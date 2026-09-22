@@ -1,0 +1,6 @@
+# Java members/classes j2go must skip; hand-translated in swt/*_manual.go instead.
+# One entry per line: binaryName, or binaryName#method(erasedParamTypes).
+
+org.eclipse.swt.SWT
+org.eclipse.swt.widgets.Monitor
+org.eclipse.swt.graphics.RoundingMode

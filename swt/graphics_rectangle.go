@@ -15,12 +15,12 @@ type Rectangle struct {
 	Y      int32
 	Width  int32
 	Height int32
-	impl   RectangleImpl
+	Impl   RectangleImpl
 }
 
 func NewRectangle(x int32, y int32, width int32, height int32) *Rectangle {
 	this := &Rectangle{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangle(x, y, width, height)
 	return this
 }
@@ -34,7 +34,7 @@ func (this *Rectangle) initRectangle(x int32, y int32, width int32, height int32
 
 func newRectangle0() *Rectangle {
 	this := &Rectangle{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangle0()
 	return this
 }
@@ -44,7 +44,7 @@ func (this *Rectangle) initRectangle0() {
 
 func (this *Rectangle) Add(rect *Rectangle) {
 	if rect == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	var left int32
 	if this.X < rect.X {
@@ -58,8 +58,8 @@ func (this *Rectangle) Add(rect *Rectangle) {
 	} else {
 		top = rect.Y
 	}
-	lhs := this.X + this.Width
-	rhs := rect.X + rect.Width
+	var lhs int32 = this.X + this.Width
+	var rhs int32 = rect.X + rect.Width
 	var right int32
 	if lhs > rhs {
 		right = lhs
@@ -86,7 +86,7 @@ func (this *Rectangle) Contains(x int32, y int32) bool {
 
 func (this *Rectangle) ContainsPt(pt *Point) bool {
 	if pt == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.Contains(pt.X, pt.Y)
 }
@@ -98,8 +98,8 @@ func (this *Rectangle) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	other, ok7 := rectangleImplAsRectangle(object)
-	if !(ok7) {
+	other, ok5 := rectangleImplAsRectangle(object)
+	if !(ok5) {
 		return false
 	}
 	return (other.X == this.X) && (other.Y == this.Y) && (other.Width == this.Width) && (other.Height == this.Height)
@@ -111,7 +111,7 @@ func (this *Rectangle) HashCode() int32 {
 
 func (this *Rectangle) Intersect(rect *Rectangle) {
 	if rect == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	if this == rect {
 		return
@@ -128,8 +128,8 @@ func (this *Rectangle) Intersect(rect *Rectangle) {
 	} else {
 		top = rect.Y
 	}
-	lhs := this.X + this.Width
-	rhs := rect.X + rect.Width
+	var lhs int32 = this.X + this.Width
+	var rhs int32 = rect.X + rect.Width
 	var right int32
 	if lhs < rhs {
 		right = lhs
@@ -168,7 +168,7 @@ func (this *Rectangle) Intersect(rect *Rectangle) {
 
 func (this *Rectangle) Intersection(rect *Rectangle) *Rectangle {
 	if rect == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	if this == rect {
 		return NewRectangle(this.X, this.Y, this.Width, this.Height)
@@ -185,8 +185,8 @@ func (this *Rectangle) Intersection(rect *Rectangle) *Rectangle {
 	} else {
 		top = rect.Y
 	}
-	lhs := this.X + this.Width
-	rhs := rect.X + rect.Width
+	var lhs int32 = this.X + this.Width
+	var rhs int32 = rect.X + rect.Width
 	var right int32
 	if lhs < rhs {
 		right = lhs
@@ -201,31 +201,31 @@ func (this *Rectangle) Intersection(rect *Rectangle) *Rectangle {
 	} else {
 		bottom = rhs
 	}
+	var cond6 int32
+	if right < left {
+		cond6 = 0
+	} else {
+		cond6 = left
+	}
+	var cond7 int32
+	if bottom < top {
+		cond7 = 0
+	} else {
+		cond7 = top
+	}
 	var cond8 int32
 	if right < left {
 		cond8 = 0
 	} else {
-		cond8 = left
+		cond8 = right - left
 	}
 	var cond9 int32
 	if bottom < top {
 		cond9 = 0
 	} else {
-		cond9 = top
+		cond9 = bottom - top
 	}
-	var cond10 int32
-	if right < left {
-		cond10 = 0
-	} else {
-		cond10 = right - left
-	}
-	var cond11 int32
-	if bottom < top {
-		cond11 = 0
-	} else {
-		cond11 = bottom - top
-	}
-	return NewRectangle(cond8, cond9, cond10, cond11)
+	return NewRectangle(cond6, cond7, cond8, cond9)
 }
 
 func (this *Rectangle) Intersects(x int32, y int32, width int32, height int32) bool {
@@ -234,7 +234,7 @@ func (this *Rectangle) Intersects(x int32, y int32, width int32, height int32) b
 
 func (this *Rectangle) IntersectsRect(rect *Rectangle) bool {
 	if rect == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	return rect == this || this.Intersects(rect.X, rect.Y, rect.Width, rect.Height)
 }
@@ -249,7 +249,7 @@ func (this *Rectangle) String() string {
 
 func (this *Rectangle) Union(rect *Rectangle) *Rectangle {
 	if rect == nil {
-		Error(ERROR_NULL_ARGUMENT)
+		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
 	}
 	var left int32
 	if this.X < rect.X {
@@ -263,8 +263,8 @@ func (this *Rectangle) Union(rect *Rectangle) *Rectangle {
 	} else {
 		top = rect.Y
 	}
-	lhs := this.X + this.Width
-	rhs := rect.X + rect.Width
+	var lhs int32 = this.X + this.Width
+	var rhs int32 = rect.X + rect.Width
 	var right int32
 	if lhs > rhs {
 		right = lhs
@@ -292,43 +292,41 @@ func RectangleOf(topLeft *Point, width int32, height int32) *Rectangle {
 
 func RectangleOfTopLeftDimension(topLeft *Point, dimension *Point) *Rectangle {
 	var x float32
-	p, ok12 := pointImplAsOfFloat(topLeft.impl)
-	if ok12 {
+	p, ok10 := pointImplAsOfFloat(topLeft.Impl)
+	if ok10 {
 		x = p.GetX()
 	} else {
 		x = float32(topLeft.X)
 	}
 	var y float32
-	p, ok13 := pointImplAsOfFloat(topLeft.impl)
-	if ok13 {
+	p, ok11 := pointImplAsOfFloat(topLeft.Impl)
+	if ok11 {
 		y = p.GetY()
 	} else {
 		y = float32(topLeft.Y)
 	}
 	var w float32
-	p, ok14 := pointImplAsOfFloat(dimension.impl)
-	if ok14 {
+	p, ok12 := pointImplAsOfFloat(dimension.Impl)
+	if ok12 {
 		w = p.GetX()
 	} else {
 		w = float32(dimension.X)
 	}
 	var h float32
-	p, ok15 := pointImplAsOfFloat(dimension.impl)
-	if ok15 {
+	p, ok13 := pointImplAsOfFloat(dimension.Impl)
+	if ok13 {
 		h = p.GetY()
 	} else {
 		h = float32(dimension.Y)
 	}
-	pm, ok16 := pointImplAsWithMonitor(topLeft.impl)
-	if ok16 {
-		n17 := newRectangleWithMonitorXYWidthHeightMonitor(x, y, w, h, pm.GetMonitor())
-		return &n17.Rectangle
+	pm, ok14 := pointImplAsWithMonitor(topLeft.Impl)
+	if ok14 {
+		return &newRectangleWithMonitorXYWidthHeightMonitor(x, y, w, h, pm.GetMonitor()).Rectangle
 	}
-	_, ok18 := pointImplAsOfFloat(topLeft.impl)
-	_, ok19 := pointImplAsOfFloat(dimension.impl)
-	if ok18 || ok19 {
-		n20 := NewRectangleOfFloatXYWidthHeight(x, y, w, h)
-		return &n20.Rectangle
+	_, ok15 := pointImplAsOfFloat(topLeft.Impl)
+	_, ok16 := pointImplAsOfFloat(dimension.Impl)
+	if ok15 || ok16 {
+		return &NewRectangleOfFloatXYWidthHeight(x, y, w, h).Rectangle
 	}
 	return NewRectangle(topLeft.X, topLeft.Y, dimension.X, dimension.Y)
 }
@@ -342,18 +340,20 @@ type Rectangle_OfFloat struct {
 
 func NewRectangleOfFloat(x int32, y int32, width int32, height int32) *Rectangle_OfFloat {
 	this := &Rectangle_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangleOfFloat(x, y, width, height)
 	return this
 }
 
 func (this *Rectangle_OfFloat) initRectangleOfFloat(x int32, y int32, width int32, height int32) {
 	this.Rectangle.initRectangle(x, y, width, height)
+	this.locationRounding = RoundingModeROUND
+	this.sizeRounding = RoundingModeROUND
 }
 
 func NewRectangleOfFloatXYWidthHeight(x float32, y float32, width float32, height float32) *Rectangle_OfFloat {
 	this := &Rectangle_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangleOfFloatXYWidthHeight(x, y, width, height)
 	return this
 }
@@ -364,13 +364,15 @@ func (this *Rectangle_OfFloat) initRectangleOfFloatXYWidthHeight(x float32, y fl
 
 func NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(x float32, y float32, width float32, height float32, locationRounding RoundingMode, sizeRounding RoundingMode) *Rectangle_OfFloat {
 	this := &Rectangle_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(x, y, width, height, locationRounding, sizeRounding)
 	return this
 }
 
 func (this *Rectangle_OfFloat) initRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(x float32, y float32, width float32, height float32, locationRounding RoundingMode, sizeRounding RoundingMode) {
 	this.Rectangle.initRectangle0()
+	this.locationRounding = RoundingModeROUND
+	this.sizeRounding = RoundingModeROUND
 	this.locationRounding = locationRounding
 	this.sizeRounding = sizeRounding
 	this.SetX(x)
@@ -426,16 +428,15 @@ func (this *Rectangle_OfFloat) GetBottomRight() *Point_OfFloat {
 }
 
 func (this *Rectangle_OfFloat) Clone() *Rectangle {
-	n21 := NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.locationRounding, this.sizeRounding)
-	return &n21.Rectangle
+	return &NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.locationRounding, this.sizeRounding).Rectangle
 }
 
 func RectangleOfFloatFrom(rectangle *Rectangle) *Rectangle_OfFloat {
-	rectangleOfFloat, ok22 := rectangleImplAsOfFloat(rectangle.impl)
-	if ok22 {
-		t23 := rectangleOfFloat.impl.Clone()
-		t24, _ := rectangleImplAsOfFloat(t23.impl)
-		return t24
+	rectangleOfFloat, ok17 := rectangleImplAsOfFloat(rectangle.Impl)
+	if ok17 {
+		t18 := rectangleOfFloat.Impl.Clone()
+		t19, _ := rectangleImplAsOfFloat(t18.Impl)
+		return t19
 	}
 	return NewRectangleOfFloat(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
 }
@@ -447,7 +448,7 @@ type Rectangle_WithMonitor struct {
 
 func NewRectangleWithMonitor(x int32, y int32, width int32, height int32, monitor *Monitor) *Rectangle_WithMonitor {
 	this := &Rectangle_WithMonitor{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangleWithMonitor(x, y, width, height, monitor)
 	return this
 }
@@ -459,7 +460,7 @@ func (this *Rectangle_WithMonitor) initRectangleWithMonitor(x int32, y int32, wi
 
 func newRectangleWithMonitorXYWidthHeightMonitor(x float32, y float32, width float32, height float32, monitor *Monitor) *Rectangle_WithMonitor {
 	this := &Rectangle_WithMonitor{}
-	this.impl = this
+	this.Impl = this
 	this.initRectangleWithMonitorXYWidthHeightMonitor(x, y, width, height, monitor)
 	return this
 }
@@ -474,8 +475,7 @@ func (this *Rectangle_WithMonitor) GetMonitor() *Monitor {
 }
 
 func (this *Rectangle_WithMonitor) Clone() *Rectangle {
-	n25 := newRectangleWithMonitorXYWidthHeightMonitor(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.monitor)
-	return &n25.Rectangle
+	return &newRectangleWithMonitorXYWidthHeightMonitor(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.monitor).Rectangle
 }
 
 // j2go: instanceof helper for Rectangle and its subclasses within the translated set.

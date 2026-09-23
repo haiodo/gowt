@@ -13,12 +13,12 @@ type PointImpl interface {
 type Point struct {
 	X    int32
 	Y    int32
-	impl PointImpl
+	Impl PointImpl
 }
 
 func NewPoint(x int32, y int32) *Point {
 	this := &Point{}
-	this.impl = this
+	this.Impl = this
 	this.initPoint(x, y)
 	return this
 }
@@ -62,7 +62,7 @@ type Point_OfFloat struct {
 
 func NewPointOfFloat(x int32, y int32) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initPointOfFloat(x, y)
 	return this
 }
@@ -74,7 +74,7 @@ func (this *Point_OfFloat) initPointOfFloat(x int32, y int32) {
 
 func NewPointOfFloatXY(x float32, y float32) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initPointOfFloatXY(x, y)
 	return this
 }
@@ -85,7 +85,7 @@ func (this *Point_OfFloat) initPointOfFloatXY(x float32, y float32) {
 
 func NewPointOfFloatXYRoundingMode(x float32, y float32, roundingMode RoundingMode) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.impl = this
+	this.Impl = this
 	this.initPointOfFloatXYRoundingMode(x, y, roundingMode)
 	return this
 }
@@ -116,16 +116,15 @@ func (this *Point_OfFloat) SetY(y float32) {
 }
 
 func (this *Point_OfFloat) Clone() *Point {
-	n2 := NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode)
-	return &n2.Point
+	return &NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode).Point
 }
 
 func PointOfFloatFrom(point *Point) *Point_OfFloat {
-	pointOfFloat, ok3 := pointImplAsOfFloat(point.impl)
-	if ok3 {
-		t4 := pointOfFloat.impl.Clone()
-		t5, _ := pointImplAsOfFloat(t4.impl)
-		return t5
+	pointOfFloat, ok2 := pointImplAsOfFloat(point.Impl)
+	if ok2 {
+		t3 := pointOfFloat.Impl.Clone()
+		t4, _ := pointImplAsOfFloat(t3.Impl)
+		return t4
 	}
 	return NewPointOfFloat(point.X, point.Y)
 }
@@ -137,7 +136,7 @@ type Point_WithMonitor struct {
 
 func NewPointWithMonitor(x int32, y int32, monitor *Monitor) *Point_WithMonitor {
 	this := &Point_WithMonitor{}
-	this.impl = this
+	this.Impl = this
 	this.initPointWithMonitor(x, y, monitor)
 	return this
 }
@@ -149,7 +148,7 @@ func (this *Point_WithMonitor) initPointWithMonitor(x int32, y int32, monitor *M
 
 func newPointWithMonitorXYMonitor(x float32, y float32, monitor *Monitor) *Point_WithMonitor {
 	this := &Point_WithMonitor{}
-	this.impl = this
+	this.Impl = this
 	this.initPointWithMonitorXYMonitor(x, y, monitor)
 	return this
 }
@@ -164,8 +163,7 @@ func (this *Point_WithMonitor) GetMonitor() *Monitor {
 }
 
 func (this *Point_WithMonitor) Clone() *Point {
-	n6 := newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor)
-	return &n6.Point
+	return &newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor).Point
 }
 
 // j2go: instanceof helper for Point and its subclasses within the translated set.

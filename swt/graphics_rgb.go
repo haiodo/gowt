@@ -21,7 +21,7 @@ func NewRGB(red int32, green int32, blue int32) *RGB {
 
 func (this *RGB) initRGB(red int32, green int32, blue int32) {
 	if (red > 255) || (red < 0) || (green > 255) || (green < 0) || (blue > 255) || (blue < 0) {
-		Error(ERROR_INVALID_ARGUMENT)
+		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.Red = red
 	this.Green = green
@@ -36,7 +36,7 @@ func NewRGBHueSaturationBrightness(hue float32, saturation float32, brightness f
 
 func (this *RGB) initRGBHueSaturationBrightness(hue float32, saturation float32, brightness float32) {
 	if hue < 0 || hue > 360 || saturation < 0 || saturation > 1 || brightness < 0 || brightness > 1 {
-		Error(ERROR_INVALID_ARGUMENT)
+		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 	}
 	var r float32
 	var g float32
@@ -50,11 +50,11 @@ func (this *RGB) initRGBHueSaturationBrightness(hue float32, saturation float32,
 			hue = float32(0)
 		}
 		hue /= float32(60)
-		i := int32(hue)
-		f := hue - float32(i)
-		p := brightness * (1 - saturation)
-		q := brightness * (1 - saturation*f)
-		t := brightness * (1 - saturation*(1-f))
+		var i int32 = int32(hue)
+		var f float32 = hue - float32(i)
+		var p float32 = brightness * (1 - saturation)
+		var q float32 = brightness * (1 - saturation*f)
+		var t float32 = brightness * (1 - saturation*(1-f))
 		switch i {
 		case 0:
 			r = brightness
@@ -92,14 +92,14 @@ func (this *RGB) initRGBHueSaturationBrightness(hue float32, saturation float32,
 }
 
 func (this *RGB) GetHSB() []float32 {
-	r := float32(this.Red) / 255
-	g := float32(this.Green) / 255
-	b := float32(this.Blue) / 255
-	max := float32(math.Max(float64(float32(math.Max(float64(r), float64(g)))), float64(b)))
-	min := float32(math.Min(float64(float32(math.Min(float64(r), float64(g)))), float64(b)))
-	delta := max - min
-	hue := float32(0)
-	brightness := max
+	var r float32 = float32(this.Red) / 255
+	var g float32 = float32(this.Green) / 255
+	var b float32 = float32(this.Blue) / 255
+	var max float32 = float32(math.Max(float64(float32(math.Max(float64(r), float64(g)))), float64(b)))
+	var min float32 = float32(math.Min(float64(float32(math.Min(float64(r), float64(g)))), float64(b)))
+	var delta float32 = max - min
+	var hue float32 = float32(0)
+	var brightness float32 = max
 	var saturation float32
 	if max == 0 {
 		saturation = float32(0)
@@ -128,8 +128,8 @@ func (this *RGB) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	rgb, ok26 := rGBImplAsRGB(object)
-	if !(ok26) {
+	rgb, ok20 := rGBImplAsRGB(object)
+	if !(ok20) {
 		return false
 	}
 	return (rgb.Red == this.Red) && (rgb.Green == this.Green) && (rgb.Blue == this.Blue)

@@ -1,16 +1,56 @@
 #!/usr/bin/env bash
-# Runs j2go over the stage-1 file list and writes generated Go into swt/.
+# Runs j2go over the stage-1 (swt/graphics value types) and stage-2/3 (internal/cocoa PI
+# bindings, all of them) file lists. --out is the repo root: each file lands under swt/ or
+# internal/cocoa/ per its own Java package (see Main.goPackageDir).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SWT_REPO="${SWT_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.swt}"
+COCOA_DIR="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa"
+EVENTS_DIR="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/events"
 
 mvn -q -f tooling/j2go/pom.xml package
 
-java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out swt \
+# Round 3: SWT.java/SWTException/SWTError, Listener/Event/EventTable/TypedListener and the whole
+# events/ package now join stage-1's graphics types in one invocation - TypeModel is
+# per-invocation (see README "Round 2"), and SWT.java references Point/Rectangle-adjacent
+# constants while TypedListener.java references every events/* type directly.
+mapfile -t EVENTS_FILES < <(find "$EVENTS_DIR" -maxdepth 1 -name '*.java' -exec basename {} \; | sort | sed 's#^#org/eclipse/swt/events/#')
+
+# Checkpoint b: every Eclipse SWT PI/cocoa class in one j2go run (all of them share bindings -
+# TypeModel is per-invocation, see README "Round 2"), plus C.java (PI/common, OS.java's own
+# base for memmove/malloc/PTR_sizeof). Selector.java is deliberately excluded from the file
+# list - not parsed as a translation target at all, only resolved via sourcepath for the
+# structural sel_x.value -> OSSel_registerName(...) rewrite (see README "Selector enum elision").
+# -printf is a GNU find extension, not on macOS's BSD find - list + basename instead.
+mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed 's#^#org/eclipse/swt/internal/cocoa/#')
+
+# Round 4: Widget/Control/Scrollable join stage-1's swt-package file set. They call straight into
+# internal/cocoa (OS.objc_msgSend, NSView, ...) - the whole cocoa file set is fed after "--" as
+# reference-only (parsed and modeled for cross-package name resolution, not re-emitted here; the
+# second invocation below is still what actually (re)generates internal/cocoa/*.go).
+java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/Point.java \
 	org/eclipse/swt/graphics/Rectangle.java \
 	org/eclipse/swt/graphics/RGB.java \
-	org/eclipse/swt/graphics/RGBA.java
+	org/eclipse/swt/graphics/RGBA.java \
+	org/eclipse/swt/SWT.java \
+	org/eclipse/swt/SWTException.java \
+	org/eclipse/swt/SWTError.java \
+	org/eclipse/swt/widgets/Listener.java \
+	org/eclipse/swt/widgets/Event.java \
+	org/eclipse/swt/widgets/EventTable.java \
+	org/eclipse/swt/widgets/TypedListener.java \
+	"${EVENTS_FILES[@]}" \
+	org/eclipse/swt/widgets/Widget.java \
+	org/eclipse/swt/widgets/Control.java \
+	org/eclipse/swt/widgets/Scrollable.java \
+	-- \
+	org/eclipse/swt/internal/C.java \
+	"${COCOA_FILES[@]}"
 
-gofmt -w swt/*.go
+java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
+	org/eclipse/swt/internal/C.java \
+	"${COCOA_FILES[@]}"
+
+gofmt -w swt/*.go internal/cocoa/*.go

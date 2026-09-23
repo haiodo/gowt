@@ -1,6 +1,8 @@
 // Hand-written stub for org.eclipse.swt.widgets.Monitor (manual.txt), until the class itself
-// is translated. The graphics classes only carry it as an opaque handle (Point.WithMonitor,
-// Rectangle.WithMonitor); nothing here calls a Monitor method.
+// is translated. Round 4 (Control.getMonitor) needs GetBounds - a zero Rectangle, same "not
+// real yet" ceiling as the rest of this stub.
 package swt
 
 type Monitor struct{}
+
+func (m *Monitor) GetBounds() *Rectangle { return &Rectangle{} }

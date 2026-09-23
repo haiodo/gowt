@@ -1,6 +1,80 @@
-# Java members/classes j2go must skip; hand-translated in swt/*_manual.go instead.
-# One entry per line: binaryName, or binaryName#method(erasedParamTypes).
+# Java members/classes j2go must skip; hand-translated in swt/*_manual.go or
+# internal/cocoa/*_manual.go instead. One entry per line: binaryName, or
+# binaryName#method(erasedParamTypes), or binaryName#fieldName for a skipped field.
 
-org.eclipse.swt.SWT
 org.eclipse.swt.widgets.Monitor
 org.eclipse.swt.graphics.RoundingMode
+
+# org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
+# stub, swt/swt_manual.go, is kept empty rather than deleted.
+
+# Whole-class skip: Java-native-library-loading bootstrap (Library.loadLibrary/isLoadable),
+# irrelevant to purego - C.java's static block calls Platform.exitIfNotLoadable()/
+# Library.loadLibrary("swt-pi"), stubbed as no-ops in internal/cocoa/platform_manual.go.
+org.eclipse.swt.internal.Platform
+org.eclipse.swt.internal.Library
+
+# Widget/graphics types a later round will translate for real; Event.java/Touch.java only carry
+# these as opaque field types today (swt/widgets_stubs_manual.go, see README "Manual superclass
+# embedding" and "Round 3"). Widget/Control/Scrollable themselves are translated for real as of
+# Round 4 - removed from this list.
+org.eclipse.swt.widgets.Display
+org.eclipse.swt.graphics.GC
+org.eclipse.swt.widgets.Touch
+
+# Round 4: Widget/Control/Scrollable reference these classes/interfaces, none translated yet -
+# temporary manual stubs (swt/widgets_stubs_manual.go) carrying only the members actually used.
+org.eclipse.swt.internal.Callback
+org.eclipse.swt.widgets.Composite
+org.eclipse.swt.widgets.Shell
+org.eclipse.swt.widgets.Decorations
+org.eclipse.swt.widgets.Canvas
+org.eclipse.swt.widgets.Menu
+org.eclipse.swt.widgets.ScrollBar
+org.eclipse.swt.graphics.Font
+org.eclipse.swt.graphics.Color
+org.eclipse.swt.graphics.Image
+org.eclipse.swt.graphics.Cursor
+org.eclipse.swt.graphics.Region
+org.eclipse.swt.graphics.Drawable
+org.eclipse.swt.accessibility.Accessible
+org.eclipse.swt.accessibility.ACC
+org.eclipse.swt.internal.WidgetSpy
+org.eclipse.swt.graphics.GCData
+org.eclipse.swt.graphics.Device
+org.eclipse.swt.graphics.Resource
+
+# EventTable.java's try-with-resources target; simplified (no Display global-handler forwarding,
+# Display isn't translated yet) in swt/internal_exceptionstash_manual.go.
+org.eclipse.swt.internal.ExceptionStash
+
+# java.lang/java.util base types some translated classes extend or catch (SWTException/SWTError
+# extend RuntimeException/Error, TypedEvent extends EventObject) - hand-written in internal/jrt,
+# see README "Manual superclass embedding". Throwable/EventListener are field/param-type-only
+# (map to Go's error/any); RuntimeException/Error/Exception/Throwable together also collapse any
+# catch clause naming them to one broad `error` match (README "Known gaps").
+java.lang.Throwable
+java.lang.RuntimeException
+java.lang.Error
+java.lang.IllegalArgumentException
+java.util.EventObject
+java.util.EventListener
+
+# Method-level: getClass().getName() is Java reflection with no Go equivalent - reads
+# this.impl's own dynamic type instead (see tooling/j2go/README.md "impl cascade" and
+# internal/cocoa/id_manual.go).
+org.eclipse.swt.internal.cocoa.id#objc_getClass()
+org.eclipse.swt.internal.cocoa.id#toString()
+
+# Method-level, dropped entirely (see README "Selector enum elision" / "dark-mode helpers"):
+# registerSelector/getSelector only exist to support Selector.java, itself never translated;
+# setTheme/isAppDarkAppearance/isSystemDarkAppearance pull in NSApplication/NSAppearance/
+# NSUserDefaults, not worth translating for 3 optional dark-mode helpers nothing else calls yet.
+org.eclipse.swt.internal.cocoa.OS#registerSelector
+org.eclipse.swt.internal.cocoa.OS#getSelector
+org.eclipse.swt.internal.cocoa.OS#setTheme
+org.eclipse.swt.internal.cocoa.OS#isAppDarkAppearance
+org.eclipse.swt.internal.cocoa.OS#isSystemDarkAppearance
+
+# Field-level, dropped: only feeds registerSelector/getSelector above.
+org.eclipse.swt.internal.cocoa.OS#SELECTORS

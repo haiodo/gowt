@@ -19,7 +19,7 @@ func NewRGBA(red int32, green int32, blue int32, alpha int32) *RGBA {
 
 func (this *RGBA) initRGBA(red int32, green int32, blue int32, alpha int32) {
 	if (alpha > 255) || (alpha < 0) {
-		Error(ERROR_INVALID_ARGUMENT)
+		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.Rgb = NewRGB(red, green, blue)
 	this.Alpha = alpha
@@ -33,14 +33,14 @@ func NewRGBAHueSaturationBrightnessAlpha(hue float32, saturation float32, bright
 
 func (this *RGBA) initRGBAHueSaturationBrightnessAlpha(hue float32, saturation float32, brightness float32, alpha float32) {
 	if (alpha > 255) || (alpha < 0) {
-		Error(ERROR_INVALID_ARGUMENT)
+		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.Rgb = NewRGBHueSaturationBrightness(hue, saturation, brightness)
 	this.Alpha = int32((float64(alpha) + 0.5))
 }
 
 func (this *RGBA) GetHSBA() []float32 {
-	hsb := this.Rgb.GetHSB()
+	var hsb []float32 = this.Rgb.GetHSB()
 	return []float32{hsb[0], hsb[1], hsb[2], float32(this.Alpha)}
 }
 
@@ -48,8 +48,8 @@ func (this *RGBA) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	rgba, ok27 := rGBAImplAsRGBA(object)
-	if !(ok27) {
+	rgba, ok21 := rGBAImplAsRGBA(object)
+	if !(ok21) {
 		return false
 	}
 	return (rgba.Rgb.Red == this.Rgb.Red) && (rgba.Rgb.Green == this.Rgb.Green) && (rgba.Rgb.Blue == this.Rgb.Blue) && (rgba.Alpha == this.Alpha)

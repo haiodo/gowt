@@ -54,8 +54,8 @@ func TestPointString(t *testing.T) {
 
 func TestPointOfFloatClone(t *testing.T) {
 	pointOfInt := NewPointOfFloat(3, 4)
-	cloned := pointOfInt.impl.Clone()
-	clonedPointOfInt, ok := pointImplAsOfFloat(cloned.impl)
+	cloned := pointOfInt.Impl.Clone()
+	clonedPointOfInt, ok := pointImplAsOfFloat(cloned.Impl)
 	if !ok {
 		t.Fatal("clone did not return a Point.OfFloat")
 	}
@@ -64,7 +64,7 @@ func TestPointOfFloatClone(t *testing.T) {
 	}
 
 	pointOfFloat := NewPointOfFloatXY(3.4, 3.5)
-	cf, ok := pointImplAsOfFloat(pointOfFloat.impl.Clone().impl)
+	cf, ok := pointImplAsOfFloat(pointOfFloat.Impl.Clone().Impl)
 	if !ok || pointOfFloat.GetX() != cf.GetX() || pointOfFloat.GetY() != cf.GetY() {
 		t.Fatalf("float clone mismatch")
 	}
@@ -168,7 +168,7 @@ func TestRectangleOfBothPointsOfFloat(t *testing.T) {
 	topLeft := NewPointOfFloatXY(10.5, 20.5)
 	dimension := NewPointOfFloatXY(30.5, 40.5)
 	rect := RectangleOfTopLeftDimension(&topLeft.Point, &dimension.Point)
-	f, ok := rectangleImplAsOfFloat(rect.impl)
+	f, ok := rectangleImplAsOfFloat(rect.Impl)
 	if !ok {
 		t.Fatal("expected a Rectangle.OfFloat")
 	}
@@ -179,7 +179,7 @@ func TestRectangleOfBothPointsOfFloat(t *testing.T) {
 
 func TestRectangleOfNeitherPointOfFloat(t *testing.T) {
 	rect := RectangleOfTopLeftDimension(NewPoint(1, 2), NewPoint(10, 20))
-	if _, ok := rectangleImplAsOfFloat(rect.impl); ok {
+	if _, ok := rectangleImplAsOfFloat(rect.Impl); ok {
 		t.Fatal("expected a plain Rectangle")
 	}
 	if rect.X != 1 || rect.Y != 2 || rect.Width != 10 || rect.Height != 20 {
@@ -191,7 +191,7 @@ func TestRectangleOfWithMonitor(t *testing.T) {
 	monitor := &Monitor{}
 	topLeft := NewPointWithMonitor(10, 20, monitor)
 	rect := RectangleOfTopLeftDimension(&topLeft.Point, NewPoint(30, 40))
-	wm, ok := rect.impl.(*Rectangle_WithMonitor)
+	wm, ok := rect.Impl.(*Rectangle_WithMonitor)
 	if !ok {
 		t.Fatal("expected a Rectangle.WithMonitor")
 	}

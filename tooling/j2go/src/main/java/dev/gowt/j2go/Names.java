@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 /** Naming: capitalization, overload suffixes, names.properties overrides (see AGENTS contract). */
-class Names {
+public class Names {
 
 	// binaryName#method(erasures) -> overrideName, loaded from names.properties.
 	private final Map<String, String> overrides = new HashMap<>();
@@ -19,6 +19,12 @@ class Names {
 
 	// method key -> its declared Java parameter names, for the overload-suffix rule.
 	private final Map<String, List<String>> paramNamesByKey = new HashMap<>();
+
+	/** Registers a computed (not user-configured) override - see TypeModel's cross-family
+	 * instance-method collision pass. */
+	void addOverride(String erasureKey, String goName) {
+		overrides.put(erasureKey, goName);
+	}
 
 	void loadOverrides(Path propsFile) throws IOException {
 		if (!Files.exists(propsFile)) return;
@@ -31,12 +37,23 @@ class Names {
 		}
 	}
 
-	static String capitalize(String s) {
+	public static String capitalize(String s) {
 		if (s.isEmpty()) return s;
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 
-	static String decapitalize(String s) {
+	/** Go base name for a Java method: toString -> String, else Capitalize(name). Shared by a
+	 * plain call/declaration and the override cascade, so both land on the same Go name. */
+	public static String javaMethodBaseGoName(String javaMethodName) {
+		return switch (javaMethodName) {
+			case "equals" -> "Equals";
+			case "hashCode" -> "HashCode";
+			case "toString" -> "String";
+			default -> capitalize(javaMethodName);
+		};
+	}
+
+	public static String decapitalize(String s) {
 		if (s.isEmpty()) return s;
 		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
@@ -63,7 +80,7 @@ class Names {
 		return String.join("", parts);
 	}
 
-	static String erasureKey(IMethodBinding m) {
+	public static String erasureKey(IMethodBinding m) {
 		IMethodBinding decl = m.getMethodDeclaration();
 		StringBuilder sb = new StringBuilder();
 		sb.append(decl.getDeclaringClass().getErasure().getBinaryName()).append('#');
@@ -90,7 +107,7 @@ class Names {
 	 * Go name for a resolved method/constructor use: base name for the first-declared overload,
 	 * base+CapitalizedParamNames for the others, unless overridden via names.properties.
 	 */
-	String goMemberName(IMethodBinding m, String baseName) {
+	public String goMemberName(IMethodBinding m, String baseName) {
 		String key = erasureKey(m);
 		String override = overrides.get(key);
 		if (override != null) return override;
@@ -102,6 +119,11 @@ class Names {
 		int idx = order.indexOf(key);
 		if (idx <= 0) return baseName; // first declared, or not registered (external) -> base name.
 
+		if (!nameBasedSuffixesUnique(order)) {
+			// JNIGen natives reuse arg0/arg1/... across overloads that differ only by type.
+			return baseName + "Overload" + idx;
+		}
+
 		List<String> params = paramNamesByKey.getOrDefault(key, List.of());
 		StringBuilder sb = new StringBuilder(baseName);
 		for (String p : params) {
@@ -110,5 +132,23 @@ class Names {
 		// No contract rule for a later zero-param overload (nothing to append); fall back to arity.
 		if (params.isEmpty()) sb.append(params.size());
 		return sb.toString();
+	}
+
+	private final Map<String, Boolean> uniqueCache = new HashMap<>();
+
+	// Suffixes for overloads after the first (which always keeps the bare base name and so
+	// can't collide) - unique means name-based suffixing is fine, else fall back to position.
+	private boolean nameBasedSuffixesUnique(List<String> order) {
+		return uniqueCache.computeIfAbsent(String.join(",", order), k -> {
+			Set<String> seen = new HashSet<>();
+			for (int i = 1; i < order.size(); i++) {
+				List<String> params = paramNamesByKey.getOrDefault(order.get(i), List.of());
+				StringBuilder sb = new StringBuilder();
+				for (String p : params) sb.append(capitalize(p));
+				if (params.isEmpty()) sb.append(0);
+				if (!seen.add(sb.toString())) return false;
+			}
+			return true;
+		});
 	}
 }

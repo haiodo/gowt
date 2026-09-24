@@ -8,7 +8,7 @@ type Protocol struct {
 
 func NewProtocol() *Protocol {
 	this := &Protocol{}
-	this.Impl = this
+	this.impl = this
 	this.initProtocol()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *Protocol) initProtocol() {
 
 func NewProtocolOverload1(id int64) *Protocol {
 	this := &Protocol{}
-	this.Impl = this
+	this.impl = this
 	this.initProtocolOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *Protocol) initProtocolOverload1(id int64) {
 
 func NewProtocolOverload2(id *id) *Protocol {
 	this := &Protocol{}
-	this.Impl = this
+	this.impl = this
 	this.initProtocolOverload2(id)
 	return this
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ebitengine/purego"
 	"os"
+	"runtime"
 	"sync"
 	"unsafe"
 )
@@ -18,13 +19,13 @@ var OSVERSION_ int32 = 0
 
 var OSIS_X86_64 bool
 
-const OSMAX_TEXT_CONTAINER_SIZE float64 = 0.5e7
+const OSMAX_TEXT_CONTAINER_SIZE float64 = float64(0.5e7)
 
 const OSNoErr int32 = 0
 
-const OSKSystemIconsCreator int32 = (int32('m') << 24) + (int32('a') << 16) + (int32('c') << 8) + 's'
+const OSKSystemIconsCreator int32 = (int32('m') << 24) + (int32('a') << 16) + (int32('c') << 8) + int32('s')
 
-const OSKAlertStopIcon int32 = (int32('s') << 24) + (int32('t') << 16) + (int32('o') << 8) + 'p'
+const OSKAlertStopIcon int32 = (int32('s') << 24) + (int32('t') << 16) + (int32('o') << 8) + int32('p')
 
 const OSCmdKey int32 = 256
 
@@ -156,9 +157,9 @@ var OSClass_NSToolbarView int64
 
 var OSSel_appAppearanceChanged int64
 
-const OSKUCKeyActionDown int16 = 0
+const OSKUCKeyActionDown int16 = int16(0)
 
-const OSKUCKeyActionUp int16 = 1
+const OSKUCKeyActionUp int16 = int16(1)
 
 const OSKQDParseRegionFromTop int32 = (1)
 
@@ -4006,7 +4007,7 @@ var OSNSLocaleLanguageCode_ *NSString
 
 func NewOS() *OS {
 	this := &OS{}
-	this.Impl = this
+	this.impl = this
 	this.initOS()
 	return this
 }
@@ -4019,37 +4020,25 @@ func OSVERSION(major int32, minor int32, bugfix int32) int32 {
 	return (major << 16) + (minor << 8) + bugfix
 }
 
-var OSCALLBACK_cellBaselineOffset_impl func(func_ int64) int64
-var OSCALLBACK_cellBaselineOffset_once sync.Once
-
-func OSCALLBACK_cellBaselineOffset(func_ int64) int64 {
-	OSCALLBACK_cellBaselineOffset_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_cellBaselineOffset_impl, purego.RTLD_DEFAULT, "CALLBACK_cellBaselineOffset")
-	})
-	return OSCALLBACK_cellBaselineOffset_impl(func_)
+func OSCALLBACK_cellBaselineOffset(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) NSPoint {
+		return structResult[NSPoint](fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
-var OSCALLBACK_NSTextAttachmentCell_cellSize_impl func(func_ int64) int64
-var OSCALLBACK_NSTextAttachmentCell_cellSize_once sync.Once
-
-func OSCALLBACK_NSTextAttachmentCell_cellSize(func_ int64) int64 {
-	OSCALLBACK_NSTextAttachmentCell_cellSize_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_NSTextAttachmentCell_cellSize_impl, purego.RTLD_DEFAULT, "CALLBACK_NSTextAttachmentCell_cellSize")
-	})
-	return OSCALLBACK_NSTextAttachmentCell_cellSize_impl(func_)
+func OSCALLBACK_NSTextAttachmentCell_cellSize(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) NSSize {
+		return structResult[NSSize](fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
-var OSCALLBACK_NSTextAttachmentCell_attachment_impl func(func_ int64) int64
-var OSCALLBACK_NSTextAttachmentCell_attachment_once sync.Once
-
-func OSCALLBACK_NSTextAttachmentCell_attachment(func_ int64) int64 {
-	OSCALLBACK_NSTextAttachmentCell_attachment_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_NSTextAttachmentCell_attachment_impl, purego.RTLD_DEFAULT, "CALLBACK_NSTextAttachmentCell_attachment")
-	})
-	return OSCALLBACK_NSTextAttachmentCell_attachment_impl(func_)
+func OSCALLBACK_NSTextAttachmentCell_attachment(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) uintptr {
+		return uintptr(fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
 var OSBeginSheetModalForWindow_impl func(id int64, sel int64, window int64, handler int64)
@@ -4064,46 +4053,36 @@ func OSBeginSheetModalForWindow(id int64, sel int64, window int64, handler int64
 }
 
 func OSBeginSheetModalForWindowIdWindowHandler(id *NSObject, window *NSWindow, handler int64) {
-	var cond945 int64
-	if window != nil {
-		cond945 = window.Id
+	var cond944 int64
+	if window != (nil) {
+		cond944 = window.Id
 	} else {
-		cond945 = int64(0)
+		cond944 = int64(0)
 	}
-	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond945, handler)
+	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond944, handler)
 }
 
-var OSNewGlobalRef_impl func(object any) int64
-var OSNewGlobalRef_once sync.Once
-
-func OSNewGlobalRef(object any) int64 {
-	OSNewGlobalRef_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNewGlobalRef_impl, purego.RTLD_DEFAULT, "NewGlobalRef")
-	})
-	return OSNewGlobalRef_impl(object)
+func OSSetTheme(isDarkTheme bool) {
+	var cond945 int32
+	if isDarkTheme {
+		cond945 = 1
+	} else {
+		cond945 = 0
+	}
+	OSObjc_msgSendOverload41(NSApplicationSharedApplication().Id, OSSel_appAppearanceChanged, cond945)
 }
 
-var OSDeleteGlobalRef_impl func(globalRef int64)
-var OSDeleteGlobalRef_once sync.Once
-
-func OSDeleteGlobalRef(globalRef int64) {
-	OSDeleteGlobalRef_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSDeleteGlobalRef_impl, purego.RTLD_DEFAULT, "DeleteGlobalRef")
-	})
-	OSDeleteGlobalRef_impl(globalRef)
+func OSIsAppDarkAppearance() bool {
+	var currentAppearance *NSAppearance = NSAppearanceCurrentAppearance()
+	if currentAppearance != (nil) {
+		return ("NSAppearanceNameDarkAqua" == currentAppearance.Name().GetString())
+	}
+	return false
 }
 
-var OSJNIGetObject_impl func(globalRef int64) any
-var OSJNIGetObject_once sync.Once
-
-func OSJNIGetObject(globalRef int64) any {
-	OSJNIGetObject_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSJNIGetObject_impl, purego.RTLD_DEFAULT, "JNIGetObject")
-	})
-	return OSJNIGetObject_impl(globalRef)
+func OSIsSystemDarkAppearance() bool {
+	var osxMode *NSString = NSUserDefaultsStandardUserDefaults().StringForKey(NSStringStringWith("AppleInterfaceStyle"))
+	return osxMode != (nil) && ("Dark" == osxMode.GetString())
 }
 
 var OSGetCurrentProcess_impl func(psn []int32) int32
@@ -4161,15 +4140,12 @@ func OSTISGetInputSourceProperty(inputSource int64, propertyKey int64) int64 {
 	return OSTISGetInputSourceProperty_impl(inputSource, propertyKey)
 }
 
-var OSKTISPropertyUnicodeKeyLayoutData_impl func() int64
-var OSKTISPropertyUnicodeKeyLayoutData_once sync.Once
-
 func OSKTISPropertyUnicodeKeyLayoutData() int64 {
-	OSKTISPropertyUnicodeKeyLayoutData_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSKTISPropertyUnicodeKeyLayoutData_impl, purego.RTLD_DEFAULT, "kTISPropertyUnicodeKeyLayoutData")
-	})
-	return OSKTISPropertyUnicodeKeyLayoutData_impl()
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "kTISPropertyUnicodeKeyLayoutData")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
 var OSSetSystemUIMode_impl func(inMode int32, inOptions int32) int32
@@ -4227,10 +4203,10 @@ func OSGetThemeMetric(themeConstant int32, metric []int32) {
 	OSGetThemeMetric_impl(themeConstant, metric)
 }
 
-var OSHIThemeDrawFocusRect_impl func(inRect CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32
+var OSHIThemeDrawFocusRect_impl func(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32
 var OSHIThemeDrawFocusRect_once sync.Once
 
-func OSHIThemeDrawFocusRect(inRect CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32 {
+func OSHIThemeDrawFocusRect(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32 {
 	OSHIThemeDrawFocusRect_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSHIThemeDrawFocusRect_impl, purego.RTLD_DEFAULT, "HIThemeDrawFocusRect")
@@ -4326,10 +4302,10 @@ func OSPMPrinterGetPrinterResolutionCount(pmPrinter int64, outNumResolutions []i
 	return OSPMPrinterGetPrinterResolutionCount_impl(pmPrinter, outNumResolutions)
 }
 
-var OSPMPrinterGetOutputResolution_impl func(pmPrinter int64, pmPrintSettings int64, outResolution PMResolution) int64
+var OSPMPrinterGetOutputResolution_impl func(pmPrinter int64, pmPrintSettings int64, outResolution *PMResolution) int64
 var OSPMPrinterGetOutputResolution_once sync.Once
 
-func OSPMPrinterGetOutputResolution(pmPrinter int64, pmPrintSettings int64, outResolution PMResolution) int64 {
+func OSPMPrinterGetOutputResolution(pmPrinter int64, pmPrintSettings int64, outResolution *PMResolution) int64 {
 	OSPMPrinterGetOutputResolution_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSPMPrinterGetOutputResolution_impl, purego.RTLD_DEFAULT, "PMPrinterGetOutputResolution")
@@ -4337,10 +4313,10 @@ func OSPMPrinterGetOutputResolution(pmPrinter int64, pmPrintSettings int64, outR
 	return OSPMPrinterGetOutputResolution_impl(pmPrinter, pmPrintSettings, outResolution)
 }
 
-var OSPMPrinterGetIndexedPrinterResolution_impl func(pmPrinter int64, index int32, outResolution PMResolution) int64
+var OSPMPrinterGetIndexedPrinterResolution_impl func(pmPrinter int64, index int32, outResolution *PMResolution) int64
 var OSPMPrinterGetIndexedPrinterResolution_once sync.Once
 
-func OSPMPrinterGetIndexedPrinterResolution(pmPrinter int64, index int32, outResolution PMResolution) int64 {
+func OSPMPrinterGetIndexedPrinterResolution(pmPrinter int64, index int32, outResolution *PMResolution) int64 {
 	OSPMPrinterGetIndexedPrinterResolution_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSPMPrinterGetIndexedPrinterResolution_impl, purego.RTLD_DEFAULT, "PMPrinterGetIndexedPrinterResolution")
@@ -4354,14 +4330,6 @@ var OSGetpid_once sync.Once
 func OSGetpid() int32 {
 	OSGetpid_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSGetpid_impl, purego.RTLD_DEFAULT, "getpid") })
 	return OSGetpid_impl()
-}
-
-var OSCall_impl func(proc int64, id int64, sel int64)
-var OSCall_once sync.Once
-
-func OSCall(proc int64, id int64, sel int64) {
-	OSCall_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSCall_impl, purego.RTLD_DEFAULT, "call") })
-	OSCall_impl(proc, id, sel)
 }
 
 var OSNewRgn_impl func() int64
@@ -4589,21 +4557,10 @@ func OSSecTrustCreateWithCertificates(certificates int64, policies int64, trustR
 	return OSSecTrustCreateWithCertificates_impl(certificates, policies, trustRef)
 }
 
-var OSIsFlipped_CALLBACK_impl func() int64
-var OSIsFlipped_CALLBACK_once sync.Once
-
-func OSIsFlipped_CALLBACK() int64 {
-	OSIsFlipped_CALLBACK_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSIsFlipped_CALLBACK_impl, purego.RTLD_DEFAULT, "isFlipped_CALLBACK")
-	})
-	return OSIsFlipped_CALLBACK_impl()
-}
-
-var OSNSIntersectionRect_impl func(result NSRect, aRect NSRect, bRect NSRect)
+var OSNSIntersectionRect_impl func(result *NSRect, aRect *NSRect, bRect *NSRect)
 var OSNSIntersectionRect_once sync.Once
 
-func OSNSIntersectionRect(result NSRect, aRect NSRect, bRect NSRect) {
+func OSNSIntersectionRect(result *NSRect, aRect *NSRect, bRect *NSRect) {
 	OSNSIntersectionRect_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSNSIntersectionRect_impl, purego.RTLD_DEFAULT, "NSIntersectionRect")
@@ -4611,10 +4568,10 @@ func OSNSIntersectionRect(result NSRect, aRect NSRect, bRect NSRect) {
 	OSNSIntersectionRect_impl(result, aRect, bRect)
 }
 
-var OSCGDisplayBounds_impl func(display int32, rect CGRect)
+var OSCGDisplayBounds_impl func(display int32, rect *CGRect)
 var OSCGDisplayBounds_once sync.Once
 
-func OSCGDisplayBounds(display int32, rect CGRect) {
+func OSCGDisplayBounds(display int32, rect *CGRect) {
 	OSCGDisplayBounds_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSCGDisplayBounds_impl, purego.RTLD_DEFAULT, "CGDisplayBounds")
@@ -4904,433 +4861,345 @@ func OSSel_registerName(selectorName string) int64 {
 
 func OSObjc_super_sizeof() int32 { return int32(unsafe.Sizeof(objc_super{})) }
 
-var OSCALLBACK_accessibilityHitTest__impl func(func_ int64) int64
-var OSCALLBACK_accessibilityHitTest__once sync.Once
-
-func OSCALLBACK_accessibilityHitTest_(func_ int64) int64 {
-	OSCALLBACK_accessibilityHitTest__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_accessibilityHitTest__impl, purego.RTLD_DEFAULT, "CALLBACK_accessibilityHitTest_")
-	})
-	return OSCALLBACK_accessibilityHitTest__impl(func_)
+func OSCALLBACK_accessibilityHitTest_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_attributedSubstringFromRange__impl func(func_ int64) int64
-var OSCALLBACK_attributedSubstringFromRange__once sync.Once
-
-func OSCALLBACK_attributedSubstringFromRange_(func_ int64) int64 {
-	OSCALLBACK_attributedSubstringFromRange__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_attributedSubstringFromRange__impl, purego.RTLD_DEFAULT, "CALLBACK_attributedSubstringFromRange_")
-	})
-	return OSCALLBACK_attributedSubstringFromRange__impl(func_)
+func OSCALLBACK_attributedSubstringFromRange_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRange) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_cacheDisplayInRect_toBitmapImageRep__impl func(func_ int64) int64
-var OSCALLBACK_cacheDisplayInRect_toBitmapImageRep__once sync.Once
-
-func OSCALLBACK_cacheDisplayInRect_toBitmapImageRep_(func_ int64) int64 {
-	OSCALLBACK_cacheDisplayInRect_toBitmapImageRep__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_cacheDisplayInRect_toBitmapImageRep__impl, purego.RTLD_DEFAULT, "CALLBACK_cacheDisplayInRect_toBitmapImageRep_")
-	})
-	return OSCALLBACK_cacheDisplayInRect_toBitmapImageRep__impl(func_)
+func OSCALLBACK_cacheDisplayInRect_toBitmapImageRep_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_canDragRowsWithIndexes_atPoint__impl func(func_ int64) int64
-var OSCALLBACK_canDragRowsWithIndexes_atPoint__once sync.Once
-
-func OSCALLBACK_canDragRowsWithIndexes_atPoint_(func_ int64) int64 {
-	OSCALLBACK_canDragRowsWithIndexes_atPoint__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_canDragRowsWithIndexes_atPoint__impl, purego.RTLD_DEFAULT, "CALLBACK_canDragRowsWithIndexes_atPoint_")
-	})
-	return OSCALLBACK_canDragRowsWithIndexes_atPoint__impl(func_)
+func OSCALLBACK_canDragRowsWithIndexes_atPoint_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3)}))
+	}))
 }
 
-var OSCALLBACK_cellSize_impl func(func_ int64) int64
-var OSCALLBACK_cellSize_once sync.Once
-
-func OSCALLBACK_cellSize(func_ int64) int64 {
-	OSCALLBACK_cellSize_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_cellSize_impl, purego.RTLD_DEFAULT, "CALLBACK_cellSize")
-	})
-	return OSCALLBACK_cellSize_impl(func_)
+func OSCALLBACK_cellSize(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) NSSize {
+		return structResult[NSSize](fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
-var OSCALLBACK_cellSizeForBounds__impl func(func_ int64) int64
-var OSCALLBACK_cellSizeForBounds__once sync.Once
-
-func OSCALLBACK_cellSizeForBounds_(func_ int64) int64 {
-	OSCALLBACK_cellSizeForBounds__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_cellSizeForBounds__impl, purego.RTLD_DEFAULT, "CALLBACK_cellSizeForBounds_")
-	})
-	return OSCALLBACK_cellSizeForBounds__impl(func_)
+func OSCALLBACK_cellSizeForBounds_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) NSSize {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSSize](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_characterIndexForPoint__impl func(func_ int64) int64
-var OSCALLBACK_characterIndexForPoint__once sync.Once
-
-func OSCALLBACK_characterIndexForPoint_(func_ int64) int64 {
-	OSCALLBACK_characterIndexForPoint__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_characterIndexForPoint__impl, purego.RTLD_DEFAULT, "CALLBACK_characterIndexForPoint_")
-	})
-	return OSCALLBACK_characterIndexForPoint__impl(func_)
+func OSCALLBACK_characterIndexForPoint_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_columnAtPoint__impl func(func_ int64) int64
-var OSCALLBACK_columnAtPoint__once sync.Once
-
-func OSCALLBACK_columnAtPoint_(func_ int64) int64 {
-	OSCALLBACK_columnAtPoint__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_columnAtPoint__impl, purego.RTLD_DEFAULT, "CALLBACK_columnAtPoint_")
-	})
-	return OSCALLBACK_columnAtPoint__impl(func_)
+func OSCALLBACK_columnAtPoint_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_draggedImage_endedAt_operation__impl func(func_ int64) int64
-var OSCALLBACK_draggedImage_endedAt_operation__once sync.Once
-
-func OSCALLBACK_draggedImage_endedAt_operation_(func_ int64) int64 {
-	OSCALLBACK_draggedImage_endedAt_operation__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_draggedImage_endedAt_operation__impl, purego.RTLD_DEFAULT, "CALLBACK_draggedImage_endedAt_operation_")
-	})
-	return OSCALLBACK_draggedImage_endedAt_operation__impl(func_)
+func OSCALLBACK_draggedImage_endedAt_operation_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSPoint, arg4 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3), int64(arg4)}))
+	}))
 }
 
-var OSCALLBACK_drawBackgroundInClipRect__impl func(func_ int64) int64
-var OSCALLBACK_drawBackgroundInClipRect__once sync.Once
-
-func OSCALLBACK_drawBackgroundInClipRect_(func_ int64) int64 {
-	OSCALLBACK_drawBackgroundInClipRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawBackgroundInClipRect__impl, purego.RTLD_DEFAULT, "CALLBACK_drawBackgroundInClipRect_")
-	})
-	return OSCALLBACK_drawBackgroundInClipRect__impl(func_)
+func OSCALLBACK_drawBackgroundInClipRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_drawBezelWithFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_drawBezelWithFrame_inView__once sync.Once
-
-func OSCALLBACK_drawBezelWithFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_drawBezelWithFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawBezelWithFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_drawBezelWithFrame_inView_")
-	})
-	return OSCALLBACK_drawBezelWithFrame_inView__impl(func_)
+func OSCALLBACK_drawBezelWithFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_drawImage_withFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_drawImage_withFrame_inView__once sync.Once
-
-func OSCALLBACK_drawImage_withFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_drawImage_withFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawImage_withFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_drawImage_withFrame_inView_")
-	})
-	return OSCALLBACK_drawImage_withFrame_inView__impl(func_)
+func OSCALLBACK_drawImage_withFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRect, arg4 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3), int64(arg4)}))
+	}))
 }
 
-var OSCALLBACK_drawInteriorWithFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_drawInteriorWithFrame_inView__once sync.Once
-
-func OSCALLBACK_drawInteriorWithFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_drawInteriorWithFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawInteriorWithFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_drawInteriorWithFrame_inView_")
-	})
-	return OSCALLBACK_drawInteriorWithFrame_inView__impl(func_)
+func OSCALLBACK_drawInteriorWithFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_drawLabel_inRect__impl func(func_ int64) int64
-var OSCALLBACK_drawLabel_inRect__once sync.Once
-
-func OSCALLBACK_drawLabel_inRect_(func_ int64) int64 {
-	OSCALLBACK_drawLabel_inRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawLabel_inRect__impl, purego.RTLD_DEFAULT, "CALLBACK_drawLabel_inRect_")
-	})
-	return OSCALLBACK_drawLabel_inRect__impl(func_)
+func OSCALLBACK_drawLabel_inRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3)}))
+	}))
 }
 
-var OSCALLBACK_drawRect__impl func(func_ int64) int64
-var OSCALLBACK_drawRect__once sync.Once
-
-func OSCALLBACK_drawRect_(func_ int64) int64 {
-	OSCALLBACK_drawRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawRect__impl, purego.RTLD_DEFAULT, "CALLBACK_drawRect_")
-	})
-	return OSCALLBACK_drawRect__impl(func_)
+func OSCALLBACK_drawRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_drawTitle_withFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_drawTitle_withFrame_inView__once sync.Once
-
-func OSCALLBACK_drawTitle_withFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_drawTitle_withFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawTitle_withFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_drawTitle_withFrame_inView_")
-	})
-	return OSCALLBACK_drawTitle_withFrame_inView__impl(func_)
+func OSCALLBACK_drawTitle_withFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRect, arg4 uintptr) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3), int64(arg4)}))
+	}))
 }
 
-var OSCALLBACK_drawViewBackgroundInRect__impl func(func_ int64) int64
-var OSCALLBACK_drawViewBackgroundInRect__once sync.Once
-
-func OSCALLBACK_drawViewBackgroundInRect_(func_ int64) int64 {
-	OSCALLBACK_drawViewBackgroundInRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawViewBackgroundInRect__impl, purego.RTLD_DEFAULT, "CALLBACK_drawViewBackgroundInRect_")
-	})
-	return OSCALLBACK_drawViewBackgroundInRect__impl(func_)
+func OSCALLBACK_drawViewBackgroundInRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_drawWithExpansionFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_drawWithExpansionFrame_inView__once sync.Once
-
-func OSCALLBACK_drawWithExpansionFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_drawWithExpansionFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_drawWithExpansionFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_drawWithExpansionFrame_inView_")
-	})
-	return OSCALLBACK_drawWithExpansionFrame_inView__impl(func_)
+func OSCALLBACK_drawWithExpansionFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_expansionFrameWithFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_expansionFrameWithFrame_inView__once sync.Once
-
-func OSCALLBACK_expansionFrameWithFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_expansionFrameWithFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_expansionFrameWithFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_expansionFrameWithFrame_inView_")
-	})
-	return OSCALLBACK_expansionFrameWithFrame_inView__impl(func_)
+func OSCALLBACK_expansionFrameWithFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_firstRectForCharacterRange__impl func(func_ int64) int64
-var OSCALLBACK_firstRectForCharacterRange__once sync.Once
-
-func OSCALLBACK_firstRectForCharacterRange_(func_ int64) int64 {
-	OSCALLBACK_firstRectForCharacterRange__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_firstRectForCharacterRange__impl, purego.RTLD_DEFAULT, "CALLBACK_firstRectForCharacterRange_")
-	})
-	return OSCALLBACK_firstRectForCharacterRange__impl(func_)
+func OSCALLBACK_firstRectForCharacterRange_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRange) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_focusRingMaskBoundsForFrame_inView__impl func(func_ int64) int64
-var OSCALLBACK_focusRingMaskBoundsForFrame_inView__once sync.Once
-
-func OSCALLBACK_focusRingMaskBoundsForFrame_inView_(func_ int64) int64 {
-	OSCALLBACK_focusRingMaskBoundsForFrame_inView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_focusRingMaskBoundsForFrame_inView__impl, purego.RTLD_DEFAULT, "CALLBACK_focusRingMaskBoundsForFrame_inView_")
-	})
-	return OSCALLBACK_focusRingMaskBoundsForFrame_inView__impl(func_)
+func OSCALLBACK_focusRingMaskBoundsForFrame_inView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect, arg3 uintptr) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_headerRectOfColumn__impl func(func_ int64) int64
-var OSCALLBACK_headerRectOfColumn__once sync.Once
-
-func OSCALLBACK_headerRectOfColumn_(func_ int64) int64 {
-	OSCALLBACK_headerRectOfColumn__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_headerRectOfColumn__impl, purego.RTLD_DEFAULT, "CALLBACK_headerRectOfColumn_")
-	})
-	return OSCALLBACK_headerRectOfColumn__impl(func_)
+func OSCALLBACK_headerRectOfColumn_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr) NSRect {
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), int64(arg2)}))
+	}))
 }
 
-var OSCALLBACK_highlightSelectionInClipRect__impl func(func_ int64) int64
-var OSCALLBACK_highlightSelectionInClipRect__once sync.Once
-
-func OSCALLBACK_highlightSelectionInClipRect_(func_ int64) int64 {
-	OSCALLBACK_highlightSelectionInClipRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_highlightSelectionInClipRect__impl, purego.RTLD_DEFAULT, "CALLBACK_highlightSelectionInClipRect_")
-	})
-	return OSCALLBACK_highlightSelectionInClipRect__impl(func_)
+func OSCALLBACK_highlightSelectionInClipRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_hitTest__impl func(func_ int64) int64
-var OSCALLBACK_hitTest__once sync.Once
-
-func OSCALLBACK_hitTest_(func_ int64) int64 {
-	OSCALLBACK_hitTest__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_hitTest__impl, purego.RTLD_DEFAULT, "CALLBACK_hitTest_")
-	})
-	return OSCALLBACK_hitTest__impl(func_)
+func OSCALLBACK_hitTest_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_hitTestForEvent_inRect_ofView__impl func(func_ int64) int64
-var OSCALLBACK_hitTestForEvent_inRect_ofView__once sync.Once
-
-func OSCALLBACK_hitTestForEvent_inRect_ofView_(func_ int64) int64 {
-	OSCALLBACK_hitTestForEvent_inRect_ofView__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_hitTestForEvent_inRect_ofView__impl, purego.RTLD_DEFAULT, "CALLBACK_hitTestForEvent_inRect_ofView_")
-	})
-	return OSCALLBACK_hitTestForEvent_inRect_ofView__impl(func_)
+func OSCALLBACK_hitTestForEvent_inRect_ofView_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRect, arg4 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3), int64(arg4)}))
+	}))
 }
 
-var OSCALLBACK_imageRectForBounds__impl func(func_ int64) int64
-var OSCALLBACK_imageRectForBounds__once sync.Once
-
-func OSCALLBACK_imageRectForBounds_(func_ int64) int64 {
-	OSCALLBACK_imageRectForBounds__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_imageRectForBounds__impl, purego.RTLD_DEFAULT, "CALLBACK_imageRectForBounds_")
-	})
-	return OSCALLBACK_imageRectForBounds__impl(func_)
+func OSCALLBACK_imageRectForBounds_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_markedRange_impl func(func_ int64) int64
-var OSCALLBACK_markedRange_once sync.Once
-
-func OSCALLBACK_markedRange(func_ int64) int64 {
-	OSCALLBACK_markedRange_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_markedRange_impl, purego.RTLD_DEFAULT, "CALLBACK_markedRange")
-	})
-	return OSCALLBACK_markedRange_impl(func_)
+func OSCALLBACK_markedRange(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) NSRange {
+		return structResult[NSRange](fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
-var OSCALLBACK_scrollClipView_toPoint__impl func(func_ int64) int64
-var OSCALLBACK_scrollClipView_toPoint__once sync.Once
-
-func OSCALLBACK_scrollClipView_toPoint_(func_ int64) int64 {
-	OSCALLBACK_scrollClipView_toPoint__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_scrollClipView_toPoint__impl, purego.RTLD_DEFAULT, "CALLBACK_scrollClipView_toPoint_")
-	})
-	return OSCALLBACK_scrollClipView_toPoint__impl(func_)
+func OSCALLBACK_scrollClipView_toPoint_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3)}))
+	}))
 }
 
-var OSCALLBACK_selectedRange_impl func(func_ int64) int64
-var OSCALLBACK_selectedRange_once sync.Once
-
-func OSCALLBACK_selectedRange(func_ int64) int64 {
-	OSCALLBACK_selectedRange_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_selectedRange_impl, purego.RTLD_DEFAULT, "CALLBACK_selectedRange")
-	})
-	return OSCALLBACK_selectedRange_impl(func_)
+func OSCALLBACK_selectedRange(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr) NSRange {
+		return structResult[NSRange](fn([]int64{int64(arg0), int64(arg1)}))
+	}))
 }
 
-var OSCALLBACK_setFrameOrigin__impl func(func_ int64) int64
-var OSCALLBACK_setFrameOrigin__once sync.Once
-
-func OSCALLBACK_setFrameOrigin_(func_ int64) int64 {
-	OSCALLBACK_setFrameOrigin__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_setFrameOrigin__impl, purego.RTLD_DEFAULT, "CALLBACK_setFrameOrigin_")
-	})
-	return OSCALLBACK_setFrameOrigin__impl(func_)
+func OSCALLBACK_setFrameOrigin_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSPoint) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_setFrameSize__impl func(func_ int64) int64
-var OSCALLBACK_setFrameSize__once sync.Once
-
-func OSCALLBACK_setFrameSize_(func_ int64) int64 {
-	OSCALLBACK_setFrameSize__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_setFrameSize__impl, purego.RTLD_DEFAULT, "CALLBACK_setFrameSize_")
-	})
-	return OSCALLBACK_setFrameSize__impl(func_)
+func OSCALLBACK_setFrameSize_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSSize) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_setMarkedText_selectedRange__impl func(func_ int64) int64
-var OSCALLBACK_setMarkedText_selectedRange__once sync.Once
-
-func OSCALLBACK_setMarkedText_selectedRange_(func_ int64) int64 {
-	OSCALLBACK_setMarkedText_selectedRange__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_setMarkedText_selectedRange__impl, purego.RTLD_DEFAULT, "CALLBACK_setMarkedText_selectedRange_")
-	})
-	return OSCALLBACK_setMarkedText_selectedRange__impl(func_)
+func OSCALLBACK_setMarkedText_selectedRange_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRange) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3)}))
+	}))
 }
 
-var OSCALLBACK_setNeedsDisplayInRect__impl func(func_ int64) int64
-var OSCALLBACK_setNeedsDisplayInRect__once sync.Once
-
-func OSCALLBACK_setNeedsDisplayInRect_(func_ int64) int64 {
-	OSCALLBACK_setNeedsDisplayInRect__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_setNeedsDisplayInRect__impl, purego.RTLD_DEFAULT, "CALLBACK_setNeedsDisplayInRect_")
-	})
-	return OSCALLBACK_setNeedsDisplayInRect__impl(func_)
+func OSCALLBACK_setNeedsDisplayInRect_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_shouldChangeTextInRange_replacementString__impl func(func_ int64) int64
-var OSCALLBACK_shouldChangeTextInRange_replacementString__once sync.Once
-
-func OSCALLBACK_shouldChangeTextInRange_replacementString_(func_ int64) int64 {
-	OSCALLBACK_shouldChangeTextInRange_replacementString__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_shouldChangeTextInRange_replacementString__impl, purego.RTLD_DEFAULT, "CALLBACK_shouldChangeTextInRange_replacementString_")
-	})
-	return OSCALLBACK_shouldChangeTextInRange_replacementString__impl(func_)
+func OSCALLBACK_shouldChangeTextInRange_replacementString_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRange, arg3 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2), int64(arg3)}))
+	}))
 }
 
-var OSCALLBACK_sizeOfLabel__impl func(func_ int64) int64
-var OSCALLBACK_sizeOfLabel__once sync.Once
-
-func OSCALLBACK_sizeOfLabel_(func_ int64) int64 {
-	OSCALLBACK_sizeOfLabel__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_sizeOfLabel__impl, purego.RTLD_DEFAULT, "CALLBACK_sizeOfLabel_")
-	})
-	return OSCALLBACK_sizeOfLabel__impl(func_)
+func OSCALLBACK_sizeOfLabel_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr) NSSize {
+		return structResult[NSSize](fn([]int64{int64(arg0), int64(arg1), int64(arg2)}))
+	}))
 }
 
-var OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange__impl func(func_ int64) int64
-var OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange__once sync.Once
-
-func OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(func_ int64) int64 {
-	OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange__impl, purego.RTLD_DEFAULT, "CALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_")
-	})
-	return OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange__impl(func_)
+func OSCALLBACK_textView_willChangeSelectionFromCharacterRange_toCharacterRange_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRange, arg4 NSRange) NSRange {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRange](fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3), pinArg(&pin, &arg4)}))
+	}))
 }
 
-var OSCALLBACK_titleRectForBounds__impl func(func_ int64) int64
-var OSCALLBACK_titleRectForBounds__once sync.Once
-
-func OSCALLBACK_titleRectForBounds_(func_ int64) int64 {
-	OSCALLBACK_titleRectForBounds__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_titleRectForBounds__impl, purego.RTLD_DEFAULT, "CALLBACK_titleRectForBounds_")
-	})
-	return OSCALLBACK_titleRectForBounds__impl(func_)
+func OSCALLBACK_titleRectForBounds_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 NSRect) NSRect {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return structResult[NSRect](fn([]int64{int64(arg0), int64(arg1), pinArg(&pin, &arg2)}))
+	}))
 }
 
-var OSCALLBACK_view_stringForToolTip_point_userData__impl func(func_ int64) int64
-var OSCALLBACK_view_stringForToolTip_point_userData__once sync.Once
-
-func OSCALLBACK_view_stringForToolTip_point_userData_(func_ int64) int64 {
-	OSCALLBACK_view_stringForToolTip_point_userData__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_view_stringForToolTip_point_userData__impl, purego.RTLD_DEFAULT, "CALLBACK_view_stringForToolTip_point_userData_")
-	})
-	return OSCALLBACK_view_stringForToolTip_point_userData__impl(func_)
+func OSCALLBACK_view_stringForToolTip_point_userData_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 uintptr, arg4 NSPoint, arg5 uintptr) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), int64(arg3), pinArg(&pin, &arg4), int64(arg5)}))
+	}))
 }
 
-var OSCALLBACK_webView_setFrame__impl func(func_ int64) int64
-var OSCALLBACK_webView_setFrame__once sync.Once
-
-func OSCALLBACK_webView_setFrame_(func_ int64) int64 {
-	OSCALLBACK_webView_setFrame__once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCALLBACK_webView_setFrame__impl, purego.RTLD_DEFAULT, "CALLBACK_webView_setFrame_")
-	})
-	return OSCALLBACK_webView_setFrame__impl(func_)
+func OSCALLBACK_webView_setFrame_(a0 int64) int64 {
+	fn := callbackFunc(a0)
+	return int64(NewCallback(func(arg0 uintptr, arg1 uintptr, arg2 uintptr, arg3 NSRect) uintptr {
+		var pin runtime.Pinner
+		defer pin.Unpin()
+		return uintptr(fn([]int64{int64(arg0), int64(arg1), int64(arg2), pinArg(&pin, &arg3)}))
+	}))
 }
 
 func OSNSAccessibilityAttributedStringForRangeParameterizedAttribute() int64 {
@@ -6477,15 +6346,12 @@ func OSNSPrintScalingFactor() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSSquareStatusItemLength_impl func() float64
-var OSNSSquareStatusItemLength_once sync.Once
-
 func OSNSSquareStatusItemLength() float64 {
-	OSNSSquareStatusItemLength_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSSquareStatusItemLength_impl, purego.RTLD_DEFAULT, "NSSquareStatusItemLength")
-	})
-	return OSNSSquareStatusItemLength_impl()
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSSquareStatusItemLength")
+	if addr == 0 {
+		return 0
+	}
+	return *(*float64)(unsafe.Add(unsafe.Pointer(nil), addr))
 }
 
 func OSNSStrikethroughColorAttributeName() int64 {
@@ -6632,26 +6498,20 @@ func OSNSWindowWillCloseNotification() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSKCFAllocatorDefault_impl func() int64
-var OSKCFAllocatorDefault_once sync.Once
-
 func OSKCFAllocatorDefault() int64 {
-	OSKCFAllocatorDefault_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSKCFAllocatorDefault_impl, purego.RTLD_DEFAULT, "kCFAllocatorDefault")
-	})
-	return OSKCFAllocatorDefault_impl()
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "kCFAllocatorDefault")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSKCFRunLoopCommonModes_impl func() int64
-var OSKCFRunLoopCommonModes_once sync.Once
-
 func OSKCFRunLoopCommonModes() int64 {
-	OSKCFRunLoopCommonModes_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSKCFRunLoopCommonModes_impl, purego.RTLD_DEFAULT, "kCFRunLoopCommonModes")
-	})
-	return OSKCFRunLoopCommonModes_impl()
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "kCFRunLoopCommonModes")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
 func OSNSDefaultRunLoopMode() int64 {
@@ -6670,15 +6530,12 @@ func OSNSLocaleLanguageCode() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSNotFound_impl func() int64
-var OSNSNotFound_once sync.Once
-
 func OSNSNotFound() int64 {
-	OSNSNotFound_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSNotFound_impl, purego.RTLD_DEFAULT, "NSNotFound")
-	})
-	return OSNSNotFound_impl()
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSNotFound")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
 var OSNSAccessibilityPostNotification_impl func(element int64, notification int64)
@@ -7305,10 +7162,10 @@ func OSCGPDFContextClose(context int64) {
 	OSCGPDFContextClose_impl(context)
 }
 
-var OSCGPDFContextCreateWithURL_impl func(url int64, mediaBox CGRect, auxiliaryInfo int64) int64
+var OSCGPDFContextCreateWithURL_impl func(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64
 var OSCGPDFContextCreateWithURL_once sync.Once
 
-func OSCGPDFContextCreateWithURL(url int64, mediaBox CGRect, auxiliaryInfo int64) int64 {
+func OSCGPDFContextCreateWithURL(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64 {
 	OSCGPDFContextCreateWithURL_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSCGPDFContextCreateWithURL_impl, purego.RTLD_DEFAULT, "CGPDFContextCreateWithURL")
@@ -7448,32 +7305,32 @@ func OSNSSearchPathForDirectoriesInDomains(directory int64, domainMask int64, ex
 	return OSNSSearchPathForDirectoriesInDomains_impl(directory, domainMask, expandTilde)
 }
 
-var OSObjc_msgSendSuper_bool_impl func(superId objc_super, sel int64, arg0 NSRange, arg1 int64) bool
+var OSObjc_msgSendSuper_bool_impl func(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool
 var OSObjc_msgSendSuper_bool_once sync.Once
 
-func OSObjc_msgSendSuper_bool(superId objc_super, sel int64, arg0 NSRange, arg1 int64) bool {
+func OSObjc_msgSendSuper_bool(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool {
 	OSObjc_msgSendSuper_bool_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_bool_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSendSuper_bool_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
 	})
 	return OSObjc_msgSendSuper_bool_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl func(superId objc_super, sel int64, arg0 int64, arg1 NSPoint) bool
+var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool
 var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_once sync.Once
 
-func OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1(superId objc_super, sel int64, arg0 int64, arg1 NSPoint) bool {
+func OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool {
 	OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
 	})
 	return OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_impl func(superId objc_super, sel int64) int64
+var OSObjc_msgSendSuper_impl func(superId *objc_super, sel int64) int64
 var OSObjc_msgSendSuper_once sync.Once
 
-func OSObjc_msgSendSuper(superId objc_super, sel int64) int64 {
+func OSObjc_msgSendSuper(superId *objc_super, sel int64) int64 {
 	OSObjc_msgSendSuper_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7481,10 +7338,10 @@ func OSObjc_msgSendSuper(superId objc_super, sel int64) int64 {
 	return OSObjc_msgSendSuper_impl(superId, sel)
 }
 
-var OSObjc_msgSendSuperOverload1_impl func(superId objc_super, sel int64, arg0 NSPoint) int64
+var OSObjc_msgSendSuperOverload1_impl func(superId *objc_super, sel int64, arg0 NSPoint) int64
 var OSObjc_msgSendSuperOverload1_once sync.Once
 
-func OSObjc_msgSendSuperOverload1(superId objc_super, sel int64, arg0 NSPoint) int64 {
+func OSObjc_msgSendSuperOverload1(superId *objc_super, sel int64, arg0 NSPoint) int64 {
 	OSObjc_msgSendSuperOverload1_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7492,10 +7349,10 @@ func OSObjc_msgSendSuperOverload1(superId objc_super, sel int64, arg0 NSPoint) i
 	return OSObjc_msgSendSuperOverload1_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload2_impl func(superId objc_super, sel int64, arg0 NSRect) int64
+var OSObjc_msgSendSuperOverload2_impl func(superId *objc_super, sel int64, arg0 NSRect) int64
 var OSObjc_msgSendSuperOverload2_once sync.Once
 
-func OSObjc_msgSendSuperOverload2(superId objc_super, sel int64, arg0 NSRect) int64 {
+func OSObjc_msgSendSuperOverload2(superId *objc_super, sel int64, arg0 NSRect) int64 {
 	OSObjc_msgSendSuperOverload2_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7503,10 +7360,10 @@ func OSObjc_msgSendSuperOverload2(superId objc_super, sel int64, arg0 NSRect) in
 	return OSObjc_msgSendSuperOverload2_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload3_impl func(superId objc_super, sel int64, arg0 NSRect, arg1 int64) int64
+var OSObjc_msgSendSuperOverload3_impl func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64
 var OSObjc_msgSendSuperOverload3_once sync.Once
 
-func OSObjc_msgSendSuperOverload3(superId objc_super, sel int64, arg0 NSRect, arg1 int64) int64 {
+func OSObjc_msgSendSuperOverload3(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64 {
 	OSObjc_msgSendSuperOverload3_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7514,10 +7371,10 @@ func OSObjc_msgSendSuperOverload3(superId objc_super, sel int64, arg0 NSRect, ar
 	return OSObjc_msgSendSuperOverload3_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload4_impl func(superId objc_super, sel int64, arg0 NSSize) int64
+var OSObjc_msgSendSuperOverload4_impl func(superId *objc_super, sel int64, arg0 NSSize) int64
 var OSObjc_msgSendSuperOverload4_once sync.Once
 
-func OSObjc_msgSendSuperOverload4(superId objc_super, sel int64, arg0 NSSize) int64 {
+func OSObjc_msgSendSuperOverload4(superId *objc_super, sel int64, arg0 NSSize) int64 {
 	OSObjc_msgSendSuperOverload4_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7525,10 +7382,10 @@ func OSObjc_msgSendSuperOverload4(superId objc_super, sel int64, arg0 NSSize) in
 	return OSObjc_msgSendSuperOverload4_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload5_impl func(superId objc_super, sel int64, arg0 bool) int64
+var OSObjc_msgSendSuperOverload5_impl func(superId *objc_super, sel int64, arg0 bool) int64
 var OSObjc_msgSendSuperOverload5_once sync.Once
 
-func OSObjc_msgSendSuperOverload5(superId objc_super, sel int64, arg0 bool) int64 {
+func OSObjc_msgSendSuperOverload5(superId *objc_super, sel int64, arg0 bool) int64 {
 	OSObjc_msgSendSuperOverload5_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7536,10 +7393,10 @@ func OSObjc_msgSendSuperOverload5(superId objc_super, sel int64, arg0 bool) int6
 	return OSObjc_msgSendSuperOverload5_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload6_impl func(superId objc_super, sel int64, arg0 bool, arg1 NSRect) int64
+var OSObjc_msgSendSuperOverload6_impl func(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64
 var OSObjc_msgSendSuperOverload6_once sync.Once
 
-func OSObjc_msgSendSuperOverload6(superId objc_super, sel int64, arg0 bool, arg1 NSRect) int64 {
+func OSObjc_msgSendSuperOverload6(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64 {
 	OSObjc_msgSendSuperOverload6_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7547,10 +7404,10 @@ func OSObjc_msgSendSuperOverload6(superId objc_super, sel int64, arg0 bool, arg1
 	return OSObjc_msgSendSuperOverload6_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload7_impl func(superId objc_super, sel int64, arg0 int64) int64
+var OSObjc_msgSendSuperOverload7_impl func(superId *objc_super, sel int64, arg0 int64) int64
 var OSObjc_msgSendSuperOverload7_once sync.Once
 
-func OSObjc_msgSendSuperOverload7(superId objc_super, sel int64, arg0 int64) int64 {
+func OSObjc_msgSendSuperOverload7(superId *objc_super, sel int64, arg0 int64) int64 {
 	OSObjc_msgSendSuperOverload7_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload7_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7558,10 +7415,10 @@ func OSObjc_msgSendSuperOverload7(superId objc_super, sel int64, arg0 int64) int
 	return OSObjc_msgSendSuperOverload7_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload8_impl func(superId objc_super, sel int64, arg0 int64, arg1 NSPoint) int64
+var OSObjc_msgSendSuperOverload8_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64
 var OSObjc_msgSendSuperOverload8_once sync.Once
 
-func OSObjc_msgSendSuperOverload8(superId objc_super, sel int64, arg0 int64, arg1 NSPoint) int64 {
+func OSObjc_msgSendSuperOverload8(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64 {
 	OSObjc_msgSendSuperOverload8_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload8_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7569,10 +7426,10 @@ func OSObjc_msgSendSuperOverload8(superId objc_super, sel int64, arg0 int64, arg
 	return OSObjc_msgSendSuperOverload8_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload9_impl func(superId objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64
+var OSObjc_msgSendSuperOverload9_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64
 var OSObjc_msgSendSuperOverload9_once sync.Once
 
-func OSObjc_msgSendSuperOverload9(superId objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
+func OSObjc_msgSendSuperOverload9(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
 	OSObjc_msgSendSuperOverload9_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload9_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7580,10 +7437,10 @@ func OSObjc_msgSendSuperOverload9(superId objc_super, sel int64, arg0 int64, arg
 	return OSObjc_msgSendSuperOverload9_impl(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuperOverload10_impl func(superId objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64
+var OSObjc_msgSendSuperOverload10_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64
 var OSObjc_msgSendSuperOverload10_once sync.Once
 
-func OSObjc_msgSendSuperOverload10(superId objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
+func OSObjc_msgSendSuperOverload10(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
 	OSObjc_msgSendSuperOverload10_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload10_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7591,10 +7448,10 @@ func OSObjc_msgSendSuperOverload10(superId objc_super, sel int64, arg0 int64, ar
 	return OSObjc_msgSendSuperOverload10_impl(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuperOverload11_impl func(superId objc_super, sel int64, arg0 int64, arg1 bool) int64
+var OSObjc_msgSendSuperOverload11_impl func(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64
 var OSObjc_msgSendSuperOverload11_once sync.Once
 
-func OSObjc_msgSendSuperOverload11(superId objc_super, sel int64, arg0 int64, arg1 bool) int64 {
+func OSObjc_msgSendSuperOverload11(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64 {
 	OSObjc_msgSendSuperOverload11_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload11_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7602,10 +7459,10 @@ func OSObjc_msgSendSuperOverload11(superId objc_super, sel int64, arg0 int64, ar
 	return OSObjc_msgSendSuperOverload11_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload12_impl func(superId objc_super, sel int64, arg0 int64, arg1 int64) int64
+var OSObjc_msgSendSuperOverload12_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64
 var OSObjc_msgSendSuperOverload12_once sync.Once
 
-func OSObjc_msgSendSuperOverload12(superId objc_super, sel int64, arg0 int64, arg1 int64) int64 {
+func OSObjc_msgSendSuperOverload12(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64 {
 	OSObjc_msgSendSuperOverload12_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload12_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7613,10 +7470,10 @@ func OSObjc_msgSendSuperOverload12(superId objc_super, sel int64, arg0 int64, ar
 	return OSObjc_msgSendSuperOverload12_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload13_impl func(superId objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64
+var OSObjc_msgSendSuperOverload13_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64
 var OSObjc_msgSendSuperOverload13_once sync.Once
 
-func OSObjc_msgSendSuperOverload13(superId objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
+func OSObjc_msgSendSuperOverload13(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
 	OSObjc_msgSendSuperOverload13_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload13_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7624,10 +7481,10 @@ func OSObjc_msgSendSuperOverload13(superId objc_super, sel int64, arg0 int64, ar
 	return OSObjc_msgSendSuperOverload13_impl(superId, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendSuperOverload14_impl func(superId objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64
+var OSObjc_msgSendSuperOverload14_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64
 var OSObjc_msgSendSuperOverload14_once sync.Once
 
-func OSObjc_msgSendSuperOverload14(superId objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
+func OSObjc_msgSendSuperOverload14(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
 	OSObjc_msgSendSuperOverload14_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload14_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7635,10 +7492,10 @@ func OSObjc_msgSendSuperOverload14(superId objc_super, sel int64, arg0 int64, ar
 	return OSObjc_msgSendSuperOverload14_impl(superId, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendSuper_stret_impl func(superId objc_super, sel int64, arg0 NSRect) NSRect
+var OSObjc_msgSendSuper_stret_impl func(superId *objc_super, sel int64, arg0 NSRect) NSRect
 var OSObjc_msgSendSuper_stret_once sync.Once
 
-func OSObjc_msgSendSuper_stret(result *NSRect, superId objc_super, sel int64, arg0 NSRect) {
+func OSObjc_msgSendSuper_stret(result *NSRect, superId *objc_super, sel int64, arg0 NSRect) {
 	OSObjc_msgSendSuper_stret_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stret_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7646,10 +7503,10 @@ func OSObjc_msgSendSuper_stret(result *NSRect, superId objc_super, sel int64, ar
 	*result = OSObjc_msgSendSuper_stret_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stretOverload1_impl func(superId objc_super, sel int64, arg0 NSRect, arg1 int64) NSRect
+var OSObjc_msgSendSuper_stretOverload1_impl func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) NSRect
 var OSObjc_msgSendSuper_stretOverload1_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload1(result *NSRect, superId objc_super, sel int64, arg0 NSRect, arg1 int64) {
+func OSObjc_msgSendSuper_stretOverload1(result *NSRect, superId *objc_super, sel int64, arg0 NSRect, arg1 int64) {
 	OSObjc_msgSendSuper_stretOverload1_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7657,10 +7514,10 @@ func OSObjc_msgSendSuper_stretOverload1(result *NSRect, superId objc_super, sel 
 	*result = OSObjc_msgSendSuper_stretOverload1_impl(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_stretOverload2_impl func(superId objc_super, sel int64, arg0 int64) NSRect
+var OSObjc_msgSendSuper_stretOverload2_impl func(superId *objc_super, sel int64, arg0 int64) NSRect
 var OSObjc_msgSendSuper_stretOverload2_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload2(result *NSRect, superId objc_super, sel int64, arg0 int64) {
+func OSObjc_msgSendSuper_stretOverload2(result *NSRect, superId *objc_super, sel int64, arg0 int64) {
 	OSObjc_msgSendSuper_stretOverload2_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7668,10 +7525,10 @@ func OSObjc_msgSendSuper_stretOverload2(result *NSRect, superId objc_super, sel 
 	*result = OSObjc_msgSendSuper_stretOverload2_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stretOverload3_impl func(superId objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect
+var OSObjc_msgSendSuper_stretOverload3_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect
 var OSObjc_msgSendSuper_stretOverload3_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload3(result *NSRect, superId objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
+func OSObjc_msgSendSuper_stretOverload3(result *NSRect, superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
 	OSObjc_msgSendSuper_stretOverload3_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7679,10 +7536,10 @@ func OSObjc_msgSendSuper_stretOverload3(result *NSRect, superId objc_super, sel 
 	*result = OSObjc_msgSendSuper_stretOverload3_impl(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuper_stretOverload4_impl func(superId objc_super, sel int64) NSSize
+var OSObjc_msgSendSuper_stretOverload4_impl func(superId *objc_super, sel int64) NSSize
 var OSObjc_msgSendSuper_stretOverload4_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload4(result *NSSize, superId objc_super, sel int64) {
+func OSObjc_msgSendSuper_stretOverload4(result *NSSize, superId *objc_super, sel int64) {
 	OSObjc_msgSendSuper_stretOverload4_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7690,10 +7547,10 @@ func OSObjc_msgSendSuper_stretOverload4(result *NSSize, superId objc_super, sel 
 	*result = OSObjc_msgSendSuper_stretOverload4_impl(superId, sel)
 }
 
-var OSObjc_msgSendSuper_stretOverload5_impl func(superId objc_super, sel int64, arg0 NSRect) NSSize
+var OSObjc_msgSendSuper_stretOverload5_impl func(superId *objc_super, sel int64, arg0 NSRect) NSSize
 var OSObjc_msgSendSuper_stretOverload5_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload5(result *NSSize, superId objc_super, sel int64, arg0 NSRect) {
+func OSObjc_msgSendSuper_stretOverload5(result *NSSize, superId *objc_super, sel int64, arg0 NSRect) {
 	OSObjc_msgSendSuper_stretOverload5_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7701,10 +7558,10 @@ func OSObjc_msgSendSuper_stretOverload5(result *NSSize, superId objc_super, sel 
 	*result = OSObjc_msgSendSuper_stretOverload5_impl(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stretOverload6_impl func(superId objc_super, sel int64, arg0 bool) NSSize
+var OSObjc_msgSendSuper_stretOverload6_impl func(superId *objc_super, sel int64, arg0 bool) NSSize
 var OSObjc_msgSendSuper_stretOverload6_once sync.Once
 
-func OSObjc_msgSendSuper_stretOverload6(result *NSSize, superId objc_super, sel int64, arg0 bool) {
+func OSObjc_msgSendSuper_stretOverload6(result *NSSize, superId *objc_super, sel int64, arg0 bool) {
 	OSObjc_msgSendSuper_stretOverload6_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
@@ -7718,7 +7575,7 @@ var OSObjc_msgSend_bool_once sync.Once
 func OSObjc_msgSend_bool(id int64, sel int64) bool {
 	OSObjc_msgSend_bool_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_bool_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_bool_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_bool_impl(id, sel)
 }
@@ -7729,7 +7586,7 @@ var OSObjc_msgSend_boolOverload1_once sync.Once
 func OSObjc_msgSend_boolOverload1(id int64, sel int64, arg0 NSPoint) bool {
 	OSObjc_msgSend_boolOverload1_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload1_impl(id, sel, arg0)
 }
@@ -7740,7 +7597,7 @@ var OSObjc_msgSend_boolOverload2_once sync.Once
 func OSObjc_msgSend_boolOverload2(id int64, sel int64, arg0 NSPoint, arg1 NSRect) bool {
 	OSObjc_msgSend_boolOverload2_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload2_impl(id, sel, arg0, arg1)
 }
@@ -7751,7 +7608,7 @@ var OSObjc_msgSend_boolOverload3_once sync.Once
 func OSObjc_msgSend_boolOverload3(id int64, sel int64, arg0 NSRange, arg1 int64) bool {
 	OSObjc_msgSend_boolOverload3_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload3_impl(id, sel, arg0, arg1)
 }
@@ -7762,7 +7619,7 @@ var OSObjc_msgSend_boolOverload4_once sync.Once
 func OSObjc_msgSend_boolOverload4(id int64, sel int64, arg0 NSRect) bool {
 	OSObjc_msgSend_boolOverload4_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload4_impl(id, sel, arg0)
 }
@@ -7773,7 +7630,7 @@ var OSObjc_msgSend_boolOverload5_once sync.Once
 func OSObjc_msgSend_boolOverload5(id int64, sel int64, arg0 int64) bool {
 	OSObjc_msgSend_boolOverload5_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload5_impl(id, sel, arg0)
 }
@@ -7784,7 +7641,7 @@ var OSObjc_msgSend_boolOverload6_once sync.Once
 func OSObjc_msgSend_boolOverload6(id int64, sel int64, arg0 int64, arg1 NSPoint) bool {
 	OSObjc_msgSend_boolOverload6_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload6_impl(id, sel, arg0, arg1)
 }
@@ -7795,7 +7652,7 @@ var OSObjc_msgSend_boolOverload7_once sync.Once
 func OSObjc_msgSend_boolOverload7(id int64, sel int64, arg0 int64, arg1 NSSize, arg2 bool) bool {
 	OSObjc_msgSend_boolOverload7_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload7_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload7_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload7_impl(id, sel, arg0, arg1, arg2)
 }
@@ -7806,7 +7663,7 @@ var OSObjc_msgSend_boolOverload8_once sync.Once
 func OSObjc_msgSend_boolOverload8(id int64, sel int64, arg0 int64, arg1 int64) bool {
 	OSObjc_msgSend_boolOverload8_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload8_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload8_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload8_impl(id, sel, arg0, arg1)
 }
@@ -7817,7 +7674,7 @@ var OSObjc_msgSend_boolOverload9_once sync.Once
 func OSObjc_msgSend_boolOverload9(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
 	OSObjc_msgSend_boolOverload9_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload9_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload9_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload9_impl(id, sel, arg0, arg1, arg2)
 }
@@ -7828,7 +7685,7 @@ var OSObjc_msgSend_boolOverload10_once sync.Once
 func OSObjc_msgSend_boolOverload10(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) bool {
 	OSObjc_msgSend_boolOverload10_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload10_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload10_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload10_impl(id, sel, arg0, arg1, arg2, arg3)
 }
@@ -7839,7 +7696,7 @@ var OSObjc_msgSend_boolOverload11_once sync.Once
 func OSObjc_msgSend_boolOverload11(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) bool {
 	OSObjc_msgSend_boolOverload11_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload11_impl, purego.RTLD_DEFAULT, "objc_msgSend_bool")
+		purego.RegisterLibFunc(&OSObjc_msgSend_boolOverload11_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_boolOverload11_impl(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
@@ -7850,7 +7707,7 @@ var OSObjc_msgSend_fpret_once sync.Once
 func OSObjc_msgSend_fpret(id int64, sel int64) float64 {
 	OSObjc_msgSend_fpret_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_fpret_impl, purego.RTLD_DEFAULT, "objc_msgSend_fpret")
+		purego.RegisterLibFunc(&OSObjc_msgSend_fpret_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_fpret_impl(id, sel)
 }
@@ -7861,7 +7718,7 @@ var OSObjc_msgSend_fpretIdSelArg0_once sync.Once
 func OSObjc_msgSend_fpretIdSelArg0(id int64, sel int64, arg0 int64) float64 {
 	OSObjc_msgSend_fpretIdSelArg0_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_fpretIdSelArg0_impl, purego.RTLD_DEFAULT, "objc_msgSend_fpret")
+		purego.RegisterLibFunc(&OSObjc_msgSend_fpretIdSelArg0_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_fpretIdSelArg0_impl(id, sel, arg0)
 }
@@ -7872,7 +7729,7 @@ var OSObjc_msgSend_fpretIdSelArg0Arg1_once sync.Once
 func OSObjc_msgSend_fpretIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64) float64 {
 	OSObjc_msgSend_fpretIdSelArg0Arg1_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_fpretIdSelArg0Arg1_impl, purego.RTLD_DEFAULT, "objc_msgSend_fpret")
+		purego.RegisterLibFunc(&OSObjc_msgSend_fpretIdSelArg0Arg1_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_fpretIdSelArg0Arg1_impl(id, sel, arg0, arg1)
 }
@@ -7883,7 +7740,7 @@ var OSObjc_msgSend_floatret_once sync.Once
 func OSObjc_msgSend_floatret(id int64, sel int64) float32 {
 	OSObjc_msgSend_floatret_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_floatret_impl, purego.RTLD_DEFAULT, "objc_msgSend_floatret")
+		purego.RegisterLibFunc(&OSObjc_msgSend_floatret_impl, purego.RTLD_DEFAULT, "objc_msgSend")
 	})
 	return OSObjc_msgSend_floatret_impl(id, sel)
 }
@@ -8913,18 +8770,18 @@ func OSNSRect_sizeof() int32 { return int32(unsafe.Sizeof(NSRect{})) }
 
 func OSNSSize_sizeof() int32 { return int32(unsafe.Sizeof(NSSize{})) }
 
-var OSMemmove_impl func(dest int64, src CGPathElement, size int64)
+var OSMemmove_impl func(dest int64, src *CGPathElement, size int64)
 var OSMemmove_once sync.Once
 
-func OSMemmove(dest int64, src CGPathElement, size int64) {
+func OSMemmove(dest int64, src *CGPathElement, size int64) {
 	OSMemmove_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSMemmove_impl, purego.RTLD_DEFAULT, "memmove") })
 	OSMemmove_impl(dest, src, size)
 }
 
-var OSMemmoveOverload1_impl func(dest CGPathElement, src int64, size int64)
+var OSMemmoveOverload1_impl func(dest *CGPathElement, src int64, size int64)
 var OSMemmoveOverload1_once sync.Once
 
-func OSMemmoveOverload1(dest CGPathElement, src int64, size int64) {
+func OSMemmoveOverload1(dest *CGPathElement, src int64, size int64) {
 	OSMemmoveOverload1_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload1_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8932,10 +8789,10 @@ func OSMemmoveOverload1(dest CGPathElement, src int64, size int64) {
 	OSMemmoveOverload1_impl(dest, src, size)
 }
 
-var OSMemmoveOverload2_impl func(dest int64, src NSPoint, size int64)
+var OSMemmoveOverload2_impl func(dest int64, src *NSPoint, size int64)
 var OSMemmoveOverload2_once sync.Once
 
-func OSMemmoveOverload2(dest int64, src NSPoint, size int64) {
+func OSMemmoveOverload2(dest int64, src *NSPoint, size int64) {
 	OSMemmoveOverload2_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload2_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8943,10 +8800,10 @@ func OSMemmoveOverload2(dest int64, src NSPoint, size int64) {
 	OSMemmoveOverload2_impl(dest, src, size)
 }
 
-var OSMemmoveOverload3_impl func(dest NSPoint, src int64, size int64)
+var OSMemmoveOverload3_impl func(dest *NSPoint, src int64, size int64)
 var OSMemmoveOverload3_once sync.Once
 
-func OSMemmoveOverload3(dest NSPoint, src int64, size int64) {
+func OSMemmoveOverload3(dest *NSPoint, src int64, size int64) {
 	OSMemmoveOverload3_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload3_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8954,10 +8811,10 @@ func OSMemmoveOverload3(dest NSPoint, src int64, size int64) {
 	OSMemmoveOverload3_impl(dest, src, size)
 }
 
-var OSMemmoveOverload4_impl func(dest int64, src NSRange, size int64)
+var OSMemmoveOverload4_impl func(dest int64, src *NSRange, size int64)
 var OSMemmoveOverload4_once sync.Once
 
-func OSMemmoveOverload4(dest int64, src NSRange, size int64) {
+func OSMemmoveOverload4(dest int64, src *NSRange, size int64) {
 	OSMemmoveOverload4_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload4_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8965,10 +8822,10 @@ func OSMemmoveOverload4(dest int64, src NSRange, size int64) {
 	OSMemmoveOverload4_impl(dest, src, size)
 }
 
-var OSMemmoveOverload5_impl func(dest NSRange, src int64, size int64)
+var OSMemmoveOverload5_impl func(dest *NSRange, src int64, size int64)
 var OSMemmoveOverload5_once sync.Once
 
-func OSMemmoveOverload5(dest NSRange, src int64, size int64) {
+func OSMemmoveOverload5(dest *NSRange, src int64, size int64) {
 	OSMemmoveOverload5_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload5_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8976,10 +8833,10 @@ func OSMemmoveOverload5(dest NSRange, src int64, size int64) {
 	OSMemmoveOverload5_impl(dest, src, size)
 }
 
-var OSMemmoveOverload6_impl func(dest int64, src NSRect, size int64)
+var OSMemmoveOverload6_impl func(dest int64, src *NSRect, size int64)
 var OSMemmoveOverload6_once sync.Once
 
-func OSMemmoveOverload6(dest int64, src NSRect, size int64) {
+func OSMemmoveOverload6(dest int64, src *NSRect, size int64) {
 	OSMemmoveOverload6_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload6_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8987,10 +8844,10 @@ func OSMemmoveOverload6(dest int64, src NSRect, size int64) {
 	OSMemmoveOverload6_impl(dest, src, size)
 }
 
-var OSMemmoveOverload7_impl func(dest NSRect, src int64, size int64)
+var OSMemmoveOverload7_impl func(dest *NSRect, src int64, size int64)
 var OSMemmoveOverload7_once sync.Once
 
-func OSMemmoveOverload7(dest NSRect, src int64, size int64) {
+func OSMemmoveOverload7(dest *NSRect, src int64, size int64) {
 	OSMemmoveOverload7_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload7_impl, purego.RTLD_DEFAULT, "memmove")
@@ -8998,10 +8855,10 @@ func OSMemmoveOverload7(dest NSRect, src int64, size int64) {
 	OSMemmoveOverload7_impl(dest, src, size)
 }
 
-var OSMemmoveOverload8_impl func(dest int64, src NSSize, size int64)
+var OSMemmoveOverload8_impl func(dest int64, src *NSSize, size int64)
 var OSMemmoveOverload8_once sync.Once
 
-func OSMemmoveOverload8(dest int64, src NSSize, size int64) {
+func OSMemmoveOverload8(dest int64, src *NSSize, size int64) {
 	OSMemmoveOverload8_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload8_impl, purego.RTLD_DEFAULT, "memmove")
@@ -9009,10 +8866,10 @@ func OSMemmoveOverload8(dest int64, src NSSize, size int64) {
 	OSMemmoveOverload8_impl(dest, src, size)
 }
 
-var OSMemmoveOverload9_impl func(dest NSSize, src int64, size int64)
+var OSMemmoveOverload9_impl func(dest *NSSize, src int64, size int64)
 var OSMemmoveOverload9_once sync.Once
 
-func OSMemmoveOverload9(dest NSSize, src int64, size int64) {
+func OSMemmoveOverload9(dest *NSSize, src int64, size int64) {
 	OSMemmoveOverload9_once.Do(func() {
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSMemmoveOverload9_impl, purego.RTLD_DEFAULT, "memmove")
@@ -21451,13 +21308,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentCenter:", r)
 			}
 		}()
-		var cond943 int32
+		var cond942 int32
 		if OSIS_X86_64 {
-			cond943 = 2
+			cond942 = 2
 		} else {
-			cond943 = 1
+			cond942 = 1
 		}
-		OSNSTextAlignmentCenter = cond943
+		OSNSTextAlignmentCenter = cond942
 	}()
 	func() {
 		defer func() {
@@ -21465,13 +21322,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentRight:", r)
 			}
 		}()
-		var cond944 int32
+		var cond943 int32
 		if OSIS_X86_64 {
-			cond944 = 1
+			cond943 = 1
 		} else {
-			cond944 = 2
+			cond943 = 2
 		}
-		OSNSTextAlignmentRight = cond944
+		OSNSTextAlignmentRight = cond943
 	}()
 	func() {
 		defer func() {

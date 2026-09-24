@@ -8,7 +8,7 @@ type WebUndefined struct {
 
 func NewWebUndefined() *WebUndefined {
 	this := &WebUndefined{}
-	this.Impl = this
+	this.impl = this
 	this.initWebUndefined()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebUndefined) initWebUndefined() {
 
 func NewWebUndefinedOverload1(id int64) *WebUndefined {
 	this := &WebUndefined{}
-	this.Impl = this
+	this.impl = this
 	this.initWebUndefinedOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebUndefined) initWebUndefinedOverload1(id int64) {
 
 func NewWebUndefinedOverload2(id *id) *WebUndefined {
 	this := &WebUndefined{}
-	this.Impl = this
+	this.impl = this
 	this.initWebUndefinedOverload2(id)
 	return this
 }

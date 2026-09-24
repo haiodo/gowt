@@ -8,7 +8,7 @@ type NSRunLoop struct {
 
 func NewNSRunLoop() *NSRunLoop {
 	this := &NSRunLoop{}
-	this.Impl = this
+	this.impl = this
 	this.initNSRunLoop()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSRunLoop) initNSRunLoop() {
 
 func NewNSRunLoopOverload1(id int64) *NSRunLoop {
 	this := &NSRunLoop{}
-	this.Impl = this
+	this.impl = this
 	this.initNSRunLoopOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSRunLoop) initNSRunLoopOverload1(id int64) {
 
 func NewNSRunLoopOverload2(id *id) *NSRunLoop {
 	this := &NSRunLoop{}
-	this.Impl = this
+	this.impl = this
 	this.initNSRunLoopOverload2(id)
 	return this
 }
@@ -40,44 +40,44 @@ func (this *NSRunLoop) initNSRunLoopOverload2(id *id) {
 }
 
 func (this *NSRunLoop) AddTimer(timer *NSTimer, mode *NSString) {
+	var cond634 int64
+	if timer != (nil) {
+		cond634 = timer.Id
+	} else {
+		cond634 = int64(0)
+	}
 	var cond635 int64
-	if timer != nil {
-		cond635 = timer.Id
+	if mode != (nil) {
+		cond635 = mode.Id
 	} else {
 		cond635 = int64(0)
 	}
+	OSObjc_msgSendOverload54(this.Id, OSSel_addTimer_forMode_, cond634, cond635)
+}
+
+func (this *NSRunLoop) RunMode(mode *NSString, limitDate *NSDate) bool {
 	var cond636 int64
-	if mode != nil {
+	if mode != (nil) {
 		cond636 = mode.Id
 	} else {
 		cond636 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_addTimer_forMode_, cond635, cond636)
-}
-
-func (this *NSRunLoop) RunMode(mode *NSString, limitDate *NSDate) bool {
 	var cond637 int64
-	if mode != nil {
-		cond637 = mode.Id
+	if limitDate != (nil) {
+		cond637 = limitDate.Id
 	} else {
 		cond637 = int64(0)
 	}
-	var cond638 int64
-	if limitDate != nil {
-		cond638 = limitDate.Id
-	} else {
-		cond638 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_runMode_beforeDate_, cond637, cond638)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_runMode_beforeDate_, cond636, cond637)
 }
 
 func NSRunLoopCurrentRunLoop() *NSRunLoop {
 	var result int64 = OSObjc_msgSend(OSClass_NSRunLoop, OSSel_currentRunLoop)
-	var cond639 *NSRunLoop
+	var cond638 *NSRunLoop
 	if result != 0 {
-		cond639 = NewNSRunLoopOverload1(result)
+		cond638 = NewNSRunLoopOverload1(result)
 	} else {
-		cond639 = nil
+		cond638 = nil
 	}
-	return cond639
+	return cond638
 }

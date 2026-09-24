@@ -8,7 +8,7 @@ type NSTouch struct {
 
 func NewNSTouch() *NSTouch {
 	this := &NSTouch{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTouch()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTouch) initNSTouch() {
 
 func NewNSTouchOverload1(id int64) *NSTouch {
 	this := &NSTouch{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTouchOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTouch) initNSTouchOverload1(id int64) {
 
 func NewNSTouchOverload2(id *id) *NSTouch {
 	this := &NSTouch{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTouchOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSTouch) initNSTouchOverload2(id *id) {
 
 func (this *NSTouch) Device() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_device)
-	var cond814 *id
+	var cond813 *id
 	if result != 0 {
-		cond814 = NewidOverload1(result)
+		cond813 = NewidOverload1(result)
 	} else {
-		cond814 = nil
+		cond813 = nil
 	}
-	return cond814
+	return cond813
 }
 
 func (this *NSTouch) DeviceSize() NSSize {

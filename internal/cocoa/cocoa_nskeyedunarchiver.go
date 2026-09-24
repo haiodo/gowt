@@ -8,7 +8,7 @@ type NSKeyedUnarchiver struct {
 
 func NewNSKeyedUnarchiver() *NSKeyedUnarchiver {
 	this := &NSKeyedUnarchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedUnarchiver()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSKeyedUnarchiver) initNSKeyedUnarchiver() {
 
 func NewNSKeyedUnarchiverOverload1(id int64) *NSKeyedUnarchiver {
 	this := &NSKeyedUnarchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedUnarchiverOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSKeyedUnarchiver) initNSKeyedUnarchiverOverload1(id int64) {
 
 func NewNSKeyedUnarchiverOverload2(id *id) *NSKeyedUnarchiver {
 	this := &NSKeyedUnarchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedUnarchiverOverload2(id)
 	return this
 }
@@ -40,18 +40,18 @@ func (this *NSKeyedUnarchiver) initNSKeyedUnarchiverOverload2(id *id) {
 }
 
 func NSKeyedUnarchiverUnarchiveObjectWithData(data *NSData) *id {
-	var cond346 int64
-	if data != nil {
-		cond346 = data.Id
+	var cond345 int64
+	if data != (nil) {
+		cond345 = data.Id
 	} else {
-		cond346 = int64(0)
+		cond345 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedUnarchiver, OSSel_unarchiveObjectWithData_, cond346)
-	var cond347 *id
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedUnarchiver, OSSel_unarchiveObjectWithData_, cond345)
+	var cond346 *id
 	if result != 0 {
-		cond347 = NewidOverload1(result)
+		cond346 = NewidOverload1(result)
 	} else {
-		cond347 = nil
+		cond346 = nil
 	}
-	return cond347
+	return cond346
 }

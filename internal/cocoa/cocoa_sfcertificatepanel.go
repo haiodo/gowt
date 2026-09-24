@@ -8,7 +8,7 @@ type SFCertificatePanel struct {
 
 func NewSFCertificatePanel() *SFCertificatePanel {
 	this := &SFCertificatePanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificatePanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SFCertificatePanel) initSFCertificatePanel() {
 
 func NewSFCertificatePanelOverload1(id int64) *SFCertificatePanel {
 	this := &SFCertificatePanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificatePanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *SFCertificatePanel) initSFCertificatePanelOverload1(id int64) {
 
 func NewSFCertificatePanelOverload2(id *id) *SFCertificatePanel {
 	this := &SFCertificatePanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificatePanelOverload2(id)
 	return this
 }
@@ -41,7 +41,7 @@ func (this *SFCertificatePanel) initSFCertificatePanelOverload2(id *id) {
 
 func (this *SFCertificatePanel) SetAlternateButtonTitle(title *NSString) {
 	var cond946 int64
-	if title != nil {
+	if title != (nil) {
 		cond946 = title.Id
 	} else {
 		cond946 = int64(0)
@@ -55,7 +55,7 @@ func (this *SFCertificatePanel) SetShowsHelp(showsHelp bool) {
 
 func SFCertificatePanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
 	var cond947 int64
-	if aTitle != nil {
+	if aTitle != (nil) {
 		cond947 = aTitle.Id
 	} else {
 		cond947 = int64(0)

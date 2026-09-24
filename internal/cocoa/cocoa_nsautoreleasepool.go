@@ -8,7 +8,7 @@ type NSAutoreleasePool struct {
 
 func NewNSAutoreleasePool() *NSAutoreleasePool {
 	this := &NSAutoreleasePool{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAutoreleasePool()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAutoreleasePool) initNSAutoreleasePool() {
 
 func NewNSAutoreleasePoolOverload1(id int64) *NSAutoreleasePool {
 	this := &NSAutoreleasePool{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAutoreleasePoolOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAutoreleasePool) initNSAutoreleasePoolOverload1(id int64) {
 
 func NewNSAutoreleasePoolOverload2(id *id) *NSAutoreleasePool {
 	this := &NSAutoreleasePool{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAutoreleasePoolOverload2(id)
 	return this
 }

@@ -8,9 +8,39 @@ type FocusListener interface {
 }
 
 func FocusListenerFocusGainedAdapter(c func(*FocusEvent)) FocusListener {
-	return func() *FocusAdapter { panic("j2go: unsupported anonymous class") }()
+	anon34 := &FocusListenerAnon1{}
+	anon34.initFocusAdapter()
+	anon34.fnFocusGained = func(e *FocusEvent) {
+		c(e)
+	}
+	return anon34
 }
 
 func FocusListenerFocusLostAdapter(c func(*FocusEvent)) FocusListener {
-	return func() *FocusAdapter { panic("j2go: unsupported anonymous class") }()
+	anon35 := &FocusListenerAnon2{}
+	anon35.initFocusAdapter()
+	anon35.fnFocusLost = func(e *FocusEvent) {
+		c(e)
+	}
+	return anon35
+}
+
+// j2go: anonymous FocusAdapter subclass.
+type FocusListenerAnon1 struct {
+	FocusAdapter
+	fnFocusGained func(a0 *FocusEvent)
+}
+
+func (this *FocusListenerAnon1) FocusGained(a0 *FocusEvent) {
+	this.fnFocusGained(a0)
+}
+
+// j2go: anonymous FocusAdapter subclass.
+type FocusListenerAnon2 struct {
+	FocusAdapter
+	fnFocusLost func(a0 *FocusEvent)
+}
+
+func (this *FocusListenerAnon2) FocusLost(a0 *FocusEvent) {
+	this.fnFocusLost(a0)
 }

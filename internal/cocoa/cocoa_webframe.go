@@ -8,7 +8,7 @@ type WebFrame struct {
 
 func NewWebFrame() *WebFrame {
 	this := &WebFrame{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrame()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebFrame) initWebFrame() {
 
 func NewWebFrameOverload1(id int64) *WebFrame {
 	this := &WebFrame{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrameOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebFrame) initWebFrameOverload1(id int64) {
 
 func NewWebFrameOverload2(id *id) *WebFrame {
 	this := &WebFrame{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrameOverload2(id)
 	return this
 }
@@ -67,13 +67,13 @@ func (this *WebFrame) GlobalContext() int64 {
 
 func (this *WebFrame) LoadHTMLString(string_ *NSString, URL *NSURL) {
 	var cond962 int64
-	if string_ != nil {
+	if string_ != (nil) {
 		cond962 = string_.Id
 	} else {
 		cond962 = int64(0)
 	}
 	var cond963 int64
-	if URL != nil {
+	if URL != (nil) {
 		cond963 = URL.Id
 	} else {
 		cond963 = int64(0)
@@ -83,7 +83,7 @@ func (this *WebFrame) LoadHTMLString(string_ *NSString, URL *NSURL) {
 
 func (this *WebFrame) LoadRequest(request *NSURLRequest) {
 	var cond964 int64
-	if request != nil {
+	if request != (nil) {
 		cond964 = request.Id
 	} else {
 		cond964 = int64(0)

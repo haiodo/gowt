@@ -8,7 +8,7 @@ type SWTSearchField struct {
 
 func NewSWTSearchField() *SWTSearchField {
 	this := &SWTSearchField{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSearchField()
 	return this
 }

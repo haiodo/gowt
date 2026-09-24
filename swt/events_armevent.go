@@ -8,7 +8,7 @@ type ArmEvent struct {
 
 func NewArmEvent(e *Event) *ArmEvent {
 	this := &ArmEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initArmEvent(e)
 	return this
 }

@@ -8,7 +8,7 @@ type NSValue struct {
 
 func NewNSValue() *NSValue {
 	this := &NSValue{}
-	this.Impl = this
+	this.impl = this
 	this.initNSValue()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSValue) initNSValue() {
 
 func NewNSValueOverload1(id int64) *NSValue {
 	this := &NSValue{}
-	this.Impl = this
+	this.impl = this
 	this.initNSValueOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSValue) initNSValueOverload1(id int64) {
 
 func NewNSValueOverload2(id *id) *NSValue {
 	this := &NSValue{}
-	this.Impl = this
+	this.impl = this
 	this.initNSValueOverload2(id)
 	return this
 }
@@ -69,6 +69,17 @@ func (this *NSValue) SizeValue() NSSize {
 
 func NSValueValueWithPoint(point NSPoint) *NSValue {
 	var result int64 = OSObjc_msgSendOverload2(OSClass_NSValue, OSSel_valueWithPoint_, point)
+	var cond847 *NSValue
+	if result != 0 {
+		cond847 = NewNSValueOverload1(result)
+	} else {
+		cond847 = nil
+	}
+	return cond847
+}
+
+func NSValueValueWithRange(range_ NSRange) *NSValue {
+	var result int64 = OSObjc_msgSendOverload8(OSClass_NSValue, OSSel_valueWithRange_, range_)
 	var cond848 *NSValue
 	if result != 0 {
 		cond848 = NewNSValueOverload1(result)
@@ -78,8 +89,8 @@ func NSValueValueWithPoint(point NSPoint) *NSValue {
 	return cond848
 }
 
-func NSValueValueWithRange(range_ NSRange) *NSValue {
-	var result int64 = OSObjc_msgSendOverload8(OSClass_NSValue, OSSel_valueWithRange_, range_)
+func NSValueValueWithRect(rect NSRect) *NSValue {
+	var result int64 = OSObjc_msgSendOverload13(OSClass_NSValue, OSSel_valueWithRect_, rect)
 	var cond849 *NSValue
 	if result != 0 {
 		cond849 = NewNSValueOverload1(result)
@@ -89,8 +100,8 @@ func NSValueValueWithRange(range_ NSRange) *NSValue {
 	return cond849
 }
 
-func NSValueValueWithRect(rect NSRect) *NSValue {
-	var result int64 = OSObjc_msgSendOverload13(OSClass_NSValue, OSSel_valueWithRect_, rect)
+func NSValueValueWithSize(size NSSize) *NSValue {
+	var result int64 = OSObjc_msgSendOverload26(OSClass_NSValue, OSSel_valueWithSize_, size)
 	var cond850 *NSValue
 	if result != 0 {
 		cond850 = NewNSValueOverload1(result)
@@ -98,15 +109,4 @@ func NSValueValueWithRect(rect NSRect) *NSValue {
 		cond850 = nil
 	}
 	return cond850
-}
-
-func NSValueValueWithSize(size NSSize) *NSValue {
-	var result int64 = OSObjc_msgSendOverload26(OSClass_NSValue, OSSel_valueWithSize_, size)
-	var cond851 *NSValue
-	if result != 0 {
-		cond851 = NewNSValueOverload1(result)
-	} else {
-		cond851 = nil
-	}
-	return cond851
 }

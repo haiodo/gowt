@@ -8,7 +8,7 @@ type NSAlert struct {
 
 func NewNSAlert() *NSAlert {
 	this := &NSAlert{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAlert()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAlert) initNSAlert() {
 
 func NewNSAlertOverload1(id int64) *NSAlert {
 	this := &NSAlert{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAlertOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAlert) initNSAlertOverload1(id int64) {
 
 func NewNSAlertOverload2(id *id) *NSAlert {
 	this := &NSAlert{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAlertOverload2(id)
 	return this
 }
@@ -41,7 +41,7 @@ func (this *NSAlert) initNSAlertOverload2(id *id) {
 
 func (this *NSAlert) AddButtonWithTitle(title *NSString) *NSButton {
 	var cond9 int64
-	if title != nil {
+	if title != (nil) {
 		cond9 = title.Id
 	} else {
 		cond9 = int64(0)
@@ -58,13 +58,13 @@ func (this *NSAlert) AddButtonWithTitle(title *NSString) *NSButton {
 
 func (this *NSAlert) BeginSheetModalForWindow(window *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
 	var cond11 int64
-	if window != nil {
+	if window != (nil) {
 		cond11 = window.Id
 	} else {
 		cond11 = int64(0)
 	}
 	var cond12 int64
-	if delegate != nil {
+	if delegate != (nil) {
 		cond12 = delegate.Id
 	} else {
 		cond12 = int64(0)
@@ -82,7 +82,7 @@ func (this *NSAlert) SetAlertStyle(alertStyle int64) {
 
 func (this *NSAlert) SetIcon(icon *NSImage) {
 	var cond13 int64
-	if icon != nil {
+	if icon != (nil) {
 		cond13 = icon.Id
 	} else {
 		cond13 = int64(0)
@@ -92,7 +92,7 @@ func (this *NSAlert) SetIcon(icon *NSImage) {
 
 func (this *NSAlert) SetMessageText(messageText *NSString) {
 	var cond14 int64
-	if messageText != nil {
+	if messageText != (nil) {
 		cond14 = messageText.Id
 	} else {
 		cond14 = int64(0)

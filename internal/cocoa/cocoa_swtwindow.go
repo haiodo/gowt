@@ -8,7 +8,7 @@ type SWTWindow struct {
 
 func NewSWTWindow() *SWTWindow {
 	this := &SWTWindow{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTWindow()
 	return this
 }

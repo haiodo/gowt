@@ -11,21 +11,96 @@ type ShellListener interface {
 }
 
 func ShellListenerShellActivatedAdapter(c func(*ShellEvent)) ShellListener {
-	return func() *ShellAdapter { panic("j2go: unsupported anonymous class") }()
+	anon49 := &ShellListenerAnon1{}
+	anon49.initShellAdapter()
+	anon49.fnShellActivated = func(e *ShellEvent) {
+		c(e)
+	}
+	return anon49
 }
 
 func ShellListenerShellClosedAdapter(c func(*ShellEvent)) ShellListener {
-	return func() *ShellAdapter { panic("j2go: unsupported anonymous class") }()
+	anon50 := &ShellListenerAnon2{}
+	anon50.initShellAdapter()
+	anon50.fnShellClosed = func(e *ShellEvent) {
+		c(e)
+	}
+	return anon50
 }
 
 func ShellListenerShellDeactivatedAdapter(c func(*ShellEvent)) ShellListener {
-	return func() *ShellAdapter { panic("j2go: unsupported anonymous class") }()
+	anon51 := &ShellListenerAnon3{}
+	anon51.initShellAdapter()
+	anon51.fnShellDeactivated = func(e *ShellEvent) {
+		c(e)
+	}
+	return anon51
 }
 
 func ShellListenerShellDeiconifiedAdapter(c func(*ShellEvent)) ShellListener {
-	return func() *ShellAdapter { panic("j2go: unsupported anonymous class") }()
+	anon52 := &ShellListenerAnon4{}
+	anon52.initShellAdapter()
+	anon52.fnShellDeiconified = func(e *ShellEvent) {
+		c(e)
+	}
+	return anon52
 }
 
 func ShellListenerShellIconifiedAdapter(c func(*ShellEvent)) ShellListener {
-	return func() *ShellAdapter { panic("j2go: unsupported anonymous class") }()
+	anon53 := &ShellListenerAnon5{}
+	anon53.initShellAdapter()
+	anon53.fnShellIconified = func(e *ShellEvent) {
+		c(e)
+	}
+	return anon53
+}
+
+// j2go: anonymous ShellAdapter subclass.
+type ShellListenerAnon1 struct {
+	ShellAdapter
+	fnShellActivated func(a0 *ShellEvent)
+}
+
+func (this *ShellListenerAnon1) ShellActivated(a0 *ShellEvent) {
+	this.fnShellActivated(a0)
+}
+
+// j2go: anonymous ShellAdapter subclass.
+type ShellListenerAnon2 struct {
+	ShellAdapter
+	fnShellClosed func(a0 *ShellEvent)
+}
+
+func (this *ShellListenerAnon2) ShellClosed(a0 *ShellEvent) {
+	this.fnShellClosed(a0)
+}
+
+// j2go: anonymous ShellAdapter subclass.
+type ShellListenerAnon3 struct {
+	ShellAdapter
+	fnShellDeactivated func(a0 *ShellEvent)
+}
+
+func (this *ShellListenerAnon3) ShellDeactivated(a0 *ShellEvent) {
+	this.fnShellDeactivated(a0)
+}
+
+// j2go: anonymous ShellAdapter subclass.
+type ShellListenerAnon4 struct {
+	ShellAdapter
+	fnShellDeiconified func(a0 *ShellEvent)
+}
+
+func (this *ShellListenerAnon4) ShellDeiconified(a0 *ShellEvent) {
+	this.fnShellDeiconified(a0)
+}
+
+// j2go: anonymous ShellAdapter subclass.
+type ShellListenerAnon5 struct {
+	ShellAdapter
+	fnShellIconified func(a0 *ShellEvent)
+}
+
+func (this *ShellListenerAnon5) ShellIconified(a0 *ShellEvent) {
+	this.fnShellIconified(a0)
 }

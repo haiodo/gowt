@@ -8,7 +8,7 @@ type SWTSecureTextField struct {
 
 func NewSWTSecureTextField() *SWTSecureTextField {
 	this := &SWTSecureTextField{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSecureTextField()
 	return this
 }

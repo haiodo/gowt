@@ -8,7 +8,7 @@ type SWTScroller struct {
 
 func NewSWTScroller() *SWTScroller {
 	this := &SWTScroller{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTScroller()
 	return this
 }

@@ -8,7 +8,7 @@ type SWTCanvasView struct {
 
 func NewSWTCanvasView() *SWTCanvasView {
 	this := &SWTCanvasView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTCanvasView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTCanvasView) initSWTCanvasView() {
 
 func NewSWTCanvasViewId(id int64) *SWTCanvasView {
 	this := &SWTCanvasView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTCanvasViewId(id)
 	return this
 }

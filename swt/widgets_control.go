@@ -14,22 +14,24 @@ import (
 
 type Control struct {
 	Widget
-	View                       *cocoa.NSView
-	parent                     *Composite
-	toolTipText                string
-	layoutData                 any
-	drawCount, backgroundAlpha int32
-	menu                       *Menu
-	foreground, background     []float64
-	backgroundImage            *Image
-	font                       *Font
-	cursor                     *Cursor
-	region                     *Region
-	regionPath                 *cocoa.NSBezierPath
-	visibleRgn                 int64
-	accessible                 *Accessible
-	inCacheDisplayInRect       bool
-	touchEnabled               bool
+	View                 *cocoa.NSView
+	parent               *Composite
+	toolTipText          string
+	layoutData           any
+	drawCount            int32
+	backgroundAlpha      int32
+	menu                 *Menu
+	foreground           []float64
+	background           []float64
+	backgroundImage      *Image
+	font                 *Font
+	cursor               *Cursor
+	region               *Region
+	regionPath           *cocoa.NSBezierPath
+	visibleRgn           int64
+	accessible           *Accessible
+	inCacheDisplayInRect bool
+	touchEnabled         bool
 }
 
 const ControlCLIPPING int32 = 1024
@@ -46,7 +48,7 @@ const ControlSYNTHETIC_ITALIC float64 = 0.2
 
 func newControl() *Control {
 	this := &Control{}
-	this.Impl = this
+	this.impl = this
 	this.initControl()
 	return this
 }
@@ -58,20 +60,20 @@ func (this *Control) initControl() {
 
 func NewControlParentStyle(parent *Composite, style int32) *Control {
 	this := &Control{}
-	this.Impl = this
+	this.impl = this
 	this.initControlParentStyle(parent, style)
 	return this
 }
 
 func (this *Control) initControlParentStyle(parent *Composite, style int32) {
-	this.Widget.initWidgetParentStyle(&parent.Widget, style)
+	this.Widget.initWidgetParentStyle(upcastCompositeToWidget(parent), style)
 	this.backgroundAlpha = 255
 	this.parent = parent
-	this.Impl.CreateWidget()
+	this.impl.CreateWidget()
 }
 
 func (this *Control) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool {
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	if (shell.style & SWTON_TOP) != 0 {
 		return true
 	}
@@ -80,20 +82,20 @@ func (this *Control) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool
 
 func (this *Control) AccessibleHandle() int64 {
 	var returnValue int64 = this.View.Id
-	_, ok36 := idImplAsControl(this.View.Impl)
-	if ok36 {
-		if (this.View.Impl.(*cocoa.NSControl)).Cell() != nil {
-			returnValue = (this.View.Impl.(*cocoa.NSControl)).Cell().Id
+	_, ok61 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok61 {
+		if (castcocoaNSViewTococoaNSControl(this.View)).Cell() != (nil) {
+			returnValue = (castcocoaNSViewTococoaNSControl(this.View)).Cell().Id
 		}
 	}
 	return returnValue
 }
 
 func (this *Control) AccessibilityActionDescription(id int64, sel int64, arg0 int64) int64 {
-	if id == this.Impl.AccessibleHandle() && this.accessible != nil {
+	if id == this.impl.AccessibleHandle() && this.accessible != (nil) {
 		var actionName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		var returnValue *cocoa.Id = this.accessible.Internal_accessibilityActionDescription(actionName, ACCCHILDID_SELF)
-		if returnValue != nil {
+		if returnValue != (nil) {
 			return returnValue.Id
 		}
 	}
@@ -103,17 +105,17 @@ func (this *Control) AccessibilityActionDescription(id int64, sel int64, arg0 in
 func (this *Control) AccessibilityActionNames(id int64, sel int64) int64 {
 	var returnValue int64 = this.Widget.AccessibilityActionNames(id, sel)
 	if this.HandleIsAccessible(id) {
-		if this.accessible != nil {
+		if this.accessible != (nil) {
 			var baseArray *cocoa.NSArray = this.accessible.Internal_accessibilityActionNames(ACCCHILDID_SELF)
-			if baseArray != nil {
+			if baseArray != (nil) {
 				returnValue = baseArray.Id
 			}
 		}
-		if this.Hooks(SWTMenuDetect) || (this.menu != nil && !this.menu.IsDisposed()) {
+		if this.Hooks(SWTMenuDetect) || (this.menu != (nil) && !this.menu.IsDisposed()) {
 			var baseArray *cocoa.NSArray = cocoa.NewNSArrayOverload1(returnValue)
 			var ourNames *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(baseArray.Count() + 1)
 			ourNames.AddObjectsFromArray(baseArray)
-			ourNames.AddObject(cocoa.OSNSAccessibilityShowMenuAction_.AsId())
+			ourNames.AddObject(upcastcocoaNSStringTococoaId(cocoa.OSNSAccessibilityShowMenuAction_))
 			returnValue = ourNames.Id
 		}
 	}
@@ -122,15 +124,15 @@ func (this *Control) AccessibilityActionNames(id int64, sel int64) int64 {
 
 func (this *Control) AccessibilityAttributeNames(id int64, sel int64) int64 {
 	var returnValue int64 = int64(0)
-	if this.HandleIsAccessible(id) && this.accessible != nil {
-		var value *cocoa.Id = this.accessible.Internal_accessibilityAttributeNames(ACCCHILDID_SELF).AsId()
-		var cond37 int64
-		if value != nil {
-			cond37 = value.Id
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+		var value *cocoa.Id = upcastcocoaNSArrayTococoaId(this.accessible.Internal_accessibilityAttributeNames(ACCCHILDID_SELF))
+		var cond62 int64
+		if value != (nil) {
+			cond62 = value.Id
 		} else {
-			cond37 = int64(0)
+			cond62 = int64(0)
 		}
-		returnValue = (cond37)
+		returnValue = (cond62)
 		if returnValue == 0 {
 			returnValue = this.Widget.AccessibilityAttributeNames(id, sel)
 		}
@@ -143,13 +145,13 @@ func (this *Control) AccessibilityAttributeNames(id int64, sel int64) int64 {
 }
 
 func (this *Control) HandleIsAccessible(id int64) bool {
-	return id == this.Impl.AccessibleHandle()
+	return id == this.impl.AccessibleHandle()
 }
 
 func (this *Control) AccessibilityParameterizedAttributeNames(id int64, sel int64) int64 {
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		var returnValue *cocoa.NSArray = this.accessible.Internal_accessibilityParameterizedAttributeNames(ACCCHILDID_SELF)
-		if returnValue != nil {
+		if returnValue != (nil) {
 			return returnValue.Id
 		}
 	}
@@ -157,7 +159,7 @@ func (this *Control) AccessibilityParameterizedAttributeNames(id int64, sel int6
 }
 
 func (this *Control) AccessibilityPerformAction(id int64, sel int64, arg0 int64) {
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		var action *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		if this.accessible.Internal_accessibilityPerformAction(action, ACCCHILDID_SELF) {
 			return
@@ -168,10 +170,10 @@ func (this *Control) AccessibilityPerformAction(id int64, sel int64, arg0 int64)
 
 func (this *Control) AccessibilityFocusedUIElement(id int64, sel int64) int64 {
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		returnValue = this.accessible.Internal_accessibilityFocusedUIElement(ACCCHILDID_SELF)
 	}
-	if returnValue == nil {
+	if returnValue == (nil) {
 		return this.Widget.AccessibilityFocusedUIElement(id, sel)
 	} else {
 		return returnValue.Id
@@ -180,10 +182,10 @@ func (this *Control) AccessibilityFocusedUIElement(id int64, sel int64) int64 {
 
 func (this *Control) AccessibilityHitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		returnValue = this.accessible.Internal_accessibilityHitTest(point, ACCCHILDID_SELF)
 	}
-	if returnValue == nil {
+	if returnValue == (nil) {
 		return this.Widget.AccessibilityHitTest(id, sel, point)
 	} else {
 		return returnValue.Id
@@ -194,12 +196,12 @@ func (this *Control) AccessibilityAttributeValue(id int64, sel int64, arg0 int64
 	var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	var returnValue int64 = int64(0)
 	var returnObject *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		returnObject = this.accessible.Internal_accessibilityAttributeValue(attribute, ACCCHILDID_SELF)
 	}
-	if returnObject == nil {
+	if returnObject == (nil) {
 		returnValue = this.Widget.AccessibilityAttributeValue(id, sel, arg0)
-		if returnObject == nil {
+		if returnObject == (nil) {
 			if attribute.IsEqualToString(cocoa.OSNSAccessibilityHelpAttribute_) {
 				if this.toolTipText != "" {
 					returnValue = cocoa.NSStringStringWith(this.toolTipText).Id
@@ -215,11 +217,11 @@ func (this *Control) AccessibilityAttributeValue(id int64, sel int64, arg0 int64
 func (this *Control) AccessibilityAttributeValue_forParameter(id int64, sel int64, arg0 int64, arg1 int64) int64 {
 	var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		var parameter *cocoa.Id = cocoa.NewidOverload1(arg1)
 		returnValue = this.accessible.Internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACCCHILDID_SELF)
 	}
-	if returnValue == nil {
+	if returnValue == (nil) {
 		return this.Widget.AccessibilityAttributeValue_forParameter(id, sel, arg0, arg1)
 	} else {
 		return returnValue.Id
@@ -228,7 +230,7 @@ func (this *Control) AccessibilityAttributeValue_forParameter(id int64, sel int6
 
 func (this *Control) AccessibilityIsAttributeSettable(id int64, sel int64, arg0 int64) bool {
 	var returnValue bool = false
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		returnValue = this.accessible.Internal_accessibilityIsAttributeSettable(attribute, ACCCHILDID_SELF)
 	}
@@ -239,7 +241,7 @@ func (this *Control) AccessibilityIsAttributeSettable(id int64, sel int64, arg0 
 }
 
 func (this *Control) AccessibilitySetValue_forAttribute(id int64, sel int64, arg0 int64, arg1 int64) {
-	if this.HandleIsAccessible(id) && this.accessible != nil {
+	if this.HandleIsAccessible(id) && this.accessible != (nil) {
 		var value *cocoa.Id = cocoa.NewidOverload1(arg0)
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg1)
 		this.accessible.Internal_accessibilitySetValue_forAttribute(value, attribute, ACCCHILDID_SELF)
@@ -301,10 +303,10 @@ func (this *Control) AddPaintListener(listener PaintListener) {
 
 func (this *Control) AddTraits(dict *cocoa.NSMutableDictionary, font *Font) {
 	if (font.ExtraTraits & cocoa.OSNSBoldFontMask) != 0 {
-		dict.SetObject(cocoa.NSNumberNumberWithDouble(ControlSYNTHETIC_BOLD).AsId(), cocoa.OSNSStrokeWidthAttributeName_.AsId())
+		dict.SetObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithDouble(ControlSYNTHETIC_BOLD)), upcastcocoaNSStringTococoaId(cocoa.OSNSStrokeWidthAttributeName_))
 	}
 	if (font.ExtraTraits & cocoa.OSNSItalicFontMask) != 0 {
-		dict.SetObject(cocoa.NSNumberNumberWithDouble(ControlSYNTHETIC_ITALIC).AsId(), cocoa.OSNSObliquenessAttributeName_.AsId())
+		dict.SetObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithDouble(ControlSYNTHETIC_ITALIC)), upcastcocoaNSStringTococoaId(cocoa.OSNSObliquenessAttributeName_))
 	}
 }
 
@@ -330,12 +332,12 @@ func (this *Control) SetEmptyRgn(rgn int64) {
 }
 
 func (this *Control) CalculateVisibleRegion(view *cocoa.NSView, visibleRgn int64, clipChildren bool) {
-	if view.IsHiddenOrHasHiddenAncestor() || !this.Impl.IsDrawing() {
+	if view.IsHiddenOrHasHiddenAncestor() || !this.impl.IsDrawing() {
 		this.SetEmptyRgn(visibleRgn)
 		return
 	}
 	var window *cocoa.NSWindow = view.Window()
-	if nil == window {
+	if (nil) == window {
 		this.SetEmptyRgn(visibleRgn)
 		return
 	}
@@ -363,8 +365,8 @@ func (this *Control) CalculateVisibleRegion(view *cocoa.NSView, visibleRgn int64
 			var subviews *cocoa.NSArray = tempView.Subviews()
 			var count int64 = subviews.Count()
 			for i := int32(0); int64(i) < count; i++ {
-				var child *cocoa.NSView = cocoa.NewNSViewOverload2(subviews.ObjectAtIndex(count - int64(i) - 1))
-				if lastControl != nil && child.Id == lastControl.Id {
+				var child *cocoa.NSView = cocoa.NewNSViewOverload2(subviews.ObjectAtIndex(count - int64(i) - int64(1)))
+				if lastControl != (nil) && child.Id == lastControl.Id {
 					break
 				}
 				if child.IsHidden() {
@@ -388,7 +390,7 @@ func (this *Control) CalculateVisibleRegion(view *cocoa.NSView, visibleRgn int64
 func (this *Control) CancelOperation(id int64, sel int64, sender int64) {
 	if this.HasKeyboardFocus(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
-		var s *Shell = this.GetShell()
+		var s *Shell = this.impl.GetShell()
 		s.keyInputHappened = false
 		var consume []bool = make([]bool, 1)
 		if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
@@ -397,15 +399,15 @@ func (this *Control) CancelOperation(id int64, sel int64, sender int64) {
 		if this.IsDisposed() {
 			return
 		}
-		if !this.SendKeyEvent(nsEvent, SWTKeyDown) {
+		if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
 			return
 		}
 	}
 }
 
 func (this *Control) CheckBackground() {
-	var shell *Shell = this.GetShell()
-	if this == &shell.Control {
+	var shell *Shell = this.impl.GetShell()
+	if this == upcastShellToControl(shell) {
 		return
 	}
 	this.state &= ^WidgetPARENT_BACKGROUND
@@ -419,8 +421,8 @@ func (this *Control) CheckBackground() {
 					if (control.state & WidgetTHEME_BACKGROUND) == 0 {
 						return
 					}
-					control = &control.parent.Control
-					if !(control != &composite.Control) {
+					control = upcastCompositeToControl(control.parent)
+					if !(control != upcastCompositeToControl(composite)) {
 						break
 					}
 				}
@@ -428,7 +430,7 @@ func (this *Control) CheckBackground() {
 			this.state |= WidgetPARENT_BACKGROUND
 			return
 		}
-		if composite == &shell.Composite {
+		if composite == upcastShellToComposite(shell) {
 			break
 		}
 		composite = composite.parent
@@ -443,18 +445,18 @@ func (this *Control) CheckBuffered() {
 }
 
 func (this *Control) CheckToolTip(target *Widget) {
-	if this.IsVisible() && this.display.tooltipControl == this && (target == nil || this.display.tooltipTarget == target) {
-		var shell *Shell = this.GetShell()
+	if this.impl.IsVisible() && this.display.tooltipControl == this && (target == (nil) || this.display.tooltipTarget == target) {
+		var shell *Shell = this.impl.GetShell()
 		shell.SendToolTipEvent(false)
 		shell.SendToolTipEvent(true)
 	}
 }
 
 func (this *Control) ComputeSize(wHint int32, hHint int32) *Point {
-	return this.ComputeSizeWHintHHintChanged(wHint, hHint, true)
+	return this.impl.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, true)
 }
 
-func (this *Control) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Control) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -471,16 +473,16 @@ func (this *Control) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, chan
 }
 
 func (this *Control) ComputeTabGroup() *Widget {
-	if this.IsTabGroup() {
-		return &this.Widget
+	if this.impl.IsTabGroup() {
+		return upcastControlToWidget(this)
 	}
-	return this.parent.ComputeTabGroup()
+	return this.parent.impl.ComputeTabGroup()
 }
 
 func (this *Control) ComputeTabList() []*Widget {
-	if this.IsTabGroup() {
+	if this.impl.IsTabGroup() {
 		if this.GetVisible() && this.GetEnabled() {
-			return []*Widget{&this.Widget}
+			return []*Widget{upcastControlToWidget(this)}
 		}
 	}
 	return make([]*Widget, 0)
@@ -488,7 +490,7 @@ func (this *Control) ComputeTabList() []*Widget {
 
 func (this *Control) ComputeTabRoot() *Control {
 	var tabList []*Control = this.parent._getTabList()
-	if tabList != nil {
+	if tabList != (nil) {
 		var index int32 = 0
 		for index < int32(len(tabList)) {
 			if tabList[index] == this {
@@ -497,12 +499,12 @@ func (this *Control) ComputeTabRoot() *Control {
 			index++
 		}
 		if index == int32(len(tabList)) {
-			if this.IsTabGroup() {
+			if this.impl.IsTabGroup() {
 				return this
 			}
 		}
 	}
-	return this.parent.ComputeTabRoot()
+	return this.parent.impl.ComputeTabRoot()
 }
 
 func (this *Control) ContentView() *cocoa.NSView {
@@ -510,32 +512,32 @@ func (this *Control) ContentView() *cocoa.NSView {
 }
 
 func (this *Control) CreateString(string_ string, font *Font, foreground []float64, alignment int32, wrap bool, enabled bool, mnemonics bool) *cocoa.NSAttributedString {
-	var dict *cocoa.NSMutableDictionary = (cocoa.NewNSMutableDictionary().Alloc().Impl.(*cocoa.NSMutableDictionary)).InitWithCapacity(int64(5))
-	if font == nil {
-		if this.font != nil {
+	var dict *cocoa.NSMutableDictionary = (castcocoaNSObjectTococoaNSMutableDictionary(cocoa.NewNSMutableDictionary().Alloc())).InitWithCapacity(int64(5))
+	if font == (nil) {
+		if this.font != (nil) {
 			font = this.font
 		} else {
-			font = this.DefaultFont()
+			font = this.impl.DefaultFont()
 		}
 	}
-	dict.SetObject(font.Handle.AsId(), cocoa.OSNSFontAttributeName_.AsId())
+	dict.SetObject(upcastcocoaNSFontTococoaId(font.Handle), upcastcocoaNSStringTococoaId(cocoa.OSNSFontAttributeName_))
 	this.AddTraits(dict, font)
 	if enabled {
-		if foreground != nil {
+		if foreground != (nil) {
 			var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3])
-			dict.SetObject(color.AsId(), cocoa.OSNSForegroundColorAttributeName_.AsId())
+			dict.SetObject(upcastcocoaNSColorTococoaId(color), upcastcocoaNSStringTococoaId(cocoa.OSNSForegroundColorAttributeName_))
 		}
 	} else {
-		dict.SetObject(cocoa.NSColorDisabledControlTextColor().AsId(), cocoa.OSNSForegroundColorAttributeName_.AsId())
+		dict.SetObject(upcastcocoaNSColorTococoaId(cocoa.NSColorDisabledControlTextColor()), upcastcocoaNSStringTococoaId(cocoa.OSNSForegroundColorAttributeName_))
 	}
-	var paragraphStyle *cocoa.NSMutableParagraphStyle = cocoa.NewNSMutableParagraphStyle().Alloc().Init().Impl.(*cocoa.NSMutableParagraphStyle)
-	var cond38 int32
+	var paragraphStyle *cocoa.NSMutableParagraphStyle = castcocoaNSObjectTococoaNSMutableParagraphStyle(cocoa.NewNSMutableParagraphStyle().Alloc().Init())
+	var cond63 int32
 	if wrap {
-		cond38 = cocoa.OSNSLineBreakByWordWrapping
+		cond63 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond38 = cocoa.OSNSLineBreakByClipping
+		cond63 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraphStyle.SetLineBreakMode(int64(cond38))
+	paragraphStyle.SetLineBreakMode(int64(cond63))
 	if alignment != 0 {
 		var align int32 = cocoa.OSNSTextAlignmentLeft
 		if (alignment & SWTCENTER) != 0 {
@@ -552,7 +554,7 @@ func (this *Control) CreateString(string_ string, font *Font, foreground []float
 	} else {
 		paragraphStyle.SetBaseWritingDirection(int64(cocoa.OSNSWritingDirectionLeftToRight))
 	}
-	dict.SetObject(paragraphStyle.AsId(), cocoa.OSNSParagraphStyleAttributeName_.AsId())
+	dict.SetObject(upcastcocoaNSMutableParagraphStyleTococoaId(paragraphStyle), upcastcocoaNSStringTococoaId(cocoa.OSNSParagraphStyleAttributeName_))
 	paragraphStyle.Release()
 	var length int32 = int32(len(string_))
 	var chars []uint16 = make([]uint16, length)
@@ -560,8 +562,8 @@ func (this *Control) CreateString(string_ string, font *Font, foreground []float
 	if mnemonics {
 		length = this.FixMnemonic(chars)
 	}
-	var str *cocoa.NSString = (cocoa.NewNSString().Alloc().Impl.(*cocoa.NSString)).InitWithCharacters(chars, int64(length))
-	var attribStr *cocoa.NSAttributedString = (cocoa.NewNSAttributedString().Alloc().Impl.(*cocoa.NSAttributedString)).InitWithStringStrAttrs(str, &dict.NSDictionary)
+	var str *cocoa.NSString = (castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())).InitWithCharacters(chars, int64(length))
+	var attribStr *cocoa.NSAttributedString = (castcocoaNSObjectTococoaNSAttributedString(cocoa.NewNSAttributedString().Alloc())).InitWithStringStrAttrs(str, upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
 	str.Release()
 	dict.Release()
 	return attribStr
@@ -569,12 +571,12 @@ func (this *Control) CreateString(string_ string, font *Font, foreground []float
 
 func (this *Control) CreateWidget() {
 	this.state |= WidgetDRAG_DETECT
-	this.CheckOrientation(&this.parent.Widget)
+	this.CheckOrientation(upcastCompositeToWidget(this.parent))
 	this.Widget.CreateWidget()
 	this.CheckBackground()
 	this.CheckBuffered()
 	this.SetDefaultFont()
-	this.Impl.SetZOrderOnControl()
+	this.impl.SetZOrderOnControl()
 	this.SetRelations()
 	if (this.state & WidgetPARENT_BACKGROUND) != 0 {
 		this.SetBackground()
@@ -590,7 +592,7 @@ func (this *Control) DefaultFont() *Font {
 	if this.display.smallFonts {
 		return this.display.GetSystemFont()
 	}
-	return FontCocoa_new(this.display, this.DefaultNSFont())
+	return FontCocoa_new(upcastDisplayToDevice(this.display), this.impl.DefaultNSFont())
 }
 
 func (this *Control) DefaultForeground() *Color {
@@ -603,25 +605,23 @@ func (this *Control) DefaultNSFont() *cocoa.NSFont {
 
 func (this *Control) Deregister() {
 	this.Widget.Deregister()
-	this.display.RemoveWidget(&this.View.NSObject)
+	this.display.RemoveWidget(upcastcocoaNSViewTococoaNSObject(this.View))
 }
 
 func (this *Control) DestroyWidget() {
-	t39 := this.Impl.TopView()
-	t40, _ := widgetImplAs(t39.Impl)
-	var view *cocoa.NSView = t40
+	var view *cocoa.NSView = this.impl.TopView()
 	view.RemoveFromSuperview()
-	this.Impl.ReleaseHandle()
+	this.impl.ReleaseHandle()
 }
 
 func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 	if this.HasKeyboardFocus(id) {
-		if this.ImeInComposition() {
+		if this.impl.ImeInComposition() {
 			return
 		}
-		var s *Shell = this.GetShell()
+		var s *Shell = this.impl.GetShell()
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
-		if nsEvent != nil && nsEvent.Type() == int64(cocoa.OSNSKeyDown) {
+		if nsEvent != (nil) && nsEvent.Type() == int64(cocoa.OSNSKeyDown) {
 			var modifiers int64 = nsEvent.ModifierFlags()
 			if s.keyInputHappened == false || (modifiers&int64(cocoa.OSNSEventModifierFlagCommand)) != 0 {
 				s.keyInputHappened = true
@@ -632,7 +632,7 @@ func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.SendKeyEvent(nsEvent, SWTKeyDown) {
+				if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
 					return
 				}
 				if consume[0] {
@@ -649,7 +649,7 @@ func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 
 func (this *Control) DragDetect(event *Event) bool {
 	this.CheckWidget()
-	if event == nil {
+	if event == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.DragDetectButtonCountStateMaskXY(event.Button, event.Count, event.StateMask, event.X, event.Y)
@@ -657,7 +657,7 @@ func (this *Control) DragDetect(event *Event) bool {
 
 func (this *Control) DragDetectEvent(event *MouseEvent) bool {
 	this.CheckWidget()
-	if event == nil {
+	if event == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.DragDetectButtonCountStateMaskXY(event.Button, event.Count, event.StateMask, event.X, event.Y)
@@ -667,13 +667,13 @@ func (this *Control) DragDetectButtonCountStateMaskXY(button int32, count int32,
 	if button != 1 || count != 1 {
 		return false
 	}
-	if !this.DragDetectXYFilterConsume(x, y, false, nil) {
+	if !this.impl.DragDetectXYFilterConsumeOnControl(x, y, false, nil) {
 		return false
 	}
 	return this.SendDragEvent(button, stateMask, x, y)
 }
 
-func (this *Control) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
+func (this *Control) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter bool, consume []bool) bool {
 	var application *cocoa.NSApplication = cocoa.NSApplicationSharedApplication()
 	var dragging bool = false
 	var eventType int64 = int64(cocoa.OSNSLeftMouseDown)
@@ -684,13 +684,13 @@ func (this *Control) DragDetectXYFilterConsume(x int32, y int32, filter bool, co
 	var timeout *cocoa.NSDate = cocoa.NSDateDateWithTimeIntervalSinceNow(0.3)
 	for eventType != int64(cocoa.OSNSLeftMouseUp) {
 		var event *cocoa.NSEvent = application.NextEventMatchingMask(int64((cocoa.OSNSLeftMouseUpMask | cocoa.OSNSLeftMouseDraggedMask)), timeout, cocoa.OSNSEventTrackingRunLoopMode_, true)
-		if event == nil {
+		if event == (nil) {
 			dragging = true
 			break
 		}
 		eventType = event.Type()
 		if eventType == int64(cocoa.OSNSLeftMouseDragged) {
-			dragEvents.AddObject(event.AsId())
+			dragEvents.AddObject(upcastcocoaNSEventTococoaId(event))
 			var windowLoc cocoa.NSPoint = event.LocationInWindow()
 			var viewLoc cocoa.NSPoint = this.View.ConvertPoint_fromView_(windowLoc, nil)
 			if !this.View.IsFlipped() {
@@ -706,7 +706,7 @@ func (this *Control) DragDetectXYFilterConsume(x int32, y int32, filter bool, co
 			}
 		}
 	}
-	if mouseUpEvent != nil {
+	if mouseUpEvent != (nil) {
 		application.PostEvent(mouseUpEvent, true)
 	}
 	if dragEvents.Count() > 0 {
@@ -749,22 +749,22 @@ func (this *Control) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect
 }
 
 func (this *Control) EnableWidget(enabled bool) {
-	_, ok41 := idImplAsControl(this.View.Impl)
-	if ok41 {
-		(this.View.Impl.(*cocoa.NSControl)).SetEnabled(enabled)
+	_, ok64 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok64 {
+		(castcocoaNSViewTococoaNSControl(this.View)).SetEnabled(enabled)
 	}
-	this.Impl.UpdateCursorRectsOnControl(this.IsEnabled())
+	this.impl.UpdateCursorRectsOnControl(this.impl.IsEnabled())
 }
 
 func (this *Control) Equals(color1 []float64, color2 []float64) bool {
 	if slices.Equal(color1, color2) {
 		return true
 	}
-	if color1 == nil {
-		return color2 == nil
+	if color1 == (nil) {
+		return color2 == (nil)
 	}
-	if color2 == nil {
-		return color1 == nil
+	if color2 == (nil) {
+		return color1 == (nil)
 	}
 	for i := int32(0); i < int32(len(color1)); i++ {
 		if color1[i] != color2[i] {
@@ -783,15 +783,15 @@ func (this *Control) FillBackground(view *cocoa.NSView, context *cocoa.NSGraphic
 }
 
 func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *cocoa.NSView, context *cocoa.NSGraphicsContext, rect cocoa.NSRect, imgHeight int32, gcView *cocoa.NSView, tx int32, ty int32) {
-	if !this.DrawsBackground() {
+	if !this.impl.DrawsBackground() {
 		return
 	}
-	var control *Control = this.FindBackgroundControl()
-	if control == nil {
+	var control *Control = this.impl.FindBackgroundControl()
+	if control == (nil) {
 		control = this
 	}
 	var image *Image = control.backgroundImage
-	if image != nil && !image.IsDisposed() {
+	if image != (nil) && !image.IsDisposed() {
 		context.SaveGraphicsState()
 		cocoa.NSColorColorWithPatternImage(image.Handle).SetFill()
 		var phase cocoa.NSPoint = cocoa.NSPoint{}
@@ -807,7 +807,7 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 			phase = view.ConvertPoint_toView_(phase, controlView)
 			phase.Y += float64(imgHeight - this.backgroundImage.GetBounds().Height)
 		}
-		if gcView != nil {
+		if gcView != (nil) {
 			var pt cocoa.NSPoint = gcView.ConvertPoint_toView_(cocoa.NSPoint{}, view)
 			phase.X += pt.X
 			phase.Y -= pt.Y
@@ -821,12 +821,12 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 	}
 	var background []float64 = control.background
 	var alpha float64
-	if background == nil {
-		if this.IsTransparent() {
+	if background == (nil) {
+		if this.impl.IsTransparent() {
 			return
 		}
 		background = control.DefaultBackground().Handle
-		alpha = float64(this.GetThemeAlpha())
+		alpha = float64(this.impl.GetThemeAlpha())
 	} else {
 		alpha = background[3]
 	}
@@ -837,34 +837,34 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 }
 
 func (this *Control) FindCursor() *Cursor {
-	if this.cursor != nil {
+	if this.cursor != (nil) {
 		return this.cursor
 	}
-	return this.parent.FindCursor()
+	return this.parent.impl.FindCursor()
 }
 
 func (this *Control) FindBackgroundControl() *Control {
-	if (this.backgroundImage != nil || this.background != nil) && this.backgroundAlpha > 0 {
+	if (this.backgroundImage != (nil) || this.background != (nil)) && this.backgroundAlpha > 0 {
 		return this
 	}
-	var cond42 *Control
-	if this.parent != nil && !this.IsTransparent() && (this.state&WidgetPARENT_BACKGROUND) != 0 {
-		cond42 = this.parent.FindBackgroundControl()
+	var cond65 *Control
+	if this.parent != (nil) && !this.impl.IsTransparent() && (this.state&WidgetPARENT_BACKGROUND) != 0 {
+		cond65 = this.parent.impl.FindBackgroundControl()
 	} else {
-		cond42 = nil
+		cond65 = nil
 	}
-	return cond42
+	return cond65
 }
 
 func (this *Control) FindMenus(control *Control) []*Menu {
-	if this.menu != nil && this != control {
+	if this.menu != (nil) && this != control {
 		return []*Menu{this.menu}
 	}
 	return make([]*Menu, 0)
 }
 
 func (this *Control) FindTooltip(pt cocoa.NSPoint) *Widget {
-	return &this.Widget
+	return upcastControlToWidget(this)
 }
 
 func (this *Control) FixChildren(newShell *Shell, oldShell *Shell, newDecorations *Decorations, oldDecorations *Decorations, menus []*Menu) {
@@ -873,12 +873,12 @@ func (this *Control) FixChildren(newShell *Shell, oldShell *Shell, newDecoration
 }
 
 func (this *Control) FixFocus(focusControl *Control) {
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
-	cond43 := &control.parent.Control
-	control = cond43
-	for control != &shell.Control && (cond43) != nil {
-		if control.SetFocus() {
+	cond66 := upcastCompositeToControl(control.parent)
+	control = cond66
+	for control != upcastShellToControl(shell) && (cond66) != (nil) {
+		if control.impl.SetFocus() {
 			return
 		}
 	}
@@ -892,7 +892,7 @@ func (this *Control) FixFocus(focusControl *Control) {
 func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
 		if (this.state & WidgetWEBKIT_EVENTS_FIX) == 0 {
-			var s *Shell = this.GetShell()
+			var s *Shell = this.impl.GetShell()
 			s.keyInputHappened = false
 			var mask int32 = 0
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
@@ -950,12 +950,12 @@ func (this *Control) ForceFocus() bool {
 	if this.display.focusEvent == SWTFocusOut {
 		return false
 	}
-	var shell *Decorations = this.MenuShell()
+	var shell *Decorations = this.impl.MenuShell()
 	shell.SetSavedFocus(this)
-	if !this.IsEnabled() || !this.IsVisible() || !this.Impl.IsActive() {
+	if !this.impl.IsEnabled() || !this.impl.IsVisible() || !this.impl.IsActive() {
 		return false
 	}
-	if &this.display.GetActiveShell().Decorations != shell && !DisplayIsActivateShellOnForceFocus() {
+	if upcastShellToDecorations(this.display.GetActiveShell()) != shell && !DisplayIsActivateShellOnForceFocus() {
 		return false
 	}
 	if this.IsFocusControl() {
@@ -971,7 +971,7 @@ func (this *Control) ForceFocus() bool {
 		return false
 	}
 	shell.SetSavedFocus(this)
-	shell.BringToTop(false)
+	shell.impl.BringToTop(false)
 	if this.IsDisposed() {
 		return false
 	}
@@ -980,10 +980,10 @@ func (this *Control) ForceFocus() bool {
 
 func (this *Control) ForceFocusFocusView(focusView *cocoa.NSView) bool {
 	var window *cocoa.NSWindow = this.View.Window()
-	if window == nil {
+	if window == (nil) {
 		return false
 	}
-	return window.MakeFirstResponder(&focusView.NSResponder)
+	return window.MakeFirstResponder(upcastcocoaNSViewTococoaNSResponder(focusView))
 }
 
 func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
@@ -994,7 +994,7 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 	if this.touchEnabled {
 		return true
 	}
-	if !this.Impl.IsEventView(id) {
+	if !this.impl.IsEventView(id) {
 		return true
 	}
 	if !this.Hooks(SWTGesture) && !this.Filters(SWTGesture) {
@@ -1056,7 +1056,7 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 
 func (this *Control) GetAccessible() *Accessible {
 	this.CheckWidget()
-	if this.accessible == nil {
+	if this.accessible == (nil) {
 		this.accessible = this.New_Accessible(this)
 	}
 	return this.accessible
@@ -1065,11 +1065,11 @@ func (this *Control) GetAccessible() *Accessible {
 func (this *Control) GetBackground() *Color {
 	this.CheckWidget()
 	if this.backgroundAlpha == 0 {
-		var color *Color = ColorCocoa_new(this.display, this.background, 0)
+		var color *Color = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, 0)
 		return color
 	} else {
-		var control *Control = this.FindBackgroundControl()
-		if control == nil {
+		var control *Control = this.impl.FindBackgroundControl()
+		if control == (nil) {
 			control = this
 		}
 		return control.GetBackgroundColor()
@@ -1077,19 +1077,19 @@ func (this *Control) GetBackground() *Color {
 }
 
 func (this *Control) GetBackgroundColor() *Color {
-	var cond44 *Color
-	if this.background != nil {
-		cond44 = ColorCocoa_new(this.display, this.background, this.backgroundAlpha)
+	var cond67 *Color
+	if this.background != (nil) {
+		cond67 = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, this.backgroundAlpha)
 	} else {
-		cond44 = this.DefaultBackground()
+		cond67 = this.DefaultBackground()
 	}
-	return cond44
+	return cond67
 }
 
 func (this *Control) GetBackgroundImage() *Image {
 	this.CheckWidget()
-	var control *Control = this.FindBackgroundControl()
-	if control == nil {
+	var control *Control = this.impl.FindBackgroundControl()
+	if control == (nil) {
 		control = this
 	}
 	return control.backgroundImage
@@ -1102,9 +1102,7 @@ func (this *Control) GetBorderWidth() int32 {
 
 func (this *Control) GetBounds() *Rectangle {
 	this.CheckWidget()
-	t45 := this.Impl.TopView()
-	t46, _ := widgetImplAs(t45.Impl)
-	var rect cocoa.NSRect = t46.Frame()
+	var rect cocoa.NSRect = this.impl.TopView().Frame()
 	return NewRectangle(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
 }
 
@@ -1129,13 +1127,13 @@ func (this *Control) GetEnabled() bool {
 
 func (this *Control) GetFont() *Font {
 	this.CheckWidget()
-	var cond47 *Font
-	if this.font != nil {
-		cond47 = this.font
+	var cond68 *Font
+	if this.font != (nil) {
+		cond68 = this.font
 	} else {
-		cond47 = this.DefaultFont()
+		cond68 = this.impl.DefaultFont()
 	}
-	return cond47
+	return cond68
 }
 
 func (this *Control) GetForeground() *Color {
@@ -1144,13 +1142,13 @@ func (this *Control) GetForeground() *Color {
 }
 
 func (this *Control) GetForegroundColor() *Color {
-	var cond48 *Color
-	if this.foreground != nil {
-		cond48 = ColorCocoa_new(this.display, this.foreground)
+	var cond69 *Color
+	if this.foreground != (nil) {
+		cond69 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.foreground)
 	} else {
-		cond48 = this.DefaultForeground()
+		cond69 = this.DefaultForeground()
 	}
-	return cond48
+	return cond69
 }
 
 func (this *Control) GetLayoutData() any {
@@ -1160,9 +1158,7 @@ func (this *Control) GetLayoutData() any {
 
 func (this *Control) GetLocation() *Point {
 	this.CheckWidget()
-	t49 := this.Impl.TopView()
-	t50, _ := widgetImplAs(t49.Impl)
-	var rect cocoa.NSRect = t50.Frame()
+	var rect cocoa.NSRect = this.impl.TopView().Frame()
 	return NewPoint(int32(rect.X), int32(rect.Y))
 }
 
@@ -1183,9 +1179,9 @@ func (this *Control) GetMonitor() *Monitor {
 	}
 	var index int32 = -1
 	var value int32 = -1
-	var bounds *Rectangle = this.GetBounds()
-	if this != &this.GetShell().Control {
-		bounds = this.display.MapRect(&this.parent.Control, nil, bounds)
+	var bounds *Rectangle = this.impl.GetBounds()
+	if this != upcastShellToControl(this.impl.GetShell()) {
+		bounds = this.display.MapFromToRectangle(upcastCompositeToControl(this.parent), nil, bounds)
 	}
 	for i := int32(0); i < int32(len(monitors)); i++ {
 		var rect *Rectangle = bounds.Intersection(monitors[i].GetBounds())
@@ -1202,29 +1198,29 @@ func (this *Control) GetMonitor() *Monitor {
 	var centerY int32 = bounds.Y + bounds.Height/2
 	for i := int32(0); i < int32(len(monitors)); i++ {
 		var rect *Rectangle = monitors[i].GetBounds()
-		var cond51 int32
+		var cond70 int32
 		if centerX > rect.X+rect.Width {
-			cond51 = centerX - rect.X - rect.Width
+			cond70 = centerX - rect.X - rect.Width
 		} else {
-			cond51 = 0
+			cond70 = 0
 		}
 		var x int32
 		if centerX < rect.X {
 			x = rect.X - centerX
 		} else {
-			x = cond51
+			x = cond70
 		}
-		var cond52 int32
+		var cond71 int32
 		if centerY > rect.Y+rect.Height {
-			cond52 = centerY - rect.Y - rect.Height
+			cond71 = centerY - rect.Y - rect.Height
 		} else {
-			cond52 = 0
+			cond71 = 0
 		}
 		var y int32
 		if centerY < rect.Y {
 			y = rect.Y - centerY
 		} else {
-			y = cond52
+			y = cond71
 		}
 		var distance int32 = x*x + y*y
 		if index == -1 || distance < value {
@@ -1247,31 +1243,31 @@ func (this *Control) GetParent() *Composite {
 
 func (this *Control) GetPath() []*Control {
 	var count int32 = 0
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
-	for control != &shell.Control {
+	for control != upcastShellToControl(shell) {
 		count++
-		control = &control.parent.Control
+		control = upcastCompositeToControl(control.parent)
 	}
 	control = this
 	var result []*Control = make([]*Control, count)
-	for control != &shell.Control {
+	for control != upcastShellToControl(shell) {
 		count--
 		result[count] = control
-		control = &control.parent.Control
+		control = upcastCompositeToControl(control.parent)
 	}
 	return result
 }
 
 func (this *Control) GetPathOverload1(region *Region) *cocoa.NSBezierPath {
-	if region == nil {
+	if region == (nil) {
 		return nil
 	}
 	return this.GetPathOverload2(region.Handle)
 }
 
 func (this *Control) GetPathOverload2(region int64) *cocoa.NSBezierPath {
-	var callback *Callback = NewCallback(this, "regionToRects", 4)
+	var callback *Callback = NewCallbackFn(func(args []int64) int64 { return this.RegionToRects(args[0], args[1], args[2], args[3]) }, 4)
 	var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
 	path.Retain()
 	cocoa.OSQDRegionToRects(region, cocoa.OSKQDParseRegionFromTopLeft, callback.GetAddress(), path.Id)
@@ -1289,14 +1285,12 @@ func (this *Control) GetRegion() *Region {
 
 func (this *Control) GetShell() *Shell {
 	this.CheckWidget()
-	return this.parent.GetShell()
+	return this.parent.impl.GetShell()
 }
 
 func (this *Control) GetSize() *Point {
 	this.CheckWidget()
-	t53 := this.Impl.TopView()
-	t54, _ := widgetImplAs(t53.Impl)
-	var rect cocoa.NSRect = t54.Frame()
+	var rect cocoa.NSRect = this.impl.TopView().Frame()
 	return NewPoint(int32(rect.Width), int32(rect.Height))
 }
 
@@ -1306,7 +1300,7 @@ func (this *Control) GetTextDirection() int32 {
 }
 
 func (this *Control) GetThemeAlpha() float32 {
-	return 1 * this.parent.GetThemeAlpha()
+	return 1 * this.parent.impl.GetThemeAlpha()
 }
 
 func (this *Control) GetToolTipText() string {
@@ -1343,20 +1337,18 @@ func (this *Control) HasFocus() bool {
 }
 
 func (this *Control) HasRegion() bool {
-	return this.region != nil || this.parent.HasRegion()
+	return this.region != (nil) || this.parent.impl.HasRegion()
 }
 
 func (this *Control) HitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
 	if (this.state & WidgetDISABLED) != 0 {
 		return int64(0)
 	}
-	if !this.Impl.IsActive() {
+	if !this.impl.IsActive() {
 		return int64(0)
 	}
-	if this.regionPath != nil {
-		t55 := this.Impl.TopView()
-		t56, _ := widgetImplAs(t55.Impl)
-		var rgnView *cocoa.NSView = t56
+	if this.regionPath != (nil) {
+		var rgnView *cocoa.NSView = this.impl.TopView()
 		if !rgnView.IsFlipped() {
 			rgnView = this.EventView()
 		}
@@ -1379,9 +1371,9 @@ func (this *Control) InsertText(id int64, sel int64, string_ int64) bool {
 		saver.Release()
 	}()
 	if this.HasKeyboardFocus(id) {
-		var s *Shell = this.GetShell()
+		var s *Shell = this.impl.GetShell()
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
-		if nsEvent != nil {
+		if nsEvent != (nil) {
 			var type_ int64 = nsEvent.Type()
 			if type_ == int64(cocoa.OSNSKeyDown) || type_ == int64(cocoa.OSNSKeyUp) || type_ == int64(cocoa.OSNSSystemDefined) {
 				var str *cocoa.NSString = cocoa.NewNSStringOverload1(string_)
@@ -1415,13 +1407,13 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 	this.CheckWidget()
 	var view *cocoa.NSView = this.PaintView()
 	var graphicsContext *cocoa.NSGraphicsContext = nil
-	if data != nil && data.PaintRect != nil {
+	if data != (nil) && data.PaintRect != (cocoa.NSRect{}) {
 		graphicsContext = cocoa.NSGraphicsContextCurrentContext()
 		if !view.IsFlipped() {
 			data.State &= ^ControlVISIBLE_REGION
 		}
 	}
-	if graphicsContext == nil {
+	if graphicsContext == (nil) {
 		var window *cocoa.NSWindow = view.Window()
 		if window.WindowNumber() <= 0 {
 			var alpha float64 = window.AlphaValue()
@@ -1431,46 +1423,46 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 			window.SetAlphaValue(alpha)
 		}
 		graphicsContext = cocoa.NSGraphicsContextGraphicsContextWithWindow(window)
-		if graphicsContext == nil {
+		if graphicsContext == (nil) {
 			var width int32 = 1920
 			var height int32 = 256
-			var rep *cocoa.NSBitmapImageRep = cocoa.NewNSBitmapImageRep().Alloc().Impl.(*cocoa.NSBitmapImageRep)
+			var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
 			rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(3), false, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat), int64(width*4), int64(32))
 			graphicsContext = cocoa.NSGraphicsContextGraphicsContextWithBitmapImageRep(rep)
 			rep.Release()
 		}
 		var flippedContext *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextGraphicsContextWithGraphicsPort(graphicsContext.GraphicsPort(), true)
 		graphicsContext = flippedContext
-		if data != nil {
+		if data != (nil) {
 			data.FlippedContext = flippedContext
 			data.State &= ^ControlVISIBLE_REGION
 			data.VisibleRgn = this.GetVisibleRegion()
 			this.display.AddContext(data)
 		}
 	}
-	if data != nil {
+	if data != (nil) {
 		var mask int32 = SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT
 		if (data.Style & mask) == 0 {
 			data.Style |= this.style & (mask | SWTMIRRORED)
 		}
-		data.Device = this.display
+		data.Device = upcastDisplayToDevice(this.display)
 		data.Thread = this.display.thread
 		data.View = view
 		data.View.Retain()
 		data.View.Window().Retain()
 		data.Foreground = this.GetForegroundColor().Handle
-		var control *Control = this.FindBackgroundControl()
-		if control == nil {
+		var control *Control = this.impl.FindBackgroundControl()
+		if control == (nil) {
 			control = this
 		}
 		data.Background = control.GetBackgroundColor().Handle
-		if this.font != nil {
+		if this.font != (nil) {
 			data.Font = this.font
 		} else {
-			data.Font = this.DefaultFont()
+			data.Font = this.impl.DefaultFont()
 		}
 	}
-	if graphicsContext != nil {
+	if graphicsContext != (nil) {
 		return graphicsContext.Id
 	}
 	return int64(0)
@@ -1481,15 +1473,15 @@ func (this *Control) Internal_dispose_GC(hDC int64, data *GCData) {
 	var context int64 = hDC
 	var graphicsContext *cocoa.NSGraphicsContext = cocoa.NewNSGraphicsContextOverload1(context)
 	this.display.RemoveContext(data)
-	if data != nil {
-		if data.PaintRect == nil {
+	if data != (nil) {
+		if data.PaintRect == (cocoa.NSRect{}) {
 			graphicsContext.FlushGraphics()
 		}
 		if data.VisibleRgn != 0 {
 			cocoa.OSDisposeRgn(data.VisibleRgn)
 		}
 		data.VisibleRgn = int64(0)
-		if data.View != nil {
+		if data.View != (nil) {
 			data.View.Window().Release()
 			data.View.Release()
 			data.View = nil
@@ -1508,26 +1500,26 @@ func (this *Control) InvalidateVisibleRegion() {
 	}
 	for i := int32(index); i < int32(len(siblings)); i++ {
 		var sibling *Control = siblings[i]
-		sibling.ResetVisibleRegion()
-		sibling.InvalidateChildrenVisibleRegion()
+		sibling.impl.ResetVisibleRegion()
+		sibling.impl.InvalidateChildrenVisibleRegion()
 	}
-	this.parent.ResetVisibleRegion()
+	this.parent.impl.ResetVisibleRegion()
 }
 
 func (this *Control) IsActive() bool {
-	if this.GetShell().GetModalShell() != nil {
+	if this.impl.GetShell().GetModalShell() != (nil) {
 		return false
 	}
 	var dialog *Dialog = this.display.GetModalDialog()
-	if dialog == nil {
+	if dialog == (nil) {
 		return true
 	}
 	var panel *cocoa.NSPanel = this.display.GetModalPanel()
-	if panel == nil {
+	if panel == (nil) {
 		return false
 	}
 	var parentWindow *cocoa.NSWindow = this.View.Window().ParentWindow()
-	return parentWindow == nil || parentWindow.Id == panel.Id
+	return parentWindow == (nil) || parentWindow.Id == panel.Id
 }
 
 func (this *Control) IsDescribedByLabel() bool {
@@ -1535,22 +1527,22 @@ func (this *Control) IsDescribedByLabel() bool {
 }
 
 func (this *Control) IsDrawing() bool {
-	return this.Impl.GetDrawing() && this.parent.Impl.IsDrawing()
+	return this.impl.GetDrawing() && this.parent.impl.IsDrawing()
 }
 
 func (this *Control) IsEnabled() bool {
 	this.CheckWidget()
-	return this.GetEnabled() && this.parent.IsEnabled()
+	return this.GetEnabled() && this.parent.impl.IsEnabled()
 }
 
 func (this *Control) IsEnabledCursor() bool {
-	return this.IsEnabled()
+	return this.impl.IsEnabled()
 }
 
 func (this *Control) IsFocusAncestor(control *Control) bool {
-	_, ok57 := control.Impl.(*Shell)
-	for control != nil && control != this && !(ok57) {
-		control = &control.parent.Control
+	_, ok72 := isControlToShell(control)
+	for control != (nil) && control != this && !(ok72) {
+		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
 }
@@ -1558,7 +1550,7 @@ func (this *Control) IsFocusAncestor(control *Control) bool {
 func (this *Control) IsFocusControl() bool {
 	this.CheckWidget()
 	var focusControl *Control = this.display.focusControl
-	if focusControl != nil && !focusControl.IsDisposed() {
+	if focusControl != (nil) && !focusControl.IsDisposed() {
 		return this == focusControl
 	}
 	return this.HasFocus()
@@ -1584,34 +1576,34 @@ func (this *Control) IsReparentable() bool {
 }
 
 func (this *Control) IsResizing() bool {
-	return (this.state&WidgetRESIZING) != 0 || this.parent.IsResizing()
+	return (this.state&WidgetRESIZING) != 0 || this.parent.impl.IsResizing()
 }
 
 func (this *Control) IsShowing() bool {
-	if !this.IsVisible() {
+	if !this.impl.IsVisible() {
 		return false
 	}
 	var control *Control = this
-	for control != nil {
-		var size *Point = control.GetSize()
+	for control != (nil) {
+		var size *Point = control.impl.GetSize()
 		if size.X == 0 || size.Y == 0 {
 			return false
 		}
-		control = &control.parent.Control
+		control = upcastCompositeToControl(control.parent)
 	}
 	return true
 }
 
 func (this *Control) IsTabGroup() bool {
 	var tabList []*Control = this.parent._getTabList()
-	if tabList != nil {
+	if tabList != (nil) {
 		for i := int32(0); i < int32(len(tabList)); i++ {
 			if tabList[i] == this {
 				return true
 			}
 		}
 	}
-	var code int32 = this.TraversalCode(0, nil)
+	var code int32 = this.impl.TraversalCode(0, nil)
 	if (code & (SWTTRAVERSE_ARROW_PREVIOUS | SWTTRAVERSE_ARROW_NEXT)) != 0 {
 		return false
 	}
@@ -1620,22 +1612,22 @@ func (this *Control) IsTabGroup() bool {
 
 func (this *Control) IsTabItem() bool {
 	var tabList []*Control = this.parent._getTabList()
-	if tabList != nil {
+	if tabList != (nil) {
 		for i := int32(0); i < int32(len(tabList)); i++ {
 			if tabList[i] == this {
 				return false
 			}
 		}
 	}
-	var code int32 = this.TraversalCode(0, nil)
+	var code int32 = this.impl.TraversalCode(0, nil)
 	return (code & (SWTTRAVERSE_ARROW_PREVIOUS | SWTTRAVERSE_ARROW_NEXT)) != 0
 }
 
 func (this *Control) IsTransparent() bool {
-	if this.background != nil {
+	if this.background != (nil) {
 		return false
 	}
-	return this.parent.IsTransparent()
+	return this.parent.impl.IsTransparent()
 }
 
 func (this *Control) IsTrim(view *cocoa.NSView) bool {
@@ -1644,12 +1636,12 @@ func (this *Control) IsTrim(view *cocoa.NSView) bool {
 
 func (this *Control) IsVisible() bool {
 	this.CheckWidget()
-	return this.GetVisible() && this.parent.IsVisible()
+	return this.GetVisible() && this.parent.impl.IsVisible()
 }
 
 func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
-		var s *Shell = this.GetShell()
+		var s *Shell = this.impl.GetShell()
 		s.keyInputHappened = false
 		var textInput bool = cocoa.OSObjc_msgSendOverload44(id, cocoa.OSSel_conformsToProtocol_, cocoa.OSObjc_getProtocol("NSTextInput")) != 0
 		if !textInput {
@@ -1661,7 +1653,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 			if this.IsDisposed() {
 				return
 			}
-			if !this.SendKeyEvent(nsEvent, SWTKeyDown) {
+			if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
 				return
 			}
 			if consume[0] {
@@ -1669,7 +1661,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 			}
 		} else {
 			this.Widget.KeyDown(id, sel, theEvent)
-			if this.ImeInComposition() {
+			if this.impl.ImeInComposition() {
 				return
 			}
 			if !s.keyInputHappened {
@@ -1681,7 +1673,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.SendKeyEvent(nsEvent, SWTKeyDown) {
+				if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
 					return
 				}
 				if consume[0] {
@@ -1701,7 +1693,7 @@ func (this *Control) HasKeyboardFocus(inId int64) bool {
 func (this *Control) KeyUp(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
-		if !this.SendKeyEvent(nsEvent, SWTKeyUp) {
+		if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyUp) {
 			return
 		}
 	}
@@ -1723,7 +1715,7 @@ func (this *Control) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 		return int64(0)
 	}
 	this.display.lastHandledMenuForEventId = theEvent
-	if !this.IsEnabled() {
+	if !this.impl.IsEnabled() {
 		return int64(0)
 	}
 	var pt cocoa.NSPoint = cocoa.NSEventMouseLocation()
@@ -1747,7 +1739,7 @@ func (this *Control) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 		return int64(0)
 	}
 	var menu *Menu = this.GetMenu()
-	if menu != nil && !menu.IsDisposed() {
+	if menu != (nil) && !menu.IsDisposed() {
 		if x != event.X || y != event.Y {
 			menu.SetLocation(event.X, event.Y)
 		}
@@ -1758,11 +1750,11 @@ func (this *Control) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 }
 
 func (this *Control) MenuShell() *Decorations {
-	return this.parent.MenuShell()
+	return this.parent.impl.MenuShell()
 }
 
 func (this *Control) ScrollWheel(id int64, sel int64, theEvent int64) {
-	if this.display == nil {
+	if this.display == (nil) {
 		return
 	}
 	var handled bool = false
@@ -1804,7 +1796,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 		return true
 	}
 	this.display.sendEvent = false
-	if !this.Impl.IsEventView(id) {
+	if !this.impl.IsEventView(id) {
 		return true
 	}
 	var dragging bool = false
@@ -1812,7 +1804,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 	var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 	var nsType int32 = int32(nsEvent.Type())
 	var manager *cocoa.NSInputManager = cocoa.NSInputManagerCurrentInputManager()
-	if manager != nil && manager.WantsToHandleMouseEvents() {
+	if manager != (nil) && manager.WantsToHandleMouseEvents() {
 		if manager.HandleMouseEvent(nsEvent) {
 			return true
 		}
@@ -1827,7 +1819,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 			if !this.View.IsFlipped() {
 				location.Y = this.View.Bounds().Height - location.Y
 			}
-			dragging = this.DragDetectXYFilterConsume(int32(location.X), int32(location.Y), false, consume)
+			dragging = this.impl.DragDetectXYFilterConsumeOnControl(int32(location.X), int32(location.Y), false, consume)
 		}
 		break
 	case cocoa.OSNSLeftMouseDragged, cocoa.OSNSRightMouseDragged, cocoa.OSNSOtherMouseDragged:
@@ -1849,17 +1841,17 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 	if runEnterExit {
 		this.display.CheckEnterExit(runEnterExitControl, nsEvent, false)
 	}
-	if consume != nil && consume[0] {
+	if consume != (nil) && consume[0] {
 		return false
 	}
 	return true
 }
 
 func (this *Control) MouseDown(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
 		return
 	}
-	var tracking bool = this.Impl.IsEventView(id)
+	var tracking bool = this.impl.IsEventView(id)
 	var display *Display = this.display
 	if tracking {
 		display.trackingControl = this
@@ -1871,56 +1863,56 @@ func (this *Control) MouseDown(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Control) MouseUp(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
 		return
 	}
 	this.Widget.MouseUp(id, sel, theEvent)
 }
 
 func (this *Control) MouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
 		return
 	}
 	this.Widget.MouseDragged(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseDown(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
 		return
 	}
 	this.Widget.RightMouseDown(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseUp(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
 		return
 	}
 	this.Widget.RightMouseUp(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
 		return
 	}
 	this.Widget.RightMouseDragged(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseDown(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
 		return
 	}
 	this.Widget.OtherMouseDown(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseUp(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
 		return
 	}
 	this.Widget.OtherMouseUp(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
 		return
 	}
 	this.Widget.OtherMouseDragged(id, sel, theEvent)
@@ -1932,7 +1924,7 @@ func (this *Control) Moved() {
 
 func (this *Control) MoveAbove(control *Control) {
 	this.CheckWidget()
-	if control != nil {
+	if control != (nil) {
 		if control.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
@@ -1940,12 +1932,12 @@ func (this *Control) MoveAbove(control *Control) {
 			return
 		}
 	}
-	this.SetZOrderSiblingAbove(control, true)
+	this.impl.SetZOrderSiblingAboveOnControl(control, true)
 }
 
 func (this *Control) MoveBelow(control *Control) {
 	this.CheckWidget()
-	if control != nil {
+	if control != (nil) {
 		if control.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
@@ -1953,7 +1945,7 @@ func (this *Control) MoveBelow(control *Control) {
 			return
 		}
 	}
-	this.SetZOrderSiblingAbove(control, false)
+	this.impl.SetZOrderSiblingAboveOnControl(control, false)
 }
 
 func (this *Control) New_Accessible(control *Control) *Accessible {
@@ -1967,7 +1959,7 @@ func (this *Control) Pack() {
 
 func (this *Control) PackChanged(changed bool) {
 	this.CheckWidget()
-	this.SetSizeSize(this.ComputeSizeWHintHHintChanged(SWTDEFAULT, SWTDEFAULT, changed))
+	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChangedOnControl(SWTDEFAULT, SWTDEFAULT, changed))
 }
 
 func (this *Control) PaintView() *cocoa.NSView {
@@ -1976,7 +1968,7 @@ func (this *Control) PaintView() *cocoa.NSView {
 
 func (this *Control) Print(gc *GC) bool {
 	this.CheckWidget()
-	if gc == nil {
+	if gc == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	if gc.IsDisposed() {
@@ -1987,7 +1979,7 @@ func (this *Control) Print(gc *GC) bool {
 }
 
 func (this *Control) RequestLayout() {
-	this.GetShell().Layout([]*Control{this}, SWTDEFER)
+	this.impl.GetShell().LayoutOverload4([]*Control{this}, SWTDEFER)
 }
 
 func (this *Control) Redraw() {
@@ -1999,7 +1991,7 @@ func (this *Control) RedrawChildren(children bool) {
 	this.View.SetNeedsDisplay(true)
 }
 
-func (this *Control) RedrawXYWidthHeightAll(x int32, y int32, width int32, height int32, all bool) {
+func (this *Control) RedrawXYWidthHeightAllOnControl(x int32, y int32, width int32, height int32, all bool) {
 	this.CheckWidget()
 	var rect cocoa.NSRect = cocoa.NSRect{}
 	rect.X = float64(x)
@@ -2031,13 +2023,13 @@ func (this *Control) RegionToRects(message int64, rgn int64, r int64, path int64
 
 func (this *Control) Register() {
 	this.Widget.Register()
-	this.display.AddWidget(&this.View.NSObject, &this.Widget)
+	this.display.AddWidget(upcastcocoaNSViewTococoaNSObject(this.View), upcastControlToWidget(this))
 }
 
 func (this *Control) Release(destroy bool) {
 	var next *Control = nil
 	var previous *Control = nil
-	if destroy && this.parent != nil {
+	if destroy && this.parent != (nil) {
 		var children []*Control = this.parent._getChildren()
 		var index int32 = 0
 		for index < int32(len(children)) {
@@ -2053,7 +2045,7 @@ func (this *Control) Release(destroy bool) {
 	}
 	this.Widget.Release(destroy)
 	if destroy {
-		if previous != nil {
+		if previous != (nil) {
 			previous.AddRelation(next)
 		}
 	}
@@ -2061,7 +2053,7 @@ func (this *Control) Release(destroy bool) {
 
 func (this *Control) ReleaseHandle() {
 	this.Widget.ReleaseHandle()
-	if this.View != nil {
+	if this.View != (nil) {
 		this.View.Release()
 	}
 	this.View = nil
@@ -2069,7 +2061,7 @@ func (this *Control) ReleaseHandle() {
 }
 
 func (this *Control) ReleaseParent() {
-	this.InvalidateVisibleRegion()
+	this.impl.InvalidateVisibleRegion()
 	this.parent.RemoveControl(this)
 }
 
@@ -2085,7 +2077,7 @@ func (this *Control) ReleaseWidget() {
 	if this.display.tooltipControl == this {
 		this.display.tooltipControl = nil
 	}
-	if this.menu != nil && !this.menu.IsDisposed() {
+	if this.menu != (nil) && !this.menu.IsDisposed() {
 		this.menu.Dispose()
 	}
 	this.menu = nil
@@ -2094,12 +2086,12 @@ func (this *Control) ReleaseWidget() {
 	}
 	this.visibleRgn = int64(0)
 	this.layoutData = nil
-	if this.accessible != nil {
+	if this.accessible != (nil) {
 		this.accessible.Internal_dispose_Accessible()
 	}
 	this.accessible = nil
 	this.region = nil
-	if this.regionPath != nil {
+	if this.regionPath != (nil) {
 		this.regionPath.Release()
 	}
 	this.regionPath = nil
@@ -2107,10 +2099,10 @@ func (this *Control) ReleaseWidget() {
 
 func (this *Control) RemoveControlListener(listener ControlListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMove, listener)
@@ -2119,10 +2111,10 @@ func (this *Control) RemoveControlListener(listener ControlListener) {
 
 func (this *Control) RemoveDragDetectListener(listener DragDetectListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTDragDetect, listener)
@@ -2130,10 +2122,10 @@ func (this *Control) RemoveDragDetectListener(listener DragDetectListener) {
 
 func (this *Control) RemoveFocusListener(listener FocusListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTFocusIn, listener)
@@ -2142,10 +2134,10 @@ func (this *Control) RemoveFocusListener(listener FocusListener) {
 
 func (this *Control) RemoveGestureListener(listener GestureListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTGesture, listener)
@@ -2153,10 +2145,10 @@ func (this *Control) RemoveGestureListener(listener GestureListener) {
 
 func (this *Control) RemoveHelpListener(listener HelpListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTHelp, listener)
@@ -2164,10 +2156,10 @@ func (this *Control) RemoveHelpListener(listener HelpListener) {
 
 func (this *Control) RemoveKeyListener(listener KeyListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTKeyUp, listener)
@@ -2176,10 +2168,10 @@ func (this *Control) RemoveKeyListener(listener KeyListener) {
 
 func (this *Control) RemoveMenuDetectListener(listener MenuDetectListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMenuDetect, listener)
@@ -2187,10 +2179,10 @@ func (this *Control) RemoveMenuDetectListener(listener MenuDetectListener) {
 
 func (this *Control) RemoveMouseListener(listener MouseListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMouseDown, listener)
@@ -2200,10 +2192,10 @@ func (this *Control) RemoveMouseListener(listener MouseListener) {
 
 func (this *Control) RemoveMouseMoveListener(listener MouseMoveListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMouseMove, listener)
@@ -2211,10 +2203,10 @@ func (this *Control) RemoveMouseMoveListener(listener MouseMoveListener) {
 
 func (this *Control) RemoveMouseTrackListener(listener MouseTrackListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMouseEnter, listener)
@@ -2224,10 +2216,10 @@ func (this *Control) RemoveMouseTrackListener(listener MouseTrackListener) {
 
 func (this *Control) RemoveMouseWheelListener(listener MouseWheelListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTMouseWheel, listener)
@@ -2235,35 +2227,35 @@ func (this *Control) RemoveMouseWheelListener(listener MouseWheelListener) {
 
 func (this *Control) RemovePaintListener(listener PaintListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTPaint, listener)
 }
 
 func (this *Control) RemoveRelation() {
-	if !this.IsDescribedByLabel() {
+	if !this.impl.IsDescribedByLabel() {
 		return
 	}
-	var accessibleElement *cocoa.NSObject = &this.FocusView().NSObject
-	viewAsControl, ok58 := idImplAsControl(accessibleElement.Impl)
-	if ok58 {
-		if viewAsControl.Cell() != nil {
-			accessibleElement = &viewAsControl.Cell().NSObject
+	var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(this.FocusView())
+	viewAsControl, ok73 := iscocoaNSObjectTococoaNSControl(accessibleElement)
+	if ok73 {
+		if viewAsControl.Cell() != (nil) {
+			accessibleElement = upcastcocoaNSCellTococoaNSObject(viewAsControl.Cell())
 		}
 	}
-	accessibleElement.AccessibilitySetOverrideValue(accessibleElement.AsId(), cocoa.OSNSAccessibilityTitleUIElementAttribute_)
+	accessibleElement.AccessibilitySetOverrideValue(upcastcocoaNSObjectTococoaId(accessibleElement), cocoa.OSNSAccessibilityTitleUIElementAttribute_)
 }
 
 func (this *Control) RemoveTouchListener(listener TouchListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTTouch, listener)
@@ -2271,10 +2263,10 @@ func (this *Control) RemoveTouchListener(listener TouchListener) {
 
 func (this *Control) RemoveTraverseListener(listener TraverseListener) {
 	this.CheckWidget()
-	if listener == nil {
+	if listener == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if this.eventTable == nil {
+	if this.eventTable == (nil) {
 		return
 	}
 	this.eventTable.UnhookEventTypeListener(SWTTraverse, listener)
@@ -2286,11 +2278,11 @@ func (this *Control) ResetVisibleRegion() {
 		this.visibleRgn = int64(0)
 	}
 	var gcs []*GCData = this.display.contexts
-	if gcs != nil {
+	if gcs != (nil) {
 		var visibleRgn int64 = int64(0)
 		for i := int32(0); i < int32(len(gcs)); i++ {
 			var data *GCData = gcs[i]
-			if data != nil {
+			if data != (nil) {
 				if data.View == this.View {
 					if visibleRgn == 0 {
 						visibleRgn = this.GetVisibleRegion()
@@ -2329,7 +2321,7 @@ func (this *Control) SendDragEvent(button int32, stateMask int32, x int32, y int
 
 func (this *Control) SendFocusEvent(type_ int32) {
 	var display *Display = this.display
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	display.focusEvent = type_
 	display.focusControl = this
 	this.SendEventEventType(type_)
@@ -2354,7 +2346,7 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 	var event *Event = NewEvent()
 	switch type_ {
 	case SWTMouseDown:
-		shell = this.GetShell()
+		shell = this.impl.GetShell()
 		fallthrough
 	case SWTMouseUp, SWTMouseDoubleClick, SWTDragDetect:
 		var button int32 = int32(nsEvent.ButtonNumber())
@@ -2403,7 +2395,7 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 	}
 	var windowPoint cocoa.NSPoint
 	var view *cocoa.NSView = this.EventView()
-	if nsEvent == nil || nsEvent.Type() == int64(cocoa.OSNSMouseMoved) {
+	if nsEvent == (nil) || nsEvent.Type() == int64(cocoa.OSNSMouseMoved) {
 		var window *cocoa.NSWindow = view.Window()
 		windowPoint = window.ConvertScreenToBase(cocoa.NSEventMouseLocation())
 	} else {
@@ -2424,14 +2416,14 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 	} else {
 		this.PostEventEventTypeEvent(type_, event)
 	}
-	if shell != nil {
-		shell.SetActiveControl(this, SWTMouseDown)
+	if shell != (nil) {
+		shell.SetActiveControlControlType(this, SWTMouseDown)
 	}
 	return event.Doit
 }
 
 func (this *Control) TouchStateFromNSTouch(touch *cocoa.NSTouch) *Touch {
-	var source any = this.display.FindTouchSource(touch)
+	var source *TouchSource = this.display.FindTouchSource(touch)
 	var osPhase int64 = touch.Phase()
 	var identity int64 = cocoa.OSObjc_msgSend(touch.Id, cocoa.OSSel_identity)
 	var state int32 = 0
@@ -2469,7 +2461,7 @@ func (this *Control) FindTouchWithId(touches *cocoa.NSArray, identity *cocoa.NSO
 	for i := int64(0); i < count; i++ {
 		var aTouch *cocoa.NSTouch = cocoa.NewNSTouchOverload1(touches.ObjectAtIndex(i).Id)
 		var currIdentity *cocoa.NSObject = cocoa.NewNSObjectOverload1(cocoa.OSObjc_msgSend(aTouch.Id, cocoa.OSSel_identity))
-		if currIdentity.IsEqual(identity.AsId()) {
+		if currIdentity.IsEqual(upcastcocoaNSObjectTococoaId(identity)) {
 			return aTouch
 		}
 	}
@@ -2481,49 +2473,49 @@ func (this *Control) SetAutoscalingMode(autoscalingMode AutoscalingMode) bool {
 }
 
 func (this *Control) SetBackground() {
-	if !this.DrawsBackground() {
+	if !this.impl.DrawsBackground() {
 		return
 	}
-	var control *Control = this.FindBackgroundControl()
-	if control == nil {
+	var control *Control = this.impl.FindBackgroundControl()
+	if control == (nil) {
 		control = this
 	}
-	if control.backgroundImage != nil {
-		this.SetBackgroundImageImage(control.backgroundImage.Handle)
+	if control.backgroundImage != (nil) {
+		this.impl.SetBackgroundImageImageOnControl(control.backgroundImage.Handle)
 	} else {
 		var color []float64
-		if control.background != nil {
+		if control.background != (nil) {
 			color = control.background
 		} else {
 			color = control.DefaultBackground().Handle
 		}
 		var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
-		this.SetBackgroundColor_200(nsColor)
+		this.impl.SetBackgroundColor(nsColor)
 	}
 }
 
-func (this *Control) SetBackgroundColor(color *Color) {
+func (this *Control) SetBackgroundColor_196(color *Color) {
 	this.CheckWidget()
 	this._setBackground(color)
-	if color != nil {
-		this.UpdateBackgroundMode()
+	if color != (nil) {
+		this.impl.UpdateBackgroundMode()
 	}
 }
 
 func (this *Control) _setBackground(color *Color) {
-	if color != nil {
-		if color.IsDisposed() {
+	if color != (nil) {
+		if color.impl.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 	}
 	var background []float64
-	if color != nil {
+	if color != (nil) {
 		background = color.Handle
 	} else {
 		background = nil
 	}
 	var alpha int32
-	if color != nil {
+	if color != (nil) {
 		alpha = color.GetAlpha()
 	} else {
 		alpha = 255
@@ -2533,13 +2525,13 @@ func (this *Control) _setBackground(color *Color) {
 	}
 	this.background = background
 	this.backgroundAlpha = alpha
-	this.UpdateBackgroundColor()
-	this.RedrawWidget(this.View, true)
+	this.impl.UpdateBackgroundColor()
+	this.impl.RedrawWidgetOnWidget(this.View, true)
 }
 
 func (this *Control) SetBackgroundImage(image *Image) {
 	this.CheckWidget()
-	if image != nil && image.IsDisposed() {
+	if image != (nil) && image.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	if image == this.backgroundImage && this.backgroundAlpha > 0 {
@@ -2547,28 +2539,26 @@ func (this *Control) SetBackgroundImage(image *Image) {
 	}
 	this.backgroundAlpha = 255
 	this.backgroundImage = image
-	this.UpdateBackgroundImage()
+	this.impl.UpdateBackgroundImage()
 }
 
-func (this *Control) SetBackgroundImageImage(image *cocoa.NSImage) {
-	this.RedrawWidget(this.View, true)
+func (this *Control) SetBackgroundImageImageOnControl(image *cocoa.NSImage) {
+	this.impl.RedrawWidgetOnWidget(this.View, true)
 }
 
-func (this *Control) SetBackgroundColor_200(nsColor *cocoa.NSColor) {
+func (this *Control) SetBackgroundColor(nsColor *cocoa.NSColor) {
 }
 
 func (this *Control) SetBounds(x int32, y int32, width int32, height int32) {
 	this.CheckWidget()
-	this.SetBoundsXYWidthHeightMoveResize(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), true, true)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), true, true)
 }
 
-func (this *Control) SetBoundsXYWidthHeightMoveResize(x int32, y int32, width int32, height int32, move bool, resize bool) {
+func (this *Control) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, width int32, height int32, move bool, resize bool) {
 	var display *Display = this.display
 	var oldIgnoreFocusControl *Control = display.ignoreFocusControl
 	display.ignoreFocusControl = this
-	t59 := this.Impl.TopView()
-	t60, _ := widgetImplAs(t59.Impl)
-	var topView *cocoa.NSView = t60
+	var topView *cocoa.NSView = this.impl.TopView()
 	if move && resize {
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		rect.X = float64(x)
@@ -2596,10 +2586,10 @@ func (this *Control) SetBoundsXYWidthHeightMoveResize(x int32, y int32, width in
 
 func (this *Control) SetBoundsRect(rect *Rectangle) {
 	this.CheckWidget()
-	if rect == nil {
+	if rect == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	this.SetBoundsXYWidthHeightMoveResize(rect.X, rect.Y, int32(math.Max(float64(0), float64(rect.Width))), int32(math.Max(float64(0), float64(rect.Height))), true, true)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(rect.X, rect.Y, int32(math.Max(float64(0), float64(rect.Width))), int32(math.Max(float64(0), float64(rect.Height))), true, true)
 }
 
 func (this *Control) SetCapture(capture bool) {
@@ -2607,10 +2597,8 @@ func (this *Control) SetCapture(capture bool) {
 }
 
 func (this *Control) SetClipRegion(view *cocoa.NSView) {
-	if this.regionPath != nil {
-		t61 := this.Impl.TopView()
-		t62, _ := widgetImplAs(t61.Impl)
-		var rgnView *cocoa.NSView = t62
+	if this.regionPath != (nil) {
+		var rgnView *cocoa.NSView = this.impl.TopView()
 		if !rgnView.IsFlipped() {
 			rgnView = this.EventView()
 		}
@@ -2622,16 +2610,16 @@ func (this *Control) SetClipRegion(view *cocoa.NSView) {
 		transform.TranslateXBy(2*pt.X, 2*pt.Y)
 		this.regionPath.TransformUsingAffineTransform(transform)
 	}
-	this.parent.Impl.SetClipRegion(view)
+	this.parent.impl.SetClipRegion(view)
 }
 
 func (this *Control) SetCursor(cursor *Cursor) {
 	this.CheckWidget()
-	if cursor != nil && cursor.IsDisposed() {
+	if cursor != (nil) && cursor.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
-	if !this.IsEnabled() {
+	if !this.impl.IsEnabled() {
 		return
 	}
 	if !this.View.Window().AreCursorRectsEnabled() {
@@ -2642,7 +2630,7 @@ func (this *Control) SetCursor(cursor *Cursor) {
 
 func (this *Control) SetDefaultFont() {
 	if this.display.smallFonts {
-		this.SetFontFont(this.DefaultFont().Handle)
+		this.impl.SetFontFontOnControl(this.impl.DefaultFont().Handle)
 		this.SetSmallSize()
 	}
 }
@@ -2674,7 +2662,7 @@ func (this *Control) SetEnabled(enabled bool) {
 	} else {
 		this.state |= WidgetDISABLED
 	}
-	this.Impl.EnableWidget(enabled)
+	this.impl.EnableWidget(enabled)
 	if fixFocus {
 		this.FixFocus(control)
 	}
@@ -2688,39 +2676,39 @@ func (this *Control) SetFocus() bool {
 	return this.ForceFocus()
 }
 
-func (this *Control) SetFont(font *Font) {
+func (this *Control) SetFontOnControl(font *Font) {
 	this.CheckWidget()
-	if font != nil {
-		if font.IsDisposed() {
+	if font != (nil) {
+		if font.impl.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 	}
 	this.font = font
-	var cond63 *cocoa.NSFont
-	if font != nil {
-		cond63 = font.Handle
+	var cond74 *cocoa.NSFont
+	if font != (nil) {
+		cond74 = font.Handle
 	} else {
-		cond63 = this.DefaultFont().Handle
+		cond74 = this.impl.DefaultFont().Handle
 	}
-	this.SetFontFont(cond63)
+	this.impl.SetFontFontOnControl(cond74)
 }
 
-func (this *Control) SetFontFont(font *cocoa.NSFont) {
-	_, ok64 := idImplAsControl(this.View.Impl)
-	if ok64 {
-		(this.View.Impl.(*cocoa.NSControl)).SetFont(font)
+func (this *Control) SetFontFontOnControl(font *cocoa.NSFont) {
+	_, ok75 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok75 {
+		(castcocoaNSViewTococoaNSControl(this.View)).SetFont(font)
 	}
 }
 
 func (this *Control) SetForeground(color *Color) {
 	this.CheckWidget()
-	if color != nil {
-		if color.IsDisposed() {
+	if color != (nil) {
+		if color.impl.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 	}
 	var foreground []float64
-	if color != nil {
+	if color != (nil) {
 		foreground = color.Handle
 	} else {
 		foreground = nil
@@ -2729,17 +2717,15 @@ func (this *Control) SetForeground(color *Color) {
 		return
 	}
 	this.foreground = foreground
-	this.SetForegroundColor(foreground)
-	this.RedrawWidget(this.View, false)
+	this.impl.SetForegroundColorOnControl(foreground)
+	this.impl.RedrawWidgetOnWidget(this.View, false)
 }
 
-func (this *Control) SetForegroundColor(color []float64) {
+func (this *Control) SetForegroundColorOnControl(color []float64) {
 }
 
 func (this *Control) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {
-	t65 := this.Impl.TopView()
-	t66, _ := widgetImplAs(t65.Impl)
-	var topView *cocoa.NSView = t66
+	var topView *cocoa.NSView = this.impl.TopView()
 	if topView.Id != id {
 		this.Widget.SetFrameOrigin(id, sel, point)
 		return
@@ -2747,15 +2733,13 @@ func (this *Control) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {
 	var frame cocoa.NSRect = topView.Frame()
 	this.Widget.SetFrameOrigin(id, sel, point)
 	if frame.X != point.X || frame.Y != point.Y {
-		this.InvalidateVisibleRegion()
+		this.impl.InvalidateVisibleRegion()
 		this.Moved()
 	}
 }
 
 func (this *Control) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
-	t67 := this.Impl.TopView()
-	t68, _ := widgetImplAs(t67.Impl)
-	var topView *cocoa.NSView = t68
+	var topView *cocoa.NSView = this.impl.TopView()
 	if topView.Id != id {
 		this.Widget.SetFrameSize(id, sel, size)
 		return
@@ -2763,10 +2747,10 @@ func (this *Control) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
 	var frame cocoa.NSRect = topView.Frame()
 	this.Widget.SetFrameSize(id, sel, size)
 	if frame.Width != size.Width || frame.Height != size.Height {
-		this.InvalidateVisibleRegion()
+		this.impl.InvalidateVisibleRegion()
 		var oldResizing bool = (this.state & WidgetRESIZING) != 0
 		this.state |= WidgetRESIZING
-		this.Resized()
+		this.impl.Resized()
 		if !oldResizing {
 			this.state &= ^WidgetRESIZING
 		}
@@ -2789,27 +2773,27 @@ func (this *Control) SetLayoutData(layoutData any) {
 
 func (this *Control) SetLocation(x int32, y int32) {
 	this.CheckWidget()
-	this.SetBoundsXYWidthHeightMoveResize(x, y, 0, 0, true, false)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, 0, 0, true, false)
 }
 
 func (this *Control) SetLocationLocation(location *Point) {
 	this.CheckWidget()
-	if location == nil {
+	if location == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	this.SetBoundsXYWidthHeightMoveResize(location.X, location.Y, 0, 0, true, false)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(location.X, location.Y, 0, 0, true, false)
 }
 
 func (this *Control) SetMenu(menu *Menu) {
 	this.CheckWidget()
-	if menu != nil {
+	if menu != (nil) {
 		if menu.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 		if (menu.style & SWTPOP_UP) == 0 {
 			this.Error(SWTERROR_MENU_NOT_POP_UP)
 		}
-		if menu.parent != this.MenuShell() {
+		if menu.parent != this.impl.MenuShell() {
 			this.Error(SWTERROR_INVALID_PARENT)
 		}
 	}
@@ -2822,7 +2806,7 @@ func (this *Control) SetOrientation(orientation int32) {
 
 func (this *Control) SetParent(parent *Composite) bool {
 	this.CheckWidget()
-	if parent == nil {
+	if parent == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	if parent.IsDisposed() {
@@ -2831,21 +2815,19 @@ func (this *Control) SetParent(parent *Composite) bool {
 	if this.parent == parent {
 		return true
 	}
-	if !this.IsReparentable() {
+	if !this.impl.IsReparentable() {
 		return false
 	}
-	this.Impl.ReleaseParent()
-	var newShell *Shell = parent.GetShell()
-	var oldShell *Shell = this.GetShell()
-	var newDecorations *Decorations = parent.MenuShell()
-	var oldDecorations *Decorations = this.MenuShell()
+	this.impl.ReleaseParent()
+	var newShell *Shell = parent.impl.GetShell()
+	var oldShell *Shell = this.impl.GetShell()
+	var newDecorations *Decorations = parent.impl.MenuShell()
+	var oldDecorations *Decorations = this.impl.MenuShell()
 	if oldShell != newShell || oldDecorations != newDecorations {
-		var menus []*Menu = oldShell.FindMenus(this)
-		this.FixChildren(newShell, oldShell, newDecorations, oldDecorations, menus)
+		var menus []*Menu = oldShell.impl.FindMenus(this)
+		this.impl.FixChildren(newShell, oldShell, newDecorations, oldDecorations, menus)
 	}
-	t69 := this.Impl.TopView()
-	t70, _ := widgetImplAs(t69.Impl)
-	var topView *cocoa.NSView = t70
+	var topView *cocoa.NSView = this.impl.TopView()
 	topView.Retain()
 	topView.RemoveFromSuperview()
 	parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
@@ -2860,18 +2842,16 @@ func (this *Control) SetRedraw(redraw bool) {
 	if redraw {
 		this.drawCount--
 		if this.drawCount == 0 {
-			this.InvalidateVisibleRegion()
-			t71 := this.Impl.TopView()
-			t72, _ := widgetImplAs(t71.Impl)
-			var topView *cocoa.NSView = t72
-			this.RedrawWidget(topView, true)
+			this.impl.InvalidateVisibleRegion()
+			var topView *cocoa.NSView = this.impl.TopView()
+			this.impl.RedrawWidgetOnWidget(topView, true)
 			if this.View.Id != topView.Id {
-				this.RedrawWidget(this.View, true)
+				this.impl.RedrawWidgetOnWidget(this.View, true)
 			}
 		}
 	} else {
 		if this.drawCount == 0 {
-			this.InvalidateVisibleRegion()
+			this.impl.InvalidateVisibleRegion()
 		}
 		this.drawCount++
 	}
@@ -2879,19 +2859,19 @@ func (this *Control) SetRedraw(redraw bool) {
 
 func (this *Control) SetRegion(region *Region) {
 	this.CheckWidget()
-	if region != nil && region.IsDisposed() {
+	if region != (nil) && region.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.region = region
-	if this.regionPath != nil {
+	if this.regionPath != (nil) {
 		this.regionPath.Release()
 	}
 	this.regionPath = this.GetPathOverload1(region)
-	this.RedrawWidget(this.View, true)
+	this.impl.RedrawWidgetOnWidget(this.View, true)
 }
 
 func (this *Control) SetRelations() {
-	if this.parent == nil {
+	if this.parent == (nil) {
 		return
 	}
 	var children []*Control = this.parent._getChildren()
@@ -2910,22 +2890,22 @@ func (this *Control) SetRadioSelection(value bool) bool {
 
 func (this *Control) SetSize(width int32, height int32) {
 	this.CheckWidget()
-	this.SetBoundsXYWidthHeightMoveResize(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), false, true)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), false, true)
 }
 
 func (this *Control) SetSizeSize(size *Point) {
 	this.CheckWidget()
-	if size == nil {
+	if size == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	this.SetBoundsXYWidthHeightMoveResize(0, 0, int32(math.Max(float64(0), float64(size.X))), int32(math.Max(float64(0), float64(size.Y))), false, true)
+	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(size.X))), int32(math.Max(float64(0), float64(size.Y))), false, true)
 }
 
 func (this *Control) SetSmallSize() {
-	_, ok73 := idImplAsControl(this.View.Impl)
-	if ok73 {
-		var cell *cocoa.NSCell = (this.View.Impl.(*cocoa.NSControl)).Cell()
-		if cell != nil {
+	_, ok76 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok76 {
+		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
+		if cell != (nil) {
 			cell.SetControlSize(int64(cocoa.OSNSControlSizeSmall))
 		}
 	}
@@ -2983,13 +2963,11 @@ func (this *Control) SetVisible(visible bool) {
 			fixFocus = this.IsFocusAncestor(control)
 		}
 	}
-	t74 := this.Impl.TopView()
-	t75, _ := widgetImplAs(t74.Impl)
-	t75.SetHidden(!visible)
+	this.impl.TopView().SetHidden(!visible)
 	if this.IsDisposed() {
 		return
 	}
-	this.InvalidateVisibleRegion()
+	this.impl.InvalidateVisibleRegion()
 	if !visible {
 		this.SendEventEventType(SWTHide)
 		if this.IsDisposed() {
@@ -3002,21 +2980,19 @@ func (this *Control) SetVisible(visible bool) {
 }
 
 func (this *Control) SetZOrderOnControl() {
-	t76 := this.Impl.TopView()
-	t77, _ := widgetImplAs(t76.Impl)
-	var topView *cocoa.NSView = t77
+	var topView *cocoa.NSView = this.impl.TopView()
 	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 }
 
 func (this *Control) ShouldDelayWindowOrderingForEvent(id int64, sel int64, theEvent int64) bool {
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	if (shell.style & SWTON_TOP) != 0 {
 		return false
 	}
 	return this.Widget.ShouldDelayWindowOrderingForEvent(id, sel, theEvent)
 }
 
-func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
+func (this *Control) SetZOrderSiblingAboveOnControl(sibling *Control, above bool) {
 	var index int32 = 0
 	var siblingIndex int32 = 0
 	var oldNextIndex int32 = -1
@@ -3028,7 +3004,7 @@ func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
 		}
 		index++
 	}
-	if sibling != nil {
+	if sibling != (nil) {
 		for siblingIndex < int32(len(children)) {
 			if children[siblingIndex] == sibling {
 				break
@@ -3041,7 +3017,7 @@ func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
 		oldNextIndex = index + 1
 		children[oldNextIndex].RemoveRelation()
 	}
-	if sibling != nil {
+	if sibling != (nil) {
 		if above {
 			sibling.RemoveRelation()
 		} else {
@@ -3050,45 +3026,41 @@ func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
 			}
 		}
 	}
-	t78 := sibling.Impl.TopView()
-	t79, _ := widgetImplAs(t78.Impl)
 	var otherView *cocoa.NSView
-	if sibling == nil {
+	if sibling == (nil) {
 		otherView = nil
 	} else {
-		otherView = t79
+		otherView = sibling.impl.TopView()
 	}
-	t80 := this.Impl.TopView()
-	t81, _ := widgetImplAs(t80.Impl)
-	var topView *cocoa.NSView = t81
+	var topView *cocoa.NSView = this.impl.TopView()
 	topView.Retain()
 	topView.RemoveFromSuperview()
-	var cond82 int32
+	var cond77 int32
 	if above {
-		cond82 = cocoa.OSNSWindowAbove
+		cond77 = cocoa.OSNSWindowAbove
 	} else {
-		cond82 = cocoa.OSNSWindowBelow
+		cond77 = cocoa.OSNSWindowBelow
 	}
-	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cond82), otherView)
+	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cond77), otherView)
 	topView.Release()
-	this.InvalidateVisibleRegion()
-	if sibling != nil {
+	this.impl.InvalidateVisibleRegion()
+	if sibling != (nil) {
 		if above {
-			var cond83 int32
+			var cond78 int32
 			if index < siblingIndex {
-				cond83 = 1
+				cond78 = 1
 			} else {
-				cond83 = 0
+				cond78 = 0
 			}
-			index = siblingIndex - (cond83)
+			index = siblingIndex - (cond78)
 		} else {
-			var cond84 int32
+			var cond79 int32
 			if siblingIndex < index {
-				cond84 = 1
+				cond79 = 1
 			} else {
-				cond84 = 0
+				cond79 = 0
 			}
-			index = siblingIndex + (cond84)
+			index = siblingIndex + (cond79)
 		}
 	} else {
 		if above {
@@ -3149,12 +3121,12 @@ func (this *Control) TooltipText() string {
 
 func (this *Control) ToControl(x int32, y int32) *Point {
 	this.CheckWidget()
-	return this.display.Map(nil, this, x, y)
+	return this.display.MapFromToXY(nil, this, x, y)
 }
 
 func (this *Control) ToControlPoint(point *Point) *Point {
 	this.CheckWidget()
-	if point == nil {
+	if point == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.ToControl(point.X, point.Y)
@@ -3162,12 +3134,12 @@ func (this *Control) ToControlPoint(point *Point) *Point {
 
 func (this *Control) ToDisplay(x int32, y int32) *Point {
 	this.CheckWidget()
-	return this.display.Map(this, nil, x, y)
+	return this.display.MapFromToXY(this, nil, x, y)
 }
 
 func (this *Control) ToDisplayPoint(point *Point) *Point {
 	this.CheckWidget()
-	if point == nil {
+	if point == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.ToDisplay(point.X, point.Y)
@@ -3185,7 +3157,7 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 	if !(this.Hooks(SWTTouch) || this.Filters(SWTTouch)) {
 		return true
 	}
-	if !this.Impl.IsEventView(id) {
+	if !this.impl.IsEventView(id) {
 		return true
 	}
 	if !this.touchEnabled {
@@ -3209,13 +3181,13 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 	for i := int32(0); int64(i) < endedTouches.Count(); i++ {
 		var touch *cocoa.NSTouch = cocoa.NewNSTouchOverload1(endedTouches.ObjectAtIndex(int64(i)).Id)
 		var identity *cocoa.NSObject = cocoa.NewNSObjectOverload1(cocoa.OSObjc_msgSend(touch.Id, cocoa.OSSel_identity))
-		var endedTouch *cocoa.NSTouch = this.FindTouchWithId(&currentTouches.NSArray, identity)
-		if endedTouch != nil {
-			currentTouches.RemoveObject(endedTouch.AsId())
+		var endedTouch *cocoa.NSTouch = this.FindTouchWithId(upcastcocoaNSMutableArrayTococoaNSArray(currentTouches), identity)
+		if endedTouch != (nil) {
+			currentTouches.RemoveObject(upcastcocoaNSTouchTococoaId(endedTouch))
 		}
-		t85 := currTouchIndex
+		t80 := currTouchIndex
 		currTouchIndex++
-		touches[t85] = this.TouchStateFromNSTouch(touch)
+		touches[t80] = this.TouchStateFromNSTouch(touch)
 	}
 	if currentTouches.Count() == 0 {
 		this.display.touchCounter = 0
@@ -3224,20 +3196,20 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 	for i := int32(0); int64(i) < activeTouches.Count(); i++ {
 		var touch *cocoa.NSTouch = cocoa.NewNSTouchOverload1(activeTouches.ObjectAtIndex(int64(i)).Id)
 		var identity *cocoa.NSObject = cocoa.NewNSObjectOverload1(cocoa.OSObjc_msgSend(touch.Id, cocoa.OSSel_identity))
-		var activeTouch *cocoa.NSTouch = this.FindTouchWithId(&currentTouches.NSArray, identity)
-		if activeTouch == nil {
-			currentTouches.AddObject(touch.AsId())
+		var activeTouch *cocoa.NSTouch = this.FindTouchWithId(upcastcocoaNSMutableArrayTococoaNSArray(currentTouches), identity)
+		if activeTouch == (nil) {
+			currentTouches.AddObject(upcastcocoaNSTouchTococoaId(touch))
 		}
-		t86 := currTouchIndex
+		t81 := currTouchIndex
 		currTouchIndex++
-		touches[t86] = this.TouchStateFromNSTouch(touch)
+		touches[t81] = this.TouchStateFromNSTouch(touch)
 	}
 	if activeTouches.Count() != currentTouches.Count() {
 		for j := int64(currentTouches.Count() - 1); j >= 0; j-- {
 			var touch *cocoa.NSTouch = cocoa.NewNSTouchOverload1(currentTouches.ObjectAtIndex(j).Id)
 			var identity *cocoa.NSObject = cocoa.NewNSObjectOverload1(cocoa.OSObjc_msgSend(touch.Id, cocoa.OSSel_identity))
 			var activeTouch *cocoa.NSTouch = this.FindTouchWithId(activeTouches, identity)
-			if activeTouch == nil {
+			if activeTouch == (nil) {
 				var fakeTouchUp *Touch = this.TouchStateFromNSTouch(touch)
 				fakeTouchUp.State = SWTTOUCHSTATE_UP
 				if currTouchIndex == int32(len(touches)) {
@@ -3245,10 +3217,10 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 					copy(newTouchStates[0:], touches[0:0+int32(len(touches))])
 					touches = newTouchStates
 				}
-				t87 := currTouchIndex
+				t82 := currTouchIndex
 				currTouchIndex++
-				touches[t87] = fakeTouchUp
-				currentTouches.RemoveObject(activeTouch.AsId())
+				touches[t82] = fakeTouchUp
+				currentTouches.RemoveObject(upcastcocoaNSTouchTococoaId(activeTouch))
 			}
 		}
 	}
@@ -3287,7 +3259,7 @@ func (this *Control) TouchesMovedWithEvent(id int64, sel int64, event int64) {
 
 func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, consume []bool) bool {
 	var detail int32 = SWTTRAVERSE_NONE
-	var code int32 = this.TraversalCode(key, theEvent)
+	var code int32 = this.impl.TraversalCode(key, theEvent)
 	var all bool = false
 	switch key {
 	case 53:
@@ -3347,7 +3319,7 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 	if !this.SetKeyState(event, SWTTraverse, theEvent) {
 		return false
 	}
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
 	for {
 		if control.TraverseEvent(event) {
@@ -3356,11 +3328,11 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 		if !event.Doit && control.Hooks(SWTTraverse) {
 			return false
 		}
-		if control == &shell.Control {
+		if control == upcastShellToControl(shell) {
 			return false
 		}
-		control = &control.parent.Control
-		if !(all && control != nil) {
+		control = upcastCompositeToControl(control.parent)
+		if !(all && control != (nil)) {
 			break
 		}
 	}
@@ -3369,8 +3341,8 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 
 func (this *Control) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 	var code int32 = SWTTRAVERSE_RETURN | SWTTRAVERSE_TAB_NEXT | SWTTRAVERSE_TAB_PREVIOUS | SWTTRAVERSE_PAGE_NEXT | SWTTRAVERSE_PAGE_PREVIOUS
-	var shell *Shell = this.GetShell()
-	if shell.parent != nil {
+	var shell *Shell = this.impl.GetShell()
+	if shell.parent != (nil) {
 		code |= SWTTRAVERSE_ESCAPE
 	}
 	return code
@@ -3382,7 +3354,7 @@ func (this *Control) TraverseMnemonic(key uint16) bool {
 
 func (this *Control) Traverse(traversal int32, event *Event) bool {
 	this.CheckWidget()
-	if event == nil {
+	if event == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
@@ -3390,7 +3362,7 @@ func (this *Control) Traverse(traversal int32, event *Event) bool {
 
 func (this *Control) TraverseTraversalEvent(traversal int32, event *KeyEvent) bool {
 	this.CheckWidget()
-	if event == nil {
+	if event == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
 	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
@@ -3462,7 +3434,7 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 	event.KeyCode = keyCode
 	event.KeyLocation = keyLocation
 	event.StateMask = stateMask
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	var all bool = false
 	switch traversal {
 	case SWTTRAVERSE_ESCAPE, SWTTRAVERSE_RETURN, SWTTRAVERSE_PAGE_NEXT, SWTTRAVERSE_PAGE_PREVIOUS:
@@ -3487,11 +3459,11 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 		if !event.Doit && control.Hooks(SWTTraverse) {
 			return false
 		}
-		if control == &shell.Control {
+		if control == upcastShellToControl(shell) {
 			return false
 		}
-		control = &control.parent.Control
-		if !(all && control != nil) {
+		control = upcastCompositeToControl(control.parent)
+		if !(all && control != (nil)) {
 			break
 		}
 	}
@@ -3518,17 +3490,17 @@ func (this *Control) TraverseEvent(event *Event) bool {
 	case SWTTRAVERSE_NONE:
 		return true
 	case SWTTRAVERSE_ESCAPE:
-		return this.TraverseEscape()
+		return this.impl.TraverseEscape()
 	case SWTTRAVERSE_RETURN:
-		return this.TraverseReturn()
+		return this.impl.TraverseReturn()
 	case SWTTRAVERSE_TAB_NEXT:
 		return this.TraverseGroup(true)
 	case SWTTRAVERSE_TAB_PREVIOUS:
 		return this.TraverseGroup(false)
 	case SWTTRAVERSE_ARROW_NEXT:
-		return this.TraverseItem(true)
+		return this.impl.TraverseItem(true)
 	case SWTTRAVERSE_ARROW_PREVIOUS:
-		return this.TraverseItem(false)
+		return this.impl.TraverseItem(false)
 	case SWTTRAVERSE_MNEMONIC:
 		return this.TraverseMnemonicEvent(event)
 	case SWTTRAVERSE_PAGE_NEXT:
@@ -3544,9 +3516,9 @@ func (this *Control) TraverseEscape() bool {
 }
 
 func (this *Control) TraverseGroup(next bool) bool {
-	var root *Control = this.ComputeTabRoot()
-	var group *Widget = this.ComputeTabGroup()
-	var list []*Widget = root.ComputeTabList()
+	var root *Control = this.impl.ComputeTabRoot()
+	var group *Widget = this.impl.ComputeTabGroup()
+	var list []*Widget = root.impl.ComputeTabList()
 	var length int32 = int32(len(list))
 	var index int32 = 0
 	for index < length {
@@ -3565,18 +3537,18 @@ func (this *Control) TraverseGroup(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond88 := ((index + offset + length) % length)
-	index = cond88
-	for (cond88) != start {
+	cond83 := ((index + offset + length) % length)
+	index = cond83
+	for (cond83) != start {
 		var widget *Widget = list[index]
-		if !widget.IsDisposed() && widget.SetTabGroupFocus() {
+		if !widget.IsDisposed() && widget.impl.SetTabGroupFocus() {
 			return true
 		}
 	}
 	if group.IsDisposed() {
 		return false
 	}
-	return group.SetTabGroupFocus()
+	return group.impl.SetTabGroupFocus()
 }
 
 func (this *Control) TraverseItem(next bool) bool {
@@ -3599,12 +3571,12 @@ func (this *Control) TraverseItem(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond89 := (index + offset + length) % length
-	index = cond89
-	for (cond89) != start {
+	cond84 := (index + offset + length) % length
+	index = cond84
+	for (cond84) != start {
 		var child *Control = children[index]
-		if !child.IsDisposed() && child.IsTabItem() {
-			if child.Impl.SetTabItemFocus() {
+		if !child.IsDisposed() && child.impl.IsTabItem() {
+			if child.impl.SetTabItemFocus() {
 				return true
 			}
 		}
@@ -3633,18 +3605,18 @@ func (this *Control) UpdateAll(all bool) bool {
 	if !ControlFORCE_RUN_UPDATE {
 		return true
 	}
-	if cocoa.NSGraphicsContextCurrentContext() == nil {
+	if cocoa.NSGraphicsContextCurrentContext() == (nil) {
 		if !this.View.LockFocusIfCanDraw() {
 			return false
 		}
-		var contextAvailableAfterLockFocus bool = cocoa.NSGraphicsContextCurrentContext() != nil
+		var contextAvailableAfterLockFocus bool = cocoa.NSGraphicsContextCurrentContext() != (nil)
 		this.View.UnlockFocus()
 		if !contextAvailableAfterLockFocus {
 			return false
 		}
 	}
-	var isPainting *cocoa.NSArray = &this.display.isPainting.NSArray
-	if isPainting.ContainsObject(this.View.AsId()) {
+	var isPainting *cocoa.NSArray = upcastcocoaNSMutableArrayTococoaNSArray(this.display.isPainting)
+	if isPainting.ContainsObject(upcastcocoaNSViewTococoaId(this.View)) {
 		return false
 	}
 	var i int32 = 0
@@ -3656,10 +3628,10 @@ func (this *Control) UpdateAll(all bool) bool {
 		}
 		i++
 	}
-	if this.IsResizing() {
+	if this.impl.IsResizing() {
 		return false
 	}
-	var shell *Shell = this.GetShell()
+	var shell *Shell = this.impl.GetShell()
 	var window *cocoa.NSWindow
 	if shell.deferFlushing && shell.scrolling {
 		window = this.View.Window()
@@ -3667,12 +3639,12 @@ func (this *Control) UpdateAll(all bool) bool {
 		window = nil
 	}
 	defer func() {
-		if window != nil {
+		if window != (nil) {
 			window.EnableFlushWindow()
 			window.Release()
 		}
 	}()
-	if window != nil {
+	if window != (nil) {
 		window.Retain()
 		window.DisableFlushWindow()
 	}
@@ -3681,35 +3653,35 @@ func (this *Control) UpdateAll(all bool) bool {
 }
 
 func (this *Control) UpdateBackgroundColor() {
-	var control *Control = this.FindBackgroundControl()
-	if control == nil {
+	var control *Control = this.impl.FindBackgroundControl()
+	if control == (nil) {
 		control = this
 	}
 	var color []float64
-	if control.background != nil {
+	if control.background != (nil) {
 		color = control.background
 	} else {
 		color = control.DefaultBackground().Handle
 	}
 	var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
-	this.SetBackgroundColor_200(nsColor)
+	this.impl.SetBackgroundColor(nsColor)
 }
 
 func (this *Control) UpdateBackgroundImage() {
-	var control *Control = this.FindBackgroundControl()
+	var control *Control = this.impl.FindBackgroundControl()
 	var image *Image
-	if control != nil {
+	if control != (nil) {
 		image = control.backgroundImage
 	} else {
 		image = this.backgroundImage
 	}
-	var cond90 *cocoa.NSImage
-	if image != nil {
-		cond90 = image.Handle
+	var cond85 *cocoa.NSImage
+	if image != (nil) {
+		cond85 = image.Handle
 	} else {
-		cond90 = nil
+		cond85 = nil
 	}
-	this.SetBackgroundImageImage(cond90)
+	this.impl.SetBackgroundImageImageOnControl(cond85)
 }
 
 func (this *Control) UpdateBackgroundMode() {
@@ -3721,13 +3693,13 @@ func (this *Control) UpdateBackgroundMode() {
 }
 
 func (this *Control) ResetCursorRects(id int64, sel int64) {
-	if this.IsEnabled() {
+	if this.impl.IsEnabled() {
 		this.CallSuper(id, sel)
 	}
 }
 
 func (this *Control) UpdateTrackingAreas(id int64, sel int64) {
-	if this.IsEnabled() {
+	if this.impl.IsEnabled() {
 		this.CallSuper(id, sel)
 	}
 }
@@ -3754,7 +3726,7 @@ func (this *Control) UpdateLayout(all bool) {
 
 func ControlCalcDiff(component float64, factor float64, wantDarker bool) float64 {
 	if wantDarker {
-		return component * -1 * factor
+		return component * float64(-1) * factor
 	} else {
 		return (1 - component) * factor
 	}
@@ -3774,8 +3746,15 @@ func ControlLuma(rgbColor []float64) float64 {
 	return 0.2126*rgbColor[0] + 0.7152*rgbColor[1] + 0.0722*rgbColor[2]
 }
 
+func upcastCompositeToWidget(x *Composite) *Widget {
+	if x == nil {
+		return nil
+	}
+	return &x.Widget
+}
+
 // j2go: instanceof helper for cocoa.NSControl and its subclasses within the translated set.
-func idImplAsControl(x any) (*cocoa.NSControl, bool) {
+func idImplAsNSControl(x any) (*cocoa.NSControl, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSControl:
 		return v, true
@@ -3835,103 +3814,284 @@ func idImplAsControl(x any) (*cocoa.NSControl, bool) {
 	return nil, false
 }
 
-// j2go: instanceof helper for cocoa.NSView and its subclasses within the translated set.
-func widgetImplAs(x any) (*cocoa.NSView, bool) {
+func iscocoaNSViewTococoaNSControl(x *cocoa.NSView) (*cocoa.NSControl, bool) {
+	if x == nil {
+		return nil, false
+	}
+	return idImplAsNSControl(x.Impl())
+}
+
+func castcocoaNSViewTococoaNSControl(x *cocoa.NSView) *cocoa.NSControl {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSControl(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSControl")
+	}
+	return v
+}
+
+func upcastcocoaNSArrayTococoaId(x *cocoa.NSArray) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastcocoaNSNumberTococoaId(x *cocoa.NSNumber) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastShellToControl(x *Shell) *Control {
+	if x == nil {
+		return nil
+	}
+	return &x.Control
+}
+
+func upcastCompositeToControl(x *Composite) *Control {
+	if x == nil {
+		return nil
+	}
+	return &x.Control
+}
+
+func upcastShellToComposite(x *Shell) *Composite {
+	if x == nil {
+		return nil
+	}
+	return &x.Composite
+}
+
+func upcastControlToWidget(x *Control) *Widget {
+	if x == nil {
+		return nil
+	}
+	return &x.Widget
+}
+
+// j2go: instanceof helper for cocoa.NSMutableDictionary and its subclasses within the translated set.
+func idImplAsNSMutableDictionary(x any) (*cocoa.NSMutableDictionary, bool) {
 	switch v := x.(type) {
-	case *cocoa.NSView:
+	case *cocoa.NSMutableDictionary:
 		return v, true
-	case *cocoa.NSBox:
-		return &v.NSView, true
-	case *cocoa.SWTBox:
-		return &v.NSView, true
-	case *cocoa.NSClipView:
-		return &v.NSView, true
-	case *cocoa.NSControl:
-		return &v.NSView, true
-	case *cocoa.NSButton:
-		return &v.NSView, true
-	case *cocoa.NSPopUpButton:
-		return &v.NSView, true
-	case *cocoa.SWTPopUpButton:
-		return &v.NSView, true
-	case *cocoa.SWTButton:
-		return &v.NSView, true
-	case *cocoa.NSDatePicker:
-		return &v.NSView, true
-	case *cocoa.SWTDatePicker:
-		return &v.NSView, true
-	case *cocoa.NSImageView:
-		return &v.NSView, true
-	case *cocoa.SWTImageView:
-		return &v.NSView, true
-	case *cocoa.NSScroller:
-		return &v.NSView, true
-	case *cocoa.SWTScroller:
-		return &v.NSView, true
-	case *cocoa.NSSlider:
-		return &v.NSView, true
-	case *cocoa.SWTSlider:
-		return &v.NSView, true
-	case *cocoa.NSStepper:
-		return &v.NSView, true
-	case *cocoa.SWTStepper:
-		return &v.NSView, true
-	case *cocoa.NSTableView:
-		return &v.NSView, true
-	case *cocoa.NSOutlineView:
-		return &v.NSView, true
-	case *cocoa.SWTOutlineView:
-		return &v.NSView, true
-	case *cocoa.SWTTableView:
-		return &v.NSView, true
-	case *cocoa.NSTextField:
-		return &v.NSView, true
-	case *cocoa.NSComboBox:
-		return &v.NSView, true
-	case *cocoa.SWTComboBox:
-		return &v.NSView, true
-	case *cocoa.NSSearchField:
-		return &v.NSView, true
-	case *cocoa.SWTSearchField:
-		return &v.NSView, true
-	case *cocoa.NSSecureTextField:
-		return &v.NSView, true
-	case *cocoa.SWTSecureTextField:
-		return &v.NSView, true
-	case *cocoa.SWTTextField:
-		return &v.NSView, true
-	case *cocoa.NSProgressIndicator:
-		return &v.NSView, true
-	case *cocoa.SWTProgressIndicator:
-		return &v.NSView, true
-	case *cocoa.NSScrollView:
-		return &v.NSView, true
-	case *cocoa.SWTScrollView:
-		return &v.NSView, true
-	case *cocoa.NSTabView:
-		return &v.NSView, true
-	case *cocoa.SWTTabView:
-		return &v.NSView, true
-	case *cocoa.NSTableHeaderView:
-		return &v.NSView, true
-	case *cocoa.SWTTableHeaderView:
-		return &v.NSView, true
-	case *cocoa.NSText:
-		return &v.NSView, true
-	case *cocoa.NSTextView:
-		return &v.NSView, true
-	case *cocoa.SWTTextView:
-		return &v.NSView, true
-	case *cocoa.SWTCanvasView:
-		return &v.NSView, true
-	case *cocoa.SWTPrinterView:
-		return &v.NSView, true
-	case *cocoa.SWTView:
-		return &v.NSView, true
-	case *cocoa.WebView:
-		return &v.NSView, true
 	}
 	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSMutableDictionary(x *cocoa.NSObject) *cocoa.NSMutableDictionary {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSMutableDictionary(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSMutableDictionary")
+	}
+	return v
+}
+
+func upcastcocoaNSFontTococoaId(x *cocoa.NSFont) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastcocoaNSColorTococoaId(x *cocoa.NSColor) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+// j2go: instanceof helper for cocoa.NSMutableParagraphStyle and its subclasses within the translated set.
+func idImplAsNSMutableParagraphStyle(x any) (*cocoa.NSMutableParagraphStyle, bool) {
+	switch v := x.(type) {
+	case *cocoa.NSMutableParagraphStyle:
+		return v, true
+	}
+	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSMutableParagraphStyle(x *cocoa.NSObject) *cocoa.NSMutableParagraphStyle {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSMutableParagraphStyle(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSMutableParagraphStyle")
+	}
+	return v
+}
+
+func upcastcocoaNSMutableParagraphStyleTococoaId(x *cocoa.NSMutableParagraphStyle) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+// j2go: instanceof helper for cocoa.NSString and its subclasses within the translated set.
+func idImplAsNSString(x any) (*cocoa.NSString, bool) {
+	switch v := x.(type) {
+	case *cocoa.NSString:
+		return v, true
+	case *cocoa.NSMutableString:
+		return &v.NSString, true
+	}
+	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSString(x *cocoa.NSObject) *cocoa.NSString {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSString(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSString")
+	}
+	return v
+}
+
+func upcastcocoaNSMutableDictionaryTococoaNSDictionary(x *cocoa.NSMutableDictionary) *cocoa.NSDictionary {
+	if x == nil {
+		return nil
+	}
+	return &x.NSDictionary
+}
+
+// j2go: instanceof helper for cocoa.NSAttributedString and its subclasses within the translated set.
+func idImplAsNSAttributedString(x any) (*cocoa.NSAttributedString, bool) {
+	switch v := x.(type) {
+	case *cocoa.NSAttributedString:
+		return v, true
+	case *cocoa.NSMutableAttributedString:
+		return &v.NSAttributedString, true
+	case *cocoa.NSTextStorage:
+		return &v.NSAttributedString, true
+	}
+	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSAttributedString(x *cocoa.NSObject) *cocoa.NSAttributedString {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSAttributedString(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSAttributedString")
+	}
+	return v
+}
+
+func upcastDisplayToDevice(x *Display) *Device {
+	if x == nil {
+		return nil
+	}
+	return &x.Device
+}
+
+func upcastcocoaNSViewTococoaNSObject(x *cocoa.NSView) *cocoa.NSObject {
+	if x == nil {
+		return nil
+	}
+	return &x.NSObject
+}
+
+func upcastcocoaNSEventTococoaId(x *cocoa.NSEvent) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastShellToDecorations(x *Shell) *Decorations {
+	if x == nil {
+		return nil
+	}
+	return &x.Decorations
+}
+
+func upcastcocoaNSViewTococoaNSResponder(x *cocoa.NSView) *cocoa.NSResponder {
+	if x == nil {
+		return nil
+	}
+	return &x.NSResponder
+}
+
+// j2go: instanceof helper for cocoa.NSBitmapImageRep and its subclasses within the translated set.
+func idImplAsNSBitmapImageRep(x any) (*cocoa.NSBitmapImageRep, bool) {
+	switch v := x.(type) {
+	case *cocoa.NSBitmapImageRep:
+		return v, true
+	}
+	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSBitmapImageRep(x *cocoa.NSObject) *cocoa.NSBitmapImageRep {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSBitmapImageRep(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSBitmapImageRep")
+	}
+	return v
+}
+
+// j2go: instanceof helper for Shell and its subclasses within the translated set.
+func widgetImplAsShell(x any) (*Shell, bool) {
+	switch v := x.(type) {
+	case *Shell:
+		return v, true
+	}
+	return nil, false
+}
+
+func isControlToShell(x *Control) (*Shell, bool) {
+	if x == nil {
+		return nil, false
+	}
+	return widgetImplAsShell(x.impl)
+}
+
+func iscocoaNSObjectTococoaNSControl(x *cocoa.NSObject) (*cocoa.NSControl, bool) {
+	if x == nil {
+		return nil, false
+	}
+	return idImplAsNSControl(x.Impl())
+}
+
+func upcastcocoaNSCellTococoaNSObject(x *cocoa.NSCell) *cocoa.NSObject {
+	if x == nil {
+		return nil
+	}
+	return &x.NSObject
+}
+
+func upcastcocoaNSObjectTococoaId(x *cocoa.NSObject) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastcocoaNSMutableArrayTococoaNSArray(x *cocoa.NSMutableArray) *cocoa.NSArray {
+	if x == nil {
+		return nil
+	}
+	return &x.NSArray
+}
+
+func upcastcocoaNSTouchTococoaId(x *cocoa.NSTouch) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
 }
 
 func init() {

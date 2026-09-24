@@ -8,7 +8,7 @@ type NSOpenGLContext struct {
 
 func NewNSOpenGLContext() *NSOpenGLContext {
 	this := &NSOpenGLContext{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLContext()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSOpenGLContext) initNSOpenGLContext() {
 
 func NewNSOpenGLContextOverload1(id int64) *NSOpenGLContext {
 	this := &NSOpenGLContext{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLContextOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSOpenGLContext) initNSOpenGLContextOverload1(id int64) {
 
 func NewNSOpenGLContextOverload2(id *id) *NSOpenGLContext {
 	this := &NSOpenGLContext{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLContextOverload2(id)
 	return this
 }
@@ -48,32 +48,32 @@ func (this *NSOpenGLContext) FlushBuffer() {
 }
 
 func (this *NSOpenGLContext) InitWithFormat(format *NSOpenGLPixelFormat, share *NSOpenGLContext) *NSOpenGLContext {
+	var cond520 int64
+	if format != (nil) {
+		cond520 = format.Id
+	} else {
+		cond520 = int64(0)
+	}
 	var cond521 int64
-	if format != nil {
-		cond521 = format.Id
+	if share != (nil) {
+		cond521 = share.Id
 	} else {
 		cond521 = int64(0)
 	}
-	var cond522 int64
-	if share != nil {
-		cond522 = share.Id
-	} else {
-		cond522 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithFormat_shareContext_, cond521, cond522)
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithFormat_shareContext_, cond520, cond521)
+	var cond522 *NSOpenGLContext
 	var cond523 *NSOpenGLContext
-	var cond524 *NSOpenGLContext
 	if result != 0 {
-		cond524 = NewNSOpenGLContextOverload1(result)
+		cond523 = NewNSOpenGLContextOverload1(result)
 	} else {
-		cond524 = nil
+		cond523 = nil
 	}
 	if result == this.Id {
-		cond523 = this
+		cond522 = this
 	} else {
-		cond523 = (cond524)
+		cond522 = (cond523)
 	}
-	return cond523
+	return cond522
 }
 
 func (this *NSOpenGLContext) MakeCurrentContext() {
@@ -85,13 +85,13 @@ func (this *NSOpenGLContext) SetValues(vals []int32, param int64) {
 }
 
 func (this *NSOpenGLContext) SetView(view *NSView) {
-	var cond525 int64
-	if view != nil {
-		cond525 = view.Id
+	var cond524 int64
+	if view != (nil) {
+		cond524 = view.Id
 	} else {
-		cond525 = int64(0)
+		cond524 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond525)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond524)
 }
 
 func (this *NSOpenGLContext) Update() {
@@ -100,22 +100,22 @@ func (this *NSOpenGLContext) Update() {
 
 func (this *NSOpenGLContext) View() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_view)
-	var cond526 *NSView
+	var cond525 *NSView
 	if result != 0 {
-		cond526 = NewNSViewOverload1(result)
+		cond525 = NewNSViewOverload1(result)
 	} else {
-		cond526 = nil
+		cond525 = nil
 	}
-	return cond526
+	return cond525
 }
 
 func NSOpenGLContextCurrentContext() *NSOpenGLContext {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenGLContext, OSSel_currentContext)
-	var cond527 *NSOpenGLContext
+	var cond526 *NSOpenGLContext
 	if result != 0 {
-		cond527 = NewNSOpenGLContextOverload1(result)
+		cond526 = NewNSOpenGLContextOverload1(result)
 	} else {
-		cond527 = nil
+		cond526 = nil
 	}
-	return cond527
+	return cond526
 }

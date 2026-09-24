@@ -8,7 +8,7 @@ type DOMMouseEvent struct {
 
 func NewDOMMouseEvent() *DOMMouseEvent {
 	this := &DOMMouseEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMMouseEvent()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *DOMMouseEvent) initDOMMouseEvent() {
 
 func NewDOMMouseEventOverload1(id int64) *DOMMouseEvent {
 	this := &DOMMouseEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMMouseEventOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *DOMMouseEvent) initDOMMouseEventOverload1(id int64) {
 
 func NewDOMMouseEventOverload2(id *id) *DOMMouseEvent {
 	this := &DOMMouseEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMMouseEventOverload2(id)
 	return this
 }

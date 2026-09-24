@@ -8,7 +8,7 @@ type NSComboBoxCell struct {
 
 func NewNSComboBoxCell() *NSComboBoxCell {
 	this := &NSComboBoxCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBoxCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSComboBoxCell) initNSComboBoxCell() {
 
 func NewNSComboBoxCellOverload1(id int64) *NSComboBoxCell {
 	this := &NSComboBoxCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBoxCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSComboBoxCell) initNSComboBoxCellOverload1(id int64) {
 
 func NewNSComboBoxCellOverload2(id *id) *NSComboBoxCell {
 	this := &NSComboBoxCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBoxCellOverload2(id)
 	return this
 }
@@ -41,11 +41,11 @@ func (this *NSComboBoxCell) initNSComboBoxCellOverload2(id *id) {
 
 func (this *NSComboBoxCell) ObjectValues() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectValues)
-	var cond198 *NSArray
+	var cond197 *NSArray
 	if result != 0 {
-		cond198 = NewNSArrayOverload1(result)
+		cond197 = NewNSArrayOverload1(result)
 	} else {
-		cond198 = nil
+		cond197 = nil
 	}
-	return cond198
+	return cond197
 }

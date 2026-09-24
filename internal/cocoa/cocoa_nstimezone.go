@@ -8,7 +8,7 @@ type NSTimeZone struct {
 
 func NewNSTimeZone() *NSTimeZone {
 	this := &NSTimeZone{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTimeZone()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTimeZone) initNSTimeZone() {
 
 func NewNSTimeZoneOverload1(id int64) *NSTimeZone {
 	this := &NSTimeZone{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTimeZoneOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTimeZone) initNSTimeZoneOverload1(id int64) {
 
 func NewNSTimeZoneOverload2(id *id) *NSTimeZone {
 	this := &NSTimeZone{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTimeZoneOverload2(id)
 	return this
 }
@@ -41,11 +41,11 @@ func (this *NSTimeZone) initNSTimeZoneOverload2(id *id) {
 
 func NSTimeZoneDefaultTimeZone() *NSTimeZone {
 	var result int64 = OSObjc_msgSend(OSClass_NSTimeZone, OSSel_defaultTimeZone)
-	var cond791 *NSTimeZone
+	var cond790 *NSTimeZone
 	if result != 0 {
-		cond791 = NewNSTimeZoneOverload1(result)
+		cond790 = NewNSTimeZoneOverload1(result)
 	} else {
-		cond791 = nil
+		cond790 = nil
 	}
-	return cond791
+	return cond790
 }

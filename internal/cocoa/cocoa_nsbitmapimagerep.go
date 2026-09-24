@@ -8,7 +8,7 @@ type NSBitmapImageRep struct {
 
 func NewNSBitmapImageRep() *NSBitmapImageRep {
 	this := &NSBitmapImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBitmapImageRep()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSBitmapImageRep) initNSBitmapImageRep() {
 
 func NewNSBitmapImageRepOverload1(id int64) *NSBitmapImageRep {
 	this := &NSBitmapImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBitmapImageRepOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSBitmapImageRep) initNSBitmapImageRepOverload1(id int64) {
 
 func NewNSBitmapImageRepOverload2(id *id) *NSBitmapImageRep {
 	this := &NSBitmapImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBitmapImageRepOverload2(id)
 	return this
 }
@@ -68,7 +68,7 @@ func (this *NSBitmapImageRep) ColorAtX(x int64, y int64) *NSColor {
 
 func (this *NSBitmapImageRep) InitWithBitmapDataPlanes(planes int64, width int64, height int64, bps int64, spp int64, alpha bool, isPlanar bool, colorSpaceName *NSString, bitmapFormat int64, rBytes int64, pBits int64) *NSBitmapImageRep {
 	var cond82 int64
-	if colorSpaceName != nil {
+	if colorSpaceName != (nil) {
 		cond82 = colorSpaceName.Id
 	} else {
 		cond82 = int64(0)
@@ -91,7 +91,7 @@ func (this *NSBitmapImageRep) InitWithBitmapDataPlanes(planes int64, width int64
 
 func (this *NSBitmapImageRep) InitWithData(data *NSData) *NSBitmapImageRep {
 	var cond85 int64
-	if data != nil {
+	if data != (nil) {
 		cond85 = data.Id
 	} else {
 		cond85 = int64(0)
@@ -122,7 +122,7 @@ func (this *NSBitmapImageRep) SamplesPerPixel() int64 {
 
 func NSBitmapImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep {
 	var cond88 int64
-	if filename != nil {
+	if filename != (nil) {
 		cond88 = filename.Id
 	} else {
 		cond88 = int64(0)

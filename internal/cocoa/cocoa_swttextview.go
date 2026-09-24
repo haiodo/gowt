@@ -8,7 +8,7 @@ type SWTTextView struct {
 
 func NewSWTTextView() *SWTTextView {
 	this := &SWTTextView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTextView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTTextView) initSWTTextView() {
 
 func NewSWTTextViewId(id int64) *SWTTextView {
 	this := &SWTTextView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTextViewId(id)
 	return this
 }

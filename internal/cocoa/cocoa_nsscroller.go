@@ -8,7 +8,7 @@ type NSScroller struct {
 
 func NewNSScroller() *NSScroller {
 	this := &NSScroller{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScroller()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSScroller) initNSScroller() {
 
 func NewNSScrollerOverload1(id int64) *NSScroller {
 	this := &NSScroller{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScrollerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSScroller) initNSScrollerOverload1(id int64) {
 
 func NewNSScrollerOverload2(id *id) *NSScroller {
 	this := &NSScroller{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScrollerOverload2(id)
 	return this
 }

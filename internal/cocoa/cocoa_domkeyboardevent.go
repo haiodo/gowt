@@ -8,7 +8,7 @@ type DOMKeyboardEvent struct {
 
 func NewDOMKeyboardEvent() *DOMKeyboardEvent {
 	this := &DOMKeyboardEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMKeyboardEvent()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *DOMKeyboardEvent) initDOMKeyboardEvent() {
 
 func NewDOMKeyboardEventOverload1(id int64) *DOMKeyboardEvent {
 	this := &DOMKeyboardEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMKeyboardEventOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *DOMKeyboardEvent) initDOMKeyboardEventOverload1(id int64) {
 
 func NewDOMKeyboardEventOverload2(id *id) *DOMKeyboardEvent {
 	this := &DOMKeyboardEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMKeyboardEventOverload2(id)
 	return this
 }

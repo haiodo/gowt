@@ -8,7 +8,7 @@ type NSUndoManager struct {
 
 func NewNSUndoManager() *NSUndoManager {
 	this := &NSUndoManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSUndoManager()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSUndoManager) initNSUndoManager() {
 
 func NewNSUndoManagerOverload1(id int64) *NSUndoManager {
 	this := &NSUndoManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSUndoManagerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSUndoManager) initNSUndoManagerOverload1(id int64) {
 
 func NewNSUndoManagerOverload2(id *id) *NSUndoManager {
 	this := &NSUndoManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSUndoManagerOverload2(id)
 	return this
 }

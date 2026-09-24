@@ -8,7 +8,7 @@ type NSError struct {
 
 func NewNSError() *NSError {
 	this := &NSError{}
-	this.Impl = this
+	this.impl = this
 	this.initNSError()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSError) initNSError() {
 
 func NewNSErrorOverload1(id int64) *NSError {
 	this := &NSError{}
-	this.Impl = this
+	this.impl = this
 	this.initNSErrorOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSError) initNSErrorOverload1(id int64) {
 
 func NewNSErrorOverload2(id *id) *NSError {
 	this := &NSError{}
-	this.Impl = this
+	this.impl = this
 	this.initNSErrorOverload2(id)
 	return this
 }
@@ -45,22 +45,22 @@ func (this *NSError) Code() int64 {
 
 func (this *NSError) LocalizedDescription() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_localizedDescription)
-	var cond247 *NSString
+	var cond246 *NSString
 	if result != 0 {
-		cond247 = NewNSStringOverload1(result)
+		cond246 = NewNSStringOverload1(result)
 	} else {
-		cond247 = nil
+		cond246 = nil
 	}
-	return cond247
+	return cond246
 }
 
 func (this *NSError) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond248 *NSDictionary
+	var cond247 *NSDictionary
 	if result != 0 {
-		cond248 = NewNSDictionaryOverload1(result)
+		cond247 = NewNSDictionaryOverload1(result)
 	} else {
-		cond248 = nil
+		cond247 = nil
 	}
-	return cond248
+	return cond247
 }

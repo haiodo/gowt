@@ -8,7 +8,7 @@ type NSSearchField struct {
 
 func NewNSSearchField() *NSSearchField {
 	this := &NSSearchField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchField()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSSearchField) initNSSearchField() {
 
 func NewNSSearchFieldOverload1(id int64) *NSSearchField {
 	this := &NSSearchField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchFieldOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSSearchField) initNSSearchFieldOverload1(id int64) {
 
 func NewNSSearchFieldOverload2(id *id) *NSSearchField {
 	this := &NSSearchField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchFieldOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSSearchField) initNSSearchFieldOverload2(id *id) {
 
 func (this *NSSearchField) RecentSearches() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_recentSearches)
-	var cond662 *NSArray
+	var cond661 *NSArray
 	if result != 0 {
-		cond662 = NewNSArrayOverload1(result)
+		cond661 = NewNSArrayOverload1(result)
 	} else {
-		cond662 = nil
+		cond661 = nil
 	}
-	return cond662
+	return cond661
 }
 
 func NSSearchFieldCellClass() int64 {

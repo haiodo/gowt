@@ -8,7 +8,7 @@ type NSButton struct {
 
 func NewNSButton() *NSButton {
 	this := &NSButton{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButton()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSButton) initNSButton() {
 
 func NewNSButtonOverload1(id int64) *NSButton {
 	this := &NSButton{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButtonOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSButton) initNSButtonOverload1(id int64) {
 
 func NewNSButtonOverload2(id *id) *NSButton {
 	this := &NSButton{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButtonOverload2(id)
 	return this
 }
@@ -60,7 +60,7 @@ func (this *NSButton) SetAllowsMixedState(allowsMixedState bool) {
 
 func (this *NSButton) SetAttributedTitle(attributedTitle *NSAttributedString) {
 	var cond118 int64
-	if attributedTitle != nil {
+	if attributedTitle != (nil) {
 		cond118 = attributedTitle.Id
 	} else {
 		cond118 = int64(0)
@@ -82,7 +82,7 @@ func (this *NSButton) SetButtonType(aType int64) {
 
 func (this *NSButton) SetImage(image *NSImage) {
 	var cond119 int64
-	if image != nil {
+	if image != (nil) {
 		cond119 = image.Id
 	} else {
 		cond119 = int64(0)
@@ -96,7 +96,7 @@ func (this *NSButton) SetImagePosition(imagePosition int64) {
 
 func (this *NSButton) SetKeyEquivalent(keyEquivalent *NSString) {
 	var cond120 int64
-	if keyEquivalent != nil {
+	if keyEquivalent != (nil) {
 		cond120 = keyEquivalent.Id
 	} else {
 		cond120 = int64(0)
@@ -110,7 +110,7 @@ func (this *NSButton) SetState(state int64) {
 
 func (this *NSButton) SetTitle(title *NSString) {
 	var cond121 int64
-	if title != nil {
+	if title != (nil) {
 		cond121 = title.Id
 	} else {
 		cond121 = int64(0)

@@ -45,6 +45,7 @@ final class StatementEmitter {
 		if (s instanceof SwitchStatement sw) return emitter.emitSwitchStatement(sw, indent);
 		if (s instanceof ThrowStatement ts) return emitter.emitThrow(ts, indent);
 		if (s instanceof TryStatement ts) return emitter.emitTry(ts, indent);
+		if (s instanceof SynchronizedStatement ss) return emitter.emitSynchronized(ss, indent);
 		if (s instanceof EmptyStatement) return "";
 		if (s instanceof ForStatement fs) return emitFor(fs, indent);
 		if (s instanceof EnhancedForStatement efs) return emitEnhancedFor(efs, indent);
@@ -78,6 +79,8 @@ final class StatementEmitter {
 				return emitter.emitSwitchExpressionAssign(lhs, se, indent);
 			}
 			String rhs = emitter.adaptNumeric(emitter.expr(a.getRightHandSide()), a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
+			String boolOp = booleanCompoundOp(a, lhs, rhs);
+			if (boolOp != null) return ind(indent) + boolOp + "\n";
 			return ind(indent) + lhs + " " + a.getOperator().toString() + " " + rhs + "\n";
 		}
 		// x++;/--x; as their own statement: Go's native x++/x-- directly, no throwaway temp
@@ -86,7 +89,11 @@ final class StatementEmitter {
 		if (e instanceof PrefixExpression pf && (pf.getOperator().toString().equals("++") || pf.getOperator().toString().equals("--"))) {
 			return ind(indent) + emitter.expr(pf.getOperand()) + pf.getOperator().toString() + "\n";
 		}
-		return ind(indent) + emitter.expr(e) + "\n";
+		String text = emitter.expr(e);
+		// An intrinsic can lower a call to a bare value (Objects.requireNonNull(x) -> x) - Go
+		// rejects an unused value as a statement.
+		if (!text.endsWith(")") && !text.endsWith("*/")) return ind(indent) + "_ = " + text + "\n";
+		return ind(indent) + text + "\n";
 	}
 
 	private String emitChainedAssignment(Assignment a, int indent) {
@@ -96,13 +103,18 @@ final class StatementEmitter {
 			targets.add(ca.getLeftHandSide());
 			cur = ca.getRightHandSide();
 		}
-		String rhs = emitter.expr(cur);
+		String prev = emitter.expr(cur);
+		ITypeBinding prevType = cur.resolveTypeBinding();
 		StringBuilder b = new StringBuilder();
-		String prev = rhs;
+		// A chain's targets need not share one type (child = update[i] = composite: Composite
+		// upcasts to Control at the outer target) - adapt at each step, not just reuse raw text.
 		for (int i = targets.size() - 1; i >= 0; i--) {
-			String lhsText = emitter.expr(targets.get(i));
-			b.append(ind(indent)).append(lhsText).append(" = ").append(prev).append('\n');
+			Expression target = targets.get(i);
+			String lhsText = emitter.expr(target);
+			String adapted = emitter.adaptNumeric(prev, prevType, target.resolveTypeBinding());
+			b.append(ind(indent)).append(lhsText).append(" = ").append(adapted).append('\n');
 			prev = lhsText;
+			prevType = target.resolveTypeBinding();
 		}
 		return b.toString();
 	}
@@ -169,9 +181,25 @@ final class StatementEmitter {
 		if (e instanceof Assignment a) {
 			String lhs = emitter.expr(a.getLeftHandSide());
 			String rhs = emitter.adaptNumeric(emitter.expr(a.getRightHandSide()), a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
+			String boolOp = booleanCompoundOp(a, lhs, rhs);
+			if (boolOp != null) return boolOp;
 			return lhs + " " + a.getOperator().toString() + " " + rhs;
 		}
 		return emitter.expr(e);
+	}
+
+	// Java allows |=/&=/^= on boolean operands (non-short-circuit logical assignment); Go has no
+	// bool|bool at all, so these lower to the equivalent ||/&&/!= form instead.
+	private String booleanCompoundOp(Assignment a, String lhs, String rhs) {
+		ITypeBinding lt = a.getLeftHandSide().resolveTypeBinding();
+		if (lt == null || !lt.getName().equals("boolean")) return null;
+		String goOp = switch (a.getOperator().toString()) {
+			case "|=" -> "||";
+			case "&=" -> "&&";
+			case "^=" -> "!=";
+			default -> null;
+		};
+		return goOp == null ? null : lhs + " = " + lhs + " " + goOp + " " + rhs;
 	}
 
 	private String emitFor(ForStatement fs, int indent) {

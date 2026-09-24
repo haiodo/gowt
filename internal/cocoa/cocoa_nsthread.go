@@ -8,7 +8,7 @@ type NSThread struct {
 
 func NewNSThread() *NSThread {
 	this := &NSThread{}
-	this.Impl = this
+	this.impl = this
 	this.initNSThread()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSThread) initNSThread() {
 
 func NewNSThreadOverload1(id int64) *NSThread {
 	this := &NSThread{}
-	this.Impl = this
+	this.impl = this
 	this.initNSThreadOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSThread) initNSThreadOverload1(id int64) {
 
 func NewNSThreadOverload2(id *id) *NSThread {
 	this := &NSThread{}
-	this.Impl = this
+	this.impl = this
 	this.initNSThreadOverload2(id)
 	return this
 }
@@ -41,24 +41,24 @@ func (this *NSThread) initNSThreadOverload2(id *id) {
 
 func (this *NSThread) ThreadDictionary() *NSMutableDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_threadDictionary)
-	var cond789 *NSMutableDictionary
+	var cond788 *NSMutableDictionary
 	if result != 0 {
-		cond789 = NewNSMutableDictionaryOverload1(result)
+		cond788 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond789 = nil
+		cond788 = nil
 	}
-	return cond789
+	return cond788
 }
 
 func NSThreadCurrentThread() *NSThread {
 	var result int64 = OSObjc_msgSend(OSClass_NSThread, OSSel_currentThread)
-	var cond790 *NSThread
+	var cond789 *NSThread
 	if result != 0 {
-		cond790 = NewNSThreadOverload1(result)
+		cond789 = NewNSThreadOverload1(result)
 	} else {
-		cond790 = nil
+		cond789 = nil
 	}
-	return cond790
+	return cond789
 }
 
 func NSThreadIsMainThread() bool {

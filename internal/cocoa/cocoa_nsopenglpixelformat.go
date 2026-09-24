@@ -8,7 +8,7 @@ type NSOpenGLPixelFormat struct {
 
 func NewNSOpenGLPixelFormat() *NSOpenGLPixelFormat {
 	this := &NSOpenGLPixelFormat{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLPixelFormat()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSOpenGLPixelFormat) initNSOpenGLPixelFormat() {
 
 func NewNSOpenGLPixelFormatOverload1(id int64) *NSOpenGLPixelFormat {
 	this := &NSOpenGLPixelFormat{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLPixelFormatOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSOpenGLPixelFormat) initNSOpenGLPixelFormatOverload1(id int64) {
 
 func NewNSOpenGLPixelFormatOverload2(id *id) *NSOpenGLPixelFormat {
 	this := &NSOpenGLPixelFormat{}
-	this.Impl = this
+	this.impl = this
 	this.initNSOpenGLPixelFormatOverload2(id)
 	return this
 }
@@ -45,17 +45,17 @@ func (this *NSOpenGLPixelFormat) GetValues(vals []int64, attrib int32, screen in
 
 func (this *NSOpenGLPixelFormat) InitWithAttributes(attribs []int32) *NSOpenGLPixelFormat {
 	var result int64 = OSObjc_msgSendOverload42(this.Id, OSSel_initWithAttributes_, attribs)
+	var cond527 *NSOpenGLPixelFormat
 	var cond528 *NSOpenGLPixelFormat
-	var cond529 *NSOpenGLPixelFormat
 	if result != 0 {
-		cond529 = NewNSOpenGLPixelFormatOverload1(result)
+		cond528 = NewNSOpenGLPixelFormatOverload1(result)
 	} else {
-		cond529 = nil
+		cond528 = nil
 	}
 	if result == this.Id {
-		cond528 = this
+		cond527 = this
 	} else {
-		cond528 = (cond529)
+		cond527 = (cond528)
 	}
-	return cond528
+	return cond527
 }

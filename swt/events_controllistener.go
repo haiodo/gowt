@@ -8,9 +8,39 @@ type ControlListener interface {
 }
 
 func ControlListenerControlMovedAdapter(c func(*ControlEvent)) ControlListener {
-	return func() *ControlAdapter { panic("j2go: unsupported anonymous class") }()
+	anon30 := &ControlListenerAnon1{}
+	anon30.initControlAdapter()
+	anon30.fnControlMoved = func(e *ControlEvent) {
+		c(e)
+	}
+	return anon30
 }
 
 func ControlListenerControlResizedAdapter(c func(*ControlEvent)) ControlListener {
-	return func() *ControlAdapter { panic("j2go: unsupported anonymous class") }()
+	anon31 := &ControlListenerAnon2{}
+	anon31.initControlAdapter()
+	anon31.fnControlResized = func(e *ControlEvent) {
+		c(e)
+	}
+	return anon31
+}
+
+// j2go: anonymous ControlAdapter subclass.
+type ControlListenerAnon1 struct {
+	ControlAdapter
+	fnControlMoved func(a0 *ControlEvent)
+}
+
+func (this *ControlListenerAnon1) ControlMoved(a0 *ControlEvent) {
+	this.fnControlMoved(a0)
+}
+
+// j2go: anonymous ControlAdapter subclass.
+type ControlListenerAnon2 struct {
+	ControlAdapter
+	fnControlResized func(a0 *ControlEvent)
+}
+
+func (this *ControlListenerAnon2) ControlResized(a0 *ControlEvent) {
+	this.fnControlResized(a0)
 }

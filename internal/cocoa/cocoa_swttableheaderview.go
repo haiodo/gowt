@@ -8,7 +8,7 @@ type SWTTableHeaderView struct {
 
 func NewSWTTableHeaderView() *SWTTableHeaderView {
 	this := &SWTTableHeaderView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTableHeaderView()
 	return this
 }

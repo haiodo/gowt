@@ -8,7 +8,7 @@ type SWTTextAttachmentCell struct {
 
 func NewSWTTextAttachmentCell() *SWTTextAttachmentCell {
 	this := &SWTTextAttachmentCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTextAttachmentCell()
 	return this
 }

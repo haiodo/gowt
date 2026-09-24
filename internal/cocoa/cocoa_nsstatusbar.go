@@ -8,7 +8,7 @@ type NSStatusBar struct {
 
 func NewNSStatusBar() *NSStatusBar {
 	this := &NSStatusBar{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStatusBar()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSStatusBar) initNSStatusBar() {
 
 func NewNSStatusBarOverload1(id int64) *NSStatusBar {
 	this := &NSStatusBar{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStatusBarOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSStatusBar) initNSStatusBarOverload1(id int64) {
 
 func NewNSStatusBarOverload2(id *id) *NSStatusBar {
 	this := &NSStatusBar{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStatusBarOverload2(id)
 	return this
 }
@@ -40,24 +40,24 @@ func (this *NSStatusBar) initNSStatusBarOverload2(id *id) {
 }
 
 func (this *NSStatusBar) RemoveStatusItem(item *NSStatusItem) {
-	var cond670 int64
-	if item != nil {
-		cond670 = item.Id
+	var cond669 int64
+	if item != (nil) {
+		cond669 = item.Id
 	} else {
-		cond670 = int64(0)
+		cond669 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeStatusItem_, cond670)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeStatusItem_, cond669)
 }
 
 func (this *NSStatusBar) StatusItemWithLength(length float64) *NSStatusItem {
 	var result int64 = OSObjc_msgSendOverload35(this.Id, OSSel_statusItemWithLength_, length)
-	var cond671 *NSStatusItem
+	var cond670 *NSStatusItem
 	if result != 0 {
-		cond671 = NewNSStatusItemOverload1(result)
+		cond670 = NewNSStatusItemOverload1(result)
 	} else {
-		cond671 = nil
+		cond670 = nil
 	}
-	return cond671
+	return cond670
 }
 
 func (this *NSStatusBar) Thickness() float64 {
@@ -66,11 +66,11 @@ func (this *NSStatusBar) Thickness() float64 {
 
 func NSStatusBarSystemStatusBar() *NSStatusBar {
 	var result int64 = OSObjc_msgSend(OSClass_NSStatusBar, OSSel_systemStatusBar)
-	var cond672 *NSStatusBar
+	var cond671 *NSStatusBar
 	if result != 0 {
-		cond672 = NewNSStatusBarOverload1(result)
+		cond671 = NewNSStatusBarOverload1(result)
 	} else {
-		cond672 = nil
+		cond671 = nil
 	}
-	return cond672
+	return cond671
 }

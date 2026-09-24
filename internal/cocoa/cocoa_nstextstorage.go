@@ -8,7 +8,7 @@ type NSTextStorage struct {
 
 func NewNSTextStorage() *NSTextStorage {
 	this := &NSTextStorage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextStorage()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTextStorage) initNSTextStorage() {
 
 func NewNSTextStorageOverload1(id int64) *NSTextStorage {
 	this := &NSTextStorage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextStorageOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTextStorage) initNSTextStorageOverload1(id int64) {
 
 func NewNSTextStorageOverload2(id *id) *NSTextStorage {
 	this := &NSTextStorage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextStorageOverload2(id)
 	return this
 }
@@ -40,22 +40,22 @@ func (this *NSTextStorage) initNSTextStorageOverload2(id *id) {
 }
 
 func (this *NSTextStorage) AddLayoutManager(aLayoutManager *NSLayoutManager) {
-	var cond773 int64
-	if aLayoutManager != nil {
-		cond773 = aLayoutManager.Id
+	var cond772 int64
+	if aLayoutManager != (nil) {
+		cond772 = aLayoutManager.Id
 	} else {
-		cond773 = int64(0)
+		cond772 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addLayoutManager_, cond773)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addLayoutManager_, cond772)
 }
 
 func (this *NSTextStorage) Paragraphs() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_paragraphs)
-	var cond774 *NSArray
+	var cond773 *NSArray
 	if result != 0 {
-		cond774 = NewNSArrayOverload1(result)
+		cond773 = NewNSArrayOverload1(result)
 	} else {
-		cond774 = nil
+		cond773 = nil
 	}
-	return cond774
+	return cond773
 }

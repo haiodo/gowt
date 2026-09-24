@@ -8,7 +8,7 @@ type SWTToolbar struct {
 
 func NewSWTToolbar() *SWTToolbar {
 	this := &SWTToolbar{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTToolbar()
 	return this
 }

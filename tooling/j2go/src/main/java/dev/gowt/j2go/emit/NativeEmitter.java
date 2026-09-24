@@ -48,8 +48,16 @@ final class NativeEmitter {
 		}
 		// A zero-arg native shadowed by a same-named field (kUTTypeFileURL(), ~165 of these) is
 		// a constant-global accessor, not a real function - calling it can SIGBUS (see README).
-		if (mb.getParameterTypes().length == 0 && isShadowedByField(ci.binding, javaName)) {
+		// flags=const, or Apple's kName convention (os_custom.c's no_gen kTISPropertyUnicodeKeyLayoutData).
+		boolean isConst = TypeModel.javadocTag(md, "@method", null).contains("flags=const")
+				|| javaName.matches("k[A-Z].*");
+		if (mb.getParameterTypes().length == 0 && (isConst || isShadowedByField(ci.binding, javaName))) {
 			emitConstantAccessor(md, mb, javaName, goName, out);
+			return;
+		}
+		String callbackTypes = TypeModel.javadocTag(md, "@method", null);
+		if (callbackTypes.contains("callback_types=")) {
+			emitStructCallback(mb, goName, callbackTypes, out);
 			return;
 		}
 		if (javaName.endsWith("_stret") && emitter.retType(mb).isEmpty() && mb.getParameterTypes().length > 0) {
@@ -77,7 +85,7 @@ final class NativeEmitter {
 		List<String> restArgs = new ArrayList<>();
 		for (int i = 1; i < types.length; i++) {
 			String n = i < mdParams.size() ? emitter.sanitizeIdent(((SingleVariableDeclaration) mdParams.get(i)).getName().getIdentifier()) : "a" + i;
-			restParams.add(n + " " + dev.gowt.j2go.GoTypes.map(types[i], emitter));
+			restParams.add(n + " " + paramType(mb, i));
 			restArgs.add(n);
 		}
 		String resultParamName = mdParams.isEmpty() ? "result" : emitter.sanitizeIdent(((SingleVariableDeclaration) mdParams.get(0)).getName().getIdentifier());
@@ -101,9 +109,19 @@ final class NativeEmitter {
 		return s.substring(0, s.length() - suffix.length());
 	}
 
+	/** A struct param JNI passes by pointer (no `flags=struct`, see TypeModel) is a Go pointer. */
+	private String paramType(IMethodBinding mb, int i) {
+		String t = dev.gowt.j2go.GoTypes.map(mb.getParameterTypes()[i], emitter);
+		return emitter.model.isNativeStructPointerParam(mb, i) ? "*" + t : t;
+	}
+
 	private void emitLazyNative(MethodDeclaration md, IMethodBinding mb, String javaName, String goName, String ret, StringBuilder out) {
 		String symbol = emitter.natives.symbolFor(javaName);
-		String params = emitter.paramList(mb, md);
+		List<String> ps = new ArrayList<>();
+		for (int i = 0; i < mb.getParameterTypes().length; i++) {
+			ps.add(emitter.sanitizeIdent(((SingleVariableDeclaration) md.parameters().get(i)).getName().getIdentifier()) + " " + paramType(mb, i));
+		}
+		String params = String.join(", ", ps);
 		String args = emitter.argNames(md);
 		String backing = goName + "_impl";
 		String once = goName + "_once";
@@ -136,6 +154,46 @@ final class NativeEmitter {
 				.append("\tif addr == 0 {\n\t\treturn 0\n\t}\n")
 				.append("\treturn ").append(deref).append('\n')
 				.append("}\n\n");
+	}
+
+	private static final java.util.Set<String> CALLBACK_STRUCTS = java.util.Set.of("NSRect", "NSPoint", "NSSize", "NSRange");
+
+	/** CALLBACK_x(func): os.c's by-value-struct IMP trampoline, generated from the Javadoc's
+	 * callback_types/flags (README "Callback design"). */
+	private void emitStructCallback(IMethodBinding mb, String goName, String javadoc, StringBuilder out) {
+		String[] types = field(javadoc, "callback_types=").split(";");
+		String[] flags = field(javadoc, "callback_flags=").split(";");
+		List<String> params = new ArrayList<>();
+		List<String> args = new ArrayList<>();
+		boolean pins = false;
+		for (int i = 1; i < types.length; i++) {
+			String st = structType(types[i], flags[i]);
+			params.add("arg" + (i - 1) + " " + (st != null ? st : "uintptr"));
+			args.add(st != null ? "pinArg(&pin, &arg" + (i - 1) + ")" : "int64(arg" + (i - 1) + ")");
+			pins |= st != null;
+		}
+		String retStruct = structType(types[0], flags[0]);
+		String call = "fn([]int64{" + String.join(", ", args) + "})";
+		out.append("func ").append(goName).append('(').append(emitter.paramList(mb, null)).append(") int64 {\n");
+		out.append("\tfn := callbackFunc(a0)\n");
+		out.append("\treturn int64(NewCallback(func(").append(String.join(", ", params)).append(") ")
+				.append(retStruct != null ? retStruct : "uintptr").append(" {\n");
+		if (pins) {
+			emitter.fileImports.add("runtime");
+			out.append("\t\tvar pin runtime.Pinner\n\t\tdefer pin.Unpin()\n");
+		}
+		out.append("\t\treturn ").append(retStruct != null ? "structResult[" + retStruct + "](" + call + ")" : "uintptr(" + call + ")")
+				.append("\n\t}))\n}\n\n");
+	}
+
+	private static String field(String javadoc, String key) {
+		String rest = javadoc.substring(javadoc.indexOf(key) + key.length()).trim();
+		int end = rest.indexOf(',');
+		return (end < 0 ? rest : rest.substring(0, end)).trim();
+	}
+
+	private static String structType(String type, String flag) {
+		return flag.trim().equals("struct") && CALLBACK_STRUCTS.contains(type.trim()) ? type.trim() : null;
 	}
 
 	/** Native with no verified purego binding (see natives.properties): unsupported-marker stub. */

@@ -13,12 +13,12 @@ type PointImpl interface {
 type Point struct {
 	X    int32
 	Y    int32
-	Impl PointImpl
+	impl PointImpl
 }
 
 func NewPoint(x int32, y int32) *Point {
 	this := &Point{}
-	this.Impl = this
+	this.impl = this
 	this.initPoint(x, y)
 	return this
 }
@@ -29,7 +29,7 @@ func (this *Point) initPoint(x int32, y int32) {
 }
 
 func (this *Point) Equals(object any) bool {
-	if object == nil {
+	if object == (nil) {
 		return false
 	}
 	if object == this {
@@ -56,13 +56,14 @@ func (this *Point) Clone() *Point {
 
 type Point_OfFloat struct {
 	Point
-	ResidualX, ResidualY float32
-	roundingMode         RoundingMode
+	ResidualX    float32
+	ResidualY    float32
+	roundingMode RoundingMode
 }
 
 func NewPointOfFloat(x int32, y int32) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.Impl = this
+	this.impl = this
 	this.initPointOfFloat(x, y)
 	return this
 }
@@ -74,7 +75,7 @@ func (this *Point_OfFloat) initPointOfFloat(x int32, y int32) {
 
 func NewPointOfFloatXY(x float32, y float32) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.Impl = this
+	this.impl = this
 	this.initPointOfFloatXY(x, y)
 	return this
 }
@@ -85,7 +86,7 @@ func (this *Point_OfFloat) initPointOfFloatXY(x float32, y float32) {
 
 func NewPointOfFloatXYRoundingMode(x float32, y float32, roundingMode RoundingMode) *Point_OfFloat {
 	this := &Point_OfFloat{}
-	this.Impl = this
+	this.impl = this
 	this.initPointOfFloatXYRoundingMode(x, y, roundingMode)
 	return this
 }
@@ -116,14 +117,14 @@ func (this *Point_OfFloat) SetY(y float32) {
 }
 
 func (this *Point_OfFloat) Clone() *Point {
-	return &NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode).Point
+	return upcastPoint_OfFloatToPoint(NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode))
 }
 
 func PointOfFloatFrom(point *Point) *Point_OfFloat {
-	pointOfFloat, ok2 := pointImplAsOfFloat(point.Impl)
+	pointOfFloat, ok2 := isPointToPoint_OfFloat(point)
 	if ok2 {
-		t3 := pointOfFloat.Impl.Clone()
-		t4, _ := pointImplAsOfFloat(t3.Impl)
+		t3 := pointOfFloat.impl.Clone()
+		t4, _ := pointImplAsOfFloat(t3.impl)
 		return t4
 	}
 	return NewPointOfFloat(point.X, point.Y)
@@ -136,7 +137,7 @@ type Point_WithMonitor struct {
 
 func NewPointWithMonitor(x int32, y int32, monitor *Monitor) *Point_WithMonitor {
 	this := &Point_WithMonitor{}
-	this.Impl = this
+	this.impl = this
 	this.initPointWithMonitor(x, y, monitor)
 	return this
 }
@@ -148,7 +149,7 @@ func (this *Point_WithMonitor) initPointWithMonitor(x int32, y int32, monitor *M
 
 func newPointWithMonitorXYMonitor(x float32, y float32, monitor *Monitor) *Point_WithMonitor {
 	this := &Point_WithMonitor{}
-	this.Impl = this
+	this.impl = this
 	this.initPointWithMonitorXYMonitor(x, y, monitor)
 	return this
 }
@@ -163,7 +164,7 @@ func (this *Point_WithMonitor) GetMonitor() *Monitor {
 }
 
 func (this *Point_WithMonitor) Clone() *Point {
-	return &newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor).Point
+	return upcastPoint_WithMonitorToPoint(newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor))
 }
 
 // j2go: instanceof helper for Point and its subclasses within the translated set.
@@ -179,6 +180,13 @@ func pointImplAsPoint(x any) (*Point, bool) {
 	return nil, false
 }
 
+func upcastPoint_OfFloatToPoint(x *Point_OfFloat) *Point {
+	if x == nil {
+		return nil
+	}
+	return &x.Point
+}
+
 // j2go: instanceof helper for Point_OfFloat and its subclasses within the translated set.
 func pointImplAsOfFloat(x any) (*Point_OfFloat, bool) {
 	switch v := x.(type) {
@@ -188,4 +196,18 @@ func pointImplAsOfFloat(x any) (*Point_OfFloat, bool) {
 		return &v.Point_OfFloat, true
 	}
 	return nil, false
+}
+
+func isPointToPoint_OfFloat(x *Point) (*Point_OfFloat, bool) {
+	if x == nil {
+		return nil, false
+	}
+	return pointImplAsOfFloat(x.impl)
+}
+
+func upcastPoint_WithMonitorToPoint(x *Point_WithMonitor) *Point {
+	if x == nil {
+		return nil
+	}
+	return &x.Point
 }

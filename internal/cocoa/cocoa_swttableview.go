@@ -8,7 +8,7 @@ type SWTTableView struct {
 
 func NewSWTTableView() *SWTTableView {
 	this := &SWTTableView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTableView()
 	return this
 }

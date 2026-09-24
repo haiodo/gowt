@@ -8,7 +8,7 @@ type SWTPrinterView struct {
 
 func NewSWTPrinterView() *SWTPrinterView {
 	this := &SWTPrinterView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPrinterView()
 	return this
 }

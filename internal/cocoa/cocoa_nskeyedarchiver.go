@@ -8,7 +8,7 @@ type NSKeyedArchiver struct {
 
 func NewNSKeyedArchiver() *NSKeyedArchiver {
 	this := &NSKeyedArchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedArchiver()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSKeyedArchiver) initNSKeyedArchiver() {
 
 func NewNSKeyedArchiverOverload1(id int64) *NSKeyedArchiver {
 	this := &NSKeyedArchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedArchiverOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSKeyedArchiver) initNSKeyedArchiverOverload1(id int64) {
 
 func NewNSKeyedArchiverOverload2(id *id) *NSKeyedArchiver {
 	this := &NSKeyedArchiver{}
-	this.Impl = this
+	this.impl = this
 	this.initNSKeyedArchiverOverload2(id)
 	return this
 }
@@ -40,18 +40,18 @@ func (this *NSKeyedArchiver) initNSKeyedArchiverOverload2(id *id) {
 }
 
 func NSKeyedArchiverArchivedDataWithRootObject(rootObject *id) *NSData {
-	var cond344 int64
-	if rootObject != nil {
-		cond344 = rootObject.Id
+	var cond343 int64
+	if rootObject != (nil) {
+		cond343 = rootObject.Id
 	} else {
-		cond344 = int64(0)
+		cond343 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedArchiver, OSSel_archivedDataWithRootObject_, cond344)
-	var cond345 *NSData
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedArchiver, OSSel_archivedDataWithRootObject_, cond343)
+	var cond344 *NSData
 	if result != 0 {
-		cond345 = NewNSDataOverload1(result)
+		cond344 = NewNSDataOverload1(result)
 	} else {
-		cond345 = nil
+		cond344 = nil
 	}
-	return cond345
+	return cond344
 }

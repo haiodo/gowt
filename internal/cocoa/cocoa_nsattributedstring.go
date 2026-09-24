@@ -8,7 +8,7 @@ type NSAttributedString struct {
 
 func NewNSAttributedString() *NSAttributedString {
 	this := &NSAttributedString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAttributedString()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAttributedString) initNSAttributedString() {
 
 func NewNSAttributedStringOverload1(id int64) *NSAttributedString {
 	this := &NSAttributedString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAttributedStringOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAttributedString) initNSAttributedStringOverload1(id int64) {
 
 func NewNSAttributedStringOverload2(id *id) *NSAttributedString {
 	this := &NSAttributedString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAttributedStringOverload2(id)
 	return this
 }
@@ -61,7 +61,7 @@ func (this *NSAttributedString) Size() NSSize {
 
 func (this *NSAttributedString) Attribute(attrName *NSString, location int64, range_ int64) *id {
 	var cond60 int64
-	if attrName != nil {
+	if attrName != (nil) {
 		cond60 = attrName.Id
 	} else {
 		cond60 = int64(0)
@@ -106,7 +106,7 @@ func (this *NSAttributedString) AttributesAtIndex(location int64, range_ int64, 
 
 func (this *NSAttributedString) InitWithString(str *NSString) *NSAttributedString {
 	var cond65 int64
-	if str != nil {
+	if str != (nil) {
 		cond65 = str.Id
 	} else {
 		cond65 = int64(0)
@@ -129,13 +129,13 @@ func (this *NSAttributedString) InitWithString(str *NSString) *NSAttributedStrin
 
 func (this *NSAttributedString) InitWithStringStrAttrs(str *NSString, attrs *NSDictionary) *NSAttributedString {
 	var cond68 int64
-	if str != nil {
+	if str != (nil) {
 		cond68 = str.Id
 	} else {
 		cond68 = int64(0)
 	}
 	var cond69 int64
-	if attrs != nil {
+	if attrs != (nil) {
 		cond69 = attrs.Id
 	} else {
 		cond69 = int64(0)

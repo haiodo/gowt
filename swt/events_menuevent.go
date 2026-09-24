@@ -8,7 +8,7 @@ type MenuEvent struct {
 
 func NewMenuEvent(e *Event) *MenuEvent {
 	this := &MenuEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initMenuEvent(e)
 	return this
 }

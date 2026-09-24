@@ -8,7 +8,7 @@ type NSAppleEventDescriptor struct {
 
 func NewNSAppleEventDescriptor() *NSAppleEventDescriptor {
 	this := &NSAppleEventDescriptor{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppleEventDescriptor()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAppleEventDescriptor) initNSAppleEventDescriptor() {
 
 func NewNSAppleEventDescriptorOverload1(id int64) *NSAppleEventDescriptor {
 	this := &NSAppleEventDescriptor{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppleEventDescriptorOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAppleEventDescriptor) initNSAppleEventDescriptorOverload1(id int64
 
 func NewNSAppleEventDescriptorOverload2(id *id) *NSAppleEventDescriptor {
 	this := &NSAppleEventDescriptor{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppleEventDescriptorOverload2(id)
 	return this
 }

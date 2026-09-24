@@ -8,7 +8,7 @@ type NSStepper struct {
 
 func NewNSStepper() *NSStepper {
 	this := &NSStepper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStepper()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSStepper) initNSStepper() {
 
 func NewNSStepperOverload1(id int64) *NSStepper {
 	this := &NSStepper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStepperOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSStepper) initNSStepperOverload1(id int64) {
 
 func NewNSStepperOverload2(id *id) *NSStepper {
 	this := &NSStepper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSStepperOverload2(id)
 	return this
 }

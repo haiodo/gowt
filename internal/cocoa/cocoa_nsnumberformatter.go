@@ -8,7 +8,7 @@ type NSNumberFormatter struct {
 
 func NewNSNumberFormatter() *NSNumberFormatter {
 	this := &NSNumberFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumberFormatter()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSNumberFormatter) initNSNumberFormatter() {
 
 func NewNSNumberFormatterOverload1(id int64) *NSNumberFormatter {
 	this := &NSNumberFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumberFormatterOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSNumberFormatter) initNSNumberFormatterOverload1(id int64) {
 
 func NewNSNumberFormatterOverload2(id *id) *NSNumberFormatter {
 	this := &NSNumberFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumberFormatterOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSNumberFormatter) initNSNumberFormatterOverload2(id *id) {
 
 func (this *NSNumberFormatter) DecimalSeparator() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_decimalSeparator)
-	var cond470 *NSString
+	var cond469 *NSString
 	if result != 0 {
-		cond470 = NewNSStringOverload1(result)
+		cond469 = NewNSStringOverload1(result)
 	} else {
-		cond470 = nil
+		cond469 = nil
 	}
-	return cond470
+	return cond469
 }
 
 func (this *NSNumberFormatter) SetAllowsFloats(allowsFloats bool) {
@@ -55,13 +55,13 @@ func (this *NSNumberFormatter) SetAllowsFloats(allowsFloats bool) {
 }
 
 func (this *NSNumberFormatter) SetMaximum(maximum *NSNumber) {
-	var cond471 int64
-	if maximum != nil {
-		cond471 = maximum.Id
+	var cond470 int64
+	if maximum != (nil) {
+		cond470 = maximum.Id
 	} else {
-		cond471 = int64(0)
+		cond470 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMaximum_, cond471)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMaximum_, cond470)
 }
 
 func (this *NSNumberFormatter) SetMaximumFractionDigits(maximumFractionDigits int64) {
@@ -73,13 +73,13 @@ func (this *NSNumberFormatter) SetMaximumIntegerDigits(maximumIntegerDigits int6
 }
 
 func (this *NSNumberFormatter) SetMinimum(minimum *NSNumber) {
-	var cond472 int64
-	if minimum != nil {
-		cond472 = minimum.Id
+	var cond471 int64
+	if minimum != (nil) {
+		cond471 = minimum.Id
 	} else {
-		cond472 = int64(0)
+		cond471 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMinimum_, cond472)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMinimum_, cond471)
 }
 
 func (this *NSNumberFormatter) SetMinimumFractionDigits(minimumFractionDigits int64) {

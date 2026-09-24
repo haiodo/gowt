@@ -8,7 +8,7 @@ type SWTPanel struct {
 
 func NewSWTPanel() *SWTPanel {
 	this := &SWTPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPanel()
 	return this
 }

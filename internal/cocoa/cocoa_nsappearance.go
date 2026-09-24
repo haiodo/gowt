@@ -8,7 +8,7 @@ type NSAppearance struct {
 
 func NewNSAppearance() *NSAppearance {
 	this := &NSAppearance{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppearance()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAppearance) initNSAppearance() {
 
 func NewNSAppearanceOverload1(id int64) *NSAppearance {
 	this := &NSAppearance{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppearanceOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAppearance) initNSAppearanceOverload1(id int64) {
 
 func NewNSAppearanceOverload2(id *id) *NSAppearance {
 	this := &NSAppearance{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAppearanceOverload2(id)
 	return this
 }
@@ -52,7 +52,7 @@ func (this *NSAppearance) Name() *NSString {
 
 func NSAppearanceAppearanceNamed(name *NSString) *NSAppearance {
 	var cond17 int64
-	if name != nil {
+	if name != (nil) {
 		cond17 = name.Id
 	} else {
 		cond17 = int64(0)

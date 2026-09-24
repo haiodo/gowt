@@ -8,7 +8,7 @@ type SWTScrollView struct {
 
 func NewSWTScrollView() *SWTScrollView {
 	this := &SWTScrollView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTScrollView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTScrollView) initSWTScrollView() {
 
 func NewSWTScrollViewId(id int64) *SWTScrollView {
 	this := &SWTScrollView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTScrollViewId(id)
 	return this
 }

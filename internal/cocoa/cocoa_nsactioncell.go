@@ -8,7 +8,7 @@ type NSActionCell struct {
 
 func NewNSActionCell() *NSActionCell {
 	this := &NSActionCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSActionCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSActionCell) initNSActionCell() {
 
 func NewNSActionCellOverload1(id int64) *NSActionCell {
 	this := &NSActionCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSActionCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSActionCell) initNSActionCellOverload1(id int64) {
 
 func NewNSActionCellOverload2(id *id) *NSActionCell {
 	this := &NSActionCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSActionCellOverload2(id)
 	return this
 }
@@ -49,7 +49,7 @@ func (this *NSActionCell) SetAction(action int64) {
 
 func (this *NSActionCell) SetTarget(target *id) {
 	var cond2 int64
-	if target != nil {
+	if target != (nil) {
 		cond2 = target.Id
 	} else {
 		cond2 = int64(0)

@@ -8,7 +8,7 @@ type NSEnumerator struct {
 
 func NewNSEnumerator() *NSEnumerator {
 	this := &NSEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSEnumerator()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSEnumerator) initNSEnumerator() {
 
 func NewNSEnumeratorOverload1(id int64) *NSEnumerator {
 	this := &NSEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSEnumeratorOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSEnumerator) initNSEnumeratorOverload1(id int64) {
 
 func NewNSEnumeratorOverload2(id *id) *NSEnumerator {
 	this := &NSEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSEnumeratorOverload2(id)
 	return this
 }
@@ -41,11 +41,11 @@ func (this *NSEnumerator) initNSEnumeratorOverload2(id *id) {
 
 func (this *NSEnumerator) NextObject() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_nextObject)
-	var cond246 *id
+	var cond245 *id
 	if result != 0 {
-		cond246 = NewidOverload1(result)
+		cond245 = NewidOverload1(result)
 	} else {
-		cond246 = nil
+		cond245 = nil
 	}
-	return cond246
+	return cond245
 }

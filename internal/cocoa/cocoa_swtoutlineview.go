@@ -8,7 +8,7 @@ type SWTOutlineView struct {
 
 func NewSWTOutlineView() *SWTOutlineView {
 	this := &SWTOutlineView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTOutlineView()
 	return this
 }

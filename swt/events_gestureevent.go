@@ -22,7 +22,7 @@ type GestureEvent struct {
 
 func NewGestureEvent(e *Event) *GestureEvent {
 	this := &GestureEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initGestureEvent(e)
 	return this
 }

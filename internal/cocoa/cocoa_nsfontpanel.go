@@ -8,7 +8,7 @@ type NSFontPanel struct {
 
 func NewNSFontPanel() *NSFontPanel {
 	this := &NSFontPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFontPanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSFontPanel) initNSFontPanel() {
 
 func NewNSFontPanelOverload1(id int64) *NSFontPanel {
 	this := &NSFontPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFontPanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSFontPanel) initNSFontPanelOverload1(id int64) {
 
 func NewNSFontPanelOverload2(id *id) *NSFontPanel {
 	this := &NSFontPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFontPanelOverload2(id)
 	return this
 }
@@ -40,51 +40,51 @@ func (this *NSFontPanel) initNSFontPanelOverload2(id *id) {
 }
 
 func (this *NSFontPanel) PanelConvertFont(fontObj *NSFont) *NSFont {
-	var cond280 int64
-	if fontObj != nil {
-		cond280 = fontObj.Id
+	var cond279 int64
+	if fontObj != (nil) {
+		cond279 = fontObj.Id
 	} else {
-		cond280 = int64(0)
+		cond279 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond280)
-	var cond281 *NSFont
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond279)
+	var cond280 *NSFont
 	if result != 0 {
-		cond281 = NewNSFontOverload1(result)
+		cond280 = NewNSFontOverload1(result)
 	} else {
-		cond281 = nil
+		cond280 = nil
 	}
-	return cond281
+	return cond280
 }
 
 func (this *NSFontPanel) SetPanelFont(fontObj *NSFont, flag bool) {
-	var cond282 int64
-	if fontObj != nil {
-		cond282 = fontObj.Id
+	var cond281 int64
+	if fontObj != (nil) {
+		cond281 = fontObj.Id
 	} else {
-		cond282 = int64(0)
+		cond281 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond282, flag)
+	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond281, flag)
 }
 
 func NSFontPanelSharedFontPanel() *NSFontPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSFontPanel, OSSel_sharedFontPanel)
-	var cond283 *NSFontPanel
+	var cond282 *NSFontPanel
 	if result != 0 {
-		cond283 = NewNSFontPanelOverload1(result)
+		cond282 = NewNSFontPanelOverload1(result)
 	} else {
-		cond283 = nil
+		cond282 = nil
 	}
-	return cond283
+	return cond282
 }
 
 func NSFontPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond284 int64
-	if aTitle != nil {
-		cond284 = aTitle.Id
+	var cond283 int64
+	if aTitle != (nil) {
+		cond283 = aTitle.Id
 	} else {
-		cond284 = int64(0)
+		cond283 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond284, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond283, aStyle)
 }
 
 func NSFontPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

@@ -8,7 +8,7 @@ type NSFormatter struct {
 
 func NewNSFormatter() *NSFormatter {
 	this := &NSFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFormatter()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSFormatter) initNSFormatter() {
 
 func NewNSFormatterOverload1(id int64) *NSFormatter {
 	this := &NSFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFormatterOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSFormatter) initNSFormatterOverload1(id int64) {
 
 func NewNSFormatterOverload2(id *id) *NSFormatter {
 	this := &NSFormatter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFormatterOverload2(id)
 	return this
 }
@@ -40,18 +40,18 @@ func (this *NSFormatter) initNSFormatterOverload2(id *id) {
 }
 
 func (this *NSFormatter) StringForObjectValue(obj *id) *NSString {
-	var cond285 int64
-	if obj != nil {
-		cond285 = obj.Id
+	var cond284 int64
+	if obj != (nil) {
+		cond284 = obj.Id
 	} else {
-		cond285 = int64(0)
+		cond284 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForObjectValue_, cond285)
-	var cond286 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForObjectValue_, cond284)
+	var cond285 *NSString
 	if result != 0 {
-		cond286 = NewNSStringOverload1(result)
+		cond285 = NewNSStringOverload1(result)
 	} else {
-		cond286 = nil
+		cond285 = nil
 	}
-	return cond286
+	return cond285
 }

@@ -13,7 +13,7 @@ type ShellEvent struct {
 
 func NewShellEvent(e *Event) *ShellEvent {
 	this := &ShellEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initShellEvent(e)
 	return this
 }

@@ -8,7 +8,7 @@ type NSMutableString struct {
 
 func NewNSMutableString() *NSMutableString {
 	this := &NSMutableString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableString()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMutableString) initNSMutableString() {
 
 func NewNSMutableStringOverload1(id int64) *NSMutableString {
 	this := &NSMutableString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableStringOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMutableString) initNSMutableStringOverload1(id int64) {
 
 func NewNSMutableStringOverload2(id *id) *NSMutableString {
 	this := &NSMutableString{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableStringOverload2(id)
 	return this
 }
@@ -40,37 +40,48 @@ func (this *NSMutableString) initNSMutableStringOverload2(id *id) {
 }
 
 func (this *NSMutableString) AppendString(aString *NSString) {
+	var cond441 int64
+	if aString != (nil) {
+		cond441 = aString.Id
+	} else {
+		cond441 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_appendString_, cond441)
+}
+
+func (this *NSMutableString) ReplaceCharactersInRange(range_ NSRange, aString *NSString) {
 	var cond442 int64
-	if aString != nil {
+	if aString != (nil) {
 		cond442 = aString.Id
 	} else {
 		cond442 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_appendString_, cond442)
+	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond442)
 }
 
-func (this *NSMutableString) ReplaceCharactersInRange(range_ NSRange, aString *NSString) {
+func (this *NSMutableString) SetString(aString *NSString) {
 	var cond443 int64
-	if aString != nil {
+	if aString != (nil) {
 		cond443 = aString.Id
 	} else {
 		cond443 = int64(0)
 	}
-	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond443)
-}
-
-func (this *NSMutableString) SetString(aString *NSString) {
-	var cond444 int64
-	if aString != nil {
-		cond444 = aString.Id
-	} else {
-		cond444 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setString_, cond444)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setString_, cond443)
 }
 
 func NSMutableStringString() *NSMutableString {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableString, OSSel_string)
+	var cond444 *NSMutableString
+	if result != 0 {
+		cond444 = NewNSMutableStringOverload1(result)
+	} else {
+		cond444 = nil
+	}
+	return cond444
+}
+
+func NSMutableStringStringWithCharacters(characters []uint16, length int64) *NSMutableString {
+	var result int64 = OSObjc_msgSendOverload34(OSClass_NSMutableString, OSSel_stringWithCharacters_length_, characters, length)
 	var cond445 *NSMutableString
 	if result != 0 {
 		cond445 = NewNSMutableStringOverload1(result)
@@ -80,8 +91,8 @@ func NSMutableStringString() *NSMutableString {
 	return cond445
 }
 
-func NSMutableStringStringWithCharacters(characters []uint16, length int64) *NSMutableString {
-	var result int64 = OSObjc_msgSendOverload34(OSClass_NSMutableString, OSSel_stringWithCharacters_length_, characters, length)
+func NSMutableStringStringWithUTF8String(nullTerminatedCString int64) *NSMutableString {
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableString, OSSel_stringWithUTF8String_, nullTerminatedCString)
 	var cond446 *NSMutableString
 	if result != 0 {
 		cond446 = NewNSMutableStringOverload1(result)
@@ -89,15 +100,4 @@ func NSMutableStringStringWithCharacters(characters []uint16, length int64) *NSM
 		cond446 = nil
 	}
 	return cond446
-}
-
-func NSMutableStringStringWithUTF8String(nullTerminatedCString int64) *NSMutableString {
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableString, OSSel_stringWithUTF8String_, nullTerminatedCString)
-	var cond447 *NSMutableString
-	if result != 0 {
-		cond447 = NewNSMutableStringOverload1(result)
-	} else {
-		cond447 = nil
-	}
-	return cond447
 }

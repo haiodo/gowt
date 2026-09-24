@@ -8,7 +8,7 @@ type NSApplication struct {
 
 func NewNSApplication() *NSApplication {
 	this := &NSApplication{}
-	this.Impl = this
+	this.impl = this
 	this.initNSApplication()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSApplication) initNSApplication() {
 
 func NewNSApplicationOverload1(id int64) *NSApplication {
 	this := &NSApplication{}
-	this.Impl = this
+	this.impl = this
 	this.initNSApplicationOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSApplication) initNSApplicationOverload1(id int64) {
 
 func NewNSApplicationOverload2(id *id) *NSApplication {
 	this := &NSApplication{}
-	this.Impl = this
+	this.impl = this
 	this.initNSApplicationOverload2(id)
 	return this
 }
@@ -56,7 +56,7 @@ func (this *NSApplication) ApplicationIconImage() *NSImage {
 
 func (this *NSApplication) ArrangeInFront(sender *id) {
 	var cond23 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond23 = sender.Id
 	} else {
 		cond23 = int64(0)
@@ -66,19 +66,19 @@ func (this *NSApplication) ArrangeInFront(sender *id) {
 
 func (this *NSApplication) BeginSheet(sheet *NSWindow, docWindow *NSWindow, modalDelegate *id, didEndSelector int64, contextInfo int64) {
 	var cond24 int64
-	if sheet != nil {
+	if sheet != (nil) {
 		cond24 = sheet.Id
 	} else {
 		cond24 = int64(0)
 	}
 	var cond25 int64
-	if docWindow != nil {
+	if docWindow != (nil) {
 		cond25 = docWindow.Id
 	} else {
 		cond25 = int64(0)
 	}
 	var cond26 int64
-	if modalDelegate != nil {
+	if modalDelegate != (nil) {
 		cond26 = modalDelegate.Id
 	} else {
 		cond26 = int64(0)
@@ -110,7 +110,7 @@ func (this *NSApplication) DockTile() *NSDockTile {
 
 func (this *NSApplication) EndSheet(sheet *NSWindow, returnCode int64) {
 	var cond29 int64
-	if sheet != nil {
+	if sheet != (nil) {
 		cond29 = sheet.Id
 	} else {
 		cond29 = int64(0)
@@ -124,7 +124,7 @@ func (this *NSApplication) FinishLaunching() {
 
 func (this *NSApplication) Hide(sender *id) {
 	var cond30 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond30 = sender.Id
 	} else {
 		cond30 = int64(0)
@@ -134,7 +134,7 @@ func (this *NSApplication) Hide(sender *id) {
 
 func (this *NSApplication) HideOtherApplications(sender *id) {
 	var cond31 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond31 = sender.Id
 	} else {
 		cond31 = int64(0)
@@ -174,13 +174,13 @@ func (this *NSApplication) MainMenu() *NSMenu {
 
 func (this *NSApplication) NextEventMatchingMask(mask int64, expiration *NSDate, mode *NSString, deqFlag bool) *NSEvent {
 	var cond34 int64
-	if expiration != nil {
+	if expiration != (nil) {
 		cond34 = expiration.Id
 	} else {
 		cond34 = int64(0)
 	}
 	var cond35 int64
-	if mode != nil {
+	if mode != (nil) {
 		cond35 = mode.Id
 	} else {
 		cond35 = int64(0)
@@ -197,7 +197,7 @@ func (this *NSApplication) NextEventMatchingMask(mask int64, expiration *NSDate,
 
 func (this *NSApplication) OrderFrontStandardAboutPanel(sender *id) {
 	var cond37 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond37 = sender.Id
 	} else {
 		cond37 = int64(0)
@@ -207,7 +207,7 @@ func (this *NSApplication) OrderFrontStandardAboutPanel(sender *id) {
 
 func (this *NSApplication) PostEvent(event *NSEvent, flag bool) {
 	var cond38 int64
-	if event != nil {
+	if event != (nil) {
 		cond38 = event.Id
 	} else {
 		cond38 = int64(0)
@@ -221,7 +221,7 @@ func (this *NSApplication) ReplyToOpenOrPrint(reply int64) {
 
 func (this *NSApplication) RunModalForWindow(theWindow *NSWindow) int64 {
 	var cond39 int64
-	if theWindow != nil {
+	if theWindow != (nil) {
 		cond39 = theWindow.Id
 	} else {
 		cond39 = int64(0)
@@ -231,13 +231,13 @@ func (this *NSApplication) RunModalForWindow(theWindow *NSWindow) int64 {
 
 func (this *NSApplication) SendAction(theAction int64, theTarget *id, sender *id) bool {
 	var cond40 int64
-	if theTarget != nil {
+	if theTarget != (nil) {
 		cond40 = theTarget.Id
 	} else {
 		cond40 = int64(0)
 	}
 	var cond41 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond41 = sender.Id
 	} else {
 		cond41 = int64(0)
@@ -247,7 +247,7 @@ func (this *NSApplication) SendAction(theAction int64, theTarget *id, sender *id
 
 func (this *NSApplication) SendEvent(theEvent *NSEvent) {
 	var cond42 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond42 = theEvent.Id
 	} else {
 		cond42 = int64(0)
@@ -261,7 +261,7 @@ func (this *NSApplication) SetActivationPolicy(activationPolicy int64) bool {
 
 func (this *NSApplication) SetApplicationIconImage(applicationIconImage *NSImage) {
 	var cond43 int64
-	if applicationIconImage != nil {
+	if applicationIconImage != (nil) {
 		cond43 = applicationIconImage.Id
 	} else {
 		cond43 = int64(0)
@@ -271,7 +271,7 @@ func (this *NSApplication) SetApplicationIconImage(applicationIconImage *NSImage
 
 func (this *NSApplication) SetDelegate(delegate *id) {
 	var cond44 int64
-	if delegate != nil {
+	if delegate != (nil) {
 		cond44 = delegate.Id
 	} else {
 		cond44 = int64(0)
@@ -281,7 +281,7 @@ func (this *NSApplication) SetDelegate(delegate *id) {
 
 func (this *NSApplication) SetHelpMenu(helpMenu *NSMenu) {
 	var cond45 int64
-	if helpMenu != nil {
+	if helpMenu != (nil) {
 		cond45 = helpMenu.Id
 	} else {
 		cond45 = int64(0)
@@ -291,7 +291,7 @@ func (this *NSApplication) SetHelpMenu(helpMenu *NSMenu) {
 
 func (this *NSApplication) SetMainMenu(mainMenu *NSMenu) {
 	var cond46 int64
-	if mainMenu != nil {
+	if mainMenu != (nil) {
 		cond46 = mainMenu.Id
 	} else {
 		cond46 = int64(0)
@@ -301,7 +301,7 @@ func (this *NSApplication) SetMainMenu(mainMenu *NSMenu) {
 
 func (this *NSApplication) SetServicesMenu(servicesMenu *NSMenu) {
 	var cond47 int64
-	if servicesMenu != nil {
+	if servicesMenu != (nil) {
 		cond47 = servicesMenu.Id
 	} else {
 		cond47 = int64(0)
@@ -311,7 +311,7 @@ func (this *NSApplication) SetServicesMenu(servicesMenu *NSMenu) {
 
 func (this *NSApplication) Stop(sender *id) {
 	var cond48 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond48 = sender.Id
 	} else {
 		cond48 = int64(0)
@@ -325,7 +325,7 @@ func (this *NSApplication) StopModal() {
 
 func (this *NSApplication) Terminate(sender *id) {
 	var cond49 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond49 = sender.Id
 	} else {
 		cond49 = int64(0)
@@ -335,7 +335,7 @@ func (this *NSApplication) Terminate(sender *id) {
 
 func (this *NSApplication) UnhideAllApplications(sender *id) {
 	var cond50 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond50 = sender.Id
 	} else {
 		cond50 = int64(0)

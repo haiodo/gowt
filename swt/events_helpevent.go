@@ -8,7 +8,7 @@ type HelpEvent struct {
 
 func NewHelpEvent(e *Event) *HelpEvent {
 	this := &HelpEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initHelpEvent(e)
 	return this
 }

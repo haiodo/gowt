@@ -8,7 +8,7 @@ type SWTImageView struct {
 
 func NewSWTImageView() *SWTImageView {
 	this := &SWTImageView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTImageView()
 	return this
 }

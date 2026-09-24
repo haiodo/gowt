@@ -8,7 +8,7 @@ type NSMutableArray struct {
 
 func NewNSMutableArray() *NSMutableArray {
 	this := &NSMutableArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableArray()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMutableArray) initNSMutableArray() {
 
 func NewNSMutableArrayOverload1(id int64) *NSMutableArray {
 	this := &NSMutableArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableArrayOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMutableArray) initNSMutableArrayOverload1(id int64) {
 
 func NewNSMutableArrayOverload2(id *id) *NSMutableArray {
 	this := &NSMutableArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableArrayOverload2(id)
 	return this
 }
@@ -40,50 +40,50 @@ func (this *NSMutableArray) initNSMutableArrayOverload2(id *id) {
 }
 
 func (this *NSMutableArray) AddObject(anObject *id) {
-	var cond409 int64
-	if anObject != nil {
-		cond409 = anObject.Id
+	var cond408 int64
+	if anObject != (nil) {
+		cond408 = anObject.Id
 	} else {
-		cond409 = int64(0)
+		cond408 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addObject_, cond409)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addObject_, cond408)
 }
 
 func (this *NSMutableArray) AddObjectsFromArray(otherArray *NSArray) {
-	var cond410 int64
-	if otherArray != nil {
-		cond410 = otherArray.Id
+	var cond409 int64
+	if otherArray != (nil) {
+		cond409 = otherArray.Id
 	} else {
-		cond410 = int64(0)
+		cond409 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond410)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond409)
 }
 
 func (this *NSMutableArray) InitWithCapacity(numItems int64) *NSMutableArray {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithCapacity_, numItems)
+	var cond410 *NSMutableArray
 	var cond411 *NSMutableArray
-	var cond412 *NSMutableArray
 	if result != 0 {
-		cond412 = NewNSMutableArrayOverload1(result)
+		cond411 = NewNSMutableArrayOverload1(result)
 	} else {
-		cond412 = nil
+		cond411 = nil
 	}
 	if result == this.Id {
-		cond411 = this
+		cond410 = this
 	} else {
-		cond411 = (cond412)
+		cond410 = (cond411)
 	}
-	return cond411
+	return cond410
 }
 
 func (this *NSMutableArray) InsertObject(anObject *id, index int64) {
-	var cond413 int64
-	if anObject != nil {
-		cond413 = anObject.Id
+	var cond412 int64
+	if anObject != (nil) {
+		cond412 = anObject.Id
 	} else {
-		cond413 = int64(0)
+		cond412 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_insertObject_atIndex_, cond413, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_insertObject_atIndex_, cond412, index)
 }
 
 func (this *NSMutableArray) RemoveLastObject() {
@@ -91,13 +91,13 @@ func (this *NSMutableArray) RemoveLastObject() {
 }
 
 func (this *NSMutableArray) RemoveObject(anObject *id) {
-	var cond414 int64
-	if anObject != nil {
-		cond414 = anObject.Id
+	var cond413 int64
+	if anObject != (nil) {
+		cond413 = anObject.Id
 	} else {
-		cond414 = int64(0)
+		cond413 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeObject_, cond414)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeObject_, cond413)
 }
 
 func (this *NSMutableArray) RemoveObjectAtIndex(index int64) {
@@ -105,17 +105,28 @@ func (this *NSMutableArray) RemoveObjectAtIndex(index int64) {
 }
 
 func (this *NSMutableArray) RemoveObjectIdenticalTo(anObject *id) {
-	var cond415 int64
-	if anObject != nil {
-		cond415 = anObject.Id
+	var cond414 int64
+	if anObject != (nil) {
+		cond414 = anObject.Id
 	} else {
-		cond415 = int64(0)
+		cond414 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeObjectIdenticalTo_, cond415)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeObjectIdenticalTo_, cond414)
 }
 
 func NSMutableArrayArrayWithCapacity(numItems int64) *NSMutableArray {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableArray, OSSel_arrayWithCapacity_, numItems)
+	var cond415 *NSMutableArray
+	if result != 0 {
+		cond415 = NewNSMutableArrayOverload1(result)
+	} else {
+		cond415 = nil
+	}
+	return cond415
+}
+
+func NSMutableArrayArray() *NSMutableArray {
+	var result int64 = OSObjc_msgSend(OSClass_NSMutableArray, OSSel_array)
 	var cond416 *NSMutableArray
 	if result != 0 {
 		cond416 = NewNSMutableArrayOverload1(result)
@@ -125,30 +136,19 @@ func NSMutableArrayArrayWithCapacity(numItems int64) *NSMutableArray {
 	return cond416
 }
 
-func NSMutableArrayArray() *NSMutableArray {
-	var result int64 = OSObjc_msgSend(OSClass_NSMutableArray, OSSel_array)
-	var cond417 *NSMutableArray
-	if result != 0 {
-		cond417 = NewNSMutableArrayOverload1(result)
-	} else {
-		cond417 = nil
-	}
-	return cond417
-}
-
 func NSMutableArrayArrayWithObject(anObject *id) *NSMutableArray {
-	var cond418 int64
-	if anObject != nil {
-		cond418 = anObject.Id
+	var cond417 int64
+	if anObject != (nil) {
+		cond417 = anObject.Id
 	} else {
-		cond418 = int64(0)
+		cond417 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableArray, OSSel_arrayWithObject_, cond418)
-	var cond419 *NSMutableArray
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableArray, OSSel_arrayWithObject_, cond417)
+	var cond418 *NSMutableArray
 	if result != 0 {
-		cond419 = NewNSMutableArrayOverload1(result)
+		cond418 = NewNSMutableArrayOverload1(result)
 	} else {
-		cond419 = nil
+		cond418 = nil
 	}
-	return cond419
+	return cond418
 }

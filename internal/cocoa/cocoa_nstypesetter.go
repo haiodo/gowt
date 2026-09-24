@@ -8,7 +8,7 @@ type NSTypesetter struct {
 
 func NewNSTypesetter() *NSTypesetter {
 	this := &NSTypesetter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTypesetter()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTypesetter) initNSTypesetter() {
 
 func NewNSTypesetterOverload1(id int64) *NSTypesetter {
 	this := &NSTypesetter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTypesetterOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTypesetter) initNSTypesetterOverload1(id int64) {
 
 func NewNSTypesetterOverload2(id *id) *NSTypesetter {
 	this := &NSTypesetter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTypesetterOverload2(id)
 	return this
 }
@@ -40,11 +40,11 @@ func (this *NSTypesetter) initNSTypesetterOverload2(id *id) {
 }
 
 func (this *NSTypesetter) BaselineOffsetInLayoutManager(layoutMgr *NSLayoutManager, glyphIndex int64) float64 {
-	var cond817 int64
-	if layoutMgr != nil {
-		cond817 = layoutMgr.Id
+	var cond816 int64
+	if layoutMgr != (nil) {
+		cond816 = layoutMgr.Id
 	} else {
-		cond817 = int64(0)
+		cond816 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(this.Id, OSSel_baselineOffsetInLayoutManager_glyphIndex_, cond817, glyphIndex)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(this.Id, OSSel_baselineOffsetInLayoutManager_glyphIndex_, cond816, glyphIndex)
 }

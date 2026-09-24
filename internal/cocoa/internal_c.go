@@ -14,14 +14,14 @@ type CImpl interface {
 }
 
 type C struct {
-	Impl CImpl
+	impl CImpl
 }
 
 var CPTR_SIZEOF int32
 
 func NewC() *C {
 	this := &C{}
-	this.Impl = this
+	this.impl = this
 	this.initC()
 	return this
 }

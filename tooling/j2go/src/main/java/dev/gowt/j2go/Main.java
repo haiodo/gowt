@@ -22,6 +22,9 @@ public class Main {
 			// Control.java declares fields of these types - JDT still needs to resolve them.
 			"bundles/org.eclipse.swt/Eclipse SWT Accessibility/common",
 			"bundles/org.eclipse.swt/Eclipse SWT Accessibility/cocoa",
+			// BidiUtil: not on win32's real sourcepath for cocoa, but the real cocoa build fragment
+			// (binaries/org.eclipse.swt.cocoa.macosx.*/build.properties) pulls this one in too.
+			"bundles/org.eclipse.swt/Eclipse SWT/emulated/bidi",
 	};
 
 	private static final String SWT_COMMIT = "af630a9093";

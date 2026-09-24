@@ -8,7 +8,7 @@ type NSSet struct {
 
 func NewNSSet() *NSSet {
 	this := &NSSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSet()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSSet) initNSSet() {
 
 func NewNSSetOverload1(id int64) *NSSet {
 	this := &NSSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSetOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSSet) initNSSetOverload1(id int64) {
 
 func NewNSSetOverload2(id *id) *NSSet {
 	this := &NSSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSetOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSSet) initNSSetOverload2(id *id) {
 
 func (this *NSSet) AllObjects() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_allObjects)
-	var cond667 *NSArray
+	var cond666 *NSArray
 	if result != 0 {
-		cond667 = NewNSArrayOverload1(result)
+		cond666 = NewNSArrayOverload1(result)
 	} else {
-		cond667 = nil
+		cond666 = nil
 	}
-	return cond667
+	return cond666
 }
 
 func (this *NSSet) Count() int64 {
@@ -56,22 +56,22 @@ func (this *NSSet) Count() int64 {
 
 func (this *NSSet) ObjectEnumerator() *NSEnumerator {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectEnumerator)
-	var cond668 *NSEnumerator
+	var cond667 *NSEnumerator
 	if result != 0 {
-		cond668 = NewNSEnumeratorOverload1(result)
+		cond667 = NewNSEnumeratorOverload1(result)
 	} else {
-		cond668 = nil
+		cond667 = nil
 	}
-	return cond668
+	return cond667
 }
 
 func NSSetSet() *NSSet {
 	var result int64 = OSObjc_msgSend(OSClass_NSSet, OSSel_set)
-	var cond669 *NSSet
+	var cond668 *NSSet
 	if result != 0 {
-		cond669 = NewNSSetOverload1(result)
+		cond668 = NewNSSetOverload1(result)
 	} else {
-		cond669 = nil
+		cond668 = nil
 	}
-	return cond669
+	return cond668
 }

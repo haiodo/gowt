@@ -8,7 +8,7 @@ type NSTextFieldCell struct {
 
 func NewNSTextFieldCell() *NSTextFieldCell {
 	this := &NSTextFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextFieldCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTextFieldCell) initNSTextFieldCell() {
 
 func NewNSTextFieldCellOverload1(id int64) *NSTextFieldCell {
 	this := &NSTextFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextFieldCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTextFieldCell) initNSTextFieldCellOverload1(id int64) {
 
 func NewNSTextFieldCellOverload2(id *id) *NSTextFieldCell {
 	this := &NSTextFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextFieldCellOverload2(id)
 	return this
 }
@@ -40,21 +40,21 @@ func (this *NSTextFieldCell) initNSTextFieldCellOverload2(id *id) {
 }
 
 func (this *NSTextFieldCell) SetPlaceholderString(placeholderString *NSString) {
-	var cond771 int64
-	if placeholderString != nil {
-		cond771 = placeholderString.Id
+	var cond770 int64
+	if placeholderString != (nil) {
+		cond770 = placeholderString.Id
 	} else {
-		cond771 = int64(0)
+		cond770 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPlaceholderString_, cond771)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPlaceholderString_, cond770)
 }
 
 func (this *NSTextFieldCell) SetTextColor(textColor *NSColor) {
-	var cond772 int64
-	if textColor != nil {
-		cond772 = textColor.Id
+	var cond771 int64
+	if textColor != (nil) {
+		cond771 = textColor.Id
 	} else {
-		cond772 = int64(0)
+		cond771 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond772)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond771)
 }

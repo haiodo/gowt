@@ -2,7 +2,6 @@
 # internal/cocoa/*_manual.go instead. One entry per line: binaryName, or
 # binaryName#method(erasedParamTypes), or binaryName#fieldName for a skipped field.
 
-org.eclipse.swt.widgets.Monitor
 org.eclipse.swt.graphics.RoundingMode
 
 # org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
@@ -18,22 +17,22 @@ org.eclipse.swt.internal.Library
 # these as opaque field types today (swt/widgets_stubs_manual.go, see README "Manual superclass
 # embedding" and "Round 3"). Widget/Control/Scrollable themselves are translated for real as of
 # Round 4 - removed from this list.
-org.eclipse.swt.widgets.Display
 org.eclipse.swt.graphics.GC
 org.eclipse.swt.widgets.Touch
 
-# Round 4: Widget/Control/Scrollable reference these classes/interfaces, none translated yet -
-# temporary manual stubs (swt/widgets_stubs_manual.go) carrying only the members actually used.
+# Round 4/5: Widget/Control/Scrollable/Composite/Canvas/Decorations/Shell/Button reference these
+# classes/interfaces, none translated yet - temporary manual stubs (swt/widgets_stubs_manual.go,
+# swt/widgets_stubs2_manual.go) carrying only the members actually used. Composite/Canvas/
+# Decorations/Shell translated for real as of Round 5 - removed from this list.
 org.eclipse.swt.internal.Callback
-org.eclipse.swt.widgets.Composite
-org.eclipse.swt.widgets.Shell
-org.eclipse.swt.widgets.Decorations
-org.eclipse.swt.widgets.Canvas
 org.eclipse.swt.widgets.Menu
+org.eclipse.swt.widgets.MenuItem
+org.eclipse.swt.widgets.ToolBar
 org.eclipse.swt.widgets.ScrollBar
-org.eclipse.swt.graphics.Font
-org.eclipse.swt.graphics.Color
+org.eclipse.swt.widgets.Caret
+org.eclipse.swt.widgets.IME
 org.eclipse.swt.graphics.Image
+org.eclipse.swt.graphics.ImageData
 org.eclipse.swt.graphics.Cursor
 org.eclipse.swt.graphics.Region
 org.eclipse.swt.graphics.Drawable
@@ -41,8 +40,48 @@ org.eclipse.swt.accessibility.Accessible
 org.eclipse.swt.accessibility.ACC
 org.eclipse.swt.internal.WidgetSpy
 org.eclipse.swt.graphics.GCData
-org.eclipse.swt.graphics.Device
-org.eclipse.swt.graphics.Resource
+
+# Round 6: Display/Device/Resource/Font/FontData/Color/Monitor/TouchSource are translated for
+# real. Boxing and java.util containers map to Go/internal/jrt (README "Round 6"); any other
+# java.* type is "any".
+java.lang.Integer
+java.lang.Boolean
+java.lang.Class
+java.lang.Runnable
+java.util.Map
+java.util.HashMap
+java.util.List
+java.util.ArrayList
+java.util.concurrent.ConcurrentLinkedQueue
+
+# Round 6: types Display only touches off the Shell+Button path, and org.eclipse.swt.internal
+# helpers whose static members it calls - swt/widgets_stubs3_manual.go.
+org.eclipse.swt.internal.LONG
+org.eclipse.swt.widgets.Display.APPEARANCE
+org.eclipse.swt.widgets.FontDialog
+org.eclipse.swt.widgets.FileDialog
+org.eclipse.swt.widgets.ColorDialog
+org.eclipse.swt.widgets.Combo
+org.eclipse.swt.widgets.TaskBar
+org.eclipse.swt.widgets.TaskItem
+org.eclipse.swt.widgets.Tray
+org.eclipse.swt.widgets.TrayItem
+org.eclipse.swt.graphics.FontMetrics
+org.eclipse.swt.internal.DPIUtil
+org.eclipse.swt.internal.BidiUtil
+org.eclipse.swt.internal.graphics.ImageUtil
+org.eclipse.swt.internal.Compatibility
+org.eclipse.swt.internal.DefaultExceptionHandler
+org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)
+
+# Round 6: native glue with no C symbol of its own (internal/cocoa/*_manual.go): JNI global refs,
+# os_custom.c's isFlippedProc, os.c's function-pointer call, NSColor.colorSpace's NSException guard.
+org.eclipse.swt.internal.cocoa.OS#NewGlobalRef(java.lang.Object)
+org.eclipse.swt.internal.cocoa.OS#DeleteGlobalRef(J)
+org.eclipse.swt.internal.cocoa.OS#JNIGetObject(J)
+org.eclipse.swt.internal.cocoa.OS#isFlipped_CALLBACK()
+org.eclipse.swt.internal.cocoa.OS#call(J,J,J)
+org.eclipse.swt.internal.cocoa.NSColor#colorSpace()
 
 # EventTable.java's try-with-resources target; simplified (no Display global-handler forwarding,
 # Display isn't translated yet) in swt/internal_exceptionstash_manual.go.
@@ -66,15 +105,10 @@ java.util.EventListener
 org.eclipse.swt.internal.cocoa.id#objc_getClass()
 org.eclipse.swt.internal.cocoa.id#toString()
 
-# Method-level, dropped entirely (see README "Selector enum elision" / "dark-mode helpers"):
-# registerSelector/getSelector only exist to support Selector.java, itself never translated;
-# setTheme/isAppDarkAppearance/isSystemDarkAppearance pull in NSApplication/NSAppearance/
-# NSUserDefaults, not worth translating for 3 optional dark-mode helpers nothing else calls yet.
+# Method-level, dropped entirely (see README "Selector enum elision"): registerSelector/
+# getSelector only exist to support Selector.java, itself never translated.
 org.eclipse.swt.internal.cocoa.OS#registerSelector
 org.eclipse.swt.internal.cocoa.OS#getSelector
-org.eclipse.swt.internal.cocoa.OS#setTheme
-org.eclipse.swt.internal.cocoa.OS#isAppDarkAppearance
-org.eclipse.swt.internal.cocoa.OS#isSystemDarkAppearance
 
 # Field-level, dropped: only feeds registerSelector/getSelector above.
 org.eclipse.swt.internal.cocoa.OS#SELECTORS

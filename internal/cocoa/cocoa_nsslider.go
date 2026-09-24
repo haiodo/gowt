@@ -8,7 +8,7 @@ type NSSlider struct {
 
 func NewNSSlider() *NSSlider {
 	this := &NSSlider{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSlider()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSSlider) initNSSlider() {
 
 func NewNSSliderOverload1(id int64) *NSSlider {
 	this := &NSSlider{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSliderOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSSlider) initNSSliderOverload1(id int64) {
 
 func NewNSSliderOverload2(id *id) *NSSlider {
 	this := &NSSlider{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSliderOverload2(id)
 	return this
 }

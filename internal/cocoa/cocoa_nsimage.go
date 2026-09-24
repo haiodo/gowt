@@ -8,7 +8,7 @@ type NSImage struct {
 
 func NewNSImage() *NSImage {
 	this := &NSImage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImage()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSImage) initNSImage() {
 
 func NewNSImageOverload1(id int64) *NSImage {
 	this := &NSImage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImageOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSImage) initNSImageOverload1(id int64) {
 
 func NewNSImageOverload2(id *id) *NSImage {
 	this := &NSImage{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImageOverload2(id)
 	return this
 }
@@ -41,40 +41,40 @@ func (this *NSImage) initNSImageOverload2(id *id) {
 
 func (this *NSImage) TIFFRepresentation() *NSData {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_TIFFRepresentation)
-	var cond313 *NSData
+	var cond312 *NSData
 	if result != 0 {
-		cond313 = NewNSDataOverload1(result)
+		cond312 = NewNSDataOverload1(result)
 	} else {
-		cond313 = nil
+		cond312 = nil
 	}
-	return cond313
+	return cond312
 }
 
 func (this *NSImage) AddRepresentation(imageRep *NSImageRep) {
-	var cond314 int64
-	if imageRep != nil {
-		cond314 = imageRep.Id
+	var cond313 int64
+	if imageRep != (nil) {
+		cond313 = imageRep.Id
 	} else {
-		cond314 = int64(0)
+		cond313 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addRepresentation_, cond314)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addRepresentation_, cond313)
 }
 
 func (this *NSImage) BestRepresentationForDevice(deviceDescription *NSDictionary) *NSImageRep {
-	var cond315 int64
-	if deviceDescription != nil {
-		cond315 = deviceDescription.Id
+	var cond314 int64
+	if deviceDescription != (nil) {
+		cond314 = deviceDescription.Id
 	} else {
-		cond315 = int64(0)
+		cond314 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_bestRepresentationForDevice_, cond315)
-	var cond316 *NSImageRep
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_bestRepresentationForDevice_, cond314)
+	var cond315 *NSImageRep
 	if result != 0 {
-		cond316 = NewNSImageRepOverload1(result)
+		cond315 = NewNSImageRepOverload1(result)
 	} else {
-		cond316 = nil
+		cond315 = nil
 	}
-	return cond316
+	return cond315
 }
 
 func (this *NSImage) DrawInRect(rect NSRect, fromRect NSRect, op int64, delta float64) {
@@ -82,106 +82,106 @@ func (this *NSImage) DrawInRect(rect NSRect, fromRect NSRect, op int64, delta fl
 }
 
 func (this *NSImage) InitByReferencingFile(fileName *NSString) *NSImage {
-	var cond317 int64
-	if fileName != nil {
-		cond317 = fileName.Id
+	var cond316 int64
+	if fileName != (nil) {
+		cond316 = fileName.Id
 	} else {
-		cond317 = int64(0)
+		cond316 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initByReferencingFile_, cond317)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initByReferencingFile_, cond316)
+	var cond317 *NSImage
 	var cond318 *NSImage
-	var cond319 *NSImage
 	if result != 0 {
-		cond319 = NewNSImageOverload1(result)
+		cond318 = NewNSImageOverload1(result)
 	} else {
-		cond319 = nil
+		cond318 = nil
 	}
 	if result == this.Id {
-		cond318 = this
+		cond317 = this
 	} else {
-		cond318 = (cond319)
+		cond317 = (cond318)
 	}
-	return cond318
+	return cond317
 }
 
 func (this *NSImage) InitWithContentsOfFile(fileName *NSString) *NSImage {
-	var cond320 int64
-	if fileName != nil {
-		cond320 = fileName.Id
+	var cond319 int64
+	if fileName != (nil) {
+		cond319 = fileName.Id
 	} else {
-		cond320 = int64(0)
+		cond319 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithContentsOfFile_, cond320)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithContentsOfFile_, cond319)
+	var cond320 *NSImage
 	var cond321 *NSImage
-	var cond322 *NSImage
 	if result != 0 {
-		cond322 = NewNSImageOverload1(result)
+		cond321 = NewNSImageOverload1(result)
 	} else {
-		cond322 = nil
+		cond321 = nil
 	}
 	if result == this.Id {
-		cond321 = this
+		cond320 = this
 	} else {
-		cond321 = (cond322)
+		cond320 = (cond321)
 	}
-	return cond321
+	return cond320
 }
 
 func (this *NSImage) InitWithData(data *NSData) *NSImage {
-	var cond323 int64
-	if data != nil {
-		cond323 = data.Id
+	var cond322 int64
+	if data != (nil) {
+		cond322 = data.Id
 	} else {
-		cond323 = int64(0)
+		cond322 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithData_, cond323)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithData_, cond322)
+	var cond323 *NSImage
 	var cond324 *NSImage
-	var cond325 *NSImage
 	if result != 0 {
-		cond325 = NewNSImageOverload1(result)
+		cond324 = NewNSImageOverload1(result)
 	} else {
-		cond325 = nil
+		cond324 = nil
 	}
 	if result == this.Id {
-		cond324 = this
+		cond323 = this
 	} else {
-		cond324 = (cond325)
+		cond323 = (cond324)
 	}
-	return cond324
+	return cond323
 }
 
 func (this *NSImage) InitWithIconRef(iconRef int64) *NSImage {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIconRef_, iconRef)
+	var cond325 *NSImage
 	var cond326 *NSImage
-	var cond327 *NSImage
 	if result != 0 {
-		cond327 = NewNSImageOverload1(result)
+		cond326 = NewNSImageOverload1(result)
 	} else {
-		cond327 = nil
+		cond326 = nil
 	}
 	if result == this.Id {
-		cond326 = this
+		cond325 = this
 	} else {
-		cond326 = (cond327)
+		cond325 = (cond326)
 	}
-	return cond326
+	return cond325
 }
 
 func (this *NSImage) InitWithSize(aSize NSSize) *NSImage {
 	var result int64 = OSObjc_msgSendOverload26(this.Id, OSSel_initWithSize_, aSize)
+	var cond327 *NSImage
 	var cond328 *NSImage
-	var cond329 *NSImage
 	if result != 0 {
-		cond329 = NewNSImageOverload1(result)
+		cond328 = NewNSImageOverload1(result)
 	} else {
-		cond329 = nil
+		cond328 = nil
 	}
 	if result == this.Id {
-		cond328 = this
+		cond327 = this
 	} else {
-		cond328 = (cond329)
+		cond327 = (cond328)
 	}
-	return cond328
+	return cond327
 }
 
 func (this *NSImage) LockFocus() {
@@ -189,24 +189,24 @@ func (this *NSImage) LockFocus() {
 }
 
 func (this *NSImage) RemoveRepresentation(imageRep *NSImageRep) {
-	var cond330 int64
-	if imageRep != nil {
-		cond330 = imageRep.Id
+	var cond329 int64
+	if imageRep != (nil) {
+		cond329 = imageRep.Id
 	} else {
-		cond330 = int64(0)
+		cond329 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeRepresentation_, cond330)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeRepresentation_, cond329)
 }
 
 func (this *NSImage) Representations() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_representations)
-	var cond331 *NSArray
+	var cond330 *NSArray
 	if result != 0 {
-		cond331 = NewNSArrayOverload1(result)
+		cond330 = NewNSArrayOverload1(result)
 	} else {
-		cond331 = nil
+		cond330 = nil
 	}
-	return cond331
+	return cond330
 }
 
 func (this *NSImage) SetCacheMode(cacheMode int64) {
@@ -232,18 +232,18 @@ func (this *NSImage) UnlockFocus() {
 }
 
 func NSImageImageNamed(name *NSString) *NSImage {
-	var cond332 int64
-	if name != nil {
-		cond332 = name.Id
+	var cond331 int64
+	if name != (nil) {
+		cond331 = name.Id
 	} else {
-		cond332 = int64(0)
+		cond331 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImage, OSSel_imageNamed_, cond332)
-	var cond333 *NSImage
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImage, OSSel_imageNamed_, cond331)
+	var cond332 *NSImage
 	if result != 0 {
-		cond333 = NewNSImageOverload1(result)
+		cond332 = NewNSImageOverload1(result)
 	} else {
-		cond333 = nil
+		cond332 = nil
 	}
-	return cond333
+	return cond332
 }

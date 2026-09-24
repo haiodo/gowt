@@ -8,7 +8,7 @@ type NSPrintPanel struct {
 
 func NewNSPrintPanel() *NSPrintPanel {
 	this := &NSPrintPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrintPanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSPrintPanel) initNSPrintPanel() {
 
 func NewNSPrintPanelOverload1(id int64) *NSPrintPanel {
 	this := &NSPrintPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrintPanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSPrintPanel) initNSPrintPanelOverload1(id int64) {
 
 func NewNSPrintPanelOverload2(id *id) *NSPrintPanel {
 	this := &NSPrintPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrintPanelOverload2(id)
 	return this
 }
@@ -40,25 +40,25 @@ func (this *NSPrintPanel) initNSPrintPanelOverload2(id *id) {
 }
 
 func (this *NSPrintPanel) BeginSheetWithPrintInfo(printInfo *NSPrintInfo, docWindow *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
+	var cond589 int64
+	if printInfo != (nil) {
+		cond589 = printInfo.Id
+	} else {
+		cond589 = int64(0)
+	}
 	var cond590 int64
-	if printInfo != nil {
-		cond590 = printInfo.Id
+	if docWindow != (nil) {
+		cond590 = docWindow.Id
 	} else {
 		cond590 = int64(0)
 	}
 	var cond591 int64
-	if docWindow != nil {
-		cond591 = docWindow.Id
+	if delegate != (nil) {
+		cond591 = delegate.Id
 	} else {
 		cond591 = int64(0)
 	}
-	var cond592 int64
-	if delegate != nil {
-		cond592 = delegate.Id
-	} else {
-		cond592 = int64(0)
-	}
-	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond590, cond591, cond592, didEndSelector, contextInfo)
+	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond589, cond590, cond591, didEndSelector, contextInfo)
 }
 
 func (this *NSPrintPanel) Options() int64 {
@@ -66,13 +66,13 @@ func (this *NSPrintPanel) Options() int64 {
 }
 
 func (this *NSPrintPanel) RunModalWithPrintInfo(printInfo *NSPrintInfo) int64 {
-	var cond593 int64
-	if printInfo != nil {
-		cond593 = printInfo.Id
+	var cond592 int64
+	if printInfo != (nil) {
+		cond592 = printInfo.Id
 	} else {
-		cond593 = int64(0)
+		cond592 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond593)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond592)
 }
 
 func (this *NSPrintPanel) SetOptions(options int64) {
@@ -81,11 +81,11 @@ func (this *NSPrintPanel) SetOptions(options int64) {
 
 func NSPrintPanelPrintPanel() *NSPrintPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintPanel, OSSel_printPanel)
-	var cond594 *NSPrintPanel
+	var cond593 *NSPrintPanel
 	if result != 0 {
-		cond594 = NewNSPrintPanelOverload1(result)
+		cond593 = NewNSPrintPanelOverload1(result)
 	} else {
-		cond594 = nil
+		cond593 = nil
 	}
-	return cond594
+	return cond593
 }

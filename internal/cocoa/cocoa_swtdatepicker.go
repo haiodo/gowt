@@ -8,7 +8,7 @@ type SWTDatePicker struct {
 
 func NewSWTDatePicker() *SWTDatePicker {
 	this := &SWTDatePicker{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTDatePicker()
 	return this
 }

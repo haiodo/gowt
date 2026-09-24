@@ -8,7 +8,7 @@ type WebPreferences struct {
 
 func NewWebPreferences() *WebPreferences {
 	this := &WebPreferences{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPreferences()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebPreferences) initWebPreferences() {
 
 func NewWebPreferencesOverload1(id int64) *WebPreferences {
 	this := &WebPreferences{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPreferencesOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebPreferences) initWebPreferencesOverload1(id int64) {
 
 func NewWebPreferencesOverload2(id *id) *WebPreferences {
 	this := &WebPreferences{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPreferencesOverload2(id)
 	return this
 }

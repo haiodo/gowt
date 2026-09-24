@@ -8,7 +8,7 @@ type NSMutableIndexSet struct {
 
 func NewNSMutableIndexSet() *NSMutableIndexSet {
 	this := &NSMutableIndexSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableIndexSet()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMutableIndexSet) initNSMutableIndexSet() {
 
 func NewNSMutableIndexSetOverload1(id int64) *NSMutableIndexSet {
 	this := &NSMutableIndexSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableIndexSetOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMutableIndexSet) initNSMutableIndexSetOverload1(id int64) {
 
 func NewNSMutableIndexSetOverload2(id *id) *NSMutableIndexSet {
 	this := &NSMutableIndexSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableIndexSetOverload2(id)
 	return this
 }

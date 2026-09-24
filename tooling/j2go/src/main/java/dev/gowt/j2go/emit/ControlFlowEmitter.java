@@ -37,18 +37,18 @@ final class ControlFlowEmitter {
 				for (Object ex : sc.expressions()) labels.add(emitter.expr((Expression) ex));
 				b.append(ind(indent)).append("case ").append(String.join(", ", labels)).append(":\n");
 			}
-			b.append(emitSwitchCaseBody(body, targetLhs, indent + 1));
+			b.append(emitSwitchCaseBody(body, targetLhs, se.resolveTypeBinding(), indent + 1));
 		}
 		b.append(ind(indent)).append("}\n");
 		return b.toString();
 	}
 
-	private String emitSwitchCaseBody(Statement body, String targetLhs, int indent) {
+	private String emitSwitchCaseBody(Statement body, String targetLhs, ITypeBinding targetType, int indent) {
 		List<Statement> stmts = body instanceof Block bl ? bl.statements() : List.of(body);
 		StringBuilder b = new StringBuilder();
 		for (Statement s : stmts) {
 			if (s instanceof YieldStatement ys) {
-				b.append(emitStatement0AsAssign(targetLhs, ys.getExpression(), indent));
+				b.append(emitStatement0AsAssign(targetLhs, ys.getExpression(), targetType, indent));
 			} else {
 				b.append(emitter.stmt(s, indent));
 			}
@@ -56,10 +56,10 @@ final class ControlFlowEmitter {
 		return b.toString();
 	}
 
-	private String emitStatement0AsAssign(String lhs, Expression rhs, int indent) {
+	private String emitStatement0AsAssign(String lhs, Expression rhs, ITypeBinding targetType, int indent) {
 		List<String> saved = emitter.prelude;
 		emitter.prelude = new ArrayList<>();
-		String text = emitter.expr(rhs);
+		String text = emitter.adaptNumeric(emitter.expr(rhs), rhs.resolveTypeBinding(), targetType);
 		StringBuilder b = new StringBuilder();
 		for (String p : emitter.prelude) b.append(ind(indent)).append(p).append('\n');
 		b.append(ind(indent)).append(lhs).append(" = ").append(text).append('\n');
@@ -182,13 +182,25 @@ final class ControlFlowEmitter {
 		return ind(indent) + "defer func() {\n" + emitter.block(block, indent + 1) + ind(indent) + "}()\n";
 	}
 
+	/** synchronized (x) { body }: the one global jrt monitor (see internal/jrt/lang.go), released
+	 * by a defer inside a block-scoped closure - the lock expression itself is not evaluated. */
+	String emitSynchronized(SynchronizedStatement ss, int indent) {
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), "jrt.MonitorExit()", indent);
+	}
+
 	/** A catch needs panic/recover, which needs a Go closure boundary - see README for how a
 	 * return/break/continue inside the try/catch body is made to escape it correctly. */
 	@SuppressWarnings("unchecked")
 	private String emitTryCatch(TryStatement ts, List<?> catchesRaw, int indent) {
-		List<CatchClause> catches = (List<CatchClause>) catchesRaw;
+		return emitClosure(ts.getBody(), (List<CatchClause>) catchesRaw, null, indent);
+	}
+
+	/** body inside `func() { defer ...; body }()`: catches become a recover() dispatch, deferText
+	 * (if any) a plain defer; return/break/continue escape via flags re-played after the call. */
+	private String emitClosure(Block body, List<CatchClause> catches, String deferText, int indent) {
 		EscapeScanner scan = new EscapeScanner();
-		ts.getBody().accept(scan);
+		body.accept(scan);
 		for (CatchClause cc : catches) cc.getBody().accept(scan);
 
 		StringBuilder b = new StringBuilder();
@@ -215,13 +227,16 @@ final class ControlFlowEmitter {
 		emitter.loopSwitchDepth = 0;
 
 		b.append(ind(indent)).append("func() {\n");
-		b.append(ind(indent + 1)).append("defer func() {\n");
-		b.append(ind(indent + 2)).append("r := recover()\n");
-		b.append(ind(indent + 2)).append("if r == nil {\n").append(ind(indent + 3)).append("return\n")
-				.append(ind(indent + 2)).append("}\n");
-		b.append(emitCatchDispatch(catches, indent + 2));
-		b.append(ind(indent + 1)).append("}()\n");
-		b.append(emitter.block(ts.getBody(), indent + 1));
+		if (deferText != null) b.append(ind(indent + 1)).append("defer ").append(deferText).append('\n');
+		if (!catches.isEmpty()) {
+			b.append(ind(indent + 1)).append("defer func() {\n");
+			b.append(ind(indent + 2)).append("r := recover()\n");
+			b.append(ind(indent + 2)).append("if r == nil {\n").append(ind(indent + 3)).append("return\n")
+					.append(ind(indent + 2)).append("}\n");
+			b.append(emitCatchDispatch(catches, indent + 2));
+			b.append(ind(indent + 1)).append("}()\n");
+		}
+		b.append(emitter.block(body, indent + 1));
 		b.append(ind(indent)).append("}()\n");
 
 		emitter.currentEscapeReturnedFlag = savedReturnedFlag;
@@ -230,7 +245,12 @@ final class ControlFlowEmitter {
 		emitter.currentEscapeRetVar = savedRetVar;
 		emitter.loopSwitchDepth = savedDepth;
 
-		if (returnedFlag != null) {
+		// Last statement of a non-void method: Java guarantees the body returned or threw, and Go
+		// needs a terminating statement here, not a conditional one.
+		if (retVar != null && isLastInMethodBody(body.getParent())) {
+			b.append(ind(indent)).append("_ = ").append(returnedFlag).append('\n');
+			b.append(emitter.returnOrEscape(indent, retVar));
+		} else if (returnedFlag != null) {
 			b.append(ind(indent)).append("if ").append(returnedFlag).append(" {\n");
 			b.append(emitter.returnOrEscape(indent + 1, retVar));
 			b.append(ind(indent)).append("}\n");
@@ -248,6 +268,12 @@ final class ControlFlowEmitter {
 		return b.toString();
 	}
 
+	private static boolean isLastInMethodBody(ASTNode stmt) {
+		if (!(stmt.getParent() instanceof Block b) || !(b.getParent() instanceof MethodDeclaration)) return false;
+		List<?> stmts = b.statements();
+		return stmts.get(stmts.size() - 1) == stmt;
+	}
+
 	private String emitCatchDispatch(List<CatchClause> catches, int indent) {
 		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < catches.size(); i++) {
@@ -259,12 +285,14 @@ final class ControlFlowEmitter {
 			b.append(ind(indent)).append(i == 0 ? "if " : "} else if ");
 			if (broad) {
 				b.append(varName).append(", ok := r.(error); ok {\n");
+				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			} else {
 				// A multi-catch of unrelated concrete types has no single Go assertion - matched
 				// via an inline type-switch probe; the catch var keeps r's static (any) type.
 				b.append("func() bool { switch r.(type) { case ").append(String.join(", ", altTypes))
 						.append(": return true }; return false }() {\n");
 				b.append(ind(indent + 1)).append(varName).append(" := r\n");
+				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			}
 			b.append(emitter.block(cc.getBody(), indent + 1));
 		}

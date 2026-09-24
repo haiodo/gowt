@@ -20,7 +20,7 @@ func (this *EventTable) initEventTable() {
 }
 
 func (this *EventTable) GetListeners(eventType int32) []Listener {
-	if this.types == nil {
+	if this.types == (nil) {
 		return make([]Listener, 0)
 	}
 	var count int32 = 0
@@ -45,10 +45,10 @@ func (this *EventTable) GetListeners(eventType int32) []Listener {
 }
 
 func (this *EventTable) Hook(eventType int32, listener Listener) {
-	if this.types == nil {
+	if this.types == (nil) {
 		this.types = make([]int32, EventTableGROW_SIZE)
 	}
-	if this.listeners == nil {
+	if this.listeners == (nil) {
 		this.listeners = make([]Listener, EventTableGROW_SIZE)
 	}
 	var length int32 = int32(len(this.types))
@@ -73,7 +73,7 @@ func (this *EventTable) Hook(eventType int32, listener Listener) {
 }
 
 func (this *EventTable) Hooks(eventType int32) bool {
-	if this.types == nil {
+	if this.types == (nil) {
 		return false
 	}
 	for _, type_ := range this.types {
@@ -85,7 +85,7 @@ func (this *EventTable) Hooks(eventType int32) bool {
 }
 
 func (this *EventTable) SendEvent(event *Event) {
-	if this.types == nil {
+	if this.types == (nil) {
 		return
 	}
 	var cond25 int32
@@ -127,7 +127,7 @@ func (this *EventTable) SendEvent(event *Event) {
 		}
 		if this.types[i] == event.Type {
 			var listener Listener = this.listeners[i]
-			if listener != nil {
+			if listener != (nil) {
 				func() {
 					defer func() {
 						r := recover()
@@ -135,6 +135,7 @@ func (this *EventTable) SendEvent(event *Event) {
 							return
 						}
 						if ex, ok := r.(error); ok {
+							_ = ex
 							exceptions.Stash(ex)
 						} else {
 							panic(r)
@@ -148,7 +149,7 @@ func (this *EventTable) SendEvent(event *Event) {
 }
 
 func (this *EventTable) Size() int32 {
-	if this.types == nil {
+	if this.types == (nil) {
 		return 0
 	}
 	var count int32 = 0
@@ -176,7 +177,7 @@ func (this *EventTable) Remove(index int32) {
 }
 
 func (this *EventTable) Unhook(eventType int32, listener Listener) {
-	if this.types == nil {
+	if this.types == (nil) {
 		return
 	}
 	for i := int32(0); i < int32(len(this.types)); i++ {
@@ -188,7 +189,7 @@ func (this *EventTable) Unhook(eventType int32, listener Listener) {
 }
 
 func (this *EventTable) UnhookEventTypeListener(eventType int32, listener any) {
-	if this.types == nil {
+	if this.types == (nil) {
 		return
 	}
 	for i := int32(0); i < int32(len(this.types)); i++ {

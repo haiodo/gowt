@@ -8,13 +8,14 @@ import (
 
 type VerifyEvent struct {
 	KeyEvent
-	Start, End int32
-	Text       string
+	Start int32
+	End   int32
+	Text  string
 }
 
 func NewVerifyEvent(e *Event) *VerifyEvent {
 	this := &VerifyEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initVerifyEvent(e)
 	return this
 }

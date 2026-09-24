@@ -1,52 +1,53 @@
 # j2go
 
-## Status / next steps (round 5)
+## Status / next steps (round 7)
 
-**Parts 1-3: done, verified, green.** `CGO_ENABLED=0 go build ./... && go vet ./... && go test
-./...` all pass. `internal/cocoa` unchanged (still all 210 PI/cocoa files + `C.java` in one
-invocation). `swt`'s own invocation grew to include `Widget.java`/`Control.java`/`Scrollable.java`
-(cocoa) alongside stage-1/round-3's files, with all 210 cocoa files + `C.java` fed after `--` as
-reference-only (parsed and modeled for name resolution, not re-emitted - see "Cross-package
-qualification" below). 30 Go tests pass, including a new `swt/widgets_widget_test.go`
-(`TestWidgetCheckBits`, exercises `WidgetCheckBits`'s mutually-exclusive style-bit resolution -
-no `Display` needed).
+**Round 6: done, verified, green. A real macOS window with a working button opens from Go,
+`CGO_ENABLED=0`.** `mvn -q -f tooling/j2go/pom.xml package && bash tooling/port.sh &&
+CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` all pass (same 33 tests).
+`cmd/hello` (hand-written) builds a Display, a Shell with FillLayout, a PUSH Button "Hello" with a
+Selection listener, `pack`/`open`, and runs the `readAndDispatch`/`sleep` loop. Verified: the
+window appears (titlebar + "Hello" button, 82x56 after `pack`), `performClick:` on the button
+prints the listener's line through the real `sendSelection -> postEvent -> runDeferredEvents`
+path, `shell.close()` disposes and `display.dispose()` returns. `screencapture` has no Screen
+Recording permission on this machine, so the check used an in-process
+`cacheDisplayInRect:toBitmapImageRep:` snapshot (a scratch program, not in the repo).
 
-Round 4 translated `Widget.java` (2452 lines) + `Control.java` (5278) + `Scrollable.java` (439)
-for real - the whole widget-core file set the task brief named, not a partial attempt. Getting
-there needed real cross-package qualification (direction 4 from Round 2, previously deferred as
-YAGNI) plus ~15 further translator fixes (below) and ~350 lines of hand-written manual stubs for
-the classes Part 3 (below) still owns: `Composite`/`Canvas`/`Decorations`/`Shell`/`Menu`/
-`ScrollBar` (embed their real translated superclass, so promoted fields/methods and the
-`upcastObject` mechanism work without restating them), `Accessible`/`ACC`, `WidgetSpy`,
-`Callback` (reflection-based dispatch - unsupported marker, not this round's job), `Font`/
-`Color`/`Image`/`Cursor`/`Region`/`GCData`/`Dialog`/`Device`/`Resource`/`AutoscalingMode`
-(`swt/widgets_manual_stubs2.go`), plus real fields/methods added to the existing `Display`/`GC`
-opaque stubs (`swt/widgets_stubs_manual.go`) and `Monitor` (`swt/widgets_monitor_manual.go`).
-`Widget` itself is no longer manual - removed from `manual.txt`/`Manual.ENTRIES`.
+**Translated for real this round** (all in `port.sh`'s swt invocation): `Display` (6861 lines),
+`Device`, `DeviceData`, `Resource`, `Font`, `FontData`, `Color`, `Synchronizer`, `RunnableLock`,
+`Monitor`, `TouchSource`. Their old stubs are gone (`widgets_monitor_manual.go` kept empty).
+Still stubs (not on the Shell+Button path): `GC`, `Image`, `Cursor`, `Menu`/`MenuItem` (Display's
+app menu is built from raw `NSMenu`, not SWT's `Menu`), `Caret`, `IME`, `ScrollBar`, `ToolBar`,
+`Region`, `Accessible`, plus new opaque ones in `swt/widgets_stubs3_manual.go` (dialogs, tray,
+taskbar, combo, `FontMetrics`, `LONG`, `Display.APPEARANCE`, `DPIUtil`/`BidiUtil`/`ImageUtil`/
+`Compatibility`/`DefaultExceptionHandler` statics).
 
-**Not attempted** (same reasons as Round 3, still true): `synchronized`, `java.util` collections,
-`Synchronizer.java`/`RunnableLock.java`. Widget's one generic method
-(`getTypedListeners<L>`, `Stream`/method-refs) is skipped entirely, like an abstract method (see
-"Generic methods" below) - no Go equivalent for its own signature, not just its body. Control's
-one `new Callback(...)` (`getPath`/`regionToRects`) is a manual-stub panic, not a real
-reflection-dispatch implementation (see "Callback" in manual.txt above) - matches the task
-brief's "do not build the full lambda/callback subsystem this round".
+**Contract changes** are listed in "Round 6" at the end: functional values, anonymous classes,
+`synchronized`, `java.util` containers, exceptions as `error`, the Callback bridge, by-pointer
+native struct params, nil-safe casts/upcasts/instanceof, and more.
 
-**Part 3 (the rest of widget core): not started.** `Composite.java` 1324 lines, `Canvas.java`
-699, `Decorations.java` 718, `Shell.java` 2580 (~5,300 lines) - each currently a manual stub
-embedding its real translated superclass; translating them for real means replacing the stub's
-panic-bodied methods with the genuine ones and should be a smaller lift than Round 4 (the
-cross-package/upcast machinery now exists and is exercised). Also still open: `Layout.java`/
-`layout/*` (needs `Composite`/`Control` first), `Item.java` (`Widget` subclass, needed before
-`MenuItem` if a later round wants it), `Display.java` (6861 lines, its own manual stub already
-carries the ~35 fields/methods Round 4 needed - translating it for real is a much bigger, separate
-effort), graphics `Device`/`GC`/`Color`/`Font`/`Image` (each still a thin manual stub).
+**Markers left** (swt invocation; cocoa has none besides the 166 known field/method name
+clashes): MethodInvocation 54, ClassInstanceCreation 6, CatchClause 5, instanceof 4,
+ExpressionMethodReference 2, MethodDeclaration 2. All are JDK surface off this path:
+`StringBuilder`/`String.indexOf(s, from)`/`Integer.parseInt` (FontData string form), Resource's
+leak tracker (`Cleaner`, `AtomicBoolean`, `ThreadGroup`), `Runtime.Version.parse` (AWT check,
+short-circuited), `Synchronizer.moveAllEventsTo`'s `list::add` refs, `Thread.sleep`, the two
+generic methods (`Widget.getTypedListeners`, `Display.syncCall`).
 
-**Next steps, in order**: (1) `Composite`/`Canvas`/`Decorations`/`Shell` for real, in that
-order (each only adds a thin layer over the previous), replacing their manual-stub entries in
-`manual.txt`/`Manual.java` one at a time the same way `Widget` was retired this round; (2)
-`Layout.java`/`layout/*` once `Composite`/`Control` are real; (3) `Item.java`; (4) only then
-`Display.java` and the graphics classes, likely their own multi-round effort; (5) Snippet1.
+**Next round, in order:**
+1. **Paint and custom drawing**: `GC` (+ `GCData` for real), `Image`, `Region`, `Path`,
+   `Pattern`, `Transform`, `TextLayout`. `Control.drawWidget` short-circuits today only because no
+   PaintListener is registered.
+2. **More widgets**: `Label`, `Text`, `Composite` children, `Menu`/`MenuItem`, `ScrollBar`,
+   `GridLayout`/`FormLayout`. Each widget class registered in `Display.initClasses` already has
+   its ObjC subclass and callbacks - only the Java class is missing.
+3. **NSException**: purego can't catch one. SWT's os.c returns 0 from a throwing native; only
+   `NSColor.colorSpace` is guarded so far (`internal/cocoa/nsexception_manual.go`). Any other
+   throwing selector aborts the process - find them as widgets arrive.
+4. **Real Java enums** (`Display.APPEARANCE` is hand-written) and Java generics
+   (`getTypedListeners`, `syncCall`).
+5. `Shell` window placement: `pack()` gives a correct size; the window opened at x=0, y=1014
+   (Cocoa coordinates) - not compared against real SWT's `cascadeWindow` result yet.
 
 Java -> Go source translator for porting Eclipse SWT to Go. v0: hand-tuned to the graphics
 value classes (`Point`, `Rectangle`, `RGB`, `RGBA`). v0.1 adds a second Go package,
@@ -71,13 +72,17 @@ it, never directly. Where to add a new construct:
 
 - **new JDK method mapping** (`Math.min`, `String.equals`, ...) -> `JdkIntrinsics`
 - **new statement form** -> `StatementEmitter`
-- **new Java construct in a class body** (field, method shell, constructor, super/this call) ->
-  `ClassEmitter`
+- **new Java construct in a class body** (field, method shell) -> `ClassEmitter`
+- **constructors, instance initializers, `super(...)`/`this(...)`/`super.method()`** ->
+  `ConstructorEmitter` (split out of `ClassEmitter` in Round 5 - line budget)
 - **new native-method shape** (purego binding, `_sizeof`, `_stret`, constant accessor) ->
   `NativeEmitter`
-- **switch/throw/try-catch-finally** -> `ControlFlowEmitter`
-- **new expression form** (literal, operator, name/field resolution, string escaping) ->
-  `ExpressionEmitter`
+- **switch/throw/try-catch-finally/synchronized** -> `ControlFlowEmitter`
+- **new expression form** (literal, prefix/postfix, assignment, name/field resolution, string
+  escaping, switch expressions) -> `ExpressionEmitter`
+- **lambdas, method references, anonymous classes** -> `FunctionalEmitter` (Round 6)
+- **infix operators, numeric widening/adaptation, object upcasting, zero values** ->
+  `NumericEmitter` (split out of `ExpressionEmitter` in Round 5 - line budget)
 - **method invocation / `new` / argument adaptation** -> `InvocationEmitter`
 - **instanceof, cast, or the impl-cascade helpers** -> `TypeTestEmitter`
 - **try/catch escape detection** -> `EscapeScanner` (the ASTVisitor pre-scan)
@@ -307,17 +312,27 @@ reachable from the 4 stage-1 files, first hit by `OS.java`).
 
 ## Callback design (`internal/cocoa/callback_manual.go`)
 
-`org.eclipse.swt.internal.Callback` wraps `(object, methodName, argCount)` and uses JNI-generated
-reflection so a Java method can serve as a native function pointer (registered as an ObjC IMP via
-`class_addMethod`, ~298 call sites in the cocoa PI layer, but only ~25 actual `new Callback(...)`
-sites - one Callback's IMP is multiplexed across many selectors/classes, dispatch happens inside
-the callback based on which `self`/`_cmd` it was invoked with). Go has first-class functions, so
-none of the reflection machinery is needed: `cocoa.NewCallback(fn any) uintptr` is a 1-line
-wrapper over `purego.NewCallback` - an ordinary Go closure with the right signature (self/_cmd as
-`uintptr` first, matching class_addMethod's type-encoding string) *is* the trampoline. The
-multiplexed-dispatch logic itself (which selector/self maps to which SWT method) is
-`Display`/`Widget` bookkeeping, not part of the Callback mechanism - out of scope until Step 3
-translates `Display.java`.
+SWT's `Callback(object, "method", argCount)` binds a Java method by reflection and hands out a
+C trampoline (`callback.c`) whose all-`long` args/return make it usable as an ObjC IMP. Since
+Round 6 the translator resolves the method at translate time instead (`InvocationEmitter.
+emitCallback`): the target class is the `TypeLiteral`'s, else the enclosing class (`this`,
+`getClass()`, a `Class<?>` local), the method is found by name + arg count, and
+
+```go
+DisplayWindowCallback3 = NewCallbackFn(func(args []int64) int64 { return DisplayWindowProcIdSelArg0(args[0], args[1], args[2]) }, 3)
+```
+
+`NewCallbackFn`/`Callback` are hand-written in `swt/widgets_stubs3_manual.go`;
+`cocoa.NewCallbackN(argCount, fn)` builds the `purego.NewCallback` with `argCount` `uintptr`
+args and remembers `fn` by its C address. `OS.CALLBACK_x(proc)` (os.c's by-value-struct
+trampolines) is generated from the native's own `@method callback_types=...,callback_flags=...`
+Javadoc (`NativeEmitter.emitStructCallback`): a Go IMP with the real ObjC shape (`NSRect`/
+`NSPoint`/`NSSize`/`NSRange` by value, struct returns by value), which looks `proc` up and calls
+it with each struct's address - pinned with `runtime.Pinner` so a stack move can't invalidate
+it - and, for a struct return, copies and `C.free`s the pointer `windowProc` `C.malloc`ed, like
+os.c does. `isFlipped_CALLBACK` (a fixed "YES" IMP) and `OS.call(proc, id, sel)` are hand-written
+next to it. purego callbacks are never freed (`Callback.dispose` is a no-op); SWT creates ~20 of
+the 2000 available, `CALLBACK_*` ~35 more.
 
 ## purego verification (darwin/arm64)
 
@@ -1175,3 +1190,262 @@ shared one `findByQualifiedName` helper; `emitConstructorBody`'s and the new
 `emitImplicitConstructor`'s zero-arg-super-call logic share `emitZeroArgSuperInitCall`;
 `emitExprHoisted`, dead code, deleted; a redundant `if`/`else` returning the same expression
 twice in `emitQualifiedName` collapsed) plus comment compression to land back at 449/449.
+
+## Round 5: Composite/Canvas/Decorations/Shell/Button, layouts (former status block)
+
+**Round 5: done, verified, green.** `mvn -q -f tooling/j2go/pom.xml package && bash
+tooling/port.sh && CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` all pass. 33 Go
+tests pass (30 from before + 3 new, `swt/layout_test.go`). `internal/cocoa` content unchanged
+(still all 210 PI/cocoa files + `C.java` in one invocation) except the `Impl` -> `impl` rename
+(below) touching every file's constructor. `swt`'s own invocation grew to include
+`Layout`/`Item`/`FillLayout`/`FillData`/`RowLayout`/`RowData`/`Composite`/`Canvas`/`Decorations`/
+`Shell`/`Button` alongside Round 4's files.
+
+**Housekeeping done first**, per the round's own brief:
+- **`impl` field unexported** (was `Impl`, leaking into the public API). Same-package code reads
+  `x.impl` directly; cocoa's `id` cascade (the only one crossed from `swt`) gained an exported
+  accessor, `func (this *id) Impl() idImpl { return this.impl }` (`internal/cocoa/id_manual.go`,
+  next to the existing `AsId()`). The translator now threads this through generically via
+  `Emitter.implAccess(rootCi)` (`".impl"` in-package, `".Impl()"` cross-package), used at every
+  emission site that used to hardcode `.Impl` (`ClassEmitter`'s field decl + `this.Impl = this`,
+  now in `ConstructorEmitter`; `InvocationEmitter`'s override-cascade call + covariant-downcast
+  temp; `TypeTestEmitter.implSubject`). Fixing this exposed a real, pre-existing latent bug: the
+  covariant-downcast temp in `InvocationEmitter` used the *calling* method's cascade root
+  (`ci.root`) for its own `.impl` access, but the temp's actual Go type is the *target* (covariant
+  return type)'s root, which can be in a different package - `Widget.topView()` returns
+  `cocoa.NSView`. Fixed to use `target.root`.
+- **`swt/widgets_manual_stubs2.go` renamed** to `swt/widgets_stubs2_manual.go` (the `*_manual.go`
+  suffix rule).
+- **`ClassEmitter`/`ExpressionEmitter` split**, each pulling out one real responsibility: the
+  constructor/instance-initializer/super-this-dispatch code moved verbatim to a new
+  `ConstructorEmitter` (`emitConstructor`, `emitImplicitConstructor`,
+  `emitZeroArgSuperInitCall`/`emitConstructorBody`/`emitInstanceInitializers`,
+  `emitSuperInvocation`/`emitThisInvocation`/`emitSuperMethodInvocation`); the infix/numeric-
+  widening/upcast/zero-value code moved verbatim to a new `NumericEmitter` (`emitInfix` +
+  `adaptNumeric`/`upcastObject`/`zeroValue` and their private helpers). Verified as a pure move: a
+  snapshot of `swt/`+`internal/cocoa/` taken before the split, regenerated after, `diff -r` clean
+  (done in two steps - split first with `Impl` still capitalized, diffed clean; the `impl` rename
+  applied and reverified via the full test suite separately, not by another byte-diff since it's
+  an intentional content change). `ClassEmitter` 290 lines, `ExpressionEmitter` 246 (pre-lambda
+  work) then 293 (after adding `ExpressionMethodReference` support, see below);
+  `ConstructorEmitter` 187; `NumericEmitter` 231 then 252 (after the 3+-operand arithmetic-chain
+  fix, see below). All emit components stay under the 450-line budget with room to spare.
+
+**Widget-hierarchy classes translated for real**: `Composite`(1324 lines)/`Canvas`(699)/
+`Decorations`(718)/`Shell`(2580)/`Button`(1072) (cocoa), `Layout`(107)/`Item`(237) (common
+widgets), `FillLayout`(254)/`FillData`(48)/`RowLayout`(522)/`RowData`(129) (layout) - ~7,690 lines
+of Java, all removed from `manual.txt`/`Manual.ENTRIES`/`Manual.WIDGET_SUPER` where they used to
+be manual stubs (`Composite`/`Canvas`/`Decorations`/`Shell`). `Layout` is its own impl-cascade
+root (not part of Widget's - it has no superclass at all); `FillLayout`/`RowLayout` override its
+two abstract methods (`computeSize`/`layout`) for real. The dispatch-through-`.impl` mechanism now
+demonstrably serves a *second* real hierarchy split across files: `Control.ComputeSize` (
+`swt/widgets_control.go:461`) calls `this.impl.ComputeSizeWHintHHintChangedOnControl(...)`, which
+resolves at runtime to `Composite`'s (`widgets_composite.go:159`) or `Shell`'s
+(`widgets_shell.go:304`) own override, never Control's generic default, exactly the polymorphism
+the impl-cascade exists for.
+
+**`ExpressionMethodReference` (`obj::method`) translated for real** - the only lambda/method-ref
+shape on this round's path (`Item.java`'s `this::handleDPIChange`, bound to the `Listener`
+functional interface; zero raw lambdas anywhere in Composite/Canvas/Decorations/Shell/Button/
+Layout/Item/FillLayout/FillData/RowLayout/RowData). Go has no bound-method-value-to-differently-
+named-interface-method coercion, so a small adapter type is generated once per target interface
+(`ExpressionEmitter.emitMethodReference`/`ensureFuncAdapter`, reusing the existing
+`fileHelperSource`/`generatedHelpers` mechanism `TypeTestEmitter`'s cascade helpers already use):
+
+```go
+type ListenerFunc func(event *Event)
+func (f ListenerFunc) HandleEvent(event *Event) { f(event) }
+```
+
+then `this::handleDPIChange` becomes `ListenerFunc(this.HandleDPIChange)`. A plain
+`LambdaExpression` (none exist on this round's path) is **not** implemented - it would still hit
+the pre-existing generic "unsupported" catch-all, which already degrades gracefully to a typed
+panic closure (`GoTypes.map` already resolves a functional-interface target type correctly, per
+Round 3's "Anonymous classes" note) rather than a hard compile break. Display's own 46 lambdas
+(next round) are unexamined - this round did not look at Display.java's lambda *shapes* at all,
+only confirmed the mechanism `ExpressionMethodReference` needs (a generated func-adapter type per
+target interface) is real and works; a `LambdaExpression`'s own body (a `Block` or a bare
+expression) would need a new case in `emitExpr` building a Go func literal the same adapter wraps
+- not attempted, no file in this round needed it.
+
+**7 further translator bugs found and fixed**, each a real, general issue exposed by files outside
+the narrow set Rounds 1-4 exercised, not one-off patches (full detail in "Round 5" below):
+1. `TypeTestEmitter.ensureCascadeHelper`'s naming assumed `target`'s Go prefix always textually
+   starts with `root`'s (true only for the nested-class case, e.g. `Point`/`Point.OfFloat`) -
+   crashed (`StringIndexOutOfBoundsException`) the first time an unrelated top-level pair (root
+   `Widget`, target `Shell`, `topView()`'s covariant return) hit it.
+2. `ConstructorEmitter.emitSuperInvocation`/`emitThisInvocation` built their args directly into a
+   `StringBuilder`, before any enclosing `emitStatement` had set up `Emitter.prelude` - a
+   ternary/instanceof in a `super(...)`/`this(...)` argument (`Shell`'s delegating constructors)
+   crashed on a null `List`.
+3. `resolveCrossFamilyNameCollisions` skipped every cascade (override-point) method on the
+   assumption a non-cascade sibling can't collide with one - true until `Button.java` newly
+   overrides `Control.setBackgroundColor(NSColor)`, making it a cascade participant for the first
+   time and exposing that it collides with `Control.setBackground(Color)`'s own overload-suffixed
+   name. Fixed by seeding the per-class collision set with cascade names too.
+4. A cascade method's Go name can equal a class's own bare name somewhere in its tree
+   (`Layout.layout()` -> `"Layout"`, the same name every subclass's *embedded* `Layout` field
+   already uses) - Go rejects a struct with both a field and a method of that name.
+   `TypeModel`'s cascade-naming pass now suffixes `Fn` when this happens.
+5. Chained assignment (`child = update[i] = composite;`) never adapted types between steps,
+   assuming (true only in the 3 previously-exercised files) every target in a chain shares one
+   type - `Composite.layout`'s traversal chains `Composite` through an intermediate array slot up
+   to a `Control`-typed target, needing an upcast Round 1-4 never had reason to apply mid-chain.
+6. `(Display) null` (a disambiguating cast Java needs to pick a constructor overload, not a
+   runtime check) emitted `nil.(*Display)` - an invalid Go type assertion on a bare `nil`. Now
+   short-circuits to bare `nil` whenever the cast's *operand* is itself `NullLiteral`.
+7. A manual (untranslated) type's own field/method access always assumed the *declaring class of
+   the resolved Java method* determines dispatch - true until a manual leaf type (`Caret`/`IME`)
+   *inherits* a method from a real translated ancestor (`Widget.release`/`.sendEvent`): the
+   receiver has no `.impl` field, and a bare `Manual.instanceMember` capitalize picks the wrong
+   Go name for an overloaded inherited method (`sendEvent(int)` is really
+   `SendEventEventType`, not `SendEvent`). `InvocationEmitter.emitMethodInvocation` now checks
+   the *receiver's* own static type for this case, computing the Go name exactly as the real
+   declaring class would (cascade-aware) and calling it as an ordinary promoted method (no
+   `.impl`, since the manual receiver isn't itself a cascade member).
+
+**2 smaller generic wins**, not bug fixes: `String.trim()` -> `strings.TrimSpace` (`JdkIntrinsics`,
+used by `RowData.toString()`), and a fix to `NumericEmitter.adaptNumeric`/`emitInfix` so a 3+
+operand arithmetic/bitwise chain (`imageRect.X + imageRect.Width + ButtonIMAGE_GAP`) widens every
+operand to the chain's own Java-resolved result type, not just the first pair (`adaptBinaryOperands`
+only ever compared two operands - the third silently kept its own narrower type, a Go compile
+error whenever it differs).
+
+**`Main`'s sourcepath gained `Eclipse SWT/emulated/bidi`** (`Item.java` references `BidiUtil`,
+which only exists there and in `win32/` - confirmed via the real cocoa build fragment's own
+`build.properties`, which pulls in `emulated/bidi` alongside `common`/`cocoa`). `BidiUtil` itself
+is not translated (still hits the generic unresolved-call marker) - only made *resolvable* so
+parsing doesn't abort with a binding error.
+
+**Manual stubs extended, not newly invented** - every addition is real fields/methods on an
+*existing* manual type (`Display`, `GC`, `Monitor`), or a new *leaf* manual type for something
+Composite/Canvas/Decorations/Shell/Button hard-require and nothing else translates yet: `Caret`,
+`IME`, `MenuItem`, `ToolBar`, `ImageData` (all named explicitly in the round's own brief), plus
+`GCData.Image`. `java.lang.Integer`/`java.util.Map`/`java.util.HashMap` are new *value-type*
+entries mapping to bare `any` (Shell's AWT window-embedding bookkeeping, `windowEmbedCounts`, is
+the only user - dead code until Display's AWT bridge exists; every read/write on it already
+degrades to an unresolved-call panic). Registering them exposed one more real gap: a value type
+mapped to bare `any` has no actual Go methods, so `Manual.isManual`'s existing instance-method
+dispatch (bare capitalize, assumes a method exists) doesn't apply to it - `Manual.isBareAny` now
+excludes it, falling through to the ordinary unresolved-call degrade instead
+(`InvocationEmitter.emitMethodInvocation`, two call sites). Likewise `emitNew`'s
+`Manual.isManual` branch assumed every manual type has a real Go constructor function
+(`Manual.ctorFuncName`) - untrue for a value type (`new HashMap<>()` needs no constructor call at
+all, just `any`'s zero value, `nil`) - fixed the same way `zeroValue` already handles it elsewhere.
+Two genuinely overloaded manual-declaring-class methods needed per-signature `MANUAL_METHODS`
+entries, same pattern as Round 4's `Display.map`/`.mapRect`: `Display.getWidget(long)`/
+`.getWidget(NSView)` -> `GetWidgetById`/`GetWidgetByView`, `Display.findControl(boolean)`/
+`.findControl(boolean, NSView[])` -> `FindControl`/`FindControlHitView`.
+
+**New: `tooling/j2go/names.properties`** (loaded by `Names.loadOverrides`, previously an unused
+hook with no file to load) - one entry, `Button.createString()` (a genuinely new, 0-arg method
+Button declares locally) renamed to `CreateAttributedTitle` to stop it shadowing the *promoted*
+7-arg `Control.createString(...)` Button also calls: Go has no overloading, so a subclass's own
+same-named-different-arity method always shadows an inherited one regardless of arity, breaking
+every 7-arg call site. Same root cause as translator bug #3 above (a same-bare-name reuse across
+an inheritance boundary), but this one is a single, real, intentional Java overload naming
+collision (not a translator gap) - the existing hand-pin mechanism is the correct fix, not a
+generalized rule. One more instance, `Canvas.drawBackground(GC,int,int,int,int)` (shadows
+`Composite`'s promoted 7-arg overload the same way) -> `DrawBackgroundGC`, pinned the same way.
+
+**Not attempted**: `GridLayout`/`FormLayout` (explicitly optional this round) - skipped outright,
+not even tried. Given how many real translator bugs the *much smaller* `FillLayout`/`RowLayout`
+pair surfaced (bugs 3-6 above), attempting `GridLayout`(754 lines)/`GridData`(577)/
+`FormLayout`(391)/`FormData`(348) - 2,070 more lines, a materially larger and more field-heavy
+API - would very likely need more translator work too, which the round's own instruction only
+authorized "if they go through without new translator work". `synchronized`, `java.util`
+collections generally (beyond the narrow `any`-mapped `Map`/`HashMap` above), `Synchronizer.java`/
+`RunnableLock.java` - same as every round so far, still true. Widget's `getTypedListeners<L>` -
+still skipped (unchanged from Round 4). `Control`'s `new Callback(...)` - still a manual-stub
+panic (unchanged).
+
+**Next round: `Display.java`.** 6861 lines, currently a ~50-member manual stub
+(`swt/widgets_stubs_manual.go`, grown again this round - `GetWidgetById`/`GetWidgetByView`,
+`CreateWindowSubclass`, `CheckFocus`, `CascadeWindow`, `ClearModal`, `GetPrimaryMonitor`,
+`GetShells`, `SetMenuBar`, `SetModalShell`, `UpdateQuitMenu`, `RunLoopModes`,
+`FindControl`/`FindControlHitView`, `GetMenus`, `_getFocusControl`, `UpdateDefaultButton`,
+`IsBundledIconSet`, `IsDisposed`, `AddLayoutDeferred`, `GetNSColorRGB`, plus fields `keyWindow`/
+`appMenuBar`/`clickCountButton`/`escAsAcceleratorPresent`/`modalPanel`/`modalShells`/
+`systemUIMode`/`systemUIOptions`/`dockImage`/`application`/`disposed`, and the 2 static functions
+`DisplayGetCurrent`/`DisplayGetDefault` both still returning `nil` - **no live Display exists
+yet**, exactly why a window can't actually open until this is translated for real). Order: (1)
+`Synchronizer`/`RunnableLock` (`Display`'s own event-loop plumbing needs them, "not attempted" in
+every round so far, including this one); (2) `Device`/`Font`/`Color` for real (currently thin
+manual stubs Round 4/5 only shaped to compile, not to work); (3) `GC`/`Image` only as far as
+`Display`'s own init/paint path needs; (4) callbacks - `Display`'s ~46 lambdas are the first real
+lambda-body-translation workload (`ExpressionMethodReference` exists now, see above; a
+`LambdaExpression`'s own body does not - expect this to be the round's biggest new-construct
+lift); (5) `cmd/snippet` - a minimal `Shell`+`Button`+`readAndDispatch` loop, the task's actual
+end-to-end goal, only reachable once (1)-(4) exist.
+
+## Round 6: Display, the event loop, callbacks - contract changes
+
+Every item is a general translator rule unless it names a manual file.
+
+- **Functional values** (`FunctionalEmitter`). A lambda/method reference/one-method anonymous
+  class becomes a Go func literal wrapped for its target type: `java.lang.Runnable` ->
+  `jrt.Runnable` interface, created as `jrt.NewRunnable(func() {...})` (a pointer, so
+  `timerExec`'s `==` lookup compares identity); `Consumer<T>` -> bare `func(T)`; a translated
+  interface -> the generated `<Iface>Func` adapter, now a **struct pointer** `&ListenerFunc{fn:
+  ...}` instead of a named func type (a func inside an interface panics on `==`, and
+  `EventTable.unhook` compares listeners). A lambda body gets fresh return type/escape/loop state
+  (`Emitter.enterFunctionBody`). An anonymous class's `this` is its own holder variable, declared
+  before the body so `timerExec(rate, this)` works; an unqualified member it inherits (and the
+  outer class doesn't) resolves to that variable too (`Emitter.implicitThis`).
+- **Anonymous subclasses** of a translated class (the 25 `events/*Listener` adapters) become a
+  generated `<Class>Anon<N>` struct embedding the base, one `fn<Method>` field per overridden
+  method plus a forwarding method; created in the prelude (`impl` set, base `init` called).
+  Ceiling: the type isn't in the impl cascade, so it is only reached through an interface.
+  `Runtime.addShutdownHook(new Thread(){...})` is dropped (no Go equivalent).
+- **`synchronized`** -> one process-wide reentrant monitor (`internal/jrt/lang.go`,
+  reentrancy by goroutine id), entered before and released by a `defer` inside a block-scoped
+  closure that reuses the try/catch escape machinery (`ControlFlowEmitter.emitClosure`).
+  `wait`/`notify`/`notifyAll` map onto it. Ceiling: unrelated blocks serialize.
+- **`java.util` containers**: `Map`/`HashMap` -> `*jrt.Map` (Java `hashCode`/`equals` semantics,
+  so two cocoa `id`s with the same handle are one key), `List`/`ArrayList`/
+  `ConcurrentLinkedQueue` -> `*jrt.List` (mutex-guarded). A call returning an erased type
+  variable is wrapped in `jrt.Cast[T]` (nil stays nil). Any other unmapped `java.*` type is now
+  `any` instead of an `unsupported_type_*` compile error - member calls on it are markers.
+- **Exceptions**: `RuntimeException`/`Error`/`Exception`/`Throwable` as a *value* type are Go
+  `error` (the catch dispatch already recovers them as `error`); `new Error()` ->
+  `&jrt.JavaError{}`. `printStackTrace`/`getMessage` are intrinsics.
+- **Native struct params**: a struct param whose Javadoc lacks `flags=struct` is passed by
+  pointer (`OS.memmove(NSRect dest, ...)`, `objc_msgSendSuper(objc_super*)`,
+  `_stret` results) - `*T` in the binding, `&x` (or a temp) at the call site. Before this, memmove
+  wrote nowhere and `objc_msgSendSuper` got a struct where it wanted a pointer.
+- **Constant natives**: `@method flags=const` or an Apple `kName` zero-arg native is a global
+  read (`emitConstantAccessor`), not a call. `natives.properties` gained os.h's aliases
+  (`objc_msgSend_bool`/`_fpret`/`_floatret` -> `objc_msgSend`, `objc_msgSendSuper_bool`).
+- **Selector enum**: `Selector.valueOf(sel)` -> `sel`, a `Selector.sel_x` constant -> OS's own
+  `sel_x` field, so `switch (Selector.valueOf(sel))` is a plain Go switch.
+- **Switch expressions** anywhere (not only `x = switch ...`) hoist into a temp; `yield` values
+  are adapted to the switch's type.
+- **Casts, upcasts, instanceof are nil-safe helpers** generated per type pair:
+  `cast<From>To<T>` (null -> nil, walks the impl cascade so `(NSWindow) new SWTWindow().alloc()`
+  works, `ClassCastException` panic on mismatch), `upcast<From>To<T>` (`&x.Base` on a nil `x`
+  panicked), `is<From>To<T>` (instanceof on null is false).
+- **cocoa struct null**: a struct is its zero value when null (already true for assignment);
+  `x == null` now compares against `T{}`. `isStruct` is limited to the cocoa package, so an swt
+  data class (`DeviceData`) stays a nullable pointer.
+- **Unresolved calls** no longer hoist their receiver/args into the prelude: they are referenced
+  inside the panic closure, so `a && unresolved()` keeps short-circuiting.
+- Smaller fixes: `'\0'`-style char literals emit as `'\u0000'`; a C-style `T name[]` field keeps
+  its array type; a String field with no initializer is `""`; static initializers are
+  numeric-adapted; a constructor whose Go name spells another class's `New<X>` gets a `_`
+  suffix (`Device(DeviceData)` vs `new DeviceData()`); imports are filtered to those the body
+  references; a try/synchronized closure that is a non-void method's last statement returns
+  unconditionally (Go's "missing return"); an intrinsic that lowers to a bare value is `_ = x` as
+  a statement.
+- **JDK intrinsics added**: `Math.ceil/floor`, `Integer.valueOf/intValue`, `Boolean.
+  booleanValue/parseBoolean/getBoolean`, `String.valueOf/indexOf/charAt/equalsIgnoreCase`,
+  `Objects.requireNonNull/nonNull`, `System.nanoTime`, `System.out/err.println`,
+  `System.getProperty(k, def)`, `Class.forName` (no-op), `Locale.getDefault().getLanguage()`
+  (`$LANG`), `Runtime.version().feature()` (0: no JVM, so no AWT run-loop mode),
+  `Cleaner.create` (nil), `Integer/Long/Float/Double.MAX/MIN_VALUE`, `Thread.MAX_PRIORITY`.
+- **Manual (hand-written) additions**: `internal/cocoa/jni_manual.go` (`NewGlobalRef`/
+  `JNIGetObject`/`DeleteGlobalRef` as a handle table - `Display.getWidget` maps a view's
+  `SWT_OBJECT` ivar back through it), `internal/cocoa/nsexception_manual.go` (see next steps,
+  item 3), `callback_manual.go` (above), `internal/jrt/{lang,util}.go`, `Display.isValidClass`
+  (checks the Go package instead of a Java class name), `Thread.currentThread()` = goroutine id
+  (so `checkWidget` really rejects other goroutines), `OS.setTheme`/`isSystemDarkAppearance`/
+  `isAppDarkAppearance` are translated again (Display calls them).

@@ -8,7 +8,7 @@ type NSComboBox struct {
 
 func NewNSComboBox() *NSComboBox {
 	this := &NSComboBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBox()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSComboBox) initNSComboBox() {
 
 func NewNSComboBoxOverload1(id int64) *NSComboBox {
 	this := &NSComboBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBoxOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSComboBox) initNSComboBoxOverload1(id int64) {
 
 func NewNSComboBoxOverload2(id *id) *NSComboBox {
 	this := &NSComboBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSComboBoxOverload2(id)
 	return this
 }
@@ -40,13 +40,13 @@ func (this *NSComboBox) initNSComboBoxOverload2(id *id) {
 }
 
 func (this *NSComboBox) AddItemWithObjectValue(object *id) {
-	var cond195 int64
-	if object != nil {
-		cond195 = object.Id
+	var cond194 int64
+	if object != (nil) {
+		cond194 = object.Id
 	} else {
-		cond195 = int64(0)
+		cond194 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addItemWithObjectValue_, cond195)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addItemWithObjectValue_, cond194)
 }
 
 func (this *NSComboBox) DeselectItemAtIndex(index int64) {
@@ -58,13 +58,13 @@ func (this *NSComboBox) IndexOfSelectedItem() int64 {
 }
 
 func (this *NSComboBox) InsertItemWithObjectValue(object *id, index int64) {
-	var cond196 int64
-	if object != nil {
-		cond196 = object.Id
+	var cond195 int64
+	if object != (nil) {
+		cond195 = object.Id
 	} else {
-		cond196 = int64(0)
+		cond195 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithObjectValue_atIndex_, cond196, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithObjectValue_atIndex_, cond195, index)
 }
 
 func (this *NSComboBox) ItemHeight() float64 {
@@ -73,13 +73,13 @@ func (this *NSComboBox) ItemHeight() float64 {
 
 func (this *NSComboBox) ItemObjectValueAtIndex(index int64) *id {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemObjectValueAtIndex_, index)
-	var cond197 *id
+	var cond196 *id
 	if result != 0 {
-		cond197 = NewidOverload1(result)
+		cond196 = NewidOverload1(result)
 	} else {
-		cond197 = nil
+		cond196 = nil
 	}
-	return cond197
+	return cond196
 }
 
 func (this *NSComboBox) NumberOfItems() int64 {

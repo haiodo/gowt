@@ -8,7 +8,7 @@ type NSCalendarDate struct {
 
 func NewNSCalendarDate() *NSCalendarDate {
 	this := &NSCalendarDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCalendarDate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSCalendarDate) initNSCalendarDate() {
 
 func NewNSCalendarDateOverload1(id int64) *NSCalendarDate {
 	this := &NSCalendarDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCalendarDateOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSCalendarDate) initNSCalendarDateOverload1(id int64) {
 
 func NewNSCalendarDateOverload2(id *id) *NSCalendarDate {
 	this := &NSCalendarDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCalendarDateOverload2(id)
 	return this
 }
@@ -87,7 +87,7 @@ func NSCalendarDateCalendarDate() *NSCalendarDate {
 
 func NSCalendarDateDateWithYear(year int64, month int64, day int64, hour int64, minute int64, second int64, aTimeZone *NSTimeZone) *NSCalendarDate {
 	var cond131 int64
-	if aTimeZone != nil {
+	if aTimeZone != (nil) {
 		cond131 = aTimeZone.Id
 	} else {
 		cond131 = int64(0)

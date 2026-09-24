@@ -8,7 +8,7 @@ type DragDetectEvent struct {
 
 func NewDragDetectEvent(e *Event) *DragDetectEvent {
 	this := &DragDetectEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDragDetectEvent(e)
 	return this
 }

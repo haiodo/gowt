@@ -8,7 +8,7 @@ type NSPrinter struct {
 
 func NewNSPrinter() *NSPrinter {
 	this := &NSPrinter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrinter()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSPrinter) initNSPrinter() {
 
 func NewNSPrinterOverload1(id int64) *NSPrinter {
 	this := &NSPrinter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrinterOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSPrinter) initNSPrinterOverload1(id int64) {
 
 func NewNSPrinterOverload2(id *id) *NSPrinter {
 	this := &NSPrinter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPrinterOverload2(id)
 	return this
 }
@@ -41,39 +41,39 @@ func (this *NSPrinter) initNSPrinterOverload2(id *id) {
 
 func (this *NSPrinter) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond595 *NSString
+	var cond594 *NSString
 	if result != 0 {
-		cond595 = NewNSStringOverload1(result)
+		cond594 = NewNSStringOverload1(result)
+	} else {
+		cond594 = nil
+	}
+	return cond594
+}
+
+func NSPrinterPrinterNames() *NSArray {
+	var result int64 = OSObjc_msgSend(OSClass_NSPrinter, OSSel_printerNames)
+	var cond595 *NSArray
+	if result != 0 {
+		cond595 = NewNSArrayOverload1(result)
 	} else {
 		cond595 = nil
 	}
 	return cond595
 }
 
-func NSPrinterPrinterNames() *NSArray {
-	var result int64 = OSObjc_msgSend(OSClass_NSPrinter, OSSel_printerNames)
-	var cond596 *NSArray
-	if result != 0 {
-		cond596 = NewNSArrayOverload1(result)
-	} else {
-		cond596 = nil
-	}
-	return cond596
-}
-
 func NSPrinterPrinterWithName(name *NSString) *NSPrinter {
-	var cond597 int64
-	if name != nil {
-		cond597 = name.Id
+	var cond596 int64
+	if name != (nil) {
+		cond596 = name.Id
 	} else {
-		cond597 = int64(0)
+		cond596 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPrinter, OSSel_printerWithName_, cond597)
-	var cond598 *NSPrinter
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPrinter, OSSel_printerWithName_, cond596)
+	var cond597 *NSPrinter
 	if result != 0 {
-		cond598 = NewNSPrinterOverload1(result)
+		cond597 = NewNSPrinterOverload1(result)
 	} else {
-		cond598 = nil
+		cond597 = nil
 	}
-	return cond598
+	return cond597
 }

@@ -8,7 +8,7 @@ type NSTextContainer struct {
 
 func NewNSTextContainer() *NSTextContainer {
 	this := &NSTextContainer{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextContainer()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTextContainer) initNSTextContainer() {
 
 func NewNSTextContainerOverload1(id int64) *NSTextContainer {
 	this := &NSTextContainer{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextContainerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTextContainer) initNSTextContainerOverload1(id int64) {
 
 func NewNSTextContainerOverload2(id *id) *NSTextContainer {
 	this := &NSTextContainer{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextContainerOverload2(id)
 	return this
 }
@@ -41,19 +41,19 @@ func (this *NSTextContainer) initNSTextContainerOverload2(id *id) {
 
 func (this *NSTextContainer) InitWithContainerSize(aContainerSize NSSize) *NSTextContainer {
 	var result int64 = OSObjc_msgSendOverload26(this.Id, OSSel_initWithContainerSize_, aContainerSize)
+	var cond764 *NSTextContainer
 	var cond765 *NSTextContainer
-	var cond766 *NSTextContainer
 	if result != 0 {
-		cond766 = NewNSTextContainerOverload1(result)
+		cond765 = NewNSTextContainerOverload1(result)
 	} else {
-		cond766 = nil
+		cond765 = nil
 	}
 	if result == this.Id {
-		cond765 = this
+		cond764 = this
 	} else {
-		cond765 = (cond766)
+		cond764 = (cond765)
 	}
-	return cond765
+	return cond764
 }
 
 func (this *NSTextContainer) SetContainerSize(containerSize NSSize) {

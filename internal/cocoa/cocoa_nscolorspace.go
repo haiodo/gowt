@@ -8,7 +8,7 @@ type NSColorSpace struct {
 
 func NewNSColorSpace() *NSColorSpace {
 	this := &NSColorSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorSpace()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSColorSpace) initNSColorSpace() {
 
 func NewNSColorSpaceOverload1(id int64) *NSColorSpace {
 	this := &NSColorSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorSpaceOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSColorSpace) initNSColorSpaceOverload1(id int64) {
 
 func NewNSColorSpaceOverload2(id *id) *NSColorSpace {
 	this := &NSColorSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorSpaceOverload2(id)
 	return this
 }

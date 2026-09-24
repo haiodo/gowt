@@ -8,7 +8,7 @@ type NSBox struct {
 
 func NewNSBox() *NSBox {
 	this := &NSBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBox()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSBox) initNSBox() {
 
 func NewNSBoxOverload1(id int64) *NSBox {
 	this := &NSBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBoxOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSBox) initNSBoxOverload1(id int64) {
 
 func NewNSBoxOverload2(id *id) *NSBox {
 	this := &NSBox{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBoxOverload2(id)
 	return this
 }
@@ -74,7 +74,7 @@ func (this *NSBox) SetBoxType(boxType int64) {
 
 func (this *NSBox) SetContentView(contentView *NSView) {
 	var cond91 int64
-	if contentView != nil {
+	if contentView != (nil) {
 		cond91 = contentView.Id
 	} else {
 		cond91 = int64(0)
@@ -88,7 +88,7 @@ func (this *NSBox) SetContentViewMargins(contentViewMargins NSSize) {
 
 func (this *NSBox) SetFillColor(fillColor *NSColor) {
 	var cond92 int64
-	if fillColor != nil {
+	if fillColor != (nil) {
 		cond92 = fillColor.Id
 	} else {
 		cond92 = int64(0)
@@ -102,7 +102,7 @@ func (this *NSBox) SetFrameFromContentFrame(contentFrame NSRect) {
 
 func (this *NSBox) SetTitle(title *NSString) {
 	var cond93 int64
-	if title != nil {
+	if title != (nil) {
 		cond93 = title.Id
 	} else {
 		cond93 = int64(0)
@@ -112,7 +112,7 @@ func (this *NSBox) SetTitle(title *NSString) {
 
 func (this *NSBox) SetTitleFont(titleFont *NSFont) {
 	var cond94 int64
-	if titleFont != nil {
+	if titleFont != (nil) {
 		cond94 = titleFont.Id
 	} else {
 		cond94 = int64(0)

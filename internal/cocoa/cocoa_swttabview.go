@@ -8,7 +8,7 @@ type SWTTabView struct {
 
 func NewSWTTabView() *SWTTabView {
 	this := &SWTTabView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTabView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTTabView) initSWTTabView() {
 
 func NewSWTTabViewId(id int64) *SWTTabView {
 	this := &SWTTabView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTabViewId(id)
 	return this
 }

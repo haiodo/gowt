@@ -8,7 +8,7 @@ type SWTButtonCell struct {
 
 func NewSWTButtonCell() *SWTButtonCell {
 	this := &SWTButtonCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTButtonCell()
 	return this
 }

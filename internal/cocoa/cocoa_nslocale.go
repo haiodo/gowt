@@ -8,7 +8,7 @@ type NSLocale struct {
 
 func NewNSLocale() *NSLocale {
 	this := &NSLocale{}
-	this.Impl = this
+	this.impl = this
 	this.initNSLocale()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSLocale) initNSLocale() {
 
 func NewNSLocaleOverload1(id int64) *NSLocale {
 	this := &NSLocale{}
-	this.Impl = this
+	this.impl = this
 	this.initNSLocaleOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSLocale) initNSLocaleOverload1(id int64) {
 
 func NewNSLocaleOverload2(id *id) *NSLocale {
 	this := &NSLocale{}
-	this.Impl = this
+	this.impl = this
 	this.initNSLocaleOverload2(id)
 	return this
 }
@@ -40,47 +40,47 @@ func (this *NSLocale) initNSLocaleOverload2(id *id) {
 }
 
 func (this *NSLocale) DisplayNameForKey(key *id, value *id) *NSString {
+	var cond361 int64
+	if key != (nil) {
+		cond361 = key.Id
+	} else {
+		cond361 = int64(0)
+	}
 	var cond362 int64
-	if key != nil {
-		cond362 = key.Id
+	if value != (nil) {
+		cond362 = value.Id
 	} else {
 		cond362 = int64(0)
 	}
-	var cond363 int64
-	if value != nil {
-		cond363 = value.Id
-	} else {
-		cond363 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_displayNameForKey_value_, cond362, cond363)
-	var cond364 *NSString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_displayNameForKey_value_, cond361, cond362)
+	var cond363 *NSString
 	if result != 0 {
-		cond364 = NewNSStringOverload1(result)
+		cond363 = NewNSStringOverload1(result)
 	} else {
-		cond364 = nil
+		cond363 = nil
 	}
-	return cond364
+	return cond363
 }
 
 func (this *NSLocale) InitWithLocaleIdentifier(string_ *NSString) *NSLocale {
-	var cond365 int64
-	if string_ != nil {
-		cond365 = string_.Id
+	var cond364 int64
+	if string_ != (nil) {
+		cond364 = string_.Id
 	} else {
-		cond365 = int64(0)
+		cond364 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithLocaleIdentifier_, cond365)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithLocaleIdentifier_, cond364)
+	var cond365 *NSLocale
 	var cond366 *NSLocale
-	var cond367 *NSLocale
 	if result != 0 {
-		cond367 = NewNSLocaleOverload1(result)
+		cond366 = NewNSLocaleOverload1(result)
 	} else {
-		cond367 = nil
+		cond366 = nil
 	}
 	if result == this.Id {
-		cond366 = this
+		cond365 = this
 	} else {
-		cond366 = (cond367)
+		cond365 = (cond366)
 	}
-	return cond366
+	return cond365
 }

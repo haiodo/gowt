@@ -8,7 +8,7 @@ type WebPolicyDecisionListener struct {
 
 func NewWebPolicyDecisionListener() *WebPolicyDecisionListener {
 	this := &WebPolicyDecisionListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPolicyDecisionListener()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebPolicyDecisionListener) initWebPolicyDecisionListener() {
 
 func NewWebPolicyDecisionListenerOverload1(id int64) *WebPolicyDecisionListener {
 	this := &WebPolicyDecisionListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPolicyDecisionListenerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebPolicyDecisionListener) initWebPolicyDecisionListenerOverload1(id
 
 func NewWebPolicyDecisionListenerOverload2(id *id) *WebPolicyDecisionListener {
 	this := &WebPolicyDecisionListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebPolicyDecisionListenerOverload2(id)
 	return this
 }

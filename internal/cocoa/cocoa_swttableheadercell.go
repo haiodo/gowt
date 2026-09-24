@@ -8,7 +8,7 @@ type SWTTableHeaderCell struct {
 
 func NewSWTTableHeaderCell() *SWTTableHeaderCell {
 	this := &SWTTableHeaderCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTableHeaderCell()
 	return this
 }

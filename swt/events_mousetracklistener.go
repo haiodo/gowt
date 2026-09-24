@@ -9,13 +9,58 @@ type MouseTrackListener interface {
 }
 
 func MouseTrackListenerMouseEnterAdapter(c func(*MouseEvent)) MouseTrackListener {
-	return func() *MouseTrackAdapter { panic("j2go: unsupported anonymous class") }()
+	anon44 := &MouseTrackListenerAnon1{}
+	anon44.initMouseTrackAdapter()
+	anon44.fnMouseEnter = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon44
 }
 
 func MouseTrackListenerMouseExitAdapter(c func(*MouseEvent)) MouseTrackListener {
-	return func() *MouseTrackAdapter { panic("j2go: unsupported anonymous class") }()
+	anon45 := &MouseTrackListenerAnon2{}
+	anon45.initMouseTrackAdapter()
+	anon45.fnMouseExit = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon45
 }
 
 func MouseTrackListenerMouseHoverAdapter(c func(*MouseEvent)) MouseTrackListener {
-	return func() *MouseTrackAdapter { panic("j2go: unsupported anonymous class") }()
+	anon46 := &MouseTrackListenerAnon3{}
+	anon46.initMouseTrackAdapter()
+	anon46.fnMouseHover = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon46
+}
+
+// j2go: anonymous MouseTrackAdapter subclass.
+type MouseTrackListenerAnon1 struct {
+	MouseTrackAdapter
+	fnMouseEnter func(a0 *MouseEvent)
+}
+
+func (this *MouseTrackListenerAnon1) MouseEnter(a0 *MouseEvent) {
+	this.fnMouseEnter(a0)
+}
+
+// j2go: anonymous MouseTrackAdapter subclass.
+type MouseTrackListenerAnon2 struct {
+	MouseTrackAdapter
+	fnMouseExit func(a0 *MouseEvent)
+}
+
+func (this *MouseTrackListenerAnon2) MouseExit(a0 *MouseEvent) {
+	this.fnMouseExit(a0)
+}
+
+// j2go: anonymous MouseTrackAdapter subclass.
+type MouseTrackListenerAnon3 struct {
+	MouseTrackAdapter
+	fnMouseHover func(a0 *MouseEvent)
+}
+
+func (this *MouseTrackListenerAnon3) MouseHover(a0 *MouseEvent) {
+	this.fnMouseHover(a0)
 }

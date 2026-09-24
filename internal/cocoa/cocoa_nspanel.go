@@ -8,7 +8,7 @@ type NSPanel struct {
 
 func NewNSPanel() *NSPanel {
 	this := &NSPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSPanel) initNSPanel() {
 
 func NewNSPanelOverload1(id int64) *NSPanel {
 	this := &NSPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSPanel) initNSPanelOverload1(id int64) {
 
 func NewNSPanelOverload2(id *id) *NSPanel {
 	this := &NSPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSPanelOverload2(id)
 	return this
 }
@@ -52,13 +52,13 @@ func (this *NSPanel) SetWorksWhenModal(worksWhenModal bool) {
 }
 
 func NSPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond545 int64
-	if aTitle != nil {
-		cond545 = aTitle.Id
+	var cond544 int64
+	if aTitle != (nil) {
+		cond544 = aTitle.Id
 	} else {
-		cond545 = int64(0)
+		cond544 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond545, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond544, aStyle)
 }
 
 func NSPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

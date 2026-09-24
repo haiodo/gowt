@@ -8,7 +8,7 @@ type SWTWindowDelegate struct {
 
 func NewSWTWindowDelegate() *SWTWindowDelegate {
 	this := &SWTWindowDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTWindowDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTWindowDelegate) initSWTWindowDelegate() {
 
 func NewSWTWindowDelegateId(id int64) *SWTWindowDelegate {
 	this := &SWTWindowDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTWindowDelegateId(id)
 	return this
 }

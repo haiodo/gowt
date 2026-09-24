@@ -8,7 +8,7 @@ type FocusEvent struct {
 
 func NewFocusEvent(e *Event) *FocusEvent {
 	this := &FocusEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initFocusEvent(e)
 	return this
 }

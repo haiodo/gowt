@@ -8,7 +8,7 @@ type WebDataSource struct {
 
 func NewWebDataSource() *WebDataSource {
 	this := &WebDataSource{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDataSource()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebDataSource) initWebDataSource() {
 
 func NewWebDataSourceOverload1(id int64) *WebDataSource {
 	this := &WebDataSource{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDataSourceOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebDataSource) initWebDataSourceOverload1(id int64) {
 
 func NewWebDataSourceOverload2(id *id) *WebDataSource {
 	this := &WebDataSource{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDataSourceOverload2(id)
 	return this
 }

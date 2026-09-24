@@ -8,7 +8,7 @@ type NSImageRep struct {
 
 func NewNSImageRep() *NSImageRep {
 	this := &NSImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImageRep()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSImageRep) initNSImageRep() {
 
 func NewNSImageRepOverload1(id int64) *NSImageRep {
 	this := &NSImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImageRepOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSImageRep) initNSImageRepOverload1(id int64) {
 
 func NewNSImageRepOverload2(id *id) *NSImageRep {
 	this := &NSImageRep{}
-	this.Impl = this
+	this.impl = this
 	this.initNSImageRepOverload2(id)
 	return this
 }
@@ -68,18 +68,18 @@ func (this *NSImageRep) SetSize(size NSSize) {
 }
 
 func NSImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep {
-	var cond334 int64
-	if filename != nil {
-		cond334 = filename.Id
+	var cond333 int64
+	if filename != (nil) {
+		cond333 = filename.Id
 	} else {
-		cond334 = int64(0)
+		cond333 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImageRep, OSSel_imageRepWithContentsOfFile_, cond334)
-	var cond335 *NSImageRep
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImageRep, OSSel_imageRepWithContentsOfFile_, cond333)
+	var cond334 *NSImageRep
 	if result != 0 {
-		cond335 = NewNSImageRepOverload1(result)
+		cond334 = NewNSImageRepOverload1(result)
 	} else {
-		cond335 = nil
+		cond334 = nil
 	}
-	return cond335
+	return cond334
 }

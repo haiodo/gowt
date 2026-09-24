@@ -8,7 +8,7 @@ type SWTSlider struct {
 
 func NewSWTSlider() *SWTSlider {
 	this := &SWTSlider{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSlider()
 	return this
 }

@@ -8,7 +8,7 @@ type SWTOpenSavePanelDelegate struct {
 
 func NewSWTOpenSavePanelDelegate() *SWTOpenSavePanelDelegate {
 	this := &SWTOpenSavePanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTOpenSavePanelDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTOpenSavePanelDelegate) initSWTOpenSavePanelDelegate() {
 
 func NewSWTOpenSavePanelDelegateId(id int64) *SWTOpenSavePanelDelegate {
 	this := &SWTOpenSavePanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTOpenSavePanelDelegateId(id)
 	return this
 }

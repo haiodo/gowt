@@ -8,7 +8,7 @@ type DOMDocument struct {
 
 func NewDOMDocument() *DOMDocument {
 	this := &DOMDocument{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMDocument()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *DOMDocument) initDOMDocument() {
 
 func NewDOMDocumentOverload1(id int64) *DOMDocument {
 	this := &DOMDocument{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMDocumentOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *DOMDocument) initDOMDocumentOverload1(id int64) {
 
 func NewDOMDocumentOverload2(id *id) *DOMDocument {
 	this := &DOMDocument{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMDocumentOverload2(id)
 	return this
 }

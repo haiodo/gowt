@@ -8,7 +8,7 @@ type SWTDragSourceDelegate struct {
 
 func NewSWTDragSourceDelegate() *SWTDragSourceDelegate {
 	this := &SWTDragSourceDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTDragSourceDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTDragSourceDelegate) initSWTDragSourceDelegate() {
 
 func NewSWTDragSourceDelegateId(id int64) *SWTDragSourceDelegate {
 	this := &SWTDragSourceDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTDragSourceDelegateId(id)
 	return this
 }

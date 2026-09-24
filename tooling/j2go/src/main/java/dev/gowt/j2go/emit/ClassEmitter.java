@@ -9,8 +9,8 @@ import java.util.*;
 
 import static dev.gowt.j2go.emit.EmitUtil.*;
 
-/** Compilation unit layout: classes, interfaces, struct fields, static fields/init, constructors,
- * instance initializers, method shells, super/this invocations. */
+/** Compilation unit layout: classes, interfaces, struct fields, static fields/init, method
+ * shells. Constructors/instance-initializer/super-this dispatch live in ConstructorEmitter. */
 final class ClassEmitter {
 
 	private final Emitter emitter;
@@ -78,9 +78,12 @@ final class ClassEmitter {
 						.append(dev.gowt.j2go.GoTypes.map(rootDecl.getReturnType(), emitter)).append('\n');
 			}
 			out.append("}\n\n");
-			// Root has no Java declaration when the override point is below it; give it a default too.
+			// Root gets a default when it has no Java declaration for this signature at all, or
+			// only an abstract one (no body, e.g. Layout.computeSize) - either way nothing concrete
+			// ends up on the root's own Go type.
 			for (var e : ci.root.overriddenRootMethods.entrySet()) {
-				if (ci.root.declaredMethods.containsKey(e.getKey())) continue;
+				IMethodBinding rootOwnDecl = ci.root.declaredMethods.get(e.getKey());
+				if (rootOwnDecl != null && !Modifier.isAbstract(rootOwnDecl.getModifiers())) continue;
 				IMethodBinding rootDecl = e.getValue();
 				String goName = ci.root.overriddenRootMethodGoNames.get(e.getKey());
 				out.append("func (this *").append(ci.goTypeName).append(") ").append(goName)
@@ -105,7 +108,7 @@ final class ClassEmitter {
 			}
 		}
 		if (ci == ci.root && needsImpl) {
-			out.append("\tImpl ").append(ci.goTypeName).append("Impl\n");
+			out.append("\timpl ").append(ci.goTypeName).append("Impl\n");
 		}
 		out.append("}\n\n");
 
@@ -122,13 +125,13 @@ final class ClassEmitter {
 		boolean hasExplicitCtor = false;
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && md.isConstructor()) {
-				emitConstructor(md, ci, td, out);
+				emitter.emitConstructor(md, ci, td, out);
 				hasExplicitCtor = true;
 			}
 		}
 		// A class with no declared constructor (e.g. Event.java: field declarations only) still
 		// gets Java's implicit public no-arg one - "new X()" elsewhere needs a matching New<X>().
-		if (!hasExplicitCtor && !ci.isStruct) emitImplicitConstructor(ci, td, out);
+		if (!hasExplicitCtor && !ci.isStruct) emitter.emitImplicitConstructor(ci, td, out);
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
 				if (Manual.manualMethod(Names.erasureKey(md.resolveBinding())) != null) continue;
@@ -150,6 +153,7 @@ final class ClassEmitter {
 				IMethodBinding smb = md.resolveBinding();
 				String declClass = smb.getDeclaringClass().getErasure().getQualifiedName();
 				if (Manual.isSkippedMethod(declClass, smb.getName())) continue;
+				if (Manual.manualMethod(Names.erasureKey(smb)) != null) continue;
 				if (Modifier.isNative(md.getModifiers())) emitter.emitStaticNativeMethod(md, ci, out);
 				else emitStaticMethod(md, ci, out);
 			}
@@ -160,6 +164,7 @@ final class ClassEmitter {
 			}
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;
+		emitter.currentClassInfo = savedClassInfo;
 	}
 
 	private Set<String> collectMethodGoNames(TypeDeclaration td) {
@@ -174,7 +179,6 @@ final class ClassEmitter {
 
 	private void emitStructFields(FieldDeclaration fd, Set<String> methodGoNames, StringBuilder out) {
 		boolean pub = Modifier.isPublic(fd.getModifiers());
-		List<String> goNames = new ArrayList<>();
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
 			String javaName = f.getName().getIdentifier();
@@ -184,19 +188,18 @@ final class ClassEmitter {
 				goName = goName + "_";
 				emitter.unsupported.add("FieldMethodNameClash: " + javaName + " clashes with a method Go name, suffixed _");
 			}
-			goNames.add(goName);
+			// Per fragment: a C-style `Runnable timerList []` puts the [] on the fragment, not the type.
+			ITypeBinding t = f.resolveBinding() != null ? f.resolveBinding().getType() : fd.getType().resolveBinding();
+			out.append('\t').append(goName).append(' ').append(dev.gowt.j2go.GoTypes.map(t, emitter)).append('\n');
 		}
-		if (goNames.isEmpty()) return;
-		out.append('\t').append(String.join(", ", goNames)).append(' ')
-				.append(dev.gowt.j2go.GoTypes.map(fd.getType().resolveBinding(), emitter)).append('\n');
 	}
 
 	private void emitStaticFields(FieldDeclaration fd, TypeModel.ClassInfo ci, StringBuilder out) {
 		boolean isFinal = Modifier.isFinal(fd.getModifiers());
-		ITypeBinding type = fd.getType().resolveBinding();
-		boolean maybeConst = isFinal && (type.isPrimitive() || type.getQualifiedName().equals("java.lang.String"));
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
+			ITypeBinding type = f.resolveBinding() != null ? f.resolveBinding().getType() : fd.getType().resolveBinding();
+			boolean maybeConst = isFinal && (type.isPrimitive() || type.getQualifiedName().equals("java.lang.String"));
 			String javaName = f.getName().getIdentifier();
 			if (javaName.equals("serialVersionUID")) continue;
 			if (Manual.isSkippedField(ci.binding.getErasure().getQualifiedName(), javaName)) continue;
@@ -227,6 +230,7 @@ final class ClassEmitter {
 				emitter.deferredStaticInitLabels.add(goName);
 				continue;
 			}
+			text = emitter.adaptNumeric(text, initExpr.resolveTypeBinding(), type);
 			out.append(maybeConst ? "const " : "var ").append(goName).append(" ")
 					.append(dev.gowt.j2go.GoTypes.map(type, emitter)).append(" = ").append(text).append('\n');
 		}
@@ -239,165 +243,6 @@ final class ClassEmitter {
 		emitter.currentReturnType = null;
 		emitter.deferredStaticInits.add(emitter.block(init.getBody(), 1));
 		emitter.deferredStaticInitLabels.add(emitter.currentClassGoTypeName + " static{}");
-	}
-
-	// ---------------------------------------------------------------- constructors
-
-	private void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
-		IMethodBinding mb = md.resolveBinding();
-		boolean pub = Modifier.isPublic(md.getModifiers());
-		String prefix = (pub ? "New" : "new") + ci.goFuncPrefix;
-		String goName = emitter.names.goMemberName(mb, prefix);
-		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape
-
-		boolean needsImpl = !ci.root.children.isEmpty();
-		out.append("func ").append(goName).append('(').append(emitter.paramList(mb, md)).append(") *")
-				.append(ci.goTypeName).append(" {\n");
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n");
-		if (needsImpl) out.append("\tthis.Impl = this\n");
-		out.append("\tthis.").append(initName).append('(').append(emitter.argNames(md)).append(")\n");
-		out.append("\treturn this\n}\n\n");
-
-		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName)
-				.append('(').append(emitter.paramList(mb, md)).append(") {\n");
-		emitter.currentReturnType = null;
-		out.append(emitConstructorBody(md, ci, td));
-		out.append("}\n\n");
-	}
-
-	/** Java's implicit no-arg constructor (JLS 8.8.9): same New<X>()/init<X>() split as
-	 * emitConstructor, so a subclass's explicit ctor can still call this init<X>(). */
-	private void emitImplicitConstructor(TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
-		boolean needsImpl = !ci.root.children.isEmpty();
-		// JLS 8.8.9: the implicit constructor's own accessibility matches the class's.
-		boolean pub = Modifier.isPublic(td.getModifiers());
-		String initName = "init" + ci.goFuncPrefix; // init methods are always unexported by shape
-		out.append("func ").append(pub ? "New" : "new").append(ci.goFuncPrefix).append("() *").append(ci.goTypeName).append(" {\n");
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n");
-		if (needsImpl) out.append("\tthis.Impl = this\n");
-		out.append("\tthis.").append(initName).append("()\n");
-		out.append("\treturn this\n}\n\n");
-
-		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName).append("() {\n");
-		out.append(emitZeroArgSuperInitCall(ci));
-		out.append(emitInstanceInitializers(td, 1));
-		out.append("}\n\n");
-	}
-
-	/** "this.Super.initSuper()" (or the manual-superclass equivalent), shared by an implicit
-	 * constructor and an explicit one with no super(...)/this(...) of its own. */
-	private String emitZeroArgSuperInitCall(TypeModel.ClassInfo ci) {
-		if (ci.superclass != null) {
-			IMethodBinding zeroArg = findZeroArgCtor(ci.superclass.binding);
-			if (zeroArg == null) return "";
-			String initName = emitter.names.goMemberName(zeroArg, "init" + ci.superclass.goFuncPrefix);
-			return "\tthis." + ci.superclass.goTypeName + "." + initName + "()\n";
-		}
-		if (ci.manualSuperQualifiedName != null) {
-			emitter.addManualImport(ci.manualSuperQualifiedName);
-			return "\tthis." + Manual.manualSuperFieldName(ci.manualSuperQualifiedName) + " = "
-					+ Manual.ctorFuncName(ci.manualSuperQualifiedName) + "()\n";
-		}
-		return "";
-	}
-
-	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td) {
-		List<Statement> stmts = md.getBody().statements();
-		StringBuilder b = new StringBuilder();
-		int start = 0;
-		boolean delegatesViaThis = !stmts.isEmpty() && stmts.get(0) instanceof ConstructorInvocation;
-		if (!stmts.isEmpty() && stmts.get(0) instanceof SuperConstructorInvocation sci) {
-			b.append(emitSuperInvocation(sci, ci));
-			start = 1;
-		} else if (delegatesViaThis) {
-			b.append(emitThisInvocation((ConstructorInvocation) stmts.get(0), ci));
-			start = 1;
-		} else {
-			b.append(emitZeroArgSuperInitCall(ci));
-		}
-		// JLS 8.8.7/12.5: field initializers run right after super(...), never in a this(...)
-		// delegate (the ultimately-invoked non-delegating constructor runs them once).
-		if (!delegatesViaThis) {
-			b.append(emitInstanceInitializers(td, 1));
-		}
-		for (int i = start; i < stmts.size(); i++) {
-			b.append(emitter.stmt(stmts.get(i), 1));
-		}
-		return b.toString();
-	}
-
-	private String emitInstanceInitializers(TypeDeclaration td, int indent) {
-		StringBuilder b = new StringBuilder();
-		for (Object o : td.bodyDeclarations()) {
-			if (o instanceof FieldDeclaration fd && !Modifier.isStatic(fd.getModifiers())) {
-				ITypeBinding fieldType = fd.getType().resolveBinding();
-				for (Object fo : fd.fragments()) {
-					VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
-					if (f.getInitializer() == null) continue;
-					IVariableBinding vb = f.resolveBinding();
-					String init = emitter.adaptNumeric(emitter.exprInto(f.getInitializer(), b, indent),
-							f.getInitializer().resolveTypeBinding(), fieldType);
-					b.append(ind(indent)).append("this.").append(emitter.fieldGoName(vb)).append(" = ").append(init).append('\n');
-				}
-			} else if (o instanceof Initializer init && !Modifier.isStatic(init.getModifiers())) {
-				b.append(emitter.block(init.getBody(), indent));
-			}
-		}
-		return b.toString();
-	}
-
-	private IMethodBinding findZeroArgCtor(ITypeBinding t) {
-		for (IMethodBinding m : t.getDeclaredMethods()) {
-			if (m.isConstructor() && m.getParameterTypes().length == 0) return m;
-		}
-		return null;
-	}
-
-	private String emitSuperInvocation(SuperConstructorInvocation sci, TypeModel.ClassInfo ci) {
-		IMethodBinding mb = sci.resolveConstructorBinding();
-		List<String> args = new ArrayList<>();
-		for (Object a : sci.arguments()) {
-			args.add(emitter.adaptArg((Expression) a, mb, sci.arguments().indexOf(a)));
-		}
-		if (ci.superclass == null && ci.manualSuperQualifiedName != null) {
-			emitter.addManualImport(ci.manualSuperQualifiedName);
-			return "\tthis." + Manual.manualSuperFieldName(ci.manualSuperQualifiedName) + " = "
-					+ Manual.ctorFuncName(ci.manualSuperQualifiedName) + "(" + String.join(", ", args) + ")\n";
-		}
-		String initName = emitter.names.goMemberName(mb, "init" + ci.superclass.goFuncPrefix);
-		return "\tthis." + ci.superclass.goTypeName + "." + initName + "(" + String.join(", ", args) + ")\n";
-	}
-
-	/** super.method(...): must not resolve back through the impl cascade - calls the specific
-	 * ancestor's Go method directly via its embedded-field path (real superclass or manual). */
-	String emitSuperMethodInvocation(SuperMethodInvocation smi) {
-		IMethodBinding mb = smi.resolveMethodBinding();
-		// A collision-renamed cascade method (Names.goMemberName's "On<Class>" suffix) must be
-		// called by that same name, even though super.x() bypasses the cascade's .Impl dispatch.
-		String cascadeName = emitter.currentClassInfo.root.overriddenRootMethodGoNames.get(TypeModel.signature(mb));
-		String base = cascadeName != null ? cascadeName : Names.javaMethodBaseGoName(smi.getName().getIdentifier());
-		List<String> args = emitter.buildArgs(smi.arguments(), mb);
-		String fieldPath;
-		if (emitter.currentClassInfo.superclass != null) {
-			fieldPath = emitter.currentClassInfo.superclass.goTypeName;
-		} else if (emitter.currentClassInfo.manualSuperQualifiedName != null) {
-			emitter.addManualImport(emitter.currentClassInfo.manualSuperQualifiedName);
-			fieldPath = Manual.manualSuperFieldName(emitter.currentClassInfo.manualSuperQualifiedName);
-		} else {
-			emitter.unsupported.add("SuperMethodInvocation: " + emitter.currentClassGoTypeName + " has no known superclass");
-			return emitter.panicClosure(smi, "unsupported super." + smi.getName().getIdentifier());
-		}
-		return "this." + fieldPath + "." + base + "(" + String.join(", ", args) + ")";
-	}
-
-	private String emitThisInvocation(ConstructorInvocation cti, TypeModel.ClassInfo ci) {
-		IMethodBinding mb = cti.resolveConstructorBinding();
-		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix);
-		List<String> args = new ArrayList<>();
-		for (Object a : cti.arguments()) {
-			args.add(emitter.adaptArg((Expression) a, mb, cti.arguments().indexOf(a)));
-		}
-		return "\tthis." + initName + "(" + String.join(", ", args) + ")\n";
 	}
 
 	// ---------------------------------------------------------------- methods

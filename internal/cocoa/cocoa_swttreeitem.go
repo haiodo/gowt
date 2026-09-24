@@ -8,7 +8,7 @@ type SWTTreeItem struct {
 
 func NewSWTTreeItem() *SWTTreeItem {
 	this := &SWTTreeItem{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTreeItem()
 	return this
 }

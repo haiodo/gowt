@@ -8,7 +8,7 @@ type ExpandEvent struct {
 
 func NewExpandEvent(e *Event) *ExpandEvent {
 	this := &ExpandEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initExpandEvent(e)
 	return this
 }

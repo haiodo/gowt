@@ -8,7 +8,7 @@ type NSResponder struct {
 
 func NewNSResponder() *NSResponder {
 	this := &NSResponder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSResponder()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSResponder) initNSResponder() {
 
 func NewNSResponderOverload1(id int64) *NSResponder {
 	this := &NSResponder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSResponderOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSResponder) initNSResponderOverload1(id int64) {
 
 func NewNSResponderOverload2(id *id) *NSResponder {
 	this := &NSResponder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSResponderOverload2(id)
 	return this
 }
@@ -48,23 +48,23 @@ func (this *NSResponder) BecomeFirstResponder() bool {
 }
 
 func (this *NSResponder) CancelOperation(sender *id) {
-	var cond601 int64
-	if sender != nil {
-		cond601 = sender.Id
+	var cond600 int64
+	if sender != (nil) {
+		cond600 = sender.Id
 	} else {
-		cond601 = int64(0)
+		cond600 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_cancelOperation_, cond601)
+	OSObjc_msgSendOverload44(this.Id, OSSel_cancelOperation_, cond600)
 }
 
 func (this *NSResponder) CursorUpdate(event *NSEvent) {
-	var cond602 int64
-	if event != nil {
-		cond602 = event.Id
+	var cond601 int64
+	if event != (nil) {
+		cond601 = event.Id
 	} else {
-		cond602 = int64(0)
+		cond601 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_cursorUpdate_, cond602)
+	OSObjc_msgSendOverload44(this.Id, OSSel_cursorUpdate_, cond601)
 }
 
 func (this *NSResponder) DoCommandBySelector(aSelector int64) {
@@ -72,123 +72,123 @@ func (this *NSResponder) DoCommandBySelector(aSelector int64) {
 }
 
 func (this *NSResponder) FlagsChanged(theEvent *NSEvent) {
-	var cond603 int64
-	if theEvent != nil {
-		cond603 = theEvent.Id
+	var cond602 int64
+	if theEvent != (nil) {
+		cond602 = theEvent.Id
 	} else {
-		cond603 = int64(0)
+		cond602 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_flagsChanged_, cond603)
+	OSObjc_msgSendOverload44(this.Id, OSSel_flagsChanged_, cond602)
 }
 
 func (this *NSResponder) HelpRequested(eventPtr *NSEvent) {
-	var cond604 int64
-	if eventPtr != nil {
-		cond604 = eventPtr.Id
+	var cond603 int64
+	if eventPtr != (nil) {
+		cond603 = eventPtr.Id
 	} else {
-		cond604 = int64(0)
+		cond603 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_helpRequested_, cond604)
+	OSObjc_msgSendOverload44(this.Id, OSSel_helpRequested_, cond603)
 }
 
 func (this *NSResponder) InterpretKeyEvents(eventArray *NSArray) {
-	var cond605 int64
-	if eventArray != nil {
-		cond605 = eventArray.Id
+	var cond604 int64
+	if eventArray != (nil) {
+		cond604 = eventArray.Id
 	} else {
-		cond605 = int64(0)
+		cond604 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_interpretKeyEvents_, cond605)
+	OSObjc_msgSendOverload44(this.Id, OSSel_interpretKeyEvents_, cond604)
 }
 
 func (this *NSResponder) KeyDown(theEvent *NSEvent) {
+	var cond605 int64
+	if theEvent != (nil) {
+		cond605 = theEvent.Id
+	} else {
+		cond605 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_keyDown_, cond605)
+}
+
+func (this *NSResponder) KeyUp(theEvent *NSEvent) {
 	var cond606 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond606 = theEvent.Id
 	} else {
 		cond606 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_keyDown_, cond606)
-}
-
-func (this *NSResponder) KeyUp(theEvent *NSEvent) {
-	var cond607 int64
-	if theEvent != nil {
-		cond607 = theEvent.Id
-	} else {
-		cond607 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_keyUp_, cond607)
+	OSObjc_msgSendOverload44(this.Id, OSSel_keyUp_, cond606)
 }
 
 func (this *NSResponder) MagnifyWithEvent(event *NSEvent) {
-	var cond608 int64
-	if event != nil {
-		cond608 = event.Id
+	var cond607 int64
+	if event != (nil) {
+		cond607 = event.Id
 	} else {
-		cond608 = int64(0)
+		cond607 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_magnifyWithEvent_, cond608)
+	OSObjc_msgSendOverload44(this.Id, OSSel_magnifyWithEvent_, cond607)
 }
 
 func (this *NSResponder) MouseDown(theEvent *NSEvent) {
+	var cond608 int64
+	if theEvent != (nil) {
+		cond608 = theEvent.Id
+	} else {
+		cond608 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseDown_, cond608)
+}
+
+func (this *NSResponder) MouseDragged(theEvent *NSEvent) {
 	var cond609 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond609 = theEvent.Id
 	} else {
 		cond609 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseDown_, cond609)
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseDragged_, cond609)
 }
 
-func (this *NSResponder) MouseDragged(theEvent *NSEvent) {
+func (this *NSResponder) MouseEntered(theEvent *NSEvent) {
 	var cond610 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond610 = theEvent.Id
 	} else {
 		cond610 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseDragged_, cond610)
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseEntered_, cond610)
 }
 
-func (this *NSResponder) MouseEntered(theEvent *NSEvent) {
+func (this *NSResponder) MouseExited(theEvent *NSEvent) {
 	var cond611 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond611 = theEvent.Id
 	} else {
 		cond611 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseEntered_, cond611)
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseExited_, cond611)
 }
 
-func (this *NSResponder) MouseExited(theEvent *NSEvent) {
+func (this *NSResponder) MouseMoved(theEvent *NSEvent) {
 	var cond612 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond612 = theEvent.Id
 	} else {
 		cond612 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseExited_, cond612)
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseMoved_, cond612)
 }
 
-func (this *NSResponder) MouseMoved(theEvent *NSEvent) {
+func (this *NSResponder) MouseUp(theEvent *NSEvent) {
 	var cond613 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond613 = theEvent.Id
 	} else {
 		cond613 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseMoved_, cond613)
-}
-
-func (this *NSResponder) MouseUp(theEvent *NSEvent) {
-	var cond614 int64
-	if theEvent != nil {
-		cond614 = theEvent.Id
-	} else {
-		cond614 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_mouseUp_, cond614)
+	OSObjc_msgSendOverload44(this.Id, OSSel_mouseUp_, cond613)
 }
 
 func (this *NSResponder) NoResponderFor(eventSelector int64) {
@@ -196,63 +196,63 @@ func (this *NSResponder) NoResponderFor(eventSelector int64) {
 }
 
 func (this *NSResponder) OtherMouseDown(theEvent *NSEvent) {
+	var cond614 int64
+	if theEvent != (nil) {
+		cond614 = theEvent.Id
+	} else {
+		cond614 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseDown_, cond614)
+}
+
+func (this *NSResponder) OtherMouseDragged(theEvent *NSEvent) {
 	var cond615 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond615 = theEvent.Id
 	} else {
 		cond615 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseDown_, cond615)
+	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseDragged_, cond615)
 }
 
-func (this *NSResponder) OtherMouseDragged(theEvent *NSEvent) {
+func (this *NSResponder) OtherMouseUp(theEvent *NSEvent) {
 	var cond616 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond616 = theEvent.Id
 	} else {
 		cond616 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseDragged_, cond616)
-}
-
-func (this *NSResponder) OtherMouseUp(theEvent *NSEvent) {
-	var cond617 int64
-	if theEvent != nil {
-		cond617 = theEvent.Id
-	} else {
-		cond617 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseUp_, cond617)
+	OSObjc_msgSendOverload44(this.Id, OSSel_otherMouseUp_, cond616)
 }
 
 func (this *NSResponder) PageDown(sender *id) {
+	var cond617 int64
+	if sender != (nil) {
+		cond617 = sender.Id
+	} else {
+		cond617 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_pageDown_, cond617)
+}
+
+func (this *NSResponder) PageUp(sender *id) {
 	var cond618 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond618 = sender.Id
 	} else {
 		cond618 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_pageDown_, cond618)
-}
-
-func (this *NSResponder) PageUp(sender *id) {
-	var cond619 int64
-	if sender != nil {
-		cond619 = sender.Id
-	} else {
-		cond619 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_pageUp_, cond619)
+	OSObjc_msgSendOverload44(this.Id, OSSel_pageUp_, cond618)
 }
 
 func (this *NSResponder) PerformKeyEquivalent(theEvent *NSEvent) bool {
-	var cond620 int64
-	if theEvent != nil {
-		cond620 = theEvent.Id
+	var cond619 int64
+	if theEvent != (nil) {
+		cond619 = theEvent.Id
 	} else {
-		cond620 = int64(0)
+		cond619 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_performKeyEquivalent_, cond620)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_performKeyEquivalent_, cond619)
 }
 
 func (this *NSResponder) ResignFirstResponder() bool {
@@ -260,135 +260,135 @@ func (this *NSResponder) ResignFirstResponder() bool {
 }
 
 func (this *NSResponder) RightMouseDown(theEvent *NSEvent) {
+	var cond620 int64
+	if theEvent != (nil) {
+		cond620 = theEvent.Id
+	} else {
+		cond620 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseDown_, cond620)
+}
+
+func (this *NSResponder) RightMouseDragged(theEvent *NSEvent) {
 	var cond621 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond621 = theEvent.Id
 	} else {
 		cond621 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseDown_, cond621)
+	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseDragged_, cond621)
 }
 
-func (this *NSResponder) RightMouseDragged(theEvent *NSEvent) {
+func (this *NSResponder) RightMouseUp(theEvent *NSEvent) {
 	var cond622 int64
-	if theEvent != nil {
+	if theEvent != (nil) {
 		cond622 = theEvent.Id
 	} else {
 		cond622 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseDragged_, cond622)
-}
-
-func (this *NSResponder) RightMouseUp(theEvent *NSEvent) {
-	var cond623 int64
-	if theEvent != nil {
-		cond623 = theEvent.Id
-	} else {
-		cond623 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseUp_, cond623)
+	OSObjc_msgSendOverload44(this.Id, OSSel_rightMouseUp_, cond622)
 }
 
 func (this *NSResponder) RotateWithEvent(event *NSEvent) {
-	var cond624 int64
-	if event != nil {
-		cond624 = event.Id
+	var cond623 int64
+	if event != (nil) {
+		cond623 = event.Id
 	} else {
-		cond624 = int64(0)
+		cond623 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_rotateWithEvent_, cond624)
+	OSObjc_msgSendOverload44(this.Id, OSSel_rotateWithEvent_, cond623)
 }
 
 func (this *NSResponder) ScrollWheel(theEvent *NSEvent) {
-	var cond625 int64
-	if theEvent != nil {
-		cond625 = theEvent.Id
+	var cond624 int64
+	if theEvent != (nil) {
+		cond624 = theEvent.Id
 	} else {
-		cond625 = int64(0)
+		cond624 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_scrollWheel_, cond625)
+	OSObjc_msgSendOverload44(this.Id, OSSel_scrollWheel_, cond624)
 }
 
 func (this *NSResponder) SwipeWithEvent(event *NSEvent) {
+	var cond625 int64
+	if event != (nil) {
+		cond625 = event.Id
+	} else {
+		cond625 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_swipeWithEvent_, cond625)
+}
+
+func (this *NSResponder) TouchesBeganWithEvent(event *NSEvent) {
 	var cond626 int64
-	if event != nil {
+	if event != (nil) {
 		cond626 = event.Id
 	} else {
 		cond626 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_swipeWithEvent_, cond626)
+	OSObjc_msgSendOverload44(this.Id, OSSel_touchesBeganWithEvent_, cond626)
 }
 
-func (this *NSResponder) TouchesBeganWithEvent(event *NSEvent) {
+func (this *NSResponder) TouchesCancelledWithEvent(event *NSEvent) {
 	var cond627 int64
-	if event != nil {
+	if event != (nil) {
 		cond627 = event.Id
 	} else {
 		cond627 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_touchesBeganWithEvent_, cond627)
+	OSObjc_msgSendOverload44(this.Id, OSSel_touchesCancelledWithEvent_, cond627)
 }
 
-func (this *NSResponder) TouchesCancelledWithEvent(event *NSEvent) {
+func (this *NSResponder) TouchesEndedWithEvent(event *NSEvent) {
 	var cond628 int64
-	if event != nil {
+	if event != (nil) {
 		cond628 = event.Id
 	} else {
 		cond628 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_touchesCancelledWithEvent_, cond628)
+	OSObjc_msgSendOverload44(this.Id, OSSel_touchesEndedWithEvent_, cond628)
 }
 
-func (this *NSResponder) TouchesEndedWithEvent(event *NSEvent) {
+func (this *NSResponder) TouchesMovedWithEvent(event *NSEvent) {
 	var cond629 int64
-	if event != nil {
+	if event != (nil) {
 		cond629 = event.Id
 	} else {
 		cond629 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_touchesEndedWithEvent_, cond629)
-}
-
-func (this *NSResponder) TouchesMovedWithEvent(event *NSEvent) {
-	var cond630 int64
-	if event != nil {
-		cond630 = event.Id
-	} else {
-		cond630 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_touchesMovedWithEvent_, cond630)
+	OSObjc_msgSendOverload44(this.Id, OSSel_touchesMovedWithEvent_, cond629)
 }
 
 func (this *NSResponder) UndoManager() *NSUndoManager {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_undoManager)
-	var cond631 *NSUndoManager
+	var cond630 *NSUndoManager
 	if result != 0 {
-		cond631 = NewNSUndoManagerOverload1(result)
+		cond630 = NewNSUndoManagerOverload1(result)
 	} else {
-		cond631 = nil
+		cond630 = nil
 	}
-	return cond631
+	return cond630
 }
 
 func (this *NSResponder) ValidRequestorForSendType(sendType *NSString, returnType *NSString) *id {
+	var cond631 int64
+	if sendType != (nil) {
+		cond631 = sendType.Id
+	} else {
+		cond631 = int64(0)
+	}
 	var cond632 int64
-	if sendType != nil {
-		cond632 = sendType.Id
+	if returnType != (nil) {
+		cond632 = returnType.Id
 	} else {
 		cond632 = int64(0)
 	}
-	var cond633 int64
-	if returnType != nil {
-		cond633 = returnType.Id
-	} else {
-		cond633 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_validRequestorForSendType_returnType_, cond632, cond633)
-	var cond634 *id
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_validRequestorForSendType_returnType_, cond631, cond632)
+	var cond633 *id
 	if result != 0 {
-		cond634 = NewidOverload1(result)
+		cond633 = NewidOverload1(result)
 	} else {
-		cond634 = nil
+		cond633 = nil
 	}
-	return cond634
+	return cond633
 }

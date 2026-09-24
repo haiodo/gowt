@@ -8,7 +8,7 @@ type SWTPanelDelegate struct {
 
 func NewSWTPanelDelegate() *SWTPanelDelegate {
 	this := &SWTPanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPanelDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTPanelDelegate) initSWTPanelDelegate() {
 
 func NewSWTPanelDelegateId(id int64) *SWTPanelDelegate {
 	this := &SWTPanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPanelDelegateId(id)
 	return this
 }

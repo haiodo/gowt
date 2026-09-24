@@ -8,7 +8,7 @@ type NSNumber struct {
 
 func NewNSNumber() *NSNumber {
 	this := &NSNumber{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumber()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSNumber) initNSNumber() {
 
 func NewNSNumberOverload1(id int64) *NSNumber {
 	this := &NSNumber{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumberOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSNumber) initNSNumberOverload1(id int64) {
 
 func NewNSNumberOverload2(id *id) *NSNumber {
 	this := &NSNumber{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNumberOverload2(id)
 	return this
 }
@@ -61,6 +61,17 @@ func (this *NSNumber) IntegerValue() int64 {
 
 func NSNumberNumberWithBool(value bool) *NSNumber {
 	var result int64 = OSObjc_msgSendOverload27(OSClass_NSNumber, OSSel_numberWithBool_, value)
+	var cond461 *NSNumber
+	if result != 0 {
+		cond461 = NewNSNumberOverload1(result)
+	} else {
+		cond461 = nil
+	}
+	return cond461
+}
+
+func NSNumberNumberWithDouble(value float64) *NSNumber {
+	var result int64 = OSObjc_msgSendOverload35(OSClass_NSNumber, OSSel_numberWithDouble_, value)
 	var cond462 *NSNumber
 	if result != 0 {
 		cond462 = NewNSNumberOverload1(result)
@@ -70,8 +81,8 @@ func NSNumberNumberWithBool(value bool) *NSNumber {
 	return cond462
 }
 
-func NSNumberNumberWithDouble(value float64) *NSNumber {
-	var result int64 = OSObjc_msgSendOverload35(OSClass_NSNumber, OSSel_numberWithDouble_, value)
+func NSNumberNumberWithInt(value int32) *NSNumber {
+	var result int64 = OSObjc_msgSendOverload41(OSClass_NSNumber, OSSel_numberWithInt_, value)
 	var cond463 *NSNumber
 	if result != 0 {
 		cond463 = NewNSNumberOverload1(result)
@@ -81,8 +92,8 @@ func NSNumberNumberWithDouble(value float64) *NSNumber {
 	return cond463
 }
 
-func NSNumberNumberWithInt(value int32) *NSNumber {
-	var result int64 = OSObjc_msgSendOverload41(OSClass_NSNumber, OSSel_numberWithInt_, value)
+func NSNumberNumberWithInteger(value int64) *NSNumber {
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSNumber, OSSel_numberWithInteger_, value)
 	var cond464 *NSNumber
 	if result != 0 {
 		cond464 = NewNSNumberOverload1(result)
@@ -92,19 +103,19 @@ func NSNumberNumberWithInt(value int32) *NSNumber {
 	return cond464
 }
 
-func NSNumberNumberWithInteger(value int64) *NSNumber {
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSNumber, OSSel_numberWithInteger_, value)
-	var cond465 *NSNumber
+func NSNumberValueWithPoint(point NSPoint) *NSValue {
+	var result int64 = OSObjc_msgSendOverload2(OSClass_NSNumber, OSSel_valueWithPoint_, point)
+	var cond465 *NSValue
 	if result != 0 {
-		cond465 = NewNSNumberOverload1(result)
+		cond465 = NewNSValueOverload1(result)
 	} else {
 		cond465 = nil
 	}
 	return cond465
 }
 
-func NSNumberValueWithPoint(point NSPoint) *NSValue {
-	var result int64 = OSObjc_msgSendOverload2(OSClass_NSNumber, OSSel_valueWithPoint_, point)
+func NSNumberValueWithRange(range_ NSRange) *NSValue {
+	var result int64 = OSObjc_msgSendOverload8(OSClass_NSNumber, OSSel_valueWithRange_, range_)
 	var cond466 *NSValue
 	if result != 0 {
 		cond466 = NewNSValueOverload1(result)
@@ -114,8 +125,8 @@ func NSNumberValueWithPoint(point NSPoint) *NSValue {
 	return cond466
 }
 
-func NSNumberValueWithRange(range_ NSRange) *NSValue {
-	var result int64 = OSObjc_msgSendOverload8(OSClass_NSNumber, OSSel_valueWithRange_, range_)
+func NSNumberValueWithRect(rect NSRect) *NSValue {
+	var result int64 = OSObjc_msgSendOverload13(OSClass_NSNumber, OSSel_valueWithRect_, rect)
 	var cond467 *NSValue
 	if result != 0 {
 		cond467 = NewNSValueOverload1(result)
@@ -125,8 +136,8 @@ func NSNumberValueWithRange(range_ NSRange) *NSValue {
 	return cond467
 }
 
-func NSNumberValueWithRect(rect NSRect) *NSValue {
-	var result int64 = OSObjc_msgSendOverload13(OSClass_NSNumber, OSSel_valueWithRect_, rect)
+func NSNumberValueWithSize(size NSSize) *NSValue {
+	var result int64 = OSObjc_msgSendOverload26(OSClass_NSNumber, OSSel_valueWithSize_, size)
 	var cond468 *NSValue
 	if result != 0 {
 		cond468 = NewNSValueOverload1(result)
@@ -134,15 +145,4 @@ func NSNumberValueWithRect(rect NSRect) *NSValue {
 		cond468 = nil
 	}
 	return cond468
-}
-
-func NSNumberValueWithSize(size NSSize) *NSValue {
-	var result int64 = OSObjc_msgSendOverload26(OSClass_NSNumber, OSSel_valueWithSize_, size)
-	var cond469 *NSValue
-	if result != 0 {
-		cond469 = NewNSValueOverload1(result)
-	} else {
-		cond469 = nil
-	}
-	return cond469
 }

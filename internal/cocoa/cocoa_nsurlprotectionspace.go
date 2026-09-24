@@ -8,7 +8,7 @@ type NSURLProtectionSpace struct {
 
 func NewNSURLProtectionSpace() *NSURLProtectionSpace {
 	this := &NSURLProtectionSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLProtectionSpace()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSURLProtectionSpace) initNSURLProtectionSpace() {
 
 func NewNSURLProtectionSpaceOverload1(id int64) *NSURLProtectionSpace {
 	this := &NSURLProtectionSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLProtectionSpaceOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSURLProtectionSpace) initNSURLProtectionSpaceOverload1(id int64) {
 
 func NewNSURLProtectionSpaceOverload2(id *id) *NSURLProtectionSpace {
 	this := &NSURLProtectionSpace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLProtectionSpaceOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSURLProtectionSpace) initNSURLProtectionSpaceOverload2(id *id) {
 
 func (this *NSURLProtectionSpace) Host() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_host)
-	var cond836 *NSString
+	var cond835 *NSString
 	if result != 0 {
-		cond836 = NewNSStringOverload1(result)
+		cond835 = NewNSStringOverload1(result)
 	} else {
-		cond836 = nil
+		cond835 = nil
 	}
-	return cond836
+	return cond835
 }
 
 func (this *NSURLProtectionSpace) Port() int64 {
@@ -56,11 +56,11 @@ func (this *NSURLProtectionSpace) Port() int64 {
 
 func (this *NSURLProtectionSpace) Realm() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_realm)
-	var cond837 *NSString
+	var cond836 *NSString
 	if result != 0 {
-		cond837 = NewNSStringOverload1(result)
+		cond836 = NewNSStringOverload1(result)
 	} else {
-		cond837 = nil
+		cond836 = nil
 	}
-	return cond837
+	return cond836
 }

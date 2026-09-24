@@ -59,7 +59,7 @@ func (this *SWTError) GetCause() error {
 }
 
 func (this *SWTError) GetMessage() string {
-	if this.Throwable == nil {
+	if this.Throwable == (nil) {
 		return this.JavaError.GetMessage()
 	}
 	return fmt.Sprintf("%s (%s)", this.JavaError.GetMessage(), this.Throwable.Error())

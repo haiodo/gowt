@@ -8,9 +8,39 @@ type MenuListener interface {
 }
 
 func MenuListenerMenuHiddenAdapter(c func(*MenuEvent)) MenuListener {
-	return func() *MenuAdapter { panic("j2go: unsupported anonymous class") }()
+	anon39 := &MenuListenerAnon1{}
+	anon39.initMenuAdapter()
+	anon39.fnMenuHidden = func(e *MenuEvent) {
+		c(e)
+	}
+	return anon39
 }
 
 func MenuListenerMenuShownAdapter(c func(*MenuEvent)) MenuListener {
-	return func() *MenuAdapter { panic("j2go: unsupported anonymous class") }()
+	anon40 := &MenuListenerAnon2{}
+	anon40.initMenuAdapter()
+	anon40.fnMenuShown = func(e *MenuEvent) {
+		c(e)
+	}
+	return anon40
+}
+
+// j2go: anonymous MenuAdapter subclass.
+type MenuListenerAnon1 struct {
+	MenuAdapter
+	fnMenuHidden func(a0 *MenuEvent)
+}
+
+func (this *MenuListenerAnon1) MenuHidden(a0 *MenuEvent) {
+	this.fnMenuHidden(a0)
+}
+
+// j2go: anonymous MenuAdapter subclass.
+type MenuListenerAnon2 struct {
+	MenuAdapter
+	fnMenuShown func(a0 *MenuEvent)
+}
+
+func (this *MenuListenerAnon2) MenuShown(a0 *MenuEvent) {
+	this.fnMenuShown(a0)
 }

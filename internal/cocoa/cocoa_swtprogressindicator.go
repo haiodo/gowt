@@ -8,7 +8,7 @@ type SWTProgressIndicator struct {
 
 func NewSWTProgressIndicator() *SWTProgressIndicator {
 	this := &SWTProgressIndicator{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTProgressIndicator()
 	return this
 }

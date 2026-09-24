@@ -8,7 +8,7 @@ type NSButtonCell struct {
 
 func NewNSButtonCell() *NSButtonCell {
 	this := &NSButtonCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButtonCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSButtonCell) initNSButtonCell() {
 
 func NewNSButtonCellOverload1(id int64) *NSButtonCell {
 	this := &NSButtonCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButtonCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSButtonCell) initNSButtonCellOverload1(id int64) {
 
 func NewNSButtonCellOverload2(id *id) *NSButtonCell {
 	this := &NSButtonCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSButtonCellOverload2(id)
 	return this
 }
@@ -41,7 +41,7 @@ func (this *NSButtonCell) initNSButtonCellOverload2(id *id) {
 
 func (this *NSButtonCell) DrawBezelWithFrame(frame NSRect, controlView *NSView) {
 	var cond122 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond122 = controlView.Id
 	} else {
 		cond122 = int64(0)
@@ -51,13 +51,13 @@ func (this *NSButtonCell) DrawBezelWithFrame(frame NSRect, controlView *NSView) 
 
 func (this *NSButtonCell) DrawImage(image *NSImage, frame NSRect, controlView *NSView) {
 	var cond123 int64
-	if image != nil {
+	if image != (nil) {
 		cond123 = image.Id
 	} else {
 		cond123 = int64(0)
 	}
 	var cond124 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond124 = controlView.Id
 	} else {
 		cond124 = int64(0)
@@ -68,13 +68,13 @@ func (this *NSButtonCell) DrawImage(image *NSImage, frame NSRect, controlView *N
 func (this *NSButtonCell) DrawTitle(title *NSAttributedString, frame NSRect, controlView *NSView) NSRect {
 	var result NSRect = NSRect{}
 	var cond125 int64
-	if title != nil {
+	if title != (nil) {
 		cond125 = title.Id
 	} else {
 		cond125 = int64(0)
 	}
 	var cond126 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond126 = controlView.Id
 	} else {
 		cond126 = int64(0)
@@ -85,7 +85,7 @@ func (this *NSButtonCell) DrawTitle(title *NSAttributedString, frame NSRect, con
 
 func (this *NSButtonCell) SetBackgroundColor(backgroundColor *NSColor) {
 	var cond127 int64
-	if backgroundColor != nil {
+	if backgroundColor != (nil) {
 		cond127 = backgroundColor.Id
 	} else {
 		cond127 = int64(0)

@@ -8,7 +8,7 @@ type NSScreen struct {
 
 func NewNSScreen() *NSScreen {
 	this := &NSScreen{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScreen()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSScreen) initNSScreen() {
 
 func NewNSScreenOverload1(id int64) *NSScreen {
 	this := &NSScreen{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScreenOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSScreen) initNSScreenOverload1(id int64) {
 
 func NewNSScreenOverload2(id *id) *NSScreen {
 	this := &NSScreen{}
-	this.Impl = this
+	this.impl = this
 	this.initNSScreenOverload2(id)
 	return this
 }
@@ -49,13 +49,13 @@ func (this *NSScreen) Depth() int32 {
 
 func (this *NSScreen) DeviceDescription() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_deviceDescription)
-	var cond653 *NSDictionary
+	var cond652 *NSDictionary
 	if result != 0 {
-		cond653 = NewNSDictionaryOverload1(result)
+		cond652 = NewNSDictionaryOverload1(result)
 	} else {
-		cond653 = nil
+		cond652 = nil
 	}
-	return cond653
+	return cond652
 }
 
 func (this *NSScreen) Frame() NSRect {
@@ -72,22 +72,22 @@ func (this *NSScreen) VisibleFrame() NSRect {
 
 func NSScreenMainScreen() *NSScreen {
 	var result int64 = OSObjc_msgSend(OSClass_NSScreen, OSSel_mainScreen)
-	var cond654 *NSScreen
+	var cond653 *NSScreen
 	if result != 0 {
-		cond654 = NewNSScreenOverload1(result)
+		cond653 = NewNSScreenOverload1(result)
 	} else {
-		cond654 = nil
+		cond653 = nil
 	}
-	return cond654
+	return cond653
 }
 
 func NSScreenScreens() *NSArray {
 	var result int64 = OSObjc_msgSend(OSClass_NSScreen, OSSel_screens)
-	var cond655 *NSArray
+	var cond654 *NSArray
 	if result != 0 {
-		cond655 = NewNSArrayOverload1(result)
+		cond654 = NewNSArrayOverload1(result)
 	} else {
-		cond655 = nil
+		cond654 = nil
 	}
-	return cond655
+	return cond654
 }

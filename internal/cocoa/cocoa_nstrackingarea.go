@@ -8,7 +8,7 @@ type NSTrackingArea struct {
 
 func NewNSTrackingArea() *NSTrackingArea {
 	this := &NSTrackingArea{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTrackingArea()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTrackingArea) initNSTrackingArea() {
 
 func NewNSTrackingAreaOverload1(id int64) *NSTrackingArea {
 	this := &NSTrackingArea{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTrackingAreaOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTrackingArea) initNSTrackingAreaOverload1(id int64) {
 
 func NewNSTrackingAreaOverload2(id *id) *NSTrackingArea {
 	this := &NSTrackingArea{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTrackingAreaOverload2(id)
 	return this
 }
@@ -41,22 +41,22 @@ func (this *NSTrackingArea) initNSTrackingAreaOverload2(id *id) {
 
 func (this *NSTrackingArea) Owner() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_owner)
-	var cond815 *id
+	var cond814 *id
 	if result != 0 {
-		cond815 = NewidOverload1(result)
+		cond814 = NewidOverload1(result)
 	} else {
-		cond815 = nil
+		cond814 = nil
 	}
-	return cond815
+	return cond814
 }
 
 func (this *NSTrackingArea) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond816 *NSDictionary
+	var cond815 *NSDictionary
 	if result != 0 {
-		cond816 = NewNSDictionaryOverload1(result)
+		cond815 = NewNSDictionaryOverload1(result)
 	} else {
-		cond816 = nil
+		cond815 = nil
 	}
-	return cond816
+	return cond815
 }

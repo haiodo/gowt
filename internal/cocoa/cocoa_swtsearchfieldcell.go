@@ -8,7 +8,7 @@ type SWTSearchFieldCell struct {
 
 func NewSWTSearchFieldCell() *SWTSearchFieldCell {
 	this := &SWTSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSearchFieldCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTSearchFieldCell) initSWTSearchFieldCell() {
 
 func NewSWTSearchFieldCellOverload1(id *id) *SWTSearchFieldCell {
 	this := &SWTSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSearchFieldCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *SWTSearchFieldCell) initSWTSearchFieldCellOverload1(id *id) {
 
 func NewSWTSearchFieldCellOverload2(id int64) *SWTSearchFieldCell {
 	this := &SWTSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTSearchFieldCellOverload2(id)
 	return this
 }

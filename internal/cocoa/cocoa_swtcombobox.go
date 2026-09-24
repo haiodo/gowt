@@ -8,7 +8,7 @@ type SWTComboBox struct {
 
 func NewSWTComboBox() *SWTComboBox {
 	this := &SWTComboBox{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTComboBox()
 	return this
 }

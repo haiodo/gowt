@@ -8,7 +8,7 @@ type NSProcessInfo struct {
 
 func NewNSProcessInfo() *NSProcessInfo {
 	this := &NSProcessInfo{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProcessInfo()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSProcessInfo) initNSProcessInfo() {
 
 func NewNSProcessInfoOverload1(id int64) *NSProcessInfo {
 	this := &NSProcessInfo{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProcessInfoOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSProcessInfo) initNSProcessInfoOverload1(id int64) {
 
 func NewNSProcessInfoOverload2(id *id) *NSProcessInfo {
 	this := &NSProcessInfo{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProcessInfoOverload2(id)
 	return this
 }
@@ -47,11 +47,11 @@ func (this *NSProcessInfo) OperatingSystemVersion() NSOperatingSystemVersion {
 
 func NSProcessInfoProcessInfo() *NSProcessInfo {
 	var result int64 = OSObjc_msgSend(OSClass_NSProcessInfo, OSSel_processInfo)
-	var cond599 *NSProcessInfo
+	var cond598 *NSProcessInfo
 	if result != 0 {
-		cond599 = NewNSProcessInfoOverload1(result)
+		cond598 = NewNSProcessInfoOverload1(result)
 	} else {
-		cond599 = nil
+		cond598 = nil
 	}
-	return cond599
+	return cond598
 }

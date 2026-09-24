@@ -8,7 +8,7 @@ type SWTButton struct {
 
 func NewSWTButton() *SWTButton {
 	this := &SWTButton{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTButton()
 	return this
 }

@@ -8,7 +8,7 @@ type NSDate struct {
 
 func NewNSDate() *NSDate {
 	this := &NSDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSDate) initNSDate() {
 
 func NewNSDateOverload1(id int64) *NSDate {
 	this := &NSDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDateOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSDate) initNSDateOverload1(id int64) {
 
 func NewNSDateOverload2(id *id) *NSDate {
 	this := &NSDate{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDateOverload2(id)
 	return this
 }
@@ -40,30 +40,41 @@ func (this *NSDate) initNSDateOverload2(id *id) {
 }
 
 func (this *NSDate) DateWithCalendarFormat(format *NSString, aTimeZone *NSTimeZone) *NSCalendarDate {
+	var cond225 int64
+	if format != (nil) {
+		cond225 = format.Id
+	} else {
+		cond225 = int64(0)
+	}
 	var cond226 int64
-	if format != nil {
-		cond226 = format.Id
+	if aTimeZone != (nil) {
+		cond226 = aTimeZone.Id
 	} else {
 		cond226 = int64(0)
 	}
-	var cond227 int64
-	if aTimeZone != nil {
-		cond227 = aTimeZone.Id
-	} else {
-		cond227 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_dateWithCalendarFormat_timeZone_, cond226, cond227)
-	var cond228 *NSCalendarDate
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_dateWithCalendarFormat_timeZone_, cond225, cond226)
+	var cond227 *NSCalendarDate
 	if result != 0 {
-		cond228 = NewNSCalendarDateOverload1(result)
+		cond227 = NewNSCalendarDateOverload1(result)
+	} else {
+		cond227 = nil
+	}
+	return cond227
+}
+
+func NSDateDateWithTimeIntervalSinceNow(secs float64) *NSDate {
+	var result int64 = OSObjc_msgSendOverload35(OSClass_NSDate, OSSel_dateWithTimeIntervalSinceNow_, secs)
+	var cond228 *NSDate
+	if result != 0 {
+		cond228 = NewNSDateOverload1(result)
 	} else {
 		cond228 = nil
 	}
 	return cond228
 }
 
-func NSDateDateWithTimeIntervalSinceNow(secs float64) *NSDate {
-	var result int64 = OSObjc_msgSendOverload35(OSClass_NSDate, OSSel_dateWithTimeIntervalSinceNow_, secs)
+func NSDateDistantFuture() *NSDate {
+	var result int64 = OSObjc_msgSend(OSClass_NSDate, OSSel_distantFuture)
 	var cond229 *NSDate
 	if result != 0 {
 		cond229 = NewNSDateOverload1(result)
@@ -71,15 +82,4 @@ func NSDateDateWithTimeIntervalSinceNow(secs float64) *NSDate {
 		cond229 = nil
 	}
 	return cond229
-}
-
-func NSDateDistantFuture() *NSDate {
-	var result int64 = OSObjc_msgSend(OSClass_NSDate, OSSel_distantFuture)
-	var cond230 *NSDate
-	if result != 0 {
-		cond230 = NewNSDateOverload1(result)
-	} else {
-		cond230 = nil
-	}
-	return cond230
 }

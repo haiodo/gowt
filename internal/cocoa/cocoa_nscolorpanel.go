@@ -8,7 +8,7 @@ type NSColorPanel struct {
 
 func NewNSColorPanel() *NSColorPanel {
 	this := &NSColorPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorPanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSColorPanel) initNSColorPanel() {
 
 func NewNSColorPanelOverload1(id int64) *NSColorPanel {
 	this := &NSColorPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorPanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSColorPanel) initNSColorPanelOverload1(id int64) {
 
 func NewNSColorPanelOverload2(id *id) *NSColorPanel {
 	this := &NSColorPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initNSColorPanelOverload2(id)
 	return this
 }
@@ -40,55 +40,55 @@ func (this *NSColorPanel) initNSColorPanelOverload2(id *id) {
 }
 
 func (this *NSColorPanel) AttachColorList(colorList *NSColorList) {
-	var cond190 int64
-	if colorList != nil {
-		cond190 = colorList.Id
+	var cond189 int64
+	if colorList != (nil) {
+		cond189 = colorList.Id
 	} else {
-		cond190 = int64(0)
+		cond189 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond190)
+	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond189)
 }
 
 func (this *NSColorPanel) Color() *NSColor {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_color)
-	var cond191 *NSColor
+	var cond190 *NSColor
 	if result != 0 {
-		cond191 = NewNSColorOverload1(result)
+		cond190 = NewNSColorOverload1(result)
 	} else {
-		cond191 = nil
+		cond190 = nil
 	}
-	return cond191
+	return cond190
 }
 
 func (this *NSColorPanel) SetColor(color *NSColor) {
-	var cond192 int64
-	if color != nil {
-		cond192 = color.Id
+	var cond191 int64
+	if color != (nil) {
+		cond191 = color.Id
 	} else {
-		cond192 = int64(0)
+		cond191 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond192)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond191)
 }
 
 func NSColorPanelSharedColorPanel() *NSColorPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSColorPanel, OSSel_sharedColorPanel)
-	var cond193 *NSColorPanel
+	var cond192 *NSColorPanel
 	if result != 0 {
-		cond193 = NewNSColorPanelOverload1(result)
+		cond192 = NewNSColorPanelOverload1(result)
 	} else {
-		cond193 = nil
+		cond192 = nil
 	}
-	return cond193
+	return cond192
 }
 
 func NSColorPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond194 int64
-	if aTitle != nil {
-		cond194 = aTitle.Id
+	var cond193 int64
+	if aTitle != (nil) {
+		cond193 = aTitle.Id
 	} else {
-		cond194 = int64(0)
+		cond193 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond194, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond193, aStyle)
 }
 
 func NSColorPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

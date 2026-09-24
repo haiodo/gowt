@@ -8,7 +8,7 @@ type NSTextTab struct {
 
 func NewNSTextTab() *NSTextTab {
 	this := &NSTextTab{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextTab()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTextTab) initNSTextTab() {
 
 func NewNSTextTabOverload1(id int64) *NSTextTab {
 	this := &NSTextTab{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextTabOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTextTab) initNSTextTabOverload1(id int64) {
 
 func NewNSTextTabOverload2(id *id) *NSTextTab {
 	this := &NSTextTab{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextTabOverload2(id)
 	return this
 }
@@ -41,17 +41,17 @@ func (this *NSTextTab) initNSTextTabOverload2(id *id) {
 
 func (this *NSTextTab) InitWithType(type_ int64, loc float64) *NSTextTab {
 	var result int64 = OSObjc_msgSendOverload53(this.Id, OSSel_initWithType_location_, type_, loc)
+	var cond774 *NSTextTab
 	var cond775 *NSTextTab
-	var cond776 *NSTextTab
 	if result != 0 {
-		cond776 = NewNSTextTabOverload1(result)
+		cond775 = NewNSTextTabOverload1(result)
 	} else {
-		cond776 = nil
+		cond775 = nil
 	}
 	if result == this.Id {
-		cond775 = this
+		cond774 = this
 	} else {
-		cond775 = (cond776)
+		cond774 = (cond775)
 	}
-	return cond775
+	return cond774
 }

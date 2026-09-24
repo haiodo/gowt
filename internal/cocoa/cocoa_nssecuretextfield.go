@@ -8,7 +8,7 @@ type NSSecureTextField struct {
 
 func NewNSSecureTextField() *NSSecureTextField {
 	this := &NSSecureTextField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSecureTextField()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSSecureTextField) initNSSecureTextField() {
 
 func NewNSSecureTextFieldOverload1(id int64) *NSSecureTextField {
 	this := &NSSecureTextField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSecureTextFieldOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSSecureTextField) initNSSecureTextFieldOverload1(id int64) {
 
 func NewNSSecureTextFieldOverload2(id *id) *NSSecureTextField {
 	this := &NSSecureTextField{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSecureTextFieldOverload2(id)
 	return this
 }

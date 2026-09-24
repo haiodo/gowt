@@ -72,8 +72,53 @@ public class TypeModel {
 
 	private final Map<String, ClassInfo> byBinaryName = new LinkedHashMap<>();
 
+	// Native method (Names.erasureKey) -> indexes of its struct params JNI passes by pointer: every
+	// struct param whose Javadoc lacks `flags=struct` (memmove's dest, objc_msgSendSuper's super).
+	private final Map<String, Set<Integer>> nativeStructPointerParams = new HashMap<>();
+
+	public boolean isNativeStructPointerParam(IMethodBinding mb, int index) {
+		Set<Integer> s = nativeStructPointerParams.get(Names.erasureKey(mb));
+		if (s == null || !s.contains(index)) return false;
+		ClassInfo ci = lookup(mb.getParameterTypes()[index]);
+		return ci != null && ci.isStruct;
+	}
+
+	/** Text of `tag` in md's Javadoc: for @param, only the entry naming paramName. */
+	public static String javadocTag(MethodDeclaration md, String tag, String paramName) {
+		if (md.getJavadoc() == null) return "";
+		for (Object o : md.getJavadoc().tags()) {
+			TagElement te = (TagElement) o;
+			if (!tag.equals(te.getTagName())) continue;
+			List<?> frags = te.fragments();
+			StringBuilder sb = new StringBuilder();
+			int start = 0;
+			if (paramName != null) {
+				if (frags.isEmpty() || !(frags.get(0) instanceof SimpleName sn) || !sn.getIdentifier().equals(paramName)) continue;
+				start = 1;
+			}
+			for (int i = start; i < frags.size(); i++) sb.append(frags.get(i).toString());
+			return sb.toString();
+		}
+		return "";
+	}
+
+	private void recordNativeStructParams(MethodDeclaration md, IMethodBinding mb) {
+		Set<Integer> idx = new HashSet<>();
+		for (int i = 0; i < md.parameters().size(); i++) {
+			SingleVariableDeclaration p = (SingleVariableDeclaration) md.parameters().get(i);
+			ITypeBinding t = mb.getParameterTypes()[i];
+			if (t.isPrimitive() || t.isArray()) continue;
+			if (!javadocTag(md, "@param", p.getName().getIdentifier()).contains("struct")) idx.add(i);
+		}
+		if (!idx.isEmpty()) nativeStructPointerParams.put(Names.erasureKey(mb), idx);
+	}
+
 	public ClassInfo lookup(ITypeBinding t) {
 		return byBinaryName.get(t.getErasure().getBinaryName());
+	}
+
+	public ClassInfo lookupBinaryName(String binaryName) {
+		return byBinaryName.get(binaryName);
 	}
 
 	public Collection<ClassInfo> all() {
@@ -115,7 +160,9 @@ public class TypeModel {
 			List<ClassInfo> tree = new ArrayList<>();
 			collectAllDescendants(ci, tree);
 			Map<String, Set<String>> sigsByBareName = new LinkedHashMap<>();
+			Set<String> treeTypeNames = new LinkedHashSet<>();
 			for (ClassInfo c : tree) {
+				treeTypeNames.add(c.goTypeName);
 				for (IMethodBinding m : c.declaredMethods.values()) {
 					sigsByBareName.computeIfAbsent(m.getName(), k -> new LinkedHashSet<>()).add(signature(m));
 				}
@@ -125,6 +172,9 @@ public class TypeModel {
 				String base = names.goMemberName(decl, Names.javaMethodBaseGoName(decl.getName()));
 				boolean collides = sigsByBareName.get(decl.getName()).size() > 1;
 				String finalName = collides ? base + "On" + lookup(decl.getDeclaringClass()).goTypeName : base;
+				// Layout.layout() -> "Layout", same as every subclass's embedded field name - Go
+				// rejects a field and method sharing a name.
+				if (treeTypeNames.contains(finalName)) finalName = finalName + "Fn";
 				ci.overriddenRootMethodGoNames.put(e.getKey(), finalName);
 			}
 		}
@@ -135,11 +185,17 @@ public class TypeModel {
 	// the same Go name (Control's setBackground()/setBackground(Color) overload suffix
 	// "SetBackground"+"Color" collides with the separately-named setBackgroundColor's own base
 	// name) - goMemberName has no visibility into sibling families to catch this on its own, so
-	// it is resolved here, once per class, with every declared method in hand. Cascade
-	// (overridden) methods are named separately (see above) and skipped here.
+	// it is resolved here, once per class, with every declared method in hand. A cascade method
+	// is named separately (see above), but still claims its name here first: a non-cascade
+	// sibling must not collide with it either - only cascaded once some subclass overrides it.
 	private void resolveCrossFamilyNameCollisions(Names names) {
 		for (ClassInfo ci : byBinaryName.values()) {
 			Map<String, IMethodBinding> claimedBy = new LinkedHashMap<>();
+			for (IMethodBinding mb : ci.declaredMethods.values()) {
+				if (ci.overridePoint(signature(mb)) == null) continue;
+				String cascadeName = ci.root.overriddenRootMethodGoNames.get(signature(mb));
+				if (cascadeName != null) claimedBy.put(cascadeName, mb);
+			}
 			int idx = 0;
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
 				idx++;
@@ -180,6 +236,7 @@ public class TypeModel {
 					paramNames.add(((SingleVariableDeclaration) p).getName().getIdentifier());
 				}
 				names.registerDeclaration(mb, paramNames);
+				if (Modifier.isNative(md.getModifiers())) recordNativeStructParams(md, mb);
 				if (!md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
 					ci.declaredMethodNames.add(md.getName().getIdentifier());
 					ci.declaredMethods.put(signature(mb), mb);
@@ -192,6 +249,8 @@ public class TypeModel {
 				|| binding.getSuperclass().getQualifiedName().equals("java.lang.Object");
 		boolean onlyToString = ci.declaredMethodNames.isEmpty()
 				|| ci.declaredMethodNames.equals(Set.of("toString"));
-		ci.isStruct = !ci.isInterface && superIsObject && onlyToString;
+		// Only the cocoa C-struct mirrors (NSRect, ...) are Go value types; an swt data class
+		// (DeviceData) is nullable in Java and stays a pointer.
+		ci.isStruct = !ci.isInterface && superIsObject && onlyToString && GoTypes.isCocoaPackage(ci.javaPackage);
 	}
 }

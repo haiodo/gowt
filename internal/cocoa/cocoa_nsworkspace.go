@@ -8,7 +8,7 @@ type NSWorkspace struct {
 
 func NewNSWorkspace() *NSWorkspace {
 	this := &NSWorkspace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSWorkspace()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSWorkspace) initNSWorkspace() {
 
 func NewNSWorkspaceOverload1(id int64) *NSWorkspace {
 	this := &NSWorkspace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSWorkspaceOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSWorkspace) initNSWorkspaceOverload1(id int64) {
 
 func NewNSWorkspaceOverload2(id *id) *NSWorkspace {
 	this := &NSWorkspace{}
-	this.Impl = this
+	this.impl = this
 	this.initNSWorkspaceOverload2(id)
 	return this
 }
@@ -40,155 +40,155 @@ func (this *NSWorkspace) initNSWorkspaceOverload2(id *id) {
 }
 
 func (this *NSWorkspace) URLForApplicationToOpenURL(url *NSURL) *NSURL {
-	var cond925 int64
-	if url != nil {
-		cond925 = url.Id
+	var cond924 int64
+	if url != (nil) {
+		cond924 = url.Id
 	} else {
-		cond925 = int64(0)
+		cond924 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenURL_, cond925)
-	var cond926 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenURL_, cond924)
+	var cond925 *NSURL
 	if result != 0 {
-		cond926 = NewNSURLOverload1(result)
+		cond925 = NewNSURLOverload1(result)
 	} else {
-		cond926 = nil
+		cond925 = nil
 	}
-	return cond926
+	return cond925
 }
 
 func (this *NSWorkspace) URLForApplicationToOpenContentType(contentType *UTType) *NSURL {
-	var cond927 int64
-	if contentType != nil {
-		cond927 = contentType.Id
+	var cond926 int64
+	if contentType != (nil) {
+		cond926 = contentType.Id
 	} else {
-		cond927 = int64(0)
+		cond926 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenContentType_, cond927)
-	var cond928 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenContentType_, cond926)
+	var cond927 *NSURL
 	if result != 0 {
-		cond928 = NewNSURLOverload1(result)
+		cond927 = NewNSURLOverload1(result)
 	} else {
-		cond928 = nil
+		cond927 = nil
 	}
-	return cond928
+	return cond927
 }
 
 func (this *NSWorkspace) FullPathForApplication(appName *NSString) *NSString {
-	var cond929 int64
-	if appName != nil {
-		cond929 = appName.Id
+	var cond928 int64
+	if appName != (nil) {
+		cond928 = appName.Id
 	} else {
-		cond929 = int64(0)
+		cond928 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_fullPathForApplication_, cond929)
-	var cond930 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_fullPathForApplication_, cond928)
+	var cond929 *NSString
 	if result != 0 {
-		cond930 = NewNSStringOverload1(result)
+		cond929 = NewNSStringOverload1(result)
 	} else {
-		cond930 = nil
+		cond929 = nil
 	}
-	return cond930
+	return cond929
 }
 
 func (this *NSWorkspace) IconForFile(fullPath *NSString) *NSImage {
-	var cond931 int64
-	if fullPath != nil {
-		cond931 = fullPath.Id
+	var cond930 int64
+	if fullPath != (nil) {
+		cond930 = fullPath.Id
 	} else {
-		cond931 = int64(0)
+		cond930 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_iconForFile_, cond931)
-	var cond932 *NSImage
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_iconForFile_, cond930)
+	var cond931 *NSImage
 	if result != 0 {
-		cond932 = NewNSImageOverload1(result)
+		cond931 = NewNSImageOverload1(result)
 	} else {
-		cond932 = nil
+		cond931 = nil
 	}
-	return cond932
+	return cond931
 }
 
 func (this *NSWorkspace) IsFilePackageAtPath(fullPath *NSString) bool {
-	var cond933 int64
-	if fullPath != nil {
-		cond933 = fullPath.Id
+	var cond932 int64
+	if fullPath != (nil) {
+		cond932 = fullPath.Id
 	} else {
-		cond933 = int64(0)
+		cond932 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isFilePackageAtPath_, cond933)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isFilePackageAtPath_, cond932)
 }
 
 func (this *NSWorkspace) OpenURL(url *NSURL) bool {
-	var cond934 int64
-	if url != nil {
-		cond934 = url.Id
+	var cond933 int64
+	if url != (nil) {
+		cond933 = url.Id
 	} else {
-		cond934 = int64(0)
+		cond933 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_openURL_, cond934)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_openURL_, cond933)
 }
 
 func (this *NSWorkspace) OpenURLs(urls *NSArray, bundleIdentifier *NSString, options int64, descriptor *NSAppleEventDescriptor, identifiers int64) bool {
+	var cond934 int64
+	if urls != (nil) {
+		cond934 = urls.Id
+	} else {
+		cond934 = int64(0)
+	}
 	var cond935 int64
-	if urls != nil {
-		cond935 = urls.Id
+	if bundleIdentifier != (nil) {
+		cond935 = bundleIdentifier.Id
 	} else {
 		cond935 = int64(0)
 	}
 	var cond936 int64
-	if bundleIdentifier != nil {
-		cond936 = bundleIdentifier.Id
+	if descriptor != (nil) {
+		cond936 = descriptor.Id
 	} else {
 		cond936 = int64(0)
 	}
-	var cond937 int64
-	if descriptor != nil {
-		cond937 = descriptor.Id
-	} else {
-		cond937 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload11(this.Id, OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, cond935, cond936, options, cond937, identifiers)
+	return OSObjc_msgSend_boolOverload11(this.Id, OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, cond934, cond935, options, cond936, identifiers)
 }
 
 func (this *NSWorkspace) Type(firstTypeName *NSString, secondTypeName *NSString) bool {
+	var cond937 int64
+	if firstTypeName != (nil) {
+		cond937 = firstTypeName.Id
+	} else {
+		cond937 = int64(0)
+	}
 	var cond938 int64
-	if firstTypeName != nil {
-		cond938 = firstTypeName.Id
+	if secondTypeName != (nil) {
+		cond938 = secondTypeName.Id
 	} else {
 		cond938 = int64(0)
 	}
-	var cond939 int64
-	if secondTypeName != nil {
-		cond939 = secondTypeName.Id
-	} else {
-		cond939 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_type_conformsToType_, cond938, cond939)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_type_conformsToType_, cond937, cond938)
 }
 
 func (this *NSWorkspace) TypeOfFile(absoluteFilePath *NSString, outError int64) *NSString {
-	var cond940 int64
-	if absoluteFilePath != nil {
-		cond940 = absoluteFilePath.Id
+	var cond939 int64
+	if absoluteFilePath != (nil) {
+		cond939 = absoluteFilePath.Id
 	} else {
-		cond940 = int64(0)
+		cond939 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_typeOfFile_error_, cond940, outError)
-	var cond941 *NSString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_typeOfFile_error_, cond939, outError)
+	var cond940 *NSString
 	if result != 0 {
-		cond941 = NewNSStringOverload1(result)
+		cond940 = NewNSStringOverload1(result)
 	} else {
-		cond941 = nil
+		cond940 = nil
 	}
-	return cond941
+	return cond940
 }
 
 func NSWorkspaceSharedWorkspace() *NSWorkspace {
 	var result int64 = OSObjc_msgSend(OSClass_NSWorkspace, OSSel_sharedWorkspace)
-	var cond942 *NSWorkspace
+	var cond941 *NSWorkspace
 	if result != 0 {
-		cond942 = NewNSWorkspaceOverload1(result)
+		cond941 = NewNSWorkspaceOverload1(result)
 	} else {
-		cond942 = nil
+		cond941 = nil
 	}
-	return cond942
+	return cond941
 }

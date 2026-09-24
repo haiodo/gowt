@@ -8,7 +8,7 @@ type WebScriptObject struct {
 
 func NewWebScriptObject() *WebScriptObject {
 	this := &WebScriptObject{}
-	this.Impl = this
+	this.impl = this
 	this.initWebScriptObject()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebScriptObject) initWebScriptObject() {
 
 func NewWebScriptObjectOverload1(id int64) *WebScriptObject {
 	this := &WebScriptObject{}
-	this.Impl = this
+	this.impl = this
 	this.initWebScriptObjectOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebScriptObject) initWebScriptObjectOverload1(id int64) {
 
 func NewWebScriptObjectOverload2(id *id) *WebScriptObject {
 	this := &WebScriptObject{}
-	this.Impl = this
+	this.impl = this
 	this.initWebScriptObjectOverload2(id)
 	return this
 }

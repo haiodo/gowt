@@ -34,70 +34,118 @@ final class InvocationEmitter {
 		String manualMethodGoName = Manual.manualMethod(Names.erasureKey(mb));
 		if (manualMethodGoName != null) {
 			if (Modifier.isStatic(mb.getModifiers())) {
-				return manualMethodGoName + "(" + String.join(", ", args) + ")";
+				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
+				String fn = declCi != null ? emitter.qualify(manualMethodGoName, declCi) : manualMethodGoName;
+				return fn + "(" + String.join(", ", args) + ")";
 			}
 			String manualRecv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 			return manualRecv + "." + manualMethodGoName + "(" + String.join(", ", args) + ")";
 		}
 
-		if (Manual.isManual(qualified)) {
+		// A manual value type backed by a bare "any" (java.util.Map, ...) has no real Go method to
+		// dispatch to - fall through to the ordinary "unresolved call" degrade below instead.
+		if (Manual.isManual(qualified) && !Manual.isBareAny(qualified)) {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				return Manual.staticMember(qualified, mb.getName()) + "(" + String.join(", ", args) + ")";
 			}
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
-			return recv + "." + Manual.instanceMember(mb.getName()) + "(" + String.join(", ", args) + ")";
+			return castErased(recv + "." + Manual.instanceMember(mb.getName()) + "(" + String.join(", ", args) + ")", mb);
+		}
+
+		// Receiver is manual but inherits a real translated method (Caret/IME extend Widget) - no
+		// .impl to dispatch through, and Manual.instanceMember's bare capitalize picks the wrong
+		// overload (sendEvent(int) -> SendEventEventType); name it as that class would instead.
+		if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) {
+			ITypeBinding receiverType = mi.getExpression().resolveTypeBinding();
+			String receiverQualified = receiverType == null ? null : receiverType.getErasure().getQualifiedName();
+			if (receiverQualified != null && Manual.isManual(receiverQualified) && !Manual.isBareAny(receiverQualified)
+					&& emitter.model.lookup(receiverType) == null) {
+				String recv = emitter.expr(mi.getExpression());
+				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
+				String goName;
+				if (declCi != null) {
+					String sig = TypeModel.signature(mb);
+					TypeModel.ClassInfo point = declCi.overridePoint(sig);
+					goName = point != null ? declCi.root.overriddenRootMethodGoNames.get(sig)
+							: emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
+				} else {
+					goName = Manual.instanceMember(mb.getName());
+				}
+				return recv + "." + goName + "(" + String.join(", ", args) + ")";
+			}
 		}
 
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
 		if (ci == null) {
 			emitter.unsupported.add("MethodInvocation: unresolved declaring type " + qualified + "." + mb.getName());
-			// args was already evaluated but the panic closure below never references it - blank
-			// assign so a local used only here doesn't go "declared and not used" (Go, not Java).
-			// Skip a static call's receiver - it's a type qualifier (Integer.toHexString), not
-			// a value.
-			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) {
-				emitter.prelude.add("_ = " + emitter.expr(mi.getExpression()));
-			}
-			for (String a : args) emitter.prelude.add("_ = " + a);
-			return emitter.panicClosure(mi, "unresolved call " + mb.getName());
+			// Receiver/args are referenced inside the panic closure (a local used only here must not
+			// go "declared and not used"), not hoisted before it: evaluating them eagerly would break
+			// && / || short-circuiting around a call that is never reached. A static call's
+			// receiver is a type qualifier (Integer.toHexString), not a value.
+			List<String> uses = new ArrayList<>(args);
+			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
+			String closure = emitter.panicClosure(mi, "unresolved call " + mb.getName());
+			if (uses.isEmpty()) return closure;
+			int brace = closure.indexOf("{ ") + 2;
+			return closure.substring(0, brace) + "_ = []any{" + String.join(", ", uses) + "}; " + closure.substring(brace);
 		}
 
 		if (Modifier.isStatic(mb.getModifiers())) {
 			String goName = emitter.staticMethodGoName(mb, ci);
-			// objc_msgSend_stret(result, ...): result became *Struct at the declaration (see
-			// emitStretNative) - the call site's own struct-valued argument needs its address.
-			if (Modifier.isNative(mb.getModifiers()) && mb.getName().endsWith("_stret") && !args.isEmpty()
-					&& emitter.structParamTarget(mb.getParameterTypes()[0]) != null) {
-				args.set(0, "&" + args.get(0));
+			// A struct JNI passes by pointer (memmove's dest, objc_msgSend_stret's result, see
+			// NativeEmitter.paramType): Java mutates the caller's object, Go needs its address.
+			for (int i = 0; i < args.size() && Modifier.isNative(mb.getModifiers()); i++) {
+				if (emitter.model.isNativeStructPointerParam(mb, i)) args.set(i, addressOf((Expression) mi.arguments().get(i), args.get(i)));
 			}
 			return goName + "(" + String.join(", ", args) + ")";
 		}
 
-		String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
+		String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.implicitThis(declaring);
 		String base = Names.javaMethodBaseGoName(mb.getName());
 		String sig = TypeModel.signature(mb);
 		boolean overridden = ci.overridePoint(sig) != null;
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
 		String callText = overridden
-				? recv + ".Impl." + goName + "(" + String.join(", ", args) + ")"
+				? recv + emitter.implAccess(ci.root) + "." + goName + "(" + String.join(", ", args) + ")"
 				: recv + "." + goName + "(" + String.join(", ", args) + ")";
 
 		if (overridden) {
 			ITypeBinding staticReturnType = mb.getReturnType(); // as resolved at THIS call site (covariant-aware)
 			TypeModel.ClassInfo rootCi = ci.root;
-			if (staticReturnType != null && !staticReturnType.getErasure().getBinaryName().equals(rootCi.binaryName)) {
+			ITypeBinding declared = ci.overridePoint(sig).declaredBinding(sig).getReturnType();
+			if (staticReturnType != null && !staticReturnType.getErasure().isEqualTo(declared.getErasure())) {
 				TypeModel.ClassInfo target = emitter.model.lookup(staticReturnType);
-				if (target != null) {
+				if (target != null && !target.isStruct) {
 					String tmp = "t" + (++emitter.tempCounter);
 					emitter.prelude.add(tmp + " := " + callText);
 					String helper = emitter.ensureCascadeHelper(rootCi, target);
 					String tmp2 = "t" + (++emitter.tempCounter);
-					emitter.prelude.add(tmp2 + ", _ := " + helper + "(" + tmp + ".Impl)");
+					// tmp's own Go type is target (the covariant return type), not rootCi's package.
+					emitter.prelude.add(tmp2 + ", _ := " + helper + "(" + tmp + emitter.implAccess(target.root) + ")");
 					return tmp2;
 				}
 			}
 		}
 		return callText;
+	}
+
+	private String addressOf(Expression e, String text) {
+		if (e instanceof Name || e instanceof FieldAccess || e instanceof ArrayAccess || e instanceof ClassInstanceCreation) {
+			return "&" + text;
+		}
+		String tmp = "t" + (++emitter.tempCounter);
+		emitter.prelude.add(tmp + " := " + text);
+		return "&" + tmp;
+	}
+
+	/** A manual container's generic method (Map.get, Queue.poll) returns any in Go; the call site
+	 * expects the type argument's Go type. */
+	private String castErased(String call, IMethodBinding mb) {
+		if (!mb.getMethodDeclaration().getReturnType().isTypeVariable()) return call;
+		String goType = dev.gowt.j2go.GoTypes.map(mb.getReturnType(), emitter);
+		if (goType.equals("any")) return call;
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		return "jrt.Cast[" + goType + "](" + call + ")";
 	}
 
 	List<String> buildArgs(List<?> javaArgs, IMethodBinding mb) {
@@ -144,28 +192,81 @@ final class InvocationEmitter {
 		return text;
 	}
 
+	// Java exception classes are Go error values (GoTypes) backed by internal/jrt's structs.
+	private String newJavaException(String qualified, ClassInstanceCreation cic) {
+		String goType = switch (qualified) {
+			case Manual.JAVA_RUNTIME_EXCEPTION, Manual.JAVA_EXCEPTION -> "jrt.RuntimeException";
+			case Manual.JAVA_ERROR, Manual.JAVA_THROWABLE -> "jrt.JavaError";
+			default -> null;
+		};
+		if (goType == null) return null;
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		List<?> args = cic.arguments();
+		String msg = args.isEmpty() ? "" : "Message: " + emitter.expr((Expression) args.get(0));
+		return "&" + goType + "{" + msg + "}";
+	}
+
+	/** new Callback(target, "method", argCount) -> a Go closure calling that method directly
+	 * (README "Callback design"). */
+	private String emitCallback(ClassInstanceCreation cic) {
+		List<?> a = cic.arguments();
+		Expression recv = (Expression) a.get(0);
+		if (a.size() != 3 || !(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof NumberLiteral argc)) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		int n = Integer.parseInt(argc.getToken());
+		// `Class<?> clazz = getClass(); new Callback(clazz, ...)`: the local is otherwise unused.
+		if (recv instanceof SimpleName) emitter.prelude.add("_ = " + emitter.expr(recv));
+		ITypeBinding cls = recv instanceof TypeLiteral tl ? tl.getType().resolveBinding() : emitter.currentClassInfo.binding;
+		IMethodBinding target = findCallbackTarget(cls, name.getLiteralValue(), n);
+		if (target == null) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback target not found " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		List<String> args = new ArrayList<>();
+		for (int i = 0; i < n; i++) args.add("args[" + i + "]");
+		String call;
+		TypeModel.ClassInfo ci = emitter.model.lookup(target.getDeclaringClass());
+		if (Modifier.isStatic(target.getModifiers())) {
+			call = emitter.staticMethodGoName(target, ci) + "(" + String.join(", ", args) + ")";
+		} else {
+			call = callText(recv instanceof ThisExpression ? emitter.expr(recv) : "this", target, ci, args);
+		}
+		String body = target.getReturnType().getName().equals("void") ? call + "; return 0" : "return " + call;
+		return "NewCallbackFn(func(args []int64) int64 { " + body + " }, " + n + ")";
+	}
+
+	private IMethodBinding findCallbackTarget(ITypeBinding cls, String name, int argc) {
+		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) {
+			for (IMethodBinding m : t.getDeclaredMethods()) {
+				if (m.getName().equals(name) && m.getParameterTypes().length == argc) return m;
+			}
+		}
+		return null;
+	}
+
+	/** recv.goName(args), through the impl cascade when mb is an override point. */
+	private String callText(String recv, IMethodBinding mb, TypeModel.ClassInfo ci, List<String> args) {
+		String sig = TypeModel.signature(mb);
+		boolean overridden = ci.overridePoint(sig) != null;
+		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig)
+				: emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
+		return recv + (overridden ? emitter.implAccess(ci.root) : "") + "." + goName + "(" + String.join(", ", args) + ")";
+	}
+
 	String emitNew(ClassInstanceCreation cic) {
 		IMethodBinding ctor = cic.resolveConstructorBinding();
 		ITypeBinding declaring = ctor.getDeclaringClass();
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
+		if (cic.getAnonymousClassDeclaration() != null) return emitter.emitAnonymous(cic);
 		if (ci == null) {
-			// Anonymous class body not translated (README "anonymous classes") - typed as a
-			// pointer to its real base class so it still satisfies the caller's expected type.
-			if (cic.getAnonymousClassDeclaration() != null) {
-				TypeModel.ClassInfo baseCi = emitter.model.lookup(declaring.getSuperclass());
-				if (baseCi == null) {
-					for (ITypeBinding iface : declaring.getInterfaces()) {
-						baseCi = emitter.model.lookup(iface);
-						if (baseCi != null) break;
-					}
-				}
-				if (baseCi != null) {
-					String baseName = emitter.qualifiedTypeName(baseCi);
-					emitter.unsupported.add("ClassInstanceCreation: anonymous class body based on " + baseName + " not translated");
-					return emitter.panicClosureTyped("*" + baseName, "unsupported anonymous class");
-				}
-			}
 			String qualified = declaring.getErasure().getQualifiedName();
+			if (qualified.equals("org.eclipse.swt.internal.Callback")) return emitCallback(cic);
+			// A bare lock object (`trackingLock = new Object()`): only its identity matters.
+			if (qualified.equals("java.lang.Object")) return "any(&struct{}{})";
+			String exception = newJavaException(qualified, cic);
+			if (exception != null) return exception;
 			// new String(char[]): the only java.lang.String constructor used in the translated
 			// set (NSString.getString()) - buffer holds UTF-16 code units, same as Java's char[].
 			if (qualified.equals("java.lang.String") && ctor.getParameterTypes().length == 1
@@ -176,6 +277,9 @@ final class InvocationEmitter {
 				return "string(utf16.Decode(" + arg + "))";
 			}
 			if (Manual.isManual(qualified)) {
+				// A value-type manual entry (any/error/...) has no real constructor function -
+				// "new X()" is just its zero value, same as an ordinary unresolved type would get.
+				if (Manual.isValueType(qualified)) return emitter.zeroValue(declaring);
 				emitter.addManualImport(qualified);
 				List<String> manualArgs = buildArgs(cic.arguments(), ctor);
 				return Manual.ctorFuncName(qualified) + "(" + String.join(", ", manualArgs) + ")";
@@ -188,7 +292,7 @@ final class InvocationEmitter {
 		if (ci.isStruct) return emitter.qualifiedTypeName(ci) + "{}";
 		boolean pub = Modifier.isPublic(ctor.getModifiers());
 		String prefix = emitter.qualify((pub ? "New" : "new") + ci.goFuncPrefix, ci);
-		String goName = emitter.names.goMemberName(ctor, prefix);
+		String goName = emitter.ctorGoName(ctor, prefix);
 		List<String> args = buildArgs(cic.arguments(), ctor);
 		return goName + "(" + String.join(", ", args) + ")";
 	}

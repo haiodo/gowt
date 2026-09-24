@@ -59,7 +59,7 @@ func (this *SWTException) GetCause() error {
 }
 
 func (this *SWTException) GetMessage() string {
-	if this.Throwable == nil {
+	if this.Throwable == (nil) {
 		return this.RuntimeException.GetMessage()
 	}
 	return fmt.Sprintf("%s (%s)", this.RuntimeException.GetMessage(), this.Throwable.Error())

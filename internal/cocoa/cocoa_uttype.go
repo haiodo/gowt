@@ -8,7 +8,7 @@ type UTType struct {
 
 func NewUTType() *UTType {
 	this := &UTType{}
-	this.Impl = this
+	this.impl = this
 	this.initUTType()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *UTType) initUTType() {
 
 func NewUTTypeOverload1(id int64) *UTType {
 	this := &UTType{}
-	this.Impl = this
+	this.impl = this
 	this.initUTTypeOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *UTType) initUTTypeOverload1(id int64) {
 
 func NewUTTypeOverload2(id *id) *UTType {
 	this := &UTType{}
-	this.Impl = this
+	this.impl = this
 	this.initUTTypeOverload2(id)
 	return this
 }
@@ -41,7 +41,7 @@ func (this *UTType) initUTTypeOverload2(id *id) {
 
 func UTTypeTypeWithFilenameExtension(filenameExtension *NSString) *UTType {
 	var cond953 int64
-	if filenameExtension != nil {
+	if filenameExtension != (nil) {
 		cond953 = filenameExtension.Id
 	} else {
 		cond953 = int64(0)

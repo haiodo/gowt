@@ -18,7 +18,7 @@ type PaintEvent struct {
 
 func NewPaintEvent(e *Event) *PaintEvent {
 	this := &PaintEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initPaintEvent(e)
 	return this
 }

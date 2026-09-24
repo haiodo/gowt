@@ -8,7 +8,7 @@ type NSURLRequest struct {
 
 func NewNSURLRequest() *NSURLRequest {
 	this := &NSURLRequest{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLRequest()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSURLRequest) initNSURLRequest() {
 
 func NewNSURLRequestOverload1(id int64) *NSURLRequest {
 	this := &NSURLRequest{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLRequestOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSURLRequest) initNSURLRequestOverload1(id int64) {
 
 func NewNSURLRequestOverload2(id *id) *NSURLRequest {
 	this := &NSURLRequest{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLRequestOverload2(id)
 	return this
 }
@@ -41,28 +41,28 @@ func (this *NSURLRequest) initNSURLRequestOverload2(id *id) {
 
 func (this *NSURLRequest) URL() *NSURL {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_URL)
-	var cond838 *NSURL
+	var cond837 *NSURL
 	if result != 0 {
-		cond838 = NewNSURLOverload1(result)
+		cond837 = NewNSURLOverload1(result)
 	} else {
-		cond838 = nil
+		cond837 = nil
 	}
-	return cond838
+	return cond837
 }
 
 func NSURLRequestRequestWithURL(URL *NSURL) *NSURLRequest {
-	var cond839 int64
-	if URL != nil {
-		cond839 = URL.Id
+	var cond838 int64
+	if URL != (nil) {
+		cond838 = URL.Id
 	} else {
-		cond839 = int64(0)
+		cond838 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURLRequest, OSSel_requestWithURL_, cond839)
-	var cond840 *NSURLRequest
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURLRequest, OSSel_requestWithURL_, cond838)
+	var cond839 *NSURLRequest
 	if result != 0 {
-		cond840 = NewNSURLRequestOverload1(result)
+		cond839 = NewNSURLRequestOverload1(result)
 	} else {
-		cond840 = nil
+		cond839 = nil
 	}
-	return cond840
+	return cond839
 }

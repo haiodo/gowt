@@ -8,7 +8,7 @@ type NSTableHeaderCell struct {
 
 func NewNSTableHeaderCell() *NSTableHeaderCell {
 	this := &NSTableHeaderCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTableHeaderCell) initNSTableHeaderCell() {
 
 func NewNSTableHeaderCellOverload1(id int64) *NSTableHeaderCell {
 	this := &NSTableHeaderCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTableHeaderCell) initNSTableHeaderCellOverload1(id int64) {
 
 func NewNSTableHeaderCellOverload2(id *id) *NSTableHeaderCell {
 	this := &NSTableHeaderCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderCellOverload2(id)
 	return this
 }
@@ -40,13 +40,13 @@ func (this *NSTableHeaderCell) initNSTableHeaderCellOverload2(id *id) {
 }
 
 func (this *NSTableHeaderCell) DrawSortIndicatorWithFrame(cellFrame NSRect, controlView *NSView, ascending bool, priority int64) {
-	var cond728 int64
-	if controlView != nil {
-		cond728 = controlView.Id
+	var cond727 int64
+	if controlView != (nil) {
+		cond727 = controlView.Id
 	} else {
-		cond728 = int64(0)
+		cond727 = int64(0)
 	}
-	OSObjc_msgSendOverload22(this.Id, OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_, cellFrame, cond728, ascending, priority)
+	OSObjc_msgSendOverload22(this.Id, OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_, cellFrame, cond727, ascending, priority)
 }
 
 func (this *NSTableHeaderCell) SortIndicatorRectForBounds(theRect NSRect) NSRect {

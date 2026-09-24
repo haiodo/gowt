@@ -8,13 +8,14 @@ import (
 
 type Scrollable struct {
 	Control
-	scrollView                 *cocoa.NSScrollView
-	horizontalBar, verticalBar *ScrollBar
+	scrollView    *cocoa.NSScrollView
+	horizontalBar *ScrollBar
+	verticalBar   *ScrollBar
 }
 
 func newScrollable() *Scrollable {
 	this := &Scrollable{}
-	this.Impl = this
+	this.impl = this
 	this.initScrollable()
 	return this
 }
@@ -25,7 +26,7 @@ func (this *Scrollable) initScrollable() {
 
 func NewScrollableParentStyle(parent *Composite, style int32) *Scrollable {
 	this := &Scrollable{}
-	this.Impl = this
+	this.impl = this
 	this.initScrollableParentStyle(parent, style)
 	return this
 }
@@ -36,29 +37,29 @@ func (this *Scrollable) initScrollableParentStyle(parent *Composite, style int32
 
 func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
-	if this.scrollView != nil {
+	if this.scrollView != (nil) {
 		var size cocoa.NSSize = cocoa.NSSize{}
 		size.Width = float64(width)
 		size.Height = float64(height)
 		var border int32
-		if this.HasBorder() {
+		if this.impl.HasBorder() {
 			border = cocoa.OSNSBezelBorder
 		} else {
 			border = cocoa.OSNSNoBorder
 		}
-		var cond91 int64
+		var cond86 int64
 		if (this.style & SWTH_SCROLL) != 0 {
-			cond91 = cocoa.OSClass_NSScroller
+			cond86 = cocoa.OSClass_NSScroller
 		} else {
-			cond91 = int64(0)
+			cond86 = int64(0)
 		}
-		var cond92 int64
+		var cond87 int64
 		if (this.style & SWTV_SCROLL) != 0 {
-			cond92 = cocoa.OSClass_NSScroller
+			cond87 = cocoa.OSClass_NSScroller
 		} else {
-			cond92 = int64(0)
+			cond87 = int64(0)
 		}
-		size = cocoa.NSScrollViewFrameSizeForContentSizeCSizeHorizontalScrollerClassVerticalScrollerClassATypeControlSizeScrollerStyle(size, cond91, cond92, int64(border), int64(cocoa.OSNSControlSizeRegular), int64(cocoa.OSNSScrollerStyleLegacy))
+		size = cocoa.NSScrollViewFrameSizeForContentSizeCSizeHorizontalScrollerClassVerticalScrollerClassATypeControlSizeScrollerStyle(size, cond86, cond87, int64(border), int64(cocoa.OSNSControlSizeRegular), int64(cocoa.OSNSScrollerStyleLegacy))
 		width = int32(size.Width)
 		height = int32(size.Height)
 		var frame cocoa.NSRect = this.scrollView.ContentView().Frame()
@@ -69,7 +70,7 @@ func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32)
 }
 
 func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
-	if this.scrollView == nil {
+	if this.scrollView == (nil) {
 		return nil
 	}
 	var bar *ScrollBar = NewScrollBar()
@@ -84,7 +85,7 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	} else {
 		rect.Height = float64(1)
 	}
-	scroller = cocoa.NewSWTScroller().Alloc().Impl.(*cocoa.NSScroller)
+	scroller = castcocoaNSObjectTococoaNSScroller(cocoa.NewSWTScroller().Alloc())
 	scroller.InitWithFrame(rect)
 	if (style & SWTH_SCROLL) != 0 {
 		this.scrollView.SetHorizontalScroller(scroller)
@@ -100,7 +101,7 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 		bar.target = scroller.Target()
 		bar.actionSelector = scroller.Action()
 	}
-	scroller.SetTarget(this.scrollView.AsId())
+	scroller.SetTarget(upcastcocoaNSScrollViewTococoaId(this.scrollView))
 	scroller.SetAction(actionSelector)
 	if (this.state & WidgetCANVAS) != 0 {
 		bar.UpdateBar(0, 0, 100, 10)
@@ -120,14 +121,14 @@ func (this *Scrollable) CreateWidget() {
 
 func (this *Scrollable) Deregister() {
 	this.Control.Deregister()
-	if this.scrollView != nil {
-		this.display.RemoveWidget(&this.scrollView.NSObject)
+	if this.scrollView != (nil) {
+		this.display.RemoveWidget(upcastcocoaNSScrollViewTococoaNSObject(this.scrollView))
 	}
 }
 
 func (this *Scrollable) GetClientArea() *Rectangle {
 	this.CheckWidget()
-	if this.scrollView != nil {
+	if this.scrollView != (nil) {
 		var size cocoa.NSSize = this.scrollView.ContentSize()
 		var contentView *cocoa.NSClipView = this.scrollView.ContentView()
 		var bounds cocoa.NSRect = contentView.Bounds()
@@ -146,7 +147,7 @@ func (this *Scrollable) GetHorizontalBar() *ScrollBar {
 func (this *Scrollable) GetScrollbarsMode() int32 {
 	this.CheckWidget()
 	var style int32 = SWTNONE
-	if this.scrollView != nil {
+	if this.scrollView != (nil) {
 		if this.scrollView.ScrollerStyle() == int64(cocoa.OSNSScrollerStyleOverlay) {
 			style = SWTSCROLLBAR_OVERLAY
 		}
@@ -176,14 +177,14 @@ func (this *Scrollable) IsNeeded(scrollbar *ScrollBar) bool {
 }
 
 func (this *Scrollable) IsTrim(view *cocoa.NSView) bool {
-	if this.scrollView != nil {
+	if this.scrollView != (nil) {
 		if this.scrollView.Id == view.Id {
 			return true
 		}
-		if this.horizontalBar != nil && this.horizontalBar.view.Id == view.Id {
+		if this.horizontalBar != (nil) && this.horizontalBar.view.Id == view.Id {
 			return true
 		}
-		if this.verticalBar != nil && this.verticalBar.view.Id == view.Id {
+		if this.verticalBar != (nil) && this.verticalBar.view.Id == view.Id {
 			return true
 		}
 	}
@@ -191,10 +192,10 @@ func (this *Scrollable) IsTrim(view *cocoa.NSView) bool {
 }
 
 func (this *Scrollable) RedrawBackgroundImage() {
-	if this.scrollView != nil {
-		var control *Control = this.FindBackgroundControl()
-		if control != nil && control.backgroundImage != nil {
-			this.RedrawWidget(this.View, false)
+	if this.scrollView != (nil) {
+		var control *Control = this.impl.FindBackgroundControl()
+		if control != (nil) && control.backgroundImage != (nil) {
+			this.impl.RedrawWidgetOnWidget(this.View, false)
 		}
 	}
 }
@@ -206,43 +207,43 @@ func (this *Scrollable) ReflectScrolledClipView(id int64, sel int64, aClipView i
 
 func (this *Scrollable) Register() {
 	this.Control.Register()
-	if this.scrollView != nil {
-		this.display.AddWidget(&this.scrollView.NSObject, &this.Widget)
+	if this.scrollView != (nil) {
+		this.display.AddWidget(upcastcocoaNSScrollViewTococoaNSObject(this.scrollView), upcastScrollableToWidget(this))
 	}
 }
 
 func (this *Scrollable) ReleaseHandle() {
 	this.Control.ReleaseHandle()
-	if this.scrollView != nil {
+	if this.scrollView != (nil) {
 		this.scrollView.Release()
 	}
 	this.scrollView = nil
 }
 
 func (this *Scrollable) ReleaseChildren(destroy bool) {
-	if this.horizontalBar != nil {
-		this.horizontalBar.Impl.Release(false)
+	if this.horizontalBar != (nil) {
+		this.horizontalBar.Release(false)
 		this.horizontalBar = nil
 	}
-	if this.verticalBar != nil {
-		this.verticalBar.Impl.Release(false)
+	if this.verticalBar != (nil) {
+		this.verticalBar.Release(false)
 		this.verticalBar = nil
 	}
 	this.Control.ReleaseChildren(destroy)
 }
 
 func (this *Scrollable) ReskinChildren(flags int32) {
-	if this.horizontalBar != nil {
+	if this.horizontalBar != (nil) {
 		this.horizontalBar.Reskin(flags)
 	}
-	if this.verticalBar != nil {
+	if this.verticalBar != (nil) {
 		this.verticalBar.Reskin(flags)
 	}
 	this.Control.ReskinChildren(flags)
 }
 
 func (this *Scrollable) ScrollClipViewToPoint(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
-	if (this.state&WidgetCANVAS) == 0 && this.scrollView != nil {
+	if (this.state&WidgetCANVAS) == 0 && this.scrollView != (nil) {
 		var clip *cocoa.NSClipView = cocoa.NewNSClipViewOverload1(clipView)
 		var oldCopies bool = clip.CopiesOnScroll()
 		var copies bool = oldCopies
@@ -250,7 +251,7 @@ func (this *Scrollable) ScrollClipViewToPoint(id int64, sel int64, clipView int6
 			copies = !this.IsObscured()
 		}
 		if copies {
-			copies = !this.HasRegion()
+			copies = !this.impl.HasRegion()
 		}
 		clip.SetCopiesOnScroll(copies)
 	}
@@ -273,16 +274,16 @@ func (this *Scrollable) SendVerticalSelection() {
 
 func (this *Scrollable) EnableWidget(enabled bool) {
 	this.Control.EnableWidget(enabled)
-	if this.horizontalBar != nil {
+	if this.horizontalBar != (nil) {
 		this.horizontalBar.EnableWidget(enabled && this.IsNeeded(this.horizontalBar))
 	}
-	if this.verticalBar != nil {
+	if this.verticalBar != (nil) {
 		this.verticalBar.EnableWidget(enabled && this.IsNeeded(this.verticalBar))
 	}
 }
 
 func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
-	if this.scrollView == nil {
+	if this.scrollView == (nil) {
 		return false
 	}
 	if (this.state & WidgetCANVAS) == 0 {
@@ -304,37 +305,94 @@ func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
 	} else {
 		this.scrollView.SetHasVerticalScroller(visible)
 	}
-	var cond93 int32
+	var cond88 int32
 	if visible {
-		cond93 = SWTShow
+		cond88 = SWTShow
 	} else {
-		cond93 = SWTHide
+		cond88 = SWTHide
 	}
-	bar.SendEventEventType(cond93)
+	bar.SendEventEventType(cond88)
 	this.SendEventEventType(SWTResize)
 	return true
 }
 
 func (this *Scrollable) SetZOrderOnControl() {
 	this.Control.SetZOrderOnControl()
-	if this.scrollView != nil {
-		this.scrollView.SetDocumentView(this.View.AsId())
+	if this.scrollView != (nil) {
+		this.scrollView.SetDocumentView(upcastcocoaNSViewTococoaId(this.View))
 	}
 }
 
 func (this *Scrollable) TopView() *cocoa.NSView {
-	if this.scrollView != nil {
-		return &this.scrollView.NSView
+	if this.scrollView != (nil) {
+		return upcastcocoaNSScrollViewTococoaNSView(this.scrollView)
 	}
 	return this.Control.TopView()
 }
 
 func (this *Scrollable) UpdateCursorRectsOnControl(enabled bool) {
 	this.Control.UpdateCursorRectsOnControl(enabled)
-	if this.scrollView == nil {
+	if this.scrollView == (nil) {
 		return
 	}
-	this.UpdateCursorRectsEnabledWidget(enabled, &this.scrollView.NSView)
+	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSScrollViewTococoaNSView(this.scrollView))
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
-	this.UpdateCursorRectsEnabledWidget(enabled, &contentView.NSView)
+	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSClipViewTococoaNSView(contentView))
+}
+
+// j2go: instanceof helper for cocoa.NSScroller and its subclasses within the translated set.
+func idImplAsNSScroller(x any) (*cocoa.NSScroller, bool) {
+	switch v := x.(type) {
+	case *cocoa.NSScroller:
+		return v, true
+	case *cocoa.SWTScroller:
+		return &v.NSScroller, true
+	}
+	return nil, false
+}
+
+func castcocoaNSObjectTococoaNSScroller(x *cocoa.NSObject) *cocoa.NSScroller {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsNSScroller(x.Impl())
+	if !ok {
+		panic("java.lang.ClassCastException: cocoa.NSScroller")
+	}
+	return v
+}
+
+func upcastcocoaNSScrollViewTococoaId(x *cocoa.NSScrollView) *cocoa.Id {
+	if x == nil {
+		return nil
+	}
+	return x.AsId()
+}
+
+func upcastcocoaNSScrollViewTococoaNSObject(x *cocoa.NSScrollView) *cocoa.NSObject {
+	if x == nil {
+		return nil
+	}
+	return &x.NSObject
+}
+
+func upcastScrollableToWidget(x *Scrollable) *Widget {
+	if x == nil {
+		return nil
+	}
+	return &x.Widget
+}
+
+func upcastcocoaNSScrollViewTococoaNSView(x *cocoa.NSScrollView) *cocoa.NSView {
+	if x == nil {
+		return nil
+	}
+	return &x.NSView
+}
+
+func upcastcocoaNSClipViewTococoaNSView(x *cocoa.NSClipView) *cocoa.NSView {
+	if x == nil {
+		return nil
+	}
+	return &x.NSView
 }

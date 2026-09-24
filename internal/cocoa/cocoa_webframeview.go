@@ -8,7 +8,7 @@ type WebFrameView struct {
 
 func NewWebFrameView() *WebFrameView {
 	this := &WebFrameView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrameView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebFrameView) initWebFrameView() {
 
 func NewWebFrameViewOverload1(id int64) *WebFrameView {
 	this := &WebFrameView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrameViewOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebFrameView) initWebFrameViewOverload1(id int64) {
 
 func NewWebFrameViewOverload2(id *id) *WebFrameView {
 	this := &WebFrameView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebFrameViewOverload2(id)
 	return this
 }
@@ -49,7 +49,7 @@ func (this *WebFrameView) PrintDocumentView() {
 
 func (this *WebFrameView) PrintOperationWithPrintInfo(printInfo *NSPrintInfo) *NSPrintOperation {
 	var cond965 int64
-	if printInfo != nil {
+	if printInfo != (nil) {
 		cond965 = printInfo.Id
 	} else {
 		cond965 = int64(0)

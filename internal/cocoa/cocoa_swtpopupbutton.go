@@ -8,7 +8,7 @@ type SWTPopUpButton struct {
 
 func NewSWTPopUpButton() *SWTPopUpButton {
 	this := &SWTPopUpButton{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPopUpButton()
 	return this
 }

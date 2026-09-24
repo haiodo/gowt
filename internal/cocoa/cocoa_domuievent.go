@@ -8,7 +8,7 @@ type DOMUIEvent struct {
 
 func NewDOMUIEvent() *DOMUIEvent {
 	this := &DOMUIEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMUIEvent()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *DOMUIEvent) initDOMUIEvent() {
 
 func NewDOMUIEventOverload1(id int64) *DOMUIEvent {
 	this := &DOMUIEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMUIEventOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *DOMUIEvent) initDOMUIEventOverload1(id int64) {
 
 func NewDOMUIEventOverload2(id *id) *DOMUIEvent {
 	this := &DOMUIEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMUIEventOverload2(id)
 	return this
 }

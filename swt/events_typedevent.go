@@ -19,12 +19,12 @@ type TypedEvent struct {
 	Widget  *Widget
 	Time    int32
 	Data    any
-	Impl    TypedEventImpl
+	impl    TypedEventImpl
 }
 
 func NewTypedEvent(object any) *TypedEvent {
 	this := &TypedEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initTypedEvent(object)
 	return this
 }
@@ -35,7 +35,7 @@ func (this *TypedEvent) initTypedEvent(object any) {
 
 func NewTypedEventE(e *Event) *TypedEvent {
 	this := &TypedEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initTypedEventE(e)
 	return this
 }

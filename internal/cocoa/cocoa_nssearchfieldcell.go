@@ -8,7 +8,7 @@ type NSSearchFieldCell struct {
 
 func NewNSSearchFieldCell() *NSSearchFieldCell {
 	this := &NSSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchFieldCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSSearchFieldCell) initNSSearchFieldCell() {
 
 func NewNSSearchFieldCellOverload1(id int64) *NSSearchFieldCell {
 	this := &NSSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchFieldCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSSearchFieldCell) initNSSearchFieldCellOverload1(id int64) {
 
 func NewNSSearchFieldCellOverload2(id *id) *NSSearchFieldCell {
 	this := &NSSearchFieldCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSSearchFieldCellOverload2(id)
 	return this
 }
@@ -41,13 +41,13 @@ func (this *NSSearchFieldCell) initNSSearchFieldCellOverload2(id *id) {
 
 func (this *NSSearchFieldCell) CancelButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cancelButtonCell)
-	var cond663 *NSButtonCell
+	var cond662 *NSButtonCell
 	if result != 0 {
-		cond663 = NewNSButtonCellOverload1(result)
+		cond662 = NewNSButtonCellOverload1(result)
 	} else {
-		cond663 = nil
+		cond662 = nil
 	}
-	return cond663
+	return cond662
 }
 
 func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
@@ -58,13 +58,13 @@ func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
 
 func (this *NSSearchFieldCell) SearchButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_searchButtonCell)
-	var cond664 *NSButtonCell
+	var cond663 *NSButtonCell
 	if result != 0 {
-		cond664 = NewNSButtonCellOverload1(result)
+		cond663 = NewNSButtonCellOverload1(result)
 	} else {
-		cond664 = nil
+		cond663 = nil
 	}
-	return cond664
+	return cond663
 }
 
 func (this *NSSearchFieldCell) SearchButtonRectForBounds(rect NSRect) NSRect {
@@ -80,21 +80,21 @@ func (this *NSSearchFieldCell) SearchTextRectForBounds(rect NSRect) NSRect {
 }
 
 func (this *NSSearchFieldCell) SetCancelButtonCell(cancelButtonCell *NSButtonCell) {
-	var cond665 int64
-	if cancelButtonCell != nil {
-		cond665 = cancelButtonCell.Id
+	var cond664 int64
+	if cancelButtonCell != (nil) {
+		cond664 = cancelButtonCell.Id
 	} else {
-		cond665 = int64(0)
+		cond664 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond665)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond664)
 }
 
 func (this *NSSearchFieldCell) SetSearchButtonCell(searchButtonCell *NSButtonCell) {
-	var cond666 int64
-	if searchButtonCell != nil {
-		cond666 = searchButtonCell.Id
+	var cond665 int64
+	if searchButtonCell != (nil) {
+		cond665 = searchButtonCell.Id
 	} else {
-		cond666 = int64(0)
+		cond665 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond666)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond665)
 }

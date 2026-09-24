@@ -8,9 +8,39 @@ type KeyListener interface {
 }
 
 func KeyListenerKeyPressedAdapter(c func(*KeyEvent)) KeyListener {
-	return func() *KeyAdapter { panic("j2go: unsupported anonymous class") }()
+	anon37 := &KeyListenerAnon1{}
+	anon37.initKeyAdapter()
+	anon37.fnKeyPressed = func(e *KeyEvent) {
+		c(e)
+	}
+	return anon37
 }
 
 func KeyListenerKeyReleasedAdapter(c func(*KeyEvent)) KeyListener {
-	return func() *KeyAdapter { panic("j2go: unsupported anonymous class") }()
+	anon38 := &KeyListenerAnon2{}
+	anon38.initKeyAdapter()
+	anon38.fnKeyReleased = func(e *KeyEvent) {
+		c(e)
+	}
+	return anon38
+}
+
+// j2go: anonymous KeyAdapter subclass.
+type KeyListenerAnon1 struct {
+	KeyAdapter
+	fnKeyPressed func(a0 *KeyEvent)
+}
+
+func (this *KeyListenerAnon1) KeyPressed(a0 *KeyEvent) {
+	this.fnKeyPressed(a0)
+}
+
+// j2go: anonymous KeyAdapter subclass.
+type KeyListenerAnon2 struct {
+	KeyAdapter
+	fnKeyReleased func(a0 *KeyEvent)
+}
+
+func (this *KeyListenerAnon2) KeyReleased(a0 *KeyEvent) {
+	this.fnKeyReleased(a0)
 }

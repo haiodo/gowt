@@ -8,7 +8,7 @@ type SWTImageTextCell struct {
 
 func NewSWTImageTextCell() *SWTImageTextCell {
 	this := &SWTImageTextCell{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTImageTextCell()
 	return this
 }

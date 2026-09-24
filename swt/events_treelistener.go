@@ -8,9 +8,39 @@ type TreeListener interface {
 }
 
 func TreeListenerTreeCollapsedAdapter(c func(*TreeEvent)) TreeListener {
-	return func() *TreeAdapter { panic("j2go: unsupported anonymous class") }()
+	anon54 := &TreeListenerAnon1{}
+	anon54.initTreeAdapter()
+	anon54.fnTreeCollapsed = func(e *TreeEvent) {
+		c(e)
+	}
+	return anon54
 }
 
 func TreeListenerTreeExpandedAdapter(c func(*TreeEvent)) TreeListener {
-	return func() *TreeAdapter { panic("j2go: unsupported anonymous class") }()
+	anon55 := &TreeListenerAnon2{}
+	anon55.initTreeAdapter()
+	anon55.fnTreeExpanded = func(e *TreeEvent) {
+		c(e)
+	}
+	return anon55
+}
+
+// j2go: anonymous TreeAdapter subclass.
+type TreeListenerAnon1 struct {
+	TreeAdapter
+	fnTreeCollapsed func(a0 *TreeEvent)
+}
+
+func (this *TreeListenerAnon1) TreeCollapsed(a0 *TreeEvent) {
+	this.fnTreeCollapsed(a0)
+}
+
+// j2go: anonymous TreeAdapter subclass.
+type TreeListenerAnon2 struct {
+	TreeAdapter
+	fnTreeExpanded func(a0 *TreeEvent)
+}
+
+func (this *TreeListenerAnon2) TreeExpanded(a0 *TreeEvent) {
+	this.fnTreeExpanded(a0)
 }

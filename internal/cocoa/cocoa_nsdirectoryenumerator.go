@@ -8,7 +8,7 @@ type NSDirectoryEnumerator struct {
 
 func NewNSDirectoryEnumerator() *NSDirectoryEnumerator {
 	this := &NSDirectoryEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDirectoryEnumerator()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSDirectoryEnumerator) initNSDirectoryEnumerator() {
 
 func NewNSDirectoryEnumeratorOverload1(id int64) *NSDirectoryEnumerator {
 	this := &NSDirectoryEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDirectoryEnumeratorOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSDirectoryEnumerator) initNSDirectoryEnumeratorOverload1(id int64) 
 
 func NewNSDirectoryEnumeratorOverload2(id *id) *NSDirectoryEnumerator {
 	this := &NSDirectoryEnumerator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDirectoryEnumeratorOverload2(id)
 	return this
 }

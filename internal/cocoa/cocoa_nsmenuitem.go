@@ -8,7 +8,7 @@ type NSMenuItem struct {
 
 func NewNSMenuItem() *NSMenuItem {
 	this := &NSMenuItem{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMenuItem()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMenuItem) initNSMenuItem() {
 
 func NewNSMenuItemOverload1(id int64) *NSMenuItem {
 	this := &NSMenuItem{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMenuItemOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMenuItem) initNSMenuItemOverload1(id int64) {
 
 func NewNSMenuItemOverload2(id *id) *NSMenuItem {
 	this := &NSMenuItem{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMenuItemOverload2(id)
 	return this
 }
@@ -45,53 +45,53 @@ func (this *NSMenuItem) Action() int64 {
 
 func (this *NSMenuItem) AttributedTitle() *NSAttributedString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_attributedTitle)
-	var cond390 *NSAttributedString
+	var cond389 *NSAttributedString
 	if result != 0 {
-		cond390 = NewNSAttributedStringOverload1(result)
+		cond389 = NewNSAttributedStringOverload1(result)
+	} else {
+		cond389 = nil
+	}
+	return cond389
+}
+
+func (this *NSMenuItem) Image() *NSImage {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
+	var cond390 *NSImage
+	if result != 0 {
+		cond390 = NewNSImageOverload1(result)
 	} else {
 		cond390 = nil
 	}
 	return cond390
 }
 
-func (this *NSMenuItem) Image() *NSImage {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
-	var cond391 *NSImage
-	if result != 0 {
-		cond391 = NewNSImageOverload1(result)
-	} else {
-		cond391 = nil
-	}
-	return cond391
-}
-
 func (this *NSMenuItem) InitWithTitle(aString *NSString, aSelector int64, charCode *NSString) *NSMenuItem {
+	var cond391 int64
+	if aString != (nil) {
+		cond391 = aString.Id
+	} else {
+		cond391 = int64(0)
+	}
 	var cond392 int64
-	if aString != nil {
-		cond392 = aString.Id
+	if charCode != (nil) {
+		cond392 = charCode.Id
 	} else {
 		cond392 = int64(0)
 	}
-	var cond393 int64
-	if charCode != nil {
-		cond393 = charCode.Id
-	} else {
-		cond393 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_initWithTitle_action_keyEquivalent_, cond392, aSelector, cond393)
+	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_initWithTitle_action_keyEquivalent_, cond391, aSelector, cond392)
+	var cond393 *NSMenuItem
 	var cond394 *NSMenuItem
-	var cond395 *NSMenuItem
 	if result != 0 {
-		cond395 = NewNSMenuItemOverload1(result)
+		cond394 = NewNSMenuItemOverload1(result)
 	} else {
-		cond395 = nil
+		cond394 = nil
 	}
 	if result == this.Id {
-		cond394 = this
+		cond393 = this
 	} else {
-		cond394 = (cond395)
+		cond393 = (cond394)
 	}
-	return cond394
+	return cond393
 }
 
 func (this *NSMenuItem) IsHidden() bool {
@@ -104,13 +104,13 @@ func (this *NSMenuItem) IsSeparatorItem() bool {
 
 func (this *NSMenuItem) KeyEquivalent() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_keyEquivalent)
-	var cond396 *NSString
+	var cond395 *NSString
 	if result != 0 {
-		cond396 = NewNSStringOverload1(result)
+		cond395 = NewNSStringOverload1(result)
 	} else {
-		cond396 = nil
+		cond395 = nil
 	}
-	return cond396
+	return cond395
 }
 
 func (this *NSMenuItem) KeyEquivalentModifierMask() int64 {
@@ -122,13 +122,13 @@ func (this *NSMenuItem) SetAction(action int64) {
 }
 
 func (this *NSMenuItem) SetAttributedTitle(attributedTitle *NSAttributedString) {
-	var cond397 int64
-	if attributedTitle != nil {
-		cond397 = attributedTitle.Id
+	var cond396 int64
+	if attributedTitle != (nil) {
+		cond396 = attributedTitle.Id
 	} else {
-		cond397 = int64(0)
+		cond396 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedTitle_, cond397)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedTitle_, cond396)
 }
 
 func (this *NSMenuItem) SetEnabled(enabled bool) {
@@ -140,23 +140,23 @@ func (this *NSMenuItem) SetHidden(hidden bool) {
 }
 
 func (this *NSMenuItem) SetImage(image *NSImage) {
-	var cond398 int64
-	if image != nil {
-		cond398 = image.Id
+	var cond397 int64
+	if image != (nil) {
+		cond397 = image.Id
 	} else {
-		cond398 = int64(0)
+		cond397 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond398)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond397)
 }
 
 func (this *NSMenuItem) SetKeyEquivalent(keyEquivalent *NSString) {
-	var cond399 int64
-	if keyEquivalent != nil {
-		cond399 = keyEquivalent.Id
+	var cond398 int64
+	if keyEquivalent != (nil) {
+		cond398 = keyEquivalent.Id
 	} else {
-		cond399 = int64(0)
+		cond398 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setKeyEquivalent_, cond399)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setKeyEquivalent_, cond398)
 }
 
 func (this *NSMenuItem) SetKeyEquivalentModifierMask(keyEquivalentModifierMask int64) {
@@ -164,13 +164,13 @@ func (this *NSMenuItem) SetKeyEquivalentModifierMask(keyEquivalentModifierMask i
 }
 
 func (this *NSMenuItem) SetMenu(menu *NSMenu) {
-	var cond400 int64
-	if menu != nil {
-		cond400 = menu.Id
+	var cond399 int64
+	if menu != (nil) {
+		cond399 = menu.Id
 	} else {
-		cond400 = int64(0)
+		cond399 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMenu_, cond400)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMenu_, cond399)
 }
 
 func (this *NSMenuItem) SetState(state int64) {
@@ -178,13 +178,13 @@ func (this *NSMenuItem) SetState(state int64) {
 }
 
 func (this *NSMenuItem) SetSubmenu(submenu *NSMenu) {
-	var cond401 int64
-	if submenu != nil {
-		cond401 = submenu.Id
+	var cond400 int64
+	if submenu != (nil) {
+		cond400 = submenu.Id
 	} else {
-		cond401 = int64(0)
+		cond400 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSubmenu_, cond401)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSubmenu_, cond400)
 }
 
 func (this *NSMenuItem) SetTag(tag int64) {
@@ -192,33 +192,33 @@ func (this *NSMenuItem) SetTag(tag int64) {
 }
 
 func (this *NSMenuItem) SetTarget(target *id) {
-	var cond402 int64
-	if target != nil {
-		cond402 = target.Id
+	var cond401 int64
+	if target != (nil) {
+		cond401 = target.Id
 	} else {
-		cond402 = int64(0)
+		cond401 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond402)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond401)
 }
 
 func (this *NSMenuItem) SetTitle(title *NSString) {
-	var cond403 int64
-	if title != nil {
-		cond403 = title.Id
+	var cond402 int64
+	if title != (nil) {
+		cond402 = title.Id
 	} else {
-		cond403 = int64(0)
+		cond402 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond403)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond402)
 }
 
 func (this *NSMenuItem) SetToolTip(toolTip *NSString) {
-	var cond404 int64
-	if toolTip != nil {
-		cond404 = toolTip.Id
+	var cond403 int64
+	if toolTip != (nil) {
+		cond403 = toolTip.Id
 	} else {
-		cond404 = int64(0)
+		cond403 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond404)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond403)
 }
 
 func (this *NSMenuItem) State() int64 {
@@ -227,13 +227,13 @@ func (this *NSMenuItem) State() int64 {
 
 func (this *NSMenuItem) Submenu() *NSMenu {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_submenu)
-	var cond405 *NSMenu
+	var cond404 *NSMenu
 	if result != 0 {
-		cond405 = NewNSMenuOverload1(result)
+		cond404 = NewNSMenuOverload1(result)
 	} else {
-		cond405 = nil
+		cond404 = nil
 	}
-	return cond405
+	return cond404
 }
 
 func (this *NSMenuItem) Tag() int64 {
@@ -242,33 +242,33 @@ func (this *NSMenuItem) Tag() int64 {
 
 func (this *NSMenuItem) Target() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_target)
-	var cond406 *id
+	var cond405 *id
 	if result != 0 {
-		cond406 = NewidOverload1(result)
+		cond405 = NewidOverload1(result)
+	} else {
+		cond405 = nil
+	}
+	return cond405
+}
+
+func (this *NSMenuItem) Title() *NSString {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
+	var cond406 *NSString
+	if result != 0 {
+		cond406 = NewNSStringOverload1(result)
 	} else {
 		cond406 = nil
 	}
 	return cond406
 }
 
-func (this *NSMenuItem) Title() *NSString {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond407 *NSString
+func NSMenuItemSeparatorItem() *NSMenuItem {
+	var result int64 = OSObjc_msgSend(OSClass_NSMenuItem, OSSel_separatorItem)
+	var cond407 *NSMenuItem
 	if result != 0 {
-		cond407 = NewNSStringOverload1(result)
+		cond407 = NewNSMenuItemOverload1(result)
 	} else {
 		cond407 = nil
 	}
 	return cond407
-}
-
-func NSMenuItemSeparatorItem() *NSMenuItem {
-	var result int64 = OSObjc_msgSend(OSClass_NSMenuItem, OSSel_separatorItem)
-	var cond408 *NSMenuItem
-	if result != 0 {
-		cond408 = NewNSMenuItemOverload1(result)
-	} else {
-		cond408 = nil
-	}
-	return cond408
 }

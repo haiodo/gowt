@@ -16,7 +16,7 @@ type MenuDetectEvent struct {
 
 func NewMenuDetectEvent(e *Event) *MenuDetectEvent {
 	this := &MenuDetectEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initMenuDetectEvent(e)
 	return this
 }

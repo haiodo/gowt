@@ -8,7 +8,7 @@ type NSFileManager struct {
 
 func NewNSFileManager() *NSFileManager {
 	this := &NSFileManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileManager()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSFileManager) initNSFileManager() {
 
 func NewNSFileManagerOverload1(id int64) *NSFileManager {
 	this := &NSFileManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileManagerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSFileManager) initNSFileManagerOverload1(id int64) {
 
 func NewNSFileManagerOverload2(id *id) *NSFileManager {
 	this := &NSFileManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileManagerOverload2(id)
 	return this
 }
@@ -40,59 +40,59 @@ func (this *NSFileManager) initNSFileManagerOverload2(id *id) {
 }
 
 func (this *NSFileManager) EnumeratorAtPath(path *NSString) *NSDirectoryEnumerator {
-	var cond258 int64
-	if path != nil {
-		cond258 = path.Id
+	var cond257 int64
+	if path != (nil) {
+		cond257 = path.Id
 	} else {
-		cond258 = int64(0)
+		cond257 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_enumeratorAtPath_, cond258)
-	var cond259 *NSDirectoryEnumerator
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_enumeratorAtPath_, cond257)
+	var cond258 *NSDirectoryEnumerator
 	if result != 0 {
-		cond259 = NewNSDirectoryEnumeratorOverload1(result)
+		cond258 = NewNSDirectoryEnumeratorOverload1(result)
 	} else {
-		cond259 = nil
+		cond258 = nil
 	}
-	return cond259
+	return cond258
 }
 
 func (this *NSFileManager) FileExistsAtPath(path *NSString) bool {
+	var cond259 int64
+	if path != (nil) {
+		cond259 = path.Id
+	} else {
+		cond259 = int64(0)
+	}
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_fileExistsAtPath_, cond259)
+}
+
+func (this *NSFileManager) FileExistsAtPathPathIsDirectory(path *NSString, isDirectory int64) bool {
 	var cond260 int64
-	if path != nil {
+	if path != (nil) {
 		cond260 = path.Id
 	} else {
 		cond260 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_fileExistsAtPath_, cond260)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_fileExistsAtPath_isDirectory_, cond260, isDirectory)
 }
 
-func (this *NSFileManager) FileExistsAtPathPathIsDirectory(path *NSString, isDirectory int64) bool {
+func (this *NSFileManager) IsExecutableFileAtPath(path *NSString) bool {
 	var cond261 int64
-	if path != nil {
+	if path != (nil) {
 		cond261 = path.Id
 	} else {
 		cond261 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_fileExistsAtPath_isDirectory_, cond261, isDirectory)
-}
-
-func (this *NSFileManager) IsExecutableFileAtPath(path *NSString) bool {
-	var cond262 int64
-	if path != nil {
-		cond262 = path.Id
-	} else {
-		cond262 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isExecutableFileAtPath_, cond262)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isExecutableFileAtPath_, cond261)
 }
 
 func NSFileManagerDefaultManager() *NSFileManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSFileManager, OSSel_defaultManager)
-	var cond263 *NSFileManager
+	var cond262 *NSFileManager
 	if result != 0 {
-		cond263 = NewNSFileManagerOverload1(result)
+		cond262 = NewNSFileManagerOverload1(result)
 	} else {
-		cond263 = nil
+		cond262 = nil
 	}
-	return cond263
+	return cond262
 }

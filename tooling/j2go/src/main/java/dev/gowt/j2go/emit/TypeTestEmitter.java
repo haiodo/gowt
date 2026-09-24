@@ -19,13 +19,14 @@ final class TypeTestEmitter {
 	String emitCast(CastExpression ce) {
 		ITypeBinding t = ce.getType().resolveBinding();
 		String expr = emitter.expr(ce.getExpression());
+		// (Display) null: a disambiguating cast Java needs to pick an overload, not a runtime
+		// check - Go's nil has no interface to assert against, so this stays bare "nil".
+		if (ce.getExpression() instanceof NullLiteral) return "nil";
 		// A Java reference cast (e.g. (id)other) is a type assertion in Go, not a conversion:
 		// Go's T(x) conversion syntax doesn't apply between an interface and an unrelated pointer type.
 		TypeModel.ClassInfo target = emitter.model.lookup(t);
 		if (target != null && target.isInterface) return expr + ".(" + emitter.qualifiedTypeName(target) + ")";
-		if (target != null && !target.isStruct) {
-			return implSubject(expr, ce.getExpression()) + ".(*" + emitter.qualifiedTypeName(target) + ")";
-		}
+		if (target != null && !target.isStruct) return castHelper(ce.getExpression(), target) + "(" + expr + ")";
 		String qualified = t.getErasure().getQualifiedName();
 		// A manual (untranslated) reference type - Composite, Shell, ... - needs the same
 		// assertion syntax as a translated one; only a manual VALUE type (any/error) converts.
@@ -41,6 +42,23 @@ final class TypeTestEmitter {
 			return expr + ".(" + goType + ")";
 		}
 		return goType + "(" + expr + ")";
+	}
+
+	/** A downcast through the impl cascade: (NSWindow) new SWTWindow().alloc() holds a *SWTWindow,
+	 * so a plain Go assertion to *NSWindow would fail. null casts to null, a mismatch panics. */
+	private String castHelper(Expression subject, TypeModel.ClassInfo target) {
+		ITypeBinding st = subject.resolveTypeBinding();
+		String fromGo = dev.gowt.j2go.GoTypes.map(st, emitter);
+		TypeModel.ClassInfo subjectCi = emitter.model.lookup(st);
+		String targetName = emitter.qualifiedTypeName(target);
+		String name = "cast" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
+		if (emitter.generatedHelpers.add(name)) {
+			String impl = subjectCi == null || subjectCi.isInterface ? "x" : "x" + emitter.implAccess(subjectCi.root);
+			String as = ensureCascadeHelper(target.root, target);
+			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
+					+ "\tv, ok := " + as + "(" + impl + ")\n\tif !ok {\n\t\tpanic(\"java.lang.ClassCastException: " + targetName + "\")\n\t}\n\treturn v\n}\n\n");
+		}
+		return name;
 	}
 
 	String emitPlainInstanceof(InstanceofExpression ioe) {
@@ -60,14 +78,12 @@ final class TypeTestEmitter {
 		return okVar;
 	}
 
-	/** A struct-typed subject (part of our own impl-cascade hierarchy) carries its dynamic
-	 * subtype in .Impl, an INTERFACE field - needed for a plain Go type assertion to even
-	 * compile (Go rejects asserting against a concrete, non-interface operand). An interface-
-	 * or Object-typed subject already holds the concrete pointer directly. */
+	/** A struct-typed subject carries its dynamic subtype in its impl field, an INTERFACE value -
+	 * needed for a plain Go type assertion to compile. Interface/Object subjects hold it directly. */
 	private String implSubject(String subjectText, Expression subject) {
 		ITypeBinding subjectType = subject.resolveTypeBinding();
 		TypeModel.ClassInfo subjectCi = subjectType == null ? null : emitter.model.lookup(subjectType);
-		return (subjectCi == null || subjectCi.isInterface) ? subjectText : subjectText + ".Impl";
+		return (subjectCi == null || subjectCi.isInterface) ? subjectText : subjectText + emitter.implAccess(subjectCi.root);
 	}
 
 	private String instanceofCheck(Expression subject, ITypeBinding target, String varName, String okVar) {
@@ -90,12 +106,34 @@ final class TypeTestEmitter {
 		if (targetCi.isInterface) {
 			return varName + ", " + okVar + " := " + subjectText + ".(" + emitter.qualifiedTypeName(targetCi) + ")";
 		}
-		String helper = ensureCascadeHelper(targetCi.root, targetCi);
-		return varName + ", " + okVar + " := " + helper + "(" + implSubjectText + ")";
+		ITypeBinding st = subject.resolveTypeBinding();
+		TypeModel.ClassInfo subjectCi = st == null ? null : emitter.model.lookup(st);
+		if (subjectCi == null || subjectCi.isInterface) {
+			return varName + ", " + okVar + " := " + ensureCascadeHelper(targetCi.root, targetCi) + "(" + subjectText + ")";
+		}
+		return varName + ", " + okVar + " := " + nilSafeInstanceof(st, subjectCi, targetCi) + "(" + subjectText + ")";
+	}
+
+	/** `x instanceof T` on a class-typed x: false for null, where reading x.impl would panic. */
+	private String nilSafeInstanceof(ITypeBinding st, TypeModel.ClassInfo subjectCi, TypeModel.ClassInfo target) {
+		String fromGo = dev.gowt.j2go.GoTypes.map(st, emitter);
+		String targetName = emitter.qualifiedTypeName(target);
+		String name = "is" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
+		if (emitter.generatedHelpers.add(name)) {
+			String as = ensureCascadeHelper(target.root, target);
+			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
+					+ "\treturn " + as + "(x" + emitter.implAccess(subjectCi.root) + ")\n}\n\n");
+		}
+		return name;
 	}
 
 	String ensureCascadeHelper(TypeModel.ClassInfo root, TypeModel.ClassInfo target) {
-		String targetLabel = target == root ? target.goFuncPrefix : target.goFuncPrefix.substring(root.goFuncPrefix.length());
+		// Nested classes (Point/Point.OfFloat) share a textual prefix; unrelated top-level roots
+		// (Widget/Shell) don't - fall back to target's own full name for those.
+		String targetLabel = target == root ? target.goFuncPrefix
+				: target.goFuncPrefix.startsWith(root.goFuncPrefix)
+				? target.goFuncPrefix.substring(root.goFuncPrefix.length())
+				: target.goFuncPrefix;
 		String name = Names.decapitalize(root.goFuncPrefix) + "ImplAs" + targetLabel;
 		if (emitter.generatedHelpers.add(name)) {
 			emitter.fileHelperSource.add(buildCascadeHelper(name, target));

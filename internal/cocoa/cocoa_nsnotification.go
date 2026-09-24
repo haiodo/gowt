@@ -8,7 +8,7 @@ type NSNotification struct {
 
 func NewNSNotification() *NSNotification {
 	this := &NSNotification{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotification()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSNotification) initNSNotification() {
 
 func NewNSNotificationOverload1(id int64) *NSNotification {
 	this := &NSNotification{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotificationOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSNotification) initNSNotificationOverload1(id int64) {
 
 func NewNSNotificationOverload2(id *id) *NSNotification {
 	this := &NSNotification{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotificationOverload2(id)
 	return this
 }
@@ -41,22 +41,22 @@ func (this *NSNotification) initNSNotificationOverload2(id *id) {
 
 func (this *NSNotification) Object() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_object)
-	var cond455 *id
+	var cond454 *id
 	if result != 0 {
-		cond455 = NewidOverload1(result)
+		cond454 = NewidOverload1(result)
 	} else {
-		cond455 = nil
+		cond454 = nil
 	}
-	return cond455
+	return cond454
 }
 
 func (this *NSNotification) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond456 *NSDictionary
+	var cond455 *NSDictionary
 	if result != 0 {
-		cond456 = NewNSDictionaryOverload1(result)
+		cond455 = NewNSDictionaryOverload1(result)
 	} else {
-		cond456 = nil
+		cond455 = nil
 	}
-	return cond456
+	return cond455
 }

@@ -22,7 +22,7 @@ type SelectionEvent struct {
 
 func NewSelectionEvent(e *Event) *SelectionEvent {
 	this := &SelectionEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initSelectionEvent(e)
 	return this
 }

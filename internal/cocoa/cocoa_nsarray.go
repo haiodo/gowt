@@ -8,7 +8,7 @@ type NSArray struct {
 
 func NewNSArray() *NSArray {
 	this := &NSArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSArray()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSArray) initNSArray() {
 
 func NewNSArrayOverload1(id int64) *NSArray {
 	this := &NSArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSArrayOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSArray) initNSArrayOverload1(id int64) {
 
 func NewNSArrayOverload2(id *id) *NSArray {
 	this := &NSArray{}
-	this.Impl = this
+	this.impl = this
 	this.initNSArrayOverload2(id)
 	return this
 }
@@ -41,7 +41,7 @@ func (this *NSArray) initNSArrayOverload2(id *id) {
 
 func (this *NSArray) ContainsObject(anObject *id) bool {
 	var cond54 int64
-	if anObject != nil {
+	if anObject != (nil) {
 		cond54 = anObject.Id
 	} else {
 		cond54 = int64(0)
@@ -55,7 +55,7 @@ func (this *NSArray) Count() int64 {
 
 func (this *NSArray) IndexOfObjectIdenticalTo(anObject *id) int64 {
 	var cond55 int64
-	if anObject != nil {
+	if anObject != (nil) {
 		cond55 = anObject.Id
 	} else {
 		cond55 = int64(0)
@@ -87,7 +87,7 @@ func NSArrayArray() *NSArray {
 
 func NSArrayArrayWithObject(anObject *id) *NSArray {
 	var cond58 int64
-	if anObject != nil {
+	if anObject != (nil) {
 		cond58 = anObject.Id
 	} else {
 		cond58 = int64(0)

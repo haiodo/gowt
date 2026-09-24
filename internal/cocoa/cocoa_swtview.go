@@ -8,7 +8,7 @@ type SWTView struct {
 
 func NewSWTView() *SWTView {
 	this := &SWTView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTView) initSWTView() {
 
 func NewSWTViewId(id int64) *SWTView {
 	this := &SWTView{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTViewId(id)
 	return this
 }

@@ -8,7 +8,7 @@ type NSClipView struct {
 
 func NewNSClipView() *NSClipView {
 	this := &NSClipView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSClipView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSClipView) initNSClipView() {
 
 func NewNSClipViewOverload1(id int64) *NSClipView {
 	this := &NSClipView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSClipViewOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSClipView) initNSClipViewOverload1(id int64) {
 
 func NewNSClipViewOverload2(id *id) *NSClipView {
 	this := &NSClipView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSClipViewOverload2(id)
 	return this
 }
@@ -49,7 +49,7 @@ func (this *NSClipView) SetCopiesOnScroll(copiesOnScroll bool) {
 
 func (this *NSClipView) SetDocumentCursor(documentCursor *NSCursor) {
 	var cond151 int64
-	if documentCursor != nil {
+	if documentCursor != (nil) {
 		cond151 = documentCursor.Id
 	} else {
 		cond151 = int64(0)

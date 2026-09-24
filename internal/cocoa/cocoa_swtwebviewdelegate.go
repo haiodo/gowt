@@ -8,7 +8,7 @@ type SWTWebViewDelegate struct {
 
 func NewSWTWebViewDelegate() *SWTWebViewDelegate {
 	this := &SWTWebViewDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTWebViewDelegate()
 	return this
 }

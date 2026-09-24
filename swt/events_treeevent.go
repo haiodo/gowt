@@ -8,7 +8,7 @@ type TreeEvent struct {
 
 func NewTreeEvent(e *Event) *TreeEvent {
 	this := &TreeEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initTreeEvent(e)
 	return this
 }

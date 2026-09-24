@@ -8,7 +8,7 @@ type NSAffineTransform struct {
 
 func NewNSAffineTransform() *NSAffineTransform {
 	this := &NSAffineTransform{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAffineTransform()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSAffineTransform) initNSAffineTransform() {
 
 func NewNSAffineTransformOverload1(id int64) *NSAffineTransform {
 	this := &NSAffineTransform{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAffineTransformOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSAffineTransform) initNSAffineTransformOverload1(id int64) {
 
 func NewNSAffineTransformOverload2(id *id) *NSAffineTransform {
 	this := &NSAffineTransform{}
-	this.Impl = this
+	this.impl = this
 	this.initNSAffineTransformOverload2(id)
 	return this
 }
@@ -49,7 +49,7 @@ func (this *NSAffineTransform) Set() {
 
 func (this *NSAffineTransform) InitWithTransform(transform *NSAffineTransform) *NSAffineTransform {
 	var cond4 int64
-	if transform != nil {
+	if transform != (nil) {
 		cond4 = transform.Id
 	} else {
 		cond4 = int64(0)
@@ -76,7 +76,7 @@ func (this *NSAffineTransform) Invert() {
 
 func (this *NSAffineTransform) PrependTransform(transform *NSAffineTransform) {
 	var cond7 int64
-	if transform != nil {
+	if transform != (nil) {
 		cond7 = transform.Id
 	} else {
 		cond7 = int64(0)

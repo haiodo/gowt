@@ -25,7 +25,8 @@ type Event struct {
 	KeyCode       int32
 	KeyLocation   int32
 	StateMask     int32
-	Start, End    int32
+	Start         int32
+	End           int32
 	Text          string
 	Segments      []int32
 	SegmentsChars []uint16

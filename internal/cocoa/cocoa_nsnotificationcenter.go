@@ -8,7 +8,7 @@ type NSNotificationCenter struct {
 
 func NewNSNotificationCenter() *NSNotificationCenter {
 	this := &NSNotificationCenter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotificationCenter()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSNotificationCenter) initNSNotificationCenter() {
 
 func NewNSNotificationCenterOverload1(id int64) *NSNotificationCenter {
 	this := &NSNotificationCenter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotificationCenterOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSNotificationCenter) initNSNotificationCenterOverload1(id int64) {
 
 func NewNSNotificationCenterOverload2(id *id) *NSNotificationCenter {
 	this := &NSNotificationCenter{}
-	this.Impl = this
+	this.impl = this
 	this.initNSNotificationCenterOverload2(id)
 	return this
 }
@@ -40,44 +40,44 @@ func (this *NSNotificationCenter) initNSNotificationCenterOverload2(id *id) {
 }
 
 func (this *NSNotificationCenter) AddObserver(observer *id, aSelector int64, aName *NSString, anObject *id) {
+	var cond456 int64
+	if observer != (nil) {
+		cond456 = observer.Id
+	} else {
+		cond456 = int64(0)
+	}
 	var cond457 int64
-	if observer != nil {
-		cond457 = observer.Id
+	if aName != (nil) {
+		cond457 = aName.Id
 	} else {
 		cond457 = int64(0)
 	}
 	var cond458 int64
-	if aName != nil {
-		cond458 = aName.Id
+	if anObject != (nil) {
+		cond458 = anObject.Id
 	} else {
 		cond458 = int64(0)
 	}
-	var cond459 int64
-	if anObject != nil {
-		cond459 = anObject.Id
-	} else {
-		cond459 = int64(0)
-	}
-	OSObjc_msgSendOverload60(this.Id, OSSel_addObserver_selector_name_object_, cond457, aSelector, cond458, cond459)
+	OSObjc_msgSendOverload60(this.Id, OSSel_addObserver_selector_name_object_, cond456, aSelector, cond457, cond458)
 }
 
 func (this *NSNotificationCenter) RemoveObserver(observer *id) {
-	var cond460 int64
-	if observer != nil {
-		cond460 = observer.Id
+	var cond459 int64
+	if observer != (nil) {
+		cond459 = observer.Id
 	} else {
-		cond460 = int64(0)
+		cond459 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeObserver_, cond460)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeObserver_, cond459)
 }
 
 func NSNotificationCenterDefaultCenter() *NSNotificationCenter {
 	var result int64 = OSObjc_msgSend(OSClass_NSNotificationCenter, OSSel_defaultCenter)
-	var cond461 *NSNotificationCenter
+	var cond460 *NSNotificationCenter
 	if result != 0 {
-		cond461 = NewNSNotificationCenterOverload1(result)
+		cond460 = NewNSNotificationCenterOverload1(result)
 	} else {
-		cond461 = nil
+		cond460 = nil
 	}
-	return cond461
+	return cond460
 }

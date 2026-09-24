@@ -8,7 +8,7 @@ type WebDocumentRepresentation struct {
 
 func NewWebDocumentRepresentation() *WebDocumentRepresentation {
 	this := &WebDocumentRepresentation{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDocumentRepresentation()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebDocumentRepresentation) initWebDocumentRepresentation() {
 
 func NewWebDocumentRepresentationOverload1(id int64) *WebDocumentRepresentation {
 	this := &WebDocumentRepresentation{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDocumentRepresentationOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebDocumentRepresentation) initWebDocumentRepresentationOverload1(id
 
 func NewWebDocumentRepresentationOverload2(id *id) *WebDocumentRepresentation {
 	this := &WebDocumentRepresentation{}
-	this.Impl = this
+	this.impl = this
 	this.initWebDocumentRepresentationOverload2(id)
 	return this
 }

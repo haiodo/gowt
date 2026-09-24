@@ -8,7 +8,7 @@ type SWTMenuItem struct {
 
 func NewSWTMenuItem() *SWTMenuItem {
 	this := &SWTMenuItem{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTMenuItem()
 	return this
 }

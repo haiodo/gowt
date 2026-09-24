@@ -40,9 +40,11 @@ public class Emitter {
 	String currentGoPackage; // GoTypes.goPackageOf(currentJavaPackage): "swt" or "cocoa"
 	String currentClassGoTypeName; // enclosing class's own Go type name, e.g. "id" (see sanitizeIdent)
 	TypeModel.ClassInfo currentClassInfo; // enclosing class, for super.method()'s field-path lookup
-	// SimpleName -> captured-field Go name, active only while emitting an anonymous class's own
-	// overridden methods (see emitAnonymousClass); null outside that context.
-	Map<String, String> currentCaptures;
+	// Non-null while emitting an anonymous class's method body (FunctionalEmitter): the Go
+	// variable holding the anonymous instance, and its Java type, for `this`/inherited members.
+	String anonThis;
+	ITypeBinding anonType;
+	int anonCounter; // per compilation unit, names <Class>Anon<N> struct types
 
 	// try/catch escape scheme (README "try/catch/finally"): non-null while emitting a try/catch
 	// body whose return/unlabeled break/continue must escape the recover() closure boundary.
@@ -55,6 +57,7 @@ public class Emitter {
 	int loopSwitchDepth;
 
 	private final ClassEmitter classEmitter;
+	private final ConstructorEmitter constructorEmitter;
 	private final NativeEmitter nativeEmitter;
 	private final StatementEmitter statementEmitter;
 	private final ControlFlowEmitter controlFlowEmitter;
@@ -62,6 +65,8 @@ public class Emitter {
 	private final InvocationEmitter invocationEmitter;
 	private final JdkIntrinsics jdkIntrinsics;
 	private final TypeTestEmitter typeTestEmitter;
+	private final NumericEmitter numericEmitter;
+	private final FunctionalEmitter functionalEmitter;
 
 	public Emitter(TypeModel model, Names names, Natives natives, Selectors selectors) {
 		this.model = model;
@@ -69,6 +74,7 @@ public class Emitter {
 		this.natives = natives;
 		this.selectors = selectors;
 		this.classEmitter = new ClassEmitter(this);
+		this.constructorEmitter = new ConstructorEmitter(this);
 		this.nativeEmitter = new NativeEmitter(this);
 		this.statementEmitter = new StatementEmitter(this);
 		this.controlFlowEmitter = new ControlFlowEmitter(this);
@@ -76,6 +82,8 @@ public class Emitter {
 		this.invocationEmitter = new InvocationEmitter(this);
 		this.jdkIntrinsics = new JdkIntrinsics(this);
 		this.typeTestEmitter = new TypeTestEmitter(this);
+		this.numericEmitter = new NumericEmitter(this);
+		this.functionalEmitter = new FunctionalEmitter(this);
 	}
 
 	public record EmitResult(String body, Set<String> imports) {}
@@ -87,6 +95,7 @@ public class Emitter {
 		fileHelperSource = new ArrayList<>();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
+		anonCounter = 0;
 		StringBuilder out = new StringBuilder();
 		for (Object t : cu.types()) {
 			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);
@@ -107,7 +116,11 @@ public class Emitter {
 			}
 			out.append("}\n\n");
 		}
-		return new EmitResult(out.toString(), fileImports);
+		// Type mapping records imports as a side effect even where the mapped text is only
+		// compared, never emitted - keep just the imports the body actually references.
+		String body = out.toString();
+		fileImports.removeIf(imp -> !body.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
+		return new EmitResult(body, fileImports);
 	}
 
 	// ---------------------------------------------------------------- cross-component delegators
@@ -159,6 +172,22 @@ public class Emitter {
 		return controlFlowEmitter.emitTry(ts, indent);
 	}
 
+	String emitSynchronized(SynchronizedStatement ss, int indent) {
+		return controlFlowEmitter.emitSynchronized(ss, indent);
+	}
+
+	String emitLambda(LambdaExpression le) {
+		return functionalEmitter.emitLambda(le);
+	}
+
+	String emitMethodReference(ExpressionMethodReference emr) {
+		return functionalEmitter.emitMethodReference(emr);
+	}
+
+	String emitAnonymous(ClassInstanceCreation cic) {
+		return functionalEmitter.emitAnonymous(cic);
+	}
+
 	String emitCast(CastExpression ce) {
 		return typeTestEmitter.emitCast(ce);
 	}
@@ -208,7 +237,15 @@ public class Emitter {
 	}
 
 	String emitSuperMethodInvocation(SuperMethodInvocation smi) {
-		return classEmitter.emitSuperMethodInvocation(smi);
+		return constructorEmitter.emitSuperMethodInvocation(smi);
+	}
+
+	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+		constructorEmitter.emitConstructor(md, ci, td, out);
+	}
+
+	void emitImplicitConstructor(TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+		constructorEmitter.emitImplicitConstructor(ci, td, out);
 	}
 
 	String staticMethodGoName(IMethodBinding mb, TypeModel.ClassInfo ci) {
@@ -236,15 +273,56 @@ public class Emitter {
 	}
 
 	String adaptNumeric(String text, ITypeBinding from, ITypeBinding to) {
-		return expressionEmitter.adaptNumeric(text, from, to);
+		return numericEmitter.adaptNumeric(text, from, to);
 	}
 
 	String upcastObject(String text, ITypeBinding from, ITypeBinding to) {
-		return expressionEmitter.upcastObject(text, from, to);
+		return numericEmitter.upcastObject(text, from, to);
 	}
 
 	String zeroValue(ITypeBinding t) {
-		return expressionEmitter.zeroValue(t);
+		return numericEmitter.zeroValue(t);
+	}
+
+	String emitInfix(InfixExpression ie) {
+		return numericEmitter.emitInfix(ie);
+	}
+
+	String ctorGoName(IMethodBinding ctor, String prefix) {
+		return constructorEmitter.ctorGoName(ctor, prefix);
+	}
+
+	// ---------------------------------------------------------------- function-body state
+
+	/** Per-function emission state a nested Go func literal (lambda/anonymous method) must not
+	 * inherit from the enclosing method: return type, try/catch escape flags, loop depth. */
+	record BodyState(ITypeBinding returnType, String returned, String broke, String continued, String retVar, int depth) {}
+
+	BodyState enterFunctionBody(ITypeBinding returnType) {
+		BodyState s = new BodyState(currentReturnType, currentEscapeReturnedFlag, currentEscapeBrokeFlag,
+				currentEscapeContinuedFlag, currentEscapeRetVar, loopSwitchDepth);
+		currentReturnType = returnType;
+		currentEscapeReturnedFlag = currentEscapeBrokeFlag = currentEscapeContinuedFlag = currentEscapeRetVar = null;
+		loopSwitchDepth = 0;
+		return s;
+	}
+
+	void exitFunctionBody(BodyState s) {
+		currentReturnType = s.returnType();
+		currentEscapeReturnedFlag = s.returned();
+		currentEscapeBrokeFlag = s.broke();
+		currentEscapeContinuedFlag = s.continued();
+		currentEscapeRetVar = s.retVar();
+		loopSwitchDepth = s.depth();
+	}
+
+	/** Receiver for an unqualified member access: the anonymous instance when the member is
+	 * inherited by the anonymous class but not by the enclosing class, else "this". */
+	String implicitThis(ITypeBinding declaringClass) {
+		if (anonThis == null || declaringClass == null) return "this";
+		boolean anonHasIt = anonType.getErasure().isSubTypeCompatible(declaringClass.getErasure());
+		boolean outerHasIt = currentClassInfo != null && currentClassInfo.binding.isSubTypeCompatible(declaringClass.getErasure());
+		return anonHasIt && !outerHasIt ? anonThis : "this";
 	}
 
 	// ---------------------------------------------------------------- shared utilities
@@ -298,9 +376,15 @@ public class Emitter {
 	}
 
 	/** Adds the import a manual (jrt.*) type's Go spelling needs, if any. */
-	void addManualImport(String manualQualifiedName) {
+	public void addManualImport(String manualQualifiedName) {
 		String imp = dev.gowt.j2go.Manual.importPath(manualQualifiedName);
 		if (imp != null) fileImports.add(imp);
+	}
+
+	/** ".impl" in-package, ".Impl()" cross-package (id_manual.go's accessor - the field itself
+	 * is unexported). */
+	String implAccess(TypeModel.ClassInfo rootCi) {
+		return rootCi.goPackage.equals(currentGoPackage) ? ".impl" : ".Impl()";
 	}
 
 	// ---------------------------------------------------------------- cross-package qualification

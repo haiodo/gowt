@@ -18,7 +18,7 @@ type KeyEvent struct {
 
 func NewKeyEvent(e *Event) *KeyEvent {
 	this := &KeyEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initKeyEvent(e)
 	return this
 }
@@ -34,12 +34,11 @@ func (this *KeyEvent) initKeyEvent(e *Event) {
 
 func (this *KeyEvent) String() string {
 	var string_ string = this.TypedEvent.String()
-	var cond30 string
-	_ = this.Character
+	var cond36 string
 	if int32(this.Character) == 0 {
-		cond30 = "\\0"
+		cond36 = "\\0"
 	} else {
-		cond30 = func() string { panic("j2go: unresolved call valueOf") }()
+		cond36 = string(rune(this.Character))
 	}
-	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", string_[0:int32(len(string_))-1], (cond30), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
+	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", string_[0:int32(len(string_))-1], (cond36), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
 }

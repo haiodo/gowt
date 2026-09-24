@@ -8,7 +8,7 @@ type NSMutableSet struct {
 
 func NewNSMutableSet() *NSMutableSet {
 	this := &NSMutableSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableSet()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMutableSet) initNSMutableSet() {
 
 func NewNSMutableSetOverload1(id int64) *NSMutableSet {
 	this := &NSMutableSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableSetOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMutableSet) initNSMutableSetOverload1(id int64) {
 
 func NewNSMutableSetOverload2(id *id) *NSMutableSet {
 	this := &NSMutableSet{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableSetOverload2(id)
 	return this
 }
@@ -40,22 +40,22 @@ func (this *NSMutableSet) initNSMutableSetOverload2(id *id) {
 }
 
 func (this *NSMutableSet) AddObjectsFromArray(array *NSArray) {
-	var cond440 int64
-	if array != nil {
-		cond440 = array.Id
+	var cond439 int64
+	if array != (nil) {
+		cond439 = array.Id
 	} else {
-		cond440 = int64(0)
+		cond439 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond440)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond439)
 }
 
 func NSMutableSetSet() *NSMutableSet {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableSet, OSSel_set)
-	var cond441 *NSMutableSet
+	var cond440 *NSMutableSet
 	if result != 0 {
-		cond441 = NewNSMutableSetOverload1(result)
+		cond440 = NewNSMutableSetOverload1(result)
 	} else {
-		cond441 = nil
+		cond440 = nil
 	}
-	return cond441
+	return cond440
 }

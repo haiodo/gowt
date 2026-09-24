@@ -8,7 +8,7 @@ type SWTTabViewItem struct {
 
 func NewSWTTabViewItem() *SWTTabViewItem {
 	this := &SWTTabViewItem{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTabViewItem()
 	return this
 }

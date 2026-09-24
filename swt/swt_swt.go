@@ -417,17 +417,17 @@ const SWTPHONETIC int32 = 16
 
 const SWTROMAN int32 = 32
 
-const SWTBS uint16 = '\b'
+const SWTBS uint16 = '\u0008'
 
-const SWTCR uint16 = '\r'
+const SWTCR uint16 = '\u000d'
 
-const SWTDEL uint16 = 0x7
+const SWTDEL uint16 = uint16(0x7)
 
-const SWTESC uint16 = 0x1B
+const SWTESC uint16 = uint16(0x1B)
 
-const SWTLF uint16 = '\n'
+const SWTLF uint16 = '\u000a'
 
-const SWTTAB uint16 = '\t'
+const SWTTAB uint16 = '\u0009'
 
 const SWTSPACE uint16 = ' '
 
@@ -961,6 +961,15 @@ const SWTSKIN_ID string = "org.eclipse.swt.skin.id"
 
 const SWTSCROLLBAR_OVERLAY int32 = 2
 
+func NewSWT() *SWT {
+	this := &SWT{}
+	this.initSWT()
+	return this
+}
+
+func (this *SWT) initSWT() {
+}
+
 func SWTIsLoadable() bool {
 	return PlatformIsLoadable()
 }
@@ -1056,14 +1065,11 @@ func SWTFindErrorText(code int32) string {
 }
 
 func SWTGetMessage(key string) string {
-	_ = key
-	return func() string { panic("j2go: unresolved call getMessage") }()
+	return CompatibilityGetMessage(key)
 }
 
 func SWTGetMessageKeyArgs(key string, args []any) string {
-	_ = key
-	_ = args
-	return func() string { panic("j2go: unresolved call getMessage") }()
+	return CompatibilityGetMessage(key, args)
 }
 
 func SWTGetPlatform() string {
@@ -1086,11 +1092,11 @@ func SWTErrorCodeThrowableDetail(code int32, throwable error, detail string) {
 	if code != SWTERROR_FAILED_EXEC {
 		_, ok22 := sWTErrorImplAsSWTError(throwable)
 		if ok22 {
-			panic(throwable.(*SWTError))
+			panic(casterrorToSWTError(throwable))
 		}
 		_, ok23 := sWTExceptionImplAsSWTException(throwable)
 		if ok23 {
-			panic(throwable.(*SWTException))
+			panic(casterrorToSWTException(throwable))
 		}
 	}
 	var message string = SWTFindErrorText(code)
@@ -1133,6 +1139,17 @@ func sWTErrorImplAsSWTError(x any) (*SWTError, bool) {
 	return nil, false
 }
 
+func casterrorToSWTError(x error) *SWTError {
+	if x == nil {
+		return nil
+	}
+	v, ok := sWTErrorImplAsSWTError(x)
+	if !ok {
+		panic("java.lang.ClassCastException: SWTError")
+	}
+	return v
+}
+
 // j2go: instanceof helper for SWTException and its subclasses within the translated set.
 func sWTExceptionImplAsSWTException(x any) (*SWTException, bool) {
 	switch v := x.(type) {
@@ -1140,6 +1157,17 @@ func sWTExceptionImplAsSWTException(x any) (*SWTException, bool) {
 		return v, true
 	}
 	return nil, false
+}
+
+func casterrorToSWTException(x error) *SWTException {
+	if x == nil {
+		return nil
+	}
+	v, ok := sWTExceptionImplAsSWTException(x)
+	if !ok {
+		panic("java.lang.ClassCastException: SWTException")
+	}
+	return v
 }
 
 func init() {

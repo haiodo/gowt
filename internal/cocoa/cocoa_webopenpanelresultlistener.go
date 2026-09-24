@@ -8,7 +8,7 @@ type WebOpenPanelResultListener struct {
 
 func NewWebOpenPanelResultListener() *WebOpenPanelResultListener {
 	this := &WebOpenPanelResultListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebOpenPanelResultListener()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebOpenPanelResultListener) initWebOpenPanelResultListener() {
 
 func NewWebOpenPanelResultListenerOverload1(id int64) *WebOpenPanelResultListener {
 	this := &WebOpenPanelResultListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebOpenPanelResultListenerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebOpenPanelResultListener) initWebOpenPanelResultListenerOverload1(
 
 func NewWebOpenPanelResultListenerOverload2(id *id) *WebOpenPanelResultListener {
 	this := &WebOpenPanelResultListener{}
-	this.Impl = this
+	this.impl = this
 	this.initWebOpenPanelResultListenerOverload2(id)
 	return this
 }
@@ -45,7 +45,7 @@ func (this *WebOpenPanelResultListener) Cancel() {
 
 func (this *WebOpenPanelResultListener) ChooseFilename(string_ *NSString) {
 	var cond967 int64
-	if string_ != nil {
+	if string_ != (nil) {
 		cond967 = string_.Id
 	} else {
 		cond967 = int64(0)

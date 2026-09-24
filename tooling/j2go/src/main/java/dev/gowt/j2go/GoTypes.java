@@ -40,6 +40,10 @@ public class GoTypes {
 		String qualified = t.getErasure().getQualifiedName();
 		if (qualified.equals("java.lang.String")) return "string";
 		if (qualified.equals("java.lang.Object")) return "any";
+		// Thrown values are Go panics recovered as error (ControlFlowEmitter's catch dispatch), so
+		// every Java exception type used as a value type is error - SWTException embeds the jrt struct.
+		if (qualified.equals(Manual.JAVA_RUNTIME_EXCEPTION) || qualified.equals(Manual.JAVA_ERROR)
+				|| qualified.equals(Manual.JAVA_EXCEPTION) || qualified.equals(Manual.JAVA_THROWABLE)) return "error";
 		// java.util.function.Consumer<T>: no lambda/method-ref support yet (see README), but a
 		// functional-interface PARAMETER type still needs a real Go type to compile at all.
 		if (qualified.equals("java.util.function.Consumer")) {
@@ -53,8 +57,12 @@ public class GoTypes {
 			return (ci.isStruct || ci.isInterface) ? name : "*" + name;
 		}
 		if (Manual.isManual(qualified)) {
+			emitter.addManualImport(qualified);
 			return Manual.isValueType(qualified) ? Manual.goTypeName(qualified) : "*" + Manual.goTypeName(qualified);
 		}
+		// Any other JDK type (Locale, Cleaner, StringBuilder, ...) degrades to any: every member
+		// access on it is already an unresolved-call marker, so only on-path uses need a mapping.
+		if (qualified.startsWith("java.")) return "any";
 		emitter.checkNoForeignPackageLeak(qualified);
 		// Not a real Go identifier (still undefined - go vet reports it plainly instead of gofmt
 		// choking on a qualified-name-shaped parse error).

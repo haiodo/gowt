@@ -8,7 +8,7 @@ type NSBundle struct {
 
 func NewNSBundle() *NSBundle {
 	this := &NSBundle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBundle()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSBundle) initNSBundle() {
 
 func NewNSBundleOverload1(id int64) *NSBundle {
 	this := &NSBundle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBundleOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSBundle) initNSBundleOverload1(id int64) {
 
 func NewNSBundleOverload2(id *id) *NSBundle {
 	this := &NSBundle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBundleOverload2(id)
 	return this
 }
@@ -74,7 +74,7 @@ func (this *NSBundle) InfoDictionary() *NSDictionary {
 
 func (this *NSBundle) ObjectForInfoDictionaryKey(key *NSString) *id {
 	var cond100 int64
-	if key != nil {
+	if key != (nil) {
 		cond100 = key.Id
 	} else {
 		cond100 = int64(0)
@@ -91,13 +91,13 @@ func (this *NSBundle) ObjectForInfoDictionaryKey(key *NSString) *id {
 
 func (this *NSBundle) PathForResource(name *NSString, ext *NSString) *NSString {
 	var cond102 int64
-	if name != nil {
+	if name != (nil) {
 		cond102 = name.Id
 	} else {
 		cond102 = int64(0)
 	}
 	var cond103 int64
-	if ext != nil {
+	if ext != (nil) {
 		cond103 = ext.Id
 	} else {
 		cond103 = int64(0)
@@ -114,25 +114,25 @@ func (this *NSBundle) PathForResource(name *NSString, ext *NSString) *NSString {
 
 func (this *NSBundle) PathForResourceNameExtSubpathLocalizationName(name *NSString, ext *NSString, subpath *NSString, localizationName *NSString) *NSString {
 	var cond105 int64
-	if name != nil {
+	if name != (nil) {
 		cond105 = name.Id
 	} else {
 		cond105 = int64(0)
 	}
 	var cond106 int64
-	if ext != nil {
+	if ext != (nil) {
 		cond106 = ext.Id
 	} else {
 		cond106 = int64(0)
 	}
 	var cond107 int64
-	if subpath != nil {
+	if subpath != (nil) {
 		cond107 = subpath.Id
 	} else {
 		cond107 = int64(0)
 	}
 	var cond108 int64
-	if localizationName != nil {
+	if localizationName != (nil) {
 		cond108 = localizationName.Id
 	} else {
 		cond108 = int64(0)
@@ -149,13 +149,13 @@ func (this *NSBundle) PathForResourceNameExtSubpathLocalizationName(name *NSStri
 
 func NSBundleLoadNibFile(fileName *NSString, context *NSDictionary, zone int64) bool {
 	var cond110 int64
-	if fileName != nil {
+	if fileName != (nil) {
 		cond110 = fileName.Id
 	} else {
 		cond110 = int64(0)
 	}
 	var cond111 int64
-	if context != nil {
+	if context != (nil) {
 		cond111 = context.Id
 	} else {
 		cond111 = int64(0)
@@ -165,7 +165,7 @@ func NSBundleLoadNibFile(fileName *NSString, context *NSDictionary, zone int64) 
 
 func NSBundleBundleWithIdentifier(identifier *NSString) *NSBundle {
 	var cond112 int64
-	if identifier != nil {
+	if identifier != (nil) {
 		cond112 = identifier.Id
 	} else {
 		cond112 = int64(0)
@@ -182,7 +182,7 @@ func NSBundleBundleWithIdentifier(identifier *NSString) *NSBundle {
 
 func NSBundleBundleWithPath(path *NSString) *NSBundle {
 	var cond114 int64
-	if path != nil {
+	if path != (nil) {
 		cond114 = path.Id
 	} else {
 		cond114 = int64(0)

@@ -8,9 +8,39 @@ type ExpandListener interface {
 }
 
 func ExpandListenerItemCollapsedAdapter(c func(*ExpandEvent)) ExpandListener {
-	return func() *ExpandAdapter { panic("j2go: unsupported anonymous class") }()
+	anon32 := &ExpandListenerAnon1{}
+	anon32.initExpandAdapter()
+	anon32.fnItemCollapsed = func(e *ExpandEvent) {
+		c(e)
+	}
+	return anon32
 }
 
 func ExpandListenerItemExpandedAdapter(c func(*ExpandEvent)) ExpandListener {
-	return func() *ExpandAdapter { panic("j2go: unsupported anonymous class") }()
+	anon33 := &ExpandListenerAnon2{}
+	anon33.initExpandAdapter()
+	anon33.fnItemExpanded = func(e *ExpandEvent) {
+		c(e)
+	}
+	return anon33
+}
+
+// j2go: anonymous ExpandAdapter subclass.
+type ExpandListenerAnon1 struct {
+	ExpandAdapter
+	fnItemCollapsed func(a0 *ExpandEvent)
+}
+
+func (this *ExpandListenerAnon1) ItemCollapsed(a0 *ExpandEvent) {
+	this.fnItemCollapsed(a0)
+}
+
+// j2go: anonymous ExpandAdapter subclass.
+type ExpandListenerAnon2 struct {
+	ExpandAdapter
+	fnItemExpanded func(a0 *ExpandEvent)
+}
+
+func (this *ExpandListenerAnon2) ItemExpanded(a0 *ExpandEvent) {
+	this.fnItemExpanded(a0)
 }

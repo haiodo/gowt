@@ -8,9 +8,39 @@ type SelectionListener interface {
 }
 
 func SelectionListenerWidgetSelectedAdapter(c func(*SelectionEvent)) SelectionListener {
-	return func() *SelectionAdapter { panic("j2go: unsupported anonymous class") }()
+	anon47 := &SelectionListenerAnon1{}
+	anon47.initSelectionAdapter()
+	anon47.fnWidgetSelected = func(e *SelectionEvent) {
+		c(e)
+	}
+	return anon47
 }
 
 func SelectionListenerWidgetDefaultSelectedAdapter(c func(*SelectionEvent)) SelectionListener {
-	return func() *SelectionAdapter { panic("j2go: unsupported anonymous class") }()
+	anon48 := &SelectionListenerAnon2{}
+	anon48.initSelectionAdapter()
+	anon48.fnWidgetDefaultSelected = func(e *SelectionEvent) {
+		c(e)
+	}
+	return anon48
+}
+
+// j2go: anonymous SelectionAdapter subclass.
+type SelectionListenerAnon1 struct {
+	SelectionAdapter
+	fnWidgetSelected func(a0 *SelectionEvent)
+}
+
+func (this *SelectionListenerAnon1) WidgetSelected(a0 *SelectionEvent) {
+	this.fnWidgetSelected(a0)
+}
+
+// j2go: anonymous SelectionAdapter subclass.
+type SelectionListenerAnon2 struct {
+	SelectionAdapter
+	fnWidgetDefaultSelected func(a0 *SelectionEvent)
+}
+
+func (this *SelectionListenerAnon2) WidgetDefaultSelected(a0 *SelectionEvent) {
+	this.fnWidgetDefaultSelected(a0)
 }

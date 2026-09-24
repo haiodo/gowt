@@ -8,7 +8,7 @@ type NSFileWrapper struct {
 
 func NewNSFileWrapper() *NSFileWrapper {
 	this := &NSFileWrapper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileWrapper()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSFileWrapper) initNSFileWrapper() {
 
 func NewNSFileWrapperOverload1(id int64) *NSFileWrapper {
 	this := &NSFileWrapper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileWrapperOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSFileWrapper) initNSFileWrapperOverload1(id int64) {
 
 func NewNSFileWrapperOverload2(id *id) *NSFileWrapper {
 	this := &NSFileWrapper{}
-	this.Impl = this
+	this.impl = this
 	this.initNSFileWrapperOverload2(id)
 	return this
 }
@@ -40,11 +40,11 @@ func (this *NSFileWrapper) initNSFileWrapperOverload2(id *id) {
 }
 
 func (this *NSFileWrapper) SetIcon(icon *NSImage) {
-	var cond264 int64
-	if icon != nil {
-		cond264 = icon.Id
+	var cond263 int64
+	if icon != (nil) {
+		cond263 = icon.Id
 	} else {
-		cond264 = int64(0)
+		cond263 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond264)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond263)
 }

@@ -8,7 +8,7 @@ type NSDockTile struct {
 
 func NewNSDockTile() *NSDockTile {
 	this := &NSDockTile{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDockTile()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSDockTile) initNSDockTile() {
 
 func NewNSDockTileOverload1(id int64) *NSDockTile {
 	this := &NSDockTile{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDockTileOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSDockTile) initNSDockTileOverload1(id int64) {
 
 func NewNSDockTileOverload2(id *id) *NSDockTile {
 	this := &NSDockTile{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDockTileOverload2(id)
 	return this
 }
@@ -41,21 +41,21 @@ func (this *NSDockTile) initNSDockTileOverload2(id *id) {
 
 func (this *NSDockTile) BadgeLabel() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_badgeLabel)
-	var cond244 *NSString
+	var cond243 *NSString
 	if result != 0 {
-		cond244 = NewNSStringOverload1(result)
+		cond243 = NewNSStringOverload1(result)
 	} else {
-		cond244 = nil
+		cond243 = nil
 	}
-	return cond244
+	return cond243
 }
 
 func (this *NSDockTile) SetBadgeLabel(badgeLabel *NSString) {
-	var cond245 int64
-	if badgeLabel != nil {
-		cond245 = badgeLabel.Id
+	var cond244 int64
+	if badgeLabel != (nil) {
+		cond244 = badgeLabel.Id
 	} else {
-		cond245 = int64(0)
+		cond244 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBadgeLabel_, cond245)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBadgeLabel_, cond244)
 }

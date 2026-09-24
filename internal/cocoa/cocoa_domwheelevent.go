@@ -8,7 +8,7 @@ type DOMWheelEvent struct {
 
 func NewDOMWheelEvent() *DOMWheelEvent {
 	this := &DOMWheelEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMWheelEvent()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *DOMWheelEvent) initDOMWheelEvent() {
 
 func NewDOMWheelEventOverload1(id int64) *DOMWheelEvent {
 	this := &DOMWheelEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMWheelEventOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *DOMWheelEvent) initDOMWheelEventOverload1(id int64) {
 
 func NewDOMWheelEventOverload2(id *id) *DOMWheelEvent {
 	this := &DOMWheelEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDOMWheelEventOverload2(id)
 	return this
 }

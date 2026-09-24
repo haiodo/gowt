@@ -8,7 +8,7 @@ type ModifyEvent struct {
 
 func NewModifyEvent(e *Event) *ModifyEvent {
 	this := &ModifyEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initModifyEvent(e)
 	return this
 }

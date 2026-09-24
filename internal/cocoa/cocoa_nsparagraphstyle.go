@@ -8,7 +8,7 @@ type NSParagraphStyle struct {
 
 func NewNSParagraphStyle() *NSParagraphStyle {
 	this := &NSParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSParagraphStyle()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSParagraphStyle) initNSParagraphStyle() {
 
 func NewNSParagraphStyleOverload1(id int64) *NSParagraphStyle {
 	this := &NSParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSParagraphStyleOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSParagraphStyle) initNSParagraphStyleOverload1(id int64) {
 
 func NewNSParagraphStyleOverload2(id *id) *NSParagraphStyle {
 	this := &NSParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSParagraphStyleOverload2(id)
 	return this
 }

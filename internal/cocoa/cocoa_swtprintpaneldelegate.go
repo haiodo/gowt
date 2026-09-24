@@ -8,7 +8,7 @@ type SWTPrintPanelDelegate struct {
 
 func NewSWTPrintPanelDelegate() *SWTPrintPanelDelegate {
 	this := &SWTPrintPanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPrintPanelDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTPrintPanelDelegate) initSWTPrintPanelDelegate() {
 
 func NewSWTPrintPanelDelegateId(id int64) *SWTPrintPanelDelegate {
 	this := &SWTPrintPanelDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTPrintPanelDelegateId(id)
 	return this
 }

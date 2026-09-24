@@ -8,7 +8,7 @@ type SWTTextField struct {
 
 func NewSWTTextField() *SWTTextField {
 	this := &SWTTextField{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTTextField()
 	return this
 }

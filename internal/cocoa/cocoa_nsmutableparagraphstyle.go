@@ -8,7 +8,7 @@ type NSMutableParagraphStyle struct {
 
 func NewNSMutableParagraphStyle() *NSMutableParagraphStyle {
 	this := &NSMutableParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableParagraphStyle()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSMutableParagraphStyle) initNSMutableParagraphStyle() {
 
 func NewNSMutableParagraphStyleOverload1(id int64) *NSMutableParagraphStyle {
 	this := &NSMutableParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableParagraphStyleOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSMutableParagraphStyle) initNSMutableParagraphStyleOverload1(id int
 
 func NewNSMutableParagraphStyleOverload2(id *id) *NSMutableParagraphStyle {
 	this := &NSMutableParagraphStyle{}
-	this.Impl = this
+	this.impl = this
 	this.initNSMutableParagraphStyleOverload2(id)
 	return this
 }
@@ -40,13 +40,13 @@ func (this *NSMutableParagraphStyle) initNSMutableParagraphStyleOverload2(id *id
 }
 
 func (this *NSMutableParagraphStyle) AddTabStop(anObject *NSTextTab) {
-	var cond438 int64
-	if anObject != nil {
-		cond438 = anObject.Id
+	var cond437 int64
+	if anObject != (nil) {
+		cond437 = anObject.Id
 	} else {
-		cond438 = int64(0)
+		cond437 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addTabStop_, cond438)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addTabStop_, cond437)
 }
 
 func (this *NSMutableParagraphStyle) SetAlignment(alignment int64) {
@@ -78,11 +78,11 @@ func (this *NSMutableParagraphStyle) SetLineSpacing(lineSpacing float64) {
 }
 
 func (this *NSMutableParagraphStyle) SetTabStops(tabStops *NSArray) {
-	var cond439 int64
-	if tabStops != nil {
-		cond439 = tabStops.Id
+	var cond438 int64
+	if tabStops != (nil) {
+		cond438 = tabStops.Id
 	} else {
-		cond439 = int64(0)
+		cond438 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTabStops_, cond439)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTabStops_, cond438)
 }

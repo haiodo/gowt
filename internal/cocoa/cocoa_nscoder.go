@@ -8,7 +8,7 @@ type NSCoder struct {
 
 func NewNSCoder() *NSCoder {
 	this := &NSCoder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCoder()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSCoder) initNSCoder() {
 
 func NewNSCoderOverload1(id int64) *NSCoder {
 	this := &NSCoder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCoderOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSCoder) initNSCoderOverload1(id int64) {
 
 func NewNSCoderOverload2(id *id) *NSCoder {
 	this := &NSCoder{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCoderOverload2(id)
 	return this
 }

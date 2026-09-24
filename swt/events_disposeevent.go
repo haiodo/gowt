@@ -8,7 +8,7 @@ type DisposeEvent struct {
 
 func NewDisposeEvent(e *Event) *DisposeEvent {
 	this := &DisposeEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initDisposeEvent(e)
 	return this
 }

@@ -12,7 +12,7 @@ type SegmentEvent struct {
 
 func NewSegmentEvent(e *Event) *SegmentEvent {
 	this := &SegmentEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initSegmentEvent(e)
 	return this
 }

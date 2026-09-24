@@ -8,7 +8,7 @@ type NSInputManager struct {
 
 func NewNSInputManager() *NSInputManager {
 	this := &NSInputManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSInputManager()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSInputManager) initNSInputManager() {
 
 func NewNSInputManagerOverload1(id int64) *NSInputManager {
 	this := &NSInputManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSInputManagerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSInputManager) initNSInputManagerOverload1(id int64) {
 
 func NewNSInputManagerOverload2(id *id) *NSInputManager {
 	this := &NSInputManager{}
-	this.Impl = this
+	this.impl = this
 	this.initNSInputManagerOverload2(id)
 	return this
 }
@@ -40,13 +40,13 @@ func (this *NSInputManager) initNSInputManagerOverload2(id *id) {
 }
 
 func (this *NSInputManager) HandleMouseEvent(theMouseEvent *NSEvent) bool {
-	var cond342 int64
-	if theMouseEvent != nil {
-		cond342 = theMouseEvent.Id
+	var cond341 int64
+	if theMouseEvent != (nil) {
+		cond341 = theMouseEvent.Id
 	} else {
-		cond342 = int64(0)
+		cond341 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_handleMouseEvent_, cond342)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_handleMouseEvent_, cond341)
 }
 
 func (this *NSInputManager) WantsToHandleMouseEvents() bool {
@@ -55,11 +55,11 @@ func (this *NSInputManager) WantsToHandleMouseEvents() bool {
 
 func NSInputManagerCurrentInputManager() *NSInputManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSInputManager, OSSel_currentInputManager)
-	var cond343 *NSInputManager
+	var cond342 *NSInputManager
 	if result != 0 {
-		cond343 = NewNSInputManagerOverload1(result)
+		cond342 = NewNSInputManagerOverload1(result)
 	} else {
-		cond343 = nil
+		cond342 = nil
 	}
-	return cond343
+	return cond342
 }

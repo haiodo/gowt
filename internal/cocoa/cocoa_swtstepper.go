@@ -8,7 +8,7 @@ type SWTStepper struct {
 
 func NewSWTStepper() *SWTStepper {
 	this := &SWTStepper{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTStepper()
 	return this
 }

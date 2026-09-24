@@ -18,7 +18,7 @@ type MouseEvent struct {
 
 func NewMouseEvent(e *Event) *MouseEvent {
 	this := &MouseEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initMouseEvent(e)
 	return this
 }

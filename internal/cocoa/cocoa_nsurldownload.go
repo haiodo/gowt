@@ -8,7 +8,7 @@ type NSURLDownload struct {
 
 func NewNSURLDownload() *NSURLDownload {
 	this := &NSURLDownload{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLDownload()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSURLDownload) initNSURLDownload() {
 
 func NewNSURLDownloadOverload1(id int64) *NSURLDownload {
 	this := &NSURLDownload{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLDownloadOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSURLDownload) initNSURLDownloadOverload1(id int64) {
 
 func NewNSURLDownloadOverload2(id *id) *NSURLDownload {
 	this := &NSURLDownload{}
-	this.Impl = this
+	this.impl = this
 	this.initNSURLDownloadOverload2(id)
 	return this
 }
@@ -44,11 +44,11 @@ func (this *NSURLDownload) Cancel() {
 }
 
 func (this *NSURLDownload) SetDestination(path *NSString, allowOverwrite bool) {
-	var cond835 int64
-	if path != nil {
-		cond835 = path.Id
+	var cond834 int64
+	if path != (nil) {
+		cond834 = path.Id
 	} else {
-		cond835 = int64(0)
+		cond834 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_setDestination_allowOverwrite_, cond835, allowOverwrite)
+	OSObjc_msgSendOverload52(this.Id, OSSel_setDestination_allowOverwrite_, cond834, allowOverwrite)
 }

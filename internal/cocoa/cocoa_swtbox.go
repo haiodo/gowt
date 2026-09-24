@@ -8,7 +8,7 @@ type SWTBox struct {
 
 func NewSWTBox() *SWTBox {
 	this := &SWTBox{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTBox()
 	return this
 }

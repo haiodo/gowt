@@ -8,7 +8,7 @@ type NSData struct {
 
 func NewNSData() *NSData {
 	this := &NSData{}
-	this.Impl = this
+	this.impl = this
 	this.initNSData()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSData) initNSData() {
 
 func NewNSDataOverload1(id int64) *NSData {
 	this := &NSData{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDataOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSData) initNSDataOverload1(id int64) {
 
 func NewNSDataOverload2(id *id) *NSData {
 	this := &NSData{}
-	this.Impl = this
+	this.impl = this
 	this.initNSDataOverload2(id)
 	return this
 }
@@ -53,11 +53,11 @@ func (this *NSData) Length() int64 {
 
 func NSDataDataWithBytes(bytes []int8, length int64) *NSData {
 	var result int64 = OSObjc_msgSendOverload31(OSClass_NSData, OSSel_dataWithBytes_length_, bytes, length)
-	var cond225 *NSData
+	var cond224 *NSData
 	if result != 0 {
-		cond225 = NewNSDataOverload1(result)
+		cond224 = NewNSDataOverload1(result)
 	} else {
-		cond225 = nil
+		cond224 = nil
 	}
-	return cond225
+	return cond224
 }

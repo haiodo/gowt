@@ -8,7 +8,7 @@ type SFCertificateTrustPanel struct {
 
 func NewSFCertificateTrustPanel() *SFCertificateTrustPanel {
 	this := &SFCertificateTrustPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificateTrustPanel()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SFCertificateTrustPanel) initSFCertificateTrustPanel() {
 
 func NewSFCertificateTrustPanelOverload1(id int64) *SFCertificateTrustPanel {
 	this := &SFCertificateTrustPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificateTrustPanelOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *SFCertificateTrustPanel) initSFCertificateTrustPanelOverload1(id int
 
 func NewSFCertificateTrustPanelOverload2(id *id) *SFCertificateTrustPanel {
 	this := &SFCertificateTrustPanel{}
-	this.Impl = this
+	this.impl = this
 	this.initSFCertificateTrustPanelOverload2(id)
 	return this
 }
@@ -41,19 +41,19 @@ func (this *SFCertificateTrustPanel) initSFCertificateTrustPanelOverload2(id *id
 
 func (this *SFCertificateTrustPanel) BeginSheetForWindow(docWindow *NSWindow, delegate *id, didEndSelector int64, contextInfo int64, trust int64, message *NSString) {
 	var cond948 int64
-	if docWindow != nil {
+	if docWindow != (nil) {
 		cond948 = docWindow.Id
 	} else {
 		cond948 = int64(0)
 	}
 	var cond949 int64
-	if delegate != nil {
+	if delegate != (nil) {
 		cond949 = delegate.Id
 	} else {
 		cond949 = int64(0)
 	}
 	var cond950 int64
-	if message != nil {
+	if message != (nil) {
 		cond950 = message.Id
 	} else {
 		cond950 = int64(0)
@@ -74,7 +74,7 @@ func SFCertificateTrustPanelSharedCertificateTrustPanel() *SFCertificateTrustPan
 
 func SFCertificateTrustPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
 	var cond952 int64
-	if aTitle != nil {
+	if aTitle != (nil) {
 		cond952 = aTitle.Id
 	} else {
 		cond952 = int64(0)

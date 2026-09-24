@@ -8,7 +8,7 @@ type ControlEvent struct {
 
 func NewControlEvent(e *Event) *ControlEvent {
 	this := &ControlEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initControlEvent(e)
 	return this
 }

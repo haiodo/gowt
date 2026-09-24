@@ -8,7 +8,7 @@ type NSBezierPath struct {
 
 func NewNSBezierPath() *NSBezierPath {
 	this := &NSBezierPath{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBezierPath()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSBezierPath) initNSBezierPath() {
 
 func NewNSBezierPathOverload1(id int64) *NSBezierPath {
 	this := &NSBezierPath{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBezierPathOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSBezierPath) initNSBezierPathOverload1(id int64) {
 
 func NewNSBezierPathOverload2(id *id) *NSBezierPath {
 	this := &NSBezierPath{}
-	this.Impl = this
+	this.impl = this
 	this.initNSBezierPathOverload2(id)
 	return this
 }
@@ -45,7 +45,7 @@ func (this *NSBezierPath) AddClip() {
 
 func (this *NSBezierPath) AppendBezierPath(path *NSBezierPath) {
 	var cond73 int64
-	if path != nil {
+	if path != (nil) {
 		cond73 = path.Id
 	} else {
 		cond73 = int64(0)
@@ -59,7 +59,7 @@ func (this *NSBezierPath) AppendBezierPathWithArcWithCenter(center NSPoint, radi
 
 func (this *NSBezierPath) AppendBezierPathWithGlyphs(glyphs int64, count int64, font *NSFont) {
 	var cond74 int64
-	if font != nil {
+	if font != (nil) {
 		cond74 = font.Id
 	} else {
 		cond74 = int64(0)
@@ -188,7 +188,7 @@ func (this *NSBezierPath) Stroke() {
 
 func (this *NSBezierPath) TransformUsingAffineTransform(transform *NSAffineTransform) {
 	var cond77 int64
-	if transform != nil {
+	if transform != (nil) {
 		cond77 = transform.Id
 	} else {
 		cond77 = int64(0)

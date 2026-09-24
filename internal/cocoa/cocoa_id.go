@@ -27,12 +27,12 @@ func (this *id) SetTitle(a0 *NSString) {
 
 type id struct {
 	Id   int64
-	Impl idImpl
+	impl idImpl
 }
 
 func Newid() *id {
 	this := &id{}
-	this.Impl = this
+	this.impl = this
 	this.initid()
 	return this
 }
@@ -42,7 +42,7 @@ func (this *id) initid() {
 
 func NewidOverload1(id_ int64) *id {
 	this := &id{}
-	this.Impl = this
+	this.impl = this
 	this.initidOverload1(id_)
 	return this
 }
@@ -53,13 +53,13 @@ func (this *id) initidOverload1(id_ int64) {
 
 func NewidOverload2(id_ *id) *id {
 	this := &id{}
-	this.Impl = this
+	this.impl = this
 	this.initidOverload2(id_)
 	return this
 }
 
 func (this *id) initidOverload2(id_ *id) {
-	if id_ != nil {
+	if id_ != (nil) {
 		this.Id = id_.Id
 	} else {
 		this.Id = int64(0)
@@ -71,5 +71,415 @@ func (this *id) HashCode() int32 {
 }
 
 func (this *id) Equals(other any) bool {
-	return (this.Id == (other.(*id)).Id)
+	return (this.Id == (castanyToid(other)).Id)
+}
+
+// j2go: instanceof helper for id and its subclasses within the translated set.
+func idImplAsid(x any) (*id, bool) {
+	switch v := x.(type) {
+	case *id:
+		return v, true
+	case *NSObject:
+		return &v.id, true
+	case *CALayer:
+		return &v.id, true
+	case *DOMDocument:
+		return &v.id, true
+	case *DOMEvent:
+		return &v.id, true
+	case *DOMUIEvent:
+		return &v.id, true
+	case *DOMKeyboardEvent:
+		return &v.id, true
+	case *DOMMouseEvent:
+		return &v.id, true
+	case *DOMWheelEvent:
+		return &v.id, true
+	case *NSAffineTransform:
+		return &v.id, true
+	case *NSAlert:
+		return &v.id, true
+	case *NSAppearance:
+		return &v.id, true
+	case *NSAppleEventDescriptor:
+		return &v.id, true
+	case *NSArray:
+		return &v.id, true
+	case *NSMutableArray:
+		return &v.id, true
+	case *NSAttributedString:
+		return &v.id, true
+	case *NSMutableAttributedString:
+		return &v.id, true
+	case *NSTextStorage:
+		return &v.id, true
+	case *NSAutoreleasePool:
+		return &v.id, true
+	case *NSBezierPath:
+		return &v.id, true
+	case *NSBundle:
+		return &v.id, true
+	case *NSCell:
+		return &v.id, true
+	case *NSActionCell:
+		return &v.id, true
+	case *NSButtonCell:
+		return &v.id, true
+	case *SWTButtonCell:
+		return &v.id, true
+	case *NSTextFieldCell:
+		return &v.id, true
+	case *NSComboBoxCell:
+		return &v.id, true
+	case *NSSearchFieldCell:
+		return &v.id, true
+	case *SWTSearchFieldCell:
+		return &v.id, true
+	case *NSTableHeaderCell:
+		return &v.id, true
+	case *SWTTableHeaderCell:
+		return &v.id, true
+	case *SWTImageTextCell:
+		return &v.id, true
+	case *SWTTextAttachmentCell:
+		return &v.id, true
+	case *NSCoder:
+		return &v.id, true
+	case *NSKeyedArchiver:
+		return &v.id, true
+	case *NSKeyedUnarchiver:
+		return &v.id, true
+	case *NSColor:
+		return &v.id, true
+	case *NSColorList:
+		return &v.id, true
+	case *NSColorSpace:
+		return &v.id, true
+	case *NSCursor:
+		return &v.id, true
+	case *NSData:
+		return &v.id, true
+	case *NSDate:
+		return &v.id, true
+	case *NSCalendarDate:
+		return &v.id, true
+	case *NSDictionary:
+		return &v.id, true
+	case *NSMutableDictionary:
+		return &v.id, true
+	case *NSDockTile:
+		return &v.id, true
+	case *NSEnumerator:
+		return &v.id, true
+	case *NSDirectoryEnumerator:
+		return &v.id, true
+	case *NSError:
+		return &v.id, true
+	case *NSEvent:
+		return &v.id, true
+	case *NSFileManager:
+		return &v.id, true
+	case *NSFileWrapper:
+		return &v.id, true
+	case *NSFont:
+		return &v.id, true
+	case *NSFontManager:
+		return &v.id, true
+	case *NSFormatter:
+		return &v.id, true
+	case *NSNumberFormatter:
+		return &v.id, true
+	case *NSGradient:
+		return &v.id, true
+	case *NSGraphicsContext:
+		return &v.id, true
+	case *NSHTTPCookie:
+		return &v.id, true
+	case *NSHTTPCookieStorage:
+		return &v.id, true
+	case *NSImage:
+		return &v.id, true
+	case *NSImageRep:
+		return &v.id, true
+	case *NSBitmapImageRep:
+		return &v.id, true
+	case *NSIndexSet:
+		return &v.id, true
+	case *NSMutableIndexSet:
+		return &v.id, true
+	case *NSInputManager:
+		return &v.id, true
+	case *NSLayoutManager:
+		return &v.id, true
+	case *NSLocale:
+		return &v.id, true
+	case *NSMenu:
+		return &v.id, true
+	case *SWTMenu:
+		return &v.id, true
+	case *NSMenuItem:
+		return &v.id, true
+	case *SWTMenuItem:
+		return &v.id, true
+	case *NSNotification:
+		return &v.id, true
+	case *NSNotificationCenter:
+		return &v.id, true
+	case *NSOpenGLContext:
+		return &v.id, true
+	case *NSOpenGLPixelFormat:
+		return &v.id, true
+	case *NSParagraphStyle:
+		return &v.id, true
+	case *NSMutableParagraphStyle:
+		return &v.id, true
+	case *NSPasteboard:
+		return &v.id, true
+	case *NSPrintInfo:
+		return &v.id, true
+	case *NSPrintOperation:
+		return &v.id, true
+	case *NSPrintPanel:
+		return &v.id, true
+	case *NSPrinter:
+		return &v.id, true
+	case *NSProcessInfo:
+		return &v.id, true
+	case *NSResponder:
+		return &v.id, true
+	case *NSApplication:
+		return &v.id, true
+	case *NSView:
+		return &v.id, true
+	case *NSBox:
+		return &v.id, true
+	case *SWTBox:
+		return &v.id, true
+	case *NSClipView:
+		return &v.id, true
+	case *NSControl:
+		return &v.id, true
+	case *NSButton:
+		return &v.id, true
+	case *NSPopUpButton:
+		return &v.id, true
+	case *SWTPopUpButton:
+		return &v.id, true
+	case *SWTButton:
+		return &v.id, true
+	case *NSDatePicker:
+		return &v.id, true
+	case *SWTDatePicker:
+		return &v.id, true
+	case *NSImageView:
+		return &v.id, true
+	case *SWTImageView:
+		return &v.id, true
+	case *NSScroller:
+		return &v.id, true
+	case *SWTScroller:
+		return &v.id, true
+	case *NSSlider:
+		return &v.id, true
+	case *SWTSlider:
+		return &v.id, true
+	case *NSStepper:
+		return &v.id, true
+	case *SWTStepper:
+		return &v.id, true
+	case *NSTableView:
+		return &v.id, true
+	case *NSOutlineView:
+		return &v.id, true
+	case *SWTOutlineView:
+		return &v.id, true
+	case *SWTTableView:
+		return &v.id, true
+	case *NSTextField:
+		return &v.id, true
+	case *NSComboBox:
+		return &v.id, true
+	case *SWTComboBox:
+		return &v.id, true
+	case *NSSearchField:
+		return &v.id, true
+	case *SWTSearchField:
+		return &v.id, true
+	case *NSSecureTextField:
+		return &v.id, true
+	case *SWTSecureTextField:
+		return &v.id, true
+	case *SWTTextField:
+		return &v.id, true
+	case *NSProgressIndicator:
+		return &v.id, true
+	case *SWTProgressIndicator:
+		return &v.id, true
+	case *NSScrollView:
+		return &v.id, true
+	case *SWTScrollView:
+		return &v.id, true
+	case *NSTabView:
+		return &v.id, true
+	case *SWTTabView:
+		return &v.id, true
+	case *NSTableHeaderView:
+		return &v.id, true
+	case *SWTTableHeaderView:
+		return &v.id, true
+	case *NSText:
+		return &v.id, true
+	case *NSTextView:
+		return &v.id, true
+	case *SWTTextView:
+		return &v.id, true
+	case *SWTCanvasView:
+		return &v.id, true
+	case *SWTPrinterView:
+		return &v.id, true
+	case *SWTView:
+		return &v.id, true
+	case *WebView:
+		return &v.id, true
+	case *NSWindow:
+		return &v.id, true
+	case *NSPanel:
+		return &v.id, true
+	case *NSColorPanel:
+		return &v.id, true
+	case *NSFontPanel:
+		return &v.id, true
+	case *NSSavePanel:
+		return &v.id, true
+	case *NSOpenPanel:
+		return &v.id, true
+	case *SFCertificatePanel:
+		return &v.id, true
+	case *SFCertificateTrustPanel:
+		return &v.id, true
+	case *SWTPanel:
+		return &v.id, true
+	case *SWTWindow:
+		return &v.id, true
+	case *NSRunLoop:
+		return &v.id, true
+	case *NSScreen:
+		return &v.id, true
+	case *NSSet:
+		return &v.id, true
+	case *NSMutableSet:
+		return &v.id, true
+	case *NSStatusBar:
+		return &v.id, true
+	case *NSStatusItem:
+		return &v.id, true
+	case *NSString:
+		return &v.id, true
+	case *NSMutableString:
+		return &v.id, true
+	case *NSTabViewItem:
+		return &v.id, true
+	case *SWTTabViewItem:
+		return &v.id, true
+	case *NSTableColumn:
+		return &v.id, true
+	case *NSTextAttachment:
+		return &v.id, true
+	case *NSTextContainer:
+		return &v.id, true
+	case *NSTextTab:
+		return &v.id, true
+	case *NSThread:
+		return &v.id, true
+	case *NSTimeZone:
+		return &v.id, true
+	case *NSTimer:
+		return &v.id, true
+	case *NSToolbar:
+		return &v.id, true
+	case *SWTToolbar:
+		return &v.id, true
+	case *NSToolbarItem:
+		return &v.id, true
+	case *NSTouch:
+		return &v.id, true
+	case *NSTrackingArea:
+		return &v.id, true
+	case *NSTypesetter:
+		return &v.id, true
+	case *NSURL:
+		return &v.id, true
+	case *NSURLAuthenticationChallenge:
+		return &v.id, true
+	case *NSURLCredential:
+		return &v.id, true
+	case *NSURLDownload:
+		return &v.id, true
+	case *NSURLProtectionSpace:
+		return &v.id, true
+	case *NSURLRequest:
+		return &v.id, true
+	case *NSMutableURLRequest:
+		return &v.id, true
+	case *NSUndoManager:
+		return &v.id, true
+	case *NSUserDefaults:
+		return &v.id, true
+	case *NSValue:
+		return &v.id, true
+	case *NSNumber:
+		return &v.id, true
+	case *NSWorkspace:
+		return &v.id, true
+	case *SWTApplicationDelegate:
+		return &v.id, true
+	case *SWTDragSourceDelegate:
+		return &v.id, true
+	case *SWTOpenSavePanelDelegate:
+		return &v.id, true
+	case *SWTPanelDelegate:
+		return &v.id, true
+	case *SWTPrintPanelDelegate:
+		return &v.id, true
+	case *SWTTreeItem:
+		return &v.id, true
+	case *SWTWebViewDelegate:
+		return &v.id, true
+	case *SWTWindowDelegate:
+		return &v.id, true
+	case *UTType:
+		return &v.id, true
+	case *WebDataSource:
+		return &v.id, true
+	case *WebDocumentRepresentation:
+		return &v.id, true
+	case *WebFrame:
+		return &v.id, true
+	case *WebFrameView:
+		return &v.id, true
+	case *WebOpenPanelResultListener:
+		return &v.id, true
+	case *WebPolicyDecisionListener:
+		return &v.id, true
+	case *WebPreferences:
+		return &v.id, true
+	case *WebScriptObject:
+		return &v.id, true
+	case *WebUndefined:
+		return &v.id, true
+	case *Protocol:
+		return &v.id, true
+	}
+	return nil, false
+}
+
+func castanyToid(x any) *id {
+	if x == nil {
+		return nil
+	}
+	v, ok := idImplAsid(x)
+	if !ok {
+		panic("java.lang.ClassCastException: id")
+	}
+	return v
 }

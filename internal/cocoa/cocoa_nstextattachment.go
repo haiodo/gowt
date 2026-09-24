@@ -8,7 +8,7 @@ type NSTextAttachment struct {
 
 func NewNSTextAttachment() *NSTextAttachment {
 	this := &NSTextAttachment{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextAttachment()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTextAttachment) initNSTextAttachment() {
 
 func NewNSTextAttachmentOverload1(id int64) *NSTextAttachment {
 	this := &NSTextAttachment{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextAttachmentOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTextAttachment) initNSTextAttachmentOverload1(id int64) {
 
 func NewNSTextAttachmentOverload2(id *id) *NSTextAttachment {
 	this := &NSTextAttachment{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTextAttachmentOverload2(id)
 	return this
 }
@@ -40,34 +40,34 @@ func (this *NSTextAttachment) initNSTextAttachmentOverload2(id *id) {
 }
 
 func (this *NSTextAttachment) InitWithFileWrapper(fileWrapper *NSFileWrapper) *NSTextAttachment {
-	var cond761 int64
-	if fileWrapper != nil {
-		cond761 = fileWrapper.Id
+	var cond760 int64
+	if fileWrapper != (nil) {
+		cond760 = fileWrapper.Id
 	} else {
-		cond761 = int64(0)
+		cond760 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithFileWrapper_, cond761)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithFileWrapper_, cond760)
+	var cond761 *NSTextAttachment
 	var cond762 *NSTextAttachment
-	var cond763 *NSTextAttachment
 	if result != 0 {
-		cond763 = NewNSTextAttachmentOverload1(result)
+		cond762 = NewNSTextAttachmentOverload1(result)
 	} else {
-		cond763 = nil
+		cond762 = nil
 	}
 	if result == this.Id {
-		cond762 = this
+		cond761 = this
 	} else {
-		cond762 = (cond763)
+		cond761 = (cond762)
 	}
-	return cond762
+	return cond761
 }
 
 func (this *NSTextAttachment) SetAttachmentCell(attachmentCell *id) {
-	var cond764 int64
-	if attachmentCell != nil {
-		cond764 = attachmentCell.Id
+	var cond763 int64
+	if attachmentCell != (nil) {
+		cond763 = attachmentCell.Id
 	} else {
-		cond764 = int64(0)
+		cond763 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttachmentCell_, cond764)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttachmentCell_, cond763)
 }

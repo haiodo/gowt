@@ -8,7 +8,7 @@ type NSTableHeaderView struct {
 
 func NewNSTableHeaderView() *NSTableHeaderView {
 	this := &NSTableHeaderView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSTableHeaderView) initNSTableHeaderView() {
 
 func NewNSTableHeaderViewOverload1(id int64) *NSTableHeaderView {
 	this := &NSTableHeaderView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderViewOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSTableHeaderView) initNSTableHeaderViewOverload1(id int64) {
 
 func NewNSTableHeaderViewOverload2(id *id) *NSTableHeaderView {
 	this := &NSTableHeaderView{}
-	this.Impl = this
+	this.impl = this
 	this.initNSTableHeaderViewOverload2(id)
 	return this
 }

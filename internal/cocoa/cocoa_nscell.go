@@ -8,7 +8,7 @@ type NSCell struct {
 
 func NewNSCell() *NSCell {
 	this := &NSCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCell()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSCell) initNSCell() {
 
 func NewNSCellOverload1(id int64) *NSCell {
 	this := &NSCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCellOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSCell) initNSCellOverload1(id int64) {
 
 func NewNSCellOverload2(id *id) *NSCell {
 	this := &NSCell{}
-	this.Impl = this
+	this.impl = this
 	this.initNSCellOverload2(id)
 	return this
 }
@@ -68,7 +68,7 @@ func (this *NSCell) ControlSize() int64 {
 
 func (this *NSCell) DrawInteriorWithFrame(cellFrame NSRect, controlView *NSView) {
 	var cond136 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond136 = controlView.Id
 	} else {
 		cond136 = int64(0)
@@ -78,7 +78,7 @@ func (this *NSCell) DrawInteriorWithFrame(cellFrame NSRect, controlView *NSView)
 
 func (this *NSCell) DrawWithExpansionFrame(cellFrame NSRect, view *NSView) {
 	var cond137 int64
-	if view != nil {
+	if view != (nil) {
 		cond137 = view.Id
 	} else {
 		cond137 = int64(0)
@@ -95,7 +95,7 @@ func (this *NSCell) DrawingRectForBounds(theRect NSRect) NSRect {
 func (this *NSCell) ExpansionFrameWithFrame(cellFrame NSRect, view *NSView) NSRect {
 	var result NSRect = NSRect{}
 	var cond138 int64
-	if view != nil {
+	if view != (nil) {
 		cond138 = view.Id
 	} else {
 		cond138 = int64(0)
@@ -107,7 +107,7 @@ func (this *NSCell) ExpansionFrameWithFrame(cellFrame NSRect, view *NSView) NSRe
 func (this *NSCell) FocusRingMaskBoundsForFrame(cellFrame NSRect, controlView *NSView) NSRect {
 	var result NSRect = NSRect{}
 	var cond139 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond139 = controlView.Id
 	} else {
 		cond139 = int64(0)
@@ -129,13 +129,13 @@ func (this *NSCell) Font() *NSFont {
 
 func (this *NSCell) HitTestForEvent(event *NSEvent, cellFrame NSRect, controlView *NSView) int64 {
 	var cond141 int64
-	if event != nil {
+	if event != (nil) {
 		cond141 = event.Id
 	} else {
 		cond141 = int64(0)
 	}
 	var cond142 int64
-	if controlView != nil {
+	if controlView != (nil) {
 		cond142 = controlView.Id
 	} else {
 		cond142 = int64(0)
@@ -182,7 +182,7 @@ func (this *NSCell) SetAllowsMixedState(allowsMixedState bool) {
 
 func (this *NSCell) SetAttributedStringValue(attributedStringValue *NSAttributedString) {
 	var cond144 int64
-	if attributedStringValue != nil {
+	if attributedStringValue != (nil) {
 		cond144 = attributedStringValue.Id
 	} else {
 		cond144 = int64(0)
@@ -208,7 +208,7 @@ func (this *NSCell) SetEnabled(enabled bool) {
 
 func (this *NSCell) SetFont(font *NSFont) {
 	var cond145 int64
-	if font != nil {
+	if font != (nil) {
 		cond145 = font.Id
 	} else {
 		cond145 = int64(0)
@@ -218,7 +218,7 @@ func (this *NSCell) SetFont(font *NSFont) {
 
 func (this *NSCell) SetFormatter(formatter *NSFormatter) {
 	var cond146 int64
-	if formatter != nil {
+	if formatter != (nil) {
 		cond146 = formatter.Id
 	} else {
 		cond146 = int64(0)
@@ -232,7 +232,7 @@ func (this *NSCell) SetHighlighted(highlighted bool) {
 
 func (this *NSCell) SetImage(image *NSImage) {
 	var cond147 int64
-	if image != nil {
+	if image != (nil) {
 		cond147 = image.Id
 	} else {
 		cond147 = int64(0)
@@ -246,7 +246,7 @@ func (this *NSCell) SetLineBreakMode(lineBreakMode int64) {
 
 func (this *NSCell) SetObjectValue(objectValue *id) {
 	var cond148 int64
-	if objectValue != nil {
+	if objectValue != (nil) {
 		cond148 = objectValue.Id
 	} else {
 		cond148 = int64(0)
@@ -260,7 +260,7 @@ func (this *NSCell) SetScrollable(scrollable bool) {
 
 func (this *NSCell) SetTitle(title *NSString) {
 	var cond149 int64
-	if title != nil {
+	if title != (nil) {
 		cond149 = title.Id
 	} else {
 		cond149 = int64(0)

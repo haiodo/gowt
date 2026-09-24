@@ -8,7 +8,7 @@ type WebView struct {
 
 func NewWebView() *WebView {
 	this := &WebView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebView()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *WebView) initWebView() {
 
 func NewWebViewOverload1(id int64) *WebView {
 	this := &WebView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebViewOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *WebView) initWebViewOverload1(id int64) {
 
 func NewWebViewOverload2(id *id) *WebView {
 	this := &WebView{}
-	this.Impl = this
+	this.impl = this
 	this.initWebViewOverload2(id)
 	return this
 }
@@ -49,7 +49,7 @@ func (this *WebView) CanGoForward() bool {
 
 func (this *WebView) Copy(sender *id) {
 	var cond971 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond971 = sender.Id
 	} else {
 		cond971 = int64(0)
@@ -59,7 +59,7 @@ func (this *WebView) Copy(sender *id) {
 
 func (this *WebView) Cut(sender *id) {
 	var cond972 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond972 = sender.Id
 	} else {
 		cond972 = int64(0)
@@ -77,13 +77,13 @@ func (this *WebView) GoForward() bool {
 
 func (this *WebView) InitWithFrame(frame NSRect, frameName *NSString, groupName *NSString) *WebView {
 	var cond973 int64
-	if frameName != nil {
+	if frameName != (nil) {
 		cond973 = frameName.Id
 	} else {
 		cond973 = int64(0)
 	}
 	var cond974 int64
-	if groupName != nil {
+	if groupName != (nil) {
 		cond974 = groupName.Id
 	} else {
 		cond974 = int64(0)
@@ -117,7 +117,7 @@ func (this *WebView) MainFrame() *WebFrame {
 
 func (this *WebView) Paste(sender *id) {
 	var cond978 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond978 = sender.Id
 	} else {
 		cond978 = int64(0)
@@ -127,7 +127,7 @@ func (this *WebView) Paste(sender *id) {
 
 func (this *WebView) Reload(sender *id) {
 	var cond979 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond979 = sender.Id
 	} else {
 		cond979 = int64(0)
@@ -137,7 +137,7 @@ func (this *WebView) Reload(sender *id) {
 
 func (this *WebView) SetApplicationNameForUserAgent(applicationNameForUserAgent *NSString) {
 	var cond980 int64
-	if applicationNameForUserAgent != nil {
+	if applicationNameForUserAgent != (nil) {
 		cond980 = applicationNameForUserAgent.Id
 	} else {
 		cond980 = int64(0)
@@ -147,7 +147,7 @@ func (this *WebView) SetApplicationNameForUserAgent(applicationNameForUserAgent 
 
 func (this *WebView) SetCustomUserAgent(customUserAgent *NSString) {
 	var cond981 int64
-	if customUserAgent != nil {
+	if customUserAgent != (nil) {
 		cond981 = customUserAgent.Id
 	} else {
 		cond981 = int64(0)
@@ -157,7 +157,7 @@ func (this *WebView) SetCustomUserAgent(customUserAgent *NSString) {
 
 func (this *WebView) SetDownloadDelegate(downloadDelegate *id) {
 	var cond982 int64
-	if downloadDelegate != nil {
+	if downloadDelegate != (nil) {
 		cond982 = downloadDelegate.Id
 	} else {
 		cond982 = int64(0)
@@ -167,7 +167,7 @@ func (this *WebView) SetDownloadDelegate(downloadDelegate *id) {
 
 func (this *WebView) SetFrameLoadDelegate(frameLoadDelegate *id) {
 	var cond983 int64
-	if frameLoadDelegate != nil {
+	if frameLoadDelegate != (nil) {
 		cond983 = frameLoadDelegate.Id
 	} else {
 		cond983 = int64(0)
@@ -177,7 +177,7 @@ func (this *WebView) SetFrameLoadDelegate(frameLoadDelegate *id) {
 
 func (this *WebView) SetPolicyDelegate(policyDelegate *id) {
 	var cond984 int64
-	if policyDelegate != nil {
+	if policyDelegate != (nil) {
 		cond984 = policyDelegate.Id
 	} else {
 		cond984 = int64(0)
@@ -187,7 +187,7 @@ func (this *WebView) SetPolicyDelegate(policyDelegate *id) {
 
 func (this *WebView) SetPreferences(preferences *WebPreferences) {
 	var cond985 int64
-	if preferences != nil {
+	if preferences != (nil) {
 		cond985 = preferences.Id
 	} else {
 		cond985 = int64(0)
@@ -197,7 +197,7 @@ func (this *WebView) SetPreferences(preferences *WebPreferences) {
 
 func (this *WebView) SetResourceLoadDelegate(resourceLoadDelegate *id) {
 	var cond986 int64
-	if resourceLoadDelegate != nil {
+	if resourceLoadDelegate != (nil) {
 		cond986 = resourceLoadDelegate.Id
 	} else {
 		cond986 = int64(0)
@@ -207,7 +207,7 @@ func (this *WebView) SetResourceLoadDelegate(resourceLoadDelegate *id) {
 
 func (this *WebView) SetUIDelegate(UIDelegate *id) {
 	var cond987 int64
-	if UIDelegate != nil {
+	if UIDelegate != (nil) {
 		cond987 = UIDelegate.Id
 	} else {
 		cond987 = int64(0)
@@ -217,7 +217,7 @@ func (this *WebView) SetUIDelegate(UIDelegate *id) {
 
 func (this *WebView) StopLoading(sender *id) {
 	var cond988 int64
-	if sender != nil {
+	if sender != (nil) {
 		cond988 = sender.Id
 	} else {
 		cond988 = int64(0)
@@ -227,7 +227,7 @@ func (this *WebView) StopLoading(sender *id) {
 
 func WebViewCanShowMIMEType(MIMEType *NSString) bool {
 	var cond989 int64
-	if MIMEType != nil {
+	if MIMEType != (nil) {
 		cond989 = MIMEType.Id
 	} else {
 		cond989 = int64(0)

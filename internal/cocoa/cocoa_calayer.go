@@ -8,7 +8,7 @@ type CALayer struct {
 
 func NewCALayer() *CALayer {
 	this := &CALayer{}
-	this.Impl = this
+	this.impl = this
 	this.initCALayer()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *CALayer) initCALayer() {
 
 func NewCALayerOverload1(id int64) *CALayer {
 	this := &CALayer{}
-	this.Impl = this
+	this.impl = this
 	this.initCALayerOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *CALayer) initCALayerOverload1(id int64) {
 
 func NewCALayerOverload2(id *id) *CALayer {
 	this := &CALayer{}
-	this.Impl = this
+	this.impl = this
 	this.initCALayerOverload2(id)
 	return this
 }

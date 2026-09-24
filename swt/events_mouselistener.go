@@ -9,13 +9,58 @@ type MouseListener interface {
 }
 
 func MouseListenerMouseDoubleClickAdapter(c func(*MouseEvent)) MouseListener {
-	return func() *MouseAdapter { panic("j2go: unsupported anonymous class") }()
+	anon41 := &MouseListenerAnon1{}
+	anon41.initMouseAdapter()
+	anon41.fnMouseDoubleClick = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon41
 }
 
 func MouseListenerMouseDownAdapter(c func(*MouseEvent)) MouseListener {
-	return func() *MouseAdapter { panic("j2go: unsupported anonymous class") }()
+	anon42 := &MouseListenerAnon2{}
+	anon42.initMouseAdapter()
+	anon42.fnMouseDown = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon42
 }
 
 func MouseListenerMouseUpAdapter(c func(*MouseEvent)) MouseListener {
-	return func() *MouseAdapter { panic("j2go: unsupported anonymous class") }()
+	anon43 := &MouseListenerAnon3{}
+	anon43.initMouseAdapter()
+	anon43.fnMouseUp = func(e *MouseEvent) {
+		c(e)
+	}
+	return anon43
+}
+
+// j2go: anonymous MouseAdapter subclass.
+type MouseListenerAnon1 struct {
+	MouseAdapter
+	fnMouseDoubleClick func(a0 *MouseEvent)
+}
+
+func (this *MouseListenerAnon1) MouseDoubleClick(a0 *MouseEvent) {
+	this.fnMouseDoubleClick(a0)
+}
+
+// j2go: anonymous MouseAdapter subclass.
+type MouseListenerAnon2 struct {
+	MouseAdapter
+	fnMouseDown func(a0 *MouseEvent)
+}
+
+func (this *MouseListenerAnon2) MouseDown(a0 *MouseEvent) {
+	this.fnMouseDown(a0)
+}
+
+// j2go: anonymous MouseAdapter subclass.
+type MouseListenerAnon3 struct {
+	MouseAdapter
+	fnMouseUp func(a0 *MouseEvent)
+}
+
+func (this *MouseListenerAnon3) MouseUp(a0 *MouseEvent) {
+	this.fnMouseUp(a0)
 }

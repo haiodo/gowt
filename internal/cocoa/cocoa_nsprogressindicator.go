@@ -8,7 +8,7 @@ type NSProgressIndicator struct {
 
 func NewNSProgressIndicator() *NSProgressIndicator {
 	this := &NSProgressIndicator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProgressIndicator()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *NSProgressIndicator) initNSProgressIndicator() {
 
 func NewNSProgressIndicatorOverload1(id int64) *NSProgressIndicator {
 	this := &NSProgressIndicator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProgressIndicatorOverload1(id)
 	return this
 }
@@ -30,7 +30,7 @@ func (this *NSProgressIndicator) initNSProgressIndicatorOverload1(id int64) {
 
 func NewNSProgressIndicatorOverload2(id *id) *NSProgressIndicator {
 	this := &NSProgressIndicator{}
-	this.Impl = this
+	this.impl = this
 	this.initNSProgressIndicatorOverload2(id)
 	return this
 }
@@ -80,11 +80,11 @@ func (this *NSProgressIndicator) SizeToFit() {
 }
 
 func (this *NSProgressIndicator) StartAnimation(sender *id) {
-	var cond600 int64
-	if sender != nil {
-		cond600 = sender.Id
+	var cond599 int64
+	if sender != (nil) {
+		cond599 = sender.Id
 	} else {
-		cond600 = int64(0)
+		cond599 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_startAnimation_, cond600)
+	OSObjc_msgSendOverload44(this.Id, OSSel_startAnimation_, cond599)
 }

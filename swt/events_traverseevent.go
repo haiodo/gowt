@@ -13,7 +13,7 @@ type TraverseEvent struct {
 
 func NewTraverseEvent(e *Event) *TraverseEvent {
 	this := &TraverseEvent{}
-	this.Impl = this
+	this.impl = this
 	this.initTraverseEvent(e)
 	return this
 }

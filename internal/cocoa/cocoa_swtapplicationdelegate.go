@@ -8,7 +8,7 @@ type SWTApplicationDelegate struct {
 
 func NewSWTApplicationDelegate() *SWTApplicationDelegate {
 	this := &SWTApplicationDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTApplicationDelegate()
 	return this
 }
@@ -19,7 +19,7 @@ func (this *SWTApplicationDelegate) initSWTApplicationDelegate() {
 
 func NewSWTApplicationDelegateId(id int64) *SWTApplicationDelegate {
 	this := &SWTApplicationDelegate{}
-	this.Impl = this
+	this.impl = this
 	this.initSWTApplicationDelegateId(id)
 	return this
 }

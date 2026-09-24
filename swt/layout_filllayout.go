@@ -281,6 +281,14 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 		return &v.Scrollable, true
 	case *Tree:
 		return &v.Scrollable, true
+	case *TabFolder:
+		return &v.Scrollable, true
+	case *Combo:
+		return &v.Scrollable, true
+	case *Table:
+		return &v.Scrollable, true
+	case *ScrolledComposite:
+		return &v.Scrollable, true
 	case *Text:
 		return &v.Scrollable, true
 	}

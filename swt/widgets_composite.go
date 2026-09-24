@@ -181,7 +181,7 @@ func (this *Composite) computeSizeWHintHHintChanged_(wHint int32, hHint int32, c
 			size = NewPoint(wHint, hHint)
 		}
 	} else {
-		size = this.MinimumSize(wHint, hHint, changed)
+		size = this.impl.minimumSize_(wHint, hHint, changed)
 		if size.X == 0 {
 			size.X = WidgetDEFAULT_WIDTH
 		}
@@ -620,6 +620,10 @@ func (this *Composite) markLayout_(changed bool, all bool) {
 }
 
 func (this *Composite) MinimumSize(wHint int32, Hint int32, changed bool) *Point {
+	return this.impl.minimumSize_(wHint, Hint, changed)
+}
+
+func (this *Composite) minimumSize_(wHint int32, Hint int32, changed bool) *Point {
 	var children []*Control = this._getChildren()
 	var clientArea *Rectangle = this.impl.getClientArea_()
 	var width int32 = 0
@@ -731,7 +735,10 @@ func (this *Composite) RemoveControl(controlLike ControlLike) {
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
-	_ = control
+	this.impl.removeControl_(control)
+}
+
+func (this *Composite) removeControl_(control *Control) {
 	if control.HasFocus() {
 		this.impl.redrawWidget_(this.View, true)
 	}
@@ -1042,6 +1049,14 @@ func widgetImplAsControl(x any) (*Control, bool) {
 	case *SashForm:
 		return &v.Control, true
 	case *Tree:
+		return &v.Control, true
+	case *TabFolder:
+		return &v.Control, true
+	case *Combo:
+		return &v.Control, true
+	case *Table:
+		return &v.Control, true
+	case *ScrolledComposite:
 		return &v.Control, true
 	case *Text:
 		return &v.Control, true

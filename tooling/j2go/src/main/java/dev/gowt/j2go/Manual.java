@@ -19,7 +19,6 @@ public class Manual {
 	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
 	private static final String ACC = "org.eclipse.swt.accessibility.ACC";
 	private static final String WIDGET_SPY = "org.eclipse.swt.internal.WidgetSpy";
-	private static final String DIALOG = "org.eclipse.swt.widgets.Dialog";
 	private static final String AUTOSCALING_MODE = "org.eclipse.swt.graphics.AutoscalingMode";
 	// checkWidget()'s thread-affinity check: no real Thread, both sides collapse to "any" nil.
 	private static final String JAVA_THREAD = "java.lang.Thread";
@@ -65,7 +64,6 @@ public class Manual {
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(ACC, "ACC", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
-		reg(DIALOG, "Dialog", null, false);
 		reg(AUTOSCALING_MODE, "AutoscalingMode", null, true);
 		reg(JAVA_THREAD, "any", null, true);
 		reg(JAVA_INTEGER, "any", null, true);
@@ -97,9 +95,10 @@ public class Manual {
 		}
 		// A nested Java enum: no enum rule yet, hand-written as an int32 type + constants.
 		reg(DISPLAY_APPEARANCE, "Display_APPEARANCE", null, true);
-		// Widgets/graphics Display only references off the Shell+Button path (dialogs, tray,
-		// dock menu, combo tracking, font metrics): opaque stubs in swt/widgets_stubs3_manual.go.
-		for (String n : new String[]{"widgets.FontDialog", "widgets.FileDialog", "widgets.ColorDialog", "widgets.Combo",
+		// Widgets Display only references off the Shell+Button path (file dialog, tray, dock
+		// menu): opaque stubs in swt/widgets_stubs3_manual.go. FontDialog/ColorDialog/Combo
+		// translated for real as of Round 9 - removed from this list.
+		for (String n : new String[]{"widgets.FileDialog",
 				"widgets.TaskBar", "widgets.TaskItem", "widgets.Tray", "widgets.TrayItem"}) {
 			String q = "org.eclipse.swt." + n;
 			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);

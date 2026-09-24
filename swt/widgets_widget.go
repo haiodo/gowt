@@ -47,6 +47,9 @@ type WidgetImpl interface {
 	collapseItem_collapseChildren_(a0 int64, a1 int64, a2 int64, a3 bool)
 	createHandle_()
 	createWidget_()
+	comboBoxSelectionDidChange_(a0 int64, a1 int64, a2 int64)
+	comboBoxWillDismiss_(a0 int64, a1 int64, a2 int64)
+	comboBoxWillPopUp_(a0 int64, a1 int64, a2 int64)
 	dealloc_(a0 int64, a1 int64)
 	deregister_()
 	destroyJNIRef_()
@@ -59,6 +62,7 @@ type WidgetImpl interface {
 	drawTitleWithFrameInView_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) cocoa.NSRect
 	drawInteriorWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	drawBezelWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	drawLabelInRect_(a0 int64, a1 int64, a2 bool, a3 cocoa.NSRect)
 	drawWithExpansionFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	drawRect_(a0 int64, a1 int64, a2 cocoa.NSRect)
 	drawWidget_(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
@@ -106,6 +110,7 @@ type WidgetImpl interface {
 	menuDidClose_(a0 int64, a1 int64, a2 int64)
 	menuWillOpen_(a0 int64, a1 int64, a2 int64)
 	noResponderFor_(a0 int64, a1 int64, a2 int64)
+	numberOfRowsInTableView_(a0 int64, a1 int64, a2 int64) int64
 	outlineView_child_ofItem_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
 	outlineView_didClickTableColumn_(a0 int64, a1 int64, a2 int64, a3 int64)
 	outlineView_objectValueForTableColumn_byItem_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
@@ -149,13 +154,25 @@ type WidgetImpl interface {
 	setFrameSize_(a0 int64, a1 int64, a2 cocoa.NSSize)
 	setImageOnWidget_(a0 int64, a1 int64, a2 int64)
 	setMarkedText_selectedRange_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	setObjectValue_(a0 int64, a1 int64, a2 int64)
 	setShouldExpandItem_(a0 int64, a1 int64, a2 bool)
 	setShouldScrollClipView_(a0 int64, a1 int64, a2 bool)
 	setTabGroupFocus_() bool
 	setTabItemFocus_() bool
 	shouldChangeTextInRange_replacementString_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	sizeOfLabel_(a0 int64, a1 int64, a2 bool) cocoa.NSSize
 	superKeyDown_(a0 int64, a1 int64, a2 int64)
 	superKeyUp_(a0 int64, a1 int64, a2 int64)
+	tableViewColumnDidMove_(a0 int64, a1 int64, a2 int64)
+	tableViewColumnDidResize_(a0 int64, a1 int64, a2 int64)
+	tableViewSelectionDidChange_(a0 int64, a1 int64, a2 int64)
+	tableViewSelectionIsChanging_(a0 int64, a1 int64, a2 int64)
+	tableView_didClickTableColumn_(a0 int64, a1 int64, a2 int64, a3 int64)
+	tableView_objectValueForTableColumn_row_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
+	tableView_setObjectValue_forTableColumn_row_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
+	tableView_shouldReorderColumn_toColumn_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
+	tableView_shouldTrackCell_forTableColumn_row_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) bool
+	tableView_willDisplayCell_forTableColumn_row_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
 	textViewDidChangeSelection_(a0 int64, a1 int64, a2 int64)
 	textDidChange_(a0 int64, a1 int64, a2 int64)
 	textView_willChangeSelectionFromCharacterRange_toCharacterRange_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
@@ -172,6 +189,9 @@ type WidgetImpl interface {
 	resetCursorRects_(a0 int64, a1 int64)
 	updateTrackingAreas_(a0 int64, a1 int64)
 	validAttributesForMarkedText_(a0 int64, a1 int64) int64
+	tabView_didSelectTabViewItem_(a0 int64, a1 int64, a2 int64, a3 int64)
+	tabView_willSelectTabViewItem_(a0 int64, a1 int64, a2 int64, a3 int64)
+	tableView_writeRowsWithIndexes_toPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
 	view_stringForToolTip_point_userData_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) int64
 	viewWillMoveToWindow_(a0 int64, a1 int64, a2 int64)
 	windowDidMove_(a0 int64, a1 int64, a2 int64)
@@ -210,6 +230,7 @@ type WidgetImpl interface {
 	forceFocusFocusView_(a0 *cocoa.NSView) bool
 	getBounds_() *Rectangle
 	getLocation_() *Point
+	getMininumHeight_() int32
 	getOrientation_() int32
 	getRegion_() *Region
 	getShell_() *Shell
@@ -256,6 +277,7 @@ type WidgetImpl interface {
 	setRedraw_(a0 bool)
 	setRegion_(a0 *Region)
 	setRadioSelection_(a0 bool) bool
+	setSmallSize_()
 	setToolTipText_(a0 string)
 	setVisible_(a0 bool)
 	setZOrder_()
@@ -265,6 +287,7 @@ type WidgetImpl interface {
 	traverseEscape_() bool
 	traverseItem_(a0 bool) bool
 	traverseReturn_() bool
+	traversePage_(a0 bool) bool
 	updateBackgroundColor_()
 	updateBackgroundImage_()
 	updateBackgroundMode_()
@@ -280,6 +303,8 @@ type WidgetImpl interface {
 	setImageOnItem_(a0 *Image)
 	setText_(a0 string)
 	findDeferredControl_() *Composite
+	minimumSize_(a0 int32, a1 int32, a2 bool) *Point
+	removeControl_(a0 *Control)
 	setLayout_(a0 *Layout)
 	bringToTop_(a0 bool)
 	getMaximized_() bool
@@ -375,6 +400,10 @@ func (this *Widget) getBounds_() *Rectangle {
 
 func (this *Widget) getLocation_() *Point {
 	panic("j2go: getLocation_ has no default on Widget")
+}
+
+func (this *Widget) getMininumHeight_() int32 {
+	panic("j2go: getMininumHeight_ has no default on Widget")
 }
 
 func (this *Widget) getOrientation_() int32 {
@@ -561,6 +590,10 @@ func (this *Widget) setRadioSelection_(a0 bool) bool {
 	panic("j2go: setRadioSelection_ has no default on Widget")
 }
 
+func (this *Widget) setSmallSize_() {
+	panic("j2go: setSmallSize_ has no default on Widget")
+}
+
 func (this *Widget) setToolTipText_(a0 string) {
 	panic("j2go: setToolTipText_ has no default on Widget")
 }
@@ -595,6 +628,10 @@ func (this *Widget) traverseItem_(a0 bool) bool {
 
 func (this *Widget) traverseReturn_() bool {
 	panic("j2go: traverseReturn_ has no default on Widget")
+}
+
+func (this *Widget) traversePage_(a0 bool) bool {
+	panic("j2go: traversePage_ has no default on Widget")
 }
 
 func (this *Widget) updateBackgroundColor_() {
@@ -655,6 +692,14 @@ func (this *Widget) setText_(a0 string) {
 
 func (this *Widget) findDeferredControl_() *Composite {
 	panic("j2go: findDeferredControl_ has no default on Widget")
+}
+
+func (this *Widget) minimumSize_(a0 int32, a1 int32, a2 bool) *Point {
+	panic("j2go: minimumSize_ has no default on Widget")
+}
+
+func (this *Widget) removeControl_(a0 *Control) {
+	panic("j2go: removeControl_ has no default on Widget")
 }
 
 func (this *Widget) setLayout_(a0 *Layout) {
@@ -1350,12 +1395,24 @@ func (this *Widget) createWidget_() {
 }
 
 func (this *Widget) ComboBoxSelectionDidChange(id int64, sel int64, notification int64) {
+	this.impl.comboBoxSelectionDidChange_(id, sel, notification)
+}
+
+func (this *Widget) comboBoxSelectionDidChange_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) ComboBoxWillDismiss(id int64, sel int64, notification int64) {
+	this.impl.comboBoxWillDismiss_(id, sel, notification)
+}
+
+func (this *Widget) comboBoxWillDismiss_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) ComboBoxWillPopUp(id int64, sel int64, notification int64) {
+	this.impl.comboBoxWillPopUp_(id, sel, notification)
+}
+
+func (this *Widget) comboBoxWillPopUp_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) Dealloc(id int64, sel int64) {
@@ -1479,6 +1536,10 @@ func (this *Widget) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame co
 }
 
 func (this *Widget) DrawLabelInRect(id int64, sel int64, shouldTruncateLabel bool, rect cocoa.NSRect) {
+	this.impl.drawLabelInRect_(id, sel, shouldTruncateLabel, rect)
+}
+
+func (this *Widget) drawLabelInRect_(id int64, sel int64, shouldTruncateLabel bool, rect cocoa.NSRect) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -2055,6 +2116,10 @@ func (this *Widget) noResponderFor_(id int64, sel int64, selector int64) {
 }
 
 func (this *Widget) NumberOfRowsInTableView(id int64, sel int64, aTableView int64) int64 {
+	return this.impl.numberOfRowsInTableView_(id, sel, aTableView)
+}
+
+func (this *Widget) numberOfRowsInTableView_(id int64, sel int64, aTableView int64) int64 {
 	return int64(0)
 }
 
@@ -2961,6 +3026,10 @@ func (this *Widget) SetNeedsDisplayInRect(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) SetObjectValue(id int64, sel int64, arg0 int64) {
+	this.impl.setObjectValue_(id, sel, arg0)
+}
+
+func (this *Widget) setObjectValue_(id int64, sel int64, arg0 int64) {
 	this.CallSuperOverload1(id, sel, arg0)
 }
 
@@ -3003,6 +3072,10 @@ func (this *Widget) shouldChangeTextInRange_replacementString_(id int64, sel int
 }
 
 func (this *Widget) SizeOfLabel(id int64, sel int64, shouldTruncateLabel bool) cocoa.NSSize {
+	return this.impl.sizeOfLabel_(id, sel, shouldTruncateLabel)
+}
+
+func (this *Widget) sizeOfLabel_(id int64, sel int64, shouldTruncateLabel bool) cocoa.NSSize {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -3028,21 +3101,45 @@ func (this *Widget) superKeyUp_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Widget) TableViewColumnDidMove(id int64, sel int64, aNotification int64) {
+	this.impl.tableViewColumnDidMove_(id, sel, aNotification)
+}
+
+func (this *Widget) tableViewColumnDidMove_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TableViewColumnDidResize(id int64, sel int64, aNotification int64) {
+	this.impl.tableViewColumnDidResize_(id, sel, aNotification)
+}
+
+func (this *Widget) tableViewColumnDidResize_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TableViewSelectionDidChange(id int64, sel int64, aNotification int64) {
+	this.impl.tableViewSelectionDidChange_(id, sel, aNotification)
+}
+
+func (this *Widget) tableViewSelectionDidChange_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TableViewSelectionIsChanging(id int64, sel int64, aNotification int64) {
+	this.impl.tableViewSelectionIsChanging_(id, sel, aNotification)
+}
+
+func (this *Widget) tableViewSelectionIsChanging_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TableView_didClickTableColumn(id int64, sel int64, tableView int64, tableColumn int64) {
+	this.impl.tableView_didClickTableColumn_(id, sel, tableView, tableColumn)
+}
+
+func (this *Widget) tableView_didClickTableColumn_(id int64, sel int64, tableView int64, tableColumn int64) {
 }
 
 func (this *Widget) TableView_objectValueForTableColumn_row(id int64, sel int64, aTableView int64, aTableColumn int64, rowIndex int64) int64 {
+	return this.impl.tableView_objectValueForTableColumn_row_(id, sel, aTableView, aTableColumn, rowIndex)
+}
+
+func (this *Widget) tableView_objectValueForTableColumn_row_(id int64, sel int64, aTableView int64, aTableColumn int64, rowIndex int64) int64 {
 	return int64(0)
 }
 
@@ -3051,9 +3148,17 @@ func (this *Widget) TableView_shouldSelectRow(id int64, sel int64, tableView int
 }
 
 func (this *Widget) TableView_setObjectValue_forTableColumn_row(id int64, sel int64, aTableView int64, anObject int64, aTableColumn int64, rowIndex int64) {
+	this.impl.tableView_setObjectValue_forTableColumn_row_(id, sel, aTableView, anObject, aTableColumn, rowIndex)
+}
+
+func (this *Widget) tableView_setObjectValue_forTableColumn_row_(id int64, sel int64, aTableView int64, anObject int64, aTableColumn int64, rowIndex int64) {
 }
 
 func (this *Widget) TableView_shouldReorderColumn_toColumn(id int64, sel int64, aTableView int64, columnIndex int64, newColumnIndex int64) bool {
+	return this.impl.tableView_shouldReorderColumn_toColumn_(id, sel, aTableView, columnIndex, newColumnIndex)
+}
+
+func (this *Widget) tableView_shouldReorderColumn_toColumn_(id int64, sel int64, aTableView int64, columnIndex int64, newColumnIndex int64) bool {
 	return true
 }
 
@@ -3062,10 +3167,18 @@ func (this *Widget) TableView_shouldEditTableColumn_row(id int64, sel int64, aTa
 }
 
 func (this *Widget) TableView_shouldTrackCell_forTableColumn_row(id int64, sel int64, table int64, cell int64, tableColumn int64, rowIndex int64) bool {
+	return this.impl.tableView_shouldTrackCell_forTableColumn_row_(id, sel, table, cell, tableColumn, rowIndex)
+}
+
+func (this *Widget) tableView_shouldTrackCell_forTableColumn_row_(id int64, sel int64, table int64, cell int64, tableColumn int64, rowIndex int64) bool {
 	return true
 }
 
 func (this *Widget) TableView_willDisplayCell_forTableColumn_row(id int64, sel int64, aTableView int64, aCell int64, aTableColumn int64, rowIndex int64) {
+	this.impl.tableView_willDisplayCell_forTableColumn_row_(id, sel, aTableView, aCell, aTableColumn, rowIndex)
+}
+
+func (this *Widget) tableView_willDisplayCell_forTableColumn_row_(id int64, sel int64, aTableView int64, aCell int64, aTableColumn int64, rowIndex int64) {
 }
 
 func (this *Widget) TextViewDidChangeSelection(id int64, sel int64, aNotification int64) {
@@ -3228,12 +3341,24 @@ func (this *Widget) validAttributesForMarkedText_(id int64, sel int64) int64 {
 }
 
 func (this *Widget) TabView_didSelectTabViewItem(id int64, sel int64, tabView int64, tabViewItem int64) {
+	this.impl.tabView_didSelectTabViewItem_(id, sel, tabView, tabViewItem)
+}
+
+func (this *Widget) tabView_didSelectTabViewItem_(id int64, sel int64, tabView int64, tabViewItem int64) {
 }
 
 func (this *Widget) TabView_willSelectTabViewItem(id int64, sel int64, tabView int64, tabViewItem int64) {
+	this.impl.tabView_willSelectTabViewItem_(id, sel, tabView, tabViewItem)
+}
+
+func (this *Widget) tabView_willSelectTabViewItem_(id int64, sel int64, tabView int64, tabViewItem int64) {
 }
 
 func (this *Widget) TableView_writeRowsWithIndexes_toPasteboard(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
+	return this.impl.tableView_writeRowsWithIndexes_toPasteboard_(id, sel, arg0, arg1, arg2)
+}
+
+func (this *Widget) tableView_writeRowsWithIndexes_toPasteboard_(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
 	return false
 }
 

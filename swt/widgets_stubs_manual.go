@@ -1,5 +1,6 @@
 // Hand-written opaque stubs for widget/graphics types not translated yet (manual.txt). Display is
-// real as of Round 6, GC as of Round 7; Touch/Dialog remain, the rest lives in swt/widgets_stubs2_manual.go.
+// real as of Round 6, GC as of Round 7, Dialog as of Round 9; Touch remains, the rest lives in
+// swt/widgets_stubs2_manual.go.
 package swt
 
 import "fmt"
@@ -20,9 +21,6 @@ func NewTouch(identity int64, source any, state int32, primary bool, x int32, y 
 func (t Touch) ToString() string {
 	return fmt.Sprintf("%+v", t)
 }
-
-// org.eclipse.swt.widgets.Dialog: only ever compared to nil in this file set (Control.isActive).
-type Dialog struct{}
 
 // org.eclipse.swt.graphics.AutoscalingMode: a Java enum (no translator rule for those yet, see
 // README); Control.setAutoscalingMode's own body ignores its argument, so any type will do.

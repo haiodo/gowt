@@ -1329,6 +1329,10 @@ func (this *Control) GetMenu() *Menu {
 }
 
 func (this *Control) GetMininumHeight() int32 {
+	return this.impl.getMininumHeight_()
+}
+
+func (this *Control) getMininumHeight_() int32 {
 	return 0
 }
 
@@ -2363,7 +2367,7 @@ func (this *Control) releaseHandle_() {
 
 func (this *Control) releaseParent_() {
 	this.impl.invalidateVisibleRegion_()
-	this.parent.RemoveControl(this)
+	this.parent.impl.removeControl_(this)
 }
 
 func (this *Control) releaseWidget_() {
@@ -2992,7 +2996,7 @@ func (this *Control) SetCursor(cursorLike CursorLike) {
 func (this *Control) SetDefaultFont() {
 	if this.display.smallFonts {
 		this.impl.setFontFont_(this.impl.defaultFont_().Handle)
-		this.SetSmallSize()
+		this.impl.setSmallSize_()
 	}
 }
 
@@ -3335,6 +3339,10 @@ func (this *Control) SetSizeSize(sizeLike PointLike) {
 }
 
 func (this *Control) SetSmallSize() {
+	this.impl.setSmallSize_()
+}
+
+func (this *Control) setSmallSize_() {
 	_, ok76 := iscocoaNSViewTococoaNSControl(this.View)
 	if ok76 {
 		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
@@ -3990,9 +3998,9 @@ func (this *Control) TraverseEvent(eventLike EventLike) bool {
 	case TRAVERSE_MNEMONIC:
 		return this.TraverseMnemonicEvent(event)
 	case TRAVERSE_PAGE_NEXT:
-		return this.TraversePage(true)
+		return this.impl.traversePage_(true)
 	case TRAVERSE_PAGE_PREVIOUS:
-		return this.TraversePage(false)
+		return this.impl.traversePage_(false)
 	}
 	return false
 }
@@ -4093,6 +4101,10 @@ func (this *Control) traverseReturn_() bool {
 }
 
 func (this *Control) TraversePage(next bool) bool {
+	return this.impl.traversePage_(next)
+}
+
+func (this *Control) traversePage_(next bool) bool {
 	return false
 }
 

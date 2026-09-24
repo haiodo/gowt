@@ -1989,3 +1989,92 @@ For example, `Composite.drawBackground(GC,...)` -> `DrawBackground` hides
 depends only on the ancestors, but those inherited overloads are reachable only through the
 embedded field (`c.Widget.DrawBackground`). The fix would be to count inherited same-name methods
 in the overload order.
+
+## Round 9 widgets
+
+**Status: done, green.** `mvn -q -f tooling/j2go/pom.xml package && bash tooling/port.sh &&
+CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` all pass. `internal/cocoa` content
+unchanged (still byte-identical, same 210 PI/cocoa files + `C.java`). `swt`'s invocation baseline
+unsupported-marker count (130 MethodInvocation, 14 ClassInstanceCreation, 7 CatchClause, 2
+ExpressionMethodReference, 2 MethodDeclaration - unchanged since Round 7 gfx) is unchanged by this
+round's 16 new files - zero new markers.
+
+**Translated for real** (`port.sh`, right after `TreeColumn.java`): `Dialog` (common), `ColorDialog`/
+`FontDialog`/`MessageBox`/`TabItem`/`TabFolder`/`Combo`/`Table`/`TableItem`/`TableColumn` (cocoa
+widgets), `ScrolledCompositeLayout`/`ScrolledComposite`/`ControlEditor`/`TableEditor` (custom,
+`Eclipse SWT Custom Widgets/common` - already on `Main`'s sourcepath since Round 8 stack). ~8,750
+generated lines. `Table` reuses `Tree`'s NSTableView/NSOutlineView callback machinery (registered
+by `Display.initClasses` since Round 6) - no bridge change needed, same as Round 8 tree's own note
+about `Tree`.
+
+**Manual stubs retired**: `ColorDialog`/`FontDialog`/`Combo` (were opaque callback-receiver shims in
+`swt/widgets_stubs3_manual.go`, only ever holding the selector methods `Display.dialogProc`/
+`Display.applicationProc` already cast to and called by Go name - `Display.java` was translated
+back in Round 6 already assuming these types were real, so the real translation's method names
+matched the manual shim's exactly, no `Display` changes needed) and `Dialog` (was an empty
+`struct{}` in `swt/widgets_stubs_manual.go`, only ever compared to `nil`). Removed from both
+`tooling/j2go/manual.txt` (documentation copy) and the actual source of truth,
+`Manual.java`'s `ENTRIES`/`DIALOG` constant and the `widgets.*` stub-registration array - **manual.txt
+is not read at runtime** (confirmed by grep: nothing outside comments references the file), so a
+manual-type retirement needs both files edited, or the translator crashes with a null `ClassInfo`
+lookup at the newly-freed class (`ClassEmitter.emitClass`, `ci == null`) - hit and fixed this round.
+`FileDialog`/`TaskBar`/`TaskItem`/`Tray`/`TrayItem` stay manual (out of this round's scope).
+
+**Translator fixes, found by these files, both general (not per-file special cases):**
+
+1. **`names.properties`**: `Combo.createString(String)` (renders an item/text attributed string)
+   shadows the promoted 7-arg `Control.createString(...)` it also calls - the same collision
+   `Button`/`Label`'s own zero-arg `createString()` needed pinning for in Rounds 5/7, just with a
+   1-arg erasure key this time (`Combo#createString(java.lang.String)=CreateAttributedString`).
+2. **`names.properties`**: `TableItem.setText(String[])`/`setImage(Image[])` (declared before the
+   `Item.setText(String)`/`setImage(Image)` overrides they also have) shadow the bare cascade name
+   as `TreeItem`'s own array overloads did in Round 8 tree - pinned the same way
+   (`TableItem#setText([Ljava.lang.String;)=SetTexts`, `#setImage([Lorg.eclipse.swt.graphics.Image;)=SetImages`).
+   Without this, `go build` renamed the whole `Item` cascade's `setText(String)` from bare `SetText`
+   to `SetTextOnItem` again (same symptom as Round 8's `TreeItem` fix, now proven general: *any*
+   sibling class in the tree with an unpinned array overload pushes the same rename, not just
+   `TreeItem`).
+
+**`cmd/widgets2`** (hand-written, new): a `Shell` with a `TabFolder` of 3 tabs - (1) a `RowLayout`
+`Composite` with a `READ_ONLY` `Combo` (3 items) and an editable `Combo` (3 items), each with a
+`SelectionListener`; (2) a `Table` (`BORDER|FULL_SELECTION`, 2 columns with headers visible, 5
+rows, one `SelectionListener`); (3) a `ScrolledComposite` over a tall `RowLayout` `Composite` of 30
+`Label`s. Verified with an in-process `cacheDisplayInRect:` snapshot (scratch program, not in the
+repo, module `snapwidgets2` replacing `github.com/haiodo/gowt` with this worktree): all three tabs
+render correctly after `tabFolder.SetSelectionIndex(n)` (Combo tab: both combos visible with their
+first items; Table tab: 2 headered columns, 5 rows; Scrolled tab: `Label 1`.."Label 16" visible,
+clipped by the viewport, confirming the content (573px tall) is taller than the visible area (302px)
+and scrolls). Selection fired through the real native paths, not direct Go calls: the read-only
+combo (`NSPopUpButton`) via `selectItemAtIndex:` + `sendAction:to:` (`sendAction:to:` is what
+`NSControl` itself calls after a real click - `NSPopUpButton` has no `performClick:`-with-index
+equivalent, unlike `NSButton`); the editable combo (`NSComboBox`) and the table row via
+`selectItemAtIndex:`/`selectRowIndexes:byExtendingSelection:` alone, which - like `NSOutlineView` in
+Round 8 tree - post their selection-changed notification on any change regardless of source. All
+three listeners printed the expected text (`Combo (read-only) selected: Three`, `Combo (editable)
+selected: Beta`, `Table selected: Row 3`), matching the item/row actually selected (index 2, index
+1, index 2).
+
+**Not a translator bug, a usage bug caught and fixed**: the first `cmd/widgets2` draft called only
+`scrolled.SetExpandHorizontal(true)` (not `SetExpandVertical`) and relied on `SetMinSize` alone for
+the content's height. Real `ScrolledCompositeLayout.layout()` (`Eclipse SWT Custom Widgets/common`)
+only overwrites `contentRect.height` from `minHeight` when `expandVertical` is true; with it false,
+`contentRect` starts from `content.getBounds()` - the content's *current* bounds, which stay
+`{0,0,0,0}` forever if nothing ever calls `content.setSize(...)` directly. `minWidth`/`minHeight` by
+themselves only feed the scrollbar-range math and the layout's own `computeSize`, not the actual
+content resize when not expanding. Fixed by also calling `SetExpandVertical(true)` (the standard
+real-SWT idiom for a content composite taller than its viewport: expand both axes, then
+`SetMinSize` clamps the *smaller* dimension up when the viewport is bigger than the content) -
+matches upstream `ScrolledComposite` snippets, not a gap in the translated code itself.
+
+**Gaps**: `FileDialog` stays a manual stub (not in this round's file list). `ColorDialog`/
+`FontDialog`'s modal `open()` (`NSColorPanel`/`NSFontPanel` + `runModalForWindow:`) was not run live
+- constructing `ColorDialog`/`FontDialog` and building doesn't crash, but the blocking modal loop
+itself is unverified (matches the task's own "runtime check optional (they block)"). `MessageBox`'s
+sheet-mode path (`style & SWT.SHEET`) constructs a real `Callback` (`new Callback(this,
+"_completionHandler", 1)`), which is still the manual reflection-stub that panics on `GetAddress`
+(`swt/widgets_stubs3_manual.go`, unchanged) - only the non-sheet `runModal()` path is safe to
+exercise; not run live either. `TableEditor`/`ControlEditor` translated cleanly (no unsupported
+markers) but have no `cmd/*` exercising them yet - `ControlExample`'s own `Tab.java` does not
+reference either class directly (checked by grep), so nothing in this round's brief required
+driving them live. Mouse-driven column resize/reorder, `Table`'s `CHECK`/`VIRTUAL` styles, and
+`Combo`'s autocomplete/verify-text paths were not exercised live.

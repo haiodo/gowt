@@ -49,10 +49,7 @@ java.util.concurrent.ConcurrentLinkedQueue
 # helpers whose static members it calls - swt/widgets_stubs3_manual.go.
 org.eclipse.swt.internal.LONG
 org.eclipse.swt.widgets.Display.APPEARANCE
-org.eclipse.swt.widgets.FontDialog
 org.eclipse.swt.widgets.FileDialog
-org.eclipse.swt.widgets.ColorDialog
-org.eclipse.swt.widgets.Combo
 org.eclipse.swt.widgets.TaskBar
 org.eclipse.swt.widgets.TaskItem
 org.eclipse.swt.widgets.Tray

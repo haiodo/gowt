@@ -52,6 +52,10 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # ColorDialog/FontDialog/MessageBox (NSColorPanel/NSFontPanel/NSAlert modal dialogs - Display
 # already casts to these concrete types in its dialogProc/alertProc, see manual.txt history),
 # TableEditor/ControlEditor.
+# Round 9 images: ImageLoader/ImageLoaderListener/ImageLoaderEvent join the swt package for
+# real; the PNG/GIF/BMP/JPEG codec backend itself is NOT translated from SWT's internal/image -
+# it's a hand-written wrapper over Go's stdlib image codecs instead, see README
+# "Round 9 images" for why.
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/Point.java \
 	org/eclipse/swt/graphics/Rectangle.java \
@@ -122,6 +126,9 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/ImageFileNameProvider.java \
 	org/eclipse/swt/graphics/ImageDataAtSizeProvider.java \
 	org/eclipse/swt/graphics/ImageGcDrawer.java \
+	org/eclipse/swt/graphics/ImageLoader.java \
+	org/eclipse/swt/graphics/ImageLoaderListener.java \
+	org/eclipse/swt/graphics/ImageLoaderEvent.java \
 	org/eclipse/swt/graphics/Cursor.java \
 	org/eclipse/swt/graphics/TextLayout.java \
 	org/eclipse/swt/graphics/TextStyle.java \

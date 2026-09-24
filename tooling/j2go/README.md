@@ -2078,3 +2078,147 @@ markers) but have no `cmd/*` exercising them yet - `ControlExample`'s own `Tab.j
 reference either class directly (checked by grep), so nothing in this round's brief required
 driving them live. Mouse-driven column resize/reorder, `Table`'s `CHECK`/`VIRTUAL` styles, and
 `Combo`'s autocomplete/verify-text paths were not exercised live.
+
+## Round 9 images: load images from files and streams
+
+**Status: done, green.** `mvn -q -f tooling/j2go/pom.xml package && bash tooling/port.sh &&
+CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` all pass. `cmd/images` (hand-
+written): a Shell with a Canvas whose PaintListener draws 3 images (PNG, GIF, BMP) loaded via
+`getResourceAsStream -> ImageData(InputStream) -> Image(Display, ImageData)`, through
+`gc.DrawImage`. Checked with the same in-process `cacheDisplayInRect:toBitmapImageRep:` snapshot
+`cmd/paint` uses: PNG "SWT" text (translucent pink on white), GIF folder icon (correct colors,
+transparent background), BMP red square all render correctly. `cmd/hello`/`paint`/`form`/`tree`/
+`stack` still run.
+
+**Direction change mid-round**: the first pass translated `FileFormat`'s dispatch as a manual
+type plus a full j2go port of `PNGFileFormat`/`GIFFileFormat`/`WinBMPFileFormat`/`OS2BMPFileFormat`/
+`LZWCodec`/`LZWNode`/`Png*`/`LEDataInputStream`/`LEDataOutputStream` (~1900 Java lines across 20
+files) - it translated cleanly and a PNG decoded correctly through it (zlib inflate via Go's
+`compress/zlib`, PNG's own dead "3.2" hand-rolled-inflate fallback and its `PngEncoder`/save path
+dropped as out of scope). Redirected before finishing GIF/BMP: less code and a proven decoder set
+(Go's stdlib png/gif/jpeg plus `golang.org/x/image/bmp`) beats re-verifying a translated codec's
+every color-type/interlace/compression branch against a decoder nothing else exercises. `Image
+Loader`/`ImageData`/`ImageLoaderEvent`/`ImageLoaderListener` still translate for real - only the
+codec *backend* (`FileFormat`'s dispatch and the four format implementations) is hand-written.
+
+**Translated for real** (swt invocation in `port.sh`): `ImageLoader`, `ImageLoaderListener`,
+`ImageLoaderEvent` (extends `java.util.EventObject`, same manual-superclass-embedding pattern as
+`TypedEvent`).
+
+**Manual** (`swt/graphics_imagecodec_manual.go`, replacing `graphics_stubs_manual.go`'s
+`ImageDataLoaderLoad` stub and `manual.txt`'s `org.eclipse.swt.internal.image.FileFormat`/
+`org.eclipse.swt.graphics.ImageDataLoader` entries): `ImageDataLoaderLoad` (the `ImageData(stream)`/
+`ImageData(filename)` entry point), `ImageLoader.LoadByZoomStub` (method-level manual override,
+`loadByZoom`'s Stream/Optional/`DPIUtil.ElementAtZoom<T>`-based HiDPI dispatch has no translator
+rule and is out of scope - the override decodes every frame directly instead),
+`NativeImageLoaderSave` (`org.eclipse.swt.internal.NativeImageLoader`, a cocoa PI-layer file never
+translated - `ImageLoader.save`'s real entry point), `FileFormatIsDynamicallySizableFormat`/
+`FileFormatCanLoadAtZoom` (both real functions kept for the `FileFormat` manual-type name, always
+`false` - none of the 4 stdlib-backed formats support arbitrary-size decode, and the zoom one's
+call site already fails to build its own `ElementAtZoom` argument and never actually runs it).
+
+### The stdlib codec wrapper
+
+`decodeImages([]byte) []*ImageData` tries `gif.DecodeAll` first (its own multi-frame API - a
+non-GIF input just fails to parse and falls through), then `image.Decode` for anything its
+registered codecs (`image/png`, `image/jpeg`, blank-imported for their `init()` registration, and
+`golang.org/x/image/bmp`, which self-registers as `"bmp"`) recognize. Two converters handle the
+result: `palettedToImageData` for a `*image.Paletted` frame (GIF, and a palette PNG/BMP - `image.
+Decode` already returns `*image.Paletted` for those) builds an indexed `PaletteData` from `img.
+Palette`, always at 8-bit depth (real SWT picks the smallest of 1/2/4/8 that fits the palette
+size; `ImageData.SetPixels`/`GetPixels` pack/unpack correctly either way, so this is a size, not a
+correctness, difference) and a `transparentPixel` from the one palette entry whose alpha is 0 (a
+binary alpha in the palette itself - `image/gif`'s own decode already bakes GIF transparency this
+way). `directToImageData` handles everything else as 24-bit direct-color RGB (`PaletteData
+(0xFF0000, 0xFF00, 0xFF)`, matching how `PNGFileFormat.java`'s own read code laid out RGB bytes) -
+real SWT keeps 8-bit grayscale as an indexed gray-ramp palette instead of promoting it to RGB, one
+converter here for every non-indexed source. It buffers each row's pixels/alphas before deciding
+whether to keep the alpha plane: a decoder's pixel Go type (`NRGBA` vs `RGBA`) says a pixel *can*
+carry alpha, not that the source image actually varies it (a 32-bit BMP decodes as `NRGBA` with
+every alpha byte still 255) - only a genuinely non-opaque image gets `SetAlphas` calls and a
+non-nil `AlphaData`, checked per pixel. `imageDataToImage` is the inverse, for `save()`: an
+indexed `ImageData` becomes `*image.Paletted`, everything else `*image.NRGBA` (`GetPixel`/
+`GetAlpha` already unpack 1/2/4-bit indexed and direct-color alike, so one converter covers both).
+`gifEncode`'s single-frame case is `gif.Encode` directly (it quantizes any `image.Image` itself);
+multi-frame goes through `gif.EncodeAll`, which requires already-`*image.Paletted` frames, so a
+frame that came from a direct-color `ImageData` is quantized first with a plain nearest-new-or-
+exact-match 256-color builder (`quantizeToPaletted` - no dithering, no popularity analysis; GIF
+itself requires an indexed palette per frame, so real SWT's own GIF encoder faces the same
+constraint).
+
+### java.io and the resource registry
+
+`internal/jrt/io.go`: `InputStream`/`OutputStream` are Go interfaces mirroring the Java methods
+actually used - `Read()/ReadRange(b []int8, off, length int32)/Close()` and `Write(b int32)/
+WriteRange(...)/Flush()/Close()` (`[]int8` matches this codebase's existing `byte[]` mapping, not
+Go's own `[]byte`). `NewInputStream(io.Reader)`/`NewOutputStream(io.Writer)` wrap a Go stream;
+`AsWriter(OutputStream) io.Writer` wraps the other way for handing a `jrt.OutputStream` to a Go
+stdlib encoder that wants a real `io.Writer` (`png.Encode`, `jpeg.Encode`, `bmp.Encode`,
+`gif.Encode`(`All`) - see "The stdlib codec wrapper" below). `IOException`
+is a pointer type (`*jrt.IOException` implements `error`) constructed with no message (every `new
+IOException()` in scope is 0-arg). `ReadAllBytes(InputStream) []int8` is `readAllBytes()`.
+`NewFileInputStream`/`NewFileOutputStream(filename string)` back `new FileInputStream/
+FileOutputStream(filename)` (`ImageLoader.load/save(String)`) via `os.Open`/`os.Create` - the
+`"FileInputStream"`/`"FileOutputStream"` Manual names feed `ctorFuncName` only, no such Go type
+exists, both constructors return the `InputStream`/`OutputStream` interface directly.
+
+`internal/jrt/resources.go`: `RegisterResources(fs.FS)`/`GetResourceAsStream(name string)
+InputStream` - `Class.getResourceAsStream(name)`'s Go stand-in. Simplest version, as directed: one
+process-wide `fs.FS` (set once, typically from a hand-written command's own `//go:embed`), `nil`
+on a missing FS or a missing name (matching Java's own "resource not found" `null` return). Not a
+translator concern - `getResourceAsStream` is only ever called from hand-written Go (`cmd/images`,
+the test), never from a file j2go translates.
+
+### Translator changes (general rules, not per-file)
+
+- **`Manual.java`**: `java.io.InputStream`/`OutputStream` registered as ordinary field/param types
+  (`isValueType=true`, a bare `jrt.InputStream`/`OutputStream` - same reasoning as `java.lang.
+  Throwable` -> `error`), `java.io.IOException` (`*jrt.IOException`), `java.io.FileInputStream`/
+  `FileOutputStream` (constructor-name-only aliases, see above), `java.io.BufferedInputStream`
+  (aliased to `InputStream` - it only ever appears inside `Image.java`'s own already-dead HiDPI
+  `new BufferedInputStream(...)`, whose enclosing `var stream jrt.InputStream = ...` stopped
+  compiling the moment `InputStream` became a real type instead of `any` - aliasing the never-
+  actually-constructed wrapper type is simpler than teaching the panic-closure machinery to adapt
+  an unresolved type's closure to its assignment target's declared type). Two new `MANUAL_METHODS`
+  entries (`ImageLoader#loadByZoom`, `NativeImageLoader#save`), erasure-key-style like the existing
+  ones.
+- **`ExpressionEmitter.fieldGoName`**: an unqualified reference to a field declared on a manual-
+  super type (`EventObject.source`) now keeps that type's own Go name (always exported, since
+  `jrt` is a separate package - an unexported field there wouldn't even be visible from `swt`'s
+  promoted-field access) instead of recomputing one from the Java field's own (here `protected`)
+  visibility. Found by `ImageLoaderEvent.toString()`'s `"source=" + source` - the first translated
+  file to reference an inherited `EventObject` field unqualified; `TypedEvent` (translated since
+  Round 3) never does, only ever calling `GetSource()` or constructing via `jrt.NewEventObject`.
+- **`ControlFlowEmitter.emitCatchDispatch`**: a single concrete catch alternative (`catch
+  (IOException e)`) now emits a real type assertion (`e := r.(*jrt.IOException)`) instead of a
+  bare `e := r` keeping `r`'s static `any` type - the body can then use `e` as that type (e.g.
+  pass it where `error` is wanted, as `SWT.error(code, throwable)` does throughout `ImageLoader.
+  java`). A true multi-catch of unrelated concrete types still can't have one assertion and keeps
+  the old `any` shape. No file before this round had a non-broad (not `RuntimeException`/`Error`/
+  `Exception`/`Throwable`) concrete catch at all, so this path was unexercised.
+- **`JdkIntrinsics`**: `InputStream.readAllBytes()` -> `jrt.ReadAllBytes(recv)` - `Image.java`'s
+  own HiDPI provider path (Round 7 gfx) calls it on an abstractly-typed `InputStream`; the generic
+  `Manual.isManual` dispatch would instead emit `recv.ReadAllBytes()`, a method `jrt.InputStream`
+  doesn't declare (it only needs `Read`/`ReadRange`/`Close` for the rest of this port).
+- **`internal/jrt/util.go`**: `List.Remove(v any) bool` (`java.util.List.remove(Object)`) -
+  `ImageLoader.removeImageLoaderListener` is the first translated caller.
+
+### Differences from Java SWT ImageLoader
+
+| Format | Load | Save | ImageData fields that may differ |
+|---|---|---|---|
+| PNG | yes (`image/png`) | yes (`image/png`) | Always 24-bit RGB + separate `alphaData`, even for an 8-bit palette PNG that `image.Decode` returns as `*image.Paletted` (that case IS indexed, matching SWT); 16-bit-per-channel PNGs decode via Go's own 16-to-8 truncation, not SWT's rounding; interlaced (Adam7) PNGs decode correctly (`image/png` handles it) but never fire `ImageLoaderListener`'s progressive-load callback - decode is all-at-once. |
+| GIF | yes (`image/gif`, multi-frame) | yes (single frame: `gif.Encode`; multi-frame: `gif.EncodeAll` after quantizing any non-indexed frame, see above) | `disposalMethod`/`delayTime` copied directly from `gif.GIF.Disposal`/`.Delay` (both already GIF-spec units, no conversion needed); `ImageLoader.repeatCount`/`logicalScreenWidth`/`logicalScreenHeight` copied from `gif.GIF.LoopCount`/`.Config` the same way. Always 8-bit indexed (real SWT can pick 1/2/4/8). |
+| BMP | yes (`golang.org/x/image/bmp`: 1/4/8/16/24/32-bit) | yes (`golang.org/x/image/bmp.Encode`, always 32-bit direct color - real SWT's own writer picks a matching depth/RLE compression) | 1/4/8-bit BMPs decode as indexed (matches SWT); 16/24/32-bit as 24-bit direct RGB + `alphaData` only if a 32-bit BMP's 4th byte actually varies (many are a padding byte, always 255 - checked per pixel, not assumed from the bit count). |
+| JPEG | yes (`image/jpeg`) | yes (`image/jpeg`, default quality) | Always 24-bit RGB (JPEG has no palette or alpha channel in this port's scope either way, so this matches SWT). `ImageLoader.compression` (SWT's 1-100 JPEG quality knob) isn't read - `jpeg.Encode`'s `nil` options is `jpeg.DefaultQuality` (75, same as SWT's own default). |
+| ICO, TIFF, OS/2 BMP, SVG | no | no | `image.Decode` doesn't recognize any of these (no registered Go codec) - `SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT)`, the same error SWT itself raises for a genuinely unrecognized format. |
+
+### Open gaps
+
+`ImageLoader.loadBySize`/`canLoadAtZoom`/`isDynamicallySizable` (the HiDPI `@2x`-variant API,
+`DPIUtil.ElementAtZoom<T>`/`java.util.Optional`/`Stream`-based, no translator rule for generic
+records or the Stream API) stay unresolved-call panics, same as `Image`'s own `ImageFileNameProvider
+`/`ImageDataProvider` HiDPI construction path since Round 7 gfx - none of this is on the `ImageData
+(stream)`/`Image(display, imageData)` path the task targets. `java.io.BufferedInputStream`'s alias
+is name-only (see above) - a real `mark`/`reset`-based pushback buffer is not ported, matching
+`FileFormat.isDynamicallySizableFormat`'s own (already-stubbed) reliance on `mark`/`reset`.

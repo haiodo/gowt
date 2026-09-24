@@ -13,6 +13,11 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `cmd/paint/` | A Canvas with a PaintListener drawing through `GC` (`CGO_ENABLED=0 go run ./cmd/paint`) |
 | `cmd/form/` | GridLayout form: Label + Text, OK button, File > Quit menu |
 | `cmd/tree/` | Tree (NSOutlineView): three root items with children, Selection and Expand listeners |
+| `cmd/images/` | Loads PNG/GIF/BMP via `getResourceAsStream` -> `ImageData(InputStream)` -> `Image`, draws with `gc.DrawImage` |
+
+`ImageLoader`/`ImageData` translate from SWT as usual, but the PNG/GIF/BMP/JPEG codec backend
+behind them is hand-written over Go's stdlib `image` codecs plus `golang.org/x/image/bmp`, not
+translated from SWT's own `internal.image` package - see `tooling/j2go/README.md` "Round 9 images".
 
 ## Build
 

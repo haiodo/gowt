@@ -46,8 +46,9 @@ func StrictChecksRunWithStrictChecksDisabled(r jrt.Runnable) { r.Run() }
 
 const FileFormatDEFAULT_ZOOM int32 = 100
 
-// ImageDataLoader: every entry point needs ImageLoader's codecs.
-func ImageDataLoaderLoad(source any) *ImageData { panic("stub: ImageLoader not ported") }
+// ImageDataLoaderLoad is real now (swt/graphics_imagecodec_manual.go, a stdlib-backed codec
+// wrapper) - only the HiDPI @2x-variant entry points below stay stubbed, see README "Round 9
+// images".
 func ImageDataLoaderLoadByZoom(source any, fileZoom int32, targetZoom int32) any {
 	panic("stub: ImageLoader not ported")
 }

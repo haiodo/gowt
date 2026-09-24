@@ -102,10 +102,36 @@ org.eclipse.swt.internal.cocoa.OS#SELECTORS
 
 # Round 7 gfx: GC's text-layout cache (a record key + LinkedHashMap.removeEldestEntry subclass,
 # swt/graphics_gc_manual.go), and the image-loading side the graphics classes call but that is
-# not ported - ImageLoader/codecs, DPIUtil scaling math, strict checks (swt/graphics_stubs_manual.go).
+# not ported - DPIUtil scaling math, strict checks (swt/graphics_stubs_manual.go); ImageDataLoader/
+# FileFormat are real now (Round 9 images), still whole-class skips - see below.
 org.eclipse.swt.graphics.GC.GCTextData.Key
 org.eclipse.swt.graphics.GC.GCTextData.Cache
+org.eclipse.swt.internal.StrictChecks
+
+# Round 9 images: ImageLoader/ImageLoaderListener/ImageLoaderEvent translate for real; the PNG/
+# GIF/BMP/JPEG codec backend is a hand-written wrapper over Go's stdlib image codecs instead of a
+# translated org.eclipse.swt.internal.image (FileFormat + PNGFileFormat/GIFFileFormat/
+# WinBMPFileFormat/OS2BMPFileFormat/LZW*/Png*/LEData*) - see README "Round 9 images" for why.
+# ImageDataLoader/FileFormat/ImageColorTransformer stay whole-class skips (swt/
+# graphics_imagecodec_manual.go and swt/graphics_stubs_manual.go replace their entry points).
 org.eclipse.swt.graphics.ImageDataLoader
 org.eclipse.swt.internal.image.FileFormat
 org.eclipse.swt.internal.image.ImageColorTransformer
-org.eclipse.swt.internal.StrictChecks
+
+# java.io surface ImageLoader.java's own translated code needs (field/param types, new
+# FileInputStream/FileOutputStream(filename)); java.io.BufferedInputStream is aliased to
+# InputStream only so an already-dead-code (HiDPI @2x) local-var declaration in Image.java still
+# type-checks - no real BufferedInputStream behavior (pushback, buffering) is ported.
+java.io.InputStream
+java.io.OutputStream
+java.io.IOException
+java.io.FileInputStream
+java.io.FileOutputStream
+java.io.BufferedInputStream
+
+# Method-level: ImageLoader.loadByZoom's HiDPI @2x-variant dispatch (Stream/Optional/
+# DPIUtil.ElementAtZoom<T>, no translator rule) is out of scope; NativeImageLoader (a cocoa PI
+# file never translated) is replaced by a real stdlib-backed implementation. Both hand-written in
+# swt/graphics_imagecodec_manual.go.
+org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)
+org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)

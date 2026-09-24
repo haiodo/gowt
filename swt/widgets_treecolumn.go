@@ -407,13 +407,13 @@ func (this *TreeColumn) SetMoveable(moveable bool) {
 
 func (this *TreeColumn) SetResizable(resizable bool) {
 	this.CheckWidget()
-	var cond536 int32
+	var cond540 int32
 	if resizable {
-		cond536 = cocoa.OSNSTableColumnUserResizingMask
+		cond540 = cocoa.OSNSTableColumnUserResizingMask
 	} else {
-		cond536 = cocoa.OSNSTableColumnNoResizing
+		cond540 = cocoa.OSNSTableColumnNoResizing
 	}
-	this.nsColumn.SetResizingMask(int64(cond536))
+	this.nsColumn.SetResizingMask(int64(cond540))
 }
 
 func (this *TreeColumn) setText_(string_ string) {

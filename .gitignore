@@ -1,2 +1,3 @@
 tooling/j2go/target/
 tooling/j2go/dependency-reduced-pom.xml
+bin/

@@ -688,7 +688,7 @@ func (this *Button) SetGrayed(grayed bool) {
 
 func (this *Button) SetImage(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	if (this.style & SWTARROW) != 0 {

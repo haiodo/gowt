@@ -82,8 +82,6 @@ var DefaultExceptionHandlerRUNTIME_ERROR_HANDLER = func(e error) {
 	panic(e)
 }
 
-type FontMetrics struct{}
-
 type Combo struct{ Composite }
 
 func (c *Combo) SendTrackingKeyEvent(nsEvent *cocoa.NSEvent, eventType int32) {}

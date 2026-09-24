@@ -1449,3 +1449,82 @@ Every item is a general translator rule unless it names a manual file.
   (checks the Go package instead of a Java class name), `Thread.currentThread()` = goroutine id
   (so `checkWidget` really rejects other goroutines), `OS.setTheme`/`isSystemDarkAppearance`/
   `isAppDarkAppearance` are translated again (Display calls them).
+
+## Round 7 gfx: GC and the graphics resources, the paint path
+
+**Status: done, green.** `mvn -q -f tooling/j2go/pom.xml package && bash tooling/port.sh &&
+CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` pass. `cmd/paint` (hand-written): a
+Shell with a Canvas (white background) whose PaintListener fills a rectangle, draws a 3px line,
+an oval and a string. The real path runs: `drawRect:` -> `OS.CALLBACK_drawRect_` (NSRect by
+value) -> `Display.windowProc` -> `Canvas.drawRect` -> `Widget.drawRect` -> `Control.drawWidget`
+-> `SWT.Paint` with a `GC` from `GC.cocoa_new`. Checked with an in-process
+`cacheDisplayInRect:` snapshot (scratch program); `Path` fill/draw, `drawText` with
+`DRAW_TRANSPARENT` and `TextLayout.draw` render too. `cmd/hello` still runs.
+
+**Translated for real** (swt invocation in `port.sh`): `GC`, `GCData`, `Drawable`, `FontMetrics`,
+`LineAttributes`, `Pattern`, `Transform`, `Path`, `PathData`, `Region`, `Image`, `ImageData`,
+`PaletteData`, `ImageDataProvider`, `ImageFileNameProvider`, `ImageDataAtSizeProvider`,
+`ImageGcDrawer`, `Cursor`, `TextLayout`, `TextStyle`, `GlyphMetrics`. Their stubs are gone.
+
+**Manual** (manual.txt): `GC.GCTextData.Key`/`Cache` (`swt/graphics_gc_manual.go`: a record key
+and an insertion-ordered cache that releases the evicted layout at `size >= cacheSize`, as
+`removeEldestEntry` does); `ImageDataLoader`, `FileFormat.DEFAULT_ZOOM`, `ImageColorTransformer`
+(default "grayed" transform), `StrictChecks`, and the `DPIUtil` scaling functions
+(`swt/graphics_stubs_manual.go`). Image loading from files/streams is not ported:
+`ImageDataLoader.load*` panics, `canLoadAtZoom`/`isDynamicallySizable` are false.
+
+**Contract changes** (general rules):
+
+- **Hex literals**: `stripNumericSuffix` stripped `f`/`d` from hex tokens (`0xFF` -> `0xF`). This
+  silently broke existing output too (`SWT.DEL` was `0x7`, `SWT.KEY_MASK` `0xFFF`, `Color`'s
+  `alpha &= 0xF`). Hex tokens now lose only `l`/`L`. A hex `int` literal above `0x7fffffff` is
+  emitted as its negative decimal (`0xFF000000` -> `-16777216`), a negative hex `long` likewise.
+- **Narrowing constant casts**: a cast that JDT folds to a constant (`(byte)0xFC`) emits the
+  Java-truncated value (`int8(-4)`); Go rejects overflowing constant conversions.
+- **Binary numeric promotion**: a `byte`/`short`/`char` operand of a binary operator is converted
+  to `int32` (`NumericEmitter.adaptBinaryOperands`), as Java promotes it. Before, `b & 0xFF` on a
+  byte stayed `int8` (compile error or wrong result).
+- **`>>>`** (and `>>>=`, also inline): `int32(uint32(x) >> n)` / `int64(uint64(x) >> n)`.
+- **Inline compound assignment** (`sp = spr += d`): applied in place, its value is the new lhs.
+  It used to drop the operator (`spr = d`).
+- **Loop conditions and updaters with hoisted statements**: a `for`/`while` condition that needs
+  a prelude (`(bit >>= b) != 0`, `--index >= 0`) is re-evaluated at the top of each iteration
+  (`for { prelude; if !(cond) { break } ... }`); it used to run once before the loop (an
+  infinite loop in `ImageData`'s static init; `Synchronizer`'s `while (--index >= 0)` was also
+  affected). The general `for` form puts its updaters in a post-statement closure
+  (`for ; cond; func() {...}() {`), so `continue` still runs them, and is braced so its hoisted
+  init vars keep loop scope.
+- **Interface default methods**: the body becomes `<Iface>Default<M>(this <Iface>, ...)`; every
+  implementer that doesn't declare the method gets a forwarder (`Emitter.defaultForwarders`:
+  translated classes, anonymous classes, `<Iface>Func` adapters), so the Go interface lists
+  default methods like abstract ones. `Control`/`Device`/`Image` get `IsAutoScalable` this way.
+- **Inner (non-static member) classes**: an `this_0 *Outer` field; `new Inner()` sets it after
+  construction (prelude), and an unqualified outer member resolves to `this.this_0`
+  (`Emitter.implicitThis`). Ceiling: the inner constructor itself can't reach the outer
+  instance (none does in the translated set).
+- **Field names that are Go keywords** (`GCTextData.range`) get a `_` suffix
+  (`EmitUtil.fieldIdent`).
+- **Catch of an unmapped JDK exception** (`IOException`, `NumberFormatException`) is a dead
+  clause (`if false { var e error ... }`); it used to be `case any:`, which caught every panic.
+- **`super.equals`/`super.hashCode` resolving to `Object`**: identity (`any(this) == o`,
+  `jrt.IdentityHashCode`).
+- **Casts of a lambda/method reference** to its functional interface emit the value as is.
+- **try-with-resources on an `any`-typed resource** closes it only if it has `Close()`.
+- **Unresolved `new X(args)`** references its args inside the panic closure (as unresolved calls
+  already did), so a local used only there doesn't go "declared and not used".
+- `stmtExits` treats `if/else` with both branches exiting as exiting (no unreachable
+  `fallthrough`).
+- **JDK intrinsics**: `Math.round` (floor(x+0.5), int for float / long for double),
+  `Math.hypot`, `Float.floatToIntBits`, `new String(char[], offset, count)`.
+
+**Markers left** (swt invocation): MethodInvocation 130, ClassInstanceCreation 14,
+CatchClause 7, ExpressionMethodReference 2, MethodDeclaration 2. New ones from this round are
+JDK surface off the paint path: `StringBuilder` (`TextStyle.toString`, `TextLayout`'s tab
+expansion), `Optional`/`ByteArrayInputStream`/`DPIUtil.ElementAtZoom` (`Image` from providers
+and streams), `FontMetrics.equals`'s `Double.compare`, `Objects.hash`.
+
+**Open gaps**: image loading (ImageLoader + codecs); `Image` from `ImageFileNameProvider`/
+`ImageDataProvider` at non-100 zoom goes through unported `ElementAtZoom`/`Optional` calls;
+`DPIUtil` is a partial hand port (deviceZoom = native zoom, no `swt.autoScale`); records and
+`LinkedHashMap` subclasses have no translator rule (GC's cache is hand-written); Java's shift
+count masking (`& 31`) is not emitted for `<<`/`>>`/`>>>`.

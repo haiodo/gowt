@@ -10,7 +10,6 @@ public class Manual {
 	private static final String ROUNDING_MODE = "org.eclipse.swt.graphics.RoundingMode";
 	private static final String PLATFORM = "org.eclipse.swt.internal.Platform";
 	private static final String LIBRARY = "org.eclipse.swt.internal.Library";
-	private static final String GRAPHICS_GC = "org.eclipse.swt.graphics.GC";
 	private static final String TOUCH = "org.eclipse.swt.widgets.Touch";
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
@@ -20,15 +19,9 @@ public class Manual {
 	private static final String SCROLL_BAR = "org.eclipse.swt.widgets.ScrollBar";
 	private static final String CARET = "org.eclipse.swt.widgets.Caret";
 	private static final String IME = "org.eclipse.swt.widgets.IME";
-	private static final String IMAGE = "org.eclipse.swt.graphics.Image";
-	private static final String IMAGE_DATA = "org.eclipse.swt.graphics.ImageData";
-	private static final String CURSOR = "org.eclipse.swt.graphics.Cursor";
-	private static final String REGION = "org.eclipse.swt.graphics.Region";
-	private static final String DRAWABLE = "org.eclipse.swt.graphics.Drawable";
 	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
 	private static final String ACC = "org.eclipse.swt.accessibility.ACC";
 	private static final String WIDGET_SPY = "org.eclipse.swt.internal.WidgetSpy";
-	private static final String GC_DATA = "org.eclipse.swt.graphics.GCData";
 	private static final String DIALOG = "org.eclipse.swt.widgets.Dialog";
 	private static final String AUTOSCALING_MODE = "org.eclipse.swt.graphics.AutoscalingMode";
 	// checkWidget()'s thread-affinity check: no real Thread, both sides collapse to "any" nil.
@@ -52,7 +45,7 @@ public class Manual {
 	private static final String JAVA_EVENT_OBJECT = "java.util.EventObject";
 	private static final String JAVA_EVENT_LISTENER = "java.util.EventListener";
 	private static final String SWT_EVENT_LISTENER = "org.eclipse.swt.internal.SWTEventListener";
-	private static final String JRT_IMPORT = "github.com/haiodo/gowt/internal/jrt";
+	public static final String JRT_IMPORT = "github.com/haiodo/gowt/internal/jrt";
 
 	private record Entry(String goType, String importPath, boolean isValueType) {}
 
@@ -66,7 +59,6 @@ public class Manual {
 		reg(ROUNDING_MODE, "RoundingMode", null, true);
 		reg(PLATFORM, "Platform", null, false);
 		reg(LIBRARY, "Library", null, false);
-		reg(GRAPHICS_GC, "GC", null, false);
 		reg(TOUCH, "Touch", null, false);
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
@@ -76,17 +68,9 @@ public class Manual {
 		reg(SCROLL_BAR, "ScrollBar", null, false);
 		reg(CARET, "Caret", null, false);
 		reg(IME, "IME", null, false);
-		reg(IMAGE, "Image", null, false);
-		reg(IMAGE_DATA, "ImageData", null, false);
-		reg(CURSOR, "Cursor", null, false);
-		reg(REGION, "Region", null, false);
-		// A content-free marker interface in the translated set (Control implements it): Go's
-		// structural typing needs no explicit "implements", so nothing to embed - see emitClass.
-		reg(DRAWABLE, "any", null, true);
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(ACC, "ACC", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
-		reg(GC_DATA, "GCData", null, false);
 		reg(DIALOG, "Dialog", null, false);
 		reg(AUTOSCALING_MODE, "AutoscalingMode", null, true);
 		reg(JAVA_THREAD, "any", null, true);
@@ -106,12 +90,23 @@ public class Manual {
 			String q = "org.eclipse.swt.internal." + n;
 			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);
 		}
+		// GC's text-layout cache: a record key and an LRU LinkedHashMap subclass, hand-written in
+		// swt/graphics_gc_manual.go (no record rule; removeEldestEntry has no jrt.Map equivalent).
+		reg("org.eclipse.swt.graphics.GC.GCTextData.Key", "GC_GCTextData_Key", null, false);
+		reg("org.eclipse.swt.graphics.GC.GCTextData.Cache", "GC_GCTextData_Cache", null, false);
+		// Image loading (ImageLoader + codecs) is not ported: loaders/strict checks/disabled-image
+		// colour transform are stubs in swt/graphics_stubs_manual.go.
+		for (String n : new String[]{"graphics.ImageDataLoader", "internal.image.FileFormat", "internal.image.ImageColorTransformer",
+				"internal.StrictChecks"}) {
+			String q = "org.eclipse.swt." + n;
+			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);
+		}
 		// A nested Java enum: no enum rule yet, hand-written as an int32 type + constants.
 		reg(DISPLAY_APPEARANCE, "Display_APPEARANCE", null, true);
 		// Widgets/graphics Display only references off the Shell+Button path (dialogs, tray,
 		// dock menu, combo tracking, font metrics): opaque stubs in swt/widgets_stubs3_manual.go.
 		for (String n : new String[]{"widgets.FontDialog", "widgets.FileDialog", "widgets.ColorDialog", "widgets.Combo",
-				"widgets.TaskBar", "widgets.TaskItem", "widgets.Tray", "widgets.TrayItem", "graphics.FontMetrics"}) {
+				"widgets.TaskBar", "widgets.TaskItem", "widgets.Tray", "widgets.TrayItem"}) {
 			String q = "org.eclipse.swt." + n;
 			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);
 		}

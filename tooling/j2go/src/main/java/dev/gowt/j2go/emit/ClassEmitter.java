@@ -56,6 +56,9 @@ final class ClassEmitter {
 			if (o instanceof MethodDeclaration md && Modifier.isStatic(md.getModifiers())) {
 				emitStaticMethod(md, ci, out);
 			}
+			if (o instanceof MethodDeclaration md && Modifier.isDefault(md.getModifiers())) {
+				emitDefaultMethod(md, ci, out);
+			}
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;
 		emitter.currentClassInfo = savedClassInfo;
@@ -100,6 +103,9 @@ final class ClassEmitter {
 		} else if (ci.manualSuperQualifiedName != null) {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			out.append('\t').append(Manual.goTypeName(ci.manualSuperQualifiedName)).append('\n');
+		}
+		if (EmitUtil.isInnerClass(ci.binding)) {
+			out.append('\t').append(EmitUtil.OUTER_FIELD).append(' ').append(dev.gowt.j2go.GoTypes.map(ci.binding.getDeclaringClass(), emitter)).append('\n');
 		}
 		Set<String> methodGoNames = collectMethodGoNames(td);
 		for (Object o : td.bodyDeclarations()) {
@@ -158,13 +164,49 @@ final class ClassEmitter {
 				else emitStaticMethod(md, ci, out);
 			}
 		}
+		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName));
 		for (Object o : td.bodyDeclarations()) {
-			if (o instanceof TypeDeclaration nested) {
+			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
 				emitClass(nested, out);
 			}
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;
 		emitter.currentClassInfo = savedClassInfo;
+	}
+
+	/** Forwarders to <Iface>Default<M> for every interface default method `type` (a class, an
+	 * anonymous class, or the interface itself for its Func adapter) doesn't implement. */
+	String defaultForwarders(ITypeBinding type, String goRecvType) {
+		StringBuilder b = new StringBuilder();
+		Set<String> seen = new HashSet<>();
+		List<ITypeBinding> todo = new ArrayList<>(type.isInterface() ? List.of(type) : List.of(type.getInterfaces()));
+		while (!todo.isEmpty()) {
+			ITypeBinding iface = todo.remove(0).getErasure();
+			todo.addAll(List.of(iface.getInterfaces()));
+			TypeModel.ClassInfo ici = emitter.model.lookup(iface);
+			if (ici == null) continue;
+			for (IMethodBinding m : iface.getDeclaredMethods()) {
+				if (!Modifier.isDefault(m.getModifiers()) || !seen.add(m.getName() + TypeModel.signature(m))) continue;
+				if (!type.isInterface() && implementsIn(type, m)) continue;
+				String goName = emitter.names.goMemberName(m, Names.capitalize(m.getName()));
+				List<String> args = new ArrayList<>(List.of("this"));
+				for (int i = 0; i < m.getParameterTypes().length; i++) args.add("a" + i);
+				String ret = emitter.retType(m);
+				b.append("func (this ").append(goRecvType).append(") ").append(goName).append('(').append(emitter.paramList(m, null))
+						.append(") ").append(ret).append(" {\n\t").append(ret.isEmpty() ? "" : "return ")
+						.append(emitter.qualify(ici.goFuncPrefix + "Default" + goName, ici)).append('(').append(String.join(", ", args)).append(")\n}\n\n");
+			}
+		}
+		return b.toString();
+	}
+
+	private static boolean implementsIn(ITypeBinding type, IMethodBinding m) {
+		for (ITypeBinding t = type; t != null; t = t.getSuperclass()) {
+			for (IMethodBinding dm : t.getDeclaredMethods()) {
+				if (!Modifier.isAbstract(dm.getModifiers()) && (dm.overrides(m) || dm.isEqualTo(m))) return true;
+			}
+		}
+		return false;
 	}
 
 	private Set<String> collectMethodGoNames(TypeDeclaration td) {
@@ -183,7 +225,7 @@ final class ClassEmitter {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
 			String javaName = f.getName().getIdentifier();
 			if (javaName.equals("serialVersionUID")) continue;
-			String goName = pub ? Names.capitalize(javaName) : javaName;
+			String goName = pub ? Names.capitalize(javaName) : EmitUtil.fieldIdent(javaName);
 			if (pub && methodGoNames.contains(goName)) {
 				goName = goName + "_";
 				emitter.unsupported.add("FieldMethodNameClash: " + javaName + " clashes with a method Go name, suffixed _");
@@ -261,6 +303,20 @@ final class ClassEmitter {
 				.append('(').append(emitter.paramList(sigSource, md)).append(") ")
 				.append(emitter.retType(sigSource)).append(" {\n");
 		emitter.currentReturnType = sigSource.getReturnType();
+		out.append(emitter.block(md.getBody(), 1));
+		emitter.currentReturnType = null;
+		out.append("}\n\n");
+	}
+
+	// A default method's body as <Iface>Default<M>(this, ...); implementers that don't declare it
+	// get a forwarding method (Emitter.defaultForwarders), so the Go interface lists it as usual.
+	private void emitDefaultMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+		IMethodBinding mb = md.resolveBinding();
+		String goName = emitter.names.goMemberName(mb, Names.capitalize(md.getName().getIdentifier()));
+		String params = emitter.paramList(mb, md);
+		out.append("func ").append(ci.goFuncPrefix).append("Default").append(goName).append("(this ").append(ci.goTypeName)
+				.append(params.isEmpty() ? "" : ", " + params).append(") ").append(emitter.retType(mb)).append(" {\n");
+		emitter.currentReturnType = mb.getReturnType();
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");

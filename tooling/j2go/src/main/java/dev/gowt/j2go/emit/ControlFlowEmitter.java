@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static dev.gowt.j2go.emit.EmitUtil.ind;
 
@@ -128,6 +129,7 @@ final class ControlFlowEmitter {
 		if (s instanceof Block bl && !bl.statements().isEmpty()) {
 			return stmtExits((Statement) bl.statements().get(bl.statements().size() - 1));
 		}
+		if (s instanceof IfStatement is) return is.getElseStatement() != null && stmtExits(is.getThenStatement()) && stmtExits(is.getElseStatement());
 		return false;
 	}
 
@@ -152,7 +154,9 @@ final class ControlFlowEmitter {
 					String init = emitter.exprInto(f.getInitializer(), b, indent);
 					b.append(ind(indent)).append("var ").append(name).append(' ').append(goType)
 							.append(" = ").append(init).append('\n');
-					resourceCloses.add(name + ".Close()");
+					// An unmapped JDK resource (InputStream) is any: close it only if it can be.
+					resourceCloses.add(goType.equals("any") ? "func() { if c, ok := " + name + ".(interface{ Close() }); ok { c.Close() } }()"
+							: name + ".Close()");
 				}
 			} else {
 				emitter.unsupported.add("TryStatement: non-declaration resource " + o);
@@ -283,7 +287,11 @@ final class ControlFlowEmitter {
 			String varName = emitter.sanitizeIdent(param.getName().getIdentifier());
 			boolean broad = altTypes.size() == 1 && altTypes.get(0).equals("error");
 			b.append(ind(indent)).append(i == 0 ? "if " : "} else if ");
-			if (broad) {
+			if (altTypes.isEmpty()) {
+				// Only unmapped JDK exceptions (IOException): nothing translated throws them.
+				b.append("false {\n").append(ind(indent + 1)).append("var ").append(varName).append(" error\n");
+				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
+			} else if (broad) {
 				b.append(varName).append(", ok := r.(error); ok {\n");
 				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			} else {
@@ -310,9 +318,10 @@ final class ControlFlowEmitter {
 		} else {
 			out.add(catchGoType(t.resolveBinding()));
 		}
+		out.removeIf(Objects::isNull);
 		// Collapse to Go's error interface whenever every alternative resolves to it (a catch of
 		// java.lang.RuntimeException/Error/Exception/Throwable - see README "Known gaps").
-		if (out.stream().allMatch(s -> s.equals("error"))) return List.of("error");
+		if (!out.isEmpty() && out.stream().allMatch(s -> s.equals("error"))) return List.of("error");
 		return out;
 	}
 
@@ -330,6 +339,6 @@ final class ControlFlowEmitter {
 			return Manual.isValueType(qualified) ? gt : "*" + gt;
 		}
 		emitter.unsupported.add("CatchClause: unresolved exception type " + qualified);
-		return "any";
+		return null;
 	}
 }

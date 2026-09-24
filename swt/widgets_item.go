@@ -64,7 +64,7 @@ func (this *Item) SetImage(image *Image) {
 	if this.image == image {
 		return
 	}
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.image = image

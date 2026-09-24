@@ -116,3 +116,6 @@ func LocaleLanguage(locale any) string {
 
 // JavaVersionFeature is Runtime.version().feature(): there is no JVM, so no Java version.
 func JavaVersionFeature(version any) int32 { return 0 }
+
+// IdentityHashCode is Object.hashCode: Go's heap objects don't move, so the address is stable.
+func IdentityHashCode(x any) int32 { return int32(reflect.ValueOf(x).Pointer()) }

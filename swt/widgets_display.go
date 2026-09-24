@@ -425,7 +425,10 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 func (this *Display) Execute(runnable jrt.Runnable) {
 	_ = runnable
 	if this.IsDisposed() {
-		panic(func() any { panic("j2go: unresolved new RejectedExecutionException") }())
+		panic(func() any {
+			_ = []any{NewSWTExceptionCodeMessage(SWTERROR_WIDGET_DISPOSED, "")}
+			panic("j2go: unresolved new RejectedExecutionException")
+		}())
 	}
 	if this.thread == ThreadCurrentThread() {
 		this.SyncExec(runnable)
@@ -1073,8 +1076,8 @@ func (this *Display) GetLastEventTime() int32 {
 		return 0
 	}
 	var timestamp float64 = event.Timestamp() * 1000
-	for timestamp > 0x7FFFFFF {
-		timestamp -= float64(0x7FFFFFF)
+	for timestamp > 0x7FFFFFFF {
+		timestamp -= float64(0x7FFFFFFF)
 	}
 	return int32(timestamp)
 }
@@ -1328,7 +1331,7 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 		return nil
 	}
 	if this.cursors[id] == (nil) {
-		this.cursors[id] = NewCursor(upcastDisplayToDevice(this), id)
+		this.cursors[id] = NewCursorDeviceStyle(upcastDisplayToDevice(this), id)
 	}
 	return this.cursors[id]
 }
@@ -2408,7 +2411,7 @@ func (this *Display) Post(event *Event) bool {
 					vKey = int16(-1)
 					var output []uint16 = make([]uint16, maxStringLength)
 					var actualStringLength []int64 = make([]int64, 1)
-					for i := int16(0); int32(i) <= 0x7; i++ {
+					for i := int16(0); int32(i) <= 0x7F; i++ {
 						deadKeyState[0] = 0
 						var cond192 int16
 						if type_ == SWTKeyDown {
@@ -2417,13 +2420,13 @@ func (this *Display) Post(event *Event) bool {
 							cond192 = cocoa.OSKUCKeyActionUp
 						}
 						cocoa.OSUCKeyTranslate(keyLayout, i, cond192, 0, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
-						if output[0] == event.Character {
+						if int32(output[0]) == int32(event.Character) {
 							vKey = i
 							break
 						}
 					}
 					if int32(vKey) == -1 {
-						for i := int16(0); int32(i) <= 0x7; i++ {
+						for i := int16(0); int32(i) <= 0x7F; i++ {
 							deadKeyState[0] = 0
 							var cond193 int16
 							if type_ == SWTKeyDown {
@@ -2431,8 +2434,8 @@ func (this *Display) Post(event *Event) bool {
 							} else {
 								cond193 = cocoa.OSKUCKeyActionUp
 							}
-							cocoa.OSUCKeyTranslate(keyLayout, i, cond193, (cocoa.OSShiftKey>>8)&0xF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
-							if output[0] == event.Character {
+							cocoa.OSUCKeyTranslate(keyLayout, i, cond193, (cocoa.OSShiftKey>>8)&0xFF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
+							if int32(output[0]) == int32(event.Character) {
 								vKey = i
 								break
 							}
@@ -2867,28 +2870,30 @@ func (this *Display) Release() {
 		}
 	}()
 	this.taskBar = nil
-	for {
-		tbrk199 := false
-		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
+	{
+		for {
+			tbrk199 := false
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if ex, ok := r.(error); ok {
+						_ = ex
+						exceptions.Stash(ex)
+					} else {
+						panic(r)
+					}
+				}()
+				if !this.ReadAndDispatch() {
+					tbrk199 = true
 					return
 				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
-				} else {
-					panic(r)
-				}
 			}()
-			if !this.ReadAndDispatch() {
-				tbrk199 = true
-				return
+			if tbrk199 {
+				break
 			}
-		}()
-		if tbrk199 {
-			break
 		}
 	}
 	if this.disposeList != (nil) {
@@ -2958,13 +2963,13 @@ func (this *Display) Release() {
 
 func (this *Display) ReleaseDisplay() {
 	if this.errorImage != (nil) {
-		this.errorImage.Dispose()
+		this.errorImage.impl.Dispose()
 	}
 	if this.infoImage != (nil) {
-		this.infoImage.Dispose()
+		this.infoImage.impl.Dispose()
 	}
 	if this.warningImage != (nil) {
-		this.warningImage.Dispose()
+		this.warningImage.impl.Dispose()
 	}
 	this.warningImage = nil
 	this.infoImage = this.warningImage
@@ -2993,7 +2998,7 @@ func (this *Display) ReleaseDisplay() {
 	this.timerDelegate = nil
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			this.cursors[i].Dispose()
+			this.cursors[i].impl.Dispose()
 		}
 	}
 	this.cursors = nil
@@ -4357,7 +4362,7 @@ func DisplayConvertToLf(text string) string {
 	if i == -1 || i == 0 {
 		return text
 	}
-	if utf16.Encode([]rune(text))[i-1] != Cr {
+	if int32(utf16.Encode([]rune(text))[i-1]) != int32(Cr) {
 		return text
 	}
 	i = 0
@@ -4916,9 +4921,12 @@ func DisplayLookupWidget(id int64, sel int64) *Widget {
 	if widget == (nil) {
 		var view *cocoa.NSView = cocoa.NewNSViewOverload1(id)
 		if view.IsKindOfClass(cocoa.OSClass_NSView) {
-			cond216 := view.Superview()
-			view = cond216
-			for widget == (nil) && (cond216) != (nil) {
+			for {
+				cond216 := view.Superview()
+				view = cond216
+				if !(widget == (nil) && (cond216) != (nil)) {
+					break
+				}
 				widget = DisplayGetWidget(view.Id)
 			}
 		}

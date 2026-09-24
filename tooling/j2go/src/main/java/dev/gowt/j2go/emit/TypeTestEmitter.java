@@ -18,6 +18,12 @@ final class TypeTestEmitter {
 
 	String emitCast(CastExpression ce) {
 		ITypeBinding t = ce.getType().resolveBinding();
+		// A narrowing constant cast ((byte)0xFC): Go rejects an overflowing constant conversion.
+		Object cv = ce.resolveConstantExpressionValue();
+		if (cv instanceof Character c) cv = (int) c;
+		if (t.isPrimitive() && (cv instanceof Byte || cv instanceof Short || cv instanceof Integer || cv instanceof Long)) {
+			return dev.gowt.j2go.GoTypes.map(t, emitter) + "(" + cv + ")";
+		}
 		String expr = emitter.expr(ce.getExpression());
 		// (Display) null: a disambiguating cast Java needs to pick an overload, not a runtime
 		// check - Go's nil has no interface to assert against, so this stays bare "nil".
@@ -25,6 +31,8 @@ final class TypeTestEmitter {
 		// A Java reference cast (e.g. (id)other) is a type assertion in Go, not a conversion:
 		// Go's T(x) conversion syntax doesn't apply between an interface and an unrelated pointer type.
 		TypeModel.ClassInfo target = emitter.model.lookup(t);
+		// (ImageDataProvider) zoom -> data: a lambda/method ref already has the target type.
+		if (ce.getExpression() instanceof LambdaExpression || ce.getExpression() instanceof MethodReference) return expr;
 		if (target != null && target.isInterface) return expr + ".(" + emitter.qualifiedTypeName(target) + ")";
 		if (target != null && !target.isStruct) return castHelper(ce.getExpression(), target) + "(" + expr + ")";
 		String qualified = t.getErasure().getQualifiedName();

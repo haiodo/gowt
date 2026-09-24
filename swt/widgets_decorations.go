@@ -276,7 +276,7 @@ func (this *Decorations) SetDefaultButton(button *Button) {
 
 func (this *Decorations) SetImage(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
@@ -300,7 +300,7 @@ func (this *Decorations) SetImages(images []*Image) {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(images)); i++ {
-		if images[i] == (nil) || images[i].IsDisposed() {
+		if images[i] == (nil) || images[i].impl.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 	}

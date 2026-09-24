@@ -217,6 +217,7 @@ public class TypeModel {
 	private void collect(AbstractTypeDeclaration decl, Names names) {
 		if (!(decl instanceof TypeDeclaration td)) return;
 		ITypeBinding binding = td.resolveBinding();
+		if (Manual.isManual(binding.getErasure().getQualifiedName())) return; // hand-written nested class
 		ClassInfo ci = new ClassInfo();
 		ci.binding = binding;
 		ci.binaryName = binding.getErasure().getBinaryName();

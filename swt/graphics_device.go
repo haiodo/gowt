@@ -432,7 +432,7 @@ func (this *Device) GetWarnings() bool {
 }
 
 func (this *Device) Init() {
-	this.COLOR_TRANSPARENT = NewColorRedGreenBlueAlpha(0xF, 0xF, 0xF, 0)
+	this.COLOR_TRANSPARENT = NewColorRedGreenBlueAlpha(0xFF, 0xFF, 0xFF, 0)
 	this.COLOR_BLACK = NewColorRedGreenBlue(0, 0, 0)
 	this.COLOR_DARK_RED = NewColorRedGreenBlue(0x80, 0, 0)
 	this.COLOR_DARK_GREEN = NewColorRedGreenBlue(0, 0x80, 0)
@@ -442,13 +442,13 @@ func (this *Device) Init() {
 	this.COLOR_DARK_CYAN = NewColorRedGreenBlue(0, 0x80, 0x80)
 	this.COLOR_GRAY = NewColorRedGreenBlue(0xC0, 0xC0, 0xC0)
 	this.COLOR_DARK_GRAY = NewColorRedGreenBlue(0x80, 0x80, 0x80)
-	this.COLOR_RED = NewColorRedGreenBlue(0xF, 0, 0)
-	this.COLOR_GREEN = NewColorRedGreenBlue(0, 0xF, 0)
-	this.COLOR_YELLOW = NewColorRedGreenBlue(0xF, 0xF, 0)
-	this.COLOR_BLUE = NewColorRedGreenBlue(0, 0, 0xF)
-	this.COLOR_MAGENTA = NewColorRedGreenBlue(0xF, 0, 0xF)
-	this.COLOR_CYAN = NewColorRedGreenBlue(0, 0xF, 0xF)
-	this.COLOR_WHITE = NewColorRedGreenBlue(0xF, 0xF, 0xF)
+	this.COLOR_RED = NewColorRedGreenBlue(0xFF, 0, 0)
+	this.COLOR_GREEN = NewColorRedGreenBlue(0, 0xFF, 0)
+	this.COLOR_YELLOW = NewColorRedGreenBlue(0xFF, 0xFF, 0)
+	this.COLOR_BLUE = NewColorRedGreenBlue(0, 0, 0xFF)
+	this.COLOR_MAGENTA = NewColorRedGreenBlue(0xFF, 0, 0xFF)
+	this.COLOR_CYAN = NewColorRedGreenBlue(0, 0xFF, 0xFF)
+	this.COLOR_WHITE = NewColorRedGreenBlue(0xFF, 0xFF, 0xFF)
 	this.paragraphStyle = castcocoaNSObjectTococoaNSMutableParagraphStyle(cocoa.NewNSMutableParagraphStyle().Alloc().Init())
 	this.paragraphStyle.SetAlignment(int64(cocoa.OSNSTextAlignmentLeft))
 	this.paragraphStyle.SetLineBreakMode(int64(cocoa.OSNSLineBreakByClipping))
@@ -547,7 +547,7 @@ func (this *Device) PrintErrors() {
 					if ok148 {
 						colors++
 					}
-					_, ok149 := object.(*Cursor)
+					_, ok149 := resourceImplAsCursor(object)
 					if ok149 {
 						cursors++
 					}
@@ -555,31 +555,31 @@ func (this *Device) PrintErrors() {
 					if ok150 {
 						fonts++
 					}
-					_, ok151 := object.(*GC)
+					_, ok151 := resourceImplAsGC(object)
 					if ok151 {
 						gcs++
 					}
-					_, ok152 := object.(*Image)
+					_, ok152 := resourceImplAsImage(object)
 					if ok152 {
 						images++
 					}
-					_, ok153 := any(nil), false
+					_, ok153 := resourceImplAsPath(object)
 					if ok153 {
 						paths++
 					}
-					_, ok154 := any(nil), false
+					_, ok154 := resourceImplAsPattern(object)
 					if ok154 {
 						patterns++
 					}
-					_, ok155 := object.(*Region)
+					_, ok155 := resourceImplAsRegion(object)
 					if ok155 {
 						regions++
 					}
-					_, ok156 := any(nil), false
+					_, ok156 := resourceImplAsTextLayout(object)
 					if ok156 {
 						textLayouts++
 					}
-					_, ok157 := any(nil), false
+					_, ok157 := resourceImplAsTransform(object)
 					if ok157 {
 						transforms++
 					}
@@ -686,6 +686,10 @@ func DeviceGetDevice() *Device {
 	return device
 }
 
+func (this *Device) IsAutoScalable() bool {
+	return DrawableDefaultIsAutoScalable(this)
+}
+
 // j2go: instanceof helper for cocoa.NSAutoreleasePool and its subclasses within the translated set.
 func idImplAsNSAutoreleasePool(x any) (*cocoa.NSAutoreleasePool, bool) {
 	switch v := x.(type) {
@@ -706,10 +710,82 @@ func castcocoaNSObjectTococoaNSAutoreleasePool(x *cocoa.NSObject) *cocoa.NSAutor
 	return v
 }
 
+// j2go: instanceof helper for Cursor and its subclasses within the translated set.
+func resourceImplAsCursor(x any) (*Cursor, bool) {
+	switch v := x.(type) {
+	case *Cursor:
+		return v, true
+	}
+	return nil, false
+}
+
 // j2go: instanceof helper for Font and its subclasses within the translated set.
 func resourceImplAsFont(x any) (*Font, bool) {
 	switch v := x.(type) {
 	case *Font:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for GC and its subclasses within the translated set.
+func resourceImplAsGC(x any) (*GC, bool) {
+	switch v := x.(type) {
+	case *GC:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for Image and its subclasses within the translated set.
+func resourceImplAsImage(x any) (*Image, bool) {
+	switch v := x.(type) {
+	case *Image:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for Path and its subclasses within the translated set.
+func resourceImplAsPath(x any) (*Path, bool) {
+	switch v := x.(type) {
+	case *Path:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for Pattern and its subclasses within the translated set.
+func resourceImplAsPattern(x any) (*Pattern, bool) {
+	switch v := x.(type) {
+	case *Pattern:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for Region and its subclasses within the translated set.
+func resourceImplAsRegion(x any) (*Region, bool) {
+	switch v := x.(type) {
+	case *Region:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for TextLayout and its subclasses within the translated set.
+func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
+	switch v := x.(type) {
+	case *TextLayout:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for Transform and its subclasses within the translated set.
+func resourceImplAsTransform(x any) (*Transform, bool) {
+	switch v := x.(type) {
+	case *Transform:
 		return v, true
 	}
 	return nil, false
@@ -728,14 +804,8 @@ func init() {
 				if r == nil {
 					return
 				}
-				if func() bool {
-					switch r.(type) {
-					case any:
-						return true
-					}
-					return false
-				}() {
-					e := r
+				if false {
+					var e error
 					_ = e
 				} else {
 					panic(r)

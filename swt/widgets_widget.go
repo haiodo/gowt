@@ -1208,11 +1208,11 @@ func (this *Widget) FixMnemonic(buffer []uint16) int32 {
 		t59 := j
 		j++
 		buffer[t59] = cond57
-		if (cond57) == '&' {
+		if int32((cond57)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
-			if buffer[i] == '&' {
+			if int32(buffer[i]) == int32('&') {
 				i++
 				continue
 			}
@@ -2079,7 +2079,7 @@ func (this *Widget) SetKeyState(event *Event, type_ int32, nsEvent *cocoa.NSEven
 		event.Character = '\u000d'
 		break
 	case int32(SWTDEL):
-		event.Character = uint16(0x7)
+		event.Character = uint16(0x7F)
 		break
 	case int32(SWTESC):
 		event.Character = uint16(0x1B)

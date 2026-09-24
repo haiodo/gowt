@@ -38,6 +38,9 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # Round 6: Display and what its construction/event loop needs for real - Device (Display's
 # superclass), Resource/Font/Color (Device.init builds the system colors/font), DeviceData,
 # Synchronizer/RunnableLock (asyncExec queue polled every readAndDispatch/sleep).
+#
+# Round 7 gfx: the paint path - GC/GCData and the graphics resources a GC draws with
+# (Pattern/Transform/Path/Region/Image/Cursor/TextLayout) plus their common value types.
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/Point.java \
 	org/eclipse/swt/graphics/Rectangle.java \
@@ -76,6 +79,27 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/widgets/Monitor.java \
 	org/eclipse/swt/widgets/TouchSource.java \
 	org/eclipse/swt/widgets/Display.java \
+	org/eclipse/swt/graphics/Drawable.java \
+	org/eclipse/swt/graphics/GC.java \
+	org/eclipse/swt/graphics/GCData.java \
+	org/eclipse/swt/graphics/FontMetrics.java \
+	org/eclipse/swt/graphics/LineAttributes.java \
+	org/eclipse/swt/graphics/Pattern.java \
+	org/eclipse/swt/graphics/Transform.java \
+	org/eclipse/swt/graphics/Path.java \
+	org/eclipse/swt/graphics/PathData.java \
+	org/eclipse/swt/graphics/Region.java \
+	org/eclipse/swt/graphics/Image.java \
+	org/eclipse/swt/graphics/ImageData.java \
+	org/eclipse/swt/graphics/PaletteData.java \
+	org/eclipse/swt/graphics/ImageDataProvider.java \
+	org/eclipse/swt/graphics/ImageFileNameProvider.java \
+	org/eclipse/swt/graphics/ImageDataAtSizeProvider.java \
+	org/eclipse/swt/graphics/ImageGcDrawer.java \
+	org/eclipse/swt/graphics/Cursor.java \
+	org/eclipse/swt/graphics/TextLayout.java \
+	org/eclipse/swt/graphics/TextStyle.java \
+	org/eclipse/swt/graphics/GlyphMetrics.java \
 	-- \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"

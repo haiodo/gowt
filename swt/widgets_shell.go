@@ -682,8 +682,11 @@ func (this *Shell) GetModalShell() *Shell {
 	if modalShells != (nil) {
 		var bits int32 = SWTAPPLICATION_MODAL | SWTSYSTEM_MODAL
 		var index int32 = int32(len(modalShells))
-		index--
-		for index >= 0 {
+		for {
+			index--
+			if !(index >= 0) {
+				break
+			}
 			var modal *Shell = modalShells[index]
 			if modal != (nil) {
 				if (modal.style & bits) != 0 {
@@ -935,7 +938,7 @@ func (this *Shell) Print(gc *GC) bool {
 	if gc == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	var children []*Control = this._getChildren()
@@ -1169,7 +1172,7 @@ func (this *Shell) SetAlpha(alpha int32) {
 		return
 	}
 	this.CheckWidget()
-	alpha &= 0xF
+	alpha &= 0xFF
 	this.window.SetAlphaValue(float64(float32(alpha) / 255))
 }
 
@@ -1429,7 +1432,7 @@ func (this *Shell) SetRegion(region *Region) {
 		return
 	}
 	if region != (nil) {
-		if region.IsDisposed() {
+		if region.impl.IsDisposed() {
 			this.Error(SWTERROR_INVALID_ARGUMENT)
 		}
 		var bounds *Rectangle = region.GetBounds()

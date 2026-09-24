@@ -421,7 +421,7 @@ const SWTBS uint16 = '\u0008'
 
 const SWTCR uint16 = '\u000d'
 
-const SWTDEL uint16 = uint16(0x7)
+const SWTDEL uint16 = uint16(0x7F)
 
 const SWTESC uint16 = uint16(0x1B)
 
@@ -471,7 +471,7 @@ const SWTSCROLL_PAGE int32 = 2
 
 const SWTKEYCODE_BIT int32 = (16777216)
 
-const SWTKEY_MASK int32 = SWTKEYCODE_BIT + 0xFFF
+const SWTKEY_MASK int32 = SWTKEYCODE_BIT + 0xFFFF
 
 const SWTARROW_UP int32 = SWTKEYCODE_BIT + 1
 

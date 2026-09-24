@@ -256,7 +256,7 @@ func (this *Composite) DrawBackground(gc *GC, x int32, y int32, width int32, hei
 	if gc == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	var control *Control = this.impl.FindBackgroundControl()

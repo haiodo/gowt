@@ -81,7 +81,7 @@ final class StatementEmitter {
 			String rhs = emitter.adaptNumeric(emitter.expr(a.getRightHandSide()), a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
 			String boolOp = booleanCompoundOp(a, lhs, rhs);
 			if (boolOp != null) return ind(indent) + boolOp + "\n";
-			return ind(indent) + lhs + " " + a.getOperator().toString() + " " + rhs + "\n";
+			return ind(indent) + compoundAssign(a, lhs, rhs) + "\n";
 		}
 		// x++;/--x; as their own statement: Go's native x++/x-- directly, no throwaway temp
 		// (the generic emitExpr path below would leave a bare, unused-value statement).
@@ -131,6 +131,30 @@ final class StatementEmitter {
 		b.append(ind(indent + 1)).append(lhsText).append(" = ").append(elseText).append('\n');
 		b.append(ind(indent)).append("}\n");
 		return b.toString();
+	}
+
+	// `for cond; post {`; a condition with hoisted statements (`(bit >>= b) != 0`) is re-evaluated
+	// at the top of every iteration instead.
+	private String loopHead(Expression cond, String post, int indent) {
+		List<String> hoisted = new ArrayList<>();
+		String c = cond == null ? "" : withPrelude(() -> emitter.expr(cond), hoisted);
+		String inHead = hoisted.isEmpty() ? c : "";
+		StringBuilder b = new StringBuilder(ind(indent)).append("for ");
+		b.append(post.isEmpty() ? inHead : "; " + inHead + "; " + post).append(" {\n");
+		if (hoisted.isEmpty()) return b.toString();
+		for (String p : hoisted) b.append(ind(indent + 1)).append(p).append('\n');
+		b.append(ind(indent + 1)).append("if !(").append(c).append(") {\n").append(ind(indent + 2)).append("break\n")
+				.append(ind(indent + 1)).append("}\n");
+		return b.toString();
+	}
+
+	private String withPrelude(java.util.function.Supplier<String> emit, List<String> hoisted) {
+		List<String> saved = emitter.prelude;
+		emitter.prelude = new ArrayList<>();
+		String text = emit.get();
+		hoisted.addAll(emitter.prelude);
+		emitter.prelude = saved;
+		return text;
 	}
 
 	/** Emits any prelude for e (instanceof hoisting) directly at `indent` into b, returns e's inline text. */
@@ -183,9 +207,17 @@ final class StatementEmitter {
 			String rhs = emitter.adaptNumeric(emitter.expr(a.getRightHandSide()), a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
 			String boolOp = booleanCompoundOp(a, lhs, rhs);
 			if (boolOp != null) return boolOp;
-			return lhs + " " + a.getOperator().toString() + " " + rhs;
+			return compoundAssign(a, lhs, rhs);
 		}
 		return emitter.expr(e);
+	}
+
+	private String compoundAssign(Assignment a, String lhs, String rhs) {
+		if (a.getOperator() != Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN) return lhs + " " + a.getOperator() + " " + rhs;
+		ITypeBinding lt = a.getLeftHandSide().resolveTypeBinding();
+		String goType = dev.gowt.j2go.GoTypes.map(lt, emitter);
+		String shifted = emitter.unsignedShift(lhs, lt, rhs);
+		return lhs + " = " + (goType.equals("int32") || goType.equals("int64") ? shifted : goType + "(" + shifted + ")");
 	}
 
 	// Java allows |=/&=/^= on boolean operands (non-short-circuit logical assignment); Go has no
@@ -221,8 +253,11 @@ final class StatementEmitter {
 			} else {
 				initText = exprAsSimpleStmt((Expression) inits.get(0));
 			}
-			String condText = fs.getExpression() == null ? "" : emitter.expr(fs.getExpression());
-			String updText = updaters.isEmpty() ? "" : exprAsSimpleStmt((Expression) updaters.get(0));
+			List<String> hoisted = new ArrayList<>();
+			String condText = fs.getExpression() == null ? "" : withPrelude(() -> emitter.expr(fs.getExpression()), hoisted);
+			String updText = updaters.isEmpty() ? "" : withPrelude(() -> exprAsSimpleStmt((Expression) updaters.get(0)), hoisted);
+			// A hoisted update (`sp = spr += d`) must run every iteration: only the general form can.
+			if (!hoisted.isEmpty()) return emitForGeneral(fs, indent);
 			b.append(ind(indent)).append("for ").append(initText).append("; ").append(condText).append("; ").append(updText).append(" {\n");
 			emitter.loopSwitchDepth++;
 			b.append(emitAsBlock(fs.getBody(), indent + 1));
@@ -230,9 +265,15 @@ final class StatementEmitter {
 			b.append(ind(indent)).append("}\n");
 			return b.toString();
 		}
-		// General form (0/multiple initializers or updaters): hoist inits before the loop,
-		// append updaters at the end of the body - always correct, just less idiomatic.
-		for (Object o : inits) {
+		return emitForGeneral(fs, indent);
+	}
+
+	// General form (0/multiple initializers or updaters): hoist inits before the loop, append
+	// updaters at the end of the body; braced so the hoisted vars keep the loop's scope.
+	private String emitForGeneral(ForStatement fs, int indent) {
+		StringBuilder b = new StringBuilder(ind(indent) + "{\n");
+		indent++;
+		for (Object o : fs.initializers()) {
 			if (o instanceof VariableDeclarationExpression vde) {
 				for (Object fo : vde.fragments()) {
 					VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
@@ -244,13 +285,20 @@ final class StatementEmitter {
 				b.append(ind(indent)).append(exprAsSimpleStmt((Expression) o)).append('\n');
 			}
 		}
-		String condText = fs.getExpression() == null ? "" : emitExprInto(fs.getExpression(), b, indent);
-		b.append(ind(indent)).append("for ").append(condText).append(" {\n");
+		// Updaters run as the post statement (a closure, so a `continue` still reaches them).
+		StringBuilder post = new StringBuilder();
+		for (Object o : fs.updaters()) {
+			List<String> hoisted = new ArrayList<>();
+			String upd = withPrelude(() -> exprAsSimpleStmt((Expression) o), hoisted);
+			for (String p : hoisted) post.append(ind(indent + 1)).append(p).append('\n');
+			post.append(ind(indent + 1)).append(upd).append('\n');
+		}
+		b.append(loopHead(fs.getExpression(), post.length() == 0 ? "" : "func() {\n" + post + ind(indent) + "}()", indent));
 		emitter.loopSwitchDepth++;
 		b.append(emitAsBlock(fs.getBody(), indent + 1));
 		emitter.loopSwitchDepth--;
-		for (Object o : updaters) b.append(ind(indent + 1)).append(exprAsSimpleStmt((Expression) o)).append('\n');
 		b.append(ind(indent)).append("}\n");
+		b.append(ind(indent - 1)).append("}\n");
 		return b.toString();
 	}
 
@@ -273,9 +321,7 @@ final class StatementEmitter {
 	}
 
 	private String emitWhile(WhileStatement ws, int indent) {
-		StringBuilder b = new StringBuilder();
-		String cond = emitExprInto(ws.getExpression(), b, indent);
-		b.append(ind(indent)).append("for ").append(cond).append(" {\n");
+		StringBuilder b = new StringBuilder(loopHead(ws.getExpression(), "", indent));
 		emitter.loopSwitchDepth++;
 		b.append(emitAsBlock(ws.getBody(), indent + 1));
 		emitter.loopSwitchDepth--;

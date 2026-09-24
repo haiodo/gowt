@@ -148,6 +148,17 @@ final class JdkIntrinsics {
 			case "java.lang.Math#ceil", "java.lang.Math#floor":
 				emitter.fileImports.add("math");
 				return "math." + (name.equals("ceil") ? "Ceil" : "Floor") + "(float64(" + arg(mi, 0) + "))";
+			// Java rounds half up: floor(x + 0.5), int for a float argument, long for a double.
+			case "java.lang.Math#round":
+				emitter.fileImports.add("math");
+				return (mb.getParameterTypes()[0].getName().equals("float") ? "int32" : "int64")
+						+ "(math.Floor(float64(" + arg(mi, 0) + ") + 0.5))";
+			case "java.lang.Math#hypot":
+				emitter.fileImports.add("math");
+				return "math.Hypot(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.lang.Float#floatToIntBits":
+				emitter.fileImports.add("math");
+				return "int32(math.Float32bits(" + arg(mi, 0) + "))";
 			// Boxed Integer is Go any (Manual); unboxing asserts back, nil reads as 0.
 			case "java.lang.Integer#valueOf":
 				return mb.getParameterTypes()[0].isPrimitive() ? arg(mi, 0) : null;

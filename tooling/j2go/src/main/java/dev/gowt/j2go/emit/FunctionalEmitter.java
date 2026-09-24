@@ -82,7 +82,7 @@ final class FunctionalEmitter {
 			b.append("type ").append(adapterName).append(" struct {\n\tfn func(").append(params).append(") ").append(ret).append("\n}\n\n");
 			b.append("func (f *").append(adapterName).append(") ").append(samGoName).append('(').append(params).append(") ").append(ret).append(" {\n");
 			b.append(ret.isEmpty() ? "\tf.fn(" + args + ")\n" : "\treturn f.fn(" + args + ")\n");
-			b.append("}\n\n");
+			b.append("}\n\n").append(emitter.defaultForwarders(ifaceCi.binding, "*" + adapterName));
 			emitter.fileHelperSource.add(b.toString());
 		}
 		return adapterName;
@@ -191,7 +191,7 @@ final class FunctionalEmitter {
 			if (fn == null) return marker(cic, "AnonymousClass");
 			assigns.add(v + "." + field + " = " + fn);
 		}
-		decl.append("}\n\n").append(forwarders);
+		decl.append("}\n\n").append(forwarders).append(emitter.defaultForwarders(anonType, "*" + typeName));
 		emitter.fileHelperSource.add(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
 		if (!baseCi.isInterface) {

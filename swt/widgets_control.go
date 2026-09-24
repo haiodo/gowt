@@ -745,7 +745,7 @@ func (this *Control) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect
 	event.Height = int32(rect.Height)
 	this.SendEventEventTypeEvent(SWTPaint, event)
 	event.Gc = nil
-	gc.Dispose()
+	gc.impl.Dispose()
 }
 
 func (this *Control) EnableWidget(enabled bool) {
@@ -791,7 +791,7 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 		control = this
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.IsDisposed() {
+	if image != (nil) && !image.impl.IsDisposed() {
 		context.SaveGraphicsState()
 		cocoa.NSColorColorWithPatternImage(image.Handle).SetFill()
 		var phase cocoa.NSPoint = cocoa.NSPoint{}
@@ -875,9 +875,12 @@ func (this *Control) FixChildren(newShell *Shell, oldShell *Shell, newDecoration
 func (this *Control) FixFocus(focusControl *Control) {
 	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
-	cond66 := upcastCompositeToControl(control.parent)
-	control = cond66
-	for control != upcastShellToControl(shell) && (cond66) != (nil) {
+	for {
+		cond66 := upcastCompositeToControl(control.parent)
+		control = cond66
+		if !(control != upcastShellToControl(shell) && (cond66) != (nil)) {
+			break
+		}
 		if control.impl.SetFocus() {
 			return
 		}
@@ -1540,8 +1543,11 @@ func (this *Control) IsEnabledCursor() bool {
 }
 
 func (this *Control) IsFocusAncestor(control *Control) bool {
-	_, ok72 := isControlToShell(control)
-	for control != (nil) && control != this && !(ok72) {
+	for {
+		_, ok72 := isControlToShell(control)
+		if !(control != (nil) && control != this && !(ok72)) {
+			break
+		}
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -1971,7 +1977,7 @@ func (this *Control) Print(gc *GC) bool {
 	if gc == (nil) {
 		this.Error(SWTERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.View.DisplayRectIgnoringOpacity(this.View.Bounds(), gc.Handle)
@@ -2531,7 +2537,7 @@ func (this *Control) _setBackground(color *Color) {
 
 func (this *Control) SetBackgroundImage(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	if image == this.backgroundImage && this.backgroundAlpha > 0 {
@@ -2615,7 +2621,7 @@ func (this *Control) SetClipRegion(view *cocoa.NSView) {
 
 func (this *Control) SetCursor(cursor *Cursor) {
 	this.CheckWidget()
-	if cursor != (nil) && cursor.IsDisposed() {
+	if cursor != (nil) && cursor.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
@@ -2859,7 +2865,7 @@ func (this *Control) SetRedraw(redraw bool) {
 
 func (this *Control) SetRegion(region *Region) {
 	this.CheckWidget()
-	if region != (nil) && region.IsDisposed() {
+	if region != (nil) && region.impl.IsDisposed() {
 		this.Error(SWTERROR_INVALID_ARGUMENT)
 	}
 	this.region = region
@@ -3537,9 +3543,12 @@ func (this *Control) TraverseGroup(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond83 := ((index + offset + length) % length)
-	index = cond83
-	for (cond83) != start {
+	for {
+		cond83 := ((index + offset + length) % length)
+		index = cond83
+		if !((cond83) != start) {
+			break
+		}
 		var widget *Widget = list[index]
 		if !widget.IsDisposed() && widget.impl.SetTabGroupFocus() {
 			return true
@@ -3571,9 +3580,12 @@ func (this *Control) TraverseItem(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond84 := (index + offset + length) % length
-	index = cond84
-	for (cond84) != start {
+	for {
+		cond84 := (index + offset + length) % length
+		index = cond84
+		if !((cond84) != start) {
+			break
+		}
 		var child *Control = children[index]
 		if !child.IsDisposed() && child.impl.IsTabItem() {
 			if child.impl.SetTabItemFocus() {
@@ -3619,14 +3631,17 @@ func (this *Control) UpdateAll(all bool) bool {
 	if isPainting.ContainsObject(upcastcocoaNSViewTococoaId(this.View)) {
 		return false
 	}
-	var i int32 = 0
-	var length int32 = int32(isPainting.Count())
-	for i < length {
-		var view *cocoa.NSView = cocoa.NewNSViewOverload2(isPainting.ObjectAtIndex(int64(i)))
-		if view.IsDescendantOf(this.View) {
-			return false
+	{
+		var i int32 = 0
+		var length int32 = int32(isPainting.Count())
+		for ; i < length; func() {
+			i++
+		}() {
+			var view *cocoa.NSView = cocoa.NewNSViewOverload2(isPainting.ObjectAtIndex(int64(i)))
+			if view.IsDescendantOf(this.View) {
+				return false
+			}
 		}
-		i++
 	}
 	if this.impl.IsResizing() {
 		return false
@@ -3744,6 +3759,10 @@ func ControlGetLighterOrDarkerColor(pixel []float64, factor float64, wantDarker 
 
 func ControlLuma(rgbColor []float64) float64 {
 	return 0.2126*rgbColor[0] + 0.7152*rgbColor[1] + 0.0722*rgbColor[2]
+}
+
+func (this *Control) IsAutoScalable() bool {
+	return DrawableDefaultIsAutoScalable(this)
 }
 
 func upcastCompositeToWidget(x *Composite) *Widget {

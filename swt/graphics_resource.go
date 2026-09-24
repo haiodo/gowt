@@ -146,7 +146,7 @@ func newResourceResourceTracker(allocationStack error) *Resource_ResourceTracker
 }
 
 func (this *Resource_ResourceTracker) initResourceResourceTracker(allocationStack error) {
-	this.reporting = func() any { panic("j2go: unresolved new AtomicBoolean") }()
+	this.reporting = func() any { _ = []any{false}; panic("j2go: unresolved new AtomicBoolean") }()
 	this.allocationStack = allocationStack
 }
 
@@ -175,7 +175,10 @@ func (this *Resource_ResourceTrackerThreadFactory) initResourceResourceTrackerTh
 	for func() any { _ = []any{root}; panic("j2go: unresolved call getParent") }() != (nil) {
 		root = func() any { _ = []any{root}; panic("j2go: unresolved call getParent") }()
 	}
-	this.group = func() any { panic("j2go: unresolved new ThreadGroup") }()
+	this.group = func() any {
+		_ = []any{root, "SWTResourceTrackerThreadGroup"}
+		panic("j2go: unresolved new ThreadGroup")
+	}()
 }
 
 func (this *Resource_ResourceTrackerThreadFactory) NewThread(r jrt.Runnable) any {

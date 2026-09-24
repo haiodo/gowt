@@ -49,14 +49,8 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if func() bool {
-				switch r.(type) {
-				case any:
-					return true
-				}
-				return false
-			}() {
-				e := r
+			if false {
+				var e error
 				_ = e
 				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 			} else {
@@ -85,14 +79,8 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if func() bool {
-				switch r.(type) {
-				case any:
-					return true
-				}
-				return false
-			}() {
-				e := r
+			if false {
+				var e error
 				_ = e
 				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 			} else {
@@ -113,14 +101,8 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if func() bool {
-				switch r.(type) {
-				case any:
-					return true
-				}
-				return false
-			}() {
-				e := r
+			if false {
+				var e error
 				_ = e
 				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
 			} else {
@@ -232,7 +214,7 @@ func (this *FontData) GetLocale() string {
 	var result string = func() string { _ = []any{buffer}; panic("j2go: unresolved call toString") }()
 	var length int32 = int32(len(result))
 	if length > 0 {
-		if utf16.Encode([]rune(result))[length-1] == sep {
+		if int32(utf16.Encode([]rune(result))[length-1]) == int32(sep) {
 			result = result[0 : length-1]
 		}
 	}
@@ -310,7 +292,7 @@ func (this *FontData) SetStyle(style int32) {
 }
 
 func (this *FontData) String() string {
-	var buffer any = func() any { panic("j2go: unresolved new StringBuilder") }()
+	var buffer any = func() any { _ = []any{128}; panic("j2go: unresolved new StringBuilder") }()
 	func() any { _ = []any{buffer, "1|"}; panic("j2go: unresolved call append") }()
 	func() any { _ = []any{buffer, this.GetName()}; panic("j2go: unresolved call append") }()
 	func() any { _ = []any{buffer, "|"}; panic("j2go: unresolved call append") }()

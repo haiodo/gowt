@@ -697,9 +697,14 @@ func (this *Button) SetGrayed(grayed bool) {
 	}
 }
 
-func (this *Button) SetImage(image *Image) {
+func (this *Button) SetImage(imageLike ImageLike) {
+	var image *Image
+	if imageLike != nil {
+		image = imageLike.AsImage()
+	}
+	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if (this.style & ARROW) != 0 {

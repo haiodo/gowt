@@ -193,7 +193,7 @@ func (this *MenuItem) KeyChar(key int32) int32 {
 	case PAGE_UP:
 		return 0x21DE
 	case PAGE_DOWN:
-		return 0x21D
+		return 0x21DF
 	case KEYPAD_CR:
 		return cocoa.OSNSEnterCharacter
 	case HELP:
@@ -221,11 +221,11 @@ func (this *MenuItem) KeyChar(key int32) int32 {
 	case F9:
 		return 0xF70C
 	case F10:
-		return 0xF70
+		return 0xF70D
 	case F11:
 		return 0xF70E
 	case F12:
-		return 0xF70
+		return 0xF70F
 	case F13:
 		return 0xF710
 	case F14:
@@ -536,7 +536,7 @@ func (this *MenuItem) UpdateText() {
 	var i int32 = 0
 	var j int32 = 0
 	for i < int32(len(buffer)) {
-		if buffer[i] == '\u0009' {
+		if int32(buffer[i]) == int32('\u0009') {
 			break
 		}
 		t181 := i
@@ -545,11 +545,11 @@ func (this *MenuItem) UpdateText() {
 		t182 := j
 		j++
 		buffer[t182] = cond180
-		if (cond180) == '&' {
+		if int32((cond180)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
-			if buffer[i] == '&' {
+			if int32(buffer[i]) == int32('&') {
 				i++
 				continue
 			}
@@ -599,7 +599,7 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 		var i int32 = 0
 		var j int32 = 0
 		for i < int32(len(buffer)) {
-			if buffer[i] == '\u0009' {
+			if int32(buffer[i]) == int32('\u0009') {
 				break
 			}
 			t184 := i
@@ -608,18 +608,18 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 			t185 := j
 			j++
 			buffer[t185] = cond183
-			if (cond183) == '&' {
+			if int32((cond183)) == int32('&') {
 				if i == int32(len(buffer)) {
 					continue
 				}
-				if buffer[i] == '&' {
+				if int32(buffer[i]) == int32('&') {
 					i++
 					continue
 				}
 				j--
 			}
 		}
-		if i < int32(len(buffer)) && buffer[i] == '\u0009' {
+		if i < int32(len(buffer)) && int32(buffer[i]) == int32('\u0009') {
 			for j = i + 1; j < int32(len(buffer)); j++ {
 				switch buffer[j] {
 				case '\u2303':
@@ -651,7 +651,7 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 				}
 				break
 			case 2:
-				if buffer[i+1] == 'F' {
+				if int32(buffer[i+1]) == int32('F') {
 					switch buffer[i+2] {
 					case '1':
 						key = 0xF704
@@ -684,16 +684,16 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 				}
 				break
 			case 3:
-				if buffer[i+1] == 'F' && buffer[i+2] == '1' {
+				if int32(buffer[i+1]) == int32('F') && int32(buffer[i+2]) == int32('1') {
 					switch buffer[i+3] {
 					case '0':
-						key = 0xF70
+						key = 0xF70D
 						break
 					case '1':
 						key = 0xF70E
 						break
 					case '2':
-						key = 0xF70
+						key = 0xF70F
 						break
 					case '3':
 						key = 0xF710

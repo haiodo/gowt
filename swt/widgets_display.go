@@ -282,7 +282,12 @@ func (this *Display) initDisplayData(data *DeviceData) {
 	this.defaultButtonTimer = anon219
 }
 
-func (this *Display) AddContext(context *GCData) {
+func (this *Display) AddContext(contextLike GCDataLike) {
+	var context *GCData
+	if contextLike != nil {
+		context = contextLike.AsGCData()
+	}
+	_ = context
 	if this.contexts == (nil) {
 		this.contexts = make([]*GCData, 12)
 	}
@@ -461,7 +466,10 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 func (this *Display) Execute(runnable jrt.Runnable) {
 	_ = runnable
 	if this.IsDisposed() {
-		panic(func() any { panic("j2go: unresolved new RejectedExecutionException") }())
+		panic(func() any {
+			_ = []any{NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")}
+			panic("j2go: unresolved new RejectedExecutionException")
+		}())
 	}
 	if this.thread == ThreadCurrentThread() {
 		this.SyncExec(runnable)
@@ -1134,8 +1142,8 @@ func (this *Display) GetLastEventTime() int32 {
 		return 0
 	}
 	var timestamp float64 = event.Timestamp() * 1000
-	for timestamp > 0x7FFFFFF {
-		timestamp -= float64(0x7FFFFFF)
+	for timestamp > 0x7FFFFFFF {
+		timestamp -= float64(0x7FFFFFFF)
 	}
 	return int32(timestamp)
 }
@@ -1394,7 +1402,7 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 		return nil
 	}
 	if this.cursors[id] == (nil) {
-		this.cursors[id] = NewCursor(upcastDisplayToDevice(this), id)
+		this.cursors[id] = NewCursorDeviceStyle(upcastDisplayToDevice(this), id)
 	}
 	return this.cursors[id]
 }
@@ -2479,7 +2487,7 @@ func (this *Display) Post(eventLike EventLike) bool {
 					vKey = int16(-1)
 					var output []uint16 = make([]uint16, maxStringLength)
 					var actualStringLength []int64 = make([]int64, 1)
-					for i := int16(0); int32(i) <= 0x7; i++ {
+					for i := int16(0); int32(i) <= 0x7F; i++ {
 						deadKeyState[0] = 0
 						var cond244 int16
 						if type_ == KeyDown {
@@ -2488,13 +2496,13 @@ func (this *Display) Post(eventLike EventLike) bool {
 							cond244 = cocoa.OSKUCKeyActionUp
 						}
 						cocoa.OSUCKeyTranslate(keyLayout, i, cond244, 0, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
-						if output[0] == event.Character {
+						if int32(output[0]) == int32(event.Character) {
 							vKey = i
 							break
 						}
 					}
 					if int32(vKey) == -1 {
-						for i := int16(0); int32(i) <= 0x7; i++ {
+						for i := int16(0); int32(i) <= 0x7F; i++ {
 							deadKeyState[0] = 0
 							var cond245 int16
 							if type_ == KeyDown {
@@ -2502,8 +2510,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 							} else {
 								cond245 = cocoa.OSKUCKeyActionUp
 							}
-							cocoa.OSUCKeyTranslate(keyLayout, i, cond245, (cocoa.OSShiftKey>>8)&0xF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
-							if output[0] == event.Character {
+							cocoa.OSUCKeyTranslate(keyLayout, i, cond245, (cocoa.OSShiftKey>>8)&0xFF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
+							if int32(output[0]) == int32(event.Character) {
 								vKey = i
 								break
 							}
@@ -2993,28 +3001,30 @@ func (this *Display) Release() {
 		}
 	}()
 	this.taskBar = nil
-	for {
-		tbrk251 := false
-		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
+	{
+		for {
+			tbrk251 := false
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if ex, ok := r.(error); ok {
+						_ = ex
+						exceptions.Stash(ex)
+					} else {
+						panic(r)
+					}
+				}()
+				if !this.ReadAndDispatch() {
+					tbrk251 = true
 					return
 				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
-				} else {
-					panic(r)
-				}
 			}()
-			if !this.ReadAndDispatch() {
-				tbrk251 = true
-				return
+			if tbrk251 {
+				break
 			}
-		}()
-		if tbrk251 {
-			break
 		}
 	}
 	if this.disposeList != (nil) {
@@ -3084,13 +3094,13 @@ func (this *Display) Release() {
 
 func (this *Display) ReleaseDisplay() {
 	if this.errorImage != (nil) {
-		this.errorImage.Dispose()
+		this.errorImage.impl.Dispose()
 	}
 	if this.infoImage != (nil) {
-		this.infoImage.Dispose()
+		this.infoImage.impl.Dispose()
 	}
 	if this.warningImage != (nil) {
-		this.warningImage.Dispose()
+		this.warningImage.impl.Dispose()
 	}
 	this.warningImage = nil
 	this.infoImage = this.warningImage
@@ -3119,7 +3129,7 @@ func (this *Display) ReleaseDisplay() {
 	this.timerDelegate = nil
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			this.cursors[i].Dispose()
+			this.cursors[i].impl.Dispose()
 		}
 	}
 	this.cursors = nil
@@ -3255,7 +3265,12 @@ func (this *Display) ReleaseDisplay() {
 	this.observerCallback = nil
 }
 
-func (this *Display) RemoveContext(context *GCData) {
+func (this *Display) RemoveContext(contextLike GCDataLike) {
+	var context *GCData
+	if contextLike != nil {
+		context = contextLike.AsGCData()
+	}
+	_ = context
 	if this.contexts == (nil) {
 		return
 	}
@@ -4543,7 +4558,7 @@ func DisplayConvertToLf(text string) string {
 	if i == -1 || i == 0 {
 		return text
 	}
-	if utf16.Encode([]rune(text))[i-1] != Cr {
+	if int32(utf16.Encode([]rune(text))[i-1]) != int32(Cr) {
 		return text
 	}
 	i = 0

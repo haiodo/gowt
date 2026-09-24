@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Stateless text/binding helpers shared across the emit components - takes an Emitter param
  * explicitly where needed rather than holding one, so this stays free of per-file state. */
@@ -42,6 +43,9 @@ final class EmitUtil {
 	static String stripNumericSuffix(String token) {
 		if (token.isEmpty()) return token;
 		char last = token.charAt(token.length() - 1);
+		// f/F/d/D are hex digits in 0x literals (0xFF): only the long suffix applies there.
+		boolean hex = token.startsWith("0x") || token.startsWith("0X");
+		if (hex) return last == 'l' || last == 'L' ? token.substring(0, token.length() - 1) : token;
 		if (last == 'f' || last == 'F' || last == 'd' || last == 'D' || last == 'l' || last == 'L') {
 			return token.substring(0, token.length() - 1);
 		}
@@ -120,5 +124,21 @@ final class EmitUtil {
 			}
 		}
 		return String.join(", ", parts);
+	}
+
+	static final Set<String> GO_KEYWORDS = Set.of(
+			"break", "default", "func", "interface", "select", "case", "defer", "go", "map", "struct",
+			"chan", "else", "goto", "package", "switch", "const", "fallthrough", "if", "range", "type",
+			"continue", "for", "import", "return", "var");
+
+	// A field is always selector-qualified, so only a Go keyword (GC.GCTextData.range) needs renaming.
+	static String fieldIdent(String javaName) {
+		return GO_KEYWORDS.contains(javaName) ? javaName + "_" : javaName;
+	}
+
+	static final String OUTER_FIELD = "this_0";
+
+	static boolean isInnerClass(ITypeBinding t) {
+		return t.isMember() && t.isClass() && !Modifier.isStatic(t.getModifiers()) && !t.getDeclaringClass().isInterface();
 	}
 }

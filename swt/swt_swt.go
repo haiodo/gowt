@@ -427,7 +427,7 @@ const BS uint16 = '\u0008'
 
 const CR uint16 = '\u000d'
 
-const DEL uint16 = uint16(0x7)
+const DEL uint16 = uint16(0x7F)
 
 const ESC uint16 = uint16(0x1B)
 
@@ -477,7 +477,7 @@ const SCROLL_PAGE int32 = 2
 
 const KEYCODE_BIT int32 = (16777216)
 
-const KEY_MASK int32 = KEYCODE_BIT + 0xFFF
+const KEY_MASK int32 = KEYCODE_BIT + 0xFFFF
 
 const ARROW_UP int32 = KEYCODE_BIT + 1
 

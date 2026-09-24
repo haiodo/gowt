@@ -272,6 +272,10 @@ public class Emitter {
 		return expressionEmitter.panicClosureTyped(goType, message);
 	}
 
+	String unsignedShift(String operand, ITypeBinding type, String count) {
+		return numericEmitter.unsignedShift(operand, type, count);
+	}
+
 	String adaptNumeric(String text, ITypeBinding from, ITypeBinding to) {
 		return numericEmitter.adaptNumeric(text, from, to);
 	}
@@ -319,21 +323,22 @@ public class Emitter {
 	/** Receiver for an unqualified member access: the anonymous instance when the member is
 	 * inherited by the anonymous class but not by the enclosing class, else "this". */
 	String implicitThis(ITypeBinding declaringClass) {
-		if (anonThis == null || declaringClass == null) return "this";
-		boolean anonHasIt = anonType.getErasure().isSubTypeCompatible(declaringClass.getErasure());
+		if (declaringClass == null) return "this";
 		boolean outerHasIt = currentClassInfo != null && currentClassInfo.binding.isSubTypeCompatible(declaringClass.getErasure());
-		return anonHasIt && !outerHasIt ? anonThis : "this";
+		if (anonThis != null && !outerHasIt && anonType.getErasure().isSubTypeCompatible(declaringClass.getErasure())) return anonThis;
+		// An inner (non-static member) class reaches its enclosing instance's members via this_0.
+		if (!outerHasIt && currentClassInfo != null && EmitUtil.isInnerClass(currentClassInfo.binding)) return "this." + EmitUtil.OUTER_FIELD;
+		return "this";
+	}
+
+	String defaultForwarders(ITypeBinding type, String goRecvType) {
+		return classEmitter.defaultForwarders(type, goRecvType);
 	}
 
 	// ---------------------------------------------------------------- shared utilities
 	//
 	// Cross-cutting helpers bound to this facade's own per-compilation-unit state
 	// (currentClassGoTypeName, fileImports) rather than owned by a single component.
-
-	private static final Set<String> GO_KEYWORDS = Set.of(
-			"break", "default", "func", "interface", "select", "case", "defer", "go", "map", "struct",
-			"chan", "else", "goto", "package", "switch", "const", "fallthrough", "if", "range", "type",
-			"continue", "for", "import", "return", "var");
 
 	// A Java local named "string" (common in toString() methods) legally shadows Go's builtin
 	// string type for the rest of the function, breaking a later `func() string {...}` closure.
@@ -343,7 +348,7 @@ public class Emitter {
 	// A Go keyword/builtin type name, or a name that shadows the enclosing class's own Go type
 	// (id.java's `id(id id)` ctor: param "id" would hide the type "id" for &id{} in its body).
 	String sanitizeIdent(String javaName) {
-		if (GO_KEYWORDS.contains(javaName) || GO_BUILTIN_TYPE_NAMES.contains(javaName)) return javaName + "_";
+		if (EmitUtil.GO_KEYWORDS.contains(javaName) || GO_BUILTIN_TYPE_NAMES.contains(javaName)) return javaName + "_";
 		if (javaName.equals(currentClassGoTypeName)) return javaName + "_";
 		return javaName;
 	}

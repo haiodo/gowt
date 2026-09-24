@@ -7,24 +7,6 @@ package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"
 
-// org.eclipse.swt.graphics.GCData: Control's own internal_new_GC/internal_dispose_GC bodies
-// (translated for real) read/write every one of these fields directly.
-type GCData struct {
-	Device                 *Device
-	Style, State           int32
-	Foreground, Background []float64
-	Font                   *Font
-	Image                  *Image
-	// A null NSRect is its zero value (see README "Struct (value-type) classes").
-	PaintRect      cocoa.NSRect
-	VisibleRgn     int64
-	View           *cocoa.NSView
-	Thread         any
-	FlippedContext *cocoa.NSGraphicsContext
-}
-
-func NewGCData() *GCData { return &GCData{} }
-
 // ToolBar: only ever stored/returned by Shell, never otherwise touched on this round's path.
 type ToolBar struct {
 	Composite
@@ -100,45 +82,6 @@ func (i *IME) SetMarkedText_selectedRange(id int64, sel int64, str int64, selRan
 	return true
 }
 func (i *IME) ValidAttributesForMarkedText(id int64, sel int64) int64 { return 0 }
-
-type Image struct {
-	Handle *cocoa.NSImage
-}
-
-func ImageCocoa_new(device *Device, typ int32, nsImage *cocoa.NSImage) *Image {
-	return &Image{Handle: nsImage}
-}
-
-func (i *Image) Dispose()                 {}
-func (i *Image) IsDisposed() bool         { return i == nil }
-func (i *Image) GetBounds() *Rectangle    { panic("stub until translated: Image.getBounds") }
-func (i *Image) GetImageData() *ImageData { panic("stub until translated: Image.getImageData") }
-
-// ImageData: Decorations.java's multi-resolution icon selection (setImages/compare) only ever
-// runs when more than one image is provided - not exercised by a minimal Shell+Button window.
-type ImageData struct {
-	Width, Height int32
-}
-
-func (d *ImageData) GetTransparencyType() int32 { return 0 }
-
-type Cursor struct {
-	Handle *cocoa.NSCursor
-}
-
-func NewCursor(device *Device, style int32) *Cursor { panic("stub until translated: Cursor") }
-
-func (c *Cursor) Dispose()         {}
-func (c *Cursor) IsDisposed() bool { return c == nil }
-
-type Region struct {
-	Handle int64
-}
-
-func RegionCocoa_new(device *Display, handle int64) *Region { return &Region{Handle: handle} }
-
-func (r *Region) IsDisposed() bool      { return r == nil }
-func (r *Region) GetBounds() *Rectangle { return &Rectangle{} }
 
 // Accessible bridge methods Control.java calls - no-op/false/nil, matching real SWT's own
 // behavior for a Control with no screen-reader Accessible attached (the common case).

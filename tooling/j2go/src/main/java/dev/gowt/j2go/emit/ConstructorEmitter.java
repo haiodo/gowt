@@ -184,6 +184,14 @@ final class ConstructorEmitter {
 		String cascadeName = emitter.currentClassInfo.root.overriddenRootMethodGoNames.get(TypeModel.signature(mb));
 		String base = cascadeName != null ? cascadeName : Names.javaMethodBaseGoName(smi.getName().getIdentifier());
 		List<String> args = emitter.buildArgs(smi.arguments(), mb);
+		// Object's own equals/hashCode: reference identity.
+		if (mb.getDeclaringClass().getQualifiedName().equals("java.lang.Object")) {
+			if (base.equals("Equals")) return "(any(this) == " + args.get(0) + ")";
+			if (base.equals("HashCode")) {
+				emitter.fileImports.add(Manual.JRT_IMPORT);
+				return "jrt.IdentityHashCode(this)";
+			}
+		}
 		String fieldPath;
 		if (emitter.currentClassInfo.superclass != null) {
 			fieldPath = emitter.currentClassInfo.superclass.goTypeName;

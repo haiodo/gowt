@@ -84,10 +84,7 @@ final class InvocationEmitter {
 			// receiver is a type qualifier (Integer.toHexString), not a value.
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
-			String closure = emitter.panicClosure(mi, "unresolved call " + mb.getName());
-			if (uses.isEmpty()) return closure;
-			int brace = closure.indexOf("{ ") + 2;
-			return closure.substring(0, brace) + "_ = []any{" + String.join(", ", uses) + "}; " + closure.substring(brace);
+			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName()), uses);
 		}
 
 		if (Modifier.isStatic(mb.getModifiers())) {
@@ -255,6 +252,13 @@ final class InvocationEmitter {
 		return recv + (overridden ? emitter.implAccess(ci.root) : "") + "." + goName + "(" + String.join(", ", args) + ")";
 	}
 
+	// References the args inside the panic closure: a local used only there must not go unused.
+	private static String usingArgs(String closure, List<String> uses) {
+		if (uses.isEmpty()) return closure;
+		int brace = closure.indexOf("{ ") + 2;
+		return closure.substring(0, brace) + "_ = []any{" + String.join(", ", uses) + "}; " + closure.substring(brace);
+	}
+
 	String emitNew(ClassInstanceCreation cic) {
 		IMethodBinding ctor = cic.resolveConstructorBinding();
 		ITypeBinding declaring = ctor.getDeclaringClass();
@@ -267,17 +271,18 @@ final class InvocationEmitter {
 			if (qualified.equals("java.lang.Object")) return "any(&struct{}{})";
 			String exception = newJavaException(qualified, cic);
 			if (exception != null) return exception;
-			// new String(char[]) / new String(char[], offset, count): buffer holds UTF-16 code
-			// units, same as Java's char[] - MenuItem's mnemonic-stripping code uses the 3-arg form.
-			if (qualified.equals("java.lang.String") && ctor.getParameterTypes().length >= 1
+			// new String(char[]): the only java.lang.String constructor used in the translated
+			// set (NSString.getString()) - buffer holds UTF-16 code units, same as Java's char[].
+			// new String(char[], offset, count) (TextLayout) slices the same buffer.
+			int n = ctor.getParameterTypes().length;
+			if (qualified.equals("java.lang.String") && (n == 1 || n == 3)
 					&& ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("char")) {
 				emitter.fileImports.add("unicode/utf16");
 				String arg = emitter.expr((Expression) cic.arguments().get(0));
-				if (ctor.getParameterTypes().length == 3) {
+				if (n == 3) {
 					String off = emitter.expr((Expression) cic.arguments().get(1));
-					String count = emitter.expr((Expression) cic.arguments().get(2));
-					arg = arg + "[" + off + ":" + off + "+" + count + "]";
+					arg += "[" + off + ":" + off + "+" + emitter.expr((Expression) cic.arguments().get(2)) + "]";
 				}
 				return "string(utf16.Decode(" + arg + "))";
 			}
@@ -290,7 +295,7 @@ final class InvocationEmitter {
 				return Manual.ctorFuncName(qualified) + "(" + String.join(", ", manualArgs) + ")";
 			}
 			emitter.unsupported.add("ClassInstanceCreation: unresolved type " + declaring.getQualifiedName());
-			return emitter.panicClosure(cic, "unresolved new " + declaring.getName());
+			return usingArgs(emitter.panicClosure(cic, "unresolved new " + declaring.getName()), buildArgs(cic.arguments(), ctor));
 		}
 		// struct classes (NSPoint, NSRect, ...) have no declared constructor in the Java source
 		// (JLS implicit no-arg ctor only): "new X()" is a zero-value composite literal.
@@ -299,6 +304,11 @@ final class InvocationEmitter {
 		String prefix = emitter.qualify((pub ? "New" : "new") + ci.goFuncPrefix, ci);
 		String goName = emitter.ctorGoName(ctor, prefix);
 		List<String> args = buildArgs(cic.arguments(), ctor);
-		return goName + "(" + String.join(", ", args) + ")";
+		if (!EmitUtil.isInnerClass(declaring)) return goName + "(" + String.join(", ", args) + ")";
+		// Set after construction: fine as long as the inner ctor itself doesn't reach the outer.
+		String tmp = "inner" + (++emitter.tempCounter);
+		emitter.prelude.add(tmp + " := " + goName + "(" + String.join(", ", args) + ")");
+		emitter.prelude.add(tmp + "." + EmitUtil.OUTER_FIELD + " = " + (cic.getExpression() != null ? emitter.expr(cic.getExpression()) : "this"));
+		return tmp;
 	}
 }

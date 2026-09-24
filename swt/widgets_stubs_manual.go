@@ -1,30 +1,8 @@
 // Hand-written opaque stubs for widget/graphics types not translated yet (manual.txt). Display is
-// real as of Round 6; GC/Touch/Dialog remain, the rest lives in swt/widgets_stubs2_manual.go.
+// real as of Round 6, GC as of Round 7; Touch/Dialog remain, the rest lives in swt/widgets_stubs2_manual.go.
 package swt
 
-import (
-	"fmt"
-
-	"github.com/haiodo/gowt/internal/cocoa"
-)
-
-type GC struct {
-	Handle      *cocoa.NSGraphicsContext
-	isDisposed_ bool
-	data        *GCData
-}
-
-func GCCocoa_new(drawable any, data *GCData) *GC {
-	panic("stub until translated: GC.cocoa_new")
-}
-
-func (g *GC) IsDisposed() bool { return g.isDisposed_ }
-
-func (g *GC) GetGCData() *GCData { return g.data }
-
-func (g *GC) FillRectangle(x int32, y int32, width int32, height int32) {}
-
-func (g *GC) Dispose() { g.isDisposed_ = true }
+import "fmt"
 
 type Touch struct {
 	Identity int64

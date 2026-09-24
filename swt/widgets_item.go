@@ -80,7 +80,7 @@ func (this *Item) SetImageOnItem(image *Image) {
 	if this.image == image {
 		return
 	}
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image

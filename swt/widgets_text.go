@@ -258,7 +258,7 @@ func (this *Text) ComputeTrim(x int32, y int32, width int32, height int32) *Rect
 
 func (this *Text) Copy() {
 	this.CheckWidget()
-	if (this.style&PASSWORD) != 0 || this.echoCharacter != '\u0000' {
+	if (this.style&PASSWORD) != 0 || int32(this.echoCharacter) != int32('\u0000') {
 		return
 	}
 	if (this.style & SINGLE) != 0 {
@@ -380,7 +380,7 @@ func (this *Text) Cut() {
 	if (this.style & READ_ONLY) != 0 {
 		return
 	}
-	if (this.style&PASSWORD) != 0 || this.echoCharacter != '\u0000' {
+	if (this.style&PASSWORD) != 0 || int32(this.echoCharacter) != int32('\u0000') {
 		return
 	}
 	var cut bool = true
@@ -477,7 +477,7 @@ func (this *Text) DrawInteriorWithFrame_inView(id int64, sel int64, cellFrame co
 		control = upcastTextToControl(this)
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.IsDisposed() {
+	if image != (nil) && !image.impl.IsDisposed() {
 		var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 		control.FillBackground(this.View, context, cellFrame, -1)
 	} else {
@@ -714,7 +714,7 @@ func (this *Text) GetLineCount() int32 {
 	var c int64
 	cond188 := int64(string_.CharacterAtIndex(length - 1))
 	c = cond188
-	if length == 0 || (cond188) == int64('\u000a') || c == int64('\u000d') {
+	if length == 0 || (cond188) == int64(int32('\u000a')) || c == int64(int32('\u000d')) {
 		count++
 	}
 	return count
@@ -1299,7 +1299,7 @@ func (this *Text) SetEditText(string_ string) {
 func (this *Text) SetEditTextText(text []uint16) {
 	var buffer []uint16
 	var length int32 = int32(math.Min(float64(int32(len(text))), float64(this.textLimit)))
-	if (this.style&PASSWORD) == 0 && this.echoCharacter != '\u0000' {
+	if (this.style&PASSWORD) == 0 && int32(this.echoCharacter) != int32('\u0000') {
 		this.hiddenText = make([]uint16, length)
 		buffer = make([]uint16, length)
 		for i := int32(0); i < length; i++ {
@@ -1555,7 +1555,7 @@ func (this *Text) ShouldChangeTextInRange_replacementString(id int64, sel int64,
 	cocoa.OSMemmoveOverload5(&range_, affectedCharRange, int64(cocoa.NSRangeSizeof))
 	var result bool = this.CallSuperBooleanIdSelRangeArg1(id, sel, range_, replacementString)
 	var nsString *cocoa.NSString = cocoa.NewNSStringOverload1(replacementString)
-	if !this.Hooks(Verify) && ((this.echoCharacter == '\u0000') || (this.style&PASSWORD) != 0) {
+	if !this.Hooks(Verify) && ((int32(this.echoCharacter) == int32('\u0000')) || (this.style&PASSWORD) != 0) {
 		if !result || (int64(this.GetCharCount())-range_.Length+nsString.Length() > int64(this.textLimit)) {
 			return false
 		}
@@ -1578,7 +1578,7 @@ func (this *Text) ShouldChangeTextInRange_replacementString(id int64, sel int64,
 		return false
 	}
 	if (this.style & SINGLE) != 0 {
-		if text != newText || this.echoCharacter != '\u0000' {
+		if text != newText || int32(this.echoCharacter) != int32('\u0000') {
 			if range_.Length == 1 {
 				var editor *cocoa.NSText = cocoa.NewNSTextOverload1(id)
 				editor.SetSelectedRange(range_)
@@ -1971,7 +1971,7 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Text static{}:", r)
 			}
 		}()
-		TextLIMIT = 0x7FFFFFF
+		TextLIMIT = 0x7FFFFFFF
 		TextDELIMITER = "\r"
 	}()
 }

@@ -262,12 +262,17 @@ func (this *Composite) CreateHandle() {
 	}
 }
 
-func (this *Composite) DrawBackground(gc *GC, x int32, y int32, width int32, height int32, offsetX int32, offsetY int32) {
+func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int32, height int32, offsetX int32, offsetY int32) {
+	var gc *GC
+	if gcLike != nil {
+		gc = gcLike.AsGC()
+	}
+	_ = gc
 	this.CheckWidget()
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var control *Control = this.impl.FindBackgroundControl()

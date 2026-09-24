@@ -362,13 +362,18 @@ func (this *Label) SetTabItemFocus() bool {
 	return false
 }
 
-func (this *Label) SetImage(image *Image) {
+func (this *Label) SetImage(imageLike ImageLike) {
+	var image *Image
+	if imageLike != nil {
+		image = imageLike.AsImage()
+	}
+	_ = image
 	this.CheckWidget()
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}
 	if image != (nil) {
-		if image.IsDisposed() {
+		if image.impl.IsDisposed() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		this.image = image

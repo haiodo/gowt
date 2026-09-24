@@ -755,7 +755,12 @@ func (this *Control) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter
 	return dragging
 }
 
-func (this *Control) DrawGripper(gc *GC, x int32, y int32, width int32, height int32, vertical bool) bool {
+func (this *Control) DrawGripper(gcLike GCLike, x int32, y int32, width int32, height int32, vertical bool) bool {
+	var gc *GC
+	if gcLike != nil {
+		gc = gcLike.AsGC()
+	}
+	_ = gc
 	return false
 }
 
@@ -781,7 +786,7 @@ func (this *Control) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect
 	event.Height = int32(rect.Height)
 	this.SendEventEventTypeEvent(Paint, event)
 	event.Gc = nil
-	gc.Dispose()
+	gc.impl.Dispose()
 }
 
 func (this *Control) EnableWidget(enabled bool) {
@@ -827,7 +832,7 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 		control = this
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.IsDisposed() {
+	if image != (nil) && !image.impl.IsDisposed() {
 		context.SaveGraphicsState()
 		cocoa.NSColorColorWithPatternImage(image.Handle).SetFill()
 		var phase cocoa.NSPoint = cocoa.NSPoint{}
@@ -1303,7 +1308,12 @@ func (this *Control) GetPath() []*Control {
 	return result
 }
 
-func (this *Control) GetPathOverload1(region *Region) *cocoa.NSBezierPath {
+func (this *Control) GetPathOverload1(regionLike RegionLike) *cocoa.NSBezierPath {
+	var region *Region
+	if regionLike != nil {
+		region = regionLike.AsRegion()
+	}
+	_ = region
 	if region == (nil) {
 		return nil
 	}
@@ -2038,7 +2048,7 @@ func (this *Control) Print(gc *GC) bool {
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.View.DisplayRectIgnoringOpacity(this.View.Bounds(), gc.Handle)
@@ -2606,9 +2616,14 @@ func (this *Control) _setBackground(colorLike ColorLike) {
 	this.impl.RedrawWidgetOnWidget(this.View, true)
 }
 
-func (this *Control) SetBackgroundImage(image *Image) {
+func (this *Control) SetBackgroundImage(imageLike ImageLike) {
+	var image *Image
+	if imageLike != nil {
+		image = imageLike.AsImage()
+	}
+	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if image == this.backgroundImage && this.backgroundAlpha > 0 {
@@ -2695,9 +2710,14 @@ func (this *Control) SetClipRegion(view *cocoa.NSView) {
 	this.parent.impl.SetClipRegion(view)
 }
 
-func (this *Control) SetCursor(cursor *Cursor) {
+func (this *Control) SetCursor(cursorLike CursorLike) {
+	var cursor *Cursor
+	if cursorLike != nil {
+		cursor = cursorLike.AsCursor()
+	}
+	_ = cursor
 	this.CheckWidget()
-	if cursor != (nil) && cursor.IsDisposed() {
+	if cursor != (nil) && cursor.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
@@ -2961,7 +2981,7 @@ func (this *Control) SetRedraw(redraw bool) {
 
 func (this *Control) SetRegion(region *Region) {
 	this.CheckWidget()
-	if region != (nil) && region.IsDisposed() {
+	if region != (nil) && region.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.region = region
@@ -3762,14 +3782,17 @@ func (this *Control) UpdateAll(all bool) bool {
 	if isPainting.ContainsObject(upcastcocoaNSViewTococoaId(this.View)) {
 		return false
 	}
-	var i int32 = 0
-	var length int32 = int32(isPainting.Count())
-	for i < length {
-		var view *cocoa.NSView = cocoa.NewNSViewOverload2(isPainting.ObjectAtIndex(int64(i)))
-		if view.IsDescendantOf(this.View) {
-			return false
+	{
+		var i int32 = 0
+		var length int32 = int32(isPainting.Count())
+		for ; i < length; func() {
+			i++
+		}() {
+			var view *cocoa.NSView = cocoa.NewNSViewOverload2(isPainting.ObjectAtIndex(int64(i)))
+			if view.IsDescendantOf(this.View) {
+				return false
+			}
 		}
-		i++
 	}
 	if this.impl.IsResizing() {
 		return false
@@ -3887,6 +3910,10 @@ func ControlGetLighterOrDarkerColor(pixel []float64, factor float64, wantDarker 
 
 func ControlLuma(rgbColor []float64) float64 {
 	return 0.2126*rgbColor[0] + 0.7152*rgbColor[1] + 0.0722*rgbColor[2]
+}
+
+func (this *Control) IsAutoScalable() bool {
+	return DrawableDefaultIsAutoScalable(this)
 }
 
 func upcastCompositeToWidget(x *Composite) *Widget {

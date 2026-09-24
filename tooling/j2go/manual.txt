@@ -17,7 +17,6 @@ org.eclipse.swt.internal.Library
 # these as opaque field types today (swt/widgets_stubs_manual.go, see README "Manual superclass
 # embedding" and "Round 3"). Widget/Control/Scrollable themselves are translated for real as of
 # Round 4 - removed from this list.
-org.eclipse.swt.graphics.GC
 org.eclipse.swt.widgets.Touch
 
 # Round 4/5: Widget/Control/Scrollable/Composite/Canvas/Decorations/Shell/Button reference these
@@ -30,15 +29,9 @@ org.eclipse.swt.widgets.ToolBar
 org.eclipse.swt.widgets.ScrollBar
 org.eclipse.swt.widgets.Caret
 org.eclipse.swt.widgets.IME
-org.eclipse.swt.graphics.Image
-org.eclipse.swt.graphics.ImageData
-org.eclipse.swt.graphics.Cursor
-org.eclipse.swt.graphics.Region
-org.eclipse.swt.graphics.Drawable
 org.eclipse.swt.accessibility.Accessible
 org.eclipse.swt.accessibility.ACC
 org.eclipse.swt.internal.WidgetSpy
-org.eclipse.swt.graphics.GCData
 
 # Round 6: Display/Device/Resource/Font/FontData/Color/Monitor/TouchSource are translated for
 # real. Boxing and java.util containers map to Go/internal/jrt (README "Round 6"); any other
@@ -65,7 +58,6 @@ org.eclipse.swt.widgets.TaskBar
 org.eclipse.swt.widgets.TaskItem
 org.eclipse.swt.widgets.Tray
 org.eclipse.swt.widgets.TrayItem
-org.eclipse.swt.graphics.FontMetrics
 org.eclipse.swt.internal.DPIUtil
 org.eclipse.swt.internal.BidiUtil
 org.eclipse.swt.internal.graphics.ImageUtil
@@ -111,3 +103,13 @@ org.eclipse.swt.internal.cocoa.OS#getSelector
 
 # Field-level, dropped: only feeds registerSelector/getSelector above.
 org.eclipse.swt.internal.cocoa.OS#SELECTORS
+
+# Round 7 gfx: GC's text-layout cache (a record key + LinkedHashMap.removeEldestEntry subclass,
+# swt/graphics_gc_manual.go), and the image-loading side the graphics classes call but that is
+# not ported - ImageLoader/codecs, DPIUtil scaling math, strict checks (swt/graphics_stubs_manual.go).
+org.eclipse.swt.graphics.GC.GCTextData.Key
+org.eclipse.swt.graphics.GC.GCTextData.Cache
+org.eclipse.swt.graphics.ImageDataLoader
+org.eclipse.swt.internal.image.FileFormat
+org.eclipse.swt.internal.image.ImageColorTransformer
+org.eclipse.swt.internal.StrictChecks

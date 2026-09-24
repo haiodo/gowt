@@ -65,7 +65,17 @@ func (this *Decorations) CheckSubclass() {
 	}
 }
 
-func (this *Decorations) Compare(data1 *ImageData, data2 *ImageData) int32 {
+func (this *Decorations) Compare(data1Like ImageDataLike, data2Like ImageDataLike) int32 {
+	var data1 *ImageData
+	if data1Like != nil {
+		data1 = data1Like.AsImageData()
+	}
+	_ = data1
+	var data2 *ImageData
+	if data2Like != nil {
+		data2 = data2Like.AsImageData()
+	}
+	_ = data2
 	if data1.Width == data2.Width && data1.Height == data2.Height {
 		var transparent1 int32 = data1.GetTransparencyType()
 		var transparent2 int32 = data2.GetTransparencyType()
@@ -300,9 +310,14 @@ func (this *Decorations) SetDefaultButton(buttonLike ButtonLike) {
 	this.display.UpdateDefaultButton()
 }
 
-func (this *Decorations) SetImage(image *Image) {
+func (this *Decorations) SetImage(imageLike ImageLike) {
+	var image *Image
+	if imageLike != nil {
+		image = imageLike.AsImage()
+	}
+	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.IsDisposed() {
+	if image != (nil) && image.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
@@ -326,7 +341,7 @@ func (this *Decorations) SetImages(images []*Image) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(images)); i++ {
-		if images[i] == (nil) || images[i].IsDisposed() {
+		if images[i] == (nil) || images[i].impl.IsDisposed() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}

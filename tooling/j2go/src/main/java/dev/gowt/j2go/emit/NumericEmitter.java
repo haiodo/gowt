@@ -40,6 +40,9 @@ final class NumericEmitter {
 		}
 		String left = emitter.expr(ie.getLeftOperand());
 		String right = emitter.expr(ie.getRightOperand());
+		if (op == InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED && ie.extendedOperands().isEmpty()) {
+			return unsignedShift(left, resultType, right);
+		}
 		// x == null / x != null where x is a String: null was translated to "" (see adaptNumeric),
 		// so the comparison must be against "" too - Go's string has no nil to compare against.
 		if (right.equals("nil") && isGoString(ie.getLeftOperand())) right = "\"\"";
@@ -121,7 +124,11 @@ final class NumericEmitter {
 	private String[] adaptBinaryOperands(String leftText, String rightText, Expression left, Expression right) {
 		String lt = goPrimitiveOf(left.resolveTypeBinding());
 		String rt = goPrimitiveOf(right.resolveTypeBinding());
-		if (lt == null || rt == null || lt.equals(rt)) return new String[]{leftText, rightText};
+		if (lt == null || rt == null) return new String[]{leftText, rightText};
+		// Java promotes byte/short/char operands to int; Go keeps int8 (byte & 0xFF won't compile).
+		if (NUMERIC_RANK.get(lt) < 3 && !isLiteral(left)) leftText = (lt = "int32") + "(" + leftText + ")";
+		if (NUMERIC_RANK.get(rt) < 3 && !isLiteral(right)) rightText = (rt = "int32") + "(" + rightText + ")";
+		if (lt.equals(rt)) return new String[]{leftText, rightText};
 		Integer lr = NUMERIC_RANK.get(lt);
 		Integer rr = NUMERIC_RANK.get(rt);
 		if (lr == null || rr == null) return new String[]{leftText, rightText};
@@ -175,6 +182,13 @@ final class NumericEmitter {
 			case "bool" -> "%t";
 			default -> "%v";
 		};
+	}
+
+	/** Java's >>> on an (int-promoted) operand: Go shifts unsigned types logically. */
+	String unsignedShift(String operand, ITypeBinding type, String count) {
+		String g = dev.gowt.j2go.GoTypes.map(type, emitter);
+		String t = g.equals("int64") ? "int64" : "int32";
+		return t + "(u" + t + "(" + operand + ") >> (" + count + "))";
 	}
 
 	// ---------------------------------------------------------------- numeric adaptation

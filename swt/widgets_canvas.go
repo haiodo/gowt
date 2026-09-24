@@ -77,7 +77,12 @@ func (this *Canvas) CharacterIndexForPoint(id int64, sel int64, point int64) int
 	return this.Composite.CharacterIndexForPoint(id, sel, point)
 }
 
-func (this *Canvas) DrawBackgroundGC(gc *GC, x int32, y int32, width int32, height int32) {
+func (this *Canvas) DrawBackgroundGC(gcLike GCLike, x int32, y int32, width int32, height int32) {
+	var gc *GC
+	if gcLike != nil {
+		gc = gcLike.AsGC()
+	}
+	_ = gc
 	this.DrawBackground(gc, x, y, width, height, 0, 0)
 }
 

@@ -974,7 +974,7 @@ func (this *Shell) Print(gc *GC) bool {
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.IsDisposed() {
+	if gc.impl.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var children []*Control = this._getChildren()
@@ -1218,7 +1218,7 @@ func (this *Shell) SetAlpha(alpha int32) {
 		return
 	}
 	this.CheckWidget()
-	alpha &= 0xF
+	alpha &= 0xFF
 	this.window.SetAlphaValue(float64(float32(alpha) / 255))
 }
 
@@ -1488,7 +1488,7 @@ func (this *Shell) SetRegion(region *Region) {
 		return
 	}
 	if region != (nil) {
-		if region.IsDisposed() {
+		if region.impl.IsDisposed() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		var bounds *Rectangle = region.GetBounds()

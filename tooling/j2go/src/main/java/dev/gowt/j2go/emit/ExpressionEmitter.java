@@ -20,7 +20,7 @@ final class ExpressionEmitter {
 	// ---------------------------------------------------------------- expressions
 
 	String emitExpr(Expression e) {
-		if (e instanceof NumberLiteral nl) return stripNumericSuffix(nl.getToken());
+		if (e instanceof NumberLiteral nl) return emitNumber(nl);
 		if (e instanceof CharacterLiteral cl) return runeLiteral(cl.charValue());
 		if (e instanceof BooleanLiteral bl) return Boolean.toString(bl.booleanValue());
 		if (e instanceof StringLiteral sl) return goStringLiteral(sl.getLiteralValue());
@@ -75,6 +75,16 @@ final class ExpressionEmitter {
 		String tmp = "cond" + (++emitter.tempCounter);
 		String rhs = emitter.adaptNumeric(emitExpr(a.getRightHandSide()), a.getRightHandSide().resolveTypeBinding(),
 				a.getLeftHandSide().resolveTypeBinding());
+		if (a.getOperator() != Assignment.Operator.ASSIGN) {
+			// Compound (`sp = spr += d`): apply in place, the expression's value is the new lhs.
+			String lhs = emitExpr(a.getLeftHandSide());
+			if (a.getOperator() == Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN) {
+				emitter.prelude.add(lhs + " = " + emitter.unsignedShift(lhs, a.getLeftHandSide().resolveTypeBinding(), rhs));
+			} else {
+				emitter.prelude.add(lhs + " " + a.getOperator() + " " + rhs);
+			}
+			return lhs;
+		}
 		emitter.prelude.add(tmp + " := " + rhs);
 		emitter.prelude.add(emitExpr(a.getLeftHandSide()) + " = " + tmp);
 		return tmp;
@@ -104,6 +114,17 @@ final class ExpressionEmitter {
 	}
 
 
+	// A hex/octal int literal past 0x7fffffff (0xFF000000) is a negative Java int: Go needs the value.
+	private String emitNumber(NumberLiteral nl) {
+		String t = stripNumericSuffix(nl.getToken());
+		ITypeBinding type = nl.resolveTypeBinding();
+		if (type == null || !(t.startsWith("0x") || t.startsWith("0X"))) return t;
+		long v = Long.parseUnsignedLong(t.substring(2).replace("_", ""), 16);
+		if (type.getName().equals("int") && v > Integer.MAX_VALUE) return Integer.toString((int) v);
+		if (type.getName().equals("long") && v < 0) return Long.toString(v);
+		return t;
+	}
+
 	private String emitSimpleName(SimpleName sn) {
 		IBinding b = sn.resolveBinding();
 		if (b instanceof IVariableBinding vb && vb.isField()) {
@@ -116,7 +137,7 @@ final class ExpressionEmitter {
 	String fieldGoName(IVariableBinding vb) {
 		String n = vb.getName();
 		if (Modifier.isPublic(vb.getModifiers())) return Names.capitalize(n);
-		return n;
+		return EmitUtil.fieldIdent(n);
 	}
 
 	/** Java's array.length is a pseudo-field with no Go equivalent syntax; len(x) replaces it. */

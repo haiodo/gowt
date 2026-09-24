@@ -203,14 +203,8 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 					if r == nil {
 						return
 					}
-					if func() bool {
-						switch r.(type) {
-						case any:
-							return true
-						}
-						return false
-					}() {
-						e := r
+					if false {
+						var e error
 						_ = e
 						interrupted = true
 					} else {

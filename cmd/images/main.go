@@ -59,8 +59,10 @@ func main() {
 	}))
 	shell.SetSize(300, 120)
 	shell.Open()
-	display.TimerExec(500, &task{func() { snapshot(os.Args[1]) }})
-	display.TimerExec(1000, &task{func() { shell.Close() }})
+	if len(os.Args) > 1 {
+		display.TimerExec(500, &task{func() { snapshot(os.Args[1]) }})
+		display.TimerExec(1000, &task{func() { shell.Close() }})
+	}
 	for !shell.IsDisposed() {
 		if !display.ReadAndDispatch() {
 			display.Sleep()
@@ -79,9 +81,8 @@ func str(s string) objc.ID {
 	return objc.ID(objc.GetClass("NSString")).Send(objc.RegisterName("stringWithUTF8String:"), s)
 }
 
-// snapshot renders the Shell's whole view hierarchy to a PNG via
-// cacheDisplayInRect:toBitmapImageRep: - the same in-process approach cmd/paint's own snapshot
-// used, since screencapture has no Screen Recording permission on this machine.
+// snapshot renders the Shell via cacheDisplayInRect:toBitmapImageRep: - screencapture needs
+// Screen Recording permission this machine does not grant.
 func snapshot(path string) {
 	app := objc.ID(objc.GetClass("NSApplication")).Send(objc.RegisterName("sharedApplication"))
 	win := shellWindow(app)

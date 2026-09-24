@@ -14,8 +14,6 @@ public class Manual {
 	private static final String TOUCH = "org.eclipse.swt.widgets.Touch";
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
-	private static final String MENU = "org.eclipse.swt.widgets.Menu";
-	private static final String MENU_ITEM = "org.eclipse.swt.widgets.MenuItem";
 	private static final String TOOL_BAR = "org.eclipse.swt.widgets.ToolBar";
 	private static final String SCROLL_BAR = "org.eclipse.swt.widgets.ScrollBar";
 	private static final String CARET = "org.eclipse.swt.widgets.Caret";
@@ -70,8 +68,6 @@ public class Manual {
 		reg(TOUCH, "Touch", null, false);
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
-		reg(MENU, "Menu", null, false);
-		reg(MENU_ITEM, "MenuItem", null, false);
 		reg(TOOL_BAR, "ToolBar", null, false);
 		reg(SCROLL_BAR, "ScrollBar", null, false);
 		reg(CARET, "Caret", null, false);
@@ -202,10 +198,9 @@ public class Manual {
 				|| qualifiedTypeName.equals(JAVA_EVENT_OBJECT);
 	}
 
-	// Menu/ScrollBar's manual superclass (Control.java climbs this via Emitter.upcastObject).
-	// Composite/Canvas/Decorations/Shell are real ClassInfos now (Round 5) - no longer here.
+	// ScrollBar's manual superclass (Control.java climbs this via Emitter.upcastObject). Menu is a
+	// real ClassInfo now (Round 7) - no longer here.
 	private static final Map<String, String> WIDGET_SUPER = Map.of(
-			MENU, "org.eclipse.swt.widgets.Widget",
 			SCROLL_BAR, "org.eclipse.swt.widgets.Widget");
 
 	/** qualifiedTypeName's superclass in the manual widget-hierarchy chain above, or null. */

@@ -188,6 +188,15 @@ final class NumericEmitter {
 			TypeModel.ClassInfo toCi = emitter.model.lookup(to);
 			if (toCi != null && toCi.isStruct) return emitter.qualifiedTypeName(toCi) + "{}";
 		}
+		// A manual int-backed enum (Display.APPEARANCE, RoundingMode, ...) has no Go nil - falls
+		// back to its zero value, collapsing "never set" into the first enum constant.
+		if (text.equals("nil") && to != null) {
+			String q = to.getErasure().getQualifiedName();
+			String goType = Manual.goTypeName(q);
+			boolean bareEnum = Manual.isValueType(q) && !goType.contains(".")
+					&& !goType.equals("any") && !goType.equals("error") && !goType.equals("bool");
+			if (bareEnum) return goType + "(0)";
+		}
 		if (from == null || to == null) return text;
 		if (!from.isPrimitive() || !to.isPrimitive()) return upcastObject(text, from, to);
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);

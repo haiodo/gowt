@@ -36,6 +36,7 @@ type WidgetImpl interface {
 	BecomeKeyWindow(a0 int64, a1 int64)
 	ReskinChildren(a0 int32)
 	CheckOpen()
+	CheckParent(a0 *Widget)
 	CheckSubclass()
 	ClearDeferFlushing(a0 int64, a1 int64)
 	CreateHandle()
@@ -49,6 +50,7 @@ type WidgetImpl interface {
 	DrawBezelWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	DrawRect(a0 int64, a1 int64, a2 cocoa.NSRect)
 	DrawWidget(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
+	ImageView() int64
 	RedrawWidgetOnWidget(a0 *cocoa.NSView, a1 bool)
 	FirstRectForCharacterRange(a0 int64, a1 int64, a2 int64) cocoa.NSRect
 	FocusRingMaskBoundsForFrame(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
@@ -76,8 +78,12 @@ type WidgetImpl interface {
 	OtherMouseDragged(a0 int64, a1 int64, a2 int64)
 	ShouldDelayWindowOrderingForEvent(a0 int64, a1 int64, a2 int64) bool
 	MenuForEvent(a0 int64, a1 int64, a2 int64) int64
+	MenuNeedsUpdate(a0 int64, a1 int64, a2 int64)
 	MakeFirstResponder(a0 int64, a1 int64, a2 int64) bool
 	MarkedRange(a0 int64, a1 int64) cocoa.NSRange
+	Menu_willHighlightItem(a0 int64, a1 int64, a2 int64, a3 int64)
+	MenuDidClose(a0 int64, a1 int64, a2 int64)
+	MenuWillOpen(a0 int64, a1 int64, a2 int64)
 	NoResponderFor(a0 int64, a1 int64, a2 int64)
 	PageDown(a0 int64, a1 int64, a2 int64)
 	PageUp(a0 int64, a1 int64, a2 int64)
@@ -92,16 +98,24 @@ type WidgetImpl interface {
 	ScrollWheel(a0 int64, a1 int64, a2 int64)
 	SelectedRange(a0 int64, a1 int64) cocoa.NSRange
 	SendKeyEventOnWidget(a0 *cocoa.NSEvent, a1 int32) bool
+	SendKeyEventTypeEventOnWidget(a0 int32, a1 *Event) bool
 	SendHorizontalSelection()
+	SendCancelSelection()
+	SendSearchSelection()
 	SendSelection()
 	SendVerticalSelection()
 	SetIsStyledText()
 	SetOpenGLContext(a0 any)
+	SetOrientationOnWidget()
 	SetFrameOrigin(a0 int64, a1 int64, a2 cocoa.NSPoint)
 	SetFrameSize(a0 int64, a1 int64, a2 cocoa.NSSize)
 	SetMarkedText_selectedRange(a0 int64, a1 int64, a2 int64, a3 int64) bool
 	SetTabGroupFocus() bool
 	SetTabItemFocus() bool
+	ShouldChangeTextInRange_replacementString(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	TextViewDidChangeSelection(a0 int64, a1 int64, a2 int64)
+	TextDidChange(a0 int64, a1 int64, a2 int64)
+	TextView_willChangeSelectionFromCharacterRange_toCharacterRange(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
 	TitleRectForBounds(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
 	TooltipText() string
 	String() string
@@ -131,21 +145,27 @@ type WidgetImpl interface {
 	ReadSelectionFromPasteboardOnWidget(a0 int64, a1 int64, a2 int64) bool
 	ValidRequestorForSendType(a0 int64, a1 int64, a2 int64, a3 int64) int64
 	WriteSelectionToPasteboardOnWidget(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	AddRelation(a0 *Control)
 	ComputeSizeWHintHHintChangedOnControl(a0 int32, a1 int32, a2 bool) *Point
 	ComputeTabGroup() *Widget
 	ComputeTabList() []*Widget
 	ComputeTabRoot() *Control
+	DefaultBackground() *Color
 	DefaultFont() *Font
+	DefaultForeground() *Color
 	DefaultNSFont() *cocoa.NSFont
 	DragDetectXYFilterConsumeOnControl(a0 int32, a1 int32, a2 bool, a3 []bool) bool
 	DrawsBackground() bool
 	EnableWidget(a0 bool)
+	EventView() *cocoa.NSView
 	FindCursor() *Cursor
 	FindBackgroundControl() *Control
 	FindMenus(a0 *Control) []*Menu
 	FixChildren(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
+	ForceFocusFocusViewOnControl(a0 *cocoa.NSView) bool
 	GetBounds() *Rectangle
 	GetLocation() *Point
+	GetOrientation() int32
 	GetRegion() *Region
 	GetShell() *Shell
 	GetSize() *Point
@@ -172,6 +192,7 @@ type WidgetImpl interface {
 	Print(a0 *GC) bool
 	RequestLayout()
 	RedrawXYWidthHeightAllOnControl(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
+	RemoveRelation()
 	ResetVisibleRegion()
 	Resized()
 	SendFocusEvent(a0 int32)
@@ -183,6 +204,7 @@ type WidgetImpl interface {
 	SetFontOnControl(a0 *Font)
 	SetFontFontOnControl(a0 *cocoa.NSFont)
 	SetForegroundColorOnControl(a0 []float64)
+	SetOrientationOnControl(a0 int32)
 	SetRegion(a0 *Region)
 	SetRadioSelection(a0 bool) bool
 	SetVisible(a0 bool)
@@ -201,7 +223,10 @@ type WidgetImpl interface {
 	ComputeTrim(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle
 	GetClientArea() *Rectangle
 	HooksKeys() bool
+	IsNeeded(a0 *ScrollBar) bool
 	SetScrollBarVisible(a0 *ScrollBar, a1 bool) bool
+	SetImageOnItem(a0 *Image)
+	SetText(a0 string)
 	FindDeferredControl() *Composite
 	BringToTop(a0 bool)
 	GetMaximized() bool
@@ -209,7 +234,10 @@ type WidgetImpl interface {
 	SetMaximized(a0 bool)
 	SetMenuBar(a0 *Menu)
 	SetMinimized(a0 bool)
-	SetText(a0 string)
+}
+
+func (this *Widget) AddRelation(a0 *Control) {
+	panic("j2go: AddRelation has no default on Widget")
 }
 
 func (this *Widget) ComputeSizeWHintHHintChangedOnControl(a0 int32, a1 int32, a2 bool) *Point {
@@ -228,8 +256,16 @@ func (this *Widget) ComputeTabRoot() *Control {
 	panic("j2go: ComputeTabRoot has no default on Widget")
 }
 
+func (this *Widget) DefaultBackground() *Color {
+	panic("j2go: DefaultBackground has no default on Widget")
+}
+
 func (this *Widget) DefaultFont() *Font {
 	panic("j2go: DefaultFont has no default on Widget")
+}
+
+func (this *Widget) DefaultForeground() *Color {
+	panic("j2go: DefaultForeground has no default on Widget")
 }
 
 func (this *Widget) DefaultNSFont() *cocoa.NSFont {
@@ -248,6 +284,10 @@ func (this *Widget) EnableWidget(a0 bool) {
 	panic("j2go: EnableWidget has no default on Widget")
 }
 
+func (this *Widget) EventView() *cocoa.NSView {
+	panic("j2go: EventView has no default on Widget")
+}
+
 func (this *Widget) FindCursor() *Cursor {
 	panic("j2go: FindCursor has no default on Widget")
 }
@@ -264,12 +304,20 @@ func (this *Widget) FixChildren(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decor
 	panic("j2go: FixChildren has no default on Widget")
 }
 
+func (this *Widget) ForceFocusFocusViewOnControl(a0 *cocoa.NSView) bool {
+	panic("j2go: ForceFocusFocusViewOnControl has no default on Widget")
+}
+
 func (this *Widget) GetBounds() *Rectangle {
 	panic("j2go: GetBounds has no default on Widget")
 }
 
 func (this *Widget) GetLocation() *Point {
 	panic("j2go: GetLocation has no default on Widget")
+}
+
+func (this *Widget) GetOrientation() int32 {
+	panic("j2go: GetOrientation has no default on Widget")
 }
 
 func (this *Widget) GetRegion() *Region {
@@ -376,6 +424,10 @@ func (this *Widget) RedrawXYWidthHeightAllOnControl(a0 int32, a1 int32, a2 int32
 	panic("j2go: RedrawXYWidthHeightAllOnControl has no default on Widget")
 }
 
+func (this *Widget) RemoveRelation() {
+	panic("j2go: RemoveRelation has no default on Widget")
+}
+
 func (this *Widget) ResetVisibleRegion() {
 	panic("j2go: ResetVisibleRegion has no default on Widget")
 }
@@ -418,6 +470,10 @@ func (this *Widget) SetFontFontOnControl(a0 *cocoa.NSFont) {
 
 func (this *Widget) SetForegroundColorOnControl(a0 []float64) {
 	panic("j2go: SetForegroundColorOnControl has no default on Widget")
+}
+
+func (this *Widget) SetOrientationOnControl(a0 int32) {
+	panic("j2go: SetOrientationOnControl has no default on Widget")
 }
 
 func (this *Widget) SetRegion(a0 *Region) {
@@ -492,8 +548,20 @@ func (this *Widget) HooksKeys() bool {
 	panic("j2go: HooksKeys has no default on Widget")
 }
 
+func (this *Widget) IsNeeded(a0 *ScrollBar) bool {
+	panic("j2go: IsNeeded has no default on Widget")
+}
+
 func (this *Widget) SetScrollBarVisible(a0 *ScrollBar, a1 bool) bool {
 	panic("j2go: SetScrollBarVisible has no default on Widget")
+}
+
+func (this *Widget) SetImageOnItem(a0 *Image) {
+	panic("j2go: SetImageOnItem has no default on Widget")
+}
+
+func (this *Widget) SetText(a0 string) {
+	panic("j2go: SetText has no default on Widget")
 }
 
 func (this *Widget) FindDeferredControl() *Composite {
@@ -522,10 +590,6 @@ func (this *Widget) SetMenuBar(a0 *Menu) {
 
 func (this *Widget) SetMinimized(a0 bool) {
 	panic("j2go: SetMinimized has no default on Widget")
-}
-
-func (this *Widget) SetText(a0 string) {
-	panic("j2go: SetText has no default on Widget")
 }
 
 type Widget struct {
@@ -629,7 +693,7 @@ func NewWidgetParentStyle(parentLike WidgetLike, style int32) *Widget {
 
 func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
 	this.impl.CheckSubclass()
-	this.CheckParent(parent)
+	this.impl.CheckParent(parent)
 	this.style = style
 	this.display = parent.display
 	this.ReskinWidget()
@@ -967,12 +1031,7 @@ func (this *Widget) CheckOrientation(parentLike WidgetLike) {
 	this.style = WidgetCheckBits(this.style, LEFT_TO_RIGHT, RIGHT_TO_LEFT, 0, 0, 0, 0)
 }
 
-func (this *Widget) CheckParent(parentLike WidgetLike) {
-	var parent *Widget
-	if parentLike != nil {
-		parent = parentLike.AsWidget()
-	}
-	_ = parent
+func (this *Widget) CheckParent(parent *Widget) {
 	if parent == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -1041,7 +1100,7 @@ func (this *Widget) CreateJNIRef() {
 func (this *Widget) CreateWidget() {
 	this.CreateJNIRef()
 	this.impl.CreateHandle()
-	this.SetOrientation()
+	this.impl.SetOrientationOnWidget()
 	this.impl.Register()
 }
 
@@ -1818,15 +1877,10 @@ func (this *Widget) SendKeyEventOnWidget(nsEvent *cocoa.NSEvent, type_ int32) bo
 	if !this.SetKeyState(event, type_, nsEvent) {
 		return true
 	}
-	return this.SendKeyEventTypeEvent(type_, event)
+	return this.impl.SendKeyEventTypeEventOnWidget(type_, event)
 }
 
-func (this *Widget) SendKeyEventTypeEvent(type_ int32, eventLike EventLike) bool {
-	var event *Event
-	if eventLike != nil {
-		event = eventLike.AsEvent()
-	}
-	_ = event
+func (this *Widget) SendKeyEventTypeEventOnWidget(type_ int32, event *Event) bool {
 	this.SendEventEventTypeEvent(type_, event)
 	if this.IsDisposed() {
 		return false
@@ -1952,7 +2006,7 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 func (this *Widget) SetOpenGLContext(value any) {
 }
 
-func (this *Widget) SetOrientation() {
+func (this *Widget) SetOrientationOnWidget() {
 }
 
 func (this *Widget) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {

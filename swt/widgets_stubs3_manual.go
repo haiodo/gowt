@@ -97,6 +97,9 @@ func NewTray(display *Display, style int32) *Tray { panic("stub until translated
 
 type TrayItem struct{ Widget }
 
+// Tray isn't translated (system tray icon, off this round's path); a tray popup menu is a no-op.
+func (t *TrayItem) ShowMenu(menu *Menu) {}
+
 type TaskBar struct {
 	Widget
 	itemCount int32

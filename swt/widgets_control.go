@@ -305,12 +305,7 @@ func (this *Control) AddMouseWheelListener(listener MouseWheelListener) {
 	this.AddTypedListener(listener, []int32{MouseWheel})
 }
 
-func (this *Control) AddRelation(controlLike ControlLike) {
-	var control *Control
-	if controlLike != nil {
-		control = controlLike.AsControl()
-	}
-	_ = control
+func (this *Control) AddRelation(control *Control) {
 }
 
 func (this *Control) AddPaintListener(listener PaintListener) {
@@ -866,7 +861,7 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 		if this.impl.IsTransparent() {
 			return
 		}
-		background = control.DefaultBackground().Handle
+		background = control.impl.DefaultBackground().Handle
 		alpha = float64(this.impl.GetThemeAlpha())
 	} else {
 		alpha = background[3]
@@ -921,9 +916,12 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	_ = focusControl
 	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
-	cond66 := upcastCompositeToControl(control.parent)
-	control = cond66
-	for control != upcastShellToControl(shell) && (cond66) != (nil) {
+	for {
+		cond66 := upcastCompositeToControl(control.parent)
+		control = cond66
+		if !(control != upcastShellToControl(shell) && (cond66) != (nil)) {
+			break
+		}
 		if control.impl.SetFocus() {
 			return
 		}
@@ -961,9 +959,9 @@ func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 				var event *Event = NewEvent()
 				event.KeyCode = keyCode
 				this.SetInputState(event, nsEvent, KeyDown)
-				this.SendKeyEventTypeEvent(KeyDown, event)
+				this.impl.SendKeyEventTypeEventOnWidget(KeyDown, event)
 				this.SetInputState(event, nsEvent, KeyUp)
-				this.SendKeyEventTypeEvent(KeyUp, event)
+				this.impl.SendKeyEventTypeEventOnWidget(KeyUp, event)
 				break
 			}
 			if mask != 0 {
@@ -978,7 +976,7 @@ func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 				event.KeyCode = keyCode
 				this.SetLocationMask(event, nsEvent)
 				this.SetInputState(event, nsEvent, type_)
-				if !this.SendKeyEventTypeEvent(type_, event) {
+				if !this.impl.SendKeyEventTypeEventOnWidget(type_, event) {
 					return
 				}
 			}
@@ -1012,7 +1010,7 @@ func (this *Control) ForceFocus() bool {
 	if !focusView.CanBecomeKeyView() {
 		return false
 	}
-	var result bool = this.ForceFocusFocusView(focusView)
+	var result bool = this.impl.ForceFocusFocusViewOnControl(focusView)
 	if this.IsDisposed() {
 		return false
 	}
@@ -1024,7 +1022,7 @@ func (this *Control) ForceFocus() bool {
 	return result
 }
 
-func (this *Control) ForceFocusFocusView(focusView *cocoa.NSView) bool {
+func (this *Control) ForceFocusFocusViewOnControl(focusView *cocoa.NSView) bool {
 	var window *cocoa.NSWindow = this.View.Window()
 	if window == (nil) {
 		return false
@@ -1049,7 +1047,7 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 	var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(eventPtr)
 	var event *Event = NewEvent()
 	var windowPoint cocoa.NSPoint
-	var view *cocoa.NSView = this.EventView()
+	var view *cocoa.NSView = this.impl.EventView()
 	windowPoint = nsEvent.LocationInWindow()
 	var point cocoa.NSPoint = view.ConvertPoint_fromView_(windowPoint, nil)
 	if !view.IsFlipped() {
@@ -1127,7 +1125,7 @@ func (this *Control) GetBackgroundColor() *Color {
 	if this.background != (nil) {
 		cond67 = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, this.backgroundAlpha)
 	} else {
-		cond67 = this.DefaultBackground()
+		cond67 = this.impl.DefaultBackground()
 	}
 	return cond67
 }
@@ -1192,7 +1190,7 @@ func (this *Control) GetForegroundColor() *Color {
 	if this.foreground != (nil) {
 		cond69 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.foreground)
 	} else {
-		cond69 = this.DefaultForeground()
+		cond69 = this.impl.DefaultForeground()
 	}
 	return cond69
 }
@@ -1396,7 +1394,7 @@ func (this *Control) HitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
 	if this.regionPath != (nil) {
 		var rgnView *cocoa.NSView = this.impl.TopView()
 		if !rgnView.IsFlipped() {
-			rgnView = this.EventView()
+			rgnView = this.impl.EventView()
 		}
 		var pt cocoa.NSPoint = rgnView.ConvertPoint_fromView_(point, cocoa.NewNSViewOverload1(id).Superview())
 		if !this.regionPath.ContainsPoint(pt) {
@@ -1436,7 +1434,7 @@ func (this *Control) InsertText(id int64, sel int64, string_ int64) bool {
 						this.SetKeyState(event, KeyDown, nsEvent)
 					}
 					event.Character = buffer[i]
-					if !this.SendKeyEventTypeEvent(KeyDown, event) {
+					if !this.impl.SendKeyEventTypeEventOnWidget(KeyDown, event) {
 						return false
 					}
 				}
@@ -1591,8 +1589,11 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	_, ok72 := isControlToShell(control)
-	for control != (nil) && control != this && !(ok72) {
+	for {
+		_, ok72 := isControlToShell(control)
+		if !(control != (nil) && control != this && !(ok72)) {
+			break
+		}
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -2029,7 +2030,7 @@ func (this *Control) PackChanged(changed bool) {
 }
 
 func (this *Control) PaintView() *cocoa.NSView {
-	return this.EventView()
+	return this.impl.EventView()
 }
 
 func (this *Control) Print(gc *GC) bool {
@@ -2112,7 +2113,7 @@ func (this *Control) Release(destroy bool) {
 	this.Widget.Release(destroy)
 	if destroy {
 		if previous != (nil) {
-			previous.AddRelation(next)
+			previous.impl.AddRelation(next)
 		}
 	}
 }
@@ -2460,7 +2461,7 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 		event.Count = this.display.clickCount
 	}
 	var windowPoint cocoa.NSPoint
-	var view *cocoa.NSView = this.EventView()
+	var view *cocoa.NSView = this.impl.EventView()
 	if nsEvent == (nil) || nsEvent.Type() == int64(cocoa.OSNSMouseMoved) {
 		var window *cocoa.NSWindow = view.Window()
 		windowPoint = window.ConvertScreenToBase(cocoa.NSEventMouseLocation())
@@ -2553,7 +2554,7 @@ func (this *Control) SetBackground() {
 		if control.background != (nil) {
 			color = control.background
 		} else {
-			color = control.DefaultBackground().Handle
+			color = control.impl.DefaultBackground().Handle
 		}
 		var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
 		this.impl.SetBackgroundColor(nsColor)
@@ -2681,7 +2682,7 @@ func (this *Control) SetClipRegion(view *cocoa.NSView) {
 	if this.regionPath != (nil) {
 		var rgnView *cocoa.NSView = this.impl.TopView()
 		if !rgnView.IsFlipped() {
-			rgnView = this.EventView()
+			rgnView = this.impl.EventView()
 		}
 		var pt cocoa.NSPoint = view.ConvertPoint_toView_(cocoa.NSPoint{}, rgnView)
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
@@ -2875,7 +2876,12 @@ func (this *Control) SetLocationLocation(locationLike PointLike) {
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(location.X, location.Y, 0, 0, true, false)
 }
 
-func (this *Control) SetMenu(menu *Menu) {
+func (this *Control) SetMenu(menuLike MenuLike) {
+	var menu *Menu
+	if menuLike != nil {
+		menu = menuLike.AsMenu()
+	}
+	_ = menu
 	this.CheckWidget()
 	if menu != (nil) {
 		if menu.IsDisposed() {
@@ -2891,7 +2897,7 @@ func (this *Control) SetMenu(menu *Menu) {
 	this.menu = menu
 }
 
-func (this *Control) SetOrientation(orientation int32) {
+func (this *Control) SetOrientationOnControl(orientation int32) {
 	this.CheckWidget()
 }
 
@@ -2975,7 +2981,7 @@ func (this *Control) SetRelations() {
 	if count > 1 {
 		var child *Control = children[count-2]
 		if child != this {
-			child.AddRelation(this)
+			child.impl.AddRelation(this)
 		}
 	}
 }
@@ -3033,7 +3039,7 @@ func (this *Control) SetToolTipText(string_ string) {
 
 func (this *Control) SetTouchEnabled(enabled bool) {
 	this.CheckWidget()
-	this.EventView().SetAcceptsTouchEvents(enabled)
+	this.impl.EventView().SetAcceptsTouchEvents(enabled)
 	this.touchEnabled = enabled
 }
 
@@ -3113,17 +3119,17 @@ func (this *Control) SetZOrderSiblingAboveOnControl(sibling *Control, above bool
 			siblingIndex++
 		}
 	}
-	this.RemoveRelation()
+	this.impl.RemoveRelation()
 	if index+1 < int32(len(children)) {
 		oldNextIndex = index + 1
-		children[oldNextIndex].RemoveRelation()
+		children[oldNextIndex].impl.RemoveRelation()
 	}
 	if sibling != (nil) {
 		if above {
-			sibling.RemoveRelation()
+			sibling.impl.RemoveRelation()
 		} else {
 			if siblingIndex+1 < int32(len(children)) {
-				children[siblingIndex+1].RemoveRelation()
+				children[siblingIndex+1].impl.RemoveRelation()
 			}
 		}
 	}
@@ -3172,17 +3178,17 @@ func (this *Control) SetZOrderSiblingAboveOnControl(sibling *Control, above bool
 	}
 	children = this.parent._getChildren()
 	if 0 < index {
-		children[index-1].AddRelation(this)
+		children[index-1].impl.AddRelation(this)
 	}
 	if index+1 < int32(len(children)) {
-		this.AddRelation(children[index+1])
+		this.impl.AddRelation(children[index+1])
 	}
 	if oldNextIndex != -1 {
 		if oldNextIndex <= index {
 			oldNextIndex--
 		}
 		if 0 < oldNextIndex && oldNextIndex != index && oldNextIndex != index+1 {
-			children[oldNextIndex-1].AddRelation(children[oldNextIndex])
+			children[oldNextIndex-1].impl.AddRelation(children[oldNextIndex])
 		}
 	}
 }
@@ -3663,9 +3669,12 @@ func (this *Control) TraverseGroup(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond83 := ((index + offset + length) % length)
-	index = cond83
-	for (cond83) != start {
+	for {
+		cond83 := ((index + offset + length) % length)
+		index = cond83
+		if !((cond83) != start) {
+			break
+		}
 		var widget *Widget = list[index]
 		if !widget.IsDisposed() && widget.impl.SetTabGroupFocus() {
 			return true
@@ -3697,9 +3706,12 @@ func (this *Control) TraverseItem(next bool) bool {
 	} else {
 		offset = -1
 	}
-	cond84 := (index + offset + length) % length
-	index = cond84
-	for (cond84) != start {
+	for {
+		cond84 := (index + offset + length) % length
+		index = cond84
+		if !((cond84) != start) {
+			break
+		}
 		var child *Control = children[index]
 		if !child.IsDisposed() && child.impl.IsTabItem() {
 			if child.impl.SetTabItemFocus() {
@@ -3792,7 +3804,7 @@ func (this *Control) UpdateBackgroundColor() {
 	if control.background != (nil) {
 		color = control.background
 	} else {
-		color = control.DefaultBackground().Handle
+		color = control.impl.DefaultBackground().Handle
 	}
 	var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
 	this.impl.SetBackgroundColor(nsColor)

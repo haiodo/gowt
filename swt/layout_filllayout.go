@@ -169,7 +169,7 @@ func (this *FillLayout) GetName() string {
 	return string_[index+1 : int32(len(string_))]
 }
 
-func (this *FillLayout) LayoutFn(composite *Composite, flushCache bool) {
+func (this *FillLayout) LayoutOnLayout(composite *Composite, flushCache bool) {
 	var rect *Rectangle = composite.impl.GetClientArea()
 	var children []*Control = composite.GetChildren()
 	var count int32 = int32(len(children))
@@ -274,6 +274,8 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 	case *Decorations:
 		return &v.Scrollable, true
 	case *Shell:
+		return &v.Scrollable, true
+	case *Text:
 		return &v.Scrollable, true
 	}
 	return nil, false

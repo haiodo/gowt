@@ -23,10 +23,9 @@ org.eclipse.swt.widgets.Touch
 # Round 4/5: Widget/Control/Scrollable/Composite/Canvas/Decorations/Shell/Button reference these
 # classes/interfaces, none translated yet - temporary manual stubs (swt/widgets_stubs_manual.go,
 # swt/widgets_stubs2_manual.go) carrying only the members actually used. Composite/Canvas/
-# Decorations/Shell translated for real as of Round 5 - removed from this list.
+# Decorations/Shell translated for real as of Round 5, Menu/MenuItem as of Round 7 - removed from
+# this list.
 org.eclipse.swt.internal.Callback
-org.eclipse.swt.widgets.Menu
-org.eclipse.swt.widgets.MenuItem
 org.eclipse.swt.widgets.ToolBar
 org.eclipse.swt.widgets.ScrollBar
 org.eclipse.swt.widgets.Caret

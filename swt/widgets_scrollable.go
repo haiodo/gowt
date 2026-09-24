@@ -180,7 +180,7 @@ func (this *Scrollable) HooksKeys() bool {
 }
 
 func (this *Scrollable) IsEventView(id int64) bool {
-	return id == this.EventView().Id
+	return id == this.impl.EventView().Id
 }
 
 func (this *Scrollable) IsNeeded(scrollbar *ScrollBar) bool {
@@ -286,10 +286,10 @@ func (this *Scrollable) SendVerticalSelection() {
 func (this *Scrollable) EnableWidget(enabled bool) {
 	this.Control.EnableWidget(enabled)
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.EnableWidget(enabled && this.IsNeeded(this.horizontalBar))
+		this.horizontalBar.EnableWidget(enabled && this.impl.IsNeeded(this.horizontalBar))
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.EnableWidget(enabled && this.IsNeeded(this.verticalBar))
+		this.verticalBar.EnableWidget(enabled && this.impl.IsNeeded(this.verticalBar))
 	}
 }
 

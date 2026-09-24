@@ -43,7 +43,7 @@ func (this *MouseEvent) initMouseEvent(e *Event) {
 	this.Count = e.Count
 }
 
-func (this *MouseEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *MouseEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	return fmt.Sprintf("%s button=%d stateMask=0x%s x=%d y=%d count=%d}", string_[0:int32(len(string_))-1], this.Button, strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.X, this.Y, this.Count)
 }

@@ -88,7 +88,7 @@ func (this *MenuItem) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *MenuItem) CheckSubclass() {
+func (this *MenuItem) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -101,14 +101,14 @@ func (this *MenuItem) CreateEmptyMenu() *cocoa.NSMenu {
 	return nil
 }
 
-func (this *MenuItem) Deregister() {
-	this.Item.Deregister()
+func (this *MenuItem) deregister_() {
+	this.Item.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSMenuItemTococoaNSObject(this.nsItem))
 }
 
-func (this *MenuItem) DestroyWidget() {
+func (this *MenuItem) destroyWidget_() {
 	this.parent.DestroyItem(this)
-	this.impl.ReleaseHandle()
+	this.impl.releaseHandle_()
 }
 
 func (this *MenuItem) GetAccelerator() int32 {
@@ -131,11 +131,11 @@ func (this *MenuItem) GetMenu() *Menu {
 	return this.menu
 }
 
-func (this *MenuItem) GetNameText() string {
+func (this *MenuItem) getNameText_() string {
 	if (this.style & SEPARATOR) != 0 {
 		return "|"
 	}
-	return this.Item.GetNameText()
+	return this.Item.getNameText_()
 }
 
 func (this *MenuItem) GetParent() *Menu {
@@ -236,13 +236,13 @@ func (this *MenuItem) KeyChar(key int32) int32 {
 	return 0
 }
 
-func (this *MenuItem) Register() {
-	this.Item.Register()
+func (this *MenuItem) register_() {
+	this.Item.register_()
 	this.display.AddWidget(upcastcocoaNSMenuItemTococoaNSObject(this.nsItem), upcastMenuItemToWidget(this))
 }
 
-func (this *MenuItem) ReleaseHandle() {
-	this.Item.ReleaseHandle()
+func (this *MenuItem) releaseHandle_() {
+	this.Item.releaseHandle_()
 	if this.nsItem != (nil) {
 		this.nsItem.Release()
 	}
@@ -250,16 +250,16 @@ func (this *MenuItem) ReleaseHandle() {
 	this.parent = nil
 }
 
-func (this *MenuItem) ReleaseChildren(destroy bool) {
+func (this *MenuItem) releaseChildren_(destroy bool) {
 	if this.menu != (nil) {
-		this.menu.impl.Release(false)
+		this.menu.impl.release_(false)
 		this.menu = nil
 	}
-	this.Item.ReleaseChildren(destroy)
+	this.Item.releaseChildren_(destroy)
 }
 
-func (this *MenuItem) ReleaseWidget() {
-	this.Item.ReleaseWidget()
+func (this *MenuItem) releaseWidget_() {
+	this.Item.releaseWidget_()
 	this.accelerator = 0
 	if this == this.parent.defaultItem {
 		this.parent.defaultItem = nil
@@ -300,11 +300,11 @@ func (this *MenuItem) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *MenuItem) ReskinChildren(flags int32) {
+func (this *MenuItem) reskinChildren_(flags int32) {
 	if this.menu != (nil) {
 		this.menu.Reskin(flags)
 	}
-	this.Item.ReskinChildren(flags)
+	this.Item.reskinChildren_(flags)
 }
 
 func (this *MenuItem) SelectRadio() {
@@ -324,12 +324,12 @@ func (this *MenuItem) SelectRadio() {
 	this.SetSelection(true)
 }
 
-func (this *MenuItem) SendSelection() {
+func (this *MenuItem) sendSelection_() {
 	if (this.style & CHECK) != 0 {
 		this.SetSelection(!this.GetSelection())
 	} else {
 		if (this.style & RADIO) != 0 {
-			if (this.parent.impl.GetStyle() & NO_RADIO_GROUP) != 0 {
+			if (this.parent.impl.getStyle_() & NO_RADIO_GROUP) != 0 {
 				this.SetSelection(!this.GetSelection())
 			} else {
 				this.SelectRadio()
@@ -404,7 +404,7 @@ func (this *MenuItem) SetID(id int32) {
 	this.nsItem.SetTag(int64(id))
 }
 
-func (this *MenuItem) SetImageOnItem(image *Image) {
+func (this *MenuItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
@@ -412,7 +412,7 @@ func (this *MenuItem) SetImageOnItem(image *Image) {
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}
-	this.Item.SetImageOnItem(image)
+	this.Item.setImageOnItem_(image)
 	var cond178 *cocoa.NSImage
 	if image != (nil) {
 		cond178 = image.Handle
@@ -496,7 +496,7 @@ func (this *MenuItem) SetSelection(selected bool) {
 	this.nsItem.SetState(int64(cond179))
 }
 
-func (this *MenuItem) SetText(string_ string) {
+func (this *MenuItem) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -507,7 +507,7 @@ func (this *MenuItem) SetText(string_ string) {
 	if this.text == string_ {
 		return
 	}
-	this.Item.SetText(string_)
+	this.Item.setText_(string_)
 	this.UpdateText()
 }
 
@@ -560,11 +560,11 @@ func (this *MenuItem) UpdateText() {
 	var submenu *cocoa.NSMenu = this.nsItem.Submenu()
 	var label *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	label = label.InitWithString(text)
-	if submenu != (nil) && (this.parent.impl.GetStyle()&BAR) != 0 {
+	if submenu != (nil) && (this.parent.impl.getStyle_()&BAR) != 0 {
 		submenu.SetTitle(label)
 	} else {
 		var direction int32
-		if (this.parent.impl.GetStyle() & RIGHT_TO_LEFT) != 0 {
+		if (this.parent.impl.getStyle_() & RIGHT_TO_LEFT) != 0 {
 			direction = cocoa.OSNSWritingDirectionRightToLeft
 		} else {
 			direction = cocoa.OSNSWritingDirectionLeftToRight

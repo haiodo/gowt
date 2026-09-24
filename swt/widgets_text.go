@@ -132,14 +132,14 @@ func (this *Text) Append(string_ string) {
 	}
 }
 
-func (this *Text) BecomeFirstResponder(id int64, sel int64) bool {
+func (this *Text) becomeFirstResponder_(id int64, sel int64) bool {
 	if (this.style & SINGLE) != 0 {
 		if (this.state & WidgetDISABLED) != 0 {
 			return false
 		}
 		return true
 	}
-	return this.Scrollable.BecomeFirstResponder(id, sel)
+	return this.Scrollable.becomeFirstResponder_(id, sel)
 }
 
 func (this *Text) ClearSelection() {
@@ -148,7 +148,7 @@ func (this *Text) ClearSelection() {
 	this.SetSelection(selection.X)
 }
 
-func (this *Text) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Text) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -225,15 +225,15 @@ func (this *Text) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed
 		if hHint != DEFAULT {
 			height = hHint
 		}
-		var trim *Rectangle = this.impl.ComputeTrim(0, 0, width, height)
+		var trim *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 		width = trim.Width
 		height = trim.Height
 	}
 	return NewPoint(width, height)
 }
 
-func (this *Text) ComputeTrim(x int32, y int32, width int32, height int32) *Rectangle {
-	var result *Rectangle = this.Scrollable.ComputeTrim(x, y, width, height)
+func (this *Text) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+	var result *Rectangle = this.Scrollable.computeTrim_(x, y, width, height)
 	if (this.style & SINGLE) != 0 {
 		var widget *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		if (this.style & SEARCH) != 0 {
@@ -276,7 +276,7 @@ func (this *Text) Copy() {
 	}
 }
 
-func (this *Text) CreateHandle() {
+func (this *Text) createHandle_() {
 	if (this.style & READ_ONLY) != 0 {
 		if (this.style & (BORDER | H_SCROLL | V_SCROLL)) == 0 {
 			this.state |= WidgetTHEME_BACKGROUND
@@ -361,8 +361,8 @@ func (this *Text) CreateHandle() {
 	}
 }
 
-func (this *Text) CreateWidget() {
-	this.Scrollable.CreateWidget()
+func (this *Text) createWidget_() {
+	this.Scrollable.createWidget_()
 	if (this.style & PASSWORD) != 0 {
 		var fieldEditor *cocoa.NSText = this.View.Window().FieldEditor(true, upcastcocoaNSViewTococoaId(this.View))
 		var nsSecureTextViewClass int64 = cocoa.OSObjc_lookUpClass("NSSecureTextView")
@@ -422,11 +422,11 @@ func (this *Text) Cut() {
 	}
 }
 
-func (this *Text) DefaultBackground() *Color {
+func (this *Text) defaultBackground_() *Color {
 	return this.display.GetWidgetColor(COLOR_LIST_BACKGROUND)
 }
 
-func (this *Text) DefaultNSFont() *cocoa.NSFont {
+func (this *Text) defaultNSFont_() *cocoa.NSFont {
 	if (this.style & MULTI) != 0 {
 		return this.display.textViewFont
 	}
@@ -439,18 +439,18 @@ func (this *Text) DefaultNSFont() *cocoa.NSFont {
 	return this.display.textFieldFont
 }
 
-func (this *Text) DefaultForeground() *Color {
+func (this *Text) defaultForeground_() *Color {
 	return this.display.GetWidgetColor(COLOR_LIST_FOREGROUND)
 }
 
-func (this *Text) Deregister() {
-	this.Scrollable.Deregister()
+func (this *Text) deregister_() {
+	this.Scrollable.deregister_()
 	if (this.style & SINGLE) != 0 {
 		this.display.RemoveWidget(upcastcocoaNSCellTococoaNSObject((castcocoaNSViewTococoaNSControl(this.View)).Cell()))
 	}
 }
 
-func (this *Text) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Text) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if (this.style & SINGLE) != 0 {
 		if this.backgroundImage == (nil) {
 			return
@@ -471,13 +471,13 @@ func (this *Text) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsCont
 	this.FillBackground(this.View, context, rect, -1)
 }
 
-func (this *Text) DrawInteriorWithFrame_inView(id int64, sel int64, cellFrame cocoa.NSRect, viewid int64) {
-	var control *Control = this.impl.FindBackgroundControl()
+func (this *Text) drawInteriorWithFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, viewid int64) {
+	var control *Control = this.impl.findBackgroundControl_()
 	if control == (nil) {
 		control = upcastTextToControl(this)
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.impl.IsDisposed() {
+	if image != (nil) && !image.impl.isDisposed_() {
 		var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 		control.FillBackground(this.View, context, cellFrame, -1)
 	} else {
@@ -485,7 +485,7 @@ func (this *Text) DrawInteriorWithFrame_inView(id int64, sel int64, cellFrame co
 			this.DrawInteriorWithFrame_inView_searchfield(id, sel, cellFrame, viewid)
 		}
 	}
-	this.Scrollable.DrawInteriorWithFrame_inView(id, sel, cellFrame, viewid)
+	this.Scrollable.drawInteriorWithFrame_inView_(id, sel, cellFrame, viewid)
 }
 
 func (this *Text) DrawInteriorWithFrame_inView_searchfield(id int64, sel int64, cellFrame cocoa.NSRect, viewid int64) {
@@ -519,17 +519,17 @@ func (this *Text) DrawInteriorWithFrame_inView_searchfield(id int64, sel int64, 
 	}
 }
 
-func (this *Text) DrawRect(id int64, sel int64, rect cocoa.NSRect) {
+func (this *Text) drawRect_(id int64, sel int64, rect cocoa.NSRect) {
 	this.UpdateThemeColors()
-	this.Scrollable.DrawRect(id, sel, rect)
+	this.Scrollable.drawRect_(id, sel, rect)
 }
 
-func (this *Text) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
+func (this *Text) dragDetectXYFilterConsume_(x int32, y int32, filter bool, consume []bool) bool {
 	var selection *Point = this.GetSelection()
 	if selection.X != selection.Y {
 		var position int64 = this.GetPosition(int64(x), int64(y))
 		if int64(selection.X) <= position && position < int64(selection.Y) {
-			if this.Scrollable.DragDetectXYFilterConsume(x, y, filter, consume) {
+			if this.Scrollable.dragDetectXYFilterConsume_(x, y, filter, consume) {
 				if consume != (nil) {
 					consume[0] = true
 				}
@@ -540,16 +540,16 @@ func (this *Text) DragDetectXYFilterConsume(x int32, y int32, filter bool, consu
 	return false
 }
 
-func (this *Text) EnableWidget(enabled bool) {
-	this.Scrollable.EnableWidget(enabled)
+func (this *Text) enableWidget_(enabled bool) {
+	this.Scrollable.enableWidget_(enabled)
 	if (this.style & MULTI) != 0 {
-		this.impl.SetForegroundColor(this.foreground)
+		this.impl.setForegroundColor_(this.foreground)
 	}
 }
 
-func (this *Text) ForceFocusFocusView(focusView *cocoa.NSView) bool {
+func (this *Text) forceFocusFocusView_(focusView *cocoa.NSView) bool {
 	this.receivingFocus = true
-	var result bool = this.Scrollable.ForceFocusFocusView(focusView)
+	var result bool = this.Scrollable.forceFocusFocusView_(focusView)
 	if (this.style & SINGLE) != 0 {
 		(castcocoaNSViewTococoaNSTextField(this.View)).SelectText(nil)
 	}
@@ -565,11 +565,11 @@ func (this *Text) GetCaretLineNumber() int32 {
 	return (this.GetTopPixel() + this.GetCaretLocation().Y) / this.GetLineHeight()
 }
 
-func (this *Text) AcceptsFirstResponder(id int64, sel int64) bool {
+func (this *Text) acceptsFirstResponder_(id int64, sel int64) bool {
 	if (this.style & READ_ONLY) != 0 {
 		return true
 	}
-	return this.Scrollable.AcceptsFirstResponder(id, sel)
+	return this.Scrollable.acceptsFirstResponder_(id, sel)
 }
 
 func (this *Text) GetCaretLocation() *Point {
@@ -731,7 +731,7 @@ func (this *Text) GetLineHeight() int32 {
 	if this.font != (nil) {
 		font = this.font
 	} else {
-		font = this.impl.DefaultFont()
+		font = this.impl.defaultFont_()
 	}
 	if (this.style & SINGLE) != 0 {
 		var dict *cocoa.NSDictionary = cocoa.NSDictionaryDictionaryWithObject(upcastcocoaNSFontTococoaId(font.Handle), upcastcocoaNSStringTococoaId(cocoa.OSNSFontAttributeName_))
@@ -746,7 +746,7 @@ func (this *Text) GetLineHeight() int32 {
 	}
 }
 
-func (this *Text) GetOrientation() int32 {
+func (this *Text) getOrientation_() int32 {
 	this.CheckWidget()
 	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
@@ -974,14 +974,14 @@ func (this *Text) _insertEditText(string_ string, enableUndo bool) {
 	}
 }
 
-func (this *Text) IsEventView(id int64) bool {
+func (this *Text) isEventView_(id int64) bool {
 	if (this.style & MULTI) != 0 {
-		return this.Scrollable.IsEventView(id)
+		return this.Scrollable.isEventView_(id)
 	}
 	return true
 }
 
-func (this *Text) IsNeeded(scrollbar *ScrollBar) bool {
+func (this *Text) isNeeded_(scrollbar *ScrollBar) bool {
 	var result bool = false
 	if (this.style & MULTI) != 0 {
 		var docFrame cocoa.NSRect = this.scrollView.DocumentView().Frame()
@@ -1061,15 +1061,15 @@ func (this *Text) _paste(enableUndo bool) {
 	this.SendEventEventType(Modify)
 }
 
-func (this *Text) Register() {
-	this.Scrollable.Register()
+func (this *Text) register_() {
+	this.Scrollable.register_()
 	if (this.style & SINGLE) != 0 {
 		this.display.AddWidget(upcastcocoaNSCellTococoaNSObject((castcocoaNSViewTococoaNSControl(this.View)).Cell()), upcastTextToWidget(this))
 	}
 }
 
-func (this *Text) ReleaseWidget() {
-	this.Scrollable.ReleaseWidget()
+func (this *Text) releaseWidget_() {
+	this.Scrollable.releaseWidget_()
 	if (this.style & SINGLE) != 0 {
 		(castcocoaNSViewTococoaNSControl(this.View)).AbortEditing()
 	}
@@ -1129,8 +1129,8 @@ func (this *Text) SelectAll() {
 	}
 }
 
-func (this *Text) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
-	var result bool = this.Scrollable.SendKeyEvent(nsEvent, type_)
+func (this *Text) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
+	var result bool = this.Scrollable.sendKeyEvent_(nsEvent, type_)
 	if !result {
 		return result
 	}
@@ -1172,8 +1172,8 @@ func (this *Text) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	return result
 }
 
-func (this *Text) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
-	var result bool = this.Scrollable.SendKeyEventTypeEvent(type_, event)
+func (this *Text) sendKeyEventTypeEvent_(type_ int32, event *Event) bool {
+	var result bool = this.Scrollable.sendKeyEventTypeEvent_(type_, event)
 	if !result {
 		return result
 	}
@@ -1210,7 +1210,7 @@ func (this *Text) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
 	return result
 }
 
-func (this *Text) SendSearchSelection() {
+func (this *Text) sendSearchSelection_() {
 	if this.targetSearch != (nil) {
 		(castcocoaNSViewTococoaNSSearchField(this.View)).SendAction(this.actionSearch, this.targetSearch)
 	}
@@ -1219,7 +1219,7 @@ func (this *Text) SendSearchSelection() {
 	this.SendSelectionEventEventTypeEventSend(DefaultSelection, event, false)
 }
 
-func (this *Text) SendCancelSelection() {
+func (this *Text) sendCancelSelection_() {
 	if this.targetCancel != (nil) {
 		(castcocoaNSViewTococoaNSSearchField(this.View)).SendAction(this.actionCancel, this.targetCancel)
 	}
@@ -1228,7 +1228,7 @@ func (this *Text) SendCancelSelection() {
 	this.SendSelectionEventEventTypeEventSend(DefaultSelection, event, false)
 }
 
-func (this *Text) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
+func (this *Text) setBackgroundColor_(nsColor *cocoa.NSColor) {
 	if (this.style & SINGLE) != 0 {
 		var textField *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		textField.SetBackgroundColor(nsColor)
@@ -1243,7 +1243,7 @@ func (this *Text) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
 	}
 }
 
-func (this *Text) SetBackgroundImageImage(image *cocoa.NSImage) {
+func (this *Text) setBackgroundImageImage_(image *cocoa.NSImage) {
 	if (this.style & SINGLE) != 0 {
 		var widget *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		widget.SetDrawsBackground(image == (nil))
@@ -1320,8 +1320,8 @@ func (this *Text) SetEditTextText(text []uint16) {
 	this.selectionRange = cocoa.NSRange{}
 }
 
-func (this *Text) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
-	this.Scrollable.SetFrameSize(id, sel, size)
+func (this *Text) setFrameSize_(id int64, sel int64, size cocoa.NSSize) {
+	this.Scrollable.setFrameSize_(id, sel, size)
 	if (this.style & SEARCH) != 0 {
 		var widget *cocoa.NSSearchField = castcocoaNSViewTococoaNSSearchField(this.View)
 		var editor *cocoa.NSText = widget.CurrentEditor()
@@ -1335,24 +1335,24 @@ func (this *Text) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
 	}
 }
 
-func (this *Text) SetFontFont(font *cocoa.NSFont) {
+func (this *Text) setFontFont_(font *cocoa.NSFont) {
 	if (this.style & MULTI) != 0 {
 		(castcocoaNSViewTococoaNSTextView(this.View)).SetFont(font)
 		return
 	}
-	this.Scrollable.SetFontFont(font)
+	this.Scrollable.setFontFont_(font)
 }
 
-func (this *Text) SetForegroundColor(color []float64) {
+func (this *Text) setForegroundColor_(color []float64) {
 	var nsColor *cocoa.NSColor
 	if color == (nil) {
 		nsColor = cocoa.NSColorTextColor()
-		if (this.style&MULTI) != 0 && !this.impl.IsEnabled() {
+		if (this.style&MULTI) != 0 && !this.impl.isEnabled_() {
 			nsColor = cocoa.NSColorDisabledControlTextColor()
 		}
 	} else {
 		var alpha float64 = float64(1)
-		if (this.style&MULTI) != 0 && !this.impl.IsEnabled() {
+		if (this.style&MULTI) != 0 && !this.impl.isEnabled_() {
 			alpha = float64(0.5)
 		}
 		nsColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], alpha)
@@ -1364,11 +1364,11 @@ func (this *Text) SetForegroundColor(color []float64) {
 	}
 }
 
-func (this *Text) SetOrientationOnControl(orientation int32) {
+func (this *Text) setOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 }
 
-func (this *Text) SetOrientationOnWidget() {
+func (this *Text) setOrientationOnWidget_() {
 	var direction int32
 	if (this.style & RIGHT_TO_LEFT) != 0 {
 		direction = cocoa.OSNSWritingDirectionRightToLeft
@@ -1550,7 +1550,7 @@ func (this *Text) SetTopIndex(index int32) {
 	this.View.ScrollPoint(pt)
 }
 
-func (this *Text) ShouldChangeTextInRange_replacementString(id int64, sel int64, affectedCharRange int64, replacementString int64) bool {
+func (this *Text) shouldChangeTextInRange_replacementString_(id int64, sel int64, affectedCharRange int64, replacementString int64) bool {
 	var range_ cocoa.NSRange = cocoa.NSRange{}
 	cocoa.OSMemmoveOverload5(&range_, affectedCharRange, int64(cocoa.NSRangeSizeof))
 	var result bool = this.CallSuperBooleanIdSelRangeArg1(id, sel, range_, replacementString)
@@ -1609,20 +1609,20 @@ func (this *Text) ShowSelection() {
 	}
 }
 
-func (this *Text) TextViewDidChangeSelection(id int64, sel int64, aNotification int64) {
+func (this *Text) textViewDidChangeSelection_(id int64, sel int64, aNotification int64) {
 	var notification *cocoa.NSNotification = cocoa.NewNSNotificationOverload1(aNotification)
 	var editor *cocoa.NSText = cocoa.NewNSTextOverload1(notification.Object().Id)
 	this.selectionRange = editor.SelectedRange()
 }
 
-func (this *Text) TextDidChange(id int64, sel int64, aNotification int64) {
+func (this *Text) textDidChange_(id int64, sel int64, aNotification int64) {
 	if (this.style & SINGLE) != 0 {
-		this.Scrollable.TextDidChange(id, sel, aNotification)
+		this.Scrollable.textDidChange_(id, sel, aNotification)
 	}
 	this.PostEvent(Modify)
 }
 
-func (this *Text) TextView_willChangeSelectionFromCharacterRange_toCharacterRange(id int64, sel int64, aTextView int64, oldSelectedCharRange int64, newSelectedCharRange int64) cocoa.NSRange {
+func (this *Text) textView_willChangeSelectionFromCharacterRange_toCharacterRange_(id int64, sel int64, aTextView int64, oldSelectedCharRange int64, newSelectedCharRange int64) cocoa.NSRange {
 	if this.receivingFocus && this.selectionRange != (cocoa.NSRange{}) {
 		return this.selectionRange
 	}
@@ -1631,8 +1631,8 @@ func (this *Text) TextView_willChangeSelectionFromCharacterRange_toCharacterRang
 	return result
 }
 
-func (this *Text) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
-	var bits int32 = this.Scrollable.TraversalCode(key, theEvent)
+func (this *Text) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
+	var bits int32 = this.Scrollable.traversalCode_(key, theEvent)
 	if (this.style & READ_ONLY) != 0 {
 		return bits
 	}
@@ -1649,8 +1649,8 @@ func (this *Text) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 	return bits
 }
 
-func (this *Text) UpdateCursorRects(enabled bool) {
-	this.Scrollable.UpdateCursorRects(enabled)
+func (this *Text) updateCursorRects_(enabled bool) {
+	this.Scrollable.updateCursorRects_(enabled)
 	if this.scrollView == (nil) {
 		return
 	}
@@ -1680,8 +1680,8 @@ func (this *Text) UpdateThemeColors() {
 		}
 	}
 	if (this.backgroundImage == (nil)) && (this.background == (nil)) {
-		var background []float64 = this.impl.DefaultBackground().Handle
-		var alpha float64 = float64(this.impl.GetThemeAlpha())
+		var background []float64 = this.impl.defaultBackground_().Handle
+		var alpha float64 = float64(this.impl.getThemeAlpha_())
 		var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(background[0], background[1], background[2], alpha)
 		(castcocoaNSViewTococoaNSTextView(this.View)).SetBackgroundColor(nsColor)
 	}

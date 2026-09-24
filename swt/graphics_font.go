@@ -69,7 +69,7 @@ func (this *Font) initFontDeviceFd(device *Device, fd *FontData) {
 		}
 	}()
 	this.Init(fd.GetName(), fd.GetHeightF(), fd.GetStyle(), fd.NsName)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewFontDeviceFds(deviceLike DeviceLike, fds []*FontData) *Font {
@@ -109,7 +109,7 @@ func (this *Font) initFontDeviceFds(device *Device, fds []*FontData) {
 	}()
 	var fd *FontData = fds[0]
 	this.Init(fd.GetName(), fd.GetHeightF(), fd.GetStyle(), fd.NsName)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewFontDeviceNameHeightStyle(deviceLike DeviceLike, name string, height int32, style int32) *Font {
@@ -137,7 +137,7 @@ func (this *Font) initFontDeviceNameHeightStyle(device *Device, name string, hei
 		}
 	}()
 	this.Init(name, float32(height), style, "")
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func (this *Font) AddTraits(attrStr *cocoa.NSMutableAttributedString, range_ cocoa.NSRange) {
@@ -158,7 +158,7 @@ func (this *Font) AddTraitsDict(dict *cocoa.NSMutableDictionary) {
 	}
 }
 
-func (this *Font) Destroy() {
+func (this *Font) destroy_() {
 	this.Handle.Release()
 	this.Handle = nil
 	this.metrics = nil
@@ -176,7 +176,7 @@ func (this *Font) Equals(object any) bool {
 }
 
 func (this *Font) GetFontData() []*FontData {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -277,12 +277,12 @@ func (this *Font) InitTraits(style int32, systemFont *cocoa.NSFont) {
 	}
 }
 
-func (this *Font) IsDisposed() bool {
+func (this *Font) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Font) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Font {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Font {%v}", this.Handle)

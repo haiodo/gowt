@@ -38,7 +38,7 @@ func (this *VerifyEvent) initVerifyEvent(e *Event) {
 	this.Text = e.Text
 }
 
-func (this *VerifyEvent) String() string {
-	var string_ string = this.KeyEvent.String()
+func (this *VerifyEvent) string_() string {
+	var string_ string = this.KeyEvent.string_()
 	return fmt.Sprintf("%s start=%d end=%d text=%s}", string_[0:int32(len(string_))-1], this.Start, this.End, this.Text)
 }

@@ -63,7 +63,7 @@ func (this *Region) initRegionDevice(device *Device) {
 	if this.Handle == 0 {
 		Error(ERROR_NO_HANDLES)
 	}
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func newRegionDeviceHandle(device *Device, handle int64) *Region {
@@ -82,7 +82,7 @@ func (this *Region) initRegionDeviceHandle(device *Device, handle int64) {
 }
 
 func (this *Region) Add(pointArray []int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if pointArray == (nil) {
@@ -125,7 +125,7 @@ func (this *Region) AddRect(rectLike RectangleLike) {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if rect == (nil) {
@@ -147,7 +147,7 @@ func (this *Region) AddRect(rectLike RectangleLike) {
 }
 
 func (this *Region) AddXYWidthHeight(x int32, y int32, width int32, height int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if width < 0 || height < 0 {
@@ -176,13 +176,13 @@ func (this *Region) AddRegion(regionLike RegionLike) {
 		region = regionLike.AsRegion()
 	}
 	_ = region
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if region == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if region.impl.IsDisposed() {
+	if region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -198,7 +198,7 @@ func (this *Region) AddRegion(regionLike RegionLike) {
 }
 
 func (this *Region) Contains(x int32, y int32) bool {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -297,7 +297,7 @@ func (this *Region) ConvertRgnMessageRgnRNewRgn(message int64, rgn int64, r int6
 	return int64(0)
 }
 
-func (this *Region) Destroy() {
+func (this *Region) destroy_() {
 	cocoa.OSDisposeRgn(this.Handle)
 	this.Handle = int64(0)
 }
@@ -307,7 +307,7 @@ func (this *Region) Equals(object any) bool {
 }
 
 func (this *Region) GetBounds() *Rectangle {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -366,7 +366,7 @@ func (this *Region) Intersect(rectLike RectangleLike) {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if rect == (nil) {
@@ -376,7 +376,7 @@ func (this *Region) Intersect(rectLike RectangleLike) {
 }
 
 func (this *Region) IntersectXYWidthHeight(x int32, y int32, width int32, height int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if width < 0 || height < 0 {
@@ -405,13 +405,13 @@ func (this *Region) IntersectRegion(regionLike RegionLike) {
 		region = regionLike.AsRegion()
 	}
 	_ = region
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if region == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if region.impl.IsDisposed() {
+	if region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -427,7 +427,7 @@ func (this *Region) IntersectRegion(regionLike RegionLike) {
 }
 
 func (this *Region) Intersects(x int32, y int32, width int32, height int32) bool {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -456,12 +456,12 @@ func (this *Region) IntersectsRect(rectLike RectangleLike) bool {
 	return this.Intersects(rect.X, rect.Y, rect.Width, rect.Height)
 }
 
-func (this *Region) IsDisposed() bool {
+func (this *Region) isDisposed_() bool {
 	return this.Handle == 0
 }
 
 func (this *Region) IsEmpty() bool {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -477,7 +477,7 @@ func (this *Region) IsEmpty() bool {
 }
 
 func (this *Region) Subtract(pointArray []int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if pointArray == (nil) {
@@ -506,7 +506,7 @@ func (this *Region) SubtractRect(rectLike RectangleLike) {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if rect == (nil) {
@@ -516,7 +516,7 @@ func (this *Region) SubtractRect(rectLike RectangleLike) {
 }
 
 func (this *Region) SubtractXYWidthHeight(x int32, y int32, width int32, height int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if width < 0 || height < 0 {
@@ -545,13 +545,13 @@ func (this *Region) SubtractRegion(regionLike RegionLike) {
 		region = regionLike.AsRegion()
 	}
 	_ = region
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if region == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if region.impl.IsDisposed() {
+	if region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -567,7 +567,7 @@ func (this *Region) SubtractRegion(regionLike RegionLike) {
 }
 
 func (this *Region) Translate(x int32, y int32) {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -588,7 +588,7 @@ func (this *Region) TranslatePt(ptLike PointLike) {
 		pt = ptLike.AsPoint()
 	}
 	_ = pt
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if pt == (nil) {
@@ -607,7 +607,7 @@ func (this *Region) TranslatePt(ptLike PointLike) {
 }
 
 func (this *Region) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Region {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Region {%d}", this.Handle)

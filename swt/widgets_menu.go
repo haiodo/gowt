@@ -44,7 +44,7 @@ func NewMenu(parentLike ControlLike) *Menu {
 }
 
 func (this *Menu) initMenu(parent *Control) {
-	this.initMenuParentStyle(MenuCheckNull(parent).impl.MenuShell(), POP_UP)
+	this.initMenuParentStyle(MenuCheckNull(parent).impl.menuShell_(), POP_UP)
 }
 
 func NewMenuParentStyle(parentLike DecorationsLike, style int32) *Menu {
@@ -61,8 +61,8 @@ func NewMenuParentStyle(parentLike DecorationsLike, style int32) *Menu {
 
 func (this *Menu) initMenuParentStyle(parent *Decorations, style int32) {
 	this.Widget.initWidget()
-	this.impl.CheckSubclass()
-	this.impl.CheckParent(upcastDecorationsToWidget(parent))
+	this.impl.checkSubclass_()
+	this.impl.checkParent_(upcastDecorationsToWidget(parent))
 	this.style = MenuCheckStyle(style)
 	if parent != (nil) {
 		this.display = parent.display
@@ -77,7 +77,7 @@ func (this *Menu) initMenuParentStyle(parent *Decorations, style int32) {
 	}
 	this.parent = parent
 	this.ReskinWidget()
-	this.impl.CreateWidget()
+	this.impl.createWidget_()
 }
 
 func NewMenuParentMenu(parentMenuLike MenuLike) *Menu {
@@ -133,7 +133,7 @@ func (this *Menu) initMenuDisplay(display *Display) {
 	this.display = display
 	this.style = BAR
 	this.ReskinWidget()
-	this.impl.CreateWidget()
+	this.impl.createWidget_()
 }
 
 func newMenuDisplayNativeMenu(display *Display, nativeMenu *cocoa.NSMenu) *Menu {
@@ -149,10 +149,10 @@ func (this *Menu) initMenuDisplayNativeMenu(display *Display, nativeMenu *cocoa.
 	this.style = DROP_DOWN
 	this.nsMenu = nativeMenu
 	this.ReskinWidget()
-	this.impl.CreateWidget()
+	this.impl.createWidget_()
 }
 
-func (this *Menu) CheckParent(parent *Widget) {
+func (this *Menu) checkParent_(parent *Widget) {
 	if parent == (nil) && DisplayGetDefault().appMenuBar == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -161,7 +161,7 @@ func (this *Menu) CheckParent(parent *Widget) {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		parent.CheckWidget()
-		parent.impl.CheckOpen()
+		parent.impl.checkOpen_()
 	}
 }
 
@@ -208,7 +208,7 @@ func (this *Menu) AddMenuListener(listener MenuListener) {
 	this.AddTypedListener(listener, []int32{Hide, Show})
 }
 
-func (this *Menu) CreateHandle() {
+func (this *Menu) createHandle_() {
 	this.display.AddMenu(this)
 	if this.nsMenu == (nil) {
 		var widget *cocoa.NSMenu = castcocoaNSObjectTococoaNSMenu(cocoa.NewSWTMenu().Alloc())
@@ -286,7 +286,7 @@ func (this *Menu) CreateItem(itemLike MenuItemLike, index int32) {
 		add = false
 	}
 	item.CreateJNIRef()
-	item.impl.Register()
+	item.impl.register_()
 	if add {
 		this.nsMenu.InsertItem(nsItem, int64(index))
 	}
@@ -319,14 +319,14 @@ func (this *Menu) CreateItem(itemLike MenuItemLike, index int32) {
 	}
 }
 
-func (this *Menu) CreateWidget() {
+func (this *Menu) createWidget_() {
 	this.CheckOrientation(upcastDecorationsToWidget(this.parent))
-	this.Widget.CreateWidget()
+	this.Widget.createWidget_()
 	this.items = make([]*MenuItem, 4)
 }
 
-func (this *Menu) Deregister() {
-	this.Widget.Deregister()
+func (this *Menu) deregister_() {
+	this.Widget.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSMenuTococoaNSObject(this.nsMenu))
 }
 
@@ -417,15 +417,15 @@ func (this *Menu) GetItems() []*MenuItem {
 	return result
 }
 
-func (this *Menu) GetNameText() string {
+func (this *Menu) getNameText_() string {
 	var result string = ""
 	var items []*MenuItem = this.GetItems()
 	var length int32 = int32(len(items))
 	if length > 0 {
 		for i := int32(0); i < length-1; i++ {
-			result = fmt.Sprintf("%s%s, ", result, items[i].impl.GetNameText())
+			result = fmt.Sprintf("%s%s, ", result, items[i].impl.getNameText_())
 		}
-		result = fmt.Sprintf("%s%s", result, items[length-1].impl.GetNameText())
+		result = fmt.Sprintf("%s%s", result, items[length-1].impl.getNameText_())
 	}
 	return result
 }
@@ -456,7 +456,7 @@ func (this *Menu) GetParentMenu() *Menu {
 func (this *Menu) GetShell() *Shell {
 	this.CheckWidget()
 	if this.parent != (nil) {
-		return this.parent.impl.GetShell()
+		return this.parent.impl.getShell_()
 	}
 	return nil
 }
@@ -467,7 +467,7 @@ func (this *Menu) GetVisible() bool {
 		if this == this.display.appMenuBar {
 			return this.display.application.IsActive()
 		} else {
-			return this == this.parent.impl.MenuShell().menuBar
+			return this == this.parent.impl.menuShell_().menuBar
 		}
 	}
 	if (this.style & POP_UP) != 0 {
@@ -512,7 +512,7 @@ func (this *Menu) IsEnabled() bool {
 	}
 	var parentMenu *Menu = this.GetParentMenu()
 	if parentMenu == (nil) {
-		return this.GetEnabled() && this.parent.impl.IsEnabled()
+		return this.GetEnabled() && this.parent.impl.isEnabled_()
 	}
 	return this.GetEnabled() && parentMenu.IsEnabled()
 }
@@ -522,7 +522,7 @@ func (this *Menu) IsVisible() bool {
 	return this.GetVisible()
 }
 
-func (this *Menu) Menu_willHighlightItem(id int64, sel int64, menu int64, itemID int64) {
+func (this *Menu) menu_willHighlightItem_(id int64, sel int64, menu int64, itemID int64) {
 	var widget *Widget = this.display.GetWidget(itemID)
 	item, ok177 := isWidgetToMenuItem(widget)
 	if ok177 {
@@ -530,10 +530,10 @@ func (this *Menu) Menu_willHighlightItem(id int64, sel int64, menu int64, itemID
 	}
 }
 
-func (this *Menu) MenuNeedsUpdate(id int64, sel int64, menu int64) {
+func (this *Menu) menuNeedsUpdate_(id int64, sel int64, menu int64) {
 }
 
-func (this *Menu) MenuWillOpen(id int64, sel int64, menu int64) {
+func (this *Menu) menuWillOpen_(id int64, sel int64, menu int64) {
 	this.visible = true
 	this.SendEventEventType(Show)
 	if this.IsDisposed() {
@@ -603,7 +603,7 @@ func (this *Menu) MenuWillOpen(id int64, sel int64, menu int64) {
 	}
 }
 
-func (this *Menu) MenuDidClose(id int64, sel int64, menu int64) {
+func (this *Menu) menuDidClose_(id int64, sel int64, menu int64) {
 	this.SendEventEventType(Hide)
 	if this.IsDisposed() {
 		return
@@ -619,44 +619,44 @@ func (this *Menu) MenuDidClose(id int64, sel int64, menu int64) {
 	}
 }
 
-func (this *Menu) Register() {
-	this.Widget.Register()
+func (this *Menu) register_() {
+	this.Widget.register_()
 	this.display.AddWidget(upcastcocoaNSMenuTococoaNSObject(this.nsMenu), upcastMenuToWidget(this))
 }
 
-func (this *Menu) ReleaseChildren(destroy bool) {
+func (this *Menu) releaseChildren_(destroy bool) {
 	if this.items != (nil) {
 		for i := int32(0); i < int32(len(this.items)); i++ {
 			var item *MenuItem = this.items[i]
 			if item != (nil) && !item.IsDisposed() {
-				item.impl.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
 	}
-	this.Widget.ReleaseChildren(destroy)
+	this.Widget.releaseChildren_(destroy)
 }
 
-func (this *Menu) ReleaseHandle() {
-	this.Widget.ReleaseHandle()
+func (this *Menu) releaseHandle_() {
+	this.Widget.releaseHandle_()
 	if this.nsMenu != (nil) {
 		this.nsMenu.Release()
 	}
 	this.nsMenu = nil
 }
 
-func (this *Menu) ReleaseParent() {
-	this.Widget.ReleaseParent()
+func (this *Menu) releaseParent_() {
+	this.Widget.releaseParent_()
 	if this.cascade != (nil) {
 		this.cascade.SetMenu(nil)
 	}
 	if (this.style&BAR) != 0 && this.parent != (nil) && this == this.parent.menuBar {
-		this.parent.impl.SetMenuBar(nil)
+		this.parent.impl.setMenuBar_(nil)
 	}
 }
 
-func (this *Menu) ReleaseWidget() {
-	this.Widget.ReleaseWidget()
+func (this *Menu) releaseWidget_() {
+	this.Widget.releaseWidget_()
 	this.display.RemoveMenu(this)
 	this.parent = nil
 	this.defaultItem = nil
@@ -686,13 +686,13 @@ func (this *Menu) RemoveMenuListener(listener MenuListener) {
 	this.eventTable.UnhookEventTypeListener(Show, listener)
 }
 
-func (this *Menu) ReskinChildren(flags int32) {
+func (this *Menu) reskinChildren_(flags int32) {
 	var items []*MenuItem = this.GetItems()
 	for i := int32(0); i < int32(len(items)); i++ {
 		var item *MenuItem = items[i]
 		item.Reskin(flags)
 	}
-	this.Widget.ReskinChildren(flags)
+	this.Widget.reskinChildren_(flags)
 }
 
 func (this *Menu) SetDefaultItem(itemLike MenuItemLike) {

@@ -151,7 +151,7 @@ func (this *Cursor) initCursorDeviceStyle(device *Device, style int32) {
 		this.Handle.Retain()
 	}
 	this.Handle.SetOnMouseEntered(true)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewCursorDeviceSourceMaskHotspotXHotspotY(deviceLike DeviceLike, sourceLike ImageDataLike, maskLike ImageDataLike, hotspotX int32, hotspotY int32) *Cursor {
@@ -226,7 +226,7 @@ func (this *Cursor) initCursorDeviceSourceMaskHotspotXHotspotY(device *Device, s
 		}
 	}()
 	this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, true)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewCursorDeviceSourceHotspotXHotspotY(deviceLike DeviceLike, sourceLike ImageDataLike, hotspotX int32, hotspotY int32) *Cursor {
@@ -374,10 +374,10 @@ func (this *Cursor) SetupCursorFromImageData(sourceLike ImageDataLike, hotspotX 
 		}
 	}()
 	this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, hasAlpha)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
-func (this *Cursor) Destroy() {
+func (this *Cursor) destroy_() {
 	this.Handle.Release()
 	this.Handle = nil
 }
@@ -403,12 +403,12 @@ func (this *Cursor) HashCode() int32 {
 	return cond490
 }
 
-func (this *Cursor) IsDisposed() bool {
+func (this *Cursor) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Cursor) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Cursor {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Cursor {%v}", this.Handle)

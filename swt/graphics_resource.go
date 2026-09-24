@@ -9,15 +9,15 @@ import (
 )
 
 type ResourceImpl interface {
-	Destroy()
-	Dispose()
-	GetDevice() *Device
-	InitOnResource()
-	IsDisposed() bool
+	destroy_()
+	dispose_()
+	getDevice_() *Device
+	init_()
+	isDisposed_() bool
 }
 
-func (this *Resource) IsDisposed() bool {
-	panic("j2go: IsDisposed has no default on Resource")
+func (this *Resource) isDisposed_() bool {
+	panic("j2go: isDisposed_ has no default on Resource")
 }
 
 type Resource struct {
@@ -65,12 +65,20 @@ func (this *Resource) initResourceDevice(device *Device) {
 }
 
 func (this *Resource) Destroy() {
+	this.impl.destroy_()
+}
+
+func (this *Resource) destroy_() {
 }
 
 func (this *Resource) DestroyHandlesExcept(zoomLevels any) {
 }
 
 func (this *Resource) Dispose() {
+	this.impl.dispose_()
+}
+
+func (this *Resource) dispose_() {
 	if this.tracker != (nil) {
 		func() any { _ = []any{this.tracker.reporting, false}; panic("j2go: unresolved call set") }()
 	}
@@ -83,7 +91,7 @@ func (this *Resource) Dispose() {
 	if this.device.IsDisposed() {
 		return
 	}
-	this.impl.Destroy()
+	this.impl.destroy_()
 	if this.device.tracking {
 		this.device.Dispose_Object(this)
 	}
@@ -91,8 +99,12 @@ func (this *Resource) Dispose() {
 }
 
 func (this *Resource) GetDevice() *Device {
+	return this.impl.getDevice_()
+}
+
+func (this *Resource) getDevice_() *Device {
 	var device *Device = this.device
-	if device == (nil) || this.impl.IsDisposed() {
+	if device == (nil) || this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return device
@@ -107,7 +119,11 @@ func (this *Resource) IgnoreNonDisposed() {
 	}
 }
 
-func (this *Resource) InitOnResource() {
+func (this *Resource) Init() {
+	this.impl.init_()
+}
+
+func (this *Resource) init_() {
 	if this.device.tracking {
 		this.device.New_Object(this)
 	}
@@ -132,6 +148,10 @@ func (this *Resource) InitNonDisposeTracking() {
 	}
 	var error_ error = &jrt.JavaError{Message: "SWT Resource was not properly disposed"}
 	this.tracker = newResourceResourceTracker(error_)
+}
+
+func (this *Resource) IsDisposed() bool {
+	return this.impl.isDisposed_()
 }
 
 func ResourceSetNonDisposeHandler(reporter func(error)) {

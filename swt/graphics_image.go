@@ -80,7 +80,7 @@ func (this *Image) initImageDeviceWidthHeight(device *Device, width int32, heigh
 		}
 	}()
 	this.Init(width, height)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceSrcImageFlag(deviceLike DeviceLike, srcImageLike ImageLike, flag int32) *Image {
@@ -111,7 +111,7 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 	if srcImage == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if srcImage.impl.IsDisposed() {
+	if srcImage.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	switch flag {
@@ -153,7 +153,7 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 			this.CreateRepFromSourceAndApplyFlag(rep200, srcWidth*2, srcHeight*2, flag)
 		}
 	}
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceBounds(deviceLike DeviceLike, boundsLike RectangleLike) *Image {
@@ -194,7 +194,7 @@ func (this *Image) initImageDeviceBounds(device *Device, bounds *Rectangle) {
 		}
 	}()
 	this.Init(bounds.Width, bounds.Height)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceData(deviceLike DeviceLike, dataLike ImageDataLike) *Image {
@@ -232,7 +232,7 @@ func (this *Image) initImageDeviceData(device *Device, data *ImageData) {
 		}
 	}()
 	this.InitImageImageZoom(data, 100)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceSourceMask(deviceLike DeviceLike, sourceLike ImageDataLike, maskLike ImageDataLike) *Image {
@@ -338,7 +338,7 @@ func (this *Image) initImageDeviceStream(device *Device, stream any) {
 		}()
 		var imageDataProvider ImageDataProvider = ImageCreateImageDataProvider(stream)
 		this.InitUsingImageDataProvider(imageDataProvider)
-		this.impl.InitOnResource()
+		this.impl.init_()
 	}()
 }
 
@@ -383,7 +383,7 @@ func (this *Image) initImageDeviceFilename(device *Device, filename string) {
 		}
 		return cond415
 	}})
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceImageFileNameProvider(deviceLike DeviceLike, imageFileNameProvider ImageFileNameProvider) *Image {
@@ -419,7 +419,7 @@ func (this *Image) initImageDeviceImageFileNameProvider(device *Device, imageFil
 		}
 	}()
 	this.InitUsingFileNameProvider(imageFileNameProvider)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewImageDeviceImageDataProvider(deviceLike DeviceLike, imageDataProvider ImageDataProvider) *Image {
@@ -455,7 +455,7 @@ func (this *Image) initImageDeviceImageDataProvider(device *Device, imageDataPro
 		}
 	}()
 	this.InitUsingImageDataProvider(imageDataProvider)
-	this.impl.InitOnResource()
+	this.impl.init_()
 	StrictChecksRunIfStrictChecksEnabled(jrt.NewRunnable(func() {
 		DPIUtilValidateLinearScaling(imageDataProvider)
 	}))
@@ -501,7 +501,7 @@ func (this *Image) initImageDeviceImageGcDrawerWidthHeight(device *Device, image
 		}
 	}()
 	this.InitImageImageZoom(data, DPIUtilGetDeviceZoom())
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func (this *Image) CopyAlphaInfo(src_alphaInfoLike Image_AlphaInfoLike, dest_alphaInfoLike Image_AlphaInfoLike) {
@@ -642,8 +642,8 @@ func (this *Image) DrawWithImageGcDrawer(imageGcDrawer ImageGcDrawer, width int3
 	}
 	var gc *GC = NewGCDrawableStyle(image, gcStyle)
 	defer func() {
-		gc.impl.Dispose()
-		image.impl.Dispose()
+		gc.impl.dispose_()
+		image.impl.dispose_()
 	}()
 	imageGcDrawer.DrawOn(gc, width, height)
 	var imageData *ImageData = image.GetImageDataZoom(zoom)
@@ -947,10 +947,10 @@ func (this *Image) CreateRepresentation(imageDataLike ImageDataLike, alphaInfoLi
 	return rep
 }
 
-func (this *Image) Destroy() {
+func (this *Image) destroy_() {
 	this.cachedImageAtSize.Destroy()
 	if this.memGC != (nil) {
-		this.memGC.impl.Dispose()
+		this.memGC.impl.dispose_()
 	}
 	this.Handle.Release()
 	this.Handle = nil
@@ -1027,7 +1027,7 @@ func (this *Image) GetTargetSize(scaleFactor int32) cocoa.NSSize {
 }
 
 func (this *Image) GetBackground() *Color {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var imageRep *cocoa.NSBitmapImageRep = this.GetRepresentation0()
@@ -1042,7 +1042,7 @@ func (this *Image) GetBackground() *Color {
 }
 
 func (this *Image) GetBounds() *Rectangle {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1082,7 +1082,7 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 }
 
 func (this *Image) GetImageDataZoom(zoom int32) *ImageData {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1400,7 +1400,7 @@ func (this *Image) Internal_dispose_GC(hDC int64, data *GCData) {
 	}
 }
 
-func (this *Image) IsDisposed() bool {
+func (this *Image) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
@@ -1410,13 +1410,13 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if color == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color.impl.IsDisposed() {
+	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1479,7 +1479,7 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 }
 
 func (this *Image) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Image {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Image {%v}", this.Handle)
@@ -1550,7 +1550,7 @@ func ImageDrawAtSize(gcLike GCLike, imageDataLike ImageDataLike, width int32, he
 			return imageData
 		}})
 		gc.DrawImageImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeight(imageToDraw, 0, 0, DPIUtilPixelToPoint(imageData.Width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(imageData.Height, DPIUtilGetDeviceZoom()), 0, 0, DPIUtilPixelToPoint(width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(height, DPIUtilGetDeviceZoom()))
-		imageToDraw.impl.Dispose()
+		imageToDraw.impl.dispose_()
 	}))
 }
 
@@ -1690,7 +1690,7 @@ func (this *Image_CachedImageAtSize) initImageCachedImageAtSize() {
 
 func (this *Image_CachedImageAtSize) Destroy() {
 	if this.image != (nil) {
-		this.image.impl.Dispose()
+		this.image.impl.dispose_()
 		this.image = nil
 	}
 }

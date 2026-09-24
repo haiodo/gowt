@@ -135,7 +135,7 @@ func (this *GC) initGCDrawableStyle(drawable Drawable, style int32) {
 	data.Device = device
 	this.device = data.Device
 	this.Init(drawable, data, contextId)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func (this *GC) CalculateTransformationScale() float32 {
@@ -437,7 +437,7 @@ func (this *GC) CopyArea(imageLike ImageLike, x int32, y int32) {
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.Type != BITMAP || image.impl.IsDisposed() {
+	if image.Type != BITMAP || image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCTRANSFORM | GCCLIPPING)
@@ -921,7 +921,7 @@ func (this *GC) CreateNSBezierPath(cgPath int64) *cocoa.NSBezierPath {
 				bezierPath.ClosePath()
 				break
 			default:
-				this.impl.Dispose()
+				this.impl.dispose_()
 				Error(ERROR_INVALID_ARGUMENT)
 			}
 		}
@@ -933,7 +933,7 @@ func (this *GC) CreateNSBezierPath(cgPath int64) *cocoa.NSBezierPath {
 	return bezierPath
 }
 
-func (this *GC) Destroy() {
+func (this *GC) destroy_() {
 	var image *Image = this.data.Image
 	if image != (nil) {
 		image.memGC = nil
@@ -1059,7 +1059,7 @@ func (this *GC) DrawImage(imageLike ImageLike, x int32, y int32) {
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.impl.IsDisposed() {
+	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if this.data.Transform != (nil) {
@@ -1088,7 +1088,7 @@ func (this *GC) DrawImageImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHe
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.impl.IsDisposed() {
+	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeightSimple(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false)
@@ -1112,7 +1112,7 @@ func (this *GC) DrawImageImageDestXDestYDestWidthDestHeight(imageLike ImageLike,
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.impl.IsDisposed() {
+	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var transformationScale float32 = this.CalculateTransformationScale()
@@ -2150,7 +2150,7 @@ func (this *GC) GetClippingRegion(regionLike RegionLike) {
 	if region == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if region.impl.IsDisposed() {
+	if region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -2233,7 +2233,7 @@ func (this *GC) GetClippingRegion(regionLike RegionLike) {
 		}
 		cocoa.CFree(points)
 		region.IntersectRegion(clipRgn)
-		clipRgn.impl.Dispose()
+		clipRgn.impl.dispose_()
 	}
 	if this.data.InverseTransform != (nil) {
 		region.ConvertRgn(this.data.InverseTransform)
@@ -2424,7 +2424,7 @@ func (this *GC) GetTransform(transformLike TransformLike) {
 	if transform == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if transform.impl.IsDisposed() {
+	if transform.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var cmt *cocoa.NSAffineTransform = this.data.Transform
@@ -2598,7 +2598,7 @@ func (this *GC) IsClipped() bool {
 	return this.data.ClipPath != (nil)
 }
 
-func (this *GC) IsDisposed() bool {
+func (this *GC) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
@@ -2666,7 +2666,7 @@ func (this *GC) SetBackground(colorLike ColorLike) {
 	if color == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color.impl.IsDisposed() {
+	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.data.Background = color.Handle
@@ -2687,7 +2687,7 @@ func (this *GC) SetBackgroundPattern(patternLike PatternLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if pattern != (nil) && pattern.impl.IsDisposed() {
+	if pattern != (nil) && pattern.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if this.data.BackgroundPattern == pattern {
@@ -2737,7 +2737,7 @@ func (this *GC) SetClippingOverload1(pathLike PathLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if path != (nil) && path.impl.IsDisposed() {
+	if path != (nil) && path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -2777,7 +2777,7 @@ func (this *GC) SetClippingOverload3(regionLike RegionLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if region != (nil) && region.impl.IsDisposed() {
+	if region != (nil) && region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -2841,7 +2841,7 @@ func (this *GC) SetFont(fontLike FontLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if font != (nil) && font.impl.IsDisposed() {
+	if font != (nil) && font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if font != (nil) {
@@ -2864,7 +2864,7 @@ func (this *GC) SetForeground(colorLike ColorLike) {
 	if color == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color.impl.IsDisposed() {
+	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.data.Foreground = color.Handle
@@ -2885,7 +2885,7 @@ func (this *GC) SetForegroundPattern(patternLike PatternLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if pattern != (nil) && pattern.impl.IsDisposed() {
+	if pattern != (nil) && pattern.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if this.data.ForegroundPattern == pattern {
@@ -3180,7 +3180,7 @@ func (this *GC) SetTransform(transformLike TransformLike) {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if transform != (nil) && transform.impl.IsDisposed() {
+	if transform != (nil) && transform.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if transform != (nil) {
@@ -3247,7 +3247,7 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 }
 
 func (this *GC) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "GC {*DISPOSED*}"
 	}
 	return fmt.Sprintf("GC {%v}", this.Handle)

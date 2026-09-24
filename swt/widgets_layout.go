@@ -3,17 +3,17 @@
 package swt
 
 type LayoutImpl interface {
-	ComputeSize(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
-	FlushCache(a0 *Control) bool
-	LayoutFn(a0 *Composite, a1 bool)
+	computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
+	flushCache_(a0 *Control) bool
+	layoutFn_(a0 *Composite, a1 bool)
 }
 
-func (this *Layout) ComputeSize(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
-	panic("j2go: ComputeSize has no default on Layout")
+func (this *Layout) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
+	panic("j2go: computeSize_ has no default on Layout")
 }
 
-func (this *Layout) LayoutFn(a0 *Composite, a1 bool) {
-	panic("j2go: LayoutFn has no default on Layout")
+func (this *Layout) layoutFn_(a0 *Composite, a1 bool) {
+	panic("j2go: layoutFn_ has no default on Layout")
 }
 
 type Layout struct {
@@ -36,6 +36,30 @@ func NewLayout() *Layout {
 func (this *Layout) initLayout() {
 }
 
-func (this *Layout) FlushCache(control *Control) bool {
+func (this *Layout) ComputeSize(compositeLike CompositeLike, wHint int32, hHint int32, flushCache bool) *Point {
+	var composite *Composite
+	if compositeLike != nil {
+		composite = compositeLike.AsComposite()
+	}
+	return this.impl.computeSize_(composite, wHint, hHint, flushCache)
+}
+
+func (this *Layout) FlushCache(controlLike ControlLike) bool {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	return this.impl.flushCache_(control)
+}
+
+func (this *Layout) flushCache_(control *Control) bool {
 	return false
+}
+
+func (this *Layout) LayoutFn(compositeLike CompositeLike, flushCache bool) {
+	var composite *Composite
+	if compositeLike != nil {
+		composite = compositeLike.AsComposite()
+	}
+	this.impl.layoutFn_(composite, flushCache)
 }

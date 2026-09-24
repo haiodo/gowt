@@ -74,7 +74,7 @@ func (this *FormLayout) ComputeHeight(controlLike ControlLike, dataLike FormData
 	return height.SolveY(data.GetHeight(control, flushCache))
 }
 
-func (this *FormLayout) ComputeSize(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FormLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var size *Point = this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, false, 0, 0, wHint, hHint, flushCache)
 	if wHint != DEFAULT {
 		size.X = wHint
@@ -85,7 +85,7 @@ func (this *FormLayout) ComputeSize(composite *Composite, wHint int32, hHint int
 	return size
 }
 
-func (this *FormLayout) FlushCache(control *Control) bool {
+func (this *FormLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
 	if data != (nil) {
 		(castanyToFormData(data)).FlushCache()
@@ -132,8 +132,8 @@ func (this *FormLayout) ComputeWidth(controlLike ControlLike, dataLike FormDataL
 	return width.SolveY(data.GetWidth(control, flushCache))
 }
 
-func (this *FormLayout) LayoutFn(composite *Composite, flushCache bool) {
-	var rect *Rectangle = composite.impl.GetClientArea()
+func (this *FormLayout) layoutFn_(composite *Composite, flushCache bool) {
+	var rect *Rectangle = composite.impl.getClientArea_()
 	var x int32 = rect.X + this.MarginLeft + this.MarginWidth
 	var y int32 = rect.Y + this.MarginTop + this.MarginHeight
 	var width int32 = int32(math.Max(float64(0), float64(rect.Width-this.MarginLeft-2*this.MarginWidth-this.MarginRight)))
@@ -180,7 +180,7 @@ func (this *FormLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 				var trim int32 = 0
 				_, ok118 := isControlToScrollable(child)
 				if ok118 {
-					var rect *Rectangle = (castControlToScrollable(child)).impl.ComputeTrim(0, 0, 0, 0)
+					var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 					trim = rect.Width
 				} else {
 					trim = child.GetBorderWidth() * 2

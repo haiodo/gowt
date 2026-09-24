@@ -15,7 +15,7 @@ func main() {
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
 	shell.SetText("Form")
-	shell.SetLayout(&swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(2, false).Layout)
+	shell.SetLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(2, false))
 
 	fill := swt.NewGridDataStyle(swt.GridDataFILL_HORIZONTAL)
 	fill.WidthHint = 150

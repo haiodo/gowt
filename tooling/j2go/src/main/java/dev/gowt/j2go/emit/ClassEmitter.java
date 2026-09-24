@@ -142,9 +142,12 @@ final class ClassEmitter {
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
 				if (Manual.manualMethod(Names.erasureKey(md.resolveBinding())) != null) continue;
-				// Abstract method (no body, e.g. Layout.computeSize): nothing to emit at this
-				// declaring class - only a concrete override further down has a real body.
-				if (md.getBody() == null) continue;
+				// Abstract method (no body, e.g. Layout.computeSize): at most its exported wrapper -
+				// only a concrete override further down has a real body.
+				if (md.getBody() == null) {
+					emitDispatchWrapper(md, ci, out);
+					continue;
+				}
 				// A generic method (e.g. getTypedListeners<L>) has no Go equivalent for its own
 				// signature (no generics, no Stream) - skipped entirely rather than emitted broken.
 				if (!md.typeParameters().isEmpty()) {
@@ -310,8 +313,9 @@ final class ClassEmitter {
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
 
 		// A cascade override, a Java-interface implementation, or a Type::method reference target
-		// has a signature fixed elsewhere - only a plain method widens its params.
+		// has a signature fixed elsewhere - only a plain method (or the wrapper) widens its params.
 		boolean widen = !overridden && !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
+		emitDispatchWrapper(md, ci, out);
 		List<String> pubPrelude = new ArrayList<>();
 		String params = widen ? publicParamList(emitter, sigSource, md, pubPrelude) : emitter.paramList(sigSource, md);
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(goName)
@@ -322,6 +326,26 @@ final class ClassEmitter {
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");
+	}
+
+	/** At a split cascade's override point: the exported natural-name method, params widened and
+	 * converted once, dispatching through this.impl (README "Round 9 api"). */
+	private void emitDispatchWrapper(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+		IMethodBinding mb = md.resolveBinding();
+		String sig = TypeModel.signature(mb);
+		if (!ci.splitsDispatch() || ci.overridePoint(sig) != ci) return;
+		String natural = emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
+		boolean widen = !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
+		List<String> pre = new ArrayList<>();
+		String params = widen ? publicParamList(emitter, mb, md, pre) : emitter.paramList(mb, md);
+		String ret = emitter.retType(mb);
+		out.append("func (this *").append(ci.goTypeName).append(") ").append(natural)
+				.append('(').append(params).append(") ").append(ret).append(" {\n");
+		for (String p : pre) {
+			if (!p.startsWith("_ = ")) out.append('\t').append(p).append('\n');
+		}
+		out.append('\t').append(ret.isEmpty() ? "" : "return ").append("this.impl.")
+				.append(ci.root.overriddenRootMethodGoNames.get(sig)).append('(').append(emitter.argNames(md)).append(")\n}\n\n");
 	}
 
 	// A default method's body as <Iface>Default<M>(this, ...); implementers that don't declare it

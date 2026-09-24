@@ -10,7 +10,7 @@ import (
 )
 
 type TypedEventImpl interface {
-	String() string
+	string_() string
 }
 
 type TypedEvent struct {
@@ -69,5 +69,9 @@ func (this *TypedEvent) GetName() string {
 }
 
 func (this *TypedEvent) String() string {
+	return this.impl.string_()
+}
+
+func (this *TypedEvent) string_() string {
 	return fmt.Sprintf("%s{%v time=%d data=%v}", this.GetName(), this.Widget, this.Time, this.Data)
 }

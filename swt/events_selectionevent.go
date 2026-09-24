@@ -51,7 +51,7 @@ func (this *SelectionEvent) initSelectionEvent(e *Event) {
 	this.Doit = e.Doit
 }
 
-func (this *SelectionEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *SelectionEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	return fmt.Sprintf("%s item=%v detail=%d x=%d y=%d width=%d height=%d stateMask=0x%s text=%s doit=%t}", string_[0:int32(len(string_))-1], this.Item, this.Detail, this.X, this.Y, this.Width, this.Height, strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Text, this.Doit)
 }

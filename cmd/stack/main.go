@@ -15,30 +15,30 @@ func main() {
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
 	shell.SetText("Stack")
-	shell.SetLayout(&swt.NewFillLayout().Layout)
+	shell.SetLayout(swt.NewFillLayout())
 
 	form := swt.NewSashForm(shell, swt.HORIZONTAL)
 
 	left := swt.NewCompositeParentStyle(form, swt.NONE)
-	left.SetLayout(&swt.NewFillLayout().Layout)
+	left.SetLayout(swt.NewFillLayout())
 
 	right := swt.NewCompositeParentStyle(form, swt.NONE)
 	stackLayout := swt.NewStackLayout()
-	right.SetLayout(&stackLayout.Layout)
+	right.SetLayout(stackLayout)
 
 	groupA := swt.NewGroup(right, swt.NONE)
 	groupA.SetText("Panel A")
-	groupA.SetLayout(&swt.NewFillLayout().Layout)
+	groupA.SetLayout(swt.NewFillLayout())
 	swt.NewLabel(groupA, swt.NONE).SetText("This is panel A")
 
 	groupB := swt.NewGroup(right, swt.NONE)
 	groupB.SetText("Panel B")
-	groupB.SetLayout(&swt.NewFillLayout().Layout)
+	groupB.SetLayout(swt.NewFillLayout())
 	swt.NewLabel(groupB, swt.NONE).SetText("This is panel B")
 
 	groupC := swt.NewGroup(right, swt.NONE)
 	groupC.SetText("Panel C")
-	groupC.SetLayout(&swt.NewFillLayout().Layout)
+	groupC.SetLayout(swt.NewFillLayout())
 	swt.NewLabel(groupC, swt.NONE).SetText("This is panel C")
 
 	stackLayout.TopControl = &groupA.Control

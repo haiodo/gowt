@@ -52,14 +52,14 @@ func (this *Canvas) initCanvasParentStyle(parent *Composite, style int32) {
 	this.Composite.initCompositeParentStyle(parent, style)
 }
 
-func (this *Canvas) AttributedSubstringFromRange(id int64, sel int64, range_ int64) int64 {
+func (this *Canvas) attributedSubstringFromRange_(id int64, sel int64, range_ int64) int64 {
 	if this.ime != (nil) {
 		return this.ime.AttributedSubstringFromRange(id, sel, range_)
 	}
-	return this.Composite.AttributedSubstringFromRange(id, sel, range_)
+	return this.Composite.attributedSubstringFromRange_(id, sel, range_)
 }
 
-func (this *Canvas) SendFocusEvent(type_ int32) {
+func (this *Canvas) sendFocusEvent_(type_ int32) {
 	if this.caret != (nil) {
 		if type_ == FocusIn {
 			this.caret.SetFocus()
@@ -67,14 +67,14 @@ func (this *Canvas) SendFocusEvent(type_ int32) {
 			this.caret.KillFocus()
 		}
 	}
-	this.Composite.SendFocusEvent(type_)
+	this.Composite.sendFocusEvent_(type_)
 }
 
-func (this *Canvas) CharacterIndexForPoint(id int64, sel int64, point int64) int64 {
+func (this *Canvas) characterIndexForPoint_(id int64, sel int64, point int64) int64 {
 	if this.ime != (nil) {
 		return this.ime.CharacterIndexForPoint(id, sel, point)
 	}
-	return this.Composite.CharacterIndexForPoint(id, sel, point)
+	return this.Composite.characterIndexForPoint_(id, sel, point)
 }
 
 func (this *Canvas) DrawBackgroundGC(gcLike GCLike, x int32, y int32, width int32, height int32) {
@@ -86,8 +86,8 @@ func (this *Canvas) DrawBackgroundGC(gcLike GCLike, x int32, y int32, width int3
 	this.DrawBackground(gc, x, y, width, height, 0, 0)
 }
 
-func (this *Canvas) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
-	this.Composite.DrawBackgroundOnWidget(id, context, rect)
+func (this *Canvas) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+	this.Composite.drawBackground_(id, context, rect)
 	if this.glcontext != (nil) {
 		if this.IsObscured() {
 			this.glcontext.SetValues([]int32{-1}, int64(cocoa.OSNSOpenGLCPSurfaceOrder))
@@ -107,18 +107,18 @@ func (this *Canvas) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsCo
 	}
 }
 
-func (this *Canvas) DrawRect(id int64, sel int64, rect cocoa.NSRect) {
+func (this *Canvas) drawRect_(id int64, sel int64, rect cocoa.NSRect) {
 	if this.glcontext != (nil) && this.glcontext.View() == (nil) {
 		this.glcontext.SetView(this.View)
 	}
-	this.Composite.DrawRect(id, sel, rect)
+	this.Composite.drawRect_(id, sel, rect)
 }
 
-func (this *Canvas) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Canvas) drawWidget_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if id != this.View.Id {
 		return
 	}
-	this.Composite.DrawWidget(id, context, rect)
+	this.Composite.drawWidget_(id, context, rect)
 	if this.caret == (nil) {
 		return
 	}
@@ -187,11 +187,11 @@ func (this *Canvas) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect 
 	}
 }
 
-func (this *Canvas) FirstRectForCharacterRange(id int64, sel int64, range_ int64) cocoa.NSRect {
+func (this *Canvas) firstRectForCharacterRange_(id int64, sel int64, range_ int64) cocoa.NSRect {
 	if this.ime != (nil) {
 		return this.ime.FirstRectForCharacterRange(id, sel, range_)
 	}
-	return this.Composite.FirstRectForCharacterRange(id, sel, range_)
+	return this.Composite.firstRectForCharacterRange_(id, sel, range_)
 }
 
 func (this *Canvas) GetCaret() *Caret {
@@ -204,41 +204,41 @@ func (this *Canvas) GetIME() *IME {
 	return this.ime
 }
 
-func (this *Canvas) HasMarkedText(id int64, sel int64) bool {
+func (this *Canvas) hasMarkedText_(id int64, sel int64) bool {
 	if this.ime != (nil) {
 		return this.ime.HasMarkedText(id, sel)
 	}
-	return this.Composite.HasMarkedText(id, sel)
+	return this.Composite.hasMarkedText_(id, sel)
 }
 
-func (this *Canvas) ImeInComposition() bool {
+func (this *Canvas) imeInComposition_() bool {
 	return this.ime != (nil) && this.ime.IsInlineEnabled() && this.ime.startOffset != -1
 }
 
-func (this *Canvas) InsertText(id int64, sel int64, string_ int64) bool {
+func (this *Canvas) insertText_(id int64, sel int64, string_ int64) bool {
 	if this.ime != (nil) {
 		if !this.ime.InsertText(id, sel, string_) {
 			return false
 		}
 	}
-	return this.Composite.InsertText(id, sel, string_)
+	return this.Composite.insertText_(id, sel, string_)
 }
 
-func (this *Canvas) IsOpaque(id int64, sel int64) bool {
+func (this *Canvas) isOpaque_(id int64, sel int64) bool {
 	if this.glcontext != (nil) {
 		return true
 	}
-	return this.Composite.IsOpaque(id, sel)
+	return this.Composite.isOpaque_(id, sel)
 }
 
-func (this *Canvas) MarkedRange(id int64, sel int64) cocoa.NSRange {
+func (this *Canvas) markedRange_(id int64, sel int64) cocoa.NSRange {
 	if this.ime != (nil) {
 		return this.ime.MarkedRange(id, sel)
 	}
-	return this.Composite.MarkedRange(id, sel)
+	return this.Composite.markedRange_(id, sel)
 }
 
-func (this *Canvas) ReadSelectionFromPasteboard(id int64, sel int64, pasteboard int64) bool {
+func (this *Canvas) readSelectionFromPasteboard_(id int64, sel int64, pasteboard int64) bool {
 	var result bool = false
 	var pboard *cocoa.NSPasteboard = cocoa.NewNSPasteboardOverload1(pasteboard)
 	var availableTypes *cocoa.NSArray = pboard.Types()
@@ -272,7 +272,7 @@ func (this *Canvas) ReadSelectionFromPasteboardPboardType(pboard *cocoa.NSPasteb
 	return result
 }
 
-func (this *Canvas) ReleaseChildren(destroy bool) {
+func (this *Canvas) releaseChildren_(destroy bool) {
 	if this.caret != (nil) {
 		this.caret.Release(false)
 		this.caret = nil
@@ -281,29 +281,29 @@ func (this *Canvas) ReleaseChildren(destroy bool) {
 		this.ime.Release(false)
 		this.ime = nil
 	}
-	this.Composite.ReleaseChildren(destroy)
+	this.Composite.releaseChildren_(destroy)
 }
 
-func (this *Canvas) ReskinChildren(flags int32) {
+func (this *Canvas) reskinChildren_(flags int32) {
 	if this.caret != (nil) {
 		this.caret.Reskin(flags)
 	}
 	if this.ime != (nil) {
 		this.ime.Reskin(flags)
 	}
-	this.Composite.ReskinChildren(flags)
+	this.Composite.reskinChildren_(flags)
 }
 
-func (this *Canvas) ReleaseWidget() {
-	this.Composite.ReleaseWidget()
+func (this *Canvas) releaseWidget_() {
+	this.Composite.releaseWidget_()
 	if this.visiblePath != (nil) {
 		this.visiblePath.Release()
 	}
 	this.visiblePath = nil
 }
 
-func (this *Canvas) ResetVisibleRegion() {
-	this.Composite.ResetVisibleRegion()
+func (this *Canvas) resetVisibleRegion_() {
+	this.Composite.resetVisibleRegion_()
 	if this.visiblePath != (nil) {
 		this.visiblePath.Release()
 	}
@@ -320,7 +320,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	if deltaX == 0 && deltaY == 0 {
 		return
 	}
-	if !this.impl.IsDrawing() {
+	if !this.impl.isDrawing_() {
 		return
 	}
 	var visibleRect cocoa.NSRect = this.View.VisibleRect()
@@ -331,18 +331,18 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	if isFocus {
 		this.caret.KillFocus()
 	}
-	var clientRect *Rectangle = this.impl.GetClientArea()
+	var clientRect *Rectangle = this.impl.getClientArea_()
 	var sourceRect *Rectangle = NewRectangle(x, y, width, height)
-	var control *Control = this.impl.FindBackgroundControl()
+	var control *Control = this.impl.findBackgroundControl_()
 	var redraw bool = control != (nil) && control.backgroundImage != (nil)
 	if !redraw {
-		redraw = this.impl.HasRegion()
+		redraw = this.impl.hasRegion_()
 	}
 	if !redraw {
 		redraw = this.IsObscured()
 	}
 	if !redraw && sourceRect.IntersectsRect(clientRect) {
-		this.impl.GetShell().SetScrolling()
+		this.impl.getShell_().SetScrolling()
 		redraw = !this.UpdateAll(all)
 	}
 	if redraw {
@@ -437,7 +437,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 		var children []*Control = this._getChildren()
 		for i := int32(0); i < int32(len(children)); i++ {
 			var child *Control = children[i]
-			var rect *Rectangle = child.impl.GetBounds()
+			var rect *Rectangle = child.impl.getBounds_()
 			if int32(math.Min(float64(x+width), float64(rect.X+rect.Width))) >= int32(math.Max(float64(x), float64(rect.X))) && int32(math.Min(float64(y+height), float64(rect.Y+rect.Height))) >= int32(math.Max(float64(y), float64(rect.Y))) {
 				child.SetLocation(rect.X+deltaX, rect.Y+deltaY)
 			}
@@ -448,18 +448,18 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	}
 }
 
-func (this *Canvas) SelectedRange(id int64, sel int64) cocoa.NSRange {
+func (this *Canvas) selectedRange_(id int64, sel int64) cocoa.NSRange {
 	if this.ime != (nil) {
 		return this.ime.SelectedRange(id, sel)
 	}
-	return this.Composite.SelectedRange(id, sel)
+	return this.Composite.selectedRange_(id, sel)
 }
 
-func (this *Canvas) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
+func (this *Canvas) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	if this.caret != (nil) {
 		cocoa.NSCursorSetHiddenUntilMouseMoves(true)
 	}
-	return this.Composite.SendKeyEvent(nsEvent, type_)
+	return this.Composite.sendKeyEvent_(nsEvent, type_)
 }
 
 func (this *Canvas) SetCaret(caret *Caret) {
@@ -480,17 +480,17 @@ func (this *Canvas) SetCaret(caret *Caret) {
 	}
 }
 
-func (this *Canvas) SetFontOnControl(font *Font) {
+func (this *Canvas) setFont_(font *Font) {
 	this.CheckWidget()
 	if this.caret != (nil) {
 		this.caret.SetFont(font)
 	}
-	this.Composite.SetFontOnControl(font)
+	this.Composite.setFont_(font)
 }
 
-func (this *Canvas) SetOpenGLContext(value any) {
+func (this *Canvas) setOpenGLContext_(value any) {
 	this.glcontext = castanyTococoaNSOpenGLContext(value)
-	var shell *Shell = this.impl.GetShell()
+	var shell *Shell = this.impl.getShell_()
 	if this.glcontext != (nil) {
 		shell.glContextCount++
 	} else {
@@ -507,23 +507,23 @@ func (this *Canvas) SetIME(ime *IME) {
 	this.ime = ime
 }
 
-func (this *Canvas) SetMarkedText_selectedRange(id int64, sel int64, string_ int64, range_ int64) bool {
+func (this *Canvas) setMarkedText_selectedRange_(id int64, sel int64, string_ int64, range_ int64) bool {
 	if this.ime != (nil) {
 		if !this.ime.SetMarkedText_selectedRange(id, sel, string_, range_) {
 			return false
 		}
 	}
-	return this.Composite.SetMarkedText_selectedRange(id, sel, string_, range_)
+	return this.Composite.setMarkedText_selectedRange_(id, sel, string_, range_)
 }
 
-func (this *Canvas) ValidAttributesForMarkedText(id int64, sel int64) int64 {
+func (this *Canvas) validAttributesForMarkedText_(id int64, sel int64) int64 {
 	if this.ime != (nil) {
 		return this.ime.ValidAttributesForMarkedText(id, sel)
 	}
-	return this.Composite.ValidAttributesForMarkedText(id, sel)
+	return this.Composite.validAttributesForMarkedText_(id, sel)
 }
 
-func (this *Canvas) ValidRequestorForSendType(id int64, sel int64, sendType int64, returnType int64) int64 {
+func (this *Canvas) validRequestorForSendType_(id int64, sel int64, sendType int64, returnType int64) int64 {
 	if id == this.View.Id {
 		var acc *Accessible = this.GetAccessible()
 		if acc != (nil) {
@@ -544,17 +544,17 @@ func (this *Canvas) ValidRequestorForSendType(id int64, sel int64, sendType int6
 			}
 		}
 	}
-	return this.Composite.ValidRequestorForSendType(id, sel, sendType, returnType)
+	return this.Composite.validRequestorForSendType_(id, sel, sendType, returnType)
 }
 
-func (this *Canvas) UpdateOpenGLContext(id int64, sel int64, notification int64) {
+func (this *Canvas) updateOpenGLContext_(id int64, sel int64, notification int64) {
 	if this.glcontext != (nil) {
 		(castcocoaNSOpenGLContextTococoaNSOpenGLContext(this.glcontext)).Update()
 	}
 }
 
-func (this *Canvas) ViewWillMoveToWindow(id int64, sel int64, arg0 int64) {
-	this.Composite.ViewWillMoveToWindow(id, sel, arg0)
+func (this *Canvas) viewWillMoveToWindow_(id int64, sel int64, arg0 int64) {
+	this.Composite.viewWillMoveToWindow_(id, sel, arg0)
 	if this.glcontext != (nil) && id == this.View.Id && arg0 != 0 {
 		var newShell *Widget = this.display.GetWidgetView(cocoa.NewNSWindowOverload1(arg0).ContentView())
 		_, ok146 := isWidgetToShell(newShell)
@@ -562,13 +562,13 @@ func (this *Canvas) ViewWillMoveToWindow(id int64, sel int64, arg0 int64) {
 			(castWidgetToShell(newShell)).glContextCount++
 			(castWidgetToShell(newShell)).UpdateOpaque()
 		}
-		var shell *Shell = this.impl.GetShell()
+		var shell *Shell = this.impl.getShell_()
 		shell.glContextCount--
 		shell.UpdateOpaque()
 	}
 }
 
-func (this *Canvas) WriteSelectionToPasteboard(id int64, sel int64, pasteboardObj int64, typesObj int64) bool {
+func (this *Canvas) writeSelectionToPasteboard_(id int64, sel int64, pasteboardObj int64, typesObj int64) bool {
 	var result bool = false
 	var pboard *cocoa.NSPasteboard = cocoa.NewNSPasteboardOverload1(pasteboardObj)
 	var types *cocoa.NSArray = cocoa.NewNSArrayOverload1(typesObj)

@@ -7,7 +7,7 @@ import (
 )
 
 type RectangleImpl interface {
-	Clone() *Rectangle
+	clone_() *Rectangle
 }
 
 type Rectangle struct {
@@ -319,6 +319,10 @@ func (this *Rectangle) Union(rectLike RectangleLike) *Rectangle {
 }
 
 func (this *Rectangle) Clone() *Rectangle {
+	return this.impl.clone_()
+}
+
+func (this *Rectangle) clone_() *Rectangle {
 	return NewRectangle(this.X, this.Y, this.Width, this.Height)
 }
 
@@ -487,7 +491,7 @@ func (this *Rectangle_OfFloat) GetBottomRight() *Point_OfFloat {
 	return NewPointOfFloatXYRoundingMode(this.GetX()+this.GetWidth(), this.GetY()+this.GetHeight(), this.sizeRounding)
 }
 
-func (this *Rectangle_OfFloat) Clone() *Rectangle {
+func (this *Rectangle_OfFloat) clone_() *Rectangle {
 	return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.locationRounding, this.sizeRounding))
 }
 
@@ -499,7 +503,7 @@ func RectangleOfFloatFrom(rectangleLike RectangleLike) *Rectangle_OfFloat {
 	_ = rectangle
 	rectangleOfFloat, ok17 := isRectangleToRectangle_OfFloat(rectangle)
 	if ok17 {
-		t18 := rectangleOfFloat.impl.Clone()
+		t18 := rectangleOfFloat.impl.clone_()
 		t19, _ := rectangleImplAsOfFloat(t18.impl)
 		return t19
 	}
@@ -550,7 +554,7 @@ func (this *Rectangle_WithMonitor) GetMonitor() *Monitor {
 	return this.monitor
 }
 
-func (this *Rectangle_WithMonitor) Clone() *Rectangle {
+func (this *Rectangle_WithMonitor) clone_() *Rectangle {
 	return upcastRectangle_WithMonitorToRectangle(newRectangleWithMonitorXYWidthHeightMonitor(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.monitor))
 }
 

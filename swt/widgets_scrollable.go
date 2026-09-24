@@ -47,13 +47,17 @@ func (this *Scrollable) initScrollableParentStyle(parent *Composite, style int32
 }
 
 func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32) *Rectangle {
+	return this.impl.computeTrim_(x, y, width, height)
+}
+
+func (this *Scrollable) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	if this.scrollView != (nil) {
 		var size cocoa.NSSize = cocoa.NSSize{}
 		size.Width = float64(width)
 		size.Height = float64(height)
 		var border int32
-		if this.impl.HasBorder() {
+		if this.impl.hasBorder_() {
 			border = cocoa.OSNSBezelBorder
 		} else {
 			border = cocoa.OSNSNoBorder
@@ -107,7 +111,7 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	}
 	bar.view = scroller
 	bar.CreateJNIRef()
-	bar.impl.Register()
+	bar.impl.register_()
 	if (this.state & WidgetCANVAS) == 0 {
 		bar.target = scroller.Target()
 		bar.actionSelector = scroller.Action()
@@ -120,8 +124,8 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	return bar
 }
 
-func (this *Scrollable) CreateWidget() {
-	this.Control.CreateWidget()
+func (this *Scrollable) createWidget_() {
+	this.Control.createWidget_()
 	if (this.style & H_SCROLL) != 0 {
 		this.horizontalBar = this.CreateScrollBar(H_SCROLL)
 	}
@@ -130,14 +134,18 @@ func (this *Scrollable) CreateWidget() {
 	}
 }
 
-func (this *Scrollable) Deregister() {
-	this.Control.Deregister()
+func (this *Scrollable) deregister_() {
+	this.Control.deregister_()
 	if this.scrollView != (nil) {
 		this.display.RemoveWidget(upcastcocoaNSScrollViewTococoaNSObject(this.scrollView))
 	}
 }
 
 func (this *Scrollable) GetClientArea() *Rectangle {
+	return this.impl.getClientArea_()
+}
+
+func (this *Scrollable) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	if this.scrollView != (nil) {
 		var size cocoa.NSSize = this.scrollView.ContentSize()
@@ -176,18 +184,30 @@ func (this *Scrollable) GetVerticalBar() *ScrollBar {
 }
 
 func (this *Scrollable) HooksKeys() bool {
+	return this.impl.hooksKeys_()
+}
+
+func (this *Scrollable) hooksKeys_() bool {
 	return this.Hooks(KeyDown) || this.Hooks(KeyUp) || this.Hooks(Traverse)
 }
 
-func (this *Scrollable) IsEventView(id int64) bool {
-	return id == this.impl.EventView().Id
+func (this *Scrollable) isEventView_(id int64) bool {
+	return id == this.impl.eventView_().Id
 }
 
-func (this *Scrollable) IsNeeded(scrollbar *ScrollBar) bool {
+func (this *Scrollable) IsNeeded(scrollbarLike ScrollBarLike) bool {
+	var scrollbar *ScrollBar
+	if scrollbarLike != nil {
+		scrollbar = scrollbarLike.AsScrollBar()
+	}
+	return this.impl.isNeeded_(scrollbar)
+}
+
+func (this *Scrollable) isNeeded_(scrollbar *ScrollBar) bool {
 	return true
 }
 
-func (this *Scrollable) IsTrim(view *cocoa.NSView) bool {
+func (this *Scrollable) isTrim_(view *cocoa.NSView) bool {
 	if this.scrollView != (nil) {
 		if this.scrollView.Id == view.Id {
 			return true
@@ -199,61 +219,61 @@ func (this *Scrollable) IsTrim(view *cocoa.NSView) bool {
 			return true
 		}
 	}
-	return this.Control.IsTrim(view)
+	return this.Control.isTrim_(view)
 }
 
 func (this *Scrollable) RedrawBackgroundImage() {
 	if this.scrollView != (nil) {
-		var control *Control = this.impl.FindBackgroundControl()
+		var control *Control = this.impl.findBackgroundControl_()
 		if control != (nil) && control.backgroundImage != (nil) {
-			this.impl.RedrawWidget(this.View, false)
+			this.impl.redrawWidget_(this.View, false)
 		}
 	}
 }
 
-func (this *Scrollable) ReflectScrolledClipView(id int64, sel int64, aClipView int64) {
-	this.Control.ReflectScrolledClipView(id, sel, aClipView)
+func (this *Scrollable) reflectScrolledClipView_(id int64, sel int64, aClipView int64) {
+	this.Control.reflectScrolledClipView_(id, sel, aClipView)
 	this.RedrawBackgroundImage()
 }
 
-func (this *Scrollable) Register() {
-	this.Control.Register()
+func (this *Scrollable) register_() {
+	this.Control.register_()
 	if this.scrollView != (nil) {
 		this.display.AddWidget(upcastcocoaNSScrollViewTococoaNSObject(this.scrollView), upcastScrollableToWidget(this))
 	}
 }
 
-func (this *Scrollable) ReleaseHandle() {
-	this.Control.ReleaseHandle()
+func (this *Scrollable) releaseHandle_() {
+	this.Control.releaseHandle_()
 	if this.scrollView != (nil) {
 		this.scrollView.Release()
 	}
 	this.scrollView = nil
 }
 
-func (this *Scrollable) ReleaseChildren(destroy bool) {
+func (this *Scrollable) releaseChildren_(destroy bool) {
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.impl.Release(false)
+		this.horizontalBar.impl.release_(false)
 		this.horizontalBar = nil
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.impl.Release(false)
+		this.verticalBar.impl.release_(false)
 		this.verticalBar = nil
 	}
-	this.Control.ReleaseChildren(destroy)
+	this.Control.releaseChildren_(destroy)
 }
 
-func (this *Scrollable) ReskinChildren(flags int32) {
+func (this *Scrollable) reskinChildren_(flags int32) {
 	if this.horizontalBar != (nil) {
 		this.horizontalBar.Reskin(flags)
 	}
 	if this.verticalBar != (nil) {
 		this.verticalBar.Reskin(flags)
 	}
-	this.Control.ReskinChildren(flags)
+	this.Control.reskinChildren_(flags)
 }
 
-func (this *Scrollable) ScrollClipViewToPoint(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
+func (this *Scrollable) scrollClipViewToPoint_(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
 	if (this.state&WidgetCANVAS) == 0 && this.scrollView != (nil) {
 		var clip *cocoa.NSClipView = cocoa.NewNSClipViewOverload1(clipView)
 		var oldCopies bool = clip.CopiesOnScroll()
@@ -262,38 +282,46 @@ func (this *Scrollable) ScrollClipViewToPoint(id int64, sel int64, clipView int6
 			copies = !this.IsObscured()
 		}
 		if copies {
-			copies = !this.impl.HasRegion()
+			copies = !this.impl.hasRegion_()
 		}
 		clip.SetCopiesOnScroll(copies)
 	}
-	this.Control.ScrollClipViewToPoint(id, sel, clipView, point)
+	this.Control.scrollClipViewToPoint_(id, sel, clipView, point)
 }
 
-func (this *Scrollable) SendHorizontalSelection() {
+func (this *Scrollable) sendHorizontalSelection_() {
 	if this.horizontalBar.view.IsHiddenOrHasHiddenAncestor() {
 		return
 	}
-	this.horizontalBar.impl.SendSelection()
+	this.horizontalBar.impl.sendSelection_()
 }
 
-func (this *Scrollable) SendVerticalSelection() {
+func (this *Scrollable) sendVerticalSelection_() {
 	if this.verticalBar.view.IsHiddenOrHasHiddenAncestor() {
 		return
 	}
-	this.verticalBar.impl.SendSelection()
+	this.verticalBar.impl.sendSelection_()
 }
 
-func (this *Scrollable) EnableWidget(enabled bool) {
-	this.Control.EnableWidget(enabled)
+func (this *Scrollable) enableWidget_(enabled bool) {
+	this.Control.enableWidget_(enabled)
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.EnableWidget(enabled && this.impl.IsNeeded(this.horizontalBar))
+		this.horizontalBar.EnableWidget(enabled && this.impl.isNeeded_(this.horizontalBar))
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.EnableWidget(enabled && this.impl.IsNeeded(this.verticalBar))
+		this.verticalBar.EnableWidget(enabled && this.impl.isNeeded_(this.verticalBar))
 	}
 }
 
-func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
+func (this *Scrollable) SetScrollBarVisible(barLike ScrollBarLike, visible bool) bool {
+	var bar *ScrollBar
+	if barLike != nil {
+		bar = barLike.AsScrollBar()
+	}
+	return this.impl.setScrollBarVisible_(bar, visible)
+}
+
+func (this *Scrollable) setScrollBarVisible_(bar *ScrollBar, visible bool) bool {
 	if this.scrollView == (nil) {
 		return false
 	}
@@ -327,22 +355,22 @@ func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
 	return true
 }
 
-func (this *Scrollable) SetZOrder() {
-	this.Control.SetZOrder()
+func (this *Scrollable) setZOrder_() {
+	this.Control.setZOrder_()
 	if this.scrollView != (nil) {
 		this.scrollView.SetDocumentView(upcastcocoaNSViewTococoaId(this.View))
 	}
 }
 
-func (this *Scrollable) TopView() *cocoa.NSView {
+func (this *Scrollable) topView_() *cocoa.NSView {
 	if this.scrollView != (nil) {
 		return upcastcocoaNSScrollViewTococoaNSView(this.scrollView)
 	}
-	return this.Control.TopView()
+	return this.Control.topView_()
 }
 
-func (this *Scrollable) UpdateCursorRects(enabled bool) {
-	this.Control.UpdateCursorRects(enabled)
+func (this *Scrollable) updateCursorRects_(enabled bool) {
+	this.Control.updateCursorRects_(enabled)
 	if this.scrollView == (nil) {
 		return
 	}

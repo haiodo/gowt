@@ -2,6 +2,7 @@ package dev.gowt.j2go;
 
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Modifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -117,7 +118,7 @@ public class Names {
 		String name = decl.isConstructor() ? "<init>" : decl.getName();
 		List<String> order = overloadOrder.getOrDefault(declKey + "#" + name, List.of());
 		int idx = order.indexOf(key);
-		if (idx <= 0) return baseName; // first declared, or not registered (external) -> base name.
+		if (idx <= 0) return withTypeNameGuard(decl, baseName); // first declared, or external -> base name.
 
 		if (!nameBasedSuffixesUnique(order)) {
 			// JNIGen natives reuse arg0/arg1/... across overloads that differ only by type.
@@ -125,13 +126,42 @@ public class Names {
 		}
 
 		List<String> params = paramNamesByKey.getOrDefault(key, List.of());
-		StringBuilder sb = new StringBuilder(baseName);
+		StringBuilder sb = new StringBuilder();
 		for (String p : params) {
 			sb.append(capitalize(p));
 		}
 		// No contract rule for a later zero-param overload (nothing to append); fall back to arity.
 		if (params.isEmpty()) sb.append(params.size());
-		return sb.toString();
+		// setBackground(Color color) must not become the natural name of setBackgroundColor(NSColor).
+		String name_ = baseName + sb;
+		if (!decl.isConstructor() && isNaturalNameOfOther(decl, name_)) name_ = baseName + "With" + sb;
+		return withTypeNameGuard(decl, name_);
+	}
+
+	// Unsuffixed Go name of a differently-named Java method of the same kind (instance: declared
+	// or inherited below Object; static: same class) - from bindings, so it never depends on the
+	// translated set.
+	private static boolean isNaturalNameOfOther(IMethodBinding decl, String goName) {
+		boolean isStatic = Modifier.isStatic(decl.getModifiers());
+		for (ITypeBinding t = decl.getDeclaringClass(); t != null && !t.getQualifiedName().equals("java.lang.Object");
+				t = isStatic ? null : t.getSuperclass()) {
+			for (IMethodBinding o : t.getDeclaredMethods()) {
+				if (o.isConstructor() || Modifier.isStatic(o.getModifiers()) != isStatic || o.getName().equals(decl.getName())) continue;
+				if (javaMethodBaseGoName(o.getName()).equals(goName)) return true;
+			}
+		}
+		return false;
+	}
+
+	// Layout.layout() -> "Layout" is also the embedded field every subclass reaches it through;
+	// an instance method named like its own or an ancestor's type gets "Fn".
+	private static String withTypeNameGuard(IMethodBinding decl, String goName) {
+		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers())) return goName;
+		for (ITypeBinding t = decl.getDeclaringClass(); t != null && !t.getQualifiedName().equals("java.lang.Object");
+				t = t.getSuperclass()) {
+			if (goTypeName(t.getErasure()).equals(goName)) return goName + "Fn";
+		}
+		return goName;
 	}
 
 	private final Map<String, Boolean> uniqueCache = new HashMap<>();

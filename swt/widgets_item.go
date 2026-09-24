@@ -33,7 +33,7 @@ func NewItem(parentLike WidgetLike, style int32) *Item {
 func (this *Item) initItem(parent *Widget, style int32) {
 	this.Widget.initWidgetParentStyle(parent, style)
 	this.text = ""
-	this.impl._addListener(ZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
+	this.impl._addListener_(ZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
 }
 
 func NewItemParentStyleIndex(parentLike WidgetLike, style int32, index int32) *Item {
@@ -52,41 +52,61 @@ func (this *Item) initItemParentStyleIndex(parent *Widget, style int32, index in
 	this.initItem(parent, style)
 }
 
-func (this *Item) CheckSubclass() {
+func (this *Item) checkSubclass_() {
 }
 
 func (this *Item) GetImage() *Image {
+	return this.impl.getImage_()
+}
+
+func (this *Item) getImage_() *Image {
 	this.CheckWidget()
 	return this.image
 }
 
-func (this *Item) GetNameText() string {
-	return this.impl.GetText()
+func (this *Item) getNameText_() string {
+	return this.impl.getText_()
 }
 
 func (this *Item) GetText() string {
+	return this.impl.getText_()
+}
+
+func (this *Item) getText_() string {
 	this.CheckWidget()
 	return this.text
 }
 
-func (this *Item) ReleaseWidget() {
-	this.Widget.ReleaseWidget()
+func (this *Item) releaseWidget_() {
+	this.Widget.releaseWidget_()
 	this.text = ""
 	this.image = nil
 }
 
-func (this *Item) SetImageOnItem(image *Image) {
+func (this *Item) SetImage(imageLike ImageLike) {
+	var image *Image
+	if imageLike != nil {
+		image = imageLike.AsImage()
+	}
+	this.impl.setImageOnItem_(image)
+}
+
+func (this *Item) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
 	}
-	if image != (nil) && image.impl.IsDisposed() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
 }
 
 func (this *Item) SetText(string_ string) {
+	this.impl.setText_(string_)
+}
+
+func (this *Item) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -116,9 +136,9 @@ func (this *Item) UpdateTextDirection(textDirection int32) bool {
 }
 
 func (this *Item) HandleDPIChange(event *Event) {
-	var image *Image = this.impl.GetImage()
+	var image *Image = this.impl.getImage_()
 	if image != (nil) {
-		this.impl.SetImageOnItem(image)
+		this.impl.setImageOnItem_(image)
 	}
 }
 

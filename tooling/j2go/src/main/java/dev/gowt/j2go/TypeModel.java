@@ -62,6 +62,12 @@ public class TypeModel {
 		public IMethodBinding declaredBinding(String sig) {
 			return declaredMethods.get(sig);
 		}
+
+		// swt's public API: cascade methods dispatch through unexported names, exported names are
+		// wrappers (README "Round 9 api"). internal/cocoa keeps exported cascade names.
+		public boolean splitsDispatch() {
+			return root.goPackage.equals("swt");
+		}
 	}
 
 	public static String signature(IMethodBinding mb) {
@@ -199,7 +205,9 @@ public class TypeModel {
 			}
 			for (var g : byBase.entrySet()) {
 				String base = g.getKey();
-				if (sigsByGoName.get(base).size() <= 1) {
+				// Split dispatch names are unexported, so only other cascade members can collide.
+				int users = ci.splitsDispatch() ? g.getValue().size() : sigsByGoName.get(base).size();
+				if (users <= 1) {
 					putCascadeName(ci, treeTypeNames, g.getValue().get(0), base);
 					continue;
 				}
@@ -211,8 +219,12 @@ public class TypeModel {
 	}
 
 	private void putCascadeName(ClassInfo ci, Set<String> treeTypeNames, Map.Entry<String, IMethodBinding> e, String name) {
-		// Layout.layout() -> "Layout", same as every subclass's embedded field name - Go
-		// rejects a field and method sharing a name.
+		if (ci.splitsDispatch()) {
+			ci.overriddenRootMethodGoNames.put(e.getKey(), Names.decapitalize(name) + "_");
+			return;
+		}
+		// A cascade name equal to a subclass's embedded field name - Go rejects a field and
+		// method sharing a name.
 		if (treeTypeNames.contains(name)) name = name + "Fn";
 		ci.overriddenRootMethodGoNames.put(e.getKey(), name);
 	}
@@ -267,25 +279,23 @@ public class TypeModel {
 		}
 	}
 
-	// Two unrelated method-name families declared on the same class can independently compute
-	// the same Go name (Control's setBackground()/setBackground(Color) overload suffix
-	// "SetBackground"+"Color" collides with the separately-named setBackgroundColor's own base
-	// name) - goMemberName has no visibility into sibling families to catch this on its own, so
-	// it is resolved here, once per class, with every declared method in hand. A cascade method
-	// is named separately (see above), but still claims its name here first: a non-cascade
-	// sibling must not collide with it either - only cascaded once some subclass overrides it.
+	// Safety net for two method-name families on one class computing the same Go name that
+	// Names.goMemberName's "With" rule doesn't catch (suffix vs suffix). In internal/cocoa a
+	// cascade name claims first: a non-cascade sibling must not collide with it either.
 	private void resolveCrossFamilyNameCollisions(Names names) {
 		for (ClassInfo ci : byBinaryName.values()) {
+			// With split dispatch every method keeps its natural exported name, cascade or not.
+			boolean split = ci.splitsDispatch();
 			Map<String, IMethodBinding> claimedBy = new LinkedHashMap<>();
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
-				if (ci.overridePoint(signature(mb)) == null) continue;
+				if (split || ci.overridePoint(signature(mb)) == null) continue;
 				String cascadeName = ci.root.overriddenRootMethodGoNames.get(signature(mb));
 				if (cascadeName != null) claimedBy.put(cascadeName, mb);
 			}
 			int idx = 0;
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
 				idx++;
-				if (ci.overridePoint(signature(mb)) != null) continue;
+				if (!split && ci.overridePoint(signature(mb)) != null) continue;
 				String candidate = names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
 				IMethodBinding owner = claimedBy.putIfAbsent(candidate, mb);
 				if (owner != null && !owner.getName().equals(mb.getName())) {

@@ -55,13 +55,13 @@ func NewTextStyleFontForegroundBackground(fontLike FontLike, foregroundLike Colo
 }
 
 func (this *TextStyle) initTextStyleFontForegroundBackground(font *Font, foreground *Color, background *Color) {
-	if font != (nil) && font.impl.IsDisposed() {
+	if font != (nil) && font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	if foreground != (nil) && foreground.impl.IsDisposed() {
+	if foreground != (nil) && foreground.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	if background != (nil) && background.impl.IsDisposed() {
+	if background != (nil) && background.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Font = font

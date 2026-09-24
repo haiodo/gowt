@@ -44,7 +44,7 @@ func NewColorDeviceRedGreenBlue(deviceLike DeviceLike, red int32, green int32, b
 func (this *Color) initColorDeviceRedGreenBlue(device *Device, red int32, green int32, blue int32) {
 	this.Resource.initResourceDevice(device)
 	this.Init(red, green, blue, 255)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewColorRedGreenBlue(red int32, green int32, blue int32) *Color {
@@ -74,7 +74,7 @@ func NewColorDeviceRedGreenBlueAlpha(deviceLike DeviceLike, red int32, green int
 func (this *Color) initColorDeviceRedGreenBlueAlpha(device *Device, red int32, green int32, blue int32, alpha int32) {
 	this.Resource.initResourceDevice(device)
 	this.Init(red, green, blue, alpha)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewColorRedGreenBlueAlpha(red int32, green int32, blue int32, alpha int32) *Color {
@@ -112,7 +112,7 @@ func (this *Color) initColorDeviceRgb(device *Device, rgb *RGB) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, 255)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewColorRgb(rgbLike RGBLike) *Color {
@@ -158,7 +158,7 @@ func (this *Color) initColorDeviceRgba(device *Device, rgba *RGBA) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgba.Rgb.Red, rgba.Rgb.Green, rgba.Rgb.Blue, rgba.Alpha)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewColorRgba(rgbaLike RGBALike) *Color {
@@ -204,7 +204,7 @@ func (this *Color) initColorDeviceRgbAlpha(device *Device, rgb *RGB, alpha int32
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, alpha)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewColorRgbAlpha(rgbLike RGBLike, alpha int32) *Color {
@@ -227,20 +227,20 @@ func (this *Color) initColorRgbAlpha(rgb *RGB, alpha int32) {
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, alpha)
 }
 
-func (this *Color) Destroy() {
+func (this *Color) destroy_() {
 	this.Handle = nil
 }
 
-func (this *Color) Dispose() {
-	this.impl.Destroy()
+func (this *Color) dispose_() {
+	this.impl.destroy_()
 	this.device = nil
 }
 
-func (this *Color) GetDevice() *Device {
+func (this *Color) getDevice_() *Device {
 	if this.device == (nil) && this.Handle != (nil) {
 		return DeviceGetDevice()
 	}
-	return this.Resource.GetDevice()
+	return this.Resource.getDevice_()
 }
 
 func (this *Color) Equals(object any) bool {
@@ -251,7 +251,7 @@ func (this *Color) Equals(object any) bool {
 	if !(ok228) {
 		return false
 	}
-	if this.impl.IsDisposed() || color.impl.IsDisposed() {
+	if this.impl.isDisposed_() || color.impl.isDisposed_() {
 		return false
 	}
 	var rgbColor []float64 = color.Handle
@@ -262,49 +262,49 @@ func (this *Color) Equals(object any) bool {
 }
 
 func (this *Color) GetAlpha() int32 {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[3] * 255))
 }
 
 func (this *Color) GetBlue() int32 {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[2] * 255))
 }
 
 func (this *Color) GetGreen() int32 {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[1] * 255))
 }
 
 func (this *Color) GetRed() int32 {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[0] * 255))
 }
 
 func (this *Color) HashCode() int32 {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return 0
 	}
 	return int32((this.Handle[0] * 255)) ^ int32((this.Handle[1] * 255)) ^ int32((this.Handle[2] * 255)) ^ int32((this.Handle[3] * 255))
 }
 
 func (this *Color) GetRGB() *RGB {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGB(this.GetRed(), this.GetGreen(), this.GetBlue())
 }
 
 func (this *Color) GetRGBA() *RGBA {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGBA(this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())
@@ -322,15 +322,15 @@ func (this *Color) Init(red int32, green int32, blue int32, alpha int32) {
 	this.Handle = rgbColor
 }
 
-func (this *Color) InitOnResource() {
+func (this *Color) init_() {
 }
 
-func (this *Color) IsDisposed() bool {
+func (this *Color) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Color) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Color {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Color {%d, %d, %d, %d}", this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())

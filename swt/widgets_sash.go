@@ -52,7 +52,7 @@ func (this *Sash) initSash(parent *Composite, style int32) {
 	this.sizeCursor = NewCursorDeviceStyle(upcastDisplayToDevice(this.display), cursorStyle)
 }
 
-func (this *Sash) AccessibilityAttributeNames(id int64, sel int64) int64 {
+func (this *Sash) accessibilityAttributeNames_(id int64, sel int64) int64 {
 	if this.accessibilityAttributes == (nil) {
 		var ourAttributes *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(int64(10))
 		ourAttributes.AddObject(upcastcocoaNSStringTococoaId(cocoa.OSNSAccessibilityRoleAttribute_))
@@ -87,7 +87,7 @@ func (this *Sash) AccessibilityAttributeNames(id int64, sel int64) int64 {
 	return this.accessibilityAttributes.Id
 }
 
-func (this *Sash) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) int64 {
+func (this *Sash) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	var returnValue int64 = int64(0)
 	var attributeName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	if this.accessible != (nil) {
@@ -108,7 +108,7 @@ func (this *Sash) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) i
 		}
 	} else {
 		if attributeName.IsEqualToString(cocoa.OSNSAccessibilityEnabledAttribute_) {
-			return cocoa.NSNumberNumberWithBool(this.impl.IsEnabled()).Id
+			return cocoa.NSNumberNumberWithBool(this.impl.isEnabled_()).Id
 		} else {
 			if attributeName.IsEqualToString(cocoa.OSNSAccessibilityOrientationAttribute_) {
 				var orientation *cocoa.NSString
@@ -120,7 +120,7 @@ func (this *Sash) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) i
 				return orientation.Id
 			} else {
 				if attributeName.IsEqualToString(cocoa.OSNSAccessibilityValueAttribute_) {
-					var location *Point = this.impl.GetLocation()
+					var location *Point = this.impl.getLocation_()
 					var value int32
 					if (this.style & VERTICAL) != 0 {
 						value = location.X
@@ -130,7 +130,7 @@ func (this *Sash) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) i
 					return cocoa.NSNumberNumberWithInt(value).Id
 				} else {
 					if attributeName.IsEqualToString(cocoa.OSNSAccessibilityMaxValueAttribute_) {
-						var parentFrame cocoa.NSRect = this.parent.impl.TopView().Frame()
+						var parentFrame cocoa.NSRect = this.parent.impl.topView_().Frame()
 						var maxValue float64
 						if (this.style & VERTICAL) != 0 {
 							maxValue = parentFrame.Width
@@ -183,10 +183,10 @@ func (this *Sash) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) i
 			}
 		}
 	}
-	return this.Control.AccessibilityAttributeValue(id, sel, arg0)
+	return this.Control.accessibilityAttributeValue_(id, sel, arg0)
 }
 
-func (this *Sash) AccessibilityIsIgnored(id int64, sel int64) bool {
+func (this *Sash) accessibilityIsIgnored_(id int64, sel int64) bool {
 	return false
 }
 
@@ -194,15 +194,15 @@ func (this *Sash) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Sash) BecomeFirstResponder(id int64, sel int64) bool {
-	var result bool = this.Control.BecomeFirstResponder(id, sel)
+func (this *Sash) becomeFirstResponder_(id int64, sel int64) bool {
+	var result bool = this.Control.becomeFirstResponder_(id, sel)
 	var frame cocoa.NSRect = this.View.Frame()
 	this.lastX = int32(frame.X)
 	this.lastY = int32(frame.Y)
 	return result
 }
 
-func (this *Sash) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Sash) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -222,22 +222,22 @@ func (this *Sash) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed
 	return NewPoint(width, height)
 }
 
-func (this *Sash) CreateHandle() {
+func (this *Sash) createHandle_() {
 	this.state |= WidgetTHEME_BACKGROUND
 	var widget *cocoa.NSView = castcocoaNSObjectTococoaNSView(cocoa.NewSWTView().Alloc())
 	widget.Init()
 	this.View = widget
 }
 
-func (this *Sash) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Sash) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if id != this.View.Id {
 		return
 	}
 	this.FillBackground(this.View, context, rect, -1)
 }
 
-func (this *Sash) FindCursor() *Cursor {
-	var cursor *Cursor = this.Control.FindCursor()
+func (this *Sash) findCursor_() *Cursor {
+	var cursor *Cursor = this.Control.findCursor_()
 	if cursor == (nil) {
 		var cursorType int32
 		if (this.style & HORIZONTAL) != 0 {
@@ -250,8 +250,8 @@ func (this *Sash) FindCursor() *Cursor {
 	return cursor
 }
 
-func (this *Sash) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
-	this.Control.SendKeyEvent(nsEvent, type_)
+func (this *Sash) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
+	this.Control.sendKeyEvent_(nsEvent, type_)
 	if type_ == KeyDown {
 		var keyCode int32 = int32(nsEvent.KeyCode())
 		switch keyCode {
@@ -283,10 +283,10 @@ func (this *Sash) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 						yChange = stepSize
 					}
 				}
-				var bounds *Rectangle = this.impl.GetBounds()
+				var bounds *Rectangle = this.impl.getBounds_()
 				var width int32 = bounds.Width
 				var height int32 = bounds.Height
-				var parentBounds *Rectangle = this.parent.impl.GetBounds()
+				var parentBounds *Rectangle = this.parent.impl.getBounds_()
 				var parentWidth int32 = parentBounds.Width
 				var parentHeight int32 = parentBounds.Height
 				var newX int32 = this.lastX
@@ -334,8 +334,8 @@ func (this *Sash) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	return true
 }
 
-func (this *Sash) MouseDown(id int64, sel int64, theEvent int64) {
-	this.Control.MouseDown(id, sel, theEvent)
+func (this *Sash) mouseDown_(id int64, sel int64, theEvent int64) {
+	this.Control.mouseDown_(id, sel, theEvent)
 	if this.IsDisposed() {
 		return
 	}
@@ -365,13 +365,13 @@ func (this *Sash) MouseDown(id int64, sel int64, theEvent int64) {
 	}
 }
 
-func (this *Sash) MouseEvent(id int64, sel int64, theEvent int64, type_ int32) bool {
-	this.Control.MouseEvent(id, sel, theEvent, type_)
+func (this *Sash) mouseEvent_(id int64, sel int64, theEvent int64, type_ int32) bool {
+	this.Control.mouseEvent_(id, sel, theEvent, type_)
 	return cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
 }
 
-func (this *Sash) MouseDragged(id int64, sel int64, theEvent int64) {
-	this.Control.MouseDragged(id, sel, theEvent)
+func (this *Sash) mouseDragged_(id int64, sel int64, theEvent int64) {
+	this.Control.mouseDragged_(id, sel, theEvent)
 	if this.IsDisposed() {
 		return
 	}
@@ -382,7 +382,7 @@ func (this *Sash) MouseDragged(id int64, sel int64, theEvent int64) {
 	var location cocoa.NSPoint = nsEvent.LocationInWindow()
 	var point cocoa.NSPoint = this.View.ConvertPoint_fromView_(location, nil)
 	var frame cocoa.NSRect = this.View.Frame()
-	var parentFrame cocoa.NSRect = this.parent.impl.TopView().Frame()
+	var parentFrame cocoa.NSRect = this.parent.impl.topView_().Frame()
 	var newX int32 = this.lastX
 	var newY int32 = this.lastY
 	if (this.style & VERTICAL) != 0 {
@@ -409,8 +409,8 @@ func (this *Sash) MouseDragged(id int64, sel int64, theEvent int64) {
 	}
 }
 
-func (this *Sash) MouseUp(id int64, sel int64, theEvent int64) {
-	this.Control.MouseUp(id, sel, theEvent)
+func (this *Sash) mouseUp_(id int64, sel int64, theEvent int64) {
+	this.Control.mouseUp_(id, sel, theEvent)
 	if this.IsDisposed() {
 		return
 	}
@@ -433,18 +433,18 @@ func (this *Sash) MouseUp(id int64, sel int64, theEvent int64) {
 	}
 }
 
-func (this *Sash) ReleaseHandle() {
-	this.Control.ReleaseHandle()
+func (this *Sash) releaseHandle_() {
+	this.Control.releaseHandle_()
 	if this.accessibilityAttributes != (nil) {
 		this.accessibilityAttributes.Release()
 	}
 	this.accessibilityAttributes = nil
 }
 
-func (this *Sash) ReleaseWidget() {
-	this.Control.ReleaseWidget()
+func (this *Sash) releaseWidget_() {
+	this.Control.releaseWidget_()
 	if this.sizeCursor != (nil) {
-		this.sizeCursor.impl.Dispose()
+		this.sizeCursor.impl.dispose_()
 	}
 	this.sizeCursor = nil
 }
@@ -461,13 +461,13 @@ func (this *Sash) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *Sash) SuperKeyDown(id int64, sel int64, theEvent int64) {
+func (this *Sash) superKeyDown_(id int64, sel int64, theEvent int64) {
 }
 
-func (this *Sash) SuperKeyUp(id int64, sel int64, theEvent int64) {
+func (this *Sash) superKeyUp_(id int64, sel int64, theEvent int64) {
 }
 
-func (this *Sash) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
+func (this *Sash) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
 	return 0
 }
 

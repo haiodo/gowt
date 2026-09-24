@@ -48,7 +48,7 @@ func (this *Pattern) initPattern(device *Device, image *Image) {
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.impl.IsDisposed() {
+	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -63,7 +63,7 @@ func (this *Pattern) initPattern(device *Device, image *Image) {
 	this.image = image
 	this.color = cocoa.NSColorColorWithPatternImage(image.Handle)
 	this.color.Retain()
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func NewPatternDeviceX1Y1X2Y2Color1Color2(deviceLike DeviceLike, x1 float32, y1 float32, x2 float32, y2 float32, color1Like ColorLike, color2Like ColorLike) *Pattern {
@@ -119,13 +119,13 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 	if color1 == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color1.impl.IsDisposed() {
+	if color1.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if color2 == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color2.impl.IsDisposed() {
+	if color2.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -150,10 +150,10 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 	var start *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color1.Handle[0], color1.Handle[1], color1.Handle[2], float64(float32(alpha1)/255))
 	var end *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color2.Handle[0], color2.Handle[1], color2.Handle[2], float64(float32(alpha2)/255))
 	this.gradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(start, end)
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
-func (this *Pattern) Destroy() {
+func (this *Pattern) destroy_() {
 	if this.color != (nil) {
 		this.color.Release()
 	}
@@ -167,12 +167,12 @@ func (this *Pattern) Destroy() {
 	this.color1 = this.color2
 }
 
-func (this *Pattern) IsDisposed() bool {
+func (this *Pattern) isDisposed_() bool {
 	return this.device == (nil)
 }
 
 func (this *Pattern) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "Pattern {*DISPOSED*}"
 	}
 	var cond365 int64

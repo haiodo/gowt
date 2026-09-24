@@ -40,13 +40,13 @@ func (this *Group) initGroup(parent *Composite, style int32) {
 	this.text = ""
 }
 
-func (this *Group) CheckSubclass() {
+func (this *Group) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
-func (this *Group) ComputeTrim(x int32, y int32, width int32, height int32) *Rectangle {
+func (this *Group) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	var widget *cocoa.NSBox = castcocoaNSViewTococoaNSBox(this.View)
 	var newRect cocoa.NSRect = cocoa.NSRect{}
@@ -64,14 +64,14 @@ func (this *Group) ComputeTrim(x int32, y int32, width int32, height int32) *Rec
 	y = int32(math.Ceil(float64(newRect.Y))) - this.vMargin
 	width = int32(math.Ceil(float64(newRect.Width))) + (this.hMargin * 2)
 	height = int32(math.Ceil(float64(newRect.Height))) + (this.vMargin * 2)
-	return this.Composite.ComputeTrim(x, y, width, height)
+	return this.Composite.computeTrim_(x, y, width, height)
 }
 
-func (this *Group) ContentView() *cocoa.NSView {
+func (this *Group) contentView_() *cocoa.NSView {
 	return this.contentView
 }
 
-func (this *Group) CreateHandle() {
+func (this *Group) createHandle_() {
 	this.state |= WidgetTHEME_BACKGROUND
 	var widget *cocoa.NSBox = castcocoaNSObjectTococoaNSBox(cocoa.NewSWTBox().Alloc())
 	widget.Init()
@@ -87,29 +87,29 @@ func (this *Group) CreateHandle() {
 	this.View = upcastcocoaNSBoxTococoaNSView(widget)
 }
 
-func (this *Group) DefaultNSFont() *cocoa.NSFont {
+func (this *Group) defaultNSFont_() *cocoa.NSFont {
 	return this.display.boxFont
 }
 
-func (this *Group) Deregister() {
-	this.Composite.Deregister()
+func (this *Group) deregister_() {
+	this.Composite.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSViewTococoaNSObject(this.contentView))
 	var box *cocoa.SWTBox = castcocoaNSViewTococoaSWTBox(this.View)
 	this.display.RemoveWidget(upcastcocoaNSCellTococoaNSObject(box.TitleCell()))
 }
 
-func (this *Group) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Group) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if id != this.View.Id {
 		return
 	}
 	this.FillBackground(this.View, context, rect, -1)
 }
 
-func (this *Group) EventView() *cocoa.NSView {
+func (this *Group) eventView_() *cocoa.NSView {
 	return this.contentView
 }
 
-func (this *Group) GetClientArea() *Rectangle {
+func (this *Group) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	var rect cocoa.NSRect = this.contentView.Bounds()
 	var width int32 = int32(math.Max(float64(0), float64(int32(rect.Width)-this.hMargin*2)))
@@ -117,7 +117,7 @@ func (this *Group) GetClientArea() *Rectangle {
 	return NewRectangle(int32((rect.X))+this.hMargin, int32((rect.Y))+this.vMargin, width, height)
 }
 
-func (this *Group) GetNameText() string {
+func (this *Group) getNameText_() string {
 	return this.GetText()
 }
 
@@ -126,46 +126,46 @@ func (this *Group) GetText() string {
 	return this.text
 }
 
-func (this *Group) IsTransparent() bool {
+func (this *Group) isTransparent_() bool {
 	return true
 }
 
-func (this *Group) GetThemeAlpha() float32 {
+func (this *Group) getThemeAlpha_() float32 {
 	var cond191 float32
 	if this.background != (nil) {
 		cond191 = float32(1)
 	} else {
 		cond191 = 0.25
 	}
-	return (cond191) * this.parent.impl.GetThemeAlpha()
+	return (cond191) * this.parent.impl.getThemeAlpha_()
 }
 
-func (this *Group) Register() {
-	this.Composite.Register()
+func (this *Group) register_() {
+	this.Composite.register_()
 	this.display.AddWidget(upcastcocoaNSViewTococoaNSObject(this.contentView), upcastGroupToWidget(this))
 	var box *cocoa.SWTBox = castcocoaNSViewTococoaSWTBox(this.View)
 	this.display.AddWidget(upcastcocoaNSCellTococoaNSObject(box.TitleCell()), upcastGroupToWidget(this))
 }
 
-func (this *Group) ReleaseHandle() {
-	this.Composite.ReleaseHandle()
+func (this *Group) releaseHandle_() {
+	this.Composite.releaseHandle_()
 	if this.contentView != (nil) {
 		this.contentView.Release()
 	}
 	this.contentView = nil
 }
 
-func (this *Group) Resized() {
+func (this *Group) resized_() {
 	if !this.ignoreResize {
-		this.Composite.Resized()
+		this.Composite.resized_()
 	}
 }
 
-func (this *Group) SetFontFont(font *cocoa.NSFont) {
+func (this *Group) setFontFont_(font *cocoa.NSFont) {
 	(castcocoaNSViewTococoaNSBox(this.View)).SetTitleFont(font)
 }
 
-func (this *Group) SetForegroundColor(color []float64) {
+func (this *Group) setForegroundColor_(color []float64) {
 	var nsColor *cocoa.NSColor
 	if color == (nil) {
 		nsColor = cocoa.NSColorTextColor()
@@ -176,7 +176,7 @@ func (this *Group) SetForegroundColor(color []float64) {
 	cell.SetTextColor(nsColor)
 }
 
-func (this *Group) SetOrientationOnWidget() {
+func (this *Group) setOrientationOnWidget_() {
 	var direction int32
 	if (this.style & RIGHT_TO_LEFT) != 0 {
 		direction = cocoa.OSNSWritingDirectionRightToLeft

@@ -34,7 +34,7 @@ func (this *TraverseEvent) initTraverseEvent(e *Event) {
 	this.Detail = e.Detail
 }
 
-func (this *TraverseEvent) String() string {
-	var string_ string = this.KeyEvent.String()
+func (this *TraverseEvent) string_() string {
+	var string_ string = this.KeyEvent.string_()
 	return fmt.Sprintf("%s detail=%d}", string_[0:int32(len(string_))-1], this.Detail)
 }

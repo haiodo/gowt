@@ -40,7 +40,7 @@ func (this *MenuDetectEvent) initMenuDetectEvent(e *Event) {
 	this.Detail = e.Detail
 }
 
-func (this *MenuDetectEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *MenuDetectEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	return fmt.Sprintf("%s x=%d y=%d doit=%t detail=%d}", string_[0:int32(len(string_))-1], this.X, this.Y, this.Doit, this.Detail)
 }

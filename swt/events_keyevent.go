@@ -43,8 +43,8 @@ func (this *KeyEvent) initKeyEvent(e *Event) {
 	this.Doit = e.Doit
 }
 
-func (this *KeyEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *KeyEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	var cond36 string
 	if int32(this.Character) == 0 {
 		cond36 = "\\0"

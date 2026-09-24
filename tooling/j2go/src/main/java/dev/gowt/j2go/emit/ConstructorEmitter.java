@@ -179,8 +179,8 @@ final class ConstructorEmitter {
 	 * ancestor's Go method directly via its embedded-field path (real superclass or manual). */
 	String emitSuperMethodInvocation(SuperMethodInvocation smi) {
 		IMethodBinding mb = smi.resolveMethodBinding();
-		// A collision-renamed cascade method (Names.goMemberName's "On<Class>" suffix) must be
-		// called by that same name, even though super.x() bypasses the cascade's .impl dispatch.
+		// A cascade method is called by its dispatch name (unexported in swt, README "Round 9
+		// api") even though super.x() bypasses the cascade's .impl dispatch.
 		String cascadeName = emitter.currentClassInfo.root.overriddenRootMethodGoNames.get(TypeModel.signature(mb));
 		String base = cascadeName != null ? cascadeName : Names.javaMethodBaseGoName(smi.getName().getIdentifier());
 		List<String> args = emitter.buildArgs(smi.arguments(), mb);

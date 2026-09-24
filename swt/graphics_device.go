@@ -11,24 +11,24 @@ import (
 )
 
 type DeviceImpl interface {
-	CheckDevice()
-	Create(a0 *DeviceData)
-	Destroy()
-	GetBounds() *Rectangle
-	GetClientArea() *Rectangle
-	GetSystemColor(a0 int32) *Color
-	Init()
-	Internal_new_GC(a0 *GCData) int64
-	Internal_dispose_GC(a0 int64, a1 *GCData)
-	Release()
+	checkDevice_()
+	create_(a0 *DeviceData)
+	destroy_()
+	getBounds_() *Rectangle
+	getClientArea_() *Rectangle
+	getSystemColor_(a0 int32) *Color
+	init_()
+	internal_new_GC_(a0 *GCData) int64
+	internal_dispose_GC_(a0 int64, a1 *GCData)
+	release_()
 }
 
-func (this *Device) Internal_new_GC(a0 *GCData) int64 {
-	panic("j2go: Internal_new_GC has no default on Device")
+func (this *Device) internal_new_GC_(a0 *GCData) int64 {
+	panic("j2go: internal_new_GC_ has no default on Device")
 }
 
-func (this *Device) Internal_dispose_GC(a0 int64, a1 *GCData) {
-	panic("j2go: Internal_dispose_GC has no default on Device")
+func (this *Device) internal_dispose_GC_(a0 int64, a1 *GCData) {
+	panic("j2go: internal_dispose_GC_ has no default on Device")
 }
 
 type Device struct {
@@ -123,18 +123,18 @@ func (this *Device) initDeviceData(data *DeviceData) {
 				pool.Release()
 			}
 		}
-		this.impl.Create(data)
-		this.impl.Init()
+		this.impl.create_(data)
+		this.impl.init_()
 	}()
 }
 
 func (this *Device) IsTracking() bool {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	return this.tracking
 }
 
 func (this *Device) SetTracking(tracking bool) {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	if tracking == this.tracking {
 		return
 	}
@@ -163,12 +163,24 @@ func (this *Device) StopTracking() {
 }
 
 func (this *Device) CheckDevice() {
+	this.impl.checkDevice_()
+}
+
+func (this *Device) checkDevice_() {
 	if this.disposed {
 		Error(ERROR_DEVICE_DISPOSED)
 	}
 }
 
-func (this *Device) Create(data *DeviceData) {
+func (this *Device) Create(dataLike DeviceDataLike) {
+	var data *DeviceData
+	if dataLike != nil {
+		data = dataLike.AsDeviceData()
+	}
+	this.impl.create_(data)
+}
+
+func (this *Device) create_(data *DeviceData) {
 }
 
 func (this *Device) Dispose() {
@@ -182,7 +194,7 @@ func (this *Device) Dispose() {
 			tretd206 = true
 			return
 		}
-		this.impl.CheckDevice()
+		this.impl.checkDevice_()
 		func() {
 			defer func() {
 				r := recover()
@@ -196,9 +208,9 @@ func (this *Device) Dispose() {
 					panic(r)
 				}
 			}()
-			this.impl.Release()
+			this.impl.release_()
 		}()
-		this.impl.Destroy()
+		this.impl.destroy_()
 		this.disposed = true
 		if this.tracking {
 			jrt.MonitorEnter()
@@ -236,10 +248,18 @@ func (this *Device) Dispose_Object(object any) {
 }
 
 func (this *Device) Destroy() {
+	this.impl.destroy_()
+}
+
+func (this *Device) destroy_() {
 }
 
 func (this *Device) GetBounds() *Rectangle {
-	this.impl.CheckDevice()
+	return this.impl.getBounds_()
+}
+
+func (this *Device) getBounds_() *Rectangle {
+	this.impl.checkDevice_()
 	var primaryScreen *cocoa.NSScreen = this.GetPrimaryScreen()
 	if primaryScreen == (nil) {
 		return NewRectangle(0, 0, 0, 0)
@@ -249,7 +269,7 @@ func (this *Device) GetBounds() *Rectangle {
 }
 
 func (this *Device) GetDeviceData() *DeviceData {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	var data *DeviceData = NewDeviceData()
 	data.Debug = this.debug
 	data.Tracking = this.tracking
@@ -283,12 +303,16 @@ func (this *Device) GetDeviceData() *DeviceData {
 }
 
 func (this *Device) GetClientArea() *Rectangle {
-	this.impl.CheckDevice()
-	return this.impl.GetBounds()
+	return this.impl.getClientArea_()
+}
+
+func (this *Device) getClientArea_() *Rectangle {
+	this.impl.checkDevice_()
+	return this.impl.getBounds_()
 }
 
 func (this *Device) GetDepth() int32 {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	var primaryScreen *cocoa.NSScreen = this.GetPrimaryScreen()
 	if primaryScreen == (nil) {
 		return 0
@@ -297,7 +321,7 @@ func (this *Device) GetDepth() int32 {
 }
 
 func (this *Device) GetDPI() *Point {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	return this.GetScreenDPI()
 }
 
@@ -313,7 +337,7 @@ func (this *Device) GetPrimaryScreen() *cocoa.NSScreen {
 }
 
 func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	if !scalable {
 		return make([]*FontData, 0)
 	}
@@ -392,7 +416,11 @@ func (this *Device) GetScreenDPI() *Point {
 }
 
 func (this *Device) GetSystemColor(id int32) *Color {
-	this.impl.CheckDevice()
+	return this.impl.getSystemColor_(id)
+}
+
+func (this *Device) getSystemColor_(id int32) *Color {
+	this.impl.checkDevice_()
 	switch id {
 	case COLOR_TRANSPARENT:
 		return this.COLOR_TRANSPARENT
@@ -433,16 +461,20 @@ func (this *Device) GetSystemColor(id int32) *Color {
 }
 
 func (this *Device) GetSystemFont() *Font {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	return this.systemFont
 }
 
 func (this *Device) GetWarnings() bool {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	return this.warnings
 }
 
 func (this *Device) Init() {
+	this.impl.init_()
+}
+
+func (this *Device) init_() {
 	this.COLOR_TRANSPARENT = NewColorRedGreenBlueAlpha(0xFF, 0xFF, 0xFF, 0)
 	this.COLOR_BLACK = NewColorRedGreenBlue(0, 0, 0)
 	this.COLOR_DARK_RED = NewColorRedGreenBlue(0x80, 0, 0)
@@ -482,12 +514,20 @@ func (this *Device) Init() {
 	this.systemFont = FontCocoa_new(this, font)
 }
 
+func (this *Device) Internal_new_GC(data *GCData) int64 {
+	return this.impl.internal_new_GC_(data)
+}
+
+func (this *Device) Internal_dispose_GC(hDC int64, data *GCData) {
+	this.impl.internal_dispose_GC_(hDC, data)
+}
+
 func (this *Device) IsDisposed() bool {
 	return this.disposed
 }
 
 func (this *Device) LoadFont(path string) bool {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	if path == "" {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -646,12 +686,16 @@ func (this *Device) PrintErrors() {
 }
 
 func (this *Device) Release() {
+	this.impl.release_()
+}
+
+func (this *Device) release_() {
 	if this.paragraphStyle != (nil) {
 		this.paragraphStyle.Release()
 	}
 	this.paragraphStyle = nil
 	if this.systemFont != (nil) {
-		this.systemFont.impl.Dispose()
+		this.systemFont.impl.dispose_()
 	}
 	this.systemFont = nil
 	this.COLOR_WHITE = nil
@@ -673,7 +717,7 @@ func (this *Device) Release() {
 }
 
 func (this *Device) SetWarnings(warnings bool) {
-	this.impl.CheckDevice()
+	this.impl.checkDevice_()
 	this.warnings = warnings
 }
 

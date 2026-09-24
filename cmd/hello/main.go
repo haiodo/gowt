@@ -14,7 +14,7 @@ func init() { runtime.LockOSThread() }
 func main() {
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
-	shell.SetLayout(&swt.NewFillLayout().Layout)
+	shell.SetLayout(swt.NewFillLayout())
 	button := swt.NewButton(shell, swt.PUSH)
 	button.SetText("Hello")
 	button.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {

@@ -117,7 +117,7 @@ func (this *TreeItem) initTreeItemParentParentItemStyleIndexCreate(parent *Tree,
 	} else {
 		this.Handle = castcocoaNSObjectTococoaSWTTreeItem(cocoa.NewSWTTreeItem().Alloc().Init())
 		this.CreateJNIRef()
-		this.impl.Register()
+		this.impl.register_()
 		this.items = make([]*TreeItem, 4)
 	}
 }
@@ -142,7 +142,7 @@ func (this *TreeItem) CalculateWidth(index int32, gcLike GCLike) int32 {
 		font = this.parent.font
 	}
 	if font == (nil) {
-		font = this.parent.impl.DefaultFont()
+		font = this.parent.impl.defaultFont_()
 	}
 	var cond524 string
 	if this.strings == (nil) {
@@ -233,7 +233,7 @@ func (this *TreeItem) CalculateWidth(index int32, gcLike GCLike) int32 {
 	return width
 }
 
-func (this *TreeItem) CheckSubclass() {
+func (this *TreeItem) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -295,22 +295,22 @@ func (this *TreeItem) CreateString(index int32) *cocoa.NSObject {
 	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond528))
 }
 
-func (this *TreeItem) Dealloc(id int64, sel int64) {
+func (this *TreeItem) dealloc_(id int64, sel int64) {
 	cocoa.OSObject_setInstanceVariable(id, DisplaySWT_OBJECT, int64(0))
-	this.Item.DestroyJNIRef()
-	this.Item.Dealloc(id, sel)
+	this.Item.destroyJNIRef_()
+	this.Item.dealloc_(id, sel)
 }
 
-func (this *TreeItem) Deregister() {
-	this.Item.Deregister()
+func (this *TreeItem) deregister_() {
+	this.Item.deregister_()
 }
 
-func (this *TreeItem) DestroyJNIRef() {
+func (this *TreeItem) destroyJNIRef_() {
 }
 
-func (this *TreeItem) DestroyWidget() {
+func (this *TreeItem) destroyWidget_() {
 	this.parent.DestroyItemItem(this)
-	this.impl.ReleaseHandle()
+	this.impl.releaseHandle_()
 }
 
 func (this *TreeItem) GetBackground() *Color {
@@ -375,7 +375,7 @@ func (this *TreeItem) GetBounds() *Rectangle {
 		font = this.parent.font
 	}
 	if font == (nil) {
-		font = this.parent.impl.DefaultFont()
+		font = this.parent.impl.defaultFont_()
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
 	cell.SetImage(nil)
@@ -509,12 +509,12 @@ func (this *TreeItem) GetGrayed() bool {
 	return this.grayed
 }
 
-func (this *TreeItem) GetImage() *Image {
+func (this *TreeItem) getImage_() *Image {
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	return this.Item.GetImage()
+	return this.Item.getImage_()
 }
 
 func (this *TreeItem) GetImageIndex(index int32) *Image {
@@ -523,7 +523,7 @@ func (this *TreeItem) GetImageIndex(index int32) *Image {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if index == 0 {
-		return this.impl.GetImage()
+		return this.impl.getImage_()
 	}
 	if this.images != (nil) {
 		if 0 <= index && index < int32(len(this.images)) {
@@ -609,13 +609,13 @@ func (this *TreeItem) GetItems() []*TreeItem {
 	return result
 }
 
-func (this *TreeItem) GetNameText() string {
+func (this *TreeItem) getNameText_() string {
 	if (this.parent.style & VIRTUAL) != 0 {
 		if !this.cached {
 			return "*virtual*"
 		}
 	}
-	return this.Item.GetNameText()
+	return this.Item.getNameText_()
 }
 
 func (this *TreeItem) GetParent() *Tree {
@@ -628,12 +628,12 @@ func (this *TreeItem) GetParentItem() *TreeItem {
 	return this.parentItem
 }
 
-func (this *TreeItem) GetText() string {
+func (this *TreeItem) getText_() string {
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	return this.Item.GetText()
+	return this.Item.getText_()
 }
 
 func (this *TreeItem) GetTextIndex(index int32) string {
@@ -642,7 +642,7 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if index == 0 {
-		return this.impl.GetText()
+		return this.impl.getText_()
 	}
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
@@ -726,12 +726,12 @@ func (this *TreeItem) IndexOf(itemLike TreeItemLike) int32 {
 	return -1
 }
 
-func (this *TreeItem) IsDrawing() bool {
-	return this.impl.GetDrawing() && this.parent.impl.IsDrawing()
+func (this *TreeItem) isDrawing_() bool {
+	return this.impl.getDrawing_() && this.parent.impl.isDrawing_()
 }
 
 func (this *TreeItem) Redraw(columnIndex int32) {
-	if this.parent.ignoreRedraw || !this.impl.IsDrawing() {
+	if this.parent.ignoreRedraw || !this.impl.isDrawing_() {
 		return
 	}
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.parent.View)
@@ -758,39 +758,39 @@ func (this *TreeItem) Redraw(columnIndex int32) {
 	outlineView.SetNeedsDisplayInRect(rect)
 }
 
-func (this *TreeItem) Register() {
-	this.Item.Register()
+func (this *TreeItem) register_() {
+	this.Item.register_()
 	this.display.AddWidget(upcastcocoaSWTTreeItemTococoaNSObject(this.Handle), upcastTreeItemToWidget(this))
 }
 
-func (this *TreeItem) Release(destroy bool) {
+func (this *TreeItem) release_(destroy bool) {
 	var selectedItems []*TreeItem = nil
 	var parent *Tree = this.parent
 	if destroy {
-		if this.impl.GetDrawing() {
+		if this.impl.getDrawing_() {
 			selectedItems = parent.GetSelection()
 		}
 	}
-	this.Item.Release(destroy)
+	this.Item.release_(destroy)
 	if selectedItems != (nil) {
 		parent.SelectItems(selectedItems, true)
 	}
 }
 
-func (this *TreeItem) ReleaseChildren(destroy bool) {
+func (this *TreeItem) releaseChildren_(destroy bool) {
 	for i := int32(0); i < int32(len(this.items)); i++ {
 		var item *TreeItem = this.items[i]
 		if item != (nil) && !item.IsDisposed() {
-			item.impl.Release(false)
+			item.impl.release_(false)
 		}
 	}
 	this.items = nil
 	this.itemCount = 0
-	this.Item.ReleaseChildren(destroy)
+	this.Item.releaseChildren_(destroy)
 }
 
-func (this *TreeItem) ReleaseHandle() {
-	this.Item.ReleaseHandle()
+func (this *TreeItem) releaseHandle_() {
+	this.Item.releaseHandle_()
 	if this.Handle != (nil) {
 		this.Handle.Autorelease()
 	}
@@ -799,8 +799,8 @@ func (this *TreeItem) ReleaseHandle() {
 	this.parent = nil
 }
 
-func (this *TreeItem) ReleaseWidget() {
-	this.Item.ReleaseWidget()
+func (this *TreeItem) releaseWidget_() {
+	this.Item.releaseWidget_()
 	this.strings = nil
 	this.images = nil
 	this.foreground = nil
@@ -851,7 +851,7 @@ func (this *TreeItem) SetBackground(colorLike ColorLike) {
 	}
 	_ = color
 	this.CheckWidget()
-	if color != (nil) && color.impl.IsDisposed() {
+	if color != (nil) && color.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldColor *Color = this.background
@@ -873,7 +873,7 @@ func (this *TreeItem) SetBackgroundIndexColor(index int32, colorLike ColorLike) 
 	}
 	_ = color
 	this.CheckWidget()
-	if color != (nil) && color.impl.IsDisposed() {
+	if color != (nil) && color.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.columnCount)))
@@ -938,7 +938,7 @@ func (this *TreeItem) SetFont(fontLike FontLike) {
 	}
 	_ = font
 	this.CheckWidget()
-	if font != (nil) && font.impl.IsDisposed() {
+	if font != (nil) && font.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
@@ -961,7 +961,7 @@ func (this *TreeItem) SetFontIndexFont(index int32, fontLike FontLike) {
 	}
 	_ = font
 	this.CheckWidget()
-	if font != (nil) && font.impl.IsDisposed() {
+	if font != (nil) && font.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.columnCount)))
@@ -994,7 +994,7 @@ func (this *TreeItem) SetForeground(colorLike ColorLike) {
 	}
 	_ = color
 	this.CheckWidget()
-	if color != (nil) && color.impl.IsDisposed() {
+	if color != (nil) && color.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldColor *Color = this.foreground
@@ -1016,7 +1016,7 @@ func (this *TreeItem) SetForegroundIndexColor(index int32, colorLike ColorLike) 
 	}
 	_ = color
 	this.CheckWidget()
-	if color != (nil) && color.impl.IsDisposed() {
+	if color != (nil) && color.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.columnCount)))
@@ -1071,7 +1071,7 @@ func (this *TreeItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if this.parent.imageBounds == (nil) && image != (nil) {
@@ -1084,7 +1084,7 @@ func (this *TreeItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 			}
 		}
 		this.width = -1
-		this.Item.SetImageOnItem(image)
+		this.Item.setImageOnItem_(image)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.columnCount)))
 	if 0 <= index && index < count {
@@ -1107,7 +1107,7 @@ func (this *TreeItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 	}
 }
 
-func (this *TreeItem) SetImageOnItem(image *Image) {
+func (this *TreeItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	this.SetImageIndexImage(0, image)
 }
@@ -1141,7 +1141,7 @@ func (this *TreeItem) SetTextIndexString(index int32, string_ string) {
 			return
 		}
 		this.width = -1
-		this.Item.SetText(string_)
+		this.Item.setText_(string_)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.columnCount)))
 	if 0 <= index && index < count {
@@ -1162,7 +1162,7 @@ func (this *TreeItem) SetTextIndexString(index int32, string_ string) {
 	}
 }
 
-func (this *TreeItem) SetText(string_ string) {
+func (this *TreeItem) setText_(string_ string) {
 	this.CheckWidget()
 	this.SetTextIndexString(0, string_)
 }

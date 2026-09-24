@@ -73,7 +73,7 @@ func (this *GridLayout) initGridLayoutNumColumnsMakeColumnsEqualWidth(numColumns
 	this.MakeColumnsEqualWidth = makeColumnsEqualWidth
 }
 
-func (this *GridLayout) ComputeSize(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *GridLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var size *Point = this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, false, 0, 0, wHint, hHint, flushCache)
 	if wHint != DEFAULT {
 		size.X = wHint
@@ -84,7 +84,7 @@ func (this *GridLayout) ComputeSize(composite *Composite, wHint int32, hHint int
 	return size
 }
 
-func (this *GridLayout) FlushCache(control *Control) bool {
+func (this *GridLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
 	if data != (nil) {
 		(castanyToGridData(data)).FlushCache()
@@ -121,8 +121,8 @@ func (this *GridLayout) GetData(grid [][]*Control, row int32, column int32, rowC
 	return nil
 }
 
-func (this *GridLayout) LayoutFn(composite *Composite, flushCache bool) {
-	var rect *Rectangle = composite.impl.GetClientArea()
+func (this *GridLayout) layoutFn_(composite *Composite, flushCache bool) {
+	var rect *Rectangle = composite.impl.getClientArea_()
 	this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, true, rect.X, rect.Y, rect.Width, rect.Height, flushCache)
 }
 
@@ -166,7 +166,7 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 				var trim int32 = 0
 				_, ok102 := isControlToScrollable(child)
 				if ok102 {
-					var rect *Rectangle = (castControlToScrollable(child)).impl.ComputeTrim(0, 0, 0, 0)
+					var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 					trim = rect.Width
 				} else {
 					trim = child.GetBorderWidth() * 2
@@ -465,7 +465,7 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 							var trim int32 = 0
 							_, ok108 := isControlToScrollable(child)
 							if ok108 {
-								var rect *Rectangle = (castControlToScrollable(child)).impl.ComputeTrim(0, 0, 0, 0)
+								var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 								trim = rect.Width
 							} else {
 								trim = child.GetBorderWidth() * 2

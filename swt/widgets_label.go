@@ -39,19 +39,19 @@ func (this *Label) initLabel(parent *Composite, style int32) {
 	this.Control.initControlParentStyle(parent, LabelCheckStyle(style))
 }
 
-func (this *Label) AccessibleHandle() int64 {
-	return this.impl.EventView().Id
+func (this *Label) accessibleHandle_() int64 {
+	return this.impl.eventView_().Id
 }
 
-func (this *Label) AccessibilityIsIgnored(id int64, sel int64) bool {
+func (this *Label) accessibilityIsIgnored_(id int64, sel int64) bool {
 	if id == this.View.Id {
 		return true
 	}
-	return this.Control.AccessibilityIsIgnored(id, sel)
+	return this.Control.accessibilityIsIgnored_(id, sel)
 }
 
-func (this *Label) AddRelation(control *Control) {
-	if !control.impl.IsDescribedByLabel() {
+func (this *Label) addRelation_(control *Control) {
+	if !control.impl.isDescribedByLabel_() {
 		return
 	}
 	if this.textView != (nil) {
@@ -68,7 +68,7 @@ func (this *Label) AddRelation(control *Control) {
 	}
 }
 
-func (this *Label) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Label) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -126,7 +126,7 @@ func (this *Label) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, change
 	return NewPoint(width, height)
 }
 
-func (this *Label) CreateHandle() {
+func (this *Label) createHandle_() {
 	this.state |= WidgetTHEME_BACKGROUND
 	var widget *cocoa.NSBox = castcocoaNSObjectTococoaNSBox(cocoa.NewSWTBox().Alloc())
 	if (this.style & SEPARATOR) != 0 {
@@ -187,9 +187,9 @@ func (this *Label) CreateHandle() {
 	this.View = upcastcocoaNSBoxTococoaNSView(widget)
 }
 
-func (this *Label) CreateWidget() {
+func (this *Label) createWidget_() {
 	this.text = ""
-	this.Control.CreateWidget()
+	this.Control.createWidget_()
 }
 
 func (this *Label) CreateAttributedText() *cocoa.NSAttributedString {
@@ -198,12 +198,12 @@ func (this *Label) CreateAttributedText() *cocoa.NSAttributedString {
 	return attribStr
 }
 
-func (this *Label) DefaultNSFont() *cocoa.NSFont {
+func (this *Label) defaultNSFont_() *cocoa.NSFont {
 	return this.display.textFieldFont
 }
 
-func (this *Label) Deregister() {
-	this.Control.Deregister()
+func (this *Label) deregister_() {
+	this.Control.deregister_()
 	if this.textView != (nil) {
 		this.display.RemoveWidget(upcastcocoaNSTextFieldTococoaNSObject(this.textView))
 		this.display.RemoveWidget(upcastcocoaNSCellTococoaNSObject(this.textView.Cell()))
@@ -217,25 +217,25 @@ func (this *Label) Deregister() {
 	}
 }
 
-func (this *Label) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Label) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if id != this.View.Id {
 		return
 	}
 	this.FillBackground(this.View, context, rect, -1)
 }
 
-func (this *Label) ImageView() int64 {
+func (this *Label) imageView_() int64 {
 	if this.imageView != (nil) {
 		return this.imageView.Id
 	}
 	return 0
 }
 
-func (this *Label) DrawsBackground() bool {
+func (this *Label) drawsBackground_() bool {
 	return this.background != (nil) || this.backgroundImage != (nil)
 }
 
-func (this *Label) EventView() *cocoa.NSView {
+func (this *Label) eventView_() *cocoa.NSView {
 	return (castcocoaNSViewTococoaNSBox(this.View)).ContentView()
 }
 
@@ -258,7 +258,7 @@ func (this *Label) GetImage() *Image {
 	return this.image
 }
 
-func (this *Label) GetNameText() string {
+func (this *Label) getNameText_() string {
 	return this.GetText()
 }
 
@@ -270,12 +270,12 @@ func (this *Label) GetText() string {
 	return this.text
 }
 
-func (this *Label) IsDescribedByLabel() bool {
+func (this *Label) isDescribedByLabel_() bool {
 	return false
 }
 
-func (this *Label) Register() {
-	this.Control.Register()
+func (this *Label) register_() {
+	this.Control.register_()
 	if this.textView != (nil) {
 		this.display.AddWidget(upcastcocoaNSTextFieldTococoaNSObject(this.textView), upcastLabelToWidget(this))
 		this.display.AddWidget(upcastcocoaNSCellTococoaNSObject(this.textView.Cell()), upcastLabelToWidget(this))
@@ -289,8 +289,8 @@ func (this *Label) Register() {
 	}
 }
 
-func (this *Label) ReleaseHandle() {
-	this.Control.ReleaseHandle()
+func (this *Label) releaseHandle_() {
+	this.Control.releaseHandle_()
 	if this.textView != (nil) {
 		this.textView.Release()
 	}
@@ -305,7 +305,7 @@ func (this *Label) ReleaseHandle() {
 	this.separator = nil
 }
 
-func (this *Label) RemoveRelation() {
+func (this *Label) removeRelation_() {
 	if this.textView != (nil) {
 		this.textView.Cell().AccessibilitySetOverrideValue(nil, cocoa.OSNSAccessibilityServesAsTitleForUIElementsAttribute_)
 	}
@@ -342,7 +342,7 @@ func (this *Label) _setAlignment() {
 	}
 }
 
-func (this *Label) SetFontFont(font *cocoa.NSFont) {
+func (this *Label) setFontFont_(font *cocoa.NSFont) {
 	if this.textView != (nil) {
 		var cell *cocoa.NSCell = cocoa.NewNSCellOverload2(upcastcocoaNSCellTococoaId(this.textView.Cell()))
 		cell.SetAttributedStringValue(this.CreateAttributedText())
@@ -350,7 +350,7 @@ func (this *Label) SetFontFont(font *cocoa.NSFont) {
 	}
 }
 
-func (this *Label) SetForegroundColor(color []float64) {
+func (this *Label) setForegroundColor_(color []float64) {
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}
@@ -358,7 +358,7 @@ func (this *Label) SetForegroundColor(color []float64) {
 	cell.SetAttributedStringValue(this.CreateAttributedText())
 }
 
-func (this *Label) SetTabItemFocus() bool {
+func (this *Label) setTabItemFocus_() bool {
 	return false
 }
 
@@ -373,7 +373,7 @@ func (this *Label) SetImage(imageLike ImageLike) {
 		return
 	}
 	if image != (nil) {
-		if image.impl.IsDisposed() {
+		if image.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		this.image = image

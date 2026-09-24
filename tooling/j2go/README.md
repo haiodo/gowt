@@ -1891,3 +1891,101 @@ concrete type also gets a small exported wrapper (`SetLayout(l LayoutLike)`) tha
 existing `As<GoTypeName>`/cast helper and calls the impl method - the same shape the `Like`
 interfaces already give non-cascade methods, just moved one level down so the wrapper, not the
 interface method itself, does the widening.
+
+## Round 9 api: public API independent of the translated set
+
+Before this round a method's exported Go name and signature depended on whether some translated
+subclass overrode it: a cascade method lost the "Round 7 api" `CLike` widening and could get
+`On<Class>`/param-type suffixes (adding `SashForm` turned `Composite.SetLayout(LayoutLike)` into
+`SetLayout(*Layout)` and produced `SetBackgroundColorOnControlColor`). Three rules fix that; they
+apply to classes whose cascade root is in package `swt` (`ClassInfo.splitsDispatch`).
+`internal/cocoa` keeps the old exported cascade names - it is reached from `swt` through
+`.Impl()`, and an unexported dispatch name would not be callable across packages. Its output is
+byte-identical.
+
+**1. Dispatch and public surface are separate** (`TypeModel.putCascadeName`,
+`ClassEmitter.emitDispatchWrapper`). A cascade method's dispatch name is its natural Go name
+decapitalized plus `_` (`setLayout_`, `layoutFn_`, `init_`). The `<Root>Impl` interface, the
+root's default panic stubs, every override in a subclass, anonymous subclasses, `super.x()` and
+every generated call through `.impl` use that name with the concrete `*C` signature. At the
+override point (the topmost declaring class) the exported natural-name method is a wrapper with
+the "Round 7 api" widened params: it converts once and calls `this.impl.<dispatch>(...)`.
+Subclasses get no wrapper of their own: the point's wrapper is promoted, and `.impl` reaches the
+most-derived override. An abstract method at the point (`Layout.computeSize`) gets only the
+wrapper. A non-cascade method is emitted as before: natural name, widened params, the body
+directly. Java-interface implementations and `Type::method` targets keep narrow params in the
+wrapper too (same reason as in "Round 7 api").
+
+```go
+func (this *Composite) SetLayout(layoutLike LayoutLike) {
+	var layout *Layout
+	if layoutLike != nil {
+		layout = layoutLike.AsLayout()
+	}
+	this.impl.setLayout_(layout)
+}
+
+func (this *Composite) setLayout_(layout *Layout) {
+	this.CheckWidget()
+	this.layout = layout
+}
+
+func (this *SashForm) setLayout_(layout *Layout) { ... } // override, reached through Widget.impl
+```
+
+The exported name comes only from `Names.goMemberName` for the declaring class's own method, so
+it cannot change when a subclass is translated. The root's default panic stubs are unexported
+now, so they no longer show up as callable methods on every widget (`Button.SetLayout` used to
+panic).
+
+**2. Overload suffix never equals another method's natural name** (`Names.isNaturalNameOfOther`).
+If `base + CapitalizedParamNames` equals the unsuffixed Go name of a differently named Java
+method of the same kind, the name becomes `base + "With" + CapitalizedParamNames`. Same kind
+means instance methods declared in the class or its superclasses below `java.lang.Object`, or
+statics of the same class. The check uses JDT bindings, so reference-only and untranslated
+classes count too. `Control.setBackground(Color)` -> `SetBackgroundWithColor`, because
+`Control.setBackgroundColor(NSColor)` is `SetBackgroundColor`. `names.properties` pins still win.
+`TypeModel.resolveCrossFamilyNameCollisions` stays as a safety net for suffix-vs-suffix
+collisions. In `swt` it no longer lets cascade names claim first.
+
+**Type-name guard** (`Names.withTypeNameGuard`): an instance method whose Go name equals its own
+class's or an ancestor's Go type name gets `Fn`, since that name is also the embedded field of
+every subclass. `Layout.layout()` stays `LayoutFn`, as it was via the cascade rule. New:
+`Transform.transform(float[])` -> `TransformFn`.
+
+**3. Collision rules only touch dispatch names.** `On<Class>`/param-type tags
+(`assignCollidingCascadeNames`) now apply only to dispatch names, and only among one root's
+cascade members: a dispatch name is lowercase with `_`, so it cannot collide with a
+non-cascade method or an embedded type name. `InvocationEmitter`'s manual-receiver path (the
+hand-written `Caret`/`IME` stubs) calls the natural name, since a stub mirrors the public API.
+
+**Stability check** (`tooling/apidump`): prints the exported API of package `swt` (package-level
+funcs/vars/consts/types plus every exported type's full method set, promoted methods included,
+via `go/types`), sorted, one symbol per line:
+
+```sh
+CGO_ENABLED=0 go run ./tooling/apidump > /tmp/api.txt
+```
+
+Checked: dump, remove `SashForm`/`SashFormLayout`/`SashFormData` from `port.sh` (and their
+generated files), regenerate, dump again, diff. The only differences are the 568 removed `SashForm*`
+lines: types `SashForm`/`SashFormData`/`SashFormLayout`, their `*Like` interfaces, methods,
+`NewSashForm`, `SashFormCheckStyle`, `SashFormDRAG_MINIMUM`. Nothing on `Composite`, `Control`,
+`Widget` or any other type changed.
+
+**Renames visible to hand-written code** (vs the Round 8 merge): `SetBackgroundColorOnControlColor`
+-> `SetBackgroundWithColor`, `SetBackgroundColorOnControl` -> `SetBackgroundColor` (NSColor),
+`SetForegroundOnControl` -> `SetForeground`, `SetFontOnControl` -> `SetFont`,
+`SetOrientationOnControl`/`OnWidget` -> `SetOrientation`, `SetImageOnItem`/`OnWidget` ->
+`SetImage`, `DrawBackgroundOnWidget` -> `DrawBackground`, `InitOnResource` -> `Init`,
+`Transform.Transform` -> `TransformFn`. Cascade methods take `CLike` again
+(`shell.SetLayout(swt.NewFillLayout())`). `cmd/*` and `swt/graphics_test.go` (`p.impl.Clone()`
+-> `p.Clone()`) are updated.
+
+**Known ceiling**: a subclass method that is a Java overload (not an override) of an inherited
+method takes its own class's first-overload name and shadows the inherited one on that subclass.
+For example, `Composite.drawBackground(GC,...)` -> `DrawBackground` hides
+`Widget.DrawBackground(id, context, rect)` on Composite and below. This is stable, since it
+depends only on the ancestors, but those inherited overloads are reachable only through the
+embedded field (`c.Widget.DrawBackground`). The fix would be to count inherited same-name methods
+in the overload order.

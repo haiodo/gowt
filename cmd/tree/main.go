@@ -15,7 +15,7 @@ func main() {
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
 	shell.SetText("Tree")
-	shell.SetLayout(&swt.NewFillLayout().Layout)
+	shell.SetLayout(swt.NewFillLayout())
 	tree := swt.NewTree(shell, swt.BORDER)
 
 	// Event.Item is the *Widget inside a TreeItem; map it back to reach TreeItem's methods.

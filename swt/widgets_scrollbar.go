@@ -45,13 +45,13 @@ func (this *ScrollBar) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *ScrollBar) Deregister() {
-	this.Widget.Deregister()
+func (this *ScrollBar) deregister_() {
+	this.Widget.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSScrollerTococoaNSObject(this.view))
 }
 
-func (this *ScrollBar) GetDrawing() bool {
-	return this.parent.impl.GetDrawing()
+func (this *ScrollBar) getDrawing_() bool {
+	return this.parent.impl.getDrawing_()
 }
 
 func (this *ScrollBar) GetEnabled() bool {
@@ -123,16 +123,16 @@ func (this *ScrollBar) GetVisible() bool {
 
 func (this *ScrollBar) IsEnabled() bool {
 	this.CheckWidget()
-	return this.GetEnabled() && this.parent.impl.IsEnabled()
+	return this.GetEnabled() && this.parent.impl.isEnabled_()
 }
 
-func (this *ScrollBar) IsDrawing() bool {
-	return this.impl.GetDrawing() && this.parent.impl.IsDrawing()
+func (this *ScrollBar) isDrawing_() bool {
+	return this.impl.getDrawing_() && this.parent.impl.isDrawing_()
 }
 
 func (this *ScrollBar) IsVisible() bool {
 	this.CheckWidget()
-	return this.GetVisible() && this.parent.impl.IsVisible()
+	return this.GetVisible() && this.parent.impl.isVisible_()
 }
 
 func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
@@ -147,21 +147,21 @@ func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *ScrollBar) Register() {
-	this.Widget.Register()
+func (this *ScrollBar) register_() {
+	this.Widget.register_()
 	this.display.AddWidget(upcastcocoaNSScrollerTococoaNSObject(this.view), upcastScrollBarToWidget(this))
 }
 
-func (this *ScrollBar) ReleaseHandle() {
-	this.Widget.ReleaseHandle()
+func (this *ScrollBar) releaseHandle_() {
+	this.Widget.releaseHandle_()
 	if this.view != (nil) {
 		this.view.Release()
 	}
 	this.view = nil
 }
 
-func (this *ScrollBar) ReleaseParent() {
-	this.Widget.ReleaseParent()
+func (this *ScrollBar) releaseParent_() {
+	this.Widget.releaseParent_()
 	if this.parent.horizontalBar == this {
 		this.parent.horizontalBar = nil
 	}
@@ -170,15 +170,15 @@ func (this *ScrollBar) ReleaseParent() {
 	}
 }
 
-func (this *ScrollBar) ReleaseWidget() {
-	this.Widget.ReleaseWidget()
+func (this *ScrollBar) releaseWidget_() {
+	this.Widget.releaseWidget_()
 	this.parent = nil
 }
 
-func (this *ScrollBar) SendSelection() {
+func (this *ScrollBar) sendSelection_() {
 	var window *cocoa.NSWindow = this.view.Window()
 	if this.target == (nil) {
-		this.parent.impl.GetShell().DeferFlushing()
+		this.parent.impl.getShell_().DeferFlushing()
 	}
 	var value int32 = 0
 	if this.target != (nil) {
@@ -227,8 +227,8 @@ func (this *ScrollBar) SetIncrement(value int32) {
 	this.increment = value
 }
 
-func (this *ScrollBar) SetClipRegion(view *cocoa.NSView) {
-	this.parent.impl.SetClipRegion(view)
+func (this *ScrollBar) setClipRegion_(view *cocoa.NSView) {
+	this.parent.impl.setClipRegion_(view)
 }
 
 func (this *ScrollBar) SetEnabled(enabled bool) {
@@ -336,7 +336,7 @@ func (this *ScrollBar) SetValues(selection int32, minimum int32, maximum int32, 
 
 func (this *ScrollBar) SetVisible(visible bool) {
 	this.CheckWidget()
-	this.parent.impl.SetScrollBarVisible(this, visible)
+	this.parent.impl.setScrollBarVisible_(this, visible)
 }
 
 func (this *ScrollBar) UpdateBar(selection int32, minimum int32, maximum int32, thumb int32) {

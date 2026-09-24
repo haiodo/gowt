@@ -41,8 +41,8 @@ func (this *TouchEvent) initTouchEvent(e *Event) {
 	this.Y = e.Y
 }
 
-func (this *TouchEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *TouchEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	string_ = string_[0 : int32(len(string_))-1]
 	string_ += fmt.Sprintf(" stateMask=0x%s x=%d y=%d", strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.X, this.Y)
 	if this.Touches != (nil) {

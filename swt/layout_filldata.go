@@ -41,14 +41,14 @@ func (this *FillData) ComputeSize(controlLike ControlLike, wHint int32, hHint in
 	}
 	if wHint == DEFAULT && hHint == DEFAULT {
 		if this.defaultWidth == -1 || this.defaultHeight == -1 {
-			var size *Point = control.impl.ComputeSizeWHintHHintChanged(wHint, hHint, flushCache)
+			var size *Point = control.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 			this.defaultWidth = size.X
 			this.defaultHeight = size.Y
 		}
 		return NewPoint(this.defaultWidth, this.defaultHeight)
 	}
 	if this.currentWidth == -1 || this.currentHeight == -1 || wHint != this.currentWhint || hHint != this.currentHhint {
-		var size *Point = control.impl.ComputeSizeWHintHHintChanged(wHint, hHint, flushCache)
+		var size *Point = control.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 		this.currentWhint = wHint
 		this.currentHhint = hHint
 		this.currentWidth = size.X

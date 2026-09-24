@@ -10,679 +10,679 @@ import (
 )
 
 type WidgetImpl interface {
-	AccessibleHandle() int64
-	AccessibilityActionDescription(a0 int64, a1 int64, a2 int64) int64
-	AccessibilityActionNames(a0 int64, a1 int64) int64
-	AccessibilityAttributeNames(a0 int64, a1 int64) int64
-	AccessibilityAttributeValue(a0 int64, a1 int64, a2 int64) int64
-	AccessibilityAttributeValue_forParameter(a0 int64, a1 int64, a2 int64, a3 int64) int64
-	AccessibilityFocusedUIElement(a0 int64, a1 int64) int64
-	AccessibilityHitTest(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
-	AccessibilityIsAttributeSettable(a0 int64, a1 int64, a2 int64) bool
-	AccessibilityIsIgnored(a0 int64, a1 int64) bool
-	AccessibilityParameterizedAttributeNames(a0 int64, a1 int64) int64
-	AccessibilityPerformAction(a0 int64, a1 int64, a2 int64)
-	AccessibilitySetValue_forAttribute(a0 int64, a1 int64, a2 int64, a3 int64)
-	SetClipRegion(a0 *cocoa.NSView)
-	AttributedSubstringFromRange(a0 int64, a1 int64, a2 int64) int64
-	CacheDisplayInRect_toBitmapImageRep(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
-	CanBecomeKeyWindow(a0 int64, a1 int64) bool
-	NeedsPanelToBecomeKey(a0 int64, a1 int64) bool
-	CancelOperation(a0 int64, a1 int64, a2 int64)
-	CellSize(a0 int64, a1 int64) cocoa.NSSize
-	CellSizeForBounds(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSSize
-	CanDragRowsWithIndexes_atPoint(a0 int64, a1 int64, a2 int64, a3 cocoa.NSPoint) bool
-	CharacterIndexForPoint(a0 int64, a1 int64, a2 int64) int64
-	ColumnAtPoint(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
-	AcceptsFirstMouse(a0 int64, a1 int64, a2 int64) bool
-	AcceptsFirstResponder(a0 int64, a1 int64) bool
-	BecomeFirstResponder(a0 int64, a1 int64) bool
-	BecomeKeyWindow(a0 int64, a1 int64)
-	ReskinChildren(a0 int32)
-	_addListener(a0 int32, a1 Listener)
-	CheckOpen()
-	CheckParent(a0 *Widget)
-	CheckSubclass()
-	ClearDeferFlushing(a0 int64, a1 int64)
-	CollapseItem_collapseChildren(a0 int64, a1 int64, a2 int64, a3 bool)
-	CreateHandle()
-	CreateWidget()
-	Dealloc(a0 int64, a1 int64)
-	Deregister()
-	DestroyJNIRef()
-	DestroyWidget()
-	DeselectAll(a0 int64, a1 int64, a2 int64)
-	DeselectRow(a0 int64, a1 int64, a2 int64)
-	DoCommandBySelector(a0 int64, a1 int64, a2 int64)
-	DrawBackgroundOnWidget(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
-	DrawBackgroundInClipRect(a0 int64, a1 int64, a2 cocoa.NSRect)
-	DrawTitleWithFrameInView(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) cocoa.NSRect
-	DrawInteriorWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
-	DrawBezelWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
-	DrawWithExpansionFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
-	DrawRect(a0 int64, a1 int64, a2 cocoa.NSRect)
-	DrawWidget(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
-	ImageView() int64
-	RedrawWidget(a0 *cocoa.NSView, a1 bool)
-	ExpandItem_expandChildren(a0 int64, a1 int64, a2 int64, a3 bool)
-	ExpansionFrameWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
-	FirstRectForCharacterRange(a0 int64, a1 int64, a2 int64) cocoa.NSRect
-	FocusRingMaskBoundsForFrame(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
-	GetDrawing() bool
-	GetNameText() string
-	GetStyle() int32
-	HasMarkedText(a0 int64, a1 int64) bool
-	HeaderRectOfColumn(a0 int64, a1 int64, a2 int64) cocoa.NSRect
-	HelpRequested(a0 int64, a1 int64, a2 int64)
-	HighlightSelectionInClipRect(a0 int64, a1 int64, a2 int64)
-	HitTest(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
-	HitTestForEvent(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) int64
-	Image(a0 int64, a1 int64) int64
-	ImageRectForBounds(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
-	InsertText(a0 int64, a1 int64, a2 int64) bool
-	IsActive() bool
-	IsDrawing() bool
-	IsOpaque(a0 int64, a1 int64) bool
-	FlagsChanged(a0 int64, a1 int64, a2 int64)
-	KeyDown(a0 int64, a1 int64, a2 int64)
-	KeyUp(a0 int64, a1 int64, a2 int64)
-	MouseDown(a0 int64, a1 int64, a2 int64)
-	MouseDownSuper(a0 int64, a1 int64, a2 int64)
-	MouseUp(a0 int64, a1 int64, a2 int64)
-	MouseMoved(a0 int64, a1 int64, a2 int64)
-	MouseDragged(a0 int64, a1 int64, a2 int64)
-	RightMouseDown(a0 int64, a1 int64, a2 int64)
-	RightMouseUp(a0 int64, a1 int64, a2 int64)
-	RightMouseDragged(a0 int64, a1 int64, a2 int64)
-	OtherMouseDown(a0 int64, a1 int64, a2 int64)
-	OtherMouseUp(a0 int64, a1 int64, a2 int64)
-	OtherMouseDragged(a0 int64, a1 int64, a2 int64)
-	ShouldDelayWindowOrderingForEvent(a0 int64, a1 int64, a2 int64) bool
-	MenuForEvent(a0 int64, a1 int64, a2 int64) int64
-	MenuNeedsUpdate(a0 int64, a1 int64, a2 int64)
-	MakeFirstResponder(a0 int64, a1 int64, a2 int64) bool
-	MarkedRange(a0 int64, a1 int64) cocoa.NSRange
-	Menu_willHighlightItem(a0 int64, a1 int64, a2 int64, a3 int64)
-	MenuDidClose(a0 int64, a1 int64, a2 int64)
-	MenuWillOpen(a0 int64, a1 int64, a2 int64)
-	NoResponderFor(a0 int64, a1 int64, a2 int64)
-	OutlineView_child_ofItem(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
-	OutlineView_didClickTableColumn(a0 int64, a1 int64, a2 int64, a3 int64)
-	OutlineView_objectValueForTableColumn_byItem(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
-	OutlineView_isItemExpandable(a0 int64, a1 int64, a2 int64, a3 int64) bool
-	OutlineView_numberOfChildrenOfItem(a0 int64, a1 int64, a2 int64, a3 int64) int64
-	OutlineView_shouldExpandItem_item(a0 int64, a1 int64, a2 int64, a3 int64) bool
-	OutlineView_shouldReorderColumn_toColumn(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
-	OutlineView_shouldTrackCell_forTableColumn_item(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) bool
-	OutlineView_willDisplayCell_forTableColumn_item(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
-	OutlineViewColumnDidMove(a0 int64, a1 int64, a2 int64)
-	OutlineViewColumnDidResize(a0 int64, a1 int64, a2 int64)
-	OutlineViewSelectionDidChange(a0 int64, a1 int64, a2 int64)
-	OutlineViewSelectionIsChanging(a0 int64, a1 int64, a2 int64)
-	OutlineView_setObjectValue_forTableColumn_byItem(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
-	OutlineView_writeItems_toPasteboard(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
-	PageDown(a0 int64, a1 int64, a2 int64)
-	PageUp(a0 int64, a1 int64, a2 int64)
-	ReflectScrolledClipView(a0 int64, a1 int64, a2 int64)
-	Register()
-	Release(a0 bool)
-	ReleaseChildren(a0 bool)
-	ReleaseHandle()
-	ReleaseParent()
-	ReleaseWidget()
-	ScrollClipViewToPoint(a0 int64, a1 int64, a2 int64, a3 cocoa.NSPoint)
-	SelectRowIndexes_byExtendingSelection(a0 int64, a1 int64, a2 int64, a3 bool)
-	ScrollWheel(a0 int64, a1 int64, a2 int64)
-	SelectedRange(a0 int64, a1 int64) cocoa.NSRange
-	SendDoubleSelection()
-	SendKeyEvent(a0 *cocoa.NSEvent, a1 int32) bool
-	SendKeyEventTypeEvent(a0 int32, a1 *Event) bool
-	SendHorizontalSelection()
-	SendCancelSelection()
-	SendSearchSelection()
-	SendSelection()
-	SendVerticalSelection()
-	SetIsStyledText()
-	SetOpenGLContext(a0 any)
-	SetOrientationOnWidget()
-	SetFrameOrigin(a0 int64, a1 int64, a2 cocoa.NSPoint)
-	SetFrameSize(a0 int64, a1 int64, a2 cocoa.NSSize)
-	SetImageOnWidget(a0 int64, a1 int64, a2 int64)
-	SetMarkedText_selectedRange(a0 int64, a1 int64, a2 int64, a3 int64) bool
-	SetShouldExpandItem(a0 int64, a1 int64, a2 bool)
-	SetShouldScrollClipView(a0 int64, a1 int64, a2 bool)
-	SetTabGroupFocus() bool
-	SetTabItemFocus() bool
-	ShouldChangeTextInRange_replacementString(a0 int64, a1 int64, a2 int64, a3 int64) bool
-	SuperKeyDown(a0 int64, a1 int64, a2 int64)
-	SuperKeyUp(a0 int64, a1 int64, a2 int64)
-	TextViewDidChangeSelection(a0 int64, a1 int64, a2 int64)
-	TextDidChange(a0 int64, a1 int64, a2 int64)
-	TextView_willChangeSelectionFromCharacterRange_toCharacterRange(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
-	TitleRectForBounds(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
-	TooltipText() string
-	String() string
-	TouchesBeganWithEvent(a0 int64, a1 int64, a2 int64)
-	TouchesCancelledWithEvent(a0 int64, a1 int64, a2 int64)
-	TouchesEndedWithEvent(a0 int64, a1 int64, a2 int64)
-	TouchesMovedWithEvent(a0 int64, a1 int64, a2 int64)
-	MagnifyWithEvent(a0 int64, a1 int64, a2 int64)
-	RotateWithEvent(a0 int64, a1 int64, a2 int64)
-	SwipeWithEvent(a0 int64, a1 int64, a2 int64)
-	ResetCursorRects(a0 int64, a1 int64)
-	UpdateTrackingAreas(a0 int64, a1 int64)
-	ValidAttributesForMarkedText(a0 int64, a1 int64) int64
-	View_stringForToolTip_point_userData(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) int64
-	ViewWillMoveToWindow(a0 int64, a1 int64, a2 int64)
-	WindowDidMove(a0 int64, a1 int64, a2 int64)
-	WindowDidResize(a0 int64, a1 int64, a2 int64)
-	WindowDidResignKey(a0 int64, a1 int64, a2 int64)
-	WindowDidBecomeKey(a0 int64, a1 int64, a2 int64)
-	WindowDidMiniturize(a0 int64, a1 int64, a2 int64)
-	WindowDidDeminiturize(a0 int64, a1 int64, a2 int64)
-	WindowSendEvent(a0 int64, a1 int64, a2 int64)
-	WindowShouldClose(a0 int64, a1 int64, a2 int64) bool
-	WindowWillClose(a0 int64, a1 int64, a2 int64)
-	NextState(a0 int64, a1 int64) int64
-	UpdateOpenGLContext(a0 int64, a1 int64, a2 int64)
-	ReadSelectionFromPasteboard(a0 int64, a1 int64, a2 int64) bool
-	ValidRequestorForSendType(a0 int64, a1 int64, a2 int64, a3 int64) int64
-	WriteSelectionToPasteboard(a0 int64, a1 int64, a2 int64, a3 int64) bool
-	AddRelation(a0 *Control)
-	ComputeSizeWHintHHintChanged(a0 int32, a1 int32, a2 bool) *Point
-	ComputeTabGroup() *Widget
-	ComputeTabList() []*Widget
-	ComputeTabRoot() *Control
-	ContentView() *cocoa.NSView
-	DefaultBackground() *Color
-	DefaultFont() *Font
-	DefaultForeground() *Color
-	DefaultNSFont() *cocoa.NSFont
-	DragDetectXYFilterConsume(a0 int32, a1 int32, a2 bool, a3 []bool) bool
-	DrawsBackground() bool
-	EnableWidget(a0 bool)
-	EventView() *cocoa.NSView
-	FindCursor() *Cursor
-	FindBackgroundControl() *Control
-	FindMenus(a0 *Control) []*Menu
-	FindTooltip(a0 cocoa.NSPoint) *Widget
-	FixChildren(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
-	ForceFocusFocusView(a0 *cocoa.NSView) bool
-	GetBounds() *Rectangle
-	GetLocation() *Point
-	GetOrientation() int32
-	GetRegion() *Region
-	GetShell() *Shell
-	GetSize() *Point
-	GetThemeAlpha() float32
-	HasBorder() bool
-	HasRegion() bool
-	ImeInComposition() bool
-	InvalidateChildrenVisibleRegion()
-	InvalidateVisibleRegion()
-	IsDescribedByLabel() bool
-	IsEnabled() bool
-	IsEnabledCursor() bool
-	IsReparentable() bool
-	IsResizing() bool
-	IsTabGroup() bool
-	IsTabItem() bool
-	IsTransparent() bool
-	IsTrim(a0 *cocoa.NSView) bool
-	IsVisible() bool
-	MarkLayout(a0 bool, a1 bool)
-	MenuShell() *Decorations
-	IsEventView(a0 int64) bool
-	MouseEvent(a0 int64, a1 int64, a2 int64, a3 int32) bool
-	Print(a0 *GC) bool
-	RequestLayout()
-	RedrawXYWidthHeightAll(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
-	RemoveRelation()
-	ResetVisibleRegion()
-	Resized()
-	SendFocusEvent(a0 int32)
-	SendMouseEvent(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool
-	SetBackgroundColorOnControlColor(a0 *Color)
-	SetBackgroundImageImage(a0 *cocoa.NSImage)
-	SetBackgroundColorOnControl(a0 *cocoa.NSColor)
-	SetBoundsXYWidthHeightMoveResize(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool)
-	SetEnabled(a0 bool)
-	SetFocus() bool
-	SetFontOnControl(a0 *Font)
-	SetFontFont(a0 *cocoa.NSFont)
-	SetForegroundOnControl(a0 *Color)
-	SetForegroundColor(a0 []float64)
-	SetOrientationOnControl(a0 int32)
-	SetRedraw(a0 bool)
-	SetRegion(a0 *Region)
-	SetRadioSelection(a0 bool) bool
-	SetToolTipText(a0 string)
-	SetVisible(a0 bool)
-	SetZOrder()
-	SetZOrderSiblingAbove(a0 *Control, a1 bool)
-	TopView() *cocoa.NSView
-	TraversalCode(a0 int32, a1 *cocoa.NSEvent) int32
-	TraverseEscape() bool
-	TraverseItem(a0 bool) bool
-	TraverseReturn() bool
-	UpdateBackgroundColor()
-	UpdateBackgroundImage()
-	UpdateBackgroundMode()
-	UpdateCursorRects(a0 bool)
-	UpdateLayout(a0 bool)
-	ComputeTrim(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle
-	GetClientArea() *Rectangle
-	HooksKeys() bool
-	IsNeeded(a0 *ScrollBar) bool
-	SetScrollBarVisible(a0 *ScrollBar, a1 bool) bool
-	GetImage() *Image
-	GetText() string
-	SetImageOnItem(a0 *Image)
-	SetText(a0 string)
-	FindDeferredControl() *Composite
-	SetLayout(a0 *Layout)
-	BringToTop(a0 bool)
-	GetMaximized() bool
-	GetMinimized() bool
-	SetMaximized(a0 bool)
-	SetMenuBar(a0 *Menu)
-	SetMinimized(a0 bool)
-}
-
-func (this *Widget) AddRelation(a0 *Control) {
-	panic("j2go: AddRelation has no default on Widget")
-}
-
-func (this *Widget) ComputeSizeWHintHHintChanged(a0 int32, a1 int32, a2 bool) *Point {
-	panic("j2go: ComputeSizeWHintHHintChanged has no default on Widget")
-}
-
-func (this *Widget) ComputeTabGroup() *Widget {
-	panic("j2go: ComputeTabGroup has no default on Widget")
-}
-
-func (this *Widget) ComputeTabList() []*Widget {
-	panic("j2go: ComputeTabList has no default on Widget")
-}
-
-func (this *Widget) ComputeTabRoot() *Control {
-	panic("j2go: ComputeTabRoot has no default on Widget")
-}
-
-func (this *Widget) ContentView() *cocoa.NSView {
-	panic("j2go: ContentView has no default on Widget")
-}
-
-func (this *Widget) DefaultBackground() *Color {
-	panic("j2go: DefaultBackground has no default on Widget")
-}
-
-func (this *Widget) DefaultFont() *Font {
-	panic("j2go: DefaultFont has no default on Widget")
-}
-
-func (this *Widget) DefaultForeground() *Color {
-	panic("j2go: DefaultForeground has no default on Widget")
-}
-
-func (this *Widget) DefaultNSFont() *cocoa.NSFont {
-	panic("j2go: DefaultNSFont has no default on Widget")
-}
-
-func (this *Widget) DragDetectXYFilterConsume(a0 int32, a1 int32, a2 bool, a3 []bool) bool {
-	panic("j2go: DragDetectXYFilterConsume has no default on Widget")
-}
-
-func (this *Widget) DrawsBackground() bool {
-	panic("j2go: DrawsBackground has no default on Widget")
-}
-
-func (this *Widget) EnableWidget(a0 bool) {
-	panic("j2go: EnableWidget has no default on Widget")
-}
-
-func (this *Widget) EventView() *cocoa.NSView {
-	panic("j2go: EventView has no default on Widget")
-}
-
-func (this *Widget) FindCursor() *Cursor {
-	panic("j2go: FindCursor has no default on Widget")
-}
-
-func (this *Widget) FindBackgroundControl() *Control {
-	panic("j2go: FindBackgroundControl has no default on Widget")
-}
-
-func (this *Widget) FindMenus(a0 *Control) []*Menu {
-	panic("j2go: FindMenus has no default on Widget")
-}
-
-func (this *Widget) FindTooltip(a0 cocoa.NSPoint) *Widget {
-	panic("j2go: FindTooltip has no default on Widget")
-}
-
-func (this *Widget) FixChildren(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu) {
-	panic("j2go: FixChildren has no default on Widget")
-}
+	accessibleHandle_() int64
+	accessibilityActionDescription_(a0 int64, a1 int64, a2 int64) int64
+	accessibilityActionNames_(a0 int64, a1 int64) int64
+	accessibilityAttributeNames_(a0 int64, a1 int64) int64
+	accessibilityAttributeValue_(a0 int64, a1 int64, a2 int64) int64
+	accessibilityAttributeValue_forParameter_(a0 int64, a1 int64, a2 int64, a3 int64) int64
+	accessibilityFocusedUIElement_(a0 int64, a1 int64) int64
+	accessibilityHitTest_(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
+	accessibilityIsAttributeSettable_(a0 int64, a1 int64, a2 int64) bool
+	accessibilityIsIgnored_(a0 int64, a1 int64) bool
+	accessibilityParameterizedAttributeNames_(a0 int64, a1 int64) int64
+	accessibilityPerformAction_(a0 int64, a1 int64, a2 int64)
+	accessibilitySetValue_forAttribute_(a0 int64, a1 int64, a2 int64, a3 int64)
+	setClipRegion_(a0 *cocoa.NSView)
+	attributedSubstringFromRange_(a0 int64, a1 int64, a2 int64) int64
+	cacheDisplayInRect_toBitmapImageRep_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	canBecomeKeyWindow_(a0 int64, a1 int64) bool
+	needsPanelToBecomeKey_(a0 int64, a1 int64) bool
+	cancelOperation_(a0 int64, a1 int64, a2 int64)
+	cellSize_(a0 int64, a1 int64) cocoa.NSSize
+	cellSizeForBounds_(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSSize
+	canDragRowsWithIndexes_atPoint_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSPoint) bool
+	characterIndexForPoint_(a0 int64, a1 int64, a2 int64) int64
+	columnAtPoint_(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
+	acceptsFirstMouse_(a0 int64, a1 int64, a2 int64) bool
+	acceptsFirstResponder_(a0 int64, a1 int64) bool
+	becomeFirstResponder_(a0 int64, a1 int64) bool
+	becomeKeyWindow_(a0 int64, a1 int64)
+	reskinChildren_(a0 int32)
+	_addListener_(a0 int32, a1 Listener)
+	checkOpen_()
+	checkParent_(a0 *Widget)
+	checkSubclass_()
+	clearDeferFlushing_(a0 int64, a1 int64)
+	collapseItem_collapseChildren_(a0 int64, a1 int64, a2 int64, a3 bool)
+	createHandle_()
+	createWidget_()
+	dealloc_(a0 int64, a1 int64)
+	deregister_()
+	destroyJNIRef_()
+	destroyWidget_()
+	deselectAll_(a0 int64, a1 int64, a2 int64)
+	deselectRow_(a0 int64, a1 int64, a2 int64)
+	doCommandBySelector_(a0 int64, a1 int64, a2 int64)
+	drawBackground_(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
+	drawBackgroundInClipRect_(a0 int64, a1 int64, a2 cocoa.NSRect)
+	drawTitleWithFrameInView_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) cocoa.NSRect
+	drawInteriorWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	drawBezelWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	drawWithExpansionFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	drawRect_(a0 int64, a1 int64, a2 cocoa.NSRect)
+	drawWidget_(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
+	imageView_() int64
+	redrawWidget_(a0 *cocoa.NSView, a1 bool)
+	expandItem_expandChildren_(a0 int64, a1 int64, a2 int64, a3 bool)
+	expansionFrameWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
+	firstRectForCharacterRange_(a0 int64, a1 int64, a2 int64) cocoa.NSRect
+	focusRingMaskBoundsForFrame_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
+	getDrawing_() bool
+	getNameText_() string
+	getStyle_() int32
+	hasMarkedText_(a0 int64, a1 int64) bool
+	headerRectOfColumn_(a0 int64, a1 int64, a2 int64) cocoa.NSRect
+	helpRequested_(a0 int64, a1 int64, a2 int64)
+	highlightSelectionInClipRect_(a0 int64, a1 int64, a2 int64)
+	hitTest_(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
+	hitTestForEvent_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) int64
+	image_(a0 int64, a1 int64) int64
+	imageRectForBounds_(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
+	insertText_(a0 int64, a1 int64, a2 int64) bool
+	isActive_() bool
+	isDrawing_() bool
+	isOpaque_(a0 int64, a1 int64) bool
+	flagsChanged_(a0 int64, a1 int64, a2 int64)
+	keyDown_(a0 int64, a1 int64, a2 int64)
+	keyUp_(a0 int64, a1 int64, a2 int64)
+	mouseDown_(a0 int64, a1 int64, a2 int64)
+	mouseDownSuper_(a0 int64, a1 int64, a2 int64)
+	mouseUp_(a0 int64, a1 int64, a2 int64)
+	mouseMoved_(a0 int64, a1 int64, a2 int64)
+	mouseDragged_(a0 int64, a1 int64, a2 int64)
+	rightMouseDown_(a0 int64, a1 int64, a2 int64)
+	rightMouseUp_(a0 int64, a1 int64, a2 int64)
+	rightMouseDragged_(a0 int64, a1 int64, a2 int64)
+	otherMouseDown_(a0 int64, a1 int64, a2 int64)
+	otherMouseUp_(a0 int64, a1 int64, a2 int64)
+	otherMouseDragged_(a0 int64, a1 int64, a2 int64)
+	shouldDelayWindowOrderingForEvent_(a0 int64, a1 int64, a2 int64) bool
+	menuForEvent_(a0 int64, a1 int64, a2 int64) int64
+	menuNeedsUpdate_(a0 int64, a1 int64, a2 int64)
+	makeFirstResponder_(a0 int64, a1 int64, a2 int64) bool
+	markedRange_(a0 int64, a1 int64) cocoa.NSRange
+	menu_willHighlightItem_(a0 int64, a1 int64, a2 int64, a3 int64)
+	menuDidClose_(a0 int64, a1 int64, a2 int64)
+	menuWillOpen_(a0 int64, a1 int64, a2 int64)
+	noResponderFor_(a0 int64, a1 int64, a2 int64)
+	outlineView_child_ofItem_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
+	outlineView_didClickTableColumn_(a0 int64, a1 int64, a2 int64, a3 int64)
+	outlineView_objectValueForTableColumn_byItem_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
+	outlineView_isItemExpandable_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	outlineView_numberOfChildrenOfItem_(a0 int64, a1 int64, a2 int64, a3 int64) int64
+	outlineView_shouldExpandItem_item_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	outlineView_shouldReorderColumn_toColumn_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
+	outlineView_shouldTrackCell_forTableColumn_item_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) bool
+	outlineView_willDisplayCell_forTableColumn_item_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
+	outlineViewColumnDidMove_(a0 int64, a1 int64, a2 int64)
+	outlineViewColumnDidResize_(a0 int64, a1 int64, a2 int64)
+	outlineViewSelectionDidChange_(a0 int64, a1 int64, a2 int64)
+	outlineViewSelectionIsChanging_(a0 int64, a1 int64, a2 int64)
+	outlineView_setObjectValue_forTableColumn_byItem_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
+	outlineView_writeItems_toPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
+	pageDown_(a0 int64, a1 int64, a2 int64)
+	pageUp_(a0 int64, a1 int64, a2 int64)
+	reflectScrolledClipView_(a0 int64, a1 int64, a2 int64)
+	register_()
+	release_(a0 bool)
+	releaseChildren_(a0 bool)
+	releaseHandle_()
+	releaseParent_()
+	releaseWidget_()
+	scrollClipViewToPoint_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSPoint)
+	selectRowIndexes_byExtendingSelection_(a0 int64, a1 int64, a2 int64, a3 bool)
+	scrollWheel_(a0 int64, a1 int64, a2 int64)
+	selectedRange_(a0 int64, a1 int64) cocoa.NSRange
+	sendDoubleSelection_()
+	sendKeyEvent_(a0 *cocoa.NSEvent, a1 int32) bool
+	sendKeyEventTypeEvent_(a0 int32, a1 *Event) bool
+	sendHorizontalSelection_()
+	sendCancelSelection_()
+	sendSearchSelection_()
+	sendSelection_()
+	sendVerticalSelection_()
+	setIsStyledText_()
+	setOpenGLContext_(a0 any)
+	setOrientationOnWidget_()
+	setFrameOrigin_(a0 int64, a1 int64, a2 cocoa.NSPoint)
+	setFrameSize_(a0 int64, a1 int64, a2 cocoa.NSSize)
+	setImageOnWidget_(a0 int64, a1 int64, a2 int64)
+	setMarkedText_selectedRange_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	setShouldExpandItem_(a0 int64, a1 int64, a2 bool)
+	setShouldScrollClipView_(a0 int64, a1 int64, a2 bool)
+	setTabGroupFocus_() bool
+	setTabItemFocus_() bool
+	shouldChangeTextInRange_replacementString_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	superKeyDown_(a0 int64, a1 int64, a2 int64)
+	superKeyUp_(a0 int64, a1 int64, a2 int64)
+	textViewDidChangeSelection_(a0 int64, a1 int64, a2 int64)
+	textDidChange_(a0 int64, a1 int64, a2 int64)
+	textView_willChangeSelectionFromCharacterRange_toCharacterRange_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
+	titleRectForBounds_(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
+	tooltipText_() string
+	string_() string
+	touchesBeganWithEvent_(a0 int64, a1 int64, a2 int64)
+	touchesCancelledWithEvent_(a0 int64, a1 int64, a2 int64)
+	touchesEndedWithEvent_(a0 int64, a1 int64, a2 int64)
+	touchesMovedWithEvent_(a0 int64, a1 int64, a2 int64)
+	magnifyWithEvent_(a0 int64, a1 int64, a2 int64)
+	rotateWithEvent_(a0 int64, a1 int64, a2 int64)
+	swipeWithEvent_(a0 int64, a1 int64, a2 int64)
+	resetCursorRects_(a0 int64, a1 int64)
+	updateTrackingAreas_(a0 int64, a1 int64)
+	validAttributesForMarkedText_(a0 int64, a1 int64) int64
+	view_stringForToolTip_point_userData_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) int64
+	viewWillMoveToWindow_(a0 int64, a1 int64, a2 int64)
+	windowDidMove_(a0 int64, a1 int64, a2 int64)
+	windowDidResize_(a0 int64, a1 int64, a2 int64)
+	windowDidResignKey_(a0 int64, a1 int64, a2 int64)
+	windowDidBecomeKey_(a0 int64, a1 int64, a2 int64)
+	windowDidMiniturize_(a0 int64, a1 int64, a2 int64)
+	windowDidDeminiturize_(a0 int64, a1 int64, a2 int64)
+	windowSendEvent_(a0 int64, a1 int64, a2 int64)
+	windowShouldClose_(a0 int64, a1 int64, a2 int64) bool
+	windowWillClose_(a0 int64, a1 int64, a2 int64)
+	nextState_(a0 int64, a1 int64) int64
+	updateOpenGLContext_(a0 int64, a1 int64, a2 int64)
+	readSelectionFromPasteboard_(a0 int64, a1 int64, a2 int64) bool
+	validRequestorForSendType_(a0 int64, a1 int64, a2 int64, a3 int64) int64
+	writeSelectionToPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	addRelation_(a0 *Control)
+	computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point
+	computeTabGroup_() *Widget
+	computeTabList_() []*Widget
+	computeTabRoot_() *Control
+	contentView_() *cocoa.NSView
+	defaultBackground_() *Color
+	defaultFont_() *Font
+	defaultForeground_() *Color
+	defaultNSFont_() *cocoa.NSFont
+	dragDetectXYFilterConsume_(a0 int32, a1 int32, a2 bool, a3 []bool) bool
+	drawsBackground_() bool
+	enableWidget_(a0 bool)
+	eventView_() *cocoa.NSView
+	findCursor_() *Cursor
+	findBackgroundControl_() *Control
+	findMenus_(a0 *Control) []*Menu
+	findTooltip_(a0 cocoa.NSPoint) *Widget
+	fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
+	forceFocusFocusView_(a0 *cocoa.NSView) bool
+	getBounds_() *Rectangle
+	getLocation_() *Point
+	getOrientation_() int32
+	getRegion_() *Region
+	getShell_() *Shell
+	getSize_() *Point
+	getThemeAlpha_() float32
+	hasBorder_() bool
+	hasRegion_() bool
+	imeInComposition_() bool
+	invalidateChildrenVisibleRegion_()
+	invalidateVisibleRegion_()
+	isDescribedByLabel_() bool
+	isEnabled_() bool
+	isEnabledCursor_() bool
+	isReparentable_() bool
+	isResizing_() bool
+	isTabGroup_() bool
+	isTabItem_() bool
+	isTransparent_() bool
+	isTrim_(a0 *cocoa.NSView) bool
+	isVisible_() bool
+	markLayout_(a0 bool, a1 bool)
+	menuShell_() *Decorations
+	isEventView_(a0 int64) bool
+	mouseEvent_(a0 int64, a1 int64, a2 int64, a3 int32) bool
+	print_(a0 *GC) bool
+	requestLayout_()
+	redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
+	removeRelation_()
+	resetVisibleRegion_()
+	resized_()
+	sendFocusEvent_(a0 int32)
+	sendMouseEvent_(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool
+	setBackgroundWithColor_(a0 *Color)
+	setBackgroundImageImage_(a0 *cocoa.NSImage)
+	setBackgroundColor_(a0 *cocoa.NSColor)
+	setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool)
+	setEnabled_(a0 bool)
+	setFocus_() bool
+	setFont_(a0 *Font)
+	setFontFont_(a0 *cocoa.NSFont)
+	setForeground_(a0 *Color)
+	setForegroundColor_(a0 []float64)
+	setOrientationOnControl_(a0 int32)
+	setRedraw_(a0 bool)
+	setRegion_(a0 *Region)
+	setRadioSelection_(a0 bool) bool
+	setToolTipText_(a0 string)
+	setVisible_(a0 bool)
+	setZOrder_()
+	setZOrderSiblingAbove_(a0 *Control, a1 bool)
+	topView_() *cocoa.NSView
+	traversalCode_(a0 int32, a1 *cocoa.NSEvent) int32
+	traverseEscape_() bool
+	traverseItem_(a0 bool) bool
+	traverseReturn_() bool
+	updateBackgroundColor_()
+	updateBackgroundImage_()
+	updateBackgroundMode_()
+	updateCursorRects_(a0 bool)
+	updateLayout_(a0 bool)
+	computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle
+	getClientArea_() *Rectangle
+	hooksKeys_() bool
+	isNeeded_(a0 *ScrollBar) bool
+	setScrollBarVisible_(a0 *ScrollBar, a1 bool) bool
+	getImage_() *Image
+	getText_() string
+	setImageOnItem_(a0 *Image)
+	setText_(a0 string)
+	findDeferredControl_() *Composite
+	setLayout_(a0 *Layout)
+	bringToTop_(a0 bool)
+	getMaximized_() bool
+	getMinimized_() bool
+	setMaximized_(a0 bool)
+	setMenuBar_(a0 *Menu)
+	setMinimized_(a0 bool)
+}
+
+func (this *Widget) addRelation_(a0 *Control) {
+	panic("j2go: addRelation_ has no default on Widget")
+}
+
+func (this *Widget) computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point {
+	panic("j2go: computeSizeWHintHHintChanged_ has no default on Widget")
+}
+
+func (this *Widget) computeTabGroup_() *Widget {
+	panic("j2go: computeTabGroup_ has no default on Widget")
+}
+
+func (this *Widget) computeTabList_() []*Widget {
+	panic("j2go: computeTabList_ has no default on Widget")
+}
+
+func (this *Widget) computeTabRoot_() *Control {
+	panic("j2go: computeTabRoot_ has no default on Widget")
+}
+
+func (this *Widget) contentView_() *cocoa.NSView {
+	panic("j2go: contentView_ has no default on Widget")
+}
+
+func (this *Widget) defaultBackground_() *Color {
+	panic("j2go: defaultBackground_ has no default on Widget")
+}
+
+func (this *Widget) defaultFont_() *Font {
+	panic("j2go: defaultFont_ has no default on Widget")
+}
+
+func (this *Widget) defaultForeground_() *Color {
+	panic("j2go: defaultForeground_ has no default on Widget")
+}
+
+func (this *Widget) defaultNSFont_() *cocoa.NSFont {
+	panic("j2go: defaultNSFont_ has no default on Widget")
+}
+
+func (this *Widget) dragDetectXYFilterConsume_(a0 int32, a1 int32, a2 bool, a3 []bool) bool {
+	panic("j2go: dragDetectXYFilterConsume_ has no default on Widget")
+}
+
+func (this *Widget) drawsBackground_() bool {
+	panic("j2go: drawsBackground_ has no default on Widget")
+}
+
+func (this *Widget) enableWidget_(a0 bool) {
+	panic("j2go: enableWidget_ has no default on Widget")
+}
+
+func (this *Widget) eventView_() *cocoa.NSView {
+	panic("j2go: eventView_ has no default on Widget")
+}
+
+func (this *Widget) findCursor_() *Cursor {
+	panic("j2go: findCursor_ has no default on Widget")
+}
+
+func (this *Widget) findBackgroundControl_() *Control {
+	panic("j2go: findBackgroundControl_ has no default on Widget")
+}
+
+func (this *Widget) findMenus_(a0 *Control) []*Menu {
+	panic("j2go: findMenus_ has no default on Widget")
+}
+
+func (this *Widget) findTooltip_(a0 cocoa.NSPoint) *Widget {
+	panic("j2go: findTooltip_ has no default on Widget")
+}
+
+func (this *Widget) fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu) {
+	panic("j2go: fixChildren_ has no default on Widget")
+}
 
-func (this *Widget) ForceFocusFocusView(a0 *cocoa.NSView) bool {
-	panic("j2go: ForceFocusFocusView has no default on Widget")
+func (this *Widget) forceFocusFocusView_(a0 *cocoa.NSView) bool {
+	panic("j2go: forceFocusFocusView_ has no default on Widget")
 }
 
-func (this *Widget) GetBounds() *Rectangle {
-	panic("j2go: GetBounds has no default on Widget")
+func (this *Widget) getBounds_() *Rectangle {
+	panic("j2go: getBounds_ has no default on Widget")
 }
 
-func (this *Widget) GetLocation() *Point {
-	panic("j2go: GetLocation has no default on Widget")
+func (this *Widget) getLocation_() *Point {
+	panic("j2go: getLocation_ has no default on Widget")
 }
 
-func (this *Widget) GetOrientation() int32 {
-	panic("j2go: GetOrientation has no default on Widget")
+func (this *Widget) getOrientation_() int32 {
+	panic("j2go: getOrientation_ has no default on Widget")
 }
 
-func (this *Widget) GetRegion() *Region {
-	panic("j2go: GetRegion has no default on Widget")
+func (this *Widget) getRegion_() *Region {
+	panic("j2go: getRegion_ has no default on Widget")
 }
 
-func (this *Widget) GetShell() *Shell {
-	panic("j2go: GetShell has no default on Widget")
+func (this *Widget) getShell_() *Shell {
+	panic("j2go: getShell_ has no default on Widget")
 }
 
-func (this *Widget) GetSize() *Point {
-	panic("j2go: GetSize has no default on Widget")
+func (this *Widget) getSize_() *Point {
+	panic("j2go: getSize_ has no default on Widget")
 }
 
-func (this *Widget) GetThemeAlpha() float32 {
-	panic("j2go: GetThemeAlpha has no default on Widget")
+func (this *Widget) getThemeAlpha_() float32 {
+	panic("j2go: getThemeAlpha_ has no default on Widget")
 }
 
-func (this *Widget) HasBorder() bool {
-	panic("j2go: HasBorder has no default on Widget")
+func (this *Widget) hasBorder_() bool {
+	panic("j2go: hasBorder_ has no default on Widget")
 }
 
-func (this *Widget) HasRegion() bool {
-	panic("j2go: HasRegion has no default on Widget")
+func (this *Widget) hasRegion_() bool {
+	panic("j2go: hasRegion_ has no default on Widget")
 }
 
-func (this *Widget) ImeInComposition() bool {
-	panic("j2go: ImeInComposition has no default on Widget")
+func (this *Widget) imeInComposition_() bool {
+	panic("j2go: imeInComposition_ has no default on Widget")
 }
 
-func (this *Widget) InvalidateChildrenVisibleRegion() {
-	panic("j2go: InvalidateChildrenVisibleRegion has no default on Widget")
+func (this *Widget) invalidateChildrenVisibleRegion_() {
+	panic("j2go: invalidateChildrenVisibleRegion_ has no default on Widget")
 }
 
-func (this *Widget) InvalidateVisibleRegion() {
-	panic("j2go: InvalidateVisibleRegion has no default on Widget")
+func (this *Widget) invalidateVisibleRegion_() {
+	panic("j2go: invalidateVisibleRegion_ has no default on Widget")
 }
 
-func (this *Widget) IsDescribedByLabel() bool {
-	panic("j2go: IsDescribedByLabel has no default on Widget")
+func (this *Widget) isDescribedByLabel_() bool {
+	panic("j2go: isDescribedByLabel_ has no default on Widget")
 }
 
-func (this *Widget) IsEnabled() bool {
-	panic("j2go: IsEnabled has no default on Widget")
+func (this *Widget) isEnabled_() bool {
+	panic("j2go: isEnabled_ has no default on Widget")
 }
 
-func (this *Widget) IsEnabledCursor() bool {
-	panic("j2go: IsEnabledCursor has no default on Widget")
+func (this *Widget) isEnabledCursor_() bool {
+	panic("j2go: isEnabledCursor_ has no default on Widget")
 }
 
-func (this *Widget) IsReparentable() bool {
-	panic("j2go: IsReparentable has no default on Widget")
+func (this *Widget) isReparentable_() bool {
+	panic("j2go: isReparentable_ has no default on Widget")
 }
 
-func (this *Widget) IsResizing() bool {
-	panic("j2go: IsResizing has no default on Widget")
+func (this *Widget) isResizing_() bool {
+	panic("j2go: isResizing_ has no default on Widget")
 }
 
-func (this *Widget) IsTabGroup() bool {
-	panic("j2go: IsTabGroup has no default on Widget")
+func (this *Widget) isTabGroup_() bool {
+	panic("j2go: isTabGroup_ has no default on Widget")
 }
 
-func (this *Widget) IsTabItem() bool {
-	panic("j2go: IsTabItem has no default on Widget")
+func (this *Widget) isTabItem_() bool {
+	panic("j2go: isTabItem_ has no default on Widget")
 }
 
-func (this *Widget) IsTransparent() bool {
-	panic("j2go: IsTransparent has no default on Widget")
+func (this *Widget) isTransparent_() bool {
+	panic("j2go: isTransparent_ has no default on Widget")
 }
 
-func (this *Widget) IsTrim(a0 *cocoa.NSView) bool {
-	panic("j2go: IsTrim has no default on Widget")
+func (this *Widget) isTrim_(a0 *cocoa.NSView) bool {
+	panic("j2go: isTrim_ has no default on Widget")
 }
 
-func (this *Widget) IsVisible() bool {
-	panic("j2go: IsVisible has no default on Widget")
+func (this *Widget) isVisible_() bool {
+	panic("j2go: isVisible_ has no default on Widget")
 }
 
-func (this *Widget) MarkLayout(a0 bool, a1 bool) {
-	panic("j2go: MarkLayout has no default on Widget")
+func (this *Widget) markLayout_(a0 bool, a1 bool) {
+	panic("j2go: markLayout_ has no default on Widget")
 }
 
-func (this *Widget) MenuShell() *Decorations {
-	panic("j2go: MenuShell has no default on Widget")
+func (this *Widget) menuShell_() *Decorations {
+	panic("j2go: menuShell_ has no default on Widget")
 }
 
-func (this *Widget) IsEventView(a0 int64) bool {
-	panic("j2go: IsEventView has no default on Widget")
+func (this *Widget) isEventView_(a0 int64) bool {
+	panic("j2go: isEventView_ has no default on Widget")
 }
 
-func (this *Widget) MouseEvent(a0 int64, a1 int64, a2 int64, a3 int32) bool {
-	panic("j2go: MouseEvent has no default on Widget")
+func (this *Widget) mouseEvent_(a0 int64, a1 int64, a2 int64, a3 int32) bool {
+	panic("j2go: mouseEvent_ has no default on Widget")
 }
 
-func (this *Widget) Print(a0 *GC) bool {
-	panic("j2go: Print has no default on Widget")
+func (this *Widget) print_(a0 *GC) bool {
+	panic("j2go: print_ has no default on Widget")
 }
 
-func (this *Widget) RequestLayout() {
-	panic("j2go: RequestLayout has no default on Widget")
+func (this *Widget) requestLayout_() {
+	panic("j2go: requestLayout_ has no default on Widget")
 }
 
-func (this *Widget) RedrawXYWidthHeightAll(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
-	panic("j2go: RedrawXYWidthHeightAll has no default on Widget")
+func (this *Widget) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
+	panic("j2go: redrawXYWidthHeightAll_ has no default on Widget")
 }
 
-func (this *Widget) RemoveRelation() {
-	panic("j2go: RemoveRelation has no default on Widget")
+func (this *Widget) removeRelation_() {
+	panic("j2go: removeRelation_ has no default on Widget")
 }
 
-func (this *Widget) ResetVisibleRegion() {
-	panic("j2go: ResetVisibleRegion has no default on Widget")
+func (this *Widget) resetVisibleRegion_() {
+	panic("j2go: resetVisibleRegion_ has no default on Widget")
 }
 
-func (this *Widget) Resized() {
-	panic("j2go: Resized has no default on Widget")
+func (this *Widget) resized_() {
+	panic("j2go: resized_ has no default on Widget")
 }
 
-func (this *Widget) SendFocusEvent(a0 int32) {
-	panic("j2go: SendFocusEvent has no default on Widget")
+func (this *Widget) sendFocusEvent_(a0 int32) {
+	panic("j2go: sendFocusEvent_ has no default on Widget")
 }
 
-func (this *Widget) SendMouseEvent(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool {
-	panic("j2go: SendMouseEvent has no default on Widget")
+func (this *Widget) sendMouseEvent_(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool {
+	panic("j2go: sendMouseEvent_ has no default on Widget")
 }
 
-func (this *Widget) SetBackgroundColorOnControlColor(a0 *Color) {
-	panic("j2go: SetBackgroundColorOnControlColor has no default on Widget")
+func (this *Widget) setBackgroundWithColor_(a0 *Color) {
+	panic("j2go: setBackgroundWithColor_ has no default on Widget")
 }
 
-func (this *Widget) SetBackgroundImageImage(a0 *cocoa.NSImage) {
-	panic("j2go: SetBackgroundImageImage has no default on Widget")
+func (this *Widget) setBackgroundImageImage_(a0 *cocoa.NSImage) {
+	panic("j2go: setBackgroundImageImage_ has no default on Widget")
 }
 
-func (this *Widget) SetBackgroundColorOnControl(a0 *cocoa.NSColor) {
-	panic("j2go: SetBackgroundColorOnControl has no default on Widget")
+func (this *Widget) setBackgroundColor_(a0 *cocoa.NSColor) {
+	panic("j2go: setBackgroundColor_ has no default on Widget")
 }
 
-func (this *Widget) SetBoundsXYWidthHeightMoveResize(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool) {
-	panic("j2go: SetBoundsXYWidthHeightMoveResize has no default on Widget")
+func (this *Widget) setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool) {
+	panic("j2go: setBoundsXYWidthHeightMoveResize_ has no default on Widget")
 }
 
-func (this *Widget) SetEnabled(a0 bool) {
-	panic("j2go: SetEnabled has no default on Widget")
+func (this *Widget) setEnabled_(a0 bool) {
+	panic("j2go: setEnabled_ has no default on Widget")
 }
 
-func (this *Widget) SetFocus() bool {
-	panic("j2go: SetFocus has no default on Widget")
+func (this *Widget) setFocus_() bool {
+	panic("j2go: setFocus_ has no default on Widget")
 }
 
-func (this *Widget) SetFontOnControl(a0 *Font) {
-	panic("j2go: SetFontOnControl has no default on Widget")
+func (this *Widget) setFont_(a0 *Font) {
+	panic("j2go: setFont_ has no default on Widget")
 }
 
-func (this *Widget) SetFontFont(a0 *cocoa.NSFont) {
-	panic("j2go: SetFontFont has no default on Widget")
+func (this *Widget) setFontFont_(a0 *cocoa.NSFont) {
+	panic("j2go: setFontFont_ has no default on Widget")
 }
 
-func (this *Widget) SetForegroundOnControl(a0 *Color) {
-	panic("j2go: SetForegroundOnControl has no default on Widget")
+func (this *Widget) setForeground_(a0 *Color) {
+	panic("j2go: setForeground_ has no default on Widget")
 }
 
-func (this *Widget) SetForegroundColor(a0 []float64) {
-	panic("j2go: SetForegroundColor has no default on Widget")
+func (this *Widget) setForegroundColor_(a0 []float64) {
+	panic("j2go: setForegroundColor_ has no default on Widget")
 }
 
-func (this *Widget) SetOrientationOnControl(a0 int32) {
-	panic("j2go: SetOrientationOnControl has no default on Widget")
+func (this *Widget) setOrientationOnControl_(a0 int32) {
+	panic("j2go: setOrientationOnControl_ has no default on Widget")
 }
 
-func (this *Widget) SetRedraw(a0 bool) {
-	panic("j2go: SetRedraw has no default on Widget")
+func (this *Widget) setRedraw_(a0 bool) {
+	panic("j2go: setRedraw_ has no default on Widget")
 }
 
-func (this *Widget) SetRegion(a0 *Region) {
-	panic("j2go: SetRegion has no default on Widget")
+func (this *Widget) setRegion_(a0 *Region) {
+	panic("j2go: setRegion_ has no default on Widget")
 }
 
-func (this *Widget) SetRadioSelection(a0 bool) bool {
-	panic("j2go: SetRadioSelection has no default on Widget")
+func (this *Widget) setRadioSelection_(a0 bool) bool {
+	panic("j2go: setRadioSelection_ has no default on Widget")
 }
 
-func (this *Widget) SetToolTipText(a0 string) {
-	panic("j2go: SetToolTipText has no default on Widget")
+func (this *Widget) setToolTipText_(a0 string) {
+	panic("j2go: setToolTipText_ has no default on Widget")
 }
 
-func (this *Widget) SetVisible(a0 bool) {
-	panic("j2go: SetVisible has no default on Widget")
+func (this *Widget) setVisible_(a0 bool) {
+	panic("j2go: setVisible_ has no default on Widget")
 }
 
-func (this *Widget) SetZOrder() {
-	panic("j2go: SetZOrder has no default on Widget")
+func (this *Widget) setZOrder_() {
+	panic("j2go: setZOrder_ has no default on Widget")
 }
 
-func (this *Widget) SetZOrderSiblingAbove(a0 *Control, a1 bool) {
-	panic("j2go: SetZOrderSiblingAbove has no default on Widget")
+func (this *Widget) setZOrderSiblingAbove_(a0 *Control, a1 bool) {
+	panic("j2go: setZOrderSiblingAbove_ has no default on Widget")
 }
 
-func (this *Widget) TopView() *cocoa.NSView {
-	panic("j2go: TopView has no default on Widget")
+func (this *Widget) topView_() *cocoa.NSView {
+	panic("j2go: topView_ has no default on Widget")
 }
 
-func (this *Widget) TraversalCode(a0 int32, a1 *cocoa.NSEvent) int32 {
-	panic("j2go: TraversalCode has no default on Widget")
+func (this *Widget) traversalCode_(a0 int32, a1 *cocoa.NSEvent) int32 {
+	panic("j2go: traversalCode_ has no default on Widget")
 }
 
-func (this *Widget) TraverseEscape() bool {
-	panic("j2go: TraverseEscape has no default on Widget")
+func (this *Widget) traverseEscape_() bool {
+	panic("j2go: traverseEscape_ has no default on Widget")
 }
 
-func (this *Widget) TraverseItem(a0 bool) bool {
-	panic("j2go: TraverseItem has no default on Widget")
+func (this *Widget) traverseItem_(a0 bool) bool {
+	panic("j2go: traverseItem_ has no default on Widget")
 }
 
-func (this *Widget) TraverseReturn() bool {
-	panic("j2go: TraverseReturn has no default on Widget")
+func (this *Widget) traverseReturn_() bool {
+	panic("j2go: traverseReturn_ has no default on Widget")
 }
 
-func (this *Widget) UpdateBackgroundColor() {
-	panic("j2go: UpdateBackgroundColor has no default on Widget")
+func (this *Widget) updateBackgroundColor_() {
+	panic("j2go: updateBackgroundColor_ has no default on Widget")
 }
 
-func (this *Widget) UpdateBackgroundImage() {
-	panic("j2go: UpdateBackgroundImage has no default on Widget")
+func (this *Widget) updateBackgroundImage_() {
+	panic("j2go: updateBackgroundImage_ has no default on Widget")
 }
 
-func (this *Widget) UpdateBackgroundMode() {
-	panic("j2go: UpdateBackgroundMode has no default on Widget")
+func (this *Widget) updateBackgroundMode_() {
+	panic("j2go: updateBackgroundMode_ has no default on Widget")
 }
 
-func (this *Widget) UpdateCursorRects(a0 bool) {
-	panic("j2go: UpdateCursorRects has no default on Widget")
+func (this *Widget) updateCursorRects_(a0 bool) {
+	panic("j2go: updateCursorRects_ has no default on Widget")
 }
 
-func (this *Widget) UpdateLayout(a0 bool) {
-	panic("j2go: UpdateLayout has no default on Widget")
+func (this *Widget) updateLayout_(a0 bool) {
+	panic("j2go: updateLayout_ has no default on Widget")
 }
 
-func (this *Widget) ComputeTrim(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
-	panic("j2go: ComputeTrim has no default on Widget")
+func (this *Widget) computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
+	panic("j2go: computeTrim_ has no default on Widget")
 }
 
-func (this *Widget) GetClientArea() *Rectangle {
-	panic("j2go: GetClientArea has no default on Widget")
+func (this *Widget) getClientArea_() *Rectangle {
+	panic("j2go: getClientArea_ has no default on Widget")
 }
 
-func (this *Widget) HooksKeys() bool {
-	panic("j2go: HooksKeys has no default on Widget")
+func (this *Widget) hooksKeys_() bool {
+	panic("j2go: hooksKeys_ has no default on Widget")
 }
 
-func (this *Widget) IsNeeded(a0 *ScrollBar) bool {
-	panic("j2go: IsNeeded has no default on Widget")
+func (this *Widget) isNeeded_(a0 *ScrollBar) bool {
+	panic("j2go: isNeeded_ has no default on Widget")
 }
 
-func (this *Widget) SetScrollBarVisible(a0 *ScrollBar, a1 bool) bool {
-	panic("j2go: SetScrollBarVisible has no default on Widget")
+func (this *Widget) setScrollBarVisible_(a0 *ScrollBar, a1 bool) bool {
+	panic("j2go: setScrollBarVisible_ has no default on Widget")
 }
 
-func (this *Widget) GetImage() *Image {
-	panic("j2go: GetImage has no default on Widget")
+func (this *Widget) getImage_() *Image {
+	panic("j2go: getImage_ has no default on Widget")
 }
 
-func (this *Widget) GetText() string {
-	panic("j2go: GetText has no default on Widget")
+func (this *Widget) getText_() string {
+	panic("j2go: getText_ has no default on Widget")
 }
 
-func (this *Widget) SetImageOnItem(a0 *Image) {
-	panic("j2go: SetImageOnItem has no default on Widget")
+func (this *Widget) setImageOnItem_(a0 *Image) {
+	panic("j2go: setImageOnItem_ has no default on Widget")
 }
 
-func (this *Widget) SetText(a0 string) {
-	panic("j2go: SetText has no default on Widget")
+func (this *Widget) setText_(a0 string) {
+	panic("j2go: setText_ has no default on Widget")
 }
 
-func (this *Widget) FindDeferredControl() *Composite {
-	panic("j2go: FindDeferredControl has no default on Widget")
+func (this *Widget) findDeferredControl_() *Composite {
+	panic("j2go: findDeferredControl_ has no default on Widget")
 }
 
-func (this *Widget) SetLayout(a0 *Layout) {
-	panic("j2go: SetLayout has no default on Widget")
+func (this *Widget) setLayout_(a0 *Layout) {
+	panic("j2go: setLayout_ has no default on Widget")
 }
 
-func (this *Widget) BringToTop(a0 bool) {
-	panic("j2go: BringToTop has no default on Widget")
+func (this *Widget) bringToTop_(a0 bool) {
+	panic("j2go: bringToTop_ has no default on Widget")
 }
 
-func (this *Widget) GetMaximized() bool {
-	panic("j2go: GetMaximized has no default on Widget")
+func (this *Widget) getMaximized_() bool {
+	panic("j2go: getMaximized_ has no default on Widget")
 }
 
-func (this *Widget) GetMinimized() bool {
-	panic("j2go: GetMinimized has no default on Widget")
+func (this *Widget) getMinimized_() bool {
+	panic("j2go: getMinimized_ has no default on Widget")
 }
 
-func (this *Widget) SetMaximized(a0 bool) {
-	panic("j2go: SetMaximized has no default on Widget")
+func (this *Widget) setMaximized_(a0 bool) {
+	panic("j2go: setMaximized_ has no default on Widget")
 }
 
-func (this *Widget) SetMenuBar(a0 *Menu) {
-	panic("j2go: SetMenuBar has no default on Widget")
+func (this *Widget) setMenuBar_(a0 *Menu) {
+	panic("j2go: setMenuBar_ has no default on Widget")
 }
 
-func (this *Widget) SetMinimized(a0 bool) {
-	panic("j2go: SetMinimized has no default on Widget")
+func (this *Widget) setMinimized_(a0 bool) {
+	panic("j2go: setMinimized_ has no default on Widget")
 }
 
 type Widget struct {
@@ -785,8 +785,8 @@ func NewWidgetParentStyle(parentLike WidgetLike, style int32) *Widget {
 }
 
 func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
-	this.impl.CheckSubclass()
-	this.impl.CheckParent(parent)
+	this.impl.checkSubclass_()
+	this.impl.checkParent_(parent)
 	this.style = style
 	this.display = parent.display
 	this.ReskinWidget()
@@ -794,26 +794,50 @@ func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
 }
 
 func (this *Widget) AccessibleHandle() int64 {
+	return this.impl.accessibleHandle_()
+}
+
+func (this *Widget) accessibleHandle_() int64 {
 	return int64(0)
 }
 
 func (this *Widget) AccessibilityActionDescription(id int64, sel int64, arg0 int64) int64 {
+	return this.impl.accessibilityActionDescription_(id, sel, arg0)
+}
+
+func (this *Widget) accessibilityActionDescription_(id int64, sel int64, arg0 int64) int64 {
 	return this.CallSuperObjectIdSelArg0(id, sel, arg0)
 }
 
 func (this *Widget) AccessibilityActionNames(id int64, sel int64) int64 {
+	return this.impl.accessibilityActionNames_(id, sel)
+}
+
+func (this *Widget) accessibilityActionNames_(id int64, sel int64) int64 {
 	return this.CallSuperObject(id, sel)
 }
 
 func (this *Widget) AccessibilityAttributeNames(id int64, sel int64) int64 {
+	return this.impl.accessibilityAttributeNames_(id, sel)
+}
+
+func (this *Widget) accessibilityAttributeNames_(id int64, sel int64) int64 {
 	return this.CallSuperObject(id, sel)
 }
 
 func (this *Widget) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) int64 {
+	return this.impl.accessibilityAttributeValue_(id, sel, arg0)
+}
+
+func (this *Widget) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	return this.CallSuperObjectIdSelArg0(id, sel, arg0)
 }
 
 func (this *Widget) AccessibilityAttributeValue_forParameter(id int64, sel int64, arg0 int64, arg1 int64) int64 {
+	return this.impl.accessibilityAttributeValue_forParameter_(id, sel, arg0, arg1)
+}
+
+func (this *Widget) accessibilityAttributeValue_forParameter_(id int64, sel int64, arg0 int64, arg1 int64) int64 {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -821,10 +845,18 @@ func (this *Widget) AccessibilityAttributeValue_forParameter(id int64, sel int64
 }
 
 func (this *Widget) AccessibilityFocusedUIElement(id int64, sel int64) int64 {
+	return this.impl.accessibilityFocusedUIElement_(id, sel)
+}
+
+func (this *Widget) accessibilityFocusedUIElement_(id int64, sel int64) int64 {
 	return this.CallSuperObject(id, sel)
 }
 
 func (this *Widget) AccessibilityHitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
+	return this.impl.accessibilityHitTest_(id, sel, point)
+}
+
+func (this *Widget) accessibilityHitTest_(id int64, sel int64, point cocoa.NSPoint) int64 {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -832,22 +864,42 @@ func (this *Widget) AccessibilityHitTest(id int64, sel int64, point cocoa.NSPoin
 }
 
 func (this *Widget) AccessibilityIsAttributeSettable(id int64, sel int64, arg0 int64) bool {
+	return this.impl.accessibilityIsAttributeSettable_(id, sel, arg0)
+}
+
+func (this *Widget) accessibilityIsAttributeSettable_(id int64, sel int64, arg0 int64) bool {
 	return this.CallSuperBooleanIdSelArg0(id, sel, arg0)
 }
 
 func (this *Widget) AccessibilityIsIgnored(id int64, sel int64) bool {
+	return this.impl.accessibilityIsIgnored_(id, sel)
+}
+
+func (this *Widget) accessibilityIsIgnored_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
 func (this *Widget) AccessibilityParameterizedAttributeNames(id int64, sel int64) int64 {
+	return this.impl.accessibilityParameterizedAttributeNames_(id, sel)
+}
+
+func (this *Widget) accessibilityParameterizedAttributeNames_(id int64, sel int64) int64 {
 	return this.CallSuperObject(id, sel)
 }
 
 func (this *Widget) AccessibilityPerformAction(id int64, sel int64, arg0 int64) {
+	this.impl.accessibilityPerformAction_(id, sel, arg0)
+}
+
+func (this *Widget) accessibilityPerformAction_(id int64, sel int64, arg0 int64) {
 	this.CallSuperOverload1(id, sel, arg0)
 }
 
 func (this *Widget) AccessibilitySetValue_forAttribute(id int64, sel int64, arg0 int64, arg1 int64) {
+	this.impl.accessibilitySetValue_forAttribute_(id, sel, arg0, arg1)
+}
+
+func (this *Widget) accessibilitySetValue_forAttribute_(id int64, sel int64, arg0 int64, arg1 int64) {
 	this.CallSuperOverload3(id, sel, arg0, arg1)
 }
 
@@ -867,13 +919,25 @@ func (this *Widget) GetClipboardText() string {
 }
 
 func (this *Widget) SetClipRegion(view *cocoa.NSView) {
+	this.impl.setClipRegion_(view)
+}
+
+func (this *Widget) setClipRegion_(view *cocoa.NSView) {
 }
 
 func (this *Widget) AttributedSubstringFromRange(id int64, sel int64, range_ int64) int64 {
+	return this.impl.attributedSubstringFromRange_(id, sel, range_)
+}
+
+func (this *Widget) attributedSubstringFromRange_(id int64, sel int64, range_ int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) CacheDisplayInRect_toBitmapImageRep(id int64, sel int64, rect cocoa.NSRect, imageRep int64) {
+	this.impl.cacheDisplayInRect_toBitmapImageRep_(id, sel, rect, imageRep)
+}
+
+func (this *Widget) cacheDisplayInRect_toBitmapImageRep_(id int64, sel int64, rect cocoa.NSRect, imageRep int64) {
 	this.CallSuperOverload4(id, sel, rect, imageRep)
 }
 
@@ -927,17 +991,33 @@ func (this *Widget) CallSuperBoolean(id int64, sel int64) bool {
 }
 
 func (this *Widget) CanBecomeKeyWindow(id int64, sel int64) bool {
+	return this.impl.canBecomeKeyWindow_(id, sel)
+}
+
+func (this *Widget) canBecomeKeyWindow_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
 func (this *Widget) NeedsPanelToBecomeKey(id int64, sel int64) bool {
+	return this.impl.needsPanelToBecomeKey_(id, sel)
+}
+
+func (this *Widget) needsPanelToBecomeKey_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
 func (this *Widget) CancelOperation(id int64, sel int64, arg0 int64) {
+	this.impl.cancelOperation_(id, sel, arg0)
+}
+
+func (this *Widget) cancelOperation_(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) CellSize(id int64, sel int64) cocoa.NSSize {
+	return this.impl.cellSize_(id, sel)
+}
+
+func (this *Widget) cellSize_(id int64, sel int64) cocoa.NSSize {
 	var result cocoa.NSSize = cocoa.NSSize{}
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
@@ -947,6 +1027,10 @@ func (this *Widget) CellSize(id int64, sel int64) cocoa.NSSize {
 }
 
 func (this *Widget) CellSizeForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSSize {
+	return this.impl.cellSizeForBounds_(id, sel, cellFrame)
+}
+
+func (this *Widget) cellSizeForBounds_(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSSize {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1009,6 +1093,10 @@ func (this *Widget) CallSuperRectIdSelRectArg0(id int64, sel int64, rect cocoa.N
 }
 
 func (this *Widget) CanDragRowsWithIndexes_atPoint(id int64, sel int64, rowIndexes int64, mouseDownPoint cocoa.NSPoint) bool {
+	return this.impl.canDragRowsWithIndexes_atPoint_(id, sel, rowIndexes, mouseDownPoint)
+}
+
+func (this *Widget) canDragRowsWithIndexes_atPoint_(id int64, sel int64, rowIndexes int64, mouseDownPoint cocoa.NSPoint) bool {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1016,10 +1104,18 @@ func (this *Widget) CanDragRowsWithIndexes_atPoint(id int64, sel int64, rowIndex
 }
 
 func (this *Widget) CharacterIndexForPoint(id int64, sel int64, point int64) int64 {
+	return this.impl.characterIndexForPoint_(id, sel, point)
+}
+
+func (this *Widget) characterIndexForPoint_(id int64, sel int64, point int64) int64 {
 	return cocoa.OSNSNotFound()
 }
 
 func (this *Widget) ColumnAtPoint(id int64, sel int64, point cocoa.NSPoint) int64 {
+	return this.impl.columnAtPoint_(id, sel, point)
+}
+
+func (this *Widget) columnAtPoint_(id int64, sel int64, point cocoa.NSPoint) int64 {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1027,6 +1123,10 @@ func (this *Widget) ColumnAtPoint(id int64, sel int64, point cocoa.NSPoint) int6
 }
 
 func (this *Widget) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool {
+	return this.impl.acceptsFirstMouse_(id, sel, theEvent)
+}
+
+func (this *Widget) acceptsFirstMouse_(id int64, sel int64, theEvent int64) bool {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1034,14 +1134,26 @@ func (this *Widget) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool 
 }
 
 func (this *Widget) AcceptsFirstResponder(id int64, sel int64) bool {
+	return this.impl.acceptsFirstResponder_(id, sel)
+}
+
+func (this *Widget) acceptsFirstResponder_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
 func (this *Widget) BecomeFirstResponder(id int64, sel int64) bool {
+	return this.impl.becomeFirstResponder_(id, sel)
+}
+
+func (this *Widget) becomeFirstResponder_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
 func (this *Widget) BecomeKeyWindow(id int64, sel int64) {
+	this.impl.becomeKeyWindow_(id, sel)
+}
+
+func (this *Widget) becomeKeyWindow_(id int64, sel int64) {
 	this.CallSuper(id, sel)
 }
 
@@ -1049,11 +1161,15 @@ func (this *Widget) Reskin(flags int32) {
 	this.CheckWidget()
 	this.ReskinWidget()
 	if (flags & ALL) != 0 {
-		this.impl.ReskinChildren(flags)
+		this.impl.reskinChildren_(flags)
 	}
 }
 
 func (this *Widget) ReskinChildren(flags int32) {
+	this.impl.reskinChildren_(flags)
+}
+
+func (this *Widget) reskinChildren_(flags int32) {
 }
 
 func (this *Widget) ReskinWidget() {
@@ -1072,7 +1188,7 @@ func (this *Widget) AddListener(eventType int32, listener Listener) {
 	if listener == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.impl._addListener(eventType, listener)
+	this.impl._addListener_(eventType, listener)
 }
 
 func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
@@ -1082,11 +1198,15 @@ func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
 	for _, eventType := range eventTypes {
-		this.impl._addListener(eventType, typedListener)
+		this.impl._addListener_(eventType, typedListener)
 	}
 }
 
 func (this *Widget) _addListener(eventType int32, listener Listener) {
+	this.impl._addListener_(eventType, listener)
+}
+
+func (this *Widget) _addListener_(eventType int32, listener Listener) {
 	if this.eventTable == (nil) {
 		this.eventTable = newEventTable()
 	}
@@ -1102,6 +1222,10 @@ func (this *Widget) CanBecomeKeyView(id int64, sel int64) bool {
 }
 
 func (this *Widget) CheckOpen() {
+	this.impl.checkOpen_()
+}
+
+func (this *Widget) checkOpen_() {
 }
 
 func (this *Widget) CheckOrientation(parentLike WidgetLike) {
@@ -1124,7 +1248,15 @@ func (this *Widget) CheckOrientation(parentLike WidgetLike) {
 	this.style = WidgetCheckBits(this.style, LEFT_TO_RIGHT, RIGHT_TO_LEFT, 0, 0, 0, 0)
 }
 
-func (this *Widget) CheckParent(parent *Widget) {
+func (this *Widget) CheckParent(parentLike WidgetLike) {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	this.impl.checkParent_(parent)
+}
+
+func (this *Widget) checkParent_(parent *Widget) {
 	if parent == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -1132,10 +1264,14 @@ func (this *Widget) CheckParent(parent *Widget) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	parent.CheckWidget()
-	parent.impl.CheckOpen()
+	parent.impl.checkOpen_()
 }
 
 func (this *Widget) CheckSubclass() {
+	this.impl.checkSubclass_()
+}
+
+func (this *Widget) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -1155,6 +1291,10 @@ func (this *Widget) CheckWidget() {
 }
 
 func (this *Widget) ClearDeferFlushing(id int64, sel int64) {
+	this.impl.clearDeferFlushing_(id, sel)
+}
+
+func (this *Widget) clearDeferFlushing_(id int64, sel int64) {
 }
 
 func (this *Widget) TextView_clickOnLink_atIndex(id int64, sel int64, textView int64, link int64, charIndex int64) bool {
@@ -1162,6 +1302,10 @@ func (this *Widget) TextView_clickOnLink_atIndex(id int64, sel int64, textView i
 }
 
 func (this *Widget) CollapseItem_collapseChildren(id int64, sel int64, item int64, children bool) {
+	this.impl.collapseItem_collapseChildren_(id, sel, item, children)
+}
+
+func (this *Widget) collapseItem_collapseChildren_(id int64, sel int64, item int64, children bool) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1181,6 +1325,10 @@ func (this *Widget) CopyToClipboard(buffer []uint16) {
 }
 
 func (this *Widget) CreateHandle() {
+	this.impl.createHandle_()
+}
+
+func (this *Widget) createHandle_() {
 }
 
 func (this *Widget) CreateJNIRef() {
@@ -1191,10 +1339,14 @@ func (this *Widget) CreateJNIRef() {
 }
 
 func (this *Widget) CreateWidget() {
+	this.impl.createWidget_()
+}
+
+func (this *Widget) createWidget_() {
 	this.CreateJNIRef()
-	this.impl.CreateHandle()
-	this.impl.SetOrientationOnWidget()
-	this.impl.Register()
+	this.impl.createHandle_()
+	this.impl.setOrientationOnWidget_()
+	this.impl.register_()
 }
 
 func (this *Widget) ComboBoxSelectionDidChange(id int64, sel int64, notification int64) {
@@ -1207,13 +1359,25 @@ func (this *Widget) ComboBoxWillPopUp(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) Dealloc(id int64, sel int64) {
+	this.impl.dealloc_(id, sel)
+}
+
+func (this *Widget) dealloc_(id int64, sel int64) {
 	this.CallSuper(id, sel)
 }
 
 func (this *Widget) Deregister() {
+	this.impl.deregister_()
+}
+
+func (this *Widget) deregister_() {
 }
 
 func (this *Widget) DestroyJNIRef() {
+	this.impl.destroyJNIRef_()
+}
+
+func (this *Widget) destroyJNIRef_() {
 	if this.jniRef != 0 {
 		cocoa.OSDeleteGlobalRef(this.jniRef)
 	}
@@ -1221,7 +1385,11 @@ func (this *Widget) DestroyJNIRef() {
 }
 
 func (this *Widget) DestroyWidget() {
-	this.impl.ReleaseHandle()
+	this.impl.destroyWidget_()
+}
+
+func (this *Widget) destroyWidget_() {
+	this.impl.releaseHandle_()
 }
 
 func (this *Widget) Dispose() {
@@ -1231,18 +1399,30 @@ func (this *Widget) Dispose() {
 	if !this.IsValidThread() {
 		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
-	this.impl.Release(true)
+	this.impl.release_(true)
 }
 
 func (this *Widget) DeselectAll(id int64, sel int64, sender int64) {
+	this.impl.deselectAll_(id, sel, sender)
+}
+
+func (this *Widget) deselectAll_(id int64, sel int64, sender int64) {
 	this.CallSuperOverload1(id, sel, sender)
 }
 
 func (this *Widget) DeselectRow(id int64, sel int64, index int64) {
+	this.impl.deselectRow_(id, sel, index)
+}
+
+func (this *Widget) deselectRow_(id int64, sel int64, index int64) {
 	this.CallSuperOverload1(id, sel, index)
 }
 
 func (this *Widget) DoCommandBySelector(id int64, sel int64, aSelector int64) {
+	this.impl.doCommandBySelector_(id, sel, aSelector)
+}
+
+func (this *Widget) doCommandBySelector_(id int64, sel int64, aSelector int64) {
 	this.CallSuperOverload1(id, sel, aSelector)
 }
 
@@ -1250,10 +1430,18 @@ func (this *Widget) DragSelectionWithEvent(id int64, sel int64, arg0 int64, arg1
 	return false
 }
 
-func (this *Widget) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Widget) DrawBackground(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+	this.impl.drawBackground_(id, context, rect)
+}
+
+func (this *Widget) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 }
 
 func (this *Widget) DrawBackgroundInClipRect(id int64, sel int64, rect cocoa.NSRect) {
+	this.impl.drawBackgroundInClipRect_(id, sel, rect)
+}
+
+func (this *Widget) drawBackgroundInClipRect_(id int64, sel int64, rect cocoa.NSRect) {
 	this.CallSuperOverload2(id, sel, rect)
 }
 
@@ -1262,6 +1450,10 @@ func (this *Widget) DrawImageWithFrameInView(id int64, sel int64, image int64, r
 }
 
 func (this *Widget) DrawTitleWithFrameInView(id int64, sel int64, title int64, rect cocoa.NSRect, view int64) cocoa.NSRect {
+	return this.impl.drawTitleWithFrameInView_(id, sel, title, rect, view)
+}
+
+func (this *Widget) drawTitleWithFrameInView_(id int64, sel int64, title int64, rect cocoa.NSRect, view int64) cocoa.NSRect {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1271,10 +1463,18 @@ func (this *Widget) DrawTitleWithFrameInView(id int64, sel int64, title int64, r
 }
 
 func (this *Widget) DrawInteriorWithFrame_inView(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
+	this.impl.drawInteriorWithFrame_inView_(id, sel, cellFrame, view)
+}
+
+func (this *Widget) drawInteriorWithFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
 	this.CallSuperOverload4(id, sel, cellFrame, view)
 }
 
 func (this *Widget) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
+	this.impl.drawBezelWithFrame_inView_(id, sel, cellFrame, view)
+}
+
+func (this *Widget) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
 	this.CallSuperOverload4(id, sel, cellFrame, view)
 }
 
@@ -1290,11 +1490,19 @@ func (this *Widget) DrawViewBackgroundInRect(id int64, sel int64, rect cocoa.NSR
 }
 
 func (this *Widget) DrawWithExpansionFrame_inView(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
+	this.impl.drawWithExpansionFrame_inView_(id, sel, cellFrame, view)
+}
+
+func (this *Widget) drawWithExpansionFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
 	this.CallSuperOverload4(id, sel, cellFrame, view)
 }
 
 func (this *Widget) DrawRect(id int64, sel int64, rect cocoa.NSRect) {
-	if !this.impl.IsDrawing() {
+	this.impl.drawRect_(id, sel, rect)
+}
+
+func (this *Widget) drawRect_(id int64, sel int64, rect cocoa.NSRect) {
+	if !this.impl.isDrawing_() {
 		return
 	}
 	var display *Display = this.display
@@ -1303,14 +1511,14 @@ func (this *Widget) DrawRect(id int64, sel int64, rect cocoa.NSRect) {
 	display.isPainting.AddObject(upcastcocoaNSViewTococoaId(view))
 	var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 	context.SaveGraphicsState()
-	this.impl.SetClipRegion(view)
-	this.impl.DrawBackgroundOnWidget(id, context, rect)
+	this.impl.setClipRegion_(view)
+	this.impl.drawBackground_(id, context, rect)
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
 	cocoa.OSObjc_msgSendSuperOverload2(&super_struct, sel, rect)
 	if !this.IsDisposed() {
-		this.impl.DrawWidget(id, context, rect)
+		this.impl.drawWidget_(id, context, rect)
 	}
 	context.RestoreGraphicsState()
 	display.isPainting.RemoveObjectIdenticalTo(upcastcocoaNSViewTococoaId(view))
@@ -1324,13 +1532,25 @@ func (this *Widget) _drawThemeProgressArea(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+	this.impl.drawWidget_(id, context, rect)
+}
+
+func (this *Widget) drawWidget_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 }
 
 func (this *Widget) ImageView() int64 {
+	return this.impl.imageView_()
+}
+
+func (this *Widget) imageView_() int64 {
 	return int64(0)
 }
 
 func (this *Widget) RedrawWidget(view *cocoa.NSView, children bool) {
+	this.impl.redrawWidget_(view, children)
+}
+
+func (this *Widget) redrawWidget_(view *cocoa.NSView, children bool) {
 	view.SetNeedsDisplay(true)
 }
 
@@ -1348,6 +1568,10 @@ func (this *Widget) Error(code int32) {
 }
 
 func (this *Widget) ExpandItem_expandChildren(id int64, sel int64, item int64, children bool) {
+	this.impl.expandItem_expandChildren_(id, sel, item, children)
+}
+
+func (this *Widget) expandItem_expandChildren_(id int64, sel int64, item int64, children bool) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1355,6 +1579,10 @@ func (this *Widget) ExpandItem_expandChildren(id int64, sel int64, item int64, c
 }
 
 func (this *Widget) ExpansionFrameWithFrame_inView(id int64, sel int64, cellRect cocoa.NSRect, view int64) cocoa.NSRect {
+	return this.impl.expansionFrameWithFrame_inView_(id, sel, cellRect, view)
+}
+
+func (this *Widget) expansionFrameWithFrame_inView_(id int64, sel int64, cellRect cocoa.NSRect, view int64) cocoa.NSRect {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1368,6 +1596,10 @@ func (this *Widget) Filters(eventType int32) bool {
 }
 
 func (this *Widget) FirstRectForCharacterRange(id int64, sel int64, range_ int64) cocoa.NSRect {
+	return this.impl.firstRectForCharacterRange_(id, sel, range_)
+}
+
+func (this *Widget) firstRectForCharacterRange_(id int64, sel int64, range_ int64) cocoa.NSRect {
 	return cocoa.NSRect{}
 }
 
@@ -1396,6 +1628,10 @@ func (this *Widget) FixMnemonic(buffer []uint16) int32 {
 }
 
 func (this *Widget) FocusRingMaskBoundsForFrame(id int64, sel int64, cellFrame cocoa.NSRect, view int64) cocoa.NSRect {
+	return this.impl.focusRingMaskBoundsForFrame_(id, sel, cellFrame, view)
+}
+
+func (this *Widget) focusRingMaskBoundsForFrame_(id int64, sel int64, cellFrame cocoa.NSRect, view int64) cocoa.NSRect {
 	return this.CallSuperRectIdSelRectArg0(id, sel, cellFrame, view)
 }
 
@@ -1416,7 +1652,7 @@ func (this *Widget) GetDataKey(key string) any {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == WidgetIS_ACTIVE {
-		return this.impl.IsActive()
+		return this.impl.isActive_()
 	}
 	if (this.state & WidgetKEYED_DATA) != 0 {
 		var table []any = this.data.([]any)
@@ -1438,6 +1674,10 @@ func (this *Widget) GetDisplay() *Display {
 }
 
 func (this *Widget) GetDrawing() bool {
+	return this.impl.getDrawing_()
+}
+
+func (this *Widget) getDrawing_() bool {
 	return true
 }
 
@@ -1459,29 +1699,57 @@ func (this *Widget) GetName() string {
 }
 
 func (this *Widget) GetNameText() string {
+	return this.impl.getNameText_()
+}
+
+func (this *Widget) getNameText_() string {
 	return ""
 }
 
 func (this *Widget) GetStyle() int32 {
+	return this.impl.getStyle_()
+}
+
+func (this *Widget) getStyle_() int32 {
 	this.CheckWidget()
 	return this.style
 }
 
 func (this *Widget) HasMarkedText(id int64, sel int64) bool {
+	return this.impl.hasMarkedText_(id, sel)
+}
+
+func (this *Widget) hasMarkedText_(id int64, sel int64) bool {
 	return false
 }
 
 func (this *Widget) HeaderRectOfColumn(id int64, sel int64, column int64) cocoa.NSRect {
+	return this.impl.headerRectOfColumn_(id, sel, column)
+}
+
+func (this *Widget) headerRectOfColumn_(id int64, sel int64, column int64) cocoa.NSRect {
 	return this.CallSuperRect(id, sel, column)
 }
 
 func (this *Widget) HelpRequested(id int64, sel int64, theEvent int64) {
+	this.impl.helpRequested_(id, sel, theEvent)
+}
+
+func (this *Widget) helpRequested_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Widget) HighlightSelectionInClipRect(id int64, sel int64, rect int64) {
+	this.impl.highlightSelectionInClipRect_(id, sel, rect)
+}
+
+func (this *Widget) highlightSelectionInClipRect_(id int64, sel int64, rect int64) {
 }
 
 func (this *Widget) HitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
+	return this.impl.hitTest_(id, sel, point)
+}
+
+func (this *Widget) hitTest_(id int64, sel int64, point cocoa.NSPoint) int64 {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1489,6 +1757,10 @@ func (this *Widget) HitTest(id int64, sel int64, point cocoa.NSPoint) int64 {
 }
 
 func (this *Widget) HitTestForEvent(id int64, sel int64, event int64, rect cocoa.NSRect, controlView int64) int64 {
+	return this.impl.hitTestForEvent_(id, sel, event, rect, controlView)
+}
+
+func (this *Widget) hitTestForEvent_(id int64, sel int64, event int64, rect cocoa.NSRect, controlView int64) int64 {
 	return int64(0)
 }
 
@@ -1500,19 +1772,35 @@ func (this *Widget) Hooks(eventType int32) bool {
 }
 
 func (this *Widget) Image(id int64, sel int64) int64 {
+	return this.impl.image_(id, sel)
+}
+
+func (this *Widget) image_(id int64, sel int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) ImageRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
+	return this.impl.imageRectForBounds_(id, sel, cellFrame)
+}
+
+func (this *Widget) imageRectForBounds_(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
 	return cocoa.NSRect{}
 }
 
 func (this *Widget) InsertText(id int64, sel int64, string_ int64) bool {
+	return this.impl.insertText_(id, sel, string_)
+}
+
+func (this *Widget) insertText_(id int64, sel int64, string_ int64) bool {
 	this.CallSuperOverload1(id, sel, string_)
 	return true
 }
 
 func (this *Widget) IsActive() bool {
+	return this.impl.isActive_()
+}
+
+func (this *Widget) isActive_() bool {
 	return true
 }
 
@@ -1525,6 +1813,10 @@ func (this *Widget) IsDisposed() bool {
 }
 
 func (this *Widget) IsDrawing() bool {
+	return this.impl.isDrawing_()
+}
+
+func (this *Widget) isDrawing_() bool {
 	return true
 }
 
@@ -1541,6 +1833,10 @@ func (this *Widget) IsListening(eventType int32) bool {
 }
 
 func (this *Widget) IsOpaque(id int64, sel int64) bool {
+	return this.impl.isOpaque_(id, sel)
+}
+
+func (this *Widget) isOpaque_(id int64, sel int64) bool {
 	return false
 }
 
@@ -1553,19 +1849,35 @@ func (this *Widget) IsValidThread() bool {
 }
 
 func (this *Widget) FlagsChanged(id int64, sel int64, theEvent int64) {
+	this.impl.flagsChanged_(id, sel, theEvent)
+}
+
+func (this *Widget) flagsChanged_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) KeyDown(id int64, sel int64, theEvent int64) {
-	this.impl.SuperKeyDown(id, sel, theEvent)
+	this.impl.keyDown_(id, sel, theEvent)
+}
+
+func (this *Widget) keyDown_(id int64, sel int64, theEvent int64) {
+	this.impl.superKeyDown_(id, sel, theEvent)
 }
 
 func (this *Widget) KeyUp(id int64, sel int64, theEvent int64) {
-	this.impl.SuperKeyUp(id, sel, theEvent)
+	this.impl.keyUp_(id, sel, theEvent)
+}
+
+func (this *Widget) keyUp_(id int64, sel int64, theEvent int64) {
+	this.impl.superKeyUp_(id, sel, theEvent)
 }
 
 func (this *Widget) MouseDown(id int64, sel int64, theEvent int64) {
-	this.impl.MouseDownSuper(id, sel, theEvent)
+	this.impl.mouseDown_(id, sel, theEvent)
+}
+
+func (this *Widget) mouseDown_(id int64, sel int64, theEvent int64) {
+	this.impl.mouseDownSuper_(id, sel, theEvent)
 }
 
 func (this *Widget) MouseDownCanMoveWindow(id int64, sel int64) bool {
@@ -1573,18 +1885,34 @@ func (this *Widget) MouseDownCanMoveWindow(id int64, sel int64) bool {
 }
 
 func (this *Widget) MouseDownSuper(id int64, sel int64, theEvent int64) {
+	this.impl.mouseDownSuper_(id, sel, theEvent)
+}
+
+func (this *Widget) mouseDownSuper_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) MouseUp(id int64, sel int64, theEvent int64) {
+	this.impl.mouseUp_(id, sel, theEvent)
+}
+
+func (this *Widget) mouseUp_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) MouseMoved(id int64, sel int64, theEvent int64) {
+	this.impl.mouseMoved_(id, sel, theEvent)
+}
+
+func (this *Widget) mouseMoved_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) MouseDragged(id int64, sel int64, theEvent int64) {
+	this.impl.mouseDragged_(id, sel, theEvent)
+}
+
+func (this *Widget) mouseDragged_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
@@ -1601,30 +1929,58 @@ func (this *Widget) CursorUpdate(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Widget) RightMouseDown(id int64, sel int64, theEvent int64) {
+	this.impl.rightMouseDown_(id, sel, theEvent)
+}
+
+func (this *Widget) rightMouseDown_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) RightMouseUp(id int64, sel int64, theEvent int64) {
+	this.impl.rightMouseUp_(id, sel, theEvent)
+}
+
+func (this *Widget) rightMouseUp_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) RightMouseDragged(id int64, sel int64, theEvent int64) {
+	this.impl.rightMouseDragged_(id, sel, theEvent)
+}
+
+func (this *Widget) rightMouseDragged_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) OtherMouseDown(id int64, sel int64, theEvent int64) {
+	this.impl.otherMouseDown_(id, sel, theEvent)
+}
+
+func (this *Widget) otherMouseDown_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) OtherMouseUp(id int64, sel int64, theEvent int64) {
+	this.impl.otherMouseUp_(id, sel, theEvent)
+}
+
+func (this *Widget) otherMouseUp_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) OtherMouseDragged(id int64, sel int64, theEvent int64) {
+	this.impl.otherMouseDragged_(id, sel, theEvent)
+}
+
+func (this *Widget) otherMouseDragged_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) ShouldDelayWindowOrderingForEvent(id int64, sel int64, theEvent int64) bool {
+	return this.impl.shouldDelayWindowOrderingForEvent_(id, sel, theEvent)
+}
+
+func (this *Widget) shouldDelayWindowOrderingForEvent_(id int64, sel int64, theEvent int64) bool {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1636,6 +1992,10 @@ func (this *Widget) MenuHasKeyEquivalent_forEvent_target_action(id int64, sel in
 }
 
 func (this *Widget) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
+	return this.impl.menuForEvent_(id, sel, theEvent)
+}
+
+func (this *Widget) menuForEvent_(id int64, sel int64, theEvent int64) int64 {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1643,26 +2003,54 @@ func (this *Widget) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 }
 
 func (this *Widget) MenuNeedsUpdate(id int64, sel int64, menu int64) {
+	this.impl.menuNeedsUpdate_(id, sel, menu)
+}
+
+func (this *Widget) menuNeedsUpdate_(id int64, sel int64, menu int64) {
 }
 
 func (this *Widget) MakeFirstResponder(id int64, sel int64, notification int64) bool {
+	return this.impl.makeFirstResponder_(id, sel, notification)
+}
+
+func (this *Widget) makeFirstResponder_(id int64, sel int64, notification int64) bool {
 	return this.CallSuperBooleanIdSelArg0(id, sel, notification)
 }
 
 func (this *Widget) MarkedRange(id int64, sel int64) cocoa.NSRange {
+	return this.impl.markedRange_(id, sel)
+}
+
+func (this *Widget) markedRange_(id int64, sel int64) cocoa.NSRange {
 	return cocoa.NSRange{}
 }
 
 func (this *Widget) Menu_willHighlightItem(id int64, sel int64, menu int64, item int64) {
+	this.impl.menu_willHighlightItem_(id, sel, menu, item)
+}
+
+func (this *Widget) menu_willHighlightItem_(id int64, sel int64, menu int64, item int64) {
 }
 
 func (this *Widget) MenuDidClose(id int64, sel int64, menu int64) {
+	this.impl.menuDidClose_(id, sel, menu)
+}
+
+func (this *Widget) menuDidClose_(id int64, sel int64, menu int64) {
 }
 
 func (this *Widget) MenuWillOpen(id int64, sel int64, menu int64) {
+	this.impl.menuWillOpen_(id, sel, menu)
+}
+
+func (this *Widget) menuWillOpen_(id int64, sel int64, menu int64) {
 }
 
 func (this *Widget) NoResponderFor(id int64, sel int64, selector int64) {
+	this.impl.noResponderFor_(id, sel, selector)
+}
+
+func (this *Widget) noResponderFor_(id int64, sel int64, selector int64) {
 	this.CallSuperOverload1(id, sel, selector)
 }
 
@@ -1671,29 +2059,57 @@ func (this *Widget) NumberOfRowsInTableView(id int64, sel int64, aTableView int6
 }
 
 func (this *Widget) OutlineView_child_ofItem(id int64, sel int64, outlineView int64, index int64, item int64) int64 {
+	return this.impl.outlineView_child_ofItem_(id, sel, outlineView, index, item)
+}
+
+func (this *Widget) outlineView_child_ofItem_(id int64, sel int64, outlineView int64, index int64, item int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) OutlineView_didClickTableColumn(id int64, sel int64, outlineView int64, tableColumn int64) {
+	this.impl.outlineView_didClickTableColumn_(id, sel, outlineView, tableColumn)
+}
+
+func (this *Widget) outlineView_didClickTableColumn_(id int64, sel int64, outlineView int64, tableColumn int64) {
 }
 
 func (this *Widget) OutlineView_objectValueForTableColumn_byItem(id int64, sel int64, outlineView int64, tableColumn int64, item int64) int64 {
+	return this.impl.outlineView_objectValueForTableColumn_byItem_(id, sel, outlineView, tableColumn, item)
+}
+
+func (this *Widget) outlineView_objectValueForTableColumn_byItem_(id int64, sel int64, outlineView int64, tableColumn int64, item int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) OutlineView_isItemExpandable(id int64, sel int64, outlineView int64, item int64) bool {
+	return this.impl.outlineView_isItemExpandable_(id, sel, outlineView, item)
+}
+
+func (this *Widget) outlineView_isItemExpandable_(id int64, sel int64, outlineView int64, item int64) bool {
 	return false
 }
 
 func (this *Widget) OutlineView_numberOfChildrenOfItem(id int64, sel int64, outlineView int64, item int64) int64 {
+	return this.impl.outlineView_numberOfChildrenOfItem_(id, sel, outlineView, item)
+}
+
+func (this *Widget) outlineView_numberOfChildrenOfItem_(id int64, sel int64, outlineView int64, item int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) OutlineView_shouldExpandItem_item(id int64, sel int64, outlineView int64, item int64) bool {
+	return this.impl.outlineView_shouldExpandItem_item_(id, sel, outlineView, item)
+}
+
+func (this *Widget) outlineView_shouldExpandItem_item_(id int64, sel int64, outlineView int64, item int64) bool {
 	return true
 }
 
 func (this *Widget) OutlineView_shouldReorderColumn_toColumn(id int64, sel int64, aTableView int64, columnIndex int64, newColumnIndex int64) bool {
+	return this.impl.outlineView_shouldReorderColumn_toColumn_(id, sel, aTableView, columnIndex, newColumnIndex)
+}
+
+func (this *Widget) outlineView_shouldReorderColumn_toColumn_(id int64, sel int64, aTableView int64, columnIndex int64, newColumnIndex int64) bool {
 	return true
 }
 
@@ -1702,28 +2118,60 @@ func (this *Widget) OutlineView_shouldEditTableColumn_row(id int64, sel int64, a
 }
 
 func (this *Widget) OutlineView_shouldTrackCell_forTableColumn_item(id int64, sel int64, table int64, cell int64, tableColumn int64, item int64) bool {
+	return this.impl.outlineView_shouldTrackCell_forTableColumn_item_(id, sel, table, cell, tableColumn, item)
+}
+
+func (this *Widget) outlineView_shouldTrackCell_forTableColumn_item_(id int64, sel int64, table int64, cell int64, tableColumn int64, item int64) bool {
 	return true
 }
 
 func (this *Widget) OutlineView_willDisplayCell_forTableColumn_item(id int64, sel int64, outlineView int64, cell int64, tableColumn int64, item int64) {
+	this.impl.outlineView_willDisplayCell_forTableColumn_item_(id, sel, outlineView, cell, tableColumn, item)
+}
+
+func (this *Widget) outlineView_willDisplayCell_forTableColumn_item_(id int64, sel int64, outlineView int64, cell int64, tableColumn int64, item int64) {
 }
 
 func (this *Widget) OutlineViewColumnDidMove(id int64, sel int64, aNotification int64) {
+	this.impl.outlineViewColumnDidMove_(id, sel, aNotification)
+}
+
+func (this *Widget) outlineViewColumnDidMove_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) OutlineViewColumnDidResize(id int64, sel int64, aNotification int64) {
+	this.impl.outlineViewColumnDidResize_(id, sel, aNotification)
+}
+
+func (this *Widget) outlineViewColumnDidResize_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) OutlineViewSelectionDidChange(id int64, sel int64, notification int64) {
+	this.impl.outlineViewSelectionDidChange_(id, sel, notification)
+}
+
+func (this *Widget) outlineViewSelectionDidChange_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) OutlineViewSelectionIsChanging(id int64, sel int64, notification int64) {
+	this.impl.outlineViewSelectionIsChanging_(id, sel, notification)
+}
+
+func (this *Widget) outlineViewSelectionIsChanging_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) OutlineView_setObjectValue_forTableColumn_byItem(id int64, sel int64, outlineView int64, object int64, tableColumn int64, item int64) {
+	this.impl.outlineView_setObjectValue_forTableColumn_byItem_(id, sel, outlineView, object, tableColumn, item)
+}
+
+func (this *Widget) outlineView_setObjectValue_forTableColumn_byItem_(id int64, sel int64, outlineView int64, object int64, tableColumn int64, item int64) {
 }
 
 func (this *Widget) OutlineView_writeItems_toPasteboard(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
+	return this.impl.outlineView_writeItems_toPasteboard_(id, sel, arg0, arg1, arg2)
+}
+
+func (this *Widget) outlineView_writeItems_toPasteboard_(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
 	return false
 }
 
@@ -1741,10 +2189,18 @@ func (this *Widget) NotifyListeners(eventType int32, eventLike EventLike) {
 }
 
 func (this *Widget) PageDown(id int64, sel int64, sender int64) {
+	this.impl.pageDown_(id, sel, sender)
+}
+
+func (this *Widget) pageDown_(id int64, sel int64, sender int64) {
 	this.CallSuperOverload1(id, sel, sender)
 }
 
 func (this *Widget) PageUp(id int64, sel int64, sender int64) {
+	this.impl.pageUp_(id, sel, sender)
+}
+
+func (this *Widget) pageUp_(id int64, sel int64, sender int64) {
 	this.CallSuperOverload1(id, sel, sender)
 }
 
@@ -1762,13 +2218,25 @@ func (this *Widget) PostEventEventTypeEvent(eventType int32, eventLike EventLike
 }
 
 func (this *Widget) ReflectScrolledClipView(id int64, sel int64, aClipView int64) {
+	this.impl.reflectScrolledClipView_(id, sel, aClipView)
+}
+
+func (this *Widget) reflectScrolledClipView_(id int64, sel int64, aClipView int64) {
 	this.CallSuperOverload1(id, sel, aClipView)
 }
 
 func (this *Widget) Register() {
+	this.impl.register_()
+}
+
+func (this *Widget) register_() {
 }
 
 func (this *Widget) Release(destroy bool) {
+	this.impl.release_(destroy)
+}
+
+func (this *Widget) release_(destroy bool) {
 	var exceptions *ExceptionStash = NewExceptionStash()
 	defer exceptions.Close()
 	if (this.state & WidgetDISPOSE_SENT) == 0 {
@@ -1803,37 +2271,53 @@ func (this *Widget) Release(destroy bool) {
 					panic(r)
 				}
 			}()
-			this.impl.ReleaseChildren(destroy)
+			this.impl.releaseChildren_(destroy)
 		}()
 	}
 	if (this.state & WidgetRELEASED) == 0 {
 		this.state |= WidgetRELEASED
 		if destroy {
-			this.impl.ReleaseParent()
-			this.impl.ReleaseWidget()
-			this.impl.DestroyWidget()
+			this.impl.releaseParent_()
+			this.impl.releaseWidget_()
+			this.impl.destroyWidget_()
 		} else {
-			this.impl.ReleaseWidget()
-			this.impl.ReleaseHandle()
+			this.impl.releaseWidget_()
+			this.impl.releaseHandle_()
 		}
 	}
 	this.NotifyDisposalTracker()
 }
 
 func (this *Widget) ReleaseChildren(destroy bool) {
+	this.impl.releaseChildren_(destroy)
+}
+
+func (this *Widget) releaseChildren_(destroy bool) {
 }
 
 func (this *Widget) ReleaseHandle() {
+	this.impl.releaseHandle_()
+}
+
+func (this *Widget) releaseHandle_() {
 	this.state |= WidgetDISPOSED
 	this.display = nil
-	this.impl.DestroyJNIRef()
+	this.impl.destroyJNIRef_()
 }
 
 func (this *Widget) ReleaseParent() {
+	this.impl.releaseParent_()
+}
+
+func (this *Widget) releaseParent_() {
 }
 
 func (this *Widget) ReleaseWidget() {
-	this.impl.Deregister()
+	this.impl.releaseWidget_()
+}
+
+func (this *Widget) releaseWidget_() {
+	this.impl.deregister_()
 	if this.display.tooltipTarget == this {
 		this.display.tooltipTarget = nil
 	}
@@ -1883,6 +2367,10 @@ func (this *Widget) RemoveDisposeListener(listener DisposeListener) {
 }
 
 func (this *Widget) ScrollClipViewToPoint(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
+	this.impl.scrollClipViewToPoint_(id, sel, clipView, point)
+}
+
+func (this *Widget) scrollClipViewToPoint_(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1890,6 +2378,10 @@ func (this *Widget) ScrollClipViewToPoint(id int64, sel int64, clipView int64, p
 }
 
 func (this *Widget) SelectRowIndexes_byExtendingSelection(id int64, sel int64, indexes int64, extend bool) {
+	this.impl.selectRowIndexes_byExtendingSelection_(id, sel, indexes, extend)
+}
+
+func (this *Widget) selectRowIndexes_byExtendingSelection_(id int64, sel int64, indexes int64, extend bool) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -1897,10 +2389,18 @@ func (this *Widget) SelectRowIndexes_byExtendingSelection(id int64, sel int64, i
 }
 
 func (this *Widget) ScrollWheel(id int64, sel int64, theEvent int64) {
+	this.impl.scrollWheel_(id, sel, theEvent)
+}
+
+func (this *Widget) scrollWheel_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) SelectedRange(id int64, sel int64) cocoa.NSRange {
+	return this.impl.selectedRange_(id, sel)
+}
+
+func (this *Widget) selectedRange_(id int64, sel int64) cocoa.NSRange {
 	return cocoa.NSRange{}
 }
 
@@ -1913,6 +2413,10 @@ func (this *Widget) PreviousValidKeyView(id int64, sel int64) int64 {
 }
 
 func (this *Widget) SendDoubleSelection() {
+	this.impl.sendDoubleSelection_()
+}
+
+func (this *Widget) sendDoubleSelection_() {
 }
 
 func (this *Widget) SendEvent(eventLike EventLike) {
@@ -1963,6 +2467,10 @@ func (this *Widget) SendEventEventTypeEventSend(eventType int32, eventLike Event
 }
 
 func (this *Widget) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
+	return this.impl.sendKeyEvent_(nsEvent, type_)
+}
+
+func (this *Widget) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	if (this.state & WidgetWEBKIT_EVENTS_FIX) != 0 {
 		return true
 	}
@@ -1970,10 +2478,18 @@ func (this *Widget) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	if !this.SetKeyState(event, type_, nsEvent) {
 		return true
 	}
-	return this.impl.SendKeyEventTypeEvent(type_, event)
+	return this.impl.sendKeyEventTypeEvent_(type_, event)
 }
 
-func (this *Widget) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
+func (this *Widget) SendKeyEventTypeEvent(type_ int32, eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	return this.impl.sendKeyEventTypeEvent_(type_, event)
+}
+
+func (this *Widget) sendKeyEventTypeEvent_(type_ int32, event *Event) bool {
 	this.SendEventEventTypeEvent(type_, event)
 	if this.IsDisposed() {
 		return false
@@ -1982,15 +2498,31 @@ func (this *Widget) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
 }
 
 func (this *Widget) SendHorizontalSelection() {
+	this.impl.sendHorizontalSelection_()
+}
+
+func (this *Widget) sendHorizontalSelection_() {
 }
 
 func (this *Widget) SendCancelSelection() {
+	this.impl.sendCancelSelection_()
+}
+
+func (this *Widget) sendCancelSelection_() {
 }
 
 func (this *Widget) SendSearchSelection() {
+	this.impl.sendSearchSelection_()
+}
+
+func (this *Widget) sendSearchSelection_() {
 }
 
 func (this *Widget) SendSelection() {
+	this.impl.sendSelection_()
+}
+
+func (this *Widget) sendSelection_() {
 }
 
 func (this *Widget) SendSelectionEvent(eventType int32) {
@@ -2017,6 +2549,10 @@ func (this *Widget) SendSelectionEventEventTypeEventSend(eventType int32, eventL
 }
 
 func (this *Widget) SendVerticalSelection() {
+	this.impl.sendVerticalSelection_()
+}
+
+func (this *Widget) sendVerticalSelection_() {
 }
 
 func (this *Widget) SetData(data any) {
@@ -2026,7 +2562,7 @@ func (this *Widget) SetData(data any) {
 		return
 	}
 	if WidgetSTYLEDTEXT_KEY == data {
-		this.impl.SetIsStyledText()
+		this.impl.setIsStyledText_()
 		return
 	}
 	if (this.state & WidgetKEYED_DATA) != 0 {
@@ -2037,6 +2573,10 @@ func (this *Widget) SetData(data any) {
 }
 
 func (this *Widget) SetIsStyledText() {
+	this.impl.setIsStyledText_()
+}
+
+func (this *Widget) setIsStyledText_() {
 }
 
 func (this *Widget) SetDataKeyValue(key string, value any) {
@@ -2045,7 +2585,7 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if WidgetGLCONTEXT_KEY == key {
-		this.impl.SetOpenGLContext(value)
+		this.impl.setOpenGLContext_(value)
 		return
 	}
 	var index int32 = 1
@@ -2097,12 +2637,24 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 }
 
 func (this *Widget) SetOpenGLContext(value any) {
+	this.impl.setOpenGLContext_(value)
 }
 
-func (this *Widget) SetOrientationOnWidget() {
+func (this *Widget) setOpenGLContext_(value any) {
+}
+
+func (this *Widget) SetOrientation() {
+	this.impl.setOrientationOnWidget_()
+}
+
+func (this *Widget) setOrientationOnWidget_() {
 }
 
 func (this *Widget) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {
+	this.impl.setFrameOrigin_(id, sel, point)
+}
+
+func (this *Widget) setFrameOrigin_(id int64, sel int64, point cocoa.NSPoint) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -2110,13 +2662,21 @@ func (this *Widget) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {
 }
 
 func (this *Widget) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
+	this.impl.setFrameSize_(id, sel, size)
+}
+
+func (this *Widget) setFrameSize_(id int64, sel int64, size cocoa.NSSize) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
 	cocoa.OSObjc_msgSendSuperOverload4(&super_struct, sel, size)
 }
 
-func (this *Widget) SetImageOnWidget(id int64, sel int64, arg0 int64) {
+func (this *Widget) SetImage(id int64, sel int64, arg0 int64) {
+	this.impl.setImageOnWidget_(id, sel, arg0)
+}
+
+func (this *Widget) setImageOnWidget_(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) SetInputState(eventLike EventLike, nsEvent *cocoa.NSEvent, type_ int32) bool {
@@ -2346,11 +2906,15 @@ func (this *Widget) SetLocationMask(eventLike EventLike, nsEvent *cocoa.NSEvent)
 }
 
 func (this *Widget) SetMarkedText_selectedRange(id int64, sel int64, string_ int64, range_ int64) bool {
+	return this.impl.setMarkedText_selectedRange_(id, sel, string_, range_)
+}
+
+func (this *Widget) setMarkedText_selectedRange_(id int64, sel int64, string_ int64, range_ int64) bool {
 	return true
 }
 
 func (this *Widget) SetNeedsDisplay(id int64, sel int64, flag bool) {
-	if flag && !this.impl.IsDrawing() {
+	if flag && !this.impl.isDrawing_() {
 		return
 	}
 	var view *cocoa.NSView = cocoa.NewNSViewOverload1(id)
@@ -2372,7 +2936,7 @@ func (this *Widget) SetNeedsDisplay(id int64, sel int64, flag bool) {
 }
 
 func (this *Widget) SetNeedsDisplayInRect(id int64, sel int64, arg0 int64) {
-	if !this.impl.IsDrawing() {
+	if !this.impl.isDrawing_() {
 		return
 	}
 	var rect cocoa.NSRect = cocoa.NSRect{}
@@ -2401,20 +2965,40 @@ func (this *Widget) SetObjectValue(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) SetShouldExpandItem(id int64, sel int64, shouldExpand bool) {
+	this.impl.setShouldExpandItem_(id, sel, shouldExpand)
+}
+
+func (this *Widget) setShouldExpandItem_(id int64, sel int64, shouldExpand bool) {
 }
 
 func (this *Widget) SetShouldScrollClipView(id int64, sel int64, shouldScroll bool) {
+	this.impl.setShouldScrollClipView_(id, sel, shouldScroll)
+}
+
+func (this *Widget) setShouldScrollClipView_(id int64, sel int64, shouldScroll bool) {
 }
 
 func (this *Widget) SetTabGroupFocus() bool {
-	return this.impl.SetTabItemFocus()
+	return this.impl.setTabGroupFocus_()
+}
+
+func (this *Widget) setTabGroupFocus_() bool {
+	return this.impl.setTabItemFocus_()
 }
 
 func (this *Widget) SetTabItemFocus() bool {
+	return this.impl.setTabItemFocus_()
+}
+
+func (this *Widget) setTabItemFocus_() bool {
 	return false
 }
 
 func (this *Widget) ShouldChangeTextInRange_replacementString(id int64, sel int64, arg0 int64, arg1 int64) bool {
+	return this.impl.shouldChangeTextInRange_replacementString_(id, sel, arg0, arg1)
+}
+
+func (this *Widget) shouldChangeTextInRange_replacementString_(id int64, sel int64, arg0 int64, arg1 int64) bool {
 	return true
 }
 
@@ -2428,10 +3012,18 @@ func (this *Widget) SizeOfLabel(id int64, sel int64, shouldTruncateLabel bool) c
 }
 
 func (this *Widget) SuperKeyDown(id int64, sel int64, theEvent int64) {
+	this.impl.superKeyDown_(id, sel, theEvent)
+}
+
+func (this *Widget) superKeyDown_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
 func (this *Widget) SuperKeyUp(id int64, sel int64, theEvent int64) {
+	this.impl.superKeyUp_(id, sel, theEvent)
+}
+
+func (this *Widget) superKeyUp_(id int64, sel int64, theEvent int64) {
 	this.CallSuperOverload1(id, sel, theEvent)
 }
 
@@ -2477,9 +3069,17 @@ func (this *Widget) TableView_willDisplayCell_forTableColumn_row(id int64, sel i
 }
 
 func (this *Widget) TextViewDidChangeSelection(id int64, sel int64, aNotification int64) {
+	this.impl.textViewDidChangeSelection_(id, sel, aNotification)
+}
+
+func (this *Widget) textViewDidChangeSelection_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TextDidChange(id int64, sel int64, aNotification int64) {
+	this.impl.textDidChange_(id, sel, aNotification)
+}
+
+func (this *Widget) textDidChange_(id int64, sel int64, aNotification int64) {
 	this.CallSuperOverload1(id, sel, aNotification)
 }
 
@@ -2488,10 +3088,18 @@ func (this *Widget) TextDidEndEditing(id int64, sel int64, aNotification int64) 
 }
 
 func (this *Widget) TextView_willChangeSelectionFromCharacterRange_toCharacterRange(id int64, sel int64, aTextView int64, oldSelectedCharRange int64, newSelectedCharRange int64) cocoa.NSRange {
+	return this.impl.textView_willChangeSelectionFromCharacterRange_toCharacterRange_(id, sel, aTextView, oldSelectedCharRange, newSelectedCharRange)
+}
+
+func (this *Widget) textView_willChangeSelectionFromCharacterRange_toCharacterRange_(id int64, sel int64, aTextView int64, oldSelectedCharRange int64, newSelectedCharRange int64) cocoa.NSRange {
 	return cocoa.NSRange{}
 }
 
 func (this *Widget) TitleRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
+	return this.impl.titleRectForBounds_(id, sel, cellFrame)
+}
+
+func (this *Widget) titleRectForBounds_(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -2517,57 +3125,105 @@ func (this *Widget) ToolbarSelectableItemIdentifiers(id int64, sel int64, toolba
 }
 
 func (this *Widget) TooltipText() string {
+	return this.impl.tooltipText_()
+}
+
+func (this *Widget) tooltipText_() string {
 	return ""
 }
 
 func (this *Widget) String() string {
+	return this.impl.string_()
+}
+
+func (this *Widget) string_() string {
 	var string_ string = "*Disposed*"
 	if !this.IsDisposed() {
 		string_ = "*Wrong Thread*"
 		if this.IsValidThread() {
-			string_ = this.impl.GetNameText()
+			string_ = this.impl.getNameText_()
 		}
 	}
 	return fmt.Sprintf("%s {%s}", this.GetName(), string_)
 }
 
 func (this *Widget) TouchesBeganWithEvent(id int64, sel int64, event int64) {
+	this.impl.touchesBeganWithEvent_(id, sel, event)
+}
+
+func (this *Widget) touchesBeganWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) TouchesCancelledWithEvent(id int64, sel int64, event int64) {
+	this.impl.touchesCancelledWithEvent_(id, sel, event)
+}
+
+func (this *Widget) touchesCancelledWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) TouchesEndedWithEvent(id int64, sel int64, event int64) {
+	this.impl.touchesEndedWithEvent_(id, sel, event)
+}
+
+func (this *Widget) touchesEndedWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) TouchesMovedWithEvent(id int64, sel int64, event int64) {
+	this.impl.touchesMovedWithEvent_(id, sel, event)
+}
+
+func (this *Widget) touchesMovedWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) MagnifyWithEvent(id int64, sel int64, event int64) {
+	this.impl.magnifyWithEvent_(id, sel, event)
+}
+
+func (this *Widget) magnifyWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) RotateWithEvent(id int64, sel int64, event int64) {
+	this.impl.rotateWithEvent_(id, sel, event)
+}
+
+func (this *Widget) rotateWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) SwipeWithEvent(id int64, sel int64, event int64) {
+	this.impl.swipeWithEvent_(id, sel, event)
+}
+
+func (this *Widget) swipeWithEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) ResetCursorRects(id int64, sel int64) {
+	this.impl.resetCursorRects_(id, sel)
+}
+
+func (this *Widget) resetCursorRects_(id int64, sel int64) {
 	this.CallSuper(id, sel)
 }
 
 func (this *Widget) UpdateTrackingAreas(id int64, sel int64) {
+	this.impl.updateTrackingAreas_(id, sel)
+}
+
+func (this *Widget) updateTrackingAreas_(id int64, sel int64) {
 	this.CallSuper(id, sel)
 }
 
 func (this *Widget) ValidAttributesForMarkedText(id int64, sel int64) int64 {
+	return this.impl.validAttributesForMarkedText_(id, sel)
+}
+
+func (this *Widget) validAttributesForMarkedText_(id int64, sel int64) int64 {
 	return int64(0)
 }
 
@@ -2586,6 +3242,10 @@ func (this *Widget) ValidateMenuItem(id int64, sel int64, menuItem int64) bool {
 }
 
 func (this *Widget) View_stringForToolTip_point_userData(id int64, sel int64, view int64, tag int64, point int64, userData int64) int64 {
+	return this.impl.view_stringForToolTip_point_userData_(id, sel, view, tag, point, userData)
+}
+
+func (this *Widget) view_stringForToolTip_point_userData_(id int64, sel int64, view int64, tag int64, point int64, userData int64) int64 {
 	return int64(0)
 }
 
@@ -2593,42 +3253,90 @@ func (this *Widget) ViewDidMoveToWindow(id int64, sel int64) {
 }
 
 func (this *Widget) ViewWillMoveToWindow(id int64, sel int64, arg0 int64) {
+	this.impl.viewWillMoveToWindow_(id, sel, arg0)
+}
+
+func (this *Widget) viewWillMoveToWindow_(id int64, sel int64, arg0 int64) {
 }
 
 func (this *Widget) WindowDidMove(id int64, sel int64, notification int64) {
+	this.impl.windowDidMove_(id, sel, notification)
+}
+
+func (this *Widget) windowDidMove_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowDidResize(id int64, sel int64, notification int64) {
+	this.impl.windowDidResize_(id, sel, notification)
+}
+
+func (this *Widget) windowDidResize_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowDidResignKey(id int64, sel int64, notification int64) {
+	this.impl.windowDidResignKey_(id, sel, notification)
+}
+
+func (this *Widget) windowDidResignKey_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowDidBecomeKey(id int64, sel int64, notification int64) {
+	this.impl.windowDidBecomeKey_(id, sel, notification)
+}
+
+func (this *Widget) windowDidBecomeKey_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowDidMiniturize(id int64, sel int64, notification int64) {
+	this.impl.windowDidMiniturize_(id, sel, notification)
+}
+
+func (this *Widget) windowDidMiniturize_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowDidDeminiturize(id int64, sel int64, notification int64) {
+	this.impl.windowDidDeminiturize_(id, sel, notification)
+}
+
+func (this *Widget) windowDidDeminiturize_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) WindowSendEvent(id int64, sel int64, event int64) {
+	this.impl.windowSendEvent_(id, sel, event)
+}
+
+func (this *Widget) windowSendEvent_(id int64, sel int64, event int64) {
 	this.CallSuperOverload1(id, sel, event)
 }
 
 func (this *Widget) WindowShouldClose(id int64, sel int64, window int64) bool {
+	return this.impl.windowShouldClose_(id, sel, window)
+}
+
+func (this *Widget) windowShouldClose_(id int64, sel int64, window int64) bool {
 	return false
 }
 
 func (this *Widget) WindowWillClose(id int64, sel int64, notification int64) {
+	this.impl.windowWillClose_(id, sel, notification)
+}
+
+func (this *Widget) windowWillClose_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) NextState(id int64, sel int64) int64 {
+	return this.impl.nextState_(id, sel)
+}
+
+func (this *Widget) nextState_(id int64, sel int64) int64 {
 	return this.CallSuperObject(id, sel)
 }
 
 func (this *Widget) UpdateOpenGLContext(id int64, sel int64, notification int64) {
+	this.impl.updateOpenGLContext_(id, sel, notification)
+}
+
+func (this *Widget) updateOpenGLContext_(id int64, sel int64, notification int64) {
 }
 
 func (this *Widget) ShouldDrawInsertionPoint(id int64, sel int64) bool {
@@ -2636,14 +3344,26 @@ func (this *Widget) ShouldDrawInsertionPoint(id int64, sel int64) bool {
 }
 
 func (this *Widget) ReadSelectionFromPasteboard(id int64, sel int64, pasteboard int64) bool {
+	return this.impl.readSelectionFromPasteboard_(id, sel, pasteboard)
+}
+
+func (this *Widget) readSelectionFromPasteboard_(id int64, sel int64, pasteboard int64) bool {
 	return false
 }
 
 func (this *Widget) ValidRequestorForSendType(id int64, sel int64, sendType int64, returnType int64) int64 {
+	return this.impl.validRequestorForSendType_(id, sel, sendType, returnType)
+}
+
+func (this *Widget) validRequestorForSendType_(id int64, sel int64, sendType int64, returnType int64) int64 {
 	return this.CallSuperObjectIdSelArg0Arg1(id, sel, sendType, returnType)
 }
 
 func (this *Widget) WriteSelectionToPasteboard(id int64, sel int64, pasteboard int64, types int64) bool {
+	return this.impl.writeSelectionToPasteboard_(id, sel, pasteboard, types)
+}
+
+func (this *Widget) writeSelectionToPasteboard_(id int64, sel int64, pasteboard int64, types int64) bool {
 	return false
 }
 

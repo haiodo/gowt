@@ -56,10 +56,14 @@ func (this *Decorations) initDecorationsParentStyle(parent *Composite, style int
 }
 
 func (this *Decorations) BringToTop(force bool) {
+	this.impl.bringToTop_(force)
+}
+
+func (this *Decorations) bringToTop_(force bool) {
 	this.MoveAbove(nil)
 }
 
-func (this *Decorations) CheckSubclass() {
+func (this *Decorations) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -108,11 +112,11 @@ func (this *Decorations) Compare(data1Like ImageDataLike, data2Like ImageDataLik
 	return cond147
 }
 
-func (this *Decorations) ComputeTabGroup() *Widget {
+func (this *Decorations) computeTabGroup_() *Widget {
 	return upcastDecorationsToWidget(this)
 }
 
-func (this *Decorations) ComputeTabRoot() *Control {
+func (this *Decorations) computeTabRoot_() *Control {
 	return upcastDecorationsToControl(this)
 }
 
@@ -177,6 +181,10 @@ func (this *Decorations) GetImages() []*Image {
 }
 
 func (this *Decorations) GetMaximized() bool {
+	return this.impl.getMaximized_()
+}
+
+func (this *Decorations) getMaximized_() bool {
 	this.CheckWidget()
 	return this.maximized
 }
@@ -187,11 +195,15 @@ func (this *Decorations) GetMenuBar() *Menu {
 }
 
 func (this *Decorations) GetMinimized() bool {
+	return this.impl.getMinimized_()
+}
+
+func (this *Decorations) getMinimized_() bool {
 	this.CheckWidget()
 	return this.minimized
 }
 
-func (this *Decorations) GetNameText() string {
+func (this *Decorations) getNameText_() string {
 	return this.GetText()
 }
 
@@ -200,24 +212,24 @@ func (this *Decorations) GetText() string {
 	return this.text
 }
 
-func (this *Decorations) IsReparentable() bool {
+func (this *Decorations) isReparentable_() bool {
 	this.CheckWidget()
 	return false
 }
 
-func (this *Decorations) IsTabGroup() bool {
+func (this *Decorations) isTabGroup_() bool {
 	return true
 }
 
-func (this *Decorations) IsTabItem() bool {
+func (this *Decorations) isTabItem_() bool {
 	return false
 }
 
-func (this *Decorations) MenuShell() *Decorations {
+func (this *Decorations) menuShell_() *Decorations {
 	return this
 }
 
-func (this *Decorations) ReleaseChildren(destroy bool) {
+func (this *Decorations) releaseChildren_(destroy bool) {
 	if this.menuBar != (nil) {
 		this.menuBar.Dispose()
 		this.menuBar = nil
@@ -226,7 +238,7 @@ func (this *Decorations) ReleaseChildren(destroy bool) {
 	if display == (nil) || display.IsDisposed() {
 		return
 	}
-	this.Canvas.ReleaseChildren(destroy)
+	this.Canvas.releaseChildren_(destroy)
 	var menus []*Menu = display.GetMenus(this)
 	if menus != (nil) {
 		for i := int32(0); i < int32(len(menus)); i++ {
@@ -239,15 +251,15 @@ func (this *Decorations) ReleaseChildren(destroy bool) {
 	}
 }
 
-func (this *Decorations) ReleaseWidget() {
-	this.Canvas.ReleaseWidget()
+func (this *Decorations) releaseWidget_() {
+	this.Canvas.releaseWidget_()
 	this.image = nil
 	this.images = nil
 	this.savedFocus = nil
 	this.defaultButton = nil
 }
 
-func (this *Decorations) ReskinChildren(flags int32) {
+func (this *Decorations) reskinChildren_(flags int32) {
 	if this.menuBar != (nil) {
 		this.menuBar.Reskin(flags)
 	}
@@ -260,7 +272,7 @@ func (this *Decorations) ReskinChildren(flags int32) {
 			}
 		}
 	}
-	this.Canvas.ReskinChildren(flags)
+	this.Canvas.reskinChildren_(flags)
 }
 
 func (this *Decorations) RestoreFocus() bool {
@@ -270,12 +282,12 @@ func (this *Decorations) RestoreFocus() bool {
 	if this.savedFocus == (nil) {
 		return false
 	}
-	return this.savedFocus.impl.SetFocus()
+	return this.savedFocus.impl.setFocus_()
 }
 
 func (this *Decorations) SaveFocus() {
 	var control *Control = this.display._getFocusControl(this.View.Window())
-	if control != (nil) && control != upcastDecorationsToControl(this) && this == control.impl.MenuShell() {
+	if control != (nil) && control != upcastDecorationsToControl(this) && this == control.impl.menuShell_() {
 		this.SetSavedFocus(control)
 	}
 }
@@ -291,7 +303,7 @@ func (this *Decorations) SetDefaultButton(buttonLike ButtonLike) {
 		if button.IsDisposed() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		if button.impl.MenuShell() != this {
+		if button.impl.menuShell_() != this {
 			this.Error(ERROR_INVALID_PARENT)
 		}
 		if (button.style & PUSH) == 0 {
@@ -317,7 +329,7 @@ func (this *Decorations) SetImage(imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
@@ -341,7 +353,7 @@ func (this *Decorations) SetImages(images []*Image) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(images)); i++ {
-		if images[i] == (nil) || images[i].impl.IsDisposed() {
+		if images[i] == (nil) || images[i].impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -365,11 +377,23 @@ func (this *Decorations) SetImages(images []*Image) {
 }
 
 func (this *Decorations) SetMaximized(maximized bool) {
+	this.impl.setMaximized_(maximized)
+}
+
+func (this *Decorations) setMaximized_(maximized bool) {
 	this.CheckWidget()
 	this.maximized = maximized
 }
 
-func (this *Decorations) SetMenuBar(menu *Menu) {
+func (this *Decorations) SetMenuBar(menuLike MenuLike) {
+	var menu *Menu
+	if menuLike != nil {
+		menu = menuLike.AsMenu()
+	}
+	this.impl.setMenuBar_(menu)
+}
+
+func (this *Decorations) setMenuBar_(menu *Menu) {
 	this.CheckWidget()
 	if this.menuBar == menu {
 		return
@@ -389,6 +413,10 @@ func (this *Decorations) SetMenuBar(menu *Menu) {
 }
 
 func (this *Decorations) SetMinimized(minimized bool) {
+	this.impl.setMinimized_(minimized)
+}
+
+func (this *Decorations) setMinimized_(minimized bool) {
 	this.CheckWidget()
 	this.minimized = minimized
 }
@@ -403,6 +431,10 @@ func (this *Decorations) SetSavedFocus(controlLike ControlLike) {
 }
 
 func (this *Decorations) SetText(string_ string) {
+	this.impl.setText_(string_)
+}
+
+func (this *Decorations) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -435,15 +467,15 @@ func (this *Decorations) Sort(images []*Image) {
 	}
 }
 
-func (this *Decorations) TraverseItem(next bool) bool {
+func (this *Decorations) traverseItem_(next bool) bool {
 	return false
 }
 
-func (this *Decorations) TraverseReturn() bool {
+func (this *Decorations) traverseReturn_() bool {
 	if this.defaultButton == (nil) || this.defaultButton.IsDisposed() {
 		return false
 	}
-	if !this.defaultButton.impl.IsVisible() || !this.defaultButton.impl.IsEnabled() {
+	if !this.defaultButton.impl.isVisible_() || !this.defaultButton.impl.isEnabled_() {
 		return false
 	}
 	this.defaultButton.Click()

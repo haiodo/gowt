@@ -7,7 +7,7 @@ import (
 )
 
 type PointImpl interface {
-	Clone() *Point
+	clone_() *Point
 }
 
 type Point struct {
@@ -57,6 +57,10 @@ func (this *Point) String() string {
 }
 
 func (this *Point) Clone() *Point {
+	return this.impl.clone_()
+}
+
+func (this *Point) clone_() *Point {
 	return NewPoint(this.X, this.Y)
 }
 
@@ -128,7 +132,7 @@ func (this *Point_OfFloat) SetY(y float32) {
 	this.ResidualY = y - float32(this.Y)
 }
 
-func (this *Point_OfFloat) Clone() *Point {
+func (this *Point_OfFloat) clone_() *Point {
 	return upcastPoint_OfFloatToPoint(NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode))
 }
 
@@ -140,7 +144,7 @@ func PointOfFloatFrom(pointLike PointLike) *Point_OfFloat {
 	_ = point
 	pointOfFloat, ok2 := isPointToPoint_OfFloat(point)
 	if ok2 {
-		t3 := pointOfFloat.impl.Clone()
+		t3 := pointOfFloat.impl.clone_()
 		t4, _ := pointImplAsOfFloat(t3.impl)
 		return t4
 	}
@@ -191,7 +195,7 @@ func (this *Point_WithMonitor) GetMonitor() *Monitor {
 	return this.monitor
 }
 
-func (this *Point_WithMonitor) Clone() *Point {
+func (this *Point_WithMonitor) clone_() *Point {
 	return upcastPoint_WithMonitorToPoint(newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor))
 }
 

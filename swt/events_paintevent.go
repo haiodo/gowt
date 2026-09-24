@@ -44,7 +44,7 @@ func (this *PaintEvent) initPaintEvent(e *Event) {
 	this.Count = e.Count
 }
 
-func (this *PaintEvent) String() string {
-	var string_ string = this.TypedEvent.String()
+func (this *PaintEvent) string_() string {
+	var string_ string = this.TypedEvent.string_()
 	return fmt.Sprintf("%s gc=%v x=%d y=%d width=%d height=%d count=%d}", string_[0:int32(len(string_))-1], this.Gc, this.X, this.Y, this.Width, this.Height, this.Count)
 }

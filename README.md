@@ -8,6 +8,7 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `internal/cocoa/` | AppKit bindings, translated by j2go from SWT's `Eclipse SWT PI/cocoa` Java sources |
 | `internal/jrt/` | The subset of the Java runtime the translated code uses |
 | `tooling/j2go/` | Java -> Go translator on Eclipse JDT |
+| `tooling/apidump/` | Prints package `swt`'s exported API, to diff before and after a regeneration |
 | `cmd/hello/` | Smallest program: a Shell with one "Hello" button (`CGO_ENABLED=0 go run ./cmd/hello`) |
 | `cmd/paint/` | A Canvas with a PaintListener drawing through `GC` (`CGO_ENABLED=0 go run ./cmd/paint`) |
 | `cmd/form/` | GridLayout form: Label + Text, OK button, File > Quit menu |

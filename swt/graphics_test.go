@@ -54,7 +54,7 @@ func TestPointString(t *testing.T) {
 
 func TestPointOfFloatClone(t *testing.T) {
 	pointOfInt := NewPointOfFloat(3, 4)
-	cloned := pointOfInt.impl.Clone()
+	cloned := pointOfInt.Clone()
 	clonedPointOfInt, ok := pointImplAsOfFloat(cloned.impl)
 	if !ok {
 		t.Fatal("clone did not return a Point.OfFloat")
@@ -64,7 +64,7 @@ func TestPointOfFloatClone(t *testing.T) {
 	}
 
 	pointOfFloat := NewPointOfFloatXY(3.4, 3.5)
-	cf, ok := pointImplAsOfFloat(pointOfFloat.impl.Clone().impl)
+	cf, ok := pointImplAsOfFloat(pointOfFloat.Clone().impl)
 	if !ok || pointOfFloat.GetX() != cf.GetX() || pointOfFloat.GetY() != cf.GetY() {
 		t.Fatalf("float clone mismatch")
 	}

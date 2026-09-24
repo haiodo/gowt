@@ -80,8 +80,8 @@ func (this *Tree) initTree(parent *Composite, style int32) {
 	this.SetItemHeightImageFontSet(nil, nil, true)
 }
 
-func (this *Tree) _addListener(eventType int32, listener Listener) {
-	this.Composite._addListener(eventType, listener)
+func (this *Tree) _addListener_(eventType int32, listener Listener) {
+	this.Composite._addListener_(eventType, listener)
 	this.ClearCachedWidth(this.items)
 }
 
@@ -112,16 +112,16 @@ func (this *Tree) _getItem(parentItemLike TreeItemLike, index int32, create bool
 	return item
 }
 
-func (this *Tree) AcceptsFirstResponder(id int64, sel int64) bool {
+func (this *Tree) acceptsFirstResponder_(id int64, sel int64) bool {
 	return true
 }
 
-func (this *Tree) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) int64 {
+func (this *Tree) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	var returnValue int64 = int64(0)
 	var attributeName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	if attributeName.IsEqualToString(cocoa.OSNSAccessibilityColumnsAttribute_) || attributeName.IsEqualToString(cocoa.OSNSAccessibilityVisibleColumnsAttribute_) {
 		if (this.style & CHECK) != 0 {
-			var superValue int64 = this.Composite.AccessibilityAttributeValue(id, sel, arg0)
+			var superValue int64 = this.Composite.accessibilityAttributeValue_(id, sel, arg0)
 			if superValue != 0 {
 				var columns *cocoa.NSArray = cocoa.NewNSArrayOverload1(superValue)
 				var columnsWithoutCheck *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(columns.Count() - 1)
@@ -134,7 +134,7 @@ func (this *Tree) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) i
 	if returnValue != 0 {
 		return returnValue
 	} else {
-		return this.Composite.AccessibilityAttributeValue(id, sel, arg0)
+		return this.Composite.accessibilityAttributeValue_(id, sel, arg0)
 	}
 }
 
@@ -169,8 +169,8 @@ func (this *Tree) CalculateWidth(items []*TreeItem, index int32, gcLike GCLike, 
 	return width
 }
 
-func (this *Tree) CellSize(id int64, sel int64) cocoa.NSSize {
-	var size cocoa.NSSize = this.Composite.CellSize(id, sel)
+func (this *Tree) cellSize_(id int64, sel int64) cocoa.NSSize {
+	var size cocoa.NSSize = this.Composite.cellSize_(id, sel)
 	var cell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 	var image *cocoa.NSImage = cell.Image()
 	if image != (nil) {
@@ -194,8 +194,8 @@ func (this *Tree) CellSize(id int64, sel int64) cocoa.NSSize {
 	return size
 }
 
-func (this *Tree) CanDragRowsWithIndexes_atPoint(id int64, sel int64, rowIndexes int64, mouseDownPoint cocoa.NSPoint) bool {
-	if !this.Composite.CanDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint) {
+func (this *Tree) canDragRowsWithIndexes_atPoint_(id int64, sel int64, rowIndexes int64, mouseDownPoint cocoa.NSPoint) bool {
+	if !this.Composite.canDragRowsWithIndexes_atPoint_(id, sel, rowIndexes, mouseDownPoint) {
 		return false
 	}
 	var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
@@ -245,7 +245,7 @@ func (this *Tree) CheckData(itemLike TreeItemLike) bool {
 	return true
 }
 
-func (this *Tree) CheckSubclass() {
+func (this *Tree) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -340,7 +340,7 @@ func (this *Tree) ClearCachedWidth(items []*TreeItem) {
 	}
 }
 
-func (this *Tree) CollapseItem_collapseChildren(id int64, sel int64, itemID int64, children bool) {
+func (this *Tree) collapseItem_collapseChildren_(id int64, sel int64, itemID int64, children bool) {
 	var item *TreeItem = castWidgetToTreeItem(this.display.GetWidget(itemID))
 	if item == (nil) {
 		return
@@ -349,7 +349,7 @@ func (this *Tree) CollapseItem_collapseChildren(id int64, sel int64, itemID int6
 		item.SendExpand(false, children)
 	}
 	this.ignoreExpand = true
-	this.Composite.CollapseItem_collapseChildren(id, sel, itemID, children)
+	this.Composite.collapseItem_collapseChildren_(id, sel, itemID, children)
 	this.ignoreExpand = false
 	if this.IsDisposed() || item.IsDisposed() {
 		return
@@ -357,16 +357,16 @@ func (this *Tree) CollapseItem_collapseChildren(id int64, sel int64, itemID int6
 	this.SetScrollWidth()
 }
 
-func (this *Tree) ColumnAtPoint(id int64, sel int64, point cocoa.NSPoint) int64 {
+func (this *Tree) columnAtPoint_(id int64, sel int64, point cocoa.NSPoint) int64 {
 	if (this.style & CHECK) != 0 {
 		if point.X <= float64(this.GetCheckColumnWidth()) && point.Y < this.headerView.Frame().Height {
 			return int64(1)
 		}
 	}
-	return this.Composite.ColumnAtPoint(id, sel, point)
+	return this.Composite.columnAtPoint_(id, sel, point)
 }
 
-func (this *Tree) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Tree) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -378,7 +378,7 @@ func (this *Tree) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed
 		} else {
 			var gc *GC = NewGCDrawable(this)
 			width = this.CalculateWidth(this.items, 0, gc, true) + TreeCELL_GAP
-			gc.impl.Dispose()
+			gc.impl.dispose_()
 		}
 		if (this.style & CHECK) != 0 {
 			width += this.GetCheckColumnWidth()
@@ -397,7 +397,7 @@ func (this *Tree) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed
 	if height <= 0 {
 		height = WidgetDEFAULT_HEIGHT
 	}
-	var rect *Rectangle = this.impl.ComputeTrim(0, 0, width, height)
+	var rect *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 	return NewPoint(rect.Width, rect.Height)
 }
 
@@ -458,14 +458,14 @@ func (this *Tree) CreateColumn(itemLike TreeItemLike, index int32) {
 	}
 }
 
-func (this *Tree) CreateHandle() {
+func (this *Tree) createHandle_() {
 	var scrollWidget *cocoa.NSScrollView = castcocoaNSObjectTococoaNSScrollView(cocoa.NewSWTScrollView().Alloc())
 	scrollWidget.Init()
 	scrollWidget.SetHasHorizontalScroller((this.style & H_SCROLL) != 0)
 	scrollWidget.SetHasVerticalScroller((this.style & V_SCROLL) != 0)
 	scrollWidget.SetAutohidesScrollers(true)
 	var cond502 int32
-	if this.impl.HasBorder() {
+	if this.impl.hasBorder_() {
 		cond502 = cocoa.OSNSBezelBorder
 	} else {
 		cond502 = cocoa.OSNSNoBorder
@@ -645,7 +645,7 @@ func (this *Tree) CreateItemItemParentItemIndex(itemLike TreeItemLike, parentIte
 	var handle *cocoa.SWTTreeItem = castcocoaNSObjectTococoaSWTTreeItem(cocoa.NewSWTTreeItem().Alloc().Init())
 	item.Handle = handle
 	item.CreateJNIRef()
-	item.impl.Register()
+	item.impl.register_()
 	if parentItem != (nil) {
 		parentItem.itemCount = count
 	} else {
@@ -653,7 +653,7 @@ func (this *Tree) CreateItemItemParentItemIndex(itemLike TreeItemLike, parentIte
 	}
 	this.ignoreExpand = true
 	var widget *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.View)
-	if this.impl.GetDrawing() {
+	if this.impl.getDrawing_() {
 		var selectedItems []*TreeItem = this.GetSelection()
 		if parentItem != (nil) {
 			widget.ReloadItem(upcastcocoaSWTTreeItemTococoaId(parentItem.Handle), true)
@@ -675,25 +675,25 @@ func (this *Tree) CreateItemItemParentItemIndex(itemLike TreeItemLike, parentIte
 	}
 }
 
-func (this *Tree) CreateWidget() {
-	this.Composite.CreateWidget()
+func (this *Tree) createWidget_() {
+	this.Composite.createWidget_()
 	this.items = make([]*TreeItem, 4)
 	this.columns = make([]*TreeColumn, 4)
 }
 
-func (this *Tree) DefaultBackground() *Color {
+func (this *Tree) defaultBackground_() *Color {
 	return this.display.GetWidgetColor(COLOR_LIST_BACKGROUND)
 }
 
-func (this *Tree) DefaultNSFont() *cocoa.NSFont {
+func (this *Tree) defaultNSFont_() *cocoa.NSFont {
 	return this.display.outlineViewFont
 }
 
-func (this *Tree) DefaultForeground() *Color {
+func (this *Tree) defaultForeground_() *Color {
 	return this.display.GetWidgetColor(COLOR_LIST_FOREGROUND)
 }
 
-func (this *Tree) DeselectAll(id int64, sel int64, sender int64) {
+func (this *Tree) deselectAll_(id int64, sel int64, sender int64) {
 	if this.preventSelect && !this.ignoreSelect {
 		return
 	}
@@ -702,10 +702,10 @@ func (this *Tree) DeselectAll(id int64, sel int64, sender int64) {
 			return
 		}
 	}
-	this.Composite.DeselectAll(id, sel, sender)
+	this.Composite.deselectAll_(id, sel, sender)
 }
 
-func (this *Tree) DeselectRow(id int64, sel int64, index int64) {
+func (this *Tree) deselectRow_(id int64, sel int64, index int64) {
 	if this.preventSelect && !this.ignoreSelect {
 		return
 	}
@@ -714,7 +714,7 @@ func (this *Tree) DeselectRow(id int64, sel int64, index int64) {
 			return
 		}
 	}
-	this.Composite.DeselectRow(id, sel, index)
+	this.Composite.deselectRow_(id, sel, index)
 }
 
 func (this *Tree) DeselectAll0() {
@@ -725,8 +725,8 @@ func (this *Tree) DeselectAll0() {
 	this.ignoreSelect = false
 }
 
-func (this *Tree) Deregister() {
-	this.Composite.Deregister()
+func (this *Tree) deregister_() {
+	this.Composite.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSTableHeaderViewTococoaNSObject(this.headerView))
 	this.display.RemoveWidget(upcastcocoaNSTextFieldCellTococoaNSObject(this.dataCell))
 	if this.buttonCell != (nil) {
@@ -894,7 +894,7 @@ func (this *Tree) DestroyItemItem(itemLike TreeItemLike) {
 		this.itemCount = count
 	}
 	var widget *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.View)
-	if this.impl.GetDrawing() {
+	if this.impl.getDrawing_() {
 		if parentItem != (nil) {
 			widget.ReloadItem(upcastcocoaSWTTreeItemTococoaId(parentItem.Handle), true)
 		} else {
@@ -917,11 +917,11 @@ func (this *Tree) DestroyItemItem(itemLike TreeItemLike) {
 	}
 }
 
-func (this *Tree) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
+func (this *Tree) dragDetectXYFilterConsume_(x int32, y int32, filter bool, consume []bool) bool {
 	return false
 }
 
-func (this *Tree) DrawBackgroundInClipRect(id int64, sel int64, rect cocoa.NSRect) {
+func (this *Tree) drawBackgroundInClipRect_(id int64, sel int64, rect cocoa.NSRect) {
 	this.Composite.DrawViewBackgroundInRect(id, sel, rect)
 	if id != this.View.Id {
 		return
@@ -929,7 +929,7 @@ func (this *Tree) DrawBackgroundInClipRect(id int64, sel int64, rect cocoa.NSRec
 	this.FillBackground(this.View, cocoa.NSGraphicsContextCurrentContext(), rect, -1)
 }
 
-func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.NSRect, view int64) {
+func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.NSRect, view int64) {
 	var hooksErase bool = this.Hooks(EraseItem)
 	var hooksPaint bool = this.Hooks(PaintItem)
 	var hooksMeasure bool = this.Hooks(MeasureItem)
@@ -987,7 +987,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 		}
 		selectionBackground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond506)
 	}
-	var contentSize cocoa.NSSize = this.Composite.CellSize(id, cocoa.OSSel_cellSize)
+	var contentSize cocoa.NSSize = this.Composite.cellSize_(id, cocoa.OSSel_cellSize)
 	var image *cocoa.NSImage = cell.Image()
 	if image != (nil) {
 		contentSize.Width += float64(this.imageBounds.Width + TreeIMAGE_GAP)
@@ -1070,7 +1070,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 			userForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), gc.GetForeground().Handle)
 		}
 		if this.IsDisposed() || item.IsDisposed() {
-			gc.impl.Dispose()
+			gc.impl.dispose_()
 			context.RestoreGraphicsState()
 			return
 		}
@@ -1079,7 +1079,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 			gc.FillRectangle(int32(cellRect.X), int32(cellRect.Y), int32(cellRect.Width), int32(cellRect.Height))
 			cellRect.Height += spacing.Height
 		}
-		gc.impl.Dispose()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	} else {
 		if isSelected && (this.style&HIDE_SELECTION) != 0 && !hasFocus {
@@ -1102,7 +1102,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 		var gc *GC = GCCocoa_new(this, data)
 		gc.SetClipping(int32((contentRect.X - offsetX)), int32((contentRect.Y - offsetY)), int32(contentRect.Width), int32(contentRect.Height))
 		var itemRect *Rectangle = this.insertItem.GetImageBounds(0).Union(this.insertItem.GetBounds())
-		var clientRect *Rectangle = this.impl.GetClientArea()
+		var clientRect *Rectangle = this.impl.getClientArea_()
 		var x int32 = clientRect.X + clientRect.Width
 		var posY int32
 		if this.insertBefore {
@@ -1111,7 +1111,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 			posY = itemRect.Y + itemRect.Height - 1
 		}
 		gc.DrawLine(itemRect.X, posY, x, posY)
-		gc.impl.Dispose()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	}
 	if drawForeground {
@@ -1191,7 +1191,7 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 				rect.Y += (rect.Height - size.Height) / 2
 				rect.Height = size.Height
 			}
-			this.Composite.DrawInteriorWithFrame_inView(id, sel, rect, view)
+			this.Composite.drawInteriorWithFrame_inView_(id, sel, rect, view)
 		}
 	}
 	if hooksPaint {
@@ -1238,18 +1238,18 @@ func (this *Tree) DrawInteriorWithFrame_inView(id int64, sel int64, rect cocoa.N
 		event.Width = contentWidth
 		event.Height = itemHeight
 		this.SendEventEventTypeEvent(PaintItem, event)
-		gc.impl.Dispose()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	}
 }
 
-func (this *Tree) DrawWithExpansionFrame_inView(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
+func (this *Tree) drawWithExpansionFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, view int64) {
 	this.drawExpansion = true
-	this.Composite.DrawWithExpansionFrame_inView(id, sel, cellFrame, view)
+	this.Composite.drawWithExpansionFrame_inView_(id, sel, cellFrame, view)
 	this.drawExpansion = false
 }
 
-func (this *Tree) ExpandItem_expandChildren(id int64, sel int64, itemID int64, children bool) {
+func (this *Tree) expandItem_expandChildren_(id int64, sel int64, itemID int64, children bool) {
 	var item *TreeItem = castWidgetToTreeItem(this.display.GetWidget(itemID))
 	if item == (nil) {
 		return
@@ -1258,7 +1258,7 @@ func (this *Tree) ExpandItem_expandChildren(id int64, sel int64, itemID int64, c
 		item.SendExpand(true, children)
 	}
 	this.ignoreExpand = true
-	this.Composite.ExpandItem_expandChildren(id, sel, itemID, children)
+	this.Composite.expandItem_expandChildren_(id, sel, itemID, children)
 	this.ignoreExpand = false
 	if this.IsDisposed() || item.IsDisposed() {
 		return
@@ -1276,9 +1276,9 @@ func (this *Tree) ExpandItem_expandChildren(id int64, sel int64, itemID int64, c
 	this.SetScrollWidthSetItemsRecurse(false, item.items, true)
 }
 
-func (this *Tree) ExpansionFrameWithFrame_inView(id int64, sel int64, cellRect cocoa.NSRect, view int64) cocoa.NSRect {
+func (this *Tree) expansionFrameWithFrame_inView_(id int64, sel int64, cellRect cocoa.NSRect, view int64) cocoa.NSRect {
 	if this.toolTipText == "" {
-		var rect cocoa.NSRect = this.Composite.ExpansionFrameWithFrame_inView(id, sel, cellRect, view)
+		var rect cocoa.NSRect = this.Composite.expansionFrameWithFrame_inView_(id, sel, cellRect, view)
 		var cell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 		var str *cocoa.NSAttributedString = cell.AttributedStringValue()
 		var textSize cocoa.NSSize = str.Size()
@@ -1301,7 +1301,7 @@ func (this *Tree) ExpansionFrameWithFrame_inView(id int64, sel int64, cellRect c
 				expansionRect.Width = cellSize.Width
 			} else {
 				expansionRect = cell.TitleRectForBounds(cellRect)
-				var cellSize cocoa.NSSize = this.Composite.CellSize(id, cocoa.OSSel_cellSize)
+				var cellSize cocoa.NSSize = this.Composite.cellSize_(id, cocoa.OSSel_cellSize)
 				expansionRect.Width = cellSize.Width
 			}
 			if textSize.Height > expansionRect.Height {
@@ -1319,7 +1319,7 @@ func (this *Tree) ExpansionFrameWithFrame_inView(id int64, sel int64, cellRect c
 	return cocoa.NSRect{}
 }
 
-func (this *Tree) FindTooltip(pt cocoa.NSPoint) *Widget {
+func (this *Tree) findTooltip_(pt cocoa.NSPoint) *Widget {
 	var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
 	var headerView *cocoa.NSTableHeaderView = widget.HeaderView()
 	if headerView != (nil) {
@@ -1336,16 +1336,16 @@ func (this *Tree) FindTooltip(pt cocoa.NSPoint) *Widget {
 			}
 		}
 	}
-	return this.Composite.FindTooltip(pt)
+	return this.Composite.findTooltip_(pt)
 }
 
 func (this *Tree) GetCheckColumnWidth() int32 {
 	return int32(this.checkColumn.DataCell().CellSize().Width)
 }
 
-func (this *Tree) GetClientArea() *Rectangle {
+func (this *Tree) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	var rect *Rectangle = this.Composite.GetClientArea()
+	var rect *Rectangle = this.Composite.getClientArea_()
 	return rect
 }
 
@@ -1407,7 +1407,7 @@ func (this *Tree) GetHeaderBackgroundColor() *Color {
 	if this.headerBackground != (nil) {
 		cond508 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerBackground)
 	} else {
-		cond508 = this.impl.DefaultBackground()
+		cond508 = this.impl.defaultBackground_()
 	}
 	return cond508
 }
@@ -1422,7 +1422,7 @@ func (this *Tree) GetHeaderForegroundColor() *Color {
 	if this.headerForeground != (nil) {
 		cond509 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerForeground)
 	} else {
-		cond509 = this.impl.DefaultForeground()
+		cond509 = this.impl.defaultForeground_()
 	}
 	return cond509
 }
@@ -1583,7 +1583,7 @@ func (this *Tree) GetTopItem() *TreeItem {
 	return castWidgetToTreeItem(this.display.GetWidget(item.Id))
 }
 
-func (this *Tree) HeaderRectOfColumn(id int64, sel int64, column int64) cocoa.NSRect {
+func (this *Tree) headerRectOfColumn_(id int64, sel int64, column int64) cocoa.NSRect {
 	if (this.style & CHECK) == 0 {
 		return this.CallSuperRect(id, sel, column)
 	}
@@ -1601,7 +1601,7 @@ func (this *Tree) HeaderRectOfColumn(id int64, sel int64, column int64) cocoa.NS
 	return this.CallSuperRect(id, sel, column)
 }
 
-func (this *Tree) HighlightSelectionInClipRect(id int64, sel int64, rect int64) {
+func (this *Tree) highlightSelectionInClipRect_(id int64, sel int64, rect int64) {
 	if this.Hooks(EraseItem) {
 		return
 	}
@@ -1613,17 +1613,17 @@ func (this *Tree) HighlightSelectionInClipRect(id int64, sel int64, rect int64) 
 	this.CallSuperOverload2(id, sel, clipRect)
 }
 
-func (this *Tree) HitTestForEvent(id int64, sel int64, event int64, rect cocoa.NSRect, controlView int64) int64 {
+func (this *Tree) hitTestForEvent_(id int64, sel int64, event int64, rect cocoa.NSRect, controlView int64) int64 {
 	return this.CallSuperOverload5(id, sel, event, rect, controlView)
 }
 
-func (this *Tree) Image(id int64, sel int64) int64 {
+func (this *Tree) image_(id int64, sel int64) int64 {
 	var image []int64 = make([]int64, 1)
 	cocoa.OSObject_getInstanceVariable(id, DisplaySWT_IMAGE, image)
 	return image[0]
 }
 
-func (this *Tree) ImageRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
+func (this *Tree) imageRectForBounds_(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
 	var image *cocoa.NSImage = cocoa.NewNSCellOverload1(id).Image()
 	if image != (nil) {
 		cellFrame.X += float64(TreeIMAGE_GAP)
@@ -1682,26 +1682,26 @@ func (this *Tree) IndexOfItem(itemLike TreeItemLike) int32 {
 	return -1
 }
 
-func (this *Tree) IsTransparent() bool {
+func (this *Tree) isTransparent_() bool {
 	return true
 }
 
-func (this *Tree) IsTrim(view *cocoa.NSView) bool {
-	if this.Composite.IsTrim(view) {
+func (this *Tree) isTrim_(view *cocoa.NSView) bool {
+	if this.Composite.isTrim_(view) {
 		return true
 	}
 	return view.Id == this.headerView.Id
 }
 
-func (this *Tree) KeyDown(id int64, sel int64, theEvent int64) {
+func (this *Tree) keyDown_(id int64, sel int64, theEvent int64) {
 	this.preventSelect = false
 	this.ignoreSelect = this.preventSelect
 	this.keyDown = true
-	this.Composite.KeyDown(id, sel, theEvent)
+	this.Composite.keyDown_(id, sel, theEvent)
 	this.keyDown = false
 }
 
-func (this *Tree) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
+func (this *Tree) menuForEvent_(id int64, sel int64, theEvent int64) int64 {
 	if this.display.lastHandledMenuForEventId == theEvent {
 		return int64(0)
 	}
@@ -1718,20 +1718,20 @@ func (this *Tree) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 			set.Release()
 		}
 	}
-	return this.Composite.MenuForEvent(id, sel, theEvent)
+	return this.Composite.menuForEvent_(id, sel, theEvent)
 }
 
-func (this *Tree) MouseDown(id int64, sel int64, theEvent int64) {
+func (this *Tree) mouseDown_(id int64, sel int64, theEvent int64) {
 	if id == this.View.Id {
 		var event *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 		if (event.ModifierFlags() & int64(cocoa.OSNSEventModifierFlagControl)) != 0 {
 			return
 		}
 	}
-	this.Composite.MouseDown(id, sel, theEvent)
+	this.Composite.mouseDown_(id, sel, theEvent)
 }
 
-func (this *Tree) MouseDownSuper(id int64, sel int64, theEvent int64) {
+func (this *Tree) mouseDownSuper_(id int64, sel int64, theEvent int64) {
 	this.preventSelect = false
 	this.ignoreSelect = this.preventSelect
 	var check bool = false
@@ -1766,18 +1766,18 @@ func (this *Tree) MouseDownSuper(id int64, sel int64, theEvent int64) {
 	if itemID != (nil) {
 		itemID.Retain()
 	}
-	this.Composite.MouseDownSuper(id, sel, theEvent)
+	this.Composite.mouseDownSuper_(id, sel, theEvent)
 	if itemID != (nil) {
 		itemID.Release()
 	}
 	this.didSelect = false
 }
 
-func (this *Tree) NeedsPanelToBecomeKey(id int64, sel int64) bool {
+func (this *Tree) needsPanelToBecomeKey_(id int64, sel int64) bool {
 	return false
 }
 
-func (this *Tree) NextState(id int64, sel int64) int64 {
+func (this *Tree) nextState_(id int64, sel int64) int64 {
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.View)
 	var index int32 = int32(outlineView.ClickedRow())
 	if index == -1 {
@@ -1802,7 +1802,7 @@ func (this *Tree) NextState(id int64, sel int64) int64 {
 	return int64(cond514)
 }
 
-func (this *Tree) OutlineView_child_ofItem(id int64, sel int64, outlineView int64, index int64, itemID int64) int64 {
+func (this *Tree) outlineView_child_ofItem_(id int64, sel int64, outlineView int64, index int64, itemID int64) int64 {
 	var parent *TreeItem = castWidgetToTreeItem(this.display.GetWidget(itemID))
 	var item *TreeItem = this._getItem(parent, int32(index), true)
 	if item != (nil) && item.Handle != (nil) {
@@ -1811,7 +1811,7 @@ func (this *Tree) OutlineView_child_ofItem(id int64, sel int64, outlineView int6
 	return int64(0)
 }
 
-func (this *Tree) OutlineView_didClickTableColumn(id int64, sel int64, outlineView int64, tableColumn int64) {
+func (this *Tree) outlineView_didClickTableColumn_(id int64, sel int64, outlineView int64, tableColumn int64) {
 	var column *TreeColumn = this.GetColumn(cocoa.NewidOverload1(tableColumn))
 	if column == (nil) {
 		return
@@ -1819,7 +1819,7 @@ func (this *Tree) OutlineView_didClickTableColumn(id int64, sel int64, outlineVi
 	column.SendSelectionEvent(Selection)
 }
 
-func (this *Tree) OutlineView_objectValueForTableColumn_byItem(id int64, sel int64, outlineView int64, tableColumn int64, itemID int64) int64 {
+func (this *Tree) outlineView_objectValueForTableColumn_byItem_(id int64, sel int64, outlineView int64, tableColumn int64, itemID int64) int64 {
 	var item *TreeItem = castWidgetToTreeItem(this.display.GetWidget(itemID))
 	this.CheckData(item)
 	if this.checkColumn != (nil) && tableColumn == this.checkColumn.Id {
@@ -1845,25 +1845,25 @@ func (this *Tree) OutlineView_objectValueForTableColumn_byItem(id int64, sel int
 	return item.CreateString(0).Id
 }
 
-func (this *Tree) OutlineView_isItemExpandable(id int64, sel int64, outlineView int64, item int64) bool {
+func (this *Tree) outlineView_isItemExpandable_(id int64, sel int64, outlineView int64, item int64) bool {
 	if item == 0 {
 		return true
 	}
 	return (castWidgetToTreeItem(this.display.GetWidget(item))).itemCount != 0
 }
 
-func (this *Tree) OutlineView_numberOfChildrenOfItem(id int64, sel int64, outlineView int64, item int64) int64 {
+func (this *Tree) outlineView_numberOfChildrenOfItem_(id int64, sel int64, outlineView int64, item int64) int64 {
 	if item == 0 {
 		return int64(this.itemCount)
 	}
 	return int64((castWidgetToTreeItem(this.display.GetWidget(item))).itemCount)
 }
 
-func (this *Tree) OutlineView_shouldExpandItem_item(id int64, sel int64, arg0 int64, arg1 int64) bool {
+func (this *Tree) outlineView_shouldExpandItem_item_(id int64, sel int64, arg0 int64, arg1 int64) bool {
 	return this.shouldExpand
 }
 
-func (this *Tree) OutlineView_shouldReorderColumn_toColumn(id int64, sel int64, aTableView int64, currentColIndex int64, newColIndex int64) bool {
+func (this *Tree) outlineView_shouldReorderColumn_toColumn_(id int64, sel int64, aTableView int64, currentColIndex int64, newColIndex int64) bool {
 	if (this.style & CHECK) != 0 {
 		if currentColIndex == 0 {
 			return false
@@ -1882,7 +1882,7 @@ func (this *Tree) OutlineView_shouldReorderColumn_toColumn(id int64, sel int64, 
 	return true
 }
 
-func (this *Tree) OutlineView_shouldTrackCell_forTableColumn_item(id int64, sel int64, table int64, cell int64, tableColumn int64, item int64) bool {
+func (this *Tree) outlineView_shouldTrackCell_forTableColumn_item_(id int64, sel int64, table int64, cell int64, tableColumn int64, item int64) bool {
 	if (this.style & CHECK) != 0 {
 		if cocoa.NewNSCellOverload1(cell).IsKindOfClass(cocoa.OSClass_NSButtonCell) {
 			return true
@@ -1893,7 +1893,7 @@ func (this *Tree) OutlineView_shouldTrackCell_forTableColumn_item(id int64, sel 
 	return widget.IsRowSelected(rowIndex)
 }
 
-func (this *Tree) OutlineView_willDisplayCell_forTableColumn_item(id int64, sel int64, outlineView int64, cell int64, tableColumn int64, itemID int64) {
+func (this *Tree) outlineView_willDisplayCell_forTableColumn_item_(id int64, sel int64, outlineView int64, cell int64, tableColumn int64, itemID int64) {
 	if this.checkColumn != (nil) && tableColumn == this.checkColumn.Id {
 		return
 	}
@@ -1979,7 +1979,7 @@ func (this *Tree) OutlineView_willDisplayCell_forTableColumn_item(id int64, sel 
 		font = this.font
 	}
 	if font == (nil) {
-		font = this.impl.DefaultFont()
+		font = this.impl.defaultFont_()
 	}
 	if font.ExtraTraits != 0 {
 		var dict *cocoa.NSMutableDictionary = (castcocoaNSObjectTococoaNSMutableDictionary(cocoa.NewNSMutableDictionary().Alloc())).InitWithCapacity(int64(5))
@@ -2004,7 +2004,7 @@ func (this *Tree) OutlineView_willDisplayCell_forTableColumn_item(id int64, sel 
 	}
 }
 
-func (this *Tree) OutlineViewColumnDidMove(id int64, sel int64, aNotification int64) {
+func (this *Tree) outlineViewColumnDidMove_(id int64, sel int64, aNotification int64) {
 	var notification *cocoa.NSNotification = cocoa.NewNSNotificationOverload1(aNotification)
 	var userInfo *cocoa.NSDictionary = notification.UserInfo()
 	var nsstring *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
@@ -2034,7 +2034,7 @@ func (this *Tree) OutlineViewColumnDidMove(id int64, sel int64, aNotification in
 	this.headerView.SetNeedsDisplay(true)
 }
 
-func (this *Tree) OutlineViewColumnDidResize(id int64, sel int64, aNotification int64) {
+func (this *Tree) outlineViewColumnDidResize_(id int64, sel int64, aNotification int64) {
 	var notification *cocoa.NSNotification = cocoa.NewNSNotificationOverload1(aNotification)
 	var userInfo *cocoa.NSDictionary = notification.UserInfo()
 	var nsstring *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
@@ -2068,9 +2068,9 @@ func (this *Tree) OutlineViewColumnDidResize(id int64, sel int64, aNotification 
 	}
 }
 
-func (this *Tree) ScrollClipViewToPoint(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
+func (this *Tree) scrollClipViewToPoint_(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
 	if this.shouldScroll {
-		this.Composite.ScrollClipViewToPoint(id, sel, clipView, point)
+		this.Composite.scrollClipViewToPoint_(id, sel, clipView, point)
 		if (this.style&CHECK) != 0 && this.columnCount > 0 && (castcocoaNSViewTococoaNSOutlineView(this.View)).HeaderView() != (nil) {
 			if point.X <= float64(this.GetCheckColumnWidth()) {
 				this.headerView.SetNeedsDisplayInRect(this.headerView.HeaderRectOfColumn(int64(1)))
@@ -2079,7 +2079,7 @@ func (this *Tree) ScrollClipViewToPoint(id int64, sel int64, clipView int64, poi
 	}
 }
 
-func (this *Tree) SendSelection() {
+func (this *Tree) sendSelection_() {
 	if this.ignoreSelect {
 		return
 	}
@@ -2097,22 +2097,22 @@ func (this *Tree) SendSelection() {
 	}
 }
 
-func (this *Tree) OutlineViewSelectionDidChange(id int64, sel int64, notification int64) {
+func (this *Tree) outlineViewSelectionDidChange_(id int64, sel int64, notification int64) {
 	if this.didSelect {
 		return
 	}
-	this.impl.SendSelection()
+	this.impl.sendSelection_()
 }
 
-func (this *Tree) OutlineViewSelectionIsChanging(id int64, sel int64, notification int64) {
+func (this *Tree) outlineViewSelectionIsChanging_(id int64, sel int64, notification int64) {
 	if this.keyDown {
 		return
 	}
 	this.didSelect = true
-	this.impl.SendSelection()
+	this.impl.sendSelection_()
 }
 
-func (this *Tree) OutlineView_setObjectValue_forTableColumn_byItem(id int64, sel int64, outlineView int64, object int64, tableColumn int64, itemID int64) {
+func (this *Tree) outlineView_setObjectValue_forTableColumn_byItem_(id int64, sel int64, outlineView int64, object int64, tableColumn int64, itemID int64) {
 	if this.checkColumn != (nil) && tableColumn == this.checkColumn.Id {
 		var item *TreeItem = castWidgetToTreeItem(this.display.GetWidget(itemID))
 		item.checked = !item.checked
@@ -2124,12 +2124,12 @@ func (this *Tree) OutlineView_setObjectValue_forTableColumn_byItem(id int64, sel
 	}
 }
 
-func (this *Tree) OutlineView_writeItems_toPasteboard(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
-	return this.impl.SendMouseEvent(cocoa.NSApplicationSharedApplication().CurrentEvent(), DragDetect, true)
+func (this *Tree) outlineView_writeItems_toPasteboard_(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
+	return this.impl.sendMouseEvent_(cocoa.NSApplicationSharedApplication().CurrentEvent(), DragDetect, true)
 }
 
-func (this *Tree) Register() {
-	this.Composite.Register()
+func (this *Tree) register_() {
+	this.Composite.register_()
 	this.display.AddWidget(upcastcocoaNSTableHeaderViewTococoaNSObject(this.headerView), upcastTreeToWidget(this))
 	this.display.AddWidget(upcastcocoaNSTextFieldCellTococoaNSObject(this.dataCell), upcastTreeToWidget(this))
 	if this.buttonCell != (nil) {
@@ -2137,11 +2137,11 @@ func (this *Tree) Register() {
 	}
 }
 
-func (this *Tree) ReleaseChildren(destroy bool) {
+func (this *Tree) releaseChildren_(destroy bool) {
 	for i := int32(0); i < int32(len(this.items)); i++ {
 		var item *TreeItem = this.items[i]
 		if item != (nil) && !item.IsDisposed() {
-			item.impl.Release(false)
+			item.impl.release_(false)
 		}
 	}
 	this.items = nil
@@ -2149,16 +2149,16 @@ func (this *Tree) ReleaseChildren(destroy bool) {
 		for i := int32(0); i < this.columnCount; i++ {
 			var column *TreeColumn = this.columns[i]
 			if column != (nil) && !column.IsDisposed() {
-				column.impl.Release(false)
+				column.impl.release_(false)
 			}
 		}
 		this.columns = nil
 	}
-	this.Composite.ReleaseChildren(destroy)
+	this.Composite.releaseChildren_(destroy)
 }
 
-func (this *Tree) ReleaseHandle() {
-	this.Composite.ReleaseHandle()
+func (this *Tree) releaseHandle_() {
+	this.Composite.releaseHandle_()
 	if this.headerView != (nil) {
 		this.headerView.Release()
 	}
@@ -2181,8 +2181,8 @@ func (this *Tree) ReleaseHandle() {
 	this.buttonCell = nil
 }
 
-func (this *Tree) ReleaseWidget() {
-	this.Composite.ReleaseWidget()
+func (this *Tree) releaseWidget_() {
+	this.Composite.releaseWidget_()
 	this.sortColumn = nil
 }
 
@@ -2191,7 +2191,7 @@ func (this *Tree) RemoveAll() {
 	for i := int32(0); i < int32(len(this.items)); i++ {
 		var item *TreeItem = this.items[i]
 		if item != (nil) && !item.IsDisposed() {
-			item.impl.Release(false)
+			item.impl.release_(false)
 		}
 	}
 	this.items = make([]*TreeItem, 4)
@@ -2225,12 +2225,12 @@ func (this *Tree) RemoveTreeListener(listener TreeListener) {
 	this.eventTable.UnhookEventTypeListener(Collapse, listener)
 }
 
-func (this *Tree) ReskinChildren(flags int32) {
+func (this *Tree) reskinChildren_(flags int32) {
 	if this.items != (nil) {
 		for i := int32(0); i < int32(len(this.items)); i++ {
 			var item *TreeItem = this.items[i]
 			if item != (nil) {
-				item.impl.ReskinChildren(flags)
+				item.impl.reskinChildren_(flags)
 			}
 		}
 	}
@@ -2238,14 +2238,14 @@ func (this *Tree) ReskinChildren(flags int32) {
 		for i := int32(0); i < int32(len(this.columns)); i++ {
 			var column *TreeColumn = this.columns[i]
 			if column != (nil) {
-				column.impl.ReskinChildren(flags)
+				column.impl.reskinChildren_(flags)
 			}
 		}
 	}
-	this.Composite.ReskinChildren(flags)
+	this.Composite.reskinChildren_(flags)
 }
 
-func (this *Tree) SetImageOnWidget(id int64, sel int64, arg0 int64) {
+func (this *Tree) setImageOnWidget_(id int64, sel int64, arg0 int64) {
 	cocoa.OSObject_setInstanceVariable(id, DisplaySWT_IMAGE, arg0)
 }
 
@@ -2307,7 +2307,7 @@ func (this *Tree) Select(itemLike TreeItemLike) {
 	set.Release()
 }
 
-func (this *Tree) SelectRowIndexes_byExtendingSelection(id int64, sel int64, indexes int64, extend bool) {
+func (this *Tree) selectRowIndexes_byExtendingSelection_(id int64, sel int64, indexes int64, extend bool) {
 	if this.preventSelect && !this.ignoreSelect {
 		return
 	}
@@ -2317,10 +2317,10 @@ func (this *Tree) SelectRowIndexes_byExtendingSelection(id int64, sel int64, ind
 			return
 		}
 	}
-	this.Composite.SelectRowIndexes_byExtendingSelection(id, sel, indexes, extend)
+	this.Composite.selectRowIndexes_byExtendingSelection_(id, sel, indexes, extend)
 }
 
-func (this *Tree) SendDoubleSelection() {
+func (this *Tree) sendDoubleSelection_() {
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.View)
 	var rowIndex int32 = int32(outlineView.ClickedRow())
 	if rowIndex == -1 {
@@ -2347,8 +2347,8 @@ func (this *Tree) SendDoubleSelection() {
 	}
 }
 
-func (this *Tree) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
-	var result bool = this.Composite.SendKeyEvent(nsEvent, type_)
+func (this *Tree) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
+	var result bool = this.Composite.sendKeyEvent_(nsEvent, type_)
 	if !result {
 		return result
 	}
@@ -2359,7 +2359,7 @@ func (this *Tree) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	switch keyCode {
 	case int16(76), int16(36):
 		{
-			this.impl.SendDoubleSelection()
+			this.impl.sendDoubleSelection_()
 			break
 		}
 	}
@@ -2390,7 +2390,7 @@ func (this *Tree) SendMeasureItem(itemLike TreeItemLike, selected bool, columnIn
 		event.Detail |= SELECTED
 	}
 	this.SendEventEventTypeEvent(MeasureItem, event)
-	gc.impl.Dispose()
+	gc.impl.dispose_()
 	if !this.IsDisposed() && !item.IsDisposed() {
 		size.Width = float64(event.Width)
 		size.Height = float64(event.Height)
@@ -2409,7 +2409,7 @@ func (this *Tree) SendMeasureItem(itemLike TreeItemLike, selected bool, columnIn
 	}
 }
 
-func (this *Tree) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bool) bool {
+func (this *Tree) sendMouseEvent_(nsEvent *cocoa.NSEvent, type_ int32, send bool) bool {
 	if type_ == DragDetect {
 		this.dragDetected = true
 	} else {
@@ -2448,7 +2448,7 @@ func (this *Tree) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bool)
 			this.dragDetected = false
 		}
 	}
-	return this.Composite.SendMouseEvent(nsEvent, type_, send)
+	return this.Composite.sendMouseEvent_(nsEvent, type_, send)
 }
 
 func (this *Tree) SelectItems(items []*TreeItem, ignoreDisposed bool) {
@@ -2476,7 +2476,7 @@ func (this *Tree) SelectItems(items []*TreeItem, ignoreDisposed bool) {
 	set.Release()
 }
 
-func (this *Tree) TitleRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
+func (this *Tree) titleRectForBounds_(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
 	var image *cocoa.NSImage = cocoa.NewNSCellOverload1(id).Image()
 	if image != (nil) {
 		var imageWidth int32 = this.imageBounds.Width + TreeIMAGE_GAP
@@ -2486,7 +2486,7 @@ func (this *Tree) TitleRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect
 	return cellFrame
 }
 
-func (this *Tree) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
+func (this *Tree) setBackgroundColor_(nsColor *cocoa.NSColor) {
 	(castcocoaNSViewTococoaNSTableView(this.View)).SetBackgroundColor(nsColor)
 }
 
@@ -2555,8 +2555,8 @@ func (this *Tree) SetColumnOrder(order []int32) {
 	}
 }
 
-func (this *Tree) SetFontFont(font *cocoa.NSFont) {
-	this.Composite.SetFontFont(font)
+func (this *Tree) setFontFont_(font *cocoa.NSFont) {
+	this.Composite.setFontFont_(font)
 	for i := int32(0); i < this.columnCount; i++ {
 		this.columns[i].nsColumn.HeaderCell().SetFont(font)
 	}
@@ -2566,8 +2566,8 @@ func (this *Tree) SetFontFont(font *cocoa.NSFont) {
 	this.SetScrollWidth()
 }
 
-func (this *Tree) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
-	this.Composite.SetFrameSize(id, sel, size)
+func (this *Tree) setFrameSize_(id int64, sel int64, size cocoa.NSSize) {
+	this.Composite.setFrameSize_(id, sel, size)
 	if (this.scrollView != (nil)) && (id == this.scrollView.Id) {
 		(castcocoaNSViewTococoaNSTableView(this.View)).Tile()
 	}
@@ -2581,7 +2581,7 @@ func (this *Tree) SetHeaderBackground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2596,7 +2596,7 @@ func (this *Tree) SetHeaderBackground(colorLike ColorLike) {
 	}
 	this.headerBackground = headerBackground
 	if this.GetHeaderVisible() {
-		this.impl.RedrawWidget(upcastcocoaNSTableHeaderViewTococoaNSView(this.headerView), false)
+		this.impl.redrawWidget_(upcastcocoaNSTableHeaderViewTococoaNSView(this.headerView), false)
 	}
 }
 
@@ -2608,7 +2608,7 @@ func (this *Tree) SetHeaderForeground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2623,7 +2623,7 @@ func (this *Tree) SetHeaderForeground(colorLike ColorLike) {
 	}
 	this.headerForeground = headerForeground
 	if this.GetHeaderVisible() {
-		this.impl.RedrawWidget(upcastcocoaNSTableHeaderViewTococoaNSView(this.headerView), false)
+		this.impl.redrawWidget_(upcastcocoaNSTableHeaderViewTococoaNSView(this.headerView), false)
 	}
 }
 
@@ -2682,7 +2682,7 @@ func (this *Tree) SetItemCountParentItemCount(parentItemLike TreeItemLike, count
 		for index := int32(count); index < itemCount; index++ {
 			var item *TreeItem = children[index]
 			if item != (nil) && !item.IsDisposed() {
-				item.impl.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.SelectItems(selectedItems, true)
@@ -2794,9 +2794,9 @@ func (this *Tree) SetLinesVisible(show bool) {
 	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetGridStyleMask(int64(cond522))
 }
 
-func (this *Tree) SetRedraw(redraw bool) {
+func (this *Tree) setRedraw_(redraw bool) {
 	this.CheckWidget()
-	this.Composite.SetRedraw(redraw)
+	this.Composite.setRedraw_(redraw)
 	if redraw && this.drawCount == 0 {
 		this.CheckItems()
 		this.SetScrollWidth()
@@ -2811,7 +2811,7 @@ func (this *Tree) SetScrollWidthSetItemsRecurse(set bool, items []*TreeItem, rec
 	if items == (nil) {
 		return false
 	}
-	if this.ignoreRedraw || !this.impl.GetDrawing() {
+	if this.ignoreRedraw || !this.impl.getDrawing_() {
 		return false
 	}
 	if this.columnCount != 0 {
@@ -2819,7 +2819,7 @@ func (this *Tree) SetScrollWidthSetItemsRecurse(set bool, items []*TreeItem, rec
 	}
 	var gc *GC = NewGCDrawable(this)
 	var newWidth int32 = this.CalculateWidth(items, 0, gc, recurse)
-	gc.impl.Dispose()
+	gc.impl.dispose_()
 	if !set {
 		var oldWidth int32 = int32(this.firstColumn.Width())
 		if oldWidth >= newWidth {
@@ -2828,7 +2828,7 @@ func (this *Tree) SetScrollWidthSetItemsRecurse(set bool, items []*TreeItem, rec
 	}
 	this.firstColumn.SetWidth(float64(newWidth))
 	if this.horizontalBar != (nil) && this.horizontalBar.view != (nil) {
-		this.impl.RedrawWidget(upcastcocoaNSScrollerTococoaNSView(this.horizontalBar.view), false)
+		this.impl.redrawWidget_(upcastcocoaNSScrollerTococoaNSView(this.horizontalBar.view), false)
 	}
 	return true
 }
@@ -2839,7 +2839,7 @@ func (this *Tree) SetScrollWidthItem(itemLike TreeItemLike) bool {
 		item = itemLike.AsTreeItem()
 	}
 	_ = item
-	if this.ignoreRedraw || !this.impl.GetDrawing() {
+	if this.ignoreRedraw || !this.impl.getDrawing_() {
 		return false
 	}
 	if this.columnCount != 0 {
@@ -2851,23 +2851,23 @@ func (this *Tree) SetScrollWidthItem(itemLike TreeItemLike) bool {
 	}
 	var gc *GC = NewGCDrawable(this)
 	var newWidth int32 = item.CalculateWidth(0, gc)
-	gc.impl.Dispose()
+	gc.impl.dispose_()
 	var oldWidth int32 = int32(this.firstColumn.Width())
 	if oldWidth < newWidth {
 		this.firstColumn.SetWidth(float64(newWidth))
 		if this.horizontalBar != (nil) && this.horizontalBar.view != (nil) {
-			this.impl.RedrawWidget(upcastcocoaNSScrollerTococoaNSView(this.horizontalBar.view), false)
+			this.impl.redrawWidget_(upcastcocoaNSScrollerTococoaNSView(this.horizontalBar.view), false)
 		}
 		return true
 	}
 	return false
 }
 
-func (this *Tree) SetShouldExpandItem(id int64, sel int64, shouldExpand bool) {
+func (this *Tree) setShouldExpandItem_(id int64, sel int64, shouldExpand bool) {
 	this.shouldExpand = shouldExpand
 }
 
-func (this *Tree) SetShouldScrollClipView(id int64, sel int64, shouldScroll bool) {
+func (this *Tree) setShouldScrollClipView_(id int64, sel int64, shouldScroll bool) {
 	this.shouldScroll = shouldScroll
 }
 
@@ -3097,8 +3097,8 @@ func (this *Tree) ShowSelection() {
 	}
 }
 
-func (this *Tree) UpdateCursorRects(enabled bool) {
-	this.Composite.UpdateCursorRects(enabled)
+func (this *Tree) updateCursorRects_(enabled bool) {
+	this.Composite.updateCursorRects_(enabled)
 	if this.headerView == (nil) {
 		return
 	}

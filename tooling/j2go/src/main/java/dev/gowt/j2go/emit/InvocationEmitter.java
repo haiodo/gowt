@@ -63,11 +63,14 @@ final class InvocationEmitter {
 				String recv = emitter.expr(mi.getExpression());
 				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
 				String goName;
-				if (declCi != null) {
+				if (declCi != null && !declCi.splitsDispatch()) {
 					String sig = TypeModel.signature(mb);
 					TypeModel.ClassInfo point = declCi.overridePoint(sig);
 					goName = point != null ? declCi.root.overriddenRootMethodGoNames.get(sig)
 							: emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
+				} else if (declCi != null) {
+					// A hand-written stub mirrors the public (natural) name, never a dispatch name.
+					goName = emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
 				} else {
 					goName = Manual.instanceMember(mb.getName());
 				}

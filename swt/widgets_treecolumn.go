@@ -69,27 +69,27 @@ func (this *TreeColumn) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *TreeColumn) CheckSubclass() {
+func (this *TreeColumn) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
-func (this *TreeColumn) Deregister() {
-	this.Item.Deregister()
+func (this *TreeColumn) deregister_() {
+	this.Item.deregister_()
 	this.display.RemoveWidget(upcastcocoaNSTableHeaderCellTococoaNSObject(this.nsColumn.HeaderCell()))
 }
 
-func (this *TreeColumn) DestroyWidget() {
+func (this *TreeColumn) destroyWidget_() {
 	this.parent.DestroyItem(this)
-	this.impl.ReleaseHandle()
+	this.impl.releaseHandle_()
 }
 
-func (this *TreeColumn) DrawInteriorWithFrame_inView(id int64, sel int64, cellRect cocoa.NSRect, view int64) {
+func (this *TreeColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cellRect cocoa.NSRect, view int64) {
 	var columnIndex int32 = this.parent.IndexOf(this.nsColumn)
 	var headerRect cocoa.NSRect = this.parent.headerView.HeaderRectOfColumn(int64(columnIndex))
 	var borderWidth float64
-	if this.parent.impl.HasBorder() {
+	if this.parent.impl.hasBorder_() {
 		borderWidth = 0.5
 	} else {
 		borderWidth = float64(0)
@@ -268,8 +268,8 @@ func (this *TreeColumn) GetAlignment() int32 {
 	return LEFT
 }
 
-func (this *TreeColumn) GetNameText() string {
-	return this.impl.GetText()
+func (this *TreeColumn) getNameText_() string {
+	return this.impl.getText_()
 }
 
 func (this *TreeColumn) GetParent() *Tree {
@@ -317,12 +317,12 @@ func (this *TreeColumn) Pack() {
 	}
 	var gc *GC = NewGCDrawable(this.parent)
 	width = int32(math.Max(float64(width), float64(this.parent.CalculateWidth(this.parent.items, this.parent.IndexOfColumn(this), gc, true))))
-	gc.impl.Dispose()
+	gc.impl.dispose_()
 	this.SetWidth(width)
 }
 
-func (this *TreeColumn) ReleaseHandle() {
-	this.Item.ReleaseHandle()
+func (this *TreeColumn) releaseHandle_() {
+	this.Item.releaseHandle_()
 	if this.nsColumn != (nil) {
 		this.nsColumn.HeaderCell().Release()
 		this.nsColumn.Release()
@@ -331,8 +331,8 @@ func (this *TreeColumn) ReleaseHandle() {
 	this.parent = nil
 }
 
-func (this *TreeColumn) ReleaseWidget() {
-	this.Item.ReleaseWidget()
+func (this *TreeColumn) releaseWidget_() {
+	this.Item.releaseWidget_()
 	if this.parent.sortColumn == this {
 		this.parent.sortColumn = nil
 	}
@@ -385,12 +385,12 @@ func (this *TreeColumn) SetAlignment(alignment int32) {
 	this.parent.View.SetNeedsDisplayInRect(rect)
 }
 
-func (this *TreeColumn) SetImageOnItem(image *Image) {
+func (this *TreeColumn) setImageOnItem_(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.SetImageOnItem(image)
+	this.Item.setImageOnItem_(image)
 	var headerView *cocoa.NSTableHeaderView = (castcocoaNSViewTococoaNSOutlineView(this.parent.View)).HeaderView()
 	if headerView == (nil) {
 		return
@@ -416,12 +416,12 @@ func (this *TreeColumn) SetResizable(resizable bool) {
 	this.nsColumn.SetResizingMask(int64(cond536))
 }
 
-func (this *TreeColumn) SetText(string_ string) {
+func (this *TreeColumn) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.Item.SetText(string_)
+	this.Item.setText_(string_)
 	var buffer []uint16 = make([]uint16, int32(len(this.text)))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)
@@ -452,7 +452,7 @@ func (this *TreeColumn) SetWidth(width int32) {
 	this.nsColumn.SetWidth(float64(width))
 }
 
-func (this *TreeColumn) TooltipText() string {
+func (this *TreeColumn) tooltipText_() string {
 	return this.toolTipText
 }
 

@@ -51,7 +51,7 @@ func (this *Composite) initCompositeParentStyle(parent *Composite, style int32) 
 }
 
 func (this *Composite) _getChildren() []*Control {
-	var nsClipView *cocoa.NSView = this.impl.ContentView()
+	var nsClipView *cocoa.NSView = this.impl.contentView_()
 	if nsClipView == (nil) {
 		return make([]*Control, 0)
 	}
@@ -105,30 +105,30 @@ func (this *Composite) _getTabList() []*Control {
 	return this.tabList
 }
 
-func (this *Composite) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool {
+func (this *Composite) acceptsFirstMouse_(id int64, sel int64, theEvent int64) bool {
 	if (this.state & WidgetCANVAS) != 0 {
 		return true
 	}
-	return this.Scrollable.AcceptsFirstMouse(id, sel, theEvent)
+	return this.Scrollable.acceptsFirstMouse_(id, sel, theEvent)
 }
 
-func (this *Composite) AcceptsFirstResponder(id int64, sel int64) bool {
+func (this *Composite) acceptsFirstResponder_(id int64, sel int64) bool {
 	if (this.state & WidgetCANVAS) != 0 {
-		if (this.style&NO_FOCUS) == 0 && this.impl.HooksKeys() {
-			if this.impl.ContentView().Subviews().Count() == 0 {
+		if (this.style&NO_FOCUS) == 0 && this.impl.hooksKeys_() {
+			if this.impl.contentView_().Subviews().Count() == 0 {
 				return true
 			}
 		}
 		return false
 	}
-	return this.Scrollable.AcceptsFirstResponder(id, sel)
+	return this.Scrollable.acceptsFirstResponder_(id, sel)
 }
 
-func (this *Composite) AccessibilityAttributeValue(id int64, sel int64, arg0 int64) int64 {
+func (this *Composite) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	var nsAttributeName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
-	var superValue int64 = this.Scrollable.AccessibilityAttributeValue(id, sel, arg0)
+	var superValue int64 = this.Scrollable.accessibilityAttributeValue_(id, sel, arg0)
 	if (this.state & WidgetCANVAS) != 0 {
-		if id == this.impl.AccessibleHandle() {
+		if id == this.impl.accessibleHandle_() {
 			if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleAttribute_) {
 				if superValue != 0 {
 					var role *cocoa.NSString = cocoa.NewNSStringOverload1(superValue)
@@ -155,27 +155,27 @@ func (this *Composite) AccessibilityAttributeValue(id int64, sel int64, arg0 int
 	return superValue
 }
 
-func (this *Composite) AccessibilityIsIgnored(id int64, sel int64) bool {
-	if id == this.impl.AccessibleHandle() {
+func (this *Composite) accessibilityIsIgnored_(id int64, sel int64) bool {
+	if id == this.impl.accessibleHandle_() {
 		if this.accessible != (nil) {
 			return this.accessible.Internal_accessibilityIsIgnored(ACCCHILDID_SELF)
 		}
 	}
-	return this.Scrollable.AccessibilityIsIgnored(id, sel)
+	return this.Scrollable.accessibilityIsIgnored_(id, sel)
 }
 
 func (this *Composite) Changed(changed []*Control) {
 	this.LayoutOverload4(changed, DEFER)
 }
 
-func (this *Composite) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+func (this *Composite) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	this.display.RunSkin()
 	var size *Point
 	if this.layout != (nil) {
 		if (wHint == DEFAULT) || (hHint == DEFAULT) {
 			changed = changed || (this.state&WidgetLAYOUT_CHANGED) != 0
-			size = this.layout.impl.ComputeSize(this, wHint, hHint, changed)
+			size = this.layout.impl.computeSize_(this, wHint, hHint, changed)
 			this.state &= ^WidgetLAYOUT_CHANGED
 		} else {
 			size = NewPoint(wHint, hHint)
@@ -195,15 +195,15 @@ func (this *Composite) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, ch
 	if hHint != DEFAULT {
 		size.Y = hHint
 	}
-	var trim *Rectangle = this.impl.ComputeTrim(0, 0, size.X, size.Y)
+	var trim *Rectangle = this.impl.computeTrim_(0, 0, size.X, size.Y)
 	return NewPoint(trim.Width, trim.Height)
 }
 
-func (this *Composite) CheckSubclass() {
+func (this *Composite) checkSubclass_() {
 }
 
-func (this *Composite) ComputeTabList() []*Widget {
-	var result []*Widget = this.Scrollable.ComputeTabList()
+func (this *Composite) computeTabList_() []*Widget {
+	var result []*Widget = this.Scrollable.computeTabList_()
 	if int32(len(result)) == 0 {
 		return result
 	}
@@ -215,7 +215,7 @@ func (this *Composite) ComputeTabList() []*Widget {
 	}
 	for i := int32(0); i < int32(len(list)); i++ {
 		var child *Control = list[i]
-		var childList []*Widget = child.impl.ComputeTabList()
+		var childList []*Widget = child.impl.computeTabList_()
 		if int32(len(childList)) != 0 {
 			var newResult []*Widget = make([]*Widget, int32(len(result))+int32(len(childList)))
 			copy(newResult[0:], result[0:0+int32(len(result))])
@@ -226,14 +226,14 @@ func (this *Composite) ComputeTabList() []*Widget {
 	return result
 }
 
-func (this *Composite) CreateHandle() {
+func (this *Composite) createHandle_() {
 	this.state |= WidgetCANVAS
 	var scrolled bool = (this.style & (V_SCROLL | H_SCROLL)) != 0
 	if !scrolled {
 		this.state |= WidgetTHEME_BACKGROUND
 	}
 	var rect cocoa.NSRect = cocoa.NSRect{}
-	if scrolled || this.impl.HasBorder() {
+	if scrolled || this.impl.hasBorder_() {
 		var scrollWidget *cocoa.NSScrollView = castcocoaNSObjectTococoaNSScrollView(cocoa.NewSWTScrollView().Alloc())
 		scrollWidget.InitWithFrame(rect)
 		scrollWidget.SetDrawsBackground(false)
@@ -244,7 +244,7 @@ func (this *Composite) CreateHandle() {
 			scrollWidget.SetHasVerticalScroller(true)
 		}
 		var cond138 int32
-		if this.impl.HasBorder() {
+		if this.impl.hasBorder_() {
 			cond138 = cocoa.OSNSBezelBorder
 		} else {
 			cond138 = cocoa.OSNSNoBorder
@@ -272,10 +272,10 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.IsDisposed() {
+	if gc.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	var control *Control = this.impl.FindBackgroundControl()
+	var control *Control = this.impl.findBackgroundControl_()
 	if control != (nil) {
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		rect.X = float64(x)
@@ -301,7 +301,7 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 	}
 }
 
-func (this *Composite) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
+func (this *Composite) drawBackground_(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
 	if id != this.View.Id {
 		return
 	}
@@ -313,24 +313,28 @@ func (this *Composite) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphic
 }
 
 func (this *Composite) FindDeferredControl() *Composite {
+	return this.impl.findDeferredControl_()
+}
+
+func (this *Composite) findDeferredControl_() *Composite {
 	var cond139 *Composite
 	if this.layoutCount > 0 {
 		cond139 = this
 	} else {
-		cond139 = this.parent.impl.FindDeferredControl()
+		cond139 = this.parent.impl.findDeferredControl_()
 	}
 	return cond139
 }
 
-func (this *Composite) FindMenus(control *Control) []*Menu {
+func (this *Composite) findMenus_(control *Control) []*Menu {
 	if control == upcastCompositeToControl(this) {
 		return make([]*Menu, 0)
 	}
-	var result []*Menu = this.Scrollable.FindMenus(control)
+	var result []*Menu = this.Scrollable.findMenus_(control)
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
-		var menuList []*Menu = child.impl.FindMenus(control)
+		var menuList []*Menu = child.impl.findMenus_(control)
 		if int32(len(menuList)) != 0 {
 			var newResult []*Menu = make([]*Menu, int32(len(result))+int32(len(menuList)))
 			copy(newResult[0:], result[0:0+int32(len(result))])
@@ -341,11 +345,11 @@ func (this *Composite) FindMenus(control *Control) []*Menu {
 	return result
 }
 
-func (this *Composite) FixChildren(newShell *Shell, oldShell *Shell, newDecorations *Decorations, oldDecorations *Decorations, menus []*Menu) {
-	this.Scrollable.FixChildren(newShell, oldShell, newDecorations, oldDecorations, menus)
+func (this *Composite) fixChildren_(newShell *Shell, oldShell *Shell, newDecorations *Decorations, oldDecorations *Decorations, menus []*Menu) {
+	this.Scrollable.fixChildren_(newShell, oldShell, newDecorations, oldDecorations, menus)
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
-		children[i].impl.FixChildren(newShell, oldShell, newDecorations, oldDecorations, menus)
+		children[i].impl.fixChildren_(newShell, oldShell, newDecorations, oldDecorations, menus)
 	}
 }
 
@@ -410,14 +414,14 @@ func (this *Composite) GetTabList() []*Control {
 		var count int32 = 0
 		var list []*Control = this._getChildren()
 		for i := int32(0); i < int32(len(list)); i++ {
-			if list[i].impl.IsTabGroup() {
+			if list[i].impl.isTabGroup_() {
 				count++
 			}
 		}
 		tabList = make([]*Control, count)
 		var index int32 = 0
 		for i := int32(0); i < int32(len(list)); i++ {
-			if list[i].impl.IsTabGroup() {
+			if list[i].impl.isTabGroup_() {
 				t141 := index
 				index++
 				tabList[t141] = list[i]
@@ -427,31 +431,31 @@ func (this *Composite) GetTabList() []*Control {
 	return tabList
 }
 
-func (this *Composite) HooksKeys() bool {
+func (this *Composite) hooksKeys_() bool {
 	return this.Hooks(KeyDown) || this.Hooks(KeyUp)
 }
 
-func (this *Composite) InvalidateChildrenVisibleRegion() {
+func (this *Composite) invalidateChildrenVisibleRegion_() {
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
-		child.impl.ResetVisibleRegion()
-		child.impl.InvalidateChildrenVisibleRegion()
+		child.impl.resetVisibleRegion_()
+		child.impl.invalidateChildrenVisibleRegion_()
 	}
 }
 
 func (this *Composite) IsLayoutDeferred() bool {
 	this.CheckWidget()
-	return this.impl.FindDeferredControl() != (nil)
+	return this.impl.findDeferredControl_() != (nil)
 }
 
-func (this *Composite) IsOpaque(id int64, sel int64) bool {
+func (this *Composite) isOpaque_(id int64, sel int64) bool {
 	if (this.state & WidgetCANVAS) != 0 {
 		if id == this.View.Id {
 			return this.region == (nil) && this.IsOpaque0()
 		}
 	}
-	return this.Scrollable.IsOpaque(id, sel)
+	return this.Scrollable.isOpaque_(id, sel)
 }
 
 func (this *Composite) IsOpaque0() bool {
@@ -461,22 +465,22 @@ func (this *Composite) IsOpaque0() bool {
 	return this.background != (nil) && this.background[3] == 1 && !this.IsObscured()
 }
 
-func (this *Composite) IsTabGroup() bool {
+func (this *Composite) isTabGroup_() bool {
 	if (this.state & WidgetCANVAS) != 0 {
 		return true
 	}
-	return this.Scrollable.IsTabGroup()
+	return this.Scrollable.isTabGroup_()
 }
 
-func (this *Composite) KeyDown(id int64, sel int64, theEvent int64) {
+func (this *Composite) keyDown_(id int64, sel int64, theEvent int64) {
 	if this.HasFocus() {
 		if (this.state & WidgetCANVAS) != 0 {
-			var s *Shell = this.impl.GetShell()
+			var s *Shell = this.impl.getShell_()
 			s.DeferFlushing()
 			var array *cocoa.NSArray = cocoa.NSArrayArrayWithObject(upcastcocoaNSEventTococoaId(cocoa.NewNSEventOverload1(theEvent)))
 			s.keyInputHappened = false
 			this.View.InterpretKeyEvents(array)
-			if this.impl.ImeInComposition() {
+			if this.impl.imeInComposition_() {
 				return
 			}
 			if !s.keyInputHappened {
@@ -488,7 +492,7 @@ func (this *Composite) KeyDown(id int64, sel int64, theEvent int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEvent(nsEvent, KeyDown) {
+				if !this.impl.sendKeyEvent_(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -498,7 +502,7 @@ func (this *Composite) KeyDown(id int64, sel int64, theEvent int64) {
 			return
 		}
 	}
-	this.Scrollable.KeyDown(id, sel, theEvent)
+	this.Scrollable.keyDown_(id, sel, theEvent)
 }
 
 func (this *Composite) Layout() {
@@ -519,8 +523,8 @@ func (this *Composite) LayoutOverload2(changed bool, all bool) {
 	if this.layout == (nil) && !all {
 		return
 	}
-	this.impl.MarkLayout(changed, all)
-	this.impl.UpdateLayout(all)
+	this.impl.markLayout_(changed, all)
+	this.impl.updateLayout_(all)
 }
 
 func (this *Composite) LayoutOverload3(changed []*Control) {
@@ -560,11 +564,11 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 		for i := int32(0); i < int32(len(changed)); i++ {
 			var child *Control = changed[i]
 			var composite *Composite = child.parent
-			child.impl.MarkLayout(false, false)
+			child.impl.markLayout_(false, false)
 			for child != upcastCompositeToControl(this) {
 				if composite.layout != (nil) {
 					composite.state |= WidgetLAYOUT_NEEDED
-					if !composite.layout.impl.FlushCache(child) {
+					if !composite.layout.impl.flushCache_(child) {
 						composite.state |= WidgetLAYOUT_CHANGED
 					}
 				}
@@ -585,22 +589,22 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 			this.display.AddLayoutDeferred(this)
 		}
 		for i := int32(updateCount - 1); i >= 0; i-- {
-			update[i].impl.UpdateLayout(false)
+			update[i].impl.updateLayout_(false)
 		}
 	} else {
 		if this.layout == (nil) && (flags&ALL) == 0 {
 			return
 		}
-		this.impl.MarkLayout((flags&CHANGED) != 0, (flags&ALL) != 0)
+		this.impl.markLayout_((flags&CHANGED) != 0, (flags&ALL) != 0)
 		if (flags & DEFER) != 0 {
 			this.SetLayoutDeferred(true)
 			this.display.AddLayoutDeferred(this)
 		}
-		this.impl.UpdateLayout((flags & ALL) != 0)
+		this.impl.updateLayout_((flags & ALL) != 0)
 	}
 }
 
-func (this *Composite) MarkLayout(changed bool, all bool) {
+func (this *Composite) markLayout_(changed bool, all bool) {
 	if this.layout != (nil) {
 		this.state |= WidgetLAYOUT_NEEDED
 		if changed {
@@ -610,26 +614,26 @@ func (this *Composite) MarkLayout(changed bool, all bool) {
 	if all {
 		var children []*Control = this._getChildren()
 		for i := int32(0); i < int32(len(children)); i++ {
-			children[i].impl.MarkLayout(changed, all)
+			children[i].impl.markLayout_(changed, all)
 		}
 	}
 }
 
 func (this *Composite) MinimumSize(wHint int32, Hint int32, changed bool) *Point {
 	var children []*Control = this._getChildren()
-	var clientArea *Rectangle = this.impl.GetClientArea()
+	var clientArea *Rectangle = this.impl.getClientArea_()
 	var width int32 = 0
 	var height int32 = 0
 	for i := int32(0); i < int32(len(children)); i++ {
-		var rect *Rectangle = children[i].impl.GetBounds()
+		var rect *Rectangle = children[i].impl.getBounds_()
 		width = int32(math.Max(float64(width), float64(rect.X-clientArea.X+rect.Width)))
 		height = int32(math.Max(float64(height), float64(rect.Y-clientArea.Y+rect.Height)))
 	}
 	return NewPoint(width, height)
 }
 
-func (this *Composite) MouseEvent(id int64, sel int64, theEvent int64, type_ int32) bool {
-	var result bool = this.Scrollable.MouseEvent(id, sel, theEvent, type_)
+func (this *Composite) mouseEvent_(id int64, sel int64, theEvent int64, type_ int32) bool {
+	var result bool = this.Scrollable.mouseEvent_(id, sel, theEvent, type_)
 	var cond143 bool
 	if (this.state & WidgetCANVAS) == 0 {
 		cond143 = result
@@ -639,58 +643,58 @@ func (this *Composite) MouseEvent(id int64, sel int64, theEvent int64, type_ int
 	return cond143
 }
 
-func (this *Composite) PageDown(id int64, sel int64, sender int64) {
+func (this *Composite) pageDown_(id int64, sel int64, sender int64) {
 	if (this.state & WidgetCANVAS) != 0 {
 		return
 	}
-	this.Scrollable.PageDown(id, sel, sender)
+	this.Scrollable.pageDown_(id, sel, sender)
 }
 
-func (this *Composite) PageUp(id int64, sel int64, sender int64) {
+func (this *Composite) pageUp_(id int64, sel int64, sender int64) {
 	if (this.state & WidgetCANVAS) != 0 {
 		return
 	}
-	this.Scrollable.PageUp(id, sel, sender)
+	this.Scrollable.pageUp_(id, sel, sender)
 }
 
-func (this *Composite) RedrawWidget(view *cocoa.NSView, redrawChildren bool) {
-	this.Scrollable.RedrawWidget(view, redrawChildren)
+func (this *Composite) redrawWidget_(view *cocoa.NSView, redrawChildren bool) {
+	this.Scrollable.redrawWidget_(view, redrawChildren)
 	if redrawChildren {
 		var _getChildren []*Control = this._getChildren()
 		for _, child := range _getChildren {
-			if child != (nil) && !child.IsDisposed() && child.impl.IsVisible() {
-				child.impl.RedrawWidget(child.View, redrawChildren)
+			if child != (nil) && !child.IsDisposed() && child.impl.isVisible_() {
+				child.impl.redrawWidget_(child.View, redrawChildren)
 			}
 		}
 	}
 }
 
-func (this *Composite) RedrawXYWidthHeightAll(x int32, y int32, width int32, height int32, all bool) {
-	this.Scrollable.RedrawXYWidthHeightAll(x, y, width, height, all)
+func (this *Composite) redrawXYWidthHeightAll_(x int32, y int32, width int32, height int32, all bool) {
+	this.Scrollable.redrawXYWidthHeightAll_(x, y, width, height, all)
 	if all {
 		var children []*Control = this._getChildren()
 		for _, child := range children {
-			if child != (nil) && !child.IsDisposed() && child.impl.IsVisible() {
+			if child != (nil) && !child.IsDisposed() && child.impl.isVisible_() {
 				var rect cocoa.NSRect = cocoa.NSRect{}
 				rect.X = float64(x)
 				rect.Y = float64(y)
 				rect.Width = float64(width)
 				rect.Height = float64(height)
 				rect = this.View.ConvertRect_toView_(rect, child.View)
-				child.impl.RedrawXYWidthHeightAll(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height), all)
+				child.impl.redrawXYWidthHeightAll_(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height), all)
 			}
 		}
 	}
 }
 
-func (this *Composite) ReflectScrolledClipView(id int64, sel int64, aClipView int64) {
+func (this *Composite) reflectScrolledClipView_(id int64, sel int64, aClipView int64) {
 	if (this.state & WidgetCANVAS) != 0 {
 		return
 	}
-	this.Scrollable.ReflectScrolledClipView(id, sel, aClipView)
+	this.Scrollable.reflectScrolledClipView_(id, sel, aClipView)
 }
 
-func (this *Composite) ReleaseChildren(destroy bool) {
+func (this *Composite) releaseChildren_(destroy bool) {
 	var exceptions *ExceptionStash = NewExceptionStash()
 	defer exceptions.Close()
 	for _, child := range this._getChildren() {
@@ -710,14 +714,14 @@ func (this *Composite) ReleaseChildren(destroy bool) {
 					panic(r)
 				}
 			}()
-			child.impl.Release(false)
+			child.impl.release_(false)
 		}()
 	}
-	this.Scrollable.ReleaseChildren(destroy)
+	this.Scrollable.releaseChildren_(destroy)
 }
 
-func (this *Composite) ReleaseWidget() {
-	this.Scrollable.ReleaseWidget()
+func (this *Composite) releaseWidget_() {
+	this.Scrollable.releaseWidget_()
 	this.layout = nil
 	this.tabList = nil
 }
@@ -729,13 +733,13 @@ func (this *Composite) RemoveControl(controlLike ControlLike) {
 	}
 	_ = control
 	if control.HasFocus() {
-		this.impl.RedrawWidget(this.View, true)
+		this.impl.redrawWidget_(this.View, true)
 	}
 	this.FixTabList(control)
 }
 
-func (this *Composite) ReskinChildren(flags int32) {
-	this.Scrollable.ReskinChildren(flags)
+func (this *Composite) reskinChildren_(flags int32) {
+	this.Scrollable.reskinChildren_(flags)
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
@@ -745,15 +749,15 @@ func (this *Composite) ReskinChildren(flags int32) {
 	}
 }
 
-func (this *Composite) Resized() {
-	this.Scrollable.Resized()
+func (this *Composite) resized_() {
+	this.Scrollable.resized_()
 	if this.layout != (nil) {
-		this.impl.MarkLayout(false, false)
-		this.impl.UpdateLayout(false)
+		this.impl.markLayout_(false, false)
+		this.impl.updateLayout_(false)
 	}
 }
 
-func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
+func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 	if (this.state & WidgetCANVAS) != 0 {
 		var view *cocoa.NSView
 		if this.scrollView != (nil) {
@@ -762,7 +766,7 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 			view = this.View
 		}
 		if id == view.Id {
-			this.impl.GetShell().DeferFlushing()
+			this.impl.getShell_().DeferFlushing()
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 			var handled bool = false
 			var deltaY float64 = nsEvent.DeltaY()
@@ -776,7 +780,7 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 				if deltaY != 0 {
 					var doit bool = true
 					if this.Hooks(MouseWheel) || this.Filters(MouseWheel) {
-						doit = this.impl.SendMouseEvent(nsEvent, MouseWheel, true)
+						doit = this.impl.sendMouseEvent_(nsEvent, MouseWheel, true)
 					}
 					var bar *ScrollBar = this.verticalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -804,7 +808,7 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 				if deltaX != 0 {
 					var doit bool = true
 					if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
-						doit = this.impl.SendMouseEvent(nsEvent, MouseHorizontalWheel, true)
+						doit = this.impl.sendMouseEvent_(nsEvent, MouseHorizontalWheel, true)
 					}
 					var bar *ScrollBar = this.horizontalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -838,7 +842,7 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 		this.CallSuperOverload1(id, sel, theEvent)
 		return
 	}
-	this.Scrollable.ScrollWheel(id, sel, theEvent)
+	this.Scrollable.scrollWheel_(id, sel, theEvent)
 }
 
 func (this *Composite) SetBackgroundMode(mode int32) {
@@ -846,26 +850,34 @@ func (this *Composite) SetBackgroundMode(mode int32) {
 	this.backgroundMode = mode
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
-		children[i].impl.UpdateBackgroundMode()
+		children[i].impl.updateBackgroundMode_()
 	}
 }
 
-func (this *Composite) SetFocus() bool {
+func (this *Composite) setFocus_() bool {
 	this.CheckWidget()
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
-		if children[i].GetVisible() && children[i].impl.SetFocus() {
+		if children[i].GetVisible() && children[i].impl.setFocus_() {
 			return true
 		}
 	}
-	return this.Scrollable.SetFocus()
+	return this.Scrollable.setFocus_()
 }
 
-func (this *Composite) SetIsStyledText() {
+func (this *Composite) setIsStyledText_() {
 	this.isStyledText = true
 }
 
-func (this *Composite) SetLayout(layout *Layout) {
+func (this *Composite) SetLayout(layoutLike LayoutLike) {
+	var layout *Layout
+	if layoutLike != nil {
+		layout = layoutLike.AsLayout()
+	}
+	this.impl.setLayout_(layout)
+}
+
+func (this *Composite) setLayout_(layout *Layout) {
 	this.CheckWidget()
 	this.layout = layout
 }
@@ -876,7 +888,7 @@ func (this *Composite) SetLayoutDeferred(defer_ bool) {
 		this.layoutCount--
 		if this.layoutCount == 0 {
 			if (this.state&WidgetLAYOUT_CHILD) != 0 || (this.state&WidgetLAYOUT_NEEDED) != 0 {
-				this.impl.UpdateLayout(true)
+				this.impl.updateLayout_(true)
 			}
 		}
 	} else {
@@ -884,30 +896,30 @@ func (this *Composite) SetLayoutDeferred(defer_ bool) {
 	}
 }
 
-func (this *Composite) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
-	var changed bool = this.Scrollable.SetScrollBarVisible(bar, visible)
+func (this *Composite) setScrollBarVisible_(bar *ScrollBar, visible bool) bool {
+	var changed bool = this.Scrollable.setScrollBarVisible_(bar, visible)
 	if changed && this.layout != (nil) {
-		this.impl.MarkLayout(false, false)
-		this.impl.UpdateLayout(false)
+		this.impl.markLayout_(false, false)
+		this.impl.updateLayout_(false)
 	}
 	return changed
 }
 
-func (this *Composite) SetTabGroupFocus() bool {
-	if this.impl.IsTabItem() {
-		return this.impl.SetTabItemFocus()
+func (this *Composite) setTabGroupFocus_() bool {
+	if this.impl.isTabItem_() {
+		return this.impl.setTabItemFocus_()
 	}
 	var takeFocus bool = (this.style & NO_FOCUS) == 0
 	if (this.state & WidgetCANVAS) != 0 {
-		takeFocus = this.impl.HooksKeys()
+		takeFocus = this.impl.hooksKeys_()
 	}
-	if takeFocus && this.impl.SetTabItemFocus() {
+	if takeFocus && this.impl.setTabItemFocus_() {
 		return true
 	}
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
-		if !child.IsDisposed() && child.impl.IsTabItem() && child.impl.SetTabItemFocus() {
+		if !child.IsDisposed() && child.impl.isTabItem_() && child.impl.setTabItemFocus_() {
 			return true
 		}
 	}
@@ -936,57 +948,57 @@ func (this *Composite) SetTabList(tabList []*Control) {
 	this.tabList = tabList
 }
 
-func (this *Composite) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
+func (this *Composite) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
 	if (this.state & WidgetCANVAS) != 0 {
 		if (this.style & NO_FOCUS) != 0 {
 			return 0
 		}
-		if this.impl.HooksKeys() {
+		if this.impl.hooksKeys_() {
 			return 0
 		}
 	}
-	return this.Scrollable.TraversalCode(key, theEvent)
+	return this.Scrollable.traversalCode_(key, theEvent)
 }
 
-func (this *Composite) UpdateBackgroundColor() {
-	this.Scrollable.UpdateBackgroundColor()
+func (this *Composite) updateBackgroundColor_() {
+	this.Scrollable.updateBackgroundColor_()
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		if (children[i].state & WidgetPARENT_BACKGROUND) != 0 {
-			children[i].impl.UpdateBackgroundColor()
+			children[i].impl.updateBackgroundColor_()
 		}
 	}
 }
 
-func (this *Composite) UpdateBackgroundImage() {
-	this.Scrollable.UpdateBackgroundImage()
+func (this *Composite) updateBackgroundImage_() {
+	this.Scrollable.updateBackgroundImage_()
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		if (children[i].state & WidgetPARENT_BACKGROUND) != 0 {
-			children[i].impl.UpdateBackgroundImage()
+			children[i].impl.updateBackgroundImage_()
 		}
 	}
 }
 
-func (this *Composite) UpdateBackgroundMode() {
-	this.Scrollable.UpdateBackgroundMode()
+func (this *Composite) updateBackgroundMode_() {
+	this.Scrollable.updateBackgroundMode_()
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
-		children[i].impl.UpdateBackgroundMode()
+		children[i].impl.updateBackgroundMode_()
 	}
 }
 
-func (this *Composite) UpdateCursorRects(enabled bool) {
-	this.Scrollable.UpdateCursorRects(enabled)
+func (this *Composite) updateCursorRects_(enabled bool) {
+	this.Scrollable.updateCursorRects_(enabled)
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var control *Control = children[i]
-		control.impl.UpdateCursorRects(enabled && control.impl.IsEnabled())
+		control.impl.updateCursorRects_(enabled && control.impl.isEnabled_())
 	}
 }
 
-func (this *Composite) UpdateLayout(all bool) {
-	var parent *Composite = this.impl.FindDeferredControl()
+func (this *Composite) updateLayout_(all bool) {
+	var parent *Composite = this.impl.findDeferredControl_()
 	if parent != (nil) {
 		parent.state |= WidgetLAYOUT_CHILD
 		return
@@ -995,19 +1007,19 @@ func (this *Composite) UpdateLayout(all bool) {
 		var changed bool = (this.state & WidgetLAYOUT_CHANGED) != 0
 		this.state &= ^(WidgetLAYOUT_NEEDED | WidgetLAYOUT_CHANGED)
 		this.display.RunSkin()
-		this.layout.impl.LayoutFn(this, changed)
+		this.layout.impl.layoutFn_(this, changed)
 	}
 	if all {
 		this.state &= ^WidgetLAYOUT_CHILD
 		var children []*Control = this._getChildren()
 		for i := int32(0); i < int32(len(children)); i++ {
-			children[i].impl.UpdateLayout(all)
+			children[i].impl.updateLayout_(all)
 		}
 	}
 }
 
-func (this *Composite) String() string {
-	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.String(), this.layout)
+func (this *Composite) string_() string {
+	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.string_(), this.layout)
 }
 
 // j2go: instanceof helper for Control and its subclasses within the translated set.

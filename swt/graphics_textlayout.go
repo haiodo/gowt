@@ -83,11 +83,11 @@ func (this *TextLayout) initTextLayout(device *Device) {
 	this.styles[0] = newTextLayoutStyleItem()
 	this.styles[1] = newTextLayoutStyleItem()
 	this.stylesCount = 2
-	this.impl.InitOnResource()
+	this.impl.init_()
 }
 
 func (this *TextLayout) CheckLayout() {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 }
@@ -230,19 +230,19 @@ func (this *TextLayout) ComputeRuns() {
 			font.AddTraits(attrStr, range_)
 		}
 		var foreground *Color = style.Foreground
-		if foreground != (nil) && !foreground.impl.IsDisposed() {
+		if foreground != (nil) && !foreground.impl.isDisposed_() {
 			var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(foreground.Handle[0], foreground.Handle[1], foreground.Handle[2], float64(1))
 			attrStr.AddAttribute(cocoa.OSNSForegroundColorAttributeName_, upcastcocoaNSColorTococoaId(color), range_)
 		}
 		var background *Color = style.Background
-		if background != (nil) && !background.impl.IsDisposed() {
+		if background != (nil) && !background.impl.isDisposed_() {
 			var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(background.Handle[0], background.Handle[1], background.Handle[2], float64(1))
 			attrStr.AddAttribute(cocoa.OSNSBackgroundColorAttributeName_, upcastcocoaNSColorTococoaId(color), range_)
 		}
 		if style.Strikeout {
 			attrStr.AddAttribute(cocoa.OSNSStrikethroughStyleAttributeName_, upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(cocoa.OSNSUnderlineStyleSingle)), range_)
 			var strikeColor *Color = style.StrikeoutColor
-			if strikeColor != (nil) && !strikeColor.impl.IsDisposed() {
+			if strikeColor != (nil) && !strikeColor.impl.isDisposed_() {
 				var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(strikeColor.Handle[0], strikeColor.Handle[1], strikeColor.Handle[2], float64(1))
 				attrStr.AddAttribute(cocoa.OSNSStrikethroughColorAttributeName_, upcastcocoaNSColorTococoaId(color), range_)
 			}
@@ -272,7 +272,7 @@ func (this *TextLayout) ComputeRuns() {
 			if underlineStyle != 0 {
 				attrStr.AddAttribute(cocoa.OSNSUnderlineStyleAttributeName_, upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(underlineStyle)), range_)
 				var underlineColor *Color = style.UnderlineColor
-				if underlineColor != (nil) && !underlineColor.impl.IsDisposed() {
+				if underlineColor != (nil) && !underlineColor.impl.isDisposed_() {
 					var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(underlineColor.Handle[0], underlineColor.Handle[1], underlineColor.Handle[2], float64(1))
 					attrStr.AddAttribute(cocoa.OSNSUnderlineColorAttributeName_, upcastcocoaNSColorTococoaId(color), range_)
 				}
@@ -390,7 +390,7 @@ func (this *TextLayout) ComputeRuns() {
 	this.lineBounds = bounds
 }
 
-func (this *TextLayout) Destroy() {
+func (this *TextLayout) destroy_() {
 	this.FreeRuns()
 	if this.textStorage != (nil) {
 		this.textStorage.Release()
@@ -453,13 +453,13 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 	if gc == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.IsDisposed() {
+	if gc.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	if selectionForeground != (nil) && selectionForeground.impl.IsDisposed() {
+	if selectionForeground != (nil) && selectionForeground.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	if selectionBackground != (nil) && selectionBackground.impl.IsDisposed() {
+	if selectionBackground != (nil) && selectionBackground.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = gc.CheckGC(GCCLIPPING | GCTRANSFORM | GCFOREGROUND)
@@ -486,7 +486,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 	var hasSelection bool = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1
 	if hasSelection || ((flags&LAST_LINE_SELECTION) != 0 && (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0) {
 		if selectionBackground == (nil) {
-			selectionBackground = this.device.impl.GetSystemColor(COLOR_LIST_SELECTION)
+			selectionBackground = this.device.impl.getSystemColor_(COLOR_LIST_SELECTION)
 		}
 		var selectionColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(selectionBackground.Handle[0], selectionBackground.Handle[1], selectionBackground.Handle[2], selectionBackground.Handle[3])
 		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
@@ -1477,7 +1477,7 @@ func (this *TextLayout) InitClasses() {
 	cocoa.OSObjc_registerClassPair(cls)
 }
 
-func (this *TextLayout) IsDisposed() bool {
+func (this *TextLayout) isDisposed_() bool {
 	return this.device == (nil)
 }
 
@@ -1585,7 +1585,7 @@ func (this *TextLayout) SetFont(fontLike FontLike) {
 	}
 	_ = font
 	this.CheckLayout()
-	if font != (nil) && font.impl.IsDisposed() {
+	if font != (nil) && font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
@@ -1989,7 +1989,7 @@ func (this *TextLayout) SetWidth(width int32) {
 }
 
 func (this *TextLayout) String() string {
-	if this.impl.IsDisposed() {
+	if this.impl.isDisposed_() {
 		return "TextLayout {*DISPOSED*}"
 	}
 	return fmt.Sprintf("TextLayout {%s}", this.text)

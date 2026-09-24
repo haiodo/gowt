@@ -200,7 +200,7 @@ func (this *FormAttachment) SolveY(value int32) int32 {
 func (this *FormAttachment) String() string {
 	var string_ string
 	if this.Control != (nil) {
-		string_ = this.Control.impl.String()
+		string_ = this.Control.impl.string_()
 	} else {
 		string_ = fmt.Sprintf("%d/%d", this.Numerator, this.Denominator)
 	}

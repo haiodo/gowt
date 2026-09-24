@@ -54,7 +54,7 @@ func (this *FillLayout) initFillLayoutType(type_ int32) {
 	this.Type = type_
 }
 
-func (this *FillLayout) ComputeSize(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FillLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var children []*Control = composite.GetChildren()
 	var count int32 = int32(len(children))
 	var maxWidth int32 = 0
@@ -126,7 +126,7 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 		var trimY int32
 		_, ok90 := isControlToScrollable(control)
 		if ok90 {
-			var rect *Rectangle = (castControlToScrollable(control)).impl.ComputeTrim(0, 0, 0, 0)
+			var rect *Rectangle = (castControlToScrollable(control)).impl.computeTrim_(0, 0, 0, 0)
 			trimX = rect.Width
 			trimY = rect.Height
 		} else {
@@ -150,7 +150,7 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 	return size
 }
 
-func (this *FillLayout) FlushCache(control *Control) bool {
+func (this *FillLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
 	_, ok91 := fillDataImplAsFillData(data)
 	if ok91 {
@@ -169,8 +169,8 @@ func (this *FillLayout) GetName() string {
 	return string_[index+1 : int32(len(string_))]
 }
 
-func (this *FillLayout) LayoutFn(composite *Composite, flushCache bool) {
-	var rect *Rectangle = composite.impl.GetClientArea()
+func (this *FillLayout) layoutFn_(composite *Composite, flushCache bool) {
+	var rect *Rectangle = composite.impl.getClientArea_()
 	var children []*Control = composite.GetChildren()
 	var count int32 = int32(len(children))
 	if count == 0 {

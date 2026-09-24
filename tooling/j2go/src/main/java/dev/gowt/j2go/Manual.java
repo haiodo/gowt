@@ -44,6 +44,19 @@ public class Manual {
 	private static final String SWT_EVENT_LISTENER = "org.eclipse.swt.internal.SWTEventListener";
 	public static final String JRT_IMPORT = "github.com/haiodo/gowt/internal/jrt";
 
+	// Round 9 images: java.io surface ImageLoader.java's own translated code needs (field/param
+	// types and new FileInputStream/FileOutputStream(filename)) - README "Round 9 images". The
+	// actual PNG/GIF/BMP/JPEG codec backend is a hand-written stdlib wrapper, not translated.
+	private static final String JAVA_IO_INPUT_STREAM = "java.io.InputStream";
+	private static final String JAVA_IO_OUTPUT_STREAM = "java.io.OutputStream";
+	private static final String JAVA_IO_EXCEPTION = "java.io.IOException";
+	private static final String JAVA_IO_FILE_INPUT_STREAM = "java.io.FileInputStream";
+	// Only ever appears inside Image's own (already-panicking, HiDPI @2x) "new
+	// BufferedInputStream(...)" - aliased to InputStream so that dead-code var declaration still
+	// type-checks, not because a real BufferedInputStream (extra unread()-pushback) is ported.
+	private static final String JAVA_IO_BUFFERED_INPUT_STREAM = "java.io.BufferedInputStream";
+	private static final String JAVA_IO_FILE_OUTPUT_STREAM = "java.io.FileOutputStream";
+
 	private record Entry(String goType, String importPath, boolean isValueType) {}
 
 	private static final Map<String, Entry> ENTRIES = new LinkedHashMap<>();
@@ -114,6 +127,16 @@ public class Manual {
 		// Both content-free marker interfaces in Java; nothing to embed on the Go side.
 		reg(JAVA_EVENT_LISTENER, "any", null, true);
 		reg(SWT_EVENT_LISTENER, "any", null, true);
+		// isValueType=true: a bare Go interface (jrt.InputStream/OutputStream), never "*jrt.X" -
+		// same reasoning as java.lang.Throwable -> error above.
+		reg(JAVA_IO_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
+		reg(JAVA_IO_OUTPUT_STREAM, "jrt.OutputStream", JRT_IMPORT, true);
+		reg(JAVA_IO_EXCEPTION, "jrt.IOException", JRT_IMPORT, false);
+		// Names only feed ctorFuncName ("jrt.NewFileInputStream"/"...Output..."); no Go type by
+		// these names actually exists, the constructor returns jrt.InputStream/OutputStream directly.
+		reg(JAVA_IO_FILE_INPUT_STREAM, "jrt.FileInputStream", JRT_IMPORT, false);
+		reg(JAVA_IO_FILE_OUTPUT_STREAM, "jrt.FileOutputStream", JRT_IMPORT, false);
+		reg(JAVA_IO_BUFFERED_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
 	}
 
 	// Methods hand-written in *_manual.go instead of translated (key: Names.erasureKey).
@@ -136,7 +159,15 @@ public class Manual {
 			// Compares a Java class name to "org.eclipse.swt.widgets." - a Go type's name can't
 			// match that, so it checks the Go package instead (swt/widgets_stubs3_manual.go).
 			Map.entry("org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)", "DisplayIsValidClass"),
-			Map.entry("java.lang.Thread#currentThread()", "ThreadCurrentThread"));
+			Map.entry("java.lang.Thread#currentThread()", "ThreadCurrentThread"),
+			// Round 9 images: loadByZoom's HiDPI @2x-variant dispatch (Stream/Optional/
+			// ElementAtZoom<T>, no translator rule) is out of scope; NativeImageLoader.save's own
+			// caller (ImageLoader.save) is plain, but NativeImageLoader itself was never translated
+			// (cocoa PI-layer file) - both replaced by hand-written stubs/wrappers in
+			// swt/graphics_imagecodec_manual.go, see README "Round 9 images".
+			Map.entry("org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)", "LoadByZoomStub"),
+			Map.entry("org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)",
+					"NativeImageLoaderSave"));
 
 	// Dropped: Selector.java's own bookkeeping is elided (see README). Matched by name only.
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
@@ -186,7 +217,7 @@ public class Manual {
 	}
 
 	/** Whether qualifiedTypeName may serve as an embedded Go base for a translated subclass. */
-	static boolean isManualSuper(String qualifiedTypeName) {
+	public static boolean isManualSuper(String qualifiedTypeName) {
 		return qualifiedTypeName.equals(JAVA_RUNTIME_EXCEPTION) || qualifiedTypeName.equals(JAVA_ERROR)
 				|| qualifiedTypeName.equals(JAVA_EVENT_OBJECT);
 	}

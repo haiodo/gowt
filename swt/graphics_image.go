@@ -290,7 +290,7 @@ func (this *Image) initImageDeviceSourceMask(device *Device, source *ImageData, 
 	this.InitImageImageZoom(image, 100)
 }
 
-func NewImageDeviceStream(deviceLike DeviceLike, stream any) *Image {
+func NewImageDeviceStream(deviceLike DeviceLike, stream jrt.InputStream) *Image {
 	var device *Device
 	if deviceLike != nil {
 		device = deviceLike.AsDevice()
@@ -302,7 +302,7 @@ func NewImageDeviceStream(deviceLike DeviceLike, stream any) *Image {
 	return this
 }
 
-func (this *Image) initImageDeviceStream(device *Device, stream any) {
+func (this *Image) initImageDeviceStream(device *Device, stream jrt.InputStream) {
 	this.Resource.initResourceDevice(device)
 	this.width = -1
 	this.height = -1
@@ -328,8 +328,14 @@ func (this *Image) initImageDeviceStream(device *Device, stream any) {
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.IOException)
 				_ = e
 				ErrorCodeThrowable(ERROR_IO, e)
 			} else {
@@ -1503,8 +1509,8 @@ func ImageCocoa_new(deviceLike DeviceLike, type_ int32, nsImage *cocoa.NSImage) 
 	return image
 }
 
-func ImageCreateImageDataProvider(stream any) ImageDataProvider {
-	var streamData []int8 = func() []int8 { _ = []any{stream}; panic("j2go: unresolved call readAllBytes") }()
+func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
+	var streamData []int8 = jrt.ReadAllBytes(stream)
 	if ImageDataLoaderIsDynamicallySizable(func() any { _ = []any{streamData}; panic("j2go: unresolved new ByteArrayInputStream") }()) {
 		anon430 := &ImageAnon1{}
 		anon430.fnGetImageData = func(zoom int32) *ImageData {
@@ -1743,15 +1749,8 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 		if fileName == this.nonSizableFileName {
 			return func() any { panic("j2go: unresolved call empty") }()
 		}
-		var stream any = func() any {
-			_ = []any{func() any { _ = []any{fileName}; panic("j2go: unresolved new FileInputStream") }()}
-			panic("j2go: unresolved new BufferedInputStream")
-		}()
-		defer func() {
-			if c, ok := stream.(interface{ Close() }); ok {
-				c.Close()
-			}
-		}()
+		var stream jrt.InputStream = nil
+		defer stream.Close()
 		var tret433 any
 		tretd434 := false
 		func() {
@@ -1760,8 +1759,14 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 				if r == nil {
 					return
 				}
-				if false {
-					var e error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.IOException)
 					_ = e
 					ErrorCodeThrowable(ERROR_IO, e)
 				} else {

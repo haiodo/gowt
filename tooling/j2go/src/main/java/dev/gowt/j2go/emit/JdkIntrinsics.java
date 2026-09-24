@@ -24,6 +24,12 @@ final class JdkIntrinsics {
 	String tryIntrinsic(MethodInvocation mi, IMethodBinding mb) {
 		String qualified = mb.getDeclaringClass().getErasure().getQualifiedName();
 
+		// Image.java's own HiDPI provider path (Round 7 gfx) - the only InputStream/OutputStream
+		// method this port's final file set reaches through an abstractly-typed receiver.
+		if (qualified.equals("java.io.InputStream") && mb.getName().equals("readAllBytes")) {
+			emitter.fileImports.add(JRT);
+			return "jrt.ReadAllBytes(" + recv(mi) + ")";
+		}
 		if (qualified.equals("java.lang.Math") && (mb.getName().equals("max") || mb.getName().equals("min"))) {
 			return emitMathMinMax(mi, mb);
 		}
@@ -135,7 +141,7 @@ final class JdkIntrinsics {
 	}
 
 	private String recv(MethodInvocation mi) {
-		return emitter.expr(mi.getExpression());
+		return mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 	}
 
 	/** Round 6 additions: boxing, monitors, a few String/Math/System members, the Selector enum. */
@@ -159,6 +165,11 @@ final class JdkIntrinsics {
 			case "java.lang.Float#floatToIntBits":
 				emitter.fileImports.add("math");
 				return "int32(math.Float32bits(" + arg(mi, 0) + "))";
+			// WinBMPFileFormat's BI_BITFIELDS mask conversion (LEDataInputStream is little-endian,
+			// ImageData masks are expected big-endian for depth != 16 - see its own comment).
+			case "java.lang.Integer#reverseBytes":
+				emitter.fileImports.add("math/bits");
+				return "int32(bits.ReverseBytes32(uint32(" + arg(mi, 0) + ")))";
 			// Boxed Integer is Go any (Manual); unboxing asserts back, nil reads as 0.
 			case "java.lang.Integer#valueOf":
 				return mb.getParameterTypes()[0].isPrimitive() ? arg(mi, 0) : null;

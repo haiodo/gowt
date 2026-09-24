@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"os"
 )
 
@@ -84,13 +85,13 @@ func (this *ImageData) initImageDataWidthHeightDepthPaletteScanlinePadData(width
 	this.initImageDataWidthHeightDepthPaletteScanlinePadDataMaskPadMaskDataAlphaDataAlphaTransparentPixelTypeXYDisposalMethodDelayTime(width, height, depth, palette, scanlinePad, ImageDataCheckData(data), 0, nil, nil, -1, -1, IMAGE_UNDEFINED, 0, 0, 0, 0)
 }
 
-func NewImageDataStream(stream any) *ImageData {
+func NewImageDataStream(stream jrt.InputStream) *ImageData {
 	this := &ImageData{}
 	this.initImageDataStream(stream)
 	return this
 }
 
-func (this *ImageData) initImageDataStream(stream any) {
+func (this *ImageData) initImageDataStream(stream jrt.InputStream) {
 	var i *ImageData = ImageDataLoaderLoad(stream)
 	this.SetAllFields(i.Width, i.Height, i.Depth, i.ScanlinePad, i.BytesPerLine, i.Data, i.Palette, i.TransparentPixel, i.MaskData, i.MaskPad, i.AlphaData, i.Alpha, i.Type, i.X, i.Y, i.DisposalMethod, i.DelayTime)
 }

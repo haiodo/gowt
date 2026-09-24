@@ -288,18 +288,24 @@ final class ControlFlowEmitter {
 			boolean broad = altTypes.size() == 1 && altTypes.get(0).equals("error");
 			b.append(ind(indent)).append(i == 0 ? "if " : "} else if ");
 			if (altTypes.isEmpty()) {
-				// Only unmapped JDK exceptions (IOException): nothing translated throws them.
+				// An unmapped JDK exception (NumberFormatException, ...): nothing translated throws it.
 				b.append("false {\n").append(ind(indent + 1)).append("var ").append(varName).append(" error\n");
 				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			} else if (broad) {
 				b.append(varName).append(", ok := r.(error); ok {\n");
 				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			} else {
-				// A multi-catch of unrelated concrete types has no single Go assertion - matched
-				// via an inline type-switch probe; the catch var keeps r's static (any) type.
 				b.append("func() bool { switch r.(type) { case ").append(String.join(", ", altTypes))
 						.append(": return true }; return false }() {\n");
-				b.append(ind(indent + 1)).append(varName).append(" := r\n");
+				if (altTypes.size() == 1) {
+					// A single concrete alternative (catch (IOException e)) gets a real assertion,
+					// so the catch body can use e as that type (e.g. pass it where error is wanted).
+					b.append(ind(indent + 1)).append(varName).append(" := r.(").append(altTypes.get(0)).append(")\n");
+				} else {
+					// A multi-catch of unrelated concrete types has no single Go assertion - matched
+					// via the type-switch probe above; the catch var keeps r's static (any) type.
+					b.append(ind(indent + 1)).append(varName).append(" := r\n");
+				}
 				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			}
 			b.append(emitter.block(cc.getBody(), indent + 1));

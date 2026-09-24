@@ -136,6 +136,11 @@ final class ExpressionEmitter {
 
 	String fieldGoName(IVariableBinding vb) {
 		String n = vb.getName();
+		// A field declared on a manual-super type (jrt.EventObject's Source, ...) keeps that
+		// type's own Go name, which is always exported - jrt is a separate Go package, so an
+		// unexported field there wouldn't even be visible from swt's promoted-field access.
+		String declaringQualified = vb.getDeclaringClass().getErasure().getQualifiedName();
+		if (Manual.isManualSuper(declaringQualified)) return Names.capitalize(n);
 		if (Modifier.isPublic(vb.getModifiers())) return Names.capitalize(n);
 		return EmitUtil.fieldIdent(n);
 	}

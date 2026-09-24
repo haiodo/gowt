@@ -157,6 +157,19 @@ func (l *List) AddAll(other *List) bool {
 	return true
 }
 
+// Remove is java.util.List.remove(Object): drops the first equal element.
+func (l *List) Remove(v any) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	for i, e := range l.items {
+		if keysEqual(e, v) {
+			l.items = append(l.items[:i], l.items[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
 // RemoveIf takes Java's Predicate as a func(any) bool; typed any because a translated
 // method-reference argument has no Go type of its own yet.
 func (l *List) RemoveIf(predicate any) bool {

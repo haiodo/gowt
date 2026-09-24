@@ -1741,3 +1741,50 @@ and streams), `FontMetrics.equals`'s `Double.compare`, `Objects.hash`.
 `DPIUtil` is a partial hand port (deviceZoom = native zoom, no `swt.autoScale`); records and
 `LinkedHashMap` subclasses have no translator rule (GC's cache is hand-written); Java's shift
 count masking (`& 31`) is not emitted for `<<`/`>>`/`>>>`.
+
+## Round 8 tree
+
+Translated for real (swt invocation in `port.sh`): `Tree` (3560 Java lines), `TreeItem`, `TreeColumn`,
+`ScrollBar`. The `ScrollBar` stub is gone from `swt/widgets_stubs2_manual.go` and from `Manual`
+(`ENTRIES`, `WIDGET_SUPER` is now empty). Everything else they need was already translated. No new
+unsupported markers (same 130/14/7/2/2 as Round 7 gfx).
+
+The NSOutlineView data source/delegate selectors (`outlineView:numberOfChildrenOfItem:`,
+`child:ofItem:`, `isItemExpandable:`, `objectValueForTableColumn:byItem:`, `willDisplayCell:...`,
+`outlineViewSelectionDidChange:`, `shouldExpandItem:`, `expandItem:expandChildren:`, ...) and the
+`SWTImageTextCell` drawing methods were already registered by `Display.initClasses` since Round 6;
+the struct-by-value ones (`highlightSelectionInClipRect:`, `drawBackgroundInClipRect:`,
+`drawInteriorWithFrame:inView:`, `canDragRowsWithIndexes:atPoint:`, `imageRectForBounds:`, `cellSize`)
+go through the generated `OS.CALLBACK_x` IMPs. No bridge change was needed.
+
+`cmd/tree` (hand-written): Shell + FillLayout + `Tree(BORDER)`, three roots with 2-3 children,
+"Fruits" expanded via `SetExpanded`, Selection and Expand listeners. `Event.Item` is a `*Widget`, so
+the program maps `item.AsWidget()` back to its `*TreeItem`. Checked with an in-process snapshot:
+`selectRowIndexes:byExtendingSelection:` printed `Selected: Banana`, `expandItem:` printed
+`Expanded: Grains`, a synthesized down-arrow `keyDown:` moved the selection to `Cherry` and printed it.
+
+**Contract changes** (general rules):
+
+- **Cascade collision check by Go name** (`TypeModel.build`): a cascade method gets the
+  `On<Class>` suffix only when another signature in its tree computes the same Go name, not merely
+  the same Java name. Before, `TreeItem.getBounds(int)` (Go `GetBoundsIndex`) pushed
+  `Control.getBounds()` to `GetBoundsOnControl`, and `Item.setText(String)` to `SetTextOnItem`.
+  Side effect: many existing names lost a spurious suffix, public and internal. Renames visible to
+  hand-written code: `Control.SetBackgroundColor_196` -> `SetBackgroundColor` (the NSColor one is
+  now `SetBackgroundColorOnControl`), `Layout.LayoutOnLayout` -> `LayoutFn`,
+  `ComputeSizeOnLayout` -> `ComputeSize`, `Device.GetBoundsOnDevice` -> `GetBounds`, and the
+  internal `...OnControl`/`...OnWidget` forms (`SetZOrder`, `SendKeyEvent`, `IsOpaque`, ...).
+  Callers in `cmd/paint` updated.
+- **names.properties**: `TreeItem.setText(String[])` -> `SetTexts`, `setImage(Image[])` ->
+  `SetImages`. They are declared before the `Item.setText(String)`/`setImage(Image)` overrides and
+  would otherwise take the bare name, pushing `Shell.SetText` onto a suffixed cascade name.
+- **Array args of natives with more than 8 integer args** (`NativeEmitter.emitLazyNative`):
+  purego's darwin/arm64 stack packing copies a slice argument's whole header (ptr, len, cap), not
+  its pointer, so an array landing on the stack arrived as its length. The backing func takes
+  `*elem` and the wrapper passes `unsafe.SliceData(x)`. Only `OS.UCKeyTranslate` has that shape;
+  before the fix any key press on any control crashed (`SIGSEGV addr=0x1` in `UCKeyTranslate`,
+  via `Widget.calculateKeycode`).
+
+**Gaps**: `Tree.deselectAll()` is `DeselectAll0` (Widget's `deselectAll(id,sel,sender)` cascade takes
+the bare name); mouse clicks, collapse, columns, images, `VIRTUAL`/`CHECK` and scrolling
+were not exercised live.

@@ -1,8 +1,7 @@
-// Hand-written opaque stubs for the rest of manual.txt's list: ScrollBar (embeds its real manual
-// superclass per Manual.WIDGET_SUPER, so promoted-field upcasts like &x.Control keep working),
-// ToolBar/Caret/IME (Composite/Canvas/Decorations/Shell/Button's own field types, not translated
-// yet), plus the graphics/accessibility leaf types Control.java reads fields off of. Composite/
-// Canvas/Decorations/Shell are real as of Round 5, Menu/MenuItem as of Round 7 - removed from here.
+// Hand-written opaque stubs for the rest of manual.txt's list: ToolBar/Caret/IME (Composite/
+// Canvas/Decorations/Shell/Button's own field types, not translated yet), plus the graphics/
+// accessibility leaf types Control.java reads fields off of. Composite/Canvas/Decorations/Shell
+// are real as of Round 5, Menu/MenuItem as of Round 7, ScrollBar as of Round 8.
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"
@@ -14,30 +13,6 @@ type ToolBar struct {
 }
 
 func NewToolBar(parent *Composite, style int32, internal bool) *ToolBar { return &ToolBar{} }
-
-type ScrollBar struct {
-	Widget
-	parent         *Scrollable
-	view           *cocoa.NSScroller
-	actionSelector int64
-	target         *cocoa.Id
-	enabled        bool
-	selection      int32
-	increment      int32
-}
-
-func NewScrollBar() *ScrollBar { return &ScrollBar{} }
-
-func (b *ScrollBar) UpdateBar(x int32, y int32, width int32, height int32) {}
-
-func (b *ScrollBar) SendSelection() {}
-
-func (b *ScrollBar) SendSelectionEvent(eventType int32, event *Event, send bool) {}
-
-func (b *ScrollBar) GetEnabled() bool     { return b.enabled }
-func (b *ScrollBar) GetSelection() int32  { return b.selection }
-func (b *ScrollBar) GetIncrement() int32  { return b.increment }
-func (b *ScrollBar) SetSelection(v int32) { b.selection = v }
 
 // Caret: Canvas.java's caret code all null-checks before use, so a nil *Caret already matches
 // real SWT's "no caret installed" behavior. Fields are package-private in Java - lowercase.

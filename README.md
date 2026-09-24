@@ -11,6 +11,7 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `cmd/hello/` | Smallest program: a Shell with one "Hello" button (`CGO_ENABLED=0 go run ./cmd/hello`) |
 | `cmd/paint/` | A Canvas with a PaintListener drawing through `GC` (`CGO_ENABLED=0 go run ./cmd/paint`) |
 | `cmd/form/` | GridLayout form: Label + Text, OK button, File > Quit menu |
+| `cmd/tree/` | Tree (NSOutlineView): three root items with children, Selection and Expand listeners |
 
 ## Build
 

@@ -4170,7 +4170,7 @@ func OSGetSystemUIMode(outMode []int32, outOptions []int32) int32 {
 	return OSGetSystemUIMode_impl(outMode, outOptions)
 }
 
-var OSUCKeyTranslate_impl func(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16, modifierKeyState int32, keyboardType int32, keyTranslateOptions int32, deadKeyState []int32, maxStringLength int32, actualStringLength []int64, unicodeString []uint16) int32
+var OSUCKeyTranslate_impl func(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16, modifierKeyState int32, keyboardType int32, keyTranslateOptions int32, deadKeyState *int32, maxStringLength int32, actualStringLength *int64, unicodeString *uint16) int32
 var OSUCKeyTranslate_once sync.Once
 
 func OSUCKeyTranslate(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16, modifierKeyState int32, keyboardType int32, keyTranslateOptions int32, deadKeyState []int32, maxStringLength int32, actualStringLength []int64, unicodeString []uint16) int32 {
@@ -4178,7 +4178,7 @@ func OSUCKeyTranslate(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16,
 		ensureFrameworks()
 		purego.RegisterLibFunc(&OSUCKeyTranslate_impl, purego.RTLD_DEFAULT, "UCKeyTranslate")
 	})
-	return OSUCKeyTranslate_impl(keyLayoutPtr, virtualKeyCode, keyAction, modifierKeyState, keyboardType, keyTranslateOptions, deadKeyState, maxStringLength, actualStringLength, unicodeString)
+	return OSUCKeyTranslate_impl(keyLayoutPtr, virtualKeyCode, keyAction, modifierKeyState, keyboardType, keyTranslateOptions, unsafe.SliceData(deadKeyState), maxStringLength, unsafe.SliceData(actualStringLength), unsafe.SliceData(unicodeString))
 }
 
 var OSUTTypeEqual_impl func(inUTI1 int64, inUTI2 int64) bool

@@ -325,8 +325,8 @@ func (this *Shell) CloseWidget(force bool) {
 	}
 }
 
-func (this *Shell) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
-	var size *Point = this.Decorations.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, changed)
+func (this *Shell) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
+	var size *Point = this.Decorations.ComputeSizeWHintHHintChanged(wHint, hHint, changed)
 	if this.toolBar != (nil) {
 		if wHint == DEFAULT && this.toolBar.itemCount > 0 {
 			var tbSize *Point = this.toolBar.ComputeSize(DEFAULT, DEFAULT)
@@ -1222,7 +1222,7 @@ func (this *Shell) SetAlpha(alpha int32) {
 	this.window.SetAlphaValue(float64(float32(alpha) / 255))
 }
 
-func (this *Shell) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, width int32, height int32, move bool, resize bool) {
+func (this *Shell) SetBoundsXYWidthHeightMoveResize(x int32, y int32, width int32, height int32, move bool, resize bool) {
 	if this.window == (nil) {
 		if move {
 			return
@@ -1395,7 +1395,7 @@ func (this *Shell) SetMaximumSize(width int32, height int32) {
 			cond158 = frame.Height
 		}
 		height = int32((cond158))
-		this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, width, height, false, true)
+		this.impl.SetBoundsXYWidthHeightMoveResize(0, 0, width, height, false, true)
 	}
 }
 
@@ -1453,7 +1453,7 @@ func (this *Shell) SetMinimumSize(width int32, height int32) {
 			cond160 = frame.Height
 		}
 		height = int32((cond160))
-		this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, width, height, false, true)
+		this.impl.SetBoundsXYWidthHeightMoveResize(0, 0, width, height, false, true)
 	}
 }
 
@@ -1683,7 +1683,7 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 	this.display.CheckEnterExit(trimControl, nil, false)
 }
 
-func (this *Shell) SetZOrderOnControl() {
+func (this *Shell) SetZOrder() {
 	if this.scrollView != (nil) {
 		this.scrollView.SetDocumentView(upcastcocoaNSViewTococoaId(this.View))
 	}
@@ -1705,7 +1705,7 @@ func (this *Shell) SetZOrderOnControl() {
 	}
 }
 
-func (this *Shell) SetZOrderSiblingAboveOnControl(control *Control, above bool) {
+func (this *Shell) SetZOrderSiblingAbove(control *Control, above bool) {
 	if this.window == (nil) {
 		return
 	}
@@ -1741,10 +1741,10 @@ func (this *Shell) TraverseEscape() bool {
 	return true
 }
 
-func (this *Shell) UpdateCursorRectsOnControl(enabled bool) {
-	this.Decorations.UpdateCursorRectsOnControl(enabled)
+func (this *Shell) UpdateCursorRects(enabled bool) {
+	this.Decorations.UpdateCursorRects(enabled)
 	if this.toolBar != (nil) {
-		this.toolBar.UpdateCursorRectsOnControl(enabled)
+		this.toolBar.UpdateCursorRects(enabled)
 	}
 }
 
@@ -1832,7 +1832,7 @@ func (this *Shell) View_stringForToolTip_point_userData(id int64, sel int64, vie
 	if control == (nil) {
 		return int64(0)
 	}
-	var target *Widget = control.FindTooltip(cocoa.NewNSViewOverload1(view).ConvertPoint_toView_(pt, nil))
+	var target *Widget = control.impl.FindTooltip(cocoa.NewNSViewOverload1(view).ConvertPoint_toView_(pt, nil))
 	var string_ string = target.impl.TooltipText()
 	if string_ == "" {
 		return int64(0)
@@ -1976,7 +1976,7 @@ func (this *Shell) WindowSendEvent(id int64, sel int64, event int64) {
 				trimControl = nil
 			}
 			if trimControl != (nil) {
-				trimControl.SendMouseEvent(nsEvent, type_, false)
+				trimControl.impl.SendMouseEvent(nsEvent, type_, false)
 			}
 		}
 		var target *Widget = nil
@@ -1989,7 +1989,7 @@ func (this *Shell) WindowSendEvent(id int64, sel int64, event int64) {
 					eventPoint = hitView[0].Window().ConvertScreenToBase(eventPoint)
 				}
 			}
-			target = control.FindTooltip(eventPoint)
+			target = control.impl.FindTooltip(eventPoint)
 		}
 		if this.display.tooltipControl != control || this.display.tooltipTarget != target {
 			var oldControl *Control = this.display.tooltipControl

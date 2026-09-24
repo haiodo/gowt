@@ -86,7 +86,7 @@ func (this *FormData) ComputeSize(controlLike ControlLike, wHint int32, hHint in
 	}
 	if wHint == this.Width && hHint == this.Height {
 		if this.defaultWidth == -1 || this.defaultHeight == -1 || wHint != this.defaultWhint || hHint != this.defaultHhint {
-			var size *Point = control.impl.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, flushCache)
+			var size *Point = control.impl.ComputeSizeWHintHHintChanged(wHint, hHint, flushCache)
 			this.defaultWhint = wHint
 			this.defaultHhint = hHint
 			this.defaultWidth = size.X
@@ -97,7 +97,7 @@ func (this *FormData) ComputeSize(controlLike ControlLike, wHint int32, hHint in
 		return
 	}
 	if this.currentWidth == -1 || this.currentHeight == -1 || wHint != this.currentWhint || hHint != this.currentHhint {
-		var size *Point = control.impl.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, flushCache)
+		var size *Point = control.impl.ComputeSizeWHintHHintChanged(wHint, hHint, flushCache)
 		this.currentWhint = wHint
 		this.currentHhint = hHint
 		this.currentWidth = size.X

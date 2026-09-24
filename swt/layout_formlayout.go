@@ -74,7 +74,7 @@ func (this *FormLayout) ComputeHeight(controlLike ControlLike, dataLike FormData
 	return height.SolveY(data.GetHeight(control, flushCache))
 }
 
-func (this *FormLayout) ComputeSizeOnLayout(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FormLayout) ComputeSize(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var size *Point = this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, false, 0, 0, wHint, hHint, flushCache)
 	if wHint != DEFAULT {
 		size.X = wHint
@@ -132,7 +132,7 @@ func (this *FormLayout) ComputeWidth(controlLike ControlLike, dataLike FormDataL
 	return width.SolveY(data.GetWidth(control, flushCache))
 }
 
-func (this *FormLayout) LayoutOnLayout(composite *Composite, flushCache bool) {
+func (this *FormLayout) LayoutFn(composite *Composite, flushCache bool) {
 	var rect *Rectangle = composite.impl.GetClientArea()
 	var x int32 = rect.X + this.MarginLeft + this.MarginWidth
 	var y int32 = rect.Y + this.MarginTop + this.MarginHeight

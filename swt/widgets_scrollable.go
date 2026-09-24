@@ -84,7 +84,7 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	if this.scrollView == (nil) {
 		return nil
 	}
-	var bar *ScrollBar = NewScrollBar()
+	var bar *ScrollBar = newScrollBar()
 	bar.parent = this
 	bar.style = style
 	bar.display = this.display
@@ -107,7 +107,7 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	}
 	bar.view = scroller
 	bar.CreateJNIRef()
-	bar.Register()
+	bar.impl.Register()
 	if (this.state & WidgetCANVAS) == 0 {
 		bar.target = scroller.Target()
 		bar.actionSelector = scroller.Action()
@@ -206,7 +206,7 @@ func (this *Scrollable) RedrawBackgroundImage() {
 	if this.scrollView != (nil) {
 		var control *Control = this.impl.FindBackgroundControl()
 		if control != (nil) && control.backgroundImage != (nil) {
-			this.impl.RedrawWidgetOnWidget(this.View, false)
+			this.impl.RedrawWidget(this.View, false)
 		}
 	}
 }
@@ -233,11 +233,11 @@ func (this *Scrollable) ReleaseHandle() {
 
 func (this *Scrollable) ReleaseChildren(destroy bool) {
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.Release(false)
+		this.horizontalBar.impl.Release(false)
 		this.horizontalBar = nil
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.Release(false)
+		this.verticalBar.impl.Release(false)
 		this.verticalBar = nil
 	}
 	this.Control.ReleaseChildren(destroy)
@@ -273,14 +273,14 @@ func (this *Scrollable) SendHorizontalSelection() {
 	if this.horizontalBar.view.IsHiddenOrHasHiddenAncestor() {
 		return
 	}
-	this.horizontalBar.SendSelection()
+	this.horizontalBar.impl.SendSelection()
 }
 
 func (this *Scrollable) SendVerticalSelection() {
 	if this.verticalBar.view.IsHiddenOrHasHiddenAncestor() {
 		return
 	}
-	this.verticalBar.SendSelection()
+	this.verticalBar.impl.SendSelection()
 }
 
 func (this *Scrollable) EnableWidget(enabled bool) {
@@ -327,8 +327,8 @@ func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
 	return true
 }
 
-func (this *Scrollable) SetZOrderOnControl() {
-	this.Control.SetZOrderOnControl()
+func (this *Scrollable) SetZOrder() {
+	this.Control.SetZOrder()
 	if this.scrollView != (nil) {
 		this.scrollView.SetDocumentView(upcastcocoaNSViewTococoaId(this.View))
 	}
@@ -341,8 +341,8 @@ func (this *Scrollable) TopView() *cocoa.NSView {
 	return this.Control.TopView()
 }
 
-func (this *Scrollable) UpdateCursorRectsOnControl(enabled bool) {
-	this.Control.UpdateCursorRectsOnControl(enabled)
+func (this *Scrollable) UpdateCursorRects(enabled bool) {
+	this.Control.UpdateCursorRects(enabled)
 	if this.scrollView == (nil) {
 		return
 	}

@@ -415,7 +415,7 @@ func (this *Control) CancelOperation(id int64, sel int64, sender int64) {
 		if this.IsDisposed() {
 			return
 		}
-		if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
+		if !this.impl.SendKeyEvent(nsEvent, KeyDown) {
 			return
 		}
 	}
@@ -474,10 +474,10 @@ func (this *Control) CheckToolTip(targetLike WidgetLike) {
 }
 
 func (this *Control) ComputeSize(wHint int32, hHint int32) *Point {
-	return this.impl.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, true)
+	return this.impl.ComputeSizeWHintHHintChanged(wHint, hHint, true)
 }
 
-func (this *Control) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
+func (this *Control) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -602,7 +602,7 @@ func (this *Control) CreateWidget() {
 	this.CheckBackground()
 	this.CheckBuffered()
 	this.SetDefaultFont()
-	this.impl.SetZOrderOnControl()
+	this.impl.SetZOrder()
 	this.SetRelations()
 	if (this.state & WidgetPARENT_BACKGROUND) != 0 {
 		this.SetBackground()
@@ -658,7 +658,7 @@ func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
+				if !this.impl.SendKeyEvent(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -703,13 +703,13 @@ func (this *Control) DragDetectButtonCountStateMaskXY(button int32, count int32,
 	if button != 1 || count != 1 {
 		return false
 	}
-	if !this.impl.DragDetectXYFilterConsumeOnControl(x, y, false, nil) {
+	if !this.impl.DragDetectXYFilterConsume(x, y, false, nil) {
 		return false
 	}
 	return this.SendDragEvent(button, stateMask, x, y)
 }
 
-func (this *Control) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter bool, consume []bool) bool {
+func (this *Control) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
 	var application *cocoa.NSApplication = cocoa.NSApplicationSharedApplication()
 	var dragging bool = false
 	var eventType int64 = int64(cocoa.OSNSLeftMouseDown)
@@ -794,7 +794,7 @@ func (this *Control) EnableWidget(enabled bool) {
 	if ok64 {
 		(castcocoaNSViewTococoaNSControl(this.View)).SetEnabled(enabled)
 	}
-	this.impl.UpdateCursorRectsOnControl(this.impl.IsEnabled())
+	this.impl.UpdateCursorRects(this.impl.IsEnabled())
 }
 
 func (this *Control) Equals(color1 []float64, color2 []float64) bool {
@@ -964,9 +964,9 @@ func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 				var event *Event = NewEvent()
 				event.KeyCode = keyCode
 				this.SetInputState(event, nsEvent, KeyDown)
-				this.impl.SendKeyEventTypeEventOnWidget(KeyDown, event)
+				this.impl.SendKeyEventTypeEvent(KeyDown, event)
 				this.SetInputState(event, nsEvent, KeyUp)
-				this.impl.SendKeyEventTypeEventOnWidget(KeyUp, event)
+				this.impl.SendKeyEventTypeEvent(KeyUp, event)
 				break
 			}
 			if mask != 0 {
@@ -981,7 +981,7 @@ func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 				event.KeyCode = keyCode
 				this.SetLocationMask(event, nsEvent)
 				this.SetInputState(event, nsEvent, type_)
-				if !this.impl.SendKeyEventTypeEventOnWidget(type_, event) {
+				if !this.impl.SendKeyEventTypeEvent(type_, event) {
 					return
 				}
 			}
@@ -1015,7 +1015,7 @@ func (this *Control) ForceFocus() bool {
 	if !focusView.CanBecomeKeyView() {
 		return false
 	}
-	var result bool = this.impl.ForceFocusFocusViewOnControl(focusView)
+	var result bool = this.impl.ForceFocusFocusView(focusView)
 	if this.IsDisposed() {
 		return false
 	}
@@ -1027,7 +1027,7 @@ func (this *Control) ForceFocus() bool {
 	return result
 }
 
-func (this *Control) ForceFocusFocusViewOnControl(focusView *cocoa.NSView) bool {
+func (this *Control) ForceFocusFocusView(focusView *cocoa.NSView) bool {
 	var window *cocoa.NSWindow = this.View.Window()
 	if window == (nil) {
 		return false
@@ -1444,7 +1444,7 @@ func (this *Control) InsertText(id int64, sel int64, string_ int64) bool {
 						this.SetKeyState(event, KeyDown, nsEvent)
 					}
 					event.Character = buffer[i]
-					if !this.impl.SendKeyEventTypeEventOnWidget(KeyDown, event) {
+					if !this.impl.SendKeyEventTypeEvent(KeyDown, event) {
 						return false
 					}
 				}
@@ -1715,7 +1715,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 			if this.IsDisposed() {
 				return
 			}
-			if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
+			if !this.impl.SendKeyEvent(nsEvent, KeyDown) {
 				return
 			}
 			if consume[0] {
@@ -1735,7 +1735,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
+				if !this.impl.SendKeyEvent(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -1755,7 +1755,7 @@ func (this *Control) HasKeyboardFocus(inId int64) bool {
 func (this *Control) KeyUp(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
-		if !this.impl.SendKeyEventOnWidget(nsEvent, KeyUp) {
+		if !this.impl.SendKeyEvent(nsEvent, KeyUp) {
 			return
 		}
 	}
@@ -1830,14 +1830,14 @@ func (this *Control) ScrollWheel(id int64, sel int64, theEvent int64) {
 		if !handled {
 			if this.Hooks(MouseWheel) || this.Filters(MouseWheel) {
 				if nsEvent.DeltaY() != 0 {
-					if !this.SendMouseEvent(nsEvent, MouseWheel, true) {
+					if !this.impl.SendMouseEvent(nsEvent, MouseWheel, true) {
 						handled = true
 					}
 				}
 			}
 			if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
 				if nsEvent.DeltaX() != 0 {
-					if !this.SendMouseEvent(nsEvent, MouseHorizontalWheel, true) {
+					if !this.impl.SendMouseEvent(nsEvent, MouseHorizontalWheel, true) {
 						handled = true
 					}
 				}
@@ -1881,7 +1881,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 			if !this.View.IsFlipped() {
 				location.Y = this.View.Bounds().Height - location.Y
 			}
-			dragging = this.impl.DragDetectXYFilterConsumeOnControl(int32(location.X), int32(location.Y), false, consume)
+			dragging = this.impl.DragDetectXYFilterConsume(int32(location.X), int32(location.Y), false, consume)
 		}
 		break
 	case cocoa.OSNSLeftMouseDragged, cocoa.OSNSRightMouseDragged, cocoa.OSNSOtherMouseDragged:
@@ -1890,15 +1890,15 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 		break
 	case cocoa.OSNSLeftMouseUp, cocoa.OSNSRightMouseUp, cocoa.OSNSOtherMouseUp:
 		if this.display.clickCount == 2 {
-			this.SendMouseEvent(nsEvent, MouseDoubleClick, false)
+			this.impl.SendMouseEvent(nsEvent, MouseDoubleClick, false)
 		}
 		runEnterExit = true
 		runEnterExitControl = this.display.FindControl(true)
 		break
 	}
-	this.SendMouseEvent(nsEvent, type_, false)
+	this.impl.SendMouseEvent(nsEvent, type_, false)
 	if dragging {
-		this.SendMouseEvent(nsEvent, DragDetect, false)
+		this.impl.SendMouseEvent(nsEvent, DragDetect, false)
 	}
 	if runEnterExit {
 		this.display.CheckEnterExit(runEnterExitControl, nsEvent, false)
@@ -1999,7 +1999,7 @@ func (this *Control) MoveAbove(controlLike ControlLike) {
 			return
 		}
 	}
-	this.impl.SetZOrderSiblingAboveOnControl(control, true)
+	this.impl.SetZOrderSiblingAbove(control, true)
 }
 
 func (this *Control) MoveBelow(controlLike ControlLike) {
@@ -2017,7 +2017,7 @@ func (this *Control) MoveBelow(controlLike ControlLike) {
 			return
 		}
 	}
-	this.impl.SetZOrderSiblingAboveOnControl(control, false)
+	this.impl.SetZOrderSiblingAbove(control, false)
 }
 
 func (this *Control) New_Accessible(controlLike ControlLike) *Accessible {
@@ -2036,7 +2036,7 @@ func (this *Control) Pack() {
 
 func (this *Control) PackChanged(changed bool) {
 	this.CheckWidget()
-	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChangedOnControl(DEFAULT, DEFAULT, changed))
+	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChanged(DEFAULT, DEFAULT, changed))
 }
 
 func (this *Control) PaintView() *cocoa.NSView {
@@ -2068,7 +2068,7 @@ func (this *Control) RedrawChildren(children bool) {
 	this.View.SetNeedsDisplay(true)
 }
 
-func (this *Control) RedrawXYWidthHeightAllOnControl(x int32, y int32, width int32, height int32, all bool) {
+func (this *Control) RedrawXYWidthHeightAll(x int32, y int32, width int32, height int32, all bool) {
 	this.CheckWidget()
 	var rect cocoa.NSRect = cocoa.NSRect{}
 	rect.X = float64(x)
@@ -2558,7 +2558,7 @@ func (this *Control) SetBackground() {
 		control = this
 	}
 	if control.backgroundImage != (nil) {
-		this.impl.SetBackgroundImageImageOnControl(control.backgroundImage.Handle)
+		this.impl.SetBackgroundImageImage(control.backgroundImage.Handle)
 	} else {
 		var color []float64
 		if control.background != (nil) {
@@ -2567,11 +2567,11 @@ func (this *Control) SetBackground() {
 			color = control.impl.DefaultBackground().Handle
 		}
 		var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
-		this.impl.SetBackgroundColor(nsColor)
+		this.impl.SetBackgroundColorOnControl(nsColor)
 	}
 }
 
-func (this *Control) SetBackgroundColor_196(colorLike ColorLike) {
+func (this *Control) SetBackgroundColor(colorLike ColorLike) {
 	var color *Color
 	if colorLike != nil {
 		color = colorLike.AsColor()
@@ -2613,7 +2613,7 @@ func (this *Control) _setBackground(colorLike ColorLike) {
 	this.background = background
 	this.backgroundAlpha = alpha
 	this.impl.UpdateBackgroundColor()
-	this.impl.RedrawWidgetOnWidget(this.View, true)
+	this.impl.RedrawWidget(this.View, true)
 }
 
 func (this *Control) SetBackgroundImage(imageLike ImageLike) {
@@ -2634,19 +2634,19 @@ func (this *Control) SetBackgroundImage(imageLike ImageLike) {
 	this.impl.UpdateBackgroundImage()
 }
 
-func (this *Control) SetBackgroundImageImageOnControl(image *cocoa.NSImage) {
-	this.impl.RedrawWidgetOnWidget(this.View, true)
+func (this *Control) SetBackgroundImageImage(image *cocoa.NSImage) {
+	this.impl.RedrawWidget(this.View, true)
 }
 
-func (this *Control) SetBackgroundColor(nsColor *cocoa.NSColor) {
+func (this *Control) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
 }
 
 func (this *Control) SetBounds(x int32, y int32, width int32, height int32) {
 	this.CheckWidget()
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), true, true)
+	this.impl.SetBoundsXYWidthHeightMoveResize(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), true, true)
 }
 
-func (this *Control) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, width int32, height int32, move bool, resize bool) {
+func (this *Control) SetBoundsXYWidthHeightMoveResize(x int32, y int32, width int32, height int32, move bool, resize bool) {
 	var display *Display = this.display
 	var oldIgnoreFocusControl *Control = display.ignoreFocusControl
 	display.ignoreFocusControl = this
@@ -2686,7 +2686,7 @@ func (this *Control) SetBoundsRect(rectLike RectangleLike) {
 	if rect == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(rect.X, rect.Y, int32(math.Max(float64(0), float64(rect.Width))), int32(math.Max(float64(0), float64(rect.Height))), true, true)
+	this.impl.SetBoundsXYWidthHeightMoveResize(rect.X, rect.Y, int32(math.Max(float64(0), float64(rect.Width))), int32(math.Max(float64(0), float64(rect.Height))), true, true)
 }
 
 func (this *Control) SetCapture(capture bool) {
@@ -2732,7 +2732,7 @@ func (this *Control) SetCursor(cursorLike CursorLike) {
 
 func (this *Control) SetDefaultFont() {
 	if this.display.smallFonts {
-		this.impl.SetFontFontOnControl(this.impl.DefaultFont().Handle)
+		this.impl.SetFontFont(this.impl.DefaultFont().Handle)
 		this.SetSmallSize()
 	}
 }
@@ -2792,10 +2792,10 @@ func (this *Control) SetFontOnControl(font *Font) {
 	} else {
 		cond74 = this.impl.DefaultFont().Handle
 	}
-	this.impl.SetFontFontOnControl(cond74)
+	this.impl.SetFontFont(cond74)
 }
 
-func (this *Control) SetFontFontOnControl(font *cocoa.NSFont) {
+func (this *Control) SetFontFont(font *cocoa.NSFont) {
 	_, ok75 := iscocoaNSViewTococoaNSControl(this.View)
 	if ok75 {
 		(castcocoaNSViewTococoaNSControl(this.View)).SetFont(font)
@@ -2824,11 +2824,11 @@ func (this *Control) SetForeground(colorLike ColorLike) {
 		return
 	}
 	this.foreground = foreground
-	this.impl.SetForegroundColorOnControl(foreground)
-	this.impl.RedrawWidgetOnWidget(this.View, false)
+	this.impl.SetForegroundColor(foreground)
+	this.impl.RedrawWidget(this.View, false)
 }
 
-func (this *Control) SetForegroundColorOnControl(color []float64) {
+func (this *Control) SetForegroundColor(color []float64) {
 }
 
 func (this *Control) SetFrameOrigin(id int64, sel int64, point cocoa.NSPoint) {
@@ -2880,7 +2880,7 @@ func (this *Control) SetLayoutData(layoutData any) {
 
 func (this *Control) SetLocation(x int32, y int32) {
 	this.CheckWidget()
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, 0, 0, true, false)
+	this.impl.SetBoundsXYWidthHeightMoveResize(x, y, 0, 0, true, false)
 }
 
 func (this *Control) SetLocationLocation(locationLike PointLike) {
@@ -2893,7 +2893,7 @@ func (this *Control) SetLocationLocation(locationLike PointLike) {
 	if location == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(location.X, location.Y, 0, 0, true, false)
+	this.impl.SetBoundsXYWidthHeightMoveResize(location.X, location.Y, 0, 0, true, false)
 }
 
 func (this *Control) SetMenu(menuLike MenuLike) {
@@ -2966,9 +2966,9 @@ func (this *Control) SetRedraw(redraw bool) {
 		if this.drawCount == 0 {
 			this.impl.InvalidateVisibleRegion()
 			var topView *cocoa.NSView = this.impl.TopView()
-			this.impl.RedrawWidgetOnWidget(topView, true)
+			this.impl.RedrawWidget(topView, true)
 			if this.View.Id != topView.Id {
-				this.impl.RedrawWidgetOnWidget(this.View, true)
+				this.impl.RedrawWidget(this.View, true)
 			}
 		}
 	} else {
@@ -2989,7 +2989,7 @@ func (this *Control) SetRegion(region *Region) {
 		this.regionPath.Release()
 	}
 	this.regionPath = this.GetPathOverload1(region)
-	this.impl.RedrawWidgetOnWidget(this.View, true)
+	this.impl.RedrawWidget(this.View, true)
 }
 
 func (this *Control) SetRelations() {
@@ -3012,7 +3012,7 @@ func (this *Control) SetRadioSelection(value bool) bool {
 
 func (this *Control) SetSize(width int32, height int32) {
 	this.CheckWidget()
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), false, true)
+	this.impl.SetBoundsXYWidthHeightMoveResize(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), false, true)
 }
 
 func (this *Control) SetSizeSize(sizeLike PointLike) {
@@ -3025,7 +3025,7 @@ func (this *Control) SetSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(size.X))), int32(math.Max(float64(0), float64(size.Y))), false, true)
+	this.impl.SetBoundsXYWidthHeightMoveResize(0, 0, int32(math.Max(float64(0), float64(size.X))), int32(math.Max(float64(0), float64(size.Y))), false, true)
 }
 
 func (this *Control) SetSmallSize() {
@@ -3106,7 +3106,7 @@ func (this *Control) SetVisible(visible bool) {
 	}
 }
 
-func (this *Control) SetZOrderOnControl() {
+func (this *Control) SetZOrder() {
 	var topView *cocoa.NSView = this.impl.TopView()
 	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 }
@@ -3119,7 +3119,7 @@ func (this *Control) ShouldDelayWindowOrderingForEvent(id int64, sel int64, theE
 	return this.Widget.ShouldDelayWindowOrderingForEvent(id, sel, theEvent)
 }
 
-func (this *Control) SetZOrderSiblingAboveOnControl(sibling *Control, above bool) {
+func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
 	var index int32 = 0
 	var siblingIndex int32 = 0
 	var oldNextIndex int32 = -1
@@ -3830,7 +3830,7 @@ func (this *Control) UpdateBackgroundColor() {
 		color = control.impl.DefaultBackground().Handle
 	}
 	var nsColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3])
-	this.impl.SetBackgroundColor(nsColor)
+	this.impl.SetBackgroundColorOnControl(nsColor)
 }
 
 func (this *Control) UpdateBackgroundImage() {
@@ -3847,7 +3847,7 @@ func (this *Control) UpdateBackgroundImage() {
 	} else {
 		cond85 = nil
 	}
-	this.impl.SetBackgroundImageImageOnControl(cond85)
+	this.impl.SetBackgroundImageImage(cond85)
 }
 
 func (this *Control) UpdateBackgroundMode() {
@@ -3870,7 +3870,7 @@ func (this *Control) UpdateTrackingAreas(id int64, sel int64) {
 	}
 }
 
-func (this *Control) UpdateCursorRectsOnControl(enabled bool) {
+func (this *Control) UpdateCursorRects(enabled bool) {
 	this.UpdateCursorRectsEnabledWidget(enabled, this.View)
 }
 

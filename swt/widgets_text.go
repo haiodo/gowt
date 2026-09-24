@@ -148,7 +148,7 @@ func (this *Text) ClearSelection() {
 	this.SetSelection(selection.X)
 }
 
-func (this *Text) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
+func (this *Text) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -524,12 +524,12 @@ func (this *Text) DrawRect(id int64, sel int64, rect cocoa.NSRect) {
 	this.Scrollable.DrawRect(id, sel, rect)
 }
 
-func (this *Text) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter bool, consume []bool) bool {
+func (this *Text) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
 	var selection *Point = this.GetSelection()
 	if selection.X != selection.Y {
 		var position int64 = this.GetPosition(int64(x), int64(y))
 		if int64(selection.X) <= position && position < int64(selection.Y) {
-			if this.Scrollable.DragDetectXYFilterConsumeOnControl(x, y, filter, consume) {
+			if this.Scrollable.DragDetectXYFilterConsume(x, y, filter, consume) {
 				if consume != (nil) {
 					consume[0] = true
 				}
@@ -543,13 +543,13 @@ func (this *Text) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter bo
 func (this *Text) EnableWidget(enabled bool) {
 	this.Scrollable.EnableWidget(enabled)
 	if (this.style & MULTI) != 0 {
-		this.impl.SetForegroundColorOnControl(this.foreground)
+		this.impl.SetForegroundColor(this.foreground)
 	}
 }
 
-func (this *Text) ForceFocusFocusViewOnControl(focusView *cocoa.NSView) bool {
+func (this *Text) ForceFocusFocusView(focusView *cocoa.NSView) bool {
 	this.receivingFocus = true
-	var result bool = this.Scrollable.ForceFocusFocusViewOnControl(focusView)
+	var result bool = this.Scrollable.ForceFocusFocusView(focusView)
 	if (this.style & SINGLE) != 0 {
 		(castcocoaNSViewTococoaNSTextField(this.View)).SelectText(nil)
 	}
@@ -1129,8 +1129,8 @@ func (this *Text) SelectAll() {
 	}
 }
 
-func (this *Text) SendKeyEventOnWidget(nsEvent *cocoa.NSEvent, type_ int32) bool {
-	var result bool = this.Scrollable.SendKeyEventOnWidget(nsEvent, type_)
+func (this *Text) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
+	var result bool = this.Scrollable.SendKeyEvent(nsEvent, type_)
 	if !result {
 		return result
 	}
@@ -1172,8 +1172,8 @@ func (this *Text) SendKeyEventOnWidget(nsEvent *cocoa.NSEvent, type_ int32) bool
 	return result
 }
 
-func (this *Text) SendKeyEventTypeEventOnWidget(type_ int32, event *Event) bool {
-	var result bool = this.Scrollable.SendKeyEventTypeEventOnWidget(type_, event)
+func (this *Text) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
+	var result bool = this.Scrollable.SendKeyEventTypeEvent(type_, event)
 	if !result {
 		return result
 	}
@@ -1228,7 +1228,7 @@ func (this *Text) SendCancelSelection() {
 	this.SendSelectionEventEventTypeEventSend(DefaultSelection, event, false)
 }
 
-func (this *Text) SetBackgroundColor(nsColor *cocoa.NSColor) {
+func (this *Text) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
 	if (this.style & SINGLE) != 0 {
 		var textField *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		textField.SetBackgroundColor(nsColor)
@@ -1243,7 +1243,7 @@ func (this *Text) SetBackgroundColor(nsColor *cocoa.NSColor) {
 	}
 }
 
-func (this *Text) SetBackgroundImageImageOnControl(image *cocoa.NSImage) {
+func (this *Text) SetBackgroundImageImage(image *cocoa.NSImage) {
 	if (this.style & SINGLE) != 0 {
 		var widget *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		widget.SetDrawsBackground(image == (nil))
@@ -1335,15 +1335,15 @@ func (this *Text) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
 	}
 }
 
-func (this *Text) SetFontFontOnControl(font *cocoa.NSFont) {
+func (this *Text) SetFontFont(font *cocoa.NSFont) {
 	if (this.style & MULTI) != 0 {
 		(castcocoaNSViewTococoaNSTextView(this.View)).SetFont(font)
 		return
 	}
-	this.Scrollable.SetFontFontOnControl(font)
+	this.Scrollable.SetFontFont(font)
 }
 
-func (this *Text) SetForegroundColorOnControl(color []float64) {
+func (this *Text) SetForegroundColor(color []float64) {
 	var nsColor *cocoa.NSColor
 	if color == (nil) {
 		nsColor = cocoa.NSColorTextColor()
@@ -1649,8 +1649,8 @@ func (this *Text) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 	return bits
 }
 
-func (this *Text) UpdateCursorRectsOnControl(enabled bool) {
-	this.Scrollable.UpdateCursorRectsOnControl(enabled)
+func (this *Text) UpdateCursorRects(enabled bool) {
+	this.Scrollable.UpdateCursorRects(enabled)
 	if this.scrollView == (nil) {
 		return
 	}

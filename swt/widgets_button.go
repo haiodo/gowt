@@ -95,7 +95,7 @@ func (this *Button) Click() {
 	this.SendSelectionEvent(Selection)
 }
 
-func (this *Button) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
+func (this *Button) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	if (this.style & ARROW) != 0 {
 		var width int32
@@ -235,8 +235,8 @@ func (this *Button) Deregister() {
 	}
 }
 
-func (this *Button) DragDetectXYFilterConsumeOnControl(x int32, y int32, filter bool, consume []bool) bool {
-	var dragging bool = this.Control.DragDetectXYFilterConsumeOnControl(x, y, filter, consume)
+func (this *Button) DragDetectXYFilterConsume(x int32, y int32, filter bool, consume []bool) bool {
+	var dragging bool = this.Control.DragDetectXYFilterConsume(x, y, filter, consume)
 	consume[0] = dragging
 	return dragging
 }
@@ -623,7 +623,7 @@ func (this *Button) _setAlignment(alignment int32) {
 	}
 }
 
-func (this *Button) SetBackgroundColor(nsColor *cocoa.NSColor) {
+func (this *Button) SetBackgroundColorOnControl(nsColor *cocoa.NSColor) {
 	var control *Control = this.impl.FindBackgroundControl()
 	if control == (nil) || control.backgroundImage == (nil) {
 		var cell *cocoa.NSButtonCell = cocoa.NewNSButtonCellOverload2(upcastcocoaNSCellTococoaId((castcocoaNSViewTococoaNSButton(this.View)).Cell()))
@@ -631,14 +631,14 @@ func (this *Button) SetBackgroundColor(nsColor *cocoa.NSColor) {
 	}
 }
 
-func (this *Button) SetBackgroundImageImageOnControl(image *cocoa.NSImage) {
+func (this *Button) SetBackgroundImageImage(image *cocoa.NSImage) {
 	if image != (nil) {
 		var cell *cocoa.NSButtonCell = cocoa.NewNSButtonCellOverload2(upcastcocoaNSCellTococoaId((castcocoaNSViewTococoaNSButton(this.View)).Cell()))
 		cell.SetBackgroundColor(nil)
 	}
 }
 
-func (this *Button) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, width int32, height int32, move bool, resize bool) {
+func (this *Button) SetBoundsXYWidthHeightMoveResize(x int32, y int32, width int32, height int32, move bool, resize bool) {
 	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
 		var heightThreshold int32 = ButtonREGULAR_BUTTON_HEIGHT
 		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
@@ -652,7 +652,7 @@ func (this *Button) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, 
 			button.SetBezelStyle(int64(cocoa.OSNSBezelStylePush))
 		}
 	}
-	this.Control.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, width, height, move, resize)
+	this.Control.SetBoundsXYWidthHeightMoveResize(x, y, width, height, move, resize)
 	if this.radioParent != (nil) && resize {
 		var size cocoa.NSSize = cocoa.NSSize{}
 		size.Width = float64(width)
@@ -661,7 +661,7 @@ func (this *Button) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, 
 	}
 }
 
-func (this *Button) SetFontFontOnControl(nsFont *cocoa.NSFont) {
+func (this *Button) SetFontFont(nsFont *cocoa.NSFont) {
 	if this.text != "" {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
@@ -676,7 +676,7 @@ func (this *Button) SetFontFontOnControl(nsFont *cocoa.NSFont) {
 	}
 }
 
-func (this *Button) SetForegroundColorOnControl(color []float64) {
+func (this *Button) SetForegroundColor(color []float64) {
 	(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 }
 
@@ -835,8 +835,8 @@ func (this *Button) TopView() *cocoa.NSView {
 	return this.Control.TopView()
 }
 
-func (this *Button) SetZOrderOnControl() {
-	this.Control.SetZOrderOnControl()
+func (this *Button) SetZOrder() {
+	this.Control.SetZOrder()
 	if this.radioParent != (nil) {
 		this.radioParent.AddSubview(this.View)
 	}

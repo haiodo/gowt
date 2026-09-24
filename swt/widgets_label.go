@@ -68,7 +68,7 @@ func (this *Label) AddRelation(control *Control) {
 	}
 }
 
-func (this *Label) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
+func (this *Label) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -342,7 +342,7 @@ func (this *Label) _setAlignment() {
 	}
 }
 
-func (this *Label) SetFontFontOnControl(font *cocoa.NSFont) {
+func (this *Label) SetFontFont(font *cocoa.NSFont) {
 	if this.textView != (nil) {
 		var cell *cocoa.NSCell = cocoa.NewNSCellOverload2(upcastcocoaNSCellTococoaId(this.textView.Cell()))
 		cell.SetAttributedStringValue(this.CreateAttributedText())
@@ -350,7 +350,7 @@ func (this *Label) SetFontFontOnControl(font *cocoa.NSFont) {
 	}
 }
 
-func (this *Label) SetForegroundColorOnControl(color []float64) {
+func (this *Label) SetForegroundColor(color []float64) {
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}

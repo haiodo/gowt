@@ -44,6 +44,7 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # join Button. Menu/MenuItem move here from the manual-stub list, so Display/Shell/Decorations/
 # Control/Widget (which all construct or call into them) must be regenerated in this same
 # invocation - see README "Round 7 widgets".
+# Round 8 tree: Tree/TreeItem/TreeColumn (NSOutlineView) and ScrollBar (was a manual stub).
 # Round 7 gfx: the paint path - GC/GCData and the graphics resources a GC draws with
 # (Pattern/Transform/Path/Region/Image/Cursor/TextLayout) plus their common value types.
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
@@ -114,6 +115,10 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/TextLayout.java \
 	org/eclipse/swt/graphics/TextStyle.java \
 	org/eclipse/swt/graphics/GlyphMetrics.java \
+	org/eclipse/swt/widgets/ScrollBar.java \
+	org/eclipse/swt/widgets/Tree.java \
+	org/eclipse/swt/widgets/TreeItem.java \
+	org/eclipse/swt/widgets/TreeColumn.java \
 	-- \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"

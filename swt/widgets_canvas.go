@@ -224,11 +224,11 @@ func (this *Canvas) InsertText(id int64, sel int64, string_ int64) bool {
 	return this.Composite.InsertText(id, sel, string_)
 }
 
-func (this *Canvas) IsOpaqueOnWidget(id int64, sel int64) bool {
+func (this *Canvas) IsOpaque(id int64, sel int64) bool {
 	if this.glcontext != (nil) {
 		return true
 	}
-	return this.Composite.IsOpaqueOnWidget(id, sel)
+	return this.Composite.IsOpaque(id, sel)
 }
 
 func (this *Canvas) MarkedRange(id int64, sel int64) cocoa.NSRange {
@@ -238,7 +238,7 @@ func (this *Canvas) MarkedRange(id int64, sel int64) cocoa.NSRange {
 	return this.Composite.MarkedRange(id, sel)
 }
 
-func (this *Canvas) ReadSelectionFromPasteboardOnWidget(id int64, sel int64, pasteboard int64) bool {
+func (this *Canvas) ReadSelectionFromPasteboard(id int64, sel int64, pasteboard int64) bool {
 	var result bool = false
 	var pboard *cocoa.NSPasteboard = cocoa.NewNSPasteboardOverload1(pasteboard)
 	var availableTypes *cocoa.NSArray = pboard.Types()
@@ -455,11 +455,11 @@ func (this *Canvas) SelectedRange(id int64, sel int64) cocoa.NSRange {
 	return this.Composite.SelectedRange(id, sel)
 }
 
-func (this *Canvas) SendKeyEventOnWidget(nsEvent *cocoa.NSEvent, type_ int32) bool {
+func (this *Canvas) SendKeyEvent(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	if this.caret != (nil) {
 		cocoa.NSCursorSetHiddenUntilMouseMoves(true)
 	}
-	return this.Composite.SendKeyEventOnWidget(nsEvent, type_)
+	return this.Composite.SendKeyEvent(nsEvent, type_)
 }
 
 func (this *Canvas) SetCaret(caret *Caret) {
@@ -568,7 +568,7 @@ func (this *Canvas) ViewWillMoveToWindow(id int64, sel int64, arg0 int64) {
 	}
 }
 
-func (this *Canvas) WriteSelectionToPasteboardOnWidget(id int64, sel int64, pasteboardObj int64, typesObj int64) bool {
+func (this *Canvas) WriteSelectionToPasteboard(id int64, sel int64, pasteboardObj int64, typesObj int64) bool {
 	var result bool = false
 	var pboard *cocoa.NSPasteboard = cocoa.NewNSPasteboardOverload1(pasteboardObj)
 	var types *cocoa.NSArray = cocoa.NewNSArrayOverload1(typesObj)

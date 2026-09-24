@@ -3,17 +3,17 @@
 package swt
 
 type LayoutImpl interface {
-	ComputeSizeOnLayout(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
+	ComputeSize(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
 	FlushCache(a0 *Control) bool
-	LayoutOnLayout(a0 *Composite, a1 bool)
+	LayoutFn(a0 *Composite, a1 bool)
 }
 
-func (this *Layout) ComputeSizeOnLayout(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
-	panic("j2go: ComputeSizeOnLayout has no default on Layout")
+func (this *Layout) ComputeSize(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
+	panic("j2go: ComputeSize has no default on Layout")
 }
 
-func (this *Layout) LayoutOnLayout(a0 *Composite, a1 bool) {
-	panic("j2go: LayoutOnLayout has no default on Layout")
+func (this *Layout) LayoutFn(a0 *Composite, a1 bool) {
+	panic("j2go: LayoutFn has no default on Layout")
 }
 
 type Layout struct {

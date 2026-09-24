@@ -14,7 +14,7 @@ type DeviceImpl interface {
 	CheckDevice()
 	Create(a0 *DeviceData)
 	Destroy()
-	GetBoundsOnDevice() *Rectangle
+	GetBounds() *Rectangle
 	GetClientArea() *Rectangle
 	GetSystemColor(a0 int32) *Color
 	Init()
@@ -238,7 +238,7 @@ func (this *Device) Dispose_Object(object any) {
 func (this *Device) Destroy() {
 }
 
-func (this *Device) GetBoundsOnDevice() *Rectangle {
+func (this *Device) GetBounds() *Rectangle {
 	this.impl.CheckDevice()
 	var primaryScreen *cocoa.NSScreen = this.GetPrimaryScreen()
 	if primaryScreen == (nil) {
@@ -284,7 +284,7 @@ func (this *Device) GetDeviceData() *DeviceData {
 
 func (this *Device) GetClientArea() *Rectangle {
 	this.impl.CheckDevice()
-	return this.impl.GetBoundsOnDevice()
+	return this.impl.GetBounds()
 }
 
 func (this *Device) GetDepth() int32 {

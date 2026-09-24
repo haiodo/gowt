@@ -117,22 +117,34 @@ final class NativeEmitter {
 
 	private void emitLazyNative(MethodDeclaration md, IMethodBinding mb, String javaName, String goName, String ret, StringBuilder out) {
 		String symbol = emitter.natives.symbolFor(javaName);
+		ITypeBinding[] types = mb.getParameterTypes();
+		// purego's darwin/arm64 stack packing copies a slice arg's whole header (ptr, len, cap)
+		// instead of its pointer, so past 8 integer args an array goes as *elem.
+		int intArgs = 0;
+		for (ITypeBinding t : types) if (!t.getName().equals("double") && !t.getName().equals("float")) intArgs++;
 		List<String> ps = new ArrayList<>();
-		for (int i = 0; i < mb.getParameterTypes().length; i++) {
-			ps.add(emitter.sanitizeIdent(((SingleVariableDeclaration) md.parameters().get(i)).getName().getIdentifier()) + " " + paramType(mb, i));
+		List<String> backingPs = new ArrayList<>();
+		List<String> args = new ArrayList<>();
+		for (int i = 0; i < types.length; i++) {
+			String n = emitter.sanitizeIdent(((SingleVariableDeclaration) md.parameters().get(i)).getName().getIdentifier());
+			String t = paramType(mb, i);
+			ps.add(n + " " + t);
+			boolean byPointer = intArgs > 8 && types[i].isArray();
+			backingPs.add(n + " " + (byPointer ? "*" + t.substring(2) : t));
+			args.add(byPointer ? "unsafe.SliceData(" + n + ")" : n);
+			if (byPointer) emitter.fileImports.add("unsafe");
 		}
 		String params = String.join(", ", ps);
-		String args = emitter.argNames(md);
 		String backing = goName + "_impl";
 		String once = goName + "_once";
 		emitter.fileImports.add("sync");
 		emitter.fileImports.add("github.com/ebitengine/purego");
-		out.append("var ").append(backing).append(" func(").append(params).append(") ").append(ret).append('\n');
+		out.append("var ").append(backing).append(" func(").append(String.join(", ", backingPs)).append(") ").append(ret).append('\n');
 		out.append("var ").append(once).append(" sync.Once\n");
 		out.append("func ").append(goName).append('(').append(params).append(") ").append(ret).append(" {\n\t")
 				.append(once).append(".Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&").append(backing)
 				.append(", purego.RTLD_DEFAULT, \"").append(symbol).append("\") })\n\t")
-				.append(ret.isEmpty() ? "" : "return ").append(backing).append('(').append(args).append(")\n}\n\n");
+				.append(ret.isEmpty() ? "" : "return ").append(backing).append('(').append(String.join(", ", args)).append(")\n}\n\n");
 	}
 
 	// A constant-global accessor (see caller): Dlsym the address and dereference it directly,

@@ -179,18 +179,21 @@ public class TypeModel {
 			// root; every class shares one `impl` field, so the Go name must be unique tree-wide.
 			List<ClassInfo> tree = new ArrayList<>();
 			collectAllDescendants(ci, tree);
-			Map<String, Set<String>> sigsByBareName = new LinkedHashMap<>();
+			// Keyed by computed Go name, not bare Java name: TreeItem.getBounds(int) is GetBoundsIndex
+			// and must not push Control.getBounds() off its plain GetBounds.
+			Map<String, Set<String>> sigsByGoName = new LinkedHashMap<>();
 			Set<String> treeTypeNames = new LinkedHashSet<>();
 			for (ClassInfo c : tree) {
 				treeTypeNames.add(c.goTypeName);
 				for (IMethodBinding m : c.declaredMethods.values()) {
-					sigsByBareName.computeIfAbsent(m.getName(), k -> new LinkedHashSet<>()).add(signature(m));
+					String goName = names.goMemberName(m, Names.javaMethodBaseGoName(m.getName()));
+					sigsByGoName.computeIfAbsent(goName, k -> new LinkedHashSet<>()).add(signature(m));
 				}
 			}
 			for (var e : ci.overriddenRootMethods.entrySet()) {
 				IMethodBinding decl = e.getValue();
 				String base = names.goMemberName(decl, Names.javaMethodBaseGoName(decl.getName()));
-				boolean collides = sigsByBareName.get(decl.getName()).size() > 1;
+				boolean collides = sigsByGoName.get(base).size() > 1;
 				String finalName = collides ? base + "On" + lookup(decl.getDeclaringClass()).goTypeName : base;
 				// Layout.layout() -> "Layout", same as every subclass's embedded field name - Go
 				// rejects a field and method sharing a name.

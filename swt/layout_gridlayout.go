@@ -73,7 +73,7 @@ func (this *GridLayout) initGridLayoutNumColumnsMakeColumnsEqualWidth(numColumns
 	this.MakeColumnsEqualWidth = makeColumnsEqualWidth
 }
 
-func (this *GridLayout) ComputeSizeOnLayout(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *GridLayout) ComputeSize(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var size *Point = this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, false, 0, 0, wHint, hHint, flushCache)
 	if wHint != DEFAULT {
 		size.X = wHint
@@ -121,7 +121,7 @@ func (this *GridLayout) GetData(grid [][]*Control, row int32, column int32, rowC
 	return nil
 }
 
-func (this *GridLayout) LayoutOnLayout(composite *Composite, flushCache bool) {
+func (this *GridLayout) LayoutFn(composite *Composite, flushCache bool) {
 	var rect *Rectangle = composite.impl.GetClientArea()
 	this.LayoutCompositeMoveXYWidthHeightFlushCache(composite, true, rect.X, rect.Y, rect.Width, rect.Height, flushCache)
 }

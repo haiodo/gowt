@@ -20,7 +20,7 @@ func main() {
 	shell.SetText("Paint")
 	shell.SetLayout(swt.NewFillLayout())
 	canvas := swt.NewCanvasParentStyle(shell, swt.NONE)
-	canvas.SetBackgroundColor_196(display.GetSystemColor(swt.COLOR_WHITE))
+	canvas.SetBackgroundColor(display.GetSystemColor(swt.COLOR_WHITE))
 	canvas.AddPaintListener(painter(func(e *swt.PaintEvent) {
 		gc := e.Gc
 		gc.SetBackground(display.GetSystemColor(swt.COLOR_DARK_GREEN))

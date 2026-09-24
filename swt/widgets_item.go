@@ -33,7 +33,7 @@ func NewItem(parentLike WidgetLike, style int32) *Item {
 func (this *Item) initItem(parent *Widget, style int32) {
 	this.Widget.initWidgetParentStyle(parent, style)
 	this.text = ""
-	this._addListener(ZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
+	this.impl._addListener(ZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
 }
 
 func NewItemParentStyleIndex(parentLike WidgetLike, style int32, index int32) *Item {
@@ -61,7 +61,7 @@ func (this *Item) GetImage() *Image {
 }
 
 func (this *Item) GetNameText() string {
-	return this.GetText()
+	return this.impl.GetText()
 }
 
 func (this *Item) GetText() string {
@@ -116,7 +116,7 @@ func (this *Item) UpdateTextDirection(textDirection int32) bool {
 }
 
 func (this *Item) HandleDPIChange(event *Event) {
-	var image *Image = this.GetImage()
+	var image *Image = this.impl.GetImage()
 	if image != (nil) {
 		this.impl.SetImageOnItem(image)
 	}

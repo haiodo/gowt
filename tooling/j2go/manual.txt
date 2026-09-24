@@ -26,7 +26,6 @@ org.eclipse.swt.widgets.Touch
 # this list.
 org.eclipse.swt.internal.Callback
 org.eclipse.swt.widgets.ToolBar
-org.eclipse.swt.widgets.ScrollBar
 org.eclipse.swt.widgets.Caret
 org.eclipse.swt.widgets.IME
 org.eclipse.swt.accessibility.Accessible

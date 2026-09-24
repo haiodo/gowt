@@ -38,6 +38,12 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # Round 6: Display and what its construction/event loop needs for real - Device (Display's
 # superclass), Resource/Font/Color (Device.init builds the system colors/font), DeviceData,
 # Synchronizer/RunnableLock (asyncExec queue polled every readAndDispatch/sleep).
+#
+# Round 7: GridLayout/GridData/FormAttachment/FormLayout/FormData (common layout - pure
+# computation, no cocoa calls) join FillLayout/RowLayout; Label/Menu/MenuItem/Text (cocoa widgets)
+# join Button. Menu/MenuItem move here from the manual-stub list, so Display/Shell/Decorations/
+# Control/Widget (which all construct or call into them) must be regenerated in this same
+# invocation - see README "Round 7 widgets".
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/Point.java \
 	org/eclipse/swt/graphics/Rectangle.java \
@@ -60,11 +66,20 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/layout/FillData.java \
 	org/eclipse/swt/layout/RowLayout.java \
 	org/eclipse/swt/layout/RowData.java \
+	org/eclipse/swt/layout/GridLayout.java \
+	org/eclipse/swt/layout/GridData.java \
+	org/eclipse/swt/layout/FormAttachment.java \
+	org/eclipse/swt/layout/FormLayout.java \
+	org/eclipse/swt/layout/FormData.java \
 	org/eclipse/swt/widgets/Composite.java \
 	org/eclipse/swt/widgets/Canvas.java \
 	org/eclipse/swt/widgets/Decorations.java \
 	org/eclipse/swt/widgets/Shell.java \
 	org/eclipse/swt/widgets/Button.java \
+	org/eclipse/swt/widgets/Label.java \
+	org/eclipse/swt/widgets/Menu.java \
+	org/eclipse/swt/widgets/MenuItem.java \
+	org/eclipse/swt/widgets/Text.java \
 	org/eclipse/swt/graphics/Resource.java \
 	org/eclipse/swt/graphics/Device.java \
 	org/eclipse/swt/graphics/DeviceData.java \

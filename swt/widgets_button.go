@@ -156,13 +156,13 @@ func (this *Button) CreateHandle() {
 		if (this.style & SWTFLAT) != 0 {
 			widget.SetBezelStyle(int64(cocoa.OSNSBezelStyleSmallSquare))
 		} else {
-			var cond131 int32
+			var cond166 int32
 			if (this.style & SWTWRAP) != 0 {
-				cond131 = cocoa.OSNSBezelStyleFlexiblePush
+				cond166 = cocoa.OSNSBezelStyleFlexiblePush
 			} else {
-				cond131 = cocoa.OSNSBezelStylePush
+				cond166 = cocoa.OSNSBezelStylePush
 			}
-			widget.SetBezelStyle(int64(cond131))
+			widget.SetBezelStyle(int64(cond166))
 		}
 	} else {
 		if (this.style & SWTCHECK) != 0 {
@@ -177,13 +177,13 @@ func (this *Button) CreateHandle() {
 					if (this.style & SWTFLAT) != 0 {
 						widget.SetBezelStyle(int64(cocoa.OSNSBezelStyleSmallSquare))
 					} else {
-						var cond132 int32
+						var cond167 int32
 						if (this.style & SWTWRAP) != 0 {
-							cond132 = cocoa.OSNSBezelStyleFlexiblePush
+							cond167 = cocoa.OSNSBezelStyleFlexiblePush
 						} else {
-							cond132 = cocoa.OSNSBezelStylePush
+							cond167 = cocoa.OSNSBezelStylePush
 						}
-						widget.SetBezelStyle(int64(cond132))
+						widget.SetBezelStyle(int64(cond167))
 					}
 				} else {
 					if (this.style & SWTARROW) != 0 {
@@ -522,13 +522,13 @@ func (this *Button) IsDescribedByLabel() bool {
 
 func (this *Button) NextState(id int64, sel int64) int64 {
 	if (this.style&SWTCHECK) != 0 && this.grayed {
-		var cond133 int32
+		var cond168 int32
 		if (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueMixed) {
-			cond133 = cocoa.OSNSControlStateValueOff
+			cond168 = cocoa.OSNSControlStateValueOff
 		} else {
-			cond133 = cocoa.OSNSControlStateValueMixed
+			cond168 = cocoa.OSNSControlStateValueMixed
 		}
-		return int64(cond133)
+		return int64(cond168)
 	}
 	return this.Control.NextState(id, sel)
 }
@@ -655,13 +655,13 @@ func (this *Button) SetFontFontOnControl(nsFont *cocoa.NSFont) {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
 	if (this.style&(SWTPUSH|SWTTOGGLE)) != 0 && (this.style&(SWTFLAT|SWTWRAP)) == 0 {
-		var cond134 int32
+		var cond169 int32
 		if this.font != (nil) {
-			cond134 = cocoa.OSNSBezelStyleFlexiblePush
+			cond169 = cocoa.OSNSBezelStyleFlexiblePush
 		} else {
-			cond134 = cocoa.OSNSBezelStylePush
+			cond169 = cocoa.OSNSBezelStylePush
 		}
-		(castcocoaNSViewTococoaNSButton(this.View)).SetBezelStyle(int64(cond134))
+		(castcocoaNSViewTococoaNSButton(this.View)).SetBezelStyle(int64(cond169))
 	}
 }
 
@@ -696,13 +696,13 @@ func (this *Button) SetImage(image *Image) {
 	}
 	this.image = image
 	if (this.style & (SWTRADIO | SWTCHECK)) == 0 {
-		var cond135 *cocoa.NSImage
+		var cond170 *cocoa.NSImage
 		if image != (nil) {
-			cond135 = image.Handle
+			cond170 = image.Handle
 		} else {
-			cond135 = nil
+			cond170 = nil
 		}
-		(castcocoaNSViewTococoaNSButton(this.View)).SetImage(cond135)
+		(castcocoaNSViewTococoaNSButton(this.View)).SetImage(cond170)
 		this.View.SetNeedsDisplay(true)
 	} else {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
@@ -742,21 +742,21 @@ func (this *Button) SetSelection(selected bool) {
 		return
 	}
 	if this.grayed {
-		var cond136 int32
+		var cond171 int32
 		if selected {
-			cond136 = cocoa.OSNSControlStateValueMixed
+			cond171 = cocoa.OSNSControlStateValueMixed
 		} else {
-			cond136 = cocoa.OSNSControlStateValueOff
+			cond171 = cocoa.OSNSControlStateValueOff
 		}
-		(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cond136))
+		(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cond171))
 	} else {
-		var cond137 int32
+		var cond172 int32
 		if selected {
-			cond137 = cocoa.OSNSControlStateValueOn
+			cond172 = cocoa.OSNSControlStateValueOn
 		} else {
-			cond137 = cocoa.OSNSControlStateValueOff
+			cond172 = cocoa.OSNSControlStateValueOff
 		}
-		(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cond137))
+		(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cond172))
 	}
 }
 
@@ -801,13 +801,13 @@ func (this *Button) UpdateAlignment() {
 		if int32(len(this.text)) != 0 && this.image != (nil) {
 			widget.SetImagePosition(int64(cocoa.OSNSImageLeft))
 		} else {
-			var cond138 int32
+			var cond173 int32
 			if int32(len(this.text)) != 0 {
-				cond138 = cocoa.OSNSNoImage
+				cond173 = cocoa.OSNSNoImage
 			} else {
-				cond138 = cocoa.OSNSImageOnly
+				cond173 = cocoa.OSNSImageOnly
 			}
-			widget.SetImagePosition(int64(cond138))
+			widget.SetImagePosition(int64(cond173))
 		}
 	}
 }

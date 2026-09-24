@@ -162,13 +162,13 @@ func (this *Device) Create(data *DeviceData) {
 
 func (this *Device) Dispose() {
 	jrt.MonitorEnter()
-	tretd140 := false
+	tretd192 := false
 	func() {
 		defer jrt.MonitorExit()
 		var exceptions *ExceptionStash = NewExceptionStash()
 		defer exceptions.Close()
 		if this.IsDisposed() {
-			tretd140 = true
+			tretd192 = true
 			return
 		}
 		this.impl.CheckDevice()
@@ -200,26 +200,26 @@ func (this *Device) Dispose() {
 			}()
 		}
 	}()
-	if tretd140 {
+	if tretd192 {
 		return
 	}
 }
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd141 := false
+	tretd193 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd141 = true
+				tretd193 = true
 				return
 			}
 		}
 	}()
-	if tretd141 {
+	if tretd193 {
 		return
 	}
 }
@@ -292,13 +292,13 @@ func (this *Device) GetDPI() *Point {
 
 func (this *Device) GetPrimaryScreen() *cocoa.NSScreen {
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
-	var cond142 *cocoa.NSScreen
+	var cond194 *cocoa.NSScreen
 	if screens != (nil) {
-		cond142 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0)))
+		cond194 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0)))
 	} else {
-		cond142 = nil
+		cond194 = nil
 	}
-	return cond142
+	return cond194
 }
 
 func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
@@ -342,9 +342,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 							copy(newFds[0:], fds[0:0+int32(len(fds))])
 							fds = newFds
 						}
-						t143 := count
+						t195 := count
 						count++
-						fds[t143] = data
+						fds[t195] = data
 					}
 				}
 			}
@@ -356,9 +356,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			copy(newFds[0:], fds[0:0+int32(len(fds))])
 			fds = newFds
 		}
-		t144 := count
+		t196 := count
 		count++
-		fds[t144] = this.systemFont.GetFontData()[0]
+		fds[t196] = this.systemFont.GetFontData()[0]
 	}
 	if count == int32(len(fds)) {
 		return fds
@@ -462,9 +462,9 @@ func (this *Device) Init() {
 	} else {
 		systemFontSize = cocoa.NSFontSystemFontSize()
 	}
-	cond145 := this.GetDPI()
-	this.dpi = cond145
-	var dpi *Point = cond145
+	cond197 := this.GetDPI()
+	this.dpi = cond197
+	var dpi *Point = cond197
 	var screenDPI *Point = this.GetScreenDPI()
 	var font *cocoa.NSFont = cocoa.NSFontSystemFontOfSize(systemFontSize * float64(dpi.Y) / float64(screenDPI.Y))
 	font.Retain()
@@ -490,14 +490,14 @@ func (this *Device) LoadFont(path string) bool {
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd146 := false
+	tretd198 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == (nil) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd146 = true
+				tretd198 = true
 				return
 			}
 		}
@@ -510,7 +510,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd146 {
+	if tretd198 {
 		return
 	}
 }
@@ -521,11 +521,11 @@ func (this *Device) PrintErrors() {
 	}
 	if this.tracking {
 		jrt.MonitorEnter()
-		tretd147 := false
+		tretd199 := false
 		func() {
 			defer jrt.MonitorExit()
 			if this.objects == (nil) || this.errors == (nil) {
-				tretd147 = true
+				tretd199 = true
 				return
 			}
 			var objectCount int32 = 0
@@ -543,44 +543,44 @@ func (this *Device) PrintErrors() {
 				var object any = this.objects[i]
 				if object != (nil) {
 					objectCount++
-					_, ok148 := resourceImplAsColor(object)
-					if ok148 {
+					_, ok200 := resourceImplAsColor(object)
+					if ok200 {
 						colors++
 					}
-					_, ok149 := object.(*Cursor)
-					if ok149 {
+					_, ok201 := object.(*Cursor)
+					if ok201 {
 						cursors++
 					}
-					_, ok150 := resourceImplAsFont(object)
-					if ok150 {
+					_, ok202 := resourceImplAsFont(object)
+					if ok202 {
 						fonts++
 					}
-					_, ok151 := object.(*GC)
-					if ok151 {
+					_, ok203 := object.(*GC)
+					if ok203 {
 						gcs++
 					}
-					_, ok152 := object.(*Image)
-					if ok152 {
+					_, ok204 := object.(*Image)
+					if ok204 {
 						images++
 					}
-					_, ok153 := any(nil), false
-					if ok153 {
+					_, ok205 := any(nil), false
+					if ok205 {
 						paths++
 					}
-					_, ok154 := any(nil), false
-					if ok154 {
+					_, ok206 := any(nil), false
+					if ok206 {
 						patterns++
 					}
-					_, ok155 := object.(*Region)
-					if ok155 {
+					_, ok207 := object.(*Region)
+					if ok207 {
 						regions++
 					}
-					_, ok156 := any(nil), false
-					if ok156 {
+					_, ok208 := any(nil), false
+					if ok208 {
 						textLayouts++
 					}
-					_, ok157 := any(nil), false
-					if ok157 {
+					_, ok209 := any(nil), false
+					if ok209 {
 						transforms++
 					}
 				}
@@ -628,7 +628,7 @@ func (this *Device) PrintErrors() {
 				}
 			}
 		}()
-		if tretd147 {
+		if tretd199 {
 			return
 		}
 	}

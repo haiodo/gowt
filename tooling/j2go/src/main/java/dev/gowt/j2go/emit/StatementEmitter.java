@@ -126,9 +126,11 @@ final class StatementEmitter {
 		String thenText = emitter.adaptNumeric(emitter.expr(ce.getThenExpression()), ce.getThenExpression().resolveTypeBinding(), targetType);
 		String elseText = emitter.adaptNumeric(emitter.expr(ce.getElseExpression()), ce.getElseExpression().resolveTypeBinding(), targetType);
 		b.append(ind(indent)).append("if ").append(cond).append(" {\n");
-		b.append(ind(indent + 1)).append(lhsText).append(" = ").append(thenText).append('\n');
+		// A branch that assigns the target to itself (columnWidth = cond ? columnWidth : ...) is
+		// a real no-op Go's own `go vet` flags as suspicious - just skip the line.
+		if (!thenText.equals(lhsText)) b.append(ind(indent + 1)).append(lhsText).append(" = ").append(thenText).append('\n');
 		b.append(ind(indent)).append("} else {\n");
-		b.append(ind(indent + 1)).append(lhsText).append(" = ").append(elseText).append('\n');
+		if (!elseText.equals(lhsText)) b.append(ind(indent + 1)).append(lhsText).append(" = ").append(elseText).append('\n');
 		b.append(ind(indent)).append("}\n");
 		return b.toString();
 	}
@@ -273,9 +275,19 @@ final class StatementEmitter {
 	}
 
 	private String emitWhile(WhileStatement ws, int indent) {
+		// A condition with a side effect (`(view = view.superview()) != null`) must re-run it
+		// every iteration - hoisting it once before a plain `for cond` would freeze its value.
+		StringBuilder probe = new StringBuilder();
+		String cond = emitExprInto(ws.getExpression(), probe, indent + 1);
 		StringBuilder b = new StringBuilder();
-		String cond = emitExprInto(ws.getExpression(), b, indent);
-		b.append(ind(indent)).append("for ").append(cond).append(" {\n");
+		if (probe.isEmpty()) {
+			b.append(ind(indent)).append("for ").append(cond).append(" {\n");
+		} else {
+			b.append(ind(indent)).append("for {\n").append(probe);
+			b.append(ind(indent + 1)).append("if !(").append(cond).append(") {\n");
+			b.append(ind(indent + 2)).append("break\n");
+			b.append(ind(indent + 1)).append("}\n");
+		}
 		emitter.loopSwitchDepth++;
 		b.append(emitAsBlock(ws.getBody(), indent + 1));
 		emitter.loopSwitchDepth--;

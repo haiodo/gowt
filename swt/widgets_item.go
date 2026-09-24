@@ -59,7 +59,7 @@ func (this *Item) ReleaseWidget() {
 	this.image = nil
 }
 
-func (this *Item) SetImage(image *Image) {
+func (this *Item) SetImageOnItem(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
@@ -102,7 +102,7 @@ func (this *Item) UpdateTextDirection(textDirection int32) bool {
 func (this *Item) HandleDPIChange(event *Event) {
 	var image *Image = this.GetImage()
 	if image != (nil) {
-		this.SetImage(image)
+		this.impl.SetImageOnItem(image)
 	}
 }
 

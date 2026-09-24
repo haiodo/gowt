@@ -1449,3 +1449,82 @@ Every item is a general translator rule unless it names a manual file.
   (checks the Go package instead of a Java class name), `Thread.currentThread()` = goroutine id
   (so `checkWidget` really rejects other goroutines), `OS.setTheme`/`isSystemDarkAppearance`/
   `isAppDarkAppearance` are translated again (Display calls them).
+
+## Round 7 widgets
+
+Translated for real: `Label`(565 lines)/`Menu`(1143)/`MenuItem`(1007)/`Text`(2522) (cocoa
+widgets) and `GridLayout`(754)/`GridData`(577)/`FormAttachment`(320)/`FormLayout`(391)/
+`FormData`(348) (common layout) - ~7,627 lines, all in `port.sh`'s single `swt` invocation
+alongside Round 4-6's files (Display/Shell/Decorations/Control/Widget are regenerated in the same
+pass, since Menu/MenuItem move here from the manual-stub list and every constructor/field access
+on them needs to resolve to the real, overload-disambiguated names). Zero new unsupported markers
+- the baseline count (54 MethodInvocation, 6 ClassInstanceCreation, 5 CatchClause, 4 instanceof,
+2 ExpressionMethodReference, 2 MethodDeclaration) is unchanged from Round 6. `cmd/form` (hand-
+written): a 2-column `GridLayout` form (`Label`+`Text` x2, a spanning `Button`), a `Menu`
+`SWT.BAR`/`SWT.CASCADE`/`SWT.DROP_DOWN` File menu with a Quit item. Verified with an in-process
+snapshot (`cacheDisplayInRect:toBitmapImageRep:`, same technique as Round 6): window titled
+"Form", both text fields visible; `SetText` on the two `Text` fields followed by `performClick:`
+on the OK button (the real target/action path, not a direct Go call) printed `Name: Alice` /
+`Email: alice@example.com` through `Text.GetText()` reading the live `NSTextField`s back.
+
+**Translator fixes, found by these files, all general (not per-file special cases):**
+
+1. **`ConstructorEmitter.emitSuperInvocation`**: an explicit `super();` with *no* translated or
+   manual superclass at all (`GridData`'s 5 constructors - a class that implicitly extends
+   `java.lang.Object` can still write `super()`) crashed with a `NullPointerException` reading
+   `ci.superclass.goFuncPrefix`. Now a real no-op (`return ""`), matching what Java's own
+   `Object()` constructor does.
+2. **`NumericEmitter` / `go vet`**: a ternary branch that assigns a variable to itself
+   (`columnWidth = cond ? columnWidth : ...` - `GridLayout.computeSize`'s own column-width
+   clamp) compiled but failed `go vet`'s self-assignment check. `emitCondIntoLvalue` now skips
+   emitting a branch whose adapted text is textually identical to the lvalue.
+3. **`InvocationEmitter.emitNew`**: `new String(char[], offset, count)` (`MenuItem`'s mnemonic-
+   stripping code) only had the 1-arg `new String(char[])` shape implemented (README "Round 2").
+   Now slices the buffer (`buf[off:off+count]`) before the same `utf16.Decode` call.
+4. **`NumericEmitter.adaptNumeric`**: a manual int-backed enum field with no initializer
+   (`Text.lastAppAppearance`, Java type `Display.APPEARANCE` - a nullable boxed enum) assigned or
+   compared against `null` (`lastAppAppearance = null`) doesn't compile - Go's `Display_APPEARANCE`
+   has no nil. Falls back to the type's zero value now, the same "known ceiling" `RoundingMode`'s
+   zero value already documented: collapses "never set" into the enum's first constant instead of
+   a distinct sentinel.
+5. **`names.properties`**: `Label.createString()` (0-arg, renders the label's attributed text)
+   shadows the promoted 7-arg `Control.createString(...)` it also calls - the exact same collision
+   `Button.createString()` needed pinning for in Round 5. Renamed to `CreateAttributedText`.
+6. **`StatementEmitter.emitWhile` - a real bug, found live, not by `go build`/`go vet`/`go test`**:
+   Java's assignment-in-condition idiom (`while (widget == null && (view = view.superview()) !=
+   null))`, `Display.LookupWidget`'s superview-walk) hoisted the assignment into a one-time
+   prelude before a plain `for cond`, so `view` never advanced - an infinite loop, not a compile
+   error. First hit at runtime: `cmd/form` hung forever inside `Label.CreateHandle`'s first
+   `NSView.AddSubview` call, which synchronously re-enters Go through the window-proc callback
+   before the new view is registered, sending `DisplayLookupWidget` walking a superview chain
+   that never finds a match - confirmed by a `SIGQUIT` goroutine dump (`objc_msgSend`/
+   `object_getInstanceVariable` on the stack, called over and over). Fixed generally: `emitWhile`
+   now probes the condition's prelude into a throwaway buffer first: empty prelude keeps the
+   existing `for cond` shape unchanged, a non-empty one (a Java condition with a real side effect)
+   unrolls into `for { <prelude>; if !(cond) { break }; <body> }` so the side effect re-runs every
+   iteration, matching Java's own re-evaluation semantics. Regenerating the whole `swt` package
+   with this fix touched only `Display.LookupWidget` - no other `while` in the translated set has
+   a side-effecting condition.
+
+**`Manual.java`/`manual.txt`**: `Menu`/`MenuItem` removed from `ENTRIES` and from `WIDGET_SUPER`
+(both real `ClassInfo`s now); their opaque stub definitions removed from
+`swt/widgets_stubs2_manual.go`. One new stub needed: `TrayItem.ShowMenu` (a no-op - `Menu._setVisible`
+calls it for a tray popup menu, and `Tray`/`TrayItem` themselves are still out of scope).
+
+**JUnit layout tests ported** (`swt/layout_test.go`): `Test_org_eclipse_swt_layout_GridData` (pure
+field/constant checks) and `Test_org_eclipse_swt_layout_FormAttachment` (the Control-taking
+constructors only ever store the pointer, never dereference it, so a bare zero-value `*Shell`
+stands in for the original test's live one - no `Display` needed). No `Test_org_eclipse_swt_
+layout_GridLayout.java`/`FormLayout`/`FormData` exists upstream to port.
+
+**A live `Display` cannot be created inside `go test` on this machine - confirmed empirically, two
+independent failure modes**: (1) a plain `Test*` function runs on its own goroutine (`go
+tRunner(...)`), never the process's real thread 1, regardless of its own `runtime.LockOSThread()`
+- `Display.create` panics with "Display must be created on main thread due to Cocoa restrictions"
+(`SWT.error`, real SWT's own check, not a gowt shortcut). (2) creating the `Display` inside
+`TestMain` (which *does* run on the real main goroutine) doesn't help either: SWT's own thread-
+affinity check (`checkWidget`, Round 6's goroutine-id-based `Thread.currentThread()`) compares the
+creating goroutine against the calling one, and a `Test*` function is always a different goroutine
+from `TestMain` - `Shell.create` panics the same way from there. A `GridLayout.computeSize` test
+with real controls is therefore not attempted; `layout_test.go` stays pure-value/no-live-view, per
+the precedent Round 5 already set for `FillLayout`/`RowLayout`.

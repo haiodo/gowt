@@ -53,11 +53,11 @@ func (this *Composite) _getChildren() []*Control {
 	var j int32 = 0
 	for i := int32(0); i < count; i++ {
 		var widget *Widget = this.display.GetWidget(views.ObjectAtIndex(int64(count - i - 1)).Id)
-		_, ok100 := isWidgetToControl(widget)
-		if widget != (nil) && widget != upcastCompositeToWidget(this) && ok100 {
-			t101 := j
+		_, ok135 := isWidgetToControl(widget)
+		if widget != (nil) && widget != upcastCompositeToWidget(this) && ok135 {
+			t136 := j
 			j++
-			children[t101] = castWidgetToControl(widget)
+			children[t136] = castWidgetToControl(widget)
 		}
 	}
 	if j == count {
@@ -85,9 +85,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for i := int32(0); i < int32(len(this.tabList)); i++ {
 		if !this.tabList[i].IsDisposed() {
-			t102 := index
+			t137 := index
 			index++
-			newList[t102] = this.tabList[i]
+			newList[t137] = this.tabList[i]
 		}
 	}
 	this.tabList = newList
@@ -232,13 +232,13 @@ func (this *Composite) CreateHandle() {
 		if (this.style & SWTV_SCROLL) != 0 {
 			scrollWidget.SetHasVerticalScroller(true)
 		}
-		var cond103 int32
+		var cond138 int32
 		if this.impl.HasBorder() {
-			cond103 = cocoa.OSNSBezelBorder
+			cond138 = cocoa.OSNSBezelBorder
 		} else {
-			cond103 = cocoa.OSNSNoBorder
+			cond138 = cocoa.OSNSNoBorder
 		}
-		scrollWidget.SetBorderType(int64(cond103))
+		scrollWidget.SetBorderType(int64(cond138))
 		this.scrollView = scrollWidget
 	}
 	var widget *cocoa.NSView = castcocoaNSObjectTococoaNSView(cocoa.NewSWTCanvasView().Alloc())
@@ -297,13 +297,13 @@ func (this *Composite) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphic
 }
 
 func (this *Composite) FindDeferredControl() *Composite {
-	var cond104 *Composite
+	var cond139 *Composite
 	if this.layoutCount > 0 {
-		cond104 = this
+		cond139 = this
 	} else {
-		cond104 = this.parent.impl.FindDeferredControl()
+		cond139 = this.parent.impl.FindDeferredControl()
 	}
-	return cond104
+	return cond139
 }
 
 func (this *Composite) FindMenus(control *Control) []*Menu {
@@ -353,9 +353,9 @@ func (this *Composite) FixTabList(control *Control) {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(this.tabList)); i++ {
 			if this.tabList[i] != control {
-				t105 := index
+				t140 := index
 				index++
-				newList[t105] = this.tabList[i]
+				newList[t140] = this.tabList[i]
 			}
 		}
 	}
@@ -397,9 +397,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(list)); i++ {
 			if list[i].impl.IsTabGroup() {
-				t106 := index
+				t141 := index
 				index++
-				tabList[t106] = list[i]
+				tabList[t141] = list[i]
 			}
 		}
 	}
@@ -552,10 +552,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t107 := updateCount
+				t142 := updateCount
 				updateCount++
-				update[t107] = composite
-				child = upcastCompositeToControl(update[t107])
+				update[t142] = composite
+				child = upcastCompositeToControl(update[t142])
 				composite = child.parent
 			}
 		}
@@ -609,13 +609,13 @@ func (this *Composite) MinimumSize(wHint int32, Hint int32, changed bool) *Point
 
 func (this *Composite) MouseEvent(id int64, sel int64, theEvent int64, type_ int32) bool {
 	var result bool = this.Scrollable.MouseEvent(id, sel, theEvent, type_)
-	var cond108 bool
+	var cond143 bool
 	if (this.state & WidgetCANVAS) == 0 {
-		cond108 = result
+		cond143 = result
 	} else {
-		cond108 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
+		cond143 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
 	}
-	return cond108
+	return cond143
 }
 
 func (this *Composite) PageDown(id int64, sel int64, sender int64) {
@@ -969,7 +969,7 @@ func (this *Composite) UpdateLayout(all bool) {
 		var changed bool = (this.state & WidgetLAYOUT_CHANGED) != 0
 		this.state &= ^(WidgetLAYOUT_NEEDED | WidgetLAYOUT_CHANGED)
 		this.display.RunSkin()
-		this.layout.impl.LayoutFn(this, changed)
+		this.layout.impl.LayoutOnLayout(this, changed)
 	}
 	if all {
 		this.state &= ^WidgetLAYOUT_CHILD
@@ -999,7 +999,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 		return &v.Control, true
 	case *Shell:
 		return &v.Control, true
+	case *Text:
+		return &v.Control, true
 	case *Button:
+		return &v.Control, true
+	case *Label:
 		return &v.Control, true
 	}
 	return nil, false

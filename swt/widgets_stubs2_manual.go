@@ -1,8 +1,8 @@
-// Hand-written opaque stubs for the rest of manual.txt's list: Menu/ScrollBar (each embeds its
-// real manual superclass per Manual.WIDGET_SUPER, so promoted-field upcasts like &x.Control keep
-// working), MenuItem/ToolBar/Caret/IME (Composite/Canvas/Decorations/Shell/Button's own field
-// types, not translated yet), plus the graphics/accessibility leaf types Control.java reads
-// fields off of. Composite/Canvas/Decorations/Shell are real as of Round 5 - removed from here.
+// Hand-written opaque stubs for the rest of manual.txt's list: ScrollBar (embeds its real manual
+// superclass per Manual.WIDGET_SUPER, so promoted-field upcasts like &x.Control keep working),
+// ToolBar/Caret/IME (Composite/Canvas/Decorations/Shell/Button's own field types, not translated
+// yet), plus the graphics/accessibility leaf types Control.java reads fields off of. Composite/
+// Canvas/Decorations/Shell are real as of Round 5, Menu/MenuItem as of Round 7 - removed from here.
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"
@@ -24,37 +24,6 @@ type GCData struct {
 }
 
 func NewGCData() *GCData { return &GCData{} }
-
-type Menu struct {
-	Widget
-	parent *Decorations
-	nsMenu *cocoa.NSMenu
-}
-
-// Real Menu has Menu(Display)/Menu(Display, NSMenu)/... constructors; only Display's app menu
-// bar code (off the Shell+Button path) creates one.
-func NewMenu(args ...any) *Menu { panic("stub until translated: Menu") }
-
-func (m *Menu) _setVisible(visible bool)        {}
-func (m *Menu) GetEnabled() bool                { return true }
-func (m *Menu) SetLocation(x int32, y int32)    {}
-func (m *Menu) SetVisible(visible bool)         {}
-func (m *Menu) FixMenus(newParent *Decorations) { m.parent = newParent }
-func (m *Menu) GetItems() []*MenuItem           { return nil }
-
-// MenuItem: Shell.java reads a handful of members off its escMenuItem/menu items (ESC-key
-// dismissal, submenu tracking) - none of it wired to a real Menu yet.
-type MenuItem struct {
-	Widget
-	nsItem *cocoa.NSMenuItem
-}
-
-func NewMenuItem(args ...any) *MenuItem { panic("stub until translated: MenuItem") }
-func (mi *MenuItem) GetEnabled() bool   { return true }
-
-func (mi *MenuItem) GetAccelerator() int32 { return 0 }
-func (mi *MenuItem) GetParent() *Menu      { return nil }
-func (mi *MenuItem) GetMenu() *Menu        { return nil }
 
 // ToolBar: only ever stored/returned by Shell, never otherwise touched on this round's path.
 type ToolBar struct {

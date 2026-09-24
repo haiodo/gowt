@@ -156,6 +156,9 @@ final class ConstructorEmitter {
 
 	private String emitSuperInvocation(SuperConstructorInvocation sci, TypeModel.ClassInfo ci) {
 		IMethodBinding mb = sci.resolveConstructorBinding();
+		// An explicit `super();` with no translated/manual superclass at all is just Java's
+		// implicit java.lang.Object() - a real no-op, not a gap (GridData.java has these).
+		if (ci.superclass == null && ci.manualSuperQualifiedName == null) return "";
 		StringBuilder out = new StringBuilder();
 		List<String> args = hoistArgs(sci.arguments(), mb, out);
 		if (ci.superclass == null && ci.manualSuperQualifiedName != null) {

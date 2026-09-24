@@ -115,7 +115,7 @@ func (this *RowLayout) GetName() string {
 	return string_[index+1 : int32(len(string_))]
 }
 
-func (this *RowLayout) LayoutFn(composite *Composite, flushCache bool) {
+func (this *RowLayout) LayoutOnLayout(composite *Composite, flushCache bool) {
 	var clientArea *Rectangle = composite.impl.GetClientArea()
 	if this.Type == SWTHORIZONTAL {
 		this.LayoutHorizontal(composite, true, this.Wrap, clientArea.Width, flushCache)

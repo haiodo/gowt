@@ -29,8 +29,8 @@ func (this *Monitor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	monitor, ok164 := monitorImplAsMonitor(object)
-	if !(ok164) {
+	monitor, ok216 := monitorImplAsMonitor(object)
+	if !(ok216) {
 		return false
 	}
 	return this.handle == monitor.handle

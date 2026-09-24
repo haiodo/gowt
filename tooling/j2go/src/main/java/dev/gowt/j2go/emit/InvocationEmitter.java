@@ -267,13 +267,18 @@ final class InvocationEmitter {
 			if (qualified.equals("java.lang.Object")) return "any(&struct{}{})";
 			String exception = newJavaException(qualified, cic);
 			if (exception != null) return exception;
-			// new String(char[]): the only java.lang.String constructor used in the translated
-			// set (NSString.getString()) - buffer holds UTF-16 code units, same as Java's char[].
-			if (qualified.equals("java.lang.String") && ctor.getParameterTypes().length == 1
+			// new String(char[]) / new String(char[], offset, count): buffer holds UTF-16 code
+			// units, same as Java's char[] - MenuItem's mnemonic-stripping code uses the 3-arg form.
+			if (qualified.equals("java.lang.String") && ctor.getParameterTypes().length >= 1
 					&& ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("char")) {
 				emitter.fileImports.add("unicode/utf16");
 				String arg = emitter.expr((Expression) cic.arguments().get(0));
+				if (ctor.getParameterTypes().length == 3) {
+					String off = emitter.expr((Expression) cic.arguments().get(1));
+					String count = emitter.expr((Expression) cic.arguments().get(2));
+					arg = arg + "[" + off + ":" + off + "+" + count + "]";
+				}
 				return "string(utf16.Decode(" + arg + "))";
 			}
 			if (Manual.isManual(qualified)) {

@@ -275,6 +275,10 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 		return &v.Scrollable, true
 	case *Shell:
 		return &v.Scrollable, true
+	case *Group:
+		return &v.Scrollable, true
+	case *SashForm:
+		return &v.Scrollable, true
 	case *Text:
 		return &v.Scrollable, true
 	}

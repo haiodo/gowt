@@ -169,13 +169,13 @@ func (this *TextLayout) ComputeRuns() {
 	paragraph.SetLineSpacing(float64(this.spacing))
 	paragraph.SetFirstLineHeadIndent(float64(this.indent))
 	paragraph.SetHeadIndent(float64(this.wrapIndent))
-	var cond478 int32
+	var cond492 int32
 	if this.wrapWidth != -1 {
-		cond478 = cocoa.OSNSLineBreakByWordWrapping
+		cond492 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond478 = cocoa.OSNSLineBreakByClipping
+		cond492 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraph.SetLineBreakMode(int64(cond478))
+	paragraph.SetLineBreakMode(int64(cond492))
 	paragraph.SetTabStops(cocoa.NSArrayArray())
 	if this.tabs != (nil) && int32(len(this.tabs)) > 0 {
 		var count int32 = int32(len(this.tabs))
@@ -740,13 +740,13 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 									rect.Width -= float64(0.5)
 									rect.Height -= float64(0.5)
 									var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-									var cond479 int32
+									var cond493 int32
 									if lengths != (nil) {
-										cond479 = int32(len(lengths))
+										cond493 = int32(len(lengths))
 									} else {
-										cond479 = 0
+										cond493 = 0
 									}
-									path.SetLineDash(lengths, int64(cond479), float64(0))
+									path.SetLineDash(lengths, int64(cond493), float64(0))
 									path.AppendBezierPathWithRect(rect)
 									path.Stroke()
 								}
@@ -1290,12 +1290,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t480 := count
+			t494 := count
 			count++
-			result[t480] = this.styles[i].start
-			t481 := count
+			result[t494] = this.styles[i].start
+			t495 := count
 			count++
-			result[t481] = this.styles[i+1].start - 1
+			result[t495] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1357,13 +1357,13 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t482 := segmentCount
+			t496 := segmentCount
 			segmentCount++
-			newChars[charCount+t482] = separator
+			newChars[charCount+t496] = separator
 		} else {
-			t483 := charCount
+			t497 := charCount
 			charCount++
-			newChars[charCount+segmentCount] = oldChars[t483]
+			newChars[charCount+segmentCount] = oldChars[t497]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1374,9 +1374,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t484 := segmentCount
+		t498 := segmentCount
 		segmentCount++
-		newChars[charCount+t484] = separator
+		newChars[charCount+t498] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1412,9 +1412,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t485 := count
+			t499 := count
 			count++
-			result[t485] = this.styles[i].style
+			result[t499] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {

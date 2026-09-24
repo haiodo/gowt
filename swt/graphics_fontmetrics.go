@@ -45,8 +45,8 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok349 := fontMetricsImplAsFontMetrics(object)
-	if !(ok349) {
+	metrics, ok363 := fontMetricsImplAsFontMetrics(object)
+	if !(ok363) {
 		return false
 	}
 	return this.ascent == metrics.ascent && this.descent == metrics.descent && this.leading == metrics.leading && this.height == metrics.height && (func() int32 {

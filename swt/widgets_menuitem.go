@@ -329,7 +329,7 @@ func (this *MenuItem) SendSelection() {
 		this.SetSelection(!this.GetSelection())
 	} else {
 		if (this.style & RADIO) != 0 {
-			if (this.parent.GetStyle() & NO_RADIO_GROUP) != 0 {
+			if (this.parent.impl.GetStyle() & NO_RADIO_GROUP) != 0 {
 				this.SetSelection(!this.GetSelection())
 			} else {
 				this.SelectRadio()
@@ -560,11 +560,11 @@ func (this *MenuItem) UpdateText() {
 	var submenu *cocoa.NSMenu = this.nsItem.Submenu()
 	var label *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	label = label.InitWithString(text)
-	if submenu != (nil) && (this.parent.GetStyle()&BAR) != 0 {
+	if submenu != (nil) && (this.parent.impl.GetStyle()&BAR) != 0 {
 		submenu.SetTitle(label)
 	} else {
 		var direction int32
-		if (this.parent.GetStyle() & RIGHT_TO_LEFT) != 0 {
+		if (this.parent.impl.GetStyle() & RIGHT_TO_LEFT) != 0 {
 			direction = cocoa.OSNSWritingDirectionRightToLeft
 		} else {
 			direction = cocoa.OSNSWritingDirectionLeftToRight

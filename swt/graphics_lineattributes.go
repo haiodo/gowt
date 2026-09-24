@@ -62,8 +62,8 @@ func (this *LineAttributes) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	p, ok350 := lineAttributesImplAsLineAttributes(object)
-	if !(ok350) {
+	p, ok364 := lineAttributesImplAsLineAttributes(object)
+	if !(ok364) {
 		return false
 	}
 	if p.Width != this.Width {

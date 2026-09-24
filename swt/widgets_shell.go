@@ -2080,7 +2080,7 @@ func (this *Shell) SearchForEscMenuItem(menuLike MenuLike) bool {
 				this.escMenuItem = item
 				return true
 			} else {
-				if (item.GetStyle() & CASCADE) != 0 {
+				if (item.impl.GetStyle() & CASCADE) != 0 {
 					var subMenu *Menu = item.GetMenu()
 					if this.SearchForEscMenuItem(subMenu) {
 						return true

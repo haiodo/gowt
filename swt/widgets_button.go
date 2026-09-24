@@ -583,7 +583,7 @@ func (this *Button) SelectRadio() {
 
 func (this *Button) SendSelection() {
 	if (this.style & RADIO) != 0 {
-		if (this.parent.GetStyle() & NO_RADIO_GROUP) == 0 {
+		if (this.parent.impl.GetStyle() & NO_RADIO_GROUP) == 0 {
 			this.SelectRadio()
 		}
 	}

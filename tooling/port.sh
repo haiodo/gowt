@@ -82,6 +82,12 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/widgets/Menu.java \
 	org/eclipse/swt/widgets/MenuItem.java \
 	org/eclipse/swt/widgets/Text.java \
+	org/eclipse/swt/widgets/Group.java \
+	org/eclipse/swt/widgets/Sash.java \
+	org/eclipse/swt/custom/StackLayout.java \
+	org/eclipse/swt/custom/SashFormLayout.java \
+	org/eclipse/swt/custom/SashFormData.java \
+	org/eclipse/swt/custom/SashForm.java \
 	org/eclipse/swt/graphics/Resource.java \
 	org/eclipse/swt/graphics/Device.java \
 	org/eclipse/swt/graphics/DeviceData.java \

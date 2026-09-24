@@ -56,6 +56,7 @@ type WidgetImpl interface {
 	FocusRingMaskBoundsForFrame(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
 	GetDrawing() bool
 	GetNameText() string
+	GetStyle() int32
 	HasMarkedText(a0 int64, a1 int64) bool
 	HelpRequested(a0 int64, a1 int64, a2 int64)
 	HitTest(a0 int64, a1 int64, a2 cocoa.NSPoint) int64
@@ -113,6 +114,8 @@ type WidgetImpl interface {
 	SetTabGroupFocus() bool
 	SetTabItemFocus() bool
 	ShouldChangeTextInRange_replacementString(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	SuperKeyDown(a0 int64, a1 int64, a2 int64)
+	SuperKeyUp(a0 int64, a1 int64, a2 int64)
 	TextViewDidChangeSelection(a0 int64, a1 int64, a2 int64)
 	TextDidChange(a0 int64, a1 int64, a2 int64)
 	TextView_willChangeSelectionFromCharacterRange_toCharacterRange(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
@@ -150,6 +153,7 @@ type WidgetImpl interface {
 	ComputeTabGroup() *Widget
 	ComputeTabList() []*Widget
 	ComputeTabRoot() *Control
+	ContentView() *cocoa.NSView
 	DefaultBackground() *Color
 	DefaultFont() *Font
 	DefaultForeground() *Color
@@ -196,6 +200,7 @@ type WidgetImpl interface {
 	ResetVisibleRegion()
 	Resized()
 	SendFocusEvent(a0 int32)
+	SetBackgroundColorOnControl(a0 *Color)
 	SetBackgroundImageImageOnControl(a0 *cocoa.NSImage)
 	SetBackgroundColor(a0 *cocoa.NSColor)
 	SetBoundsXYWidthHeightMoveResizeOnControl(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool)
@@ -203,10 +208,12 @@ type WidgetImpl interface {
 	SetFocus() bool
 	SetFontOnControl(a0 *Font)
 	SetFontFontOnControl(a0 *cocoa.NSFont)
+	SetForegroundOnControl(a0 *Color)
 	SetForegroundColorOnControl(a0 []float64)
 	SetOrientationOnControl(a0 int32)
 	SetRegion(a0 *Region)
 	SetRadioSelection(a0 bool) bool
+	SetToolTipText(a0 string)
 	SetVisible(a0 bool)
 	SetZOrderOnControl()
 	SetZOrderSiblingAboveOnControl(a0 *Control, a1 bool)
@@ -228,6 +235,7 @@ type WidgetImpl interface {
 	SetImageOnItem(a0 *Image)
 	SetText(a0 string)
 	FindDeferredControl() *Composite
+	SetLayout(a0 *Layout)
 	BringToTop(a0 bool)
 	GetMaximized() bool
 	GetMinimized() bool
@@ -254,6 +262,10 @@ func (this *Widget) ComputeTabList() []*Widget {
 
 func (this *Widget) ComputeTabRoot() *Control {
 	panic("j2go: ComputeTabRoot has no default on Widget")
+}
+
+func (this *Widget) ContentView() *cocoa.NSView {
+	panic("j2go: ContentView has no default on Widget")
 }
 
 func (this *Widget) DefaultBackground() *Color {
@@ -440,6 +452,10 @@ func (this *Widget) SendFocusEvent(a0 int32) {
 	panic("j2go: SendFocusEvent has no default on Widget")
 }
 
+func (this *Widget) SetBackgroundColorOnControl(a0 *Color) {
+	panic("j2go: SetBackgroundColorOnControl has no default on Widget")
+}
+
 func (this *Widget) SetBackgroundImageImageOnControl(a0 *cocoa.NSImage) {
 	panic("j2go: SetBackgroundImageImageOnControl has no default on Widget")
 }
@@ -468,6 +484,10 @@ func (this *Widget) SetFontFontOnControl(a0 *cocoa.NSFont) {
 	panic("j2go: SetFontFontOnControl has no default on Widget")
 }
 
+func (this *Widget) SetForegroundOnControl(a0 *Color) {
+	panic("j2go: SetForegroundOnControl has no default on Widget")
+}
+
 func (this *Widget) SetForegroundColorOnControl(a0 []float64) {
 	panic("j2go: SetForegroundColorOnControl has no default on Widget")
 }
@@ -482,6 +502,10 @@ func (this *Widget) SetRegion(a0 *Region) {
 
 func (this *Widget) SetRadioSelection(a0 bool) bool {
 	panic("j2go: SetRadioSelection has no default on Widget")
+}
+
+func (this *Widget) SetToolTipText(a0 string) {
+	panic("j2go: SetToolTipText has no default on Widget")
 }
 
 func (this *Widget) SetVisible(a0 bool) {
@@ -566,6 +590,10 @@ func (this *Widget) SetText(a0 string) {
 
 func (this *Widget) FindDeferredControl() *Composite {
 	panic("j2go: FindDeferredControl has no default on Widget")
+}
+
+func (this *Widget) SetLayout(a0 *Layout) {
+	panic("j2go: SetLayout has no default on Widget")
 }
 
 func (this *Widget) BringToTop(a0 bool) {
@@ -1464,11 +1492,11 @@ func (this *Widget) FlagsChanged(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Widget) KeyDown(id int64, sel int64, theEvent int64) {
-	this.SuperKeyDown(id, sel, theEvent)
+	this.impl.SuperKeyDown(id, sel, theEvent)
 }
 
 func (this *Widget) KeyUp(id int64, sel int64, theEvent int64) {
-	this.SuperKeyUp(id, sel, theEvent)
+	this.impl.SuperKeyUp(id, sel, theEvent)
 }
 
 func (this *Widget) MouseDown(id int64, sel int64, theEvent int64) {

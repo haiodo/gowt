@@ -279,13 +279,13 @@ func (this *Cursor) CreateNSCursor(hotspotX int32, hotspotY int32, buffer []int8
 	size.Width = float64(width)
 	size.Height = float64(height)
 	nsImage = nsImage.InitWithSize(size)
-	var cond474 int32
+	var cond488 int32
 	if hasAlpha {
-		cond474 = 4
+		cond488 = 4
 	} else {
-		cond474 = 3
+		cond488 = 3
 	}
-	nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond474), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
+	nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond488), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
 	cocoa.CMemmove(nsImageRep.BitmapData(), buffer, int64(int32(len(buffer))))
 	nsImage.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(nsImageRep))
 	var point cocoa.NSPoint = cocoa.NSPoint{}
@@ -386,21 +386,21 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	cursor, ok475 := resourceImplAsCursor(object)
-	if !(ok475) {
+	cursor, ok489 := resourceImplAsCursor(object)
+	if !(ok489) {
 		return false
 	}
 	return this.device == cursor.device && this.Handle == cursor.Handle
 }
 
 func (this *Cursor) HashCode() int32 {
-	var cond476 int32
+	var cond490 int32
 	if this.Handle != (nil) {
-		cond476 = int32(this.Handle.Id)
+		cond490 = int32(this.Handle.Id)
 	} else {
-		cond476 = 0
+		cond490 = 0
 	}
-	return cond476
+	return cond490
 }
 
 func (this *Cursor) IsDisposed() bool {
@@ -419,13 +419,13 @@ func CursorBusyButClickableCursor() *cocoa.NSCursor {
 		return nil
 	}
 	var result int64 = cocoa.OSObjc_msgSend(cocoa.OSClass_NSCursor, cocoa.OSSel_busyButClickableCursor)
-	var cond477 *cocoa.NSCursor
+	var cond491 *cocoa.NSCursor
 	if result != 0 {
-		cond477 = cocoa.NewNSCursorOverload1(result)
+		cond491 = cocoa.NewNSCursorOverload1(result)
 	} else {
-		cond477 = nil
+		cond491 = nil
 	}
-	return cond477
+	return cond491
 }
 
 func CursorCocoa_new(deviceLike DeviceLike, handle *cocoa.NSCursor) *Cursor {

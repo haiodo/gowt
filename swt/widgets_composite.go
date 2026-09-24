@@ -51,7 +51,7 @@ func (this *Composite) initCompositeParentStyle(parent *Composite, style int32) 
 }
 
 func (this *Composite) _getChildren() []*Control {
-	var nsClipView *cocoa.NSView = this.ContentView()
+	var nsClipView *cocoa.NSView = this.impl.ContentView()
 	if nsClipView == (nil) {
 		return make([]*Control, 0)
 	}
@@ -115,7 +115,7 @@ func (this *Composite) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bo
 func (this *Composite) AcceptsFirstResponder(id int64, sel int64) bool {
 	if (this.state & WidgetCANVAS) != 0 {
 		if (this.style&NO_FOCUS) == 0 && this.impl.HooksKeys() {
-			if this.ContentView().Subviews().Count() == 0 {
+			if this.impl.ContentView().Subviews().Count() == 0 {
 				return true
 			}
 		}
@@ -865,12 +865,7 @@ func (this *Composite) SetIsStyledText() {
 	this.isStyledText = true
 }
 
-func (this *Composite) SetLayout(layoutLike LayoutLike) {
-	var layout *Layout
-	if layoutLike != nil {
-		layout = layoutLike.AsLayout()
-	}
-	_ = layout
+func (this *Composite) SetLayout(layout *Layout) {
 	this.CheckWidget()
 	this.layout = layout
 }
@@ -1030,11 +1025,17 @@ func widgetImplAsControl(x any) (*Control, bool) {
 		return &v.Control, true
 	case *Shell:
 		return &v.Control, true
+	case *Group:
+		return &v.Control, true
+	case *SashForm:
+		return &v.Control, true
 	case *Text:
 		return &v.Control, true
 	case *Button:
 		return &v.Control, true
 	case *Label:
+		return &v.Control, true
+	case *Sash:
 		return &v.Control, true
 	}
 	return nil, false

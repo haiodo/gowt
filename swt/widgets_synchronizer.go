@@ -143,7 +143,7 @@ func (this *Synchronizer) RunAsyncMessagesAll(all bool) bool {
 func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 	var lock *RunnableLock = nil
 	jrt.MonitorEnter()
-	tretd215 := false
+	tretd229 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.display == (nil) || this.display.IsDisposed() {
@@ -152,7 +152,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 		if !this.display.IsValidThread() {
 			if runnable == (nil) {
 				this.display.Wake()
-				tretd215 = true
+				tretd229 = true
 				return
 			}
 			lock = newRunnableLock(runnable)
@@ -160,7 +160,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 			this.AddLast(lock)
 		}
 	}()
-	if tretd215 {
+	if tretd229 {
 		return
 	}
 	if lock == (nil) {

@@ -247,8 +247,8 @@ func (this *Color) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	color, ok214 := resourceImplAsColor(object)
-	if !(ok214) {
+	color, ok228 := resourceImplAsColor(object)
+	if !(ok228) {
 		return false
 	}
 	if this.impl.IsDisposed() || color.impl.IsDisposed() {

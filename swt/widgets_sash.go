@@ -4,7 +4,9 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type Sash struct {
@@ -474,6 +476,17 @@ func (this *Sash) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
 func SashCheckStyle(style int32) int32 {
 	style |= SMOOTH
 	return WidgetCheckBits(style, HORIZONTAL, VERTICAL, 0, 0, 0, 0)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Sash](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Sash](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Sash](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Sash](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
 }
 
 func upcastSashToControl(x *Sash) *Control {

@@ -5,6 +5,8 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
 )
 
 type ColorDialog struct {
@@ -158,6 +160,20 @@ func (this *ColorDialog) SetRGBs(rgbs []*RGB) {
 
 func (this *ColorDialog) WindowWillClose(id int64, sel int64, sender int64) {
 	cocoa.NSApplicationSharedApplication().Stop(nil)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*ColorDialog](), "getRGB", nil, reflect.TypeFor[*RGB](), func(target any, args []any) any { return jrt.Narrow[*ColorDialog](target).GetRGB() })
+	jrt.RegisterMethod(reflect.TypeFor[*ColorDialog](), "getRGBs", nil, reflect.TypeFor[[]*RGB](), func(target any, args []any) any { return jrt.Narrow[*ColorDialog](target).GetRGBs() })
+	jrt.RegisterMethod(reflect.TypeFor[*ColorDialog](), "open", nil, reflect.TypeFor[*RGB](), func(target any, args []any) any { return jrt.Narrow[*ColorDialog](target).Open() })
+	jrt.RegisterMethod(reflect.TypeFor[*ColorDialog](), "setRGB", []reflect.Type{reflect.TypeFor[RGBLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*ColorDialog](target).SetRGB(jrt.ArgAs[RGBLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*ColorDialog](), "setRGBs", []reflect.Type{reflect.TypeFor[[]*RGB]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*ColorDialog](target).SetRGBs(jrt.ArgAs[[]*RGB](args[0]))
+		return nil
+	})
 }
 
 // j2go: instanceof helper for cocoa.NSColorList and its subclasses within the translated set.

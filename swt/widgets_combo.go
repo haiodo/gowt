@@ -5,8 +5,10 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
+	"reflect"
 	"strings"
 	"unicode/utf16"
 )
@@ -1182,6 +1184,118 @@ func ComboCheckStyle(style int32) int32 {
 		return style & ^READ_ONLY
 	}
 	return style
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "add", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).Add(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "add", []reflect.Type{reflect.TypeFor[string](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).AddStringIndex(jrt.ArgAs[string](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "addModifyListener", []reflect.Type{reflect.TypeFor[ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).AddModifyListener(jrt.ArgAs[ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "addSegmentListener", []reflect.Type{reflect.TypeFor[SegmentListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).AddSegmentListener(jrt.ArgAs[SegmentListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "addVerifyListener", []reflect.Type{reflect.TypeFor[VerifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).AddVerifyListener(jrt.ArgAs[VerifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "clearSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).ClearSelection(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "copy", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).Copy(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "cut", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).Cut(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "deselect", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).Deselect(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).DeselectAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getCaretPosition", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetCaretPosition() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getCaretLocation", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetCaretLocation() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetItem(jrt.ArgAs[int32](args[0])) })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getItemHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetItemHeight() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getItems", nil, reflect.TypeFor[[]string](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getListVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetListVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getSelection", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getSelectionIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetSelectionIndex() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getTextHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetTextHeight() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getTextLimit", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetTextLimit() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "getVisibleItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Combo](target).GetVisibleItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "indexOf", []reflect.Type{reflect.TypeFor[string]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*Combo](target).IndexOf(jrt.ArgAs[string](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "indexOf", []reflect.Type{reflect.TypeFor[string](), reflect.TypeFor[int32]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*Combo](target).IndexOfStringStart(jrt.ArgAs[string](args[0]), jrt.ArgAs[int32](args[1]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "paste", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).Paste(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "remove", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).Remove(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "remove", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveStartEnd(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "remove", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveString(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "removeAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Combo](target).RemoveAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "removeModifyListener", []reflect.Type{reflect.TypeFor[ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveModifyListener(jrt.ArgAs[ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "removeSegmentListener", []reflect.Type{reflect.TypeFor[SegmentListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveSegmentListener(jrt.ArgAs[SegmentListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "removeVerifyListener", []reflect.Type{reflect.TypeFor[VerifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).RemoveVerifyListener(jrt.ArgAs[VerifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "select", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).Select(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setItem", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetItem(jrt.ArgAs[int32](args[0]), jrt.ArgAs[string](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setListVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetListVisible(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setSelection", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetSelection(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setTextLimit", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetTextLimit(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Combo](), "setVisibleItemCount", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Combo](target).SetVisibleItemCount(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
 }
 
 // j2go: instanceof helper for cocoa.NSPopUpButton and its subclasses within the translated set.

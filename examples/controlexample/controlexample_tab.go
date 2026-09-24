@@ -938,11 +938,11 @@ func (this *Tab) SetMethodName(methodRoot string) string {
 func (this *Tab) ParameterInfo(methodRoot string) string {
 	var typeName string = ""
 	var returnType reflect.Type = this.GetReturnType(methodRoot)
-	var isArray bool = func() bool { _ = []any{returnType}; panic("j2go: unresolved call isArray") }()
+	var isArray bool = returnType.Kind() == reflect.Slice
 	if isArray {
-		typeName = func() reflect.Type { _ = []any{returnType}; panic("j2go: unresolved call getComponentType") }().String()
+		typeName = jrt.ClassName(returnType.Elem())
 	} else {
-		typeName = returnType.String()
+		typeName = jrt.ClassName(returnType)
 	}
 	var typeNameString string = typeName
 	var index int32 = int32(strings.LastIndexByte(typeName, byte('.')))
@@ -985,30 +985,21 @@ func (this *Tab) GetValue() {
 				tcnt12 = true
 				return
 			}
-			var method any = func() any {
-				_ = []any{reflect.TypeOf(widgets[i]), methodName, []reflect.Type{}}
-				panic("j2go: unresolved call getMethod")
-			}()
-			var result any = func() any { _ = []any{method, widgets[i], []any{}}; panic("j2go: unresolved call invoke") }()
+			var method any = jrt.ClassGetMethod(reflect.TypeOf(widgets[i].Impl()), methodName, []reflect.Type{})
+			var result any = method.(*jrt.Method).Invoke(widgets[i], []any{}...)
 			if result == (nil) {
 				this.getText.Append("null")
 			} else {
-				if func() bool { _ = []any{reflect.TypeOf(result)}; panic("j2go: unresolved call isArray") }() {
-					var length int32 = func() int32 { _ = []any{result}; panic("j2go: unresolved call getLength") }()
+				if reflect.TypeOf(result).Kind() == reflect.Slice {
+					var length int32 = int32(reflect.ValueOf(result).Len())
 					if length == 0 {
-						this.getText.Append(fmt.Sprintf("%v[0]", func() reflect.Type {
-							_ = []any{reflect.TypeOf(result)}
-							panic("j2go: unresolved call getComponentType")
-						}()))
+						this.getText.Append(fmt.Sprintf("%v[0]", reflect.TypeOf(result).Elem()))
 					}
 					for j := int32(0); j < length; j++ {
-						this.getText.Append(fmt.Sprintf("%s\n", func() string {
-							_ = []any{func() any { _ = []any{result, j}; panic("j2go: unresolved call get") }()}
-							panic("j2go: unresolved call toString")
-						}()))
+						this.getText.Append(fmt.Sprintf("%s\n", fmt.Sprint(reflect.ValueOf(result).Index(int(j)).Interface())))
 					}
 				} else {
-					this.getText.Append(func() string { _ = []any{result}; panic("j2go: unresolved call toString") }())
+					this.getText.Append(fmt.Sprint(result))
 				}
 			}
 		}()
@@ -1037,11 +1028,8 @@ func (this *Tab) GetReturnType(methodRoot string) reflect.Type {
 				panic(r)
 			}
 		}()
-		var method any = func() any {
-			_ = []any{reflect.TypeOf(widgets[0]), methodName, []reflect.Type{}}
-			panic("j2go: unresolved call getMethod")
-		}()
-		returnType = func() reflect.Type { _ = []any{method}; panic("j2go: unresolved call getReturnType") }()
+		var method any = jrt.ClassGetMethod(reflect.TypeOf(widgets[0].Impl()), methodName, []reflect.Type{})
+		returnType = method.(*jrt.Method).GetReturnType()
 	}()
 	return returnType
 }
@@ -1079,27 +1067,24 @@ func (this *Tab) SetValue() {
 				tcnt13 = true
 				return
 			}
-			var method any = func() any {
-				_ = []any{reflect.TypeOf(widget), methodName, []reflect.Type{returnType}}
-				panic("j2go: unresolved call getMethod")
-			}()
-			var typeName string = returnType.String()
+			var method any = jrt.ClassGetMethod(reflect.TypeOf(widget.Impl()), methodName, []reflect.Type{returnType})
+			var typeName string = jrt.ClassName(returnType)
 			var parameter []any = nil
 			if value == "null" {
 				parameter = []any{nil}
 			} else {
 				if typeName == "int" {
-					parameter = []any{func() any { _ = []any{value}; panic("j2go: unresolved call valueOf") }()}
+					parameter = []any{jrt.ParseInt(value)}
 				} else {
 					if typeName == "long" {
-						parameter = []any{func() any { _ = []any{value}; panic("j2go: unresolved call valueOf") }()}
+						parameter = []any{jrt.ParseLong(value)}
 					} else {
 						if typeName == "char" {
 							var cond14 any
 							if int32(len(value)) == 1 {
-								cond14 = func() any { _ = []any{utf16.Encode([]rune(value))[0]}; panic("j2go: unresolved call valueOf") }()
+								cond14 = utf16.Encode([]rune(value))[0]
 							} else {
-								cond14 = func() any { _ = []any{'\u0000'}; panic("j2go: unresolved call valueOf") }()
+								cond14 = '\u0000'
 							}
 							parameter = []any{cond14}
 						} else {
@@ -1148,7 +1133,7 @@ func (this *Tab) SetValue() {
 					}
 				}
 			}
-			func() any { _ = []any{method, widget, parameter}; panic("j2go: unresolved call invoke") }()
+			method.(*jrt.Method).Invoke(widget, parameter...)
 		}()
 		if tcnt13 {
 			continue

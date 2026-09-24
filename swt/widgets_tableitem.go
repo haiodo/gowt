@@ -5,7 +5,9 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type TableItem struct {
@@ -952,4 +954,91 @@ func TableItemCheckNull(controlLike TableLike) *Table {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	return control
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getBackground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetBackground() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getBackground", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Color](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetBackgroundIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetBoundsIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getChecked", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetChecked() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getFont", nil, reflect.TypeFor[*Font](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetFont() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getFont", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Font](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetFontIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getForeground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetForeground() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getForeground", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Color](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetForegroundIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getGrayed", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetGrayed() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getImage", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Image](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetImageIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getImageBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetImageBounds(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getImageIndent", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetImageIndent() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getParent", nil, reflect.TypeFor[*Table](), func(target any, args []any) any { return jrt.Narrow[*TableItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getText", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[string](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetTextIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "getTextBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TableItem](target).GetTextBounds(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setBackground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetBackground(jrt.ArgAs[ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setBackground", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetBackgroundIndexColor(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ColorLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setChecked", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetChecked(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setFont", []reflect.Type{reflect.TypeFor[FontLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetFont(jrt.ArgAs[FontLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setFont", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[FontLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetFontIndexFont(jrt.ArgAs[int32](args[0]), jrt.ArgAs[FontLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setForeground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetForeground(jrt.ArgAs[ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setForeground", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetForegroundIndexColor(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ColorLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setGrayed", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetGrayed(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setImage", []reflect.Type{reflect.TypeFor[[]*Image]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetImages(jrt.ArgAs[[]*Image](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setImage", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetImageIndexImage(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ImageLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setImageIndent", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetImageIndent(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setText", []reflect.Type{reflect.TypeFor[[]string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetTexts(jrt.ArgAs[[]string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TableItem](), "setText", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TableItem](target).SetTextIndexString(jrt.ArgAs[int32](args[0]), jrt.ArgAs[string](args[1]))
+		return nil
+	})
 }

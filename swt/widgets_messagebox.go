@@ -5,6 +5,7 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
 )
 
 type MessageBox struct {
@@ -324,6 +325,19 @@ func MessageBoxCheckStyle(style int32) int32 {
 	}
 	style = (style & ^mask) | OK
 	return style
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*MessageBox](), "getMessage", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*MessageBox](target).GetMessage() })
+	jrt.RegisterMethod(reflect.TypeFor[*MessageBox](), "open", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*MessageBox](target).Open() })
+	jrt.RegisterMethod(reflect.TypeFor[*MessageBox](), "setMessage", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*MessageBox](target).SetMessage(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*MessageBox](), "setButtonLabels", []reflect.Type{reflect.TypeFor[*jrt.Map]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*MessageBox](target).SetButtonLabels(jrt.ArgAs[*jrt.Map](args[0]))
+		return nil
+	})
 }
 
 // j2go: instanceof helper for cocoa.NSAlert and its subclasses within the translated set.

@@ -4,7 +4,9 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type TabItem struct {
@@ -313,6 +315,21 @@ func (this *TabItem) UpdateTextSelected(selected bool) {
 	}
 	this.attriStr = this.parent.CreateString(this.text, nil, foreground, 0, false, true, true)
 	this.nsItem.SetLabel(cocoa.NSStringString())
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*TabItem](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "getControl", nil, reflect.TypeFor[*Control](), func(target any, args []any) any { return jrt.Narrow[*TabItem](target).GetControl() })
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "getParent", nil, reflect.TypeFor[*TabFolder](), func(target any, args []any) any { return jrt.Narrow[*TabItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "getToolTipText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*TabItem](target).GetToolTipText() })
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "setControl", []reflect.Type{reflect.TypeFor[ControlLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TabItem](target).SetControl(jrt.ArgAs[ControlLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TabItem](), "setToolTipText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TabItem](target).SetToolTipText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
 }
 
 func upcastTabFolderToWidget(x *TabFolder) *Widget {

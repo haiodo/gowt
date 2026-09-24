@@ -4,7 +4,9 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type Button struct {
@@ -881,6 +883,42 @@ func ButtonSmallerRect(cellFrame cocoa.NSRect, dx float64, dy1 float64, dy2 floa
 	result.Width = cellFrame.Width - 2*dx
 	result.Height = cellFrame.Height - dy1 - dy2
 	return result
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "getAlignment", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Button](target).GetAlignment() })
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "getGrayed", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Button](target).GetGrayed() })
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "getImage", nil, reflect.TypeFor[*Image](), func(target any, args []any) any { return jrt.Narrow[*Button](target).GetImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "getSelection", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Button](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Button](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "setAlignment", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).SetAlignment(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "setGrayed", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).SetGrayed(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "setImage", []reflect.Type{reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).SetImage(jrt.ArgAs[ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "setSelection", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).SetSelection(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Button](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Button](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
 }
 
 func castcocoaNSObjectTococoaNSButton(x *cocoa.NSObject) *cocoa.NSButton {

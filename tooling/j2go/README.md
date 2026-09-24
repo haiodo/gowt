@@ -2344,7 +2344,100 @@ tab-switch path; opening the Set/Get dialog and pressing Get/Set panics.
   custom widgets `CCombo`, `CLabel`, `CTabFolder`/`CTabItem`, `StyledText` (the CustomControlExample
   tabs), plus `Tree` columns/`TreeEditor` for TreeTab and `SystemTab`'s `Display` events.
   `ShellTab` itself needs nothing new (Shell styles, `setAlpha`, `Region`).
-- The Set/Get API dialog needs reflection (see markers).
+- The Set/Get API dialog needed reflection (see markers) - implemented, see "Round 10 reflection".
 - `Object.equals` on translated objects has no identity rule yet (upcast both sides, compare).
 - `MessageFormat` has no format types or quoted sections; `ResourceBundle` no locale fallback.
 - Boolean `&`/`|` short-circuit.
+
+## Round 10 reflection
+
+**Status: done, green.** `make gen && make` pass. Fixes the panic from "Round 10 controlexample"'s
+own markers: `Class.getMethod`, `Method.invoke`/`getReturnType`, `Class.isArray`/`getComponentType`/
+`getName`, `reflect.Array.getLength`/`get`, and a generic `Object.toString()` - the `java.lang.reflect`
+subset `Tab.java`'s Set/Get dialog (`getValue`/`setValue`/`getReturnType`/`parameterInfo`) needs on top
+of `java.lang.Class` staying `reflect.Type` (unchanged from Round 10 controlexample's `X.class ->
+reflect.TypeFor[*X]()`).
+
+**Constraint that shaped the design**: `reflect.Type.MethodByName`/`Method(i)` with a non-constant
+name is out - the Go linker sees either call statically and keeps every exported method of every
+reflect-reachable type in the binary (dead-code elimination for methods off program-wide), which
+would grow every gowt binary a lot more than this fix's own registry does (measured: `cmd/
+controlexample` built `-trimpath -ldflags='-s -w'` grew from 8,295,154 to 9,791,298 bytes, +18%,
+718 registered methods across 36 widgets-package classes - a `MethodByName`-based version was not
+built to compare, but keeping literally every widget/cocoa method reachable from `swt`'s own huge
+method surface would be materially larger).
+
+**Design: translator-emitted per-class registry**, not a runtime name-guessing fallback (`ClassEmitter.
+registerReflectMethod`/`regParamType`, `internal/jrt/reflect.go`). For every public instance method
+of a `org.eclipse.swt.widgets`-package class (own declaration, or a split cascade's override-point
+wrapper - the two places a method's real exported Go name is actually emitted), `ClassEmitter` also
+emits a line into that class's own `func init()`:
+
+```go
+jrt.RegisterMethod(reflect.TypeFor[*Text](), "getSelection", nil, reflect.TypeFor[*Point](),
+	func(target any, args []any) any { return jrt.Narrow[*Text](target).GetSelection() })
+jrt.RegisterMethod(reflect.TypeFor[*Text](), "setSelection", []reflect.Type{reflect.TypeFor[PointLike]()}, nil,
+	func(target any, args []any) any { jrt.Narrow[*Text](target).SetSelectionSelection(jrt.ArgAs[PointLike](args[0])); return nil })
+```
+
+The Java method name is the registry key (captured verbatim where the method is emitted, not
+reconstructed from the Go name), so naming can never diverge from the real translation rule -
+this *is* the "preferred" design from the brief, just scoped to `org.eclipse.swt.widgets` rather
+than every translated class (cheap to widen later: same two call sites, same gate). paramTypes/
+returnType are the method's own Go types (widened to its `<Class>Like` interface the same way
+`publicParamList` does, so `ClassGetMethod`'s overload matching sees the same type an external
+caller would pass - `regParamType` mirrors `EmitUtil.publicParamList`'s per-parameter branch).
+
+**`getExampleWidgets()` returns `Widget[]`, i.e. `[]*Widget`** - each element is an upcast
+promoted-field address (`&someText.Widget`, see `upcastswtTextToswtWidget`), so `reflect.TypeOf` on
+it always reports `*Widget`, never `*Text`: Go has no runtime-polymorphic object identity the way
+Java references do. `Object.getClass()`'s own intrinsic (`JdkIntrinsics`) now routes through the
+receiver's `.Impl()` (the impl-cascade field every split-dispatch root already has, Round 6+) when
+the receiver's static type has one, recovering the real concrete type `reflect.TypeOf(x.Impl())`
+- this also fixes `Widget.GetName()`/every translated `toString()`'s own `getClass().getName()`,
+previously reporting "Widget" for a `*Text` too, for the same underlying reason.
+
+**`internal/jrt/reflect.go`**: `Method` (a `paramTypes`/`returnType`/closure triple from one
+`RegisterMethod` call), `ClassGetMethod(t, name, paramTypes)` (looks `name` up in `t`'s own
+registered methods, then its ancestors' - `parentOf` walks the field-0 embedding chain every
+translated class embeds its superclass through, struct-field reflection only, never Method/
+MethodByName), `Method.Invoke` (panics `*InvocationTargetException` on failure, matching the
+"exceptions are panics" contract `jrt.ParseInt`/`ResourceBundle` already use), `Narrow[T]` (the
+address of a registered closure's own declaring type within whatever concrete leaf `target`
+actually is - what Go's own method promotion does, done explicitly with `Field(0).Addr()` so a
+closure registered on `*Control` still works when invoked with a `*Button`), `ArgAs[T]` (one
+`Method.invoke` argument, boxed `any`, nil for Java `null`, converted to the closure's own param
+type), `ClassName` (`Class#getName()`: JVM primitive names and array-descriptor syntax exactly -
+what the dialog's `setValue` branches on - plus a best-effort `org.eclipse.swt.widgets.<Name>`
+guess for any other pointer-to-struct type, harmless since every existing `getClass().getName()`
+caller only keeps the tail after the last `.`).
+
+**`JdkIntrinsics` additions**: `Integer.valueOf`/new `Long.valueOf`/`Character.valueOf` (the
+dialog's `setValue` boxes a parsed numeric/char into `Object[]` - previously only the
+primitive-argument overload of `Integer.valueOf` was handled), `java.lang.reflect.Array.getLength`/
+`get` (plain `reflect.ValueOf(...).Len()`/`Index(...).Interface()` - Java arrays are Go slices
+throughout this port already, nothing array-specific to add).
+
+**Verify**: `internal/jrt/reflect_test.go` (a hand-written two-level struct hierarchy, no
+`Display` needed - `ClassGetMethod`/`Invoke`/`GetReturnType` on an own method, an inherited one via
+the field-0 climb, and two overloads of the same Java name disambiguated by paramTypes; `ClassName`
+on primitives/arrays). Live: `ControlExample`'s Text tab, calling `Tab.GetReturnType`/
+`ParameterInfo` directly (no `Display` panic) returns correct Java-shaped descriptions for
+`Text`/`Selection`/`ToolTipText`/`TextChars` (`String`/`Point`/`String`/`char[]`); clicking the real
+"Set/Get API" button opens the dialog and populates its combo/labels/set-button/get-button text
+via the real reflection chain for the default property (`DoubleClickEnabled` -> `boolean e.g.
+true`).
+
+**Found, not fixed - blocks full dialog exercise**: `Tab.resetLabels()`/`getValue()` call
+`setText.SetText("")`/`getText.SetText("")` as their own first statements (matching Java's
+`setText.setText("");`) - `Text.SetText` panics `*jrt.IllegalArgumentException` (`ERROR_NULL_
+ARGUMENT`) for an empty string. Root cause: `NumericEmitter`'s `x == null` -> `x == ""` rule for
+Go `string` operands (`string` has no nil to compare against) - a deliberate, already-relied-on
+simplification elsewhere, but it makes `Text.setText("")` (a legal, common "clear the field" call
+in real SWT) indistinguishable from `setText(null)`. Pre-existing (present since `Text.java` was
+first translated), unrelated to this round, newly exposed because this round is the first thing to
+make `resetLabels()` run past its own `parameterInfo()` call. Not fixed here: the type model has no
+way to represent Java's null distinctly from `""` for a Go `string` without a broader change (e.g.
+`*string`) touching every String-typed field/param across the whole translated set. Blocks
+`GetValue()`/`SetValue()`/`ResetLabels()` specifically (not `GetReturnType`/`ParameterInfo`, which
+this round's live verification used instead) for every tab, every property.

@@ -4,6 +4,8 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
 )
 
 type Event struct {
@@ -82,4 +84,13 @@ func (this *Event) SetLocation(x int32, y int32) {
 
 func (this *Event) String() string {
 	return fmt.Sprintf("Event {type=%d %v time=%d data=%v x=%d y=%d width=%d height=%d detail=%d}", this.Type, this.Widget, this.Time, this.Data, this.X, this.Y, this.Width, this.Height, this.Detail)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Event](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*Event](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*Event](), "setBounds", []reflect.Type{reflect.TypeFor[RectangleLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Event](target).SetBounds(jrt.ArgAs[RectangleLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Event](), "toString", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Event](target).String() })
 }

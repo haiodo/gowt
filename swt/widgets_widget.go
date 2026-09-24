@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
 	"strings"
 )
@@ -1753,7 +1754,7 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 }
 
 func (this *Widget) GetName() string {
-	var string_ string = reflect.TypeOf(this).String()
+	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
 	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
 	if index == -1 {
 		return string_
@@ -1904,7 +1905,7 @@ func (this *Widget) isOpaque_(id int64, sel int64) bool {
 }
 
 func (this *Widget) IsValidSubclass() bool {
-	return DisplayIsValidClass(reflect.TypeOf(this))
+	return DisplayIsValidClass(reflect.TypeOf(this.Impl()))
 }
 
 func (this *Widget) IsValidThread() bool {
@@ -3530,6 +3531,57 @@ func WidgetCheckBits(style int32, int0 int32, int1 int32, int2 int32, int3 int32
 		style = (style & ^mask) | int5
 	}
 	return style
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "reskin", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).Reskin(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "addListener", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).AddListener(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "addDisposeListener", []reflect.Type{reflect.TypeFor[DisposeListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).AddDisposeListener(jrt.ArgAs[DisposeListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "dispose", nil, nil, func(target any, args []any) any { jrt.Narrow[*Widget](target).Dispose(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "getData", nil, reflect.TypeFor[any](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).GetData() })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "getData", []reflect.Type{reflect.TypeFor[string]()}, reflect.TypeFor[any](), func(target any, args []any) any {
+		return jrt.Narrow[*Widget](target).GetDataKey(jrt.ArgAs[string](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "getDisplay", nil, reflect.TypeFor[*Display](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).GetDisplay() })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "getListeners", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[[]Listener](), func(target any, args []any) any {
+		return jrt.Narrow[*Widget](target).GetListeners(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "getStyle", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).GetStyle() })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "isAutoDirection", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).IsAutoDirection() })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "isDisposed", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).IsDisposed() })
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "isListening", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
+		return jrt.Narrow[*Widget](target).IsListening(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "notifyListeners", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[EventLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).NotifyListeners(jrt.ArgAs[int32](args[0]), jrt.ArgAs[EventLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "removeListener", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).RemoveListener(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "removeDisposeListener", []reflect.Type{reflect.TypeFor[DisposeListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).RemoveDisposeListener(jrt.ArgAs[DisposeListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "setData", []reflect.Type{reflect.TypeFor[any]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).SetData(jrt.ArgAs[any](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "setData", []reflect.Type{reflect.TypeFor[string](), reflect.TypeFor[any]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Widget](target).SetDataKeyValue(jrt.ArgAs[string](args[0]), jrt.ArgAs[any](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Widget](), "toString", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Widget](target).String() })
 }
 
 func upcastcocoaNSStringTococoaId(x *cocoa.NSString) *cocoa.Id {

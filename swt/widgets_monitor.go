@@ -2,6 +2,11 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
+)
+
 type Monitor struct {
 	handle       int64
 	x            int32
@@ -80,6 +85,14 @@ func (this *Monitor) SetClientArea(rectLike RectangleLike) {
 
 func (this *Monitor) HashCode() int32 {
 	return int32(this.handle)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Monitor](), "equals", []reflect.Type{reflect.TypeFor[any]()}, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Monitor](target).Equals(jrt.ArgAs[any](args[0])) })
+	jrt.RegisterMethod(reflect.TypeFor[*Monitor](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*Monitor](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*Monitor](), "getClientArea", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*Monitor](target).GetClientArea() })
+	jrt.RegisterMethod(reflect.TypeFor[*Monitor](), "getZoom", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Monitor](target).GetZoom() })
+	jrt.RegisterMethod(reflect.TypeFor[*Monitor](), "hashCode", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Monitor](target).HashCode() })
 }
 
 // j2go: instanceof helper for Monitor and its subclasses within the translated set.

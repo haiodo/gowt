@@ -163,6 +163,15 @@ func ParseInt(s string) int32 {
 	return int32(n)
 }
 
+// ParseLong is Long.parseLong/Long.valueOf(String).
+func ParseLong(s string) int64 {
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		panic(&NumberFormatException{Input: s})
+	}
+	return n
+}
+
 // IndexFrom is String.indexOf(str, fromIndex): byte offsets, like the rest of this port's strings.
 func IndexFrom(s, needle string, from int32) int32 {
 	if from < 0 {

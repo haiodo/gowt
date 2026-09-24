@@ -5,8 +5,10 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
+	"reflect"
 )
 
 type Canvas struct {
@@ -610,6 +612,27 @@ func (this *Canvas) WriteSelectionToPasteboardPboardType(pboard *cocoa.NSPastebo
 		}
 	}
 	return result
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "drawBackground", []reflect.Type{reflect.TypeFor[GCLike](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Canvas](target).DrawBackgroundGC(jrt.ArgAs[GCLike](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "getCaret", nil, reflect.TypeFor[*Caret](), func(target any, args []any) any { return jrt.Narrow[*Canvas](target).GetCaret() })
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "getIME", nil, reflect.TypeFor[*IME](), func(target any, args []any) any { return jrt.Narrow[*Canvas](target).GetIME() })
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "scroll", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Canvas](target).Scroll(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]), jrt.ArgAs[bool](args[6]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "setCaret", []reflect.Type{reflect.TypeFor[CaretLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Canvas](target).SetCaret(jrt.ArgAs[CaretLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Canvas](), "setIME", []reflect.Type{reflect.TypeFor[*IME]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Canvas](target).SetIME(jrt.ArgAs[*IME](args[0]))
+		return nil
+	})
 }
 
 func upcastcocoaNSBitmapImageRepTococoaNSImageRep(x *cocoa.NSBitmapImageRep) *cocoa.NSImageRep {

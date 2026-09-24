@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
 	"strings"
 )
@@ -267,7 +268,7 @@ func (this *FormData) GetLeftAttachment(controlLike ControlLike, spacing int32, 
 }
 
 func (this *FormData) GetName() string {
-	var string_ string = reflect.TypeOf(this).String()
+	var string_ string = jrt.ClassName(reflect.TypeOf(this))
 	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
 	if index == -1 {
 		return string_

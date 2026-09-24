@@ -5,7 +5,9 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type TreeItem struct {
@@ -1215,6 +1217,115 @@ func TreeItemCheckIndex(index int32) int32 {
 		Error(ERROR_INVALID_RANGE)
 	}
 	return index
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "clear", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).ClearIndexAll(jrt.ArgAs[int32](args[0]), jrt.ArgAs[bool](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "clearAll", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).ClearAll(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getBackground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetBackground() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getBackground", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Color](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetBackgroundIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetBoundsIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getChecked", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetChecked() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getExpanded", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetExpanded() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getFont", nil, reflect.TypeFor[*Font](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetFont() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getFont", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Font](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetFontIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getForeground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetForeground() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getForeground", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Color](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetForegroundIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getGrayed", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetGrayed() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getImage", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Image](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetImageIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getImageBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetImageBounds(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*TreeItem](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getItems", nil, reflect.TypeFor[[]*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getParent", nil, reflect.TypeFor[*Tree](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getParentItem", nil, reflect.TypeFor[*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*TreeItem](target).GetParentItem() })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getText", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[string](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetTextIndex(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "getTextBounds", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).GetTextBounds(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "indexOf", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*TreeItem](target).IndexOf(jrt.ArgAs[TreeItemLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "removeAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*TreeItem](target).RemoveAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setBackground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetBackground(jrt.ArgAs[ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setBackground", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetBackgroundIndexColor(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ColorLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setChecked", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetChecked(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setExpanded", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetExpanded(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setFont", []reflect.Type{reflect.TypeFor[FontLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetFont(jrt.ArgAs[FontLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setFont", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[FontLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetFontIndexFont(jrt.ArgAs[int32](args[0]), jrt.ArgAs[FontLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setForeground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetForeground(jrt.ArgAs[ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setForeground", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetForegroundIndexColor(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ColorLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setGrayed", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetGrayed(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setImage", []reflect.Type{reflect.TypeFor[[]*Image]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetImages(jrt.ArgAs[[]*Image](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setImage", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetImageIndexImage(jrt.ArgAs[int32](args[0]), jrt.ArgAs[ImageLike](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setItemCount", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetItemCount(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setText", []reflect.Type{reflect.TypeFor[[]string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetTexts(jrt.ArgAs[[]string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*TreeItem](), "setText", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TreeItem](target).SetTextIndexString(jrt.ArgAs[int32](args[0]), jrt.ArgAs[string](args[1]))
+		return nil
+	})
 }
 
 func upcastcocoaNSTextFieldCellTococoaNSCell(x *cocoa.NSTextFieldCell) *cocoa.NSCell {

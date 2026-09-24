@@ -2,6 +2,11 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
+)
+
 type Item struct {
 	Widget
 	text  string
@@ -140,6 +145,19 @@ func (this *Item) HandleDPIChange(event *Event) {
 	if image != (nil) {
 		this.impl.setImageOnItem_(image)
 	}
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Item](), "getImage", nil, reflect.TypeFor[*Image](), func(target any, args []any) any { return jrt.Narrow[*Item](target).GetImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*Item](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Item](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Item](), "setImage", []reflect.Type{reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Item](target).SetImage(jrt.ArgAs[ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Item](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Item](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
 }
 
 // j2go: func adapter for Listener.

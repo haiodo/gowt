@@ -5,8 +5,10 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
+	"reflect"
 	"unicode/utf16"
 )
 
@@ -1728,6 +1730,126 @@ func TextCheckStyle(style int32) int32 {
 		return style | MULTI
 	}
 	return style | SINGLE
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "addModifyListener", []reflect.Type{reflect.TypeFor[ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).AddModifyListener(jrt.ArgAs[ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "addSegmentListener", []reflect.Type{reflect.TypeFor[SegmentListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).AddSegmentListener(jrt.ArgAs[SegmentListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "addVerifyListener", []reflect.Type{reflect.TypeFor[VerifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).AddVerifyListener(jrt.ArgAs[VerifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "append", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).Append(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "clearSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).ClearSelection(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "copy", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).Copy(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "cut", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).Cut(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getCaretLineNumber", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetCaretLineNumber() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getCaretLocation", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetCaretLocation() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getCaretPosition", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetCaretPosition() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getCharCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetCharCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getDoubleClickEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetDoubleClickEnabled() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getEchoChar", nil, reflect.TypeFor[uint16](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetEchoChar() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getEditable", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetEditable() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getLineCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetLineCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getLineDelimiter", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetLineDelimiter() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getLineHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetLineHeight() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getMessage", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetMessage() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getSelection", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getSelectionCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetSelectionCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getSelectionText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetSelectionText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getTabs", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetTabs() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getText", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[string](), func(target any, args []any) any {
+		return jrt.Narrow[*Text](target).GetTextStartEnd(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getTextChars", nil, reflect.TypeFor[[]uint16](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetTextChars() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getTextLimit", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetTextLimit() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getTopIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetTopIndex() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "getTopPixel", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Text](target).GetTopPixel() })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "insert", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).Insert(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "paste", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).Paste(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "removeModifyListener", []reflect.Type{reflect.TypeFor[ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).RemoveModifyListener(jrt.ArgAs[ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "removeSegmentListener", []reflect.Type{reflect.TypeFor[SegmentListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).RemoveSegmentListener(jrt.ArgAs[SegmentListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "removeVerifyListener", []reflect.Type{reflect.TypeFor[VerifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).RemoveVerifyListener(jrt.ArgAs[VerifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "selectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).SelectAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setDoubleClickEnabled", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetDoubleClickEnabled(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setEchoChar", []reflect.Type{reflect.TypeFor[uint16]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetEchoChar(jrt.ArgAs[uint16](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setEditable", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetEditable(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setMessage", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetMessage(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetSelection(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setSelection", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetSelectionStartEnd(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setSelection", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetSelectionSelection(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setTabs", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetTabs(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setTextChars", []reflect.Type{reflect.TypeFor[[]uint16]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetTextChars(jrt.ArgAs[[]uint16](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setTextLimit", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetTextLimit(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "setTopIndex", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Text](target).SetTopIndex(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Text](), "showSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*Text](target).ShowSelection(); return nil })
 }
 
 // j2go: instanceof helper for cocoa.NSSearchField and its subclasses within the translated set.

@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"reflect"
 	"strings"
@@ -94,7 +95,7 @@ func (this *FormLayout) flushCache_(control *Control) bool {
 }
 
 func (this *FormLayout) GetName() string {
-	var string_ string = reflect.TypeOf(this).String()
+	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
 	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
 	if index == -1 {
 		return string_

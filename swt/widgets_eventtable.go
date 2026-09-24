@@ -2,6 +2,11 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
+)
+
 type EventTable struct {
 	types     []int32
 	listeners []Listener
@@ -214,6 +219,32 @@ func (this *EventTable) UnhookEventTypeListener(eventType int32, listener any) {
 			}
 		}
 	}
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "getListeners", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[[]Listener](), func(target any, args []any) any {
+		return jrt.Narrow[*EventTable](target).GetListeners(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "hook", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*EventTable](target).Hook(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "hooks", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
+		return jrt.Narrow[*EventTable](target).Hooks(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "sendEvent", []reflect.Type{reflect.TypeFor[EventLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*EventTable](target).SendEvent(jrt.ArgAs[EventLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "size", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*EventTable](target).Size() })
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "unhook", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*EventTable](target).Unhook(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*EventTable](), "unhook", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[any]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*EventTable](target).UnhookEventTypeListener(jrt.ArgAs[int32](args[0]), jrt.ArgAs[any](args[1]))
+		return nil
+	})
 }
 
 // j2go: instanceof helper for TypedListener and its subclasses within the translated set.

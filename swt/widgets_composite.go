@@ -5,7 +5,9 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 )
 
 type Composite struct {
@@ -1027,6 +1029,56 @@ func (this *Composite) updateLayout_(all bool) {
 
 func (this *Composite) string_() string {
 	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.string_(), this.layout)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "changed", []reflect.Type{reflect.TypeFor[[]*Control]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).Changed(jrt.ArgAs[[]*Control](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "drawBackground", []reflect.Type{reflect.TypeFor[GCLike](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).DrawBackground(jrt.ArgAs[GCLike](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]), jrt.ArgAs[int32](args[6]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "getBackgroundMode", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).GetBackgroundMode() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "getChildren", nil, reflect.TypeFor[[]*Control](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).GetChildren() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "getLayout", nil, reflect.TypeFor[*Layout](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).GetLayout() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "getLayoutDeferred", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).GetLayoutDeferred() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "getTabList", nil, reflect.TypeFor[[]*Control](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).GetTabList() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "isLayoutDeferred", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Composite](target).IsLayoutDeferred() })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "layout", nil, nil, func(target any, args []any) any { jrt.Narrow[*Composite](target).Layout(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "layout", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).LayoutOverload1(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "layout", []reflect.Type{reflect.TypeFor[bool](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).LayoutOverload2(jrt.ArgAs[bool](args[0]), jrt.ArgAs[bool](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "layout", []reflect.Type{reflect.TypeFor[[]*Control]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).LayoutOverload3(jrt.ArgAs[[]*Control](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "layout", []reflect.Type{reflect.TypeFor[[]*Control](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).LayoutOverload4(jrt.ArgAs[[]*Control](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "setBackgroundMode", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).SetBackgroundMode(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "setLayout", []reflect.Type{reflect.TypeFor[LayoutLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).SetLayout(jrt.ArgAs[LayoutLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "setLayoutDeferred", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).SetLayoutDeferred(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Composite](), "setTabList", []reflect.Type{reflect.TypeFor[[]*Control]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Composite](target).SetTabList(jrt.ArgAs[[]*Control](args[0]))
+		return nil
+	})
 }
 
 // j2go: instanceof helper for Control and its subclasses within the translated set.

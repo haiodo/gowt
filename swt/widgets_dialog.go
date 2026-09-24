@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
 )
 
@@ -60,7 +61,7 @@ func (this *Dialog) initDialogParentStyle(parent *Shell, style int32) {
 }
 
 func (this *Dialog) CheckSubclass() {
-	if !DisplayIsValidClass(reflect.TypeOf(this)) {
+	if !DisplayIsValidClass(reflect.TypeOf(this.Impl())) {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
@@ -134,4 +135,14 @@ func DialogCheckStyle(parentLike ShellLike, style int32) int32 {
 		}
 	}
 	return WidgetCheckBits(style, LEFT_TO_RIGHT, RIGHT_TO_LEFT, 0, 0, 0, 0)
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Dialog](), "getParent", nil, reflect.TypeFor[*Shell](), func(target any, args []any) any { return jrt.Narrow[*Dialog](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*Dialog](), "getStyle", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Dialog](target).GetStyle() })
+	jrt.RegisterMethod(reflect.TypeFor[*Dialog](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Dialog](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*Dialog](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Dialog](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
 }

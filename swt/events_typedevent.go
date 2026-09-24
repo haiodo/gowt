@@ -62,7 +62,7 @@ func (this *TypedEvent) initTypedEventE(e *Event) {
 }
 
 func (this *TypedEvent) GetName() string {
-	var string_ string = reflect.TypeOf(this).String()
+	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
 	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
 	if index == -1 {
 		return string_

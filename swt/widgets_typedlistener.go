@@ -2,6 +2,11 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
+)
+
 type TypedListener struct {
 	eventListener any
 }
@@ -262,4 +267,12 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			break
 		}
 	}
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*TypedListener](), "getEventListener", nil, reflect.TypeFor[any](), func(target any, args []any) any { return jrt.Narrow[*TypedListener](target).GetEventListener() })
+	jrt.RegisterMethod(reflect.TypeFor[*TypedListener](), "handleEvent", []reflect.Type{reflect.TypeFor[*Event]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*TypedListener](target).HandleEvent(jrt.ArgAs[*Event](args[0]))
+		return nil
+	})
 }

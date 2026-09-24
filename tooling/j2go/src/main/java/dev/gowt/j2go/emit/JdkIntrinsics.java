@@ -1,12 +1,15 @@
 package dev.gowt.j2go.emit;
 
 import dev.gowt.j2go.Manual;
+import dev.gowt.j2go.TypeModel;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.StringLiteral;
+
+import java.util.List;
 
 /** Mapping of plain JDK calls used by the translated set: Math.min/max, System.arraycopy,
  * System.getProperty("os.arch"), String/Consumer/Throwable methods. The single place to add
@@ -123,13 +126,52 @@ final class JdkIntrinsics {
 		}
 		// getClass()/Class#getName(): on Widget's own constructor path (checkSubclass), so it
 		// must not degrade to the generic panic marker like other reflection - use reflect.Type.
+		// A cascade class's receiver expression is frequently an upcast promoted-field address
+		// (Widget[] widgets = getExampleWidgets() stores &concreteText.Widget) - reflect.TypeOf on
+		// that gives the upcast type (*Widget), not the real dynamic one Java's getClass() means.
+		// This class's own .impl (Round 6+ impl cascade) always holds the true concrete pointer,
+		// so route through .Impl() instead whenever the receiver's static type has one.
 		if (qualified.equals("java.lang.Object") && mb.getName().equals("getClass") && mi.arguments().isEmpty()) {
 			emitter.fileImports.add("reflect");
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
+			ITypeBinding receiverType = mi.getExpression() != null ? mi.getExpression().resolveTypeBinding() : null;
+			TypeModel.ClassInfo rci = receiverType != null ? emitter.model.lookup(receiverType) : emitter.currentClassInfo;
+			if (rci != null && rci.root.splitsDispatch() && !rci.root.children.isEmpty()) {
+				return "reflect.TypeOf(" + recv + ".Impl())";
+			}
 			return "reflect.TypeOf(" + recv + ")";
 		}
+		// Round 10 reflection: Class<?> stays reflect.Type (Manual) - see README "Round 10
+		// reflection" and internal/jrt/reflect.go.
 		if (qualified.equals("java.lang.Class") && mb.getName().equals("getName")) {
-			return emitter.expr(mi.getExpression()) + ".String()";
+			emitter.fileImports.add(JRT);
+			return "jrt.ClassName(" + recv(mi) + ")";
+		}
+		if (qualified.equals("java.lang.Class") && mb.getName().equals("isArray")) {
+			emitter.fileImports.add("reflect");
+			return recv(mi) + ".Kind() == reflect.Slice";
+		}
+		if (qualified.equals("java.lang.Class") && mb.getName().equals("getComponentType")) {
+			return recv(mi) + ".Elem()";
+		}
+		if (qualified.equals("java.lang.Class") && mb.getName().equals("getMethod")) {
+			List<String> args = emitter.buildArgs(mi.arguments(), mb);
+			emitter.fileImports.add(JRT);
+			return "jrt.ClassGetMethod(" + recv(mi) + ", " + args.get(0) + ", " + args.get(1) + ")";
+		}
+		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("invoke")) {
+			List<String> args = emitter.buildArgs(mi.arguments(), mb);
+			emitter.fileImports.add(JRT);
+			return recv(mi) + ".(*jrt.Method).Invoke(" + args.get(0) + ", " + args.get(1) + "...)";
+		}
+		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("getReturnType")) {
+			return recv(mi) + ".(*jrt.Method).GetReturnType()";
+		}
+		// Object.toString() on an Object-typed receiver (Method.invoke's boxed result): fmt.Sprint
+		// picks up every translated class's own Go String() method via fmt.Stringer.
+		if (qualified.equals("java.lang.Object") && mb.getName().equals("toString") && mi.arguments().isEmpty()) {
+			emitter.fileImports.add("fmt");
+			return "fmt.Sprint(" + recv(mi) + ")";
 		}
 		return tryMore(mi, mb, qualified, mb.getName());
 	}
@@ -170,12 +212,28 @@ final class JdkIntrinsics {
 			case "java.lang.Integer#reverseBytes":
 				emitter.fileImports.add("math/bits");
 				return "int32(bits.ReverseBytes32(uint32(" + arg(mi, 0) + ")))";
-			// Boxed Integer is Go any (Manual); unboxing asserts back, nil reads as 0.
+			// Boxed Integer is Go any (Manual); unboxing asserts back, nil reads as 0. The
+			// String overload (Set/Get dialog's numeric parameters) parses instead of boxing.
 			case "java.lang.Integer#valueOf":
-				return mb.getParameterTypes()[0].isPrimitive() ? arg(mi, 0) : null;
+				if (mb.getParameterTypes()[0].isPrimitive()) return arg(mi, 0);
+				emitter.fileImports.add(JRT);
+				return "jrt.ParseInt(" + arg(mi, 0) + ")";
+			case "java.lang.Long#valueOf":
+				if (mb.getParameterTypes()[0].isPrimitive()) return arg(mi, 0);
+				emitter.fileImports.add(JRT);
+				return "jrt.ParseLong(" + arg(mi, 0) + ")";
+			// Character has no String-parsing overload - always a primitive-char box (no-op).
+			case "java.lang.Character#valueOf":
+				return arg(mi, 0);
 			case "java.lang.Integer#intValue":
 				emitter.fileImports.add(JRT);
 				return "jrt.Cast[int32](" + recv(mi) + ")";
+			case "java.lang.reflect.Array#getLength":
+				emitter.fileImports.add("reflect");
+				return "int32(reflect.ValueOf(" + arg(mi, 0) + ").Len())";
+			case "java.lang.reflect.Array#get":
+				emitter.fileImports.add("reflect");
+				return "reflect.ValueOf(" + arg(mi, 0) + ").Index(int(" + arg(mi, 1) + ")).Interface()";
 			case "java.lang.Boolean#booleanValue":
 				return recv(mi);
 			case "java.util.Objects#requireNonNull", "java.util.Objects#nonNull":

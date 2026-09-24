@@ -4,6 +4,8 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
+	"reflect"
 )
 
 type Caret struct {
@@ -328,6 +330,53 @@ func (this *Caret) ShowCaret() bool {
 	}
 	this.isShowing = true
 	return this.DrawCaret()
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getFont", nil, reflect.TypeFor[*Font](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetFont() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getImage", nil, reflect.TypeFor[*Image](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getLocation", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetLocation() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getParent", nil, reflect.TypeFor[*Canvas](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getSize", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "getVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).GetVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "isVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Caret](target).IsVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setBounds", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetBounds(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setBounds", []reflect.Type{reflect.TypeFor[RectangleLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetBoundsRect(jrt.ArgAs[RectangleLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setFont", []reflect.Type{reflect.TypeFor[FontLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetFont(jrt.ArgAs[FontLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setImage", []reflect.Type{reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetImage(jrt.ArgAs[ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setLocation", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetLocationLocation(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setSize", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetSizeSize(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Caret](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Caret](target).SetVisible(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
 }
 
 func upcastCanvasToWidget(x *Canvas) *Widget {

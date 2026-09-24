@@ -6,6 +6,7 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
+	"reflect"
 	"unicode/utf16"
 )
 
@@ -2168,6 +2169,66 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 		return bits | PRIMARY_MODAL
 	}
 	return bits
+}
+
+func init() {
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "addShellListener", []reflect.Type{reflect.TypeFor[ShellListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).AddShellListener(jrt.ArgAs[ShellListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "close", nil, nil, func(target any, args []any) any { jrt.Narrow[*Shell](target).Close(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "forceActive", nil, nil, func(target any, args []any) any { jrt.Narrow[*Shell](target).ForceActive(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getAlpha", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetAlpha() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getFullScreen", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetFullScreen() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getImeInputMode", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetImeInputMode() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getModified", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetModified() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getMaximumSize", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetMaximumSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getMinimumSize", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetMinimumSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getShells", nil, reflect.TypeFor[[]*Shell](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetShells() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getToolBar", nil, reflect.TypeFor[*ToolBar](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetToolBar() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "open", nil, nil, func(target any, args []any) any { jrt.Narrow[*Shell](target).Open(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "removeShellListener", []reflect.Type{reflect.TypeFor[ShellListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).RemoveShellListener(jrt.ArgAs[ShellListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setActive", nil, nil, func(target any, args []any) any { jrt.Narrow[*Shell](target).SetActive(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setAlpha", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetAlpha(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setFullScreen", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetFullScreen(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setImeInputMode", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetImeInputMode(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setMaximumSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetMaximumSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setMaximumSize", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetMaximumSizeSize(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setMinimumSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetMinimumSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setMinimumSize", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetMinimumSizeSize(jrt.ArgAs[PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setModified", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetModified(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "getZoom", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Shell](target).GetZoom() })
+	jrt.RegisterMethod(reflect.TypeFor[*Shell](), "setDarkThemePreferred", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*Shell](target).SetDarkThemePreferred(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
 }
 
 func upcastcocoaNSWindowTococoaNSObject(x *cocoa.NSWindow) *cocoa.NSObject {

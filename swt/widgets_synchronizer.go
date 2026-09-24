@@ -14,6 +14,12 @@ type Synchronizer struct {
 	syncThread any
 }
 
+func (this *Synchronizer) AsSynchronizer() *Synchronizer { return this }
+
+type SynchronizerLike interface {
+	AsSynchronizer() *Synchronizer
+}
+
 const SynchronizerGROW_SIZE int32 = 4
 
 const SynchronizerMESSAGE_LIMIT int32 = 64
@@ -22,7 +28,12 @@ var SynchronizerIS_COCOA bool
 
 var SynchronizerIS_GTK bool
 
-func NewSynchronizer(display *Display) *Synchronizer {
+func NewSynchronizer(displayLike DisplayLike) *Synchronizer {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	this := &Synchronizer{}
 	this.initSynchronizer(display)
 	return this
@@ -33,14 +44,24 @@ func (this *Synchronizer) initSynchronizer(display *Display) {
 	this.display = display
 }
 
-func (this *Synchronizer) MoveAllEventsTo(toReceiveTheEvents *Synchronizer) {
+func (this *Synchronizer) MoveAllEventsTo(toReceiveTheEventsLike SynchronizerLike) {
+	var toReceiveTheEvents *Synchronizer
+	if toReceiveTheEventsLike != nil {
+		toReceiveTheEvents = toReceiveTheEventsLike.AsSynchronizer()
+	}
+	_ = toReceiveTheEvents
 	var tail *jrt.List = jrt.NewList()
 	toReceiveTheEvents.messages.RemoveIf(func() any { panic("j2go: unsupported ExpressionMethodReference") }())
 	this.messages.RemoveIf(func() any { panic("j2go: unsupported ExpressionMethodReference") }())
 	toReceiveTheEvents.messages.AddAll(tail)
 }
 
-func (this *Synchronizer) AddLast(lock *RunnableLock) {
+func (this *Synchronizer) AddLast(lockLike RunnableLockLike) {
+	var lock *RunnableLock
+	if lockLike != nil {
+		lock = lockLike.AsRunnableLock()
+	}
+	_ = lock
 	this.messages.Add(lock)
 	if jrt.Cast[*RunnableLock](this.messages.Peek()) == lock {
 		this.display.WakeThread()
@@ -87,10 +108,10 @@ func (this *Synchronizer) RunAsyncMessagesAll(all bool) bool {
 		func() {
 			defer jrt.MonitorExit()
 			this.syncThread = lock.thread
-			this.display.SendPreEvent(SWTNone)
+			this.display.SendPreEvent(None)
 			defer func() {
 				if this.display != (nil) && !this.display.IsDisposed() {
-					this.display.SendPostEvent(SWTNone)
+					this.display.SendPostEvent(None)
 				}
 				this.syncThread = nil
 				jrt.MonitorNotifyAll()
@@ -104,7 +125,7 @@ func (this *Synchronizer) RunAsyncMessagesAll(all bool) bool {
 					if t, ok := r.(error); ok {
 						_ = t
 						lock.throwable = t
-						SWTErrorCodeThrowable(SWTERROR_FAILED_EXEC, t)
+						ErrorCodeThrowable(ERROR_FAILED_EXEC, t)
 					} else {
 						panic(r)
 					}
@@ -126,7 +147,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 	func() {
 		defer jrt.MonitorExit()
 		if this.display == (nil) || this.display.IsDisposed() {
-			SWTErrorFn(SWTERROR_DEVICE_DISPOSED)
+			Error(ERROR_DEVICE_DISPOSED)
 		}
 		if !this.display.IsValidThread() {
 			if runnable == (nil) {
@@ -144,10 +165,10 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 	}
 	if lock == (nil) {
 		if runnable != (nil) {
-			this.display.SendPreEvent(SWTNone)
+			this.display.SendPreEvent(None)
 			defer func() {
 				if this.display != (nil) && !this.display.IsDisposed() {
-					this.display.SendPostEvent(SWTNone)
+					this.display.SendPostEvent(None)
 				}
 			}()
 			func() {
@@ -203,7 +224,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 			func() any { _ = []any{ThreadCurrentThread()}; panic("j2go: unresolved call interrupt") }()
 		}
 		if lock.throwable != (nil) {
-			SWTErrorCodeThrowable(SWTERROR_FAILED_EXEC, lock.throwable)
+			ErrorCodeThrowable(ERROR_FAILED_EXEC, lock.throwable)
 		}
 	}()
 }
@@ -215,7 +236,7 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SynchronizerIS_COCOA:", r)
 			}
 		}()
-		SynchronizerIS_COCOA = ("cocoa" == SWTGetPlatform())
+		SynchronizerIS_COCOA = ("cocoa" == GetPlatform())
 	}()
 	func() {
 		defer func() {
@@ -223,6 +244,6 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SynchronizerIS_GTK:", r)
 			}
 		}()
-		SynchronizerIS_GTK = ("gtk" == SWTGetPlatform())
+		SynchronizerIS_GTK = ("gtk" == GetPlatform())
 	}()
 }

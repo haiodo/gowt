@@ -15,7 +15,18 @@ type TouchEvent struct {
 	Y         int32
 }
 
-func NewTouchEvent(e *Event) *TouchEvent {
+func (this *TouchEvent) AsTouchEvent() *TouchEvent { return this }
+
+type TouchEventLike interface {
+	AsTouchEvent() *TouchEvent
+}
+
+func NewTouchEvent(eLike EventLike) *TouchEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &TouchEvent{}
 	this.impl = this
 	this.initTouchEvent(e)

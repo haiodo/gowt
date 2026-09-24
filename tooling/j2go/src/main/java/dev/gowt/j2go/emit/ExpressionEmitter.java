@@ -186,7 +186,7 @@ final class ExpressionEmitter {
 		if (Manual.isManual(qualified)) return Manual.staticMember(qualified, vb.getName());
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
 		if (ci != null) {
-			String goName = emitter.qualifiedFuncPrefix(ci) + Names.capitalize(vb.getName());
+			String goName = staticFieldGoName(emitter, ci, vb.getName());
 			return staticFieldClashesWithMethod(declaring, vb.getName()) ? goName + "_" : goName;
 		}
 		emitter.unsupported.add("StaticField: unresolved declaring type for " + vb.getName());

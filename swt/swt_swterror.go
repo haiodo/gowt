@@ -13,6 +13,12 @@ type SWTError struct {
 	Throwable error
 }
 
+func (this *SWTError) AsSWTError() *SWTError { return this }
+
+type SWTErrorLike interface {
+	AsSWTError() *SWTError
+}
+
 func NewSWTError() *SWTError {
 	this := &SWTError{}
 	this.initSWTError()
@@ -20,7 +26,7 @@ func NewSWTError() *SWTError {
 }
 
 func (this *SWTError) initSWTError() {
-	this.initSWTErrorCode(SWTERROR_UNSPECIFIED)
+	this.initSWTErrorCode(ERROR_UNSPECIFIED)
 }
 
 func NewSWTErrorMessage(message string) *SWTError {
@@ -30,7 +36,7 @@ func NewSWTErrorMessage(message string) *SWTError {
 }
 
 func (this *SWTError) initSWTErrorMessage(message string) {
-	this.initSWTErrorCodeMessage(SWTERROR_UNSPECIFIED, message)
+	this.initSWTErrorCodeMessage(ERROR_UNSPECIFIED, message)
 }
 
 func NewSWTErrorCode(code int32) *SWTError {
@@ -40,7 +46,7 @@ func NewSWTErrorCode(code int32) *SWTError {
 }
 
 func (this *SWTError) initSWTErrorCode(code int32) {
-	this.initSWTErrorCodeMessage(code, SWTFindErrorText(code))
+	this.initSWTErrorCodeMessage(code, FindErrorText(code))
 }
 
 func NewSWTErrorCodeMessage(code int32, message string) *SWTError {

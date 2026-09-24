@@ -5,6 +5,12 @@ package swt
 type FocusAdapter struct {
 }
 
+func (this *FocusAdapter) AsFocusAdapter() *FocusAdapter { return this }
+
+type FocusAdapterLike interface {
+	AsFocusAdapter() *FocusAdapter
+}
+
 func NewFocusAdapter() *FocusAdapter {
 	this := &FocusAdapter{}
 	this.initFocusAdapter()

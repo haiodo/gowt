@@ -5,6 +5,12 @@ package swt
 type MenuAdapter struct {
 }
 
+func (this *MenuAdapter) AsMenuAdapter() *MenuAdapter { return this }
+
+type MenuAdapterLike interface {
+	AsMenuAdapter() *MenuAdapter
+}
+
 func NewMenuAdapter() *MenuAdapter {
 	this := &MenuAdapter{}
 	this.initMenuAdapter()

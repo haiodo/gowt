@@ -16,7 +16,18 @@ type PaintEvent struct {
 	Count  int32
 }
 
-func NewPaintEvent(e *Event) *PaintEvent {
+func (this *PaintEvent) AsPaintEvent() *PaintEvent { return this }
+
+type PaintEventLike interface {
+	AsPaintEvent() *PaintEvent
+}
+
+func NewPaintEvent(eLike EventLike) *PaintEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &PaintEvent{}
 	this.impl = this
 	this.initPaintEvent(e)

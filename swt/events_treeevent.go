@@ -6,7 +6,18 @@ type TreeEvent struct {
 	SelectionEvent
 }
 
-func NewTreeEvent(e *Event) *TreeEvent {
+func (this *TreeEvent) AsTreeEvent() *TreeEvent { return this }
+
+type TreeEventLike interface {
+	AsTreeEvent() *TreeEvent
+}
+
+func NewTreeEvent(eLike EventLike) *TreeEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &TreeEvent{}
 	this.impl = this
 	this.initTreeEvent(e)

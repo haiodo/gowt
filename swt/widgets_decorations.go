@@ -18,6 +18,12 @@ type Decorations struct {
 	defaultButton *Button
 }
 
+func (this *Decorations) AsDecorations() *Decorations { return this }
+
+type DecorationsLike interface {
+	AsDecorations() *Decorations
+}
+
 func newDecorations() *Decorations {
 	this := &Decorations{}
 	this.impl = this
@@ -31,7 +37,12 @@ func (this *Decorations) initDecorations() {
 	this.text = ""
 }
 
-func NewDecorationsParentStyle(parent *Composite, style int32) *Decorations {
+func NewDecorationsParentStyle(parentLike CompositeLike, style int32) *Decorations {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Decorations{}
 	this.impl = this
 	this.initDecorationsParentStyle(parent, style)
@@ -50,7 +61,7 @@ func (this *Decorations) BringToTop(force bool) {
 
 func (this *Decorations) CheckSubclass() {
 	if !this.IsValidSubclass() {
-		this.Error(SWTERROR_INVALID_SUBCLASS)
+		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
@@ -58,22 +69,22 @@ func (this *Decorations) Compare(data1 *ImageData, data2 *ImageData) int32 {
 	if data1.Width == data2.Width && data1.Height == data2.Height {
 		var transparent1 int32 = data1.GetTransparencyType()
 		var transparent2 int32 = data2.GetTransparencyType()
-		if transparent1 == SWTTRANSPARENCY_ALPHA {
+		if transparent1 == TRANSPARENCY_ALPHA {
 			return -1
 		}
-		if transparent2 == SWTTRANSPARENCY_ALPHA {
+		if transparent2 == TRANSPARENCY_ALPHA {
 			return 1
 		}
-		if transparent1 == SWTTRANSPARENCY_MASK {
+		if transparent1 == TRANSPARENCY_MASK {
 			return -1
 		}
-		if transparent2 == SWTTRANSPARENCY_MASK {
+		if transparent2 == TRANSPARENCY_MASK {
 			return 1
 		}
-		if transparent1 == SWTTRANSPARENCY_PIXEL {
+		if transparent1 == TRANSPARENCY_PIXEL {
 			return -1
 		}
-		if transparent2 == SWTTRANSPARENCY_PIXEL {
+		if transparent2 == TRANSPARENCY_PIXEL {
 			return 1
 		}
 		return 0
@@ -95,7 +106,17 @@ func (this *Decorations) ComputeTabRoot() *Control {
 	return upcastDecorationsToControl(this)
 }
 
-func (this *Decorations) FixDecorations(newDecorations *Decorations, control *Control, menus []*Menu) {
+func (this *Decorations) FixDecorations(newDecorationsLike DecorationsLike, controlLike ControlLike, menus []*Menu) {
+	var newDecorations *Decorations
+	if newDecorationsLike != nil {
+		newDecorations = newDecorationsLike.AsDecorations()
+	}
+	_ = newDecorations
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if this == newDecorations {
 		return
 	}
@@ -249,16 +270,21 @@ func (this *Decorations) SaveFocus() {
 	}
 }
 
-func (this *Decorations) SetDefaultButton(button *Button) {
+func (this *Decorations) SetDefaultButton(buttonLike ButtonLike) {
+	var button *Button
+	if buttonLike != nil {
+		button = buttonLike.AsButton()
+	}
+	_ = button
 	this.CheckWidget()
 	if button != (nil) {
 		if button.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		if button.impl.MenuShell() != this {
-			this.Error(SWTERROR_INVALID_PARENT)
+			this.Error(ERROR_INVALID_PARENT)
 		}
-		if (button.style & SWTPUSH) == 0 {
+		if (button.style & PUSH) == 0 {
 			return
 		}
 	}
@@ -267,7 +293,7 @@ func (this *Decorations) SetDefaultButton(button *Button) {
 	}
 	this.defaultButton = button
 	var cell *cocoa.NSButtonCell = nil
-	if this.defaultButton != (nil) && (this.defaultButton.style&SWTPUSH) != 0 {
+	if this.defaultButton != (nil) && (this.defaultButton.style&PUSH) != 0 {
 		cell = cocoa.NewNSButtonCellOverload2(upcastcocoaNSCellTococoaId((castcocoaNSViewTococoaNSButton(this.defaultButton.View)).Cell()))
 	}
 	this.View.Window().SetDefaultButtonCell(cell)
@@ -277,7 +303,7 @@ func (this *Decorations) SetDefaultButton(button *Button) {
 func (this *Decorations) SetImage(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
 	if this.parent != (nil) {
@@ -297,11 +323,11 @@ func (this *Decorations) SetImage(image *Image) {
 func (this *Decorations) SetImages(images []*Image) {
 	this.CheckWidget()
 	if images == (nil) {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(images)); i++ {
 		if images[i] == (nil) || images[i].IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
 	this.images = images
@@ -335,13 +361,13 @@ func (this *Decorations) SetMenuBar(menu *Menu) {
 	}
 	if menu != (nil) {
 		if menu.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		if (menu.style & SWTBAR) == 0 {
-			this.Error(SWTERROR_MENU_NOT_BAR)
+		if (menu.style & BAR) == 0 {
+			this.Error(ERROR_MENU_NOT_BAR)
 		}
 		if menu.parent != this {
-			this.Error(SWTERROR_INVALID_PARENT)
+			this.Error(ERROR_INVALID_PARENT)
 		}
 	}
 	this.menuBar = menu
@@ -352,14 +378,19 @@ func (this *Decorations) SetMinimized(minimized bool) {
 	this.minimized = minimized
 }
 
-func (this *Decorations) SetSavedFocus(control *Control) {
+func (this *Decorations) SetSavedFocus(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	this.savedFocus = control
 }
 
 func (this *Decorations) SetText(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
 }
@@ -405,15 +436,15 @@ func (this *Decorations) TraverseReturn() bool {
 }
 
 func DecorationsCheckStyle(style int32) int32 {
-	if (style & SWTNO_TRIM) != 0 {
-		style &= ^(SWTCLOSE | SWTTITLE | SWTMIN | SWTMAX | SWTRESIZE | SWTBORDER)
+	if (style & NO_TRIM) != 0 {
+		style &= ^(CLOSE | TITLE | MIN | MAX | RESIZE | BORDER)
 	} else {
-		if (style & SWTNO_MOVE) != 0 {
-			style |= SWTTITLE
+		if (style & NO_MOVE) != 0 {
+			style |= TITLE
 		}
 	}
-	if (style & (SWTMENU | SWTMIN | SWTMAX | SWTCLOSE)) != 0 {
-		style |= SWTTITLE
+	if (style & (MENU | MIN | MAX | CLOSE)) != 0 {
+		style |= TITLE
 	}
 	return style
 }

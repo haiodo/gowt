@@ -111,6 +111,7 @@ final class ClassEmitter {
 			out.append("\timpl ").append(ci.goTypeName).append("Impl\n");
 		}
 		out.append("}\n\n");
+		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
 
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd && Modifier.isStatic(fd.getModifiers())) {
@@ -167,6 +168,15 @@ final class ClassEmitter {
 		emitter.currentClassInfo = savedClassInfo;
 	}
 
+	/** func (this *C) AsC() *C { return this } + type CLike interface { AsC() *C } (README
+	 * "Round 7 api") - every subclass satisfies CLike too, promoted through its embedded C. */
+	private void emitLikeAccessor(TypeModel.ClassInfo ci, StringBuilder out) {
+		out.append("func (this *").append(ci.goTypeName).append(") ").append(ci.asMethodName)
+				.append("() *").append(ci.goTypeName).append(" { return this }\n\n");
+		out.append("type ").append(ci.likeInterfaceName).append(" interface {\n\t")
+				.append(ci.asMethodName).append("() *").append(ci.goTypeName).append("\n}\n\n");
+	}
+
 	private Set<String> collectMethodGoNames(TypeDeclaration td) {
 		Set<String> s = new HashSet<>();
 		for (Object o : td.bodyDeclarations()) {
@@ -203,7 +213,7 @@ final class ClassEmitter {
 			String javaName = f.getName().getIdentifier();
 			if (javaName.equals("serialVersionUID")) continue;
 			if (Manual.isSkippedField(ci.binding.getErasure().getQualifiedName(), javaName)) continue;
-			String goName = ci.goFuncPrefix + Names.capitalize(javaName);
+			String goName = staticFieldGoName(emitter, ci, javaName);
 			if (staticFieldClashesWithMethod(ci.binding, javaName)) {
 				goName = goName + "_";
 				emitter.unsupported.add("StaticFieldMethodNameClash: " + javaName + " clashes with a static method Go name, suffixed _");
@@ -257,9 +267,15 @@ final class ClassEmitter {
 		IMethodBinding sigSource = overridden ? overridePoint.declaredBinding(sig) : mb;
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
 
+		// A cascade override, a Java-interface implementation, or a Type::method reference target
+		// has a signature fixed elsewhere - only a plain method widens its params.
+		boolean widen = !overridden && !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
+		List<String> pubPrelude = new ArrayList<>();
+		String params = widen ? publicParamList(emitter, sigSource, md, pubPrelude) : emitter.paramList(sigSource, md);
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(goName)
-				.append('(').append(emitter.paramList(sigSource, md)).append(") ")
+				.append('(').append(params).append(") ")
 				.append(emitter.retType(sigSource)).append(" {\n");
+		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
 		emitter.currentReturnType = sigSource.getReturnType();
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
@@ -269,26 +285,20 @@ final class ClassEmitter {
 	private void emitStaticMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
 		String goName = staticMethodGoName(mb, ci);
-		out.append("func ").append(goName).append('(').append(emitter.paramList(mb, md)).append(") ")
+		List<String> pubPrelude = new ArrayList<>();
+		String params = publicParamList(emitter, mb, md, pubPrelude);
+		out.append("func ").append(goName).append('(').append(params).append(") ")
 				.append(emitter.retType(mb)).append(" {\n");
+		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
 		emitter.currentReturnType = mb.getReturnType();
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");
 	}
 
-	// A static method's Go name can coincidentally spell out another translated type's own name
-	// (SWT.error -> "SWTError", colliding with class SWTError) - Go rejects that, so disambiguate.
 	String staticMethodGoName(IMethodBinding mb, TypeModel.ClassInfo ci) {
-		String goName = emitter.qualifiedFuncPrefix(ci) + emitter.names.goMemberName(mb, Names.capitalize(mb.getName()));
-		return collidesWithTypeName(goName) ? goName + "Fn" : goName;
-	}
-
-	private boolean collidesWithTypeName(String name) {
-		for (TypeModel.ClassInfo c : emitter.model.all()) {
-			if (c.goTypeName.equals(name)) return true;
-		}
-		return false;
+		String bareMember = emitter.names.goMemberName(mb, Names.capitalize(mb.getName()));
+		return EmitUtil.staticMethodGoName(emitter, ci, bareMember);
 	}
 
 }

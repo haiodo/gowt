@@ -18,6 +18,12 @@ type Rectangle struct {
 	impl   RectangleImpl
 }
 
+func (this *Rectangle) AsRectangle() *Rectangle { return this }
+
+type RectangleLike interface {
+	AsRectangle() *Rectangle
+}
+
 func NewRectangle(x int32, y int32, width int32, height int32) *Rectangle {
 	this := &Rectangle{}
 	this.impl = this
@@ -42,9 +48,14 @@ func newRectangle0() *Rectangle {
 func (this *Rectangle) initRectangle0() {
 }
 
-func (this *Rectangle) Add(rect *Rectangle) {
+func (this *Rectangle) Add(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	if rect == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var left int32
 	if this.X < rect.X {
@@ -84,9 +95,14 @@ func (this *Rectangle) Contains(x int32, y int32) bool {
 	return (x >= this.X) && (y >= this.Y) && x < (this.X+this.Width) && y < (this.Y+this.Height)
 }
 
-func (this *Rectangle) ContainsPt(pt *Point) bool {
+func (this *Rectangle) ContainsPt(ptLike PointLike) bool {
+	var pt *Point
+	if ptLike != nil {
+		pt = ptLike.AsPoint()
+	}
+	_ = pt
 	if pt == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.Contains(pt.X, pt.Y)
 }
@@ -109,9 +125,14 @@ func (this *Rectangle) HashCode() int32 {
 	return this.X ^ this.Y ^ this.Width ^ this.Height
 }
 
-func (this *Rectangle) Intersect(rect *Rectangle) {
+func (this *Rectangle) Intersect(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	if rect == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	if this == rect {
 		return
@@ -166,9 +187,14 @@ func (this *Rectangle) Intersect(rect *Rectangle) {
 	}
 }
 
-func (this *Rectangle) Intersection(rect *Rectangle) *Rectangle {
+func (this *Rectangle) Intersection(rectLike RectangleLike) *Rectangle {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	if rect == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	if this == rect {
 		return NewRectangle(this.X, this.Y, this.Width, this.Height)
@@ -232,9 +258,14 @@ func (this *Rectangle) Intersects(x int32, y int32, width int32, height int32) b
 	return (x < this.X+this.Width) && (y < this.Y+this.Height) && (x+width > this.X) && (y+height > this.Y)
 }
 
-func (this *Rectangle) IntersectsRect(rect *Rectangle) bool {
+func (this *Rectangle) IntersectsRect(rectLike RectangleLike) bool {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	if rect == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	return rect == this || this.Intersects(rect.X, rect.Y, rect.Width, rect.Height)
 }
@@ -247,9 +278,14 @@ func (this *Rectangle) String() string {
 	return fmt.Sprintf("Rectangle {%d, %d, %d, %d}", this.X, this.Y, this.Width, this.Height)
 }
 
-func (this *Rectangle) Union(rect *Rectangle) *Rectangle {
+func (this *Rectangle) Union(rectLike RectangleLike) *Rectangle {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	if rect == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var left int32
 	if this.X < rect.X {
@@ -286,11 +322,26 @@ func (this *Rectangle) Clone() *Rectangle {
 	return NewRectangle(this.X, this.Y, this.Width, this.Height)
 }
 
-func RectangleOf(topLeft *Point, width int32, height int32) *Rectangle {
+func RectangleOf(topLeftLike PointLike, width int32, height int32) *Rectangle {
+	var topLeft *Point
+	if topLeftLike != nil {
+		topLeft = topLeftLike.AsPoint()
+	}
+	_ = topLeft
 	return RectangleOfTopLeftDimension(topLeft, NewPoint(width, height))
 }
 
-func RectangleOfTopLeftDimension(topLeft *Point, dimension *Point) *Rectangle {
+func RectangleOfTopLeftDimension(topLeftLike PointLike, dimensionLike PointLike) *Rectangle {
+	var topLeft *Point
+	if topLeftLike != nil {
+		topLeft = topLeftLike.AsPoint()
+	}
+	_ = topLeft
+	var dimension *Point
+	if dimensionLike != nil {
+		dimension = dimensionLike.AsPoint()
+	}
+	_ = dimension
 	var x float32
 	p, ok10 := isPointToPoint_OfFloat(topLeft)
 	if ok10 {
@@ -339,6 +390,12 @@ type Rectangle_OfFloat struct {
 	residualHeight   float32
 	locationRounding RoundingMode
 	sizeRounding     RoundingMode
+}
+
+func (this *Rectangle_OfFloat) AsRectangle_OfFloat() *Rectangle_OfFloat { return this }
+
+type Rectangle_OfFloatLike interface {
+	AsRectangle_OfFloat() *Rectangle_OfFloat
 }
 
 func NewRectangleOfFloat(x int32, y int32, width int32, height int32) *Rectangle_OfFloat {
@@ -434,7 +491,12 @@ func (this *Rectangle_OfFloat) Clone() *Rectangle {
 	return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.locationRounding, this.sizeRounding))
 }
 
-func RectangleOfFloatFrom(rectangle *Rectangle) *Rectangle_OfFloat {
+func RectangleOfFloatFrom(rectangleLike RectangleLike) *Rectangle_OfFloat {
+	var rectangle *Rectangle
+	if rectangleLike != nil {
+		rectangle = rectangleLike.AsRectangle()
+	}
+	_ = rectangle
 	rectangleOfFloat, ok17 := isRectangleToRectangle_OfFloat(rectangle)
 	if ok17 {
 		t18 := rectangleOfFloat.impl.Clone()
@@ -449,7 +511,18 @@ type Rectangle_WithMonitor struct {
 	monitor *Monitor
 }
 
-func NewRectangleWithMonitor(x int32, y int32, width int32, height int32, monitor *Monitor) *Rectangle_WithMonitor {
+func (this *Rectangle_WithMonitor) AsRectangle_WithMonitor() *Rectangle_WithMonitor { return this }
+
+type Rectangle_WithMonitorLike interface {
+	AsRectangle_WithMonitor() *Rectangle_WithMonitor
+}
+
+func NewRectangleWithMonitor(x int32, y int32, width int32, height int32, monitorLike MonitorLike) *Rectangle_WithMonitor {
+	var monitor *Monitor
+	if monitorLike != nil {
+		monitor = monitorLike.AsMonitor()
+	}
+	_ = monitor
 	this := &Rectangle_WithMonitor{}
 	this.impl = this
 	this.initRectangleWithMonitor(x, y, width, height, monitor)

@@ -15,24 +15,24 @@ func (l *recordingListener) HandleEvent(event *Event) { l.got = event }
 
 func TestEventTableHookUnhookSendEvent(t *testing.T) {
 	table := &EventTable{}
-	if table.Hooks(SWTSelection) {
+	if table.Hooks(Selection) {
 		t.Fatal("should not be hooked yet")
 	}
 	l := &recordingListener{}
-	table.Hook(SWTSelection, l)
-	if !table.Hooks(SWTSelection) {
+	table.Hook(Selection, l)
+	if !table.Hooks(Selection) {
 		t.Fatal("should be hooked")
 	}
 
-	ev := &Event{Type: SWTSelection, Data: "payload"}
+	ev := &Event{Type: Selection, Data: "payload"}
 	table.SendEvent(ev)
 	if l.got == nil || l.got.Data != "payload" {
 		t.Fatalf("listener was not invoked with the event, got %+v", l.got)
 	}
 
 	l.got = nil
-	table.Unhook(SWTSelection, l)
-	table.SendEvent(&Event{Type: SWTSelection})
+	table.Unhook(Selection, l)
+	table.SendEvent(&Event{Type: Selection})
 	if l.got != nil {
 		t.Fatal("listener should not fire after unhook")
 	}
@@ -51,8 +51,8 @@ func (l *flagListener) HandleEvent(*Event) { l.ran = true }
 func TestEventTableSendEventPropagatesListenerPanic(t *testing.T) {
 	table := &EventTable{}
 	second := &flagListener{}
-	table.Hook(SWTSelection, panickingListener{})
-	table.Hook(SWTSelection, second)
+	table.Hook(Selection, panickingListener{})
+	table.Hook(Selection, second)
 
 	func() {
 		defer func() {
@@ -61,7 +61,7 @@ func TestEventTableSendEventPropagatesListenerPanic(t *testing.T) {
 				t.Fatalf("expected the stashed panic to propagate, got %v", r)
 			}
 		}()
-		table.SendEvent(&Event{Type: SWTSelection})
+		table.SendEvent(&Event{Type: Selection})
 	}()
 
 	if !second.ran {
@@ -82,12 +82,12 @@ func TestTypedListenerSwitchDispatch(t *testing.T) {
 	sl := &fakeShellListener{}
 	tl := NewTypedListener(sl)
 
-	tl.HandleEvent(&Event{Type: SWTActivate})
+	tl.HandleEvent(&Event{Type: Activate})
 	if !sl.activated {
 		t.Fatal("case SWT.Activate did not dispatch to ShellActivated")
 	}
 
-	e := &Event{Type: SWTClose}
+	e := &Event{Type: Close}
 	tl.HandleEvent(e)
 	if !sl.closed {
 		t.Fatal("case SWT.Close did not dispatch to ShellClosed")
@@ -106,7 +106,7 @@ func (f *fakeShellListener) ShellIconified(*ShellEvent)   {}
 
 // SWT.error/findErrorText: old-style switch with grouped case labels, throw -> panic.
 func TestSWTErrorSwitchAndThrow(t *testing.T) {
-	if got := SWTFindErrorText(SWTERROR_NULL_ARGUMENT); got != "Argument not valid" && got == "Unknown error" {
+	if got := FindErrorText(ERROR_NULL_ARGUMENT); got != "Argument not valid" && got == "Unknown error" {
 		t.Fatalf("findErrorText regressed: %q", got)
 	}
 	func() {
@@ -116,19 +116,19 @@ func TestSWTErrorSwitchAndThrow(t *testing.T) {
 			if !ok {
 				t.Fatalf("expected a *SWTException panic, got %T (%v)", r, r)
 			}
-			if ex.Code != SWTERROR_IO {
+			if ex.Code != ERROR_IO {
 				t.Fatalf("wrong code: %d", ex.Code)
 			}
 		}()
-		SWTErrorFn(SWTERROR_IO)
+		Error(ERROR_IO)
 	}()
 }
 
 // SWTException/SWTError extend the hand-written internal/jrt base types (manual superclass
 // embedding) - GetMessage must still combine with the wrapped cause via super.getMessage().
 func TestSWTExceptionGetMessageWithCause(t *testing.T) {
-	inner := NewSWTErrorCodeMessage(SWTERROR_UNSPECIFIED, "inner")
-	outer := NewSWTExceptionCodeMessage(SWTERROR_IO, "outer")
+	inner := NewSWTErrorCodeMessage(ERROR_UNSPECIFIED, "inner")
+	outer := NewSWTExceptionCodeMessage(ERROR_IO, "outer")
 	outer.Throwable = inner
 	got := outer.GetMessage()
 	if got != "outer (inner)" {

@@ -5,6 +5,12 @@ package swt
 type SelectionAdapter struct {
 }
 
+func (this *SelectionAdapter) AsSelectionAdapter() *SelectionAdapter { return this }
+
+type SelectionAdapterLike interface {
+	AsSelectionAdapter() *SelectionAdapter
+}
+
 func NewSelectionAdapter() *SelectionAdapter {
 	this := &SelectionAdapter{}
 	this.initSelectionAdapter()

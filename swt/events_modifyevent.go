@@ -6,7 +6,18 @@ type ModifyEvent struct {
 	TypedEvent
 }
 
-func NewModifyEvent(e *Event) *ModifyEvent {
+func (this *ModifyEvent) AsModifyEvent() *ModifyEvent { return this }
+
+type ModifyEventLike interface {
+	AsModifyEvent() *ModifyEvent
+}
+
+func NewModifyEvent(eLike EventLike) *ModifyEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &ModifyEvent{}
 	this.impl = this
 	this.initModifyEvent(e)

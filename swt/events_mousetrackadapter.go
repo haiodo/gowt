@@ -5,6 +5,12 @@ package swt
 type MouseTrackAdapter struct {
 }
 
+func (this *MouseTrackAdapter) AsMouseTrackAdapter() *MouseTrackAdapter { return this }
+
+type MouseTrackAdapterLike interface {
+	AsMouseTrackAdapter() *MouseTrackAdapter
+}
+
 func NewMouseTrackAdapter() *MouseTrackAdapter {
 	this := &MouseTrackAdapter{}
 	this.initMouseTrackAdapter()

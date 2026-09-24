@@ -13,6 +13,12 @@ type SWTException struct {
 	Throwable error
 }
 
+func (this *SWTException) AsSWTException() *SWTException { return this }
+
+type SWTExceptionLike interface {
+	AsSWTException() *SWTException
+}
+
 func NewSWTException() *SWTException {
 	this := &SWTException{}
 	this.initSWTException()
@@ -20,7 +26,7 @@ func NewSWTException() *SWTException {
 }
 
 func (this *SWTException) initSWTException() {
-	this.initSWTExceptionCode(SWTERROR_UNSPECIFIED)
+	this.initSWTExceptionCode(ERROR_UNSPECIFIED)
 }
 
 func NewSWTExceptionMessage(message string) *SWTException {
@@ -30,7 +36,7 @@ func NewSWTExceptionMessage(message string) *SWTException {
 }
 
 func (this *SWTException) initSWTExceptionMessage(message string) {
-	this.initSWTExceptionCodeMessage(SWTERROR_UNSPECIFIED, message)
+	this.initSWTExceptionCodeMessage(ERROR_UNSPECIFIED, message)
 }
 
 func NewSWTExceptionCode(code int32) *SWTException {
@@ -40,7 +46,7 @@ func NewSWTExceptionCode(code int32) *SWTException {
 }
 
 func (this *SWTException) initSWTExceptionCode(code int32) {
-	this.initSWTExceptionCodeMessage(code, SWTFindErrorText(code))
+	this.initSWTExceptionCodeMessage(code, FindErrorText(code))
 }
 
 func NewSWTExceptionCodeMessage(code int32, message string) *SWTException {

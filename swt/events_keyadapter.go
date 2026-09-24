@@ -5,6 +5,12 @@ package swt
 type KeyAdapter struct {
 }
 
+func (this *KeyAdapter) AsKeyAdapter() *KeyAdapter { return this }
+
+type KeyAdapterLike interface {
+	AsKeyAdapter() *KeyAdapter
+}
+
 func NewKeyAdapter() *KeyAdapter {
 	this := &KeyAdapter{}
 	this.initKeyAdapter()

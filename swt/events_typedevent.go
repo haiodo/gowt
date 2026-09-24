@@ -22,6 +22,12 @@ type TypedEvent struct {
 	impl    TypedEventImpl
 }
 
+func (this *TypedEvent) AsTypedEvent() *TypedEvent { return this }
+
+type TypedEventLike interface {
+	AsTypedEvent() *TypedEvent
+}
+
 func NewTypedEvent(object any) *TypedEvent {
 	this := &TypedEvent{}
 	this.impl = this
@@ -33,7 +39,12 @@ func (this *TypedEvent) initTypedEvent(object any) {
 	this.EventObject = jrt.NewEventObject(object)
 }
 
-func NewTypedEventE(e *Event) *TypedEvent {
+func NewTypedEventE(eLike EventLike) *TypedEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &TypedEvent{}
 	this.impl = this
 	this.initTypedEventE(e)

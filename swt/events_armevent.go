@@ -6,7 +6,18 @@ type ArmEvent struct {
 	TypedEvent
 }
 
-func NewArmEvent(e *Event) *ArmEvent {
+func (this *ArmEvent) AsArmEvent() *ArmEvent { return this }
+
+type ArmEventLike interface {
+	AsArmEvent() *ArmEvent
+}
+
+func NewArmEvent(eLike EventLike) *ArmEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &ArmEvent{}
 	this.impl = this
 	this.initArmEvent(e)

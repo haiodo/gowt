@@ -11,955 +11,961 @@ import (
 type SWT struct {
 }
 
-const SWTNone int32 = 0
+func (this *SWT) AsSWT() *SWT { return this }
 
-const SWTKeyDown int32 = 1
+type SWTLike interface {
+	AsSWT() *SWT
+}
 
-const SWTKeyUp int32 = 2
+const None int32 = 0
 
-const SWTMouseDown int32 = 3
+const KeyDown int32 = 1
 
-const SWTMouseUp int32 = 4
+const KeyUp int32 = 2
 
-const SWTMouseMove int32 = 5
+const MouseDown int32 = 3
 
-const SWTMouseEnter int32 = 6
+const MouseUp int32 = 4
 
-const SWTMouseExit int32 = 7
+const MouseMove int32 = 5
 
-const SWTMouseDoubleClick int32 = 8
+const MouseEnter int32 = 6
 
-const SWTPaint int32 = 9
+const MouseExit int32 = 7
 
-const SWTMove int32 = 10
+const MouseDoubleClick int32 = 8
 
-const SWTResize int32 = 11
+const Paint int32 = 9
 
-const SWTDispose int32 = 12
+const Move int32 = 10
 
-const SWTSelection int32 = 13
+const Resize int32 = 11
 
-const SWTDefaultSelection int32 = 14
+const Dispose int32 = 12
 
-const SWTFocusIn int32 = 15
+const Selection int32 = 13
 
-const SWTFocusOut int32 = 16
+const DefaultSelection int32 = 14
 
-const SWTExpand int32 = 17
+const FocusIn int32 = 15
 
-const SWTCollapse int32 = 18
+const FocusOut int32 = 16
 
-const SWTIconify int32 = 19
+const Expand int32 = 17
 
-const SWTDeiconify int32 = 20
+const Collapse int32 = 18
 
-const SWTClose int32 = 21
+const Iconify int32 = 19
 
-const SWTShow int32 = 22
+const Deiconify int32 = 20
 
-const SWTHide int32 = 23
+const Close int32 = 21
 
-const SWTModify int32 = 24
+const Show int32 = 22
 
-const SWTVerify int32 = 25
+const Hide int32 = 23
 
-const SWTActivate int32 = 26
+const Modify int32 = 24
 
-const SWTDeactivate int32 = 27
+const Verify int32 = 25
 
-const SWTHelp int32 = 28
+const Activate int32 = 26
 
-const SWTDragDetect int32 = 29
+const Deactivate int32 = 27
 
-const SWTArm int32 = 30
+const Help int32 = 28
 
-const SWTTraverse int32 = 31
+const DragDetect int32 = 29
 
-const SWTMouseHover int32 = 32
+const Arm int32 = 30
 
-const SWTHardKeyDown int32 = 33
+const Traverse int32 = 31
 
-const SWTHardKeyUp int32 = 34
+const MouseHover int32 = 32
 
-const SWTMenuDetect int32 = 35
+const HardKeyDown int32 = 33
 
-const SWTSetData int32 = 36
+const HardKeyUp int32 = 34
 
-const SWTMouseVerticalWheel int32 = 37
+const MenuDetect int32 = 35
 
-const SWTMouseHorizontalWheel int32 = 38
+const SetData int32 = 36
 
-const SWTMouseWheel int32 = SWTMouseVerticalWheel
+const MouseVerticalWheel int32 = 37
 
-const SWTSettings int32 = 39
+const MouseHorizontalWheel int32 = 38
 
-const SWTEraseItem int32 = 40
+const MouseWheel int32 = MouseVerticalWheel
 
-const SWTMeasureItem int32 = 41
+const Settings int32 = 39
 
-const SWTPaintItem int32 = 42
+const EraseItem int32 = 40
 
-const SWTImeComposition int32 = 43
+const MeasureItem int32 = 41
 
-const SWTOrientationChange int32 = 44
+const PaintItem int32 = 42
 
-const SWTSkin int32 = 45
+const ImeComposition int32 = 43
 
-const SWTOpenDocument int32 = 46
+const OrientationChange int32 = 44
+
+const Skin int32 = 45
+
+const OpenDocument int32 = 46
 
 const SWTTouch int32 = 47
 
-const SWTGesture int32 = 48
+const Gesture int32 = 48
 
-const SWTSegments int32 = 49
+const Segments int32 = 49
 
-const SWTPreEvent int32 = 50
+const PreEvent int32 = 50
 
-const SWTPostEvent int32 = 51
+const PostEvent int32 = 51
 
-const SWTPreExternalEventDispatch int32 = 52
+const PreExternalEventDispatch int32 = 52
 
-const SWTPostExternalEventDispatch int32 = 53
+const PostExternalEventDispatch int32 = 53
 
-const SWTSleep int32 = SWTPreExternalEventDispatch
+const Sleep int32 = PreExternalEventDispatch
 
-const SWTWakeup int32 = SWTPostExternalEventDispatch
+const Wakeup int32 = PostExternalEventDispatch
 
-const SWTOpenUrl int32 = 54
+const OpenUrl int32 = 54
 
-const SWTZoomChanged int32 = 55
+const ZoomChanged int32 = 55
 
-const SWTEmptinessChanged int32 = 56
+const EmptinessChanged int32 = 56
 
-const SWTCOMPOSITION_CHANGED int32 = 1
+const COMPOSITION_CHANGED int32 = 1
 
-const SWTCOMPOSITION_OFFSET int32 = 2
+const COMPOSITION_OFFSET int32 = 2
 
-const SWTCOMPOSITION_SELECTION int32 = 3
+const COMPOSITION_SELECTION int32 = 3
 
-const SWTDRAG int32 = 1
+const DRAG int32 = 1
 
-const SWTSELECTED int32 = 2
+const SELECTED int32 = 2
 
-const SWTFOCUSED int32 = 4
+const FOCUSED int32 = 4
 
-const SWTBACKGROUND int32 = 8
+const BACKGROUND int32 = 8
 
-const SWTFOREGROUND int32 = 16
+const FOREGROUND int32 = 16
 
-const SWTHOT int32 = 32
+const HOT int32 = 32
 
-const SWTTRAVERSE_NONE int32 = 0
+const TRAVERSE_NONE int32 = 0
 
-const SWTTRAVERSE_ESCAPE int32 = 2
+const TRAVERSE_ESCAPE int32 = 2
 
-const SWTTRAVERSE_RETURN int32 = 4
+const TRAVERSE_RETURN int32 = 4
 
-const SWTTRAVERSE_TAB_PREVIOUS int32 = 8
+const TRAVERSE_TAB_PREVIOUS int32 = 8
 
-const SWTTRAVERSE_TAB_NEXT int32 = 16
+const TRAVERSE_TAB_NEXT int32 = 16
 
-const SWTTRAVERSE_ARROW_PREVIOUS int32 = 32
+const TRAVERSE_ARROW_PREVIOUS int32 = 32
 
-const SWTTRAVERSE_ARROW_NEXT int32 = 64
+const TRAVERSE_ARROW_NEXT int32 = 64
 
-const SWTTRAVERSE_MNEMONIC int32 = 128
+const TRAVERSE_MNEMONIC int32 = 128
 
-const SWTTRAVERSE_PAGE_PREVIOUS int32 = 256
+const TRAVERSE_PAGE_PREVIOUS int32 = 256
 
-const SWTTRAVERSE_PAGE_NEXT int32 = 512
+const TRAVERSE_PAGE_NEXT int32 = 512
 
-const SWTGESTURE_BEGIN int32 = 2
+const GESTURE_BEGIN int32 = 2
 
-const SWTGESTURE_END int32 = 4
+const GESTURE_END int32 = 4
 
-const SWTGESTURE_ROTATE int32 = 8
+const GESTURE_ROTATE int32 = 8
 
-const SWTGESTURE_SWIPE int32 = 16
+const GESTURE_SWIPE int32 = 16
 
-const SWTGESTURE_MAGNIFY int32 = 32
+const GESTURE_MAGNIFY int32 = 32
 
-const SWTGESTURE_PAN int32 = 64
+const GESTURE_PAN int32 = 64
 
-const SWTTOUCHSTATE_DOWN int32 = 1
+const TOUCHSTATE_DOWN int32 = 1
 
-const SWTTOUCHSTATE_MOVE int32 = 2
+const TOUCHSTATE_MOVE int32 = 2
 
-const SWTTOUCHSTATE_UP int32 = 4
+const TOUCHSTATE_UP int32 = 4
 
-const SWTMENU_MOUSE int32 = 0
+const MENU_MOUSE int32 = 0
 
-const SWTMENU_KEYBOARD int32 = 1
+const MENU_KEYBOARD int32 = 1
 
-const SWTCHANGED int32 = 2
+const CHANGED int32 = 2
 
-const SWTDEFER int32 = 4
+const DEFER int32 = 4
 
-const SWTNONE int32 = 0
+const NONE int32 = 0
 
-const SWTNULL int32 = 0
+const NULL int32 = 0
 
-const SWTDEFAULT int32 = -1
+const DEFAULT int32 = -1
 
-const SWTOFF int32 = 0
+const OFF int32 = 0
 
-const SWTON int32 = 1
+const ON int32 = 1
 
-const SWTLOW int32 = 1
+const LOW int32 = 1
 
-const SWTHIGH int32 = 2
+const HIGH int32 = 2
 
-const SWTBAR int32 = 2
+const BAR int32 = 2
 
-const SWTDROP_DOWN int32 = 4
+const DROP_DOWN int32 = 4
 
-const SWTPOP_UP int32 = 8
+const POP_UP int32 = 8
 
-const SWTSEPARATOR int32 = 2
+const SEPARATOR int32 = 2
 
-const SWTSEPARATOR_FILL int32 = -2
+const SEPARATOR_FILL int32 = -2
 
-const SWTTOGGLE int32 = 2
+const TOGGLE int32 = 2
 
-const SWTARROW int32 = 4
+const ARROW int32 = 4
 
-const SWTPUSH int32 = 8
+const PUSH int32 = 8
 
-const SWTRADIO int32 = 16
+const RADIO int32 = 16
 
-const SWTCHECK int32 = 32
+const CHECK int32 = 32
 
-const SWTCASCADE int32 = 64
+const CASCADE int32 = 64
 
-const SWTMULTI int32 = 2
+const MULTI int32 = 2
 
-const SWTSINGLE int32 = 4
+const SINGLE int32 = 4
 
-const SWTREAD_ONLY int32 = 8
+const READ_ONLY int32 = 8
 
-const SWTWRAP int32 = 64
+const WRAP int32 = 64
 
-const SWTSEARCH int32 = 128
+const SEARCH int32 = 128
 
-const SWTNO_SEARCH int32 = 1024
+const NO_SEARCH int32 = 1024
 
-const SWTSIMPLE int32 = 64
+const SIMPLE int32 = 64
 
-const SWTPASSWORD int32 = 4194304
+const PASSWORD int32 = 4194304
 
-const SWTSHADOW_IN int32 = 4
+const SHADOW_IN int32 = 4
 
-const SWTSHADOW_OUT int32 = 8
+const SHADOW_OUT int32 = 8
 
-const SWTSHADOW_ETCHED_IN int32 = 16
+const SHADOW_ETCHED_IN int32 = 16
 
-const SWTSHADOW_ETCHED_OUT int32 = 64
+const SHADOW_ETCHED_OUT int32 = 64
 
-const SWTSHADOW_NONE int32 = 32
+const SHADOW_NONE int32 = 32
 
-const SWTINDETERMINATE int32 = 2
+const INDETERMINATE int32 = 2
 
-const SWTTOOL int32 = 4
+const TOOL int32 = 4
 
-const SWTNO_TRIM int32 = 8
+const NO_TRIM int32 = 8
 
-const SWTRESIZE int32 = 16
+const RESIZE int32 = 16
 
-const SWTTITLE int32 = 32
+const TITLE int32 = 32
 
-const SWTCLOSE int32 = 64
+const CLOSE int32 = 64
 
-const SWTMENU int32 = SWTCLOSE
+const MENU int32 = CLOSE
 
-const SWTMIN int32 = 128
+const MIN int32 = 128
 
-const SWTMAX int32 = 1024
+const MAX int32 = 1024
 
-const SWTNO_MOVE int32 = 8388608
+const NO_MOVE int32 = 8388608
 
-const SWTH_SCROLL int32 = 256
+const H_SCROLL int32 = 256
 
-const SWTV_SCROLL int32 = 512
+const V_SCROLL int32 = 512
 
-const SWTNO_SCROLL int32 = 16
+const NO_SCROLL int32 = 16
 
-const SWTBORDER int32 = 2048
+const BORDER int32 = 2048
 
-const SWTCLIP_CHILDREN int32 = 4096
+const CLIP_CHILDREN int32 = 4096
 
-const SWTCLIP_SIBLINGS int32 = 8192
+const CLIP_SIBLINGS int32 = 8192
 
-const SWTON_TOP int32 = 16384
+const ON_TOP int32 = 16384
 
-const SWTSHEET int32 = 268435456
+const SHEET int32 = 268435456
 
-const SWTSHELL_TRIM int32 = SWTCLOSE | SWTTITLE | SWTMIN | SWTMAX | SWTRESIZE
+const SHELL_TRIM int32 = CLOSE | TITLE | MIN | MAX | RESIZE
 
-const SWTDIALOG_TRIM int32 = SWTTITLE | SWTCLOSE | SWTBORDER
+const DIALOG_TRIM int32 = TITLE | CLOSE | BORDER
 
-const SWTMODELESS int32 = 0
+const MODELESS int32 = 0
 
-const SWTPRIMARY_MODAL int32 = 32768
+const PRIMARY_MODAL int32 = 32768
 
-const SWTAPPLICATION_MODAL int32 = 65536
+const APPLICATION_MODAL int32 = 65536
 
-const SWTSYSTEM_MODAL int32 = 131072
+const SYSTEM_MODAL int32 = 131072
 
-const SWTHIDE_SELECTION int32 = 32768
+const HIDE_SELECTION int32 = 32768
 
-const SWTFULL_SELECTION int32 = 65536
+const FULL_SELECTION int32 = 65536
 
-const SWTFLAT int32 = 8388608
+const FLAT int32 = 8388608
 
-const SWTSMOOTH int32 = 65536
+const SMOOTH int32 = 65536
 
-const SWTNO_BACKGROUND int32 = 262144
+const NO_BACKGROUND int32 = 262144
 
-const SWTNO_FOCUS int32 = 524288
+const NO_FOCUS int32 = 524288
 
-const SWTNO_REDRAW_RESIZE int32 = 1048576
+const NO_REDRAW_RESIZE int32 = 1048576
 
-const SWTNO_MERGE_PAINTS int32 = 2097152
+const NO_MERGE_PAINTS int32 = 2097152
 
-const SWTNO_RADIO_GROUP int32 = 4194304
+const NO_RADIO_GROUP int32 = 4194304
 
-const SWTLEFT_TO_RIGHT int32 = 33554432
+const LEFT_TO_RIGHT int32 = 33554432
 
-const SWTRIGHT_TO_LEFT int32 = 67108864
+const RIGHT_TO_LEFT int32 = 67108864
 
-const SWTMIRRORED int32 = 134217728
+const MIRRORED int32 = 134217728
 
-const SWTEMBEDDED int32 = 16777216
+const EMBEDDED int32 = 16777216
 
-const SWTVIRTUAL int32 = 268435456
+const VIRTUAL int32 = 268435456
 
-const SWTDOUBLE_BUFFERED int32 = 536870912
+const DOUBLE_BUFFERED int32 = 536870912
 
-const SWTTRANSPARENT int32 = 1073741824
+const TRANSPARENT int32 = 1073741824
 
-const SWTFLIP_TEXT_DIRECTION int32 = -2147483648
+const FLIP_TEXT_DIRECTION int32 = -2147483648
 
-const SWTAUTO_TEXT_DIRECTION int32 = SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT
+const AUTO_TEXT_DIRECTION int32 = LEFT_TO_RIGHT | RIGHT_TO_LEFT
 
-const SWTUP int32 = 128
+const UP int32 = 128
 
-const SWTUNDERLINE_SINGLE int32 = 0
+const UNDERLINE_SINGLE int32 = 0
 
-const SWTUNDERLINE_DOUBLE int32 = 1
+const UNDERLINE_DOUBLE int32 = 1
 
-const SWTUNDERLINE_ERROR int32 = 2
+const UNDERLINE_ERROR int32 = 2
 
-const SWTUNDERLINE_SQUIGGLE int32 = 3
+const UNDERLINE_SQUIGGLE int32 = 3
 
-const SWTUNDERLINE_LINK int32 = 4
+const UNDERLINE_LINK int32 = 4
 
-const SWTBORDER_SOLID int32 = 1
+const BORDER_SOLID int32 = 1
 
-const SWTBORDER_DASH int32 = 2
+const BORDER_DASH int32 = 2
 
-const SWTBORDER_DOT int32 = 4
+const BORDER_DOT int32 = 4
 
-const SWTTOP int32 = SWTUP
+const TOP int32 = UP
 
-const SWTDOWN int32 = 1024
+const DOWN int32 = 1024
 
-const SWTBOTTOM int32 = SWTDOWN
+const BOTTOM int32 = DOWN
 
-const SWTLEAD int32 = 16384
+const LEAD int32 = 16384
 
-const SWTLEFT int32 = SWTLEAD
+const LEFT int32 = LEAD
 
-const SWTTRAIL int32 = 131072
+const TRAIL int32 = 131072
 
-const SWTRIGHT int32 = SWTTRAIL
+const RIGHT int32 = TRAIL
 
-const SWTCENTER int32 = 16777216
+const CENTER int32 = 16777216
 
-const SWTHORIZONTAL int32 = 256
+const HORIZONTAL int32 = 256
 
-const SWTVERTICAL int32 = 512
+const VERTICAL int32 = 512
 
-const SWTDATE int32 = 32
+const DATE int32 = 32
 
-const SWTTIME int32 = 128
+const TIME int32 = 128
 
-const SWTCALENDAR int32 = 1024
+const CALENDAR int32 = 1024
 
-const SWTCALENDAR_WEEKNUMBERS int32 = 16384
+const CALENDAR_WEEKNUMBERS int32 = 16384
 
-const SWTSHORT int32 = 32768
+const SHORT int32 = 32768
 
-const SWTMEDIUM int32 = 65536
+const MEDIUM int32 = 65536
 
 const SWTLONG int32 = 268435456
 
-const SWTMOZILLA int32 = 32768
+const MOZILLA int32 = 32768
 
-const SWTWEBKIT int32 = 65536
+const WEBKIT int32 = 65536
 
-const SWTEDGE int32 = 262144
+const EDGE int32 = 262144
 
-const SWTIE int32 = 524288
+const IE int32 = 524288
 
-const SWTBALLOON int32 = 4096
+const BALLOON int32 = 4096
 
-const SWTBEGINNING int32 = 1
+const BEGINNING int32 = 1
 
-const SWTFILL int32 = 4
+const FILL int32 = 4
 
-const SWTDBCS int32 = 2
+const DBCS int32 = 2
 
-const SWTALPHA int32 = 4
+const ALPHA int32 = 4
 
-const SWTNATIVE int32 = 8
+const NATIVE int32 = 8
 
-const SWTPHONETIC int32 = 16
+const PHONETIC int32 = 16
 
-const SWTROMAN int32 = 32
+const ROMAN int32 = 32
 
-const SWTBS uint16 = '\u0008'
+const BS uint16 = '\u0008'
 
-const SWTCR uint16 = '\u000d'
+const CR uint16 = '\u000d'
 
-const SWTDEL uint16 = uint16(0x7)
+const DEL uint16 = uint16(0x7)
 
-const SWTESC uint16 = uint16(0x1B)
+const ESC uint16 = uint16(0x1B)
 
-const SWTLF uint16 = '\u000a'
+const LF uint16 = '\u000a'
 
-const SWTTAB uint16 = '\u0009'
+const TAB uint16 = '\u0009'
 
-const SWTSPACE uint16 = ' '
+const SPACE uint16 = ' '
 
-const SWTALT_GR int32 = 32768
+const ALT_GR int32 = 32768
 
-const SWTALT int32 = 65536
+const ALT int32 = 65536
 
-const SWTSHIFT int32 = 131072
+const SHIFT int32 = 131072
 
-const SWTCTRL int32 = 262144
+const CTRL int32 = 262144
 
-const SWTCONTROL int32 = SWTCTRL
+const CONTROL int32 = CTRL
 
-const SWTCOMMAND int32 = 4194304
+const COMMAND int32 = 4194304
 
-var SWTMODIFIER_MASK int32 = 0
+var MODIFIER_MASK int32 = 0
 
-const SWTBUTTON1 int32 = 524288
+const BUTTON1 int32 = 524288
 
-const SWTBUTTON2 int32 = 1048576
+const BUTTON2 int32 = 1048576
 
-const SWTBUTTON3 int32 = 2097152
+const BUTTON3 int32 = 2097152
 
-const SWTBUTTON4 int32 = 8388608
+const BUTTON4 int32 = 8388608
 
-const SWTBUTTON5 int32 = 33554432
+const BUTTON5 int32 = 33554432
 
-var SWTBUTTON_MASK int32 = 0
+var BUTTON_MASK int32 = 0
 
-var SWTMOD1 int32 = 0
+var MOD1 int32 = 0
 
-var SWTMOD2 int32 = 0
+var MOD2 int32 = 0
 
-var SWTMOD3 int32 = 0
+var MOD3 int32 = 0
 
-var SWTMOD4 int32 = 0
+var MOD4 int32 = 0
 
-const SWTSCROLL_LINE int32 = 1
+const SCROLL_LINE int32 = 1
 
-const SWTSCROLL_PAGE int32 = 2
+const SCROLL_PAGE int32 = 2
 
-const SWTKEYCODE_BIT int32 = (16777216)
+const KEYCODE_BIT int32 = (16777216)
 
-const SWTKEY_MASK int32 = SWTKEYCODE_BIT + 0xFFF
+const KEY_MASK int32 = KEYCODE_BIT + 0xFFF
 
-const SWTARROW_UP int32 = SWTKEYCODE_BIT + 1
+const ARROW_UP int32 = KEYCODE_BIT + 1
 
-const SWTARROW_DOWN int32 = SWTKEYCODE_BIT + 2
+const ARROW_DOWN int32 = KEYCODE_BIT + 2
 
-const SWTARROW_LEFT int32 = SWTKEYCODE_BIT + 3
+const ARROW_LEFT int32 = KEYCODE_BIT + 3
 
-const SWTARROW_RIGHT int32 = SWTKEYCODE_BIT + 4
+const ARROW_RIGHT int32 = KEYCODE_BIT + 4
 
-const SWTPAGE_UP int32 = SWTKEYCODE_BIT + 5
+const PAGE_UP int32 = KEYCODE_BIT + 5
 
-const SWTPAGE_DOWN int32 = SWTKEYCODE_BIT + 6
+const PAGE_DOWN int32 = KEYCODE_BIT + 6
 
-const SWTHOME int32 = SWTKEYCODE_BIT + 7
+const HOME int32 = KEYCODE_BIT + 7
 
-const SWTEND int32 = SWTKEYCODE_BIT + 8
+const END int32 = KEYCODE_BIT + 8
 
-const SWTINSERT int32 = SWTKEYCODE_BIT + 9
+const INSERT int32 = KEYCODE_BIT + 9
 
-const SWTF1 int32 = SWTKEYCODE_BIT + 10
+const F1 int32 = KEYCODE_BIT + 10
 
-const SWTF2 int32 = SWTKEYCODE_BIT + 11
+const F2 int32 = KEYCODE_BIT + 11
 
-const SWTF3 int32 = SWTKEYCODE_BIT + 12
+const F3 int32 = KEYCODE_BIT + 12
 
-const SWTF4 int32 = SWTKEYCODE_BIT + 13
+const F4 int32 = KEYCODE_BIT + 13
 
-const SWTF5 int32 = SWTKEYCODE_BIT + 14
+const F5 int32 = KEYCODE_BIT + 14
 
-const SWTF6 int32 = SWTKEYCODE_BIT + 15
+const F6 int32 = KEYCODE_BIT + 15
 
-const SWTF7 int32 = SWTKEYCODE_BIT + 16
+const F7 int32 = KEYCODE_BIT + 16
 
-const SWTF8 int32 = SWTKEYCODE_BIT + 17
+const F8 int32 = KEYCODE_BIT + 17
 
-const SWTF9 int32 = SWTKEYCODE_BIT + 18
+const F9 int32 = KEYCODE_BIT + 18
 
-const SWTF10 int32 = SWTKEYCODE_BIT + 19
+const F10 int32 = KEYCODE_BIT + 19
 
-const SWTF11 int32 = SWTKEYCODE_BIT + 20
+const F11 int32 = KEYCODE_BIT + 20
 
-const SWTF12 int32 = SWTKEYCODE_BIT + 21
+const F12 int32 = KEYCODE_BIT + 21
 
-const SWTF13 int32 = SWTKEYCODE_BIT + 22
+const F13 int32 = KEYCODE_BIT + 22
 
-const SWTF14 int32 = SWTKEYCODE_BIT + 23
+const F14 int32 = KEYCODE_BIT + 23
 
-const SWTF15 int32 = SWTKEYCODE_BIT + 24
+const F15 int32 = KEYCODE_BIT + 24
 
-const SWTF16 int32 = SWTKEYCODE_BIT + 25
+const F16 int32 = KEYCODE_BIT + 25
 
-const SWTF17 int32 = SWTKEYCODE_BIT + 26
+const F17 int32 = KEYCODE_BIT + 26
 
-const SWTF18 int32 = SWTKEYCODE_BIT + 27
+const F18 int32 = KEYCODE_BIT + 27
 
-const SWTF19 int32 = SWTKEYCODE_BIT + 28
+const F19 int32 = KEYCODE_BIT + 28
 
-const SWTF20 int32 = SWTKEYCODE_BIT + 29
+const F20 int32 = KEYCODE_BIT + 29
 
-const SWTKEYPAD int32 = 2
+const KEYPAD int32 = 2
 
-const SWTKEYPAD_MULTIPLY int32 = SWTKEYCODE_BIT + 42
+const KEYPAD_MULTIPLY int32 = KEYCODE_BIT + 42
 
-const SWTKEYPAD_ADD int32 = SWTKEYCODE_BIT + 43
+const KEYPAD_ADD int32 = KEYCODE_BIT + 43
 
-const SWTKEYPAD_SUBTRACT int32 = SWTKEYCODE_BIT + 45
+const KEYPAD_SUBTRACT int32 = KEYCODE_BIT + 45
 
-const SWTKEYPAD_DECIMAL int32 = SWTKEYCODE_BIT + 46
+const KEYPAD_DECIMAL int32 = KEYCODE_BIT + 46
 
-const SWTKEYPAD_DIVIDE int32 = SWTKEYCODE_BIT + 47
+const KEYPAD_DIVIDE int32 = KEYCODE_BIT + 47
 
-const SWTKEYPAD_0 int32 = SWTKEYCODE_BIT + 48
+const KEYPAD_0 int32 = KEYCODE_BIT + 48
 
-const SWTKEYPAD_1 int32 = SWTKEYCODE_BIT + 49
+const KEYPAD_1 int32 = KEYCODE_BIT + 49
 
-const SWTKEYPAD_2 int32 = SWTKEYCODE_BIT + 50
+const KEYPAD_2 int32 = KEYCODE_BIT + 50
 
-const SWTKEYPAD_3 int32 = SWTKEYCODE_BIT + 51
+const KEYPAD_3 int32 = KEYCODE_BIT + 51
 
-const SWTKEYPAD_4 int32 = SWTKEYCODE_BIT + 52
+const KEYPAD_4 int32 = KEYCODE_BIT + 52
 
-const SWTKEYPAD_5 int32 = SWTKEYCODE_BIT + 53
+const KEYPAD_5 int32 = KEYCODE_BIT + 53
 
-const SWTKEYPAD_6 int32 = SWTKEYCODE_BIT + 54
+const KEYPAD_6 int32 = KEYCODE_BIT + 54
 
-const SWTKEYPAD_7 int32 = SWTKEYCODE_BIT + 55
+const KEYPAD_7 int32 = KEYCODE_BIT + 55
 
-const SWTKEYPAD_8 int32 = SWTKEYCODE_BIT + 56
+const KEYPAD_8 int32 = KEYCODE_BIT + 56
 
-const SWTKEYPAD_9 int32 = SWTKEYCODE_BIT + 57
+const KEYPAD_9 int32 = KEYCODE_BIT + 57
 
-const SWTKEYPAD_EQUAL int32 = SWTKEYCODE_BIT + 61
+const KEYPAD_EQUAL int32 = KEYCODE_BIT + 61
 
-const SWTKEYPAD_CR int32 = SWTKEYCODE_BIT + 80
+const KEYPAD_CR int32 = KEYCODE_BIT + 80
 
-const SWTHELP int32 = SWTKEYCODE_BIT + 81
+const HELP int32 = KEYCODE_BIT + 81
 
-const SWTCAPS_LOCK int32 = SWTKEYCODE_BIT + 82
+const CAPS_LOCK int32 = KEYCODE_BIT + 82
 
-const SWTNUM_LOCK int32 = SWTKEYCODE_BIT + 83
+const NUM_LOCK int32 = KEYCODE_BIT + 83
 
-const SWTSCROLL_LOCK int32 = SWTKEYCODE_BIT + 84
+const SCROLL_LOCK int32 = KEYCODE_BIT + 84
 
-const SWTPAUSE int32 = SWTKEYCODE_BIT + 85
+const PAUSE int32 = KEYCODE_BIT + 85
 
-const SWTBREAK int32 = SWTKEYCODE_BIT + 86
+const BREAK int32 = KEYCODE_BIT + 86
 
-const SWTPRINT_SCREEN int32 = SWTKEYCODE_BIT + 87
+const PRINT_SCREEN int32 = KEYCODE_BIT + 87
 
-const SWTICON_ERROR int32 = 1
+const ICON_ERROR int32 = 1
 
-const SWTICON_INFORMATION int32 = 2
+const ICON_INFORMATION int32 = 2
 
-const SWTICON_QUESTION int32 = 4
+const ICON_QUESTION int32 = 4
 
-const SWTICON_WARNING int32 = 8
+const ICON_WARNING int32 = 8
 
-const SWTICON_WORKING int32 = 16
+const ICON_WORKING int32 = 16
 
-const SWTICON_SEARCH int32 = 512
+const ICON_SEARCH int32 = 512
 
-const SWTICON_CANCEL int32 = 256
+const ICON_CANCEL int32 = 256
 
-const SWTOK int32 = 32
+const OK int32 = 32
 
-const SWTYES int32 = 64
+const YES int32 = 64
 
-const SWTNO int32 = 128
+const NO int32 = 128
 
-const SWTCANCEL int32 = 256
+const CANCEL int32 = 256
 
-const SWTABORT int32 = 512
+const ABORT int32 = 512
 
-const SWTRETRY int32 = 1024
+const RETRY int32 = 1024
 
-const SWTIGNORE int32 = 2048
+const IGNORE int32 = 2048
 
-const SWTOPEN int32 = 4096
+const OPEN int32 = 4096
 
-const SWTSAVE int32 = 8192
+const SAVE int32 = 8192
 
-const SWTINHERIT_NONE int32 = 0
+const INHERIT_NONE int32 = 0
 
-const SWTINHERIT_DEFAULT int32 = 1
+const INHERIT_DEFAULT int32 = 1
 
-const SWTINHERIT_FORCE int32 = 2
+const INHERIT_FORCE int32 = 2
 
-const SWTCOLOR_WHITE int32 = 1
+const COLOR_WHITE int32 = 1
 
-const SWTCOLOR_BLACK int32 = 2
+const COLOR_BLACK int32 = 2
 
-const SWTCOLOR_RED int32 = 3
+const COLOR_RED int32 = 3
 
-const SWTCOLOR_DARK_RED int32 = 4
+const COLOR_DARK_RED int32 = 4
 
-const SWTCOLOR_GREEN int32 = 5
+const COLOR_GREEN int32 = 5
 
-const SWTCOLOR_DARK_GREEN int32 = 6
+const COLOR_DARK_GREEN int32 = 6
 
-const SWTCOLOR_YELLOW int32 = 7
+const COLOR_YELLOW int32 = 7
 
-const SWTCOLOR_DARK_YELLOW int32 = 8
+const COLOR_DARK_YELLOW int32 = 8
 
-const SWTCOLOR_BLUE int32 = 9
+const COLOR_BLUE int32 = 9
 
-const SWTCOLOR_DARK_BLUE int32 = 10
+const COLOR_DARK_BLUE int32 = 10
 
-const SWTCOLOR_MAGENTA int32 = 11
+const COLOR_MAGENTA int32 = 11
 
-const SWTCOLOR_DARK_MAGENTA int32 = 12
+const COLOR_DARK_MAGENTA int32 = 12
 
-const SWTCOLOR_CYAN int32 = 13
+const COLOR_CYAN int32 = 13
 
-const SWTCOLOR_DARK_CYAN int32 = 14
+const COLOR_DARK_CYAN int32 = 14
 
-const SWTCOLOR_GRAY int32 = 15
+const COLOR_GRAY int32 = 15
 
-const SWTCOLOR_DARK_GRAY int32 = 16
+const COLOR_DARK_GRAY int32 = 16
 
-const SWTCOLOR_WIDGET_DARK_SHADOW int32 = 17
+const COLOR_WIDGET_DARK_SHADOW int32 = 17
 
-const SWTCOLOR_WIDGET_NORMAL_SHADOW int32 = 18
+const COLOR_WIDGET_NORMAL_SHADOW int32 = 18
 
-const SWTCOLOR_WIDGET_LIGHT_SHADOW int32 = 19
+const COLOR_WIDGET_LIGHT_SHADOW int32 = 19
 
-const SWTCOLOR_WIDGET_HIGHLIGHT_SHADOW int32 = 20
+const COLOR_WIDGET_HIGHLIGHT_SHADOW int32 = 20
 
-const SWTCOLOR_WIDGET_FOREGROUND int32 = 21
+const COLOR_WIDGET_FOREGROUND int32 = 21
 
-const SWTCOLOR_WIDGET_BACKGROUND int32 = 22
+const COLOR_WIDGET_BACKGROUND int32 = 22
 
-const SWTCOLOR_WIDGET_BORDER int32 = 23
+const COLOR_WIDGET_BORDER int32 = 23
 
-const SWTCOLOR_LIST_FOREGROUND int32 = 24
+const COLOR_LIST_FOREGROUND int32 = 24
 
-const SWTCOLOR_LIST_BACKGROUND int32 = 25
+const COLOR_LIST_BACKGROUND int32 = 25
 
-const SWTCOLOR_LIST_SELECTION int32 = 26
+const COLOR_LIST_SELECTION int32 = 26
 
-const SWTCOLOR_LIST_SELECTION_TEXT int32 = 27
+const COLOR_LIST_SELECTION_TEXT int32 = 27
 
-const SWTCOLOR_INFO_FOREGROUND int32 = 28
+const COLOR_INFO_FOREGROUND int32 = 28
 
-const SWTCOLOR_INFO_BACKGROUND int32 = 29
+const COLOR_INFO_BACKGROUND int32 = 29
 
-const SWTCOLOR_TITLE_FOREGROUND int32 = 30
+const COLOR_TITLE_FOREGROUND int32 = 30
 
-const SWTCOLOR_TITLE_BACKGROUND int32 = 31
+const COLOR_TITLE_BACKGROUND int32 = 31
 
-const SWTCOLOR_TITLE_BACKGROUND_GRADIENT int32 = 32
+const COLOR_TITLE_BACKGROUND_GRADIENT int32 = 32
 
-const SWTCOLOR_TITLE_INACTIVE_FOREGROUND int32 = 33
+const COLOR_TITLE_INACTIVE_FOREGROUND int32 = 33
 
-const SWTCOLOR_TITLE_INACTIVE_BACKGROUND int32 = 34
+const COLOR_TITLE_INACTIVE_BACKGROUND int32 = 34
 
-const SWTCOLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT int32 = 35
+const COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT int32 = 35
 
-const SWTCOLOR_LINK_FOREGROUND int32 = 36
+const COLOR_LINK_FOREGROUND int32 = 36
 
-const SWTCOLOR_TRANSPARENT int32 = 37
+const COLOR_TRANSPARENT int32 = 37
 
-const SWTCOLOR_TEXT_DISABLED_BACKGROUND int32 = 38
+const COLOR_TEXT_DISABLED_BACKGROUND int32 = 38
 
-const SWTCOLOR_WIDGET_DISABLED_FOREGROUND int32 = 39
+const COLOR_WIDGET_DISABLED_FOREGROUND int32 = 39
 
-const SWTDRAW_TRANSPARENT int32 = 1
+const DRAW_TRANSPARENT int32 = 1
 
-const SWTDRAW_DELIMITER int32 = 2
+const DRAW_DELIMITER int32 = 2
 
-const SWTDRAW_TAB int32 = 4
+const DRAW_TAB int32 = 4
 
-const SWTDRAW_MNEMONIC int32 = 8
+const DRAW_MNEMONIC int32 = 8
 
-const SWTDELIMITER_SELECTION int32 = 131072
+const DELIMITER_SELECTION int32 = 131072
 
-const SWTLAST_LINE_SELECTION int32 = 1048576
+const LAST_LINE_SELECTION int32 = 1048576
 
-const SWTERROR_UNSPECIFIED int32 = 1
+const ERROR_UNSPECIFIED int32 = 1
 
-const SWTERROR_NO_HANDLES int32 = 2
+const ERROR_NO_HANDLES int32 = 2
 
-const SWTERROR_NO_MORE_CALLBACKS int32 = 3
+const ERROR_NO_MORE_CALLBACKS int32 = 3
 
-const SWTERROR_NULL_ARGUMENT int32 = 4
+const ERROR_NULL_ARGUMENT int32 = 4
 
-const SWTERROR_INVALID_ARGUMENT int32 = 5
+const ERROR_INVALID_ARGUMENT int32 = 5
 
-const SWTERROR_INVALID_RANGE int32 = 6
+const ERROR_INVALID_RANGE int32 = 6
 
-const SWTERROR_CANNOT_BE_ZERO int32 = 7
+const ERROR_CANNOT_BE_ZERO int32 = 7
 
-const SWTERROR_CANNOT_GET_ITEM int32 = 8
+const ERROR_CANNOT_GET_ITEM int32 = 8
 
-const SWTERROR_CANNOT_GET_SELECTION int32 = 9
+const ERROR_CANNOT_GET_SELECTION int32 = 9
 
-const SWTERROR_CANNOT_INVERT_MATRIX int32 = 10
+const ERROR_CANNOT_INVERT_MATRIX int32 = 10
 
-const SWTERROR_CANNOT_GET_ITEM_HEIGHT int32 = 11
+const ERROR_CANNOT_GET_ITEM_HEIGHT int32 = 11
 
-const SWTERROR_CANNOT_GET_TEXT int32 = 12
+const ERROR_CANNOT_GET_TEXT int32 = 12
 
-const SWTERROR_CANNOT_SET_TEXT int32 = 13
+const ERROR_CANNOT_SET_TEXT int32 = 13
 
-const SWTERROR_ITEM_NOT_ADDED int32 = 14
+const ERROR_ITEM_NOT_ADDED int32 = 14
 
-const SWTERROR_ITEM_NOT_REMOVED int32 = 15
+const ERROR_ITEM_NOT_REMOVED int32 = 15
 
-const SWTERROR_NO_GRAPHICS_LIBRARY int32 = 16
+const ERROR_NO_GRAPHICS_LIBRARY int32 = 16
 
-const SWTERROR_NOT_IMPLEMENTED int32 = 20
+const ERROR_NOT_IMPLEMENTED int32 = 20
 
-const SWTERROR_MENU_NOT_DROP_DOWN int32 = 21
+const ERROR_MENU_NOT_DROP_DOWN int32 = 21
 
-const SWTERROR_THREAD_INVALID_ACCESS int32 = 22
+const ERROR_THREAD_INVALID_ACCESS int32 = 22
 
-const SWTERROR_WIDGET_DISPOSED int32 = 24
+const ERROR_WIDGET_DISPOSED int32 = 24
 
-const SWTERROR_MENUITEM_NOT_CASCADE int32 = 27
+const ERROR_MENUITEM_NOT_CASCADE int32 = 27
 
-const SWTERROR_CANNOT_SET_SELECTION int32 = 28
+const ERROR_CANNOT_SET_SELECTION int32 = 28
 
-const SWTERROR_CANNOT_SET_MENU int32 = 29
+const ERROR_CANNOT_SET_MENU int32 = 29
 
-const SWTERROR_CANNOT_SET_ENABLED int32 = 30
+const ERROR_CANNOT_SET_ENABLED int32 = 30
 
-const SWTERROR_CANNOT_GET_ENABLED int32 = 31
+const ERROR_CANNOT_GET_ENABLED int32 = 31
 
-const SWTERROR_INVALID_PARENT int32 = 32
+const ERROR_INVALID_PARENT int32 = 32
 
-const SWTERROR_MENU_NOT_BAR int32 = 33
+const ERROR_MENU_NOT_BAR int32 = 33
 
-const SWTERROR_CANNOT_GET_COUNT int32 = 36
+const ERROR_CANNOT_GET_COUNT int32 = 36
 
-const SWTERROR_MENU_NOT_POP_UP int32 = 37
+const ERROR_MENU_NOT_POP_UP int32 = 37
 
-const SWTERROR_UNSUPPORTED_DEPTH int32 = 38
+const ERROR_UNSUPPORTED_DEPTH int32 = 38
 
-const SWTERROR_IO int32 = 39
+const ERROR_IO int32 = 39
 
-const SWTERROR_INVALID_IMAGE int32 = 40
+const ERROR_INVALID_IMAGE int32 = 40
 
-const SWTERROR_UNSUPPORTED_FORMAT int32 = 42
+const ERROR_UNSUPPORTED_FORMAT int32 = 42
 
-const SWTERROR_INVALID_SUBCLASS int32 = 43
+const ERROR_INVALID_SUBCLASS int32 = 43
 
-const SWTERROR_GRAPHIC_DISPOSED int32 = 44
+const ERROR_GRAPHIC_DISPOSED int32 = 44
 
-const SWTERROR_DEVICE_DISPOSED int32 = 45
+const ERROR_DEVICE_DISPOSED int32 = 45
 
-const SWTERROR_FAILED_EXEC int32 = 46
+const ERROR_FAILED_EXEC int32 = 46
 
-const SWTERROR_FAILED_LOAD_LIBRARY int32 = 47
+const ERROR_FAILED_LOAD_LIBRARY int32 = 47
 
-const SWTERROR_INVALID_FONT int32 = 48
+const ERROR_INVALID_FONT int32 = 48
 
-const SWTERROR_FUNCTION_DISPOSED int32 = 49
+const ERROR_FUNCTION_DISPOSED int32 = 49
 
-const SWTERROR_FAILED_EVALUATE int32 = 50
+const ERROR_FAILED_EVALUATE int32 = 50
 
-const SWTERROR_INVALID_RETURN_VALUE int32 = 51
+const ERROR_INVALID_RETURN_VALUE int32 = 51
 
-const SWTBITMAP int32 = 0
+const BITMAP int32 = 0
 
-const SWTICON int32 = 1
+const ICON int32 = 1
 
-const SWTIMAGE_COPY int32 = 0
+const IMAGE_COPY int32 = 0
 
-const SWTIMAGE_DISABLE int32 = 1
+const IMAGE_DISABLE int32 = 1
 
-const SWTIMAGE_GRAY int32 = 2
+const IMAGE_GRAY int32 = 2
 
-const SWTERROR int32 = 1
+const ERROR int32 = 1
 
-const SWTPAUSED int32 = 4
+const PAUSED int32 = 4
 
-const SWTNORMAL int32 = 0
+const NORMAL int32 = 0
 
-const SWTBOLD int32 = 1
+const BOLD int32 = 1
 
-const SWTITALIC int32 = 2
+const ITALIC int32 = 2
 
-const SWTCURSOR_ARROW int32 = 0
+const CURSOR_ARROW int32 = 0
 
-const SWTCURSOR_WAIT int32 = 1
+const CURSOR_WAIT int32 = 1
 
-const SWTCURSOR_CROSS int32 = 2
+const CURSOR_CROSS int32 = 2
 
-const SWTCURSOR_APPSTARTING int32 = 3
+const CURSOR_APPSTARTING int32 = 3
 
-const SWTCURSOR_HELP int32 = 4
+const CURSOR_HELP int32 = 4
 
-const SWTCURSOR_SIZEALL int32 = 5
+const CURSOR_SIZEALL int32 = 5
 
-const SWTCURSOR_SIZENESW int32 = 6
+const CURSOR_SIZENESW int32 = 6
 
-const SWTCURSOR_SIZENS int32 = 7
+const CURSOR_SIZENS int32 = 7
 
-const SWTCURSOR_SIZENWSE int32 = 8
+const CURSOR_SIZENWSE int32 = 8
 
-const SWTCURSOR_SIZEWE int32 = 9
+const CURSOR_SIZEWE int32 = 9
 
-const SWTCURSOR_SIZEN int32 = 10
+const CURSOR_SIZEN int32 = 10
 
-const SWTCURSOR_SIZES int32 = 11
+const CURSOR_SIZES int32 = 11
 
-const SWTCURSOR_SIZEE int32 = 12
+const CURSOR_SIZEE int32 = 12
 
-const SWTCURSOR_SIZEW int32 = 13
+const CURSOR_SIZEW int32 = 13
 
-const SWTCURSOR_SIZENE int32 = 14
+const CURSOR_SIZENE int32 = 14
 
-const SWTCURSOR_SIZESE int32 = 15
+const CURSOR_SIZESE int32 = 15
 
-const SWTCURSOR_SIZESW int32 = 16
+const CURSOR_SIZESW int32 = 16
 
-const SWTCURSOR_SIZENW int32 = 17
+const CURSOR_SIZENW int32 = 17
 
-const SWTCURSOR_UPARROW int32 = 18
+const CURSOR_UPARROW int32 = 18
 
-const SWTCURSOR_IBEAM int32 = 19
+const CURSOR_IBEAM int32 = 19
 
-const SWTCURSOR_NO int32 = 20
+const CURSOR_NO int32 = 20
 
-const SWTCURSOR_HAND int32 = 21
+const CURSOR_HAND int32 = 21
 
-const SWTCAP_FLAT int32 = 1
+const CAP_FLAT int32 = 1
 
-const SWTCAP_ROUND int32 = 2
+const CAP_ROUND int32 = 2
 
-const SWTCAP_SQUARE int32 = 3
+const CAP_SQUARE int32 = 3
 
-const SWTJOIN_MITER int32 = 1
+const JOIN_MITER int32 = 1
 
-const SWTJOIN_ROUND int32 = 2
+const JOIN_ROUND int32 = 2
 
-const SWTJOIN_BEVEL int32 = 3
+const JOIN_BEVEL int32 = 3
 
-const SWTLINE_SOLID int32 = 1
+const LINE_SOLID int32 = 1
 
-const SWTLINE_DASH int32 = 2
+const LINE_DASH int32 = 2
 
-const SWTLINE_DOT int32 = 3
+const LINE_DOT int32 = 3
 
-const SWTLINE_DASHDOT int32 = 4
+const LINE_DASHDOT int32 = 4
 
-const SWTLINE_DASHDOTDOT int32 = 5
+const LINE_DASHDOTDOT int32 = 5
 
-const SWTLINE_CUSTOM int32 = 6
+const LINE_CUSTOM int32 = 6
 
-const SWTPATH_MOVE_TO int32 = 1
+const PATH_MOVE_TO int32 = 1
 
-const SWTPATH_LINE_TO int32 = 2
+const PATH_LINE_TO int32 = 2
 
-const SWTPATH_QUAD_TO int32 = 3
+const PATH_QUAD_TO int32 = 3
 
-const SWTPATH_CUBIC_TO int32 = 4
+const PATH_CUBIC_TO int32 = 4
 
-const SWTPATH_CLOSE int32 = 5
+const PATH_CLOSE int32 = 5
 
-const SWTFILL_EVEN_ODD int32 = 1
+const FILL_EVEN_ODD int32 = 1
 
-const SWTFILL_WINDING int32 = 2
+const FILL_WINDING int32 = 2
 
-const SWTIMAGE_UNDEFINED int32 = -1
+const IMAGE_UNDEFINED int32 = -1
 
-const SWTIMAGE_BMP int32 = 0
+const IMAGE_BMP int32 = 0
 
-const SWTIMAGE_BMP_RLE int32 = 1
+const IMAGE_BMP_RLE int32 = 1
 
-const SWTIMAGE_GIF int32 = 2
+const IMAGE_GIF int32 = 2
 
-const SWTIMAGE_ICO int32 = 3
+const IMAGE_ICO int32 = 3
 
-const SWTIMAGE_JPEG int32 = 4
+const IMAGE_JPEG int32 = 4
 
-const SWTIMAGE_PNG int32 = 5
+const IMAGE_PNG int32 = 5
 
-const SWTIMAGE_TIFF int32 = 6
+const IMAGE_TIFF int32 = 6
 
-const SWTIMAGE_OS2_BMP int32 = 7
+const IMAGE_OS2_BMP int32 = 7
 
-const SWTIMAGE_SVG int32 = 8
+const IMAGE_SVG int32 = 8
 
-const SWTDM_UNSPECIFIED int32 = 0x0
+const DM_UNSPECIFIED int32 = 0x0
 
-const SWTDM_FILL_NONE int32 = 0x1
+const DM_FILL_NONE int32 = 0x1
 
-const SWTDM_FILL_BACKGROUND int32 = 0x2
+const DM_FILL_BACKGROUND int32 = 0x2
 
-const SWTDM_FILL_PREVIOUS int32 = 0x3
+const DM_FILL_PREVIOUS int32 = 0x3
 
-const SWTTRANSPARENCY_NONE int32 = 0x0
+const TRANSPARENCY_NONE int32 = 0x0
 
-const SWTTRANSPARENCY_ALPHA int32 = 1
+const TRANSPARENCY_ALPHA int32 = 1
 
-const SWTTRANSPARENCY_MASK int32 = 2
+const TRANSPARENCY_MASK int32 = 2
 
-const SWTTRANSPARENCY_PIXEL int32 = 4
+const TRANSPARENCY_PIXEL int32 = 4
 
-const SWTMOVEMENT_CHAR int32 = 1
+const MOVEMENT_CHAR int32 = 1
 
-const SWTMOVEMENT_CLUSTER int32 = 2
+const MOVEMENT_CLUSTER int32 = 2
 
-const SWTMOVEMENT_WORD int32 = 4
+const MOVEMENT_WORD int32 = 4
 
-const SWTMOVEMENT_WORD_END int32 = 8
+const MOVEMENT_WORD_END int32 = 8
 
-const SWTMOVEMENT_WORD_START int32 = 16
+const MOVEMENT_WORD_START int32 = 16
 
-const SWTALL int32 = 1
+const ALL int32 = 1
 
-const SWTID_ABOUT int32 = -1
+const ID_ABOUT int32 = -1
 
-const SWTID_PREFERENCES int32 = -2
+const ID_PREFERENCES int32 = -2
 
-const SWTID_HIDE int32 = -3
+const ID_HIDE int32 = -3
 
-const SWTID_HIDE_OTHERS int32 = -4
+const ID_HIDE_OTHERS int32 = -4
 
-const SWTID_SHOW_ALL int32 = -5
+const ID_SHOW_ALL int32 = -5
 
-const SWTID_QUIT int32 = -6
+const ID_QUIT int32 = -6
 
-const SWTSKIN_CLASS string = "org.eclipse.swt.skin.class"
+const SKIN_CLASS string = "org.eclipse.swt.skin.class"
 
-const SWTSKIN_ID string = "org.eclipse.swt.skin.id"
+const SKIN_ID string = "org.eclipse.swt.skin.id"
 
-const SWTSCROLLBAR_OVERLAY int32 = 2
+const SCROLLBAR_OVERLAY int32 = 2
 
 func NewSWT() *SWT {
 	this := &SWT{}
@@ -970,126 +976,126 @@ func NewSWT() *SWT {
 func (this *SWT) initSWT() {
 }
 
-func SWTIsLoadable() bool {
+func IsLoadable() bool {
 	return PlatformIsLoadable()
 }
 
-func SWTFindErrorText(code int32) string {
+func FindErrorText(code int32) string {
 	switch code {
-	case SWTERROR_UNSPECIFIED:
+	case ERROR_UNSPECIFIED:
 		return "Unspecified error"
-	case SWTERROR_NO_HANDLES:
+	case ERROR_NO_HANDLES:
 		return "No more handles"
-	case SWTERROR_NO_MORE_CALLBACKS:
+	case ERROR_NO_MORE_CALLBACKS:
 		return "No more callbacks"
-	case SWTERROR_NULL_ARGUMENT:
+	case ERROR_NULL_ARGUMENT:
 		return "Argument cannot be null"
-	case SWTERROR_INVALID_ARGUMENT:
+	case ERROR_INVALID_ARGUMENT:
 		return "Argument not valid"
-	case SWTERROR_INVALID_RETURN_VALUE:
+	case ERROR_INVALID_RETURN_VALUE:
 		return "Return value not valid"
-	case SWTERROR_INVALID_RANGE:
+	case ERROR_INVALID_RANGE:
 		return "Index out of bounds"
-	case SWTERROR_CANNOT_BE_ZERO:
+	case ERROR_CANNOT_BE_ZERO:
 		return "Argument cannot be zero"
-	case SWTERROR_CANNOT_GET_ITEM:
+	case ERROR_CANNOT_GET_ITEM:
 		return "Cannot get item"
-	case SWTERROR_CANNOT_GET_SELECTION:
+	case ERROR_CANNOT_GET_SELECTION:
 		return "Cannot get selection"
-	case SWTERROR_CANNOT_GET_ITEM_HEIGHT:
+	case ERROR_CANNOT_GET_ITEM_HEIGHT:
 		return "Cannot get item height"
-	case SWTERROR_CANNOT_GET_TEXT:
+	case ERROR_CANNOT_GET_TEXT:
 		return "Cannot get text"
-	case SWTERROR_CANNOT_SET_TEXT:
+	case ERROR_CANNOT_SET_TEXT:
 		return "Cannot set text"
-	case SWTERROR_ITEM_NOT_ADDED:
+	case ERROR_ITEM_NOT_ADDED:
 		return "Item not added"
-	case SWTERROR_ITEM_NOT_REMOVED:
+	case ERROR_ITEM_NOT_REMOVED:
 		return "Item not removed"
-	case SWTERROR_NOT_IMPLEMENTED:
+	case ERROR_NOT_IMPLEMENTED:
 		return "Not implemented"
-	case SWTERROR_MENU_NOT_DROP_DOWN:
+	case ERROR_MENU_NOT_DROP_DOWN:
 		return "Menu must be a drop down"
-	case SWTERROR_THREAD_INVALID_ACCESS:
+	case ERROR_THREAD_INVALID_ACCESS:
 		return "Invalid thread access"
-	case SWTERROR_WIDGET_DISPOSED:
+	case ERROR_WIDGET_DISPOSED:
 		return "Widget is disposed"
-	case SWTERROR_MENUITEM_NOT_CASCADE:
+	case ERROR_MENUITEM_NOT_CASCADE:
 		return "Menu item is not a CASCADE"
-	case SWTERROR_CANNOT_SET_SELECTION:
+	case ERROR_CANNOT_SET_SELECTION:
 		return "Cannot set selection"
-	case SWTERROR_CANNOT_SET_MENU:
+	case ERROR_CANNOT_SET_MENU:
 		return "Cannot set menu"
-	case SWTERROR_CANNOT_SET_ENABLED:
+	case ERROR_CANNOT_SET_ENABLED:
 		return "Cannot set the enabled state"
-	case SWTERROR_CANNOT_GET_ENABLED:
+	case ERROR_CANNOT_GET_ENABLED:
 		return "Cannot get the enabled state"
-	case SWTERROR_INVALID_PARENT:
+	case ERROR_INVALID_PARENT:
 		return "Widget has the wrong parent"
-	case SWTERROR_MENU_NOT_BAR:
+	case ERROR_MENU_NOT_BAR:
 		return "Menu is not a BAR"
-	case SWTERROR_CANNOT_GET_COUNT:
+	case ERROR_CANNOT_GET_COUNT:
 		return "Cannot get count"
-	case SWTERROR_MENU_NOT_POP_UP:
+	case ERROR_MENU_NOT_POP_UP:
 		return "Menu is not a POP_UP"
-	case SWTERROR_UNSUPPORTED_DEPTH:
+	case ERROR_UNSUPPORTED_DEPTH:
 		return "Unsupported color depth"
-	case SWTERROR_IO:
+	case ERROR_IO:
 		return "i/o error"
-	case SWTERROR_INVALID_IMAGE:
+	case ERROR_INVALID_IMAGE:
 		return "Invalid image"
-	case SWTERROR_UNSUPPORTED_FORMAT:
+	case ERROR_UNSUPPORTED_FORMAT:
 		return "Unsupported or unrecognized format"
-	case SWTERROR_INVALID_SUBCLASS:
+	case ERROR_INVALID_SUBCLASS:
 		return "Subclassing not allowed"
-	case SWTERROR_GRAPHIC_DISPOSED:
+	case ERROR_GRAPHIC_DISPOSED:
 		return "Graphic is disposed"
-	case SWTERROR_DEVICE_DISPOSED:
+	case ERROR_DEVICE_DISPOSED:
 		return "Device is disposed"
-	case SWTERROR_FUNCTION_DISPOSED:
+	case ERROR_FUNCTION_DISPOSED:
 		return "BrowserFunction is disposed"
-	case SWTERROR_FAILED_EXEC:
+	case ERROR_FAILED_EXEC:
 		return "Failed to execute runnable"
-	case SWTERROR_FAILED_EVALUATE:
+	case ERROR_FAILED_EVALUATE:
 		return "Failed to evaluate javascript expression"
-	case SWTERROR_FAILED_LOAD_LIBRARY:
+	case ERROR_FAILED_LOAD_LIBRARY:
 		return "Unable to load library"
-	case SWTERROR_CANNOT_INVERT_MATRIX:
+	case ERROR_CANNOT_INVERT_MATRIX:
 		return "Cannot invert matrix"
-	case SWTERROR_NO_GRAPHICS_LIBRARY:
+	case ERROR_NO_GRAPHICS_LIBRARY:
 		return "Unable to load graphics library"
-	case SWTERROR_INVALID_FONT:
+	case ERROR_INVALID_FONT:
 		return "Font not valid"
 	}
 	return "Unknown error"
 }
 
-func SWTGetMessage(key string) string {
+func GetMessage(key string) string {
 	return CompatibilityGetMessage(key)
 }
 
-func SWTGetMessageKeyArgs(key string, args []any) string {
+func GetMessageKeyArgs(key string, args []any) string {
 	return CompatibilityGetMessage(key, args)
 }
 
-func SWTGetPlatform() string {
+func GetPlatform() string {
 	return PlatformPLATFORM
 }
 
-func SWTGetVersion() int32 {
+func GetVersion() int32 {
 	return LibrarySWT_VERSION
 }
 
-func SWTErrorFn(code int32) {
-	SWTErrorCodeThrowable(code, nil)
+func Error(code int32) {
+	ErrorCodeThrowable(code, nil)
 }
 
-func SWTErrorCodeThrowable(code int32, throwable error) {
-	SWTErrorCodeThrowableDetail(code, throwable, "")
+func ErrorCodeThrowable(code int32, throwable error) {
+	ErrorCodeThrowableDetail(code, throwable, "")
 }
 
-func SWTErrorCodeThrowableDetail(code int32, throwable error, detail string) {
-	if code != SWTERROR_FAILED_EXEC {
+func ErrorCodeThrowableDetail(code int32, throwable error, detail string) {
+	if code != ERROR_FAILED_EXEC {
 		_, ok22 := sWTErrorImplAsSWTError(throwable)
 		if ok22 {
 			panic(casterrorToSWTError(throwable))
@@ -1099,28 +1105,28 @@ func SWTErrorCodeThrowableDetail(code int32, throwable error, detail string) {
 			panic(casterrorToSWTException(throwable))
 		}
 	}
-	var message string = SWTFindErrorText(code)
+	var message string = FindErrorText(code)
 	if detail != "" {
 		message += detail
 	}
 	switch code {
-	case SWTERROR_NULL_ARGUMENT, SWTERROR_CANNOT_BE_ZERO, SWTERROR_INVALID_ARGUMENT, SWTERROR_MENU_NOT_BAR, SWTERROR_MENU_NOT_DROP_DOWN, SWTERROR_MENU_NOT_POP_UP, SWTERROR_MENUITEM_NOT_CASCADE, SWTERROR_INVALID_PARENT, SWTERROR_INVALID_RANGE:
+	case ERROR_NULL_ARGUMENT, ERROR_CANNOT_BE_ZERO, ERROR_INVALID_ARGUMENT, ERROR_MENU_NOT_BAR, ERROR_MENU_NOT_DROP_DOWN, ERROR_MENU_NOT_POP_UP, ERROR_MENUITEM_NOT_CASCADE, ERROR_INVALID_PARENT, ERROR_INVALID_RANGE:
 		{
 			panic(jrt.NewIllegalArgumentException(message))
 		}
-	case SWTERROR_INVALID_SUBCLASS, SWTERROR_THREAD_INVALID_ACCESS, SWTERROR_WIDGET_DISPOSED, SWTERROR_GRAPHIC_DISPOSED, SWTERROR_DEVICE_DISPOSED, SWTERROR_FUNCTION_DISPOSED, SWTERROR_INVALID_IMAGE, SWTERROR_UNSUPPORTED_DEPTH, SWTERROR_UNSUPPORTED_FORMAT, SWTERROR_FAILED_EXEC, SWTERROR_FAILED_EVALUATE, SWTERROR_CANNOT_INVERT_MATRIX, SWTERROR_NO_GRAPHICS_LIBRARY, SWTERROR_INVALID_RETURN_VALUE, SWTERROR_IO:
+	case ERROR_INVALID_SUBCLASS, ERROR_THREAD_INVALID_ACCESS, ERROR_WIDGET_DISPOSED, ERROR_GRAPHIC_DISPOSED, ERROR_DEVICE_DISPOSED, ERROR_FUNCTION_DISPOSED, ERROR_INVALID_IMAGE, ERROR_UNSUPPORTED_DEPTH, ERROR_UNSUPPORTED_FORMAT, ERROR_FAILED_EXEC, ERROR_FAILED_EVALUATE, ERROR_CANNOT_INVERT_MATRIX, ERROR_NO_GRAPHICS_LIBRARY, ERROR_INVALID_RETURN_VALUE, ERROR_IO:
 		{
 			var exception *SWTException = NewSWTExceptionCodeMessage(code, message)
 			exception.Throwable = throwable
 			panic(exception)
 		}
-	case SWTERROR_CANNOT_GET_COUNT, SWTERROR_CANNOT_GET_ENABLED, SWTERROR_CANNOT_GET_ITEM, SWTERROR_CANNOT_GET_ITEM_HEIGHT, SWTERROR_CANNOT_GET_SELECTION, SWTERROR_CANNOT_GET_TEXT, SWTERROR_CANNOT_SET_ENABLED, SWTERROR_CANNOT_SET_MENU, SWTERROR_CANNOT_SET_SELECTION, SWTERROR_CANNOT_SET_TEXT, SWTERROR_ITEM_NOT_ADDED, SWTERROR_ITEM_NOT_REMOVED, SWTERROR_FAILED_LOAD_LIBRARY, SWTERROR_NO_MORE_CALLBACKS, SWTERROR_NOT_IMPLEMENTED, SWTERROR_UNSPECIFIED:
+	case ERROR_CANNOT_GET_COUNT, ERROR_CANNOT_GET_ENABLED, ERROR_CANNOT_GET_ITEM, ERROR_CANNOT_GET_ITEM_HEIGHT, ERROR_CANNOT_GET_SELECTION, ERROR_CANNOT_GET_TEXT, ERROR_CANNOT_SET_ENABLED, ERROR_CANNOT_SET_MENU, ERROR_CANNOT_SET_SELECTION, ERROR_CANNOT_SET_TEXT, ERROR_ITEM_NOT_ADDED, ERROR_ITEM_NOT_REMOVED, ERROR_FAILED_LOAD_LIBRARY, ERROR_NO_MORE_CALLBACKS, ERROR_NOT_IMPLEMENTED, ERROR_UNSPECIFIED:
 		{
 			var error_ *SWTError = NewSWTErrorCodeMessage(code, message)
 			error_.Throwable = throwable
 			panic(error_)
 		}
-	case SWTERROR_NO_HANDLES:
+	case ERROR_NO_HANDLES:
 		var error_ *SWTError = NewSWTErrorCodeMessage(code, message)
 		error_.Throwable = throwable
 		panic(error_)
@@ -1177,19 +1183,19 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SWT static{}:", r)
 			}
 		}()
-		SWTBUTTON_MASK = SWTBUTTON1 | SWTBUTTON2 | SWTBUTTON3 | SWTBUTTON4 | SWTBUTTON5
-		SWTMODIFIER_MASK = SWTALT | SWTSHIFT | SWTCTRL | SWTCOMMAND | SWTALT_GR
-		var platform string = SWTGetPlatform()
+		BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3 | BUTTON4 | BUTTON5
+		MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND | ALT_GR
+		var platform string = GetPlatform()
 		if "cocoa" == platform {
-			SWTMOD1 = SWTCOMMAND
-			SWTMOD2 = SWTSHIFT
-			SWTMOD3 = SWTALT
-			SWTMOD4 = SWTCONTROL
+			MOD1 = COMMAND
+			MOD2 = SHIFT
+			MOD3 = ALT
+			MOD4 = CONTROL
 		} else {
-			SWTMOD1 = SWTCONTROL
-			SWTMOD2 = SWTSHIFT
-			SWTMOD3 = SWTALT
-			SWTMOD4 = 0
+			MOD1 = CONTROL
+			MOD2 = SHIFT
+			MOD3 = ALT
+			MOD4 = 0
 		}
 	}()
 }

@@ -5,6 +5,12 @@ package swt
 type ShellAdapter struct {
 }
 
+func (this *ShellAdapter) AsShellAdapter() *ShellAdapter { return this }
+
+type ShellAdapterLike interface {
+	AsShellAdapter() *ShellAdapter
+}
+
 func NewShellAdapter() *ShellAdapter {
 	this := &ShellAdapter{}
 	this.initShellAdapter()

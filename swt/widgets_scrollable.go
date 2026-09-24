@@ -13,6 +13,12 @@ type Scrollable struct {
 	verticalBar   *ScrollBar
 }
 
+func (this *Scrollable) AsScrollable() *Scrollable { return this }
+
+type ScrollableLike interface {
+	AsScrollable() *Scrollable
+}
+
 func newScrollable() *Scrollable {
 	this := &Scrollable{}
 	this.impl = this
@@ -24,7 +30,12 @@ func (this *Scrollable) initScrollable() {
 	this.Control.initControl()
 }
 
-func NewScrollableParentStyle(parent *Composite, style int32) *Scrollable {
+func NewScrollableParentStyle(parentLike CompositeLike, style int32) *Scrollable {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Scrollable{}
 	this.impl = this
 	this.initScrollableParentStyle(parent, style)
@@ -48,13 +59,13 @@ func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32)
 			border = cocoa.OSNSNoBorder
 		}
 		var cond86 int64
-		if (this.style & SWTH_SCROLL) != 0 {
+		if (this.style & H_SCROLL) != 0 {
 			cond86 = cocoa.OSClass_NSScroller
 		} else {
 			cond86 = int64(0)
 		}
 		var cond87 int64
-		if (this.style & SWTV_SCROLL) != 0 {
+		if (this.style & V_SCROLL) != 0 {
 			cond87 = cocoa.OSClass_NSScroller
 		} else {
 			cond87 = int64(0)
@@ -80,14 +91,14 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 	var scroller *cocoa.NSScroller
 	var actionSelector int64
 	var rect cocoa.NSRect = cocoa.NSRect{}
-	if (style & SWTH_SCROLL) != 0 {
+	if (style & H_SCROLL) != 0 {
 		rect.Width = float64(1)
 	} else {
 		rect.Height = float64(1)
 	}
 	scroller = castcocoaNSObjectTococoaNSScroller(cocoa.NewSWTScroller().Alloc())
 	scroller.InitWithFrame(rect)
-	if (style & SWTH_SCROLL) != 0 {
+	if (style & H_SCROLL) != 0 {
 		this.scrollView.SetHorizontalScroller(scroller)
 		actionSelector = cocoa.OSSel_sendHorizontalSelection
 	} else {
@@ -111,11 +122,11 @@ func (this *Scrollable) CreateScrollBar(style int32) *ScrollBar {
 
 func (this *Scrollable) CreateWidget() {
 	this.Control.CreateWidget()
-	if (this.style & SWTH_SCROLL) != 0 {
-		this.horizontalBar = this.CreateScrollBar(SWTH_SCROLL)
+	if (this.style & H_SCROLL) != 0 {
+		this.horizontalBar = this.CreateScrollBar(H_SCROLL)
 	}
-	if (this.style & SWTV_SCROLL) != 0 {
-		this.verticalBar = this.CreateScrollBar(SWTV_SCROLL)
+	if (this.style & V_SCROLL) != 0 {
+		this.verticalBar = this.CreateScrollBar(V_SCROLL)
 	}
 }
 
@@ -146,10 +157,10 @@ func (this *Scrollable) GetHorizontalBar() *ScrollBar {
 
 func (this *Scrollable) GetScrollbarsMode() int32 {
 	this.CheckWidget()
-	var style int32 = SWTNONE
+	var style int32 = NONE
 	if this.scrollView != (nil) {
 		if this.scrollView.ScrollerStyle() == int64(cocoa.OSNSScrollerStyleOverlay) {
-			style = SWTSCROLLBAR_OVERLAY
+			style = SCROLLBAR_OVERLAY
 		}
 	}
 	return style
@@ -165,7 +176,7 @@ func (this *Scrollable) GetVerticalBar() *ScrollBar {
 }
 
 func (this *Scrollable) HooksKeys() bool {
-	return this.Hooks(SWTKeyDown) || this.Hooks(SWTKeyUp) || this.Hooks(SWTTraverse)
+	return this.Hooks(KeyDown) || this.Hooks(KeyUp) || this.Hooks(Traverse)
 }
 
 func (this *Scrollable) IsEventView(id int64) bool {
@@ -300,19 +311,19 @@ func (this *Scrollable) SetScrollBarVisible(bar *ScrollBar, visible bool) bool {
 		}
 		bar.state |= WidgetHIDDEN
 	}
-	if (bar.style & SWTHORIZONTAL) != 0 {
+	if (bar.style & HORIZONTAL) != 0 {
 		this.scrollView.SetHasHorizontalScroller(visible)
 	} else {
 		this.scrollView.SetHasVerticalScroller(visible)
 	}
 	var cond88 int32
 	if visible {
-		cond88 = SWTShow
+		cond88 = Show
 	} else {
-		cond88 = SWTHide
+		cond88 = Hide
 	}
 	bar.SendEventEventType(cond88)
-	this.SendEventEventType(SWTResize)
+	this.SendEventEventType(Resize)
 	return true
 }
 

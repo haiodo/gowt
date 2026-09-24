@@ -8,11 +8,22 @@ type Item struct {
 	image *Image
 }
 
+func (this *Item) AsItem() *Item { return this }
+
+type ItemLike interface {
+	AsItem() *Item
+}
+
 const ItemTEXT_LIMIT int32 = 8192
 
 const ItemELLIPSIS string = "..."
 
-func NewItem(parent *Widget, style int32) *Item {
+func NewItem(parentLike WidgetLike, style int32) *Item {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	_ = parent
 	this := &Item{}
 	this.impl = this
 	this.initItem(parent, style)
@@ -22,10 +33,15 @@ func NewItem(parent *Widget, style int32) *Item {
 func (this *Item) initItem(parent *Widget, style int32) {
 	this.Widget.initWidgetParentStyle(parent, style)
 	this.text = ""
-	this._addListener(SWTZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
+	this._addListener(ZoomChanged, &ListenerFunc{fn: this.HandleDPIChange})
 }
 
-func NewItemParentStyleIndex(parent *Widget, style int32, index int32) *Item {
+func NewItemParentStyleIndex(parentLike WidgetLike, style int32, index int32) *Item {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	_ = parent
 	this := &Item{}
 	this.impl = this
 	this.initItemParentStyleIndex(parent, style, index)
@@ -65,7 +81,7 @@ func (this *Item) SetImage(image *Image) {
 		return
 	}
 	if image != (nil) && image.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
 }
@@ -73,7 +89,7 @@ func (this *Item) SetImage(image *Image) {
 func (this *Item) SetText(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
 	if (this.state & WidgetHAS_AUTO_DIRECTION) != 0 {
@@ -87,13 +103,13 @@ func (this *Item) UpdateTextDirection(textDirection int32) bool {
 		if (this.style ^ BidiUtilResolveTextDirection(this.text)) == 0 {
 			textDirection = 0
 		} else {
-			textDirection = SWTFLIP_TEXT_DIRECTION
+			textDirection = FLIP_TEXT_DIRECTION
 		}
 	} else {
 		this.state &= ^WidgetHAS_AUTO_DIRECTION
 	}
-	if ((this.style & SWTFLIP_TEXT_DIRECTION) ^ textDirection) != 0 {
-		this.style ^= SWTFLIP_TEXT_DIRECTION
+	if ((this.style & FLIP_TEXT_DIRECTION) ^ textDirection) != 0 {
+		this.style ^= FLIP_TEXT_DIRECTION
 		return true
 	}
 	return textDirection == WidgetAUTO_TEXT_DIRECTION

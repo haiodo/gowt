@@ -17,6 +17,12 @@ type FillLayout struct {
 	Spacing      int32
 }
 
+func (this *FillLayout) AsFillLayout() *FillLayout { return this }
+
+type FillLayoutLike interface {
+	AsFillLayout() *FillLayout
+}
+
 func NewFillLayout() *FillLayout {
 	this := &FillLayout{}
 	this.impl = this
@@ -26,7 +32,7 @@ func NewFillLayout() *FillLayout {
 
 func (this *FillLayout) initFillLayout() {
 	this.Layout.initLayout()
-	this.Type = SWTHORIZONTAL
+	this.Type = HORIZONTAL
 	this.MarginWidth = 0
 	this.MarginHeight = 0
 	this.Spacing = 0
@@ -41,7 +47,7 @@ func NewFillLayoutType(type_ int32) *FillLayout {
 
 func (this *FillLayout) initFillLayoutType(type_ int32) {
 	this.Layout.initLayout()
-	this.Type = SWTHORIZONTAL
+	this.Type = HORIZONTAL
 	this.MarginWidth = 0
 	this.MarginHeight = 0
 	this.Spacing = 0
@@ -58,10 +64,10 @@ func (this *FillLayout) ComputeSizeOnLayout(composite *Composite, wHint int32, h
 		var w int32 = wHint
 		var h int32 = hHint
 		if count > 0 {
-			if this.Type == SWTHORIZONTAL && wHint != SWTDEFAULT {
+			if this.Type == HORIZONTAL && wHint != DEFAULT {
 				w = int32(math.Max(float64(0), float64((wHint-(count-1)*this.Spacing)/count)))
 			}
-			if this.Type == SWTVERTICAL && hHint != SWTDEFAULT {
+			if this.Type == VERTICAL && hHint != DEFAULT {
 				h = int32(math.Max(float64(0), float64((hHint-(count-1)*this.Spacing)/count)))
 			}
 		}
@@ -71,7 +77,7 @@ func (this *FillLayout) ComputeSizeOnLayout(composite *Composite, wHint int32, h
 	}
 	var width int32 = 0
 	var height int32 = 0
-	if this.Type == SWTHORIZONTAL {
+	if this.Type == HORIZONTAL {
 		width = count * maxWidth
 		if count != 0 {
 			width += (count - 1) * this.Spacing
@@ -86,16 +92,21 @@ func (this *FillLayout) ComputeSizeOnLayout(composite *Composite, wHint int32, h
 	}
 	width += this.MarginWidth * 2
 	height += this.MarginHeight * 2
-	if wHint != SWTDEFAULT {
+	if wHint != DEFAULT {
 		width = wHint
 	}
-	if hHint != SWTDEFAULT {
+	if hHint != DEFAULT {
 		height = hHint
 	}
 	return NewPoint(width, height)
 }
 
-func (this *FillLayout) ComputeChildSize(control *Control, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, hHint int32, flushCache bool) *Point {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	var data any = control.GetLayoutData()
 	var fillData *FillData
 	_, ok89 := fillDataImplAsFillData(data)
@@ -108,7 +119,7 @@ func (this *FillLayout) ComputeChildSize(control *Control, wHint int32, hHint in
 		}
 	}
 	var size *Point = nil
-	if wHint == SWTDEFAULT && hHint == SWTDEFAULT {
+	if wHint == DEFAULT && hHint == DEFAULT {
 		size = fillData.ComputeSize(control, wHint, hHint, flushCache)
 	} else {
 		var trimX int32
@@ -123,13 +134,13 @@ func (this *FillLayout) ComputeChildSize(control *Control, wHint int32, hHint in
 			trimX = trimY
 		}
 		var w int32
-		if wHint == SWTDEFAULT {
+		if wHint == DEFAULT {
 			w = wHint
 		} else {
 			w = int32(math.Max(float64(0), float64(wHint-trimX)))
 		}
 		var h int32
-		if hHint == SWTDEFAULT {
+		if hHint == DEFAULT {
 			h = hHint
 		} else {
 			h = int32(math.Max(float64(0), float64(hHint-trimY)))
@@ -167,7 +178,7 @@ func (this *FillLayout) LayoutFn(composite *Composite, flushCache bool) {
 	}
 	var width int32 = rect.Width - this.MarginWidth*2
 	var height int32 = rect.Height - this.MarginHeight*2
-	if this.Type == SWTHORIZONTAL {
+	if this.Type == HORIZONTAL {
 		width -= (count - 1) * this.Spacing
 		var x int32 = rect.X + this.MarginWidth
 		var extra int32 = width % count
@@ -211,7 +222,7 @@ func (this *FillLayout) LayoutFn(composite *Composite, flushCache bool) {
 func (this *FillLayout) String() string {
 	var string_ string = fmt.Sprintf("%s {", this.GetName())
 	var cond92 string
-	if this.Type == SWTVERTICAL {
+	if this.Type == VERTICAL {
 		cond92 = "SWT.VERTICAL"
 	} else {
 		cond92 = "SWT.HORIZONTAL"

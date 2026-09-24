@@ -39,6 +39,12 @@ type Event struct {
 	Rotation      float64
 }
 
+func (this *Event) AsEvent() *Event { return this }
+
+type EventLike interface {
+	AsEvent() *Event
+}
+
 func NewEvent() *Event {
 	this := &Event{}
 	this.initEvent()
@@ -57,7 +63,12 @@ func (this *Event) GetLocation() *Point {
 	return NewPoint(this.X, this.Y)
 }
 
-func (this *Event) SetBounds(rect *Rectangle) {
+func (this *Event) SetBounds(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	this.X = rect.X
 	this.Y = rect.Y
 	this.Width = rect.Width

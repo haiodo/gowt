@@ -15,6 +15,12 @@ type Monitor struct {
 	zoom         int32
 }
 
+func (this *Monitor) AsMonitor() *Monitor { return this }
+
+type MonitorLike interface {
+	AsMonitor() *Monitor
+}
+
 func newMonitor() *Monitor {
 	this := &Monitor{}
 	this.initMonitor()
@@ -48,14 +54,24 @@ func (this *Monitor) GetZoom() int32 {
 	return this.zoom
 }
 
-func (this *Monitor) SetBounds(rect *Rectangle) {
+func (this *Monitor) SetBounds(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	this.x = rect.X
 	this.y = rect.Y
 	this.width = rect.Width
 	this.height = rect.Height
 }
 
-func (this *Monitor) SetClientArea(rect *Rectangle) {
+func (this *Monitor) SetClientArea(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	this.clientX = rect.X
 	this.clientY = rect.Y
 	this.clientWidth = rect.Width

@@ -6,7 +6,18 @@ type ExpandEvent struct {
 	SelectionEvent
 }
 
-func NewExpandEvent(e *Event) *ExpandEvent {
+func (this *ExpandEvent) AsExpandEvent() *ExpandEvent { return this }
+
+type ExpandEventLike interface {
+	AsExpandEvent() *ExpandEvent
+}
+
+func NewExpandEvent(eLike EventLike) *ExpandEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &ExpandEvent{}
 	this.impl = this
 	this.initExpandEvent(e)

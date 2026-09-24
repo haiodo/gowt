@@ -12,6 +12,12 @@ type TouchSource struct {
 	bounds *Rectangle
 }
 
+func (this *TouchSource) AsTouchSource() *TouchSource { return this }
+
+type TouchSourceLike interface {
+	AsTouchSource() *TouchSource
+}
+
 func newTouchSource(handle int64, direct bool, bounds *Rectangle) *TouchSource {
 	this := &TouchSource{}
 	this.initTouchSource(handle, direct, bounds)

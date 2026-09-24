@@ -40,8 +40,13 @@ final class ConstructorEmitter {
 		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape
 
 		boolean needsImpl = !ci.root.children.isEmpty();
-		out.append("func ").append(goName).append('(').append(emitter.paramList(mb, md)).append(") *")
+		// Only the public New<X> entry point widens its params (README "Round 7 api") - init<X>
+		// (below) is always unexported and keeps concrete *C, cheap for generated-code callers.
+		List<String> pubPrelude = new ArrayList<>();
+		String ctorParams = pub ? EmitUtil.publicParamList(emitter, mb, md, pubPrelude) : emitter.paramList(mb, md);
+		out.append("func ").append(goName).append('(').append(ctorParams).append(") *")
 				.append(ci.goTypeName).append(" {\n");
+		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
 		out.append("\tthis := &").append(ci.goTypeName).append("{}\n");
 		if (needsImpl) out.append("\tthis.impl = this\n");
 		out.append("\tthis.").append(initName).append('(').append(emitter.argNames(md)).append(")\n");

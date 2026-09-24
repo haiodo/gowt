@@ -1449,3 +1449,137 @@ Every item is a general translator rule unless it names a manual file.
   (checks the Go package instead of a Java class name), `Thread.currentThread()` = goroutine id
   (so `checkWidget` really rejects other goroutines), `OS.setTheme`/`isSystemDarkAppearance`/
   `isAppDarkAppearance` are translated again (Display calls them).
+
+## Round 7 api
+
+Ergonomics for package `swt`'s public API, scoped to `swt` only (rule 5 of the round's own
+brief) - `internal/cocoa`'s generated output is untouched (confirmed: `port.sh`'s second
+invocation produces a byte-identical `internal/cocoa/*.go`).
+
+### Upcast accessor + `<C>Like` interface (`TypeModel.assignLikeNames`, `ClassEmitter.emitLikeAccessor`)
+
+Every non-struct, non-interface class `C` in package `swt` (in practice: every translated swt
+class - `isStruct` is cocoa-only) gets:
+
+```go
+func (this *Composite) AsComposite() *Composite { return this }
+
+type CompositeLike interface {
+	AsComposite() *Composite
+}
+```
+
+Go promotes `AsComposite()` through every embedded ancestor, so `*Shell`/`*Canvas`/`*Decorations`
+satisfy `CompositeLike` too, for free, at any embedding depth - no per-class registration needed.
+Computed once in `TypeModel.build` (`ClassInfo.asMethodName`/`likeInterfaceName`), so the
+declaration site and every parameter-widening site (below) agree by construction.
+
+**Collision check**: `asMethodName` suffixes `_` if a real Java method on that same class already
+computes to `As<C>` (checked against `ci.declaredMethods`); `likeInterfaceName` suffixes `_` if
+another swt-package class is itself already named `<C>Like`. Zero occurrences in the current file
+set (confirmed: 0 `*Like_`/`As..._()` in the generated output).
+
+### Parameter widening (`EmitUtil.publicParamList`)
+
+A parameter of a widenable class type in an **exported, plain** signature becomes `<C>Like`; the
+function's first lines convert it back to the concrete pointer:
+
+```go
+func NewButton(parentLike CompositeLike, style int32) *Button {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
+	...
+```
+
+(`_ = parent` only when nothing else in the body reads it - real SWT has genuine no-op overrides,
+e.g. `Control.addRelation`, whose Java parameter is otherwise unused; Go rejects an unused local,
+unlike an unused parameter.) A nil `parentLike` converts to a nil `*Composite` (`AsComposite` never
+dereferences `this`), matching Java's own null-friendliness. Applied at exactly 3 emission sites:
+
+- `ConstructorEmitter.emitConstructor` - only the public `New<X>` wrapper; `init<X>` (its callee,
+  always unexported by shape) keeps `*C` - cheap, unchanged calls from every other generated site.
+- `ClassEmitter.emitInstanceMethod` - only when the method is **plain**: not a cascade override
+  (`ci.overridePoint(sig) == null`), not an implementation of a real Java `interface` method
+  (`EmitUtil.implementsInterfaceMethod`, walks the type's transitive interfaces via
+  `IMethodBinding.overrides`), and not the target of a `Type::method` reference anywhere in the
+  file set (`TypeModel.isMethodReferenceTarget`, a one-time `ExpressionMethodReference` pre-scan
+  over every compilation unit in `build()`). All three are real Go interface/function-value
+  contracts shared with other code (the `<Root>Impl` cascade interface, a `ShellListener`-shaped
+  interface, a `ListenerFunc`-adapted bound method) - widening only one side would break structural
+  typing. `Item.handleDPIChange` (bound via `this::handleDPIChange`) and every `*Adapter`/interface
+  implementation in `events/*` are the file set's real instances of this; excluded correctly.
+- `ClassEmitter.emitStaticMethod` - static methods never participate in either contract, always
+  widened.
+
+Interface declarations themselves (`emitInterface`), the `<Root>Impl` cascade interface + its
+default panic stubs, and `FunctionalEmitter`'s SAM-adapter/anonymous-class forwarder signatures
+are untouched (still `emitter.paramList`, concrete `*C`) - by construction, since only the 3 call
+sites above were switched to `EmitUtil.publicParamList`. Return types are never touched.
+
+### SWT's static fields/methods drop the class prefix (`EmitUtil.staticFieldGoName`/`staticMethodGoName`)
+
+`org.eclipse.swt.SWT` is a namespace of constants and static utility methods, not a real object -
+`SWT.PUSH` -> `PUSH`, `SWT.error(int)` -> `Error`, not `SWTPUSH`/`SWTErrorFn`. Every other
+translated class keeps its `<Class>Name` prefix, unchanged. One function each, called from both
+the declaration site (`ClassEmitter.emitStaticFields`/`emitStaticMethod`) and every reference site
+(`ExpressionEmitter.staticFieldRef`/`InvocationEmitter` via `Emitter.staticMethodGoName`), so a
+declaration and its uses can never name-drift apart.
+
+**Collision check**: the bare name falls back to the old prefixed form when it collides with
+another translated class's `goTypeName` **or** a manual (hand-written) type's own same-Go-package
+name (`Manual.ownPackageTypeNames`, new - a manual type living in another package, `jrt.*`, can't
+collide). 2 real collisions in the current file set, both resolved this way:
+- `SWT.Touch` (event-type constant, value 47) vs the manual `Touch` struct
+  (`swt/widgets_stubs_manual.go`) -> stays `SWTTouch`.
+- `SWT.LONG` (style-bit constant, `1<<28`) vs the manual `LONG` value type
+  (`org.eclipse.swt.internal.LONG`) -> stays `SWTLONG`.
+
+475 static fields and 9 static methods in `SWT.java`; 473/475 fields and all 9 methods got the
+bare name, 0 needed the pre-existing type-collision `Fn` suffix (`SWT.error` no longer spells
+`SWTError`, the real exception class, once the prefix is gone).
+
+Hand-written callers updated for the new names: `swt/eventtable_test.go`,
+`swt/widgets_widget_test.go`, `swt/layout_test.go`, `swt/widgets_stubs3_manual.go` (one
+`SWTNONE` -> `NONE`).
+
+### `cmd/hello`
+
+```go
+// before
+shell := swt.NewShellDisplay(display)
+shell.SetLayout(&swt.NewFillLayout().Layout)
+button := swt.NewButton(&shell.Composite, swt.SWTPUSH)
+
+// after
+shell := swt.NewShellDisplay(display)
+shell.SetLayout(swt.NewFillLayout())
+button := swt.NewButton(shell, swt.PUSH)
+```
+
+Verified: `CGO_ENABLED=0 go build ./cmd/hello` and a 3s run, no crash, no stdout/stderr (same as
+Round 6's baseline - a Screen-Recording-less `screencapture` couldn't confirm the window
+on-screen then either, unchanged this round).
+
+### Files changed
+
+Translator: `TypeModel.java` (`asMethodName`/`likeInterfaceName` fields + `assignLikeNames`,
+`methodReferenceTargets` + its pre-scan), `Manual.java` (`ownPackageTypeNames`),
+`emit/EmitUtil.java` (`publicParamList`, `implementsInterfaceMethod`, `collidesWithTypeName`,
+`staticFieldGoName`, `staticMethodGoName`, `SWT_NO_PREFIX_CLASS`), `emit/ClassEmitter.java`
+(`emitLikeAccessor`, widened `emitInstanceMethod`/`emitStaticMethod`, delegates to the new
+`EmitUtil` helpers), `emit/ConstructorEmitter.java` (widened `emitConstructor`),
+`emit/ExpressionEmitter.java` (`staticFieldRef` delegates to `EmitUtil.staticFieldGoName`). All
+components stay under the 450-line budget (`ClassEmitter` 304, `ConstructorEmitter` 204,
+`EmitUtil` 124, `TypeModel` 299, `Manual` 249 - `Emitter.java` itself untouched, still 444).
+
+Generated: all 67 `swt/*.go` files (regenerated - `internal/cocoa/*.go` byte-identical, 0 files
+changed there). Hand-written: `cmd/hello/main.go`, the 3 test files + 1 manual file above.
+
+End state green: `mvn -q -f tooling/j2go/pom.xml package && bash tooling/port.sh &&
+CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...` - same 33 tests, same 0 `internal/cocoa`
+diff, same unsupported-marker counts as Round 6 (54 MethodInvocation, 6 ClassInstanceCreation, 5
+CatchClause, 4 instanceof, 2 ExpressionMethodReference, 2 MethodDeclaration) - this round added no
+new markers.

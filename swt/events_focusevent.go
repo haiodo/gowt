@@ -6,7 +6,18 @@ type FocusEvent struct {
 	TypedEvent
 }
 
-func NewFocusEvent(e *Event) *FocusEvent {
+func (this *FocusEvent) AsFocusEvent() *FocusEvent { return this }
+
+type FocusEventLike interface {
+	AsFocusEvent() *FocusEvent
+}
+
+func NewFocusEvent(eLike EventLike) *FocusEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &FocusEvent{}
 	this.impl = this
 	this.initFocusEvent(e)

@@ -11,7 +11,18 @@ type ShellEvent struct {
 	Doit bool
 }
 
-func NewShellEvent(e *Event) *ShellEvent {
+func (this *ShellEvent) AsShellEvent() *ShellEvent { return this }
+
+type ShellEventLike interface {
+	AsShellEvent() *ShellEvent
+}
+
+func NewShellEvent(eLike EventLike) *ShellEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &ShellEvent{}
 	this.impl = this
 	this.initShellEvent(e)

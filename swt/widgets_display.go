@@ -132,6 +132,12 @@ type Display struct {
 	defaultButtonTimer                jrt.Runnable
 }
 
+func (this *Display) AsDisplay() *Display { return this }
+
+type DisplayLike interface {
+	AsDisplay() *Display
+}
+
 var DisplayTypes []int8 = []int8{int8('*'), int8('\u0000')}
 
 var DisplaySize int32 = cocoa.CPTR_SIZEOF
@@ -160,7 +166,7 @@ var DisplayApplicationCallback3 *Callback = nil
 var DisplayApplicationCallback4 *Callback = nil
 var DisplayApplicationCallback6 *Callback = nil
 
-var DisplayKeyTable [][]int32 = [][]int32{[]int32{58, SWTALT}, []int32{56, SWTSHIFT}, []int32{59, SWTCONTROL}, []int32{55, SWTCOMMAND}, []int32{61, SWTALT}, []int32{62, SWTCONTROL}, []int32{60, SWTSHIFT}, []int32{54, SWTCOMMAND}, []int32{126, SWTARROW_UP}, []int32{125, SWTARROW_DOWN}, []int32{123, SWTARROW_LEFT}, []int32{124, SWTARROW_RIGHT}, []int32{116, SWTPAGE_UP}, []int32{121, SWTPAGE_DOWN}, []int32{115, SWTHOME}, []int32{119, SWTEND}, []int32{51, int32(SWTBS)}, []int32{36, int32(SWTCR)}, []int32{117, int32(SWTDEL)}, []int32{53, int32(SWTESC)}, []int32{76, int32(SWTLF)}, []int32{48, int32(SWTTAB)}, []int32{122, SWTF1}, []int32{120, SWTF2}, []int32{99, SWTF3}, []int32{118, SWTF4}, []int32{96, SWTF5}, []int32{97, SWTF6}, []int32{98, SWTF7}, []int32{100, SWTF8}, []int32{101, SWTF9}, []int32{109, SWTF10}, []int32{103, SWTF11}, []int32{111, SWTF12}, []int32{105, SWTF13}, []int32{107, SWTF14}, []int32{113, SWTF15}, []int32{106, SWTF16}, []int32{64, SWTF17}, []int32{79, SWTF18}, []int32{80, SWTF19}, []int32{67, SWTKEYPAD_MULTIPLY}, []int32{69, SWTKEYPAD_ADD}, []int32{76, SWTKEYPAD_CR}, []int32{78, SWTKEYPAD_SUBTRACT}, []int32{65, SWTKEYPAD_DECIMAL}, []int32{75, SWTKEYPAD_DIVIDE}, []int32{82, SWTKEYPAD_0}, []int32{83, SWTKEYPAD_1}, []int32{84, SWTKEYPAD_2}, []int32{85, SWTKEYPAD_3}, []int32{86, SWTKEYPAD_4}, []int32{87, SWTKEYPAD_5}, []int32{88, SWTKEYPAD_6}, []int32{89, SWTKEYPAD_7}, []int32{91, SWTKEYPAD_8}, []int32{92, SWTKEYPAD_9}, []int32{81, SWTKEYPAD_EQUAL}, []int32{57, SWTCAPS_LOCK}, []int32{71, SWTNUM_LOCK}, []int32{114, SWTHELP}}
+var DisplayKeyTable [][]int32 = [][]int32{[]int32{58, ALT}, []int32{56, SHIFT}, []int32{59, CONTROL}, []int32{55, COMMAND}, []int32{61, ALT}, []int32{62, CONTROL}, []int32{60, SHIFT}, []int32{54, COMMAND}, []int32{126, ARROW_UP}, []int32{125, ARROW_DOWN}, []int32{123, ARROW_LEFT}, []int32{124, ARROW_RIGHT}, []int32{116, PAGE_UP}, []int32{121, PAGE_DOWN}, []int32{115, HOME}, []int32{119, END}, []int32{51, int32(BS)}, []int32{36, int32(CR)}, []int32{117, int32(DEL)}, []int32{53, int32(ESC)}, []int32{76, int32(LF)}, []int32{48, int32(TAB)}, []int32{122, F1}, []int32{120, F2}, []int32{99, F3}, []int32{118, F4}, []int32{96, F5}, []int32{97, F6}, []int32{98, F7}, []int32{100, F8}, []int32{101, F9}, []int32{109, F10}, []int32{103, F11}, []int32{111, F12}, []int32{105, F13}, []int32{107, F14}, []int32{113, F15}, []int32{106, F16}, []int32{64, F17}, []int32{79, F18}, []int32{80, F19}, []int32{67, KEYPAD_MULTIPLY}, []int32{69, KEYPAD_ADD}, []int32{76, KEYPAD_CR}, []int32{78, KEYPAD_SUBTRACT}, []int32{65, KEYPAD_DECIMAL}, []int32{75, KEYPAD_DIVIDE}, []int32{82, KEYPAD_0}, []int32{83, KEYPAD_1}, []int32{84, KEYPAD_2}, []int32{85, KEYPAD_3}, []int32{86, KEYPAD_4}, []int32{87, KEYPAD_5}, []int32{88, KEYPAD_6}, []int32{89, KEYPAD_7}, []int32{91, KEYPAD_8}, []int32{92, KEYPAD_9}, []int32{81, KEYPAD_EQUAL}, []int32{57, CAPS_LOCK}, []int32{71, NUM_LOCK}, []int32{114, HELP}}
 
 var DisplayAPP_NAME string = ""
 
@@ -207,7 +213,12 @@ func (this *Display) initDisplay() {
 	this.initDisplayData(nil)
 }
 
-func NewDisplayData(data *DeviceData) *Display {
+func NewDisplayData(dataLike DeviceDataLike) *Display {
+	var data *DeviceData
+	if dataLike != nil {
+		data = dataLike.AsDeviceData()
+	}
+	_ = data
 	this := &Display{}
 	this.impl = this
 	this.initDisplayData(data)
@@ -224,11 +235,11 @@ func (this *Display) initDisplayData(data *DeviceData) {
 	this.screenID = make([]int32, 32)
 	this.screenCascade = make([]cocoa.NSPoint, 32)
 	this.lockCursor = true
-	this.cursors = make([]*Cursor, SWTCURSOR_HAND+1)
+	this.cursors = make([]*Cursor, CURSOR_HAND+1)
 	this.skinList = make([]*Widget, DisplayGROW_SIZE)
 	this.hoverTimer = jrt.NewRunnable(func() {
 		if this.currentControl != (nil) && !this.currentControl.IsDisposed() {
-			this.currentControl.SendMouseEvent(nil, SWTMouseHover, this.trackingControl != (nil) && !this.trackingControl.IsDisposed())
+			this.currentControl.SendMouseEvent(nil, MouseHover, this.trackingControl != (nil) && !this.trackingControl.IsDisposed())
 		}
 	})
 	anon166 := jrt.NewRunnable(nil)
@@ -290,7 +301,7 @@ func (this *Display) AddContext(context *GCData) {
 func (this *Display) AddFilter(eventType int32, listener Listener) {
 	this.impl.CheckDevice()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.filterTable == (nil) {
 		this.filterTable = newEventTable()
@@ -298,7 +309,12 @@ func (this *Display) AddFilter(eventType int32, listener Listener) {
 	this.filterTable.Hook(eventType, listener)
 }
 
-func (this *Display) AddLayoutDeferred(comp *Composite) {
+func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
+	var comp *Composite
+	if compLike != nil {
+		comp = compLike.AsComposite()
+	}
+	_ = comp
 	if this.layoutDeferred == (nil) {
 		this.layoutDeferred = make([]*Composite, 64)
 	}
@@ -315,7 +331,7 @@ func (this *Display) AddLayoutDeferred(comp *Composite) {
 func (this *Display) AddListener(eventType int32, listener Listener) {
 	this.impl.CheckDevice()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		this.eventTable = newEventTable()
@@ -386,7 +402,12 @@ func (this *Display) AddPopup(menu *Menu) {
 	this.popups[index] = menu
 }
 
-func (this *Display) AddSkinnableWidget(widget *Widget) {
+func (this *Display) AddSkinnableWidget(widgetLike WidgetLike) {
+	var widget *Widget
+	if widgetLike != nil {
+		widget = widgetLike.AsWidget()
+	}
+	_ = widget
 	if this.skinCount >= int32(len(this.skinList)) {
 		var newSkinWidgets []*Widget = make([]*Widget, (int32(len(this.skinList))+1)*3/2)
 		copy(newSkinWidgets[0:], this.skinList[0:0+int32(len(this.skinList))])
@@ -397,7 +418,12 @@ func (this *Display) AddSkinnableWidget(widget *Widget) {
 	this.skinList[t170] = widget
 }
 
-func (this *Display) AddWidget(view *cocoa.NSObject, widget *Widget) {
+func (this *Display) AddWidget(view *cocoa.NSObject, widgetLike WidgetLike) {
+	var widget *Widget
+	if widgetLike != nil {
+		widget = widgetLike.AsWidget()
+	}
+	_ = widget
 	if view == (nil) {
 		return
 	}
@@ -416,7 +442,7 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		this.synchronizer.AsyncExec(runnable)
 	}()
@@ -470,27 +496,32 @@ func (this *Display) CascadeWindow(window *cocoa.NSWindow, screen *cocoa.NSScree
 
 func (this *Display) CheckDevice() {
 	if this.thread == (nil) {
-		this.Error(SWTERROR_WIDGET_DISPOSED)
+		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.thread != ThreadCurrentThread() {
-		this.Error(SWTERROR_THREAD_INVALID_ACCESS)
+		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	if this.IsDisposed() {
-		this.Error(SWTERROR_DEVICE_DISPOSED)
+		this.Error(ERROR_DEVICE_DISPOSED)
 	}
 }
 
-func (this *Display) CheckEnterExit(control *Control, nsEvent *cocoa.NSEvent, send bool) {
+func (this *Display) CheckEnterExit(controlLike ControlLike, nsEvent *cocoa.NSEvent, send bool) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if control != this.currentControl {
 		if this.currentControl != (nil) && !this.currentControl.IsDisposed() {
-			this.currentControl.SendMouseEvent(nsEvent, SWTMouseExit, send)
+			this.currentControl.SendMouseEvent(nsEvent, MouseExit, send)
 		}
 		if control != (nil) && control.IsDisposed() {
 			control = nil
 		}
 		this.currentControl = control
 		if control != (nil) {
-			control.SendMouseEvent(nsEvent, SWTMouseEnter, send)
+			control.SendMouseEvent(nsEvent, MouseEnter, send)
 		}
 		this.SetCursor(control)
 	}
@@ -515,22 +546,27 @@ func (this *Display) CheckFocus() {
 	}
 	if oldControl != newControl {
 		if oldControl != (nil) && !oldControl.IsDisposed() {
-			oldControl.impl.SendFocusEvent(SWTFocusOut)
+			oldControl.impl.SendFocusEvent(FocusOut)
 		}
 		this.currentFocusControl = newControl
 		if newControl != (nil) && !newControl.IsDisposed() {
-			newControl.impl.SendFocusEvent(SWTFocusIn)
+			newControl.impl.SendFocusEvent(FocusIn)
 		}
 	}
 }
 
 func (this *Display) CheckSubclass() {
 	if !DisplayIsValidClass(reflect.TypeOf(this)) {
-		this.Error(SWTERROR_INVALID_SUBCLASS)
+		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
-func (this *Display) ClearModal(shell *Shell) {
+func (this *Display) ClearModal(shellLike ShellLike) {
+	var shell *Shell
+	if shellLike != nil {
+		shell = shellLike.AsShell()
+	}
+	_ = shell
 	if this.modalShells == (nil) {
 		return
 	}
@@ -570,7 +606,7 @@ func (this *Display) ClearPool() {
 func (this *Display) Close() {
 	this.impl.CheckDevice()
 	var event *Event = NewEvent()
-	this.SendEvent(SWTClose, event)
+	this.SendEvent(Close, event)
 	if event.Doit {
 		this.Dispose()
 	}
@@ -589,15 +625,20 @@ func (this *Display) Create(data *DeviceData) {
 	}
 }
 
-func (this *Display) CreateDisplay(data *DeviceData) {
+func (this *Display) CreateDisplay(dataLike DeviceDataLike) {
+	var data *DeviceData
+	if dataLike != nil {
+		data = dataLike.AsDeviceData()
+	}
+	_ = data
 	if cocoa.OSVERSION_ < cocoa.OSVERSION(11, 0, 0) {
 		fmt.Fprintln(os.Stdout, "***WARNING: SWT requires macOS version 11 or greater")
-		this.Error(SWTERROR_NOT_IMPLEMENTED)
+		this.Error(ERROR_NOT_IMPLEMENTED)
 	}
 	var nsthread *cocoa.NSThread = cocoa.NSThreadCurrentThread()
 	if !cocoa.NSThreadIsMainThread() {
 		fmt.Fprintln(os.Stdout, "***WARNING: Display must be created on main thread due to Cocoa restrictions. Use vmarg -XstartOnFirstThread")
-		this.Error(SWTERROR_THREAD_INVALID_ACCESS)
+		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	var dictionary *cocoa.NSMutableDictionary = nsthread.ThreadDictionary()
 	var key *cocoa.NSString = cocoa.NSStringStringWith("SWT_NSAutoreleasePool")
@@ -699,15 +740,15 @@ func (this *Display) CreateMainMenu() {
 	appleMenu = castcocoaNSObjectTococoaNSMenu(cocoa.NewNSMenu().Alloc())
 	appleMenu.InitWithTitle(emptyStr)
 	cocoa.OSObjc_msgSendOverload44(this.application.Id, cocoa.OSSel_registerName("setAppleMenu:"), appleMenu.Id)
-	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", SWTGetMessage("SWT_About"), appName))
+	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", GetMessage("SWT_About"), appName))
 	menuItem = appleMenu.AddItemWithTitle(title, cocoa.OSSel_orderFrontStandardAboutPanel_, emptyStr)
 	menuItem.SetTarget(upcastcocoaSWTApplicationDelegateTococoaId(DisplayApplicationDelegate))
 	appleMenu.AddItem(cocoa.NSMenuItemSeparatorItem())
-	title = cocoa.NSStringStringWith(SWTGetMessage("SWT_Preferences"))
+	title = cocoa.NSStringStringWith(GetMessage("SWT_Preferences"))
 	menuItem = appleMenu.AddItemWithTitle(title, int64(0), cocoa.NSStringStringWith(","))
 	menuItem.SetTag(int64(42))
 	appleMenu.AddItem(cocoa.NSMenuItemSeparatorItem())
-	title = cocoa.NSStringStringWith(SWTGetMessage("SWT_Services"))
+	title = cocoa.NSStringStringWith(GetMessage("SWT_Services"))
 	menuItem = appleMenu.AddItemWithTitle(title, int64(0), emptyStr)
 	var servicesMenu *cocoa.NSMenu = castcocoaNSObjectTococoaNSMenu(cocoa.NewNSMenu().Alloc())
 	servicesMenu.InitWithTitle(emptyStr)
@@ -715,18 +756,18 @@ func (this *Display) CreateMainMenu() {
 	servicesMenu.Release()
 	this.application.SetServicesMenu(servicesMenu)
 	appleMenu.AddItem(cocoa.NSMenuItemSeparatorItem())
-	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", SWTGetMessage("SWT_Hide"), appName))
+	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", GetMessage("SWT_Hide"), appName))
 	menuItem = appleMenu.AddItemWithTitle(title, cocoa.OSSel_hide_, cocoa.NSStringStringWith("h"))
 	menuItem.SetTarget(upcastcocoaSWTApplicationDelegateTococoaId(DisplayApplicationDelegate))
-	title = cocoa.NSStringStringWith(SWTGetMessage("SWT_HideOthers"))
+	title = cocoa.NSStringStringWith(GetMessage("SWT_HideOthers"))
 	menuItem = appleMenu.AddItemWithTitle(title, cocoa.OSSel_hideOtherApplications_, cocoa.NSStringStringWith("h"))
 	menuItem.SetKeyEquivalentModifierMask(int64(cocoa.OSNSEventModifierFlagCommand | cocoa.OSNSAlternateKeyMask))
 	menuItem.SetTarget(upcastcocoaSWTApplicationDelegateTococoaId(DisplayApplicationDelegate))
-	title = cocoa.NSStringStringWith(SWTGetMessage("SWT_ShowAll"))
+	title = cocoa.NSStringStringWith(GetMessage("SWT_ShowAll"))
 	menuItem = appleMenu.AddItemWithTitle(title, cocoa.OSSel_unhideAllApplications_, emptyStr)
 	menuItem.SetTarget(upcastcocoaSWTApplicationDelegateTococoaId(DisplayApplicationDelegate))
 	appleMenu.AddItem(cocoa.NSMenuItemSeparatorItem())
-	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", SWTGetMessage("SWT_Quit"), appName))
+	title = cocoa.NSStringStringWith(fmt.Sprintf("%s %s", GetMessage("SWT_Quit"), appName))
 	menuItem = appleMenu.AddItemWithTitle(title, cocoa.OSSel_applicationShouldTerminate_, cocoa.NSStringStringWith("q"))
 	menuItem.SetTarget(upcastcocoaSWTApplicationDelegateTococoaId(DisplayApplicationDelegate))
 	mainMenu.SetSubmenu(appleMenu, appItem)
@@ -790,10 +831,15 @@ func (this *Display) DisposeExec(runnable jrt.Runnable) {
 }
 
 func (this *Display) Error(code int32) {
-	SWTErrorFn(code)
+	Error(code)
 }
 
-func (this *Display) FilterEvent(event *Event) bool {
+func (this *Display) FilterEvent(eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.filterTable != (nil) {
 		var type_ int32 = event.Type
 		this.SendPreEvent(type_)
@@ -822,7 +868,12 @@ func (this *Display) FindWidgetHandleId(handle int64, id int64) *Widget {
 	return this.GetWidget(handle)
 }
 
-func (this *Display) FindWidgetWidgetId(widget *Widget, id int64) *Widget {
+func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget {
+	var widget *Widget
+	if widgetLike != nil {
+		widget = widgetLike.AsWidget()
+	}
+	_ = widget
 	this.impl.CheckDevice()
 	return nil
 }
@@ -977,7 +1028,7 @@ func (this *Display) GetCursorSizes() []*Point {
 func (this *Display) GetData(key string) any {
 	this.impl.CheckDevice()
 	if key == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.keys == (nil) {
 		return nil
@@ -997,7 +1048,7 @@ func (this *Display) GetData0() any {
 
 func (this *Display) GetDismissalAlignment() int32 {
 	this.impl.CheckDevice()
-	return SWTRIGHT
+	return RIGHT
 }
 
 func (this *Display) GetDoubleClickTime() int32 {
@@ -1079,7 +1130,12 @@ func (this *Display) GetLastEventTime() int32 {
 	return int32(timestamp)
 }
 
-func (this *Display) GetMenus(shell *Decorations) []*Menu {
+func (this *Display) GetMenus(shellLike DecorationsLike) []*Menu {
+	var shell *Decorations
+	if shellLike != nil {
+		shell = shellLike.AsDecorations()
+	}
+	_ = shell
 	if this.menus == (nil) {
 		return make([]*Menu, 0)
 	}
@@ -1209,7 +1265,7 @@ func (this *Display) GetSyncThread() any {
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		tret182 = this.synchronizer.syncThread
 		tretd183 = true
@@ -1238,68 +1294,68 @@ func (this *Display) GetWidgetColor(id int32) *Color {
 func (this *Display) GetWidgetColorRGB(id int32) []float64 {
 	var color *cocoa.NSColor = nil
 	switch id {
-	case SWTCOLOR_INFO_FOREGROUND:
+	case COLOR_INFO_FOREGROUND:
 		color = cocoa.NSColorBlackColor()
 		break
-	case SWTCOLOR_INFO_BACKGROUND:
+	case COLOR_INFO_BACKGROUND:
 		return []float64{float64(236 / 255), float64(235 / 255), float64(236 / 255), float64(1)}
-	case SWTCOLOR_TITLE_FOREGROUND:
+	case COLOR_TITLE_FOREGROUND:
 		color = cocoa.NSColorWindowFrameTextColor()
 		break
-	case SWTCOLOR_TITLE_BACKGROUND:
+	case COLOR_TITLE_BACKGROUND:
 		color = cocoa.NSColorAlternateSelectedControlColor()
 		break
-	case SWTCOLOR_TITLE_BACKGROUND_GRADIENT:
+	case COLOR_TITLE_BACKGROUND_GRADIENT:
 		color = cocoa.NSColorSelectedControlColor()
 		break
-	case SWTCOLOR_TITLE_INACTIVE_FOREGROUND:
+	case COLOR_TITLE_INACTIVE_FOREGROUND:
 		color = cocoa.NSColorDisabledControlTextColor()
 		break
-	case SWTCOLOR_TITLE_INACTIVE_BACKGROUND:
+	case COLOR_TITLE_INACTIVE_BACKGROUND:
 		color = cocoa.NSColorSecondarySelectedControlColor()
 		break
-	case SWTCOLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:
+	case COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:
 		color = cocoa.NSColorSecondarySelectedControlColor()
 		break
-	case SWTCOLOR_WIDGET_DARK_SHADOW:
+	case COLOR_WIDGET_DARK_SHADOW:
 		color = cocoa.NSColorControlDarkShadowColor()
 		break
-	case SWTCOLOR_WIDGET_NORMAL_SHADOW:
+	case COLOR_WIDGET_NORMAL_SHADOW:
 		return []float64{float64(159 / 255), float64(159 / 255), float64(159 / 255), float64(1)}
-	case SWTCOLOR_WIDGET_LIGHT_SHADOW:
+	case COLOR_WIDGET_LIGHT_SHADOW:
 		return []float64{float64(232 / 255), float64(232 / 255), float64(232 / 255), float64(1)}
-	case SWTCOLOR_WIDGET_HIGHLIGHT_SHADOW:
+	case COLOR_WIDGET_HIGHLIGHT_SHADOW:
 		color = cocoa.NSColorControlLightHighlightColor()
 		break
-	case SWTCOLOR_WIDGET_BACKGROUND:
+	case COLOR_WIDGET_BACKGROUND:
 		color = cocoa.NSColorWindowBackgroundColor()
 		break
-	case SWTCOLOR_WIDGET_FOREGROUND:
+	case COLOR_WIDGET_FOREGROUND:
 		color = cocoa.NSColorControlTextColor()
 		break
-	case SWTCOLOR_WIDGET_BORDER:
+	case COLOR_WIDGET_BORDER:
 		color = cocoa.NSColorBlackColor()
 		break
-	case SWTCOLOR_LIST_FOREGROUND:
+	case COLOR_LIST_FOREGROUND:
 		color = cocoa.NSColorTextColor()
 		break
-	case SWTCOLOR_TEXT_DISABLED_BACKGROUND, SWTCOLOR_LIST_BACKGROUND:
+	case COLOR_TEXT_DISABLED_BACKGROUND, COLOR_LIST_BACKGROUND:
 		color = cocoa.NSColorTextBackgroundColor()
 		break
-	case SWTCOLOR_LIST_SELECTION_TEXT:
+	case COLOR_LIST_SELECTION_TEXT:
 		color = cocoa.NSColorSelectedTextColor()
 		break
-	case SWTCOLOR_LIST_SELECTION:
+	case COLOR_LIST_SELECTION:
 		color = cocoa.NSColorSelectedTextBackgroundColor()
 		break
-	case SWTCOLOR_LINK_FOREGROUND:
+	case COLOR_LINK_FOREGROUND:
 		var textView *cocoa.NSTextView = castcocoaNSObjectTococoaNSTextView(cocoa.NewNSTextView().Alloc())
 		textView.Init()
 		var dict *cocoa.NSDictionary = textView.LinkTextAttributes()
 		color = cocoa.NewNSColorOverload2(dict.Impl().ValueForKey(cocoa.OSNSForegroundColorAttributeName_))
 		textView.Release()
 		break
-	case SWTCOLOR_WIDGET_DISABLED_FOREGROUND:
+	case COLOR_WIDGET_DISABLED_FOREGROUND:
 		color = cocoa.NSColorSecondarySelectedControlColor()
 		break
 	}
@@ -1336,35 +1392,35 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 func (this *Display) GetSystemImage(id int32) *Image {
 	this.impl.CheckDevice()
 	switch id {
-	case SWTICON_ERROR:
+	case ICON_ERROR:
 		{
 			if this.errorImage != (nil) {
 				return this.errorImage
 			}
 			var img *cocoa.NSImage = DisplayGetSystemImageForID(cocoa.OSKAlertStopIcon)
-			cond184 := ImageCocoa_new(upcastDisplayToDevice(this), SWTICON, img)
+			cond184 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
 			this.errorImage = cond184
 			return cond184
 		}
-	case SWTICON_INFORMATION, SWTICON_QUESTION, SWTICON_WORKING:
+	case ICON_INFORMATION, ICON_QUESTION, ICON_WORKING:
 		{
 			if this.infoImage != (nil) {
 				return this.infoImage
 			}
 			var img *cocoa.NSImage = cocoa.NSImageImageNamed(cocoa.OSNSImageNameInfo_)
 			img.Retain()
-			cond185 := ImageCocoa_new(upcastDisplayToDevice(this), SWTICON, img)
+			cond185 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
 			this.infoImage = cond185
 			return cond185
 		}
-	case SWTICON_WARNING:
+	case ICON_WARNING:
 		{
 			if this.warningImage != (nil) {
 				return this.warningImage
 			}
 			var img *cocoa.NSImage = cocoa.NSImageImageNamed(cocoa.OSNSImageNameCaution_)
 			img.Retain()
-			cond186 := ImageCocoa_new(upcastDisplayToDevice(this), SWTICON, img)
+			cond186 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
 			this.warningImage = cond186
 			return cond186
 		}
@@ -1401,7 +1457,7 @@ func (this *Display) GetSystemTray() *Tray {
 	if this.tray != (nil) {
 		return this.tray
 	}
-	cond187 := NewTray(this, SWTNONE)
+	cond187 := NewTray(this, NONE)
 	this.tray = cond187
 	return cond187
 }
@@ -1411,7 +1467,7 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 	if this.taskBar != (nil) {
 		return this.taskBar
 	}
-	this.taskBar = NewTaskBar(this, SWTNONE)
+	this.taskBar = NewTaskBar(this, NONE)
 	return this.taskBar
 }
 
@@ -1436,7 +1492,7 @@ func (this *Display) GetThread() any {
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		tret188 = this.thread
 		tretd189 = true
@@ -1511,7 +1567,7 @@ func (this *Display) Init() {
 		/* Runtime.addShutdownHook dropped */
 	}
 	var appleMenu *cocoa.NSMenu = this.application.MainMenu().ItemAtIndex(int64(0)).Submenu()
-	var prefsItem *cocoa.NSMenuItem = appleMenu.ItemWithTag(int64(SWTID_PREFERENCES))
+	var prefsItem *cocoa.NSMenuItem = appleMenu.ItemWithTag(int64(ID_PREFERENCES))
 	if prefsItem != (nil) {
 		prefsItem.SetTag(int64(42))
 	}
@@ -1519,14 +1575,14 @@ func (this *Display) Init() {
 		DisplayCurrAppDelegate.Init()
 	}
 	if prefsItem != (nil) {
-		prefsItem.SetTag(int64(SWTID_PREFERENCES))
+		prefsItem.SetTag(int64(ID_PREFERENCES))
 	}
 	this.observerCallback = NewCallbackFn(func(args []int64) int64 { return this.ObserverProc(args[0], args[1], args[2]) }, 3)
 	var observerProc int64 = this.observerCallback.GetAddress()
 	var activities int32 = cocoa.OSKCFRunLoopBeforeWaiting
 	this.runLoopObserver = cocoa.OSCFRunLoopObserverCreate(int64(0), int64(activities), true, int64(0), observerProc, int64(0))
 	if this.runLoopObserver == 0 {
-		this.Error(SWTERROR_NO_HANDLES)
+		this.Error(ERROR_NO_HANDLES)
 	}
 	cocoa.OSCFRunLoopAddObserver(cocoa.OSCFRunLoopGetCurrent(), this.runLoopObserver, cocoa.OSKCFRunLoopCommonModes())
 	var javaRunLoopMode *cocoa.NSString = DisplayGetAwtRunLoopMode()
@@ -2245,42 +2301,42 @@ func (this *Display) GetFont(cls int64, sel int64) *cocoa.NSFont {
 
 func (this *Display) InitColors(ignoreColorChange bool) {
 	if ignoreColorChange && this.colors != (nil) {
-		var color_list_foreground []float64 = this.colors[SWTCOLOR_LIST_FOREGROUND]
-		var color_list_background []float64 = this.colors[SWTCOLOR_LIST_BACKGROUND]
-		var color_widget_foreground []float64 = this.colors[SWTCOLOR_WIDGET_FOREGROUND]
+		var color_list_foreground []float64 = this.colors[COLOR_LIST_FOREGROUND]
+		var color_list_background []float64 = this.colors[COLOR_LIST_BACKGROUND]
+		var color_widget_foreground []float64 = this.colors[COLOR_WIDGET_FOREGROUND]
 		this.InitColors0()
-		this.colors[SWTCOLOR_LIST_FOREGROUND] = color_list_foreground
-		this.colors[SWTCOLOR_LIST_BACKGROUND] = color_list_background
-		this.colors[SWTCOLOR_WIDGET_FOREGROUND] = color_widget_foreground
+		this.colors[COLOR_LIST_FOREGROUND] = color_list_foreground
+		this.colors[COLOR_LIST_BACKGROUND] = color_list_background
+		this.colors[COLOR_WIDGET_FOREGROUND] = color_widget_foreground
 	} else {
 		this.InitColors0()
 	}
 }
 
 func (this *Display) InitColors0() {
-	this.colors = make([][]float64, SWTCOLOR_WIDGET_DISABLED_FOREGROUND+1)
-	this.colors[SWTCOLOR_INFO_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_INFO_FOREGROUND)
-	this.colors[SWTCOLOR_INFO_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_INFO_BACKGROUND)
-	this.colors[SWTCOLOR_TITLE_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_FOREGROUND)
-	this.colors[SWTCOLOR_TITLE_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_BACKGROUND)
-	this.colors[SWTCOLOR_TITLE_BACKGROUND_GRADIENT] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_BACKGROUND_GRADIENT)
-	this.colors[SWTCOLOR_TITLE_INACTIVE_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_INACTIVE_FOREGROUND)
-	this.colors[SWTCOLOR_TITLE_INACTIVE_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_INACTIVE_BACKGROUND)
-	this.colors[SWTCOLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT] = this.GetWidgetColorRGB(SWTCOLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT)
-	this.colors[SWTCOLOR_WIDGET_DARK_SHADOW] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_DARK_SHADOW)
-	this.colors[SWTCOLOR_WIDGET_NORMAL_SHADOW] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_NORMAL_SHADOW)
-	this.colors[SWTCOLOR_WIDGET_LIGHT_SHADOW] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_LIGHT_SHADOW)
-	this.colors[SWTCOLOR_WIDGET_HIGHLIGHT_SHADOW] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_HIGHLIGHT_SHADOW)
-	this.colors[SWTCOLOR_WIDGET_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_BACKGROUND)
-	this.colors[SWTCOLOR_WIDGET_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_FOREGROUND)
-	this.colors[SWTCOLOR_WIDGET_BORDER] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_BORDER)
-	this.colors[SWTCOLOR_LIST_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_LIST_FOREGROUND)
-	this.colors[SWTCOLOR_LIST_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_LIST_BACKGROUND)
-	this.colors[SWTCOLOR_LIST_SELECTION_TEXT] = this.GetWidgetColorRGB(SWTCOLOR_LIST_SELECTION_TEXT)
-	this.colors[SWTCOLOR_LIST_SELECTION] = this.GetWidgetColorRGB(SWTCOLOR_LIST_SELECTION)
-	this.colors[SWTCOLOR_LINK_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_LINK_FOREGROUND)
-	this.colors[SWTCOLOR_TEXT_DISABLED_BACKGROUND] = this.GetWidgetColorRGB(SWTCOLOR_TEXT_DISABLED_BACKGROUND)
-	this.colors[SWTCOLOR_WIDGET_DISABLED_FOREGROUND] = this.GetWidgetColorRGB(SWTCOLOR_WIDGET_DISABLED_FOREGROUND)
+	this.colors = make([][]float64, COLOR_WIDGET_DISABLED_FOREGROUND+1)
+	this.colors[COLOR_INFO_FOREGROUND] = this.GetWidgetColorRGB(COLOR_INFO_FOREGROUND)
+	this.colors[COLOR_INFO_BACKGROUND] = this.GetWidgetColorRGB(COLOR_INFO_BACKGROUND)
+	this.colors[COLOR_TITLE_FOREGROUND] = this.GetWidgetColorRGB(COLOR_TITLE_FOREGROUND)
+	this.colors[COLOR_TITLE_BACKGROUND] = this.GetWidgetColorRGB(COLOR_TITLE_BACKGROUND)
+	this.colors[COLOR_TITLE_BACKGROUND_GRADIENT] = this.GetWidgetColorRGB(COLOR_TITLE_BACKGROUND_GRADIENT)
+	this.colors[COLOR_TITLE_INACTIVE_FOREGROUND] = this.GetWidgetColorRGB(COLOR_TITLE_INACTIVE_FOREGROUND)
+	this.colors[COLOR_TITLE_INACTIVE_BACKGROUND] = this.GetWidgetColorRGB(COLOR_TITLE_INACTIVE_BACKGROUND)
+	this.colors[COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT] = this.GetWidgetColorRGB(COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT)
+	this.colors[COLOR_WIDGET_DARK_SHADOW] = this.GetWidgetColorRGB(COLOR_WIDGET_DARK_SHADOW)
+	this.colors[COLOR_WIDGET_NORMAL_SHADOW] = this.GetWidgetColorRGB(COLOR_WIDGET_NORMAL_SHADOW)
+	this.colors[COLOR_WIDGET_LIGHT_SHADOW] = this.GetWidgetColorRGB(COLOR_WIDGET_LIGHT_SHADOW)
+	this.colors[COLOR_WIDGET_HIGHLIGHT_SHADOW] = this.GetWidgetColorRGB(COLOR_WIDGET_HIGHLIGHT_SHADOW)
+	this.colors[COLOR_WIDGET_BACKGROUND] = this.GetWidgetColorRGB(COLOR_WIDGET_BACKGROUND)
+	this.colors[COLOR_WIDGET_FOREGROUND] = this.GetWidgetColorRGB(COLOR_WIDGET_FOREGROUND)
+	this.colors[COLOR_WIDGET_BORDER] = this.GetWidgetColorRGB(COLOR_WIDGET_BORDER)
+	this.colors[COLOR_LIST_FOREGROUND] = this.GetWidgetColorRGB(COLOR_LIST_FOREGROUND)
+	this.colors[COLOR_LIST_BACKGROUND] = this.GetWidgetColorRGB(COLOR_LIST_BACKGROUND)
+	this.colors[COLOR_LIST_SELECTION_TEXT] = this.GetWidgetColorRGB(COLOR_LIST_SELECTION_TEXT)
+	this.colors[COLOR_LIST_SELECTION] = this.GetWidgetColorRGB(COLOR_LIST_SELECTION)
+	this.colors[COLOR_LINK_FOREGROUND] = this.GetWidgetColorRGB(COLOR_LINK_FOREGROUND)
+	this.colors[COLOR_TEXT_DISABLED_BACKGROUND] = this.GetWidgetColorRGB(COLOR_TEXT_DISABLED_BACKGROUND)
+	this.colors[COLOR_WIDGET_DISABLED_FOREGROUND] = this.GetWidgetColorRGB(COLOR_WIDGET_DISABLED_FOREGROUND)
 	this.alternateSelectedControlTextColor = this.GetNSColorRGB(cocoa.NSColorAlternateSelectedControlTextColor())
 	this.selectedControlTextColor = this.GetNSColorRGB(cocoa.NSColorSelectedControlTextColor())
 	this.alternateSelectedControlColor = nil
@@ -2308,7 +2364,7 @@ func (this *Display) InitFonts() {
 
 func (this *Display) Internal_new_GC(data *GCData) int64 {
 	if this.IsDisposed() {
-		this.Error(SWTERROR_DEVICE_DISPOSED)
+		this.Error(ERROR_DEVICE_DISPOSED)
 	}
 	if this.screenWindow == (nil) {
 		var window *cocoa.NSWindow = castcocoaNSObjectTococoaNSWindow(cocoa.NewNSWindow().Alloc())
@@ -2327,13 +2383,13 @@ func (this *Display) Internal_new_GC(data *GCData) int64 {
 		rep.Release()
 	}
 	if data != (nil) {
-		var mask int32 = SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT
+		var mask int32 = LEFT_TO_RIGHT | RIGHT_TO_LEFT
 		if (data.Style & mask) == 0 {
-			data.Style |= SWTLEFT_TO_RIGHT
+			data.Style |= LEFT_TO_RIGHT
 		}
 		data.Device = upcastDisplayToDevice(this)
-		data.Background = this.impl.GetSystemColor(SWTCOLOR_WHITE).Handle
-		data.Foreground = this.impl.GetSystemColor(SWTCOLOR_BLACK).Handle
+		data.Background = this.impl.GetSystemColor(COLOR_WHITE).Handle
+		data.Foreground = this.impl.GetSystemColor(COLOR_BLACK).Handle
 		data.Font = this.GetSystemFont()
 	}
 	return context.Id
@@ -2341,7 +2397,7 @@ func (this *Display) Internal_new_GC(data *GCData) int64 {
 
 func (this *Display) Internal_dispose_GC(hDC int64, data *GCData) {
 	if this.IsDisposed() {
-		this.Error(SWTERROR_DEVICE_DISPOSED)
+		this.Error(ERROR_DEVICE_DISPOSED)
 	}
 }
 
@@ -2371,17 +2427,22 @@ func (this *Display) IsValidThread() bool {
 	return this.thread == ThreadCurrentThread()
 }
 
-func (this *Display) Post(event *Event) bool {
+func (this *Display) Post(eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	jrt.MonitorEnter()
 	var tret190 bool
 	tretd191 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if event == (nil) {
-			this.Error(SWTERROR_NULL_ARGUMENT)
+			this.Error(ERROR_NULL_ARGUMENT)
 		}
 		var eventRef int64 = int64(0)
 		var eventSource int64 = cocoa.OSCGEventSourceCreate(cocoa.OSKCGEventSourceStateHIDSystemState)
@@ -2394,7 +2455,7 @@ func (this *Display) Post(event *Event) bool {
 		var deadKeyState []int32 = make([]int32, 1)
 		var type_ int32 = event.Type
 		switch type_ {
-		case SWTKeyDown, SWTKeyUp:
+		case KeyDown, KeyUp:
 			{
 				var vKey int16 = int16(DisplayUntranslateKey(event.KeyCode))
 				if int32(vKey) == 0 {
@@ -2411,7 +2472,7 @@ func (this *Display) Post(event *Event) bool {
 					for i := int16(0); int32(i) <= 0x7; i++ {
 						deadKeyState[0] = 0
 						var cond192 int16
-						if type_ == SWTKeyDown {
+						if type_ == KeyDown {
 							cond192 = cocoa.OSKUCKeyActionDown
 						} else {
 							cond192 = cocoa.OSKUCKeyActionUp
@@ -2426,7 +2487,7 @@ func (this *Display) Post(event *Event) bool {
 						for i := int16(0); int32(i) <= 0x7; i++ {
 							deadKeyState[0] = 0
 							var cond193 int16
-							if type_ == SWTKeyDown {
+							if type_ == KeyDown {
 								cond193 = cocoa.OSKUCKeyActionDown
 							} else {
 								cond193 = cocoa.OSKUCKeyActionUp
@@ -2443,14 +2504,14 @@ func (this *Display) Post(event *Event) bool {
 					vKey = int16(127)
 				}
 				if int32(vKey) != -1 {
-					eventRef = cocoa.OSCGEventCreateKeyboardEvent(eventSource, vKey, type_ == SWTKeyDown)
+					eventRef = cocoa.OSCGEventCreateKeyboardEvent(eventSource, vKey, type_ == KeyDown)
 				}
 				break
 			}
-		case SWTMouseDown, SWTMouseMove, SWTMouseUp:
+		case MouseDown, MouseMove, MouseUp:
 			{
 				var mouseCursorPosition cocoa.CGPoint = cocoa.CGPoint{}
-				if type_ == SWTMouseMove {
+				if type_ == MouseMove {
 					mouseCursorPosition.X = float64(event.X)
 					mouseCursorPosition.Y = float64(event.Y)
 					eventRef = cocoa.OSCGEventCreateMouseEvent(eventSource, cocoa.OSKCGEventMouseMoved, mouseCursorPosition, 0)
@@ -2464,7 +2525,7 @@ func (this *Display) Post(event *Event) bool {
 					switch event.Button {
 					case 1:
 						var cond195 int32
-						if event.Type == SWTMouseDown {
+						if event.Type == MouseDown {
 							cond195 = cocoa.OSKCGEventLeftMouseDown
 						} else {
 							cond195 = cocoa.OSKCGEventLeftMouseUp
@@ -2473,7 +2534,7 @@ func (this *Display) Post(event *Event) bool {
 						sw194 = 0
 					case 2:
 						var cond196 int32
-						if event.Type == SWTMouseDown {
+						if event.Type == MouseDown {
 							cond196 = cocoa.OSKCGEventOtherMouseDown
 						} else {
 							cond196 = cocoa.OSKCGEventOtherMouseUp
@@ -2482,7 +2543,7 @@ func (this *Display) Post(event *Event) bool {
 						sw194 = 2
 					case 3:
 						var cond197 int32
-						if event.Type == SWTMouseDown {
+						if event.Type == MouseDown {
 							cond197 = cocoa.OSKCGEventRightMouseDown
 						} else {
 							cond197 = cocoa.OSKCGEventRightMouseUp
@@ -2491,7 +2552,7 @@ func (this *Display) Post(event *Event) bool {
 						sw194 = 1
 					default:
 						var cond198 int32
-						if event.Type == SWTMouseDown {
+						if event.Type == MouseDown {
 							cond198 = cocoa.OSKCGEventOtherMouseDown
 						} else {
 							cond198 = cocoa.OSKCGEventOtherMouseUp
@@ -2506,7 +2567,7 @@ func (this *Display) Post(event *Event) bool {
 				}
 				break
 			}
-		case SWTMouseWheel:
+		case MouseWheel:
 			{
 				eventRef = cocoa.OSCGEventCreateScrollWheelEvent(eventSource, cocoa.OSKCGScrollEventUnitLine, 1, event.Count)
 				break
@@ -2542,7 +2603,12 @@ func (this *Display) Post(event *Event) bool {
 	return tret190
 }
 
-func (this *Display) PostEvent(event *Event) {
+func (this *Display) PostEvent(eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.eventQueue == (nil) {
 		this.eventQueue = make([]*Event, 4)
 	}
@@ -2562,21 +2628,46 @@ func (this *Display) PostEvent(event *Event) {
 	this.eventQueue[index] = event
 }
 
-func (this *Display) Map(from *Control, to *Control, point *Point) *Point {
+func (this *Display) Map(fromLike ControlLike, toLike ControlLike, pointLike PointLike) *Point {
+	var from *Control
+	if fromLike != nil {
+		from = fromLike.AsControl()
+	}
+	_ = from
+	var to *Control
+	if toLike != nil {
+		to = toLike.AsControl()
+	}
+	_ = to
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	this.impl.CheckDevice()
 	if point == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.MapFromToXY(from, to, point.X, point.Y)
 }
 
-func (this *Display) MapFromToXY(from *Control, to *Control, x int32, y int32) *Point {
+func (this *Display) MapFromToXY(fromLike ControlLike, toLike ControlLike, x int32, y int32) *Point {
+	var from *Control
+	if fromLike != nil {
+		from = fromLike.AsControl()
+	}
+	_ = from
+	var to *Control
+	if toLike != nil {
+		to = toLike.AsControl()
+	}
+	_ = to
 	this.impl.CheckDevice()
 	if from != (nil) && from.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if to != (nil) && to.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var point *Point = NewPoint(x, y)
 	if from == to {
@@ -2631,21 +2722,46 @@ func (this *Display) MapFromToXY(from *Control, to *Control, x int32, y int32) *
 	return point
 }
 
-func (this *Display) MapFromToRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle {
+func (this *Display) MapFromToRectangle(fromLike ControlLike, toLike ControlLike, rectangleLike RectangleLike) *Rectangle {
+	var from *Control
+	if fromLike != nil {
+		from = fromLike.AsControl()
+	}
+	_ = from
+	var to *Control
+	if toLike != nil {
+		to = toLike.AsControl()
+	}
+	_ = to
+	var rectangle *Rectangle
+	if rectangleLike != nil {
+		rectangle = rectangleLike.AsRectangle()
+	}
+	_ = rectangle
 	this.impl.CheckDevice()
 	if rectangle == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.MapFromToXYWidthHeight(from, to, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
 }
 
-func (this *Display) MapFromToXYWidthHeight(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle {
+func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike ControlLike, x int32, y int32, width int32, height int32) *Rectangle {
+	var from *Control
+	if fromLike != nil {
+		from = fromLike.AsControl()
+	}
+	_ = from
+	var to *Control
+	if toLike != nil {
+		to = toLike.AsControl()
+	}
+	_ = to
 	this.impl.CheckDevice()
 	if from != (nil) && from.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if to != (nil) && to.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var rectangle *Rectangle = NewRectangle(x, y, width, height)
 	if from == to {
@@ -2724,18 +2840,18 @@ func (this *Display) PerformKeyEquivalent(window *cocoa.NSWindow, nsEvent *cocoa
 	var selector int64 = int64(0)
 	var modifierFlags int64 = nsEvent.ModifierFlags()
 	if (modifierFlags & int64(cocoa.OSNSAlternateKeyMask)) != 0 {
-		stateMask |= SWTALT
+		stateMask |= ALT
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagShift)) != 0 {
-		stateMask |= SWTSHIFT
+		stateMask |= SHIFT
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagControl)) != 0 {
-		stateMask |= SWTCONTROL
+		stateMask |= CONTROL
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagCommand)) != 0 {
-		stateMask |= SWTCOMMAND
+		stateMask |= COMMAND
 	}
-	if stateMask == SWTCOMMAND {
+	if stateMask == COMMAND {
 		var keyCode int16 = nsEvent.KeyCode()
 		switch keyCode {
 		case int16(7):
@@ -2810,7 +2926,7 @@ func (this *Display) Release() {
 				panic(r)
 			}
 		}()
-		this.SendEvent(SWTDispose, NewEvent())
+		this.SendEvent(Dispose, NewEvent())
 	}()
 	for _, shell := range this.GetShells() {
 		func() {
@@ -3151,7 +3267,7 @@ func (this *Display) RemoveContext(context *GCData) {
 func (this *Display) RemoveFilter(eventType int32, listener Listener) {
 	this.impl.CheckDevice()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.filterTable == (nil) {
 		return
@@ -3165,7 +3281,7 @@ func (this *Display) RemoveFilter(eventType int32, listener Listener) {
 func (this *Display) RemoveListener(eventType int32, listener Listener) {
 	this.impl.CheckDevice()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
@@ -3379,7 +3495,7 @@ func (this *Display) RunSettings() bool {
 		}
 	}
 	this.InitColors(ignoreColorChange)
-	this.SendEvent(SWTSettings, nil)
+	this.SendEvent(Settings, nil)
 	var shells []*Shell = this.GetShells()
 	for i := int32(0); i < int32(len(shells)); i++ {
 		var shell *Shell = shells[i]
@@ -3436,7 +3552,7 @@ func (this *Display) RunSkin() bool {
 		var count int32 = this.skinCount
 		this.skinList = make([]*Widget, DisplayGROW_SIZE)
 		this.skinCount = 0
-		if this.eventTable != (nil) && this.eventTable.Hooks(SWTSkin) {
+		if this.eventTable != (nil) && this.eventTable.Hooks(Skin) {
 			for i := int32(0); i < count; i++ {
 				var widget *Widget = oldSkinWidgets[i]
 				if widget != (nil) && !widget.IsDisposed() {
@@ -3444,7 +3560,7 @@ func (this *Display) RunSkin() bool {
 					oldSkinWidgets[i] = nil
 					var event *Event = NewEvent()
 					event.Widget = widget
-					this.SendEvent(SWTSkin, event)
+					this.SendEvent(Skin, event)
 				}
 			}
 		}
@@ -3489,7 +3605,12 @@ func (this *Display) SendJDKInternalEventEventTypeDetail(eventType int32, detail
 	}
 }
 
-func (this *Display) SendEvent(eventType int32, event *Event) {
+func (this *Display) SendEvent(eventType int32, eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.eventTable == (nil) && this.filterTable == (nil) {
 		return
 	}
@@ -3504,7 +3625,17 @@ func (this *Display) SendEvent(eventType int32, event *Event) {
 	this.SendEventTableEvent(this.eventTable, event)
 }
 
-func (this *Display) SendEventTableEvent(table *EventTable, event *Event) {
+func (this *Display) SendEventTableEvent(tableLike EventTableLike, eventLike EventLike) {
+	var table *EventTable
+	if tableLike != nil {
+		table = tableLike.AsEventTable()
+	}
+	_ = table
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	defer func() {
 		this.sendEventCount--
 	}()
@@ -3522,23 +3653,23 @@ func (this *Display) SendEventTableEvent(table *EventTable, event *Event) {
 }
 
 func (this *Display) SendPreEvent(eventType int32) {
-	if eventType != SWTPreEvent && eventType != SWTPostEvent && eventType != SWTPreExternalEventDispatch && eventType != SWTPostExternalEventDispatch {
-		this.SendJDKInternalEventEventTypeDetail(SWTPreEvent, eventType)
+	if eventType != PreEvent && eventType != PostEvent && eventType != PreExternalEventDispatch && eventType != PostExternalEventDispatch {
+		this.SendJDKInternalEventEventTypeDetail(PreEvent, eventType)
 	}
 }
 
 func (this *Display) SendPostEvent(eventType int32) {
-	if eventType != SWTPreEvent && eventType != SWTPostEvent && eventType != SWTPreExternalEventDispatch && eventType != SWTPostExternalEventDispatch {
-		this.SendJDKInternalEventEventTypeDetail(SWTPostEvent, eventType)
+	if eventType != PreEvent && eventType != PostEvent && eventType != PreExternalEventDispatch && eventType != PostExternalEventDispatch {
+		this.SendJDKInternalEventEventTypeDetail(PostEvent, eventType)
 	}
 }
 
 func (this *Display) SendPreExternalEventDispatchEvent() {
-	this.SendJDKInternalEvent(SWTPreExternalEventDispatch)
+	this.SendJDKInternalEvent(PreExternalEventDispatch)
 }
 
 func (this *Display) SendPostExternalEventDispatchEvent() {
-	this.SendJDKInternalEvent(SWTPostExternalEventDispatch)
+	this.SendJDKInternalEvent(PostExternalEventDispatch)
 }
 
 func (this *Display) SetCurrentCaret(caret *Caret) {
@@ -3552,7 +3683,12 @@ func (this *Display) SetCurrentCaret(caret *Caret) {
 	this.TimerExec(blinkRate, this.caretTimer)
 }
 
-func (this *Display) SetCursor(control *Control) {
+func (this *Display) SetCursor(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	var cursor *Cursor = nil
 	if control != (nil) && !control.IsDisposed() {
 		cursor = control.impl.FindCursor()
@@ -3566,7 +3702,7 @@ func (this *Display) SetCursor(control *Control) {
 			}
 			return
 		}
-		cursor = this.GetSystemCursor(SWTCURSOR_ARROW)
+		cursor = this.GetSystemCursor(CURSOR_ARROW)
 	}
 	this.lockCursor = false
 	cursor.Handle.Set()
@@ -3576,16 +3712,21 @@ func (this *Display) SetCursor(control *Control) {
 func (this *Display) SetCursorLocation(x int32, y int32) {
 	this.impl.CheckDevice()
 	var e *Event = NewEvent()
-	e.Type = SWTMouseMove
+	e.Type = MouseMove
 	e.X = x
 	e.Y = y
 	this.Post(e)
 }
 
-func (this *Display) SetCursorLocationPoint(point *Point) {
+func (this *Display) SetCursorLocationPoint(pointLike PointLike) {
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	this.impl.CheckDevice()
 	if point == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.SetCursorLocation(point.X, point.Y)
 }
@@ -3593,7 +3734,7 @@ func (this *Display) SetCursorLocationPoint(point *Point) {
 func (this *Display) SetData(key string, value any) {
 	this.impl.CheckDevice()
 	if key == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == DisplayADD_WIDGET_KEY {
 		var data []any = value.([]any)
@@ -3694,7 +3835,7 @@ func (this *Display) SetMenuBar(menu *Menu) {
 			var item *MenuItem = items[i]
 			var nsItem *cocoa.NSMenuItem = item.nsItem
 			var submenu *cocoa.NSMenu = nsItem.Submenu()
-			if submenu != (nil) && (submenu.Title().GetString() == SWTGetMessage("SWT_Help")) {
+			if submenu != (nil) && (submenu.Title().GetString() == GetMessage("SWT_Help")) {
 				this.application.SetHelpMenu(submenu)
 			}
 			nsItem.SetMenu(nil)
@@ -3715,7 +3856,12 @@ func (this *Display) SetModalDialogModalDialogPanel(modalDialog *Dialog, panel *
 	this.modalPanel = panel
 }
 
-func (this *Display) SetModalShell(shell *Shell) {
+func (this *Display) SetModalShell(shellLike ShellLike) {
+	var shell *Shell
+	if shellLike != nil {
+		shell = shellLike.AsShell()
+	}
+	_ = shell
 	if this.modalShells == (nil) {
 		this.modalShells = make([]*Shell, 4)
 	}
@@ -3747,10 +3893,15 @@ func (this *Display) SetDataData(data any) {
 	this.data = data
 }
 
-func (this *Display) SetSynchronizer(synchronizer *Synchronizer) {
+func (this *Display) SetSynchronizer(synchronizerLike SynchronizerLike) {
+	var synchronizer *Synchronizer
+	if synchronizerLike != nil {
+		synchronizer = synchronizerLike.AsSynchronizer()
+	}
+	_ = synchronizer
 	this.impl.CheckDevice()
 	if synchronizer == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if synchronizer == this.synchronizer {
 		return
@@ -3814,7 +3965,7 @@ func (this *Display) SyncExec(runnable jrt.Runnable) {
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		synchronizer = this.synchronizer
 	}()
@@ -3824,7 +3975,7 @@ func (this *Display) SyncExec(runnable jrt.Runnable) {
 func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
 	this.impl.CheckDevice()
 	if runnable == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.timerList == (nil) {
 		this.timerList = make([]jrt.Runnable, 4)
@@ -3876,7 +4027,7 @@ func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
 	var userInfo *cocoa.NSNumber = cocoa.NSNumberNumberWithInt(index)
 	var timer *cocoa.NSTimer = cocoa.NSTimerScheduledTimerWithTimeInterval(float64(milliseconds)/1000.0, upcastcocoaSWTWindowDelegateTococoaId(this.timerDelegate), cocoa.OSSel_timerProc_, upcastcocoaNSNumberTococoaId(userInfo), false)
 	if timer == (nil) {
-		SWTErrorFn(SWTERROR_NO_HANDLES)
+		Error(ERROR_NO_HANDLES)
 	}
 	var runLoop *cocoa.NSRunLoop = cocoa.NSRunLoopCurrentRunLoop()
 	runLoop.AddTimer(timer, cocoa.OSNSModalPanelRunLoopMode_)
@@ -3957,7 +4108,7 @@ func (this *Display) UpdateQuitMenu() {
 	}
 	var enabled bool = true
 	var shells []*Shell = this.GetShells()
-	var mask int32 = SWTPRIMARY_MODAL | SWTAPPLICATION_MODAL | SWTSYSTEM_MODAL
+	var mask int32 = PRIMARY_MODAL | APPLICATION_MODAL | SYSTEM_MODAL
 	for i := int32(0); i < int32(len(shells)); i++ {
 		var shell *Shell = shells[i]
 		if (shell.style&mask) != 0 && shell.impl.IsVisible() {
@@ -3983,7 +4134,7 @@ func (this *Display) Wake() {
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
-			this.Error(SWTERROR_DEVICE_DISPOSED)
+			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if this.thread == ThreadCurrentThread() {
 			tretd202 = true
@@ -4092,7 +4243,7 @@ func (this *Display) ApplicationNextEventMatchingMask(id int64, sel int64, mask 
 		if dequeue != 0 && this.currentCombo != (nil) && !this.currentCombo.IsDisposed() {
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(result)
 			if nsEvent.Type() == int64(cocoa.OSNSKeyDown) {
-				this.currentCombo.SendTrackingKeyEvent(nsEvent, SWTKeyDown)
+				this.currentCombo.SendTrackingKeyEvent(nsEvent, KeyDown)
 			}
 		}
 		if dequeue != 0 && this.trackingControl != (nil) && !this.trackingControl.IsDisposed() {
@@ -4102,7 +4253,12 @@ func (this *Display) ApplicationNextEventMatchingMask(id int64, sel int64, mask 
 	return result
 }
 
-func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, trackingControl *Control) {
+func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, trackingControlLike ControlLike) {
+	var trackingControl *Control
+	if trackingControlLike != nil {
+		trackingControl = trackingControlLike.AsControl()
+	}
+	_ = trackingControl
 	var type_ int32 = int32(nsEvent.Type())
 	var runEnterExit bool = false
 	var runEnterExitControl *Control = nil
@@ -4116,7 +4272,7 @@ func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, tracki
 		}
 		this.clickCount = int32((cond204))
 		this.clickCountButton = int32(nsEvent.ButtonNumber())
-		trackingControl.SendMouseEvent(nsEvent, SWTMouseDown, true)
+		trackingControl.SendMouseEvent(nsEvent, MouseDown, true)
 		break
 	case cocoa.OSNSLeftMouseUp, cocoa.OSNSRightMouseUp, cocoa.OSNSOtherMouseUp:
 		runEnterExit = true
@@ -4124,10 +4280,10 @@ func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, tracki
 		var control *Control = trackingControl
 		this.trackingControl = nil
 		if this.clickCount == 2 {
-			control.SendMouseEvent(nsEvent, SWTMouseDoubleClick, false)
+			control.SendMouseEvent(nsEvent, MouseDoubleClick, false)
 		}
 		if !control.IsDisposed() {
-			control.SendMouseEvent(nsEvent, SWTMouseUp, false)
+			control.SendMouseEvent(nsEvent, MouseUp, false)
 		}
 		break
 	case cocoa.OSNSLeftMouseDragged, cocoa.OSNSRightMouseDragged, cocoa.OSNSOtherMouseDragged:
@@ -4135,7 +4291,7 @@ func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, tracki
 		runEnterExitControl = trackingControl
 		fallthrough
 	case cocoa.OSNSMouseMoved:
-		trackingControl.SendMouseEvent(nsEvent, SWTMouseMove, true)
+		trackingControl.SendMouseEvent(nsEvent, MouseMove, true)
 		break
 	}
 	if runEnterExit {
@@ -4258,22 +4414,22 @@ func (this *Display) ApplicationWillFinishLaunching(id int64, sel int64, notific
 			var newTag int64 = int64(0)
 			switch i {
 			case 0:
-				newTag = int64(SWTID_ABOUT)
+				newTag = int64(ID_ABOUT)
 				break
 			case 2:
-				newTag = int64(SWTID_PREFERENCES)
+				newTag = int64(ID_PREFERENCES)
 				break
 			case 6:
-				newTag = int64(SWTID_HIDE)
+				newTag = int64(ID_HIDE)
 				break
 			case 7:
-				newTag = int64(SWTID_HIDE_OTHERS)
+				newTag = int64(ID_HIDE_OTHERS)
 				break
 			case 8:
-				newTag = int64(SWTID_SHOW_ALL)
+				newTag = int64(ID_SHOW_ALL)
 				break
 			case 10:
-				newTag = int64(SWTID_QUIT)
+				newTag = int64(ID_QUIT)
 				break
 			}
 			if newTag != 0 {
@@ -4296,7 +4452,12 @@ func (this *Display) SetRescalingAtRuntime(activate bool) bool {
 	return false
 }
 
-func DisplaySetDevice(device *Device) {
+func DisplaySetDevice(deviceLike DeviceLike) {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	DeviceCurrentDevice = device
 }
 
@@ -4336,10 +4497,10 @@ func DisplayCheckDisplay(thread any, multiple bool) {
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			if DisplayDisplays[i] != (nil) {
 				if !multiple {
-					SWTErrorCodeThrowableDetail(SWTERROR_NOT_IMPLEMENTED, nil, " [multiple displays]")
+					ErrorCodeThrowableDetail(ERROR_NOT_IMPLEMENTED, nil, " [multiple displays]")
 				}
 				if DisplayDisplays[i].thread == thread {
-					SWTErrorFn(SWTERROR_THREAD_INVALID_ACCESS)
+					Error(ERROR_THREAD_INVALID_ACCESS)
 				}
 			}
 		}
@@ -4384,7 +4545,12 @@ func DisplayConfigureSystemOptions() {
 	DisplayConfigureSystemOption("NSViewUsesAutomaticLayerBackingStores", false)
 }
 
-func DisplayDeregister(display *Display) {
+func DisplayDeregister(displayLike DisplayLike) {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	jrt.MonitorEnter()
 	func() {
 		defer jrt.MonitorExit()
@@ -4527,7 +4693,12 @@ func DisplayGetCurrentKeyLayout() int64 {
 	return keyLayout
 }
 
-func DisplayRegister(display *Display) {
+func DisplayRegister(displayLike DisplayLike) {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	jrt.MonitorEnter()
 	tretd209 := false
 	func() {
@@ -4670,7 +4841,7 @@ func DisplayApplicationProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 			var returnVal int32 = cocoa.OSNSTerminateCancel
 			if !display.disposing {
 				var event *Event = NewEvent()
-				display.SendEvent(SWTClose, event)
+				display.SendEvent(Close, event)
 				if event.Doit {
 					display.Dispose()
 					returnVal = cocoa.OSNSTerminateNow
@@ -4747,7 +4918,7 @@ func DisplayApplicationProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 i
 			var file string = cocoa.NewNSStringOverload1(arg1).GetString()
 			var event *Event = NewEvent()
 			event.Text = file
-			display.SendEvent(SWTOpenDocument, event)
+			display.SendEvent(OpenDocument, event)
 			return int64(1)
 		}
 	case cocoa.OSSel_application_openFiles_:
@@ -4758,7 +4929,7 @@ func DisplayApplicationProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 i
 				var file string = cocoa.NewNSStringOverload2(files.ObjectAtIndex(int64(i))).GetString()
 				var event *Event = NewEvent()
 				event.Text = file
-				display.SendEvent(SWTOpenDocument, event)
+				display.SendEvent(OpenDocument, event)
 			}
 			cocoa.NewNSApplicationOverload1(arg0).ReplyToOpenOrPrint(int64(cocoa.OSNSApplicationDelegateReplySuccess))
 			return int64(0)
@@ -4771,14 +4942,14 @@ func DisplayApplicationProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 i
 				var url string = cocoa.NewNSStringOverload2(urls.ObjectAtIndex(int64(i))).GetString()
 				var event *Event = NewEvent()
 				event.Text = url
-				display.SendEvent(SWTOpenUrl, event)
+				display.SendEvent(OpenUrl, event)
 			}
 			return int64(0)
 		}
 	case cocoa.OSSel_applicationShouldHandleReopen_hasVisibleWindows_:
 		{
 			var event *Event = NewEvent()
-			display.SendEvent(SWTActivate, event)
+			display.SendEvent(Activate, event)
 			var cond212 int32
 			if event.Doit {
 				cond212 = 1

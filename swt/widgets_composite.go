@@ -17,6 +17,12 @@ type Composite struct {
 	isStyledText   bool
 }
 
+func (this *Composite) AsComposite() *Composite { return this }
+
+type CompositeLike interface {
+	AsComposite() *Composite
+}
+
 func newComposite() *Composite {
 	this := &Composite{}
 	this.impl = this
@@ -28,7 +34,12 @@ func (this *Composite) initComposite() {
 	this.Scrollable.initScrollable()
 }
 
-func NewCompositeParentStyle(parent *Composite, style int32) *Composite {
+func NewCompositeParentStyle(parentLike CompositeLike, style int32) *Composite {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Composite{}
 	this.impl = this
 	this.initCompositeParentStyle(parent, style)
@@ -103,7 +114,7 @@ func (this *Composite) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bo
 
 func (this *Composite) AcceptsFirstResponder(id int64, sel int64) bool {
 	if (this.state & WidgetCANVAS) != 0 {
-		if (this.style&SWTNO_FOCUS) == 0 && this.impl.HooksKeys() {
+		if (this.style&NO_FOCUS) == 0 && this.impl.HooksKeys() {
 			if this.ContentView().Subviews().Count() == 0 {
 				return true
 			}
@@ -154,7 +165,7 @@ func (this *Composite) AccessibilityIsIgnored(id int64, sel int64) bool {
 }
 
 func (this *Composite) Changed(changed []*Control) {
-	this.LayoutOverload4(changed, SWTDEFER)
+	this.LayoutOverload4(changed, DEFER)
 }
 
 func (this *Composite) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
@@ -162,7 +173,7 @@ func (this *Composite) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint 
 	this.display.RunSkin()
 	var size *Point
 	if this.layout != (nil) {
-		if (wHint == SWTDEFAULT) || (hHint == SWTDEFAULT) {
+		if (wHint == DEFAULT) || (hHint == DEFAULT) {
 			changed = changed || (this.state&WidgetLAYOUT_CHANGED) != 0
 			size = this.layout.impl.ComputeSizeOnLayout(this, wHint, hHint, changed)
 			this.state &= ^WidgetLAYOUT_CHANGED
@@ -178,10 +189,10 @@ func (this *Composite) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint 
 			size.Y = WidgetDEFAULT_HEIGHT
 		}
 	}
-	if wHint != SWTDEFAULT {
+	if wHint != DEFAULT {
 		size.X = wHint
 	}
-	if hHint != SWTDEFAULT {
+	if hHint != DEFAULT {
 		size.Y = hHint
 	}
 	var trim *Rectangle = this.impl.ComputeTrim(0, 0, size.X, size.Y)
@@ -217,7 +228,7 @@ func (this *Composite) ComputeTabList() []*Widget {
 
 func (this *Composite) CreateHandle() {
 	this.state |= WidgetCANVAS
-	var scrolled bool = (this.style & (SWTV_SCROLL | SWTH_SCROLL)) != 0
+	var scrolled bool = (this.style & (V_SCROLL | H_SCROLL)) != 0
 	if !scrolled {
 		this.state |= WidgetTHEME_BACKGROUND
 	}
@@ -226,10 +237,10 @@ func (this *Composite) CreateHandle() {
 		var scrollWidget *cocoa.NSScrollView = castcocoaNSObjectTococoaNSScrollView(cocoa.NewSWTScrollView().Alloc())
 		scrollWidget.InitWithFrame(rect)
 		scrollWidget.SetDrawsBackground(false)
-		if (this.style & SWTH_SCROLL) != 0 {
+		if (this.style & H_SCROLL) != 0 {
 			scrollWidget.SetHasHorizontalScroller(true)
 		}
-		if (this.style & SWTV_SCROLL) != 0 {
+		if (this.style & V_SCROLL) != 0 {
 			scrollWidget.SetHasVerticalScroller(true)
 		}
 		var cond103 int32
@@ -254,10 +265,10 @@ func (this *Composite) CreateHandle() {
 func (this *Composite) DrawBackground(gc *GC, x int32, y int32, width int32, height int32, offsetX int32, offsetY int32) {
 	this.CheckWidget()
 	if gc == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if gc.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var control *Control = this.impl.FindBackgroundControl()
 	if control != (nil) {
@@ -290,7 +301,7 @@ func (this *Composite) DrawBackgroundOnWidget(id int64, context *cocoa.NSGraphic
 		return
 	}
 	if (this.state & WidgetCANVAS) != 0 {
-		if (this.style & SWTNO_BACKGROUND) == 0 {
+		if (this.style & NO_BACKGROUND) == 0 {
 			this.FillBackground(this.View, context, rect, -1)
 		}
 	}
@@ -333,7 +344,12 @@ func (this *Composite) FixChildren(newShell *Shell, oldShell *Shell, newDecorati
 	}
 }
 
-func (this *Composite) FixTabList(control *Control) {
+func (this *Composite) FixTabList(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if this.tabList == (nil) {
 		return
 	}
@@ -407,7 +423,7 @@ func (this *Composite) GetTabList() []*Control {
 }
 
 func (this *Composite) HooksKeys() bool {
-	return this.Hooks(SWTKeyDown) || this.Hooks(SWTKeyUp)
+	return this.Hooks(KeyDown) || this.Hooks(KeyUp)
 }
 
 func (this *Composite) InvalidateChildrenVisibleRegion() {
@@ -467,7 +483,7 @@ func (this *Composite) KeyDown(id int64, sel int64, theEvent int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
+				if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -505,9 +521,9 @@ func (this *Composite) LayoutOverload2(changed bool, all bool) {
 func (this *Composite) LayoutOverload3(changed []*Control) {
 	this.CheckWidget()
 	if changed == (nil) {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.LayoutOverload4(changed, SWTNONE)
+	this.LayoutOverload4(changed, NONE)
 }
 
 func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
@@ -516,10 +532,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 		for i := int32(0); i < int32(len(changed)); i++ {
 			var control *Control = changed[i]
 			if control == (nil) {
-				this.Error(SWTERROR_INVALID_ARGUMENT)
+				this.Error(ERROR_INVALID_ARGUMENT)
 			}
 			if control.IsDisposed() {
-				this.Error(SWTERROR_INVALID_ARGUMENT)
+				this.Error(ERROR_INVALID_ARGUMENT)
 			}
 			var ancestor bool = false
 			var composite *Composite = control.parent
@@ -531,7 +547,7 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 				composite = composite.parent
 			}
 			if !ancestor {
-				this.Error(SWTERROR_INVALID_PARENT)
+				this.Error(ERROR_INVALID_PARENT)
 			}
 		}
 		var updateCount int32 = 0
@@ -559,7 +575,7 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 				composite = child.parent
 			}
 		}
-		if (flags & SWTDEFER) != 0 {
+		if (flags & DEFER) != 0 {
 			this.SetLayoutDeferred(true)
 			this.display.AddLayoutDeferred(this)
 		}
@@ -567,15 +583,15 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 			update[i].impl.UpdateLayout(false)
 		}
 	} else {
-		if this.layout == (nil) && (flags&SWTALL) == 0 {
+		if this.layout == (nil) && (flags&ALL) == 0 {
 			return
 		}
-		this.impl.MarkLayout((flags&SWTCHANGED) != 0, (flags&SWTALL) != 0)
-		if (flags & SWTDEFER) != 0 {
+		this.impl.MarkLayout((flags&CHANGED) != 0, (flags&ALL) != 0)
+		if (flags & DEFER) != 0 {
 			this.SetLayoutDeferred(true)
 			this.display.AddLayoutDeferred(this)
 		}
-		this.impl.UpdateLayout((flags & SWTALL) != 0)
+		this.impl.UpdateLayout((flags & ALL) != 0)
 	}
 }
 
@@ -701,7 +717,12 @@ func (this *Composite) ReleaseWidget() {
 	this.tabList = nil
 }
 
-func (this *Composite) RemoveControl(control *Control) {
+func (this *Composite) RemoveControl(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if control.HasFocus() {
 		this.impl.RedrawWidgetOnWidget(this.View, true)
 	}
@@ -741,16 +762,16 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 			var handled bool = false
 			var deltaY float64 = nsEvent.DeltaY()
 			var deltaX float64 = nsEvent.DeltaX()
-			if this.Hooks(SWTGesture) || this.Filters(SWTGesture) {
-				if !this.GestureEvent(id, theEvent, SWTGESTURE_PAN) {
+			if this.Hooks(Gesture) || this.Filters(Gesture) {
+				if !this.GestureEvent(id, theEvent, GESTURE_PAN) {
 					handled = true
 				}
 			}
 			if !handled {
 				if deltaY != 0 {
 					var doit bool = true
-					if this.Hooks(SWTMouseWheel) || this.Filters(SWTMouseWheel) {
-						doit = this.SendMouseEvent(nsEvent, SWTMouseWheel, true)
+					if this.Hooks(MouseWheel) || this.Filters(MouseWheel) {
+						doit = this.SendMouseEvent(nsEvent, MouseWheel, true)
 					}
 					var bar *ScrollBar = this.verticalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -764,11 +785,11 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 						bar.SetSelection(selection)
 						var event *Event = NewEvent()
 						if deltaY > 0 {
-							event.Detail = SWTPAGE_UP
+							event.Detail = PAGE_UP
 						} else {
-							event.Detail = SWTPAGE_DOWN
+							event.Detail = PAGE_DOWN
 						}
-						bar.SendSelectionEventEventTypeEventSend(SWTSelection, event, true)
+						bar.SendSelectionEventEventTypeEventSend(Selection, event, true)
 						handled = true
 					}
 					if !doit {
@@ -777,8 +798,8 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 				}
 				if deltaX != 0 {
 					var doit bool = true
-					if this.Hooks(SWTMouseHorizontalWheel) || this.Filters(SWTMouseHorizontalWheel) {
-						doit = this.SendMouseEvent(nsEvent, SWTMouseHorizontalWheel, true)
+					if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
+						doit = this.SendMouseEvent(nsEvent, MouseHorizontalWheel, true)
 					}
 					var bar *ScrollBar = this.horizontalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -792,11 +813,11 @@ func (this *Composite) ScrollWheel(id int64, sel int64, theEvent int64) {
 						bar.SetSelection(selection)
 						var event *Event = NewEvent()
 						if deltaX > 0 {
-							event.Detail = SWTPAGE_UP
+							event.Detail = PAGE_UP
 						} else {
-							event.Detail = SWTPAGE_DOWN
+							event.Detail = PAGE_DOWN
 						}
-						bar.SendSelectionEventEventTypeEventSend(SWTSelection, event, true)
+						bar.SendSelectionEventEventTypeEventSend(Selection, event, true)
 						handled = true
 					}
 					if !doit {
@@ -839,7 +860,12 @@ func (this *Composite) SetIsStyledText() {
 	this.isStyledText = true
 }
 
-func (this *Composite) SetLayout(layout *Layout) {
+func (this *Composite) SetLayout(layoutLike LayoutLike) {
+	var layout *Layout
+	if layoutLike != nil {
+		layout = layoutLike.AsLayout()
+	}
+	_ = layout
 	this.CheckWidget()
 	this.layout = layout
 }
@@ -871,7 +897,7 @@ func (this *Composite) SetTabGroupFocus() bool {
 	if this.impl.IsTabItem() {
 		return this.impl.SetTabItemFocus()
 	}
-	var takeFocus bool = (this.style & SWTNO_FOCUS) == 0
+	var takeFocus bool = (this.style & NO_FOCUS) == 0
 	if (this.state & WidgetCANVAS) != 0 {
 		takeFocus = this.impl.HooksKeys()
 	}
@@ -894,13 +920,13 @@ func (this *Composite) SetTabList(tabList []*Control) {
 		for i := int32(0); i < int32(len(tabList)); i++ {
 			var control *Control = tabList[i]
 			if control == (nil) {
-				this.Error(SWTERROR_INVALID_ARGUMENT)
+				this.Error(ERROR_INVALID_ARGUMENT)
 			}
 			if control.IsDisposed() {
-				this.Error(SWTERROR_INVALID_ARGUMENT)
+				this.Error(ERROR_INVALID_ARGUMENT)
 			}
 			if control.parent != this {
-				this.Error(SWTERROR_INVALID_PARENT)
+				this.Error(ERROR_INVALID_PARENT)
 			}
 		}
 		var newList []*Control = make([]*Control, int32(len(tabList)))
@@ -912,7 +938,7 @@ func (this *Composite) SetTabList(tabList []*Control) {
 
 func (this *Composite) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 	if (this.state & WidgetCANVAS) != 0 {
-		if (this.style & SWTNO_FOCUS) != 0 {
+		if (this.style & NO_FOCUS) != 0 {
 			return 0
 		}
 		if this.impl.HooksKeys() {

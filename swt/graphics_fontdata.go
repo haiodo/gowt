@@ -17,6 +17,12 @@ type FontData struct {
 	variant string
 }
 
+func (this *FontData) AsFontData() *FontData { return this }
+
+type FontDataLike interface {
+	AsFontData() *FontData
+}
+
 func NewFontData() *FontData {
 	this := &FontData{}
 	this.initFontData()
@@ -24,7 +30,7 @@ func NewFontData() *FontData {
 }
 
 func (this *FontData) initFontData() {
-	this.initFontDataOverload3("", 12, SWTNORMAL)
+	this.initFontDataOverload3("", 12, NORMAL)
 }
 
 func NewFontDataOverload1(string_ string) *FontData {
@@ -35,12 +41,12 @@ func NewFontDataOverload1(string_ string) *FontData {
 
 func (this *FontData) initFontDataOverload1(string_ string) {
 	if string_ == "" {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var start int32 = 0
 	var end int32 = int32(strings.Index(string_, string(rune('|'))))
 	if end == -1 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var version1 string = string_[start:end]
 	func() {
@@ -58,25 +64,25 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			}() {
 				e := r
 				_ = e
-				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+				Error(ERROR_INVALID_ARGUMENT)
 			} else {
 				panic(r)
 			}
 		}()
 		if func() int32 { _ = []any{version1}; panic("j2go: unresolved call parseInt") }() != 1 {
-			SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+			Error(ERROR_INVALID_ARGUMENT)
 		}
 	}()
 	start = end + 1
 	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
 	if end == -1 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var name string = string_[start:end]
 	start = end + 1
 	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
 	if end == -1 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var height float32 = float32(0)
 	func() {
@@ -94,7 +100,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			}() {
 				e := r
 				_ = e
-				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+				Error(ERROR_INVALID_ARGUMENT)
 			} else {
 				panic(r)
 			}
@@ -104,7 +110,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	start = end + 1
 	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
 	if end == -1 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var style int32 = 0
 	func() {
@@ -122,7 +128,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			}() {
 				e := r
 				_ = e
-				SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+				Error(ERROR_INVALID_ARGUMENT)
 			} else {
 				panic(r)
 			}
@@ -153,7 +159,12 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	}
 }
 
-func NewFontDataOverload2(fontData *FontData) *FontData {
+func NewFontDataOverload2(fontDataLike FontDataLike) *FontData {
+	var fontData *FontData
+	if fontDataLike != nil {
+		fontData = fontDataLike.AsFontData()
+	}
+	_ = fontData
 	this := &FontData{}
 	this.initFontDataOverload2(fontData)
 	return this
@@ -161,7 +172,7 @@ func NewFontDataOverload2(fontData *FontData) *FontData {
 
 func (this *FontData) initFontDataOverload2(fontData *FontData) {
 	if fontData == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Name = fontData.Name
 	this.Height = fontData.Height
@@ -253,14 +264,14 @@ func (this *FontData) HashCode() int32 {
 
 func (this *FontData) SetHeight(height int32) {
 	if height < 0 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Height = float32(height)
 }
 
 func (this *FontData) SetHeightHeight(height float32) {
 	if height < 0 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Height = height
 }
@@ -298,7 +309,7 @@ func (this *FontData) SetLocale(locale string) {
 
 func (this *FontData) SetName(name string) {
 	if name == "" {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Name = name
 	this.NsName = ""

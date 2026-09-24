@@ -14,7 +14,18 @@ type MenuDetectEvent struct {
 	Detail int32
 }
 
-func NewMenuDetectEvent(e *Event) *MenuDetectEvent {
+func (this *MenuDetectEvent) AsMenuDetectEvent() *MenuDetectEvent { return this }
+
+type MenuDetectEventLike interface {
+	AsMenuDetectEvent() *MenuDetectEvent
+}
+
+func NewMenuDetectEvent(eLike EventLike) *MenuDetectEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &MenuDetectEvent{}
 	this.impl = this
 	this.initMenuDetectEvent(e)

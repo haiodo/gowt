@@ -17,6 +17,12 @@ type Canvas struct {
 	visiblePath *cocoa.NSBezierPath
 }
 
+func (this *Canvas) AsCanvas() *Canvas { return this }
+
+type CanvasLike interface {
+	AsCanvas() *Canvas
+}
+
 var CanvasSupportedPboardTypes *cocoa.NSMutableArray = nil
 
 func newCanvas() *Canvas {
@@ -30,7 +36,12 @@ func (this *Canvas) initCanvas() {
 	this.Composite.initComposite()
 }
 
-func NewCanvasParentStyle(parent *Composite, style int32) *Canvas {
+func NewCanvasParentStyle(parentLike CompositeLike, style int32) *Canvas {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Canvas{}
 	this.impl = this
 	this.initCanvasParentStyle(parent, style)
@@ -50,7 +61,7 @@ func (this *Canvas) AttributedSubstringFromRange(id int64, sel int64, range_ int
 
 func (this *Canvas) SendFocusEvent(type_ int32) {
 	if this.caret != (nil) {
-		if type_ == SWTFocusIn {
+		if type_ == FocusIn {
 			this.caret.SetFocus()
 		} else {
 			this.caret.KillFocus()
@@ -457,7 +468,7 @@ func (this *Canvas) SetCaret(caret *Caret) {
 		}
 		if newCaret != (nil) {
 			if newCaret.IsDisposed() {
-				this.Error(SWTERROR_INVALID_ARGUMENT)
+				this.Error(ERROR_INVALID_ARGUMENT)
 			}
 			newCaret.SetFocus()
 		}
@@ -486,7 +497,7 @@ func (this *Canvas) SetOpenGLContext(value any) {
 func (this *Canvas) SetIME(ime *IME) {
 	this.CheckWidget()
 	if ime != (nil) && ime.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.ime = ime
 }

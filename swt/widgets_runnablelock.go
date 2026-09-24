@@ -12,6 +12,12 @@ type RunnableLock struct {
 	throwable error
 }
 
+func (this *RunnableLock) AsRunnableLock() *RunnableLock { return this }
+
+type RunnableLockLike interface {
+	AsRunnableLock() *RunnableLock
+}
+
 func newRunnableLock(runnable jrt.Runnable) *RunnableLock {
 	this := &RunnableLock{}
 	this.initRunnableLock(runnable)
@@ -26,7 +32,12 @@ func (this *RunnableLock) Done() bool {
 	return this.runnable == (nil) || this.throwable != (nil)
 }
 
-func (this *RunnableLock) Run(display *Display) {
+func (this *RunnableLock) Run(displayLike DisplayLike) {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	if this.runnable != (nil) {
 		func() {
 			defer func() {

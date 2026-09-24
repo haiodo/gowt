@@ -14,6 +14,12 @@ type RowData struct {
 	Exclude bool
 }
 
+func (this *RowData) AsRowData() *RowData { return this }
+
+type RowDataLike interface {
+	AsRowData() *RowData
+}
+
 func NewRowData() *RowData {
 	this := &RowData{}
 	this.initRowData()
@@ -21,8 +27,8 @@ func NewRowData() *RowData {
 }
 
 func (this *RowData) initRowData() {
-	this.Width = SWTDEFAULT
-	this.Height = SWTDEFAULT
+	this.Width = DEFAULT
+	this.Height = DEFAULT
 	this.Exclude = false
 }
 
@@ -33,14 +39,19 @@ func NewRowDataWidthHeight(width int32, height int32) *RowData {
 }
 
 func (this *RowData) initRowDataWidthHeight(width int32, height int32) {
-	this.Width = SWTDEFAULT
-	this.Height = SWTDEFAULT
+	this.Width = DEFAULT
+	this.Height = DEFAULT
 	this.Exclude = false
 	this.Width = width
 	this.Height = height
 }
 
-func NewRowDataPoint(point *Point) *RowData {
+func NewRowDataPoint(pointLike PointLike) *RowData {
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	this := &RowData{}
 	this.initRowDataPoint(point)
 	return this
@@ -61,10 +72,10 @@ func (this *RowData) GetName() string {
 
 func (this *RowData) String() string {
 	var string_ string = fmt.Sprintf("%s {", this.GetName())
-	if this.Width != SWTDEFAULT {
+	if this.Width != DEFAULT {
 		string_ += fmt.Sprintf("width=%d ", this.Width)
 	}
-	if this.Height != SWTDEFAULT {
+	if this.Height != DEFAULT {
 		string_ += fmt.Sprintf("height=%d ", this.Height)
 	}
 	if this.Exclude {

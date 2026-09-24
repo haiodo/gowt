@@ -11,6 +11,12 @@ type FillData struct {
 	currentHeight int32
 }
 
+func (this *FillData) AsFillData() *FillData { return this }
+
+type FillDataLike interface {
+	AsFillData() *FillData
+}
+
 func newFillData() *FillData {
 	this := &FillData{}
 	this.initFillData()
@@ -24,11 +30,16 @@ func (this *FillData) initFillData() {
 	this.currentHeight = -1
 }
 
-func (this *FillData) ComputeSize(control *Control, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FillData) ComputeSize(controlLike ControlLike, wHint int32, hHint int32, flushCache bool) *Point {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if flushCache {
 		this.FlushCache()
 	}
-	if wHint == SWTDEFAULT && hHint == SWTDEFAULT {
+	if wHint == DEFAULT && hHint == DEFAULT {
 		if this.defaultWidth == -1 || this.defaultHeight == -1 {
 			var size *Point = control.impl.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, flushCache)
 			this.defaultWidth = size.X

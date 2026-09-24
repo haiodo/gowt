@@ -5,6 +5,12 @@ package swt
 type ControlAdapter struct {
 }
 
+func (this *ControlAdapter) AsControlAdapter() *ControlAdapter { return this }
+
+type ControlAdapterLike interface {
+	AsControlAdapter() *ControlAdapter
+}
+
 func NewControlAdapter() *ControlAdapter {
 	this := &ControlAdapter{}
 	this.initControlAdapter()

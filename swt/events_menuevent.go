@@ -6,7 +6,18 @@ type MenuEvent struct {
 	TypedEvent
 }
 
-func NewMenuEvent(e *Event) *MenuEvent {
+func (this *MenuEvent) AsMenuEvent() *MenuEvent { return this }
+
+type MenuEventLike interface {
+	AsMenuEvent() *MenuEvent
+}
+
+func NewMenuEvent(eLike EventLike) *MenuEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &MenuEvent{}
 	this.impl = this
 	this.initMenuEvent(e)

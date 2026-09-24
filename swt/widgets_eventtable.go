@@ -8,6 +8,12 @@ type EventTable struct {
 	level     int32
 }
 
+func (this *EventTable) AsEventTable() *EventTable { return this }
+
+type EventTableLike interface {
+	AsEventTable() *EventTable
+}
+
 const EventTableGROW_SIZE int32 = 4
 
 func newEventTable() *EventTable {
@@ -84,7 +90,12 @@ func (this *EventTable) Hooks(eventType int32) bool {
 	return false
 }
 
-func (this *EventTable) SendEvent(event *Event) {
+func (this *EventTable) SendEvent(eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.types == (nil) {
 		return
 	}
@@ -122,7 +133,7 @@ func (this *EventTable) SendEvent(event *Event) {
 	}()
 	defer exceptions.Close()
 	for i := int32(0); i < int32(len(this.types)); i++ {
-		if event.Type == SWTNone {
+		if event.Type == None {
 			return
 		}
 		if this.types[i] == event.Type {

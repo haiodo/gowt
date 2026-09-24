@@ -13,6 +13,12 @@ type RGB struct {
 	Blue  int32
 }
 
+func (this *RGB) AsRGB() *RGB { return this }
+
+type RGBLike interface {
+	AsRGB() *RGB
+}
+
 func NewRGB(red int32, green int32, blue int32) *RGB {
 	this := &RGB{}
 	this.initRGB(red, green, blue)
@@ -21,7 +27,7 @@ func NewRGB(red int32, green int32, blue int32) *RGB {
 
 func (this *RGB) initRGB(red int32, green int32, blue int32) {
 	if (red > 255) || (red < 0) || (green > 255) || (green < 0) || (blue > 255) || (blue < 0) {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Red = red
 	this.Green = green
@@ -36,7 +42,7 @@ func NewRGBHueSaturationBrightness(hue float32, saturation float32, brightness f
 
 func (this *RGB) initRGBHueSaturationBrightness(hue float32, saturation float32, brightness float32) {
 	if hue < 0 || hue > 360 || saturation < 0 || saturation > 1 || brightness < 0 || brightness > 1 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var r float32
 	var g float32

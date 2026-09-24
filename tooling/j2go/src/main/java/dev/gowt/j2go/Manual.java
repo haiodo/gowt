@@ -236,4 +236,14 @@ public class Manual {
 	public static String instanceMember(String javaMemberName) {
 		return Names.capitalize(javaMemberName);
 	}
+
+	/** Every manual type's own (same-Go-package) type name - manual types in another package
+	 * (jrt.*, reflect.Type) can't collide with an swt-package identifier. */
+	public static Set<String> ownPackageTypeNames() {
+		Set<String> s = new java.util.HashSet<>();
+		for (Entry e : ENTRIES.values()) {
+			if (e.importPath() == null) s.add(e.goType());
+		}
+		return s;
+	}
 }

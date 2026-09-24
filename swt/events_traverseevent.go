@@ -11,7 +11,18 @@ type TraverseEvent struct {
 	Detail int32
 }
 
-func NewTraverseEvent(e *Event) *TraverseEvent {
+func (this *TraverseEvent) AsTraverseEvent() *TraverseEvent { return this }
+
+type TraverseEventLike interface {
+	AsTraverseEvent() *TraverseEvent
+}
+
+func NewTraverseEvent(eLike EventLike) *TraverseEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &TraverseEvent{}
 	this.impl = this
 	this.initTraverseEvent(e)

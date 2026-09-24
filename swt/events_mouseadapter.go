@@ -5,6 +5,12 @@ package swt
 type MouseAdapter struct {
 }
 
+func (this *MouseAdapter) AsMouseAdapter() *MouseAdapter { return this }
+
+type MouseAdapterLike interface {
+	AsMouseAdapter() *MouseAdapter
+}
+
 func NewMouseAdapter() *MouseAdapter {
 	this := &MouseAdapter{}
 	this.initMouseAdapter()

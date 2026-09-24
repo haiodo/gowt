@@ -11,6 +11,12 @@ type RGBA struct {
 	Alpha int32
 }
 
+func (this *RGBA) AsRGBA() *RGBA { return this }
+
+type RGBALike interface {
+	AsRGBA() *RGBA
+}
+
 func NewRGBA(red int32, green int32, blue int32, alpha int32) *RGBA {
 	this := &RGBA{}
 	this.initRGBA(red, green, blue, alpha)
@@ -19,7 +25,7 @@ func NewRGBA(red int32, green int32, blue int32, alpha int32) *RGBA {
 
 func (this *RGBA) initRGBA(red int32, green int32, blue int32, alpha int32) {
 	if (alpha > 255) || (alpha < 0) {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Rgb = NewRGB(red, green, blue)
 	this.Alpha = alpha
@@ -33,7 +39,7 @@ func NewRGBAHueSaturationBrightnessAlpha(hue float32, saturation float32, bright
 
 func (this *RGBA) initRGBAHueSaturationBrightnessAlpha(hue float32, saturation float32, brightness float32, alpha float32) {
 	if (alpha > 255) || (alpha < 0) {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.Rgb = NewRGBHueSaturationBrightness(hue, saturation, brightness)
 	this.Alpha = int32((float64(alpha) + 0.5))

@@ -16,7 +16,18 @@ type MouseEvent struct {
 	Count     int32
 }
 
-func NewMouseEvent(e *Event) *MouseEvent {
+func (this *MouseEvent) AsMouseEvent() *MouseEvent { return this }
+
+type MouseEventLike interface {
+	AsMouseEvent() *MouseEvent
+}
+
+func NewMouseEvent(eLike EventLike) *MouseEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &MouseEvent{}
 	this.impl = this
 	this.initMouseEvent(e)

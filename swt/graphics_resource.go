@@ -27,6 +27,12 @@ type Resource struct {
 	impl      ResourceImpl
 }
 
+func (this *Resource) AsResource() *Resource { return this }
+
+type ResourceLike interface {
+	AsResource() *Resource
+}
+
 var ResourceNonDisposedReporter func(error) = nil
 
 func NewResource() *Resource {
@@ -52,7 +58,7 @@ func (this *Resource) initResourceDevice(device *Device) {
 		device = DeviceGetDevice()
 	}
 	if device == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.device = device
 	this.InitNonDisposeTracking()
@@ -87,7 +93,7 @@ func (this *Resource) Dispose() {
 func (this *Resource) GetDevice() *Device {
 	var device *Device = this.device
 	if device == (nil) || this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return device
 }
@@ -137,6 +143,14 @@ type Resource_ResourceTracker struct {
 	reporting       any
 }
 
+func (this *Resource_ResourceTracker) AsResource_ResourceTracker() *Resource_ResourceTracker {
+	return this
+}
+
+type Resource_ResourceTrackerLike interface {
+	AsResource_ResourceTracker() *Resource_ResourceTracker
+}
+
 var ResourceResourceTrackerCleaner any
 
 func newResourceResourceTracker(allocationStack error) *Resource_ResourceTracker {
@@ -162,6 +176,14 @@ func (this *Resource_ResourceTracker) Run() {
 
 type Resource_ResourceTrackerThreadFactory struct {
 	group any
+}
+
+func (this *Resource_ResourceTrackerThreadFactory) AsResource_ResourceTrackerThreadFactory() *Resource_ResourceTrackerThreadFactory {
+	return this
+}
+
+type Resource_ResourceTrackerThreadFactoryLike interface {
+	AsResource_ResourceTrackerThreadFactory() *Resource_ResourceTrackerThreadFactory
 }
 
 func NewResourceResourceTrackerThreadFactory() *Resource_ResourceTrackerThreadFactory {

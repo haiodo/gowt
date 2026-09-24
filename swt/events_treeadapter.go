@@ -5,6 +5,12 @@ package swt
 type TreeAdapter struct {
 }
 
+func (this *TreeAdapter) AsTreeAdapter() *TreeAdapter { return this }
+
+type TreeAdapterLike interface {
+	AsTreeAdapter() *TreeAdapter
+}
+
 func NewTreeAdapter() *TreeAdapter {
 	this := &TreeAdapter{}
 	this.initTreeAdapter()

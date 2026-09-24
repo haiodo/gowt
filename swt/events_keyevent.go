@@ -16,7 +16,18 @@ type KeyEvent struct {
 	Doit        bool
 }
 
-func NewKeyEvent(e *Event) *KeyEvent {
+func (this *KeyEvent) AsKeyEvent() *KeyEvent { return this }
+
+type KeyEventLike interface {
+	AsKeyEvent() *KeyEvent
+}
+
+func NewKeyEvent(eLike EventLike) *KeyEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &KeyEvent{}
 	this.impl = this
 	this.initKeyEvent(e)

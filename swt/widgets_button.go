@@ -15,6 +15,12 @@ type Button struct {
 	radioParent *cocoa.SWTView
 }
 
+func (this *Button) AsButton() *Button { return this }
+
+type ButtonLike interface {
+	AsButton() *Button
+}
+
 var ButtonDEFAULT_DISABLED_FOREGROUND []float64 = []float64{float64(0.6745), float64(0.6745), float64(0.6745), float64(1.0)}
 
 const ButtonEXTRA_HEIGHT int32 = 2
@@ -29,7 +35,12 @@ const ButtonREGULAR_BUTTON_HEIGHT int32 = 32
 
 const ButtonMAX_SIZE int32 = 40000
 
-func NewButton(parent *Composite, style int32) *Button {
+func NewButton(parentLike CompositeLike, style int32) *Button {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Button{}
 	this.impl = this
 	this.initButton(parent, style)
@@ -41,17 +52,17 @@ func (this *Button) initButton(parent *Composite, style int32) {
 }
 
 func (this *Button) AddSelectionListener(listener SelectionListener) {
-	this.AddTypedListener(listener, []int32{SWTSelection, SWTDefaultSelection})
+	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
 func (this *Button) CellSizeForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSSize {
 	var size cocoa.NSSize = this.Control.CellSizeForBounds(id, sel, cellFrame)
-	if this.image != (nil) && ((this.style & (SWTCHECK | SWTRADIO)) != 0) {
+	if this.image != (nil) && ((this.style & (CHECK | RADIO)) != 0) {
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		size.Width += imageSize.Width + float64(ButtonIMAGE_GAP)
 		size.Height = float64(math.Max(float64(size.Height), float64(imageSize.Height)))
 	}
-	if ((this.style & (SWTPUSH | SWTTOGGLE)) != 0) && (this.style&(SWTFLAT|SWTWRAP)) == 0 {
+	if ((this.style & (PUSH | TOGGLE)) != 0) && (this.style&(FLAT|WRAP)) == 0 {
 		if this.image != (nil) {
 			var cell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 			if cell.ControlSize() == int64(cocoa.OSNSControlSizeSmall) {
@@ -60,7 +71,7 @@ func (this *Button) CellSizeForBounds(id int64, sel int64, cellFrame cocoa.NSRec
 		}
 		size.Width += float64(ButtonEXTRA_WIDTH)
 	}
-	if (this.style&SWTWRAP) != 0 && int32(len(this.text)) != 0 && cellFrame.Width < float64(ButtonMAX_SIZE) {
+	if (this.style&WRAP) != 0 && int32(len(this.text)) != 0 && cellFrame.Width < float64(ButtonMAX_SIZE) {
 		var cell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 		var titleRect cocoa.NSRect = cell.TitleRectForBounds(cellFrame)
 		var wrapSize cocoa.NSSize = cocoa.NSSize{}
@@ -71,7 +82,7 @@ func (this *Button) CellSizeForBounds(id int64, sel int64, cellFrame cocoa.NSRec
 		attribStr.Release()
 		var trimHeight float64 = float64(math.Max(float64(size.Height-titleRect.Height), float64(0)))
 		size.Height = rect.Height
-		if this.image != (nil) && ((this.style & (SWTCHECK | SWTRADIO)) != 0) {
+		if this.image != (nil) && ((this.style & (CHECK | RADIO)) != 0) {
 			var imageSize cocoa.NSSize = this.image.Handle.Size()
 			size.Height = float64(math.Max(float64(size.Height), float64(imageSize.Height)))
 		}
@@ -81,20 +92,20 @@ func (this *Button) CellSizeForBounds(id int64, sel int64, cellFrame cocoa.NSRec
 }
 
 func (this *Button) Click() {
-	this.SendSelectionEvent(SWTSelection)
+	this.SendSelectionEvent(Selection)
 }
 
 func (this *Button) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
-	if (this.style & SWTARROW) != 0 {
+	if (this.style & ARROW) != 0 {
 		var width int32
-		if wHint != SWTDEFAULT {
+		if wHint != DEFAULT {
 			width = wHint
 		} else {
 			width = 14
 		}
 		var height int32
-		if hHint != SWTDEFAULT {
+		if hHint != DEFAULT {
 			height = hHint
 		} else {
 			height = 14
@@ -103,10 +114,10 @@ func (this *Button) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int
 	}
 	var size cocoa.NSSize = cocoa.NSSize{}
 	var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSButton(this.View)).Cell()
-	if (this.style&SWTWRAP) != 0 && wHint != SWTDEFAULT {
+	if (this.style&WRAP) != 0 && wHint != DEFAULT {
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		rect.Width = float64(wHint)
-		if hHint != SWTDEFAULT {
+		if hHint != DEFAULT {
 			rect.Height = float64(hHint)
 		} else {
 			rect.Height = float64(ButtonMAX_SIZE)
@@ -117,10 +128,10 @@ func (this *Button) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int
 	}
 	var width int32 = int32(math.Ceil(float64(size.Width)))
 	var height int32 = int32(math.Ceil(float64(size.Height)))
-	if wHint != SWTDEFAULT {
+	if wHint != DEFAULT {
 		width = wHint
 	}
-	if hHint != SWTDEFAULT {
+	if hHint != DEFAULT {
 		height = hHint
 	}
 	return NewPoint(width, height)
@@ -133,7 +144,7 @@ func (this *Button) CreateAttributedTitle() *cocoa.NSAttributedString {
 }
 
 func (this *Button) CreateHandle() {
-	if (this.style & SWTPUSH) == 0 {
+	if (this.style & PUSH) == 0 {
 		this.state |= WidgetTHEME_BACKGROUND
 	}
 	var widget *cocoa.NSButton = castcocoaNSObjectTococoaNSButton(cocoa.NewSWTButton().Alloc())
@@ -141,23 +152,23 @@ func (this *Button) CreateHandle() {
 	var cell *cocoa.NSButtonCell = castcocoaNSObjectTococoaNSButtonCell(cocoa.NewSWTButtonCell().Alloc().Init())
 	widget.SetCell(upcastcocoaNSButtonCellTococoaNSCell(cell))
 	cell.Release()
-	if (this.style&(SWTPUSH|SWTTOGGLE)) != 0 && (this.style&SWTFLAT) == 0 {
+	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&FLAT) == 0 {
 		var superview *cocoa.NSView = this.parent.View
 		for superview != (nil) {
 			if superview.IsKindOfClass(cocoa.OSClass_NSTableView) {
-				this.style |= SWTFLAT
+				this.style |= FLAT
 				break
 			}
 			superview = superview.Superview()
 		}
 	}
 	var type_ int32 = cocoa.OSNSButtonTypeMomentaryLight
-	if (this.style & SWTPUSH) != 0 {
-		if (this.style & SWTFLAT) != 0 {
+	if (this.style & PUSH) != 0 {
+		if (this.style & FLAT) != 0 {
 			widget.SetBezelStyle(int64(cocoa.OSNSBezelStyleSmallSquare))
 		} else {
 			var cond131 int32
-			if (this.style & SWTWRAP) != 0 {
+			if (this.style & WRAP) != 0 {
 				cond131 = cocoa.OSNSBezelStyleFlexiblePush
 			} else {
 				cond131 = cocoa.OSNSBezelStylePush
@@ -165,20 +176,20 @@ func (this *Button) CreateHandle() {
 			widget.SetBezelStyle(int64(cond131))
 		}
 	} else {
-		if (this.style & SWTCHECK) != 0 {
+		if (this.style & CHECK) != 0 {
 			type_ = cocoa.OSNSButtonTypeSwitch
 		} else {
-			if (this.style & SWTRADIO) != 0 {
+			if (this.style & RADIO) != 0 {
 				type_ = cocoa.OSNSButtonTypeRadio
 				this.radioParent = castcocoaNSObjectTococoaSWTView(cocoa.NewSWTView().Alloc().Init())
 			} else {
-				if (this.style & SWTTOGGLE) != 0 {
+				if (this.style & TOGGLE) != 0 {
 					type_ = cocoa.OSNSButtonTypePushOnPushOff
-					if (this.style & SWTFLAT) != 0 {
+					if (this.style & FLAT) != 0 {
 						widget.SetBezelStyle(int64(cocoa.OSNSBezelStyleSmallSquare))
 					} else {
 						var cond132 int32
-						if (this.style & SWTWRAP) != 0 {
+						if (this.style & WRAP) != 0 {
 							cond132 = cocoa.OSNSBezelStyleFlexiblePush
 						} else {
 							cond132 = cocoa.OSNSBezelStylePush
@@ -186,7 +197,7 @@ func (this *Button) CreateHandle() {
 						widget.SetBezelStyle(int64(cond132))
 					}
 				} else {
-					if (this.style & SWTARROW) != 0 {
+					if (this.style & ARROW) != 0 {
 						widget.SetBezelStyle(int64(cocoa.OSNSBezelStyleSmallSquare))
 					}
 				}
@@ -234,7 +245,7 @@ func (this *Button) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame coc
 	if this.background != (nil) {
 		var button *cocoa.NSButton = castcocoaNSViewTococoaNSButton(this.View)
 		var isHighlighted bool
-		if (this.style & SWTTOGGLE) == 0 {
+		if (this.style & TOGGLE) == 0 {
 			isHighlighted = button.IsHighlighted()
 		} else {
 			isHighlighted = (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueOn)
@@ -248,7 +259,7 @@ func (this *Button) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame coc
 		}
 		var isDefault bool = defaultButtonCell != (nil) && defaultButtonCell.Id == id
 		var borderRGB []float64 = ControlGetLighterOrDarkerColor(this.background, 0.3, ControlLuma(this.background) >= 0.5)
-		if isHighlighted && (this.style&SWTFLAT) != 0 {
+		if isHighlighted && (this.style&FLAT) != 0 {
 			borderRGB = ControlGetLighterOrDarkerColor(borderRGB, 0.2, true)
 		}
 		var gc *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
@@ -258,7 +269,7 @@ func (this *Button) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame coc
 		if isDefault {
 			lineWidth = 2
 		} else {
-			if (this.style & SWTFLAT) == 0 {
+			if (this.style & FLAT) == 0 {
 				lineWidth = 0.75
 			} else {
 				lineWidth = 1
@@ -280,7 +291,7 @@ func (this *Button) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame coc
 		if !isHighlighted {
 			var backgroundRGB []float64 = this.background
 			var backgroundNSColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2], float64(1))
-			if (this.style & SWTFLAT) == 0 {
+			if (this.style & FLAT) == 0 {
 				var topRGB []float64 = ControlGetLighterOrDarkerColor(this.background, 0.2, false)
 				var topColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(topRGB[0], topRGB[1], topRGB[2], float64(1))
 				var bottomRGB []float64 = ControlGetLighterOrDarkerColor(this.background, 0.1, true)
@@ -314,25 +325,25 @@ func (this *Button) DrawBezelWithFrame_inView(id int64, sel int64, cellFrame coc
 }
 
 func (this *Button) DrawInteriorWithFrame_inView(id int64, sel int64, cellRect cocoa.NSRect, viewid int64) {
-	if (this.style&(SWTCHECK|SWTRADIO)) != 0 && this.backgroundImage != (nil) {
+	if (this.style&(CHECK|RADIO)) != 0 && this.backgroundImage != (nil) {
 		this.FillBackground(cocoa.NewNSViewOverload1(viewid), cocoa.NSGraphicsContextCurrentContext(), cellRect, -1)
 	}
 	this.Control.DrawInteriorWithFrame_inView(id, sel, cellRect, viewid)
-	if this.image != (nil) && ((this.style & (SWTCHECK | SWTRADIO)) != 0) {
+	if this.image != (nil) && ((this.style & (CHECK | RADIO)) != 0) {
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		var nsCell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 		var x float64 = float64(0)
 		var y float64 = (imageSize.Height - cellRect.Height) / 2
 		var imageRect cocoa.NSRect = nsCell.ImageRectForBounds(cellRect)
 		var stringSize cocoa.NSSize = (castcocoaNSViewTococoaNSButton(this.View)).AttributedTitle().Size()
-		switch this.style & (SWTLEFT | SWTRIGHT | SWTCENTER) {
-		case SWTLEFT:
+		switch this.style & (LEFT | RIGHT | CENTER) {
+		case LEFT:
 			x = imageRect.X + imageRect.Width + float64(ButtonIMAGE_GAP)
 			break
-		case SWTCENTER:
+		case CENTER:
 			x = cellRect.X + imageRect.X + imageRect.Width + ((cellRect.Width - stringSize.Width) / 2) - imageSize.Width - float64(ButtonIMAGE_GAP)
 			break
-		case SWTRIGHT:
+		case RIGHT:
 			x = cellRect.X + cellRect.Width - stringSize.Width - imageSize.Width - float64(ButtonIMAGE_GAP)
 			break
 		}
@@ -352,7 +363,7 @@ func (this *Button) DrawInteriorWithFrame_inView(id int64, sel int64, cellRect c
 }
 
 func (this *Button) DrawTitleWithFrameInView(id int64, sel int64, title int64, titleRect cocoa.NSRect, view int64) cocoa.NSRect {
-	var wrap bool = (this.style&SWTWRAP) != 0 && int32(len(this.text)) != 0
+	var wrap bool = (this.style&WRAP) != 0 && int32(len(this.text)) != 0
 	var isEnabled bool = this.impl.IsEnabled()
 	if wrap {
 		var wrapSize cocoa.NSSize = cocoa.NSSize{}
@@ -374,14 +385,14 @@ func (this *Button) DrawTitleWithFrameInView(id int64, sel int64, title int64, t
 		}
 		var attribStr *cocoa.NSAttributedString = this.CreateString(this.text, nil, foreground2, this.style, true, true, true)
 		var rect cocoa.NSRect = attribStr.BoundingRectWithSize(wrapSize, int64(cocoa.OSNSStringDrawingUsesLineFragmentOrigin))
-		switch this.style & (SWTLEFT | SWTRIGHT | SWTCENTER) {
-		case SWTLEFT:
+		switch this.style & (LEFT | RIGHT | CENTER) {
+		case LEFT:
 			rect.X = titleRect.X
 			break
-		case SWTCENTER:
+		case CENTER:
 			rect.X = titleRect.X + (titleRect.Width-rect.Width)/2
 			break
-		case SWTRIGHT:
+		case RIGHT:
 			rect.X = titleRect.X + titleRect.Width - rect.Width
 			break
 		}
@@ -404,7 +415,7 @@ func (this *Button) DrawsBackground() bool {
 }
 
 func (this *Button) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect cocoa.NSRect) {
-	if (this.style & SWTARROW) != 0 {
+	if (this.style & ARROW) != 0 {
 		var frame cocoa.NSRect = this.View.Frame()
 		var arrowSize int32 = int32(math.Min(float64(int32(frame.Height)), float64(int32(frame.Width)))) / 2
 		context.SaveGraphicsState()
@@ -422,13 +433,13 @@ func (this *Button) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect 
 		path.LineToPoint(p3)
 		path.ClosePath()
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-		if (this.style & SWTLEFT) != 0 {
+		if (this.style & LEFT) != 0 {
 			transform.RotateByDegrees(float64(90))
 		} else {
-			if (this.style & SWTUP) != 0 {
+			if (this.style & UP) != 0 {
 				transform.RotateByDegrees(float64(180))
 			} else {
-				if (this.style & SWTRIGHT) != 0 {
+				if (this.style & RIGHT) != 0 {
 					transform.RotateByDegrees(float64(-90))
 				}
 			}
@@ -456,36 +467,36 @@ func (this *Button) FocusRingMaskBoundsForFrame(id int64, sel int64, cellFrame c
 
 func (this *Button) GetAlignment() int32 {
 	this.CheckWidget()
-	if (this.style & SWTARROW) != 0 {
-		if (this.style & SWTUP) != 0 {
-			return SWTUP
+	if (this.style & ARROW) != 0 {
+		if (this.style & UP) != 0 {
+			return UP
 		}
-		if (this.style & SWTDOWN) != 0 {
-			return SWTDOWN
+		if (this.style & DOWN) != 0 {
+			return DOWN
 		}
-		if (this.style & SWTLEFT) != 0 {
-			return SWTLEFT
+		if (this.style & LEFT) != 0 {
+			return LEFT
 		}
-		if (this.style & SWTRIGHT) != 0 {
-			return SWTRIGHT
+		if (this.style & RIGHT) != 0 {
+			return RIGHT
 		}
-		return SWTUP
+		return UP
 	}
-	if (this.style & SWTLEFT) != 0 {
-		return SWTLEFT
+	if (this.style & LEFT) != 0 {
+		return LEFT
 	}
-	if (this.style & SWTCENTER) != 0 {
-		return SWTCENTER
+	if (this.style & CENTER) != 0 {
+		return CENTER
 	}
-	if (this.style & SWTRIGHT) != 0 {
-		return SWTRIGHT
+	if (this.style & RIGHT) != 0 {
+		return RIGHT
 	}
-	return SWTLEFT
+	return LEFT
 }
 
 func (this *Button) GetGrayed() bool {
 	this.CheckWidget()
-	if (this.style & SWTCHECK) == 0 {
+	if (this.style & CHECK) == 0 {
 		return false
 	}
 	return this.grayed
@@ -502,10 +513,10 @@ func (this *Button) GetNameText() string {
 
 func (this *Button) GetSelection() bool {
 	this.CheckWidget()
-	if (this.style & (SWTCHECK | SWTRADIO | SWTTOGGLE)) == 0 {
+	if (this.style & (CHECK | RADIO | TOGGLE)) == 0 {
 		return false
 	}
-	if (this.style&SWTCHECK) != 0 && this.grayed {
+	if (this.style&CHECK) != 0 && this.grayed {
 		return (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueMixed)
 	}
 	return (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueOn)
@@ -521,7 +532,7 @@ func (this *Button) IsDescribedByLabel() bool {
 }
 
 func (this *Button) NextState(id int64, sel int64) int64 {
-	if (this.style&SWTCHECK) != 0 && this.grayed {
+	if (this.style&CHECK) != 0 && this.grayed {
 		var cond133 int32
 		if (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueMixed) {
 			cond133 = cocoa.OSNSControlStateValueOff
@@ -550,13 +561,13 @@ func (this *Button) ReleaseWidget() {
 func (this *Button) RemoveSelectionListener(listener SelectionListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTSelection, listener)
-	this.eventTable.UnhookEventTypeListener(SWTDefaultSelection, listener)
+	this.eventTable.UnhookEventTypeListener(Selection, listener)
+	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
 func (this *Button) SelectRadio() {
@@ -571,12 +582,12 @@ func (this *Button) SelectRadio() {
 }
 
 func (this *Button) SendSelection() {
-	if (this.style & SWTRADIO) != 0 {
-		if (this.parent.GetStyle() & SWTNO_RADIO_GROUP) == 0 {
+	if (this.style & RADIO) != 0 {
+		if (this.parent.GetStyle() & NO_RADIO_GROUP) == 0 {
 			this.SelectRadio()
 		}
 	}
-	if (this.style & SWTCHECK) != 0 {
+	if (this.style & CHECK) != 0 {
 		if this.grayed && (castcocoaNSViewTococoaNSButton(this.View)).State() == int64(cocoa.OSNSControlStateValueOn) {
 			(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cocoa.OSNSControlStateValueOff))
 		}
@@ -584,7 +595,7 @@ func (this *Button) SendSelection() {
 			(castcocoaNSViewTococoaNSButton(this.View)).SetState(int64(cocoa.OSNSControlStateValueOn))
 		}
 	}
-	this.SendSelectionEvent(SWTSelection)
+	this.SendSelectionEvent(Selection)
 }
 
 func (this *Button) SetAlignment(alignment int32) {
@@ -594,19 +605,19 @@ func (this *Button) SetAlignment(alignment int32) {
 }
 
 func (this *Button) _setAlignment(alignment int32) {
-	if (this.style & SWTARROW) != 0 {
-		if (this.style & (SWTUP | SWTDOWN | SWTLEFT | SWTRIGHT)) == 0 {
+	if (this.style & ARROW) != 0 {
+		if (this.style & (UP | DOWN | LEFT | RIGHT)) == 0 {
 			return
 		}
-		this.style &= ^(SWTUP | SWTDOWN | SWTLEFT | SWTRIGHT)
-		this.style |= alignment & (SWTUP | SWTDOWN | SWTLEFT | SWTRIGHT)
+		this.style &= ^(UP | DOWN | LEFT | RIGHT)
+		this.style |= alignment & (UP | DOWN | LEFT | RIGHT)
 		return
 	}
-	if (alignment & (SWTLEFT | SWTRIGHT | SWTCENTER)) == 0 {
+	if (alignment & (LEFT | RIGHT | CENTER)) == 0 {
 		return
 	}
-	this.style &= ^(SWTLEFT | SWTRIGHT | SWTCENTER)
-	this.style |= alignment & (SWTLEFT | SWTRIGHT | SWTCENTER)
+	this.style &= ^(LEFT | RIGHT | CENTER)
+	this.style |= alignment & (LEFT | RIGHT | CENTER)
 	if this.text != "" {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
@@ -628,7 +639,7 @@ func (this *Button) SetBackgroundImageImageOnControl(image *cocoa.NSImage) {
 }
 
 func (this *Button) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32, width int32, height int32, move bool, resize bool) {
-	if (this.style&(SWTPUSH|SWTTOGGLE)) != 0 && (this.style&(SWTFLAT|SWTWRAP)) == 0 {
+	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
 		var heightThreshold int32 = ButtonREGULAR_BUTTON_HEIGHT
 		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
 		if cell != (nil) && cell.ControlSize() == int64(cocoa.OSNSControlSizeSmall) {
@@ -654,7 +665,7 @@ func (this *Button) SetFontFontOnControl(nsFont *cocoa.NSFont) {
 	if this.text != "" {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
-	if (this.style&(SWTPUSH|SWTTOGGLE)) != 0 && (this.style&(SWTFLAT|SWTWRAP)) == 0 {
+	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
 		var cond134 int32
 		if this.font != (nil) {
 			cond134 = cocoa.OSNSBezelStyleFlexiblePush
@@ -671,7 +682,7 @@ func (this *Button) SetForegroundColorOnControl(color []float64) {
 
 func (this *Button) SetGrayed(grayed bool) {
 	this.CheckWidget()
-	if (this.style & SWTCHECK) == 0 {
+	if (this.style & CHECK) == 0 {
 		return
 	}
 	var checked bool = this.GetSelection()
@@ -689,13 +700,13 @@ func (this *Button) SetGrayed(grayed bool) {
 func (this *Button) SetImage(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	if (this.style & SWTARROW) != 0 {
+	if (this.style & ARROW) != 0 {
 		return
 	}
 	this.image = image
-	if (this.style & (SWTRADIO | SWTCHECK)) == 0 {
+	if (this.style & (RADIO | CHECK)) == 0 {
 		var cond135 *cocoa.NSImage
 		if image != (nil) {
 			cond135 = image.Handle
@@ -708,7 +719,7 @@ func (this *Button) SetImage(image *Image) {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
 	if image != (nil) {
-		if (this.style&(SWTPUSH|SWTTOGGLE)) != 0 && (this.style&(SWTFLAT|SWTWRAP)) == 0 {
+		if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
 			var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSButton(this.View)).Cell()
 			var size cocoa.NSSize = cell.CellSize()
 			var height int32 = int32(math.Ceil(float64(size.Height)))
@@ -726,19 +737,19 @@ func (this *Button) SetImage(image *Image) {
 }
 
 func (this *Button) SetRadioSelection(value bool) bool {
-	if (this.style & SWTRADIO) == 0 {
+	if (this.style & RADIO) == 0 {
 		return false
 	}
 	if this.GetSelection() != value {
 		this.SetSelection(value)
-		this.SendSelectionEvent(SWTSelection)
+		this.SendSelectionEvent(Selection)
 	}
 	return true
 }
 
 func (this *Button) SetSelection(selected bool) {
 	this.CheckWidget()
-	if (this.style & (SWTCHECK | SWTRADIO | SWTTOGGLE)) == 0 {
+	if (this.style & (CHECK | RADIO | TOGGLE)) == 0 {
 		return
 	}
 	if this.grayed {
@@ -763,9 +774,9 @@ func (this *Button) SetSelection(selected bool) {
 func (this *Button) SetText(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if (this.style & SWTARROW) != 0 {
+	if (this.style & ARROW) != 0 {
 		return
 	}
 	this.text = string_
@@ -775,7 +786,7 @@ func (this *Button) SetText(string_ string) {
 
 func (this *Button) TitleRectForBounds(id int64, sel int64, cellFrame cocoa.NSRect) cocoa.NSRect {
 	var rect cocoa.NSRect = this.Control.TitleRectForBounds(id, sel, cellFrame)
-	if this.image != (nil) && ((this.style & (SWTCHECK | SWTRADIO)) != 0) {
+	if this.image != (nil) && ((this.style & (CHECK | RADIO)) != 0) {
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		rect.X += imageSize.Width + float64(ButtonIMAGE_GAP)
 		rect.Width -= (imageSize.Width + float64(ButtonIMAGE_GAP))
@@ -786,18 +797,18 @@ func (this *Button) TitleRectForBounds(id int64, sel int64, cellFrame cocoa.NSRe
 
 func (this *Button) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 	var code int32 = this.Control.TraversalCode(key, theEvent)
-	if (this.style & SWTARROW) != 0 {
-		code &= ^(SWTTRAVERSE_TAB_NEXT | SWTTRAVERSE_TAB_PREVIOUS)
+	if (this.style & ARROW) != 0 {
+		code &= ^(TRAVERSE_TAB_NEXT | TRAVERSE_TAB_PREVIOUS)
 	}
-	if (this.style & SWTRADIO) != 0 {
-		code |= SWTTRAVERSE_ARROW_NEXT | SWTTRAVERSE_ARROW_PREVIOUS
+	if (this.style & RADIO) != 0 {
+		code |= TRAVERSE_ARROW_NEXT | TRAVERSE_ARROW_PREVIOUS
 	}
 	return code
 }
 
 func (this *Button) UpdateAlignment() {
 	var widget *cocoa.NSButton = castcocoaNSViewTococoaNSButton(this.View)
-	if (this.style & (SWTPUSH | SWTTOGGLE)) != 0 {
+	if (this.style & (PUSH | TOGGLE)) != 0 {
 		if int32(len(this.text)) != 0 && this.image != (nil) {
 			widget.SetImagePosition(int64(cocoa.OSNSImageLeft))
 		} else {
@@ -827,16 +838,16 @@ func (this *Button) SetZOrderOnControl() {
 }
 
 func ButtonCheckStyle(style int32) int32 {
-	style = WidgetCheckBits(style, SWTPUSH, SWTARROW, SWTCHECK, SWTRADIO, SWTTOGGLE, 0)
-	if (style & (SWTPUSH | SWTTOGGLE)) != 0 {
-		return WidgetCheckBits(style, SWTCENTER, SWTLEFT, SWTRIGHT, 0, 0, 0)
+	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, 0)
+	if (style & (PUSH | TOGGLE)) != 0 {
+		return WidgetCheckBits(style, CENTER, LEFT, RIGHT, 0, 0, 0)
 	}
-	if (style & (SWTCHECK | SWTRADIO)) != 0 {
-		return WidgetCheckBits(style, SWTLEFT, SWTRIGHT, SWTCENTER, 0, 0, 0)
+	if (style & (CHECK | RADIO)) != 0 {
+		return WidgetCheckBits(style, LEFT, RIGHT, CENTER, 0, 0, 0)
 	}
-	if (style & SWTARROW) != 0 {
-		style |= SWTNO_FOCUS
-		return WidgetCheckBits(style, SWTUP, SWTDOWN, SWTLEFT, SWTRIGHT, 0, 0)
+	if (style & ARROW) != 0 {
+		style |= NO_FOCUS
+		return WidgetCheckBits(style, UP, DOWN, LEFT, RIGHT, 0, 0)
 	}
 	return style
 }

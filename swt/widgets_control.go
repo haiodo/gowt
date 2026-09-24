@@ -34,6 +34,12 @@ type Control struct {
 	touchEnabled         bool
 }
 
+func (this *Control) AsControl() *Control { return this }
+
+type ControlLike interface {
+	AsControl() *Control
+}
+
 const ControlCLIPPING int32 = 1024
 
 const ControlVISIBLE_REGION int32 = 4096
@@ -58,7 +64,12 @@ func (this *Control) initControl() {
 	this.backgroundAlpha = 255
 }
 
-func NewControlParentStyle(parent *Composite, style int32) *Control {
+func NewControlParentStyle(parentLike CompositeLike, style int32) *Control {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this := &Control{}
 	this.impl = this
 	this.initControlParentStyle(parent, style)
@@ -74,7 +85,7 @@ func (this *Control) initControlParentStyle(parent *Composite, style int32) {
 
 func (this *Control) AcceptsFirstMouse(id int64, sel int64, theEvent int64) bool {
 	var shell *Shell = this.impl.GetShell()
-	if (shell.style & SWTON_TOP) != 0 {
+	if (shell.style & ON_TOP) != 0 {
 		return true
 	}
 	return this.Widget.AcceptsFirstMouse(id, sel, theEvent)
@@ -111,7 +122,7 @@ func (this *Control) AccessibilityActionNames(id int64, sel int64) int64 {
 				returnValue = baseArray.Id
 			}
 		}
-		if this.Hooks(SWTMenuDetect) || (this.menu != (nil) && !this.menu.IsDisposed()) {
+		if this.Hooks(MenuDetect) || (this.menu != (nil) && !this.menu.IsDisposed()) {
 			var baseArray *cocoa.NSArray = cocoa.NewNSArrayOverload1(returnValue)
 			var ourNames *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(baseArray.Count() + 1)
 			ourNames.AddObjectsFromArray(baseArray)
@@ -251,57 +262,67 @@ func (this *Control) AccessibilitySetValue_forAttribute(id int64, sel int64, arg
 }
 
 func (this *Control) AddControlListener(listener ControlListener) {
-	this.AddTypedListener(listener, []int32{SWTResize, SWTMove})
+	this.AddTypedListener(listener, []int32{Resize, Move})
 }
 
 func (this *Control) AddDragDetectListener(listener DragDetectListener) {
-	this.AddTypedListener(listener, []int32{SWTDragDetect})
+	this.AddTypedListener(listener, []int32{DragDetect})
 }
 
 func (this *Control) AddFocusListener(listener FocusListener) {
-	this.AddTypedListener(listener, []int32{SWTFocusIn, SWTFocusOut})
+	this.AddTypedListener(listener, []int32{FocusIn, FocusOut})
 }
 
 func (this *Control) AddGestureListener(listener GestureListener) {
-	this.AddTypedListener(listener, []int32{SWTGesture})
+	this.AddTypedListener(listener, []int32{Gesture})
 }
 
 func (this *Control) AddHelpListener(listener HelpListener) {
-	this.AddTypedListener(listener, []int32{SWTHelp})
+	this.AddTypedListener(listener, []int32{Help})
 }
 
 func (this *Control) AddKeyListener(listener KeyListener) {
-	this.AddTypedListener(listener, []int32{SWTKeyUp, SWTKeyDown})
+	this.AddTypedListener(listener, []int32{KeyUp, KeyDown})
 }
 
 func (this *Control) AddMenuDetectListener(listener MenuDetectListener) {
-	this.AddTypedListener(listener, []int32{SWTMenuDetect})
+	this.AddTypedListener(listener, []int32{MenuDetect})
 }
 
 func (this *Control) AddMouseListener(listener MouseListener) {
-	this.AddTypedListener(listener, []int32{SWTMouseDown, SWTMouseUp, SWTMouseDoubleClick})
+	this.AddTypedListener(listener, []int32{MouseDown, MouseUp, MouseDoubleClick})
 }
 
 func (this *Control) AddMouseTrackListener(listener MouseTrackListener) {
-	this.AddTypedListener(listener, []int32{SWTMouseEnter, SWTMouseExit, SWTMouseHover})
+	this.AddTypedListener(listener, []int32{MouseEnter, MouseExit, MouseHover})
 }
 
 func (this *Control) AddMouseMoveListener(listener MouseMoveListener) {
-	this.AddTypedListener(listener, []int32{SWTMouseMove})
+	this.AddTypedListener(listener, []int32{MouseMove})
 }
 
 func (this *Control) AddMouseWheelListener(listener MouseWheelListener) {
-	this.AddTypedListener(listener, []int32{SWTMouseWheel})
+	this.AddTypedListener(listener, []int32{MouseWheel})
 }
 
-func (this *Control) AddRelation(control *Control) {
+func (this *Control) AddRelation(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 }
 
 func (this *Control) AddPaintListener(listener PaintListener) {
-	this.AddTypedListener(listener, []int32{SWTPaint})
+	this.AddTypedListener(listener, []int32{Paint})
 }
 
-func (this *Control) AddTraits(dict *cocoa.NSMutableDictionary, font *Font) {
+func (this *Control) AddTraits(dict *cocoa.NSMutableDictionary, fontLike FontLike) {
+	var font *Font
+	if fontLike != nil {
+		font = fontLike.AsFont()
+	}
+	_ = font
 	if (font.ExtraTraits & cocoa.OSNSBoldFontMask) != 0 {
 		dict.SetObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithDouble(ControlSYNTHETIC_BOLD)), upcastcocoaNSStringTococoaId(cocoa.OSNSStrokeWidthAttributeName_))
 	}
@@ -315,7 +336,7 @@ func (this *Control) AddTouchListener(listener TouchListener) {
 }
 
 func (this *Control) AddTraverseListener(listener TraverseListener) {
-	this.AddTypedListener(listener, []int32{SWTTraverse})
+	this.AddTypedListener(listener, []int32{Traverse})
 }
 
 func (this *Control) BecomeFirstResponder(id int64, sel int64) bool {
@@ -399,7 +420,7 @@ func (this *Control) CancelOperation(id int64, sel int64, sender int64) {
 		if this.IsDisposed() {
 			return
 		}
-		if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
+		if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
 			return
 		}
 	}
@@ -415,7 +436,7 @@ func (this *Control) CheckBackground() {
 	for {
 		var mode int32 = composite.backgroundMode
 		if mode != 0 || this.backgroundAlpha == 0 {
-			if mode == SWTINHERIT_DEFAULT || this.backgroundAlpha == 0 {
+			if mode == INHERIT_DEFAULT || this.backgroundAlpha == 0 {
 				var control *Control = this
 				for {
 					if (control.state & WidgetTHEME_BACKGROUND) == 0 {
@@ -441,10 +462,15 @@ func (this *Control) CheckBackground() {
 }
 
 func (this *Control) CheckBuffered() {
-	this.style |= SWTDOUBLE_BUFFERED
+	this.style |= DOUBLE_BUFFERED
 }
 
-func (this *Control) CheckToolTip(target *Widget) {
+func (this *Control) CheckToolTip(targetLike WidgetLike) {
+	var target *Widget
+	if targetLike != nil {
+		target = targetLike.AsWidget()
+	}
+	_ = target
 	if this.impl.IsVisible() && this.display.tooltipControl == this && (target == (nil) || this.display.tooltipTarget == target) {
 		var shell *Shell = this.impl.GetShell()
 		shell.SendToolTipEvent(false)
@@ -460,10 +486,10 @@ func (this *Control) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint in
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
-	if wHint != SWTDEFAULT {
+	if wHint != DEFAULT {
 		width = wHint
 	}
-	if hHint != SWTDEFAULT {
+	if hHint != DEFAULT {
 		height = hHint
 	}
 	var border int32 = this.GetBorderWidth()
@@ -511,7 +537,12 @@ func (this *Control) ContentView() *cocoa.NSView {
 	return this.View
 }
 
-func (this *Control) CreateString(string_ string, font *Font, foreground []float64, alignment int32, wrap bool, enabled bool, mnemonics bool) *cocoa.NSAttributedString {
+func (this *Control) CreateString(string_ string, fontLike FontLike, foreground []float64, alignment int32, wrap bool, enabled bool, mnemonics bool) *cocoa.NSAttributedString {
+	var font *Font
+	if fontLike != nil {
+		font = fontLike.AsFont()
+	}
+	_ = font
 	var dict *cocoa.NSMutableDictionary = (castcocoaNSObjectTococoaNSMutableDictionary(cocoa.NewNSMutableDictionary().Alloc())).InitWithCapacity(int64(5))
 	if font == (nil) {
 		if this.font != (nil) {
@@ -540,16 +571,16 @@ func (this *Control) CreateString(string_ string, font *Font, foreground []float
 	paragraphStyle.SetLineBreakMode(int64(cond63))
 	if alignment != 0 {
 		var align int32 = cocoa.OSNSTextAlignmentLeft
-		if (alignment & SWTCENTER) != 0 {
+		if (alignment & CENTER) != 0 {
 			align = cocoa.OSNSTextAlignmentCenter
 		} else {
-			if (alignment & SWTRIGHT) != 0 {
+			if (alignment & RIGHT) != 0 {
 				align = cocoa.OSNSTextAlignmentRight
 			}
 		}
 		paragraphStyle.SetAlignment(int64(align))
 	}
-	if (this.style & SWTRIGHT_TO_LEFT) != 0 {
+	if (this.style & RIGHT_TO_LEFT) != 0 {
 		paragraphStyle.SetBaseWritingDirection(int64(cocoa.OSNSWritingDirectionRightToLeft))
 	} else {
 		paragraphStyle.SetBaseWritingDirection(int64(cocoa.OSNSWritingDirectionLeftToRight))
@@ -585,7 +616,7 @@ func (this *Control) CreateWidget() {
 }
 
 func (this *Control) DefaultBackground() *Color {
-	return this.display.GetWidgetColor(SWTCOLOR_WIDGET_BACKGROUND)
+	return this.display.GetWidgetColor(COLOR_WIDGET_BACKGROUND)
 }
 
 func (this *Control) DefaultFont() *Font {
@@ -596,7 +627,7 @@ func (this *Control) DefaultFont() *Font {
 }
 
 func (this *Control) DefaultForeground() *Color {
-	return this.display.GetWidgetColor(SWTCOLOR_WIDGET_FOREGROUND)
+	return this.display.GetWidgetColor(COLOR_WIDGET_FOREGROUND)
 }
 
 func (this *Control) DefaultNSFont() *cocoa.NSFont {
@@ -632,7 +663,7 @@ func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
+				if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -647,18 +678,28 @@ func (this *Control) DoCommandBySelector(id int64, sel int64, selector int64) {
 	this.Widget.DoCommandBySelector(id, sel, selector)
 }
 
-func (this *Control) DragDetect(event *Event) bool {
+func (this *Control) DragDetect(eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.CheckWidget()
 	if event == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.DragDetectButtonCountStateMaskXY(event.Button, event.Count, event.StateMask, event.X, event.Y)
 }
 
-func (this *Control) DragDetectEvent(event *MouseEvent) bool {
+func (this *Control) DragDetectEvent(eventLike MouseEventLike) bool {
+	var event *MouseEvent
+	if eventLike != nil {
+		event = eventLike.AsMouseEvent()
+	}
+	_ = event
 	this.CheckWidget()
 	if event == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.DragDetectButtonCountStateMaskXY(event.Button, event.Count, event.StateMask, event.X, event.Y)
 }
@@ -731,7 +772,7 @@ func (this *Control) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect
 	if id != this.PaintView().Id {
 		return
 	}
-	if !this.Hooks(SWTPaint) && !this.Filters(SWTPaint) {
+	if !this.Hooks(Paint) && !this.Filters(Paint) {
 		return
 	}
 	var data *GCData = NewGCData()
@@ -743,7 +784,7 @@ func (this *Control) DrawWidget(id int64, context *cocoa.NSGraphicsContext, rect
 	event.Y = int32(rect.Y)
 	event.Width = int32(rect.Width)
 	event.Height = int32(rect.Height)
-	this.SendEventEventTypeEvent(SWTPaint, event)
+	this.SendEventEventTypeEvent(Paint, event)
 	event.Gc = nil
 	gc.Dispose()
 }
@@ -872,7 +913,12 @@ func (this *Control) FixChildren(newShell *Shell, oldShell *Shell, newDecoration
 	oldDecorations.FixDecorations(newDecorations, this, menus)
 }
 
-func (this *Control) FixFocus(focusControl *Control) {
+func (this *Control) FixFocus(focusControlLike ControlLike) {
+	var focusControl *Control
+	if focusControlLike != nil {
+		focusControl = focusControlLike.AsControl()
+	}
+	_ = focusControl
 	var shell *Shell = this.impl.GetShell()
 	var control *Control = this
 	cond66 := upcastCompositeToControl(control.parent)
@@ -899,34 +945,34 @@ func (this *Control) FlagsChanged(id int64, sel int64, theEvent int64) {
 			var modifiers int64 = nsEvent.ModifierFlags()
 			var keyCode int32 = DisplayTranslateKey(int32(nsEvent.KeyCode()))
 			switch keyCode {
-			case SWTALT:
+			case ALT:
 				mask = cocoa.OSNSAlternateKeyMask
 				break
-			case SWTCONTROL:
+			case CONTROL:
 				mask = cocoa.OSNSEventModifierFlagControl
 				break
-			case SWTCOMMAND:
+			case COMMAND:
 				mask = cocoa.OSNSEventModifierFlagCommand
 				break
-			case SWTSHIFT:
+			case SHIFT:
 				mask = cocoa.OSNSEventModifierFlagShift
 				break
-			case SWTCAPS_LOCK:
+			case CAPS_LOCK:
 				var event *Event = NewEvent()
 				event.KeyCode = keyCode
-				this.SetInputState(event, nsEvent, SWTKeyDown)
-				this.SendKeyEventTypeEvent(SWTKeyDown, event)
-				this.SetInputState(event, nsEvent, SWTKeyUp)
-				this.SendKeyEventTypeEvent(SWTKeyUp, event)
+				this.SetInputState(event, nsEvent, KeyDown)
+				this.SendKeyEventTypeEvent(KeyDown, event)
+				this.SetInputState(event, nsEvent, KeyUp)
+				this.SendKeyEventTypeEvent(KeyUp, event)
 				break
 			}
 			if mask != 0 {
 				s.keyInputHappened = true
 				var type_ int32
 				if (int64(mask) & modifiers) != 0 {
-					type_ = SWTKeyDown
+					type_ = KeyDown
 				} else {
-					type_ = SWTKeyUp
+					type_ = KeyUp
 				}
 				var event *Event = NewEvent()
 				event.KeyCode = keyCode
@@ -947,7 +993,7 @@ func (this *Control) FocusView() *cocoa.NSView {
 
 func (this *Control) ForceFocus() bool {
 	this.CheckWidget()
-	if this.display.focusEvent == SWTFocusOut {
+	if this.display.focusEvent == FocusOut {
 		return false
 	}
 	var shell *Decorations = this.impl.MenuShell()
@@ -997,7 +1043,7 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 	if !this.impl.IsEventView(id) {
 		return true
 	}
-	if !this.Hooks(SWTGesture) && !this.Filters(SWTGesture) {
+	if !this.Hooks(Gesture) && !this.Filters(Gesture) {
 		return true
 	}
 	var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(eventPtr)
@@ -1011,36 +1057,36 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 	}
 	event.X = int32(point.X)
 	event.Y = int32(point.Y)
-	this.SetInputState(event, nsEvent, SWTGesture)
+	this.SetInputState(event, nsEvent, Gesture)
 	var phase int64 = nsEvent.Phase()
 	if phase == int64(cocoa.OSNSEventPhaseBegan) {
-		detail = SWTGESTURE_BEGIN
+		detail = GESTURE_BEGIN
 		this.display.rotation = 0.0
 		this.display.magnification = 1.0
 		this.display.gestureActive = true
 	} else {
 		if phase == int64(cocoa.OSNSEventPhaseCancelled) || phase == int64(cocoa.OSNSEventPhaseEnded) {
-			detail = SWTGESTURE_END
+			detail = GESTURE_END
 			this.display.gestureActive = false
 		}
 	}
 	event.Detail = detail
 	switch detail {
-	case SWTGESTURE_SWIPE:
+	case GESTURE_SWIPE:
 		event.XDirection = int32(-nsEvent.DeltaX())
 		event.YDirection = int32(-nsEvent.DeltaY())
 		break
-	case SWTGESTURE_ROTATE:
+	case GESTURE_ROTATE:
 		{
 			this.display.rotation += float64(nsEvent.Rotation())
 			event.Rotation = this.display.rotation
 			break
 		}
-	case SWTGESTURE_MAGNIFY:
+	case GESTURE_MAGNIFY:
 		this.display.magnification *= (1.0 + nsEvent.Magnification())
 		event.Magnification = this.display.magnification
 		break
-	case SWTGESTURE_PAN:
+	case GESTURE_PAN:
 		if this.display.gestureActive {
 			event.XDirection = int32(nsEvent.DeltaX())
 			event.YDirection = int32(nsEvent.DeltaY())
@@ -1050,7 +1096,7 @@ func (this *Control) GestureEvent(id int64, eventPtr int64, detail int32) bool {
 		}
 		break
 	}
-	this.SendEventEventTypeEvent(SWTGesture, event)
+	this.SendEventEventTypeEvent(Gesture, event)
 	return event.Doit
 }
 
@@ -1233,7 +1279,7 @@ func (this *Control) GetMonitor() *Monitor {
 
 func (this *Control) GetOrientation() int32 {
 	this.CheckWidget()
-	return this.style & (SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT)
+	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
 
 func (this *Control) GetParent() *Composite {
@@ -1296,7 +1342,7 @@ func (this *Control) GetSize() *Point {
 
 func (this *Control) GetTextDirection() int32 {
 	this.CheckWidget()
-	return this.style & (SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT)
+	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
 
 func (this *Control) GetThemeAlpha() float32 {
@@ -1329,7 +1375,7 @@ func (this *Control) GetVisibleRegion() int64 {
 }
 
 func (this *Control) HasBorder() bool {
-	return (this.style & SWTBORDER) != 0
+	return (this.style & BORDER) != 0
 }
 
 func (this *Control) HasFocus() bool {
@@ -1387,10 +1433,10 @@ func (this *Control) InsertText(id int64, sel int64, string_ int64) bool {
 					s.keyInputHappened = true
 					var event *Event = NewEvent()
 					if i == 0 && type_ == int64(cocoa.OSNSKeyDown) {
-						this.SetKeyState(event, SWTKeyDown, nsEvent)
+						this.SetKeyState(event, KeyDown, nsEvent)
 					}
 					event.Character = buffer[i]
-					if !this.SendKeyEventTypeEvent(SWTKeyDown, event) {
+					if !this.SendKeyEventTypeEvent(KeyDown, event) {
 						return false
 					}
 				}
@@ -1441,9 +1487,9 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		}
 	}
 	if data != (nil) {
-		var mask int32 = SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT
+		var mask int32 = LEFT_TO_RIGHT | RIGHT_TO_LEFT
 		if (data.Style & mask) == 0 {
-			data.Style |= this.style & (mask | SWTMIRRORED)
+			data.Style |= this.style & (mask | MIRRORED)
 		}
 		data.Device = upcastDisplayToDevice(this.display)
 		data.Thread = this.display.thread
@@ -1539,7 +1585,12 @@ func (this *Control) IsEnabledCursor() bool {
 	return this.impl.IsEnabled()
 }
 
-func (this *Control) IsFocusAncestor(control *Control) bool {
+func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	_, ok72 := isControlToShell(control)
 	for control != (nil) && control != this && !(ok72) {
 		control = upcastCompositeToControl(control.parent)
@@ -1604,10 +1655,10 @@ func (this *Control) IsTabGroup() bool {
 		}
 	}
 	var code int32 = this.impl.TraversalCode(0, nil)
-	if (code & (SWTTRAVERSE_ARROW_PREVIOUS | SWTTRAVERSE_ARROW_NEXT)) != 0 {
+	if (code & (TRAVERSE_ARROW_PREVIOUS | TRAVERSE_ARROW_NEXT)) != 0 {
 		return false
 	}
-	return (code & (SWTTRAVERSE_TAB_PREVIOUS | SWTTRAVERSE_TAB_NEXT)) != 0
+	return (code & (TRAVERSE_TAB_PREVIOUS | TRAVERSE_TAB_NEXT)) != 0
 }
 
 func (this *Control) IsTabItem() bool {
@@ -1620,7 +1671,7 @@ func (this *Control) IsTabItem() bool {
 		}
 	}
 	var code int32 = this.impl.TraversalCode(0, nil)
-	return (code & (SWTTRAVERSE_ARROW_PREVIOUS | SWTTRAVERSE_ARROW_NEXT)) != 0
+	return (code & (TRAVERSE_ARROW_PREVIOUS | TRAVERSE_ARROW_NEXT)) != 0
 }
 
 func (this *Control) IsTransparent() bool {
@@ -1653,7 +1704,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 			if this.IsDisposed() {
 				return
 			}
-			if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
+			if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
 				return
 			}
 			if consume[0] {
@@ -1673,7 +1724,7 @@ func (this *Control) KeyDown(id int64, sel int64, theEvent int64) {
 				if this.IsDisposed() {
 					return
 				}
-				if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyDown) {
+				if !this.impl.SendKeyEventOnWidget(nsEvent, KeyDown) {
 					return
 				}
 				if consume[0] {
@@ -1693,7 +1744,7 @@ func (this *Control) HasKeyboardFocus(inId int64) bool {
 func (this *Control) KeyUp(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
-		if !this.impl.SendKeyEventOnWidget(nsEvent, SWTKeyUp) {
+		if !this.impl.SendKeyEventOnWidget(nsEvent, KeyUp) {
 			return
 		}
 	}
@@ -1701,7 +1752,7 @@ func (this *Control) KeyUp(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Control) MagnifyWithEvent(id int64, sel int64, event int64) {
-	if !this.GestureEvent(id, event, SWTGESTURE_MAGNIFY) {
+	if !this.GestureEvent(id, event, GESTURE_MAGNIFY) {
 		return
 	}
 	this.Widget.MagnifyWithEvent(id, sel, event)
@@ -1727,11 +1778,11 @@ func (this *Control) MenuForEvent(id int64, sel int64, theEvent int64) int64 {
 	event.Y = y
 	var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 	if nsEvent.Type() == int64(cocoa.OSNSLeftMouseDown) || nsEvent.ButtonNumber() > 0 {
-		event.Detail = SWTMENU_MOUSE
+		event.Detail = MENU_MOUSE
 	} else {
-		event.Detail = SWTMENU_KEYBOARD
+		event.Detail = MENU_KEYBOARD
 	}
-	this.SendEventEventTypeEvent(SWTMenuDetect, event)
+	this.SendEventEventTypeEvent(MenuDetect, event)
 	if this.IsDisposed() {
 		return int64(0)
 	}
@@ -1760,22 +1811,22 @@ func (this *Control) ScrollWheel(id int64, sel int64, theEvent int64) {
 	var handled bool = false
 	if id == this.View.Id {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
-		if this.Hooks(SWTGesture) || this.Filters(SWTGesture) {
-			if !this.GestureEvent(id, theEvent, SWTGESTURE_PAN) {
+		if this.Hooks(Gesture) || this.Filters(Gesture) {
+			if !this.GestureEvent(id, theEvent, GESTURE_PAN) {
 				handled = true
 			}
 		}
 		if !handled {
-			if this.Hooks(SWTMouseWheel) || this.Filters(SWTMouseWheel) {
+			if this.Hooks(MouseWheel) || this.Filters(MouseWheel) {
 				if nsEvent.DeltaY() != 0 {
-					if !this.SendMouseEvent(nsEvent, SWTMouseWheel, true) {
+					if !this.SendMouseEvent(nsEvent, MouseWheel, true) {
 						handled = true
 					}
 				}
 			}
-			if this.Hooks(SWTMouseHorizontalWheel) || this.Filters(SWTMouseHorizontalWheel) {
+			if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
 				if nsEvent.DeltaX() != 0 {
-					if !this.SendMouseEvent(nsEvent, SWTMouseHorizontalWheel, true) {
+					if !this.SendMouseEvent(nsEvent, MouseHorizontalWheel, true) {
 						handled = true
 					}
 				}
@@ -1813,7 +1864,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 	var runEnterExitControl *Control = nil
 	switch nsType {
 	case cocoa.OSNSLeftMouseDown:
-		if nsEvent.ClickCount() == 1 && (nsEvent.ModifierFlags()&int64(cocoa.OSNSEventModifierFlagControl)) == 0 && (this.state&WidgetDRAG_DETECT) != 0 && this.Hooks(SWTDragDetect) {
+		if nsEvent.ClickCount() == 1 && (nsEvent.ModifierFlags()&int64(cocoa.OSNSEventModifierFlagControl)) == 0 && (this.state&WidgetDRAG_DETECT) != 0 && this.Hooks(DragDetect) {
 			consume = make([]bool, 1)
 			var location cocoa.NSPoint = this.View.ConvertPoint_fromView_(nsEvent.LocationInWindow(), nil)
 			if !this.View.IsFlipped() {
@@ -1828,7 +1879,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 		break
 	case cocoa.OSNSLeftMouseUp, cocoa.OSNSRightMouseUp, cocoa.OSNSOtherMouseUp:
 		if this.display.clickCount == 2 {
-			this.SendMouseEvent(nsEvent, SWTMouseDoubleClick, false)
+			this.SendMouseEvent(nsEvent, MouseDoubleClick, false)
 		}
 		runEnterExit = true
 		runEnterExitControl = this.display.FindControl(true)
@@ -1836,7 +1887,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 	}
 	this.SendMouseEvent(nsEvent, type_, false)
 	if dragging {
-		this.SendMouseEvent(nsEvent, SWTDragDetect, false)
+		this.SendMouseEvent(nsEvent, DragDetect, false)
 	}
 	if runEnterExit {
 		this.display.CheckEnterExit(runEnterExitControl, nsEvent, false)
@@ -1848,7 +1899,7 @@ func (this *Control) MouseEvent(id int64, sel int64, theEvent int64, type_ int32
 }
 
 func (this *Control) MouseDown(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseDown) {
 		return
 	}
 	var tracking bool = this.impl.IsEventView(id)
@@ -1863,70 +1914,75 @@ func (this *Control) MouseDown(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Control) MouseUp(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseUp) {
 		return
 	}
 	this.Widget.MouseUp(id, sel, theEvent)
 }
 
 func (this *Control) MouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseMove) {
 		return
 	}
 	this.Widget.MouseDragged(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseDown(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseDown) {
 		return
 	}
 	this.Widget.RightMouseDown(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseUp(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseUp) {
 		return
 	}
 	this.Widget.RightMouseUp(id, sel, theEvent)
 }
 
 func (this *Control) RightMouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseMove) {
 		return
 	}
 	this.Widget.RightMouseDragged(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseDown(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseDown) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseDown) {
 		return
 	}
 	this.Widget.OtherMouseDown(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseUp(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseUp) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseUp) {
 		return
 	}
 	this.Widget.OtherMouseUp(id, sel, theEvent)
 }
 
 func (this *Control) OtherMouseDragged(id int64, sel int64, theEvent int64) {
-	if !this.impl.MouseEvent(id, sel, theEvent, SWTMouseMove) {
+	if !this.impl.MouseEvent(id, sel, theEvent, MouseMove) {
 		return
 	}
 	this.Widget.OtherMouseDragged(id, sel, theEvent)
 }
 
 func (this *Control) Moved() {
-	this.SendEventEventType(SWTMove)
+	this.SendEventEventType(Move)
 }
 
-func (this *Control) MoveAbove(control *Control) {
+func (this *Control) MoveAbove(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	this.CheckWidget()
 	if control != (nil) {
 		if control.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		if this.parent != control.parent {
 			return
@@ -1935,11 +1991,16 @@ func (this *Control) MoveAbove(control *Control) {
 	this.impl.SetZOrderSiblingAboveOnControl(control, true)
 }
 
-func (this *Control) MoveBelow(control *Control) {
+func (this *Control) MoveBelow(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	this.CheckWidget()
 	if control != (nil) {
 		if control.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		if this.parent != control.parent {
 			return
@@ -1948,7 +2009,12 @@ func (this *Control) MoveBelow(control *Control) {
 	this.impl.SetZOrderSiblingAboveOnControl(control, false)
 }
 
-func (this *Control) New_Accessible(control *Control) *Accessible {
+func (this *Control) New_Accessible(controlLike ControlLike) *Accessible {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	return AccessibleInternal_new_Accessible(this)
 }
 
@@ -1959,7 +2025,7 @@ func (this *Control) Pack() {
 
 func (this *Control) PackChanged(changed bool) {
 	this.CheckWidget()
-	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChangedOnControl(SWTDEFAULT, SWTDEFAULT, changed))
+	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChangedOnControl(DEFAULT, DEFAULT, changed))
 }
 
 func (this *Control) PaintView() *cocoa.NSView {
@@ -1969,17 +2035,17 @@ func (this *Control) PaintView() *cocoa.NSView {
 func (this *Control) Print(gc *GC) bool {
 	this.CheckWidget()
 	if gc == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if gc.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.View.DisplayRectIgnoringOpacity(this.View.Bounds(), gc.Handle)
 	return true
 }
 
 func (this *Control) RequestLayout() {
-	this.impl.GetShell().LayoutOverload4([]*Control{this}, SWTDEFER)
+	this.impl.GetShell().LayoutOverload4([]*Control{this}, DEFER)
 }
 
 func (this *Control) Redraw() {
@@ -2100,140 +2166,140 @@ func (this *Control) ReleaseWidget() {
 func (this *Control) RemoveControlListener(listener ControlListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMove, listener)
-	this.eventTable.UnhookEventTypeListener(SWTResize, listener)
+	this.eventTable.UnhookEventTypeListener(Move, listener)
+	this.eventTable.UnhookEventTypeListener(Resize, listener)
 }
 
 func (this *Control) RemoveDragDetectListener(listener DragDetectListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTDragDetect, listener)
+	this.eventTable.UnhookEventTypeListener(DragDetect, listener)
 }
 
 func (this *Control) RemoveFocusListener(listener FocusListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTFocusIn, listener)
-	this.eventTable.UnhookEventTypeListener(SWTFocusOut, listener)
+	this.eventTable.UnhookEventTypeListener(FocusIn, listener)
+	this.eventTable.UnhookEventTypeListener(FocusOut, listener)
 }
 
 func (this *Control) RemoveGestureListener(listener GestureListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTGesture, listener)
+	this.eventTable.UnhookEventTypeListener(Gesture, listener)
 }
 
 func (this *Control) RemoveHelpListener(listener HelpListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTHelp, listener)
+	this.eventTable.UnhookEventTypeListener(Help, listener)
 }
 
 func (this *Control) RemoveKeyListener(listener KeyListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTKeyUp, listener)
-	this.eventTable.UnhookEventTypeListener(SWTKeyDown, listener)
+	this.eventTable.UnhookEventTypeListener(KeyUp, listener)
+	this.eventTable.UnhookEventTypeListener(KeyDown, listener)
 }
 
 func (this *Control) RemoveMenuDetectListener(listener MenuDetectListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMenuDetect, listener)
+	this.eventTable.UnhookEventTypeListener(MenuDetect, listener)
 }
 
 func (this *Control) RemoveMouseListener(listener MouseListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMouseDown, listener)
-	this.eventTable.UnhookEventTypeListener(SWTMouseUp, listener)
-	this.eventTable.UnhookEventTypeListener(SWTMouseDoubleClick, listener)
+	this.eventTable.UnhookEventTypeListener(MouseDown, listener)
+	this.eventTable.UnhookEventTypeListener(MouseUp, listener)
+	this.eventTable.UnhookEventTypeListener(MouseDoubleClick, listener)
 }
 
 func (this *Control) RemoveMouseMoveListener(listener MouseMoveListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMouseMove, listener)
+	this.eventTable.UnhookEventTypeListener(MouseMove, listener)
 }
 
 func (this *Control) RemoveMouseTrackListener(listener MouseTrackListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMouseEnter, listener)
-	this.eventTable.UnhookEventTypeListener(SWTMouseExit, listener)
-	this.eventTable.UnhookEventTypeListener(SWTMouseHover, listener)
+	this.eventTable.UnhookEventTypeListener(MouseEnter, listener)
+	this.eventTable.UnhookEventTypeListener(MouseExit, listener)
+	this.eventTable.UnhookEventTypeListener(MouseHover, listener)
 }
 
 func (this *Control) RemoveMouseWheelListener(listener MouseWheelListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTMouseWheel, listener)
+	this.eventTable.UnhookEventTypeListener(MouseWheel, listener)
 }
 
 func (this *Control) RemovePaintListener(listener PaintListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTPaint, listener)
+	this.eventTable.UnhookEventTypeListener(Paint, listener)
 }
 
 func (this *Control) RemoveRelation() {
@@ -2253,7 +2319,7 @@ func (this *Control) RemoveRelation() {
 func (this *Control) RemoveTouchListener(listener TouchListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
@@ -2264,12 +2330,12 @@ func (this *Control) RemoveTouchListener(listener TouchListener) {
 func (this *Control) RemoveTraverseListener(listener TraverseListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTTraverse, listener)
+	this.eventTable.UnhookEventTypeListener(Traverse, listener)
 }
 
 func (this *Control) ResetVisibleRegion() {
@@ -2299,11 +2365,11 @@ func (this *Control) ResetVisibleRegion() {
 }
 
 func (this *Control) Resized() {
-	this.SendEventEventType(SWTResize)
+	this.SendEventEventType(Resize)
 }
 
 func (this *Control) RotateWithEvent(id int64, sel int64, event int64) {
-	if !this.GestureEvent(id, event, SWTGESTURE_ROTATE) {
+	if !this.GestureEvent(id, event, GESTURE_ROTATE) {
 		return
 	}
 	this.Widget.RotateWithEvent(id, sel, event)
@@ -2315,7 +2381,7 @@ func (this *Control) SendDragEvent(button int32, stateMask int32, x int32, y int
 	event.X = x
 	event.Y = y
 	event.StateMask = stateMask
-	this.PostEventEventTypeEvent(SWTDragDetect, event)
+	this.PostEventEventTypeEvent(DragDetect, event)
 	return event.Doit
 }
 
@@ -2325,14 +2391,14 @@ func (this *Control) SendFocusEvent(type_ int32) {
 	display.focusEvent = type_
 	display.focusControl = this
 	this.SendEventEventType(type_)
-	display.focusEvent = SWTNone
+	display.focusEvent = None
 	display.focusControl = nil
 	if !shell.IsDisposed() {
 		switch type_ {
-		case SWTFocusIn:
+		case FocusIn:
 			shell.SetActiveControl(this)
 			break
-		case SWTFocusOut:
+		case FocusOut:
 			if shell != display.GetActiveShell() {
 				shell.SetActiveControl(nil)
 			}
@@ -2345,10 +2411,10 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 	var shell *Shell = nil
 	var event *Event = NewEvent()
 	switch type_ {
-	case SWTMouseDown:
+	case MouseDown:
 		shell = this.impl.GetShell()
 		fallthrough
-	case SWTMouseUp, SWTMouseDoubleClick, SWTDragDetect:
+	case MouseUp, MouseDoubleClick, DragDetect:
 		var button int32 = int32(nsEvent.ButtonNumber())
 		switch button {
 		case 0:
@@ -2368,9 +2434,9 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 			break
 		}
 		break
-	case SWTMouseWheel:
+	case MouseWheel:
 		{
-			event.Detail = SWTSCROLL_LINE
+			event.Detail = SCROLL_LINE
 			var delta float64 = nsEvent.DeltaY()
 			if delta > 0 {
 				event.Count = int32(math.Max(float64(1), float64(int32(delta))))
@@ -2379,7 +2445,7 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 			}
 			break
 		}
-	case SWTMouseHorizontalWheel:
+	case MouseHorizontalWheel:
 		{
 			var delta float64 = nsEvent.DeltaX()
 			if delta > 0 {
@@ -2417,7 +2483,7 @@ func (this *Control) SendMouseEvent(nsEvent *cocoa.NSEvent, type_ int32, send bo
 		this.PostEventEventTypeEvent(type_, event)
 	}
 	if shell != (nil) {
-		shell.SetActiveControlControlType(this, SWTMouseDown)
+		shell.SetActiveControlControlType(this, MouseDown)
 	}
 	return event.Doit
 }
@@ -2429,13 +2495,13 @@ func (this *Control) TouchStateFromNSTouch(touch *cocoa.NSTouch) *Touch {
 	var state int32 = 0
 	switch int32(osPhase) {
 	case cocoa.OSNSTouchPhaseBegan:
-		state = SWTTOUCHSTATE_DOWN
+		state = TOUCHSTATE_DOWN
 		break
 	case cocoa.OSNSTouchPhaseMoved:
-		state = SWTTOUCHSTATE_MOVE
+		state = TOUCHSTATE_MOVE
 		break
 	case cocoa.OSNSTouchPhaseEnded, cocoa.OSNSTouchPhaseCancelled:
-		state = SWTTOUCHSTATE_UP
+		state = TOUCHSTATE_UP
 		break
 	}
 	this.display.touchCounter++
@@ -2494,7 +2560,12 @@ func (this *Control) SetBackground() {
 	}
 }
 
-func (this *Control) SetBackgroundColor_196(color *Color) {
+func (this *Control) SetBackgroundColor_196(colorLike ColorLike) {
+	var color *Color
+	if colorLike != nil {
+		color = colorLike.AsColor()
+	}
+	_ = color
 	this.CheckWidget()
 	this._setBackground(color)
 	if color != (nil) {
@@ -2502,10 +2573,15 @@ func (this *Control) SetBackgroundColor_196(color *Color) {
 	}
 }
 
-func (this *Control) _setBackground(color *Color) {
+func (this *Control) _setBackground(colorLike ColorLike) {
+	var color *Color
+	if colorLike != nil {
+		color = colorLike.AsColor()
+	}
+	_ = color
 	if color != (nil) {
 		if color.impl.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
 	var background []float64
@@ -2532,7 +2608,7 @@ func (this *Control) _setBackground(color *Color) {
 func (this *Control) SetBackgroundImage(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if image == this.backgroundImage && this.backgroundAlpha > 0 {
 		return
@@ -2584,10 +2660,15 @@ func (this *Control) SetBoundsXYWidthHeightMoveResizeOnControl(x int32, y int32,
 	display.ignoreFocusControl = oldIgnoreFocusControl
 }
 
-func (this *Control) SetBoundsRect(rect *Rectangle) {
+func (this *Control) SetBoundsRect(rectLike RectangleLike) {
+	var rect *Rectangle
+	if rectLike != nil {
+		rect = rectLike.AsRectangle()
+	}
+	_ = rect
 	this.CheckWidget()
 	if rect == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(rect.X, rect.Y, int32(math.Max(float64(0), float64(rect.Width))), int32(math.Max(float64(0), float64(rect.Height))), true, true)
 }
@@ -2616,7 +2697,7 @@ func (this *Control) SetClipRegion(view *cocoa.NSView) {
 func (this *Control) SetCursor(cursor *Cursor) {
 	this.CheckWidget()
 	if cursor != (nil) && cursor.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
 	if !this.impl.IsEnabled() {
@@ -2652,7 +2733,7 @@ func (this *Control) SetEnabled(enabled bool) {
 	var control *Control = nil
 	var fixFocus bool = false
 	if !enabled {
-		if this.display.focusEvent != SWTFocusOut {
+		if this.display.focusEvent != FocusOut {
 			control = this.display.GetFocusControl()
 			fixFocus = this.IsFocusAncestor(control)
 		}
@@ -2670,7 +2751,7 @@ func (this *Control) SetEnabled(enabled bool) {
 
 func (this *Control) SetFocus() bool {
 	this.CheckWidget()
-	if (this.style & SWTNO_FOCUS) != 0 {
+	if (this.style & NO_FOCUS) != 0 {
 		return false
 	}
 	return this.ForceFocus()
@@ -2680,7 +2761,7 @@ func (this *Control) SetFontOnControl(font *Font) {
 	this.CheckWidget()
 	if font != (nil) {
 		if font.impl.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
 	this.font = font
@@ -2700,11 +2781,16 @@ func (this *Control) SetFontFontOnControl(font *cocoa.NSFont) {
 	}
 }
 
-func (this *Control) SetForeground(color *Color) {
+func (this *Control) SetForeground(colorLike ColorLike) {
+	var color *Color
+	if colorLike != nil {
+		color = colorLike.AsColor()
+	}
+	_ = color
 	this.CheckWidget()
 	if color != (nil) {
 		if color.impl.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
 	var foreground []float64
@@ -2776,10 +2862,15 @@ func (this *Control) SetLocation(x int32, y int32) {
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(x, y, 0, 0, true, false)
 }
 
-func (this *Control) SetLocationLocation(location *Point) {
+func (this *Control) SetLocationLocation(locationLike PointLike) {
+	var location *Point
+	if locationLike != nil {
+		location = locationLike.AsPoint()
+	}
+	_ = location
 	this.CheckWidget()
 	if location == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(location.X, location.Y, 0, 0, true, false)
 }
@@ -2788,13 +2879,13 @@ func (this *Control) SetMenu(menu *Menu) {
 	this.CheckWidget()
 	if menu != (nil) {
 		if menu.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		if (menu.style & SWTPOP_UP) == 0 {
-			this.Error(SWTERROR_MENU_NOT_POP_UP)
+		if (menu.style & POP_UP) == 0 {
+			this.Error(ERROR_MENU_NOT_POP_UP)
 		}
 		if menu.parent != this.impl.MenuShell() {
-			this.Error(SWTERROR_INVALID_PARENT)
+			this.Error(ERROR_INVALID_PARENT)
 		}
 	}
 	this.menu = menu
@@ -2804,13 +2895,18 @@ func (this *Control) SetOrientation(orientation int32) {
 	this.CheckWidget()
 }
 
-func (this *Control) SetParent(parent *Composite) bool {
+func (this *Control) SetParent(parentLike CompositeLike) bool {
+	var parent *Composite
+	if parentLike != nil {
+		parent = parentLike.AsComposite()
+	}
+	_ = parent
 	this.CheckWidget()
 	if parent == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if parent.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if this.parent == parent {
 		return true
@@ -2833,7 +2929,7 @@ func (this *Control) SetParent(parent *Composite) bool {
 	parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 	topView.Release()
 	this.parent = parent
-	this.Reskin(SWTALL)
+	this.Reskin(ALL)
 	return true
 }
 
@@ -2860,7 +2956,7 @@ func (this *Control) SetRedraw(redraw bool) {
 func (this *Control) SetRegion(region *Region) {
 	this.CheckWidget()
 	if region != (nil) && region.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.region = region
 	if this.regionPath != (nil) {
@@ -2893,10 +2989,15 @@ func (this *Control) SetSize(width int32, height int32) {
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), false, true)
 }
 
-func (this *Control) SetSizeSize(size *Point) {
+func (this *Control) SetSizeSize(sizeLike PointLike) {
+	var size *Point
+	if sizeLike != nil {
+		size = sizeLike.AsPoint()
+	}
+	_ = size
 	this.CheckWidget()
 	if size == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.impl.SetBoundsXYWidthHeightMoveResizeOnControl(0, 0, int32(math.Max(float64(0), float64(size.X))), int32(math.Max(float64(0), float64(size.Y))), false, true)
 }
@@ -2950,7 +3051,7 @@ func (this *Control) SetVisible(visible bool) {
 		this.state |= WidgetHIDDEN
 	}
 	if visible {
-		this.SendEventEventType(SWTShow)
+		this.SendEventEventType(Show)
 		if this.IsDisposed() {
 			return
 		}
@@ -2958,7 +3059,7 @@ func (this *Control) SetVisible(visible bool) {
 	var control *Control = nil
 	var fixFocus bool = false
 	if !visible {
-		if this.display.focusEvent != SWTFocusOut {
+		if this.display.focusEvent != FocusOut {
 			control = this.display.GetFocusControl()
 			fixFocus = this.IsFocusAncestor(control)
 		}
@@ -2969,7 +3070,7 @@ func (this *Control) SetVisible(visible bool) {
 	}
 	this.impl.InvalidateVisibleRegion()
 	if !visible {
-		this.SendEventEventType(SWTHide)
+		this.SendEventEventType(Hide)
 		if this.IsDisposed() {
 			return
 		}
@@ -2986,7 +3087,7 @@ func (this *Control) SetZOrderOnControl() {
 
 func (this *Control) ShouldDelayWindowOrderingForEvent(id int64, sel int64, theEvent int64) bool {
 	var shell *Shell = this.impl.GetShell()
-	if (shell.style & SWTON_TOP) != 0 {
+	if (shell.style & ON_TOP) != 0 {
 		return false
 	}
 	return this.Widget.ShouldDelayWindowOrderingForEvent(id, sel, theEvent)
@@ -3102,7 +3203,7 @@ func (this *Control) Sort(items []int32) {
 }
 
 func (this *Control) SwipeWithEvent(id int64, sel int64, event int64) {
-	if !this.GestureEvent(id, event, SWTGESTURE_SWIPE) {
+	if !this.GestureEvent(id, event, GESTURE_SWIPE) {
 		return
 	}
 	this.Widget.SwipeWithEvent(id, sel, event)
@@ -3124,10 +3225,15 @@ func (this *Control) ToControl(x int32, y int32) *Point {
 	return this.display.MapFromToXY(nil, this, x, y)
 }
 
-func (this *Control) ToControlPoint(point *Point) *Point {
+func (this *Control) ToControlPoint(pointLike PointLike) *Point {
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	this.CheckWidget()
 	if point == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.ToControl(point.X, point.Y)
 }
@@ -3137,10 +3243,15 @@ func (this *Control) ToDisplay(x int32, y int32) *Point {
 	return this.display.MapFromToXY(this, nil, x, y)
 }
 
-func (this *Control) ToDisplayPoint(point *Point) *Point {
+func (this *Control) ToDisplayPoint(pointLike PointLike) *Point {
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	this.CheckWidget()
 	if point == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.ToDisplay(point.X, point.Y)
 }
@@ -3211,7 +3322,7 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 			var activeTouch *cocoa.NSTouch = this.FindTouchWithId(activeTouches, identity)
 			if activeTouch == (nil) {
 				var fakeTouchUp *Touch = this.TouchStateFromNSTouch(touch)
-				fakeTouchUp.State = SWTTOUCHSTATE_UP
+				fakeTouchUp.State = TOUCHSTATE_UP
 				if currTouchIndex == int32(len(touches)) {
 					var newTouchStates []*Touch = make([]*Touch, int32(len(touches))+1)
 					copy(newTouchStates[0:], touches[0:0+int32(len(touches))])
@@ -3258,20 +3369,20 @@ func (this *Control) TouchesMovedWithEvent(id int64, sel int64, event int64) {
 }
 
 func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, consume []bool) bool {
-	var detail int32 = SWTTRAVERSE_NONE
+	var detail int32 = TRAVERSE_NONE
 	var code int32 = this.impl.TraversalCode(key, theEvent)
 	var all bool = false
 	switch key {
 	case 53:
 		{
 			all = true
-			detail = SWTTRAVERSE_ESCAPE
+			detail = TRAVERSE_ESCAPE
 			break
 		}
 	case 76, 36:
 		{
 			all = true
-			detail = SWTTRAVERSE_RETURN
+			detail = TRAVERSE_RETURN
 			break
 		}
 	case 48:
@@ -3279,9 +3390,9 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 			var modifiers int64 = theEvent.ModifierFlags()
 			var next bool = (modifiers & int64(cocoa.OSNSEventModifierFlagShift)) == 0
 			if next {
-				detail = SWTTRAVERSE_TAB_NEXT
+				detail = TRAVERSE_TAB_NEXT
 			} else {
-				detail = SWTTRAVERSE_TAB_PREVIOUS
+				detail = TRAVERSE_TAB_PREVIOUS
 			}
 			break
 		}
@@ -3289,9 +3400,9 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 		{
 			var next bool = key == 125 || key == 124
 			if next {
-				detail = SWTTRAVERSE_ARROW_NEXT
+				detail = TRAVERSE_ARROW_NEXT
 			} else {
-				detail = SWTTRAVERSE_ARROW_PREVIOUS
+				detail = TRAVERSE_ARROW_PREVIOUS
 			}
 			break
 		}
@@ -3303,9 +3414,9 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 				return false
 			}
 			if key == 121 {
-				detail = SWTTRAVERSE_PAGE_NEXT
+				detail = TRAVERSE_PAGE_NEXT
 			} else {
-				detail = SWTTRAVERSE_PAGE_PREVIOUS
+				detail = TRAVERSE_PAGE_PREVIOUS
 			}
 			break
 		}
@@ -3316,7 +3427,7 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 	consume[0] = (code & detail) != 0
 	event.Doit = consume[0]
 	event.Detail = detail
-	if !this.SetKeyState(event, SWTTraverse, theEvent) {
+	if !this.SetKeyState(event, Traverse, theEvent) {
 		return false
 	}
 	var shell *Shell = this.impl.GetShell()
@@ -3325,7 +3436,7 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 		if control.TraverseEvent(event) {
 			return true
 		}
-		if !event.Doit && control.Hooks(SWTTraverse) {
+		if !event.Doit && control.Hooks(Traverse) {
 			return false
 		}
 		if control == upcastShellToControl(shell) {
@@ -3340,10 +3451,10 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 }
 
 func (this *Control) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
-	var code int32 = SWTTRAVERSE_RETURN | SWTTRAVERSE_TAB_NEXT | SWTTRAVERSE_TAB_PREVIOUS | SWTTRAVERSE_PAGE_NEXT | SWTTRAVERSE_PAGE_PREVIOUS
+	var code int32 = TRAVERSE_RETURN | TRAVERSE_TAB_NEXT | TRAVERSE_TAB_PREVIOUS | TRAVERSE_PAGE_NEXT | TRAVERSE_PAGE_PREVIOUS
 	var shell *Shell = this.impl.GetShell()
 	if shell.parent != (nil) {
-		code |= SWTTRAVERSE_ESCAPE
+		code |= TRAVERSE_ESCAPE
 	}
 	return code
 }
@@ -3352,71 +3463,81 @@ func (this *Control) TraverseMnemonic(key uint16) bool {
 	return false
 }
 
-func (this *Control) Traverse(traversal int32, event *Event) bool {
+func (this *Control) Traverse(traversal int32, eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.CheckWidget()
 	if event == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
 }
 
-func (this *Control) TraverseTraversalEvent(traversal int32, event *KeyEvent) bool {
+func (this *Control) TraverseTraversalEvent(traversal int32, eventLike KeyEventLike) bool {
+	var event *KeyEvent
+	if eventLike != nil {
+		event = eventLike.AsKeyEvent()
+	}
+	_ = event
 	this.CheckWidget()
 	if event == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
 }
 
 func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal int32, character uint16, keyCode int32, keyLocation int32, stateMask int32, doit bool) bool {
-	if traversal == SWTTRAVERSE_NONE {
+	if traversal == TRAVERSE_NONE {
 		switch keyCode {
-		case int32(SWTESC):
+		case int32(ESC):
 			{
-				traversal = SWTTRAVERSE_ESCAPE
+				traversal = TRAVERSE_ESCAPE
 				doit = true
 				break
 			}
-		case int32(SWTCR):
+		case int32(CR):
 			{
-				traversal = SWTTRAVERSE_RETURN
+				traversal = TRAVERSE_RETURN
 				doit = true
 				break
 			}
-		case SWTARROW_DOWN, SWTARROW_RIGHT:
+		case ARROW_DOWN, ARROW_RIGHT:
 			{
-				traversal = SWTTRAVERSE_ARROW_NEXT
+				traversal = TRAVERSE_ARROW_NEXT
 				doit = false
 				break
 			}
-		case SWTARROW_UP, SWTARROW_LEFT:
+		case ARROW_UP, ARROW_LEFT:
 			{
-				traversal = SWTTRAVERSE_ARROW_PREVIOUS
+				traversal = TRAVERSE_ARROW_PREVIOUS
 				doit = false
 				break
 			}
-		case int32(SWTTAB):
+		case int32(TAB):
 			{
-				if (stateMask & SWTSHIFT) != 0 {
-					traversal = SWTTRAVERSE_TAB_PREVIOUS
+				if (stateMask & SHIFT) != 0 {
+					traversal = TRAVERSE_TAB_PREVIOUS
 				} else {
-					traversal = SWTTRAVERSE_TAB_NEXT
+					traversal = TRAVERSE_TAB_NEXT
 				}
 				doit = true
 				break
 			}
-		case SWTPAGE_DOWN:
+		case PAGE_DOWN:
 			{
-				if (stateMask & SWTCTRL) != 0 {
-					traversal = SWTTRAVERSE_PAGE_NEXT
+				if (stateMask & CTRL) != 0 {
+					traversal = TRAVERSE_PAGE_NEXT
 					doit = true
 				}
 				break
 			}
-		case SWTPAGE_UP:
+		case PAGE_UP:
 			{
-				if (stateMask & SWTCTRL) != 0 {
-					traversal = SWTTRAVERSE_PAGE_PREVIOUS
+				if (stateMask & CTRL) != 0 {
+					traversal = TRAVERSE_PAGE_PREVIOUS
 					doit = true
 				}
 				break
@@ -3437,12 +3558,12 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 	var shell *Shell = this.impl.GetShell()
 	var all bool = false
 	switch traversal {
-	case SWTTRAVERSE_ESCAPE, SWTTRAVERSE_RETURN, SWTTRAVERSE_PAGE_NEXT, SWTTRAVERSE_PAGE_PREVIOUS:
+	case TRAVERSE_ESCAPE, TRAVERSE_RETURN, TRAVERSE_PAGE_NEXT, TRAVERSE_PAGE_PREVIOUS:
 		{
 			all = true
 		}
 		fallthrough
-	case SWTTRAVERSE_ARROW_NEXT, SWTTRAVERSE_ARROW_PREVIOUS, SWTTRAVERSE_TAB_NEXT, SWTTRAVERSE_TAB_PREVIOUS:
+	case TRAVERSE_ARROW_NEXT, TRAVERSE_ARROW_PREVIOUS, TRAVERSE_TAB_NEXT, TRAVERSE_TAB_PREVIOUS:
 		{
 			break
 		}
@@ -3456,7 +3577,7 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 		if control.TraverseEvent(event) {
 			return true
 		}
-		if !event.Doit && control.Hooks(SWTTraverse) {
+		if !event.Doit && control.Hooks(Traverse) {
 			return false
 		}
 		if control == upcastShellToControl(shell) {
@@ -3478,8 +3599,13 @@ func (this *Control) TraverseTraversal(traversal int32) bool {
 	return this.TraverseEvent(event)
 }
 
-func (this *Control) TraverseEvent(event *Event) bool {
-	this.SendEventEventTypeEvent(SWTTraverse, event)
+func (this *Control) TraverseEvent(eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
+	this.SendEventEventTypeEvent(Traverse, event)
 	if this.IsDisposed() {
 		return true
 	}
@@ -3487,25 +3613,25 @@ func (this *Control) TraverseEvent(event *Event) bool {
 		return false
 	}
 	switch event.Detail {
-	case SWTTRAVERSE_NONE:
+	case TRAVERSE_NONE:
 		return true
-	case SWTTRAVERSE_ESCAPE:
+	case TRAVERSE_ESCAPE:
 		return this.impl.TraverseEscape()
-	case SWTTRAVERSE_RETURN:
+	case TRAVERSE_RETURN:
 		return this.impl.TraverseReturn()
-	case SWTTRAVERSE_TAB_NEXT:
+	case TRAVERSE_TAB_NEXT:
 		return this.TraverseGroup(true)
-	case SWTTRAVERSE_TAB_PREVIOUS:
+	case TRAVERSE_TAB_PREVIOUS:
 		return this.TraverseGroup(false)
-	case SWTTRAVERSE_ARROW_NEXT:
+	case TRAVERSE_ARROW_NEXT:
 		return this.impl.TraverseItem(true)
-	case SWTTRAVERSE_ARROW_PREVIOUS:
+	case TRAVERSE_ARROW_PREVIOUS:
 		return this.impl.TraverseItem(false)
-	case SWTTRAVERSE_MNEMONIC:
+	case TRAVERSE_MNEMONIC:
 		return this.TraverseMnemonicEvent(event)
-	case SWTTRAVERSE_PAGE_NEXT:
+	case TRAVERSE_PAGE_NEXT:
 		return this.TraversePage(true)
-	case SWTTRAVERSE_PAGE_PREVIOUS:
+	case TRAVERSE_PAGE_PREVIOUS:
 		return this.TraversePage(false)
 	}
 	return false
@@ -3592,7 +3718,12 @@ func (this *Control) TraversePage(next bool) bool {
 	return false
 }
 
-func (this *Control) TraverseMnemonicEvent(event *Event) bool {
+func (this *Control) TraverseMnemonicEvent(eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	return false
 }
 

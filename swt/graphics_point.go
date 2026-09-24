@@ -16,6 +16,12 @@ type Point struct {
 	impl PointImpl
 }
 
+func (this *Point) AsPoint() *Point { return this }
+
+type PointLike interface {
+	AsPoint() *Point
+}
+
 func NewPoint(x int32, y int32) *Point {
 	this := &Point{}
 	this.impl = this
@@ -59,6 +65,12 @@ type Point_OfFloat struct {
 	ResidualX    float32
 	ResidualY    float32
 	roundingMode RoundingMode
+}
+
+func (this *Point_OfFloat) AsPoint_OfFloat() *Point_OfFloat { return this }
+
+type Point_OfFloatLike interface {
+	AsPoint_OfFloat() *Point_OfFloat
 }
 
 func NewPointOfFloat(x int32, y int32) *Point_OfFloat {
@@ -120,7 +132,12 @@ func (this *Point_OfFloat) Clone() *Point {
 	return upcastPoint_OfFloatToPoint(NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode))
 }
 
-func PointOfFloatFrom(point *Point) *Point_OfFloat {
+func PointOfFloatFrom(pointLike PointLike) *Point_OfFloat {
+	var point *Point
+	if pointLike != nil {
+		point = pointLike.AsPoint()
+	}
+	_ = point
 	pointOfFloat, ok2 := isPointToPoint_OfFloat(point)
 	if ok2 {
 		t3 := pointOfFloat.impl.Clone()
@@ -135,7 +152,18 @@ type Point_WithMonitor struct {
 	monitor *Monitor
 }
 
-func NewPointWithMonitor(x int32, y int32, monitor *Monitor) *Point_WithMonitor {
+func (this *Point_WithMonitor) AsPoint_WithMonitor() *Point_WithMonitor { return this }
+
+type Point_WithMonitorLike interface {
+	AsPoint_WithMonitor() *Point_WithMonitor
+}
+
+func NewPointWithMonitor(x int32, y int32, monitorLike MonitorLike) *Point_WithMonitor {
+	var monitor *Monitor
+	if monitorLike != nil {
+		monitor = monitorLike.AsMonitor()
+	}
+	_ = monitor
 	this := &Point_WithMonitor{}
 	this.impl = this
 	this.initPointWithMonitor(x, y, monitor)

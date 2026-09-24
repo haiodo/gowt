@@ -6,7 +6,18 @@ type DragDetectEvent struct {
 	MouseEvent
 }
 
-func NewDragDetectEvent(e *Event) *DragDetectEvent {
+func (this *DragDetectEvent) AsDragDetectEvent() *DragDetectEvent { return this }
+
+type DragDetectEventLike interface {
+	AsDragDetectEvent() *DragDetectEvent
+}
+
+func NewDragDetectEvent(eLike EventLike) *DragDetectEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &DragDetectEvent{}
 	this.impl = this
 	this.initDragDetectEvent(e)

@@ -37,6 +37,12 @@ type Shell struct {
 	escMenuItem       *MenuItem
 }
 
+func (this *Shell) AsShell() *Shell { return this }
+
+type ShellLike interface {
+	AsShell() *Shell
+}
+
 var ShellDEFAULT_CLIENT_WIDTH int32 = -1
 
 var ShellDEFAULT_CLIENT_HEIGHT int32 = -1
@@ -63,7 +69,12 @@ func (this *Shell) initShellStyle(style int32) {
 	this.initShellDisplayStyle(nil, style)
 }
 
-func NewShellDisplay(display *Display) *Shell {
+func NewShellDisplay(displayLike DisplayLike) *Shell {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	this := &Shell{}
 	this.impl = this
 	this.initShellDisplay(display)
@@ -71,10 +82,15 @@ func NewShellDisplay(display *Display) *Shell {
 }
 
 func (this *Shell) initShellDisplay(display *Display) {
-	this.initShellDisplayStyle(display, SWTSHELL_TRIM)
+	this.initShellDisplayStyle(display, SHELL_TRIM)
 }
 
-func NewShellDisplayStyle(display *Display, style int32) *Shell {
+func NewShellDisplayStyle(displayLike DisplayLike, style int32) *Shell {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
 	this := &Shell{}
 	this.impl = this
 	this.initShellDisplayStyle(display, style)
@@ -102,13 +118,13 @@ func (this *Shell) initShellDisplayParentStyleHandleEmbedded(display *Display, p
 		display = DisplayGetDefault()
 	}
 	if !display.IsValidThread() {
-		this.Error(SWTERROR_THREAD_INVALID_ACCESS)
+		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	if parent != (nil) && parent.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if !DisplayGetSheetEnabled() {
-		this.center = parent != (nil) && (style&SWTSHEET) != 0
+		this.center = parent != (nil) && (style&SHEET) != 0
 	}
 	this.style = ShellCheckStyle(parent, style)
 	this.parent = upcastShellToComposite(parent)
@@ -125,7 +141,12 @@ func (this *Shell) initShellDisplayParentStyleHandleEmbedded(display *Display, p
 	this.impl.CreateWidget()
 }
 
-func NewShellParent(parent *Shell) *Shell {
+func NewShellParent(parentLike ShellLike) *Shell {
+	var parent *Shell
+	if parentLike != nil {
+		parent = parentLike.AsShell()
+	}
+	_ = parent
 	this := &Shell{}
 	this.impl = this
 	this.initShellParent(parent)
@@ -133,10 +154,15 @@ func NewShellParent(parent *Shell) *Shell {
 }
 
 func (this *Shell) initShellParent(parent *Shell) {
-	this.initShellParentStyle(parent, SWTDIALOG_TRIM)
+	this.initShellParentStyle(parent, DIALOG_TRIM)
 }
 
-func NewShellParentStyle(parent *Shell, style int32) *Shell {
+func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
+	var parent *Shell
+	if parentLike != nil {
+		parent = parentLike.AsShell()
+	}
+	_ = parent
 	this := &Shell{}
 	this.impl = this
 	this.initShellParentStyle(parent, style)
@@ -161,7 +187,7 @@ func (this *Shell) AccessibilityIsIgnored(id int64, sel int64) bool {
 }
 
 func (this *Shell) AddShellListener(listener ShellListener) {
-	this.AddTypedListener(listener, []int32{SWTActivate, SWTClose, SWTDeactivate, SWTIconify, SWTDeiconify})
+	this.AddTypedListener(listener, []int32{Activate, Close, Deactivate, Iconify, Deiconify})
 }
 
 func (this *Shell) AttachObserversToWindow(newWindow *cocoa.NSWindow) {
@@ -227,7 +253,7 @@ func (this *Shell) CanBecomeKeyWindow(id int64, sel int64) bool {
 		return false
 	}
 	if this.window != (nil) {
-		if (this.style & SWTNO_FOCUS) != 0 {
+		if (this.style & NO_FOCUS) != 0 {
 			var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 			if nsEvent != (nil) && nsEvent.Type() == int64(cocoa.OSNSLeftMouseDown) {
 				var contentView *cocoa.NSView = this.window.ContentView()
@@ -293,7 +319,7 @@ func (this *Shell) CloseWidget(force bool) {
 		return
 	}
 	var event *Event = NewEvent()
-	this.SendEventEventTypeEvent(SWTClose, event)
+	this.SendEventEventTypeEvent(Close, event)
 	if (force || event.Doit) && !this.IsDisposed() {
 		this.Dispose()
 	}
@@ -302,8 +328,8 @@ func (this *Shell) CloseWidget(force bool) {
 func (this *Shell) ComputeSizeWHintHHintChangedOnControl(wHint int32, hHint int32, changed bool) *Point {
 	var size *Point = this.Decorations.ComputeSizeWHintHHintChangedOnControl(wHint, hHint, changed)
 	if this.toolBar != (nil) {
-		if wHint == SWTDEFAULT && this.toolBar.itemCount > 0 {
-			var tbSize *Point = this.toolBar.ComputeSize(SWTDEFAULT, SWTDEFAULT)
+		if wHint == DEFAULT && this.toolBar.itemCount > 0 {
+			var tbSize *Point = this.toolBar.ComputeSize(DEFAULT, DEFAULT)
 			size.X = int32(math.Max(float64(tbSize.X), float64(size.X)))
 		}
 	}
@@ -332,9 +358,9 @@ func (this *Shell) CreateHandle() {
 	this.state |= WidgetHIDDEN
 	if this.window == (nil) && this.View == (nil) {
 		var styleMask int32 = cocoa.OSNSWindowStyleMaskBorderless
-		if (this.style & (SWTTOOL | SWTSHEET)) != 0 {
+		if (this.style & (TOOL | SHEET)) != 0 {
 			this.window = castcocoaNSObjectTococoaNSWindow(cocoa.NewSWTPanel().Alloc())
-			if (this.style & SWTSHEET) != 0 {
+			if (this.style & SHEET) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskDocModalWindow
 			} else {
 				styleMask |= cocoa.OSNSWindowStyleMaskUtilityWindow | cocoa.OSNSWindowStyleMaskNonactivatingPanel
@@ -342,20 +368,20 @@ func (this *Shell) CreateHandle() {
 		} else {
 			this.window = castcocoaNSObjectTococoaNSWindow(cocoa.NewSWTWindow().Alloc())
 		}
-		if (this.style & SWTNO_TRIM) == 0 {
-			if (this.style & SWTTITLE) != 0 {
+		if (this.style & NO_TRIM) == 0 {
+			if (this.style & TITLE) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskTitled
 			}
-			if (this.style & SWTCLOSE) != 0 {
+			if (this.style & CLOSE) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskClosable
 			}
-			if (this.style & SWTMIN) != 0 {
+			if (this.style & MIN) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskMiniaturizable
 			}
-			if (this.style & SWTMAX) != 0 {
+			if (this.style & MAX) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskResizable
 			}
-			if (this.style & SWTRESIZE) != 0 {
+			if (this.style & RESIZE) != 0 {
 				styleMask |= cocoa.OSNSWindowStyleMaskResizable
 			}
 		}
@@ -367,20 +393,20 @@ func (this *Shell) CreateHandle() {
 		if screen == (nil) {
 			screen = primaryScreen
 		}
-		this.window = this.window.InitWithContentRectContentRectAStyleBufferingTypeFlagScreen(cocoa.NSRect{}, int64(styleMask), int64(cocoa.OSNSBackingStoreBuffered), (this.style&SWTON_TOP) != 0, screen)
-		if (this.style&(SWTNO_TRIM|SWTBORDER|SWTSHELL_TRIM)) == 0 || (this.style&(SWTTOOL|SWTSHEET)) != 0 {
+		this.window = this.window.InitWithContentRectContentRectAStyleBufferingTypeFlagScreen(cocoa.NSRect{}, int64(styleMask), int64(cocoa.OSNSBackingStoreBuffered), (this.style&ON_TOP) != 0, screen)
+		if (this.style&(NO_TRIM|BORDER|SHELL_TRIM)) == 0 || (this.style&(TOOL|SHEET)) != 0 {
 			this.window.SetHasShadow(true)
 		}
-		if (this.style & SWTNO_MOVE) != 0 {
+		if (this.style & NO_MOVE) != 0 {
 			this.window.SetMovable(false)
 		}
-		if (this.style & SWTTOOL) != 0 {
+		if (this.style & TOOL) != 0 {
 			(castcocoaNSWindowTococoaNSPanel(this.window)).SetFloatingPanel(false)
 			(castcocoaNSWindowTococoaNSPanel(this.window)).SetHidesOnDeactivate(false)
 			(castcocoaNSWindowTococoaNSPanel(this.window)).SetBecomesKeyOnlyIfNeeded(false)
 		}
 		this.window.SetReleasedWhenClosed(true)
-		if (this.style & SWTNO_TRIM) == 0 {
+		if (this.style & NO_TRIM) == 0 {
 			var size cocoa.NSSize = this.window.MinSize()
 			size.Width = cocoa.NSWindowMinFrameWidthWithTitle(cocoa.NSStringString(), int64(styleMask))
 			this.window.SetMinSize(size)
@@ -401,7 +427,7 @@ func (this *Shell) CreateHandle() {
 		frame.Width = width
 		frame.Height = height
 		this.window.SetFrame(frame, false)
-		if (this.style & SWTON_TOP) != 0 {
+		if (this.style & ON_TOP) != 0 {
 			this.window.SetLevel(int64(cocoa.OSNSStatusWindowLevel))
 		}
 		this.Decorations.CreateHandle()
@@ -420,7 +446,7 @@ func (this *Shell) CreateHandle() {
 			this.Decorations.CreateHandle()
 			parentView.AddSubview(this.impl.TopView())
 		}
-		this.style |= SWTNO_BACKGROUND
+		this.style |= NO_BACKGROUND
 	}
 	this.windowDelegate = castcocoaNSObjectTococoaSWTWindowDelegate(cocoa.NewSWTWindowDelegate().Alloc().Init())
 	if this.window == (nil) {
@@ -431,7 +457,7 @@ func (this *Shell) CreateHandle() {
 		if this.parent != (nil) {
 			behavior = cocoa.OSNSWindowCollectionBehaviorMoveToActiveSpace
 		} else {
-			if (this.style & SWTTOOL) != 0 {
+			if (this.style & TOOL) != 0 {
 				behavior = cocoa.OSNSWindowCollectionBehaviorFullScreenAuxiliary
 			} else {
 				behavior = cocoa.OSNSWindowCollectionBehaviorFullScreenPrimary
@@ -477,7 +503,7 @@ func (this *Shell) DestroyWidget() {
 	if view != (nil) {
 		view.Retain()
 	}
-	var sheet bool = (this.style & (SWTSHEET)) != 0
+	var sheet bool = (this.style & (SHEET)) != 0
 	this.impl.ReleaseHandle()
 	if window != (nil) {
 		if sheet {
@@ -543,15 +569,25 @@ func (this *Shell) FixResize() bool {
 	if this.window == (nil) {
 		return false
 	}
-	if (this.style & SWTNO_TRIM) == 0 {
-		if (this.style&SWTRESIZE) != 0 && (this.style&(SWTSHEET|SWTTITLE|SWTCLOSE|SWTMIN|SWTMAX)) == 0 {
+	if (this.style & NO_TRIM) == 0 {
+		if (this.style&RESIZE) != 0 && (this.style&(SHEET|TITLE|CLOSE|MIN|MAX)) == 0 {
 			return true
 		}
 	}
 	return false
 }
 
-func (this *Shell) FixShell(newShell *Shell, control *Control) {
+func (this *Shell) FixShell(newShellLike ShellLike, controlLike ControlLike) {
+	var newShell *Shell
+	if newShellLike != nil {
+		newShell = newShellLike.AsShell()
+	}
+	_ = newShell
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if this == newShell {
 		return
 	}
@@ -619,7 +655,7 @@ func (this *Shell) GetClientArea() *Rectangle {
 		var size cocoa.NSSize = cocoa.NSSize{}
 		size.Width = float64(width)
 		size.Height = float64(height)
-		size = cocoa.NSScrollViewContentSizeForFrameSize(size, (this.style&SWTH_SCROLL) != 0, (this.style&SWTV_SCROLL) != 0, int64(cocoa.OSNSNoBorder))
+		size = cocoa.NSScrollViewContentSizeForFrameSize(size, (this.style&H_SCROLL) != 0, (this.style&V_SCROLL) != 0, int64(cocoa.OSNSNoBorder))
 		width = int32(size.Width)
 		height = int32(size.Height)
 	}
@@ -646,7 +682,7 @@ func (this *Shell) _getFullScreen() bool {
 
 func (this *Shell) GetImeInputMode() int32 {
 	this.CheckWidget()
-	return SWTNONE
+	return NONE
 }
 
 func (this *Shell) GetLocation() *Point {
@@ -680,7 +716,7 @@ func (this *Shell) GetModalShell() *Shell {
 	var shell *Shell = nil
 	var modalShells []*Shell = this.display.modalShells
 	if modalShells != (nil) {
-		var bits int32 = SWTAPPLICATION_MODAL | SWTSYSTEM_MODAL
+		var bits int32 = APPLICATION_MODAL | SYSTEM_MODAL
 		var index int32 = int32(len(modalShells))
 		index--
 		for index >= 0 {
@@ -699,7 +735,7 @@ func (this *Shell) GetModalShell() *Shell {
 					}
 					break
 				}
-				if (modal.style & SWTPRIMARY_MODAL) != 0 {
+				if (modal.style & PRIMARY_MODAL) != 0 {
 					if shell == (nil) {
 						shell = this.impl.GetShell()
 					}
@@ -810,9 +846,9 @@ func (this *Shell) GetThemeAlpha() float32 {
 
 func (this *Shell) GetToolBar() *ToolBar {
 	this.CheckWidget()
-	if (this.style & SWTNO_TRIM) == 0 {
+	if (this.style & NO_TRIM) == 0 {
 		if this.toolBar == (nil) {
-			this.toolBar = NewToolBar(upcastShellToComposite(this), SWTHORIZONTAL|SWTSMOOTH, true)
+			this.toolBar = NewToolBar(upcastShellToComposite(this), HORIZONTAL|SMOOTH, true)
 		}
 	}
 	return this.toolBar
@@ -829,8 +865,8 @@ func (this *Shell) HasRegion() bool {
 func (this *Shell) HelpRequested(id int64, sel int64, theEvent int64) {
 	var control *Control = this.display.GetFocusControl()
 	for control != (nil) {
-		if control.Hooks(SWTHelp) {
-			control.PostEvent(SWTHelp)
+		if control.Hooks(Help) {
+			control.PostEvent(Help)
 			break
 		}
 		control = upcastCompositeToControl(control.parent)
@@ -905,7 +941,7 @@ func (this *Shell) NoResponderFor(id int64, sel int64, selector int64) {
 
 func (this *Shell) Open() {
 	this.CheckWidget()
-	var mask int32 = SWTPRIMARY_MODAL | SWTAPPLICATION_MODAL | SWTSYSTEM_MODAL
+	var mask int32 = PRIMARY_MODAL | APPLICATION_MODAL | SYSTEM_MODAL
 	if (this.style & mask) != 0 {
 		this.display.SetModalShell(this)
 	} else {
@@ -933,10 +969,10 @@ func (this *Shell) ParentWindow() *cocoa.NSWindow {
 func (this *Shell) Print(gc *GC) bool {
 	this.CheckWidget()
 	if gc == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if gc.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var children []*Control = this._getChildren()
 	for _, child := range children {
@@ -1030,20 +1066,20 @@ func (this *Shell) RemoveObserversFromWindow() {
 func (this *Shell) RemoveShellListener(listener ShellListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTActivate, listener)
-	this.eventTable.UnhookEventTypeListener(SWTClose, listener)
-	this.eventTable.UnhookEventTypeListener(SWTDeactivate, listener)
-	this.eventTable.UnhookEventTypeListener(SWTIconify, listener)
-	this.eventTable.UnhookEventTypeListener(SWTDeiconify, listener)
+	this.eventTable.UnhookEventTypeListener(Activate, listener)
+	this.eventTable.UnhookEventTypeListener(Close, listener)
+	this.eventTable.UnhookEventTypeListener(Deactivate, listener)
+	this.eventTable.UnhookEventTypeListener(Iconify, listener)
+	this.eventTable.UnhookEventTypeListener(Deiconify, listener)
 }
 
 func (this *Shell) RequestLayout() {
-	this.LayoutOverload4(nil, SWTDEFER)
+	this.LayoutOverload4(nil, DEFER)
 }
 
 func (this *Shell) ReskinChildren(flags int32) {
@@ -1115,11 +1151,21 @@ func (this *Shell) SetActive() {
 	this.MakeKeyAndOrderFront()
 }
 
-func (this *Shell) SetActiveControl(control *Control) {
-	this.SetActiveControlControlType(control, SWTNone)
+func (this *Shell) SetActiveControl(controlLike ControlLike) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
+	this.SetActiveControlControlType(control, None)
 }
 
-func (this *Shell) SetActiveControlControlType(control *Control, type_ int32) {
+func (this *Shell) SetActiveControlControlType(controlLike ControlLike, type_ int32) {
+	var control *Control
+	if controlLike != nil {
+		control = controlLike.AsControl()
+	}
+	_ = control
 	if control != (nil) && control.IsDisposed() {
 		control = nil
 	}
@@ -1152,14 +1198,14 @@ func (this *Shell) SetActiveControlControlType(control *Control, type_ int32) {
 	}
 	for i := int32(int32(len(deactivate)) - 1); i >= index; i-- {
 		if !deactivate[i].IsDisposed() {
-			deactivate[i].SendEventEventType(SWTDeactivate)
+			deactivate[i].SendEventEventType(Deactivate)
 		}
 	}
 	for i := int32(int32(len(activate)) - 1); i >= index; i-- {
 		if !activate[i].IsDisposed() {
 			var event *Event = NewEvent()
 			event.Detail = type_
-			activate[i].SendEventEventTypeEvent(SWTActivate, event)
+			activate[i].SendEventEventTypeEvent(Activate, event)
 		}
 	}
 }
@@ -1350,10 +1396,15 @@ func (this *Shell) SetMaximumSize(width int32, height int32) {
 	}
 }
 
-func (this *Shell) SetMaximumSizeSize(size *Point) {
+func (this *Shell) SetMaximumSizeSize(sizeLike PointLike) {
+	var size *Point
+	if sizeLike != nil {
+		size = sizeLike.AsPoint()
+	}
+	_ = size
 	this.CheckWidget()
 	if size == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.SetMaximumSize(size.X, size.Y)
 }
@@ -1403,10 +1454,15 @@ func (this *Shell) SetMinimumSize(width int32, height int32) {
 	}
 }
 
-func (this *Shell) SetMinimumSizeSize(size *Point) {
+func (this *Shell) SetMinimumSizeSize(sizeLike PointLike) {
+	var size *Point
+	if sizeLike != nil {
+		size = sizeLike.AsPoint()
+	}
+	_ = size
 	this.CheckWidget()
 	if size == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.SetMinimumSize(size.X, size.Y)
 }
@@ -1422,7 +1478,7 @@ func (this *Shell) GetZoom() int32 {
 
 func (this *Shell) SetRegion(region *Region) {
 	this.CheckWidget()
-	if (this.style & SWTNO_TRIM) == 0 {
+	if (this.style & NO_TRIM) == 0 {
 		return
 	}
 	if this.window == (nil) {
@@ -1430,7 +1486,7 @@ func (this *Shell) SetRegion(region *Region) {
 	}
 	if region != (nil) {
 		if region.IsDisposed() {
-			this.Error(SWTERROR_INVALID_ARGUMENT)
+			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		var bounds *Rectangle = region.GetBounds()
 		this.SetSize(bounds.X+bounds.Width, bounds.Y+bounds.Height)
@@ -1478,7 +1534,7 @@ func (this *Shell) SetDarkThemePreferred(preferred bool) {
 func (this *Shell) SetText(string_ string) {
 	this.CheckWidget()
 	if string_ == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.window == (nil) {
 		return
@@ -1490,7 +1546,7 @@ func (this *Shell) SetText(string_ string) {
 
 func (this *Shell) SetVisible(visible bool) {
 	this.CheckWidget()
-	var mask int32 = SWTPRIMARY_MODAL | SWTAPPLICATION_MODAL | SWTSYSTEM_MODAL
+	var mask int32 = PRIMARY_MODAL | APPLICATION_MODAL | SYSTEM_MODAL
 	if (this.style & mask) != 0 {
 		if visible {
 			this.display.SetModalShell(this)
@@ -1534,7 +1590,7 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 			}
 			this.Center()
 		}
-		this.SendEventEventType(SWTShow)
+		this.SendEventEventType(Show)
 		if this.IsDisposed() {
 			return
 		}
@@ -1542,13 +1598,13 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 		this.impl.InvalidateVisibleRegion()
 		if this.window != (nil) {
 			this.PreventShellActivateJvmCrash()
-			if (this.style & (SWTSHEET)) != 0 {
+			if (this.style & (SHEET)) != 0 {
 				var application *cocoa.NSApplication = cocoa.NSApplicationSharedApplication()
 				application.BeginSheet(this.window, this.ParentWindow(), nil, int64(0), int64(0))
 			} else {
 				var parentMinimized bool = this.parent != (nil) && this.ParentWindow().IsMiniaturized()
 				if !parentMinimized {
-					if key && (this.style&SWTNO_FOCUS) == 0 {
+					if key && (this.style&NO_FOCUS) == 0 {
 						this.MakeKeyAndOrderFront()
 					} else {
 						this.window.OrderFront(nil)
@@ -1573,14 +1629,14 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 		this.opened = true
 		if !this.moved {
 			this.moved = true
-			this.SendEventEventType(SWTMove)
+			this.SendEventEventType(Move)
 			if this.IsDisposed() {
 				return
 			}
 		}
 		if !this.resized {
 			this.resized = true
-			this.SendEventEventType(SWTResize)
+			this.SendEventEventType(Resize)
 			if this.IsDisposed() {
 				return
 			}
@@ -1592,7 +1648,7 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 	} else {
 		this.UpdateParent(visible)
 		if this.window != (nil) {
-			if (this.style & (SWTSHEET)) != 0 {
+			if (this.style & (SHEET)) != 0 {
 				var application *cocoa.NSApplication = cocoa.NSApplicationSharedApplication()
 				application.EndSheet(this.window, int64(0))
 			}
@@ -1603,7 +1659,7 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 		}
 		this.impl.TopView().SetHidden(true)
 		this.impl.InvalidateVisibleRegion()
-		this.SendEventEventType(SWTHide)
+		this.SendEventEventType(Hide)
 	}
 	if this.IsDisposed() {
 		return
@@ -1710,7 +1766,7 @@ func (this *Shell) UpdateParent(visible bool) {
 					parentWindow = this.ParentWindow()
 				}
 				parentWindow.AddChildWindow(this.window, int64(cocoa.OSNSWindowAbove))
-				if (this.style & SWTON_TOP) != 0 {
+				if (this.style & ON_TOP) != 0 {
 					this.window.SetLevel(int64(cocoa.OSNSStatusWindowLevel))
 				} else {
 					var parentShell *Shell = castCompositeToShell(this.parent)
@@ -1806,7 +1862,7 @@ func (this *Shell) WindowDidBecomeKey(id int64, sel int64, notification int64) {
 		var display *Display = this.display
 		display.SetMenuBar(this.menuBar)
 	}
-	this.SendEventEventType(SWTActivate)
+	this.SendEventEventType(Activate)
 	if this.IsDisposed() {
 		return
 	}
@@ -1834,17 +1890,17 @@ func (this *Shell) WindowDidBecomeKey(id int64, sel int64, notification int64) {
 
 func (this *Shell) WindowDidDeminiturize(id int64, sel int64, notification int64) {
 	this.minimized = false
-	this.SendEventEventType(SWTDeiconify)
+	this.SendEventEventType(Deiconify)
 }
 
 func (this *Shell) WindowDidMiniturize(id int64, sel int64, notification int64) {
 	this.minimized = true
-	this.SendEventEventType(SWTIconify)
+	this.SendEventEventType(Iconify)
 }
 
 func (this *Shell) WindowDidMove(id int64, sel int64, notification int64) {
 	this.moved = true
-	this.SendEventEventType(SWTMove)
+	this.SendEventEventType(Move)
 }
 
 func (this *Shell) WindowDidResize(id int64, sel int64, notification int64) {
@@ -1862,7 +1918,7 @@ func (this *Shell) WindowDidResize(id int64, sel int64, notification int64) {
 		this.window.ContentView().SetFrame(rect)
 	}
 	this.resized = true
-	this.SendEventEventType(SWTResize)
+	this.SendEventEventType(Resize)
 	if this.IsDisposed() {
 		return
 	}
@@ -1876,7 +1932,7 @@ func (this *Shell) WindowDidResignKey(id int64, sel int64, notification int64) {
 	if this.display.IsDisposed() {
 		return
 	}
-	this.SendEventEventType(SWTDeactivate)
+	this.SendEventEventType(Deactivate)
 	if this.IsDisposed() {
 		return
 	}
@@ -1958,7 +2014,7 @@ func (this *Shell) WindowSendEvent(id int64, sel int64, event int64) {
 		break
 	case cocoa.OSNSKeyDown:
 		if this.display.escAsAcceleratorPresent && int32(nsEvent.KeyCode()) == 53 {
-			if this.escMenuItem == (nil) || this.escMenuItem.GetAccelerator() != int32(SWTESC) {
+			if this.escMenuItem == (nil) || this.escMenuItem.GetAccelerator() != int32(ESC) {
 				this.UpdateEscMenuItem()
 			}
 			if this.escMenuItem != (nil) {
@@ -2012,11 +2068,11 @@ func (this *Shell) SearchForEscMenuItem(menu *Menu) bool {
 		if item == (nil) || item.IsDisposed() {
 			continue
 		} else {
-			if item.GetAccelerator() == int32(SWTESC) {
+			if item.GetAccelerator() == int32(ESC) {
 				this.escMenuItem = item
 				return true
 			} else {
-				if (item.GetStyle() & SWTCASCADE) != 0 {
+				if (item.GetStyle() & CASCADE) != 0 {
 					var subMenu *Menu = item.GetMenu()
 					if this.SearchForEscMenuItem(subMenu) {
 						return true
@@ -2039,54 +2095,69 @@ func (this *Shell) WindowWillClose(id int64, sel int64, notification int64) {
 	this.CloseWidget(true)
 }
 
-func ShellInternal_new(display *Display, handle int64) *Shell {
-	return newShellDisplayParentStyleHandleEmbedded(display, nil, SWTNO_TRIM, handle, false)
+func ShellInternal_new(displayLike DisplayLike, handle int64) *Shell {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
+	return newShellDisplayParentStyleHandleEmbedded(display, nil, NO_TRIM, handle, false)
 }
 
-func ShellCocoa_new(display *Display, handle int64) *Shell {
-	return newShellDisplayParentStyleHandleEmbedded(display, nil, SWTNO_TRIM, handle, true)
+func ShellCocoa_new(displayLike DisplayLike, handle int64) *Shell {
+	var display *Display
+	if displayLike != nil {
+		display = displayLike.AsDisplay()
+	}
+	_ = display
+	return newShellDisplayParentStyleHandleEmbedded(display, nil, NO_TRIM, handle, true)
 }
 
-func ShellCheckStyle(parent *Shell, style int32) int32 {
+func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
+	var parent *Shell
+	if parentLike != nil {
+		parent = parentLike.AsShell()
+	}
+	_ = parent
 	style = DecorationsCheckStyle(style)
-	style &= ^SWTTRANSPARENT
-	var mask int32 = SWTSYSTEM_MODAL | SWTAPPLICATION_MODAL | SWTPRIMARY_MODAL
-	if (style & SWTSHEET) != 0 {
+	style &= ^TRANSPARENT
+	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
+	if (style & SHEET) != 0 {
 		if DisplayGetSheetEnabled() {
-			style &= ^(SWTCLOSE | SWTTITLE | SWTMIN | SWTMAX)
+			style &= ^(CLOSE | TITLE | MIN | MAX)
 			if parent == (nil) {
-				style &= ^SWTSHEET
-				style |= SWTSHELL_TRIM
+				style &= ^SHEET
+				style |= SHELL_TRIM
 			}
 		} else {
-			style &= ^SWTSHEET
+			style &= ^SHEET
 			var cond129 int32
 			if parent == (nil) {
-				cond129 = SWTSHELL_TRIM
+				cond129 = SHELL_TRIM
 			} else {
-				cond129 = SWTDIALOG_TRIM
+				cond129 = DIALOG_TRIM
 			}
 			style |= cond129
 		}
 		if (style & mask) == 0 {
 			var cond130 int32
 			if parent == (nil) {
-				cond130 = SWTAPPLICATION_MODAL
+				cond130 = APPLICATION_MODAL
 			} else {
-				cond130 = SWTPRIMARY_MODAL
+				cond130 = PRIMARY_MODAL
 			}
 			style |= cond130
 		}
 	}
 	var bits int32 = style & ^mask
-	if (style & SWTSYSTEM_MODAL) != 0 {
-		return bits | SWTSYSTEM_MODAL
+	if (style & SYSTEM_MODAL) != 0 {
+		return bits | SYSTEM_MODAL
 	}
-	if (style & SWTAPPLICATION_MODAL) != 0 {
-		return bits | SWTAPPLICATION_MODAL
+	if (style & APPLICATION_MODAL) != 0 {
+		return bits | APPLICATION_MODAL
 	}
-	if (style & SWTPRIMARY_MODAL) != 0 {
-		return bits | SWTPRIMARY_MODAL
+	if (style & PRIMARY_MODAL) != 0 {
+		return bits | PRIMARY_MODAL
 	}
 	return bits
 }

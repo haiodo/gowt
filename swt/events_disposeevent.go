@@ -6,7 +6,18 @@ type DisposeEvent struct {
 	TypedEvent
 }
 
-func NewDisposeEvent(e *Event) *DisposeEvent {
+func (this *DisposeEvent) AsDisposeEvent() *DisposeEvent { return this }
+
+type DisposeEventLike interface {
+	AsDisposeEvent() *DisposeEvent
+}
+
+func NewDisposeEvent(eLike EventLike) *DisposeEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &DisposeEvent{}
 	this.impl = this
 	this.initDisposeEvent(e)

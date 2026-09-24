@@ -5,6 +5,12 @@ package swt
 type ExpandAdapter struct {
 }
 
+func (this *ExpandAdapter) AsExpandAdapter() *ExpandAdapter { return this }
+
+type ExpandAdapterLike interface {
+	AsExpandAdapter() *ExpandAdapter
+}
+
 func NewExpandAdapter() *ExpandAdapter {
 	this := &ExpandAdapter{}
 	this.initExpandAdapter()

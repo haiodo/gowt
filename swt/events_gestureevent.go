@@ -20,7 +20,18 @@ type GestureEvent struct {
 	Doit          bool
 }
 
-func NewGestureEvent(e *Event) *GestureEvent {
+func (this *GestureEvent) AsGestureEvent() *GestureEvent { return this }
+
+type GestureEventLike interface {
+	AsGestureEvent() *GestureEvent
+}
+
+func NewGestureEvent(eLike EventLike) *GestureEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &GestureEvent{}
 	this.impl = this
 	this.initGestureEvent(e)

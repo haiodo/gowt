@@ -538,6 +538,12 @@ type Widget struct {
 	impl       WidgetImpl
 }
 
+func (this *Widget) AsWidget() *Widget { return this }
+
+type WidgetLike interface {
+	AsWidget() *Widget
+}
+
 const WidgetDISPOSED int32 = 1
 
 const WidgetCANVAS int32 = 2
@@ -592,7 +598,7 @@ const WidgetSKIN_NEEDED int32 = 2097152
 
 const WidgetHAS_AUTO_DIRECTION int32 = 0
 
-const WidgetAUTO_TEXT_DIRECTION int32 = SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT
+const WidgetAUTO_TEXT_DIRECTION int32 = LEFT_TO_RIGHT | RIGHT_TO_LEFT
 
 const WidgetDEFAULT_WIDTH int32 = 64
 
@@ -609,7 +615,12 @@ func (this *Widget) initWidget() {
 	this.NotifyCreationTracker()
 }
 
-func NewWidgetParentStyle(parent *Widget, style int32) *Widget {
+func NewWidgetParentStyle(parentLike WidgetLike, style int32) *Widget {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	_ = parent
 	this := &Widget{}
 	this.impl = this
 	this.initWidgetParentStyle(parent, style)
@@ -880,7 +891,7 @@ func (this *Widget) BecomeKeyWindow(id int64, sel int64) {
 func (this *Widget) Reskin(flags int32) {
 	this.CheckWidget()
 	this.ReskinWidget()
-	if (flags & SWTALL) != 0 {
+	if (flags & ALL) != 0 {
 		this.impl.ReskinChildren(flags)
 	}
 }
@@ -902,7 +913,7 @@ func (this *Widget) ResignFirstResponder(id int64, sel int64) bool {
 func (this *Widget) AddListener(eventType int32, listener Listener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this._addListener(eventType, listener)
 }
@@ -910,7 +921,7 @@ func (this *Widget) AddListener(eventType int32, listener Listener) {
 func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	this.CheckWidget()
 	if listener == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
 	for _, eventType := range eventTypes {
@@ -926,7 +937,7 @@ func (this *Widget) _addListener(eventType int32, listener Listener) {
 }
 
 func (this *Widget) AddDisposeListener(listener DisposeListener) {
-	this.AddTypedListener(listener, []int32{SWTDispose})
+	this.AddTypedListener(listener, []int32{Dispose})
 }
 
 func (this *Widget) CanBecomeKeyView(id int64, sel int64) bool {
@@ -936,27 +947,37 @@ func (this *Widget) CanBecomeKeyView(id int64, sel int64) bool {
 func (this *Widget) CheckOpen() {
 }
 
-func (this *Widget) CheckOrientation(parent *Widget) {
-	this.style &= ^SWTMIRRORED
-	if (this.style & (SWTLEFT_TO_RIGHT | SWTRIGHT_TO_LEFT)) == 0 {
+func (this *Widget) CheckOrientation(parentLike WidgetLike) {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	_ = parent
+	this.style &= ^MIRRORED
+	if (this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)) == 0 {
 		if parent != (nil) {
-			if (parent.style & SWTLEFT_TO_RIGHT) != 0 {
-				this.style |= SWTLEFT_TO_RIGHT
+			if (parent.style & LEFT_TO_RIGHT) != 0 {
+				this.style |= LEFT_TO_RIGHT
 			}
-			if (parent.style & SWTRIGHT_TO_LEFT) != 0 {
-				this.style |= SWTRIGHT_TO_LEFT
+			if (parent.style & RIGHT_TO_LEFT) != 0 {
+				this.style |= RIGHT_TO_LEFT
 			}
 		}
 	}
-	this.style = WidgetCheckBits(this.style, SWTLEFT_TO_RIGHT, SWTRIGHT_TO_LEFT, 0, 0, 0, 0)
+	this.style = WidgetCheckBits(this.style, LEFT_TO_RIGHT, RIGHT_TO_LEFT, 0, 0, 0, 0)
 }
 
-func (this *Widget) CheckParent(parent *Widget) {
+func (this *Widget) CheckParent(parentLike WidgetLike) {
+	var parent *Widget
+	if parentLike != nil {
+		parent = parentLike.AsWidget()
+	}
+	_ = parent
 	if parent == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if parent.IsDisposed() {
-		this.Error(SWTERROR_INVALID_ARGUMENT)
+		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	parent.CheckWidget()
 	parent.impl.CheckOpen()
@@ -964,20 +985,20 @@ func (this *Widget) CheckParent(parent *Widget) {
 
 func (this *Widget) CheckSubclass() {
 	if !this.IsValidSubclass() {
-		this.Error(SWTERROR_INVALID_SUBCLASS)
+		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
 func (this *Widget) CheckWidget() {
 	var display *Display = this.display
 	if display == (nil) {
-		this.Error(SWTERROR_WIDGET_DISPOSED)
+		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if display.thread != ThreadCurrentThread() {
-		this.Error(SWTERROR_THREAD_INVALID_ACCESS)
+		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	if (this.state & WidgetDISPOSED) != 0 {
-		this.Error(SWTERROR_WIDGET_DISPOSED)
+		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 }
 
@@ -1013,7 +1034,7 @@ func (this *Widget) CreateHandle() {
 func (this *Widget) CreateJNIRef() {
 	this.jniRef = cocoa.OSNewGlobalRef(this)
 	if this.jniRef == 0 {
-		this.Error(SWTERROR_NO_HANDLES)
+		this.Error(ERROR_NO_HANDLES)
 	}
 }
 
@@ -1056,7 +1077,7 @@ func (this *Widget) Dispose() {
 		return
 	}
 	if !this.IsValidThread() {
-		this.Error(SWTERROR_THREAD_INVALID_ACCESS)
+		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	this.impl.Release(true)
 }
@@ -1171,7 +1192,7 @@ func (this *Widget) RedrawWidgetViewXYWidthHeightChildren(view *cocoa.NSView, x 
 }
 
 func (this *Widget) Error(code int32) {
-	SWTErrorFn(code)
+	Error(code)
 }
 
 func (this *Widget) ExpandItem_expandChildren(id int64, sel int64, item int64, children bool) {
@@ -1240,7 +1261,7 @@ func (this *Widget) GetData() any {
 func (this *Widget) GetDataKey(key string) any {
 	this.CheckWidget()
 	if key == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == WidgetIS_ACTIVE {
 		return this.impl.IsActive()
@@ -1259,7 +1280,7 @@ func (this *Widget) GetDataKey(key string) any {
 func (this *Widget) GetDisplay() *Display {
 	var display *Display = this.display
 	if display == (nil) {
-		this.Error(SWTERROR_WIDGET_DISPOSED)
+		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	return display
 }
@@ -1554,7 +1575,12 @@ func (this *Widget) OutlineView_writeItems_toPasteboard(id int64, sel int64, arg
 	return false
 }
 
-func (this *Widget) NotifyListeners(eventType int32, event *Event) {
+func (this *Widget) NotifyListeners(eventType int32, eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.CheckWidget()
 	if event == (nil) {
 		event = NewEvent()
@@ -1574,7 +1600,12 @@ func (this *Widget) PostEvent(eventType int32) {
 	this.SendEventEventTypeEventSend(eventType, nil, false)
 }
 
-func (this *Widget) PostEventEventTypeEvent(eventType int32, event *Event) {
+func (this *Widget) PostEventEventTypeEvent(eventType int32, eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.SendEventEventTypeEventSend(eventType, event, false)
 }
 
@@ -1603,7 +1634,7 @@ func (this *Widget) Release(destroy bool) {
 					panic(r)
 				}
 			}()
-			this.SendEventEventType(SWTDispose)
+			this.SendEventEventType(Dispose)
 		}()
 	}
 	if (this.state & WidgetDISPOSED) == 0 {
@@ -1661,7 +1692,7 @@ func (this *Widget) ReleaseWidget() {
 func (this *Widget) RemoveListener(eventType int32, listener Listener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
@@ -1680,7 +1711,7 @@ func (this *Widget) RemoveListenerOverload2(eventType int32, listener any) {
 func (this *Widget) RemoveTypedListener(eventType int32, listener any) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
@@ -1691,12 +1722,12 @@ func (this *Widget) RemoveTypedListener(eventType int32, listener any) {
 func (this *Widget) RemoveDisposeListener(listener DisposeListener) {
 	this.CheckWidget()
 	if listener == (nil) {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
 		return
 	}
-	this.eventTable.UnhookEventTypeListener(SWTDispose, listener)
+	this.eventTable.UnhookEventTypeListener(Dispose, listener)
 }
 
 func (this *Widget) ScrollClipViewToPoint(id int64, sel int64, clipView int64, point cocoa.NSPoint) {
@@ -1732,7 +1763,12 @@ func (this *Widget) PreviousValidKeyView(id int64, sel int64) int64 {
 func (this *Widget) SendDoubleSelection() {
 }
 
-func (this *Widget) SendEvent(event *Event) {
+func (this *Widget) SendEvent(eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.display.SendEventTableEvent(this.eventTable, event)
 }
 
@@ -1740,11 +1776,21 @@ func (this *Widget) SendEventEventType(eventType int32) {
 	this.SendEventEventTypeEventSend(eventType, nil, true)
 }
 
-func (this *Widget) SendEventEventTypeEvent(eventType int32, event *Event) {
+func (this *Widget) SendEventEventTypeEvent(eventType int32, eventLike EventLike) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.SendEventEventTypeEventSend(eventType, event, true)
 }
 
-func (this *Widget) SendEventEventTypeEventSend(eventType int32, event *Event, send bool) {
+func (this *Widget) SendEventEventTypeEventSend(eventType int32, eventLike EventLike, send bool) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.eventTable == (nil) && !this.display.Filters(eventType) {
 		return
 	}
@@ -1775,7 +1821,12 @@ func (this *Widget) SendKeyEventOnWidget(nsEvent *cocoa.NSEvent, type_ int32) bo
 	return this.SendKeyEventTypeEvent(type_, event)
 }
 
-func (this *Widget) SendKeyEventTypeEvent(type_ int32, event *Event) bool {
+func (this *Widget) SendKeyEventTypeEvent(type_ int32, eventLike EventLike) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	this.SendEventEventTypeEvent(type_, event)
 	if this.IsDisposed() {
 		return false
@@ -1799,7 +1850,12 @@ func (this *Widget) SendSelectionEvent(eventType int32) {
 	this.SendSelectionEventEventTypeEventSend(eventType, nil, false)
 }
 
-func (this *Widget) SendSelectionEventEventTypeEventSend(eventType int32, event *Event, send bool) {
+func (this *Widget) SendSelectionEventEventTypeEventSend(eventType int32, eventLike EventLike, send bool) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if this.eventTable == (nil) && !this.display.Filters(eventType) {
 		return
 	}
@@ -1839,7 +1895,7 @@ func (this *Widget) SetIsStyledText() {
 func (this *Widget) SetDataKeyValue(key string, value any) {
 	this.CheckWidget()
 	if key == "" {
-		this.Error(SWTERROR_NULL_ARGUMENT)
+		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if WidgetGLCONTEXT_KEY == key {
 		this.impl.SetOpenGLContext(value)
@@ -1888,8 +1944,8 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 			}
 		}
 	}
-	if (key == SWTSKIN_CLASS) || (key == SWTSKIN_ID) {
-		this.Reskin(SWTALL)
+	if (key == SKIN_CLASS) || (key == SKIN_ID) {
+		this.Reskin(ALL)
 	}
 }
 
@@ -1916,7 +1972,12 @@ func (this *Widget) SetFrameSize(id int64, sel int64, size cocoa.NSSize) {
 func (this *Widget) SetImage(id int64, sel int64, arg0 int64) {
 }
 
-func (this *Widget) SetInputState(event *Event, nsEvent *cocoa.NSEvent, type_ int32) bool {
+func (this *Widget) SetInputState(eventLike EventLike, nsEvent *cocoa.NSEvent, type_ int32) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	if nsEvent == (nil) {
 		nsEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 		if nsEvent == (nil) {
@@ -1925,94 +1986,94 @@ func (this *Widget) SetInputState(event *Event, nsEvent *cocoa.NSEvent, type_ in
 	}
 	var modifierFlags int64 = nsEvent.ModifierFlags()
 	if (modifierFlags & int64(cocoa.OSNSAlternateKeyMask)) != 0 {
-		event.StateMask |= SWTALT
+		event.StateMask |= ALT
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagShift)) != 0 {
-		event.StateMask |= SWTSHIFT
+		event.StateMask |= SHIFT
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagControl)) != 0 {
-		event.StateMask |= SWTCONTROL
+		event.StateMask |= CONTROL
 	}
 	if (modifierFlags & int64(cocoa.OSNSEventModifierFlagCommand)) != 0 {
-		event.StateMask |= SWTCOMMAND
+		event.StateMask |= COMMAND
 	}
 	var state int64 = cocoa.NSEventPressedMouseButtons()
 	if (state & 0x1) != 0 {
-		event.StateMask |= SWTBUTTON1
+		event.StateMask |= BUTTON1
 	}
 	if (state & 0x2) != 0 {
-		event.StateMask |= SWTBUTTON3
+		event.StateMask |= BUTTON3
 	}
 	if (state & 0x4) != 0 {
-		event.StateMask |= SWTBUTTON2
+		event.StateMask |= BUTTON2
 	}
 	if (state & 0x8) != 0 {
-		event.StateMask |= SWTBUTTON4
+		event.StateMask |= BUTTON4
 	}
 	if (state & 0x10) != 0 {
-		event.StateMask |= SWTBUTTON5
+		event.StateMask |= BUTTON5
 	}
 	switch type_ {
-	case SWTMouseDown, SWTMouseDoubleClick:
+	case MouseDown, MouseDoubleClick:
 		if event.Button == 1 {
-			event.StateMask &= ^SWTBUTTON1
+			event.StateMask &= ^BUTTON1
 		}
 		if event.Button == 2 {
-			event.StateMask &= ^SWTBUTTON2
+			event.StateMask &= ^BUTTON2
 		}
 		if event.Button == 3 {
-			event.StateMask &= ^SWTBUTTON3
+			event.StateMask &= ^BUTTON3
 		}
 		if event.Button == 4 {
-			event.StateMask &= ^SWTBUTTON4
+			event.StateMask &= ^BUTTON4
 		}
 		if event.Button == 5 {
-			event.StateMask &= ^SWTBUTTON5
+			event.StateMask &= ^BUTTON5
 		}
 		break
-	case SWTMouseUp:
+	case MouseUp:
 		if event.Button == 1 {
-			event.StateMask |= SWTBUTTON1
+			event.StateMask |= BUTTON1
 		}
 		if event.Button == 2 {
-			event.StateMask |= SWTBUTTON2
+			event.StateMask |= BUTTON2
 		}
 		if event.Button == 3 {
-			event.StateMask |= SWTBUTTON3
+			event.StateMask |= BUTTON3
 		}
 		if event.Button == 4 {
-			event.StateMask |= SWTBUTTON4
+			event.StateMask |= BUTTON4
 		}
 		if event.Button == 5 {
-			event.StateMask |= SWTBUTTON5
+			event.StateMask |= BUTTON5
 		}
 		break
-	case SWTKeyDown, SWTTraverse:
-		if event.KeyCode == SWTALT {
-			event.StateMask &= ^SWTALT
+	case KeyDown, Traverse:
+		if event.KeyCode == ALT {
+			event.StateMask &= ^ALT
 		}
-		if event.KeyCode == SWTSHIFT {
-			event.StateMask &= ^SWTSHIFT
+		if event.KeyCode == SHIFT {
+			event.StateMask &= ^SHIFT
 		}
-		if event.KeyCode == SWTCONTROL {
-			event.StateMask &= ^SWTCONTROL
+		if event.KeyCode == CONTROL {
+			event.StateMask &= ^CONTROL
 		}
-		if event.KeyCode == SWTCOMMAND {
-			event.StateMask &= ^SWTCOMMAND
+		if event.KeyCode == COMMAND {
+			event.StateMask &= ^COMMAND
 		}
 		break
-	case SWTKeyUp:
-		if event.KeyCode == SWTALT {
-			event.StateMask |= SWTALT
+	case KeyUp:
+		if event.KeyCode == ALT {
+			event.StateMask |= ALT
 		}
-		if event.KeyCode == SWTSHIFT {
-			event.StateMask |= SWTSHIFT
+		if event.KeyCode == SHIFT {
+			event.StateMask |= SHIFT
 		}
-		if event.KeyCode == SWTCONTROL {
-			event.StateMask |= SWTCONTROL
+		if event.KeyCode == CONTROL {
+			event.StateMask |= CONTROL
 		}
-		if event.KeyCode == SWTCOMMAND {
-			event.StateMask |= SWTCOMMAND
+		if event.KeyCode == COMMAND {
+			event.StateMask |= COMMAND
 		}
 		break
 	}
@@ -2024,7 +2085,12 @@ func (this *Widget) GetKeyboardType(nsEvent *cocoa.NSEvent) int32 {
 	return int32(cocoa.OSCGEventGetIntegerValueField(cgEvent, cocoa.OSKCGKeyboardEventKeyboardType))
 }
 
-func (this *Widget) CalculateKeycode(event *Event, nsEvent *cocoa.NSEvent) int32 {
+func (this *Widget) CalculateKeycode(eventLike EventLike, nsEvent *cocoa.NSEvent) int32 {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	var keyLayout int64 = DisplayGetCurrentKeyLayout()
 	if keyLayout == 0 {
 		var unmodifiedChars *cocoa.NSString = nsEvent.CharactersIgnoringModifiers().LowercaseString()
@@ -2035,7 +2101,7 @@ func (this *Widget) CalculateKeycode(event *Event, nsEvent *cocoa.NSEvent) int32
 	}
 	var nsKeyCode int16 = nsEvent.KeyCode()
 	var keyAction int16
-	if event.Type == SWTKeyDown {
+	if event.Type == KeyDown {
 		keyAction = cocoa.OSKUCKeyActionDown
 	} else {
 		keyAction = cocoa.OSKUCKeyActionUp
@@ -2061,34 +2127,39 @@ func (this *Widget) CalculateKeycode(event *Event, nsEvent *cocoa.NSEvent) int32
 	return int32(unicodeString[0])
 }
 
-func (this *Widget) SetKeyState(event *Event, type_ int32, nsEvent *cocoa.NSEvent) bool {
+func (this *Widget) SetKeyState(eventLike EventLike, type_ int32, nsEvent *cocoa.NSEvent) bool {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	var isNull bool = false
 	var keyCode int32 = int32(nsEvent.KeyCode())
 	event.KeyCode = DisplayTranslateKey(keyCode)
 	switch event.KeyCode {
-	case int32(SWTLF):
+	case int32(LF):
 		{
-			event.KeyCode = SWTKEYPAD_CR
+			event.KeyCode = KEYPAD_CR
 			event.Character = '\u000d'
 			break
 		}
-	case int32(SWTBS):
+	case int32(BS):
 		event.Character = '\u0008'
 		break
-	case int32(SWTCR):
+	case int32(CR):
 		event.Character = '\u000d'
 		break
-	case int32(SWTDEL):
+	case int32(DEL):
 		event.Character = uint16(0x7)
 		break
-	case int32(SWTESC):
+	case int32(ESC):
 		event.Character = uint16(0x1B)
 		break
-	case int32(SWTTAB):
+	case int32(TAB):
 		event.Character = '\u0009'
 		break
 	default:
-		if event.KeyCode == 0 || (SWTKEYPAD_MULTIPLY <= event.KeyCode && event.KeyCode <= SWTKEYPAD_CR) {
+		if event.KeyCode == 0 || (KEYPAD_MULTIPLY <= event.KeyCode && event.KeyCode <= KEYPAD_CR) {
 			var chars *cocoa.NSString = nsEvent.Characters()
 			if chars != (nil) && chars.Length() > 0 {
 				event.Character = uint16(chars.CharacterAtIndex(int64(0)))
@@ -2108,16 +2179,21 @@ func (this *Widget) SetKeyState(event *Event, type_ int32, nsEvent *cocoa.NSEven
 	return true
 }
 
-func (this *Widget) SetLocationMask(event *Event, nsEvent *cocoa.NSEvent) {
+func (this *Widget) SetLocationMask(eventLike EventLike, nsEvent *cocoa.NSEvent) {
+	var event *Event
+	if eventLike != nil {
+		event = eventLike.AsEvent()
+	}
+	_ = event
 	switch nsEvent.KeyCode() {
 	case int16(55), int16(56), int16(58), int16(59):
-		event.KeyLocation = SWTLEFT
+		event.KeyLocation = LEFT
 		break
 	case int16(54), int16(60), int16(61), int16(62):
-		event.KeyLocation = SWTRIGHT
+		event.KeyLocation = RIGHT
 		break
 	case int16(67), int16(69), int16(76), int16(78), int16(65), int16(75), int16(82), int16(83), int16(84), int16(85), int16(86), int16(87), int16(88), int16(89), int16(91), int16(92), int16(81):
-		event.KeyLocation = SWTKEYPAD
+		event.KeyLocation = KEYPAD
 		break
 	}
 }

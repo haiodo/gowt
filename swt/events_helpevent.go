@@ -6,7 +6,18 @@ type HelpEvent struct {
 	TypedEvent
 }
 
-func NewHelpEvent(e *Event) *HelpEvent {
+func (this *HelpEvent) AsHelpEvent() *HelpEvent { return this }
+
+type HelpEventLike interface {
+	AsHelpEvent() *HelpEvent
+}
+
+func NewHelpEvent(eLike EventLike) *HelpEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &HelpEvent{}
 	this.impl = this
 	this.initHelpEvent(e)

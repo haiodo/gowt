@@ -24,6 +24,10 @@ public class TypeModel {
 		public String goPackage;
 		/** Plain data class (extends Object, no methods besides toString): Go value type, not *T. */
 		public boolean isStruct;
+		// "As<GoTypeName>"/"<GoTypeName>Like" - swt-package, non-struct, non-interface classes
+		// only (see README "Round 7 api"); null otherwise. Collision-resolved once in build().
+		public String asMethodName;
+		public String likeInterfaceName;
 		// Non-null when the Java superclass is external but manual-embeddable (SWTException
 		// extends RuntimeException) - see Manual.isManualSuper / README "Manual superclass embedding".
 		public String manualSuperQualifiedName;
@@ -83,6 +87,14 @@ public class TypeModel {
 		return ci != null && ci.isStruct;
 	}
 
+	// Methods bound via Type::method (Names.erasureKey) anywhere in the file set - the target's
+	// signature is that functional interface's SAM, so "Round 7 api" must not widen its params.
+	private final Set<String> methodReferenceTargets = new HashSet<>();
+
+	public boolean isMethodReferenceTarget(IMethodBinding mb) {
+		return methodReferenceTargets.contains(Names.erasureKey(mb));
+	}
+
 	/** Text of `tag` in md's Javadoc: for @param, only the entry naming paramName. */
 	public static String javadocTag(MethodDeclaration md, String tag, String paramName) {
 		if (md.getJavadoc() == null) return "";
@@ -130,6 +142,14 @@ public class TypeModel {
 			for (Object t : cu.types()) {
 				collect((AbstractTypeDeclaration) t, names);
 			}
+			cu.accept(new ASTVisitor() {
+				@Override
+				public boolean visit(ExpressionMethodReference node) {
+					IMethodBinding mb = node.resolveMethodBinding();
+					if (mb != null) methodReferenceTargets.add(Names.erasureKey(mb));
+					return true;
+				}
+			});
 		}
 		for (ClassInfo ci : byBinaryName.values()) {
 			ITypeBinding superBinding = ci.binding.getSuperclass();
@@ -179,6 +199,29 @@ public class TypeModel {
 			}
 		}
 		resolveCrossFamilyNameCollisions(names);
+		assignLikeNames(names);
+	}
+
+	// Every non-struct, non-interface swt-package class gets an upcast accessor + a 1-method
+	// interface every subclass satisfies via embedding (see README "Round 7 api").
+	private void assignLikeNames(Names names) {
+		Set<String> swtTypeNames = new HashSet<>();
+		for (ClassInfo c : byBinaryName.values()) {
+			if (c.goPackage.equals("swt")) swtTypeNames.add(c.goTypeName);
+		}
+		for (ClassInfo ci : byBinaryName.values()) {
+			if (!ci.goPackage.equals("swt") || ci.isInterface || ci.isStruct) continue;
+			String as = "As" + ci.goTypeName;
+			for (IMethodBinding mb : ci.declaredMethods.values()) {
+				if (names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName())).equals(as)) {
+					as = as + "_";
+					break;
+				}
+			}
+			ci.asMethodName = as;
+			String like = ci.goTypeName + "Like";
+			ci.likeInterfaceName = swtTypeNames.contains(like) ? like + "_" : like;
+		}
 	}
 
 	// Two unrelated method-name families declared on the same class can independently compute

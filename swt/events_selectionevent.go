@@ -20,7 +20,18 @@ type SelectionEvent struct {
 	Doit      bool
 }
 
-func NewSelectionEvent(e *Event) *SelectionEvent {
+func (this *SelectionEvent) AsSelectionEvent() *SelectionEvent { return this }
+
+type SelectionEventLike interface {
+	AsSelectionEvent() *SelectionEvent
+}
+
+func NewSelectionEvent(eLike EventLike) *SelectionEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &SelectionEvent{}
 	this.impl = this
 	this.initSelectionEvent(e)

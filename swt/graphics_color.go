@@ -12,6 +12,12 @@ type Color struct {
 	Handle []float64
 }
 
+func (this *Color) AsColor() *Color { return this }
+
+type ColorLike interface {
+	AsColor() *Color
+}
+
 func newColor(device *Device) *Color {
 	this := &Color{}
 	this.impl = this
@@ -23,7 +29,12 @@ func (this *Color) initColor(device *Device) {
 	this.Resource.initResourceDevice(device)
 }
 
-func NewColorDeviceRedGreenBlue(device *Device, red int32, green int32, blue int32) *Color {
+func NewColorDeviceRedGreenBlue(deviceLike DeviceLike, red int32, green int32, blue int32) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	this := &Color{}
 	this.impl = this
 	this.initColorDeviceRedGreenBlue(device, red, green, blue)
@@ -48,7 +59,12 @@ func (this *Color) initColorRedGreenBlue(red int32, green int32, blue int32) {
 	this.Init(red, green, blue, 255)
 }
 
-func NewColorDeviceRedGreenBlueAlpha(device *Device, red int32, green int32, blue int32, alpha int32) *Color {
+func NewColorDeviceRedGreenBlueAlpha(deviceLike DeviceLike, red int32, green int32, blue int32, alpha int32) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	this := &Color{}
 	this.impl = this
 	this.initColorDeviceRedGreenBlueAlpha(device, red, green, blue, alpha)
@@ -73,7 +89,17 @@ func (this *Color) initColorRedGreenBlueAlpha(red int32, green int32, blue int32
 	this.Init(red, green, blue, alpha)
 }
 
-func NewColorDeviceRgb(device *Device, rgb *RGB) *Color {
+func NewColorDeviceRgb(deviceLike DeviceLike, rgbLike RGBLike) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
+	var rgb *RGB
+	if rgbLike != nil {
+		rgb = rgbLike.AsRGB()
+	}
+	_ = rgb
 	this := &Color{}
 	this.impl = this
 	this.initColorDeviceRgb(device, rgb)
@@ -83,13 +109,18 @@ func NewColorDeviceRgb(device *Device, rgb *RGB) *Color {
 func (this *Color) initColorDeviceRgb(device *Device, rgb *RGB) {
 	this.Resource.initResourceDevice(device)
 	if rgb == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, 255)
 	this.impl.InitOnResource()
 }
 
-func NewColorRgb(rgb *RGB) *Color {
+func NewColorRgb(rgbLike RGBLike) *Color {
+	var rgb *RGB
+	if rgbLike != nil {
+		rgb = rgbLike.AsRGB()
+	}
+	_ = rgb
 	this := &Color{}
 	this.impl = this
 	this.initColorRgb(rgb)
@@ -99,12 +130,22 @@ func NewColorRgb(rgb *RGB) *Color {
 func (this *Color) initColorRgb(rgb *RGB) {
 	this.Resource.initResource()
 	if rgb == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, 255)
 }
 
-func NewColorDeviceRgba(device *Device, rgba *RGBA) *Color {
+func NewColorDeviceRgba(deviceLike DeviceLike, rgbaLike RGBALike) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
+	var rgba *RGBA
+	if rgbaLike != nil {
+		rgba = rgbaLike.AsRGBA()
+	}
+	_ = rgba
 	this := &Color{}
 	this.impl = this
 	this.initColorDeviceRgba(device, rgba)
@@ -114,13 +155,18 @@ func NewColorDeviceRgba(device *Device, rgba *RGBA) *Color {
 func (this *Color) initColorDeviceRgba(device *Device, rgba *RGBA) {
 	this.Resource.initResourceDevice(device)
 	if rgba == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgba.Rgb.Red, rgba.Rgb.Green, rgba.Rgb.Blue, rgba.Alpha)
 	this.impl.InitOnResource()
 }
 
-func NewColorRgba(rgba *RGBA) *Color {
+func NewColorRgba(rgbaLike RGBALike) *Color {
+	var rgba *RGBA
+	if rgbaLike != nil {
+		rgba = rgbaLike.AsRGBA()
+	}
+	_ = rgba
 	this := &Color{}
 	this.impl = this
 	this.initColorRgba(rgba)
@@ -130,12 +176,22 @@ func NewColorRgba(rgba *RGBA) *Color {
 func (this *Color) initColorRgba(rgba *RGBA) {
 	this.Resource.initResource()
 	if rgba == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgba.Rgb.Red, rgba.Rgb.Green, rgba.Rgb.Blue, rgba.Alpha)
 }
 
-func NewColorDeviceRgbAlpha(device *Device, rgb *RGB, alpha int32) *Color {
+func NewColorDeviceRgbAlpha(deviceLike DeviceLike, rgbLike RGBLike, alpha int32) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
+	var rgb *RGB
+	if rgbLike != nil {
+		rgb = rgbLike.AsRGB()
+	}
+	_ = rgb
 	this := &Color{}
 	this.impl = this
 	this.initColorDeviceRgbAlpha(device, rgb, alpha)
@@ -145,13 +201,18 @@ func NewColorDeviceRgbAlpha(device *Device, rgb *RGB, alpha int32) *Color {
 func (this *Color) initColorDeviceRgbAlpha(device *Device, rgb *RGB, alpha int32) {
 	this.Resource.initResourceDevice(device)
 	if rgb == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, alpha)
 	this.impl.InitOnResource()
 }
 
-func NewColorRgbAlpha(rgb *RGB, alpha int32) *Color {
+func NewColorRgbAlpha(rgbLike RGBLike, alpha int32) *Color {
+	var rgb *RGB
+	if rgbLike != nil {
+		rgb = rgbLike.AsRGB()
+	}
+	_ = rgb
 	this := &Color{}
 	this.impl = this
 	this.initColorRgbAlpha(rgb, alpha)
@@ -161,7 +222,7 @@ func NewColorRgbAlpha(rgb *RGB, alpha int32) *Color {
 func (this *Color) initColorRgbAlpha(rgb *RGB, alpha int32) {
 	this.Resource.initResource()
 	if rgb == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Init(rgb.Red, rgb.Green, rgb.Blue, alpha)
 }
@@ -202,28 +263,28 @@ func (this *Color) Equals(object any) bool {
 
 func (this *Color) GetAlpha() int32 {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[3] * 255))
 }
 
 func (this *Color) GetBlue() int32 {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[2] * 255))
 }
 
 func (this *Color) GetGreen() int32 {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[1] * 255))
 }
 
 func (this *Color) GetRed() int32 {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[0] * 255))
 }
@@ -237,21 +298,21 @@ func (this *Color) HashCode() int32 {
 
 func (this *Color) GetRGB() *RGB {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGB(this.GetRed(), this.GetGreen(), this.GetBlue())
 }
 
 func (this *Color) GetRGBA() *RGBA {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGBA(this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())
 }
 
 func (this *Color) Init(red int32, green int32, blue int32, alpha int32) {
 	if (red > 255) || (red < 0) || (green > 255) || (green < 0) || (blue > 255) || (blue < 0) || (alpha > 255) || (alpha < 0) {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var rgbColor []float64 = make([]float64, 4)
 	rgbColor[0] = float64(float32(red) / 255)
@@ -275,14 +336,24 @@ func (this *Color) String() string {
 	return fmt.Sprintf("Color {%d, %d, %d, %d}", this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())
 }
 
-func ColorCocoa_new(device *Device, handle []float64) *Color {
+func ColorCocoa_new(deviceLike DeviceLike, handle []float64) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	var rgbColor []float64 = handle
 	var color *Color = newColor(device)
 	color.Handle = rgbColor
 	return color
 }
 
-func ColorCocoa_newDeviceHandleAlpha(device *Device, handle []float64, alpha int32) *Color {
+func ColorCocoa_newDeviceHandleAlpha(deviceLike DeviceLike, handle []float64, alpha int32) *Color {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	var rgbColor []float64 = handle
 	var color *Color = newColor(device)
 	color.Handle = rgbColor

@@ -14,6 +14,12 @@ type Font struct {
 	metrics     *FontMetrics
 }
 
+func (this *Font) AsFont() *Font { return this }
+
+type FontLike interface {
+	AsFont() *Font
+}
+
 const FontSYNTHETIC_BOLD float64 = -2.5
 
 const FontSYNTHETIC_ITALIC float64 = 0.2
@@ -30,7 +36,17 @@ func (this *Font) initFont(device *Device) {
 	this.metrics = nil
 }
 
-func NewFontDeviceFd(device *Device, fd *FontData) *Font {
+func NewFontDeviceFd(deviceLike DeviceLike, fdLike FontDataLike) *Font {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
+	var fd *FontData
+	if fdLike != nil {
+		fd = fdLike.AsFontData()
+	}
+	_ = fd
 	this := &Font{}
 	this.impl = this
 	this.initFontDeviceFd(device, fd)
@@ -41,7 +57,7 @@ func (this *Font) initFontDeviceFd(device *Device, fd *FontData) {
 	this.Resource.initResourceDevice(device)
 	this.metrics = nil
 	if fd == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
 	if !cocoa.NSThreadIsMainThread() {
@@ -56,7 +72,12 @@ func (this *Font) initFontDeviceFd(device *Device, fd *FontData) {
 	this.impl.InitOnResource()
 }
 
-func NewFontDeviceFds(device *Device, fds []*FontData) *Font {
+func NewFontDeviceFds(deviceLike DeviceLike, fds []*FontData) *Font {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	this := &Font{}
 	this.impl = this
 	this.initFontDeviceFds(device, fds)
@@ -67,14 +88,14 @@ func (this *Font) initFontDeviceFds(device *Device, fds []*FontData) {
 	this.Resource.initResourceDevice(device)
 	this.metrics = nil
 	if fds == (nil) {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	if int32(len(fds)) == 0 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(fds)); i++ {
 		if fds[i] == (nil) {
-			SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+			Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -91,7 +112,12 @@ func (this *Font) initFontDeviceFds(device *Device, fds []*FontData) {
 	this.impl.InitOnResource()
 }
 
-func NewFontDeviceNameHeightStyle(device *Device, name string, height int32, style int32) *Font {
+func NewFontDeviceNameHeightStyle(deviceLike DeviceLike, name string, height int32, style int32) *Font {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	this := &Font{}
 	this.impl = this
 	this.initFontDeviceNameHeightStyle(device, name, height, style)
@@ -151,7 +177,7 @@ func (this *Font) Equals(object any) bool {
 
 func (this *Font) GetFontData() []*FontData {
 	if this.impl.IsDisposed() {
-		SWTErrorFn(SWTERROR_GRAPHIC_DISPOSED)
+		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
 	if !cocoa.NSThreadIsMainThread() {
@@ -168,18 +194,18 @@ func (this *Font) GetFontData() []*FontData {
 	var nsName string = str.GetString()
 	var manager *cocoa.NSFontManager = cocoa.NSFontManagerSharedFontManager()
 	var traits int64 = manager.TraitsOfFont(this.Handle)
-	var style int32 = SWTNORMAL
+	var style int32 = NORMAL
 	if (traits & int64(cocoa.OSNSItalicFontMask)) != 0 {
-		style |= SWTITALIC
+		style |= ITALIC
 	}
 	if (traits & int64(cocoa.OSNSBoldFontMask)) != 0 {
-		style |= SWTBOLD
+		style |= BOLD
 	}
 	if (this.ExtraTraits & cocoa.OSNSItalicFontMask) != 0 {
-		style |= SWTITALIC
+		style |= ITALIC
 	}
 	if (this.ExtraTraits & cocoa.OSNSBoldFontMask) != 0 {
-		style |= SWTBOLD
+		style |= BOLD
 	}
 	var dpi *Point = this.device.dpi
 	var screenDPI *Point = this.device.GetScreenDPI()
@@ -200,10 +226,10 @@ func (this *Font) HashCode() int32 {
 
 func (this *Font) Init(name string, height float32, style int32, nsName string) {
 	if name == "" {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	if height < 0 {
-		SWTErrorFn(SWTERROR_INVALID_ARGUMENT)
+		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var dpi *Point = this.device.dpi
 	var screenDPI *Point = this.device.GetScreenDPI()
@@ -214,7 +240,7 @@ func (this *Font) Init(name string, height float32, style int32, nsName string) 
 	var boldSystemFontName string = boldSystemFont.FamilyName().GetString()
 	if (systemFontName == name) || (boldSystemFontName == name) {
 		var cond160 *cocoa.NSFont
-		if (style & SWTBOLD) == 0 {
+		if (style & BOLD) == 0 {
 			cond160 = systemFont
 		} else {
 			cond160 = boldSystemFont
@@ -234,19 +260,19 @@ func (this *Font) Init(name string, height float32, style int32, nsName string) 
 
 func (this *Font) InitTraits(style int32, systemFont *cocoa.NSFont) {
 	var manager *cocoa.NSFontManager = cocoa.NSFontManagerSharedFontManager()
-	if this.Handle != (nil) && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSBoldFontMask)) == 0 && ((style & SWTBOLD) != 0) {
+	if this.Handle != (nil) && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSBoldFontMask)) == 0 && ((style & BOLD) != 0) {
 		this.Handle = manager.ConvertFont(this.Handle, int64(cocoa.OSNSBoldFontMask))
 	}
-	if this.Handle != (nil) && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSItalicFontMask)) == 0 && ((style & SWTITALIC) != 0) {
+	if this.Handle != (nil) && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSItalicFontMask)) == 0 && ((style & ITALIC) != 0) {
 		this.Handle = manager.ConvertFont(this.Handle, int64(cocoa.OSNSItalicFontMask))
 	}
 	if this.Handle == (nil) {
 		this.Handle = systemFont
 	}
-	if (style&SWTITALIC) != 0 && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSItalicFontMask)) == 0 {
+	if (style&ITALIC) != 0 && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSItalicFontMask)) == 0 {
 		this.ExtraTraits |= cocoa.OSNSItalicFontMask
 	}
-	if (style&SWTBOLD) != 0 && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSBoldFontMask)) == 0 {
+	if (style&BOLD) != 0 && (manager.TraitsOfFont(this.Handle)&int64(cocoa.OSNSBoldFontMask)) == 0 {
 		this.ExtraTraits |= cocoa.OSNSBoldFontMask
 	}
 }
@@ -262,7 +288,12 @@ func (this *Font) String() string {
 	return fmt.Sprintf("Font {%v}", this.Handle)
 }
 
-func FontCocoa_new(device *Device, handle *cocoa.NSFont) *Font {
+func FontCocoa_new(deviceLike DeviceLike, handle *cocoa.NSFont) *Font {
+	var device *Device
+	if deviceLike != nil {
+		device = deviceLike.AsDevice()
+	}
+	_ = device
 	var font *Font = newFont(device)
 	font.Handle = handle
 	font.IgnoreNonDisposed()

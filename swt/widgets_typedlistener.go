@@ -6,6 +6,12 @@ type TypedListener struct {
 	eventListener any
 }
 
+func (this *TypedListener) AsTypedListener() *TypedListener { return this }
+
+type TypedListenerLike interface {
+	AsTypedListener() *TypedListener
+}
+
 func NewTypedListener(listener any) *TypedListener {
 	this := &TypedListener{}
 	this.initTypedListener(listener)
@@ -32,24 +38,24 @@ func (this *TypedListener) GetEventListener() any {
 
 func (this *TypedListener) HandleEvent(e *Event) {
 	switch e.Type {
-	case SWTActivate:
+	case Activate:
 		{
 			(this.eventListener.(ShellListener)).ShellActivated(NewShellEvent(e))
 			break
 		}
-	case SWTArm:
+	case Arm:
 		{
 			(this.eventListener.(ArmListener)).WidgetArmed(NewArmEvent(e))
 			break
 		}
-	case SWTClose:
+	case Close:
 		{
 			var event *ShellEvent = NewShellEvent(e)
 			(this.eventListener.(ShellListener)).ShellClosed(event)
 			e.Doit = event.Doit
 			break
 		}
-	case SWTCollapse:
+	case Collapse:
 		{
 			_, ok28 := this.eventListener.(TreeListener)
 			if ok28 {
@@ -59,32 +65,32 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			}
 			break
 		}
-	case SWTDeactivate:
+	case Deactivate:
 		{
 			(this.eventListener.(ShellListener)).ShellDeactivated(NewShellEvent(e))
 			break
 		}
-	case SWTDeiconify:
+	case Deiconify:
 		{
 			(this.eventListener.(ShellListener)).ShellDeiconified(NewShellEvent(e))
 			break
 		}
-	case SWTDefaultSelection:
+	case DefaultSelection:
 		{
 			(this.eventListener.(SelectionListener)).WidgetDefaultSelected(NewSelectionEvent(e))
 			break
 		}
-	case SWTDispose:
+	case Dispose:
 		{
 			(this.eventListener.(DisposeListener)).WidgetDisposed(NewDisposeEvent(e))
 			break
 		}
-	case SWTDragDetect:
+	case DragDetect:
 		{
 			(this.eventListener.(DragDetectListener)).DragDetected(NewDragDetectEvent(e))
 			break
 		}
-	case SWTExpand:
+	case Expand:
 		{
 			_, ok29 := this.eventListener.(TreeListener)
 			if ok29 {
@@ -94,58 +100,58 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			}
 			break
 		}
-	case SWTFocusIn:
+	case FocusIn:
 		{
 			(this.eventListener.(FocusListener)).FocusGained(NewFocusEvent(e))
 			break
 		}
-	case SWTFocusOut:
+	case FocusOut:
 		{
 			(this.eventListener.(FocusListener)).FocusLost(NewFocusEvent(e))
 			break
 		}
-	case SWTGesture:
+	case Gesture:
 		{
 			var event *GestureEvent = NewGestureEvent(e)
 			(this.eventListener.(GestureListener)).Gesture(event)
 			e.Doit = event.Doit
 			break
 		}
-	case SWTHelp:
+	case Help:
 		{
 			(this.eventListener.(HelpListener)).HelpRequested(NewHelpEvent(e))
 			break
 		}
-	case SWTHide:
+	case Hide:
 		{
 			(this.eventListener.(MenuListener)).MenuHidden(NewMenuEvent(e))
 			break
 		}
-	case SWTIconify:
+	case Iconify:
 		{
 			(this.eventListener.(ShellListener)).ShellIconified(NewShellEvent(e))
 			break
 		}
-	case SWTKeyDown:
+	case KeyDown:
 		{
 			var event *KeyEvent = NewKeyEvent(e)
 			(this.eventListener.(KeyListener)).KeyPressed(event)
 			e.Doit = event.Doit
 			break
 		}
-	case SWTKeyUp:
+	case KeyUp:
 		{
 			var event *KeyEvent = NewKeyEvent(e)
 			(this.eventListener.(KeyListener)).KeyReleased(event)
 			e.Doit = event.Doit
 			break
 		}
-	case SWTModify:
+	case Modify:
 		{
 			(this.eventListener.(ModifyListener)).ModifyText(NewModifyEvent(e))
 			break
 		}
-	case SWTMenuDetect:
+	case MenuDetect:
 		{
 			var event *MenuDetectEvent = NewMenuDetectEvent(e)
 			(this.eventListener.(MenuDetectListener)).MenuDetected(event)
@@ -155,64 +161,64 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			e.Detail = event.Detail
 			break
 		}
-	case SWTMouseDown:
+	case MouseDown:
 		{
 			(this.eventListener.(MouseListener)).MouseDown(NewMouseEvent(e))
 			break
 		}
-	case SWTMouseDoubleClick:
+	case MouseDoubleClick:
 		{
 			(this.eventListener.(MouseListener)).MouseDoubleClick(NewMouseEvent(e))
 			break
 		}
-	case SWTMouseEnter:
+	case MouseEnter:
 		{
 			(this.eventListener.(MouseTrackListener)).MouseEnter(NewMouseEvent(e))
 			break
 		}
-	case SWTMouseExit:
+	case MouseExit:
 		{
 			(this.eventListener.(MouseTrackListener)).MouseExit(NewMouseEvent(e))
 			break
 		}
-	case SWTMouseHover:
+	case MouseHover:
 		{
 			(this.eventListener.(MouseTrackListener)).MouseHover(NewMouseEvent(e))
 			break
 		}
-	case SWTMouseMove:
+	case MouseMove:
 		{
 			(this.eventListener.(MouseMoveListener)).MouseMove(NewMouseEvent(e))
 			return
 		}
-	case SWTMouseWheel:
+	case MouseWheel:
 		{
 			(this.eventListener.(MouseWheelListener)).MouseScrolled(NewMouseEvent(e))
 			return
 		}
-	case SWTMouseUp:
+	case MouseUp:
 		{
 			(this.eventListener.(MouseListener)).MouseUp(NewMouseEvent(e))
 			break
 		}
-	case SWTMove:
+	case Move:
 		{
 			(this.eventListener.(ControlListener)).ControlMoved(NewControlEvent(e))
 			break
 		}
-	case SWTPaint:
+	case Paint:
 		{
 			var event *PaintEvent = NewPaintEvent(e)
 			(this.eventListener.(PaintListener)).PaintControl(event)
 			e.Gc = event.Gc
 			break
 		}
-	case SWTResize:
+	case Resize:
 		{
 			(this.eventListener.(ControlListener)).ControlResized(NewControlEvent(e))
 			break
 		}
-	case SWTSegments:
+	case Segments:
 		{
 			var event *SegmentEvent = NewSegmentEvent(e)
 			(this.eventListener.(SegmentListener)).GetSegments(event)
@@ -220,7 +226,7 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			e.SegmentsChars = event.SegmentsChars
 			break
 		}
-	case SWTSelection:
+	case Selection:
 		{
 			var event *SelectionEvent = NewSelectionEvent(e)
 			(this.eventListener.(SelectionListener)).WidgetSelected(event)
@@ -229,7 +235,7 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			e.Doit = event.Doit
 			break
 		}
-	case SWTShow:
+	case Show:
 		{
 			(this.eventListener.(MenuListener)).MenuShown(NewMenuEvent(e))
 			break
@@ -239,7 +245,7 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			(this.eventListener.(TouchListener)).Touch(NewTouchEvent(e))
 			break
 		}
-	case SWTTraverse:
+	case Traverse:
 		{
 			var event *TraverseEvent = NewTraverseEvent(e)
 			(this.eventListener.(TraverseListener)).KeyTraversed(event)
@@ -247,7 +253,7 @@ func (this *TypedListener) HandleEvent(e *Event) {
 			e.Doit = event.Doit
 			break
 		}
-	case SWTVerify:
+	case Verify:
 		{
 			var event *VerifyEvent = NewVerifyEvent(e)
 			(this.eventListener.(VerifyListener)).VerifyText(event)

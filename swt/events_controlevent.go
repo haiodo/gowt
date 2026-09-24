@@ -6,7 +6,18 @@ type ControlEvent struct {
 	TypedEvent
 }
 
-func NewControlEvent(e *Event) *ControlEvent {
+func (this *ControlEvent) AsControlEvent() *ControlEvent { return this }
+
+type ControlEventLike interface {
+	AsControlEvent() *ControlEvent
+}
+
+func NewControlEvent(eLike EventLike) *ControlEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &ControlEvent{}
 	this.impl = this
 	this.initControlEvent(e)

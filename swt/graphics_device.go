@@ -62,6 +62,12 @@ type Device struct {
 	impl               DeviceImpl
 }
 
+func (this *Device) AsDevice() *Device { return this }
+
+type DeviceLike interface {
+	AsDevice() *Device
+}
+
 var DeviceDEBUG bool = false
 
 var DeviceCurrentDevice *Device = nil
@@ -79,7 +85,12 @@ func (this *Device) initDevice() {
 	this.initDeviceData(nil)
 }
 
-func NewDeviceData_(data *DeviceData) *Device {
+func NewDeviceData_(dataLike DeviceDataLike) *Device {
+	var data *DeviceData
+	if dataLike != nil {
+		data = dataLike.AsDeviceData()
+	}
+	_ = data
 	this := &Device{}
 	this.impl = this
 	this.initDeviceData(data)
@@ -153,7 +164,7 @@ func (this *Device) StopTracking() {
 
 func (this *Device) CheckDevice() {
 	if this.disposed {
-		SWTErrorFn(SWTERROR_DEVICE_DISPOSED)
+		Error(ERROR_DEVICE_DISPOSED)
 	}
 }
 
@@ -324,12 +335,12 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 					var nsName string = cocoa.NewNSStringOverload2(fontDetails.ObjectAtIndex(int64(0))).GetString()
 					var weight int64 = cocoa.NewNSNumberOverload2(fontDetails.ObjectAtIndex(int64(2))).IntegerValue()
 					var traits int64 = cocoa.NewNSNumberOverload2(fontDetails.ObjectAtIndex(int64(3))).IntegerValue()
-					var style int32 = SWTNORMAL
+					var style int32 = NORMAL
 					if (traits & int64(cocoa.OSNSItalicFontMask)) != 0 {
-						style |= SWTITALIC
+						style |= ITALIC
 					}
 					if weight == 9 {
-						style |= SWTBOLD
+						style |= BOLD
 					}
 					if faceName == "" || strings.EqualFold(faceName, name) {
 						var data *FontData = NewFontDataOverload3(name, 0, style)
@@ -383,39 +394,39 @@ func (this *Device) GetScreenDPI() *Point {
 func (this *Device) GetSystemColor(id int32) *Color {
 	this.impl.CheckDevice()
 	switch id {
-	case SWTCOLOR_TRANSPARENT:
+	case COLOR_TRANSPARENT:
 		return this.COLOR_TRANSPARENT
-	case SWTCOLOR_BLACK:
+	case COLOR_BLACK:
 		return this.COLOR_BLACK
-	case SWTCOLOR_DARK_RED:
+	case COLOR_DARK_RED:
 		return this.COLOR_DARK_RED
-	case SWTCOLOR_DARK_GREEN:
+	case COLOR_DARK_GREEN:
 		return this.COLOR_DARK_GREEN
-	case SWTCOLOR_DARK_YELLOW:
+	case COLOR_DARK_YELLOW:
 		return this.COLOR_DARK_YELLOW
-	case SWTCOLOR_DARK_BLUE:
+	case COLOR_DARK_BLUE:
 		return this.COLOR_DARK_BLUE
-	case SWTCOLOR_DARK_MAGENTA:
+	case COLOR_DARK_MAGENTA:
 		return this.COLOR_DARK_MAGENTA
-	case SWTCOLOR_DARK_CYAN:
+	case COLOR_DARK_CYAN:
 		return this.COLOR_DARK_CYAN
-	case SWTCOLOR_GRAY:
+	case COLOR_GRAY:
 		return this.COLOR_GRAY
-	case SWTCOLOR_DARK_GRAY:
+	case COLOR_DARK_GRAY:
 		return this.COLOR_DARK_GRAY
-	case SWTCOLOR_RED:
+	case COLOR_RED:
 		return this.COLOR_RED
-	case SWTCOLOR_GREEN:
+	case COLOR_GREEN:
 		return this.COLOR_GREEN
-	case SWTCOLOR_YELLOW:
+	case COLOR_YELLOW:
 		return this.COLOR_YELLOW
-	case SWTCOLOR_BLUE:
+	case COLOR_BLUE:
 		return this.COLOR_BLUE
-	case SWTCOLOR_MAGENTA:
+	case COLOR_MAGENTA:
 		return this.COLOR_MAGENTA
-	case SWTCOLOR_CYAN:
+	case COLOR_CYAN:
 		return this.COLOR_CYAN
-	case SWTCOLOR_WHITE:
+	case COLOR_WHITE:
 		return this.COLOR_WHITE
 	}
 	return this.COLOR_BLACK
@@ -478,7 +489,7 @@ func (this *Device) IsDisposed() bool {
 func (this *Device) LoadFont(path string) bool {
 	this.impl.CheckDevice()
 	if path == "" {
-		SWTErrorFn(SWTERROR_NULL_ARGUMENT)
+		Error(ERROR_NULL_ARGUMENT)
 	}
 	var nsPath *cocoa.NSString = cocoa.NSStringStringWith(path)
 	var nsUrl *cocoa.NSURL = cocoa.NSURLFileURLWithPath(nsPath)

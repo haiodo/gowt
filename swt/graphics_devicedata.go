@@ -9,6 +9,12 @@ type DeviceData struct {
 	Objects  []any
 }
 
+func (this *DeviceData) AsDeviceData() *DeviceData { return this }
+
+type DeviceDataLike interface {
+	AsDeviceData() *DeviceData
+}
+
 func NewDeviceData() *DeviceData {
 	this := &DeviceData{}
 	this.initDeviceData()

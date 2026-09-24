@@ -13,7 +13,18 @@ type VerifyEvent struct {
 	Text  string
 }
 
-func NewVerifyEvent(e *Event) *VerifyEvent {
+func (this *VerifyEvent) AsVerifyEvent() *VerifyEvent { return this }
+
+type VerifyEventLike interface {
+	AsVerifyEvent() *VerifyEvent
+}
+
+func NewVerifyEvent(eLike EventLike) *VerifyEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &VerifyEvent{}
 	this.impl = this
 	this.initVerifyEvent(e)

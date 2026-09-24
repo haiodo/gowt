@@ -10,7 +10,18 @@ type SegmentEvent struct {
 	SegmentsChars []uint16
 }
 
-func NewSegmentEvent(e *Event) *SegmentEvent {
+func (this *SegmentEvent) AsSegmentEvent() *SegmentEvent { return this }
+
+type SegmentEventLike interface {
+	AsSegmentEvent() *SegmentEvent
+}
+
+func NewSegmentEvent(eLike EventLike) *SegmentEvent {
+	var e *Event
+	if eLike != nil {
+		e = eLike.AsEvent()
+	}
+	_ = e
 	this := &SegmentEvent{}
 	this.impl = this
 	this.initSegmentEvent(e)

@@ -7,7 +7,7 @@ import "testing"
 
 func TestRowDataDefaults(t *testing.T) {
 	d := NewRowData()
-	if d.Width != SWTDEFAULT || d.Height != SWTDEFAULT || d.Exclude {
+	if d.Width != DEFAULT || d.Height != DEFAULT || d.Exclude {
 		t.Fatalf("got %+v", d)
 	}
 	d2 := NewRowDataWidthHeight(50, 40)
@@ -38,7 +38,7 @@ func TestLayoutCascadeWiring(t *testing.T) {
 	if _, ok := fl.impl.(*FillLayout); !ok {
 		t.Fatalf("FillLayout.impl = %T, want *FillLayout", fl.impl)
 	}
-	if fl.Type != SWTHORIZONTAL || fl.MarginWidth != 0 || fl.Spacing != 0 {
+	if fl.Type != HORIZONTAL || fl.MarginWidth != 0 || fl.Spacing != 0 {
 		t.Fatalf("got %+v", fl)
 	}
 	// FillLayout overrides FlushCache for real (needs a live Control) - only the base Layout's
@@ -53,7 +53,7 @@ func TestLayoutCascadeWiring(t *testing.T) {
 	if _, ok := rl.impl.(*RowLayout); !ok {
 		t.Fatalf("RowLayout.impl = %T, want *RowLayout", rl.impl)
 	}
-	if rl.Type != SWTHORIZONTAL || rl.Wrap != true || rl.Pack != true {
+	if rl.Type != HORIZONTAL || rl.Wrap != true || rl.Pack != true {
 		t.Fatalf("got %+v", rl)
 	}
 }

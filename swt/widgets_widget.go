@@ -47,11 +47,14 @@ type WidgetImpl interface {
 	CollapseItem_collapseChildren(a0 int64, a1 int64, a2 int64, a3 bool)
 	CreateHandle()
 	CreateWidget()
+	ComboBoxSelectionDidChange(a0 int64, a1 int64, a2 int64)
+	ComboBoxWillDismiss(a0 int64, a1 int64, a2 int64)
+	ComboBoxWillPopUp(a0 int64, a1 int64, a2 int64)
 	Dealloc(a0 int64, a1 int64)
 	Deregister()
 	DestroyJNIRef()
 	DestroyWidget()
-	DeselectAll(a0 int64, a1 int64, a2 int64)
+	DeselectAllOnWidget(a0 int64, a1 int64, a2 int64)
 	DeselectRow(a0 int64, a1 int64, a2 int64)
 	DoCommandBySelector(a0 int64, a1 int64, a2 int64)
 	DrawBackgroundOnWidget(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
@@ -59,6 +62,7 @@ type WidgetImpl interface {
 	DrawTitleWithFrameInView(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) cocoa.NSRect
 	DrawInteriorWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	DrawBezelWithFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
+	DrawLabelInRect(a0 int64, a1 int64, a2 bool, a3 cocoa.NSRect)
 	DrawWithExpansionFrame_inView(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	DrawRect(a0 int64, a1 int64, a2 cocoa.NSRect)
 	DrawWidget(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
@@ -106,6 +110,7 @@ type WidgetImpl interface {
 	MenuDidClose(a0 int64, a1 int64, a2 int64)
 	MenuWillOpen(a0 int64, a1 int64, a2 int64)
 	NoResponderFor(a0 int64, a1 int64, a2 int64)
+	NumberOfRowsInTableView(a0 int64, a1 int64, a2 int64) int64
 	OutlineView_child_ofItem(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
 	OutlineView_didClickTableColumn(a0 int64, a1 int64, a2 int64, a3 int64)
 	OutlineView_objectValueForTableColumn_byItem(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
@@ -149,13 +154,25 @@ type WidgetImpl interface {
 	SetFrameSize(a0 int64, a1 int64, a2 cocoa.NSSize)
 	SetImageOnWidget(a0 int64, a1 int64, a2 int64)
 	SetMarkedText_selectedRange(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	SetObjectValue(a0 int64, a1 int64, a2 int64)
 	SetShouldExpandItem(a0 int64, a1 int64, a2 bool)
 	SetShouldScrollClipView(a0 int64, a1 int64, a2 bool)
 	SetTabGroupFocus() bool
 	SetTabItemFocus() bool
 	ShouldChangeTextInRange_replacementString(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	SizeOfLabel(a0 int64, a1 int64, a2 bool) cocoa.NSSize
 	SuperKeyDown(a0 int64, a1 int64, a2 int64)
 	SuperKeyUp(a0 int64, a1 int64, a2 int64)
+	TableViewColumnDidMove(a0 int64, a1 int64, a2 int64)
+	TableViewColumnDidResize(a0 int64, a1 int64, a2 int64)
+	TableViewSelectionDidChange(a0 int64, a1 int64, a2 int64)
+	TableViewSelectionIsChanging(a0 int64, a1 int64, a2 int64)
+	TableView_didClickTableColumn(a0 int64, a1 int64, a2 int64, a3 int64)
+	TableView_objectValueForTableColumn_row(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) int64
+	TableView_setObjectValue_forTableColumn_row(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
+	TableView_shouldReorderColumn_toColumn(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
+	TableView_shouldTrackCell_forTableColumn_row(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) bool
+	TableView_willDisplayCell_forTableColumn_row(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
 	TextViewDidChangeSelection(a0 int64, a1 int64, a2 int64)
 	TextDidChange(a0 int64, a1 int64, a2 int64)
 	TextView_willChangeSelectionFromCharacterRange_toCharacterRange(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
@@ -172,6 +189,9 @@ type WidgetImpl interface {
 	ResetCursorRects(a0 int64, a1 int64)
 	UpdateTrackingAreas(a0 int64, a1 int64)
 	ValidAttributesForMarkedText(a0 int64, a1 int64) int64
+	TabView_didSelectTabViewItem(a0 int64, a1 int64, a2 int64, a3 int64)
+	TabView_willSelectTabViewItem(a0 int64, a1 int64, a2 int64, a3 int64)
+	TableView_writeRowsWithIndexes_toPasteboard(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
 	View_stringForToolTip_point_userData(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) int64
 	ViewWillMoveToWindow(a0 int64, a1 int64, a2 int64)
 	WindowDidMove(a0 int64, a1 int64, a2 int64)
@@ -210,6 +230,7 @@ type WidgetImpl interface {
 	ForceFocusFocusView(a0 *cocoa.NSView) bool
 	GetBounds() *Rectangle
 	GetLocation() *Point
+	GetMininumHeight() int32
 	GetOrientation() int32
 	GetRegion() *Region
 	GetShell() *Shell
@@ -256,6 +277,7 @@ type WidgetImpl interface {
 	SetRedraw(a0 bool)
 	SetRegion(a0 *Region)
 	SetRadioSelection(a0 bool) bool
+	SetSmallSize()
 	SetToolTipText(a0 string)
 	SetVisible(a0 bool)
 	SetZOrder()
@@ -265,6 +287,7 @@ type WidgetImpl interface {
 	TraverseEscape() bool
 	TraverseItem(a0 bool) bool
 	TraverseReturn() bool
+	TraversePage(a0 bool) bool
 	UpdateBackgroundColor()
 	UpdateBackgroundImage()
 	UpdateBackgroundMode()
@@ -280,6 +303,8 @@ type WidgetImpl interface {
 	SetImageOnItem(a0 *Image)
 	SetText(a0 string)
 	FindDeferredControl() *Composite
+	MinimumSize(a0 int32, a1 int32, a2 bool) *Point
+	RemoveControl(a0 *Control)
 	SetLayout(a0 *Layout)
 	BringToTop(a0 bool)
 	GetMaximized() bool
@@ -375,6 +400,10 @@ func (this *Widget) GetBounds() *Rectangle {
 
 func (this *Widget) GetLocation() *Point {
 	panic("j2go: GetLocation has no default on Widget")
+}
+
+func (this *Widget) GetMininumHeight() int32 {
+	panic("j2go: GetMininumHeight has no default on Widget")
 }
 
 func (this *Widget) GetOrientation() int32 {
@@ -561,6 +590,10 @@ func (this *Widget) SetRadioSelection(a0 bool) bool {
 	panic("j2go: SetRadioSelection has no default on Widget")
 }
 
+func (this *Widget) SetSmallSize() {
+	panic("j2go: SetSmallSize has no default on Widget")
+}
+
 func (this *Widget) SetToolTipText(a0 string) {
 	panic("j2go: SetToolTipText has no default on Widget")
 }
@@ -595,6 +628,10 @@ func (this *Widget) TraverseItem(a0 bool) bool {
 
 func (this *Widget) TraverseReturn() bool {
 	panic("j2go: TraverseReturn has no default on Widget")
+}
+
+func (this *Widget) TraversePage(a0 bool) bool {
+	panic("j2go: TraversePage has no default on Widget")
 }
 
 func (this *Widget) UpdateBackgroundColor() {
@@ -655,6 +692,14 @@ func (this *Widget) SetText(a0 string) {
 
 func (this *Widget) FindDeferredControl() *Composite {
 	panic("j2go: FindDeferredControl has no default on Widget")
+}
+
+func (this *Widget) MinimumSize(a0 int32, a1 int32, a2 bool) *Point {
+	panic("j2go: MinimumSize has no default on Widget")
+}
+
+func (this *Widget) RemoveControl(a0 *Control) {
+	panic("j2go: RemoveControl has no default on Widget")
 }
 
 func (this *Widget) SetLayout(a0 *Layout) {
@@ -1234,7 +1279,7 @@ func (this *Widget) Dispose() {
 	this.impl.Release(true)
 }
 
-func (this *Widget) DeselectAll(id int64, sel int64, sender int64) {
+func (this *Widget) DeselectAllOnWidget(id int64, sel int64, sender int64) {
 	this.CallSuperOverload1(id, sel, sender)
 }
 

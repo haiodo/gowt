@@ -3784,7 +3784,7 @@ func (this *Display) SetData(key string, value any) {
 	if key == DisplaySET_MODAL_DIALOG {
 		var cond266 *Dialog
 		if value != (nil) {
-			cond266 = value.(*Dialog)
+			cond266 = castanyToDialog(value)
 		} else {
 			cond266 = nil
 		}
@@ -3887,11 +3887,21 @@ func (this *Display) SetMenuBar(menuLike MenuLike) {
 	}
 }
 
-func (this *Display) SetModalDialog(modalDialog *Dialog) {
+func (this *Display) SetModalDialog(modalDialogLike DialogLike) {
+	var modalDialog *Dialog
+	if modalDialogLike != nil {
+		modalDialog = modalDialogLike.AsDialog()
+	}
+	_ = modalDialog
 	this.SetModalDialogModalDialogPanel(modalDialog, nil)
 }
 
-func (this *Display) SetModalDialogModalDialogPanel(modalDialog *Dialog, panel *cocoa.NSPanel) {
+func (this *Display) SetModalDialogModalDialogPanel(modalDialogLike DialogLike, panel *cocoa.NSPanel) {
+	var modalDialog *Dialog
+	if modalDialogLike != nil {
+		modalDialog = modalDialogLike.AsDialog()
+	}
+	_ = modalDialog
 	this.modalDialog = modalDialog
 	this.modalPanel = panel
 }
@@ -5029,7 +5039,7 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 	case cocoa.OSSel_changeColor_:
 		{
 			var object any = cocoa.OSJNIGetObject(jniRef[0])
-			colorDialog, ok279 := object.(*ColorDialog)
+			colorDialog, ok279 := dialogImplAsColorDialog(object)
 			if ok279 {
 				colorDialog.ChangeColor(id, sel, arg0)
 			}
@@ -5037,7 +5047,7 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 		}
 	case cocoa.OSSel_changeFont_:
 		{
-			var dialog *FontDialog = cocoa.OSJNIGetObject(jniRef[0]).(*FontDialog)
+			var dialog *FontDialog = castanyToFontDialog(cocoa.OSJNIGetObject(jniRef[0]))
 			if dialog == (nil) {
 				return int64(0)
 			}
@@ -5046,7 +5056,7 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 		}
 	case cocoa.OSSel_validModesForFontPanel_:
 		{
-			var dialog *FontDialog = cocoa.OSJNIGetObject(jniRef[0]).(*FontDialog)
+			var dialog *FontDialog = castanyToFontDialog(cocoa.OSJNIGetObject(jniRef[0]))
 			if dialog == (nil) {
 				return int64(0)
 			}
@@ -5064,11 +5074,11 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 	case cocoa.OSSel_windowWillClose_:
 		{
 			var object any = cocoa.OSJNIGetObject(jniRef[0])
-			fontDialog, ok280 := object.(*FontDialog)
+			fontDialog, ok280 := dialogImplAsFontDialog(object)
 			if ok280 {
 				fontDialog.WindowWillClose(id, sel, arg0)
 			} else {
-				colorDialog, ok281 := object.(*ColorDialog)
+				colorDialog, ok281 := dialogImplAsColorDialog(object)
 				if ok281 {
 					colorDialog.WindowWillClose(id, sel, arg0)
 				}
@@ -5096,7 +5106,7 @@ func DisplayDialogProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64)
 		return dialog.Panel_shouldEnableURL(id, sel, arg0, arg1)
 	}
 	if sel == cocoa.OSSel_setColor_forAttribute_ {
-		var dialog *FontDialog = cocoa.OSJNIGetObject(jniRef[0]).(*FontDialog)
+		var dialog *FontDialog = castanyToFontDialog(cocoa.OSJNIGetObject(jniRef[0]))
 		if dialog == (nil) {
 			return int64(0)
 		}
@@ -5499,12 +5509,12 @@ func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		}
 		sw297 = int64(cond300)
 	case cocoa.OSSel_numberOfRowsInTableView_:
-		sw297 = widget.NumberOfRowsInTableView(id, sel, arg0)
+		sw297 = widget.impl.NumberOfRowsInTableView(id, sel, arg0)
 	case cocoa.OSSel_tableViewSelectionDidChange_:
-		widget.TableViewSelectionDidChange(id, sel, arg0)
+		widget.impl.TableViewSelectionDidChange(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_tableViewSelectionIsChanging_:
-		widget.TableViewSelectionIsChanging(id, sel, arg0)
+		widget.impl.TableViewSelectionIsChanging(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_windowDidResignKey_:
 		widget.impl.WindowDidResignKey(id, sel, arg0)
@@ -5611,10 +5621,10 @@ func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		}
 		sw297 = int64(cond303)
 	case cocoa.OSSel_tableViewColumnDidMove_:
-		widget.TableViewColumnDidMove(id, sel, arg0)
+		widget.impl.TableViewColumnDidMove(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_tableViewColumnDidResize_:
-		widget.TableViewColumnDidResize(id, sel, arg0)
+		widget.impl.TableViewColumnDidResize(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_outlineViewColumnDidMove_:
 		widget.impl.OutlineViewColumnDidMove(id, sel, arg0)
@@ -5658,24 +5668,24 @@ func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		cocoa.OSMemmoveOverload8(result, &size, int64(cocoa.NSSizeSizeof))
 		sw297 = result
 	case cocoa.OSSel_setObjectValue_:
-		widget.SetObjectValue(id, sel, arg0)
+		widget.impl.SetObjectValue(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_updateOpenGLContext_:
 		widget.impl.UpdateOpenGLContext(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_sizeOfLabel_:
-		var size cocoa.NSSize = widget.SizeOfLabel(id, sel, arg0 != 0)
+		var size cocoa.NSSize = widget.impl.SizeOfLabel(id, sel, arg0 != 0)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSSizeSizeof))
 		cocoa.OSMemmoveOverload8(result, &size, int64(cocoa.NSSizeSizeof))
 		sw297 = result
 	case cocoa.OSSel_comboBoxSelectionDidChange_:
-		widget.ComboBoxSelectionDidChange(id, sel, arg0)
+		widget.impl.ComboBoxSelectionDidChange(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_comboBoxWillDismiss_:
-		widget.ComboBoxWillDismiss(id, sel, arg0)
+		widget.impl.ComboBoxWillDismiss(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_comboBoxWillPopUp_:
-		widget.ComboBoxWillPopUp(id, sel, arg0)
+		widget.impl.ComboBoxWillPopUp(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_drawViewBackgroundInRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
@@ -5752,7 +5762,7 @@ func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		widget.impl.DeselectRow(id, sel, arg0)
 		sw297 = int64(0)
 	case cocoa.OSSel_deselectAll_:
-		widget.impl.DeselectAll(id, sel, arg0)
+		widget.impl.DeselectAllOnWidget(id, sel, arg0)
 		sw297 = int64(0)
 	default:
 		sw297 = int64(0)
@@ -5768,10 +5778,10 @@ func DisplayWindowProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64)
 	var sw306 int64
 	switch sel {
 	case cocoa.OSSel_tabView_willSelectTabViewItem_:
-		widget.TabView_willSelectTabViewItem(id, sel, arg0, arg1)
+		widget.impl.TabView_willSelectTabViewItem(id, sel, arg0, arg1)
 		sw306 = int64(0)
 	case cocoa.OSSel_tabView_didSelectTabViewItem_:
-		widget.TabView_didSelectTabViewItem(id, sel, arg0, arg1)
+		widget.impl.TabView_didSelectTabViewItem(id, sel, arg0, arg1)
 		sw306 = int64(0)
 	case cocoa.OSSel_outlineView_isItemExpandable_:
 		var cond307 int32
@@ -5812,7 +5822,7 @@ func DisplayWindowProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64)
 	case cocoa.OSSel_accessibilityAttributeValue_forParameter_:
 		sw306 = widget.impl.AccessibilityAttributeValue_forParameter(id, sel, arg0, arg1)
 	case cocoa.OSSel_tableView_didClickTableColumn_:
-		widget.TableView_didClickTableColumn(id, sel, arg0, arg1)
+		widget.impl.TableView_didClickTableColumn(id, sel, arg0, arg1)
 		sw306 = int64(0)
 	case cocoa.OSSel_outlineView_didClickTableColumn_:
 		widget.impl.OutlineView_didClickTableColumn(id, sel, arg0, arg1)
@@ -5858,7 +5868,7 @@ func DisplayWindowProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64)
 	case cocoa.OSSel_drawLabel_inRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg1, int64(cocoa.NSRectSizeof))
-		widget.DrawLabelInRect(id, sel, arg0 == 1, rect)
+		widget.impl.DrawLabelInRect(id, sel, arg0 == 1, rect)
 		sw306 = int64(0)
 	case cocoa.OSSel_scrollClipView_toPoint_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
@@ -5903,10 +5913,10 @@ func DisplayWindowProcIdSelArg0Arg1Arg2(id int64, sel int64, arg0 int64, arg1 in
 	var sw312 int64
 	switch sel {
 	case cocoa.OSSel_tableView_objectValueForTableColumn_row_:
-		sw312 = widget.TableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2)
+		sw312 = widget.impl.TableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2)
 	case cocoa.OSSel_tableView_shouldReorderColumn_toColumn_:
 		var cond313 int32
-		if widget.TableView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) {
+		if widget.impl.TableView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) {
 			cond313 = 1
 		} else {
 			cond313 = 0
@@ -5981,7 +5991,7 @@ func DisplayWindowProcIdSelArg0Arg1Arg2(id int64, sel int64, arg0 int64, arg1 in
 		sw312 = widget.impl.HitTestForEvent(id, sel, arg0, rect, arg2)
 	case cocoa.OSSel_tableView_writeRowsWithIndexes_toPasteboard_:
 		var cond319 int32
-		if widget.TableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) {
+		if widget.impl.TableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) {
 			cond319 = 1
 		} else {
 			cond319 = 0
@@ -6011,7 +6021,7 @@ func DisplayWindowProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int64, arg
 	var sw321 int64
 	switch sel {
 	case cocoa.OSSel_tableView_willDisplayCell_forTableColumn_row_:
-		widget.TableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3)
+		widget.impl.TableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3)
 		sw321 = int64(0)
 	case cocoa.OSSel_outlineView_willDisplayCell_forTableColumn_item_:
 		widget.impl.OutlineView_willDisplayCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3)
@@ -6020,13 +6030,13 @@ func DisplayWindowProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int64, arg
 		widget.impl.OutlineView_setObjectValue_forTableColumn_byItem(id, sel, arg0, arg1, arg2, arg3)
 		sw321 = int64(0)
 	case cocoa.OSSel_tableView_setObjectValue_forTableColumn_row_:
-		widget.TableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3)
+		widget.impl.TableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3)
 		sw321 = int64(0)
 	case cocoa.OSSel_view_stringForToolTip_point_userData_:
 		sw321 = widget.impl.View_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3)
 	case cocoa.OSSel_tableView_shouldTrackCell_forTableColumn_row_:
 		var cond322 int32
-		if widget.TableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) {
+		if widget.impl.TableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) {
 			cond322 = 1
 		} else {
 			cond322 = 0
@@ -6113,6 +6123,14 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 		return &v.Widget, true
 	case *Tree:
 		return &v.Widget, true
+	case *TabFolder:
+		return &v.Widget, true
+	case *Combo:
+		return &v.Widget, true
+	case *Table:
+		return &v.Widget, true
+	case *ScrolledComposite:
+		return &v.Widget, true
 	case *Text:
 		return &v.Widget, true
 	case *Button:
@@ -6128,6 +6146,12 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 	case *TreeItem:
 		return &v.Widget, true
 	case *TreeColumn:
+		return &v.Widget, true
+	case *TabItem:
+		return &v.Widget, true
+	case *TableItem:
+		return &v.Widget, true
+	case *TableColumn:
 		return &v.Widget, true
 	case *Menu:
 		return &v.Widget, true
@@ -6554,6 +6578,32 @@ func castanyTococoaNSObject(x any) *cocoa.NSObject {
 	return v
 }
 
+// j2go: instanceof helper for Dialog and its subclasses within the translated set.
+func dialogImplAsDialog(x any) (*Dialog, bool) {
+	switch v := x.(type) {
+	case *Dialog:
+		return v, true
+	case *ColorDialog:
+		return &v.Dialog, true
+	case *FontDialog:
+		return &v.Dialog, true
+	case *MessageBox:
+		return &v.Dialog, true
+	}
+	return nil, false
+}
+
+func castanyToDialog(x any) *Dialog {
+	if x == nil {
+		return nil
+	}
+	v, ok := dialogImplAsDialog(x)
+	if !ok {
+		panic("java.lang.ClassCastException: Dialog")
+	}
+	return v
+}
+
 // j2go: instanceof helper for cocoa.NSLocale and its subclasses within the translated set.
 func idImplAsNSLocale(x any) (*cocoa.NSLocale, bool) {
 	switch v := x.(type) {
@@ -6579,6 +6629,35 @@ func upcastcocoaNSLocaleTococoaId(x *cocoa.NSLocale) *cocoa.Id {
 		return nil
 	}
 	return x.AsId()
+}
+
+// j2go: instanceof helper for ColorDialog and its subclasses within the translated set.
+func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
+	switch v := x.(type) {
+	case *ColorDialog:
+		return v, true
+	}
+	return nil, false
+}
+
+// j2go: instanceof helper for FontDialog and its subclasses within the translated set.
+func dialogImplAsFontDialog(x any) (*FontDialog, bool) {
+	switch v := x.(type) {
+	case *FontDialog:
+		return v, true
+	}
+	return nil, false
+}
+
+func castanyToFontDialog(x any) *FontDialog {
+	if x == nil {
+		return nil
+	}
+	v, ok := dialogImplAsFontDialog(x)
+	if !ok {
+		panic("java.lang.ClassCastException: FontDialog")
+	}
+	return v
 }
 
 func init() {

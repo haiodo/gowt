@@ -2139,7 +2139,7 @@ func (this *Control) ReleaseHandle() {
 
 func (this *Control) ReleaseParent() {
 	this.impl.InvalidateVisibleRegion()
-	this.parent.RemoveControl(this)
+	this.parent.impl.RemoveControl(this)
 }
 
 func (this *Control) ReleaseWidget() {
@@ -2728,7 +2728,7 @@ func (this *Control) SetCursor(cursorLike CursorLike) {
 func (this *Control) SetDefaultFont() {
 	if this.display.smallFonts {
 		this.impl.SetFontFont(this.impl.DefaultFont().Handle)
-		this.SetSmallSize()
+		this.impl.SetSmallSize()
 	}
 }
 
@@ -3646,9 +3646,9 @@ func (this *Control) TraverseEvent(eventLike EventLike) bool {
 	case TRAVERSE_MNEMONIC:
 		return this.TraverseMnemonicEvent(event)
 	case TRAVERSE_PAGE_NEXT:
-		return this.TraversePage(true)
+		return this.impl.TraversePage(true)
 	case TRAVERSE_PAGE_PREVIOUS:
-		return this.TraversePage(false)
+		return this.impl.TraversePage(false)
 	}
 	return false
 }

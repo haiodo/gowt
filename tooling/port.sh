@@ -47,6 +47,11 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # Round 8 tree: Tree/TreeItem/TreeColumn (NSOutlineView) and ScrollBar (was a manual stub).
 # Round 7 gfx: the paint path - GC/GCData and the graphics resources a GC draws with
 # (Pattern/Transform/Path/Region/Image/Cursor/TextLayout) plus their common value types.
+# Round 9 widgets: TabFolder/TabItem/Combo/Table/TableItem/TableColumn (Table reuses Tree's
+# NSTableView/NSOutlineView callback machinery), ScrolledComposite(Layout), Dialog +
+# ColorDialog/FontDialog/MessageBox (NSColorPanel/NSFontPanel/NSAlert modal dialogs - Display
+# already casts to these concrete types in its dialogProc/alertProc, see manual.txt history),
+# TableEditor/ControlEditor.
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/graphics/Point.java \
 	org/eclipse/swt/graphics/Rectangle.java \
@@ -125,6 +130,20 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/widgets/Tree.java \
 	org/eclipse/swt/widgets/TreeItem.java \
 	org/eclipse/swt/widgets/TreeColumn.java \
+	org/eclipse/swt/widgets/Dialog.java \
+	org/eclipse/swt/widgets/ColorDialog.java \
+	org/eclipse/swt/widgets/FontDialog.java \
+	org/eclipse/swt/widgets/MessageBox.java \
+	org/eclipse/swt/widgets/TabItem.java \
+	org/eclipse/swt/widgets/TabFolder.java \
+	org/eclipse/swt/widgets/Combo.java \
+	org/eclipse/swt/widgets/Table.java \
+	org/eclipse/swt/widgets/TableItem.java \
+	org/eclipse/swt/widgets/TableColumn.java \
+	org/eclipse/swt/custom/ScrolledCompositeLayout.java \
+	org/eclipse/swt/custom/ScrolledComposite.java \
+	org/eclipse/swt/custom/ControlEditor.java \
+	org/eclipse/swt/custom/TableEditor.java \
 	-- \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"

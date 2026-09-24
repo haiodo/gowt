@@ -181,7 +181,7 @@ func (this *Composite) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, ch
 			size = NewPoint(wHint, hHint)
 		}
 	} else {
-		size = this.MinimumSize(wHint, hHint, changed)
+		size = this.impl.MinimumSize(wHint, hHint, changed)
 		if size.X == 0 {
 			size.X = WidgetDEFAULT_WIDTH
 		}
@@ -722,12 +722,7 @@ func (this *Composite) ReleaseWidget() {
 	this.tabList = nil
 }
 
-func (this *Composite) RemoveControl(controlLike ControlLike) {
-	var control *Control
-	if controlLike != nil {
-		control = controlLike.AsControl()
-	}
-	_ = control
+func (this *Composite) RemoveControl(control *Control) {
 	if control.HasFocus() {
 		this.impl.RedrawWidget(this.View, true)
 	}
@@ -1030,6 +1025,14 @@ func widgetImplAsControl(x any) (*Control, bool) {
 	case *SashForm:
 		return &v.Control, true
 	case *Tree:
+		return &v.Control, true
+	case *TabFolder:
+		return &v.Control, true
+	case *Combo:
+		return &v.Control, true
+	case *Table:
+		return &v.Control, true
+	case *ScrolledComposite:
 		return &v.Control, true
 	case *Text:
 		return &v.Control, true

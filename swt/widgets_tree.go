@@ -693,7 +693,7 @@ func (this *Tree) DefaultForeground() *Color {
 	return this.display.GetWidgetColor(COLOR_LIST_FOREGROUND)
 }
 
-func (this *Tree) DeselectAll(id int64, sel int64, sender int64) {
+func (this *Tree) DeselectAllOnWidget(id int64, sel int64, sender int64) {
 	if this.preventSelect && !this.ignoreSelect {
 		return
 	}
@@ -702,7 +702,7 @@ func (this *Tree) DeselectAll(id int64, sel int64, sender int64) {
 			return
 		}
 	}
-	this.Composite.DeselectAll(id, sel, sender)
+	this.Composite.DeselectAllOnWidget(id, sel, sender)
 }
 
 func (this *Tree) DeselectRow(id int64, sel int64, index int64) {

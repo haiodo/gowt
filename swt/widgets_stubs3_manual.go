@@ -82,10 +82,6 @@ var DefaultExceptionHandlerRUNTIME_ERROR_HANDLER = func(e error) {
 	panic(e)
 }
 
-type Combo struct{ Composite }
-
-func (c *Combo) SendTrackingKeyEvent(nsEvent *cocoa.NSEvent, eventType int32) {}
-
 type Tray struct {
 	Widget
 	itemCount int32
@@ -109,19 +105,6 @@ func (t *TaskBar) GetItem(shell *Shell) *TaskItem       { return nil }
 type TaskItem struct{ Widget }
 
 func (t *TaskItem) GetMenu() *Menu { return nil }
-
-type ColorDialog struct{}
-
-func (d *ColorDialog) ChangeColor(id int64, sel int64, sender int64)     {}
-func (d *ColorDialog) WindowWillClose(id int64, sel int64, sender int64) {}
-
-type FontDialog struct{}
-
-func (d *FontDialog) ChangeFont(id int64, sel int64, sender int64)      {}
-func (d *FontDialog) WindowWillClose(id int64, sel int64, sender int64) {}
-func (d *FontDialog) SetColor_forAttribute(id int64, sel int64, colorArg int64, attribute int64) {
-}
-func (d *FontDialog) ValidModesForFontPanel(id int64, sel int64, fontPanel int64) int64 { return 0 }
 
 type FileDialog struct{}
 

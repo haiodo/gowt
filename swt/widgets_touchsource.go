@@ -4,8 +4,6 @@ package swt
 
 import (
 	"fmt"
-	"github.com/haiodo/gowt/internal/jrt"
-	"reflect"
 )
 
 type TouchSource struct {
@@ -42,10 +40,4 @@ func (this *TouchSource) GetBounds() *Rectangle {
 
 func (this *TouchSource) String() string {
 	return fmt.Sprintf("TouchSource {handle=%d direct=%t bounds=%v}", this.handle, this.direct, this.bounds)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*TouchSource](), "isDirect", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TouchSource](target).IsDirect() })
-	jrt.RegisterMethod(reflect.TypeFor[*TouchSource](), "getBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*TouchSource](target).GetBounds() })
-	jrt.RegisterMethod(reflect.TypeFor[*TouchSource](), "toString", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*TouchSource](target).String() })
 }

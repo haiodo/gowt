@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 	"unicode/utf16"
 )
 
@@ -421,7 +419,7 @@ func (this *TableColumn) SetResizable(resizable bool) {
 
 func (this *TableColumn) setText_(string_ string) {
 	this.CheckWidget()
-	if string_ == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Item.setText_(string_)
@@ -461,50 +459,4 @@ func (this *TableColumn) tooltipText_() string {
 
 func TableColumnCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, LEFT, CENTER, RIGHT, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "addControlListener", []reflect.Type{reflect.TypeFor[ControlListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).AddControlListener(jrt.ArgAs[ControlListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getAlignment", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetAlignment() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getParent", nil, reflect.TypeFor[*Table](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetParent() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getMoveable", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetMoveable() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getResizable", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetResizable() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getToolTipText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetToolTipText() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "getWidth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TableColumn](target).GetWidth() })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "pack", nil, nil, func(target any, args []any) any { jrt.Narrow[*TableColumn](target).Pack(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "removeControlListener", []reflect.Type{reflect.TypeFor[ControlListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).RemoveControlListener(jrt.ArgAs[ControlListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "setAlignment", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).SetAlignment(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "setMoveable", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).SetMoveable(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "setResizable", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).SetResizable(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "setToolTipText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).SetToolTipText(jrt.ArgAs[string](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TableColumn](), "setWidth", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TableColumn](target).SetWidth(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
 }

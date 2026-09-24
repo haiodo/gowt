@@ -15,12 +15,6 @@ final class ClassEmitter {
 
 	private final Emitter emitter;
 
-	// Round 10 reflection (README): one line per public instance method of a widgets-package
-	// class, collected while its methods are emitted and flushed as that class's own func init()
-	// in emitClass - see registerReflectMethod and internal/jrt/reflect.go.
-	private static final String WIDGETS_PACKAGE = "org.eclipse.swt.widgets";
-	private List<String> currentReflectRegistrations;
-
 	ClassEmitter(Emitter emitter) {
 		this.emitter = emitter;
 	}
@@ -74,10 +68,8 @@ final class ClassEmitter {
 		TypeModel.ClassInfo ci = emitter.model.lookup(td.resolveBinding());
 		String savedClassGoTypeName = emitter.currentClassGoTypeName;
 		TypeModel.ClassInfo savedClassInfo = emitter.currentClassInfo;
-		List<String> savedReflectRegistrations = currentReflectRegistrations;
 		emitter.currentClassGoTypeName = ci.goTypeName;
 		emitter.currentClassInfo = ci;
-		currentReflectRegistrations = new ArrayList<>();
 		boolean needsImpl = !ci.root.children.isEmpty();
 
 		if (ci == ci.root && needsImpl) {
@@ -183,7 +175,6 @@ final class ClassEmitter {
 			}
 		}
 		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName));
-		flushReflectRegistrations(out);
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
 				emitClass(nested, out);
@@ -191,53 +182,6 @@ final class ClassEmitter {
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;
 		emitter.currentClassInfo = savedClassInfo;
-		currentReflectRegistrations = savedReflectRegistrations;
-	}
-
-	/** Round 10 reflection: this class's own func init() registering everything
-	 * registerReflectMethod collected while its methods were emitted. */
-	private void flushReflectRegistrations(StringBuilder out) {
-		if (currentReflectRegistrations.isEmpty()) return;
-		emitter.fileImports.add("reflect");
-		emitter.fileImports.add(Manual.JRT_IMPORT);
-		out.append("func init() {\n");
-		for (String line : currentReflectRegistrations) out.append('\t').append(line).append('\n');
-		out.append("}\n\n");
-	}
-
-	/** Registers one public instance method (own declaration, or a split cascade's override-point
-	 * wrapper) of a org.eclipse.swt.widgets class for java.lang.Class#getMethod/Method#invoke -
-	 * see internal/jrt/reflect.go. Skipped for anything GoTypes couldn't map to a real Go type
-	 * (still "unsupported_..."/degrades to any at a param position not worth reflecting on
-	 * anyway) - simply not reflectable, same ceiling any other unsupported construct has. */
-	private void registerReflectMethod(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, String ret, boolean widen) {
-		if (!ci.javaPackage.equals(WIDGETS_PACKAGE) || !Modifier.isPublic(mb.getModifiers()) || mb.isVarargs()) return;
-		if (ret.contains("unsupported_") || ret.contains("func(")) return;
-		ITypeBinding[] paramTypes = mb.getParameterTypes();
-		List<String> paramTypeExprs = new ArrayList<>();
-		List<String> callArgs = new ArrayList<>();
-		for (int i = 0; i < paramTypes.length; i++) {
-			String t = regParamType(paramTypes[i], widen);
-			if (t.contains("unsupported_") || t.contains("func(")) return;
-			paramTypeExprs.add("reflect.TypeFor[" + t + "]()");
-			callArgs.add("jrt.ArgAs[" + t + "](args[" + i + "])");
-		}
-		String paramTypesLit = paramTypeExprs.isEmpty() ? "nil" : "[]reflect.Type{" + String.join(", ", paramTypeExprs) + "}";
-		String returnTypeExpr = ret.isEmpty() ? "nil" : "reflect.TypeFor[" + ret + "]()";
-		String call = "jrt.Narrow[*" + ci.goTypeName + "](target)." + goName + "(" + String.join(", ", callArgs) + ")";
-		String body = ret.isEmpty() ? call + "; return nil" : "return " + call;
-		currentReflectRegistrations.add("jrt.RegisterMethod(reflect.TypeFor[*" + ci.goTypeName + "](), \"" + javaName + "\", "
-				+ paramTypesLit + ", " + returnTypeExpr + ", func(target any, args []any) any { " + body + " })");
-	}
-
-	/** Same per-parameter widening publicParamList uses (README "Round 7 api"): a translated-class
-	 * param widens to its "<Class>Like" interface so the registered closure accepts any subclass. */
-	private String regParamType(ITypeBinding t, boolean widen) {
-		if (widen) {
-			TypeModel.ClassInfo pci = emitter.model.lookup(t);
-			if (pci != null && pci.likeInterfaceName != null) return emitter.qualify(pci.likeInterfaceName, pci);
-		}
-		return dev.gowt.j2go.GoTypes.map(t, emitter);
 	}
 
 	/** func (this *C) AsC() *C { return this } + type CLike interface { AsC() *C } (README
@@ -407,7 +351,7 @@ final class ClassEmitter {
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");
-		if (!overridden) registerReflectMethod(ci, mb, javaName, goName, ret, widen);
+		if (!overridden) emitter.registerReflectMethod(ci, mb, javaName, goName, widen);
 	}
 
 	/** At a split cascade's override point: the exported natural-name method, params widened and
@@ -428,7 +372,7 @@ final class ClassEmitter {
 		}
 		out.append('\t').append(ret.isEmpty() ? "" : "return ").append("this.impl.")
 				.append(ci.root.overriddenRootMethodGoNames.get(sig)).append('(').append(emitter.argNames(md)).append(")\n}\n\n");
-		registerReflectMethod(ci, mb, md.getName().getIdentifier(), natural, ret, widen);
+		emitter.registerReflectMethod(ci, mb, md.getName().getIdentifier(), natural, widen);
 	}
 
 	// A default method's body as <Iface>Default<M>(this, ...); implementers that don't declare it

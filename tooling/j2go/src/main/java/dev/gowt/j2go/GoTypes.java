@@ -86,7 +86,8 @@ public class GoTypes {
 		}
 		if (Manual.isManual(qualified)) {
 			emitter.addManualImport(qualified);
-			return Manual.isValueType(qualified) ? Manual.goTypeName(qualified) : "*" + Manual.goTypeName(qualified);
+			String goType = emitter.qualifyManual(Manual.goTypeName(qualified), t);
+			return Manual.isValueType(qualified) ? goType : "*" + goType;
 		}
 		// Any other JDK type (Locale, Cleaner, StringBuilder, ...) degrades to any: every member
 		// access on it is already an unresolved-call marker, so only on-path uses need a mapping.

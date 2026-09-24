@@ -4,8 +4,6 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
-	"reflect"
 )
 
 type Scrollable struct {
@@ -379,20 +377,6 @@ func (this *Scrollable) updateCursorRects_(enabled bool) {
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSScrollViewTococoaNSView(this.scrollView))
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSClipViewTococoaNSView(contentView))
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "computeTrim", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*Scrollable](target).ComputeTrim(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "getClientArea", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*Scrollable](target).GetClientArea() })
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "getHorizontalBar", nil, reflect.TypeFor[*ScrollBar](), func(target any, args []any) any { return jrt.Narrow[*Scrollable](target).GetHorizontalBar() })
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "getScrollbarsMode", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Scrollable](target).GetScrollbarsMode() })
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "setScrollbarsMode", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Scrollable](target).SetScrollbarsMode(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Scrollable](), "getVerticalBar", nil, reflect.TypeFor[*ScrollBar](), func(target any, args []any) any { return jrt.Narrow[*Scrollable](target).GetVerticalBar() })
 }
 
 // j2go: instanceof helper for cocoa.NSScroller and its subclasses within the translated set.

@@ -7,10 +7,10 @@
 // reflect.Type.MethodByName/Method(i) - is deliberately not used: the Go linker sees any static
 // call to those two APIs and, unable to tell which name will be looked up at runtime, keeps every
 // exported method of every reflect-reachable type in the binary (defeats dead-code elimination
-// program-wide). Instead ClassEmitter emits, per translated widgets-package class, one func
-// init() registering each of its own public methods as a closure naming its own concrete types
-// statically - the linker can dead-code-eliminate exactly as it would any other unreferenced
-// method. Inherited (promoted) methods are found by walking the embedding chain at lookup time
+// program-wide). Instead j2go generates package swt/swtreflect, whose init() registers each public
+// method of the translated widgets-package classes as a closure naming its concrete types
+// statically. Only programs importing swtreflect keep those methods (README "Round 11").
+// Inherited (promoted) methods are found by walking the embedding chain at lookup time
 // (parentOf) and dispatched through Narrow, both using only struct-field reflection (Field/
 // Addr/Interface), never Method/MethodByName.
 package jrt
@@ -30,8 +30,8 @@ type MethodEntry struct {
 
 var classMethods = map[reflect.Type]map[string][]*MethodEntry{}
 
-// RegisterMethod is called from generated code - one func init() per translated widgets-package
-// class (ClassEmitter's reflect registry emission, README "Round 10 reflection").
+// RegisterMethod is called from generated code - swt/swtreflect's init() (ReflectEmitter, README
+// "Round 10 reflection").
 func RegisterMethod(t reflect.Type, javaName string, paramTypes []reflect.Type, returnType reflect.Type, call func(target any, args []any) any) {
 	m := classMethods[t]
 	if m == nil {

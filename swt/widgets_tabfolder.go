@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 )
 
 type TabFolder struct {
@@ -520,42 +518,6 @@ func (this *TabFolder) tabView_didSelectTabViewItem_(id int64, sel int64, tabVie
 func TabFolderCheckStyle(style int32) int32 {
 	style = WidgetCheckBits(style, TOP, BOTTOM, 0, 0, 0, 0)
 	return style & ^(H_SCROLL | V_SCROLL)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TabFolder](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*TabItem](), func(target any, args []any) any {
-		return jrt.Narrow[*TabFolder](target).GetItem(jrt.ArgAs[int32](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getItem", []reflect.Type{reflect.TypeFor[PointLike]()}, reflect.TypeFor[*TabItem](), func(target any, args []any) any {
-		return jrt.Narrow[*TabFolder](target).GetItemPoint(jrt.ArgAs[PointLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TabFolder](target).GetItemCount() })
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getItems", nil, reflect.TypeFor[[]*TabItem](), func(target any, args []any) any { return jrt.Narrow[*TabFolder](target).GetItems() })
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getSelection", nil, reflect.TypeFor[[]*TabItem](), func(target any, args []any) any { return jrt.Narrow[*TabFolder](target).GetSelection() })
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "getSelectionIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TabFolder](target).GetSelectionIndex() })
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "indexOf", []reflect.Type{reflect.TypeFor[TabItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*TabFolder](target).IndexOf(jrt.ArgAs[TabItemLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TabFolder](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "setSelection", []reflect.Type{reflect.TypeFor[TabItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TabFolder](target).SetSelection(jrt.ArgAs[TabItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "setSelection", []reflect.Type{reflect.TypeFor[[]*TabItem]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TabFolder](target).SetSelectionItems(jrt.ArgAs[[]*TabItem](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TabFolder](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TabFolder](target).SetSelectionIndex(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
 }
 
 func castcocoaNSObjectTococoaNSTabView(x *cocoa.NSObject) *cocoa.NSTabView {

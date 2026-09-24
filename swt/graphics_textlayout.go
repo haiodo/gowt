@@ -1939,7 +1939,7 @@ func (this *TextLayout) SetTabs(tabs []int32) {
 
 func (this *TextLayout) SetText(text string) {
 	this.CheckLayout()
-	if text == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	if text == this.text {

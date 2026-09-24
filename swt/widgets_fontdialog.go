@@ -4,8 +4,6 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
-	"reflect"
 )
 
 type FontDialog struct {
@@ -196,30 +194,6 @@ func (this *FontDialog) ValidModesForFontPanel(id int64, sel int64, arg0 int64) 
 
 func (this *FontDialog) WindowWillClose(id int64, sel int64, sender int64) {
 	cocoa.NSApplicationSharedApplication().Stop(nil)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "getEffectsVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*FontDialog](target).GetEffectsVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "getFontData", nil, reflect.TypeFor[*FontData](), func(target any, args []any) any { return jrt.Narrow[*FontDialog](target).GetFontData() })
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "getFontList", nil, reflect.TypeFor[[]*FontData](), func(target any, args []any) any { return jrt.Narrow[*FontDialog](target).GetFontList() })
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "getRGB", nil, reflect.TypeFor[*RGB](), func(target any, args []any) any { return jrt.Narrow[*FontDialog](target).GetRGB() })
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "open", nil, reflect.TypeFor[*FontData](), func(target any, args []any) any { return jrt.Narrow[*FontDialog](target).Open() })
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "setEffectsVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*FontDialog](target).SetEffectsVisible(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "setFontData", []reflect.Type{reflect.TypeFor[FontDataLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*FontDialog](target).SetFontData(jrt.ArgAs[FontDataLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "setFontList", []reflect.Type{reflect.TypeFor[[]*FontData]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*FontDialog](target).SetFontList(jrt.ArgAs[[]*FontData](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*FontDialog](), "setRGB", []reflect.Type{reflect.TypeFor[RGBLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*FontDialog](target).SetRGB(jrt.ArgAs[RGBLike](args[0]))
-		return nil
-	})
 }
 
 func upcastFontDialogToDialog(x *FontDialog) *Dialog {

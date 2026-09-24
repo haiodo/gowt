@@ -377,7 +377,7 @@ func (this *Image) initImageDeviceFilename(device *Device, filename string) {
 			pool.Release()
 		}
 	}()
-	if filename == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.InitUsingFileNameProvider(&ImageFileNameProviderFunc{fn: func(zoom int32) string {

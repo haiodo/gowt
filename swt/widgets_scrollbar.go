@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 )
 
 type ScrollBar struct {
@@ -369,67 +367,6 @@ func (this *ScrollBar) UpdateBar(selection int32, minimum int32, maximum int32, 
 
 func ScrollBarCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, HORIZONTAL, VERTICAL, 0, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetEnabled() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetIncrement() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getMaximum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetMaximum() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getMinimum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetMinimum() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getPageIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetPageIncrement() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getParent", nil, reflect.TypeFor[*Scrollable](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetParent() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getSelection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetSelection() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getSize", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetSize() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getThumb", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetThumb() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getThumbBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetThumbBounds() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getThumbTrackBounds", nil, reflect.TypeFor[*Rectangle](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetThumbTrackBounds() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "getVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).GetVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "isEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).IsEnabled() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "isVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*ScrollBar](target).IsVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetIncrement(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setEnabled", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetEnabled(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setMaximum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetMaximum(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setMinimum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetMinimum(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setPageIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetPageIncrement(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetSelection(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setThumb", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetThumb(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setValues", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetValues(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*ScrollBar](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*ScrollBar](target).SetVisible(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
 }
 
 func upcastcocoaNSScrollerTococoaNSObject(x *cocoa.NSScroller) *cocoa.NSObject {

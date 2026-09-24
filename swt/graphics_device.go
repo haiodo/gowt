@@ -530,7 +530,7 @@ func (this *Device) IsDisposed() bool {
 
 func (this *Device) LoadFont(path string) bool {
 	this.impl.checkDevice_()
-	if path == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var nsPath *cocoa.NSString = cocoa.NSStringStringWith(path)

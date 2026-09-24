@@ -62,7 +62,7 @@ func (this *ImageLoader) LoadFilename(filename string) []*ImageData {
 }
 
 func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, fileZoom int32, targetZoom int32) *jrt.List {
-	if filename == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var stream jrt.InputStream = jrt.NewFileInputStream(filename)
@@ -107,7 +107,7 @@ func (this *ImageLoader) Save(stream jrt.OutputStream, format int32) {
 }
 
 func (this *ImageLoader) SaveFilenameFormat(filename string, format int32) {
-	if filename == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var stream jrt.OutputStream = jrt.NewFileOutputStream(filename)
@@ -184,7 +184,7 @@ func ImageLoaderCanLoadAtZoom(stream jrt.InputStream, fileZoom int32, targetZoom
 }
 
 func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoom int32, targetZoom int32) bool {
-	if filename == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var stream jrt.InputStream = jrt.NewFileInputStream(filename)

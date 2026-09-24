@@ -1045,7 +1045,7 @@ func (this *Display) GetCursorSizes() []*Point {
 
 func (this *Display) GetData(key string) any {
 	this.impl.checkDevice_()
-	if key == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.keys == (nil) {
@@ -3773,7 +3773,7 @@ func (this *Display) SetCursorLocationPoint(pointLike PointLike) {
 
 func (this *Display) SetData(key string, value any) {
 	this.impl.checkDevice_()
-	if key == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == DisplayADD_WIDGET_KEY {
@@ -6063,142 +6063,6 @@ func DisplayWindowProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int64, arg
 
 func DisplayIsActivateShellOnForceFocus() bool {
 	return ("true" == "true")
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "addFilter", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).AddFilter(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "addListener", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).AddListener(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "asyncExec", []reflect.Type{reflect.TypeFor[jrt.Runnable]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).AsyncExec(jrt.ArgAs[jrt.Runnable](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "execute", []reflect.Type{reflect.TypeFor[jrt.Runnable]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).Execute(jrt.ArgAs[jrt.Runnable](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "beep", nil, nil, func(target any, args []any) any { jrt.Narrow[*Display](target).Beep(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "close", nil, nil, func(target any, args []any) any { jrt.Narrow[*Display](target).Close(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "disposeExec", []reflect.Type{reflect.TypeFor[jrt.Runnable]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).DisposeExec(jrt.ArgAs[jrt.Runnable](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "findWidget", []reflect.Type{reflect.TypeFor[int64]()}, reflect.TypeFor[*Widget](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).FindWidget(jrt.ArgAs[int64](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "findWidget", []reflect.Type{reflect.TypeFor[int64](), reflect.TypeFor[int64]()}, reflect.TypeFor[*Widget](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).FindWidgetHandleId(jrt.ArgAs[int64](args[0]), jrt.ArgAs[int64](args[1]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "findWidget", []reflect.Type{reflect.TypeFor[WidgetLike](), reflect.TypeFor[int64]()}, reflect.TypeFor[*Widget](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).FindWidgetWidgetId(jrt.ArgAs[WidgetLike](args[0]), jrt.ArgAs[int64](args[1]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getActiveShell", nil, reflect.TypeFor[*Shell](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetActiveShell() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getCursorControl", nil, reflect.TypeFor[*Control](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetCursorControl() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getCursorLocation", nil, reflect.TypeFor[*Point](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetCursorLocation() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getCursorSizes", nil, reflect.TypeFor[[]*Point](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetCursorSizes() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getData", []reflect.Type{reflect.TypeFor[string]()}, reflect.TypeFor[any](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).GetData(jrt.ArgAs[string](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getData", nil, reflect.TypeFor[any](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetData0() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getDismissalAlignment", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetDismissalAlignment() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getDoubleClickTime", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetDoubleClickTime() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getFocusControl", nil, reflect.TypeFor[*Control](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetFocusControl() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getHighContrast", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetHighContrast() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getIconDepth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetIconDepth() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getIconSizes", nil, reflect.TypeFor[[]*Point](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetIconSizes() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setDarkThemePreferred", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetDarkThemePreferred(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getMonitors", nil, reflect.TypeFor[[]*Monitor](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetMonitors() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getPrimaryMonitor", nil, reflect.TypeFor[*Monitor](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetPrimaryMonitor() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getShells", nil, reflect.TypeFor[[]*Shell](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetShells() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSynchronizer", nil, reflect.TypeFor[*Synchronizer](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetSynchronizer() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSyncThread", nil, reflect.TypeFor[any](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetSyncThread() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSystemCursor", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Cursor](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).GetSystemCursor(jrt.ArgAs[int32](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSystemImage", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*Image](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).GetSystemImage(jrt.ArgAs[int32](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getMenuBar", nil, reflect.TypeFor[*Menu](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetMenuBar() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSystemMenu", nil, reflect.TypeFor[*Menu](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetSystemMenu() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSystemTray", nil, reflect.TypeFor[*Tray](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetSystemTray() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getSystemTaskBar", nil, reflect.TypeFor[*TaskBar](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetSystemTaskBar() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getThread", nil, reflect.TypeFor[any](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetThread() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "getTouchEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Display](target).GetTouchEnabled() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "post", []reflect.Type{reflect.TypeFor[EventLike]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).Post(jrt.ArgAs[EventLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "map", []reflect.Type{reflect.TypeFor[ControlLike](), reflect.TypeFor[ControlLike](), reflect.TypeFor[PointLike]()}, reflect.TypeFor[*Point](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).Map(jrt.ArgAs[ControlLike](args[0]), jrt.ArgAs[ControlLike](args[1]), jrt.ArgAs[PointLike](args[2]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "map", []reflect.Type{reflect.TypeFor[ControlLike](), reflect.TypeFor[ControlLike](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*Point](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).MapFromToXY(jrt.ArgAs[ControlLike](args[0]), jrt.ArgAs[ControlLike](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "map", []reflect.Type{reflect.TypeFor[ControlLike](), reflect.TypeFor[ControlLike](), reflect.TypeFor[RectangleLike]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).MapFromToRectangle(jrt.ArgAs[ControlLike](args[0]), jrt.ArgAs[ControlLike](args[1]), jrt.ArgAs[RectangleLike](args[2]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "map", []reflect.Type{reflect.TypeFor[ControlLike](), reflect.TypeFor[ControlLike](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).MapFromToXYWidthHeight(jrt.ArgAs[ControlLike](args[0]), jrt.ArgAs[ControlLike](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "readAndDispatch", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Display](target).ReadAndDispatch() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "removeFilter", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).RemoveFilter(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "removeListener", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[Listener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).RemoveListener(jrt.ArgAs[int32](args[0]), jrt.ArgAs[Listener](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "sendPreExternalEventDispatchEvent", nil, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SendPreExternalEventDispatchEvent()
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "sendPostExternalEventDispatchEvent", nil, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SendPostExternalEventDispatchEvent()
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setCursorLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetCursorLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setCursorLocation", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetCursorLocationPoint(jrt.ArgAs[PointLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setData", []reflect.Type{reflect.TypeFor[string](), reflect.TypeFor[any]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetData(jrt.ArgAs[string](args[0]), jrt.ArgAs[any](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setData", []reflect.Type{reflect.TypeFor[any]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetDataData(jrt.ArgAs[any](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setSynchronizer", []reflect.Type{reflect.TypeFor[SynchronizerLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SetSynchronizer(jrt.ArgAs[SynchronizerLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "sleep", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Display](target).Sleep() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "syncExec", []reflect.Type{reflect.TypeFor[jrt.Runnable]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).SyncExec(jrt.ArgAs[jrt.Runnable](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "timerExec", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[jrt.Runnable]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Display](target).TimerExec(jrt.ArgAs[int32](args[0]), jrt.ArgAs[jrt.Runnable](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "update", nil, nil, func(target any, args []any) any { jrt.Narrow[*Display](target).Update(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "wake", nil, nil, func(target any, args []any) any { jrt.Narrow[*Display](target).Wake(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "isRescalingAtRuntime", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Display](target).IsRescalingAtRuntime() })
-	jrt.RegisterMethod(reflect.TypeFor[*Display](), "setRescalingAtRuntime", []reflect.Type{reflect.TypeFor[bool]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
-		return jrt.Narrow[*Display](target).SetRescalingAtRuntime(jrt.ArgAs[bool](args[0]))
-	})
 }
 
 // j2go: instanceof helper for cocoa.NSImage and its subclasses within the translated set.

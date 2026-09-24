@@ -3,6 +3,7 @@ package dev.gowt.j2go.emit;
 import dev.gowt.j2go.GoTypes;
 import dev.gowt.j2go.Names;
 import dev.gowt.j2go.TypeModel;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 
 import java.util.Map;
 
@@ -29,6 +30,15 @@ final class PackageQualifier {
 		if (prefix.isEmpty()) return bareIdent;
 		String alias = LOWERCASE_ALIASES.get(bareIdent);
 		return prefix + (alias != null ? alias : Names.capitalize(bareIdent));
+	}
+
+	/** A hand-written type spelled without a package (swt's Accessible, an example's ShellTab) lives
+	 * in its Java package's Go package: qualified when referenced from a higher layer. */
+	String qualifyManual(String goType, ITypeBinding t) {
+		if (goType.contains(".") || !Character.isUpperCase(goType.charAt(0))) return goType; // jrt.X, any, error
+		String home = GoTypes.goPackageOf(t.getPackage().getName(), t.getErasure().getName());
+		if (home.equals(emitter.currentGoPackage) || GoTypes.layer(home) >= GoTypes.layer(emitter.currentGoPackage)) return goType;
+		return packagePrefix(home) + goType;
 	}
 
 	private String packagePrefix(String targetGoPackage) {

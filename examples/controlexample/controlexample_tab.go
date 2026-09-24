@@ -986,7 +986,7 @@ func (this *Tab) GetValue() {
 				return
 			}
 			var method any = jrt.ClassGetMethod(reflect.TypeOf(widgets[i].Impl()), methodName, []reflect.Type{})
-			var result any = method.(*jrt.Method).Invoke(widgets[i], []any{}...)
+			var result any = method.(*jrt.Method).Invoke(widgets[i].Impl(), []any{}...)
 			if result == (nil) {
 				this.getText.Append("null")
 			} else {
@@ -1133,7 +1133,7 @@ func (this *Tab) SetValue() {
 					}
 				}
 			}
-			method.(*jrt.Method).Invoke(widget, parameter...)
+			method.(*jrt.Method).Invoke(widget.Impl(), parameter...)
 		}()
 		if tcnt13 {
 			continue

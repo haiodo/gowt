@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 	"unicode/utf16"
 )
 
@@ -420,7 +418,7 @@ func (this *TreeColumn) SetResizable(resizable bool) {
 
 func (this *TreeColumn) setText_(string_ string) {
 	this.CheckWidget()
-	if string_ == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Item.setText_(string_)
@@ -460,50 +458,4 @@ func (this *TreeColumn) tooltipText_() string {
 
 func TreeColumnCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, LEFT, CENTER, RIGHT, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "addControlListener", []reflect.Type{reflect.TypeFor[ControlListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).AddControlListener(jrt.ArgAs[ControlListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getAlignment", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetAlignment() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getParent", nil, reflect.TypeFor[*Tree](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetParent() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getMoveable", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetMoveable() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getResizable", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetResizable() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getToolTipText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetToolTipText() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "getWidth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*TreeColumn](target).GetWidth() })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "pack", nil, nil, func(target any, args []any) any { jrt.Narrow[*TreeColumn](target).Pack(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "removeControlListener", []reflect.Type{reflect.TypeFor[ControlListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).RemoveControlListener(jrt.ArgAs[ControlListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "setAlignment", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).SetAlignment(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "setMoveable", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).SetMoveable(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "setResizable", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).SetResizable(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "setToolTipText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).SetToolTipText(jrt.ArgAs[string](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*TreeColumn](), "setWidth", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*TreeColumn](target).SetWidth(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
 }

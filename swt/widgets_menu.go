@@ -5,9 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 	"strings"
 )
 
@@ -800,65 +798,6 @@ func MenuCheckNullItem(itemLike MenuItemLike) *MenuItem {
 
 func MenuCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, POP_UP, BAR, DROP_DOWN, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "addHelpListener", []reflect.Type{reflect.TypeFor[HelpListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).AddHelpListener(jrt.ArgAs[HelpListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "addMenuListener", []reflect.Type{reflect.TypeFor[MenuListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).AddMenuListener(jrt.ArgAs[MenuListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getDefaultItem", nil, reflect.TypeFor[*MenuItem](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetDefaultItem() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetEnabled() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*MenuItem](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetItem(jrt.ArgAs[int32](args[0])) })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetItemCount() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getItems", nil, reflect.TypeFor[[]*MenuItem](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetItems() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getOrientation", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetOrientation() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getParent", nil, reflect.TypeFor[*Decorations](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetParent() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getParentItem", nil, reflect.TypeFor[*MenuItem](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetParentItem() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getParentMenu", nil, reflect.TypeFor[*Menu](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetParentMenu() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getShell", nil, reflect.TypeFor[*Shell](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetShell() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "getVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).GetVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "indexOf", []reflect.Type{reflect.TypeFor[MenuItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*Menu](target).IndexOf(jrt.ArgAs[MenuItemLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "isEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).IsEnabled() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "isVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Menu](target).IsVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "removeHelpListener", []reflect.Type{reflect.TypeFor[HelpListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).RemoveHelpListener(jrt.ArgAs[HelpListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "removeMenuListener", []reflect.Type{reflect.TypeFor[MenuListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).RemoveMenuListener(jrt.ArgAs[MenuListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setDefaultItem", []reflect.Type{reflect.TypeFor[MenuItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetDefaultItem(jrt.ArgAs[MenuItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setEnabled", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetEnabled(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setLocation", []reflect.Type{reflect.TypeFor[PointLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetLocationLocation(jrt.ArgAs[PointLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setOrientation", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetOrientation(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Menu](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Menu](target).SetVisible(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
 }
 
 // j2go: instanceof helper for cocoa.NSMenu and its subclasses within the translated set.

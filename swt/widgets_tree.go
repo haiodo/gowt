@@ -5,9 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 )
 
 type Tree struct {
@@ -3113,132 +3111,6 @@ func TreeCheckStyle(style int32) int32 {
 	}
 	style |= FULL_SELECTION
 	return WidgetCheckBits(style, SINGLE, MULTI, 0, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "addSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).AddSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "addTreeListener", []reflect.Type{reflect.TypeFor[TreeListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).AddTreeListener(jrt.ArgAs[TreeListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "clear", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).ClearIndexAll(jrt.ArgAs[int32](args[0]), jrt.ArgAs[bool](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "clearAll", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).ClearAllAll(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Tree](target).DeselectAll0(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "deselect", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).Deselect(jrt.ArgAs[TreeItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getColumn", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*TreeColumn](), func(target any, args []any) any {
-		return jrt.Narrow[*Tree](target).GetColumnIndex(jrt.ArgAs[int32](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getColumnCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetColumnCount() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getColumnOrder", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetColumnOrder() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getColumns", nil, reflect.TypeFor[[]*TreeColumn](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetColumns() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getGridLineWidth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetGridLineWidth() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getHeaderBackground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetHeaderBackground() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getHeaderForeground", nil, reflect.TypeFor[*Color](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetHeaderForeground() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getHeaderHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetHeaderHeight() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getHeaderVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetHeaderVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetItem(jrt.ArgAs[int32](args[0])) })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getItem", []reflect.Type{reflect.TypeFor[PointLike]()}, reflect.TypeFor[*TreeItem](), func(target any, args []any) any {
-		return jrt.Narrow[*Tree](target).GetItemPoint(jrt.ArgAs[PointLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetItemCount() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getItemHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetItemHeight() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getItems", nil, reflect.TypeFor[[]*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetItems() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getLinesVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetLinesVisible() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getParentItem", nil, reflect.TypeFor[*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetParentItem() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getSelection", nil, reflect.TypeFor[[]*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetSelection() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getSelectionCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetSelectionCount() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getSortColumn", nil, reflect.TypeFor[*TreeColumn](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetSortColumn() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getSortDirection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetSortDirection() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "getTopItem", nil, reflect.TypeFor[*TreeItem](), func(target any, args []any) any { return jrt.Narrow[*Tree](target).GetTopItem() })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "indexOf", []reflect.Type{reflect.TypeFor[TreeColumnLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*Tree](target).IndexOfColumn(jrt.ArgAs[TreeColumnLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "indexOf", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*Tree](target).IndexOfItem(jrt.ArgAs[TreeItemLike](args[0]))
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "removeAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Tree](target).RemoveAll(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[SelectionListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).RemoveSelectionListener(jrt.ArgAs[SelectionListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "removeTreeListener", []reflect.Type{reflect.TypeFor[TreeListener]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).RemoveTreeListener(jrt.ArgAs[TreeListener](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setInsertMark", []reflect.Type{reflect.TypeFor[TreeItemLike](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetInsertMark(jrt.ArgAs[TreeItemLike](args[0]), jrt.ArgAs[bool](args[1]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "selectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*Tree](target).SelectAll(); return nil })
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "select", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).Select(jrt.ArgAs[TreeItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setColumnOrder", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetColumnOrder(jrt.ArgAs[[]int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setHeaderBackground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetHeaderBackground(jrt.ArgAs[ColorLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setHeaderForeground", []reflect.Type{reflect.TypeFor[ColorLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetHeaderForeground(jrt.ArgAs[ColorLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setHeaderVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetHeaderVisible(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setItemCount", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetItemCount(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setLinesVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetLinesVisible(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setSelection", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetSelection(jrt.ArgAs[TreeItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setSelection", []reflect.Type{reflect.TypeFor[[]*TreeItem]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetSelectionItems(jrt.ArgAs[[]*TreeItem](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setSortColumn", []reflect.Type{reflect.TypeFor[TreeColumnLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetSortColumn(jrt.ArgAs[TreeColumnLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setSortDirection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetSortDirection(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "setTopItem", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).SetTopItem(jrt.ArgAs[TreeItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "showColumn", []reflect.Type{reflect.TypeFor[TreeColumnLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).ShowColumn(jrt.ArgAs[TreeColumnLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "showItem", []reflect.Type{reflect.TypeFor[TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Tree](target).ShowItem(jrt.ArgAs[TreeItemLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Tree](), "showSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*Tree](target).ShowSelection(); return nil })
 }
 
 // j2go: instanceof helper for cocoa.NSTableView and its subclasses within the translated set.

@@ -89,6 +89,7 @@ it, never directly. Where to add a new construct:
 - **a stateless text/binding helper shared by several components** -> `EmitUtil`
 - **cross-package qualification (`<pkg>.` + import, package layering guard)** -> `PackageQualifier`
   (split out of `Emitter` in Round 10 - line budget)
+- **the reflect registry (package `swt/swtreflect`)** -> `ReflectEmitter` (Round 11)
 
 ## Run
 
@@ -2441,3 +2442,89 @@ way to represent Java's null distinctly from `""` for a Go `string` without a br
 `*string`) touching every String-typed field/param across the whole translated set. Blocks
 `GetValue()`/`SetValue()`/`ResetLabels()` specifically (not `GetReturnType`/`ParameterInfo`, which
 this round's live verification used instead) for every tab, every property.
+Fixed in "Round 11 null-string and reflect opt-in".
+
+## Round 11 null-string and reflect opt-in
+
+**Status: done, green.** `make gen && make` pass, `internal/cocoa` byte-identical, every `cmd/*` runs
+3 s without a crash.
+
+### Reflect registry is opt-in (`ReflectEmitter`, `swt/swtreflect`)
+
+Round 10 put the 718 `jrt.RegisterMethod(...)` calls into each widgets class's own `init()` in
+package `swt`, so every program linking `swt` kept all those methods. Now `ReflectEmitter` (split
+out of `ClassEmitter`; `ClassEmitter`/`Emitter` call `emitter.registerReflectMethod` at the same two
+points as before) collects them across the whole run, and `Main` writes one generated file,
+`swt/swtreflect/swtreflect.go` (package `swtreflect`, one `func init()`), only when the run
+registered something - the cocoa and example runs leave it alone. The registration text is built
+with `currentGoPackage = "swtreflect"` and its own import set, so the ordinary qualification rules
+spell every type as seen from outside `swt` (`*swt.Text`, `swt.PointLike`, `jrt.Runnable`). All 718
+entries call exported API only (the natural-name method or the override-point wrapper), none needed
+rerouting.
+
+A program that needs Java-style reflection imports it for the side effect:
+`import _ "github.com/haiodo/gowt/swt/swtreflect"` - `examples/controlexample/controlexample_manual.go`
+does (the Set/Get API dialog).
+
+- `PackageQualifier.qualifyManual` (from `GoTypes.map`): a hand-written type spelled without a package
+  (`Accessible`, `IME`, `Tray`, `ToolBar`, `TaskBar`, `AutoscalingMode`, an example's `ShellTab`)
+  lives in its Java package's Go package and is qualified when referenced from a higher layer.
+  Spellings with a dot (`jrt.X`) or lowercase (`any`, `error`) are left alone. No existing output
+  changed; the registry uses it for 9 entries.
+- `JdkIntrinsics`: `Method.invoke(target, ...)` passes `target.Impl()` when the target's static type
+  has an impl cascade - the same rule `getClass()` already used. `getExampleWidgets()` returns upcast
+  `*Widget` addresses, and `jrt.Narrow[*Text]` can only walk from the concrete object up to its
+  ancestors, so `Invoke(widgets[i])` failed with `*int32 does not embed *swt.Text` (not reached in
+  Round 10, `getValue()` panicked before).
+
+Release sizes (`CGO_ENABLED=0 go build -trimpath -ldflags='-s -w'`):
+
+| binary | Round 10 | Round 11 |
+|---|---|---|
+| `cmd/hello` | 8,930,754 | 6,386,946 |
+| `cmd/controlexample` | 9,791,298 | 9,561,394 |
+
+`hello` is back to its pre-reflection size (6,386,834 + 112). `controlexample` still carries the
+registry because it imports `swtreflect`.
+
+### Java null vs "" for String (`NumericEmitter.stringParamNullCheck`)
+
+Go's `string` has no nil; the port keeps `""` as null's stand-in (`adaptNumeric` turns a `null`
+argument/assignment into `""`, `x == null` into `x == ""`). That made SWT's argument validation fire
+for the empty string: `Text.setText("")` panicked with `ERROR_NULL_ARGUMENT`.
+
+Rule as implemented: a `==`/`!=` comparison of a **String parameter** with `null` becomes the constant
+`false`/`true` when it is a **null-argument guard** - the condition of an `if` (alone, parenthesized,
+or one operand of a `||` chain) whose then-branch is `error(...ERROR_NULL_ARGUMENT)` (either
+`error`/`SWT.error`) or a `throw`. A Go caller cannot pass null, so such a guard can never be true.
+Every other String null comparison keeps `== ""`.
+
+Why not every parameter null check: several parameters use null as "absent" and internal callers
+pass it (translated to `""`). With a blanket rule these changed behaviour:
+`Device.getFontList(faceName)` (null = all fonts, would return none), `Font.init(..., nsName)` (null
+= no native name, would call `fontWithName:` with ""), `MenuItem.setToolTipText(null)` (clears the
+tooltip). `FontData.setLocale`, `SWT.error(code, t, detail)` were harmless but are unchanged too.
+
+Affected sites (39, all `if false { Error/this.Error(ERROR_NULL_ARGUMENT) }` now):
+- widget text setters: `Button/Label/Group/Combo/Text.SetText`, `Item/Decorations/Shell/MenuItem/
+  TabItem/TableColumn/TreeColumn.setText_`, `TableItem/TreeItem.SetTextIndexString`, `Dialog.SetText`,
+  `MessageBox.SetMessage`, `Text.SetMessage/Append/Insert`;
+- `Combo` item API: `Add`, `AddStringIndex`, `IndexOfStringStart`, `RemoveString`, `SetItem`;
+- data keys: `Widget.GetDataKey/SetDataKeyValue`, `Display.GetData/SetData`;
+- graphics: `Font.Init(name)`, `FontData(String)`/`SetName`, `GC.DrawTextStringXYFlags`/
+  `TextExtentStringFlags`, `TextLayout.SetText`, `Device.LoadFont`, `Image(device, filename)`,
+  `ImageLoader.LoadByZoom.../SaveFilenameFormat/CanLoadAtZoom...`.
+
+Kept as `== ""` (null and "" merge): String **fields** (e.g. `this.text != ""` before drawing, `toolTipText == ""` in Table/Tree's expansion frame,
+`displayText`, `FontData.lang/country/variant`), **locals** and **returns** (`Text.setText`'s
+`string = verifyText(...); if (string == null) return` - a verify listener returning "" now also
+returns early, same as before), and null-as-absent parameters above. None of these needs to tell
+null from "" on a path a Go caller can reach, so no explicit null marker was introduced.
+Short-circuits stay correct: a guard operand becomes a literal inside the same `||`
+(`if false || x == null`), and `s == null || s.length() == 0` outside a guard is unchanged.
+
+Verify: `swt/graphics_test.go` `TestFontDataSetNameEmpty` (`FontData.SetName("")`, no Display;
+panicked before). Live: `bin/controlexample`, Text tab, "Set/Get API" dialog, property `Text`: Get
+shows the example Text's content, Set "Hello gowt" changes the widget and Get shows it, Set "" clears
+the widget and Get shows "" - no panic.
+

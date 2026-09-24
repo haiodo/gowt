@@ -1488,7 +1488,7 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if string_ == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM | GCFONT | GCFOREGROUND_FILL)
@@ -3215,7 +3215,7 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if string_ == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFONT)

@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 	"unicode/utf16"
 )
 
@@ -191,7 +189,7 @@ func (this *Group) setOrientationOnWidget_() {
 
 func (this *Group) SetText(string_ string) {
 	this.CheckWidget()
-	if string_ == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
@@ -212,14 +210,6 @@ func (this *Group) SetText(string_ string) {
 func GroupCheckStyle(style int32) int32 {
 	style |= NO_FOCUS
 	return style & ^(H_SCROLL | V_SCROLL)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Group](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Group](target).GetText() })
-	jrt.RegisterMethod(reflect.TypeFor[*Group](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Group](target).SetText(jrt.ArgAs[string](args[0]))
-		return nil
-	})
 }
 
 // j2go: instanceof helper for cocoa.SWTBox and its subclasses within the translated set.

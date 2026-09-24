@@ -2,11 +2,7 @@ package dev.gowt.j2go.emit;
 
 import dev.gowt.j2go.Manual;
 import dev.gowt.j2go.TypeModel;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.NumberLiteral;
-import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.*;
 
 import java.util.Map;
 
@@ -38,6 +34,8 @@ final class NumericEmitter {
 			String folded = foldShift(ln, rn, resultType);
 			if (folded != null) return folded;
 		}
+		String paramNullCheck = stringParamNullCheck(ie, op);
+		if (paramNullCheck != null) return paramNullCheck;
 		String goOp = goOperator(ie);
 		String left = parenthesize(ie.getLeftOperand(), emitter.expr(ie.getLeftOperand()), goOp, false);
 		String right = parenthesize(ie.getRightOperand(), emitter.expr(ie.getRightOperand()), goOp, true);
@@ -133,6 +131,34 @@ final class NumericEmitter {
 				|| op == InfixExpression.Operator.TIMES || op == InfixExpression.Operator.DIVIDE
 				|| op == InfixExpression.Operator.REMAINDER || op == InfixExpression.Operator.AND
 				|| op == InfixExpression.Operator.OR || op == InfixExpression.Operator.XOR;
+	}
+
+	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter: the
+	 * check becomes constant false (`!=`: true). A Go caller cannot pass null, so it must not fire
+	 * for "" (README "Round 11 null-string"). Every other String null check keeps `== ""`. */
+	private String stringParamNullCheck(InfixExpression ie, InfixExpression.Operator op) {
+		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
+		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
+		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
+		if (!(other instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return null;
+		if (!vb.isParameter() || !isGoString(other) || !isNullArgumentGuard(ie)) return null;
+		return op == InfixExpression.Operator.EQUALS ? "false" : "true";
+	}
+
+	// e is the condition of an if (alone or inside a || chain) whose then-branch is
+	// error(...ERROR_NULL_ARGUMENT) or a throw.
+	private static boolean isNullArgumentGuard(Expression e) {
+		ASTNode p = e.getParent();
+		while (p instanceof ParenthesizedExpression || p instanceof InfixExpression ie && ie.getOperator() == InfixExpression.Operator.CONDITIONAL_OR) {
+			p = p.getParent();
+		}
+		if (!(p instanceof IfStatement is)) return false;
+		Statement then = is.getThenStatement();
+		if (then instanceof Block b && b.statements().size() == 1) then = (Statement) b.statements().get(0);
+		if (then instanceof ThrowStatement) return true;
+		return then instanceof ExpressionStatement es && es.getExpression() instanceof MethodInvocation mi
+				&& mi.getName().getIdentifier().equals("error") && !mi.arguments().isEmpty()
+				&& mi.arguments().get(0) instanceof Name arg && arg.getFullyQualifiedName().endsWith("ERROR_NULL_ARGUMENT");
 	}
 
 	private boolean isGoString(Expression e) {

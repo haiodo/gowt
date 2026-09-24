@@ -68,6 +68,7 @@ public class Emitter {
 	private final NumericEmitter numericEmitter;
 	private final FunctionalEmitter functionalEmitter;
 	private final PackageQualifier packageQualifier;
+	private final ReflectEmitter reflectEmitter;
 
 	public Emitter(TypeModel model, Names names, Natives natives, Selectors selectors) {
 		this.model = model;
@@ -86,6 +87,7 @@ public class Emitter {
 		this.numericEmitter = new NumericEmitter(this);
 		this.functionalEmitter = new FunctionalEmitter(this);
 		this.packageQualifier = new PackageQualifier(this);
+		this.reflectEmitter = new ReflectEmitter(this);
 	}
 
 	public record EmitResult(String body, Set<String> imports) {}
@@ -407,6 +409,19 @@ public class Emitter {
 
 	String qualify(String bareIdent, TypeModel.ClassInfo ci) {
 		return packageQualifier.qualify(bareIdent, ci);
+	}
+
+	void registerReflectMethod(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, boolean widen) {
+		reflectEmitter.registerReflectMethod(ci, mb, javaName, goName, widen);
+	}
+
+	/** Package swtreflect's Go source, or null if this run registered nothing (see ReflectEmitter). */
+	public String reflectRegistryFile() {
+		return reflectEmitter.registryFile();
+	}
+
+	public String qualifyManual(String goType, ITypeBinding t) {
+		return packageQualifier.qualifyManual(goType, t);
 	}
 
 	public void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {

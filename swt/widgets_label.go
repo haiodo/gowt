@@ -4,9 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"reflect"
 )
 
 type Label struct {
@@ -398,7 +396,7 @@ func (this *Label) SetImage(imageLike ImageLike) {
 
 func (this *Label) SetText(string_ string) {
 	this.CheckWidget()
-	if string_ == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if (this.style & SEPARATOR) != 0 {
@@ -422,24 +420,6 @@ func LabelCheckStyle(style int32) int32 {
 		return WidgetCheckBits(style, SHADOW_OUT, SHADOW_IN, SHADOW_NONE, 0, 0, 0)
 	}
 	return WidgetCheckBits(style, LEFT, CENTER, RIGHT, 0, 0, 0)
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "getAlignment", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*Label](target).GetAlignment() })
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "getImage", nil, reflect.TypeFor[*Image](), func(target any, args []any) any { return jrt.Narrow[*Label](target).GetImage() })
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Label](target).GetText() })
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "setAlignment", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Label](target).SetAlignment(jrt.ArgAs[int32](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "setImage", []reflect.Type{reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Label](target).SetImage(jrt.ArgAs[ImageLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Label](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Label](target).SetText(jrt.ArgAs[string](args[0]))
-		return nil
-	})
 }
 
 // j2go: instanceof helper for cocoa.NSBox and its subclasses within the translated set.

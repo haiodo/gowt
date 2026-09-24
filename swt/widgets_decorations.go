@@ -4,8 +4,6 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
-	"reflect"
 )
 
 type Decorations struct {
@@ -438,7 +436,7 @@ func (this *Decorations) SetText(string_ string) {
 
 func (this *Decorations) setText_(string_ string) {
 	this.CheckWidget()
-	if string_ == "" {
+	if false {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
@@ -496,44 +494,6 @@ func DecorationsCheckStyle(style int32) int32 {
 		style |= TITLE
 	}
 	return style
-}
-
-func init() {
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getDefaultButton", nil, reflect.TypeFor[*Button](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetDefaultButton() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getImage", nil, reflect.TypeFor[*Image](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetImage() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getImages", nil, reflect.TypeFor[[]*Image](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetImages() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getMaximized", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetMaximized() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getMenuBar", nil, reflect.TypeFor[*Menu](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetMenuBar() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getMinimized", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetMinimized() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*Decorations](target).GetText() })
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setDefaultButton", []reflect.Type{reflect.TypeFor[ButtonLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetDefaultButton(jrt.ArgAs[ButtonLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setImage", []reflect.Type{reflect.TypeFor[ImageLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetImage(jrt.ArgAs[ImageLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setImages", []reflect.Type{reflect.TypeFor[[]*Image]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetImages(jrt.ArgAs[[]*Image](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setMaximized", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetMaximized(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setMenuBar", []reflect.Type{reflect.TypeFor[MenuLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetMenuBar(jrt.ArgAs[MenuLike](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setMinimized", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetMinimized(jrt.ArgAs[bool](args[0]))
-		return nil
-	})
-	jrt.RegisterMethod(reflect.TypeFor[*Decorations](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*Decorations](target).SetText(jrt.ArgAs[string](args[0]))
-		return nil
-	})
 }
 
 func upcastDecorationsToWidget(x *Decorations) *Widget {

@@ -278,3 +278,12 @@ func TestRGBAString(t *testing.T) {
 		t.Fatalf("got %q", got)
 	}
 }
+
+// Java null vs "" (j2go README "Round 11"): a String parameter's null guard must not fire for "".
+func TestFontDataSetNameEmpty(t *testing.T) {
+	fd := NewFontData()
+	fd.SetName("")
+	if fd.GetName() != "" {
+		t.Fatalf("name = %q", fd.GetName())
+	}
+}

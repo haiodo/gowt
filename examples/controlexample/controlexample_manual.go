@@ -7,6 +7,8 @@ import (
 
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
+	// The Set/Get API dialog looks widget methods up by Java name (Tab.java's getMethod).
+	_ "github.com/haiodo/gowt/swt/swtreflect"
 )
 
 // Registered from a var initializer: those run before every init(), including the generated

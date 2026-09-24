@@ -183,4 +183,4 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 cp "$EX_SRC/$CE"/*.png "$EX_SRC/$CE"/*.gif "$EX_SRC/$CE"/*.bmp "$EX_SRC/examples_control.properties" examples/controlexample/
 
-gofmt -w swt/*.go internal/cocoa/*.go examples/controlexample/*.go
+gofmt -w swt/*.go swt/swtreflect/*.go internal/cocoa/*.go examples/controlexample/*.go

@@ -136,9 +136,7 @@ final class JdkIntrinsics {
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 			ITypeBinding receiverType = mi.getExpression() != null ? mi.getExpression().resolveTypeBinding() : null;
 			TypeModel.ClassInfo rci = receiverType != null ? emitter.model.lookup(receiverType) : emitter.currentClassInfo;
-			if (rci != null && rci.root.splitsDispatch() && !rci.root.children.isEmpty()) {
-				return "reflect.TypeOf(" + recv + ".Impl())";
-			}
+			if (hasImpl(rci)) return "reflect.TypeOf(" + recv + ".Impl())";
 			return "reflect.TypeOf(" + recv + ")";
 		}
 		// Round 10 reflection: Class<?> stays reflect.Type (Manual) - see README "Round 10
@@ -162,7 +160,10 @@ final class JdkIntrinsics {
 		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("invoke")) {
 			List<String> args = emitter.buildArgs(mi.arguments(), mb);
 			emitter.fileImports.add(JRT);
-			return recv(mi) + ".(*jrt.Method).Invoke(" + args.get(0) + ", " + args.get(1) + "...)";
+			// Same .Impl() rule as getClass: the registered closure needs the concrete object.
+			ITypeBinding targetType = ((Expression) mi.arguments().get(0)).resolveTypeBinding();
+			String target = targetType != null && hasImpl(emitter.model.lookup(targetType)) ? args.get(0) + ".Impl()" : args.get(0);
+			return recv(mi) + ".(*jrt.Method).Invoke(" + target + ", " + args.get(1) + "...)";
 		}
 		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("getReturnType")) {
 			return recv(mi) + ".(*jrt.Method).GetReturnType()";
@@ -394,5 +395,9 @@ final class JdkIntrinsics {
 		String dstPos = emitter.expr((Expression) a.get(3));
 		String length = emitter.expr((Expression) a.get(4));
 		return "copy(" + dst + "[" + dstPos + ":], " + src + "[" + srcPos + ":" + srcPos + "+" + length + "])";
+	}
+
+	private static boolean hasImpl(TypeModel.ClassInfo ci) {
+		return ci != null && ci.root.splitsDispatch() && !ci.root.children.isEmpty();
 	}
 }

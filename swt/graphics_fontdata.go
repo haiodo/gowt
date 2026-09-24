@@ -41,7 +41,7 @@ func NewFontDataOverload1(string_ string) *FontData {
 }
 
 func (this *FontData) initFontDataOverload1(string_ string) {
-	if string_ == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var start int32 = 0
@@ -309,7 +309,7 @@ func (this *FontData) SetLocale(locale string) {
 }
 
 func (this *FontData) SetName(name string) {
-	if name == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Name = name

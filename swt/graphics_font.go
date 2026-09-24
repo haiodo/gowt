@@ -225,7 +225,7 @@ func (this *Font) HashCode() int32 {
 }
 
 func (this *Font) Init(name string, height float32, style int32, nsName string) {
-	if name == "" {
+	if false {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	if height < 0 {

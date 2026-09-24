@@ -3707,7 +3707,12 @@ func (this *Display) SendPostExternalEventDispatchEvent() {
 	this.SendJDKInternalEvent(PostExternalEventDispatch)
 }
 
-func (this *Display) SetCurrentCaret(caret *Caret) {
+func (this *Display) SetCurrentCaret(caretLike CaretLike) {
+	var caret *Caret
+	if caretLike != nil {
+		caret = caretLike.AsCaret()
+	}
+	_ = caret
 	this.currentCaret = caret
 	var blinkRate int32
 	if this.currentCaret != (nil) {
@@ -4564,7 +4569,7 @@ func DisplayConvertToLf(text string) string {
 	if length == 0 {
 		return text
 	}
-	var i int32 = func() int32 { _ = []any{text, int32(Lf), 0}; panic("j2go: unresolved call indexOf") }()
+	var i int32 = jrt.IndexFrom(text, string(rune(Lf)), 0)
 	if i == -1 || i == 0 {
 		return text
 	}
@@ -4574,7 +4579,7 @@ func DisplayConvertToLf(text string) string {
 	i = 0
 	var result any = func() any { panic("j2go: unresolved new StringBuilder") }()
 	for i < length {
-		var j int32 = func() int32 { _ = []any{text, int32(Cr), i}; panic("j2go: unresolved call indexOf") }()
+		var j int32 = jrt.IndexFrom(text, string(rune(Cr)), i)
 		if j == -1 {
 			j = length
 		}
@@ -6156,6 +6161,8 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 	case *Menu:
 		return &v.Widget, true
 	case *ScrollBar:
+		return &v.Widget, true
+	case *Caret:
 		return &v.Widget, true
 	}
 	return nil, false

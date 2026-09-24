@@ -1,7 +1,7 @@
-// Hand-written opaque stubs for the rest of manual.txt's list: ToolBar/Caret/IME (Composite/
+// Hand-written opaque stubs for the rest of manual.txt's list: ToolBar/IME (Composite/
 // Canvas/Decorations/Shell/Button's own field types, not translated yet), plus the graphics/
 // accessibility leaf types Control.java reads fields off of. Composite/Canvas/Decorations/Shell
-// are real as of Round 5, Menu/MenuItem as of Round 7, ScrollBar as of Round 8.
+// are real as of Round 5, Menu/MenuItem as of Round 7, ScrollBar as of Round 8, Caret as of Round 10.
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"
@@ -14,28 +14,8 @@ type ToolBar struct {
 
 func NewToolBar(parent *Composite, style int32, internal bool) *ToolBar { return &ToolBar{} }
 
-// Caret: Canvas.java's caret code all null-checks before use, so a nil *Caret already matches
-// real SWT's "no caret installed" behavior. Fields are package-private in Java - lowercase.
-type Caret struct {
-	isShowing           bool
-	blinkRate           int32
-	image               *Image
-	x, y, width, height int32
-}
-
-const CaretDEFAULT_WIDTH int32 = 1
-
-func (c *Caret) IsDisposed() bool   { return c == nil }
-func (c *Caret) BlinkCaret() bool   { return false }
-func (c *Caret) Release(bool)       {}
-func (c *Caret) Reskin(flags int32) {}
-func (c *Caret) IsFocusCaret() bool { return false }
-func (c *Caret) KillFocus()         {}
-func (c *Caret) SetFocus()          {}
-func (c *Caret) SetFont(font *Font) {}
-
-// IME: same nil-checked-before-use shape as Caret. Every param is a raw objc-runtime int64
-// handle (id/SEL/pointer), matching IME.java's own native-bridge method signatures.
+// IME: Canvas.java null-checks it before every use, so a nil *IME is "no IME". Every param is a
+// raw objc-runtime int64 handle (id/SEL/pointer), matching IME.java's native-bridge signatures.
 type IME struct {
 	startOffset int32
 }

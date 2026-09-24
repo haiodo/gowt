@@ -28,6 +28,8 @@ type ControlEditor struct {
 	impl                ControlEditorImpl
 }
 
+func (this *ControlEditor) Impl() ControlEditorImpl { return this.impl }
+
 func (this *ControlEditor) AsControlEditor() *ControlEditor { return this }
 
 type ControlEditorLike interface {

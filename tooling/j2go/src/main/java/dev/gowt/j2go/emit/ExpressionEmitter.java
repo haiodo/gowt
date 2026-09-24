@@ -47,6 +47,11 @@ final class ExpressionEmitter {
 		if (e instanceof ExpressionMethodReference emr) return emitter.emitMethodReference(emr);
 		if (e instanceof LambdaExpression le) return emitter.emitLambda(le);
 		if (e instanceof SwitchExpression se) return emitSwitchExpressionHoisted(se);
+		// X.class: java.lang.Class is reflect.Type (Manual).
+		if (e instanceof TypeLiteral tl) {
+			emitter.fileImports.add("reflect");
+			return "reflect.TypeFor[" + dev.gowt.j2go.GoTypes.map(tl.getType().resolveBinding(), emitter) + "]()";
+		}
 		String oneLine = e.toString().replace("\n", " ").trim();
 		emitter.unsupported.add(e.getClass().getSimpleName() + ": " + oneLine);
 		return panicClosure(e, "unsupported " + e.getClass().getSimpleName()) + " /* TODO(gowt-port): " + oneLine + " */";

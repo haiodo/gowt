@@ -740,6 +740,8 @@ type Widget struct {
 	impl       WidgetImpl
 }
 
+func (this *Widget) Impl() WidgetImpl { return this.impl }
+
 func (this *Widget) AsWidget() *Widget { return this }
 
 type WidgetLike interface {

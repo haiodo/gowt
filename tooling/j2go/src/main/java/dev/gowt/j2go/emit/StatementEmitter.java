@@ -26,9 +26,18 @@ final class StatementEmitter {
 	}
 
 	String emitStatement(Statement s, int indent) {
+		return withPrelude(() -> emitStatementInner(s, indent), indent);
+	}
+
+	/** A lambda's expression body (`e -> x = v`) emitted as the statement it stands for. */
+	String emitExpressionAsStatement(Expression e, int indent) {
+		return withPrelude(() -> emitExpressionStatement(e, indent), indent);
+	}
+
+	private String withPrelude(java.util.function.Supplier<String> inner, int indent) {
 		List<String> saved = emitter.prelude;
 		emitter.prelude = new ArrayList<>();
-		String main = emitStatementInner(s, indent);
+		String main = inner.get();
 		StringBuilder b = new StringBuilder();
 		for (String p : emitter.prelude) b.append(ind(indent)).append(p).append('\n');
 		b.append(main);
@@ -37,7 +46,7 @@ final class StatementEmitter {
 	}
 
 	private String emitStatementInner(Statement s, int indent) {
-		if (s instanceof ExpressionStatement es) return emitExpressionStatement(es, indent);
+		if (s instanceof ExpressionStatement es) return emitExpressionStatement(es.getExpression(), indent);
 		if (s instanceof ReturnStatement rs) return emitReturn(rs, indent);
 		if (s instanceof IfStatement is) return emitIf(is, indent);
 		if (s instanceof VariableDeclarationStatement vds) return emitVarDecl(vds, indent);
@@ -65,8 +74,7 @@ final class StatementEmitter {
 		return unsupportedStmt(s, indent);
 	}
 
-	private String emitExpressionStatement(ExpressionStatement es, int indent) {
-		Expression e = es.getExpression();
+	private String emitExpressionStatement(Expression e, int indent) {
 		if (e instanceof Assignment a) {
 			if (a.getOperator() == Assignment.Operator.ASSIGN && a.getRightHandSide() instanceof Assignment) {
 				return emitChainedAssignment(a, indent);

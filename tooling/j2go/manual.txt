@@ -22,11 +22,10 @@ org.eclipse.swt.widgets.Touch
 # Round 4/5: Widget/Control/Scrollable/Composite/Canvas/Decorations/Shell/Button reference these
 # classes/interfaces, none translated yet - temporary manual stubs (swt/widgets_stubs_manual.go,
 # swt/widgets_stubs2_manual.go) carrying only the members actually used. Composite/Canvas/
-# Decorations/Shell translated for real as of Round 5, Menu/MenuItem as of Round 7 - removed from
-# this list.
+# Decorations/Shell translated for real as of Round 5, Menu/MenuItem as of Round 7, Caret as of
+# Round 10 - removed from this list.
 org.eclipse.swt.internal.Callback
 org.eclipse.swt.widgets.ToolBar
-org.eclipse.swt.widgets.Caret
 org.eclipse.swt.widgets.IME
 org.eclipse.swt.accessibility.Accessible
 org.eclipse.swt.accessibility.ACC
@@ -46,7 +45,8 @@ java.util.ArrayList
 java.util.concurrent.ConcurrentLinkedQueue
 
 # Round 6: types Display only touches off the Shell+Button path, and org.eclipse.swt.internal
-# helpers whose static members it calls - swt/widgets_stubs3_manual.go.
+# helpers whose static members it calls - swt/widgets_stubs3_manual.go. ImageUtil is translated
+# for real as of Round 10 - removed from this list.
 org.eclipse.swt.internal.LONG
 org.eclipse.swt.widgets.Display.APPEARANCE
 org.eclipse.swt.widgets.FileDialog
@@ -56,7 +56,6 @@ org.eclipse.swt.widgets.Tray
 org.eclipse.swt.widgets.TrayItem
 org.eclipse.swt.internal.DPIUtil
 org.eclipse.swt.internal.BidiUtil
-org.eclipse.swt.internal.graphics.ImageUtil
 org.eclipse.swt.internal.Compatibility
 org.eclipse.swt.internal.DefaultExceptionHandler
 org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)
@@ -135,3 +134,16 @@ java.io.BufferedInputStream
 # swt/graphics_imagecodec_manual.go.
 org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)
 org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)
+
+# Round 10 controlexample: java.util.ResourceBundle over the registered resource FS,
+# MessageFormat.format's {n} substitution and the exceptions they (and Integer.parseInt) throw -
+# internal/jrt/text.go.
+java.util.ResourceBundle
+java.util.MissingResourceException
+java.text.MessageFormat
+java.lang.NumberFormatException
+
+# Round 10 controlexample: only the tabs translated so far - createTabs is hand-written, ShellTab
+# (a field of ControlExample) is an opaque stub (examples/controlexample/controlexample_manual.go).
+org.eclipse.swt.examples.controlexample.ShellTab
+org.eclipse.swt.examples.controlexample.ControlExample#createTabs()

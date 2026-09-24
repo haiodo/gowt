@@ -89,7 +89,7 @@ final class EmitUtil {
 		String bare = Names.capitalize(javaName);
 		String prefixed = emitter.qualifiedFuncPrefix(ci) + bare;
 		if (!ci.binaryName.equals(SWT_NO_PREFIX_CLASS)) return prefixed;
-		return collidesWithTypeName(emitter.model, bare) ? prefixed : bare;
+		return collidesWithTypeName(emitter.model, bare) ? prefixed : emitter.qualify(bare, ci);
 	}
 
 	/** Same no-prefix exception for a static method, plus the pre-existing "Fn" collision
@@ -99,7 +99,7 @@ final class EmitUtil {
 			String prefixed = emitter.qualifiedFuncPrefix(ci) + bareMember;
 			return collidesWithTypeName(emitter.model, prefixed) ? prefixed + "Fn" : prefixed;
 		}
-		return collidesWithTypeName(emitter.model, bareMember) ? emitter.qualifiedFuncPrefix(ci) + bareMember : bareMember;
+		return collidesWithTypeName(emitter.model, bareMember) ? emitter.qualifiedFuncPrefix(ci) + bareMember : emitter.qualify(bareMember, ci);
 	}
 
 	/** A translated-class parameter widens to "<Class>Like"; preludeOut collects the entry-
@@ -115,8 +115,8 @@ final class EmitUtil {
 			String n = i < javaNames.size() ? emitter.sanitizeIdent(javaNames.get(i)) : "a" + i;
 			TypeModel.ClassInfo ci = emitter.model.lookup(types[i]);
 			if (ci != null && ci.likeInterfaceName != null) {
-				parts.add(n + "Like " + ci.likeInterfaceName);
-				preludeOut.add("var " + n + " *" + ci.goTypeName);
+				parts.add(n + "Like " + emitter.qualify(ci.likeInterfaceName, ci));
+				preludeOut.add("var " + n + " *" + emitter.qualifiedTypeName(ci));
 				preludeOut.add("if " + n + "Like != nil { " + n + " = " + n + "Like." + ci.asMethodName + "() }");
 				preludeOut.add("_ = " + n); // a Java body that never reads this param still compiles
 			} else {

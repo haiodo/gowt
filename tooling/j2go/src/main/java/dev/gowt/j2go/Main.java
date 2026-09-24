@@ -27,15 +27,11 @@ public class Main {
 			"bundles/org.eclipse.swt/Eclipse SWT/emulated/bidi",
 			// org.eclipse.swt.custom: StackLayout/SashForm/SashFormLayout/SashFormData (Round 8).
 			"bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common",
+			// org.eclipse.swt.examples.* (Round 10): each example package is its own Go package.
+			"examples/org.eclipse.swt.examples/src",
 	};
 
 	private static final String SWT_COMMIT = "af630a9093";
-
-	// Java package -> Go package dir. GoTypes owns the package-name half (goPackageOf) since it
-	// also needs it for cross-package qualification; this is just the on-disk half.
-	private static String goPackageDir(String javaPackage) {
-		return GoTypes.isCocoaPackage(javaPackage) ? "internal/cocoa" : "swt";
-	}
 
 	public static void main(String[] args) throws Exception {
 		String swtRoot = null;
@@ -141,7 +137,7 @@ public class Main {
 
 			StringBuilder file = new StringBuilder();
 			file.append(header).append('\n');
-			file.append("package ").append(GoTypes.goPackageOf(javaPackage)).append("\n\n");
+			file.append("package ").append(GoTypes.goPackageOf(javaPackage, typeName)).append("\n\n");
 			if (!result.imports().isEmpty()) {
 				file.append("import (\n");
 				for (String imp : result.imports()) file.append('\t').append('"').append(imp).append("\"\n");
@@ -149,7 +145,7 @@ public class Main {
 			}
 			file.append(result.body());
 
-			Path outPath = Path.of(outDir, goPackageDir(javaPackage), outName);
+			Path outPath = Path.of(outDir, GoTypes.goPackageDir(javaPackage, typeName), outName);
 			Files.createDirectories(outPath.getParent());
 			Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
 			System.out.println("wrote " + outPath);

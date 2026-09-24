@@ -27,6 +27,8 @@ type Resource struct {
 	impl      ResourceImpl
 }
 
+func (this *Resource) Impl() ResourceImpl { return this.impl }
+
 func (this *Resource) AsResource() *Resource { return this }
 
 type ResourceLike interface {

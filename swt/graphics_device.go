@@ -62,6 +62,8 @@ type Device struct {
 	impl               DeviceImpl
 }
 
+func (this *Device) Impl() DeviceImpl { return this.impl }
+
 func (this *Device) AsDevice() *Device { return this }
 
 type DeviceLike interface {

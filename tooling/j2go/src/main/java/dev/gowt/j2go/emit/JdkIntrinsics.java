@@ -190,6 +190,9 @@ final class JdkIntrinsics {
 				return "fmt.Fprintln(os.Stderr, " + recv(mi) + ")";
 			case "java.lang.Throwable#getMessage":
 				return recv(mi) + ".Error()";
+			case "java.lang.Throwable#getCause":
+				emitter.fileImports.add("errors");
+				return "errors.Unwrap(" + recv(mi) + ")";
 			case "java.lang.Boolean#parseBoolean":
 				emitter.fileImports.add("strings");
 				return "strings.EqualFold(" + arg(mi, 0) + ", \"true\")";
@@ -200,9 +203,26 @@ final class JdkIntrinsics {
 				emitter.fileImports.add("strings");
 				return "strings.EqualFold(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#indexOf":
-				emitter.fileImports.add("strings");
 				String needle = mb.getParameterTypes()[0].isPrimitive() ? "string(rune(" + arg(mi, 0) + "))" : arg(mi, 0);
-				return mi.arguments().size() == 1 ? "int32(strings.Index(" + recv(mi) + ", " + needle + "))" : null;
+				if (mi.arguments().size() == 2) {
+					emitter.fileImports.add(JRT);
+					return "jrt.IndexFrom(" + recv(mi) + ", " + needle + ", " + arg(mi, 1) + ")";
+				}
+				emitter.fileImports.add("strings");
+				return "int32(strings.Index(" + recv(mi) + ", " + needle + "))";
+			case "java.lang.String#isEmpty":
+				return "(len(" + recv(mi) + ") == 0)";
+			case "java.lang.Integer#parseInt":
+				emitter.fileImports.add(JRT);
+				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : null;
+			case "java.lang.Integer#toString", "java.lang.Boolean#toString":
+				if (mi.arguments().size() != 1 || mi.getExpression() == null) return null;
+				emitter.fileImports.add("fmt");
+				return "fmt.Sprint(" + arg(mi, 0) + ")";
+			// One resource registry per process (jrt.RegisterResources), not per class loader.
+			case "java.lang.Class#getResourceAsStream":
+				emitter.fileImports.add(JRT);
+				return "jrt.ClassGetResourceAsStream(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#charAt":
 				emitter.fileImports.add("unicode/utf16");
 				return "utf16.Encode([]rune(" + recv(mi) + "))[" + arg(mi, 0) + "]";

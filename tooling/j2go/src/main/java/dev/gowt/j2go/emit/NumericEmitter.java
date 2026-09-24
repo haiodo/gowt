@@ -38,8 +38,9 @@ final class NumericEmitter {
 			String folded = foldShift(ln, rn, resultType);
 			if (folded != null) return folded;
 		}
-		String left = emitter.expr(ie.getLeftOperand());
-		String right = emitter.expr(ie.getRightOperand());
+		String goOp = goOperator(ie);
+		String left = parenthesize(ie.getLeftOperand(), emitter.expr(ie.getLeftOperand()), goOp, false);
+		String right = parenthesize(ie.getRightOperand(), emitter.expr(ie.getRightOperand()), goOp, true);
 		if (op == InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED && ie.extendedOperands().isEmpty()) {
 			return unsignedShift(left, resultType, right);
 		}
@@ -69,7 +70,6 @@ final class NumericEmitter {
 				else right = upcastObject(right, rt, lt);
 			}
 		}
-		String goOp = op == InfixExpression.Operator.XOR ? "^" : op.toString();
 		StringBuilder b = new StringBuilder();
 		// A 3+ operand chain (a+b+c): every operand needs the shared result type, not just a pair.
 		if (!ie.extendedOperands().isEmpty() && isArithmeticOrBitwise(op) && resultType != null) {
@@ -78,7 +78,7 @@ final class NumericEmitter {
 					.append(emitter.adaptNumeric(right, ie.getRightOperand().resolveTypeBinding(), resultType));
 			for (Object ext : ie.extendedOperands()) {
 				Expression e = (Expression) ext;
-				String r = emitter.adaptNumeric(emitter.expr(e), e.resolveTypeBinding(), resultType);
+				String r = emitter.adaptNumeric(parenthesize(e, emitter.expr(e), goOp, true), e.resolveTypeBinding(), resultType);
 				b.append(' ').append(goOp).append(' ').append(r);
 			}
 			return b.toString();
@@ -86,10 +86,44 @@ final class NumericEmitter {
 		String[] adapted = adaptBinaryOperands(left, right, ie.getLeftOperand(), ie.getRightOperand());
 		b.append(adapted[0]).append(' ').append(goOp).append(' ').append(adapted[1]);
 		for (Object ext : ie.extendedOperands()) {
-			String r = emitter.expr((Expression) ext);
+			String r = parenthesize((Expression) ext, emitter.expr((Expression) ext), goOp, true);
 			b.append(' ').append(goOp).append(' ').append(r);
 		}
 		return b.toString();
+	}
+
+	// Java's boolean &, | and ^ have no Go bool operator: &&, || (short-circuiting - a ceiling
+	// only when the right operand has side effects) and !=.
+	private static String goOperator(InfixExpression ie) {
+		String op = ie.getOperator().toString();
+		ITypeBinding lt = ie.getLeftOperand().resolveTypeBinding();
+		if (lt == null || !lt.getName().equals("boolean")) return op;
+		return switch (op) {
+			case "&" -> "&&";
+			case "|" -> "||";
+			case "^" -> "!=";
+			default -> op;
+		};
+	}
+
+	// Go ranks & with * and | ^ with +, both above comparisons; Java ranks them below. A nested
+	// infix operand keeps Java's grouping only if parenthesized wherever Go would regroup it.
+	private String parenthesize(Expression operand, String text, String parentGoOp, boolean rightSide) {
+		if (!(operand instanceof InfixExpression child)) return text;
+		int c = goPrecedence(goOperator(child));
+		int p = goPrecedence(parentGoOp);
+		return c < p || c == p && rightSide ? "(" + text + ")" : text;
+	}
+
+	private static int goPrecedence(String goOp) {
+		return switch (goOp) {
+			case "*", "/", "%", "<<", ">>", "&", "&^" -> 5;
+			case "+", "-", "|", "^" -> 4;
+			case "==", "!=", "<", "<=", ">", ">=" -> 3;
+			case "&&" -> 2;
+			case "||" -> 1;
+			default -> 6;
+		};
 	}
 
 	// Result type equals the promoted operand type only for these; relational/logical ops always

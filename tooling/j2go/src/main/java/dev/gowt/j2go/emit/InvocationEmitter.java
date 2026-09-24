@@ -46,6 +46,7 @@ final class InvocationEmitter {
 		// dispatch to - fall through to the ordinary "unresolved call" degrade below instead.
 		if (Manual.isManual(qualified) && !Manual.isBareAny(qualified)) {
 			if (Modifier.isStatic(mb.getModifiers())) {
+				emitter.addManualImport(qualified);
 				return Manual.staticMember(qualified, mb.getName()) + "(" + String.join(", ", args) + ")";
 			}
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
@@ -103,13 +104,18 @@ final class InvocationEmitter {
 		String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.implicitThis(declaring);
 		String base = Names.javaMethodBaseGoName(mb.getName());
 		String sig = TypeModel.signature(mb);
-		boolean overridden = ci.overridePoint(sig) != null;
-		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
+		TypeModel.ClassInfo point = ci.overridePoint(sig);
+		// Another package can't reach an unexported dispatch name: it calls the point's exported
+		// wrapper, which dispatches through impl itself.
+		boolean viaWrapper = point != null && ci.splitsDispatch() && !ci.root.goPackage.equals(emitter.currentGoPackage);
+		boolean overridden = point != null && !viaWrapper;
+		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig)
+				: emitter.names.goMemberName(viaWrapper ? point.declaredBinding(sig) : mb, base);
 		String callText = overridden
 				? recv + emitter.implAccess(ci.root) + "." + goName + "(" + String.join(", ", args) + ")"
 				: recv + "." + goName + "(" + String.join(", ", args) + ")";
 
-		if (overridden) {
+		if (point != null) {
 			ITypeBinding staticReturnType = mb.getReturnType(); // as resolved at THIS call site (covariant-aware)
 			TypeModel.ClassInfo rootCi = ci.root;
 			ITypeBinding declared = ci.overridePoint(sig).declaredBinding(sig).getReturnType();

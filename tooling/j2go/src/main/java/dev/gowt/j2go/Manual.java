@@ -14,7 +14,6 @@ public class Manual {
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
 	private static final String TOOL_BAR = "org.eclipse.swt.widgets.ToolBar";
-	private static final String CARET = "org.eclipse.swt.widgets.Caret";
 	private static final String IME = "org.eclipse.swt.widgets.IME";
 	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
 	private static final String ACC = "org.eclipse.swt.accessibility.ACC";
@@ -30,6 +29,7 @@ public class Manual {
 	private static final String SWT_LONG = "org.eclipse.swt.internal.LONG";
 	private static final String DISPLAY_APPEARANCE = "org.eclipse.swt.widgets.Display.APPEARANCE";
 	private static final String COCOA_PKG = "org.eclipse.swt.internal.cocoa.";
+	private static final String CONTROL_EXAMPLE_PKG = "org.eclipse.swt.examples.controlexample.";
 
 	// java.lang/java.util base types some translated classes extend (SWTException/SWTError,
 	// TypedEvent - see README "Manual superclass embedding") or catch. Hand-written in internal/jrt.
@@ -72,7 +72,6 @@ public class Manual {
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
 		reg(TOOL_BAR, "ToolBar", null, false);
-		reg(CARET, "Caret", null, false);
 		reg(IME, "IME", null, false);
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(ACC, "ACC", null, false);
@@ -91,7 +90,7 @@ public class Manual {
 		reg(SWT_LONG, "LONG", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
 		// only their static members are used, hand-written in swt/internal_helpers_manual.go.
-		for (String n : new String[]{"DPIUtil", "BidiUtil", "graphics.ImageUtil", "Compatibility", "DefaultExceptionHandler"}) {
+		for (String n : new String[]{"DPIUtil", "BidiUtil", "Compatibility", "DefaultExceptionHandler"}) {
 			String q = "org.eclipse.swt.internal." + n;
 			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);
 		}
@@ -136,6 +135,15 @@ public class Manual {
 		reg(JAVA_IO_FILE_INPUT_STREAM, "jrt.FileInputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_FILE_OUTPUT_STREAM, "jrt.FileOutputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_BUFFERED_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
+		// Round 10: ControlExample keeps a ShellTab field, but ShellTab is not translated yet -
+		// an opaque stub in examples/controlexample/controlexample_manual.go.
+		reg(CONTROL_EXAMPLE_PKG + "ShellTab", "ShellTab", null, false);
+		// java.util.ResourceBundle over the registered resource FS, java.text.MessageFormat's
+		// {n} substitution, and the exceptions they (and Integer.parseInt) throw - internal/jrt/text.go.
+		reg("java.util.ResourceBundle", "jrt.ResourceBundle", JRT_IMPORT, false);
+		reg("java.util.MissingResourceException", "jrt.MissingResourceException", JRT_IMPORT, false);
+		reg("java.text.MessageFormat", "jrt.MessageFormat", JRT_IMPORT, false);
+		reg("java.lang.NumberFormatException", "jrt.NumberFormatException", JRT_IMPORT, false);
 	}
 
 	// Methods hand-written in *_manual.go instead of translated (key: Names.erasureKey).
@@ -166,7 +174,9 @@ public class Manual {
 			// swt/graphics_imagecodec_manual.go, see README "Round 9 images".
 			Map.entry("org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)", "LoadByZoomStub"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)",
-					"NativeImageLoaderSave"));
+					"NativeImageLoaderSave"),
+			// Round 10: only the tabs translated so far (examples/controlexample/controlexample_manual.go).
+			Map.entry(CONTROL_EXAMPLE_PKG + "ControlExample#createTabs()", "CreateTabs"));
 
 	// Dropped: Selector.java's own bookkeeping is elided (see README). Matched by name only.
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
@@ -176,12 +186,12 @@ public class Manual {
 		return ENTRIES.containsKey(qualifiedTypeName);
 	}
 
-	/** A value type with no real Go method surface (java.util.Map, ...) - method calls on it
-	 * can't dispatch through Manual.instanceMember and must fall back to the unresolved-call
-	 * degrade instead (see InvocationEmitter.emitMethodInvocation). */
+	/** A value type with no Go method surface mirroring Java's (a bare "any", or java.lang.Class
+	 * as reflect.Type) - method calls on it can't dispatch through Manual.instanceMember and
+	 * fall back to the unresolved-call degrade instead (see InvocationEmitter.emitMethodInvocation). */
 	public static boolean isBareAny(String qualifiedTypeName) {
 		Entry e = ENTRIES.get(qualifiedTypeName);
-		return e != null && e.isValueType() && e.goType().equals("any");
+		return e != null && e.isValueType() && (e.goType().equals("any") || qualifiedTypeName.equals(JAVA_CLASS));
 	}
 
 	/** Go func name for a manual.txt method-level entry (erasureKey format), or null. */

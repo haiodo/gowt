@@ -111,6 +111,10 @@ final class FunctionalEmitter {
 	private String bodyText(ASTNode body, String ret, ITypeBinding retType) {
 		if (body instanceof Block b) return emitter.block(b, 1);
 		Expression e = (Expression) body;
+		// `e -> field = value` for a void SAM: the expression is a statement of its own, not a value.
+		if (ret.isEmpty() && (e instanceof Assignment || e instanceof PostfixExpression || e instanceof PrefixExpression)) {
+			return emitter.exprStatement(e, 1);
+		}
 		StringBuilder sb = new StringBuilder();
 		String t = emitter.exprInto(e, sb, 1);
 		if (!ret.isEmpty()) {
@@ -192,9 +196,15 @@ final class FunctionalEmitter {
 			assigns.add(v + "." + field + " = " + fn);
 		}
 		decl.append("}\n\n").append(forwarders).append(emitter.defaultForwarders(anonType, "*" + typeName));
+		boolean foreign = !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage);
+		// Another package's impl field and init<Base> are unexported: only a base outside any
+		// impl cascade can be built there, by copying in its public constructor's result.
+		if (foreign && !baseCi.root.children.isEmpty()) return marker(cic, "AnonymousClass");
 		emitter.fileHelperSource.add(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
-		if (!baseCi.isInterface) {
+		if (foreign) {
+			emitter.prelude.add(v + "." + baseCi.goTypeName + " = *" + foreignCtorCall(cic, baseCi));
+		} else if (!baseCi.isInterface) {
 			if (!baseCi.root.children.isEmpty()) emitter.prelude.add(v + ".impl = " + v);
 			emitter.prelude.add(v + "." + superInitCall(cic, baseCi));
 		}
@@ -212,6 +222,12 @@ final class FunctionalEmitter {
 		String init = "init" + baseCi.goFuncPrefix;
 		if (ctor == null) return init + "()";
 		return emitter.names.goMemberName(ctor, init) + "(" + String.join(", ", emitter.buildArgs(args, ctor)) + ")";
+	}
+
+	private String foreignCtorCall(ClassInstanceCreation cic, TypeModel.ClassInfo baseCi) {
+		IMethodBinding ctor = cic.resolveConstructorBinding();
+		String name = emitter.ctorGoName(ctor, emitter.qualify("New" + baseCi.goFuncPrefix, baseCi));
+		return name + "(" + String.join(", ", emitter.buildArgs(cic.arguments(), ctor)) + ")";
 	}
 
 	private IMethodBinding findOverridden(IMethodBinding m, ITypeBinding anonType) {

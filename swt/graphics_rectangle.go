@@ -18,6 +18,8 @@ type Rectangle struct {
 	impl   RectangleImpl
 }
 
+func (this *Rectangle) Impl() RectangleImpl { return this.impl }
+
 func (this *Rectangle) AsRectangle() *Rectangle { return this }
 
 type RectangleLike interface {

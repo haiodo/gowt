@@ -16,6 +16,8 @@ type Point struct {
 	impl PointImpl
 }
 
+func (this *Point) Impl() PointImpl { return this.impl }
+
 func (this *Point) AsPoint() *Point { return this }
 
 type PointLike interface {

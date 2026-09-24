@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Runs j2go over the stage-1 (swt/graphics value types) and stage-2/3 (internal/cocoa PI
-# bindings, all of them) file lists. --out is the repo root: each file lands under swt/ or
-# internal/cocoa/ per its own Java package (see Main.goPackageDir).
+# Runs j2go over the swt, internal/cocoa (PI bindings) and examples/controlexample file lists.
+# --out is the repo root: each file lands under swt/, internal/cocoa/ or examples/<name>/ per its
+# own Java package (see GoTypes.goPackageDir).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -56,101 +56,109 @@ mapfile -t COCOA_FILES < <(find "$COCOA_DIR" -maxdepth 1 -name '*.java' ! -name 
 # real; the PNG/GIF/BMP/JPEG codec backend itself is NOT translated from SWT's internal/image -
 # it's a hand-written wrapper over Go's stdlib image codecs instead, see README
 # "Round 9 images" for why.
+# Round 10 controlexample: TransparencyColorImageGcDrawer (the example subclasses it), Caret and
+# ImageUtil (were manual stubs; CanvasTab creates a Caret, image-backed GCs need createImageRep).
+SWT_FILES=(
+	org/eclipse/swt/graphics/Point.java
+	org/eclipse/swt/graphics/Rectangle.java
+	org/eclipse/swt/graphics/RGB.java
+	org/eclipse/swt/graphics/RGBA.java
+	org/eclipse/swt/SWT.java
+	org/eclipse/swt/SWTException.java
+	org/eclipse/swt/SWTError.java
+	org/eclipse/swt/widgets/Listener.java
+	org/eclipse/swt/widgets/Event.java
+	org/eclipse/swt/widgets/EventTable.java
+	org/eclipse/swt/widgets/TypedListener.java
+	"${EVENTS_FILES[@]}"
+	org/eclipse/swt/widgets/Widget.java
+	org/eclipse/swt/widgets/Control.java
+	org/eclipse/swt/widgets/Scrollable.java
+	org/eclipse/swt/widgets/Layout.java
+	org/eclipse/swt/widgets/Item.java
+	org/eclipse/swt/layout/FillLayout.java
+	org/eclipse/swt/layout/FillData.java
+	org/eclipse/swt/layout/RowLayout.java
+	org/eclipse/swt/layout/RowData.java
+	org/eclipse/swt/layout/GridLayout.java
+	org/eclipse/swt/layout/GridData.java
+	org/eclipse/swt/layout/FormAttachment.java
+	org/eclipse/swt/layout/FormLayout.java
+	org/eclipse/swt/layout/FormData.java
+	org/eclipse/swt/widgets/Composite.java
+	org/eclipse/swt/widgets/Canvas.java
+	org/eclipse/swt/widgets/Decorations.java
+	org/eclipse/swt/widgets/Shell.java
+	org/eclipse/swt/widgets/Button.java
+	org/eclipse/swt/widgets/Label.java
+	org/eclipse/swt/widgets/Menu.java
+	org/eclipse/swt/widgets/MenuItem.java
+	org/eclipse/swt/widgets/Text.java
+	org/eclipse/swt/widgets/Group.java
+	org/eclipse/swt/widgets/Sash.java
+	org/eclipse/swt/custom/StackLayout.java
+	org/eclipse/swt/custom/SashFormLayout.java
+	org/eclipse/swt/custom/SashFormData.java
+	org/eclipse/swt/custom/SashForm.java
+	org/eclipse/swt/graphics/Resource.java
+	org/eclipse/swt/graphics/Device.java
+	org/eclipse/swt/graphics/DeviceData.java
+	org/eclipse/swt/graphics/Font.java
+	org/eclipse/swt/graphics/FontData.java
+	org/eclipse/swt/graphics/Color.java
+	org/eclipse/swt/widgets/Synchronizer.java
+	org/eclipse/swt/widgets/RunnableLock.java
+	org/eclipse/swt/widgets/Monitor.java
+	org/eclipse/swt/widgets/TouchSource.java
+	org/eclipse/swt/widgets/Display.java
+	org/eclipse/swt/graphics/Drawable.java
+	org/eclipse/swt/graphics/GC.java
+	org/eclipse/swt/graphics/GCData.java
+	org/eclipse/swt/graphics/FontMetrics.java
+	org/eclipse/swt/graphics/LineAttributes.java
+	org/eclipse/swt/graphics/Pattern.java
+	org/eclipse/swt/graphics/Transform.java
+	org/eclipse/swt/graphics/Path.java
+	org/eclipse/swt/graphics/PathData.java
+	org/eclipse/swt/graphics/Region.java
+	org/eclipse/swt/graphics/Image.java
+	org/eclipse/swt/graphics/ImageData.java
+	org/eclipse/swt/graphics/PaletteData.java
+	org/eclipse/swt/graphics/ImageDataProvider.java
+	org/eclipse/swt/graphics/ImageFileNameProvider.java
+	org/eclipse/swt/graphics/ImageDataAtSizeProvider.java
+	org/eclipse/swt/graphics/ImageGcDrawer.java
+	org/eclipse/swt/graphics/ImageLoader.java
+	org/eclipse/swt/graphics/ImageLoaderListener.java
+	org/eclipse/swt/graphics/ImageLoaderEvent.java
+	org/eclipse/swt/graphics/Cursor.java
+	org/eclipse/swt/graphics/TextLayout.java
+	org/eclipse/swt/graphics/TextStyle.java
+	org/eclipse/swt/graphics/GlyphMetrics.java
+	org/eclipse/swt/widgets/ScrollBar.java
+	org/eclipse/swt/widgets/Tree.java
+	org/eclipse/swt/widgets/TreeItem.java
+	org/eclipse/swt/widgets/TreeColumn.java
+	org/eclipse/swt/widgets/Dialog.java
+	org/eclipse/swt/widgets/ColorDialog.java
+	org/eclipse/swt/widgets/FontDialog.java
+	org/eclipse/swt/widgets/MessageBox.java
+	org/eclipse/swt/widgets/TabItem.java
+	org/eclipse/swt/widgets/TabFolder.java
+	org/eclipse/swt/widgets/Combo.java
+	org/eclipse/swt/widgets/Table.java
+	org/eclipse/swt/widgets/TableItem.java
+	org/eclipse/swt/widgets/TableColumn.java
+	org/eclipse/swt/custom/ScrolledCompositeLayout.java
+	org/eclipse/swt/custom/ScrolledComposite.java
+	org/eclipse/swt/custom/ControlEditor.java
+	org/eclipse/swt/custom/TableEditor.java
+	org/eclipse/swt/internal/TransparencyColorImageGcDrawer.java
+	org/eclipse/swt/widgets/Caret.java
+	org/eclipse/swt/internal/graphics/ImageUtil.java
+)
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
-	org/eclipse/swt/graphics/Point.java \
-	org/eclipse/swt/graphics/Rectangle.java \
-	org/eclipse/swt/graphics/RGB.java \
-	org/eclipse/swt/graphics/RGBA.java \
-	org/eclipse/swt/SWT.java \
-	org/eclipse/swt/SWTException.java \
-	org/eclipse/swt/SWTError.java \
-	org/eclipse/swt/widgets/Listener.java \
-	org/eclipse/swt/widgets/Event.java \
-	org/eclipse/swt/widgets/EventTable.java \
-	org/eclipse/swt/widgets/TypedListener.java \
-	"${EVENTS_FILES[@]}" \
-	org/eclipse/swt/widgets/Widget.java \
-	org/eclipse/swt/widgets/Control.java \
-	org/eclipse/swt/widgets/Scrollable.java \
-	org/eclipse/swt/widgets/Layout.java \
-	org/eclipse/swt/widgets/Item.java \
-	org/eclipse/swt/layout/FillLayout.java \
-	org/eclipse/swt/layout/FillData.java \
-	org/eclipse/swt/layout/RowLayout.java \
-	org/eclipse/swt/layout/RowData.java \
-	org/eclipse/swt/layout/GridLayout.java \
-	org/eclipse/swt/layout/GridData.java \
-	org/eclipse/swt/layout/FormAttachment.java \
-	org/eclipse/swt/layout/FormLayout.java \
-	org/eclipse/swt/layout/FormData.java \
-	org/eclipse/swt/widgets/Composite.java \
-	org/eclipse/swt/widgets/Canvas.java \
-	org/eclipse/swt/widgets/Decorations.java \
-	org/eclipse/swt/widgets/Shell.java \
-	org/eclipse/swt/widgets/Button.java \
-	org/eclipse/swt/widgets/Label.java \
-	org/eclipse/swt/widgets/Menu.java \
-	org/eclipse/swt/widgets/MenuItem.java \
-	org/eclipse/swt/widgets/Text.java \
-	org/eclipse/swt/widgets/Group.java \
-	org/eclipse/swt/widgets/Sash.java \
-	org/eclipse/swt/custom/StackLayout.java \
-	org/eclipse/swt/custom/SashFormLayout.java \
-	org/eclipse/swt/custom/SashFormData.java \
-	org/eclipse/swt/custom/SashForm.java \
-	org/eclipse/swt/graphics/Resource.java \
-	org/eclipse/swt/graphics/Device.java \
-	org/eclipse/swt/graphics/DeviceData.java \
-	org/eclipse/swt/graphics/Font.java \
-	org/eclipse/swt/graphics/FontData.java \
-	org/eclipse/swt/graphics/Color.java \
-	org/eclipse/swt/widgets/Synchronizer.java \
-	org/eclipse/swt/widgets/RunnableLock.java \
-	org/eclipse/swt/widgets/Monitor.java \
-	org/eclipse/swt/widgets/TouchSource.java \
-	org/eclipse/swt/widgets/Display.java \
-	org/eclipse/swt/graphics/Drawable.java \
-	org/eclipse/swt/graphics/GC.java \
-	org/eclipse/swt/graphics/GCData.java \
-	org/eclipse/swt/graphics/FontMetrics.java \
-	org/eclipse/swt/graphics/LineAttributes.java \
-	org/eclipse/swt/graphics/Pattern.java \
-	org/eclipse/swt/graphics/Transform.java \
-	org/eclipse/swt/graphics/Path.java \
-	org/eclipse/swt/graphics/PathData.java \
-	org/eclipse/swt/graphics/Region.java \
-	org/eclipse/swt/graphics/Image.java \
-	org/eclipse/swt/graphics/ImageData.java \
-	org/eclipse/swt/graphics/PaletteData.java \
-	org/eclipse/swt/graphics/ImageDataProvider.java \
-	org/eclipse/swt/graphics/ImageFileNameProvider.java \
-	org/eclipse/swt/graphics/ImageDataAtSizeProvider.java \
-	org/eclipse/swt/graphics/ImageGcDrawer.java \
-	org/eclipse/swt/graphics/ImageLoader.java \
-	org/eclipse/swt/graphics/ImageLoaderListener.java \
-	org/eclipse/swt/graphics/ImageLoaderEvent.java \
-	org/eclipse/swt/graphics/Cursor.java \
-	org/eclipse/swt/graphics/TextLayout.java \
-	org/eclipse/swt/graphics/TextStyle.java \
-	org/eclipse/swt/graphics/GlyphMetrics.java \
-	org/eclipse/swt/widgets/ScrollBar.java \
-	org/eclipse/swt/widgets/Tree.java \
-	org/eclipse/swt/widgets/TreeItem.java \
-	org/eclipse/swt/widgets/TreeColumn.java \
-	org/eclipse/swt/widgets/Dialog.java \
-	org/eclipse/swt/widgets/ColorDialog.java \
-	org/eclipse/swt/widgets/FontDialog.java \
-	org/eclipse/swt/widgets/MessageBox.java \
-	org/eclipse/swt/widgets/TabItem.java \
-	org/eclipse/swt/widgets/TabFolder.java \
-	org/eclipse/swt/widgets/Combo.java \
-	org/eclipse/swt/widgets/Table.java \
-	org/eclipse/swt/widgets/TableItem.java \
-	org/eclipse/swt/widgets/TableColumn.java \
-	org/eclipse/swt/custom/ScrolledCompositeLayout.java \
-	org/eclipse/swt/custom/ScrolledComposite.java \
-	org/eclipse/swt/custom/ControlEditor.java \
-	org/eclipse/swt/custom/TableEditor.java \
+	"${SWT_FILES[@]}" \
 	-- \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"
@@ -159,4 +167,20 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"
 
-gofmt -w swt/*.go internal/cocoa/*.go
+# Round 10 controlexample: the example's own package, examples/controlexample, imports swt. The
+# swt and cocoa file sets are reference-only here (names resolve exactly as when translated).
+# Only the tabs ControlExample.createTabs (hand-written) returns are translated, plus their bases.
+CE=org/eclipse/swt/examples/controlexample
+java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
+	$CE/ControlExample.java $CE/Tab.java $CE/AlignableTab.java $CE/ScrollableTab.java \
+	$CE/ButtonTab.java $CE/LabelTab.java $CE/TextTab.java $CE/GroupTab.java $CE/CanvasTab.java $CE/MenuTab.java \
+	-- \
+	"${SWT_FILES[@]}" \
+	org/eclipse/swt/internal/C.java \
+	"${COCOA_FILES[@]}"
+
+# Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
+EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
+cp "$EX_SRC/$CE"/*.png "$EX_SRC/$CE"/*.gif "$EX_SRC/$CE"/*.bmp "$EX_SRC/examples_control.properties" examples/controlexample/
+
+gofmt -w swt/*.go internal/cocoa/*.go examples/controlexample/*.go

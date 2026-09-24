@@ -274,7 +274,7 @@ func (this *Canvas) ReadSelectionFromPasteboardPboardType(pboard *cocoa.NSPasteb
 
 func (this *Canvas) releaseChildren_(destroy bool) {
 	if this.caret != (nil) {
-		this.caret.Release(false)
+		this.caret.impl.release_(false)
 		this.caret = nil
 	}
 	if this.ime != (nil) {
@@ -462,7 +462,12 @@ func (this *Canvas) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	return this.Composite.sendKeyEvent_(nsEvent, type_)
 }
 
-func (this *Canvas) SetCaret(caret *Caret) {
+func (this *Canvas) SetCaret(caretLike CaretLike) {
+	var caret *Caret
+	if caretLike != nil {
+		caret = caretLike.AsCaret()
+	}
+	_ = caret
 	this.CheckWidget()
 	var newCaret *Caret = caret
 	var oldCaret *Caret = this.caret

@@ -22,6 +22,8 @@ type TypedEvent struct {
 	impl    TypedEventImpl
 }
 
+func (this *TypedEvent) Impl() TypedEventImpl { return this.impl }
+
 func (this *TypedEvent) AsTypedEvent() *TypedEvent { return this }
 
 type TypedEventLike interface {

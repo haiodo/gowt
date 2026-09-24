@@ -338,7 +338,7 @@ final class ControlFlowEmitter {
 			return "error";
 		}
 		TypeModel.ClassInfo ci = emitter.model.lookup(t);
-		if (ci != null) return (ci.isStruct || ci.isInterface) ? ci.goTypeName : "*" + ci.goTypeName;
+		if (ci != null) return (ci.isStruct || ci.isInterface) ? emitter.qualifiedTypeName(ci) : "*" + emitter.qualifiedTypeName(ci);
 		if (Manual.isManual(qualified)) {
 			emitter.addManualImport(qualified);
 			String gt = Manual.goTypeName(qualified);

@@ -20,6 +20,8 @@ type Layout struct {
 	impl LayoutImpl
 }
 
+func (this *Layout) Impl() LayoutImpl { return this.impl }
+
 func (this *Layout) AsLayout() *Layout { return this }
 
 type LayoutLike interface {

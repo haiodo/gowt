@@ -87,6 +87,8 @@ it, never directly. Where to add a new construct:
 - **instanceof, cast, or the impl-cascade helpers** -> `TypeTestEmitter`
 - **try/catch escape detection** -> `EscapeScanner` (the ASTVisitor pre-scan)
 - **a stateless text/binding helper shared by several components** -> `EmitUtil`
+- **cross-package qualification (`<pkg>.` + import, package layering guard)** -> `PackageQualifier`
+  (split out of `Emitter` in Round 10 - line budget)
 
 ## Run
 
@@ -106,10 +108,9 @@ java -jar tooling/j2go/target/j2go.jar --swt <swt repo root> --out . \
 	org/eclipse/swt/graphics/Point.java org/eclipse/swt/graphics/Rectangle.java ...
 ```
 
-`--out` is the repo root, not a single package directory: each file lands under `swt/` or
-`internal/cocoa/` per its own Java package (`Main.goPackageDir`/`goPackageName` - currently a
-2-entry mapping, `org.eclipse.swt.internal.cocoa` -> `internal/cocoa`, everything else -> `swt`;
-see "Multiple Go packages" below).
+`--out` is the repo root, not a single package directory: each file lands under `swt/`,
+`internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
+"Multiple Go packages" and "Round 10 controlexample" below).
 
 File arguments are resolved against the SWT source roots (`Eclipse SWT/common`, `/cocoa`,
 `Eclipse SWT PI/common`, `/cocoa` - whichever exist under `--swt`), or taken as-is if absolute.
@@ -2222,3 +2223,128 @@ records or the Stream API) stay unresolved-call panics, same as `Image`'s own `I
 (stream)`/`Image(display, imageData)` path the task targets. `java.io.BufferedInputStream`'s alias
 is name-only (see above) - a real `mark`/`reset`-based pushback buffer is not ported, matching
 `FileFormat.isDynamicallySizableFormat`'s own (already-stubbed) reliance on `mark`/`reset`.
+
+## Round 10 controlexample
+
+**Status: done, green.** `make gen && make` pass (vet, test, every `cmd/*`). `internal/cocoa` is
+byte-identical. `bin/controlexample -snap <dir>` opens SWT's ControlExample with 6 tabs (Button,
+Canvas, Group, Label, Menu, Text), selects each tab through `NSTabView selectTabViewItemAtIndex:`
+(TabFolder's own delegate path), writes `<dir>/<tab>.png` via `cacheDisplayInRect:toBitmapImageRep:`,
+and on Button/Canvas/Label/Text clicks one style or option checkbox (`SWT.BORDER`, `Caret`,
+`SWT.SEPARATOR`) with `performClick:` - the example recreates its sample widgets (Button: the old
+"One" button is disposed, a new one exists) and the snapshot `<dir>/<tab>_<checkbox>.png` shows
+the result. Without arguments it stays up like the Java `main`.
+
+### A third Go package: `examples/controlexample`
+
+`port.sh` has a third j2go invocation: ControlExample, Tab, AlignableTab, ScrollableTab and the 6
+tabs are the emit files; the whole swt file set (`SWT_FILES`, now an array shared by both
+invocations), `C.java` and the cocoa files are reference-only (Round 4's `--`), so every swt name
+resolves exactly as when swt was generated. `examples/org.eclipse.swt.examples/src` joined
+`Main.SOURCE_ROOTS`. The other 20 tab classes are on the sourcepath (JDT resolves them) but not
+translated.
+
+- **Package routing** (`GoTypes.goPackageDir(javaPackage, topLevelName)`): `org.eclipse.swt.
+  internal.cocoa` and PI's `org.eclipse.swt.internal.C` -> `internal/cocoa`;
+  `org.eclipse.swt.examples.<x>` -> `examples/<x>` (package `<x>`); everything else -> `swt`.
+  Before, all of `org.eclipse.swt.internal` went to cocoa, which put
+  `org.eclipse.swt.internal.TransparencyColorImageGcDrawer` (common code using swt types) on the
+  wrong side. `GoTypes.importPath` maps a package name to its import path.
+- **Layering guard** (`PackageQualifier`): cocoa < swt < examples; a file may only qualify a type
+  from a lower layer (was: cocoa must not reference swt).
+- **Calls into another package's cascade** (`InvocationEmitter`): a dispatch name (`setText_`) and
+  the `impl` field are unexported, so a call from another package to a split-dispatch cascade
+  method uses the override point's exported wrapper (`button.SetText(...)`), which dispatches
+  through `impl` itself.
+- **`Impl()` accessor** (`ClassEmitter`): every split-dispatch root with an `impl` field gets
+  `func (this *Widget) Impl() WidgetImpl { return this.impl }`, what `.Impl()` in cross-package
+  instanceof/cast helpers already expected (cocoa's `id` had a hand-written one). 9 swt roots.
+- **SWT constants cross-package** (`EmitUtil.staticFieldGoName`/`staticMethodGoName`): the bare
+  `SWT.x` name is qualified too (`swt.PUSH`, `swt.GetPlatform()`).
+- **Widened params cross-package** (`EmitUtil.publicParamList`): `swt.CompositeLike` and
+  `*swt.Composite`, qualified.
+- **Anonymous subclass of another package's class** (`FunctionalEmitter.emitStructAnon`): `init<X>`
+  and `impl` are unexported there, so the base is built by the public constructor and copied in
+  (`anon.SelectionAdapter = *swt.NewSelectionAdapter()`). A base inside an impl cascade stays an
+  `AnonymousClass` marker (none in this file set).
+- **`splitsDispatch`** is true for every non-cocoa root, so the example's own Tab hierarchy uses
+  the Round 9 api shape (unexported dispatch `createExampleWidgets_`, exported wrapper).
+
+### Translator changes (general rules)
+
+- `ClassEmitter.defaultForwarders`: an abstract class that leaves an interface method to its
+  subclasses gets a panicking stub for it, so it satisfies the Go interface its own default
+  forwarders pass `this` as (`TransparencyColorImageGcDrawer` leaves `ImageGcDrawer.drawOn`).
+- `NumericEmitter.emitInfix`: Java ranks `&`/`|`/`^` below comparisons and `<<` below `+`, Go the
+  other way round. A nested infix operand is parenthesized wherever Go would regroup it
+  (`shells[i] != null & !shells[i].isDisposed()`). Boolean `&`/`|`/`^` become `&&`/`||`/`!=`
+  (short-circuiting - differs only when the right operand has side effects). No existing swt
+  output changed.
+- `FunctionalEmitter.bodyText`: a void lambda whose body is an assignment or `++`/`--`
+  (`e -> untypedEvents = box.getSelection()`) is emitted as that statement.
+- `ExpressionEmitter`: `X.class` -> `reflect.TypeFor[*X]()`.
+- `ControlFlowEmitter.catchGoType`: a caught translated exception type is package-qualified.
+- `InvocationEmitter`: a static call on a manual type records its import.
+- `Manual.isBareAny`: `java.lang.Class` (`reflect.Type`) has no Java method surface - calls other
+  than the intrinsics are unresolved markers instead of non-compiling `recv.IsArray()`.
+- `JdkIntrinsics`: `String.isEmpty`, `String.indexOf(s, from)` (`jrt.IndexFrom`),
+  `Integer.parseInt` (`jrt.ParseInt`, panics `*jrt.NumberFormatException`), `Integer.toString(i)`/
+  `Boolean.toString(b)`, `Class.getResourceAsStream` (`jrt.ClassGetResourceAsStream`, the class
+  is ignored - one resource FS per process), `Throwable.getCause` (`errors.Unwrap`). These also
+  resolved 10 old swt markers (`FontData`'s string form and locale parsing, `Display`'s
+  line-delimiter conversion): swt markers 130/13/5/2/2 -> 120/13/2/2/2 (MethodInvocation/ClassInstanceCreation/
+  CatchClause/ExpressionMethodReference/MethodDeclaration).
+
+### JDK surface (`internal/jrt/text.go`, Manual entries)
+
+`java.util.ResourceBundle` -> `*jrt.ResourceBundle` (`ResourceBundleGetBundle(name)` reads
+`<name>.properties` from the registered resource FS; `GetString` panics
+`*jrt.MissingResourceException`, which the example's `catch (MissingResourceException e)` catches;
+no locale chain), `java.text.MessageFormat.format` -> `jrt.MessageFormatFormat` (`{n}` and `''`
+only), `java.lang.NumberFormatException` -> `*jrt.NumberFormatException`. Properties parsing covers
+comments, `=`/`:`/space separators, `\` continuation lines, `\t`/`\n`/`\uXXXX` escapes
+(`internal/jrt/text_test.go`).
+
+### Newly translated in swt (were manual stubs)
+
+`TransparencyColorImageGcDrawer` (the example's color/font swatches subclass it), `Caret`
+(CanvasTab's Caret checkbox creates one; the stub is gone from `widgets_stubs2_manual.go`) and
+`ImageUtil` (`createImageRep`, needed by a GC on an `Image(device, ImageGcDrawer, w, h)`; stub gone
+from `widgets_stubs3_manual.go`). `tooling/apidump` diff vs the previous round: only additions,
+except 7 lines where a stub's signature became the translated one (`Canvas/Decorations/Shell.
+SetCaret`, `Display.SetCurrentCaret` take `CaretLike`; `Caret.Release(destroy bool)`,
+`Caret.SetFont(FontLike)`, `ImageUtilCreateImageRep(ImageLike, ...)`) - all source-compatible for a
+`*Caret`/`*Font`/`*Image` argument. Additions: 88 promoted `Impl()` lines, the `Caret`, `ImageUtil`
+and `TransparencyColorImageGcDrawer` APIs.
+
+### Manual (hand-written)
+
+`examples/controlexample/controlexample_manual.go`: `ControlExample.CreateTabs` (replaces
+`createTabs()` via `Manual.MANUAL_METHODS`, returns the 6 translated tabs), an opaque `ShellTab`
+(`ControlExample.shellTab`'s type; `closeAllShells` is a no-op), the `//go:embed` of the images and
+`examples_control.properties` (copied by `port.sh` from the SWT repo), registered from a package
+var initializer so it precedes the generated `init()` that calls `ResourceBundle.getBundle`, and
+`TabFolder()` for the driver. `cmd/controlexample/main.go` is the Java `main` plus `-snap`.
+
+### Markers (example invocation)
+
+CatchClause 2 (`catch (NullPointerException)` in `getResourceString`), MethodInvocation 22: Java
+reflection behind the Set/Get API dialog (`Class.getMethod/isArray/getComponentType`,
+`Method.invoke/getReturnType`, `reflect.Array.get/getLength`, `Object.toString` on its results,
+`Integer/Long/Character.valueOf` boxing into `Object[]`) and 4 `Object.equals` on widgets in
+`handleTextDirection` (only reached when `rtlSupport()`, false on cocoa). None is on the startup or
+tab-switch path; opening the Set/Get dialog and pressing Get/Set panics.
+
+### Gaps
+
+- 20 tabs not translated. Widgets they need beyond what swt has: `List` (ListTab), `ProgressBar`,
+  `Scale`, `Slider`, `Spinner`, `DateTime`, `Link`, `ToolBar`/`ToolItem` (ToolBar is a stub),
+  `CoolBar`/`CoolItem`, `ExpandBar`/`ExpandItem`, `ToolTip`, `Tray`/`TrayItem` (stubs), `Browser`
+  (`org.eclipse.swt.browser`), `FileDialog`/`DirectoryDialog`/`PrintDialog` (DialogTab), the
+  custom widgets `CCombo`, `CLabel`, `CTabFolder`/`CTabItem`, `StyledText` (the CustomControlExample
+  tabs), plus `Tree` columns/`TreeEditor` for TreeTab and `SystemTab`'s `Display` events.
+  `ShellTab` itself needs nothing new (Shell styles, `setAlpha`, `Region`).
+- The Set/Get API dialog needs reflection (see markers).
+- `Object.equals` on translated objects has no identity rule yet (upcast both sides, compare).
+- `MessageFormat` has no format types or quoted sections; `ResourceBundle` no locale fallback.
+- Boolean `&`/`|` short-circuit.

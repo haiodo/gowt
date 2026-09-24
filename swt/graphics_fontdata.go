@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
 	"unicode/utf16"
 )
@@ -55,26 +56,32 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.NumberFormatException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.NumberFormatException)
 				_ = e
 				Error(ERROR_INVALID_ARGUMENT)
 			} else {
 				panic(r)
 			}
 		}()
-		if func() int32 { _ = []any{version1}; panic("j2go: unresolved call parseInt") }() != 1 {
+		if jrt.ParseInt(version1) != 1 {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
 	}()
 	start = end + 1
-	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
+	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var name string = string_[start:end]
 	start = end + 1
-	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
+	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
@@ -85,8 +92,14 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.NumberFormatException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.NumberFormatException)
 				_ = e
 				Error(ERROR_INVALID_ARGUMENT)
 			} else {
@@ -96,7 +109,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 		height = func() float32 { _ = []any{string_[start:end]}; panic("j2go: unresolved call parseFloat") }()
 	}()
 	start = end + 1
-	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
+	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
@@ -107,18 +120,24 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.NumberFormatException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.NumberFormatException)
 				_ = e
 				Error(ERROR_INVALID_ARGUMENT)
 			} else {
 				panic(r)
 			}
 		}()
-		style = func() int32 { _ = []any{string_[start:end]}; panic("j2go: unresolved call parseInt") }()
+		style = jrt.ParseInt(string_[start:end])
 	}()
 	start = end + 1
-	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
+	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	this.SetName(name)
 	this.SetHeightHeight(height)
 	this.SetStyle(style)
@@ -127,7 +146,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	}
 	var platform string = string_[start:end]
 	start = end + 1
-	end = func() int32 { _ = []any{string_, int32('|'), start}; panic("j2go: unresolved call indexOf") }()
+	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
 		return
 	}
@@ -272,7 +291,7 @@ func (this *FontData) SetLocale(locale string) {
 			secondSep = length
 			firstSep = secondSep
 		} else {
-			secondSep = func() int32 { _ = []any{locale, int32(sep), firstSep + 1}; panic("j2go: unresolved call indexOf") }()
+			secondSep = jrt.IndexFrom(locale, string(rune(sep)), firstSep+1)
 			if secondSep == -1 {
 				secondSep = length
 			}

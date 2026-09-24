@@ -63,10 +63,6 @@ func DPIUtilGetNativeDeviceZoom() int32           { return dpiNativeDeviceZoom }
 // BidiUtil (emulated/bidi): no bidi support, text direction is left as is.
 func BidiUtilResolveTextDirection(text string) int32 { return NONE }
 
-func ImageUtilCreateImageRep(image *Image, size cocoa.NSSize) *cocoa.NSBitmapImageRep {
-	panic("stub until translated: ImageUtil.createImageRep")
-}
-
 // Compatibility.getMessage: no SWTMessages resource bundle, the key itself is the message.
 func CompatibilityGetMessage(key string, args ...[]any) string {
 	if len(args) == 0 {

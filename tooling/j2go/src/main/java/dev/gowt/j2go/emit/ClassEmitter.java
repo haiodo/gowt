@@ -117,6 +117,12 @@ final class ClassEmitter {
 			out.append("\timpl ").append(ci.goTypeName).append("Impl\n");
 		}
 		out.append("}\n\n");
+		// Another package's instanceof/cast reads the dynamic type through this (cocoa's id has a
+		// hand-written one): the impl field itself is unexported.
+		if (ci == ci.root && needsImpl && ci.splitsDispatch()) {
+			out.append("func (this *").append(ci.goTypeName).append(") Impl() ").append(ci.goTypeName)
+					.append("Impl { return this.impl }\n\n");
+		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
 
 		for (Object o : td.bodyDeclarations()) {
@@ -199,9 +205,18 @@ final class ClassEmitter {
 			TypeModel.ClassInfo ici = emitter.model.lookup(iface);
 			if (ici == null) continue;
 			for (IMethodBinding m : iface.getDeclaredMethods()) {
-				if (!Modifier.isDefault(m.getModifiers()) || !seen.add(m.getName() + TypeModel.signature(m))) continue;
-				if (!type.isInterface() && implementsIn(type, m)) continue;
+				// An abstract class leaving an interface method to its subclasses still has to satisfy
+				// the Go interface itself (its default forwarders pass `this`): a panicking stub.
+				boolean abstractGap = !type.isInterface() && Modifier.isAbstract(type.getModifiers())
+						&& Modifier.isAbstract(m.getModifiers()) && !Modifier.isStatic(m.getModifiers());
+				if (!Modifier.isDefault(m.getModifiers()) && !abstractGap || !seen.add(m.getName() + TypeModel.signature(m))) continue;
+				if (!type.isInterface() && implementsIn(type, m) || abstractGap && declaresIn(type, m)) continue;
 				String goName = emitter.names.goMemberName(m, Names.capitalize(m.getName()));
+				if (abstractGap) {
+					b.append("func (this ").append(goRecvType).append(") ").append(goName).append('(').append(emitter.paramList(m, null))
+							.append(") ").append(emitter.retType(m)).append(" {\n\tpanic(\"j2go: abstract ").append(goName).append("\")\n}\n\n");
+					continue;
+				}
 				List<String> args = new ArrayList<>(List.of("this"));
 				for (int i = 0; i < m.getParameterTypes().length; i++) args.add("a" + i);
 				String ret = emitter.retType(m);
@@ -211,6 +226,15 @@ final class ClassEmitter {
 			}
 		}
 		return b.toString();
+	}
+
+	private static boolean declaresIn(ITypeBinding type, IMethodBinding m) {
+		for (ITypeBinding t = type; t != null; t = t.getSuperclass()) {
+			for (IMethodBinding dm : t.getDeclaredMethods()) {
+				if (dm.overrides(m) || dm.isEqualTo(m)) return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean implementsIn(ITypeBinding type, IMethodBinding m) {

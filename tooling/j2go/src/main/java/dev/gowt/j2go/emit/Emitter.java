@@ -37,7 +37,7 @@ public class Emitter {
 	int tempCounter;
 	ITypeBinding currentReturnType; // declared Go return type of the method body being emitted, or null
 	String currentJavaPackage; // this compilation unit's Java package, e.g. "org.eclipse.swt.widgets"
-	String currentGoPackage; // GoTypes.goPackageOf(currentJavaPackage): "swt" or "cocoa"
+	String currentGoPackage; // GoTypes.goPackageOf: "cocoa", "swt" or an example package
 	String currentClassGoTypeName; // enclosing class's own Go type name, e.g. "id" (see sanitizeIdent)
 	TypeModel.ClassInfo currentClassInfo; // enclosing class, for super.method()'s field-path lookup
 	// Non-null while emitting an anonymous class's method body (FunctionalEmitter): the Go
@@ -67,6 +67,7 @@ public class Emitter {
 	private final TypeTestEmitter typeTestEmitter;
 	private final NumericEmitter numericEmitter;
 	private final FunctionalEmitter functionalEmitter;
+	private final PackageQualifier packageQualifier;
 
 	public Emitter(TypeModel model, Names names, Natives natives, Selectors selectors) {
 		this.model = model;
@@ -84,13 +85,14 @@ public class Emitter {
 		this.typeTestEmitter = new TypeTestEmitter(this);
 		this.numericEmitter = new NumericEmitter(this);
 		this.functionalEmitter = new FunctionalEmitter(this);
+		this.packageQualifier = new PackageQualifier(this);
 	}
 
 	public record EmitResult(String body, Set<String> imports) {}
 
 	public EmitResult emitCompilationUnit(CompilationUnit cu) {
 		currentJavaPackage = cu.getPackage().getName().getFullyQualifiedName();
-		currentGoPackage = dev.gowt.j2go.GoTypes.goPackageOf(currentJavaPackage);
+		currentGoPackage = dev.gowt.j2go.GoTypes.goPackageOf(currentJavaPackage, ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier());
 		fileImports = new LinkedHashSet<>();
 		fileHelperSource = new ArrayList<>();
 		deferredStaticInits = new ArrayList<>();
@@ -393,57 +395,25 @@ public class Emitter {
 	}
 
 	// ---------------------------------------------------------------- cross-package qualification
-	// swt referencing a cocoa class needs "cocoa." + an import; cocoa referencing swt is a
-	// contract violation (see README "Multiple Go packages").
+	// (PackageQualifier: package prefix + import, the lowercase-alias rule, the layering guard)
 
-	/** ci.goTypeName, qualified for use from the file currently being emitted. Capitalized when
-	 * actually crossing packages: Go visibility is the identifier's own case, and 2 translated
-	 * types (id, objc_super) have a lowercase Java class name - see internal/cocoa/id_manual.go's
-	 * Id/ObjcSuper aliases, the exported names a cross-package reference must use instead. */
 	public String qualifiedTypeName(TypeModel.ClassInfo ci) {
-		return qualify(ci.goTypeName, ci);
+		return packageQualifier.qualify(ci.goTypeName, ci);
 	}
 
-	/** ci.goFuncPrefix, qualified the same way - valid only where goFuncPrefix is the FIRST
-	 * token of the name being built (a package qualifier must lead the whole identifier). */
 	String qualifiedFuncPrefix(TypeModel.ClassInfo ci) {
-		return qualify(ci.goFuncPrefix, ci);
+		return packageQualifier.qualify(ci.goFuncPrefix, ci);
 	}
 
-	// The 2 lowercase Java class names in this codebase (id, objc_super) need more than a bare
-	// first-letter capitalize to reach their hand-written exported alias (id_manual.go's
-	// Id/ObjcSuper) - "objc_super" capitalized is "Objc_super", not "ObjcSuper".
-	private static final java.util.Map<String, String> LOWERCASE_ALIASES = java.util.Map.of(
-			"id", "Id", "objc_super", "ObjcSuper");
-
-	/** Qualifies an already-built bare identifier, e.g. "New" + ci.goFuncPrefix. */
 	String qualify(String bareIdent, TypeModel.ClassInfo ci) {
-		String prefix = packagePrefix(ci.goPackage);
-		if (prefix.isEmpty()) return bareIdent;
-		String alias = LOWERCASE_ALIASES.get(bareIdent);
-		return prefix + (alias != null ? alias : Names.capitalize(bareIdent));
+		return packageQualifier.qualify(bareIdent, ci);
 	}
 
-	private String packagePrefix(String targetGoPackage) {
-		if (targetGoPackage.equals(currentGoPackage)) return "";
-		if (currentGoPackage.equals("cocoa")) {
-			System.err.println("j2go: guard violated: cocoa file " + currentJavaPackage
-					+ " must not reference a " + targetGoPackage + " type");
-			System.exit(1);
-		}
-		fileImports.add(dev.gowt.j2go.GoTypes.COCOA_IMPORT);
-		return targetGoPackage + ".";
-	}
-
-	/** Same guard, for a type GoTypes.map could not resolve at all (not in model, not manual). */
 	public void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {
-		if (!currentGoPackage.equals("cocoa")) return;
-		int dot = qualifiedJavaTypeName.lastIndexOf('.');
-		String javaPackage = dot < 0 ? "" : qualifiedJavaTypeName.substring(0, dot);
-		if (javaPackage.startsWith("org.eclipse.swt") && !dev.gowt.j2go.GoTypes.isCocoaPackage(javaPackage)) {
-			System.err.println("j2go: guard violated: cocoa file " + currentJavaPackage
-					+ " must not reference swt type " + qualifiedJavaTypeName);
-			System.exit(1);
-		}
+		packageQualifier.checkNoForeignPackageLeak(qualifiedJavaTypeName);
+	}
+
+	String exprStatement(Expression e, int indent) {
+		return statementEmitter.emitExpressionAsStatement(e, indent);
 	}
 }

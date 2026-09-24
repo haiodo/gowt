@@ -63,10 +63,11 @@ public class TypeModel {
 			return declaredMethods.get(sig);
 		}
 
-		// swt's public API: cascade methods dispatch through unexported names, exported names are
-		// wrappers (README "Round 9 api"). internal/cocoa keeps exported cascade names.
+		// swt's public API (and the examples built on it): cascade methods dispatch through
+		// unexported names, exported names are wrappers (README "Round 9 api"). internal/cocoa
+		// keeps exported cascade names.
 		public boolean splitsDispatch() {
-			return root.goPackage.equals("swt");
+			return !root.goPackage.equals("cocoa");
 		}
 	}
 
@@ -321,7 +322,9 @@ public class TypeModel {
 		ci.goFuncPrefix = Names.goFuncPrefix(binding);
 		ci.isInterface = td.isInterface();
 		ci.javaPackage = binding.getPackage() == null ? "" : binding.getPackage().getName();
-		ci.goPackage = GoTypes.goPackageOf(ci.javaPackage);
+		ITypeBinding top = binding;
+		while (top.getDeclaringClass() != null) top = top.getDeclaringClass();
+		ci.goPackage = GoTypes.goPackageOf(ci.javaPackage, top.getName());
 		byBinaryName.put(ci.binaryName, ci);
 
 		for (Object o : td.bodyDeclarations()) {

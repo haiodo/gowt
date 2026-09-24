@@ -12,11 +12,39 @@ public class GoTypes {
 		return javaPackage.equals("org.eclipse.swt.internal.cocoa") || javaPackage.equals("org.eclipse.swt.internal");
 	}
 
-	public static String goPackageOf(String javaPackage) {
-		return isCocoaPackage(javaPackage) ? "cocoa" : "swt";
+	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
+
+	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
+	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
+	public static String goPackageDir(String javaPackage, String topLevelName) {
+		if (javaPackage.equals("org.eclipse.swt.internal.cocoa")) return "internal/cocoa";
+		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/cocoa";
+		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
+		return "swt";
 	}
 
-	public static final String COCOA_IMPORT = "github.com/haiodo/gowt/internal/cocoa";
+	public static String goPackageOf(String javaPackage, String topLevelName) {
+		String dir = goPackageDir(javaPackage, topLevelName);
+		return dir.substring(dir.lastIndexOf('/') + 1);
+	}
+
+	/** Import path of a Go package produced by goPackageDir (package names are unique). */
+	public static String importPath(String goPackage) {
+		return "github.com/haiodo/gowt/" + switch (goPackage) {
+			case "cocoa" -> "internal/cocoa";
+			case "swt" -> "swt";
+			default -> "examples/" + goPackage;
+		};
+	}
+
+	/** Import layering: cocoa < swt < examples; a package may only reference lower layers. */
+	public static int layer(String goPackage) {
+		return switch (goPackage) {
+			case "cocoa" -> 0;
+			case "swt" -> 1;
+			default -> 2;
+		};
+	}
 
 	public static String map(ITypeBinding t, Emitter emitter) {
 		TypeModel model = emitter.model;

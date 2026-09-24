@@ -10,7 +10,7 @@ BIN  := bin
 
 all: check build
 
-# Rebuilds the translator and regenerates swt/ and internal/cocoa/ from the SWT sources.
+# Rebuilds the translator and regenerates swt/, internal/cocoa/ and examples/ from the SWT sources.
 gen:
 	bash tooling/port.sh
 

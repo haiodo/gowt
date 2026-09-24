@@ -190,19 +190,59 @@ public class TypeModel {
 					sigsByGoName.computeIfAbsent(goName, k -> new LinkedHashSet<>()).add(signature(m));
 				}
 			}
+			// Group this root's cascade methods by their pre-suffix base Go name (two chains
+			// can land on the same one) before naming them - see assignCollidingCascadeNames.
+			Map<String, List<Map.Entry<String, IMethodBinding>>> byBase = new LinkedHashMap<>();
 			for (var e : ci.overriddenRootMethods.entrySet()) {
-				IMethodBinding decl = e.getValue();
-				String base = names.goMemberName(decl, Names.javaMethodBaseGoName(decl.getName()));
-				boolean collides = sigsByGoName.get(base).size() > 1;
-				String finalName = collides ? base + "On" + lookup(decl.getDeclaringClass()).goTypeName : base;
-				// Layout.layout() -> "Layout", same as every subclass's embedded field name - Go
-				// rejects a field and method sharing a name.
-				if (treeTypeNames.contains(finalName)) finalName = finalName + "Fn";
-				ci.overriddenRootMethodGoNames.put(e.getKey(), finalName);
+				String base = names.goMemberName(e.getValue(), Names.javaMethodBaseGoName(e.getValue().getName()));
+				byBase.computeIfAbsent(base, k -> new ArrayList<>()).add(e);
+			}
+			for (var g : byBase.entrySet()) {
+				String base = g.getKey();
+				if (sigsByGoName.get(base).size() <= 1) {
+					putCascadeName(ci, treeTypeNames, g.getValue().get(0), base);
+					continue;
+				}
+				assignCollidingCascadeNames(ci, treeTypeNames, base, g.getValue());
 			}
 		}
 		resolveCrossFamilyNameCollisions(names);
 		assignLikeNames(names);
+	}
+
+	private void putCascadeName(ClassInfo ci, Set<String> treeTypeNames, Map.Entry<String, IMethodBinding> e, String name) {
+		// Layout.layout() -> "Layout", same as every subclass's embedded field name - Go
+		// rejects a field and method sharing a name.
+		if (treeTypeNames.contains(name)) name = name + "Fn";
+		ci.overriddenRootMethodGoNames.put(e.getKey(), name);
+	}
+
+	// "<base>On<class>" alone isn't unique when two members share both base and declaring class
+	// (Control's setBackground(Color) and setBackgroundColor(NSColor) both -> SetBackgroundColor).
+	// The member whose bare Java name literally is the base claims the plain spelling; the rest
+	// append their own parameter types, then a stable ordinal if that still repeats.
+	private void assignCollidingCascadeNames(ClassInfo ci, Set<String> treeTypeNames, String base,
+			List<Map.Entry<String, IMethodBinding>> members) {
+		members.sort(Comparator.comparingInt(e ->
+				base.equals(Names.javaMethodBaseGoName(e.getValue().getName())) ? 0 : 1));
+		Set<String> used = new HashSet<>();
+		for (var e : members) {
+			IMethodBinding decl = e.getValue();
+			String declClass = lookup(decl.getDeclaringClass()).goTypeName;
+			String candidate = base + "On" + declClass;
+			if (!used.add(candidate)) {
+				candidate = base + "On" + declClass + paramTypeTag(decl);
+				int ordinal = 2;
+				while (!used.add(candidate)) candidate = base + "On" + declClass + paramTypeTag(decl) + ordinal++;
+			}
+			putCascadeName(ci, treeTypeNames, e, candidate);
+		}
+	}
+
+	private static String paramTypeTag(IMethodBinding decl) {
+		StringBuilder sb = new StringBuilder();
+		for (ITypeBinding t : decl.getParameterTypes()) sb.append(Names.capitalize(t.getErasure().getName()));
+		return sb.toString();
 	}
 
 	// Every non-struct, non-interface swt-package class gets an upcast accessor + a 1-method

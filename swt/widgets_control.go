@@ -2571,12 +2571,7 @@ func (this *Control) SetBackground() {
 	}
 }
 
-func (this *Control) SetBackgroundColor(colorLike ColorLike) {
-	var color *Color
-	if colorLike != nil {
-		color = colorLike.AsColor()
-	}
-	_ = color
+func (this *Control) SetBackgroundColorOnControlColor(color *Color) {
 	this.CheckWidget()
 	this._setBackground(color)
 	if color != (nil) {
@@ -2802,12 +2797,7 @@ func (this *Control) SetFontFont(font *cocoa.NSFont) {
 	}
 }
 
-func (this *Control) SetForeground(colorLike ColorLike) {
-	var color *Color
-	if colorLike != nil {
-		color = colorLike.AsColor()
-	}
-	_ = color
+func (this *Control) SetForegroundOnControl(color *Color) {
 	this.CheckWidget()
 	if color != (nil) {
 		if color.impl.IsDisposed() {
@@ -2952,7 +2942,7 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	var topView *cocoa.NSView = this.impl.TopView()
 	topView.Retain()
 	topView.RemoveFromSuperview()
-	parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
+	parent.impl.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 	topView.Release()
 	this.parent = parent
 	this.Reskin(ALL)
@@ -3108,7 +3098,7 @@ func (this *Control) SetVisible(visible bool) {
 
 func (this *Control) SetZOrder() {
 	var topView *cocoa.NSView = this.impl.TopView()
-	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
+	this.parent.impl.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 }
 
 func (this *Control) ShouldDelayWindowOrderingForEvent(id int64, sel int64, theEvent int64) bool {
@@ -3168,7 +3158,7 @@ func (this *Control) SetZOrderSiblingAbove(sibling *Control, above bool) {
 	} else {
 		cond77 = cocoa.OSNSWindowBelow
 	}
-	this.parent.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cond77), otherView)
+	this.parent.impl.ContentView().AddSubviewAViewPlaceOtherView(topView, int64(cond77), otherView)
 	topView.Release()
 	this.impl.InvalidateVisibleRegion()
 	if sibling != (nil) {

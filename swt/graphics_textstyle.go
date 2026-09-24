@@ -106,8 +106,8 @@ func (this *TextStyle) Equals(object any) bool {
 	if object == (nil) {
 		return false
 	}
-	style, ok486 := textStyleImplAsTextStyle(object)
-	if !(ok486) {
+	style, ok500 := textStyleImplAsTextStyle(object)
+	if !(ok500) {
 		return false
 	}
 	if this.Foreground != (nil) {

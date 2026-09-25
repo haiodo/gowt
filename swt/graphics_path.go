@@ -171,9 +171,9 @@ func (this *Path) AddArc(x float32, y float32, width float32, height float32, st
 		path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
 		path.TransformUsingAffineTransform(transform)
 		this.AppendBezierPath(path)
-		cond369 := (float32(math.Abs(float64(arcAngle))) >= 360)
-		this.closed = cond369
-		if cond369 {
+		cond375 := (float32(math.Abs(float64(arcAngle))) >= 360)
+		this.closed = cond375
+		if cond375 {
 			this.Handle.ClosePath()
 		}
 	}
@@ -566,33 +566,9 @@ func (this *Path) GetPathData() *PathData {
 			var element int32 = int32(this.Handle.ElementAtIndex(int64(i), points))
 			switch element {
 			case cocoa.OSNSMoveToBezierPathElement:
-				t370 := typeCount
-				typeCount++
-				types[t370] = int8(PATH_MOVE_TO)
-				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t371 := pointCount
-				pointCount++
-				pointArray[t371] = float32(pt.X)
-				t372 := pointCount
-				pointCount++
-				pointArray[t372] = float32(pt.Y)
-				break
-			case cocoa.OSNSLineToBezierPathElement:
-				t373 := typeCount
-				typeCount++
-				types[t373] = int8(PATH_LINE_TO)
-				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t374 := pointCount
-				pointCount++
-				pointArray[t374] = float32(pt.X)
-				t375 := pointCount
-				pointCount++
-				pointArray[t375] = float32(pt.Y)
-				break
-			case cocoa.OSNSCurveToBezierPathElement:
 				t376 := typeCount
 				typeCount++
-				types[t376] = int8(PATH_CUBIC_TO)
+				types[t376] = int8(PATH_MOVE_TO)
 				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
 				t377 := pointCount
 				pointCount++
@@ -600,25 +576,49 @@ func (this *Path) GetPathData() *PathData {
 				t378 := pointCount
 				pointCount++
 				pointArray[t378] = float32(pt.Y)
-				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
-				t379 := pointCount
-				pointCount++
-				pointArray[t379] = float32(pt.X)
+				break
+			case cocoa.OSNSLineToBezierPathElement:
+				t379 := typeCount
+				typeCount++
+				types[t379] = int8(PATH_LINE_TO)
+				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
 				t380 := pointCount
 				pointCount++
-				pointArray[t380] = float32(pt.Y)
-				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof)+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
+				pointArray[t380] = float32(pt.X)
 				t381 := pointCount
 				pointCount++
-				pointArray[t381] = float32(pt.X)
-				t382 := pointCount
+				pointArray[t381] = float32(pt.Y)
+				break
+			case cocoa.OSNSCurveToBezierPathElement:
+				t382 := typeCount
+				typeCount++
+				types[t382] = int8(PATH_CUBIC_TO)
+				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+				t383 := pointCount
 				pointCount++
-				pointArray[t382] = float32(pt.Y)
+				pointArray[t383] = float32(pt.X)
+				t384 := pointCount
+				pointCount++
+				pointArray[t384] = float32(pt.Y)
+				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
+				t385 := pointCount
+				pointCount++
+				pointArray[t385] = float32(pt.X)
+				t386 := pointCount
+				pointCount++
+				pointArray[t386] = float32(pt.Y)
+				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof)+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
+				t387 := pointCount
+				pointCount++
+				pointArray[t387] = float32(pt.X)
+				t388 := pointCount
+				pointCount++
+				pointArray[t388] = float32(pt.Y)
 				break
 			case cocoa.OSNSClosePathBezierPathElement:
-				t383 := typeCount
+				t389 := typeCount
 				typeCount++
-				types[t383] = int8(PATH_CLOSE)
+				types[t389] = int8(PATH_CLOSE)
 				break
 			}
 		}
@@ -651,35 +651,20 @@ func (this *Path) Init(dataLike PathDataLike) {
 		}() {
 			switch types[i] {
 			case int8(PATH_MOVE_TO):
-				t384 := j
-				j++
-				t385 := j
-				j++
-				this.MoveTo(points[t384], points[t385])
-				break
-			case int8(PATH_LINE_TO):
-				t386 := j
-				j++
-				t387 := j
-				j++
-				this.LineTo(points[t386], points[t387])
-				break
-			case int8(PATH_CUBIC_TO):
-				t388 := j
-				j++
-				t389 := j
-				j++
 				t390 := j
 				j++
 				t391 := j
 				j++
+				this.MoveTo(points[t390], points[t391])
+				break
+			case int8(PATH_LINE_TO):
 				t392 := j
 				j++
 				t393 := j
 				j++
-				this.CubicTo(points[t388], points[t389], points[t390], points[t391], points[t392], points[t393])
+				this.LineTo(points[t392], points[t393])
 				break
-			case int8(PATH_QUAD_TO):
+			case int8(PATH_CUBIC_TO):
 				t394 := j
 				j++
 				t395 := j
@@ -688,7 +673,22 @@ func (this *Path) Init(dataLike PathDataLike) {
 				j++
 				t397 := j
 				j++
-				this.QuadTo(points[t394], points[t395], points[t396], points[t397])
+				t398 := j
+				j++
+				t399 := j
+				j++
+				this.CubicTo(points[t394], points[t395], points[t396], points[t397], points[t398], points[t399])
+				break
+			case int8(PATH_QUAD_TO):
+				t400 := j
+				j++
+				t401 := j
+				j++
+				t402 := j
+				j++
+				t403 := j
+				j++
+				this.QuadTo(points[t400], points[t401], points[t402], points[t403])
 				break
 			case int8(PATH_CLOSE):
 				this.Close()

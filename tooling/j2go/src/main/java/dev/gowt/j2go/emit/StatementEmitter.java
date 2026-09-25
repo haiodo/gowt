@@ -237,7 +237,7 @@ final class StatementEmitter {
 
 	// Java allows |=/&=/^= on boolean operands (non-short-circuit logical assignment); Go has no
 	// bool|bool at all, so these lower to the equivalent ||/&&/!= form instead.
-	private String booleanCompoundOp(Assignment a, String lhs, String rhs) {
+	String booleanCompoundOp(Assignment a, String lhs, String rhs) {
 		ITypeBinding lt = a.getLeftHandSide().resolveTypeBinding();
 		if (lt == null || !lt.getName().equals("boolean")) return null;
 		String goOp = switch (a.getOperator().toString()) {
@@ -246,7 +246,15 @@ final class StatementEmitter {
 			case "^=" -> "!=";
 			default -> null;
 		};
-		return goOp == null ? null : lhs + " = " + lhs + " " + goOp + " " + rhs;
+		if (goOp == null) return null;
+		// |=/&= don't short-circuit in Java either, but Go's ||/&& would skip a side-effecting rhs
+		// once lhs already decides the result - hoist it into a temp first so it always runs.
+		if (!goOp.equals("!=") && emitter.hasSideEffect(a.getRightHandSide())) {
+			String tmp = "b" + (++emitter.tempCounter);
+			emitter.prelude.add(tmp + " := " + rhs);
+			rhs = tmp;
+		}
+		return lhs + " = " + lhs + " " + goOp + " " + rhs;
 	}
 
 	private String emitFor(ForStatement fs, int indent) {

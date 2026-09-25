@@ -160,6 +160,11 @@ final class JdkIntrinsics {
 			if (hasImpl(rci)) return "reflect.TypeOf(" + recv + ".Impl())";
 			return "reflect.TypeOf(" + recv + ")";
 		}
+		// Object.equals with no override: Java's default is reference identity, same embedded-
+		// pointer-level problem as getClass() above - see emitObjectEquals.
+		if (qualified.equals("java.lang.Object") && mb.getName().equals("equals") && mi.arguments().size() == 1) {
+			return emitObjectEquals(mi);
+		}
 		// Round 10 reflection: Class<?> stays reflect.Type (Manual) - see README "Round 10
 		// reflection" and internal/jrt/reflect.go.
 		if (qualified.equals("java.lang.Class") && mb.getName().equals("getName")) {
@@ -425,5 +430,22 @@ final class JdkIntrinsics {
 
 	private static boolean hasImpl(TypeModel.ClassInfo ci) {
 		return ci != null && ci.root.splitsDispatch() && !ci.root.children.isEmpty();
+	}
+
+	// A translated object can be referenced through different embedded-pointer levels
+	// (&shell.Widget vs shell): .Impl() normalizes to the concrete leaf pointer instead.
+	private String emitObjectEquals(MethodInvocation mi) {
+		Expression argExpr = (Expression) mi.arguments().get(0);
+		String recv = recv(mi);
+		String arg = emitter.expr(argExpr);
+		ITypeBinding receiverType = mi.getExpression() != null ? mi.getExpression().resolveTypeBinding() : null;
+		TypeModel.ClassInfo rci = receiverType != null ? emitter.model.lookup(receiverType) : emitter.currentClassInfo;
+		TypeModel.ClassInfo aci = argExpr.resolveTypeBinding() != null ? emitter.model.lookup(argExpr.resolveTypeBinding()) : null;
+		boolean rHas = hasImpl(rci);
+		boolean aHas = hasImpl(aci);
+		if (!rHas && !aHas) return "(" + recv + " == " + arg + ")";
+		String l = rHas ? recv + ".Impl()" : recv;
+		String r = aHas ? arg + ".Impl()" : arg;
+		return "(any(" + l + ") == any(" + r + "))";
 	}
 }

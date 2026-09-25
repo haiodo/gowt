@@ -179,11 +179,11 @@ func (this *Pattern) String() string {
 	if this.impl.isDisposed_() {
 		return "Pattern {*DISPOSED*}"
 	}
-	var cond368 int64
+	var cond374 int64
 	if this.color != (nil) {
-		cond368 = this.color.Id
+		cond374 = this.color.Id
 	} else {
-		cond368 = this.gradient.Id
+		cond374 = this.gradient.Id
 	}
-	return fmt.Sprintf("Pattern {%d}", (cond368))
+	return fmt.Sprintf("Pattern {%d}", (cond374))
 }

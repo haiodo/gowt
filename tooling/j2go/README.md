@@ -2646,3 +2646,129 @@ constructor shapes (`()`, `(String)`, `(Throwable)`, `(String, Throwable)`).
   skipped with a reason.
 - `object == null` on `any` holding a typed nil pointer is false (`tests/RESULTS.md`, translator bug),
   not fixed here: it is `NumericEmitter.emitInfix`, which another branch is changing.
+
+## Round 12 semantics
+
+**Status: done, green.** `make gen && make` pass, `internal/cocoa` byte-identical, every `cmd/*`
+runs 3 s without a crash, `bin/controlexample -snap` unchanged. Two general Java-semantics
+deviations, both flagged as open gaps in "Round 10 controlexample".
+
+### Boolean `&`/`|`/`^` and `&=`/`|=`/`^=` no longer short-circuit
+
+Java's boolean `&`/`|` (and their compound-assignment forms) always evaluate both operands; Go's
+`&&`/`||` stop at the first false/true. `NumericEmitter.goOperator` already mapped `&`/`|`/`^` to
+`&&`/`||`/`!=` (Round 10) - `!=` is fine (not short-circuiting in Go either), but `&&`/`||` drop a
+right-hand side effect whenever the left operand alone already decides the result.
+
+`NumericEmitter.hoistBooleanChainIfNeeded` (called from `emitInfix` right after `goOperator`):
+for a boolean `&`/`|` chain (2 or more operands, `extendedOperands()` included) where any operand
+past the first can have a side effect (`NumericEmitter.hasSideEffect`: a call, `new`, an
+assignment, or `++`/`--` - reuses the same shape as `ExpressionEmitter.containsCall`, extended),
+every operand is hoisted into its own `bN := <operand>` prelude line (existing prelude mechanism,
+README "instanceof / pattern matching"), then combined with `&&`/`||` over the temps. A
+side-effect-free chain is untouched (still plain `&&`/`||`).
+
+```go
+// before (Round 10): events = events || this.RunTimers() - short-circuits once events is true
+// after:
+b266 := this.RunTimers()
+events = events || b266
+```
+
+Same rule for `&=`/`|=` (`StatementEmitter.booleanCompoundOp`, also used by
+`ExpressionEmitter.emitInlineAssign`'s inline compound-assign path, which previously emitted the
+literal Java operator token - invalid Go for `bool &=`/`bool |=`, never hit by the corpus): a
+side-effecting RHS is hoisted into a temp before the `lhs = lhs && tmp`/`lhs = lhs || tmp` line.
+`^=` keeps its existing `!=` form (never short-circuits).
+
+**Real site found**: `Display.ReadAndDispatch`'s `events |= this.RunSettings()/.RunTimers()/
+.RunContexts()/.RunPopups()/.RunPaint()/.RunDeferredEvents()` chain - once any earlier call in the
+chain returned true, every later `Run*()` call was skipped by Go's `||`, silently starving
+timers/contexts/popups/deferred-event dispatch for the rest of that `readAndDispatch()`. Fixed by
+`swt/widgets_display.go`'s regenerated `ReadAndDispatch`. Also
+`examples/controlexample/controlexample_menutab.go`'s `MenuTab.CloseAllShells` (`shells[i] != null
+& !shells[i].isDisposed()`, the exact expression named in "Round 10 controlexample").
+
+Test: `swt/identity_test.go` `TestBooleanOrEvaluatesEveryOperand`.
+
+### `Object.equals`/`==` identity through `.Impl()`
+
+Java's default `Object.equals`/`==` is reference identity. With the impl/embedding model (README
+"Inheritance / impl dispatch") the same object can be referenced through different embedded-
+pointer levels (`&shell.Widget` vs `shell`), and two unrelated sibling classes (`Button`/`Label`)
+have no upcast helper connecting them at all - `NumericEmitter.upcastObject`'s ancestor-only
+upcast can't reconcile that case, and the receiver fell into InvocationEmitter's generic
+"unresolved call" panic marker for `.equals()` (no case existed for it).
+
+**`.equals()`** (`JdkIntrinsics.emitObjectEquals`, hooked in `tryIntrinsic` next to `getClass()`):
+fires when the resolved method is `java.lang.Object#equals` (no override anywhere in the
+hierarchy). Each side routes through `.Impl()` when its own static type is a translated class with
+an impl cascade (`hasImpl`, the same check `getClass()`/`Method.invoke` already use); `.Impl()`
+always normalizes to the concrete leaf pointer regardless of hierarchy shape. Both sides are
+`any`-boxed (`any(l) == any(r)`) so two different roots' differently-typed `Impl()` interfaces
+still compile against each other - no runtime helper needed, `any` comparison already does dynamic
+type+value identity. Neither side having impl (e.g. two `String`/struct/manual values wandering
+through a raw `Object.equals`) falls back to a plain `recv == arg`.
+
+```go
+// examples/controlexample/controlexample_tab.go, Tab.HandleTextDirection - was an unconditional
+// panic ("unresolved call equals"), 4 sites:
+if any(this.ltrDirectionButton.Impl()) == any(widget.Impl()) {
+```
+
+**`==`/`!=`** (`NumericEmitter`, in the existing `EQUALS`/`NOT_EQUALS` block): `upcastObject` is
+tried both ways first, unchanged (ancestor/descendant `==` was already correct - Go's promoted-
+field addressing gives the same address for the same object down any embedding path, so no output
+changed there). Only when upcasting resolved neither side (sibling types, upcast a no-op both
+ways), neither operand is a null literal, and the two Go types still differ, does
+`identityCompare` kick in with the same `.Impl()`+`any` scheme as `.equals()` above - skipped
+whenever either side's Go type is already plain `any` (that already compiles and compares
+correctly as-is; this exclusion is what keeps every existing `if (object == this) return true`
+fast path in the hand-translated `*.Equals` methods - `Color`, `Font`, `Image`, ... - byte-for-byte
+unchanged, since one side there is always the `any`-typed `equals(Object)` parameter). No live
+sibling-vs-sibling `==` site exists in the current corpus; this closes a real compile gap (`*Button
+== *Label` has no direct upcast relation either way and wouldn't have type-checked) rather than
+changing any existing behavior.
+
+Test: `swt/identity_test.go` `TestObjectIdentityThroughImpl`.
+
+### Marker counts (port.sh runs 3 j2go invocations - cocoa, swt, examples - each prints its own summary)
+
+| invocation | kind | before | after |
+|---|---|---|---|
+| cocoa | `StaticFieldMethodNameClash` | 166 | 166 (unrelated, untouched) |
+| swt | `MethodInvocation` (total) | 120 | 116 |
+| swt | `MethodInvocation` (`unresolved declaring type java.lang.Object.equals`) | 4 | 0 |
+| swt | `CatchClause`/`ClassInstanceCreation`/`ExpressionMethodReference`/`MethodDeclaration` | 2/13/2/2 | 2/13/2/2 (unrelated, untouched) |
+| examples | `MethodInvocation` (`unresolved declaring type java.lang.Object.equals`) | 4 | 0 |
+| examples | `CatchClause` | 2 | 2 (unrelated, untouched) |
+
+8 `java.lang.Object.equals` markers total -> 0 (confirmed by `grep -r "unresolved call equals" swt
+examples`, 8 -> 0). The remaining `CatchClause` markers are unrelated (`catch (NullPointerException)`
+in `getResourceString`, README "Round 10 controlexample").
+
+### Changed generated sites (full list)
+
+`.equals()` -> `.Impl()` identity (4, all `examples/controlexample/controlexample_tab.go`
+`Tab.HandleTextDirection`) and 4 more `Image.Equals`/`TextStyle.Equals` sites in
+`swt/graphics_image.go` (3: `imageDataProvider`/`imageFileNameProvider`/`imageGcDrawer`) and
+`swt/graphics_textstyle.go` (1: `Data`), where the compared field is declared `Object`-erased but
+resolves to a manual (non-impl) type - these were also `.equals()`-on-`Object` unresolved-call
+markers before, now a plain `recv == arg` (see `emitObjectEquals`'s "neither has impl" branch; both
+sides are always Go-comparable pointers in this file set, confirmed by `go build`/`go vet`/
+`go test` all green).
+
+Boolean-`|=` hoisting: `swt/widgets_display.go` (`Display.ReadAndDispatch`, 6 calls) and
+`examples/controlexample/controlexample_menutab.go` (`MenuTab.CloseAllShells`, 1 site).
+
+Every other file in the 30-file diff (`swt/custom_scrolledcomposite.go`, `custom_tableeditor.go`,
+`graphics_cursor.go`, `graphics_fontmetrics.go`, `graphics_gc.go`, `graphics_glyphmetrics.go`,
+`graphics_imagedata.go`, `graphics_imageloader.go`, `graphics_lineattributes.go`,
+`graphics_palettedata.go`, `graphics_path.go`, `graphics_pattern.go`, `graphics_region.go`,
+`graphics_textlayout.go`, `widgets_combo.go`, `widgets_dialog.go`, `widgets_fontdialog.go`,
+`widgets_messagebox.go`, `widgets_tabfolder.go`, `widgets_table.go`, `widgets_tablecolumn.go`,
+`widgets_tableitem.go`, `widgets_tree.go`, `widgets_treecolumn.go`, `widgets_treeitem.go`) only
+renumbers `condN`/`okN`/`tN`/`anonN`/`innerN` temp names - collateral from `tempCounter` being a
+single counter shared across the whole invocation, shifted by the new hoists earlier in the run;
+same file set, same logic, verified via a digit-stripped diff against the pre-Round-12 output.
+

@@ -60,27 +60,27 @@ func (this *PaletteData) GetPixel(rgbLike RGBLike) int32 {
 	}
 	if this.IsDirect {
 		var pixel int32 = 0
-		var cond490 int32
+		var cond496 int32
 		if this.RedShift < 0 {
-			cond490 = rgb.Red << -this.RedShift
+			cond496 = rgb.Red << -this.RedShift
 		} else {
-			cond490 = int32(uint32(rgb.Red) >> (this.RedShift))
+			cond496 = int32(uint32(rgb.Red) >> (this.RedShift))
 		}
-		pixel |= (cond490) & this.RedMask
-		var cond491 int32
+		pixel |= (cond496) & this.RedMask
+		var cond497 int32
 		if this.GreenShift < 0 {
-			cond491 = rgb.Green << -this.GreenShift
+			cond497 = rgb.Green << -this.GreenShift
 		} else {
-			cond491 = int32(uint32(rgb.Green) >> (this.GreenShift))
+			cond497 = int32(uint32(rgb.Green) >> (this.GreenShift))
 		}
-		pixel |= (cond491) & this.GreenMask
-		var cond492 int32
+		pixel |= (cond497) & this.GreenMask
+		var cond498 int32
 		if this.BlueShift < 0 {
-			cond492 = rgb.Blue << -this.BlueShift
+			cond498 = rgb.Blue << -this.BlueShift
 		} else {
-			cond492 = int32(uint32(rgb.Blue) >> (this.BlueShift))
+			cond498 = int32(uint32(rgb.Blue) >> (this.BlueShift))
 		}
-		pixel |= (cond492) & this.BlueMask
+		pixel |= (cond498) & this.BlueMask
 		return pixel
 	} else {
 		for i := int32(0); i < int32(len(this.Colors)); i++ {

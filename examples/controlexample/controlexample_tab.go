@@ -1441,16 +1441,16 @@ func (this *Tab) HandleTextDirection(widgetLike swt.WidgetLike) bool {
 		return false
 	}
 	var textDirection int32 = swt.NONE
-	if func() bool { _ = []any{this.ltrDirectionButton, widget}; panic("j2go: unresolved call equals") }() {
+	if any(this.ltrDirectionButton.Impl()) == any(widget.Impl()) {
 		textDirection = swt.LEFT_TO_RIGHT
 	} else {
-		if func() bool { _ = []any{this.rtlDirectionButton, widget}; panic("j2go: unresolved call equals") }() {
+		if any(this.rtlDirectionButton.Impl()) == any(widget.Impl()) {
 			textDirection = swt.RIGHT_TO_LEFT
 		} else {
-			if func() bool { _ = []any{this.autoDirectionButton, widget}; panic("j2go: unresolved call equals") }() {
+			if any(this.autoDirectionButton.Impl()) == any(widget.Impl()) {
 				textDirection = swt.AUTO_TEXT_DIRECTION
 			} else {
-				if !func() bool { _ = []any{this.defaultDirectionButton, widget}; panic("j2go: unresolved call equals") }() {
+				if !(any(this.defaultDirectionButton.Impl()) == any(widget.Impl())) {
 					return false
 				}
 			}

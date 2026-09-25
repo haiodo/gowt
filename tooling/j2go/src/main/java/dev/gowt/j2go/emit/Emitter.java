@@ -308,6 +308,14 @@ public class Emitter {
 		return numericEmitter.emitInfix(ie);
 	}
 
+	boolean hasSideEffect(Expression e) {
+		return numericEmitter.hasSideEffect(e);
+	}
+
+	String booleanCompoundOp(Assignment a, String lhs, String rhs) {
+		return statementEmitter.booleanCompoundOp(a, lhs, rhs);
+	}
+
 	String ctorGoName(IMethodBinding ctor, String prefix) {
 		return constructorEmitter.ctorGoName(ctor, prefix);
 	}

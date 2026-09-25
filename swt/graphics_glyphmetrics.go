@@ -37,8 +37,8 @@ func (this *GlyphMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok510 := glyphMetricsImplAsGlyphMetrics(object)
-	if !(ok510) {
+	metrics, ok516 := glyphMetricsImplAsGlyphMetrics(object)
+	if !(ok516) {
 		return false
 	}
 	return metrics.Ascent == this.Ascent && metrics.Descent == this.Descent && metrics.Width == this.Width

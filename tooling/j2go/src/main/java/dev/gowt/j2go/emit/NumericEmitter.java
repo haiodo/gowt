@@ -37,6 +37,8 @@ final class NumericEmitter {
 		String paramNullCheck = stringParamNullCheck(ie, op);
 		if (paramNullCheck != null) return paramNullCheck;
 		String goOp = goOperator(ie);
+		String hoisted = hoistBooleanChainIfNeeded(ie, op, goOp);
+		if (hoisted != null) return hoisted;
 		String left = parenthesize(ie.getLeftOperand(), emitter.expr(ie.getLeftOperand()), goOp, false);
 		String right = parenthesize(ie.getRightOperand(), emitter.expr(ie.getRightOperand()), goOp, true);
 		if (op == InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED && ie.extendedOperands().isEmpty()) {
@@ -64,8 +66,22 @@ final class NumericEmitter {
 			// Go's == needs identical types, so whichever side is the narrower one gets upcast.
 			if (lt != null && rt != null && !lt.isPrimitive() && !rt.isPrimitive()) {
 				String upLeft = upcastObject(left, lt, rt);
-				if (!upLeft.equals(left)) left = upLeft;
-				else right = upcastObject(right, rt, lt);
+				boolean upcastApplied = !upLeft.equals(left);
+				if (upcastApplied) {
+					left = upLeft;
+				} else {
+					String upRight = upcastObject(right, rt, lt);
+					upcastApplied = !upRight.equals(right);
+					if (upcastApplied) right = upRight;
+				}
+				// Sibling types (Button vs Label): upcastObject can't reconcile them - identityCompare
+				// instead, unless one side is already plain `any` (already compiles as-is).
+				boolean nullCompare = ie.getLeftOperand() instanceof NullLiteral || ie.getRightOperand() instanceof NullLiteral;
+				String goL = dev.gowt.j2go.GoTypes.map(lt, emitter), goR = dev.gowt.j2go.GoTypes.map(rt, emitter);
+				if (!upcastApplied && !nullCompare && !goL.equals(goR) && !goL.equals("any") && !goR.equals("any")) {
+					String identity = identityCompare(left, right, lt, rt);
+					if (identity != null) return op == InfixExpression.Operator.EQUALS ? identity : "!" + identity;
+				}
 			}
 		}
 		StringBuilder b = new StringBuilder();
@@ -90,8 +106,51 @@ final class NumericEmitter {
 		return b.toString();
 	}
 
+	/** Java's &/| always evaluates every operand; Go's &&/|| stops early. Only a side effect past
+	 * the first operand needs hoisting - each operand into its own temp, then combine with &&/||. */
+	private String hoistBooleanChainIfNeeded(InfixExpression ie, InfixExpression.Operator op, String goOp) {
+		if (op != InfixExpression.Operator.AND && op != InfixExpression.Operator.OR) return null;
+		if (!goOp.equals("&&") && !goOp.equals("||")) return null; // int &/|, not boolean: unaffected
+		java.util.List<Expression> operands = new java.util.ArrayList<>();
+		operands.add(ie.getLeftOperand());
+		operands.add(ie.getRightOperand());
+		for (Object o : ie.extendedOperands()) operands.add((Expression) o);
+		boolean needsHoist = false;
+		for (int i = 1; i < operands.size() && !needsHoist; i++) needsHoist = hasSideEffect(operands.get(i));
+		if (!needsHoist) return null;
+		java.util.List<String> temps = new java.util.ArrayList<>();
+		for (Expression e : operands) {
+			String tmp = "b" + (++emitter.tempCounter);
+			emitter.prelude.add(tmp + " := " + emitter.expr(e));
+			temps.add(tmp);
+		}
+		return String.join(" " + goOp + " ", temps);
+	}
+
+	/** True if e can have a side effect Go's &&/|| would wrongly skip as a boolean &/|'s non-first
+	 * operand: a call, `new`, an assignment, or ++/--. */
+	boolean hasSideEffect(Expression e) {
+		boolean[] found = {false};
+		e.accept(new ASTVisitor() {
+			@Override public boolean visit(MethodInvocation node) { return stop(); }
+			@Override public boolean visit(SuperMethodInvocation node) { return stop(); }
+			@Override public boolean visit(ClassInstanceCreation node) { return stop(); }
+			@Override public boolean visit(Assignment node) { return stop(); }
+			@Override public boolean visit(PrefixExpression node) {
+				String op = node.getOperator().toString();
+				return op.equals("++") || op.equals("--") ? stop() : true;
+			}
+			@Override public boolean visit(PostfixExpression node) { return stop(); }
+			@Override public boolean visit(QualifiedName node) {
+				return emitter.selectorStringOf(node) != null ? stop() : true;
+			}
+			private boolean stop() { found[0] = true; return false; }
+		});
+		return found[0];
+	}
+
 	// Java's boolean &, | and ^ have no Go bool operator: &&, || (short-circuiting - a ceiling
-	// only when the right operand has side effects) and !=.
+	// only when the right operand has side effects, see hoistBooleanChainIfNeeded) and !=.
 	private static String goOperator(InfixExpression ie) {
 		String op = ie.getOperator().toString();
 		ITypeBinding lt = ie.getLeftOperand().resolveTypeBinding();
@@ -295,6 +354,22 @@ final class NumericEmitter {
 		if (path == null && toBare == null) return text;
 		if (path == null) path = "&x." + toBare;
 		return ensureUpcastHelper(fromGo, toGo, path) + "(" + text + ")";
+	}
+
+	/** .Impl() always normalizes to the concrete leaf pointer regardless of hierarchy shape -
+	 * any-boxed so two different roots' differently-typed Impl() interfaces still compile. */
+	private String identityCompare(String left, String right, ITypeBinding lt, ITypeBinding rt) {
+		boolean lHas = hasImpl(lt);
+		boolean rHas = hasImpl(rt);
+		if (!lHas && !rHas) return null;
+		String l = lHas ? left + ".Impl()" : left;
+		String r = rHas ? right + ".Impl()" : right;
+		return "(any(" + l + ") == any(" + r + "))";
+	}
+
+	private boolean hasImpl(ITypeBinding t) {
+		TypeModel.ClassInfo ci = t == null ? null : emitter.model.lookup(t);
+		return ci != null && ci.root.splitsDispatch() && !ci.root.children.isEmpty();
 	}
 
 	/** Java upcasts null to null; `&x.Base` on a nil x panics - so each upcast is a nil-checking

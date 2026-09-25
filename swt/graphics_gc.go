@@ -233,13 +233,13 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			this.data.State &= ^(GCBACKGROUND | GCFOREGROUND)
 		}
 	}
-	var cond324 int32
+	var cond330 int32
 	if this.data.XorMode {
-		cond324 = cocoa.OSKCGBlendModeDifference
+		cond330 = cocoa.OSKCGBlendModeDifference
 	} else {
-		cond324 = cocoa.OSKCGBlendModeNormal
+		cond330 = cocoa.OSKCGBlendModeNormal
 	}
-	cocoa.OSCGContextSetBlendMode(this.Handle.GraphicsPort(), cond324)
+	cocoa.OSCGContextSetBlendMode(this.Handle.GraphicsPort(), cond330)
 	var state int32 = this.data.State
 	if (state & mask) == mask {
 		return pool
@@ -257,9 +257,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond325 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Fg = cond325
-			var fg *cocoa.NSColor = cond325
+			cond331 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Fg = cond331
+			var fg *cocoa.NSColor = cond331
 			fg.Retain()
 			fg.SetStroke()
 		}
@@ -275,9 +275,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond326 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Fg = cond326
-			var fg *cocoa.NSColor = cond326
+			cond332 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Fg = cond332
+			var fg *cocoa.NSColor = cond332
 			fg.Retain()
 			fg.SetFill()
 		}
@@ -294,9 +294,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Bg != (nil) {
 				this.data.Bg.Release()
 			}
-			cond327 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Bg = cond327
-			var bg *cocoa.NSColor = cond327
+			cond333 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Bg = cond333
+			var bg *cocoa.NSColor = cond333
 			bg.Retain()
 			bg.SetFill()
 		}
@@ -304,13 +304,13 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 	}
 	var path *cocoa.NSBezierPath = this.data.Path
 	if (state & GCLINE_WIDTH) != 0 {
-		var cond328 float32
+		var cond334 float32
 		if this.data.LineWidth == 0 {
-			cond328 = float32(1)
+			cond334 = float32(1)
 		} else {
-			cond328 = this.data.LineWidth
+			cond334 = this.data.LineWidth
 		}
-		path.SetLineWidth(float64(cond328))
+		path.SetLineWidth(float64(cond334))
 		switch this.data.LineStyle {
 		case LINE_DOT, LINE_DASH, LINE_DASHDOT, LINE_DASHDOTDOT:
 			state |= GCLINE_STYLE
@@ -668,11 +668,11 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int3
 						newX = destX + width
 					}
 					damage.X = float64(newX)
-					abs329 := deltaX
-					if abs329 < 0 {
-						abs329 = -abs329
+					abs335 := deltaX
+					if abs335 < 0 {
+						abs335 = -abs335
 					}
-					damage.Width = float64(abs329)
+					damage.Width = float64(abs335)
 					view.SetNeedsDisplayInRect(damage)
 				}
 				if deltaY != 0 {
@@ -683,11 +683,11 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int3
 					damage.X = float64(srcX)
 					damage.Y = float64(newY)
 					damage.Width = float64(width)
-					abs330 := deltaY
-					if abs330 < 0 {
-						abs330 = -abs330
+					abs336 := deltaY
+					if abs336 < 0 {
+						abs336 = -abs336
 					}
-					damage.Height = float64(abs330)
+					damage.Height = float64(abs336)
 					view.SetNeedsDisplayInRect(damage)
 				}
 			}
@@ -783,13 +783,13 @@ func (this *GC) CreateString(string_ string, flags int32, draw bool) *cocoa.NSAt
 		var i int32 = 0
 		var j int32 = 0
 		for i < int32(len(chars)) {
-			t332 := i
+			t338 := i
 			i++
-			cond331 := chars[t332]
-			t333 := j
+			cond337 := chars[t338]
+			t339 := j
 			j++
-			chars[t333] = cond331
-			var c uint16 = cond331
+			chars[t339] = cond337
+			var c uint16 = cond337
 			switch c {
 			case '&':
 				{
@@ -852,47 +852,24 @@ func (this *GC) CreateNSBezierPath(cgPath int64) *cocoa.NSBezierPath {
 		}() {
 			switch this.types[i] {
 			case int8(PATH_MOVE_TO):
-				t334 := j
+				t340 := j
 				j++
-				nsPoint.X = this.points[t334]
-				t335 := j
+				nsPoint.X = this.points[t340]
+				t341 := j
 				j++
-				nsPoint.Y = this.points[t335]
+				nsPoint.Y = this.points[t341]
 				bezierPath.MoveToPoint(nsPoint)
 				break
 			case int8(PATH_LINE_TO):
-				t336 := j
-				j++
-				nsPoint.X = this.points[t336]
-				t337 := j
-				j++
-				nsPoint.Y = this.points[t337]
-				bezierPath.LineToPoint(nsPoint)
-				break
-			case int8(PATH_CUBIC_TO):
-				t338 := j
-				j++
-				nsPoint2.X = this.points[t338]
-				t339 := j
-				j++
-				nsPoint2.Y = this.points[t339]
-				t340 := j
-				j++
-				nsPoint3.X = this.points[t340]
-				t341 := j
-				j++
-				nsPoint3.Y = this.points[t341]
 				t342 := j
 				j++
 				nsPoint.X = this.points[t342]
 				t343 := j
 				j++
 				nsPoint.Y = this.points[t343]
-				bezierPath.CurveToPoint(nsPoint, nsPoint2, nsPoint3)
+				bezierPath.LineToPoint(nsPoint)
 				break
-			case int8(PATH_QUAD_TO):
-				var currentX float64 = nsPoint.X
-				var currentY float64 = nsPoint.Y
+			case int8(PATH_CUBIC_TO):
 				t344 := j
 				j++
 				nsPoint2.X = this.points[t344]
@@ -901,10 +878,33 @@ func (this *GC) CreateNSBezierPath(cgPath int64) *cocoa.NSBezierPath {
 				nsPoint2.Y = this.points[t345]
 				t346 := j
 				j++
-				nsPoint.X = this.points[t346]
+				nsPoint3.X = this.points[t346]
 				t347 := j
 				j++
-				nsPoint.Y = this.points[t347]
+				nsPoint3.Y = this.points[t347]
+				t348 := j
+				j++
+				nsPoint.X = this.points[t348]
+				t349 := j
+				j++
+				nsPoint.Y = this.points[t349]
+				bezierPath.CurveToPoint(nsPoint, nsPoint2, nsPoint3)
+				break
+			case int8(PATH_QUAD_TO):
+				var currentX float64 = nsPoint.X
+				var currentY float64 = nsPoint.Y
+				t350 := j
+				j++
+				nsPoint2.X = this.points[t350]
+				t351 := j
+				j++
+				nsPoint2.Y = this.points[t351]
+				t352 := j
+				j++
+				nsPoint.X = this.points[t352]
+				t353 := j
+				j++
+				nsPoint.Y = this.points[t353]
 				var x0 float64 = currentX
 				var y0 float64 = currentY
 				var cx1 float64 = x0 + 2*(nsPoint2.X-x0)/3
@@ -1463,13 +1463,13 @@ func (this *GC) DrawString(string_ string, x int32, y int32) {
 }
 
 func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32, isTransparent bool) {
-	var cond348 int32
+	var cond354 int32
 	if isTransparent {
-		cond348 = DRAW_TRANSPARENT
+		cond354 = DRAW_TRANSPARENT
 	} else {
-		cond348 = 0
+		cond354 = 0
 	}
-	this.DrawTextStringXYFlags(string_, x, y, cond348)
+	this.DrawTextStringXYFlags(string_, x, y, cond354)
 }
 
 func (this *GC) DrawText(string_ string, x int32, y int32) {
@@ -1529,13 +1529,13 @@ func (this *GC) DoFastDrawText(string_ string, x int32, y int32) {
 }
 
 func (this *GC) GetTextData(string_ string) *GC_GCTextData {
-	var cond349 int64
+	var cond355 int64
 	if this.data.Font == (nil) || this.data.Font.Handle == (nil) {
-		cond349 = int64(0)
+		cond355 = int64(0)
 	} else {
-		cond349 = this.data.Font.Handle.Id
+		cond355 = this.data.Font.Handle.Id
 	}
-	var key *GC_GCTextData_Key = NewGC_GCTextData_Key(string_, this.data.Alpha, cond349, this.data.Foreground)
+	var key *GC_GCTextData_Key = NewGC_GCTextData_Key(string_, this.data.Alpha, cond355, this.data.Foreground)
 	var gcData *GC_GCTextData = this.textDataCache.Get(key)
 	if gcData == (nil) {
 		var attribStr *cocoa.NSAttributedString = this.CreateString(string_, 0, true)
@@ -1587,8 +1587,8 @@ func (this *GC) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok350 := resourceImplAsGC(object)
-	if !(ok350) {
+	_, ok356 := resourceImplAsGC(object)
+	if !(ok356) {
 		return false
 	}
 	return this.Handle == (castanyToGC(object)).Handle
@@ -1693,13 +1693,13 @@ func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int3
 		}
 		rect.Width = float64(width)
 		rect.Height = float64(height)
-		var cond351 int32
+		var cond357 int32
 		if vertical {
-			cond351 = 90
+			cond357 = 90
 		} else {
-			cond351 = 0
+			cond357 = 0
 		}
-		gradient.DrawInRect(rect, float64(cond351))
+		gradient.DrawInRect(rect, float64(cond357))
 		gradient.Release()
 	}
 }
@@ -2204,21 +2204,21 @@ func (this *GC) GetClippingRegion(regionLike RegionLike) {
 				}
 				pointCount = 0
 				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t352 := pointCount
+				t358 := pointCount
 				pointCount++
-				pointArray[t352] = int32(pt.X)
-				t353 := pointCount
+				pointArray[t358] = int32(pt.X)
+				t359 := pointCount
 				pointCount++
-				pointArray[t353] = int32(pt.Y)
+				pointArray[t359] = int32(pt.Y)
 				break
 			case cocoa.OSNSLineToBezierPathElement:
 				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t354 := pointCount
+				t360 := pointCount
 				pointCount++
-				pointArray[t354] = int32(pt.X)
-				t355 := pointCount
+				pointArray[t360] = int32(pt.X)
+				t361 := pointCount
 				pointCount++
-				pointArray[t355] = int32(pt.Y)
+				pointArray[t361] = int32(pt.Y)
 				break
 			case cocoa.OSNSClosePathBezierPathElement:
 				if pointCount != 0 {
@@ -2444,13 +2444,13 @@ func (this *GC) GetXORMode() bool {
 }
 
 func (this *GC) HashCode() int32 {
-	var cond356 int32
+	var cond362 int32
 	if this.Handle != (nil) {
-		cond356 = int32(this.Handle.Id)
+		cond362 = int32(this.Handle.Id)
 	} else {
-		cond356 = 0
+		cond362 = 0
 	}
-	return cond356
+	return cond362
 }
 
 func (this *GC) Init(drawable Drawable, dataLike GCDataLike, context int64) {
@@ -2479,26 +2479,26 @@ func (this *GC) Init(drawable Drawable, dataLike GCDataLike, context int64) {
 	this.Handle.Retain()
 	this.Handle.SaveGraphicsState()
 	data.Path = cocoa.NSBezierPathBezierPath()
-	var cond357 int32
+	var cond363 int32
 	if data.FillRule == FILL_WINDING {
-		cond357 = cocoa.OSNSNonZeroWindingRule
+		cond363 = cocoa.OSNSNonZeroWindingRule
 	} else {
-		cond357 = cocoa.OSNSEvenOddWindingRule
+		cond363 = cocoa.OSNSEvenOddWindingRule
 	}
-	data.Path.SetWindingRule(int64(cond357))
+	data.Path.SetWindingRule(int64(cond363))
 	data.Path.Retain()
 }
 
 func (this *GC) InitCGContext(cgContext int64) {
 	var state int32 = this.data.State
 	if (state & GCLINE_WIDTH) != 0 {
-		var cond358 float32
+		var cond364 float32
 		if this.data.LineWidth == 0 {
-			cond358 = float32(1)
+			cond364 = float32(1)
 		} else {
-			cond358 = this.data.LineWidth
+			cond364 = this.data.LineWidth
 		}
-		cocoa.OSCGContextSetLineWidth(cgContext, float64(cond358))
+		cocoa.OSCGContextSetLineWidth(cgContext, float64(cond364))
 		switch this.data.LineStyle {
 		case LINE_DOT, LINE_DASH, LINE_DASHDOT, LINE_DASHDOTDOT:
 			state |= GCLINE_STYLE
@@ -2789,13 +2789,13 @@ func (this *GC) SetClippingOverload3(regionLike RegionLike) {
 			pool.Release()
 		}
 	}()
-	var cond359 *cocoa.NSBezierPath
+	var cond365 *cocoa.NSBezierPath
 	if region != (nil) {
-		cond359 = region.GetPath()
+		cond365 = region.GetPath()
 	} else {
-		cond359 = nil
+		cond365 = nil
 	}
-	this.SetClippingOverload4(cond359)
+	this.SetClippingOverload4(cond365)
 }
 
 func (this *GC) SetClippingOverload4(path *cocoa.NSBezierPath) {
@@ -2823,13 +2823,13 @@ func (this *GC) SetFillRule(rule int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.data.FillRule = rule
-	var cond360 int32
+	var cond366 int32
 	if rule == FILL_WINDING {
-		cond360 = cocoa.OSNSNonZeroWindingRule
+		cond366 = cocoa.OSNSNonZeroWindingRule
 	} else {
-		cond360 = cocoa.OSNSEvenOddWindingRule
+		cond366 = cocoa.OSNSEvenOddWindingRule
 	}
-	this.data.Path.SetWindingRule(int64(cond360))
+	this.data.Path.SetWindingRule(int64(cond366))
 }
 
 func (this *GC) SetFont(fontLike FontLike) {
@@ -3226,24 +3226,24 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 	if this.data.TextStorage == (nil) {
 		this.CreateLayout()
 	}
-	var cond361 string
+	var cond367 string
 	if length == 0 {
-		cond361 = " "
+		cond367 = " "
 	} else {
-		cond361 = string_
+		cond367 = string_
 	}
-	var attribStr *cocoa.NSAttributedString = this.CreateString(cond361, flags, false)
+	var attribStr *cocoa.NSAttributedString = this.CreateString(cond367, flags, false)
 	this.data.TextStorage.SetAttributedString(attribStr)
 	attribStr.Release()
 	this.data.LayoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
 	var rect cocoa.NSRect = this.data.LayoutManager.UsedRectForTextContainer(this.data.TextContainer)
-	var cond362 int32
+	var cond368 int32
 	if length == 0 {
-		cond362 = 0
+		cond368 = 0
 	} else {
-		cond362 = int32(math.Ceil(float64(rect.Width)))
+		cond368 = int32(math.Ceil(float64(rect.Width)))
 	}
-	return NewPoint(cond362, int32(math.Ceil(float64(rect.Height))))
+	return NewPoint(cond368, int32(math.Ceil(float64(rect.Height))))
 }
 
 func (this *GC) String() string {

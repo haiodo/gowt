@@ -106,8 +106,8 @@ func (this *TextStyle) Equals(object any) bool {
 	if object == (nil) {
 		return false
 	}
-	style, ok504 := textStyleImplAsTextStyle(object)
-	if !(ok504) {
+	style, ok510 := textStyleImplAsTextStyle(object)
+	if !(ok510) {
 		return false
 	}
 	if this.Foreground != (nil) {
@@ -192,7 +192,7 @@ func (this *TextStyle) Equals(object any) bool {
 		}
 	}
 	if this.Data != (nil) {
-		if !func() bool { _ = []any{this.Data, style.Data}; panic("j2go: unresolved call equals") }() {
+		if !(this.Data == style.Data) {
 			return false
 		}
 	} else {

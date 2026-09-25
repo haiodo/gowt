@@ -83,7 +83,10 @@ final class ExpressionEmitter {
 		if (a.getOperator() != Assignment.Operator.ASSIGN) {
 			// Compound (`sp = spr += d`): apply in place, the expression's value is the new lhs.
 			String lhs = emitExpr(a.getLeftHandSide());
-			if (a.getOperator() == Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN) {
+			String boolOp = emitter.booleanCompoundOp(a, lhs, rhs); // Go has no bool &=/|=/^=
+			if (boolOp != null) {
+				emitter.prelude.add(boolOp);
+			} else if (a.getOperator() == Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN) {
 				emitter.prelude.add(lhs + " = " + emitter.unsignedShift(lhs, a.getLeftHandSide().resolveTypeBinding(), rhs));
 			} else {
 				emitter.prelude.add(lhs + " " + a.getOperator() + " " + rhs);

@@ -45,9 +45,9 @@ func (this *Image) initImage(device *Device) {
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner407 := newImageCachedImageAtSize()
-	inner407.this_0 = this
-	this.cachedImageAtSize = inner407
+	inner413 := newImageCachedImageAtSize()
+	inner413.this_0 = this
+	this.cachedImageAtSize = inner413
 }
 
 func NewImageDeviceWidthHeight(deviceLike DeviceLike, width int32, height int32) *Image {
@@ -67,9 +67,9 @@ func (this *Image) initImageDeviceWidthHeight(device *Device, width int32, heigh
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner408 := newImageCachedImageAtSize()
-	inner408.this_0 = this
-	this.cachedImageAtSize = inner408
+	inner414 := newImageCachedImageAtSize()
+	inner414.this_0 = this
+	this.cachedImageAtSize = inner414
 	var pool *cocoa.NSAutoreleasePool = nil
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
@@ -105,9 +105,9 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner409 := newImageCachedImageAtSize()
-	inner409.this_0 = this
-	this.cachedImageAtSize = inner409
+	inner415 := newImageCachedImageAtSize()
+	inner415.this_0 = this
+	this.cachedImageAtSize = inner415
 	if srcImage == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -178,9 +178,9 @@ func (this *Image) initImageDeviceBounds(device *Device, bounds *Rectangle) {
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner410 := newImageCachedImageAtSize()
-	inner410.this_0 = this
-	this.cachedImageAtSize = inner410
+	inner416 := newImageCachedImageAtSize()
+	inner416.this_0 = this
+	this.cachedImageAtSize = inner416
 	if bounds == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -219,9 +219,9 @@ func (this *Image) initImageDeviceData(device *Device, data *ImageData) {
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner411 := newImageCachedImageAtSize()
-	inner411.this_0 = this
-	this.cachedImageAtSize = inner411
+	inner417 := newImageCachedImageAtSize()
+	inner417.this_0 = this
+	this.cachedImageAtSize = inner417
 	var pool *cocoa.NSAutoreleasePool = nil
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
@@ -262,9 +262,9 @@ func (this *Image) initImageDeviceSourceMask(device *Device, source *ImageData, 
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner412 := newImageCachedImageAtSize()
-	inner412.this_0 = this
-	this.cachedImageAtSize = inner412
+	inner418 := newImageCachedImageAtSize()
+	inner418.this_0 = this
+	this.cachedImageAtSize = inner418
 	if source == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -307,9 +307,9 @@ func (this *Image) initImageDeviceStream(device *Device, stream jrt.InputStream)
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner413 := newImageCachedImageAtSize()
-	inner413.this_0 = this
-	this.cachedImageAtSize = inner413
+	inner419 := newImageCachedImageAtSize()
+	inner419.this_0 = this
+	this.cachedImageAtSize = inner419
 	if stream == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -365,9 +365,9 @@ func (this *Image) initImageDeviceFilename(device *Device, filename string) {
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner414 := newImageCachedImageAtSize()
-	inner414.this_0 = this
-	this.cachedImageAtSize = inner414
+	inner420 := newImageCachedImageAtSize()
+	inner420.this_0 = this
+	this.cachedImageAtSize = inner420
 	var pool *cocoa.NSAutoreleasePool = nil
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
@@ -381,13 +381,13 @@ func (this *Image) initImageDeviceFilename(device *Device, filename string) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.InitUsingFileNameProvider(&ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var cond415 string
+		var cond421 string
 		if zoom == 100 {
-			cond415 = filename
+			cond421 = filename
 		} else {
-			cond415 = ""
+			cond421 = ""
 		}
-		return cond415
+		return cond421
 	}})
 	this.impl.init_()
 }
@@ -409,9 +409,9 @@ func (this *Image) initImageDeviceImageFileNameProvider(device *Device, imageFil
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner416 := newImageCachedImageAtSize()
-	inner416.this_0 = this
-	this.cachedImageAtSize = inner416
+	inner422 := newImageCachedImageAtSize()
+	inner422.this_0 = this
+	this.cachedImageAtSize = inner422
 	if imageFileNameProvider == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -445,9 +445,9 @@ func (this *Image) initImageDeviceImageDataProvider(device *Device, imageDataPro
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner417 := newImageCachedImageAtSize()
-	inner417.this_0 = this
-	this.cachedImageAtSize = inner417
+	inner423 := newImageCachedImageAtSize()
+	inner423.this_0 = this
+	this.cachedImageAtSize = inner423
 	if imageDataProvider == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -484,9 +484,9 @@ func (this *Image) initImageDeviceImageGcDrawerWidthHeight(device *Device, image
 	this.width = -1
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
-	inner418 := newImageCachedImageAtSize()
-	inner418.this_0 = this
-	this.cachedImageAtSize = inner418
+	inner424 := newImageCachedImageAtSize()
+	inner424.this_0 = this
+	this.cachedImageAtSize = inner424
 	if imageGcDrawer == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -780,36 +780,36 @@ func (this *Image) CreateAlpha() {
 		if (format & int64(cocoa.OSNSAlphaFirstBitmapFormat)) != 0 {
 			for i := int32(0); int64(i) < dataSize; i += 4 {
 				var pixel int32 = ((int32(srcData[i+1]) & 0xFF) << 16) | ((int32(srcData[i+2]) & 0xFF) << 8) | (int32(srcData[i+3]) & 0xFF)
-				var cond419 int32
+				var cond425 int32
 				if pixel == info.transparentPixel {
-					cond419 = 0
+					cond425 = 0
 				} else {
-					cond419 = 0xFF
+					cond425 = 0xFF
 				}
-				srcData[i] = int8((cond419))
+				srcData[i] = int8((cond425))
 			}
 		} else {
 			for i := int32(0); int64(i) < dataSize; i += 4 {
 				var pixel int32 = ((int32(srcData[i+0]) & 0xFF) << 16) | ((int32(srcData[i+1]) & 0xFF) << 8) | (int32(srcData[i+2]) & 0xFF)
-				var cond420 int32
+				var cond426 int32
 				if pixel == info.transparentPixel {
-					cond420 = 0
+					cond426 = 0
 				} else {
-					cond420 = 0xFF
+					cond426 = 0xFF
 				}
-				srcData[i] = int8((cond420))
+				srcData[i] = int8((cond426))
 			}
 		}
 	} else {
 		if info.alpha != -1 {
 			var a int8 = int8(info.alpha)
-			var cond421 int32
+			var cond427 int32
 			if (format & int64(cocoa.OSNSAlphaFirstBitmapFormat)) != 0 {
-				cond421 = 0
+				cond427 = 0
 			} else {
-				cond421 = 3
+				cond427 = 3
 			}
-			for i := int32(cond421); int64(i) < dataSize; i += 4 {
+			for i := int32(cond427); int64(i) < dataSize; i += 4 {
 				srcData[i] = a
 			}
 		} else {
@@ -942,13 +942,13 @@ func (this *Image) CreateRepresentation(imageDataLike ImageDataLike, alphaInfoLi
 			}
 		}
 	}
-	var cond422 int32
+	var cond428 int32
 	if hasAlpha {
-		cond422 = 4
+		cond428 = 4
 	} else {
-		cond422 = 3
+		cond428 = 3
 	}
-	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(imageData.Width), int64(imageData.Height), int64(8), int64(cond422), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
+	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(imageData.Width), int64(imageData.Height), int64(8), int64(cond428), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
 	cocoa.CMemmove(rep.BitmapData(), buffer, int64(dataSize))
 	return rep
 }
@@ -967,27 +967,21 @@ func (this *Image) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	image, ok423 := resourceImplAsImage(object)
-	if !(ok423) {
+	image, ok429 := resourceImplAsImage(object)
+	if !(ok429) {
 		return false
 	}
 	if this.device != image.device || this.alphaInfo_100.transparentPixel != image.alphaInfo_100.transparentPixel {
 		return false
 	}
 	if this.imageDataProvider != (nil) && image.imageDataProvider != (nil) {
-		return this.styleFlag == image.styleFlag && func() bool {
-			_ = []any{this.imageDataProvider, image.imageDataProvider}
-			panic("j2go: unresolved call equals")
-		}()
+		return this.styleFlag == image.styleFlag && (this.imageDataProvider == image.imageDataProvider)
 	} else {
 		if this.imageFileNameProvider != (nil) && image.imageFileNameProvider != (nil) {
-			return this.styleFlag == image.styleFlag && func() bool {
-				_ = []any{this.imageFileNameProvider, image.imageFileNameProvider}
-				panic("j2go: unresolved call equals")
-			}()
+			return this.styleFlag == image.styleFlag && (this.imageFileNameProvider == image.imageFileNameProvider)
 		} else {
 			if this.imageGcDrawer != (nil) && image.imageGcDrawer != (nil) {
-				return this.styleFlag == image.styleFlag && func() bool { _ = []any{this.imageGcDrawer, image.imageGcDrawer}; panic("j2go: unresolved call equals") }() && this.width == image.width && this.height == image.height
+				return this.styleFlag == image.styleFlag && (this.imageGcDrawer == image.imageGcDrawer) && this.width == image.width && this.height == image.height
 			} else {
 				return this.Handle == image.Handle
 			}
@@ -1064,11 +1058,11 @@ func (this *Image) GetBounds() *Rectangle {
 		return NewRectangle(0, 0, this.width, this.height)
 	}
 	var size cocoa.NSSize = this.Handle.Size()
-	cond424 := int32(size.Width)
-	this.width = cond424
-	cond425 := int32(size.Height)
-	this.height = cond425
-	return NewRectangle(0, 0, cond424, cond425)
+	cond430 := int32(size.Width)
+	this.width = cond430
+	cond431 := int32(size.Height)
+	this.height = cond431
+	return NewRectangle(0, 0, cond430, cond431)
 }
 
 func (this *Image) GetBoundsInPixels() *Rectangle {
@@ -1141,13 +1135,13 @@ func (this *Image) HashCode() int32 {
 					panic("j2go: unresolved call hash")
 				}()
 			} else {
-				var cond426 int32
+				var cond432 int32
 				if this.Handle != (nil) {
-					cond426 = int32(this.Handle.Id)
+					cond432 = int32(this.Handle.Id)
 				} else {
-					cond426 = 0
+					cond432 = 0
 				}
-				return cond426
+				return cond432
 			}
 		}
 	}
@@ -1235,13 +1229,13 @@ func (this *Image) InitAlpha_200(nativeRep *cocoa.NSBitmapImageRep) {
 	var hasAlpha bool = nativeRep.HasAlpha()
 	var bpr int32 = width * 4
 	var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
-	var cond427 int32
+	var cond433 int32
 	if hasAlpha {
-		cond427 = 4
+		cond433 = 4
 	} else {
-		cond427 = 3
+		cond433 = 3
 	}
-	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond427), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
+	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond433), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
 	if this.alphaInfo_200 == (nil) {
 		this.alphaInfo_200 = newImageAlphaInfo()
 	}
@@ -1264,13 +1258,13 @@ func (this *Image) InitAlpha_100(nativeRep *cocoa.NSBitmapImageRep) {
 	var hasAlpha bool = nativeRep.HasAlpha()
 	var bpr int32 = width * 4
 	var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
-	var cond428 int32
+	var cond434 int32
 	if hasAlpha {
-		cond428 = 4
+		cond434 = 4
 	} else {
-		cond428 = 3
+		cond434 = 3
 	}
-	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond428), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
+	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond434), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
 	if this.alphaInfo_100 == (nil) {
 		this.alphaInfo_100 = newImageAlphaInfo()
 	}
@@ -1312,13 +1306,13 @@ func (this *Image) InitNative(filename string) {
 	size.Height = float64(this.height)
 	this.Handle = this.Handle.InitWithSize(size)
 	var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
-	var cond429 int32
+	var cond435 int32
 	if hasAlpha {
-		cond429 = 4
+		cond435 = 4
 	} else {
-		cond429 = 3
+		cond435 = 3
 	}
-	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(this.width), int64(this.height), int64(8), int64(cond429), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
+	rep = rep.InitWithBitmapDataPlanes(int64(0), int64(this.width), int64(this.height), int64(8), int64(cond435), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(bpr), int64(32))
 	this.Handle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
 	rep.Release()
 	this.Handle.SetCacheMode(int64(cocoa.OSNSImageCacheNever))
@@ -1512,17 +1506,17 @@ func ImageCocoa_new(deviceLike DeviceLike, type_ int32, nsImage *cocoa.NSImage) 
 func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
 	var streamData []int8 = jrt.ReadAllBytes(stream)
 	if ImageDataLoaderIsDynamicallySizable(func() any { _ = []any{streamData}; panic("j2go: unresolved new ByteArrayInputStream") }()) {
-		anon430 := &ImageAnon1{}
-		anon430.fnGetImageData = func(zoom int32) *ImageData {
+		anon436 := &ImageAnon1{}
+		anon436.fnGetImageData = func(zoom int32) *ImageData {
 			return func() *ImageData {
 				_ = []any{ImageDataLoaderLoadByZoom(func() any { _ = []any{streamData}; panic("j2go: unresolved new ByteArrayInputStream") }(), FileFormatDEFAULT_ZOOM, zoom)}
 				panic("j2go: unresolved call element")
 			}()
 		}
-		anon430.fnGetImageDataWidthHeight = func(width int32, height int32) *ImageData {
+		anon436.fnGetImageDataWidthHeight = func(width int32, height int32) *ImageData {
 			return ImageDataLoaderLoadBySize(func() any { _ = []any{streamData}; panic("j2go: unresolved new ByteArrayInputStream") }(), width, height)
 		}
-		var imageDataAtSizeProvider ImageDataAtSizeProvider = anon430
+		var imageDataAtSizeProvider ImageDataAtSizeProvider = anon436
 		return imageDataAtSizeProvider
 	}
 	var imageData *ImageData = func() *ImageData {
@@ -1530,13 +1524,13 @@ func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
 		panic("j2go: unresolved call element")
 	}()
 	return &ImageDataProviderFunc{fn: func(zoom int32) *ImageData {
-		var cond431 *ImageData
+		var cond437 *ImageData
 		if zoom == 100 {
-			cond431 = imageData
+			cond437 = imageData
 		} else {
-			cond431 = nil
+			cond437 = nil
 		}
-		return cond431
+		return cond437
 	}}
 }
 
@@ -1733,8 +1727,8 @@ func (this *Image_CachedImageAtSize) LoadImageAtSize(destWidth int32, destHeight
 }
 
 func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32, targetHeight int32) any {
-	imageDataAtSizeProvider, ok432 := this.this_0.imageDataProvider.(ImageDataAtSizeProvider)
-	if ok432 {
+	imageDataAtSizeProvider, ok438 := this.this_0.imageDataProvider.(ImageDataAtSizeProvider)
+	if ok438 {
 		var imageData *ImageData = imageDataAtSizeProvider.GetImageDataWidthHeight(targetWidth, targetHeight)
 		if imageData == (nil) {
 			ErrorCodeThrowableDetail(ERROR_INVALID_ARGUMENT, nil, fmt.Sprintf(" ImageDataAtSizeProvider returned null for width=%d, height=%d", targetWidth, targetHeight))
@@ -1751,8 +1745,8 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 		}
 		var stream jrt.InputStream = nil
 		defer stream.Close()
-		var tret433 any
-		tretd434 := false
+		var tret439 any
+		tretd440 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -1775,17 +1769,17 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 			}()
 			if ImageDataLoaderIsDynamicallySizable(stream) {
 				this.nonSizableFileName = ""
-				tret433 = func() any {
+				tret439 = func() any {
 					_ = []any{ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight)}
 					panic("j2go: unresolved call of")
 				}()
-				tretd434 = true
+				tretd440 = true
 				return
 			}
 			this.nonSizableFileName = fileName
 		}()
-		if tretd434 {
-			return tret433
+		if tretd440 {
+			return tret439
 		}
 	}
 	return func() any { panic("j2go: unresolved call empty") }()

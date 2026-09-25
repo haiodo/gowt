@@ -110,13 +110,13 @@ func DialogCheckStyle(parentLike ShellLike, style int32) int32 {
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
 		if (style & mask) == 0 {
-			var cond541 int32
+			var cond547 int32
 			if parent == (nil) {
-				cond541 = APPLICATION_MODAL
+				cond547 = APPLICATION_MODAL
 			} else {
-				cond541 = PRIMARY_MODAL
+				cond547 = PRIMARY_MODAL
 			}
-			style |= cond541
+			style |= cond547
 		}
 	}
 	if (style & mask) == 0 {

@@ -67,8 +67,8 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 	}
 	var stream jrt.InputStream = jrt.NewFileInputStream(filename)
 	defer stream.Close()
-	var tret488 *jrt.List
-	tretd489 := false
+	var tret494 *jrt.List
+	tretd495 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -89,12 +89,12 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 				panic(r)
 			}
 		}()
-		tret488 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
-		tretd489 = true
+		tret494 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
+		tretd495 = true
 		return
 	}()
-	if tretd489 {
-		return tret488
+	if tretd495 {
+		return tret494
 	}
 	return nil
 }
@@ -189,8 +189,8 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 	}
 	var stream jrt.InputStream = jrt.NewFileInputStream(filename)
 	defer stream.Close()
-	var tret490 bool
-	tretd491 := false
+	var tret496 bool
+	tretd497 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -211,12 +211,12 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 				panic(r)
 			}
 		}()
-		tret490 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
-		tretd491 = true
+		tret496 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
+		tretd497 = true
 		return
 	}()
-	if tretd491 {
-		return tret490
+	if tretd497 {
+		return tret496
 	}
 	return false
 }

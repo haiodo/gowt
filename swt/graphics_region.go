@@ -249,47 +249,47 @@ func (this *Region) ConvertRgnMessageRgnRNewRgn(message int64, rgn int64, r int6
 		point = this.transform.TransformPoint(point)
 		var startX int16
 		var startY int16
-		t395 := i
+		t401 := i
 		i++
 		startX = int16(point.X)
-		points[t395] = int32(startX)
-		t396 := i
+		points[t401] = int32(startX)
+		t402 := i
 		i++
 		startY = int16(point.Y)
-		points[t396] = int32(startY)
+		points[t402] = int32(startY)
 		point.X = float64(rect[3])
 		point.Y = float64(rect[0])
 		point = this.transform.TransformPoint(point)
-		t397 := i
+		t403 := i
 		i++
-		points[t397] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
-		t398 := i
+		points[t403] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
+		t404 := i
 		i++
-		points[t398] = int32(int16(point.Y))
+		points[t404] = int32(int16(point.Y))
 		point.X = float64(rect[3])
 		point.Y = float64(rect[2])
 		point = this.transform.TransformPoint(point)
-		t399 := i
+		t405 := i
 		i++
-		points[t399] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
-		t400 := i
+		points[t405] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
+		t406 := i
 		i++
-		points[t400] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
+		points[t406] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
 		point.X = float64(rect[1])
 		point.Y = float64(rect[2])
 		point = this.transform.TransformPoint(point)
-		t401 := i
+		t407 := i
 		i++
-		points[t401] = int32(int16(point.X))
-		t402 := i
+		points[t407] = int32(int16(point.X))
+		t408 := i
 		i++
-		points[t402] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
-		t403 := i
+		points[t408] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
+		t409 := i
 		i++
-		points[t403] = int32(startX)
-		t404 := i
+		points[t409] = int32(startX)
+		t410 := i
 		i++
-		points[t404] = int32(startY)
+		points[t410] = int32(startY)
 		var polyRgn int64 = RegionPolyRgn(points, int32(len(points)))
 		cocoa.OSUnionRgn(newRgn, polyRgn, newRgn)
 		cocoa.OSDisposeRgn(polyRgn)
@@ -645,9 +645,9 @@ func RegionPolyToRgn(poly []int32, length int32) int64 {
 			var x2 int32 = poly[p]
 			var y2 int32 = poly[p+1]
 			if y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
-				t405 := count
+				t411 := count
 				count++
-				inter[t405] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
+				inter[t411] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
 			}
 			x1 = x2
 			y1 = y2
@@ -655,9 +655,9 @@ func RegionPolyToRgn(poly []int32, length int32) int64 {
 		var x2 int32 = poly[0]
 		var y2 int32 = poly[1]
 		if y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
-			t406 := count
+			t412 := count
 			count++
-			inter[t406] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
+			inter[t412] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
 		}
 		for gap := int32(count / 2); gap > 0; gap /= 2 {
 			for i := int32(gap); i < count; i++ {

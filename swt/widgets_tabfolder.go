@@ -240,13 +240,13 @@ func (this *TabFolder) GetSelectionIndex() int32 {
 }
 
 func (this *TabFolder) getThemeAlpha_() float32 {
-	var cond546 float32
+	var cond552 float32
 	if this.background != (nil) {
-		cond546 = float32(1)
+		cond552 = float32(1)
 	} else {
-		cond546 = 0.25
+		cond552 = 0.25
 	}
-	return (cond546) * this.parent.impl.getThemeAlpha_()
+	return (cond552) * this.parent.impl.getThemeAlpha_()
 }
 
 func (this *TabFolder) IndexOf(itemLike TabItemLike) int32 {

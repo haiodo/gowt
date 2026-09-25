@@ -89,13 +89,13 @@ func (this *FontDialog) Open() *FontData {
 		display = DisplayGetCurrent()
 	}
 	var panel *cocoa.NSFontPanel = cocoa.NSFontPanelSharedFontPanel()
-	var cond542 string
+	var cond548 string
 	if this.title != "" {
-		cond542 = this.title
+		cond548 = this.title
 	} else {
-		cond542 = ""
+		cond548 = ""
 	}
-	panel.Impl().SetTitle(cocoa.NSStringStringWith(cond542))
+	panel.Impl().SetTitle(cocoa.NSStringStringWith(cond548))
 	var create bool = this.fontData != (nil)
 	var font *Font
 	if create {
@@ -183,13 +183,13 @@ func (this *FontDialog) SetRGB(rgbLike RGBLike) {
 }
 
 func (this *FontDialog) ValidModesForFontPanel(id int64, sel int64, arg0 int64) int32 {
-	var cond543 int32
+	var cond549 int32
 	if this.effectsVisible {
-		cond543 = cocoa.OSNSFontPanelModeMaskAllModes
+		cond549 = cocoa.OSNSFontPanelModeMaskAllModes
 	} else {
-		cond543 = cocoa.OSNSFontPanelModeMaskAllModes & ^cocoa.OSNSFontPanelModeMaskAllEffects
+		cond549 = cocoa.OSNSFontPanelModeMaskAllModes & ^cocoa.OSNSFontPanelModeMaskAllEffects
 	}
-	return cond543
+	return cond549
 }
 
 func (this *FontDialog) WindowWillClose(id int64, sel int64, sender int64) {

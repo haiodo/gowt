@@ -169,13 +169,13 @@ func (this *TextLayout) ComputeRuns() {
 	paragraph.SetLineSpacing(float64(this.spacing))
 	paragraph.SetFirstLineHeadIndent(float64(this.indent))
 	paragraph.SetHeadIndent(float64(this.wrapIndent))
-	var cond496 int32
+	var cond501 int32
 	if this.wrapWidth != -1 {
-		cond496 = cocoa.OSNSLineBreakByWordWrapping
+		cond501 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond496 = cocoa.OSNSLineBreakByClipping
+		cond501 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraph.SetLineBreakMode(int64(cond496))
+	paragraph.SetLineBreakMode(int64(cond501))
 	paragraph.SetTabStops(cocoa.NSArrayArray())
 	if this.tabs != (nil) && int32(len(this.tabs)) > 0 {
 		var count int32 = int32(len(this.tabs))
@@ -463,302 +463,304 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = gc.CheckGC(GCCLIPPING | GCTRANSFORM | GCFOREGROUND)
-	defer func() {
-		gc.UncheckGC(pool)
-	}()
-	this.ComputeRuns()
-	var length int32 = this.TranslateOffset(int32(len(this.text)))
-	if length == 0 && flags == 0 {
-		return
-	}
-	y += this.GetVerticalIndent()
-	gc.Handle.SaveGraphicsState()
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y)
-	var range_ cocoa.NSRange = cocoa.NSRange{}
-	var numberOfGlyphs int64 = this.layoutManager.NumberOfGlyphs()
-	if numberOfGlyphs > 0 {
-		range_.Location = int64(0)
-		range_.Length = numberOfGlyphs
-		this.layoutManager.DrawBackgroundForGlyphRange(range_, pt)
-	}
-	var hasSelection bool = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1
-	if hasSelection || ((flags&LAST_LINE_SELECTION) != 0 && (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0) {
-		if selectionBackground == (nil) {
-			selectionBackground = this.device.impl.getSystemColor_(COLOR_LIST_SELECTION)
+	{
+		defer func() {
+			gc.UncheckGC(pool)
+		}()
+		this.ComputeRuns()
+		var length int32 = this.TranslateOffset(int32(len(this.text)))
+		if length == 0 && flags == 0 {
+			return
 		}
-		var selectionColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(selectionBackground.Handle[0], selectionBackground.Handle[1], selectionBackground.Handle[2], selectionBackground.Handle[3])
-		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-		var rect cocoa.NSRect = cocoa.NSRect{}
-		if hasSelection {
-			range_.Location = int64(this.TranslateOffset(selectionStart))
-			range_.Length = int64(this.TranslateOffset(selectionEnd - selectionStart + 1))
-			var rectCount []int64 = make([]int64, 1)
-			var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
-			{
-				var k int32 = 0
-				for ; int64(k) < rectCount[0]; func() {
-					k++
-					pArray += int64(cocoa.NSRectSizeof)
-				}() {
-					cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-					this.FixRect(rect)
-					rect.X += pt.X
-					rect.Y += pt.Y
-					if this.fixedLineMetrics != (nil) {
-						rect.Height = float64(this.fixedLineMetrics.height)
-					}
-					rect.Height = float64(math.Max(float64(rect.Height), float64(this.ascent+this.descent)))
-					if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && ((flags & LAST_LINE_SELECTION) != 0) {
-						rect.Height += float64(this.spacing)
-					}
-					path.AppendBezierPathWithRect(rect)
-				}
-			}
-		}
-		if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && ((flags & LAST_LINE_SELECTION) != 0) {
-			var bounds cocoa.NSRect = this.lineBounds[int32(len(this.lineBounds))-1]
-			rect.X = pt.X + bounds.X + bounds.Width
-			rect.Y = float64(y) + bounds.Y
-			if (flags & FULL_SELECTION) != 0 {
-				rect.Width = cocoa.OSMAX_TEXT_CONTAINER_SIZE
-			} else {
-				rect.Width = (bounds.Height + float64(this.spacing)) / 3
-			}
-			rect.Height = float64(math.Max(float64(bounds.Height+float64(this.spacing)), float64(this.ascent+this.descent)))
-			path.AppendBezierPathWithRect(rect)
-		}
-		selectionColor.SetFill()
-		path.Fill()
-	}
-	if numberOfGlyphs > 0 {
-		range_.Location = int64(0)
-		range_.Length = numberOfGlyphs
-		var fg []float64 = gc.data.Foreground
-		var defaultFg bool = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1 && gc.data.Alpha == 255
-		if !defaultFg {
-			for i := int32(0); i < this.stylesCount-1; i++ {
-				var run *TextLayout_StyleItem = this.styles[i]
-				if run.style != (nil) && run.style.Foreground != (nil) {
-					continue
-				}
-				if run.style != (nil) && run.style.Underline && run.style.UnderlineStyle == UNDERLINE_LINK {
-					continue
-				}
-				if length != 0 {
-					range_.Location = int64(this.TranslateOffset(run.start))
-				} else {
-					range_.Location = int64(0)
-				}
-				range_.Length = int64(this.TranslateOffset(this.styles[i+1].start)) - range_.Location
-				this.layoutManager.AddTemporaryAttribute(cocoa.OSNSForegroundColorAttributeName_, upcastcocoaNSColorTococoaId(gc.data.Fg), range_)
-			}
-		}
-		var ptGlyphs cocoa.NSPoint = cocoa.NSPoint{}
-		ptGlyphs.X = pt.X
-		ptGlyphs.Y = pt.Y
-		if this.fixedLineMetrics != (nil) {
-			ptGlyphs.Y += this.fixedLineMetricsDy
-		}
-		range_.Location = int64(0)
-		range_.Length = numberOfGlyphs
-		this.layoutManager.DrawGlyphsForGlyphRange(range_, ptGlyphs)
-		if !defaultFg {
+		y += this.GetVerticalIndent()
+		gc.Handle.SaveGraphicsState()
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y)
+		var range_ cocoa.NSRange = cocoa.NSRange{}
+		var numberOfGlyphs int64 = this.layoutManager.NumberOfGlyphs()
+		if numberOfGlyphs > 0 {
 			range_.Location = int64(0)
-			range_.Length = int64(length)
-			this.layoutManager.RemoveTemporaryAttribute(cocoa.OSNSForegroundColorAttributeName_, range_)
+			range_.Length = numberOfGlyphs
+			this.layoutManager.DrawBackgroundForGlyphRange(range_, pt)
 		}
-		var point cocoa.NSPoint = cocoa.NSPoint{}
-		for j := int32(0); j < this.stylesCount; j++ {
-			var run *TextLayout_StyleItem = this.styles[j]
-			var style *TextStyle = run.style
-			if style == (nil) {
-				continue
+		var hasSelection bool = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1
+		if hasSelection || ((flags&LAST_LINE_SELECTION) != 0 && (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0) {
+			if selectionBackground == (nil) {
+				selectionBackground = this.device.impl.getSystemColor_(COLOR_LIST_SELECTION)
 			}
-			var drawUnderline bool = style.Underline && !this.IsUnderlineSupported(style)
-			drawUnderline = drawUnderline && (j+1 == this.stylesCount || !style.IsAdherentUnderline(this.styles[j+1].style))
-			var drawBorder bool = style.BorderStyle != NONE
-			drawBorder = drawBorder && (j+1 == this.stylesCount || !style.IsAdherentBorder(this.styles[j+1].style))
-			if !drawUnderline && !drawBorder {
-				continue
-			}
-			var end int32
-			if j+1 < this.stylesCount {
-				end = this.TranslateOffset(this.styles[j+1].start - 1)
-			} else {
-				end = length
-			}
-			for i := int32(0); i < int32(len(this.lineOffsets))-1; i++ {
-				var lineStart int32 = this.UntranslateOffset(this.lineOffsets[i])
-				var lineEnd int32 = this.UntranslateOffset(this.lineOffsets[i+1] - 1)
-				if drawUnderline {
-					var start int32 = run.start
-					for k := int32(j); k > 0 && style.IsAdherentUnderline(this.styles[k-1].style); k-- {
-						start = this.styles[k-1].start
+			var selectionColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(selectionBackground.Handle[0], selectionBackground.Handle[1], selectionBackground.Handle[2], selectionBackground.Handle[3])
+			var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
+			var rect cocoa.NSRect = cocoa.NSRect{}
+			if hasSelection {
+				range_.Location = int64(this.TranslateOffset(selectionStart))
+				range_.Length = int64(this.TranslateOffset(selectionEnd - selectionStart + 1))
+				var rectCount []int64 = make([]int64, 1)
+				var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
+				{
+					var k int32 = 0
+					for ; int64(k) < rectCount[0]; func() {
+						k++
+						pArray += int64(cocoa.NSRectSizeof)
+					}() {
+						cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
+						this.FixRect(rect)
+						rect.X += pt.X
+						rect.Y += pt.Y
+						if this.fixedLineMetrics != (nil) {
+							rect.Height = float64(this.fixedLineMetrics.height)
+						}
+						rect.Height = float64(math.Max(float64(rect.Height), float64(this.ascent+this.descent)))
+						if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && ((flags & LAST_LINE_SELECTION) != 0) {
+							rect.Height += float64(this.spacing)
+						}
+						path.AppendBezierPathWithRect(rect)
 					}
-					start = this.TranslateOffset(start)
-					if !(start > lineEnd || end < lineStart) {
-						range_.Location = int64(int32(math.Max(float64(lineStart), float64(start))))
-						range_.Length = int64(int32(math.Min(float64(lineEnd), float64(end)))+1) - range_.Location
-						if range_.Length > 0 {
-							var rectCount []int64 = make([]int64, 1)
-							var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
-							var rect cocoa.NSRect = cocoa.NSRect{}
-							gc.Handle.SaveGraphicsState()
-							var baseline float64 = this.layoutManager.Typesetter().BaselineOffsetInLayoutManager(this.layoutManager, int64(lineStart))
-							var color []float64 = nil
-							if style.UnderlineColor != (nil) {
-								color = style.UnderlineColor.Handle
-							}
-							if color == (nil) && style.Foreground != (nil) {
-								color = style.Foreground.Handle
-							}
-							if color != (nil) {
-								cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3]).SetStroke()
-							}
-							{
-								var k int32 = 0
-								for ; int64(k) < rectCount[0]; func() {
-									k++
-									pArray += int64(cocoa.NSRectSizeof)
-								}() {
-									cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-									this.FixRect(rect)
-									var underlineX float64 = pt.X + rect.X
-									var underlineY float64 = pt.Y + rect.Y + rect.Height - baseline + 1
-									var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-									switch style.UnderlineStyle {
-									case UNDERLINE_ERROR:
-										{
-											path.SetLineWidth(float64(2))
-											path.SetLineCapStyle(int64(cocoa.OSNSRoundLineCapStyle))
-											path.SetLineJoinStyle(int64(cocoa.OSNSRoundLineJoinStyle))
-											path.SetLineDash([]float64{float64(1), float64(3)}, int64(2), float64(0))
-											point.X = underlineX
-											point.Y = underlineY + 0.5
-											path.MoveToPoint(point)
-											point.X = underlineX + rect.Width
-											point.Y = underlineY + 0.5
-											path.LineToPoint(point)
-											break
-										}
-									case UNDERLINE_SQUIGGLE:
-										{
-											gc.Handle.SetShouldAntialias(false)
-											path.SetLineWidth(float64(1.0))
-											path.SetLineCapStyle(int64(cocoa.OSNSButtLineCapStyle))
-											path.SetLineJoinStyle(int64(cocoa.OSNSMiterLineJoinStyle))
-											var lineBottom float64 = pt.Y + rect.Y + rect.Height
-											var squigglyThickness float32 = float32(1)
-											var squigglyHeight float32 = 2 * squigglyThickness
-											var squigglyY float64 = float64(math.Min(float64(underlineY-float64(squigglyHeight/2)), float64(lineBottom-float64(squigglyHeight)-float64(1))))
-											var points []float32 = this.ComputePolyline(int32(underlineX), int32(squigglyY), int32((underlineX + rect.Width)), int32((squigglyY + float64(squigglyHeight))))
-											point.X = float64(points[0] + 0.5)
-											point.Y = float64(points[1] + 0.5)
-											path.MoveToPoint(point)
-											for p := int32(2); p < int32(len(points)); p += 2 {
-												point.X = float64(points[p] + 0.5)
-												point.Y = float64(points[p+1] + 0.5)
+				}
+			}
+			if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && ((flags & LAST_LINE_SELECTION) != 0) {
+				var bounds cocoa.NSRect = this.lineBounds[int32(len(this.lineBounds))-1]
+				rect.X = pt.X + bounds.X + bounds.Width
+				rect.Y = float64(y) + bounds.Y
+				if (flags & FULL_SELECTION) != 0 {
+					rect.Width = cocoa.OSMAX_TEXT_CONTAINER_SIZE
+				} else {
+					rect.Width = (bounds.Height + float64(this.spacing)) / 3
+				}
+				rect.Height = float64(math.Max(float64(bounds.Height+float64(this.spacing)), float64(this.ascent+this.descent)))
+				path.AppendBezierPathWithRect(rect)
+			}
+			selectionColor.SetFill()
+			path.Fill()
+		}
+		if numberOfGlyphs > 0 {
+			range_.Location = int64(0)
+			range_.Length = numberOfGlyphs
+			var fg []float64 = gc.data.Foreground
+			var defaultFg bool = fg[0] == 0 && fg[1] == 0 && fg[2] == 0 && fg[3] == 1 && gc.data.Alpha == 255
+			if !defaultFg {
+				for i := int32(0); i < this.stylesCount-1; i++ {
+					var run *TextLayout_StyleItem = this.styles[i]
+					if run.style != (nil) && run.style.Foreground != (nil) {
+						continue
+					}
+					if run.style != (nil) && run.style.Underline && run.style.UnderlineStyle == UNDERLINE_LINK {
+						continue
+					}
+					if length != 0 {
+						range_.Location = int64(this.TranslateOffset(run.start))
+					} else {
+						range_.Location = int64(0)
+					}
+					range_.Length = int64(this.TranslateOffset(this.styles[i+1].start)) - range_.Location
+					this.layoutManager.AddTemporaryAttribute(cocoa.OSNSForegroundColorAttributeName_, upcastcocoaNSColorTococoaId(gc.data.Fg), range_)
+				}
+			}
+			var ptGlyphs cocoa.NSPoint = cocoa.NSPoint{}
+			ptGlyphs.X = pt.X
+			ptGlyphs.Y = pt.Y
+			if this.fixedLineMetrics != (nil) {
+				ptGlyphs.Y += this.fixedLineMetricsDy
+			}
+			range_.Location = int64(0)
+			range_.Length = numberOfGlyphs
+			this.layoutManager.DrawGlyphsForGlyphRange(range_, ptGlyphs)
+			if !defaultFg {
+				range_.Location = int64(0)
+				range_.Length = int64(length)
+				this.layoutManager.RemoveTemporaryAttribute(cocoa.OSNSForegroundColorAttributeName_, range_)
+			}
+			var point cocoa.NSPoint = cocoa.NSPoint{}
+			for j := int32(0); j < this.stylesCount; j++ {
+				var run *TextLayout_StyleItem = this.styles[j]
+				var style *TextStyle = run.style
+				if style == (nil) {
+					continue
+				}
+				var drawUnderline bool = style.Underline && !this.IsUnderlineSupported(style)
+				drawUnderline = drawUnderline && (j+1 == this.stylesCount || !style.IsAdherentUnderline(this.styles[j+1].style))
+				var drawBorder bool = style.BorderStyle != NONE
+				drawBorder = drawBorder && (j+1 == this.stylesCount || !style.IsAdherentBorder(this.styles[j+1].style))
+				if !drawUnderline && !drawBorder {
+					continue
+				}
+				var end int32
+				if j+1 < this.stylesCount {
+					end = this.TranslateOffset(this.styles[j+1].start - 1)
+				} else {
+					end = length
+				}
+				for i := int32(0); i < int32(len(this.lineOffsets))-1; i++ {
+					var lineStart int32 = this.UntranslateOffset(this.lineOffsets[i])
+					var lineEnd int32 = this.UntranslateOffset(this.lineOffsets[i+1] - 1)
+					if drawUnderline {
+						var start int32 = run.start
+						for k := int32(j); k > 0 && style.IsAdherentUnderline(this.styles[k-1].style); k-- {
+							start = this.styles[k-1].start
+						}
+						start = this.TranslateOffset(start)
+						if !(start > lineEnd || end < lineStart) {
+							range_.Location = int64(int32(math.Max(float64(lineStart), float64(start))))
+							range_.Length = int64(int32(math.Min(float64(lineEnd), float64(end)))+1) - range_.Location
+							if range_.Length > 0 {
+								var rectCount []int64 = make([]int64, 1)
+								var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
+								var rect cocoa.NSRect = cocoa.NSRect{}
+								gc.Handle.SaveGraphicsState()
+								var baseline float64 = this.layoutManager.Typesetter().BaselineOffsetInLayoutManager(this.layoutManager, int64(lineStart))
+								var color []float64 = nil
+								if style.UnderlineColor != (nil) {
+									color = style.UnderlineColor.Handle
+								}
+								if color == (nil) && style.Foreground != (nil) {
+									color = style.Foreground.Handle
+								}
+								if color != (nil) {
+									cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3]).SetStroke()
+								}
+								{
+									var k int32 = 0
+									for ; int64(k) < rectCount[0]; func() {
+										k++
+										pArray += int64(cocoa.NSRectSizeof)
+									}() {
+										cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
+										this.FixRect(rect)
+										var underlineX float64 = pt.X + rect.X
+										var underlineY float64 = pt.Y + rect.Y + rect.Height - baseline + 1
+										var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
+										switch style.UnderlineStyle {
+										case UNDERLINE_ERROR:
+											{
+												path.SetLineWidth(float64(2))
+												path.SetLineCapStyle(int64(cocoa.OSNSRoundLineCapStyle))
+												path.SetLineJoinStyle(int64(cocoa.OSNSRoundLineJoinStyle))
+												path.SetLineDash([]float64{float64(1), float64(3)}, int64(2), float64(0))
+												point.X = underlineX
+												point.Y = underlineY + 0.5
+												path.MoveToPoint(point)
+												point.X = underlineX + rect.Width
+												point.Y = underlineY + 0.5
 												path.LineToPoint(point)
+												break
 											}
-											break
+										case UNDERLINE_SQUIGGLE:
+											{
+												gc.Handle.SetShouldAntialias(false)
+												path.SetLineWidth(float64(1.0))
+												path.SetLineCapStyle(int64(cocoa.OSNSButtLineCapStyle))
+												path.SetLineJoinStyle(int64(cocoa.OSNSMiterLineJoinStyle))
+												var lineBottom float64 = pt.Y + rect.Y + rect.Height
+												var squigglyThickness float32 = float32(1)
+												var squigglyHeight float32 = 2 * squigglyThickness
+												var squigglyY float64 = float64(math.Min(float64(underlineY-float64(squigglyHeight/2)), float64(lineBottom-float64(squigglyHeight)-float64(1))))
+												var points []float32 = this.ComputePolyline(int32(underlineX), int32(squigglyY), int32((underlineX + rect.Width)), int32((squigglyY + float64(squigglyHeight))))
+												point.X = float64(points[0] + 0.5)
+												point.Y = float64(points[1] + 0.5)
+												path.MoveToPoint(point)
+												for p := int32(2); p < int32(len(points)); p += 2 {
+													point.X = float64(points[p] + 0.5)
+													point.Y = float64(points[p+1] + 0.5)
+													path.LineToPoint(point)
+												}
+												break
+											}
 										}
+										path.Stroke()
 									}
-									path.Stroke()
 								}
+								gc.Handle.RestoreGraphicsState()
 							}
-							gc.Handle.RestoreGraphicsState()
 						}
 					}
-				}
-				if drawBorder {
-					var start int32 = run.start
-					for k := int32(j); k > 0 && style.IsAdherentBorder(this.styles[k-1].style); k-- {
-						start = this.styles[k-1].start
-					}
-					start = this.TranslateOffset(start)
-					if !(start > lineEnd || end < lineStart) {
-						range_.Location = int64(int32(math.Max(float64(lineStart), float64(start))))
-						range_.Length = int64(int32(math.Min(float64(lineEnd), float64(end)))+1) - range_.Location
-						if range_.Length > 0 {
-							var rectCount []int64 = make([]int64, 1)
-							var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
-							var rect cocoa.NSRect = cocoa.NSRect{}
-							gc.Handle.SaveGraphicsState()
-							var color []float64 = nil
-							if style.BorderColor != (nil) {
-								color = style.BorderColor.Handle
-							}
-							if color == (nil) && style.Foreground != (nil) {
-								color = style.Foreground.Handle
-							}
-							if color != (nil) {
-								cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3]).SetStroke()
-							}
-							var width int32 = 1
-							var dashes []float32 = nil
-							switch style.BorderStyle {
-							case BORDER_SOLID:
-								break
-							case BORDER_DASH:
-								if width != 0 {
-									dashes = GCLINE_DASH
-								} else {
-									dashes = GCLINE_DASH_ZERO
+					if drawBorder {
+						var start int32 = run.start
+						for k := int32(j); k > 0 && style.IsAdherentBorder(this.styles[k-1].style); k-- {
+							start = this.styles[k-1].start
+						}
+						start = this.TranslateOffset(start)
+						if !(start > lineEnd || end < lineStart) {
+							range_.Location = int64(int32(math.Max(float64(lineStart), float64(start))))
+							range_.Length = int64(int32(math.Min(float64(lineEnd), float64(end)))+1) - range_.Location
+							if range_.Length > 0 {
+								var rectCount []int64 = make([]int64, 1)
+								var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
+								var rect cocoa.NSRect = cocoa.NSRect{}
+								gc.Handle.SaveGraphicsState()
+								var color []float64 = nil
+								if style.BorderColor != (nil) {
+									color = style.BorderColor.Handle
 								}
-								break
-							case BORDER_DOT:
-								if width != 0 {
-									dashes = GCLINE_DOT
-								} else {
-									dashes = GCLINE_DOT_ZERO
+								if color == (nil) && style.Foreground != (nil) {
+									color = style.Foreground.Handle
 								}
-								break
-							}
-							var lengths []float64 = nil
-							if dashes != (nil) {
-								lengths = make([]float64, int32(len(dashes)))
-								for k := int32(0); k < int32(len(lengths)); k++ {
-									if width == 0 {
-										lengths[k] = float64(dashes[k])
+								if color != (nil) {
+									cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], color[3]).SetStroke()
+								}
+								var width int32 = 1
+								var dashes []float32 = nil
+								switch style.BorderStyle {
+								case BORDER_SOLID:
+									break
+								case BORDER_DASH:
+									if width != 0 {
+										dashes = GCLINE_DASH
 									} else {
-										lengths[k] = float64(dashes[k] * float32(width))
+										dashes = GCLINE_DASH_ZERO
+									}
+									break
+								case BORDER_DOT:
+									if width != 0 {
+										dashes = GCLINE_DOT
+									} else {
+										dashes = GCLINE_DOT_ZERO
+									}
+									break
+								}
+								var lengths []float64 = nil
+								if dashes != (nil) {
+									lengths = make([]float64, int32(len(dashes)))
+									for k := int32(0); k < int32(len(lengths)); k++ {
+										if width == 0 {
+											lengths[k] = float64(dashes[k])
+										} else {
+											lengths[k] = float64(dashes[k] * float32(width))
+										}
 									}
 								}
-							}
-							{
-								var k int32 = 0
-								for ; int64(k) < rectCount[0]; func() {
-									k++
-									pArray += int64(cocoa.NSRectSizeof)
-								}() {
-									cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-									this.FixRect(rect)
-									rect.X += pt.X + 0.5
-									rect.Y += pt.Y + 0.5
-									rect.Width -= float64(0.5)
-									rect.Height -= float64(0.5)
-									var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-									var cond497 int32
-									if lengths != (nil) {
-										cond497 = int32(len(lengths))
-									} else {
-										cond497 = 0
+								{
+									var k int32 = 0
+									for ; int64(k) < rectCount[0]; func() {
+										k++
+										pArray += int64(cocoa.NSRectSizeof)
+									}() {
+										cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
+										this.FixRect(rect)
+										rect.X += pt.X + 0.5
+										rect.Y += pt.Y + 0.5
+										rect.Width -= float64(0.5)
+										rect.Height -= float64(0.5)
+										var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
+										var cond502 int32
+										if lengths != (nil) {
+											cond502 = int32(len(lengths))
+										} else {
+											cond502 = 0
+										}
+										path.SetLineDash(lengths, int64(cond502), float64(0))
+										path.AppendBezierPathWithRect(rect)
+										path.Stroke()
 									}
-									path.SetLineDash(lengths, int64(cond497), float64(0))
-									path.AppendBezierPathWithRect(rect)
-									path.Stroke()
 								}
+								gc.Handle.RestoreGraphicsState()
 							}
-							gc.Handle.RestoreGraphicsState()
 						}
 					}
 				}
 			}
 		}
+		gc.Handle.RestoreGraphicsState()
 	}
-	gc.Handle.RestoreGraphicsState()
 }
 
 func (this *TextLayout) FixRect(rect cocoa.NSRect) {
@@ -805,31 +807,33 @@ func (this *TextLayout) GetBounds() *Rectangle {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var rect cocoa.NSRect = this.layoutManager.UsedRectForTextContainer(this.textContainer)
+		if this.wrapWidth != -1 {
+			rect.Width = float64(this.wrapWidth)
 		}
-	}()
-	this.ComputeRuns()
-	var rect cocoa.NSRect = this.layoutManager.UsedRectForTextContainer(this.textContainer)
-	if this.wrapWidth != -1 {
-		rect.Width = float64(this.wrapWidth)
-	}
-	if int32(len(this.text)) == 0 {
-		var font *Font
-		if this.font != (nil) {
-			font = this.font
-		} else {
-			font = this.device.systemFont
+		if int32(len(this.text)) == 0 {
+			var font *Font
+			if this.font != (nil) {
+				font = this.font
+			} else {
+				font = this.device.systemFont
+			}
+			var nsFont *cocoa.NSFont = font.Handle
+			rect.Height = this.layoutManager.DefaultLineHeightForFont(nsFont)
 		}
-		var nsFont *cocoa.NSFont = font.Handle
-		rect.Height = this.layoutManager.DefaultLineHeightForFont(nsFont)
+		if this.fixedLineMetrics != (nil) {
+			rect.Height = float64(this.fixedLineMetrics.height)
+		}
+		rect.Height = float64(math.Max(float64(rect.Height), float64(this.ascent+this.descent))) + float64(this.spacing)
+		return NewRectangle(0, 0, int32(math.Ceil(float64(rect.Width))), int32(math.Ceil(float64(rect.Height)))+this.GetVerticalIndent())
 	}
-	if this.fixedLineMetrics != (nil) {
-		rect.Height = float64(this.fixedLineMetrics.height)
-	}
-	rect.Height = float64(math.Max(float64(rect.Height), float64(this.ascent+this.descent))) + float64(this.spacing)
-	return NewRectangle(0, 0, int32(math.Ceil(float64(rect.Width))), int32(math.Ceil(float64(rect.Height)))+this.GetVerticalIndent())
 }
 
 func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
@@ -838,51 +842,53 @@ func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.ComputeRuns()
-	var length int32 = int32(len(this.text))
-	if length == 0 {
-		return NewRectangle(0, 0, 0, 0)
-	}
-	if start > end {
-		return NewRectangle(0, 0, 0, 0)
-	}
-	start = int32(math.Min(float64(int32(math.Max(float64(0), float64(start)))), float64(length-1)))
-	end = int32(math.Min(float64(int32(math.Max(float64(0), float64(end)))), float64(length-1)))
-	start = this.TranslateOffset(start)
-	end = this.TranslateOffset(end)
-	var range_ cocoa.NSRange = cocoa.NSRange{}
-	range_.Location = int64(start)
-	range_.Length = int64(end - start + 1)
-	var rectCount []int64 = make([]int64, 1)
-	var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	var left int32 = 0x7FFFFFFF
-	var right int32 = 0
-	var top int32 = 0x7FFFFFFF
-	var bottom int32 = 0
 	{
-		var i int32 = 0
-		for ; int64(i) < rectCount[0]; func() {
-			i++
-			pArray += int64(cocoa.NSRectSizeof)
-		}() {
-			cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-			this.FixRect(rect)
-			left = int32(math.Min(float64(left), float64(int32(rect.X))))
-			right = int32(math.Max(float64(right), float64(int32(math.Ceil(float64(rect.X+rect.Width))))))
-			top = int32(math.Min(float64(top), float64(int32(rect.Y))))
-			bottom = int32(math.Max(float64(bottom), float64(int32(math.Ceil(float64(rect.Y+rect.Height))))))
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var length int32 = int32(len(this.text))
+		if length == 0 {
+			return NewRectangle(0, 0, 0, 0)
 		}
+		if start > end {
+			return NewRectangle(0, 0, 0, 0)
+		}
+		start = int32(math.Min(float64(int32(math.Max(float64(0), float64(start)))), float64(length-1)))
+		end = int32(math.Min(float64(int32(math.Max(float64(0), float64(end)))), float64(length-1)))
+		start = this.TranslateOffset(start)
+		end = this.TranslateOffset(end)
+		var range_ cocoa.NSRange = cocoa.NSRange{}
+		range_.Location = int64(start)
+		range_.Length = int64(end - start + 1)
+		var rectCount []int64 = make([]int64, 1)
+		var pArray int64 = this.layoutManager.RectArrayForCharacterRange(range_, range_, this.textContainer, rectCount)
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		var left int32 = 0x7FFFFFFF
+		var right int32 = 0
+		var top int32 = 0x7FFFFFFF
+		var bottom int32 = 0
+		{
+			var i int32 = 0
+			for ; int64(i) < rectCount[0]; func() {
+				i++
+				pArray += int64(cocoa.NSRectSizeof)
+			}() {
+				cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
+				this.FixRect(rect)
+				left = int32(math.Min(float64(left), float64(int32(rect.X))))
+				right = int32(math.Max(float64(right), float64(int32(math.Ceil(float64(rect.X+rect.Width))))))
+				top = int32(math.Min(float64(top), float64(int32(rect.Y))))
+				bottom = int32(math.Max(float64(bottom), float64(int32(math.Ceil(float64(rect.Y+rect.Height))))))
+			}
+		}
+		if this.fixedLineMetrics != (nil) {
+			bottom = top + this.fixedLineMetrics.height
+		}
+		return NewRectangle(left, top, right-left, bottom-top+this.GetVerticalIndent())
 	}
-	if this.fixedLineMetrics != (nil) {
-		bottom = top + this.fixedLineMetrics.height
-	}
-	return NewRectangle(left, top, right-left, bottom-top+this.GetVerticalIndent())
 }
 
 func (this *TextLayout) GetDescent() int32 {
@@ -911,24 +917,26 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var length int32 = int32(len(this.text))
+		if !(0 <= offset && offset <= length) {
+			Error(ERROR_INVALID_RANGE)
 		}
-	}()
-	this.ComputeRuns()
-	var length int32 = int32(len(this.text))
-	if !(0 <= offset && offset <= length) {
-		Error(ERROR_INVALID_RANGE)
+		offset = this.TranslateOffset(offset)
+		var glyphOffset int64 = this.layoutManager.GlyphIndexForCharacterAtIndex(int64(offset))
+		var range_ cocoa.NSRange = cocoa.NSRange{}
+		range_.Location = glyphOffset
+		range_.Length = int64(1)
+		var bidiLevels []int8 = make([]int8, 1)
+		this.layoutManager.GetGlyphsInRange(range_, int64(0), int64(0), int64(0), int64(0), bidiLevels)
+		return int32(bidiLevels[0])
 	}
-	offset = this.TranslateOffset(offset)
-	var glyphOffset int64 = this.layoutManager.GlyphIndexForCharacterAtIndex(int64(offset))
-	var range_ cocoa.NSRange = cocoa.NSRange{}
-	range_.Location = glyphOffset
-	range_.Length = int64(1)
-	var bidiLevels []int8 = make([]int8, 1)
-	this.layoutManager.GetGlyphsInRange(range_, int64(0), int64(0), int64(0), int64(0), bidiLevels)
-	return int32(bidiLevels[0])
 }
 
 func (this *TextLayout) GetLineOffsets() []int32 {
@@ -937,17 +945,19 @@ func (this *TextLayout) GetLineOffsets() []int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var offsets []int32 = make([]int32, int32(len(this.lineOffsets)))
+		for i := int32(0); i < int32(len(offsets)); i++ {
+			offsets[i] = this.UntranslateOffset(this.lineOffsets[i])
 		}
-	}()
-	this.ComputeRuns()
-	var offsets []int32 = make([]int32, int32(len(this.lineOffsets)))
-	for i := int32(0); i < int32(len(offsets)); i++ {
-		offsets[i] = this.UntranslateOffset(this.lineOffsets[i])
+		return offsets
 	}
-	return offsets
 }
 
 func (this *TextLayout) GetLineIndex(offset int32) int32 {
@@ -956,23 +966,25 @@ func (this *TextLayout) GetLineIndex(offset int32) int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var length int32 = int32(len(this.text))
+		if !(0 <= offset && offset <= length) {
+			Error(ERROR_INVALID_RANGE)
 		}
-	}()
-	this.ComputeRuns()
-	var length int32 = int32(len(this.text))
-	if !(0 <= offset && offset <= length) {
-		Error(ERROR_INVALID_RANGE)
-	}
-	offset = this.TranslateOffset(offset)
-	for line := int32(0); line < int32(len(this.lineOffsets))-1; line++ {
-		if this.lineOffsets[line+1] > offset {
-			return line
+		offset = this.TranslateOffset(offset)
+		for line := int32(0); line < int32(len(this.lineOffsets))-1; line++ {
+			if this.lineOffsets[line+1] > offset {
+				return line
+			}
 		}
+		return int32(len(this.lineBounds)) - 1
 	}
-	return int32(len(this.lineBounds)) - 1
 }
 
 func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
@@ -981,18 +993,20 @@ func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		if !(0 <= lineIndex && lineIndex < int32(len(this.lineBounds))) {
+			Error(ERROR_INVALID_RANGE)
 		}
-	}()
-	this.ComputeRuns()
-	if !(0 <= lineIndex && lineIndex < int32(len(this.lineBounds))) {
-		Error(ERROR_INVALID_RANGE)
+		var rect cocoa.NSRect = this.lineBounds[lineIndex]
+		var height int32 = int32(math.Max(float64(int32(math.Ceil(float64(rect.Height)))), float64(this.ascent+this.descent)))
+		return NewRectangle(int32(rect.X), int32(rect.Y), int32(math.Ceil(float64(rect.Width))), height)
 	}
-	var rect cocoa.NSRect = this.lineBounds[lineIndex]
-	var height int32 = int32(math.Max(float64(int32(math.Ceil(float64(rect.Height)))), float64(this.ascent+this.descent)))
-	return NewRectangle(int32(rect.X), int32(rect.Y), int32(math.Ceil(float64(rect.Width))), height)
 }
 
 func (this *TextLayout) GetLineCount() int32 {
@@ -1001,13 +1015,15 @@ func (this *TextLayout) GetLineCount() int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.ComputeRuns()
-	return int32(len(this.lineOffsets)) - 1
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		return int32(len(this.lineOffsets)) - 1
+	}
 }
 
 func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
@@ -1016,36 +1032,38 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var lineCount int32 = this.GetLineCount()
+		if !(0 <= lineIndex && lineIndex < lineCount) {
+			Error(ERROR_INVALID_RANGE)
 		}
-	}()
-	this.ComputeRuns()
-	var lineCount int32 = this.GetLineCount()
-	if !(0 <= lineIndex && lineIndex < lineCount) {
-		Error(ERROR_INVALID_RANGE)
-	}
-	if this.fixedLineMetrics != (nil) {
-		return this.fixedLineMetrics.MakeCopy()
-	}
-	var length int32 = int32(len(this.text))
-	if length == 0 {
-		var font *Font
-		if this.font != (nil) {
-			font = this.font
-		} else {
-			font = this.device.systemFont
+		if this.fixedLineMetrics != (nil) {
+			return this.fixedLineMetrics.MakeCopy()
 		}
-		var ascent int32 = int32(this.layoutManager.DefaultBaselineOffsetForFont(font.Handle))
-		var descent int32 = int32(this.layoutManager.DefaultLineHeightForFont(font.Handle)) - ascent
-		ascent = int32(math.Max(float64(ascent), float64(this.ascent)))
-		descent = int32(math.Max(float64(descent), float64(this.descent)))
-		return FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent, descent, 0.0, 0, ascent+descent)
+		var length int32 = int32(len(this.text))
+		if length == 0 {
+			var font *Font
+			if this.font != (nil) {
+				font = this.font
+			} else {
+				font = this.device.systemFont
+			}
+			var ascent int32 = int32(this.layoutManager.DefaultBaselineOffsetForFont(font.Handle))
+			var descent int32 = int32(this.layoutManager.DefaultLineHeightForFont(font.Handle)) - ascent
+			ascent = int32(math.Max(float64(ascent), float64(this.ascent)))
+			descent = int32(math.Max(float64(descent), float64(this.descent)))
+			return FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent, descent, 0.0, 0, ascent+descent)
+		}
+		var rect *Rectangle = this.GetLineBounds(lineIndex)
+		var baseline int32 = int32(this.layoutManager.Typesetter().BaselineOffsetInLayoutManager(this.layoutManager, int64(this.GetLineOffsets()[lineIndex])))
+		return FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(rect.Height-baseline, baseline, 0.0, 0, rect.Height)
 	}
-	var rect *Rectangle = this.GetLineBounds(lineIndex)
-	var baseline int32 = int32(this.layoutManager.Typesetter().BaselineOffsetInLayoutManager(this.layoutManager, int64(this.GetLineOffsets()[lineIndex])))
-	return FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(rect.Height-baseline, baseline, 0.0, 0, rect.Height)
 }
 
 func (this *TextLayout) GetLinkForeground() *cocoa.NSColor {
@@ -1065,47 +1083,49 @@ func (this *TextLayout) GetLocation(offset int32, trailing bool) *Point {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.ComputeRuns()
-	var length int32 = int32(len(this.text))
-	if !(0 <= offset && offset <= length) {
-		Error(ERROR_INVALID_RANGE)
-	}
-	if length == 0 {
-		return NewPoint(0, 0)
-	}
-	if offset == length {
-		var rect cocoa.NSRect = this.lineBounds[int32(len(this.lineBounds))-1]
-		return NewPoint(int32((rect.X + rect.Width)), int32(rect.Y))
-	} else {
-		offset = this.TranslateOffset(offset)
-		var glyphIndex int64 = this.layoutManager.GlyphIndexForCharacterAtIndex(int64(offset))
-		var rect cocoa.NSRect = this.layoutManager.LineFragmentUsedRectForGlyphAtIndex(glyphIndex, int64(0))
-		var point cocoa.NSPoint = this.layoutManager.LocationForGlyphAtIndex(glyphIndex)
-		var rtl bool = false
-		var range_ cocoa.NSRange = cocoa.NSRange{}
-		range_.Location = glyphIndex
-		range_.Length = int64(1)
-		var bidiLevels []int8 = make([]int8, 1)
-		var result int64 = this.layoutManager.GetGlyphsInRange(range_, int64(0), int64(0), int64(0), int64(0), bidiLevels)
-		if result > 0 {
-			rtl = (int32(bidiLevels[0]) & 1) != 0
-		}
-		if trailing != rtl {
-			var rectCount []int64 = make([]int64, 1)
-			var pArray int64 = this.layoutManager.RectArrayForGlyphRange(range_, range_, this.textContainer, rectCount)
-			if rectCount[0] > 0 {
-				var bounds cocoa.NSRect = cocoa.NSRect{}
-				cocoa.OSMemmoveOverload7(&bounds, pArray, int64(cocoa.NSRectSizeof))
-				this.FixRect(bounds)
-				point.X += bounds.Width
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
 			}
+		}()
+		this.ComputeRuns()
+		var length int32 = int32(len(this.text))
+		if !(0 <= offset && offset <= length) {
+			Error(ERROR_INVALID_RANGE)
 		}
-		return NewPoint(int32(point.X), int32(rect.Y)+this.GetVerticalIndent())
+		if length == 0 {
+			return NewPoint(0, 0)
+		}
+		if offset == length {
+			var rect cocoa.NSRect = this.lineBounds[int32(len(this.lineBounds))-1]
+			return NewPoint(int32((rect.X + rect.Width)), int32(rect.Y))
+		} else {
+			offset = this.TranslateOffset(offset)
+			var glyphIndex int64 = this.layoutManager.GlyphIndexForCharacterAtIndex(int64(offset))
+			var rect cocoa.NSRect = this.layoutManager.LineFragmentUsedRectForGlyphAtIndex(glyphIndex, int64(0))
+			var point cocoa.NSPoint = this.layoutManager.LocationForGlyphAtIndex(glyphIndex)
+			var rtl bool = false
+			var range_ cocoa.NSRange = cocoa.NSRange{}
+			range_.Location = glyphIndex
+			range_.Length = int64(1)
+			var bidiLevels []int8 = make([]int8, 1)
+			var result int64 = this.layoutManager.GetGlyphsInRange(range_, int64(0), int64(0), int64(0), int64(0), bidiLevels)
+			if result > 0 {
+				rtl = (int32(bidiLevels[0]) & 1) != 0
+			}
+			if trailing != rtl {
+				var rectCount []int64 = make([]int64, 1)
+				var pArray int64 = this.layoutManager.RectArrayForGlyphRange(range_, range_, this.textContainer, rectCount)
+				if rectCount[0] > 0 {
+					var bounds cocoa.NSRect = cocoa.NSRect{}
+					cocoa.OSMemmoveOverload7(&bounds, pArray, int64(cocoa.NSRectSizeof))
+					this.FixRect(bounds)
+					point.X += bounds.Width
+				}
+			}
+			return NewPoint(int32(point.X), int32(rect.Y)+this.GetVerticalIndent())
+		}
 	}
 }
 
@@ -1114,12 +1134,14 @@ func (this *TextLayout) GetNextOffset(offset int32, movement int32) int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	return this._getOffset(offset, movement, true)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		return this._getOffset(offset, movement, true)
+	}
 }
 
 func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) int32 {
@@ -1225,45 +1247,47 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		if trailing != (nil) && int32(len(trailing)) < 1 {
+			Error(ERROR_INVALID_ARGUMENT)
 		}
-	}()
-	this.ComputeRuns()
-	if trailing != (nil) && int32(len(trailing)) < 1 {
-		Error(ERROR_INVALID_ARGUMENT)
-	}
-	var length int32 = int32(len(this.text))
-	if length == 0 {
-		return 0
-	}
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y - this.GetVerticalIndent())
-	var partialFraction []float64 = make([]float64, 1)
-	var glyphIndex int64 = this.layoutManager.GlyphIndexForPoint(pt, this.textContainer, partialFraction)
-	var charOffset int64 = this.layoutManager.CharacterIndexForGlyphAtIndex(glyphIndex)
-	if int32(this.textStorage.String().CharacterAtIndex(charOffset)) == int32('\u000a') {
-		charOffset--
-	}
-	var offset int32 = int32(charOffset)
-	offset = int32(math.Min(float64(this.UntranslateOffset(offset)), float64(length-1)))
-	if trailing != (nil) {
-		trailing[0] = int32(math.Floor(float64(float32(partialFraction[0])) + 0.5))
-		if partialFraction[0] >= 0.5 {
-			var ch uint16 = utf16.Encode([]rune(this.text))[offset]
-			if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
-				if offset+1 < length {
-					ch = utf16.Encode([]rune(this.text))[offset+1]
-					if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
-						trailing[0]++
+		var length int32 = int32(len(this.text))
+		if length == 0 {
+			return 0
+		}
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y - this.GetVerticalIndent())
+		var partialFraction []float64 = make([]float64, 1)
+		var glyphIndex int64 = this.layoutManager.GlyphIndexForPoint(pt, this.textContainer, partialFraction)
+		var charOffset int64 = this.layoutManager.CharacterIndexForGlyphAtIndex(glyphIndex)
+		if int32(this.textStorage.String().CharacterAtIndex(charOffset)) == int32('\u000a') {
+			charOffset--
+		}
+		var offset int32 = int32(charOffset)
+		offset = int32(math.Min(float64(this.UntranslateOffset(offset)), float64(length-1)))
+		if trailing != (nil) {
+			trailing[0] = int32(math.Floor(float64(float32(partialFraction[0])) + 0.5))
+			if partialFraction[0] >= 0.5 {
+				var ch uint16 = utf16.Encode([]rune(this.text))[offset]
+				if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
+					if offset+1 < length {
+						ch = utf16.Encode([]rune(this.text))[offset+1]
+						if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
+							trailing[0]++
+						}
 					}
 				}
 			}
 		}
+		return offset
 	}
-	return offset
 }
 
 func (this *TextLayout) GetOrientation() int32 {
@@ -1276,12 +1300,14 @@ func (this *TextLayout) GetPreviousOffset(offset int32, movement int32) int32 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	return this._getOffset(offset, movement, false)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		return this._getOffset(offset, movement, false)
+	}
 }
 
 func (this *TextLayout) GetRanges() []int32 {
@@ -1290,12 +1316,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t498 := count
+			t503 := count
 			count++
-			result[t498] = this.styles[i].start
-			t499 := count
+			result[t503] = this.styles[i].start
+			t504 := count
 			count++
-			result[t499] = this.styles[i+1].start - 1
+			result[t504] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1357,13 +1383,13 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t500 := segmentCount
+			t505 := segmentCount
 			segmentCount++
-			newChars[charCount+t500] = separator
+			newChars[charCount+t505] = separator
 		} else {
-			t501 := charCount
+			t506 := charCount
 			charCount++
-			newChars[charCount+segmentCount] = oldChars[t501]
+			newChars[charCount+segmentCount] = oldChars[t506]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1374,9 +1400,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t502 := segmentCount
+		t507 := segmentCount
 		segmentCount++
-		newChars[charCount+t502] = separator
+		newChars[charCount+t507] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1412,9 +1438,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t503 := count
+			t508 := count
 			count++
-			result[t503] = this.styles[i].style
+			result[t508] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -1514,13 +1540,15 @@ func (this *TextLayout) SetAlignment(alignment int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.alignment = alignment
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.alignment = alignment
+	}
 }
 
 func (this *TextLayout) SetAscent(ascent int32) {
@@ -1535,13 +1563,15 @@ func (this *TextLayout) SetAscent(ascent int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.ascent = ascent
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.ascent = ascent
+	}
 }
 
 func (this *TextLayout) SetDescent(descent int32) {
@@ -1556,13 +1586,15 @@ func (this *TextLayout) SetDescent(descent int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.descent = descent
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.descent = descent
+	}
 }
 
 func (this *TextLayout) SetFixedLineMetrics(metricsLike FontMetricsLike) {
@@ -1600,12 +1632,14 @@ func (this *TextLayout) SetFont(fontLike FontLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+	}
 }
 
 func (this *TextLayout) SetIndent(indent int32) {
@@ -1620,13 +1654,15 @@ func (this *TextLayout) SetIndent(indent int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.indent = indent
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.indent = indent
+	}
 }
 
 func (this *TextLayout) SetWrapIndent(wrapIndent int32) {
@@ -1641,13 +1677,15 @@ func (this *TextLayout) SetWrapIndent(wrapIndent int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.wrapIndent = wrapIndent
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.wrapIndent = wrapIndent
+	}
 }
 
 func (this *TextLayout) SetJustify(justify bool) {
@@ -1659,13 +1697,15 @@ func (this *TextLayout) SetJustify(justify bool) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.justify = justify
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.justify = justify
+	}
 }
 
 func (this *TextLayout) SetOrientation(orientation int32) {
@@ -1686,12 +1726,14 @@ func (this *TextLayout) SetOrientation(orientation int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+	}
 }
 
 func (this *TextLayout) SetSegments(segments []int32) {
@@ -1716,13 +1758,15 @@ func (this *TextLayout) SetSegments(segments []int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.segments = segments
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.segments = segments
+	}
 }
 
 func (this *TextLayout) SetSegmentsChars(segmentsChars []uint16) {
@@ -1747,13 +1791,15 @@ func (this *TextLayout) SetSegmentsChars(segmentsChars []uint16) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.segmentsChars = segmentsChars
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.segmentsChars = segmentsChars
+	}
 }
 
 func (this *TextLayout) SetSpacing(spacing int32) {
@@ -1768,13 +1814,15 @@ func (this *TextLayout) SetSpacing(spacing int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.spacing = spacing
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.spacing = spacing
+	}
 }
 
 func (this *TextLayout) SetVerticalIndent(verticalIndent int32) {
@@ -1789,13 +1837,15 @@ func (this *TextLayout) SetVerticalIndent(verticalIndent int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.verticalIndentInPoints = verticalIndent
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.verticalIndentInPoints = verticalIndent
+	}
 }
 
 func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32) {
@@ -1809,101 +1859,103 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var length int32 = int32(len(this.text))
+		if length == 0 {
+			return
 		}
-	}()
-	var length int32 = int32(len(this.text))
-	if length == 0 {
-		return
-	}
-	if start > end {
-		return
-	}
-	start = int32(math.Min(float64(int32(math.Max(float64(0), float64(start)))), float64(length-1)))
-	end = int32(math.Min(float64(int32(math.Max(float64(0), float64(end)))), float64(length-1)))
-	var low int32 = -1
-	var high int32 = this.stylesCount
-	for high-low > 1 {
-		var index int32 = (high + low) / 2
-		if this.styles[index+1].start > start {
-			high = index
-		} else {
-			low = index
+		if start > end {
+			return
 		}
-	}
-	if 0 <= high && high < this.stylesCount {
-		var item *TextLayout_StyleItem = this.styles[high]
-		if item.start == start && this.styles[high+1].start-1 == end {
-			if style == (nil) {
-				if item.style == (nil) {
-					return
-				}
+		start = int32(math.Min(float64(int32(math.Max(float64(0), float64(start)))), float64(length-1)))
+		end = int32(math.Min(float64(int32(math.Max(float64(0), float64(end)))), float64(length-1)))
+		var low int32 = -1
+		var high int32 = this.stylesCount
+		for high-low > 1 {
+			var index int32 = (high + low) / 2
+			if this.styles[index+1].start > start {
+				high = index
 			} else {
-				if style.Equals(item.style) {
-					return
+				low = index
+			}
+		}
+		if 0 <= high && high < this.stylesCount {
+			var item *TextLayout_StyleItem = this.styles[high]
+			if item.start == start && this.styles[high+1].start-1 == end {
+				if style == (nil) {
+					if item.style == (nil) {
+						return
+					}
+				} else {
+					if style.Equals(item.style) {
+						return
+					}
 				}
 			}
 		}
-	}
-	this.FreeRuns()
-	var modifyStart int32 = high
-	var modifyEnd int32 = modifyStart
-	for modifyEnd < this.stylesCount {
-		if this.styles[modifyEnd+1].start > end {
-			break
-		}
-		modifyEnd++
-	}
-	if modifyStart == modifyEnd {
-		var styleStart int32 = this.styles[modifyStart].start
-		var styleEnd int32 = this.styles[modifyEnd+1].start - 1
-		if styleStart == start && styleEnd == end {
-			this.styles[modifyStart].style = style
-			return
-		}
-		if styleStart != start && styleEnd != end {
-			var newLength int32 = this.stylesCount + 2
-			if newLength > int32(len(this.styles)) {
-				var newSize int32 = int32(math.Min(float64(newLength+1024), float64(int32(math.Max(float64(64), float64(newLength*2))))))
-				var newStyles []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, newSize)
-				copy(newStyles[0:], this.styles[0:0+this.stylesCount])
-				this.styles = newStyles
+		this.FreeRuns()
+		var modifyStart int32 = high
+		var modifyEnd int32 = modifyStart
+		for modifyEnd < this.stylesCount {
+			if this.styles[modifyEnd+1].start > end {
+				break
 			}
-			copy(this.styles[modifyEnd+3:], this.styles[modifyEnd+1:modifyEnd+1+this.stylesCount-modifyEnd-1])
-			var item *TextLayout_StyleItem = newTextLayoutStyleItem()
-			item.start = start
-			item.style = style
-			this.styles[modifyStart+1] = item
-			item = newTextLayoutStyleItem()
-			item.start = end + 1
-			item.style = this.styles[modifyStart].style
-			this.styles[modifyStart+2] = item
-			this.stylesCount = newLength
-			return
+			modifyEnd++
 		}
+		if modifyStart == modifyEnd {
+			var styleStart int32 = this.styles[modifyStart].start
+			var styleEnd int32 = this.styles[modifyEnd+1].start - 1
+			if styleStart == start && styleEnd == end {
+				this.styles[modifyStart].style = style
+				return
+			}
+			if styleStart != start && styleEnd != end {
+				var newLength int32 = this.stylesCount + 2
+				if newLength > int32(len(this.styles)) {
+					var newSize int32 = int32(math.Min(float64(newLength+1024), float64(int32(math.Max(float64(64), float64(newLength*2))))))
+					var newStyles []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, newSize)
+					copy(newStyles[0:], this.styles[0:0+this.stylesCount])
+					this.styles = newStyles
+				}
+				copy(this.styles[modifyEnd+3:], this.styles[modifyEnd+1:modifyEnd+1+this.stylesCount-modifyEnd-1])
+				var item *TextLayout_StyleItem = newTextLayoutStyleItem()
+				item.start = start
+				item.style = style
+				this.styles[modifyStart+1] = item
+				item = newTextLayoutStyleItem()
+				item.start = end + 1
+				item.style = this.styles[modifyStart].style
+				this.styles[modifyStart+2] = item
+				this.stylesCount = newLength
+				return
+			}
+		}
+		if start == this.styles[modifyStart].start {
+			modifyStart--
+		}
+		if end == this.styles[modifyEnd+1].start-1 {
+			modifyEnd++
+		}
+		var newLength int32 = this.stylesCount + 1 - (modifyEnd - modifyStart - 1)
+		if newLength > int32(len(this.styles)) {
+			var newSize int32 = int32(math.Min(float64(newLength+1024), float64(int32(math.Max(float64(64), float64(newLength*2))))))
+			var newStyles []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, newSize)
+			copy(newStyles[0:], this.styles[0:0+this.stylesCount])
+			this.styles = newStyles
+		}
+		copy(this.styles[modifyStart+2:], this.styles[modifyEnd:modifyEnd+this.stylesCount-modifyEnd])
+		var item *TextLayout_StyleItem = newTextLayoutStyleItem()
+		item.start = start
+		item.style = style
+		this.styles[modifyStart+1] = item
+		this.styles[modifyStart+2].start = end + 1
+		this.stylesCount = newLength
 	}
-	if start == this.styles[modifyStart].start {
-		modifyStart--
-	}
-	if end == this.styles[modifyEnd+1].start-1 {
-		modifyEnd++
-	}
-	var newLength int32 = this.stylesCount + 1 - (modifyEnd - modifyStart - 1)
-	if newLength > int32(len(this.styles)) {
-		var newSize int32 = int32(math.Min(float64(newLength+1024), float64(int32(math.Max(float64(64), float64(newLength*2))))))
-		var newStyles []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, newSize)
-		copy(newStyles[0:], this.styles[0:0+this.stylesCount])
-		this.styles = newStyles
-	}
-	copy(this.styles[modifyStart+2:], this.styles[modifyEnd:modifyEnd+this.stylesCount-modifyEnd])
-	var item *TextLayout_StyleItem = newTextLayoutStyleItem()
-	item.start = start
-	item.style = style
-	this.styles[modifyStart+1] = item
-	this.styles[modifyStart+2].start = end + 1
-	this.stylesCount = newLength
 }
 
 func (this *TextLayout) SetTabs(tabs []int32) {
@@ -1928,13 +1980,15 @@ func (this *TextLayout) SetTabs(tabs []int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.tabs = tabs
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.tabs = tabs
+	}
 }
 
 func (this *TextLayout) SetText(text string) {
@@ -1949,18 +2003,20 @@ func (this *TextLayout) SetText(text string) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.text = text
-	this.styles = make([]*TextLayout_StyleItem, 2)
-	this.styles[0] = newTextLayoutStyleItem()
-	this.styles[1] = newTextLayoutStyleItem()
-	this.styles[1].start = int32(len(text))
-	this.stylesCount = 2
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.text = text
+		this.styles = make([]*TextLayout_StyleItem, 2)
+		this.styles[0] = newTextLayoutStyleItem()
+		this.styles[1] = newTextLayoutStyleItem()
+		this.styles[1].start = int32(len(text))
+		this.stylesCount = 2
+	}
 }
 
 func (this *TextLayout) SetTextDirection(textDirection int32) {
@@ -1979,13 +2035,15 @@ func (this *TextLayout) SetWidth(width int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.FreeRuns()
-	this.wrapWidth = width
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.FreeRuns()
+		this.wrapWidth = width
+	}
 }
 
 func (this *TextLayout) String() string {
@@ -2073,17 +2131,19 @@ func (this *TextLayout) GetTabWidth() float64 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.ComputeRuns()
+		var rect cocoa.NSRect = this.layoutManager.UsedRectForTextContainer(this.textContainer)
+		if this.wrapWidth != -1 {
+			rect.Width = float64(this.wrapWidth)
 		}
-	}()
-	this.ComputeRuns()
-	var rect cocoa.NSRect = this.layoutManager.UsedRectForTextContainer(this.textContainer)
-	if this.wrapWidth != -1 {
-		rect.Width = float64(this.wrapWidth)
+		return rect.Width
 	}
-	return rect.Width
 }
 
 func TextLayoutTextLayoutProc(id int64, sel int64) int64 {

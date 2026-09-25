@@ -2,12 +2,14 @@ package jrt
 
 import (
 	"bytes"
+	"math"
 	"os"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"unicode/utf16"
 )
 
 // Runnable is java.lang.Runnable. Lambdas and anonymous classes become *RunnableFunc: a pointer,
@@ -119,3 +121,46 @@ func JavaVersionFeature(version any) int32 { return 0 }
 
 // IdentityHashCode is Object.hashCode: Go's heap objects don't move, so the address is stable.
 func IdentityHashCode(x any) int32 { return int32(reflect.ValueOf(x).Pointer()) }
+
+// StringHashCode is String.hashCode(): h = 31*h + c over the UTF-16 code units.
+func StringHashCode(s string) int32 {
+	var h int32
+	for _, c := range utf16.Encode([]rune(s)) {
+		h = 31*h + int32(c)
+	}
+	return h
+}
+
+// DoubleHashCode is Double.hashCode(d).
+func DoubleHashCode(d float64) int32 {
+	b := math.Float64bits(d)
+	return int32(b ^ b>>32)
+}
+
+// ObjectsHash is Objects.hash(values...), i.e. Arrays.hashCode of the boxed values.
+func ObjectsHash(values ...any) int32 {
+	h := int32(1)
+	for _, v := range values {
+		var e int32
+		switch x := v.(type) {
+		case nil:
+		case interface{ HashCode() int32 }:
+			e = x.HashCode()
+		case int32:
+			e = x
+		case string:
+			e = StringHashCode(x)
+		case float64:
+			e = DoubleHashCode(x)
+		case bool:
+			e = 1237
+			if x {
+				e = 1231
+			}
+		default:
+			e = IdentityHashCode(x)
+		}
+		h = 31*h + e
+	}
+	return h
+}

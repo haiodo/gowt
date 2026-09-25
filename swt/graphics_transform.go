@@ -68,18 +68,20 @@ func (this *Transform) initTransformDeviceM11M12M21M22DxDy(device *Device, m11 f
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle = cocoa.NSAffineTransformTransform()
+		if this.Handle == (nil) {
+			Error(ERROR_NO_HANDLES)
 		}
-	}()
-	this.Handle = cocoa.NSAffineTransformTransform()
-	if this.Handle == (nil) {
-		Error(ERROR_NO_HANDLES)
+		this.Handle.Retain()
+		this.SetElements(m11, m12, m21, m22, dx, dy)
+		this.impl.init_()
 	}
-	this.Handle.Retain()
-	this.SetElements(m11, m12, m21, m22, dx, dy)
-	this.impl.init_()
 }
 
 func (this *Transform) destroy_() {
@@ -101,18 +103,20 @@ func (this *Transform) GetElements(elements []float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
-	elements[0] = float32(struct_.M11)
-	elements[1] = float32(struct_.M12)
-	elements[2] = float32(struct_.M21)
-	elements[3] = float32(struct_.M22)
-	elements[4] = float32(struct_.TX)
-	elements[5] = float32(struct_.TY)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
+		elements[0] = float32(struct_.M11)
+		elements[1] = float32(struct_.M12)
+		elements[2] = float32(struct_.M21)
+		elements[3] = float32(struct_.M22)
+		elements[4] = float32(struct_.TX)
+		elements[5] = float32(struct_.TY)
+	}
 }
 
 func (this *Transform) Identity() {
@@ -123,15 +127,17 @@ func (this *Transform) Identity() {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
-	struct_.M11 = float64(1)
-	struct_.M22 = float64(1)
-	this.Handle.SetTransformStruct(struct_)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
+		struct_.M11 = float64(1)
+		struct_.M22 = float64(1)
+		this.Handle.SetTransformStruct(struct_)
+	}
 }
 
 func (this *Transform) Invert() {
@@ -142,16 +148,18 @@ func (this *Transform) Invert() {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
+		if (struct_.M11*struct_.M22 - struct_.M12*struct_.M21) == 0 {
+			Error(ERROR_CANNOT_INVERT_MATRIX)
 		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
-	if (struct_.M11*struct_.M22 - struct_.M12*struct_.M21) == 0 {
-		Error(ERROR_CANNOT_INVERT_MATRIX)
+		this.Handle.Invert()
 	}
-	this.Handle.Invert()
 }
 
 func (this *Transform) isDisposed_() bool {
@@ -166,13 +174,15 @@ func (this *Transform) IsIdentity() bool {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
-	return struct_.M11 == 1 && struct_.M12 == 0 && struct_.M21 == 0 && struct_.M22 == 1 && struct_.TX == 0 && struct_.TY == 0
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = this.Handle.TransformStruct()
+		return struct_.M11 == 1 && struct_.M12 == 0 && struct_.M21 == 0 && struct_.M22 == 1 && struct_.TX == 0 && struct_.TY == 0
+	}
 }
 
 func (this *Transform) Multiply(matrixLike TransformLike) {
@@ -194,12 +204,14 @@ func (this *Transform) Multiply(matrixLike TransformLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.PrependTransform(matrix.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.PrependTransform(matrix.Handle)
+	}
 }
 
 func (this *Transform) Rotate(angle float32) {
@@ -210,12 +222,14 @@ func (this *Transform) Rotate(angle float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.RotateByDegrees(float64(angle))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.RotateByDegrees(float64(angle))
+	}
 }
 
 func (this *Transform) Scale(scaleX float32, scaleY float32) {
@@ -226,12 +240,14 @@ func (this *Transform) Scale(scaleX float32, scaleY float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.ScaleXBy(float64(scaleX), float64(scaleY))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.ScaleXBy(float64(scaleX), float64(scaleY))
+	}
 }
 
 func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 float32, dx float32, dy float32) {
@@ -242,19 +258,21 @@ func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 fl
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
-	struct_.M11 = float64(m11)
-	struct_.M12 = float64(m12)
-	struct_.M21 = float64(m21)
-	struct_.M22 = float64(m22)
-	struct_.TX = float64(dx)
-	struct_.TY = float64(dy)
-	this.Handle.SetTransformStruct(struct_)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
+		struct_.M11 = float64(m11)
+		struct_.M12 = float64(m12)
+		struct_.M21 = float64(m21)
+		struct_.M22 = float64(m22)
+		struct_.TX = float64(dx)
+		struct_.TY = float64(dy)
+		this.Handle.SetTransformStruct(struct_)
+	}
 }
 
 func (this *Transform) Shear(shearX float32, shearY float32) {
@@ -265,19 +283,21 @@ func (this *Transform) Shear(shearX float32, shearY float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
-	struct_.M11 = float64(1)
-	struct_.M12 = float64(shearX)
-	struct_.M21 = float64(shearY)
-	struct_.M22 = float64(1)
-	var matrix *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	matrix.SetTransformStruct(struct_)
-	this.Handle.PrependTransform(matrix)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var struct_ cocoa.NSAffineTransformStruct = cocoa.NSAffineTransformStruct{}
+		struct_.M11 = float64(1)
+		struct_.M12 = float64(shearX)
+		struct_.M21 = float64(shearY)
+		struct_.M22 = float64(1)
+		var matrix *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		matrix.SetTransformStruct(struct_)
+		this.Handle.PrependTransform(matrix)
+	}
 }
 
 func (this *Transform) TransformFn(pointArray []float32) {
@@ -291,25 +311,27 @@ func (this *Transform) TransformFn(pointArray []float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var point cocoa.NSPoint = cocoa.NSPoint{}
-	var length int32 = int32(len(pointArray)) / 2
 	{
-		var i int32 = 0
-		var j int32 = 0
-		for ; i < length; func() {
-			i++
-			j += 2
-		}() {
-			point.X = float64(pointArray[j])
-			point.Y = float64(pointArray[j+1])
-			point = this.Handle.TransformPoint(point)
-			pointArray[j] = float32(point.X)
-			pointArray[j+1] = float32(point.Y)
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var point cocoa.NSPoint = cocoa.NSPoint{}
+		var length int32 = int32(len(pointArray)) / 2
+		{
+			var i int32 = 0
+			var j int32 = 0
+			for ; i < length; func() {
+				i++
+				j += 2
+			}() {
+				point.X = float64(pointArray[j])
+				point.Y = float64(pointArray[j+1])
+				point = this.Handle.TransformPoint(point)
+				pointArray[j] = float32(point.X)
+				pointArray[j+1] = float32(point.Y)
+			}
 		}
 	}
 }
@@ -322,12 +344,14 @@ func (this *Transform) Translate(offsetX float32, offsetY float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.TranslateXBy(float64(offsetX), float64(offsetY))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.TranslateXBy(float64(offsetX), float64(offsetY))
+	}
 }
 
 func (this *Transform) String() string {

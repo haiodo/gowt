@@ -66,6 +66,9 @@ final class ExpressionEmitter {
 	// Closure typed to e's own resolved type, so it type-checks wherever e's text lands.
 	String panicClosure(Expression e, String message) {
 		ITypeBinding t = e.resolveTypeBinding();
+		// An anonymous class has no Go type of its own here: its base type is what the context expects.
+		if (t != null && t.isAnonymous()) t = t.getSuperclass().getQualifiedName().equals("java.lang.Object") && t.getInterfaces().length > 0
+				? t.getInterfaces()[0] : t.getSuperclass();
 		String goType = t == null ? "" : dev.gowt.j2go.GoTypes.map(t, emitter);
 		return panicClosureTyped(goType, message);
 	}
@@ -214,14 +217,19 @@ final class ExpressionEmitter {
 			if (jdk.contains(".")) emitter.fileImports.add(jdk.substring(0, jdk.indexOf('.')));
 			return jdk;
 		}
-		if (Manual.isManual(qualified)) return Manual.staticMember(qualified, vb.getName());
+		if (Manual.isManual(qualified)) return emitter.qualifyManual(Manual.staticMember(qualified, vb.getName()), declaring);
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
 		if (ci != null) {
 			String goName = staticFieldGoName(emitter, ci, vb.getName());
 			return staticFieldClashesWithMethod(declaring, vb.getName()) ? goName + "_" : goName;
 		}
+		// A JDK compile-time constant (Short.MAX_VALUE) is its value; anything else panics if reached.
+		Object cv = vb.getConstantValue();
+		if (cv instanceof Number || cv instanceof Boolean) return cv.toString();
+		if (cv instanceof Character c) return Integer.toString(c);
+		if (cv instanceof String str) return goStringLiteral(str);
 		emitter.unsupported.add("StaticField: unresolved declaring type for " + vb.getName());
-		return vb.getName();
+		return panicClosureTyped(dev.gowt.j2go.GoTypes.map(vb.getType(), emitter), "unresolved static field " + vb.getName());
 	}
 
 	private static final java.util.Map<String, String> JDK_CONSTANTS = java.util.Map.of(

@@ -1,6 +1,7 @@
 package jrt
 
 import (
+	"bytes"
 	"io"
 	"os"
 )
@@ -163,3 +164,38 @@ func NewFileOutputStream(filename string) OutputStream {
 	}
 	return NewOutputStream(f)
 }
+
+// ByteArrayInputStream is java.io.ByteArrayInputStream.
+type ByteArrayInputStream struct{ readerInputStream }
+
+func NewByteArrayInputStream(buf []int8) *ByteArrayInputStream {
+	b := make([]byte, len(buf))
+	for i, v := range buf {
+		b[i] = byte(v)
+	}
+	return &ByteArrayInputStream{readerInputStream{r: bytes.NewReader(b)}}
+}
+
+// ByteArrayOutputStream is java.io.ByteArrayOutputStream.
+type ByteArrayOutputStream struct {
+	writerOutputStream
+	buf *bytes.Buffer
+}
+
+func NewByteArrayOutputStream() *ByteArrayOutputStream {
+	b := &bytes.Buffer{}
+	return &ByteArrayOutputStream{writerOutputStream{w: b}, b}
+}
+
+func (s *ByteArrayOutputStream) ToByteArray() []int8 {
+	out := make([]int8, s.buf.Len())
+	for i, v := range s.buf.Bytes() {
+		out[i] = int8(v)
+	}
+	return out
+}
+
+func (s *ByteArrayOutputStream) Size() int32 { return int32(s.buf.Len()) }
+
+// ToString is toString() and toString(Charset): the bytes as UTF-8, the only charset used.
+func (s *ByteArrayOutputStream) ToString(charset ...any) string { return s.buf.String() }

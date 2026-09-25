@@ -175,9 +175,10 @@ final class ClassEmitter {
 			}
 		}
 		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName));
+		out.append(emitter.testRegistration(td, ci));
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
-				emitClass(nested, out);
+				emitTopLevelClass(nested, out);
 			}
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;

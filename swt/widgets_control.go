@@ -1569,40 +1569,42 @@ func (this *Control) imeInComposition_() bool {
 func (this *Control) insertText_(id int64, sel int64, string_ int64) bool {
 	var saver *cocoa.NSObject = cocoa.NewNSObjectOverload1(string_)
 	saver.Retain()
-	defer func() {
-		saver.Release()
-	}()
-	if this.HasKeyboardFocus(id) {
-		var s *Shell = this.impl.getShell_()
-		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
-		if nsEvent != (nil) {
-			var type_ int64 = nsEvent.Type()
-			if type_ == int64(cocoa.OSNSKeyDown) || type_ == int64(cocoa.OSNSKeyUp) || type_ == int64(cocoa.OSNSSystemDefined) {
-				var str *cocoa.NSString = cocoa.NewNSStringOverload1(string_)
-				if str.IsKindOfClass(cocoa.OSClass_NSAttributedString) {
-					str = cocoa.NewNSAttributedStringOverload1(string_).String()
-				}
-				var length int32 = int32(str.Length())
-				var buffer []uint16 = make([]uint16, length)
-				str.GetCharacters(buffer)
-				for i := int32(0); i < int32(len(buffer)); i++ {
-					s.keyInputHappened = true
-					var event *Event = NewEvent()
-					if i == 0 && type_ == int64(cocoa.OSNSKeyDown) {
-						this.SetKeyState(event, KeyDown, nsEvent)
+	{
+		defer func() {
+			saver.Release()
+		}()
+		if this.HasKeyboardFocus(id) {
+			var s *Shell = this.impl.getShell_()
+			var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
+			if nsEvent != (nil) {
+				var type_ int64 = nsEvent.Type()
+				if type_ == int64(cocoa.OSNSKeyDown) || type_ == int64(cocoa.OSNSKeyUp) || type_ == int64(cocoa.OSNSSystemDefined) {
+					var str *cocoa.NSString = cocoa.NewNSStringOverload1(string_)
+					if str.IsKindOfClass(cocoa.OSClass_NSAttributedString) {
+						str = cocoa.NewNSAttributedStringOverload1(string_).String()
 					}
-					event.Character = buffer[i]
-					if !this.impl.sendKeyEventTypeEvent_(KeyDown, event) {
-						return false
+					var length int32 = int32(str.Length())
+					var buffer []uint16 = make([]uint16, length)
+					str.GetCharacters(buffer)
+					for i := int32(0); i < int32(len(buffer)); i++ {
+						s.keyInputHappened = true
+						var event *Event = NewEvent()
+						if i == 0 && type_ == int64(cocoa.OSNSKeyDown) {
+							this.SetKeyState(event, KeyDown, nsEvent)
+						}
+						event.Character = buffer[i]
+						if !this.impl.sendKeyEventTypeEvent_(KeyDown, event) {
+							return false
+						}
 					}
 				}
 			}
+			if (this.state & WidgetCANVAS) != 0 {
+				return true
+			}
 		}
-		if (this.state & WidgetCANVAS) != 0 {
-			return true
-		}
+		return this.Widget.insertText_(id, sel, string_)
 	}
-	return this.Widget.insertText_(id, sel, string_)
 }
 
 func (this *Control) Internal_new_GC(data *GCData) int64 {
@@ -4162,17 +4164,19 @@ func (this *Control) UpdateAll(all bool) bool {
 	} else {
 		window = nil
 	}
-	defer func() {
+	func() {
+		defer func() {
+			if window != (nil) {
+				window.EnableFlushWindow()
+				window.Release()
+			}
+		}()
 		if window != (nil) {
-			window.EnableFlushWindow()
-			window.Release()
+			window.Retain()
+			window.DisableFlushWindow()
 		}
+		this.View.DisplayIfNeeded()
 	}()
-	if window != (nil) {
-		window.Retain()
-		window.DisableFlushWindow()
-	}
-	this.View.DisplayIfNeeded()
 	return true
 }
 

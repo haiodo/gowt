@@ -117,25 +117,27 @@ func (this *GC) initGCDrawableStyle(drawable Drawable, style int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var data *GCData = NewGCData()
+		data.Style = GCCheckStyle(style)
+		var contextId int64 = drawable.Internal_new_GC(data)
+		var device *Device = data.Device
+		if device == (nil) {
+			device = DeviceGetDevice()
 		}
-	}()
-	var data *GCData = NewGCData()
-	data.Style = GCCheckStyle(style)
-	var contextId int64 = drawable.Internal_new_GC(data)
-	var device *Device = data.Device
-	if device == (nil) {
-		device = DeviceGetDevice()
+		if device == (nil) {
+			Error(ERROR_NULL_ARGUMENT)
+		}
+		data.Device = device
+		this.device = data.Device
+		this.Init(drawable, data, contextId)
+		this.impl.init_()
 	}
-	if device == (nil) {
-		Error(ERROR_NULL_ARGUMENT)
-	}
-	data.Device = device
-	this.device = data.Device
-	this.Init(drawable, data, contextId)
-	this.impl.init_()
 }
 
 func (this *GC) CalculateTransformationScale() float32 {
@@ -233,13 +235,13 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			this.data.State &= ^(GCBACKGROUND | GCFOREGROUND)
 		}
 	}
-	var cond324 int32
+	var cond327 int32
 	if this.data.XorMode {
-		cond324 = cocoa.OSKCGBlendModeDifference
+		cond327 = cocoa.OSKCGBlendModeDifference
 	} else {
-		cond324 = cocoa.OSKCGBlendModeNormal
+		cond327 = cocoa.OSKCGBlendModeNormal
 	}
-	cocoa.OSCGContextSetBlendMode(this.Handle.GraphicsPort(), cond324)
+	cocoa.OSCGContextSetBlendMode(this.Handle.GraphicsPort(), cond327)
 	var state int32 = this.data.State
 	if (state & mask) == mask {
 		return pool
@@ -257,9 +259,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond325 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Fg = cond325
-			var fg *cocoa.NSColor = cond325
+			cond328 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Fg = cond328
+			var fg *cocoa.NSColor = cond328
 			fg.Retain()
 			fg.SetStroke()
 		}
@@ -275,9 +277,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond326 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Fg = cond326
-			var fg *cocoa.NSColor = cond326
+			cond329 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Fg = cond329
+			var fg *cocoa.NSColor = cond329
 			fg.Retain()
 			fg.SetFill()
 		}
@@ -294,9 +296,9 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Bg != (nil) {
 				this.data.Bg.Release()
 			}
-			cond327 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
-			this.data.Bg = cond327
-			var bg *cocoa.NSColor = cond327
+			cond330 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			this.data.Bg = cond330
+			var bg *cocoa.NSColor = cond330
 			bg.Retain()
 			bg.SetFill()
 		}
@@ -304,13 +306,13 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 	}
 	var path *cocoa.NSBezierPath = this.data.Path
 	if (state & GCLINE_WIDTH) != 0 {
-		var cond328 float32
+		var cond331 float32
 		if this.data.LineWidth == 0 {
-			cond328 = float32(1)
+			cond331 = float32(1)
 		} else {
-			cond328 = this.data.LineWidth
+			cond331 = this.data.LineWidth
 		}
-		path.SetLineWidth(float64(cond328))
+		path.SetLineWidth(float64(cond331))
 		switch this.data.LineStyle {
 		case LINE_DOT, LINE_DASH, LINE_DASHDOT, LINE_DASHDOTDOT:
 			state |= GCLINE_STYLE
@@ -441,110 +443,112 @@ func (this *GC) CopyArea(imageLike ImageLike, x int32, y int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCTRANSFORM | GCCLIPPING)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if this.data.Image != (nil) {
-		var srcX int32 = x
-		var srcY int32 = y
-		var destX int32 = 0
-		var destY int32 = 0
-		var scaleFactor int32 = DPIUtilGetDeviceZoom() / 100
-		var srcSize cocoa.NSSize = this.data.Image.Handle.Size()
-		var imgHeight int32 = int32(srcSize.Height)
-		var destWidth int32 = int32(srcSize.Width) - x
-		var destHeight int32 = int32(srcSize.Height) - y
-		var srcWidth int32 = destWidth
-		var srcHeight int32 = destHeight
-		var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextGraphicsContextWithBitmapImageRep(image.GetRepresentation0())
-		cocoa.NSGraphicsContextStatic_saveGraphicsState()
-		cocoa.NSGraphicsContextSetCurrentContext(context)
-		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-		var size cocoa.NSSize = image.Handle.Size()
-		transform.TranslateXBy(float64(0), (size.Height-float64((destHeight+2*destY)))*float64(scaleFactor))
-		transform.Concat()
-		var srcRect cocoa.NSRect = cocoa.NSRect{}
-		srcRect.X = float64(srcX)
-		srcRect.Y = float64(imgHeight - (srcY + srcHeight))
-		srcRect.Width = float64(srcWidth)
-		srcRect.Height = float64(srcHeight)
-		var destRect cocoa.NSRect = cocoa.NSRect{}
-		destRect.X = float64(destX)
-		destRect.Y = float64(destY)
-		destRect.Width = float64(destWidth * scaleFactor)
-		destRect.Height = float64(destHeight * scaleFactor)
-		this.data.Image.Handle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationCopy), float64(1))
-		cocoa.NSGraphicsContextStatic_restoreGraphicsState()
-		return
-	}
-	if this.data.View != (nil) {
-		var size cocoa.NSSize = image.Handle.Size()
-		var topView *cocoa.NSView = this.GetTopView(this.data.View)
-		var rect cocoa.NSRect = cocoa.NSRect{}
-		rect.X = float64(x)
-		rect.Y = float64(y)
-		rect.Width = size.Width
-		rect.Height = size.Height
-		var imageRep *cocoa.NSBitmapImageRep = topView.BitmapImageRepForCachingDisplayInRect(rect)
-		imageRep.SetSize(size)
-		topView.CacheDisplayInRect(rect, imageRep)
-		var rep *cocoa.NSBitmapImageRep = image.GetRepresentation0()
-		image.Handle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(imageRep))
-		image.Handle.RemoveRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
-		return
-	}
-	if this.Handle.IsDrawingToScreen() {
-		var imageHandle *cocoa.NSImage = image.Handle
-		var size cocoa.NSSize = imageHandle.Size()
-		var screens *cocoa.NSArray = nil
-		var key *cocoa.NSString = nil
-		screens = cocoa.NSScreenScreens()
-		key = cocoa.NSStringStringWith("NSScreenNumber")
-		var rect cocoa.CGRect = cocoa.CGRect{}
-		rect.Origin.X = float64(x)
-		rect.Origin.Y = float64(y)
-		rect.Size.Width = size.Width
-		rect.Size.Height = size.Height
-		var displayCount int32 = 16
-		var displays int64 = cocoa.CMalloc(int64(4 * displayCount))
-		var countPtr int64 = cocoa.CMalloc(int64(4))
-		if cocoa.OSCGGetDisplaysWithRect(rect, displayCount, displays, countPtr) != 0 {
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if this.data.Image != (nil) {
+			var srcX int32 = x
+			var srcY int32 = y
+			var destX int32 = 0
+			var destY int32 = 0
+			var scaleFactor int32 = DPIUtilGetDeviceZoom() / 100
+			var srcSize cocoa.NSSize = this.data.Image.Handle.Size()
+			var imgHeight int32 = int32(srcSize.Height)
+			var destWidth int32 = int32(srcSize.Width) - x
+			var destHeight int32 = int32(srcSize.Height) - y
+			var srcWidth int32 = destWidth
+			var srcHeight int32 = destHeight
+			var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextGraphicsContextWithBitmapImageRep(image.GetRepresentation0())
+			cocoa.NSGraphicsContextStatic_saveGraphicsState()
+			cocoa.NSGraphicsContextSetCurrentContext(context)
+			var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+			var size cocoa.NSSize = image.Handle.Size()
+			transform.TranslateXBy(float64(0), (size.Height-float64((destHeight+2*destY)))*float64(scaleFactor))
+			transform.Concat()
+			var srcRect cocoa.NSRect = cocoa.NSRect{}
+			srcRect.X = float64(srcX)
+			srcRect.Y = float64(imgHeight - (srcY + srcHeight))
+			srcRect.Width = float64(srcWidth)
+			srcRect.Height = float64(srcHeight)
+			var destRect cocoa.NSRect = cocoa.NSRect{}
+			destRect.X = float64(destX)
+			destRect.Y = float64(destY)
+			destRect.Width = float64(destWidth * scaleFactor)
+			destRect.Height = float64(destHeight * scaleFactor)
+			this.data.Image.Handle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationCopy), float64(1))
+			cocoa.NSGraphicsContextStatic_restoreGraphicsState()
 			return
 		}
-		var count []int32 = make([]int32, 1)
-		var display []int32 = make([]int32, 1)
-		cocoa.CMemmoveOverload15(count, countPtr, int64(cocoa.CPTR_SIZEOF))
-		for i := int32(0); i < count[0]; i++ {
-			cocoa.CMemmoveOverload15(display, displays+int64((i*4)), int64(4))
-			cocoa.OSCGDisplayBounds(display[0], &rect)
-			var scaling float64 = float64(1)
-			if screens != (nil) {
-				for j := int32(0); int64(j) < screens.Count(); j++ {
-					var screen *cocoa.NSScreen = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(j)))
-					if display[0] == cocoa.NewNSNumberOverload2(screen.DeviceDescription().ObjectForKey(upcastcocoaNSStringTococoaId(key))).IntValue() {
-						scaling = screen.BackingScaleFactor()
-						break
+		if this.data.View != (nil) {
+			var size cocoa.NSSize = image.Handle.Size()
+			var topView *cocoa.NSView = this.GetTopView(this.data.View)
+			var rect cocoa.NSRect = cocoa.NSRect{}
+			rect.X = float64(x)
+			rect.Y = float64(y)
+			rect.Width = size.Width
+			rect.Height = size.Height
+			var imageRep *cocoa.NSBitmapImageRep = topView.BitmapImageRepForCachingDisplayInRect(rect)
+			imageRep.SetSize(size)
+			topView.CacheDisplayInRect(rect, imageRep)
+			var rep *cocoa.NSBitmapImageRep = image.GetRepresentation0()
+			image.Handle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(imageRep))
+			image.Handle.RemoveRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
+			return
+		}
+		if this.Handle.IsDrawingToScreen() {
+			var imageHandle *cocoa.NSImage = image.Handle
+			var size cocoa.NSSize = imageHandle.Size()
+			var screens *cocoa.NSArray = nil
+			var key *cocoa.NSString = nil
+			screens = cocoa.NSScreenScreens()
+			key = cocoa.NSStringStringWith("NSScreenNumber")
+			var rect cocoa.CGRect = cocoa.CGRect{}
+			rect.Origin.X = float64(x)
+			rect.Origin.Y = float64(y)
+			rect.Size.Width = size.Width
+			rect.Size.Height = size.Height
+			var displayCount int32 = 16
+			var displays int64 = cocoa.CMalloc(int64(4 * displayCount))
+			var countPtr int64 = cocoa.CMalloc(int64(4))
+			if cocoa.OSCGGetDisplaysWithRect(rect, displayCount, displays, countPtr) != 0 {
+				return
+			}
+			var count []int32 = make([]int32, 1)
+			var display []int32 = make([]int32, 1)
+			cocoa.CMemmoveOverload15(count, countPtr, int64(cocoa.CPTR_SIZEOF))
+			for i := int32(0); i < count[0]; i++ {
+				cocoa.CMemmoveOverload15(display, displays+int64((i*4)), int64(4))
+				cocoa.OSCGDisplayBounds(display[0], &rect)
+				var scaling float64 = float64(1)
+				if screens != (nil) {
+					for j := int32(0); int64(j) < screens.Count(); j++ {
+						var screen *cocoa.NSScreen = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(j)))
+						if display[0] == cocoa.NewNSNumberOverload2(screen.DeviceDescription().ObjectForKey(upcastcocoaNSStringTococoaId(key))).IntValue() {
+							scaling = screen.BackingScaleFactor()
+							break
+						}
 					}
 				}
+				if scaling > 1 {
+					var width int32 = int32((size.Width * scaling))
+					var height int32 = int32((size.Height * scaling))
+					var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
+					rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(3), false, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
+					cocoa.CMemset(rep.BitmapData(), 0xFF, int64(width*height*4))
+					imageHandle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
+					rep.Release()
+				}
+				var srcImage int64 = int64(0)
+				srcImage = cocoa.OSCGDisplayCreateImage(display[0])
+				if srcImage != 0 {
+					this.CopyAreaImageXYSrcImage(image, int32((float64(x)*scaling - rect.Origin.X)), int32((float64(y)*scaling - rect.Origin.Y)), srcImage)
+					cocoa.OSCGImageRelease(srcImage)
+				}
 			}
-			if scaling > 1 {
-				var width int32 = int32((size.Width * scaling))
-				var height int32 = int32((size.Height * scaling))
-				var rep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
-				rep = rep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(3), false, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
-				cocoa.CMemset(rep.BitmapData(), 0xFF, int64(width*height*4))
-				imageHandle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
-				rep.Release()
-			}
-			var srcImage int64 = int64(0)
-			srcImage = cocoa.OSCGDisplayCreateImage(display[0])
-			if srcImage != 0 {
-				this.CopyAreaImageXYSrcImage(image, int32((float64(x)*scaling - rect.Origin.X)), int32((float64(y)*scaling - rect.Origin.Y)), srcImage)
-				cocoa.OSCGImageRelease(srcImage)
-			}
+			cocoa.CFree(displays)
+			cocoa.CFree(countPtr)
 		}
-		cocoa.CFree(displays)
-		cocoa.CFree(countPtr)
 	}
 }
 
@@ -610,125 +614,127 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int3
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCTRANSFORM | GCCLIPPING)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var image *Image = this.data.Image
-	if image != (nil) {
-		var imageHandle *cocoa.NSImage = image.Handle
-		var size cocoa.NSSize = imageHandle.Size()
-		var imgHeight int32 = int32(size.Height)
-		this.Handle.SaveGraphicsState()
-		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-		transform.ScaleXBy(float64(1), float64(-1))
-		transform.TranslateXBy(float64(0), float64(-(height + 2*destY)))
-		transform.Concat()
-		var srcRect cocoa.NSRect = cocoa.NSRect{}
-		srcRect.X = float64(srcX)
-		srcRect.Y = float64(imgHeight - (srcY + height))
-		srcRect.Width = float64(width)
-		srcRect.Height = float64(height)
-		var destRect cocoa.NSRect = cocoa.NSRect{}
-		destRect.X = float64(destX)
-		destRect.Y = float64(destY)
-		destRect.Width = float64(width)
-		destRect.Height = float64(height)
-		imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationCopy), float64(1))
-		this.Handle.RestoreGraphicsState()
-		return
-	}
-	if this.data.View != (nil) {
-		var view *cocoa.NSView = this.data.View
-		var visibleRect cocoa.NSRect = view.VisibleRect()
-		if visibleRect.Width <= 0 || visibleRect.Height <= 0 {
-			return
-		}
-		var damage cocoa.NSRect = cocoa.NSRect{}
-		damage.X = float64(srcX)
-		damage.Y = float64(srcY)
-		damage.Width = float64(width)
-		damage.Height = float64(height)
-		var dest cocoa.NSPoint = cocoa.NSPoint{}
-		dest.X = float64(destX)
-		dest.Y = float64(destY)
-		view.LockFocus()
-		var delta cocoa.NSSize = cocoa.NSSize{}
-		delta.Width = float64(deltaX)
-		delta.Height = float64(deltaY)
-		view.ScrollRect(damage, delta)
-		view.UnlockFocus()
-		if paint {
-			var disjoint bool = (destX+width < srcX) || (srcX+width < destX) || (destY+height < srcY) || (srcY+height < destY)
-			if disjoint {
-				view.SetNeedsDisplayInRect(damage)
-			} else {
-				if deltaX != 0 {
-					var newX int32 = destX - deltaX
-					if deltaX < 0 {
-						newX = destX + width
-					}
-					damage.X = float64(newX)
-					abs329 := deltaX
-					if abs329 < 0 {
-						abs329 = -abs329
-					}
-					damage.Width = float64(abs329)
-					view.SetNeedsDisplayInRect(damage)
-				}
-				if deltaY != 0 {
-					var newY int32 = destY - deltaY
-					if deltaY < 0 {
-						newY = destY + height
-					}
-					damage.X = float64(srcX)
-					damage.Y = float64(newY)
-					damage.Width = float64(width)
-					abs330 := deltaY
-					if abs330 < 0 {
-						abs330 = -abs330
-					}
-					damage.Height = float64(abs330)
-					view.SetNeedsDisplayInRect(damage)
-				}
-			}
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var image *Image = this.data.Image
+		if image != (nil) {
+			var imageHandle *cocoa.NSImage = image.Handle
+			var size cocoa.NSSize = imageHandle.Size()
+			var imgHeight int32 = int32(size.Height)
+			this.Handle.SaveGraphicsState()
+			var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+			transform.ScaleXBy(float64(1), float64(-1))
+			transform.TranslateXBy(float64(0), float64(-(height + 2*destY)))
+			transform.Concat()
 			var srcRect cocoa.NSRect = cocoa.NSRect{}
 			srcRect.X = float64(srcX)
-			srcRect.Y = float64(srcY)
+			srcRect.Y = float64(imgHeight - (srcY + height))
 			srcRect.Width = float64(width)
 			srcRect.Height = float64(height)
-			cocoa.OSNSIntersectionRect(&visibleRect, &visibleRect, &srcRect)
-			if !cocoa.OSNSEqualRects(visibleRect, srcRect) {
-				if srcRect.X != visibleRect.X {
-					damage.X = srcRect.X + float64(deltaX)
-					damage.Y = srcRect.Y + float64(deltaY)
-					damage.Width = visibleRect.X - srcRect.X
-					damage.Height = srcRect.Height
+			var destRect cocoa.NSRect = cocoa.NSRect{}
+			destRect.X = float64(destX)
+			destRect.Y = float64(destY)
+			destRect.Width = float64(width)
+			destRect.Height = float64(height)
+			imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationCopy), float64(1))
+			this.Handle.RestoreGraphicsState()
+			return
+		}
+		if this.data.View != (nil) {
+			var view *cocoa.NSView = this.data.View
+			var visibleRect cocoa.NSRect = view.VisibleRect()
+			if visibleRect.Width <= 0 || visibleRect.Height <= 0 {
+				return
+			}
+			var damage cocoa.NSRect = cocoa.NSRect{}
+			damage.X = float64(srcX)
+			damage.Y = float64(srcY)
+			damage.Width = float64(width)
+			damage.Height = float64(height)
+			var dest cocoa.NSPoint = cocoa.NSPoint{}
+			dest.X = float64(destX)
+			dest.Y = float64(destY)
+			view.LockFocus()
+			var delta cocoa.NSSize = cocoa.NSSize{}
+			delta.Width = float64(deltaX)
+			delta.Height = float64(deltaY)
+			view.ScrollRect(damage, delta)
+			view.UnlockFocus()
+			if paint {
+				var disjoint bool = (destX+width < srcX) || (srcX+width < destX) || (destY+height < srcY) || (srcY+height < destY)
+				if disjoint {
 					view.SetNeedsDisplayInRect(damage)
+				} else {
+					if deltaX != 0 {
+						var newX int32 = destX - deltaX
+						if deltaX < 0 {
+							newX = destX + width
+						}
+						damage.X = float64(newX)
+						abs332 := deltaX
+						if abs332 < 0 {
+							abs332 = -abs332
+						}
+						damage.Width = float64(abs332)
+						view.SetNeedsDisplayInRect(damage)
+					}
+					if deltaY != 0 {
+						var newY int32 = destY - deltaY
+						if deltaY < 0 {
+							newY = destY + height
+						}
+						damage.X = float64(srcX)
+						damage.Y = float64(newY)
+						damage.Width = float64(width)
+						abs333 := deltaY
+						if abs333 < 0 {
+							abs333 = -abs333
+						}
+						damage.Height = float64(abs333)
+						view.SetNeedsDisplayInRect(damage)
+					}
 				}
-				if visibleRect.X+visibleRect.Width != srcRect.X+srcRect.Width {
-					damage.X = srcRect.X + visibleRect.Width + float64(deltaX)
-					damage.Y = srcRect.Y + float64(deltaY)
-					damage.Width = srcRect.Width - visibleRect.Width
-					damage.Height = srcRect.Height
-					view.SetNeedsDisplayInRect(damage)
-				}
-				if visibleRect.Y != srcRect.Y {
-					damage.X = visibleRect.X + float64(deltaX)
-					damage.Y = srcRect.Y + float64(deltaY)
-					damage.Width = visibleRect.Width
-					damage.Height = visibleRect.Y - srcRect.Y
-					view.SetNeedsDisplayInRect(damage)
-				}
-				if visibleRect.Y+visibleRect.Height != srcRect.Y+srcRect.Height {
-					damage.X = visibleRect.X + float64(deltaX)
-					damage.Y = visibleRect.Y + visibleRect.Height + float64(deltaY)
-					damage.Width = visibleRect.Width
-					damage.Height = srcRect.Y + srcRect.Height - (visibleRect.Y + visibleRect.Height)
-					view.SetNeedsDisplayInRect(damage)
+				var srcRect cocoa.NSRect = cocoa.NSRect{}
+				srcRect.X = float64(srcX)
+				srcRect.Y = float64(srcY)
+				srcRect.Width = float64(width)
+				srcRect.Height = float64(height)
+				cocoa.OSNSIntersectionRect(&visibleRect, &visibleRect, &srcRect)
+				if !cocoa.OSNSEqualRects(visibleRect, srcRect) {
+					if srcRect.X != visibleRect.X {
+						damage.X = srcRect.X + float64(deltaX)
+						damage.Y = srcRect.Y + float64(deltaY)
+						damage.Width = visibleRect.X - srcRect.X
+						damage.Height = srcRect.Height
+						view.SetNeedsDisplayInRect(damage)
+					}
+					if visibleRect.X+visibleRect.Width != srcRect.X+srcRect.Width {
+						damage.X = srcRect.X + visibleRect.Width + float64(deltaX)
+						damage.Y = srcRect.Y + float64(deltaY)
+						damage.Width = srcRect.Width - visibleRect.Width
+						damage.Height = srcRect.Height
+						view.SetNeedsDisplayInRect(damage)
+					}
+					if visibleRect.Y != srcRect.Y {
+						damage.X = visibleRect.X + float64(deltaX)
+						damage.Y = srcRect.Y + float64(deltaY)
+						damage.Width = visibleRect.Width
+						damage.Height = visibleRect.Y - srcRect.Y
+						view.SetNeedsDisplayInRect(damage)
+					}
+					if visibleRect.Y+visibleRect.Height != srcRect.Y+srcRect.Height {
+						damage.X = visibleRect.X + float64(deltaX)
+						damage.Y = visibleRect.Y + visibleRect.Height + float64(deltaY)
+						damage.Width = visibleRect.Width
+						damage.Height = srcRect.Y + srcRect.Height - (visibleRect.Y + visibleRect.Height)
+						view.SetNeedsDisplayInRect(damage)
+					}
 				}
 			}
+			return
 		}
-		return
 	}
 }
 
@@ -783,13 +789,13 @@ func (this *GC) CreateString(string_ string, flags int32, draw bool) *cocoa.NSAt
 		var i int32 = 0
 		var j int32 = 0
 		for i < int32(len(chars)) {
-			t332 := i
+			t335 := i
 			i++
-			cond331 := chars[t332]
-			t333 := j
+			cond334 := chars[t335]
+			t336 := j
 			j++
-			chars[t333] = cond331
-			var c uint16 = cond331
+			chars[t336] = cond334
+			var c uint16 = cond334
 			switch c {
 			case '&':
 				{
@@ -852,59 +858,59 @@ func (this *GC) CreateNSBezierPath(cgPath int64) *cocoa.NSBezierPath {
 		}() {
 			switch this.types[i] {
 			case int8(PATH_MOVE_TO):
-				t334 := j
+				t337 := j
 				j++
-				nsPoint.X = this.points[t334]
-				t335 := j
+				nsPoint.X = this.points[t337]
+				t338 := j
 				j++
-				nsPoint.Y = this.points[t335]
+				nsPoint.Y = this.points[t338]
 				bezierPath.MoveToPoint(nsPoint)
 				break
 			case int8(PATH_LINE_TO):
-				t336 := j
+				t339 := j
 				j++
-				nsPoint.X = this.points[t336]
-				t337 := j
+				nsPoint.X = this.points[t339]
+				t340 := j
 				j++
-				nsPoint.Y = this.points[t337]
+				nsPoint.Y = this.points[t340]
 				bezierPath.LineToPoint(nsPoint)
 				break
 			case int8(PATH_CUBIC_TO):
-				t338 := j
-				j++
-				nsPoint2.X = this.points[t338]
-				t339 := j
-				j++
-				nsPoint2.Y = this.points[t339]
-				t340 := j
-				j++
-				nsPoint3.X = this.points[t340]
 				t341 := j
 				j++
-				nsPoint3.Y = this.points[t341]
+				nsPoint2.X = this.points[t341]
 				t342 := j
 				j++
-				nsPoint.X = this.points[t342]
+				nsPoint2.Y = this.points[t342]
 				t343 := j
 				j++
-				nsPoint.Y = this.points[t343]
+				nsPoint3.X = this.points[t343]
+				t344 := j
+				j++
+				nsPoint3.Y = this.points[t344]
+				t345 := j
+				j++
+				nsPoint.X = this.points[t345]
+				t346 := j
+				j++
+				nsPoint.Y = this.points[t346]
 				bezierPath.CurveToPoint(nsPoint, nsPoint2, nsPoint3)
 				break
 			case int8(PATH_QUAD_TO):
 				var currentX float64 = nsPoint.X
 				var currentY float64 = nsPoint.Y
-				t344 := j
-				j++
-				nsPoint2.X = this.points[t344]
-				t345 := j
-				j++
-				nsPoint2.Y = this.points[t345]
-				t346 := j
-				j++
-				nsPoint.X = this.points[t346]
 				t347 := j
 				j++
-				nsPoint.Y = this.points[t347]
+				nsPoint2.X = this.points[t347]
+				t348 := j
+				j++
+				nsPoint2.Y = this.points[t348]
+				t349 := j
+				j++
+				nsPoint.X = this.points[t349]
+				t350 := j
+				j++
+				nsPoint.Y = this.points[t350]
 				var x0 float64 = currentX
 				var y0 float64 = currentY
 				var cx1 float64 = x0 + 2*(nsPoint2.X-x0)/3
@@ -1001,32 +1007,34 @@ func (this *GC) DrawArc(x int32, y int32, width int32, height int32, startAngle 
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	this.Handle.SaveGraphicsState()
-	var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	var xOffset float64 = this.data.DrawXOffset
-	var yOffset float64 = this.data.DrawYOffset
-	transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-	transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
-	var path *cocoa.NSBezierPath = this.data.Path
-	var center cocoa.NSPoint = cocoa.NSPoint{}
-	var sAngle float32 = float32(-startAngle)
-	var eAngle float32 = float32(-(startAngle + arcAngle))
-	path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
-	path.TransformUsingAffineTransform(transform)
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		this.Handle.SaveGraphicsState()
+		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		var xOffset float64 = this.data.DrawXOffset
+		var yOffset float64 = this.data.DrawYOffset
+		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
+		transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
+		var path *cocoa.NSBezierPath = this.data.Path
+		var center cocoa.NSPoint = cocoa.NSPoint{}
+		var sAngle float32 = float32(-startAngle)
+		var eAngle float32 = float32(-(startAngle + arcAngle))
+		path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
+		path.TransformUsingAffineTransform(transform)
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
+		this.Handle.RestoreGraphicsState()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
-	this.Handle.RestoreGraphicsState()
 }
 
 func (this *GC) DrawFocus(x int32, y int32, width int32, height int32) {
@@ -1034,17 +1042,19 @@ func (this *GC) DrawFocus(x int32, y int32, width int32, height int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var metric []int32 = make([]int32, 1)
-	cocoa.OSGetThemeMetric(cocoa.OSKThemeMetricFocusRectOutset, metric)
-	var rect cocoa.CGRect = cocoa.CGRect{}
-	rect.Origin.X = float64(x + metric[0])
-	rect.Origin.Y = float64(y + metric[0])
-	rect.Size.Width = float64(width - metric[0]*2)
-	rect.Size.Height = float64(height - metric[0]*2)
-	cocoa.OSHIThemeDrawFocusRect(&rect, true, this.Handle.GraphicsPort(), cocoa.OSKHIThemeOrientationNormal)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var metric []int32 = make([]int32, 1)
+		cocoa.OSGetThemeMetric(cocoa.OSKThemeMetricFocusRectOutset, metric)
+		var rect cocoa.CGRect = cocoa.CGRect{}
+		rect.Origin.X = float64(x + metric[0])
+		rect.Origin.Y = float64(y + metric[0])
+		rect.Size.Width = float64(width - metric[0]*2)
+		rect.Size.Height = float64(height - metric[0]*2)
+		cocoa.OSHIThemeDrawFocusRect(&rect, true, this.Handle.GraphicsPort(), cocoa.OSKHIThemeOrientationNormal)
+	}
 }
 
 func (this *GC) DrawImage(imageLike ImageLike, x int32, y int32) {
@@ -1149,29 +1159,31 @@ func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDes
 		}
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if srcImage.memGC != (nil) {
-		srcImage.CreateAlpha()
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if srcImage.memGC != (nil) {
+			srcImage.CreateAlpha()
+		}
+		this.Handle.SaveGraphicsState()
+		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		transform.ScaleXBy(float64(1), float64(-1))
+		transform.TranslateXBy(float64(0), float64(-(destHeight + 2*destY)))
+		transform.Concat()
+		var srcRect cocoa.NSRect = cocoa.NSRect{}
+		srcRect.X = float64(srcX)
+		srcRect.Y = float64(imgHeight - (srcY + srcHeight))
+		srcRect.Width = float64(srcWidth)
+		srcRect.Height = float64(srcHeight)
+		var destRect cocoa.NSRect = cocoa.NSRect{}
+		destRect.X = float64(destX)
+		destRect.Y = float64(destY)
+		destRect.Width = float64(destWidth)
+		destRect.Height = float64(destHeight)
+		imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(float32(this.data.Alpha)/255))
+		this.Handle.RestoreGraphicsState()
 	}
-	this.Handle.SaveGraphicsState()
-	var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	transform.ScaleXBy(float64(1), float64(-1))
-	transform.TranslateXBy(float64(0), float64(-(destHeight + 2*destY)))
-	transform.Concat()
-	var srcRect cocoa.NSRect = cocoa.NSRect{}
-	srcRect.X = float64(srcX)
-	srcRect.Y = float64(imgHeight - (srcY + srcHeight))
-	srcRect.Width = float64(srcWidth)
-	srcRect.Height = float64(srcHeight)
-	var destRect cocoa.NSRect = cocoa.NSRect{}
-	destRect.X = float64(destX)
-	destRect.Y = float64(destY)
-	destRect.Width = float64(destWidth)
-	destRect.Height = float64(destHeight)
-	imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(float32(this.data.Alpha)/255))
-	this.Handle.RestoreGraphicsState()
 }
 
 func (this *GC) DrawLine(x1 int32, y1 int32, x2 int32, y2 int32) {
@@ -1183,27 +1195,29 @@ func (this *GC) DrawLine(x1 int32, y1 int32, x2 int32, y2 int32) {
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var path *cocoa.NSBezierPath = this.data.Path
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x1) + this.data.DrawXOffset
-	pt.Y = float64(y1) + this.data.DrawYOffset
-	path.MoveToPoint(pt)
-	pt.X = float64(x2) + this.data.DrawXOffset
-	pt.Y = float64(y2) + this.data.DrawYOffset
-	path.LineToPoint(pt)
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var path *cocoa.NSBezierPath = this.data.Path
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x1) + this.data.DrawXOffset
+		pt.Y = float64(y1) + this.data.DrawYOffset
+		path.MoveToPoint(pt)
+		pt.X = float64(x2) + this.data.DrawXOffset
+		pt.Y = float64(y2) + this.data.DrawYOffset
+		path.LineToPoint(pt)
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawOval(x int32, y int32, width int32, height int32) {
@@ -1211,34 +1225,36 @@ func (this *GC) DrawOval(x int32, y int32, width int32, height int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if width < 0 {
-		x = x + width
-		width = -width
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if width < 0 {
+			x = x + width
+			width = -width
+		}
+		if height < 0 {
+			y = y + height
+			height = -height
+		}
+		var path *cocoa.NSBezierPath = this.data.Path
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x) + this.data.DrawXOffset
+		rect.Y = float64(y) + this.data.DrawXOffset
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		path.AppendBezierPathWithOvalInRect(rect)
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	if height < 0 {
-		y = y + height
-		height = -height
-	}
-	var path *cocoa.NSBezierPath = this.data.Path
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x) + this.data.DrawXOffset
-	rect.Y = float64(y) + this.data.DrawXOffset
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	path.AppendBezierPathWithOvalInRect(rect)
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawPath(pathLike PathLike) {
@@ -1257,26 +1273,28 @@ func (this *GC) DrawPath(pathLike PathLike) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	this.Handle.SaveGraphicsState()
-	var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	transform.TranslateXBy(this.data.DrawXOffset, this.data.DrawYOffset)
-	transform.Concat()
-	var drawPath *cocoa.NSBezierPath = this.data.Path
-	drawPath.AppendBezierPath(path.Handle)
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		this.Handle.SaveGraphicsState()
+		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		transform.TranslateXBy(this.data.DrawXOffset, this.data.DrawYOffset)
+		transform.Concat()
+		var drawPath *cocoa.NSBezierPath = this.data.Path
+		drawPath.AppendBezierPath(path.Handle)
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(drawPath, pattern)
+		} else {
+			drawPath.Stroke()
+		}
+		drawPath.RemoveAllPoints()
+		this.Handle.RestoreGraphicsState()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(drawPath, pattern)
-	} else {
-		drawPath.Stroke()
-	}
-	drawPath.RemoveAllPoints()
-	this.Handle.RestoreGraphicsState()
 }
 
 func (this *GC) DrawPoint(x int32, y int32) {
@@ -1284,18 +1302,20 @@ func (this *GC) DrawPoint(x int32, y int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFOREGROUND_FILL | GCCLIPPING | GCTRANSFORM)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x)
-	rect.Y = float64(y)
-	rect.Width = float64(1)
-	rect.Height = float64(1)
-	var path *cocoa.NSBezierPath = this.data.Path
-	path.AppendBezierPathWithRect(rect)
-	path.Fill()
-	path.RemoveAllPoints()
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x)
+		rect.Y = float64(y)
+		rect.Width = float64(1)
+		rect.Height = float64(1)
+		var path *cocoa.NSBezierPath = this.data.Path
+		path.AppendBezierPathWithRect(rect)
+		path.Fill()
+		path.RemoveAllPoints()
+	}
 }
 
 func (this *GC) DrawPolygon(pointArray []int32) {
@@ -1309,33 +1329,35 @@ func (this *GC) DrawPolygon(pointArray []int32) {
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var xOffset float64 = this.data.DrawXOffset
-	var yOffset float64 = this.data.DrawYOffset
-	var path *cocoa.NSBezierPath = this.data.Path
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(pointArray[0]) + xOffset
-	pt.Y = float64(pointArray[1]) + yOffset
-	path.MoveToPoint(pt)
-	var end int32 = int32(len(pointArray)) / 2 * 2
-	for i := int32(2); i < end; i += 2 {
-		pt.X = float64(pointArray[i]) + xOffset
-		pt.Y = float64(pointArray[i+1]) + yOffset
-		path.LineToPoint(pt)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var xOffset float64 = this.data.DrawXOffset
+		var yOffset float64 = this.data.DrawYOffset
+		var path *cocoa.NSBezierPath = this.data.Path
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(pointArray[0]) + xOffset
+		pt.Y = float64(pointArray[1]) + yOffset
+		path.MoveToPoint(pt)
+		var end int32 = int32(len(pointArray)) / 2 * 2
+		for i := int32(2); i < end; i += 2 {
+			pt.X = float64(pointArray[i]) + xOffset
+			pt.Y = float64(pointArray[i+1]) + yOffset
+			path.LineToPoint(pt)
+		}
+		path.ClosePath()
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	path.ClosePath()
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawPolyline(pointArray []int32) {
@@ -1349,32 +1371,34 @@ func (this *GC) DrawPolyline(pointArray []int32) {
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var xOffset float64 = this.data.DrawXOffset
-	var yOffset float64 = this.data.DrawYOffset
-	var path *cocoa.NSBezierPath = this.data.Path
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(pointArray[0]) + xOffset
-	pt.Y = float64(pointArray[1]) + yOffset
-	path.MoveToPoint(pt)
-	var end int32 = int32(len(pointArray)) / 2 * 2
-	for i := int32(2); i < end; i += 2 {
-		pt.X = float64(pointArray[i]) + xOffset
-		pt.Y = float64(pointArray[i+1]) + yOffset
-		path.LineToPoint(pt)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var xOffset float64 = this.data.DrawXOffset
+		var yOffset float64 = this.data.DrawYOffset
+		var path *cocoa.NSBezierPath = this.data.Path
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(pointArray[0]) + xOffset
+		pt.Y = float64(pointArray[1]) + yOffset
+		path.MoveToPoint(pt)
+		var end int32 = int32(len(pointArray)) / 2 * 2
+		for i := int32(2); i < end; i += 2 {
+			pt.X = float64(pointArray[i]) + xOffset
+			pt.Y = float64(pointArray[i+1]) + yOffset
+			path.LineToPoint(pt)
+		}
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawRectangle(x int32, y int32, width int32, height int32) {
@@ -1382,34 +1406,36 @@ func (this *GC) DrawRectangle(x int32, y int32, width int32, height int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if width < 0 {
-		x = x + width
-		width = -width
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if width < 0 {
+			x = x + width
+			width = -width
+		}
+		if height < 0 {
+			y = y + height
+			height = -height
+		}
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x) + this.data.DrawXOffset
+		rect.Y = float64(y) + this.data.DrawYOffset
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		var path *cocoa.NSBezierPath = this.data.Path
+		path.AppendBezierPathWithRect(rect)
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	if height < 0 {
-		y = y + height
-		height = -height
-	}
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x) + this.data.DrawXOffset
-	rect.Y = float64(y) + this.data.DrawYOffset
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	var path *cocoa.NSBezierPath = this.data.Path
-	path.AppendBezierPathWithRect(rect)
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawRectangleRect(rectLike RectangleLike) {
@@ -1436,26 +1462,28 @@ func (this *GC) DrawRoundRectangle(x int32, y int32, width int32, height int32, 
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCDRAW)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var path *cocoa.NSBezierPath = this.data.Path
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x) + this.data.DrawXOffset
-	rect.Y = float64(y) + this.data.DrawYOffset
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
-	var pattern *Pattern = this.data.ForegroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var path *cocoa.NSBezierPath = this.data.Path
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x) + this.data.DrawXOffset
+		rect.Y = float64(y) + this.data.DrawYOffset
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
+		var pattern *Pattern = this.data.ForegroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.StrokePattern(path, pattern)
+		} else {
+			path.Stroke()
+		}
+		path.RemoveAllPoints()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.StrokePattern(path, pattern)
-	} else {
-		path.Stroke()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) DrawString(string_ string, x int32, y int32) {
@@ -1463,13 +1491,13 @@ func (this *GC) DrawString(string_ string, x int32, y int32) {
 }
 
 func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32, isTransparent bool) {
-	var cond348 int32
+	var cond351 int32
 	if isTransparent {
-		cond348 = DRAW_TRANSPARENT
+		cond351 = DRAW_TRANSPARENT
 	} else {
-		cond348 = 0
+		cond351 = 0
 	}
-	this.DrawTextStringXYFlags(string_, x, y, cond348)
+	this.DrawTextStringXYFlags(string_, x, y, cond351)
 }
 
 func (this *GC) DrawText(string_ string, x int32, y int32) {
@@ -1492,35 +1520,37 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM | GCFONT | GCFOREGROUND_FILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var length int32 = int32(len(string_))
-	if length == 0 {
-		return
-	}
-	var mode bool = true
-	switch this.data.TextAntialias {
-	case DEFAULT:
-		if !this.Handle.IsDrawingToScreen() {
-			mode = false
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var length int32 = int32(len(string_))
+		if length == 0 {
+			return
 		}
-		break
-	case OFF:
-		mode = false
-		break
-	case ON:
-		mode = true
-		break
+		var mode bool = true
+		switch this.data.TextAntialias {
+		case DEFAULT:
+			if !this.Handle.IsDrawingToScreen() {
+				mode = false
+			}
+			break
+		case OFF:
+			mode = false
+			break
+		case ON:
+			mode = true
+			break
+		}
+		this.Handle.SaveGraphicsState()
+		this.Handle.SetShouldAntialias(mode)
+		if length == 1 && (flags&DRAW_TRANSPARENT) != 0 {
+			this.DoFastDrawText(string_, x, y)
+		} else {
+			this.DoDrawText(string_, x, y, flags)
+		}
+		this.Handle.RestoreGraphicsState()
 	}
-	this.Handle.SaveGraphicsState()
-	this.Handle.SetShouldAntialias(mode)
-	if length == 1 && (flags&DRAW_TRANSPARENT) != 0 {
-		this.DoFastDrawText(string_, x, y)
-	} else {
-		this.DoDrawText(string_, x, y, flags)
-	}
-	this.Handle.RestoreGraphicsState()
 }
 
 func (this *GC) DoFastDrawText(string_ string, x int32, y int32) {
@@ -1529,13 +1559,13 @@ func (this *GC) DoFastDrawText(string_ string, x int32, y int32) {
 }
 
 func (this *GC) GetTextData(string_ string) *GC_GCTextData {
-	var cond349 int64
+	var cond352 int64
 	if this.data.Font == (nil) || this.data.Font.Handle == (nil) {
-		cond349 = int64(0)
+		cond352 = int64(0)
 	} else {
-		cond349 = this.data.Font.Handle.Id
+		cond352 = this.data.Font.Handle.Id
 	}
-	var key *GC_GCTextData_Key = NewGC_GCTextData_Key(string_, this.data.Alpha, cond349, this.data.Foreground)
+	var key *GC_GCTextData_Key = NewGC_GCTextData_Key(string_, this.data.Alpha, cond352, this.data.Foreground)
 	var gcData *GC_GCTextData = this.textDataCache.Get(key)
 	if gcData == (nil) {
 		var attribStr *cocoa.NSAttributedString = this.CreateString(string_, 0, true)
@@ -1587,8 +1617,8 @@ func (this *GC) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok350 := resourceImplAsGC(object)
-	if !(ok350) {
+	_, ok353 := resourceImplAsGC(object)
+	if !(ok353) {
 		return false
 	}
 	return this.Handle == (castanyToGC(object)).Handle
@@ -1610,34 +1640,36 @@ func (this *GC) FillArc(x int32, y int32, width int32, height int32, startAngle 
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	this.Handle.SaveGraphicsState()
-	var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	var xOffset float64 = this.data.DrawXOffset
-	var yOffset float64 = this.data.DrawYOffset
-	transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-	transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
-	var path *cocoa.NSBezierPath = this.data.Path
-	var center cocoa.NSPoint = cocoa.NSPoint{}
-	path.MoveToPoint(center)
-	var sAngle float32 = float32(-startAngle)
-	var eAngle float32 = float32(-(startAngle + arcAngle))
-	path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
-	path.ClosePath()
-	path.TransformUsingAffineTransform(transform)
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		this.Handle.SaveGraphicsState()
+		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		var xOffset float64 = this.data.DrawXOffset
+		var yOffset float64 = this.data.DrawYOffset
+		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
+		transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
+		var path *cocoa.NSBezierPath = this.data.Path
+		var center cocoa.NSPoint = cocoa.NSPoint{}
+		path.MoveToPoint(center)
+		var sAngle float32 = float32(-startAngle)
+		var eAngle float32 = float32(-(startAngle + arcAngle))
+		path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
+		path.ClosePath()
+		path.TransformUsingAffineTransform(transform)
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(path, pattern)
+		} else {
+			path.Fill()
+		}
+		path.RemoveAllPoints()
+		this.Handle.RestoreGraphicsState()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(path, pattern)
-	} else {
-		path.Fill()
-	}
-	path.RemoveAllPoints()
-	this.Handle.RestoreGraphicsState()
 }
 
 func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int32, vertical bool) {
@@ -1648,59 +1680,61 @@ func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int3
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var backgroundRGB *RGB
-	var foregroundRGB *RGB
-	backgroundRGB = this.GetBackground().GetRGB()
-	foregroundRGB = this.GetForeground().GetRGB()
-	var fromRGB *RGB
-	var toRGB *RGB
-	fromRGB = foregroundRGB
-	toRGB = backgroundRGB
-	var swapColors bool = false
-	if width < 0 {
-		x += width
-		width = -width
-		if !vertical {
-			swapColors = true
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var backgroundRGB *RGB
+		var foregroundRGB *RGB
+		backgroundRGB = this.GetBackground().GetRGB()
+		foregroundRGB = this.GetForeground().GetRGB()
+		var fromRGB *RGB
+		var toRGB *RGB
+		fromRGB = foregroundRGB
+		toRGB = backgroundRGB
+		var swapColors bool = false
+		if width < 0 {
+			x += width
+			width = -width
+			if !vertical {
+				swapColors = true
+			}
 		}
-	}
-	if height < 0 {
-		y += height
-		height = -height
-		if vertical {
-			swapColors = true
+		if height < 0 {
+			y += height
+			height = -height
+			if vertical {
+				swapColors = true
+			}
 		}
-	}
-	if swapColors {
-		fromRGB = backgroundRGB
-		toRGB = foregroundRGB
-	}
-	if fromRGB.Equals(toRGB) {
-		this.FillRectangle(x, y, width, height)
-	} else {
-		var startingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(fromRGB.Red)/255), float64(float32(fromRGB.Green)/255), float64(float32(fromRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
-		var endingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(toRGB.Red)/255), float64(float32(toRGB.Green)/255), float64(float32(toRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
-		var gradient *cocoa.NSGradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(startingColor, endingColor)
-		var rect cocoa.NSRect = cocoa.NSRect{}
-		rect.X = float64(x)
-		if y < 0 {
-			rect.Y = float64(0)
+		if swapColors {
+			fromRGB = backgroundRGB
+			toRGB = foregroundRGB
+		}
+		if fromRGB.Equals(toRGB) {
+			this.FillRectangle(x, y, width, height)
 		} else {
-			rect.Y = float64(y)
+			var startingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(fromRGB.Red)/255), float64(float32(fromRGB.Green)/255), float64(float32(fromRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
+			var endingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(toRGB.Red)/255), float64(float32(toRGB.Green)/255), float64(float32(toRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
+			var gradient *cocoa.NSGradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(startingColor, endingColor)
+			var rect cocoa.NSRect = cocoa.NSRect{}
+			rect.X = float64(x)
+			if y < 0 {
+				rect.Y = float64(0)
+			} else {
+				rect.Y = float64(y)
+			}
+			rect.Width = float64(width)
+			rect.Height = float64(height)
+			var cond354 int32
+			if vertical {
+				cond354 = 90
+			} else {
+				cond354 = 0
+			}
+			gradient.DrawInRect(rect, float64(cond354))
+			gradient.Release()
 		}
-		rect.Width = float64(width)
-		rect.Height = float64(height)
-		var cond351 int32
-		if vertical {
-			cond351 = 90
-		} else {
-			cond351 = 0
-		}
-		gradient.DrawInRect(rect, float64(cond351))
-		gradient.Release()
 	}
 }
 
@@ -1709,34 +1743,36 @@ func (this *GC) FillOval(x int32, y int32, width int32, height int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if width < 0 {
-		x = x + width
-		width = -width
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if width < 0 {
+			x = x + width
+			width = -width
+		}
+		if height < 0 {
+			y = y + height
+			height = -height
+		}
+		var path *cocoa.NSBezierPath = this.data.Path
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x)
+		rect.Y = float64(y)
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		path.AppendBezierPathWithOvalInRect(rect)
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(path, pattern)
+		} else {
+			path.Fill()
+		}
+		path.RemoveAllPoints()
 	}
-	if height < 0 {
-		y = y + height
-		height = -height
-	}
-	var path *cocoa.NSBezierPath = this.data.Path
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x)
-	rect.Y = float64(y)
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	path.AppendBezierPathWithOvalInRect(rect)
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(path, pattern)
-	} else {
-		path.Fill()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) FillPattern(path *cocoa.NSBezierPath, patternLike PatternLike) {
@@ -1866,21 +1902,23 @@ func (this *GC) FillPath(pathLike PathLike) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var drawPath *cocoa.NSBezierPath = this.data.Path
-	drawPath.AppendBezierPath(path.Handle)
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var drawPath *cocoa.NSBezierPath = this.data.Path
+		drawPath.AppendBezierPath(path.Handle)
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(drawPath, pattern)
+		} else {
+			drawPath.Fill()
+		}
+		drawPath.RemoveAllPoints()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(drawPath, pattern)
-	} else {
-		drawPath.Fill()
-	}
-	drawPath.RemoveAllPoints()
 }
 
 func (this *GC) FillPolygon(pointArray []int32) {
@@ -1894,31 +1932,33 @@ func (this *GC) FillPolygon(pointArray []int32) {
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var path *cocoa.NSBezierPath = this.data.Path
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(pointArray[0])
-	pt.Y = float64(pointArray[1])
-	path.MoveToPoint(pt)
-	var end int32 = int32(len(pointArray)) / 2 * 2
-	for i := int32(2); i < end; i += 2 {
-		pt.X = float64(pointArray[i])
-		pt.Y = float64(pointArray[i+1])
-		path.LineToPoint(pt)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var path *cocoa.NSBezierPath = this.data.Path
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(pointArray[0])
+		pt.Y = float64(pointArray[1])
+		path.MoveToPoint(pt)
+		var end int32 = int32(len(pointArray)) / 2 * 2
+		for i := int32(2); i < end; i += 2 {
+			pt.X = float64(pointArray[i])
+			pt.Y = float64(pointArray[i+1])
+			path.LineToPoint(pt)
+		}
+		path.ClosePath()
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(path, pattern)
+		} else {
+			path.Fill()
+		}
+		path.RemoveAllPoints()
 	}
-	path.ClosePath()
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(path, pattern)
-	} else {
-		path.Fill()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) FillRectangle(x int32, y int32, width int32, height int32) {
@@ -1926,34 +1966,36 @@ func (this *GC) FillRectangle(x int32, y int32, width int32, height int32) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if width < 0 {
-		x = x + width
-		width = -width
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if width < 0 {
+			x = x + width
+			width = -width
+		}
+		if height < 0 {
+			y = y + height
+			height = -height
+		}
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x)
+		rect.Y = float64(y)
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		var path *cocoa.NSBezierPath = this.data.Path
+		path.AppendBezierPathWithRect(rect)
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(path, pattern)
+		} else {
+			path.Fill()
+		}
+		path.RemoveAllPoints()
 	}
-	if height < 0 {
-		y = y + height
-		height = -height
-	}
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x)
-	rect.Y = float64(y)
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	var path *cocoa.NSBezierPath = this.data.Path
-	path.AppendBezierPathWithRect(rect)
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
-	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(path, pattern)
-	} else {
-		path.Fill()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) FillRectangleRect(rectLike RectangleLike) {
@@ -1980,26 +2022,28 @@ func (this *GC) FillRoundRectangle(x int32, y int32, width int32, height int32, 
 		return
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFILL)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var path *cocoa.NSBezierPath = this.data.Path
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x)
-	rect.Y = float64(y)
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
-	var pattern *Pattern = this.data.BackgroundPattern
-	if pattern != (nil) {
-		this.SetPatternPhase(pattern)
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var path *cocoa.NSBezierPath = this.data.Path
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x)
+		rect.Y = float64(y)
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
+		var pattern *Pattern = this.data.BackgroundPattern
+		if pattern != (nil) {
+			this.SetPatternPhase(pattern)
+		}
+		if pattern != (nil) && pattern.gradient != (nil) {
+			this.FillPattern(path, pattern)
+		} else {
+			path.Fill()
+		}
+		path.RemoveAllPoints()
 	}
-	if pattern != (nil) && pattern.gradient != (nil) {
-		this.FillPattern(path, pattern)
-	} else {
-		path.Fill()
-	}
-	path.RemoveAllPoints()
 }
 
 func (this *GC) StrokePattern(path *cocoa.NSBezierPath, patternLike PatternLike) {
@@ -2089,53 +2133,55 @@ func (this *GC) GetClipping() *Rectangle {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	if this.data.View != (nil) {
-		rect = this.data.View.VisibleRect()
-	} else {
-		rect = cocoa.NSRect{}
-		if this.data.Image != (nil) {
-			var size cocoa.NSSize = this.data.Image.Handle.Size()
-			rect.Width = size.Width
-			rect.Height = size.Height
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		if this.data.View != (nil) {
+			rect = this.data.View.VisibleRect()
 		} else {
-			if this.data.Size != (cocoa.NSSize{}) {
-				rect.Width = this.data.Size.Width
-				rect.Height = this.data.Size.Height
+			rect = cocoa.NSRect{}
+			if this.data.Image != (nil) {
+				var size cocoa.NSSize = this.data.Image.Handle.Size()
+				rect.Width = size.Width
+				rect.Height = size.Height
+			} else {
+				if this.data.Size != (cocoa.NSSize{}) {
+					rect.Width = this.data.Size.Width
+					rect.Height = this.data.Size.Height
+				}
 			}
 		}
+		if this.data.PaintRect != (cocoa.NSRect{}) || this.data.ClipPath != (nil) || this.data.InverseTransform != (nil) {
+			if this.data.PaintRect != (cocoa.NSRect{}) {
+				cocoa.OSNSIntersectionRect(&rect, &rect, &this.data.PaintRect)
+			}
+			if this.data.ClipPath != (nil) {
+				var clip cocoa.NSRect = this.data.ClipPath.Bounds()
+				clip.X = float64(int32(clip.X))
+				clip.Y = float64(int32(clip.Y))
+				cocoa.OSNSIntersectionRect(&rect, &rect, &clip)
+			}
+			if this.data.InverseTransform != (nil) && rect.Width > 0 && rect.Height > 0 {
+				var pt cocoa.NSPoint = cocoa.NSPoint{}
+				pt.X = rect.X
+				pt.Y = rect.Y
+				var size cocoa.NSSize = cocoa.NSSize{}
+				size.Width = rect.Width
+				size.Height = rect.Height
+				pt = this.data.InverseTransform.TransformPoint(pt)
+				size = this.data.InverseTransform.TransformSize(size)
+				rect.X = pt.X
+				rect.Y = pt.Y
+				rect.Width = size.Width
+				rect.Height = size.Height
+			}
+		}
+		return NewRectangle(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
 	}
-	if this.data.PaintRect != (cocoa.NSRect{}) || this.data.ClipPath != (nil) || this.data.InverseTransform != (nil) {
-		if this.data.PaintRect != (cocoa.NSRect{}) {
-			cocoa.OSNSIntersectionRect(&rect, &rect, &this.data.PaintRect)
-		}
-		if this.data.ClipPath != (nil) {
-			var clip cocoa.NSRect = this.data.ClipPath.Bounds()
-			clip.X = float64(int32(clip.X))
-			clip.Y = float64(int32(clip.Y))
-			cocoa.OSNSIntersectionRect(&rect, &rect, &clip)
-		}
-		if this.data.InverseTransform != (nil) && rect.Width > 0 && rect.Height > 0 {
-			var pt cocoa.NSPoint = cocoa.NSPoint{}
-			pt.X = rect.X
-			pt.Y = rect.Y
-			var size cocoa.NSSize = cocoa.NSSize{}
-			size.Width = rect.Width
-			size.Height = rect.Height
-			pt = this.data.InverseTransform.TransformPoint(pt)
-			size = this.data.InverseTransform.TransformSize(size)
-			rect.X = pt.X
-			rect.Y = pt.Y
-			rect.Width = size.Width
-			rect.Height = size.Height
-		}
-	}
-	return NewRectangle(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
 }
 
 func (this *GC) GetClippingRegion(regionLike RegionLike) {
@@ -2157,86 +2203,88 @@ func (this *GC) GetClippingRegion(regionLike RegionLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	region.SubtractRegion(region)
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	if this.data.View != (nil) {
-		rect = this.data.View.VisibleRect()
-	} else {
-		rect = cocoa.NSRect{}
-		if this.data.Image != (nil) {
-			var size cocoa.NSSize = this.data.Image.Handle.Size()
-			rect.Width = size.Width
-			rect.Height = size.Height
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		region.SubtractRegion(region)
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		if this.data.View != (nil) {
+			rect = this.data.View.VisibleRect()
 		} else {
-			if this.data.Size != (cocoa.NSSize{}) {
-				rect.Width = this.data.Size.Width
-				rect.Height = this.data.Size.Height
+			rect = cocoa.NSRect{}
+			if this.data.Image != (nil) {
+				var size cocoa.NSSize = this.data.Image.Handle.Size()
+				rect.Width = size.Width
+				rect.Height = size.Height
+			} else {
+				if this.data.Size != (cocoa.NSSize{}) {
+					rect.Width = this.data.Size.Width
+					rect.Height = this.data.Size.Height
+				}
 			}
 		}
-	}
-	region.AddXYWidthHeight(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
-	var paintRect cocoa.NSRect = this.data.PaintRect
-	if paintRect != (cocoa.NSRect{}) {
-		region.IntersectXYWidthHeight(int32(paintRect.X), int32(paintRect.Y), int32(paintRect.Width), int32(paintRect.Height))
-	}
-	if this.data.ClipPath != (nil) {
-		var clip *cocoa.NSBezierPath = this.data.ClipPath.BezierPathByFlatteningPath()
-		var count int32 = int32(clip.ElementCount())
-		var pointCount int32 = 0
-		var clipRgn *Region = NewRegionDevice(this.device)
-		var pointArray []int32 = make([]int32, count*2)
-		var points int64 = cocoa.CMalloc(int64(cocoa.NSPointSizeof))
-		if points == 0 {
-			Error(ERROR_NO_HANDLES)
+		region.AddXYWidthHeight(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
+		var paintRect cocoa.NSRect = this.data.PaintRect
+		if paintRect != (cocoa.NSRect{}) {
+			region.IntersectXYWidthHeight(int32(paintRect.X), int32(paintRect.Y), int32(paintRect.Width), int32(paintRect.Height))
 		}
-		var pt cocoa.NSPoint = cocoa.NSPoint{}
-		for i := int32(0); i < count; i++ {
-			var element int32 = int32(clip.ElementAtIndex(int64(i), points))
-			switch element {
-			case cocoa.OSNSMoveToBezierPathElement:
-				if pointCount != 0 {
-					clipRgn.AddPointArrayCount(pointArray, pointCount)
-				}
-				pointCount = 0
-				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t352 := pointCount
-				pointCount++
-				pointArray[t352] = int32(pt.X)
-				t353 := pointCount
-				pointCount++
-				pointArray[t353] = int32(pt.Y)
-				break
-			case cocoa.OSNSLineToBezierPathElement:
-				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-				t354 := pointCount
-				pointCount++
-				pointArray[t354] = int32(pt.X)
-				t355 := pointCount
-				pointCount++
-				pointArray[t355] = int32(pt.Y)
-				break
-			case cocoa.OSNSClosePathBezierPathElement:
-				if pointCount != 0 {
-					clipRgn.AddPointArrayCount(pointArray, pointCount)
-				}
-				pointCount = 0
-				break
+		if this.data.ClipPath != (nil) {
+			var clip *cocoa.NSBezierPath = this.data.ClipPath.BezierPathByFlatteningPath()
+			var count int32 = int32(clip.ElementCount())
+			var pointCount int32 = 0
+			var clipRgn *Region = NewRegionDevice(this.device)
+			var pointArray []int32 = make([]int32, count*2)
+			var points int64 = cocoa.CMalloc(int64(cocoa.NSPointSizeof))
+			if points == 0 {
+				Error(ERROR_NO_HANDLES)
 			}
+			var pt cocoa.NSPoint = cocoa.NSPoint{}
+			for i := int32(0); i < count; i++ {
+				var element int32 = int32(clip.ElementAtIndex(int64(i), points))
+				switch element {
+				case cocoa.OSNSMoveToBezierPathElement:
+					if pointCount != 0 {
+						clipRgn.AddPointArrayCount(pointArray, pointCount)
+					}
+					pointCount = 0
+					cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+					t355 := pointCount
+					pointCount++
+					pointArray[t355] = int32(pt.X)
+					t356 := pointCount
+					pointCount++
+					pointArray[t356] = int32(pt.Y)
+					break
+				case cocoa.OSNSLineToBezierPathElement:
+					cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+					t357 := pointCount
+					pointCount++
+					pointArray[t357] = int32(pt.X)
+					t358 := pointCount
+					pointCount++
+					pointArray[t358] = int32(pt.Y)
+					break
+				case cocoa.OSNSClosePathBezierPathElement:
+					if pointCount != 0 {
+						clipRgn.AddPointArrayCount(pointArray, pointCount)
+					}
+					pointCount = 0
+					break
+				}
+			}
+			if pointCount != 0 {
+				clipRgn.AddPointArrayCount(pointArray, pointCount)
+			}
+			cocoa.CFree(points)
+			region.IntersectRegion(clipRgn)
+			clipRgn.impl.dispose_()
 		}
-		if pointCount != 0 {
-			clipRgn.AddPointArrayCount(pointArray, pointCount)
+		if this.data.InverseTransform != (nil) {
+			region.ConvertRgn(this.data.InverseTransform)
 		}
-		cocoa.CFree(points)
-		region.IntersectRegion(clipRgn)
-		clipRgn.impl.dispose_()
-	}
-	if this.data.InverseTransform != (nil) {
-		region.ConvertRgn(this.data.InverseTransform)
 	}
 }
 
@@ -2259,30 +2307,32 @@ func (this *GC) GetFontMetrics() *FontMetrics {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFONT)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	if this.data.TextStorage == (nil) {
-		this.CreateLayout()
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		if this.data.TextStorage == (nil) {
+			this.CreateLayout()
+		}
+		if this.data.Font.metrics == (nil) {
+			var s string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+			var dict *cocoa.NSMutableDictionary = (castcocoaNSObjectTococoaNSMutableDictionary(cocoa.NewNSMutableDictionary().Alloc())).InitWithCapacity(int64(3))
+			dict.SetObject(upcastcocoaNSFontTococoaId(this.data.Font.Handle), upcastcocoaNSStringTococoaId(cocoa.OSNSFontAttributeName_))
+			this.data.Font.AddTraitsDict(dict)
+			var attribStr *cocoa.NSAttributedString = (castcocoaNSObjectTococoaNSAttributedString(cocoa.NewNSAttributedString().Alloc())).InitWithStringStrAttrs(cocoa.NSStringStringWith(s), upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
+			this.data.TextStorage.SetAttributedString(attribStr)
+			attribStr.Release()
+			dict.Release()
+			var layoutManager *cocoa.NSLayoutManager = this.data.LayoutManager
+			layoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
+			var rect cocoa.NSRect = layoutManager.UsedRectForTextContainer(this.data.TextContainer)
+			var avgWidth float64 = math.Ceil(float64(rect.Width)) / float64(int32(len(s)))
+			var ascent int32 = int32(layoutManager.DefaultBaselineOffsetForFont(this.data.Font.Handle))
+			var height int32 = int32(layoutManager.DefaultLineHeightForFont(this.data.Font.Handle))
+			this.data.Font.metrics = FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent, height-ascent, avgWidth, 0, height)
+		}
+		return this.data.Font.metrics
 	}
-	if this.data.Font.metrics == (nil) {
-		var s string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-		var dict *cocoa.NSMutableDictionary = (castcocoaNSObjectTococoaNSMutableDictionary(cocoa.NewNSMutableDictionary().Alloc())).InitWithCapacity(int64(3))
-		dict.SetObject(upcastcocoaNSFontTococoaId(this.data.Font.Handle), upcastcocoaNSStringTococoaId(cocoa.OSNSFontAttributeName_))
-		this.data.Font.AddTraitsDict(dict)
-		var attribStr *cocoa.NSAttributedString = (castcocoaNSObjectTococoaNSAttributedString(cocoa.NewNSAttributedString().Alloc())).InitWithStringStrAttrs(cocoa.NSStringStringWith(s), upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
-		this.data.TextStorage.SetAttributedString(attribStr)
-		attribStr.Release()
-		dict.Release()
-		var layoutManager *cocoa.NSLayoutManager = this.data.LayoutManager
-		layoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
-		var rect cocoa.NSRect = layoutManager.UsedRectForTextContainer(this.data.TextContainer)
-		var avgWidth float64 = math.Ceil(float64(rect.Width)) / float64(int32(len(s)))
-		var ascent int32 = int32(layoutManager.DefaultBaselineOffsetForFont(this.data.Font.Handle))
-		var height int32 = int32(layoutManager.DefaultLineHeightForFont(this.data.Font.Handle))
-		this.data.Font.metrics = FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent, height-ascent, avgWidth, 0, height)
-	}
-	return this.data.Font.metrics
 }
 
 func (this *GC) GetForeground() *Color {
@@ -2444,13 +2494,13 @@ func (this *GC) GetXORMode() bool {
 }
 
 func (this *GC) HashCode() int32 {
-	var cond356 int32
+	var cond359 int32
 	if this.Handle != (nil) {
-		cond356 = int32(this.Handle.Id)
+		cond359 = int32(this.Handle.Id)
 	} else {
-		cond356 = 0
+		cond359 = 0
 	}
-	return cond356
+	return cond359
 }
 
 func (this *GC) Init(drawable Drawable, dataLike GCDataLike, context int64) {
@@ -2479,26 +2529,26 @@ func (this *GC) Init(drawable Drawable, dataLike GCDataLike, context int64) {
 	this.Handle.Retain()
 	this.Handle.SaveGraphicsState()
 	data.Path = cocoa.NSBezierPathBezierPath()
-	var cond357 int32
+	var cond360 int32
 	if data.FillRule == FILL_WINDING {
-		cond357 = cocoa.OSNSNonZeroWindingRule
+		cond360 = cocoa.OSNSNonZeroWindingRule
 	} else {
-		cond357 = cocoa.OSNSEvenOddWindingRule
+		cond360 = cocoa.OSNSEvenOddWindingRule
 	}
-	data.Path.SetWindingRule(int64(cond357))
+	data.Path.SetWindingRule(int64(cond360))
 	data.Path.Retain()
 }
 
 func (this *GC) InitCGContext(cgContext int64) {
 	var state int32 = this.data.State
 	if (state & GCLINE_WIDTH) != 0 {
-		var cond358 float32
+		var cond361 float32
 		if this.data.LineWidth == 0 {
-			cond358 = float32(1)
+			cond361 = float32(1)
 		} else {
-			cond358 = this.data.LineWidth
+			cond361 = this.data.LineWidth
 		}
-		cocoa.OSCGContextSetLineWidth(cgContext, float64(cond358))
+		cocoa.OSCGContextSetLineWidth(cgContext, float64(cond361))
 		switch this.data.LineStyle {
 		case LINE_DOT, LINE_DASH, LINE_DASHDOT, LINE_DASHDOTDOT:
 			state |= GCLINE_STYLE
@@ -2705,27 +2755,29 @@ func (this *GC) SetClipping(x int32, y int32, width int32, height int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		if width < 0 {
+			x = x + width
+			width = -width
 		}
-	}()
-	if width < 0 {
-		x = x + width
-		width = -width
+		if height < 0 {
+			y = y + height
+			height = -height
+		}
+		var rect cocoa.NSRect = cocoa.NSRect{}
+		rect.X = float64(x)
+		rect.Y = float64(y)
+		rect.Width = float64(width)
+		rect.Height = float64(height)
+		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPathWithRect(rect)
+		path.Retain()
+		this.SetClippingOverload4(path)
 	}
-	if height < 0 {
-		y = y + height
-		height = -height
-	}
-	var rect cocoa.NSRect = cocoa.NSRect{}
-	rect.X = float64(x)
-	rect.Y = float64(y)
-	rect.Width = float64(width)
-	rect.Height = float64(height)
-	var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPathWithRect(rect)
-	path.Retain()
-	this.SetClippingOverload4(path)
 }
 
 func (this *GC) SetClippingOverload1(pathLike PathLike) {
@@ -2744,12 +2796,14 @@ func (this *GC) SetClippingOverload1(pathLike PathLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.SetClippingOverload4(cocoa.NewNSBezierPathOverload1(path.Handle.Copy().Id))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.SetClippingOverload4(cocoa.NewNSBezierPathOverload1(path.Handle.Copy().Id))
+	}
 }
 
 func (this *GC) SetClippingOverload2(rectLike RectangleLike) {
@@ -2784,18 +2838,20 @@ func (this *GC) SetClippingOverload3(regionLike RegionLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var cond362 *cocoa.NSBezierPath
+		if region != (nil) {
+			cond362 = region.GetPath()
+		} else {
+			cond362 = nil
 		}
-	}()
-	var cond359 *cocoa.NSBezierPath
-	if region != (nil) {
-		cond359 = region.GetPath()
-	} else {
-		cond359 = nil
+		this.SetClippingOverload4(cond362)
 	}
-	this.SetClippingOverload4(cond359)
 }
 
 func (this *GC) SetClippingOverload4(path *cocoa.NSBezierPath) {
@@ -2823,13 +2879,13 @@ func (this *GC) SetFillRule(rule int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.data.FillRule = rule
-	var cond360 int32
+	var cond363 int32
 	if rule == FILL_WINDING {
-		cond360 = cocoa.OSNSNonZeroWindingRule
+		cond363 = cocoa.OSNSNonZeroWindingRule
 	} else {
-		cond360 = cocoa.OSNSEvenOddWindingRule
+		cond363 = cocoa.OSNSEvenOddWindingRule
 	}
-	this.data.Path.SetWindingRule(int64(cond360))
+	this.data.Path.SetWindingRule(int64(cond363))
 }
 
 func (this *GC) SetFont(fontLike FontLike) {
@@ -3219,31 +3275,33 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFONT)
-	defer func() {
-		this.UncheckGC(pool)
-	}()
-	var length int32 = int32(len(string_))
-	if this.data.TextStorage == (nil) {
-		this.CreateLayout()
+	{
+		defer func() {
+			this.UncheckGC(pool)
+		}()
+		var length int32 = int32(len(string_))
+		if this.data.TextStorage == (nil) {
+			this.CreateLayout()
+		}
+		var cond364 string
+		if length == 0 {
+			cond364 = " "
+		} else {
+			cond364 = string_
+		}
+		var attribStr *cocoa.NSAttributedString = this.CreateString(cond364, flags, false)
+		this.data.TextStorage.SetAttributedString(attribStr)
+		attribStr.Release()
+		this.data.LayoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
+		var rect cocoa.NSRect = this.data.LayoutManager.UsedRectForTextContainer(this.data.TextContainer)
+		var cond365 int32
+		if length == 0 {
+			cond365 = 0
+		} else {
+			cond365 = int32(math.Ceil(float64(rect.Width)))
+		}
+		return NewPoint(cond365, int32(math.Ceil(float64(rect.Height))))
 	}
-	var cond361 string
-	if length == 0 {
-		cond361 = " "
-	} else {
-		cond361 = string_
-	}
-	var attribStr *cocoa.NSAttributedString = this.CreateString(cond361, flags, false)
-	this.data.TextStorage.SetAttributedString(attribStr)
-	attribStr.Release()
-	this.data.LayoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
-	var rect cocoa.NSRect = this.data.LayoutManager.UsedRectForTextContainer(this.data.TextContainer)
-	var cond362 int32
-	if length == 0 {
-		cond362 = 0
-	} else {
-		cond362 = int32(math.Ceil(float64(rect.Width)))
-	}
-	return NewPoint(cond362, int32(math.Ceil(float64(rect.Height))))
 }
 
 func (this *GC) String() string {

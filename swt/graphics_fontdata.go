@@ -212,8 +212,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	data, ok227 := fontDataImplAsFontData(object)
-	if !(ok227) {
+	data, ok228 := fontDataImplAsFontData(object)
+	if !(ok228) {
 		return false
 	}
 	return (this.Name == data.Name) && this.Height == data.Height && this.Style == data.Style
@@ -260,7 +260,7 @@ func (this *FontData) GetStyle() int32 {
 }
 
 func (this *FontData) HashCode() int32 {
-	return func() int32 { _ = []any{this.Name}; panic("j2go: unresolved call hashCode") }() ^ this.GetHeight()<<8 ^ this.Style
+	return jrt.StringHashCode(this.Name) ^ this.GetHeight()<<8 ^ this.Style
 }
 
 func (this *FontData) SetHeight(height int32) {

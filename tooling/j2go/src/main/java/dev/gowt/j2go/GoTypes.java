@@ -13,12 +13,15 @@ public class GoTypes {
 	}
 
 	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
+	// Round 12: the JUnit tests and their helper packages (tests.junit, tests.graphics) - one Go package.
+	private static final String TESTS_PACKAGE = "org.eclipse.swt.tests.";
 
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
 	public static String goPackageDir(String javaPackage, String topLevelName) {
 		if (javaPackage.equals("org.eclipse.swt.internal.cocoa")) return "internal/cocoa";
 		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/cocoa";
+		if (javaPackage.startsWith(TESTS_PACKAGE)) return "tests/swttests";
 		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
 		return "swt";
 	}
@@ -33,6 +36,7 @@ public class GoTypes {
 		return "github.com/haiodo/gowt/" + switch (goPackage) {
 			case "cocoa" -> "internal/cocoa";
 			case "swt" -> "swt";
+			case "swttests" -> "tests/swttests";
 			default -> "examples/" + goPackage;
 		};
 	}
@@ -92,6 +96,8 @@ public class GoTypes {
 		// Any other JDK type (Locale, Cleaner, StringBuilder, ...) degrades to any: every member
 		// access on it is already an unresolved-call marker, so only on-path uses need a mapping.
 		if (qualified.startsWith("java.")) return "any";
+		// Tests reference SWT API not translated yet: it degrades like the JDK, a test using it fails.
+		if (emitter.degradesUnresolvedTypes()) return "any";
 		emitter.checkNoForeignPackageLeak(qualified);
 		// Not a real Go identifier (still undefined - go vet reports it plainly instead of gofmt
 		// choking on a qualified-name-shaped parse error).

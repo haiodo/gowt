@@ -135,6 +135,9 @@ public class Manual {
 		reg(JAVA_IO_FILE_INPUT_STREAM, "jrt.FileInputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_FILE_OUTPUT_STREAM, "jrt.FileOutputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_BUFFERED_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
+		// Round 12: the in-memory streams the ImageLoader tests save to and load from.
+		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
+		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
 		// Round 10: ControlExample keeps a ShellTab field, but ShellTab is not translated yet -
 		// an opaque stub in examples/controlexample/controlexample_manual.go.
 		reg(CONTROL_EXAMPLE_PKG + "ShellTab", "ShellTab", null, false);

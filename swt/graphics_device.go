@@ -190,39 +190,48 @@ func (this *Device) Dispose() {
 	tretd206 := false
 	func() {
 		defer jrt.MonitorExit()
-		var exceptions *ExceptionStash = NewExceptionStash()
-		defer exceptions.Close()
-		if this.IsDisposed() {
-			tretd206 = true
-			return
-		}
-		this.impl.checkDevice_()
-		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
+		{
+			var exceptions *ExceptionStash = NewExceptionStash()
+			tretd207 := false
+			func() {
+				defer exceptions.Close()
+				if this.IsDisposed() {
+					tretd207 = true
 					return
 				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
-				} else {
-					panic(r)
+				this.impl.checkDevice_()
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if ex, ok := r.(error); ok {
+							_ = ex
+							exceptions.Stash(ex)
+						} else {
+							panic(r)
+						}
+					}()
+					this.impl.release_()
+				}()
+				this.impl.destroy_()
+				this.disposed = true
+				if this.tracking {
+					jrt.MonitorEnter()
+					func() {
+						defer jrt.MonitorExit()
+						this.PrintErrors()
+						this.objects = nil
+						this.errors = nil
+						this.trackingLock = nil
+					}()
 				}
 			}()
-			this.impl.release_()
-		}()
-		this.impl.destroy_()
-		this.disposed = true
-		if this.tracking {
-			jrt.MonitorEnter()
-			func() {
-				defer jrt.MonitorExit()
-				this.PrintErrors()
-				this.objects = nil
-				this.errors = nil
-				this.trackingLock = nil
-			}()
+			if tretd207 {
+				tretd206 = true
+				return
+			}
 		}
 	}()
 	if tretd206 {
@@ -232,19 +241,19 @@ func (this *Device) Dispose() {
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd207 := false
+	tretd208 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd207 = true
+				tretd208 = true
 				return
 			}
 		}
 	}()
-	if tretd207 {
+	if tretd208 {
 		return
 	}
 }
@@ -329,13 +338,13 @@ func (this *Device) GetDPI() *Point {
 
 func (this *Device) GetPrimaryScreen() *cocoa.NSScreen {
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
-	var cond208 *cocoa.NSScreen
+	var cond209 *cocoa.NSScreen
 	if screens != (nil) {
-		cond208 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0)))
+		cond209 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0)))
 	} else {
-		cond208 = nil
+		cond209 = nil
 	}
-	return cond208
+	return cond209
 }
 
 func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
@@ -379,9 +388,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 							copy(newFds[0:], fds[0:0+int32(len(fds))])
 							fds = newFds
 						}
-						t209 := count
+						t210 := count
 						count++
-						fds[t209] = data
+						fds[t210] = data
 					}
 				}
 			}
@@ -393,9 +402,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			copy(newFds[0:], fds[0:0+int32(len(fds))])
 			fds = newFds
 		}
-		t210 := count
+		t211 := count
 		count++
-		fds[t210] = this.systemFont.GetFontData()[0]
+		fds[t211] = this.systemFont.GetFontData()[0]
 	}
 	if count == int32(len(fds)) {
 		return fds
@@ -507,9 +516,9 @@ func (this *Device) init_() {
 	} else {
 		systemFontSize = cocoa.NSFontSystemFontSize()
 	}
-	cond211 := this.GetDPI()
-	this.dpi = cond211
-	var dpi *Point = cond211
+	cond212 := this.GetDPI()
+	this.dpi = cond212
+	var dpi *Point = cond212
 	var screenDPI *Point = this.GetScreenDPI()
 	var font *cocoa.NSFont = cocoa.NSFontSystemFontOfSize(systemFontSize * float64(dpi.Y) / float64(screenDPI.Y))
 	font.Retain()
@@ -543,14 +552,14 @@ func (this *Device) LoadFont(path string) bool {
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd212 := false
+	tretd213 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == (nil) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd212 = true
+				tretd213 = true
 				return
 			}
 		}
@@ -563,7 +572,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd212 {
+	if tretd213 {
 		return
 	}
 }
@@ -574,11 +583,11 @@ func (this *Device) PrintErrors() {
 	}
 	if this.tracking {
 		jrt.MonitorEnter()
-		tretd213 := false
+		tretd214 := false
 		func() {
 			defer jrt.MonitorExit()
 			if this.objects == (nil) || this.errors == (nil) {
-				tretd213 = true
+				tretd214 = true
 				return
 			}
 			var objectCount int32 = 0
@@ -596,44 +605,44 @@ func (this *Device) PrintErrors() {
 				var object any = this.objects[i]
 				if object != (nil) {
 					objectCount++
-					_, ok214 := resourceImplAsColor(object)
-					if ok214 {
+					_, ok215 := resourceImplAsColor(object)
+					if ok215 {
 						colors++
 					}
-					_, ok215 := resourceImplAsCursor(object)
-					if ok215 {
+					_, ok216 := resourceImplAsCursor(object)
+					if ok216 {
 						cursors++
 					}
-					_, ok216 := resourceImplAsFont(object)
-					if ok216 {
+					_, ok217 := resourceImplAsFont(object)
+					if ok217 {
 						fonts++
 					}
-					_, ok217 := resourceImplAsGC(object)
-					if ok217 {
+					_, ok218 := resourceImplAsGC(object)
+					if ok218 {
 						gcs++
 					}
-					_, ok218 := resourceImplAsImage(object)
-					if ok218 {
+					_, ok219 := resourceImplAsImage(object)
+					if ok219 {
 						images++
 					}
-					_, ok219 := resourceImplAsPath(object)
-					if ok219 {
+					_, ok220 := resourceImplAsPath(object)
+					if ok220 {
 						paths++
 					}
-					_, ok220 := resourceImplAsPattern(object)
-					if ok220 {
+					_, ok221 := resourceImplAsPattern(object)
+					if ok221 {
 						patterns++
 					}
-					_, ok221 := resourceImplAsRegion(object)
-					if ok221 {
+					_, ok222 := resourceImplAsRegion(object)
+					if ok222 {
 						regions++
 					}
-					_, ok222 := resourceImplAsTextLayout(object)
-					if ok222 {
+					_, ok223 := resourceImplAsTextLayout(object)
+					if ok223 {
 						textLayouts++
 					}
-					_, ok223 := resourceImplAsTransform(object)
-					if ok223 {
+					_, ok224 := resourceImplAsTransform(object)
+					if ok224 {
 						transforms++
 					}
 				}
@@ -681,7 +690,7 @@ func (this *Device) PrintErrors() {
 				}
 			}
 		}()
-		if tretd213 {
+		if tretd214 {
 			return
 		}
 	}

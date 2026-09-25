@@ -111,10 +111,14 @@ func (this *ControlExample) InitResources() {
 			if this.images == (nil) {
 				this.images = make([]*swt.Image, int32(len(ControlExampleImageLocations)))
 				for i := int32(0); i < int32(len(ControlExampleImageLocations)); i++ {
-					var sourceStream jrt.InputStream = jrt.ClassGetResourceAsStream(clazz, ControlExampleImageLocations[i])
-					defer sourceStream.Close()
-					var source *swt.ImageData = swt.NewImageDataStream(sourceStream)
-					this.images[i] = swt.NewImageDeviceData(nil, source)
+					{
+						var sourceStream jrt.InputStream = jrt.ClassGetResourceAsStream(clazz, ControlExampleImageLocations[i])
+						func() {
+							defer sourceStream.Close()
+							var source *swt.ImageData = swt.NewImageDataStream(sourceStream)
+							this.images[i] = swt.NewImageDeviceData(nil, source)
+						}()
+					}
 				}
 			}
 			tretd1 = true

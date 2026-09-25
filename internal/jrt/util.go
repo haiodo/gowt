@@ -1,6 +1,9 @@
 package jrt
 
-import "sync"
+import (
+	"reflect"
+	"sync"
+)
 
 // hasher is what Java's HashMap uses for key identity: translated classes carry
 // HashCode/Equals (cocoa's id compares by native handle, not by Go pointer).
@@ -185,4 +188,58 @@ func (l *List) RemoveIf(predicate any) bool {
 	removed := len(kept) != len(l.items)
 	l.items = kept
 	return removed
+}
+
+// ListOf is List.of(e1, e2, ...).
+func ListOf(elems ...any) *List { return &List{items: elems} }
+
+// Contains is List.contains(Object).
+func (l *List) Contains(v any) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	for _, e := range l.items {
+		if keysEqual(e, v) {
+			return true
+		}
+	}
+	return false
+}
+
+// ForEach is Iterable.forEach(Consumer): the action is a Go func of the element type (or an
+// untyped marker), called through reflect because the list itself is erased to any.
+func (l *List) ForEach(action any) {
+	l.mu.Lock()
+	items := append([]any(nil), l.items...)
+	l.mu.Unlock()
+	for _, v := range items {
+		callErased(action, v)
+	}
+}
+
+// ForEach is Map.forEach(BiConsumer), same erased call as List.ForEach.
+func (m *Map) ForEach(action any) {
+	for _, b := range m.buckets {
+		for _, e := range b {
+			callErased(action, e.key, e.value)
+		}
+	}
+}
+
+func callErased(fn any, args ...any) {
+	f := reflect.ValueOf(fn)
+	in := make([]reflect.Value, len(args))
+	for i, a := range args {
+		in[i] = reflect.Zero(f.Type().In(i))
+		if a != nil {
+			in[i] = reflect.ValueOf(a)
+		}
+	}
+	f.Call(in)
+}
+
+// ToArray is List.toArray(): a snapshot, also what a for-each over the list ranges over.
+func (l *List) ToArray() []any {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return append([]any(nil), l.items...)
 }

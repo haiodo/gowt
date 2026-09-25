@@ -40,9 +40,34 @@ final class FunctionalEmitter {
 		IMethodBinding sam = fType == null ? null : fType.getFunctionalInterfaceMethod();
 		TypeModel.ClassInfo declCi = target == null ? null : emitter.model.lookup(target.getDeclaringClass());
 		if (sam == null || declCi == null) return marker(emr, "ExpressionMethodReference");
-		String goName = emitter.names.goMemberName(target, Names.javaMethodBaseGoName(target.getName()));
-		String wrapped = wrap(fType, emitter.expr(emr.getExpression()) + "." + goName);
+		String wrapped = wrap(fType, methodRefFunc(emr, target, declCi));
 		return wrapped != null ? wrapped : marker(emr, "ExpressionMethodReference");
+	}
+
+	/** `recv.M` for `expr::m`; `Type::m` (JDT parses it the same way) is a static func or the
+	 * method expression `(*T).M`, which takes the receiver as its first argument. */
+	private String methodRefFunc(ExpressionMethodReference emr, IMethodBinding target, TypeModel.ClassInfo declCi) {
+		if (Modifier.isStatic(target.getModifiers())) return emitter.staticMethodGoName(target, declCi);
+		String goName = emitter.names.goMemberName(target, Names.javaMethodBaseGoName(target.getName()));
+		boolean typeName = emr.getExpression() instanceof Name n && n.resolveBinding() instanceof ITypeBinding;
+		String recv = typeName ? "(" + GoTypes.map(((Name) emr.getExpression()).resolveTypeBinding(), emitter) + ")" : emitter.expr(emr.getExpression());
+		return recv + "." + goName;
+	}
+
+	/** A lambda or bound method reference as a bare Go func value, for a callee that takes a Go
+	 * func instead of a functional interface (JUnit's Executable/Supplier), or null. */
+	String rawFunc(Expression e) {
+		if (e instanceof LambdaExpression le && le.resolveMethodBinding() != null) {
+			List<String> names = new ArrayList<>();
+			for (Object p : le.parameters()) names.add(((VariableDeclaration) p).getName().getIdentifier());
+			return funcLiteral(le.resolveMethodBinding(), names, le.getBody());
+		}
+		if (e instanceof ExpressionMethodReference emr && emr.resolveMethodBinding() != null
+				&& emitter.model.lookup(emr.resolveMethodBinding().getDeclaringClass()) != null) {
+			IMethodBinding target = emr.resolveMethodBinding();
+			return methodRefFunc(emr, target, emitter.model.lookup(target.getDeclaringClass()));
+		}
+		return null;
 	}
 
 	private String marker(Expression e, String kind) {
@@ -88,8 +113,7 @@ final class FunctionalEmitter {
 		return adapterName;
 	}
 
-	/** `func(params) ret { body }` for a lambda/anonymous-method body (Block or Expression), or
-	 * null for an expression body that can't stand as a Go statement. */
+	/** `func(params) ret { body }` for a lambda/anonymous-method body (Block or Expression). */
 	private String funcLiteral(IMethodBinding sig, List<String> paramNames, ASTNode body) {
 		ITypeBinding[] types = sig.getParameterTypes();
 		List<String> params = new ArrayList<>();
@@ -123,8 +147,8 @@ final class FunctionalEmitter {
 		}
 		boolean statementShaped = e instanceof MethodInvocation || e instanceof ClassInstanceCreation
 				|| e instanceof SuperMethodInvocation;
-		if (!statementShaped) return null;
-		sb.append(ind(1)).append(t).append('\n');
+		// `() -> rect.x` for a void SAM: evaluated for its side effects (a panic) only.
+		sb.append(ind(1)).append(statementShaped ? "" : "_ = ").append(t).append('\n');
 		return sb.toString();
 	}
 

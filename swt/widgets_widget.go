@@ -2305,53 +2305,57 @@ func (this *Widget) Release(destroy bool) {
 }
 
 func (this *Widget) release_(destroy bool) {
-	var exceptions *ExceptionStash = NewExceptionStash()
-	defer exceptions.Close()
-	if (this.state & WidgetDISPOSE_SENT) == 0 {
-		this.state |= WidgetDISPOSE_SENT
+	{
+		var exceptions *ExceptionStash = NewExceptionStash()
 		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
-				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
+			defer exceptions.Close()
+			if (this.state & WidgetDISPOSE_SENT) == 0 {
+				this.state |= WidgetDISPOSE_SENT
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if ex, ok := r.(error); ok {
+							_ = ex
+							exceptions.Stash(ex)
+						} else {
+							panic(r)
+						}
+					}()
+					this.SendEventEventType(Dispose)
+				}()
+			}
+			if (this.state & WidgetDISPOSED) == 0 {
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if ex, ok := r.(error); ok {
+							_ = ex
+							exceptions.Stash(ex)
+						} else {
+							panic(r)
+						}
+					}()
+					this.impl.releaseChildren_(destroy)
+				}()
+			}
+			if (this.state & WidgetRELEASED) == 0 {
+				this.state |= WidgetRELEASED
+				if destroy {
+					this.impl.releaseParent_()
+					this.impl.releaseWidget_()
+					this.impl.destroyWidget_()
 				} else {
-					panic(r)
+					this.impl.releaseWidget_()
+					this.impl.releaseHandle_()
 				}
-			}()
-			this.SendEventEventType(Dispose)
+			}
 		}()
-	}
-	if (this.state & WidgetDISPOSED) == 0 {
-		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
-				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
-				} else {
-					panic(r)
-				}
-			}()
-			this.impl.releaseChildren_(destroy)
-		}()
-	}
-	if (this.state & WidgetRELEASED) == 0 {
-		this.state |= WidgetRELEASED
-		if destroy {
-			this.impl.releaseParent_()
-			this.impl.releaseWidget_()
-			this.impl.destroyWidget_()
-		} else {
-			this.impl.releaseWidget_()
-			this.impl.releaseHandle_()
-		}
 	}
 	this.NotifyDisposalTracker()
 }

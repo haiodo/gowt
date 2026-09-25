@@ -29,13 +29,19 @@ public class Main {
 			"bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common",
 			// org.eclipse.swt.examples.* (Round 10): each example package is its own Go package.
 			"examples/org.eclipse.swt.examples/src",
+			// Round 12: the SWT JUnit tests (org.eclipse.swt.tests.junit -> tests/swttests).
+			"tests/org.eclipse.swt.tests/JUnit Tests",
 	};
+
+	// Java stubs for test-harness classes outside the SWT repo (org.eclipse.test.Screenshots).
+	private static final String STUB_ROOT = "tooling/j2go/stubs";
 
 	private static final String SWT_COMMIT = "af630a9093";
 
 	public static void main(String[] args) throws Exception {
 		String swtRoot = null;
 		String outDir = null;
+		String[] classpath = new String[0];
 		List<String> files = new ArrayList<>();
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
 		// when translated) but not re-emitted - e.g. Widget.java needs OS.java's ClassInfo, not
@@ -46,6 +52,7 @@ public class Main {
 			switch (args[i]) {
 				case "--swt" -> swtRoot = args[++i];
 				case "--out" -> outDir = args[++i];
+				case "--classpath" -> classpath = args[++i].split(":");
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
@@ -61,6 +68,7 @@ public class Main {
 			Path p = swtRootPath.resolve(r);
 			if (Files.isDirectory(p)) sourceRoots.add(p.toString());
 		}
+		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
 
 		List<String> absFiles = resolveSources(files, sourceRoots);
 		List<String> absRefFiles = resolveSources(refFiles, sourceRoots);
@@ -75,7 +83,7 @@ public class Main {
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setStatementsRecovery(true);
-		parser.setEnvironment(new String[0], sourceRoots.toArray(new String[0]), null, true);
+		parser.setEnvironment(classpath, sourceRoots.toArray(new String[0]), null, true);
 
 		Map<String, CompilationUnit> unitsByPath = new LinkedHashMap<>();
 		String[] encodings = new String[allAbsFiles.size()];

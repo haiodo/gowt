@@ -183,4 +183,68 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 cp "$EX_SRC/$CE"/*.png "$EX_SRC/$CE"/*.gif "$EX_SRC/$CE"/*.bmp "$EX_SRC/examples_control.properties" examples/controlexample/
 
-gofmt -w swt/*.go swt/swtreflect/*.go internal/cocoa/*.go examples/controlexample/*.go
+# Round 12 tests: SWT's JUnit 5 tests -> tests/swttests (package swttests), run by cmd/swttest on
+# the main thread. JUnit's own jars are only on the parser classpath (pom.xml "provided").
+M2="${M2_REPO:-$HOME/.m2/repository}"
+JUNIT_CP="$M2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar"
+JUNIT_CP+=":$M2/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar"
+JUNIT_CP+=":$M2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar"
+JUNIT_CP+=":$M2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar"
+JUNIT_CP+=":$M2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar"
+TJ=org/eclipse/swt/tests/junit
+TEST_FILES=(
+	$TJ/SwtTestUtil.java
+	$TJ/ImageTestUtil.java
+	$TJ/CapturedOutput.java
+	$TJ/Test_org_eclipse_swt_events_ArmEvent.java
+	$TJ/Test_org_eclipse_swt_events_ControlEvent.java
+	$TJ/Test_org_eclipse_swt_events_DisposeEvent.java
+	$TJ/Test_org_eclipse_swt_events_FocusEvent.java
+	$TJ/Test_org_eclipse_swt_events_HelpEvent.java
+	$TJ/Test_org_eclipse_swt_events_KeyEvent.java
+	$TJ/Test_org_eclipse_swt_events_MenuEvent.java
+	$TJ/Test_org_eclipse_swt_events_ModifyEvent.java
+	$TJ/Test_org_eclipse_swt_events_MouseEvent.java
+	$TJ/Test_org_eclipse_swt_events_PaintEvent.java
+	$TJ/Test_org_eclipse_swt_events_SelectionEvent.java
+	$TJ/Test_org_eclipse_swt_events_ShellEvent.java
+	$TJ/Test_org_eclipse_swt_events_TraverseEvent.java
+	$TJ/Test_org_eclipse_swt_events_TreeEvent.java
+	$TJ/Test_org_eclipse_swt_events_TypedEvent.java
+	$TJ/Test_org_eclipse_swt_events_VerifyEvent.java
+	$TJ/Test_org_eclipse_swt_graphics_Color.java
+	$TJ/Test_org_eclipse_swt_graphics_Cursor.java
+	$TJ/Test_org_eclipse_swt_graphics_DeviceData.java
+	$TJ/Test_org_eclipse_swt_graphics_Font.java
+	$TJ/Test_org_eclipse_swt_graphics_FontData.java
+	$TJ/Test_org_eclipse_swt_graphics_FontMetrics.java
+	$TJ/Test_org_eclipse_swt_graphics_GC.java
+	$TJ/Test_org_eclipse_swt_graphics_Image.java
+	$TJ/Test_org_eclipse_swt_graphics_ImageData.java
+	$TJ/Test_org_eclipse_swt_graphics_ImageLoader.java
+	$TJ/Test_org_eclipse_swt_graphics_ImageLoaderEvent.java
+	$TJ/Test_org_eclipse_swt_graphics_PaletteData.java
+	$TJ/Test_org_eclipse_swt_graphics_Path.java
+	$TJ/Test_org_eclipse_swt_graphics_Pattern.java
+	$TJ/Test_org_eclipse_swt_graphics_Point.java
+	$TJ/Test_org_eclipse_swt_graphics_RGB.java
+	$TJ/Test_org_eclipse_swt_graphics_RGBA.java
+	$TJ/Test_org_eclipse_swt_graphics_Rectangle.java
+	$TJ/Test_org_eclipse_swt_graphics_Region.java
+	$TJ/Test_org_eclipse_swt_graphics_TextLayout.java
+	$TJ/Test_org_eclipse_swt_graphics_Transform.java
+	$TJ/Test_org_eclipse_swt_layout_FormAttachment.java
+	$TJ/Test_org_eclipse_swt_layout_GridData.java
+	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
+)
+java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --classpath "$JUNIT_CP" \
+	"${TEST_FILES[@]}" \
+	-- \
+	"${SWT_FILES[@]}" \
+	org/eclipse/swt/internal/C.java \
+	"${COCOA_FILES[@]}"
+TESTS_SRC="$SWT_REPO/tests/org.eclipse.swt.tests/JUnit Tests/$TJ"
+mkdir -p tests/swttests/testdata
+cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
+
+gofmt -w swt/*.go swt/swtreflect/*.go internal/cocoa/*.go examples/controlexample/*.go tests/swttests/*.go

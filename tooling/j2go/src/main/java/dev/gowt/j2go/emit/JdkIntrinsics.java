@@ -18,6 +18,11 @@ final class JdkIntrinsics {
 
 	private final Emitter emitter;
 
+	// String methods that are one strings.X(receiver, args...) call, by Java name and arity.
+	private static final java.util.Map<String, String> STRING_FUNCS = java.util.Map.of(
+			"startsWith/1", "strings.HasPrefix", "endsWith/1", "strings.HasSuffix", "contains/1", "strings.Contains",
+			"toLowerCase/0", "strings.ToLower", "toUpperCase/0", "strings.ToUpper");
+
 	JdkIntrinsics(Emitter emitter) {
 		this.emitter = emitter;
 	}
@@ -80,6 +85,8 @@ final class JdkIntrinsics {
 		// real JDK's own behavior for a key that was never set (String.getProperty(...) returns
 		// null; Boolean.valueOf(null)/EqualFold("", "true") both come out false either way).
 		if (qualified.equals("java.lang.System") && mb.getName().equals("getProperty")) {
+			// os.name: this port is the cocoa one.
+			if (mi.arguments().get(0) instanceof StringLiteral sl && sl.getLiteralValue().equals("os.name")) return "\"Mac OS X\"";
 			return mi.arguments().size() == 1 ? "\"\"" : arg(mi, 1);
 		}
 		// str.getChars(0, n, dst, 0): every call site in the translated set copies the whole
@@ -90,6 +97,20 @@ final class JdkIntrinsics {
 			String dst = emitter.expr((Expression) mi.arguments().get(2));
 			return "copy(" + dst + ", utf16.Encode([]rune(" + recv + ")))";
 		}
+		String stringFunc = STRING_FUNCS.get(mb.getName() + "/" + mi.arguments().size());
+		if (qualified.equals("java.lang.String") && stringFunc != null) {
+			emitter.fileImports.add("strings");
+			return stringFunc + "(" + emitter.expr(mi.getExpression()) + (mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0)) + ")";
+		}
+		// hashCode surface of the value types' own hashCode() (FontData, FontMetrics, Image).
+		if (qualified.equals("java.lang.String") && mb.getName().equals("hashCode")) return jrtCall("StringHashCode", recv(mi));
+		if (qualified.equals("java.lang.Double") && mb.getName().equals("hashCode") && mi.arguments().size() == 1) return jrtCall("DoubleHashCode", arg(mi, 0));
+		if (qualified.equals("java.util.Objects") && mb.getName().equals("hash")) {
+			List<String> args = new java.util.ArrayList<>();
+			for (int i = 0; i < mi.arguments().size(); i++) args.add(arg(mi, i));
+			return jrtCall("ObjectsHash", String.join(", ", args));
+		}
+		if (qualified.equals("java.lang.System") && mb.getName().equals("lineSeparator")) return "\"\\n\"";
 		if (qualified.equals("java.lang.String") && mb.getName().equals("length")) {
 			return "int32(len(" + emitter.expr(mi.getExpression()) + "))";
 		}
@@ -178,6 +199,11 @@ final class JdkIntrinsics {
 	}
 
 	private static final String JRT = "github.com/haiodo/gowt/internal/jrt";
+
+	private String jrtCall(String fn, String args) {
+		emitter.fileImports.add(JRT);
+		return "jrt." + fn + "(" + args + ")";
+	}
 
 	private String arg(MethodInvocation mi, int i) {
 		return emitter.expr((Expression) mi.arguments().get(i));

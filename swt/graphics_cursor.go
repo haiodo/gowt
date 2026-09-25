@@ -50,108 +50,110 @@ func (this *Cursor) initCursorDeviceStyle(device *Device, style int32) {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
 	var shouldCreateCursor bool = false
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	switch style {
-	case CURSOR_HAND:
-		this.Handle = cocoa.NSCursorPointingHandCursor()
-		break
-	case CURSOR_ARROW:
-		this.Handle = cocoa.NSCursorArrowCursor()
-		break
-	case CURSOR_WAIT:
-		{
-			this.Handle = CursorBusyButClickableCursor()
-			if this.Handle == (nil) {
-				shouldCreateCursor = true
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
 			}
+		}()
+		switch style {
+		case CURSOR_HAND:
+			this.Handle = cocoa.NSCursorPointingHandCursor()
 			break
+		case CURSOR_ARROW:
+			this.Handle = cocoa.NSCursorArrowCursor()
+			break
+		case CURSOR_WAIT:
+			{
+				this.Handle = CursorBusyButClickableCursor()
+				if this.Handle == (nil) {
+					shouldCreateCursor = true
+				}
+				break
+			}
+		case CURSOR_CROSS:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_APPSTARTING:
+			this.Handle = cocoa.NSCursorArrowCursor()
+			break
+		case CURSOR_HELP:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZEALL:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZENESW:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZENS:
+			this.Handle = cocoa.NSCursorResizeUpDownCursor()
+			break
+		case CURSOR_SIZENWSE:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZEWE:
+			this.Handle = cocoa.NSCursorResizeLeftRightCursor()
+			break
+		case CURSOR_SIZEN:
+			this.Handle = cocoa.NSCursorResizeUpCursor()
+			break
+		case CURSOR_SIZES:
+			this.Handle = cocoa.NSCursorResizeDownCursor()
+			break
+		case CURSOR_SIZEE:
+			this.Handle = cocoa.NSCursorResizeRightCursor()
+			break
+		case CURSOR_SIZEW:
+			this.Handle = cocoa.NSCursorResizeLeftCursor()
+			break
+		case CURSOR_SIZENE:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZESE:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZESW:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_SIZENW:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_UPARROW:
+			this.Handle = cocoa.NSCursorCrosshairCursor()
+			break
+		case CURSOR_IBEAM:
+			this.Handle = cocoa.NSCursorIBeamCursor()
+			break
+		case CURSOR_NO:
+			this.Handle = cocoa.NSCursorOperationNotAllowedCursor()
+			break
+		default:
+			Error(ERROR_INVALID_ARGUMENT)
 		}
-	case CURSOR_CROSS:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_APPSTARTING:
-		this.Handle = cocoa.NSCursorArrowCursor()
-		break
-	case CURSOR_HELP:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZEALL:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZENESW:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZENS:
-		this.Handle = cocoa.NSCursorResizeUpDownCursor()
-		break
-	case CURSOR_SIZENWSE:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZEWE:
-		this.Handle = cocoa.NSCursorResizeLeftRightCursor()
-		break
-	case CURSOR_SIZEN:
-		this.Handle = cocoa.NSCursorResizeUpCursor()
-		break
-	case CURSOR_SIZES:
-		this.Handle = cocoa.NSCursorResizeDownCursor()
-		break
-	case CURSOR_SIZEE:
-		this.Handle = cocoa.NSCursorResizeRightCursor()
-		break
-	case CURSOR_SIZEW:
-		this.Handle = cocoa.NSCursorResizeLeftCursor()
-		break
-	case CURSOR_SIZENE:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZESE:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZESW:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_SIZENW:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_UPARROW:
-		this.Handle = cocoa.NSCursorCrosshairCursor()
-		break
-	case CURSOR_IBEAM:
-		this.Handle = cocoa.NSCursorIBeamCursor()
-		break
-	case CURSOR_NO:
-		this.Handle = cocoa.NSCursorOperationNotAllowedCursor()
-		break
-	default:
-		Error(ERROR_INVALID_ARGUMENT)
+		if this.Handle == (nil) && shouldCreateCursor {
+			var nsImage *cocoa.NSImage = castcocoaNSObjectTococoaNSImage(cocoa.NewNSImage().Alloc())
+			var nsImageRep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
+			this.Handle = castcocoaNSObjectTococoaNSCursor(cocoa.NewNSCursor().Alloc())
+			var width int32 = 16
+			var height int32 = 16
+			var size cocoa.NSSize = cocoa.NSSize{}
+			size.Width = float64(width)
+			size.Height = float64(height)
+			nsImage = nsImage.InitWithSize(size)
+			nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(4), true, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
+			var point cocoa.NSPoint = cocoa.NSPoint{}
+			cocoa.CMemmove(nsImageRep.BitmapData(), CursorWAIT_SOURCE, int64(int32(len(CursorWAIT_SOURCE))))
+			nsImage.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(nsImageRep))
+			this.Handle = this.Handle.InitWithImage(nsImage, point)
+			nsImageRep.Release()
+			nsImage.Release()
+		} else {
+			this.Handle.Retain()
+		}
+		this.Handle.SetOnMouseEntered(true)
+		this.impl.init_()
 	}
-	if this.Handle == (nil) && shouldCreateCursor {
-		var nsImage *cocoa.NSImage = castcocoaNSObjectTococoaNSImage(cocoa.NewNSImage().Alloc())
-		var nsImageRep *cocoa.NSBitmapImageRep = castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
-		this.Handle = castcocoaNSObjectTococoaNSCursor(cocoa.NewNSCursor().Alloc())
-		var width int32 = 16
-		var height int32 = 16
-		var size cocoa.NSSize = cocoa.NSSize{}
-		size.Width = float64(width)
-		size.Height = float64(height)
-		nsImage = nsImage.InitWithSize(size)
-		nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(4), true, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
-		var point cocoa.NSPoint = cocoa.NSPoint{}
-		cocoa.CMemmove(nsImageRep.BitmapData(), CursorWAIT_SOURCE, int64(int32(len(CursorWAIT_SOURCE))))
-		nsImage.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(nsImageRep))
-		this.Handle = this.Handle.InitWithImage(nsImage, point)
-		nsImageRep.Release()
-		nsImage.Release()
-	} else {
-		this.Handle.Retain()
-	}
-	this.Handle.SetOnMouseEntered(true)
-	this.impl.init_()
 }
 
 func NewCursorDeviceSourceMaskHotspotXHotspotY(deviceLike DeviceLike, sourceLike ImageDataLike, maskLike ImageDataLike, hotspotX int32, hotspotY int32) *Cursor {
@@ -220,13 +222,15 @@ func (this *Cursor) initCursorDeviceSourceMaskHotspotXHotspotY(device *Device, s
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, true)
-	this.impl.init_()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, true)
+		this.impl.init_()
+	}
 }
 
 func NewCursorDeviceSourceHotspotXHotspotY(deviceLike DeviceLike, sourceLike ImageDataLike, hotspotX int32, hotspotY int32) *Cursor {
@@ -279,13 +283,13 @@ func (this *Cursor) CreateNSCursor(hotspotX int32, hotspotY int32, buffer []int8
 	size.Width = float64(width)
 	size.Height = float64(height)
 	nsImage = nsImage.InitWithSize(size)
-	var cond492 int32
+	var cond497 int32
 	if hasAlpha {
-		cond492 = 4
+		cond497 = 4
 	} else {
-		cond492 = 3
+		cond497 = 3
 	}
-	nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond492), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
+	nsImageRep = nsImageRep.InitWithBitmapDataPlanes(int64(0), int64(width), int64(height), int64(8), int64(cond497), hasAlpha, false, cocoa.OSNSDeviceRGBColorSpace_, int64(cocoa.OSNSAlphaFirstBitmapFormat|cocoa.OSNSAlphaNonpremultipliedBitmapFormat), int64(width*4), int64(32))
 	cocoa.CMemmove(nsImageRep.BitmapData(), buffer, int64(int32(len(buffer))))
 	nsImage.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(nsImageRep))
 	var point cocoa.NSPoint = cocoa.NSPoint{}
@@ -368,13 +372,15 @@ func (this *Cursor) SetupCursorFromImageData(sourceLike ImageDataLike, hotspotX 
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, hasAlpha)
-	this.impl.init_()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.CreateNSCursor(hotspotX, hotspotY, data, source.Width, source.Height, hasAlpha)
+		this.impl.init_()
+	}
 }
 
 func (this *Cursor) destroy_() {
@@ -386,21 +392,21 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	cursor, ok493 := resourceImplAsCursor(object)
-	if !(ok493) {
+	cursor, ok498 := resourceImplAsCursor(object)
+	if !(ok498) {
 		return false
 	}
 	return this.device == cursor.device && this.Handle == cursor.Handle
 }
 
 func (this *Cursor) HashCode() int32 {
-	var cond494 int32
+	var cond499 int32
 	if this.Handle != (nil) {
-		cond494 = int32(this.Handle.Id)
+		cond499 = int32(this.Handle.Id)
 	} else {
-		cond494 = 0
+		cond499 = 0
 	}
-	return cond494
+	return cond499
 }
 
 func (this *Cursor) isDisposed_() bool {
@@ -419,13 +425,13 @@ func CursorBusyButClickableCursor() *cocoa.NSCursor {
 		return nil
 	}
 	var result int64 = cocoa.OSObjc_msgSend(cocoa.OSClass_NSCursor, cocoa.OSSel_busyButClickableCursor)
-	var cond495 *cocoa.NSCursor
+	var cond500 *cocoa.NSCursor
 	if result != 0 {
-		cond495 = cocoa.NewNSCursorOverload1(result)
+		cond500 = cocoa.NewNSCursorOverload1(result)
 	} else {
-		cond495 = nil
+		cond500 = nil
 	}
-	return cond495
+	return cond500
 }
 
 func CursorCocoa_new(deviceLike DeviceLike, handle *cocoa.NSCursor) *Cursor {

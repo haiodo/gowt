@@ -106,54 +106,56 @@ func (this *EventTable) SendEvent(eventLike EventLike) {
 		cond25 = -1
 	}
 	this.level += cond25
-	var exceptions *ExceptionStash = NewExceptionStash()
-	defer func() {
-		var compact bool = this.level < 0
-		var cond26 int32
-		if this.level >= 0 {
-			cond26 = 1
-		} else {
-			cond26 = -1
-		}
-		this.level -= cond26
-		if compact && this.level == 0 {
-			var index int32 = 0
-			for i := int32(0); i < int32(len(this.types)); i++ {
-				if this.types[i] != 0 {
-					this.types[index] = this.types[i]
-					this.listeners[index] = this.listeners[i]
-					index++
+	{
+		var exceptions *ExceptionStash = NewExceptionStash()
+		defer func() {
+			var compact bool = this.level < 0
+			var cond26 int32
+			if this.level >= 0 {
+				cond26 = 1
+			} else {
+				cond26 = -1
+			}
+			this.level -= cond26
+			if compact && this.level == 0 {
+				var index int32 = 0
+				for i := int32(0); i < int32(len(this.types)); i++ {
+					if this.types[i] != 0 {
+						this.types[index] = this.types[i]
+						this.listeners[index] = this.listeners[i]
+						index++
+					}
+				}
+				for i := int32(index); i < int32(len(this.types)); i++ {
+					this.types[i] = 0
+					this.listeners[i] = nil
 				}
 			}
-			for i := int32(index); i < int32(len(this.types)); i++ {
-				this.types[i] = 0
-				this.listeners[i] = nil
+		}()
+		defer exceptions.Close()
+		for i := int32(0); i < int32(len(this.types)); i++ {
+			if event.Type == None {
+				return
 			}
-		}
-	}()
-	defer exceptions.Close()
-	for i := int32(0); i < int32(len(this.types)); i++ {
-		if event.Type == None {
-			return
-		}
-		if this.types[i] == event.Type {
-			var listener Listener = this.listeners[i]
-			if listener != (nil) {
-				func() {
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
-						}
-						if ex, ok := r.(error); ok {
-							_ = ex
-							exceptions.Stash(ex)
-						} else {
-							panic(r)
-						}
+			if this.types[i] == event.Type {
+				var listener Listener = this.listeners[i]
+				if listener != (nil) {
+					func() {
+						defer func() {
+							r := recover()
+							if r == nil {
+								return
+							}
+							if ex, ok := r.(error); ok {
+								_ = ex
+								exceptions.Stash(ex)
+							} else {
+								panic(r)
+							}
+						}()
+						listener.HandleEvent(event)
 					}()
-					listener.HandleEvent(event)
-				}()
+				}
 			}
 		}
 	}

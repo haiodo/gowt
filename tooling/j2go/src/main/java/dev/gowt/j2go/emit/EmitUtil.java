@@ -2,11 +2,7 @@ package dev.gowt.j2go.emit;
 
 import dev.gowt.j2go.Names;
 import dev.gowt.j2go.TypeModel;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,5 +136,23 @@ final class EmitUtil {
 
 	static boolean isInnerClass(ITypeBinding t) {
 		return t.isMember() && t.isClass() && !Modifier.isStatic(t.getModifiers()) && !t.getDeclaringClass().isInterface();
+	}
+
+	/** A local Java only assigns: Go rejects it as unused. */
+	static boolean neverRead(VariableDeclarationFragment f, ASTNode scope) {
+		IVariableBinding vb = f.resolveBinding();
+		if (vb == null) return false;
+		boolean[] read = {false};
+		scope.accept(new ASTVisitor() {
+			@Override
+			public boolean visit(SimpleName n) {
+				if (n == f.getName() || !vb.isEqualTo(n.resolveBinding())) return false;
+				boolean assigned = n.getParent() instanceof Assignment a && a.getLeftHandSide() == n
+						&& a.getOperator() == Assignment.Operator.ASSIGN;
+				read[0] |= !assigned;
+				return false;
+			}
+		});
+		return !read[0];
 	}
 }

@@ -6,7 +6,7 @@ export SWT_REPO
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: all gen build release vet test check clean run-% $(CMDS)
+.PHONY: all gen build release vet test check clean test-swt run-% $(CMDS)
 
 all: check build
 
@@ -34,6 +34,10 @@ test:
 	go test ./...
 
 check: vet test
+
+# Translated SWT JUnit tests on the main thread (cmd/swttest); SWTTEST_FLAGS e.g. -run GC -json.
+test-swt: swttest
+	./$(BIN)/swttest $(SWTTEST_FLAGS)
 
 run-%: %
 	./$(BIN)/$*

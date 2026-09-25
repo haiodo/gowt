@@ -46,8 +46,8 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok363 := fontMetricsImplAsFontMetrics(object)
-	if !(ok363) {
+	metrics, ok366 := fontMetricsImplAsFontMetrics(object)
+	if !(ok366) {
 		return false
 	}
 	return this.ascent == metrics.ascent && this.descent == metrics.descent && this.leading == metrics.leading && this.height == metrics.height && (func() int32 {
@@ -81,7 +81,7 @@ func (this *FontMetrics) GetLeading() int32 {
 }
 
 func (this *FontMetrics) HashCode() int32 {
-	return this.ascent ^ this.descent ^ func() int32 { _ = []any{this.averageCharWidth}; panic("j2go: unresolved call hashCode") }() ^ this.leading ^ this.height
+	return this.ascent ^ this.descent ^ jrt.DoubleHashCode(this.averageCharWidth) ^ this.leading ^ this.height
 }
 
 func (this *FontMetrics) GetName() string {

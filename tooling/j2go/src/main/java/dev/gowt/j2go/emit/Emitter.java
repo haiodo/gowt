@@ -69,6 +69,7 @@ public class Emitter {
 	private final FunctionalEmitter functionalEmitter;
 	private final PackageQualifier packageQualifier;
 	private final ReflectEmitter reflectEmitter;
+	private final TestEmitter testEmitter;
 
 	public Emitter(TypeModel model, Names names, Natives natives, Selectors selectors) {
 		this.model = model;
@@ -88,6 +89,7 @@ public class Emitter {
 		this.functionalEmitter = new FunctionalEmitter(this);
 		this.packageQualifier = new PackageQualifier(this);
 		this.reflectEmitter = new ReflectEmitter(this);
+		this.testEmitter = new TestEmitter(this);
 	}
 
 	public record EmitResult(String body, Set<String> imports) {}
@@ -225,7 +227,17 @@ public class Emitter {
 	}
 
 	String tryIntrinsic(MethodInvocation mi, IMethodBinding mb) {
-		return jdkIntrinsics.tryIntrinsic(mi, mb);
+		String junit = testEmitter.junitCall(mi, mb);
+		return junit != null ? junit : jdkIntrinsics.tryIntrinsic(mi, mb);
+	}
+
+	String testRegistration(TypeDeclaration td, TypeModel.ClassInfo ci) { return testEmitter.registration(td, ci); }
+
+	String rawFunc(Expression e) { return functionalEmitter.rawFunc(e); }
+
+	/** recv.method(args) as an ordinary call would dispatch it (through impl when overridden). */
+	String instanceCall(String recv, IMethodBinding mb, List<String> args) {
+		return invocationEmitter.callText(recv, mb, model.lookup(mb.getDeclaringClass()), args);
 	}
 
 	void emitStaticNativeMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
@@ -423,6 +435,8 @@ public class Emitter {
 	public String qualifyManual(String goType, ITypeBinding t) {
 		return packageQualifier.qualifyManual(goType, t);
 	}
+
+	public boolean degradesUnresolvedTypes() { return "swttests".equals(currentGoPackage); }
 
 	public void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {
 		packageQualifier.checkNoForeignPackageLeak(qualifiedJavaTypeName);

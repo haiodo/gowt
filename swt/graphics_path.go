@@ -39,18 +39,20 @@ func (this *Path) initPath(device *Device) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle = cocoa.NSBezierPathBezierPath()
+		if this.Handle == (nil) {
+			Error(ERROR_NO_HANDLES)
 		}
-	}()
-	this.Handle = cocoa.NSBezierPathBezierPath()
-	if this.Handle == (nil) {
-		Error(ERROR_NO_HANDLES)
+		this.Handle.Retain()
+		this.Handle.MoveToPoint(cocoa.NSPoint{})
+		this.impl.init_()
 	}
-	this.Handle.Retain()
-	this.Handle.MoveToPoint(cocoa.NSPoint{})
-	this.impl.init_()
 }
 
 func NewPathDevicePathFlatness(deviceLike DeviceLike, pathLike PathLike, flatness float32) *Path {
@@ -77,31 +79,33 @@ func (this *Path) initPathDevicePathFlatness(device *Device, path *Path, flatnes
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		if path == (nil) {
+			Error(ERROR_NULL_ARGUMENT)
 		}
-	}()
-	if path == (nil) {
-		Error(ERROR_NULL_ARGUMENT)
+		if path.impl.isDisposed_() {
+			Error(ERROR_INVALID_ARGUMENT)
+		}
+		flatness = float32(math.Max(float64(0), float64(flatness)))
+		if flatness == 0 {
+			this.Handle = cocoa.NewNSBezierPathOverload1(path.Handle.Copy().Id)
+		} else {
+			var defaultFlatness float64 = cocoa.NSBezierPathDefaultFlatness()
+			cocoa.NSBezierPathSetDefaultFlatness(float64(flatness))
+			this.Handle = path.Handle.BezierPathByFlatteningPath()
+			this.Handle.Retain()
+			cocoa.NSBezierPathSetDefaultFlatness(defaultFlatness)
+		}
+		if this.Handle == (nil) {
+			Error(ERROR_NO_HANDLES)
+		}
+		this.impl.init_()
 	}
-	if path.impl.isDisposed_() {
-		Error(ERROR_INVALID_ARGUMENT)
-	}
-	flatness = float32(math.Max(float64(0), float64(flatness)))
-	if flatness == 0 {
-		this.Handle = cocoa.NewNSBezierPathOverload1(path.Handle.Copy().Id)
-	} else {
-		var defaultFlatness float64 = cocoa.NSBezierPathDefaultFlatness()
-		cocoa.NSBezierPathSetDefaultFlatness(float64(flatness))
-		this.Handle = path.Handle.BezierPathByFlatteningPath()
-		this.Handle.Retain()
-		cocoa.NSBezierPathSetDefaultFlatness(defaultFlatness)
-	}
-	if this.Handle == (nil) {
-		Error(ERROR_NO_HANDLES)
-	}
-	this.impl.init_()
 }
 
 func NewPathDeviceData(deviceLike DeviceLike, dataLike PathDataLike) *Path {
@@ -127,15 +131,17 @@ func (this *Path) initPathDeviceData(device *Device, data *PathData) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		if data == (nil) {
+			Error(ERROR_NULL_ARGUMENT)
 		}
-	}()
-	if data == (nil) {
-		Error(ERROR_NULL_ARGUMENT)
+		this.Init(data)
 	}
-	this.Init(data)
 }
 
 func (this *Path) AddArc(x float32, y float32, width float32, height float32, startAngle float32, arcAngle float32) {
@@ -149,25 +155,27 @@ func (this *Path) AddArc(x float32, y float32, width float32, height float32, st
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+		transform.TranslateXBy(float64(x+width/2), float64(y+height/2))
+		transform.ScaleXBy(float64(width/2), float64(height/2))
+		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
+		var center cocoa.NSPoint = cocoa.NSPoint{}
+		var sAngle float32 = -startAngle
+		var eAngle float32 = -(startAngle + arcAngle)
+		path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
+		path.TransformUsingAffineTransform(transform)
+		this.AppendBezierPath(path)
+		cond369 := (float32(math.Abs(float64(arcAngle))) >= 360)
+		this.closed = cond369
+		if cond369 {
+			this.Handle.ClosePath()
 		}
-	}()
-	var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-	transform.TranslateXBy(float64(x+width/2), float64(y+height/2))
-	transform.ScaleXBy(float64(width/2), float64(height/2))
-	var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-	var center cocoa.NSPoint = cocoa.NSPoint{}
-	var sAngle float32 = -startAngle
-	var eAngle float32 = -(startAngle + arcAngle)
-	path.AppendBezierPathWithArcWithCenter(center, float64(1), float64(sAngle), float64(eAngle), arcAngle > 0)
-	path.TransformUsingAffineTransform(transform)
-	this.AppendBezierPath(path)
-	cond366 := (float32(math.Abs(float64(arcAngle))) >= 360)
-	this.closed = cond366
-	if cond366 {
-		this.Handle.ClosePath()
 	}
 }
 
@@ -231,13 +239,15 @@ func (this *Path) AddPath(pathLike PathLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.AppendBezierPath(path.Handle)
-	this.closed = path.closed
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.AppendBezierPath(path.Handle)
+		this.closed = path.closed
+	}
 }
 
 func (this *Path) AddRectangle(x float32, y float32, width float32, height float32) {
@@ -253,13 +263,15 @@ func (this *Path) AddRectangle(x float32, y float32, width float32, height float
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.AppendBezierPathWithRect(rect)
-	this.closed = true
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.AppendBezierPathWithRect(rect)
+		this.closed = true
+	}
 }
 
 func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontLike) {
@@ -281,56 +293,58 @@ func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontL
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.closed = true
+		var str *cocoa.NSString = cocoa.NSStringStringWith(string_)
+		var textStorage *cocoa.NSTextStorage = castcocoaNSObjectTococoaNSTextStorage(cocoa.NewNSTextStorage().Alloc().Init())
+		var layoutManager *cocoa.NSLayoutManager = castcocoaNSObjectTococoaNSLayoutManager(cocoa.NewNSLayoutManager().Alloc().Init())
+		var textContainer *cocoa.NSTextContainer = castcocoaNSObjectTococoaNSTextContainer(cocoa.NewNSTextContainer().Alloc())
+		var size cocoa.NSSize = cocoa.NSSize{}
+		size.Width = cocoa.OSMAX_TEXT_CONTAINER_SIZE
+		size.Height = cocoa.OSMAX_TEXT_CONTAINER_SIZE
+		textContainer.InitWithContainerSize(size)
+		textContainer.SetLineFragmentPadding(float64(0))
+		textStorage.AddLayoutManager(layoutManager)
+		layoutManager.AddTextContainer(textContainer)
+		var range_ cocoa.NSRange = cocoa.NSRange{}
+		range_.Length = str.Length()
+		var attrStr *cocoa.NSMutableAttributedString = castcocoaNSObjectTococoaNSMutableAttributedString(cocoa.NewNSMutableAttributedString().Alloc())
+		attrStr.Id = attrStr.InitWithString(str).Id
+		attrStr.BeginEditing()
+		attrStr.AddAttribute(cocoa.OSNSFontAttributeName_, upcastcocoaNSFontTococoaId(font.Handle), range_)
+		font.AddTraits(attrStr, range_)
+		attrStr.EndEditing()
+		textStorage.SetAttributedString(upcastcocoaNSMutableAttributedStringTococoaNSAttributedString(attrStr))
+		attrStr.Release()
+		range_ = layoutManager.GlyphRangeForTextContainer(textContainer)
+		if range_.Length != 0 {
+			var glyphs int64 = cocoa.CMalloc((range_.Length + 1) * 4)
+			var count int64 = layoutManager.GetGlyphs(glyphs, range_)
+			var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
+			for i := int32(0); int64(i) < count; i++ {
+				var pt cocoa.NSPoint = layoutManager.LocationForGlyphAtIndex(int64(i))
+				var lineFragmentRect cocoa.NSRect = layoutManager.LineFragmentUsedRectForGlyphAtIndex(int64(i), int64(0))
+				var actualFont *cocoa.NSFont = cocoa.NewNSFontOverload2(textStorage.Attribute(cocoa.OSNSFontAttributeName_, layoutManager.CharacterIndexForGlyphAtIndex(int64(i)), int64(0)))
+				pt.X = pt.X + float64(x) + lineFragmentRect.X
+				pt.Y = -pt.Y - float64(y) - lineFragmentRect.Y
+				path.MoveToPoint(pt)
+				path.AppendBezierPathWithGlyphs(glyphs+int64((i*4)), int64(1), actualFont)
+			}
+			cocoa.CFree(glyphs)
+			var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
+			transform.ScaleXBy(float64(1), float64(-1))
+			path.TransformUsingAffineTransform(transform)
+			this.Handle.AppendBezierPath(path)
 		}
-	}()
-	this.closed = true
-	var str *cocoa.NSString = cocoa.NSStringStringWith(string_)
-	var textStorage *cocoa.NSTextStorage = castcocoaNSObjectTococoaNSTextStorage(cocoa.NewNSTextStorage().Alloc().Init())
-	var layoutManager *cocoa.NSLayoutManager = castcocoaNSObjectTococoaNSLayoutManager(cocoa.NewNSLayoutManager().Alloc().Init())
-	var textContainer *cocoa.NSTextContainer = castcocoaNSObjectTococoaNSTextContainer(cocoa.NewNSTextContainer().Alloc())
-	var size cocoa.NSSize = cocoa.NSSize{}
-	size.Width = cocoa.OSMAX_TEXT_CONTAINER_SIZE
-	size.Height = cocoa.OSMAX_TEXT_CONTAINER_SIZE
-	textContainer.InitWithContainerSize(size)
-	textContainer.SetLineFragmentPadding(float64(0))
-	textStorage.AddLayoutManager(layoutManager)
-	layoutManager.AddTextContainer(textContainer)
-	var range_ cocoa.NSRange = cocoa.NSRange{}
-	range_.Length = str.Length()
-	var attrStr *cocoa.NSMutableAttributedString = castcocoaNSObjectTococoaNSMutableAttributedString(cocoa.NewNSMutableAttributedString().Alloc())
-	attrStr.Id = attrStr.InitWithString(str).Id
-	attrStr.BeginEditing()
-	attrStr.AddAttribute(cocoa.OSNSFontAttributeName_, upcastcocoaNSFontTococoaId(font.Handle), range_)
-	font.AddTraits(attrStr, range_)
-	attrStr.EndEditing()
-	textStorage.SetAttributedString(upcastcocoaNSMutableAttributedStringTococoaNSAttributedString(attrStr))
-	attrStr.Release()
-	range_ = layoutManager.GlyphRangeForTextContainer(textContainer)
-	if range_.Length != 0 {
-		var glyphs int64 = cocoa.CMalloc((range_.Length + 1) * 4)
-		var count int64 = layoutManager.GetGlyphs(glyphs, range_)
-		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-		for i := int32(0); int64(i) < count; i++ {
-			var pt cocoa.NSPoint = layoutManager.LocationForGlyphAtIndex(int64(i))
-			var lineFragmentRect cocoa.NSRect = layoutManager.LineFragmentUsedRectForGlyphAtIndex(int64(i), int64(0))
-			var actualFont *cocoa.NSFont = cocoa.NewNSFontOverload2(textStorage.Attribute(cocoa.OSNSFontAttributeName_, layoutManager.CharacterIndexForGlyphAtIndex(int64(i)), int64(0)))
-			pt.X = pt.X + float64(x) + lineFragmentRect.X
-			pt.Y = -pt.Y - float64(y) - lineFragmentRect.Y
-			path.MoveToPoint(pt)
-			path.AppendBezierPathWithGlyphs(glyphs+int64((i*4)), int64(1), actualFont)
-		}
-		cocoa.CFree(glyphs)
-		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-		transform.ScaleXBy(float64(1), float64(-1))
-		path.TransformUsingAffineTransform(transform)
-		this.Handle.AppendBezierPath(path)
+		textContainer.Release()
+		layoutManager.Release()
+		textStorage.Release()
 	}
-	textContainer.Release()
-	layoutManager.Release()
-	textStorage.Release()
 }
 
 func (this *Path) Close() {
@@ -341,13 +355,15 @@ func (this *Path) Close() {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Handle.ClosePath()
-	this.closed = true
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle.ClosePath()
+		this.closed = true
+	}
 }
 
 func (this *Path) Contains(x float32, y float32, gcLike GCLike, outline bool) bool {
@@ -369,67 +385,69 @@ func (this *Path) Contains(x float32, y float32, gcLike GCLike, outline bool) bo
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	if outline {
-		var pixel int64 = cocoa.CMalloc(int64(4))
-		if pixel == 0 {
-			Error(ERROR_NO_HANDLES)
-		}
-		var buffer []int32 = []int32{-1}
-		cocoa.CMemmoveOverload4(pixel, buffer, int64(4))
-		var colorspace int64 = cocoa.OSCGColorSpaceCreateDeviceRGB()
-		var context int64 = cocoa.OSCGBitmapContextCreate(pixel, int64(1), int64(1), int64(8), int64(4), colorspace, cocoa.OSKCGImageAlphaNoneSkipFirst)
-		cocoa.OSCGColorSpaceRelease(colorspace)
-		if context == 0 {
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		if outline {
+			var pixel int64 = cocoa.CMalloc(int64(4))
+			if pixel == 0 {
+				Error(ERROR_NO_HANDLES)
+			}
+			var buffer []int32 = []int32{-1}
+			cocoa.CMemmoveOverload4(pixel, buffer, int64(4))
+			var colorspace int64 = cocoa.OSCGColorSpaceCreateDeviceRGB()
+			var context int64 = cocoa.OSCGBitmapContextCreate(pixel, int64(1), int64(1), int64(8), int64(4), colorspace, cocoa.OSKCGImageAlphaNoneSkipFirst)
+			cocoa.OSCGColorSpaceRelease(colorspace)
+			if context == 0 {
+				cocoa.CFree(pixel)
+				Error(ERROR_NO_HANDLES)
+			}
+			var data *GCData = gc.data
+			var capStyle int32 = 0
+			switch data.LineCap {
+			case CAP_ROUND:
+				capStyle = cocoa.OSKCGLineCapRound
+				break
+			case CAP_FLAT:
+				capStyle = cocoa.OSKCGLineCapButt
+				break
+			case CAP_SQUARE:
+				capStyle = cocoa.OSKCGLineCapSquare
+				break
+			}
+			cocoa.OSCGContextSetLineCap(context, capStyle)
+			var joinStyle int32 = 0
+			switch data.LineJoin {
+			case JOIN_MITER:
+				joinStyle = cocoa.OSKCGLineJoinMiter
+				break
+			case JOIN_ROUND:
+				joinStyle = cocoa.OSKCGLineJoinRound
+				break
+			case JOIN_BEVEL:
+				joinStyle = cocoa.OSKCGLineJoinBevel
+				break
+			}
+			cocoa.OSCGContextSetLineJoin(context, joinStyle)
+			cocoa.OSCGContextSetLineWidth(context, float64(data.LineWidth))
+			cocoa.OSCGContextTranslateCTM(context, float64(-x+0.5), float64(-y+0.5))
+			var path int64 = GCCreateCGPathRef(this.Handle)
+			cocoa.OSCGContextAddPath(context, path)
+			cocoa.OSCGPathRelease(path)
+			cocoa.OSCGContextStrokePath(context)
+			cocoa.OSCGContextRelease(context)
+			cocoa.CMemmoveOverload15(buffer, pixel, int64(4))
 			cocoa.CFree(pixel)
-			Error(ERROR_NO_HANDLES)
+			return buffer[0] != -1
+		} else {
+			var point cocoa.NSPoint = cocoa.NSPoint{}
+			point.X = float64(x)
+			point.Y = float64(y)
+			return this.Handle.ContainsPoint(point)
 		}
-		var data *GCData = gc.data
-		var capStyle int32 = 0
-		switch data.LineCap {
-		case CAP_ROUND:
-			capStyle = cocoa.OSKCGLineCapRound
-			break
-		case CAP_FLAT:
-			capStyle = cocoa.OSKCGLineCapButt
-			break
-		case CAP_SQUARE:
-			capStyle = cocoa.OSKCGLineCapSquare
-			break
-		}
-		cocoa.OSCGContextSetLineCap(context, capStyle)
-		var joinStyle int32 = 0
-		switch data.LineJoin {
-		case JOIN_MITER:
-			joinStyle = cocoa.OSKCGLineJoinMiter
-			break
-		case JOIN_ROUND:
-			joinStyle = cocoa.OSKCGLineJoinRound
-			break
-		case JOIN_BEVEL:
-			joinStyle = cocoa.OSKCGLineJoinBevel
-			break
-		}
-		cocoa.OSCGContextSetLineJoin(context, joinStyle)
-		cocoa.OSCGContextSetLineWidth(context, float64(data.LineWidth))
-		cocoa.OSCGContextTranslateCTM(context, float64(-x+0.5), float64(-y+0.5))
-		var path int64 = GCCreateCGPathRef(this.Handle)
-		cocoa.OSCGContextAddPath(context, path)
-		cocoa.OSCGPathRelease(path)
-		cocoa.OSCGContextStrokePath(context)
-		cocoa.OSCGContextRelease(context)
-		cocoa.CMemmoveOverload15(buffer, pixel, int64(4))
-		cocoa.CFree(pixel)
-		return buffer[0] != -1
-	} else {
-		var point cocoa.NSPoint = cocoa.NSPoint{}
-		point.X = float64(x)
-		point.Y = float64(y)
-		return this.Handle.ContainsPoint(point)
 	}
 }
 
@@ -441,22 +459,24 @@ func (this *Path) CubicTo(cx1 float32, cy1 float32, cx2 float32, cy2 float32, x 
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y)
-	var ct1 cocoa.NSPoint = cocoa.NSPoint{}
-	ct1.X = float64(cx1)
-	ct1.Y = float64(cy1)
-	var ct2 cocoa.NSPoint = cocoa.NSPoint{}
-	ct2.X = float64(cx2)
-	ct2.Y = float64(cy2)
-	this.Handle.CurveToPoint(pt, ct1, ct2)
-	this.closed = false
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y)
+		var ct1 cocoa.NSPoint = cocoa.NSPoint{}
+		ct1.X = float64(cx1)
+		ct1.Y = float64(cy1)
+		var ct2 cocoa.NSPoint = cocoa.NSPoint{}
+		ct2.X = float64(cx2)
+		ct2.Y = float64(cy2)
+		this.Handle.CurveToPoint(pt, ct1, ct2)
+		this.closed = false
+	}
 }
 
 func (this *Path) destroy_() {
@@ -478,16 +498,18 @@ func (this *Path) GetBounds(bounds []float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var rect cocoa.NSRect = this.Handle.ControlPointBounds()
-	bounds[0] = float32(rect.X)
-	bounds[1] = float32(rect.Y)
-	bounds[2] = float32(rect.Width)
-	bounds[3] = float32(rect.Height)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var rect cocoa.NSRect = this.Handle.ControlPointBounds()
+		bounds[0] = float32(rect.X)
+		bounds[1] = float32(rect.Y)
+		bounds[2] = float32(rect.Width)
+		bounds[3] = float32(rect.Height)
+	}
 }
 
 func (this *Path) GetCurrentPoint(point []float32) {
@@ -504,14 +526,16 @@ func (this *Path) GetCurrentPoint(point []float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var pt cocoa.NSPoint = this.Handle.CurrentPoint()
-	point[0] = float32(pt.X)
-	point[1] = float32(pt.Y)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var pt cocoa.NSPoint = this.Handle.CurrentPoint()
+		point[0] = float32(pt.X)
+		point[1] = float32(pt.Y)
+	}
 }
 
 func (this *Path) GetPathData() *PathData {
@@ -522,91 +546,93 @@ func (this *Path) GetPathData() *PathData {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var count int32 = int32(this.Handle.ElementCount())
+		var pointCount int32 = 0
+		var typeCount int32 = 0
+		var types []int8 = make([]int8, count)
+		var pointArray []float32 = make([]float32, count*6)
+		var points int64 = cocoa.CMalloc(int64(3 * cocoa.NSPointSizeof))
+		if points == 0 {
+			Error(ERROR_NO_HANDLES)
 		}
-	}()
-	var count int32 = int32(this.Handle.ElementCount())
-	var pointCount int32 = 0
-	var typeCount int32 = 0
-	var types []int8 = make([]int8, count)
-	var pointArray []float32 = make([]float32, count*6)
-	var points int64 = cocoa.CMalloc(int64(3 * cocoa.NSPointSizeof))
-	if points == 0 {
-		Error(ERROR_NO_HANDLES)
-	}
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	for i := int32(0); i < count; i++ {
-		var element int32 = int32(this.Handle.ElementAtIndex(int64(i), points))
-		switch element {
-		case cocoa.OSNSMoveToBezierPathElement:
-			t367 := typeCount
-			typeCount++
-			types[t367] = int8(PATH_MOVE_TO)
-			cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-			t368 := pointCount
-			pointCount++
-			pointArray[t368] = float32(pt.X)
-			t369 := pointCount
-			pointCount++
-			pointArray[t369] = float32(pt.Y)
-			break
-		case cocoa.OSNSLineToBezierPathElement:
-			t370 := typeCount
-			typeCount++
-			types[t370] = int8(PATH_LINE_TO)
-			cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-			t371 := pointCount
-			pointCount++
-			pointArray[t371] = float32(pt.X)
-			t372 := pointCount
-			pointCount++
-			pointArray[t372] = float32(pt.Y)
-			break
-		case cocoa.OSNSCurveToBezierPathElement:
-			t373 := typeCount
-			typeCount++
-			types[t373] = int8(PATH_CUBIC_TO)
-			cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
-			t374 := pointCount
-			pointCount++
-			pointArray[t374] = float32(pt.X)
-			t375 := pointCount
-			pointCount++
-			pointArray[t375] = float32(pt.Y)
-			cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
-			t376 := pointCount
-			pointCount++
-			pointArray[t376] = float32(pt.X)
-			t377 := pointCount
-			pointCount++
-			pointArray[t377] = float32(pt.Y)
-			cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof)+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
-			t378 := pointCount
-			pointCount++
-			pointArray[t378] = float32(pt.X)
-			t379 := pointCount
-			pointCount++
-			pointArray[t379] = float32(pt.Y)
-			break
-		case cocoa.OSNSClosePathBezierPathElement:
-			t380 := typeCount
-			typeCount++
-			types[t380] = int8(PATH_CLOSE)
-			break
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		for i := int32(0); i < count; i++ {
+			var element int32 = int32(this.Handle.ElementAtIndex(int64(i), points))
+			switch element {
+			case cocoa.OSNSMoveToBezierPathElement:
+				t370 := typeCount
+				typeCount++
+				types[t370] = int8(PATH_MOVE_TO)
+				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+				t371 := pointCount
+				pointCount++
+				pointArray[t371] = float32(pt.X)
+				t372 := pointCount
+				pointCount++
+				pointArray[t372] = float32(pt.Y)
+				break
+			case cocoa.OSNSLineToBezierPathElement:
+				t373 := typeCount
+				typeCount++
+				types[t373] = int8(PATH_LINE_TO)
+				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+				t374 := pointCount
+				pointCount++
+				pointArray[t374] = float32(pt.X)
+				t375 := pointCount
+				pointCount++
+				pointArray[t375] = float32(pt.Y)
+				break
+			case cocoa.OSNSCurveToBezierPathElement:
+				t376 := typeCount
+				typeCount++
+				types[t376] = int8(PATH_CUBIC_TO)
+				cocoa.OSMemmoveOverload3(&pt, points, int64(cocoa.NSPointSizeof))
+				t377 := pointCount
+				pointCount++
+				pointArray[t377] = float32(pt.X)
+				t378 := pointCount
+				pointCount++
+				pointArray[t378] = float32(pt.Y)
+				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
+				t379 := pointCount
+				pointCount++
+				pointArray[t379] = float32(pt.X)
+				t380 := pointCount
+				pointCount++
+				pointArray[t380] = float32(pt.Y)
+				cocoa.OSMemmoveOverload3(&pt, points+int64(cocoa.NSPointSizeof)+int64(cocoa.NSPointSizeof), int64(cocoa.NSPointSizeof))
+				t381 := pointCount
+				pointCount++
+				pointArray[t381] = float32(pt.X)
+				t382 := pointCount
+				pointCount++
+				pointArray[t382] = float32(pt.Y)
+				break
+			case cocoa.OSNSClosePathBezierPathElement:
+				t383 := typeCount
+				typeCount++
+				types[t383] = int8(PATH_CLOSE)
+				break
+			}
 		}
+		cocoa.CFree(points)
+		if pointCount != int32(len(pointArray)) {
+			var temp []float32 = make([]float32, pointCount)
+			copy(temp[0:], pointArray[0:0+pointCount])
+			pointArray = temp
+		}
+		var data *PathData = NewPathData()
+		data.Types = types
+		data.Points = pointArray
+		return data
 	}
-	cocoa.CFree(points)
-	if pointCount != int32(len(pointArray)) {
-		var temp []float32 = make([]float32, pointCount)
-		copy(temp[0:], pointArray[0:0+pointCount])
-		pointArray = temp
-	}
-	var data *PathData = NewPathData()
-	data.Types = types
-	data.Points = pointArray
-	return data
 }
 
 func (this *Path) Init(dataLike PathDataLike) {
@@ -625,44 +651,44 @@ func (this *Path) Init(dataLike PathDataLike) {
 		}() {
 			switch types[i] {
 			case int8(PATH_MOVE_TO):
-				t381 := j
-				j++
-				t382 := j
-				j++
-				this.MoveTo(points[t381], points[t382])
-				break
-			case int8(PATH_LINE_TO):
-				t383 := j
-				j++
 				t384 := j
 				j++
-				this.LineTo(points[t383], points[t384])
-				break
-			case int8(PATH_CUBIC_TO):
 				t385 := j
 				j++
+				this.MoveTo(points[t384], points[t385])
+				break
+			case int8(PATH_LINE_TO):
 				t386 := j
 				j++
 				t387 := j
 				j++
+				this.LineTo(points[t386], points[t387])
+				break
+			case int8(PATH_CUBIC_TO):
 				t388 := j
 				j++
 				t389 := j
 				j++
 				t390 := j
 				j++
-				this.CubicTo(points[t385], points[t386], points[t387], points[t388], points[t389], points[t390])
-				break
-			case int8(PATH_QUAD_TO):
 				t391 := j
 				j++
 				t392 := j
 				j++
 				t393 := j
 				j++
+				this.CubicTo(points[t388], points[t389], points[t390], points[t391], points[t392], points[t393])
+				break
+			case int8(PATH_QUAD_TO):
 				t394 := j
 				j++
-				this.QuadTo(points[t391], points[t392], points[t393], points[t394])
+				t395 := j
+				j++
+				t396 := j
+				j++
+				t397 := j
+				j++
+				this.QuadTo(points[t394], points[t395], points[t396], points[t397])
 				break
 			case int8(PATH_CLOSE):
 				this.Close()
@@ -687,16 +713,18 @@ func (this *Path) LineTo(x float32, y float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y)
-	this.Handle.LineToPoint(pt)
-	this.closed = false
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y)
+		this.Handle.LineToPoint(pt)
+		this.closed = false
+	}
 }
 
 func (this *Path) MoveTo(x float32, y float32) {
@@ -707,16 +735,18 @@ func (this *Path) MoveTo(x float32, y float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y)
-	this.Handle.MoveToPoint(pt)
-	this.closed = true
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y)
+		this.Handle.MoveToPoint(pt)
+		this.closed = true
+	}
 }
 
 func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
@@ -727,28 +757,30 @@ func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var current cocoa.NSPoint
+		if this.Handle.IsEmpty() {
+			current = cocoa.NSPoint{}
+		} else {
+			current = this.Handle.CurrentPoint()
 		}
-	}()
-	var current cocoa.NSPoint
-	if this.Handle.IsEmpty() {
-		current = cocoa.NSPoint{}
-	} else {
-		current = this.Handle.CurrentPoint()
+		var ct1 cocoa.NSPoint = cocoa.NSPoint{}
+		ct1.X = current.X + 2*(float64(cx)-current.X)/3
+		ct1.Y = current.Y + 2*(float64(cy)-current.Y)/3
+		var ct2 cocoa.NSPoint = cocoa.NSPoint{}
+		ct2.X = ct1.X + (float64(x)-current.X)/3
+		ct2.Y = ct1.Y + (float64(y)-current.Y)/3
+		var pt cocoa.NSPoint = cocoa.NSPoint{}
+		pt.X = float64(x)
+		pt.Y = float64(y)
+		this.Handle.CurveToPoint(pt, ct1, ct2)
+		this.closed = false
 	}
-	var ct1 cocoa.NSPoint = cocoa.NSPoint{}
-	ct1.X = current.X + 2*(float64(cx)-current.X)/3
-	ct1.Y = current.Y + 2*(float64(cy)-current.Y)/3
-	var ct2 cocoa.NSPoint = cocoa.NSPoint{}
-	ct2.X = ct1.X + (float64(x)-current.X)/3
-	ct2.Y = ct1.Y + (float64(y)-current.Y)/3
-	var pt cocoa.NSPoint = cocoa.NSPoint{}
-	pt.X = float64(x)
-	pt.Y = float64(y)
-	this.Handle.CurveToPoint(pt, ct1, ct2)
-	this.closed = false
 }
 
 func (this *Path) String() string {

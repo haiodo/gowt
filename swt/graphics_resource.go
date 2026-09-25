@@ -226,7 +226,7 @@ func (this *Resource_ResourceTrackerThreadFactory) initResourceResourceTrackerTh
 }
 
 func (this *Resource_ResourceTrackerThreadFactory) NewThread(r jrt.Runnable) any {
-	var thread any = nil
+	var thread any = func() any { _ = []any{this.group, r, "SWTResourceTracker", int64(0), false}; return nil }()
 	func() any { _ = []any{thread, 10 - 2}; panic("j2go: unresolved call setPriority") }()
 	func() any {
 		_ = []any{thread, func() any { panic("j2go: unresolved call getSystemClassLoader") }()}

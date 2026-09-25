@@ -162,47 +162,41 @@ final class ControlFlowEmitter {
 				emitter.unsupported.add("TryStatement: non-declaration resource " + o);
 			}
 		}
-		List<?> catches = ts.catchClauses();
-		Block finallyBlock = ts.getFinally();
-		// No catch: nothing needs panic/recover, so the body is inlined directly (no closure);
-		// a defer for the resource/finally cleanup then runs on any exit path, return included.
-		if (catches.isEmpty()) {
-			if (finallyBlock != null) b.append(deferBlock(finallyBlock, indent));
-			for (int i = resourceCloses.size() - 1; i >= 0; i--) {
-				b.append(ind(indent)).append("defer ").append(resourceCloses.get(i)).append('\n');
-			}
+		@SuppressWarnings("unchecked")
+		List<CatchClause> catches = (List<CatchClause>) ts.catchClauses();
+		List<String> cleanup = cleanupDefers(resourceCloses, ts.getFinally(), indent);
+		// The method's last statement without a catch: a function-level defer already runs right
+		// after the body, so no closure; the block keeps the body's locals scoped.
+		if (catches.isEmpty() && isLastInMethodBody(ts)) {
+			for (String d : cleanup) b.append(ind(indent)).append("defer ").append(d).append('\n');
 			b.append(emitter.block(ts.getBody(), indent));
-			return b.toString();
+			return ind(indent) + "{\n" + b + ind(indent) + "}\n";
 		}
-		if (finallyBlock != null) b.append(deferBlock(finallyBlock, indent));
-		for (int i = resourceCloses.size() - 1; i >= 0; i--) {
-			b.append(ind(indent)).append("defer ").append(resourceCloses.get(i)).append('\n');
-		}
-		b.append(emitTryCatch(ts, catches, indent));
-		return b.toString();
+		// Anywhere else finally must run when the try ends, not at function exit: a closure's defer.
+		b.append(emitClosure(ts.getBody(), catches, cleanup, indent));
+		// Resource variables are scoped to the try statement.
+		return resourceCloses.isEmpty() ? b.toString() : ind(indent) + "{\n" + b + ind(indent) + "}\n";
 	}
 
-	private String deferBlock(Block block, int indent) {
-		return ind(indent) + "defer func() {\n" + emitter.block(block, indent + 1) + ind(indent) + "}()\n";
+	/** Defers in registration order: finally first so it runs last, then one per resource so the
+	 * last declared closes first - separate, so a close that panics still lets finally run. */
+	private List<String> cleanupDefers(List<String> resourceCloses, Block finallyBlock, int indent) {
+		List<String> defers = new ArrayList<>();
+		if (finallyBlock != null) defers.add("func() {\n" + emitter.block(finallyBlock, indent + 2) + ind(indent + 1) + "}()");
+		defers.addAll(resourceCloses);
+		return defers;
 	}
 
 	/** synchronized (x) { body }: the one global jrt monitor (see internal/jrt/lang.go), released
 	 * by a defer inside a block-scoped closure - the lock expression itself is not evaluated. */
 	String emitSynchronized(SynchronizedStatement ss, int indent) {
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
-		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), "jrt.MonitorExit()", indent);
+		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), List.of("jrt.MonitorExit()"), indent);
 	}
 
-	/** A catch needs panic/recover, which needs a Go closure boundary - see README for how a
-	 * return/break/continue inside the try/catch body is made to escape it correctly. */
-	@SuppressWarnings("unchecked")
-	private String emitTryCatch(TryStatement ts, List<?> catchesRaw, int indent) {
-		return emitClosure(ts.getBody(), (List<CatchClause>) catchesRaw, null, indent);
-	}
-
-	/** body inside `func() { defer ...; body }()`: catches become a recover() dispatch, deferText
-	 * (if any) a plain defer; return/break/continue escape via flags re-played after the call. */
-	private String emitClosure(Block body, List<CatchClause> catches, String deferText, int indent) {
+	/** body inside `func() { defer ...; body }()`: catches become a recover() dispatch, defers
+	 * plain defers; return/break/continue escape via flags re-played after the call. */
+	private String emitClosure(Block body, List<CatchClause> catches, List<String> defers, int indent) {
 		EscapeScanner scan = new EscapeScanner();
 		body.accept(scan);
 		for (CatchClause cc : catches) cc.getBody().accept(scan);
@@ -231,7 +225,7 @@ final class ControlFlowEmitter {
 		emitter.loopSwitchDepth = 0;
 
 		b.append(ind(indent)).append("func() {\n");
-		if (deferText != null) b.append(ind(indent + 1)).append("defer ").append(deferText).append('\n');
+		for (String d : defers) b.append(ind(indent + 1)).append("defer ").append(d).append('\n');
 		if (!catches.isEmpty()) {
 			b.append(ind(indent + 1)).append("defer func() {\n");
 			b.append(ind(indent + 2)).append("r := recover()\n");

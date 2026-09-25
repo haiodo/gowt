@@ -47,7 +47,7 @@ final class InvocationEmitter {
 		if (Manual.isManual(qualified) && !Manual.isBareAny(qualified)) {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				emitter.addManualImport(qualified);
-				return Manual.staticMember(qualified, mb.getName()) + "(" + String.join(", ", args) + ")";
+				return emitter.qualifyManual(Manual.staticMember(qualified, mb.getName()), declaring) + "(" + String.join(", ", args) + ")";
 			}
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 			return castErased(recv + "." + Manual.instanceMember(mb.getName()) + "(" + String.join(", ", args) + ")", mb);
@@ -253,7 +253,7 @@ final class InvocationEmitter {
 	}
 
 	/** recv.goName(args), through the impl cascade when mb is an override point. */
-	private String callText(String recv, IMethodBinding mb, TypeModel.ClassInfo ci, List<String> args) {
+	String callText(String recv, IMethodBinding mb, TypeModel.ClassInfo ci, List<String> args) {
 		String sig = TypeModel.signature(mb);
 		boolean overridden = ci.overridePoint(sig) != null;
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig)
@@ -298,7 +298,13 @@ final class InvocationEmitter {
 			if (Manual.isManual(qualified)) {
 				// A value-type manual entry (any/error/...) has no real constructor function -
 				// "new X()" is just its zero value, same as an ordinary unresolved type would get.
-				if (Manual.isValueType(qualified)) return emitter.zeroValue(declaring);
+				if (Manual.isValueType(qualified)) {
+					// The arguments are still evaluated, as in Java (and so count as used in Go).
+					List<String> valueArgs = buildArgs(cic.arguments(), ctor);
+					if (valueArgs.isEmpty()) return emitter.zeroValue(declaring);
+					return "func() " + dev.gowt.j2go.GoTypes.map(declaring, emitter) + " { _ = []any{" + String.join(", ", valueArgs)
+							+ "}; return " + emitter.zeroValue(declaring) + " }()";
+				}
 				emitter.addManualImport(qualified);
 				List<String> manualArgs = buildArgs(cic.arguments(), ctor);
 				return Manual.ctorFuncName(qualified) + "(" + String.join(", ", manualArgs) + ")";

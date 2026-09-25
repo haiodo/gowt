@@ -109,14 +109,14 @@ func (this *Synchronizer) RunAsyncMessagesAll(all bool) bool {
 			defer jrt.MonitorExit()
 			this.syncThread = lock.thread
 			this.display.SendPreEvent(None)
-			defer func() {
-				if this.display != (nil) && !this.display.IsDisposed() {
-					this.display.SendPostEvent(None)
-				}
-				this.syncThread = nil
-				jrt.MonitorNotifyAll()
-			}()
 			func() {
+				defer func() {
+					if this.display != (nil) && !this.display.IsDisposed() {
+						this.display.SendPostEvent(None)
+					}
+					this.syncThread = nil
+					jrt.MonitorNotifyAll()
+				}()
 				defer func() {
 					r := recover()
 					if r == nil {
@@ -143,7 +143,7 @@ func (this *Synchronizer) RunAsyncMessagesAll(all bool) bool {
 func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 	var lock *RunnableLock = nil
 	jrt.MonitorEnter()
-	tretd229 := false
+	tretd230 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.display == (nil) || this.display.IsDisposed() {
@@ -152,7 +152,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 		if !this.display.IsValidThread() {
 			if runnable == (nil) {
 				this.display.Wake()
-				tretd229 = true
+				tretd230 = true
 				return
 			}
 			lock = newRunnableLock(runnable)
@@ -160,18 +160,18 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 			this.AddLast(lock)
 		}
 	}()
-	if tretd229 {
+	if tretd230 {
 		return
 	}
 	if lock == (nil) {
 		if runnable != (nil) {
 			this.display.SendPreEvent(None)
-			defer func() {
-				if this.display != (nil) && !this.display.IsDisposed() {
-					this.display.SendPostEvent(None)
-				}
-			}()
 			func() {
+				defer func() {
+					if this.display != (nil) && !this.display.IsDisposed() {
+						this.display.SendPostEvent(None)
+					}
+				}()
 				defer func() {
 					r := recover()
 					if r == nil {

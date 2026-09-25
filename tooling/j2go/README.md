@@ -90,6 +90,7 @@ it, never directly. Where to add a new construct:
 - **cross-package qualification (`<pkg>.` + import, package layering guard)** -> `PackageQualifier`
   (split out of `Emitter` in Round 10 - line budget)
 - **the reflect registry (package `swt/swtreflect`)** -> `ReflectEmitter` (Round 11)
+- **JUnit: `Assertions`/`Assumptions` calls, the per-class test registry** -> `TestEmitter` (Round 12)
 
 ## Run
 
@@ -2528,3 +2529,120 @@ panicked before). Live: `bin/controlexample`, Text tab, "Set/Get API" dialog, pr
 shows the example Text's content, Set "Hello gowt" changes the widget and Get shows it, Set "" clears
 the widget and Get shows "" - no panic.
 
+## Round 12 tests
+
+**Status: done, green.** `make gen && make` pass, `make test-swt` runs to completion: 352 tests, 292
+passed, 55 failed, 5 skipped (`tests/RESULTS.md`). `internal/cocoa` byte-identical, every `cmd/*` runs.
+
+### Layout
+
+- `port.sh` has a fourth j2go invocation: the test files (`TEST_FILES`: `SwtTestUtil`, `ImageTestUtil`,
+  `CapturedOutput`, the `graphics`/`layout`/`events` test classes, `tests/graphics/ImageDataTestHelper`)
+  are emitted; swt, `C.java` and cocoa are reference-only. `Test_org_eclipse_swt_layout_BorderLayout` is
+  left out (see `tests/RESULTS.md`). The test images are copied to `tests/swttests/testdata/` and
+  embedded by `tests/swttests/swttests_manual.go` (`Class.getResourceAsStream`).
+- `org.eclipse.swt.tests.*` -> `tests/swttests` (package `swttests`, `GoTypes.goPackageDir`), layer 2
+  like the examples.
+- JUnit on the parser classpath only: `Main --classpath <jars>`; `pom.xml` declares
+  `junit-jupiter-params` 5.11.4 as `provided` so Maven fetches it (with api, opentest4j,
+  platform-commons, apiguardian) without shading it; `port.sh` builds the path from `~/.m2`.
+  `org.eclipse.test.Screenshots` (not in the SWT repo) is a parser-only stub under
+  `tooling/j2go/stubs` (an extra source root).
+- In `swttests` a type that is neither translated nor manual degrades to `any`, like a JDK type
+  (`Emitter.degradesUnresolvedTypes`): tests may reference SWT API not ported yet; such a test
+  compiles and fails at run time with an `unresolved` marker. Other packages keep the
+  `unsupported_type_` guard.
+
+### `internal/junit` and the registry (`TestEmitter`)
+
+- `Assertions.x(...)`/`Assumptions.x(...)` -> `junit.X(...)` (`Emitter.tryIntrinsic` asks
+  `TestEmitter.junitCall` first). The shim takes `any` plus JUnit's trailing message (`msg ...any`: a
+  string or a `func() string` Supplier). A numeric argument is converted to its Java type
+  (`int32(100)`) - an untyped Go constant would arrive as `int` and never equal an `int32`.
+  Overloads with a `double`/`float` third parameter map to `AssertEqualsDelta`/`AssertNotEqualsDelta`/
+  `AssertArrayEqualsDelta`. `assertThrows(X.class, exec)` and `assertInstanceOf(X.class, v)` take the
+  class as a Go type argument: `junit.AssertThrows[*swt.SWTException](func() {...})`, returning the
+  exception. A lambda or bound method reference argument is a bare Go func (`FunctionalEmitter.rawFunc`),
+  not a functional-interface adapter.
+- Semantics: `AssertEquals`/`AssertArrayEquals` use the translated `Equals(any) bool` when the
+  expected value has one, identity otherwise; identity (`AssertSame`) compares pointer addresses, since
+  an upcast is the address of the embedded superclass field (offset 0) and has another Go type. Null is
+  a nil pointer/slice/map/func/interface or `""` (the port's null String). A failed assertion panics
+  `*junit.AssertionFailed`, a failed assumption `*junit.Skipped`.
+- Per concrete top-level test class (`ClassEmitter` calls `TestEmitter.registration` after the class):
+  a `func init() { junit.Register(&junit.Class{...}) }` with `New`, `BeforeAll`/`AfterAll` (static),
+  `BeforeEach` (superclass first)/`AfterEach` (subclass first) and `Tests`. Methods are each signature's
+  most-derived declaration along the superclass chain, so inherited tests run on the subclass and an
+  override without `@Test` is not a test (JUnit 5 rules). A call goes through the impl cascade like any
+  call (`Emitter.instanceCall`), so an overridden `newTypedEvent` dispatches to the subclass.
+- Annotations, evaluated at translation time for macOS: `@Test`; `@ParameterizedTest` +
+  `@ValueSource` expanded into one test per value (`name[1]`, ...); `@Tag`/`@Tags` (class tags inherited);
+  `@Disabled`, `@DisabledOnOs`/`@EnabledOnOs` (`OS.MAC`), `@DisabledIfEnvironmentVariable` (checked at
+  init by `junit.SkipIfEnv`), `@DisabledIfSystemProperty` (never: Go has no system properties),
+  `@Timeout` (per-test watchdog), `@TestMethodOrder` with `OrderAnnotation`/`MethodName`. A test with
+  another `org.junit` annotation, another parameter source (`@MethodSource`) or injected parameters
+  (`@TempDir Path`, `TestInfo`) is registered as skipped with the reason.
+
+### Runner `cmd/swttest`
+
+`runtime.LockOSThread()` in `init`; one `Display` created up front on the main thread (recreated if a
+test disposed it). Each test gets a fresh instance; `BeforeEach`, the test and `AfterEach` each run under
+`recover` - a panic fails that test, `AfterEach` still runs. A `time.AfterFunc` watchdog per test
+(`-timeout`, default 30s, or the test's `@Timeout`) prints the hung test as FAIL and exits 2. Flags:
+`-run <regexp on Class.method>`, `-tag a,b,!c`, `-json` (`go test -json` events: run/output/pass/fail/skip
+per test, a package pass/fail at the end), `-list`. One line per test: `PASS|FAIL|SKIP Class.method
+(0.012s): message at file:line` - the site is the first frame outside the runtime, the shim and the
+runner. Exit 0 when the run completes, failures included (TSK-053 adds the expected-results gate).
+`make test-swt` builds and runs it (`SWTTEST_FLAGS=...`).
+
+### Translator changes (general rules)
+
+- `ControlFlowEmitter.emitTry`: `finally` (and try-with-resources closes) ran as function-level
+  defers, i.e. at method exit - late, and a later reassignment of the same variable was what the
+  deferred code saw (`Font.getFontData` test: five sequential try/finally disposed the last font five
+  times). Now only the method's last statement keeps the inline form (a function-level defer then
+  runs right after it); any other try runs in a closure whose defers fire when the try ends. The body
+  is always block-scoped (Java allows the same local name in sibling try blocks). Resource closes are
+  separate defers, the last declared closing first, so a close that panics still lets `finally` run
+  (`EventTable.sendEvent`'s `ExceptionStash`, `eventtable_test.go`). Also stops
+  `ControlExample.initResources` from keeping every image stream open until the method returns.
+- `StatementEmitter`: a local that Java only ever assigns gets `_ = x` (`EmitUtil.neverRead`); a
+  for-each over a `java.util` collection (`*jrt.List`) ranges over `ToArray()` with a `jrt.Cast` to the
+  loop variable's type; the unsupported-for-each marker is `func() { panic(...) }()`, not a terminating
+  statement, so `go vet` does not report the code after it as unreachable.
+- `FunctionalEmitter`: `Type::method` (JDT parses it as an `ExpressionMethodReference` whose expression
+  is a type name) is the Go method expression `(*swt.Image).Dispose` or the static function, not
+  `Image.Dispose`; a void lambda with a non-statement expression body (`() -> rect.x`) is `_ = expr`
+  instead of a marker.
+- `ClassEmitter`: a nested interface is emitted as a Go interface (was a struct).
+- `ExpressionEmitter`: a static field of an unresolved JDK class with a compile-time constant value
+  (`Short.MAX_VALUE`) is that literal; any other unresolved static field is a typed panic closure
+  instead of an undefined identifier; an anonymous class marker has its base type (was `any`, did not
+  compile where a `*swt.Canvas` was expected). A manual type's static member is package-qualified from
+  another package (`swt.DPIUtilGetDeviceZoom()`; `InvocationEmitter` too).
+- `InvocationEmitter`: `new X(args)` of a value-type manual class (`Thread` = `any`) still evaluates
+  its arguments.
+- `Names.javaMethodBaseGoName`: `$` (legal in Java identifiers, used in JUnit method names) -> `_`.
+- `JdkIntrinsics`: `String.startsWith/endsWith/contains/toLowerCase/toUpperCase` (`strings.X`),
+  `String.hashCode` (`jrt.StringHashCode`), `Double.hashCode`, `Objects.hash`, `System.lineSeparator()`,
+  `System.getProperty("os.name")` = `"Mac OS X"`. swt markers: MethodInvocation 120 -> 115,
+  ClassInstanceCreation 13 -> 9.
+- `Manual`: `java.io.ByteArrayInputStream`/`ByteArrayOutputStream` -> `jrt`.
+
+### `internal/jrt`
+
+`List.ToArray/Contains/ForEach`, `ListOf`, `Map.ForEach` (the action arrives as an erased func and is
+called through reflect), `ByteArrayInputStream`/`ByteArrayOutputStream` (`ToByteArray`, `ToString`),
+`StringHashCode`/`DoubleHashCode`/`ObjectsHash`. `NewIllegalArgumentException` returns a pointer (it
+returned a struct, so `panic(jrt.NewIllegalArgumentException(..))` never matched a
+`catch (IllegalArgumentException)`, whose type is `*jrt.IllegalArgumentException`) and takes Java's four
+constructor shapes (`()`, `(String)`, `(Throwable)`, `(String, Throwable)`).
+
+### Gaps
+
+- Widget test classes: not translated (task 052). A trial run over all of them stops at JDT errors
+  (`CoolBar`, `CoolItem`, ... are not on the cocoa source path).
+- `@MethodSource`/`@CsvSource`, parameter injection (`@TempDir`, `TestInfo`), `@RegisterExtension`:
+  skipped with a reason.
+- `object == null` on `any` holding a typed nil pointer is false (`tests/RESULTS.md`, translator bug),
+  not fixed here: it is `NumericEmitter.emitInfix`, which another branch is changing.

@@ -18,6 +18,13 @@
 			<artifactId>org.eclipse.jdt.core</artifactId>
 			<version>3.47.0</version>
 		</dependency>
+		<!-- Round 12: only on the parser classpath for the SWT JUnit sources (port.sh), not shaded. -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>5.11.4</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

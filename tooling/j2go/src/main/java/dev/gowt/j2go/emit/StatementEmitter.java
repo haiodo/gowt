@@ -180,8 +180,10 @@ final class StatementEmitter {
 	private String emitVarDecl(VariableDeclarationStatement vds, int indent) {
 		StringBuilder b = new StringBuilder();
 		ITypeBinding declType = vds.getType().resolveBinding();
+		List<String> unread = new ArrayList<>();
 		for (Object o : vds.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
+			if (EmitUtil.neverRead(f, vds.getParent())) unread.add(emitter.sanitizeIdent(f.getName().getIdentifier()));
 			// C-style declaration (`Touch touches[]`): the []  binds to the FRAGMENT, not the
 			// shared type node - vds.getType() alone would miss it and declare a bare *Touch.
 			ITypeBinding fragType = f.resolveBinding() != null ? f.resolveBinding().getType() : declType;
@@ -201,8 +203,11 @@ final class StatementEmitter {
 			// not int32, silently breaking later int32 comparisons/arithmetic against it.
 			b.append(ind(indent)).append("var ").append(name).append(' ').append(goType).append(" = ").append(init).append('\n');
 		}
+		// Java allows a local that is only ever assigned; Go rejects it as unused.
+		for (String n : unread) b.append(ind(indent)).append("_ = ").append(n).append('\n');
 		return b.toString();
 	}
+
 
 	// Bare text (no newline) for a for-loop init/update clause: prefers Go's native x++/x--
 	// and plain assignment over the general temp-var expression forms.
@@ -325,8 +330,21 @@ final class StatementEmitter {
 			b.append(ind(indent)).append("}\n");
 			return b.toString();
 		}
+		// A java.util collection is a jrt.List of erased elements: cast each back to the loop type.
+		if (collType != null && dev.gowt.j2go.GoTypes.map(collType, emitter).equals("*jrt.List")) {
+			String elemType = dev.gowt.j2go.GoTypes.map(efs.getParameter().getType().resolveBinding(), emitter);
+			String tmp = "elem" + (++emitter.tempCounter);
+			b.append(ind(indent)).append("for _, ").append(tmp).append(" := range ").append(collText).append(".ToArray() {\n");
+			b.append(ind(indent + 1)).append(varName).append(" := jrt.Cast[").append(elemType).append("](").append(tmp).append(")\n");
+			emitter.loopSwitchDepth++;
+			b.append(emitAsBlock(efs.getBody(), indent + 1));
+			emitter.loopSwitchDepth--;
+			b.append(ind(indent)).append("}\n");
+			return b.toString();
+		}
 		emitter.unsupported.add("EnhancedForStatement: non-array Iterable " + efs);
-		b.append(ind(indent)).append("panic(\"j2go: unsupported EnhancedForStatement over non-array\")\n");
+		// Not a terminating statement: code after the loop stays reachable for go vet.
+		b.append(ind(indent)).append("func() { panic(\"j2go: unsupported EnhancedForStatement over non-array\") }()\n");
 		return b.toString();
 	}
 

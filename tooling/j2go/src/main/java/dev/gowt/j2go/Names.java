@@ -50,7 +50,8 @@ public class Names {
 			case "equals" -> "Equals";
 			case "hashCode" -> "HashCode";
 			case "toString" -> "String";
-			default -> capitalize(javaMethodName);
+			// '$' is legal in a Java identifier, not in Go (JUnit names: test_Constructor...Device$L...).
+			default -> capitalize(javaMethodName.replace('$', '_'));
 		};
 	}
 

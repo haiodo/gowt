@@ -55,15 +55,17 @@ func (this *Pattern) initPattern(device *Device, image *Image) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.image = image
-	this.color = cocoa.NSColorColorWithPatternImage(image.Handle)
-	this.color.Retain()
-	this.impl.init_()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.image = image
+		this.color = cocoa.NSColorColorWithPatternImage(image.Handle)
+		this.color.Retain()
+		this.impl.init_()
+	}
 }
 
 func NewPatternDeviceX1Y1X2Y2Color1Color2(deviceLike DeviceLike, x1 float32, y1 float32, x2 float32, y2 float32, color1Like ColorLike, color2Like ColorLike) *Pattern {
@@ -132,25 +134,27 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.pt1 = cocoa.NSPoint{}
-	this.pt2 = cocoa.NSPoint{}
-	this.pt1.X = float64(x1)
-	this.pt1.Y = float64(y1)
-	this.pt2.X = float64(x2)
-	this.pt2.Y = float64(y2)
-	this.color1 = color1.Handle
-	this.color2 = color2.Handle
-	this.alpha1 = alpha1
-	this.alpha2 = alpha2
-	var start *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color1.Handle[0], color1.Handle[1], color1.Handle[2], float64(float32(alpha1)/255))
-	var end *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color2.Handle[0], color2.Handle[1], color2.Handle[2], float64(float32(alpha2)/255))
-	this.gradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(start, end)
-	this.impl.init_()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.pt1 = cocoa.NSPoint{}
+		this.pt2 = cocoa.NSPoint{}
+		this.pt1.X = float64(x1)
+		this.pt1.Y = float64(y1)
+		this.pt2.X = float64(x2)
+		this.pt2.Y = float64(y2)
+		this.color1 = color1.Handle
+		this.color2 = color2.Handle
+		this.alpha1 = alpha1
+		this.alpha2 = alpha2
+		var start *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color1.Handle[0], color1.Handle[1], color1.Handle[2], float64(float32(alpha1)/255))
+		var end *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color2.Handle[0], color2.Handle[1], color2.Handle[2], float64(float32(alpha2)/255))
+		this.gradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(start, end)
+		this.impl.init_()
+	}
 }
 
 func (this *Pattern) destroy_() {
@@ -175,11 +179,11 @@ func (this *Pattern) String() string {
 	if this.impl.isDisposed_() {
 		return "Pattern {*DISPOSED*}"
 	}
-	var cond365 int64
+	var cond368 int64
 	if this.color != (nil) {
-		cond365 = this.color.Id
+		cond368 = this.color.Id
 	} else {
-		cond365 = this.gradient.Id
+		cond368 = this.gradient.Id
 	}
-	return fmt.Sprintf("Pattern {%d}", (cond365))
+	return fmt.Sprintf("Pattern {%d}", (cond368))
 }

@@ -54,16 +54,18 @@ func (this *Region) initRegionDevice(device *Device) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Handle = cocoa.OSNewRgn()
+		if this.Handle == 0 {
+			Error(ERROR_NO_HANDLES)
 		}
-	}()
-	this.Handle = cocoa.OSNewRgn()
-	if this.Handle == 0 {
-		Error(ERROR_NO_HANDLES)
+		this.impl.init_()
 	}
-	this.impl.init_()
 }
 
 func newRegionDeviceHandle(device *Device, handle int64) *Region {
@@ -92,12 +94,14 @@ func (this *Region) Add(pointArray []int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.AddPointArrayCount(pointArray, int32(len(pointArray)))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.AddPointArrayCount(pointArray, int32(len(pointArray)))
+	}
 }
 
 func (this *Region) AddPointArrayCount(pointArray []int32, count int32) {
@@ -109,14 +113,16 @@ func (this *Region) AddPointArrayCount(pointArray []int32, count int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var polyRgn int64 = RegionPolyRgn(pointArray, count)
-	cocoa.OSUnionRgn(this.Handle, polyRgn, this.Handle)
-	cocoa.OSDisposeRgn(polyRgn)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var polyRgn int64 = RegionPolyRgn(pointArray, count)
+		cocoa.OSUnionRgn(this.Handle, polyRgn, this.Handle)
+		cocoa.OSDisposeRgn(polyRgn)
+	}
 }
 
 func (this *Region) AddRect(rectLike RectangleLike) {
@@ -138,12 +144,14 @@ func (this *Region) AddRect(rectLike RectangleLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.AddXYWidthHeight(rect.X, rect.Y, rect.Width, rect.Height)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.AddXYWidthHeight(rect.X, rect.Y, rect.Width, rect.Height)
+	}
 }
 
 func (this *Region) AddXYWidthHeight(x int32, y int32, width int32, height int32) {
@@ -157,17 +165,19 @@ func (this *Region) AddXYWidthHeight(x int32, y int32, width int32, height int32
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var rectRgn int64 = cocoa.OSNewRgn()
-	var r []int16 = make([]int16, 4)
-	cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
-	cocoa.OSRectRgn(rectRgn, r)
-	cocoa.OSUnionRgn(this.Handle, rectRgn, this.Handle)
-	cocoa.OSDisposeRgn(rectRgn)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var rectRgn int64 = cocoa.OSNewRgn()
+		var r []int16 = make([]int16, 4)
+		cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
+		cocoa.OSRectRgn(rectRgn, r)
+		cocoa.OSUnionRgn(this.Handle, rectRgn, this.Handle)
+		cocoa.OSDisposeRgn(rectRgn)
+	}
 }
 
 func (this *Region) AddRegion(regionLike RegionLike) {
@@ -189,12 +199,14 @@ func (this *Region) AddRegion(regionLike RegionLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	cocoa.OSUnionRgn(this.Handle, region.Handle, this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		cocoa.OSUnionRgn(this.Handle, region.Handle, this.Handle)
+	}
 }
 
 func (this *Region) Contains(x int32, y int32) bool {
@@ -205,13 +217,15 @@ func (this *Region) Contains(x int32, y int32) bool {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var point []int16 = []int16{int16(y), int16(x)}
-	return cocoa.OSPtInRgn(point, this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var point []int16 = []int16{int16(y), int16(x)}
+		return cocoa.OSPtInRgn(point, this.Handle)
+	}
 }
 
 func (this *Region) ContainsPt(ptLike PointLike) bool {
@@ -249,47 +263,47 @@ func (this *Region) ConvertRgnMessageRgnRNewRgn(message int64, rgn int64, r int6
 		point = this.transform.TransformPoint(point)
 		var startX int16
 		var startY int16
-		t395 := i
+		t398 := i
 		i++
 		startX = int16(point.X)
-		points[t395] = int32(startX)
-		t396 := i
+		points[t398] = int32(startX)
+		t399 := i
 		i++
 		startY = int16(point.Y)
-		points[t396] = int32(startY)
+		points[t399] = int32(startY)
 		point.X = float64(rect[3])
 		point.Y = float64(rect[0])
 		point = this.transform.TransformPoint(point)
-		t397 := i
+		t400 := i
 		i++
-		points[t397] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
-		t398 := i
+		points[t400] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
+		t401 := i
 		i++
-		points[t398] = int32(int16(point.Y))
+		points[t401] = int32(int16(point.Y))
 		point.X = float64(rect[3])
 		point.Y = float64(rect[2])
 		point = this.transform.TransformPoint(point)
-		t399 := i
+		t402 := i
 		i++
-		points[t399] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
-		t400 := i
+		points[t402] = int32(int16(int64(math.Floor(float64(point.X) + 0.5))))
+		t403 := i
 		i++
-		points[t400] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
+		points[t403] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
 		point.X = float64(rect[1])
 		point.Y = float64(rect[2])
 		point = this.transform.TransformPoint(point)
-		t401 := i
-		i++
-		points[t401] = int32(int16(point.X))
-		t402 := i
-		i++
-		points[t402] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
-		t403 := i
-		i++
-		points[t403] = int32(startX)
 		t404 := i
 		i++
-		points[t404] = int32(startY)
+		points[t404] = int32(int16(point.X))
+		t405 := i
+		i++
+		points[t405] = int32(int16(int64(math.Floor(float64(point.Y) + 0.5))))
+		t406 := i
+		i++
+		points[t406] = int32(startX)
+		t407 := i
+		i++
+		points[t407] = int32(startY)
 		var polyRgn int64 = RegionPolyRgn(points, int32(len(points)))
 		cocoa.OSUnionRgn(newRgn, polyRgn, newRgn)
 		cocoa.OSDisposeRgn(polyRgn)
@@ -314,16 +328,18 @@ func (this *Region) GetBounds() *Rectangle {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var bounds []int16 = make([]int16, 4)
-	cocoa.OSGetRegionBounds(this.Handle, bounds)
-	var width int32 = int32(bounds[3]) - int32(bounds[1])
-	var height int32 = int32(bounds[2]) - int32(bounds[0])
-	return NewRectangle(int32(bounds[1]), int32(bounds[0]), width, height)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var bounds []int16 = make([]int16, 4)
+		cocoa.OSGetRegionBounds(this.Handle, bounds)
+		var width int32 = int32(bounds[3]) - int32(bounds[1])
+		var height int32 = int32(bounds[2]) - int32(bounds[0])
+		return NewRectangle(int32(bounds[1]), int32(bounds[0]), width, height)
+	}
 }
 
 func (this *Region) GetPath() *cocoa.NSBezierPath {
@@ -386,17 +402,19 @@ func (this *Region) IntersectXYWidthHeight(x int32, y int32, width int32, height
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var rectRgn int64 = cocoa.OSNewRgn()
-	var r []int16 = make([]int16, 4)
-	cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
-	cocoa.OSRectRgn(rectRgn, r)
-	cocoa.OSSectRgn(this.Handle, rectRgn, this.Handle)
-	cocoa.OSDisposeRgn(rectRgn)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var rectRgn int64 = cocoa.OSNewRgn()
+		var r []int16 = make([]int16, 4)
+		cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
+		cocoa.OSRectRgn(rectRgn, r)
+		cocoa.OSSectRgn(this.Handle, rectRgn, this.Handle)
+		cocoa.OSDisposeRgn(rectRgn)
+	}
 }
 
 func (this *Region) IntersectRegion(regionLike RegionLike) {
@@ -418,12 +436,14 @@ func (this *Region) IntersectRegion(regionLike RegionLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	cocoa.OSSectRgn(this.Handle, region.Handle, this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		cocoa.OSSectRgn(this.Handle, region.Handle, this.Handle)
+	}
 }
 
 func (this *Region) Intersects(x int32, y int32, width int32, height int32) bool {
@@ -434,14 +454,16 @@ func (this *Region) Intersects(x int32, y int32, width int32, height int32) bool
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var r []int16 = make([]int16, 4)
-	cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
-	return cocoa.OSRectInRgn(r, this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var r []int16 = make([]int16, 4)
+		cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
+		return cocoa.OSRectInRgn(r, this.Handle)
+	}
 }
 
 func (this *Region) IntersectsRect(rectLike RectangleLike) bool {
@@ -468,12 +490,14 @@ func (this *Region) IsEmpty() bool {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	return cocoa.OSEmptyRgn(this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		return cocoa.OSEmptyRgn(this.Handle)
+	}
 }
 
 func (this *Region) Subtract(pointArray []int32) {
@@ -490,14 +514,16 @@ func (this *Region) Subtract(pointArray []int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var polyRgn int64 = RegionPolyRgn(pointArray, int32(len(pointArray)))
-	cocoa.OSDiffRgn(this.Handle, polyRgn, this.Handle)
-	cocoa.OSDisposeRgn(polyRgn)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var polyRgn int64 = RegionPolyRgn(pointArray, int32(len(pointArray)))
+		cocoa.OSDiffRgn(this.Handle, polyRgn, this.Handle)
+		cocoa.OSDisposeRgn(polyRgn)
+	}
 }
 
 func (this *Region) SubtractRect(rectLike RectangleLike) {
@@ -526,17 +552,19 @@ func (this *Region) SubtractXYWidthHeight(x int32, y int32, width int32, height 
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	var rectRgn int64 = cocoa.OSNewRgn()
-	var r []int16 = make([]int16, 4)
-	cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
-	cocoa.OSRectRgn(rectRgn, r)
-	cocoa.OSDiffRgn(this.Handle, rectRgn, this.Handle)
-	cocoa.OSDisposeRgn(rectRgn)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var rectRgn int64 = cocoa.OSNewRgn()
+		var r []int16 = make([]int16, 4)
+		cocoa.OSSetRect(r, int16(x), int16(y), int16((x + width)), int16((y + height)))
+		cocoa.OSRectRgn(rectRgn, r)
+		cocoa.OSDiffRgn(this.Handle, rectRgn, this.Handle)
+		cocoa.OSDisposeRgn(rectRgn)
+	}
 }
 
 func (this *Region) SubtractRegion(regionLike RegionLike) {
@@ -558,12 +586,14 @@ func (this *Region) SubtractRegion(regionLike RegionLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	cocoa.OSDiffRgn(this.Handle, region.Handle, this.Handle)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		cocoa.OSDiffRgn(this.Handle, region.Handle, this.Handle)
+	}
 }
 
 func (this *Region) Translate(x int32, y int32) {
@@ -574,12 +604,14 @@ func (this *Region) Translate(x int32, y int32) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	cocoa.OSOffsetRgn(this.Handle, int16(x), int16(y))
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		cocoa.OSOffsetRgn(this.Handle, int16(x), int16(y))
+	}
 }
 
 func (this *Region) TranslatePt(ptLike PointLike) {
@@ -598,12 +630,14 @@ func (this *Region) TranslatePt(ptLike PointLike) {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
-		}
-	}()
-	this.Translate(pt.X, pt.Y)
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		this.Translate(pt.X, pt.Y)
+	}
 }
 
 func (this *Region) String() string {
@@ -645,9 +679,9 @@ func RegionPolyToRgn(poly []int32, length int32) int64 {
 			var x2 int32 = poly[p]
 			var y2 int32 = poly[p+1]
 			if y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
-				t405 := count
+				t408 := count
 				count++
-				inter[t405] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
+				inter[t408] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
 			}
 			x1 = x2
 			y1 = y2
@@ -655,9 +689,9 @@ func RegionPolyToRgn(poly []int32, length int32) int64 {
 		var x2 int32 = poly[0]
 		var y2 int32 = poly[1]
 		if y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
-			t406 := count
+			t409 := count
 			count++
-			inter[t406] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
+			inter[t409] = int32((((float32((y - y1)) / float32((y2 - y1))) * float32((x2 - x1))) + float32(x1) + 0.5))
 		}
 		for gap := int32(count / 2); gap > 0; gap /= 2 {
 			for i := int32(gap); i < count; i++ {
@@ -686,23 +720,25 @@ func RegionPolyRgn(pointArray []int32, count int32) int64 {
 	if !cocoa.NSThreadIsMainThread() {
 		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
 	}
-	defer func() {
-		if pool != (nil) {
-			pool.Release()
+	{
+		defer func() {
+			if pool != (nil) {
+				pool.Release()
+			}
+		}()
+		var polyRgn int64
+		if cocoa.CPTR_SIZEOF == 4 {
+			polyRgn = cocoa.OSNewRgn()
+			cocoa.OSOpenRgn()
+			cocoa.OSMoveTo(int16(pointArray[0]), int16(pointArray[1]))
+			for i := int32(1); i < count/2; i++ {
+				cocoa.OSLineTo(int16(pointArray[2*i]), int16(pointArray[2*i+1]))
+			}
+			cocoa.OSLineTo(int16(pointArray[0]), int16(pointArray[1]))
+			cocoa.OSCloseRgn(polyRgn)
+		} else {
+			polyRgn = RegionPolyToRgn(pointArray, count)
 		}
-	}()
-	var polyRgn int64
-	if cocoa.CPTR_SIZEOF == 4 {
-		polyRgn = cocoa.OSNewRgn()
-		cocoa.OSOpenRgn()
-		cocoa.OSMoveTo(int16(pointArray[0]), int16(pointArray[1]))
-		for i := int32(1); i < count/2; i++ {
-			cocoa.OSLineTo(int16(pointArray[2*i]), int16(pointArray[2*i+1]))
-		}
-		cocoa.OSLineTo(int16(pointArray[0]), int16(pointArray[1]))
-		cocoa.OSCloseRgn(polyRgn)
-	} else {
-		polyRgn = RegionPolyToRgn(pointArray, count)
+		return polyRgn
 	}
-	return polyRgn
 }

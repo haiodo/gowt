@@ -408,13 +408,13 @@ func (this *TableColumn) SetMoveable(moveable bool) {
 
 func (this *TableColumn) SetResizable(resizable bool) {
 	this.CheckWidget()
-	var cond583 int32
+	var cond588 int32
 	if resizable {
-		cond583 = cocoa.OSNSTableColumnUserResizingMask
+		cond588 = cocoa.OSNSTableColumnUserResizingMask
 	} else {
-		cond583 = cocoa.OSNSTableColumnNoResizing
+		cond588 = cocoa.OSNSTableColumnNoResizing
 	}
-	this.nsColumn.SetResizingMask(int64(cond583))
+	this.nsColumn.SetResizingMask(int64(cond588))
 }
 
 func (this *TableColumn) setText_(string_ string) {

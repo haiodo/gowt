@@ -42,13 +42,29 @@ func (e *JavaError) PrintStackTrace()   { fmt.Fprintln(os.Stderr, e.Message) }
 
 type IllegalArgumentException struct {
 	Message string
+	Cause   error
 }
 
-func NewIllegalArgumentException(message string) IllegalArgumentException {
-	return IllegalArgumentException{Message: message}
+// NewIllegalArgumentException covers Java's (), (String), (Throwable) and (String, Throwable).
+func NewIllegalArgumentException(args ...any) *IllegalArgumentException {
+	e := &IllegalArgumentException{}
+	for _, a := range args {
+		switch v := a.(type) {
+		case string:
+			e.Message = v
+		case error:
+			e.Cause = v
+			if e.Message == "" {
+				e.Message = v.Error()
+			}
+		}
+	}
+	return e
 }
 
-func (e *IllegalArgumentException) Error() string { return e.Message }
+func (e *IllegalArgumentException) Error() string      { return e.Message }
+func (e *IllegalArgumentException) GetMessage() string { return e.Message }
+func (e *IllegalArgumentException) Unwrap() error      { return e.Cause }
 
 // EventObject mirrors java.util.EventObject's one field: the object that fired the event.
 type EventObject struct {

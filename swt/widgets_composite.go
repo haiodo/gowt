@@ -699,29 +699,31 @@ func (this *Composite) reflectScrolledClipView_(id int64, sel int64, aClipView i
 }
 
 func (this *Composite) releaseChildren_(destroy bool) {
-	var exceptions *ExceptionStash = NewExceptionStash()
-	defer exceptions.Close()
-	for _, child := range this._getChildren() {
-		if child == (nil) || child.IsDisposed() {
-			continue
-		}
-		func() {
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
-				}
-				if ex, ok := r.(error); ok {
-					_ = ex
-					exceptions.Stash(ex)
-				} else {
-					panic(r)
-				}
+	{
+		var exceptions *ExceptionStash = NewExceptionStash()
+		defer exceptions.Close()
+		for _, child := range this._getChildren() {
+			if child == (nil) || child.IsDisposed() {
+				continue
+			}
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if ex, ok := r.(error); ok {
+						_ = ex
+						exceptions.Stash(ex)
+					} else {
+						panic(r)
+					}
+				}()
+				child.impl.release_(false)
 			}()
-			child.impl.release_(false)
-		}()
+		}
+		this.Scrollable.releaseChildren_(destroy)
 	}
-	this.Scrollable.releaseChildren_(destroy)
 }
 
 func (this *Composite) releaseWidget_() {

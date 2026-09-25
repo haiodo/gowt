@@ -140,13 +140,13 @@ func (this *Combo) ClearSelection() {
 }
 
 func (this *Combo) setObjectValue_(id int64, sel int64, arg0 int64) {
-	var cond547 int64
+	var cond552 int64
 	if this.ignoreSetObject {
-		cond547 = arg0
+		cond552 = arg0
 	} else {
-		cond547 = this.CreateAttributedString(this.text).Id
+		cond552 = this.CreateAttributedString(this.text).Id
 	}
-	this.Composite.setObjectValue_(id, sel, cond547)
+	this.Composite.setObjectValue_(id, sel, cond552)
 }
 
 func (this *Combo) comboBoxSelectionDidChange_(id int64, sel int64, notification int64) {
@@ -393,13 +393,13 @@ func (this *Combo) focusRingMaskBoundsForFrame_(id int64, sel int64, cellFrame c
 
 func (this *Combo) GetCaretPosition() int32 {
 	this.CheckWidget()
-	var cond548 int32
+	var cond553 int32
 	if this.selectionRange != (cocoa.NSRange{}) {
-		cond548 = int32(this.selectionRange.Location)
+		cond553 = int32(this.selectionRange.Location)
 	} else {
-		cond548 = 0
+		cond553 = 0
 	}
-	return cond548
+	return cond553
 }
 
 func (this *Combo) GetCaretLocation() *Point {

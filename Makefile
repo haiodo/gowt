@@ -6,7 +6,7 @@ export SWT_REPO
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: all gen build vet test check clean run-% $(CMDS)
+.PHONY: all gen build release vet test check clean run-% $(CMDS)
 
 all: check build
 
@@ -18,6 +18,14 @@ build: $(CMDS)
 
 $(CMDS):
 	go build -o $(BIN)/$@ ./cmd/$@
+
+# Stripped builds into bin/release/ with a size per binary (pclntab stays: stack traces).
+release:
+	@mkdir -p $(BIN)/release
+	@for c in $(CMDS); do \
+		go build -trimpath -ldflags='-s -w' -o $(BIN)/release/$$c ./cmd/$$c || exit 1; \
+		printf '%10d  %s\n' $$(stat -f %z $(BIN)/release/$$c) $$c; \
+	done
 
 vet:
 	go vet ./...

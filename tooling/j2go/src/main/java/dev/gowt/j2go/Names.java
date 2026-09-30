@@ -100,7 +100,7 @@ public class Names {
 
 	// gtk's C struct mirrors are named like the C type (cairo_path_t) and must still be exported across packages.
 	private static String exportedPi(String name) {
-		return GoTypes.piPackage.equals("gtk") ? capitalize(name) : name;
+		return GoTypes.platform == Platform.GTK ? capitalize(name) : name;
 	}
 
 	public static String erasureKey(IMethodBinding m) {
@@ -159,8 +159,9 @@ public class Names {
 
 	// Go has no overloading: a subclass's method named like an ancestor's overload (other parameters) would hide it.
 	private boolean shadowsAncestorOverload(IMethodBinding decl) {
-		// Public API names stay as the overload rule gave them (one API for every platform).
-		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers()) || Modifier.isPublic(decl.getModifiers())
+		// Public API names stay as the overload rule gave them (one API for every platform); the reference
+		// platform's own names are what the pins freeze, so only the other platforms need this.
+		if (GoTypes.platform == Platform.COCOA || decl.isConstructor() || Modifier.isStatic(decl.getModifiers()) || Modifier.isPublic(decl.getModifiers())
 				|| decl.getDeclaringClass().getQualifiedName().contains(".internal.")) return false;
 		for (ITypeBinding t = decl.getDeclaringClass().getSuperclass(); t != null && t.getQualifiedName().startsWith("org.eclipse.swt"); t = t.getSuperclass()) {
 			for (IMethodBinding o : t.getDeclaredMethods()) {

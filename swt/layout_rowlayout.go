@@ -510,6 +510,9 @@ func rowDataImplAsRowData(x any) (*RowData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsRowData() *RowData }); ok {
+		return l.AsRowData(), true
+	}
 	return nil, false
 }
 

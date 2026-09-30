@@ -78,5 +78,8 @@ func rGBAImplAsRGBA(x any) (*RGBA, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsRGBA() *RGBA }); ok {
+		return l.AsRGBA(), true
+	}
 	return nil, false
 }

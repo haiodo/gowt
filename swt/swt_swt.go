@@ -1145,6 +1145,9 @@ func sWTErrorImplAsSWTError(x any) (*SWTError, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSWTError() *SWTError }); ok {
+		return l.AsSWTError(), true
+	}
 	return nil, false
 }
 
@@ -1167,6 +1170,9 @@ func sWTExceptionImplAsSWTException(x any) (*SWTException, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsSWTException() *SWTException }); ok {
+		return l.AsSWTException(), true
 	}
 	return nil, false
 }

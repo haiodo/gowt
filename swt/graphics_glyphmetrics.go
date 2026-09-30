@@ -61,5 +61,8 @@ func glyphMetricsImplAsGlyphMetrics(x any) (*GlyphMetrics, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGlyphMetrics() *GlyphMetrics }); ok {
+		return l.AsGlyphMetrics(), true
+	}
 	return nil, false
 }

@@ -243,6 +243,9 @@ func resourceImplAsColor(x any) (*Color, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsColor() *Color }); ok {
+		return l.AsColor(), true
+	}
 	return nil, false
 }
 

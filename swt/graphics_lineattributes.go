@@ -125,5 +125,8 @@ func lineAttributesImplAsLineAttributes(x any) (*LineAttributes, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsLineAttributes() *LineAttributes }); ok {
+		return l.AsLineAttributes(), true
+	}
 	return nil, false
 }

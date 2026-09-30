@@ -6284,6 +6284,9 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 		}
 		return &v.Widget, true
 	}
+	if l, ok := x.(interface{ AsWidget() *Widget }); ok {
+		return l.AsWidget(), true
+	}
 	return nil, false
 }
 
@@ -7310,6 +7313,9 @@ func dialogImplAsDialog(x any) (*Dialog, bool) {
 		}
 		return &v.Dialog, true
 	}
+	if l, ok := x.(interface{ AsDialog() *Dialog }); ok {
+		return l.AsDialog(), true
+	}
 	return nil, false
 }
 
@@ -7363,6 +7369,9 @@ func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsColorDialog() *ColorDialog }); ok {
+		return l.AsColorDialog(), true
+	}
 	return nil, false
 }
 
@@ -7374,6 +7383,9 @@ func dialogImplAsFontDialog(x any) (*FontDialog, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsFontDialog() *FontDialog }); ok {
+		return l.AsFontDialog(), true
 	}
 	return nil, false
 }

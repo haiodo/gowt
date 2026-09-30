@@ -158,5 +158,8 @@ func rGBImplAsRGB(x any) (*RGB, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsRGB() *RGB }); ok {
+		return l.AsRGB(), true
+	}
 	return nil, false
 }

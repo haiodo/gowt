@@ -167,7 +167,13 @@ final class TypeTestEmitter {
 				b.append("\t\treturn &v.").append(target.goTypeName).append(", true\n");
 			}
 		}
-		b.append("\t}\n\treturn nil, false\n}\n\n");
+		b.append("\t}\n");
+		// A subclass declared in another package (anonymous widget) is not in the switch but embeds the target.
+		if (target.asMethodName != null && target.goPackage.equals(emitter.currentGoPackage)) {
+			b.append("\tif l, ok := x.(interface{ ").append(target.asMethodName).append("() *").append(targetName)
+					.append(" }); ok {\n\t\treturn l.").append(target.asMethodName).append("(), true\n\t}\n");
+		}
+		b.append("\treturn nil, false\n}\n\n");
 		return b.toString();
 	}
 

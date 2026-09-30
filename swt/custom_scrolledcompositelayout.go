@@ -154,6 +154,9 @@ func widgetImplAsScrolledComposite(x any) (*ScrolledComposite, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsScrolledComposite() *ScrolledComposite }); ok {
+		return l.AsScrolledComposite(), true
+	}
 	return nil, false
 }
 

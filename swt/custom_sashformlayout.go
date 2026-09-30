@@ -222,6 +222,9 @@ func widgetImplAsSashForm(x any) (*SashForm, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSashForm() *SashForm }); ok {
+		return l.AsSashForm(), true
+	}
 	return nil, false
 }
 
@@ -244,6 +247,9 @@ func sashFormDataImplAsSashFormData(x any) (*SashFormData, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsSashFormData() *SashFormData }); ok {
+		return l.AsSashFormData(), true
 	}
 	return nil, false
 }

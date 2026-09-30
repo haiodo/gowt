@@ -374,6 +374,9 @@ func widgetImplAsSash(x any) (*Sash, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSash() *Sash }); ok {
+		return l.AsSash(), true
+	}
 	return nil, false
 }
 

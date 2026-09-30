@@ -581,6 +581,9 @@ func rectangleImplAsRectangle(x any) (*Rectangle, bool) {
 		}
 		return &v.Rectangle, true
 	}
+	if l, ok := x.(interface{ AsRectangle() *Rectangle }); ok {
+		return l.AsRectangle(), true
+	}
 	return nil, false
 }
 
@@ -592,6 +595,9 @@ func pointImplAsWithMonitor(x any) (*Point_WithMonitor, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsPoint_WithMonitor() *Point_WithMonitor }); ok {
+		return l.AsPoint_WithMonitor(), true
 	}
 	return nil, false
 }
@@ -630,6 +636,9 @@ func rectangleImplAsOfFloat(x any) (*Rectangle_OfFloat, bool) {
 			return nil, false
 		}
 		return &v.Rectangle_OfFloat, true
+	}
+	if l, ok := x.(interface{ AsRectangle_OfFloat() *Rectangle_OfFloat }); ok {
+		return l.AsRectangle_OfFloat(), true
 	}
 	return nil, false
 }

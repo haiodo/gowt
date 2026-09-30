@@ -91,5 +91,8 @@ func monitorImplAsMonitor(x any) (*Monitor, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsMonitor() *Monitor }); ok {
+		return l.AsMonitor(), true
+	}
 	return nil, false
 }

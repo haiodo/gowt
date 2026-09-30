@@ -801,6 +801,9 @@ func gridDataImplAsGridData(x any) (*GridData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGridData() *GridData }); ok {
+		return l.AsGridData(), true
+	}
 	return nil, false
 }
 

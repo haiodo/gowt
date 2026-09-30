@@ -282,6 +282,9 @@ func formDataImplAsFormData(x any) (*FormData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsFormData() *FormData }); ok {
+		return l.AsFormData(), true
+	}
 	return nil, false
 }
 

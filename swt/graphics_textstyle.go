@@ -461,5 +461,8 @@ func textStyleImplAsTextStyle(x any) (*TextStyle, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTextStyle() *TextStyle }); ok {
+		return l.AsTextStyle(), true
+	}
 	return nil, false
 }

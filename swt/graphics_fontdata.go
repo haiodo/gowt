@@ -345,5 +345,8 @@ func fontDataImplAsFontData(x any) (*FontData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsFontData() *FontData }); ok {
+		return l.AsFontData(), true
+	}
 	return nil, false
 }

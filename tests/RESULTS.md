@@ -2,7 +2,7 @@
 
 `make test-swt` on macOS arm64, SWT `af630a9093`. The run is gated by `tests/expected.txt` (below).
 
-**Total: 1822 tests - 1802 passed, 11 failed, 9 skipped** (Round 15; before it 1728 / 83 / 11). Before the merge of TSK-051 and TSK-052/053:
+**Total: 1822 tests - 1805 passed, 8 failed, 9 skipped** (Round 15; before it 1728 / 83 / 11). Before the merge of TSK-051 and TSK-052/053:
 widget tests alone 1662 / 149 / 11; graphics, layout and events alone 325 / 22 / 5 (TSK-051 seed: 292 / 55 / 5).
 `Tree.test_Virtual` is `flaky` (SetData count timing).
 
@@ -47,7 +47,7 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | graphics_Transform | 4 | 0 | 0 |
 | layout_FormAttachment | 7 | 0 | 0 |
 | layout_GridData | 3 | 0 | 0 |
-| widgets_Button | 99 | 1 | 2 |
+| widgets_Button | 100 | 0 | 2 |
 | widgets_Canvas | 96 | 0 | 0 |
 | widgets_Caret | 18 | 0 | 0 |
 | widgets_Combo | 141 | 0 | 0 |
@@ -59,9 +59,9 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | widgets_ScrolledComposite | 101 | 0 | 0 |
 | widgets_Shell | 139 | 0 | 1 |
 | widgets_TabFolder | 107 | 0 | 0 |
-| widgets_Table | 135 | 1 | 0 |
+| widgets_Table | 136 | 0 | 0 |
 | widgets_Text | 132 | 1 | 0 |
-| widgets_Tree | 131 | 1 | 0 |
+| widgets_Tree | 132 | 0 | 0 |
 
 Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Display.test_setCursorLocation*`
 (`@TempDir`-style parameter injection, not supported by the runner).
@@ -70,9 +70,7 @@ Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Dis
 
 Each is in `tests/expected.txt` with its reason: HiDPI/SVG loading (GC `withTransform` x2, Image `reevaluatesSizability..`),
 private-method reflection (ImageData `blit` x2), TextLayout `bug568740` (rendering), Display `setSynchronizer` (local
-class), Text `backspaceAndDelete` (`Display.post` of a key event returns false), and two Round 15 regressions without
-a root cause: Button `addDisposeListener` (a late `setNeedsDisplay` reaches a Widget with a nil display) and Table
-`Virtual` (passes alone, fails after the preceding tests). Sections below describe earlier rounds.
+class), Text `backspaceAndDelete` (`Display.post` of a key event returns false). Sections below describe earlier rounds.
 
 ## Null String arguments in tests
 

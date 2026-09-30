@@ -252,6 +252,9 @@ func fillDataImplAsFillData(x any) (*FillData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsFillData() *FillData }); ok {
+		return l.AsFillData(), true
+	}
 	return nil, false
 }
 
@@ -339,6 +342,9 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	}
+	if l, ok := x.(interface{ AsScrollable() *Scrollable }); ok {
+		return l.AsScrollable(), true
 	}
 	return nil, false
 }

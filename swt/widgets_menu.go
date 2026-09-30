@@ -886,6 +886,9 @@ func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsMenuItem() *MenuItem }); ok {
+		return l.AsMenuItem(), true
+	}
 	return nil, false
 }
 

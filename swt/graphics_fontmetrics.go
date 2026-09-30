@@ -125,5 +125,8 @@ func fontMetricsImplAsFontMetrics(x any) (*FontMetrics, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsFontMetrics() *FontMetrics }); ok {
+		return l.AsFontMetrics(), true
+	}
 	return nil, false
 }

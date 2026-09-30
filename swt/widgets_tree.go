@@ -3159,6 +3159,9 @@ func widgetImplAsTreeItem(x any) (*TreeItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTreeItem() *TreeItem }); ok {
+		return l.AsTreeItem(), true
+	}
 	return nil, false
 }
 

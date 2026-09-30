@@ -15,6 +15,3 @@ func (this *Display) SyncCall(callable func() any) any {
 	}
 	return result
 }
-
-// HandleLost: no Display left, so a native callback cannot be served (see cocoa.OSJNIGetObject).
-func (this *Widget) HandleLost() bool { return this.display == nil }

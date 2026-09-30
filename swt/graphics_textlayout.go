@@ -2284,6 +2284,9 @@ func textLayoutStyleItemImplAsTextLayoutStyleItem(x any) (*TextLayout_StyleItem,
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTextLayout_StyleItem() *TextLayout_StyleItem }); ok {
+		return l.AsTextLayout_StyleItem(), true
+	}
 	return nil, false
 }
 

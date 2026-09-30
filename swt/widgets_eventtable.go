@@ -227,5 +227,8 @@ func typedListenerImplAsTypedListener(x any) (*TypedListener, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTypedListener() *TypedListener }); ok {
+		return l.AsTypedListener(), true
+	}
 	return nil, false
 }

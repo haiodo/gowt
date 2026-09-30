@@ -790,6 +790,9 @@ func resourceImplAsCursor(x any) (*Cursor, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsCursor() *Cursor }); ok {
+		return l.AsCursor(), true
+	}
 	return nil, false
 }
 
@@ -801,6 +804,9 @@ func resourceImplAsFont(x any) (*Font, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsFont() *Font }); ok {
+		return l.AsFont(), true
 	}
 	return nil, false
 }
@@ -814,6 +820,9 @@ func resourceImplAsGC(x any) (*GC, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGC() *GC }); ok {
+		return l.AsGC(), true
+	}
 	return nil, false
 }
 
@@ -825,6 +834,9 @@ func resourceImplAsImage(x any) (*Image, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsImage() *Image }); ok {
+		return l.AsImage(), true
 	}
 	return nil, false
 }
@@ -838,6 +850,9 @@ func resourceImplAsPath(x any) (*Path, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsPath() *Path }); ok {
+		return l.AsPath(), true
+	}
 	return nil, false
 }
 
@@ -849,6 +864,9 @@ func resourceImplAsPattern(x any) (*Pattern, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsPattern() *Pattern }); ok {
+		return l.AsPattern(), true
 	}
 	return nil, false
 }
@@ -862,6 +880,9 @@ func resourceImplAsRegion(x any) (*Region, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsRegion() *Region }); ok {
+		return l.AsRegion(), true
+	}
 	return nil, false
 }
 
@@ -874,6 +895,9 @@ func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTextLayout() *TextLayout }); ok {
+		return l.AsTextLayout(), true
+	}
 	return nil, false
 }
 
@@ -885,6 +909,9 @@ func resourceImplAsTransform(x any) (*Transform, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsTransform() *Transform }); ok {
+		return l.AsTransform(), true
 	}
 	return nil, false
 }

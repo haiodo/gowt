@@ -2,9 +2,9 @@
 
 `make test-swt` on macOS arm64, SWT `af630a9093`. The run is gated by `tests/expected.txt` (below).
 
-**Total: 1822 tests - 1714 passed, 97 failed, 11 skipped** (merge of TSK-051 and TSK-052/053). Before:
+**Total: 1822 tests - 1728 passed, 83 failed, 11 skipped.** Before the merge of TSK-051 and TSK-052/053:
 widget tests alone 1662 / 149 / 11; graphics, layout and events alone 325 / 22 / 5 (TSK-051 seed: 292 / 55 / 5).
-The merge fixed 66 listed failures and broke 13 tests (below, "Merge regressions"); `Tree.test_Virtual` is `flaky`.
+`Tree.test_Virtual` is `flaky` (SetData count timing).
 
 Translated: `graphics`, `layout` (except `BorderLayout`, see below), `events`, and the widget classes
 `Widget`, `Control`, `Scrollable`, `Composite`, `Canvas`, `Decorations`, `Shell`, `Display`, `Button`, `Label`,
@@ -47,31 +47,30 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | graphics_Transform | 4 | 0 | 0 |
 | layout_FormAttachment | 7 | 0 | 0 |
 | layout_GridData | 3 | 0 | 0 |
-| widgets_Button | 99 | 1 | 2 |
-| widgets_Canvas | 92 | 4 | 0 |
+| widgets_Button | 100 | 0 | 2 |
+| widgets_Canvas | 93 | 3 | 0 |
 | widgets_Caret | 18 | 0 | 0 |
-| widgets_Combo | 137 | 4 | 0 |
-| widgets_Composite | 87 | 4 | 0 |
-| widgets_Display | 50 | 11 | 3 |
-| widgets_Group | 90 | 4 | 0 |
-| widgets_Label | 85 | 1 | 0 |
+| widgets_Combo | 138 | 3 | 0 |
+| widgets_Composite | 88 | 3 | 0 |
+| widgets_Display | 51 | 10 | 3 |
+| widgets_Group | 91 | 3 | 0 |
+| widgets_Label | 86 | 0 | 0 |
 | widgets_Menu | 29 | 0 | 0 |
-| widgets_ScrolledComposite | 97 | 4 | 0 |
-| widgets_Shell | 133 | 6 | 1 |
-| widgets_TabFolder | 97 | 10 | 0 |
-| widgets_Table | 126 | 10 | 0 |
-| widgets_Text | 131 | 2 | 0 |
-| widgets_Tree | 118 | 14 | 0 |
+| widgets_ScrolledComposite | 98 | 3 | 0 |
+| widgets_Shell | 134 | 5 | 1 |
+| widgets_TabFolder | 98 | 9 | 0 |
+| widgets_Table | 127 | 9 | 0 |
+| widgets_Text | 132 | 1 | 0 |
+| widgets_Tree | 120 | 12 | 0 |
 
 Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Display.test_setCursorLocation*`
 (`@TempDir`-style parameter injection, not supported by the runner).
 
-## Merge regressions (13)
+## Null String arguments in tests
 
-TSK-051 turns a test's literal `null` String argument into `jrt.NullString`, for the ported null-argument guards.
-The sentinel also reaches setters and filters where null means "no value" and is stored as text: 12
-`setToolTipText(null)` tests (`getToolTipText()` returns the sentinel, not null) and `Display.getFontList(null, ..)`
-(looks for a face named after it, finds none). Fix: emit `jrt.NullString` only for a parameter the callee guards.
+A test's literal `null` String becomes `jrt.NullString` only where the callee guards that parameter
+(`NullArgGuards`, the same check as `NumericEmitter.stringParamNullCheck`); elsewhere it is `""`, the port's
+contract. Before that, the sentinel leaked into `setToolTipText(null)` and `getFontList(null, ..)` (13 tests).
 
 ## Graphics failures by cause (TSK-051, before the merge)
 

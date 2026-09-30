@@ -132,6 +132,29 @@ public class TypeModel {
 		if (!idx.isEmpty()) nativeStructPointerParams.put(Names.erasureKey(mb), idx);
 	}
 
+	// Method binding key -> declaration, every method and constructor of every parsed unit
+	// (hand-written Manual classes included: their Java source is still the guard reference).
+	private final Map<String, MethodDeclaration> declarations = new HashMap<>();
+
+	/** Declarations of mb plus same-signature ones up the superclass chain and below (overrides). */
+	public List<MethodDeclaration> relatedDeclarations(IMethodBinding mb) {
+		List<MethodDeclaration> out = new ArrayList<>();
+		addDeclaration(out, mb);
+		ClassInfo ci = mb.getDeclaringClass() == null ? null : lookup(mb.getDeclaringClass());
+		if (ci == null || mb.isConstructor() || Modifier.isStatic(mb.getModifiers())) return out;
+		String sig = signature(mb.getMethodDeclaration());
+		List<ClassInfo> related = new ArrayList<>();
+		for (ClassInfo cur = ci; cur != null; cur = cur.superclass) related.add(cur);
+		collectAllDescendants(ci, related);
+		for (ClassInfo c : related) addDeclaration(out, c.declaredMethods.get(sig));
+		return out;
+	}
+
+	private void addDeclaration(List<MethodDeclaration> out, IMethodBinding mb) {
+		MethodDeclaration md = mb == null ? null : declarations.get(mb.getMethodDeclaration().getKey());
+		if (md != null && !out.contains(md)) out.add(md);
+	}
+
 	public ClassInfo lookup(ITypeBinding t) {
 		return byBinaryName.get(t.getErasure().getBinaryName());
 	}
@@ -150,6 +173,13 @@ public class TypeModel {
 				collect((AbstractTypeDeclaration) t, names);
 			}
 			cu.accept(new ASTVisitor() {
+				@Override
+				public boolean visit(MethodDeclaration node) {
+					IMethodBinding mb = node.resolveBinding();
+					if (mb != null) declarations.put(mb.getMethodDeclaration().getKey(), node);
+					return true;
+				}
+
 				@Override
 				public boolean visit(ExpressionMethodReference node) {
 					IMethodBinding mb = node.resolveMethodBinding();

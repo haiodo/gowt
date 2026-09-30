@@ -766,7 +766,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_bug558652_scrollBarNPE() {
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_Issue450_NoShellActivateOnSetFocus() {
 	var key string = "org.eclipse.swt.internal.activateShellOnForceFocus"
-	var prevKey string = jrt.NullString
+	var prevKey string = ""
 	func() string { _ = []any{key, "false"}; panic("j2go: unresolved call setProperty") }()
 	{
 		defer func() {

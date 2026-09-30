@@ -1404,8 +1404,8 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getFontListLjava_lang_Str
 		defer func() {
 			display.Dispose()
 		}()
-		var scalable []*swt.FontData = display.GetFontList(jrt.NullString, true)
-		var non_scalable []*swt.FontData = display.GetFontList(jrt.NullString, false)
+		var scalable []*swt.FontData = display.GetFontList("", true)
+		var non_scalable []*swt.FontData = display.GetFontList("", false)
 		junit.AssertTrue((int32(len(scalable))+int32(len(non_scalable))) > 0, "no fonts detected")
 	}
 }

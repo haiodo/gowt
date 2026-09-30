@@ -155,16 +155,15 @@ func (e *InvocationTargetException) Error() string {
 }
 func (e *InvocationTargetException) Unwrap() error { return e.Cause }
 
-// graphicsTypes are this port's swt value-type names whose real Java package is
-// org.eclipse.swt.graphics, for ClassName's pointer-to-struct case.
-var graphicsTypes = map[string]bool{
-	"Point": true, "Rectangle": true, "RGB": true, "RGBA": true,
-	"Color": true, "Font": true, "FontData": true, "Image": true, "FontMetrics": true,
-}
+var classPackages = map[string]string{}
+
+// RegisterClassPackage records the Java package of a swt type outside org.eclipse.swt.widgets
+// (generated init, ClassEmitter); ClassName falls back to widgets for the rest.
+func RegisterClassPackage(goName, javaPackage string) { classPackages[goName] = javaPackage }
 
 // ClassName is java.lang.Class#getName(): JVM primitive names and array-descriptor syntax
 // exactly (what the Set/Get dialog branches on), plus a best-effort "org.eclipse.swt.widgets.
-// <Name>" guess for a pointer-to-struct type outside graphicsTypes - wrong package for e.g. a
+// <Name>" guess for a pointer-to-struct type outside classPackages - wrong package for e.g. a
 // layout type, harmless since every caller (Widget.getName(), every toString()) only keeps the
 // tail after the last '.'. Upgrade path: a translator-emitted per-class Java-FQN registry.
 func ClassName(t reflect.Type) string {
@@ -185,8 +184,8 @@ func ClassName(t reflect.Type) string {
 		return "[" + arrayDescriptor(t.Elem())
 	case reflect.Ptr:
 		name := t.Elem().Name()
-		if graphicsTypes[name] {
-			return "org.eclipse.swt.graphics." + name
+		if pkg, ok := classPackages[name]; ok {
+			return pkg + "." + name
 		}
 		return "org.eclipse.swt.widgets." + name
 	default:

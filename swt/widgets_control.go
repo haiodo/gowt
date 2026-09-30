@@ -124,7 +124,7 @@ func (this *Control) accessibilityActionDescription_(id int64, sel int64, arg0 i
 
 func (this *Control) accessibilityActionNames_(id int64, sel int64) int64 {
 	var returnValue int64 = this.Widget.accessibilityActionNames_(id, sel)
-	if this.HandleIsAccessible(id) {
+	if this.impl.handleIsAccessible_(id) {
 		if this.accessible != (nil) {
 			var baseArray *cocoa.NSArray = this.accessible.Internal_accessibilityActionNames(ACCCHILDID_SELF)
 			if baseArray != (nil) {
@@ -144,7 +144,7 @@ func (this *Control) accessibilityActionNames_(id int64, sel int64) int64 {
 
 func (this *Control) accessibilityAttributeNames_(id int64, sel int64) int64 {
 	var returnValue int64 = int64(0)
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var value *cocoa.Id = upcastcocoaNSArrayTococoaId(this.accessible.Internal_accessibilityAttributeNames(ACCCHILDID_SELF))
 		var cond62 int64
 		if value != (nil) {
@@ -165,11 +165,15 @@ func (this *Control) accessibilityAttributeNames_(id int64, sel int64) int64 {
 }
 
 func (this *Control) HandleIsAccessible(id int64) bool {
+	return this.impl.handleIsAccessible_(id)
+}
+
+func (this *Control) handleIsAccessible_(id int64) bool {
 	return id == this.impl.accessibleHandle_()
 }
 
 func (this *Control) accessibilityParameterizedAttributeNames_(id int64, sel int64) int64 {
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var returnValue *cocoa.NSArray = this.accessible.Internal_accessibilityParameterizedAttributeNames(ACCCHILDID_SELF)
 		if returnValue != (nil) {
 			return returnValue.Id
@@ -179,7 +183,7 @@ func (this *Control) accessibilityParameterizedAttributeNames_(id int64, sel int
 }
 
 func (this *Control) accessibilityPerformAction_(id int64, sel int64, arg0 int64) {
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var action *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		if this.accessible.Internal_accessibilityPerformAction(action, ACCCHILDID_SELF) {
 			return
@@ -190,7 +194,7 @@ func (this *Control) accessibilityPerformAction_(id int64, sel int64, arg0 int64
 
 func (this *Control) accessibilityFocusedUIElement_(id int64, sel int64) int64 {
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		returnValue = this.accessible.Internal_accessibilityFocusedUIElement(ACCCHILDID_SELF)
 	}
 	if returnValue == (nil) {
@@ -202,7 +206,7 @@ func (this *Control) accessibilityFocusedUIElement_(id int64, sel int64) int64 {
 
 func (this *Control) accessibilityHitTest_(id int64, sel int64, point cocoa.NSPoint) int64 {
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		returnValue = this.accessible.Internal_accessibilityHitTest(point, ACCCHILDID_SELF)
 	}
 	if returnValue == (nil) {
@@ -216,7 +220,7 @@ func (this *Control) accessibilityAttributeValue_(id int64, sel int64, arg0 int6
 	var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	var returnValue int64 = int64(0)
 	var returnObject *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		returnObject = this.accessible.Internal_accessibilityAttributeValue(attribute, ACCCHILDID_SELF)
 	}
 	if returnObject == (nil) {
@@ -237,7 +241,7 @@ func (this *Control) accessibilityAttributeValue_(id int64, sel int64, arg0 int6
 func (this *Control) accessibilityAttributeValue_forParameter_(id int64, sel int64, arg0 int64, arg1 int64) int64 {
 	var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	var returnValue *cocoa.Id = nil
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var parameter *cocoa.Id = cocoa.NewidOverload1(arg1)
 		returnValue = this.accessible.Internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACCCHILDID_SELF)
 	}
@@ -250,7 +254,7 @@ func (this *Control) accessibilityAttributeValue_forParameter_(id int64, sel int
 
 func (this *Control) accessibilityIsAttributeSettable_(id int64, sel int64, arg0 int64) bool {
 	var returnValue bool = false
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		returnValue = this.accessible.Internal_accessibilityIsAttributeSettable(attribute, ACCCHILDID_SELF)
 	}
@@ -261,7 +265,7 @@ func (this *Control) accessibilityIsAttributeSettable_(id int64, sel int64, arg0
 }
 
 func (this *Control) accessibilitySetValue_forAttribute_(id int64, sel int64, arg0 int64, arg1 int64) {
-	if this.HandleIsAccessible(id) && this.accessible != (nil) {
+	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var value *cocoa.Id = cocoa.NewidOverload1(arg0)
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg1)
 		this.accessible.Internal_accessibilitySetValue_forAttribute(value, attribute, ACCCHILDID_SELF)
@@ -421,12 +425,12 @@ func (this *Control) CalculateVisibleRegion(view *cocoa.NSView, visibleRgn int64
 }
 
 func (this *Control) cancelOperation_(id int64, sel int64, sender int64) {
-	if this.HasKeyboardFocus(id) {
+	if this.impl.hasKeyboardFocus_(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 		var s *Shell = this.impl.getShell_()
 		s.keyInputHappened = false
 		var consume []bool = make([]bool, 1)
-		if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
+		if this.impl.translateTraversal_(int32(nsEvent.KeyCode()), nsEvent, consume) {
 			return
 		}
 		if this.IsDisposed() {
@@ -694,7 +698,7 @@ func (this *Control) destroyWidget_() {
 }
 
 func (this *Control) doCommandBySelector_(id int64, sel int64, selector int64) {
-	if this.HasKeyboardFocus(id) {
+	if this.impl.hasKeyboardFocus_(id) {
 		if this.impl.imeInComposition_() {
 			return
 		}
@@ -705,7 +709,7 @@ func (this *Control) doCommandBySelector_(id int64, sel int64, selector int64) {
 			if s.keyInputHappened == false || (modifiers&int64(cocoa.OSNSEventModifierFlagCommand)) != 0 {
 				s.keyInputHappened = true
 				var consume []bool = make([]bool, 1)
-				if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
+				if this.impl.translateTraversal_(int32(nsEvent.KeyCode()), nsEvent, consume) {
 					return
 				}
 				if this.IsDisposed() {
@@ -1047,7 +1051,7 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 }
 
 func (this *Control) flagsChanged_(id int64, sel int64, theEvent int64) {
-	if this.HasKeyboardFocus(id) {
+	if this.impl.hasKeyboardFocus_(id) {
 		if (this.state & WidgetWEBKIT_EVENTS_FIX) == 0 {
 			var s *Shell = this.impl.getShell_()
 			s.keyInputHappened = false
@@ -1099,6 +1103,10 @@ func (this *Control) flagsChanged_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Control) FocusView() *cocoa.NSView {
+	return this.impl.focusView_()
+}
+
+func (this *Control) focusView_() *cocoa.NSView {
 	return this.View
 }
 
@@ -1115,11 +1123,11 @@ func (this *Control) ForceFocus() bool {
 	if upcastShellToDecorations(this.display.GetActiveShell()) != shell && !DisplayIsActivateShellOnForceFocus() {
 		return false
 	}
-	if this.IsFocusControl() {
+	if this.impl.isFocusControl_() {
 		return true
 	}
 	shell.SetSavedFocus(nil)
-	var focusView *cocoa.NSView = this.FocusView()
+	var focusView *cocoa.NSView = this.impl.focusView_()
 	if !focusView.CanBecomeKeyView() {
 		return false
 	}
@@ -1302,6 +1310,10 @@ func (this *Control) GetFont() *Font {
 }
 
 func (this *Control) GetForeground() *Color {
+	return this.impl.getForeground_()
+}
+
+func (this *Control) getForeground_() *Color {
 	this.CheckWidget()
 	return this.GetForegroundColor()
 }
@@ -1332,6 +1344,10 @@ func (this *Control) getLocation_() *Point {
 }
 
 func (this *Control) GetMenu() *Menu {
+	return this.impl.getMenu_()
+}
+
+func (this *Control) getMenu_() *Menu {
 	this.CheckWidget()
 	return this.menu
 }
@@ -1502,6 +1518,10 @@ func (this *Control) getThemeAlpha_() float32 {
 }
 
 func (this *Control) GetToolTipText() string {
+	return this.impl.getToolTipText_()
+}
+
+func (this *Control) getToolTipText_() string {
 	this.CheckWidget()
 	return this.toolTipText
 }
@@ -1581,7 +1601,7 @@ func (this *Control) insertText_(id int64, sel int64, string_ int64) bool {
 		defer func() {
 			saver.Release()
 		}()
-		if this.HasKeyboardFocus(id) {
+		if this.impl.hasKeyboardFocus_(id) {
 			var s *Shell = this.impl.getShell_()
 			var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 			if nsEvent != (nil) {
@@ -1784,6 +1804,10 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 }
 
 func (this *Control) IsFocusControl() bool {
+	return this.impl.isFocusControl_()
+}
+
+func (this *Control) isFocusControl_() bool {
 	this.CheckWidget()
 	var focusControl *Control = this.display.focusControl
 	if focusControl != (nil) && !focusControl.IsDisposed() {
@@ -1904,14 +1928,14 @@ func (this *Control) isVisible_() bool {
 }
 
 func (this *Control) keyDown_(id int64, sel int64, theEvent int64) {
-	if this.HasKeyboardFocus(id) {
+	if this.impl.hasKeyboardFocus_(id) {
 		var s *Shell = this.impl.getShell_()
 		s.keyInputHappened = false
 		var textInput bool = cocoa.OSObjc_msgSendOverload44(id, cocoa.OSSel_conformsToProtocol_, cocoa.OSObjc_getProtocol("NSTextInput")) != 0
 		if !textInput {
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 			var consume []bool = make([]bool, 1)
-			if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
+			if this.impl.translateTraversal_(int32(nsEvent.KeyCode()), nsEvent, consume) {
 				return
 			}
 			if this.IsDisposed() {
@@ -1931,7 +1955,7 @@ func (this *Control) keyDown_(id int64, sel int64, theEvent int64) {
 			if !s.keyInputHappened {
 				var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 				var consume []bool = make([]bool, 1)
-				if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
+				if this.impl.translateTraversal_(int32(nsEvent.KeyCode()), nsEvent, consume) {
 					return
 				}
 				if this.IsDisposed() {
@@ -1951,11 +1975,15 @@ func (this *Control) keyDown_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Control) HasKeyboardFocus(inId int64) bool {
+	return this.impl.hasKeyboardFocus_(inId)
+}
+
+func (this *Control) hasKeyboardFocus_(inId int64) bool {
 	return this.View.Window().FirstResponder().Id == inId
 }
 
 func (this *Control) keyUp_(id int64, sel int64, theEvent int64) {
-	if this.HasKeyboardFocus(id) {
+	if this.impl.hasKeyboardFocus_(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 		if !this.impl.sendKeyEvent_(nsEvent, KeyUp) {
 			return
@@ -2006,7 +2034,7 @@ func (this *Control) menuForEvent_(id int64, sel int64, theEvent int64) int64 {
 	if !event.Doit {
 		return int64(0)
 	}
-	var menu *Menu = this.GetMenu()
+	var menu *Menu = this.impl.getMenu_()
 	if menu != (nil) && !menu.IsDisposed() {
 		if x != event.X || y != event.Y {
 			menu.SetLocation(event.X, event.Y)
@@ -2290,6 +2318,10 @@ func (this *Control) requestLayout_() {
 }
 
 func (this *Control) Redraw() {
+	this.impl.redraw_()
+}
+
+func (this *Control) redraw_() {
 	this.CheckWidget()
 	this.View.SetNeedsDisplay(true)
 }
@@ -2389,7 +2421,7 @@ func (this *Control) releaseWidget_() {
 		this.display.tooltipControl = nil
 	}
 	if this.menu != (nil) && !this.menu.IsDisposed() {
-		this.menu.Dispose()
+		this.menu.impl.dispose_()
 	}
 	this.menu = nil
 	if this.visibleRgn != 0 {
@@ -2555,7 +2587,7 @@ func (this *Control) removeRelation_() {
 	if !this.impl.isDescribedByLabel_() {
 		return
 	}
-	var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(this.FocusView())
+	var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(this.impl.focusView_())
 	viewAsControl, ok73 := iscocoaNSObjectTococoaNSControl(accessibleElement)
 	if ok73 {
 		if viewAsControl.Cell() != (nil) {
@@ -2878,7 +2910,10 @@ func (this *Control) SetBackgroundImage(imageLike ImageLike) {
 	if imageLike != nil {
 		image = imageLike.AsImage()
 	}
-	_ = image
+	this.impl.setBackgroundImage_(image)
+}
+
+func (this *Control) setBackgroundImage_(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
@@ -2984,7 +3019,10 @@ func (this *Control) SetCursor(cursorLike CursorLike) {
 	if cursorLike != nil {
 		cursor = cursorLike.AsCursor()
 	}
-	_ = cursor
+	this.impl.setCursor_(cursor)
+}
+
+func (this *Control) setCursor_(cursor *Cursor) {
 	this.CheckWidget()
 	if cursor != (nil) && cursor.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
@@ -3197,7 +3235,10 @@ func (this *Control) SetMenu(menuLike MenuLike) {
 	if menuLike != nil {
 		menu = menuLike.AsMenu()
 	}
-	_ = menu
+	this.impl.setMenu_(menu)
+}
+
+func (this *Control) setMenu_(menu *Menu) {
 	this.CheckWidget()
 	if menu != (nil) {
 		if menu.IsDisposed() {
@@ -3255,7 +3296,7 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	parent.impl.contentView_().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 	topView.Release()
 	this.parent = parent
-	this.Reskin(ALL)
+	this.impl.reskin_(ALL)
 	return true
 }
 
@@ -3739,6 +3780,10 @@ func (this *Control) touchesMovedWithEvent_(id int64, sel int64, event int64) {
 }
 
 func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, consume []bool) bool {
+	return this.impl.translateTraversal_(key, theEvent, consume)
+}
+
+func (this *Control) translateTraversal_(key int32, theEvent *cocoa.NSEvent, consume []bool) bool {
 	var detail int32 = TRAVERSE_NONE
 	var code int32 = this.impl.traversalCode_(key, theEvent)
 	var all bool = false
@@ -3966,6 +4011,10 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 }
 
 func (this *Control) TraverseTraversal(traversal int32) bool {
+	return this.impl.traverseTraversal_(traversal)
+}
+
+func (this *Control) traverseTraversal_(traversal int32) bool {
 	this.CheckWidget()
 	var event *Event = NewEvent()
 	event.Doit = true

@@ -15,6 +15,8 @@ type Font struct {
 	metrics     *FontMetrics
 }
 
+func init() { jrt.RegisterClassPackage("Font", "org.eclipse.swt.graphics") }
+
 func (this *Font) AsFont() *Font { return this }
 
 type FontLike interface {
@@ -175,8 +177,8 @@ func (this *Font) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	font, ok225 := resourceImplAsFont(object)
-	if !(ok225) {
+	font, ok227 := resourceImplAsFont(object)
+	if !(ok227) {
 		return false
 	}
 	return this.Handle == font.Handle
@@ -224,13 +226,13 @@ func (this *Font) GetFontData() []*FontData {
 }
 
 func (this *Font) HashCode() int32 {
-	var cond226 int32
+	var cond228 int32
 	if this.Handle != (nil) {
-		cond226 = int32(this.Handle.Id)
+		cond228 = int32(this.Handle.Id)
 	} else {
-		cond226 = 0
+		cond228 = 0
 	}
-	return cond226
+	return cond228
 }
 
 func (this *Font) Init(name string, height float32, style int32, nsName string) {
@@ -248,13 +250,13 @@ func (this *Font) Init(name string, height float32, style int32, nsName string) 
 	var systemFontName string = systemFont.FamilyName().GetString()
 	var boldSystemFontName string = boldSystemFont.FamilyName().GetString()
 	if (systemFontName == name) || (boldSystemFontName == name) {
-		var cond227 *cocoa.NSFont
+		var cond229 *cocoa.NSFont
 		if (style & BOLD) == 0 {
-			cond227 = systemFont
+			cond229 = systemFont
 		} else {
-			cond227 = boldSystemFont
+			cond229 = boldSystemFont
 		}
-		this.Handle = (cond227)
+		this.Handle = (cond229)
 	} else {
 		if nsName != "" {
 			this.Handle = cocoa.NSFontFontWithName(cocoa.NSStringStringWith(nsName), float64(size))

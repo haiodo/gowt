@@ -55,7 +55,8 @@ final class JdkIntrinsics {
 			return jrtCall("Substring", recv(mi) + ", " + arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "-1" : arg(mi, 1)));
 		}
 		if (qualified.equals("java.lang.String") && mb.getName().equals("lastIndexOf")) {
-			return jrtCall("LastIndexOf", recv(mi) + ", string(rune(" + arg(mi, 0) + "))");
+			boolean strArg = ((Expression) mi.arguments().get(0)).resolveTypeBinding().getQualifiedName().equals("java.lang.String");
+			return jrtCall("LastIndexOf", recv(mi) + ", " + (strArg ? arg(mi, 0) : "string(rune(" + arg(mi, 0) + "))"));
 		}
 		// Integer.toHexString treats its argument as UNSIGNED 32-bit, matching Go's uint32 here.
 		if (qualified.equals("java.lang.Integer") && mb.getName().equals("toHexString")) {
@@ -73,6 +74,8 @@ final class JdkIntrinsics {
 			if (isGoStringArg(arg0) && isGoStringArg(arg1)) {
 				return "(" + emitter.expr(arg0) + " == " + emitter.expr(arg1) + ")";
 			}
+			// Any other operand: null-safe a.equals(b) (ToolItem.setBackground compares Colors).
+			return jrtCall("ObjectsEquals", emitter.expr(arg0) + ", " + emitter.expr(arg1));
 		}
 		// Every System property key besides "os.arch" reads as unset in this port - matches the
 		// real JDK's own behavior for a key that was never set (String.getProperty(...) returns

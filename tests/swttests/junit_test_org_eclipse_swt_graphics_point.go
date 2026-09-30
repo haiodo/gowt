@@ -58,18 +58,18 @@ func (this *Test_org_eclipse_swt_graphics_Point) Test_toString() {
 
 func (this *Test_org_eclipse_swt_graphics_Point) Test_OfFloat_clone() {
 	var pointOfInt *swt.Point_OfFloat = swt.NewPointOfFloat(3, 4)
-	t41 := pointOfInt.Clone()
-	t42, _ := pointImplAsOfFloat(t41.Impl())
-	var clonedPointOfInt *swt.Point_OfFloat = t42
+	t42 := pointOfInt.Clone()
+	t43, _ := pointImplAsOfFloat(t42.Impl())
+	var clonedPointOfInt *swt.Point_OfFloat = t43
 	junit.AssertEquals(pointOfInt, clonedPointOfInt)
 	junit.AssertEquals(int32(pointOfInt.X), int32(clonedPointOfInt.X))
 	junit.AssertEquals(float32(pointOfInt.GetX()), float32(clonedPointOfInt.GetX()))
 	junit.AssertEquals(int32(pointOfInt.Y), int32(clonedPointOfInt.Y))
 	junit.AssertEquals(float32(pointOfInt.GetY()), float32(clonedPointOfInt.GetY()))
 	var pointOfFloat *swt.Point_OfFloat = swt.NewPointOfFloatXY(3.4, 3.5)
-	t43 := pointOfFloat.Clone()
-	t44, _ := pointImplAsOfFloat(t43.Impl())
-	var clonedPointOfFloat *swt.Point_OfFloat = t44
+	t44 := pointOfFloat.Clone()
+	t45, _ := pointImplAsOfFloat(t44.Impl())
+	var clonedPointOfFloat *swt.Point_OfFloat = t45
 	junit.AssertEquals(pointOfFloat, clonedPointOfFloat)
 	junit.AssertEquals(int32(pointOfFloat.X), int32(clonedPointOfFloat.X))
 	junit.AssertEquals(float32(pointOfFloat.GetX()), float32(clonedPointOfFloat.GetX()))

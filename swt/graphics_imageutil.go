@@ -4,10 +4,13 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type ImageUtil struct {
 }
+
+func init() { jrt.RegisterClassPackage("ImageUtil", "org.eclipse.swt.internal.graphics") }
 
 func (this *ImageUtil) AsImageUtil() *ImageUtil { return this }
 

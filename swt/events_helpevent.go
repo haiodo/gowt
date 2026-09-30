@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type HelpEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("HelpEvent", "org.eclipse.swt.events") }
 
 func (this *HelpEvent) AsHelpEvent() *HelpEvent { return this }
 

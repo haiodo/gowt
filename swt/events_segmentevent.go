@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type SegmentEvent struct {
 	TypedEvent
 	LineOffset    int32
@@ -9,6 +13,8 @@ type SegmentEvent struct {
 	Segments      []int32
 	SegmentsChars []uint16
 }
+
+func init() { jrt.RegisterClassPackage("SegmentEvent", "org.eclipse.swt.events") }
 
 func (this *SegmentEvent) AsSegmentEvent() *SegmentEvent { return this }
 

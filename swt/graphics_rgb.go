@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -12,6 +13,8 @@ type RGB struct {
 	Green int32
 	Blue  int32
 }
+
+func init() { jrt.RegisterClassPackage("RGB", "org.eclipse.swt.graphics") }
 
 func (this *RGB) AsRGB() *RGB { return this }
 

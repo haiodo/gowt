@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type DragDetectEvent struct {
 	MouseEvent
 }
+
+func init() { jrt.RegisterClassPackage("DragDetectEvent", "org.eclipse.swt.events") }
 
 func (this *DragDetectEvent) AsDragDetectEvent() *DragDetectEvent { return this }
 

@@ -75,6 +75,8 @@ func (this *Resource) SetImpl_(impl ResourceImpl) {
 	this.impl = &resourceHooked{ResourceImpl: this.impl, hook: impl}
 }
 
+func init() { jrt.RegisterClassPackage("Resource", "org.eclipse.swt.graphics") }
+
 func (this *Resource) AsResource() *Resource { return this }
 
 type ResourceLike interface {
@@ -119,7 +121,7 @@ func (this *Resource) Destroy() {
 func (this *Resource) destroy_() {
 }
 
-func (this *Resource) DestroyHandlesExcept(zoomLevels any) {
+func (this *Resource) DestroyHandlesExcept(zoomLevels *jrt.List) {
 }
 
 func (this *Resource) Dispose() {
@@ -184,8 +186,8 @@ func (this *Resource) init_() {
 }
 
 func (this *Resource) InitNonDisposeTracking() {
-	_, ok205 := isResourceToColor(this)
-	if ok205 {
+	_, ok207 := isResourceToColor(this)
+	if ok207 {
 		return
 	}
 	if ResourceNonDisposedReporter == (nil) {
@@ -207,6 +209,8 @@ type Resource_ResourceTracker struct {
 	allocationStack error
 	reporting       *jrt.AtomicBoolean
 }
+
+func init() { jrt.RegisterClassPackage("Resource_ResourceTracker", "org.eclipse.swt.graphics") }
 
 func (this *Resource_ResourceTracker) AsResource_ResourceTracker() *Resource_ResourceTracker {
 	return this
@@ -249,6 +253,10 @@ func (this *Resource_ResourceTracker) Run() {
 
 type Resource_ResourceTrackerThreadFactory struct {
 	group any
+}
+
+func init() {
+	jrt.RegisterClassPackage("Resource_ResourceTrackerThreadFactory", "org.eclipse.swt.graphics")
 }
 
 func (this *Resource_ResourceTrackerThreadFactory) AsResource_ResourceTrackerThreadFactory() *Resource_ResourceTrackerThreadFactory {

@@ -17,6 +17,8 @@ type MouseEvent struct {
 	Count     int32
 }
 
+func init() { jrt.RegisterClassPackage("MouseEvent", "org.eclipse.swt.events") }
+
 func (this *MouseEvent) AsMouseEvent() *MouseEvent { return this }
 
 type MouseEventLike interface {

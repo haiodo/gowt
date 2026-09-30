@@ -138,6 +138,19 @@ func DoubleHashCode(d float64) int32 {
 	return int32(b ^ b>>32)
 }
 
+// ObjectsEquals is Objects.equals(a, b): a typed nil pointer counts as null.
+func ObjectsEquals(a, b any) bool {
+	an := a == nil || reflect.ValueOf(a).Kind() == reflect.Pointer && reflect.ValueOf(a).IsNil()
+	bn := b == nil || reflect.ValueOf(b).Kind() == reflect.Pointer && reflect.ValueOf(b).IsNil()
+	if an || bn {
+		return an && bn
+	}
+	if e, ok := a.(interface{ Equals(any) bool }); ok {
+		return e.Equals(b)
+	}
+	return a == b
+}
+
 // ObjectsHash is Objects.hash(values...), i.e. Arrays.hashCode of the boxed values.
 func ObjectsHash(values ...any) int32 {
 	h := int32(1)

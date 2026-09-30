@@ -241,10 +241,7 @@ func SwtTestUtilOpenShell(shellLike swt.ShellLike) {
 			if SwtTestUtilIsGTK4() || SwtTestUtilIsWayland() {
 				SwtTestUtilWaitAllEvents(jrt.NewRunnable(func() {
 					shell.Open()
-				}), upcastswtShellToswtControl(shell), func() any {
-					_ = []any{int32(swt.Paint), int32(swt.Activate), int32(swt.FocusIn)}
-					panic("j2go: unresolved call of")
-				}(), 1000)
+				}), upcastswtShellToswtControl(shell), jrt.ListOf(int32(swt.Paint), int32(swt.Activate), int32(swt.FocusIn)), 1000)
 			} else {
 				SwtTestUtilWaitEvent(jrt.NewRunnable(func() {
 					shell.Open()
@@ -522,16 +519,24 @@ func SwtTestUtilWaitEvent(trigger jrt.Runnable, controlLike swt.ControlLike, swt
 	return true
 }
 
-func SwtTestUtilWaitAllEvents(trigger jrt.Runnable, controlLike swt.ControlLike, swtEvents any, timeoutMsec int32) bool {
+func SwtTestUtilWaitAllEvents(trigger jrt.Runnable, controlLike swt.ControlLike, swtEvents *jrt.List, timeoutMsec int32) bool {
 	var control *swt.Control
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
 	_ = control
 	var eventsLeftToReceive *jrt.Map = jrt.NewMap()
-	func() { panic("j2go: unsupported EnhancedForStatement over non-array") }()
-	var tret10 bool
-	tretd11 := false
+	for _, elem10 := range swtEvents.ToArray() {
+		swtEvent := jrt.Cast[any](elem10)
+		var listener swt.Listener = &ListenerFunc{fn: func(event *swt.Event) {
+			control.RemoveListener(jrt.Cast[int32](swtEvent), jrt.Cast[swt.Listener](eventsLeftToReceive.Get(swtEvent)))
+			jrt.Cast[swt.Listener](eventsLeftToReceive.Remove(swtEvent))
+		}}
+		jrt.Cast[swt.Listener](eventsLeftToReceive.Put(swtEvent, listener))
+		control.AddListener(jrt.Cast[int32](swtEvent), listener)
+	}
+	var tret11 bool
+	tretd12 := false
 	func() {
 		defer func() {
 			eventsLeftToReceive.ForEach(func(swtEvent any, listener swt.Listener) {
@@ -544,15 +549,15 @@ func SwtTestUtilWaitAllEvents(trigger jrt.Runnable, controlLike swt.ControlLike,
 		var start int64 = jrt.CurrentTimeMillis()
 		for !eventsLeftToReceive.IsEmpty() {
 			if jrt.CurrentTimeMillis()-start > int64(timeoutMsec) {
-				tret10 = false
-				tretd11 = true
+				tret11 = false
+				tretd12 = true
 				return
 			}
 			SwtTestUtilProcessEvents()
 		}
 	}()
-	if tretd11 {
-		return tret10
+	if tretd12 {
+		return tret11
 	}
 	return true
 }

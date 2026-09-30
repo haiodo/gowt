@@ -326,11 +326,16 @@ final class NumericEmitter {
 		if (from.isPrimitive() || to.isPrimitive()) return text;
 		if (from.isArray() && to.isArray()) return upcastArray(text, from, to);
 		// A foreign anonymous subclass embeds its base by pointer (FunctionalEmitter.emitStructAnon).
-		if (from.isAnonymous() && from.getSuperclass() != null) {
-			TypeModel.ClassInfo baseCi = emitter.model.lookup(from.getSuperclass());
-			if (baseCi != null && !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage)
-					&& !to.isInterface() && !to.getErasure().isEqualTo(from.getErasure())) {
-				return upcastObject(text + "." + baseCi.goTypeName, from.getSuperclass(), to);
+		TypeModel.ClassInfo fromCi = emitter.model.lookup(from);
+		ITypeBinding foreignBase = from.isAnonymous() ? from.getSuperclass() : fromCi != null && fromCi.foreignSuper != null ? fromCi.foreignSuper.binding : null;
+		if (foreignBase != null) {
+			TypeModel.ClassInfo baseCi = emitter.model.lookup(foreignBase);
+			if (baseCi != null && !baseCi.isInterface && !to.isInterface() && !to.getErasure().isEqualTo(from.getErasure())) {
+				// Same-package anonymous classes embed the base by value, its impl still dispatches to the anonymous type.
+				boolean sameGoPackage = baseCi.goPackage.equals(emitter.currentGoPackage);
+				if (!sameGoPackage || from.isAnonymous()) {
+					return upcastObject((sameGoPackage ? "&" : "") + text + "." + baseCi.goTypeName, foreignBase, to);
+				}
 			}
 		}
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);

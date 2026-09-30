@@ -13,6 +13,8 @@ type SWTException struct {
 	Throwable error
 }
 
+func init() { jrt.RegisterClassPackage("SWTException", "org.eclipse.swt") }
+
 func (this *SWTException) AsSWTException() *SWTException { return this }
 
 type SWTExceptionLike interface {

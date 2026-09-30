@@ -83,6 +83,51 @@ func (a *AtomicInteger) CompareAndSet(expected, v int32) bool {
 	return true
 }
 
+type AtomicLong struct {
+	mu sync.Mutex
+	v  int64
+}
+
+func NewAtomicLong(initial ...int64) *AtomicLong {
+	a := &AtomicLong{}
+	if len(initial) > 0 {
+		a.v = initial[0]
+	}
+	return a
+}
+
+func (a *AtomicLong) Get() int64       { a.mu.Lock(); defer a.mu.Unlock(); return a.v }
+func (a *AtomicLong) GetPlain() int64  { return a.Get() }
+func (a *AtomicLong) LongValue() int64  { return a.Get() }
+func (a *AtomicLong) Set(v int64)      { a.mu.Lock(); a.v = v; a.mu.Unlock() }
+func (a *AtomicLong) SetPlain(v int64) { a.Set(v) }
+func (a *AtomicLong) AddAndGet(d int64) int64 {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.v += d
+	return a.v
+}
+func (a *AtomicLong) GetAndAdd(d int64) int64 { return a.AddAndGet(d) - d }
+func (a *AtomicLong) IncrementAndGet() int64  { return a.AddAndGet(1) }
+func (a *AtomicLong) GetAndIncrement() int64  { return a.AddAndGet(1) - 1 }
+func (a *AtomicLong) DecrementAndGet() int64  { return a.AddAndGet(-1) }
+func (a *AtomicLong) GetAndSet(v int64) int64 {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	old := a.v
+	a.v = v
+	return old
+}
+func (a *AtomicLong) CompareAndSet(expected, v int64) bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.v != expected {
+		return false
+	}
+	a.v = v
+	return true
+}
+
 type AtomicReference struct {
 	mu sync.Mutex
 	v  any

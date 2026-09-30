@@ -601,13 +601,13 @@ func (this *Text) GetCaretLocation() *Point {
 func (this *Text) GetCaretPosition() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond187 int32
+		var cond189 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond187 = int32(this.selectionRange.Location)
+			cond189 = int32(this.selectionRange.Location)
 		} else {
-			cond187 = 0
+			cond189 = 0
 		}
-		return cond187
+		return cond189
 	} else {
 		var range_ cocoa.NSRange = (castcocoaNSViewTococoaNSTextView(this.View)).SelectedRange()
 		return int32(range_.Location)
@@ -714,9 +714,9 @@ func (this *Text) GetLineCount() int32 {
 	var length int64 = string_.Length()
 	var c int64
 	if length == 0 || func() bool {
-		cond188 := int64(string_.CharacterAtIndex(length - 1))
-		c = cond188
-		return (cond188) == int64(int32('\u000a'))
+		cond190 := int64(string_.CharacterAtIndex(length - 1))
+		c = cond190
+		return (cond190) == int64(int32('\u000a'))
 	}() || c == int64(int32('\u000d')) {
 		count++
 	}
@@ -789,13 +789,13 @@ func (this *Text) GetSelection() *Point {
 func (this *Text) GetSelectionCount() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond189 int32
+		var cond191 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond189 = int32(this.selectionRange.Length)
+			cond191 = int32(this.selectionRange.Length)
 		} else {
-			cond189 = 0
+			cond191 = 0
 		}
-		return cond189
+		return cond191
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var range_ cocoa.NSRange = widget.SelectedRange()
@@ -1658,13 +1658,13 @@ func (this *Text) updateCursorRects_(enabled bool) {
 		return
 	}
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
-	var cond190 *cocoa.NSCursor
+	var cond192 *cocoa.NSCursor
 	if enabled {
-		cond190 = cocoa.NSCursorIBeamCursor()
+		cond192 = cocoa.NSCursorIBeamCursor()
 	} else {
-		cond190 = nil
+		cond192 = nil
 	}
-	contentView.SetDocumentCursor(cond190)
+	contentView.SetDocumentCursor(cond192)
 }
 
 func (this *Text) UpdateThemeColors() {

@@ -3,12 +3,15 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
 type SashFormLayout struct {
 	Layout
 }
+
+func init() { jrt.RegisterClassPackage("SashFormLayout", "org.eclipse.swt.custom") }
 
 func (this *SashFormLayout) AsSashFormLayout() *SashFormLayout { return this }
 
@@ -65,8 +68,8 @@ func (this *SashFormLayout) computeSize_(composite *Composite, wHint int32, hHin
 	var total int64 = int64(0)
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		_, ok193 := sashFormDataImplAsSashFormData(data)
-		if ok193 {
+		_, ok195 := sashFormDataImplAsSashFormData(data)
+		if ok195 {
 			ratios[i] = (castanyToSashFormData(data)).weight
 		} else {
 			data = newSashFormData()
@@ -137,14 +140,14 @@ func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
 	if int32(len(sashForm.sashes)) > int32(len(controls))-1 {
 		if int32(len(controls)) == 0 {
 			for _, sash := range sashForm.sashes {
-				sash.Dispose()
+				sash.impl.dispose_()
 			}
 			sashForm.sashes = make([]*Sash, 0)
 		} else {
 			var newSashes []*Sash = make([]*Sash, int32(len(controls))-1)
 			copy(newSashes[0:], sashForm.sashes[0:0+int32(len(newSashes))])
 			for i := int32(int32(len(controls)) - 1); i < int32(len(sashForm.sashes)); i++ {
-				sashForm.sashes[i].Dispose()
+				sashForm.sashes[i].impl.dispose_()
 			}
 			sashForm.sashes = newSashes
 		}
@@ -157,8 +160,8 @@ func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
 	var total int64 = int64(0)
 	for i := int32(0); i < int32(len(controls)); i++ {
 		var data any = controls[i].GetLayoutData()
-		_, ok194 := sashFormDataImplAsSashFormData(data)
-		if ok194 {
+		_, ok196 := sashFormDataImplAsSashFormData(data)
+		if ok196 {
 			ratios[i] = (castanyToSashFormData(data)).weight
 		} else {
 			data = newSashFormData()

@@ -17,6 +17,8 @@ type TreeEditor struct {
 	timer          jrt.Runnable
 }
 
+func init() { jrt.RegisterClassPackage("TreeEditor", "org.eclipse.swt.custom") }
+
 func (this *TreeEditor) AsTreeEditor() *TreeEditor { return this }
 
 type TreeEditorLike interface {
@@ -41,17 +43,17 @@ func (this *TreeEditor) initTreeEditor(tree *Tree) {
 	this.ControlEditor.initControlEditor(upcastTreeToComposite(tree))
 	this.column = 0
 	this.tree = tree
-	anon610 := &TreeEditorAnon1{}
-	anon610.fnControlMoved = func(e *ControlEvent) {
+	anon676 := &TreeEditorAnon1{}
+	anon676.fnControlMoved = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	anon610.fnControlResized = func(e *ControlEvent) {
+	anon676.fnControlResized = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	this.columnListener = anon610
+	this.columnListener = anon676
 	this.timer = jrt.NewRunnable(this.Layout)
-	anon611 := &TreeEditorAnon2{}
-	anon611.runnable = jrt.NewRunnable(func() {
+	anon677 := &TreeEditorAnon2{}
+	anon677.runnable = jrt.NewRunnable(func() {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
@@ -61,21 +63,21 @@ func (this *TreeEditor) initTreeEditor(tree *Tree) {
 		this.impl.layout_()
 		this.editor.impl.setVisible_(true)
 	})
-	anon611.fnTreeCollapsed = func(e *TreeEvent) {
+	anon677.fnTreeCollapsed = func(e *TreeEvent) {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
 		this.editor.impl.setVisible_(false)
-		e.Display.AsyncExec(anon611.runnable)
+		e.Display.AsyncExec(anon677.runnable)
 	}
-	anon611.fnTreeExpanded = func(e *TreeEvent) {
+	anon677.fnTreeExpanded = func(e *TreeEvent) {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
 		this.editor.impl.setVisible_(false)
-		e.Display.AsyncExec(anon611.runnable)
+		e.Display.AsyncExec(anon677.runnable)
 	}
-	this.treeListener = anon611
+	this.treeListener = anon677
 	tree.AddTreeListener(this.treeListener)
 	this.GrabVertical = true
 }

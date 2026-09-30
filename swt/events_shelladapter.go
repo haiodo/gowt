@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ShellAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("ShellAdapter", "org.eclipse.swt.events") }
 
 func (this *ShellAdapter) AsShellAdapter() *ShellAdapter { return this }
 

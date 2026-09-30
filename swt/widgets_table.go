@@ -116,9 +116,9 @@ func (this *Table) _getItem(index int32) *TableItem {
 	if this.items[index] != (nil) {
 		return this.items[index]
 	}
-	cond563 := newTableItemParentStyleIndexCreate(this, NULL, -1, false)
-	this.items[index] = cond563
-	return cond563
+	cond565 := newTableItemParentStyleIndexCreate(this, NULL, -1, false)
+	this.items[index] = cond565
+	return cond565
 }
 
 func (this *Table) CalculateWidth(items []*TableItem, index int32, gcLike GCLike) int32 {
@@ -401,13 +401,13 @@ func (this *Table) createHandle_() {
 	scrollWidget.SetHasHorizontalScroller((this.style & H_SCROLL) != 0)
 	scrollWidget.SetHasVerticalScroller((this.style & V_SCROLL) != 0)
 	scrollWidget.SetAutohidesScrollers(true)
-	var cond564 int32
+	var cond566 int32
 	if this.impl.hasBorder_() {
-		cond564 = cocoa.OSNSBezelBorder
+		cond566 = cocoa.OSNSBezelBorder
 	} else {
-		cond564 = cocoa.OSNSNoBorder
+		cond566 = cocoa.OSNSNoBorder
 	}
-	scrollWidget.SetBorderType(int64(cond564))
+	scrollWidget.SetBorderType(int64(cond566))
 	var widget *cocoa.NSTableView = castcocoaNSObjectTococoaNSTableView(cocoa.NewSWTTableView().Alloc())
 	widget.Init()
 	widget.SetAllowsMultipleSelection((this.style & MULTI) != 0)
@@ -511,9 +511,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 	this.display.AddWidget(upcastcocoaNSTableHeaderCellTococoaNSObject(headerCell), upcastTableColumnToWidget(column))
 	column.nsColumn = nsColumn
 	nsColumn.SetWidth(float64(0))
-	t565 := this.columnCount
+	t567 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t565-index])
+	copy(this.columns[index+1:], this.columns[index:index+t567-index])
 	this.columns[index] = column
 	for i := int32(0); i < this.itemCount; i++ {
 		var item *TableItem = this.items[i]
@@ -545,9 +545,9 @@ func (this *Table) CreateItemItemIndex(itemLike TableItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t566 := this.itemCount
+	t568 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t566-index])
+	copy(this.items[index+1:], this.items[index:index+t568-index])
 	this.items[index] = item
 	this.UpdateRowCount()
 	if index != this.itemCount {
@@ -838,20 +838,20 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 	var selectionBackground *Color = nil
 	var selectionForeground *Color = nil
 	if isSelected && (hooksErase || hooksPaint) {
-		var cond567 []float64
+		var cond569 []float64
 		if hasFocus || Display_APPEARANCEDark == this.display.appAppearance {
-			cond567 = this.display.alternateSelectedControlTextColor
+			cond569 = this.display.alternateSelectedControlTextColor
 		} else {
-			cond567 = this.display.selectedControlTextColor
+			cond569 = this.display.selectedControlTextColor
 		}
-		selectionForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond567)
-		var cond568 []float64
+		selectionForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond569)
+		var cond570 []float64
 		if hasFocus {
-			cond568 = this.display.GetAlternateSelectedControlColor()
+			cond570 = this.display.GetAlternateSelectedControlColor()
 		} else {
-			cond568 = this.display.GetSecondarySelectedControlColor()
+			cond570 = this.display.GetSecondarySelectedControlColor()
 		}
-		selectionBackground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond568)
+		selectionBackground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond570)
 	}
 	var contentSize cocoa.NSSize = this.Composite.cellSize_(id, cocoa.OSSel_cellSize)
 	var image *cocoa.NSImage = cell.Image()
@@ -1049,13 +1049,13 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 			gc.SetForeground(selectionForeground)
 			gc.SetBackground(selectionBackground)
 		} else {
-			var cond569 *Color
+			var cond571 *Color
 			if userForeground != (nil) {
-				cond569 = userForeground
+				cond571 = userForeground
 			} else {
-				cond569 = item.GetForegroundIndex(columnIndex)
+				cond571 = item.GetForegroundIndex(columnIndex)
 			}
-			gc.SetForeground(cond569)
+			gc.SetForeground(cond571)
 			gc.SetBackground(item.GetBackgroundIndex(columnIndex))
 		}
 		if !this.drawExpansion {
@@ -1179,18 +1179,18 @@ func (this *Table) FixSelection(index int32, add bool) {
 		if !add && selection[i] == index {
 			fix = true
 		} else {
-			t570 := newCount
+			t572 := newCount
 			newCount++
-			var newIndex int32 = t570
+			var newIndex int32 = t572
 			selection[newIndex] = selection[i]
 			if selection[newIndex] >= index {
-				var cond571 int32
+				var cond573 int32
 				if add {
-					cond571 = 1
+					cond573 = 1
 				} else {
-					cond571 = -1
+					cond573 = -1
 				}
-				selection[newIndex] += cond571
+				selection[newIndex] += cond573
 				fix = true
 			}
 		}
@@ -1264,13 +1264,13 @@ func (this *Table) GetHeaderBackground() *Color {
 }
 
 func (this *Table) GetHeaderBackgroundColor() *Color {
-	var cond572 *Color
+	var cond574 *Color
 	if this.headerBackground != (nil) {
-		cond572 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerBackground)
+		cond574 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerBackground)
 	} else {
-		cond572 = this.impl.defaultBackground_()
+		cond574 = this.impl.defaultBackground_()
 	}
-	return cond572
+	return cond574
 }
 
 func (this *Table) GetHeaderForeground() *Color {
@@ -1279,13 +1279,13 @@ func (this *Table) GetHeaderForeground() *Color {
 }
 
 func (this *Table) GetHeaderForegroundColor() *Color {
-	var cond573 *Color
+	var cond575 *Color
 	if this.headerForeground != (nil) {
-		cond573 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerForeground)
+		cond575 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerForeground)
 	} else {
-		cond573 = this.impl.defaultForeground_()
+		cond575 = this.impl.defaultForeground_()
 	}
-	return cond573
+	return cond575
 }
 
 func (this *Table) GetHeaderHeight() int32 {
@@ -1534,17 +1534,17 @@ func (this *Table) IndexOfItem(itemLike TableItemLike) int32 {
 	if this.lastIndexOf < this.itemCount/2 {
 		for i := int32(0); i < this.itemCount; i++ {
 			if this.items[i] == item {
-				cond574 := i
-				this.lastIndexOf = cond574
-				return cond574
+				cond576 := i
+				this.lastIndexOf = cond576
+				return cond576
 			}
 		}
 	} else {
 		for i := int32(this.itemCount - 1); i >= 0; i-- {
 			if this.items[i] == item {
-				cond575 := i
-				this.lastIndexOf = cond575
-				return cond575
+				cond577 := i
+				this.lastIndexOf = cond577
+				return cond577
 			}
 		}
 	}
@@ -1651,21 +1651,21 @@ func (this *Table) nextState_(id int64, sel int64) int64 {
 	}
 	var item *TableItem = this.items[index]
 	if item.grayed {
-		var cond576 int32
+		var cond578 int32
 		if item.checked {
-			cond576 = cocoa.OSNSControlStateValueOff
+			cond578 = cocoa.OSNSControlStateValueOff
 		} else {
-			cond576 = cocoa.OSNSControlStateValueMixed
+			cond578 = cocoa.OSNSControlStateValueMixed
 		}
-		return int64(cond576)
+		return int64(cond578)
 	}
-	var cond577 int32
+	var cond579 int32
 	if item.checked {
-		cond577 = cocoa.OSNSControlStateValueOff
+		cond579 = cocoa.OSNSControlStateValueOff
 	} else {
-		cond577 = cocoa.OSNSControlStateValueOn
+		cond579 = cocoa.OSNSControlStateValueOn
 	}
-	return int64(cond577)
+	return int64(cond579)
 }
 
 func (this *Table) numberOfRowsInTableView_(id int64, sel int64, aTableView int64) int64 {
@@ -1780,9 +1780,9 @@ func (this *Table) RemoveStartEnd(start int32, end int32) {
 				if selection[i] >= start && selection[i] <= end {
 					fix = true
 				} else {
-					t578 := newCount
+					t580 := newCount
 					newCount++
-					var newIndex int32 = t578
+					var newIndex int32 = t580
 					selection[newIndex] = selection[i]
 					if selection[newIndex] > end {
 						selection[newIndex] -= numOfItemsRemoved
@@ -1874,7 +1874,7 @@ func (this *Table) reskinChildren_(flags int32) {
 		for i := int32(0); i < this.itemCount; i++ {
 			var item *TableItem = this.items[i]
 			if item != (nil) {
-				item.Reskin(flags)
+				item.impl.reskin_(flags)
 			}
 		}
 	}
@@ -1882,7 +1882,7 @@ func (this *Table) reskinChildren_(flags int32) {
 		for i := int32(0); i < this.columnCount; i++ {
 			var column *TableColumn = this.columns[i]
 			if !column.IsDisposed() {
-				column.Reskin(flags)
+				column.impl.reskin_(flags)
 			}
 		}
 	}
@@ -2132,13 +2132,13 @@ func (this *Table) SetHeaderForeground(colorLike ColorLike) {
 
 func (this *Table) SetHeaderVisible(show bool) {
 	this.CheckWidget()
-	var cond579 *cocoa.NSTableHeaderView
+	var cond581 *cocoa.NSTableHeaderView
 	if show {
-		cond579 = this.headerView
+		cond581 = this.headerView
 	} else {
-		cond579 = nil
+		cond581 = nil
 	}
-	(castcocoaNSViewTococoaNSTableView(this.View)).SetHeaderView(cond579)
+	(castcocoaNSViewTococoaNSTableView(this.View)).SetHeaderView(cond581)
 	this.scrollView.Tile()
 }
 
@@ -2246,13 +2246,13 @@ func (this *Table) setRedraw_(redraw bool) {
 func (this *Table) SetLinesVisible(show bool) {
 	this.CheckWidget()
 	(castcocoaNSViewTococoaNSTableView(this.View)).SetUsesAlternatingRowBackgroundColors(show)
-	var cond580 int32
+	var cond582 int32
 	if show {
-		cond580 = cocoa.OSNSTableViewSolidVerticalGridLineMask
+		cond582 = cocoa.OSNSTableViewSolidVerticalGridLineMask
 	} else {
-		cond580 = cocoa.OSNSTableViewGridNone
+		cond582 = cocoa.OSNSTableViewGridNone
 	}
-	(castcocoaNSViewTococoaNSTableView(this.View)).SetGridStyleMask(int64(cond580))
+	(castcocoaNSViewTococoaNSTableView(this.View)).SetGridStyleMask(int64(cond582))
 }
 
 func (this *Table) SetScrollWidth() bool {
@@ -2393,9 +2393,9 @@ func (this *Table) SetSelectionItems(items []*TableItem) {
 	for i := int32(0); i < length; i++ {
 		var index int32 = this.IndexOfItem(items[length-i-1])
 		if index != -1 {
-			t581 := count
+			t583 := count
 			count++
-			indices[t581] = index
+			indices[t583] = index
 		}
 	}
 	if count > 0 {
@@ -2503,13 +2503,13 @@ func (this *Table) ShowColumn(columnLike TableColumnLike) {
 	}
 	var index int32 = this.IndexOf(column.nsColumn)
 	if !(0 <= index && func() bool {
-		var cond582 int32
+		var cond584 int32
 		if (this.style & CHECK) != 0 {
-			cond582 = 1
+			cond584 = 1
 		} else {
-			cond582 = 0
+			cond584 = 0
 		}
-		return index < this.columnCount+(cond582)
+		return index < this.columnCount+(cond584)
 	}()) {
 		return
 	}
@@ -2785,13 +2785,13 @@ func (this *Table) tableView_objectValueForTableColumn_row_(id int64, sel int64,
 		if item.checked && item.grayed {
 			value = cocoa.NSNumberNumberWithInt(cocoa.OSNSControlStateValueMixed)
 		} else {
-			var cond583 int32
+			var cond585 int32
 			if item.checked {
-				cond583 = cocoa.OSNSControlStateValueOn
+				cond585 = cocoa.OSNSControlStateValueOn
 			} else {
-				cond583 = cocoa.OSNSControlStateValueOff
+				cond585 = cocoa.OSNSControlStateValueOff
 			}
-			value = cocoa.NSNumberNumberWithInt(cond583)
+			value = cocoa.NSNumberNumberWithInt(cond585)
 		}
 		return value.Id
 	}
@@ -2882,25 +2882,25 @@ func (this *Table) tableView_willDisplayCell_forTableColumn_row_(id int64, sel i
 	var textCell *cocoa.NSTextFieldCell = cocoa.NewNSTextFieldCellOverload1(cell)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_ROW, rowIndex)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_COLUMN, tableColumn)
-	var cond584 *Image
+	var cond586 *Image
 	if item.images == (nil) {
-		cond584 = nil
+		cond586 = nil
 	} else {
-		cond584 = item.images[index]
+		cond586 = item.images[index]
 	}
 	var image *Image
 	if index == 0 {
 		image = item.image
 	} else {
-		image = (cond584)
+		image = (cond586)
 	}
-	var cond585 *cocoa.NSImage
+	var cond587 *cocoa.NSImage
 	if image != (nil) {
-		cond585 = image.Handle
+		cond587 = image.Handle
 	} else {
-		cond585 = nil
+		cond587 = nil
 	}
-	textCell.SetImage(cond585)
+	textCell.SetImage(cond587)
 	var color *cocoa.NSColor
 	if textCell.IsEnabled() {
 		if textCell.IsHighlighted() {

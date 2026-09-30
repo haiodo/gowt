@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type GlyphMetrics struct {
@@ -11,6 +12,8 @@ type GlyphMetrics struct {
 	Descent int32
 	Width   int32
 }
+
+func init() { jrt.RegisterClassPackage("GlyphMetrics", "org.eclipse.swt.graphics") }
 
 func (this *GlyphMetrics) AsGlyphMetrics() *GlyphMetrics { return this }
 
@@ -37,8 +40,8 @@ func (this *GlyphMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok519 := glyphMetricsImplAsGlyphMetrics(object)
-	if !(ok519) {
+	metrics, ok521 := glyphMetricsImplAsGlyphMetrics(object)
+	if !(ok521) {
 		return false
 	}
 	return metrics.Ascent == this.Ascent && metrics.Descent == this.Descent && metrics.Width == this.Width

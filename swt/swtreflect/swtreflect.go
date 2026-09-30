@@ -1812,6 +1812,550 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "showSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.List](target).ShowSelection(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "getIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Scale](target).GetIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "getMaximum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Scale](target).GetMaximum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "getMinimum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Scale](target).GetMinimum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "getPageIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Scale](target).GetPageIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "getSelection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Scale](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "setIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).SetIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "setMaximum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).SetMaximum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "setMinimum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).SetMinimum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "setPageIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).SetPageIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Scale](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Scale](target).SetSelection(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getMaximum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetMaximum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getMinimum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetMinimum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getPageIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetPageIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getSelection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "getThumb", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Slider](target).GetThumb() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setMaximum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetMaximum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setMinimum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetMinimum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setPageIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetPageIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetSelection(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setThumb", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetThumb(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Slider](), "setValues", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Slider](target).SetValues(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "addModifyListener", []reflect.Type{reflect.TypeFor[swt.ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).AddModifyListener(jrt.ArgAs[swt.ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "copy", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Spinner](target).Copy(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "cut", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Spinner](target).Cut(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getDigits", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetDigits() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getMaximum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetMaximum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getMinimum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetMinimum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getPageIncrement", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetPageIncrement() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getSelection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "getTextLimit", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Spinner](target).GetTextLimit() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "paste", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Spinner](target).Paste(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "removeModifyListener", []reflect.Type{reflect.TypeFor[swt.ModifyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).RemoveModifyListener(jrt.ArgAs[swt.ModifyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setDigits", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetDigits(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setMaximum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetMaximum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setMinimum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetMinimum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setPageIncrement", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetPageIncrement(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetSelection(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setTextLimit", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetTextLimit(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Spinner](), "setValues", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Spinner](target).SetValues(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "getMaximum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ProgressBar](target).GetMaximum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "getMinimum", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ProgressBar](target).GetMinimum() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "getSelection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ProgressBar](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "getState", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ProgressBar](target).GetState() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "setMaximum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ProgressBar](target).SetMaximum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "setMinimum", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ProgressBar](target).SetMinimum(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ProgressBar](target).SetSelection(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ProgressBar](), "setState", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ProgressBar](target).SetState(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Link](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "getLinkForeground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.Link](target).GetLinkForeground() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.Link](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Link](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "setLinkForeground", []reflect.Type{reflect.TypeFor[swt.ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Link](target).SetLinkForeground(jrt.ArgAs[swt.ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Link](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Link](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.ToolItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.ToolBar](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "getItem", []reflect.Type{reflect.TypeFor[swt.PointLike]()}, reflect.TypeFor[*swt.ToolItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.ToolBar](target).GetItemPoint(jrt.ArgAs[swt.PointLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolBar](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "getItems", nil, reflect.TypeFor[[]*swt.ToolItem](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolBar](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "getRowCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolBar](target).GetRowCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "indexOf", []reflect.Type{reflect.TypeFor[swt.ToolItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.ToolBar](target).IndexOf(jrt.ArgAs[swt.ToolItemLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getBackground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetBackground() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getBounds", nil, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getControl", nil, reflect.TypeFor[*swt.Control](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetControl() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getDisabledImage", nil, reflect.TypeFor[*swt.Image](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetDisabledImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetEnabled() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getForeground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetForeground() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getHotImage", nil, reflect.TypeFor[*swt.Image](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetHotImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getParent", nil, reflect.TypeFor[*swt.ToolBar](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getSelection", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetSelection() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getToolTipText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetToolTipText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "getWidth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).GetWidth() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "isEnabled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolItem](target).IsEnabled() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setBackground", []reflect.Type{reflect.TypeFor[swt.ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetBackground(jrt.ArgAs[swt.ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setControl", []reflect.Type{reflect.TypeFor[swt.ControlLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetControl(jrt.ArgAs[swt.ControlLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setEnabled", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetEnabled(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setDisabledImage", []reflect.Type{reflect.TypeFor[swt.ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetDisabledImage(jrt.ArgAs[swt.ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setForeground", []reflect.Type{reflect.TypeFor[swt.ColorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetForeground(jrt.ArgAs[swt.ColorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setHotImage", []reflect.Type{reflect.TypeFor[swt.ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetHotImage(jrt.ArgAs[swt.ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setSelection", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetSelection(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setToolTipText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetToolTipText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "setWidth", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolItem](target).SetWidth(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "addExpandListener", []reflect.Type{reflect.TypeFor[swt.ExpandListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandBar](target).AddExpandListener(jrt.ArgAs[swt.ExpandListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.ExpandItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.ExpandBar](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandBar](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "getItems", nil, reflect.TypeFor[[]*swt.ExpandItem](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandBar](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "getSpacing", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandBar](target).GetSpacing() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "indexOf", []reflect.Type{reflect.TypeFor[swt.ExpandItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.ExpandBar](target).IndexOf(jrt.ArgAs[swt.ExpandItemLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "removeExpandListener", []reflect.Type{reflect.TypeFor[swt.ExpandListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandBar](target).RemoveExpandListener(jrt.ArgAs[swt.ExpandListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandBar](), "setSpacing", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandBar](target).SetSpacing(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "getControl", nil, reflect.TypeFor[*swt.Control](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandItem](target).GetControl() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "getExpanded", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandItem](target).GetExpanded() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "getHeaderHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandItem](target).GetHeaderHeight() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "getHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandItem](target).GetHeight() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "getParent", nil, reflect.TypeFor[*swt.ExpandBar](), func(target any, args []any) any { return jrt.Narrow[*swt.ExpandItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "setControl", []reflect.Type{reflect.TypeFor[swt.ControlLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandItem](target).SetControl(jrt.ArgAs[swt.ControlLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "setExpanded", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandItem](target).SetExpanded(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ExpandItem](), "setHeight", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ExpandItem](target).SetHeight(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "getAutoHide", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).GetAutoHide() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "getMessage", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).GetMessage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "getParent", nil, reflect.TypeFor[*swt.Shell](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "getVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).GetVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "isVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolTip](target).IsVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setAutoHide", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetAutoHide(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setLocation", []reflect.Type{reflect.TypeFor[swt.PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetLocationLocation(jrt.ArgAs[swt.PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setMessage", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetMessage(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolTip](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.ToolTip](target).SetVisible(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.CoolItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.CoolBar](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getItems", nil, reflect.TypeFor[[]*swt.CoolItem](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "indexOf", []reflect.Type{reflect.TypeFor[swt.CoolItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.CoolBar](target).IndexOf(jrt.ArgAs[swt.CoolItemLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getItemOrder", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetItemOrder() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getItemSizes", nil, reflect.TypeFor[[]*swt.Point](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetItemSizes() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getLocked", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetLocked() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "getWrapIndices", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolBar](target).GetWrapIndices() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "setLocked", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolBar](target).SetLocked(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "setWrapIndices", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolBar](target).SetWrapIndices(jrt.ArgAs[[]int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolBar](), "setItemLayout", []reflect.Type{reflect.TypeFor[[]int32](), reflect.TypeFor[[]int32](), reflect.TypeFor[[]*swt.Point]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolBar](target).SetItemLayout(jrt.ArgAs[[]int32](args[0]), jrt.ArgAs[[]int32](args[1]), jrt.ArgAs[[]*swt.Point](args[2]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "computeSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.CoolItem](target).ComputeSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getBounds", nil, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetBounds() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getControl", nil, reflect.TypeFor[*swt.Control](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetControl() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getMinimumSize", nil, reflect.TypeFor[*swt.Point](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetMinimumSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getParent", nil, reflect.TypeFor[*swt.CoolBar](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getPreferredSize", nil, reflect.TypeFor[*swt.Point](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetPreferredSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "getSize", nil, reflect.TypeFor[*swt.Point](), func(target any, args []any) any { return jrt.Narrow[*swt.CoolItem](target).GetSize() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setControl", []reflect.Type{reflect.TypeFor[swt.ControlLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetControl(jrt.ArgAs[swt.ControlLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setMinimumSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetMinimumSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setMinimumSize", []reflect.Type{reflect.TypeFor[swt.PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetMinimumSizeSize(jrt.ArgAs[swt.PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setPreferredSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetPreferredSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setPreferredSize", []reflect.Type{reflect.TypeFor[swt.PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetPreferredSizeSize(jrt.ArgAs[swt.PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setSize", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetSize(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CoolItem](), "setSize", []reflect.Type{reflect.TypeFor[swt.PointLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.CoolItem](target).SetSizeSize(jrt.ArgAs[swt.PointLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getDay", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetDay() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getHours", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetHours() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getMinutes", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetMinutes() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getMonth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetMonth() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getSeconds", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetSeconds() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "getYear", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.DateTime](target).GetYear() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setDate", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetDate(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setDay", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetDay(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setHours", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetHours(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setMinutes", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetMinutes(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setMonth", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetMonth(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setSeconds", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetSeconds(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setTime", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetTime(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]), jrt.ArgAs[int32](args[2]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DateTime](), "setYear", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DateTime](target).SetYear(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tray](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.TrayItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.Tray](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tray](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tray](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tray](), "getItems", nil, reflect.TypeFor[[]*swt.TrayItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tray](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "addMenuDetectListener", []reflect.Type{reflect.TypeFor[swt.MenuDetectListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).AddMenuDetectListener(jrt.ArgAs[swt.MenuDetectListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "getHighlightImage", nil, reflect.TypeFor[*swt.Image](), func(target any, args []any) any { return jrt.Narrow[*swt.TrayItem](target).GetHighlightImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "getParent", nil, reflect.TypeFor[*swt.Tray](), func(target any, args []any) any { return jrt.Narrow[*swt.TrayItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "getToolTip", nil, reflect.TypeFor[*swt.ToolTip](), func(target any, args []any) any { return jrt.Narrow[*swt.TrayItem](target).GetToolTip() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "getToolTipText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.TrayItem](target).GetToolTipText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "getVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.TrayItem](target).GetVisible() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "removeMenuDetectListener", []reflect.Type{reflect.TypeFor[swt.MenuDetectListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).RemoveMenuDetectListener(jrt.ArgAs[swt.MenuDetectListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "removeSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).RemoveSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "setHighlightImage", []reflect.Type{reflect.TypeFor[swt.ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).SetHighlightImage(jrt.ArgAs[swt.ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "setToolTip", []reflect.Type{reflect.TypeFor[swt.ToolTipLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).SetToolTip(jrt.ArgAs[swt.ToolTipLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "setToolTipText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).SetToolTipText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TrayItem](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TrayItem](target).SetVisible(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskBar](), "getItem", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.TaskItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.TaskBar](target).GetItem(jrt.ArgAs[int32](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskBar](), "getItemCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskBar](target).GetItemCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskBar](), "getItem", []reflect.Type{reflect.TypeFor[swt.ShellLike]()}, reflect.TypeFor[*swt.TaskItem](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.TaskBar](target).GetItemShell(jrt.ArgAs[swt.ShellLike](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskBar](), "getItems", nil, reflect.TypeFor[[]*swt.TaskItem](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskBar](target).GetItems() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getMenu", nil, reflect.TypeFor[*swt.Menu](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetMenu() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getOverlayImage", nil, reflect.TypeFor[*swt.Image](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetOverlayImage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getOverlayText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetOverlayText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getParent", nil, reflect.TypeFor[*swt.TaskBar](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetParent() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getProgress", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetProgress() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "getProgressState", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.TaskItem](target).GetProgressState() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "setMenu", []reflect.Type{reflect.TypeFor[swt.MenuLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TaskItem](target).SetMenu(jrt.ArgAs[swt.MenuLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "setOverlayImage", []reflect.Type{reflect.TypeFor[swt.ImageLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TaskItem](target).SetOverlayImage(jrt.ArgAs[swt.ImageLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "setOverlayText", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TaskItem](target).SetOverlayText(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "setProgress", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TaskItem](target).SetProgress(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.TaskItem](), "setProgressState", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.TaskItem](target).SetProgressState(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFileName", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFileName() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFileNames", nil, reflect.TypeFor[[]string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFileNames() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFilterExtensions", nil, reflect.TypeFor[[]string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFilterExtensions() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFilterIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFilterIndex() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFilterNames", nil, reflect.TypeFor[[]string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFilterNames() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getFilterPath", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetFilterPath() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "getOverwrite", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).GetOverwrite() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "open", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).Open() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "openDialog", nil, reflect.TypeFor[*jrt.Optional](), func(target any, args []any) any { return jrt.Narrow[*swt.FileDialog](target).OpenDialog() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "setFileName", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.FileDialog](target).SetFileName(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "setFilterIndex", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.FileDialog](target).SetFilterIndex(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "setFilterPath", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.FileDialog](target).SetFilterPath(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.FileDialog](), "setOverwrite", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.FileDialog](target).SetOverwrite(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "getFilterPath", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.DirectoryDialog](target).GetFilterPath() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "getMessage", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.DirectoryDialog](target).GetMessage() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "open", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.DirectoryDialog](target).Open() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "openDialog", nil, reflect.TypeFor[*jrt.Optional](), func(target any, args []any) any { return jrt.Narrow[*swt.DirectoryDialog](target).OpenDialog() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "setMessage", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DirectoryDialog](target).SetMessage(jrt.ArgAs[string](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.DirectoryDialog](), "setFilterPath", []reflect.Type{reflect.TypeFor[string]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.DirectoryDialog](target).SetFilterPath(jrt.ArgAs[string](args[0]))
+		return nil
+	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.TableItem](), "getBackground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.TableItem](target).GetBackground() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.TableItem](), "getBackground", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Color](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.TableItem](target).GetBackgroundIndex(jrt.ArgAs[int32](args[0]))

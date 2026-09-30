@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type FormAttachment struct {
@@ -13,6 +14,8 @@ type FormAttachment struct {
 	Control     *Control
 	Alignment   int32
 }
+
+func init() { jrt.RegisterClassPackage("FormAttachment", "org.eclipse.swt.layout") }
 
 func (this *FormAttachment) AsFormAttachment() *FormAttachment { return this }
 
@@ -120,16 +123,16 @@ func (this *FormAttachment) Divide(value int32) *FormAttachment {
 
 func (this *FormAttachment) Gcd(m int32, n int32) int32 {
 	var temp int32
-	abs114 := m
-	if abs114 < 0 {
-		abs114 = -abs114
+	abs116 := m
+	if abs116 < 0 {
+		abs116 = -abs116
 	}
-	m = abs114
-	abs115 := n
-	if abs115 < 0 {
-		abs115 = -abs115
+	m = abs116
+	abs117 := n
+	if abs117 < 0 {
+		abs117 = -abs117
 	}
-	n = abs115
+	n = abs117
 	if m < n {
 		temp = m
 		m = n
@@ -204,11 +207,11 @@ func (this *FormAttachment) String() string {
 	} else {
 		string_ = fmt.Sprintf("%d/%d", this.Numerator, this.Denominator)
 	}
-	var cond116 string
+	var cond118 string
 	if this.Offset >= 0 {
-		cond116 = fmt.Sprintf(")x + %d", this.Offset)
+		cond118 = fmt.Sprintf(")x + %d", this.Offset)
 	} else {
-		cond116 = fmt.Sprintf(")x - %d", (-this.Offset))
+		cond118 = fmt.Sprintf(")x - %d", (-this.Offset))
 	}
-	return fmt.Sprintf("{y = (%s%s}", string_, (cond116))
+	return fmt.Sprintf("{y = (%s%s}", string_, (cond118))
 }

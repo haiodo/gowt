@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ExpandEvent struct {
 	SelectionEvent
 }
+
+func init() { jrt.RegisterClassPackage("ExpandEvent", "org.eclipse.swt.events") }
 
 func (this *ExpandEvent) AsExpandEvent() *ExpandEvent { return this }
 

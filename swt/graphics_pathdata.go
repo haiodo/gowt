@@ -2,10 +2,16 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type PathData struct {
 	Types  []int8
 	Points []float32
 }
+
+func init() { jrt.RegisterClassPackage("PathData", "org.eclipse.swt.graphics") }
 
 func (this *PathData) AsPathData() *PathData { return this }
 

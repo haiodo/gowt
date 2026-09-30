@@ -3004,3 +3004,38 @@ ControlExample tabs (`port.sh`, `CreateTabs` in `controlexample_manual.go`): But
 Shell, TabFolder, Table, Text, Tree. Not in: Scale, Slider, Spinner, ProgressBar, Link, ToolBar, ToolTip, CoolBar, ExpandBar,
 DateTime, Dialog (no widget or stub-only widget), CTabFolder/CCombo/CLabel/StyledText (custom widgets not translated), System, Browser.
 `SashFormTab` is not in the tab list of `ControlExample` (CustomControlExample) and is not translated.
+
+## Round 17 more widgets and ControlExample tabs (TSK-2026-09-23-031)
+
+Static verification only (no GUI run): `make gen && make` green; `tests/expected.txt` is not refreshed, the new tests show up
+as UNDESCRIBED after the next batch run. Release sizes: hello 7 425 058, controlexample 12 580 290 bytes.
+
+Translated (`port.sh`, same pattern as `List`): Scale, Slider, Spinner, ProgressBar, Link, ToolBar/ToolItem, DateTime, Tray/
+TrayItem/TaskBar/TaskItem, FileDialog/DirectoryDialog, printing.PrintDialog/PrinterData/Printer, and the emulated ExpandBar/
+ExpandItem, ToolTip, CoolBar/CoolItem (source roots `emulated/{tooltip,coolbar,expand}` and `Eclipse SWT Printing`), the
+accessibility events/listeners/adapters and `ACC`, custom CLabel/CCombo/CTabFolder/CTabItem (+ renderer, layout, events).
+`Accessible` stays a stub: `Add*Listener` and `SetFocus` are no-ops (`widgets_stubs2_manual.go`); PDFDocument/PageSize (a
+record) are not translated.
+
+Tabs, in ControlExample's own order: added CoolBar, DateTime, Dialog, ExpandBar, Link, ProgressBar, Scale, Slider, Spinner,
+System, ToolBar, ToolTip (25 of its 26; Browser is not). CLabel/CCombo/CTabFolder belong to CustomControlExample, which is not ported.
+JUnit classes added: Scale, Slider, Spinner, ProgressBar, Link, ToolBar, ToolItem, ExpandBar, ExpandItem, CoolBar, CoolItem,
+DateTime (+ Style_CALENDAR/DATE/TIME), FileDialog, DirectoryDialog, custom CLabel/CCombo/CTabFolder/CTabItem, and the bases
+Item and Dialog: 1519 registered tests in all.
+
+Translator rules:
+
+- **Foreign superclass** (`TypeModel.ClassInfo.foreignSuper`, `TypeModel.build`): a named class whose translated superclass lands in
+  another Go package (`DropDownSelectionListener extends SelectionAdapter`) is not a cascade child of it - the base was emitted
+  without knowing it (before this, the base looked like it had an `impl`, and every anonymous subclass got a `SetImpl_` the base
+  lacks). It embeds `*swt.Base`, constructs it with the public `New<Base>` (+ `SetImpl_` when the base has a cascade), overrides
+  cascade methods by the base's hook name, and upcasts to the base by field (`ClassEmitter`, `ConstructorEmitter.foreignSuperInit`,
+  `NumericEmitter.upcastObject`). A same-package anonymous subclass assigned to its base class type upcasts to `&anon.Base`.
+- `Objects.equals` on non-strings is `jrt.ObjectsEquals` (`JdkIntrinsics`); `String.lastIndexOf(String)`, `split`, `replace`,
+  `format`, `Character.isDigit/isWhitespace/isLetter/toLowerCase/toUpperCase`, `Double.compare/toString`, `Arrays.copyOf`
+  (`JdkCalls`, `jrt/text.go`, `jrt/util.go`); `StringTokenizer`, `Map.Entry`, `Set` are manual types (`Manual`).
+- `Map.entrySet()` is a `*jrt.List` of `*jrt.MapEntry` in ascending int32 key order (a HashMap of small Integers iterates so);
+  other key types come out unordered.
+
+Ceilings: `TrayItem`/`Tray`/`TaskBar` are translated but were never run; `Character.isWhitespace` is `unicode.IsSpace`;
+`String.format` covers only the conversions Go shares with Java.

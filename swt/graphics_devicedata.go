@@ -2,12 +2,46 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
+type DeviceDataImpl interface {
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type deviceDataHooked struct {
+	DeviceDataImpl
+	hook   DeviceDataImpl
+	active string
+}
+
+func (this *deviceDataHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
 type DeviceData struct {
 	Debug    bool
 	Tracking bool
 	Errors   []error
 	Objects  []any
+	impl     DeviceDataImpl
 }
+
+func (this *DeviceData) Impl() DeviceDataImpl {
+	if h, ok := this.impl.(*deviceDataHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *DeviceData) SetImpl_(impl DeviceDataImpl) {
+	this.impl = &deviceDataHooked{DeviceDataImpl: this.impl, hook: impl}
+}
+
+func init() { jrt.RegisterClassPackage("DeviceData", "org.eclipse.swt.graphics") }
 
 func (this *DeviceData) AsDeviceData() *DeviceData { return this }
 
@@ -17,6 +51,7 @@ type DeviceDataLike interface {
 
 func NewDeviceData() *DeviceData {
 	this := &DeviceData{}
+	this.impl = this
 	this.initDeviceData()
 	return this
 }

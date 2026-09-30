@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ModifyEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("ModifyEvent", "org.eclipse.swt.events") }
 
 func (this *ModifyEvent) AsModifyEvent() *ModifyEvent { return this }
 

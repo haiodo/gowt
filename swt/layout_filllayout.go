@@ -18,6 +18,8 @@ type FillLayout struct {
 	Spacing      int32
 }
 
+func init() { jrt.RegisterClassPackage("FillLayout", "org.eclipse.swt.layout") }
+
 func (this *FillLayout) AsFillLayout() *FillLayout { return this }
 
 type FillLayoutLike interface {
@@ -56,7 +58,7 @@ func (this *FillLayout) initFillLayoutType(type_ int32) {
 }
 
 func (this *FillLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
-	var children []*Control = composite.GetChildren()
+	var children []*Control = composite.impl.getChildren_()
 	var count int32 = int32(len(children))
 	var maxWidth int32 = 0
 	var maxHeight int32 = 0
@@ -172,7 +174,7 @@ func (this *FillLayout) GetName() string {
 
 func (this *FillLayout) layoutFn_(composite *Composite, flushCache bool) {
 	var rect *Rectangle = composite.impl.getClientArea_()
-	var children []*Control = composite.GetChildren()
+	var children []*Control = composite.impl.getChildren_()
 	var count int32 = int32(len(children))
 	if count == 0 {
 		return
@@ -300,6 +302,11 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	case *CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
 	case *Group:
 		if v == nil {
 			return nil, false
@@ -330,7 +337,42 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	case *Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *CTabFolder:
 		if v == nil {
 			return nil, false
 		}

@@ -87,12 +87,21 @@ final class ConstructorEmitter {
 			String initName = emitter.names.goMemberName(zeroArg, "init" + ci.superclass.goFuncPrefix);
 			return "\tthis." + ci.superclass.goTypeName + "." + initName + "()\n";
 		}
+		if (ci.foreignSuper != null) return foreignSuperInit(ci, findZeroArgCtor(ci.foreignSuper.binding), List.of());
 		if (ci.manualSuperQualifiedName != null) {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			return "\tthis." + Manual.manualSuperFieldName(ci.manualSuperQualifiedName) + " = "
 					+ Manual.ctorFuncName(ci.manualSuperQualifiedName) + "()\n";
 		}
 		return "";
+	}
+
+	/** The base's exported constructor and, when the base has a cascade, SetImpl_ (its impl and init are unexported). */
+	private String foreignSuperInit(TypeModel.ClassInfo ci, IMethodBinding ctor, List<String> args) {
+		TypeModel.ClassInfo f = ci.foreignSuper;
+		String name = emitter.ctorGoName(ctor, emitter.qualify("New" + f.goFuncPrefix, f));
+		return "\tthis." + f.goTypeName + " = " + name + "(" + String.join(", ", args) + ")\n"
+				+ (f.root.children.isEmpty() ? "" : "\tthis.SetImpl_(this)\n");
 	}
 
 	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td) {
@@ -166,9 +175,10 @@ final class ConstructorEmitter {
 		IMethodBinding mb = sci.resolveConstructorBinding();
 		// An explicit `super();` with no translated/manual superclass at all is just Java's
 		// implicit java.lang.Object() - a real no-op, not a gap (GridData.java has these).
-		if (ci.superclass == null && ci.manualSuperQualifiedName == null) return "";
+		if (ci.superclass == null && ci.foreignSuper == null && ci.manualSuperQualifiedName == null) return "";
 		StringBuilder out = new StringBuilder();
 		List<String> args = hoistArgs(sci.arguments(), mb, out);
+		if (ci.foreignSuper != null) return out + foreignSuperInit(ci, mb, args);
 		if (ci.superclass == null && ci.manualSuperQualifiedName != null) {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			return out + "\tthis." + Manual.manualSuperFieldName(ci.manualSuperQualifiedName) + " = "
@@ -210,7 +220,13 @@ final class ConstructorEmitter {
 				return emitter.anonThis + "." + baseCi.goTypeName + "." + base + "(" + String.join(", ", args) + ")";
 			}
 		}
-		if (emitter.currentClassInfo.superclass != null) {
+		if (emitter.currentClassInfo.foreignSuper != null) {
+			// The public natural-name call reaches the default while the hook wrapper runs this method.
+			TypeModel.ClassInfo fs = emitter.currentClassInfo.foreignSuper;
+			TypeModel.ClassInfo point = fs.overridePoint(TypeModel.signature(mb));
+			if (point != null) base = emitter.names.goMemberName(point.declaredBinding(TypeModel.signature(mb)), Names.javaMethodBaseGoName(smi.getName().getIdentifier()));
+			fieldPath = fs.goTypeName;
+		} else if (emitter.currentClassInfo.superclass != null) {
 			fieldPath = emitter.currentClassInfo.superclass.goTypeName;
 		} else if (emitter.currentClassInfo.manualSuperQualifiedName != null) {
 			emitter.addManualImport(emitter.currentClassInfo.manualSuperQualifiedName);

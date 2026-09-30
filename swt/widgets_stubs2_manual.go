@@ -1,18 +1,10 @@
-// Hand-written opaque stubs for the rest of manual.txt's list: ToolBar/IME (Composite/
+// Hand-written opaque stubs for the rest of manual.txt's list: IME (Composite/
 // Canvas/Decorations/Shell/Button's own field types, not translated yet), plus the graphics/
 // accessibility leaf types Control.java reads fields off of. Composite/Canvas/Decorations/Shell
 // are real as of Round 5, Menu/MenuItem as of Round 7, ScrollBar as of Round 8, Caret as of Round 10.
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"
-
-// ToolBar: only ever stored/returned by Shell, never otherwise touched on this round's path.
-type ToolBar struct {
-	Composite
-	itemCount int32
-}
-
-func NewToolBar(parent *Composite, style int32, internal bool) *ToolBar { return &ToolBar{} }
 
 // IME: Canvas.java null-checks it before every use, so a nil *IME is "no IME". Every param is a
 // raw objc-runtime int64 handle (id/SEL/pointer), matching IME.java's native-bridge signatures.
@@ -74,8 +66,11 @@ func (a *Accessible) Internal_accessibilitySetValue_forAttribute(value *cocoa.Id
 func (a *Accessible) Internal_addRelationAttributes(attributes int64) int64 { return attributes }
 func (a *Accessible) Internal_dispose_Accessible()                          {}
 
-// org.eclipse.swt.accessibility.ACC.CHILDID_SELF - the only ACC member the translated set reads.
-const ACCCHILDID_SELF int32 = -1
+// The listeners are not stored: no accessibility tree is built (custom widgets register them at creation).
+func (a *Accessible) AddAccessibleListener(l AccessibleListener)               {}
+func (a *Accessible) AddAccessibleControlListener(l AccessibleControlListener) {}
+func (a *Accessible) AddAccessibleTextListener(l AccessibleTextListener)       {}
+func (a *Accessible) SetFocus(childID int32)                                   {}
 
 // org.eclipse.swt.internal.WidgetSpy: creation/disposal tracking, off by default (matches the
 // real class's own isEnabled starting false).

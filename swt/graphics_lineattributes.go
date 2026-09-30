@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -15,6 +16,8 @@ type LineAttributes struct {
 	DashOffset float32
 	MiterLimit float32
 }
+
+func init() { jrt.RegisterClassPackage("LineAttributes", "org.eclipse.swt.graphics") }
 
 func (this *LineAttributes) AsLineAttributes() *LineAttributes { return this }
 
@@ -62,8 +65,8 @@ func (this *LineAttributes) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	p, ok373 := lineAttributesImplAsLineAttributes(object)
-	if !(ok373) {
+	p, ok375 := lineAttributesImplAsLineAttributes(object)
+	if !(ok375) {
 		return false
 	}
 	if p.Width != this.Width {

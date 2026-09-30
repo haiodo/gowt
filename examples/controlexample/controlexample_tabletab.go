@@ -283,7 +283,7 @@ func (this *TableTab) createOtherGroup_() {
 		this.SetWidgetLinesVisible()
 	}))
 	this.multipleColumns.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.RecreateExampleWidgets()
+		this.impl.recreateExampleWidgets_()
 	}))
 	this.headerVisibleButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
 		this.SetWidgetHeaderVisible()
@@ -298,10 +298,10 @@ func (this *TableTab) createOtherGroup_() {
 		this.SetColumnsResizable()
 	}))
 	this.headerImagesButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.RecreateExampleWidgets()
+		this.impl.recreateExampleWidgets_()
 	}))
 	this.subImagesButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.RecreateExampleWidgets()
+		this.impl.recreateExampleWidgets_()
 	}))
 	this.editableButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
 		this.MakeTableContentEditable()

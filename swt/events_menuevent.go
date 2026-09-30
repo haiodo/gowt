@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type MenuEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("MenuEvent", "org.eclipse.swt.events") }
 
 func (this *MenuEvent) AsMenuEvent() *MenuEvent { return this }
 

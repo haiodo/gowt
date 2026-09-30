@@ -344,10 +344,23 @@ final class ExpressionEmitter {
 		}
 		// new T[n]: a sized, zero-valued array - {} is a Go LENGTH-0 slice, not one of length n.
 		java.util.List<?> dims = ac.dimensions();
+		// new T[a][b]: every inner row is allocated too (Java zero-fills the whole rectangle).
+		if (dims.size() > 1 && ac.resolveTypeBinding().getDimensions() >= dims.size()) {
+			return multiDim(ac.resolveTypeBinding(), dims, 0);
+		}
 		if (!dims.isEmpty() && dims.get(0) != null) {
 			return "make(" + goType + ", " + emitExpr((Expression) dims.get(0)) + ")";
 		}
 		return goType + "{}";
+	}
+
+	private String multiDim(ITypeBinding t, java.util.List<?> dims, int i) {
+		String goType = dev.gowt.j2go.GoTypes.map(t, emitter);
+		String n = emitExpr((Expression) dims.get(i));
+		if (i == dims.size() - 1) return "make(" + goType + ", " + n + ")";
+		String v = "a" + (++emitter.tempCounter);
+		return "func() " + goType + " { " + v + " := make(" + goType + ", " + n + "); for i := range " + v + " { " + v + "[i] = "
+				+ multiDim(t.getComponentType(), dims, i + 1) + " }; return " + v + " }()";
 	}
 
 	private String emitArrayInitializer(ArrayInitializer ai, ITypeBinding arrayType) {

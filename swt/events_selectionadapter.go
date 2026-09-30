@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type SelectionAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("SelectionAdapter", "org.eclipse.swt.events") }
 
 func (this *SelectionAdapter) AsSelectionAdapter() *SelectionAdapter { return this }
 

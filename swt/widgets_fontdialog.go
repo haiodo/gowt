@@ -53,7 +53,7 @@ func NewFontDialogParentStyle(parentLike ShellLike, style int32) *FontDialog {
 func (this *FontDialog) initFontDialogParentStyle(parent *Shell, style int32) {
 	this.Dialog.initDialogParentStyle(parent, DialogCheckStyle(parent, style))
 	this.effectsVisible = true
-	this.CheckSubclass()
+	this.impl.checkSubclass_()
 }
 
 func (this *FontDialog) ChangeFont(id int64, sel int64, arg0 int64) {
@@ -89,13 +89,13 @@ func (this *FontDialog) Open() *FontData {
 		display = DisplayGetCurrent()
 	}
 	var panel *cocoa.NSFontPanel = cocoa.NSFontPanelSharedFontPanel()
-	var cond556 string
+	var cond558 string
 	if this.title != "" {
-		cond556 = this.title
+		cond558 = this.title
 	} else {
-		cond556 = ""
+		cond558 = ""
 	}
-	panel.Impl().SetTitle(cocoa.NSStringStringWith(cond556))
+	panel.Impl().SetTitle(cocoa.NSStringStringWith(cond558))
 	var create bool = this.fontData != (nil)
 	var font *Font
 	if create {
@@ -183,13 +183,13 @@ func (this *FontDialog) SetRGB(rgbLike RGBLike) {
 }
 
 func (this *FontDialog) ValidModesForFontPanel(id int64, sel int64, arg0 int64) int32 {
-	var cond557 int32
+	var cond559 int32
 	if this.effectsVisible {
-		cond557 = cocoa.OSNSFontPanelModeMaskAllModes
+		cond559 = cocoa.OSNSFontPanelModeMaskAllModes
 	} else {
-		cond557 = cocoa.OSNSFontPanelModeMaskAllModes & ^cocoa.OSNSFontPanelModeMaskAllEffects
+		cond559 = cocoa.OSNSFontPanelModeMaskAllModes & ^cocoa.OSNSFontPanelModeMaskAllEffects
 	}
-	return cond557
+	return cond559
 }
 
 func (this *FontDialog) WindowWillClose(id int64, sel int64, sender int64) {

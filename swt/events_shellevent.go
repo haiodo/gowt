@@ -12,6 +12,8 @@ type ShellEvent struct {
 	Doit bool
 }
 
+func init() { jrt.RegisterClassPackage("ShellEvent", "org.eclipse.swt.events") }
+
 func (this *ShellEvent) AsShellEvent() *ShellEvent { return this }
 
 type ShellEventLike interface {

@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type FillData struct {
 	defaultWidth  int32
 	defaultHeight int32
@@ -10,6 +14,8 @@ type FillData struct {
 	currentWidth  int32
 	currentHeight int32
 }
+
+func init() { jrt.RegisterClassPackage("FillData", "org.eclipse.swt.layout") }
 
 func (this *FillData) AsFillData() *FillData { return this }
 

@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type GCData struct {
@@ -48,6 +49,8 @@ type GCData struct {
 	FlippedContext    *cocoa.NSGraphicsContext
 	RestoreContext    bool
 }
+
+func init() { jrt.RegisterClassPackage("GCData", "org.eclipse.swt.graphics") }
 
 func (this *GCData) AsGCData() *GCData { return this }
 

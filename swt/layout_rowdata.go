@@ -15,6 +15,8 @@ type RowData struct {
 	Exclude bool
 }
 
+func init() { jrt.RegisterClassPackage("RowData", "org.eclipse.swt.layout") }
+
 func (this *RowData) AsRowData() *RowData { return this }
 
 type RowDataLike interface {

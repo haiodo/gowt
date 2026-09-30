@@ -21,6 +21,8 @@ type GestureEvent struct {
 	Doit          bool
 }
 
+func init() { jrt.RegisterClassPackage("GestureEvent", "org.eclipse.swt.events") }
+
 func (this *GestureEvent) AsGestureEvent() *GestureEvent { return this }
 
 type GestureEventLike interface {

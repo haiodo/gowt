@@ -31,6 +31,9 @@ public class TypeModel {
 		// Non-null when the Java superclass is external but manual-embeddable (SWTException
 		// extends RuntimeException) - see Manual.isManualSuper / README "Manual superclass embedding".
 		public String manualSuperQualifiedName;
+		// A translated superclass in another Go package (a widget subclass in an example or test): the
+		// base was emitted without knowing it, so it is not a cascade parent (like an anonymous subclass).
+		public ClassInfo foreignSuper;
 		public final List<ClassInfo> children = new ArrayList<>();
 		final Set<String> declaredMethodNames = new LinkedHashSet<>();
 		// signature ("name(erasedParamType,...)") -> binding, this class's own declarations only.
@@ -194,6 +197,10 @@ public class TypeModel {
 		for (ClassInfo ci : byBinaryName.values()) {
 			ITypeBinding superBinding = ci.binding.getSuperclass();
 			ci.superclass = superBinding == null ? null : byBinaryName.get(superBinding.getErasure().getBinaryName());
+			if (ci.superclass != null && !ci.superclass.goPackage.equals(ci.goPackage)) {
+				ci.foreignSuper = ci.superclass;
+				ci.superclass = null;
+			}
 			if (ci.superclass != null) ci.superclass.children.add(ci);
 			if (ci.superclass == null && superBinding != null) {
 				String q = superBinding.getErasure().getQualifiedName();

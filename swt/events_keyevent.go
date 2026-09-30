@@ -17,6 +17,8 @@ type KeyEvent struct {
 	Doit        bool
 }
 
+func init() { jrt.RegisterClassPackage("KeyEvent", "org.eclipse.swt.events") }
+
 func (this *KeyEvent) AsKeyEvent() *KeyEvent { return this }
 
 type KeyEventLike interface {

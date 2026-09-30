@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type TreeEvent struct {
 	SelectionEvent
 }
+
+func init() { jrt.RegisterClassPackage("TreeEvent", "org.eclipse.swt.events") }
 
 func (this *TreeEvent) AsTreeEvent() *TreeEvent { return this }
 

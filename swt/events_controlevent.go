@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ControlEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("ControlEvent", "org.eclipse.swt.events") }
 
 func (this *ControlEvent) AsControlEvent() *ControlEvent { return this }
 

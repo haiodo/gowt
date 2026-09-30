@@ -14,6 +14,7 @@ import (
 
 type Test_org_eclipse_swt_widgets_WidgetImpl interface {
 	setUp_()
+	tearDown_()
 	setWidget_(a0 *swt.Widget)
 	test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
 	test_computeSizeIIZ_()
@@ -21,22 +22,35 @@ type Test_org_eclipse_swt_widgets_WidgetImpl interface {
 	test_getParent_()
 	test_getShell_()
 	test_isEnabled_()
+	test_isFocusControl_()
 	test_isReparentable_()
 	test_isVisible_()
+	test_redraw_()
+	test_redrawIIIIZ_()
+	test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 	test_setBoundsIIII_()
 	test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
 	test_setEnabledZ_()
 	test_setFocus_()
 	test_setFontLorg_eclipse_swt_graphics_Font_()
+	test_setForegroundLorg_eclipse_swt_graphics_Color_()
 	test_setLocationII_()
 	test_setLocationLorg_eclipse_swt_graphics_Point_()
 	test_setRedrawZ_()
 	test_setSizeII_()
 	test_setSizeLorg_eclipse_swt_graphics_Point_()
+	test_setToolTipTextLjava_lang_String_()
 	test_setVisibleZ_()
 	test_computeTrimIIII_()
 	test_getClientArea_()
 	test_getChildren_()
+	test_setFocus_toChild_afterOpen_()
+	test_setFocus_toChild_beforeOpen_()
+	getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite
+	test_consistency_MenuDetect_()
+	test_consistency_DragDetect_()
+	test_setImageLorg_eclipse_swt_graphics_Image_()
+	test_setTextLjava_lang_String_()
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_ConstructorLorg_eclipse_swt_widgets_CompositeI_() {
@@ -63,12 +77,28 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_isEnabled_() {
 	panic("j2go: test_isEnabled_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
+func (this *Test_org_eclipse_swt_widgets_Widget) test_isFocusControl_() {
+	panic("j2go: test_isFocusControl_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
 func (this *Test_org_eclipse_swt_widgets_Widget) test_isReparentable_() {
 	panic("j2go: test_isReparentable_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_isVisible_() {
 	panic("j2go: test_isVisible_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_redraw_() {
+	panic("j2go: test_redraw_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_redrawIIIIZ_() {
+	panic("j2go: test_redrawIIIIZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setBackgroundLorg_eclipse_swt_graphics_Color_() {
+	panic("j2go: test_setBackgroundLorg_eclipse_swt_graphics_Color_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_setBoundsIIII_() {
@@ -91,6 +121,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_setFontLorg_eclipse_swt_gr
 	panic("j2go: test_setFontLorg_eclipse_swt_graphics_Font_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setForegroundLorg_eclipse_swt_graphics_Color_() {
+	panic("j2go: test_setForegroundLorg_eclipse_swt_graphics_Color_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
 func (this *Test_org_eclipse_swt_widgets_Widget) test_setLocationII_() {
 	panic("j2go: test_setLocationII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
@@ -111,6 +145,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_setSizeLorg_eclipse_swt_gr
 	panic("j2go: test_setSizeLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setToolTipTextLjava_lang_String_() {
+	panic("j2go: test_setToolTipTextLjava_lang_String_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
 func (this *Test_org_eclipse_swt_widgets_Widget) test_setVisibleZ_() {
 	panic("j2go: test_setVisibleZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
@@ -125,6 +163,34 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_getClientArea_() {
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_getChildren_() {
 	panic("j2go: test_getChildren_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_toChild_afterOpen_() {
+	panic("j2go: test_setFocus_toChild_afterOpen_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_toChild_beforeOpen_() {
+	panic("j2go: test_setFocus_toChild_beforeOpen_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite {
+	panic("j2go: getElementExpectedToHaveFocusAfterSetFocusOnParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_consistency_MenuDetect_() {
+	panic("j2go: test_consistency_MenuDetect_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_consistency_DragDetect_() {
+	panic("j2go: test_consistency_DragDetect_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setImageLorg_eclipse_swt_graphics_Image_() {
+	panic("j2go: test_setImageLorg_eclipse_swt_graphics_Image_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setTextLjava_lang_String_() {
+	panic("j2go: test_setTextLjava_lang_String_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -146,6 +212,14 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) setUp_() {
 		h.SetUp_()
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.setUp_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) tearDown_() {
+	if h, ok := this.hook.(interface{ TearDown_() }); ok && this.active != "tearDown_" {
+		defer this.enter("tearDown_")()
+		h.TearDown_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.tearDown_()
 }
 
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) setWidget_(a0 *swt.Widget) {
@@ -196,6 +270,14 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isEnabled_() {
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isEnabled_()
 }
 
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isFocusControl_() {
+	if h, ok := this.hook.(interface{ Test_isFocusControl_() }); ok && this.active != "test_isFocusControl_" {
+		defer this.enter("test_isFocusControl_")()
+		h.Test_isFocusControl_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isFocusControl_()
+}
+
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isReparentable_() {
 	if h, ok := this.hook.(interface{ Test_isReparentable_() }); ok && this.active != "test_isReparentable_" {
 		defer this.enter("test_isReparentable_")()
@@ -210,6 +292,30 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isVisible_() {
 		h.Test_isVisible_()
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isVisible_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_redraw_() {
+	if h, ok := this.hook.(interface{ Test_redraw_() }); ok && this.active != "test_redraw_" {
+		defer this.enter("test_redraw_")()
+		h.Test_redraw_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_redraw_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_redrawIIIIZ_() {
+	if h, ok := this.hook.(interface{ Test_redrawIIIIZ_() }); ok && this.active != "test_redrawIIIIZ_" {
+		defer this.enter("test_redrawIIIIZ_")()
+		h.Test_redrawIIIIZ_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_redrawIIIIZ_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBackgroundLorg_eclipse_swt_graphics_Color_() {
+	if h, ok := this.hook.(interface{ Test_setBackgroundLorg_eclipse_swt_graphics_Color_() }); ok && this.active != "test_setBackgroundLorg_eclipse_swt_graphics_Color_" {
+		defer this.enter("test_setBackgroundLorg_eclipse_swt_graphics_Color_")()
+		h.Test_setBackgroundLorg_eclipse_swt_graphics_Color_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 }
 
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBoundsIIII_() {
@@ -252,6 +358,14 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFontLorg_eclipse_
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFontLorg_eclipse_swt_graphics_Font_()
 }
 
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setForegroundLorg_eclipse_swt_graphics_Color_() {
+	if h, ok := this.hook.(interface{ Test_setForegroundLorg_eclipse_swt_graphics_Color_() }); ok && this.active != "test_setForegroundLorg_eclipse_swt_graphics_Color_" {
+		defer this.enter("test_setForegroundLorg_eclipse_swt_graphics_Color_")()
+		h.Test_setForegroundLorg_eclipse_swt_graphics_Color_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setForegroundLorg_eclipse_swt_graphics_Color_()
+}
+
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setLocationII_() {
 	if h, ok := this.hook.(interface{ Test_setLocationII_() }); ok && this.active != "test_setLocationII_" {
 		defer this.enter("test_setLocationII_")()
@@ -292,6 +406,14 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setSizeLorg_eclipse_
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setSizeLorg_eclipse_swt_graphics_Point_()
 }
 
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setToolTipTextLjava_lang_String_() {
+	if h, ok := this.hook.(interface{ Test_setToolTipTextLjava_lang_String_() }); ok && this.active != "test_setToolTipTextLjava_lang_String_" {
+		defer this.enter("test_setToolTipTextLjava_lang_String_")()
+		h.Test_setToolTipTextLjava_lang_String_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setToolTipTextLjava_lang_String_()
+}
+
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setVisibleZ_() {
 	if h, ok := this.hook.(interface{ Test_setVisibleZ_() }); ok && this.active != "test_setVisibleZ_" {
 		defer this.enter("test_setVisibleZ_")()
@@ -322,6 +444,64 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getChildren_() {
 		h.Test_getChildren_()
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getChildren_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_toChild_afterOpen_() {
+	if h, ok := this.hook.(interface{ Test_setFocus_toChild_afterOpen_() }); ok && this.active != "test_setFocus_toChild_afterOpen_" {
+		defer this.enter("test_setFocus_toChild_afterOpen_")()
+		h.Test_setFocus_toChild_afterOpen_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_toChild_afterOpen_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_toChild_beforeOpen_() {
+	if h, ok := this.hook.(interface{ Test_setFocus_toChild_beforeOpen_() }); ok && this.active != "test_setFocus_toChild_beforeOpen_" {
+		defer this.enter("test_setFocus_toChild_beforeOpen_")()
+		h.Test_setFocus_toChild_beforeOpen_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_toChild_beforeOpen_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite {
+	if h, ok := this.hook.(interface {
+		GetElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite
+	}); ok && this.active != "getElementExpectedToHaveFocusAfterSetFocusOnParent_" {
+		defer this.enter("getElementExpectedToHaveFocusAfterSetFocusOnParent_")()
+		return h.GetElementExpectedToHaveFocusAfterSetFocusOnParent_(a0)
+	}
+	return this.Test_org_eclipse_swt_widgets_WidgetImpl.getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0)
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_consistency_MenuDetect_() {
+	if h, ok := this.hook.(interface{ Test_consistency_MenuDetect_() }); ok && this.active != "test_consistency_MenuDetect_" {
+		defer this.enter("test_consistency_MenuDetect_")()
+		h.Test_consistency_MenuDetect_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_consistency_MenuDetect_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_consistency_DragDetect_() {
+	if h, ok := this.hook.(interface{ Test_consistency_DragDetect_() }); ok && this.active != "test_consistency_DragDetect_" {
+		defer this.enter("test_consistency_DragDetect_")()
+		h.Test_consistency_DragDetect_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_consistency_DragDetect_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setImageLorg_eclipse_swt_graphics_Image_() {
+	if h, ok := this.hook.(interface{ Test_setImageLorg_eclipse_swt_graphics_Image_() }); ok && this.active != "test_setImageLorg_eclipse_swt_graphics_Image_" {
+		defer this.enter("test_setImageLorg_eclipse_swt_graphics_Image_")()
+		h.Test_setImageLorg_eclipse_swt_graphics_Image_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setImageLorg_eclipse_swt_graphics_Image_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setTextLjava_lang_String_() {
+	if h, ok := this.hook.(interface{ Test_setTextLjava_lang_String_() }); ok && this.active != "test_setTextLjava_lang_String_" {
+		defer this.enter("test_setTextLjava_lang_String_")()
+		h.Test_setTextLjava_lang_String_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setTextLjava_lang_String_()
 }
 
 type Test_org_eclipse_swt_widgets_Widget struct {
@@ -368,6 +548,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) setUp_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) TearDown() {
+	this.impl.tearDown_()
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) tearDown_() {
 	if this.widget != (nil) {
 		junit.AssertEquals(this.disposedIntentionally, this.widget.IsDisposed())
 	}
@@ -433,8 +617,8 @@ func (this *Test_org_eclipse_swt_widgets_Widget) Test_notifyListenersILorg_eclip
 	this.widget.NotifyListeners(0, nil)
 	var event *swt.Event = swt.NewEvent()
 	var gc *swt.GC = nil
-	_, ok50 := isswtWidgetToswtControl(this.widget)
-	if ok50 {
+	_, ok51 := isswtWidgetToswtControl(this.widget)
+	if ok51 {
 		event.Gc = swt.NewGCDrawable(castswtWidgetToswtControl(this.widget))
 		gc = event.Gc
 	}
@@ -596,8 +780,8 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 		display = displayLike.AsDisplay()
 	}
 	_ = display
-	var tret51 []*swt.Widget
-	tretd52 := false
+	var tret52 []*swt.Widget
+	tretd53 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -607,8 +791,8 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 			if t, ok := r.(error); ok {
 				_ = t
 				fmt.Fprintln(os.Stderr, t)
-				tret51 = nil
-				tretd52 = true
+				tret52 = nil
+				tretd53 = true
 				return
 			} else {
 				panic(r)
@@ -620,12 +804,12 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 		}()
 		func() any { _ = []any{field, true}; panic("j2go: unresolved call setAccessible") }()
 		var widgetTable []*swt.Widget = func() any { _ = []any{field, display}; panic("j2go: unresolved call get") }().([]*swt.Widget)
-		tret51 = widgetTable
-		tretd52 = true
+		tret52 = widgetTable
+		tretd53 = true
 		return
 	}()
-	_ = tretd52
-	return tret51
+	_ = tretd53
+	return tret52
 }
 
 // j2go: func adapter for DisposeListener.
@@ -670,6 +854,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *swt.Group:
 		if v == nil {
 			return nil, false
@@ -700,7 +889,42 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *swt.Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CTabFolder:
 		if v == nil {
 			return nil, false
 		}
@@ -726,6 +950,26 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.Sash:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Scale:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Slider:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ProgressBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Link:
 		if v == nil {
 			return nil, false
 		}

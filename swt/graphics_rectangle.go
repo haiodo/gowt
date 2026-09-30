@@ -51,6 +51,8 @@ func (this *Rectangle) SetImpl_(impl RectangleImpl) {
 	this.impl = &rectangleHooked{RectangleImpl: this.impl, hook: impl}
 }
 
+func init() { jrt.RegisterClassPackage("Rectangle", "org.eclipse.swt.graphics") }
+
 func (this *Rectangle) AsRectangle() *Rectangle { return this }
 
 type RectangleLike interface {
@@ -428,6 +430,8 @@ type Rectangle_OfFloat struct {
 	sizeRounding     RoundingMode
 }
 
+func init() { jrt.RegisterClassPackage("Rectangle_OfFloat", "org.eclipse.swt.graphics") }
+
 func (this *Rectangle_OfFloat) AsRectangle_OfFloat() *Rectangle_OfFloat { return this }
 
 type Rectangle_OfFloatLike interface {
@@ -546,6 +550,8 @@ type Rectangle_WithMonitor struct {
 	Rectangle_OfFloat
 	monitor *Monitor
 }
+
+func init() { jrt.RegisterClassPackage("Rectangle_WithMonitor", "org.eclipse.swt.graphics") }
 
 func (this *Rectangle_WithMonitor) AsRectangle_WithMonitor() *Rectangle_WithMonitor { return this }
 

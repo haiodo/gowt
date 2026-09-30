@@ -14,6 +14,8 @@ type ImageLoaderEvent struct {
 	EndOfImage     bool
 }
 
+func init() { jrt.RegisterClassPackage("ImageLoaderEvent", "org.eclipse.swt.graphics") }
+
 func (this *ImageLoaderEvent) AsImageLoaderEvent() *ImageLoaderEvent { return this }
 
 type ImageLoaderEventLike interface {

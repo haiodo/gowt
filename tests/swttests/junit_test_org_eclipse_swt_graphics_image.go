@@ -29,46 +29,46 @@ func NewTest_org_eclipse_swt_graphics_Image() *Test_org_eclipse_swt_graphics_Ima
 
 func (this *Test_org_eclipse_swt_graphics_Image) initTest_org_eclipse_swt_graphics_Image() {
 	this.imageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var sw21 string
+		var sw22 string
 		switch zoom {
 		case 100:
-			sw21 = "collapseall.png"
+			sw22 = "collapseall.png"
 		case 150:
-			sw21 = "collapseall@1.5x.png"
+			sw22 = "collapseall@1.5x.png"
 		case 200:
-			sw21 = "collapseall@2x.png"
+			sw22 = "collapseall@2x.png"
 		default:
-			sw21 = ""
+			sw22 = ""
 		}
-		var fileName string = sw21
-		var cond22 string
+		var fileName string = sw22
+		var cond23 string
 		if fileName != "" {
-			cond22 = Test_org_eclipse_swt_graphics_ImageGetPath(fileName)
+			cond23 = Test_org_eclipse_swt_graphics_ImageGetPath(fileName)
 		} else {
-			cond22 = ""
+			cond23 = ""
 		}
-		return cond22
+		return cond23
 	}}
 	this.imageDataProvider = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
-		var sw23 string
+		var sw24 string
 		switch zoom {
 		case 100:
-			sw23 = "collapseall.png"
+			sw24 = "collapseall.png"
 		case 150:
-			sw23 = "collapseall@1.5x.png"
+			sw24 = "collapseall@1.5x.png"
 		case 200:
-			sw23 = "collapseall@2x.png"
+			sw24 = "collapseall@2x.png"
 		default:
-			sw23 = ""
+			sw24 = ""
 		}
-		var fileName string = sw23
-		var cond24 *swt.ImageData
+		var fileName string = sw24
+		var cond25 *swt.ImageData
 		if fileName != "" {
-			cond24 = swt.NewImageDataFilename(Test_org_eclipse_swt_graphics_ImageGetPath(fileName))
+			cond25 = swt.NewImageDataFilename(Test_org_eclipse_swt_graphics_ImageGetPath(fileName))
 		} else {
-			cond24 = nil
+			cond25 = nil
 		}
-		return cond24
+		return cond25
 	}}
 	this.imageDataProvider1xOnly = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
 		if zoom == 100 {
@@ -394,21 +394,21 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var image *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), this.imageFileNameProvider)
 	image.Dispose()
 	var provider3 swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var sw25 string
+		var sw26 string
 		switch zoom {
 		case 100, 150, 200:
-			sw25 = "corrupt.png"
+			sw26 = "corrupt.png"
 		default:
-			sw25 = ""
+			sw26 = ""
 		}
-		var fileName string = sw25
-		var cond26 string
+		var fileName string = sw26
+		var cond27 string
 		if fileName != "" {
-			cond26 = Test_org_eclipse_swt_graphics_ImageGetPath(fileName)
+			cond27 = Test_org_eclipse_swt_graphics_ImageGetPath(fileName)
 		} else {
-			cond26 = ""
+			cond27 = ""
 		}
-		return cond26
+		return cond27
 	}}
 	e = junit.AssertThrows[*swt.SWTException](func() {
 		swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), provider3)
@@ -441,14 +441,14 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var image *swt.Image = swt.NewImageDeviceImageDataProvider(upcastswtDisplayToswtDevice(this.display), this.imageDataProvider)
 	image.Dispose()
 	var provider3 swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
-		var sw27 *swt.ImageData
+		var sw28 *swt.ImageData
 		switch zoom {
 		case 100, 150, 200:
-			sw27 = swt.NewImageDataFilename(Test_org_eclipse_swt_graphics_ImageGetPath("corrupt.png"))
+			sw28 = swt.NewImageDataFilename(Test_org_eclipse_swt_graphics_ImageGetPath("corrupt.png"))
 		default:
-			sw27 = nil
+			sw28 = nil
 		}
-		return sw27
+		return sw28
 	}}
 	e = junit.AssertThrows[*swt.SWTException](func() {
 		swt.NewImageDeviceImageDataProvider(upcastswtDisplayToswtDevice(this.display), provider3)
@@ -466,14 +466,14 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataAtSizeProvider() {
 	var imageSize int32 = 10
-	anon28 := &Test_org_eclipse_swt_graphics_ImageAnon1{}
-	anon28.fnGetDefaultSize = func() *swt.Point {
+	anon29 := &Test_org_eclipse_swt_graphics_ImageAnon1{}
+	anon29.fnGetDefaultSize = func() *swt.Point {
 		return swt.NewPoint(imageSize, imageSize)
 	}
-	anon28.fnGetImageDataWidthHeight = func(width int32, height int32) *swt.ImageData {
+	anon29.fnGetImageDataWidthHeight = func(width int32, height int32) *swt.ImageData {
 		return swt.NewImageData(width, height, 32, swt.NewPaletteDataRedMaskGreenMaskBlueMask(0xFF0000, 0xFF00, 0xFF))
 	}
-	var provider swt.ImageDataAtSizeProvider = anon28
+	var provider swt.ImageDataAtSizeProvider = anon29
 	var image *swt.Image = swt.NewImageDeviceImageDataProvider(upcastswtDisplayToswtDevice(this.display), provider)
 	junit.AssertEquals(int32(imageSize), int32(image.GetBounds().Width))
 	junit.AssertEquals(int32(imageSize*2), int32(image.GetImageDataZoom(200).Width))
@@ -506,13 +506,13 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_fileNameProvider() {
 	var fileNameProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var cond29 string
+		var cond30 string
 		if zoom == 100 {
-			cond29 = Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")
+			cond30 = Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")
 		} else {
-			cond29 = ""
+			cond30 = ""
 		}
-		return cond29
+		return cond30
 	}}
 	var sourceImage *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), fileNameProvider)
 	var copiedImage *swt.Image = swt.NewImageDeviceSrcImageFlag(upcastswtDisplayToswtDevice(this.display), sourceImage, swt.IMAGE_COPY)
@@ -712,8 +712,8 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_getImageData_changingImage
 		defer func() {
 			images.ForEach((*swt.Image).Dispose)
 		}()
-		for _, elem30 := range images.ToArray() {
-			image := jrt.Cast[*swt.Image](elem30)
+		for _, elem31 := range images.ToArray() {
+			image := jrt.Cast[*swt.Image](elem31)
 			var originalImageData *swt.ImageData = image.GetImageData()
 			originalImageData.SetPixel(0, 0, originalImageData.GetPixel(0, 0)+1)
 			junit.AssertNotEquals(int32(image.GetImageData().GetPixel(0, 0)), int32(originalImageData.GetPixel(0, 0)))
@@ -1072,20 +1072,20 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaDifferentP
 	junit.AssumeFalse(SwtTestUtilIsCocoa, "Cocoa generates inconsistent image data")
 	var imagePath string = Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")
 	var imageFileNameProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var cond31 string
+		var cond32 string
 		if zoom == 100 {
-			cond31 = imagePath
+			cond32 = imagePath
 		} else {
-			cond31 = ""
+			cond32 = ""
 		}
-		return cond31
+		return cond32
 	}}
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
 		if zoom == 100 {
 			{
 				var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
-				var tret32 *swt.ImageData
-				tretd33 := false
+				var tret33 *swt.ImageData
+				tretd34 := false
 				func() {
 					defer imageStream.Close()
 					defer func() {
@@ -1106,12 +1106,12 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaDifferentP
 							panic(r)
 						}
 					}()
-					tret32 = swt.NewImageDataStream(imageStream)
-					tretd33 = true
+					tret33 = swt.NewImageDataStream(imageStream)
+					tretd34 = true
 					return
 				}()
-				if tretd33 {
-					return tret32
+				if tretd34 {
+					return tret33
 				}
 			}
 		}
@@ -1135,8 +1135,8 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaProviderAn
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(__ int32) *swt.ImageData {
 		{
 			var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
-			var tret34 *swt.ImageData
-			tretd35 := false
+			var tret35 *swt.ImageData
+			tretd36 := false
 			func() {
 				defer imageStream.Close()
 				defer func() {
@@ -1157,12 +1157,12 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaProviderAn
 						panic(r)
 					}
 				}()
-				tret34 = swt.NewImageDataStream(imageStream)
-				tretd35 = true
+				tret35 = swt.NewImageDataStream(imageStream)
+				tretd36 = true
 				return
 			}()
-			if tretd35 {
-				return tret34
+			if tretd36 {
+				return tret35
 			}
 		}
 		return nil
@@ -1233,13 +1233,13 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 	jrt.FilesCopy(jrt.PathOf(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.svg"), []string{}), sizableFile, []any{})
 	var currentFile *jrt.AtomicReference = jrt.NewAtomicReference(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"))
 	var switchingProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var cond36 string
+		var cond37 string
 		if zoom == 100 {
-			cond36 = jrt.Cast[string](currentFile.Get())
+			cond37 = jrt.Cast[string](currentFile.Get())
 		} else {
-			cond36 = ""
+			cond37 = ""
 		}
-		return cond36
+		return cond37
 	}}
 	var previousDeviceZoom int32 = swt.DPIUtilGetDeviceZoom()
 	swt.DPIUtilSetDeviceZoom(100)

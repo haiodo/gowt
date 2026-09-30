@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ExpandAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("ExpandAdapter", "org.eclipse.swt.events") }
 
 func (this *ExpandAdapter) AsExpandAdapter() *ExpandAdapter { return this }
 

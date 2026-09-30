@@ -17,6 +17,8 @@ type PaintEvent struct {
 	Count  int32
 }
 
+func init() { jrt.RegisterClassPackage("PaintEvent", "org.eclipse.swt.events") }
+
 func (this *PaintEvent) AsPaintEvent() *PaintEvent { return this }
 
 type PaintEventLike interface {

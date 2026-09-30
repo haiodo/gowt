@@ -15,6 +15,8 @@ type MenuDetectEvent struct {
 	Detail int32
 }
 
+func init() { jrt.RegisterClassPackage("MenuDetectEvent", "org.eclipse.swt.events") }
+
 func (this *MenuDetectEvent) AsMenuDetectEvent() *MenuDetectEvent { return this }
 
 type MenuDetectEventLike interface {

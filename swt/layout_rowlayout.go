@@ -27,6 +27,8 @@ type RowLayout struct {
 	MarginBottom int32
 }
 
+func init() { jrt.RegisterClassPackage("RowLayout", "org.eclipse.swt.layout") }
+
 func (this *RowLayout) AsRowLayout() *RowLayout { return this }
 
 type RowLayoutLike interface {
@@ -142,7 +144,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 		composite = compositeLike.AsComposite()
 	}
 	_ = composite
-	var children []*Control = composite.GetChildren()
+	var children []*Control = composite.impl.getChildren_()
 	var count int32 = 0
 	for i := int32(0); i < int32(len(children)); i++ {
 		var control *Control = children[i]
@@ -305,7 +307,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 		composite = compositeLike.AsComposite()
 	}
 	_ = composite
-	var children []*Control = composite.GetChildren()
+	var children []*Control = composite.impl.getChildren_()
 	var count int32 = 0
 	for i := int32(0); i < int32(len(children)); i++ {
 		var control *Control = children[i]

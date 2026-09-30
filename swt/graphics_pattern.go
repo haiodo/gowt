@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type Pattern struct {
@@ -19,6 +20,8 @@ type Pattern struct {
 	alpha1   int32
 	alpha2   int32
 }
+
+func init() { jrt.RegisterClassPackage("Pattern", "org.eclipse.swt.graphics") }
 
 func (this *Pattern) AsPattern() *Pattern { return this }
 
@@ -179,11 +182,11 @@ func (this *Pattern) String() string {
 	if this.impl.isDisposed_() {
 		return "Pattern {*DISPOSED*}"
 	}
-	var cond374 int64
+	var cond376 int64
 	if this.color != (nil) {
-		cond374 = this.color.Id
+		cond376 = this.color.Id
 	} else {
-		cond374 = this.gradient.Id
+		cond376 = this.gradient.Id
 	}
-	return fmt.Sprintf("Pattern {%d}", (cond374))
+	return fmt.Sprintf("Pattern {%d}", (cond376))
 }

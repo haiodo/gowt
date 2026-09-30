@@ -2,6 +2,7 @@ package jrt
 
 import (
 	"reflect"
+	"sort"
 	"sync"
 	"time"
 )
@@ -226,6 +227,29 @@ func (m *Map) ForEach(action any) {
 	}
 }
 
+// MapEntry is Map.Entry.
+type MapEntry struct{ key, value any }
+
+func (e *MapEntry) GetKey() any   { return e.key }
+func (e *MapEntry) GetValue() any { return e.value }
+
+// EntrySet lists the entries by ascending int32 key: a HashMap of small Integer keys iterates in
+// that order. Ceiling: other key types come out in an unspecified order.
+func (m *Map) EntrySet() *List {
+	var entries []any
+	for _, b := range m.buckets {
+		for _, e := range b {
+			entries = append(entries, &MapEntry{e.key, e.value})
+		}
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		a, aok := entries[i].(*MapEntry).key.(int32)
+		b, bok := entries[j].(*MapEntry).key.(int32)
+		return aok && bok && a < b
+	})
+	return ListOf(entries...)
+}
+
 func callErased(fn any, args ...any) {
 	f := reflect.ValueOf(fn)
 	in := make([]reflect.Value, len(args))
@@ -269,3 +293,10 @@ func ToSlice[T any](l *List) []T {
 
 // CurrentTimeMillis is System.currentTimeMillis().
 func CurrentTimeMillis() int64 { return time.Now().UnixMilli() }
+
+// CopyOf is Arrays.copyOf: truncated or zero-padded to n.
+func CopyOf[T any](a []T, n int32) []T {
+	out := make([]T, n)
+	copy(out, a)
+	return out
+}

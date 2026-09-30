@@ -2,7 +2,7 @@
 
 `make test-swt` on macOS arm64, SWT `af630a9093`. The run is gated by `tests/expected.txt` (below).
 
-**Total: 1822 tests - 1805 passed, 8 failed, 9 skipped** (Round 15; before it 1728 / 83 / 11). Before the merge of TSK-051 and TSK-052/053:
+**Total: 3341 tests - 3310 passed, 21 failed, 10 skipped** (Round 17 added the tests of Scale, Slider, Spinner, ProgressBar, Link, ToolBar, ToolItem, ExpandBar, ExpandItem, CoolBar, CoolItem, DateTime, FileDialog, DirectoryDialog and custom CLabel, CCombo, CTabFolder, CTabItem; before: 1805 / 8 / 9 of 1822) (Round 15; before it 1728 / 83 / 11). Before the merge of TSK-051 and TSK-052/053:
 widget tests alone 1662 / 149 / 11; graphics, layout and events alone 325 / 22 / 5 (TSK-051 seed: 292 / 55 / 5).
 `Tree.test_Virtual` is `flaky` (SetData count timing).
 
@@ -23,6 +23,10 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 
 | Class | Pass | Fail | Skip |
 |---|---:|---:|---:|
+| custom_CCombo | 130 | 2 | 0 |
+| custom_CLabel | 96 | 0 | 0 |
+| custom_CTabFolder | 120 | 7 | 1 |
+| custom_CTabItem | 15 | 0 | 0 |
 | events_* (16 classes, 2 tests each) | 32 | 0 | 0 |
 | graphics_Color | 27 | 0 | 0 |
 | graphics_Cursor | 7 | 0 | 0 |
@@ -52,21 +56,41 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | widgets_Caret | 18 | 0 | 0 |
 | widgets_Combo | 141 | 0 | 0 |
 | widgets_Composite | 91 | 0 | 0 |
+| widgets_CoolBar | 96 | 0 | 0 |
+| widgets_CoolItem | 20 | 4 | 0 |
+| widgets_DateTime_Style_CALENDAR | 106 | 0 | 0 |
+| widgets_DateTime_Style_DATE | 106 | 0 | 0 |
+| widgets_DateTime_Style_TIME | 106 | 0 | 0 |
+| widgets_DirectoryDialog | 7 | 0 | 0 |
 | widgets_Display | 62 | 1 | 1 |
+| widgets_ExpandBar | 104 | 0 | 0 |
+| widgets_ExpandItem | 18 | 0 | 0 |
+| widgets_FileDialog | 11 | 0 | 0 |
 | widgets_Group | 94 | 0 | 0 |
 | widgets_Label | 86 | 0 | 0 |
+| widgets_Link | 86 | 0 | 0 |
 | widgets_Menu | 29 | 0 | 0 |
+| widgets_ProgressBar | 84 | 0 | 0 |
+| widgets_Scale | 87 | 0 | 0 |
 | widgets_ScrolledComposite | 101 | 0 | 0 |
 | widgets_Shell | 139 | 0 | 1 |
+| widgets_Slider | 98 | 0 | 0 |
+| widgets_Spinner | 100 | 0 | 0 |
 | widgets_TabFolder | 107 | 0 | 0 |
 | widgets_Table | 136 | 0 | 0 |
 | widgets_Text | 132 | 1 | 0 |
+| widgets_ToolBar | 101 | 0 | 0 |
+| widgets_ToolItem | 14 | 0 | 0 |
 | widgets_Tree | 132 | 0 | 0 |
 
 Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Display.test_setCursorLocation*`
 (`@TempDir`-style parameter injection, not supported by the runner).
 
-## Remaining failures (Round 15)
+## Remaining failures
+
+Round 17 (13, reasons in `tests/expected.txt`): CoolItem size/bounds (4), CTabFolder private-member reflection (4), `stream()` (1), pixel colour (1), a SIGSEGV closing a freed NSWindow after a zoom change (1), CCombo null text and a missing IllegalArgumentException (2).
+
+Round 15:
 
 Each is in `tests/expected.txt` with its reason: HiDPI/SVG loading (GC `withTransform` x2, Image `reevaluatesSizability..`),
 private-method reflection (ImageData `blit` x2), TextLayout `bug568740` (rendering), Display `setSynchronizer` (local

@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type KeyAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("KeyAdapter", "org.eclipse.swt.events") }
 
 func (this *KeyAdapter) AsKeyAdapter() *KeyAdapter { return this }
 

@@ -295,9 +295,9 @@ func (this *Menu) CreateItem(itemLike MenuItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t175 := this.itemCount
+	t177 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t175-index])
+	copy(this.items[index+1:], this.items[index:index+t177-index])
 	this.items[index] = item
 	if add {
 		var emptyMenu *cocoa.NSMenu = item.CreateEmptyMenu()
@@ -403,9 +403,9 @@ func (this *Menu) GetItems() []*MenuItem {
 		for i := int32(0); i < this.itemCount; i++ {
 			var item *MenuItem = this.items[i]
 			if item != (nil) && !item.IsDisposed() {
-				t176 := index
+				t178 := index
 				index++
-				result[t176] = item
+				result[t178] = item
 			}
 		}
 	}
@@ -524,8 +524,8 @@ func (this *Menu) IsVisible() bool {
 
 func (this *Menu) menu_willHighlightItem_(id int64, sel int64, menu int64, itemID int64) {
 	var widget *Widget = this.display.GetWidget(itemID)
-	item, ok177 := isWidgetToMenuItem(widget)
-	if ok177 {
+	item, ok179 := isWidgetToMenuItem(widget)
+	if ok179 {
 		item.SendEventEventType(Arm)
 	}
 }
@@ -690,7 +690,7 @@ func (this *Menu) reskinChildren_(flags int32) {
 	var items []*MenuItem = this.GetItems()
 	for i := int32(0); i < int32(len(items)); i++ {
 		var item *MenuItem = items[i]
-		item.Reskin(flags)
+		item.impl.reskin_(flags)
 	}
 	this.Widget.reskinChildren_(flags)
 }

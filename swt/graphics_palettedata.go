@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type PaletteData struct {
 	IsDirect   bool
 	Colors     []*RGB
@@ -12,6 +16,8 @@ type PaletteData struct {
 	GreenShift int32
 	BlueShift  int32
 }
+
+func init() { jrt.RegisterClassPackage("PaletteData", "org.eclipse.swt.graphics") }
 
 func (this *PaletteData) AsPaletteData() *PaletteData { return this }
 
@@ -60,27 +66,27 @@ func (this *PaletteData) GetPixel(rgbLike RGBLike) int32 {
 	}
 	if this.IsDirect {
 		var pixel int32 = 0
-		var cond498 int32
-		if this.RedShift < 0 {
-			cond498 = rgb.Red << -this.RedShift
-		} else {
-			cond498 = int32(uint32(rgb.Red) >> (this.RedShift))
-		}
-		pixel |= (cond498) & this.RedMask
-		var cond499 int32
-		if this.GreenShift < 0 {
-			cond499 = rgb.Green << -this.GreenShift
-		} else {
-			cond499 = int32(uint32(rgb.Green) >> (this.GreenShift))
-		}
-		pixel |= (cond499) & this.GreenMask
 		var cond500 int32
-		if this.BlueShift < 0 {
-			cond500 = rgb.Blue << -this.BlueShift
+		if this.RedShift < 0 {
+			cond500 = rgb.Red << -this.RedShift
 		} else {
-			cond500 = int32(uint32(rgb.Blue) >> (this.BlueShift))
+			cond500 = int32(uint32(rgb.Red) >> (this.RedShift))
 		}
-		pixel |= (cond500) & this.BlueMask
+		pixel |= (cond500) & this.RedMask
+		var cond501 int32
+		if this.GreenShift < 0 {
+			cond501 = rgb.Green << -this.GreenShift
+		} else {
+			cond501 = int32(uint32(rgb.Green) >> (this.GreenShift))
+		}
+		pixel |= (cond501) & this.GreenMask
+		var cond502 int32
+		if this.BlueShift < 0 {
+			cond502 = rgb.Blue << -this.BlueShift
+		} else {
+			cond502 = int32(uint32(rgb.Blue) >> (this.BlueShift))
+		}
+		pixel |= (cond502) & this.BlueMask
 		return pixel
 	} else {
 		for i := int32(0); i < int32(len(this.Colors)); i++ {

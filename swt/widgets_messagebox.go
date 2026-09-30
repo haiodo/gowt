@@ -57,7 +57,7 @@ func (this *MessageBox) initMessageBoxParentStyle(parent *Shell, style int32) {
 			this.style |= SHEET
 		}
 	}
-	this.CheckSubclass()
+	this.impl.checkSubclass_()
 }
 
 func (this *MessageBox) GetBits() int32 {
@@ -139,22 +139,22 @@ func (this *MessageBox) Open() int32 {
 		alert.AddButtonWithTitle(title)
 		break
 	}
-	var cond558 string
+	var cond560 string
 	if this.title != "" {
-		cond558 = this.title
+		cond560 = this.title
 	} else {
-		cond558 = ""
+		cond560 = ""
 	}
-	title = cocoa.NSStringStringWith(cond558)
+	title = cocoa.NSStringStringWith(cond560)
 	var panel *cocoa.NSPanel = alert.Window()
 	panel.Impl().SetTitle(title)
-	var cond559 string
+	var cond561 string
 	if this.message != "" {
-		cond559 = this.message
+		cond561 = this.message
 	} else {
-		cond559 = ""
+		cond561 = ""
 	}
-	var message *cocoa.NSString = cocoa.NSStringStringWith(cond559)
+	var message *cocoa.NSString = cocoa.NSStringStringWith(cond561)
 	alert.SetMessageText(message)
 	var jniRef int64 = int64(0)
 	var delegate *cocoa.SWTPanelDelegate = nil

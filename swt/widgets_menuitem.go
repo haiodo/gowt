@@ -303,7 +303,7 @@ func (this *MenuItem) RemoveSelectionListener(listener SelectionListener) {
 
 func (this *MenuItem) reskinChildren_(flags int32) {
 	if this.menu != (nil) {
-		this.menu.Reskin(flags)
+		this.menu.impl.reskin_(flags)
 	}
 	this.Item.reskinChildren_(flags)
 }
@@ -414,13 +414,13 @@ func (this *MenuItem) setImageOnItem_(image *Image) {
 		return
 	}
 	this.Item.setImageOnItem_(image)
-	var cond178 *cocoa.NSImage
+	var cond180 *cocoa.NSImage
 	if image != (nil) {
-		cond178 = image.Handle
+		cond180 = image.Handle
 	} else {
-		cond178 = nil
+		cond180 = nil
 	}
-	this.nsItem.SetImage(cond178)
+	this.nsItem.SetImage(cond180)
 }
 
 func (this *MenuItem) SetMenu(menuLike MenuLike) {
@@ -488,13 +488,13 @@ func (this *MenuItem) SetSelection(selected bool) {
 	if (this.style & (CHECK | RADIO)) == 0 {
 		return
 	}
-	var cond179 int32
+	var cond181 int32
 	if selected {
-		cond179 = cocoa.OSNSControlStateValueOn
+		cond181 = cocoa.OSNSControlStateValueOn
 	} else {
-		cond179 = cocoa.OSNSControlStateValueOff
+		cond181 = cocoa.OSNSControlStateValueOff
 	}
-	this.nsItem.SetState(int64(cond179))
+	this.nsItem.SetState(int64(cond181))
 }
 
 func (this *MenuItem) setText_(string_ string) {
@@ -540,13 +540,13 @@ func (this *MenuItem) UpdateText() {
 		if int32(buffer[i]) == int32('\u0009') {
 			break
 		}
-		t181 := i
+		t183 := i
 		i++
-		cond180 := buffer[t181]
-		t182 := j
+		cond182 := buffer[t183]
+		t184 := j
 		j++
-		buffer[t182] = cond180
-		if int32((cond180)) == int32('&') {
+		buffer[t184] = cond182
+		if int32((cond182)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
@@ -603,13 +603,13 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 			if int32(buffer[i]) == int32('\u0009') {
 				break
 			}
-			t184 := i
+			t186 := i
 			i++
-			cond183 := buffer[t184]
-			t185 := j
+			cond185 := buffer[t186]
+			t187 := j
 			j++
-			buffer[t185] = cond183
-			if int32((cond183)) == int32('&') {
+			buffer[t187] = cond185
+			if int32((cond185)) == int32('&') {
 				if i == int32(len(buffer)) {
 					continue
 				}
@@ -713,13 +713,13 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	}
 	this.nsItem.SetKeyEquivalentModifierMask(int64(mask))
 	var nsstring *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-	var cond186 string
+	var cond188 string
 	if key == 0 {
-		cond186 = ""
+		cond188 = ""
 	} else {
-		cond186 = string(rune(uint16(key)))
+		cond188 = string(rune(uint16(key)))
 	}
-	nsstring = nsstring.InitWithString(cond186)
+	nsstring = nsstring.InitWithString(cond188)
 	this.nsItem.SetKeyEquivalent(nsstring.LowercaseString())
 	nsstring.Release()
 	return key != 0

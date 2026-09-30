@@ -41,6 +41,8 @@ type TextLayout struct {
 	ignoreSegments         bool
 }
 
+func init() { jrt.RegisterClassPackage("TextLayout", "org.eclipse.swt.graphics") }
+
 func (this *TextLayout) AsTextLayout() *TextLayout { return this }
 
 type TextLayoutLike interface {
@@ -170,13 +172,13 @@ func (this *TextLayout) ComputeRuns() {
 	paragraph.SetLineSpacing(float64(this.spacing))
 	paragraph.SetFirstLineHeadIndent(float64(this.indent))
 	paragraph.SetHeadIndent(float64(this.wrapIndent))
-	var cond509 int32
+	var cond511 int32
 	if this.wrapWidth != -1 {
-		cond509 = cocoa.OSNSLineBreakByWordWrapping
+		cond511 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond509 = cocoa.OSNSLineBreakByClipping
+		cond511 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraph.SetLineBreakMode(int64(cond509))
+	paragraph.SetLineBreakMode(int64(cond511))
 	paragraph.SetTabStops(cocoa.NSArrayArray())
 	if this.tabs != (nil) && int32(len(this.tabs)) > 0 {
 		var count int32 = int32(len(this.tabs))
@@ -742,13 +744,13 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 										rect.Width -= float64(0.5)
 										rect.Height -= float64(0.5)
 										var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-										var cond510 int32
+										var cond512 int32
 										if lengths != (nil) {
-											cond510 = int32(len(lengths))
+											cond512 = int32(len(lengths))
 										} else {
-											cond510 = 0
+											cond512 = 0
 										}
-										path.SetLineDash(lengths, int64(cond510), float64(0))
+										path.SetLineDash(lengths, int64(cond512), float64(0))
 										path.AppendBezierPathWithRect(rect)
 										path.Stroke()
 									}
@@ -1317,12 +1319,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t511 := count
+			t513 := count
 			count++
-			result[t511] = this.styles[i].start
-			t512 := count
+			result[t513] = this.styles[i].start
+			t514 := count
 			count++
-			result[t512] = this.styles[i+1].start - 1
+			result[t514] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1384,14 +1386,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t513 := segmentCount
+			t515 := segmentCount
 			segmentCount++
-			newChars[charCount+t513] = separator
+			newChars[charCount+t515] = separator
 		} else {
-			idx515 := charCount + segmentCount
-			t514 := charCount
+			idx517 := charCount + segmentCount
+			t516 := charCount
 			charCount++
-			newChars[idx515] = oldChars[t514]
+			newChars[idx517] = oldChars[t516]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1402,9 +1404,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t516 := segmentCount
+		t518 := segmentCount
 		segmentCount++
-		newChars[charCount+t516] = separator
+		newChars[charCount+t518] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1440,9 +1442,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t517 := count
+			t519 := count
 			count++
-			result[t517] = this.styles[i].style
+			result[t519] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -2195,6 +2197,8 @@ type TextLayout_StyleItem struct {
 	jniRef int64
 	cell   *cocoa.NSCell
 }
+
+func init() { jrt.RegisterClassPackage("TextLayout_StyleItem", "org.eclipse.swt.graphics") }
 
 func (this *TextLayout_StyleItem) AsTextLayout_StyleItem() *TextLayout_StyleItem { return this }
 

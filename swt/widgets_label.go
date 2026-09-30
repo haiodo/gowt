@@ -56,9 +56,9 @@ func (this *Label) addRelation_(control *Control) {
 		return
 	}
 	if this.textView != (nil) {
-		var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(control.FocusView())
-		viewAsControl, ok174 := iscocoaNSObjectTococoaNSControl(accessibleElement)
-		if ok174 {
+		var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(control.impl.focusView_())
+		viewAsControl, ok176 := iscocoaNSObjectTococoaNSControl(accessibleElement)
+		if ok176 {
 			if viewAsControl.Cell() != (nil) {
 				accessibleElement = upcastcocoaNSCellTococoaNSObject(viewAsControl.Cell())
 			}

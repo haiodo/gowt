@@ -16,6 +16,8 @@ type ImageLoader struct {
 	imageLoaderListeners *jrt.List
 }
 
+func init() { jrt.RegisterClassPackage("ImageLoader", "org.eclipse.swt.graphics") }
+
 func (this *ImageLoader) AsImageLoader() *ImageLoader { return this }
 
 type ImageLoaderLike interface {
@@ -67,8 +69,8 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 	}
 	{
 		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret501 *jrt.List
-		tretd502 := false
+		var tret503 *jrt.List
+		tretd504 := false
 		func() {
 			defer stream.Close()
 			defer func() {
@@ -90,12 +92,12 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 					panic(r)
 				}
 			}()
-			tret501 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
-			tretd502 = true
+			tret503 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
+			tretd504 = true
 			return
 		}()
-		if tretd502 {
-			return tret501
+		if tretd504 {
+			return tret503
 		}
 	}
 	return nil
@@ -193,8 +195,8 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 	}
 	{
 		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret503 bool
-		tretd504 := false
+		var tret505 bool
+		tretd506 := false
 		func() {
 			defer stream.Close()
 			defer func() {
@@ -216,12 +218,12 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 					panic(r)
 				}
 			}()
-			tret503 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
-			tretd504 = true
+			tret505 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
+			tretd506 = true
 			return
 		}()
-		if tretd504 {
-			return tret503
+		if tretd506 {
+			return tret505
 		}
 	}
 	return false

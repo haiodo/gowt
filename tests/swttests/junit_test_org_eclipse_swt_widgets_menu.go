@@ -80,14 +80,14 @@ func (this *Test_org_eclipse_swt_widgets_Menu) Test_addHelpListenerLorg_eclipse_
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	this.listenerCalled = false
-	anon85 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
-	anon85.fnMenuShown = func(e *swt.MenuEvent) {
+	anon86 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
+	anon86.fnMenuShown = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	anon85.fnMenuHidden = func(e *swt.MenuEvent) {
+	anon86.fnMenuHidden = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	var menuListener swt.MenuListener = anon85
+	var menuListener swt.MenuListener = anon86
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.menu.AddMenuListener(nil)
 	}, "No exception thrown for addMenuListener with null argument")
@@ -256,7 +256,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.setUp_() },
 		},
 		AfterEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).TearDown() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.tearDown_() },
 		},
 		Tests: []junit.Test{
 			{Name: "test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener", Run: func(t any) {

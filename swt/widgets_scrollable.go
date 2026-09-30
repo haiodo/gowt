@@ -265,10 +265,10 @@ func (this *Scrollable) releaseChildren_(destroy bool) {
 
 func (this *Scrollable) reskinChildren_(flags int32) {
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.Reskin(flags)
+		this.horizontalBar.impl.reskin_(flags)
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.Reskin(flags)
+		this.verticalBar.impl.reskin_(flags)
 	}
 	this.Control.reskinChildren_(flags)
 }

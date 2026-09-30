@@ -188,8 +188,8 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) LoadImages() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Decorations) FreeImages() {
-	for _, elem67 := range this.images.ToArray() {
-		image := jrt.Cast[*swt.Image](elem67)
+	for _, elem68 := range this.images.ToArray() {
+		image := jrt.Cast[*swt.Image](elem68)
 		image.Dispose()
 	}
 }

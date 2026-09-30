@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -10,6 +11,8 @@ type ScrolledCompositeLayout struct {
 	Layout
 	inLayout bool
 }
+
+func init() { jrt.RegisterClassPackage("ScrolledCompositeLayout", "org.eclipse.swt.custom") }
 
 func (this *ScrolledCompositeLayout) AsScrolledCompositeLayout() *ScrolledCompositeLayout {
 	return this

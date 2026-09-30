@@ -21,6 +21,8 @@ type FormLayout struct {
 	Spacing      int32
 }
 
+func init() { jrt.RegisterClassPackage("FormLayout", "org.eclipse.swt.layout") }
+
 func (this *FormLayout) AsFormLayout() *FormLayout { return this }
 
 type FormLayoutLike interface {
@@ -148,13 +150,13 @@ func (this *FormLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 		composite = compositeLike.AsComposite()
 	}
 	_ = composite
-	var children []*Control = composite.GetChildren()
+	var children []*Control = composite.impl.getChildren_()
 	for _, child := range children {
 		var data *FormData = castanyToFormData(child.GetLayoutData())
 		if data == (nil) {
-			cond117 := NewFormData()
-			data = cond117
-			child.SetLayoutData(cond117)
+			cond119 := NewFormData()
+			data = cond119
+			child.SetLayoutData(cond119)
 		}
 		if flushCache {
 			data.FlushCache()
@@ -179,8 +181,8 @@ func (this *FormLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 			var x2 int32 = right.SolveX(width)
 			if data.Height == DEFAULT && !data.needed {
 				var trim int32 = 0
-				_, ok118 := isControlToScrollable(child)
-				if ok118 {
+				_, ok120 := isControlToScrollable(child)
+				if ok120 {
 					var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 					trim = rect.Width
 				} else {

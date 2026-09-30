@@ -16,6 +16,8 @@ type TouchEvent struct {
 	Y         int32
 }
 
+func init() { jrt.RegisterClassPackage("TouchEvent", "org.eclipse.swt.events") }
+
 func (this *TouchEvent) AsTouchEvent() *TouchEvent { return this }
 
 type TouchEventLike interface {

@@ -64,10 +64,10 @@ func (this *Composite) _getChildren() []*Control {
 	var j int32 = 0
 	for i := int32(0); i < count; i++ {
 		var widget *Widget = this.display.GetWidget(views.ObjectAtIndex(int64(count - i - 1)).Id)
-		if widget != (nil) && widget != upcastCompositeToWidget(this) && func() bool { _, ok135 := isWidgetToControl(widget); return ok135 }() {
-			t136 := j
+		if widget != (nil) && widget != upcastCompositeToWidget(this) && func() bool { _, ok137 := isWidgetToControl(widget); return ok137 }() {
+			t138 := j
 			j++
-			children[t136] = castWidgetToControl(widget)
+			children[t138] = castWidgetToControl(widget)
 		}
 	}
 	if j == count {
@@ -95,9 +95,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for i := int32(0); i < int32(len(this.tabList)); i++ {
 		if !this.tabList[i].IsDisposed() {
-			t137 := index
+			t139 := index
 			index++
-			newList[t137] = this.tabList[i]
+			newList[t139] = this.tabList[i]
 		}
 	}
 	this.tabList = newList
@@ -242,13 +242,13 @@ func (this *Composite) createHandle_() {
 		if (this.style & V_SCROLL) != 0 {
 			scrollWidget.SetHasVerticalScroller(true)
 		}
-		var cond138 int32
+		var cond140 int32
 		if this.impl.hasBorder_() {
-			cond138 = cocoa.OSNSBezelBorder
+			cond140 = cocoa.OSNSBezelBorder
 		} else {
-			cond138 = cocoa.OSNSNoBorder
+			cond140 = cocoa.OSNSNoBorder
 		}
-		scrollWidget.SetBorderType(int64(cond138))
+		scrollWidget.SetBorderType(int64(cond140))
 		this.scrollView = scrollWidget
 	}
 	var widget *cocoa.NSView = castcocoaNSObjectTococoaNSView(cocoa.NewSWTCanvasView().Alloc())
@@ -316,13 +316,13 @@ func (this *Composite) FindDeferredControl() *Composite {
 }
 
 func (this *Composite) findDeferredControl_() *Composite {
-	var cond139 *Composite
+	var cond141 *Composite
 	if this.layoutCount > 0 {
-		cond139 = this
+		cond141 = this
 	} else {
-		cond139 = this.parent.impl.findDeferredControl_()
+		cond141 = this.parent.impl.findDeferredControl_()
 	}
-	return cond139
+	return cond141
 }
 
 func (this *Composite) findMenus_(control *Control) []*Menu {
@@ -377,9 +377,9 @@ func (this *Composite) FixTabList(controlLike ControlLike) {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(this.tabList)); i++ {
 			if this.tabList[i] != control {
-				t140 := index
+				t142 := index
 				index++
-				newList[t140] = this.tabList[i]
+				newList[t142] = this.tabList[i]
 			}
 		}
 	}
@@ -392,6 +392,10 @@ func (this *Composite) GetBackgroundMode() int32 {
 }
 
 func (this *Composite) GetChildren() []*Control {
+	return this.impl.getChildren_()
+}
+
+func (this *Composite) getChildren_() []*Control {
 	this.CheckWidget()
 	return this._getChildren()
 }
@@ -421,9 +425,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(list)); i++ {
 			if list[i].impl.isTabGroup_() {
-				t141 := index
+				t143 := index
 				index++
-				tabList[t141] = list[i]
+				tabList[t143] = list[i]
 			}
 		}
 	}
@@ -485,7 +489,7 @@ func (this *Composite) keyDown_(id int64, sel int64, theEvent int64) {
 			if !s.keyInputHappened {
 				var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 				var consume []bool = make([]bool, 1)
-				if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
+				if this.impl.translateTraversal_(int32(nsEvent.KeyCode()), nsEvent, consume) {
 					return
 				}
 				if this.IsDisposed() {
@@ -576,10 +580,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t142 := updateCount
+				t144 := updateCount
 				updateCount++
-				update[t142] = composite
-				child = upcastCompositeToControl(update[t142])
+				update[t144] = composite
+				child = upcastCompositeToControl(update[t144])
 				composite = child.parent
 			}
 		}
@@ -637,13 +641,13 @@ func (this *Composite) minimumSize_(wHint int32, Hint int32, changed bool) *Poin
 
 func (this *Composite) mouseEvent_(id int64, sel int64, theEvent int64, type_ int32) bool {
 	var result bool = this.Scrollable.mouseEvent_(id, sel, theEvent, type_)
-	var cond143 bool
+	var cond145 bool
 	if (this.state & WidgetCANVAS) == 0 {
-		cond143 = result
+		cond145 = result
 	} else {
-		cond143 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
+		cond145 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
 	}
-	return cond143
+	return cond145
 }
 
 func (this *Composite) pageDown_(id int64, sel int64, sender int64) {
@@ -752,7 +756,7 @@ func (this *Composite) reskinChildren_(flags int32) {
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
 		if child != (nil) {
-			child.Reskin(flags)
+			child.impl.reskin_(flags)
 		}
 	}
 }
@@ -1066,6 +1070,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *Group:
 		if v == nil {
 			return nil, false
@@ -1096,7 +1105,42 @@ func widgetImplAsControl(x any) (*Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *CTabFolder:
 		if v == nil {
 			return nil, false
 		}
@@ -1122,6 +1166,26 @@ func widgetImplAsControl(x any) (*Control, bool) {
 		}
 		return &v.Control, true
 	case *Sash:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *Scale:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *Slider:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *ProgressBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *Link:
 		if v == nil {
 			return nil, false
 		}

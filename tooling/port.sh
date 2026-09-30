@@ -148,6 +148,28 @@ SWT_FILES=(
 	org/eclipse/swt/widgets/Combo.java
 	org/eclipse/swt/widgets/Table.java
 	org/eclipse/swt/widgets/List.java
+	org/eclipse/swt/widgets/Scale.java
+	org/eclipse/swt/widgets/Slider.java
+	org/eclipse/swt/widgets/Spinner.java
+	org/eclipse/swt/widgets/ProgressBar.java
+	org/eclipse/swt/widgets/Link.java
+	org/eclipse/swt/widgets/ToolBar.java
+	org/eclipse/swt/widgets/ToolItem.java
+	org/eclipse/swt/widgets/ExpandBar.java
+	org/eclipse/swt/widgets/ExpandItem.java
+	org/eclipse/swt/widgets/ToolTip.java
+	org/eclipse/swt/widgets/CoolBar.java
+	org/eclipse/swt/widgets/CoolItem.java
+	org/eclipse/swt/widgets/DateTime.java
+	org/eclipse/swt/widgets/Tray.java
+	org/eclipse/swt/widgets/TrayItem.java
+	org/eclipse/swt/widgets/TaskBar.java
+	org/eclipse/swt/widgets/TaskItem.java
+	org/eclipse/swt/widgets/FileDialog.java
+	org/eclipse/swt/widgets/DirectoryDialog.java
+	org/eclipse/swt/printing/PrinterData.java
+	org/eclipse/swt/printing/Printer.java
+	org/eclipse/swt/printing/PrintDialog.java
 	org/eclipse/swt/widgets/TableItem.java
 	org/eclipse/swt/widgets/TableColumn.java
 	org/eclipse/swt/custom/ScrolledCompositeLayout.java
@@ -155,6 +177,27 @@ SWT_FILES=(
 	org/eclipse/swt/custom/ControlEditor.java
 	org/eclipse/swt/custom/TableEditor.java
 	org/eclipse/swt/custom/TreeEditor.java
+	org/eclipse/swt/accessibility/ACC.java
+	org/eclipse/swt/accessibility/AccessibleEvent.java
+	org/eclipse/swt/accessibility/AccessibleListener.java
+	org/eclipse/swt/accessibility/AccessibleAdapter.java
+	org/eclipse/swt/accessibility/AccessibleControlEvent.java
+	org/eclipse/swt/accessibility/AccessibleControlListener.java
+	org/eclipse/swt/accessibility/AccessibleControlAdapter.java
+	org/eclipse/swt/accessibility/AccessibleTextEvent.java
+	org/eclipse/swt/accessibility/AccessibleTextListener.java
+	org/eclipse/swt/accessibility/AccessibleTextAdapter.java
+	org/eclipse/swt/custom/CLabel.java
+	org/eclipse/swt/custom/CCombo.java
+	org/eclipse/swt/custom/CTabFolder.java
+	org/eclipse/swt/custom/CTabItem.java
+	org/eclipse/swt/custom/CTabFolderRenderer.java
+	org/eclipse/swt/custom/CTabFolderLayout.java
+	org/eclipse/swt/custom/CTabFolderEvent.java
+	org/eclipse/swt/custom/CTabFolderListener.java
+	org/eclipse/swt/custom/CTabFolder2Listener.java
+	org/eclipse/swt/custom/CTabFolderAdapter.java
+	org/eclipse/swt/custom/CTabFolder2Adapter.java
 	org/eclipse/swt/internal/TransparencyColorImageGcDrawer.java
 	org/eclipse/swt/widgets/Caret.java
 	org/eclipse/swt/internal/graphics/ImageUtil.java
@@ -177,6 +220,8 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	$CE/ControlExample.java $CE/Tab.java $CE/AlignableTab.java $CE/ScrollableTab.java \
 	$CE/ButtonTab.java $CE/LabelTab.java $CE/TextTab.java $CE/GroupTab.java $CE/CanvasTab.java $CE/MenuTab.java \
 	$CE/ListTab.java $CE/ComboTab.java $CE/TabFolderTab.java $CE/SashTab.java $CE/TableTab.java $CE/TreeTab.java $CE/ShellTab.java \
+	$CE/RangeTab.java $CE/LinkTab.java $CE/ProgressBarTab.java $CE/ScaleTab.java $CE/SliderTab.java $CE/SpinnerTab.java \
+	$CE/ToolBarTab.java $CE/ExpandBarTab.java $CE/CoolBarTab.java $CE/DateTimeTab.java $CE/ToolTipTab.java $CE/DialogTab.java $CE/SystemTab.java \
 	-- \
 	"${SWT_FILES[@]}" \
 	org/eclipse/swt/internal/C.java \
@@ -257,6 +302,29 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_widgets_Group.java
 	$TJ/Test_org_eclipse_swt_widgets_Menu.java
 	$TJ/Test_org_eclipse_swt_widgets_Caret.java
+	$TJ/Test_org_eclipse_swt_widgets_Scale.java
+	$TJ/Test_org_eclipse_swt_widgets_Slider.java
+	$TJ/Test_org_eclipse_swt_widgets_Spinner.java
+	$TJ/Test_org_eclipse_swt_widgets_ProgressBar.java
+	$TJ/Test_org_eclipse_swt_widgets_Link.java
+	$TJ/Test_org_eclipse_swt_custom_CLabel.java
+	$TJ/Test_org_eclipse_swt_custom_CCombo.java
+	$TJ/Test_org_eclipse_swt_custom_CTabFolder.java
+	$TJ/Test_org_eclipse_swt_custom_CTabItem.java
+	$TJ/Test_org_eclipse_swt_widgets_Dialog.java
+	$TJ/Test_org_eclipse_swt_widgets_FileDialog.java
+	$TJ/Test_org_eclipse_swt_widgets_DirectoryDialog.java
+	$TJ/Test_org_eclipse_swt_widgets_ToolBar.java
+	$TJ/Test_org_eclipse_swt_widgets_Item.java
+	$TJ/Test_org_eclipse_swt_widgets_ToolItem.java
+	$TJ/Test_org_eclipse_swt_widgets_ExpandBar.java
+	$TJ/Test_org_eclipse_swt_widgets_ExpandItem.java
+	$TJ/Test_org_eclipse_swt_widgets_CoolBar.java
+	$TJ/Test_org_eclipse_swt_widgets_CoolItem.java
+	$TJ/Test_org_eclipse_swt_widgets_DateTime.java
+	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_CALENDAR.java
+	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_DATE.java
+	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_TIME.java
 	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
 	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java

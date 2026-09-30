@@ -17,6 +17,8 @@ type StackLayout struct {
 	TopControl   *Control
 }
 
+func init() { jrt.RegisterClassPackage("StackLayout", "org.eclipse.swt.custom") }
+
 func (this *StackLayout) AsStackLayout() *StackLayout { return this }
 
 type StackLayoutLike interface {
@@ -39,7 +41,7 @@ func (this *StackLayout) initStackLayout() {
 func (this *StackLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var maxWidth int32 = 0
 	var maxHeight int32 = 0
-	for _, element := range composite.GetChildren() {
+	for _, element := range composite.impl.getChildren_() {
 		var size *Point = element.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 		maxWidth = int32(math.Max(float64(size.X), float64(maxWidth)))
 		maxHeight = int32(math.Max(float64(size.Y), float64(maxHeight)))
@@ -65,7 +67,7 @@ func (this *StackLayout) layoutFn_(composite *Composite, flushCache bool) {
 	rect.Y += this.MarginHeight
 	rect.Width -= 2 * this.MarginWidth
 	rect.Height -= 2 * this.MarginHeight
-	for _, element := range composite.GetChildren() {
+	for _, element := range composite.impl.getChildren_() {
 		element.SetBoundsRect(rect)
 		element.impl.setVisible_(element == this.TopControl)
 	}

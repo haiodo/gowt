@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ControlAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("ControlAdapter", "org.eclipse.swt.events") }
 
 func (this *ControlAdapter) AsControlAdapter() *ControlAdapter { return this }
 

@@ -25,10 +25,8 @@ org.eclipse.swt.widgets.Touch
 # Decorations/Shell translated for real as of Round 5, Menu/MenuItem as of Round 7, Caret as of
 # Round 10 - removed from this list.
 org.eclipse.swt.internal.Callback
-org.eclipse.swt.widgets.ToolBar
 org.eclipse.swt.widgets.IME
 org.eclipse.swt.accessibility.Accessible
-org.eclipse.swt.accessibility.ACC
 org.eclipse.swt.internal.WidgetSpy
 
 # Round 6: Display/Device/Resource/Font/FontData/Color/Monitor/TouchSource are translated for
@@ -49,11 +47,6 @@ java.util.concurrent.ConcurrentLinkedQueue
 # for real as of Round 10 - removed from this list.
 org.eclipse.swt.internal.LONG
 org.eclipse.swt.widgets.Display.APPEARANCE
-org.eclipse.swt.widgets.FileDialog
-org.eclipse.swt.widgets.TaskBar
-org.eclipse.swt.widgets.TaskItem
-org.eclipse.swt.widgets.Tray
-org.eclipse.swt.widgets.TrayItem
 org.eclipse.swt.internal.DPIUtil
 org.eclipse.swt.internal.BidiUtil
 org.eclipse.swt.internal.Compatibility

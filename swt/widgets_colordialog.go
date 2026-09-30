@@ -50,7 +50,7 @@ func NewColorDialogParentStyle(parentLike ShellLike, style int32) *ColorDialog {
 
 func (this *ColorDialog) initColorDialogParentStyle(parent *Shell, style int32) {
 	this.Dialog.initDialogParentStyle(parent, DialogCheckStyle(parent, style))
-	this.CheckSubclass()
+	this.impl.checkSubclass_()
 }
 
 func (this *ColorDialog) ChangeColor(id int64, sel int64, sender int64) {

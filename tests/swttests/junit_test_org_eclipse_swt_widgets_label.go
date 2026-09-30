@@ -107,7 +107,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.setUp_() },
 		},
 		AfterEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).TearDown() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.tearDown_() },
 		},
 		Tests: []junit.Test{
 			{Name: "test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener", Run: func(t any) {
@@ -193,15 +193,15 @@ func init() {
 			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_getParent_() }},
 			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_getShell_() }},
 			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_isEnabled_() }},
-			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_isFocusControl() }},
+			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_isFocusControl_() }},
 			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_isReparentable_() }},
 			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_isVisible_() }},
 			{Name: "test_moveAboveLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_moveAboveLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_moveBelowLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_moveBelowLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_pack", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_pack() }},
 			{Name: "test_packZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_packZ() }},
-			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_redraw() }},
-			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_redrawIIIIZ() }},
+			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_redraw_() }},
+			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_redrawIIIIZ_() }},
 			{Name: "test_requestLayoutL", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_requestLayoutL() }},
 			{Name: "test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Label).Test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color()
@@ -210,7 +210,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Label).Test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setBackgroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Label).Test_setBackgroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setBoundsIIII_() }},
 			{Name: "test_setBoundsLorg_eclipse_swt_graphics_Rectangle", Run: func(t any) {
@@ -229,7 +229,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Label).Test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setForegroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Label).Test_setForegroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setForegroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setLayoutDataLjava_lang_Object", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_setLayoutDataLjava_lang_Object() }},
 			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setLocationII_() }},
@@ -246,7 +246,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setSizeLorg_eclipse_swt_graphics_Point_()
 			}},
 			{Name: "test_setTextDirection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_setTextDirection() }},
-			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_setToolTipTextLjava_lang_String() }},
+			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setToolTipTextLjava_lang_String_() }},
 			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).impl.test_setVisibleZ_() }},
 			{Name: "test_toControlII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_toControlII() }},
 			{Name: "test_toControlLorg_eclipse_swt_graphics_Point", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Label).Test_toControlLorg_eclipse_swt_graphics_Point() }},

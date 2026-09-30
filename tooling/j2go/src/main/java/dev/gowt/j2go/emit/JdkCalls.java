@@ -122,6 +122,38 @@ final class JdkCalls {
 				return "jrt.ArraysAsList(" + arg(mi, 0) + ")";
 			case "java.lang.String#toString":
 				return recv(mi);
+			// char is uint16 (a code point when the parameter is int); Java's isWhitespace/isDigit are close to unicode's.
+			case "java.lang.Character#isDigit", "java.lang.Character#isWhitespace", "java.lang.Character#isLetter":
+				emitter.fileImports.add("unicode");
+				return "unicode.Is" + (name.equals("isWhitespace") ? "Space" : dev.gowt.j2go.Names.capitalize(name).substring(2)) + "(rune(" + arg(mi, 0) + "))";
+			case "java.lang.Character#toLowerCase", "java.lang.Character#toUpperCase":
+				emitter.fileImports.add("unicode");
+				return dev.gowt.j2go.GoTypes.map(mb.getReturnType(), emitter) + "(unicode.To" + (name.equals("toLowerCase") ? "Lower" : "Upper") + "(rune(" + arg(mi, 0) + ")))";
+			case "java.lang.Double#compare":
+				emitter.fileImports.add(JRT);
+				return "jrt.DoubleCompare(float64(" + arg(mi, 0) + "), float64(" + arg(mi, 1) + "))";
+			case "java.lang.Double#toString":
+				if (mi.arguments().size() != 1) return null;
+				emitter.fileImports.add(JRT);
+				return "jrt.DoubleToString(float64(" + arg(mi, 0) + "))";
+			case "java.lang.String#format":
+				if (!mb.getParameterTypes()[0].getQualifiedName().equals("java.lang.String")) return null;
+				emitter.fileImports.add(JRT);
+				java.util.List<String> rest = new java.util.ArrayList<>();
+				for (int i = 1; i < mi.arguments().size(); i++) rest.add(arg(mi, i));
+				return "jrt.Format(" + arg(mi, 0) + ", []any{" + String.join(", ", rest) + "})";
+			case "java.lang.String#replace": {
+				emitter.fileImports.add("strings");
+				String[] r = new String[2];
+				for (int i = 0; i < 2; i++) r[i] = mb.getParameterTypes()[i].isPrimitive() ? "string(rune(" + arg(mi, i) + "))" : arg(mi, i);
+				return "strings.ReplaceAll(" + recv(mi) + ", " + r[0] + ", " + r[1] + ")";
+			}
+			case "java.util.Arrays#copyOf":
+				emitter.fileImports.add(JRT);
+				return "jrt.CopyOf(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.lang.String#split":
+				emitter.fileImports.add(JRT);
+				return "jrt.Split(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.Float#parseFloat":
 				emitter.fileImports.add(JRT);
 				return "jrt.ParseFloat(" + arg(mi, 0) + ")";

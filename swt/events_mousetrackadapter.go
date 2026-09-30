@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type MouseTrackAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("MouseTrackAdapter", "org.eclipse.swt.events") }
 
 func (this *MouseTrackAdapter) AsMouseTrackAdapter() *MouseTrackAdapter { return this }
 

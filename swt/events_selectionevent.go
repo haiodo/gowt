@@ -21,6 +21,8 @@ type SelectionEvent struct {
 	Doit      bool
 }
 
+func init() { jrt.RegisterClassPackage("SelectionEvent", "org.eclipse.swt.events") }
+
 func (this *SelectionEvent) AsSelectionEvent() *SelectionEvent { return this }
 
 type SelectionEventLike interface {

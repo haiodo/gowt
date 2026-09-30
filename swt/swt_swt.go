@@ -11,6 +11,8 @@ import (
 type SWT struct {
 }
 
+func init() { jrt.RegisterClassPackage("SWT", "org.eclipse.swt") }
+
 func (this *SWT) AsSWT() *SWT { return this }
 
 type SWTLike interface {

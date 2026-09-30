@@ -101,6 +101,8 @@ final class ClassEmitter {
 		out.append("type ").append(ci.goTypeName).append(" struct {\n");
 		if (ci.superclass != null) {
 			out.append('\t').append(ci.superclass.goTypeName).append('\n');
+		} else if (ci.foreignSuper != null) {
+			out.append("\t*").append(emitter.qualifiedTypeName(ci.foreignSuper)).append('\n');
 		} else if (ci.manualSuperQualifiedName != null) {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			out.append('\t').append(Manual.goTypeName(ci.manualSuperQualifiedName)).append('\n');
@@ -127,6 +129,11 @@ final class ClassEmitter {
 					.append("\treturn this.impl\n}\n\n");
 			out.append("func (this *").append(ci.goTypeName).append(") SetImpl_(impl ").append(ci.goTypeName)
 					.append("Impl) { this.impl = &").append(hooked).append("{").append(ci.goTypeName).append("Impl: this.impl, hook: impl} }\n\n");
+		}
+		// jrt.ClassName only guesses the widgets package: tell it the real one.
+		if (ci.goPackage.equals("swt") && !ci.isInterface && !ci.javaPackage.equals("org.eclipse.swt.widgets")) {
+			emitter.fileImports.add(Manual.JRT_IMPORT);
+			out.append("func init() { jrt.RegisterClassPackage(\"").append(ci.goTypeName).append("\", \"").append(ci.javaPackage).append("\") }\n\n");
 		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
 
@@ -356,6 +363,13 @@ final class ClassEmitter {
 		boolean overridden = overridePoint != null;
 		IMethodBinding sigSource = overridden ? overridePoint.declaredBinding(sig) : mb;
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
+		// Overriding a method of a base in another package: the base's exported hook name (HookEmitter).
+		TypeModel.ClassInfo foreignPoint = ci.foreignSuper == null ? null : ci.foreignSuper.overridePoint(sig);
+		if (foreignPoint != null && foreignPoint.root.overriddenRootHookNames.containsKey(sig)) {
+			overridden = true;
+			sigSource = foreignPoint.declaredBinding(sig);
+			goName = foreignPoint.root.overriddenRootHookNames.get(sig);
+		}
 
 		// A cascade override, a Java-interface implementation, or a Type::method reference target
 		// has a signature fixed elsewhere - only a plain method (or the wrapper) widens its params.

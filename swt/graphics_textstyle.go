@@ -22,6 +22,8 @@ type TextStyle struct {
 	Data           any
 }
 
+func init() { jrt.RegisterClassPackage("TextStyle", "org.eclipse.swt.graphics") }
+
 func (this *TextStyle) AsTextStyle() *TextStyle { return this }
 
 type TextStyleLike interface {
@@ -110,8 +112,8 @@ func (this *TextStyle) Equals(object any) bool {
 	if jrt.IsNil(object) {
 		return false
 	}
-	style, ok518 := textStyleImplAsTextStyle(object)
-	if !(ok518) {
+	style, ok520 := textStyleImplAsTextStyle(object)
+	if !(ok520) {
 		return false
 	}
 	if this.Foreground != (nil) {

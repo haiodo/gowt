@@ -13,6 +13,8 @@ type SWTError struct {
 	Throwable error
 }
 
+func init() { jrt.RegisterClassPackage("SWTError", "org.eclipse.swt") }
+
 func (this *SWTError) AsSWTError() *SWTError { return this }
 
 type SWTErrorLike interface {

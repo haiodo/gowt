@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
+	"math"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -133,7 +135,7 @@ func unescapeProperty(s string) string {
 }
 
 // MessageFormatFormat is MessageFormat.format(pattern, args): {n} is replaced by fmt.Sprint(args[n])
-// and '' is a literal quote. Not supported: {n,number,...} format types, quoted literal sections.
+// and ” is a literal quote. Not supported: {n,number,...} format types, quoted literal sections.
 func MessageFormatFormat(pattern string, args []any) string {
 	var b strings.Builder
 	for i := 0; i < len(pattern); i++ {
@@ -220,4 +222,64 @@ func LastIndexOf(s, needle string) int32 {
 // against the one registered resource FS.
 func ClassGetResourceAsStream(class any, name string) InputStream {
 	return GetResourceAsStream(name)
+}
+
+// DoubleCompare is Double.compare: NaN sorts last and equals itself, -0.0 < 0.0.
+func DoubleCompare(a, b float64) int32 {
+	switch {
+	case a < b:
+		return -1
+	case a > b:
+		return 1
+	case a != a && b != b:
+		return 0
+	case a != a:
+		return 1
+	case b != b:
+		return -1
+	case a == 0 && math.Signbit(a) != math.Signbit(b):
+		if math.Signbit(a) {
+			return -1
+		}
+		return 1
+	}
+	return 0
+}
+
+// DoubleToString is Double.toString for the plain decimal range ("1.0", not "1").
+func DoubleToString(f float64) string {
+	s := strconv.FormatFloat(f, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".IN") {
+		s += ".0"
+	}
+	return s
+}
+
+// Split is String.split(regex): trailing empty strings are dropped.
+func Split(s, regex string) []string {
+	parts := regexp.MustCompile(regex).Split(s, -1)
+	for len(parts) > 1 && parts[len(parts)-1] == "" {
+		parts = parts[:len(parts)-1]
+	}
+	return parts
+}
+
+// StringTokenizer is java.util.StringTokenizer over a set of delimiter characters.
+type StringTokenizer struct{ tokens []string }
+
+func NewStringTokenizer(s, delims string) *StringTokenizer {
+	return &StringTokenizer{strings.FieldsFunc(s, func(r rune) bool { return strings.ContainsRune(delims, r) })}
+}
+
+func (t *StringTokenizer) HasMoreTokens() bool { return len(t.tokens) > 0 }
+
+func (t *StringTokenizer) NextToken() string {
+	tok := t.tokens[0]
+	t.tokens = t.tokens[1:]
+	return tok
+}
+
+// Format is String.format(fmt, args...) for the conversions Go shares with Java (%d %s %x %02X); %n is a newline.
+func Format(format string, args []any) string {
+	return fmt.Sprintf(strings.ReplaceAll(format, "%n", "\n"), args...)
 }

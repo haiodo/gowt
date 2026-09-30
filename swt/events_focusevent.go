@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type FocusEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("FocusEvent", "org.eclipse.swt.events") }
 
 func (this *FocusEvent) AsFocusEvent() *FocusEvent { return this }
 

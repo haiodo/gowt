@@ -17,6 +17,8 @@ type FontData struct {
 	variant string
 }
 
+func init() { jrt.RegisterClassPackage("FontData", "org.eclipse.swt.graphics") }
+
 func (this *FontData) AsFontData() *FontData { return this }
 
 type FontDataLike interface {
@@ -211,8 +213,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	data, ok228 := fontDataImplAsFontData(object)
-	if !(ok228) {
+	data, ok230 := fontDataImplAsFontData(object)
+	if !(ok230) {
 		return false
 	}
 	return (this.Name == data.Name) && this.Height == data.Height && this.Style == data.Style

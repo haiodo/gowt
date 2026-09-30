@@ -4,12 +4,15 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type RGBA struct {
 	Rgb   *RGB
 	Alpha int32
 }
+
+func init() { jrt.RegisterClassPackage("RGBA", "org.eclipse.swt.graphics") }
 
 func (this *RGBA) AsRGBA() *RGBA { return this }
 

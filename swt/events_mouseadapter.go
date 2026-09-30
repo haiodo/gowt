@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type MouseAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("MouseAdapter", "org.eclipse.swt.events") }
 
 func (this *MouseAdapter) AsMouseAdapter() *MouseAdapter { return this }
 

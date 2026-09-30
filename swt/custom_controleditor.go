@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -75,6 +76,8 @@ func (this *ControlEditor) Impl() ControlEditorImpl {
 func (this *ControlEditor) SetImpl_(impl ControlEditorImpl) {
 	this.impl = &controlEditorHooked{ControlEditorImpl: this.impl, hook: impl}
 }
+
+func init() { jrt.RegisterClassPackage("ControlEditor", "org.eclipse.swt.custom") }
 
 func (this *ControlEditor) AsControlEditor() *ControlEditor { return this }
 
@@ -193,7 +196,7 @@ func (this *ControlEditor) layout_() {
 		return
 	}
 	if this.editor.GetVisible() {
-		this.hadFocus = this.editor.IsFocusControl()
+		this.hadFocus = this.editor.impl.isFocusControl_()
 	}
 	this.editor.SetBoundsRect(this.impl.computeBounds_())
 	if this.hadFocus {

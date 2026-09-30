@@ -5,12 +5,15 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type Transform struct {
 	Resource
 	Handle *cocoa.NSAffineTransform
 }
+
+func init() { jrt.RegisterClassPackage("Transform", "org.eclipse.swt.graphics") }
 
 func (this *Transform) AsTransform() *Transform { return this }
 

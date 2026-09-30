@@ -16,6 +16,8 @@ type TableEditor struct {
 	timer          jrt.Runnable
 }
 
+func init() { jrt.RegisterClassPackage("TableEditor", "org.eclipse.swt.custom") }
+
 func (this *TableEditor) AsTableEditor() *TableEditor { return this }
 
 type TableEditorLike interface {
@@ -40,14 +42,14 @@ func (this *TableEditor) initTableEditor(table *Table) {
 	this.ControlEditor.initControlEditor(upcastTableToComposite(table))
 	this.column = -1
 	this.table = table
-	anon609 := &TableEditorAnon1{}
-	anon609.fnControlMoved = func(e *ControlEvent) {
+	anon675 := &TableEditorAnon1{}
+	anon675.fnControlMoved = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	anon609.fnControlResized = func(e *ControlEvent) {
+	anon675.fnControlResized = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	this.columnListener = anon609
+	this.columnListener = anon675
 	this.timer = jrt.NewRunnable(this.Layout)
 	this.GrabVertical = true
 }

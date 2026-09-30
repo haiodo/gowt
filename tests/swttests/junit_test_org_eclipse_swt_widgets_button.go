@@ -46,13 +46,13 @@ func (this *Test_org_eclipse_swt_widgets_Button) test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon74 := &Test_org_eclipse_swt_widgets_ButtonAnon1{}
-	anon74.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon75 := &Test_org_eclipse_swt_widgets_ButtonAnon1{}
+	anon75.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon74.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
+	anon75.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon74
+	var listener swt.SelectionListener = anon75
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.button.AddSelectionListener(nil)
 	}, "No exception thrown for addSelectionListener with null argument")
@@ -376,81 +376,81 @@ func (this *Test_org_eclipse_swt_widgets_Button) SetUpStyle(style int32) {
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_consistency_MenuDetect() {
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 10, 3, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.CHECK)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 3, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.RADIO)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 3, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.TOGGLE)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 3, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.ARROW)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 3, 0, ConsistencyUtilityMOUSE_CLICK)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_consistency_MouseSelection() {
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 10, 1, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.CHECK)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 1, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.RADIO)
 	this.button.SetSelection(true)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 1, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.TOGGLE)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 1, 0, ConsistencyUtilityMOUSE_CLICK)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.ARROW)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 1, 0, ConsistencyUtilityMOUSE_CLICK)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_consistency_EnterSelection() {
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.CHECK)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 13, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.RADIO)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 13, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.TOGGLE)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 13, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.ARROW)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 13, 0, 0, ConsistencyUtilityKEY_PRESS)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_consistency_SpaceSelection() {
 	this.ConsistencyEventParamAParamBParamCParamDMethod(int32(' '), 32, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.CHECK)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(int32(' '), 32, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.RADIO)
 	this.button.SetSelection(true)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(int32(' '), 32, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.TOGGLE)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(int32(' '), 32, 0, 0, ConsistencyUtilityKEY_PRESS)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.ARROW)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(int32(' '), 32, 0, 0, ConsistencyUtilityKEY_PRESS)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_consistency_DragDetect() {
 	this.ConsistencyEventParamAParamBParamCParamDMethod(10, 10, 20, 20, ConsistencyUtilityMOUSE_DRAG)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.CHECK)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 15, 15, ConsistencyUtilityMOUSE_DRAG)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.RADIO)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 15, 15, ConsistencyUtilityMOUSE_DRAG)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.TOGGLE)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 15, 15, ConsistencyUtilityMOUSE_DRAG)
-	this.TearDown()
+	this.impl.tearDown_()
 	this.SetUpStyle(swt.ARROW)
 	this.ConsistencyEventParamAParamBParamCParamDMethod(5, 5, 15, 15, ConsistencyUtilityMOUSE_DRAG)
 }
@@ -489,13 +489,13 @@ func (this *Test_org_eclipse_swt_widgets_Button) Test_Bug381668() {
 		return t.IsFocusControl()
 	})
 	junit.AssertTrue(t.IsFocusControl())
-	anon75 := &Test_org_eclipse_swt_widgets_ButtonAnon2{}
-	anon75.FocusAdapter = swt.NewFocusAdapter()
-	anon75.fnFocusLost = func(e *swt.FocusEvent) {
+	anon76 := &Test_org_eclipse_swt_widgets_ButtonAnon2{}
+	anon76.FocusAdapter = swt.NewFocusAdapter()
+	anon76.fnFocusLost = func(e *swt.FocusEvent) {
 		r1.Dispose()
 		r2.Dispose()
 	}
-	t.AddFocusListener(anon75)
+	t.AddFocusListener(anon76)
 	junit.AssertFalse(r1.IsDisposed())
 	junit.AssertFalse(r2.IsDisposed())
 	t.TraverseTraversal(swt.TRAVERSE_TAB_NEXT)
@@ -512,7 +512,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.setUp_() },
 		},
 		AfterEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).TearDown() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.tearDown_() },
 		},
 		Tests: []junit.Test{
 			{Name: "test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener", Run: func(t any) {
@@ -598,15 +598,15 @@ func init() {
 			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_getParent_() }},
 			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_getShell_() }},
 			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_isEnabled_() }},
-			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_isFocusControl() }},
+			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_isFocusControl_() }},
 			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_isReparentable_() }},
 			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_isVisible_() }},
 			{Name: "test_moveAboveLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_moveAboveLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_moveBelowLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_moveBelowLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_pack", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_pack() }},
 			{Name: "test_packZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_packZ() }},
-			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_redraw() }},
-			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_redrawIIIIZ() }},
+			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_redraw_() }},
+			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_redrawIIIIZ_() }},
 			{Name: "test_requestLayoutL", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_requestLayoutL() }},
 			{Name: "test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Button).Test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color()
@@ -615,7 +615,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Button).Test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setBackgroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Button).Test_setBackgroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setBoundsIIII_() }},
 			{Name: "test_setBoundsLorg_eclipse_swt_graphics_Rectangle", Run: func(t any) {
@@ -634,7 +634,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Button).Test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setForegroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Button).Test_setForegroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setForegroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setLayoutDataLjava_lang_Object", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_setLayoutDataLjava_lang_Object() }},
 			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setLocationII_() }},
@@ -651,7 +651,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setSizeLorg_eclipse_swt_graphics_Point_()
 			}},
 			{Name: "test_setTextDirection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_setTextDirection() }},
-			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_setToolTipTextLjava_lang_String() }},
+			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setToolTipTextLjava_lang_String_() }},
 			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).impl.test_setVisibleZ_() }},
 			{Name: "test_toControlII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_toControlII() }},
 			{Name: "test_toControlLorg_eclipse_swt_graphics_Point", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Button).Test_toControlLorg_eclipse_swt_graphics_Point() }},

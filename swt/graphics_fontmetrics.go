@@ -16,6 +16,8 @@ type FontMetrics struct {
 	averageCharWidth float64
 }
 
+func init() { jrt.RegisterClassPackage("FontMetrics", "org.eclipse.swt.graphics") }
+
 func (this *FontMetrics) AsFontMetrics() *FontMetrics { return this }
 
 type FontMetricsLike interface {
@@ -45,14 +47,11 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok372 := fontMetricsImplAsFontMetrics(object)
-	if !(ok372) {
+	metrics, ok374 := fontMetricsImplAsFontMetrics(object)
+	if !(ok374) {
 		return false
 	}
-	return this.ascent == metrics.ascent && this.descent == metrics.descent && this.leading == metrics.leading && this.height == metrics.height && (func() int32 {
-		_ = []any{this.averageCharWidth, metrics.averageCharWidth}
-		panic("j2go: unresolved call compare")
-	}() == 0)
+	return this.ascent == metrics.ascent && this.descent == metrics.descent && this.leading == metrics.leading && this.height == metrics.height && (jrt.DoubleCompare(float64(this.averageCharWidth), float64(metrics.averageCharWidth)) == 0)
 }
 
 func (this *FontMetrics) GetAscent() int32 {

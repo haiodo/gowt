@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type ArmEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("ArmEvent", "org.eclipse.swt.events") }
 
 func (this *ArmEvent) AsArmEvent() *ArmEvent { return this }
 

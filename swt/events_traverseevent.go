@@ -12,6 +12,8 @@ type TraverseEvent struct {
 	Detail int32
 }
 
+func init() { jrt.RegisterClassPackage("TraverseEvent", "org.eclipse.swt.events") }
+
 func (this *TraverseEvent) AsTraverseEvent() *TraverseEvent { return this }
 
 type TraverseEventLike interface {

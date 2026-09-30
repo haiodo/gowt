@@ -879,7 +879,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat
 	var pixelsRepeated [][]int32 = this.DrawInputAntialias(func() string { _ = []any{input, repeat}; panic("j2go: unresolved call repeat") }(), antialias)
 	for i := int32(0); i < repeat; i++ {
 		for x := int32(1); x < int32(len(pixelsOnce))-1; x++ {
-			tcnt49 := false
+			tcnt50 := false
 			func() {
 				defer func() {
 					r := recover()
@@ -897,14 +897,14 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat
 				var extepectedColumn []int32 = pixelsOnce[x]
 				var actualColumn []int32 = pixelsRepeated[x+int32(len(pixelsOnce))*i]
 				if func() bool { _ = []any{extepectedColumn, actualColumn}; panic("j2go: unresolved call equals") }() {
-					tcnt49 = true
+					tcnt50 = true
 					return
 				}
 				for y := int32(0); y < int32(len(extepectedColumn)); y++ {
 					SwtTestUtilAssertSimilarBrightness("", extepectedColumn[y], actualColumn[y])
 				}
 			}()
-			if tcnt49 {
+			if tcnt50 {
 				continue
 			}
 		}

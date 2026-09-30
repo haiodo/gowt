@@ -82,6 +82,11 @@ func widgetImplAsScrollable(x any) (*swt.Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
 	case *swt.Group:
 		if v == nil {
 			return nil, false
@@ -112,7 +117,42 @@ func widgetImplAsScrollable(x any) (*swt.Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	case *swt.Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.CTabFolder:
 		if v == nil {
 			return nil, false
 		}

@@ -18,6 +18,8 @@ type SashForm struct {
 	sashListener Listener
 }
 
+func init() { jrt.RegisterClassPackage("SashForm", "org.eclipse.swt.custom") }
+
 func (this *SashForm) AsSashForm() *SashForm { return this }
 
 type SashFormLike interface {
@@ -65,19 +67,19 @@ func (this *SashForm) CreateSash() *Sash {
 	var sash *Sash = NewSash(upcastSashFormToComposite(this), this.sashStyle)
 	sash.impl.setBackgroundWithColor_(this.background)
 	sash.impl.setForeground_(this.foreground)
-	sash.impl.setToolTipText_(this.GetToolTipText())
+	sash.impl.setToolTipText_(this.impl.getToolTipText_())
 	sash.AddListener(Selection, this.sashListener)
 	return sash
 }
 
 func (this *SashForm) getOrientation_() int32 {
-	var cond195 int32
+	var cond197 int32
 	if (this.sashStyle & VERTICAL) != 0 {
-		cond195 = HORIZONTAL
+		cond197 = HORIZONTAL
 	} else {
-		cond195 = VERTICAL
+		cond197 = VERTICAL
 	}
-	return cond195
+	return cond197
 }
 
 func (this *SashForm) GetSashWidth() int32 {
@@ -87,13 +89,13 @@ func (this *SashForm) GetSashWidth() int32 {
 
 func (this *SashForm) getStyle_() int32 {
 	var style int32 = this.Composite.getStyle_()
-	var cond196 int32
+	var cond198 int32
 	if this.impl.getOrientation_() == VERTICAL {
-		cond196 = VERTICAL
+		cond198 = VERTICAL
 	} else {
-		cond196 = HORIZONTAL
+		cond198 = HORIZONTAL
 	}
-	style |= cond196
+	style |= cond198
 	if (this.sashStyle & SMOOTH) != 0 {
 		style |= SMOOTH
 	}
@@ -110,8 +112,8 @@ func (this *SashForm) GetWeights() []int32 {
 	var ratios []int32 = make([]int32, int32(len(cArray)))
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		_, ok197 := sashFormDataImplAsSashFormData(data)
-		if ok197 {
+		_, ok199 := sashFormDataImplAsSashFormData(data)
+		if ok199 {
 			ratios[i] = int32(((castanyToSashFormData(data)).weight * 1000 >> 16))
 		} else {
 			ratios[i] = 200
@@ -122,9 +124,9 @@ func (this *SashForm) GetWeights() []int32 {
 
 func (this *SashForm) GetControls(onlyVisible bool) []*Control {
 	var result []*Control = make([]*Control, 0)
-	for _, element := range this.GetChildren() {
-		_, ok198 := isControlToSash(element)
-		if ok198 {
+	for _, element := range this.impl.getChildren_() {
+		_, ok200 := isControlToSash(element)
+		if ok200 {
 			continue
 		}
 		if onlyVisible && !element.GetVisible() {
@@ -179,12 +181,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		if jrt.IsNil(data1) || func() bool { _, ok199 := sashFormDataImplAsSashFormData(data1); return !(ok199) }() {
+		if jrt.IsNil(data1) || func() bool { _, ok201 := sashFormDataImplAsSashFormData(data1); return !(ok201) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		if jrt.IsNil(data2) || func() bool { _, ok200 := sashFormDataImplAsSashFormData(data2); return !(ok200) }() {
+		if jrt.IsNil(data2) || func() bool { _, ok202 := sashFormDataImplAsSashFormData(data2); return !(ok202) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -212,12 +214,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		if jrt.IsNil(data1) || func() bool { _, ok201 := sashFormDataImplAsSashFormData(data1); return !(ok201) }() {
+		if jrt.IsNil(data1) || func() bool { _, ok203 := sashFormDataImplAsSashFormData(data1); return !(ok203) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		if jrt.IsNil(data2) || func() bool { _, ok202 := sashFormDataImplAsSashFormData(data2); return !(ok202) }() {
+		if jrt.IsNil(data2) || func() bool { _, ok204 := sashFormDataImplAsSashFormData(data2); return !(ok204) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -244,15 +246,15 @@ func (this *SashForm) setOrientationOnControl_(orientation int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.sashStyle &= ^(HORIZONTAL | VERTICAL)
-	var cond203 int32
+	var cond205 int32
 	if orientation == VERTICAL {
-		cond203 = HORIZONTAL
+		cond205 = HORIZONTAL
 	} else {
-		cond203 = VERTICAL
+		cond205 = VERTICAL
 	}
-	this.sashStyle |= cond203
+	this.sashStyle |= cond205
 	for i := int32(0); i < int32(len(this.sashes)); i++ {
-		this.sashes[i].Dispose()
+		this.sashes[i].impl.dispose_()
 		this.sashes[i] = this.CreateSash()
 	}
 	this.LayoutOverload1(false)
@@ -337,7 +339,7 @@ func (this *SashForm) SetWeights(weights []int32) {
 	}
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		if jrt.IsNil(data) || func() bool { _, ok204 := sashFormDataImplAsSashFormData(data); return !(ok204) }() {
+		if jrt.IsNil(data) || func() bool { _, ok206 := sashFormDataImplAsSashFormData(data); return !(ok206) }() {
 			data = newSashFormData()
 			cArray[i].SetLayoutData(data)
 		}

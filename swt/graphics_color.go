@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"slices"
 )
 
@@ -11,6 +12,8 @@ type Color struct {
 	Resource
 	Handle []float64
 }
+
+func init() { jrt.RegisterClassPackage("Color", "org.eclipse.swt.graphics") }
 
 func (this *Color) AsColor() *Color { return this }
 
@@ -247,8 +250,8 @@ func (this *Color) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	color, ok229 := resourceImplAsColor(object)
-	if !(ok229) {
+	color, ok231 := resourceImplAsColor(object)
+	if !(ok231) {
 		return false
 	}
 	if this.impl.isDisposed_() || color.impl.isDisposed_() {

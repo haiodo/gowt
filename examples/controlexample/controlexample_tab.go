@@ -19,8 +19,10 @@ type TabImpl interface {
 	createColorAndFontGroup_()
 	changeFontOrColor_(a0 int32)
 	createOtherGroup_()
+	createBackgroundModeGroup_()
 	createExampleGroup_()
 	createExampleWidgets_()
+	createListenersGroup_()
 	getMethodNames_() []string
 	setMethodName_(a0 string) string
 	parameterForType_(a0 string, a1 string, a2 *swt.Widget) []any
@@ -33,14 +35,47 @@ type TabImpl interface {
 	getExampleWidgetItems_() []*swt.Item
 	getShortTabText_() string
 	getTabText_() string
+	recreateExampleWidgets_()
 	resetColorsAndFonts_()
+	rtlSupport_() bool
 	setExampleWidgetSize_()
 	setExampleWidgetState_()
+	setExampleWidgetVisibility_()
 	setExampleWidgetAlignment_()
+	getDefaultMaximum_() int32
+	getDefaultMinimum_() int32
+	getDefaultSelection_() int32
+	setWidgetMaximum_()
+	setWidgetMinimum_()
+	setWidgetSelection_()
 }
 
 func (this *Tab) setExampleWidgetAlignment_() {
 	panic("j2go: setExampleWidgetAlignment_ has no default on Tab")
+}
+
+func (this *Tab) getDefaultMaximum_() int32 {
+	panic("j2go: getDefaultMaximum_ has no default on Tab")
+}
+
+func (this *Tab) getDefaultMinimum_() int32 {
+	panic("j2go: getDefaultMinimum_ has no default on Tab")
+}
+
+func (this *Tab) getDefaultSelection_() int32 {
+	panic("j2go: getDefaultSelection_ has no default on Tab")
+}
+
+func (this *Tab) setWidgetMaximum_() {
+	panic("j2go: setWidgetMaximum_ has no default on Tab")
+}
+
+func (this *Tab) setWidgetMinimum_() {
+	panic("j2go: setWidgetMinimum_ has no default on Tab")
+}
+
+func (this *Tab) setWidgetSelection_() {
+	panic("j2go: setWidgetSelection_ has no default on Tab")
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -229,11 +264,11 @@ func (this *Tab) createControlGroup_() {
 	this.CreateSetGetGroup()
 	this.impl.createSizeGroup_()
 	this.impl.createColorAndFontGroup_()
-	if this.RtlSupport() {
+	if this.impl.rtlSupport_() {
 		this.CreateOrientationGroup()
 		this.CreateDirectionGroup()
 	}
-	this.CreateBackgroundModeGroup()
+	this.impl.createBackgroundModeGroup_()
 	var selectionListener swt.SelectionListener = swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
 		if (event.Widget.GetStyle() & swt.RADIO) != 0 {
 			if !(castswtWidgetToswtButton(event.Widget)).GetSelection() {
@@ -241,8 +276,8 @@ func (this *Tab) createControlGroup_() {
 			}
 		}
 		if !this.HandleTextDirection(event.Widget) {
-			this.RecreateExampleWidgets()
-			if this.RtlSupport() {
+			this.impl.recreateExampleWidgets_()
+			if this.impl.rtlSupport_() {
 				this.ltrDirectionButton.SetSelection(false)
 				this.rtlDirectionButton.SetSelection(false)
 				this.autoDirectionButton.SetSelection(false)
@@ -267,7 +302,7 @@ func (this *Tab) createControlGroup_() {
 			}
 		}
 	}
-	if this.RtlSupport() {
+	if this.impl.rtlSupport_() {
 		this.rtlButton.AddSelectionListener(selectionListener)
 		this.ltrButton.AddSelectionListener(selectionListener)
 		this.defaultOrietationButton.AddSelectionListener(selectionListener)
@@ -454,7 +489,7 @@ func (this *Tab) createOtherGroup_() {
 		this.SetExampleWidgetEnabled()
 	}))
 	this.visibleButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.SetExampleWidgetVisibility()
+		this.impl.setExampleWidgetVisibility_()
 	}))
 	this.backgroundImageButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
 		this.SetExampleWidgetBackgroundImage()
@@ -469,6 +504,10 @@ func (this *Tab) createOtherGroup_() {
 }
 
 func (this *Tab) CreateBackgroundModeGroup() {
+	this.impl.createBackgroundModeGroup_()
+}
+
+func (this *Tab) createBackgroundModeGroup_() {
 	this.backgroundModeGroup = swt.NewGroup(upcastswtGroupToswtComposite(this.controlGroup), swt.NONE)
 	this.backgroundModeGroup.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayout()))
 	this.backgroundModeGroup.SetLayoutData(swt.NewGridDataHorizontalAlignmentVerticalAlignmentGrabExcessHorizontalSpaceGrabExcessVerticalSpace(swt.FILL, swt.FILL, false, false))
@@ -886,6 +925,10 @@ func (this *Tab) CreateListenerSelectionDialog() {
 }
 
 func (this *Tab) CreateListenersGroup() {
+	this.impl.createListenersGroup_()
+}
+
+func (this *Tab) createListenersGroup_() {
 	this.listenersGroup = swt.NewGroup(this.tabFolderPage, swt.NONE)
 	this.listenersGroup.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(4, false)))
 	this.listenersGroup.SetLayoutData(swt.NewGridDataHorizontalAlignmentVerticalAlignmentGrabExcessHorizontalSpaceGrabExcessVerticalSpaceHorizontalSpanVerticalSpan(swt.FILL, swt.FILL, true, true, 2, 1))
@@ -894,7 +937,7 @@ func (this *Tab) CreateListenersGroup() {
 	listenersButton.SetText(ControlExampleGetResourceString("Select_Listeners"))
 	listenersButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {
 		this.CreateListenerSelectionDialog()
-		this.RecreateExampleWidgets()
+		this.impl.recreateExampleWidgets_()
 	}))
 	var untypedEventsCheckbox *swt.Button = swt.NewButton(upcastswtGroupToswtComposite(this.listenersGroup), swt.CHECK)
 	untypedEventsCheckbox.SetText(ControlExampleGetResourceString("UntypedEvents"))
@@ -905,7 +948,7 @@ func (this *Tab) CreateListenersGroup() {
 	listenCheckbox.SetText(ControlExampleGetResourceString("Listen"))
 	listenCheckbox.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {
 		this.logging = listenCheckbox.GetSelection()
-		this.RecreateExampleWidgets()
+		this.impl.recreateExampleWidgets_()
 	}))
 	var clearButton *swt.Button = swt.NewButton(upcastswtGroupToswtComposite(this.listenersGroup), swt.PUSH)
 	clearButton.SetText(ControlExampleGetResourceString("Clear"))
@@ -1314,7 +1357,7 @@ func (this *Tab) createTabFolderPage_(tabFolder *swt.TabFolder) *swt.Composite {
 	this.tabFolderPage.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(2, false)))
 	this.impl.createExampleGroup_()
 	this.impl.createControlGroup_()
-	this.CreateListenersGroup()
+	this.impl.createListenersGroup_()
 	this.impl.createExampleWidgets_()
 	this.HookExampleWidgetListeners()
 	this.impl.createControlWidgets_()
@@ -1527,7 +1570,7 @@ func (this *Tab) HandleTextDirection(widgetLike swt.WidgetLike) bool {
 		widget = widgetLike.AsWidget()
 	}
 	_ = widget
-	if !this.RtlSupport() {
+	if !this.impl.rtlSupport_() {
 		return false
 	}
 	var textDirection int32 = swt.NONE
@@ -1714,6 +1757,10 @@ func (this *Tab) LogEventNameEvent(eventName string, eventLike swt.TypedEventLik
 }
 
 func (this *Tab) RecreateExampleWidgets() {
+	this.impl.recreateExampleWidgets_()
+}
+
+func (this *Tab) recreateExampleWidgets_() {
 	this.impl.disposeExampleWidgets_()
 	this.impl.createExampleWidgets_()
 	this.HookExampleWidgetListeners()
@@ -1739,6 +1786,10 @@ func (this *Tab) resetColorsAndFonts_() {
 }
 
 func (this *Tab) RtlSupport() bool {
+	return this.impl.rtlSupport_()
+}
+
+func (this *Tab) rtlSupport_() bool {
 	return TabRTL_SUPPORT_ENABLE
 }
 
@@ -1921,7 +1972,7 @@ func (this *Tab) setExampleWidgetState_() {
 	this.SetExampleWidgetFont()
 	if !this.instance.startup {
 		this.SetExampleWidgetEnabled()
-		this.SetExampleWidgetVisibility()
+		this.impl.setExampleWidgetVisibility_()
 		this.SetExampleGroupBackgroundMode()
 		this.SetExampleGroupBackgroundColor()
 		this.SetExampleGroupBackgroundImage()
@@ -1932,6 +1983,10 @@ func (this *Tab) setExampleWidgetState_() {
 }
 
 func (this *Tab) SetExampleWidgetVisibility() {
+	this.impl.setExampleWidgetVisibility_()
+}
+
+func (this *Tab) setExampleWidgetVisibility_() {
 	var controls []*swt.Control = this.GetExampleControls()
 	for _, control := range controls {
 		control.SetVisible(this.visibleButton.GetSelection())
@@ -2055,6 +2110,11 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 			return nil, false
 		}
 		return &v.Composite, true
+	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
 	case *swt.Group:
 		if v == nil {
 			return nil, false
@@ -2085,7 +2145,42 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 			return nil, false
 		}
 		return &v.Composite, true
+	case *swt.Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *swt.CTabFolder:
 		if v == nil {
 			return nil, false
 		}
@@ -2241,6 +2336,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *swt.Group:
 		if v == nil {
 			return nil, false
@@ -2271,7 +2371,42 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *swt.Spinner:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ToolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ExpandBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CoolBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.DateTime:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CCombo:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.CTabFolder:
 		if v == nil {
 			return nil, false
 		}
@@ -2297,6 +2432,26 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.Sash:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Scale:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Slider:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.ProgressBar:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.Link:
 		if v == nil {
 			return nil, false
 		}

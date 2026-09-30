@@ -12,6 +12,8 @@ type SashFormData struct {
 	weight int64
 }
 
+func init() { jrt.RegisterClassPackage("SashFormData", "org.eclipse.swt.custom") }
+
 func (this *SashFormData) AsSashFormData() *SashFormData { return this }
 
 type SashFormDataLike interface {

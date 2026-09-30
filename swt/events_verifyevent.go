@@ -14,6 +14,8 @@ type VerifyEvent struct {
 	Text  string
 }
 
+func init() { jrt.RegisterClassPackage("VerifyEvent", "org.eclipse.swt.events") }
+
 func (this *VerifyEvent) AsVerifyEvent() *VerifyEvent { return this }
 
 type VerifyEventLike interface {

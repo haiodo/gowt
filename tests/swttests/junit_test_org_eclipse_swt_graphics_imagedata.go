@@ -51,10 +51,10 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_blit() {
 			}
 		}
 	}
-	for _, elem37 := range tests.ToArray() {
-		dstInfo := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem37)
-		for _, elem38 := range tests.ToArray() {
-			srcInfo := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem38)
+	for _, elem38 := range tests.ToArray() {
+		dstInfo := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem38)
+		for _, elem39 := range tests.ToArray() {
+			srcInfo := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem39)
 			if srcInfo.IsDirect && !dstInfo.IsDirect {
 				continue
 			}
@@ -99,8 +99,8 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_blit_MsbLsb() {
 			tests.Add(NewImageDataTestHelperBlitTestInfoDepthScaleByteOrderIsDirect(depth, 1, ImageDataTestHelperMSB_FIRST, true))
 		}
 	}
-	for _, elem39 := range tests.ToArray() {
-		src := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem39)
+	for _, elem40 := range tests.ToArray() {
+		src := jrt.Cast[*ImageDataTestHelper_BlitTestInfo](elem40)
 		func() {
 			defer func() {
 				r := recover()

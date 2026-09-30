@@ -8,6 +8,7 @@ import (
 )
 
 type DialogImpl interface {
+	checkSubclass_()
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -21,6 +22,14 @@ func (this *dialogHooked) enter(name string) func() {
 	prev := this.active
 	this.active = name
 	return func() { this.active = prev }
+}
+
+func (this *dialogHooked) checkSubclass_() {
+	if h, ok := this.hook.(interface{ CheckSubclass_() }); ok && this.active != "checkSubclass_" {
+		defer this.enter("checkSubclass_")()
+		h.CheckSubclass_()
+	}
+	this.DialogImpl.checkSubclass_()
 }
 
 type Dialog struct {
@@ -83,6 +92,10 @@ func (this *Dialog) initDialogParentStyle(parent *Shell, style int32) {
 }
 
 func (this *Dialog) CheckSubclass() {
+	this.impl.checkSubclass_()
+}
+
+func (this *Dialog) checkSubclass_() {
 	if !DisplayIsValidClass(reflect.TypeOf(this.Impl())) {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -133,13 +146,13 @@ func DialogCheckStyle(parentLike ShellLike, style int32) int32 {
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
 		if (style & mask) == 0 {
-			var cond555 int32
+			var cond557 int32
 			if parent == (nil) {
-				cond555 = APPLICATION_MODAL
+				cond557 = APPLICATION_MODAL
 			} else {
-				cond555 = PRIMARY_MODAL
+				cond557 = PRIMARY_MODAL
 			}
-			style |= cond555
+			style |= cond557
 		}
 	}
 	if (style & mask) == 0 {

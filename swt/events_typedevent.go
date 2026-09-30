@@ -53,6 +53,8 @@ func (this *TypedEvent) SetImpl_(impl TypedEventImpl) {
 	this.impl = &typedEventHooked{TypedEventImpl: this.impl, hook: impl}
 }
 
+func init() { jrt.RegisterClassPackage("TypedEvent", "org.eclipse.swt.events") }
+
 func (this *TypedEvent) AsTypedEvent() *TypedEvent { return this }
 
 type TypedEventLike interface {

@@ -207,13 +207,13 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	gcSrc.FillRectangle(2, 2, srcSize-4, srcSize-4)
 	gcSrc.Dispose()
 	var bounds *swt.Rectangle = image.GetBounds()
-	anon15 := &Test_org_eclipse_swt_graphics_GCAnon1{}
-	anon15.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(shell), swt.NONE)
-	anon15.SetImpl_(anon15)
-	anon15.fnIsAutoScalable = func() bool {
+	anon16 := &Test_org_eclipse_swt_graphics_GCAnon1{}
+	anon16.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(shell), swt.NONE)
+	anon16.SetImpl_(anon16)
+	anon16.fnIsAutoScalable = func() bool {
 		return false
 	}
-	var canvas *swt.Canvas = anon15.Canvas
+	var canvas *swt.Canvas = anon16.Canvas
 	var canvasWidth int32 = int32(math.Floor(float64(float32(bounds.Width)*targetScale) + 0.5))
 	var canvasHeight int32 = int32(math.Floor(float64(float32(bounds.Height)*targetScale) + 0.5))
 	canvas.SetSize(canvasWidth, canvasHeight)
@@ -923,16 +923,16 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_textExtentLjava_lang_StringI_
 	var ptWithoutAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", "\n"), 0)
 	this.gc.SetAdvanced(true)
 	var ptWithAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", "\n"), 0)
-	abs16 := ptWithAdvanced.X - ptWithoutAdvanced.X
-	if abs16 < 0 {
-		abs16 = -abs16
-	}
-	junit.AssertTrue(abs16 <= 2)
-	abs17 := ptWithAdvanced.Y - ptWithoutAdvanced.Y
+	abs17 := ptWithAdvanced.X - ptWithoutAdvanced.X
 	if abs17 < 0 {
 		abs17 = -abs17
 	}
 	junit.AssertTrue(abs17 <= 2)
+	abs18 := ptWithAdvanced.Y - ptWithoutAdvanced.Y
+	if abs18 < 0 {
+		abs18 = -abs18
+	}
+	junit.AssertTrue(abs18 <= 2)
 	this.gc.Dispose()
 }
 
@@ -951,21 +951,21 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_textExtentLjava_lang_StringI_
 	var crlfAdv *swt.Point = this.gc.TextExtentStringFlags(withCRLF, flags)
 	junit.AssertEquals(int32(lfNonAdv.Y), int32(crNonAdv.Y), "Non-advanced: CR must produce the same height as LF with DRAW_DELIMITER")
 	junit.AssertEquals(int32(lfNonAdv.Y), int32(crlfNonAdv.Y), "Non-advanced: CRLF must produce the same height as LF with DRAW_DELIMITER")
-	abs18 := lfAdv.Y - lfNonAdv.Y
-	if abs18 < 0 {
-		abs18 = -abs18
-	}
-	junit.AssertTrue(abs18 <= 2, "LF: advanced height must match non-advanced")
-	abs19 := crAdv.Y - crNonAdv.Y
+	abs19 := lfAdv.Y - lfNonAdv.Y
 	if abs19 < 0 {
 		abs19 = -abs19
 	}
-	junit.AssertTrue(abs19 <= 2, "CR: advanced height must match non-advanced")
-	abs20 := crlfAdv.Y - crlfNonAdv.Y
+	junit.AssertTrue(abs19 <= 2, "LF: advanced height must match non-advanced")
+	abs20 := crAdv.Y - crNonAdv.Y
 	if abs20 < 0 {
 		abs20 = -abs20
 	}
-	junit.AssertTrue(abs20 <= 2, "CRLF: advanced height must match non-advanced")
+	junit.AssertTrue(abs20 <= 2, "CR: advanced height must match non-advanced")
+	abs21 := crlfAdv.Y - crlfNonAdv.Y
+	if abs21 < 0 {
+		abs21 = -abs21
+	}
+	junit.AssertTrue(abs21 <= 2, "CRLF: advanced height must match non-advanced")
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_toString() {

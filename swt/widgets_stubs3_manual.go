@@ -74,37 +74,3 @@ var DefaultExceptionHandlerRUNTIME_ERROR_HANDLER = func(e error) {
 	fmt.Fprintln(os.Stderr, e)
 	panic(e)
 }
-
-type Tray struct {
-	Widget
-	itemCount int32
-}
-
-func NewTray(display *Display, style int32) *Tray { panic("stub until translated: Tray") }
-
-type TrayItem struct{ Widget }
-
-// Tray isn't translated (system tray icon, off this round's path); a tray popup menu is a no-op.
-func (t *TrayItem) ShowMenu(menu *Menu) {}
-
-type TaskBar struct {
-	Widget
-	itemCount int32
-}
-
-func NewTaskBar(display *Display, style int32) *TaskBar { panic("stub until translated: TaskBar") }
-func (t *TaskBar) GetItem(shell *Shell) *TaskItem       { return nil }
-
-type TaskItem struct{ Widget }
-
-func (t *TaskItem) GetMenu() *Menu { return nil }
-
-type FileDialog struct{}
-
-func (d *FileDialog) SendSelection(id int64, sel int64, arg int64) {}
-func (d *FileDialog) Panel_shouldEnableURL(id int64, sel int64, arg0 int64, arg1 int64) int64 {
-	return 1
-}
-func (d *FileDialog) Panel_userEnteredFilename_confirmed(id int64, sel int64, sender int64, filename int64, okFlag int64) int64 {
-	return filename
-}

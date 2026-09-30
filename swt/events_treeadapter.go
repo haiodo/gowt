@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type TreeAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("TreeAdapter", "org.eclipse.swt.events") }
 
 func (this *TreeAdapter) AsTreeAdapter() *TreeAdapter { return this }
 

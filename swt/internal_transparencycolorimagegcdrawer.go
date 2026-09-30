@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type TransparencyColorImageGcDrawer struct {
 	transparencyColor *Color
 }
+
+func init() { jrt.RegisterClassPackage("TransparencyColorImageGcDrawer", "org.eclipse.swt.internal") }
 
 func (this *TransparencyColorImageGcDrawer) AsTransparencyColorImageGcDrawer() *TransparencyColorImageGcDrawer {
 	return this

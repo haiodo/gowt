@@ -89,19 +89,19 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_ConstructorLorg_eclipse_swt
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	this.listenerCalled = false
-	anon68 := &Test_org_eclipse_swt_widgets_ShellAnon1{}
-	anon68.fnShellActivated = func(e *swt.ShellEvent) {
+	anon69 := &Test_org_eclipse_swt_widgets_ShellAnon1{}
+	anon69.fnShellActivated = func(e *swt.ShellEvent) {
 		this.listenerCalled = true
 	}
-	anon68.fnShellClosed = func(e *swt.ShellEvent) {
+	anon69.fnShellClosed = func(e *swt.ShellEvent) {
 	}
-	anon68.fnShellDeactivated = func(e *swt.ShellEvent) {
+	anon69.fnShellDeactivated = func(e *swt.ShellEvent) {
 	}
-	anon68.fnShellDeiconified = func(e *swt.ShellEvent) {
+	anon69.fnShellDeiconified = func(e *swt.ShellEvent) {
 	}
-	anon68.fnShellIconified = func(e *swt.ShellEvent) {
+	anon69.fnShellIconified = func(e *swt.ShellEvent) {
 	}
-	var listener swt.ShellListener = anon68
+	var listener swt.ShellListener = anon69
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.shell.AddShellListener(nil)
 	})
@@ -507,13 +507,13 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_setBounds() {
 				testShell.SetBoundsRect(bounds)
 				this.LogUnlessEquals(log, fmt.Sprintf("%d.1: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.Open()
-				var cond69 any
+				var cond70 any
 				if Test_org_eclipse_swt_widgets_ShellIS_GTK_BUG_445900 {
-					cond69 = os.Stdout
+					cond70 = os.Stdout
 				} else {
-					cond69 = log
+					cond70 = log
 				}
-				this.LogUnlessEquals(cond69, fmt.Sprintf("%d.2: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
+				this.LogUnlessEquals(cond70, fmt.Sprintf("%d.2: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.SetBoundsRect(bounds)
 				this.LogUnlessEquals(log, fmt.Sprintf("%d.3: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.SetBoundsRect(bounds2)
@@ -643,21 +643,21 @@ func (this *Test_org_eclipse_swt_widgets_Shell) AssertShellProperlySized(shellLi
 		tolerance = 0
 	}
 	var actualSize *swt.Point = shell.GetSize()
-	abs70 := expectedSize.X - actualSize.X
-	if abs70 < 0 {
-		abs70 = -abs70
+	abs71 := expectedSize.X - actualSize.X
+	if abs71 < 0 {
+		abs71 = -abs71
 	}
-	junit.AssertTrue(abs70 <= tolerance && func() bool {
-		abs71 := expectedSize.Y - actualSize.Y
-		if abs71 < 0 {
-			abs71 = -abs71
+	junit.AssertTrue(abs71 <= tolerance && func() bool {
+		abs72 := expectedSize.Y - actualSize.Y
+		if abs72 < 0 {
+			abs72 = -abs72
 		}
-		return abs71 <= tolerance
+		return abs72 <= tolerance
 	}(), fmt.Sprintf("%s%v ± %d, actual size: %v)", fmt.Sprintf("Shell is not sized correctly (expected size: "), expectedSize, tolerance, actualSize))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Shell) CreateShell() {
-	this.TearDown()
+	this.impl.tearDown_()
 	this.shell = swt.NewShell()
 	this.testShell = swt.NewShellParentStyle(this.shell, swt.DIALOG_TRIM|swt.MIN)
 	this.testShell.SetSize(100, 300)
@@ -708,13 +708,13 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Dispose() {
 	this.CreateShell()
 	var button *swt.Button = swt.NewButton(upcastswtShellToswtComposite(this.testShell), swt.PUSH)
 	button.SetText("dispose")
-	anon72 := &Test_org_eclipse_swt_widgets_ShellAnon2{}
-	anon72.SelectionAdapter = swt.NewSelectionAdapter()
-	anon72.fnWidgetSelected = func(se *swt.SelectionEvent) {
+	anon73 := &Test_org_eclipse_swt_widgets_ShellAnon2{}
+	anon73.SelectionAdapter = swt.NewSelectionAdapter()
+	anon73.fnWidgetSelected = func(se *swt.SelectionEvent) {
 		button.Dispose()
 		this.testShell.Dispose()
 	}
-	button.AddSelectionListener(anon72)
+	button.AddSelectionListener(anon73)
 	var events *jrt.List = jrt.NewList()
 	this.ConsistencyPrePackShellShell(this.testShell)
 	var pt *swt.Point = button.GetLocation()
@@ -840,7 +840,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.setUp_() },
 		},
 		AfterEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).TearDown() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.tearDown_() },
 		},
 		Tests: []junit.Test{
 			{Name: "test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener", Run: func(t any) {
@@ -923,13 +923,13 @@ func init() {
 			{Name: "test_getAccessible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getAccessible() }},
 			{Name: "test_getBorderWidth", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getBorderWidth() }},
 			{Name: "test_getMonitor", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getMonitor() }},
-			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_isFocusControl() }},
+			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_isFocusControl_() }},
 			{Name: "test_moveAboveLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_moveAboveLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_moveBelowLorg_eclipse_swt_widgets_Control", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_moveBelowLorg_eclipse_swt_widgets_Control() }},
 			{Name: "test_pack", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_pack() }},
 			{Name: "test_packZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_packZ() }},
-			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_redraw() }},
-			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_redrawIIIIZ() }},
+			{Name: "test_redraw", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_redraw_() }},
+			{Name: "test_redrawIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_redrawIIIIZ_() }},
 			{Name: "test_requestLayoutL", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_requestLayoutL() }},
 			{Name: "test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color()
@@ -938,7 +938,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setBackgroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setBackgroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setCaptureZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCaptureZ() }},
 			{Name: "test_setCursorLorg_eclipse_swt_graphics_Cursor", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCursorLorg_eclipse_swt_graphics_Cursor() }},
@@ -950,7 +950,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setForegroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setForegroundLorg_eclipse_swt_graphics_Color()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setForegroundLorg_eclipse_swt_graphics_Color_()
 			}},
 			{Name: "test_setLayoutDataLjava_lang_Object", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setLayoutDataLjava_lang_Object() }},
 			{Name: "test_setMenuLorg_eclipse_swt_widgets_Menu", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setMenuLorg_eclipse_swt_widgets_Menu() }},
@@ -959,7 +959,7 @@ func init() {
 			}},
 			{Name: "test_setRedrawZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setRedrawZ_() }},
 			{Name: "test_setTextDirection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setTextDirection() }},
-			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setToolTipTextLjava_lang_String() }},
+			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setToolTipTextLjava_lang_String_() }},
 			{Name: "test_toControlII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_toControlII() }},
 			{Name: "test_toControlLorg_eclipse_swt_graphics_Point", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_toControlLorg_eclipse_swt_graphics_Point() }},
 			{Name: "test_toDisplayII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_toDisplayII() }},
@@ -970,8 +970,8 @@ func init() {
 			{Name: "test_getVerticalBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getVerticalBar() }},
 			{Name: "test_bug2162_transparentStyle", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_bug2162_transparentStyle() }},
 			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getChildren_() }},
-			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_toChild_afterOpen() }},
-			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_toChild_beforeOpen() }},
+			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setFocus_toChild_afterOpen_() }},
+			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setFocus_toChild_beforeOpen_() }},
 			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_withInvisibleChild() }},
 			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_withVisibleAndInvisibleChild() }},
 			{Name: "test_setTabList$Lorg_eclipse_swt_widgets_Control", Run: func(t any) {
@@ -981,8 +981,8 @@ func init() {
 			{Name: "test_CaretWithDisposedFontDoesNotThrowException_issue2323", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_CaretWithDisposedFontDoesNotThrowException_issue2323()
 			}},
-			{Name: "test_consistency_DragDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_consistency_DragDetect() }},
-			{Name: "test_consistency_MenuDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_consistency_MenuDetect() }},
+			{Name: "test_consistency_DragDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_consistency_DragDetect_() }},
+			{Name: "test_consistency_MenuDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_consistency_MenuDetect_() }},
 			{Name: "test_scrollIIIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_scrollIIIIIIZ() }},
 			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCaretLorg_eclipse_swt_widgets_Caret() }},
 			{Name: "test_setFontLorg_eclipse_swt_graphics_Font", Run: func(t any) {

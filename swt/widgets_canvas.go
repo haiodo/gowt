@@ -286,7 +286,7 @@ func (this *Canvas) releaseChildren_(destroy bool) {
 
 func (this *Canvas) reskinChildren_(flags int32) {
 	if this.caret != (nil) {
-		this.caret.Reskin(flags)
+		this.caret.impl.reskin_(flags)
 	}
 	if this.ime != (nil) {
 		this.ime.Reskin(flags)
@@ -373,11 +373,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 					newX = destX + width
 				}
 				damage.X = float64(newX)
-				abs144 := deltaX
-				if abs144 < 0 {
-					abs144 = -abs144
+				abs146 := deltaX
+				if abs146 < 0 {
+					abs146 = -abs146
 				}
-				damage.Width = float64(abs144)
+				damage.Width = float64(abs146)
 				this.View.SetNeedsDisplayInRect(damage)
 			}
 			if deltaY != 0 {
@@ -388,11 +388,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 				damage.X = float64(x)
 				damage.Y = float64(newY)
 				damage.Width = float64(width)
-				abs145 := deltaY
-				if abs145 < 0 {
-					abs145 = -abs145
+				abs147 := deltaY
+				if abs147 < 0 {
+					abs147 = -abs147
 				}
-				damage.Height = float64(abs145)
+				damage.Height = float64(abs147)
 				this.View.SetNeedsDisplayInRect(damage)
 			}
 		}
@@ -562,8 +562,8 @@ func (this *Canvas) viewWillMoveToWindow_(id int64, sel int64, arg0 int64) {
 	this.Composite.viewWillMoveToWindow_(id, sel, arg0)
 	if this.glcontext != (nil) && id == this.View.Id && arg0 != 0 {
 		var newShell *Widget = this.display.GetWidgetView(cocoa.NewNSWindowOverload1(arg0).ContentView())
-		_, ok146 := isWidgetToShell(newShell)
-		if ok146 {
+		_, ok148 := isWidgetToShell(newShell)
+		if ok148 {
 			(castWidgetToShell(newShell)).glContextCount++
 			(castWidgetToShell(newShell)).UpdateOpaque()
 		}

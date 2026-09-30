@@ -104,13 +104,13 @@ func (this *Decorations) Compare(data1Like ImageDataLike, data2Like ImageDataLik
 		}
 		return 0
 	}
-	var cond147 int32
+	var cond149 int32
 	if data1.Width > data2.Width || data1.Height > data2.Height {
-		cond147 = -1
+		cond149 = -1
 	} else {
-		cond147 = 1
+		cond149 = 1
 	}
-	return cond147
+	return cond149
 }
 
 func (this *Decorations) computeTabGroup_() *Widget {
@@ -149,7 +149,7 @@ func (this *Decorations) FixDecorations(newDecorationsLike DecorationsLike, cont
 		var index int32 = 0
 		for index < int32(len(menus)) {
 			if menus[index] == menu {
-				control.SetMenu(nil)
+				control.impl.setMenu_(nil)
 				return
 			}
 			index++
@@ -232,7 +232,7 @@ func (this *Decorations) menuShell_() *Decorations {
 
 func (this *Decorations) releaseChildren_(destroy bool) {
 	if this.menuBar != (nil) {
-		this.menuBar.Dispose()
+		this.menuBar.impl.dispose_()
 		this.menuBar = nil
 	}
 	var display *Display = this.display
@@ -245,7 +245,7 @@ func (this *Decorations) releaseChildren_(destroy bool) {
 		for i := int32(0); i < int32(len(menus)); i++ {
 			var menu *Menu = menus[i]
 			if menu != (nil) && !menu.IsDisposed() {
-				menu.Dispose()
+				menu.impl.dispose_()
 			}
 		}
 		menus = nil
@@ -262,14 +262,14 @@ func (this *Decorations) releaseWidget_() {
 
 func (this *Decorations) reskinChildren_(flags int32) {
 	if this.menuBar != (nil) {
-		this.menuBar.Reskin(flags)
+		this.menuBar.impl.reskin_(flags)
 	}
 	var menus []*Menu = this.display.GetMenus(this)
 	if menus != (nil) {
 		for i := int32(0); i < int32(len(menus)); i++ {
 			var menu *Menu = menus[i]
 			if menu != (nil) {
-				menu.Reskin(flags)
+				menu.impl.reskin_(flags)
 			}
 		}
 	}
@@ -338,13 +338,13 @@ func (this *Decorations) SetImage(imageLike ImageLike) {
 		return
 	}
 	if this.display.dockImage == (nil) && !this.display.IsBundledIconSet() {
-		var cond148 *cocoa.NSImage
+		var cond150 *cocoa.NSImage
 		if image != (nil) {
-			cond148 = image.Handle
+			cond150 = image.Handle
 		} else {
-			cond148 = nil
+			cond150 = nil
 		}
-		this.display.application.SetApplicationIconImage(cond148)
+		this.display.application.SetApplicationIconImage(cond150)
 	}
 }
 

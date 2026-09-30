@@ -2,8 +2,14 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type FocusAdapter struct {
 }
+
+func init() { jrt.RegisterClassPackage("FocusAdapter", "org.eclipse.swt.events") }
 
 func (this *FocusAdapter) AsFocusAdapter() *FocusAdapter { return this }
 

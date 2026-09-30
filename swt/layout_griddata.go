@@ -35,6 +35,8 @@ type GridData struct {
 	currentHeight             int32
 }
 
+func init() { jrt.RegisterClassPackage("GridData", "org.eclipse.swt.layout") }
+
 func (this *GridData) AsGridData() *GridData { return this }
 
 type GridDataLike interface {

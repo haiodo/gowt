@@ -49,6 +49,8 @@ func (this *Point) SetImpl_(impl PointImpl) {
 	this.impl = &pointHooked{PointImpl: this.impl, hook: impl}
 }
 
+func init() { jrt.RegisterClassPackage("Point", "org.eclipse.swt.graphics") }
+
 func (this *Point) AsPoint() *Point { return this }
 
 type PointLike interface {
@@ -103,6 +105,8 @@ type Point_OfFloat struct {
 	ResidualY    float32
 	roundingMode RoundingMode
 }
+
+func init() { jrt.RegisterClassPackage("Point_OfFloat", "org.eclipse.swt.graphics") }
 
 func (this *Point_OfFloat) AsPoint_OfFloat() *Point_OfFloat { return this }
 
@@ -188,6 +192,8 @@ type Point_WithMonitor struct {
 	Point_OfFloat
 	monitor *Monitor
 }
+
+func init() { jrt.RegisterClassPackage("Point_WithMonitor", "org.eclipse.swt.graphics") }
 
 func (this *Point_WithMonitor) AsPoint_WithMonitor() *Point_WithMonitor { return this }
 

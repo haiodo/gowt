@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -19,6 +20,8 @@ type ScrolledComposite struct {
 	showFocusedControl     bool
 	showNextFocusedControl bool
 }
+
+func init() { jrt.RegisterClassPackage("ScrolledComposite", "org.eclipse.swt.custom") }
 
 func (this *ScrolledComposite) AsScrolledComposite() *ScrolledComposite { return this }
 
@@ -73,8 +76,8 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 			if !this.showNextFocusedControl {
 				this.showNextFocusedControl = true
 			} else {
-				control, ok606 := isWidgetToControl(event.Widget)
-				if ok606 {
+				control, ok672 := isWidgetToControl(event.Widget)
+				if ok672 {
 					if this.Contains(control) {
 						this.ShowControl(control)
 					}
@@ -82,8 +85,8 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 			}
 		} else {
 			var w *Widget = event.Widget
-			_, ok607 := isWidgetToControl(w)
-			if ok607 {
+			_, ok673 := isWidgetToControl(w)
+			if ok673 {
 				this.showNextFocusedControl = w.GetDisplay().GetActiveShell() == (castWidgetToControl(w)).impl.getShell_()
 			}
 		}
@@ -104,7 +107,7 @@ func (this *ScrolledComposite) Contains(controlLike ControlLike) bool {
 		return false
 	}
 	var parent *Composite = control.GetParent()
-	for parent != (nil) && func() bool { _, ok608 := isCompositeToShell(parent); return !(ok608) }() {
+	for parent != (nil) && func() bool { _, ok674 := isCompositeToShell(parent); return !(ok674) }() {
 		if upcastScrolledCompositeToComposite(this) == parent {
 			return true
 		}
@@ -442,13 +445,6 @@ type DisposeListenerFunc struct {
 
 func (f *DisposeListenerFunc) WidgetDisposed(a0 *DisposeEvent) {
 	f.fn(a0)
-}
-
-func isCompositeToShell(x *Composite) (*Shell, bool) {
-	if x == nil {
-		return nil, false
-	}
-	return widgetImplAsShell(x.impl)
 }
 
 func upcastScrolledCompositeToComposite(x *ScrolledComposite) *Composite {

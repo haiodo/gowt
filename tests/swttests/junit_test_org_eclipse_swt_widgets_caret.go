@@ -133,7 +133,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).impl.setUp_() },
 		},
 		AfterEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).TearDown() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).impl.tearDown_() },
 		},
 		Tests: []junit.Test{
 			{Name: "test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener", Run: func(t any) {

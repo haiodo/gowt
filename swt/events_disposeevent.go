@@ -2,9 +2,15 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type DisposeEvent struct {
 	TypedEvent
 }
+
+func init() { jrt.RegisterClassPackage("DisposeEvent", "org.eclipse.swt.events") }
 
 func (this *DisposeEvent) AsDisposeEvent() *DisposeEvent { return this }
 

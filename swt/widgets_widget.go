@@ -38,12 +38,14 @@ type WidgetImpl interface {
 	acceptsFirstResponder_(a0 int64, a1 int64) bool
 	becomeFirstResponder_(a0 int64, a1 int64) bool
 	becomeKeyWindow_(a0 int64, a1 int64)
+	reskin_(a0 int32)
 	reskinChildren_(a0 int32)
 	_addListener_(a0 int32, a1 Listener)
 	checkOpen_()
 	checkParent_(a0 *Widget)
 	checkSubclass_()
 	clearDeferFlushing_(a0 int64, a1 int64)
+	textView_clickOnLink_atIndex_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
 	collapseItem_collapseChildren_(a0 int64, a1 int64, a2 int64, a3 bool)
 	createHandle_()
 	createWidget_()
@@ -54,17 +56,20 @@ type WidgetImpl interface {
 	deregister_()
 	destroyJNIRef_()
 	destroyWidget_()
+	dispose_()
 	deselectAll_(a0 int64, a1 int64, a2 int64)
 	deselectRow_(a0 int64, a1 int64, a2 int64)
 	doCommandBySelector_(a0 int64, a1 int64, a2 int64)
 	drawBackground_(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
 	drawBackgroundInClipRect_(a0 int64, a1 int64, a2 cocoa.NSRect)
+	drawImageWithFrameInView_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64)
 	drawTitleWithFrameInView_(a0 int64, a1 int64, a2 int64, a3 cocoa.NSRect, a4 int64) cocoa.NSRect
 	drawInteriorWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	drawBezelWithFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	drawLabelInRect_(a0 int64, a1 int64, a2 bool, a3 cocoa.NSRect)
 	drawWithExpansionFrame_inView_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64)
 	drawRect_(a0 int64, a1 int64, a2 cocoa.NSRect)
+	_drawThemeProgressArea_(a0 int64, a1 int64, a2 int64)
 	drawWidget_(a0 int64, a1 *cocoa.NSGraphicsContext, a2 cocoa.NSRect)
 	imageView_() int64
 	redrawWidget_(a0 *cocoa.NSView, a1 bool)
@@ -86,11 +91,13 @@ type WidgetImpl interface {
 	insertText_(a0 int64, a1 int64, a2 int64) bool
 	isActive_() bool
 	isDrawing_() bool
+	isFlipped_(a0 int64, a1 int64) bool
 	isOpaque_(a0 int64, a1 int64) bool
 	flagsChanged_(a0 int64, a1 int64, a2 int64)
 	keyDown_(a0 int64, a1 int64, a2 int64)
 	keyUp_(a0 int64, a1 int64, a2 int64)
 	mouseDown_(a0 int64, a1 int64, a2 int64)
+	mouseDownCanMoveWindow_(a0 int64, a1 int64) bool
 	mouseDownSuper_(a0 int64, a1 int64, a2 int64)
 	mouseUp_(a0 int64, a1 int64, a2 int64)
 	mouseMoved_(a0 int64, a1 int64, a2 int64)
@@ -175,8 +182,13 @@ type WidgetImpl interface {
 	tableView_willDisplayCell_forTableColumn_row_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64)
 	textViewDidChangeSelection_(a0 int64, a1 int64, a2 int64)
 	textDidChange_(a0 int64, a1 int64, a2 int64)
+	textDidEndEditing_(a0 int64, a1 int64, a2 int64)
 	textView_willChangeSelectionFromCharacterRange_toCharacterRange_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
 	titleRectForBounds_(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
+	toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(a0 int64, a1 int64, a2 int64, a3 int64, a4 bool) int64
+	toolbarAllowedItemIdentifiers_(a0 int64, a1 int64, a2 int64) int64
+	toolbarDefaultItemIdentifiers_(a0 int64, a1 int64, a2 int64) int64
+	toolbarSelectableItemIdentifiers_(a0 int64, a1 int64, a2 int64) int64
 	tooltipText_() string
 	string_() string
 	touchesBeganWithEvent_(a0 int64, a1 int64, a2 int64)
@@ -192,7 +204,9 @@ type WidgetImpl interface {
 	tabView_didSelectTabViewItem_(a0 int64, a1 int64, a2 int64, a3 int64)
 	tabView_willSelectTabViewItem_(a0 int64, a1 int64, a2 int64, a3 int64)
 	tableView_writeRowsWithIndexes_toPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) bool
+	validateMenuItem_(a0 int64, a1 int64, a2 int64) bool
 	view_stringForToolTip_point_userData_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64, a5 int64) int64
+	viewDidMoveToWindow_(a0 int64, a1 int64)
 	viewWillMoveToWindow_(a0 int64, a1 int64, a2 int64)
 	windowDidMove_(a0 int64, a1 int64, a2 int64)
 	windowDidResize_(a0 int64, a1 int64, a2 int64)
@@ -205,9 +219,11 @@ type WidgetImpl interface {
 	windowWillClose_(a0 int64, a1 int64, a2 int64)
 	nextState_(a0 int64, a1 int64) int64
 	updateOpenGLContext_(a0 int64, a1 int64, a2 int64)
+	shouldDrawInsertionPoint_(a0 int64, a1 int64) bool
 	readSelectionFromPasteboard_(a0 int64, a1 int64, a2 int64) bool
 	validRequestorForSendType_(a0 int64, a1 int64, a2 int64, a3 int64) int64
 	writeSelectionToPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64) bool
+	handleIsAccessible_(a0 int64) bool
 	addRelation_(a0 *Control)
 	computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point
 	computeTabGroup_() *Widget
@@ -227,15 +243,19 @@ type WidgetImpl interface {
 	findMenus_(a0 *Control) []*Menu
 	findTooltip_(a0 cocoa.NSPoint) *Widget
 	fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
+	focusView_() *cocoa.NSView
 	forceFocusFocusView_(a0 *cocoa.NSView) bool
 	getBounds_() *Rectangle
+	getForeground_() *Color
 	getLocation_() *Point
+	getMenu_() *Menu
 	getMininumHeight_() int32
 	getOrientation_() int32
 	getRegion_() *Region
 	getShell_() *Shell
 	getSize_() *Point
 	getThemeAlpha_() float32
+	getToolTipText_() string
 	hasBorder_() bool
 	hasRegion_() bool
 	imeInComposition_() bool
@@ -244,6 +264,7 @@ type WidgetImpl interface {
 	isDescribedByLabel_() bool
 	isEnabled_() bool
 	isEnabledCursor_() bool
+	isFocusControl_() bool
 	isReparentable_() bool
 	isResizing_() bool
 	isTabGroup_() bool
@@ -251,12 +272,14 @@ type WidgetImpl interface {
 	isTransparent_() bool
 	isTrim_(a0 *cocoa.NSView) bool
 	isVisible_() bool
+	hasKeyboardFocus_(a0 int64) bool
 	markLayout_(a0 bool, a1 bool)
 	menuShell_() *Decorations
 	isEventView_(a0 int64) bool
 	mouseEvent_(a0 int64, a1 int64, a2 int64, a3 int32) bool
 	print_(a0 *GC) bool
 	requestLayout_()
+	redraw_()
 	redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
 	removeRelation_()
 	resetVisibleRegion_()
@@ -264,15 +287,18 @@ type WidgetImpl interface {
 	sendFocusEvent_(a0 int32)
 	sendMouseEvent_(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool
 	setBackgroundWithColor_(a0 *Color)
+	setBackgroundImage_(a0 *Image)
 	setBackgroundImageImage_(a0 *cocoa.NSImage)
 	setBackgroundColor_(a0 *cocoa.NSColor)
 	setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool)
+	setCursor_(a0 *Cursor)
 	setEnabled_(a0 bool)
 	setFocus_() bool
 	setFont_(a0 *Font)
 	setFontFont_(a0 *cocoa.NSFont)
 	setForeground_(a0 *Color)
 	setForegroundColor_(a0 []float64)
+	setMenu_(a0 *Menu)
 	setOrientationOnControl_(a0 int32)
 	setRedraw_(a0 bool)
 	setRegion_(a0 *Region)
@@ -283,7 +309,9 @@ type WidgetImpl interface {
 	setZOrder_()
 	setZOrderSiblingAbove_(a0 *Control, a1 bool)
 	topView_() *cocoa.NSView
+	translateTraversal_(a0 int32, a1 *cocoa.NSEvent, a2 []bool) bool
 	traversalCode_(a0 int32, a1 *cocoa.NSEvent) int32
+	traverseTraversal_(a0 int32) bool
 	traverseEscape_() bool
 	traverseItem_(a0 bool) bool
 	traverseReturn_() bool
@@ -303,6 +331,7 @@ type WidgetImpl interface {
 	setImageOnItem_(a0 *Image)
 	setText_(a0 string)
 	findDeferredControl_() *Composite
+	getChildren_() []*Control
 	minimumSize_(a0 int32, a1 int32, a2 bool) *Point
 	removeControl_(a0 *Control)
 	setLayout_(a0 *Layout)
@@ -312,6 +341,10 @@ type WidgetImpl interface {
 	setMaximized_(a0 bool)
 	setMenuBar_(a0 *Menu)
 	setMinimized_(a0 bool)
+}
+
+func (this *Widget) handleIsAccessible_(a0 int64) bool {
+	panic("j2go: handleIsAccessible_ has no default on Widget")
 }
 
 func (this *Widget) addRelation_(a0 *Control) {
@@ -390,6 +423,10 @@ func (this *Widget) fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Deco
 	panic("j2go: fixChildren_ has no default on Widget")
 }
 
+func (this *Widget) focusView_() *cocoa.NSView {
+	panic("j2go: focusView_ has no default on Widget")
+}
+
 func (this *Widget) forceFocusFocusView_(a0 *cocoa.NSView) bool {
 	panic("j2go: forceFocusFocusView_ has no default on Widget")
 }
@@ -398,8 +435,16 @@ func (this *Widget) getBounds_() *Rectangle {
 	panic("j2go: getBounds_ has no default on Widget")
 }
 
+func (this *Widget) getForeground_() *Color {
+	panic("j2go: getForeground_ has no default on Widget")
+}
+
 func (this *Widget) getLocation_() *Point {
 	panic("j2go: getLocation_ has no default on Widget")
+}
+
+func (this *Widget) getMenu_() *Menu {
+	panic("j2go: getMenu_ has no default on Widget")
 }
 
 func (this *Widget) getMininumHeight_() int32 {
@@ -424,6 +469,10 @@ func (this *Widget) getSize_() *Point {
 
 func (this *Widget) getThemeAlpha_() float32 {
 	panic("j2go: getThemeAlpha_ has no default on Widget")
+}
+
+func (this *Widget) getToolTipText_() string {
+	panic("j2go: getToolTipText_ has no default on Widget")
 }
 
 func (this *Widget) hasBorder_() bool {
@@ -458,6 +507,10 @@ func (this *Widget) isEnabledCursor_() bool {
 	panic("j2go: isEnabledCursor_ has no default on Widget")
 }
 
+func (this *Widget) isFocusControl_() bool {
+	panic("j2go: isFocusControl_ has no default on Widget")
+}
+
 func (this *Widget) isReparentable_() bool {
 	panic("j2go: isReparentable_ has no default on Widget")
 }
@@ -486,6 +539,10 @@ func (this *Widget) isVisible_() bool {
 	panic("j2go: isVisible_ has no default on Widget")
 }
 
+func (this *Widget) hasKeyboardFocus_(a0 int64) bool {
+	panic("j2go: hasKeyboardFocus_ has no default on Widget")
+}
+
 func (this *Widget) markLayout_(a0 bool, a1 bool) {
 	panic("j2go: markLayout_ has no default on Widget")
 }
@@ -508,6 +565,10 @@ func (this *Widget) print_(a0 *GC) bool {
 
 func (this *Widget) requestLayout_() {
 	panic("j2go: requestLayout_ has no default on Widget")
+}
+
+func (this *Widget) redraw_() {
+	panic("j2go: redraw_ has no default on Widget")
 }
 
 func (this *Widget) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
@@ -538,6 +599,10 @@ func (this *Widget) setBackgroundWithColor_(a0 *Color) {
 	panic("j2go: setBackgroundWithColor_ has no default on Widget")
 }
 
+func (this *Widget) setBackgroundImage_(a0 *Image) {
+	panic("j2go: setBackgroundImage_ has no default on Widget")
+}
+
 func (this *Widget) setBackgroundImageImage_(a0 *cocoa.NSImage) {
 	panic("j2go: setBackgroundImageImage_ has no default on Widget")
 }
@@ -548,6 +613,10 @@ func (this *Widget) setBackgroundColor_(a0 *cocoa.NSColor) {
 
 func (this *Widget) setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool) {
 	panic("j2go: setBoundsXYWidthHeightMoveResize_ has no default on Widget")
+}
+
+func (this *Widget) setCursor_(a0 *Cursor) {
+	panic("j2go: setCursor_ has no default on Widget")
 }
 
 func (this *Widget) setEnabled_(a0 bool) {
@@ -572,6 +641,10 @@ func (this *Widget) setForeground_(a0 *Color) {
 
 func (this *Widget) setForegroundColor_(a0 []float64) {
 	panic("j2go: setForegroundColor_ has no default on Widget")
+}
+
+func (this *Widget) setMenu_(a0 *Menu) {
+	panic("j2go: setMenu_ has no default on Widget")
 }
 
 func (this *Widget) setOrientationOnControl_(a0 int32) {
@@ -614,8 +687,16 @@ func (this *Widget) topView_() *cocoa.NSView {
 	panic("j2go: topView_ has no default on Widget")
 }
 
+func (this *Widget) translateTraversal_(a0 int32, a1 *cocoa.NSEvent, a2 []bool) bool {
+	panic("j2go: translateTraversal_ has no default on Widget")
+}
+
 func (this *Widget) traversalCode_(a0 int32, a1 *cocoa.NSEvent) int32 {
 	panic("j2go: traversalCode_ has no default on Widget")
+}
+
+func (this *Widget) traverseTraversal_(a0 int32) bool {
+	panic("j2go: traverseTraversal_ has no default on Widget")
 }
 
 func (this *Widget) traverseEscape_() bool {
@@ -694,6 +775,10 @@ func (this *Widget) findDeferredControl_() *Composite {
 	panic("j2go: findDeferredControl_ has no default on Widget")
 }
 
+func (this *Widget) getChildren_() []*Control {
+	panic("j2go: getChildren_ has no default on Widget")
+}
+
 func (this *Widget) minimumSize_(a0 int32, a1 int32, a2 bool) *Point {
 	panic("j2go: minimumSize_ has no default on Widget")
 }
@@ -743,12 +828,28 @@ func (this *widgetHooked) enter(name string) func() {
 	return func() { this.active = prev }
 }
 
+func (this *widgetHooked) reskin_(a0 int32) {
+	if h, ok := this.hook.(interface{ Reskin_(a0 int32) }); ok && this.active != "reskin_" {
+		defer this.enter("reskin_")()
+		h.Reskin_(a0)
+	}
+	this.WidgetImpl.reskin_(a0)
+}
+
 func (this *widgetHooked) checkSubclass_() {
 	if h, ok := this.hook.(interface{ CheckSubclass_() }); ok && this.active != "checkSubclass_" {
 		defer this.enter("checkSubclass_")()
 		h.CheckSubclass_()
 	}
 	this.WidgetImpl.checkSubclass_()
+}
+
+func (this *widgetHooked) dispose_() {
+	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
+		defer this.enter("dispose_")()
+		h.Dispose_()
+	}
+	this.WidgetImpl.dispose_()
 }
 
 func (this *widgetHooked) getStyle_() int32 {
@@ -801,12 +902,28 @@ func (this *widgetHooked) getBounds_() *Rectangle {
 	return this.WidgetImpl.getBounds_()
 }
 
+func (this *widgetHooked) getForeground_() *Color {
+	if h, ok := this.hook.(interface{ GetForeground_() *Color }); ok && this.active != "getForeground_" {
+		defer this.enter("getForeground_")()
+		return h.GetForeground_()
+	}
+	return this.WidgetImpl.getForeground_()
+}
+
 func (this *widgetHooked) getLocation_() *Point {
 	if h, ok := this.hook.(interface{ GetLocation_() *Point }); ok && this.active != "getLocation_" {
 		defer this.enter("getLocation_")()
 		return h.GetLocation_()
 	}
 	return this.WidgetImpl.getLocation_()
+}
+
+func (this *widgetHooked) getMenu_() *Menu {
+	if h, ok := this.hook.(interface{ GetMenu_() *Menu }); ok && this.active != "getMenu_" {
+		defer this.enter("getMenu_")()
+		return h.GetMenu_()
+	}
+	return this.WidgetImpl.getMenu_()
 }
 
 func (this *widgetHooked) getOrientation_() int32 {
@@ -841,12 +958,28 @@ func (this *widgetHooked) getSize_() *Point {
 	return this.WidgetImpl.getSize_()
 }
 
+func (this *widgetHooked) getToolTipText_() string {
+	if h, ok := this.hook.(interface{ GetToolTipText_() string }); ok && this.active != "getToolTipText_" {
+		defer this.enter("getToolTipText_")()
+		return h.GetToolTipText_()
+	}
+	return this.WidgetImpl.getToolTipText_()
+}
+
 func (this *widgetHooked) isEnabled_() bool {
 	if h, ok := this.hook.(interface{ IsEnabled_() bool }); ok && this.active != "isEnabled_" {
 		defer this.enter("isEnabled_")()
 		return h.IsEnabled_()
 	}
 	return this.WidgetImpl.isEnabled_()
+}
+
+func (this *widgetHooked) isFocusControl_() bool {
+	if h, ok := this.hook.(interface{ IsFocusControl_() bool }); ok && this.active != "isFocusControl_" {
+		defer this.enter("isFocusControl_")()
+		return h.IsFocusControl_()
+	}
+	return this.WidgetImpl.isFocusControl_()
 }
 
 func (this *widgetHooked) isReparentable_() bool {
@@ -881,6 +1014,14 @@ func (this *widgetHooked) requestLayout_() {
 	this.WidgetImpl.requestLayout_()
 }
 
+func (this *widgetHooked) redraw_() {
+	if h, ok := this.hook.(interface{ Redraw_() }); ok && this.active != "redraw_" {
+		defer this.enter("redraw_")()
+		h.Redraw_()
+	}
+	this.WidgetImpl.redraw_()
+}
+
 func (this *widgetHooked) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
 	if h, ok := this.hook.(interface {
 		RedrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
@@ -897,6 +1038,22 @@ func (this *widgetHooked) setBackgroundWithColor_(a0 *Color) {
 		h.SetBackgroundWithColor_(a0)
 	}
 	this.WidgetImpl.setBackgroundWithColor_(a0)
+}
+
+func (this *widgetHooked) setBackgroundImage_(a0 *Image) {
+	if h, ok := this.hook.(interface{ SetBackgroundImage_(a0 *Image) }); ok && this.active != "setBackgroundImage_" {
+		defer this.enter("setBackgroundImage_")()
+		h.SetBackgroundImage_(a0)
+	}
+	this.WidgetImpl.setBackgroundImage_(a0)
+}
+
+func (this *widgetHooked) setCursor_(a0 *Cursor) {
+	if h, ok := this.hook.(interface{ SetCursor_(a0 *Cursor) }); ok && this.active != "setCursor_" {
+		defer this.enter("setCursor_")()
+		h.SetCursor_(a0)
+	}
+	this.WidgetImpl.setCursor_(a0)
 }
 
 func (this *widgetHooked) setEnabled_(a0 bool) {
@@ -931,6 +1088,14 @@ func (this *widgetHooked) setForeground_(a0 *Color) {
 	this.WidgetImpl.setForeground_(a0)
 }
 
+func (this *widgetHooked) setMenu_(a0 *Menu) {
+	if h, ok := this.hook.(interface{ SetMenu_(a0 *Menu) }); ok && this.active != "setMenu_" {
+		defer this.enter("setMenu_")()
+		h.SetMenu_(a0)
+	}
+	this.WidgetImpl.setMenu_(a0)
+}
+
 func (this *widgetHooked) setRedraw_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetRedraw_(a0 bool) }); ok && this.active != "setRedraw_" {
 		defer this.enter("setRedraw_")()
@@ -961,6 +1126,14 @@ func (this *widgetHooked) setVisible_(a0 bool) {
 		h.SetVisible_(a0)
 	}
 	this.WidgetImpl.setVisible_(a0)
+}
+
+func (this *widgetHooked) traverseTraversal_(a0 int32) bool {
+	if h, ok := this.hook.(interface{ TraverseTraversal_(a0 int32) bool }); ok && this.active != "traverseTraversal_" {
+		defer this.enter("traverseTraversal_")()
+		return h.TraverseTraversal_(a0)
+	}
+	return this.WidgetImpl.traverseTraversal_(a0)
 }
 
 func (this *widgetHooked) computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
@@ -1003,6 +1176,14 @@ func (this *widgetHooked) setText_(a0 string) {
 		h.SetText_(a0)
 	}
 	this.WidgetImpl.setText_(a0)
+}
+
+func (this *widgetHooked) getChildren_() []*Control {
+	if h, ok := this.hook.(interface{ GetChildren_() []*Control }); ok && this.active != "getChildren_" {
+		defer this.enter("getChildren_")()
+		return h.GetChildren_()
+	}
+	return this.WidgetImpl.getChildren_()
 }
 
 func (this *widgetHooked) setLayout_(a0 *Layout) {
@@ -1537,6 +1718,10 @@ func (this *Widget) becomeKeyWindow_(id int64, sel int64) {
 }
 
 func (this *Widget) Reskin(flags int32) {
+	this.impl.reskin_(flags)
+}
+
+func (this *Widget) reskin_(flags int32) {
 	this.CheckWidget()
 	this.ReskinWidget()
 	if (flags & ALL) != 0 {
@@ -1677,6 +1862,10 @@ func (this *Widget) clearDeferFlushing_(id int64, sel int64) {
 }
 
 func (this *Widget) TextView_clickOnLink_atIndex(id int64, sel int64, textView int64, link int64, charIndex int64) bool {
+	return this.impl.textView_clickOnLink_atIndex_(id, sel, textView, link, charIndex)
+}
+
+func (this *Widget) textView_clickOnLink_atIndex_(id int64, sel int64, textView int64, link int64, charIndex int64) bool {
 	return true
 }
 
@@ -1784,6 +1973,10 @@ func (this *Widget) destroyWidget_() {
 }
 
 func (this *Widget) Dispose() {
+	this.impl.dispose_()
+}
+
+func (this *Widget) dispose_() {
 	if this.IsDisposed() {
 		return
 	}
@@ -1837,6 +2030,10 @@ func (this *Widget) drawBackgroundInClipRect_(id int64, sel int64, rect cocoa.NS
 }
 
 func (this *Widget) DrawImageWithFrameInView(id int64, sel int64, image int64, rect cocoa.NSRect, view int64) {
+	this.impl.drawImageWithFrameInView_(id, sel, image, rect, view)
+}
+
+func (this *Widget) drawImageWithFrameInView_(id int64, sel int64, image int64, rect cocoa.NSRect, view int64) {
 	this.CallSuperOverload5(id, sel, image, rect, view)
 }
 
@@ -1920,6 +2117,10 @@ func (this *Widget) drawRect_(id int64, sel int64, rect cocoa.NSRect) {
 }
 
 func (this *Widget) _drawThemeProgressArea(id int64, sel int64, arg0 int64) {
+	this.impl._drawThemeProgressArea_(id, sel, arg0)
+}
+
+func (this *Widget) _drawThemeProgressArea_(id int64, sel int64, arg0 int64) {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -2216,6 +2417,10 @@ func (this *Widget) isDrawing_() bool {
 }
 
 func (this *Widget) IsFlipped(id int64, sel int64) bool {
+	return this.impl.isFlipped_(id, sel)
+}
+
+func (this *Widget) isFlipped_(id int64, sel int64) bool {
 	var super_struct cocoa.ObjcSuper = cocoa.ObjcSuper{}
 	super_struct.Receiver = id
 	super_struct.Super_class = cocoa.OSObjc_msgSend(id, cocoa.OSSel_superclass)
@@ -2276,6 +2481,10 @@ func (this *Widget) mouseDown_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Widget) MouseDownCanMoveWindow(id int64, sel int64) bool {
+	return this.impl.mouseDownCanMoveWindow_(id, sel)
+}
+
+func (this *Widget) mouseDownCanMoveWindow_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 
@@ -3035,7 +3244,7 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 		}
 	}
 	if (key == SKIN_CLASS) || (key == SKIN_ID) {
-		this.Reskin(ALL)
+		this.impl.reskin_(ALL)
 	}
 }
 
@@ -3535,6 +3744,10 @@ func (this *Widget) textDidChange_(id int64, sel int64, aNotification int64) {
 }
 
 func (this *Widget) TextDidEndEditing(id int64, sel int64, aNotification int64) {
+	this.impl.textDidEndEditing_(id, sel, aNotification)
+}
+
+func (this *Widget) textDidEndEditing_(id int64, sel int64, aNotification int64) {
 	this.CallSuperOverload1(id, sel, aNotification)
 }
 
@@ -3560,18 +3773,34 @@ func (this *Widget) titleRectForBounds_(id int64, sel int64, cellFrame cocoa.NSR
 }
 
 func (this *Widget) Toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(id int64, sel int64, toolbar int64, itemID int64, flag bool) int64 {
+	return this.impl.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(id, sel, toolbar, itemID, flag)
+}
+
+func (this *Widget) toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(id int64, sel int64, toolbar int64, itemID int64, flag bool) int64 {
 	return int64(0)
 }
 
 func (this *Widget) ToolbarAllowedItemIdentifiers(id int64, sel int64, toolbar int64) int64 {
+	return this.impl.toolbarAllowedItemIdentifiers_(id, sel, toolbar)
+}
+
+func (this *Widget) toolbarAllowedItemIdentifiers_(id int64, sel int64, toolbar int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) ToolbarDefaultItemIdentifiers(id int64, sel int64, toolbar int64) int64 {
+	return this.impl.toolbarDefaultItemIdentifiers_(id, sel, toolbar)
+}
+
+func (this *Widget) toolbarDefaultItemIdentifiers_(id int64, sel int64, toolbar int64) int64 {
 	return int64(0)
 }
 
 func (this *Widget) ToolbarSelectableItemIdentifiers(id int64, sel int64, toolbar int64) int64 {
+	return this.impl.toolbarSelectableItemIdentifiers_(id, sel, toolbar)
+}
+
+func (this *Widget) toolbarSelectableItemIdentifiers_(id int64, sel int64, toolbar int64) int64 {
 	return int64(0)
 }
 
@@ -3701,6 +3930,10 @@ func (this *Widget) tableView_writeRowsWithIndexes_toPasteboard_(id int64, sel i
 }
 
 func (this *Widget) ValidateMenuItem(id int64, sel int64, menuItem int64) bool {
+	return this.impl.validateMenuItem_(id, sel, menuItem)
+}
+
+func (this *Widget) validateMenuItem_(id int64, sel int64, menuItem int64) bool {
 	return true
 }
 
@@ -3713,6 +3946,10 @@ func (this *Widget) view_stringForToolTip_point_userData_(id int64, sel int64, v
 }
 
 func (this *Widget) ViewDidMoveToWindow(id int64, sel int64) {
+	this.impl.viewDidMoveToWindow_(id, sel)
+}
+
+func (this *Widget) viewDidMoveToWindow_(id int64, sel int64) {
 }
 
 func (this *Widget) ViewWillMoveToWindow(id int64, sel int64, arg0 int64) {
@@ -3803,6 +4040,10 @@ func (this *Widget) updateOpenGLContext_(id int64, sel int64, notification int64
 }
 
 func (this *Widget) ShouldDrawInsertionPoint(id int64, sel int64) bool {
+	return this.impl.shouldDrawInsertionPoint_(id, sel)
+}
+
+func (this *Widget) shouldDrawInsertionPoint_(id int64, sel int64) bool {
 	return this.CallSuperBoolean(id, sel)
 }
 

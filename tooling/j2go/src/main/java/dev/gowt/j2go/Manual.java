@@ -13,10 +13,8 @@ public class Manual {
 	private static final String TOUCH = "org.eclipse.swt.widgets.Touch";
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
-	private static final String TOOL_BAR = "org.eclipse.swt.widgets.ToolBar";
 	private static final String IME = "org.eclipse.swt.widgets.IME";
 	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
-	private static final String ACC = "org.eclipse.swt.accessibility.ACC";
 	private static final String WIDGET_SPY = "org.eclipse.swt.internal.WidgetSpy";
 	private static final String AUTOSCALING_MODE = "org.eclipse.swt.graphics.AutoscalingMode";
 	// checkWidget()'s thread-affinity check: no real Thread, both sides collapse to "any" nil.
@@ -71,10 +69,8 @@ public class Manual {
 		reg(TOUCH, "Touch", null, false);
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
-		reg(TOOL_BAR, "ToolBar", null, false);
 		reg(IME, "IME", null, false);
 		reg(ACCESSIBLE, "Accessible", null, false);
-		reg(ACC, "ACC", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
 		reg(AUTOSCALING_MODE, "AutoscalingMode", null, true);
 		reg(JAVA_THREAD, "any", null, true);
@@ -84,7 +80,8 @@ public class Manual {
 		reg(JAVA_RUNNABLE, "jrt.Runnable", JRT_IMPORT, true);
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.concurrent.ConcurrentLinkedQueue"}) {
+		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.concurrent.ConcurrentLinkedQueue"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg(SWT_LONG, "LONG", null, false);
@@ -107,14 +104,6 @@ public class Manual {
 		}
 		// A nested Java enum: no enum rule yet, hand-written as an int32 type + constants.
 		reg(DISPLAY_APPEARANCE, "Display_APPEARANCE", null, true);
-		// Widgets Display only references off the Shell+Button path (file dialog, tray, dock
-		// menu): opaque stubs in swt/widgets_stubs3_manual.go. FontDialog/ColorDialog/Combo
-		// translated for real as of Round 9 - removed from this list.
-		for (String n : new String[]{"widgets.FileDialog",
-				"widgets.TaskBar", "widgets.TaskItem", "widgets.Tray", "widgets.TrayItem"}) {
-			String q = "org.eclipse.swt." + n;
-			reg(q, q.substring(q.lastIndexOf('.') + 1), null, false);
-		}
 		// java.lang.Throwable itself is only ever used as a field/param/return TYPE (never a
 		// manual superclass to embed) - Go's builtin error interface is exactly that role.
 		reg(JAVA_THROWABLE, "error", null, true);
@@ -139,7 +128,7 @@ public class Manual {
 		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
 		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
 		// Round 14: java.util.concurrent.atomic cells the widget tests capture from listeners.
-		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicReference"}) {
+		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicLong", "AtomicReference"}) {
 			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
 		}
 		// A record (no rule): swt/graphics_stubs_manual.go, element erased to any.
@@ -154,6 +143,7 @@ public class Manual {
 		}
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
+		reg("java.util.StringTokenizer", "jrt.StringTokenizer", JRT_IMPORT, false);
 		// java.util.ResourceBundle over the registered resource FS, java.text.MessageFormat's
 		// {n} substitution, and the exceptions they (and Integer.parseInt) throw - internal/jrt/text.go.
 		reg("java.util.ResourceBundle", "jrt.ResourceBundle", JRT_IMPORT, false);

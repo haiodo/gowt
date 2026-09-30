@@ -25,6 +25,12 @@ public class Main {
 			// BidiUtil: not on win32's real sourcepath for cocoa, but the real cocoa build fragment
 			// (binaries/org.eclipse.swt.cocoa.macosx.*/build.properties) pulls this one in too.
 			"bundles/org.eclipse.swt/Eclipse SWT/emulated/bidi",
+			// Cocoa has no ToolTip/CoolBar/ExpandBar of its own: the emulated ones (Round 17).
+			"bundles/org.eclipse.swt/Eclipse SWT/emulated/tooltip",
+			"bundles/org.eclipse.swt/Eclipse SWT/emulated/coolbar",
+			"bundles/org.eclipse.swt/Eclipse SWT/emulated/expand",
+			"bundles/org.eclipse.swt/Eclipse SWT Printing/common",
+			"bundles/org.eclipse.swt/Eclipse SWT Printing/cocoa",
 			// org.eclipse.swt.custom: StackLayout/SashForm/SashFormLayout/SashFormData (Round 8).
 			"bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common",
 			// org.eclipse.swt.examples.* (Round 10): each example package is its own Go package.

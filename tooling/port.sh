@@ -223,8 +223,9 @@ SWT_FILES=(
 	org/eclipse/swt/custom/CTabFolder2Adapter.java
 	org/eclipse/swt/internal/TransparencyColorImageGcDrawer.java
 	org/eclipse/swt/widgets/Caret.java
-	org/eclipse/swt/internal/graphics/ImageUtil.java
 )
+# Only cocoa has an ImageUtil (win32 and gtk draw images without it).
+[ "$PLATFORM" = cocoa ] && SWT_FILES+=(org/eclipse/swt/internal/graphics/ImageUtil.java)
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \
 	-- \

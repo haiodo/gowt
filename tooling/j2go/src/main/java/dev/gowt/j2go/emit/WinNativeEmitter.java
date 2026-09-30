@@ -37,6 +37,11 @@ final class WinNativeEmitter {
 		String javaName = md.getName().getIdentifier();
 		String goName = ci.goFuncPrefix + emitter.names.goMemberName(mb, Names.capitalize(javaName));
 		ITypeBinding[] types = mb.getParameterTypes();
+		// GDI+ is C++ in os: the flat API is bound by hand (internal/win32/gdip_manual.go) once GC needs it.
+		if (ci.binding.getName().equals("Gdip") && !javaName.endsWith("_sizeof")) {
+			emitter.emitUnsupportedNative(md, ci, out);
+			return;
+		}
 		if (javaName.endsWith("_sizeof") && types.length == 0) {
 			String typeName = javaName.substring(0, javaName.length() - "_sizeof".length());
 			Integer size = WinLayout.size(typeName);

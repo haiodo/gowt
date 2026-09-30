@@ -1,14 +1,23 @@
-# SWT JUnit tests (TSK-2026-09-23-051)
+# SWT JUnit tests: results (TSK-2026-09-23-051, -052, -053)
 
-`make test-swt` on macOS arm64, SWT `af630a9093`, translated set: the `graphics`, `layout` and
-`events` test classes plus `SwtTestUtil`, `ImageTestUtil`, `CapturedOutput`,
-`tests/graphics/ImageDataTestHelper`. Widget test classes are not translated (task 052).
+`make test-swt` on macOS arm64, SWT `af630a9093`. The run is gated by `tests/expected.txt` (below).
 
-**Total: 352 tests - 325 passed, 22 failed, 5 skipped** (first run, TSK-2026-09-23-051 seed: 292 / 55 / 5).
+**Total: 1822 tests - 1714 passed, 97 failed, 11 skipped** (merge of TSK-051 and TSK-052/053). Before:
+widget tests alone 1662 / 149 / 11; graphics, layout and events alone 325 / 22 / 5 (TSK-051 seed: 292 / 55 / 5).
+The merge fixed 66 listed failures and broke 13 tests (below, "Merge regressions"); `Tree.test_Virtual` is `flaky`.
 
-Not translated from this set: `Test_org_eclipse_swt_layout_BorderLayout` - `BorderLayout`/`BorderData`
-are not in `swt`, and its `MockControl extends Canvas` subclasses a widget from another Go package
-(the impl cascade's `impl` field and `init<X>` are unexported).
+Translated: `graphics`, `layout` (except `BorderLayout`, see below), `events`, and the widget classes
+`Widget`, `Control`, `Scrollable`, `Composite`, `Canvas`, `Decorations`, `Shell`, `Display`, `Button`, `Label`,
+`Text`, `Tree`, `Table`, `Combo`, `TabFolder`, `Group`, `Menu`, `Caret`, `ScrolledComposite`, plus `SwtTestUtil`,
+`ImageTestUtil`, `CapturedOutput`, `ConsistencyUtility`, `ImageDataTestHelper`. `Widget`, `Control`, `Scrollable`
+and `Decorations` are abstract: their tests run once per concrete subclass (so one Widget test counts in every
+widget row). `CoolBar` was neither translated nor excluded: in these classes it only appears as a string key in
+`ConsistencyUtility`, and j2go parses them without it. SWT has no `Test_..._SashForm`; `SashForm` is not
+covered by any JUnit test.
+
+Not translated: `Test_org_eclipse_swt_layout_BorderLayout` (`BorderLayout`/`BorderData` are not in `swt`; its
+`MockControl extends Canvas` subclasses a widget from another Go package). Not attempted: the other widget
+tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the task list.
 
 ## Per class
 
@@ -30,19 +39,42 @@ are not in `swt`, and its `MockControl extends Canvas` subclasses a widget from 
 | graphics_Path | 3 | 0 | 1 |
 | graphics_Pattern | 16 | 0 | 0 |
 | graphics_Point | 5 | 0 | 0 |
-| graphics_Rectangle | 17 | 0 | 0 |
-| graphics_Region | 21 | 0 | 0 |
 | graphics_RGB | 6 | 0 | 0 |
 | graphics_RGBA | 6 | 0 | 0 |
+| graphics_Rectangle | 17 | 0 | 0 |
+| graphics_Region | 21 | 0 | 0 |
 | graphics_TextLayout | 19 | 1 | 0 |
 | graphics_Transform | 4 | 0 | 0 |
 | layout_FormAttachment | 7 | 0 | 0 |
 | layout_GridData | 3 | 0 | 0 |
+| widgets_Button | 99 | 1 | 2 |
+| widgets_Canvas | 92 | 4 | 0 |
+| widgets_Caret | 18 | 0 | 0 |
+| widgets_Combo | 137 | 4 | 0 |
+| widgets_Composite | 87 | 4 | 0 |
+| widgets_Display | 50 | 11 | 3 |
+| widgets_Group | 90 | 4 | 0 |
+| widgets_Label | 85 | 1 | 0 |
+| widgets_Menu | 29 | 0 | 0 |
+| widgets_ScrolledComposite | 97 | 4 | 0 |
+| widgets_Shell | 133 | 6 | 1 |
+| widgets_TabFolder | 97 | 10 | 0 |
+| widgets_Table | 126 | 10 | 0 |
+| widgets_Text | 131 | 2 | 0 |
+| widgets_Tree | 118 | 14 | 0 |
 
-Skips are the tests' own `assumeTrue/assumeFalse` for cocoa (GC `bug493455`, Image
-`imageDataIsCached`/`imageDataSameVia*` x2, Path `testClonePath`).
+Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Display.test_setCursorLocation*`
+(`@TempDir`-style parameter injection, not supported by the runner).
 
-## Failures by cause (22)
+## Merge regressions (13)
+
+TSK-051 turns a test's literal `null` String argument into `jrt.NullString`, for the ported null-argument guards.
+The sentinel also reaches setters and filters where null means "no value" and is stored as text: 12
+`setToolTipText(null)` tests (`getToolTipText()` returns the sentinel, not null) and `Display.getFontList(null, ..)`
+(looks for a face named after it, finds none). Fix: emit `jrt.NullString` only for a parameter the callee guards.
+
+## Graphics failures by cause (TSK-051, before the merge)
+
 
 | Cause | Count |
 |---|---:|
@@ -94,9 +126,43 @@ conversion between `NSColor.colorWithDeviceRed` and the image's bitmap rep.
 | `StringBuilder`, `Float.parseFloat`, `Locale`, `Thread`/`AtomicReference` | 4 (FontData `toString`, `ConstructorString`, `setLocale`; GC `bug1288`) | `jrt.StringBuilder/Locale/Thread/AtomicReference` |
 | null String argument | 6 (Font x2, FontData `StringII`/`setName`, ImageLoader `load(String)`/`save(String)`) | `jrt.NullString` sentinel, guards check it |
 | `TextStyle.equals(null)`: typed nil in `any` | 1 (TextLayout `setStyle`) | instanceof helpers reject a typed nil |
-| `NSIntersectionRect`/`CGDisplayBounds`/`PtInRgn` by-value natives | 4 (GC `setClipping` x2, Region `contains` x2) | `internal/cocoa/os_custom_manual.go` |
+| `NSIntersectionRect`/`CGDisplayBounds`/`PtInRgn` by-value natives | 4 (GC `setClipping` x2, Region `contains` x2) | `internal/cocoa/rect_manual.go` |
 | `a[i] = f(i++)` order + `String.length()` in bytes | 1 (TextLayout `getSegments`) | `pinIndex`, `jrt.StringLength/Substring` |
 | stubs | 5 (ImageData `ConstructorInputStream`/`ConstructorString`, ImageLoader `addImageLoaderListener`/`save(OutputStream)`, ImageLoaderEvent) | `swt/graphics_imagecodec_manual.go`, `jrt.NewEventObject`, `Arrays.asList` |
 
 Beyond the tests: the by-value natives also fed `Canvas.scroll`, Tree/Table expansion frames and `GC.copyArea`; `String.length()`
 was the byte length, so every non-ASCII string handed to `NSString.stringWith` was padded with NULs (20 call sites in `swt`).
+
+## Widget failures by cause (TSK-052, before the merge; 66 of all listed failures pass now)
+
+| Cause | Count |
+|---|---:|
+| null String is `""` in the port: guard `s == null` is dead (README "Round 11 null-string") | 36 |
+| `TestInfo.getTestMethod` (`Optional<Method>`) not translated: event-consistency tests | 21 |
+| anonymous class not translated (subclass of a widget from another package, or `Thread`) | 20 |
+| `java.nio.file.Path`/`@TempDir` not translated | 15 |
+| HiDPI image path not translated (TSK-2026-09-23-048) | 14 |
+| `SWT.Activate` not received in 3s (`waitShellActivate`), then `PrintStream.println` untranslated; activation cause not diagnosed | 11 |
+| `widgets.List` not translated | 8 |
+| generic method `Display.syncCall` / `SwtCallable` lambda not translated | 7 |
+| other JDK surface (Locale, WeakReference, CountDownLatch, Thread, `System.setProperty`, Random, StringBuilder, lambdas) | 12 |
+| image codec differences (listener never fires; wrong exception type) | 2 |
+| port bug not diagnosed (`TextLayout.getSegments`), pixel test `bug568740_multilineTextStyle` | 2 |
+| local class declaration not translated | 1 |
+
+The null-String and `TestInfo` groups are the two large ones. The first is a documented contract of the port
+(a test passing `null` for a String expects `ERROR_NULL_ARGUMENT`; `""` is a valid value, so no guard can be
+emitted); it is not a translator bug. The second needs `Optional`/`java.lang.reflect.Method` (JDK surface).
+
+## Regression gate: `tests/expected.txt`
+
+One line per test, tab separated: `pass Class.method`, `fail Class.method reason`, `skip Class.method reason`,
+`flaky Class.method reason` (either outcome accepted). `make test-swt` exits 1 when
+
+- a test listed as `pass` no longer passes (or is skipped);
+- a test fails that is not listed, is listed as `skip`, or whose reason starts with `UNDESCRIBED`;
+- (full run only) a listed test was not run.
+
+A test that does better than listed (a failure now passes, a new test passes) does not fail the run; the gate
+prints how many and `make test-swt-update` records them. Refresh after `make gen`: see README "Round 14 widget
+tests".

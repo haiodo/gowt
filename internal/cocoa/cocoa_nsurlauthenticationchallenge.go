@@ -45,33 +45,33 @@ func (this *NSURLAuthenticationChallenge) PreviousFailureCount() int64 {
 
 func (this *NSURLAuthenticationChallenge) ProposedCredential() *NSURLCredential {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_proposedCredential)
-	var cond826 *NSURLCredential
+	var cond825 *NSURLCredential
 	if result != 0 {
-		cond826 = NewNSURLCredentialOverload1(result)
+		cond825 = NewNSURLCredentialOverload1(result)
+	} else {
+		cond825 = nil
+	}
+	return cond825
+}
+
+func (this *NSURLAuthenticationChallenge) ProtectionSpace() *NSURLProtectionSpace {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_protectionSpace)
+	var cond826 *NSURLProtectionSpace
+	if result != 0 {
+		cond826 = NewNSURLProtectionSpaceOverload1(result)
 	} else {
 		cond826 = nil
 	}
 	return cond826
 }
 
-func (this *NSURLAuthenticationChallenge) ProtectionSpace() *NSURLProtectionSpace {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_protectionSpace)
-	var cond827 *NSURLProtectionSpace
+func (this *NSURLAuthenticationChallenge) Sender() *id {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_sender)
+	var cond827 *id
 	if result != 0 {
-		cond827 = NewNSURLProtectionSpaceOverload1(result)
+		cond827 = NewidOverload1(result)
 	} else {
 		cond827 = nil
 	}
 	return cond827
-}
-
-func (this *NSURLAuthenticationChallenge) Sender() *id {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_sender)
-	var cond828 *id
-	if result != 0 {
-		cond828 = NewidOverload1(result)
-	} else {
-		cond828 = nil
-	}
-	return cond828
 }

@@ -471,7 +471,7 @@ func (this *Display) Execute(runnable jrt.Runnable) {
 			panic("j2go: unresolved new RejectedExecutionException")
 		}())
 	}
-	if this.thread == ThreadCurrentThread() {
+	if this.thread == jrt.CurrentThread() {
 		this.SyncExec(runnable)
 	} else {
 		this.AsyncExec(runnable)
@@ -513,10 +513,10 @@ func (this *Display) CascadeWindow(window *cocoa.NSWindow, screen *cocoa.NSScree
 }
 
 func (this *Display) checkDevice_() {
-	if this.thread == (nil) {
+	if jrt.IsNil(this.thread) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	if this.thread != ThreadCurrentThread() {
+	if this.thread != jrt.CurrentThread() {
 		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
 	if this.IsDisposed() {
@@ -632,7 +632,7 @@ func (this *Display) Close() {
 
 func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
-	cond239 := ThreadCurrentThread()
+	cond239 := jrt.CurrentThread()
 	this.thread = cond239
 	DisplayCheckDisplay(cond239, false)
 	this.CreateDisplay(data)
@@ -2444,7 +2444,7 @@ func (this *Display) IsBundledIconSet() bool {
 }
 
 func (this *Display) IsValidThread() bool {
-	return this.thread == ThreadCurrentThread()
+	return this.thread == jrt.CurrentThread()
 }
 
 func (this *Display) Post(eventLike EventLike) bool {
@@ -2608,7 +2608,7 @@ func (this *Display) Post(eventLike EventLike) bool {
 						panic(r)
 					}
 				}()
-				func() any { _ = []any{int64(1)}; panic("j2go: unresolved call sleep") }()
+				jrt.Sleep(int64(1))
 			}()
 			returnValue = true
 		}
@@ -3804,7 +3804,7 @@ func (this *Display) SetData(key string, value any) {
 	}
 	if key == DisplaySET_MODAL_DIALOG {
 		var cond273 *Dialog
-		if value != (nil) {
+		if !jrt.IsNil(value) {
 			cond273 = castanyToDialog(value)
 		} else {
 			cond273 = nil
@@ -3815,11 +3815,11 @@ func (this *Display) SetData(key string, value any) {
 		this.lockCursor = (value.(bool))
 	}
 	if key == DisplayRUN_AWT_INVOKE_LATER_KEY {
-		if value != (nil) {
+		if !jrt.IsNil(value) {
 			value = this.RunAWTInvokeLater()
 		}
 	}
-	if value == (nil) {
+	if jrt.IsNil(value) {
 		if this.keys == (nil) {
 			return
 		}
@@ -4218,7 +4218,7 @@ func (this *Display) Wake() {
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		if this.thread == ThreadCurrentThread() {
+		if this.thread == jrt.CurrentThread() {
 			tretd277 = true
 			return
 		}
@@ -4669,7 +4669,7 @@ func DisplayFindDisplay(thread any) *Display {
 }
 
 func DisplayGetCurrent() *Display {
-	return DisplayFindDisplay(ThreadCurrentThread())
+	return DisplayFindDisplay(jrt.CurrentThread())
 }
 
 func DisplayGetDefault() *Display {
@@ -5171,12 +5171,7 @@ func DisplayLookupWidget(id int64, sel int64) *Widget {
 	if widget == (nil) {
 		var view *cocoa.NSView = cocoa.NewNSViewOverload1(id)
 		if view.IsKindOfClass(cocoa.OSClass_NSView) {
-			for {
-				cond291 := view.Superview()
-				view = cond291
-				if !(widget == (nil) && (cond291) != (nil)) {
-					break
-				}
+			for widget == (nil) && func() bool { cond291 := view.Superview(); view = cond291; return (cond291) != (nil) }() {
 				widget = DisplayGetWidget(view.Id)
 			}
 		}

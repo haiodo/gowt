@@ -235,6 +235,26 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_graphics_Transform.java
 	$TJ/Test_org_eclipse_swt_layout_FormAttachment.java
 	$TJ/Test_org_eclipse_swt_layout_GridData.java
+	$TJ/Test_org_eclipse_swt_widgets_Widget.java
+	$TJ/Test_org_eclipse_swt_widgets_Control.java
+	$TJ/Test_org_eclipse_swt_widgets_Scrollable.java
+	$TJ/Test_org_eclipse_swt_widgets_Composite.java
+	$TJ/Test_org_eclipse_swt_widgets_Canvas.java
+	$TJ/Test_org_eclipse_swt_widgets_Decorations.java
+	$TJ/Test_org_eclipse_swt_widgets_Shell.java
+	$TJ/Test_org_eclipse_swt_widgets_Display.java
+	$TJ/Test_org_eclipse_swt_widgets_Button.java
+	$TJ/Test_org_eclipse_swt_widgets_Label.java
+	$TJ/Test_org_eclipse_swt_widgets_Text.java
+	$TJ/Test_org_eclipse_swt_widgets_Tree.java
+	$TJ/Test_org_eclipse_swt_widgets_Table.java
+	$TJ/Test_org_eclipse_swt_widgets_Combo.java
+	$TJ/Test_org_eclipse_swt_widgets_TabFolder.java
+	$TJ/Test_org_eclipse_swt_widgets_Group.java
+	$TJ/Test_org_eclipse_swt_widgets_Menu.java
+	$TJ/Test_org_eclipse_swt_widgets_Caret.java
+	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
+	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
 )
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --classpath "$JUNIT_CP" \
@@ -246,5 +266,6 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --classpath "$J
 TESTS_SRC="$SWT_REPO/tests/org.eclipse.swt.tests/JUnit Tests/$TJ"
 mkdir -p tests/swttests/testdata
 cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
+
 
 gofmt -w swt/*.go swt/swtreflect/*.go internal/cocoa/*.go examples/controlexample/*.go tests/swttests/*.go

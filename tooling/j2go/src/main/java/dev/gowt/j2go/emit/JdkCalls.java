@@ -193,12 +193,18 @@ final class JdkCalls {
 		return "fmt.Sprint(" + a + ")";
 	}
 
-	/** System.out/err.println(x): the receiver is the only thing telling stdout from stderr. */
+	/** System.out/err.println(x) picks the stream by name; a PrintStream variable is an any holding an io.Writer. */
 	private String println(MethodInvocation mi) {
-		if (!(mi.getExpression() instanceof QualifiedName qn)) return null;
+		if (mi.getExpression() == null) return null;
 		emitter.fileImports.add("fmt");
-		emitter.fileImports.add("os");
-		String stream = qn.getName().getIdentifier().equals("err") ? "os.Stderr" : "os.Stdout";
+		String stream;
+		if (mi.getExpression() instanceof QualifiedName qn && qn.getQualifier().getFullyQualifiedName().equals("System")) {
+			emitter.fileImports.add("os");
+			stream = qn.getName().getIdentifier().equals("err") ? "os.Stderr" : "os.Stdout";
+		} else {
+			emitter.fileImports.add("io");
+			stream = recv(mi) + ".(io.Writer)";
+		}
 		String a = mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0);
 		return "fmt.Fprintln(" + stream + a + ")";
 	}

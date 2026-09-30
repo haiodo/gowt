@@ -7,6 +7,7 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
+	"io"
 	"math"
 	"os"
 	"reflect"
@@ -316,13 +317,10 @@ func SwtTestUtilDebugDisplayDifferences(expectedLike swt.ImageLike, actualLike s
 
 func SwtTestUtilDumpShellState(out any) {
 	var display *swt.Display = swt.DisplayGetCurrent()
-	func() any {
-		_ = []any{out, "Display.getFocusControl() and its parents: "}
-		panic("j2go: unresolved call println")
-	}()
+	fmt.Fprintln(out.(io.Writer), "Display.getFocusControl() and its parents: ")
 	var focusControl *swt.Control = display.GetFocusControl()
 	if focusControl == (nil) {
-		func() any { _ = []any{out, "  <null>"}; panic("j2go: unresolved call println") }()
+		fmt.Fprintln(out.(io.Writer), "  <null>")
 	} else {
 		var indent *jrt.StringBuilder = jrt.NewStringBuilder()
 		for {
@@ -338,10 +336,10 @@ func SwtTestUtilDumpShellState(out any) {
 			}
 		}
 	}
-	func() any { _ = []any{out, "Display.getShells(): "}; panic("j2go: unresolved call println") }()
+	fmt.Fprintln(out.(io.Writer), "Display.getShells(): ")
 	var shells []*swt.Shell = display.GetShells()
 	if int32(len(shells)) == 0 {
-		func() any { _ = []any{out, "  <none>"}; panic("j2go: unresolved call println") }()
+		fmt.Fprintln(out.(io.Writer), "  <none>")
 	} else {
 		for _, shell := range shells {
 			var bounds *swt.Rectangle = shell.GetBounds()
@@ -429,16 +427,16 @@ func SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMs int32, breakCondi
 			return false
 		}
 	}
-	var targetTimestamp int64 = func() int64 { panic("j2go: unresolved call currentTimeMillis") }() + int64(timeoutMs)
+	var targetTimestamp int64 = jrt.CurrentTimeMillis() + int64(timeoutMs)
 	var display *swt.Display = swt.DisplayGetCurrent()
 	for !breakCondition() {
 		for display.ReadAndDispatch() {
-			if func() int64 { panic("j2go: unresolved call currentTimeMillis") }() >= targetTimestamp {
+			if jrt.CurrentTimeMillis() >= targetTimestamp {
 				return
 			}
 		}
-		if func() int64 { panic("j2go: unresolved call currentTimeMillis") }() < targetTimestamp {
-			func() any { _ = []any{int64(50)}; panic("j2go: unresolved call sleep") }()
+		if jrt.CurrentTimeMillis() < targetTimestamp {
+			jrt.Sleep(int64(50))
 		} else {
 			return
 		}
@@ -451,9 +449,9 @@ func SwtTestUtilWaitEvent(trigger jrt.Runnable, controlLike swt.ControlLike, swt
 		control = controlLike.AsControl()
 	}
 	_ = control
-	var eventReceived any = func() any { _ = []any{false}; panic("j2go: unresolved new AtomicBoolean") }()
+	var eventReceived *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var listener swt.Listener = &ListenerFunc{fn: func(event *swt.Event) {
-		func() any { _ = []any{eventReceived, true}; panic("j2go: unresolved call set") }()
+		eventReceived.Set(true)
 	}}
 	control.AddListener(swtEvent, listener)
 	var tret8 bool
@@ -465,9 +463,9 @@ func SwtTestUtilWaitEvent(trigger jrt.Runnable, controlLike swt.ControlLike, swt
 		if trigger != (nil) {
 			trigger.Run()
 		}
-		var start int64 = func() int64 { panic("j2go: unresolved call currentTimeMillis") }()
-		for !func() bool { _ = []any{eventReceived}; panic("j2go: unresolved call get") }() {
-			if func() int64 { panic("j2go: unresolved call currentTimeMillis") }()-start > int64(timeoutMsec) {
+		var start int64 = jrt.CurrentTimeMillis()
+		for !eventReceived.Get() {
+			if jrt.CurrentTimeMillis()-start > int64(timeoutMsec) {
 				tret8 = false
 				tretd9 = true
 				return
@@ -500,9 +498,9 @@ func SwtTestUtilWaitAllEvents(trigger jrt.Runnable, controlLike swt.ControlLike,
 		if trigger != (nil) {
 			trigger.Run()
 		}
-		var start int64 = func() int64 { panic("j2go: unresolved call currentTimeMillis") }()
+		var start int64 = jrt.CurrentTimeMillis()
 		for !eventsLeftToReceive.IsEmpty() {
-			if func() int64 { panic("j2go: unresolved call currentTimeMillis") }()-start > int64(timeoutMsec) {
+			if jrt.CurrentTimeMillis()-start > int64(timeoutMsec) {
 				tret10 = false
 				tretd11 = true
 				return
@@ -532,10 +530,7 @@ func SwtTestUtilWaitShellActivate(trigger jrt.Runnable, shellLike swt.ShellLike)
 	if SwtTestUtilWaitEvent(triggerWithEnforcedShellActivationOnMacOs, upcastswtShellToswtControl(shell), swt.Activate, timeoutInMsec) {
 		return
 	}
-	func() string {
-		_ = []any{reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("waitShellActivate-%d", func() int64 { panic("j2go: unresolved call currentTimeMillis") }())}
-		panic("j2go: unresolved call takeScreenshot")
-	}()
+	jrt.TakeScreenshot(reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("waitShellActivate-%d", jrt.CurrentTimeMillis()))
 	SwtTestUtilDumpShellState(os.Stdout)
 	junit.AssertEquals(shell.GetDisplay().GetActiveShell(), shell, "Shell did not activate")
 	junit.Fail("SWT.Activate was not received but Shell is (incorrectly?) reported active")
@@ -690,7 +685,7 @@ func SwtTestUtilCopyFile(sourceFilename string, destinationPath *jrt.Path) *jrt.
 }
 
 func SwtTestUtilRunOperationInThread(supplier SwtTestUtil_ExceptionalSupplier) any {
-	return SwtTestUtilRunOperationInThreadTimeoutMsSupplier(10000, supplier)
+	return func() any { _ = []any{10000, supplier}; panic("j2go: unresolved call runOperationInThread") }()
 }
 
 func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier SwtTestUtil_ExceptionalSupplier) any {

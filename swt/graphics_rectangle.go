@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type RectangleImpl interface {
@@ -110,7 +111,7 @@ func (this *Rectangle) ContainsPt(ptLike PointLike) bool {
 }
 
 func (this *Rectangle) Equals(object any) bool {
-	if object == (nil) {
+	if jrt.IsNil(object) {
 		return false
 	}
 	if object == this {
@@ -381,8 +382,7 @@ func RectangleOfTopLeftDimension(topLeftLike PointLike, dimensionLike PointLike)
 		return upcastRectangle_WithMonitorToRectangle(newRectangleWithMonitorXYWidthHeightMonitor(x, y, w, h, pm.GetMonitor()))
 	}
 	_, ok15 := isPointToPoint_OfFloat(topLeft)
-	_, ok16 := isPointToPoint_OfFloat(dimension)
-	if ok15 || ok16 {
+	if ok15 || func() bool { _, ok16 := isPointToPoint_OfFloat(dimension); return ok16 }() {
 		return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeight(x, y, w, h))
 	}
 	return NewRectangle(topLeft.X, topLeft.Y, dimension.X, dimension.Y)

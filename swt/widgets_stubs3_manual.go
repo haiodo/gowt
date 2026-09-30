@@ -9,7 +9,6 @@ import (
 	"reflect"
 
 	"github.com/haiodo/gowt/internal/cocoa"
-	"github.com/haiodo/gowt/internal/jrt"
 )
 
 // Callback: `new Callback(obj, "method", argCount)` is translated into NewCallbackFn with a Go
@@ -29,8 +28,6 @@ func (c *Callback) Dispose() {}
 
 // Callback.getEntryCount: JNI re-entry depth, only compared to 0 to decide on autorelease pools.
 func CallbackGetEntryCount() int32 { return 0 }
-
-func ThreadCurrentThread() any { return jrt.CurrentThread() }
 
 // Display.isValidClass: SWT rejects subclasses outside its own package; the Go analogue is the
 // swt package itself (getClass() on an SWT receiver is always one of its own types anyway).

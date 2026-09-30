@@ -40,11 +40,11 @@ func (this *NSTypesetter) initNSTypesetterOverload2(id *id) {
 }
 
 func (this *NSTypesetter) BaselineOffsetInLayoutManager(layoutMgr *NSLayoutManager, glyphIndex int64) float64 {
-	var cond816 int64
+	var cond815 int64
 	if layoutMgr != (nil) {
-		cond816 = layoutMgr.Id
+		cond815 = layoutMgr.Id
 	} else {
-		cond816 = int64(0)
+		cond815 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(this.Id, OSSel_baselineOffsetInLayoutManager_glyphIndex_, cond816, glyphIndex)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(this.Id, OSSel_baselineOffsetInLayoutManager_glyphIndex_, cond815, glyphIndex)
 }

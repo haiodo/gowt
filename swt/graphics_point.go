@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type PointImpl interface {
@@ -37,7 +38,7 @@ func (this *Point) initPoint(x int32, y int32) {
 }
 
 func (this *Point) Equals(object any) bool {
-	if object == (nil) {
+	if jrt.IsNil(object) {
 		return false
 	}
 	if object == this {

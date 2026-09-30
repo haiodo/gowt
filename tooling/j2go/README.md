@@ -2640,8 +2640,7 @@ constructor shapes (`()`, `(String)`, `(Throwable)`, `(String, Throwable)`).
 
 ### Gaps
 
-- Widget test classes: not translated (task 052). A trial run over all of them stops at JDT errors
-  (`CoolBar`, `CoolItem`, ... are not on the cocoa source path).
+- Widget test classes: translated in Round 14.
 - `@MethodSource`/`@CsvSource`, parameter injection (`@TempDir`, `TestInfo`), `@RegisterExtension`:
   skipped with a reason.
 - `object == null` on `any` holding a typed nil pointer is false (`tests/RESULTS.md`, translator bug),
@@ -2795,12 +2794,122 @@ Rules added (the numbers are in `tests/RESULTS.md`):
   `param == jrt.NullString` instead of constant `false`. `""` stays a valid String, production callers cannot pass null.
 - **instanceof helpers** return false for a typed nil pointer boxed in `any` (Java null); it fixed `TextStyle.equals(null)`.
 - **`a[i] = f(i++)`**: the index is pinned to a temp before the right side's hoisted statements (`StatementEmitter.pinIndex`).
-- **`String.length()`/`substring`** are UTF-16-correct (`jrt.StringLength`/`Substring`, ASCII fast path). `length()` used to be
-  the byte length, so `NSString.stringWith` padded every non-ASCII string with NULs. `indexOf`/`lastIndexOf` are still
-  byte offsets: mixing them with `substring` on non-ASCII text is wrong (ceiling: make them UTF-16 too).
-- **By-value struct natives** (`internal/cocoa/os_custom_manual.go`): `NSIntersectionRect`/`CGDisplayBounds` (os_custom.c
+- **String indices are UTF-16 units**: `length()`, `charAt`, `substring`, `indexOf`, `lastIndexOf` (`jrt.StringLength`,
+  `Substring`, `IndexFrom`, `LastIndexOf`, ASCII fast path). `length()` used to be the byte length, so `NSString.stringWith`
+  padded every non-ASCII string with NULs. Each call re-encodes a non-ASCII string: O(n) per call.
+- **By-value struct natives** (`internal/cocoa/rect_manual.go`; both branches fixed it, the merge kept this one): `NSIntersectionRect`/`CGDisplayBounds` (os_custom.c
   out-parameter wrappers, were dlsym'd as if the C function took pointers: the result was never written, hence
   `GC.getClipping` = the full image) and `PtInRgn` (Point by value, hence `Region.contains` always false).
 
 Not done: private-method reflection (`getDeclaredMethod` of `ImageData.blit`), `WeakReference`/`System.gc`,
 anonymous subclass of a class from another Go package, the HiDPI image path (TSK-048).
+
+## Round 14 widget tests
+
+**Status: done, green.** `make gen && make` pass (vet, test, every `cmd/*`), `make test-swt` is green against
+`tests/expected.txt`: 1822 tests, 1662 passed, 149 failed (all described), 11 skipped (`tests/RESULTS.md`;
+before: 352 tests, 292 passed). `internal/cocoa` is not byte-identical any more: two `NSComboBox` methods became
+manual (`Manual.MANUAL_METHODS`), which shifts the shared `condN` counter in later files; no logic change there.
+
+### Test set
+
+`port.sh` `TEST_FILES` gained the widget classes of task 052 (`Widget`, `Control`, `Scrollable`, `Composite`,
+`Canvas`, `Decorations`, `Shell`, `Display`, `Button`, `Label`, `Text`, `Tree`, `Table`, `Combo`, `TabFolder`,
+`Group`, `Menu`, `Caret`, `ScrolledComposite`) and `ConsistencyUtility`. `CoolBar` needed no translation: in
+these classes it is only a string key in `ConsistencyUtility`. SWT has no `SashForm` JUnit test. A test using an
+untranslated type (`List`, `Optional<Method>`, ...) compiles (`degradesUnresolvedTypes`) and fails at run time.
+
+### Runner (`cmd/swttest`)
+
+- Default mode supervises: it runs itself with `-child -json -skip N` and re-emits the events. AppKit aborts the
+  process on an uncaught NSException (purego cannot catch it), so a crash is reported as
+  `FAIL <test>: process died: <NSException reason>` and the run resumes with the next test in a fresh child.
+  `-child` runs in the process (a crash ends the run; use it with a debugger); `-list` is always in-process.
+  `SWTTEST_STACK=1` puts the full stack into a failure message.
+- The `Display` test class runs without the shared Display (a second live Display is ERROR_NOT_IMPLEMENTED) and
+  disposes what the test leaves behind.
+- Gate flags: `-expected <file>`, `-update <file>` (full run only). The gate lines are plain text; do not combine
+  `-expected` with `-json`.
+
+### `tests/expected.txt` (TSK-2026-09-23-053)
+
+Tab separated, one test per line: `pass Class.method`, `fail Class.method reason`, `skip Class.method reason`,
+`flaky Class.method reason` (either outcome accepted; a hand edit). `make test-swt` exits 1 if
+
+- a listed `pass` no longer passes (or is skipped) - `GATE regression`;
+- a test fails that is not listed, is listed `skip`, or has a reason starting with `UNDESCRIBED` -
+  `GATE undescribed failure`;
+- on a full run, a listed test was not run - `GATE missing`.
+
+A test that does better than listed does not fail the run; the gate counts them.
+
+Refresh (after every `make gen`, and whenever a translator or port change moves the numbers):
+
+1. `make gen && make`, then `make test-swt`. Green: nothing to do.
+2. Red `regression`/`undescribed failure`: fix the cause, or if the difference is intended go to 3.
+3. `make test-swt-update` rewrites the file from a full run: passes become `pass`; failures that were already
+   listed keep their reason; new failures get `UNDESCRIBED: <message>`. Replace each `UNDESCRIBED: ...` with the
+   cause (the gate stays red until none is left). Review `git diff tests/expected.txt`: a `fail` -> `pass` is an
+   improvement to keep, a `pass` -> `fail` must be explained or fixed, not recorded.
+4. A focus- or timing-dependent test that flakes: change its line to `flaky<TAB>name<TAB>why`.
+
+### Translator rules
+
+- `EmitUtil.escapeGoQuoted`: other control characters (`"\0"`, `"\b"`) as `\uXXXX` (a raw NUL is illegal in Go
+  source; `Test_Button` has `"\0"`).
+- `ClassEmitter.emitStaticFields`: `static final` is a Go `const` only when JDT resolves a constant value
+  (`static final boolean BUG = SwtTestUtil.isWindows && ...` is a `var`).
+- `TestEmitter`: an injected hook parameter (`@BeforeEach setupBase(TestInfo)`) is passed `nil`; a test with a
+  runtime `junit.SkipIfEnv` keeps its `Run`.
+- `ConstructorEmitter.emitInstanceInitializers`: a `@RegisterExtension` field is not initialised (its lambda
+  initializer made every construction panic).
+- `ControlFlowEmitter.emitSwitchStatement`: `case X -> call();` (an implicit `yield` in a switch statement) is
+  the call as a statement (was an unsupported-statement marker).
+- `EmitUtil.lazyOperand` (from `NumericEmitter.emitInfix`): a right operand of `&&`/`||` that needs prelude lines
+  (`(c = s.characterAtIndex(n - 1)) == '\n'`, a type test) is wrapped in `func() bool { ...; return x }()` instead of
+  being evaluated before the whole condition. Real bug: `Text.getLineCount` read index -1 of an empty string
+  (NSException), `Control.fixFocus` overwrote `control` when the left operand was already false. Changes ~15 sites
+  in `swt/`, all in the right operand of `&&`/`||`.
+- `EmitUtil.anyNullCompare`: `x == null` / `!= null` on an `Object` (Go `any`) is `jrt.IsNil(x)`; `== nil` misses
+  a typed nil pointer in the interface (`TextStyle.equals(null style)` dereferenced it). This was the "translator
+  bug" of `tests/RESULTS.md`.
+- `ExpressionEmitter.panicClosure`: a marker for dropped code (`unsupported ...`) also reads the locals used by
+  that code (`_ = []any{x}`), else a local used only there is "declared and not used"; a boxed result type
+  (`int x = display.syncCall(..)`) is the primitive's Go type.
+- `ExpressionEmitter.emitFieldAccess`/`emitQualifiedName`: a field read on a degraded (`any`) receiver is a
+  marker, not `x.field`.
+- `InvocationEmitter`: a call to a generic method of a translated class (skipped by `ClassEmitter`: `syncCall`) and
+  a call on a degraded (`any`) receiver are unresolved-call markers; `list.toArray(new T[0])` on a `*jrt.List` is
+  `jrt.ToSlice[T](list)`; `new String(String)` is the argument; a manual static method mapped to `jrt.X` imports
+  `jrt`, and a native struct-pointer parameter of a manual method gets its `&`.
+- `NumericEmitter.upcastObject`: a value of a degraded SWT type, a local class or an anonymous `Thread` subclass
+  (Go `any`) used where its supertype is expected is a type assertion.
+- `Manual`: `java.util.concurrent.atomic.AtomicBoolean/AtomicInteger/AtomicReference` -> `internal/jrt/atomic.go`;
+  methods `System.currentTimeMillis`, `Thread.sleep/yield/interrupted`, `Screenshots.takeScreenshot` -> `jrt.*`.
+  Manual `OS.NSIntersectionRect`, `OS.CGDisplayBounds`, `OS.PtInRgn`, `NSComboBox.selectItemAtIndex/
+  itemObjectValueAtIndex` (see next).
+
+### Port fixes found by the tests
+
+- `internal/cocoa/rect_manual.go`: os.c wraps `NSIntersectionRect`/`CGDisplayBounds` (rect by value) as void
+  functions writing through a pointer and `PtInRgn` (Carbon `Point` by value) with a `short[]`. The generic
+  native binding called the literal symbol with pointer arguments: the result was never written. Effects: GC
+  clipping (`getClipping` returned the whole image), `Region.contains`, and the rect intersections in
+  `Canvas.scroll`, `Table`/`Tree` expansion. `rect_manual_test.go` covers the intersection.
+- `internal/cocoa/nsexception_manual.go`: `NSComboBox.selectItemAtIndex`/`itemObjectValueAtIndex` with an index
+  outside the list (-1 = no selection after `deselect`) threw NSRangeException, which os.c swallows; five Combo
+  tests aborted the process.
+- `swt/internal_exceptionstash_manual.go`: `ExceptionStash.stash` now offers the exception to the current
+  Display's runtime-exception/error handler first, as the real class (`Display.setRuntimeExceptionHandler` was
+  ignored by `Widget.dispose` and every listener dispatch).
+- `internal/jrt`: `IsNil`, `ToSlice`, `CurrentTimeMillis`, `Sleep`, `Yield`, `Interrupted`, `TakeScreenshot`,
+  `AtomicBoolean`/`AtomicInteger`/`AtomicReference`.
+
+### Left as is
+
+- `port.sh` rewrites a bare `panic("j2go: unsupported X") // TODO` in `tests/swttests` to a `func() { ... }()`
+  call: `StatementEmitter.unsupportedStmt` emits a terminating statement and `go vet` flags the code after a
+  local class declaration as unreachable. Belongs in `StatementEmitter` (not edited here: another branch splits it).
+- `tests/swttests/swttests_manual.go` defines `ThreadCurrentThread` (`JdkIntrinsics` emits it unqualified).
+- The 149 failures (`tests/RESULTS.md`): mostly the null-String contract, `Optional<Method>`/`TestInfo`, anonymous
+  subclasses of widgets from another package, `java.nio.file`, the HiDPI image path (TSK-048), `widgets.List`.

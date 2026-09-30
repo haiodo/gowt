@@ -44,64 +44,64 @@ func (this *NSMutableURLRequest) SetCachePolicy(cachePolicy int64) {
 }
 
 func (this *NSMutableURLRequest) SetHTTPBody(HTTPBody *NSData) {
-	var cond447 int64
+	var cond446 int64
 	if HTTPBody != (nil) {
-		cond447 = HTTPBody.Id
+		cond446 = HTTPBody.Id
 	} else {
-		cond447 = int64(0)
+		cond446 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHTTPBody_, cond447)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHTTPBody_, cond446)
 }
 
 func (this *NSMutableURLRequest) SetHTTPMethod(HTTPMethod *NSString) {
-	var cond448 int64
+	var cond447 int64
 	if HTTPMethod != (nil) {
-		cond448 = HTTPMethod.Id
+		cond447 = HTTPMethod.Id
 	} else {
-		cond448 = int64(0)
+		cond447 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHTTPMethod_, cond448)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHTTPMethod_, cond447)
 }
 
 func (this *NSMutableURLRequest) SetURL(URL *NSURL) {
-	var cond449 int64
+	var cond448 int64
 	if URL != (nil) {
-		cond449 = URL.Id
+		cond448 = URL.Id
 	} else {
-		cond449 = int64(0)
+		cond448 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setURL_, cond449)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setURL_, cond448)
 }
 
 func (this *NSMutableURLRequest) SetValue(value *NSString, field *NSString) {
-	var cond450 int64
+	var cond449 int64
 	if value != (nil) {
-		cond450 = value.Id
+		cond449 = value.Id
+	} else {
+		cond449 = int64(0)
+	}
+	var cond450 int64
+	if field != (nil) {
+		cond450 = field.Id
 	} else {
 		cond450 = int64(0)
 	}
-	var cond451 int64
-	if field != (nil) {
-		cond451 = field.Id
-	} else {
-		cond451 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forHTTPHeaderField_, cond450, cond451)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forHTTPHeaderField_, cond449, cond450)
 }
 
 func NSMutableURLRequestRequestWithURL(URL *NSURL) *NSMutableURLRequest {
-	var cond452 int64
+	var cond451 int64
 	if URL != (nil) {
-		cond452 = URL.Id
+		cond451 = URL.Id
 	} else {
-		cond452 = int64(0)
+		cond451 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableURLRequest, OSSel_requestWithURL_, cond452)
-	var cond453 *NSMutableURLRequest
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableURLRequest, OSSel_requestWithURL_, cond451)
+	var cond452 *NSMutableURLRequest
 	if result != 0 {
-		cond453 = NewNSMutableURLRequestOverload1(result)
+		cond452 = NewNSMutableURLRequestOverload1(result)
 	} else {
-		cond453 = nil
+		cond452 = nil
 	}
-	return cond453
+	return cond452
 }

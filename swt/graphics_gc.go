@@ -3319,7 +3319,7 @@ func (this *GC) UncheckGC(pool *cocoa.NSAutoreleasePool) {
 	}
 	var view *cocoa.NSView = this.data.View
 	if view != (nil) && this.data.PaintRect == (cocoa.NSRect{}) {
-		if this.data.Thread != ThreadCurrentThread() {
+		if this.data.Thread != jrt.CurrentThread() {
 			this.Flush()
 		}
 	}

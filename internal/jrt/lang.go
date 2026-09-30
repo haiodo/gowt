@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 	"unicode/utf16"
 )
 
@@ -163,4 +164,28 @@ func ObjectsHash(values ...any) int32 {
 		h = 31*h + e
 	}
 	return h
+}
+
+// TakeScreenshot is org.eclipse.test.Screenshots.takeScreenshot: the runner captures nothing.
+func TakeScreenshot(testClass any, name string) string { return "" }
+
+// Sleep is Thread.sleep(millis).
+func Sleep(millis int64) { time.Sleep(time.Duration(millis) * time.Millisecond) }
+
+// Interrupted is Thread.interrupted(): nothing interrupts a goroutine.
+func Interrupted() bool { return false }
+
+// Yield is Thread.yield().
+func Yield() { runtime.Gosched() }
+
+// IsNil is `x == null` for a Java Object held as any: a typed nil pointer inside the interface is null too.
+func IsNil(v any) bool {
+	if v == nil {
+		return true
+	}
+	switch r := reflect.ValueOf(v); r.Kind() {
+	case reflect.Pointer, reflect.Slice, reflect.Map, reflect.Func, reflect.Interface, reflect.Chan:
+		return r.IsNil()
+	}
+	return false
 }

@@ -41,13 +41,13 @@ func (this *NSSearchFieldCell) initNSSearchFieldCellOverload2(id *id) {
 
 func (this *NSSearchFieldCell) CancelButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cancelButtonCell)
-	var cond662 *NSButtonCell
+	var cond661 *NSButtonCell
 	if result != 0 {
-		cond662 = NewNSButtonCellOverload1(result)
+		cond661 = NewNSButtonCellOverload1(result)
 	} else {
-		cond662 = nil
+		cond661 = nil
 	}
-	return cond662
+	return cond661
 }
 
 func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
@@ -58,13 +58,13 @@ func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
 
 func (this *NSSearchFieldCell) SearchButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_searchButtonCell)
-	var cond663 *NSButtonCell
+	var cond662 *NSButtonCell
 	if result != 0 {
-		cond663 = NewNSButtonCellOverload1(result)
+		cond662 = NewNSButtonCellOverload1(result)
 	} else {
-		cond663 = nil
+		cond662 = nil
 	}
-	return cond663
+	return cond662
 }
 
 func (this *NSSearchFieldCell) SearchButtonRectForBounds(rect NSRect) NSRect {
@@ -80,21 +80,21 @@ func (this *NSSearchFieldCell) SearchTextRectForBounds(rect NSRect) NSRect {
 }
 
 func (this *NSSearchFieldCell) SetCancelButtonCell(cancelButtonCell *NSButtonCell) {
-	var cond664 int64
+	var cond663 int64
 	if cancelButtonCell != (nil) {
-		cond664 = cancelButtonCell.Id
+		cond663 = cancelButtonCell.Id
 	} else {
-		cond664 = int64(0)
+		cond663 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond664)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond663)
 }
 
 func (this *NSSearchFieldCell) SetSearchButtonCell(searchButtonCell *NSButtonCell) {
-	var cond665 int64
+	var cond664 int64
 	if searchButtonCell != (nil) {
-		cond665 = searchButtonCell.Id
+		cond664 = searchButtonCell.Id
 	} else {
-		cond665 = int64(0)
+		cond664 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond665)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond664)
 }

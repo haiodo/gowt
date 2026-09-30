@@ -29,12 +29,20 @@ final class InvocationEmitter {
 
 		List<String> args = buildArgs(mi.arguments(), mb);
 
+		// list.toArray(new T[0]): jrt.List.ToArray is []any, a typed slice needs the element type.
+		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && args.size() == 1 && mi.getExpression() != null
+				&& mb.getReturnType().isArray() && dev.gowt.j2go.GoTypes.map(mi.getExpression().resolveTypeBinding(), emitter).equals("*jrt.List")) {
+			emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+			return "jrt.ToSlice[" + dev.gowt.j2go.GoTypes.map(mb.getReturnType().getComponentType(), emitter) + "](" + emitter.expr(mi.getExpression()) + ")";
+		}
+
 		// Per-signature override first: the generic per-type Manual dispatch below has no
 		// overload awareness, so an overloaded manual method (e.g. Display.map) needs this.
 		String manualMethodGoName = Manual.manualMethod(Names.erasureKey(mb));
 		if (manualMethodGoName != null) {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
+				if (manualMethodGoName.startsWith("jrt.")) emitter.fileImports.add(Manual.JRT_IMPORT);
 				String fn = declCi != null ? emitter.qualify(manualMethodGoName, declCi) : manualMethodGoName;
 				addressStructArgs(mi, mb, args);
 				return fn + "(" + String.join(", ", args) + ")";
@@ -93,6 +101,24 @@ final class InvocationEmitter {
 			// receiver is a type qualifier (Integer.toHexString), not a value.
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
+			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName()), uses);
+		}
+
+		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.
+		if (mb.getMethodDeclaration().getTypeParameters().length > 0) {
+			emitter.unsupported.add("MethodInvocation: generic method " + qualified + "." + mb.getName() + " not translated");
+			List<String> uses = new ArrayList<>(args);
+			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
+			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName()), uses);
+		}
+
+		// A receiver of a degraded (untranslated) SWT type is `any`: the call cannot be made.
+		if (emitter.degradesUnresolvedTypes() && mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())
+				&& mi.getExpression().resolveTypeBinding() != null
+				&& dev.gowt.j2go.GoTypes.map(mi.getExpression().resolveTypeBinding(), emitter).equals("any")) {
+			emitter.unsupported.add("MethodInvocation: receiver of untranslated type " + mi.getExpression().resolveTypeBinding().getQualifiedName() + "." + mb.getName());
+			List<String> uses = new ArrayList<>(args);
+			uses.add(0, emitter.expr(mi.getExpression()));
 			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName()), uses);
 		}
 
@@ -308,6 +334,10 @@ final class InvocationEmitter {
 			if (qualified.equals("java.lang.Thread") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
+			}
+			// new String(String) is a copy; Go strings are values.
+			if (qualified.equals("java.lang.String") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.String")) {
+				return emitter.expr((Expression) cic.arguments().get(0));
 			}
 			if (Manual.isManual(qualified)) {
 				// A value-type manual entry (any/error/...) has no real constructor function -

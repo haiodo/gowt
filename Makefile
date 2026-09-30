@@ -6,7 +6,7 @@ export SWT_REPO
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: all gen build release vet test check clean test-swt run-% $(CMDS)
+.PHONY: all gen build release vet test check clean test-swt test-swt-update run-% $(CMDS)
 
 all: check build
 
@@ -35,9 +35,14 @@ test:
 
 check: vet test
 
-# Translated SWT JUnit tests on the main thread (cmd/swttest); SWTTEST_FLAGS e.g. -run GC -json.
+# Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
+# regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).
 test-swt: swttest
-	./$(BIN)/swttest $(SWTTEST_FLAGS)
+	./$(BIN)/swttest -expected tests/expected.txt $(SWTTEST_FLAGS)
+
+# Rewrites tests/expected.txt from a full run; a new failure comes out as UNDESCRIBED until its cause is written.
+test-swt-update: swttest
+	./$(BIN)/swttest -update tests/expected.txt $(SWTTEST_FLAGS)
 
 run-%: %
 	./$(BIN)/$*

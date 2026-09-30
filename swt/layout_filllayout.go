@@ -115,7 +115,7 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 		fillData = castanyToFillData(data)
 	} else {
 		fillData = newFillData()
-		if data == (nil) {
+		if jrt.IsNil(data) {
 			control.SetLayoutData(fillData)
 		}
 	}

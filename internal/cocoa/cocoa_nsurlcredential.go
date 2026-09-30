@@ -45,6 +45,17 @@ func (this *NSURLCredential) HasPassword() bool {
 
 func (this *NSURLCredential) Password() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_password)
+	var cond828 *NSString
+	if result != 0 {
+		cond828 = NewNSStringOverload1(result)
+	} else {
+		cond828 = nil
+	}
+	return cond828
+}
+
+func (this *NSURLCredential) User() *NSString {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_user)
 	var cond829 *NSString
 	if result != 0 {
 		cond829 = NewNSStringOverload1(result)
@@ -54,36 +65,25 @@ func (this *NSURLCredential) Password() *NSString {
 	return cond829
 }
 
-func (this *NSURLCredential) User() *NSString {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_user)
-	var cond830 *NSString
-	if result != 0 {
-		cond830 = NewNSStringOverload1(result)
-	} else {
-		cond830 = nil
-	}
-	return cond830
-}
-
 func NSURLCredentialCredentialWithUser(user *NSString, password *NSString, persistence int64) *NSURLCredential {
-	var cond831 int64
+	var cond830 int64
 	if user != (nil) {
-		cond831 = user.Id
+		cond830 = user.Id
+	} else {
+		cond830 = int64(0)
+	}
+	var cond831 int64
+	if password != (nil) {
+		cond831 = password.Id
 	} else {
 		cond831 = int64(0)
 	}
-	var cond832 int64
-	if password != (nil) {
-		cond832 = password.Id
-	} else {
-		cond832 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload58(OSClass_NSURLCredential, OSSel_credentialWithUser_password_persistence_, cond831, cond832, persistence)
-	var cond833 *NSURLCredential
+	var result int64 = OSObjc_msgSendOverload58(OSClass_NSURLCredential, OSSel_credentialWithUser_password_persistence_, cond830, cond831, persistence)
+	var cond832 *NSURLCredential
 	if result != 0 {
-		cond833 = NewNSURLCredentialOverload1(result)
+		cond832 = NewNSURLCredentialOverload1(result)
 	} else {
-		cond833 = nil
+		cond832 = nil
 	}
-	return cond833
+	return cond832
 }

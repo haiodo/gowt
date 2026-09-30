@@ -16,3 +16,22 @@ func (this *NSColor) ColorSpace() *NSColorSpace {
 	}
 	return NewNSColorSpaceOverload1(result)
 }
+
+// -[NSComboBox selectItemAtIndex:] and itemObjectValueAtIndex: throw NSRangeException for -1 (no
+// selection) or a stale index; os.c turns that into a no-op / 0.
+func (this *NSComboBox) SelectItemAtIndex(index int64) {
+	if index < 0 || index >= this.NumberOfItems() {
+		return
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_selectItemAtIndex_, index)
+}
+
+func (this *NSComboBox) ItemObjectValueAtIndex(index int64) *id {
+	if index < 0 || index >= this.NumberOfItems() {
+		return nil
+	}
+	if result := OSObjc_msgSendOverload44(this.Id, OSSel_itemObjectValueAtIndex_, index); result != 0 {
+		return NewidOverload1(result)
+	}
+	return nil
+}

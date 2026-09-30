@@ -49,11 +49,11 @@ func (this *WebPreferences) SetJavaScriptEnabled(javaScriptEnabled bool) {
 
 func WebPreferencesStandardPreferences() *WebPreferences {
 	var result int64 = OSObjc_msgSend(OSClass_WebPreferences, OSSel_standardPreferences)
-	var cond968 *WebPreferences
+	var cond967 *WebPreferences
 	if result != 0 {
-		cond968 = NewWebPreferencesOverload1(result)
+		cond967 = NewWebPreferencesOverload1(result)
 	} else {
-		cond968 = nil
+		cond967 = nil
 	}
-	return cond968
+	return cond967
 }

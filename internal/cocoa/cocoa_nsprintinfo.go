@@ -49,13 +49,13 @@ func (this *NSPrintInfo) PMPrintSettings() int64 {
 
 func (this *NSPrintInfo) Dictionary() *NSMutableDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dictionary)
-	var cond575 *NSMutableDictionary
+	var cond574 *NSMutableDictionary
 	if result != 0 {
-		cond575 = NewNSMutableDictionaryOverload1(result)
+		cond574 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond575 = nil
+		cond574 = nil
 	}
-	return cond575
+	return cond574
 }
 
 func (this *NSPrintInfo) ImageablePageBounds() NSRect {
@@ -70,13 +70,13 @@ func (this *NSPrintInfo) IsSelectionOnly() bool {
 
 func (this *NSPrintInfo) JobDisposition() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_jobDisposition)
-	var cond576 *NSString
+	var cond575 *NSString
 	if result != 0 {
-		cond576 = NewNSStringOverload1(result)
+		cond575 = NewNSStringOverload1(result)
 	} else {
-		cond576 = nil
+		cond575 = nil
 	}
-	return cond576
+	return cond575
 }
 
 func (this *NSPrintInfo) PaperSize() NSSize {
@@ -87,33 +87,33 @@ func (this *NSPrintInfo) PaperSize() NSSize {
 
 func (this *NSPrintInfo) Printer() *NSPrinter {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_printer)
-	var cond577 *NSPrinter
+	var cond576 *NSPrinter
 	if result != 0 {
-		cond577 = NewNSPrinterOverload1(result)
+		cond576 = NewNSPrinterOverload1(result)
 	} else {
-		cond577 = nil
+		cond576 = nil
 	}
-	return cond577
+	return cond576
 }
 
 func (this *NSPrintInfo) SetJobDisposition(jobDisposition *NSString) {
-	var cond578 int64
+	var cond577 int64
 	if jobDisposition != (nil) {
-		cond578 = jobDisposition.Id
+		cond577 = jobDisposition.Id
 	} else {
-		cond578 = int64(0)
+		cond577 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setJobDisposition_, cond578)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setJobDisposition_, cond577)
 }
 
 func (this *NSPrintInfo) SetPrinter(printer *NSPrinter) {
-	var cond579 int64
+	var cond578 int64
 	if printer != (nil) {
-		cond579 = printer.Id
+		cond578 = printer.Id
 	} else {
-		cond579 = int64(0)
+		cond578 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPrinter_, cond579)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPrinter_, cond578)
 }
 
 func (this *NSPrintInfo) SetSelectionOnly(selectionOnly bool) {
@@ -130,22 +130,22 @@ func (this *NSPrintInfo) UpdateFromPMPrintSettings() {
 
 func NSPrintInfoDefaultPrinter() *NSPrinter {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintInfo, OSSel_defaultPrinter)
-	var cond580 *NSPrinter
+	var cond579 *NSPrinter
 	if result != 0 {
-		cond580 = NewNSPrinterOverload1(result)
+		cond579 = NewNSPrinterOverload1(result)
 	} else {
-		cond580 = nil
+		cond579 = nil
 	}
-	return cond580
+	return cond579
 }
 
 func NSPrintInfoSharedPrintInfo() *NSPrintInfo {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintInfo, OSSel_sharedPrintInfo)
-	var cond581 *NSPrintInfo
+	var cond580 *NSPrintInfo
 	if result != 0 {
-		cond581 = NewNSPrintInfoOverload1(result)
+		cond580 = NewNSPrintInfoOverload1(result)
 	} else {
-		cond581 = nil
+		cond580 = nil
 	}
-	return cond581
+	return cond580
 }

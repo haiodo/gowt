@@ -40,23 +40,23 @@ func (this *NSTableView) initNSTableViewOverload2(id *id) {
 }
 
 func (this *NSTableView) AddTableColumn(tableColumn *NSTableColumn) {
-	var cond728 int64
+	var cond727 int64
 	if tableColumn != (nil) {
-		cond728 = tableColumn.Id
+		cond727 = tableColumn.Id
 	} else {
-		cond728 = int64(0)
+		cond727 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addTableColumn_, cond728)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addTableColumn_, cond727)
 }
 
 func (this *NSTableView) CanDragRowsWithIndexes(rowIndexes *NSIndexSet, mouseDownPoint NSPoint) bool {
-	var cond729 int64
+	var cond728 int64
 	if rowIndexes != (nil) {
-		cond729 = rowIndexes.Id
+		cond728 = rowIndexes.Id
 	} else {
-		cond729 = int64(0)
+		cond728 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload6(this.Id, OSSel_canDragRowsWithIndexes_atPoint_, cond729, mouseDownPoint)
+	return OSObjc_msgSend_boolOverload6(this.Id, OSSel_canDragRowsWithIndexes_atPoint_, cond728, mouseDownPoint)
 }
 
 func (this *NSTableView) ClickedColumn() int64 {
@@ -72,13 +72,13 @@ func (this *NSTableView) ColumnAtPoint(point NSPoint) int64 {
 }
 
 func (this *NSTableView) DeselectAll(sender *id) {
-	var cond730 int64
+	var cond729 int64
 	if sender != (nil) {
-		cond730 = sender.Id
+		cond729 = sender.Id
 	} else {
-		cond730 = int64(0)
+		cond729 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_deselectAll_, cond730)
+	OSObjc_msgSendOverload44(this.Id, OSSel_deselectAll_, cond729)
 }
 
 func (this *NSTableView) DeselectRow(row int64) {
@@ -86,32 +86,32 @@ func (this *NSTableView) DeselectRow(row int64) {
 }
 
 func (this *NSTableView) DragImageForRowsWithIndexes(dragRows *NSIndexSet, tableColumns *NSArray, dragEvent *NSEvent, dragImageOffset int64) *NSImage {
-	var cond731 int64
+	var cond730 int64
 	if dragRows != (nil) {
-		cond731 = dragRows.Id
+		cond730 = dragRows.Id
+	} else {
+		cond730 = int64(0)
+	}
+	var cond731 int64
+	if tableColumns != (nil) {
+		cond731 = tableColumns.Id
 	} else {
 		cond731 = int64(0)
 	}
 	var cond732 int64
-	if tableColumns != (nil) {
-		cond732 = tableColumns.Id
+	if dragEvent != (nil) {
+		cond732 = dragEvent.Id
 	} else {
 		cond732 = int64(0)
 	}
-	var cond733 int64
-	if dragEvent != (nil) {
-		cond733 = dragEvent.Id
-	} else {
-		cond733 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload60(this.Id, OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_, cond731, cond732, cond733, dragImageOffset)
-	var cond734 *NSImage
+	var result int64 = OSObjc_msgSendOverload60(this.Id, OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_, cond730, cond731, cond732, dragImageOffset)
+	var cond733 *NSImage
 	if result != 0 {
-		cond734 = NewNSImageOverload1(result)
+		cond733 = NewNSImageOverload1(result)
 	} else {
-		cond734 = nil
+		cond733 = nil
 	}
-	return cond734
+	return cond733
 }
 
 func (this *NSTableView) DrawBackgroundInClipRect(clipRect NSRect) {
@@ -126,13 +126,13 @@ func (this *NSTableView) FrameOfCellAtColumn(column int64, row int64) NSRect {
 
 func (this *NSTableView) HeaderView() *NSTableHeaderView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_headerView)
-	var cond735 *NSTableHeaderView
+	var cond734 *NSTableHeaderView
 	if result != 0 {
-		cond735 = NewNSTableHeaderViewOverload1(result)
+		cond734 = NewNSTableHeaderViewOverload1(result)
 	} else {
-		cond735 = nil
+		cond734 = nil
 	}
-	return cond735
+	return cond734
 }
 
 func (this *NSTableView) HighlightSelectionInClipRect(clipRect NSRect) {
@@ -171,13 +171,13 @@ func (this *NSTableView) NumberOfSelectedRows() int64 {
 
 func (this *NSTableView) PreparedCellAtColumn(column int64, row int64) *NSCell {
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_preparedCellAtColumn_row_, column, row)
-	var cond736 *NSCell
+	var cond735 *NSCell
 	if result != 0 {
-		cond736 = NewNSCellOverload1(result)
+		cond735 = NewNSCellOverload1(result)
 	} else {
-		cond736 = nil
+		cond735 = nil
 	}
-	return cond736
+	return cond735
 }
 
 func (this *NSTableView) RectOfColumn(column int64) NSRect {
@@ -197,13 +197,13 @@ func (this *NSTableView) ReloadData() {
 }
 
 func (this *NSTableView) RemoveTableColumn(tableColumn *NSTableColumn) {
-	var cond737 int64
+	var cond736 int64
 	if tableColumn != (nil) {
-		cond737 = tableColumn.Id
+		cond736 = tableColumn.Id
 	} else {
-		cond737 = int64(0)
+		cond736 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeTableColumn_, cond737)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeTableColumn_, cond736)
 }
 
 func (this *NSTableView) RowAtPoint(point NSPoint) int64 {
@@ -223,23 +223,23 @@ func (this *NSTableView) ScrollRowToVisible(row int64) {
 }
 
 func (this *NSTableView) SelectAll(sender *id) {
-	var cond738 int64
+	var cond737 int64
 	if sender != (nil) {
-		cond738 = sender.Id
+		cond737 = sender.Id
 	} else {
-		cond738 = int64(0)
+		cond737 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_selectAll_, cond738)
+	OSObjc_msgSendOverload44(this.Id, OSSel_selectAll_, cond737)
 }
 
 func (this *NSTableView) SelectRowIndexes(indexes *NSIndexSet, extend bool) {
-	var cond739 int64
+	var cond738 int64
 	if indexes != (nil) {
-		cond739 = indexes.Id
+		cond738 = indexes.Id
 	} else {
-		cond739 = int64(0)
+		cond738 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_selectRowIndexes_byExtendingSelection_, cond739, extend)
+	OSObjc_msgSendOverload52(this.Id, OSSel_selectRowIndexes_byExtendingSelection_, cond738, extend)
 }
 
 func (this *NSTableView) SelectedRow() int64 {
@@ -248,13 +248,13 @@ func (this *NSTableView) SelectedRow() int64 {
 
 func (this *NSTableView) SelectedRowIndexes() *NSIndexSet {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedRowIndexes)
-	var cond740 *NSIndexSet
+	var cond739 *NSIndexSet
 	if result != 0 {
-		cond740 = NewNSIndexSetOverload1(result)
+		cond739 = NewNSIndexSetOverload1(result)
 	} else {
-		cond740 = nil
+		cond739 = nil
 	}
-	return cond740
+	return cond739
 }
 
 func (this *NSTableView) SetAllowsColumnReordering(allowsColumnReordering bool) {
@@ -266,13 +266,13 @@ func (this *NSTableView) SetAllowsMultipleSelection(allowsMultipleSelection bool
 }
 
 func (this *NSTableView) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond741 int64
+	var cond740 int64
 	if backgroundColor != (nil) {
-		cond741 = backgroundColor.Id
+		cond740 = backgroundColor.Id
 	} else {
-		cond741 = int64(0)
+		cond740 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond741)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond740)
 }
 
 func (this *NSTableView) SetColumnAutoresizingStyle(columnAutoresizingStyle int64) {
@@ -280,23 +280,23 @@ func (this *NSTableView) SetColumnAutoresizingStyle(columnAutoresizingStyle int6
 }
 
 func (this *NSTableView) SetDataSource(aSource *id) {
-	var cond742 int64
+	var cond741 int64
 	if aSource != (nil) {
-		cond742 = aSource.Id
+		cond741 = aSource.Id
 	} else {
-		cond742 = int64(0)
+		cond741 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDataSource_, cond742)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDataSource_, cond741)
 }
 
 func (this *NSTableView) SetDelegate(delegate *id) {
-	var cond743 int64
+	var cond742 int64
 	if delegate != (nil) {
-		cond743 = delegate.Id
+		cond742 = delegate.Id
 	} else {
-		cond743 = int64(0)
+		cond742 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond743)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond742)
 }
 
 func (this *NSTableView) SetDoubleAction(doubleAction int64) {
@@ -312,39 +312,39 @@ func (this *NSTableView) SetGridStyleMask(gridStyleMask int64) {
 }
 
 func (this *NSTableView) SetHeaderView(headerView *NSTableHeaderView) {
-	var cond744 int64
+	var cond743 int64
 	if headerView != (nil) {
-		cond744 = headerView.Id
+		cond743 = headerView.Id
 	} else {
-		cond744 = int64(0)
+		cond743 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHeaderView_, cond744)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHeaderView_, cond743)
 }
 
 func (this *NSTableView) SetHighlightedTableColumn(highlightedTableColumn *NSTableColumn) {
-	var cond745 int64
+	var cond744 int64
 	if highlightedTableColumn != (nil) {
-		cond745 = highlightedTableColumn.Id
+		cond744 = highlightedTableColumn.Id
 	} else {
-		cond745 = int64(0)
+		cond744 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHighlightedTableColumn_, cond745)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHighlightedTableColumn_, cond744)
 }
 
 func (this *NSTableView) SetIndicatorImage(anImage *NSImage, tableColumn *NSTableColumn) {
-	var cond746 int64
+	var cond745 int64
 	if anImage != (nil) {
-		cond746 = anImage.Id
+		cond745 = anImage.Id
+	} else {
+		cond745 = int64(0)
+	}
+	var cond746 int64
+	if tableColumn != (nil) {
+		cond746 = tableColumn.Id
 	} else {
 		cond746 = int64(0)
 	}
-	var cond747 int64
-	if tableColumn != (nil) {
-		cond747 = tableColumn.Id
-	} else {
-		cond747 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setIndicatorImage_inTableColumn_, cond746, cond747)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setIndicatorImage_inTableColumn_, cond745, cond746)
 }
 
 func (this *NSTableView) SetIntercellSpacing(intercellSpacing NSSize) {
@@ -361,13 +361,13 @@ func (this *NSTableView) SetUsesAlternatingRowBackgroundColors(usesAlternatingRo
 
 func (this *NSTableView) TableColumns() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_tableColumns)
-	var cond748 *NSArray
+	var cond747 *NSArray
 	if result != 0 {
-		cond748 = NewNSArrayOverload1(result)
+		cond747 = NewNSArrayOverload1(result)
 	} else {
-		cond748 = nil
+		cond747 = nil
 	}
-	return cond748
+	return cond747
 }
 
 func (this *NSTableView) Tile() {

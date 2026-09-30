@@ -49,6 +49,17 @@ func (this *NSEvent) ButtonNumber() int64 {
 
 func (this *NSEvent) Characters() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_characters)
+	var cond247 *NSString
+	if result != 0 {
+		cond247 = NewNSStringOverload1(result)
+	} else {
+		cond247 = nil
+	}
+	return cond247
+}
+
+func (this *NSEvent) CharactersIgnoringModifiers() *NSString {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_charactersIgnoringModifiers)
 	var cond248 *NSString
 	if result != 0 {
 		cond248 = NewNSStringOverload1(result)
@@ -56,17 +67,6 @@ func (this *NSEvent) Characters() *NSString {
 		cond248 = nil
 	}
 	return cond248
-}
-
-func (this *NSEvent) CharactersIgnoringModifiers() *NSString {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_charactersIgnoringModifiers)
-	var cond249 *NSString
-	if result != 0 {
-		cond249 = NewNSStringOverload1(result)
-	} else {
-		cond249 = nil
-	}
-	return cond249
 }
 
 func (this *NSEvent) ClickCount() int64 {
@@ -112,20 +112,20 @@ func (this *NSEvent) Timestamp() float64 {
 }
 
 func (this *NSEvent) TouchesMatchingPhase(phase int64, view *NSView) *NSSet {
-	var cond250 int64
+	var cond249 int64
 	if view != (nil) {
-		cond250 = view.Id
+		cond249 = view.Id
 	} else {
-		cond250 = int64(0)
+		cond249 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_touchesMatchingPhase_inView_, phase, cond250)
-	var cond251 *NSSet
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_touchesMatchingPhase_inView_, phase, cond249)
+	var cond250 *NSSet
 	if result != 0 {
-		cond251 = NewNSSetOverload1(result)
+		cond250 = NewNSSetOverload1(result)
 	} else {
-		cond251 = nil
+		cond250 = nil
 	}
-	return cond251
+	return cond250
 }
 
 func (this *NSEvent) Type() int64 {
@@ -134,13 +134,13 @@ func (this *NSEvent) Type() int64 {
 
 func (this *NSEvent) Window() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond252 *NSWindow
+	var cond251 *NSWindow
 	if result != 0 {
-		cond252 = NewNSWindowOverload1(result)
+		cond251 = NewNSWindowOverload1(result)
 	} else {
-		cond252 = nil
+		cond251 = nil
 	}
-	return cond252
+	return cond251
 }
 
 func NSEventDoubleClickInterval() float64 {
@@ -148,20 +148,20 @@ func NSEventDoubleClickInterval() float64 {
 }
 
 func NSEventEnterExitEventWithType(type_ int64, location NSPoint, flags int64, time float64, wNum int64, context *NSGraphicsContext, eNum int64, tNum int64, data int64) *NSEvent {
-	var cond253 int64
+	var cond252 int64
 	if context != (nil) {
-		cond253 = context.Id
+		cond252 = context.Id
 	} else {
-		cond253 = int64(0)
+		cond252 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload48(OSClass_NSEvent, OSSel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type_, location, flags, time, wNum, cond253, eNum, tNum, data)
-	var cond254 *NSEvent
+	var result int64 = OSObjc_msgSendOverload48(OSClass_NSEvent, OSSel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type_, location, flags, time, wNum, cond252, eNum, tNum, data)
+	var cond253 *NSEvent
 	if result != 0 {
-		cond254 = NewNSEventOverload1(result)
+		cond253 = NewNSEventOverload1(result)
 	} else {
-		cond254 = nil
+		cond253 = nil
 	}
-	return cond254
+	return cond253
 }
 
 func NSEventMouseLocation() NSPoint {
@@ -171,20 +171,20 @@ func NSEventMouseLocation() NSPoint {
 }
 
 func NSEventOtherEventWithType(type_ int64, location NSPoint, flags int64, time float64, wNum int64, context *NSGraphicsContext, subtype int16, d1 int64, d2 int64) *NSEvent {
-	var cond255 int64
+	var cond254 int64
 	if context != (nil) {
-		cond255 = context.Id
+		cond254 = context.Id
 	} else {
-		cond255 = int64(0)
+		cond254 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload49(OSClass_NSEvent, OSSel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type_, location, flags, time, wNum, cond255, subtype, d1, d2)
-	var cond256 *NSEvent
+	var result int64 = OSObjc_msgSendOverload49(OSClass_NSEvent, OSSel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type_, location, flags, time, wNum, cond254, subtype, d1, d2)
+	var cond255 *NSEvent
 	if result != 0 {
-		cond256 = NewNSEventOverload1(result)
+		cond255 = NewNSEventOverload1(result)
 	} else {
-		cond256 = nil
+		cond255 = nil
 	}
-	return cond256
+	return cond255
 }
 
 func NSEventPressedMouseButtons() int64 {

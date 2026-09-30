@@ -125,6 +125,9 @@ final class ConstructorEmitter {
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd && !Modifier.isStatic(fd.getModifiers())) {
 				ITypeBinding fieldType = fd.getType().resolveBinding();
+				// JUnit extensions are not run by cmd/swttest; their lambda initializer would panic construction.
+				if (((List<?>) fd.modifiers()).stream().anyMatch(m -> m instanceof MarkerAnnotation a
+						&& a.resolveAnnotationBinding().getAnnotationType().getQualifiedName().equals("org.junit.jupiter.api.extension.RegisterExtension"))) continue;
 				for (Object fo : fd.fragments()) {
 					VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
 					if (f.getInitializer() == null) continue;

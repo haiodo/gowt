@@ -1475,8 +1475,7 @@ func (this *Tree) GetItemPoint(pointLike PointLike) *TreeItem {
 	}
 	var id *cocoa.Id = widget.ItemAtRow(int64(row))
 	var item *Widget = this.display.GetWidget(id.Id)
-	_, ok528 := isWidgetToTreeItem(item)
-	if item != (nil) && ok528 {
+	if item != (nil) && func() bool { _, ok528 := isWidgetToTreeItem(item); return ok528 }() {
 		return castWidgetToTreeItem(item)
 	}
 	return nil
@@ -1540,8 +1539,7 @@ func (this *Tree) GetSelection() []*TreeItem {
 	for i := int32(0); i < count; i++ {
 		var id *cocoa.Id = widget.ItemAtRow(indexBuffer[i])
 		var item *Widget = this.display.GetWidget(id.Id)
-		_, ok530 := isWidgetToTreeItem(item)
-		if item != (nil) && ok530 {
+		if item != (nil) && func() bool { _, ok530 := isWidgetToTreeItem(item); return ok530 }() {
 			result[i] = castWidgetToTreeItem(item)
 		}
 	}
@@ -2435,8 +2433,7 @@ func (this *Tree) sendMouseEvent_(nsEvent *cocoa.NSEvent, type_ int32, send bool
 					var itemID *cocoa.Id = widget.ItemAtRow(int64(this.selectedRowIndex))
 					if itemID != (nil) {
 						var item *Widget = this.display.GetWidget(itemID.Id)
-						_, ok536 := isWidgetToTreeItem(item)
-						if item != (nil) && ok536 {
+						if item != (nil) && func() bool { _, ok536 := isWidgetToTreeItem(item); return ok536 }() {
 							event.Item = this.display.GetWidget(itemID.Id)
 							this.SendSelectionEventEventTypeEventSend(Selection, event, false)
 						}
@@ -3011,13 +3008,15 @@ func (this *Tree) ShowColumn(columnLike TreeColumnLike) {
 		return
 	}
 	var index int32 = this.IndexOf(column.nsColumn)
-	var cond541 int32
-	if (this.style & CHECK) != 0 {
-		cond541 = 1
-	} else {
-		cond541 = 0
-	}
-	if !(0 <= index && index < this.columnCount+(cond541)) {
+	if !(0 <= index && func() bool {
+		var cond541 int32
+		if (this.style & CHECK) != 0 {
+			cond541 = 1
+		} else {
+			cond541 = 0
+		}
+		return index < this.columnCount+(cond541)
+	}()) {
 		return
 	}
 	(castcocoaNSViewTococoaNSOutlineView(this.View)).ScrollColumnToVisible(int64(index))

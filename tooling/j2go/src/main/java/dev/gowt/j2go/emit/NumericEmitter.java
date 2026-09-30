@@ -40,7 +40,7 @@ final class NumericEmitter {
 		String hoisted = hoistBooleanChainIfNeeded(ie, op, goOp);
 		if (hoisted != null) return hoisted;
 		String left = parenthesize(ie.getLeftOperand(), emitter.expr(ie.getLeftOperand()), goOp, false);
-		String right = parenthesize(ie.getRightOperand(), emitter.expr(ie.getRightOperand()), goOp, true);
+		String right = parenthesize(ie.getRightOperand(), EmitUtil.lazyOperand(emitter, ie.getRightOperand(), goOp), goOp, true);
 		if (op == InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED && ie.extendedOperands().isEmpty()) {
 			return unsignedShift(left, resultType, right);
 		}
@@ -48,6 +48,8 @@ final class NumericEmitter {
 		// so the comparison must be against "" too - Go's string has no nil to compare against.
 		if (right.equals("nil") && isGoString(ie.getLeftOperand())) right = "\"\"";
 		if (left.equals("nil") && isGoString(ie.getRightOperand())) left = "\"\"";
+		String anyNull = EmitUtil.anyNullCompare(emitter, ie, left, right);
+		if (anyNull != null) return anyNull;
 		// Same for a cocoa struct (NSPoint): null is stored as its zero value (adaptNumeric).
 		// Parenthesized: a bare composite literal in an `if` condition is a Go parse error.
 		if (right.equals("nil")) right = "(" + emitter.adaptNumeric(right, null, ie.getLeftOperand().resolveTypeBinding()) + ")";
@@ -100,7 +102,7 @@ final class NumericEmitter {
 		String[] adapted = adaptBinaryOperands(left, right, ie.getLeftOperand(), ie.getRightOperand());
 		b.append(adapted[0]).append(' ').append(goOp).append(' ').append(adapted[1]);
 		for (Object ext : ie.extendedOperands()) {
-			String r = parenthesize((Expression) ext, emitter.expr((Expression) ext), goOp, true);
+			String r = parenthesize((Expression) ext, EmitUtil.lazyOperand(emitter, (Expression) ext, goOp), goOp, true);
 			b.append(' ').append(goOp).append(' ').append(r);
 		}
 		return b.toString();
@@ -352,6 +354,10 @@ final class NumericEmitter {
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
 		if (fromGo.equals(toGo)) return text;
+		// A degraded (untranslated) SWT type is `any`; it only reaches here as a subtype of the target.
+		if (fromGo.equals("any") && emitter.degradesUnresolvedTypes() && !text.equals("nil")
+				&& (from.getErasure().getQualifiedName().startsWith("org.eclipse.swt.") || from.isLocal() && !from.isAnonymous()
+				|| from.isAnonymous() && from.getSuperclass().getQualifiedName().equals("java.lang.Thread"))) return text + ".(" + toGo + ")";
 		String toQualified = to.getErasure().getQualifiedName();
 		if (!isProperDescendant(from.getErasure().getQualifiedName(), toQualified)) return text;
 		// cocoa's id: its embedded-field selector name (x.id) is unexported and cross-package-

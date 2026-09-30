@@ -47,10 +47,9 @@ final class JdkIntrinsics {
 		if (qualified.equals("java.lang.Math") && mb.getName().equals("abs")) {
 			return emitMathAbs(mi, mb);
 		}
-		// No real Thread/thread-affinity tracking (see Display.thread, an "any" always nil) -
-		// checkWidget()'s "!= currentThread()" compares two nils, so it always passes.
+		// Thread identity is the goroutine id (internal/jrt/lang.go), shared by swt and the tests.
 		if (qualified.equals("java.lang.Thread") && mb.getName().equals("currentThread")) {
-			return "ThreadCurrentThread()";
+			return jrtCall("CurrentThread", "");
 		}
 		if (qualified.equals("java.lang.String") && mb.getName().equals("substring")) {
 			return jrtCall("Substring", recv(mi) + ", " + arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "-1" : arg(mi, 1)));

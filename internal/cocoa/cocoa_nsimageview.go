@@ -41,23 +41,23 @@ func (this *NSImageView) initNSImageViewOverload2(id *id) {
 
 func (this *NSImageView) Image() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
-	var cond335 *NSImage
+	var cond334 *NSImage
 	if result != 0 {
-		cond335 = NewNSImageOverload1(result)
+		cond334 = NewNSImageOverload1(result)
 	} else {
-		cond335 = nil
+		cond334 = nil
 	}
-	return cond335
+	return cond334
 }
 
 func (this *NSImageView) SetImage(image *NSImage) {
-	var cond336 int64
+	var cond335 int64
 	if image != (nil) {
-		cond336 = image.Id
+		cond335 = image.Id
 	} else {
-		cond336 = int64(0)
+		cond335 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond336)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond335)
 }
 
 func (this *NSImageView) SetImageAlignment(imageAlignment int64) {

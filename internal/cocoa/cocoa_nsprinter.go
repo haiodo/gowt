@@ -41,39 +41,39 @@ func (this *NSPrinter) initNSPrinterOverload2(id *id) {
 
 func (this *NSPrinter) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond594 *NSString
+	var cond593 *NSString
 	if result != 0 {
-		cond594 = NewNSStringOverload1(result)
+		cond593 = NewNSStringOverload1(result)
+	} else {
+		cond593 = nil
+	}
+	return cond593
+}
+
+func NSPrinterPrinterNames() *NSArray {
+	var result int64 = OSObjc_msgSend(OSClass_NSPrinter, OSSel_printerNames)
+	var cond594 *NSArray
+	if result != 0 {
+		cond594 = NewNSArrayOverload1(result)
 	} else {
 		cond594 = nil
 	}
 	return cond594
 }
 
-func NSPrinterPrinterNames() *NSArray {
-	var result int64 = OSObjc_msgSend(OSClass_NSPrinter, OSSel_printerNames)
-	var cond595 *NSArray
-	if result != 0 {
-		cond595 = NewNSArrayOverload1(result)
-	} else {
-		cond595 = nil
-	}
-	return cond595
-}
-
 func NSPrinterPrinterWithName(name *NSString) *NSPrinter {
-	var cond596 int64
+	var cond595 int64
 	if name != (nil) {
-		cond596 = name.Id
+		cond595 = name.Id
 	} else {
-		cond596 = int64(0)
+		cond595 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPrinter, OSSel_printerWithName_, cond596)
-	var cond597 *NSPrinter
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPrinter, OSSel_printerWithName_, cond595)
+	var cond596 *NSPrinter
 	if result != 0 {
-		cond597 = NewNSPrinterOverload1(result)
+		cond596 = NewNSPrinterOverload1(result)
 	} else {
-		cond597 = nil
+		cond596 = nil
 	}
-	return cond597
+	return cond596
 }

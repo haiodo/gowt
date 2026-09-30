@@ -64,8 +64,7 @@ func (this *Composite) _getChildren() []*Control {
 	var j int32 = 0
 	for i := int32(0); i < count; i++ {
 		var widget *Widget = this.display.GetWidget(views.ObjectAtIndex(int64(count - i - 1)).Id)
-		_, ok135 := isWidgetToControl(widget)
-		if widget != (nil) && widget != upcastCompositeToWidget(this) && ok135 {
+		if widget != (nil) && widget != upcastCompositeToWidget(this) && func() bool { _, ok135 := isWidgetToControl(widget); return ok135 }() {
 			t136 := j
 			j++
 			children[t136] = castWidgetToControl(widget)

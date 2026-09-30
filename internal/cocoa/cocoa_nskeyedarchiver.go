@@ -40,18 +40,18 @@ func (this *NSKeyedArchiver) initNSKeyedArchiverOverload2(id *id) {
 }
 
 func NSKeyedArchiverArchivedDataWithRootObject(rootObject *id) *NSData {
-	var cond343 int64
+	var cond342 int64
 	if rootObject != (nil) {
-		cond343 = rootObject.Id
+		cond342 = rootObject.Id
 	} else {
-		cond343 = int64(0)
+		cond342 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedArchiver, OSSel_archivedDataWithRootObject_, cond343)
-	var cond344 *NSData
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedArchiver, OSSel_archivedDataWithRootObject_, cond342)
+	var cond343 *NSData
 	if result != 0 {
-		cond344 = NewNSDataOverload1(result)
+		cond343 = NewNSDataOverload1(result)
 	} else {
-		cond344 = nil
+		cond343 = nil
 	}
-	return cond344
+	return cond343
 }

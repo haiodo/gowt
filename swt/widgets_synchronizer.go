@@ -51,8 +51,11 @@ func (this *Synchronizer) MoveAllEventsTo(toReceiveTheEventsLike SynchronizerLik
 	}
 	_ = toReceiveTheEvents
 	var tail *jrt.List = jrt.NewList()
-	toReceiveTheEvents.messages.RemoveIf(func() func(*RunnableLock) bool { panic("j2go: unsupported ExpressionMethodReference") }())
-	this.messages.RemoveIf(func() func(*RunnableLock) bool { panic("j2go: unsupported ExpressionMethodReference") }())
+	toReceiveTheEvents.messages.RemoveIf(func() func(*RunnableLock) bool { _ = []any{tail}; panic("j2go: unsupported ExpressionMethodReference") }())
+	this.messages.RemoveIf(func() func(*RunnableLock) bool {
+		_ = []any{toReceiveTheEvents}
+		panic("j2go: unsupported ExpressionMethodReference")
+	}())
 	toReceiveTheEvents.messages.AddAll(tail)
 }
 
@@ -156,7 +159,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 				return
 			}
 			lock = newRunnableLock(runnable)
-			lock.thread = ThreadCurrentThread()
+			lock.thread = jrt.CurrentThread()
 			this.AddLast(lock)
 		}
 	}()
@@ -215,7 +218,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 			}()
 		}
 		if interrupted {
-			func() any { _ = []any{ThreadCurrentThread()}; panic("j2go: unresolved call interrupt") }()
+			func() any { _ = []any{jrt.CurrentThread()}; panic("j2go: unresolved call interrupt") }()
 		}
 		if lock.throwable != (nil) {
 			ErrorCodeThrowable(ERROR_FAILED_EXEC, lock.throwable)

@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 	"unicode/utf16"
 )
@@ -121,32 +120,6 @@ func LocaleDefault() *Locale { return &Locale{LocaleLanguage(nil)} }
 
 func (l *Locale) ToString() string    { return l.tag }
 func (l *Locale) GetLanguage() string { return l.tag }
-
-// AtomicReference is java.util.concurrent.atomic.AtomicReference over an erased value.
-type AtomicReference struct {
-	mu sync.Mutex
-	v  any
-}
-
-func NewAtomicReference(init ...any) *AtomicReference {
-	r := &AtomicReference{}
-	if len(init) == 1 {
-		r.v = init[0]
-	}
-	return r
-}
-
-func (r *AtomicReference) Get() any {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return r.v
-}
-
-func (r *AtomicReference) Set(v any) {
-	r.mu.Lock()
-	r.v = v
-	r.mu.Unlock()
-}
 
 // Thread is java.lang.Thread for `new Thread(runnable)` + start/join; the port's `Thread` type
 // itself stays a bare any (Display.thread), see Manual.

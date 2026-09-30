@@ -40,22 +40,22 @@ func (this *NSMutableSet) initNSMutableSetOverload2(id *id) {
 }
 
 func (this *NSMutableSet) AddObjectsFromArray(array *NSArray) {
-	var cond439 int64
+	var cond438 int64
 	if array != (nil) {
-		cond439 = array.Id
+		cond438 = array.Id
 	} else {
-		cond439 = int64(0)
+		cond438 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond439)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addObjectsFromArray_, cond438)
 }
 
 func NSMutableSetSet() *NSMutableSet {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableSet, OSSel_set)
-	var cond440 *NSMutableSet
+	var cond439 *NSMutableSet
 	if result != 0 {
-		cond440 = NewNSMutableSetOverload1(result)
+		cond439 = NewNSMutableSetOverload1(result)
 	} else {
-		cond440 = nil
+		cond439 = nil
 	}
-	return cond440
+	return cond439
 }

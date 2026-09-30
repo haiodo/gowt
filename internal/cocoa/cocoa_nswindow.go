@@ -40,13 +40,13 @@ func (this *NSWindow) initNSWindowOverload2(id *id) {
 }
 
 func (this *NSWindow) AddChildWindow(childWin *NSWindow, place int64) {
-	var cond886 int64
+	var cond885 int64
 	if childWin != (nil) {
-		cond886 = childWin.Id
+		cond885 = childWin.Id
 	} else {
-		cond886 = int64(0)
+		cond885 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_addChildWindow_ordered_, cond886, place)
+	OSObjc_msgSendOverload54(this.Id, OSSel_addChildWindow_ordered_, cond885, place)
 }
 
 func (this *NSWindow) AlphaValue() float64 {
@@ -81,13 +81,13 @@ func (this *NSWindow) CollectionBehavior() int64 {
 
 func (this *NSWindow) ContentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond887 *NSView
+	var cond886 *NSView
 	if result != 0 {
-		cond887 = NewNSViewOverload1(result)
+		cond886 = NewNSViewOverload1(result)
 	} else {
-		cond887 = nil
+		cond886 = nil
 	}
-	return cond887
+	return cond886
 }
 
 func (this *NSWindow) ConvertBaseToScreen(aPoint NSPoint) NSPoint {
@@ -104,34 +104,34 @@ func (this *NSWindow) ConvertScreenToBase(aPoint NSPoint) NSPoint {
 
 func (this *NSWindow) DefaultButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_defaultButtonCell)
-	var cond888 *NSButtonCell
+	var cond887 *NSButtonCell
 	if result != 0 {
-		cond888 = NewNSButtonCellOverload1(result)
+		cond887 = NewNSButtonCellOverload1(result)
+	} else {
+		cond887 = nil
+	}
+	return cond887
+}
+
+func (this *NSWindow) Delegate() *id {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_delegate)
+	var cond888 *id
+	if result != 0 {
+		cond888 = NewidOverload1(result)
 	} else {
 		cond888 = nil
 	}
 	return cond888
 }
 
-func (this *NSWindow) Delegate() *id {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_delegate)
-	var cond889 *id
-	if result != 0 {
-		cond889 = NewidOverload1(result)
-	} else {
-		cond889 = nil
-	}
-	return cond889
-}
-
 func (this *NSWindow) Deminiaturize(sender *id) {
-	var cond890 int64
+	var cond889 int64
 	if sender != (nil) {
-		cond890 = sender.Id
+		cond889 = sender.Id
 	} else {
-		cond890 = int64(0)
+		cond889 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_deminiaturize_, cond890)
+	OSObjc_msgSendOverload44(this.Id, OSSel_deminiaturize_, cond889)
 }
 
 func (this *NSWindow) DisableCursorRects() {
@@ -155,41 +155,41 @@ func (this *NSWindow) EnableFlushWindow() {
 }
 
 func (this *NSWindow) EndEditingFor(anObject *id) {
+	var cond890 int64
+	if anObject != (nil) {
+		cond890 = anObject.Id
+	} else {
+		cond890 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_endEditingFor_, cond890)
+}
+
+func (this *NSWindow) FieldEditor(createFlag bool, anObject *id) *NSText {
 	var cond891 int64
 	if anObject != (nil) {
 		cond891 = anObject.Id
 	} else {
 		cond891 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_endEditingFor_, cond891)
-}
-
-func (this *NSWindow) FieldEditor(createFlag bool, anObject *id) *NSText {
-	var cond892 int64
-	if anObject != (nil) {
-		cond892 = anObject.Id
-	} else {
-		cond892 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload29(this.Id, OSSel_fieldEditor_forObject_, createFlag, cond892)
-	var cond893 *NSText
+	var result int64 = OSObjc_msgSendOverload29(this.Id, OSSel_fieldEditor_forObject_, createFlag, cond891)
+	var cond892 *NSText
 	if result != 0 {
-		cond893 = NewNSTextOverload1(result)
+		cond892 = NewNSTextOverload1(result)
 	} else {
-		cond893 = nil
+		cond892 = nil
 	}
-	return cond893
+	return cond892
 }
 
 func (this *NSWindow) FirstResponder() *NSResponder {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_firstResponder)
-	var cond894 *NSResponder
+	var cond893 *NSResponder
 	if result != 0 {
-		cond894 = NewNSResponderOverload1(result)
+		cond893 = NewNSResponderOverload1(result)
 	} else {
-		cond894 = nil
+		cond893 = nil
 	}
-	return cond894
+	return cond893
 }
 
 func (this *NSWindow) FlushWindowIfNeeded() {
@@ -210,13 +210,13 @@ func (this *NSWindow) FrameRectForContentRect(contentRect NSRect) NSRect {
 
 func (this *NSWindow) GraphicsContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_graphicsContext)
-	var cond895 *NSGraphicsContext
+	var cond894 *NSGraphicsContext
 	if result != 0 {
-		cond895 = NewNSGraphicsContextOverload1(result)
+		cond894 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond895 = nil
+		cond894 = nil
 	}
-	return cond895
+	return cond894
 }
 
 func (this *NSWindow) HasShadow() bool {
@@ -225,42 +225,42 @@ func (this *NSWindow) HasShadow() bool {
 
 func (this *NSWindow) InitWithContentRect(contentRect NSRect, aStyle int64, bufferingType int64, flag bool) *NSWindow {
 	var result int64 = OSObjc_msgSendOverload24(this.Id, OSSel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag)
+	var cond895 *NSWindow
 	var cond896 *NSWindow
-	var cond897 *NSWindow
 	if result != 0 {
-		cond897 = NewNSWindowOverload1(result)
+		cond896 = NewNSWindowOverload1(result)
 	} else {
-		cond897 = nil
+		cond896 = nil
 	}
 	if result == this.Id {
-		cond896 = this
+		cond895 = this
 	} else {
-		cond896 = (cond897)
+		cond895 = (cond896)
 	}
-	return cond896
+	return cond895
 }
 
 func (this *NSWindow) InitWithContentRectContentRectAStyleBufferingTypeFlagScreen(contentRect NSRect, aStyle int64, bufferingType int64, flag bool, screen *NSScreen) *NSWindow {
-	var cond898 int64
+	var cond897 int64
 	if screen != (nil) {
-		cond898 = screen.Id
+		cond897 = screen.Id
 	} else {
-		cond898 = int64(0)
+		cond897 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload25(this.Id, OSSel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, cond898)
+	var result int64 = OSObjc_msgSendOverload25(this.Id, OSSel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, cond897)
+	var cond898 *NSWindow
 	var cond899 *NSWindow
-	var cond900 *NSWindow
 	if result != 0 {
-		cond900 = NewNSWindowOverload1(result)
+		cond899 = NewNSWindowOverload1(result)
 	} else {
-		cond900 = nil
+		cond899 = nil
 	}
 	if result == this.Id {
-		cond899 = this
+		cond898 = this
 	} else {
-		cond899 = (cond900)
+		cond898 = (cond899)
 	}
-	return cond899
+	return cond898
 }
 
 func (this *NSWindow) InvalidateShadow() {
@@ -296,23 +296,23 @@ func (this *NSWindow) IsZoomed() bool {
 }
 
 func (this *NSWindow) MakeFirstResponder(aResponder *NSResponder) bool {
-	var cond901 int64
+	var cond900 int64
 	if aResponder != (nil) {
-		cond901 = aResponder.Id
+		cond900 = aResponder.Id
 	} else {
-		cond901 = int64(0)
+		cond900 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_makeFirstResponder_, cond901)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_makeFirstResponder_, cond900)
 }
 
 func (this *NSWindow) MakeKeyAndOrderFront(sender *id) {
-	var cond902 int64
+	var cond901 int64
 	if sender != (nil) {
-		cond902 = sender.Id
+		cond901 = sender.Id
 	} else {
-		cond902 = int64(0)
+		cond901 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_makeKeyAndOrderFront_, cond902)
+	OSObjc_msgSendOverload44(this.Id, OSSel_makeKeyAndOrderFront_, cond901)
 }
 
 func (this *NSWindow) MaxSize() NSSize {
@@ -328,13 +328,13 @@ func (this *NSWindow) MinSize() NSSize {
 }
 
 func (this *NSWindow) Miniaturize(sender *id) {
-	var cond903 int64
+	var cond902 int64
 	if sender != (nil) {
-		cond903 = sender.Id
+		cond902 = sender.Id
 	} else {
-		cond903 = int64(0)
+		cond902 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_miniaturize_, cond903)
+	OSObjc_msgSendOverload44(this.Id, OSSel_miniaturize_, cond902)
 }
 
 func (this *NSWindow) MouseLocationOutsideOfEventStream() NSPoint {
@@ -344,23 +344,23 @@ func (this *NSWindow) MouseLocationOutsideOfEventStream() NSPoint {
 }
 
 func (this *NSWindow) OrderBack(sender *id) {
+	var cond903 int64
+	if sender != (nil) {
+		cond903 = sender.Id
+	} else {
+		cond903 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_orderBack_, cond903)
+}
+
+func (this *NSWindow) OrderFront(sender *id) {
 	var cond904 int64
 	if sender != (nil) {
 		cond904 = sender.Id
 	} else {
 		cond904 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_orderBack_, cond904)
-}
-
-func (this *NSWindow) OrderFront(sender *id) {
-	var cond905 int64
-	if sender != (nil) {
-		cond905 = sender.Id
-	} else {
-		cond905 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_orderFront_, cond905)
+	OSObjc_msgSendOverload44(this.Id, OSSel_orderFront_, cond904)
 }
 
 func (this *NSWindow) OrderFrontRegardless() {
@@ -368,13 +368,13 @@ func (this *NSWindow) OrderFrontRegardless() {
 }
 
 func (this *NSWindow) OrderOut(sender *id) {
-	var cond906 int64
+	var cond905 int64
 	if sender != (nil) {
-		cond906 = sender.Id
+		cond905 = sender.Id
 	} else {
-		cond906 = int64(0)
+		cond905 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_orderOut_, cond906)
+	OSObjc_msgSendOverload44(this.Id, OSSel_orderOut_, cond905)
 }
 
 func (this *NSWindow) OrderWindow(place int64, otherWin int64) {
@@ -383,50 +383,50 @@ func (this *NSWindow) OrderWindow(place int64, otherWin int64) {
 
 func (this *NSWindow) ParentWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_parentWindow)
+	var cond906 *NSWindow
 	var cond907 *NSWindow
-	var cond908 *NSWindow
 	if result != 0 {
-		cond908 = NewNSWindowOverload1(result)
+		cond907 = NewNSWindowOverload1(result)
 	} else {
-		cond908 = nil
+		cond907 = nil
 	}
 	if result == this.Id {
-		cond907 = this
+		cond906 = this
 	} else {
-		cond907 = (cond908)
+		cond906 = (cond907)
 	}
-	return cond907
+	return cond906
 }
 
 func (this *NSWindow) RemoveChildWindow(childWin *NSWindow) {
-	var cond909 int64
+	var cond908 int64
 	if childWin != (nil) {
-		cond909 = childWin.Id
+		cond908 = childWin.Id
 	} else {
-		cond909 = int64(0)
+		cond908 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeChildWindow_, cond909)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeChildWindow_, cond908)
 }
 
 func (this *NSWindow) Screen() *NSScreen {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_screen)
-	var cond910 *NSScreen
+	var cond909 *NSScreen
 	if result != 0 {
-		cond910 = NewNSScreenOverload1(result)
+		cond909 = NewNSScreenOverload1(result)
 	} else {
-		cond910 = nil
+		cond909 = nil
 	}
-	return cond910
+	return cond909
 }
 
 func (this *NSWindow) SendEvent(theEvent *NSEvent) {
-	var cond911 int64
+	var cond910 int64
 	if theEvent != (nil) {
-		cond911 = theEvent.Id
+		cond910 = theEvent.Id
 	} else {
-		cond911 = int64(0)
+		cond910 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_sendEvent_, cond911)
+	OSObjc_msgSendOverload44(this.Id, OSSel_sendEvent_, cond910)
 }
 
 func (this *NSWindow) SetAcceptsMouseMovedEvents(acceptsMouseMovedEvents bool) {
@@ -438,13 +438,13 @@ func (this *NSWindow) SetAlphaValue(alphaValue float64) {
 }
 
 func (this *NSWindow) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond912 int64
+	var cond911 int64
 	if backgroundColor != (nil) {
-		cond912 = backgroundColor.Id
+		cond911 = backgroundColor.Id
 	} else {
-		cond912 = int64(0)
+		cond911 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond912)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond911)
 }
 
 func (this *NSWindow) SetCollectionBehavior(collectionBehavior int64) {
@@ -452,33 +452,33 @@ func (this *NSWindow) SetCollectionBehavior(collectionBehavior int64) {
 }
 
 func (this *NSWindow) SetContentView(contentView *NSView) {
-	var cond913 int64
+	var cond912 int64
 	if contentView != (nil) {
-		cond913 = contentView.Id
+		cond912 = contentView.Id
 	} else {
-		cond913 = int64(0)
+		cond912 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setContentView_, cond913)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setContentView_, cond912)
 }
 
 func (this *NSWindow) SetDefaultButtonCell(defaultButtonCell *NSButtonCell) {
-	var cond914 int64
+	var cond913 int64
 	if defaultButtonCell != (nil) {
-		cond914 = defaultButtonCell.Id
+		cond913 = defaultButtonCell.Id
 	} else {
-		cond914 = int64(0)
+		cond913 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDefaultButtonCell_, cond914)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDefaultButtonCell_, cond913)
 }
 
 func (this *NSWindow) SetDelegate(delegate *id) {
-	var cond915 int64
+	var cond914 int64
 	if delegate != (nil) {
-		cond915 = delegate.Id
+		cond914 = delegate.Id
 	} else {
-		cond915 = int64(0)
+		cond914 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond915)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond914)
 }
 
 func (this *NSWindow) SetDocumentEdited(documentEdited bool) {
@@ -526,23 +526,23 @@ func (this *NSWindow) SetReleasedWhenClosed(releasedWhenClosed bool) {
 }
 
 func (this *NSWindow) SetRepresentedFilename(representedFilename *NSString) {
-	var cond916 int64
+	var cond915 int64
 	if representedFilename != (nil) {
-		cond916 = representedFilename.Id
+		cond915 = representedFilename.Id
 	} else {
-		cond916 = int64(0)
+		cond915 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setRepresentedFilename_, cond916)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setRepresentedFilename_, cond915)
 }
 
 func (this *NSWindow) SetRepresentedURL(representedURL *NSURL) {
-	var cond917 int64
+	var cond916 int64
 	if representedURL != (nil) {
-		cond917 = representedURL.Id
+		cond916 = representedURL.Id
 	} else {
-		cond917 = int64(0)
+		cond916 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setRepresentedURL_, cond917)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setRepresentedURL_, cond916)
 }
 
 func (this *NSWindow) SetShowsResizeIndicator(showsResizeIndicator bool) {
@@ -554,23 +554,23 @@ func (this *NSWindow) SetShowsToolbarButton(showsToolbarButton bool) {
 }
 
 func (this *NSWindow) SetTitle(title *NSString) {
-	var cond918 int64
+	var cond917 int64
 	if title != (nil) {
-		cond918 = title.Id
+		cond917 = title.Id
 	} else {
-		cond918 = int64(0)
+		cond917 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond918)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond917)
 }
 
 func (this *NSWindow) SetToolbar(toolbar *NSToolbar) {
-	var cond919 int64
+	var cond918 int64
 	if toolbar != (nil) {
-		cond919 = toolbar.Id
+		cond918 = toolbar.Id
 	} else {
-		cond919 = int64(0)
+		cond918 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setToolbar_, cond919)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setToolbar_, cond918)
 }
 
 func (this *NSWindow) StyleMask() int64 {
@@ -578,24 +578,24 @@ func (this *NSWindow) StyleMask() int64 {
 }
 
 func (this *NSWindow) ToggleFullScreen(sender *id) {
-	var cond920 int64
+	var cond919 int64
 	if sender != (nil) {
-		cond920 = sender.Id
+		cond919 = sender.Id
 	} else {
-		cond920 = int64(0)
+		cond919 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_toggleFullScreen_, cond920)
+	OSObjc_msgSendOverload44(this.Id, OSSel_toggleFullScreen_, cond919)
 }
 
 func (this *NSWindow) Toolbar() *NSToolbar {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_toolbar)
-	var cond921 *NSToolbar
+	var cond920 *NSToolbar
 	if result != 0 {
-		cond921 = NewNSToolbarOverload1(result)
+		cond920 = NewNSToolbarOverload1(result)
 	} else {
-		cond921 = nil
+		cond920 = nil
 	}
-	return cond921
+	return cond920
 }
 
 func (this *NSWindow) WindowNumber() int64 {
@@ -603,23 +603,23 @@ func (this *NSWindow) WindowNumber() int64 {
 }
 
 func (this *NSWindow) Zoom(sender *id) {
-	var cond922 int64
+	var cond921 int64
 	if sender != (nil) {
-		cond922 = sender.Id
+		cond921 = sender.Id
 	} else {
-		cond922 = int64(0)
+		cond921 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_zoom_, cond922)
+	OSObjc_msgSendOverload44(this.Id, OSSel_zoom_, cond921)
 }
 
 func NSWindowMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond923 int64
+	var cond922 int64
 	if aTitle != (nil) {
-		cond923 = aTitle.Id
+		cond922 = aTitle.Id
 	} else {
-		cond923 = int64(0)
+		cond922 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSWindow, OSSel_minFrameWidthWithTitle_styleMask_, cond923, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSWindow, OSSel_minFrameWidthWithTitle_styleMask_, cond922, aStyle)
 }
 
 func NSWindowWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

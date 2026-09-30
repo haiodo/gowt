@@ -41,13 +41,13 @@ func (this *NSOpenPanel) initNSOpenPanelOverload2(id *id) {
 
 func (this *NSOpenPanel) Filenames() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_filenames)
-	var cond529 *NSArray
+	var cond528 *NSArray
 	if result != 0 {
-		cond529 = NewNSArrayOverload1(result)
+		cond528 = NewNSArrayOverload1(result)
 	} else {
-		cond529 = nil
+		cond528 = nil
 	}
-	return cond529
+	return cond528
 }
 
 func (this *NSOpenPanel) SetAccessoryViewDisclosed(accessoryViewDisclosed bool) {
@@ -68,34 +68,34 @@ func (this *NSOpenPanel) SetCanChooseFiles(canChooseFiles bool) {
 
 func NSOpenPanelOpenPanel() *NSOpenPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenPanel, OSSel_openPanel)
-	var cond530 *NSOpenPanel
+	var cond529 *NSOpenPanel
 	if result != 0 {
-		cond530 = NewNSOpenPanelOverload1(result)
+		cond529 = NewNSOpenPanelOverload1(result)
+	} else {
+		cond529 = nil
+	}
+	return cond529
+}
+
+func NSOpenPanelSavePanel() *NSSavePanel {
+	var result int64 = OSObjc_msgSend(OSClass_NSOpenPanel, OSSel_savePanel)
+	var cond530 *NSSavePanel
+	if result != 0 {
+		cond530 = NewNSSavePanelOverload1(result)
 	} else {
 		cond530 = nil
 	}
 	return cond530
 }
 
-func NSOpenPanelSavePanel() *NSSavePanel {
-	var result int64 = OSObjc_msgSend(OSClass_NSOpenPanel, OSSel_savePanel)
-	var cond531 *NSSavePanel
-	if result != 0 {
-		cond531 = NewNSSavePanelOverload1(result)
-	} else {
-		cond531 = nil
-	}
-	return cond531
-}
-
 func NSOpenPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond532 int64
+	var cond531 int64
 	if aTitle != (nil) {
-		cond532 = aTitle.Id
+		cond531 = aTitle.Id
 	} else {
-		cond532 = int64(0)
+		cond531 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSOpenPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond532, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSOpenPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond531, aStyle)
 }
 
 func NSOpenPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

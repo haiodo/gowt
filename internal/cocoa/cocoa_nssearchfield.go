@@ -41,13 +41,13 @@ func (this *NSSearchField) initNSSearchFieldOverload2(id *id) {
 
 func (this *NSSearchField) RecentSearches() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_recentSearches)
-	var cond661 *NSArray
+	var cond660 *NSArray
 	if result != 0 {
-		cond661 = NewNSArrayOverload1(result)
+		cond660 = NewNSArrayOverload1(result)
 	} else {
-		cond661 = nil
+		cond660 = nil
 	}
-	return cond661
+	return cond660
 }
 
 func NSSearchFieldCellClass() int64 {

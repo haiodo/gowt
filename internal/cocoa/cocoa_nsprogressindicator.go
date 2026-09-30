@@ -80,11 +80,11 @@ func (this *NSProgressIndicator) SizeToFit() {
 }
 
 func (this *NSProgressIndicator) StartAnimation(sender *id) {
-	var cond599 int64
+	var cond598 int64
 	if sender != (nil) {
-		cond599 = sender.Id
+		cond598 = sender.Id
 	} else {
-		cond599 = int64(0)
+		cond598 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_startAnimation_, cond599)
+	OSObjc_msgSendOverload44(this.Id, OSSel_startAnimation_, cond598)
 }

@@ -82,9 +82,9 @@ func (this *Resource) Dispose() {
 
 func (this *Resource) dispose_() {
 	if this.tracker != (nil) {
-		func() any { _ = []any{this.tracker.reporting, false}; panic("j2go: unresolved call set") }()
+		this.tracker.reporting.Set(false)
 	}
-	if this.cleanable != (nil) {
+	if !jrt.IsNil(this.cleanable) {
 		func() any { _ = []any{this.cleanable}; panic("j2go: unresolved call clean") }()
 	}
 	if this.device == (nil) {
@@ -114,9 +114,9 @@ func (this *Resource) getDevice_() *Device {
 
 func (this *Resource) IgnoreNonDisposed() {
 	if this.tracker != (nil) {
-		func() any { _ = []any{this.tracker.reporting, false}; panic("j2go: unresolved call set") }()
+		this.tracker.reporting.Set(false)
 	}
-	if this.cleanable != (nil) {
+	if !jrt.IsNil(this.cleanable) {
 		func() any { _ = []any{this.cleanable}; panic("j2go: unresolved call clean") }()
 	}
 }
@@ -129,10 +129,7 @@ func (this *Resource) init_() {
 	if this.device.tracking {
 		this.device.New_Object(this)
 	}
-	if this.tracker != (nil) && func() bool {
-		_ = []any{this.tracker.reporting, false, true}
-		panic("j2go: unresolved call compareAndSet")
-	}() {
+	if this.tracker != (nil) && this.tracker.reporting.CompareAndSet(false, true) {
 		this.cleanable = func() any {
 			_ = []any{ResourceResourceTrackerCleaner, this, this.tracker}
 			panic("j2go: unresolved call register")
@@ -162,7 +159,7 @@ func ResourceSetNonDisposeHandler(reporter func(error)) {
 
 type Resource_ResourceTracker struct {
 	allocationStack error
-	reporting       any
+	reporting       *jrt.AtomicBoolean
 }
 
 func (this *Resource_ResourceTracker) AsResource_ResourceTracker() *Resource_ResourceTracker {
@@ -182,12 +179,12 @@ func newResourceResourceTracker(allocationStack error) *Resource_ResourceTracker
 }
 
 func (this *Resource_ResourceTracker) initResourceResourceTracker(allocationStack error) {
-	this.reporting = func() any { _ = []any{false}; panic("j2go: unresolved new AtomicBoolean") }()
+	this.reporting = jrt.NewAtomicBoolean(false)
 	this.allocationStack = allocationStack
 }
 
 func (this *Resource_ResourceTracker) Run() {
-	if !func() bool { _ = []any{this.reporting}; panic("j2go: unresolved call get") }() {
+	if !this.reporting.Get() {
 		return
 	}
 	if ResourceNonDisposedReporter == (nil) {
@@ -215,8 +212,8 @@ func NewResourceResourceTrackerThreadFactory() *Resource_ResourceTrackerThreadFa
 }
 
 func (this *Resource_ResourceTrackerThreadFactory) initResourceResourceTrackerThreadFactory() {
-	var root any = func() any { _ = []any{ThreadCurrentThread()}; panic("j2go: unresolved call getThreadGroup") }()
-	for func() any { _ = []any{root}; panic("j2go: unresolved call getParent") }() != (nil) {
+	var root any = func() any { _ = []any{jrt.CurrentThread()}; panic("j2go: unresolved call getThreadGroup") }()
+	for !jrt.IsNil(func() any { _ = []any{root}; panic("j2go: unresolved call getParent") }()) {
 		root = func() any { _ = []any{root}; panic("j2go: unresolved call getParent") }()
 	}
 	this.group = func() any {

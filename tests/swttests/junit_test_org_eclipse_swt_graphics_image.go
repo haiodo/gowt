@@ -1048,9 +1048,9 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_updateWidthHeightAfterDPIC
 func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataIsCached() {
 	junit.AssumeTrue(SwtTestUtilIsWindows, "On-demand image creation only implemented for Windows")
 	var imagePath string = Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")
-	var callCount any = func() any { panic("j2go: unresolved new AtomicInteger") }()
+	var callCount *jrt.AtomicInteger = jrt.NewAtomicInteger()
 	var imageFileNameProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(__ int32) string {
-		func() int32 { _ = []any{callCount}; panic("j2go: unresolved call incrementAndGet") }()
+		callCount.IncrementAndGet()
 		return imagePath
 	}}
 	var fileNameProviderImage *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), imageFileNameProvider)
@@ -1059,10 +1059,10 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataIsCached() {
 			fileNameProviderImage.Dispose()
 		}()
 		fileNameProviderImage.GetImageDataZoom(100)
-		func() any { _ = []any{callCount, 0}; panic("j2go: unresolved call set") }()
+		callCount.Set(0)
 		fileNameProviderImage.GetImageDataZoom(100)
 		fileNameProviderImage.GetImageDataZoom(100)
-		junit.AssertEquals(int32(0), int32(func() int32 { _ = []any{callCount}; panic("j2go: unresolved call get") }()))
+		junit.AssertEquals(int32(0), int32(callCount.Get()))
 	}
 }
 

@@ -300,6 +300,7 @@ final class StatementEmitter {
 	private String unsupportedStmt(Statement s, int indent) {
 		String oneLine = s.toString().replace("\n", " ").trim();
 		emitter.unsupported.add(s.getClass().getSimpleName() + ": " + oneLine);
-		return ind(indent) + "panic(\"j2go: unsupported " + s.getClass().getSimpleName() + "\") // TODO(gowt-port): " + oneLine + "\n";
+		// In a closure: a bare panic is terminating, and go vet flags the statements after it as unreachable.
+		return ind(indent) + "func() { panic(\"j2go: unsupported " + s.getClass().getSimpleName() + "\") }() // TODO(gowt-port): " + oneLine + "\n";
 	}
 }

@@ -3,6 +3,7 @@ package jrt
 import (
 	"reflect"
 	"sync"
+	"time"
 )
 
 // hasher is what Java's HashMap uses for key identity: translated classes carry
@@ -253,3 +254,18 @@ func ArraysAsList(array any) *List {
 	}
 	return l
 }
+
+// ToSlice is list.toArray(new T[0]): the snapshot as a typed slice (nil elements stay zero).
+func ToSlice[T any](l *List) []T {
+	items := l.ToArray()
+	out := make([]T, len(items))
+	for i, v := range items {
+		if v != nil {
+			out[i] = v.(T)
+		}
+	}
+	return out
+}
+
+// CurrentTimeMillis is System.currentTimeMillis().
+func CurrentTimeMillis() int64 { return time.Now().UnixMilli() }

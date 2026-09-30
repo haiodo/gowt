@@ -40,13 +40,13 @@ func (this *SFCertificatePanel) initSFCertificatePanelOverload2(id *id) {
 }
 
 func (this *SFCertificatePanel) SetAlternateButtonTitle(title *NSString) {
-	var cond946 int64
+	var cond945 int64
 	if title != (nil) {
-		cond946 = title.Id
+		cond945 = title.Id
 	} else {
-		cond946 = int64(0)
+		cond945 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAlternateButtonTitle_, cond946)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAlternateButtonTitle_, cond945)
 }
 
 func (this *SFCertificatePanel) SetShowsHelp(showsHelp bool) {
@@ -54,13 +54,13 @@ func (this *SFCertificatePanel) SetShowsHelp(showsHelp bool) {
 }
 
 func SFCertificatePanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond947 int64
+	var cond946 int64
 	if aTitle != (nil) {
-		cond947 = aTitle.Id
+		cond946 = aTitle.Id
 	} else {
-		cond947 = int64(0)
+		cond946 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_SFCertificatePanel, OSSel_minFrameWidthWithTitle_styleMask_, cond947, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_SFCertificatePanel, OSSel_minFrameWidthWithTitle_styleMask_, cond946, aStyle)
 }
 
 func SFCertificatePanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

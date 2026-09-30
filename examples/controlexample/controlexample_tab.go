@@ -987,7 +987,7 @@ func (this *Tab) GetValue() {
 			}
 			var method any = jrt.ClassGetMethod(reflect.TypeOf(widgets[i].Impl()), methodName, []reflect.Type{})
 			var result any = method.(*jrt.Method).Invoke(widgets[i].Impl(), []any{}...)
-			if result == (nil) {
+			if jrt.IsNil(result) {
 				this.getText.Append("null")
 			} else {
 				if reflect.TypeOf(result).Kind() == reflect.Slice {

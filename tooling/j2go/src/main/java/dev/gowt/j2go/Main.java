@@ -155,8 +155,12 @@ public class Main {
 			file.append(result.body());
 
 			Path outPath = Path.of(outDir, outDirName, outName);
-			Files.createDirectories(outPath.getParent());
-			Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
+			if (piFile || platformFile) {
+				Files.createDirectories(outPath.getParent());
+				Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
+			} else {
+				SharedFiles.write(outPath, file.toString(), platform);
+			}
 			System.out.println("wrote " + outPath);
 		}
 

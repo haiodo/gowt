@@ -682,7 +682,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Canvas static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Canvas static{}:", r)
 			}
 		}()
 		CanvasSupportedPboardTypes = cocoa.NSMutableArrayArrayWithCapacity(int64(1))

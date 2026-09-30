@@ -1062,7 +1062,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Device static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Device static{}:", r)
 			}
 		}()
 		func() {

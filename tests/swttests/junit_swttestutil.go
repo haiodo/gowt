@@ -953,7 +953,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtil static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtil static{}:", r)
 			}
 		}()
 		SwtTestUtilTestFontName = "Helvetica"

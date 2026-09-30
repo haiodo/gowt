@@ -19,7 +19,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init objc_superSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init objc_superSizeof:", r)
 			}
 		}()
 		objc_superSizeof = OSObjc_super_sizeof()

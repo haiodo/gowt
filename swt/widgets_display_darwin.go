@@ -7580,7 +7580,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DeviceDeviceFinder = jrt.NewRunnable(func() {
@@ -7594,7 +7594,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DisplayConfigureSystemOptions()

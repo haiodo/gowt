@@ -19,7 +19,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init NSRangeSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NSRangeSizeof:", r)
 			}
 		}()
 		NSRangeSizeof = OSNSRange_sizeof()

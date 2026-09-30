@@ -324,7 +324,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init ConsistencyUtility static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ConsistencyUtility static{}:", r)
 			}
 		}()
 		jrt.Cast[[]string](ConsistencyUtilityEventOrdering.Put("DoubleClick", []string{"MouseDown", "Selection:", "MouseUp", "MouseDown", "MouseDoubleClick", "DefaultSelection", "MouseUp"}))

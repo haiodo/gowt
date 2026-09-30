@@ -23,7 +23,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init NSSizeSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NSSizeSizeof:", r)
 			}
 		}()
 		NSSizeSizeof = OSNSSize_sizeof()

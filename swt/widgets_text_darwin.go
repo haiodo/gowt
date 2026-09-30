@@ -2037,7 +2037,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Text static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Text static{}:", r)
 			}
 		}()
 		TextLIMIT = 0x7FFFFFFF

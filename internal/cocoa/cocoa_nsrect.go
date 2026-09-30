@@ -25,7 +25,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init NSRectSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NSRectSizeof:", r)
 			}
 		}()
 		NSRectSizeof = OSNSRect_sizeof()

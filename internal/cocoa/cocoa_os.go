@@ -8849,6 +8849,1577 @@ func OSMemmoveOverload9(dest *NSSize, src int64, size int64) {
 }
 
 func init() {
+	for _, e := range [...]struct {
+		p *int64
+		n string
+	}{
+		{&OSSel_identity, "identity"},
+		{&OSSel_sendSearchSelection, "sendSearchSelection"},
+		{&OSSel_sendCancelSelection, "sendCancelSelection"},
+		{&OSSel_sendSelection, "sendSelection"},
+		{&OSSel_sendSelection_, "sendSelection:"},
+		{&OSSel_sendDoubleSelection, "sendDoubleSelection"},
+		{&OSSel_sendVerticalSelection, "sendVerticalSelection"},
+		{&OSSel_sendHorizontalSelection, "sendHorizontalSelection"},
+		{&OSSel_timerProc_, "timerProc:"},
+		{&OSSel_callJava, "callJava:index:token:arg:"},
+		{&OSSel_callRunBeforeUnloadConfirmPanelWithMessage, "callRunBeforeUnloadConfirmPanelWithMessage:arg:"},
+		{&OSSel_createPanelDidEnd, "createPanelDidEnd:returnCode:contextInfo:"},
+		{&OSSel_systemColorSettingsChanged_, "systemSettingsChanged:"},
+		{&OSSel_screenParametersChanged_, "screenParametersChanged:"},
+		{&OSSel_panelDidEnd_returnCode_contextInfo_, "panelDidEnd:returnCode:contextInfo:"},
+		{&OSSel_updateOpenGLContext_, "updateOpenGLContext:"},
+		{&OSSel_overwriteExistingFileCheck, "_overwriteExistingFileCheck:"},
+		{&OSSel__drawThemeProgressArea_, "_drawThemeProgressArea:"},
+		{&OSSel__setDashboardBehavior, "_setDashboardBehavior:to:"},
+		{&OSSel_sharedHandler, "sharedHandler"},
+		{&OSSel_startAuthentication, "startAuthentication:window:"},
+		{&OSSel_setAllowsAnyHTTPSCertificate, "setAllowsAnyHTTPSCertificate:forHost:"},
+		{&OSSel_accessibleHandle, "accessibleHandle"},
+		{&OSSel_getImageView, "getImageView"},
+		{&OSSel_clearDeferFlushing, "clearDeferFlushing"},
+		{&OSSel_setShouldExpandItem_, "setShouldExpandItem:"},
+		{&OSSel_setShouldScrollClipView_, "setShouldScrollClipView:"},
+		{&OSSel_setQuota, "setQuota:"},
+		{&OSSel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_, "webView:frame:exceededDatabaseQuotaForSecurityOrigin:database:"},
+		{&OSSel_beginSheetModalForWindow_completionHandler_, "beginSheetModalForWindow:completionHandler:"},
+		{&OSSel_application_openUrls_, "application:openUrls:"},
+		{&OSSel_busyButClickableCursor, "busyButClickableCursor"},
+		{&OSSel_isSelectorExcludedFromWebScript_, "isSelectorExcludedFromWebScript:"},
+		{&OSSel_webScriptNameForSelector_, "webScriptNameForSelector:"},
+		{&OSSel_setColor_forAttribute_, "setColor:forAttribute:"},
+		{&OSSel_javaRunLoopMode, "javaRunLoopMode"},
+		{&OSSel_null, "null"},
+		{&OSSel_cellBaselineOffset, "cellBaselineOffset"},
+		{&OSSel_setAllowsAutomaticWindowTabbing_, "setAllowsAutomaticWindowTabbing:"},
+		{&OSSel_selectedContentBackgroundColor, "selectedContentBackgroundColor"},
+		{&OSSel_unemphasizedSelectedContentBackgroundColor, "unemphasizedSelectedContentBackgroundColor"},
+		{&OSSel_setStyle, "setStyle:"},
+		{&OSSel_setClipsToBounds_, "setClipsToBounds:"},
+		{&OSSel_awtAppDelegate, "awtAppDelegate"},
+		{&OSSel_appAppearanceChanged, "appAppearanceChanged"},
+		{&OSSel_CGEvent, "CGEvent"},
+		{&OSSel_DOMDocument, "DOMDocument"},
+		{&OSSel_IBeamCursor, "IBeamCursor"},
+		{&OSSel_PMPrintSession, "PMPrintSession"},
+		{&OSSel_PMPrintSettings, "PMPrintSettings"},
+		{&OSSel_TIFFRepresentation, "TIFFRepresentation"},
+		{&OSSel_URL, "URL"},
+		{&OSSel_URLForApplicationToOpenContentType_, "URLForApplicationToOpenContentType:"},
+		{&OSSel_URLForApplicationToOpenURL_, "URLForApplicationToOpenURL:"},
+		{&OSSel_URLFromPasteboard_, "URLFromPasteboard:"},
+		{&OSSel_URLWithString_, "URLWithString:"},
+		{&OSSel_UTF8String, "UTF8String"},
+		{&OSSel_abortEditing, "abortEditing"},
+		{&OSSel_absoluteString, "absoluteString"},
+		{&OSSel_acceptsFirstMouse_, "acceptsFirstMouse:"},
+		{&OSSel_acceptsFirstResponder, "acceptsFirstResponder"},
+		{&OSSel_accessibilityActionDescription_, "accessibilityActionDescription:"},
+		{&OSSel_accessibilityActionNames, "accessibilityActionNames"},
+		{&OSSel_accessibilityAttributeNames, "accessibilityAttributeNames"},
+		{&OSSel_accessibilityAttributeValue_, "accessibilityAttributeValue:"},
+		{&OSSel_accessibilityAttributeValue_forParameter_, "accessibilityAttributeValue:forParameter:"},
+		{&OSSel_accessibilityFocusedUIElement, "accessibilityFocusedUIElement"},
+		{&OSSel_accessibilityHitTest_, "accessibilityHitTest:"},
+		{&OSSel_accessibilityIsAttributeSettable_, "accessibilityIsAttributeSettable:"},
+		{&OSSel_accessibilityIsIgnored, "accessibilityIsIgnored"},
+		{&OSSel_accessibilityParameterizedAttributeNames, "accessibilityParameterizedAttributeNames"},
+		{&OSSel_accessibilityPerformAction_, "accessibilityPerformAction:"},
+		{&OSSel_accessibilitySetOverrideValue_forAttribute_, "accessibilitySetOverrideValue:forAttribute:"},
+		{&OSSel_accessibilitySetValue_forAttribute_, "accessibilitySetValue:forAttribute:"},
+		{&OSSel_action, "action"},
+		{&OSSel_activateIgnoringOtherApps_, "activateIgnoringOtherApps:"},
+		{&OSSel_addAttribute_value_range_, "addAttribute:value:range:"},
+		{&OSSel_addButtonWithTitle_, "addButtonWithTitle:"},
+		{&OSSel_addChildWindow_ordered_, "addChildWindow:ordered:"},
+		{&OSSel_addClip, "addClip"},
+		{&OSSel_addEventListener_listener_useCapture_, "addEventListener:listener:useCapture:"},
+		{&OSSel_addIndex_, "addIndex:"},
+		{&OSSel_addItem_, "addItem:"},
+		{&OSSel_addItemWithObjectValue_, "addItemWithObjectValue:"},
+		{&OSSel_addItemWithTitle_action_keyEquivalent_, "addItemWithTitle:action:keyEquivalent:"},
+		{&OSSel_addLayoutManager_, "addLayoutManager:"},
+		{&OSSel_addObject_, "addObject:"},
+		{&OSSel_addObjectsFromArray_, "addObjectsFromArray:"},
+		{&OSSel_addObserver_selector_name_object_, "addObserver:selector:name:object:"},
+		{&OSSel_addRepresentation_, "addRepresentation:"},
+		{&OSSel_addSubview_, "addSubview:"},
+		{&OSSel_addSubview_positioned_relativeTo_, "addSubview:positioned:relativeTo:"},
+		{&OSSel_addTabStop_, "addTabStop:"},
+		{&OSSel_addTableColumn_, "addTableColumn:"},
+		{&OSSel_addTemporaryAttribute_value_forCharacterRange_, "addTemporaryAttribute:value:forCharacterRange:"},
+		{&OSSel_addTextContainer_, "addTextContainer:"},
+		{&OSSel_addTimer_forMode_, "addTimer:forMode:"},
+		{&OSSel_addToolTipRect_owner_userData_, "addToolTipRect:owner:userData:"},
+		{&OSSel_addTypes_owner_, "addTypes:owner:"},
+		{&OSSel_alignment, "alignment"},
+		{&OSSel_allKeys, "allKeys"},
+		{&OSSel_allObjects, "allObjects"},
+		{&OSSel_alloc, "alloc"},
+		{&OSSel_alphaComponent, "alphaComponent"},
+		{&OSSel_alphaValue, "alphaValue"},
+		{&OSSel_altKey, "altKey"},
+		{&OSSel_alternateSelectedControlColor, "alternateSelectedControlColor"},
+		{&OSSel_alternateSelectedControlTextColor, "alternateSelectedControlTextColor"},
+		{&OSSel_appearanceNamed_, "appearanceNamed:"},
+		{&OSSel_appendAttributedString_, "appendAttributedString:"},
+		{&OSSel_appendBezierPath_, "appendBezierPath:"},
+		{&OSSel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_, "appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:clockwise:"},
+		{&OSSel_appendBezierPathWithGlyphs_count_inFont_, "appendBezierPathWithGlyphs:count:inFont:"},
+		{&OSSel_appendBezierPathWithOvalInRect_, "appendBezierPathWithOvalInRect:"},
+		{&OSSel_appendBezierPathWithRect_, "appendBezierPathWithRect:"},
+		{&OSSel_appendBezierPathWithRoundedRect_xRadius_yRadius_, "appendBezierPathWithRoundedRect:xRadius:yRadius:"},
+		{&OSSel_appendString_, "appendString:"},
+		{&OSSel_application_openFile_, "application:openFile:"},
+		{&OSSel_application_openFiles_, "application:openFiles:"},
+		{&OSSel_applicationDidBecomeActive_, "applicationDidBecomeActive:"},
+		{&OSSel_applicationDidFinishLaunching_, "applicationDidFinishLaunching:"},
+		{&OSSel_applicationDidResignActive_, "applicationDidResignActive:"},
+		{&OSSel_applicationDockMenu_, "applicationDockMenu:"},
+		{&OSSel_applicationIconImage, "applicationIconImage"},
+		{&OSSel_applicationShouldHandleReopen_hasVisibleWindows_, "applicationShouldHandleReopen:hasVisibleWindows:"},
+		{&OSSel_applicationShouldTerminate_, "applicationShouldTerminate:"},
+		{&OSSel_applicationWillFinishLaunching_, "applicationWillFinishLaunching:"},
+		{&OSSel_archivedDataWithRootObject_, "archivedDataWithRootObject:"},
+		{&OSSel_areCursorRectsEnabled, "areCursorRectsEnabled"},
+		{&OSSel_arrangeInFront_, "arrangeInFront:"},
+		{&OSSel_array, "array"},
+		{&OSSel_arrayWithCapacity_, "arrayWithCapacity:"},
+		{&OSSel_arrayWithObject_, "arrayWithObject:"},
+		{&OSSel_arrowCursor, "arrowCursor"},
+		{&OSSel_ascender, "ascender"},
+		{&OSSel_attachColorList_, "attachColorList:"},
+		{&OSSel_attachment, "attachment"},
+		{&OSSel_attribute_atIndex_effectiveRange_, "attribute:atIndex:effectiveRange:"},
+		{&OSSel_attributedStringValue, "attributedStringValue"},
+		{&OSSel_attributedSubstringFromRange_, "attributedSubstringFromRange:"},
+		{&OSSel_attributedTitle, "attributedTitle"},
+		{&OSSel_attributesAtIndex_longestEffectiveRange_inRange_, "attributesAtIndex:longestEffectiveRange:inRange:"},
+		{&OSSel_autorelease, "autorelease"},
+		{&OSSel_availableFontFamilies, "availableFontFamilies"},
+		{&OSSel_availableMembersOfFontFamily_, "availableMembersOfFontFamily:"},
+		{&OSSel_availableTypeFromArray_, "availableTypeFromArray:"},
+		{&OSSel_backingScaleFactor, "backingScaleFactor"},
+		{&OSSel_badgeLabel, "badgeLabel"},
+		{&OSSel_baselineOffsetInLayoutManager_glyphIndex_, "baselineOffsetInLayoutManager:glyphIndex:"},
+		{&OSSel_becomeFirstResponder, "becomeFirstResponder"},
+		{&OSSel_becomeKeyWindow, "becomeKeyWindow"},
+		{&OSSel_beginDocument, "beginDocument"},
+		{&OSSel_beginEditing, "beginEditing"},
+		{&OSSel_beginPageInRect_atPlacement_, "beginPageInRect:atPlacement:"},
+		{&OSSel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_, "beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:"},
+		{&OSSel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_, "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:"},
+		{&OSSel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_, "beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:"},
+		{&OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, "beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:"},
+		{&OSSel_beginUndoGrouping, "beginUndoGrouping"},
+		{&OSSel_bestRepresentationForDevice_, "bestRepresentationForDevice:"},
+		{&OSSel_bezelStyle, "bezelStyle"},
+		{&OSSel_bezierPath, "bezierPath"},
+		{&OSSel_bezierPathByFlatteningPath, "bezierPathByFlatteningPath"},
+		{&OSSel_bezierPathWithRect_, "bezierPathWithRect:"},
+		{&OSSel_bezierPathWithRoundedRect_xRadius_yRadius_, "bezierPathWithRoundedRect:xRadius:yRadius:"},
+		{&OSSel_bitmapData, "bitmapData"},
+		{&OSSel_bitmapFormat, "bitmapFormat"},
+		{&OSSel_bitmapImageRepForCachingDisplayInRect_, "bitmapImageRepForCachingDisplayInRect:"},
+		{&OSSel_bitsPerPixel, "bitsPerPixel"},
+		{&OSSel_bitsPerSample, "bitsPerSample"},
+		{&OSSel_blackColor, "blackColor"},
+		{&OSSel_blueComponent, "blueComponent"},
+		{&OSSel_boldSystemFontOfSize_, "boldSystemFontOfSize:"},
+		{&OSSel_boolValue, "boolValue"},
+		{&OSSel_borderWidth, "borderWidth"},
+		{&OSSel_boundingRectForGlyphRange_inTextContainer_, "boundingRectForGlyphRange:inTextContainer:"},
+		{&OSSel_boundingRectWithSize_options_, "boundingRectWithSize:options:"},
+		{&OSSel_bounds, "bounds"},
+		{&OSSel_bundleIdentifier, "bundleIdentifier"},
+		{&OSSel_bundlePath, "bundlePath"},
+		{&OSSel_bundleWithIdentifier_, "bundleWithIdentifier:"},
+		{&OSSel_bundleWithPath_, "bundleWithPath:"},
+		{&OSSel_button, "button"},
+		{&OSSel_buttonNumber, "buttonNumber"},
+		{&OSSel_bytes, "bytes"},
+		{&OSSel_bytesPerRow, "bytesPerRow"},
+		{&OSSel_cacheDisplayInRect_toBitmapImageRep_, "cacheDisplayInRect:toBitmapImageRep:"},
+		{&OSSel_calendarDate, "calendarDate"},
+		{&OSSel_canBecomeKeyView, "canBecomeKeyView"},
+		{&OSSel_canBecomeKeyWindow, "canBecomeKeyWindow"},
+		{&OSSel_canDragRowsWithIndexes_atPoint_, "canDragRowsWithIndexes:atPoint:"},
+		{&OSSel_canGoBack, "canGoBack"},
+		{&OSSel_canGoForward, "canGoForward"},
+		{&OSSel_canRedo, "canRedo"},
+		{&OSSel_canShowMIMEType_, "canShowMIMEType:"},
+		{&OSSel_canUndo, "canUndo"},
+		{&OSSel_cancel, "cancel"},
+		{&OSSel_cancelAuthenticationChallenge_, "cancelAuthenticationChallenge:"},
+		{&OSSel_cancelButtonCell, "cancelButtonCell"},
+		{&OSSel_cancelButtonRectForBounds_, "cancelButtonRectForBounds:"},
+		{&OSSel_cancelOperation_, "cancelOperation:"},
+		{&OSSel_cancelTracking, "cancelTracking"},
+		{&OSSel_cascadeTopLeftFromPoint_, "cascadeTopLeftFromPoint:"},
+		{&OSSel_cell, "cell"},
+		{&OSSel_cellClass, "cellClass"},
+		{&OSSel_cellSize, "cellSize"},
+		{&OSSel_cellSizeForBounds_, "cellSizeForBounds:"},
+		{&OSSel_changeColor_, "changeColor:"},
+		{&OSSel_changeFont_, "changeFont:"},
+		{&OSSel_charCode, "charCode"},
+		{&OSSel_characterAtIndex_, "characterAtIndex:"},
+		{&OSSel_characterIndexForGlyphAtIndex_, "characterIndexForGlyphAtIndex:"},
+		{&OSSel_characterIndexForInsertionAtPoint_, "characterIndexForInsertionAtPoint:"},
+		{&OSSel_characterIndexForPoint_, "characterIndexForPoint:"},
+		{&OSSel_characters, "characters"},
+		{&OSSel_charactersIgnoringModifiers, "charactersIgnoringModifiers"},
+		{&OSSel_chooseFilename_, "chooseFilename:"},
+		{&OSSel_className, "className"},
+		{&OSSel_cleanUpOperation, "cleanUpOperation"},
+		{&OSSel_clearColor, "clearColor"},
+		{&OSSel_clearDrawable, "clearDrawable"},
+		{&OSSel_clickCount, "clickCount"},
+		{&OSSel_clickedColumn, "clickedColumn"},
+		{&OSSel_clickedRow, "clickedRow"},
+		{&OSSel_close, "close"},
+		{&OSSel_closePath, "closePath"},
+		{&OSSel_code, "code"},
+		{&OSSel_collapseItem_, "collapseItem:"},
+		{&OSSel_collapseItem_collapseChildren_, "collapseItem:collapseChildren:"},
+		{&OSSel_collectionBehavior, "collectionBehavior"},
+		{&OSSel_color, "color"},
+		{&OSSel_colorAtX_y_, "colorAtX:y:"},
+		{&OSSel_colorListNamed_, "colorListNamed:"},
+		{&OSSel_colorSpace, "colorSpace"},
+		{&OSSel_colorSpaceModel, "colorSpaceModel"},
+		{&OSSel_colorUsingColorSpaceName_, "colorUsingColorSpaceName:"},
+		{&OSSel_colorWithDeviceRed_green_blue_alpha_, "colorWithDeviceRed:green:blue:alpha:"},
+		{&OSSel_colorWithKey_, "colorWithKey:"},
+		{&OSSel_colorWithPatternImage_, "colorWithPatternImage:"},
+		{&OSSel_columnAtPoint_, "columnAtPoint:"},
+		{&OSSel_comboBoxSelectionDidChange_, "comboBoxSelectionDidChange:"},
+		{&OSSel_comboBoxWillDismiss_, "comboBoxWillDismiss:"},
+		{&OSSel_comboBoxWillPopUp_, "comboBoxWillPopUp:"},
+		{&OSSel_compare_, "compare:"},
+		{&OSSel_concat, "concat"},
+		{&OSSel_conformsToProtocol_, "conformsToProtocol:"},
+		{&OSSel_containsIndex_, "containsIndex:"},
+		{&OSSel_containsObject_, "containsObject:"},
+		{&OSSel_containsPoint_, "containsPoint:"},
+		{&OSSel_contentRect, "contentRect"},
+		{&OSSel_contentSize, "contentSize"},
+		{&OSSel_contentSizeForFrameSize_hasHorizontalScroller_hasVerticalScroller_borderType_, "contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:"},
+		{&OSSel_contentView, "contentView"},
+		{&OSSel_contentViewMargins, "contentViewMargins"},
+		{&OSSel_context, "context"},
+		{&OSSel_controlBackgroundColor, "controlBackgroundColor"},
+		{&OSSel_controlDarkShadowColor, "controlDarkShadowColor"},
+		{&OSSel_controlHighlightColor, "controlHighlightColor"},
+		{&OSSel_controlLightHighlightColor, "controlLightHighlightColor"},
+		{&OSSel_controlPointBounds, "controlPointBounds"},
+		{&OSSel_controlShadowColor, "controlShadowColor"},
+		{&OSSel_controlSize, "controlSize"},
+		{&OSSel_controlTextColor, "controlTextColor"},
+		{&OSSel_convertBaseToScreen_, "convertBaseToScreen:"},
+		{&OSSel_convertFont_toHaveTrait_, "convertFont:toHaveTrait:"},
+		{&OSSel_convertPoint_fromView_, "convertPoint:fromView:"},
+		{&OSSel_convertPoint_toView_, "convertPoint:toView:"},
+		{&OSSel_convertRect_fromView_, "convertRect:fromView:"},
+		{&OSSel_convertRect_toView_, "convertRect:toView:"},
+		{&OSSel_convertScreenToBase_, "convertScreenToBase:"},
+		{&OSSel_cookies, "cookies"},
+		{&OSSel_cookiesForURL_, "cookiesForURL:"},
+		{&OSSel_cookiesWithResponseHeaderFields_forURL_, "cookiesWithResponseHeaderFields:forURL:"},
+		{&OSSel_copiesOnScroll, "copiesOnScroll"},
+		{&OSSel_copy, "copy"},
+		{&OSSel_copy_, "copy:"},
+		{&OSSel_count, "count"},
+		{&OSSel_createContext, "createContext"},
+		{&OSSel_credentialWithUser_password_persistence_, "credentialWithUser:password:persistence:"},
+		{&OSSel_crosshairCursor, "crosshairCursor"},
+		{&OSSel_ctrlKey, "ctrlKey"},
+		{&OSSel_currentAppearance, "currentAppearance"},
+		{&OSSel_currentContext, "currentContext"},
+		{&OSSel_currentCursor, "currentCursor"},
+		{&OSSel_currentEditor, "currentEditor"},
+		{&OSSel_currentEvent, "currentEvent"},
+		{&OSSel_currentInputManager, "currentInputManager"},
+		{&OSSel_currentPoint, "currentPoint"},
+		{&OSSel_currentRunLoop, "currentRunLoop"},
+		{&OSSel_currentThread, "currentThread"},
+		{&OSSel_cursorUpdate_, "cursorUpdate:"},
+		{&OSSel_curveToPoint_controlPoint1_controlPoint2_, "curveToPoint:controlPoint1:controlPoint2:"},
+		{&OSSel_cut_, "cut:"},
+		{&OSSel_dataCell, "dataCell"},
+		{&OSSel_dataForType_, "dataForType:"},
+		{&OSSel_dataSource, "dataSource"},
+		{&OSSel_dataWithBytes_length_, "dataWithBytes:length:"},
+		{&OSSel_dateValue, "dateValue"},
+		{&OSSel_dateWithCalendarFormat_timeZone_, "dateWithCalendarFormat:timeZone:"},
+		{&OSSel_dateWithTimeIntervalSinceNow_, "dateWithTimeIntervalSinceNow:"},
+		{&OSSel_dateWithYear_month_day_hour_minute_second_timeZone_, "dateWithYear:month:day:hour:minute:second:timeZone:"},
+		{&OSSel_dayOfMonth, "dayOfMonth"},
+		{&OSSel_dealloc, "dealloc"},
+		{&OSSel_decimalSeparator, "decimalSeparator"},
+		{&OSSel_declareTypes_owner_, "declareTypes:owner:"},
+		{&OSSel_defaultBaselineOffsetForFont_, "defaultBaselineOffsetForFont:"},
+		{&OSSel_defaultButtonCell, "defaultButtonCell"},
+		{&OSSel_defaultCenter, "defaultCenter"},
+		{&OSSel_defaultFlatness, "defaultFlatness"},
+		{&OSSel_defaultLineHeightForFont_, "defaultLineHeightForFont:"},
+		{&OSSel_defaultManager, "defaultManager"},
+		{&OSSel_defaultParagraphStyle, "defaultParagraphStyle"},
+		{&OSSel_defaultPrinter, "defaultPrinter"},
+		{&OSSel_defaultTimeZone, "defaultTimeZone"},
+		{&OSSel_delegate, "delegate"},
+		{&OSSel_deleteCookie_, "deleteCookie:"},
+		{&OSSel_deliverResult, "deliverResult"},
+		{&OSSel_deltaX, "deltaX"},
+		{&OSSel_deltaY, "deltaY"},
+		{&OSSel_deminiaturize_, "deminiaturize:"},
+		{&OSSel_depth, "depth"},
+		{&OSSel_descender, "descender"},
+		{&OSSel_description, "description"},
+		{&OSSel_deselectAll_, "deselectAll:"},
+		{&OSSel_deselectItemAtIndex_, "deselectItemAtIndex:"},
+		{&OSSel_deselectRow_, "deselectRow:"},
+		{&OSSel_destroyContext, "destroyContext"},
+		{&OSSel_detail, "detail"},
+		{&OSSel_device, "device"},
+		{&OSSel_deviceDescription, "deviceDescription"},
+		{&OSSel_deviceSize, "deviceSize"},
+		{&OSSel_dictionary, "dictionary"},
+		{&OSSel_dictionaryWithCapacity_, "dictionaryWithCapacity:"},
+		{&OSSel_dictionaryWithObject_forKey_, "dictionaryWithObject:forKey:"},
+		{&OSSel_disableCursorRects, "disableCursorRects"},
+		{&OSSel_disableFlushWindow, "disableFlushWindow"},
+		{&OSSel_disabledControlTextColor, "disabledControlTextColor"},
+		{&OSSel_discardCursorRects, "discardCursorRects"},
+		{&OSSel_display, "display"},
+		{&OSSel_displayIfNeeded, "displayIfNeeded"},
+		{&OSSel_displayName, "displayName"},
+		{&OSSel_displayNameForKey_value_, "displayNameForKey:value:"},
+		{&OSSel_displayRectIgnoringOpacity_inContext_, "displayRectIgnoringOpacity:inContext:"},
+		{&OSSel_distantFuture, "distantFuture"},
+		{&OSSel_doCommandBySelector_, "doCommandBySelector:"},
+		{&OSSel_dockTile, "dockTile"},
+		{&OSSel_documentSource, "documentSource"},
+		{&OSSel_documentView, "documentView"},
+		{&OSSel_documentViewShouldHandlePrint, "documentViewShouldHandlePrint"},
+		{&OSSel_documentVisibleRect, "documentVisibleRect"},
+		{&OSSel_doubleClickInterval, "doubleClickInterval"},
+		{&OSSel_doubleValue, "doubleValue"},
+		{&OSSel_download, "download"},
+		{&OSSel_download_decideDestinationWithSuggestedFilename_, "download:decideDestinationWithSuggestedFilename:"},
+		{&OSSel_dragImage_at_offset_event_pasteboard_source_slideBack_, "dragImage:at:offset:event:pasteboard:source:slideBack:"},
+		{&OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_, "dragImageForRowsWithIndexes:tableColumns:event:offset:"},
+		{&OSSel_dragSelectionWithEvent_offset_slideBack_, "dragSelectionWithEvent:offset:slideBack:"},
+		{&OSSel_draggedImage_beganAt_, "draggedImage:beganAt:"},
+		{&OSSel_draggedImage_endedAt_operation_, "draggedImage:endedAt:operation:"},
+		{&OSSel_draggingDestinationWindow, "draggingDestinationWindow"},
+		{&OSSel_draggingEntered_, "draggingEntered:"},
+		{&OSSel_draggingExited_, "draggingExited:"},
+		{&OSSel_draggingLocation, "draggingLocation"},
+		{&OSSel_draggingPasteboard, "draggingPasteboard"},
+		{&OSSel_draggingSourceOperationMask, "draggingSourceOperationMask"},
+		{&OSSel_draggingSourceOperationMaskForLocal_, "draggingSourceOperationMaskForLocal:"},
+		{&OSSel_draggingUpdated_, "draggingUpdated:"},
+		{&OSSel_drawBackgroundForGlyphRange_atPoint_, "drawBackgroundForGlyphRange:atPoint:"},
+		{&OSSel_drawBackgroundInClipRect_, "drawBackgroundInClipRect:"},
+		{&OSSel_drawBezelWithFrame_inView_, "drawBezelWithFrame:inView:"},
+		{&OSSel_drawFromPoint_toPoint_options_, "drawFromPoint:toPoint:options:"},
+		{&OSSel_drawGlyphsForGlyphRange_atPoint_, "drawGlyphsForGlyphRange:atPoint:"},
+		{&OSSel_drawImage_withFrame_inView_, "drawImage:withFrame:inView:"},
+		{&OSSel_drawInBezierPath_angle_, "drawInBezierPath:angle:"},
+		{&OSSel_drawInRect_, "drawInRect:"},
+		{&OSSel_drawInRect_angle_, "drawInRect:angle:"},
+		{&OSSel_drawInRect_fromRect_operation_fraction_, "drawInRect:fromRect:operation:fraction:"},
+		{&OSSel_drawInteriorWithFrame_inView_, "drawInteriorWithFrame:inView:"},
+		{&OSSel_drawLabel_inRect_, "drawLabel:inRect:"},
+		{&OSSel_drawRect_, "drawRect:"},
+		{&OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_, "drawSortIndicatorWithFrame:inView:ascending:priority:"},
+		{&OSSel_drawStatusBarBackgroundInRect_withHighlight_, "drawStatusBarBackgroundInRect:withHighlight:"},
+		{&OSSel_drawTitle_withFrame_inView_, "drawTitle:withFrame:inView:"},
+		{&OSSel_drawViewBackgroundInRect_, "drawViewBackgroundInRect:"},
+		{&OSSel_drawWithExpansionFrame_inView_, "drawWithExpansionFrame:inView:"},
+		{&OSSel_drawingRectForBounds_, "drawingRectForBounds:"},
+		{&OSSel_elementAtIndex_associatedPoints_, "elementAtIndex:associatedPoints:"},
+		{&OSSel_elementCount, "elementCount"},
+		{&OSSel_enableCursorRects, "enableCursorRects"},
+		{&OSSel_enableFlushWindow, "enableFlushWindow"},
+		{&OSSel_endDocument, "endDocument"},
+		{&OSSel_endEditing, "endEditing"},
+		{&OSSel_endEditingFor_, "endEditingFor:"},
+		{&OSSel_endPage, "endPage"},
+		{&OSSel_endSheet_returnCode_, "endSheet:returnCode:"},
+		{&OSSel_endUndoGrouping, "endUndoGrouping"},
+		{&OSSel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, "enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:"},
+		{&OSSel_enumeratorAtPath_, "enumeratorAtPath:"},
+		{&OSSel_expandItem_, "expandItem:"},
+		{&OSSel_expandItem_expandChildren_, "expandItem:expandChildren:"},
+		{&OSSel_expansionFrameWithFrame_inView_, "expansionFrameWithFrame:inView:"},
+		{&OSSel_familyName, "familyName"},
+		{&OSSel_fieldEditor_forObject_, "fieldEditor:forObject:"},
+		{&OSSel_fileExistsAtPath_, "fileExistsAtPath:"},
+		{&OSSel_fileExistsAtPath_isDirectory_, "fileExistsAtPath:isDirectory:"},
+		{&OSSel_fileURLWithPath_, "fileURLWithPath:"},
+		{&OSSel_filename, "filename"},
+		{&OSSel_filenames, "filenames"},
+		{&OSSel_fill, "fill"},
+		{&OSSel_fillRect_, "fillRect:"},
+		{&OSSel_finishLaunching, "finishLaunching"},
+		{&OSSel_firstRectForCharacterRange_, "firstRectForCharacterRange:"},
+		{&OSSel_firstResponder, "firstResponder"},
+		{&OSSel_flagsChanged_, "flagsChanged:"},
+		{&OSSel_flashScrollers, "flashScrollers"},
+		{&OSSel_floatValue, "floatValue"},
+		{&OSSel_flushBuffer, "flushBuffer"},
+		{&OSSel_flushGraphics, "flushGraphics"},
+		{&OSSel_flushWindowIfNeeded, "flushWindowIfNeeded"},
+		{&OSSel_focusRingMaskBoundsForFrame_inView_, "focusRingMaskBoundsForFrame:inView:"},
+		{&OSSel_font, "font"},
+		{&OSSel_fontName, "fontName"},
+		{&OSSel_fontWithName_size_, "fontWithName:size:"},
+		{&OSSel_frame, "frame"},
+		{&OSSel_frameOfCellAtColumn_row_, "frameOfCellAtColumn:row:"},
+		{&OSSel_frameOfOutlineCellAtRow_, "frameOfOutlineCellAtRow:"},
+		{&OSSel_frameRectForContentRect_, "frameRectForContentRect:"},
+		{&OSSel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_, "frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:"},
+		{&OSSel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_, "frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:"},
+		{&OSSel_fullPathForApplication_, "fullPathForApplication:"},
+		{&OSSel_generalPasteboard, "generalPasteboard"},
+		{&OSSel_getBytes_, "getBytes:"},
+		{&OSSel_getCharacters_, "getCharacters:"},
+		{&OSSel_getCharacters_range_, "getCharacters:range:"},
+		{&OSSel_getComponents_, "getComponents:"},
+		{&OSSel_getGlyphs_range_, "getGlyphs:range:"},
+		{&OSSel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_, "getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:"},
+		{&OSSel_getIndexes_maxCount_inIndexRange_, "getIndexes:maxCount:inIndexRange:"},
+		{&OSSel_getValues_forAttribute_forVirtualScreen_, "getValues:forAttribute:forVirtualScreen:"},
+		{&OSSel_globalContext, "globalContext"},
+		{&OSSel_glyphIndexForCharacterAtIndex_, "glyphIndexForCharacterAtIndex:"},
+		{&OSSel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, "glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:"},
+		{&OSSel_glyphRangeForCharacterRange_actualCharacterRange_, "glyphRangeForCharacterRange:actualCharacterRange:"},
+		{&OSSel_glyphRangeForTextContainer_, "glyphRangeForTextContainer:"},
+		{&OSSel_goBack, "goBack"},
+		{&OSSel_goForward, "goForward"},
+		{&OSSel_graphicsContext, "graphicsContext"},
+		{&OSSel_graphicsContextWithBitmapImageRep_, "graphicsContextWithBitmapImageRep:"},
+		{&OSSel_graphicsContextWithGraphicsPort_flipped_, "graphicsContextWithGraphicsPort:flipped:"},
+		{&OSSel_graphicsContextWithWindow_, "graphicsContextWithWindow:"},
+		{&OSSel_graphicsPort, "graphicsPort"},
+		{&OSSel_greenComponent, "greenComponent"},
+		{&OSSel_handleEvent_, "handleEvent:"},
+		{&OSSel_handleMouseEvent_, "handleMouseEvent:"},
+		{&OSSel_hasAlpha, "hasAlpha"},
+		{&OSSel_hasMarkedText, "hasMarkedText"},
+		{&OSSel_hasPassword, "hasPassword"},
+		{&OSSel_hasShadow, "hasShadow"},
+		{&OSSel_headerCell, "headerCell"},
+		{&OSSel_headerRectOfColumn_, "headerRectOfColumn:"},
+		{&OSSel_headerView, "headerView"},
+		{&OSSel_helpRequested_, "helpRequested:"},
+		{&OSSel_hide_, "hide:"},
+		{&OSSel_hideOtherApplications_, "hideOtherApplications:"},
+		{&OSSel_highlightSelectionInClipRect_, "highlightSelectionInClipRect:"},
+		{&OSSel_hitPart, "hitPart"},
+		{&OSSel_hitTest_, "hitTest:"},
+		{&OSSel_hitTestForEvent_inRect_ofView_, "hitTestForEvent:inRect:ofView:"},
+		{&OSSel_host, "host"},
+		{&OSSel_hourOfDay, "hourOfDay"},
+		{&OSSel_iconForFile_, "iconForFile:"},
+		{&OSSel_ignore, "ignore"},
+		{&OSSel_ignoreModifierKeysWhileDragging, "ignoreModifierKeysWhileDragging"},
+		{&OSSel_image, "image"},
+		{&OSSel_imageInterpolation, "imageInterpolation"},
+		{&OSSel_imageNamed_, "imageNamed:"},
+		{&OSSel_imageRectForBounds_, "imageRectForBounds:"},
+		{&OSSel_imageRepWithContentsOfFile_, "imageRepWithContentsOfFile:"},
+		{&OSSel_imageablePageBounds, "imageablePageBounds"},
+		{&OSSel_increment, "increment"},
+		{&OSSel_indentationPerLevel, "indentationPerLevel"},
+		{&OSSel_indexOfItemWithTarget_andAction_, "indexOfItemWithTarget:andAction:"},
+		{&OSSel_indexOfObjectIdenticalTo_, "indexOfObjectIdenticalTo:"},
+		{&OSSel_indexOfSelectedItem, "indexOfSelectedItem"},
+		{&OSSel_infoDictionary, "infoDictionary"},
+		{&OSSel_init, "init"},
+		{&OSSel_initByReferencingFile_, "initByReferencingFile:"},
+		{&OSSel_initListDescriptor, "initListDescriptor"},
+		{&OSSel_initWithAttributes_, "initWithAttributes:"},
+		{&OSSel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_, "initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:"},
+		{&OSSel_initWithCapacity_, "initWithCapacity:"},
+		{&OSSel_initWithCharacters_length_, "initWithCharacters:length:"},
+		{&OSSel_initWithColors_, "initWithColors:"},
+		{&OSSel_initWithContainerSize_, "initWithContainerSize:"},
+		{&OSSel_initWithContentRect_styleMask_backing_defer_, "initWithContentRect:styleMask:backing:defer:"},
+		{&OSSel_initWithContentRect_styleMask_backing_defer_screen_, "initWithContentRect:styleMask:backing:defer:screen:"},
+		{&OSSel_initWithContentsOfFile_, "initWithContentsOfFile:"},
+		{&OSSel_initWithData_, "initWithData:"},
+		{&OSSel_initWithFileWrapper_, "initWithFileWrapper:"},
+		{&OSSel_initWithFormat_shareContext_, "initWithFormat:shareContext:"},
+		{&OSSel_initWithFrame_, "initWithFrame:"},
+		{&OSSel_initWithFrame_frameName_groupName_, "initWithFrame:frameName:groupName:"},
+		{&OSSel_initWithFrame_pullsDown_, "initWithFrame:pullsDown:"},
+		{&OSSel_initWithIconRef_, "initWithIconRef:"},
+		{&OSSel_initWithIdentifier_, "initWithIdentifier:"},
+		{&OSSel_initWithImage_hotSpot_, "initWithImage:hotSpot:"},
+		{&OSSel_initWithIndex_, "initWithIndex:"},
+		{&OSSel_initWithIndexesInRange_, "initWithIndexesInRange:"},
+		{&OSSel_initWithItemIdentifier_, "initWithItemIdentifier:"},
+		{&OSSel_initWithLocaleIdentifier_, "initWithLocaleIdentifier:"},
+		{&OSSel_initWithName_, "initWithName:"},
+		{&OSSel_initWithSize_, "initWithSize:"},
+		{&OSSel_initWithStartingColor_endingColor_, "initWithStartingColor:endingColor:"},
+		{&OSSel_initWithString_, "initWithString:"},
+		{&OSSel_initWithString_attributes_, "initWithString:attributes:"},
+		{&OSSel_initWithTitle_, "initWithTitle:"},
+		{&OSSel_initWithTitle_action_keyEquivalent_, "initWithTitle:action:keyEquivalent:"},
+		{&OSSel_initWithTransform_, "initWithTransform:"},
+		{&OSSel_initWithType_location_, "initWithType:location:"},
+		{&OSSel_insertColor_key_atIndex_, "insertColor:key:atIndex:"},
+		{&OSSel_insertItem_atIndex_, "insertItem:atIndex:"},
+		{&OSSel_insertItemWithItemIdentifier_atIndex_, "insertItemWithItemIdentifier:atIndex:"},
+		{&OSSel_insertItemWithObjectValue_atIndex_, "insertItemWithObjectValue:atIndex:"},
+		{&OSSel_insertObject_atIndex_, "insertObject:atIndex:"},
+		{&OSSel_insertTabViewItem_atIndex_, "insertTabViewItem:atIndex:"},
+		{&OSSel_insertText_, "insertText:"},
+		{&OSSel_insertText_replacementRange_, "insertText:replacementRange:"},
+		{&OSSel_intValue, "intValue"},
+		{&OSSel_integerValue, "integerValue"},
+		{&OSSel_intercellSpacing, "intercellSpacing"},
+		{&OSSel_interpretKeyEvents_, "interpretKeyEvents:"},
+		{&OSSel_invalidate, "invalidate"},
+		{&OSSel_invalidateShadow, "invalidateShadow"},
+		{&OSSel_invert, "invert"},
+		{&OSSel_isActive, "isActive"},
+		{&OSSel_isCompatibleWithOverlayScrollers, "isCompatibleWithOverlayScrollers"},
+		{&OSSel_isDescendantOf_, "isDescendantOf:"},
+		{&OSSel_isDocumentEdited, "isDocumentEdited"},
+		{&OSSel_isDrawingToScreen, "isDrawingToScreen"},
+		{&OSSel_isEmpty, "isEmpty"},
+		{&OSSel_isEnabled, "isEnabled"},
+		{&OSSel_isEqual_, "isEqual:"},
+		{&OSSel_isEqualToString_, "isEqualToString:"},
+		{&OSSel_isExecutableFileAtPath_, "isExecutableFileAtPath:"},
+		{&OSSel_isFieldEditor, "isFieldEditor"},
+		{&OSSel_isFilePackageAtPath_, "isFilePackageAtPath:"},
+		{&OSSel_isFileURL, "isFileURL"},
+		{&OSSel_isFlipped, "isFlipped"},
+		{&OSSel_isHidden, "isHidden"},
+		{&OSSel_isHiddenOrHasHiddenAncestor, "isHiddenOrHasHiddenAncestor"},
+		{&OSSel_isHighlighted, "isHighlighted"},
+		{&OSSel_isItemExpanded_, "isItemExpanded:"},
+		{&OSSel_isKeyWindow, "isKeyWindow"},
+		{&OSSel_isKindOfClass_, "isKindOfClass:"},
+		{&OSSel_isMainThread, "isMainThread"},
+		{&OSSel_isMainWindow, "isMainWindow"},
+		{&OSSel_isMiniaturized, "isMiniaturized"},
+		{&OSSel_isOpaque, "isOpaque"},
+		{&OSSel_isPlanar, "isPlanar"},
+		{&OSSel_isResting, "isResting"},
+		{&OSSel_isRowSelected_, "isRowSelected:"},
+		{&OSSel_isRunning, "isRunning"},
+		{&OSSel_isSelectionOnly, "isSelectionOnly"},
+		{&OSSel_isSeparatorItem, "isSeparatorItem"},
+		{&OSSel_isSessionOnly, "isSessionOnly"},
+		{&OSSel_isSheet, "isSheet"},
+		{&OSSel_isVisible, "isVisible"},
+		{&OSSel_isZoomed, "isZoomed"},
+		{&OSSel_itemArray, "itemArray"},
+		{&OSSel_itemAtIndex_, "itemAtIndex:"},
+		{&OSSel_itemAtRow_, "itemAtRow:"},
+		{&OSSel_itemHeight, "itemHeight"},
+		{&OSSel_itemIdentifier, "itemIdentifier"},
+		{&OSSel_itemObjectValueAtIndex_, "itemObjectValueAtIndex:"},
+		{&OSSel_itemTitleAtIndex_, "itemTitleAtIndex:"},
+		{&OSSel_itemWithTag_, "itemWithTag:"},
+		{&OSSel_jobDisposition, "jobDisposition"},
+		{&OSSel_keyCode, "keyCode"},
+		{&OSSel_keyDown_, "keyDown:"},
+		{&OSSel_keyEquivalent, "keyEquivalent"},
+		{&OSSel_keyEquivalentModifierMask, "keyEquivalentModifierMask"},
+		{&OSSel_keyUp_, "keyUp:"},
+		{&OSSel_keyWindow, "keyWindow"},
+		{&OSSel_knobProportion, "knobProportion"},
+		{&OSSel_knobThickness, "knobThickness"},
+		{&OSSel_lastPathComponent, "lastPathComponent"},
+		{&OSSel_layer, "layer"},
+		{&OSSel_layoutManager, "layoutManager"},
+		{&OSSel_leading, "leading"},
+		{&OSSel_length, "length"},
+		{&OSSel_levelForItem_, "levelForItem:"},
+		{&OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_, "lineFragmentUsedRectForGlyphAtIndex:effectiveRange:"},
+		{&OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_, "lineFragmentUsedRectForGlyphAtIndex:effectiveRange:withoutAdditionalLayout:"},
+		{&OSSel_lineToPoint_, "lineToPoint:"},
+		{&OSSel_linkTextAttributes, "linkTextAttributes"},
+		{&OSSel_loadHTMLString_baseURL_, "loadHTMLString:baseURL:"},
+		{&OSSel_loadNibFile_externalNameTable_withZone_, "loadNibFile:externalNameTable:withZone:"},
+		{&OSSel_loadRequest_, "loadRequest:"},
+		{&OSSel_localizedDescription, "localizedDescription"},
+		{&OSSel_locationForGlyphAtIndex_, "locationForGlyphAtIndex:"},
+		{&OSSel_locationInWindow, "locationInWindow"},
+		{&OSSel_lockFocus, "lockFocus"},
+		{&OSSel_lockFocusIfCanDraw, "lockFocusIfCanDraw"},
+		{&OSSel_lowercaseString, "lowercaseString"},
+		{&OSSel_magnification, "magnification"},
+		{&OSSel_magnifyWithEvent_, "magnifyWithEvent:"},
+		{&OSSel_mainBundle, "mainBundle"},
+		{&OSSel_mainFrame, "mainFrame"},
+		{&OSSel_mainMenu, "mainMenu"},
+		{&OSSel_mainScreen, "mainScreen"},
+		{&OSSel_makeCurrentContext, "makeCurrentContext"},
+		{&OSSel_makeFirstResponder_, "makeFirstResponder:"},
+		{&OSSel_makeKeyAndOrderFront_, "makeKeyAndOrderFront:"},
+		{&OSSel_markedRange, "markedRange"},
+		{&OSSel_markedTextAttributes, "markedTextAttributes"},
+		{&OSSel_maxSize, "maxSize"},
+		{&OSSel_maxValue, "maxValue"},
+		{&OSSel_menu, "menu"},
+		{&OSSel_menu_willHighlightItem_, "menu:willHighlightItem:"},
+		{&OSSel_menuBarFontOfSize_, "menuBarFontOfSize:"},
+		{&OSSel_menuDidClose_, "menuDidClose:"},
+		{&OSSel_menuForEvent_, "menuForEvent:"},
+		{&OSSel_menuNeedsUpdate_, "menuNeedsUpdate:"},
+		{&OSSel_menuWillOpen_, "menuWillOpen:"},
+		{&OSSel_metaKey, "metaKey"},
+		{&OSSel_minFrameWidthWithTitle_styleMask_, "minFrameWidthWithTitle:styleMask:"},
+		{&OSSel_minSize, "minSize"},
+		{&OSSel_minValue, "minValue"},
+		{&OSSel_miniaturize_, "miniaturize:"},
+		{&OSSel_minimumSize, "minimumSize"},
+		{&OSSel_minuteOfHour, "minuteOfHour"},
+		{&OSSel_modifierFlags, "modifierFlags"},
+		{&OSSel_monthOfYear, "monthOfYear"},
+		{&OSSel_mouse_inRect_, "mouse:inRect:"},
+		{&OSSel_mouseDown_, "mouseDown:"},
+		{&OSSel_mouseDownCanMoveWindow, "mouseDownCanMoveWindow"},
+		{&OSSel_mouseDragged_, "mouseDragged:"},
+		{&OSSel_mouseEntered_, "mouseEntered:"},
+		{&OSSel_mouseExited_, "mouseExited:"},
+		{&OSSel_mouseLocation, "mouseLocation"},
+		{&OSSel_mouseLocationOutsideOfEventStream, "mouseLocationOutsideOfEventStream"},
+		{&OSSel_mouseMoved_, "mouseMoved:"},
+		{&OSSel_mouseUp_, "mouseUp:"},
+		{&OSSel_moveColumn_toColumn_, "moveColumn:toColumn:"},
+		{&OSSel_moveToPoint_, "moveToPoint:"},
+		{&OSSel_mutableCopy, "mutableCopy"},
+		{&OSSel_name, "name"},
+		{&OSSel_nameFieldStringValue, "nameFieldStringValue"},
+		{&OSSel_needsPanelToBecomeKey, "needsPanelToBecomeKey"},
+		{&OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_, "nextEventMatchingMask:untilDate:inMode:dequeue:"},
+		{&OSSel_nextObject, "nextObject"},
+		{&OSSel_nextState, "nextState"},
+		{&OSSel_nextWordFromIndex_forward_, "nextWordFromIndex:forward:"},
+		{&OSSel_noResponderFor_, "noResponderFor:"},
+		{&OSSel_normalizedPosition, "normalizedPosition"},
+		{&OSSel_noteNumberOfRowsChanged, "noteNumberOfRowsChanged"},
+		{&OSSel_numberOfColumns, "numberOfColumns"},
+		{&OSSel_numberOfComponents, "numberOfComponents"},
+		{&OSSel_numberOfGlyphs, "numberOfGlyphs"},
+		{&OSSel_numberOfItems, "numberOfItems"},
+		{&OSSel_numberOfRows, "numberOfRows"},
+		{&OSSel_numberOfRowsInTableView_, "numberOfRowsInTableView:"},
+		{&OSSel_numberOfSelectedRows, "numberOfSelectedRows"},
+		{&OSSel_numberOfVisibleItems, "numberOfVisibleItems"},
+		{&OSSel_numberWithBool_, "numberWithBool:"},
+		{&OSSel_numberWithDouble_, "numberWithDouble:"},
+		{&OSSel_numberWithInt_, "numberWithInt:"},
+		{&OSSel_numberWithInteger_, "numberWithInteger:"},
+		{&OSSel_objCType, "objCType"},
+		{&OSSel_object, "object"},
+		{&OSSel_objectAtIndex_, "objectAtIndex:"},
+		{&OSSel_objectEnumerator, "objectEnumerator"},
+		{&OSSel_objectForInfoDictionaryKey_, "objectForInfoDictionaryKey:"},
+		{&OSSel_objectForKey_, "objectForKey:"},
+		{&OSSel_objectValues, "objectValues"},
+		{&OSSel_openPanel, "openPanel"},
+		{&OSSel_openURL_, "openURL:"},
+		{&OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, "openURLs:withAppBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifiers:"},
+		{&OSSel_operatingSystemVersion, "operatingSystemVersion"},
+		{&OSSel_operationNotAllowedCursor, "operationNotAllowedCursor"},
+		{&OSSel_options, "options"},
+		{&OSSel_orderBack_, "orderBack:"},
+		{&OSSel_orderFront_, "orderFront:"},
+		{&OSSel_orderFrontRegardless, "orderFrontRegardless"},
+		{&OSSel_orderFrontStandardAboutPanel_, "orderFrontStandardAboutPanel:"},
+		{&OSSel_orderOut_, "orderOut:"},
+		{&OSSel_orderWindow_relativeTo_, "orderWindow:relativeTo:"},
+		{&OSSel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, "otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:"},
+		{&OSSel_otherMouseDown_, "otherMouseDown:"},
+		{&OSSel_otherMouseDragged_, "otherMouseDragged:"},
+		{&OSSel_otherMouseUp_, "otherMouseUp:"},
+		{&OSSel_outlineView_acceptDrop_item_childIndex_, "outlineView:acceptDrop:item:childIndex:"},
+		{&OSSel_outlineView_child_ofItem_, "outlineView:child:ofItem:"},
+		{&OSSel_outlineView_didClickTableColumn_, "outlineView:didClickTableColumn:"},
+		{&OSSel_outlineView_isItemExpandable_, "outlineView:isItemExpandable:"},
+		{&OSSel_outlineView_numberOfChildrenOfItem_, "outlineView:numberOfChildrenOfItem:"},
+		{&OSSel_outlineView_objectValueForTableColumn_byItem_, "outlineView:objectValueForTableColumn:byItem:"},
+		{&OSSel_outlineView_setObjectValue_forTableColumn_byItem_, "outlineView:setObjectValue:forTableColumn:byItem:"},
+		{&OSSel_outlineView_shouldEditTableColumn_item_, "outlineView:shouldEditTableColumn:item:"},
+		{&OSSel_outlineView_shouldExpandItem_, "outlineView:shouldExpandItem:"},
+		{&OSSel_outlineView_shouldReorderColumn_toColumn_, "outlineView:shouldReorderColumn:toColumn:"},
+		{&OSSel_outlineView_shouldTrackCell_forTableColumn_item_, "outlineView:shouldTrackCell:forTableColumn:item:"},
+		{&OSSel_outlineView_validateDrop_proposedItem_proposedChildIndex_, "outlineView:validateDrop:proposedItem:proposedChildIndex:"},
+		{&OSSel_outlineView_willDisplayCell_forTableColumn_item_, "outlineView:willDisplayCell:forTableColumn:item:"},
+		{&OSSel_outlineView_writeItems_toPasteboard_, "outlineView:writeItems:toPasteboard:"},
+		{&OSSel_outlineViewColumnDidMove_, "outlineViewColumnDidMove:"},
+		{&OSSel_outlineViewColumnDidResize_, "outlineViewColumnDidResize:"},
+		{&OSSel_outlineViewSelectionDidChange_, "outlineViewSelectionDidChange:"},
+		{&OSSel_outlineViewSelectionIsChanging_, "outlineViewSelectionIsChanging:"},
+		{&OSSel_owner, "owner"},
+		{&OSSel_pageDown_, "pageDown:"},
+		{&OSSel_pageTitle, "pageTitle"},
+		{&OSSel_pageUp_, "pageUp:"},
+		{&OSSel_panel_shouldEnableURL_, "panel:shouldEnableURL:"},
+		{&OSSel_panel_userEnteredFilename_confirmed_, "panel:userEnteredFilename:confirmed:"},
+		{&OSSel_panelConvertFont_, "panelConvertFont:"},
+		{&OSSel_paperSize, "paperSize"},
+		{&OSSel_paragraphs, "paragraphs"},
+		{&OSSel_parentWindow, "parentWindow"},
+		{&OSSel_password, "password"},
+		{&OSSel_paste_, "paste:"},
+		{&OSSel_pasteboard_provideDataForType_, "pasteboard:provideDataForType:"},
+		{&OSSel_pasteboardWithName_, "pasteboardWithName:"},
+		{&OSSel_path, "path"},
+		{&OSSel_pathExtension, "pathExtension"},
+		{&OSSel_pathForResource_ofType_, "pathForResource:ofType:"},
+		{&OSSel_pathForResource_ofType_inDirectory_forLocalization_, "pathForResource:ofType:inDirectory:forLocalization:"},
+		{&OSSel_performDragOperation_, "performDragOperation:"},
+		{&OSSel_performKeyEquivalent_, "performKeyEquivalent:"},
+		{&OSSel_performSelector_withObject_afterDelay_inModes_, "performSelector:withObject:afterDelay:inModes:"},
+		{&OSSel_performSelectorOnMainThread_withObject_waitUntilDone_, "performSelectorOnMainThread:withObject:waitUntilDone:"},
+		{&OSSel_phase, "phase"},
+		{&OSSel_pixelsHigh, "pixelsHigh"},
+		{&OSSel_pixelsWide, "pixelsWide"},
+		{&OSSel_pointSize, "pointSize"},
+		{&OSSel_pointValue, "pointValue"},
+		{&OSSel_pointingHandCursor, "pointingHandCursor"},
+		{&OSSel_pop, "pop"},
+		{&OSSel_popUpContextMenu_withEvent_forView_, "popUpContextMenu:withEvent:forView:"},
+		{&OSSel_popUpStatusItemMenu_, "popUpStatusItemMenu:"},
+		{&OSSel_port, "port"},
+		{&OSSel_postEvent_atStart_, "postEvent:atStart:"},
+		{&OSSel_preparedCellAtColumn_row_, "preparedCellAtColumn:row:"},
+		{&OSSel_prependTransform_, "prependTransform:"},
+		{&OSSel_pressedMouseButtons, "pressedMouseButtons"},
+		{&OSSel_preventDefault, "preventDefault"},
+		{&OSSel_previousFailureCount, "previousFailureCount"},
+		{&OSSel_printDocumentView, "printDocumentView"},
+		{&OSSel_printOperationWithPrintInfo_, "printOperationWithPrintInfo:"},
+		{&OSSel_printOperationWithView_printInfo_, "printOperationWithView:printInfo:"},
+		{&OSSel_printPanel, "printPanel"},
+		{&OSSel_printer, "printer"},
+		{&OSSel_printerNames, "printerNames"},
+		{&OSSel_printerWithName_, "printerWithName:"},
+		{&OSSel_processInfo, "processInfo"},
+		{&OSSel_propertyListForType_, "propertyListForType:"},
+		{&OSSel_proposedCredential, "proposedCredential"},
+		{&OSSel_protectionSpace, "protectionSpace"},
+		{&OSSel_push, "push"},
+		{&OSSel_rangeValue, "rangeValue"},
+		{&OSSel_readSelectionFromPasteboard_, "readSelectionFromPasteboard:"},
+		{&OSSel_realm, "realm"},
+		{&OSSel_recentSearches, "recentSearches"},
+		{&OSSel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, "rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:"},
+		{&OSSel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_, "rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:"},
+		{&OSSel_rectForPart_, "rectForPart:"},
+		{&OSSel_rectOfColumn_, "rectOfColumn:"},
+		{&OSSel_rectOfRow_, "rectOfRow:"},
+		{&OSSel_rectValue, "rectValue"},
+		{&OSSel_redComponent, "redComponent"},
+		{&OSSel_redo, "redo"},
+		{&OSSel_reflectScrolledClipView_, "reflectScrolledClipView:"},
+		{&OSSel_registerDefaults_, "registerDefaults:"},
+		{&OSSel_registerForDraggedTypes_, "registerForDraggedTypes:"},
+		{&OSSel_release, "release"},
+		{&OSSel_reload_, "reload:"},
+		{&OSSel_reloadData, "reloadData"},
+		{&OSSel_reloadItem_reloadChildren_, "reloadItem:reloadChildren:"},
+		{&OSSel_removeAllItems, "removeAllItems"},
+		{&OSSel_removeAllPoints, "removeAllPoints"},
+		{&OSSel_removeAttribute_range_, "removeAttribute:range:"},
+		{&OSSel_removeChildWindow_, "removeChildWindow:"},
+		{&OSSel_removeColorWithKey_, "removeColorWithKey:"},
+		{&OSSel_removeFromSuperview, "removeFromSuperview"},
+		{&OSSel_removeItem_, "removeItem:"},
+		{&OSSel_removeItemAtIndex_, "removeItemAtIndex:"},
+		{&OSSel_removeLastObject, "removeLastObject"},
+		{&OSSel_removeObject_, "removeObject:"},
+		{&OSSel_removeObjectAtIndex_, "removeObjectAtIndex:"},
+		{&OSSel_removeObjectForKey_, "removeObjectForKey:"},
+		{&OSSel_removeObjectIdenticalTo_, "removeObjectIdenticalTo:"},
+		{&OSSel_removeObserver_, "removeObserver:"},
+		{&OSSel_removeRepresentation_, "removeRepresentation:"},
+		{&OSSel_removeStatusItem_, "removeStatusItem:"},
+		{&OSSel_removeTabViewItem_, "removeTabViewItem:"},
+		{&OSSel_removeTableColumn_, "removeTableColumn:"},
+		{&OSSel_removeTemporaryAttribute_forCharacterRange_, "removeTemporaryAttribute:forCharacterRange:"},
+		{&OSSel_removeToolTip_, "removeToolTip:"},
+		{&OSSel_removeTrackingArea_, "removeTrackingArea:"},
+		{&OSSel_replaceCharactersInRange_withString_, "replaceCharactersInRange:withString:"},
+		{&OSSel_replyToOpenOrPrint_, "replyToOpenOrPrint:"},
+		{&OSSel_representation, "representation"},
+		{&OSSel_representations, "representations"},
+		{&OSSel_request, "request"},
+		{&OSSel_requestWithURL_, "requestWithURL:"},
+		{&OSSel_resetCursorRects, "resetCursorRects"},
+		{&OSSel_resignFirstResponder, "resignFirstResponder"},
+		{&OSSel_resizeDownCursor, "resizeDownCursor"},
+		{&OSSel_resizeLeftCursor, "resizeLeftCursor"},
+		{&OSSel_resizeLeftRightCursor, "resizeLeftRightCursor"},
+		{&OSSel_resizeRightCursor, "resizeRightCursor"},
+		{&OSSel_resizeUpCursor, "resizeUpCursor"},
+		{&OSSel_resizeUpDownCursor, "resizeUpDownCursor"},
+		{&OSSel_resizingMask, "resizingMask"},
+		{&OSSel_respondsToSelector_, "respondsToSelector:"},
+		{&OSSel_restoreGraphicsState, "restoreGraphicsState"},
+		{&OSSel_retain, "retain"},
+		{&OSSel_retainCount, "retainCount"},
+		{&OSSel_rightMouseDown_, "rightMouseDown:"},
+		{&OSSel_rightMouseDragged_, "rightMouseDragged:"},
+		{&OSSel_rightMouseUp_, "rightMouseUp:"},
+		{&OSSel_rotateByDegrees_, "rotateByDegrees:"},
+		{&OSSel_rotateWithEvent_, "rotateWithEvent:"},
+		{&OSSel_rotation, "rotation"},
+		{&OSSel_rowAtPoint_, "rowAtPoint:"},
+		{&OSSel_rowForItem_, "rowForItem:"},
+		{&OSSel_rowHeight, "rowHeight"},
+		{&OSSel_runModal, "runModal"},
+		{&OSSel_runModalForDirectory_file_, "runModalForDirectory:file:"},
+		{&OSSel_runModalForWindow_, "runModalForWindow:"},
+		{&OSSel_runModalWithPrintInfo_, "runModalWithPrintInfo:"},
+		{&OSSel_runMode_beforeDate_, "runMode:beforeDate:"},
+		{&OSSel_runOperation, "runOperation"},
+		{&OSSel_samplesPerPixel, "samplesPerPixel"},
+		{&OSSel_saveGraphicsState, "saveGraphicsState"},
+		{&OSSel_savePanel, "savePanel"},
+		{&OSSel_scaleXBy_yBy_, "scaleXBy:yBy:"},
+		{&OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_, "scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:"},
+		{&OSSel_screen, "screen"},
+		{&OSSel_screenX, "screenX"},
+		{&OSSel_screenY, "screenY"},
+		{&OSSel_screens, "screens"},
+		{&OSSel_scrollClipView_toPoint_, "scrollClipView:toPoint:"},
+		{&OSSel_scrollColumnToVisible_, "scrollColumnToVisible:"},
+		{&OSSel_scrollPoint_, "scrollPoint:"},
+		{&OSSel_scrollRangeToVisible_, "scrollRangeToVisible:"},
+		{&OSSel_scrollRect_by_, "scrollRect:by:"},
+		{&OSSel_scrollRowToVisible_, "scrollRowToVisible:"},
+		{&OSSel_scrollWheel_, "scrollWheel:"},
+		{&OSSel_scrollerStyle, "scrollerStyle"},
+		{&OSSel_scrollerWidthForControlSize_, "scrollerWidthForControlSize:"},
+		{&OSSel_searchButtonCell, "searchButtonCell"},
+		{&OSSel_searchButtonRectForBounds_, "searchButtonRectForBounds:"},
+		{&OSSel_searchTextRectForBounds_, "searchTextRectForBounds:"},
+		{&OSSel_secondOfMinute, "secondOfMinute"},
+		{&OSSel_secondarySelectedControlColor, "secondarySelectedControlColor"},
+		{&OSSel_selectAll_, "selectAll:"},
+		{&OSSel_selectItem_, "selectItem:"},
+		{&OSSel_selectItemAtIndex_, "selectItemAtIndex:"},
+		{&OSSel_selectRowIndexes_byExtendingSelection_, "selectRowIndexes:byExtendingSelection:"},
+		{&OSSel_selectTabViewItemAtIndex_, "selectTabViewItemAtIndex:"},
+		{&OSSel_selectText_, "selectText:"},
+		{&OSSel_selectedControlColor, "selectedControlColor"},
+		{&OSSel_selectedControlTextColor, "selectedControlTextColor"},
+		{&OSSel_selectedRange, "selectedRange"},
+		{&OSSel_selectedRow, "selectedRow"},
+		{&OSSel_selectedRowIndexes, "selectedRowIndexes"},
+		{&OSSel_selectedTabViewItem, "selectedTabViewItem"},
+		{&OSSel_selectedTextAttributes, "selectedTextAttributes"},
+		{&OSSel_selectedTextBackgroundColor, "selectedTextBackgroundColor"},
+		{&OSSel_selectedTextColor, "selectedTextColor"},
+		{&OSSel_sendAction_to_, "sendAction:to:"},
+		{&OSSel_sendAction_to_from_, "sendAction:to:from:"},
+		{&OSSel_sendEvent_, "sendEvent:"},
+		{&OSSel_sender, "sender"},
+		{&OSSel_separatorItem, "separatorItem"},
+		{&OSSel_set, "set"},
+		{&OSSel_setAcceptsMouseMovedEvents_, "setAcceptsMouseMovedEvents:"},
+		{&OSSel_setAcceptsTouchEvents_, "setAcceptsTouchEvents:"},
+		{&OSSel_setAccessoryView_, "setAccessoryView:"},
+		{&OSSel_setAccessoryViewDisclosed_, "setAccessoryViewDisclosed:"},
+		{&OSSel_setAction_, "setAction:"},
+		{&OSSel_setActivationPolicy_, "setActivationPolicy:"},
+		{&OSSel_setAlertStyle_, "setAlertStyle:"},
+		{&OSSel_setAlignment_, "setAlignment:"},
+		{&OSSel_setAllowedFileTypes_, "setAllowedFileTypes:"},
+		{&OSSel_setAllowsColumnReordering_, "setAllowsColumnReordering:"},
+		{&OSSel_setAllowsFloats_, "setAllowsFloats:"},
+		{&OSSel_setAllowsMixedState_, "setAllowsMixedState:"},
+		{&OSSel_setAllowsMultipleSelection_, "setAllowsMultipleSelection:"},
+		{&OSSel_setAllowsOtherFileTypes_, "setAllowsOtherFileTypes:"},
+		{&OSSel_setAllowsUndo_, "setAllowsUndo:"},
+		{&OSSel_setAllowsUserCustomization_, "setAllowsUserCustomization:"},
+		{&OSSel_setAlpha_, "setAlpha:"},
+		{&OSSel_setAlphaValue_, "setAlphaValue:"},
+		{&OSSel_setAlternateButtonTitle_, "setAlternateButtonTitle:"},
+		{&OSSel_setAppearance_, "setAppearance:"},
+		{&OSSel_setApplicationIconImage_, "setApplicationIconImage:"},
+		{&OSSel_setApplicationNameForUserAgent_, "setApplicationNameForUserAgent:"},
+		{&OSSel_setAttachmentCell_, "setAttachmentCell:"},
+		{&OSSel_setAttributedString_, "setAttributedString:"},
+		{&OSSel_setAttributedStringValue_, "setAttributedStringValue:"},
+		{&OSSel_setAttributedTitle_, "setAttributedTitle:"},
+		{&OSSel_setAutoenablesItems_, "setAutoenablesItems:"},
+		{&OSSel_setAutohidesScrollers_, "setAutohidesScrollers:"},
+		{&OSSel_setAutoresizesOutlineColumn_, "setAutoresizesOutlineColumn:"},
+		{&OSSel_setAutoresizesSubviews_, "setAutoresizesSubviews:"},
+		{&OSSel_setAutoresizingMask_, "setAutoresizingMask:"},
+		{&OSSel_setAutosaveExpandedItems_, "setAutosaveExpandedItems:"},
+		{&OSSel_setBackgroundColor_, "setBackgroundColor:"},
+		{&OSSel_setBackgroundLayoutEnabled_, "setBackgroundLayoutEnabled:"},
+		{&OSSel_setBackgroundStyle_, "setBackgroundStyle:"},
+		{&OSSel_setBadgeLabel_, "setBadgeLabel:"},
+		{&OSSel_setBaseWritingDirection_, "setBaseWritingDirection:"},
+		{&OSSel_setBecomesKeyOnlyIfNeeded_, "setBecomesKeyOnlyIfNeeded:"},
+		{&OSSel_setBezelStyle_, "setBezelStyle:"},
+		{&OSSel_setBezeled_, "setBezeled:"},
+		{&OSSel_setBorderType_, "setBorderType:"},
+		{&OSSel_setBorderWidth_, "setBorderWidth:"},
+		{&OSSel_setBordered_, "setBordered:"},
+		{&OSSel_setBoundsRotation_, "setBoundsRotation:"},
+		{&OSSel_setBoundsSize_, "setBoundsSize:"},
+		{&OSSel_setBoxType_, "setBoxType:"},
+		{&OSSel_setButtonType_, "setButtonType:"},
+		{&OSSel_setCacheMode_, "setCacheMode:"},
+		{&OSSel_setCachePolicy_, "setCachePolicy:"},
+		{&OSSel_setCanChooseDirectories_, "setCanChooseDirectories:"},
+		{&OSSel_setCanChooseFiles_, "setCanChooseFiles:"},
+		{&OSSel_setCanCreateDirectories_, "setCanCreateDirectories:"},
+		{&OSSel_setCancelButtonCell_, "setCancelButtonCell:"},
+		{&OSSel_setCell_, "setCell:"},
+		{&OSSel_setCellClass_, "setCellClass:"},
+		{&OSSel_setClip, "setClip"},
+		{&OSSel_setCollectionBehavior_, "setCollectionBehavior:"},
+		{&OSSel_setColor_, "setColor:"},
+		{&OSSel_setColumnAutoresizingStyle_, "setColumnAutoresizingStyle:"},
+		{&OSSel_setCompositingOperation_, "setCompositingOperation:"},
+		{&OSSel_setContainerSize_, "setContainerSize:"},
+		{&OSSel_setContentView_, "setContentView:"},
+		{&OSSel_setContentViewMargins_, "setContentViewMargins:"},
+		{&OSSel_setControlSize_, "setControlSize:"},
+		{&OSSel_setCookie_, "setCookie:"},
+		{&OSSel_setCopiesOnScroll_, "setCopiesOnScroll:"},
+		{&OSSel_setCurrentContext_, "setCurrentContext:"},
+		{&OSSel_setCurrentOperation_, "setCurrentOperation:"},
+		{&OSSel_setCustomUserAgent_, "setCustomUserAgent:"},
+		{&OSSel_setData_forType_, "setData:forType:"},
+		{&OSSel_setDataCell_, "setDataCell:"},
+		{&OSSel_setDataSource_, "setDataSource:"},
+		{&OSSel_setDatePickerElements_, "setDatePickerElements:"},
+		{&OSSel_setDatePickerStyle_, "setDatePickerStyle:"},
+		{&OSSel_setDateValue_, "setDateValue:"},
+		{&OSSel_setDefaultButtonCell_, "setDefaultButtonCell:"},
+		{&OSSel_setDefaultFlatness_, "setDefaultFlatness:"},
+		{&OSSel_setDefaultParagraphStyle_, "setDefaultParagraphStyle:"},
+		{&OSSel_setDefaultTabInterval_, "setDefaultTabInterval:"},
+		{&OSSel_setDelegate_, "setDelegate:"},
+		{&OSSel_setDestination_allowOverwrite_, "setDestination:allowOverwrite:"},
+		{&OSSel_setDictionary_, "setDictionary:"},
+		{&OSSel_setDirectory_, "setDirectory:"},
+		{&OSSel_setDirectoryURL_, "setDirectoryURL:"},
+		{&OSSel_setDisplayMode_, "setDisplayMode:"},
+		{&OSSel_setDisplaysLinkToolTips_, "setDisplaysLinkToolTips:"},
+		{&OSSel_setDocumentCursor_, "setDocumentCursor:"},
+		{&OSSel_setDocumentEdited_, "setDocumentEdited:"},
+		{&OSSel_setDocumentView_, "setDocumentView:"},
+		{&OSSel_setDoubleAction_, "setDoubleAction:"},
+		{&OSSel_setDoubleValue_, "setDoubleValue:"},
+		{&OSSel_setDownloadDelegate_, "setDownloadDelegate:"},
+		{&OSSel_setDrawsBackground_, "setDrawsBackground:"},
+		{&OSSel_setDropItem_dropChildIndex_, "setDropItem:dropChildIndex:"},
+		{&OSSel_setDropRow_dropOperation_, "setDropRow:dropOperation:"},
+		{&OSSel_setEditable_, "setEditable:"},
+		{&OSSel_setEnabled_, "setEnabled:"},
+		{&OSSel_setFill, "setFill"},
+		{&OSSel_setFillColor_, "setFillColor:"},
+		{&OSSel_setFireDate_, "setFireDate:"},
+		{&OSSel_setFirstLineHeadIndent_, "setFirstLineHeadIndent:"},
+		{&OSSel_setFloatingPanel_, "setFloatingPanel:"},
+		{&OSSel_setFocusRingType_, "setFocusRingType:"},
+		{&OSSel_setFont_, "setFont:"},
+		{&OSSel_setFormatter_, "setFormatter:"},
+		{&OSSel_setFrame_, "setFrame:"},
+		{&OSSel_setFrame_display_, "setFrame:display:"},
+		{&OSSel_setFrame_display_animate_, "setFrame:display:animate:"},
+		{&OSSel_setFrameFromContentFrame_, "setFrameFromContentFrame:"},
+		{&OSSel_setFrameLoadDelegate_, "setFrameLoadDelegate:"},
+		{&OSSel_setFrameOrigin_, "setFrameOrigin:"},
+		{&OSSel_setFrameSize_, "setFrameSize:"},
+		{&OSSel_setGridStyleMask_, "setGridStyleMask:"},
+		{&OSSel_setHTTPBody_, "setHTTPBody:"},
+		{&OSSel_setHTTPMethod_, "setHTTPMethod:"},
+		{&OSSel_setHasHorizontalScroller_, "setHasHorizontalScroller:"},
+		{&OSSel_setHasShadow_, "setHasShadow:"},
+		{&OSSel_setHasVerticalScroller_, "setHasVerticalScroller:"},
+		{&OSSel_setHeadIndent_, "setHeadIndent:"},
+		{&OSSel_setHeaderCell_, "setHeaderCell:"},
+		{&OSSel_setHeaderView_, "setHeaderView:"},
+		{&OSSel_setHelpMenu_, "setHelpMenu:"},
+		{&OSSel_setHidden_, "setHidden:"},
+		{&OSSel_setHiddenUntilMouseMoves_, "setHiddenUntilMouseMoves:"},
+		{&OSSel_setHidesOnDeactivate_, "setHidesOnDeactivate:"},
+		{&OSSel_setHighlightMode_, "setHighlightMode:"},
+		{&OSSel_setHighlighted_, "setHighlighted:"},
+		{&OSSel_setHighlightedTableColumn_, "setHighlightedTableColumn:"},
+		{&OSSel_setHighlightsBy_, "setHighlightsBy:"},
+		{&OSSel_setHorizontalScroller_, "setHorizontalScroller:"},
+		{&OSSel_setHorizontallyResizable_, "setHorizontallyResizable:"},
+		{&OSSel_setIcon_, "setIcon:"},
+		{&OSSel_setIdentifier_, "setIdentifier:"},
+		{&OSSel_setImage_, "setImage:"},
+		{&OSSel_setImageAlignment_, "setImageAlignment:"},
+		{&OSSel_setImageInterpolation_, "setImageInterpolation:"},
+		{&OSSel_setImagePosition_, "setImagePosition:"},
+		{&OSSel_setImageScaling_, "setImageScaling:"},
+		{&OSSel_setIncrement_, "setIncrement:"},
+		{&OSSel_setIndeterminate_, "setIndeterminate:"},
+		{&OSSel_setIndicatorImage_inTableColumn_, "setIndicatorImage:inTableColumn:"},
+		{&OSSel_setInteger_forKey_, "setInteger:forKey:"},
+		{&OSSel_setIntercellSpacing_, "setIntercellSpacing:"},
+		{&OSSel_setJavaEnabled_, "setJavaEnabled:"},
+		{&OSSel_setJavaScriptEnabled_, "setJavaScriptEnabled:"},
+		{&OSSel_setJobDisposition_, "setJobDisposition:"},
+		{&OSSel_setJobTitle_, "setJobTitle:"},
+		{&OSSel_setKeyEquivalent_, "setKeyEquivalent:"},
+		{&OSSel_setKeyEquivalentModifierMask_, "setKeyEquivalentModifierMask:"},
+		{&OSSel_setKnobProportion_, "setKnobProportion:"},
+		{&OSSel_setLabel_, "setLabel:"},
+		{&OSSel_setLength_, "setLength:"},
+		{&OSSel_setLevel_, "setLevel:"},
+		{&OSSel_setLineBreakMode_, "setLineBreakMode:"},
+		{&OSSel_setLineCapStyle_, "setLineCapStyle:"},
+		{&OSSel_setLineDash_count_phase_, "setLineDash:count:phase:"},
+		{&OSSel_setLineFragmentPadding_, "setLineFragmentPadding:"},
+		{&OSSel_setLineJoinStyle_, "setLineJoinStyle:"},
+		{&OSSel_setLineSpacing_, "setLineSpacing:"},
+		{&OSSel_setLineWidth_, "setLineWidth:"},
+		{&OSSel_setLinkTextAttributes_, "setLinkTextAttributes:"},
+		{&OSSel_setMainMenu_, "setMainMenu:"},
+		{&OSSel_setMarkedText_selectedRange_, "setMarkedText:selectedRange:"},
+		{&OSSel_setMaxSize_, "setMaxSize:"},
+		{&OSSel_setMaxValue_, "setMaxValue:"},
+		{&OSSel_setMaximum_, "setMaximum:"},
+		{&OSSel_setMaximumFractionDigits_, "setMaximumFractionDigits:"},
+		{&OSSel_setMaximumIntegerDigits_, "setMaximumIntegerDigits:"},
+		{&OSSel_setMenu_, "setMenu:"},
+		{&OSSel_setMenuFormRepresentation_, "setMenuFormRepresentation:"},
+		{&OSSel_setMessage_, "setMessage:"},
+		{&OSSel_setMessageText_, "setMessageText:"},
+		{&OSSel_setMinSize_, "setMinSize:"},
+		{&OSSel_setMinValue_, "setMinValue:"},
+		{&OSSel_setMinWidth_, "setMinWidth:"},
+		{&OSSel_setMinimum_, "setMinimum:"},
+		{&OSSel_setMinimumFractionDigits_, "setMinimumFractionDigits:"},
+		{&OSSel_setMinimumIntegerDigits_, "setMinimumIntegerDigits:"},
+		{&OSSel_setMiterLimit_, "setMiterLimit:"},
+		{&OSSel_setMovable_, "setMovable:"},
+		{&OSSel_setNameFieldStringValue_, "setNameFieldStringValue:"},
+		{&OSSel_setNeedsDisplay_, "setNeedsDisplay:"},
+		{&OSSel_setNeedsDisplayInRect_, "setNeedsDisplayInRect:"},
+		{&OSSel_setNumberOfVisibleItems_, "setNumberOfVisibleItems:"},
+		{&OSSel_setNumberStyle_, "setNumberStyle:"},
+		{&OSSel_setObject_forKey_, "setObject:forKey:"},
+		{&OSSel_setObjectValue_, "setObjectValue:"},
+		{&OSSel_setOnMouseEntered_, "setOnMouseEntered:"},
+		{&OSSel_setOpaque_, "setOpaque:"},
+		{&OSSel_setOptions_, "setOptions:"},
+		{&OSSel_setOutlineTableColumn_, "setOutlineTableColumn:"},
+		{&OSSel_setPaletteLabel_, "setPaletteLabel:"},
+		{&OSSel_setPanelFont_isMultiple_, "setPanelFont:isMultiple:"},
+		{&OSSel_setPartialStringValidationEnabled_, "setPartialStringValidationEnabled:"},
+		{&OSSel_setPatternPhase_, "setPatternPhase:"},
+		{&OSSel_setPlaceholderString_, "setPlaceholderString:"},
+		{&OSSel_setPolicyDelegate_, "setPolicyDelegate:"},
+		{&OSSel_setPreferences_, "setPreferences:"},
+		{&OSSel_setPrinter_, "setPrinter:"},
+		{&OSSel_setPropertyList_forType_, "setPropertyList:forType:"},
+		{&OSSel_setPullsDown_, "setPullsDown:"},
+		{&OSSel_setReleasedWhenClosed_, "setReleasedWhenClosed:"},
+		{&OSSel_setRepresentedFilename_, "setRepresentedFilename:"},
+		{&OSSel_setRepresentedURL_, "setRepresentedURL:"},
+		{&OSSel_setResizingMask_, "setResizingMask:"},
+		{&OSSel_setResourceLoadDelegate_, "setResourceLoadDelegate:"},
+		{&OSSel_setRichText_, "setRichText:"},
+		{&OSSel_setRowHeight_, "setRowHeight:"},
+		{&OSSel_setScalesWhenResized_, "setScalesWhenResized:"},
+		{&OSSel_setScrollable_, "setScrollable:"},
+		{&OSSel_setSearchButtonCell_, "setSearchButtonCell:"},
+		{&OSSel_setSelectable_, "setSelectable:"},
+		{&OSSel_setSelectedItemIdentifier_, "setSelectedItemIdentifier:"},
+		{&OSSel_setSelectedRange_, "setSelectedRange:"},
+		{&OSSel_setSelectedTextAttributes_, "setSelectedTextAttributes:"},
+		{&OSSel_setSelectionOnly_, "setSelectionOnly:"},
+		{&OSSel_setServicesMenu_, "setServicesMenu:"},
+		{&OSSel_setShouldAntialias_, "setShouldAntialias:"},
+		{&OSSel_setShowsHelp_, "setShowsHelp:"},
+		{&OSSel_setShowsPrintPanel_, "setShowsPrintPanel:"},
+		{&OSSel_setShowsProgressPanel_, "setShowsProgressPanel:"},
+		{&OSSel_setShowsResizeIndicator_, "setShowsResizeIndicator:"},
+		{&OSSel_setShowsToolbarButton_, "setShowsToolbarButton:"},
+		{&OSSel_setSize_, "setSize:"},
+		{&OSSel_setState_, "setState:"},
+		{&OSSel_setString_, "setString:"},
+		{&OSSel_setString_forType_, "setString:forType:"},
+		{&OSSel_setStringValue_, "setStringValue:"},
+		{&OSSel_setStroke, "setStroke"},
+		{&OSSel_setSubmenu_, "setSubmenu:"},
+		{&OSSel_setSubmenu_forItem_, "setSubmenu:forItem:"},
+		{&OSSel_setTabStops_, "setTabStops:"},
+		{&OSSel_setTabViewType_, "setTabViewType:"},
+		{&OSSel_setTag_, "setTag:"},
+		{&OSSel_setTarget_, "setTarget:"},
+		{&OSSel_setTextColor_, "setTextColor:"},
+		{&OSSel_setTextStorage_, "setTextStorage:"},
+		{&OSSel_setTitle_, "setTitle:"},
+		{&OSSel_setTitleFont_, "setTitleFont:"},
+		{&OSSel_setTitlePosition_, "setTitlePosition:"},
+		{&OSSel_setToolTip_, "setToolTip:"},
+		{&OSSel_setToolbar_, "setToolbar:"},
+		{&OSSel_setTransformStruct_, "setTransformStruct:"},
+		{&OSSel_setTreatsFilePackagesAsDirectories_, "setTreatsFilePackagesAsDirectories:"},
+		{&OSSel_setUIDelegate_, "setUIDelegate:"},
+		{&OSSel_setURL_, "setURL:"},
+		{&OSSel_setUpPrintOperationDefaultValues, "setUpPrintOperationDefaultValues"},
+		{&OSSel_setUsesAlternatingRowBackgroundColors_, "setUsesAlternatingRowBackgroundColors:"},
+		{&OSSel_setUsesFontPanel_, "setUsesFontPanel:"},
+		{&OSSel_setUsesScreenFonts_, "setUsesScreenFonts:"},
+		{&OSSel_setUsesSingleLineMode_, "setUsesSingleLineMode:"},
+		{&OSSel_setUsesThreadedAnimation_, "setUsesThreadedAnimation:"},
+		{&OSSel_setValue_forHTTPHeaderField_, "setValue:forHTTPHeaderField:"},
+		{&OSSel_setValue_forKey_, "setValue:forKey:"},
+		{&OSSel_setValueWraps_, "setValueWraps:"},
+		{&OSSel_setValues_forParameter_, "setValues:forParameter:"},
+		{&OSSel_setVerticalScrollElasticity_, "setVerticalScrollElasticity:"},
+		{&OSSel_setVerticalScroller_, "setVerticalScroller:"},
+		{&OSSel_setView_, "setView:"},
+		{&OSSel_setVisible_, "setVisible:"},
+		{&OSSel_setWantsRestingTouches_, "setWantsRestingTouches:"},
+		{&OSSel_setWidth_, "setWidth:"},
+		{&OSSel_setWidthTracksTextView_, "setWidthTracksTextView:"},
+		{&OSSel_setWindingRule_, "setWindingRule:"},
+		{&OSSel_setWorksWhenModal_, "setWorksWhenModal:"},
+		{&OSSel_setWraps_, "setWraps:"},
+		{&OSSel_sharedApplication, "sharedApplication"},
+		{&OSSel_sharedCertificateTrustPanel, "sharedCertificateTrustPanel"},
+		{&OSSel_sharedColorPanel, "sharedColorPanel"},
+		{&OSSel_sharedFontManager, "sharedFontManager"},
+		{&OSSel_sharedFontPanel, "sharedFontPanel"},
+		{&OSSel_sharedHTTPCookieStorage, "sharedHTTPCookieStorage"},
+		{&OSSel_sharedPrintInfo, "sharedPrintInfo"},
+		{&OSSel_sharedWorkspace, "sharedWorkspace"},
+		{&OSSel_shiftKey, "shiftKey"},
+		{&OSSel_shouldAntialias, "shouldAntialias"},
+		{&OSSel_shouldChangeTextInRange_replacementString_, "shouldChangeTextInRange:replacementString:"},
+		{&OSSel_shouldDelayWindowOrderingForEvent_, "shouldDelayWindowOrderingForEvent:"},
+		{&OSSel_shouldDrawInsertionPoint, "shouldDrawInsertionPoint"},
+		{&OSSel_size, "size"},
+		{&OSSel_sizeOfLabel_, "sizeOfLabel:"},
+		{&OSSel_sizeToFit, "sizeToFit"},
+		{&OSSel_sizeValue, "sizeValue"},
+		{&OSSel_skipDescendents, "skipDescendents"},
+		{&OSSel_smallSystemFontSize, "smallSystemFontSize"},
+		{&OSSel_sortIndicatorRectForBounds_, "sortIndicatorRectForBounds:"},
+		{&OSSel_standardPreferences, "standardPreferences"},
+		{&OSSel_standardUserDefaults, "standardUserDefaults"},
+		{&OSSel_startAnimation_, "startAnimation:"},
+		{&OSSel_state, "state"},
+		{&OSSel_statusItemWithLength_, "statusItemWithLength:"},
+		{&OSSel_stop_, "stop:"},
+		{&OSSel_stopLoading_, "stopLoading:"},
+		{&OSSel_stopModal, "stopModal"},
+		{&OSSel_string, "string"},
+		{&OSSel_stringByAddingPercentEscapesUsingEncoding_, "stringByAddingPercentEscapesUsingEncoding:"},
+		{&OSSel_stringByAppendingPathComponent_, "stringByAppendingPathComponent:"},
+		{&OSSel_stringByAppendingPathExtension_, "stringByAppendingPathExtension:"},
+		{&OSSel_stringByAppendingString_, "stringByAppendingString:"},
+		{&OSSel_stringByDeletingLastPathComponent, "stringByDeletingLastPathComponent"},
+		{&OSSel_stringByDeletingPathExtension, "stringByDeletingPathExtension"},
+		{&OSSel_stringByReplacingOccurrencesOfString_withString_, "stringByReplacingOccurrencesOfString:withString:"},
+		{&OSSel_stringByReplacingPercentEscapesUsingEncoding_, "stringByReplacingPercentEscapesUsingEncoding:"},
+		{&OSSel_stringForKey_, "stringForKey:"},
+		{&OSSel_stringForObjectValue_, "stringForObjectValue:"},
+		{&OSSel_stringForType_, "stringForType:"},
+		{&OSSel_stringValue, "stringValue"},
+		{&OSSel_stringWithCharacters_length_, "stringWithCharacters:length:"},
+		{&OSSel_stringWithUTF8String_, "stringWithUTF8String:"},
+		{&OSSel_stroke, "stroke"},
+		{&OSSel_strokeRect_, "strokeRect:"},
+		{&OSSel_styleMask, "styleMask"},
+		{&OSSel_submenu, "submenu"},
+		{&OSSel_subviews, "subviews"},
+		{&OSSel_superclass, "superclass"},
+		{&OSSel_superview, "superview"},
+		{&OSSel_swipeWithEvent_, "swipeWithEvent:"},
+		{&OSSel_systemFontOfSize_, "systemFontOfSize:"},
+		{&OSSel_systemFontSize, "systemFontSize"},
+		{&OSSel_systemFontSizeForControlSize_, "systemFontSizeForControlSize:"},
+		{&OSSel_systemStatusBar, "systemStatusBar"},
+		{&OSSel_systemVersion, "systemVersion"},
+		{&OSSel_tabView_didSelectTabViewItem_, "tabView:didSelectTabViewItem:"},
+		{&OSSel_tabView_willSelectTabViewItem_, "tabView:willSelectTabViewItem:"},
+		{&OSSel_tabViewItemAtPoint_, "tabViewItemAtPoint:"},
+		{&OSSel_tableColumns, "tableColumns"},
+		{&OSSel_tableView_acceptDrop_row_dropOperation_, "tableView:acceptDrop:row:dropOperation:"},
+		{&OSSel_tableView_didClickTableColumn_, "tableView:didClickTableColumn:"},
+		{&OSSel_tableView_objectValueForTableColumn_row_, "tableView:objectValueForTableColumn:row:"},
+		{&OSSel_tableView_setObjectValue_forTableColumn_row_, "tableView:setObjectValue:forTableColumn:row:"},
+		{&OSSel_tableView_shouldEditTableColumn_row_, "tableView:shouldEditTableColumn:row:"},
+		{&OSSel_tableView_shouldReorderColumn_toColumn_, "tableView:shouldReorderColumn:toColumn:"},
+		{&OSSel_tableView_shouldTrackCell_forTableColumn_row_, "tableView:shouldTrackCell:forTableColumn:row:"},
+		{&OSSel_tableView_validateDrop_proposedRow_proposedDropOperation_, "tableView:validateDrop:proposedRow:proposedDropOperation:"},
+		{&OSSel_tableView_willDisplayCell_forTableColumn_row_, "tableView:willDisplayCell:forTableColumn:row:"},
+		{&OSSel_tableView_writeRowsWithIndexes_toPasteboard_, "tableView:writeRowsWithIndexes:toPasteboard:"},
+		{&OSSel_tableViewColumnDidMove_, "tableViewColumnDidMove:"},
+		{&OSSel_tableViewColumnDidResize_, "tableViewColumnDidResize:"},
+		{&OSSel_tableViewSelectionDidChange_, "tableViewSelectionDidChange:"},
+		{&OSSel_tableViewSelectionIsChanging_, "tableViewSelectionIsChanging:"},
+		{&OSSel_tag, "tag"},
+		{&OSSel_target, "target"},
+		{&OSSel_terminate_, "terminate:"},
+		{&OSSel_testPart_, "testPart:"},
+		{&OSSel_textBackgroundColor, "textBackgroundColor"},
+		{&OSSel_textColor, "textColor"},
+		{&OSSel_textContainer, "textContainer"},
+		{&OSSel_textDidChange_, "textDidChange:"},
+		{&OSSel_textDidEndEditing_, "textDidEndEditing:"},
+		{&OSSel_textStorage, "textStorage"},
+		{&OSSel_textView_clickedOnLink_atIndex_, "textView:clickedOnLink:atIndex:"},
+		{&OSSel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, "textView:willChangeSelectionFromCharacterRange:toCharacterRange:"},
+		{&OSSel_textViewDidChangeSelection_, "textViewDidChangeSelection:"},
+		{&OSSel_thickness, "thickness"},
+		{&OSSel_threadDictionary, "threadDictionary"},
+		{&OSSel_tile, "tile"},
+		{&OSSel_timeZone, "timeZone"},
+		{&OSSel_timestamp, "timestamp"},
+		{&OSSel_title, "title"},
+		{&OSSel_titleCell, "titleCell"},
+		{&OSSel_titleFont, "titleFont"},
+		{&OSSel_titleOfSelectedItem, "titleOfSelectedItem"},
+		{&OSSel_titleRectForBounds_, "titleRectForBounds:"},
+		{&OSSel_toggleFullScreen_, "toggleFullScreen:"},
+		{&OSSel_toolbar, "toolbar"},
+		{&OSSel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_, "toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:"},
+		{&OSSel_toolbarAllowedItemIdentifiers_, "toolbarAllowedItemIdentifiers:"},
+		{&OSSel_toolbarDefaultItemIdentifiers_, "toolbarDefaultItemIdentifiers:"},
+		{&OSSel_toolbarSelectableItemIdentifiers_, "toolbarSelectableItemIdentifiers:"},
+		{&OSSel_touchesBeganWithEvent_, "touchesBeganWithEvent:"},
+		{&OSSel_touchesCancelledWithEvent_, "touchesCancelledWithEvent:"},
+		{&OSSel_touchesEndedWithEvent_, "touchesEndedWithEvent:"},
+		{&OSSel_touchesMatchingPhase_inView_, "touchesMatchingPhase:inView:"},
+		{&OSSel_touchesMovedWithEvent_, "touchesMovedWithEvent:"},
+		{&OSSel_trackingAreas, "trackingAreas"},
+		{&OSSel_traitsOfFont_, "traitsOfFont:"},
+		{&OSSel_transform, "transform"},
+		{&OSSel_transformPoint_, "transformPoint:"},
+		{&OSSel_transformSize_, "transformSize:"},
+		{&OSSel_transformStruct, "transformStruct"},
+		{&OSSel_transformUsingAffineTransform_, "transformUsingAffineTransform:"},
+		{&OSSel_translateXBy_yBy_, "translateXBy:yBy:"},
+		{&OSSel_type, "type"},
+		{&OSSel_type_conformsToType_, "type:conformsToType:"},
+		{&OSSel_typeOfFile_error_, "typeOfFile:error:"},
+		{&OSSel_typeWithFilenameExtension_, "typeWithFilenameExtension:"},
+		{&OSSel_types, "types"},
+		{&OSSel_typesetter, "typesetter"},
+		{&OSSel_unarchiveObjectWithData_, "unarchiveObjectWithData:"},
+		{&OSSel_undefined, "undefined"},
+		{&OSSel_undo, "undo"},
+		{&OSSel_undoManager, "undoManager"},
+		{&OSSel_unhideAllApplications_, "unhideAllApplications:"},
+		{&OSSel_unlockFocus, "unlockFocus"},
+		{&OSSel_unmarkText, "unmarkText"},
+		{&OSSel_unregisterDraggedTypes, "unregisterDraggedTypes"},
+		{&OSSel_update, "update"},
+		{&OSSel_updateFromPMPrintSettings, "updateFromPMPrintSettings"},
+		{&OSSel_updateTrackingAreas, "updateTrackingAreas"},
+		{&OSSel_use, "use"},
+		{&OSSel_useCredential_forAuthenticationChallenge_, "useCredential:forAuthenticationChallenge:"},
+		{&OSSel_usedRectForTextContainer_, "usedRectForTextContainer:"},
+		{&OSSel_user, "user"},
+		{&OSSel_userInfo, "userInfo"},
+		{&OSSel_usesAlternatingRowBackgroundColors, "usesAlternatingRowBackgroundColors"},
+		{&OSSel_validAttributesForMarkedText, "validAttributesForMarkedText"},
+		{&OSSel_validModesForFontPanel_, "validModesForFontPanel:"},
+		{&OSSel_validRequestorForSendType_returnType_, "validRequestorForSendType:returnType:"},
+		{&OSSel_validateMenuItem_, "validateMenuItem:"},
+		{&OSSel_validateVisibleColumns, "validateVisibleColumns"},
+		{&OSSel_value, "value"},
+		{&OSSel_valueForKey_, "valueForKey:"},
+		{&OSSel_valueWithPoint_, "valueWithPoint:"},
+		{&OSSel_valueWithRange_, "valueWithRange:"},
+		{&OSSel_valueWithRect_, "valueWithRect:"},
+		{&OSSel_valueWithSize_, "valueWithSize:"},
+		{&OSSel_view, "view"},
+		{&OSSel_view_stringForToolTip_point_userData_, "view:stringForToolTip:point:userData:"},
+		{&OSSel_viewDidMoveToWindow, "viewDidMoveToWindow"},
+		{&OSSel_viewWillMoveToWindow_, "viewWillMoveToWindow:"},
+		{&OSSel_visibleFrame, "visibleFrame"},
+		{&OSSel_visibleRect, "visibleRect"},
+		{&OSSel_wantsPeriodicDraggingUpdates, "wantsPeriodicDraggingUpdates"},
+		{&OSSel_wantsToHandleMouseEvents, "wantsToHandleMouseEvents"},
+		{&OSSel_webFrame, "webFrame"},
+		{&OSSel_webScriptValueAtIndex_, "webScriptValueAtIndex:"},
+		{&OSSel_webView_contextMenuItemsForElement_defaultMenuItems_, "webView:contextMenuItemsForElement:defaultMenuItems:"},
+		{&OSSel_webView_createWebViewWithRequest_, "webView:createWebViewWithRequest:"},
+		{&OSSel_webView_decidePolicyForMIMEType_request_frame_decisionListener_, "webView:decidePolicyForMIMEType:request:frame:decisionListener:"},
+		{&OSSel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_, "webView:decidePolicyForNavigationAction:request:frame:decisionListener:"},
+		{&OSSel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_, "webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:"},
+		{&OSSel_webView_didChangeLocationWithinPageForFrame_, "webView:didChangeLocationWithinPageForFrame:"},
+		{&OSSel_webView_didCommitLoadForFrame_, "webView:didCommitLoadForFrame:"},
+		{&OSSel_webView_didFailProvisionalLoadWithError_forFrame_, "webView:didFailProvisionalLoadWithError:forFrame:"},
+		{&OSSel_webView_didFinishLoadForFrame_, "webView:didFinishLoadForFrame:"},
+		{&OSSel_webView_didReceiveTitle_forFrame_, "webView:didReceiveTitle:forFrame:"},
+		{&OSSel_webView_didStartProvisionalLoadForFrame_, "webView:didStartProvisionalLoadForFrame:"},
+		{&OSSel_webView_identifierForInitialRequest_fromDataSource_, "webView:identifierForInitialRequest:fromDataSource:"},
+		{&OSSel_webView_mouseDidMoveOverElement_modifierFlags_, "webView:mouseDidMoveOverElement:modifierFlags:"},
+		{&OSSel_webView_printFrameView_, "webView:printFrameView:"},
+		{&OSSel_webView_resource_didFailLoadingWithError_fromDataSource_, "webView:resource:didFailLoadingWithError:fromDataSource:"},
+		{&OSSel_webView_resource_didFinishLoadingFromDataSource_, "webView:resource:didFinishLoadingFromDataSource:"},
+		{&OSSel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_, "webView:resource:didReceiveAuthenticationChallenge:fromDataSource:"},
+		{&OSSel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, "webView:resource:willSendRequest:redirectResponse:fromDataSource:"},
+		{&OSSel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_, "webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:"},
+		{&OSSel_webView_runJavaScriptAlertPanelWithMessage_, "webView:runJavaScriptAlertPanelWithMessage:"},
+		{&OSSel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_, "webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:"},
+		{&OSSel_webView_runJavaScriptConfirmPanelWithMessage_, "webView:runJavaScriptConfirmPanelWithMessage:"},
+		{&OSSel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_, "webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:"},
+		{&OSSel_webView_runOpenPanelForFileButtonWithResultListener_, "webView:runOpenPanelForFileButtonWithResultListener:"},
+		{&OSSel_webView_setFrame_, "webView:setFrame:"},
+		{&OSSel_webView_setResizable_, "webView:setResizable:"},
+		{&OSSel_webView_setStatusBarVisible_, "webView:setStatusBarVisible:"},
+		{&OSSel_webView_setStatusText_, "webView:setStatusText:"},
+		{&OSSel_webView_setToolbarsVisible_, "webView:setToolbarsVisible:"},
+		{&OSSel_webView_unableToImplementPolicyWithError_frame_, "webView:unableToImplementPolicyWithError:frame:"},
+		{&OSSel_webView_windowScriptObjectAvailable_, "webView:windowScriptObjectAvailable:"},
+		{&OSSel_webViewClose_, "webViewClose:"},
+		{&OSSel_webViewFocus_, "webViewFocus:"},
+		{&OSSel_webViewShow_, "webViewShow:"},
+		{&OSSel_webViewUnfocus_, "webViewUnfocus:"},
+		{&OSSel_wheelDelta, "wheelDelta"},
+		{&OSSel_wheelDeltaX, "wheelDeltaX"},
+		{&OSSel_wheelDeltaY, "wheelDeltaY"},
+		{&OSSel_width, "width"},
+		{&OSSel_window, "window"},
+		{&OSSel_windowBackgroundColor, "windowBackgroundColor"},
+		{&OSSel_windowDidBecomeKey_, "windowDidBecomeKey:"},
+		{&OSSel_windowDidDeminiaturize_, "windowDidDeminiaturize:"},
+		{&OSSel_windowDidMiniaturize_, "windowDidMiniaturize:"},
+		{&OSSel_windowDidMove_, "windowDidMove:"},
+		{&OSSel_windowDidResignKey_, "windowDidResignKey:"},
+		{&OSSel_windowDidResize_, "windowDidResize:"},
+		{&OSSel_windowFrameTextColor, "windowFrameTextColor"},
+		{&OSSel_windowNumber, "windowNumber"},
+		{&OSSel_windowNumberAtPoint_belowWindowWithWindowNumber_, "windowNumberAtPoint:belowWindowWithWindowNumber:"},
+		{&OSSel_windowShouldClose_, "windowShouldClose:"},
+		{&OSSel_windowWillClose_, "windowWillClose:"},
+		{&OSSel_windowWithWindowNumber_, "windowWithWindowNumber:"},
+		{&OSSel_windows, "windows"},
+		{&OSSel_writeObjects_, "writeObjects:"},
+		{&OSSel_writeSelectionToPasteboard_types_, "writeSelectionToPasteboard:types:"},
+		{&OSSel_yearOfCommonEra, "yearOfCommonEra"},
+		{&OSSel_zoom_, "zoom:"},
+	} {
+		*e.p = OSSel_registerName(e.n)
+	}
+	for _, e := range [...]struct {
+		p *int64
+		n string
+	}{
+		{&OSClass_WebPanelAuthenticationHandler, "WebPanelAuthenticationHandler"},
+		{&OSClass_NSNull, "NSNull"},
+		{&OSClass_JRSAppKitAWT, "JRSAppKitAWT"},
+		{&OSClass_NSToolbarView, "NSToolbarView"},
+		{&OSClass_CALayer, "CALayer"},
+		{&OSClass_DOMDocument, "DOMDocument"},
+		{&OSClass_DOMEvent, "DOMEvent"},
+		{&OSClass_DOMKeyboardEvent, "DOMKeyboardEvent"},
+		{&OSClass_DOMMouseEvent, "DOMMouseEvent"},
+		{&OSClass_DOMUIEvent, "DOMUIEvent"},
+		{&OSClass_DOMWheelEvent, "DOMWheelEvent"},
+		{&OSClass_NSActionCell, "NSActionCell"},
+		{&OSClass_NSAffineTransform, "NSAffineTransform"},
+		{&OSClass_NSAlert, "NSAlert"},
+		{&OSClass_NSAppearance, "NSAppearance"},
+		{&OSClass_NSAppleEventDescriptor, "NSAppleEventDescriptor"},
+		{&OSClass_NSApplication, "NSApplication"},
+		{&OSClass_NSArray, "NSArray"},
+		{&OSClass_NSAttributedString, "NSAttributedString"},
+		{&OSClass_NSAutoreleasePool, "NSAutoreleasePool"},
+		{&OSClass_NSBezierPath, "NSBezierPath"},
+		{&OSClass_NSBitmapImageRep, "NSBitmapImageRep"},
+		{&OSClass_NSBox, "NSBox"},
+		{&OSClass_NSBundle, "NSBundle"},
+		{&OSClass_NSButton, "NSButton"},
+		{&OSClass_NSButtonCell, "NSButtonCell"},
+		{&OSClass_NSCalendarDate, "NSCalendarDate"},
+		{&OSClass_NSCell, "NSCell"},
+		{&OSClass_NSClipView, "NSClipView"},
+		{&OSClass_NSCoder, "NSCoder"},
+		{&OSClass_NSColor, "NSColor"},
+		{&OSClass_NSColorList, "NSColorList"},
+		{&OSClass_NSColorPanel, "NSColorPanel"},
+		{&OSClass_NSColorSpace, "NSColorSpace"},
+		{&OSClass_NSComboBox, "NSComboBox"},
+		{&OSClass_NSComboBoxCell, "NSComboBoxCell"},
+		{&OSClass_NSControl, "NSControl"},
+		{&OSClass_NSCursor, "NSCursor"},
+		{&OSClass_NSData, "NSData"},
+		{&OSClass_NSDate, "NSDate"},
+		{&OSClass_NSDatePicker, "NSDatePicker"},
+		{&OSClass_NSDictionary, "NSDictionary"},
+		{&OSClass_NSDirectoryEnumerator, "NSDirectoryEnumerator"},
+		{&OSClass_NSDockTile, "NSDockTile"},
+		{&OSClass_NSEnumerator, "NSEnumerator"},
+		{&OSClass_NSError, "NSError"},
+		{&OSClass_NSEvent, "NSEvent"},
+		{&OSClass_NSFileManager, "NSFileManager"},
+		{&OSClass_NSFileWrapper, "NSFileWrapper"},
+		{&OSClass_NSFont, "NSFont"},
+		{&OSClass_NSFontManager, "NSFontManager"},
+		{&OSClass_NSFontPanel, "NSFontPanel"},
+		{&OSClass_NSFormatter, "NSFormatter"},
+		{&OSClass_NSGradient, "NSGradient"},
+		{&OSClass_NSGraphicsContext, "NSGraphicsContext"},
+		{&OSClass_NSHTTPCookie, "NSHTTPCookie"},
+		{&OSClass_NSHTTPCookieStorage, "NSHTTPCookieStorage"},
+		{&OSClass_NSImage, "NSImage"},
+		{&OSClass_NSImageRep, "NSImageRep"},
+		{&OSClass_NSImageView, "NSImageView"},
+		{&OSClass_NSIndexSet, "NSIndexSet"},
+		{&OSClass_NSInputManager, "NSInputManager"},
+		{&OSClass_NSKeyedArchiver, "NSKeyedArchiver"},
+		{&OSClass_NSKeyedUnarchiver, "NSKeyedUnarchiver"},
+		{&OSClass_NSLayoutManager, "NSLayoutManager"},
+		{&OSClass_NSLocale, "NSLocale"},
+		{&OSClass_NSMenu, "NSMenu"},
+		{&OSClass_NSMenuItem, "NSMenuItem"},
+		{&OSClass_NSMutableArray, "NSMutableArray"},
+		{&OSClass_NSMutableAttributedString, "NSMutableAttributedString"},
+		{&OSClass_NSMutableDictionary, "NSMutableDictionary"},
+		{&OSClass_NSMutableIndexSet, "NSMutableIndexSet"},
+		{&OSClass_NSMutableParagraphStyle, "NSMutableParagraphStyle"},
+		{&OSClass_NSMutableSet, "NSMutableSet"},
+		{&OSClass_NSMutableString, "NSMutableString"},
+		{&OSClass_NSMutableURLRequest, "NSMutableURLRequest"},
+		{&OSClass_NSNotification, "NSNotification"},
+		{&OSClass_NSNotificationCenter, "NSNotificationCenter"},
+		{&OSClass_NSNumber, "NSNumber"},
+		{&OSClass_NSNumberFormatter, "NSNumberFormatter"},
+		{&OSClass_NSObject, "NSObject"},
+		{&OSClass_NSOpenGLContext, "NSOpenGLContext"},
+		{&OSClass_NSOpenGLPixelFormat, "NSOpenGLPixelFormat"},
+		{&OSClass_NSOpenPanel, "NSOpenPanel"},
+		{&OSClass_NSOutlineView, "NSOutlineView"},
+		{&OSClass_NSPanel, "NSPanel"},
+		{&OSClass_NSParagraphStyle, "NSParagraphStyle"},
+		{&OSClass_NSPasteboard, "NSPasteboard"},
+		{&OSClass_NSPopUpButton, "NSPopUpButton"},
+		{&OSClass_NSPrintInfo, "NSPrintInfo"},
+		{&OSClass_NSPrintOperation, "NSPrintOperation"},
+		{&OSClass_NSPrintPanel, "NSPrintPanel"},
+		{&OSClass_NSPrinter, "NSPrinter"},
+		{&OSClass_NSProcessInfo, "NSProcessInfo"},
+		{&OSClass_NSProgressIndicator, "NSProgressIndicator"},
+		{&OSClass_NSResponder, "NSResponder"},
+		{&OSClass_NSRunLoop, "NSRunLoop"},
+		{&OSClass_NSSavePanel, "NSSavePanel"},
+		{&OSClass_NSScreen, "NSScreen"},
+		{&OSClass_NSScrollView, "NSScrollView"},
+		{&OSClass_NSScroller, "NSScroller"},
+		{&OSClass_NSSearchField, "NSSearchField"},
+		{&OSClass_NSSearchFieldCell, "NSSearchFieldCell"},
+		{&OSClass_NSSecureTextField, "NSSecureTextField"},
+		{&OSClass_NSSet, "NSSet"},
+		{&OSClass_NSSlider, "NSSlider"},
+		{&OSClass_NSStatusBar, "NSStatusBar"},
+		{&OSClass_NSStatusItem, "NSStatusItem"},
+		{&OSClass_NSStepper, "NSStepper"},
+		{&OSClass_NSString, "NSString"},
+		{&OSClass_NSTabView, "NSTabView"},
+		{&OSClass_NSTabViewItem, "NSTabViewItem"},
+		{&OSClass_NSTableColumn, "NSTableColumn"},
+		{&OSClass_NSTableHeaderCell, "NSTableHeaderCell"},
+		{&OSClass_NSTableHeaderView, "NSTableHeaderView"},
+		{&OSClass_NSTableView, "NSTableView"},
+		{&OSClass_NSText, "NSText"},
+		{&OSClass_NSTextAttachment, "NSTextAttachment"},
+		{&OSClass_NSTextContainer, "NSTextContainer"},
+		{&OSClass_NSTextField, "NSTextField"},
+		{&OSClass_NSTextFieldCell, "NSTextFieldCell"},
+		{&OSClass_NSTextStorage, "NSTextStorage"},
+		{&OSClass_NSTextTab, "NSTextTab"},
+		{&OSClass_NSTextView, "NSTextView"},
+		{&OSClass_NSThread, "NSThread"},
+		{&OSClass_NSTimeZone, "NSTimeZone"},
+		{&OSClass_NSTimer, "NSTimer"},
+		{&OSClass_NSToolbar, "NSToolbar"},
+		{&OSClass_NSToolbarItem, "NSToolbarItem"},
+		{&OSClass_NSTouch, "NSTouch"},
+		{&OSClass_NSTrackingArea, "NSTrackingArea"},
+		{&OSClass_NSTypesetter, "NSTypesetter"},
+		{&OSClass_NSURL, "NSURL"},
+		{&OSClass_NSURLAuthenticationChallenge, "NSURLAuthenticationChallenge"},
+		{&OSClass_NSURLCredential, "NSURLCredential"},
+		{&OSClass_NSURLDownload, "NSURLDownload"},
+		{&OSClass_NSURLProtectionSpace, "NSURLProtectionSpace"},
+		{&OSClass_NSURLRequest, "NSURLRequest"},
+		{&OSClass_NSUndoManager, "NSUndoManager"},
+		{&OSClass_NSUserDefaults, "NSUserDefaults"},
+		{&OSClass_NSValue, "NSValue"},
+		{&OSClass_NSView, "NSView"},
+		{&OSClass_NSWindow, "NSWindow"},
+		{&OSClass_NSWorkspace, "NSWorkspace"},
+		{&OSClass_SFCertificatePanel, "SFCertificatePanel"},
+		{&OSClass_SFCertificateTrustPanel, "SFCertificateTrustPanel"},
+		{&OSClass_UTType, "UTType"},
+		{&OSClass_WebDataSource, "WebDataSource"},
+		{&OSClass_WebFrame, "WebFrame"},
+		{&OSClass_WebFrameView, "WebFrameView"},
+		{&OSClass_WebPreferences, "WebPreferences"},
+		{&OSClass_WebScriptObject, "WebScriptObject"},
+		{&OSClass_WebUndefined, "WebUndefined"},
+		{&OSClass_WebView, "WebView"},
+	} {
+		*e.p = OSObjc_getClass(e.n)
+	}
+	for _, e := range [...]struct {
+		p *int64
+		n string
+	}{
+		{&OSProtocol_NSAccessibility, "NSAccessibility"},
+		{&OSProtocol_NSAccessibilityAdditions, "NSAccessibilityAdditions"},
+		{&OSProtocol_NSAppearanceCustomization, "NSAppearanceCustomization"},
+		{&OSProtocol_NSApplicationDelegate, "NSApplicationDelegate"},
+		{&OSProtocol_NSColorPanelResponderMethod, "NSColorPanelResponderMethod"},
+		{&OSProtocol_NSComboBoxDelegate, "NSComboBoxDelegate"},
+		{&OSProtocol_NSDraggingDestination, "NSDraggingDestination"},
+		{&OSProtocol_NSDraggingSourceDeprecated, "NSDraggingSourceDeprecated"},
+		{&OSProtocol_NSFontManagerResponderMethod, "NSFontManagerResponderMethod"},
+		{&OSProtocol_NSFontPanelValidationAdditions, "NSFontPanelValidationAdditions"},
+		{&OSProtocol_NSMenuDelegate, "NSMenuDelegate"},
+		{&OSProtocol_NSMenuValidation, "NSMenuValidation"},
+		{&OSProtocol_NSOpenSavePanelDelegate, "NSOpenSavePanelDelegate"},
+		{&OSProtocol_NSOutlineViewDataSource, "NSOutlineViewDataSource"},
+		{&OSProtocol_NSOutlineViewDelegate, "NSOutlineViewDelegate"},
+		{&OSProtocol_NSPasteboardOwner, "NSPasteboardOwner"},
+		{&OSProtocol_NSTabViewDelegate, "NSTabViewDelegate"},
+		{&OSProtocol_NSTableViewDataSource, "NSTableViewDataSource"},
+		{&OSProtocol_NSTableViewDelegate, "NSTableViewDelegate"},
+		{&OSProtocol_NSTextAttachmentCell, "NSTextAttachmentCell"},
+		{&OSProtocol_NSTextDelegate, "NSTextDelegate"},
+		{&OSProtocol_NSTextInput, "NSTextInput"},
+		{&OSProtocol_NSTextInputClient, "NSTextInputClient"},
+		{&OSProtocol_NSTextViewDelegate, "NSTextViewDelegate"},
+		{&OSProtocol_NSToolTipOwner, "NSToolTipOwner"},
+		{&OSProtocol_NSToolbarDelegate, "NSToolbarDelegate"},
+		{&OSProtocol_NSURLDownloadDelegate, "NSURLDownloadDelegate"},
+		{&OSProtocol_NSWindowDelegate, "NSWindowDelegate"},
+		{&OSProtocol_WebDocumentRepresentation, "WebDocumentRepresentation"},
+		{&OSProtocol_WebFrameLoadDelegate, "WebFrameLoadDelegate"},
+		{&OSProtocol_WebOpenPanelResultListener, "WebOpenPanelResultListener"},
+		{&OSProtocol_WebPolicyDecisionListener, "WebPolicyDecisionListener"},
+		{&OSProtocol_WebPolicyDelegate, "WebPolicyDelegate"},
+		{&OSProtocol_WebResourceLoadDelegate, "WebResourceLoadDelegate"},
+		{&OSProtocol_WebUIDelegate, "WebUIDelegate"},
+	} {
+		*e.p = OSObjc_getProtocol(e.n)
+	}
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -8856,398 +10427,6 @@ func init() {
 			}
 		}()
 		OSIS_X86_64 = (jrt.GetProperty("os.arch", "") == "x86_64")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_identity:", r)
-			}
-		}()
-		OSSel_identity = OSSel_registerName("identity")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendSearchSelection:", r)
-			}
-		}()
-		OSSel_sendSearchSelection = OSSel_registerName("sendSearchSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendCancelSelection:", r)
-			}
-		}()
-		OSSel_sendCancelSelection = OSSel_registerName("sendCancelSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendSelection:", r)
-			}
-		}()
-		OSSel_sendSelection = OSSel_registerName("sendSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendSelection_:", r)
-			}
-		}()
-		OSSel_sendSelection_ = OSSel_registerName("sendSelection:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendDoubleSelection:", r)
-			}
-		}()
-		OSSel_sendDoubleSelection = OSSel_registerName("sendDoubleSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendVerticalSelection:", r)
-			}
-		}()
-		OSSel_sendVerticalSelection = OSSel_registerName("sendVerticalSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendHorizontalSelection:", r)
-			}
-		}()
-		OSSel_sendHorizontalSelection = OSSel_registerName("sendHorizontalSelection")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_timerProc_:", r)
-			}
-		}()
-		OSSel_timerProc_ = OSSel_registerName("timerProc:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_callJava:", r)
-			}
-		}()
-		OSSel_callJava = OSSel_registerName("callJava:index:token:arg:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_callRunBeforeUnloadConfirmPanelWithMessage:", r)
-			}
-		}()
-		OSSel_callRunBeforeUnloadConfirmPanelWithMessage = OSSel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_createPanelDidEnd:", r)
-			}
-		}()
-		OSSel_createPanelDidEnd = OSSel_registerName("createPanelDidEnd:returnCode:contextInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemColorSettingsChanged_:", r)
-			}
-		}()
-		OSSel_systemColorSettingsChanged_ = OSSel_registerName("systemSettingsChanged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_screenParametersChanged_:", r)
-			}
-		}()
-		OSSel_screenParametersChanged_ = OSSel_registerName("screenParametersChanged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_panelDidEnd_returnCode_contextInfo_:", r)
-			}
-		}()
-		OSSel_panelDidEnd_returnCode_contextInfo_ = OSSel_registerName("panelDidEnd:returnCode:contextInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_updateOpenGLContext_:", r)
-			}
-		}()
-		OSSel_updateOpenGLContext_ = OSSel_registerName("updateOpenGLContext:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_overwriteExistingFileCheck:", r)
-			}
-		}()
-		OSSel_overwriteExistingFileCheck = OSSel_registerName("_overwriteExistingFileCheck:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel__drawThemeProgressArea_:", r)
-			}
-		}()
-		OSSel__drawThemeProgressArea_ = OSSel_registerName("_drawThemeProgressArea:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel__setDashboardBehavior:", r)
-			}
-		}()
-		OSSel__setDashboardBehavior = OSSel_registerName("_setDashboardBehavior:to:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebPanelAuthenticationHandler:", r)
-			}
-		}()
-		OSClass_WebPanelAuthenticationHandler = OSObjc_getClass("WebPanelAuthenticationHandler")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedHandler:", r)
-			}
-		}()
-		OSSel_sharedHandler = OSSel_registerName("sharedHandler")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_startAuthentication:", r)
-			}
-		}()
-		OSSel_startAuthentication = OSSel_registerName("startAuthentication:window:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsAnyHTTPSCertificate:", r)
-			}
-		}()
-		OSSel_setAllowsAnyHTTPSCertificate = OSSel_registerName("setAllowsAnyHTTPSCertificate:forHost:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibleHandle:", r)
-			}
-		}()
-		OSSel_accessibleHandle = OSSel_registerName("accessibleHandle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getImageView:", r)
-			}
-		}()
-		OSSel_getImageView = OSSel_registerName("getImageView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clearDeferFlushing:", r)
-			}
-		}()
-		OSSel_clearDeferFlushing = OSSel_registerName("clearDeferFlushing")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShouldExpandItem_:", r)
-			}
-		}()
-		OSSel_setShouldExpandItem_ = OSSel_registerName("setShouldExpandItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShouldScrollClipView_:", r)
-			}
-		}()
-		OSSel_setShouldScrollClipView_ = OSSel_registerName("setShouldScrollClipView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setQuota:", r)
-			}
-		}()
-		OSSel_setQuota = OSSel_registerName("setQuota:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_:", r)
-			}
-		}()
-		OSSel_webView_frame_exceededDatabaseQuotaForSecurityOrigin_database_ = OSSel_registerName("webView:frame:exceededDatabaseQuotaForSecurityOrigin:database:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginSheetModalForWindow_completionHandler_:", r)
-			}
-		}()
-		OSSel_beginSheetModalForWindow_completionHandler_ = OSSel_registerName("beginSheetModalForWindow:completionHandler:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_application_openUrls_:", r)
-			}
-		}()
-		OSSel_application_openUrls_ = OSSel_registerName("application:openUrls:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_busyButClickableCursor:", r)
-			}
-		}()
-		OSSel_busyButClickableCursor = OSSel_registerName("busyButClickableCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isSelectorExcludedFromWebScript_:", r)
-			}
-		}()
-		OSSel_isSelectorExcludedFromWebScript_ = OSSel_registerName("isSelectorExcludedFromWebScript:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webScriptNameForSelector_:", r)
-			}
-		}()
-		OSSel_webScriptNameForSelector_ = OSSel_registerName("webScriptNameForSelector:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setColor_forAttribute_:", r)
-			}
-		}()
-		OSSel_setColor_forAttribute_ = OSSel_registerName("setColor:forAttribute:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_javaRunLoopMode:", r)
-			}
-		}()
-		OSSel_javaRunLoopMode = OSSel_registerName("javaRunLoopMode")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSNull:", r)
-			}
-		}()
-		OSClass_NSNull = OSObjc_getClass("NSNull")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_null:", r)
-			}
-		}()
-		OSSel_null = OSSel_registerName("null")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cellBaselineOffset:", r)
-			}
-		}()
-		OSSel_cellBaselineOffset = OSSel_registerName("cellBaselineOffset")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsAutomaticWindowTabbing_:", r)
-			}
-		}()
-		OSSel_setAllowsAutomaticWindowTabbing_ = OSSel_registerName("setAllowsAutomaticWindowTabbing:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedContentBackgroundColor:", r)
-			}
-		}()
-		OSSel_selectedContentBackgroundColor = OSSel_registerName("selectedContentBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unemphasizedSelectedContentBackgroundColor:", r)
-			}
-		}()
-		OSSel_unemphasizedSelectedContentBackgroundColor = OSSel_registerName("unemphasizedSelectedContentBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setStyle:", r)
-			}
-		}()
-		OSSel_setStyle = OSSel_registerName("setStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setClipsToBounds_:", r)
-			}
-		}()
-		OSSel_setClipsToBounds_ = OSSel_registerName("setClipsToBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_JRSAppKitAWT:", r)
-			}
-		}()
-		OSClass_JRSAppKitAWT = OSObjc_getClass("JRSAppKitAWT")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_awtAppDelegate:", r)
-			}
-		}()
-		OSSel_awtAppDelegate = OSSel_registerName("awtAppDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSToolbarView:", r)
-			}
-		}()
-		OSClass_NSToolbarView = OSObjc_getClass("NSToolbarView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appAppearanceChanged:", r)
-			}
-		}()
-		OSSel_appAppearanceChanged = OSSel_registerName("appAppearanceChanged")
 	}()
 	func() {
 		defer func() {
@@ -9264,12014 +10443,6 @@ func init() {
 			}
 		}()
 		OSKUTTypeURL_ = NewNSStringOverload1(OSKUTTypeURL())
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_CALayer:", r)
-			}
-		}()
-		OSClass_CALayer = OSObjc_getClass("CALayer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMDocument:", r)
-			}
-		}()
-		OSClass_DOMDocument = OSObjc_getClass("DOMDocument")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMEvent:", r)
-			}
-		}()
-		OSClass_DOMEvent = OSObjc_getClass("DOMEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMKeyboardEvent:", r)
-			}
-		}()
-		OSClass_DOMKeyboardEvent = OSObjc_getClass("DOMKeyboardEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMMouseEvent:", r)
-			}
-		}()
-		OSClass_DOMMouseEvent = OSObjc_getClass("DOMMouseEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMUIEvent:", r)
-			}
-		}()
-		OSClass_DOMUIEvent = OSObjc_getClass("DOMUIEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_DOMWheelEvent:", r)
-			}
-		}()
-		OSClass_DOMWheelEvent = OSObjc_getClass("DOMWheelEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSActionCell:", r)
-			}
-		}()
-		OSClass_NSActionCell = OSObjc_getClass("NSActionCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAffineTransform:", r)
-			}
-		}()
-		OSClass_NSAffineTransform = OSObjc_getClass("NSAffineTransform")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAlert:", r)
-			}
-		}()
-		OSClass_NSAlert = OSObjc_getClass("NSAlert")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAppearance:", r)
-			}
-		}()
-		OSClass_NSAppearance = OSObjc_getClass("NSAppearance")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAppleEventDescriptor:", r)
-			}
-		}()
-		OSClass_NSAppleEventDescriptor = OSObjc_getClass("NSAppleEventDescriptor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSApplication:", r)
-			}
-		}()
-		OSClass_NSApplication = OSObjc_getClass("NSApplication")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSArray:", r)
-			}
-		}()
-		OSClass_NSArray = OSObjc_getClass("NSArray")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAttributedString:", r)
-			}
-		}()
-		OSClass_NSAttributedString = OSObjc_getClass("NSAttributedString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSAutoreleasePool:", r)
-			}
-		}()
-		OSClass_NSAutoreleasePool = OSObjc_getClass("NSAutoreleasePool")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSBezierPath:", r)
-			}
-		}()
-		OSClass_NSBezierPath = OSObjc_getClass("NSBezierPath")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSBitmapImageRep:", r)
-			}
-		}()
-		OSClass_NSBitmapImageRep = OSObjc_getClass("NSBitmapImageRep")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSBox:", r)
-			}
-		}()
-		OSClass_NSBox = OSObjc_getClass("NSBox")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSBundle:", r)
-			}
-		}()
-		OSClass_NSBundle = OSObjc_getClass("NSBundle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSButton:", r)
-			}
-		}()
-		OSClass_NSButton = OSObjc_getClass("NSButton")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSButtonCell:", r)
-			}
-		}()
-		OSClass_NSButtonCell = OSObjc_getClass("NSButtonCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSCalendarDate:", r)
-			}
-		}()
-		OSClass_NSCalendarDate = OSObjc_getClass("NSCalendarDate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSCell:", r)
-			}
-		}()
-		OSClass_NSCell = OSObjc_getClass("NSCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSClipView:", r)
-			}
-		}()
-		OSClass_NSClipView = OSObjc_getClass("NSClipView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSCoder:", r)
-			}
-		}()
-		OSClass_NSCoder = OSObjc_getClass("NSCoder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSColor:", r)
-			}
-		}()
-		OSClass_NSColor = OSObjc_getClass("NSColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSColorList:", r)
-			}
-		}()
-		OSClass_NSColorList = OSObjc_getClass("NSColorList")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSColorPanel:", r)
-			}
-		}()
-		OSClass_NSColorPanel = OSObjc_getClass("NSColorPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSColorSpace:", r)
-			}
-		}()
-		OSClass_NSColorSpace = OSObjc_getClass("NSColorSpace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSComboBox:", r)
-			}
-		}()
-		OSClass_NSComboBox = OSObjc_getClass("NSComboBox")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSComboBoxCell:", r)
-			}
-		}()
-		OSClass_NSComboBoxCell = OSObjc_getClass("NSComboBoxCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSControl:", r)
-			}
-		}()
-		OSClass_NSControl = OSObjc_getClass("NSControl")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSCursor:", r)
-			}
-		}()
-		OSClass_NSCursor = OSObjc_getClass("NSCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSData:", r)
-			}
-		}()
-		OSClass_NSData = OSObjc_getClass("NSData")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSDate:", r)
-			}
-		}()
-		OSClass_NSDate = OSObjc_getClass("NSDate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSDatePicker:", r)
-			}
-		}()
-		OSClass_NSDatePicker = OSObjc_getClass("NSDatePicker")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSDictionary:", r)
-			}
-		}()
-		OSClass_NSDictionary = OSObjc_getClass("NSDictionary")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSDirectoryEnumerator:", r)
-			}
-		}()
-		OSClass_NSDirectoryEnumerator = OSObjc_getClass("NSDirectoryEnumerator")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSDockTile:", r)
-			}
-		}()
-		OSClass_NSDockTile = OSObjc_getClass("NSDockTile")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSEnumerator:", r)
-			}
-		}()
-		OSClass_NSEnumerator = OSObjc_getClass("NSEnumerator")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSError:", r)
-			}
-		}()
-		OSClass_NSError = OSObjc_getClass("NSError")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSEvent:", r)
-			}
-		}()
-		OSClass_NSEvent = OSObjc_getClass("NSEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFileManager:", r)
-			}
-		}()
-		OSClass_NSFileManager = OSObjc_getClass("NSFileManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFileWrapper:", r)
-			}
-		}()
-		OSClass_NSFileWrapper = OSObjc_getClass("NSFileWrapper")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFont:", r)
-			}
-		}()
-		OSClass_NSFont = OSObjc_getClass("NSFont")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFontManager:", r)
-			}
-		}()
-		OSClass_NSFontManager = OSObjc_getClass("NSFontManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFontPanel:", r)
-			}
-		}()
-		OSClass_NSFontPanel = OSObjc_getClass("NSFontPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSFormatter:", r)
-			}
-		}()
-		OSClass_NSFormatter = OSObjc_getClass("NSFormatter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSGradient:", r)
-			}
-		}()
-		OSClass_NSGradient = OSObjc_getClass("NSGradient")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSGraphicsContext:", r)
-			}
-		}()
-		OSClass_NSGraphicsContext = OSObjc_getClass("NSGraphicsContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSHTTPCookie:", r)
-			}
-		}()
-		OSClass_NSHTTPCookie = OSObjc_getClass("NSHTTPCookie")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSHTTPCookieStorage:", r)
-			}
-		}()
-		OSClass_NSHTTPCookieStorage = OSObjc_getClass("NSHTTPCookieStorage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSImage:", r)
-			}
-		}()
-		OSClass_NSImage = OSObjc_getClass("NSImage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSImageRep:", r)
-			}
-		}()
-		OSClass_NSImageRep = OSObjc_getClass("NSImageRep")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSImageView:", r)
-			}
-		}()
-		OSClass_NSImageView = OSObjc_getClass("NSImageView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSIndexSet:", r)
-			}
-		}()
-		OSClass_NSIndexSet = OSObjc_getClass("NSIndexSet")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSInputManager:", r)
-			}
-		}()
-		OSClass_NSInputManager = OSObjc_getClass("NSInputManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSKeyedArchiver:", r)
-			}
-		}()
-		OSClass_NSKeyedArchiver = OSObjc_getClass("NSKeyedArchiver")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSKeyedUnarchiver:", r)
-			}
-		}()
-		OSClass_NSKeyedUnarchiver = OSObjc_getClass("NSKeyedUnarchiver")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSLayoutManager:", r)
-			}
-		}()
-		OSClass_NSLayoutManager = OSObjc_getClass("NSLayoutManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSLocale:", r)
-			}
-		}()
-		OSClass_NSLocale = OSObjc_getClass("NSLocale")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMenu:", r)
-			}
-		}()
-		OSClass_NSMenu = OSObjc_getClass("NSMenu")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMenuItem:", r)
-			}
-		}()
-		OSClass_NSMenuItem = OSObjc_getClass("NSMenuItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableArray:", r)
-			}
-		}()
-		OSClass_NSMutableArray = OSObjc_getClass("NSMutableArray")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableAttributedString:", r)
-			}
-		}()
-		OSClass_NSMutableAttributedString = OSObjc_getClass("NSMutableAttributedString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableDictionary:", r)
-			}
-		}()
-		OSClass_NSMutableDictionary = OSObjc_getClass("NSMutableDictionary")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableIndexSet:", r)
-			}
-		}()
-		OSClass_NSMutableIndexSet = OSObjc_getClass("NSMutableIndexSet")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableParagraphStyle:", r)
-			}
-		}()
-		OSClass_NSMutableParagraphStyle = OSObjc_getClass("NSMutableParagraphStyle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableSet:", r)
-			}
-		}()
-		OSClass_NSMutableSet = OSObjc_getClass("NSMutableSet")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableString:", r)
-			}
-		}()
-		OSClass_NSMutableString = OSObjc_getClass("NSMutableString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSMutableURLRequest:", r)
-			}
-		}()
-		OSClass_NSMutableURLRequest = OSObjc_getClass("NSMutableURLRequest")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSNotification:", r)
-			}
-		}()
-		OSClass_NSNotification = OSObjc_getClass("NSNotification")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSNotificationCenter:", r)
-			}
-		}()
-		OSClass_NSNotificationCenter = OSObjc_getClass("NSNotificationCenter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSNumber:", r)
-			}
-		}()
-		OSClass_NSNumber = OSObjc_getClass("NSNumber")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSNumberFormatter:", r)
-			}
-		}()
-		OSClass_NSNumberFormatter = OSObjc_getClass("NSNumberFormatter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSObject:", r)
-			}
-		}()
-		OSClass_NSObject = OSObjc_getClass("NSObject")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSOpenGLContext:", r)
-			}
-		}()
-		OSClass_NSOpenGLContext = OSObjc_getClass("NSOpenGLContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSOpenGLPixelFormat:", r)
-			}
-		}()
-		OSClass_NSOpenGLPixelFormat = OSObjc_getClass("NSOpenGLPixelFormat")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSOpenPanel:", r)
-			}
-		}()
-		OSClass_NSOpenPanel = OSObjc_getClass("NSOpenPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSOutlineView:", r)
-			}
-		}()
-		OSClass_NSOutlineView = OSObjc_getClass("NSOutlineView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPanel:", r)
-			}
-		}()
-		OSClass_NSPanel = OSObjc_getClass("NSPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSParagraphStyle:", r)
-			}
-		}()
-		OSClass_NSParagraphStyle = OSObjc_getClass("NSParagraphStyle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPasteboard:", r)
-			}
-		}()
-		OSClass_NSPasteboard = OSObjc_getClass("NSPasteboard")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPopUpButton:", r)
-			}
-		}()
-		OSClass_NSPopUpButton = OSObjc_getClass("NSPopUpButton")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPrintInfo:", r)
-			}
-		}()
-		OSClass_NSPrintInfo = OSObjc_getClass("NSPrintInfo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPrintOperation:", r)
-			}
-		}()
-		OSClass_NSPrintOperation = OSObjc_getClass("NSPrintOperation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPrintPanel:", r)
-			}
-		}()
-		OSClass_NSPrintPanel = OSObjc_getClass("NSPrintPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSPrinter:", r)
-			}
-		}()
-		OSClass_NSPrinter = OSObjc_getClass("NSPrinter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSProcessInfo:", r)
-			}
-		}()
-		OSClass_NSProcessInfo = OSObjc_getClass("NSProcessInfo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSProgressIndicator:", r)
-			}
-		}()
-		OSClass_NSProgressIndicator = OSObjc_getClass("NSProgressIndicator")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSResponder:", r)
-			}
-		}()
-		OSClass_NSResponder = OSObjc_getClass("NSResponder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSRunLoop:", r)
-			}
-		}()
-		OSClass_NSRunLoop = OSObjc_getClass("NSRunLoop")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSavePanel:", r)
-			}
-		}()
-		OSClass_NSSavePanel = OSObjc_getClass("NSSavePanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSScreen:", r)
-			}
-		}()
-		OSClass_NSScreen = OSObjc_getClass("NSScreen")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSScrollView:", r)
-			}
-		}()
-		OSClass_NSScrollView = OSObjc_getClass("NSScrollView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSScroller:", r)
-			}
-		}()
-		OSClass_NSScroller = OSObjc_getClass("NSScroller")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSearchField:", r)
-			}
-		}()
-		OSClass_NSSearchField = OSObjc_getClass("NSSearchField")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSearchFieldCell:", r)
-			}
-		}()
-		OSClass_NSSearchFieldCell = OSObjc_getClass("NSSearchFieldCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSecureTextField:", r)
-			}
-		}()
-		OSClass_NSSecureTextField = OSObjc_getClass("NSSecureTextField")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSet:", r)
-			}
-		}()
-		OSClass_NSSet = OSObjc_getClass("NSSet")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSSlider:", r)
-			}
-		}()
-		OSClass_NSSlider = OSObjc_getClass("NSSlider")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSStatusBar:", r)
-			}
-		}()
-		OSClass_NSStatusBar = OSObjc_getClass("NSStatusBar")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSStatusItem:", r)
-			}
-		}()
-		OSClass_NSStatusItem = OSObjc_getClass("NSStatusItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSStepper:", r)
-			}
-		}()
-		OSClass_NSStepper = OSObjc_getClass("NSStepper")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSString:", r)
-			}
-		}()
-		OSClass_NSString = OSObjc_getClass("NSString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTabView:", r)
-			}
-		}()
-		OSClass_NSTabView = OSObjc_getClass("NSTabView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTabViewItem:", r)
-			}
-		}()
-		OSClass_NSTabViewItem = OSObjc_getClass("NSTabViewItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTableColumn:", r)
-			}
-		}()
-		OSClass_NSTableColumn = OSObjc_getClass("NSTableColumn")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTableHeaderCell:", r)
-			}
-		}()
-		OSClass_NSTableHeaderCell = OSObjc_getClass("NSTableHeaderCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTableHeaderView:", r)
-			}
-		}()
-		OSClass_NSTableHeaderView = OSObjc_getClass("NSTableHeaderView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTableView:", r)
-			}
-		}()
-		OSClass_NSTableView = OSObjc_getClass("NSTableView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSText:", r)
-			}
-		}()
-		OSClass_NSText = OSObjc_getClass("NSText")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextAttachment:", r)
-			}
-		}()
-		OSClass_NSTextAttachment = OSObjc_getClass("NSTextAttachment")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextContainer:", r)
-			}
-		}()
-		OSClass_NSTextContainer = OSObjc_getClass("NSTextContainer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextField:", r)
-			}
-		}()
-		OSClass_NSTextField = OSObjc_getClass("NSTextField")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextFieldCell:", r)
-			}
-		}()
-		OSClass_NSTextFieldCell = OSObjc_getClass("NSTextFieldCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextStorage:", r)
-			}
-		}()
-		OSClass_NSTextStorage = OSObjc_getClass("NSTextStorage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextTab:", r)
-			}
-		}()
-		OSClass_NSTextTab = OSObjc_getClass("NSTextTab")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTextView:", r)
-			}
-		}()
-		OSClass_NSTextView = OSObjc_getClass("NSTextView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSThread:", r)
-			}
-		}()
-		OSClass_NSThread = OSObjc_getClass("NSThread")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTimeZone:", r)
-			}
-		}()
-		OSClass_NSTimeZone = OSObjc_getClass("NSTimeZone")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTimer:", r)
-			}
-		}()
-		OSClass_NSTimer = OSObjc_getClass("NSTimer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSToolbar:", r)
-			}
-		}()
-		OSClass_NSToolbar = OSObjc_getClass("NSToolbar")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSToolbarItem:", r)
-			}
-		}()
-		OSClass_NSToolbarItem = OSObjc_getClass("NSToolbarItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTouch:", r)
-			}
-		}()
-		OSClass_NSTouch = OSObjc_getClass("NSTouch")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTrackingArea:", r)
-			}
-		}()
-		OSClass_NSTrackingArea = OSObjc_getClass("NSTrackingArea")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSTypesetter:", r)
-			}
-		}()
-		OSClass_NSTypesetter = OSObjc_getClass("NSTypesetter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURL:", r)
-			}
-		}()
-		OSClass_NSURL = OSObjc_getClass("NSURL")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURLAuthenticationChallenge:", r)
-			}
-		}()
-		OSClass_NSURLAuthenticationChallenge = OSObjc_getClass("NSURLAuthenticationChallenge")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURLCredential:", r)
-			}
-		}()
-		OSClass_NSURLCredential = OSObjc_getClass("NSURLCredential")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURLDownload:", r)
-			}
-		}()
-		OSClass_NSURLDownload = OSObjc_getClass("NSURLDownload")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURLProtectionSpace:", r)
-			}
-		}()
-		OSClass_NSURLProtectionSpace = OSObjc_getClass("NSURLProtectionSpace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSURLRequest:", r)
-			}
-		}()
-		OSClass_NSURLRequest = OSObjc_getClass("NSURLRequest")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSUndoManager:", r)
-			}
-		}()
-		OSClass_NSUndoManager = OSObjc_getClass("NSUndoManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSUserDefaults:", r)
-			}
-		}()
-		OSClass_NSUserDefaults = OSObjc_getClass("NSUserDefaults")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSValue:", r)
-			}
-		}()
-		OSClass_NSValue = OSObjc_getClass("NSValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSView:", r)
-			}
-		}()
-		OSClass_NSView = OSObjc_getClass("NSView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSWindow:", r)
-			}
-		}()
-		OSClass_NSWindow = OSObjc_getClass("NSWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_NSWorkspace:", r)
-			}
-		}()
-		OSClass_NSWorkspace = OSObjc_getClass("NSWorkspace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_SFCertificatePanel:", r)
-			}
-		}()
-		OSClass_SFCertificatePanel = OSObjc_getClass("SFCertificatePanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_SFCertificateTrustPanel:", r)
-			}
-		}()
-		OSClass_SFCertificateTrustPanel = OSObjc_getClass("SFCertificateTrustPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_UTType:", r)
-			}
-		}()
-		OSClass_UTType = OSObjc_getClass("UTType")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebDataSource:", r)
-			}
-		}()
-		OSClass_WebDataSource = OSObjc_getClass("WebDataSource")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebFrame:", r)
-			}
-		}()
-		OSClass_WebFrame = OSObjc_getClass("WebFrame")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebFrameView:", r)
-			}
-		}()
-		OSClass_WebFrameView = OSObjc_getClass("WebFrameView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebPreferences:", r)
-			}
-		}()
-		OSClass_WebPreferences = OSObjc_getClass("WebPreferences")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebScriptObject:", r)
-			}
-		}()
-		OSClass_WebScriptObject = OSObjc_getClass("WebScriptObject")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebUndefined:", r)
-			}
-		}()
-		OSClass_WebUndefined = OSObjc_getClass("WebUndefined")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSClass_WebView:", r)
-			}
-		}()
-		OSClass_WebView = OSObjc_getClass("WebView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSAccessibility:", r)
-			}
-		}()
-		OSProtocol_NSAccessibility = OSObjc_getProtocol("NSAccessibility")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSAccessibilityAdditions:", r)
-			}
-		}()
-		OSProtocol_NSAccessibilityAdditions = OSObjc_getProtocol("NSAccessibilityAdditions")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSAppearanceCustomization:", r)
-			}
-		}()
-		OSProtocol_NSAppearanceCustomization = OSObjc_getProtocol("NSAppearanceCustomization")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSApplicationDelegate:", r)
-			}
-		}()
-		OSProtocol_NSApplicationDelegate = OSObjc_getProtocol("NSApplicationDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSColorPanelResponderMethod:", r)
-			}
-		}()
-		OSProtocol_NSColorPanelResponderMethod = OSObjc_getProtocol("NSColorPanelResponderMethod")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSComboBoxDelegate:", r)
-			}
-		}()
-		OSProtocol_NSComboBoxDelegate = OSObjc_getProtocol("NSComboBoxDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSDraggingDestination:", r)
-			}
-		}()
-		OSProtocol_NSDraggingDestination = OSObjc_getProtocol("NSDraggingDestination")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSDraggingSourceDeprecated:", r)
-			}
-		}()
-		OSProtocol_NSDraggingSourceDeprecated = OSObjc_getProtocol("NSDraggingSourceDeprecated")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSFontManagerResponderMethod:", r)
-			}
-		}()
-		OSProtocol_NSFontManagerResponderMethod = OSObjc_getProtocol("NSFontManagerResponderMethod")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSFontPanelValidationAdditions:", r)
-			}
-		}()
-		OSProtocol_NSFontPanelValidationAdditions = OSObjc_getProtocol("NSFontPanelValidationAdditions")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSMenuDelegate:", r)
-			}
-		}()
-		OSProtocol_NSMenuDelegate = OSObjc_getProtocol("NSMenuDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSMenuValidation:", r)
-			}
-		}()
-		OSProtocol_NSMenuValidation = OSObjc_getProtocol("NSMenuValidation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSOpenSavePanelDelegate:", r)
-			}
-		}()
-		OSProtocol_NSOpenSavePanelDelegate = OSObjc_getProtocol("NSOpenSavePanelDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSOutlineViewDataSource:", r)
-			}
-		}()
-		OSProtocol_NSOutlineViewDataSource = OSObjc_getProtocol("NSOutlineViewDataSource")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSOutlineViewDelegate:", r)
-			}
-		}()
-		OSProtocol_NSOutlineViewDelegate = OSObjc_getProtocol("NSOutlineViewDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSPasteboardOwner:", r)
-			}
-		}()
-		OSProtocol_NSPasteboardOwner = OSObjc_getProtocol("NSPasteboardOwner")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTabViewDelegate:", r)
-			}
-		}()
-		OSProtocol_NSTabViewDelegate = OSObjc_getProtocol("NSTabViewDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTableViewDataSource:", r)
-			}
-		}()
-		OSProtocol_NSTableViewDataSource = OSObjc_getProtocol("NSTableViewDataSource")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTableViewDelegate:", r)
-			}
-		}()
-		OSProtocol_NSTableViewDelegate = OSObjc_getProtocol("NSTableViewDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTextAttachmentCell:", r)
-			}
-		}()
-		OSProtocol_NSTextAttachmentCell = OSObjc_getProtocol("NSTextAttachmentCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTextDelegate:", r)
-			}
-		}()
-		OSProtocol_NSTextDelegate = OSObjc_getProtocol("NSTextDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTextInput:", r)
-			}
-		}()
-		OSProtocol_NSTextInput = OSObjc_getProtocol("NSTextInput")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTextInputClient:", r)
-			}
-		}()
-		OSProtocol_NSTextInputClient = OSObjc_getProtocol("NSTextInputClient")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSTextViewDelegate:", r)
-			}
-		}()
-		OSProtocol_NSTextViewDelegate = OSObjc_getProtocol("NSTextViewDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSToolTipOwner:", r)
-			}
-		}()
-		OSProtocol_NSToolTipOwner = OSObjc_getProtocol("NSToolTipOwner")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSToolbarDelegate:", r)
-			}
-		}()
-		OSProtocol_NSToolbarDelegate = OSObjc_getProtocol("NSToolbarDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSURLDownloadDelegate:", r)
-			}
-		}()
-		OSProtocol_NSURLDownloadDelegate = OSObjc_getProtocol("NSURLDownloadDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_NSWindowDelegate:", r)
-			}
-		}()
-		OSProtocol_NSWindowDelegate = OSObjc_getProtocol("NSWindowDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebDocumentRepresentation:", r)
-			}
-		}()
-		OSProtocol_WebDocumentRepresentation = OSObjc_getProtocol("WebDocumentRepresentation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebFrameLoadDelegate:", r)
-			}
-		}()
-		OSProtocol_WebFrameLoadDelegate = OSObjc_getProtocol("WebFrameLoadDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebOpenPanelResultListener:", r)
-			}
-		}()
-		OSProtocol_WebOpenPanelResultListener = OSObjc_getProtocol("WebOpenPanelResultListener")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebPolicyDecisionListener:", r)
-			}
-		}()
-		OSProtocol_WebPolicyDecisionListener = OSObjc_getProtocol("WebPolicyDecisionListener")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebPolicyDelegate:", r)
-			}
-		}()
-		OSProtocol_WebPolicyDelegate = OSObjc_getProtocol("WebPolicyDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebResourceLoadDelegate:", r)
-			}
-		}()
-		OSProtocol_WebResourceLoadDelegate = OSObjc_getProtocol("WebResourceLoadDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSProtocol_WebUIDelegate:", r)
-			}
-		}()
-		OSProtocol_WebUIDelegate = OSObjc_getProtocol("WebUIDelegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_CGEvent:", r)
-			}
-		}()
-		OSSel_CGEvent = OSSel_registerName("CGEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_DOMDocument:", r)
-			}
-		}()
-		OSSel_DOMDocument = OSSel_registerName("DOMDocument")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_IBeamCursor:", r)
-			}
-		}()
-		OSSel_IBeamCursor = OSSel_registerName("IBeamCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_PMPrintSession:", r)
-			}
-		}()
-		OSSel_PMPrintSession = OSSel_registerName("PMPrintSession")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_PMPrintSettings:", r)
-			}
-		}()
-		OSSel_PMPrintSettings = OSSel_registerName("PMPrintSettings")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_TIFFRepresentation:", r)
-			}
-		}()
-		OSSel_TIFFRepresentation = OSSel_registerName("TIFFRepresentation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_URL:", r)
-			}
-		}()
-		OSSel_URL = OSSel_registerName("URL")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_URLForApplicationToOpenContentType_:", r)
-			}
-		}()
-		OSSel_URLForApplicationToOpenContentType_ = OSSel_registerName("URLForApplicationToOpenContentType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_URLForApplicationToOpenURL_:", r)
-			}
-		}()
-		OSSel_URLForApplicationToOpenURL_ = OSSel_registerName("URLForApplicationToOpenURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_URLFromPasteboard_:", r)
-			}
-		}()
-		OSSel_URLFromPasteboard_ = OSSel_registerName("URLFromPasteboard:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_URLWithString_:", r)
-			}
-		}()
-		OSSel_URLWithString_ = OSSel_registerName("URLWithString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_UTF8String:", r)
-			}
-		}()
-		OSSel_UTF8String = OSSel_registerName("UTF8String")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_abortEditing:", r)
-			}
-		}()
-		OSSel_abortEditing = OSSel_registerName("abortEditing")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_absoluteString:", r)
-			}
-		}()
-		OSSel_absoluteString = OSSel_registerName("absoluteString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_acceptsFirstMouse_:", r)
-			}
-		}()
-		OSSel_acceptsFirstMouse_ = OSSel_registerName("acceptsFirstMouse:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_acceptsFirstResponder:", r)
-			}
-		}()
-		OSSel_acceptsFirstResponder = OSSel_registerName("acceptsFirstResponder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityActionDescription_:", r)
-			}
-		}()
-		OSSel_accessibilityActionDescription_ = OSSel_registerName("accessibilityActionDescription:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityActionNames:", r)
-			}
-		}()
-		OSSel_accessibilityActionNames = OSSel_registerName("accessibilityActionNames")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityAttributeNames:", r)
-			}
-		}()
-		OSSel_accessibilityAttributeNames = OSSel_registerName("accessibilityAttributeNames")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityAttributeValue_:", r)
-			}
-		}()
-		OSSel_accessibilityAttributeValue_ = OSSel_registerName("accessibilityAttributeValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityAttributeValue_forParameter_:", r)
-			}
-		}()
-		OSSel_accessibilityAttributeValue_forParameter_ = OSSel_registerName("accessibilityAttributeValue:forParameter:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityFocusedUIElement:", r)
-			}
-		}()
-		OSSel_accessibilityFocusedUIElement = OSSel_registerName("accessibilityFocusedUIElement")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityHitTest_:", r)
-			}
-		}()
-		OSSel_accessibilityHitTest_ = OSSel_registerName("accessibilityHitTest:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityIsAttributeSettable_:", r)
-			}
-		}()
-		OSSel_accessibilityIsAttributeSettable_ = OSSel_registerName("accessibilityIsAttributeSettable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityIsIgnored:", r)
-			}
-		}()
-		OSSel_accessibilityIsIgnored = OSSel_registerName("accessibilityIsIgnored")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityParameterizedAttributeNames:", r)
-			}
-		}()
-		OSSel_accessibilityParameterizedAttributeNames = OSSel_registerName("accessibilityParameterizedAttributeNames")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilityPerformAction_:", r)
-			}
-		}()
-		OSSel_accessibilityPerformAction_ = OSSel_registerName("accessibilityPerformAction:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilitySetOverrideValue_forAttribute_:", r)
-			}
-		}()
-		OSSel_accessibilitySetOverrideValue_forAttribute_ = OSSel_registerName("accessibilitySetOverrideValue:forAttribute:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_accessibilitySetValue_forAttribute_:", r)
-			}
-		}()
-		OSSel_accessibilitySetValue_forAttribute_ = OSSel_registerName("accessibilitySetValue:forAttribute:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_action:", r)
-			}
-		}()
-		OSSel_action = OSSel_registerName("action")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_activateIgnoringOtherApps_:", r)
-			}
-		}()
-		OSSel_activateIgnoringOtherApps_ = OSSel_registerName("activateIgnoringOtherApps:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addAttribute_value_range_:", r)
-			}
-		}()
-		OSSel_addAttribute_value_range_ = OSSel_registerName("addAttribute:value:range:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addButtonWithTitle_:", r)
-			}
-		}()
-		OSSel_addButtonWithTitle_ = OSSel_registerName("addButtonWithTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addChildWindow_ordered_:", r)
-			}
-		}()
-		OSSel_addChildWindow_ordered_ = OSSel_registerName("addChildWindow:ordered:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addClip:", r)
-			}
-		}()
-		OSSel_addClip = OSSel_registerName("addClip")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addEventListener_listener_useCapture_:", r)
-			}
-		}()
-		OSSel_addEventListener_listener_useCapture_ = OSSel_registerName("addEventListener:listener:useCapture:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addIndex_:", r)
-			}
-		}()
-		OSSel_addIndex_ = OSSel_registerName("addIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addItem_:", r)
-			}
-		}()
-		OSSel_addItem_ = OSSel_registerName("addItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addItemWithObjectValue_:", r)
-			}
-		}()
-		OSSel_addItemWithObjectValue_ = OSSel_registerName("addItemWithObjectValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addItemWithTitle_action_keyEquivalent_:", r)
-			}
-		}()
-		OSSel_addItemWithTitle_action_keyEquivalent_ = OSSel_registerName("addItemWithTitle:action:keyEquivalent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addLayoutManager_:", r)
-			}
-		}()
-		OSSel_addLayoutManager_ = OSSel_registerName("addLayoutManager:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addObject_:", r)
-			}
-		}()
-		OSSel_addObject_ = OSSel_registerName("addObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addObjectsFromArray_:", r)
-			}
-		}()
-		OSSel_addObjectsFromArray_ = OSSel_registerName("addObjectsFromArray:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addObserver_selector_name_object_:", r)
-			}
-		}()
-		OSSel_addObserver_selector_name_object_ = OSSel_registerName("addObserver:selector:name:object:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addRepresentation_:", r)
-			}
-		}()
-		OSSel_addRepresentation_ = OSSel_registerName("addRepresentation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addSubview_:", r)
-			}
-		}()
-		OSSel_addSubview_ = OSSel_registerName("addSubview:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addSubview_positioned_relativeTo_:", r)
-			}
-		}()
-		OSSel_addSubview_positioned_relativeTo_ = OSSel_registerName("addSubview:positioned:relativeTo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTabStop_:", r)
-			}
-		}()
-		OSSel_addTabStop_ = OSSel_registerName("addTabStop:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTableColumn_:", r)
-			}
-		}()
-		OSSel_addTableColumn_ = OSSel_registerName("addTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTemporaryAttribute_value_forCharacterRange_:", r)
-			}
-		}()
-		OSSel_addTemporaryAttribute_value_forCharacterRange_ = OSSel_registerName("addTemporaryAttribute:value:forCharacterRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTextContainer_:", r)
-			}
-		}()
-		OSSel_addTextContainer_ = OSSel_registerName("addTextContainer:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTimer_forMode_:", r)
-			}
-		}()
-		OSSel_addTimer_forMode_ = OSSel_registerName("addTimer:forMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addToolTipRect_owner_userData_:", r)
-			}
-		}()
-		OSSel_addToolTipRect_owner_userData_ = OSSel_registerName("addToolTipRect:owner:userData:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_addTypes_owner_:", r)
-			}
-		}()
-		OSSel_addTypes_owner_ = OSSel_registerName("addTypes:owner:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alignment:", r)
-			}
-		}()
-		OSSel_alignment = OSSel_registerName("alignment")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_allKeys:", r)
-			}
-		}()
-		OSSel_allKeys = OSSel_registerName("allKeys")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_allObjects:", r)
-			}
-		}()
-		OSSel_allObjects = OSSel_registerName("allObjects")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alloc:", r)
-			}
-		}()
-		OSSel_alloc = OSSel_registerName("alloc")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alphaComponent:", r)
-			}
-		}()
-		OSSel_alphaComponent = OSSel_registerName("alphaComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alphaValue:", r)
-			}
-		}()
-		OSSel_alphaValue = OSSel_registerName("alphaValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_altKey:", r)
-			}
-		}()
-		OSSel_altKey = OSSel_registerName("altKey")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alternateSelectedControlColor:", r)
-			}
-		}()
-		OSSel_alternateSelectedControlColor = OSSel_registerName("alternateSelectedControlColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_alternateSelectedControlTextColor:", r)
-			}
-		}()
-		OSSel_alternateSelectedControlTextColor = OSSel_registerName("alternateSelectedControlTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appearanceNamed_:", r)
-			}
-		}()
-		OSSel_appearanceNamed_ = OSSel_registerName("appearanceNamed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendAttributedString_:", r)
-			}
-		}()
-		OSSel_appendAttributedString_ = OSSel_registerName("appendAttributedString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPath_:", r)
-			}
-		}()
-		OSSel_appendBezierPath_ = OSSel_registerName("appendBezierPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_:", r)
-			}
-		}()
-		OSSel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_ = OSSel_registerName("appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:clockwise:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPathWithGlyphs_count_inFont_:", r)
-			}
-		}()
-		OSSel_appendBezierPathWithGlyphs_count_inFont_ = OSSel_registerName("appendBezierPathWithGlyphs:count:inFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPathWithOvalInRect_:", r)
-			}
-		}()
-		OSSel_appendBezierPathWithOvalInRect_ = OSSel_registerName("appendBezierPathWithOvalInRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPathWithRect_:", r)
-			}
-		}()
-		OSSel_appendBezierPathWithRect_ = OSSel_registerName("appendBezierPathWithRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendBezierPathWithRoundedRect_xRadius_yRadius_:", r)
-			}
-		}()
-		OSSel_appendBezierPathWithRoundedRect_xRadius_yRadius_ = OSSel_registerName("appendBezierPathWithRoundedRect:xRadius:yRadius:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_appendString_:", r)
-			}
-		}()
-		OSSel_appendString_ = OSSel_registerName("appendString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_application_openFile_:", r)
-			}
-		}()
-		OSSel_application_openFile_ = OSSel_registerName("application:openFile:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_application_openFiles_:", r)
-			}
-		}()
-		OSSel_application_openFiles_ = OSSel_registerName("application:openFiles:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationDidBecomeActive_:", r)
-			}
-		}()
-		OSSel_applicationDidBecomeActive_ = OSSel_registerName("applicationDidBecomeActive:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationDidFinishLaunching_:", r)
-			}
-		}()
-		OSSel_applicationDidFinishLaunching_ = OSSel_registerName("applicationDidFinishLaunching:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationDidResignActive_:", r)
-			}
-		}()
-		OSSel_applicationDidResignActive_ = OSSel_registerName("applicationDidResignActive:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationDockMenu_:", r)
-			}
-		}()
-		OSSel_applicationDockMenu_ = OSSel_registerName("applicationDockMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationIconImage:", r)
-			}
-		}()
-		OSSel_applicationIconImage = OSSel_registerName("applicationIconImage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationShouldHandleReopen_hasVisibleWindows_:", r)
-			}
-		}()
-		OSSel_applicationShouldHandleReopen_hasVisibleWindows_ = OSSel_registerName("applicationShouldHandleReopen:hasVisibleWindows:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationShouldTerminate_:", r)
-			}
-		}()
-		OSSel_applicationShouldTerminate_ = OSSel_registerName("applicationShouldTerminate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_applicationWillFinishLaunching_:", r)
-			}
-		}()
-		OSSel_applicationWillFinishLaunching_ = OSSel_registerName("applicationWillFinishLaunching:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_archivedDataWithRootObject_:", r)
-			}
-		}()
-		OSSel_archivedDataWithRootObject_ = OSSel_registerName("archivedDataWithRootObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_areCursorRectsEnabled:", r)
-			}
-		}()
-		OSSel_areCursorRectsEnabled = OSSel_registerName("areCursorRectsEnabled")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_arrangeInFront_:", r)
-			}
-		}()
-		OSSel_arrangeInFront_ = OSSel_registerName("arrangeInFront:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_array:", r)
-			}
-		}()
-		OSSel_array = OSSel_registerName("array")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_arrayWithCapacity_:", r)
-			}
-		}()
-		OSSel_arrayWithCapacity_ = OSSel_registerName("arrayWithCapacity:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_arrayWithObject_:", r)
-			}
-		}()
-		OSSel_arrayWithObject_ = OSSel_registerName("arrayWithObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_arrowCursor:", r)
-			}
-		}()
-		OSSel_arrowCursor = OSSel_registerName("arrowCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_ascender:", r)
-			}
-		}()
-		OSSel_ascender = OSSel_registerName("ascender")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attachColorList_:", r)
-			}
-		}()
-		OSSel_attachColorList_ = OSSel_registerName("attachColorList:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attachment:", r)
-			}
-		}()
-		OSSel_attachment = OSSel_registerName("attachment")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attribute_atIndex_effectiveRange_:", r)
-			}
-		}()
-		OSSel_attribute_atIndex_effectiveRange_ = OSSel_registerName("attribute:atIndex:effectiveRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attributedStringValue:", r)
-			}
-		}()
-		OSSel_attributedStringValue = OSSel_registerName("attributedStringValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attributedSubstringFromRange_:", r)
-			}
-		}()
-		OSSel_attributedSubstringFromRange_ = OSSel_registerName("attributedSubstringFromRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attributedTitle:", r)
-			}
-		}()
-		OSSel_attributedTitle = OSSel_registerName("attributedTitle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_attributesAtIndex_longestEffectiveRange_inRange_:", r)
-			}
-		}()
-		OSSel_attributesAtIndex_longestEffectiveRange_inRange_ = OSSel_registerName("attributesAtIndex:longestEffectiveRange:inRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_autorelease:", r)
-			}
-		}()
-		OSSel_autorelease = OSSel_registerName("autorelease")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_availableFontFamilies:", r)
-			}
-		}()
-		OSSel_availableFontFamilies = OSSel_registerName("availableFontFamilies")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_availableMembersOfFontFamily_:", r)
-			}
-		}()
-		OSSel_availableMembersOfFontFamily_ = OSSel_registerName("availableMembersOfFontFamily:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_availableTypeFromArray_:", r)
-			}
-		}()
-		OSSel_availableTypeFromArray_ = OSSel_registerName("availableTypeFromArray:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_backingScaleFactor:", r)
-			}
-		}()
-		OSSel_backingScaleFactor = OSSel_registerName("backingScaleFactor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_badgeLabel:", r)
-			}
-		}()
-		OSSel_badgeLabel = OSSel_registerName("badgeLabel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_baselineOffsetInLayoutManager_glyphIndex_:", r)
-			}
-		}()
-		OSSel_baselineOffsetInLayoutManager_glyphIndex_ = OSSel_registerName("baselineOffsetInLayoutManager:glyphIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_becomeFirstResponder:", r)
-			}
-		}()
-		OSSel_becomeFirstResponder = OSSel_registerName("becomeFirstResponder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_becomeKeyWindow:", r)
-			}
-		}()
-		OSSel_becomeKeyWindow = OSSel_registerName("becomeKeyWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginDocument:", r)
-			}
-		}()
-		OSSel_beginDocument = OSSel_registerName("beginDocument")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginEditing:", r)
-			}
-		}()
-		OSSel_beginEditing = OSSel_registerName("beginEditing")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginPageInRect_atPlacement_:", r)
-			}
-		}()
-		OSSel_beginPageInRect_atPlacement_ = OSSel_registerName("beginPageInRect:atPlacement:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_:", r)
-			}
-		}()
-		OSSel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_ = OSSel_registerName("beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_:", r)
-			}
-		}()
-		OSSel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_ = OSSel_registerName("beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_:", r)
-			}
-		}()
-		OSSel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_ = OSSel_registerName("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_:", r)
-			}
-		}()
-		OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_ = OSSel_registerName("beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_beginUndoGrouping:", r)
-			}
-		}()
-		OSSel_beginUndoGrouping = OSSel_registerName("beginUndoGrouping")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bestRepresentationForDevice_:", r)
-			}
-		}()
-		OSSel_bestRepresentationForDevice_ = OSSel_registerName("bestRepresentationForDevice:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bezelStyle:", r)
-			}
-		}()
-		OSSel_bezelStyle = OSSel_registerName("bezelStyle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bezierPath:", r)
-			}
-		}()
-		OSSel_bezierPath = OSSel_registerName("bezierPath")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bezierPathByFlatteningPath:", r)
-			}
-		}()
-		OSSel_bezierPathByFlatteningPath = OSSel_registerName("bezierPathByFlatteningPath")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bezierPathWithRect_:", r)
-			}
-		}()
-		OSSel_bezierPathWithRect_ = OSSel_registerName("bezierPathWithRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bezierPathWithRoundedRect_xRadius_yRadius_:", r)
-			}
-		}()
-		OSSel_bezierPathWithRoundedRect_xRadius_yRadius_ = OSSel_registerName("bezierPathWithRoundedRect:xRadius:yRadius:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bitmapData:", r)
-			}
-		}()
-		OSSel_bitmapData = OSSel_registerName("bitmapData")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bitmapFormat:", r)
-			}
-		}()
-		OSSel_bitmapFormat = OSSel_registerName("bitmapFormat")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bitmapImageRepForCachingDisplayInRect_:", r)
-			}
-		}()
-		OSSel_bitmapImageRepForCachingDisplayInRect_ = OSSel_registerName("bitmapImageRepForCachingDisplayInRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bitsPerPixel:", r)
-			}
-		}()
-		OSSel_bitsPerPixel = OSSel_registerName("bitsPerPixel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bitsPerSample:", r)
-			}
-		}()
-		OSSel_bitsPerSample = OSSel_registerName("bitsPerSample")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_blackColor:", r)
-			}
-		}()
-		OSSel_blackColor = OSSel_registerName("blackColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_blueComponent:", r)
-			}
-		}()
-		OSSel_blueComponent = OSSel_registerName("blueComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_boldSystemFontOfSize_:", r)
-			}
-		}()
-		OSSel_boldSystemFontOfSize_ = OSSel_registerName("boldSystemFontOfSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_boolValue:", r)
-			}
-		}()
-		OSSel_boolValue = OSSel_registerName("boolValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_borderWidth:", r)
-			}
-		}()
-		OSSel_borderWidth = OSSel_registerName("borderWidth")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_boundingRectForGlyphRange_inTextContainer_:", r)
-			}
-		}()
-		OSSel_boundingRectForGlyphRange_inTextContainer_ = OSSel_registerName("boundingRectForGlyphRange:inTextContainer:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_boundingRectWithSize_options_:", r)
-			}
-		}()
-		OSSel_boundingRectWithSize_options_ = OSSel_registerName("boundingRectWithSize:options:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bounds:", r)
-			}
-		}()
-		OSSel_bounds = OSSel_registerName("bounds")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bundleIdentifier:", r)
-			}
-		}()
-		OSSel_bundleIdentifier = OSSel_registerName("bundleIdentifier")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bundlePath:", r)
-			}
-		}()
-		OSSel_bundlePath = OSSel_registerName("bundlePath")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bundleWithIdentifier_:", r)
-			}
-		}()
-		OSSel_bundleWithIdentifier_ = OSSel_registerName("bundleWithIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bundleWithPath_:", r)
-			}
-		}()
-		OSSel_bundleWithPath_ = OSSel_registerName("bundleWithPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_button:", r)
-			}
-		}()
-		OSSel_button = OSSel_registerName("button")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_buttonNumber:", r)
-			}
-		}()
-		OSSel_buttonNumber = OSSel_registerName("buttonNumber")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bytes:", r)
-			}
-		}()
-		OSSel_bytes = OSSel_registerName("bytes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_bytesPerRow:", r)
-			}
-		}()
-		OSSel_bytesPerRow = OSSel_registerName("bytesPerRow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cacheDisplayInRect_toBitmapImageRep_:", r)
-			}
-		}()
-		OSSel_cacheDisplayInRect_toBitmapImageRep_ = OSSel_registerName("cacheDisplayInRect:toBitmapImageRep:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_calendarDate:", r)
-			}
-		}()
-		OSSel_calendarDate = OSSel_registerName("calendarDate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canBecomeKeyView:", r)
-			}
-		}()
-		OSSel_canBecomeKeyView = OSSel_registerName("canBecomeKeyView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canBecomeKeyWindow:", r)
-			}
-		}()
-		OSSel_canBecomeKeyWindow = OSSel_registerName("canBecomeKeyWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canDragRowsWithIndexes_atPoint_:", r)
-			}
-		}()
-		OSSel_canDragRowsWithIndexes_atPoint_ = OSSel_registerName("canDragRowsWithIndexes:atPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canGoBack:", r)
-			}
-		}()
-		OSSel_canGoBack = OSSel_registerName("canGoBack")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canGoForward:", r)
-			}
-		}()
-		OSSel_canGoForward = OSSel_registerName("canGoForward")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canRedo:", r)
-			}
-		}()
-		OSSel_canRedo = OSSel_registerName("canRedo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canShowMIMEType_:", r)
-			}
-		}()
-		OSSel_canShowMIMEType_ = OSSel_registerName("canShowMIMEType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_canUndo:", r)
-			}
-		}()
-		OSSel_canUndo = OSSel_registerName("canUndo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancel:", r)
-			}
-		}()
-		OSSel_cancel = OSSel_registerName("cancel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancelAuthenticationChallenge_:", r)
-			}
-		}()
-		OSSel_cancelAuthenticationChallenge_ = OSSel_registerName("cancelAuthenticationChallenge:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancelButtonCell:", r)
-			}
-		}()
-		OSSel_cancelButtonCell = OSSel_registerName("cancelButtonCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancelButtonRectForBounds_:", r)
-			}
-		}()
-		OSSel_cancelButtonRectForBounds_ = OSSel_registerName("cancelButtonRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancelOperation_:", r)
-			}
-		}()
-		OSSel_cancelOperation_ = OSSel_registerName("cancelOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cancelTracking:", r)
-			}
-		}()
-		OSSel_cancelTracking = OSSel_registerName("cancelTracking")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cascadeTopLeftFromPoint_:", r)
-			}
-		}()
-		OSSel_cascadeTopLeftFromPoint_ = OSSel_registerName("cascadeTopLeftFromPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cell:", r)
-			}
-		}()
-		OSSel_cell = OSSel_registerName("cell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cellClass:", r)
-			}
-		}()
-		OSSel_cellClass = OSSel_registerName("cellClass")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cellSize:", r)
-			}
-		}()
-		OSSel_cellSize = OSSel_registerName("cellSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cellSizeForBounds_:", r)
-			}
-		}()
-		OSSel_cellSizeForBounds_ = OSSel_registerName("cellSizeForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_changeColor_:", r)
-			}
-		}()
-		OSSel_changeColor_ = OSSel_registerName("changeColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_changeFont_:", r)
-			}
-		}()
-		OSSel_changeFont_ = OSSel_registerName("changeFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_charCode:", r)
-			}
-		}()
-		OSSel_charCode = OSSel_registerName("charCode")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_characterAtIndex_:", r)
-			}
-		}()
-		OSSel_characterAtIndex_ = OSSel_registerName("characterAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_characterIndexForGlyphAtIndex_:", r)
-			}
-		}()
-		OSSel_characterIndexForGlyphAtIndex_ = OSSel_registerName("characterIndexForGlyphAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_characterIndexForInsertionAtPoint_:", r)
-			}
-		}()
-		OSSel_characterIndexForInsertionAtPoint_ = OSSel_registerName("characterIndexForInsertionAtPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_characterIndexForPoint_:", r)
-			}
-		}()
-		OSSel_characterIndexForPoint_ = OSSel_registerName("characterIndexForPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_characters:", r)
-			}
-		}()
-		OSSel_characters = OSSel_registerName("characters")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_charactersIgnoringModifiers:", r)
-			}
-		}()
-		OSSel_charactersIgnoringModifiers = OSSel_registerName("charactersIgnoringModifiers")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_chooseFilename_:", r)
-			}
-		}()
-		OSSel_chooseFilename_ = OSSel_registerName("chooseFilename:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_className:", r)
-			}
-		}()
-		OSSel_className = OSSel_registerName("className")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cleanUpOperation:", r)
-			}
-		}()
-		OSSel_cleanUpOperation = OSSel_registerName("cleanUpOperation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clearColor:", r)
-			}
-		}()
-		OSSel_clearColor = OSSel_registerName("clearColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clearDrawable:", r)
-			}
-		}()
-		OSSel_clearDrawable = OSSel_registerName("clearDrawable")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clickCount:", r)
-			}
-		}()
-		OSSel_clickCount = OSSel_registerName("clickCount")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clickedColumn:", r)
-			}
-		}()
-		OSSel_clickedColumn = OSSel_registerName("clickedColumn")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_clickedRow:", r)
-			}
-		}()
-		OSSel_clickedRow = OSSel_registerName("clickedRow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_close:", r)
-			}
-		}()
-		OSSel_close = OSSel_registerName("close")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_closePath:", r)
-			}
-		}()
-		OSSel_closePath = OSSel_registerName("closePath")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_code:", r)
-			}
-		}()
-		OSSel_code = OSSel_registerName("code")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_collapseItem_:", r)
-			}
-		}()
-		OSSel_collapseItem_ = OSSel_registerName("collapseItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_collapseItem_collapseChildren_:", r)
-			}
-		}()
-		OSSel_collapseItem_collapseChildren_ = OSSel_registerName("collapseItem:collapseChildren:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_collectionBehavior:", r)
-			}
-		}()
-		OSSel_collectionBehavior = OSSel_registerName("collectionBehavior")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_color:", r)
-			}
-		}()
-		OSSel_color = OSSel_registerName("color")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorAtX_y_:", r)
-			}
-		}()
-		OSSel_colorAtX_y_ = OSSel_registerName("colorAtX:y:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorListNamed_:", r)
-			}
-		}()
-		OSSel_colorListNamed_ = OSSel_registerName("colorListNamed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorSpace:", r)
-			}
-		}()
-		OSSel_colorSpace = OSSel_registerName("colorSpace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorSpaceModel:", r)
-			}
-		}()
-		OSSel_colorSpaceModel = OSSel_registerName("colorSpaceModel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorUsingColorSpaceName_:", r)
-			}
-		}()
-		OSSel_colorUsingColorSpaceName_ = OSSel_registerName("colorUsingColorSpaceName:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorWithDeviceRed_green_blue_alpha_:", r)
-			}
-		}()
-		OSSel_colorWithDeviceRed_green_blue_alpha_ = OSSel_registerName("colorWithDeviceRed:green:blue:alpha:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorWithKey_:", r)
-			}
-		}()
-		OSSel_colorWithKey_ = OSSel_registerName("colorWithKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_colorWithPatternImage_:", r)
-			}
-		}()
-		OSSel_colorWithPatternImage_ = OSSel_registerName("colorWithPatternImage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_columnAtPoint_:", r)
-			}
-		}()
-		OSSel_columnAtPoint_ = OSSel_registerName("columnAtPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_comboBoxSelectionDidChange_:", r)
-			}
-		}()
-		OSSel_comboBoxSelectionDidChange_ = OSSel_registerName("comboBoxSelectionDidChange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_comboBoxWillDismiss_:", r)
-			}
-		}()
-		OSSel_comboBoxWillDismiss_ = OSSel_registerName("comboBoxWillDismiss:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_comboBoxWillPopUp_:", r)
-			}
-		}()
-		OSSel_comboBoxWillPopUp_ = OSSel_registerName("comboBoxWillPopUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_compare_:", r)
-			}
-		}()
-		OSSel_compare_ = OSSel_registerName("compare:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_concat:", r)
-			}
-		}()
-		OSSel_concat = OSSel_registerName("concat")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_conformsToProtocol_:", r)
-			}
-		}()
-		OSSel_conformsToProtocol_ = OSSel_registerName("conformsToProtocol:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_containsIndex_:", r)
-			}
-		}()
-		OSSel_containsIndex_ = OSSel_registerName("containsIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_containsObject_:", r)
-			}
-		}()
-		OSSel_containsObject_ = OSSel_registerName("containsObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_containsPoint_:", r)
-			}
-		}()
-		OSSel_containsPoint_ = OSSel_registerName("containsPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_contentRect:", r)
-			}
-		}()
-		OSSel_contentRect = OSSel_registerName("contentRect")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_contentSize:", r)
-			}
-		}()
-		OSSel_contentSize = OSSel_registerName("contentSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_contentSizeForFrameSize_hasHorizontalScroller_hasVerticalScroller_borderType_:", r)
-			}
-		}()
-		OSSel_contentSizeForFrameSize_hasHorizontalScroller_hasVerticalScroller_borderType_ = OSSel_registerName("contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_contentView:", r)
-			}
-		}()
-		OSSel_contentView = OSSel_registerName("contentView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_contentViewMargins:", r)
-			}
-		}()
-		OSSel_contentViewMargins = OSSel_registerName("contentViewMargins")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_context:", r)
-			}
-		}()
-		OSSel_context = OSSel_registerName("context")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlBackgroundColor:", r)
-			}
-		}()
-		OSSel_controlBackgroundColor = OSSel_registerName("controlBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlDarkShadowColor:", r)
-			}
-		}()
-		OSSel_controlDarkShadowColor = OSSel_registerName("controlDarkShadowColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlHighlightColor:", r)
-			}
-		}()
-		OSSel_controlHighlightColor = OSSel_registerName("controlHighlightColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlLightHighlightColor:", r)
-			}
-		}()
-		OSSel_controlLightHighlightColor = OSSel_registerName("controlLightHighlightColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlPointBounds:", r)
-			}
-		}()
-		OSSel_controlPointBounds = OSSel_registerName("controlPointBounds")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlShadowColor:", r)
-			}
-		}()
-		OSSel_controlShadowColor = OSSel_registerName("controlShadowColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlSize:", r)
-			}
-		}()
-		OSSel_controlSize = OSSel_registerName("controlSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_controlTextColor:", r)
-			}
-		}()
-		OSSel_controlTextColor = OSSel_registerName("controlTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertBaseToScreen_:", r)
-			}
-		}()
-		OSSel_convertBaseToScreen_ = OSSel_registerName("convertBaseToScreen:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertFont_toHaveTrait_:", r)
-			}
-		}()
-		OSSel_convertFont_toHaveTrait_ = OSSel_registerName("convertFont:toHaveTrait:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertPoint_fromView_:", r)
-			}
-		}()
-		OSSel_convertPoint_fromView_ = OSSel_registerName("convertPoint:fromView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertPoint_toView_:", r)
-			}
-		}()
-		OSSel_convertPoint_toView_ = OSSel_registerName("convertPoint:toView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertRect_fromView_:", r)
-			}
-		}()
-		OSSel_convertRect_fromView_ = OSSel_registerName("convertRect:fromView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertRect_toView_:", r)
-			}
-		}()
-		OSSel_convertRect_toView_ = OSSel_registerName("convertRect:toView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_convertScreenToBase_:", r)
-			}
-		}()
-		OSSel_convertScreenToBase_ = OSSel_registerName("convertScreenToBase:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cookies:", r)
-			}
-		}()
-		OSSel_cookies = OSSel_registerName("cookies")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cookiesForURL_:", r)
-			}
-		}()
-		OSSel_cookiesForURL_ = OSSel_registerName("cookiesForURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cookiesWithResponseHeaderFields_forURL_:", r)
-			}
-		}()
-		OSSel_cookiesWithResponseHeaderFields_forURL_ = OSSel_registerName("cookiesWithResponseHeaderFields:forURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_copiesOnScroll:", r)
-			}
-		}()
-		OSSel_copiesOnScroll = OSSel_registerName("copiesOnScroll")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_copy:", r)
-			}
-		}()
-		OSSel_copy = OSSel_registerName("copy")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_copy_:", r)
-			}
-		}()
-		OSSel_copy_ = OSSel_registerName("copy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_count:", r)
-			}
-		}()
-		OSSel_count = OSSel_registerName("count")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_createContext:", r)
-			}
-		}()
-		OSSel_createContext = OSSel_registerName("createContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_credentialWithUser_password_persistence_:", r)
-			}
-		}()
-		OSSel_credentialWithUser_password_persistence_ = OSSel_registerName("credentialWithUser:password:persistence:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_crosshairCursor:", r)
-			}
-		}()
-		OSSel_crosshairCursor = OSSel_registerName("crosshairCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_ctrlKey:", r)
-			}
-		}()
-		OSSel_ctrlKey = OSSel_registerName("ctrlKey")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentAppearance:", r)
-			}
-		}()
-		OSSel_currentAppearance = OSSel_registerName("currentAppearance")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentContext:", r)
-			}
-		}()
-		OSSel_currentContext = OSSel_registerName("currentContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentCursor:", r)
-			}
-		}()
-		OSSel_currentCursor = OSSel_registerName("currentCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentEditor:", r)
-			}
-		}()
-		OSSel_currentEditor = OSSel_registerName("currentEditor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentEvent:", r)
-			}
-		}()
-		OSSel_currentEvent = OSSel_registerName("currentEvent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentInputManager:", r)
-			}
-		}()
-		OSSel_currentInputManager = OSSel_registerName("currentInputManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentPoint:", r)
-			}
-		}()
-		OSSel_currentPoint = OSSel_registerName("currentPoint")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentRunLoop:", r)
-			}
-		}()
-		OSSel_currentRunLoop = OSSel_registerName("currentRunLoop")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_currentThread:", r)
-			}
-		}()
-		OSSel_currentThread = OSSel_registerName("currentThread")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cursorUpdate_:", r)
-			}
-		}()
-		OSSel_cursorUpdate_ = OSSel_registerName("cursorUpdate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_curveToPoint_controlPoint1_controlPoint2_:", r)
-			}
-		}()
-		OSSel_curveToPoint_controlPoint1_controlPoint2_ = OSSel_registerName("curveToPoint:controlPoint1:controlPoint2:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_cut_:", r)
-			}
-		}()
-		OSSel_cut_ = OSSel_registerName("cut:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dataCell:", r)
-			}
-		}()
-		OSSel_dataCell = OSSel_registerName("dataCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dataForType_:", r)
-			}
-		}()
-		OSSel_dataForType_ = OSSel_registerName("dataForType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dataSource:", r)
-			}
-		}()
-		OSSel_dataSource = OSSel_registerName("dataSource")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dataWithBytes_length_:", r)
-			}
-		}()
-		OSSel_dataWithBytes_length_ = OSSel_registerName("dataWithBytes:length:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dateValue:", r)
-			}
-		}()
-		OSSel_dateValue = OSSel_registerName("dateValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dateWithCalendarFormat_timeZone_:", r)
-			}
-		}()
-		OSSel_dateWithCalendarFormat_timeZone_ = OSSel_registerName("dateWithCalendarFormat:timeZone:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dateWithTimeIntervalSinceNow_:", r)
-			}
-		}()
-		OSSel_dateWithTimeIntervalSinceNow_ = OSSel_registerName("dateWithTimeIntervalSinceNow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dateWithYear_month_day_hour_minute_second_timeZone_:", r)
-			}
-		}()
-		OSSel_dateWithYear_month_day_hour_minute_second_timeZone_ = OSSel_registerName("dateWithYear:month:day:hour:minute:second:timeZone:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dayOfMonth:", r)
-			}
-		}()
-		OSSel_dayOfMonth = OSSel_registerName("dayOfMonth")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dealloc:", r)
-			}
-		}()
-		OSSel_dealloc = OSSel_registerName("dealloc")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_decimalSeparator:", r)
-			}
-		}()
-		OSSel_decimalSeparator = OSSel_registerName("decimalSeparator")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_declareTypes_owner_:", r)
-			}
-		}()
-		OSSel_declareTypes_owner_ = OSSel_registerName("declareTypes:owner:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultBaselineOffsetForFont_:", r)
-			}
-		}()
-		OSSel_defaultBaselineOffsetForFont_ = OSSel_registerName("defaultBaselineOffsetForFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultButtonCell:", r)
-			}
-		}()
-		OSSel_defaultButtonCell = OSSel_registerName("defaultButtonCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultCenter:", r)
-			}
-		}()
-		OSSel_defaultCenter = OSSel_registerName("defaultCenter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultFlatness:", r)
-			}
-		}()
-		OSSel_defaultFlatness = OSSel_registerName("defaultFlatness")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultLineHeightForFont_:", r)
-			}
-		}()
-		OSSel_defaultLineHeightForFont_ = OSSel_registerName("defaultLineHeightForFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultManager:", r)
-			}
-		}()
-		OSSel_defaultManager = OSSel_registerName("defaultManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultParagraphStyle:", r)
-			}
-		}()
-		OSSel_defaultParagraphStyle = OSSel_registerName("defaultParagraphStyle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultPrinter:", r)
-			}
-		}()
-		OSSel_defaultPrinter = OSSel_registerName("defaultPrinter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_defaultTimeZone:", r)
-			}
-		}()
-		OSSel_defaultTimeZone = OSSel_registerName("defaultTimeZone")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_delegate:", r)
-			}
-		}()
-		OSSel_delegate = OSSel_registerName("delegate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deleteCookie_:", r)
-			}
-		}()
-		OSSel_deleteCookie_ = OSSel_registerName("deleteCookie:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deliverResult:", r)
-			}
-		}()
-		OSSel_deliverResult = OSSel_registerName("deliverResult")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deltaX:", r)
-			}
-		}()
-		OSSel_deltaX = OSSel_registerName("deltaX")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deltaY:", r)
-			}
-		}()
-		OSSel_deltaY = OSSel_registerName("deltaY")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deminiaturize_:", r)
-			}
-		}()
-		OSSel_deminiaturize_ = OSSel_registerName("deminiaturize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_depth:", r)
-			}
-		}()
-		OSSel_depth = OSSel_registerName("depth")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_descender:", r)
-			}
-		}()
-		OSSel_descender = OSSel_registerName("descender")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_description:", r)
-			}
-		}()
-		OSSel_description = OSSel_registerName("description")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deselectAll_:", r)
-			}
-		}()
-		OSSel_deselectAll_ = OSSel_registerName("deselectAll:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deselectItemAtIndex_:", r)
-			}
-		}()
-		OSSel_deselectItemAtIndex_ = OSSel_registerName("deselectItemAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deselectRow_:", r)
-			}
-		}()
-		OSSel_deselectRow_ = OSSel_registerName("deselectRow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_destroyContext:", r)
-			}
-		}()
-		OSSel_destroyContext = OSSel_registerName("destroyContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_detail:", r)
-			}
-		}()
-		OSSel_detail = OSSel_registerName("detail")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_device:", r)
-			}
-		}()
-		OSSel_device = OSSel_registerName("device")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deviceDescription:", r)
-			}
-		}()
-		OSSel_deviceDescription = OSSel_registerName("deviceDescription")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_deviceSize:", r)
-			}
-		}()
-		OSSel_deviceSize = OSSel_registerName("deviceSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dictionary:", r)
-			}
-		}()
-		OSSel_dictionary = OSSel_registerName("dictionary")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dictionaryWithCapacity_:", r)
-			}
-		}()
-		OSSel_dictionaryWithCapacity_ = OSSel_registerName("dictionaryWithCapacity:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dictionaryWithObject_forKey_:", r)
-			}
-		}()
-		OSSel_dictionaryWithObject_forKey_ = OSSel_registerName("dictionaryWithObject:forKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_disableCursorRects:", r)
-			}
-		}()
-		OSSel_disableCursorRects = OSSel_registerName("disableCursorRects")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_disableFlushWindow:", r)
-			}
-		}()
-		OSSel_disableFlushWindow = OSSel_registerName("disableFlushWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_disabledControlTextColor:", r)
-			}
-		}()
-		OSSel_disabledControlTextColor = OSSel_registerName("disabledControlTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_discardCursorRects:", r)
-			}
-		}()
-		OSSel_discardCursorRects = OSSel_registerName("discardCursorRects")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_display:", r)
-			}
-		}()
-		OSSel_display = OSSel_registerName("display")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_displayIfNeeded:", r)
-			}
-		}()
-		OSSel_displayIfNeeded = OSSel_registerName("displayIfNeeded")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_displayName:", r)
-			}
-		}()
-		OSSel_displayName = OSSel_registerName("displayName")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_displayNameForKey_value_:", r)
-			}
-		}()
-		OSSel_displayNameForKey_value_ = OSSel_registerName("displayNameForKey:value:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_displayRectIgnoringOpacity_inContext_:", r)
-			}
-		}()
-		OSSel_displayRectIgnoringOpacity_inContext_ = OSSel_registerName("displayRectIgnoringOpacity:inContext:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_distantFuture:", r)
-			}
-		}()
-		OSSel_distantFuture = OSSel_registerName("distantFuture")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_doCommandBySelector_:", r)
-			}
-		}()
-		OSSel_doCommandBySelector_ = OSSel_registerName("doCommandBySelector:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dockTile:", r)
-			}
-		}()
-		OSSel_dockTile = OSSel_registerName("dockTile")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_documentSource:", r)
-			}
-		}()
-		OSSel_documentSource = OSSel_registerName("documentSource")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_documentView:", r)
-			}
-		}()
-		OSSel_documentView = OSSel_registerName("documentView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_documentViewShouldHandlePrint:", r)
-			}
-		}()
-		OSSel_documentViewShouldHandlePrint = OSSel_registerName("documentViewShouldHandlePrint")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_documentVisibleRect:", r)
-			}
-		}()
-		OSSel_documentVisibleRect = OSSel_registerName("documentVisibleRect")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_doubleClickInterval:", r)
-			}
-		}()
-		OSSel_doubleClickInterval = OSSel_registerName("doubleClickInterval")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_doubleValue:", r)
-			}
-		}()
-		OSSel_doubleValue = OSSel_registerName("doubleValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_download:", r)
-			}
-		}()
-		OSSel_download = OSSel_registerName("download")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_download_decideDestinationWithSuggestedFilename_:", r)
-			}
-		}()
-		OSSel_download_decideDestinationWithSuggestedFilename_ = OSSel_registerName("download:decideDestinationWithSuggestedFilename:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dragImage_at_offset_event_pasteboard_source_slideBack_:", r)
-			}
-		}()
-		OSSel_dragImage_at_offset_event_pasteboard_source_slideBack_ = OSSel_registerName("dragImage:at:offset:event:pasteboard:source:slideBack:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_:", r)
-			}
-		}()
-		OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_ = OSSel_registerName("dragImageForRowsWithIndexes:tableColumns:event:offset:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_dragSelectionWithEvent_offset_slideBack_:", r)
-			}
-		}()
-		OSSel_dragSelectionWithEvent_offset_slideBack_ = OSSel_registerName("dragSelectionWithEvent:offset:slideBack:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggedImage_beganAt_:", r)
-			}
-		}()
-		OSSel_draggedImage_beganAt_ = OSSel_registerName("draggedImage:beganAt:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggedImage_endedAt_operation_:", r)
-			}
-		}()
-		OSSel_draggedImage_endedAt_operation_ = OSSel_registerName("draggedImage:endedAt:operation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingDestinationWindow:", r)
-			}
-		}()
-		OSSel_draggingDestinationWindow = OSSel_registerName("draggingDestinationWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingEntered_:", r)
-			}
-		}()
-		OSSel_draggingEntered_ = OSSel_registerName("draggingEntered:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingExited_:", r)
-			}
-		}()
-		OSSel_draggingExited_ = OSSel_registerName("draggingExited:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingLocation:", r)
-			}
-		}()
-		OSSel_draggingLocation = OSSel_registerName("draggingLocation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingPasteboard:", r)
-			}
-		}()
-		OSSel_draggingPasteboard = OSSel_registerName("draggingPasteboard")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingSourceOperationMask:", r)
-			}
-		}()
-		OSSel_draggingSourceOperationMask = OSSel_registerName("draggingSourceOperationMask")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingSourceOperationMaskForLocal_:", r)
-			}
-		}()
-		OSSel_draggingSourceOperationMaskForLocal_ = OSSel_registerName("draggingSourceOperationMaskForLocal:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_draggingUpdated_:", r)
-			}
-		}()
-		OSSel_draggingUpdated_ = OSSel_registerName("draggingUpdated:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawBackgroundForGlyphRange_atPoint_:", r)
-			}
-		}()
-		OSSel_drawBackgroundForGlyphRange_atPoint_ = OSSel_registerName("drawBackgroundForGlyphRange:atPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawBackgroundInClipRect_:", r)
-			}
-		}()
-		OSSel_drawBackgroundInClipRect_ = OSSel_registerName("drawBackgroundInClipRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawBezelWithFrame_inView_:", r)
-			}
-		}()
-		OSSel_drawBezelWithFrame_inView_ = OSSel_registerName("drawBezelWithFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawFromPoint_toPoint_options_:", r)
-			}
-		}()
-		OSSel_drawFromPoint_toPoint_options_ = OSSel_registerName("drawFromPoint:toPoint:options:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawGlyphsForGlyphRange_atPoint_:", r)
-			}
-		}()
-		OSSel_drawGlyphsForGlyphRange_atPoint_ = OSSel_registerName("drawGlyphsForGlyphRange:atPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawImage_withFrame_inView_:", r)
-			}
-		}()
-		OSSel_drawImage_withFrame_inView_ = OSSel_registerName("drawImage:withFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawInBezierPath_angle_:", r)
-			}
-		}()
-		OSSel_drawInBezierPath_angle_ = OSSel_registerName("drawInBezierPath:angle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawInRect_:", r)
-			}
-		}()
-		OSSel_drawInRect_ = OSSel_registerName("drawInRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawInRect_angle_:", r)
-			}
-		}()
-		OSSel_drawInRect_angle_ = OSSel_registerName("drawInRect:angle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawInRect_fromRect_operation_fraction_:", r)
-			}
-		}()
-		OSSel_drawInRect_fromRect_operation_fraction_ = OSSel_registerName("drawInRect:fromRect:operation:fraction:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawInteriorWithFrame_inView_:", r)
-			}
-		}()
-		OSSel_drawInteriorWithFrame_inView_ = OSSel_registerName("drawInteriorWithFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawLabel_inRect_:", r)
-			}
-		}()
-		OSSel_drawLabel_inRect_ = OSSel_registerName("drawLabel:inRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawRect_:", r)
-			}
-		}()
-		OSSel_drawRect_ = OSSel_registerName("drawRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_:", r)
-			}
-		}()
-		OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_ = OSSel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawStatusBarBackgroundInRect_withHighlight_:", r)
-			}
-		}()
-		OSSel_drawStatusBarBackgroundInRect_withHighlight_ = OSSel_registerName("drawStatusBarBackgroundInRect:withHighlight:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawTitle_withFrame_inView_:", r)
-			}
-		}()
-		OSSel_drawTitle_withFrame_inView_ = OSSel_registerName("drawTitle:withFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawViewBackgroundInRect_:", r)
-			}
-		}()
-		OSSel_drawViewBackgroundInRect_ = OSSel_registerName("drawViewBackgroundInRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawWithExpansionFrame_inView_:", r)
-			}
-		}()
-		OSSel_drawWithExpansionFrame_inView_ = OSSel_registerName("drawWithExpansionFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_drawingRectForBounds_:", r)
-			}
-		}()
-		OSSel_drawingRectForBounds_ = OSSel_registerName("drawingRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_elementAtIndex_associatedPoints_:", r)
-			}
-		}()
-		OSSel_elementAtIndex_associatedPoints_ = OSSel_registerName("elementAtIndex:associatedPoints:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_elementCount:", r)
-			}
-		}()
-		OSSel_elementCount = OSSel_registerName("elementCount")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_enableCursorRects:", r)
-			}
-		}()
-		OSSel_enableCursorRects = OSSel_registerName("enableCursorRects")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_enableFlushWindow:", r)
-			}
-		}()
-		OSSel_enableFlushWindow = OSSel_registerName("enableFlushWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endDocument:", r)
-			}
-		}()
-		OSSel_endDocument = OSSel_registerName("endDocument")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endEditing:", r)
-			}
-		}()
-		OSSel_endEditing = OSSel_registerName("endEditing")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endEditingFor_:", r)
-			}
-		}()
-		OSSel_endEditingFor_ = OSSel_registerName("endEditingFor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endPage:", r)
-			}
-		}()
-		OSSel_endPage = OSSel_registerName("endPage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endSheet_returnCode_:", r)
-			}
-		}()
-		OSSel_endSheet_returnCode_ = OSSel_registerName("endSheet:returnCode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_endUndoGrouping:", r)
-			}
-		}()
-		OSSel_endUndoGrouping = OSSel_registerName("endUndoGrouping")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_:", r)
-			}
-		}()
-		OSSel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_ = OSSel_registerName("enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_enumeratorAtPath_:", r)
-			}
-		}()
-		OSSel_enumeratorAtPath_ = OSSel_registerName("enumeratorAtPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_expandItem_:", r)
-			}
-		}()
-		OSSel_expandItem_ = OSSel_registerName("expandItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_expandItem_expandChildren_:", r)
-			}
-		}()
-		OSSel_expandItem_expandChildren_ = OSSel_registerName("expandItem:expandChildren:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_expansionFrameWithFrame_inView_:", r)
-			}
-		}()
-		OSSel_expansionFrameWithFrame_inView_ = OSSel_registerName("expansionFrameWithFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_familyName:", r)
-			}
-		}()
-		OSSel_familyName = OSSel_registerName("familyName")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fieldEditor_forObject_:", r)
-			}
-		}()
-		OSSel_fieldEditor_forObject_ = OSSel_registerName("fieldEditor:forObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fileExistsAtPath_:", r)
-			}
-		}()
-		OSSel_fileExistsAtPath_ = OSSel_registerName("fileExistsAtPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fileExistsAtPath_isDirectory_:", r)
-			}
-		}()
-		OSSel_fileExistsAtPath_isDirectory_ = OSSel_registerName("fileExistsAtPath:isDirectory:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fileURLWithPath_:", r)
-			}
-		}()
-		OSSel_fileURLWithPath_ = OSSel_registerName("fileURLWithPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_filename:", r)
-			}
-		}()
-		OSSel_filename = OSSel_registerName("filename")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_filenames:", r)
-			}
-		}()
-		OSSel_filenames = OSSel_registerName("filenames")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fill:", r)
-			}
-		}()
-		OSSel_fill = OSSel_registerName("fill")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fillRect_:", r)
-			}
-		}()
-		OSSel_fillRect_ = OSSel_registerName("fillRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_finishLaunching:", r)
-			}
-		}()
-		OSSel_finishLaunching = OSSel_registerName("finishLaunching")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_firstRectForCharacterRange_:", r)
-			}
-		}()
-		OSSel_firstRectForCharacterRange_ = OSSel_registerName("firstRectForCharacterRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_firstResponder:", r)
-			}
-		}()
-		OSSel_firstResponder = OSSel_registerName("firstResponder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_flagsChanged_:", r)
-			}
-		}()
-		OSSel_flagsChanged_ = OSSel_registerName("flagsChanged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_flashScrollers:", r)
-			}
-		}()
-		OSSel_flashScrollers = OSSel_registerName("flashScrollers")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_floatValue:", r)
-			}
-		}()
-		OSSel_floatValue = OSSel_registerName("floatValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_flushBuffer:", r)
-			}
-		}()
-		OSSel_flushBuffer = OSSel_registerName("flushBuffer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_flushGraphics:", r)
-			}
-		}()
-		OSSel_flushGraphics = OSSel_registerName("flushGraphics")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_flushWindowIfNeeded:", r)
-			}
-		}()
-		OSSel_flushWindowIfNeeded = OSSel_registerName("flushWindowIfNeeded")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_focusRingMaskBoundsForFrame_inView_:", r)
-			}
-		}()
-		OSSel_focusRingMaskBoundsForFrame_inView_ = OSSel_registerName("focusRingMaskBoundsForFrame:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_font:", r)
-			}
-		}()
-		OSSel_font = OSSel_registerName("font")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fontName:", r)
-			}
-		}()
-		OSSel_fontName = OSSel_registerName("fontName")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fontWithName_size_:", r)
-			}
-		}()
-		OSSel_fontWithName_size_ = OSSel_registerName("fontWithName:size:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frame:", r)
-			}
-		}()
-		OSSel_frame = OSSel_registerName("frame")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frameOfCellAtColumn_row_:", r)
-			}
-		}()
-		OSSel_frameOfCellAtColumn_row_ = OSSel_registerName("frameOfCellAtColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frameOfOutlineCellAtRow_:", r)
-			}
-		}()
-		OSSel_frameOfOutlineCellAtRow_ = OSSel_registerName("frameOfOutlineCellAtRow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frameRectForContentRect_:", r)
-			}
-		}()
-		OSSel_frameRectForContentRect_ = OSSel_registerName("frameRectForContentRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_:", r)
-			}
-		}()
-		OSSel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_ = OSSel_registerName("frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_:", r)
-			}
-		}()
-		OSSel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = OSSel_registerName("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_fullPathForApplication_:", r)
-			}
-		}()
-		OSSel_fullPathForApplication_ = OSSel_registerName("fullPathForApplication:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_generalPasteboard:", r)
-			}
-		}()
-		OSSel_generalPasteboard = OSSel_registerName("generalPasteboard")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getBytes_:", r)
-			}
-		}()
-		OSSel_getBytes_ = OSSel_registerName("getBytes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getCharacters_:", r)
-			}
-		}()
-		OSSel_getCharacters_ = OSSel_registerName("getCharacters:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getCharacters_range_:", r)
-			}
-		}()
-		OSSel_getCharacters_range_ = OSSel_registerName("getCharacters:range:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getComponents_:", r)
-			}
-		}()
-		OSSel_getComponents_ = OSSel_registerName("getComponents:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getGlyphs_range_:", r)
-			}
-		}()
-		OSSel_getGlyphs_range_ = OSSel_registerName("getGlyphs:range:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_:", r)
-			}
-		}()
-		OSSel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_ = OSSel_registerName("getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getIndexes_maxCount_inIndexRange_:", r)
-			}
-		}()
-		OSSel_getIndexes_maxCount_inIndexRange_ = OSSel_registerName("getIndexes:maxCount:inIndexRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_getValues_forAttribute_forVirtualScreen_:", r)
-			}
-		}()
-		OSSel_getValues_forAttribute_forVirtualScreen_ = OSSel_registerName("getValues:forAttribute:forVirtualScreen:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_globalContext:", r)
-			}
-		}()
-		OSSel_globalContext = OSSel_registerName("globalContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_glyphIndexForCharacterAtIndex_:", r)
-			}
-		}()
-		OSSel_glyphIndexForCharacterAtIndex_ = OSSel_registerName("glyphIndexForCharacterAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_:", r)
-			}
-		}()
-		OSSel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_ = OSSel_registerName("glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_glyphRangeForCharacterRange_actualCharacterRange_:", r)
-			}
-		}()
-		OSSel_glyphRangeForCharacterRange_actualCharacterRange_ = OSSel_registerName("glyphRangeForCharacterRange:actualCharacterRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_glyphRangeForTextContainer_:", r)
-			}
-		}()
-		OSSel_glyphRangeForTextContainer_ = OSSel_registerName("glyphRangeForTextContainer:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_goBack:", r)
-			}
-		}()
-		OSSel_goBack = OSSel_registerName("goBack")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_goForward:", r)
-			}
-		}()
-		OSSel_goForward = OSSel_registerName("goForward")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_graphicsContext:", r)
-			}
-		}()
-		OSSel_graphicsContext = OSSel_registerName("graphicsContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_graphicsContextWithBitmapImageRep_:", r)
-			}
-		}()
-		OSSel_graphicsContextWithBitmapImageRep_ = OSSel_registerName("graphicsContextWithBitmapImageRep:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_graphicsContextWithGraphicsPort_flipped_:", r)
-			}
-		}()
-		OSSel_graphicsContextWithGraphicsPort_flipped_ = OSSel_registerName("graphicsContextWithGraphicsPort:flipped:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_graphicsContextWithWindow_:", r)
-			}
-		}()
-		OSSel_graphicsContextWithWindow_ = OSSel_registerName("graphicsContextWithWindow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_graphicsPort:", r)
-			}
-		}()
-		OSSel_graphicsPort = OSSel_registerName("graphicsPort")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_greenComponent:", r)
-			}
-		}()
-		OSSel_greenComponent = OSSel_registerName("greenComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_handleEvent_:", r)
-			}
-		}()
-		OSSel_handleEvent_ = OSSel_registerName("handleEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_handleMouseEvent_:", r)
-			}
-		}()
-		OSSel_handleMouseEvent_ = OSSel_registerName("handleMouseEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hasAlpha:", r)
-			}
-		}()
-		OSSel_hasAlpha = OSSel_registerName("hasAlpha")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hasMarkedText:", r)
-			}
-		}()
-		OSSel_hasMarkedText = OSSel_registerName("hasMarkedText")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hasPassword:", r)
-			}
-		}()
-		OSSel_hasPassword = OSSel_registerName("hasPassword")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hasShadow:", r)
-			}
-		}()
-		OSSel_hasShadow = OSSel_registerName("hasShadow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_headerCell:", r)
-			}
-		}()
-		OSSel_headerCell = OSSel_registerName("headerCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_headerRectOfColumn_:", r)
-			}
-		}()
-		OSSel_headerRectOfColumn_ = OSSel_registerName("headerRectOfColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_headerView:", r)
-			}
-		}()
-		OSSel_headerView = OSSel_registerName("headerView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_helpRequested_:", r)
-			}
-		}()
-		OSSel_helpRequested_ = OSSel_registerName("helpRequested:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hide_:", r)
-			}
-		}()
-		OSSel_hide_ = OSSel_registerName("hide:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hideOtherApplications_:", r)
-			}
-		}()
-		OSSel_hideOtherApplications_ = OSSel_registerName("hideOtherApplications:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_highlightSelectionInClipRect_:", r)
-			}
-		}()
-		OSSel_highlightSelectionInClipRect_ = OSSel_registerName("highlightSelectionInClipRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hitPart:", r)
-			}
-		}()
-		OSSel_hitPart = OSSel_registerName("hitPart")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hitTest_:", r)
-			}
-		}()
-		OSSel_hitTest_ = OSSel_registerName("hitTest:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hitTestForEvent_inRect_ofView_:", r)
-			}
-		}()
-		OSSel_hitTestForEvent_inRect_ofView_ = OSSel_registerName("hitTestForEvent:inRect:ofView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_host:", r)
-			}
-		}()
-		OSSel_host = OSSel_registerName("host")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_hourOfDay:", r)
-			}
-		}()
-		OSSel_hourOfDay = OSSel_registerName("hourOfDay")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_iconForFile_:", r)
-			}
-		}()
-		OSSel_iconForFile_ = OSSel_registerName("iconForFile:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_ignore:", r)
-			}
-		}()
-		OSSel_ignore = OSSel_registerName("ignore")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_ignoreModifierKeysWhileDragging:", r)
-			}
-		}()
-		OSSel_ignoreModifierKeysWhileDragging = OSSel_registerName("ignoreModifierKeysWhileDragging")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_image:", r)
-			}
-		}()
-		OSSel_image = OSSel_registerName("image")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_imageInterpolation:", r)
-			}
-		}()
-		OSSel_imageInterpolation = OSSel_registerName("imageInterpolation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_imageNamed_:", r)
-			}
-		}()
-		OSSel_imageNamed_ = OSSel_registerName("imageNamed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_imageRectForBounds_:", r)
-			}
-		}()
-		OSSel_imageRectForBounds_ = OSSel_registerName("imageRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_imageRepWithContentsOfFile_:", r)
-			}
-		}()
-		OSSel_imageRepWithContentsOfFile_ = OSSel_registerName("imageRepWithContentsOfFile:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_imageablePageBounds:", r)
-			}
-		}()
-		OSSel_imageablePageBounds = OSSel_registerName("imageablePageBounds")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_increment:", r)
-			}
-		}()
-		OSSel_increment = OSSel_registerName("increment")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_indentationPerLevel:", r)
-			}
-		}()
-		OSSel_indentationPerLevel = OSSel_registerName("indentationPerLevel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_indexOfItemWithTarget_andAction_:", r)
-			}
-		}()
-		OSSel_indexOfItemWithTarget_andAction_ = OSSel_registerName("indexOfItemWithTarget:andAction:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_indexOfObjectIdenticalTo_:", r)
-			}
-		}()
-		OSSel_indexOfObjectIdenticalTo_ = OSSel_registerName("indexOfObjectIdenticalTo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_indexOfSelectedItem:", r)
-			}
-		}()
-		OSSel_indexOfSelectedItem = OSSel_registerName("indexOfSelectedItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_infoDictionary:", r)
-			}
-		}()
-		OSSel_infoDictionary = OSSel_registerName("infoDictionary")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_init:", r)
-			}
-		}()
-		OSSel_init = OSSel_registerName("init")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initByReferencingFile_:", r)
-			}
-		}()
-		OSSel_initByReferencingFile_ = OSSel_registerName("initByReferencingFile:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initListDescriptor:", r)
-			}
-		}()
-		OSSel_initListDescriptor = OSSel_registerName("initListDescriptor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithAttributes_:", r)
-			}
-		}()
-		OSSel_initWithAttributes_ = OSSel_registerName("initWithAttributes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_:", r)
-			}
-		}()
-		OSSel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_ = OSSel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithCapacity_:", r)
-			}
-		}()
-		OSSel_initWithCapacity_ = OSSel_registerName("initWithCapacity:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithCharacters_length_:", r)
-			}
-		}()
-		OSSel_initWithCharacters_length_ = OSSel_registerName("initWithCharacters:length:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithColors_:", r)
-			}
-		}()
-		OSSel_initWithColors_ = OSSel_registerName("initWithColors:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithContainerSize_:", r)
-			}
-		}()
-		OSSel_initWithContainerSize_ = OSSel_registerName("initWithContainerSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithContentRect_styleMask_backing_defer_:", r)
-			}
-		}()
-		OSSel_initWithContentRect_styleMask_backing_defer_ = OSSel_registerName("initWithContentRect:styleMask:backing:defer:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithContentRect_styleMask_backing_defer_screen_:", r)
-			}
-		}()
-		OSSel_initWithContentRect_styleMask_backing_defer_screen_ = OSSel_registerName("initWithContentRect:styleMask:backing:defer:screen:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithContentsOfFile_:", r)
-			}
-		}()
-		OSSel_initWithContentsOfFile_ = OSSel_registerName("initWithContentsOfFile:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithData_:", r)
-			}
-		}()
-		OSSel_initWithData_ = OSSel_registerName("initWithData:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithFileWrapper_:", r)
-			}
-		}()
-		OSSel_initWithFileWrapper_ = OSSel_registerName("initWithFileWrapper:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithFormat_shareContext_:", r)
-			}
-		}()
-		OSSel_initWithFormat_shareContext_ = OSSel_registerName("initWithFormat:shareContext:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithFrame_:", r)
-			}
-		}()
-		OSSel_initWithFrame_ = OSSel_registerName("initWithFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithFrame_frameName_groupName_:", r)
-			}
-		}()
-		OSSel_initWithFrame_frameName_groupName_ = OSSel_registerName("initWithFrame:frameName:groupName:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithFrame_pullsDown_:", r)
-			}
-		}()
-		OSSel_initWithFrame_pullsDown_ = OSSel_registerName("initWithFrame:pullsDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithIconRef_:", r)
-			}
-		}()
-		OSSel_initWithIconRef_ = OSSel_registerName("initWithIconRef:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithIdentifier_:", r)
-			}
-		}()
-		OSSel_initWithIdentifier_ = OSSel_registerName("initWithIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithImage_hotSpot_:", r)
-			}
-		}()
-		OSSel_initWithImage_hotSpot_ = OSSel_registerName("initWithImage:hotSpot:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithIndex_:", r)
-			}
-		}()
-		OSSel_initWithIndex_ = OSSel_registerName("initWithIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithIndexesInRange_:", r)
-			}
-		}()
-		OSSel_initWithIndexesInRange_ = OSSel_registerName("initWithIndexesInRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithItemIdentifier_:", r)
-			}
-		}()
-		OSSel_initWithItemIdentifier_ = OSSel_registerName("initWithItemIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithLocaleIdentifier_:", r)
-			}
-		}()
-		OSSel_initWithLocaleIdentifier_ = OSSel_registerName("initWithLocaleIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithName_:", r)
-			}
-		}()
-		OSSel_initWithName_ = OSSel_registerName("initWithName:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithSize_:", r)
-			}
-		}()
-		OSSel_initWithSize_ = OSSel_registerName("initWithSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithStartingColor_endingColor_:", r)
-			}
-		}()
-		OSSel_initWithStartingColor_endingColor_ = OSSel_registerName("initWithStartingColor:endingColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithString_:", r)
-			}
-		}()
-		OSSel_initWithString_ = OSSel_registerName("initWithString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithString_attributes_:", r)
-			}
-		}()
-		OSSel_initWithString_attributes_ = OSSel_registerName("initWithString:attributes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithTitle_:", r)
-			}
-		}()
-		OSSel_initWithTitle_ = OSSel_registerName("initWithTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithTitle_action_keyEquivalent_:", r)
-			}
-		}()
-		OSSel_initWithTitle_action_keyEquivalent_ = OSSel_registerName("initWithTitle:action:keyEquivalent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithTransform_:", r)
-			}
-		}()
-		OSSel_initWithTransform_ = OSSel_registerName("initWithTransform:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_initWithType_location_:", r)
-			}
-		}()
-		OSSel_initWithType_location_ = OSSel_registerName("initWithType:location:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertColor_key_atIndex_:", r)
-			}
-		}()
-		OSSel_insertColor_key_atIndex_ = OSSel_registerName("insertColor:key:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertItem_atIndex_:", r)
-			}
-		}()
-		OSSel_insertItem_atIndex_ = OSSel_registerName("insertItem:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertItemWithItemIdentifier_atIndex_:", r)
-			}
-		}()
-		OSSel_insertItemWithItemIdentifier_atIndex_ = OSSel_registerName("insertItemWithItemIdentifier:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertItemWithObjectValue_atIndex_:", r)
-			}
-		}()
-		OSSel_insertItemWithObjectValue_atIndex_ = OSSel_registerName("insertItemWithObjectValue:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertObject_atIndex_:", r)
-			}
-		}()
-		OSSel_insertObject_atIndex_ = OSSel_registerName("insertObject:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertTabViewItem_atIndex_:", r)
-			}
-		}()
-		OSSel_insertTabViewItem_atIndex_ = OSSel_registerName("insertTabViewItem:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertText_:", r)
-			}
-		}()
-		OSSel_insertText_ = OSSel_registerName("insertText:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_insertText_replacementRange_:", r)
-			}
-		}()
-		OSSel_insertText_replacementRange_ = OSSel_registerName("insertText:replacementRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_intValue:", r)
-			}
-		}()
-		OSSel_intValue = OSSel_registerName("intValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_integerValue:", r)
-			}
-		}()
-		OSSel_integerValue = OSSel_registerName("integerValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_intercellSpacing:", r)
-			}
-		}()
-		OSSel_intercellSpacing = OSSel_registerName("intercellSpacing")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_interpretKeyEvents_:", r)
-			}
-		}()
-		OSSel_interpretKeyEvents_ = OSSel_registerName("interpretKeyEvents:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_invalidate:", r)
-			}
-		}()
-		OSSel_invalidate = OSSel_registerName("invalidate")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_invalidateShadow:", r)
-			}
-		}()
-		OSSel_invalidateShadow = OSSel_registerName("invalidateShadow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_invert:", r)
-			}
-		}()
-		OSSel_invert = OSSel_registerName("invert")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isActive:", r)
-			}
-		}()
-		OSSel_isActive = OSSel_registerName("isActive")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isCompatibleWithOverlayScrollers:", r)
-			}
-		}()
-		OSSel_isCompatibleWithOverlayScrollers = OSSel_registerName("isCompatibleWithOverlayScrollers")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isDescendantOf_:", r)
-			}
-		}()
-		OSSel_isDescendantOf_ = OSSel_registerName("isDescendantOf:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isDocumentEdited:", r)
-			}
-		}()
-		OSSel_isDocumentEdited = OSSel_registerName("isDocumentEdited")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isDrawingToScreen:", r)
-			}
-		}()
-		OSSel_isDrawingToScreen = OSSel_registerName("isDrawingToScreen")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isEmpty:", r)
-			}
-		}()
-		OSSel_isEmpty = OSSel_registerName("isEmpty")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isEnabled:", r)
-			}
-		}()
-		OSSel_isEnabled = OSSel_registerName("isEnabled")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isEqual_:", r)
-			}
-		}()
-		OSSel_isEqual_ = OSSel_registerName("isEqual:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isEqualToString_:", r)
-			}
-		}()
-		OSSel_isEqualToString_ = OSSel_registerName("isEqualToString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isExecutableFileAtPath_:", r)
-			}
-		}()
-		OSSel_isExecutableFileAtPath_ = OSSel_registerName("isExecutableFileAtPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isFieldEditor:", r)
-			}
-		}()
-		OSSel_isFieldEditor = OSSel_registerName("isFieldEditor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isFilePackageAtPath_:", r)
-			}
-		}()
-		OSSel_isFilePackageAtPath_ = OSSel_registerName("isFilePackageAtPath:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isFileURL:", r)
-			}
-		}()
-		OSSel_isFileURL = OSSel_registerName("isFileURL")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isFlipped:", r)
-			}
-		}()
-		OSSel_isFlipped = OSSel_registerName("isFlipped")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isHidden:", r)
-			}
-		}()
-		OSSel_isHidden = OSSel_registerName("isHidden")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isHiddenOrHasHiddenAncestor:", r)
-			}
-		}()
-		OSSel_isHiddenOrHasHiddenAncestor = OSSel_registerName("isHiddenOrHasHiddenAncestor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isHighlighted:", r)
-			}
-		}()
-		OSSel_isHighlighted = OSSel_registerName("isHighlighted")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isItemExpanded_:", r)
-			}
-		}()
-		OSSel_isItemExpanded_ = OSSel_registerName("isItemExpanded:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isKeyWindow:", r)
-			}
-		}()
-		OSSel_isKeyWindow = OSSel_registerName("isKeyWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isKindOfClass_:", r)
-			}
-		}()
-		OSSel_isKindOfClass_ = OSSel_registerName("isKindOfClass:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isMainThread:", r)
-			}
-		}()
-		OSSel_isMainThread = OSSel_registerName("isMainThread")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isMainWindow:", r)
-			}
-		}()
-		OSSel_isMainWindow = OSSel_registerName("isMainWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isMiniaturized:", r)
-			}
-		}()
-		OSSel_isMiniaturized = OSSel_registerName("isMiniaturized")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isOpaque:", r)
-			}
-		}()
-		OSSel_isOpaque = OSSel_registerName("isOpaque")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isPlanar:", r)
-			}
-		}()
-		OSSel_isPlanar = OSSel_registerName("isPlanar")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isResting:", r)
-			}
-		}()
-		OSSel_isResting = OSSel_registerName("isResting")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isRowSelected_:", r)
-			}
-		}()
-		OSSel_isRowSelected_ = OSSel_registerName("isRowSelected:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isRunning:", r)
-			}
-		}()
-		OSSel_isRunning = OSSel_registerName("isRunning")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isSelectionOnly:", r)
-			}
-		}()
-		OSSel_isSelectionOnly = OSSel_registerName("isSelectionOnly")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isSeparatorItem:", r)
-			}
-		}()
-		OSSel_isSeparatorItem = OSSel_registerName("isSeparatorItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isSessionOnly:", r)
-			}
-		}()
-		OSSel_isSessionOnly = OSSel_registerName("isSessionOnly")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isSheet:", r)
-			}
-		}()
-		OSSel_isSheet = OSSel_registerName("isSheet")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isVisible:", r)
-			}
-		}()
-		OSSel_isVisible = OSSel_registerName("isVisible")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_isZoomed:", r)
-			}
-		}()
-		OSSel_isZoomed = OSSel_registerName("isZoomed")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemArray:", r)
-			}
-		}()
-		OSSel_itemArray = OSSel_registerName("itemArray")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemAtIndex_:", r)
-			}
-		}()
-		OSSel_itemAtIndex_ = OSSel_registerName("itemAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemAtRow_:", r)
-			}
-		}()
-		OSSel_itemAtRow_ = OSSel_registerName("itemAtRow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemHeight:", r)
-			}
-		}()
-		OSSel_itemHeight = OSSel_registerName("itemHeight")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemIdentifier:", r)
-			}
-		}()
-		OSSel_itemIdentifier = OSSel_registerName("itemIdentifier")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemObjectValueAtIndex_:", r)
-			}
-		}()
-		OSSel_itemObjectValueAtIndex_ = OSSel_registerName("itemObjectValueAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemTitleAtIndex_:", r)
-			}
-		}()
-		OSSel_itemTitleAtIndex_ = OSSel_registerName("itemTitleAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_itemWithTag_:", r)
-			}
-		}()
-		OSSel_itemWithTag_ = OSSel_registerName("itemWithTag:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_jobDisposition:", r)
-			}
-		}()
-		OSSel_jobDisposition = OSSel_registerName("jobDisposition")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyCode:", r)
-			}
-		}()
-		OSSel_keyCode = OSSel_registerName("keyCode")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyDown_:", r)
-			}
-		}()
-		OSSel_keyDown_ = OSSel_registerName("keyDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyEquivalent:", r)
-			}
-		}()
-		OSSel_keyEquivalent = OSSel_registerName("keyEquivalent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyEquivalentModifierMask:", r)
-			}
-		}()
-		OSSel_keyEquivalentModifierMask = OSSel_registerName("keyEquivalentModifierMask")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyUp_:", r)
-			}
-		}()
-		OSSel_keyUp_ = OSSel_registerName("keyUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_keyWindow:", r)
-			}
-		}()
-		OSSel_keyWindow = OSSel_registerName("keyWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_knobProportion:", r)
-			}
-		}()
-		OSSel_knobProportion = OSSel_registerName("knobProportion")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_knobThickness:", r)
-			}
-		}()
-		OSSel_knobThickness = OSSel_registerName("knobThickness")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lastPathComponent:", r)
-			}
-		}()
-		OSSel_lastPathComponent = OSSel_registerName("lastPathComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_layer:", r)
-			}
-		}()
-		OSSel_layer = OSSel_registerName("layer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_layoutManager:", r)
-			}
-		}()
-		OSSel_layoutManager = OSSel_registerName("layoutManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_leading:", r)
-			}
-		}()
-		OSSel_leading = OSSel_registerName("leading")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_length:", r)
-			}
-		}()
-		OSSel_length = OSSel_registerName("length")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_levelForItem_:", r)
-			}
-		}()
-		OSSel_levelForItem_ = OSSel_registerName("levelForItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_:", r)
-			}
-		}()
-		OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_ = OSSel_registerName("lineFragmentUsedRectForGlyphAtIndex:effectiveRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_:", r)
-			}
-		}()
-		OSSel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_ = OSSel_registerName("lineFragmentUsedRectForGlyphAtIndex:effectiveRange:withoutAdditionalLayout:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lineToPoint_:", r)
-			}
-		}()
-		OSSel_lineToPoint_ = OSSel_registerName("lineToPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_linkTextAttributes:", r)
-			}
-		}()
-		OSSel_linkTextAttributes = OSSel_registerName("linkTextAttributes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_loadHTMLString_baseURL_:", r)
-			}
-		}()
-		OSSel_loadHTMLString_baseURL_ = OSSel_registerName("loadHTMLString:baseURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_loadNibFile_externalNameTable_withZone_:", r)
-			}
-		}()
-		OSSel_loadNibFile_externalNameTable_withZone_ = OSSel_registerName("loadNibFile:externalNameTable:withZone:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_loadRequest_:", r)
-			}
-		}()
-		OSSel_loadRequest_ = OSSel_registerName("loadRequest:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_localizedDescription:", r)
-			}
-		}()
-		OSSel_localizedDescription = OSSel_registerName("localizedDescription")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_locationForGlyphAtIndex_:", r)
-			}
-		}()
-		OSSel_locationForGlyphAtIndex_ = OSSel_registerName("locationForGlyphAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_locationInWindow:", r)
-			}
-		}()
-		OSSel_locationInWindow = OSSel_registerName("locationInWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lockFocus:", r)
-			}
-		}()
-		OSSel_lockFocus = OSSel_registerName("lockFocus")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lockFocusIfCanDraw:", r)
-			}
-		}()
-		OSSel_lockFocusIfCanDraw = OSSel_registerName("lockFocusIfCanDraw")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_lowercaseString:", r)
-			}
-		}()
-		OSSel_lowercaseString = OSSel_registerName("lowercaseString")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_magnification:", r)
-			}
-		}()
-		OSSel_magnification = OSSel_registerName("magnification")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_magnifyWithEvent_:", r)
-			}
-		}()
-		OSSel_magnifyWithEvent_ = OSSel_registerName("magnifyWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mainBundle:", r)
-			}
-		}()
-		OSSel_mainBundle = OSSel_registerName("mainBundle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mainFrame:", r)
-			}
-		}()
-		OSSel_mainFrame = OSSel_registerName("mainFrame")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mainMenu:", r)
-			}
-		}()
-		OSSel_mainMenu = OSSel_registerName("mainMenu")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mainScreen:", r)
-			}
-		}()
-		OSSel_mainScreen = OSSel_registerName("mainScreen")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_makeCurrentContext:", r)
-			}
-		}()
-		OSSel_makeCurrentContext = OSSel_registerName("makeCurrentContext")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_makeFirstResponder_:", r)
-			}
-		}()
-		OSSel_makeFirstResponder_ = OSSel_registerName("makeFirstResponder:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_makeKeyAndOrderFront_:", r)
-			}
-		}()
-		OSSel_makeKeyAndOrderFront_ = OSSel_registerName("makeKeyAndOrderFront:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_markedRange:", r)
-			}
-		}()
-		OSSel_markedRange = OSSel_registerName("markedRange")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_markedTextAttributes:", r)
-			}
-		}()
-		OSSel_markedTextAttributes = OSSel_registerName("markedTextAttributes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_maxSize:", r)
-			}
-		}()
-		OSSel_maxSize = OSSel_registerName("maxSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_maxValue:", r)
-			}
-		}()
-		OSSel_maxValue = OSSel_registerName("maxValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menu:", r)
-			}
-		}()
-		OSSel_menu = OSSel_registerName("menu")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menu_willHighlightItem_:", r)
-			}
-		}()
-		OSSel_menu_willHighlightItem_ = OSSel_registerName("menu:willHighlightItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menuBarFontOfSize_:", r)
-			}
-		}()
-		OSSel_menuBarFontOfSize_ = OSSel_registerName("menuBarFontOfSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menuDidClose_:", r)
-			}
-		}()
-		OSSel_menuDidClose_ = OSSel_registerName("menuDidClose:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menuForEvent_:", r)
-			}
-		}()
-		OSSel_menuForEvent_ = OSSel_registerName("menuForEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menuNeedsUpdate_:", r)
-			}
-		}()
-		OSSel_menuNeedsUpdate_ = OSSel_registerName("menuNeedsUpdate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_menuWillOpen_:", r)
-			}
-		}()
-		OSSel_menuWillOpen_ = OSSel_registerName("menuWillOpen:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_metaKey:", r)
-			}
-		}()
-		OSSel_metaKey = OSSel_registerName("metaKey")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_minFrameWidthWithTitle_styleMask_:", r)
-			}
-		}()
-		OSSel_minFrameWidthWithTitle_styleMask_ = OSSel_registerName("minFrameWidthWithTitle:styleMask:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_minSize:", r)
-			}
-		}()
-		OSSel_minSize = OSSel_registerName("minSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_minValue:", r)
-			}
-		}()
-		OSSel_minValue = OSSel_registerName("minValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_miniaturize_:", r)
-			}
-		}()
-		OSSel_miniaturize_ = OSSel_registerName("miniaturize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_minimumSize:", r)
-			}
-		}()
-		OSSel_minimumSize = OSSel_registerName("minimumSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_minuteOfHour:", r)
-			}
-		}()
-		OSSel_minuteOfHour = OSSel_registerName("minuteOfHour")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_modifierFlags:", r)
-			}
-		}()
-		OSSel_modifierFlags = OSSel_registerName("modifierFlags")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_monthOfYear:", r)
-			}
-		}()
-		OSSel_monthOfYear = OSSel_registerName("monthOfYear")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouse_inRect_:", r)
-			}
-		}()
-		OSSel_mouse_inRect_ = OSSel_registerName("mouse:inRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseDown_:", r)
-			}
-		}()
-		OSSel_mouseDown_ = OSSel_registerName("mouseDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseDownCanMoveWindow:", r)
-			}
-		}()
-		OSSel_mouseDownCanMoveWindow = OSSel_registerName("mouseDownCanMoveWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseDragged_:", r)
-			}
-		}()
-		OSSel_mouseDragged_ = OSSel_registerName("mouseDragged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseEntered_:", r)
-			}
-		}()
-		OSSel_mouseEntered_ = OSSel_registerName("mouseEntered:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseExited_:", r)
-			}
-		}()
-		OSSel_mouseExited_ = OSSel_registerName("mouseExited:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseLocation:", r)
-			}
-		}()
-		OSSel_mouseLocation = OSSel_registerName("mouseLocation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseLocationOutsideOfEventStream:", r)
-			}
-		}()
-		OSSel_mouseLocationOutsideOfEventStream = OSSel_registerName("mouseLocationOutsideOfEventStream")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseMoved_:", r)
-			}
-		}()
-		OSSel_mouseMoved_ = OSSel_registerName("mouseMoved:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mouseUp_:", r)
-			}
-		}()
-		OSSel_mouseUp_ = OSSel_registerName("mouseUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_moveColumn_toColumn_:", r)
-			}
-		}()
-		OSSel_moveColumn_toColumn_ = OSSel_registerName("moveColumn:toColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_moveToPoint_:", r)
-			}
-		}()
-		OSSel_moveToPoint_ = OSSel_registerName("moveToPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_mutableCopy:", r)
-			}
-		}()
-		OSSel_mutableCopy = OSSel_registerName("mutableCopy")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_name:", r)
-			}
-		}()
-		OSSel_name = OSSel_registerName("name")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_nameFieldStringValue:", r)
-			}
-		}()
-		OSSel_nameFieldStringValue = OSSel_registerName("nameFieldStringValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_needsPanelToBecomeKey:", r)
-			}
-		}()
-		OSSel_needsPanelToBecomeKey = OSSel_registerName("needsPanelToBecomeKey")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_:", r)
-			}
-		}()
-		OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_ = OSSel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_nextObject:", r)
-			}
-		}()
-		OSSel_nextObject = OSSel_registerName("nextObject")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_nextState:", r)
-			}
-		}()
-		OSSel_nextState = OSSel_registerName("nextState")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_nextWordFromIndex_forward_:", r)
-			}
-		}()
-		OSSel_nextWordFromIndex_forward_ = OSSel_registerName("nextWordFromIndex:forward:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_noResponderFor_:", r)
-			}
-		}()
-		OSSel_noResponderFor_ = OSSel_registerName("noResponderFor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_normalizedPosition:", r)
-			}
-		}()
-		OSSel_normalizedPosition = OSSel_registerName("normalizedPosition")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_noteNumberOfRowsChanged:", r)
-			}
-		}()
-		OSSel_noteNumberOfRowsChanged = OSSel_registerName("noteNumberOfRowsChanged")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfColumns:", r)
-			}
-		}()
-		OSSel_numberOfColumns = OSSel_registerName("numberOfColumns")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfComponents:", r)
-			}
-		}()
-		OSSel_numberOfComponents = OSSel_registerName("numberOfComponents")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfGlyphs:", r)
-			}
-		}()
-		OSSel_numberOfGlyphs = OSSel_registerName("numberOfGlyphs")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfItems:", r)
-			}
-		}()
-		OSSel_numberOfItems = OSSel_registerName("numberOfItems")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfRows:", r)
-			}
-		}()
-		OSSel_numberOfRows = OSSel_registerName("numberOfRows")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfRowsInTableView_:", r)
-			}
-		}()
-		OSSel_numberOfRowsInTableView_ = OSSel_registerName("numberOfRowsInTableView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfSelectedRows:", r)
-			}
-		}()
-		OSSel_numberOfSelectedRows = OSSel_registerName("numberOfSelectedRows")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberOfVisibleItems:", r)
-			}
-		}()
-		OSSel_numberOfVisibleItems = OSSel_registerName("numberOfVisibleItems")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberWithBool_:", r)
-			}
-		}()
-		OSSel_numberWithBool_ = OSSel_registerName("numberWithBool:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberWithDouble_:", r)
-			}
-		}()
-		OSSel_numberWithDouble_ = OSSel_registerName("numberWithDouble:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberWithInt_:", r)
-			}
-		}()
-		OSSel_numberWithInt_ = OSSel_registerName("numberWithInt:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_numberWithInteger_:", r)
-			}
-		}()
-		OSSel_numberWithInteger_ = OSSel_registerName("numberWithInteger:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objCType:", r)
-			}
-		}()
-		OSSel_objCType = OSSel_registerName("objCType")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_object:", r)
-			}
-		}()
-		OSSel_object = OSSel_registerName("object")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objectAtIndex_:", r)
-			}
-		}()
-		OSSel_objectAtIndex_ = OSSel_registerName("objectAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objectEnumerator:", r)
-			}
-		}()
-		OSSel_objectEnumerator = OSSel_registerName("objectEnumerator")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objectForInfoDictionaryKey_:", r)
-			}
-		}()
-		OSSel_objectForInfoDictionaryKey_ = OSSel_registerName("objectForInfoDictionaryKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objectForKey_:", r)
-			}
-		}()
-		OSSel_objectForKey_ = OSSel_registerName("objectForKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_objectValues:", r)
-			}
-		}()
-		OSSel_objectValues = OSSel_registerName("objectValues")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_openPanel:", r)
-			}
-		}()
-		OSSel_openPanel = OSSel_registerName("openPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_openURL_:", r)
-			}
-		}()
-		OSSel_openURL_ = OSSel_registerName("openURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_:", r)
-			}
-		}()
-		OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_ = OSSel_registerName("openURLs:withAppBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifiers:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_operatingSystemVersion:", r)
-			}
-		}()
-		OSSel_operatingSystemVersion = OSSel_registerName("operatingSystemVersion")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_operationNotAllowedCursor:", r)
-			}
-		}()
-		OSSel_operationNotAllowedCursor = OSSel_registerName("operationNotAllowedCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_options:", r)
-			}
-		}()
-		OSSel_options = OSSel_registerName("options")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderBack_:", r)
-			}
-		}()
-		OSSel_orderBack_ = OSSel_registerName("orderBack:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderFront_:", r)
-			}
-		}()
-		OSSel_orderFront_ = OSSel_registerName("orderFront:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderFrontRegardless:", r)
-			}
-		}()
-		OSSel_orderFrontRegardless = OSSel_registerName("orderFrontRegardless")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderFrontStandardAboutPanel_:", r)
-			}
-		}()
-		OSSel_orderFrontStandardAboutPanel_ = OSSel_registerName("orderFrontStandardAboutPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderOut_:", r)
-			}
-		}()
-		OSSel_orderOut_ = OSSel_registerName("orderOut:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_orderWindow_relativeTo_:", r)
-			}
-		}()
-		OSSel_orderWindow_relativeTo_ = OSSel_registerName("orderWindow:relativeTo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_:", r)
-			}
-		}()
-		OSSel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_ = OSSel_registerName("otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_otherMouseDown_:", r)
-			}
-		}()
-		OSSel_otherMouseDown_ = OSSel_registerName("otherMouseDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_otherMouseDragged_:", r)
-			}
-		}()
-		OSSel_otherMouseDragged_ = OSSel_registerName("otherMouseDragged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_otherMouseUp_:", r)
-			}
-		}()
-		OSSel_otherMouseUp_ = OSSel_registerName("otherMouseUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_acceptDrop_item_childIndex_:", r)
-			}
-		}()
-		OSSel_outlineView_acceptDrop_item_childIndex_ = OSSel_registerName("outlineView:acceptDrop:item:childIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_child_ofItem_:", r)
-			}
-		}()
-		OSSel_outlineView_child_ofItem_ = OSSel_registerName("outlineView:child:ofItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_didClickTableColumn_:", r)
-			}
-		}()
-		OSSel_outlineView_didClickTableColumn_ = OSSel_registerName("outlineView:didClickTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_isItemExpandable_:", r)
-			}
-		}()
-		OSSel_outlineView_isItemExpandable_ = OSSel_registerName("outlineView:isItemExpandable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_numberOfChildrenOfItem_:", r)
-			}
-		}()
-		OSSel_outlineView_numberOfChildrenOfItem_ = OSSel_registerName("outlineView:numberOfChildrenOfItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_objectValueForTableColumn_byItem_:", r)
-			}
-		}()
-		OSSel_outlineView_objectValueForTableColumn_byItem_ = OSSel_registerName("outlineView:objectValueForTableColumn:byItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_setObjectValue_forTableColumn_byItem_:", r)
-			}
-		}()
-		OSSel_outlineView_setObjectValue_forTableColumn_byItem_ = OSSel_registerName("outlineView:setObjectValue:forTableColumn:byItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_shouldEditTableColumn_item_:", r)
-			}
-		}()
-		OSSel_outlineView_shouldEditTableColumn_item_ = OSSel_registerName("outlineView:shouldEditTableColumn:item:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_shouldExpandItem_:", r)
-			}
-		}()
-		OSSel_outlineView_shouldExpandItem_ = OSSel_registerName("outlineView:shouldExpandItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_shouldReorderColumn_toColumn_:", r)
-			}
-		}()
-		OSSel_outlineView_shouldReorderColumn_toColumn_ = OSSel_registerName("outlineView:shouldReorderColumn:toColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_shouldTrackCell_forTableColumn_item_:", r)
-			}
-		}()
-		OSSel_outlineView_shouldTrackCell_forTableColumn_item_ = OSSel_registerName("outlineView:shouldTrackCell:forTableColumn:item:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_validateDrop_proposedItem_proposedChildIndex_:", r)
-			}
-		}()
-		OSSel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = OSSel_registerName("outlineView:validateDrop:proposedItem:proposedChildIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_willDisplayCell_forTableColumn_item_:", r)
-			}
-		}()
-		OSSel_outlineView_willDisplayCell_forTableColumn_item_ = OSSel_registerName("outlineView:willDisplayCell:forTableColumn:item:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineView_writeItems_toPasteboard_:", r)
-			}
-		}()
-		OSSel_outlineView_writeItems_toPasteboard_ = OSSel_registerName("outlineView:writeItems:toPasteboard:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineViewColumnDidMove_:", r)
-			}
-		}()
-		OSSel_outlineViewColumnDidMove_ = OSSel_registerName("outlineViewColumnDidMove:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineViewColumnDidResize_:", r)
-			}
-		}()
-		OSSel_outlineViewColumnDidResize_ = OSSel_registerName("outlineViewColumnDidResize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineViewSelectionDidChange_:", r)
-			}
-		}()
-		OSSel_outlineViewSelectionDidChange_ = OSSel_registerName("outlineViewSelectionDidChange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_outlineViewSelectionIsChanging_:", r)
-			}
-		}()
-		OSSel_outlineViewSelectionIsChanging_ = OSSel_registerName("outlineViewSelectionIsChanging:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_owner:", r)
-			}
-		}()
-		OSSel_owner = OSSel_registerName("owner")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pageDown_:", r)
-			}
-		}()
-		OSSel_pageDown_ = OSSel_registerName("pageDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pageTitle:", r)
-			}
-		}()
-		OSSel_pageTitle = OSSel_registerName("pageTitle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pageUp_:", r)
-			}
-		}()
-		OSSel_pageUp_ = OSSel_registerName("pageUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_panel_shouldEnableURL_:", r)
-			}
-		}()
-		OSSel_panel_shouldEnableURL_ = OSSel_registerName("panel:shouldEnableURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_panel_userEnteredFilename_confirmed_:", r)
-			}
-		}()
-		OSSel_panel_userEnteredFilename_confirmed_ = OSSel_registerName("panel:userEnteredFilename:confirmed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_panelConvertFont_:", r)
-			}
-		}()
-		OSSel_panelConvertFont_ = OSSel_registerName("panelConvertFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_paperSize:", r)
-			}
-		}()
-		OSSel_paperSize = OSSel_registerName("paperSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_paragraphs:", r)
-			}
-		}()
-		OSSel_paragraphs = OSSel_registerName("paragraphs")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_parentWindow:", r)
-			}
-		}()
-		OSSel_parentWindow = OSSel_registerName("parentWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_password:", r)
-			}
-		}()
-		OSSel_password = OSSel_registerName("password")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_paste_:", r)
-			}
-		}()
-		OSSel_paste_ = OSSel_registerName("paste:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pasteboard_provideDataForType_:", r)
-			}
-		}()
-		OSSel_pasteboard_provideDataForType_ = OSSel_registerName("pasteboard:provideDataForType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pasteboardWithName_:", r)
-			}
-		}()
-		OSSel_pasteboardWithName_ = OSSel_registerName("pasteboardWithName:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_path:", r)
-			}
-		}()
-		OSSel_path = OSSel_registerName("path")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pathExtension:", r)
-			}
-		}()
-		OSSel_pathExtension = OSSel_registerName("pathExtension")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pathForResource_ofType_:", r)
-			}
-		}()
-		OSSel_pathForResource_ofType_ = OSSel_registerName("pathForResource:ofType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pathForResource_ofType_inDirectory_forLocalization_:", r)
-			}
-		}()
-		OSSel_pathForResource_ofType_inDirectory_forLocalization_ = OSSel_registerName("pathForResource:ofType:inDirectory:forLocalization:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_performDragOperation_:", r)
-			}
-		}()
-		OSSel_performDragOperation_ = OSSel_registerName("performDragOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_performKeyEquivalent_:", r)
-			}
-		}()
-		OSSel_performKeyEquivalent_ = OSSel_registerName("performKeyEquivalent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_performSelector_withObject_afterDelay_inModes_:", r)
-			}
-		}()
-		OSSel_performSelector_withObject_afterDelay_inModes_ = OSSel_registerName("performSelector:withObject:afterDelay:inModes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_performSelectorOnMainThread_withObject_waitUntilDone_:", r)
-			}
-		}()
-		OSSel_performSelectorOnMainThread_withObject_waitUntilDone_ = OSSel_registerName("performSelectorOnMainThread:withObject:waitUntilDone:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_phase:", r)
-			}
-		}()
-		OSSel_phase = OSSel_registerName("phase")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pixelsHigh:", r)
-			}
-		}()
-		OSSel_pixelsHigh = OSSel_registerName("pixelsHigh")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pixelsWide:", r)
-			}
-		}()
-		OSSel_pixelsWide = OSSel_registerName("pixelsWide")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pointSize:", r)
-			}
-		}()
-		OSSel_pointSize = OSSel_registerName("pointSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pointValue:", r)
-			}
-		}()
-		OSSel_pointValue = OSSel_registerName("pointValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pointingHandCursor:", r)
-			}
-		}()
-		OSSel_pointingHandCursor = OSSel_registerName("pointingHandCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pop:", r)
-			}
-		}()
-		OSSel_pop = OSSel_registerName("pop")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_popUpContextMenu_withEvent_forView_:", r)
-			}
-		}()
-		OSSel_popUpContextMenu_withEvent_forView_ = OSSel_registerName("popUpContextMenu:withEvent:forView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_popUpStatusItemMenu_:", r)
-			}
-		}()
-		OSSel_popUpStatusItemMenu_ = OSSel_registerName("popUpStatusItemMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_port:", r)
-			}
-		}()
-		OSSel_port = OSSel_registerName("port")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_postEvent_atStart_:", r)
-			}
-		}()
-		OSSel_postEvent_atStart_ = OSSel_registerName("postEvent:atStart:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_preparedCellAtColumn_row_:", r)
-			}
-		}()
-		OSSel_preparedCellAtColumn_row_ = OSSel_registerName("preparedCellAtColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_prependTransform_:", r)
-			}
-		}()
-		OSSel_prependTransform_ = OSSel_registerName("prependTransform:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_pressedMouseButtons:", r)
-			}
-		}()
-		OSSel_pressedMouseButtons = OSSel_registerName("pressedMouseButtons")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_preventDefault:", r)
-			}
-		}()
-		OSSel_preventDefault = OSSel_registerName("preventDefault")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_previousFailureCount:", r)
-			}
-		}()
-		OSSel_previousFailureCount = OSSel_registerName("previousFailureCount")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printDocumentView:", r)
-			}
-		}()
-		OSSel_printDocumentView = OSSel_registerName("printDocumentView")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printOperationWithPrintInfo_:", r)
-			}
-		}()
-		OSSel_printOperationWithPrintInfo_ = OSSel_registerName("printOperationWithPrintInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printOperationWithView_printInfo_:", r)
-			}
-		}()
-		OSSel_printOperationWithView_printInfo_ = OSSel_registerName("printOperationWithView:printInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printPanel:", r)
-			}
-		}()
-		OSSel_printPanel = OSSel_registerName("printPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printer:", r)
-			}
-		}()
-		OSSel_printer = OSSel_registerName("printer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printerNames:", r)
-			}
-		}()
-		OSSel_printerNames = OSSel_registerName("printerNames")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_printerWithName_:", r)
-			}
-		}()
-		OSSel_printerWithName_ = OSSel_registerName("printerWithName:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_processInfo:", r)
-			}
-		}()
-		OSSel_processInfo = OSSel_registerName("processInfo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_propertyListForType_:", r)
-			}
-		}()
-		OSSel_propertyListForType_ = OSSel_registerName("propertyListForType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_proposedCredential:", r)
-			}
-		}()
-		OSSel_proposedCredential = OSSel_registerName("proposedCredential")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_protectionSpace:", r)
-			}
-		}()
-		OSSel_protectionSpace = OSSel_registerName("protectionSpace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_push:", r)
-			}
-		}()
-		OSSel_push = OSSel_registerName("push")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rangeValue:", r)
-			}
-		}()
-		OSSel_rangeValue = OSSel_registerName("rangeValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_readSelectionFromPasteboard_:", r)
-			}
-		}()
-		OSSel_readSelectionFromPasteboard_ = OSSel_registerName("readSelectionFromPasteboard:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_realm:", r)
-			}
-		}()
-		OSSel_realm = OSSel_registerName("realm")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_recentSearches:", r)
-			}
-		}()
-		OSSel_recentSearches = OSSel_registerName("recentSearches")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_:", r)
-			}
-		}()
-		OSSel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_ = OSSel_registerName("rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_:", r)
-			}
-		}()
-		OSSel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_ = OSSel_registerName("rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectForPart_:", r)
-			}
-		}()
-		OSSel_rectForPart_ = OSSel_registerName("rectForPart:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectOfColumn_:", r)
-			}
-		}()
-		OSSel_rectOfColumn_ = OSSel_registerName("rectOfColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectOfRow_:", r)
-			}
-		}()
-		OSSel_rectOfRow_ = OSSel_registerName("rectOfRow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rectValue:", r)
-			}
-		}()
-		OSSel_rectValue = OSSel_registerName("rectValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_redComponent:", r)
-			}
-		}()
-		OSSel_redComponent = OSSel_registerName("redComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_redo:", r)
-			}
-		}()
-		OSSel_redo = OSSel_registerName("redo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_reflectScrolledClipView_:", r)
-			}
-		}()
-		OSSel_reflectScrolledClipView_ = OSSel_registerName("reflectScrolledClipView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_registerDefaults_:", r)
-			}
-		}()
-		OSSel_registerDefaults_ = OSSel_registerName("registerDefaults:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_registerForDraggedTypes_:", r)
-			}
-		}()
-		OSSel_registerForDraggedTypes_ = OSSel_registerName("registerForDraggedTypes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_release:", r)
-			}
-		}()
-		OSSel_release = OSSel_registerName("release")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_reload_:", r)
-			}
-		}()
-		OSSel_reload_ = OSSel_registerName("reload:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_reloadData:", r)
-			}
-		}()
-		OSSel_reloadData = OSSel_registerName("reloadData")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_reloadItem_reloadChildren_:", r)
-			}
-		}()
-		OSSel_reloadItem_reloadChildren_ = OSSel_registerName("reloadItem:reloadChildren:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeAllItems:", r)
-			}
-		}()
-		OSSel_removeAllItems = OSSel_registerName("removeAllItems")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeAllPoints:", r)
-			}
-		}()
-		OSSel_removeAllPoints = OSSel_registerName("removeAllPoints")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeAttribute_range_:", r)
-			}
-		}()
-		OSSel_removeAttribute_range_ = OSSel_registerName("removeAttribute:range:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeChildWindow_:", r)
-			}
-		}()
-		OSSel_removeChildWindow_ = OSSel_registerName("removeChildWindow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeColorWithKey_:", r)
-			}
-		}()
-		OSSel_removeColorWithKey_ = OSSel_registerName("removeColorWithKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeFromSuperview:", r)
-			}
-		}()
-		OSSel_removeFromSuperview = OSSel_registerName("removeFromSuperview")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeItem_:", r)
-			}
-		}()
-		OSSel_removeItem_ = OSSel_registerName("removeItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeItemAtIndex_:", r)
-			}
-		}()
-		OSSel_removeItemAtIndex_ = OSSel_registerName("removeItemAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeLastObject:", r)
-			}
-		}()
-		OSSel_removeLastObject = OSSel_registerName("removeLastObject")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeObject_:", r)
-			}
-		}()
-		OSSel_removeObject_ = OSSel_registerName("removeObject:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeObjectAtIndex_:", r)
-			}
-		}()
-		OSSel_removeObjectAtIndex_ = OSSel_registerName("removeObjectAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeObjectForKey_:", r)
-			}
-		}()
-		OSSel_removeObjectForKey_ = OSSel_registerName("removeObjectForKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeObjectIdenticalTo_:", r)
-			}
-		}()
-		OSSel_removeObjectIdenticalTo_ = OSSel_registerName("removeObjectIdenticalTo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeObserver_:", r)
-			}
-		}()
-		OSSel_removeObserver_ = OSSel_registerName("removeObserver:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeRepresentation_:", r)
-			}
-		}()
-		OSSel_removeRepresentation_ = OSSel_registerName("removeRepresentation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeStatusItem_:", r)
-			}
-		}()
-		OSSel_removeStatusItem_ = OSSel_registerName("removeStatusItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeTabViewItem_:", r)
-			}
-		}()
-		OSSel_removeTabViewItem_ = OSSel_registerName("removeTabViewItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeTableColumn_:", r)
-			}
-		}()
-		OSSel_removeTableColumn_ = OSSel_registerName("removeTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeTemporaryAttribute_forCharacterRange_:", r)
-			}
-		}()
-		OSSel_removeTemporaryAttribute_forCharacterRange_ = OSSel_registerName("removeTemporaryAttribute:forCharacterRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeToolTip_:", r)
-			}
-		}()
-		OSSel_removeToolTip_ = OSSel_registerName("removeToolTip:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_removeTrackingArea_:", r)
-			}
-		}()
-		OSSel_removeTrackingArea_ = OSSel_registerName("removeTrackingArea:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_replaceCharactersInRange_withString_:", r)
-			}
-		}()
-		OSSel_replaceCharactersInRange_withString_ = OSSel_registerName("replaceCharactersInRange:withString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_replyToOpenOrPrint_:", r)
-			}
-		}()
-		OSSel_replyToOpenOrPrint_ = OSSel_registerName("replyToOpenOrPrint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_representation:", r)
-			}
-		}()
-		OSSel_representation = OSSel_registerName("representation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_representations:", r)
-			}
-		}()
-		OSSel_representations = OSSel_registerName("representations")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_request:", r)
-			}
-		}()
-		OSSel_request = OSSel_registerName("request")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_requestWithURL_:", r)
-			}
-		}()
-		OSSel_requestWithURL_ = OSSel_registerName("requestWithURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resetCursorRects:", r)
-			}
-		}()
-		OSSel_resetCursorRects = OSSel_registerName("resetCursorRects")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resignFirstResponder:", r)
-			}
-		}()
-		OSSel_resignFirstResponder = OSSel_registerName("resignFirstResponder")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeDownCursor:", r)
-			}
-		}()
-		OSSel_resizeDownCursor = OSSel_registerName("resizeDownCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeLeftCursor:", r)
-			}
-		}()
-		OSSel_resizeLeftCursor = OSSel_registerName("resizeLeftCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeLeftRightCursor:", r)
-			}
-		}()
-		OSSel_resizeLeftRightCursor = OSSel_registerName("resizeLeftRightCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeRightCursor:", r)
-			}
-		}()
-		OSSel_resizeRightCursor = OSSel_registerName("resizeRightCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeUpCursor:", r)
-			}
-		}()
-		OSSel_resizeUpCursor = OSSel_registerName("resizeUpCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizeUpDownCursor:", r)
-			}
-		}()
-		OSSel_resizeUpDownCursor = OSSel_registerName("resizeUpDownCursor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_resizingMask:", r)
-			}
-		}()
-		OSSel_resizingMask = OSSel_registerName("resizingMask")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_respondsToSelector_:", r)
-			}
-		}()
-		OSSel_respondsToSelector_ = OSSel_registerName("respondsToSelector:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_restoreGraphicsState:", r)
-			}
-		}()
-		OSSel_restoreGraphicsState = OSSel_registerName("restoreGraphicsState")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_retain:", r)
-			}
-		}()
-		OSSel_retain = OSSel_registerName("retain")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_retainCount:", r)
-			}
-		}()
-		OSSel_retainCount = OSSel_registerName("retainCount")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rightMouseDown_:", r)
-			}
-		}()
-		OSSel_rightMouseDown_ = OSSel_registerName("rightMouseDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rightMouseDragged_:", r)
-			}
-		}()
-		OSSel_rightMouseDragged_ = OSSel_registerName("rightMouseDragged:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rightMouseUp_:", r)
-			}
-		}()
-		OSSel_rightMouseUp_ = OSSel_registerName("rightMouseUp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rotateByDegrees_:", r)
-			}
-		}()
-		OSSel_rotateByDegrees_ = OSSel_registerName("rotateByDegrees:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rotateWithEvent_:", r)
-			}
-		}()
-		OSSel_rotateWithEvent_ = OSSel_registerName("rotateWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rotation:", r)
-			}
-		}()
-		OSSel_rotation = OSSel_registerName("rotation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rowAtPoint_:", r)
-			}
-		}()
-		OSSel_rowAtPoint_ = OSSel_registerName("rowAtPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rowForItem_:", r)
-			}
-		}()
-		OSSel_rowForItem_ = OSSel_registerName("rowForItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_rowHeight:", r)
-			}
-		}()
-		OSSel_rowHeight = OSSel_registerName("rowHeight")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runModal:", r)
-			}
-		}()
-		OSSel_runModal = OSSel_registerName("runModal")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runModalForDirectory_file_:", r)
-			}
-		}()
-		OSSel_runModalForDirectory_file_ = OSSel_registerName("runModalForDirectory:file:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runModalForWindow_:", r)
-			}
-		}()
-		OSSel_runModalForWindow_ = OSSel_registerName("runModalForWindow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runModalWithPrintInfo_:", r)
-			}
-		}()
-		OSSel_runModalWithPrintInfo_ = OSSel_registerName("runModalWithPrintInfo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runMode_beforeDate_:", r)
-			}
-		}()
-		OSSel_runMode_beforeDate_ = OSSel_registerName("runMode:beforeDate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_runOperation:", r)
-			}
-		}()
-		OSSel_runOperation = OSSel_registerName("runOperation")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_samplesPerPixel:", r)
-			}
-		}()
-		OSSel_samplesPerPixel = OSSel_registerName("samplesPerPixel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_saveGraphicsState:", r)
-			}
-		}()
-		OSSel_saveGraphicsState = OSSel_registerName("saveGraphicsState")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_savePanel:", r)
-			}
-		}()
-		OSSel_savePanel = OSSel_registerName("savePanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scaleXBy_yBy_:", r)
-			}
-		}()
-		OSSel_scaleXBy_yBy_ = OSSel_registerName("scaleXBy:yBy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_:", r)
-			}
-		}()
-		OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_ = OSSel_registerName("scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_screen:", r)
-			}
-		}()
-		OSSel_screen = OSSel_registerName("screen")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_screenX:", r)
-			}
-		}()
-		OSSel_screenX = OSSel_registerName("screenX")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_screenY:", r)
-			}
-		}()
-		OSSel_screenY = OSSel_registerName("screenY")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_screens:", r)
-			}
-		}()
-		OSSel_screens = OSSel_registerName("screens")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollClipView_toPoint_:", r)
-			}
-		}()
-		OSSel_scrollClipView_toPoint_ = OSSel_registerName("scrollClipView:toPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollColumnToVisible_:", r)
-			}
-		}()
-		OSSel_scrollColumnToVisible_ = OSSel_registerName("scrollColumnToVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollPoint_:", r)
-			}
-		}()
-		OSSel_scrollPoint_ = OSSel_registerName("scrollPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollRangeToVisible_:", r)
-			}
-		}()
-		OSSel_scrollRangeToVisible_ = OSSel_registerName("scrollRangeToVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollRect_by_:", r)
-			}
-		}()
-		OSSel_scrollRect_by_ = OSSel_registerName("scrollRect:by:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollRowToVisible_:", r)
-			}
-		}()
-		OSSel_scrollRowToVisible_ = OSSel_registerName("scrollRowToVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollWheel_:", r)
-			}
-		}()
-		OSSel_scrollWheel_ = OSSel_registerName("scrollWheel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollerStyle:", r)
-			}
-		}()
-		OSSel_scrollerStyle = OSSel_registerName("scrollerStyle")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_scrollerWidthForControlSize_:", r)
-			}
-		}()
-		OSSel_scrollerWidthForControlSize_ = OSSel_registerName("scrollerWidthForControlSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_searchButtonCell:", r)
-			}
-		}()
-		OSSel_searchButtonCell = OSSel_registerName("searchButtonCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_searchButtonRectForBounds_:", r)
-			}
-		}()
-		OSSel_searchButtonRectForBounds_ = OSSel_registerName("searchButtonRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_searchTextRectForBounds_:", r)
-			}
-		}()
-		OSSel_searchTextRectForBounds_ = OSSel_registerName("searchTextRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_secondOfMinute:", r)
-			}
-		}()
-		OSSel_secondOfMinute = OSSel_registerName("secondOfMinute")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_secondarySelectedControlColor:", r)
-			}
-		}()
-		OSSel_secondarySelectedControlColor = OSSel_registerName("secondarySelectedControlColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectAll_:", r)
-			}
-		}()
-		OSSel_selectAll_ = OSSel_registerName("selectAll:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectItem_:", r)
-			}
-		}()
-		OSSel_selectItem_ = OSSel_registerName("selectItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectItemAtIndex_:", r)
-			}
-		}()
-		OSSel_selectItemAtIndex_ = OSSel_registerName("selectItemAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectRowIndexes_byExtendingSelection_:", r)
-			}
-		}()
-		OSSel_selectRowIndexes_byExtendingSelection_ = OSSel_registerName("selectRowIndexes:byExtendingSelection:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectTabViewItemAtIndex_:", r)
-			}
-		}()
-		OSSel_selectTabViewItemAtIndex_ = OSSel_registerName("selectTabViewItemAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectText_:", r)
-			}
-		}()
-		OSSel_selectText_ = OSSel_registerName("selectText:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedControlColor:", r)
-			}
-		}()
-		OSSel_selectedControlColor = OSSel_registerName("selectedControlColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedControlTextColor:", r)
-			}
-		}()
-		OSSel_selectedControlTextColor = OSSel_registerName("selectedControlTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedRange:", r)
-			}
-		}()
-		OSSel_selectedRange = OSSel_registerName("selectedRange")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedRow:", r)
-			}
-		}()
-		OSSel_selectedRow = OSSel_registerName("selectedRow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedRowIndexes:", r)
-			}
-		}()
-		OSSel_selectedRowIndexes = OSSel_registerName("selectedRowIndexes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedTabViewItem:", r)
-			}
-		}()
-		OSSel_selectedTabViewItem = OSSel_registerName("selectedTabViewItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedTextAttributes:", r)
-			}
-		}()
-		OSSel_selectedTextAttributes = OSSel_registerName("selectedTextAttributes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedTextBackgroundColor:", r)
-			}
-		}()
-		OSSel_selectedTextBackgroundColor = OSSel_registerName("selectedTextBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_selectedTextColor:", r)
-			}
-		}()
-		OSSel_selectedTextColor = OSSel_registerName("selectedTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendAction_to_:", r)
-			}
-		}()
-		OSSel_sendAction_to_ = OSSel_registerName("sendAction:to:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendAction_to_from_:", r)
-			}
-		}()
-		OSSel_sendAction_to_from_ = OSSel_registerName("sendAction:to:from:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sendEvent_:", r)
-			}
-		}()
-		OSSel_sendEvent_ = OSSel_registerName("sendEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sender:", r)
-			}
-		}()
-		OSSel_sender = OSSel_registerName("sender")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_separatorItem:", r)
-			}
-		}()
-		OSSel_separatorItem = OSSel_registerName("separatorItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_set:", r)
-			}
-		}()
-		OSSel_set = OSSel_registerName("set")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAcceptsMouseMovedEvents_:", r)
-			}
-		}()
-		OSSel_setAcceptsMouseMovedEvents_ = OSSel_registerName("setAcceptsMouseMovedEvents:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAcceptsTouchEvents_:", r)
-			}
-		}()
-		OSSel_setAcceptsTouchEvents_ = OSSel_registerName("setAcceptsTouchEvents:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAccessoryView_:", r)
-			}
-		}()
-		OSSel_setAccessoryView_ = OSSel_registerName("setAccessoryView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAccessoryViewDisclosed_:", r)
-			}
-		}()
-		OSSel_setAccessoryViewDisclosed_ = OSSel_registerName("setAccessoryViewDisclosed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAction_:", r)
-			}
-		}()
-		OSSel_setAction_ = OSSel_registerName("setAction:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setActivationPolicy_:", r)
-			}
-		}()
-		OSSel_setActivationPolicy_ = OSSel_registerName("setActivationPolicy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAlertStyle_:", r)
-			}
-		}()
-		OSSel_setAlertStyle_ = OSSel_registerName("setAlertStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAlignment_:", r)
-			}
-		}()
-		OSSel_setAlignment_ = OSSel_registerName("setAlignment:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowedFileTypes_:", r)
-			}
-		}()
-		OSSel_setAllowedFileTypes_ = OSSel_registerName("setAllowedFileTypes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsColumnReordering_:", r)
-			}
-		}()
-		OSSel_setAllowsColumnReordering_ = OSSel_registerName("setAllowsColumnReordering:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsFloats_:", r)
-			}
-		}()
-		OSSel_setAllowsFloats_ = OSSel_registerName("setAllowsFloats:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsMixedState_:", r)
-			}
-		}()
-		OSSel_setAllowsMixedState_ = OSSel_registerName("setAllowsMixedState:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsMultipleSelection_:", r)
-			}
-		}()
-		OSSel_setAllowsMultipleSelection_ = OSSel_registerName("setAllowsMultipleSelection:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsOtherFileTypes_:", r)
-			}
-		}()
-		OSSel_setAllowsOtherFileTypes_ = OSSel_registerName("setAllowsOtherFileTypes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsUndo_:", r)
-			}
-		}()
-		OSSel_setAllowsUndo_ = OSSel_registerName("setAllowsUndo:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAllowsUserCustomization_:", r)
-			}
-		}()
-		OSSel_setAllowsUserCustomization_ = OSSel_registerName("setAllowsUserCustomization:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAlpha_:", r)
-			}
-		}()
-		OSSel_setAlpha_ = OSSel_registerName("setAlpha:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAlphaValue_:", r)
-			}
-		}()
-		OSSel_setAlphaValue_ = OSSel_registerName("setAlphaValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAlternateButtonTitle_:", r)
-			}
-		}()
-		OSSel_setAlternateButtonTitle_ = OSSel_registerName("setAlternateButtonTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAppearance_:", r)
-			}
-		}()
-		OSSel_setAppearance_ = OSSel_registerName("setAppearance:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setApplicationIconImage_:", r)
-			}
-		}()
-		OSSel_setApplicationIconImage_ = OSSel_registerName("setApplicationIconImage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setApplicationNameForUserAgent_:", r)
-			}
-		}()
-		OSSel_setApplicationNameForUserAgent_ = OSSel_registerName("setApplicationNameForUserAgent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAttachmentCell_:", r)
-			}
-		}()
-		OSSel_setAttachmentCell_ = OSSel_registerName("setAttachmentCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAttributedString_:", r)
-			}
-		}()
-		OSSel_setAttributedString_ = OSSel_registerName("setAttributedString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAttributedStringValue_:", r)
-			}
-		}()
-		OSSel_setAttributedStringValue_ = OSSel_registerName("setAttributedStringValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAttributedTitle_:", r)
-			}
-		}()
-		OSSel_setAttributedTitle_ = OSSel_registerName("setAttributedTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutoenablesItems_:", r)
-			}
-		}()
-		OSSel_setAutoenablesItems_ = OSSel_registerName("setAutoenablesItems:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutohidesScrollers_:", r)
-			}
-		}()
-		OSSel_setAutohidesScrollers_ = OSSel_registerName("setAutohidesScrollers:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutoresizesOutlineColumn_:", r)
-			}
-		}()
-		OSSel_setAutoresizesOutlineColumn_ = OSSel_registerName("setAutoresizesOutlineColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutoresizesSubviews_:", r)
-			}
-		}()
-		OSSel_setAutoresizesSubviews_ = OSSel_registerName("setAutoresizesSubviews:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutoresizingMask_:", r)
-			}
-		}()
-		OSSel_setAutoresizingMask_ = OSSel_registerName("setAutoresizingMask:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setAutosaveExpandedItems_:", r)
-			}
-		}()
-		OSSel_setAutosaveExpandedItems_ = OSSel_registerName("setAutosaveExpandedItems:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBackgroundColor_:", r)
-			}
-		}()
-		OSSel_setBackgroundColor_ = OSSel_registerName("setBackgroundColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBackgroundLayoutEnabled_:", r)
-			}
-		}()
-		OSSel_setBackgroundLayoutEnabled_ = OSSel_registerName("setBackgroundLayoutEnabled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBackgroundStyle_:", r)
-			}
-		}()
-		OSSel_setBackgroundStyle_ = OSSel_registerName("setBackgroundStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBadgeLabel_:", r)
-			}
-		}()
-		OSSel_setBadgeLabel_ = OSSel_registerName("setBadgeLabel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBaseWritingDirection_:", r)
-			}
-		}()
-		OSSel_setBaseWritingDirection_ = OSSel_registerName("setBaseWritingDirection:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBecomesKeyOnlyIfNeeded_:", r)
-			}
-		}()
-		OSSel_setBecomesKeyOnlyIfNeeded_ = OSSel_registerName("setBecomesKeyOnlyIfNeeded:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBezelStyle_:", r)
-			}
-		}()
-		OSSel_setBezelStyle_ = OSSel_registerName("setBezelStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBezeled_:", r)
-			}
-		}()
-		OSSel_setBezeled_ = OSSel_registerName("setBezeled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBorderType_:", r)
-			}
-		}()
-		OSSel_setBorderType_ = OSSel_registerName("setBorderType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBorderWidth_:", r)
-			}
-		}()
-		OSSel_setBorderWidth_ = OSSel_registerName("setBorderWidth:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBordered_:", r)
-			}
-		}()
-		OSSel_setBordered_ = OSSel_registerName("setBordered:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBoundsRotation_:", r)
-			}
-		}()
-		OSSel_setBoundsRotation_ = OSSel_registerName("setBoundsRotation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBoundsSize_:", r)
-			}
-		}()
-		OSSel_setBoundsSize_ = OSSel_registerName("setBoundsSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setBoxType_:", r)
-			}
-		}()
-		OSSel_setBoxType_ = OSSel_registerName("setBoxType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setButtonType_:", r)
-			}
-		}()
-		OSSel_setButtonType_ = OSSel_registerName("setButtonType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCacheMode_:", r)
-			}
-		}()
-		OSSel_setCacheMode_ = OSSel_registerName("setCacheMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCachePolicy_:", r)
-			}
-		}()
-		OSSel_setCachePolicy_ = OSSel_registerName("setCachePolicy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCanChooseDirectories_:", r)
-			}
-		}()
-		OSSel_setCanChooseDirectories_ = OSSel_registerName("setCanChooseDirectories:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCanChooseFiles_:", r)
-			}
-		}()
-		OSSel_setCanChooseFiles_ = OSSel_registerName("setCanChooseFiles:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCanCreateDirectories_:", r)
-			}
-		}()
-		OSSel_setCanCreateDirectories_ = OSSel_registerName("setCanCreateDirectories:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCancelButtonCell_:", r)
-			}
-		}()
-		OSSel_setCancelButtonCell_ = OSSel_registerName("setCancelButtonCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCell_:", r)
-			}
-		}()
-		OSSel_setCell_ = OSSel_registerName("setCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCellClass_:", r)
-			}
-		}()
-		OSSel_setCellClass_ = OSSel_registerName("setCellClass:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setClip:", r)
-			}
-		}()
-		OSSel_setClip = OSSel_registerName("setClip")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCollectionBehavior_:", r)
-			}
-		}()
-		OSSel_setCollectionBehavior_ = OSSel_registerName("setCollectionBehavior:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setColor_:", r)
-			}
-		}()
-		OSSel_setColor_ = OSSel_registerName("setColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setColumnAutoresizingStyle_:", r)
-			}
-		}()
-		OSSel_setColumnAutoresizingStyle_ = OSSel_registerName("setColumnAutoresizingStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCompositingOperation_:", r)
-			}
-		}()
-		OSSel_setCompositingOperation_ = OSSel_registerName("setCompositingOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setContainerSize_:", r)
-			}
-		}()
-		OSSel_setContainerSize_ = OSSel_registerName("setContainerSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setContentView_:", r)
-			}
-		}()
-		OSSel_setContentView_ = OSSel_registerName("setContentView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setContentViewMargins_:", r)
-			}
-		}()
-		OSSel_setContentViewMargins_ = OSSel_registerName("setContentViewMargins:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setControlSize_:", r)
-			}
-		}()
-		OSSel_setControlSize_ = OSSel_registerName("setControlSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCookie_:", r)
-			}
-		}()
-		OSSel_setCookie_ = OSSel_registerName("setCookie:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCopiesOnScroll_:", r)
-			}
-		}()
-		OSSel_setCopiesOnScroll_ = OSSel_registerName("setCopiesOnScroll:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCurrentContext_:", r)
-			}
-		}()
-		OSSel_setCurrentContext_ = OSSel_registerName("setCurrentContext:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCurrentOperation_:", r)
-			}
-		}()
-		OSSel_setCurrentOperation_ = OSSel_registerName("setCurrentOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setCustomUserAgent_:", r)
-			}
-		}()
-		OSSel_setCustomUserAgent_ = OSSel_registerName("setCustomUserAgent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setData_forType_:", r)
-			}
-		}()
-		OSSel_setData_forType_ = OSSel_registerName("setData:forType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDataCell_:", r)
-			}
-		}()
-		OSSel_setDataCell_ = OSSel_registerName("setDataCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDataSource_:", r)
-			}
-		}()
-		OSSel_setDataSource_ = OSSel_registerName("setDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDatePickerElements_:", r)
-			}
-		}()
-		OSSel_setDatePickerElements_ = OSSel_registerName("setDatePickerElements:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDatePickerStyle_:", r)
-			}
-		}()
-		OSSel_setDatePickerStyle_ = OSSel_registerName("setDatePickerStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDateValue_:", r)
-			}
-		}()
-		OSSel_setDateValue_ = OSSel_registerName("setDateValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDefaultButtonCell_:", r)
-			}
-		}()
-		OSSel_setDefaultButtonCell_ = OSSel_registerName("setDefaultButtonCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDefaultFlatness_:", r)
-			}
-		}()
-		OSSel_setDefaultFlatness_ = OSSel_registerName("setDefaultFlatness:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDefaultParagraphStyle_:", r)
-			}
-		}()
-		OSSel_setDefaultParagraphStyle_ = OSSel_registerName("setDefaultParagraphStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDefaultTabInterval_:", r)
-			}
-		}()
-		OSSel_setDefaultTabInterval_ = OSSel_registerName("setDefaultTabInterval:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDelegate_:", r)
-			}
-		}()
-		OSSel_setDelegate_ = OSSel_registerName("setDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDestination_allowOverwrite_:", r)
-			}
-		}()
-		OSSel_setDestination_allowOverwrite_ = OSSel_registerName("setDestination:allowOverwrite:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDictionary_:", r)
-			}
-		}()
-		OSSel_setDictionary_ = OSSel_registerName("setDictionary:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDirectory_:", r)
-			}
-		}()
-		OSSel_setDirectory_ = OSSel_registerName("setDirectory:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDirectoryURL_:", r)
-			}
-		}()
-		OSSel_setDirectoryURL_ = OSSel_registerName("setDirectoryURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDisplayMode_:", r)
-			}
-		}()
-		OSSel_setDisplayMode_ = OSSel_registerName("setDisplayMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDisplaysLinkToolTips_:", r)
-			}
-		}()
-		OSSel_setDisplaysLinkToolTips_ = OSSel_registerName("setDisplaysLinkToolTips:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDocumentCursor_:", r)
-			}
-		}()
-		OSSel_setDocumentCursor_ = OSSel_registerName("setDocumentCursor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDocumentEdited_:", r)
-			}
-		}()
-		OSSel_setDocumentEdited_ = OSSel_registerName("setDocumentEdited:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDocumentView_:", r)
-			}
-		}()
-		OSSel_setDocumentView_ = OSSel_registerName("setDocumentView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDoubleAction_:", r)
-			}
-		}()
-		OSSel_setDoubleAction_ = OSSel_registerName("setDoubleAction:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDoubleValue_:", r)
-			}
-		}()
-		OSSel_setDoubleValue_ = OSSel_registerName("setDoubleValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDownloadDelegate_:", r)
-			}
-		}()
-		OSSel_setDownloadDelegate_ = OSSel_registerName("setDownloadDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDrawsBackground_:", r)
-			}
-		}()
-		OSSel_setDrawsBackground_ = OSSel_registerName("setDrawsBackground:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDropItem_dropChildIndex_:", r)
-			}
-		}()
-		OSSel_setDropItem_dropChildIndex_ = OSSel_registerName("setDropItem:dropChildIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setDropRow_dropOperation_:", r)
-			}
-		}()
-		OSSel_setDropRow_dropOperation_ = OSSel_registerName("setDropRow:dropOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setEditable_:", r)
-			}
-		}()
-		OSSel_setEditable_ = OSSel_registerName("setEditable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setEnabled_:", r)
-			}
-		}()
-		OSSel_setEnabled_ = OSSel_registerName("setEnabled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFill:", r)
-			}
-		}()
-		OSSel_setFill = OSSel_registerName("setFill")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFillColor_:", r)
-			}
-		}()
-		OSSel_setFillColor_ = OSSel_registerName("setFillColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFireDate_:", r)
-			}
-		}()
-		OSSel_setFireDate_ = OSSel_registerName("setFireDate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFirstLineHeadIndent_:", r)
-			}
-		}()
-		OSSel_setFirstLineHeadIndent_ = OSSel_registerName("setFirstLineHeadIndent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFloatingPanel_:", r)
-			}
-		}()
-		OSSel_setFloatingPanel_ = OSSel_registerName("setFloatingPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFocusRingType_:", r)
-			}
-		}()
-		OSSel_setFocusRingType_ = OSSel_registerName("setFocusRingType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFont_:", r)
-			}
-		}()
-		OSSel_setFont_ = OSSel_registerName("setFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFormatter_:", r)
-			}
-		}()
-		OSSel_setFormatter_ = OSSel_registerName("setFormatter:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrame_:", r)
-			}
-		}()
-		OSSel_setFrame_ = OSSel_registerName("setFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrame_display_:", r)
-			}
-		}()
-		OSSel_setFrame_display_ = OSSel_registerName("setFrame:display:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrame_display_animate_:", r)
-			}
-		}()
-		OSSel_setFrame_display_animate_ = OSSel_registerName("setFrame:display:animate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrameFromContentFrame_:", r)
-			}
-		}()
-		OSSel_setFrameFromContentFrame_ = OSSel_registerName("setFrameFromContentFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrameLoadDelegate_:", r)
-			}
-		}()
-		OSSel_setFrameLoadDelegate_ = OSSel_registerName("setFrameLoadDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrameOrigin_:", r)
-			}
-		}()
-		OSSel_setFrameOrigin_ = OSSel_registerName("setFrameOrigin:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setFrameSize_:", r)
-			}
-		}()
-		OSSel_setFrameSize_ = OSSel_registerName("setFrameSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setGridStyleMask_:", r)
-			}
-		}()
-		OSSel_setGridStyleMask_ = OSSel_registerName("setGridStyleMask:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHTTPBody_:", r)
-			}
-		}()
-		OSSel_setHTTPBody_ = OSSel_registerName("setHTTPBody:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHTTPMethod_:", r)
-			}
-		}()
-		OSSel_setHTTPMethod_ = OSSel_registerName("setHTTPMethod:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHasHorizontalScroller_:", r)
-			}
-		}()
-		OSSel_setHasHorizontalScroller_ = OSSel_registerName("setHasHorizontalScroller:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHasShadow_:", r)
-			}
-		}()
-		OSSel_setHasShadow_ = OSSel_registerName("setHasShadow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHasVerticalScroller_:", r)
-			}
-		}()
-		OSSel_setHasVerticalScroller_ = OSSel_registerName("setHasVerticalScroller:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHeadIndent_:", r)
-			}
-		}()
-		OSSel_setHeadIndent_ = OSSel_registerName("setHeadIndent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHeaderCell_:", r)
-			}
-		}()
-		OSSel_setHeaderCell_ = OSSel_registerName("setHeaderCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHeaderView_:", r)
-			}
-		}()
-		OSSel_setHeaderView_ = OSSel_registerName("setHeaderView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHelpMenu_:", r)
-			}
-		}()
-		OSSel_setHelpMenu_ = OSSel_registerName("setHelpMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHidden_:", r)
-			}
-		}()
-		OSSel_setHidden_ = OSSel_registerName("setHidden:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHiddenUntilMouseMoves_:", r)
-			}
-		}()
-		OSSel_setHiddenUntilMouseMoves_ = OSSel_registerName("setHiddenUntilMouseMoves:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHidesOnDeactivate_:", r)
-			}
-		}()
-		OSSel_setHidesOnDeactivate_ = OSSel_registerName("setHidesOnDeactivate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHighlightMode_:", r)
-			}
-		}()
-		OSSel_setHighlightMode_ = OSSel_registerName("setHighlightMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHighlighted_:", r)
-			}
-		}()
-		OSSel_setHighlighted_ = OSSel_registerName("setHighlighted:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHighlightedTableColumn_:", r)
-			}
-		}()
-		OSSel_setHighlightedTableColumn_ = OSSel_registerName("setHighlightedTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHighlightsBy_:", r)
-			}
-		}()
-		OSSel_setHighlightsBy_ = OSSel_registerName("setHighlightsBy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHorizontalScroller_:", r)
-			}
-		}()
-		OSSel_setHorizontalScroller_ = OSSel_registerName("setHorizontalScroller:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setHorizontallyResizable_:", r)
-			}
-		}()
-		OSSel_setHorizontallyResizable_ = OSSel_registerName("setHorizontallyResizable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIcon_:", r)
-			}
-		}()
-		OSSel_setIcon_ = OSSel_registerName("setIcon:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIdentifier_:", r)
-			}
-		}()
-		OSSel_setIdentifier_ = OSSel_registerName("setIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setImage_:", r)
-			}
-		}()
-		OSSel_setImage_ = OSSel_registerName("setImage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setImageAlignment_:", r)
-			}
-		}()
-		OSSel_setImageAlignment_ = OSSel_registerName("setImageAlignment:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setImageInterpolation_:", r)
-			}
-		}()
-		OSSel_setImageInterpolation_ = OSSel_registerName("setImageInterpolation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setImagePosition_:", r)
-			}
-		}()
-		OSSel_setImagePosition_ = OSSel_registerName("setImagePosition:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setImageScaling_:", r)
-			}
-		}()
-		OSSel_setImageScaling_ = OSSel_registerName("setImageScaling:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIncrement_:", r)
-			}
-		}()
-		OSSel_setIncrement_ = OSSel_registerName("setIncrement:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIndeterminate_:", r)
-			}
-		}()
-		OSSel_setIndeterminate_ = OSSel_registerName("setIndeterminate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIndicatorImage_inTableColumn_:", r)
-			}
-		}()
-		OSSel_setIndicatorImage_inTableColumn_ = OSSel_registerName("setIndicatorImage:inTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setInteger_forKey_:", r)
-			}
-		}()
-		OSSel_setInteger_forKey_ = OSSel_registerName("setInteger:forKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setIntercellSpacing_:", r)
-			}
-		}()
-		OSSel_setIntercellSpacing_ = OSSel_registerName("setIntercellSpacing:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setJavaEnabled_:", r)
-			}
-		}()
-		OSSel_setJavaEnabled_ = OSSel_registerName("setJavaEnabled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setJavaScriptEnabled_:", r)
-			}
-		}()
-		OSSel_setJavaScriptEnabled_ = OSSel_registerName("setJavaScriptEnabled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setJobDisposition_:", r)
-			}
-		}()
-		OSSel_setJobDisposition_ = OSSel_registerName("setJobDisposition:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setJobTitle_:", r)
-			}
-		}()
-		OSSel_setJobTitle_ = OSSel_registerName("setJobTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setKeyEquivalent_:", r)
-			}
-		}()
-		OSSel_setKeyEquivalent_ = OSSel_registerName("setKeyEquivalent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setKeyEquivalentModifierMask_:", r)
-			}
-		}()
-		OSSel_setKeyEquivalentModifierMask_ = OSSel_registerName("setKeyEquivalentModifierMask:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setKnobProportion_:", r)
-			}
-		}()
-		OSSel_setKnobProportion_ = OSSel_registerName("setKnobProportion:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLabel_:", r)
-			}
-		}()
-		OSSel_setLabel_ = OSSel_registerName("setLabel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLength_:", r)
-			}
-		}()
-		OSSel_setLength_ = OSSel_registerName("setLength:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLevel_:", r)
-			}
-		}()
-		OSSel_setLevel_ = OSSel_registerName("setLevel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineBreakMode_:", r)
-			}
-		}()
-		OSSel_setLineBreakMode_ = OSSel_registerName("setLineBreakMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineCapStyle_:", r)
-			}
-		}()
-		OSSel_setLineCapStyle_ = OSSel_registerName("setLineCapStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineDash_count_phase_:", r)
-			}
-		}()
-		OSSel_setLineDash_count_phase_ = OSSel_registerName("setLineDash:count:phase:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineFragmentPadding_:", r)
-			}
-		}()
-		OSSel_setLineFragmentPadding_ = OSSel_registerName("setLineFragmentPadding:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineJoinStyle_:", r)
-			}
-		}()
-		OSSel_setLineJoinStyle_ = OSSel_registerName("setLineJoinStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineSpacing_:", r)
-			}
-		}()
-		OSSel_setLineSpacing_ = OSSel_registerName("setLineSpacing:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLineWidth_:", r)
-			}
-		}()
-		OSSel_setLineWidth_ = OSSel_registerName("setLineWidth:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setLinkTextAttributes_:", r)
-			}
-		}()
-		OSSel_setLinkTextAttributes_ = OSSel_registerName("setLinkTextAttributes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMainMenu_:", r)
-			}
-		}()
-		OSSel_setMainMenu_ = OSSel_registerName("setMainMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMarkedText_selectedRange_:", r)
-			}
-		}()
-		OSSel_setMarkedText_selectedRange_ = OSSel_registerName("setMarkedText:selectedRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMaxSize_:", r)
-			}
-		}()
-		OSSel_setMaxSize_ = OSSel_registerName("setMaxSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMaxValue_:", r)
-			}
-		}()
-		OSSel_setMaxValue_ = OSSel_registerName("setMaxValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMaximum_:", r)
-			}
-		}()
-		OSSel_setMaximum_ = OSSel_registerName("setMaximum:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMaximumFractionDigits_:", r)
-			}
-		}()
-		OSSel_setMaximumFractionDigits_ = OSSel_registerName("setMaximumFractionDigits:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMaximumIntegerDigits_:", r)
-			}
-		}()
-		OSSel_setMaximumIntegerDigits_ = OSSel_registerName("setMaximumIntegerDigits:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMenu_:", r)
-			}
-		}()
-		OSSel_setMenu_ = OSSel_registerName("setMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMenuFormRepresentation_:", r)
-			}
-		}()
-		OSSel_setMenuFormRepresentation_ = OSSel_registerName("setMenuFormRepresentation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMessage_:", r)
-			}
-		}()
-		OSSel_setMessage_ = OSSel_registerName("setMessage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMessageText_:", r)
-			}
-		}()
-		OSSel_setMessageText_ = OSSel_registerName("setMessageText:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinSize_:", r)
-			}
-		}()
-		OSSel_setMinSize_ = OSSel_registerName("setMinSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinValue_:", r)
-			}
-		}()
-		OSSel_setMinValue_ = OSSel_registerName("setMinValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinWidth_:", r)
-			}
-		}()
-		OSSel_setMinWidth_ = OSSel_registerName("setMinWidth:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinimum_:", r)
-			}
-		}()
-		OSSel_setMinimum_ = OSSel_registerName("setMinimum:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinimumFractionDigits_:", r)
-			}
-		}()
-		OSSel_setMinimumFractionDigits_ = OSSel_registerName("setMinimumFractionDigits:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMinimumIntegerDigits_:", r)
-			}
-		}()
-		OSSel_setMinimumIntegerDigits_ = OSSel_registerName("setMinimumIntegerDigits:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMiterLimit_:", r)
-			}
-		}()
-		OSSel_setMiterLimit_ = OSSel_registerName("setMiterLimit:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setMovable_:", r)
-			}
-		}()
-		OSSel_setMovable_ = OSSel_registerName("setMovable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setNameFieldStringValue_:", r)
-			}
-		}()
-		OSSel_setNameFieldStringValue_ = OSSel_registerName("setNameFieldStringValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setNeedsDisplay_:", r)
-			}
-		}()
-		OSSel_setNeedsDisplay_ = OSSel_registerName("setNeedsDisplay:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setNeedsDisplayInRect_:", r)
-			}
-		}()
-		OSSel_setNeedsDisplayInRect_ = OSSel_registerName("setNeedsDisplayInRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setNumberOfVisibleItems_:", r)
-			}
-		}()
-		OSSel_setNumberOfVisibleItems_ = OSSel_registerName("setNumberOfVisibleItems:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setNumberStyle_:", r)
-			}
-		}()
-		OSSel_setNumberStyle_ = OSSel_registerName("setNumberStyle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setObject_forKey_:", r)
-			}
-		}()
-		OSSel_setObject_forKey_ = OSSel_registerName("setObject:forKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setObjectValue_:", r)
-			}
-		}()
-		OSSel_setObjectValue_ = OSSel_registerName("setObjectValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setOnMouseEntered_:", r)
-			}
-		}()
-		OSSel_setOnMouseEntered_ = OSSel_registerName("setOnMouseEntered:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setOpaque_:", r)
-			}
-		}()
-		OSSel_setOpaque_ = OSSel_registerName("setOpaque:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setOptions_:", r)
-			}
-		}()
-		OSSel_setOptions_ = OSSel_registerName("setOptions:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setOutlineTableColumn_:", r)
-			}
-		}()
-		OSSel_setOutlineTableColumn_ = OSSel_registerName("setOutlineTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPaletteLabel_:", r)
-			}
-		}()
-		OSSel_setPaletteLabel_ = OSSel_registerName("setPaletteLabel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPanelFont_isMultiple_:", r)
-			}
-		}()
-		OSSel_setPanelFont_isMultiple_ = OSSel_registerName("setPanelFont:isMultiple:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPartialStringValidationEnabled_:", r)
-			}
-		}()
-		OSSel_setPartialStringValidationEnabled_ = OSSel_registerName("setPartialStringValidationEnabled:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPatternPhase_:", r)
-			}
-		}()
-		OSSel_setPatternPhase_ = OSSel_registerName("setPatternPhase:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPlaceholderString_:", r)
-			}
-		}()
-		OSSel_setPlaceholderString_ = OSSel_registerName("setPlaceholderString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPolicyDelegate_:", r)
-			}
-		}()
-		OSSel_setPolicyDelegate_ = OSSel_registerName("setPolicyDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPreferences_:", r)
-			}
-		}()
-		OSSel_setPreferences_ = OSSel_registerName("setPreferences:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPrinter_:", r)
-			}
-		}()
-		OSSel_setPrinter_ = OSSel_registerName("setPrinter:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPropertyList_forType_:", r)
-			}
-		}()
-		OSSel_setPropertyList_forType_ = OSSel_registerName("setPropertyList:forType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setPullsDown_:", r)
-			}
-		}()
-		OSSel_setPullsDown_ = OSSel_registerName("setPullsDown:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setReleasedWhenClosed_:", r)
-			}
-		}()
-		OSSel_setReleasedWhenClosed_ = OSSel_registerName("setReleasedWhenClosed:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setRepresentedFilename_:", r)
-			}
-		}()
-		OSSel_setRepresentedFilename_ = OSSel_registerName("setRepresentedFilename:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setRepresentedURL_:", r)
-			}
-		}()
-		OSSel_setRepresentedURL_ = OSSel_registerName("setRepresentedURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setResizingMask_:", r)
-			}
-		}()
-		OSSel_setResizingMask_ = OSSel_registerName("setResizingMask:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setResourceLoadDelegate_:", r)
-			}
-		}()
-		OSSel_setResourceLoadDelegate_ = OSSel_registerName("setResourceLoadDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setRichText_:", r)
-			}
-		}()
-		OSSel_setRichText_ = OSSel_registerName("setRichText:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setRowHeight_:", r)
-			}
-		}()
-		OSSel_setRowHeight_ = OSSel_registerName("setRowHeight:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setScalesWhenResized_:", r)
-			}
-		}()
-		OSSel_setScalesWhenResized_ = OSSel_registerName("setScalesWhenResized:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setScrollable_:", r)
-			}
-		}()
-		OSSel_setScrollable_ = OSSel_registerName("setScrollable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSearchButtonCell_:", r)
-			}
-		}()
-		OSSel_setSearchButtonCell_ = OSSel_registerName("setSearchButtonCell:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSelectable_:", r)
-			}
-		}()
-		OSSel_setSelectable_ = OSSel_registerName("setSelectable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSelectedItemIdentifier_:", r)
-			}
-		}()
-		OSSel_setSelectedItemIdentifier_ = OSSel_registerName("setSelectedItemIdentifier:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSelectedRange_:", r)
-			}
-		}()
-		OSSel_setSelectedRange_ = OSSel_registerName("setSelectedRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSelectedTextAttributes_:", r)
-			}
-		}()
-		OSSel_setSelectedTextAttributes_ = OSSel_registerName("setSelectedTextAttributes:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSelectionOnly_:", r)
-			}
-		}()
-		OSSel_setSelectionOnly_ = OSSel_registerName("setSelectionOnly:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setServicesMenu_:", r)
-			}
-		}()
-		OSSel_setServicesMenu_ = OSSel_registerName("setServicesMenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShouldAntialias_:", r)
-			}
-		}()
-		OSSel_setShouldAntialias_ = OSSel_registerName("setShouldAntialias:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShowsHelp_:", r)
-			}
-		}()
-		OSSel_setShowsHelp_ = OSSel_registerName("setShowsHelp:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShowsPrintPanel_:", r)
-			}
-		}()
-		OSSel_setShowsPrintPanel_ = OSSel_registerName("setShowsPrintPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShowsProgressPanel_:", r)
-			}
-		}()
-		OSSel_setShowsProgressPanel_ = OSSel_registerName("setShowsProgressPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShowsResizeIndicator_:", r)
-			}
-		}()
-		OSSel_setShowsResizeIndicator_ = OSSel_registerName("setShowsResizeIndicator:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setShowsToolbarButton_:", r)
-			}
-		}()
-		OSSel_setShowsToolbarButton_ = OSSel_registerName("setShowsToolbarButton:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSize_:", r)
-			}
-		}()
-		OSSel_setSize_ = OSSel_registerName("setSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setState_:", r)
-			}
-		}()
-		OSSel_setState_ = OSSel_registerName("setState:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setString_:", r)
-			}
-		}()
-		OSSel_setString_ = OSSel_registerName("setString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setString_forType_:", r)
-			}
-		}()
-		OSSel_setString_forType_ = OSSel_registerName("setString:forType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setStringValue_:", r)
-			}
-		}()
-		OSSel_setStringValue_ = OSSel_registerName("setStringValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setStroke:", r)
-			}
-		}()
-		OSSel_setStroke = OSSel_registerName("setStroke")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSubmenu_:", r)
-			}
-		}()
-		OSSel_setSubmenu_ = OSSel_registerName("setSubmenu:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setSubmenu_forItem_:", r)
-			}
-		}()
-		OSSel_setSubmenu_forItem_ = OSSel_registerName("setSubmenu:forItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTabStops_:", r)
-			}
-		}()
-		OSSel_setTabStops_ = OSSel_registerName("setTabStops:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTabViewType_:", r)
-			}
-		}()
-		OSSel_setTabViewType_ = OSSel_registerName("setTabViewType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTag_:", r)
-			}
-		}()
-		OSSel_setTag_ = OSSel_registerName("setTag:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTarget_:", r)
-			}
-		}()
-		OSSel_setTarget_ = OSSel_registerName("setTarget:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTextColor_:", r)
-			}
-		}()
-		OSSel_setTextColor_ = OSSel_registerName("setTextColor:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTextStorage_:", r)
-			}
-		}()
-		OSSel_setTextStorage_ = OSSel_registerName("setTextStorage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTitle_:", r)
-			}
-		}()
-		OSSel_setTitle_ = OSSel_registerName("setTitle:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTitleFont_:", r)
-			}
-		}()
-		OSSel_setTitleFont_ = OSSel_registerName("setTitleFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTitlePosition_:", r)
-			}
-		}()
-		OSSel_setTitlePosition_ = OSSel_registerName("setTitlePosition:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setToolTip_:", r)
-			}
-		}()
-		OSSel_setToolTip_ = OSSel_registerName("setToolTip:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setToolbar_:", r)
-			}
-		}()
-		OSSel_setToolbar_ = OSSel_registerName("setToolbar:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTransformStruct_:", r)
-			}
-		}()
-		OSSel_setTransformStruct_ = OSSel_registerName("setTransformStruct:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setTreatsFilePackagesAsDirectories_:", r)
-			}
-		}()
-		OSSel_setTreatsFilePackagesAsDirectories_ = OSSel_registerName("setTreatsFilePackagesAsDirectories:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUIDelegate_:", r)
-			}
-		}()
-		OSSel_setUIDelegate_ = OSSel_registerName("setUIDelegate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setURL_:", r)
-			}
-		}()
-		OSSel_setURL_ = OSSel_registerName("setURL:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUpPrintOperationDefaultValues:", r)
-			}
-		}()
-		OSSel_setUpPrintOperationDefaultValues = OSSel_registerName("setUpPrintOperationDefaultValues")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUsesAlternatingRowBackgroundColors_:", r)
-			}
-		}()
-		OSSel_setUsesAlternatingRowBackgroundColors_ = OSSel_registerName("setUsesAlternatingRowBackgroundColors:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUsesFontPanel_:", r)
-			}
-		}()
-		OSSel_setUsesFontPanel_ = OSSel_registerName("setUsesFontPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUsesScreenFonts_:", r)
-			}
-		}()
-		OSSel_setUsesScreenFonts_ = OSSel_registerName("setUsesScreenFonts:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUsesSingleLineMode_:", r)
-			}
-		}()
-		OSSel_setUsesSingleLineMode_ = OSSel_registerName("setUsesSingleLineMode:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setUsesThreadedAnimation_:", r)
-			}
-		}()
-		OSSel_setUsesThreadedAnimation_ = OSSel_registerName("setUsesThreadedAnimation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setValue_forHTTPHeaderField_:", r)
-			}
-		}()
-		OSSel_setValue_forHTTPHeaderField_ = OSSel_registerName("setValue:forHTTPHeaderField:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setValue_forKey_:", r)
-			}
-		}()
-		OSSel_setValue_forKey_ = OSSel_registerName("setValue:forKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setValueWraps_:", r)
-			}
-		}()
-		OSSel_setValueWraps_ = OSSel_registerName("setValueWraps:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setValues_forParameter_:", r)
-			}
-		}()
-		OSSel_setValues_forParameter_ = OSSel_registerName("setValues:forParameter:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setVerticalScrollElasticity_:", r)
-			}
-		}()
-		OSSel_setVerticalScrollElasticity_ = OSSel_registerName("setVerticalScrollElasticity:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setVerticalScroller_:", r)
-			}
-		}()
-		OSSel_setVerticalScroller_ = OSSel_registerName("setVerticalScroller:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setView_:", r)
-			}
-		}()
-		OSSel_setView_ = OSSel_registerName("setView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setVisible_:", r)
-			}
-		}()
-		OSSel_setVisible_ = OSSel_registerName("setVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWantsRestingTouches_:", r)
-			}
-		}()
-		OSSel_setWantsRestingTouches_ = OSSel_registerName("setWantsRestingTouches:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWidth_:", r)
-			}
-		}()
-		OSSel_setWidth_ = OSSel_registerName("setWidth:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWidthTracksTextView_:", r)
-			}
-		}()
-		OSSel_setWidthTracksTextView_ = OSSel_registerName("setWidthTracksTextView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWindingRule_:", r)
-			}
-		}()
-		OSSel_setWindingRule_ = OSSel_registerName("setWindingRule:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWorksWhenModal_:", r)
-			}
-		}()
-		OSSel_setWorksWhenModal_ = OSSel_registerName("setWorksWhenModal:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_setWraps_:", r)
-			}
-		}()
-		OSSel_setWraps_ = OSSel_registerName("setWraps:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedApplication:", r)
-			}
-		}()
-		OSSel_sharedApplication = OSSel_registerName("sharedApplication")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedCertificateTrustPanel:", r)
-			}
-		}()
-		OSSel_sharedCertificateTrustPanel = OSSel_registerName("sharedCertificateTrustPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedColorPanel:", r)
-			}
-		}()
-		OSSel_sharedColorPanel = OSSel_registerName("sharedColorPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedFontManager:", r)
-			}
-		}()
-		OSSel_sharedFontManager = OSSel_registerName("sharedFontManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedFontPanel:", r)
-			}
-		}()
-		OSSel_sharedFontPanel = OSSel_registerName("sharedFontPanel")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedHTTPCookieStorage:", r)
-			}
-		}()
-		OSSel_sharedHTTPCookieStorage = OSSel_registerName("sharedHTTPCookieStorage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedPrintInfo:", r)
-			}
-		}()
-		OSSel_sharedPrintInfo = OSSel_registerName("sharedPrintInfo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sharedWorkspace:", r)
-			}
-		}()
-		OSSel_sharedWorkspace = OSSel_registerName("sharedWorkspace")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_shiftKey:", r)
-			}
-		}()
-		OSSel_shiftKey = OSSel_registerName("shiftKey")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_shouldAntialias:", r)
-			}
-		}()
-		OSSel_shouldAntialias = OSSel_registerName("shouldAntialias")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_shouldChangeTextInRange_replacementString_:", r)
-			}
-		}()
-		OSSel_shouldChangeTextInRange_replacementString_ = OSSel_registerName("shouldChangeTextInRange:replacementString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_shouldDelayWindowOrderingForEvent_:", r)
-			}
-		}()
-		OSSel_shouldDelayWindowOrderingForEvent_ = OSSel_registerName("shouldDelayWindowOrderingForEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_shouldDrawInsertionPoint:", r)
-			}
-		}()
-		OSSel_shouldDrawInsertionPoint = OSSel_registerName("shouldDrawInsertionPoint")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_size:", r)
-			}
-		}()
-		OSSel_size = OSSel_registerName("size")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sizeOfLabel_:", r)
-			}
-		}()
-		OSSel_sizeOfLabel_ = OSSel_registerName("sizeOfLabel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sizeToFit:", r)
-			}
-		}()
-		OSSel_sizeToFit = OSSel_registerName("sizeToFit")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sizeValue:", r)
-			}
-		}()
-		OSSel_sizeValue = OSSel_registerName("sizeValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_skipDescendents:", r)
-			}
-		}()
-		OSSel_skipDescendents = OSSel_registerName("skipDescendents")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_smallSystemFontSize:", r)
-			}
-		}()
-		OSSel_smallSystemFontSize = OSSel_registerName("smallSystemFontSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_sortIndicatorRectForBounds_:", r)
-			}
-		}()
-		OSSel_sortIndicatorRectForBounds_ = OSSel_registerName("sortIndicatorRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_standardPreferences:", r)
-			}
-		}()
-		OSSel_standardPreferences = OSSel_registerName("standardPreferences")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_standardUserDefaults:", r)
-			}
-		}()
-		OSSel_standardUserDefaults = OSSel_registerName("standardUserDefaults")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_startAnimation_:", r)
-			}
-		}()
-		OSSel_startAnimation_ = OSSel_registerName("startAnimation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_state:", r)
-			}
-		}()
-		OSSel_state = OSSel_registerName("state")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_statusItemWithLength_:", r)
-			}
-		}()
-		OSSel_statusItemWithLength_ = OSSel_registerName("statusItemWithLength:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stop_:", r)
-			}
-		}()
-		OSSel_stop_ = OSSel_registerName("stop:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stopLoading_:", r)
-			}
-		}()
-		OSSel_stopLoading_ = OSSel_registerName("stopLoading:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stopModal:", r)
-			}
-		}()
-		OSSel_stopModal = OSSel_registerName("stopModal")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_string:", r)
-			}
-		}()
-		OSSel_string = OSSel_registerName("string")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByAddingPercentEscapesUsingEncoding_:", r)
-			}
-		}()
-		OSSel_stringByAddingPercentEscapesUsingEncoding_ = OSSel_registerName("stringByAddingPercentEscapesUsingEncoding:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByAppendingPathComponent_:", r)
-			}
-		}()
-		OSSel_stringByAppendingPathComponent_ = OSSel_registerName("stringByAppendingPathComponent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByAppendingPathExtension_:", r)
-			}
-		}()
-		OSSel_stringByAppendingPathExtension_ = OSSel_registerName("stringByAppendingPathExtension:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByAppendingString_:", r)
-			}
-		}()
-		OSSel_stringByAppendingString_ = OSSel_registerName("stringByAppendingString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByDeletingLastPathComponent:", r)
-			}
-		}()
-		OSSel_stringByDeletingLastPathComponent = OSSel_registerName("stringByDeletingLastPathComponent")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByDeletingPathExtension:", r)
-			}
-		}()
-		OSSel_stringByDeletingPathExtension = OSSel_registerName("stringByDeletingPathExtension")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByReplacingOccurrencesOfString_withString_:", r)
-			}
-		}()
-		OSSel_stringByReplacingOccurrencesOfString_withString_ = OSSel_registerName("stringByReplacingOccurrencesOfString:withString:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringByReplacingPercentEscapesUsingEncoding_:", r)
-			}
-		}()
-		OSSel_stringByReplacingPercentEscapesUsingEncoding_ = OSSel_registerName("stringByReplacingPercentEscapesUsingEncoding:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringForKey_:", r)
-			}
-		}()
-		OSSel_stringForKey_ = OSSel_registerName("stringForKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringForObjectValue_:", r)
-			}
-		}()
-		OSSel_stringForObjectValue_ = OSSel_registerName("stringForObjectValue:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringForType_:", r)
-			}
-		}()
-		OSSel_stringForType_ = OSSel_registerName("stringForType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringValue:", r)
-			}
-		}()
-		OSSel_stringValue = OSSel_registerName("stringValue")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringWithCharacters_length_:", r)
-			}
-		}()
-		OSSel_stringWithCharacters_length_ = OSSel_registerName("stringWithCharacters:length:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stringWithUTF8String_:", r)
-			}
-		}()
-		OSSel_stringWithUTF8String_ = OSSel_registerName("stringWithUTF8String:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_stroke:", r)
-			}
-		}()
-		OSSel_stroke = OSSel_registerName("stroke")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_strokeRect_:", r)
-			}
-		}()
-		OSSel_strokeRect_ = OSSel_registerName("strokeRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_styleMask:", r)
-			}
-		}()
-		OSSel_styleMask = OSSel_registerName("styleMask")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_submenu:", r)
-			}
-		}()
-		OSSel_submenu = OSSel_registerName("submenu")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_subviews:", r)
-			}
-		}()
-		OSSel_subviews = OSSel_registerName("subviews")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_superclass:", r)
-			}
-		}()
-		OSSel_superclass = OSSel_registerName("superclass")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_superview:", r)
-			}
-		}()
-		OSSel_superview = OSSel_registerName("superview")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_swipeWithEvent_:", r)
-			}
-		}()
-		OSSel_swipeWithEvent_ = OSSel_registerName("swipeWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemFontOfSize_:", r)
-			}
-		}()
-		OSSel_systemFontOfSize_ = OSSel_registerName("systemFontOfSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemFontSize:", r)
-			}
-		}()
-		OSSel_systemFontSize = OSSel_registerName("systemFontSize")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemFontSizeForControlSize_:", r)
-			}
-		}()
-		OSSel_systemFontSizeForControlSize_ = OSSel_registerName("systemFontSizeForControlSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemStatusBar:", r)
-			}
-		}()
-		OSSel_systemStatusBar = OSSel_registerName("systemStatusBar")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_systemVersion:", r)
-			}
-		}()
-		OSSel_systemVersion = OSSel_registerName("systemVersion")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tabView_didSelectTabViewItem_:", r)
-			}
-		}()
-		OSSel_tabView_didSelectTabViewItem_ = OSSel_registerName("tabView:didSelectTabViewItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tabView_willSelectTabViewItem_:", r)
-			}
-		}()
-		OSSel_tabView_willSelectTabViewItem_ = OSSel_registerName("tabView:willSelectTabViewItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tabViewItemAtPoint_:", r)
-			}
-		}()
-		OSSel_tabViewItemAtPoint_ = OSSel_registerName("tabViewItemAtPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableColumns:", r)
-			}
-		}()
-		OSSel_tableColumns = OSSel_registerName("tableColumns")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_acceptDrop_row_dropOperation_:", r)
-			}
-		}()
-		OSSel_tableView_acceptDrop_row_dropOperation_ = OSSel_registerName("tableView:acceptDrop:row:dropOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_didClickTableColumn_:", r)
-			}
-		}()
-		OSSel_tableView_didClickTableColumn_ = OSSel_registerName("tableView:didClickTableColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_objectValueForTableColumn_row_:", r)
-			}
-		}()
-		OSSel_tableView_objectValueForTableColumn_row_ = OSSel_registerName("tableView:objectValueForTableColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_setObjectValue_forTableColumn_row_:", r)
-			}
-		}()
-		OSSel_tableView_setObjectValue_forTableColumn_row_ = OSSel_registerName("tableView:setObjectValue:forTableColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_shouldEditTableColumn_row_:", r)
-			}
-		}()
-		OSSel_tableView_shouldEditTableColumn_row_ = OSSel_registerName("tableView:shouldEditTableColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_shouldReorderColumn_toColumn_:", r)
-			}
-		}()
-		OSSel_tableView_shouldReorderColumn_toColumn_ = OSSel_registerName("tableView:shouldReorderColumn:toColumn:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_shouldTrackCell_forTableColumn_row_:", r)
-			}
-		}()
-		OSSel_tableView_shouldTrackCell_forTableColumn_row_ = OSSel_registerName("tableView:shouldTrackCell:forTableColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_validateDrop_proposedRow_proposedDropOperation_:", r)
-			}
-		}()
-		OSSel_tableView_validateDrop_proposedRow_proposedDropOperation_ = OSSel_registerName("tableView:validateDrop:proposedRow:proposedDropOperation:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_willDisplayCell_forTableColumn_row_:", r)
-			}
-		}()
-		OSSel_tableView_willDisplayCell_forTableColumn_row_ = OSSel_registerName("tableView:willDisplayCell:forTableColumn:row:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableView_writeRowsWithIndexes_toPasteboard_:", r)
-			}
-		}()
-		OSSel_tableView_writeRowsWithIndexes_toPasteboard_ = OSSel_registerName("tableView:writeRowsWithIndexes:toPasteboard:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableViewColumnDidMove_:", r)
-			}
-		}()
-		OSSel_tableViewColumnDidMove_ = OSSel_registerName("tableViewColumnDidMove:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableViewColumnDidResize_:", r)
-			}
-		}()
-		OSSel_tableViewColumnDidResize_ = OSSel_registerName("tableViewColumnDidResize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableViewSelectionDidChange_:", r)
-			}
-		}()
-		OSSel_tableViewSelectionDidChange_ = OSSel_registerName("tableViewSelectionDidChange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tableViewSelectionIsChanging_:", r)
-			}
-		}()
-		OSSel_tableViewSelectionIsChanging_ = OSSel_registerName("tableViewSelectionIsChanging:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tag:", r)
-			}
-		}()
-		OSSel_tag = OSSel_registerName("tag")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_target:", r)
-			}
-		}()
-		OSSel_target = OSSel_registerName("target")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_terminate_:", r)
-			}
-		}()
-		OSSel_terminate_ = OSSel_registerName("terminate:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_testPart_:", r)
-			}
-		}()
-		OSSel_testPart_ = OSSel_registerName("testPart:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textBackgroundColor:", r)
-			}
-		}()
-		OSSel_textBackgroundColor = OSSel_registerName("textBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textColor:", r)
-			}
-		}()
-		OSSel_textColor = OSSel_registerName("textColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textContainer:", r)
-			}
-		}()
-		OSSel_textContainer = OSSel_registerName("textContainer")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textDidChange_:", r)
-			}
-		}()
-		OSSel_textDidChange_ = OSSel_registerName("textDidChange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textDidEndEditing_:", r)
-			}
-		}()
-		OSSel_textDidEndEditing_ = OSSel_registerName("textDidEndEditing:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textStorage:", r)
-			}
-		}()
-		OSSel_textStorage = OSSel_registerName("textStorage")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textView_clickedOnLink_atIndex_:", r)
-			}
-		}()
-		OSSel_textView_clickedOnLink_atIndex_ = OSSel_registerName("textView:clickedOnLink:atIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_:", r)
-			}
-		}()
-		OSSel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_ = OSSel_registerName("textView:willChangeSelectionFromCharacterRange:toCharacterRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_textViewDidChangeSelection_:", r)
-			}
-		}()
-		OSSel_textViewDidChangeSelection_ = OSSel_registerName("textViewDidChangeSelection:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_thickness:", r)
-			}
-		}()
-		OSSel_thickness = OSSel_registerName("thickness")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_threadDictionary:", r)
-			}
-		}()
-		OSSel_threadDictionary = OSSel_registerName("threadDictionary")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_tile:", r)
-			}
-		}()
-		OSSel_tile = OSSel_registerName("tile")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_timeZone:", r)
-			}
-		}()
-		OSSel_timeZone = OSSel_registerName("timeZone")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_timestamp:", r)
-			}
-		}()
-		OSSel_timestamp = OSSel_registerName("timestamp")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_title:", r)
-			}
-		}()
-		OSSel_title = OSSel_registerName("title")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_titleCell:", r)
-			}
-		}()
-		OSSel_titleCell = OSSel_registerName("titleCell")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_titleFont:", r)
-			}
-		}()
-		OSSel_titleFont = OSSel_registerName("titleFont")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_titleOfSelectedItem:", r)
-			}
-		}()
-		OSSel_titleOfSelectedItem = OSSel_registerName("titleOfSelectedItem")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_titleRectForBounds_:", r)
-			}
-		}()
-		OSSel_titleRectForBounds_ = OSSel_registerName("titleRectForBounds:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toggleFullScreen_:", r)
-			}
-		}()
-		OSSel_toggleFullScreen_ = OSSel_registerName("toggleFullScreen:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toolbar:", r)
-			}
-		}()
-		OSSel_toolbar = OSSel_registerName("toolbar")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_:", r)
-			}
-		}()
-		OSSel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_ = OSSel_registerName("toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toolbarAllowedItemIdentifiers_:", r)
-			}
-		}()
-		OSSel_toolbarAllowedItemIdentifiers_ = OSSel_registerName("toolbarAllowedItemIdentifiers:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toolbarDefaultItemIdentifiers_:", r)
-			}
-		}()
-		OSSel_toolbarDefaultItemIdentifiers_ = OSSel_registerName("toolbarDefaultItemIdentifiers:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_toolbarSelectableItemIdentifiers_:", r)
-			}
-		}()
-		OSSel_toolbarSelectableItemIdentifiers_ = OSSel_registerName("toolbarSelectableItemIdentifiers:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_touchesBeganWithEvent_:", r)
-			}
-		}()
-		OSSel_touchesBeganWithEvent_ = OSSel_registerName("touchesBeganWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_touchesCancelledWithEvent_:", r)
-			}
-		}()
-		OSSel_touchesCancelledWithEvent_ = OSSel_registerName("touchesCancelledWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_touchesEndedWithEvent_:", r)
-			}
-		}()
-		OSSel_touchesEndedWithEvent_ = OSSel_registerName("touchesEndedWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_touchesMatchingPhase_inView_:", r)
-			}
-		}()
-		OSSel_touchesMatchingPhase_inView_ = OSSel_registerName("touchesMatchingPhase:inView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_touchesMovedWithEvent_:", r)
-			}
-		}()
-		OSSel_touchesMovedWithEvent_ = OSSel_registerName("touchesMovedWithEvent:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_trackingAreas:", r)
-			}
-		}()
-		OSSel_trackingAreas = OSSel_registerName("trackingAreas")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_traitsOfFont_:", r)
-			}
-		}()
-		OSSel_traitsOfFont_ = OSSel_registerName("traitsOfFont:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_transform:", r)
-			}
-		}()
-		OSSel_transform = OSSel_registerName("transform")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_transformPoint_:", r)
-			}
-		}()
-		OSSel_transformPoint_ = OSSel_registerName("transformPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_transformSize_:", r)
-			}
-		}()
-		OSSel_transformSize_ = OSSel_registerName("transformSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_transformStruct:", r)
-			}
-		}()
-		OSSel_transformStruct = OSSel_registerName("transformStruct")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_transformUsingAffineTransform_:", r)
-			}
-		}()
-		OSSel_transformUsingAffineTransform_ = OSSel_registerName("transformUsingAffineTransform:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_translateXBy_yBy_:", r)
-			}
-		}()
-		OSSel_translateXBy_yBy_ = OSSel_registerName("translateXBy:yBy:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_type:", r)
-			}
-		}()
-		OSSel_type = OSSel_registerName("type")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_type_conformsToType_:", r)
-			}
-		}()
-		OSSel_type_conformsToType_ = OSSel_registerName("type:conformsToType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_typeOfFile_error_:", r)
-			}
-		}()
-		OSSel_typeOfFile_error_ = OSSel_registerName("typeOfFile:error:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_typeWithFilenameExtension_:", r)
-			}
-		}()
-		OSSel_typeWithFilenameExtension_ = OSSel_registerName("typeWithFilenameExtension:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_types:", r)
-			}
-		}()
-		OSSel_types = OSSel_registerName("types")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_typesetter:", r)
-			}
-		}()
-		OSSel_typesetter = OSSel_registerName("typesetter")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unarchiveObjectWithData_:", r)
-			}
-		}()
-		OSSel_unarchiveObjectWithData_ = OSSel_registerName("unarchiveObjectWithData:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_undefined:", r)
-			}
-		}()
-		OSSel_undefined = OSSel_registerName("undefined")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_undo:", r)
-			}
-		}()
-		OSSel_undo = OSSel_registerName("undo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_undoManager:", r)
-			}
-		}()
-		OSSel_undoManager = OSSel_registerName("undoManager")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unhideAllApplications_:", r)
-			}
-		}()
-		OSSel_unhideAllApplications_ = OSSel_registerName("unhideAllApplications:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unlockFocus:", r)
-			}
-		}()
-		OSSel_unlockFocus = OSSel_registerName("unlockFocus")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unmarkText:", r)
-			}
-		}()
-		OSSel_unmarkText = OSSel_registerName("unmarkText")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_unregisterDraggedTypes:", r)
-			}
-		}()
-		OSSel_unregisterDraggedTypes = OSSel_registerName("unregisterDraggedTypes")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_update:", r)
-			}
-		}()
-		OSSel_update = OSSel_registerName("update")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_updateFromPMPrintSettings:", r)
-			}
-		}()
-		OSSel_updateFromPMPrintSettings = OSSel_registerName("updateFromPMPrintSettings")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_updateTrackingAreas:", r)
-			}
-		}()
-		OSSel_updateTrackingAreas = OSSel_registerName("updateTrackingAreas")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_use:", r)
-			}
-		}()
-		OSSel_use = OSSel_registerName("use")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_useCredential_forAuthenticationChallenge_:", r)
-			}
-		}()
-		OSSel_useCredential_forAuthenticationChallenge_ = OSSel_registerName("useCredential:forAuthenticationChallenge:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_usedRectForTextContainer_:", r)
-			}
-		}()
-		OSSel_usedRectForTextContainer_ = OSSel_registerName("usedRectForTextContainer:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_user:", r)
-			}
-		}()
-		OSSel_user = OSSel_registerName("user")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_userInfo:", r)
-			}
-		}()
-		OSSel_userInfo = OSSel_registerName("userInfo")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_usesAlternatingRowBackgroundColors:", r)
-			}
-		}()
-		OSSel_usesAlternatingRowBackgroundColors = OSSel_registerName("usesAlternatingRowBackgroundColors")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_validAttributesForMarkedText:", r)
-			}
-		}()
-		OSSel_validAttributesForMarkedText = OSSel_registerName("validAttributesForMarkedText")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_validModesForFontPanel_:", r)
-			}
-		}()
-		OSSel_validModesForFontPanel_ = OSSel_registerName("validModesForFontPanel:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_validRequestorForSendType_returnType_:", r)
-			}
-		}()
-		OSSel_validRequestorForSendType_returnType_ = OSSel_registerName("validRequestorForSendType:returnType:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_validateMenuItem_:", r)
-			}
-		}()
-		OSSel_validateMenuItem_ = OSSel_registerName("validateMenuItem:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_validateVisibleColumns:", r)
-			}
-		}()
-		OSSel_validateVisibleColumns = OSSel_registerName("validateVisibleColumns")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_value:", r)
-			}
-		}()
-		OSSel_value = OSSel_registerName("value")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_valueForKey_:", r)
-			}
-		}()
-		OSSel_valueForKey_ = OSSel_registerName("valueForKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_valueWithPoint_:", r)
-			}
-		}()
-		OSSel_valueWithPoint_ = OSSel_registerName("valueWithPoint:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_valueWithRange_:", r)
-			}
-		}()
-		OSSel_valueWithRange_ = OSSel_registerName("valueWithRange:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_valueWithRect_:", r)
-			}
-		}()
-		OSSel_valueWithRect_ = OSSel_registerName("valueWithRect:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_valueWithSize_:", r)
-			}
-		}()
-		OSSel_valueWithSize_ = OSSel_registerName("valueWithSize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_view:", r)
-			}
-		}()
-		OSSel_view = OSSel_registerName("view")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_view_stringForToolTip_point_userData_:", r)
-			}
-		}()
-		OSSel_view_stringForToolTip_point_userData_ = OSSel_registerName("view:stringForToolTip:point:userData:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_viewDidMoveToWindow:", r)
-			}
-		}()
-		OSSel_viewDidMoveToWindow = OSSel_registerName("viewDidMoveToWindow")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_viewWillMoveToWindow_:", r)
-			}
-		}()
-		OSSel_viewWillMoveToWindow_ = OSSel_registerName("viewWillMoveToWindow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_visibleFrame:", r)
-			}
-		}()
-		OSSel_visibleFrame = OSSel_registerName("visibleFrame")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_visibleRect:", r)
-			}
-		}()
-		OSSel_visibleRect = OSSel_registerName("visibleRect")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_wantsPeriodicDraggingUpdates:", r)
-			}
-		}()
-		OSSel_wantsPeriodicDraggingUpdates = OSSel_registerName("wantsPeriodicDraggingUpdates")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_wantsToHandleMouseEvents:", r)
-			}
-		}()
-		OSSel_wantsToHandleMouseEvents = OSSel_registerName("wantsToHandleMouseEvents")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webFrame:", r)
-			}
-		}()
-		OSSel_webFrame = OSSel_registerName("webFrame")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webScriptValueAtIndex_:", r)
-			}
-		}()
-		OSSel_webScriptValueAtIndex_ = OSSel_registerName("webScriptValueAtIndex:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_contextMenuItemsForElement_defaultMenuItems_:", r)
-			}
-		}()
-		OSSel_webView_contextMenuItemsForElement_defaultMenuItems_ = OSSel_registerName("webView:contextMenuItemsForElement:defaultMenuItems:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_createWebViewWithRequest_:", r)
-			}
-		}()
-		OSSel_webView_createWebViewWithRequest_ = OSSel_registerName("webView:createWebViewWithRequest:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_decidePolicyForMIMEType_request_frame_decisionListener_:", r)
-			}
-		}()
-		OSSel_webView_decidePolicyForMIMEType_request_frame_decisionListener_ = OSSel_registerName("webView:decidePolicyForMIMEType:request:frame:decisionListener:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_:", r)
-			}
-		}()
-		OSSel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_ = OSSel_registerName("webView:decidePolicyForNavigationAction:request:frame:decisionListener:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_:", r)
-			}
-		}()
-		OSSel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_ = OSSel_registerName("webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didChangeLocationWithinPageForFrame_:", r)
-			}
-		}()
-		OSSel_webView_didChangeLocationWithinPageForFrame_ = OSSel_registerName("webView:didChangeLocationWithinPageForFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didCommitLoadForFrame_:", r)
-			}
-		}()
-		OSSel_webView_didCommitLoadForFrame_ = OSSel_registerName("webView:didCommitLoadForFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didFailProvisionalLoadWithError_forFrame_:", r)
-			}
-		}()
-		OSSel_webView_didFailProvisionalLoadWithError_forFrame_ = OSSel_registerName("webView:didFailProvisionalLoadWithError:forFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didFinishLoadForFrame_:", r)
-			}
-		}()
-		OSSel_webView_didFinishLoadForFrame_ = OSSel_registerName("webView:didFinishLoadForFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didReceiveTitle_forFrame_:", r)
-			}
-		}()
-		OSSel_webView_didReceiveTitle_forFrame_ = OSSel_registerName("webView:didReceiveTitle:forFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_didStartProvisionalLoadForFrame_:", r)
-			}
-		}()
-		OSSel_webView_didStartProvisionalLoadForFrame_ = OSSel_registerName("webView:didStartProvisionalLoadForFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_identifierForInitialRequest_fromDataSource_:", r)
-			}
-		}()
-		OSSel_webView_identifierForInitialRequest_fromDataSource_ = OSSel_registerName("webView:identifierForInitialRequest:fromDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_mouseDidMoveOverElement_modifierFlags_:", r)
-			}
-		}()
-		OSSel_webView_mouseDidMoveOverElement_modifierFlags_ = OSSel_registerName("webView:mouseDidMoveOverElement:modifierFlags:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_printFrameView_:", r)
-			}
-		}()
-		OSSel_webView_printFrameView_ = OSSel_registerName("webView:printFrameView:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_resource_didFailLoadingWithError_fromDataSource_:", r)
-			}
-		}()
-		OSSel_webView_resource_didFailLoadingWithError_fromDataSource_ = OSSel_registerName("webView:resource:didFailLoadingWithError:fromDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_resource_didFinishLoadingFromDataSource_:", r)
-			}
-		}()
-		OSSel_webView_resource_didFinishLoadingFromDataSource_ = OSSel_registerName("webView:resource:didFinishLoadingFromDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_:", r)
-			}
-		}()
-		OSSel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_ = OSSel_registerName("webView:resource:didReceiveAuthenticationChallenge:fromDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_resource_willSendRequest_redirectResponse_fromDataSource_:", r)
-			}
-		}()
-		OSSel_webView_resource_willSendRequest_redirectResponse_fromDataSource_ = OSSel_registerName("webView:resource:willSendRequest:redirectResponse:fromDataSource:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_:", r)
-			}
-		}()
-		OSSel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_ = OSSel_registerName("webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runJavaScriptAlertPanelWithMessage_:", r)
-			}
-		}()
-		OSSel_webView_runJavaScriptAlertPanelWithMessage_ = OSSel_registerName("webView:runJavaScriptAlertPanelWithMessage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_:", r)
-			}
-		}()
-		OSSel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_ = OSSel_registerName("webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runJavaScriptConfirmPanelWithMessage_:", r)
-			}
-		}()
-		OSSel_webView_runJavaScriptConfirmPanelWithMessage_ = OSSel_registerName("webView:runJavaScriptConfirmPanelWithMessage:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_:", r)
-			}
-		}()
-		OSSel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_ = OSSel_registerName("webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_runOpenPanelForFileButtonWithResultListener_:", r)
-			}
-		}()
-		OSSel_webView_runOpenPanelForFileButtonWithResultListener_ = OSSel_registerName("webView:runOpenPanelForFileButtonWithResultListener:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_setFrame_:", r)
-			}
-		}()
-		OSSel_webView_setFrame_ = OSSel_registerName("webView:setFrame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_setResizable_:", r)
-			}
-		}()
-		OSSel_webView_setResizable_ = OSSel_registerName("webView:setResizable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_setStatusBarVisible_:", r)
-			}
-		}()
-		OSSel_webView_setStatusBarVisible_ = OSSel_registerName("webView:setStatusBarVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_setStatusText_:", r)
-			}
-		}()
-		OSSel_webView_setStatusText_ = OSSel_registerName("webView:setStatusText:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_setToolbarsVisible_:", r)
-			}
-		}()
-		OSSel_webView_setToolbarsVisible_ = OSSel_registerName("webView:setToolbarsVisible:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_unableToImplementPolicyWithError_frame_:", r)
-			}
-		}()
-		OSSel_webView_unableToImplementPolicyWithError_frame_ = OSSel_registerName("webView:unableToImplementPolicyWithError:frame:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webView_windowScriptObjectAvailable_:", r)
-			}
-		}()
-		OSSel_webView_windowScriptObjectAvailable_ = OSSel_registerName("webView:windowScriptObjectAvailable:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webViewClose_:", r)
-			}
-		}()
-		OSSel_webViewClose_ = OSSel_registerName("webViewClose:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webViewFocus_:", r)
-			}
-		}()
-		OSSel_webViewFocus_ = OSSel_registerName("webViewFocus:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webViewShow_:", r)
-			}
-		}()
-		OSSel_webViewShow_ = OSSel_registerName("webViewShow:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_webViewUnfocus_:", r)
-			}
-		}()
-		OSSel_webViewUnfocus_ = OSSel_registerName("webViewUnfocus:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_wheelDelta:", r)
-			}
-		}()
-		OSSel_wheelDelta = OSSel_registerName("wheelDelta")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_wheelDeltaX:", r)
-			}
-		}()
-		OSSel_wheelDeltaX = OSSel_registerName("wheelDeltaX")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_wheelDeltaY:", r)
-			}
-		}()
-		OSSel_wheelDeltaY = OSSel_registerName("wheelDeltaY")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_width:", r)
-			}
-		}()
-		OSSel_width = OSSel_registerName("width")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_window:", r)
-			}
-		}()
-		OSSel_window = OSSel_registerName("window")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowBackgroundColor:", r)
-			}
-		}()
-		OSSel_windowBackgroundColor = OSSel_registerName("windowBackgroundColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidBecomeKey_:", r)
-			}
-		}()
-		OSSel_windowDidBecomeKey_ = OSSel_registerName("windowDidBecomeKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidDeminiaturize_:", r)
-			}
-		}()
-		OSSel_windowDidDeminiaturize_ = OSSel_registerName("windowDidDeminiaturize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidMiniaturize_:", r)
-			}
-		}()
-		OSSel_windowDidMiniaturize_ = OSSel_registerName("windowDidMiniaturize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidMove_:", r)
-			}
-		}()
-		OSSel_windowDidMove_ = OSSel_registerName("windowDidMove:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidResignKey_:", r)
-			}
-		}()
-		OSSel_windowDidResignKey_ = OSSel_registerName("windowDidResignKey:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowDidResize_:", r)
-			}
-		}()
-		OSSel_windowDidResize_ = OSSel_registerName("windowDidResize:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowFrameTextColor:", r)
-			}
-		}()
-		OSSel_windowFrameTextColor = OSSel_registerName("windowFrameTextColor")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowNumber:", r)
-			}
-		}()
-		OSSel_windowNumber = OSSel_registerName("windowNumber")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowNumberAtPoint_belowWindowWithWindowNumber_:", r)
-			}
-		}()
-		OSSel_windowNumberAtPoint_belowWindowWithWindowNumber_ = OSSel_registerName("windowNumberAtPoint:belowWindowWithWindowNumber:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowShouldClose_:", r)
-			}
-		}()
-		OSSel_windowShouldClose_ = OSSel_registerName("windowShouldClose:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowWillClose_:", r)
-			}
-		}()
-		OSSel_windowWillClose_ = OSSel_registerName("windowWillClose:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windowWithWindowNumber_:", r)
-			}
-		}()
-		OSSel_windowWithWindowNumber_ = OSSel_registerName("windowWithWindowNumber:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_windows:", r)
-			}
-		}()
-		OSSel_windows = OSSel_registerName("windows")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_writeObjects_:", r)
-			}
-		}()
-		OSSel_writeObjects_ = OSSel_registerName("writeObjects:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_writeSelectionToPasteboard_types_:", r)
-			}
-		}()
-		OSSel_writeSelectionToPasteboard_types_ = OSSel_registerName("writeSelectionToPasteboard:types:")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_yearOfCommonEra:", r)
-			}
-		}()
-		OSSel_yearOfCommonEra = OSSel_registerName("yearOfCommonEra")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSSel_zoom_:", r)
-			}
-		}()
-		OSSel_zoom_ = OSSel_registerName("zoom:")
 	}()
 	func() {
 		defer func() {

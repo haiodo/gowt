@@ -3039,3 +3039,29 @@ Translator rules:
 
 Ceilings: `TrayItem`/`Tray`/`TaskBar` are translated but were never run; `Character.isWhitespace` is `unicode.IsSpace`;
 `String.format` covers only the conversions Go shares with Java.
+
+## Round 18: binary size, snapshot gate
+
+**Size (TSK-055/056).** `hello` stripped was 7 458 658 bytes. Measured with `go tool nm -size` (unstripped build): the
+largest single item was `internal/cocoa.init`, 445 KB - one `func() { defer recover ... }()` closure per deferred static field,
+1 550 of them being `OSSel_x = OSSel_registerName("x")`, `OSClass_x = OSObjc_getClass("X")`, `OSProtocol_x = OSObjc_getProtocol("X")`.
+`Display.InitClasses` itself is 14 KB and all of `swt` in `hello` is 700 KB, so lazy per-class registration cannot reach the 1 MB
+bar the plan set; it was not done, and the registration order of SWT is unchanged. The per-native `sync.Once` closures that
+the program actually reaches are about 95 KB in `hello` (unreached ones are dropped by the linker); a single table would save a part of that - not done.
+
+Rule: `EmitUtil.deferredInitFunc` collects the init entries whose text is exactly one of those three lookups into one table per
+lookup function (`for _, e := range [...]struct{p *int64; n string}{...} { *e.p = fn(e.n) }`), emitted ahead of the remaining
+entries (which keep their per-entry recover; the lookups cannot panic and do not depend on them). Deviation: a failing lookup
+can no longer be reported per entry (none did). Result (release, stripped): hello 7 458 658 -> 6 542 386,
+controlexample 12 613 874 -> 11 697 890, swttest 17 805 938 -> 16 889 122 (about -0.92 MB each).
+
+`make release` prints each size and warns `WARNING: +N% over recorded` when a binary is more than 5% above `tooling/sizes.txt`
+(`tooling/release-sizes.sh`); `make release-sizes-update` rewrites that file.
+
+**Snapshot gate (TSK-033).** `controlexample -snap <dir>` also writes `<dir>/meta.txt` (`scale`, `macos`, `appearance`).
+References live in `tests/snapshots/` (one PNG per tab and style variant + `meta.txt`). `make snap-check` runs the snap and
+`cmd/snapcheck` (non-GUI): if `meta.txt` differs from the reference one it prints SKIP and exits 0; otherwise each PNG is
+compared by `internal/snapcmp` - a pixel differs when its largest channel delta exceeds `-threshold` (16 of 255, absorbs
+antialiasing), an image fails when more than `-fraction` of its pixels differ (0.2%, absorbs a caret/cursor), a size change
+fails. Failures write a diff image (differing pixels red over the dimmed reference) to `bin/snap/diff`; a PNG without reference or
+a missing one also fails. `make snap-update` replaces the references. Values are guesses until measured on repeated runs.

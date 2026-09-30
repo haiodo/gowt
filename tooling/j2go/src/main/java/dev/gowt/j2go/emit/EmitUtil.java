@@ -166,9 +166,24 @@ final class EmitUtil {
 	/** func init() running each deferred static initializer under its own recover(). */
 	static String deferredInitFunc(List<String> inits, List<String> labels) {
 		StringBuilder out = new StringBuilder("func init() {\n");
+		// Round 18: name lookups (selectors, classes, protocols) go through one table loop per function;
+		// a recover closure per entry cost ~300 bytes each and the linker keeps all of them.
+		java.util.Map<String, StringBuilder> tables = new java.util.LinkedHashMap<>();
+		List<Integer> rest = new java.util.ArrayList<>();
+		java.util.regex.Pattern lookup = java.util.regex.Pattern.compile("\\t(\\w+) = (OSSel_registerName|OSObjc_getClass|OSObjc_getProtocol)\\(\"([^\"]*)\"\\)\n");
+		for (int i = 0; i < inits.size(); i++) {
+			java.util.regex.Matcher m = lookup.matcher(inits.get(i));
+			if (!m.matches()) {
+				rest.add(i);
+				continue;
+			}
+			tables.computeIfAbsent(m.group(2), k -> new StringBuilder()).append("\t\t{&").append(m.group(1)).append(", \"").append(m.group(3)).append("\"},\n");
+		}
+		tables.forEach((fn, rows) -> out.append("\tfor _, e := range [...]struct {\n\t\tp *int64\n\t\tn string\n\t}{\n").append(rows)
+				.append("\t} {\n\t\t*e.p = ").append(fn).append("(e.n)\n\t}\n"));
 		// Some deferred fields (e.g. kUTType*) resolve only inside SWT's own native lib,
 		// which this port lacks - recover per-entry so one bad symbol doesn't sink the rest.
-		for (int i = 0; i < inits.size(); i++) {
+		for (int i : rest) {
 			out.append("\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n")
 					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/cocoa: deferred init ")
 					.append(labels.get(i)).append(":\", r)\n")

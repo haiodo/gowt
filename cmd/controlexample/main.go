@@ -6,8 +6,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"structs"
 
 	"github.com/ebitengine/purego/objc"
@@ -53,6 +56,10 @@ var clicks = map[string]string{"Button": "SWT.BORDER", "Canvas": "Caret", "Text"
 // runs TabFolder's own delegate path), waits for layout and paint, then snapshots the window.
 func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string) {
 	var steps []func()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		panic(err)
+	}
+	steps = append(steps, func() { writeMeta(filepath.Join(dir, "meta.txt")) })
 	for i, item := range folder.GetItems() {
 		name := item.GetText()
 		steps = append(steps, func() { selectTab(folder, i) }, func() { snapshot(filepath.Join(dir, name+".png")) })
@@ -72,6 +79,23 @@ func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir 
 	steps = append(steps, func() { shell.Close() })
 	for i, step := range steps {
 		display.TimerExec(int32(500*(i+1)), &task{step})
+	}
+}
+
+// writeMeta records what the pixels depend on; snapcheck skips the comparison when it differs
+// from the references.
+func writeMeta(path string) {
+	app := objc.ID(objc.GetClass("NSApplication")).Send(objc.RegisterName("sharedApplication"))
+	scale := objc.Send[float64](shellWindow(app), objc.RegisterName("backingScaleFactor"))
+	version, _ := exec.Command("sw_vers", "-productVersion").Output()
+	style, _ := exec.Command("defaults", "read", "-g", "AppleInterfaceStyle").Output() // fails in light mode
+	appearance := "light"
+	if strings.TrimSpace(string(style)) == "Dark" {
+		appearance = "dark"
+	}
+	meta := fmt.Sprintf("scale=%g\nmacos=%s\nappearance=%s\n", scale, strings.TrimSpace(string(version)), appearance)
+	if err := os.WriteFile(path, []byte(meta), 0o644); err != nil {
+		panic(err)
 	}
 }
 

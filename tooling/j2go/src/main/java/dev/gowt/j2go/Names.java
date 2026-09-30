@@ -110,9 +110,39 @@ public class Names {
 	 * base+CapitalizedParamNames for the others, unless overridden via names.properties.
 	 */
 	public String goMemberName(IMethodBinding m, String baseName) {
-		String key = erasureKey(m);
-		String override = overrides.get(key);
+		String override = overrides.get(erasureKey(m));
 		if (override != null) return override;
+		String name = declaredGoName(m, baseName);
+		return shadowsAncestorOverload(m.getMethodDeclaration()) ? name + shadowSuffix(m.getMethodDeclaration()) : name;
+	}
+
+	// Go has no overloading: a subclass's method named like an ancestor's overload (other parameters) would hide it.
+	private boolean shadowsAncestorOverload(IMethodBinding decl) {
+		// Public API names stay as the overload rule gave them (one API for every platform).
+		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers()) || Modifier.isPublic(decl.getModifiers())
+				|| decl.getDeclaringClass().getQualifiedName().contains(".internal.")) return false;
+		for (ITypeBinding t = decl.getDeclaringClass().getSuperclass(); t != null && t.getQualifiedName().startsWith("org.eclipse.swt"); t = t.getSuperclass()) {
+			for (IMethodBinding o : t.getDeclaredMethods()) {
+				if (!o.isConstructor() && !Modifier.isStatic(o.getModifiers()) && o.getName().equals(decl.getName())
+						&& !Arrays.equals(erasedParams(o), erasedParams(decl))) return true;
+			}
+		}
+		return false;
+	}
+
+	private static String[] erasedParams(IMethodBinding m) {
+		return Arrays.stream(m.getParameterTypes()).map(p -> p.getErasure().getQualifiedName()).toArray(String[]::new);
+	}
+
+	private String shadowSuffix(IMethodBinding decl) {
+		List<String> params = paramNamesByKey.getOrDefault(erasureKey(decl), List.of());
+		StringBuilder sb = new StringBuilder();
+		for (String p : params) sb.append(capitalize(p));
+		return sb.length() == 0 ? "NoArgs" : sb.toString();
+	}
+
+	private String declaredGoName(IMethodBinding m, String baseName) {
+		String key = erasureKey(m);
 
 		IMethodBinding decl = m.getMethodDeclaration();
 		String declKey = decl.getDeclaringClass().getErasure().getBinaryName();

@@ -231,6 +231,30 @@ SWT_FILES=(
 )
 # Only cocoa has an ImageUtil (win32 and gtk draw images without it).
 [ "$PLATFORM" = cocoa ] && SWT_FILES+=(org/eclipse/swt/internal/graphics/ImageUtil.java)
+# Win32: the DPI/zoom layer, font registry, image lists, bidi and IME of Eclipse SWT/win32 and the common helpers cocoa stubs by hand.
+if [ "$PLATFORM" = win32 ]; then
+	SWT_FILES+=(
+		org/eclipse/swt/internal/DPIUtil.java
+		org/eclipse/swt/internal/AutoScaleCalculation.java
+		org/eclipse/swt/internal/Compatibility.java
+		org/eclipse/swt/internal/DefaultExceptionHandler.java
+		org/eclipse/swt/internal/StrictChecks.java
+		org/eclipse/swt/internal/WidgetSpy.java
+		org/eclipse/swt/internal/Win32DPIUtils.java
+		org/eclipse/swt/internal/BidiUtil.java
+		org/eclipse/swt/internal/ImageList.java
+		org/eclipse/swt/internal/SWTFontRegistry.java
+		org/eclipse/swt/internal/LegacySWTFontRegistry.java
+		org/eclipse/swt/internal/ScalingSWTFontRegistry.java
+		org/eclipse/swt/internal/SWTFontProvider.java
+		org/eclipse/swt/widgets/CoordinateSystemMapper.java
+		org/eclipse/swt/widgets/SingleZoomCoordinateSystemMapper.java
+		org/eclipse/swt/widgets/MultiZoomCoordinateSystemMapper.java
+		org/eclipse/swt/widgets/ToolBarImageLists.java
+		org/eclipse/swt/widgets/IME.java
+		org/eclipse/swt/widgets/Tracker.java
+	)
+fi
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \
 	-- \

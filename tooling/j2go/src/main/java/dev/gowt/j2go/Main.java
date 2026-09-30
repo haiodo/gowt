@@ -55,11 +55,23 @@ public class Main {
 		List<String> platformRoots = new ArrayList<>();
 		List<String> allRoots = new ArrayList<>(platform.roots());
 		allRoots.addAll(Platform.commonRoots());
+		// Win32 sources use records: a mirror with them rewritten shadows the real root for parsing.
+		Path mirrorDir = platform == Platform.WIN32 ? Files.createTempDirectory("j2go-mirror") : null;
+		Map<String, String> mirrorToReal = new HashMap<>();
 		for (String r : allRoots) {
 			Path p = swtRootPath.resolve(r);
 			if (!Files.isDirectory(p)) continue;
+			boolean platformRoot = platform.roots().contains(r);
+			if (mirrorDir != null) {
+				Path mirror = mirrorDir.resolve(Integer.toString(sourceRoots.size()));
+				if (SourcePrep.mirror(p, mirror)) {
+					sourceRoots.add(mirror.toString());
+					mirrorToReal.put(mirror.toString(), p.toString());
+					if (platformRoot) platformRoots.add(mirror + "/");
+				}
+			}
 			sourceRoots.add(p.toString());
-			if (platform.roots().contains(r)) platformRoots.add(p + "/");
+			if (platformRoot) platformRoots.add(p + "/");
 		}
 		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
 
@@ -130,7 +142,9 @@ public class Main {
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
 			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
 
-			String relPath = swtRootPath.relativize(Path.of(absPath)).toString();
+			String realPath = absPath;
+			for (var e : mirrorToReal.entrySet()) if (absPath.startsWith(e.getKey() + "/")) realPath = e.getValue() + absPath.substring(e.getKey().length());
+			String relPath = swtRootPath.relativize(Path.of(realPath)).toString();
 			String javaPackage = cu.getPackage().getName().getFullyQualifiedName();
 			String pkgLastSegment = lastSegment(javaPackage);
 			String typeName = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
@@ -155,12 +169,8 @@ public class Main {
 			file.append(result.body());
 
 			Path outPath = Path.of(outDir, outDirName, outName);
-			if (piFile || platformFile) {
-				Files.createDirectories(outPath.getParent());
-				Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
-			} else {
-				SharedFiles.write(outPath, file.toString(), platform);
-			}
+			Files.createDirectories(outPath.getParent());
+			Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
 			System.out.println("wrote " + outPath);
 		}
 

@@ -22,7 +22,7 @@ func (this *Test_org_eclipse_swt_events_MenuEvent) initTest_org_eclipse_swt_even
 	this.Test_org_eclipse_swt_events_TypedEvent.initTest_org_eclipse_swt_events_TypedEvent()
 }
 
-func (this *Test_org_eclipse_swt_events_MenuEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_MenuEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return upcastswtMenuEventToswtTypedEvent(swt.NewMenuEvent(event))
 }
 

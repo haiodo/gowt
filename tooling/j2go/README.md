@@ -2913,3 +2913,63 @@ Refresh (after every `make gen`, and whenever a translator or port change moves 
 - `tests/swttests/swttests_manual.go` defines `ThreadCurrentThread` (`JdkIntrinsics` emits it unqualified).
 - The 149 failures (`tests/RESULTS.md`): mostly the null-String contract, `Optional<Method>`/`TestInfo`, anonymous
   subclasses of widgets from another package, `java.nio.file`, the HiDPI image path (TSK-048), `widgets.List`.
+
+## Round 15 test failures (TSK-2026-09-23-048, -051, -052)
+
+Static verification only: the generated Go of each targeted test no longer hits the marker/stub its `tests/expected.txt`
+reason names; `make gen && make` is green. `tests/expected.txt` and `tests/RESULTS.md` are refreshed after a batch run.
+
+Rules added:
+
+- **Anonymous subclass of a class from another Go package** (`FunctionalEmitter.emitStructAnon`): the base is embedded by
+  pointer (a copy would not be the object the Display knows) and built with its public constructor (`superCtor` finds the
+  base constructor: `cic`'s own binding is the anonymous one), then `x.SetImpl_(x)` points the cascade at the subclass.
+  `upcastObject` turns the anonymous value into `x.<Base>` where a class is expected (an interface target keeps `x`).
+  `super.m()` inside the body is `x.<Base>.<dispatch>()` (`ConstructorEmitter.emitSuperMethodInvocation`).
+- **Exported dispatch names** (`TypeModel.putCascadeName`): the dispatch name of a public/protected cascade method is
+  exported (`SetFocus_`, was `setFocus_`), so another package can override it; package-private ones stay unexported.
+  Every root with an impl cascade also gets `SetImpl_(impl)` (`ClassEmitter`).
+  Ceiling: a virtual call made by the base constructor itself still reaches the base implementation.
+- **`new Thread() { run() }`** is `any(jrt.NewThread(jrt.NewRunnable(func(){..})))`; `jrt.Thread` got `Run` so it can be passed
+  as a `Runnable`. **`new InputStream() { read() }`** is `&jrt.FuncInputStream{ReadFn: ..}`.
+- **`Callable`/`SwtCallable`** are bare Go funcs (`GoTypes.isJdkFunctional`); `callable::call` is the func itself.
+  `Display.syncCall<T,E>` (generic, skipped by `ClassEmitter`) is manual: `SyncCall(func() any) any` in
+  `swt/widgets_display_manual.go`, a panic of the callable is re-raised in the caller.
+- **Boxing a primitive into `any`** (`Integer`/`Object`/`T`) converts to the primitive's Go type (`int32(42)`): an untyped
+  constant boxed as Go `int` and `jrt.Cast[int32]` read it as 0.
+- **JUnit `TestInfo`**: `internal/junit.TestInfo` (`GetTestMethod` -> `jrt.Optional` of a named `jrt.Method`, `GetDisplayName`),
+  `junit.Current` is set by `cmd/swttest` before `@BeforeEach`; a hook or test parameter of that type is passed `junit.Current`
+  (`TestEmitter.nilArgs`), so `getTestMethod().get().getName()` (`Method#getName` intrinsic) works and the two
+  `@Test m(TestInfo)` tests are no longer skipped.
+- **JDK surface** (`internal/jrt`): `Optional` (`jdk.go`), `CountDownLatch`, `TimeUnit`, `CompletableFuture` (`supplyAsync`,
+  `thenRunAsync`, state queries only), `WeakReference` (`weak.Pointer`) + `System.gc`, `System.getProperty/setProperty/
+  getProperties` over `jrt.SystemProperties` (`java.util.Properties` is a `jrt.Map`), `getenv`, `String.isBlank/matches`,
+  `Math.log/sqrt/exp/sin/cos/pow`, `IllegalStateException`/`UnsupportedOperationException` (a `jrt.RuntimeException`) and
+  `AssertionError` (`jrt.JavaError`), `IOException` with a message.
+- **Null-element guard** (`NullArgGuards.stringNullCheck`, moved out of `NumericEmitter`): `if (items[i] == null) error(..)` on a
+  `String[]` element is `== jrt.NullString`, like a parameter guard; `""` is a valid item (`Combo.setItems`).
+- **`widgets.List`** is translated (`port.sh`); it had no unsupported construct.
+- **HiDPI image path** (TSK-048, `swt/graphics_stubs_manual.go`, `graphics_imagecodec_manual.go`): `DPIUtil.ElementAtZoom<T>` is
+  a manual record (`DPIUtilElementAtZoom`, element erased, callers cast); `validateAndGetImagePathAtZoom` is a real port;
+  `ImageDataLoader.loadByZoom` decodes with the stdlib codecs and returns the element at `fileZoom`; `canLoadAtZoom` is
+  `zoom == target`; `NativeImageLoader.load(ElementAtZoom, ImageLoader, int)` is manual. Manual static methods and
+  constructors called from another Go package are qualified (`qualifyManual`).
+
+Ceilings and not done:
+
+- Local class declaration (`Display.test_setSynchronizer`): a local class extending a class of another package needs the
+  local type mapped to a Go struct, its constructor calling the base's public one, and captured locals; not started.
+- `ImageDataTestHelper` reflection on private members (`ImageData.getByteOrder`, private static `blit`): the instance method is
+  unexported in Go; no rule.
+- SVG (`collapseall.svg`, GC `..IIII_withTransform*`): no SVG decoder in the stdlib codecs.
+- `CompletableFuture` has no `get`/`join`/`thenApply`; `WeakReference` needs the referent to be unreachable after `System.gc()`
+  (the cascade's `impl` and Display registries may still hold a `GC`).
+
+Fixes after the first batch run:
+
+- An uncaught panic in a `jrt.Thread` goroutine is printed, not fatal (Java: the thread dies, the JVM lives). The leaked
+  `Display.test_sleep` thread called `syncExec` on a disposed Display and killed the run in the next test.
+- `cocoa.OSJNIGetObject` returns nil for a disposed widget (its global ref is gone in Java): a late native callback used to
+  reach a released widget (nil `display`/`parent`). Defensive; the trigger was not reproduced.
+- `char` in string concatenation is `%c` (was `%d`: `name + '.' + ext` gave "name46png").
+- `new BufferedInputStream(s)` is `s` (the stub returned nil, live since `drawImageAtSize` reads files).

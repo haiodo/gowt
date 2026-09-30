@@ -251,7 +251,10 @@ public class TypeModel {
 
 	private void putCascadeName(ClassInfo ci, Set<String> treeTypeNames, Map.Entry<String, IMethodBinding> e, String name) {
 		if (ci.splitsDispatch()) {
-			ci.overriddenRootMethodGoNames.put(e.getKey(), Names.decapitalize(name) + "_");
+			// public/protected: exported so a subclass in another Go package can override it.
+			int mods = e.getValue().getModifiers();
+			boolean overridable = java.lang.reflect.Modifier.isPublic(mods) || java.lang.reflect.Modifier.isProtected(mods);
+			ci.overriddenRootMethodGoNames.put(e.getKey(), (overridable ? name : Names.decapitalize(name)) + "_");
 			return;
 		}
 		// A cascade name equal to a subclass's embedded field name - Go rejects a field and

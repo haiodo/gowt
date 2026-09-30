@@ -373,10 +373,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_computeSizeII() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_computeSizeIIZ() {
-	this.impl.test_computeSizeIIZ_()
+	this.impl.Test_computeSizeIIZ_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_computeSizeIIZ_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_computeSizeIIZ_() {
 	this.control.ComputeSizeWHintHHintChanged(swt.DEFAULT, swt.DEFAULT, true)
 	var size *swt.Point = this.control.GetSize()
 	this.control.ComputeSizeWHintHHintChanged(size.X, size.Y, false)
@@ -394,10 +394,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_getBorderWidth() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_getLocation() {
-	this.impl.test_getLocation_()
+	this.impl.Test_getLocation_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_getLocation_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_getLocation_() {
 	this.control.SetBounds(32, 43, 30, 40)
 	junit.AssertEquals(swt.NewPoint(32, 43), this.control.GetLocation())
 }
@@ -419,26 +419,26 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_getMonitor() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_getParent() {
-	this.impl.test_getParent_()
+	this.impl.Test_getParent_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_getParent_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_getParent_() {
 	junit.AssertEquals(this.shell, this.control.GetParent())
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_getShell() {
-	this.impl.test_getShell_()
+	this.impl.Test_getShell_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_getShell_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_getShell_() {
 	junit.AssertEquals(this.shell, this.control.GetShell())
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_isEnabled() {
-	this.impl.test_isEnabled_()
+	this.impl.Test_isEnabled_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_isEnabled_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_isEnabled_() {
 	this.control.SetEnabled(true)
 	junit.AssertTrue(this.control.IsEnabled())
 	this.control.SetEnabled(false)
@@ -456,18 +456,18 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_isFocusControl() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_isReparentable() {
-	this.impl.test_isReparentable_()
+	this.impl.Test_isReparentable_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_isReparentable_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_isReparentable_() {
 	junit.AssertTrue(this.control.IsReparentable())
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_isVisible() {
-	this.impl.test_isVisible_()
+	this.impl.Test_isVisible_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_isVisible_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_isVisible_() {
 	this.control.SetVisible(true)
 	junit.AssertFalse(this.control.IsVisible())
 	this.control.SetVisible(false)
@@ -559,10 +559,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setBackgroundDisposedColo
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setBoundsIIII() {
-	this.impl.test_setBoundsIIII_()
+	this.impl.Test_setBoundsIIII_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setBoundsIIII_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setBoundsIIII_() {
 	this.control.SetBounds(10, 20, 30, 40)
 	junit.AssertEquals(swt.NewRectangle(10, 20, 30, 40), this.control.GetBounds())
 	this.control.SetBounds(20, 30, 40, 50)
@@ -571,10 +571,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) test_setBoundsIIII_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
-	this.impl.test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+	this.impl.Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
 	this.control.SetBoundsRect(swt.NewRectangle(10, 20, 30, 40))
 	junit.AssertEquals(swt.NewRectangle(10, 20, 30, 40), this.control.GetBounds())
 	this.control.SetBoundsRect(swt.NewRectangle(20, 30, 40, 50))
@@ -598,10 +598,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setCursorLorg_eclipse_swt
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setEnabledZ() {
-	this.impl.test_setEnabledZ_()
+	this.impl.Test_setEnabledZ_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setEnabledZ_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setEnabledZ_() {
 	this.control.SetEnabled(true)
 	junit.AssertTrue(this.control.GetEnabled())
 	this.control.SetEnabled(false)
@@ -645,18 +645,18 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setTextDirection() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setFocus() {
-	this.impl.test_setFocus_()
+	this.impl.Test_setFocus_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setFocus_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setFocus_() {
 	this.control.SetFocus()
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setFontLorg_eclipse_swt_graphics_Font() {
-	this.impl.test_setFontLorg_eclipse_swt_graphics_Font_()
+	this.impl.Test_setFontLorg_eclipse_swt_graphics_Font_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setFontLorg_eclipse_swt_graphics_Font_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setFontLorg_eclipse_swt_graphics_Font_() {
 	var font *swt.Font = this.control.GetFont()
 	this.control.SetFont(font)
 	junit.AssertEquals(font, this.control.GetFont())
@@ -717,10 +717,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setLayoutDataLjava_lang_O
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setLocationII() {
-	this.impl.test_setLocationII_()
+	this.impl.Test_setLocationII_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setLocationII_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setLocationII_() {
 	this.control.SetBounds(32, 43, 30, 40)
 	this.control.SetLocation(11, 22)
 	this.control.SetSize(32, 43)
@@ -730,10 +730,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) test_setLocationII_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setLocationLorg_eclipse_swt_graphics_Point() {
-	this.impl.test_setLocationLorg_eclipse_swt_graphics_Point_()
+	this.impl.Test_setLocationLorg_eclipse_swt_graphics_Point_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setLocationLorg_eclipse_swt_graphics_Point_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setLocationLorg_eclipse_swt_graphics_Point_() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.control.SetLocationLocation(nil)
 	})
@@ -771,19 +771,19 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setParentLorg_eclipse_swt
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setRedrawZ() {
-	this.impl.test_setRedrawZ_()
+	this.impl.Test_setRedrawZ_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setRedrawZ_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setRedrawZ_() {
 	this.control.SetRedraw(false)
 	this.control.SetRedraw(true)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setSizeII() {
-	this.impl.test_setSizeII_()
+	this.impl.Test_setSizeII_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setSizeII_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setSizeII_() {
 	this.control.SetBounds(32, 43, 30, 40)
 	junit.AssertEquals(swt.NewPoint(30, 40), this.control.GetSize())
 	this.control.SetBounds(32, 43, 30, 40)
@@ -797,10 +797,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) test_setSizeII_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setSizeLorg_eclipse_swt_graphics_Point() {
-	this.impl.test_setSizeLorg_eclipse_swt_graphics_Point_()
+	this.impl.Test_setSizeLorg_eclipse_swt_graphics_Point_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setSizeLorg_eclipse_swt_graphics_Point_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setSizeLorg_eclipse_swt_graphics_Point_() {
 	this.control.SetSizeSize(swt.NewPoint(30, 40))
 	junit.AssertEquals(swt.NewPoint(30, 40), this.control.GetSize())
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -820,10 +820,10 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setToolTipTextLjava_lang_
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setVisibleZ() {
-	this.impl.test_setVisibleZ_()
+	this.impl.Test_setVisibleZ_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) test_setVisibleZ_() {
+func (this *Test_org_eclipse_swt_widgets_Control) Test_setVisibleZ_() {
 	this.control.SetVisible(true)
 	junit.AssertTrue(this.control.GetVisible())
 	this.control.SetVisible(false)
@@ -869,9 +869,9 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_update() {
 	this.control.Update()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Control) setWidget_(w *swt.Widget) {
+func (this *Test_org_eclipse_swt_widgets_Control) SetWidget_(w *swt.Widget) {
 	this.control = castswtWidgetToswtControl(w)
-	this.Test_org_eclipse_swt_widgets_Widget.setWidget_(w)
+	this.Test_org_eclipse_swt_widgets_Widget.SetWidget_(w)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32, paramB int32, paramC int32, paramD int32, method int32, events *jrt.List, focus bool) {
@@ -895,16 +895,52 @@ func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32,
 			this.control.ForceFocus()
 		}
 		var expectedEvents []string = this.HookExpectedEvents(test, events)
-		jrt.ThreadStart(func() any {
-			_ = []any{display, method, pt, paramC, paramD, paramA, paramB}
-			panic("j2go: unsupported AnonymousClass")
-		}())
+		jrt.ThreadStart(any(jrt.NewThread(jrt.NewRunnable(func() {
+			display.Wake()
+			switch method {
+			case ConsistencyUtilityMOUSE_CLICK:
+				junit.AssertTrue(ConsistencyUtilityPostClickDisplayPtButton(display, pt[0], paramC))
+				if paramD == ConsistencyUtilityESCAPE_MENU {
+					junit.AssertTrue(ConsistencyUtilityPostClickDisplayPtButton(display, pt[1], 1))
+				}
+				break
+			case ConsistencyUtilityMOUSE_DOUBLECLICK:
+				junit.AssertTrue(ConsistencyUtilityPostDoubleClick(display, pt[0], paramC))
+				break
+			case ConsistencyUtilityKEY_PRESS:
+				junit.AssertTrue(ConsistencyUtilityPostKeyPress(display, paramA, paramB))
+				break
+			case ConsistencyUtilityDOUBLE_KEY_PRESS:
+				junit.AssertTrue(ConsistencyUtilityPostDoubleKeyPress(display, paramA, paramB, paramC, paramD))
+				break
+			case ConsistencyUtilityMOUSE_DRAG:
+				junit.AssertTrue(ConsistencyUtilityPostDrag(display, pt[0], pt[1]))
+				break
+			case ConsistencyUtilitySELECTION:
+				junit.AssertTrue(ConsistencyUtilityPostSelection(display, pt[0], pt[1]))
+				break
+			case ConsistencyUtilitySHELL_ICONIFY:
+				junit.AssertTrue(ConsistencyUtilityPostShellIconify(display, pt[1], paramA))
+				_, ok64 := isswtControlToswtShell(this.control)
+				if ok64 {
+					display.SyncExec(jrt.NewRunnable(func() {
+						(castswtControlToswtShell(this.control)).SetMinimized(false)
+					}))
+				} else {
+					junit.Fail("Iconifying a non shell control")
+				}
+				break
+			}
+			display.AsyncExec(jrt.NewRunnable(func() {
+				this.shell.Dispose()
+			}))
+		}))))
 		for !this.shell.IsDisposed() {
 			if !display.ReadAndDispatch() {
 				display.Sleep()
 			}
 		}
-		this.impl.setUp_()
+		this.impl.SetUp_()
 		var results []string = make([]string, events.Size())
 		results = jrt.ToSlice[string](events)
 		junit.AssertArrayEquals(expectedEvents, results)

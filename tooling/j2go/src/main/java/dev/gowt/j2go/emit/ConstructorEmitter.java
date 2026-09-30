@@ -184,7 +184,8 @@ final class ConstructorEmitter {
 		IMethodBinding mb = smi.resolveMethodBinding();
 		// A cascade method is called by its dispatch name (unexported in swt, README "Round 9
 		// api") even though super.x() bypasses the cascade's .impl dispatch.
-		String cascadeName = emitter.currentClassInfo.root.overriddenRootMethodGoNames.get(TypeModel.signature(mb));
+		TypeModel.ClassInfo declaringCi = emitter.model.lookup(mb.getDeclaringClass());
+		String cascadeName = (declaringCi != null ? declaringCi.root : emitter.currentClassInfo.root).overriddenRootMethodGoNames.get(TypeModel.signature(mb));
 		String base = cascadeName != null ? cascadeName : Names.javaMethodBaseGoName(smi.getName().getIdentifier());
 		List<String> args = emitter.buildArgs(smi.arguments(), mb);
 		// Object's own equals/hashCode: reference identity.
@@ -196,6 +197,11 @@ final class ConstructorEmitter {
 			}
 		}
 		String fieldPath;
+		// Inside an anonymous subclass `this` is the holder variable and its base is the embedded field.
+		if (emitter.anonThis != null) {
+			TypeModel.ClassInfo baseCi = emitter.model.lookup(emitter.anonType.getSuperclass());
+			if (baseCi != null) return emitter.anonThis + "." + baseCi.goTypeName + "." + base + "(" + String.join(", ", args) + ")";
+		}
 		if (emitter.currentClassInfo.superclass != null) {
 			fieldPath = emitter.currentClassInfo.superclass.goTypeName;
 		} else if (emitter.currentClassInfo.manualSuperQualifiedName != null) {

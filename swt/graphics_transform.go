@@ -90,7 +90,7 @@ func (this *Transform) destroy_() {
 }
 
 func (this *Transform) GetElements(elements []float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if elements == (nil) {
@@ -120,7 +120,7 @@ func (this *Transform) GetElements(elements []float32) {
 }
 
 func (this *Transform) Identity() {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -141,7 +141,7 @@ func (this *Transform) Identity() {
 }
 
 func (this *Transform) Invert() {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -162,12 +162,12 @@ func (this *Transform) Invert() {
 	}
 }
 
-func (this *Transform) isDisposed_() bool {
+func (this *Transform) IsDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Transform) IsIdentity() bool {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -191,13 +191,13 @@ func (this *Transform) Multiply(matrixLike TransformLike) {
 		matrix = matrixLike.AsTransform()
 	}
 	_ = matrix
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if matrix == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if matrix.impl.isDisposed_() {
+	if matrix.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -215,7 +215,7 @@ func (this *Transform) Multiply(matrixLike TransformLike) {
 }
 
 func (this *Transform) Rotate(angle float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -233,7 +233,7 @@ func (this *Transform) Rotate(angle float32) {
 }
 
 func (this *Transform) Scale(scaleX float32, scaleY float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -251,7 +251,7 @@ func (this *Transform) Scale(scaleX float32, scaleY float32) {
 }
 
 func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 float32, dx float32, dy float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -276,7 +276,7 @@ func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 fl
 }
 
 func (this *Transform) Shear(shearX float32, shearY float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -301,7 +301,7 @@ func (this *Transform) Shear(shearX float32, shearY float32) {
 }
 
 func (this *Transform) TransformFn(pointArray []float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if pointArray == (nil) {
@@ -337,7 +337,7 @@ func (this *Transform) TransformFn(pointArray []float32) {
 }
 
 func (this *Transform) Translate(offsetX float32, offsetY float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -355,7 +355,7 @@ func (this *Transform) Translate(offsetX float32, offsetY float32) {
 }
 
 func (this *Transform) String() string {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		return "Transform {*DISPOSED*}"
 	}
 	var elements []float32 = make([]float32, 6)

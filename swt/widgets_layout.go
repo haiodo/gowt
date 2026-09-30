@@ -3,17 +3,17 @@
 package swt
 
 type LayoutImpl interface {
-	computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
-	flushCache_(a0 *Control) bool
-	layoutFn_(a0 *Composite, a1 bool)
+	ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
+	FlushCache_(a0 *Control) bool
+	LayoutFn_(a0 *Composite, a1 bool)
 }
 
-func (this *Layout) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
-	panic("j2go: computeSize_ has no default on Layout")
+func (this *Layout) ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
+	panic("j2go: ComputeSize_ has no default on Layout")
 }
 
-func (this *Layout) layoutFn_(a0 *Composite, a1 bool) {
-	panic("j2go: layoutFn_ has no default on Layout")
+func (this *Layout) LayoutFn_(a0 *Composite, a1 bool) {
+	panic("j2go: LayoutFn_ has no default on Layout")
 }
 
 type Layout struct {
@@ -21,6 +21,8 @@ type Layout struct {
 }
 
 func (this *Layout) Impl() LayoutImpl { return this.impl }
+
+func (this *Layout) SetImpl_(impl LayoutImpl) { this.impl = impl }
 
 func (this *Layout) AsLayout() *Layout { return this }
 
@@ -43,7 +45,7 @@ func (this *Layout) ComputeSize(compositeLike CompositeLike, wHint int32, hHint 
 	if compositeLike != nil {
 		composite = compositeLike.AsComposite()
 	}
-	return this.impl.computeSize_(composite, wHint, hHint, flushCache)
+	return this.impl.ComputeSize_(composite, wHint, hHint, flushCache)
 }
 
 func (this *Layout) FlushCache(controlLike ControlLike) bool {
@@ -51,10 +53,10 @@ func (this *Layout) FlushCache(controlLike ControlLike) bool {
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
-	return this.impl.flushCache_(control)
+	return this.impl.FlushCache_(control)
 }
 
-func (this *Layout) flushCache_(control *Control) bool {
+func (this *Layout) FlushCache_(control *Control) bool {
 	return false
 }
 
@@ -63,5 +65,5 @@ func (this *Layout) LayoutFn(compositeLike CompositeLike, flushCache bool) {
 	if compositeLike != nil {
 		composite = compositeLike.AsComposite()
 	}
-	this.impl.layoutFn_(composite, flushCache)
+	this.impl.LayoutFn_(composite, flushCache)
 }

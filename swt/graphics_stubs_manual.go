@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/haiodo/gowt/internal/jrt"
@@ -35,8 +36,47 @@ func DPIUtilScaleImageData(device *Device, imageData *ImageData, targetZoom int3
 
 func DPIUtilValidateLinearScaling(provider ImageDataProvider) {}
 
-func DPIUtilValidateAndGetImagePathAtZoom(provider ImageFileNameProvider, zoom int32) any {
-	panic("stub: image files are not supported (ImageLoader not ported)")
+// DPIUtilElementAtZoom is DPIUtil.ElementAtZoom<T>: the element is erased to any, callers cast it.
+type DPIUtilElementAtZoom struct {
+	element any
+	zoom    int32
+}
+
+func NewDPIUtilElementAtZoom(element any, zoom int32) *DPIUtilElementAtZoom {
+	if jrt.IsNil(element) {
+		Error(ERROR_NULL_ARGUMENT)
+	}
+	if zoom <= 0 {
+		Error(ERROR_INVALID_ARGUMENT)
+	}
+	return &DPIUtilElementAtZoom{element, zoom}
+}
+
+func (e *DPIUtilElementAtZoom) Element() any { return e.element }
+func (e *DPIUtilElementAtZoom) Zoom() int32  { return e.zoom }
+
+// DPIUtilValidateAndGetImagePathAtZoom: the path at zoom, else 150/200 (above 100 only), else 100.
+func DPIUtilValidateAndGetImagePathAtZoom(provider ImageFileNameProvider, zoom int32) *DPIUtilElementAtZoom {
+	if provider == nil {
+		Error(ERROR_NULL_ARGUMENT)
+	}
+	candidates := []int32{zoom}
+	if zoom > 100 && zoom <= 150 {
+		candidates = append(candidates, 150)
+	}
+	if zoom > 100 {
+		candidates = append(candidates, 200)
+	}
+	if zoom != 100 {
+		candidates = append(candidates, 100)
+	}
+	for _, z := range candidates {
+		if path := provider.GetImagePath(z); path != "" {
+			return NewDPIUtilElementAtZoom(path, z)
+		}
+	}
+	ErrorCodeThrowableDetail(ERROR_INVALID_ARGUMENT, nil, fmt.Sprintf(": ImageFileNameProvider [%v] returns null filename at 100%% zoom.", provider))
+	return nil
 }
 
 func CompatibilityCeil(p int32, q int32) int32 { return (p + q - 1) / q }
@@ -46,12 +86,12 @@ func StrictChecksRunWithStrictChecksDisabled(r jrt.Runnable) { r.Run() }
 
 const FileFormatDEFAULT_ZOOM int32 = 100
 
-// ImageDataLoaderLoad is real now (swt/graphics_imagecodec_manual.go, a stdlib-backed codec
-// wrapper) - only the HiDPI @2x-variant entry points below stay stubbed, see README "Round 9
-// images".
-func ImageDataLoaderLoadByZoom(source any, fileZoom int32, targetZoom int32) any {
-	panic("stub: ImageLoader not ported")
+// ImageDataLoaderLoadByZoom is ImageDataLoader.loadByZoom (stream or file name): every supported format
+// decodes at its own resolution, so the element is at fileZoom.
+func ImageDataLoaderLoadByZoom(source any, fileZoom int32, targetZoom int32) *DPIUtilElementAtZoom {
+	return NewDPIUtilElementAtZoom(ImageDataLoaderLoad(source), fileZoom)
 }
+
 func ImageDataLoaderLoadBySize(source any, width int32, height int32) *ImageData {
 	panic("stub: ImageLoader not ported")
 }

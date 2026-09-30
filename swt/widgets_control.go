@@ -85,7 +85,7 @@ func (this *Control) initControlParentStyle(parent *Composite, style int32) {
 }
 
 func (this *Control) acceptsFirstMouse_(id int64, sel int64, theEvent int64) bool {
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	if (shell.style & ON_TOP) != 0 {
 		return true
 	}
@@ -415,7 +415,7 @@ func (this *Control) CalculateVisibleRegion(view *cocoa.NSView, visibleRgn int64
 func (this *Control) cancelOperation_(id int64, sel int64, sender int64) {
 	if this.HasKeyboardFocus(id) {
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
-		var s *Shell = this.impl.getShell_()
+		var s *Shell = this.impl.GetShell_()
 		s.keyInputHappened = false
 		var consume []bool = make([]bool, 1)
 		if this.TranslateTraversal(int32(nsEvent.KeyCode()), nsEvent, consume) {
@@ -431,7 +431,7 @@ func (this *Control) cancelOperation_(id int64, sel int64, sender int64) {
 }
 
 func (this *Control) CheckBackground() {
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	if this == upcastShellToControl(shell) {
 		return
 	}
@@ -475,22 +475,22 @@ func (this *Control) CheckToolTip(targetLike WidgetLike) {
 		target = targetLike.AsWidget()
 	}
 	_ = target
-	if this.impl.isVisible_() && this.display.tooltipControl == this && (target == (nil) || this.display.tooltipTarget == target) {
-		var shell *Shell = this.impl.getShell_()
+	if this.impl.IsVisible_() && this.display.tooltipControl == this && (target == (nil) || this.display.tooltipTarget == target) {
+		var shell *Shell = this.impl.GetShell_()
 		shell.SendToolTipEvent(false)
 		shell.SendToolTipEvent(true)
 	}
 }
 
 func (this *Control) ComputeSize(wHint int32, hHint int32) *Point {
-	return this.impl.computeSizeWHintHHintChanged_(wHint, hHint, true)
+	return this.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, true)
 }
 
 func (this *Control) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, changed bool) *Point {
-	return this.impl.computeSizeWHintHHintChanged_(wHint, hHint, changed)
+	return this.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, changed)
 }
 
-func (this *Control) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Control) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -690,7 +690,7 @@ func (this *Control) doCommandBySelector_(id int64, sel int64, selector int64) {
 		if this.impl.imeInComposition_() {
 			return
 		}
-		var s *Shell = this.impl.getShell_()
+		var s *Shell = this.impl.GetShell_()
 		var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 		if nsEvent != (nil) && nsEvent.Type() == int64(cocoa.OSNSKeyDown) {
 			var modifiers int64 = nsEvent.ModifierFlags()
@@ -839,7 +839,7 @@ func (this *Control) drawWidget_(id int64, context *cocoa.NSGraphicsContext, rec
 	event.Height = int32(rect.Height)
 	this.SendEventEventTypeEvent(Paint, event)
 	event.Gc = nil
-	gc.impl.dispose_()
+	gc.impl.Dispose_()
 }
 
 func (this *Control) EnableWidget(enabled bool) {
@@ -851,7 +851,7 @@ func (this *Control) enableWidget_(enabled bool) {
 	if ok64 {
 		(castcocoaNSViewTococoaNSControl(this.View)).SetEnabled(enabled)
 	}
-	this.impl.updateCursorRects_(this.impl.isEnabled_())
+	this.impl.updateCursorRects_(this.impl.IsEnabled_())
 }
 
 func (this *Control) Equals(color1 []float64, color2 []float64) bool {
@@ -893,7 +893,7 @@ func (this *Control) FillBackgroundViewContextRectImgHeightGcViewTxTy(view *coco
 		control = this
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.impl.isDisposed_() {
+	if image != (nil) && !image.impl.IsDisposed_() {
 		context.SaveGraphicsState()
 		cocoa.NSColorColorWithPatternImage(image.Handle).SetFill()
 		var phase cocoa.NSPoint = cocoa.NSPoint{}
@@ -1020,14 +1020,14 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 		focusControl = focusControlLike.AsControl()
 	}
 	_ = focusControl
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) && func() bool {
 		cond66 := upcastCompositeToControl(control.parent)
 		control = cond66
 		return (cond66) != (nil)
 	}() {
-		if control.impl.setFocus_() {
+		if control.impl.SetFocus_() {
 			return
 		}
 	}
@@ -1041,7 +1041,7 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 func (this *Control) flagsChanged_(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
 		if (this.state & WidgetWEBKIT_EVENTS_FIX) == 0 {
-			var s *Shell = this.impl.getShell_()
+			var s *Shell = this.impl.GetShell_()
 			s.keyInputHappened = false
 			var mask int32 = 0
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
@@ -1101,7 +1101,7 @@ func (this *Control) ForceFocus() bool {
 	}
 	var shell *Decorations = this.impl.menuShell_()
 	shell.SetSavedFocus(this)
-	if !this.impl.isEnabled_() || !this.impl.isVisible_() || !this.impl.isActive_() {
+	if !this.impl.IsEnabled_() || !this.impl.IsVisible_() || !this.impl.isActive_() {
 		return false
 	}
 	if upcastShellToDecorations(this.display.GetActiveShell()) != shell && !DisplayIsActivateShellOnForceFocus() {
@@ -1254,10 +1254,10 @@ func (this *Control) GetBorderWidth() int32 {
 }
 
 func (this *Control) GetBounds() *Rectangle {
-	return this.impl.getBounds_()
+	return this.impl.GetBounds_()
 }
 
-func (this *Control) getBounds_() *Rectangle {
+func (this *Control) GetBounds_() *Rectangle {
 	this.CheckWidget()
 	var rect cocoa.NSRect = this.impl.topView_().Frame()
 	return NewRectangle(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height))
@@ -1314,10 +1314,10 @@ func (this *Control) GetLayoutData() any {
 }
 
 func (this *Control) GetLocation() *Point {
-	return this.impl.getLocation_()
+	return this.impl.GetLocation_()
 }
 
-func (this *Control) getLocation_() *Point {
+func (this *Control) GetLocation_() *Point {
 	this.CheckWidget()
 	var rect cocoa.NSRect = this.impl.topView_().Frame()
 	return NewPoint(int32(rect.X), int32(rect.Y))
@@ -1344,8 +1344,8 @@ func (this *Control) GetMonitor() *Monitor {
 	}
 	var index int32 = -1
 	var value int32 = -1
-	var bounds *Rectangle = this.impl.getBounds_()
-	if this != upcastShellToControl(this.impl.getShell_()) {
+	var bounds *Rectangle = this.impl.GetBounds_()
+	if this != upcastShellToControl(this.impl.GetShell_()) {
 		bounds = this.display.MapFromToRectangle(upcastCompositeToControl(this.parent), nil, bounds)
 	}
 	for i := int32(0); i < int32(len(monitors)); i++ {
@@ -1397,10 +1397,10 @@ func (this *Control) GetMonitor() *Monitor {
 }
 
 func (this *Control) GetOrientation() int32 {
-	return this.impl.getOrientation_()
+	return this.impl.GetOrientation_()
 }
 
-func (this *Control) getOrientation_() int32 {
+func (this *Control) GetOrientation_() int32 {
 	this.CheckWidget()
 	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
@@ -1412,7 +1412,7 @@ func (this *Control) GetParent() *Composite {
 
 func (this *Control) GetPath() []*Control {
 	var count int32 = 0
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) {
 		count++
@@ -1453,28 +1453,28 @@ func (this *Control) GetPathOverload2(region int64) *cocoa.NSBezierPath {
 }
 
 func (this *Control) GetRegion() *Region {
-	return this.impl.getRegion_()
+	return this.impl.GetRegion_()
 }
 
-func (this *Control) getRegion_() *Region {
+func (this *Control) GetRegion_() *Region {
 	this.CheckWidget()
 	return this.region
 }
 
 func (this *Control) GetShell() *Shell {
-	return this.impl.getShell_()
+	return this.impl.GetShell_()
 }
 
-func (this *Control) getShell_() *Shell {
+func (this *Control) GetShell_() *Shell {
 	this.CheckWidget()
-	return this.parent.impl.getShell_()
+	return this.parent.impl.GetShell_()
 }
 
 func (this *Control) GetSize() *Point {
-	return this.impl.getSize_()
+	return this.impl.GetSize_()
 }
 
-func (this *Control) getSize_() *Point {
+func (this *Control) GetSize_() *Point {
 	this.CheckWidget()
 	var rect cocoa.NSRect = this.impl.topView_().Frame()
 	return NewPoint(int32(rect.Width), int32(rect.Height))
@@ -1574,7 +1574,7 @@ func (this *Control) insertText_(id int64, sel int64, string_ int64) bool {
 			saver.Release()
 		}()
 		if this.HasKeyboardFocus(id) {
-			var s *Shell = this.impl.getShell_()
+			var s *Shell = this.impl.GetShell_()
 			var nsEvent *cocoa.NSEvent = cocoa.NSApplicationSharedApplication().CurrentEvent()
 			if nsEvent != (nil) {
 				var type_ int64 = nsEvent.Type()
@@ -1719,7 +1719,7 @@ func (this *Control) invalidateVisibleRegion_() {
 }
 
 func (this *Control) isActive_() bool {
-	if this.impl.getShell_().GetModalShell() != (nil) {
+	if this.impl.GetShell_().GetModalShell() != (nil) {
 		return false
 	}
 	var dialog *Dialog = this.display.GetModalDialog()
@@ -1747,12 +1747,12 @@ func (this *Control) isDrawing_() bool {
 }
 
 func (this *Control) IsEnabled() bool {
-	return this.impl.isEnabled_()
+	return this.impl.IsEnabled_()
 }
 
-func (this *Control) isEnabled_() bool {
+func (this *Control) IsEnabled_() bool {
 	this.CheckWidget()
-	return this.GetEnabled() && this.parent.impl.isEnabled_()
+	return this.GetEnabled() && this.parent.impl.IsEnabled_()
 }
 
 func (this *Control) IsEnabledCursor() bool {
@@ -1760,7 +1760,7 @@ func (this *Control) IsEnabledCursor() bool {
 }
 
 func (this *Control) isEnabledCursor_() bool {
-	return this.impl.isEnabled_()
+	return this.impl.IsEnabled_()
 }
 
 func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
@@ -1799,10 +1799,10 @@ func (this *Control) IsObscured() bool {
 }
 
 func (this *Control) IsReparentable() bool {
-	return this.impl.isReparentable_()
+	return this.impl.IsReparentable_()
 }
 
-func (this *Control) isReparentable_() bool {
+func (this *Control) IsReparentable_() bool {
 	this.CheckWidget()
 	return true
 }
@@ -1816,12 +1816,12 @@ func (this *Control) isResizing_() bool {
 }
 
 func (this *Control) IsShowing() bool {
-	if !this.impl.isVisible_() {
+	if !this.impl.IsVisible_() {
 		return false
 	}
 	var control *Control = this
 	for control != (nil) {
-		var size *Point = control.impl.getSize_()
+		var size *Point = control.impl.GetSize_()
 		if size.X == 0 || size.Y == 0 {
 			return false
 		}
@@ -1887,17 +1887,17 @@ func (this *Control) isTrim_(view *cocoa.NSView) bool {
 }
 
 func (this *Control) IsVisible() bool {
-	return this.impl.isVisible_()
+	return this.impl.IsVisible_()
 }
 
-func (this *Control) isVisible_() bool {
+func (this *Control) IsVisible_() bool {
 	this.CheckWidget()
-	return this.GetVisible() && this.parent.impl.isVisible_()
+	return this.GetVisible() && this.parent.impl.IsVisible_()
 }
 
 func (this *Control) keyDown_(id int64, sel int64, theEvent int64) {
 	if this.HasKeyboardFocus(id) {
-		var s *Shell = this.impl.getShell_()
+		var s *Shell = this.impl.GetShell_()
 		s.keyInputHappened = false
 		var textInput bool = cocoa.OSObjc_msgSendOverload44(id, cocoa.OSSel_conformsToProtocol_, cocoa.OSObjc_getProtocol("NSTextInput")) != 0
 		if !textInput {
@@ -1975,7 +1975,7 @@ func (this *Control) menuForEvent_(id int64, sel int64, theEvent int64) int64 {
 		return int64(0)
 	}
 	this.display.lastHandledMenuForEventId = theEvent
-	if !this.impl.isEnabled_() {
+	if !this.impl.IsEnabled_() {
 		return int64(0)
 	}
 	var pt cocoa.NSPoint = cocoa.NSEventMouseLocation()
@@ -2246,7 +2246,7 @@ func (this *Control) Pack() {
 
 func (this *Control) PackChanged(changed bool) {
 	this.CheckWidget()
-	this.SetSizeSize(this.impl.computeSizeWHintHHintChanged_(DEFAULT, DEFAULT, changed))
+	this.SetSizeSize(this.impl.ComputeSizeWHintHHintChanged_(DEFAULT, DEFAULT, changed))
 }
 
 func (this *Control) PaintView() *cocoa.NSView {
@@ -2258,15 +2258,15 @@ func (this *Control) Print(gcLike GCLike) bool {
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	return this.impl.print_(gc)
+	return this.impl.Print_(gc)
 }
 
-func (this *Control) print_(gc *GC) bool {
+func (this *Control) Print_(gc *GC) bool {
 	this.CheckWidget()
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.isDisposed_() {
+	if gc.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.View.DisplayRectIgnoringOpacity(this.View.Bounds(), gc.Handle)
@@ -2274,11 +2274,11 @@ func (this *Control) print_(gc *GC) bool {
 }
 
 func (this *Control) RequestLayout() {
-	this.impl.requestLayout_()
+	this.impl.RequestLayout_()
 }
 
-func (this *Control) requestLayout_() {
-	this.impl.getShell_().LayoutOverload4([]*Control{this}, DEFER)
+func (this *Control) RequestLayout_() {
+	this.impl.GetShell_().LayoutOverload4([]*Control{this}, DEFER)
 }
 
 func (this *Control) Redraw() {
@@ -2291,10 +2291,10 @@ func (this *Control) RedrawChildren(children bool) {
 }
 
 func (this *Control) RedrawXYWidthHeightAll(x int32, y int32, width int32, height int32, all bool) {
-	this.impl.redrawXYWidthHeightAll_(x, y, width, height, all)
+	this.impl.RedrawXYWidthHeightAll_(x, y, width, height, all)
 }
 
-func (this *Control) redrawXYWidthHeightAll_(x int32, y int32, width int32, height int32, all bool) {
+func (this *Control) RedrawXYWidthHeightAll_(x int32, y int32, width int32, height int32, all bool) {
 	this.CheckWidget()
 	var rect cocoa.NSRect = cocoa.NSRect{}
 	rect.X = float64(x)
@@ -2640,7 +2640,7 @@ func (this *Control) SendFocusEvent(type_ int32) {
 
 func (this *Control) sendFocusEvent_(type_ int32) {
 	var display *Display = this.display
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	display.focusEvent = type_
 	display.focusControl = this
 	this.SendEventEventType(type_)
@@ -2669,7 +2669,7 @@ func (this *Control) sendMouseEvent_(nsEvent *cocoa.NSEvent, type_ int32, send b
 	var event *Event = NewEvent()
 	switch type_ {
 	case MouseDown:
-		shell = this.impl.getShell_()
+		shell = this.impl.GetShell_()
 		fallthrough
 	case MouseUp, MouseDoubleClick, DragDetect:
 		var button int32 = int32(nsEvent.ButtonNumber())
@@ -2822,10 +2822,10 @@ func (this *Control) SetBackgroundWithColor(colorLike ColorLike) {
 	if colorLike != nil {
 		color = colorLike.AsColor()
 	}
-	this.impl.setBackgroundWithColor_(color)
+	this.impl.SetBackgroundWithColor_(color)
 }
 
-func (this *Control) setBackgroundWithColor_(color *Color) {
+func (this *Control) SetBackgroundWithColor_(color *Color) {
 	this.CheckWidget()
 	this._setBackground(color)
 	if color != (nil) {
@@ -2840,7 +2840,7 @@ func (this *Control) _setBackground(colorLike ColorLike) {
 	}
 	_ = color
 	if color != (nil) {
-		if color.impl.isDisposed_() {
+		if color.impl.IsDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2872,7 +2872,7 @@ func (this *Control) SetBackgroundImage(imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.isDisposed_() {
+	if image != (nil) && image.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if image == this.backgroundImage && this.backgroundAlpha > 0 {
@@ -2978,11 +2978,11 @@ func (this *Control) SetCursor(cursorLike CursorLike) {
 	}
 	_ = cursor
 	this.CheckWidget()
-	if cursor != (nil) && cursor.impl.isDisposed_() {
+	if cursor != (nil) && cursor.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
-	if !this.impl.isEnabled_() {
+	if !this.impl.IsEnabled_() {
 		return
 	}
 	if !this.View.Window().AreCursorRectsEnabled() {
@@ -3008,10 +3008,10 @@ func (this *Control) SetDragDetect(dragDetect bool) {
 }
 
 func (this *Control) SetEnabled(enabled bool) {
-	this.impl.setEnabled_(enabled)
+	this.impl.SetEnabled_(enabled)
 }
 
-func (this *Control) setEnabled_(enabled bool) {
+func (this *Control) SetEnabled_(enabled bool) {
 	this.CheckWidget()
 	if ((this.state & WidgetDISABLED) == 0) == enabled {
 		return
@@ -3036,10 +3036,10 @@ func (this *Control) setEnabled_(enabled bool) {
 }
 
 func (this *Control) SetFocus() bool {
-	return this.impl.setFocus_()
+	return this.impl.SetFocus_()
 }
 
-func (this *Control) setFocus_() bool {
+func (this *Control) SetFocus_() bool {
 	this.CheckWidget()
 	if (this.style & NO_FOCUS) != 0 {
 		return false
@@ -3052,13 +3052,13 @@ func (this *Control) SetFont(fontLike FontLike) {
 	if fontLike != nil {
 		font = fontLike.AsFont()
 	}
-	this.impl.setFont_(font)
+	this.impl.SetFont_(font)
 }
 
-func (this *Control) setFont_(font *Font) {
+func (this *Control) SetFont_(font *Font) {
 	this.CheckWidget()
 	if font != (nil) {
-		if font.impl.isDisposed_() {
+		if font.impl.IsDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -3088,13 +3088,13 @@ func (this *Control) SetForeground(colorLike ColorLike) {
 	if colorLike != nil {
 		color = colorLike.AsColor()
 	}
-	this.impl.setForeground_(color)
+	this.impl.SetForeground_(color)
 }
 
-func (this *Control) setForeground_(color *Color) {
+func (this *Control) SetForeground_(color *Color) {
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.isDisposed_() {
+		if color.impl.IsDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -3206,10 +3206,10 @@ func (this *Control) SetMenu(menuLike MenuLike) {
 }
 
 func (this *Control) SetOrientation(orientation int32) {
-	this.impl.setOrientationOnControl_(orientation)
+	this.impl.SetOrientationOnControl_(orientation)
 }
 
-func (this *Control) setOrientationOnControl_(orientation int32) {
+func (this *Control) SetOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 }
 
@@ -3229,12 +3229,12 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	if this.parent == parent {
 		return true
 	}
-	if !this.impl.isReparentable_() {
+	if !this.impl.IsReparentable_() {
 		return false
 	}
 	this.impl.releaseParent_()
-	var newShell *Shell = parent.impl.getShell_()
-	var oldShell *Shell = this.impl.getShell_()
+	var newShell *Shell = parent.impl.GetShell_()
+	var oldShell *Shell = this.impl.GetShell_()
 	var newDecorations *Decorations = parent.impl.menuShell_()
 	var oldDecorations *Decorations = this.impl.menuShell_()
 	if oldShell != newShell || oldDecorations != newDecorations {
@@ -3252,10 +3252,10 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 }
 
 func (this *Control) SetRedraw(redraw bool) {
-	this.impl.setRedraw_(redraw)
+	this.impl.SetRedraw_(redraw)
 }
 
-func (this *Control) setRedraw_(redraw bool) {
+func (this *Control) SetRedraw_(redraw bool) {
 	this.CheckWidget()
 	if redraw {
 		this.drawCount--
@@ -3280,12 +3280,12 @@ func (this *Control) SetRegion(regionLike RegionLike) {
 	if regionLike != nil {
 		region = regionLike.AsRegion()
 	}
-	this.impl.setRegion_(region)
+	this.impl.SetRegion_(region)
 }
 
-func (this *Control) setRegion_(region *Region) {
+func (this *Control) SetRegion_(region *Region) {
 	this.CheckWidget()
-	if region != (nil) && region.impl.isDisposed_() {
+	if region != (nil) && region.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.region = region
@@ -3362,10 +3362,10 @@ func (this *Control) SetTextDirection(textDirection int32) {
 }
 
 func (this *Control) SetToolTipText(string_ string) {
-	this.impl.setToolTipText_(string_)
+	this.impl.SetToolTipText_(string_)
 }
 
-func (this *Control) setToolTipText_(string_ string) {
+func (this *Control) SetToolTipText_(string_ string) {
 	this.CheckWidget()
 	if !(string_ == this.toolTipText) {
 		this.toolTipText = string_
@@ -3380,10 +3380,10 @@ func (this *Control) SetTouchEnabled(enabled bool) {
 }
 
 func (this *Control) SetVisible(visible bool) {
-	this.impl.setVisible_(visible)
+	this.impl.SetVisible_(visible)
 }
 
-func (this *Control) setVisible_(visible bool) {
+func (this *Control) SetVisible_(visible bool) {
 	this.CheckWidget()
 	if visible {
 		if (this.state & WidgetHIDDEN) == 0 {
@@ -3436,7 +3436,7 @@ func (this *Control) setZOrder_() {
 }
 
 func (this *Control) shouldDelayWindowOrderingForEvent_(id int64, sel int64, theEvent int64) bool {
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	if (shell.style & ON_TOP) != 0 {
 		return false
 	}
@@ -3792,7 +3792,7 @@ func (this *Control) TranslateTraversal(key int32, theEvent *cocoa.NSEvent, cons
 	if !this.SetKeyState(event, Traverse, theEvent) {
 		return false
 	}
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	var control *Control = this
 	for {
 		if control.TraverseEvent(event) {
@@ -3818,7 +3818,7 @@ func (this *Control) TraversalCode(key int32, theEvent *cocoa.NSEvent) int32 {
 
 func (this *Control) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
 	var code int32 = TRAVERSE_RETURN | TRAVERSE_TAB_NEXT | TRAVERSE_TAB_PREVIOUS | TRAVERSE_PAGE_NEXT | TRAVERSE_PAGE_PREVIOUS
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	if shell.parent != (nil) {
 		code |= TRAVERSE_ESCAPE
 	}
@@ -3921,7 +3921,7 @@ func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(t
 	event.KeyCode = keyCode
 	event.KeyLocation = keyLocation
 	event.StateMask = stateMask
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	var all bool = false
 	switch traversal {
 	case TRAVERSE_ESCAPE, TRAVERSE_RETURN, TRAVERSE_PAGE_NEXT, TRAVERSE_PAGE_PREVIOUS:
@@ -4153,7 +4153,7 @@ func (this *Control) UpdateAll(all bool) bool {
 	if this.impl.isResizing_() {
 		return false
 	}
-	var shell *Shell = this.impl.getShell_()
+	var shell *Shell = this.impl.GetShell_()
 	var window *cocoa.NSWindow
 	if shell.deferFlushing && shell.scrolling {
 		window = this.View.Window()
@@ -4229,13 +4229,13 @@ func (this *Control) updateBackgroundMode_() {
 }
 
 func (this *Control) resetCursorRects_(id int64, sel int64) {
-	if this.impl.isEnabled_() {
+	if this.impl.IsEnabled_() {
 		this.CallSuper(id, sel)
 	}
 }
 
 func (this *Control) updateTrackingAreas_(id int64, sel int64) {
-	if this.impl.isEnabled_() {
+	if this.impl.IsEnabled_() {
 		this.CallSuper(id, sel)
 	}
 }
@@ -4757,6 +4757,6 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init ControlFORCE_RUN_UPDATE:", r)
 			}
 		}()
-		ControlFORCE_RUN_UPDATE = strings.EqualFold("", "true")
+		ControlFORCE_RUN_UPDATE = strings.EqualFold(jrt.GetProperty("org.eclipse.swt.internal.control.forceRunUpdate", ""), "true")
 	}()
 }

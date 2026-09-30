@@ -47,6 +47,11 @@ type Method struct {
 	e        *MethodEntry
 }
 
+// NewNamedMethod is a Method that only knows its name (TestInfo.getTestMethod).
+func NewNamedMethod(name string) *Method { return &Method{javaName: name} }
+
+func (mth *Method) GetName() string { return mth.javaName }
+
 // GetReturnType is Method.getReturnType(); nil (a nil reflect.Type) for a void method.
 func (mth *Method) GetReturnType() reflect.Type { return mth.e.returnType }
 

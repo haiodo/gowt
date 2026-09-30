@@ -2,7 +2,7 @@
 
 `make test-swt` on macOS arm64, SWT `af630a9093`. The run is gated by `tests/expected.txt` (below).
 
-**Total: 1822 tests - 1728 passed, 83 failed, 11 skipped.** Before the merge of TSK-051 and TSK-052/053:
+**Total: 1822 tests - 1802 passed, 11 failed, 9 skipped** (Round 15; before it 1728 / 83 / 11). Before the merge of TSK-051 and TSK-052/053:
 widget tests alone 1662 / 149 / 11; graphics, layout and events alone 325 / 22 / 5 (TSK-051 seed: 292 / 55 / 5).
 `Tree.test_Virtual` is `flaky` (SetData count timing).
 
@@ -30,10 +30,10 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | graphics_Font | 9 | 0 | 0 |
 | graphics_FontData | 11 | 0 | 0 |
 | graphics_FontMetrics | 8 | 0 | 0 |
-| graphics_GC | 63 | 10 | 1 |
-| graphics_Image | 29 | 6 | 3 |
-| graphics_ImageData | 17 | 4 | 0 |
-| graphics_ImageLoader | 7 | 1 | 0 |
+| graphics_GC | 71 | 2 | 1 |
+| graphics_Image | 34 | 1 | 3 |
+| graphics_ImageData | 19 | 2 | 0 |
+| graphics_ImageLoader | 8 | 0 | 0 |
 | graphics_ImageLoaderEvent | 2 | 0 | 0 |
 | graphics_PaletteData | 5 | 0 | 0 |
 | graphics_Path | 3 | 0 | 1 |
@@ -47,24 +47,32 @@ tests (`List`, `Sash`, `MenuItem`, `TreeItem`, `TableItem`, ... ) - not in the t
 | graphics_Transform | 4 | 0 | 0 |
 | layout_FormAttachment | 7 | 0 | 0 |
 | layout_GridData | 3 | 0 | 0 |
-| widgets_Button | 100 | 0 | 2 |
-| widgets_Canvas | 93 | 3 | 0 |
+| widgets_Button | 99 | 1 | 2 |
+| widgets_Canvas | 96 | 0 | 0 |
 | widgets_Caret | 18 | 0 | 0 |
-| widgets_Combo | 138 | 3 | 0 |
-| widgets_Composite | 88 | 3 | 0 |
-| widgets_Display | 51 | 10 | 3 |
-| widgets_Group | 91 | 3 | 0 |
+| widgets_Combo | 141 | 0 | 0 |
+| widgets_Composite | 91 | 0 | 0 |
+| widgets_Display | 62 | 1 | 1 |
+| widgets_Group | 94 | 0 | 0 |
 | widgets_Label | 86 | 0 | 0 |
 | widgets_Menu | 29 | 0 | 0 |
-| widgets_ScrolledComposite | 98 | 3 | 0 |
-| widgets_Shell | 134 | 5 | 1 |
-| widgets_TabFolder | 98 | 9 | 0 |
-| widgets_Table | 127 | 9 | 0 |
+| widgets_ScrolledComposite | 101 | 0 | 0 |
+| widgets_Shell | 139 | 0 | 1 |
+| widgets_TabFolder | 107 | 0 | 0 |
+| widgets_Table | 135 | 1 | 0 |
 | widgets_Text | 132 | 1 | 0 |
-| widgets_Tree | 120 | 12 | 0 |
+| widgets_Tree | 131 | 1 | 0 |
 
 Skips: the tests' own `assumeTrue/assumeFalse`/`@Disabled*` for cocoa, plus `Display.test_setCursorLocation*`
 (`@TempDir`-style parameter injection, not supported by the runner).
+
+## Remaining failures (Round 15)
+
+Each is in `tests/expected.txt` with its reason: HiDPI/SVG loading (GC `withTransform` x2, Image `reevaluatesSizability..`),
+private-method reflection (ImageData `blit` x2), TextLayout `bug568740` (rendering), Display `setSynchronizer` (local
+class), Text `backspaceAndDelete` (`Display.post` of a key event returns false), and two Round 15 regressions without
+a root cause: Button `addDisposeListener` (a late `setNeedsDisplay` reaches a Widget with a nil display) and Table
+`Virtual` (passes alone, fails after the preceding tests). Sections below describe earlier rounds.
 
 ## Null String arguments in tests
 

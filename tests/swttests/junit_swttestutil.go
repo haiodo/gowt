@@ -73,11 +73,11 @@ func (this *SwtTestUtil) initSwtTestUtil() {
 }
 
 func SwtTestUtilCheckEnvVarMatches(name string, regex string) bool {
-	var value string = func() string { _ = []any{name}; panic("j2go: unresolved call getenv") }()
+	var value string = jrt.Getenv(name)
 	if value == "" {
 		return false
 	}
-	return func() bool { _ = []any{value, regex}; panic("j2go: unresolved call matches") }()
+	return jrt.Matches(value, regex)
 }
 
 func SwtTestUtilIsRunningOnGitHubActions() bool {
@@ -92,7 +92,7 @@ func SwtTestUtilIsX11() bool {
 	if !SwtTestUtilIsGTK {
 		return false
 	}
-	var backend string = ""
+	var backend string = jrt.GetProperty("org.eclipse.swt.internal.gdk.backend", "")
 	if "x11" == backend {
 		return true
 	} else {
@@ -101,14 +101,14 @@ func SwtTestUtilIsX11() bool {
 		}
 	}
 	junit.Fail("org.eclipse.swt.internal.gdk.backend System property is not set yet. Create a new Display before calling isX11")
-	panic(func() any { _ = []any{"unreachable"}; panic("j2go: unresolved new IllegalStateException") }())
+	panic(&jrt.RuntimeException{Message: "unreachable"})
 }
 
 func SwtTestUtilIsWayland() bool {
 	if !SwtTestUtilIsGTK {
 		return false
 	}
-	var backend string = ""
+	var backend string = jrt.GetProperty("org.eclipse.swt.internal.gdk.backend", "")
 	if "wayland" == backend {
 		return true
 	} else {
@@ -117,39 +117,39 @@ func SwtTestUtilIsWayland() bool {
 		}
 	}
 	junit.Fail("org.eclipse.swt.internal.gdk.backend System property is not set yet. Create a new Display before calling isWayland")
-	panic(func() any { _ = []any{"unreachable"}; panic("j2go: unresolved new IllegalStateException") }())
+	panic(&jrt.RuntimeException{Message: "unreachable"})
 }
 
 func SwtTestUtilIsGTK3() bool {
 	if !SwtTestUtilIsGTK {
 		return false
 	}
-	var version string = ""
+	var version string = jrt.GetProperty("org.eclipse.swt.internal.gtk.version", "")
 	if strings.HasPrefix(version, "3") {
 		return true
 	} else {
-		if !func() bool { _ = []any{version}; panic("j2go: unresolved call isBlank") }() {
+		if !(strings.TrimSpace(version) == "") {
 			return false
 		}
 	}
 	junit.Fail("org.eclipse.swt.internal.gtk.version System property is not set yet. Create a new Display (or otherwise access OS) before calling isGTK4")
-	panic(func() any { _ = []any{"unreachable"}; panic("j2go: unresolved new IllegalStateException") }())
+	panic(&jrt.RuntimeException{Message: "unreachable"})
 }
 
 func SwtTestUtilIsGTK4() bool {
 	if !SwtTestUtilIsGTK {
 		return false
 	}
-	var version string = ""
+	var version string = jrt.GetProperty("org.eclipse.swt.internal.gtk.version", "")
 	if strings.HasPrefix(version, "4") {
 		return true
 	} else {
-		if !func() bool { _ = []any{version}; panic("j2go: unresolved call isBlank") }() {
+		if !(strings.TrimSpace(version) == "") {
 			return false
 		}
 	}
 	junit.Fail("org.eclipse.swt.internal.gtk.version System property is not set yet. Create a new Display (or otherwise access OS) before calling isGTK4")
-	panic(func() any { _ = []any{"unreachable"}; panic("j2go: unresolved new IllegalStateException") }())
+	panic(&jrt.RuntimeException{Message: "unreachable"})
 }
 
 func SwtTestUtilAssertSWTProblem(message string, expectedCode int32, actualThrowable error) {
@@ -201,7 +201,10 @@ func SwtTestUtilOpenShell(shellLike swt.ShellLike) {
 			if SwtTestUtilIsGTK4() || SwtTestUtilIsWayland() {
 				SwtTestUtilWaitAllEvents(jrt.NewRunnable(func() {
 					shell.Open()
-				}), upcastswtShellToswtControl(shell), func() any { _ = []any{swt.Paint, swt.Activate, swt.FocusIn}; panic("j2go: unresolved call of") }(), 1000)
+				}), upcastswtShellToswtControl(shell), func() any {
+					_ = []any{int32(swt.Paint), int32(swt.Activate), int32(swt.FocusIn)}
+					panic("j2go: unresolved call of")
+				}(), 1000)
 			} else {
 				SwtTestUtilWaitEvent(jrt.NewRunnable(func() {
 					shell.Open()
@@ -326,7 +329,7 @@ func SwtTestUtilDumpShellState(out any) {
 		for {
 			var bounds *swt.Rectangle = focusControl.GetBounds()
 			func() any {
-				_ = []any{out, "  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{jrt.HashCodeOf(focusControl), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}}
+				_ = []any{out, "  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{int32(jrt.HashCodeOf(focusControl)), int32(bounds.X), int32(bounds.Y), int32(bounds.Width), int32(bounds.Height), indent, focusControl}}
 				panic("j2go: unresolved call format")
 			}()
 			focusControl = upcastswtCompositeToswtControl(focusControl.GetParent())
@@ -356,7 +359,7 @@ func SwtTestUtilDumpShellState(out any) {
 				cond7 = 'N'
 			}
 			func() any {
-				_ = []any{out, "  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{jrt.HashCodeOf(shell), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}}
+				_ = []any{out, "  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{int32(jrt.HashCodeOf(shell)), uint16(cond6), uint16(cond7), int32(bounds.X), int32(bounds.Y), int32(bounds.Width), int32(bounds.Height), shell.GetText()}}
 				panic("j2go: unresolved call format")
 			}()
 		}

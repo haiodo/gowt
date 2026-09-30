@@ -203,8 +203,8 @@ func (this *MessageBox) Open() int32 {
 }
 
 func (this *MessageBox) GetLabelForButton(buttonId int32, messageId string) *cocoa.NSString {
-	if this.labels != (nil) && this.labels.ContainsKey(buttonId) && jrt.Cast[string](this.labels.Get(buttonId)) != "" {
-		return cocoa.NSStringStringWith(jrt.Cast[string](this.labels.Get(buttonId)))
+	if this.labels != (nil) && this.labels.ContainsKey(int32(buttonId)) && jrt.Cast[string](this.labels.Get(int32(buttonId))) != "" {
+		return cocoa.NSStringStringWith(jrt.Cast[string](this.labels.Get(int32(buttonId))))
 	}
 	return cocoa.NSStringStringWith(GetMessage(messageId))
 }

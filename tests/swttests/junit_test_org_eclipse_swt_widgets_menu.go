@@ -26,10 +26,10 @@ func (this *Test_org_eclipse_swt_widgets_Menu) initTest_org_eclipse_swt_widgets_
 	this.Test_org_eclipse_swt_widgets_Widget.initTest_org_eclipse_swt_widgets_Widget()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Menu) setUp_() {
-	this.Test_org_eclipse_swt_widgets_Widget.setUp_()
+func (this *Test_org_eclipse_swt_widgets_Menu) SetUp_() {
+	this.Test_org_eclipse_swt_widgets_Widget.SetUp_()
 	this.menu = swt.NewMenu(upcastswtShellToswtControl(this.shell))
-	this.impl.setWidget_(upcastswtMenuToswtWidget(this.menu))
+	this.impl.SetWidget_(upcastswtMenuToswtWidget(this.menu))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_ConstructorLorg_eclipse_swt_widgets_Control() {
@@ -80,14 +80,14 @@ func (this *Test_org_eclipse_swt_widgets_Menu) Test_addHelpListenerLorg_eclipse_
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	this.listenerCalled = false
-	anon84 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
-	anon84.fnMenuShown = func(e *swt.MenuEvent) {
+	anon85 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
+	anon85.fnMenuShown = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	anon84.fnMenuHidden = func(e *swt.MenuEvent) {
+	anon85.fnMenuHidden = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	var menuListener swt.MenuListener = anon84
+	var menuListener swt.MenuListener = anon85
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.menu.AddMenuListener(nil)
 	}, "No exception thrown for addMenuListener with null argument")
@@ -252,8 +252,8 @@ func init() {
 		Name: "Test_org_eclipse_swt_widgets_Menu",
 		New:  func() any { return NewTest_org_eclipse_swt_widgets_Menu() },
 		BeforeEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).SetupBase(nil) },
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.setUp_() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).SetupBase(junit.Current) },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.SetUp_() },
 		},
 		AfterEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).TearDown() },

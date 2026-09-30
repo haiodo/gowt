@@ -34,7 +34,7 @@ final class NumericEmitter {
 			String folded = foldShift(ln, rn, resultType);
 			if (folded != null) return folded;
 		}
-		String paramNullCheck = stringParamNullCheck(ie, op);
+		String paramNullCheck = NullArgGuards.stringNullCheck(emitter, ie, op);
 		if (paramNullCheck != null) return paramNullCheck;
 		String goOp = goOperator(ie);
 		String hoisted = hoistBooleanChainIfNeeded(ie, op, goOp);
@@ -194,48 +194,6 @@ final class NumericEmitter {
 				|| op == InfixExpression.Operator.OR || op == InfixExpression.Operator.XOR;
 	}
 
-	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter: it
-	 * fires only for jrt.NullString, which a test's literal null argument becomes; "" is a valid
-	 * String (README "Round 11 null-string"). Every other String null check keeps `== ""`. */
-	private String stringParamNullCheck(InfixExpression ie, InfixExpression.Operator op) {
-		if (nullGuardedParam(ie) == null) return null;
-		Expression other = ie.getRightOperand() instanceof NullLiteral ? ie.getLeftOperand() : ie.getRightOperand();
-		if (!isGoString(other)) return null;
-		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
-		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
-	}
-
-	/** The parameter of a null-argument guard `param ==/!= null`, or null if ie is not one. Shared
-	 * with NullArgGuards, which asks the same question of a callee's body. */
-	static IVariableBinding nullGuardedParam(InfixExpression ie) {
-		InfixExpression.Operator op = ie.getOperator();
-		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
-		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
-		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
-		if (!(other instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return null;
-		return vb.isParameter() && isNullArgumentGuard(ie) ? vb : null;
-	}
-
-	// e is the condition of an if (alone or inside a || chain) whose then-branch is
-	// error(...ERROR_NULL_ARGUMENT) or a throw.
-	private static boolean isNullArgumentGuard(Expression e) {
-		ASTNode p = e.getParent();
-		while (p instanceof ParenthesizedExpression || p instanceof InfixExpression ie && ie.getOperator() == InfixExpression.Operator.CONDITIONAL_OR) {
-			p = p.getParent();
-		}
-		if (!(p instanceof IfStatement is)) return false;
-		Statement then = is.getThenStatement();
-		if (then instanceof Block b && b.statements().size() == 1) then = (Statement) b.statements().get(0);
-		if (then instanceof ThrowStatement) return true;
-		return then instanceof ExpressionStatement es && es.getExpression() instanceof MethodInvocation mi
-				&& mi.getName().getIdentifier().equals("error") && !mi.arguments().isEmpty()
-				&& mi.arguments().get(0) instanceof Name arg && arg.getFullyQualifiedName().endsWith("ERROR_NULL_ARGUMENT");
-	}
-
-	private boolean isGoString(Expression e) {
-		ITypeBinding t = e.resolveTypeBinding();
-		return t != null && dev.gowt.j2go.GoTypes.map(t, emitter).equals("string");
-	}
 
 	/** Folds a literal << literal to its Java-shift decimal result, or null if not foldable. */
 	private String foldShift(NumberLiteral base, NumberLiteral shiftLit, ITypeBinding resultType) {
@@ -305,6 +263,7 @@ final class NumericEmitter {
 
 	private String verbFor(ITypeBinding t) {
 		if (t == null) return "%v";
+		if (t.getName().equals("char")) return "%c";
 		String g = dev.gowt.j2go.GoTypes.map(t, emitter);
 		return switch (g) {
 			case "int8", "int16", "uint16", "int32", "int64" -> "%d";
@@ -349,6 +308,11 @@ final class NumericEmitter {
 			emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 			return "jrt.Cast[" + dev.gowt.j2go.GoTypes.map(to, emitter) + "](" + text + ")";
 		}
+		// Boxing into any: an untyped constant would box as Go int, not the primitive's type.
+		if (from.isPrimitive() && !to.isPrimitive() && !from.getName().equals("boolean") && !from.getName().equals("void")
+				&& dev.gowt.j2go.GoTypes.map(to, emitter).equals("any")) {
+			return dev.gowt.j2go.GoTypes.map(from, emitter) + "(" + text + ")";
+		}
 		if (!from.isPrimitive() || !to.isPrimitive()) return upcastObject(text, from, to);
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
@@ -360,6 +324,14 @@ final class NumericEmitter {
 	 * the target (real or manual chain, e.g. `control = control.parent`) needs an explicit upcast. */
 	String upcastObject(String text, ITypeBinding from, ITypeBinding to) {
 		if (from.isPrimitive() || to.isPrimitive()) return text;
+		// A foreign anonymous subclass embeds its base by pointer (FunctionalEmitter.emitStructAnon).
+		if (from.isAnonymous() && from.getSuperclass() != null) {
+			TypeModel.ClassInfo baseCi = emitter.model.lookup(from.getSuperclass());
+			if (baseCi != null && !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage)
+					&& !to.isInterface() && !to.getErasure().isEqualTo(from.getErasure())) {
+				return upcastObject(text + "." + baseCi.goTypeName, from.getSuperclass(), to);
+			}
+		}
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
 		if (fromGo.equals(toGo)) return text;
@@ -445,5 +417,10 @@ final class NumericEmitter {
 		if (ci != null && ci.isStruct) return emitter.qualifiedTypeName(ci) + "{}";
 		if (t.getQualifiedName().equals("java.lang.String")) return "\"\"";
 		return "nil";
+	}
+
+	private boolean isGoString(Expression e) {
+		ITypeBinding t = e.resolveTypeBinding();
+		return t != null && dev.gowt.j2go.GoTypes.map(t, emitter).equals("string");
 	}
 }

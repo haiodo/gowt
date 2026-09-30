@@ -88,7 +88,7 @@ func (this *Path) initPathDevicePathFlatness(device *Device, path *Path, flatnes
 		if path == (nil) {
 			Error(ERROR_NULL_ARGUMENT)
 		}
-		if path.impl.isDisposed_() {
+		if path.impl.IsDisposed_() {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
 		flatness = float32(math.Max(float64(0), float64(flatness)))
@@ -145,7 +145,7 @@ func (this *Path) initPathDeviceData(device *Device, data *PathData) {
 }
 
 func (this *Path) AddArc(x float32, y float32, width float32, height float32, startAngle float32, arcAngle float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if width == 0 || height == 0 || arcAngle == 0 {
@@ -226,13 +226,13 @@ func (this *Path) AddPath(pathLike PathLike) {
 		path = pathLike.AsPath()
 	}
 	_ = path
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if path == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if path.impl.isDisposed_() {
+	if path.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -251,7 +251,7 @@ func (this *Path) AddPath(pathLike PathLike) {
 }
 
 func (this *Path) AddRectangle(x float32, y float32, width float32, height float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var rect cocoa.NSRect = cocoa.NSRect{}
@@ -280,13 +280,13 @@ func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontL
 		font = fontLike.AsFont()
 	}
 	_ = font
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if font == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if font.impl.isDisposed_() {
+	if font.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -348,7 +348,7 @@ func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontL
 }
 
 func (this *Path) Close() {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -372,13 +372,13 @@ func (this *Path) Contains(x float32, y float32, gcLike GCLike, outline bool) bo
 		gc = gcLike.AsGC()
 	}
 	_ = gc
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if gc == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.isDisposed_() {
+	if gc.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -452,7 +452,7 @@ func (this *Path) Contains(x float32, y float32, gcLike GCLike, outline bool) bo
 }
 
 func (this *Path) CubicTo(cx1 float32, cy1 float32, cx2 float32, cy2 float32, x float32, y float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -485,7 +485,7 @@ func (this *Path) destroy_() {
 }
 
 func (this *Path) GetBounds(bounds []float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if bounds == (nil) {
@@ -513,7 +513,7 @@ func (this *Path) GetBounds(bounds []float32) {
 }
 
 func (this *Path) GetCurrentPoint(point []float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if point == (nil) {
@@ -539,7 +539,7 @@ func (this *Path) GetCurrentPoint(point []float32) {
 }
 
 func (this *Path) GetPathData() *PathData {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -694,19 +694,19 @@ func (this *Path) Init(dataLike PathDataLike) {
 				this.Close()
 				break
 			default:
-				this.impl.dispose_()
+				this.impl.Dispose_()
 				Error(ERROR_INVALID_ARGUMENT)
 			}
 		}
 	}
 }
 
-func (this *Path) isDisposed_() bool {
+func (this *Path) IsDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Path) LineTo(x float32, y float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -728,7 +728,7 @@ func (this *Path) LineTo(x float32, y float32) {
 }
 
 func (this *Path) MoveTo(x float32, y float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -750,7 +750,7 @@ func (this *Path) MoveTo(x float32, y float32) {
 }
 
 func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -784,7 +784,7 @@ func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
 }
 
 func (this *Path) String() string {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		return "Path {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Path {%v}", this.Handle)

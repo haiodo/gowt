@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Does a callee treat a String parameter as a null-argument guard (see NumericEmitter.nullGuardedParam)?
+/** Does a callee treat a String parameter as a null-argument guard (see nullGuardedParam)?
  * Only then does a test's literal null become jrt.NullString; anywhere else it stays "". */
 final class NullArgGuards {
 	private NullArgGuards() {}
@@ -47,7 +47,7 @@ final class NullArgGuards {
 			md.getBody().accept(new ASTVisitor() {
 				@Override
 				public boolean visit(InfixExpression ie) {
-					IVariableBinding g = NumericEmitter.nullGuardedParam(ie);
+					IVariableBinding g = nullGuardedParam(ie);
 					if (g != null && g.isEqualTo(param)) hit[0] = true;
 					return !hit[0];
 				}
@@ -79,5 +79,52 @@ final class NullArgGuards {
 		int i = args.indexOf(n);
 		return callee != null && i >= 0 && !(callee.isVarargs() && i >= callee.getParameterTypes().length - 1)
 				&& guards(model, callee, i, seen);
+	}
+
+	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter, or
+	 * `if (items[i] == null) error(...)` on a String[] element: it fires only for jrt.NullString, which
+	 * a test's literal null becomes; "" is a valid String (README "Round 11 null-string"). Every
+	 * other String null check keeps `== ""`. Null when ie is neither. */
+	static String stringNullCheck(Emitter emitter, InfixExpression ie, InfixExpression.Operator op) {
+		Expression other = ie.getRightOperand() instanceof NullLiteral ? ie.getLeftOperand() : ie.getRightOperand();
+		if (nullGuardedParam(ie) == null && !isElementGuard(ie, other)) return null;
+		ITypeBinding t = other.resolveTypeBinding();
+		if (t == null || !dev.gowt.j2go.GoTypes.map(t, emitter).equals("string")) return null;
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
+	}
+
+	private static boolean isElementGuard(InfixExpression ie, Expression other) {
+		InfixExpression.Operator op = ie.getOperator();
+		return (op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS)
+				&& (ie.getLeftOperand() instanceof NullLiteral || ie.getRightOperand() instanceof NullLiteral)
+				&& other instanceof ArrayAccess && isGuardCondition(ie, false);
+	}
+
+	/** The parameter of a null-argument guard `param ==/!= null`, or null if ie is not one. Shared
+	 * with guards(), which asks the same question of a callee's body. */
+	static IVariableBinding nullGuardedParam(InfixExpression ie) {
+		InfixExpression.Operator op = ie.getOperator();
+		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
+		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
+		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
+		if (!(other instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return null;
+		return vb.isParameter() && isGuardCondition(ie, true) ? vb : null;
+	}
+
+	// e is the condition of an if (alone or inside a || chain) whose then-branch is a throw or
+	// error(...): ERROR_NULL_ARGUMENT only when nullArgumentOnly, any error code otherwise.
+	private static boolean isGuardCondition(Expression e, boolean nullArgumentOnly) {
+		ASTNode p = e.getParent();
+		while (p instanceof ParenthesizedExpression || p instanceof InfixExpression ie && ie.getOperator() == InfixExpression.Operator.CONDITIONAL_OR) {
+			p = p.getParent();
+		}
+		if (!(p instanceof IfStatement is)) return false;
+		Statement then = is.getThenStatement();
+		if (then instanceof Block b && b.statements().size() == 1) then = (Statement) b.statements().get(0);
+		if (then instanceof ThrowStatement) return true;
+		return then instanceof ExpressionStatement es && es.getExpression() instanceof MethodInvocation mi
+				&& mi.getName().getIdentifier().equals("error") && !mi.arguments().isEmpty()
+				&& (!nullArgumentOnly || mi.arguments().get(0) instanceof Name arg && arg.getFullyQualifiedName().endsWith("ERROR_NULL_ARGUMENT"));
 	}
 }

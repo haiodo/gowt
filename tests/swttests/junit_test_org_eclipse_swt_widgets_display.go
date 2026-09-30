@@ -33,7 +33,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_Constructor() {
 	var disp *swt.Display = swt.NewDisplay()
 	disp.Dispose()
 	if SwtTestUtilIsGTK {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf("org.eclipse.swt.internal.gtk.version=%s", ""))
+		fmt.Fprintln(os.Stdout, fmt.Sprintf("org.eclipse.swt.internal.gtk.version=%s", jrt.GetProperty("org.eclipse.swt.internal.gtk.version", "")))
 	}
 }
 
@@ -133,44 +133,35 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_Executor() {
 			integer.Set(1)
 		}))
 		junit.AssertEquals(int32(1), int32(integer.Get()))
-		var latch any = func() any { _ = []any{1}; panic("j2go: unresolved new CountDownLatch") }()
+		var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 		jrt.ThreadStart(jrt.NewThread(jrt.NewRunnable(func() {
 			display.Execute(jrt.NewRunnable(func() {
 				func() {
 					defer func() {
-						func() any { _ = []any{latch}; panic("j2go: unresolved call countDown") }()
+						latch.CountDown()
 					}()
 					junit.AssertEquals(display, swt.DisplayGetCurrent())
 					integer.Set(2)
 				}()
 			}))
 		})))
-		for !func() bool {
-			_ = []any{latch, int64(10), func() any { panic("j2go: unresolved static field MILLISECONDS") }()}
-			panic("j2go: unresolved call await")
-		}() {
+		for !latch.Await(int64(10), jrt.TimeUnitMILLISECONDS) {
 			for display.ReadAndDispatch() {
 			}
 		}
 		junit.AssertEquals(int32(2), int32(integer.Get()))
-		var future any = func() any {
-			_ = []any{func() any {
-				_ = []any{func() string {
-					junit.AssertNull(swt.DisplayGetCurrent())
-					return "Hello SWT from background thread"
-				}}
-				panic("j2go: unresolved call supplyAsync")
-			}(), jrt.NewRunnable(func() {
-				junit.AssertEquals(display, swt.DisplayGetCurrent())
-			}), swt.DisplayGetDefault()}
-			panic("j2go: unresolved call thenRunAsync")
-		}()
-		for !func() bool { _ = []any{future}; panic("j2go: unresolved call isDone") }() {
+		var future *jrt.CompletableFuture = jrt.CompletableFutureSupplyAsync(func() string {
+			junit.AssertNull(swt.DisplayGetCurrent())
+			return "Hello SWT from background thread"
+		}).ThenRunAsync(jrt.NewRunnable(func() {
+			junit.AssertEquals(display, swt.DisplayGetCurrent())
+		}), swt.DisplayGetDefault())
+		for !future.IsDone() {
 			for display.ReadAndDispatch() {
 			}
 		}
-		junit.AssertFalse(func() bool { _ = []any{future}; panic("j2go: unresolved call isCancelled") }())
-		junit.AssertFalse(func() bool { _ = []any{future}; panic("j2go: unresolved call isCompletedExceptionally") }())
+		junit.AssertFalse(future.IsCancelled())
+		junit.AssertFalse(future.IsCompletedExceptionally())
 	}
 }
 
@@ -1050,7 +1041,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setAppNameLjava_lang_Stri
 	swt.DisplaySetAppName("My Application Name")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationII(info any) {
+func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationII(info *junit.TestInfo) {
 	var display *swt.Display = swt.NewDisplay()
 	{
 		defer func() {
@@ -1066,16 +1057,16 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationII(info 
 		var actual *swt.Point = display.GetCursorLocation()
 		if !Test_org_eclipse_swt_widgets_DisplayBUG_492569 && SwtTestUtilIsX11() {
 			if !location.Equals(actual) {
-				jrt.TakeScreenshot(reflect.TypeOf(this), func() string { _ = []any{info}; panic("j2go: unresolved call getDisplayName") }())
+				jrt.TakeScreenshot(reflect.TypeOf(this), info.GetDisplayName())
 				junit.Fail(fmt.Sprintf("\nExpected:%s  Actual:%s", location.String(), actual.String()))
 			}
 		} else {
-			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s#%s: actual == %v", jrt.ClassName(reflect.TypeOf(this)), func() string { _ = []any{info}; panic("j2go: unresolved call getDisplayName") }(), actual))
+			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s#%s: actual == %v", jrt.ClassName(reflect.TypeOf(this)), info.GetDisplayName(), actual))
 		}
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationLorg_eclipse_swt_graphics_Point(info any) {
+func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationLorg_eclipse_swt_graphics_Point(info *junit.TestInfo) {
 	var display *swt.Display = swt.NewDisplay()
 	{
 		defer func() {
@@ -1095,11 +1086,11 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setCursorLocationLorg_ecl
 		var actual *swt.Point = display.GetCursorLocation()
 		if !Test_org_eclipse_swt_widgets_DisplayBUG_492569 && SwtTestUtilIsX11() {
 			if !location.Equals(actual) {
-				jrt.TakeScreenshot(reflect.TypeOf(this), func() string { _ = []any{info}; panic("j2go: unresolved call getDisplayName") }())
+				jrt.TakeScreenshot(reflect.TypeOf(this), info.GetDisplayName())
 				junit.Fail(fmt.Sprintf("\nExpected:%s  Actual:%s", location.String(), actual.String()))
 			}
 		} else {
-			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s#%s: actual == %v", jrt.ClassName(reflect.TypeOf(this)), func() string { _ = []any{info}; panic("j2go: unresolved call getDisplayName") }(), actual))
+			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s#%s: actual == %v", jrt.ClassName(reflect.TypeOf(this)), info.GetDisplayName(), actual))
 		}
 	}
 }
@@ -1189,12 +1180,50 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_sleep() {
 		var eventQueued bool
 		for display.ReadAndDispatch() {
 		}
-		thread = func() any { _ = []any{display}; panic("j2go: unsupported AnonymousClass") }()
+		thread = any(jrt.NewThread(jrt.NewRunnable(func() {
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if false {
+						var ex error
+						_ = ex
+					} else {
+						panic(r)
+					}
+				}()
+				jrt.Sleep(int64(3000))
+			}()
+			display.Wake()
+		})))
 		jrt.ThreadStart(thread)
 		eventQueued = display.Sleep()
 		for display.ReadAndDispatch() {
 		}
-		thread = func() any { _ = []any{display}; panic("j2go: unsupported AnonymousClass") }()
+		thread = any(jrt.NewThread(jrt.NewRunnable(func() {
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if false {
+						var ex error
+						_ = ex
+					} else {
+						panic(r)
+					}
+				}()
+				jrt.Sleep(int64(3000))
+			}()
+			display.SyncExec(jrt.NewRunnable(func() {
+				var s *swt.Shell = swt.NewShellDisplay(display)
+				s.Open()
+				s.Dispose()
+			}))
+		})))
 		jrt.ThreadStart(thread)
 		eventQueued = display.Sleep()
 		junit.AssertTrue(eventQueued)
@@ -1231,10 +1260,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall() {
 		defer func() {
 			display.Dispose()
 		}()
-		var depth int32 = jrt.Cast[int32](func() int32 {
-			_ = []any{display, func() any { _ = []any{display}; panic("j2go: unsupported LambdaExpression") }()}
-			panic("j2go: unresolved call syncCall")
-		}())
+		var depth int32 = jrt.Cast[int32](display.SyncCall(func() any {
+			return int32(display.GetDepth())
+		}))
 		junit.AssertEquals(int32(display.GetDepth()), int32(depth))
 	}
 }
@@ -1245,10 +1273,10 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_dispose() {
 		defer func() {
 			junit.AssertTrue(display.IsDisposed())
 		}()
-		var magic int32 = jrt.Cast[int32](func() int32 {
-			_ = []any{display, func() any { _ = []any{display}; panic("j2go: unsupported LambdaExpression") }()}
-			panic("j2go: unresolved call syncCall")
-		}())
+		var magic int32 = jrt.Cast[int32](display.SyncCall(func() any {
+			display.Dispose()
+			return int32(42)
+		}))
 		junit.AssertEquals(int32(42), int32(magic))
 	}
 }
@@ -1260,10 +1288,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_RuntimeException
 			display.Dispose()
 		}()
 		var e error = junit.AssertThrows[error](func() {
-			func() any {
-				_ = []any{display, func() any { panic("j2go: unsupported LambdaExpression") }()}
-				panic("j2go: unresolved call syncCall")
-			}()
+			display.SyncCall(func() any {
+				panic(jrt.NewIllegalArgumentException("42"))
+			})
 		})
 		junit.AssertEquals("42", e.Error())
 	}
@@ -1276,10 +1303,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_Exception() {
 			display.Dispose()
 		}()
 		var e *jrt.IOException = junit.AssertThrows[*jrt.IOException](func() {
-			func() any {
-				_ = []any{display, func() any { panic("j2go: unsupported LambdaExpression") }()}
-				panic("j2go: unresolved call syncCall")
-			}()
+			display.SyncCall(func() any {
+				panic(jrt.NewIOException("42"))
+			})
 		})
 		junit.AssertEquals("42", e.Error())
 	}
@@ -1289,10 +1315,10 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_SWTException() {
 	var display *swt.Display = swt.NewDisplay()
 	display.Dispose()
 	var e *swt.SWTException = junit.AssertThrows[*swt.SWTException](func() {
-		func() int32 {
-			_ = []any{display, func() any { _ = []any{display}; panic("j2go: unsupported LambdaExpression") }()}
-			panic("j2go: unresolved call syncCall")
-		}()
+		display.SyncCall(func() any {
+			display.Dispose()
+			return int32(42)
+		})
 	})
 	junit.AssertEquals("Device is disposed", e.GetMessage())
 }
@@ -1303,11 +1329,10 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_concurrentCallab
 		defer func() {
 			display.Dispose()
 		}()
-		var c any = func() any { panic("j2go: unsupported LambdaExpression") }()
-		var magic int32 = jrt.Cast[int32](func() int32 {
-			_ = []any{display, func() any { _ = []any{c}; panic("j2go: unsupported ExpressionMethodReference") }()}
-			panic("j2go: unresolved call syncCall")
-		}())
+		var c func() any = func() any {
+			return int32(42)
+		}
+		var magic int32 = jrt.Cast[int32](display.SyncCall(c))
 		junit.AssertEquals(int32(42), int32(magic))
 	}
 }
@@ -1318,12 +1343,11 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_syncCall_concurrentCallab
 		defer func() {
 			display.Dispose()
 		}()
-		var c any = func() any { panic("j2go: unsupported LambdaExpression") }()
+		var c func() any = func() any {
+			panic(jrt.NewIOException("42"))
+		}
 		var e error = junit.AssertThrows[error](func() {
-			func() int32 {
-				_ = []any{display, func() any { _ = []any{c}; panic("j2go: unsupported ExpressionMethodReference") }()}
-				panic("j2go: unresolved call syncCall")
-			}()
+			display.SyncCall(c)
 		})
 		junit.AssertEquals("42", e.Error())
 	}
@@ -1423,9 +1447,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getWarnings() {
 func (this *Test_org_eclipse_swt_widgets_Display) Test_manyDispose() {
 	var i int32 = 0
 	for {
-		t72 := i
+		t73 := i
 		i++
-		if !(t72 < 300) {
+		if !(t73 < 300) {
 			break
 		}
 		var display *swt.Display = swt.NewDisplay()
@@ -1557,8 +1581,10 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Display).Test_removeListenerILorg_eclipse_swt_widgets_Listener()
 			}},
 			{Name: "test_setAppNameLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_setAppNameLjava_lang_String() }},
-			{Name: "test_setCursorLocationII", Tags: []string{"gtk4-todo"}, Skip: "parameter injection not supported"},
-			{Name: "test_setCursorLocationLorg_eclipse_swt_graphics_Point", Tags: []string{"gtk4-todo"}, Skip: "parameter injection not supported"},
+			{Name: "test_setCursorLocationII", Tags: []string{"gtk4-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_setCursorLocationII(junit.Current) }},
+			{Name: "test_setCursorLocationLorg_eclipse_swt_graphics_Point", Tags: []string{"gtk4-todo"}, Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_Display).Test_setCursorLocationLorg_eclipse_swt_graphics_Point(junit.Current)
+			}},
 			{Name: "test_setDataLjava_lang_Object", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_setDataLjava_lang_Object() }},
 			{Name: "test_setDataLjava_lang_StringLjava_lang_Object", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Display).Test_setDataLjava_lang_StringLjava_lang_Object()
@@ -1591,6 +1617,6 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson:", r)
 			}
 		}()
-		Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson = strings.EqualFold("hudsonbuild", "") || strings.EqualFold("genie.platform", "")
+		Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson = strings.EqualFold("hudsonbuild", jrt.GetProperty("user.name", "")) || strings.EqualFold("genie.platform", jrt.GetProperty("user.name", ""))
 	}()
 }

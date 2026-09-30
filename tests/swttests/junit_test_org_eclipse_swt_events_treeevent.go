@@ -22,7 +22,7 @@ func (this *Test_org_eclipse_swt_events_TreeEvent) initTest_org_eclipse_swt_even
 	this.Test_org_eclipse_swt_events_SelectionEvent.initTest_org_eclipse_swt_events_SelectionEvent()
 }
 
-func (this *Test_org_eclipse_swt_events_TreeEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_TreeEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return upcastswtTreeEventToswtTypedEvent(swt.NewTreeEvent(event))
 }
 

@@ -2495,7 +2495,7 @@ func ImageDataFillGradientRectangle(gcLike GCLike, deviceLike DeviceLike, x int3
 			}
 		}
 	}
-	image.impl.dispose_()
+	image.impl.Dispose_()
 }
 
 // j2go: func adapter for ImageDataAtSizeProvider.

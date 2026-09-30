@@ -183,7 +183,7 @@ func (this *Font) Equals(object any) bool {
 }
 
 func (this *Font) GetFontData() []*FontData {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -286,12 +286,12 @@ func (this *Font) InitTraits(style int32, systemFont *cocoa.NSFont) {
 	}
 }
 
-func (this *Font) isDisposed_() bool {
+func (this *Font) IsDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Font) String() string {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		return "Font {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Font {%v}", this.Handle)

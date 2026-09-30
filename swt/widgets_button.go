@@ -96,7 +96,7 @@ func (this *Button) Click() {
 	this.SendSelectionEvent(Selection)
 }
 
-func (this *Button) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Button) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	if (this.style & ARROW) != 0 {
 		var width int32
@@ -365,7 +365,7 @@ func (this *Button) drawInteriorWithFrame_inView_(id int64, sel int64, cellRect 
 
 func (this *Button) drawTitleWithFrameInView_(id int64, sel int64, title int64, titleRect cocoa.NSRect, view int64) cocoa.NSRect {
 	var wrap bool = (this.style&WRAP) != 0 && jrt.StringLength(this.text) != 0
-	var isEnabled bool = this.impl.isEnabled_()
+	var isEnabled bool = this.impl.IsEnabled_()
 	if wrap {
 		var wrapSize cocoa.NSSize = cocoa.NSSize{}
 		wrapSize.Width = titleRect.Width
@@ -450,7 +450,7 @@ func (this *Button) drawWidget_(id int64, context *cocoa.NSGraphicsContext, rect
 		transform.TranslateXBy(frame.Width/2, frame.Height/2)
 		path.TransformUsingAffineTransform(transform)
 		var color *cocoa.NSColor
-		if this.impl.isEnabled_() {
+		if this.impl.IsEnabled_() {
 			color = cocoa.NSColorBlackColor()
 		} else {
 			color = cocoa.NSColorDisabledControlTextColor()
@@ -584,7 +584,7 @@ func (this *Button) SelectRadio() {
 
 func (this *Button) sendSelection_() {
 	if (this.style & RADIO) != 0 {
-		if (this.parent.impl.getStyle_() & NO_RADIO_GROUP) == 0 {
+		if (this.parent.impl.GetStyle_() & NO_RADIO_GROUP) == 0 {
 			this.SelectRadio()
 		}
 	}
@@ -705,7 +705,7 @@ func (this *Button) SetImage(imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.isDisposed_() {
+	if image != (nil) && image.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	if (this.style & ARROW) != 0 {
@@ -736,7 +736,7 @@ func (this *Button) SetImage(imageLike ImageLike) {
 					cell.SetControlSize(int64(cocoa.OSNSControlSizeSmall))
 				}
 			}
-			this.impl.setFont_(this.GetFont())
+			this.impl.SetFont_(this.GetFont())
 		}
 	}
 	this.UpdateAlignment()

@@ -124,7 +124,7 @@ func (this *Combo) becomeFirstResponder_(id int64, sel int64) bool {
 	return result
 }
 
-func (this *Combo) checkSubclass_() {
+func (this *Combo) CheckSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -163,7 +163,7 @@ func (this *Combo) comboBoxSelectionDidChange_(id int64, sel int64, notification
 	}
 }
 
-func (this *Combo) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Combo) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -498,7 +498,7 @@ func (this *Combo) getMininumHeight_() int32 {
 	return this.GetTextHeight()
 }
 
-func (this *Combo) getOrientation_() int32 {
+func (this *Combo) GetOrientation_() int32 {
 	this.CheckWidget()
 	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
@@ -943,7 +943,7 @@ func (this *Combo) SetItems(items []string) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(items)); i++ {
-		if items[i] == "" {
+		if items[i] == jrt.NullString {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -978,7 +978,7 @@ func (this *Combo) SetListVisible(visible bool) {
 	}
 }
 
-func (this *Combo) setOrientationOnControl_(orientation int32) {
+func (this *Combo) SetOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 }
 

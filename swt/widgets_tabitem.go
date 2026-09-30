@@ -79,7 +79,7 @@ func (this *TabItem) accessibilityAttributeValue_(id int64, sel int64, arg0 int6
 	return this.Item.accessibilityAttributeValue_(id, sel, arg0)
 }
 
-func (this *TabItem) checkSubclass_() {
+func (this *TabItem) CheckSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -96,7 +96,7 @@ func (this *TabItem) destroyWidget_() {
 }
 
 func (this *TabItem) drawLabelInRect_(id int64, sel int64, shouldTruncateLabel bool, rect cocoa.NSRect) {
-	if this.image != (nil) && !this.image.impl.isDisposed_() {
+	if this.image != (nil) && !this.image.impl.IsDisposed_() {
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		var destRect cocoa.NSRect = cocoa.NSRect{}
 		destRect.X = rect.X
@@ -178,7 +178,7 @@ func (this *TabItem) releaseParent_() {
 	var index int32 = this.parent.IndexOf(this)
 	if index == this.parent.GetSelectionIndex() {
 		if this.control != (nil) {
-			this.control.impl.setVisible_(false)
+			this.control.impl.SetVisible_(false)
 		}
 	}
 }
@@ -221,15 +221,15 @@ func (this *TabItem) SetControl(controlLike ControlLike) {
 				}
 			}
 			if hideControl {
-				newControl.impl.setVisible_(false)
+				newControl.impl.SetVisible_(false)
 			}
 		}
 	} else {
 		if newControl != (nil) {
-			newControl.impl.setVisible_(true)
+			newControl.impl.SetVisible_(true)
 		}
 		if oldControl != (nil) && newControl != (nil) && oldControl != newControl {
-			oldControl.impl.setVisible_(false)
+			oldControl.impl.SetVisible_(false)
 		}
 	}
 	var view *cocoa.NSView
@@ -249,17 +249,17 @@ func (this *TabItem) SetControl(controlLike ControlLike) {
 	}
 }
 
-func (this *TabItem) setImageOnItem_(image *Image) {
+func (this *TabItem) SetImageOnItem_(image *Image) {
 	this.CheckWidget()
 	var index int32 = this.parent.IndexOf(this)
 	if index == -1 {
 		return
 	}
-	this.Item.setImageOnItem_(image)
+	this.Item.SetImageOnItem_(image)
 	this.nsItem.SetLabel(cocoa.NSStringString())
 }
 
-func (this *TabItem) setText_(string_ string) {
+func (this *TabItem) SetText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -268,7 +268,7 @@ func (this *TabItem) setText_(string_ string) {
 	if index == -1 {
 		return
 	}
-	this.Item.setText_(string_)
+	this.Item.SetText_(string_)
 	this.UpdateText()
 }
 
@@ -280,7 +280,7 @@ func (this *TabItem) SetToolTipText(string_ string) {
 
 func (this *TabItem) sizeOfLabel_(id int64, sel int64, shouldTruncateLabel bool) cocoa.NSSize {
 	var size cocoa.NSSize = this.Item.sizeOfLabel_(id, sel, shouldTruncateLabel)
-	if this.image != (nil) && !this.image.impl.isDisposed_() {
+	if this.image != (nil) && !this.image.impl.IsDisposed_() {
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		size.Width += imageSize.Width + float64(TabItemIMAGE_GAP)
 	}

@@ -122,6 +122,8 @@ final class ClassEmitter {
 		if (ci == ci.root && needsImpl && ci.splitsDispatch()) {
 			out.append("func (this *").append(ci.goTypeName).append(") Impl() ").append(ci.goTypeName)
 					.append("Impl { return this.impl }\n\n");
+			out.append("func (this *").append(ci.goTypeName).append(") SetImpl_(impl ").append(ci.goTypeName)
+					.append("Impl) { this.impl = impl }\n\n");
 		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
 

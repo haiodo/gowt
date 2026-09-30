@@ -184,7 +184,7 @@ func ImageLoaderCanLoadAtZoom(stream jrt.InputStream, fileZoom int32, targetZoom
 	if stream == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	return FileFormatCanLoadAtZoom(func() any { _ = []any{stream, fileZoom}; panic("j2go: unresolved new ElementAtZoom<InputStream>") }(), targetZoom)
+	return FileFormatCanLoadAtZoom(NewDPIUtilElementAtZoom(stream, fileZoom), targetZoom)
 }
 
 func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoom int32, targetZoom int32) bool {

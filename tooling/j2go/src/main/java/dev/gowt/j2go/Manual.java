@@ -142,6 +142,18 @@ public class Manual {
 		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicReference"}) {
 			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
 		}
+		// A record (no rule): swt/graphics_stubs_manual.go, element erased to any.
+		reg("org.eclipse.swt.internal.DPIUtil.ElementAtZoom", "DPIUtilElementAtZoom", null, false);
+		// TestInfo: internal/junit; Optional: internal/jrt/jdk.go.
+		reg("org.junit.jupiter.api.TestInfo", "junit.TestInfo", "github.com/haiodo/gowt/internal/junit", false);
+		reg("java.util.Optional", "jrt.Optional", JRT_IMPORT, false);
+		// internal/jrt/concurrent.go; TimeUnit is a value type (jrt.TimeUnitMILLISECONDS, ...).
+		for (String q : new String[]{"java.util.concurrent.CountDownLatch", "java.util.concurrent.CompletableFuture",
+				"java.lang.ref.WeakReference"}) {
+			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
+		}
+		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
+		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
 		// Round 10: ControlExample keeps a ShellTab field, but ShellTab is not translated yet -
 		// an opaque stub in examples/controlexample/controlexample_manual.go.
 		reg(CONTROL_EXAMPLE_PKG + "ShellTab", "ShellTab", null, false);
@@ -190,6 +202,8 @@ public class Manual {
 			// match that, so it checks the Go package instead (swt/widgets_stubs3_manual.go).
 			Map.entry("org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)", "DisplayIsValidClass"),
 			Map.entry("java.lang.Thread#currentThread()", "jrt.CurrentThread"),
+			// Generic, so hand-written over func() any (swt/widgets_display_manual.go).
+			Map.entry("org.eclipse.swt.widgets.Display#syncCall(org.eclipse.swt.SwtCallable)", "SyncCall"),
 			Map.entry("java.lang.System#currentTimeMillis()", "jrt.CurrentTimeMillis"),
 			// Eclipse's test harness screenshot helper: nothing to capture in cmd/swttest.
 			Map.entry("org.eclipse.test.Screenshots#takeScreenshot(java.lang.Class,java.lang.String)", "jrt.TakeScreenshot"),
@@ -199,6 +213,8 @@ public class Manual {
 			// (cocoa PI-layer file) - both replaced by hand-written stubs/wrappers in
 			// swt/graphics_imagecodec_manual.go, see README "Round 9 images".
 			Map.entry("org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)", "LoadByZoomStub"),
+			Map.entry("org.eclipse.swt.internal.NativeImageLoader#load(org.eclipse.swt.internal.DPIUtil$ElementAtZoom,org.eclipse.swt.graphics.ImageLoader,I)",
+					"NativeImageLoaderLoad"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)",
 					"NativeImageLoaderSave"),
 			// Round 10: only the tabs translated so far (examples/controlexample/controlexample_manual.go).

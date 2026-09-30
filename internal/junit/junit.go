@@ -3,7 +3,11 @@
 // panics *AssertionFailed, a failed assumption *Skipped; cmd/swttest recovers both per test.
 package junit
 
-import "time"
+import (
+	"time"
+
+	"github.com/haiodo/gowt/internal/jrt"
+)
 
 // Test is one test method (a @ParameterizedTest is expanded into one Test per argument).
 type Test struct {
@@ -37,3 +41,12 @@ func (e *AssertionFailed) Error() string { return e.Message }
 type Skipped struct{ Reason string }
 
 func (e *Skipped) Error() string { return e.Reason }
+
+// TestInfo is JUnit's TestInfo for the test being run; Current is set by the runner before @BeforeEach.
+type TestInfo struct{ Method string }
+
+var Current *TestInfo
+
+func (t *TestInfo) GetTestMethod() *jrt.Optional { return jrt.OptionalOf(jrt.NewNamedMethod(t.Method)) }
+
+func (t *TestInfo) GetDisplayName() string { return t.Method + "()" }

@@ -120,9 +120,15 @@ final class TestEmitter {
 		}
 	}
 
-	// A hook's injected parameter (TestInfo) is nil: the runner has no JUnit context to give.
+	// A hook's injected TestInfo is the runner's current test; any other injected parameter is nil.
 	private static List<String> nilArgs(IMethodBinding mb) {
-		return Collections.nCopies(mb.getParameterTypes().length, "nil");
+		List<String> args = new ArrayList<>();
+		for (ITypeBinding p : mb.getParameterTypes()) args.add(isTestInfo(p) ? "junit.Current" : "nil");
+		return args;
+	}
+
+	private static boolean isTestInfo(ITypeBinding t) {
+		return t.getQualifiedName().equals(API + "TestInfo");
 	}
 
 	private static void appendList(StringBuilder b, String field, String type, List<String> items) {
@@ -148,6 +154,7 @@ final class TestEmitter {
 		if (skip != null) common.append(", Skip: ").append(skip);
 		int params = mb.getParameterTypes().length;
 		if (!anns.contains(PARAMS + "ParameterizedTest")) {
+			if (params == 1 && isTestInfo(mb.getParameterTypes()[0])) return List.of(entry(name, common, emitter.instanceCall(recv, mb, nilArgs(mb))));
 			if (params > 0) return List.of(skipped(name, common, "parameter injection not supported"));
 			return List.of(entry(name, common, emitter.instanceCall(recv, mb, List.of())));
 		}

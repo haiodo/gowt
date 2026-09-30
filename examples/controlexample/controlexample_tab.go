@@ -96,6 +96,8 @@ type Tab struct {
 
 func (this *Tab) Impl() TabImpl { return this.impl }
 
+func (this *Tab) SetImpl_(impl TabImpl) { this.impl = impl }
+
 const TabTOO_SMALL_SIZE int32 = 10
 
 const TabRETANGLE_SIZE_WIDTH int32 = 140
@@ -769,7 +771,7 @@ func (this *Tab) CreateListenerSelectionDialog() {
 	}))
 	editEvent.SetEnabled(false)
 	anon9 := &TabAnon1{}
-	anon9.SelectionAdapter = *swt.NewSelectionAdapter()
+	anon9.SelectionAdapter = swt.NewSelectionAdapter()
 	anon9.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		var fields int32 = 0
 		var index int32 = table.GetSelectionIndex()
@@ -860,7 +862,7 @@ func (this *Tab) CreateListenersGroup() {
 	this.eventConsole.SetLayoutData(data)
 	this.CreateEventConsolePopup()
 	anon10 := &TabAnon2{}
-	anon10.KeyAdapter = *swt.NewKeyAdapter()
+	anon10.KeyAdapter = swt.NewKeyAdapter()
 	anon10.fnKeyPressed = func(e *swt.KeyEvent) {
 		if (e.KeyCode == int32('A') || e.KeyCode == int32('a')) && (e.StateMask&swt.MOD1) != 0 {
 			this.eventConsole.SelectAll()
@@ -1307,7 +1309,7 @@ func (this *Tab) ColorImage(colorLike swt.ColorLike) *swt.Image {
 	}
 	_ = color
 	anon15 := &TabAnon3{}
-	anon15.TransparencyColorImageGcDrawer = *swt.NewTransparencyColorImageGcDrawer(this.GetTransparencyColor(color))
+	anon15.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(this.GetTransparencyColor(color))
 	anon15.fnDrawOn = func(gc *swt.GC, imageWidth int32, imageHeight int32) {
 		gc.SetBackground(this.GetTransparencyColor(color))
 		gc.FillRectangle(0, 0, imageWidth, imageHeight)
@@ -1330,7 +1332,7 @@ func (this *Tab) FontImage(fontLike swt.FontLike) *swt.Image {
 	_ = font
 	var transparentcolor *swt.Color = this.display.GetSystemColor(swt.COLOR_CYAN)
 	anon16 := &TabAnon4{}
-	anon16.TransparencyColorImageGcDrawer = *swt.NewTransparencyColorImageGcDrawer(transparentcolor)
+	anon16.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(transparentcolor)
 	anon16.fnDrawOn = func(gc *swt.GC, iwidth int32, iheight int32) {
 		gc.SetBackground(this.display.GetSystemColor(swt.COLOR_CYAN))
 		gc.FillRectangle(0, 0, iwidth, iheight)
@@ -2060,7 +2062,7 @@ func upcastswtButtonToswtControl(x *swt.Button) *swt.Control {
 
 // j2go: anonymous SelectionAdapter subclass.
 type TabAnon1 struct {
-	swt.SelectionAdapter
+	*swt.SelectionAdapter
 	fnWidgetSelected        func(a0 *swt.SelectionEvent)
 	fnWidgetDefaultSelected func(a0 *swt.SelectionEvent)
 }
@@ -2075,7 +2077,7 @@ func (this *TabAnon1) WidgetDefaultSelected(a0 *swt.SelectionEvent) {
 
 // j2go: anonymous KeyAdapter subclass.
 type TabAnon2 struct {
-	swt.KeyAdapter
+	*swt.KeyAdapter
 	fnKeyPressed func(a0 *swt.KeyEvent)
 }
 
@@ -2092,7 +2094,7 @@ func upcastswtTabFolderToswtComposite(x *swt.TabFolder) *swt.Composite {
 
 // j2go: anonymous TransparencyColorImageGcDrawer subclass.
 type TabAnon3 struct {
-	swt.TransparencyColorImageGcDrawer
+	*swt.TransparencyColorImageGcDrawer
 	fnDrawOn func(a0 *swt.GC, a1 int32, a2 int32)
 }
 
@@ -2102,7 +2104,7 @@ func (this *TabAnon3) DrawOn(a0 *swt.GC, a1 int32, a2 int32) {
 
 // j2go: anonymous TransparencyColorImageGcDrawer subclass.
 type TabAnon4 struct {
-	swt.TransparencyColorImageGcDrawer
+	*swt.TransparencyColorImageGcDrawer
 	fnDrawOn func(a0 *swt.GC, a1 int32, a2 int32)
 }
 
@@ -2179,6 +2181,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.Text:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.List:
 		if v == nil {
 			return nil, false
 		}

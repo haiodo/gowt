@@ -16,6 +16,32 @@ type InputStream interface {
 	Close()
 }
 
+// FuncInputStream is `new InputStream() { int read() {...} }`: the other methods are InputStream's own.
+type FuncInputStream struct{ ReadFn func() int32 }
+
+func (s *FuncInputStream) Read() int32 { return s.ReadFn() }
+
+func (s *FuncInputStream) ReadRange(b []int8, off, length int32) int32 {
+	if length == 0 {
+		return 0
+	}
+	c := s.ReadFn()
+	if c < 0 {
+		return -1
+	}
+	b[off] = int8(c)
+	n := int32(1)
+	for ; n < length; n++ {
+		if c = s.ReadFn(); c < 0 {
+			break
+		}
+		b[off+n] = int8(c)
+	}
+	return n
+}
+
+func (s *FuncInputStream) Close() {}
+
 // OutputStream mirrors write(int)/write(byte[],off,len)/flush()/close().
 type OutputStream interface {
 	Write(b int32)
@@ -126,11 +152,22 @@ func (s *writerOutputStream) Close() {
 
 // IOException is java.io.IOException: a pointer so the panic value satisfies Go's error
 // interface (see ControlFlowEmitter's concrete-catch type assertion).
-type IOException struct{}
+type IOException struct{ Message string }
 
-func NewIOException() *IOException { return &IOException{} }
+func NewIOException(message ...string) *IOException {
+	e := &IOException{}
+	if len(message) > 0 {
+		e.Message = message[0]
+	}
+	return e
+}
 
-func (e *IOException) Error() string { return "IOException" }
+func (e *IOException) Error() string {
+	if e.Message != "" {
+		return e.Message
+	}
+	return "IOException"
+}
 
 // ReadAllBytes is java.io.InputStream.readAllBytes(): read until EOF.
 func ReadAllBytes(s InputStream) []int8 {

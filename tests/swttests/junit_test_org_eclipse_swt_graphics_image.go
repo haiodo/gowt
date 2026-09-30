@@ -284,7 +284,9 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 		}()
 	}
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for invalid InputStream", swt.ERROR_UNSUPPORTED_FORMAT, e)
-	var failingStream jrt.InputStream = func() jrt.InputStream { panic("j2go: unsupported AnonymousClass") }()
+	var failingStream jrt.InputStream = &jrt.FuncInputStream{ReadFn: func() int32 {
+		panic(jrt.NewIOException("bad input stream"))
+	}}
 	e = junit.AssertThrows[*swt.SWTException](func() {
 		swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(this.display), failingStream)
 	})

@@ -52,7 +52,7 @@ func (this *GestureEvent) initGestureEvent(e *Event) {
 	this.Doit = e.Doit
 }
 
-func (this *GestureEvent) string_() string {
-	var string_ string = this.TypedEvent.string_()
+func (this *GestureEvent) String_() string {
+	var string_ string = this.TypedEvent.String_()
 	return fmt.Sprintf("%s stateMask=0x%s detail=%d x=%d y=%d rotation=%v xDirection=%d yDirection=%d magnification=%v}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Detail, this.X, this.Y, this.Rotation, this.XDirection, this.YDirection, this.Magnification)
 }

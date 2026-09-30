@@ -698,7 +698,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getTransparencyType() 
 		}()
 	}
 	{
-		var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeOf(this), fmt.Sprintf("%s%d%s", SwtTestUtilImageFilenames[0], '.', SwtTestUtilImageFormats[int32(len(SwtTestUtilImageFormats))-1]))
+		var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeOf(this), fmt.Sprintf("%s%c%s", SwtTestUtilImageFilenames[0], '.', SwtTestUtilImageFormats[int32(len(SwtTestUtilImageFormats))-1]))
 		defer stream.Close()
 		var image *swt.Image = swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(swt.DisplayGetDefault()), stream)
 		this.imageData = image.GetImageData()

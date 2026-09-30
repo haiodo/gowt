@@ -35,7 +35,7 @@ func (this *ShellEvent) initShellEvent(e *Event) {
 	this.Doit = e.Doit
 }
 
-func (this *ShellEvent) string_() string {
-	var string_ string = this.TypedEvent.string_()
+func (this *ShellEvent) String_() string {
+	var string_ string = this.TypedEvent.String_()
 	return fmt.Sprintf("%s doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Doit)
 }

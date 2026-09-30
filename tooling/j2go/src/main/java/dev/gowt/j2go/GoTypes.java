@@ -111,7 +111,8 @@ public class GoTypes {
 
 	/** java.util.function.* and Comparator are bare Go funcs (lambdas need no adapter, a call is a Go call). */
 	public static boolean isJdkFunctional(String qualified) {
-		return qualified.startsWith("java.util.function.") || qualified.equals("java.util.Comparator");
+		return qualified.startsWith("java.util.function.") || qualified.equals("java.util.Comparator")
+				|| qualified.equals("java.util.concurrent.Callable") || qualified.equals("org.eclipse.swt.SwtCallable");
 	}
 
 	private static String funcType(IMethodBinding sam, Emitter emitter) {

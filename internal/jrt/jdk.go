@@ -3,6 +3,7 @@ package jrt
 import (
 	"cmp"
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -130,10 +131,19 @@ type Thread struct {
 
 func NewThread(r Runnable) *Thread { return &Thread{run: r, done: make(chan struct{})} }
 
+// Run lets a Thread be passed as a Runnable; it runs the body in place.
+func (t *Thread) Run() { t.run.Run() }
+
 func ThreadStart(t any) {
 	th := t.(*Thread)
 	go func() {
 		defer close(th.done)
+		// An uncaught exception ends only its own Java thread.
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Fprintln(os.Stderr, "Exception in thread:", r)
+			}
+		}()
 		th.run.Run()
 	}()
 }
@@ -228,3 +238,43 @@ func Substring(s string, start, end int32) string {
 	}
 	return string(utf16.Decode(u[start:end]))
 }
+
+// Optional is java.util.Optional over any: erased generics, so a caller casts Get's result.
+type Optional struct {
+	v  any
+	ok bool
+}
+
+func OptionalOf(v any) *Optional { return &Optional{v, true} }
+
+// OptionalOfNullable: a nil interface or typed nil pointer is empty.
+func OptionalOfNullable(v any) *Optional {
+	if IsNil(v) {
+		return &Optional{}
+	}
+	return &Optional{v, true}
+}
+
+func OptionalEmpty() *Optional { return &Optional{} }
+
+func (o *Optional) IsPresent() bool { return o.ok }
+func (o *Optional) IsEmpty() bool   { return !o.ok }
+
+func (o *Optional) Get() any {
+	if !o.ok {
+		panic(&NoSuchElementException{})
+	}
+	return o.v
+}
+
+func (o *Optional) OrElse(other any) any {
+	if o.ok {
+		return o.v
+	}
+	return other
+}
+
+// NoSuchElementException is java.util.NoSuchElementException.
+type NoSuchElementException struct{}
+
+func (e *NoSuchElementException) Error() string { return "No value present" }

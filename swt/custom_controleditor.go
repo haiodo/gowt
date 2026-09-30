@@ -8,9 +8,9 @@ import (
 
 type ControlEditorImpl interface {
 	computeBounds_() *Rectangle
-	dispose_()
-	layout_()
-	setEditor_(a0 *Control)
+	Dispose_()
+	Layout_()
+	SetEditor_(a0 *Control)
 }
 
 type ControlEditor struct {
@@ -29,6 +29,8 @@ type ControlEditor struct {
 }
 
 func (this *ControlEditor) Impl() ControlEditorImpl { return this.impl }
+
+func (this *ControlEditor) SetImpl_(impl ControlEditorImpl) { this.impl = impl }
 
 func (this *ControlEditor) AsControlEditor() *ControlEditor { return this }
 
@@ -59,7 +61,7 @@ func (this *ControlEditor) initControlEditor(parent *Composite) {
 	this.MinimumHeight = 0
 	this.parent = parent
 	this.controlListener = &ListenerFunc{fn: func(e *Event) {
-		this.impl.layout_()
+		this.impl.Layout_()
 	}}
 	for _, event := range ControlEditorEVENTS {
 		parent.AddListener(event, this.controlListener)
@@ -80,7 +82,7 @@ func (this *ControlEditor) ComputeBounds() *Rectangle {
 }
 
 func (this *ControlEditor) computeBounds_() *Rectangle {
-	var clientArea *Rectangle = this.parent.impl.getClientArea_()
+	var clientArea *Rectangle = this.parent.impl.GetClientArea_()
 	var editorRect *Rectangle = NewRectangle(clientArea.X, clientArea.Y, this.MinimumWidth, this.MinimumHeight)
 	if this.GrabHorizontal {
 		editorRect.Width = int32(math.Max(float64(clientArea.Width), float64(this.MinimumWidth)))
@@ -110,10 +112,10 @@ func (this *ControlEditor) computeBounds_() *Rectangle {
 }
 
 func (this *ControlEditor) Dispose() {
-	this.impl.dispose_()
+	this.impl.Dispose_()
 }
 
-func (this *ControlEditor) dispose_() {
+func (this *ControlEditor) Dispose_() {
 	if this.parent != (nil) && !this.parent.IsDisposed() {
 		for _, event := range ControlEditorEVENTS {
 			this.parent.RemoveListener(event, this.controlListener)
@@ -139,10 +141,10 @@ func (this *ControlEditor) GetEditor() *Control {
 }
 
 func (this *ControlEditor) Layout() {
-	this.impl.layout_()
+	this.impl.Layout_()
 }
 
-func (this *ControlEditor) layout_() {
+func (this *ControlEditor) Layout_() {
 	if this.editor == (nil) || this.editor.IsDisposed() {
 		return
 	}
@@ -154,7 +156,7 @@ func (this *ControlEditor) layout_() {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
-		this.editor.impl.setFocus_()
+		this.editor.impl.SetFocus_()
 	}
 }
 
@@ -162,7 +164,7 @@ func (this *ControlEditor) Scroll(e *Event) {
 	if this.editor == (nil) || this.editor.IsDisposed() {
 		return
 	}
-	this.impl.layout_()
+	this.impl.Layout_()
 }
 
 func (this *ControlEditor) SetEditor(editorLike ControlLike) {
@@ -170,18 +172,18 @@ func (this *ControlEditor) SetEditor(editorLike ControlLike) {
 	if editorLike != nil {
 		editor = editorLike.AsControl()
 	}
-	this.impl.setEditor_(editor)
+	this.impl.SetEditor_(editor)
 }
 
-func (this *ControlEditor) setEditor_(editor *Control) {
+func (this *ControlEditor) SetEditor_(editor *Control) {
 	if editor == (nil) {
 		this.editor = nil
 		return
 	}
 	this.editor = editor
-	this.impl.layout_()
+	this.impl.Layout_()
 	if this.editor == (nil) || this.editor.IsDisposed() {
 		return
 	}
-	editor.impl.setVisible_(true)
+	editor.impl.SetVisible_(true)
 }

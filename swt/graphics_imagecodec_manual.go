@@ -103,10 +103,21 @@ func NativeImageLoaderSave(stream jrt.OutputStream, format int32, loader *ImageL
 // (all decode at their own stored resolution) - always false.
 func FileFormatIsDynamicallySizableFormat(stream jrt.InputStream) bool { return false }
 
-// FileFormatCanLoadAtZoom replaces FileFormat.canLoadAtZoom: only ever reached through an
-// ElementAtZoom<InputStream> construction this port doesn't model (HiDPI @2x variants, out of
-// scope - the call site already panics building that argument), so this body is unreachable.
-func FileFormatCanLoadAtZoom(elementAtZoom any, targetZoom int32) bool { return false }
+// FileFormatCanLoadAtZoom is FileFormat.canLoadAtZoom; no format here is dynamically sizable.
+func FileFormatCanLoadAtZoom(streamAtZoom *DPIUtilElementAtZoom, targetZoom int32) bool {
+	return streamAtZoom.Zoom() == targetZoom
+}
+
+// NativeImageLoaderLoad replaces NativeImageLoader.load(ElementAtZoom<InputStream>, ImageLoader, int)
+// (a cocoa PI file never translated): every frame, each as an element at the stream's zoom.
+func NativeImageLoaderLoad(streamAtZoom *DPIUtilElementAtZoom, loader *ImageLoader, targetZoom int32) *jrt.List {
+	frames := loader.LoadByZoomStub(streamAtZoom.Element().(jrt.InputStream), streamAtZoom.Zoom(), targetZoom)
+	out := jrt.NewList()
+	for i := int32(0); i < frames.Size(); i++ {
+		out.Add(NewDPIUtilElementAtZoom(frames.Get(i), streamAtZoom.Zoom()))
+	}
+	return out
+}
 
 // errorUndecodable: like SWT's FileFormat, a recognised signature with undecodable data is an invalid image.
 func errorUndecodable(data []byte) {

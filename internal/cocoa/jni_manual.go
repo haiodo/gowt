@@ -18,6 +18,14 @@ func OSDeleteGlobalRef(globalRef int64) {
 	delete(globalRefs, globalRef)
 }
 
+// A disposed widget, or one without a Display, is not gettable: in Java a late native callback finds null.
 func OSJNIGetObject(globalRef int64) any {
-	return globalRefs[globalRef]
+	o := globalRefs[globalRef]
+	if d, ok := o.(interface{ IsDisposed() bool }); ok && d.IsDisposed() {
+		return nil
+	}
+	if l, ok := o.(interface{ HandleLost() bool }); ok && l.HandleLost() {
+		return nil
+	}
+	return o
 }

@@ -80,7 +80,7 @@ final class JdkIntrinsics {
 		if (qualified.equals("java.lang.System") && mb.getName().equals("getProperty")) {
 			// os.name: this port is the cocoa one.
 			if (mi.arguments().get(0) instanceof StringLiteral sl && sl.getLiteralValue().equals("os.name")) return "\"Mac OS X\"";
-			return mi.arguments().size() == 1 ? "\"\"" : arg(mi, 1);
+			return jrtCall("GetProperty", arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "\"\"" : arg(mi, 1)));
 		}
 		// str.getChars(0, n, dst, 0): every call site in the translated set copies the whole
 		// string, so this only needs to encode str as UTF-16 into dst (see NSString.getChars).
@@ -188,6 +188,9 @@ final class JdkIntrinsics {
 			ITypeBinding targetType = ((Expression) mi.arguments().get(0)).resolveTypeBinding();
 			String target = targetType != null && hasImpl(emitter.model.lookup(targetType)) ? args.get(0) + ".Impl()" : args.get(0);
 			return recv(mi) + ".(*jrt.Method).Invoke(" + target + ", " + args.get(1) + "...)";
+		}
+		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("getName")) {
+			return recv(mi) + ".(*jrt.Method).GetName()";
 		}
 		if (qualified.equals("java.lang.reflect.Method") && mb.getName().equals("getReturnType")) {
 			return recv(mi) + ".(*jrt.Method).GetReturnType()";

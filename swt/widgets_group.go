@@ -41,13 +41,13 @@ func (this *Group) initGroup(parent *Composite, style int32) {
 	this.text = ""
 }
 
-func (this *Group) checkSubclass_() {
+func (this *Group) CheckSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
-func (this *Group) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+func (this *Group) ComputeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	var widget *cocoa.NSBox = castcocoaNSViewTococoaNSBox(this.View)
 	var newRect cocoa.NSRect = cocoa.NSRect{}
@@ -65,7 +65,7 @@ func (this *Group) computeTrim_(x int32, y int32, width int32, height int32) *Re
 	y = int32(math.Ceil(float64(newRect.Y))) - this.vMargin
 	width = int32(math.Ceil(float64(newRect.Width))) + (this.hMargin * 2)
 	height = int32(math.Ceil(float64(newRect.Height))) + (this.vMargin * 2)
-	return this.Composite.computeTrim_(x, y, width, height)
+	return this.Composite.ComputeTrim_(x, y, width, height)
 }
 
 func (this *Group) contentView_() *cocoa.NSView {
@@ -110,7 +110,7 @@ func (this *Group) eventView_() *cocoa.NSView {
 	return this.contentView
 }
 
-func (this *Group) getClientArea_() *Rectangle {
+func (this *Group) GetClientArea_() *Rectangle {
 	this.CheckWidget()
 	var rect cocoa.NSRect = this.contentView.Bounds()
 	var width int32 = int32(math.Max(float64(0), float64(int32(rect.Width)-this.hMargin*2)))

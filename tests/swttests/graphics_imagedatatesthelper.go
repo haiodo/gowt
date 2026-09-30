@@ -108,9 +108,9 @@ func ImageDataTestHelperBlit(srcInfo *ImageDataTestHelper_BlitTestInfo, dstInfo_
 				panic("j2go: unresolved call getDeclaredMethod")
 			}()
 			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
-			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, src.Depth, src.BytesPerLine, srcInfo.ByteOrder, src.Width, src.Height, src.Palette.RedMask, src.Palette.GreenMask, src.Palette.BlueMask, dst.Data, dst.Depth, dst.BytesPerLine, dstInfo_byteOrder, dst.Width, dst.Height, dst.Palette.RedMask, dst.Palette.GreenMask, dst.Palette.BlueMask, false, false}...)
+			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), int32(src.Width), int32(src.Height), int32(src.Palette.RedMask), int32(src.Palette.GreenMask), int32(src.Palette.BlueMask), dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Width), int32(dst.Height), int32(dst.Palette.RedMask), int32(dst.Palette.GreenMask), int32(dst.Palette.BlueMask), false, false}...)
 		} else {
-			panic(func() any { panic("j2go: unresolved new UnsupportedOperationException") }())
+			panic(&jrt.RuntimeException{})
 		}
 	} else {
 		if dstInfo_isDirect {
@@ -119,14 +119,14 @@ func ImageDataTestHelperBlit(srcInfo *ImageDataTestHelper_BlitTestInfo, dstInfo_
 				panic("j2go: unresolved call getDeclaredMethod")
 			}()
 			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
-			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Width, src.Height, src.Data, src.Depth, src.BytesPerLine, srcInfo.ByteOrder, srcInfo.PaletteR, srcInfo.PaletteG, srcInfo.PaletteB, dst.Data, dst.Depth, dst.BytesPerLine, dstInfo_byteOrder, dst.Palette.RedMask, dst.Palette.GreenMask, dst.Palette.BlueMask}...)
+			blitMethod.(*jrt.Method).Invoke(nil, []any{int32(src.Width), int32(src.Height), src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), srcInfo.PaletteR, srcInfo.PaletteG, srcInfo.PaletteB, dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Palette.RedMask), int32(dst.Palette.GreenMask), int32(dst.Palette.BlueMask)}...)
 		} else {
 			var blitMethod any = func() any {
 				_ = []any{reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool](), reflect.TypeFor[bool]()}}
 				panic("j2go: unresolved call getDeclaredMethod")
 			}()
 			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
-			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, src.Depth, src.BytesPerLine, srcInfo.ByteOrder, src.Width, src.Height, dst.Data, dst.Depth, dst.BytesPerLine, dstInfo_byteOrder, dst.Width, dst.Height, false, false}...)
+			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), int32(src.Width), int32(src.Height), dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Width), int32(dst.Height), false, false}...)
 		}
 	}
 	return NewImageDataTestHelperBlitTestInfo(dstInfo_depth, dstInfo_scale, dstInfo_byteOrder, dstInfo_isDirect, dst)
@@ -136,7 +136,7 @@ func ImageDataTestHelperImageDataComparator() func(*swt.ImageData, *swt.ImageDat
 	return jrt.ThenComparing(jrt.ThenComparing(jrt.ComparingInt(func(d *swt.ImageData) int32 {
 		return d.Width
 	}), func(d *swt.ImageData) any {
-		return d.Height
+		return int32(d.Height)
 	}), func(firstData *swt.ImageData, secondData *swt.ImageData) int32 {
 		for x := int32(0); x < firstData.Width; x++ {
 			for y := int32(0); y < firstData.Height; y++ {

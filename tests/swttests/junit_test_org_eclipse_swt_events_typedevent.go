@@ -9,7 +9,7 @@ import (
 )
 
 type Test_org_eclipse_swt_events_TypedEventImpl interface {
-	newTypedEvent_(a0 *swt.Event) *swt.TypedEvent
+	NewTypedEvent_(a0 *swt.Event) *swt.TypedEvent
 }
 
 type Test_org_eclipse_swt_events_TypedEvent struct {
@@ -19,6 +19,10 @@ type Test_org_eclipse_swt_events_TypedEvent struct {
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) Impl() Test_org_eclipse_swt_events_TypedEventImpl {
 	return this.impl
+}
+
+func (this *Test_org_eclipse_swt_events_TypedEvent) SetImpl_(impl Test_org_eclipse_swt_events_TypedEventImpl) {
+	this.impl = impl
 }
 
 func NewTest_org_eclipse_swt_events_TypedEvent() *Test_org_eclipse_swt_events_TypedEvent {
@@ -42,14 +46,14 @@ func (this *Test_org_eclipse_swt_events_TypedEvent) TearDown() {
 func (this *Test_org_eclipse_swt_events_TypedEvent) Test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	var event *swt.Event = swt.NewEvent()
 	event.Widget = upcastswtShellToswtWidget(this.Shell)
-	var typedEvent *swt.TypedEvent = this.impl.newTypedEvent_(event)
+	var typedEvent *swt.TypedEvent = this.impl.NewTypedEvent_(event)
 	junit.AssertNotNull(typedEvent)
 }
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) Test_toString() {
 	var event *swt.Event = swt.NewEvent()
 	event.Widget = upcastswtShellToswtWidget(this.Shell)
-	var typedEvent *swt.TypedEvent = this.impl.newTypedEvent_(event)
+	var typedEvent *swt.TypedEvent = this.impl.NewTypedEvent_(event)
 	junit.AssertNotNull(typedEvent.String())
 	junit.AssertTrue(jrt.StringLength(typedEvent.String()) > 0)
 }
@@ -59,10 +63,10 @@ func (this *Test_org_eclipse_swt_events_TypedEvent) NewTypedEvent(eventLike swt.
 	if eventLike != nil {
 		event = eventLike.AsEvent()
 	}
-	return this.impl.newTypedEvent_(event)
+	return this.impl.NewTypedEvent_(event)
 }
 
-func (this *Test_org_eclipse_swt_events_TypedEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_TypedEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return swt.NewTypedEventE(event)
 }
 

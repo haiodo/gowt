@@ -27,7 +27,7 @@ func (this *SashFormLayout) initSashFormLayout() {
 	this.Layout.initLayout()
 }
 
-func (this *SashFormLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *SashFormLayout) ComputeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var sashForm *SashForm = castCompositeToSashForm(composite)
 	var cArray []*Control = sashForm.GetControls(true)
 	var width int32 = 0
@@ -41,19 +41,19 @@ func (this *SashFormLayout) computeSize_(composite *Composite, wHint int32, hHin
 		}
 		return NewPoint(width, height)
 	}
-	var vertical bool = sashForm.impl.getOrientation_() == VERTICAL
+	var vertical bool = sashForm.impl.GetOrientation_() == VERTICAL
 	var maxIndex int32 = 0
 	var maxValue int32 = 0
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		if vertical {
-			var size *Point = cArray[i].impl.computeSizeWHintHHintChanged_(wHint, DEFAULT, flushCache)
+			var size *Point = cArray[i].impl.ComputeSizeWHintHHintChanged_(wHint, DEFAULT, flushCache)
 			if size.Y > maxValue {
 				maxIndex = i
 				maxValue = size.Y
 			}
 			width = int32(math.Max(float64(width), float64(size.X)))
 		} else {
-			var size *Point = cArray[i].impl.computeSizeWHintHHintChanged_(DEFAULT, hHint, flushCache)
+			var size *Point = cArray[i].impl.ComputeSizeWHintHHintChanged_(DEFAULT, hHint, flushCache)
 			if size.X > maxValue {
 				maxIndex = i
 				maxValue = size.X
@@ -100,13 +100,13 @@ func (this *SashFormLayout) computeSize_(composite *Composite, wHint int32, hHin
 	return NewPoint(width, height)
 }
 
-func (this *SashFormLayout) flushCache_(control *Control) bool {
+func (this *SashFormLayout) FlushCache_(control *Control) bool {
 	return true
 }
 
-func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
+func (this *SashFormLayout) LayoutFn_(composite *Composite, flushCache bool) {
 	var sashForm *SashForm = castCompositeToSashForm(composite)
-	var area *Rectangle = sashForm.impl.getClientArea_()
+	var area *Rectangle = sashForm.impl.GetClientArea_()
 	if area.Width <= 1 || area.Height <= 1 {
 		return
 	}
@@ -174,7 +174,7 @@ func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
 	} else {
 		sashwidth = sashForm.SASH_WIDTH
 	}
-	if sashForm.impl.getOrientation_() == HORIZONTAL {
+	if sashForm.impl.GetOrientation_() == HORIZONTAL {
 		var width int32 = int32((ratios[0] * int64((area.Width - int32(len(sashes))*sashwidth)) / total))
 		var x int32 = area.X
 		controls[0].SetBounds(x, area.Y, width, area.Height)

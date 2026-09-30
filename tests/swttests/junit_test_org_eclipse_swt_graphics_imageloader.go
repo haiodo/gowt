@@ -203,16 +203,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_loadSingleFrameGifRe
 		}()
 	}
 	for _, zoom := range []int32{100, 200} {
-		var imageData *swt.ImageData = func() *swt.ImageData {
-			_ = []any{func() *jrt.List {
-				_ = []any{func() any {
-					_ = []any{jrt.NewByteArrayInputStream(bytes), zoom}
-					panic("j2go: unresolved new ElementAtZoom<InputStream>")
-				}(), swt.NewImageLoader(), zoom}
-				panic("j2go: unresolved call load")
-			}().Get(0)}
-			panic("j2go: unresolved call element")
-		}()
+		var imageData *swt.ImageData = jrt.Cast[*swt.ImageData](jrt.Cast[*swt.DPIUtilElementAtZoom](swt.NativeImageLoaderLoad(swt.NewDPIUtilElementAtZoom(jrt.NewByteArrayInputStream(bytes), zoom), swt.NewImageLoader(), zoom).Get(0)).Element())
 		junit.AssertNotNull(imageData, fmt.Sprintf("No ImageData returned at zoom %d", zoom))
 		junit.AssertTrue(imageData.Width > 0 && imageData.Height > 0, fmt.Sprintf("ImageData has no pixels at zoom %d", zoom))
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 type TypedEventImpl interface {
-	string_() string
+	String_() string
 }
 
 type TypedEvent struct {
@@ -22,6 +22,8 @@ type TypedEvent struct {
 }
 
 func (this *TypedEvent) Impl() TypedEventImpl { return this.impl }
+
+func (this *TypedEvent) SetImpl_(impl TypedEventImpl) { this.impl = impl }
 
 func (this *TypedEvent) AsTypedEvent() *TypedEvent { return this }
 
@@ -70,9 +72,9 @@ func (this *TypedEvent) GetName() string {
 }
 
 func (this *TypedEvent) String() string {
-	return this.impl.string_()
+	return this.impl.String_()
 }
 
-func (this *TypedEvent) string_() string {
+func (this *TypedEvent) String_() string {
 	return fmt.Sprintf("%s{%v time=%d data=%v}", this.GetName(), this.Widget, this.Time, this.Data)
 }

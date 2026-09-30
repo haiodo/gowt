@@ -152,6 +152,8 @@ func runTest(c *junit.Class, t junit.Test, name string) result {
 	})
 	defer watchdog.Stop()
 
+	// A parameterized test's name is "method[n]".
+	junit.Current = &junit.TestInfo{Method: strings.SplitN(t.Name, "[", 2)[0]}
 	var instance any
 	res := step(func() { instance = c.New() })
 	if res.status == "" {

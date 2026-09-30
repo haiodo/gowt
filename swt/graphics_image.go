@@ -114,7 +114,7 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 	if srcImage == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if srcImage.impl.isDisposed_() {
+	if srcImage.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	switch flag {
@@ -630,10 +630,7 @@ func (this *Image) InitUsingFileNameProvider(imageFileNameProvider ImageFileName
 	}
 	this.InitNative(filename)
 	if this.Handle == (nil) {
-		this.InitImageImageZoom(func() *ImageData {
-			_ = []any{ImageDataLoaderLoadByZoom(filename, 100, 100)}
-			panic("j2go: unresolved call element")
-		}(), 100)
+		this.InitImageImageZoom(jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(filename, 100, 100).Element()), 100)
 	}
 	var filename2x string = imageFileNameProvider.GetImagePath(200)
 	if filename2x != "" {
@@ -643,10 +640,7 @@ func (this *Image) InitUsingFileNameProvider(imageFileNameProvider ImageFileName
 		this.Handle.AddRepresentation(rep)
 	} else {
 		if ImageDataLoaderCanLoadAtZoom(filename, 100, 200) {
-			var imageData2x *ImageData = func() *ImageData {
-				_ = []any{ImageDataLoaderLoadByZoom(filename, 100, 200)}
-				panic("j2go: unresolved call element")
-			}()
+			var imageData2x *ImageData = jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(filename, 100, 200).Element())
 			this.alphaInfo_200 = newImageAlphaInfo()
 			var rep *cocoa.NSBitmapImageRep = this.CreateRepresentation(imageData2x, this.alphaInfo_200)
 			this.Handle.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
@@ -668,8 +662,8 @@ func (this *Image) DrawWithImageGcDrawer(imageGcDrawer ImageGcDrawer, width int3
 	var gc *GC = NewGCDrawableStyle(image, gcStyle)
 	{
 		defer func() {
-			gc.impl.dispose_()
-			image.impl.dispose_()
+			gc.impl.Dispose_()
+			image.impl.Dispose_()
 		}()
 		imageGcDrawer.DrawOn(gc, width, height)
 		var imageData *ImageData = image.GetImageDataZoom(zoom)
@@ -981,7 +975,7 @@ func (this *Image) CreateRepresentation(imageDataLike ImageDataLike, alphaInfoLi
 func (this *Image) destroy_() {
 	this.cachedImageAtSize.Destroy()
 	if this.memGC != (nil) {
-		this.memGC.impl.dispose_()
+		this.memGC.impl.Dispose_()
 	}
 	this.Handle.Release()
 	this.Handle = nil
@@ -1052,7 +1046,7 @@ func (this *Image) GetTargetSize(scaleFactor int32) cocoa.NSSize {
 }
 
 func (this *Image) GetBackground() *Color {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var imageRep *cocoa.NSBitmapImageRep = this.GetRepresentation0()
@@ -1067,7 +1061,7 @@ func (this *Image) GetBackground() *Color {
 }
 
 func (this *Image) GetBounds() *Rectangle {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1109,7 +1103,7 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 }
 
 func (this *Image) GetImageDataZoom(zoom int32) *ImageData {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1442,7 +1436,7 @@ func (this *Image) Internal_dispose_GC(hDC int64, data *GCData) {
 	}
 }
 
-func (this *Image) isDisposed_() bool {
+func (this *Image) IsDisposed_() bool {
 	return this.Handle == (nil)
 }
 
@@ -1452,13 +1446,13 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if color == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color.impl.isDisposed_() {
+	if color.impl.IsDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1523,15 +1517,15 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 }
 
 func (this *Image) String() string {
-	if this.impl.isDisposed_() {
+	if this.impl.IsDisposed_() {
 		return "Image {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Image {%v}", this.Handle)
 }
 
 func (this *Image) ExecuteOnImageAtSizeBestFittingSize(imageAtBestFittingSizeConsumer func(*Image), destWidth int32, destHeight int32) {
-	var imageAtSize any = this.cachedImageAtSize.Refresh(int32(math.Max(float64(1), float64(destWidth))), int32(math.Max(float64(1), float64(destHeight))))
-	imageAtBestFittingSizeConsumer(func() *Image { _ = []any{imageAtSize, this}; panic("j2go: unresolved call orElse") }())
+	var imageAtSize *jrt.Optional = this.cachedImageAtSize.Refresh(int32(math.Max(float64(1), float64(destWidth))), int32(math.Max(float64(1), float64(destHeight))))
+	imageAtBestFittingSizeConsumer(jrt.Cast[*Image](imageAtSize.OrElse(this)))
 }
 
 func ImageCocoa_new(deviceLike DeviceLike, type_ int32, nsImage *cocoa.NSImage) *Image {
@@ -1552,10 +1546,7 @@ func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
 	if ImageDataLoaderIsDynamicallySizable(jrt.NewByteArrayInputStream(streamData)) {
 		anon443 := &ImageAnon1{}
 		anon443.fnGetImageData = func(zoom int32) *ImageData {
-			return func() *ImageData {
-				_ = []any{ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, zoom)}
-				panic("j2go: unresolved call element")
-			}()
+			return jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, zoom).Element())
 		}
 		anon443.fnGetImageDataWidthHeight = func(width int32, height int32) *ImageData {
 			return ImageDataLoaderLoadBySize(jrt.NewByteArrayInputStream(streamData), width, height)
@@ -1563,10 +1554,7 @@ func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
 		var imageDataAtSizeProvider ImageDataAtSizeProvider = anon443
 		return imageDataAtSizeProvider
 	}
-	var imageData *ImageData = func() *ImageData {
-		_ = []any{ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, 100)}
-		panic("j2go: unresolved call element")
-	}()
+	var imageData *ImageData = jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, 100).Element())
 	return &ImageDataProviderFunc{fn: func(zoom int32) *ImageData {
 		var cond444 *ImageData
 		if zoom == 100 {
@@ -1594,7 +1582,7 @@ func ImageDrawAtSize(gcLike GCLike, imageDataLike ImageDataLike, width int32, he
 			return imageData
 		}})
 		gc.DrawImageImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeight(imageToDraw, 0, 0, DPIUtilPixelToPoint(imageData.Width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(imageData.Height, DPIUtilGetDeviceZoom()), 0, 0, DPIUtilPixelToPoint(width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(height, DPIUtilGetDeviceZoom()))
-		imageToDraw.impl.dispose_()
+		imageToDraw.impl.Dispose_()
 	}))
 }
 
@@ -1734,20 +1722,20 @@ func (this *Image_CachedImageAtSize) initImageCachedImageAtSize() {
 
 func (this *Image_CachedImageAtSize) Destroy() {
 	if this.image != (nil) {
-		this.image.impl.dispose_()
+		this.image.impl.Dispose_()
 		this.image = nil
 	}
 }
 
-func (this *Image_CachedImageAtSize) Refresh(destWidth int32, destHeight int32) any {
+func (this *Image_CachedImageAtSize) Refresh(destWidth int32, destHeight int32) *jrt.Optional {
 	var scaledWidth int32 = DPIUtilPointToPixel(destWidth, DPIUtilGetDeviceZoom())
 	var scaledHeight int32 = DPIUtilPointToPixel(destHeight, DPIUtilGetDeviceZoom())
 	if this.IsReusable(scaledWidth, scaledHeight) {
-		return func() any { _ = []any{this.image}; panic("j2go: unresolved call of") }()
+		return jrt.OptionalOf(this.image)
 	} else {
 		this.Destroy()
-		var imageAtSize any = this.LoadImageAtSize(scaledWidth, scaledHeight)
-		this.image = func() *Image { _ = []any{imageAtSize, nil}; panic("j2go: unresolved call orElse") }()
+		var imageAtSize *jrt.Optional = this.LoadImageAtSize(scaledWidth, scaledHeight)
+		this.image = jrt.Cast[*Image](imageAtSize.OrElse(nil))
 		return imageAtSize
 	}
 }
@@ -1756,40 +1744,37 @@ func (this *Image_CachedImageAtSize) IsReusable(width int32, height int32) bool 
 	return this.image != (nil) && this.image.height == height && this.image.width == width
 }
 
-func (this *Image_CachedImageAtSize) LoadImageAtSize(destWidth int32, destHeight int32) any {
-	var imageData any = this.LoadImageDataAtExactSize(destWidth, destHeight)
-	if func() bool { _ = []any{imageData}; panic("j2go: unresolved call isEmpty") }() {
-		return func() any { panic("j2go: unresolved call empty") }()
+func (this *Image_CachedImageAtSize) LoadImageAtSize(destWidth int32, destHeight int32) *jrt.Optional {
+	var imageData *jrt.Optional = this.LoadImageDataAtExactSize(destWidth, destHeight)
+	if imageData.IsEmpty() {
+		return jrt.OptionalEmpty()
 	}
-	var image *Image = NewImageDeviceData(this.this_0.device, func() *ImageData { _ = []any{imageData}; panic("j2go: unresolved call get") }())
+	var image *Image = NewImageDeviceData(this.this_0.device, jrt.Cast[*ImageData](imageData.Get()))
 	if this.this_0.styleFlag != IMAGE_COPY {
 		var representation *cocoa.NSBitmapImageRep = image.GetOrCreateRepresentation(100)
 		image.CreateRepFromSourceAndApplyFlag(representation, destWidth, destHeight, this.this_0.styleFlag)
 		image.Handle.RemoveRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(representation))
 	}
-	return func() any { _ = []any{image}; panic("j2go: unresolved call of") }()
+	return jrt.OptionalOf(image)
 }
 
-func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32, targetHeight int32) any {
+func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32, targetHeight int32) *jrt.Optional {
 	imageDataAtSizeProvider, ok445 := this.this_0.imageDataProvider.(ImageDataAtSizeProvider)
 	if ok445 {
 		var imageData *ImageData = imageDataAtSizeProvider.GetImageDataWidthHeight(targetWidth, targetHeight)
 		if imageData == (nil) {
 			ErrorCodeThrowableDetail(ERROR_INVALID_ARGUMENT, nil, fmt.Sprintf(" ImageDataAtSizeProvider returned null for width=%d, height=%d", targetWidth, targetHeight))
 		}
-		return func() any { _ = []any{imageData}; panic("j2go: unresolved call of") }()
+		return jrt.OptionalOf(imageData)
 	}
 	if this.this_0.imageFileNameProvider != (nil) {
-		var fileName string = func() string {
-			_ = []any{DPIUtilValidateAndGetImagePathAtZoom(this.this_0.imageFileNameProvider, 100)}
-			panic("j2go: unresolved call element")
-		}()
+		var fileName string = jrt.Cast[string](DPIUtilValidateAndGetImagePathAtZoom(this.this_0.imageFileNameProvider, 100).Element())
 		if fileName == this.nonSizableFileName {
-			return func() any { panic("j2go: unresolved call empty") }()
+			return jrt.OptionalEmpty()
 		}
 		{
-			var stream jrt.InputStream = func() jrt.InputStream { _ = []any{jrt.NewFileInputStream(fileName)}; return nil }()
-			var tret446 any
+			var stream jrt.InputStream = jrt.NewFileInputStream(fileName)
+			var tret446 *jrt.Optional
 			tretd447 := false
 			func() {
 				defer stream.Close()
@@ -1814,10 +1799,7 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 				}()
 				if ImageDataLoaderIsDynamicallySizable(stream) {
 					this.nonSizableFileName = ""
-					tret446 = func() any {
-						_ = []any{ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight)}
-						panic("j2go: unresolved call of")
-					}()
+					tret446 = jrt.OptionalOf(ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight))
 					tretd447 = true
 					return
 				}
@@ -1828,7 +1810,7 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 			}
 		}
 	}
-	return func() any { panic("j2go: unresolved call empty") }()
+	return jrt.OptionalEmpty()
 }
 
 // j2go: func adapter for ImageFileNameProvider.

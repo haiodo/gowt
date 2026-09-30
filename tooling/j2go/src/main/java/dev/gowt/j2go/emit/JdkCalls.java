@@ -40,6 +40,31 @@ final class JdkCalls {
 				emitter.fileImports.add("math");
 				return (mb.getParameterTypes()[0].getName().equals("float") ? "int32" : "int64")
 						+ "(math.Floor(float64(" + arg(mi, 0) + ") + 0.5))";
+			case "java.lang.Math#log", "java.lang.Math#sqrt", "java.lang.Math#exp", "java.lang.Math#sin", "java.lang.Math#cos":
+				emitter.fileImports.add("math");
+				return "math." + dev.gowt.j2go.Names.capitalize(name) + "(float64(" + arg(mi, 0) + "))";
+			case "java.lang.Math#pow":
+				emitter.fileImports.add("math");
+				return "math.Pow(float64(" + arg(mi, 0) + "), float64(" + arg(mi, 1) + "))";
+			case "java.lang.System#gc":
+				emitter.fileImports.add(JRT);
+				return "jrt.GC()";
+			case "java.lang.System#setProperty":
+				emitter.fileImports.add(JRT);
+				return "jrt.SetProperty(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.lang.System#getProperties":
+				emitter.fileImports.add(JRT);
+				return "jrt.SystemProperties";
+			case "java.lang.System#getenv":
+				if (mi.arguments().size() != 1) return null;
+				emitter.fileImports.add(JRT);
+				return "jrt.Getenv(" + arg(mi, 0) + ")";
+			case "java.lang.String#isBlank":
+				emitter.fileImports.add("strings");
+				return "(strings.TrimSpace(" + recv(mi) + ") == \"\")";
+			case "java.lang.String#matches":
+				emitter.fileImports.add(JRT);
+				return "jrt.Matches(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.Math#hypot":
 				emitter.fileImports.add("math");
 				return "math.Hypot(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";

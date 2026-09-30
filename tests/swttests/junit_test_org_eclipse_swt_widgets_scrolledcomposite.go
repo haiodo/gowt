@@ -24,10 +24,10 @@ func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) initTest_org_eclipse
 	this.Test_org_eclipse_swt_widgets_Composite.initTest_org_eclipse_swt_widgets_Composite()
 }
 
-func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) setUp_() {
-	this.Test_org_eclipse_swt_widgets_Composite.setUp_()
+func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) SetUp_() {
+	this.Test_org_eclipse_swt_widgets_Composite.SetUp_()
 	this.scrolledComposite = swt.NewScrolledComposite(upcastswtShellToswtComposite(this.shell), 0)
-	this.impl.setWidget_(upcastswtScrolledCompositeToswtWidget(this.scrolledComposite))
+	this.impl.SetWidget_(upcastswtScrolledCompositeToswtWidget(this.scrolledComposite))
 }
 
 func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) test_ConstructorLorg_eclipse_swt_widgets_CompositeI_() {
@@ -40,7 +40,7 @@ func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) test_ConstructorLorg
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) test_computeSizeIIZ_() {
+func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) Test_computeSizeIIZ_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_ScrolledComposite) Test_getAlwaysShowScrollBars() {
@@ -234,8 +234,8 @@ func init() {
 		Name: "Test_org_eclipse_swt_widgets_ScrolledComposite",
 		New:  func() any { return NewTest_org_eclipse_swt_widgets_ScrolledComposite() },
 		BeforeEach: []func(any){
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).SetupBase(nil) },
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.setUp_() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).SetupBase(junit.Current) },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.SetUp_() },
 		},
 		AfterEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).TearDown() },
@@ -321,14 +321,14 @@ func init() {
 			{Name: "test_computeSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_computeSizeII() }},
 			{Name: "test_getAccessible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getAccessible() }},
 			{Name: "test_getBorderWidth", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getBorderWidth() }},
-			{Name: "test_getLocation", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_getLocation_() }},
+			{Name: "test_getLocation", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_getLocation_() }},
 			{Name: "test_getMonitor", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getMonitor() }},
-			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_getParent_() }},
-			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_getShell_() }},
-			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_isEnabled_() }},
+			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_getParent_() }},
+			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_getShell_() }},
+			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_isEnabled_() }},
 			{Name: "test_isFocusControl", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_isFocusControl() }},
-			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_isReparentable_() }},
-			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_isVisible_() }},
+			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_isReparentable_() }},
+			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_isVisible_() }},
 			{Name: "test_moveAboveLorg_eclipse_swt_widgets_Control", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_moveAboveLorg_eclipse_swt_widgets_Control()
 			}},
@@ -349,18 +349,18 @@ func init() {
 			{Name: "test_setBackgroundLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setBackgroundLorg_eclipse_swt_graphics_Color()
 			}},
-			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setBoundsIIII_() }},
+			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setBoundsIIII_() }},
 			{Name: "test_setBoundsLorg_eclipse_swt_graphics_Rectangle", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
 			}},
 			{Name: "test_setCaptureZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setCaptureZ() }},
 			{Name: "test_setCursorLorg_eclipse_swt_graphics_Cursor", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setCursorLorg_eclipse_swt_graphics_Cursor()
 			}},
-			{Name: "test_setEnabledZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setEnabledZ_() }},
-			{Name: "test_setFocus", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setFocus_() }},
+			{Name: "test_setEnabledZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setEnabledZ_() }},
+			{Name: "test_setFocus", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setFocus_() }},
 			{Name: "test_setFontLorg_eclipse_swt_graphics_Font", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setFontLorg_eclipse_swt_graphics_Font_()
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setFontLorg_eclipse_swt_graphics_Font_()
 			}},
 			{Name: "test_setForegroundAlphaLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setForegroundAlphaLorg_eclipse_swt_graphics_Color()
@@ -372,9 +372,9 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setForegroundLorg_eclipse_swt_graphics_Color()
 			}},
 			{Name: "test_setLayoutDataLjava_lang_Object", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setLayoutDataLjava_lang_Object() }},
-			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setLocationII_() }},
+			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setLocationII_() }},
 			{Name: "test_setLocationLorg_eclipse_swt_graphics_Point", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setLocationLorg_eclipse_swt_graphics_Point_()
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setLocationLorg_eclipse_swt_graphics_Point_()
 			}},
 			{Name: "test_setMenuLorg_eclipse_swt_widgets_Menu", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setMenuLorg_eclipse_swt_widgets_Menu()
@@ -382,16 +382,16 @@ func init() {
 			{Name: "test_setParentLorg_eclipse_swt_widgets_Composite", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setParentLorg_eclipse_swt_widgets_Composite()
 			}},
-			{Name: "test_setRedrawZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setRedrawZ_() }},
-			{Name: "test_setSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setSizeII_() }},
+			{Name: "test_setRedrawZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setRedrawZ_() }},
+			{Name: "test_setSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setSizeII_() }},
 			{Name: "test_setSizeLorg_eclipse_swt_graphics_Point", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setSizeLorg_eclipse_swt_graphics_Point_()
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setSizeLorg_eclipse_swt_graphics_Point_()
 			}},
 			{Name: "test_setTextDirection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setTextDirection() }},
 			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setToolTipTextLjava_lang_String()
 			}},
-			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setVisibleZ_() }},
+			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_setVisibleZ_() }},
 			{Name: "test_toControlII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_toControlII() }},
 			{Name: "test_toControlLorg_eclipse_swt_graphics_Point", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_toControlLorg_eclipse_swt_graphics_Point()
@@ -402,12 +402,12 @@ func init() {
 			}},
 			{Name: "test_traverseI", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_traverseI() }},
 			{Name: "test_update", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_update() }},
-			{Name: "test_computeTrimIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_computeTrimIIII_() }},
-			{Name: "test_getClientArea", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_getClientArea_() }},
+			{Name: "test_computeTrimIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_computeTrimIIII_() }},
+			{Name: "test_getClientArea", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_getClientArea_() }},
 			{Name: "test_getHorizontalBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getHorizontalBar() }},
 			{Name: "test_getVerticalBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getVerticalBar() }},
 			{Name: "test_bug2162_transparentStyle", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_bug2162_transparentStyle() }},
-			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_getChildren_() }},
+			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_getChildren_() }},
 			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setFocus_toChild_afterOpen() }},
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setFocus_toChild_beforeOpen() }},
 			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setFocus_withInvisibleChild() }},
@@ -421,7 +421,7 @@ func init() {
 			{Name: "test_ConstructorLorg_eclipse_swt_widgets_CompositeI", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
 			}},
-			{Name: "test_computeSizeIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_computeSizeIIZ_() }},
+			{Name: "test_computeSizeIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.Test_computeSizeIIZ_() }},
 			{Name: "test_getAlwaysShowScrollBars", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getAlwaysShowScrollBars() }},
 			{Name: "test_getExpandHorizontal", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getExpandHorizontal() }},
 			{Name: "test_getExpandVertical", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_getExpandVertical() }},

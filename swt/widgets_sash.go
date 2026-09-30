@@ -108,7 +108,7 @@ func (this *Sash) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) 
 		}
 	} else {
 		if attributeName.IsEqualToString(cocoa.OSNSAccessibilityEnabledAttribute_) {
-			return cocoa.NSNumberNumberWithBool(this.impl.isEnabled_()).Id
+			return cocoa.NSNumberNumberWithBool(this.impl.IsEnabled_()).Id
 		} else {
 			if attributeName.IsEqualToString(cocoa.OSNSAccessibilityOrientationAttribute_) {
 				var orientation *cocoa.NSString
@@ -120,7 +120,7 @@ func (this *Sash) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) 
 				return orientation.Id
 			} else {
 				if attributeName.IsEqualToString(cocoa.OSNSAccessibilityValueAttribute_) {
-					var location *Point = this.impl.getLocation_()
+					var location *Point = this.impl.GetLocation_()
 					var value int32
 					if (this.style & VERTICAL) != 0 {
 						value = location.X
@@ -202,7 +202,7 @@ func (this *Sash) becomeFirstResponder_(id int64, sel int64) bool {
 	return result
 }
 
-func (this *Sash) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Sash) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -283,10 +283,10 @@ func (this *Sash) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 						yChange = stepSize
 					}
 				}
-				var bounds *Rectangle = this.impl.getBounds_()
+				var bounds *Rectangle = this.impl.GetBounds_()
 				var width int32 = bounds.Width
 				var height int32 = bounds.Height
-				var parentBounds *Rectangle = this.parent.impl.getBounds_()
+				var parentBounds *Rectangle = this.parent.impl.GetBounds_()
 				var parentWidth int32 = parentBounds.Width
 				var parentHeight int32 = parentBounds.Height
 				var newX int32 = this.lastX
@@ -444,7 +444,7 @@ func (this *Sash) releaseHandle_() {
 func (this *Sash) releaseWidget_() {
 	this.Control.releaseWidget_()
 	if this.sizeCursor != (nil) {
-		this.sizeCursor.impl.dispose_()
+		this.sizeCursor.impl.Dispose_()
 	}
 	this.sizeCursor = nil
 }

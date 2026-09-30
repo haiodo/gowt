@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
+	"math"
 	"os"
 )
 
@@ -96,7 +97,7 @@ func ConsistencyUtilityGetSelectionType(type_ int32) string {
 func ConsistencyUtilityGetTraversalType(type_ int32) string {
 	var pow int32 = 0
 	if type_ != 0 {
-		pow = int32((func() float64 { _ = []any{float64(type_)}; panic("j2go: unresolved call log") }() / func() float64 { _ = []any{float64(2)}; panic("j2go: unresolved call log") }()))
+		pow = int32((math.Log(float64(type_)) / math.Log(float64(2))))
 	}
 	return ConsistencyUtilityTraversalTypes[pow]
 }
@@ -158,8 +159,8 @@ func ConsistencyUtilityPostDoubleClick(displayLike swt.DisplayLike, ptLike swt.P
 	}
 	_ = pt
 	var ret bool = ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
-	b85 := ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
-	ret = ret && b85
+	b86 := ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
+	ret = ret && b86
 	return ret
 }
 
@@ -288,9 +289,11 @@ func ConsistencyUtilityPostSelection(displayLike swt.DisplayLike, pt1Like swt.Po
 	}
 	_ = pt2
 	var ret bool = ConsistencyUtilityPostClickDisplayPtButton(display, pt1, 1)
-	display.SyncExec(func() any { _ = []any{display}; panic("j2go: unsupported AnonymousClass") }().(jrt.Runnable))
-	b86 := ConsistencyUtilityPostClickDisplayPtButton(display, pt2, 1)
-	ret = ret && b86
+	display.SyncExec(any(jrt.NewThread(jrt.NewRunnable(func() {
+		display.Update()
+	}))).(jrt.Runnable))
+	b87 := ConsistencyUtilityPostClickDisplayPtButton(display, pt2, 1)
+	ret = ret && b87
 	return ret
 }
 

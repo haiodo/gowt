@@ -22,7 +22,7 @@ func (this *Test_org_eclipse_swt_events_TraverseEvent) initTest_org_eclipse_swt_
 	this.Test_org_eclipse_swt_events_KeyEvent.initTest_org_eclipse_swt_events_KeyEvent()
 }
 
-func (this *Test_org_eclipse_swt_events_TraverseEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_TraverseEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return upcastswtTraverseEventToswtTypedEvent(swt.NewTraverseEvent(event))
 }
 

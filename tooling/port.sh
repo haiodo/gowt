@@ -147,6 +147,7 @@ SWT_FILES=(
 	org/eclipse/swt/widgets/TabFolder.java
 	org/eclipse/swt/widgets/Combo.java
 	org/eclipse/swt/widgets/Table.java
+	org/eclipse/swt/widgets/List.java
 	org/eclipse/swt/widgets/TableItem.java
 	org/eclipse/swt/widgets/TableColumn.java
 	org/eclipse/swt/custom/ScrolledCompositeLayout.java

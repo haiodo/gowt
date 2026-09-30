@@ -13,118 +13,118 @@ import (
 )
 
 type Test_org_eclipse_swt_widgets_WidgetImpl interface {
-	setUp_()
-	setWidget_(a0 *swt.Widget)
+	SetUp_()
+	SetWidget_(a0 *swt.Widget)
 	test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
-	test_computeSizeIIZ_()
-	test_getLocation_()
-	test_getParent_()
-	test_getShell_()
-	test_isEnabled_()
-	test_isReparentable_()
-	test_isVisible_()
-	test_setBoundsIIII_()
-	test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
-	test_setEnabledZ_()
-	test_setFocus_()
-	test_setFontLorg_eclipse_swt_graphics_Font_()
-	test_setLocationII_()
-	test_setLocationLorg_eclipse_swt_graphics_Point_()
-	test_setRedrawZ_()
-	test_setSizeII_()
-	test_setSizeLorg_eclipse_swt_graphics_Point_()
-	test_setVisibleZ_()
-	test_computeTrimIIII_()
-	test_getClientArea_()
-	test_getChildren_()
+	Test_computeSizeIIZ_()
+	Test_getLocation_()
+	Test_getParent_()
+	Test_getShell_()
+	Test_isEnabled_()
+	Test_isReparentable_()
+	Test_isVisible_()
+	Test_setBoundsIIII_()
+	Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+	Test_setEnabledZ_()
+	Test_setFocus_()
+	Test_setFontLorg_eclipse_swt_graphics_Font_()
+	Test_setLocationII_()
+	Test_setLocationLorg_eclipse_swt_graphics_Point_()
+	Test_setRedrawZ_()
+	Test_setSizeII_()
+	Test_setSizeLorg_eclipse_swt_graphics_Point_()
+	Test_setVisibleZ_()
+	Test_computeTrimIIII_()
+	Test_getClientArea_()
+	Test_getChildren_()
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_ConstructorLorg_eclipse_swt_widgets_CompositeI_() {
 	panic("j2go: test_ConstructorLorg_eclipse_swt_widgets_CompositeI_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_computeSizeIIZ_() {
-	panic("j2go: test_computeSizeIIZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_computeSizeIIZ_() {
+	panic("j2go: Test_computeSizeIIZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_getLocation_() {
-	panic("j2go: test_getLocation_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_getLocation_() {
+	panic("j2go: Test_getLocation_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_getParent_() {
-	panic("j2go: test_getParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_getParent_() {
+	panic("j2go: Test_getParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_getShell_() {
-	panic("j2go: test_getShell_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_getShell_() {
+	panic("j2go: Test_getShell_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_isEnabled_() {
-	panic("j2go: test_isEnabled_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_isEnabled_() {
+	panic("j2go: Test_isEnabled_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_isReparentable_() {
-	panic("j2go: test_isReparentable_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_isReparentable_() {
+	panic("j2go: Test_isReparentable_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_isVisible_() {
-	panic("j2go: test_isVisible_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_isVisible_() {
+	panic("j2go: Test_isVisible_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setBoundsIIII_() {
-	panic("j2go: test_setBoundsIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setBoundsIIII_() {
+	panic("j2go: Test_setBoundsIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
-	panic("j2go: test_setBoundsLorg_eclipse_swt_graphics_Rectangle_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
+	panic("j2go: Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setEnabledZ_() {
-	panic("j2go: test_setEnabledZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setEnabledZ_() {
+	panic("j2go: Test_setEnabledZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_() {
-	panic("j2go: test_setFocus_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setFocus_() {
+	panic("j2go: Test_setFocus_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setFontLorg_eclipse_swt_graphics_Font_() {
-	panic("j2go: test_setFontLorg_eclipse_swt_graphics_Font_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setFontLorg_eclipse_swt_graphics_Font_() {
+	panic("j2go: Test_setFontLorg_eclipse_swt_graphics_Font_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setLocationII_() {
-	panic("j2go: test_setLocationII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setLocationII_() {
+	panic("j2go: Test_setLocationII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setLocationLorg_eclipse_swt_graphics_Point_() {
-	panic("j2go: test_setLocationLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setLocationLorg_eclipse_swt_graphics_Point_() {
+	panic("j2go: Test_setLocationLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setRedrawZ_() {
-	panic("j2go: test_setRedrawZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setRedrawZ_() {
+	panic("j2go: Test_setRedrawZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setSizeII_() {
-	panic("j2go: test_setSizeII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setSizeII_() {
+	panic("j2go: Test_setSizeII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setSizeLorg_eclipse_swt_graphics_Point_() {
-	panic("j2go: test_setSizeLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setSizeLorg_eclipse_swt_graphics_Point_() {
+	panic("j2go: Test_setSizeLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_setVisibleZ_() {
-	panic("j2go: test_setVisibleZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_setVisibleZ_() {
+	panic("j2go: Test_setVisibleZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_computeTrimIIII_() {
-	panic("j2go: test_computeTrimIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_computeTrimIIII_() {
+	panic("j2go: Test_computeTrimIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_getClientArea_() {
-	panic("j2go: test_getClientArea_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_getClientArea_() {
+	panic("j2go: Test_getClientArea_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) test_getChildren_() {
-	panic("j2go: test_getChildren_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) Test_getChildren_() {
+	panic("j2go: Test_getChildren_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
 type Test_org_eclipse_swt_widgets_Widget struct {
@@ -132,13 +132,17 @@ type Test_org_eclipse_swt_widgets_Widget struct {
 	widget                     *swt.Widget
 	listenerCalled             bool
 	disposedIntentionally      bool
-	testInfo                   any
+	testInfo                   *junit.TestInfo
 	afterTestExecutionCallback any
 	impl                       Test_org_eclipse_swt_widgets_WidgetImpl
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) Impl() Test_org_eclipse_swt_widgets_WidgetImpl {
 	return this.impl
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) SetImpl_(impl Test_org_eclipse_swt_widgets_WidgetImpl) {
+	this.impl = impl
 }
 
 func newTest_org_eclipse_swt_widgets_Widget() *Test_org_eclipse_swt_widgets_Widget {
@@ -151,15 +155,15 @@ func newTest_org_eclipse_swt_widgets_Widget() *Test_org_eclipse_swt_widgets_Widg
 func (this *Test_org_eclipse_swt_widgets_Widget) initTest_org_eclipse_swt_widgets_Widget() {
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) SetupBase(testInfo any) {
+func (this *Test_org_eclipse_swt_widgets_Widget) SetupBase(testInfo *junit.TestInfo) {
 	this.testInfo = testInfo
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) SetUp() {
-	this.impl.setUp_()
+	this.impl.SetUp_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) setUp_() {
+func (this *Test_org_eclipse_swt_widgets_Widget) SetUp_() {
 	this.shell = swt.NewShell()
 }
 
@@ -279,10 +283,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) SetWidget(wLike swt.WidgetLike)
 	if wLike != nil {
 		w = wLike.AsWidget()
 	}
-	this.impl.setWidget_(w)
+	this.impl.SetWidget_(w)
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) setWidget_(w *swt.Widget) {
+func (this *Test_org_eclipse_swt_widgets_Widget) SetWidget_(w *swt.Widget) {
 	this.widget = w
 }
 
@@ -333,12 +337,9 @@ func (this *Test_org_eclipse_swt_widgets_Widget) HookExpectedEventsWTypesEvents(
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) GetTestName() string {
-	var testMethod any = func() any { _ = []any{this.testInfo}; panic("j2go: unresolved call getTestMethod") }()
-	junit.AssertTrue(func() bool { _ = []any{testMethod}; panic("j2go: unresolved call isPresent") }())
-	var test string = func() string {
-		_ = []any{func() any { _ = []any{testMethod}; panic("j2go: unresolved call get") }()}
-		panic("j2go: unresolved call getName")
-	}()
+	var testMethod *jrt.Optional = this.testInfo.GetTestMethod()
+	junit.AssertTrue(testMethod.IsPresent())
+	var test string = testMethod.Get().(*jrt.Method).GetName()
 	var index int32 = jrt.LastIndexOf(test, string(rune('_')))
 	if index != -1 {
 		test = jrt.Substring(test, index+1, -1)
@@ -505,6 +506,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.Text:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.List:
 		if v == nil {
 			return nil, false
 		}

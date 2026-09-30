@@ -10,14 +10,14 @@ import (
 
 type ResourceImpl interface {
 	destroy_()
-	dispose_()
-	getDevice_() *Device
+	Dispose_()
+	GetDevice_() *Device
 	init_()
-	isDisposed_() bool
+	IsDisposed_() bool
 }
 
-func (this *Resource) isDisposed_() bool {
-	panic("j2go: isDisposed_ has no default on Resource")
+func (this *Resource) IsDisposed_() bool {
+	panic("j2go: IsDisposed_ has no default on Resource")
 }
 
 type Resource struct {
@@ -28,6 +28,8 @@ type Resource struct {
 }
 
 func (this *Resource) Impl() ResourceImpl { return this.impl }
+
+func (this *Resource) SetImpl_(impl ResourceImpl) { this.impl = impl }
 
 func (this *Resource) AsResource() *Resource { return this }
 
@@ -77,10 +79,10 @@ func (this *Resource) DestroyHandlesExcept(zoomLevels any) {
 }
 
 func (this *Resource) Dispose() {
-	this.impl.dispose_()
+	this.impl.Dispose_()
 }
 
-func (this *Resource) dispose_() {
+func (this *Resource) Dispose_() {
 	if this.tracker != (nil) {
 		this.tracker.reporting.Set(false)
 	}
@@ -101,12 +103,12 @@ func (this *Resource) dispose_() {
 }
 
 func (this *Resource) GetDevice() *Device {
-	return this.impl.getDevice_()
+	return this.impl.GetDevice_()
 }
 
-func (this *Resource) getDevice_() *Device {
+func (this *Resource) GetDevice_() *Device {
 	var device *Device = this.device
-	if device == (nil) || this.impl.isDisposed_() {
+	if device == (nil) || this.impl.IsDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return device
@@ -150,7 +152,7 @@ func (this *Resource) InitNonDisposeTracking() {
 }
 
 func (this *Resource) IsDisposed() bool {
-	return this.impl.isDisposed_()
+	return this.impl.IsDisposed_()
 }
 
 func ResourceSetNonDisposeHandler(reporter func(error)) {

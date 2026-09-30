@@ -87,8 +87,8 @@ func ImageTestUtilAssertImagesEqualExpectedActual(expected []*swt.ImageData, act
 		return cond13
 	}
 	for i := int32(0); i < int32(len(expected)); i++ {
-		junit.AssertEquals(int32(expected[i].Width), int32(actual[i].Width), formatMsg("Different width", i))
-		junit.AssertEquals(int32(expected[i].Height), int32(actual[i].Height), formatMsg("Different height", i))
+		junit.AssertEquals(int32(expected[i].Width), int32(actual[i].Width), formatMsg("Different width", int32(i)))
+		junit.AssertEquals(int32(expected[i].Height), int32(actual[i].Height), formatMsg("Different height", int32(i)))
 		var expectedFixAlpha int32 = ImageTestUtilGetEffectiveAlpha(expected[i], -1, -1)
 		var actualFixAlpha int32 = ImageTestUtilGetEffectiveAlpha(actual[i], -1, -1)
 		var expectedLine []int32 = make([]int32, expected[i].Width)
@@ -97,7 +97,7 @@ func ImageTestUtilAssertImagesEqualExpectedActual(expected []*swt.ImageData, act
 			expected[i].GetPixelsXYGetWidthPixelsStartIndex(0, y, expected[i].Width, expectedLine, 0)
 			actual[i].GetPixelsXYGetWidthPixelsStartIndex(0, y, actual[i].Width, actualLine, 0)
 			for x := int32(0); x < expected[i].Width; x++ {
-				junit.AssertEquals(expected[i].Palette.GetRGB(expectedLine[x]), actual[i].Palette.GetRGB(actualLine[x]), formatMsg(fmt.Sprintf("Different color at x=%d, y=%d", x, y), i))
+				junit.AssertEquals(expected[i].Palette.GetRGB(expectedLine[x]), actual[i].Palette.GetRGB(actualLine[x]), formatMsg(fmt.Sprintf("Different color at x=%d, y=%d", x, y), int32(i)))
 				var expectedAlpha int32
 				if expectedFixAlpha < 0 {
 					expectedAlpha = ImageTestUtilGetEffectiveAlpha(expected[i], x, y)
@@ -111,9 +111,9 @@ func ImageTestUtilAssertImagesEqualExpectedActual(expected []*swt.ImageData, act
 					actualAlpha = actualFixAlpha
 				}
 				if expectedAlpha != actualAlpha {
-					junit.AssertEquals(int32(expectedAlpha), int32(actualAlpha), formatMsg(fmt.Sprintf("Different alpha at x=%d, y=%d", x, y), i))
+					junit.AssertEquals(int32(expectedAlpha), int32(actualAlpha), formatMsg(fmt.Sprintf("Different alpha at x=%d, y=%d", x, y), int32(i)))
 				}
-				junit.AssertNotEquals(int32(-1), int32(actualAlpha), formatMsg(fmt.Sprintf("Invalid alpha at x=%d, y=%d", x, y), i))
+				junit.AssertNotEquals(int32(-1), int32(actualAlpha), formatMsg(fmt.Sprintf("Invalid alpha at x=%d, y=%d", x, y), int32(i)))
 			}
 		}
 	}

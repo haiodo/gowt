@@ -19,6 +19,8 @@ type Dialog struct {
 
 func (this *Dialog) Impl() DialogImpl { return this.impl }
 
+func (this *Dialog) SetImpl_(impl DialogImpl) { this.impl = impl }
+
 func (this *Dialog) AsDialog() *Dialog { return this }
 
 type DialogLike interface {

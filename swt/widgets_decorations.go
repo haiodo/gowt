@@ -64,7 +64,7 @@ func (this *Decorations) bringToTop_(force bool) {
 	this.MoveAbove(nil)
 }
 
-func (this *Decorations) checkSubclass_() {
+func (this *Decorations) CheckSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -182,10 +182,10 @@ func (this *Decorations) GetImages() []*Image {
 }
 
 func (this *Decorations) GetMaximized() bool {
-	return this.impl.getMaximized_()
+	return this.impl.GetMaximized_()
 }
 
-func (this *Decorations) getMaximized_() bool {
+func (this *Decorations) GetMaximized_() bool {
 	this.CheckWidget()
 	return this.maximized
 }
@@ -196,10 +196,10 @@ func (this *Decorations) GetMenuBar() *Menu {
 }
 
 func (this *Decorations) GetMinimized() bool {
-	return this.impl.getMinimized_()
+	return this.impl.GetMinimized_()
 }
 
-func (this *Decorations) getMinimized_() bool {
+func (this *Decorations) GetMinimized_() bool {
 	this.CheckWidget()
 	return this.minimized
 }
@@ -213,7 +213,7 @@ func (this *Decorations) GetText() string {
 	return this.text
 }
 
-func (this *Decorations) isReparentable_() bool {
+func (this *Decorations) IsReparentable_() bool {
 	this.CheckWidget()
 	return false
 }
@@ -283,7 +283,7 @@ func (this *Decorations) RestoreFocus() bool {
 	if this.savedFocus == (nil) {
 		return false
 	}
-	return this.savedFocus.impl.setFocus_()
+	return this.savedFocus.impl.SetFocus_()
 }
 
 func (this *Decorations) SaveFocus() {
@@ -330,7 +330,7 @@ func (this *Decorations) SetImage(imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.isDisposed_() {
+	if image != (nil) && image.impl.IsDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
@@ -354,7 +354,7 @@ func (this *Decorations) SetImages(images []*Image) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	for i := int32(0); i < int32(len(images)); i++ {
-		if images[i] == (nil) || images[i].impl.isDisposed_() {
+		if images[i] == (nil) || images[i].impl.IsDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -378,10 +378,10 @@ func (this *Decorations) SetImages(images []*Image) {
 }
 
 func (this *Decorations) SetMaximized(maximized bool) {
-	this.impl.setMaximized_(maximized)
+	this.impl.SetMaximized_(maximized)
 }
 
-func (this *Decorations) setMaximized_(maximized bool) {
+func (this *Decorations) SetMaximized_(maximized bool) {
 	this.CheckWidget()
 	this.maximized = maximized
 }
@@ -391,10 +391,10 @@ func (this *Decorations) SetMenuBar(menuLike MenuLike) {
 	if menuLike != nil {
 		menu = menuLike.AsMenu()
 	}
-	this.impl.setMenuBar_(menu)
+	this.impl.SetMenuBar_(menu)
 }
 
-func (this *Decorations) setMenuBar_(menu *Menu) {
+func (this *Decorations) SetMenuBar_(menu *Menu) {
 	this.CheckWidget()
 	if this.menuBar == menu {
 		return
@@ -414,10 +414,10 @@ func (this *Decorations) setMenuBar_(menu *Menu) {
 }
 
 func (this *Decorations) SetMinimized(minimized bool) {
-	this.impl.setMinimized_(minimized)
+	this.impl.SetMinimized_(minimized)
 }
 
-func (this *Decorations) setMinimized_(minimized bool) {
+func (this *Decorations) SetMinimized_(minimized bool) {
 	this.CheckWidget()
 	this.minimized = minimized
 }
@@ -432,10 +432,10 @@ func (this *Decorations) SetSavedFocus(controlLike ControlLike) {
 }
 
 func (this *Decorations) SetText(string_ string) {
-	this.impl.setText_(string_)
+	this.impl.SetText_(string_)
 }
 
-func (this *Decorations) setText_(string_ string) {
+func (this *Decorations) SetText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -476,7 +476,7 @@ func (this *Decorations) traverseReturn_() bool {
 	if this.defaultButton == (nil) || this.defaultButton.IsDisposed() {
 		return false
 	}
-	if !this.defaultButton.impl.isVisible_() || !this.defaultButton.impl.isEnabled_() {
+	if !this.defaultButton.impl.IsVisible_() || !this.defaultButton.impl.IsEnabled_() {
 		return false
 	}
 	this.defaultButton.Click()

@@ -127,7 +127,7 @@ func (this *FontDialog) Open() *FontData {
 	delegate.Release()
 	cocoa.OSDeleteGlobalRef(jniRef)
 	if create {
-		font.impl.dispose_()
+		font.impl.Dispose_()
 	}
 	return this.fontData
 }

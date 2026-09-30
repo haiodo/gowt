@@ -39,6 +39,12 @@ final class FunctionalEmitter {
 		ITypeBinding fType = emr.resolveTypeBinding();
 		IMethodBinding sam = fType == null ? null : fType.getFunctionalInterfaceMethod();
 		TypeModel.ClassInfo declCi = target == null ? null : emitter.model.lookup(target.getDeclaringClass());
+		// `callable::call`: the receiver already is the bare Go func.
+		if (sam != null && target != null && !Modifier.isStatic(target.getModifiers()) && Modifier.isAbstract(target.getModifiers())
+				&& GoTypes.isJdkFunctional(target.getDeclaringClass().getErasure().getQualifiedName())) {
+			String fn = wrap(fType, emitter.expr(emr.getExpression()));
+			if (fn != null) return fn;
+		}
 		if (sam == null || declCi == null) return marker(emr, "ExpressionMethodReference");
 		String wrapped = wrap(fType, methodRefFunc(emr, target, declCi));
 		return wrapped != null ? wrapped : marker(emr, "ExpressionMethodReference");
@@ -170,6 +176,23 @@ final class FunctionalEmitter {
 			else onlyMethods = false;
 		}
 		if (base == null || !onlyMethods) return marker(cic, "AnonymousClass");
+		// `new Thread() { run() {...} }`: jrt.Thread runs the body; no other Thread member is modeled.
+		if (base.getErasure().getQualifiedName().equals("java.lang.Thread") && cic.arguments().isEmpty()
+				&& methods.size() == 1 && methods.get(0).getName().getIdentifier().equals("run")) {
+			String fn = withAnonThis("this", anonType, () -> funcLiteral(methods.get(0).resolveBinding(), paramNames(methods.get(0)), methods.get(0).getBody()));
+			if (fn != null) {
+				emitter.fileImports.add(JRT_IMPORT);
+				return "any(jrt.NewThread(jrt.NewRunnable(" + fn + ")))";
+			}
+		}
+		if (base.getErasure().getQualifiedName().equals("java.io.InputStream") && methods.size() == 1
+				&& methods.get(0).getName().getIdentifier().equals("read") && methods.get(0).parameters().isEmpty()) {
+			String fn = withAnonThis("this", anonType, () -> funcLiteral(methods.get(0).resolveBinding(), paramNames(methods.get(0)), methods.get(0).getBody()));
+			if (fn != null) {
+				emitter.fileImports.add(JRT_IMPORT);
+				return "&jrt.FuncInputStream{ReadFn: " + fn + "}";
+			}
+		}
 		TypeModel.ClassInfo baseCi = emitter.model.lookup(base);
 		boolean runnable = base.getErasure().getQualifiedName().equals("java.lang.Runnable");
 		boolean singleMethodIface = baseCi != null && baseCi.isInterface && methods.size() == 1
@@ -197,7 +220,9 @@ final class FunctionalEmitter {
 		String typeName = emitter.currentClassGoTypeName + "Anon" + (++emitter.anonCounter);
 		StringBuilder decl = new StringBuilder("// j2go: anonymous ").append(baseCi.goTypeName).append(" subclass.\n");
 		decl.append("type ").append(typeName).append(" struct {\n");
-		if (!baseCi.isInterface) decl.append('\t').append(emitter.qualifiedTypeName(baseCi)).append('\n');
+		boolean foreign = !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage);
+		// Embedded by pointer: the widget registers itself with the Display, a copy would be a stranger.
+		if (!baseCi.isInterface) decl.append('\t').append(foreign ? "*" : "").append(emitter.qualifiedTypeName(baseCi)).append('\n');
 		StringBuilder forwarders = new StringBuilder();
 		String v = "anon" + (++emitter.tempCounter);
 		List<String> assigns = new ArrayList<>();
@@ -220,14 +245,14 @@ final class FunctionalEmitter {
 			assigns.add(v + "." + field + " = " + fn);
 		}
 		decl.append("}\n\n").append(forwarders).append(emitter.defaultForwarders(anonType, "*" + typeName));
-		boolean foreign = !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage);
-		// Another package's impl field and init<Base> are unexported: only a base outside any
-		// impl cascade can be built there, by copying in its public constructor's result.
-		if (foreign && !baseCi.root.children.isEmpty()) return marker(cic, "AnonymousClass");
+		// Another package's impl and init<Base> are unexported: build with the public constructor, then
+		// SetImpl_. Ceiling: virtual calls the constructor makes still reach the base implementation.
+		if (foreign && !baseCi.root.children.isEmpty() && !baseCi.root.splitsDispatch()) return marker(cic, "AnonymousClass");
 		emitter.fileHelperSource.add(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
 		if (foreign) {
-			emitter.prelude.add(v + "." + baseCi.goTypeName + " = *" + foreignCtorCall(cic, baseCi));
+			emitter.prelude.add(v + "." + baseCi.goTypeName + " = " + foreignCtorCall(cic, baseCi));
+			if (!baseCi.root.children.isEmpty()) emitter.prelude.add(v + ".SetImpl_(" + v + ")");
 		} else if (!baseCi.isInterface) {
 			if (!baseCi.root.children.isEmpty()) emitter.prelude.add(v + ".impl = " + v);
 			emitter.prelude.add(v + "." + superInitCall(cic, baseCi));
@@ -249,9 +274,23 @@ final class FunctionalEmitter {
 	}
 
 	private String foreignCtorCall(ClassInstanceCreation cic, TypeModel.ClassInfo baseCi) {
-		IMethodBinding ctor = cic.resolveConstructorBinding();
+		IMethodBinding ctor = superCtor(cic, baseCi);
 		String name = emitter.ctorGoName(ctor, emitter.qualify("New" + baseCi.goFuncPrefix, baseCi));
 		return name + "(" + String.join(", ", emitter.buildArgs(cic.arguments(), ctor)) + ")";
+	}
+
+	/** cic's binding is the anonymous constructor; the base one has the same parameter types. */
+	private static IMethodBinding superCtor(ClassInstanceCreation cic, TypeModel.ClassInfo baseCi) {
+		IMethodBinding own = cic.resolveConstructorBinding();
+		for (IMethodBinding m : baseCi.binding.getDeclaredMethods()) {
+			if (!m.isConstructor() || m.getParameterTypes().length != own.getParameterTypes().length) continue;
+			boolean same = true;
+			for (int i = 0; i < m.getParameterTypes().length; i++) {
+				same &= m.getParameterTypes()[i].getErasure().isEqualTo(own.getParameterTypes()[i].getErasure());
+			}
+			if (same) return m;
+		}
+		return own;
 	}
 
 	private IMethodBinding findOverridden(IMethodBinding m, ITypeBinding anonType) {

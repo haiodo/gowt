@@ -42,7 +42,7 @@ type WidgetImpl interface {
 	_addListener_(a0 int32, a1 Listener)
 	checkOpen_()
 	checkParent_(a0 *Widget)
-	checkSubclass_()
+	CheckSubclass_()
 	clearDeferFlushing_(a0 int64, a1 int64)
 	collapseItem_collapseChildren_(a0 int64, a1 int64, a2 int64, a3 bool)
 	createHandle_()
@@ -74,7 +74,7 @@ type WidgetImpl interface {
 	focusRingMaskBoundsForFrame_(a0 int64, a1 int64, a2 cocoa.NSRect, a3 int64) cocoa.NSRect
 	getDrawing_() bool
 	getNameText_() string
-	getStyle_() int32
+	GetStyle_() int32
 	hasMarkedText_(a0 int64, a1 int64) bool
 	headerRectOfColumn_(a0 int64, a1 int64, a2 int64) cocoa.NSRect
 	helpRequested_(a0 int64, a1 int64, a2 int64)
@@ -178,7 +178,7 @@ type WidgetImpl interface {
 	textView_willChangeSelectionFromCharacterRange_toCharacterRange_(a0 int64, a1 int64, a2 int64, a3 int64, a4 int64) cocoa.NSRange
 	titleRectForBounds_(a0 int64, a1 int64, a2 cocoa.NSRect) cocoa.NSRect
 	tooltipText_() string
-	string_() string
+	String_() string
 	touchesBeganWithEvent_(a0 int64, a1 int64, a2 int64)
 	touchesCancelledWithEvent_(a0 int64, a1 int64, a2 int64)
 	touchesEndedWithEvent_(a0 int64, a1 int64, a2 int64)
@@ -209,7 +209,7 @@ type WidgetImpl interface {
 	validRequestorForSendType_(a0 int64, a1 int64, a2 int64, a3 int64) int64
 	writeSelectionToPasteboard_(a0 int64, a1 int64, a2 int64, a3 int64) bool
 	addRelation_(a0 *Control)
-	computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point
+	ComputeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point
 	computeTabGroup_() *Widget
 	computeTabList_() []*Widget
 	computeTabRoot_() *Control
@@ -228,13 +228,13 @@ type WidgetImpl interface {
 	findTooltip_(a0 cocoa.NSPoint) *Widget
 	fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
 	forceFocusFocusView_(a0 *cocoa.NSView) bool
-	getBounds_() *Rectangle
-	getLocation_() *Point
+	GetBounds_() *Rectangle
+	GetLocation_() *Point
 	getMininumHeight_() int32
-	getOrientation_() int32
-	getRegion_() *Region
-	getShell_() *Shell
-	getSize_() *Point
+	GetOrientation_() int32
+	GetRegion_() *Region
+	GetShell_() *Shell
+	GetSize_() *Point
 	getThemeAlpha_() float32
 	hasBorder_() bool
 	hasRegion_() bool
@@ -242,44 +242,44 @@ type WidgetImpl interface {
 	invalidateChildrenVisibleRegion_()
 	invalidateVisibleRegion_()
 	isDescribedByLabel_() bool
-	isEnabled_() bool
+	IsEnabled_() bool
 	isEnabledCursor_() bool
-	isReparentable_() bool
+	IsReparentable_() bool
 	isResizing_() bool
 	isTabGroup_() bool
 	isTabItem_() bool
 	isTransparent_() bool
 	isTrim_(a0 *cocoa.NSView) bool
-	isVisible_() bool
+	IsVisible_() bool
 	markLayout_(a0 bool, a1 bool)
 	menuShell_() *Decorations
 	isEventView_(a0 int64) bool
 	mouseEvent_(a0 int64, a1 int64, a2 int64, a3 int32) bool
-	print_(a0 *GC) bool
-	requestLayout_()
-	redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
+	Print_(a0 *GC) bool
+	RequestLayout_()
+	RedrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
 	removeRelation_()
 	resetVisibleRegion_()
 	resized_()
 	sendFocusEvent_(a0 int32)
 	sendMouseEvent_(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool
-	setBackgroundWithColor_(a0 *Color)
+	SetBackgroundWithColor_(a0 *Color)
 	setBackgroundImageImage_(a0 *cocoa.NSImage)
 	setBackgroundColor_(a0 *cocoa.NSColor)
 	setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool, a5 bool)
-	setEnabled_(a0 bool)
-	setFocus_() bool
-	setFont_(a0 *Font)
+	SetEnabled_(a0 bool)
+	SetFocus_() bool
+	SetFont_(a0 *Font)
 	setFontFont_(a0 *cocoa.NSFont)
-	setForeground_(a0 *Color)
+	SetForeground_(a0 *Color)
 	setForegroundColor_(a0 []float64)
-	setOrientationOnControl_(a0 int32)
-	setRedraw_(a0 bool)
-	setRegion_(a0 *Region)
+	SetOrientationOnControl_(a0 int32)
+	SetRedraw_(a0 bool)
+	SetRegion_(a0 *Region)
 	setRadioSelection_(a0 bool) bool
 	setSmallSize_()
-	setToolTipText_(a0 string)
-	setVisible_(a0 bool)
+	SetToolTipText_(a0 string)
+	SetVisible_(a0 bool)
 	setZOrder_()
 	setZOrderSiblingAbove_(a0 *Control, a1 bool)
 	topView_() *cocoa.NSView
@@ -293,33 +293,33 @@ type WidgetImpl interface {
 	updateBackgroundMode_()
 	updateCursorRects_(a0 bool)
 	updateLayout_(a0 bool)
-	computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle
-	getClientArea_() *Rectangle
+	ComputeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle
+	GetClientArea_() *Rectangle
 	hooksKeys_() bool
 	isNeeded_(a0 *ScrollBar) bool
 	setScrollBarVisible_(a0 *ScrollBar, a1 bool) bool
-	getImage_() *Image
-	getText_() string
-	setImageOnItem_(a0 *Image)
-	setText_(a0 string)
+	GetImage_() *Image
+	GetText_() string
+	SetImageOnItem_(a0 *Image)
+	SetText_(a0 string)
 	findDeferredControl_() *Composite
 	minimumSize_(a0 int32, a1 int32, a2 bool) *Point
 	removeControl_(a0 *Control)
-	setLayout_(a0 *Layout)
+	SetLayout_(a0 *Layout)
 	bringToTop_(a0 bool)
-	getMaximized_() bool
-	getMinimized_() bool
-	setMaximized_(a0 bool)
-	setMenuBar_(a0 *Menu)
-	setMinimized_(a0 bool)
+	GetMaximized_() bool
+	GetMinimized_() bool
+	SetMaximized_(a0 bool)
+	SetMenuBar_(a0 *Menu)
+	SetMinimized_(a0 bool)
 }
 
 func (this *Widget) addRelation_(a0 *Control) {
 	panic("j2go: addRelation_ has no default on Widget")
 }
 
-func (this *Widget) computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point {
-	panic("j2go: computeSizeWHintHHintChanged_ has no default on Widget")
+func (this *Widget) ComputeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point {
+	panic("j2go: ComputeSizeWHintHHintChanged_ has no default on Widget")
 }
 
 func (this *Widget) computeTabGroup_() *Widget {
@@ -394,32 +394,32 @@ func (this *Widget) forceFocusFocusView_(a0 *cocoa.NSView) bool {
 	panic("j2go: forceFocusFocusView_ has no default on Widget")
 }
 
-func (this *Widget) getBounds_() *Rectangle {
-	panic("j2go: getBounds_ has no default on Widget")
+func (this *Widget) GetBounds_() *Rectangle {
+	panic("j2go: GetBounds_ has no default on Widget")
 }
 
-func (this *Widget) getLocation_() *Point {
-	panic("j2go: getLocation_ has no default on Widget")
+func (this *Widget) GetLocation_() *Point {
+	panic("j2go: GetLocation_ has no default on Widget")
 }
 
 func (this *Widget) getMininumHeight_() int32 {
 	panic("j2go: getMininumHeight_ has no default on Widget")
 }
 
-func (this *Widget) getOrientation_() int32 {
-	panic("j2go: getOrientation_ has no default on Widget")
+func (this *Widget) GetOrientation_() int32 {
+	panic("j2go: GetOrientation_ has no default on Widget")
 }
 
-func (this *Widget) getRegion_() *Region {
-	panic("j2go: getRegion_ has no default on Widget")
+func (this *Widget) GetRegion_() *Region {
+	panic("j2go: GetRegion_ has no default on Widget")
 }
 
-func (this *Widget) getShell_() *Shell {
-	panic("j2go: getShell_ has no default on Widget")
+func (this *Widget) GetShell_() *Shell {
+	panic("j2go: GetShell_ has no default on Widget")
 }
 
-func (this *Widget) getSize_() *Point {
-	panic("j2go: getSize_ has no default on Widget")
+func (this *Widget) GetSize_() *Point {
+	panic("j2go: GetSize_ has no default on Widget")
 }
 
 func (this *Widget) getThemeAlpha_() float32 {
@@ -450,16 +450,16 @@ func (this *Widget) isDescribedByLabel_() bool {
 	panic("j2go: isDescribedByLabel_ has no default on Widget")
 }
 
-func (this *Widget) isEnabled_() bool {
-	panic("j2go: isEnabled_ has no default on Widget")
+func (this *Widget) IsEnabled_() bool {
+	panic("j2go: IsEnabled_ has no default on Widget")
 }
 
 func (this *Widget) isEnabledCursor_() bool {
 	panic("j2go: isEnabledCursor_ has no default on Widget")
 }
 
-func (this *Widget) isReparentable_() bool {
-	panic("j2go: isReparentable_ has no default on Widget")
+func (this *Widget) IsReparentable_() bool {
+	panic("j2go: IsReparentable_ has no default on Widget")
 }
 
 func (this *Widget) isResizing_() bool {
@@ -482,8 +482,8 @@ func (this *Widget) isTrim_(a0 *cocoa.NSView) bool {
 	panic("j2go: isTrim_ has no default on Widget")
 }
 
-func (this *Widget) isVisible_() bool {
-	panic("j2go: isVisible_ has no default on Widget")
+func (this *Widget) IsVisible_() bool {
+	panic("j2go: IsVisible_ has no default on Widget")
 }
 
 func (this *Widget) markLayout_(a0 bool, a1 bool) {
@@ -502,16 +502,16 @@ func (this *Widget) mouseEvent_(a0 int64, a1 int64, a2 int64, a3 int32) bool {
 	panic("j2go: mouseEvent_ has no default on Widget")
 }
 
-func (this *Widget) print_(a0 *GC) bool {
-	panic("j2go: print_ has no default on Widget")
+func (this *Widget) Print_(a0 *GC) bool {
+	panic("j2go: Print_ has no default on Widget")
 }
 
-func (this *Widget) requestLayout_() {
-	panic("j2go: requestLayout_ has no default on Widget")
+func (this *Widget) RequestLayout_() {
+	panic("j2go: RequestLayout_ has no default on Widget")
 }
 
-func (this *Widget) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
-	panic("j2go: redrawXYWidthHeightAll_ has no default on Widget")
+func (this *Widget) RedrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool) {
+	panic("j2go: RedrawXYWidthHeightAll_ has no default on Widget")
 }
 
 func (this *Widget) removeRelation_() {
@@ -534,8 +534,8 @@ func (this *Widget) sendMouseEvent_(a0 *cocoa.NSEvent, a1 int32, a2 bool) bool {
 	panic("j2go: sendMouseEvent_ has no default on Widget")
 }
 
-func (this *Widget) setBackgroundWithColor_(a0 *Color) {
-	panic("j2go: setBackgroundWithColor_ has no default on Widget")
+func (this *Widget) SetBackgroundWithColor_(a0 *Color) {
+	panic("j2go: SetBackgroundWithColor_ has no default on Widget")
 }
 
 func (this *Widget) setBackgroundImageImage_(a0 *cocoa.NSImage) {
@@ -550,40 +550,40 @@ func (this *Widget) setBoundsXYWidthHeightMoveResize_(a0 int32, a1 int32, a2 int
 	panic("j2go: setBoundsXYWidthHeightMoveResize_ has no default on Widget")
 }
 
-func (this *Widget) setEnabled_(a0 bool) {
-	panic("j2go: setEnabled_ has no default on Widget")
+func (this *Widget) SetEnabled_(a0 bool) {
+	panic("j2go: SetEnabled_ has no default on Widget")
 }
 
-func (this *Widget) setFocus_() bool {
-	panic("j2go: setFocus_ has no default on Widget")
+func (this *Widget) SetFocus_() bool {
+	panic("j2go: SetFocus_ has no default on Widget")
 }
 
-func (this *Widget) setFont_(a0 *Font) {
-	panic("j2go: setFont_ has no default on Widget")
+func (this *Widget) SetFont_(a0 *Font) {
+	panic("j2go: SetFont_ has no default on Widget")
 }
 
 func (this *Widget) setFontFont_(a0 *cocoa.NSFont) {
 	panic("j2go: setFontFont_ has no default on Widget")
 }
 
-func (this *Widget) setForeground_(a0 *Color) {
-	panic("j2go: setForeground_ has no default on Widget")
+func (this *Widget) SetForeground_(a0 *Color) {
+	panic("j2go: SetForeground_ has no default on Widget")
 }
 
 func (this *Widget) setForegroundColor_(a0 []float64) {
 	panic("j2go: setForegroundColor_ has no default on Widget")
 }
 
-func (this *Widget) setOrientationOnControl_(a0 int32) {
-	panic("j2go: setOrientationOnControl_ has no default on Widget")
+func (this *Widget) SetOrientationOnControl_(a0 int32) {
+	panic("j2go: SetOrientationOnControl_ has no default on Widget")
 }
 
-func (this *Widget) setRedraw_(a0 bool) {
-	panic("j2go: setRedraw_ has no default on Widget")
+func (this *Widget) SetRedraw_(a0 bool) {
+	panic("j2go: SetRedraw_ has no default on Widget")
 }
 
-func (this *Widget) setRegion_(a0 *Region) {
-	panic("j2go: setRegion_ has no default on Widget")
+func (this *Widget) SetRegion_(a0 *Region) {
+	panic("j2go: SetRegion_ has no default on Widget")
 }
 
 func (this *Widget) setRadioSelection_(a0 bool) bool {
@@ -594,12 +594,12 @@ func (this *Widget) setSmallSize_() {
 	panic("j2go: setSmallSize_ has no default on Widget")
 }
 
-func (this *Widget) setToolTipText_(a0 string) {
-	panic("j2go: setToolTipText_ has no default on Widget")
+func (this *Widget) SetToolTipText_(a0 string) {
+	panic("j2go: SetToolTipText_ has no default on Widget")
 }
 
-func (this *Widget) setVisible_(a0 bool) {
-	panic("j2go: setVisible_ has no default on Widget")
+func (this *Widget) SetVisible_(a0 bool) {
+	panic("j2go: SetVisible_ has no default on Widget")
 }
 
 func (this *Widget) setZOrder_() {
@@ -654,12 +654,12 @@ func (this *Widget) updateLayout_(a0 bool) {
 	panic("j2go: updateLayout_ has no default on Widget")
 }
 
-func (this *Widget) computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
-	panic("j2go: computeTrim_ has no default on Widget")
+func (this *Widget) ComputeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
+	panic("j2go: ComputeTrim_ has no default on Widget")
 }
 
-func (this *Widget) getClientArea_() *Rectangle {
-	panic("j2go: getClientArea_ has no default on Widget")
+func (this *Widget) GetClientArea_() *Rectangle {
+	panic("j2go: GetClientArea_ has no default on Widget")
 }
 
 func (this *Widget) hooksKeys_() bool {
@@ -674,20 +674,20 @@ func (this *Widget) setScrollBarVisible_(a0 *ScrollBar, a1 bool) bool {
 	panic("j2go: setScrollBarVisible_ has no default on Widget")
 }
 
-func (this *Widget) getImage_() *Image {
-	panic("j2go: getImage_ has no default on Widget")
+func (this *Widget) GetImage_() *Image {
+	panic("j2go: GetImage_ has no default on Widget")
 }
 
-func (this *Widget) getText_() string {
-	panic("j2go: getText_ has no default on Widget")
+func (this *Widget) GetText_() string {
+	panic("j2go: GetText_ has no default on Widget")
 }
 
-func (this *Widget) setImageOnItem_(a0 *Image) {
-	panic("j2go: setImageOnItem_ has no default on Widget")
+func (this *Widget) SetImageOnItem_(a0 *Image) {
+	panic("j2go: SetImageOnItem_ has no default on Widget")
 }
 
-func (this *Widget) setText_(a0 string) {
-	panic("j2go: setText_ has no default on Widget")
+func (this *Widget) SetText_(a0 string) {
+	panic("j2go: SetText_ has no default on Widget")
 }
 
 func (this *Widget) findDeferredControl_() *Composite {
@@ -702,32 +702,32 @@ func (this *Widget) removeControl_(a0 *Control) {
 	panic("j2go: removeControl_ has no default on Widget")
 }
 
-func (this *Widget) setLayout_(a0 *Layout) {
-	panic("j2go: setLayout_ has no default on Widget")
+func (this *Widget) SetLayout_(a0 *Layout) {
+	panic("j2go: SetLayout_ has no default on Widget")
 }
 
 func (this *Widget) bringToTop_(a0 bool) {
 	panic("j2go: bringToTop_ has no default on Widget")
 }
 
-func (this *Widget) getMaximized_() bool {
-	panic("j2go: getMaximized_ has no default on Widget")
+func (this *Widget) GetMaximized_() bool {
+	panic("j2go: GetMaximized_ has no default on Widget")
 }
 
-func (this *Widget) getMinimized_() bool {
-	panic("j2go: getMinimized_ has no default on Widget")
+func (this *Widget) GetMinimized_() bool {
+	panic("j2go: GetMinimized_ has no default on Widget")
 }
 
-func (this *Widget) setMaximized_(a0 bool) {
-	panic("j2go: setMaximized_ has no default on Widget")
+func (this *Widget) SetMaximized_(a0 bool) {
+	panic("j2go: SetMaximized_ has no default on Widget")
 }
 
-func (this *Widget) setMenuBar_(a0 *Menu) {
-	panic("j2go: setMenuBar_ has no default on Widget")
+func (this *Widget) SetMenuBar_(a0 *Menu) {
+	panic("j2go: SetMenuBar_ has no default on Widget")
 }
 
-func (this *Widget) setMinimized_(a0 bool) {
-	panic("j2go: setMinimized_ has no default on Widget")
+func (this *Widget) SetMinimized_(a0 bool) {
+	panic("j2go: SetMinimized_ has no default on Widget")
 }
 
 type Widget struct {
@@ -741,6 +741,8 @@ type Widget struct {
 }
 
 func (this *Widget) Impl() WidgetImpl { return this.impl }
+
+func (this *Widget) SetImpl_(impl WidgetImpl) { this.impl = impl }
 
 func (this *Widget) AsWidget() *Widget { return this }
 
@@ -832,7 +834,7 @@ func NewWidgetParentStyle(parentLike WidgetLike, style int32) *Widget {
 }
 
 func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
-	this.impl.checkSubclass_()
+	this.impl.CheckSubclass_()
 	this.impl.checkParent_(parent)
 	this.style = style
 	this.display = parent.display
@@ -1315,10 +1317,10 @@ func (this *Widget) checkParent_(parent *Widget) {
 }
 
 func (this *Widget) CheckSubclass() {
-	this.impl.checkSubclass_()
+	this.impl.CheckSubclass_()
 }
 
-func (this *Widget) checkSubclass_() {
+func (this *Widget) CheckSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -1770,10 +1772,10 @@ func (this *Widget) getNameText_() string {
 }
 
 func (this *Widget) GetStyle() int32 {
-	return this.impl.getStyle_()
+	return this.impl.GetStyle_()
 }
 
-func (this *Widget) getStyle_() int32 {
+func (this *Widget) GetStyle_() int32 {
 	this.CheckWidget()
 	return this.style
 }
@@ -3252,10 +3254,10 @@ func (this *Widget) tooltipText_() string {
 }
 
 func (this *Widget) String() string {
-	return this.impl.string_()
+	return this.impl.String_()
 }
 
-func (this *Widget) string_() string {
+func (this *Widget) String_() string {
 	var string_ string = "*Disposed*"
 	if !this.IsDisposed() {
 		string_ = "*Wrong Thread*"

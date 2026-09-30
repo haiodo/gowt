@@ -43,12 +43,12 @@ final class InvocationEmitter {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
 				if (manualMethodGoName.startsWith("jrt.")) emitter.fileImports.add(Manual.JRT_IMPORT);
-				String fn = declCi != null ? emitter.qualify(manualMethodGoName, declCi) : manualMethodGoName;
+				String fn = declCi != null ? emitter.qualify(manualMethodGoName, declCi) : emitter.qualifyManual(manualMethodGoName, declaring);
 				addressStructArgs(mi, mb, args);
 				return fn + "(" + String.join(", ", args) + ")";
 			}
 			String manualRecv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
-			return manualRecv + "." + manualMethodGoName + "(" + String.join(", ", args) + ")";
+			return castErased(manualRecv + "." + manualMethodGoName + "(" + String.join(", ", args) + ")", mb);
 		}
 
 		// A manual value type backed by a bare "any" (java.util.Map, ...) has no real Go method to
@@ -235,9 +235,11 @@ final class InvocationEmitter {
 
 	// Java exception classes are Go error values (GoTypes) backed by internal/jrt's structs.
 	private String newJavaException(String qualified, ClassInstanceCreation cic) {
+		// The concrete type is not modeled: catch dispatch only sees Go error.
 		String goType = switch (qualified) {
-			case Manual.JAVA_RUNTIME_EXCEPTION, Manual.JAVA_EXCEPTION -> "jrt.RuntimeException";
-			case Manual.JAVA_ERROR, Manual.JAVA_THROWABLE -> "jrt.JavaError";
+			case Manual.JAVA_RUNTIME_EXCEPTION, Manual.JAVA_EXCEPTION, "java.lang.IllegalStateException",
+					"java.lang.UnsupportedOperationException" -> "jrt.RuntimeException";
+			case Manual.JAVA_ERROR, Manual.JAVA_THROWABLE, "java.lang.AssertionError" -> "jrt.JavaError";
 			default -> null;
 		};
 		if (goType == null) return null;
@@ -335,6 +337,8 @@ final class InvocationEmitter {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
 			}
+			// BufferedInputStream only adds buffering: the wrapped stream is the value.
+			if (qualified.equals("java.io.BufferedInputStream") && n == 1) return emitter.expr((Expression) cic.arguments().get(0));
 			// new String(String) is a copy; Go strings are values.
 			if (qualified.equals("java.lang.String") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.String")) {
 				return emitter.expr((Expression) cic.arguments().get(0));
@@ -351,7 +355,7 @@ final class InvocationEmitter {
 				}
 				emitter.addManualImport(qualified);
 				List<String> manualArgs = buildArgs(cic.arguments(), ctor);
-				return Manual.ctorFuncName(qualified) + "(" + String.join(", ", manualArgs) + ")";
+				return emitter.qualifyManual(Manual.ctorFuncName(qualified), declaring) + "(" + String.join(", ", manualArgs) + ")";
 			}
 			emitter.unsupported.add("ClassInstanceCreation: unresolved type " + declaring.getQualifiedName());
 			return usingArgs(emitter.panicClosure(cic, "unresolved new " + declaring.getName()), buildArgs(cic.arguments(), ctor));

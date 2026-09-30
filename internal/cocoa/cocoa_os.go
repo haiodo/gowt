@@ -5,6 +5,7 @@ package cocoa
 import (
 	"fmt"
 	"github.com/ebitengine/purego"
+	"github.com/haiodo/gowt/internal/jrt"
 	"os"
 	"runtime"
 	"sync"
@@ -8854,7 +8855,7 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSIS_X86_64:", r)
 			}
 		}()
-		OSIS_X86_64 = ("" == "x86_64")
+		OSIS_X86_64 = (jrt.GetProperty("os.arch", "") == "x86_64")
 	}()
 	func() {
 		defer func() {

@@ -207,7 +207,13 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	gcSrc.FillRectangle(2, 2, srcSize-4, srcSize-4)
 	gcSrc.Dispose()
 	var bounds *swt.Rectangle = image.GetBounds()
-	var canvas *swt.Canvas = func() *swt.Canvas { _ = []any{shell}; panic("j2go: unsupported AnonymousClass") }()
+	anon15 := &Test_org_eclipse_swt_graphics_GCAnon1{}
+	anon15.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(shell), swt.NONE)
+	anon15.SetImpl_(anon15)
+	anon15.fnIsAutoScalable = func() bool {
+		return false
+	}
+	var canvas *swt.Canvas = anon15.Canvas
 	var canvasWidth int32 = int32(math.Floor(float64(float32(bounds.Width)*targetScale) + 0.5))
 	var canvasHeight int32 = int32(math.Floor(float64(float32(bounds.Height)*targetScale) + 0.5))
 	canvas.SetSize(canvasWidth, canvasHeight)
@@ -1068,11 +1074,11 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_noMemoryLeakAfterDispose() {
 		testGC.DrawImage(image, 0, 0)
 		testGC.DrawText("Test", 0, 0)
 		testGC.DrawLine(0, 0, 5, 5)
-		var testGCReference any = func() any { _ = []any{testGC}; panic("j2go: unresolved new WeakReference<GC>") }()
+		var testGCReference *jrt.WeakReference = jrt.NewWeakReference(testGC)
 		testGC.Dispose()
 		testGC = nil
-		func() any { panic("j2go: unresolved call gc") }()
-		junit.AssertNull(func() *swt.GC { _ = []any{testGCReference}; panic("j2go: unresolved call get") }())
+		jrt.GC()
+		junit.AssertNull(testGCReference.Get())
 	}
 }
 
@@ -1253,6 +1259,16 @@ func (this *Test_org_eclipse_swt_graphics_GC_TestImages) Dispose() {
 	this.normal.Dispose()
 	this.transparent.Dispose()
 	this.alpha.Dispose()
+}
+
+// j2go: anonymous Canvas subclass.
+type Test_org_eclipse_swt_graphics_GCAnon1 struct {
+	*swt.Canvas
+	fnIsAutoScalable func() bool
+}
+
+func (this *Test_org_eclipse_swt_graphics_GCAnon1) IsAutoScalable() bool {
+	return this.fnIsAutoScalable()
 }
 
 // j2go: func adapter for ImageDataAtSizeProvider.

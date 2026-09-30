@@ -36,11 +36,11 @@ func (this *StackLayout) initStackLayout() {
 	this.MarginHeight = 0
 }
 
-func (this *StackLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *StackLayout) ComputeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var maxWidth int32 = 0
 	var maxHeight int32 = 0
 	for _, element := range composite.GetChildren() {
-		var size *Point = element.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
+		var size *Point = element.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 		maxWidth = int32(math.Max(float64(size.X), float64(maxWidth)))
 		maxHeight = int32(math.Max(float64(size.Y), float64(maxHeight)))
 	}
@@ -55,19 +55,19 @@ func (this *StackLayout) computeSize_(composite *Composite, wHint int32, hHint i
 	return NewPoint(width, height)
 }
 
-func (this *StackLayout) flushCache_(control *Control) bool {
+func (this *StackLayout) FlushCache_(control *Control) bool {
 	return true
 }
 
-func (this *StackLayout) layoutFn_(composite *Composite, flushCache bool) {
-	var rect *Rectangle = composite.impl.getClientArea_()
+func (this *StackLayout) LayoutFn_(composite *Composite, flushCache bool) {
+	var rect *Rectangle = composite.impl.GetClientArea_()
 	rect.X += this.MarginWidth
 	rect.Y += this.MarginHeight
 	rect.Width -= 2 * this.MarginWidth
 	rect.Height -= 2 * this.MarginHeight
 	for _, element := range composite.GetChildren() {
 		element.SetBoundsRect(rect)
-		element.impl.setVisible_(element == this.TopControl)
+		element.impl.SetVisible_(element == this.TopControl)
 	}
 }
 

@@ -138,6 +138,10 @@ public class Manual {
 		// Round 12: the in-memory streams the ImageLoader tests save to and load from.
 		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
 		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
+		// Round 13: java.util.concurrent.atomic cells the widget tests capture from listeners.
+		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicReference"}) {
+			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
+		}
 		// Round 10: ControlExample keeps a ShellTab field, but ShellTab is not translated yet -
 		// an opaque stub in examples/controlexample/controlexample_manual.go.
 		reg(CONTROL_EXAMPLE_PKG + "ShellTab", "ShellTab", null, false);
@@ -162,6 +166,17 @@ public class Manual {
 			// catch one, so the few selectors SWT relies on that for avoid the throw instead
 			// (internal/cocoa/nsexception_manual.go).
 			Map.entry(COCOA_PKG + "NSColor#colorSpace()", "ColorSpace"),
+			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).
+			Map.entry(COCOA_PKG + "OS#NSIntersectionRect(" + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect)",
+					"OSNSIntersectionRect"),
+			Map.entry(COCOA_PKG + "OS#CGDisplayBounds(I," + COCOA_PKG + "CGRect)", "OSCGDisplayBounds"),
+			Map.entry(COCOA_PKG + "OS#PtInRgn([S,J)", "OSPtInRgn"),
+			// An out-of-range index (-1: nothing selected) throws NSRangeException, which os.c swallows.
+			Map.entry(COCOA_PKG + "NSComboBox#selectItemAtIndex(J)", "SelectItemAtIndex"),
+			Map.entry(COCOA_PKG + "NSComboBox#itemObjectValueAtIndex(J)", "ItemObjectValueAtIndex"),
+			Map.entry("java.lang.Thread#sleep(J)", "jrt.Sleep"),
+			Map.entry("java.lang.Thread#interrupted()", "jrt.Interrupted"),
+			Map.entry("java.lang.Thread#yield()", "jrt.Yield"),
 			// os.c's `((void (*)())proc)(id, sel)`: a call through a C function pointer.
 			Map.entry(COCOA_PKG + "OS#call(J,J,J)", "OSCall"),
 			// A fixed "return YES" IMP in os_custom.c, no Java/Go call (callback_manual.go).
@@ -170,6 +185,9 @@ public class Manual {
 			// match that, so it checks the Go package instead (swt/widgets_stubs3_manual.go).
 			Map.entry("org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)", "DisplayIsValidClass"),
 			Map.entry("java.lang.Thread#currentThread()", "ThreadCurrentThread"),
+			Map.entry("java.lang.System#currentTimeMillis()", "jrt.CurrentTimeMillis"),
+			// Eclipse's test harness screenshot helper: nothing to capture in cmd/swttest.
+			Map.entry("org.eclipse.test.Screenshots#takeScreenshot(java.lang.Class,java.lang.String)", "jrt.TakeScreenshot"),
 			// Round 9 images: loadByZoom's HiDPI @2x-variant dispatch (Stream/Optional/
 			// ElementAtZoom<T>, no translator rule) is out of scope; NativeImageLoader.save's own
 			// caller (ImageLoader.save) is plain, but NativeImageLoader itself was never translated

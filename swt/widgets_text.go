@@ -712,9 +712,11 @@ func (this *Text) GetLineCount() int32 {
 	var string_ *cocoa.NSString = storage.String()
 	var length int64 = string_.Length()
 	var c int64
-	cond188 := int64(string_.CharacterAtIndex(length - 1))
-	c = cond188
-	if length == 0 || (cond188) == int64(int32('\u000a')) || c == int64(int32('\u000d')) {
+	if length == 0 || func() bool {
+		cond188 := int64(string_.CharacterAtIndex(length - 1))
+		c = cond188
+		return (cond188) == int64(int32('\u000a'))
+	}() || c == int64(int32('\u000d')) {
 		count++
 	}
 	return count

@@ -165,7 +165,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if width > DEFAULT && width < size.X && wrap {
 				var cond94 int32
-				if child.GetLayoutData() == (nil) {
+				if jrt.IsNil(child.GetLayoutData()) {
 					cond94 = DEFAULT
 				} else {
 					cond94 = (castanyToRowData(child.GetLayoutData())).Height
@@ -200,7 +200,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if width > DEFAULT && width < size.X && wrap {
 				var cond95 int32
-				if child.GetLayoutData() == (nil) {
+				if jrt.IsNil(child.GetLayoutData()) {
 					cond95 = DEFAULT
 				} else {
 					cond95 = (castanyToRowData(child.GetLayoutData())).Height
@@ -328,7 +328,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if height > DEFAULT && height < size.Y && wrap {
 				var cond97 int32
-				if child.GetLayoutData() == (nil) {
+				if jrt.IsNil(child.GetLayoutData()) {
 					cond97 = DEFAULT
 				} else {
 					cond97 = (castanyToRowData(child.GetLayoutData())).Width
@@ -363,7 +363,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if height > DEFAULT && height < size.Y && wrap {
 				var cond98 int32
-				if child.GetLayoutData() == (nil) {
+				if jrt.IsNil(child.GetLayoutData()) {
 					cond98 = DEFAULT
 				} else {
 					cond98 = (castanyToRowData(child.GetLayoutData())).Width

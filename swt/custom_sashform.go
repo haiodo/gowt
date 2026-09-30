@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type SashForm struct {
 	Composite
 	SASH_WIDTH   int32
@@ -175,14 +179,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		_, ok199 := sashFormDataImplAsSashFormData(data1)
-		if data1 == (nil) || !(ok199) {
+		if jrt.IsNil(data1) || func() bool { _, ok199 := sashFormDataImplAsSashFormData(data1); return !(ok199) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		_, ok200 := sashFormDataImplAsSashFormData(data2)
-		if data2 == (nil) || !(ok200) {
+		if jrt.IsNil(data2) || func() bool { _, ok200 := sashFormDataImplAsSashFormData(data2); return !(ok200) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -210,14 +212,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		_, ok201 := sashFormDataImplAsSashFormData(data1)
-		if data1 == (nil) || !(ok201) {
+		if jrt.IsNil(data1) || func() bool { _, ok201 := sashFormDataImplAsSashFormData(data1); return !(ok201) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		_, ok202 := sashFormDataImplAsSashFormData(data2)
-		if data2 == (nil) || !(ok202) {
+		if jrt.IsNil(data2) || func() bool { _, ok202 := sashFormDataImplAsSashFormData(data2); return !(ok202) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -337,8 +337,7 @@ func (this *SashForm) SetWeights(weights []int32) {
 	}
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		_, ok204 := sashFormDataImplAsSashFormData(data)
-		if data == (nil) || !(ok204) {
+		if jrt.IsNil(data) || func() bool { _, ok204 := sashFormDataImplAsSashFormData(data); return !(ok204) }() {
 			data = newSashFormData()
 			cArray[i].SetLayoutData(data)
 		}

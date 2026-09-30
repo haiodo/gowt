@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type TextStyle struct {
 	Font           *Font
 	Foreground     *Color
@@ -103,7 +107,7 @@ func (this *TextStyle) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	if object == (nil) {
+	if jrt.IsNil(object) {
 		return false
 	}
 	style, ok515 := textStyleImplAsTextStyle(object)
@@ -191,12 +195,12 @@ func (this *TextStyle) Equals(object any) bool {
 			return false
 		}
 	}
-	if this.Data != (nil) {
+	if !jrt.IsNil(this.Data) {
 		if !(this.Data == style.Data) {
 			return false
 		}
 	} else {
-		if style.Data != (nil) {
+		if !jrt.IsNil(style.Data) {
 			return false
 		}
 	}

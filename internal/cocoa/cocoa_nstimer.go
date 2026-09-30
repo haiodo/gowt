@@ -44,45 +44,45 @@ func (this *NSTimer) Invalidate() {
 }
 
 func (this *NSTimer) SetFireDate(fireDate *NSDate) {
-	var cond791 int64
+	var cond790 int64
 	if fireDate != (nil) {
-		cond791 = fireDate.Id
+		cond790 = fireDate.Id
 	} else {
-		cond791 = int64(0)
+		cond790 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFireDate_, cond791)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFireDate_, cond790)
 }
 
 func (this *NSTimer) UserInfo() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond792 *id
+	var cond791 *id
 	if result != 0 {
-		cond792 = NewidOverload1(result)
+		cond791 = NewidOverload1(result)
 	} else {
-		cond792 = nil
+		cond791 = nil
 	}
-	return cond792
+	return cond791
 }
 
 func NSTimerScheduledTimerWithTimeInterval(ti float64, aTarget *id, aSelector int64, userInfo *id, yesOrNo bool) *NSTimer {
-	var cond793 int64
+	var cond792 int64
 	if aTarget != (nil) {
-		cond793 = aTarget.Id
+		cond792 = aTarget.Id
+	} else {
+		cond792 = int64(0)
+	}
+	var cond793 int64
+	if userInfo != (nil) {
+		cond793 = userInfo.Id
 	} else {
 		cond793 = int64(0)
 	}
-	var cond794 int64
-	if userInfo != (nil) {
-		cond794 = userInfo.Id
-	} else {
-		cond794 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload38(OSClass_NSTimer, OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_, ti, cond793, aSelector, cond794, yesOrNo)
-	var cond795 *NSTimer
+	var result int64 = OSObjc_msgSendOverload38(OSClass_NSTimer, OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_, ti, cond792, aSelector, cond793, yesOrNo)
+	var cond794 *NSTimer
 	if result != 0 {
-		cond795 = NewNSTimerOverload1(result)
+		cond794 = NewNSTimerOverload1(result)
 	} else {
-		cond795 = nil
+		cond794 = nil
 	}
-	return cond795
+	return cond794
 }

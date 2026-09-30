@@ -77,7 +77,7 @@ func ImageTestUtilAssertImagesEqualExpectedActual(expected []*swt.ImageData, act
 	junit.AssertNotNull(expected)
 	junit.AssertNotNull(actual)
 	junit.AssertEquals(int32(int32(len(expected))), int32(int32(len(actual))), "Different number of frames.")
-	var formatMsg any = func() any { panic("j2go: unsupported LambdaExpression") }()
+	var formatMsg any = func() any { _ = []any{expected}; panic("j2go: unsupported LambdaExpression") }()
 	for i := int32(0); i < int32(len(expected)); i++ {
 		junit.AssertEquals(int32(expected[i].Width), int32(actual[i].Width), func() string { _ = []any{formatMsg, "Different width", i}; panic("j2go: unresolved call apply") }())
 		junit.AssertEquals(int32(expected[i].Height), int32(actual[i].Height), func() string { _ = []any{formatMsg, "Different height", i}; panic("j2go: unresolved call apply") }())

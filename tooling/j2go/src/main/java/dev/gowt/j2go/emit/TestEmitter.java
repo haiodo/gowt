@@ -77,7 +77,7 @@ final class TestEmitter {
 			Set<String> anns = annotationNames(mb.getAnnotations());
 			String call = Modifier.isStatic(mb.getModifiers())
 					? emitter.staticMethodGoName(mb, emitter.model.lookup(mb.getDeclaringClass())) + "()"
-					: emitter.instanceCall(recv, mb, List.of());
+					: emitter.instanceCall(recv, mb, nilArgs(mb));
 			if (anns.contains(API + "BeforeEach")) beforeEach.add("func(t any) { " + call + " }");
 			if (anns.contains(API + "AfterEach")) afterEach.add(0, "func(t any) { " + call + " }");
 			if (anns.contains(API + "BeforeAll")) beforeAll.add("func() { " + call + " }");
@@ -99,6 +99,11 @@ final class TestEmitter {
 		return b.toString();
 	}
 
+	// A hook's injected parameter (TestInfo) is nil: the runner has no JUnit context to give.
+	private static List<String> nilArgs(IMethodBinding mb) {
+		return Collections.nCopies(mb.getParameterTypes().length, "nil");
+	}
+
 	private static void appendList(StringBuilder b, String field, String type, List<String> items) {
 		if (items.isEmpty()) return;
 		b.append("\t\t").append(field).append(": []").append(type).append("{\n");
@@ -117,7 +122,9 @@ final class TestEmitter {
 		long timeout = timeoutNanos(mb.getAnnotations());
 		if (timeout > 0) common.append(", Timeout: ").append(timeout);
 		String skip = skipReason(cls, mb, anns);
-		if (skip != null) return List.of("{Name: " + EmitUtil.goStringLiteral(name) + common + ", Skip: " + skip + "}");
+		// junit.SkipIfEnv is decided at run time: the test still needs its Run.
+		if (skip != null && !skip.startsWith("junit.")) return List.of("{Name: " + EmitUtil.goStringLiteral(name) + common + ", Skip: " + skip + "}");
+		if (skip != null) common.append(", Skip: ").append(skip);
 		int params = mb.getParameterTypes().length;
 		if (!anns.contains(PARAMS + "ParameterizedTest")) {
 			if (params > 0) return List.of(skipped(name, common, "parameter injection not supported"));

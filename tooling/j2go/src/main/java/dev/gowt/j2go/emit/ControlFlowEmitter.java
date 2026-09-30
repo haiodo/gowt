@@ -107,7 +107,11 @@ final class ControlFlowEmitter {
 				}
 				b.append(ind(indent)).append("case ").append(String.join(", ", labels)).append(":\n");
 			}
-			for (Statement st : body) b.append(emitter.stmt(st, indent + 1));
+			for (Statement st : body) {
+				// `case X -> call();` in a switch statement is an implicit yield of the expression.
+				if (st instanceof YieldStatement ys && ys.isImplicit()) b.append(emitter.exprStatement(ys.getExpression(), indent + 1));
+				else b.append(emitter.stmt(st, indent + 1));
+			}
 			// Java's case falls through by default, Go's does not - add an explicit fallthrough
 			// unless the body exits, or this is the last group (Go rejects a trailing one).
 			if (!isArrow && !isLastGroup && !bodyExits(body)) {

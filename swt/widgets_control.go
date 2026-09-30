@@ -1021,12 +1021,11 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	_ = focusControl
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
-	for {
+	for control != upcastShellToControl(shell) && func() bool {
 		cond66 := upcastCompositeToControl(control.parent)
 		control = cond66
-		if !(control != upcastShellToControl(shell) && (cond66) != (nil)) {
-			break
-		}
+		return (cond66) != (nil)
+	}() {
 		if control.impl.setFocus_() {
 			return
 		}
@@ -1769,11 +1768,7 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for {
-		_, ok72 := isControlToShell(control)
-		if !(control != (nil) && control != this && !(ok72)) {
-			break
-		}
+	for control != (nil) && control != this && func() bool { _, ok72 := isControlToShell(control); return !(ok72) }() {
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this

@@ -48,18 +48,18 @@ func (this *WebFrameView) PrintDocumentView() {
 }
 
 func (this *WebFrameView) PrintOperationWithPrintInfo(printInfo *NSPrintInfo) *NSPrintOperation {
-	var cond965 int64
+	var cond964 int64
 	if printInfo != (nil) {
-		cond965 = printInfo.Id
+		cond964 = printInfo.Id
 	} else {
-		cond965 = int64(0)
+		cond964 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_printOperationWithPrintInfo_, cond965)
-	var cond966 *NSPrintOperation
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_printOperationWithPrintInfo_, cond964)
+	var cond965 *NSPrintOperation
 	if result != 0 {
-		cond966 = NewNSPrintOperationOverload1(result)
+		cond965 = NewNSPrintOperationOverload1(result)
 	} else {
-		cond966 = nil
+		cond965 = nil
 	}
-	return cond966
+	return cond965
 }

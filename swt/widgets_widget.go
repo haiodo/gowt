@@ -1241,7 +1241,7 @@ func (this *Widget) AddListener(eventType int32, listener Listener) {
 
 func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	this.CheckWidget()
-	if listener == (nil) {
+	if jrt.IsNil(listener) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
@@ -2418,7 +2418,7 @@ func (this *Widget) RemoveListenerOverload2(eventType int32, listener any) {
 
 func (this *Widget) RemoveTypedListener(eventType int32, listener any) {
 	this.CheckWidget()
-	if listener == (nil) {
+	if jrt.IsNil(listener) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.eventTable == (nil) {
@@ -2671,7 +2671,7 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 			index += 2
 		}
 	}
-	if value != (nil) {
+	if !jrt.IsNil(value) {
 		if (this.state & WidgetKEYED_DATA) != 0 {
 			if index == int32(len(table)) {
 				var newTable []any = make([]any, int32(len(table))+2)

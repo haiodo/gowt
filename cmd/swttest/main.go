@@ -24,11 +24,15 @@ import (
 func init() { runtime.LockOSThread() }
 
 var (
-	runFlag     = flag.String("run", "", "only tests whose Class.method matches this regexp")
-	tagFlag     = flag.String("tag", "", "comma-separated tags: a test must have one of them; !tag excludes")
-	timeoutFlag = flag.Duration("timeout", 30*time.Second, "per-test timeout; a hung test aborts the run")
-	jsonFlag    = flag.Bool("json", false, "emit go test -json compatible events")
-	listFlag    = flag.Bool("list", false, "list the matching tests and exit")
+	runFlag      = flag.String("run", "", "only tests whose Class.method matches this regexp")
+	tagFlag      = flag.String("tag", "", "comma-separated tags: a test must have one of them; !tag excludes")
+	timeoutFlag  = flag.Duration("timeout", 30*time.Second, "per-test timeout; a hung test aborts the run")
+	jsonFlag     = flag.Bool("json", false, "emit go test -json compatible events")
+	listFlag     = flag.Bool("list", false, "list the matching tests and exit")
+	childFlag    = flag.Bool("child", false, "run in this process (a crash ends the run); default supervises a child and resumes after a crash")
+	expectedFlag = flag.String("expected", "", "compare the run with this expected-results file; exit 1 on a regression or an undescribed failure")
+	updateFlag   = flag.String("update", "", "rewrite this expected-results file from a full run")
+	skipFlag     = flag.Int("skip", 0, "with -child: skip the first N matching tests")
 )
 
 const pkg = "github.com/haiodo/gowt/tests/swttests"
@@ -41,6 +45,10 @@ type result struct {
 
 func main() {
 	flag.Parse()
+	if !*childFlag && !*listFlag {
+		supervise()
+		return
+	}
 	var runRe *regexp.Regexp
 	if *runFlag != "" {
 		runRe = regexp.MustCompile(*runFlag)
@@ -48,11 +56,15 @@ func main() {
 	display := swt.NewDisplay()
 	var passed, failed, skipped int
 	start := time.Now()
+	index := 0
 	for _, c := range junit.Classes {
 		var tests []junit.Test
 		for _, t := range c.Tests {
 			if (runRe == nil || runRe.MatchString(c.Name+"."+t.Name)) && tagsMatch(t.Tags) {
-				tests = append(tests, t)
+				index++
+				if index > *skipFlag {
+					tests = append(tests, t)
+				}
 			}
 		}
 		if len(tests) == 0 {
@@ -68,12 +80,18 @@ func main() {
 			fn()
 		}
 		for _, t := range tests {
-			if display.IsDisposed() {
+			// The Display tests create their own: a second live Display is ERROR_NOT_IMPLEMENTED.
+			if strings.HasSuffix(c.Name, "_widgets_Display") {
+				disposeCurrent()
+			} else if display.IsDisposed() {
 				display = swt.NewDisplay()
 			}
 			name := c.Name + "." + t.Name
 			event("run", name, 0, "")
 			r := runTest(c, t, name)
+			if strings.HasSuffix(c.Name, "_widgets_Display") {
+				disposeCurrent() // a failed test leaves its own Display alive
+			}
 			report(name, r)
 			switch r.status {
 			case "PASS":
@@ -91,6 +109,10 @@ func main() {
 	if *listFlag {
 		return
 	}
+	summarize(passed, failed, skipped, start)
+}
+
+func summarize(passed, failed, skipped int, start time.Time) {
 	summary := fmt.Sprintf("%d passed, %d failed, %d skipped, %d total in %.1fs", passed, failed, skipped,
 		passed+failed+skipped, time.Since(start).Seconds())
 	if *jsonFlag {
@@ -102,6 +124,14 @@ func main() {
 		event(action, "", time.Since(start), "")
 	} else {
 		fmt.Println(summary)
+	}
+}
+
+// disposeCurrent disposes the Display of this thread, if any.
+func disposeCurrent() {
+	defer func() { _ = recover() }()
+	if d := swt.DisplayGetCurrent(); d != nil && !d.IsDisposed() {
+		d.Dispose()
 	}
 }
 
@@ -167,6 +197,9 @@ func step(fn func()) (res result) {
 
 // panicSite is the first stack frame outside the runtime, the junit shim and this runner.
 func panicSite(assertion bool) string {
+	if os.Getenv("SWTTEST_STACK") != "" {
+		return string(debug.Stack())
+	}
 	for _, line := range strings.Split(string(debug.Stack()), "\n") {
 		line = strings.TrimSpace(line)
 		if !strings.Contains(line, ".go:") || strings.Contains(line, "/runtime/") ||

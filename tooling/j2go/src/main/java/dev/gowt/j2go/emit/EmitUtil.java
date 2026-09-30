@@ -28,8 +28,15 @@ final class EmitUtil {
 	/** A decoded Java string literal can contain a raw newline/tab (from a source "\n"/"\t"
 	 * escape) - Go's interpreted string literal needs those escaped too, not just \ and ". */
 	static String escapeGoQuoted(String s) {
-		return s.replace("\\", "\\\\").replace("\"", "\\\"")
+		String q = s.replace("\\", "\\\\").replace("\"", "\\\"")
 				.replace("\n", "\\n").replace("\t", "\\t").replace("\r", "\\r");
+		// Other control characters (\0, \b) would land raw in the Go source; NUL is illegal there.
+		StringBuilder sb = new StringBuilder(q.length());
+		for (char c : q.toCharArray()) {
+			if (c < 0x20 || c == 0x7f) sb.append(String.format("\\u%04x", (int) c));
+			else sb.append(c);
+		}
+		return sb.toString();
 	}
 
 	static String escapeForFormat(String s) {
@@ -154,5 +161,29 @@ final class EmitUtil {
 			}
 		});
 		return !read[0];
+	}
+
+	/** A right operand of &&/|| runs only when reached: prelude lines it needs (an inline
+	 * assignment) go inside a closure, not before the whole condition. */
+	static String lazyOperand(Emitter emitter, Expression e, String goOp) {
+		if (!goOp.equals("&&") && !goOp.equals("||")) return emitter.expr(e);
+		List<String> saved = emitter.prelude;
+		emitter.prelude = new java.util.ArrayList<>();
+		String text = emitter.expr(e);
+		List<String> own = emitter.prelude;
+		emitter.prelude = saved;
+		return own.isEmpty() ? text : "func() bool { " + String.join("; ", own) + "; return " + text + " }()";
+	}
+
+	/** `x == null` on an Object (Go any): a typed nil pointer inside the interface is null too,
+	 * `== nil` misses it. Null when ie is not such a comparison. */
+	static String anyNullCompare(Emitter emitter, InfixExpression ie, String left, String right) {
+		InfixExpression.Operator op = ie.getOperator();
+		if ((op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) || !ie.extendedOperands().isEmpty()
+				|| !(right.equals("nil") ^ left.equals("nil"))) return null;
+		ITypeBinding t = (right.equals("nil") ? ie.getLeftOperand() : ie.getRightOperand()).resolveTypeBinding();
+		if (t == null || t.isNullType() || !dev.gowt.j2go.GoTypes.map(t, emitter).equals("any")) return null;
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		return (op == InfixExpression.Operator.NOT_EQUALS ? "!" : "") + "jrt.IsNil(" + (right.equals("nil") ? left : right) + ")";
 	}
 }

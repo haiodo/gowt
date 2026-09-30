@@ -71,17 +71,6 @@ func (this *NSComboBox) ItemHeight() float64 {
 	return OSObjc_msgSend_fpret(this.Id, OSSel_itemHeight)
 }
 
-func (this *NSComboBox) ItemObjectValueAtIndex(index int64) *id {
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemObjectValueAtIndex_, index)
-	var cond196 *id
-	if result != 0 {
-		cond196 = NewidOverload1(result)
-	} else {
-		cond196 = nil
-	}
-	return cond196
-}
-
 func (this *NSComboBox) NumberOfItems() int64 {
 	return OSObjc_msgSend(this.Id, OSSel_numberOfItems)
 }
@@ -96,10 +85,6 @@ func (this *NSComboBox) RemoveAllItems() {
 
 func (this *NSComboBox) RemoveItemAtIndex(index int64) {
 	OSObjc_msgSendOverload44(this.Id, OSSel_removeItemAtIndex_, index)
-}
-
-func (this *NSComboBox) SelectItemAtIndex(index int64) {
-	OSObjc_msgSendOverload44(this.Id, OSSel_selectItemAtIndex_, index)
 }
 
 func (this *NSComboBox) SetNumberOfVisibleItems(numberOfVisibleItems int64) {

@@ -279,7 +279,9 @@ final class ClassEmitter {
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
 			ITypeBinding type = f.resolveBinding() != null ? f.resolveBinding().getType() : fd.getType().resolveBinding();
-			boolean maybeConst = isFinal && (type.isPrimitive() || type.getQualifiedName().equals("java.lang.String"));
+			// Only a compile-time constant is a Go const: `static final boolean X = Util.flag` is not.
+			boolean maybeConst = isFinal && (type.isPrimitive() || type.getQualifiedName().equals("java.lang.String"))
+					&& (f.getInitializer() == null || f.getInitializer().resolveConstantExpressionValue() != null);
 			String javaName = f.getName().getIdentifier();
 			if (javaName.equals("serialVersionUID")) continue;
 			if (Manual.isSkippedField(ci.binding.getErasure().getQualifiedName(), javaName)) continue;

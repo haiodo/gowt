@@ -104,11 +104,7 @@ func (this *ScrolledComposite) Contains(controlLike ControlLike) bool {
 		return false
 	}
 	var parent *Composite = control.GetParent()
-	for {
-		_, ok597 := isCompositeToShell(parent)
-		if !(parent != (nil) && !(ok597)) {
-			break
-		}
+	for parent != (nil) && func() bool { _, ok597 := isCompositeToShell(parent); return !(ok597) }() {
 		if upcastScrolledCompositeToComposite(this) == parent {
 			return true
 		}

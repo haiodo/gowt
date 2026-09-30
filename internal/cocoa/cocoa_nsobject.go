@@ -45,63 +45,63 @@ func (this *NSObject) Alloc() *NSObject {
 }
 
 func (this *NSObject) AccessibilityAttributeValue(attribute *NSString, parameter *id) *id {
-	var cond472 int64
+	var cond471 int64
 	if attribute != (nil) {
-		cond472 = attribute.Id
+		cond471 = attribute.Id
+	} else {
+		cond471 = int64(0)
+	}
+	var cond472 int64
+	if parameter != (nil) {
+		cond472 = parameter.Id
 	} else {
 		cond472 = int64(0)
 	}
-	var cond473 int64
-	if parameter != (nil) {
-		cond473 = parameter.Id
-	} else {
-		cond473 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_accessibilityAttributeValue_forParameter_, cond472, cond473)
-	var cond474 *id
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_accessibilityAttributeValue_forParameter_, cond471, cond472)
+	var cond473 *id
 	if result != 0 {
-		cond474 = NewidOverload1(result)
+		cond473 = NewidOverload1(result)
 	} else {
-		cond474 = nil
+		cond473 = nil
 	}
-	return cond474
+	return cond473
 }
 
 func (this *NSObject) AccessibilitySetOverrideValue(value *id, attribute *NSString) bool {
-	var cond475 int64
+	var cond474 int64
 	if value != (nil) {
-		cond475 = value.Id
+		cond474 = value.Id
+	} else {
+		cond474 = int64(0)
+	}
+	var cond475 int64
+	if attribute != (nil) {
+		cond475 = attribute.Id
 	} else {
 		cond475 = int64(0)
 	}
-	var cond476 int64
-	if attribute != (nil) {
-		cond476 = attribute.Id
-	} else {
-		cond476 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_accessibilitySetOverrideValue_forAttribute_, cond475, cond476)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_accessibilitySetOverrideValue_forAttribute_, cond474, cond475)
 }
 
 func (this *NSObject) DraggedImage(image *NSImage, screenPoint NSPoint, operation int64) {
-	var cond477 int64
+	var cond476 int64
 	if image != (nil) {
-		cond477 = image.Id
+		cond476 = image.Id
 	} else {
-		cond477 = int64(0)
+		cond476 = int64(0)
 	}
-	OSObjc_msgSendOverload47(this.Id, OSSel_draggedImage_endedAt_operation_, cond477, screenPoint, operation)
+	OSObjc_msgSendOverload47(this.Id, OSSel_draggedImage_endedAt_operation_, cond476, screenPoint, operation)
 }
 
 func (this *NSObject) DraggingDestinationWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_draggingDestinationWindow)
-	var cond478 *NSWindow
+	var cond477 *NSWindow
 	if result != 0 {
-		cond478 = NewNSWindowOverload1(result)
+		cond477 = NewNSWindowOverload1(result)
 	} else {
-		cond478 = nil
+		cond477 = nil
 	}
-	return cond478
+	return cond477
 }
 
 func (this *NSObject) DraggingLocation() NSPoint {
@@ -112,13 +112,13 @@ func (this *NSObject) DraggingLocation() NSPoint {
 
 func (this *NSObject) DraggingPasteboard() *NSPasteboard {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_draggingPasteboard)
-	var cond479 *NSPasteboard
+	var cond478 *NSPasteboard
 	if result != 0 {
-		cond479 = NewNSPasteboardOverload1(result)
+		cond478 = NewNSPasteboardOverload1(result)
 	} else {
-		cond479 = nil
+		cond478 = nil
 	}
-	return cond479
+	return cond478
 }
 
 func (this *NSObject) DraggingSourceOperationMask() int64 {
@@ -126,218 +126,218 @@ func (this *NSObject) DraggingSourceOperationMask() int64 {
 }
 
 func (this *NSObject) OutlineView(outlineView *NSOutlineView, tableColumn *NSTableColumn, item *id) bool {
-	var cond480 int64
+	var cond479 int64
 	if outlineView != (nil) {
-		cond480 = outlineView.Id
+		cond479 = outlineView.Id
+	} else {
+		cond479 = int64(0)
+	}
+	var cond480 int64
+	if tableColumn != (nil) {
+		cond480 = tableColumn.Id
 	} else {
 		cond480 = int64(0)
 	}
 	var cond481 int64
-	if tableColumn != (nil) {
-		cond481 = tableColumn.Id
+	if item != (nil) {
+		cond481 = item.Id
 	} else {
 		cond481 = int64(0)
 	}
-	var cond482 int64
-	if item != (nil) {
-		cond482 = item.Id
-	} else {
-		cond482 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_outlineView_shouldEditTableColumn_item_, cond480, cond481, cond482)
+	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_outlineView_shouldEditTableColumn_item_, cond479, cond480, cond481)
 }
 
 func (this *NSObject) OutlineViewOutlineViewColumnIndexNewColumnIndex(outlineView *NSOutlineView, columnIndex int64, newColumnIndex int64) bool {
+	var cond482 int64
+	if outlineView != (nil) {
+		cond482 = outlineView.Id
+	} else {
+		cond482 = int64(0)
+	}
+	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_outlineView_shouldReorderColumn_toColumn_, cond482, columnIndex, newColumnIndex)
+}
+
+func (this *NSObject) OutlineViewOutlineViewCellTableColumnItem(outlineView *NSOutlineView, cell *NSCell, tableColumn *NSTableColumn, item *id) bool {
 	var cond483 int64
 	if outlineView != (nil) {
 		cond483 = outlineView.Id
 	} else {
 		cond483 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_outlineView_shouldReorderColumn_toColumn_, cond483, columnIndex, newColumnIndex)
-}
-
-func (this *NSObject) OutlineViewOutlineViewCellTableColumnItem(outlineView *NSOutlineView, cell *NSCell, tableColumn *NSTableColumn, item *id) bool {
 	var cond484 int64
-	if outlineView != (nil) {
-		cond484 = outlineView.Id
+	if cell != (nil) {
+		cond484 = cell.Id
 	} else {
 		cond484 = int64(0)
 	}
 	var cond485 int64
-	if cell != (nil) {
-		cond485 = cell.Id
+	if tableColumn != (nil) {
+		cond485 = tableColumn.Id
 	} else {
 		cond485 = int64(0)
 	}
 	var cond486 int64
-	if tableColumn != (nil) {
-		cond486 = tableColumn.Id
+	if item != (nil) {
+		cond486 = item.Id
 	} else {
 		cond486 = int64(0)
 	}
-	var cond487 int64
-	if item != (nil) {
-		cond487 = item.Id
-	} else {
-		cond487 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload10(this.Id, OSSel_outlineView_shouldTrackCell_forTableColumn_item_, cond484, cond485, cond486, cond487)
+	return OSObjc_msgSend_boolOverload10(this.Id, OSSel_outlineView_shouldTrackCell_forTableColumn_item_, cond483, cond484, cond485, cond486)
 }
 
 func (this *NSObject) ReadSelectionFromPasteboard(pboard *NSPasteboard) bool {
-	var cond488 int64
+	var cond487 int64
 	if pboard != (nil) {
-		cond488 = pboard.Id
+		cond487 = pboard.Id
 	} else {
-		cond488 = int64(0)
+		cond487 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_readSelectionFromPasteboard_, cond488)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_readSelectionFromPasteboard_, cond487)
 }
 
 func (this *NSObject) TableView(tableView *NSTableView, columnIndex int64, newColumnIndex int64) bool {
+	var cond488 int64
+	if tableView != (nil) {
+		cond488 = tableView.Id
+	} else {
+		cond488 = int64(0)
+	}
+	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_tableView_shouldReorderColumn_toColumn_, cond488, columnIndex, newColumnIndex)
+}
+
+func (this *NSObject) TableViewTableViewCellTableColumnRow(tableView *NSTableView, cell *NSCell, tableColumn *NSTableColumn, row int64) bool {
 	var cond489 int64
 	if tableView != (nil) {
 		cond489 = tableView.Id
 	} else {
 		cond489 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_tableView_shouldReorderColumn_toColumn_, cond489, columnIndex, newColumnIndex)
-}
-
-func (this *NSObject) TableViewTableViewCellTableColumnRow(tableView *NSTableView, cell *NSCell, tableColumn *NSTableColumn, row int64) bool {
 	var cond490 int64
-	if tableView != (nil) {
-		cond490 = tableView.Id
+	if cell != (nil) {
+		cond490 = cell.Id
 	} else {
 		cond490 = int64(0)
 	}
 	var cond491 int64
-	if cell != (nil) {
-		cond491 = cell.Id
+	if tableColumn != (nil) {
+		cond491 = tableColumn.Id
 	} else {
 		cond491 = int64(0)
 	}
-	var cond492 int64
-	if tableColumn != (nil) {
-		cond492 = tableColumn.Id
-	} else {
-		cond492 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload10(this.Id, OSSel_tableView_shouldTrackCell_forTableColumn_row_, cond490, cond491, cond492, row)
+	return OSObjc_msgSend_boolOverload10(this.Id, OSSel_tableView_shouldTrackCell_forTableColumn_row_, cond489, cond490, cond491, row)
 }
 
 func (this *NSObject) WriteSelectionToPasteboard(pboard *NSPasteboard, types *NSArray) bool {
-	var cond493 int64
+	var cond492 int64
 	if pboard != (nil) {
-		cond493 = pboard.Id
+		cond492 = pboard.Id
+	} else {
+		cond492 = int64(0)
+	}
+	var cond493 int64
+	if types != (nil) {
+		cond493 = types.Id
 	} else {
 		cond493 = int64(0)
 	}
-	var cond494 int64
-	if types != (nil) {
-		cond494 = types.Id
-	} else {
-		cond494 = int64(0)
-	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_writeSelectionToPasteboard_types_, cond493, cond494)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_writeSelectionToPasteboard_types_, cond492, cond493)
 }
 
 func (this *NSObject) Autorelease() *NSObject {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_autorelease)
+	var cond494 *NSObject
 	var cond495 *NSObject
-	var cond496 *NSObject
 	if result != 0 {
-		cond496 = NewNSObjectOverload1(result)
+		cond495 = NewNSObjectOverload1(result)
 	} else {
-		cond496 = nil
+		cond495 = nil
 	}
 	if result == this.Id {
-		cond495 = this
+		cond494 = this
 	} else {
-		cond495 = (cond496)
+		cond494 = (cond495)
 	}
-	return cond495
+	return cond494
 }
 
 func (this *NSObject) CancelAuthenticationChallenge(challenge *NSURLAuthenticationChallenge) {
-	var cond497 int64
+	var cond496 int64
 	if challenge != (nil) {
-		cond497 = challenge.Id
+		cond496 = challenge.Id
 	} else {
-		cond497 = int64(0)
+		cond496 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_cancelAuthenticationChallenge_, cond497)
+	OSObjc_msgSendOverload44(this.Id, OSSel_cancelAuthenticationChallenge_, cond496)
 }
 
 func (this *NSObject) ClassName() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_className)
-	var cond498 *NSString
+	var cond497 *NSString
 	if result != 0 {
-		cond498 = NewNSStringOverload1(result)
+		cond497 = NewNSStringOverload1(result)
 	} else {
-		cond498 = nil
+		cond497 = nil
 	}
-	return cond498
+	return cond497
 }
 
 func (this *NSObject) ConformsToProtocol(aProtocol *Protocol) bool {
-	var cond499 int64
+	var cond498 int64
 	if aProtocol != (nil) {
-		cond499 = aProtocol.Id
+		cond498 = aProtocol.Id
 	} else {
-		cond499 = int64(0)
+		cond498 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_conformsToProtocol_, cond499)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_conformsToProtocol_, cond498)
 }
 
 func (this *NSObject) Copy() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_copy)
-	var cond500 *id
+	var cond499 *id
 	if result != 0 {
-		cond500 = NewidOverload1(result)
+		cond499 = NewidOverload1(result)
+	} else {
+		cond499 = nil
+	}
+	return cond499
+}
+
+func (this *NSObject) Description() *NSString {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_description)
+	var cond500 *NSString
+	if result != 0 {
+		cond500 = NewNSStringOverload1(result)
 	} else {
 		cond500 = nil
 	}
 	return cond500
 }
 
-func (this *NSObject) Description() *NSString {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_description)
-	var cond501 *NSString
+func (this *NSObject) Init() *NSObject {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_init)
+	var cond501 *NSObject
+	var cond502 *NSObject
 	if result != 0 {
-		cond501 = NewNSStringOverload1(result)
+		cond502 = NewNSObjectOverload1(result)
 	} else {
-		cond501 = nil
+		cond502 = nil
+	}
+	if result == this.Id {
+		cond501 = this
+	} else {
+		cond501 = (cond502)
 	}
 	return cond501
 }
 
-func (this *NSObject) Init() *NSObject {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_init)
-	var cond502 *NSObject
-	var cond503 *NSObject
-	if result != 0 {
-		cond503 = NewNSObjectOverload1(result)
-	} else {
-		cond503 = nil
-	}
-	if result == this.Id {
-		cond502 = this
-	} else {
-		cond502 = (cond503)
-	}
-	return cond502
-}
-
 func (this *NSObject) IsEqual(object *id) bool {
-	var cond504 int64
+	var cond503 int64
 	if object != (nil) {
-		cond504 = object.Id
+		cond503 = object.Id
 	} else {
-		cond504 = int64(0)
+		cond503 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isEqual_, cond504)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isEqual_, cond503)
 }
 
 func (this *NSObject) IsKindOfClass(aClass int64) bool {
@@ -346,39 +346,39 @@ func (this *NSObject) IsKindOfClass(aClass int64) bool {
 
 func (this *NSObject) MutableCopy() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mutableCopy)
-	var cond505 *id
+	var cond504 *id
 	if result != 0 {
-		cond505 = NewidOverload1(result)
+		cond504 = NewidOverload1(result)
 	} else {
-		cond505 = nil
+		cond504 = nil
 	}
-	return cond505
+	return cond504
 }
 
 func (this *NSObject) PerformSelector(aSelector int64, anArgument *id, delay float64, modes *NSArray) {
-	var cond506 int64
+	var cond505 int64
 	if anArgument != (nil) {
-		cond506 = anArgument.Id
+		cond505 = anArgument.Id
+	} else {
+		cond505 = int64(0)
+	}
+	var cond506 int64
+	if modes != (nil) {
+		cond506 = modes.Id
 	} else {
 		cond506 = int64(0)
 	}
-	var cond507 int64
-	if modes != (nil) {
-		cond507 = modes.Id
-	} else {
-		cond507 = int64(0)
-	}
-	OSObjc_msgSendOverload57(this.Id, OSSel_performSelector_withObject_afterDelay_inModes_, aSelector, cond506, delay, cond507)
+	OSObjc_msgSendOverload57(this.Id, OSSel_performSelector_withObject_afterDelay_inModes_, aSelector, cond505, delay, cond506)
 }
 
 func (this *NSObject) PerformSelectorOnMainThread(aSelector int64, arg *id, wait bool) {
-	var cond508 int64
+	var cond507 int64
 	if arg != (nil) {
-		cond508 = arg.Id
+		cond507 = arg.Id
 	} else {
-		cond508 = int64(0)
+		cond507 = int64(0)
 	}
-	OSObjc_msgSendOverload56(this.Id, OSSel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, cond508, wait)
+	OSObjc_msgSendOverload56(this.Id, OSSel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, cond507, wait)
 }
 
 func (this *NSObject) Release() {
@@ -391,19 +391,19 @@ func (this *NSObject) RespondsToSelector(aSelector int64) bool {
 
 func (this *NSObject) Retain() *NSObject {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_retain)
+	var cond508 *NSObject
 	var cond509 *NSObject
-	var cond510 *NSObject
 	if result != 0 {
-		cond510 = NewNSObjectOverload1(result)
+		cond509 = NewNSObjectOverload1(result)
 	} else {
-		cond510 = nil
+		cond509 = nil
 	}
 	if result == this.Id {
-		cond509 = this
+		cond508 = this
 	} else {
-		cond509 = (cond510)
+		cond508 = (cond509)
 	}
-	return cond509
+	return cond508
 }
 
 func (this *NSObject) RetainCount() int64 {
@@ -411,19 +411,19 @@ func (this *NSObject) RetainCount() int64 {
 }
 
 func (this *NSObject) SetValueOnNSObject(value *id, key *NSString) {
-	var cond511 int64
+	var cond510 int64
 	if value != (nil) {
-		cond511 = value.Id
+		cond510 = value.Id
+	} else {
+		cond510 = int64(0)
+	}
+	var cond511 int64
+	if key != (nil) {
+		cond511 = key.Id
 	} else {
 		cond511 = int64(0)
 	}
-	var cond512 int64
-	if key != (nil) {
-		cond512 = key.Id
-	} else {
-		cond512 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forKey_, cond511, cond512)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forKey_, cond510, cond511)
 }
 
 func (this *NSObject) Superclass() int64 {
@@ -431,60 +431,60 @@ func (this *NSObject) Superclass() int64 {
 }
 
 func (this *NSObject) UseCredential(credential *NSURLCredential, challenge *NSURLAuthenticationChallenge) {
-	var cond513 int64
+	var cond512 int64
 	if credential != (nil) {
-		cond513 = credential.Id
+		cond512 = credential.Id
+	} else {
+		cond512 = int64(0)
+	}
+	var cond513 int64
+	if challenge != (nil) {
+		cond513 = challenge.Id
 	} else {
 		cond513 = int64(0)
 	}
-	var cond514 int64
-	if challenge != (nil) {
-		cond514 = challenge.Id
-	} else {
-		cond514 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_useCredential_forAuthenticationChallenge_, cond513, cond514)
+	OSObjc_msgSendOverload54(this.Id, OSSel_useCredential_forAuthenticationChallenge_, cond512, cond513)
 }
 
 func (this *NSObject) ValueForKey(key *NSString) *id {
-	var cond515 int64
+	var cond514 int64
 	if key != (nil) {
-		cond515 = key.Id
+		cond514 = key.Id
 	} else {
-		cond515 = int64(0)
+		cond514 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond515)
-	var cond516 *id
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond514)
+	var cond515 *id
 	if result != 0 {
-		cond516 = NewidOverload1(result)
+		cond515 = NewidOverload1(result)
 	} else {
-		cond516 = nil
+		cond515 = nil
 	}
-	return cond516
+	return cond515
 }
 
 func (this *NSObject) AddEventListener(type_ *NSString, listener *id, useCapture bool) {
-	var cond517 int64
+	var cond516 int64
 	if type_ != (nil) {
-		cond517 = type_.Id
+		cond516 = type_.Id
+	} else {
+		cond516 = int64(0)
+	}
+	var cond517 int64
+	if listener != (nil) {
+		cond517 = listener.Id
 	} else {
 		cond517 = int64(0)
 	}
-	var cond518 int64
-	if listener != (nil) {
-		cond518 = listener.Id
-	} else {
-		cond518 = int64(0)
-	}
-	OSObjc_msgSendOverload56(this.Id, OSSel_addEventListener_listener_useCapture_, cond517, cond518, useCapture)
+	OSObjc_msgSendOverload56(this.Id, OSSel_addEventListener_listener_useCapture_, cond516, cond517, useCapture)
 }
 
 func (this *NSObject) HandleEvent(event *DOMEvent) {
-	var cond519 int64
+	var cond518 int64
 	if event != (nil) {
-		cond519 = event.Id
+		cond518 = event.Id
 	} else {
-		cond519 = int64(0)
+		cond518 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_handleEvent_, cond519)
+	OSObjc_msgSendOverload44(this.Id, OSSel_handleEvent_, cond518)
 }

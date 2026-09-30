@@ -513,7 +513,7 @@ func (this *Display) CascadeWindow(window *cocoa.NSWindow, screen *cocoa.NSScree
 }
 
 func (this *Display) checkDevice_() {
-	if this.thread == (nil) {
+	if jrt.IsNil(this.thread) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.thread != ThreadCurrentThread() {
@@ -2608,7 +2608,7 @@ func (this *Display) Post(eventLike EventLike) bool {
 						panic(r)
 					}
 				}()
-				func() any { _ = []any{int64(1)}; panic("j2go: unresolved call sleep") }()
+				jrt.Sleep(int64(1))
 			}()
 			returnValue = true
 		}
@@ -3804,7 +3804,7 @@ func (this *Display) SetData(key string, value any) {
 	}
 	if key == DisplaySET_MODAL_DIALOG {
 		var cond273 *Dialog
-		if value != (nil) {
+		if !jrt.IsNil(value) {
 			cond273 = castanyToDialog(value)
 		} else {
 			cond273 = nil
@@ -3815,11 +3815,11 @@ func (this *Display) SetData(key string, value any) {
 		this.lockCursor = (value.(bool))
 	}
 	if key == DisplayRUN_AWT_INVOKE_LATER_KEY {
-		if value != (nil) {
+		if !jrt.IsNil(value) {
 			value = this.RunAWTInvokeLater()
 		}
 	}
-	if value == (nil) {
+	if jrt.IsNil(value) {
 		if this.keys == (nil) {
 			return
 		}
@@ -5171,12 +5171,7 @@ func DisplayLookupWidget(id int64, sel int64) *Widget {
 	if widget == (nil) {
 		var view *cocoa.NSView = cocoa.NewNSViewOverload1(id)
 		if view.IsKindOfClass(cocoa.OSClass_NSView) {
-			for {
-				cond291 := view.Superview()
-				view = cond291
-				if !(widget == (nil) && (cond291) != (nil)) {
-					break
-				}
+			for widget == (nil) && func() bool { cond291 := view.Superview(); view = cond291; return (cond291) != (nil) }() {
 				widget = DisplayGetWidget(view.Id)
 			}
 		}

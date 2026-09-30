@@ -40,24 +40,24 @@ func (this *NSStatusBar) initNSStatusBarOverload2(id *id) {
 }
 
 func (this *NSStatusBar) RemoveStatusItem(item *NSStatusItem) {
-	var cond669 int64
+	var cond668 int64
 	if item != (nil) {
-		cond669 = item.Id
+		cond668 = item.Id
 	} else {
-		cond669 = int64(0)
+		cond668 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeStatusItem_, cond669)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeStatusItem_, cond668)
 }
 
 func (this *NSStatusBar) StatusItemWithLength(length float64) *NSStatusItem {
 	var result int64 = OSObjc_msgSendOverload35(this.Id, OSSel_statusItemWithLength_, length)
-	var cond670 *NSStatusItem
+	var cond669 *NSStatusItem
 	if result != 0 {
-		cond670 = NewNSStatusItemOverload1(result)
+		cond669 = NewNSStatusItemOverload1(result)
 	} else {
-		cond670 = nil
+		cond669 = nil
 	}
-	return cond670
+	return cond669
 }
 
 func (this *NSStatusBar) Thickness() float64 {
@@ -66,11 +66,11 @@ func (this *NSStatusBar) Thickness() float64 {
 
 func NSStatusBarSystemStatusBar() *NSStatusBar {
 	var result int64 = OSObjc_msgSend(OSClass_NSStatusBar, OSSel_systemStatusBar)
-	var cond671 *NSStatusBar
+	var cond670 *NSStatusBar
 	if result != 0 {
-		cond671 = NewNSStatusBarOverload1(result)
+		cond670 = NewNSStatusBarOverload1(result)
 	} else {
-		cond671 = nil
+		cond670 = nil
 	}
-	return cond671
+	return cond670
 }

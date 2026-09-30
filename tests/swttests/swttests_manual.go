@@ -20,3 +20,6 @@ var _ = func() bool {
 	jrt.RegisterResources(sub)
 	return true
 }()
+
+// Thread.currentThread() in a test: JdkIntrinsics emits the bare swt name (no package prefix).
+func ThreadCurrentThread() any { return jrt.CurrentThread() }

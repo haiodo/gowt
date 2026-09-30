@@ -40,29 +40,29 @@ func (this *NSMutableAttributedString) initNSMutableAttributedStringOverload2(id
 }
 
 func (this *NSMutableAttributedString) AddAttribute(name *NSString, value *id, range_ NSRange) {
-	var cond419 int64
+	var cond418 int64
 	if name != (nil) {
-		cond419 = name.Id
+		cond418 = name.Id
+	} else {
+		cond418 = int64(0)
+	}
+	var cond419 int64
+	if value != (nil) {
+		cond419 = value.Id
 	} else {
 		cond419 = int64(0)
 	}
-	var cond420 int64
-	if value != (nil) {
-		cond420 = value.Id
-	} else {
-		cond420 = int64(0)
-	}
-	OSObjc_msgSendOverload55(this.Id, OSSel_addAttribute_value_range_, cond419, cond420, range_)
+	OSObjc_msgSendOverload55(this.Id, OSSel_addAttribute_value_range_, cond418, cond419, range_)
 }
 
 func (this *NSMutableAttributedString) AppendAttributedString(attrString *NSAttributedString) {
-	var cond421 int64
+	var cond420 int64
 	if attrString != (nil) {
-		cond421 = attrString.Id
+		cond420 = attrString.Id
 	} else {
-		cond421 = int64(0)
+		cond420 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_appendAttributedString_, cond421)
+	OSObjc_msgSendOverload44(this.Id, OSSel_appendAttributedString_, cond420)
 }
 
 func (this *NSMutableAttributedString) BeginEditing() {
@@ -74,31 +74,31 @@ func (this *NSMutableAttributedString) EndEditing() {
 }
 
 func (this *NSMutableAttributedString) RemoveAttribute(name *NSString, range_ NSRange) {
-	var cond422 int64
+	var cond421 int64
 	if name != (nil) {
-		cond422 = name.Id
+		cond421 = name.Id
 	} else {
-		cond422 = int64(0)
+		cond421 = int64(0)
 	}
-	OSObjc_msgSendOverload50(this.Id, OSSel_removeAttribute_range_, cond422, range_)
+	OSObjc_msgSendOverload50(this.Id, OSSel_removeAttribute_range_, cond421, range_)
 }
 
 func (this *NSMutableAttributedString) ReplaceCharactersInRange(range_ NSRange, str *NSString) {
-	var cond423 int64
+	var cond422 int64
 	if str != (nil) {
-		cond423 = str.Id
+		cond422 = str.Id
 	} else {
-		cond423 = int64(0)
+		cond422 = int64(0)
 	}
-	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond423)
+	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond422)
 }
 
 func (this *NSMutableAttributedString) SetAttributedString(attrString *NSAttributedString) {
-	var cond424 int64
+	var cond423 int64
 	if attrString != (nil) {
-		cond424 = attrString.Id
+		cond423 = attrString.Id
 	} else {
-		cond424 = int64(0)
+		cond423 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedString_, cond424)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedString_, cond423)
 }

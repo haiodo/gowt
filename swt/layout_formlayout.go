@@ -88,7 +88,7 @@ func (this *FormLayout) computeSize_(composite *Composite, wHint int32, hHint in
 
 func (this *FormLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
-	if data != (nil) {
+	if !jrt.IsNil(data) {
 		(castanyToFormData(data)).FlushCache()
 	}
 	return true

@@ -87,7 +87,7 @@ func (this *GridLayout) computeSize_(composite *Composite, wHint int32, hHint in
 
 func (this *GridLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
-	if data != (nil) {
+	if !jrt.IsNil(data) {
 		(castanyToGridData(data)).FlushCache()
 	}
 	return true

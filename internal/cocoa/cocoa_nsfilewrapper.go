@@ -40,11 +40,11 @@ func (this *NSFileWrapper) initNSFileWrapperOverload2(id *id) {
 }
 
 func (this *NSFileWrapper) SetIcon(icon *NSImage) {
-	var cond263 int64
+	var cond262 int64
 	if icon != (nil) {
-		cond263 = icon.Id
+		cond262 = icon.Id
 	} else {
-		cond263 = int64(0)
+		cond262 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond263)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond262)
 }

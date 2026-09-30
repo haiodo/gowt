@@ -5,6 +5,8 @@ import dev.gowt.j2go.Names;
 import dev.gowt.j2go.TypeModel;
 import org.eclipse.jdt.core.dom.*;
 
+import java.util.*;
+
 import static dev.gowt.j2go.emit.EmitUtil.*;
 
 /** Expression dispatch, prefix/postfix, assignment, literals, names and field access, static
@@ -69,8 +71,44 @@ final class ExpressionEmitter {
 		// An anonymous class has no Go type of its own here: its base type is what the context expects.
 		if (t != null && t.isAnonymous()) t = t.getSuperclass().getQualifiedName().equals("java.lang.Object") && t.getInterfaces().length > 0
 				? t.getInterfaces()[0] : t.getSuperclass();
+		// A boxed result (`int x = display.syncCall(..)`) is typed as the primitive: `any` does not assign to int32.
+		String prim = t == null ? null : switch (t.getQualifiedName()) {
+			case "java.lang.Integer" -> "int";
+			case "java.lang.Long" -> "long";
+			case "java.lang.Boolean" -> "boolean";
+			case "java.lang.Double" -> "double";
+			case "java.lang.Float" -> "float";
+			case "java.lang.Short" -> "short";
+			case "java.lang.Byte" -> "byte";
+			case "java.lang.Character" -> "char";
+			default -> null;
+		};
+		if (prim != null) t = e.getAST().resolveWellKnownType(prim);
 		String goType = t == null ? "" : dev.gowt.j2go.GoTypes.map(t, emitter);
-		return panicClosureTyped(goType, message);
+		String closure = panicClosureTyped(goType, message);
+		// Dropped code (lambda, anonymous class) still reads its locals: a local used only there
+		// would go "declared and not used" in Go.
+		if (!message.startsWith("unsupported ")) return closure;
+		List<String> uses = outerLocals(e);
+		if (uses.isEmpty()) return closure;
+		return closure.replaceFirst("\\{ ", "{ _ = []any{" + String.join(", ", uses).replace("$", "\\$") + "}; ");
+	}
+
+	private List<String> outerLocals(Expression e) {
+		List<String> out = new ArrayList<>();
+		Set<IBinding> seen = new HashSet<>();
+		CompilationUnit cu = (CompilationUnit) e.getRoot();
+		e.accept(new ASTVisitor() {
+			@Override public boolean visit(SimpleName sn) {
+				if (sn.resolveBinding() instanceof IVariableBinding vb && !vb.isField() && !vb.isEnumConstant() && seen.add(vb)) {
+					ASTNode decl = cu.findDeclaringNode(vb);
+					if (decl != null && (decl.getStartPosition() < e.getStartPosition()
+							|| decl.getStartPosition() >= e.getStartPosition() + e.getLength())) out.add(emitter.expr(sn));
+				}
+				return false;
+			}
+		});
+		return out;
 	}
 
 	String panicClosureTyped(String goType, String message) {
@@ -163,11 +201,19 @@ final class ExpressionEmitter {
 		return t != null && t.isArray();
 	}
 
+	/** In swttests an untranslated SWT type or a local class is `any`: it has no fields to read. */
+	private boolean isDegradedReceiver(Expression recv) {
+		ITypeBinding t = recv.resolveTypeBinding();
+		return emitter.degradesUnresolvedTypes() && t != null && !t.isNullType() && !recv.toString().equals("this")
+				&& dev.gowt.j2go.GoTypes.map(t, emitter).equals("any");
+	}
+
 	private String emitFieldAccess(FieldAccess fa) {
 		if (isArrayLength(fa.getExpression(), fa.getName().getIdentifier())) {
 			return "int32(len(" + emitExpr(fa.getExpression()) + "))"; // int32: Java's length is int
 		}
 		IVariableBinding vb = fa.resolveFieldBinding();
+		if (isDegradedReceiver(fa.getExpression())) return panicClosure(fa, "unresolved field " + fa.getName().getIdentifier());
 		String recv = emitExpr(fa.getExpression());
 		return recv + "." + fieldGoName(vb);
 	}
@@ -201,6 +247,7 @@ final class ExpressionEmitter {
 			if (Modifier.isStatic(vb.getModifiers())) {
 				return staticFieldRef(vb);
 			}
+			if (isDegradedReceiver(qn.getQualifier())) return panicClosure(qn, "unresolved field " + qn.getName().getIdentifier());
 			String recv = emitExpr(qn.getQualifier());
 			return recv + "." + fieldGoName(vb);
 		}

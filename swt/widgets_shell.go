@@ -209,7 +209,7 @@ func (this *Shell) AttachObserversToWindow(newWindow *cocoa.NSWindow) {
 		this.windowEmbedCounts = jrt.NewMap()
 	}
 	var embedCount any = this.windowEmbedCounts.Get(this.hostWindow)
-	if embedCount == (nil) {
+	if jrt.IsNil(embedCount) {
 		embedCount = 0
 	}
 	embedCount = jrt.Cast[int32](embedCount) + 1
@@ -1048,7 +1048,7 @@ func (this *Shell) RemoveObserversFromWindow() {
 	cocoa.NSNotificationCenterDefaultCenter().RemoveObserver(upcastcocoaSWTWindowDelegateTococoaId(this.windowDelegate))
 	if this.hostWindow != (nil) {
 		var embedCount any = any(this.windowEmbedCounts.Get(this.hostWindow))
-		if embedCount == (nil) {
+		if jrt.IsNil(embedCount) {
 			embedCount = 0
 		}
 		embedCount = jrt.Cast[int32](embedCount) - 1

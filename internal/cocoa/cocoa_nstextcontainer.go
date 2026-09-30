@@ -41,19 +41,19 @@ func (this *NSTextContainer) initNSTextContainerOverload2(id *id) {
 
 func (this *NSTextContainer) InitWithContainerSize(aContainerSize NSSize) *NSTextContainer {
 	var result int64 = OSObjc_msgSendOverload26(this.Id, OSSel_initWithContainerSize_, aContainerSize)
+	var cond763 *NSTextContainer
 	var cond764 *NSTextContainer
-	var cond765 *NSTextContainer
 	if result != 0 {
-		cond765 = NewNSTextContainerOverload1(result)
+		cond764 = NewNSTextContainerOverload1(result)
 	} else {
-		cond765 = nil
+		cond764 = nil
 	}
 	if result == this.Id {
-		cond764 = this
+		cond763 = this
 	} else {
-		cond764 = (cond765)
+		cond763 = (cond764)
 	}
-	return cond764
+	return cond763
 }
 
 func (this *NSTextContainer) SetContainerSize(containerSize NSSize) {

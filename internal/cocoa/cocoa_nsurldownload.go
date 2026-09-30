@@ -44,11 +44,11 @@ func (this *NSURLDownload) Cancel() {
 }
 
 func (this *NSURLDownload) SetDestination(path *NSString, allowOverwrite bool) {
-	var cond834 int64
+	var cond833 int64
 	if path != (nil) {
-		cond834 = path.Id
+		cond833 = path.Id
 	} else {
-		cond834 = int64(0)
+		cond833 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_setDestination_allowOverwrite_, cond834, allowOverwrite)
+	OSObjc_msgSendOverload52(this.Id, OSSel_setDestination_allowOverwrite_, cond833, allowOverwrite)
 }

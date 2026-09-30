@@ -2502,13 +2502,15 @@ func (this *Table) ShowColumn(columnLike TableColumnLike) {
 		return
 	}
 	var index int32 = this.IndexOf(column.nsColumn)
-	var cond579 int32
-	if (this.style & CHECK) != 0 {
-		cond579 = 1
-	} else {
-		cond579 = 0
-	}
-	if !(0 <= index && index < this.columnCount+(cond579)) {
+	if !(0 <= index && func() bool {
+		var cond579 int32
+		if (this.style & CHECK) != 0 {
+			cond579 = 1
+		} else {
+			cond579 = 0
+		}
+		return index < this.columnCount+(cond579)
+	}()) {
 		return
 	}
 	(castcocoaNSViewTococoaNSTableView(this.View)).ScrollColumnToVisible(int64(index))

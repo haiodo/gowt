@@ -4053,23 +4053,23 @@ func OSBeginSheetModalForWindow(id int64, sel int64, window int64, handler int64
 }
 
 func OSBeginSheetModalForWindowIdWindowHandler(id *NSObject, window *NSWindow, handler int64) {
-	var cond944 int64
+	var cond943 int64
 	if window != (nil) {
-		cond944 = window.Id
+		cond943 = window.Id
 	} else {
-		cond944 = int64(0)
+		cond943 = int64(0)
 	}
-	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond944, handler)
+	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond943, handler)
 }
 
 func OSSetTheme(isDarkTheme bool) {
-	var cond945 int32
+	var cond944 int32
 	if isDarkTheme {
-		cond945 = 1
+		cond944 = 1
 	} else {
-		cond945 = 0
+		cond944 = 0
 	}
-	OSObjc_msgSendOverload41(NSApplicationSharedApplication().Id, OSSel_appAppearanceChanged, cond945)
+	OSObjc_msgSendOverload41(NSApplicationSharedApplication().Id, OSSel_appAppearanceChanged, cond944)
 }
 
 func OSIsAppDarkAppearance() bool {
@@ -4410,14 +4410,6 @@ func OSDisposeRgn(rgnHandle int64) {
 	OSDisposeRgn_impl(rgnHandle)
 }
 
-var OSPtInRgn_impl func(pt []int16, rgnHandle int64) bool
-var OSPtInRgn_once sync.Once
-
-func OSPtInRgn(pt []int16, rgnHandle int64) bool {
-	OSPtInRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSPtInRgn_impl, purego.RTLD_DEFAULT, "PtInRgn") })
-	return OSPtInRgn_impl(pt, rgnHandle)
-}
-
 var OSGetRegionBounds_impl func(rgnHandle int64, bounds []int16)
 var OSGetRegionBounds_once sync.Once
 
@@ -4555,28 +4547,6 @@ func OSSecTrustCreateWithCertificates(certificates int64, policies int64, trustR
 		purego.RegisterLibFunc(&OSSecTrustCreateWithCertificates_impl, purego.RTLD_DEFAULT, "SecTrustCreateWithCertificates")
 	})
 	return OSSecTrustCreateWithCertificates_impl(certificates, policies, trustRef)
-}
-
-var OSNSIntersectionRect_impl func(result *NSRect, aRect *NSRect, bRect *NSRect)
-var OSNSIntersectionRect_once sync.Once
-
-func OSNSIntersectionRect(result *NSRect, aRect *NSRect, bRect *NSRect) {
-	OSNSIntersectionRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSIntersectionRect_impl, purego.RTLD_DEFAULT, "NSIntersectionRect")
-	})
-	OSNSIntersectionRect_impl(result, aRect, bRect)
-}
-
-var OSCGDisplayBounds_impl func(display int32, rect *CGRect)
-var OSCGDisplayBounds_once sync.Once
-
-func OSCGDisplayBounds(display int32, rect *CGRect) {
-	OSCGDisplayBounds_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGDisplayBounds_impl, purego.RTLD_DEFAULT, "CGDisplayBounds")
-	})
-	OSCGDisplayBounds_impl(display, rect)
 }
 
 func OSKUTTypeFileURL() int64 {
@@ -21308,13 +21278,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentCenter:", r)
 			}
 		}()
-		var cond942 int32
+		var cond941 int32
 		if OSIS_X86_64 {
-			cond942 = 2
+			cond941 = 2
 		} else {
-			cond942 = 1
+			cond941 = 1
 		}
-		OSNSTextAlignmentCenter = cond942
+		OSNSTextAlignmentCenter = cond941
 	}()
 	func() {
 		defer func() {
@@ -21322,13 +21292,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentRight:", r)
 			}
 		}()
-		var cond943 int32
+		var cond942 int32
 		if OSIS_X86_64 {
-			cond943 = 1
+			cond942 = 1
 		} else {
-			cond943 = 2
+			cond942 = 2
 		}
-		OSNSTextAlignmentRight = cond943
+		OSNSTextAlignmentRight = cond942
 	}()
 	func() {
 		defer func() {

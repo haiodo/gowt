@@ -45,23 +45,23 @@ func (this *NSTextView) CharacterIndexForInsertionAtPoint(point NSPoint) int64 {
 
 func (this *NSTextView) DefaultParagraphStyle() *NSParagraphStyle {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_defaultParagraphStyle)
-	var cond776 *NSParagraphStyle
+	var cond775 *NSParagraphStyle
 	if result != 0 {
-		cond776 = NewNSParagraphStyleOverload1(result)
+		cond775 = NewNSParagraphStyleOverload1(result)
 	} else {
-		cond776 = nil
+		cond775 = nil
 	}
-	return cond776
+	return cond775
 }
 
 func (this *NSTextView) DragSelectionWithEvent(event *NSEvent, mouseOffset NSSize, slideBack bool) bool {
-	var cond777 int64
+	var cond776 int64
 	if event != (nil) {
-		cond777 = event.Id
+		cond776 = event.Id
 	} else {
-		cond777 = int64(0)
+		cond776 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload7(this.Id, OSSel_dragSelectionWithEvent_offset_slideBack_, cond777, mouseOffset, slideBack)
+	return OSObjc_msgSend_boolOverload7(this.Id, OSSel_dragSelectionWithEvent_offset_slideBack_, cond776, mouseOffset, slideBack)
 }
 
 func (this *NSTextView) DrawViewBackgroundInRect(rect NSRect) {
@@ -70,17 +70,28 @@ func (this *NSTextView) DrawViewBackgroundInRect(rect NSRect) {
 
 func (this *NSTextView) LayoutManager() *NSLayoutManager {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_layoutManager)
-	var cond778 *NSLayoutManager
+	var cond777 *NSLayoutManager
 	if result != 0 {
-		cond778 = NewNSLayoutManagerOverload1(result)
+		cond777 = NewNSLayoutManagerOverload1(result)
+	} else {
+		cond777 = nil
+	}
+	return cond777
+}
+
+func (this *NSTextView) LinkTextAttributes() *NSDictionary {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_linkTextAttributes)
+	var cond778 *NSDictionary
+	if result != 0 {
+		cond778 = NewNSDictionaryOverload1(result)
 	} else {
 		cond778 = nil
 	}
 	return cond778
 }
 
-func (this *NSTextView) LinkTextAttributes() *NSDictionary {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_linkTextAttributes)
+func (this *NSTextView) MarkedTextAttributes() *NSDictionary {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_markedTextAttributes)
 	var cond779 *NSDictionary
 	if result != 0 {
 		cond779 = NewNSDictionaryOverload1(result)
@@ -90,8 +101,8 @@ func (this *NSTextView) LinkTextAttributes() *NSDictionary {
 	return cond779
 }
 
-func (this *NSTextView) MarkedTextAttributes() *NSDictionary {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_markedTextAttributes)
+func (this *NSTextView) SelectedTextAttributes() *NSDictionary {
+	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedTextAttributes)
 	var cond780 *NSDictionary
 	if result != 0 {
 		cond780 = NewNSDictionaryOverload1(result)
@@ -101,29 +112,18 @@ func (this *NSTextView) MarkedTextAttributes() *NSDictionary {
 	return cond780
 }
 
-func (this *NSTextView) SelectedTextAttributes() *NSDictionary {
-	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedTextAttributes)
-	var cond781 *NSDictionary
-	if result != 0 {
-		cond781 = NewNSDictionaryOverload1(result)
-	} else {
-		cond781 = nil
-	}
-	return cond781
-}
-
 func (this *NSTextView) SetAllowsUndo(allowsUndo bool) {
 	OSObjc_msgSendOverload27(this.Id, OSSel_setAllowsUndo_, allowsUndo)
 }
 
 func (this *NSTextView) SetDefaultParagraphStyle(defaultParagraphStyle *NSParagraphStyle) {
-	var cond782 int64
+	var cond781 int64
 	if defaultParagraphStyle != (nil) {
-		cond782 = defaultParagraphStyle.Id
+		cond781 = defaultParagraphStyle.Id
 	} else {
-		cond782 = int64(0)
+		cond781 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDefaultParagraphStyle_, cond782)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDefaultParagraphStyle_, cond781)
 }
 
 func (this *NSTextView) SetDisplaysLinkToolTips(displaysLinkToolTips bool) {
@@ -131,13 +131,13 @@ func (this *NSTextView) SetDisplaysLinkToolTips(displaysLinkToolTips bool) {
 }
 
 func (this *NSTextView) SetLinkTextAttributes(linkTextAttributes *NSDictionary) {
-	var cond783 int64
+	var cond782 int64
 	if linkTextAttributes != (nil) {
-		cond783 = linkTextAttributes.Id
+		cond782 = linkTextAttributes.Id
 	} else {
-		cond783 = int64(0)
+		cond782 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setLinkTextAttributes_, cond783)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setLinkTextAttributes_, cond782)
 }
 
 func (this *NSTextView) SetRichText(richText bool) {
@@ -145,13 +145,13 @@ func (this *NSTextView) SetRichText(richText bool) {
 }
 
 func (this *NSTextView) SetSelectedTextAttributes(selectedTextAttributes *NSDictionary) {
-	var cond784 int64
+	var cond783 int64
 	if selectedTextAttributes != (nil) {
-		cond784 = selectedTextAttributes.Id
+		cond783 = selectedTextAttributes.Id
 	} else {
-		cond784 = int64(0)
+		cond783 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSelectedTextAttributes_, cond784)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSelectedTextAttributes_, cond783)
 }
 
 func (this *NSTextView) SetUsesFontPanel(usesFontPanel bool) {
@@ -159,13 +159,13 @@ func (this *NSTextView) SetUsesFontPanel(usesFontPanel bool) {
 }
 
 func (this *NSTextView) ShouldChangeTextInRange(affectedCharRange NSRange, replacementString *NSString) bool {
-	var cond785 int64
+	var cond784 int64
 	if replacementString != (nil) {
-		cond785 = replacementString.Id
+		cond784 = replacementString.Id
 	} else {
-		cond785 = int64(0)
+		cond784 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload3(this.Id, OSSel_shouldChangeTextInRange_replacementString_, affectedCharRange, cond785)
+	return OSObjc_msgSend_boolOverload3(this.Id, OSSel_shouldChangeTextInRange_replacementString_, affectedCharRange, cond784)
 }
 
 func (this *NSTextView) ShouldDrawInsertionPoint() bool {
@@ -174,22 +174,22 @@ func (this *NSTextView) ShouldDrawInsertionPoint() bool {
 
 func (this *NSTextView) TextContainer() *NSTextContainer {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_textContainer)
-	var cond786 *NSTextContainer
+	var cond785 *NSTextContainer
 	if result != 0 {
-		cond786 = NewNSTextContainerOverload1(result)
+		cond785 = NewNSTextContainerOverload1(result)
 	} else {
-		cond786 = nil
+		cond785 = nil
 	}
-	return cond786
+	return cond785
 }
 
 func (this *NSTextView) TextStorage() *NSTextStorage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_textStorage)
-	var cond787 *NSTextStorage
+	var cond786 *NSTextStorage
 	if result != 0 {
-		cond787 = NewNSTextStorageOverload1(result)
+		cond786 = NewNSTextStorageOverload1(result)
 	} else {
-		cond787 = nil
+		cond786 = nil
 	}
-	return cond787
+	return cond786
 }

@@ -207,19 +207,19 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	gcSrc.FillRectangle(2, 2, srcSize-4, srcSize-4)
 	gcSrc.Dispose()
 	var bounds *swt.Rectangle = image.GetBounds()
-	var canvas *swt.Canvas = func() *swt.Canvas { panic("j2go: unsupported AnonymousClass") }()
+	var canvas *swt.Canvas = func() *swt.Canvas { _ = []any{shell}; panic("j2go: unsupported AnonymousClass") }()
 	var canvasWidth int32 = int32(math.Floor(float64(float32(bounds.Width)*targetScale) + 0.5))
 	var canvasHeight int32 = int32(math.Floor(float64(float32(bounds.Height)*targetScale) + 0.5))
 	canvas.SetSize(canvasWidth, canvasHeight)
-	var paintListenerCalled any = func() any { panic("j2go: unresolved new AtomicBoolean") }()
+	var paintListenerCalled *jrt.AtomicBoolean = jrt.NewAtomicBoolean()
 	canvas.AddPaintListener(&PaintListenerFunc{fn: func(e *swt.PaintEvent) {
 		e.Gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, canvasWidth, canvasHeight)
-		func() any { _ = []any{paintListenerCalled, true}; panic("j2go: unresolved call set") }()
+		paintListenerCalled.Set(true)
 	}})
 	shell.Open()
 	var timeoutMillis int32 = 2000
-	SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMillis, func() any { panic("j2go: unsupported LambdaExpression") }())
-	junit.AssertTrue(func() bool { _ = []any{paintListenerCalled}; panic("j2go: unresolved call get") }(), "paint listener was never called")
+	SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMillis, func() any { _ = []any{paintListenerCalled}; panic("j2go: unsupported LambdaExpression") }())
+	junit.AssertTrue(paintListenerCalled.Get(), "paint listener was never called")
 	var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), canvasWidth, canvasHeight)
 	var gcCopy *swt.GC = swt.NewGCDrawable(canvas)
 	gcCopy.CopyArea(target, 0, 0)
@@ -1028,7 +1028,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawLine_noSingularitiesIn45D
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFromNonDisplayThread() {
-	var exceptionReference any = func() any { panic("j2go: unresolved new AtomicReference<Exception>") }()
+	var exceptionReference *jrt.AtomicReference = jrt.NewAtomicReference()
 	var thread any = func() any {
 		_ = []any{jrt.NewRunnable(func() {
 			func() {
@@ -1039,7 +1039,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFrom
 					}
 					if e, ok := r.(error); ok {
 						_ = e
-						func() any { _ = []any{exceptionReference, e}; panic("j2go: unresolved call set") }()
+						exceptionReference.Set(e)
 					} else {
 						panic(r)
 					}
@@ -1054,7 +1054,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFrom
 	}()
 	func() any { _ = []any{thread}; panic("j2go: unresolved call start") }()
 	func() any { _ = []any{thread}; panic("j2go: unresolved call join") }()
-	junit.AssertNull(func() error { _ = []any{exceptionReference}; panic("j2go: unresolved call get") }(), "Creating a GC from an Image without a device threw an exception")
+	junit.AssertNull(jrt.Cast[error](exceptionReference.Get()), "Creating a GC from an Image without a device threw an exception")
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_noMemoryLeakAfterDispose() {

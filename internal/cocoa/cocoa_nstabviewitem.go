@@ -44,46 +44,46 @@ func (this *NSTabViewItem) DrawLabel(shouldTruncateLabel bool, labelRect NSRect)
 }
 
 func (this *NSTabViewItem) InitWithIdentifier(identifier *id) *NSTabViewItem {
-	var cond714 int64
+	var cond713 int64
 	if identifier != (nil) {
-		cond714 = identifier.Id
+		cond713 = identifier.Id
 	} else {
-		cond714 = int64(0)
+		cond713 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond714)
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond713)
+	var cond714 *NSTabViewItem
 	var cond715 *NSTabViewItem
-	var cond716 *NSTabViewItem
 	if result != 0 {
-		cond716 = NewNSTabViewItemOverload1(result)
+		cond715 = NewNSTabViewItemOverload1(result)
 	} else {
-		cond716 = nil
+		cond715 = nil
 	}
 	if result == this.Id {
-		cond715 = this
+		cond714 = this
 	} else {
-		cond715 = (cond716)
+		cond714 = (cond715)
 	}
-	return cond715
+	return cond714
 }
 
 func (this *NSTabViewItem) SetLabel(label *NSString) {
-	var cond717 int64
+	var cond716 int64
 	if label != (nil) {
-		cond717 = label.Id
+		cond716 = label.Id
 	} else {
-		cond717 = int64(0)
+		cond716 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setLabel_, cond717)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setLabel_, cond716)
 }
 
 func (this *NSTabViewItem) SetView(view *NSView) {
-	var cond718 int64
+	var cond717 int64
 	if view != (nil) {
-		cond718 = view.Id
+		cond717 = view.Id
 	} else {
-		cond718 = int64(0)
+		cond717 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond718)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond717)
 }
 
 func (this *NSTabViewItem) SizeOfLabel(computeMin bool) NSSize {

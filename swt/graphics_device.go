@@ -291,7 +291,7 @@ func (this *Device) GetDeviceData() *DeviceData {
 			var count int32 = 0
 			var length int32 = int32(len(this.objects))
 			for i := int32(0); i < length; i++ {
-				if this.objects[i] != (nil) {
+				if !jrt.IsNil(this.objects[i]) {
 					count++
 				}
 			}
@@ -299,7 +299,7 @@ func (this *Device) GetDeviceData() *DeviceData {
 			data.Objects = make([]any, count)
 			data.Errors = make([]error, count)
 			for i := int32(0); i < length; i++ {
-				if this.objects[i] != (nil) {
+				if !jrt.IsNil(this.objects[i]) {
 					data.Objects[index] = this.objects[i]
 					data.Errors[index] = this.errors[i]
 					index++
@@ -556,7 +556,7 @@ func (this *Device) New_Object(object any) {
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
-			if this.objects[i] == (nil) {
+			if jrt.IsNil(this.objects[i]) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
 				tretd213 = true
@@ -603,7 +603,7 @@ func (this *Device) PrintErrors() {
 			var transforms int32 = 0
 			for i := int32(0); i < int32(len(this.objects)); i++ {
 				var object any = this.objects[i]
-				if object != (nil) {
+				if !jrt.IsNil(object) {
 					objectCount++
 					_, ok215 := resourceImplAsColor(object)
 					if ok215 {

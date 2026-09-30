@@ -41,103 +41,103 @@ func (this *NSMutableDictionary) initNSMutableDictionaryOverload2(id *id) {
 
 func (this *NSMutableDictionary) InitWithCapacity(numItems int64) *NSMutableDictionary {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithCapacity_, numItems)
+	var cond424 *NSMutableDictionary
 	var cond425 *NSMutableDictionary
-	var cond426 *NSMutableDictionary
 	if result != 0 {
-		cond426 = NewNSMutableDictionaryOverload1(result)
+		cond425 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond426 = nil
+		cond425 = nil
 	}
 	if result == this.Id {
-		cond425 = this
+		cond424 = this
 	} else {
-		cond425 = (cond426)
+		cond424 = (cond425)
 	}
-	return cond425
+	return cond424
 }
 
 func (this *NSMutableDictionary) RemoveObjectForKey(aKey *id) {
-	var cond427 int64
+	var cond426 int64
 	if aKey != (nil) {
-		cond427 = aKey.Id
+		cond426 = aKey.Id
 	} else {
-		cond427 = int64(0)
+		cond426 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeObjectForKey_, cond427)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeObjectForKey_, cond426)
 }
 
 func (this *NSMutableDictionary) SetDictionary(otherDictionary *NSDictionary) {
-	var cond428 int64
+	var cond427 int64
 	if otherDictionary != (nil) {
-		cond428 = otherDictionary.Id
+		cond427 = otherDictionary.Id
 	} else {
-		cond428 = int64(0)
+		cond427 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDictionary_, cond428)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDictionary_, cond427)
 }
 
 func (this *NSMutableDictionary) SetObject(anObject *id, aKey *id) {
-	var cond429 int64
+	var cond428 int64
 	if anObject != (nil) {
-		cond429 = anObject.Id
+		cond428 = anObject.Id
+	} else {
+		cond428 = int64(0)
+	}
+	var cond429 int64
+	if aKey != (nil) {
+		cond429 = aKey.Id
 	} else {
 		cond429 = int64(0)
 	}
-	var cond430 int64
-	if aKey != (nil) {
-		cond430 = aKey.Id
-	} else {
-		cond430 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setObject_forKey_, cond429, cond430)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setObject_forKey_, cond428, cond429)
 }
 
 func (this *NSMutableDictionary) SetValueOnNSObject(value *id, key *NSString) {
-	var cond431 int64
+	var cond430 int64
 	if value != (nil) {
-		cond431 = value.Id
+		cond430 = value.Id
+	} else {
+		cond430 = int64(0)
+	}
+	var cond431 int64
+	if key != (nil) {
+		cond431 = key.Id
 	} else {
 		cond431 = int64(0)
 	}
-	var cond432 int64
-	if key != (nil) {
-		cond432 = key.Id
-	} else {
-		cond432 = int64(0)
-	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forKey_, cond431, cond432)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setValue_forKey_, cond430, cond431)
 }
 
 func NSMutableDictionaryDictionaryWithCapacity(numItems int64) *NSMutableDictionary {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableDictionary, OSSel_dictionaryWithCapacity_, numItems)
-	var cond433 *NSMutableDictionary
+	var cond432 *NSMutableDictionary
 	if result != 0 {
-		cond433 = NewNSMutableDictionaryOverload1(result)
+		cond432 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond433 = nil
+		cond432 = nil
 	}
-	return cond433
+	return cond432
 }
 
 func NSMutableDictionaryDictionaryWithObject(object *id, key *id) *NSMutableDictionary {
-	var cond434 int64
+	var cond433 int64
 	if object != (nil) {
-		cond434 = object.Id
+		cond433 = object.Id
+	} else {
+		cond433 = int64(0)
+	}
+	var cond434 int64
+	if key != (nil) {
+		cond434 = key.Id
 	} else {
 		cond434 = int64(0)
 	}
-	var cond435 int64
-	if key != (nil) {
-		cond435 = key.Id
-	} else {
-		cond435 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload54(OSClass_NSMutableDictionary, OSSel_dictionaryWithObject_forKey_, cond434, cond435)
-	var cond436 *NSMutableDictionary
+	var result int64 = OSObjc_msgSendOverload54(OSClass_NSMutableDictionary, OSSel_dictionaryWithObject_forKey_, cond433, cond434)
+	var cond435 *NSMutableDictionary
 	if result != 0 {
-		cond436 = NewNSMutableDictionaryOverload1(result)
+		cond435 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond436 = nil
+		cond435 = nil
 	}
-	return cond436
+	return cond435
 }

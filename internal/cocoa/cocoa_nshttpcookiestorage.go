@@ -41,59 +41,59 @@ func (this *NSHTTPCookieStorage) initNSHTTPCookieStorageOverload2(id *id) {
 
 func (this *NSHTTPCookieStorage) Cookies() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cookies)
-	var cond306 *NSArray
+	var cond305 *NSArray
 	if result != 0 {
-		cond306 = NewNSArrayOverload1(result)
+		cond305 = NewNSArrayOverload1(result)
 	} else {
-		cond306 = nil
+		cond305 = nil
 	}
-	return cond306
+	return cond305
 }
 
 func (this *NSHTTPCookieStorage) CookiesForURL(URL *NSURL) *NSArray {
-	var cond307 int64
+	var cond306 int64
 	if URL != (nil) {
-		cond307 = URL.Id
+		cond306 = URL.Id
 	} else {
-		cond307 = int64(0)
+		cond306 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_cookiesForURL_, cond307)
-	var cond308 *NSArray
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_cookiesForURL_, cond306)
+	var cond307 *NSArray
 	if result != 0 {
-		cond308 = NewNSArrayOverload1(result)
+		cond307 = NewNSArrayOverload1(result)
 	} else {
-		cond308 = nil
+		cond307 = nil
 	}
-	return cond308
+	return cond307
 }
 
 func (this *NSHTTPCookieStorage) DeleteCookie(cookie *NSHTTPCookie) {
+	var cond308 int64
+	if cookie != (nil) {
+		cond308 = cookie.Id
+	} else {
+		cond308 = int64(0)
+	}
+	OSObjc_msgSendOverload44(this.Id, OSSel_deleteCookie_, cond308)
+}
+
+func (this *NSHTTPCookieStorage) SetCookie(cookie *NSHTTPCookie) {
 	var cond309 int64
 	if cookie != (nil) {
 		cond309 = cookie.Id
 	} else {
 		cond309 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_deleteCookie_, cond309)
-}
-
-func (this *NSHTTPCookieStorage) SetCookie(cookie *NSHTTPCookie) {
-	var cond310 int64
-	if cookie != (nil) {
-		cond310 = cookie.Id
-	} else {
-		cond310 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCookie_, cond310)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCookie_, cond309)
 }
 
 func NSHTTPCookieStorageSharedHTTPCookieStorage() *NSHTTPCookieStorage {
 	var result int64 = OSObjc_msgSend(OSClass_NSHTTPCookieStorage, OSSel_sharedHTTPCookieStorage)
-	var cond311 *NSHTTPCookieStorage
+	var cond310 *NSHTTPCookieStorage
 	if result != 0 {
-		cond311 = NewNSHTTPCookieStorageOverload1(result)
+		cond310 = NewNSHTTPCookieStorageOverload1(result)
 	} else {
-		cond311 = nil
+		cond310 = nil
 	}
-	return cond311
+	return cond310
 }

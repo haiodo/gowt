@@ -1072,9 +1072,9 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_updateWidthHeightAfterDPIC
 func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataIsCached() {
 	junit.AssumeTrue(SwtTestUtilIsWindows, "On-demand image creation only implemented for Windows")
 	var imagePath string = Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")
-	var callCount any = func() any { panic("j2go: unresolved new AtomicInteger") }()
+	var callCount *jrt.AtomicInteger = jrt.NewAtomicInteger()
 	var imageFileNameProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(__ int32) string {
-		func() int32 { _ = []any{callCount}; panic("j2go: unresolved call incrementAndGet") }()
+		callCount.IncrementAndGet()
 		return imagePath
 	}}
 	var fileNameProviderImage *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), imageFileNameProvider)
@@ -1083,10 +1083,10 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataIsCached() {
 			fileNameProviderImage.Dispose()
 		}()
 		fileNameProviderImage.GetImageDataZoom(100)
-		func() any { _ = []any{callCount, 0}; panic("j2go: unresolved call set") }()
+		callCount.Set(0)
 		fileNameProviderImage.GetImageDataZoom(100)
 		fileNameProviderImage.GetImageDataZoom(100)
-		junit.AssertEquals(int32(0), int32(func() int32 { _ = []any{callCount}; panic("j2go: unresolved call get") }()))
+		junit.AssertEquals(int32(0), int32(callCount.Get()))
 	}
 }
 
@@ -1283,14 +1283,11 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 		}(), sizableFile, []any{}}
 		panic("j2go: unresolved call copy")
 	}()
-	var currentFile any = func() any {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")}
-		panic("j2go: unresolved new AtomicReference<String>")
-	}()
+	var currentFile *jrt.AtomicReference = jrt.NewAtomicReference(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"))
 	var switchingProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
 		var cond36 string
 		if zoom == 100 {
-			cond36 = func() string { _ = []any{currentFile}; panic("j2go: unresolved call get") }()
+			cond36 = jrt.Cast[string](currentFile.Get())
 		} else {
 			cond36 = ""
 		}
@@ -1313,10 +1310,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 				image.Dispose()
 			}()
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 20, 20)
-			func() any {
-				_ = []any{currentFile, func() string { _ = []any{sizableFile}; panic("j2go: unresolved call toString") }()}
-				panic("j2go: unresolved call set")
-			}()
+			currentFile.Set(func() string { _ = []any{sizableFile}; panic("j2go: unresolved call toString") }())
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 20, 20)
 			func() any { _ = []any{sizableFile}; panic("j2go: unresolved call delete") }()
 			junit.AssertThrows[*swt.SWTException](func() {

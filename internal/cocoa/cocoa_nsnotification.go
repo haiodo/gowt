@@ -41,22 +41,22 @@ func (this *NSNotification) initNSNotificationOverload2(id *id) {
 
 func (this *NSNotification) Object() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_object)
-	var cond454 *id
+	var cond453 *id
 	if result != 0 {
-		cond454 = NewidOverload1(result)
+		cond453 = NewidOverload1(result)
 	} else {
-		cond454 = nil
+		cond453 = nil
 	}
-	return cond454
+	return cond453
 }
 
 func (this *NSNotification) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond455 *NSDictionary
+	var cond454 *NSDictionary
 	if result != 0 {
-		cond455 = NewNSDictionaryOverload1(result)
+		cond454 = NewNSDictionaryOverload1(result)
 	} else {
-		cond455 = nil
+		cond454 = nil
 	}
-	return cond455
+	return cond454
 }

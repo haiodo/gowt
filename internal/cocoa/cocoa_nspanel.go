@@ -52,13 +52,13 @@ func (this *NSPanel) SetWorksWhenModal(worksWhenModal bool) {
 }
 
 func NSPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond544 int64
+	var cond543 int64
 	if aTitle != (nil) {
-		cond544 = aTitle.Id
+		cond543 = aTitle.Id
 	} else {
-		cond544 = int64(0)
+		cond543 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond544, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond543, aStyle)
 }
 
 func NSPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

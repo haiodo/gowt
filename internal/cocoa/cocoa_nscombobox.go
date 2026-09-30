@@ -41,13 +41,13 @@ func (this *NSComboBox) initNSComboBoxOverload2(id *id) {
 }
 
 func (this *NSComboBox) AddItemWithObjectValue(object *id) {
-	var cond194 int64
+	var cond1 int64
 	if object != (nil) {
-		cond194 = object.Id
+		cond1 = object.Id
 	} else {
-		cond194 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addItemWithObjectValue_, cond194)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addItemWithObjectValue_, cond1)
 }
 
 func (this *NSComboBox) DeselectItemAtIndex(index int64) {
@@ -59,13 +59,13 @@ func (this *NSComboBox) IndexOfSelectedItem() int64 {
 }
 
 func (this *NSComboBox) InsertItemWithObjectValue(object *id, index int64) {
-	var cond195 int64
+	var cond2 int64
 	if object != (nil) {
-		cond195 = object.Id
+		cond2 = object.Id
 	} else {
-		cond195 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithObjectValue_atIndex_, cond195, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithObjectValue_atIndex_, cond2, index)
 }
 
 func (this *NSComboBox) ItemHeight() float64 {

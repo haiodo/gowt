@@ -115,14 +115,14 @@ func (this *Test_org_eclipse_swt_widgets_Composite) test_setFocus_toChild_before
 
 func (this *Test_org_eclipse_swt_widgets_Composite) Test_setFocus_withInvisibleChild() {
 	var wasSetFocusCalledOnInvisibleChildWidget *jrt.AtomicReference = jrt.NewAtomicReference(false)
-	anon66 := &Test_org_eclipse_swt_widgets_CompositeAnon1{}
-	anon66.Composite = swt.NewCompositeParentStyle(this.composite, swt.NONE)
-	anon66.SetImpl_(anon66)
-	anon66.fnSetFocus_ = func() bool {
+	anon1 := &Test_org_eclipse_swt_widgets_CompositeAnon1{}
+	anon1.Composite = swt.NewCompositeParentStyle(this.composite, swt.NONE)
+	anon1.SetImpl_(anon1)
+	anon1.fnSetFocus_ = func() bool {
 		wasSetFocusCalledOnInvisibleChildWidget.Set(true)
-		return anon66.Composite.SetFocus()
+		return anon1.Composite.SetFocus()
 	}
-	var invisibleChildWidget *swt.Composite = anon66.Composite
+	var invisibleChildWidget *swt.Composite = anon1.Composite
 	invisibleChildWidget.SetVisible(false)
 	SwtTestUtilWaitShellActivate(jrt.NewRunnable(this.shell.Open), this.shell)
 	this.composite.SetFocus()
@@ -131,14 +131,14 @@ func (this *Test_org_eclipse_swt_widgets_Composite) Test_setFocus_withInvisibleC
 
 func (this *Test_org_eclipse_swt_widgets_Composite) Test_setFocus_withVisibleAndInvisibleChild() {
 	var wasSetFocusCalledOnInvisibleChildWidget *jrt.AtomicReference = jrt.NewAtomicReference(false)
-	anon67 := &Test_org_eclipse_swt_widgets_CompositeAnon2{}
-	anon67.Composite = swt.NewCompositeParentStyle(this.composite, swt.NONE)
-	anon67.SetImpl_(anon67)
-	anon67.fnSetFocus_ = func() bool {
+	anon2 := &Test_org_eclipse_swt_widgets_CompositeAnon2{}
+	anon2.Composite = swt.NewCompositeParentStyle(this.composite, swt.NONE)
+	anon2.SetImpl_(anon2)
+	anon2.fnSetFocus_ = func() bool {
 		wasSetFocusCalledOnInvisibleChildWidget.Set(true)
-		return anon67.Composite.SetFocus()
+		return anon2.Composite.SetFocus()
 	}
-	var invisibleChildWidget *swt.Composite = anon67.Composite
+	var invisibleChildWidget *swt.Composite = anon2.Composite
 	invisibleChildWidget.SetVisible(false)
 	var visibleChildWidget *swt.Composite = swt.NewCompositeParentStyle(this.composite, swt.NONE)
 	SwtTestUtilWaitShellActivate(jrt.NewRunnable(this.shell.Open), this.shell)

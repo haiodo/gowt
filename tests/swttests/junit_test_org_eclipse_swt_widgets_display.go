@@ -1455,9 +1455,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getWarnings() {
 func (this *Test_org_eclipse_swt_widgets_Display) Test_manyDispose() {
 	var i int32 = 0
 	for {
-		t74 := i
+		t1 := i
 		i++
-		if !(t74 < 300) {
+		if !(t1 < 300) {
 			break
 		}
 		var display *swt.Display = swt.NewDisplay()

@@ -61,100 +61,100 @@ func (this *NSAttributedString) Size() NSSize {
 }
 
 func (this *NSAttributedString) Attribute(attrName *NSString, location int64, range_ int64) *id {
-	var cond60 int64
+	var cond1 int64
 	if attrName != (nil) {
-		cond60 = attrName.Id
+		cond1 = attrName.Id
 	} else {
-		cond60 = int64(0)
+		cond1 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_attribute_atIndex_effectiveRange_, cond60, location, range_)
-	var cond61 *id
+	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_attribute_atIndex_effectiveRange_, cond1, location, range_)
+	var cond2 *id
 	if result != 0 {
-		cond61 = NewidOverload1(result)
+		cond2 = NewidOverload1(result)
 	} else {
-		cond61 = nil
+		cond2 = nil
 	}
-	return cond61
+	return cond2
 }
 
 func (this *NSAttributedString) AttributedSubstringFromRange(range_ NSRange) *NSAttributedString {
 	var result int64 = OSObjc_msgSendOverload8(this.Id, OSSel_attributedSubstringFromRange_, range_)
-	var cond62 *NSAttributedString
-	var cond63 *NSAttributedString
+	var cond3 *NSAttributedString
+	var cond4 *NSAttributedString
 	if result != 0 {
-		cond63 = NewNSAttributedStringOverload1(result)
+		cond4 = NewNSAttributedStringOverload1(result)
 	} else {
-		cond63 = nil
+		cond4 = nil
 	}
 	if result == this.Id {
-		cond62 = this
+		cond3 = this
 	} else {
-		cond62 = (cond63)
+		cond3 = (cond4)
 	}
-	return cond62
+	return cond3
 }
 
 func (this *NSAttributedString) AttributesAtIndex(location int64, range_ int64, rangeLimit NSRange) *NSDictionary {
 	var result int64 = OSObjc_msgSendOverload55(this.Id, OSSel_attributesAtIndex_longestEffectiveRange_inRange_, location, range_, rangeLimit)
-	var cond64 *NSDictionary
+	var cond5 *NSDictionary
 	if result != 0 {
-		cond64 = NewNSDictionaryOverload1(result)
+		cond5 = NewNSDictionaryOverload1(result)
 	} else {
-		cond64 = nil
+		cond5 = nil
 	}
-	return cond64
+	return cond5
 }
 
 func (this *NSAttributedString) InitWithString(str *NSString) *NSAttributedString {
-	var cond65 int64
+	var cond6 int64
 	if str != (nil) {
-		cond65 = str.Id
+		cond6 = str.Id
 	} else {
-		cond65 = int64(0)
+		cond6 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithString_, cond65)
-	var cond66 *NSAttributedString
-	var cond67 *NSAttributedString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithString_, cond6)
+	var cond7 *NSAttributedString
+	var cond8 *NSAttributedString
 	if result != 0 {
-		cond67 = NewNSAttributedStringOverload1(result)
+		cond8 = NewNSAttributedStringOverload1(result)
 	} else {
-		cond67 = nil
+		cond8 = nil
 	}
 	if result == this.Id {
-		cond66 = this
+		cond7 = this
 	} else {
-		cond66 = (cond67)
+		cond7 = (cond8)
 	}
-	return cond66
+	return cond7
 }
 
 func (this *NSAttributedString) InitWithStringStrAttrs(str *NSString, attrs *NSDictionary) *NSAttributedString {
-	var cond68 int64
+	var cond9 int64
 	if str != (nil) {
-		cond68 = str.Id
+		cond9 = str.Id
 	} else {
-		cond68 = int64(0)
+		cond9 = int64(0)
 	}
-	var cond69 int64
+	var cond10 int64
 	if attrs != (nil) {
-		cond69 = attrs.Id
+		cond10 = attrs.Id
 	} else {
-		cond69 = int64(0)
+		cond10 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithString_attributes_, cond68, cond69)
-	var cond70 *NSAttributedString
-	var cond71 *NSAttributedString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithString_attributes_, cond9, cond10)
+	var cond11 *NSAttributedString
+	var cond12 *NSAttributedString
 	if result != 0 {
-		cond71 = NewNSAttributedStringOverload1(result)
+		cond12 = NewNSAttributedStringOverload1(result)
 	} else {
-		cond71 = nil
+		cond12 = nil
 	}
 	if result == this.Id {
-		cond70 = this
+		cond11 = this
 	} else {
-		cond70 = (cond71)
+		cond11 = (cond12)
 	}
-	return cond70
+	return cond11
 }
 
 func (this *NSAttributedString) Length() int64 {
@@ -163,11 +163,11 @@ func (this *NSAttributedString) Length() int64 {
 
 func (this *NSAttributedString) String() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_string)
-	var cond72 *NSString
+	var cond13 *NSString
 	if result != 0 {
-		cond72 = NewNSStringOverload1(result)
+		cond13 = NewNSStringOverload1(result)
 	} else {
-		cond72 = nil
+		cond13 = nil
 	}
-	return cond72
+	return cond13
 }

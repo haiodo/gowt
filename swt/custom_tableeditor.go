@@ -42,14 +42,14 @@ func (this *TableEditor) initTableEditor(table *Table) {
 	this.ControlEditor.initControlEditor(upcastTableToComposite(table))
 	this.column = -1
 	this.table = table
-	anon675 := &TableEditorAnon1{}
-	anon675.fnControlMoved = func(e *ControlEvent) {
+	anon1 := &TableEditorAnon1{}
+	anon1.fnControlMoved = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	anon675.fnControlResized = func(e *ControlEvent) {
+	anon1.fnControlResized = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	this.columnListener = anon675
+	this.columnListener = anon1
 	this.timer = jrt.NewRunnable(this.Layout)
 	this.GrabVertical = true
 }

@@ -42,13 +42,13 @@ func (this *NSSearchFieldCell) initNSSearchFieldCellOverload2(id *id) {
 
 func (this *NSSearchFieldCell) CancelButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cancelButtonCell)
-	var cond661 *NSButtonCell
+	var cond1 *NSButtonCell
 	if result != 0 {
-		cond661 = NewNSButtonCellOverload1(result)
+		cond1 = NewNSButtonCellOverload1(result)
 	} else {
-		cond661 = nil
+		cond1 = nil
 	}
-	return cond661
+	return cond1
 }
 
 func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
@@ -59,13 +59,13 @@ func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
 
 func (this *NSSearchFieldCell) SearchButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_searchButtonCell)
-	var cond662 *NSButtonCell
+	var cond2 *NSButtonCell
 	if result != 0 {
-		cond662 = NewNSButtonCellOverload1(result)
+		cond2 = NewNSButtonCellOverload1(result)
 	} else {
-		cond662 = nil
+		cond2 = nil
 	}
-	return cond662
+	return cond2
 }
 
 func (this *NSSearchFieldCell) SearchButtonRectForBounds(rect NSRect) NSRect {
@@ -81,21 +81,21 @@ func (this *NSSearchFieldCell) SearchTextRectForBounds(rect NSRect) NSRect {
 }
 
 func (this *NSSearchFieldCell) SetCancelButtonCell(cancelButtonCell *NSButtonCell) {
-	var cond663 int64
+	var cond3 int64
 	if cancelButtonCell != (nil) {
-		cond663 = cancelButtonCell.Id
+		cond3 = cancelButtonCell.Id
 	} else {
-		cond663 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond663)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCancelButtonCell_, cond3)
 }
 
 func (this *NSSearchFieldCell) SetSearchButtonCell(searchButtonCell *NSButtonCell) {
-	var cond664 int64
+	var cond4 int64
 	if searchButtonCell != (nil) {
-		cond664 = searchButtonCell.Id
+		cond4 = searchButtonCell.Id
 	} else {
-		cond664 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond664)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSearchButtonCell_, cond4)
 }

@@ -42,17 +42,17 @@ func (this *NSAppleEventDescriptor) initNSAppleEventDescriptorOverload2(id *id) 
 
 func (this *NSAppleEventDescriptor) InitListDescriptor() *NSAppleEventDescriptor {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_initListDescriptor)
-	var cond20 *NSAppleEventDescriptor
-	var cond21 *NSAppleEventDescriptor
+	var cond1 *NSAppleEventDescriptor
+	var cond2 *NSAppleEventDescriptor
 	if result != 0 {
-		cond21 = NewNSAppleEventDescriptorOverload1(result)
+		cond2 = NewNSAppleEventDescriptorOverload1(result)
 	} else {
-		cond21 = nil
+		cond2 = nil
 	}
 	if result == this.Id {
-		cond20 = this
+		cond1 = this
 	} else {
-		cond20 = (cond21)
+		cond1 = (cond2)
 	}
-	return cond20
+	return cond1
 }

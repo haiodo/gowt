@@ -49,7 +49,7 @@ func ImageTestUtilAssertImagesNotEqual(expectedLike swt.ImageDataLike, actualLik
 }
 
 func ImageTestUtilAssertImagesNotEqualExpectedActual(expected []*swt.ImageData, actual []*swt.ImageData) {
-	tretd13 := false
+	tretd1 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -59,7 +59,7 @@ func ImageTestUtilAssertImagesNotEqualExpectedActual(expected []*swt.ImageData, 
 			if false {
 				var e error
 				_ = e
-				tretd13 = true
+				tretd1 = true
 				return
 			} else {
 				panic(r)
@@ -67,7 +67,7 @@ func ImageTestUtilAssertImagesNotEqualExpectedActual(expected []*swt.ImageData, 
 		}()
 		ImageTestUtilAssertImagesEqualExpectedActual(expected, actual)
 	}()
-	if tretd13 {
+	if tretd1 {
 		return
 	}
 	junit.Fail("Images are equal.")
@@ -78,13 +78,13 @@ func ImageTestUtilAssertImagesEqualExpectedActual(expected []*swt.ImageData, act
 	junit.AssertNotNull(actual)
 	junit.AssertEquals(int32(int32(len(expected))), int32(int32(len(actual))), "Different number of frames.")
 	var formatMsg func(string, any) string = func(msg string, i any) string {
-		var cond14 string
+		var cond2 string
 		if int32(len(expected)) == 1 {
-			cond14 = fmt.Sprintf("%s.", msg)
+			cond2 = fmt.Sprintf("%s.", msg)
 		} else {
-			cond14 = fmt.Sprintf("%s in frame %v.", msg, i)
+			cond2 = fmt.Sprintf("%s in frame %v.", msg, i)
 		}
-		return cond14
+		return cond2
 	}
 	for i := int32(0); i < int32(len(expected)); i++ {
 		junit.AssertEquals(int32(expected[i].Width), int32(actual[i].Width), formatMsg("Different width", int32(i)))
@@ -138,13 +138,13 @@ func ImageTestUtilGetEffectiveAlpha(dataLike swt.ImageDataLike, x int32, y int32
 				if x < 0 || y < 0 {
 					return -1
 				}
-				var cond15 int32
+				var cond3 int32
 				if data.TransparentPixel != -1 && data.GetPixel(x, y) == data.TransparentPixel {
-					cond15 = 0
+					cond3 = 0
 				} else {
-					cond15 = 255
+					cond3 = 255
 				}
-				return cond15
+				return cond3
 			} else {
 				if data.Depth != 32 {
 					return 255

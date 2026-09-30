@@ -49,22 +49,22 @@ func (this *NSActionCell) SetAction(action int64) {
 }
 
 func (this *NSActionCell) SetTarget(target *id) {
-	var cond2 int64
+	var cond1 int64
 	if target != (nil) {
-		cond2 = target.Id
+		cond1 = target.Id
 	} else {
-		cond2 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond2)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond1)
 }
 
 func (this *NSActionCell) Target() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_target)
-	var cond3 *id
+	var cond2 *id
 	if result != 0 {
-		cond3 = NewidOverload1(result)
+		cond2 = NewidOverload1(result)
 	} else {
-		cond3 = nil
+		cond2 = nil
 	}
-	return cond3
+	return cond2
 }

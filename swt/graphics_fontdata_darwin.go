@@ -213,8 +213,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	data, ok230 := fontDataImplAsFontData(object)
-	if !(ok230) {
+	data, ok1 := fontDataImplAsFontData(object)
+	if !(ok1) {
 		return false
 	}
 	return (this.Name == data.Name) && this.Height == data.Height && this.Style == data.Style

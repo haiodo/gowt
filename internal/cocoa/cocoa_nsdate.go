@@ -41,46 +41,46 @@ func (this *NSDate) initNSDateOverload2(id *id) {
 }
 
 func (this *NSDate) DateWithCalendarFormat(format *NSString, aTimeZone *NSTimeZone) *NSCalendarDate {
-	var cond224 int64
+	var cond1 int64
 	if format != (nil) {
-		cond224 = format.Id
+		cond1 = format.Id
 	} else {
-		cond224 = int64(0)
+		cond1 = int64(0)
 	}
-	var cond225 int64
+	var cond2 int64
 	if aTimeZone != (nil) {
-		cond225 = aTimeZone.Id
+		cond2 = aTimeZone.Id
 	} else {
-		cond225 = int64(0)
+		cond2 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_dateWithCalendarFormat_timeZone_, cond224, cond225)
-	var cond226 *NSCalendarDate
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_dateWithCalendarFormat_timeZone_, cond1, cond2)
+	var cond3 *NSCalendarDate
 	if result != 0 {
-		cond226 = NewNSCalendarDateOverload1(result)
+		cond3 = NewNSCalendarDateOverload1(result)
 	} else {
-		cond226 = nil
+		cond3 = nil
 	}
-	return cond226
+	return cond3
 }
 
 func NSDateDateWithTimeIntervalSinceNow(secs float64) *NSDate {
 	var result int64 = OSObjc_msgSendOverload35(OSClass_NSDate, OSSel_dateWithTimeIntervalSinceNow_, secs)
-	var cond227 *NSDate
+	var cond4 *NSDate
 	if result != 0 {
-		cond227 = NewNSDateOverload1(result)
+		cond4 = NewNSDateOverload1(result)
 	} else {
-		cond227 = nil
+		cond4 = nil
 	}
-	return cond227
+	return cond4
 }
 
 func NSDateDistantFuture() *NSDate {
 	var result int64 = OSObjc_msgSend(OSClass_NSDate, OSSel_distantFuture)
-	var cond228 *NSDate
+	var cond5 *NSDate
 	if result != 0 {
-		cond228 = NewNSDateOverload1(result)
+		cond5 = NewNSDateOverload1(result)
 	} else {
-		cond228 = nil
+		cond5 = nil
 	}
-	return cond228
+	return cond5
 }

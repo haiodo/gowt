@@ -8,21 +8,21 @@ type ExpandListener interface {
 }
 
 func ExpandListenerItemCollapsedAdapter(c func(*ExpandEvent)) ExpandListener {
-	anon32 := &ExpandListenerAnon1{}
-	anon32.initExpandAdapter()
-	anon32.fnItemCollapsed = func(e *ExpandEvent) {
+	anon1 := &ExpandListenerAnon1{}
+	anon1.initExpandAdapter()
+	anon1.fnItemCollapsed = func(e *ExpandEvent) {
 		c(e)
 	}
-	return anon32
+	return anon1
 }
 
 func ExpandListenerItemExpandedAdapter(c func(*ExpandEvent)) ExpandListener {
-	anon33 := &ExpandListenerAnon2{}
-	anon33.initExpandAdapter()
-	anon33.fnItemExpanded = func(e *ExpandEvent) {
+	anon2 := &ExpandListenerAnon2{}
+	anon2.initExpandAdapter()
+	anon2.fnItemExpanded = func(e *ExpandEvent) {
 		c(e)
 	}
-	return anon33
+	return anon2
 }
 
 // j2go: anonymous ExpandAdapter subclass.

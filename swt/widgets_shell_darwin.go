@@ -170,13 +170,13 @@ func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
 }
 
 func (this *Shell) initShellParentStyle(parent *Shell, style int32) {
-	var cond151 *Display
+	var cond1 *Display
 	if parent != (nil) {
-		cond151 = parent.display
+		cond1 = parent.display
 	} else {
-		cond151 = nil
+		cond1 = nil
 	}
-	this.initShellDisplayParentStyleHandleEmbedded(cond151, parent, style, int64(0), false)
+	this.initShellDisplayParentStyleHandleEmbedded(cond1, parent, style, int64(0), false)
 }
 
 func (this *Shell) accessibilityIsIgnored_(id int64, sel int64) bool {
@@ -542,23 +542,23 @@ func (this *Shell) drawBackground_(id int64, context *cocoa.NSGraphicsContext, r
 }
 
 func (this *Shell) findBackgroundControl_() *Control {
-	var cond152 *Control
+	var cond2 *Control
 	if this.background != (nil) || this.backgroundImage != (nil) {
-		cond152 = upcastShellToControl(this)
+		cond2 = upcastShellToControl(this)
 	} else {
-		cond152 = nil
+		cond2 = nil
 	}
-	return cond152
+	return cond2
 }
 
 func (this *Shell) findDeferredControl_() *Composite {
-	var cond153 *Composite
+	var cond3 *Composite
 	if this.layoutCount > 0 {
-		cond153 = upcastShellToComposite(this)
+		cond3 = upcastShellToComposite(this)
 	} else {
-		cond153 = nil
+		cond3 = nil
 	}
-	return cond153
+	return cond3
 }
 
 func (this *Shell) findCursor_() *Cursor {
@@ -669,13 +669,13 @@ func (this *Shell) GetFullScreen() bool {
 
 func (this *Shell) _getFullScreen() bool {
 	if (this.window.CollectionBehavior() & int64(cocoa.OSNSWindowCollectionBehaviorFullScreenPrimary)) != 0 {
-		var cond154 bool
+		var cond4 bool
 		if (this.window.StyleMask() & int64(cocoa.OSNSWindowStyleMaskFullScreen)) != 0 {
-			cond154 = true
+			cond4 = true
 		} else {
-			cond154 = false
+			cond4 = false
 		}
-		return cond154
+		return cond4
 	}
 	return this.fullScreen
 }
@@ -823,9 +823,9 @@ func (this *Shell) GetShells() []*Shell {
 			}
 		}
 		if shell == upcastShellToControl(this) {
-			t155 := index
+			t5 := index
 			index++
-			result[t155] = activeshell
+			result[t5] = activeshell
 		}
 	}
 	return result
@@ -833,13 +833,13 @@ func (this *Shell) GetShells() []*Shell {
 
 func (this *Shell) getSize_() *Point {
 	this.CheckWidget()
-	var cond156 cocoa.NSRect
+	var cond6 cocoa.NSRect
 	if this.window != (nil) {
-		cond156 = this.window.Frame()
+		cond6 = this.window.Frame()
 	} else {
-		cond156 = this.View.Frame()
+		cond6 = this.View.Frame()
 	}
-	var frame cocoa.NSRect = (cond156)
+	var frame cocoa.NSRect = (cond6)
 	return NewPoint(int32(frame.Width), int32(frame.Height))
 }
 
@@ -1127,20 +1127,20 @@ func (this *Shell) SendToolTipEvent(enter bool) {
 		return
 	}
 	var pt cocoa.NSPoint = eventWindow.ConvertScreenToBase(cocoa.NSEventMouseLocation())
-	var cond157 int32
+	var cond7 int32
 	if enter {
-		cond157 = cocoa.OSNSMouseEntered
+		cond7 = cocoa.OSNSMouseEntered
 	} else {
-		cond157 = cocoa.OSNSMouseExited
+		cond7 = cocoa.OSNSMouseExited
 	}
-	var event *cocoa.NSEvent = cocoa.NSEventEnterExitEventWithType(int64(cond157), pt, int64(0), float64(0), eventWindow.WindowNumber(), nil, int64(0), this.tooltipTag, this.tooltipUserData)
-	var cond158 int64
+	var event *cocoa.NSEvent = cocoa.NSEventEnterExitEventWithType(int64(cond7), pt, int64(0), float64(0), eventWindow.WindowNumber(), nil, int64(0), this.tooltipTag, this.tooltipUserData)
+	var cond8 int64
 	if enter {
-		cond158 = cocoa.OSSel_mouseEntered_
+		cond8 = cocoa.OSSel_mouseEntered_
 	} else {
-		cond158 = cocoa.OSSel_mouseExited_
+		cond8 = cocoa.OSSel_mouseExited_
 	}
-	cocoa.OSObjc_msgSendOverload44(this.tooltipOwner, cond158, event.Id)
+	cocoa.OSObjc_msgSendOverload44(this.tooltipOwner, cond8, event.Id)
 }
 
 func (this *Shell) SetActive() {
@@ -1381,20 +1381,20 @@ func (this *Shell) SetMaximumSize(width int32, height int32) {
 	this.window.SetMaxSize(size)
 	var frame cocoa.NSRect = this.window.Frame()
 	if float64(width) < frame.Width || float64(height) < frame.Height {
-		var cond159 float64
+		var cond9 float64
 		if float64(width) < frame.Width {
-			cond159 = float64(width)
+			cond9 = float64(width)
 		} else {
-			cond159 = frame.Width
+			cond9 = frame.Width
 		}
-		width = int32((cond159))
-		var cond160 float64
+		width = int32((cond9))
+		var cond10 float64
 		if float64(height) < frame.Height {
-			cond160 = float64(height)
+			cond10 = float64(height)
 		} else {
-			cond160 = frame.Height
+			cond10 = frame.Height
 		}
-		height = int32((cond160))
+		height = int32((cond10))
 		this.impl.setBoundsXYWidthHeightMoveResize_(0, 0, width, height, false, true)
 	}
 }
@@ -1439,20 +1439,20 @@ func (this *Shell) SetMinimumSize(width int32, height int32) {
 	this.window.SetMinSize(size)
 	var frame cocoa.NSRect = this.window.Frame()
 	if float64(width) > frame.Width || float64(height) > frame.Height {
-		var cond161 float64
+		var cond11 float64
 		if float64(width) > frame.Width {
-			cond161 = float64(width)
+			cond11 = float64(width)
 		} else {
-			cond161 = frame.Width
+			cond11 = frame.Width
 		}
-		width = int32((cond161))
-		var cond162 float64
+		width = int32((cond11))
+		var cond12 float64
 		if float64(height) > frame.Height {
-			cond162 = float64(height)
+			cond12 = float64(height)
 		} else {
-			cond162 = frame.Height
+			cond12 = frame.Height
 		}
-		height = int32((cond162))
+		height = int32((cond12))
 		this.impl.setBoundsXYWidthHeightMoveResize_(0, 0, width, height, false, true)
 	}
 }
@@ -1690,13 +1690,13 @@ func (this *Shell) setZOrder_() {
 	if this.window == (nil) {
 		return
 	}
-	var cond163 *cocoa.NSView
+	var cond13 *cocoa.NSView
 	if this.scrollView != (nil) {
-		cond163 = upcastcocoaNSScrollViewTococoaNSView(this.scrollView)
+		cond13 = upcastcocoaNSScrollViewTococoaNSView(this.scrollView)
 	} else {
-		cond163 = this.View
+		cond13 = this.View
 	}
-	this.window.SetContentView(cond163)
+	this.window.SetContentView(cond13)
 	if this.FixResize() {
 		var rect cocoa.NSRect = this.window.Frame()
 		rect.Y = float64(0)
@@ -1720,13 +1720,13 @@ func (this *Shell) setZOrderSiblingAbove_(control *Control, above bool) {
 		}
 	} else {
 		var otherWindow *cocoa.NSWindow = control.impl.getShell_().window
-		var cond164 int32
+		var cond14 int32
 		if above {
-			cond164 = cocoa.OSNSWindowAbove
+			cond14 = cocoa.OSNSWindowAbove
 		} else {
-			cond164 = cocoa.OSNSWindowBelow
+			cond14 = cocoa.OSNSWindowBelow
 		}
-		this.window.OrderWindow(int64(cond164), otherWindow.WindowNumber())
+		this.window.OrderWindow(int64(cond14), otherWindow.WindowNumber())
 	}
 }
 
@@ -1951,13 +1951,13 @@ func (this *Shell) windowSendEvent_(id int64, sel int64, event int64) {
 	var type_ int32 = int32(nsEvent.Type())
 	switch type_ {
 	case cocoa.OSNSLeftMouseDown, cocoa.OSNSRightMouseDown, cocoa.OSNSOtherMouseDown:
-		var cond165 int64
+		var cond15 int64
 		if int64(this.display.clickCountButton) == nsEvent.ButtonNumber() {
-			cond165 = nsEvent.ClickCount()
+			cond15 = nsEvent.ClickCount()
 		} else {
-			cond165 = int64(1)
+			cond15 = int64(1)
 		}
-		this.display.clickCount = int32((cond165))
+		this.display.clickCount = int32((cond15))
 		this.display.clickCountButton = int32(nsEvent.ButtonNumber())
 		break
 	case cocoa.OSNSLeftMouseUp, cocoa.OSNSRightMouseUp, cocoa.OSNSOtherMouseUp, cocoa.OSNSMouseMoved:
@@ -2139,22 +2139,22 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 			}
 		} else {
 			style &= ^SHEET
-			var cond166 int32
+			var cond16 int32
 			if parent == (nil) {
-				cond166 = SHELL_TRIM
+				cond16 = SHELL_TRIM
 			} else {
-				cond166 = DIALOG_TRIM
+				cond16 = DIALOG_TRIM
 			}
-			style |= cond166
+			style |= cond16
 		}
 		if (style & mask) == 0 {
-			var cond167 int32
+			var cond17 int32
 			if parent == (nil) {
-				cond167 = APPLICATION_MODAL
+				cond17 = APPLICATION_MODAL
 			} else {
-				cond167 = PRIMARY_MODAL
+				cond17 = PRIMARY_MODAL
 			}
-			style |= cond167
+			style |= cond17
 		}
 	}
 	var bits int32 = style & ^mask

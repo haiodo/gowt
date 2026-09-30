@@ -153,8 +153,8 @@ func (this *DateTime) CreatePopupShell(year int32, month int32, day int32) {
 	}
 	if this.clickListener == (nil) {
 		this.clickListener = &ListenerFunc{fn: func(event *Event) {
-			c, ok637 := isWidgetToControl(event.Widget)
-			if ok637 && event.Widget != upcastDateTimeToWidget(this) {
+			c, ok1 := isWidgetToControl(event.Widget)
+			if ok1 && event.Widget != upcastDateTimeToWidget(this) {
 				if c.impl.getShell_() != this.popupShell {
 					this.HideCalendar()
 				}
@@ -257,23 +257,23 @@ func (this *DateTime) HideCalendar() {
 }
 
 func (this *DateTime) GetBezelInset() int32 {
-	var cond638 int32
+	var cond2 int32
 	if this.buttonView.Cell().ControlSize() == int64(cocoa.OSNSControlSizeMini) {
-		cond638 = 3
+		cond2 = 3
 	} else {
-		cond638 = 1
+		cond2 = 1
 	}
-	return cond638
+	return cond2
 }
 
 func (this *DateTime) GetBezelSize() int32 {
-	var cond639 int32
+	var cond3 int32
 	if this.buttonView.Cell().ControlSize() == int64(cocoa.OSNSControlSizeMini) {
-		cond639 = 6
+		cond3 = 6
 	} else {
-		cond639 = 4
+		cond3 = 4
 	}
-	return cond639
+	return cond3
 }
 
 func (this *DateTime) GetCalendarDate() *cocoa.NSCalendarDate {
@@ -307,13 +307,13 @@ func (this *DateTime) GetMonth() int32 {
 }
 
 func (this *DateTime) getNameText_() string {
-	var cond640 string
+	var cond4 string
 	if (this.style & TIME) != 0 {
-		cond640 = fmt.Sprintf("%d:%d:%d", this.GetHours(), this.GetMinutes(), this.GetSeconds())
+		cond4 = fmt.Sprintf("%d:%d:%d", this.GetHours(), this.GetMinutes(), this.GetSeconds())
 	} else {
-		cond640 = fmt.Sprintf("%d/%d/%d", (this.GetMonth() + 1), this.GetDay(), this.GetYear())
+		cond4 = fmt.Sprintf("%d/%d/%d", (this.GetMonth() + 1), this.GetDay(), this.GetYear())
 	}
-	return cond640
+	return cond4
 }
 
 func (this *DateTime) GetSeconds() int32 {

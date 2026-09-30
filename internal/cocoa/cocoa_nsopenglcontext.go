@@ -49,32 +49,32 @@ func (this *NSOpenGLContext) FlushBuffer() {
 }
 
 func (this *NSOpenGLContext) InitWithFormat(format *NSOpenGLPixelFormat, share *NSOpenGLContext) *NSOpenGLContext {
-	var cond519 int64
+	var cond1 int64
 	if format != (nil) {
-		cond519 = format.Id
+		cond1 = format.Id
 	} else {
-		cond519 = int64(0)
+		cond1 = int64(0)
 	}
-	var cond520 int64
+	var cond2 int64
 	if share != (nil) {
-		cond520 = share.Id
+		cond2 = share.Id
 	} else {
-		cond520 = int64(0)
+		cond2 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithFormat_shareContext_, cond519, cond520)
-	var cond521 *NSOpenGLContext
-	var cond522 *NSOpenGLContext
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithFormat_shareContext_, cond1, cond2)
+	var cond3 *NSOpenGLContext
+	var cond4 *NSOpenGLContext
 	if result != 0 {
-		cond522 = NewNSOpenGLContextOverload1(result)
+		cond4 = NewNSOpenGLContextOverload1(result)
 	} else {
-		cond522 = nil
+		cond4 = nil
 	}
 	if result == this.Id {
-		cond521 = this
+		cond3 = this
 	} else {
-		cond521 = (cond522)
+		cond3 = (cond4)
 	}
-	return cond521
+	return cond3
 }
 
 func (this *NSOpenGLContext) MakeCurrentContext() {
@@ -86,13 +86,13 @@ func (this *NSOpenGLContext) SetValues(vals []int32, param int64) {
 }
 
 func (this *NSOpenGLContext) SetView(view *NSView) {
-	var cond523 int64
+	var cond5 int64
 	if view != (nil) {
-		cond523 = view.Id
+		cond5 = view.Id
 	} else {
-		cond523 = int64(0)
+		cond5 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond523)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond5)
 }
 
 func (this *NSOpenGLContext) Update() {
@@ -101,22 +101,22 @@ func (this *NSOpenGLContext) Update() {
 
 func (this *NSOpenGLContext) View() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_view)
-	var cond524 *NSView
+	var cond6 *NSView
 	if result != 0 {
-		cond524 = NewNSViewOverload1(result)
+		cond6 = NewNSViewOverload1(result)
 	} else {
-		cond524 = nil
+		cond6 = nil
 	}
-	return cond524
+	return cond6
 }
 
 func NSOpenGLContextCurrentContext() *NSOpenGLContext {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenGLContext, OSSel_currentContext)
-	var cond525 *NSOpenGLContext
+	var cond7 *NSOpenGLContext
 	if result != 0 {
-		cond525 = NewNSOpenGLContextOverload1(result)
+		cond7 = NewNSOpenGLContextOverload1(result)
 	} else {
-		cond525 = nil
+		cond7 = nil
 	}
-	return cond525
+	return cond7
 }

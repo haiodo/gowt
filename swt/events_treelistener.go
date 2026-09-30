@@ -8,21 +8,21 @@ type TreeListener interface {
 }
 
 func TreeListenerTreeCollapsedAdapter(c func(*TreeEvent)) TreeListener {
-	anon54 := &TreeListenerAnon1{}
-	anon54.initTreeAdapter()
-	anon54.fnTreeCollapsed = func(e *TreeEvent) {
+	anon1 := &TreeListenerAnon1{}
+	anon1.initTreeAdapter()
+	anon1.fnTreeCollapsed = func(e *TreeEvent) {
 		c(e)
 	}
-	return anon54
+	return anon1
 }
 
 func TreeListenerTreeExpandedAdapter(c func(*TreeEvent)) TreeListener {
-	anon55 := &TreeListenerAnon2{}
-	anon55.initTreeAdapter()
-	anon55.fnTreeExpanded = func(e *TreeEvent) {
+	anon2 := &TreeListenerAnon2{}
+	anon2.initTreeAdapter()
+	anon2.fnTreeExpanded = func(e *TreeEvent) {
 		c(e)
 	}
-	return anon55
+	return anon2
 }
 
 // j2go: anonymous TreeAdapter subclass.

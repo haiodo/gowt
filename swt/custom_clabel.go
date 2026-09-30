@@ -228,43 +228,43 @@ func (this *CLabel) GetTopMargin() int32 {
 
 func (this *CLabel) InitAccessible() {
 	var accessible *Accessible = this.GetAccessible()
-	anon682 := &CLabelAnon1{}
-	anon682.initAccessibleAdapter()
-	anon682.fnGetName = func(e *AccessibleEvent) {
+	anon1 := &CLabelAnon1{}
+	anon1.initAccessibleAdapter()
+	anon1.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.GetText()
 	}
-	anon682.fnGetHelp = func(e *AccessibleEvent) {
+	anon1.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	anon682.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon1.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		var mnemonic uint16 = this._findMnemonic(this.text)
 		if int32(mnemonic) != int32('\u0000') {
 			e.Result = fmt.Sprintf("Alt+%c", mnemonic)
 		}
 	}
-	accessible.AddAccessibleListener(anon682)
-	anon683 := &CLabelAnon2{}
-	anon683.initAccessibleControlAdapter()
-	anon683.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	accessible.AddAccessibleListener(anon1)
+	anon2 := &CLabelAnon2{}
+	anon2.initAccessibleControlAdapter()
+	anon2.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		e.ChildID = ACCCHILDID_SELF
 	}
-	anon683.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon2.fnGetLocation = func(e *AccessibleControlEvent) {
 		var rect *Rectangle = this.GetDisplay().MapFromToRectangle(upcastCompositeToControl(this.GetParent()), nil, this.impl.getBounds_())
 		e.X = rect.X
 		e.Y = rect.Y
 		e.Width = rect.Width
 		e.Height = rect.Height
 	}
-	anon683.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon2.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = 0
 	}
-	anon683.fnGetRole = func(e *AccessibleControlEvent) {
+	anon2.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_LABEL
 	}
-	anon683.fnGetState = func(e *AccessibleControlEvent) {
+	anon2.fnGetState = func(e *AccessibleControlEvent) {
 		e.Detail = ACCSTATE_READONLY
 	}
-	accessible.AddAccessibleControlListener(anon683)
+	accessible.AddAccessibleControlListener(anon2)
 }
 
 func (this *CLabel) OnDispose(event *Event) {
@@ -813,14 +813,14 @@ func (this *CLabel) SplitString(text string) []string {
 			lines[int32(len(lines))-1] = jrt.Substring(text, start, -1)
 		} else {
 			var crlf bool = (pos > 0) && (int32(utf16.Encode([]rune(text))[pos-1]) == int32('\u000d'))
-			idx685 := int32(len(lines)) - 1
-			var cond684 int32
+			idx4 := int32(len(lines)) - 1
+			var cond3 int32
 			if crlf {
-				cond684 = 1
+				cond3 = 1
 			} else {
-				cond684 = 0
+				cond3 = 0
 			}
-			lines[idx685] = jrt.Substring(text, start, pos-(cond684))
+			lines[idx4] = jrt.Substring(text, start, pos-(cond3))
 			start = pos + 1
 			var newLines []string = make([]string, int32(len(lines))+1)
 			copy(newLines[0:], lines[0:0+int32(len(lines))])

@@ -150,9 +150,9 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 		var control *Control = children[i]
 		var data *RowData = castanyToRowData(control.GetLayoutData())
 		if data == (nil) || !data.Exclude {
-			t93 := count
+			t1 := count
 			count++
-			children[t93] = children[i]
+			children[t1] = children[i]
 		}
 	}
 	if count == 0 {
@@ -166,13 +166,13 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 			var child *Control = children[i]
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if width > DEFAULT && width < size.X && wrap {
-				var cond94 int32
+				var cond2 int32
 				if jrt.IsNil(child.GetLayoutData()) {
-					cond94 = DEFAULT
+					cond2 = DEFAULT
 				} else {
-					cond94 = (castanyToRowData(child.GetLayoutData())).Height
+					cond2 = (castanyToRowData(child.GetLayoutData())).Height
 				}
-				size = child.impl.computeSizeWHintHHintChanged_(width, cond94, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(width, cond2, flushCache)
 			}
 			childWidth = int32(math.Max(float64(childWidth), float64(size.X)))
 			childHeight = int32(math.Max(float64(childHeight), float64(size.Y)))
@@ -201,13 +201,13 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 		if this.Pack {
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if width > DEFAULT && width < size.X && wrap {
-				var cond95 int32
+				var cond3 int32
 				if jrt.IsNil(child.GetLayoutData()) {
-					cond95 = DEFAULT
+					cond3 = DEFAULT
 				} else {
-					cond95 = (castanyToRowData(child.GetLayoutData())).Height
+					cond3 = (castanyToRowData(child.GetLayoutData())).Height
 				}
-				size = child.impl.computeSizeWHintHHintChanged_(width, cond95, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(width, cond3, flushCache)
 			}
 			childWidth = size.X
 			childHeight = size.Y
@@ -313,9 +313,9 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 		var control *Control = children[i]
 		var data *RowData = castanyToRowData(control.GetLayoutData())
 		if data == (nil) || !data.Exclude {
-			t96 := count
+			t4 := count
 			count++
-			children[t96] = children[i]
+			children[t4] = children[i]
 		}
 	}
 	if count == 0 {
@@ -329,13 +329,13 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 			var child *Control = children[i]
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if height > DEFAULT && height < size.Y && wrap {
-				var cond97 int32
+				var cond5 int32
 				if jrt.IsNil(child.GetLayoutData()) {
-					cond97 = DEFAULT
+					cond5 = DEFAULT
 				} else {
-					cond97 = (castanyToRowData(child.GetLayoutData())).Width
+					cond5 = (castanyToRowData(child.GetLayoutData())).Width
 				}
-				size = child.impl.computeSizeWHintHHintChanged_(cond97, height, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(cond5, height, flushCache)
 			}
 			childWidth = int32(math.Max(float64(childWidth), float64(size.X)))
 			childHeight = int32(math.Max(float64(childHeight), float64(size.Y)))
@@ -364,13 +364,13 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 		if this.Pack {
 			var size *Point = this.ComputeSizeControlFlushCache(child, flushCache)
 			if height > DEFAULT && height < size.Y && wrap {
-				var cond98 int32
+				var cond6 int32
 				if jrt.IsNil(child.GetLayoutData()) {
-					cond98 = DEFAULT
+					cond6 = DEFAULT
 				} else {
-					cond98 = (castanyToRowData(child.GetLayoutData())).Width
+					cond6 = (castanyToRowData(child.GetLayoutData())).Width
 				}
-				size = child.impl.computeSizeWHintHHintChanged_(cond98, height, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(cond6, height, flushCache)
 			}
 			childWidth = size.X
 			childHeight = size.Y
@@ -466,13 +466,13 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 
 func (this *RowLayout) String() string {
 	var string_ string = fmt.Sprintf("%s {", this.GetName())
-	var cond99 string
+	var cond7 string
 	if this.Type != HORIZONTAL {
-		cond99 = "SWT.VERTICAL"
+		cond7 = "SWT.VERTICAL"
 	} else {
-		cond99 = "SWT.HORIZONTAL"
+		cond7 = "SWT.HORIZONTAL"
 	}
-	string_ += fmt.Sprintf("type=%s ", (cond99))
+	string_ += fmt.Sprintf("type=%s ", (cond7))
 	if this.MarginWidth != 0 {
 		string_ += fmt.Sprintf("marginWidth=%d ", this.MarginWidth)
 	}

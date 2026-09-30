@@ -102,32 +102,32 @@ func (this *TableItem) CalculateWidth(index int32, gcLike GCLike, rowSelected bo
 	if font == (nil) {
 		font = this.parent.impl.defaultFont_()
 	}
-	var cond660 string
+	var cond1 string
 	if this.strings == (nil) {
-		cond660 = ""
+		cond1 = ""
 	} else {
-		cond660 = this.strings[index]
+		cond1 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond660)
+		text = (cond1)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond661 *Image
+	var cond2 *Image
 	if this.images == (nil) {
-		cond661 = nil
+		cond2 = nil
 	} else {
-		cond661 = this.images[index]
+		cond2 = this.images[index]
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = (cond661)
+		image = (cond2)
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
 	if font.ExtraTraits != 0 {
@@ -137,13 +137,13 @@ func (this *TableItem) CalculateWidth(index int32, gcLike GCLike, rowSelected bo
 	} else {
 		cell.SetFont(font.Handle)
 		var str *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-		var cond662 string
+		var cond3 string
 		if text != "" {
-			cond662 = text
+			cond3 = text
 		} else {
-			cond662 = ""
+			cond3 = ""
 		}
-		str = str.InitWithString(cond662)
+		str = str.InitWithString(cond3)
 		cell.SetTitle(str)
 		str.Release()
 	}
@@ -210,28 +210,28 @@ func (this *TableItem) Clear() {
 }
 
 func (this *TableItem) CreateString(index int32) *cocoa.NSObject {
-	var cond663 string
+	var cond4 string
 	if this.strings == (nil) {
-		cond663 = ""
+		cond4 = ""
 	} else {
-		cond663 = this.strings[index]
+		cond4 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond663)
+		text = (cond4)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond664 string
+	var cond5 string
 	if text != "" {
-		cond664 = text
+		cond5 = text
 	} else {
-		cond664 = ""
+		cond5 = ""
 	}
-	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond664))
+	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond5))
 }
 
 func (this *TableItem) destroyWidget_() {
@@ -244,13 +244,13 @@ func (this *TableItem) GetBackground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond665 *Color
+	var cond6 *Color
 	if this.background != (nil) {
-		cond665 = this.background
+		cond6 = this.background
 	} else {
-		cond665 = this.parent.GetBackground()
+		cond6 = this.parent.GetBackground()
 	}
-	return cond665
+	return cond6
 }
 
 func (this *TableItem) GetBackgroundIndex(index int32) *Color {
@@ -361,13 +361,13 @@ func (this *TableItem) GetFont() *Font {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond666 *Font
+	var cond7 *Font
 	if this.font != (nil) {
-		cond666 = this.font
+		cond7 = this.font
 	} else {
-		cond666 = this.parent.GetFont()
+		cond7 = this.parent.GetFont()
 	}
-	return cond666
+	return cond7
 }
 
 func (this *TableItem) GetFontIndex(index int32) *Font {
@@ -390,13 +390,13 @@ func (this *TableItem) GetForeground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond667 *Color
+	var cond8 *Color
 	if this.foreground != (nil) {
-		cond667 = this.foreground
+		cond8 = this.foreground
 	} else {
-		cond667 = this.parent.impl.getForeground_()
+		cond8 = this.parent.impl.getForeground_()
 	}
-	return cond667
+	return cond8
 }
 
 func (this *TableItem) GetForegroundIndex(index int32) *Color {
@@ -458,17 +458,17 @@ func (this *TableItem) GetImageBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond668 *Image
+	var cond9 *Image
 	if this.images != (nil) {
-		cond668 = this.images[index]
+		cond9 = this.images[index]
 	} else {
-		cond668 = nil
+		cond9 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond668
+		image = cond9
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {
@@ -531,13 +531,13 @@ func (this *TableItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond669 string
+			var cond10 string
 			if string_ != "" {
-				cond669 = string_
+				cond10 = string_
 			} else {
-				cond669 = ""
+				cond10 = ""
 			}
-			return cond669
+			return cond10
 		}
 	}
 	return ""
@@ -552,17 +552,17 @@ func (this *TableItem) GetTextBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond670 *Image
+	var cond11 *Image
 	if this.images != (nil) {
-		cond670 = this.images[index]
+		cond11 = this.images[index]
 	} else {
-		cond670 = nil
+		cond11 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond670
+		image = cond11
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {

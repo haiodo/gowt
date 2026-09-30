@@ -147,13 +147,13 @@ func (this *ImageData) initImageDataWidthHeightDepthPaletteScanlinePadDataMaskPa
 	if data != (nil) && int32(len(data)) < minBytesPerLine*height {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond454 []int8
+	var cond5 []int8
 	if data != (nil) {
-		cond454 = data
+		cond5 = data
 	} else {
-		cond454 = make([]int8, bytesPerLine*height)
+		cond5 = make([]int8, bytesPerLine*height)
 	}
-	this.SetAllFields(width, height, depth, scanlinePad, bytesPerLine, cond454, palette, transparentPixel, maskData, maskPad, alphaData, alpha, type_, x, y, disposalMethod, delayTime)
+	this.SetAllFields(width, height, depth, scanlinePad, bytesPerLine, cond5, palette, transparentPixel, maskData, maskPad, alphaData, alpha, type_, x, y, disposalMethod, delayTime)
 }
 
 func (this *ImageData) SetAllFields(width int32, height int32, depth int32, scanlinePad int32, bytesPerLine int32, data []int8, paletteLike PaletteDataLike, transparentPixel int32, maskData []int8, maskPad int32, alphaData []int8, alpha int32, type_ int32, x int32, y int32, disposalMethod int32, delayTime int32) {
@@ -620,18 +620,18 @@ func (this *ImageData) GetRGBs() []*RGB {
 
 func (this *ImageData) GetTransparencyMask() *ImageData {
 	var transparencyType int32 = this.GetTransparencyType()
-	var sw455 *ImageData
+	var sw6 *ImageData
 	switch transparencyType {
 	case TRANSPARENCY_ALPHA:
-		sw455 = this.GetTransparencyMaskFromAlphaData()
+		sw6 = this.GetTransparencyMaskFromAlphaData()
 	case TRANSPARENCY_MASK:
-		sw455 = NewImageDataWidthHeightDepthPaletteScanlinePadData(this.Width, this.Height, 1, ImageDataBwPalette(), this.MaskPad, this.MaskData)
+		sw6 = NewImageDataWidthHeightDepthPaletteScanlinePadData(this.Width, this.Height, 1, ImageDataBwPalette(), this.MaskPad, this.MaskData)
 	case TRANSPARENCY_PIXEL:
-		sw455 = this.ColorMaskImage(this.TransparentPixel)
+		sw6 = this.ColorMaskImage(this.TransparentPixel)
 	default:
-		sw455 = this.ColorMaskImage(this.TransparentPixel)
+		sw6 = this.ColorMaskImage(this.TransparentPixel)
 	}
-	return sw455
+	return sw6
 }
 
 func (this *ImageData) GetTransparencyMaskFromAlphaData() *ImageData {
@@ -639,9 +639,9 @@ func (this *ImageData) GetTransparencyMaskFromAlphaData() *ImageData {
 	var offset int32 = 0
 	for y := int32(0); y < this.Height; y++ {
 		for x := int32(0); x < this.Width; x++ {
-			t456 := offset
+			t7 := offset
 			offset++
-			var a int8 = this.AlphaData[t456]
+			var a int8 = this.AlphaData[t7]
 			if int32(a) == 0 {
 				mask.SetPixel(x, y, 0)
 			} else {
@@ -666,13 +666,13 @@ func (this *ImageData) GetTransparencyType() int32 {
 }
 
 func (this *ImageData) GetByteOrder() int32 {
-	var cond457 int32
+	var cond8 int32
 	if this.Depth != 16 {
-		cond457 = ImageDataMSB_FIRST
+		cond8 = ImageDataMSB_FIRST
 	} else {
-		cond457 = ImageDataLSB_FIRST
+		cond8 = ImageDataLSB_FIRST
 	}
-	return cond457
+	return cond8
 }
 
 func (this *ImageData) ScaledTo(width int32, height int32) *ImageData {
@@ -1226,19 +1226,19 @@ func ImageDataBlit(srcData []int8, srcDepth int32, srcStride int32, srcOrder int
 	default:
 		return
 	}
-	var cond458 int32
+	var cond9 int32
 	if flipY {
-		cond458 = dhm1
+		cond9 = dhm1
 	} else {
-		cond458 = 0
+		cond9 = 0
 	}
-	var cond459 int32
+	var cond10 int32
 	if flipX {
-		cond459 = dwm1
+		cond10 = dwm1
 	} else {
-		cond459 = 0
+		cond10 = 0
 	}
-	var dpr int32 = (cond458)*destStride + (cond459)*dbpp
+	var dpr int32 = (cond9)*destStride + (cond10)*dbpp
 	var dprxi int32
 	if flipX {
 		dprxi = -dbpp
@@ -1658,19 +1658,19 @@ func ImageDataBlitSrcDataSrcDepthSrcStrideSrcOrderSrcWidthSrcHeightDestDataDestD
 	}
 	var srcPixelsPerStride int32 = srcStride * 8 / srcDepth
 	var dstPixelsPerStride int32 = destStride * 8 / destDepth
-	var cond474 int32
+	var cond25 int32
 	if flipY {
-		cond474 = dhm1
+		cond25 = dhm1
 	} else {
-		cond474 = 0
+		cond25 = 0
 	}
-	var cond475 int32
+	var cond26 int32
 	if flipX {
-		cond475 = dwm1
+		cond26 = dwm1
 	} else {
-		cond475 = 0
+		cond26 = 0
 	}
-	var dpr int32 = (cond474)*dstPixelsPerStride + (cond475)
+	var dpr int32 = (cond25)*dstPixelsPerStride + (cond26)
 	var dprxi int32
 	if flipX {
 		dprxi = -1
@@ -1970,18 +1970,18 @@ func ImageDataBlitSrcWidthSrcHeightSrcDataSrcDepthSrcStrideSrcOrderSrcRedsSrcGre
 				dp += dpad
 			}() {
 				for x := int32(0); x < srcWidth; x++ {
-					t490 := sp
+					t41 := sp
 					sp++
-					var index int32 = int32(srcData[t490]) & 0xff
-					t491 := dp
+					var index int32 = int32(srcData[t41]) & 0xff
+					t42 := dp
 					dp++
-					destData[t491] = srcReds[index]
-					t492 := dp
+					destData[t42] = srcReds[index]
+					t43 := dp
 					dp++
-					destData[t492] = srcGreens[index]
-					t493 := dp
+					destData[t43] = srcGreens[index]
+					t44 := dp
 					dp++
-					destData[t493] = srcBlues[index]
+					destData[t44] = srcBlues[index]
 				}
 			}
 		}
@@ -2000,19 +2000,19 @@ func ImageDataBlitSrcWidthSrcHeightSrcDataSrcDepthSrcStrideSrcOrderSrcRedsSrcGre
 				dp += dpad
 			}() {
 				for x := int32(0); x < srcWidth; x++ {
-					t494 := sp
+					t45 := sp
 					sp++
-					var index int32 = int32(srcData[t494]) & 0xff
+					var index int32 = int32(srcData[t45]) & 0xff
 					dp++
-					t495 := dp
+					t46 := dp
 					dp++
-					destData[t495] = srcReds[index]
-					t496 := dp
+					destData[t46] = srcReds[index]
+					t47 := dp
 					dp++
-					destData[t496] = srcGreens[index]
-					t497 := dp
+					destData[t47] = srcGreens[index]
+					t48 := dp
 					dp++
-					destData[t497] = srcBlues[index]
+					destData[t48] = srcBlues[index]
 				}
 			}
 		}
@@ -2525,9 +2525,9 @@ func init() {
 			}
 		}()
 		for b := int32(0); b < 9; b++ {
-			cond450 := make([]int8, 1<<b)
-			ImageDataANY_TO_EIGHT[b] = cond450
-			var data []int8 = cond450
+			cond1 := make([]int8, 1<<b)
+			ImageDataANY_TO_EIGHT[b] = cond1
+			var data []int8 = cond1
 			if b == 0 {
 				continue
 			}
@@ -2548,9 +2548,9 @@ func init() {
 				for ; v < 0x10000; func() {
 					v += inc
 				}() {
-					t453 := p
+					t4 := p
 					p++
-					data[t453] = int8((v >> 8))
+					data[t4] = int8((v >> 8))
 				}
 			}
 		}

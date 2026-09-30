@@ -570,13 +570,13 @@ func (this *Test_org_eclipse_swt_widgets_Tree) MakeCleanEnvironment(single bool)
 	if this.tree != (nil) {
 		this.tree.Dispose()
 	}
-	var cond82 int32
+	var cond1 int32
 	if single {
-		cond82 = swt.SINGLE
+		cond1 = swt.SINGLE
 	} else {
-		cond82 = swt.MULTI
+		cond1 = swt.MULTI
 	}
-	this.tree = swt.NewTree(upcastswtShellToswtComposite(this.shell), cond82)
+	this.tree = swt.NewTree(upcastswtShellToswtComposite(this.shell), cond1)
 	this.impl.setWidget_(upcastswtTreeToswtWidget(this.tree))
 }
 

@@ -49,23 +49,23 @@ func (this *WebView) CanGoForward() bool {
 }
 
 func (this *WebView) Copy(sender *id) {
-	var cond970 int64
+	var cond1 int64
 	if sender != (nil) {
-		cond970 = sender.Id
+		cond1 = sender.Id
 	} else {
-		cond970 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_copy_, cond970)
+	OSObjc_msgSendOverload44(this.Id, OSSel_copy_, cond1)
 }
 
 func (this *WebView) Cut(sender *id) {
-	var cond971 int64
+	var cond2 int64
 	if sender != (nil) {
-		cond971 = sender.Id
+		cond2 = sender.Id
 	} else {
-		cond971 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_cut_, cond971)
+	OSObjc_msgSendOverload44(this.Id, OSSel_cut_, cond2)
 }
 
 func (this *WebView) GoBack() bool {
@@ -77,161 +77,161 @@ func (this *WebView) GoForward() bool {
 }
 
 func (this *WebView) InitWithFrame(frame NSRect, frameName *NSString, groupName *NSString) *WebView {
-	var cond972 int64
+	var cond3 int64
 	if frameName != (nil) {
-		cond972 = frameName.Id
+		cond3 = frameName.Id
 	} else {
-		cond972 = int64(0)
+		cond3 = int64(0)
 	}
-	var cond973 int64
+	var cond4 int64
 	if groupName != (nil) {
-		cond973 = groupName.Id
+		cond4 = groupName.Id
 	} else {
-		cond973 = int64(0)
+		cond4 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload23(this.Id, OSSel_initWithFrame_frameName_groupName_, frame, cond972, cond973)
-	var cond974 *WebView
-	var cond975 *WebView
+	var result int64 = OSObjc_msgSendOverload23(this.Id, OSSel_initWithFrame_frameName_groupName_, frame, cond3, cond4)
+	var cond5 *WebView
+	var cond6 *WebView
 	if result != 0 {
-		cond975 = NewWebViewOverload1(result)
+		cond6 = NewWebViewOverload1(result)
 	} else {
-		cond975 = nil
+		cond6 = nil
 	}
 	if result == this.Id {
-		cond974 = this
+		cond5 = this
 	} else {
-		cond974 = (cond975)
+		cond5 = (cond6)
 	}
-	return cond974
+	return cond5
 }
 
 func (this *WebView) MainFrame() *WebFrame {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mainFrame)
-	var cond976 *WebFrame
+	var cond7 *WebFrame
 	if result != 0 {
-		cond976 = NewWebFrameOverload1(result)
+		cond7 = NewWebFrameOverload1(result)
 	} else {
-		cond976 = nil
+		cond7 = nil
 	}
-	return cond976
+	return cond7
 }
 
 func (this *WebView) Paste(sender *id) {
-	var cond977 int64
+	var cond8 int64
 	if sender != (nil) {
-		cond977 = sender.Id
+		cond8 = sender.Id
 	} else {
-		cond977 = int64(0)
+		cond8 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_paste_, cond977)
+	OSObjc_msgSendOverload44(this.Id, OSSel_paste_, cond8)
 }
 
 func (this *WebView) Reload(sender *id) {
-	var cond978 int64
+	var cond9 int64
 	if sender != (nil) {
-		cond978 = sender.Id
+		cond9 = sender.Id
 	} else {
-		cond978 = int64(0)
+		cond9 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_reload_, cond978)
+	OSObjc_msgSendOverload44(this.Id, OSSel_reload_, cond9)
 }
 
 func (this *WebView) SetApplicationNameForUserAgent(applicationNameForUserAgent *NSString) {
-	var cond979 int64
+	var cond10 int64
 	if applicationNameForUserAgent != (nil) {
-		cond979 = applicationNameForUserAgent.Id
+		cond10 = applicationNameForUserAgent.Id
 	} else {
-		cond979 = int64(0)
+		cond10 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setApplicationNameForUserAgent_, cond979)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setApplicationNameForUserAgent_, cond10)
 }
 
 func (this *WebView) SetCustomUserAgent(customUserAgent *NSString) {
-	var cond980 int64
+	var cond11 int64
 	if customUserAgent != (nil) {
-		cond980 = customUserAgent.Id
+		cond11 = customUserAgent.Id
 	} else {
-		cond980 = int64(0)
+		cond11 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCustomUserAgent_, cond980)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCustomUserAgent_, cond11)
 }
 
 func (this *WebView) SetDownloadDelegate(downloadDelegate *id) {
-	var cond981 int64
+	var cond12 int64
 	if downloadDelegate != (nil) {
-		cond981 = downloadDelegate.Id
+		cond12 = downloadDelegate.Id
 	} else {
-		cond981 = int64(0)
+		cond12 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDownloadDelegate_, cond981)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDownloadDelegate_, cond12)
 }
 
 func (this *WebView) SetFrameLoadDelegate(frameLoadDelegate *id) {
-	var cond982 int64
+	var cond13 int64
 	if frameLoadDelegate != (nil) {
-		cond982 = frameLoadDelegate.Id
+		cond13 = frameLoadDelegate.Id
 	} else {
-		cond982 = int64(0)
+		cond13 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFrameLoadDelegate_, cond982)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFrameLoadDelegate_, cond13)
 }
 
 func (this *WebView) SetPolicyDelegate(policyDelegate *id) {
-	var cond983 int64
+	var cond14 int64
 	if policyDelegate != (nil) {
-		cond983 = policyDelegate.Id
+		cond14 = policyDelegate.Id
 	} else {
-		cond983 = int64(0)
+		cond14 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPolicyDelegate_, cond983)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPolicyDelegate_, cond14)
 }
 
 func (this *WebView) SetPreferences(preferences *WebPreferences) {
-	var cond984 int64
+	var cond15 int64
 	if preferences != (nil) {
-		cond984 = preferences.Id
+		cond15 = preferences.Id
 	} else {
-		cond984 = int64(0)
+		cond15 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPreferences_, cond984)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPreferences_, cond15)
 }
 
 func (this *WebView) SetResourceLoadDelegate(resourceLoadDelegate *id) {
-	var cond985 int64
+	var cond16 int64
 	if resourceLoadDelegate != (nil) {
-		cond985 = resourceLoadDelegate.Id
+		cond16 = resourceLoadDelegate.Id
 	} else {
-		cond985 = int64(0)
+		cond16 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setResourceLoadDelegate_, cond985)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setResourceLoadDelegate_, cond16)
 }
 
 func (this *WebView) SetUIDelegate(UIDelegate *id) {
-	var cond986 int64
+	var cond17 int64
 	if UIDelegate != (nil) {
-		cond986 = UIDelegate.Id
+		cond17 = UIDelegate.Id
 	} else {
-		cond986 = int64(0)
+		cond17 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setUIDelegate_, cond986)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setUIDelegate_, cond17)
 }
 
 func (this *WebView) StopLoading(sender *id) {
-	var cond987 int64
+	var cond18 int64
 	if sender != (nil) {
-		cond987 = sender.Id
+		cond18 = sender.Id
 	} else {
-		cond987 = int64(0)
+		cond18 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_stopLoading_, cond987)
+	OSObjc_msgSendOverload44(this.Id, OSSel_stopLoading_, cond18)
 }
 
 func WebViewCanShowMIMEType(MIMEType *NSString) bool {
-	var cond988 int64
+	var cond19 int64
 	if MIMEType != (nil) {
-		cond988 = MIMEType.Id
+		cond19 = MIMEType.Id
 	} else {
-		cond988 = int64(0)
+		cond19 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(OSClass_WebView, OSSel_canShowMIMEType_, cond988)
+	return OSObjc_msgSend_boolOverload5(OSClass_WebView, OSSel_canShowMIMEType_, cond19)
 }

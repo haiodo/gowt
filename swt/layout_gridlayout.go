@@ -144,9 +144,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 		var control *Control = children[i]
 		var data *GridData = castanyToGridData(control.GetLayoutData())
 		if data == (nil) || !data.Exclude {
-			t100 := count
+			t1 := count
 			count++
-			children[t100] = children[i]
+			children[t1] = children[i]
 		}
 	}
 	if count == 0 {
@@ -156,9 +156,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 		var child *Control = children[i]
 		var data *GridData = castanyToGridData(child.GetLayoutData())
 		if data == (nil) {
-			cond101 := NewGridData()
-			data = cond101
-			child.SetLayoutData(cond101)
+			cond2 := NewGridData()
+			data = cond2
+			child.SetLayoutData(cond2)
 		}
 		if flushCache {
 			data.FlushCache()
@@ -167,8 +167,8 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 		if data.GrabExcessHorizontalSpace && data.MinimumWidth > 0 {
 			if data.cacheWidth < data.MinimumWidth {
 				var trim int32 = 0
-				_, ok102 := isControlToScrollable(child)
-				if ok102 {
+				_, ok3 := isControlToScrollable(child)
+				if ok3 {
 					var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 					trim = rect.Width
 				} else {
@@ -188,11 +188,11 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 	var rowCount int32 = 0
 	var columnCount int32 = this.NumColumns
 	var grid [][]*Control = func() [][]*Control {
-		a103 := make([][]*Control, 4)
-		for i := range a103 {
-			a103[i] = make([]*Control, columnCount)
+		a4 := make([][]*Control, 4)
+		for i := range a4 {
+			a4[i] = make([]*Control, columnCount)
 		}
-		return a103
+		return a4
 	}()
 	for i := int32(0); i < count; i++ {
 		var child *Control = children[i]
@@ -203,11 +203,11 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 			var lastRow int32 = row + vSpan
 			if lastRow >= int32(len(grid)) {
 				var newGrid [][]*Control = func() [][]*Control {
-					a104 := make([][]*Control, lastRow+4)
-					for i := range a104 {
-						a104[i] = make([]*Control, columnCount)
+					a5 := make([][]*Control, lastRow+4)
+					for i := range a5 {
+						a5[i] = make([]*Control, columnCount)
 					}
-					return a104
+					return a5
 				}()
 				copy(newGrid[0:], grid[0:0+int32(len(grid))])
 				grid = newGrid
@@ -302,9 +302,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 							var remainder int32 = (w + spanWidth) % hSpan
 							var last int32 = -1
 							for k := int32(0); k < hSpan; k++ {
-								cond105 := j - k
-								last = cond105
-								widths[cond105] = int32(math.Max(float64(equalWidth), float64(widths[j-k])))
+								cond6 := j - k
+								last = cond6
+								widths[cond6] = int32(math.Max(float64(equalWidth), float64(widths[j-k])))
 							}
 							if last > -1 {
 								widths[last] += remainder
@@ -318,9 +318,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 								var last int32 = -1
 								for k := int32(0); k < hSpan; k++ {
 									if expandColumn[j-k] {
-										cond106 := j - k
-										last = cond106
-										widths[cond106] += delta
+										cond7 := j - k
+										last = cond7
+										widths[cond7] += delta
 									}
 								}
 								if last > -1 {
@@ -345,9 +345,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 								var last int32 = -1
 								for k := int32(0); k < hSpan; k++ {
 									if expandColumn[j-k] {
-										cond107 := j - k
-										last = cond107
-										minWidths[cond107] += delta
+										cond8 := j - k
+										last = cond8
+										minWidths[cond8] += delta
 									}
 								}
 								if last > -1 {
@@ -389,9 +389,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 				for j := int32(0); j < columnCount; j++ {
 					if expandColumn[j] {
 						if widths[j]+delta > minWidths[j] {
-							cond108 := j
-							last = cond108
-							widths[cond108] = widths[j] + delta
+							cond9 := j
+							last = cond9
+							widths[cond9] = widths[j] + delta
 						} else {
 							widths[j] = minWidths[j]
 							expandColumn[j] = false
@@ -433,9 +433,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 											var last2 int32 = -1
 											for k := int32(0); k < hSpan; k++ {
 												if expandColumn[j-k] {
-													cond109 := j - k
-													last2 = cond109
-													widths[cond109] += delta2
+													cond10 := j - k
+													last2 = cond10
+													widths[cond10] += delta2
 												}
 											}
 											if last2 > -1 {
@@ -478,8 +478,8 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 						currentWidth += (hSpan-1)*this.HorizontalSpacing - data.HorizontalIndent
 						if (currentWidth != data.cacheWidth && data.HorizontalAlignment == FILL) || (data.cacheWidth > currentWidth) {
 							var trim int32 = 0
-							_, ok110 := isControlToScrollable(child)
-							if ok110 {
+							_, ok11 := isControlToScrollable(child)
+							if ok11 {
 								var rect *Rectangle = (castControlToScrollable(child)).impl.computeTrim_(0, 0, 0, 0)
 								trim = rect.Width
 							} else {
@@ -494,9 +494,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 							if flush == (nil) {
 								flush = make([]*GridData, count)
 							}
-							t111 := flushLength
+							t12 := flushLength
 							flushLength++
-							flush[t111] = data
+							flush[t12] = data
 						}
 					}
 				}
@@ -563,9 +563,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 							var last int32 = -1
 							for k := int32(0); k < vSpan; k++ {
 								if expandRow[i-k] {
-									cond112 := i - k
-									last = cond112
-									heights[cond112] += delta
+									cond13 := i - k
+									last = cond13
+									heights[cond13] += delta
 								}
 							}
 							if last > -1 {
@@ -589,9 +589,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 								var last int32 = -1
 								for k := int32(0); k < vSpan; k++ {
 									if expandRow[i-k] {
-										cond113 := i - k
-										last = cond113
-										minHeights[cond113] += delta
+										cond14 := i - k
+										last = cond14
+										minHeights[cond14] += delta
 									}
 								}
 								if last > -1 {
@@ -617,9 +617,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 			for i := int32(0); i < rowCount; i++ {
 				if expandRow[i] {
 					if heights[i]+delta > minHeights[i] {
-						cond114 := i
-						last = cond114
-						heights[cond114] = heights[i] + delta
+						cond15 := i
+						last = cond15
+						heights[cond15] = heights[i] + delta
 					} else {
 						heights[i] = minHeights[i]
 						expandRow[i] = false
@@ -661,9 +661,9 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 										var last2 int32 = -1
 										for k := int32(0); k < vSpan; k++ {
 											if expandRow[i-k] {
-												cond115 := i - k
-												last2 = cond115
-												heights[cond115] += delta2
+												cond16 := i - k
+												last2 = cond16
+												heights[cond16] += delta2
 											}
 										}
 										if last2 > -1 {

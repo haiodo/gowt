@@ -141,13 +141,13 @@ func (this *TaskItem) SetOverlayImage(overlayImageLike ImageLike) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.overlayImage = overlayImage
-	var cond644 string
+	var cond1 string
 	if overlayImage != (nil) {
-		cond644 = ""
+		cond1 = ""
 	} else {
-		cond644 = this.overlayText
+		cond1 = this.overlayText
 	}
-	this.UpdateOverlayText(cond644)
+	this.UpdateOverlayText(cond1)
 	this.UpdateImage()
 }
 

@@ -80,14 +80,14 @@ func (this *Test_org_eclipse_swt_widgets_Menu) Test_addHelpListenerLorg_eclipse_
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	this.listenerCalled = false
-	anon86 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
-	anon86.fnMenuShown = func(e *swt.MenuEvent) {
+	anon1 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
+	anon1.fnMenuShown = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	anon86.fnMenuHidden = func(e *swt.MenuEvent) {
+	anon1.fnMenuHidden = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	var menuListener swt.MenuListener = anon86
+	var menuListener swt.MenuListener = anon1
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.menu.AddMenuListener(nil)
 	}, "No exception thrown for addMenuListener with null argument")

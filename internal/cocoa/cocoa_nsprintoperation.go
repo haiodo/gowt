@@ -46,24 +46,24 @@ func (this *NSPrintOperation) CleanUpOperation() {
 
 func (this *NSPrintOperation) Context() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_context)
-	var cond581 *NSGraphicsContext
+	var cond1 *NSGraphicsContext
 	if result != 0 {
-		cond581 = NewNSGraphicsContextOverload1(result)
+		cond1 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond581 = nil
+		cond1 = nil
 	}
-	return cond581
+	return cond1
 }
 
 func (this *NSPrintOperation) CreateContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_createContext)
-	var cond582 *NSGraphicsContext
+	var cond2 *NSGraphicsContext
 	if result != 0 {
-		cond582 = NewNSGraphicsContextOverload1(result)
+		cond2 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond582 = nil
+		cond2 = nil
 	}
-	return cond582
+	return cond2
 }
 
 func (this *NSPrintOperation) DeliverResult() bool {
@@ -79,13 +79,13 @@ func (this *NSPrintOperation) RunOperation() bool {
 }
 
 func (this *NSPrintOperation) SetJobTitle(jobTitle *NSString) {
-	var cond583 int64
+	var cond3 int64
 	if jobTitle != (nil) {
-		cond583 = jobTitle.Id
+		cond3 = jobTitle.Id
 	} else {
-		cond583 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setJobTitle_, cond583)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setJobTitle_, cond3)
 }
 
 func (this *NSPrintOperation) SetShowsPrintPanel(showsPrintPanel bool) {
@@ -97,34 +97,34 @@ func (this *NSPrintOperation) SetShowsProgressPanel(showsProgressPanel bool) {
 }
 
 func NSPrintOperationPrintOperationWithView(view *NSView, printInfo *NSPrintInfo) *NSPrintOperation {
-	var cond584 int64
+	var cond4 int64
 	if view != (nil) {
-		cond584 = view.Id
+		cond4 = view.Id
 	} else {
-		cond584 = int64(0)
+		cond4 = int64(0)
 	}
-	var cond585 int64
+	var cond5 int64
 	if printInfo != (nil) {
-		cond585 = printInfo.Id
+		cond5 = printInfo.Id
 	} else {
-		cond585 = int64(0)
+		cond5 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(OSClass_NSPrintOperation, OSSel_printOperationWithView_printInfo_, cond584, cond585)
-	var cond586 *NSPrintOperation
+	var result int64 = OSObjc_msgSendOverload54(OSClass_NSPrintOperation, OSSel_printOperationWithView_printInfo_, cond4, cond5)
+	var cond6 *NSPrintOperation
 	if result != 0 {
-		cond586 = NewNSPrintOperationOverload1(result)
+		cond6 = NewNSPrintOperationOverload1(result)
 	} else {
-		cond586 = nil
+		cond6 = nil
 	}
-	return cond586
+	return cond6
 }
 
 func NSPrintOperationSetCurrentOperation(operation *NSPrintOperation) {
-	var cond587 int64
+	var cond7 int64
 	if operation != (nil) {
-		cond587 = operation.Id
+		cond7 = operation.Id
 	} else {
-		cond587 = int64(0)
+		cond7 = int64(0)
 	}
-	OSObjc_msgSendOverload44(OSClass_NSPrintOperation, OSSel_setCurrentOperation_, cond587)
+	OSObjc_msgSendOverload44(OSClass_NSPrintOperation, OSSel_setCurrentOperation_, cond7)
 }

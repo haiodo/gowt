@@ -42,9 +42,9 @@ func (this *Tray) CreateItem(itemLike TrayItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t641 := this.itemCount
+	t1 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t641-index])
+	copy(this.items[index+1:], this.items[index:index+t1-index])
 	this.items[index] = item
 }
 

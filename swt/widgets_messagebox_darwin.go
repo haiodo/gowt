@@ -139,22 +139,22 @@ func (this *MessageBox) Open() int32 {
 		alert.AddButtonWithTitle(title)
 		break
 	}
-	var cond560 string
+	var cond1 string
 	if this.title != "" {
-		cond560 = this.title
+		cond1 = this.title
 	} else {
-		cond560 = ""
+		cond1 = ""
 	}
-	title = cocoa.NSStringStringWith(cond560)
+	title = cocoa.NSStringStringWith(cond1)
 	var panel *cocoa.NSPanel = alert.Window()
 	panel.Impl().SetTitle(title)
-	var cond561 string
+	var cond2 string
 	if this.message != "" {
-		cond561 = this.message
+		cond2 = this.message
 	} else {
-		cond561 = ""
+		cond2 = ""
 	}
-	var message *cocoa.NSString = cocoa.NSStringStringWith(cond561)
+	var message *cocoa.NSString = cocoa.NSStringStringWith(cond2)
 	alert.SetMessageText(message)
 	var jniRef int64 = int64(0)
 	var delegate *cocoa.SWTPanelDelegate = nil

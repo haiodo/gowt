@@ -41,49 +41,49 @@ func (this *NSView) initNSViewOverload2(id *id) {
 }
 
 func (this *NSView) AcceptsFirstMouse(theEvent *NSEvent) bool {
-	var cond850 int64
+	var cond1 int64
 	if theEvent != (nil) {
-		cond850 = theEvent.Id
+		cond1 = theEvent.Id
 	} else {
-		cond850 = int64(0)
+		cond1 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_acceptsFirstMouse_, cond850)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_acceptsFirstMouse_, cond1)
 }
 
 func (this *NSView) AddSubview(aView *NSView) {
-	var cond851 int64
+	var cond2 int64
 	if aView != (nil) {
-		cond851 = aView.Id
+		cond2 = aView.Id
 	} else {
-		cond851 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addSubview_, cond851)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addSubview_, cond2)
 }
 
 func (this *NSView) AddSubviewAViewPlaceOtherView(aView *NSView, place int64, otherView *NSView) {
-	var cond852 int64
+	var cond3 int64
 	if aView != (nil) {
-		cond852 = aView.Id
+		cond3 = aView.Id
 	} else {
-		cond852 = int64(0)
+		cond3 = int64(0)
 	}
-	var cond853 int64
+	var cond4 int64
 	if otherView != (nil) {
-		cond853 = otherView.Id
+		cond4 = otherView.Id
 	} else {
-		cond853 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSendOverload58(this.Id, OSSel_addSubview_positioned_relativeTo_, cond852, place, cond853)
+	OSObjc_msgSendOverload58(this.Id, OSSel_addSubview_positioned_relativeTo_, cond3, place, cond4)
 }
 
 func (this *NSView) AddToolTipRect(aRect NSRect, anObject *id, data int64) int64 {
-	var cond854 int64
+	var cond5 int64
 	if anObject != (nil) {
-		cond854 = anObject.Id
+		cond5 = anObject.Id
 	} else {
-		cond854 = int64(0)
+		cond5 = int64(0)
 	}
-	return OSObjc_msgSendOverload23(this.Id, OSSel_addToolTipRect_owner_userData_, aRect, cond854, data)
+	return OSObjc_msgSendOverload23(this.Id, OSSel_addToolTipRect_owner_userData_, aRect, cond5, data)
 }
 
 func (this *NSView) BeginDocument() {
@@ -96,13 +96,13 @@ func (this *NSView) BeginPageInRect(aRect NSRect, location NSPoint) {
 
 func (this *NSView) BitmapImageRepForCachingDisplayInRect(rect NSRect) *NSBitmapImageRep {
 	var result int64 = OSObjc_msgSendOverload13(this.Id, OSSel_bitmapImageRepForCachingDisplayInRect_, rect)
-	var cond855 *NSBitmapImageRep
+	var cond6 *NSBitmapImageRep
 	if result != 0 {
-		cond855 = NewNSBitmapImageRepOverload1(result)
+		cond6 = NewNSBitmapImageRepOverload1(result)
 	} else {
-		cond855 = nil
+		cond6 = nil
 	}
-	return cond855
+	return cond6
 }
 
 func (this *NSView) Bounds() NSRect {
@@ -112,13 +112,13 @@ func (this *NSView) Bounds() NSRect {
 }
 
 func (this *NSView) CacheDisplayInRect(rect NSRect, bitmapImageRep *NSBitmapImageRep) {
-	var cond856 int64
+	var cond7 int64
 	if bitmapImageRep != (nil) {
-		cond856 = bitmapImageRep.Id
+		cond7 = bitmapImageRep.Id
 	} else {
-		cond856 = int64(0)
+		cond7 = int64(0)
 	}
-	OSObjc_msgSendOverload21(this.Id, OSSel_cacheDisplayInRect_toBitmapImageRep_, rect, cond856)
+	OSObjc_msgSendOverload21(this.Id, OSSel_cacheDisplayInRect_toBitmapImageRep_, rect, cond7)
 }
 
 func (this *NSView) CanBecomeKeyView() bool {
@@ -127,49 +127,49 @@ func (this *NSView) CanBecomeKeyView() bool {
 
 func (this *NSView) ConvertPoint_fromView_(aPoint NSPoint, aView *NSView) NSPoint {
 	var result NSPoint = NSPoint{}
-	var cond857 int64
+	var cond8 int64
 	if aView != (nil) {
-		cond857 = aView.Id
+		cond8 = aView.Id
 	} else {
-		cond857 = int64(0)
+		cond8 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload4(&result, this.Id, OSSel_convertPoint_fromView_, aPoint, cond857)
+	OSObjc_msgSend_stretOverload4(&result, this.Id, OSSel_convertPoint_fromView_, aPoint, cond8)
 	return result
 }
 
 func (this *NSView) ConvertPoint_toView_(aPoint NSPoint, aView *NSView) NSPoint {
 	var result NSPoint = NSPoint{}
-	var cond858 int64
+	var cond9 int64
 	if aView != (nil) {
-		cond858 = aView.Id
+		cond9 = aView.Id
 	} else {
-		cond858 = int64(0)
+		cond9 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload4(&result, this.Id, OSSel_convertPoint_toView_, aPoint, cond858)
+	OSObjc_msgSend_stretOverload4(&result, this.Id, OSSel_convertPoint_toView_, aPoint, cond9)
 	return result
 }
 
 func (this *NSView) ConvertRect_fromView_(aRect NSRect, aView *NSView) NSRect {
 	var result NSRect = NSRect{}
-	var cond859 int64
+	var cond10 int64
 	if aView != (nil) {
-		cond859 = aView.Id
+		cond10 = aView.Id
 	} else {
-		cond859 = int64(0)
+		cond10 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_convertRect_fromView_, aRect, cond859)
+	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_convertRect_fromView_, aRect, cond10)
 	return result
 }
 
 func (this *NSView) ConvertRect_toView_(aRect NSRect, aView *NSView) NSRect {
 	var result NSRect = NSRect{}
-	var cond860 int64
+	var cond11 int64
 	if aView != (nil) {
-		cond860 = aView.Id
+		cond11 = aView.Id
 	} else {
-		cond860 = int64(0)
+		cond11 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_convertRect_toView_, aRect, cond860)
+	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_convertRect_toView_, aRect, cond11)
 	return result
 }
 
@@ -186,41 +186,41 @@ func (this *NSView) DisplayIfNeeded() {
 }
 
 func (this *NSView) DisplayRectIgnoringOpacity(aRect NSRect, context *NSGraphicsContext) {
-	var cond861 int64
+	var cond12 int64
 	if context != (nil) {
-		cond861 = context.Id
+		cond12 = context.Id
 	} else {
-		cond861 = int64(0)
+		cond12 = int64(0)
 	}
-	OSObjc_msgSendOverload21(this.Id, OSSel_displayRectIgnoringOpacity_inContext_, aRect, cond861)
+	OSObjc_msgSendOverload21(this.Id, OSSel_displayRectIgnoringOpacity_inContext_, aRect, cond12)
 }
 
 func (this *NSView) DragImage(anImage *NSImage, viewLocation NSPoint, initialOffset NSSize, event *NSEvent, pboard *NSPasteboard, sourceObj *id, slideFlag bool) {
-	var cond862 int64
+	var cond13 int64
 	if anImage != (nil) {
-		cond862 = anImage.Id
+		cond13 = anImage.Id
 	} else {
-		cond862 = int64(0)
+		cond13 = int64(0)
 	}
-	var cond863 int64
+	var cond14 int64
 	if event != (nil) {
-		cond863 = event.Id
+		cond14 = event.Id
 	} else {
-		cond863 = int64(0)
+		cond14 = int64(0)
 	}
-	var cond864 int64
+	var cond15 int64
 	if pboard != (nil) {
-		cond864 = pboard.Id
+		cond15 = pboard.Id
 	} else {
-		cond864 = int64(0)
+		cond15 = int64(0)
 	}
-	var cond865 int64
+	var cond16 int64
 	if sourceObj != (nil) {
-		cond865 = sourceObj.Id
+		cond16 = sourceObj.Id
 	} else {
-		cond865 = int64(0)
+		cond16 = int64(0)
 	}
-	OSObjc_msgSendOverload46(this.Id, OSSel_dragImage_at_offset_event_pasteboard_source_slideBack_, cond862, viewLocation, initialOffset, cond863, cond864, cond865, slideFlag)
+	OSObjc_msgSendOverload46(this.Id, OSSel_dragImage_at_offset_event_pasteboard_source_slideBack_, cond13, viewLocation, initialOffset, cond14, cond15, cond16, slideFlag)
 }
 
 func (this *NSView) DrawRect(dirtyRect NSRect) {
@@ -243,46 +243,46 @@ func (this *NSView) Frame() NSRect {
 
 func (this *NSView) HitTest(aPoint NSPoint) *NSView {
 	var result int64 = OSObjc_msgSendOverload2(this.Id, OSSel_hitTest_, aPoint)
-	var cond866 *NSView
-	var cond867 *NSView
+	var cond17 *NSView
+	var cond18 *NSView
 	if result != 0 {
-		cond867 = NewNSViewOverload1(result)
+		cond18 = NewNSViewOverload1(result)
 	} else {
-		cond867 = nil
+		cond18 = nil
 	}
 	if result == this.Id {
-		cond866 = this
+		cond17 = this
 	} else {
-		cond866 = (cond867)
+		cond17 = (cond18)
 	}
-	return cond866
+	return cond17
 }
 
 func (this *NSView) InitWithFrame(frameRect NSRect) *NSView {
 	var result int64 = OSObjc_msgSendOverload13(this.Id, OSSel_initWithFrame_, frameRect)
-	var cond868 *NSView
-	var cond869 *NSView
+	var cond19 *NSView
+	var cond20 *NSView
 	if result != 0 {
-		cond869 = NewNSViewOverload1(result)
+		cond20 = NewNSViewOverload1(result)
 	} else {
-		cond869 = nil
+		cond20 = nil
 	}
 	if result == this.Id {
-		cond868 = this
+		cond19 = this
 	} else {
-		cond868 = (cond869)
+		cond19 = (cond20)
 	}
-	return cond868
+	return cond19
 }
 
 func (this *NSView) IsDescendantOf(aView *NSView) bool {
-	var cond870 int64
+	var cond21 int64
 	if aView != (nil) {
-		cond870 = aView.Id
+		cond21 = aView.Id
 	} else {
-		cond870 = int64(0)
+		cond21 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isDescendantOf_, cond870)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isDescendantOf_, cond21)
 }
 
 func (this *NSView) IsFlipped() bool {
@@ -303,13 +303,13 @@ func (this *NSView) IsOpaque() bool {
 
 func (this *NSView) Layer() *CALayer {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_layer)
-	var cond871 *CALayer
+	var cond22 *CALayer
 	if result != 0 {
-		cond871 = NewCALayerOverload1(result)
+		cond22 = NewCALayerOverload1(result)
 	} else {
-		cond871 = nil
+		cond22 = nil
 	}
-	return cond871
+	return cond22
 }
 
 func (this *NSView) LockFocus() {
@@ -321,20 +321,20 @@ func (this *NSView) LockFocusIfCanDraw() bool {
 }
 
 func (this *NSView) MenuForEvent(event *NSEvent) *NSMenu {
-	var cond872 int64
+	var cond23 int64
 	if event != (nil) {
-		cond872 = event.Id
+		cond23 = event.Id
 	} else {
-		cond872 = int64(0)
+		cond23 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_menuForEvent_, cond872)
-	var cond873 *NSMenu
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_menuForEvent_, cond23)
+	var cond24 *NSMenu
 	if result != 0 {
-		cond873 = NewNSMenuOverload1(result)
+		cond24 = NewNSMenuOverload1(result)
 	} else {
-		cond873 = nil
+		cond24 = nil
 	}
-	return cond873
+	return cond24
 }
 
 func (this *NSView) Mouse(aPoint NSPoint, aRect NSRect) bool {
@@ -350,13 +350,13 @@ func (this *NSView) NeedsPanelToBecomeKey() bool {
 }
 
 func (this *NSView) RegisterForDraggedTypes(newTypes *NSArray) {
-	var cond874 int64
+	var cond25 int64
 	if newTypes != (nil) {
-		cond874 = newTypes.Id
+		cond25 = newTypes.Id
 	} else {
-		cond874 = int64(0)
+		cond25 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_registerForDraggedTypes_, cond874)
+	OSObjc_msgSendOverload44(this.Id, OSSel_registerForDraggedTypes_, cond25)
 }
 
 func (this *NSView) RemoveFromSuperview() {
@@ -368,13 +368,13 @@ func (this *NSView) RemoveToolTip(tag int64) {
 }
 
 func (this *NSView) RemoveTrackingArea(trackingArea *NSTrackingArea) {
-	var cond875 int64
+	var cond26 int64
 	if trackingArea != (nil) {
-		cond875 = trackingArea.Id
+		cond26 = trackingArea.Id
 	} else {
-		cond875 = int64(0)
+		cond26 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeTrackingArea_, cond875)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeTrackingArea_, cond26)
 }
 
 func (this *NSView) ResetCursorRects() {
@@ -382,13 +382,13 @@ func (this *NSView) ResetCursorRects() {
 }
 
 func (this *NSView) ScrollClipView(aClipView *NSClipView, aPoint NSPoint) {
-	var cond876 int64
+	var cond27 int64
 	if aClipView != (nil) {
-		cond876 = aClipView.Id
+		cond27 = aClipView.Id
 	} else {
-		cond876 = int64(0)
+		cond27 = int64(0)
 	}
-	OSObjc_msgSendOverload45(this.Id, OSSel_scrollClipView_toPoint_, cond876, aPoint)
+	OSObjc_msgSendOverload45(this.Id, OSSel_scrollClipView_toPoint_, cond27, aPoint)
 }
 
 func (this *NSView) ScrollPoint(aPoint NSPoint) {
@@ -448,13 +448,13 @@ func (this *NSView) SetNeedsDisplayInRect(invalidRect NSRect) {
 }
 
 func (this *NSView) SetToolTip(toolTip *NSString) {
-	var cond877 int64
+	var cond28 int64
 	if toolTip != (nil) {
-		cond877 = toolTip.Id
+		cond28 = toolTip.Id
 	} else {
-		cond877 = int64(0)
+		cond28 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond877)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond28)
 }
 
 func (this *NSView) SetWantsRestingTouches(wantsRestingTouches bool) {
@@ -462,52 +462,52 @@ func (this *NSView) SetWantsRestingTouches(wantsRestingTouches bool) {
 }
 
 func (this *NSView) ShouldDelayWindowOrderingForEvent(theEvent *NSEvent) bool {
-	var cond878 int64
+	var cond29 int64
 	if theEvent != (nil) {
-		cond878 = theEvent.Id
+		cond29 = theEvent.Id
 	} else {
-		cond878 = int64(0)
+		cond29 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_shouldDelayWindowOrderingForEvent_, cond878)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_shouldDelayWindowOrderingForEvent_, cond29)
 }
 
 func (this *NSView) Subviews() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_subviews)
-	var cond879 *NSArray
+	var cond30 *NSArray
 	if result != 0 {
-		cond879 = NewNSArrayOverload1(result)
+		cond30 = NewNSArrayOverload1(result)
 	} else {
-		cond879 = nil
+		cond30 = nil
 	}
-	return cond879
+	return cond30
 }
 
 func (this *NSView) Superview() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_superview)
-	var cond880 *NSView
-	var cond881 *NSView
+	var cond31 *NSView
+	var cond32 *NSView
 	if result != 0 {
-		cond881 = NewNSViewOverload1(result)
+		cond32 = NewNSViewOverload1(result)
 	} else {
-		cond881 = nil
+		cond32 = nil
 	}
 	if result == this.Id {
-		cond880 = this
+		cond31 = this
 	} else {
-		cond880 = (cond881)
+		cond31 = (cond32)
 	}
-	return cond880
+	return cond31
 }
 
 func (this *NSView) TrackingAreas() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_trackingAreas)
-	var cond882 *NSArray
+	var cond33 *NSArray
 	if result != 0 {
-		cond882 = NewNSArrayOverload1(result)
+		cond33 = NewNSArrayOverload1(result)
 	} else {
-		cond882 = nil
+		cond33 = nil
 	}
-	return cond882
+	return cond33
 }
 
 func (this *NSView) UnlockFocus() {
@@ -527,13 +527,13 @@ func (this *NSView) ViewDidMoveToWindow() {
 }
 
 func (this *NSView) ViewWillMoveToWindow(newWindow *NSWindow) {
-	var cond883 int64
+	var cond34 int64
 	if newWindow != (nil) {
-		cond883 = newWindow.Id
+		cond34 = newWindow.Id
 	} else {
-		cond883 = int64(0)
+		cond34 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_viewWillMoveToWindow_, cond883)
+	OSObjc_msgSendOverload44(this.Id, OSSel_viewWillMoveToWindow_, cond34)
 }
 
 func (this *NSView) VisibleRect() NSRect {
@@ -544,11 +544,11 @@ func (this *NSView) VisibleRect() NSRect {
 
 func (this *NSView) Window() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond884 *NSWindow
+	var cond35 *NSWindow
 	if result != 0 {
-		cond884 = NewNSWindowOverload1(result)
+		cond35 = NewNSWindowOverload1(result)
 	} else {
-		cond884 = nil
+		cond35 = nil
 	}
-	return cond884
+	return cond35
 }

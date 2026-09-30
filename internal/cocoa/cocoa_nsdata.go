@@ -54,11 +54,11 @@ func (this *NSData) Length() int64 {
 
 func NSDataDataWithBytes(bytes []int8, length int64) *NSData {
 	var result int64 = OSObjc_msgSendOverload31(OSClass_NSData, OSSel_dataWithBytes_length_, bytes, length)
-	var cond223 *NSData
+	var cond1 *NSData
 	if result != 0 {
-		cond223 = NewNSDataOverload1(result)
+		cond1 = NewNSDataOverload1(result)
 	} else {
-		cond223 = nil
+		cond1 = nil
 	}
-	return cond223
+	return cond1
 }

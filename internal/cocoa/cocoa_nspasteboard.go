@@ -41,198 +41,198 @@ func (this *NSPasteboard) initNSPasteboardOverload2(id *id) {
 }
 
 func (this *NSPasteboard) AddTypes(newTypes *NSArray, newOwner *id) int64 {
-	var cond544 int64
+	var cond1 int64
 	if newTypes != (nil) {
-		cond544 = newTypes.Id
+		cond1 = newTypes.Id
 	} else {
-		cond544 = int64(0)
+		cond1 = int64(0)
 	}
-	var cond545 int64
+	var cond2 int64
 	if newOwner != (nil) {
-		cond545 = newOwner.Id
+		cond2 = newOwner.Id
 	} else {
-		cond545 = int64(0)
+		cond2 = int64(0)
 	}
-	return OSObjc_msgSendOverload54(this.Id, OSSel_addTypes_owner_, cond544, cond545)
+	return OSObjc_msgSendOverload54(this.Id, OSSel_addTypes_owner_, cond1, cond2)
 }
 
 func (this *NSPasteboard) AvailableTypeFromArray(types *NSArray) *NSString {
-	var cond546 int64
+	var cond3 int64
 	if types != (nil) {
-		cond546 = types.Id
+		cond3 = types.Id
 	} else {
-		cond546 = int64(0)
+		cond3 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_availableTypeFromArray_, cond546)
-	var cond547 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_availableTypeFromArray_, cond3)
+	var cond4 *NSString
 	if result != 0 {
-		cond547 = NewNSStringOverload1(result)
+		cond4 = NewNSStringOverload1(result)
 	} else {
-		cond547 = nil
+		cond4 = nil
 	}
-	return cond547
+	return cond4
 }
 
 func (this *NSPasteboard) DataForType(dataType *NSString) *NSData {
-	var cond548 int64
+	var cond5 int64
 	if dataType != (nil) {
-		cond548 = dataType.Id
+		cond5 = dataType.Id
 	} else {
-		cond548 = int64(0)
+		cond5 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_dataForType_, cond548)
-	var cond549 *NSData
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_dataForType_, cond5)
+	var cond6 *NSData
 	if result != 0 {
-		cond549 = NewNSDataOverload1(result)
+		cond6 = NewNSDataOverload1(result)
 	} else {
-		cond549 = nil
+		cond6 = nil
 	}
-	return cond549
+	return cond6
 }
 
 func (this *NSPasteboard) DeclareTypes(newTypes *NSArray, newOwner *id) int64 {
-	var cond550 int64
+	var cond7 int64
 	if newTypes != (nil) {
-		cond550 = newTypes.Id
+		cond7 = newTypes.Id
 	} else {
-		cond550 = int64(0)
+		cond7 = int64(0)
 	}
-	var cond551 int64
+	var cond8 int64
 	if newOwner != (nil) {
-		cond551 = newOwner.Id
+		cond8 = newOwner.Id
 	} else {
-		cond551 = int64(0)
+		cond8 = int64(0)
 	}
-	return OSObjc_msgSendOverload54(this.Id, OSSel_declareTypes_owner_, cond550, cond551)
+	return OSObjc_msgSendOverload54(this.Id, OSSel_declareTypes_owner_, cond7, cond8)
 }
 
 func (this *NSPasteboard) PropertyListForType(dataType *NSString) *id {
-	var cond552 int64
+	var cond9 int64
 	if dataType != (nil) {
-		cond552 = dataType.Id
+		cond9 = dataType.Id
 	} else {
-		cond552 = int64(0)
+		cond9 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_propertyListForType_, cond552)
-	var cond553 *id
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_propertyListForType_, cond9)
+	var cond10 *id
 	if result != 0 {
-		cond553 = NewidOverload1(result)
+		cond10 = NewidOverload1(result)
 	} else {
-		cond553 = nil
+		cond10 = nil
 	}
-	return cond553
+	return cond10
 }
 
 func (this *NSPasteboard) SetData(data *NSData, dataType *NSString) bool {
-	var cond554 int64
+	var cond11 int64
 	if data != (nil) {
-		cond554 = data.Id
+		cond11 = data.Id
 	} else {
-		cond554 = int64(0)
+		cond11 = int64(0)
 	}
-	var cond555 int64
+	var cond12 int64
 	if dataType != (nil) {
-		cond555 = dataType.Id
+		cond12 = dataType.Id
 	} else {
-		cond555 = int64(0)
+		cond12 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setData_forType_, cond554, cond555)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setData_forType_, cond11, cond12)
 }
 
 func (this *NSPasteboard) SetPropertyList(plist *id, dataType *NSString) bool {
-	var cond556 int64
+	var cond13 int64
 	if plist != (nil) {
-		cond556 = plist.Id
+		cond13 = plist.Id
 	} else {
-		cond556 = int64(0)
+		cond13 = int64(0)
 	}
-	var cond557 int64
+	var cond14 int64
 	if dataType != (nil) {
-		cond557 = dataType.Id
+		cond14 = dataType.Id
 	} else {
-		cond557 = int64(0)
+		cond14 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setPropertyList_forType_, cond556, cond557)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setPropertyList_forType_, cond13, cond14)
 }
 
 func (this *NSPasteboard) SetString(string_ *NSString, dataType *NSString) bool {
-	var cond558 int64
+	var cond15 int64
 	if string_ != (nil) {
-		cond558 = string_.Id
+		cond15 = string_.Id
 	} else {
-		cond558 = int64(0)
+		cond15 = int64(0)
 	}
-	var cond559 int64
+	var cond16 int64
 	if dataType != (nil) {
-		cond559 = dataType.Id
+		cond16 = dataType.Id
 	} else {
-		cond559 = int64(0)
+		cond16 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setString_forType_, cond558, cond559)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_setString_forType_, cond15, cond16)
 }
 
 func (this *NSPasteboard) StringForType(dataType *NSString) *NSString {
-	var cond560 int64
+	var cond17 int64
 	if dataType != (nil) {
-		cond560 = dataType.Id
+		cond17 = dataType.Id
 	} else {
-		cond560 = int64(0)
+		cond17 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForType_, cond560)
-	var cond561 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForType_, cond17)
+	var cond18 *NSString
 	if result != 0 {
-		cond561 = NewNSStringOverload1(result)
+		cond18 = NewNSStringOverload1(result)
 	} else {
-		cond561 = nil
+		cond18 = nil
 	}
-	return cond561
+	return cond18
 }
 
 func (this *NSPasteboard) Types() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_types)
-	var cond562 *NSArray
+	var cond19 *NSArray
 	if result != 0 {
-		cond562 = NewNSArrayOverload1(result)
+		cond19 = NewNSArrayOverload1(result)
 	} else {
-		cond562 = nil
+		cond19 = nil
 	}
-	return cond562
+	return cond19
 }
 
 func (this *NSPasteboard) WriteObjects(objects *NSArray) bool {
-	var cond563 int64
+	var cond20 int64
 	if objects != (nil) {
-		cond563 = objects.Id
+		cond20 = objects.Id
 	} else {
-		cond563 = int64(0)
+		cond20 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_writeObjects_, cond563)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_writeObjects_, cond20)
 }
 
 func NSPasteboardGeneralPasteboard() *NSPasteboard {
 	var result int64 = OSObjc_msgSend(OSClass_NSPasteboard, OSSel_generalPasteboard)
-	var cond564 *NSPasteboard
+	var cond21 *NSPasteboard
 	if result != 0 {
-		cond564 = NewNSPasteboardOverload1(result)
+		cond21 = NewNSPasteboardOverload1(result)
 	} else {
-		cond564 = nil
+		cond21 = nil
 	}
-	return cond564
+	return cond21
 }
 
 func NSPasteboardPasteboardWithName(name *NSString) *NSPasteboard {
-	var cond565 int64
+	var cond22 int64
 	if name != (nil) {
-		cond565 = name.Id
+		cond22 = name.Id
 	} else {
-		cond565 = int64(0)
+		cond22 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPasteboard, OSSel_pasteboardWithName_, cond565)
-	var cond566 *NSPasteboard
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPasteboard, OSSel_pasteboardWithName_, cond22)
+	var cond23 *NSPasteboard
 	if result != 0 {
-		cond566 = NewNSPasteboardOverload1(result)
+		cond23 = NewNSPasteboardOverload1(result)
 	} else {
-		cond566 = nil
+		cond23 = nil
 	}
-	return cond566
+	return cond23
 }

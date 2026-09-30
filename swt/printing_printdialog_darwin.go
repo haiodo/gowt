@@ -84,17 +84,17 @@ func (this *PrintDialog) Open() *PrinterData {
 	var printInfo *cocoa.NSPrintInfo = cocoa.NewNSPrintInfoOverload2(cocoa.NSPrintInfoSharedPrintInfo().Copy())
 	if this.printerData.Duplex != DEFAULT {
 		var settings int64 = printInfo.PMPrintSettings()
-		var cond656 int32
+		var cond1 int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_LONG_EDGE {
-			cond656 = cocoa.OSKPMDuplexNoTumble
+			cond1 = cocoa.OSKPMDuplexNoTumble
 		} else {
-			cond656 = cocoa.OSKPMDuplexNone
+			cond1 = cocoa.OSKPMDuplexNone
 		}
 		var duplex int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
 			duplex = cocoa.OSKPMDuplexTumble
 		} else {
-			duplex = cond656
+			duplex = cond1
 		}
 		cocoa.OSPMSetDuplex(settings, duplex)
 	}
@@ -108,13 +108,13 @@ func (this *PrintDialog) Open() *PrinterData {
 	var dict *cocoa.NSMutableDictionary = printInfo.Dictionary()
 	dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithBool(this.printerData.Collate)), cocoa.OSNSPrintMustCollate_)
 	dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(this.printerData.CopyCount)), cocoa.OSNSPrintCopies_)
-	var cond657 int32
+	var cond2 int32
 	if this.printerData.Orientation == PrinterDataLANDSCAPE {
-		cond657 = cocoa.OSNSLandscapeOrientation
+		cond2 = cocoa.OSNSLandscapeOrientation
 	} else {
-		cond657 = cocoa.OSNSPortraitOrientation
+		cond2 = cocoa.OSNSPortraitOrientation
 	}
-	dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(cond657)), cocoa.OSNSPrintOrientation_)
+	dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(cond2)), cocoa.OSNSPrintOrientation_)
 	if this.printerData.PrintToFile {
 		dict.Impl().SetValueOnNSObject(upcastcocoaNSStringTococoaId(cocoa.OSNSPrintSaveJob_), cocoa.OSNSPrintJobDisposition_)
 	}
@@ -197,16 +197,16 @@ func (this *PrintDialog) Open() *PrinterData {
 		var settings int64 = printInfo.PMPrintSettings()
 		var outDuplexSetting []int32 = make([]int32, 1)
 		cocoa.OSPMGetDuplex(settings, outDuplexSetting)
-		var cond658 int32
+		var cond3 int32
 		if outDuplexSetting[0] == cocoa.OSKPMDuplexNoTumble {
-			cond658 = PrinterDataDUPLEX_LONG_EDGE
+			cond3 = PrinterDataDUPLEX_LONG_EDGE
 		} else {
-			cond658 = PrinterDataDUPLEX_NONE
+			cond3 = PrinterDataDUPLEX_NONE
 		}
 		if outDuplexSetting[0] == cocoa.OSKPMDuplexTumble {
 			data.Duplex = PrinterDataDUPLEX_SHORT_EDGE
 		} else {
-			data.Duplex = cond658
+			data.Duplex = cond3
 		}
 		var nsData *cocoa.NSData = cocoa.NSKeyedArchiverArchivedDataWithRootObject(upcastcocoaNSPrintInfoTococoaId(printInfo))
 		data.otherData = make([]int8, int32(nsData.Length()))
@@ -298,13 +298,13 @@ func PrintDialogCheckStyle(parentLike ShellLike, style int32) int32 {
 			style &= ^SHEET
 		}
 		if (style & mask) == 0 {
-			var cond659 int32
+			var cond4 int32
 			if parent == (nil) {
-				cond659 = APPLICATION_MODAL
+				cond4 = APPLICATION_MODAL
 			} else {
-				cond659 = PRIMARY_MODAL
+				cond4 = PRIMARY_MODAL
 			}
-			style |= cond659
+			style |= cond4
 		}
 	}
 	return style

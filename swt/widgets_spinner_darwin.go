@@ -253,8 +253,8 @@ func (this *Spinner) GetSelection() int32 {
 
 func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 	var string_ string = this.textView.StringValue().GetString()
-	var tret596 int32
-	tretd597 := false
+	var tret1 int32
+	tretd2 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -321,13 +321,13 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 		var max int32 = this.GetMaximum()
 		var min int32 = this.GetMinimum()
 		if min <= value && value <= max {
-			tret596 = value
-			tretd597 = true
+			tret1 = value
+			tretd2 = true
 			return
 		}
 	}()
-	if tretd597 {
-		return tret596
+	if tretd2 {
+		return tret1
 	}
 	parseFail[0] = true
 	return -1
@@ -634,9 +634,9 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 				buffer.Append("0")
 				buffer.Append(decimalSeparator)
 				for {
-					t598 := index
+					t3 := index
 					index++
-					if !(t598 < 0) {
+					if !(t3 < 0) {
 						break
 					}
 					buffer.Append("0")

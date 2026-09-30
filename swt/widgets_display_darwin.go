@@ -147,13 +147,13 @@ var DisplayAlign int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init DisplayAlign:", e)
 		}
 	}()
-	var cond234 int32
+	var cond1 int32
 	if cocoa.CPTR_SIZEOF == 4 {
-		cond234 = 2
+		cond1 = 2
 	} else {
-		cond234 = 3
+		cond1 = 3
 	}
-	r = cond234
+	r = cond1
 	return
 }()
 
@@ -256,8 +256,8 @@ func (this *Display) initDisplayData(data *DeviceData) {
 			this.currentControl.impl.sendMouseEvent_(nil, MouseHover, this.trackingControl != (nil) && !this.trackingControl.IsDisposed())
 		}
 	})
-	anon235 := jrt.NewRunnable(nil)
-	anon235.Fn = func() {
+	anon2 := jrt.NewRunnable(nil)
+	anon2.Fn = func() {
 		if this.currentCaret != (nil) {
 			if this.currentCaret == (nil) || this.currentCaret.IsDisposed() {
 				return
@@ -265,16 +265,16 @@ func (this *Display) initDisplayData(data *DeviceData) {
 			if this.currentCaret.BlinkCaret() {
 				var blinkRate int32 = this.currentCaret.blinkRate
 				if blinkRate != 0 {
-					this.TimerExec(blinkRate, anon235)
+					this.TimerExec(blinkRate, anon2)
 				}
 			} else {
 				this.currentCaret = nil
 			}
 		}
 	}
-	this.caretTimer = anon235
-	anon236 := jrt.NewRunnable(nil)
-	anon236.Fn = func() {
+	this.caretTimer = anon2
+	anon3 := jrt.NewRunnable(nil)
+	anon3.Fn = func() {
 		if this.IsDisposed() {
 			return
 		}
@@ -290,10 +290,10 @@ func (this *Display) initDisplayData(data *DeviceData) {
 			return
 		}
 		if this.HasDefaultButton() {
-			this.TimerExec(DisplayDEFAULT_BUTTON_INTERVAL, anon236)
+			this.TimerExec(DisplayDEFAULT_BUTTON_INTERVAL, anon3)
 		}
 	}
-	this.defaultButtonTimer = anon236
+	this.defaultButtonTimer = anon3
 }
 
 func (this *Display) AddContext(contextLike GCDataLike) {
@@ -342,9 +342,9 @@ func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
 		copy(temp[0:], this.layoutDeferred[0:0+int32(len(this.layoutDeferred))])
 		this.layoutDeferred = temp
 	}
-	t237 := this.layoutDeferredCount
+	t4 := this.layoutDeferredCount
 	this.layoutDeferredCount++
-	this.layoutDeferred[t237] = comp
+	this.layoutDeferred[t4] = comp
 }
 
 func (this *Display) AddListener(eventType int32, listener Listener) {
@@ -396,9 +396,9 @@ func (this *Display) AddPoolPool(pool *cocoa.NSAutoreleasePool) {
 		var dictionary *cocoa.NSMutableDictionary = cocoa.NSThreadCurrentThread().ThreadDictionary()
 		dictionary.SetObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInteger(pool.Id)), upcastcocoaNSStringTococoaId(cocoa.NSStringStringWith("SWT_NSAutoreleasePool")))
 	}
-	t238 := this.poolCount
+	t5 := this.poolCount
 	this.poolCount++
-	this.pools[t238] = pool
+	this.pools[t5] = pool
 }
 
 func (this *Display) AddPopup(menuLike MenuLike) {
@@ -442,9 +442,9 @@ func (this *Display) AddSkinnableWidget(widgetLike WidgetLike) {
 		copy(newSkinWidgets[0:], this.skinList[0:0+int32(len(this.skinList))])
 		this.skinList = newSkinWidgets
 	}
-	t239 := this.skinCount
+	t6 := this.skinCount
 	this.skinCount++
-	this.skinList[t239] = widget
+	this.skinList[t6] = widget
 }
 
 func (this *Display) AddWidget(view *cocoa.NSObject, widgetLike WidgetLike) {
@@ -560,13 +560,13 @@ func (this *Display) CheckEnterExit(controlLike ControlLike, nsEvent *cocoa.NSEv
 	var location cocoa.NSPoint = cocoa.NSEventMouseLocation()
 	if control == (nil) || control != this.currentControl || this.hoverLastLocation == (cocoa.NSPoint{}) || location.X != this.hoverLastLocation.X || location.Y != this.hoverLastLocation.Y {
 		this.hoverLastLocation = location
-		var cond240 int32
+		var cond7 int32
 		if control != (nil) && !control.IsDisposed() {
-			cond240 = this.GetToolTipTime()
+			cond7 = this.GetToolTipTime()
 		} else {
-			cond240 = -1
+			cond7 = -1
 		}
-		this.TimerExec(cond240, this.hoverTimer)
+		this.TimerExec(cond7, this.hoverTimer)
 	}
 }
 
@@ -646,9 +646,9 @@ func (this *Display) Close() {
 
 func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
-	cond241 := jrt.CurrentThread()
-	this.thread = cond241
-	DisplayCheckDisplay(cond241, false)
+	cond8 := jrt.CurrentThread()
+	this.thread = cond8
+	DisplayCheckDisplay(cond8, false)
 	this.CreateDisplay(data)
 	DisplayRegister(this)
 	this.synchronizer = NewSynchronizer(this)
@@ -696,9 +696,9 @@ func (this *Display) CreateDisplay(dataLike DeviceDataLike) {
 	}
 	var className string = "SWTApplication"
 	var cls int64
-	cond242 := cocoa.OSObjc_lookUpClass(className)
-	cls = cond242
-	if (cond242) == 0 {
+	cond9 := cocoa.OSObjc_lookUpClass(className)
+	cls = cond9
+	if (cond9) == 0 {
 		var clazz reflect.Type = reflect.TypeOf(this.Impl())
 		_ = clazz
 		DisplayApplicationCallback2 = NewCallbackFn(func(args []int64) int64 { return DisplayApplicationProc(args[0], args[1]) }, 2)
@@ -766,9 +766,9 @@ func (this *Display) CreateMainMenu() {
 	var menuItem *cocoa.NSMenuItem
 	var appleMenu *cocoa.NSMenu
 	var title *cocoa.NSString
-	cond243 := mainMenu.AddItemWithTitle(emptyStr, int64(0), emptyStr)
-	menuItem = cond243
-	var appItem *cocoa.NSMenuItem = cond243
+	cond10 := mainMenu.AddItemWithTitle(emptyStr, int64(0), emptyStr)
+	menuItem = cond10
+	var appItem *cocoa.NSMenuItem = cond10
 	appleMenu = castcocoaNSObjectTococoaNSMenu(cocoa.NewNSMenu().Alloc())
 	appleMenu.InitWithTitle(emptyStr)
 	cocoa.OSObjc_msgSendOverload44(this.application.Id, cocoa.OSSel_registerName("setAppleMenu:"), appleMenu.Id)
@@ -951,16 +951,16 @@ func (this *Display) GetActiveShell() *Shell {
 	}
 	if window != (nil) {
 		var widget *Widget = this.GetWidgetView(window.ContentView())
-		_, ok244 := isWidgetToShell(widget)
-		if ok244 {
+		_, ok11 := isWidgetToShell(widget)
+		if ok11 {
 			return castWidgetToShell(widget)
 		}
 		var windowLocation cocoa.NSPoint = window.MouseLocationOutsideOfEventStream()
 		var hitView *cocoa.NSView = window.ContentView().HitTest(windowLocation)
 		for hitView != (nil) {
 			widget = this.GetWidget(hitView.Id)
-			_, ok245 := isWidgetToShell(widget)
-			if ok245 {
+			_, ok12 := isWidgetToShell(widget)
+			if ok12 {
 				break
 			}
 			hitView = hitView.Superview()
@@ -1114,8 +1114,8 @@ func (this *Display) _getFocusControl(window *cocoa.NSWindow) *Control {
 		if view != (nil) {
 			for {
 				var widget *Widget = DisplayGetWidget(view.Id)
-				_, ok246 := isWidgetToControl(widget)
-				if ok246 {
+				_, ok13 := isWidgetToControl(widget)
+				if ok13 {
 					return castWidgetToControl(widget)
 				}
 				view = view.Superview()
@@ -1185,9 +1185,9 @@ func (this *Display) GetMenus(shellLike DecorationsLike) []*Menu {
 	for i := int32(0); i < int32(len(this.menus)); i++ {
 		var menu *Menu = this.menus[i]
 		if menu != (nil) && menu.parent == shell {
-			t247 := index
+			t14 := index
 			index++
-			result[t247] = menu
+			result[t14] = menu
 		}
 	}
 	return result
@@ -1232,13 +1232,13 @@ func (this *Display) GetMonitors() []*Monitor {
 
 func (this *Display) GetPrimaryFrame() cocoa.NSRect {
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
-	var cond248 cocoa.NSRect
+	var cond15 cocoa.NSRect
 	if screens != (nil) {
-		cond248 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0))).Frame()
+		cond15 = cocoa.NewNSScreenOverload2(screens.ObjectAtIndex(int64(0))).Frame()
 	} else {
-		cond248 = cocoa.NSRect{}
+		cond15 = cocoa.NSRect{}
 	}
-	return cond248
+	return cond15
 }
 
 func (this *Display) GetPrimaryMonitor() *Monitor {
@@ -1272,11 +1272,11 @@ func (this *Display) GetShells() []*Shell {
 	for i := int32(0); i < int32(len(result)); i++ {
 		var window *cocoa.NSWindow = cocoa.NewNSWindowOverload2(windows.ObjectAtIndex(int64(i)))
 		var widget *Widget = this.GetWidgetView(window.ContentView())
-		_, ok249 := isWidgetToShell(widget)
-		if ok249 {
-			t250 := index
+		_, ok16 := isWidgetToShell(widget)
+		if ok16 {
+			t17 := index
 			index++
-			result[t250] = castWidgetToShell(widget)
+			result[t17] = castWidgetToShell(widget)
 		}
 	}
 	if index == int32(len(result)) {
@@ -1294,19 +1294,19 @@ func (this *Display) GetSynchronizer() *Synchronizer {
 
 func (this *Display) GetSyncThread() any {
 	jrt.MonitorEnter()
-	var tret251 any
-	tretd252 := false
+	var tret18 any
+	tretd19 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret251 = this.synchronizer.syncThread
-		tretd252 = true
+		tret18 = this.synchronizer.syncThread
+		tretd19 = true
 		return
 	}()
-	_ = tretd252
-	return tret251
+	_ = tretd19
+	return tret18
 }
 
 func (this *Display) getSystemColor_(id int32) *Color {
@@ -1432,9 +1432,9 @@ func (this *Display) GetSystemImage(id int32) *Image {
 				return this.errorImage
 			}
 			var img *cocoa.NSImage = DisplayGetSystemImageForID(cocoa.OSKAlertStopIcon)
-			cond253 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
-			this.errorImage = cond253
-			return cond253
+			cond20 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
+			this.errorImage = cond20
+			return cond20
 		}
 	case ICON_INFORMATION, ICON_QUESTION, ICON_WORKING:
 		{
@@ -1443,9 +1443,9 @@ func (this *Display) GetSystemImage(id int32) *Image {
 			}
 			var img *cocoa.NSImage = cocoa.NSImageImageNamed(cocoa.OSNSImageNameInfo_)
 			img.Retain()
-			cond254 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
-			this.infoImage = cond254
-			return cond254
+			cond21 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
+			this.infoImage = cond21
+			return cond21
 		}
 	case ICON_WARNING:
 		{
@@ -1454,9 +1454,9 @@ func (this *Display) GetSystemImage(id int32) *Image {
 			}
 			var img *cocoa.NSImage = cocoa.NSImageImageNamed(cocoa.OSNSImageNameCaution_)
 			img.Retain()
-			cond255 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
-			this.warningImage = cond255
-			return cond255
+			cond22 := ImageCocoa_new(upcastDisplayToDevice(this), ICON, img)
+			this.warningImage = cond22
+			return cond22
 		}
 	}
 	return nil
@@ -1491,9 +1491,9 @@ func (this *Display) GetSystemTray() *Tray {
 	if this.tray != (nil) {
 		return this.tray
 	}
-	cond256 := newTray(this, NONE)
-	this.tray = cond256
-	return cond256
+	cond23 := newTray(this, NONE)
+	this.tray = cond23
+	return cond23
 }
 
 func (this *Display) GetSystemTaskBar() *TaskBar {
@@ -1521,19 +1521,19 @@ func (this *Display) GetSecondarySelectedControlColor() []float64 {
 
 func (this *Display) GetThread() any {
 	jrt.MonitorEnter()
-	var tret257 any
-	tretd258 := false
+	var tret24 any
+	tretd25 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret257 = this.thread
-		tretd258 = true
+		tret24 = this.thread
+		tretd25 = true
 		return
 	}()
-	_ = tretd258
-	return tret257
+	_ = tretd25
+	return tret24
 }
 
 func (this *Display) GetTouchEnabled() bool {
@@ -2468,8 +2468,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 	}
 	_ = event
 	jrt.MonitorEnter()
-	var tret259 bool
-	tretd260 := false
+	var tret26 bool
+	tretd27 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
@@ -2481,8 +2481,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 		var eventRef int64 = int64(0)
 		var eventSource int64 = cocoa.OSCGEventSourceCreate(cocoa.OSKCGEventSourceStateHIDSystemState)
 		if eventSource == 0 {
-			tret259 = false
-			tretd260 = true
+			tret26 = false
+			tretd27 = true
 			return
 		}
 		var returnValue bool = false
@@ -2495,8 +2495,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 				if int32(vKey) == 0 {
 					var keyLayout int64 = DisplayGetCurrentKeyLayout()
 					if keyLayout == 0 {
-						tret259 = false
-						tretd260 = true
+						tret26 = false
+						tretd27 = true
 						return
 					}
 					var maxStringLength int32 = 256
@@ -2505,13 +2505,13 @@ func (this *Display) Post(eventLike EventLike) bool {
 					var actualStringLength []int64 = make([]int64, 1)
 					for i := int16(0); int32(i) <= 0x7F; i++ {
 						deadKeyState[0] = 0
-						var cond261 int16
+						var cond28 int16
 						if type_ == KeyDown {
-							cond261 = cocoa.OSKUCKeyActionDown
+							cond28 = cocoa.OSKUCKeyActionDown
 						} else {
-							cond261 = cocoa.OSKUCKeyActionUp
+							cond28 = cocoa.OSKUCKeyActionUp
 						}
-						cocoa.OSUCKeyTranslate(keyLayout, i, cond261, 0, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
+						cocoa.OSUCKeyTranslate(keyLayout, i, cond28, 0, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
 						if int32(output[0]) == int32(event.Character) {
 							vKey = i
 							break
@@ -2520,13 +2520,13 @@ func (this *Display) Post(eventLike EventLike) bool {
 					if int32(vKey) == -1 {
 						for i := int16(0); int32(i) <= 0x7F; i++ {
 							deadKeyState[0] = 0
-							var cond262 int16
+							var cond29 int16
 							if type_ == KeyDown {
-								cond262 = cocoa.OSKUCKeyActionDown
+								cond29 = cocoa.OSKUCKeyActionDown
 							} else {
-								cond262 = cocoa.OSKUCKeyActionUp
+								cond29 = cocoa.OSKUCKeyActionUp
 							}
-							cocoa.OSUCKeyTranslate(keyLayout, i, cond262, (cocoa.OSShiftKey>>8)&0xFF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
+							cocoa.OSUCKeyTranslate(keyLayout, i, cond29, (cocoa.OSShiftKey>>8)&0xFF, int32(cocoa.OSLMGetKbdType()), 0, deadKeyState, maxStringLength, actualStringLength, output)
 							if int32(output[0]) == int32(event.Character) {
 								vKey = i
 								break
@@ -2555,46 +2555,46 @@ func (this *Display) Post(eventLike EventLike) bool {
 					mouseCursorPosition.X = nsCursorPosition.X
 					mouseCursorPosition.Y = float64(int32((primaryFrame.Height - nsCursorPosition.Y)))
 					var eventType int32 = 0
-					var sw263 int32
+					var sw30 int32
 					switch event.Button {
 					case 1:
-						var cond264 int32
+						var cond31 int32
 						if event.Type == MouseDown {
-							cond264 = cocoa.OSKCGEventLeftMouseDown
+							cond31 = cocoa.OSKCGEventLeftMouseDown
 						} else {
-							cond264 = cocoa.OSKCGEventLeftMouseUp
+							cond31 = cocoa.OSKCGEventLeftMouseUp
 						}
-						eventType = (cond264)
-						sw263 = 0
+						eventType = (cond31)
+						sw30 = 0
 					case 2:
-						var cond265 int32
+						var cond32 int32
 						if event.Type == MouseDown {
-							cond265 = cocoa.OSKCGEventOtherMouseDown
+							cond32 = cocoa.OSKCGEventOtherMouseDown
 						} else {
-							cond265 = cocoa.OSKCGEventOtherMouseUp
+							cond32 = cocoa.OSKCGEventOtherMouseUp
 						}
-						eventType = (cond265)
-						sw263 = 2
+						eventType = (cond32)
+						sw30 = 2
 					case 3:
-						var cond266 int32
+						var cond33 int32
 						if event.Type == MouseDown {
-							cond266 = cocoa.OSKCGEventRightMouseDown
+							cond33 = cocoa.OSKCGEventRightMouseDown
 						} else {
-							cond266 = cocoa.OSKCGEventRightMouseUp
+							cond33 = cocoa.OSKCGEventRightMouseUp
 						}
-						eventType = (cond266)
-						sw263 = 1
+						eventType = (cond33)
+						sw30 = 1
 					default:
-						var cond267 int32
+						var cond34 int32
 						if event.Type == MouseDown {
-							cond267 = cocoa.OSKCGEventOtherMouseDown
+							cond34 = cocoa.OSKCGEventOtherMouseDown
 						} else {
-							cond267 = cocoa.OSKCGEventOtherMouseUp
+							cond34 = cocoa.OSKCGEventOtherMouseUp
 						}
-						eventType = (cond267)
-						sw263 = event.Button - 1
+						eventType = (cond34)
+						sw30 = event.Button - 1
 					}
-					var cgButton int32 = sw263
+					var cgButton int32 = sw30
 					if cgButton >= 0 {
 						eventRef = cocoa.OSCGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, cgButton)
 					}
@@ -2629,12 +2629,12 @@ func (this *Display) Post(eventLike EventLike) bool {
 		if eventSource != 0 {
 			cocoa.OSCFRelease(eventSource)
 		}
-		tret259 = returnValue
-		tretd260 = true
+		tret26 = returnValue
+		tretd27 = true
 		return
 	}()
-	_ = tretd260
-	return tret259
+	_ = tretd27
+	return tret26
 }
 
 func (this *Display) PostEvent(eventLike EventLike) {
@@ -2927,23 +2927,23 @@ func (this *Display) ReadAndDispatch() bool {
 				this.AddPool()
 			}
 		}()
-		b268 := this.RunSettings()
-		events = events || b268
-		b269 := this.RunTimers()
-		events = events || b269
-		b270 := this.RunContexts()
-		events = events || b270
-		b271 := this.RunPopups()
-		events = events || b271
+		b35 := this.RunSettings()
+		events = events || b35
+		b36 := this.RunTimers()
+		events = events || b36
+		b37 := this.RunContexts()
+		events = events || b37
+		b38 := this.RunPopups()
+		events = events || b38
 		var event *cocoa.NSEvent = this.application.NextEventMatchingMask(cocoa.OSNSAnyEventMask, nil, cocoa.OSNSDefaultRunLoopMode_, true)
 		if (event != (nil)) && (this.application != (nil)) {
 			events = true
 			this.application.SendEvent(event)
 		}
-		b272 := this.RunPaint()
-		events = events || b272
-		b273 := this.RunDeferredEvents()
-		events = events || b273
+		b39 := this.RunPaint()
+		events = events || b39
+		b40 := this.RunDeferredEvents()
+		events = events || b40
 		if !events {
 			events = this.IsDisposed() || this.RunAsyncMessages(false)
 		}
@@ -3028,7 +3028,7 @@ func (this *Display) release_() {
 		this.taskBar = nil
 		{
 			for {
-				tbrk274 := false
+				tbrk41 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -3043,11 +3043,11 @@ func (this *Display) release_() {
 						}
 					}()
 					if !this.ReadAndDispatch() {
-						tbrk274 = true
+						tbrk41 = true
 						return
 					}
 				}()
-				if tbrk274 {
+				if tbrk41 {
 					break
 				}
 			}
@@ -3817,13 +3817,13 @@ func (this *Display) SetData(key string, value any) {
 		}
 	}
 	if key == DisplaySET_MODAL_DIALOG {
-		var cond275 *Dialog
+		var cond42 *Dialog
 		if !jrt.IsNil(value) {
-			cond275 = castanyToDialog(value)
+			cond42 = castanyToDialog(value)
 		} else {
-			cond275 = nil
+			cond42 = nil
 		}
-		this.SetModalDialog(cond275)
+		this.SetModalDialog(cond42)
 	}
 	if key == DisplayLOCK_CURSOR {
 		this.lockCursor = (value.(bool))
@@ -4126,8 +4126,8 @@ func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
 
 func (this *Display) TimerProc(id int64, sel int64, timerID int64) int64 {
 	var timer *cocoa.NSTimer = cocoa.NewNSTimerOverload1(timerID)
-	var tret276 int64
-	tretd277 := false
+	var tret43 int64
+	tretd44 := false
 	func() {
 		defer func() {
 			timer.Invalidate()
@@ -4136,8 +4136,8 @@ func (this *Display) TimerProc(id int64, sel int64, timerID int64) int64 {
 		var number *cocoa.NSNumber = cocoa.NewNSNumberOverload2(timer.UserInfo())
 		var index int32 = number.IntValue()
 		if this.timerList == (nil) {
-			tret276 = int64(0)
-			tretd277 = true
+			tret43 = int64(0)
+			tretd44 = true
 			return
 		}
 		if 0 <= index && index < int32(len(this.timerList)) {
@@ -4171,8 +4171,8 @@ func (this *Display) TimerProc(id int64, sel int64, timerID int64) int64 {
 			}
 		}
 	}()
-	if tretd277 {
-		return tret276
+	if tretd44 {
+		return tret43
 	}
 	return int64(0)
 }
@@ -4189,13 +4189,13 @@ func (this *Display) Update() {
 }
 
 func (this *Display) UpdateDefaultButton() {
-	var cond278 int32
+	var cond45 int32
 	if this.HasDefaultButton() {
-		cond278 = DisplayDEFAULT_BUTTON_INTERVAL
+		cond45 = DisplayDEFAULT_BUTTON_INTERVAL
 	} else {
-		cond278 = -1
+		cond45 = -1
 	}
-	this.TimerExec(cond278, this.defaultButtonTimer)
+	this.TimerExec(cond45, this.defaultButtonTimer)
 }
 
 func (this *Display) UpdateQuitMenu() {
@@ -4226,19 +4226,19 @@ func (this *Display) UpdateQuitMenu() {
 
 func (this *Display) Wake() {
 	jrt.MonitorEnter()
-	tretd279 := false
+	tretd46 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if this.thread == jrt.CurrentThread() {
-			tretd279 = true
+			tretd46 = true
 			return
 		}
 		this.WakeThread()
 	}()
-	if tretd279 {
+	if tretd46 {
 		return
 	}
 }
@@ -4274,8 +4274,8 @@ func (this *Display) FindControlCheckTrimHitView(checkTrim bool, hitView []*coco
 	if view != (nil) {
 		for {
 			var widget *Widget = this.GetWidgetView(view)
-			_, ok280 := isWidgetToControl(widget)
-			if ok280 {
+			_, ok47 := isWidgetToControl(widget)
+			if ok47 {
 				control = castWidgetToControl(widget)
 				break
 			}
@@ -4362,13 +4362,13 @@ func (this *Display) ApplicationSendTrackingEvent(nsEvent *cocoa.NSEvent, tracki
 	var runEnterExitControl *Control = nil
 	switch type_ {
 	case cocoa.OSNSLeftMouseDown, cocoa.OSNSRightMouseDown, cocoa.OSNSOtherMouseDown:
-		var cond281 int64
+		var cond48 int64
 		if int64(this.clickCountButton) == nsEvent.ButtonNumber() {
-			cond281 = nsEvent.ClickCount()
+			cond48 = nsEvent.ClickCount()
 		} else {
-			cond281 = int64(1)
+			cond48 = int64(1)
 		}
-		this.clickCount = int32((cond281))
+		this.clickCount = int32((cond48))
 		this.clickCountButton = int32(nsEvent.ButtonNumber())
 		trackingControl.impl.sendMouseEvent_(nsEvent, MouseDown, true)
 		break
@@ -4662,24 +4662,24 @@ func DisplayDeregister(displayLike DisplayLike) {
 
 func DisplayFindDisplay(thread any) *Display {
 	jrt.MonitorEnter()
-	var tret282 *Display
-	tretd283 := false
+	var tret49 *Display
+	tretd50 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			var display *Display = DisplayDisplays[i]
 			if display != (nil) && display.thread == thread {
-				tret282 = display
-				tretd283 = true
+				tret49 = display
+				tretd50 = true
 				return
 			}
 		}
-		tret282 = nil
-		tretd283 = true
+		tret49 = nil
+		tretd50 = true
 		return
 	}()
-	_ = tretd283
-	return tret282
+	_ = tretd50
+	return tret49
 }
 
 func DisplayGetCurrent() *Display {
@@ -4688,19 +4688,19 @@ func DisplayGetCurrent() *Display {
 
 func DisplayGetDefault() *Display {
 	jrt.MonitorEnter()
-	var tret284 *Display
-	tretd285 := false
+	var tret51 *Display
+	tretd52 := false
 	func() {
 		defer jrt.MonitorExit()
 		if DisplayDefault == (nil) {
 			DisplayDefault = NewDisplay()
 		}
-		tret284 = DisplayDefault
-		tretd285 = true
+		tret51 = DisplayDefault
+		tretd52 = true
 		return
 	}()
-	_ = tretd285
-	return tret284
+	_ = tretd52
+	return tret51
 }
 
 func DisplayIsSystemDarkTheme() bool {
@@ -4798,13 +4798,13 @@ func DisplayRegister(displayLike DisplayLike) {
 	}
 	_ = display
 	jrt.MonitorEnter()
-	tretd286 := false
+	tretd53 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			if DisplayDisplays[i] == (nil) {
 				DisplayDisplays[i] = display
-				tretd286 = true
+				tretd53 = true
 				return
 			}
 		}
@@ -4813,7 +4813,7 @@ func DisplayRegister(displayLike DisplayLike) {
 		newDisplays[int32(len(DisplayDisplays))] = display
 		DisplayDisplays = newDisplays
 	}()
-	if tretd286 {
+	if tretd53 {
 		return
 	}
 }
@@ -4880,13 +4880,13 @@ func DisplayApplicationProc(id int64, sel int64) int64 {
 		return cocoa.OSObjc_msgSendSuper(&super_struct, sel)
 	}
 	if sel == cocoa.OSSel_isRunning {
-		var cond287 int32
+		var cond54 int32
 		if display.IsDisposed() {
-			cond287 = 0
+			cond54 = 0
 		} else {
-			cond287 = 1
+			cond54 = 1
 		}
-		return int64(cond287)
+		return int64(cond54)
 	}
 	if sel == cocoa.OSSel_finishLaunching {
 		display.FinishLaunching(id, sel)
@@ -4909,13 +4909,13 @@ func DisplayApplicationProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 	}
 	var application *cocoa.NSApplication = display.application
 	if sel == cocoa.OSSel_appAppearanceChanged {
-		var cond288 Display_APPEARANCE
+		var cond55 Display_APPEARANCE
 		if arg0 == 1 {
-			cond288 = Display_APPEARANCEDark
+			cond55 = Display_APPEARANCEDark
 		} else {
-			cond288 = Display_APPEARANCELight
+			cond55 = Display_APPEARANCELight
 		}
-		display.SetAppAppearance(cond288)
+		display.SetAppAppearance(cond55)
 		return int64(0)
 	}
 	switch sel {
@@ -5048,13 +5048,13 @@ func DisplayApplicationProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 i
 		{
 			var event *Event = NewEvent()
 			display.SendEvent(Activate, event)
-			var cond289 int32
+			var cond56 int32
 			if event.Doit {
-				cond289 = 1
+				cond56 = 1
 			} else {
-				cond289 = 0
+				cond56 = 0
 			}
-			return int64(cond289)
+			return int64(cond56)
 		}
 	default:
 		{
@@ -5087,8 +5087,8 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 	case cocoa.OSSel_changeColor_:
 		{
 			var object any = cocoa.OSJNIGetObject(jniRef[0])
-			colorDialog, ok290 := dialogImplAsColorDialog(object)
-			if ok290 {
+			colorDialog, ok57 := dialogImplAsColorDialog(object)
+			if ok57 {
 				colorDialog.ChangeColor(id, sel, arg0)
 			}
 			return int64(0)
@@ -5122,12 +5122,12 @@ func DisplayDialogProc(id int64, sel int64, arg0 int64) int64 {
 	case cocoa.OSSel_windowWillClose_:
 		{
 			var object any = cocoa.OSJNIGetObject(jniRef[0])
-			fontDialog, ok291 := dialogImplAsFontDialog(object)
-			if ok291 {
+			fontDialog, ok58 := dialogImplAsFontDialog(object)
+			if ok58 {
 				fontDialog.WindowWillClose(id, sel, arg0)
 			} else {
-				colorDialog, ok292 := dialogImplAsColorDialog(object)
-				if ok292 {
+				colorDialog, ok59 := dialogImplAsColorDialog(object)
+				if ok59 {
 					colorDialog.WindowWillClose(id, sel, arg0)
 				}
 			}
@@ -5185,7 +5185,7 @@ func DisplayLookupWidget(id int64, sel int64) *Widget {
 	if widget == (nil) {
 		var view *cocoa.NSView = cocoa.NewNSViewOverload1(id)
 		if view.IsKindOfClass(cocoa.OSClass_NSView) {
-			for widget == (nil) && func() bool { cond293 := view.Superview(); view = cond293; return (cond293) != (nil) }() {
+			for widget == (nil) && func() bool { cond60 := view.Superview(); view = cond60; return (cond60) != (nil) }() {
 				widget = DisplayGetWidget(view.Id)
 			}
 		}
@@ -5197,13 +5197,13 @@ func DisplayWindowProc(id int64, sel int64) int64 {
 	if sel == cocoa.OSSel_cellClass {
 		var superCls int64 = cocoa.OSObjc_msgSend(cocoa.OSClass_getSuperclass(id), sel)
 		var cls int64 = cocoa.OSObjc_lookUpClass(fmt.Sprintf("SWTAccessible%s", cocoa.OSClass_getName(superCls)))
-		var cond294 int64
+		var cond61 int64
 		if cls != 0 {
-			cond294 = cls
+			cond61 = cls
 		} else {
-			cond294 = superCls
+			cond61 = superCls
 		}
-		return cond294
+		return cond61
 	}
 	if !cocoa.NSThreadIsMainThread() {
 		if sel == cocoa.OSSel_isOpaque {
@@ -5214,179 +5214,179 @@ func DisplayWindowProc(id int64, sel int64) int64 {
 	if widget == (nil) {
 		return int64(0)
 	}
-	var sw295 int64
+	var sw62 int64
 	switch sel {
 	case cocoa.OSSel_sendSelection:
 		widget.impl.sendSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_dealloc:
 		widget.impl.dealloc_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_sendDoubleSelection:
 		widget.impl.sendDoubleSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_sendVerticalSelection:
 		widget.impl.sendVerticalSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_sendHorizontalSelection:
 		widget.impl.sendHorizontalSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_sendSearchSelection:
 		widget.impl.sendSearchSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_sendCancelSelection:
 		widget.impl.sendCancelSelection_()
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_acceptsFirstResponder:
-		var cond296 int32
+		var cond63 int32
 		if widget.impl.acceptsFirstResponder_(id, sel) {
-			cond296 = 1
+			cond63 = 1
 		} else {
-			cond296 = 0
+			cond63 = 0
 		}
-		sw295 = int64(cond296)
+		sw62 = int64(cond63)
 	case cocoa.OSSel_becomeFirstResponder:
-		var cond297 int32
+		var cond64 int32
 		if widget.impl.becomeFirstResponder_(id, sel) {
-			cond297 = 1
+			cond64 = 1
 		} else {
-			cond297 = 0
+			cond64 = 0
 		}
-		sw295 = int64(cond297)
+		sw62 = int64(cond64)
 	case cocoa.OSSel_resignFirstResponder:
-		var cond298 int32
+		var cond65 int32
 		if widget.ResignFirstResponder(id, sel) {
-			cond298 = 1
+			cond65 = 1
 		} else {
-			cond298 = 0
+			cond65 = 0
 		}
-		sw295 = int64(cond298)
+		sw62 = int64(cond65)
 	case cocoa.OSSel_isOpaque:
-		var cond299 int32
+		var cond66 int32
 		if widget.impl.isOpaque_(id, sel) {
-			cond299 = 1
+			cond66 = 1
 		} else {
-			cond299 = 0
+			cond66 = 0
 		}
-		sw295 = int64(cond299)
+		sw62 = int64(cond66)
 	case cocoa.OSSel_isFlipped:
-		var cond300 int32
+		var cond67 int32
 		if widget.impl.isFlipped_(id, sel) {
-			cond300 = 1
+			cond67 = 1
 		} else {
-			cond300 = 0
+			cond67 = 0
 		}
-		sw295 = int64(cond300)
+		sw62 = int64(cond67)
 	case cocoa.OSSel_canBecomeKeyView:
-		var cond301 int32
+		var cond68 int32
 		if widget.CanBecomeKeyView(id, sel) {
-			cond301 = 1
+			cond68 = 1
 		} else {
-			cond301 = 0
+			cond68 = 0
 		}
-		sw295 = int64(cond301)
+		sw62 = int64(cond68)
 	case cocoa.OSSel_needsPanelToBecomeKey:
-		var cond302 int32
+		var cond69 int32
 		if widget.impl.needsPanelToBecomeKey_(id, sel) {
-			cond302 = 1
+			cond69 = 1
 		} else {
-			cond302 = 0
+			cond69 = 0
 		}
-		sw295 = int64(cond302)
+		sw62 = int64(cond69)
 	case cocoa.OSSel_becomeKeyWindow:
 		widget.impl.becomeKeyWindow_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_unmarkText:
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_validAttributesForMarkedText:
-		sw295 = widget.impl.validAttributesForMarkedText_(id, sel)
+		sw62 = widget.impl.validAttributesForMarkedText_(id, sel)
 	case cocoa.OSSel_markedRange:
 		var range_ cocoa.NSRange = widget.impl.markedRange_(id, sel)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRangeSizeof))
 		cocoa.OSMemmoveOverload4(result, &range_, int64(cocoa.NSRangeSizeof))
-		sw295 = result
+		sw62 = result
 	case cocoa.OSSel_selectedRange:
 		var range_ cocoa.NSRange = widget.impl.selectedRange_(id, sel)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRangeSizeof))
 		cocoa.OSMemmoveOverload4(result, &range_, int64(cocoa.NSRangeSizeof))
-		sw295 = result
+		sw62 = result
 	case cocoa.OSSel_cellSize:
 		var size cocoa.NSSize = widget.impl.cellSize_(id, sel)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSSizeSizeof))
 		cocoa.OSMemmoveOverload8(result, &size, int64(cocoa.NSSizeSizeof))
-		sw295 = result
+		sw62 = result
 	case cocoa.OSSel_hasMarkedText:
-		var cond303 int32
+		var cond70 int32
 		if widget.impl.hasMarkedText_(id, sel) {
-			cond303 = 1
+			cond70 = 1
 		} else {
-			cond303 = 0
+			cond70 = 0
 		}
-		sw295 = int64(cond303)
+		sw62 = int64(cond70)
 	case cocoa.OSSel_canBecomeKeyWindow:
-		var cond304 int32
+		var cond71 int32
 		if widget.impl.canBecomeKeyWindow_(id, sel) {
-			cond304 = 1
+			cond71 = 1
 		} else {
-			cond304 = 0
+			cond71 = 0
 		}
-		sw295 = int64(cond304)
+		sw62 = int64(cond71)
 	case cocoa.OSSel_accessibilityActionNames:
-		sw295 = widget.impl.accessibilityActionNames_(id, sel)
+		sw62 = widget.impl.accessibilityActionNames_(id, sel)
 	case cocoa.OSSel_accessibilityAttributeNames:
-		sw295 = widget.impl.accessibilityAttributeNames_(id, sel)
+		sw62 = widget.impl.accessibilityAttributeNames_(id, sel)
 	case cocoa.OSSel_accessibilityParameterizedAttributeNames:
-		sw295 = widget.impl.accessibilityParameterizedAttributeNames_(id, sel)
+		sw62 = widget.impl.accessibilityParameterizedAttributeNames_(id, sel)
 	case cocoa.OSSel_getImageView:
-		sw295 = widget.impl.imageView_()
+		sw62 = widget.impl.imageView_()
 	case cocoa.OSSel_mouseDownCanMoveWindow:
-		var cond305 int32
+		var cond72 int32
 		if widget.impl.mouseDownCanMoveWindow_(id, sel) {
-			cond305 = 1
+			cond72 = 1
 		} else {
-			cond305 = 0
+			cond72 = 0
 		}
-		sw295 = int64((cond305))
+		sw62 = int64((cond72))
 	case cocoa.OSSel_accessibilityFocusedUIElement:
-		sw295 = widget.impl.accessibilityFocusedUIElement_(id, sel)
+		sw62 = widget.impl.accessibilityFocusedUIElement_(id, sel)
 	case cocoa.OSSel_accessibilityIsIgnored:
-		var cond306 int32
+		var cond73 int32
 		if widget.impl.accessibilityIsIgnored_(id, sel) {
-			cond306 = 1
+			cond73 = 1
 		} else {
-			cond306 = 0
+			cond73 = 0
 		}
-		sw295 = int64((cond306))
+		sw62 = int64((cond73))
 	case cocoa.OSSel_nextState:
-		sw295 = widget.impl.nextState_(id, sel)
+		sw62 = widget.impl.nextState_(id, sel)
 	case cocoa.OSSel_resetCursorRects:
 		widget.impl.resetCursorRects_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_updateTrackingAreas:
 		widget.impl.updateTrackingAreas_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_viewDidMoveToWindow:
 		widget.impl.viewDidMoveToWindow_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	case cocoa.OSSel_image:
-		sw295 = widget.impl.image_(id, sel)
+		sw62 = widget.impl.image_(id, sel)
 	case cocoa.OSSel_shouldDrawInsertionPoint:
-		var cond307 int32
+		var cond74 int32
 		if widget.impl.shouldDrawInsertionPoint_(id, sel) {
-			cond307 = 1
+			cond74 = 1
 		} else {
-			cond307 = 0
+			cond74 = 0
 		}
-		sw295 = int64(cond307)
+		sw62 = int64(cond74)
 	case cocoa.OSSel_accessibleHandle:
-		sw295 = widget.impl.accessibleHandle_()
+		sw62 = widget.impl.accessibleHandle_()
 	case cocoa.OSSel_clearDeferFlushing:
 		widget.impl.clearDeferFlushing_(id, sel)
-		sw295 = int64(0)
+		sw62 = int64(0)
 	default:
-		sw295 = int64(0)
+		sw62 = int64(0)
 	}
-	return sw295
+	return sw62
 }
 
 func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
@@ -5443,374 +5443,374 @@ func DisplayWindowProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 	if widget == (nil) {
 		return int64(0)
 	}
-	var sw308 int64
+	var sw75 int64
 	switch sel {
 	case cocoa.OSSel_windowWillClose_:
 		widget.impl.windowWillClose_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_drawRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.drawRect_(id, sel, rect)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_columnAtPoint_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&point, arg0, int64(cocoa.NSPointSizeof))
-		sw308 = widget.impl.columnAtPoint_(id, sel, point)
+		sw75 = widget.impl.columnAtPoint_(id, sel, point)
 	case cocoa.OSSel__drawThemeProgressArea_:
 		widget.impl._drawThemeProgressArea_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setFrameOrigin_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&point, arg0, int64(cocoa.NSPointSizeof))
 		widget.impl.setFrameOrigin_(id, sel, point)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setFrameSize_:
 		var size cocoa.NSSize = cocoa.NSSize{}
 		cocoa.OSMemmoveOverload9(&size, arg0, int64(cocoa.NSSizeSizeof))
 		widget.impl.setFrameSize_(id, sel, size)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_hitTest_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&point, arg0, int64(cocoa.NSPointSizeof))
-		sw308 = widget.impl.hitTest_(id, sel, point)
+		sw75 = widget.impl.hitTest_(id, sel, point)
 	case cocoa.OSSel_windowShouldClose_:
-		var cond309 int32
+		var cond76 int32
 		if widget.impl.windowShouldClose_(id, sel, arg0) {
-			cond309 = 1
+			cond76 = 1
 		} else {
-			cond309 = 0
+			cond76 = 0
 		}
-		sw308 = int64(cond309)
+		sw75 = int64(cond76)
 	case cocoa.OSSel_mouseDown_:
 		widget.impl.mouseDown_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_keyDown_:
 		widget.impl.keyDown_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_keyUp_:
 		widget.impl.keyUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_flagsChanged_:
 		widget.impl.flagsChanged_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_mouseUp_:
 		widget.impl.mouseUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_rightMouseDown_:
 		widget.impl.rightMouseDown_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_rightMouseDragged_:
 		widget.impl.rightMouseDragged_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_rightMouseUp_:
 		widget.impl.rightMouseUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_otherMouseDown_:
 		widget.impl.otherMouseDown_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_otherMouseUp_:
 		widget.impl.otherMouseUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_otherMouseDragged_:
 		widget.impl.otherMouseDragged_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_mouseMoved_:
 		widget.impl.mouseMoved_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_mouseDragged_:
 		widget.impl.mouseDragged_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_mouseEntered_:
 		widget.MouseEntered(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_mouseExited_:
 		widget.MouseExited(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_cursorUpdate_:
 		widget.CursorUpdate(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_menuForEvent_:
-		sw308 = widget.impl.menuForEvent_(id, sel, arg0)
+		sw75 = widget.impl.menuForEvent_(id, sel, arg0)
 	case cocoa.OSSel_noResponderFor_:
 		widget.impl.noResponderFor_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_shouldDelayWindowOrderingForEvent_:
-		var cond310 int32
+		var cond77 int32
 		if widget.impl.shouldDelayWindowOrderingForEvent_(id, sel, arg0) {
-			cond310 = 1
+			cond77 = 1
 		} else {
-			cond310 = 0
+			cond77 = 0
 		}
-		sw308 = int64(cond310)
+		sw75 = int64(cond77)
 	case cocoa.OSSel_acceptsFirstMouse_:
-		var cond311 int32
+		var cond78 int32
 		if widget.impl.acceptsFirstMouse_(id, sel, arg0) {
-			cond311 = 1
+			cond78 = 1
 		} else {
-			cond311 = 0
+			cond78 = 0
 		}
-		sw308 = int64(cond311)
+		sw75 = int64(cond78)
 	case cocoa.OSSel_numberOfRowsInTableView_:
-		sw308 = widget.impl.numberOfRowsInTableView_(id, sel, arg0)
+		sw75 = widget.impl.numberOfRowsInTableView_(id, sel, arg0)
 	case cocoa.OSSel_tableViewSelectionDidChange_:
 		widget.impl.tableViewSelectionDidChange_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_tableViewSelectionIsChanging_:
 		widget.impl.tableViewSelectionIsChanging_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidResignKey_:
 		widget.impl.windowDidResignKey_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidBecomeKey_:
 		widget.impl.windowDidBecomeKey_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidResize_:
 		widget.impl.windowDidResize_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidMove_:
 		widget.impl.windowDidMove_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_menuWillOpen_:
 		widget.impl.menuWillOpen_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_menuDidClose_:
 		widget.impl.menuDidClose_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_menuNeedsUpdate_:
 		widget.impl.menuNeedsUpdate_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_outlineViewSelectionDidChange_:
 		widget.impl.outlineViewSelectionDidChange_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_outlineViewSelectionIsChanging_:
 		widget.impl.outlineViewSelectionIsChanging_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_sendEvent_:
 		widget.impl.windowSendEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_helpRequested_:
 		widget.impl.helpRequested_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_scrollWheel_:
 		widget.impl.scrollWheel_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_pageDown_:
 		widget.impl.pageDown_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_pageUp_:
 		widget.impl.pageUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_textViewDidChangeSelection_:
 		widget.impl.textViewDidChangeSelection_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_textDidChange_:
 		widget.impl.textDidChange_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_textDidEndEditing_:
 		widget.impl.textDidEndEditing_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_attributedSubstringFromRange_:
-		sw308 = widget.impl.attributedSubstringFromRange_(id, sel, arg0)
+		sw75 = widget.impl.attributedSubstringFromRange_(id, sel, arg0)
 	case cocoa.OSSel_characterIndexForPoint_:
-		sw308 = widget.impl.characterIndexForPoint_(id, sel, arg0)
+		sw75 = widget.impl.characterIndexForPoint_(id, sel, arg0)
 	case cocoa.OSSel_firstRectForCharacterRange_:
 		var rect cocoa.NSRect = widget.impl.firstRectForCharacterRange_(id, sel, arg0)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_insertText_:
-		var cond312 int32
+		var cond79 int32
 		if widget.impl.insertText_(id, sel, arg0) {
-			cond312 = 1
+			cond79 = 1
 		} else {
-			cond312 = 0
+			cond79 = 0
 		}
-		sw308 = int64(cond312)
+		sw75 = int64(cond79)
 	case cocoa.OSSel_doCommandBySelector_:
 		widget.impl.doCommandBySelector_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_highlightSelectionInClipRect_:
 		widget.impl.highlightSelectionInClipRect_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_reflectScrolledClipView_:
 		widget.impl.reflectScrolledClipView_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_accessibilityHitTest_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&point, arg0, int64(cocoa.NSPointSizeof))
-		sw308 = widget.impl.accessibilityHitTest_(id, sel, point)
+		sw75 = widget.impl.accessibilityHitTest_(id, sel, point)
 	case cocoa.OSSel_accessibilityAttributeValue_:
-		sw308 = widget.impl.accessibilityAttributeValue_(id, sel, arg0)
+		sw75 = widget.impl.accessibilityAttributeValue_(id, sel, arg0)
 	case cocoa.OSSel_accessibilityPerformAction_:
 		widget.impl.accessibilityPerformAction_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_accessibilityActionDescription_:
-		sw308 = widget.impl.accessibilityActionDescription_(id, sel, arg0)
+		sw75 = widget.impl.accessibilityActionDescription_(id, sel, arg0)
 	case cocoa.OSSel_accessibilityIsAttributeSettable_:
-		var cond313 int32
+		var cond80 int32
 		if widget.impl.accessibilityIsAttributeSettable_(id, sel, arg0) {
-			cond313 = 1
+			cond80 = 1
 		} else {
-			cond313 = 0
+			cond80 = 0
 		}
-		sw308 = int64(cond313)
+		sw75 = int64(cond80)
 	case cocoa.OSSel_makeFirstResponder_:
-		var cond314 int32
+		var cond81 int32
 		if widget.impl.makeFirstResponder_(id, sel, arg0) {
-			cond314 = 1
+			cond81 = 1
 		} else {
-			cond314 = 0
+			cond81 = 0
 		}
-		sw308 = int64(cond314)
+		sw75 = int64(cond81)
 	case cocoa.OSSel_tableViewColumnDidMove_:
 		widget.impl.tableViewColumnDidMove_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_tableViewColumnDidResize_:
 		widget.impl.tableViewColumnDidResize_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_outlineViewColumnDidMove_:
 		widget.impl.outlineViewColumnDidMove_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_outlineViewColumnDidResize_:
 		widget.impl.outlineViewColumnDidResize_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setNeedsDisplay_:
 		widget.SetNeedsDisplay(id, sel, arg0 != 0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setNeedsDisplayInRect_:
 		widget.SetNeedsDisplayInRect(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setImage_:
 		widget.impl.setImageOnWidget_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_headerRectOfColumn_:
 		var rect cocoa.NSRect = widget.impl.headerRectOfColumn_(id, sel, arg0)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_imageRectForBounds_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		rect = widget.impl.imageRectForBounds_(id, sel, rect)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_titleRectForBounds_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		rect = widget.impl.titleRectForBounds_(id, sel, rect)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_cellSizeForBounds_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		var size cocoa.NSSize = widget.impl.cellSizeForBounds_(id, sel, rect)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSSizeSizeof))
 		cocoa.OSMemmoveOverload8(result, &size, int64(cocoa.NSSizeSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_setObjectValue_:
 		widget.impl.setObjectValue_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_updateOpenGLContext_:
 		widget.impl.updateOpenGLContext_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_sizeOfLabel_:
 		var size cocoa.NSSize = widget.impl.sizeOfLabel_(id, sel, arg0 != 0)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSSizeSizeof))
 		cocoa.OSMemmoveOverload8(result, &size, int64(cocoa.NSSizeSizeof))
-		sw308 = result
+		sw75 = result
 	case cocoa.OSSel_comboBoxSelectionDidChange_:
 		widget.impl.comboBoxSelectionDidChange_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_comboBoxWillDismiss_:
 		widget.impl.comboBoxWillDismiss_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_comboBoxWillPopUp_:
 		widget.impl.comboBoxWillPopUp_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_drawViewBackgroundInRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.DrawViewBackgroundInRect(id, sel, rect)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_drawBackgroundInClipRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.drawBackgroundInClipRect_(id, sel, rect)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidMiniaturize_:
 		widget.impl.windowDidMiniturize_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_windowDidDeminiaturize_:
 		widget.impl.windowDidDeminiturize_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_touchesBeganWithEvent_:
 		widget.impl.touchesBeganWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_touchesMovedWithEvent_:
 		widget.impl.touchesMovedWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_touchesEndedWithEvent_:
 		widget.impl.touchesEndedWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_touchesCancelledWithEvent_:
 		widget.impl.touchesCancelledWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_swipeWithEvent_:
 		widget.impl.swipeWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_magnifyWithEvent_:
 		widget.impl.magnifyWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_rotateWithEvent_:
 		widget.impl.rotateWithEvent_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_toolbarAllowedItemIdentifiers_:
-		sw308 = widget.impl.toolbarAllowedItemIdentifiers_(id, sel, arg0)
+		sw75 = widget.impl.toolbarAllowedItemIdentifiers_(id, sel, arg0)
 	case cocoa.OSSel_toolbarDefaultItemIdentifiers_:
-		sw308 = widget.impl.toolbarDefaultItemIdentifiers_(id, sel, arg0)
+		sw75 = widget.impl.toolbarDefaultItemIdentifiers_(id, sel, arg0)
 	case cocoa.OSSel_toolbarSelectableItemIdentifiers_:
-		sw308 = widget.impl.toolbarSelectableItemIdentifiers_(id, sel, arg0)
+		sw75 = widget.impl.toolbarSelectableItemIdentifiers_(id, sel, arg0)
 	case cocoa.OSSel_validateMenuItem_:
-		var cond315 int32
+		var cond82 int32
 		if widget.impl.validateMenuItem_(id, sel, arg0) {
-			cond315 = 1
+			cond82 = 1
 		} else {
-			cond315 = 0
+			cond82 = 0
 		}
-		sw308 = int64((cond315))
+		sw75 = int64((cond82))
 	case cocoa.OSSel_readSelectionFromPasteboard_:
-		var cond316 int32
+		var cond83 int32
 		if widget.impl.readSelectionFromPasteboard_(id, sel, arg0) {
-			cond316 = 1
+			cond83 = 1
 		} else {
-			cond316 = 0
+			cond83 = 0
 		}
-		sw308 = int64((cond316))
+		sw75 = int64((cond83))
 	case cocoa.OSSel_viewWillMoveToWindow_:
 		widget.impl.viewWillMoveToWindow_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_cancelOperation_:
 		widget.impl.cancelOperation_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setShouldExpandItem_:
 		widget.impl.setShouldExpandItem_(id, sel, arg0 != 0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_setShouldScrollClipView_:
 		widget.impl.setShouldScrollClipView_(id, sel, arg0 != 0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_deselectRow_:
 		widget.impl.deselectRow_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	case cocoa.OSSel_deselectAll_:
 		widget.impl.deselectAll_(id, sel, arg0)
-		sw308 = int64(0)
+		sw75 = int64(0)
 	default:
-		sw308 = int64(0)
+		sw75 = int64(0)
 	}
-	return sw308
+	return sw75
 }
 
 func DisplayWindowProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64) int64 {
@@ -5818,134 +5818,134 @@ func DisplayWindowProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64)
 	if widget == (nil) {
 		return int64(0)
 	}
-	var sw317 int64
+	var sw84 int64
 	switch sel {
 	case cocoa.OSSel_tabView_willSelectTabViewItem_:
 		widget.impl.tabView_willSelectTabViewItem_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_tabView_didSelectTabViewItem_:
 		widget.impl.tabView_didSelectTabViewItem_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_outlineView_isItemExpandable_:
-		var cond318 int32
+		var cond85 int32
 		if widget.impl.outlineView_isItemExpandable_(id, sel, arg0, arg1) {
-			cond318 = 1
+			cond85 = 1
 		} else {
-			cond318 = 0
+			cond85 = 0
 		}
-		sw317 = int64(cond318)
+		sw84 = int64(cond85)
 	case cocoa.OSSel_outlineView_numberOfChildrenOfItem_:
-		sw317 = widget.impl.outlineView_numberOfChildrenOfItem_(id, sel, arg0, arg1)
+		sw84 = widget.impl.outlineView_numberOfChildrenOfItem_(id, sel, arg0, arg1)
 	case cocoa.OSSel_menu_willHighlightItem_:
 		widget.impl.menu_willHighlightItem_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_setMarkedText_selectedRange_:
 		widget.impl.setMarkedText_selectedRange_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_cacheDisplayInRect_toBitmapImageRep_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.cacheDisplayInRect_toBitmapImageRep_(id, sel, rect, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_drawInteriorWithFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.drawInteriorWithFrame_inView_(id, sel, rect, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_drawWithExpansionFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.drawWithExpansionFrame_inView_(id, sel, rect, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_drawBezelWithFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		widget.impl.drawBezelWithFrame_inView_(id, sel, rect, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_accessibilityAttributeValue_forParameter_:
-		sw317 = widget.impl.accessibilityAttributeValue_forParameter_(id, sel, arg0, arg1)
+		sw84 = widget.impl.accessibilityAttributeValue_forParameter_(id, sel, arg0, arg1)
 	case cocoa.OSSel_tableView_didClickTableColumn_:
 		widget.impl.tableView_didClickTableColumn_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_outlineView_didClickTableColumn_:
 		widget.impl.outlineView_didClickTableColumn_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_shouldChangeTextInRange_replacementString_:
-		var cond319 int32
+		var cond86 int32
 		if widget.impl.shouldChangeTextInRange_replacementString_(id, sel, arg0, arg1) {
-			cond319 = 1
+			cond86 = 1
 		} else {
-			cond319 = 0
+			cond86 = 0
 		}
-		sw317 = int64(cond319)
+		sw84 = int64(cond86)
 	case cocoa.OSSel_canDragRowsWithIndexes_atPoint_:
 		var clickPoint cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&clickPoint, arg1, int64(cocoa.NSPointSizeof))
-		var cond320 int32
+		var cond87 int32
 		if widget.impl.canDragRowsWithIndexes_atPoint_(id, sel, arg0, clickPoint) {
-			cond320 = 1
+			cond87 = 1
 		} else {
-			cond320 = 0
+			cond87 = 0
 		}
-		sw317 = int64(cond320)
+		sw84 = int64(cond87)
 	case cocoa.OSSel_expandItem_expandChildren_:
 		widget.impl.expandItem_expandChildren_(id, sel, arg0, arg1 != 0)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_collapseItem_collapseChildren_:
 		widget.impl.collapseItem_collapseChildren_(id, sel, arg0, arg1 != 0)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_expansionFrameWithFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		rect = widget.impl.expansionFrameWithFrame_inView_(id, sel, rect, arg1)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw317 = result
+		sw84 = result
 	case cocoa.OSSel_focusRingMaskBoundsForFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg0, int64(cocoa.NSRectSizeof))
 		rect = widget.impl.focusRingMaskBoundsForFrame_(id, sel, rect, arg1)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw317 = result
+		sw84 = result
 	case cocoa.OSSel_drawLabel_inRect_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg1, int64(cocoa.NSRectSizeof))
 		widget.impl.drawLabelInRect_(id, sel, arg0 == 1, rect)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_scrollClipView_toPoint_:
 		var point cocoa.NSPoint = cocoa.NSPoint{}
 		cocoa.OSMemmoveOverload3(&point, arg1, int64(cocoa.NSPointSizeof))
 		widget.impl.scrollClipViewToPoint_(id, sel, arg0, point)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_accessibilitySetValue_forAttribute_:
 		widget.impl.accessibilitySetValue_forAttribute_(id, sel, arg0, arg1)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	case cocoa.OSSel_validRequestorForSendType_returnType_:
-		sw317 = widget.impl.validRequestorForSendType_(id, sel, arg0, arg1)
+		sw84 = widget.impl.validRequestorForSendType_(id, sel, arg0, arg1)
 	case cocoa.OSSel_writeSelectionToPasteboard_types_:
-		var cond321 int32
+		var cond88 int32
 		if widget.impl.writeSelectionToPasteboard_(id, sel, arg0, arg1) {
-			cond321 = 1
+			cond88 = 1
 		} else {
-			cond321 = 0
+			cond88 = 0
 		}
-		sw317 = int64((cond321))
+		sw84 = int64((cond88))
 	case cocoa.OSSel_outlineView_shouldExpandItem_:
-		var cond322 int32
+		var cond89 int32
 		if widget.impl.outlineView_shouldExpandItem_item_(id, sel, arg0, arg1) {
-			cond322 = 1
+			cond89 = 1
 		} else {
-			cond322 = 0
+			cond89 = 0
 		}
-		sw317 = int64((cond322))
+		sw84 = int64((cond89))
 	case cocoa.OSSel_selectRowIndexes_byExtendingSelection_:
 		widget.impl.selectRowIndexes_byExtendingSelection_(id, sel, arg0, arg1 != 0)
-		sw317 = int64(0)
+		sw84 = int64(0)
 	default:
-		sw317 = int64(0)
+		sw84 = int64(0)
 	}
-	return sw317
+	return sw84
 }
 
 func DisplayWindowProcIdSelArg0Arg1Arg2(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64 {
@@ -5953,107 +5953,107 @@ func DisplayWindowProcIdSelArg0Arg1Arg2(id int64, sel int64, arg0 int64, arg1 in
 	if widget == (nil) {
 		return int64(0)
 	}
-	var sw323 int64
+	var sw90 int64
 	switch sel {
 	case cocoa.OSSel_tableView_objectValueForTableColumn_row_:
-		sw323 = widget.impl.tableView_objectValueForTableColumn_row_(id, sel, arg0, arg1, arg2)
+		sw90 = widget.impl.tableView_objectValueForTableColumn_row_(id, sel, arg0, arg1, arg2)
 	case cocoa.OSSel_tableView_shouldReorderColumn_toColumn_:
-		var cond324 int32
+		var cond91 int32
 		if widget.impl.tableView_shouldReorderColumn_toColumn_(id, sel, arg0, arg1, arg2) {
-			cond324 = 1
+			cond91 = 1
 		} else {
-			cond324 = 0
+			cond91 = 0
 		}
-		sw323 = int64(cond324)
+		sw90 = int64(cond91)
 	case cocoa.OSSel_tableView_shouldEditTableColumn_row_:
-		var cond325 int32
+		var cond92 int32
 		if widget.TableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) {
-			cond325 = 1
+			cond92 = 1
 		} else {
-			cond325 = 0
+			cond92 = 0
 		}
-		sw323 = int64(cond325)
+		sw90 = int64(cond92)
 	case cocoa.OSSel_outlineView_shouldReorderColumn_toColumn_:
-		var cond326 int32
+		var cond93 int32
 		if widget.impl.outlineView_shouldReorderColumn_toColumn_(id, sel, arg0, arg1, arg2) {
-			cond326 = 1
+			cond93 = 1
 		} else {
-			cond326 = 0
+			cond93 = 0
 		}
-		sw323 = int64(cond326)
+		sw90 = int64(cond93)
 	case cocoa.OSSel_outlineView_shouldEditTableColumn_item_:
-		var cond327 int32
+		var cond94 int32
 		if widget.OutlineView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) {
-			cond327 = 1
+			cond94 = 1
 		} else {
-			cond327 = 0
+			cond94 = 0
 		}
-		sw323 = int64(cond327)
+		sw90 = int64(cond94)
 	case cocoa.OSSel_textView_clickedOnLink_atIndex_:
-		var cond328 int32
+		var cond95 int32
 		if widget.impl.textView_clickOnLink_atIndex_(id, sel, arg0, arg1, arg2) {
-			cond328 = 1
+			cond95 = 1
 		} else {
-			cond328 = 0
+			cond95 = 0
 		}
-		sw323 = int64(cond328)
+		sw90 = int64(cond95)
 	case cocoa.OSSel_outlineView_child_ofItem_:
-		sw323 = widget.impl.outlineView_child_ofItem_(id, sel, arg0, arg1, arg2)
+		sw90 = widget.impl.outlineView_child_ofItem_(id, sel, arg0, arg1, arg2)
 	case cocoa.OSSel_outlineView_objectValueForTableColumn_byItem_:
-		sw323 = widget.impl.outlineView_objectValueForTableColumn_byItem_(id, sel, arg0, arg1, arg2)
+		sw90 = widget.impl.outlineView_objectValueForTableColumn_byItem_(id, sel, arg0, arg1, arg2)
 	case cocoa.OSSel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_:
 		var range_ cocoa.NSRange = widget.impl.textView_willChangeSelectionFromCharacterRange_toCharacterRange_(id, sel, arg0, arg1, arg2)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRangeSizeof))
 		cocoa.OSMemmoveOverload4(result, &range_, int64(cocoa.NSRangeSizeof))
-		sw323 = result
+		sw90 = result
 	case cocoa.OSSel_dragSelectionWithEvent_offset_slideBack_:
 		var offset cocoa.NSSize = cocoa.NSSize{}
 		cocoa.OSMemmoveOverload9(&offset, arg0, int64(cocoa.NSSizeSizeof))
-		var cond329 int32
+		var cond96 int32
 		if widget.DragSelectionWithEvent(id, sel, arg0, arg1, arg2) {
-			cond329 = 1
+			cond96 = 1
 		} else {
-			cond329 = 0
+			cond96 = 0
 		}
-		sw323 = int64((cond329))
+		sw90 = int64((cond96))
 	case cocoa.OSSel_drawImage_withFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg1, int64(cocoa.NSRectSizeof))
 		widget.impl.drawImageWithFrameInView_(id, sel, arg0, rect, arg2)
-		sw323 = int64(0)
+		sw90 = int64(0)
 	case cocoa.OSSel_drawTitle_withFrame_inView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg1, int64(cocoa.NSRectSizeof))
 		rect = widget.impl.drawTitleWithFrameInView_(id, sel, arg0, rect, arg2)
 		var result int64 = cocoa.CMalloc(int64(cocoa.NSRectSizeof))
 		cocoa.OSMemmoveOverload6(result, &rect, int64(cocoa.NSRectSizeof))
-		sw323 = result
+		sw90 = result
 	case cocoa.OSSel_hitTestForEvent_inRect_ofView_:
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		cocoa.OSMemmoveOverload7(&rect, arg1, int64(cocoa.NSRectSizeof))
-		sw323 = widget.impl.hitTestForEvent_(id, sel, arg0, rect, arg2)
+		sw90 = widget.impl.hitTestForEvent_(id, sel, arg0, rect, arg2)
 	case cocoa.OSSel_tableView_writeRowsWithIndexes_toPasteboard_:
-		var cond330 int32
+		var cond97 int32
 		if widget.impl.tableView_writeRowsWithIndexes_toPasteboard_(id, sel, arg0, arg1, arg2) {
-			cond330 = 1
+			cond97 = 1
 		} else {
-			cond330 = 0
+			cond97 = 0
 		}
-		sw323 = int64((cond330))
+		sw90 = int64((cond97))
 	case cocoa.OSSel_outlineView_writeItems_toPasteboard_:
-		var cond331 int32
+		var cond98 int32
 		if widget.impl.outlineView_writeItems_toPasteboard_(id, sel, arg0, arg1, arg2) {
-			cond331 = 1
+			cond98 = 1
 		} else {
-			cond331 = 0
+			cond98 = 0
 		}
-		sw323 = int64((cond331))
+		sw90 = int64((cond98))
 	case cocoa.OSSel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_:
-		sw323 = widget.impl.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(id, sel, arg0, arg1, arg2 != 0)
+		sw90 = widget.impl.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(id, sel, arg0, arg1, arg2 != 0)
 	default:
-		sw323 = int64(0)
+		sw90 = int64(0)
 	}
-	return sw323
+	return sw90
 }
 
 func DisplayWindowProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
@@ -6061,42 +6061,42 @@ func DisplayWindowProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int64, arg
 	if widget == (nil) {
 		return int64(0)
 	}
-	var sw332 int64
+	var sw99 int64
 	switch sel {
 	case cocoa.OSSel_tableView_willDisplayCell_forTableColumn_row_:
 		widget.impl.tableView_willDisplayCell_forTableColumn_row_(id, sel, arg0, arg1, arg2, arg3)
-		sw332 = int64(0)
+		sw99 = int64(0)
 	case cocoa.OSSel_outlineView_willDisplayCell_forTableColumn_item_:
 		widget.impl.outlineView_willDisplayCell_forTableColumn_item_(id, sel, arg0, arg1, arg2, arg3)
-		sw332 = int64(0)
+		sw99 = int64(0)
 	case cocoa.OSSel_outlineView_setObjectValue_forTableColumn_byItem_:
 		widget.impl.outlineView_setObjectValue_forTableColumn_byItem_(id, sel, arg0, arg1, arg2, arg3)
-		sw332 = int64(0)
+		sw99 = int64(0)
 	case cocoa.OSSel_tableView_setObjectValue_forTableColumn_row_:
 		widget.impl.tableView_setObjectValue_forTableColumn_row_(id, sel, arg0, arg1, arg2, arg3)
-		sw332 = int64(0)
+		sw99 = int64(0)
 	case cocoa.OSSel_view_stringForToolTip_point_userData_:
-		sw332 = widget.impl.view_stringForToolTip_point_userData_(id, sel, arg0, arg1, arg2, arg3)
+		sw99 = widget.impl.view_stringForToolTip_point_userData_(id, sel, arg0, arg1, arg2, arg3)
 	case cocoa.OSSel_tableView_shouldTrackCell_forTableColumn_row_:
-		var cond333 int32
+		var cond100 int32
 		if widget.impl.tableView_shouldTrackCell_forTableColumn_row_(id, sel, arg0, arg1, arg2, arg3) {
-			cond333 = 1
+			cond100 = 1
 		} else {
-			cond333 = 0
+			cond100 = 0
 		}
-		sw332 = int64(cond333)
+		sw99 = int64(cond100)
 	case cocoa.OSSel_outlineView_shouldTrackCell_forTableColumn_item_:
-		var cond334 int32
+		var cond101 int32
 		if widget.impl.outlineView_shouldTrackCell_forTableColumn_item_(id, sel, arg0, arg1, arg2, arg3) {
-			cond334 = 1
+			cond101 = 1
 		} else {
-			cond334 = 0
+			cond101 = 0
 		}
-		sw332 = int64(cond334)
+		sw99 = int64(cond101)
 	default:
-		sw332 = int64(0)
+		sw99 = int64(0)
 	}
-	return sw332
+	return sw99
 }
 
 func DisplayIsActivateShellOnForceFocus() bool {

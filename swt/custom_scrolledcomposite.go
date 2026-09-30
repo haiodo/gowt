@@ -76,8 +76,8 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 			if !this.showNextFocusedControl {
 				this.showNextFocusedControl = true
 			} else {
-				control, ok672 := isWidgetToControl(event.Widget)
-				if ok672 {
+				control, ok1 := isWidgetToControl(event.Widget)
+				if ok1 {
 					if this.Contains(control) {
 						this.ShowControl(control)
 					}
@@ -85,8 +85,8 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 			}
 		} else {
 			var w *Widget = event.Widget
-			_, ok673 := isWidgetToControl(w)
-			if ok673 {
+			_, ok2 := isWidgetToControl(w)
+			if ok2 {
 				this.showNextFocusedControl = w.GetDisplay().GetActiveShell() == (castWidgetToControl(w)).impl.getShell_()
 			}
 		}
@@ -107,7 +107,7 @@ func (this *ScrolledComposite) Contains(controlLike ControlLike) bool {
 		return false
 	}
 	var parent *Composite = control.GetParent()
-	for parent != (nil) && func() bool { _, ok674 := isCompositeToShell(parent); return !(ok674) }() {
+	for parent != (nil) && func() bool { _, ok3 := isCompositeToShell(parent); return !(ok3) }() {
 		if upcastScrolledCompositeToComposite(this) == parent {
 			return true
 		}

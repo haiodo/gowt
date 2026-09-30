@@ -134,13 +134,13 @@ func (this *Test_org_eclipse_swt_widgets_Combo) Test_addModifyListenerLorg_eclip
 
 func (this *Test_org_eclipse_swt_widgets_Combo) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon84 := &Test_org_eclipse_swt_widgets_ComboAnon1{}
-	anon84.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon1 := &Test_org_eclipse_swt_widgets_ComboAnon1{}
+	anon1.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon84.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon1.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon84
+	var listener swt.SelectionListener = anon1
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.combo.AddSelectionListener(nil)
 	})
@@ -1009,9 +1009,9 @@ func (this *Test_org_eclipse_swt_widgets_Combo) DoSegmentsTest(isListening bool)
 	this.combo.Add(item)
 	junit.AssertEquals(isListening, this.listenerCalled)
 	this.listenerCalled = false
-	t85 := count
+	t2 := count
 	count++
-	junit.AssertEquals(item, this.combo.GetItem(t85))
+	junit.AssertEquals(item, this.combo.GetItem(t2))
 	junit.AssertEquals(int32(count), int32(this.combo.GetItemCount()))
 	this.combo.Select(1)
 	this.combo.RemoveString(items[1])

@@ -41,23 +41,23 @@ func (this *NSTextField) initNSTextFieldOverload2(id *id) {
 }
 
 func (this *NSTextField) SelectText(sender *id) {
-	var cond765 int64
+	var cond1 int64
 	if sender != (nil) {
-		cond765 = sender.Id
+		cond1 = sender.Id
 	} else {
-		cond765 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_selectText_, cond765)
+	OSObjc_msgSendOverload44(this.Id, OSSel_selectText_, cond1)
 }
 
 func (this *NSTextField) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond766 int64
+	var cond2 int64
 	if backgroundColor != (nil) {
-		cond766 = backgroundColor.Id
+		cond2 = backgroundColor.Id
 	} else {
-		cond766 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond766)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond2)
 }
 
 func (this *NSTextField) SetBordered(bordered bool) {
@@ -65,13 +65,13 @@ func (this *NSTextField) SetBordered(bordered bool) {
 }
 
 func (this *NSTextField) SetDelegate(delegate *id) {
-	var cond767 int64
+	var cond3 int64
 	if delegate != (nil) {
-		cond767 = delegate.Id
+		cond3 = delegate.Id
 	} else {
-		cond767 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond767)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond3)
 }
 
 func (this *NSTextField) SetDrawsBackground(drawsBackground bool) {
@@ -87,13 +87,13 @@ func (this *NSTextField) SetSelectable(selectable bool) {
 }
 
 func (this *NSTextField) SetTextColor(textColor *NSColor) {
-	var cond768 int64
+	var cond4 int64
 	if textColor != (nil) {
-		cond768 = textColor.Id
+		cond4 = textColor.Id
 	} else {
-		cond768 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond768)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond4)
 }
 
 func NSTextFieldCellClass() int64 {

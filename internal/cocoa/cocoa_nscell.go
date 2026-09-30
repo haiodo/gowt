@@ -42,13 +42,13 @@ func (this *NSCell) initNSCellOverload2(id *id) {
 
 func (this *NSCell) AttributedStringValue() *NSAttributedString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_attributedStringValue)
-	var cond135 *NSAttributedString
+	var cond1 *NSAttributedString
 	if result != 0 {
-		cond135 = NewNSAttributedStringOverload1(result)
+		cond1 = NewNSAttributedStringOverload1(result)
 	} else {
-		cond135 = nil
+		cond1 = nil
 	}
-	return cond135
+	return cond1
 }
 
 func (this *NSCell) CellSize() NSSize {
@@ -68,23 +68,23 @@ func (this *NSCell) ControlSize() int64 {
 }
 
 func (this *NSCell) DrawInteriorWithFrame(cellFrame NSRect, controlView *NSView) {
-	var cond136 int64
+	var cond2 int64
 	if controlView != (nil) {
-		cond136 = controlView.Id
+		cond2 = controlView.Id
 	} else {
-		cond136 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload21(this.Id, OSSel_drawInteriorWithFrame_inView_, cellFrame, cond136)
+	OSObjc_msgSendOverload21(this.Id, OSSel_drawInteriorWithFrame_inView_, cellFrame, cond2)
 }
 
 func (this *NSCell) DrawWithExpansionFrame(cellFrame NSRect, view *NSView) {
-	var cond137 int64
+	var cond3 int64
 	if view != (nil) {
-		cond137 = view.Id
+		cond3 = view.Id
 	} else {
-		cond137 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload21(this.Id, OSSel_drawWithExpansionFrame_inView_, cellFrame, cond137)
+	OSObjc_msgSendOverload21(this.Id, OSSel_drawWithExpansionFrame_inView_, cellFrame, cond3)
 }
 
 func (this *NSCell) DrawingRectForBounds(theRect NSRect) NSRect {
@@ -95,64 +95,64 @@ func (this *NSCell) DrawingRectForBounds(theRect NSRect) NSRect {
 
 func (this *NSCell) ExpansionFrameWithFrame(cellFrame NSRect, view *NSView) NSRect {
 	var result NSRect = NSRect{}
-	var cond138 int64
+	var cond4 int64
 	if view != (nil) {
-		cond138 = view.Id
+		cond4 = view.Id
 	} else {
-		cond138 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_expansionFrameWithFrame_inView_, cellFrame, cond138)
+	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_expansionFrameWithFrame_inView_, cellFrame, cond4)
 	return result
 }
 
 func (this *NSCell) FocusRingMaskBoundsForFrame(cellFrame NSRect, controlView *NSView) NSRect {
 	var result NSRect = NSRect{}
-	var cond139 int64
+	var cond5 int64
 	if controlView != (nil) {
-		cond139 = controlView.Id
+		cond5 = controlView.Id
 	} else {
-		cond139 = int64(0)
+		cond5 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_focusRingMaskBoundsForFrame_inView_, cellFrame, cond139)
+	OSObjc_msgSend_stretOverload12(&result, this.Id, OSSel_focusRingMaskBoundsForFrame_inView_, cellFrame, cond5)
 	return result
 }
 
 func (this *NSCell) Font() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_font)
-	var cond140 *NSFont
+	var cond6 *NSFont
 	if result != 0 {
-		cond140 = NewNSFontOverload1(result)
+		cond6 = NewNSFontOverload1(result)
 	} else {
-		cond140 = nil
+		cond6 = nil
 	}
-	return cond140
+	return cond6
 }
 
 func (this *NSCell) HitTestForEvent(event *NSEvent, cellFrame NSRect, controlView *NSView) int64 {
-	var cond141 int64
+	var cond7 int64
 	if event != (nil) {
-		cond141 = event.Id
+		cond7 = event.Id
 	} else {
-		cond141 = int64(0)
+		cond7 = int64(0)
 	}
-	var cond142 int64
+	var cond8 int64
 	if controlView != (nil) {
-		cond142 = controlView.Id
+		cond8 = controlView.Id
 	} else {
-		cond142 = int64(0)
+		cond8 = int64(0)
 	}
-	return OSObjc_msgSendOverload51(this.Id, OSSel_hitTestForEvent_inRect_ofView_, cond141, cellFrame, cond142)
+	return OSObjc_msgSendOverload51(this.Id, OSSel_hitTestForEvent_inRect_ofView_, cond7, cellFrame, cond8)
 }
 
 func (this *NSCell) Image() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
-	var cond143 *NSImage
+	var cond9 *NSImage
 	if result != 0 {
-		cond143 = NewNSImageOverload1(result)
+		cond9 = NewNSImageOverload1(result)
 	} else {
-		cond143 = nil
+		cond9 = nil
 	}
-	return cond143
+	return cond9
 }
 
 func (this *NSCell) ImageRectForBounds(theRect NSRect) NSRect {
@@ -182,13 +182,13 @@ func (this *NSCell) SetAllowsMixedState(allowsMixedState bool) {
 }
 
 func (this *NSCell) SetAttributedStringValue(attributedStringValue *NSAttributedString) {
-	var cond144 int64
+	var cond10 int64
 	if attributedStringValue != (nil) {
-		cond144 = attributedStringValue.Id
+		cond10 = attributedStringValue.Id
 	} else {
-		cond144 = int64(0)
+		cond10 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedStringValue_, cond144)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedStringValue_, cond10)
 }
 
 func (this *NSCell) SetBackgroundStyle(backgroundStyle int64) {
@@ -208,23 +208,23 @@ func (this *NSCell) SetEnabled(enabled bool) {
 }
 
 func (this *NSCell) SetFont(font *NSFont) {
-	var cond145 int64
+	var cond11 int64
 	if font != (nil) {
-		cond145 = font.Id
+		cond11 = font.Id
 	} else {
-		cond145 = int64(0)
+		cond11 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond145)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond11)
 }
 
 func (this *NSCell) SetFormatter(formatter *NSFormatter) {
-	var cond146 int64
+	var cond12 int64
 	if formatter != (nil) {
-		cond146 = formatter.Id
+		cond12 = formatter.Id
 	} else {
-		cond146 = int64(0)
+		cond12 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFormatter_, cond146)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFormatter_, cond12)
 }
 
 func (this *NSCell) SetHighlighted(highlighted bool) {
@@ -232,13 +232,13 @@ func (this *NSCell) SetHighlighted(highlighted bool) {
 }
 
 func (this *NSCell) SetImage(image *NSImage) {
-	var cond147 int64
+	var cond13 int64
 	if image != (nil) {
-		cond147 = image.Id
+		cond13 = image.Id
 	} else {
-		cond147 = int64(0)
+		cond13 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond147)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond13)
 }
 
 func (this *NSCell) SetLineBreakMode(lineBreakMode int64) {
@@ -246,13 +246,13 @@ func (this *NSCell) SetLineBreakMode(lineBreakMode int64) {
 }
 
 func (this *NSCell) SetObjectValue(objectValue *id) {
-	var cond148 int64
+	var cond14 int64
 	if objectValue != (nil) {
-		cond148 = objectValue.Id
+		cond14 = objectValue.Id
 	} else {
-		cond148 = int64(0)
+		cond14 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setObjectValue_, cond148)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setObjectValue_, cond14)
 }
 
 func (this *NSCell) SetScrollable(scrollable bool) {
@@ -260,13 +260,13 @@ func (this *NSCell) SetScrollable(scrollable bool) {
 }
 
 func (this *NSCell) SetTitle(title *NSString) {
-	var cond149 int64
+	var cond15 int64
 	if title != (nil) {
-		cond149 = title.Id
+		cond15 = title.Id
 	} else {
-		cond149 = int64(0)
+		cond15 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond149)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond15)
 }
 
 func (this *NSCell) SetUsesSingleLineMode(usesSingleLineMode bool) {
@@ -279,13 +279,13 @@ func (this *NSCell) SetWraps(wraps bool) {
 
 func (this *NSCell) Title() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond150 *NSString
+	var cond16 *NSString
 	if result != 0 {
-		cond150 = NewNSStringOverload1(result)
+		cond16 = NewNSStringOverload1(result)
 	} else {
-		cond150 = nil
+		cond16 = nil
 	}
-	return cond150
+	return cond16
 }
 
 func (this *NSCell) TitleRectForBounds(theRect NSRect) NSRect {

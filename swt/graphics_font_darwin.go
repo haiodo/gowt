@@ -177,8 +177,8 @@ func (this *Font) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	font, ok227 := resourceImplAsFont(object)
-	if !(ok227) {
+	font, ok1 := resourceImplAsFont(object)
+	if !(ok1) {
 		return false
 	}
 	return this.Handle == font.Handle
@@ -226,13 +226,13 @@ func (this *Font) GetFontData() []*FontData {
 }
 
 func (this *Font) HashCode() int32 {
-	var cond228 int32
+	var cond2 int32
 	if this.Handle != (nil) {
-		cond228 = int32(this.Handle.Id)
+		cond2 = int32(this.Handle.Id)
 	} else {
-		cond228 = 0
+		cond2 = 0
 	}
-	return cond228
+	return cond2
 }
 
 func (this *Font) Init(name string, height float32, style int32, nsName string) {
@@ -250,13 +250,13 @@ func (this *Font) Init(name string, height float32, style int32, nsName string) 
 	var systemFontName string = systemFont.FamilyName().GetString()
 	var boldSystemFontName string = boldSystemFont.FamilyName().GetString()
 	if (systemFontName == name) || (boldSystemFontName == name) {
-		var cond229 *cocoa.NSFont
+		var cond3 *cocoa.NSFont
 		if (style & BOLD) == 0 {
-			cond229 = systemFont
+			cond3 = systemFont
 		} else {
-			cond229 = boldSystemFont
+			cond3 = boldSystemFont
 		}
-		this.Handle = (cond229)
+		this.Handle = (cond3)
 	} else {
 		if nsName != "" {
 			this.Handle = cocoa.NSFontFontWithName(cocoa.NSStringStringWith(nsName), float64(size))

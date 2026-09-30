@@ -9,30 +9,30 @@ type MouseListener interface {
 }
 
 func MouseListenerMouseDoubleClickAdapter(c func(*MouseEvent)) MouseListener {
-	anon41 := &MouseListenerAnon1{}
-	anon41.initMouseAdapter()
-	anon41.fnMouseDoubleClick = func(e *MouseEvent) {
+	anon1 := &MouseListenerAnon1{}
+	anon1.initMouseAdapter()
+	anon1.fnMouseDoubleClick = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon41
+	return anon1
 }
 
 func MouseListenerMouseDownAdapter(c func(*MouseEvent)) MouseListener {
-	anon42 := &MouseListenerAnon2{}
-	anon42.initMouseAdapter()
-	anon42.fnMouseDown = func(e *MouseEvent) {
+	anon2 := &MouseListenerAnon2{}
+	anon2.initMouseAdapter()
+	anon2.fnMouseDown = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon42
+	return anon2
 }
 
 func MouseListenerMouseUpAdapter(c func(*MouseEvent)) MouseListener {
-	anon43 := &MouseListenerAnon3{}
-	anon43.initMouseAdapter()
-	anon43.fnMouseUp = func(e *MouseEvent) {
+	anon3 := &MouseListenerAnon3{}
+	anon3.initMouseAdapter()
+	anon3.fnMouseUp = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon43
+	return anon3
 }
 
 // j2go: anonymous MouseAdapter subclass.

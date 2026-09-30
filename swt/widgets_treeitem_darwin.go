@@ -145,32 +145,32 @@ func (this *TreeItem) CalculateWidth(index int32, gcLike GCLike) int32 {
 	if font == (nil) {
 		font = this.parent.impl.defaultFont_()
 	}
-	var cond544 string
+	var cond1 string
 	if this.strings == (nil) {
-		cond544 = ""
+		cond1 = ""
 	} else {
-		cond544 = this.strings[index]
+		cond1 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond544)
+		text = (cond1)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond545 *Image
+	var cond2 *Image
 	if this.images == (nil) {
-		cond545 = nil
+		cond2 = nil
 	} else {
-		cond545 = this.images[index]
+		cond2 = this.images[index]
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = (cond545)
+		image = (cond2)
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
 	if font.ExtraTraits != 0 {
@@ -180,13 +180,13 @@ func (this *TreeItem) CalculateWidth(index int32, gcLike GCLike) int32 {
 	} else {
 		cell.SetFont(font.Handle)
 		var str *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-		var cond546 string
+		var cond3 string
 		if text != "" {
-			cond546 = text
+			cond3 = text
 		} else {
-			cond546 = ""
+			cond3 = ""
 		}
-		str = str.InitWithString(cond546)
+		str = str.InitWithString(cond3)
 		cell.SetTitle(str)
 		str.Release()
 	}
@@ -272,28 +272,28 @@ func (this *TreeItem) ClearAll(all bool) {
 }
 
 func (this *TreeItem) CreateString(index int32) *cocoa.NSObject {
-	var cond547 string
+	var cond4 string
 	if this.strings == (nil) {
-		cond547 = ""
+		cond4 = ""
 	} else {
-		cond547 = this.strings[index]
+		cond4 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond547)
+		text = (cond4)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond548 string
+	var cond5 string
 	if text != "" {
-		cond548 = text
+		cond5 = text
 	} else {
-		cond548 = ""
+		cond5 = ""
 	}
-	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond548))
+	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond5))
 }
 
 func (this *TreeItem) dealloc_(id int64, sel int64) {
@@ -319,13 +319,13 @@ func (this *TreeItem) GetBackground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond549 *Color
+	var cond6 *Color
 	if this.background != (nil) {
-		cond549 = this.background
+		cond6 = this.background
 	} else {
-		cond549 = this.parent.GetBackground()
+		cond6 = this.parent.GetBackground()
 	}
-	return cond549
+	return cond6
 }
 
 func (this *TreeItem) GetBackgroundIndex(index int32) *Color {
@@ -446,13 +446,13 @@ func (this *TreeItem) GetFont() *Font {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond550 *Font
+	var cond7 *Font
 	if this.font != (nil) {
-		cond550 = this.font
+		cond7 = this.font
 	} else {
-		cond550 = this.parent.GetFont()
+		cond7 = this.parent.GetFont()
 	}
-	return cond550
+	return cond7
 }
 
 func (this *TreeItem) GetFontIndex(index int32) *Font {
@@ -475,13 +475,13 @@ func (this *TreeItem) GetForeground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond551 *Color
+	var cond8 *Color
 	if this.foreground != (nil) {
-		cond551 = this.foreground
+		cond8 = this.foreground
 	} else {
-		cond551 = this.parent.impl.getForeground_()
+		cond8 = this.parent.impl.getForeground_()
 	}
-	return cond551
+	return cond8
 }
 
 func (this *TreeItem) GetForegroundIndex(index int32) *Color {
@@ -544,17 +544,17 @@ func (this *TreeItem) GetImageBounds(index int32) *Rectangle {
 	}
 	this.parent.CheckItems()
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.parent.View)
-	var cond552 *Image
+	var cond9 *Image
 	if this.images != (nil) {
-		cond552 = this.images[index]
+		cond9 = this.images[index]
 	} else {
-		cond552 = nil
+		cond9 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond552
+		image = cond9
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {
@@ -648,13 +648,13 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond553 string
+			var cond10 string
 			if string_ != "" {
-				cond553 = string_
+				cond10 = string_
 			} else {
-				cond553 = ""
+				cond10 = ""
 			}
-			return cond553
+			return cond10
 		}
 	}
 	return ""
@@ -670,17 +670,17 @@ func (this *TreeItem) GetTextBounds(index int32) *Rectangle {
 	}
 	this.parent.CheckItems()
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.parent.View)
-	var cond554 *Image
+	var cond11 *Image
 	if this.images != (nil) {
-		cond554 = this.images[index]
+		cond11 = this.images[index]
 	} else {
-		cond554 = nil
+		cond11 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond554
+		image = cond11
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {
@@ -824,13 +824,13 @@ func (this *TreeItem) SendExpand(expand bool, recurse bool) {
 	if this.expanded != expand {
 		var event *Event = NewEvent()
 		event.Item = upcastTreeItemToWidget(this)
-		var cond555 int32
+		var cond12 int32
 		if expand {
-			cond555 = Expand
+			cond12 = Expand
 		} else {
-			cond555 = Collapse
+			cond12 = Collapse
 		}
-		this.parent.SendEventEventTypeEvent(cond555, event)
+		this.parent.SendEventEventTypeEvent(cond12, event)
 		if this.IsDisposed() {
 			return
 		}

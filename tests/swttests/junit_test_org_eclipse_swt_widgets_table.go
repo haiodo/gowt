@@ -1374,13 +1374,13 @@ func (this *Test_org_eclipse_swt_widgets_Table) MakeCleanEnvironment(single bool
 	if this.table != (nil) {
 		this.table.Dispose()
 	}
-	var cond83 int32
+	var cond1 int32
 	if single {
-		cond83 = swt.SINGLE
+		cond1 = swt.SINGLE
 	} else {
-		cond83 = swt.MULTI
+		cond1 = swt.MULTI
 	}
-	this.table = swt.NewTable(upcastswtShellToswtComposite(this.shell), cond83)
+	this.table = swt.NewTable(upcastswtShellToswtComposite(this.shell), cond1)
 	this.impl.setWidget_(upcastswtTableToswtWidget(this.table))
 }
 

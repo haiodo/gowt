@@ -41,18 +41,18 @@ func (this *NSFormatter) initNSFormatterOverload2(id *id) {
 }
 
 func (this *NSFormatter) StringForObjectValue(obj *id) *NSString {
-	var cond283 int64
+	var cond1 int64
 	if obj != (nil) {
-		cond283 = obj.Id
+		cond1 = obj.Id
 	} else {
-		cond283 = int64(0)
+		cond1 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForObjectValue_, cond283)
-	var cond284 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForObjectValue_, cond1)
+	var cond2 *NSString
 	if result != 0 {
-		cond284 = NewNSStringOverload1(result)
+		cond2 = NewNSStringOverload1(result)
 	} else {
-		cond284 = nil
+		cond2 = nil
 	}
-	return cond284
+	return cond2
 }

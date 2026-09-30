@@ -184,8 +184,8 @@ func (this *Test_org_eclipse_swt_custom_CCombo) test_setFocus_() {
 		}()
 		junit.AssertTrue(this.ccombo.IsFocusControl())
 		var focusControl *swt.Control = this.ccombo.GetDisplay().GetFocusControl()
-		_, ok89 := isswtControlToswtText(focusControl)
-		junit.AssertTrue(ok89)
+		_, ok1 := isswtControlToswtText(focusControl)
+		junit.AssertTrue(ok1)
 		junit.AssertEquals(this.ccombo, focusControl.GetParent())
 	}
 }
@@ -312,13 +312,13 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_addModifyListenerLorg_eclip
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.ccombo = swt.NewCCombo(upcastswtShellToswtComposite(this.shell), 0)
 	this.listenerCalled = false
-	anon90 := &Test_org_eclipse_swt_custom_CComboAnon1{}
-	anon90.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon2 := &Test_org_eclipse_swt_custom_CComboAnon1{}
+	anon2.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon90.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon2.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon90
+	var listener swt.SelectionListener = anon2
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.ccombo.AddSelectionListener(nil)
 	})
@@ -660,13 +660,13 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_removeModifyListenerLorg_ec
 
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon91 := &Test_org_eclipse_swt_custom_CComboAnon2{}
-	anon91.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon3 := &Test_org_eclipse_swt_custom_CComboAnon2{}
+	anon3.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon91.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon3.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon91
+	var listener swt.SelectionListener = anon3
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.ccombo.AddSelectionListener(nil)
 	})

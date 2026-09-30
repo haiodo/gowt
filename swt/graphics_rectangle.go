@@ -149,8 +149,8 @@ func (this *Rectangle) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	other, ok5 := rectangleImplAsRectangle(object)
-	if !(ok5) {
+	other, ok1 := rectangleImplAsRectangle(object)
+	if !(ok1) {
 		return false
 	}
 	return (other.X == this.X) && (other.Y == this.Y) && (other.Width == this.Width) && (other.Height == this.Height)
@@ -262,31 +262,31 @@ func (this *Rectangle) Intersection(rectLike RectangleLike) *Rectangle {
 	} else {
 		bottom = rhs
 	}
-	var cond6 int32
+	var cond2 int32
 	if right < left {
-		cond6 = 0
+		cond2 = 0
 	} else {
-		cond6 = left
+		cond2 = left
 	}
-	var cond7 int32
+	var cond3 int32
 	if bottom < top {
-		cond7 = 0
+		cond3 = 0
 	} else {
-		cond7 = top
+		cond3 = top
 	}
-	var cond8 int32
+	var cond4 int32
 	if right < left {
-		cond8 = 0
+		cond4 = 0
 	} else {
-		cond8 = right - left
+		cond4 = right - left
 	}
-	var cond9 int32
+	var cond5 int32
 	if bottom < top {
-		cond9 = 0
+		cond5 = 0
 	} else {
-		cond9 = bottom - top
+		cond5 = bottom - top
 	}
-	return NewRectangle(cond6, cond7, cond8, cond9)
+	return NewRectangle(cond2, cond3, cond4, cond5)
 }
 
 func (this *Rectangle) Intersects(x int32, y int32, width int32, height int32) bool {
@@ -382,39 +382,39 @@ func RectangleOfTopLeftDimension(topLeftLike PointLike, dimensionLike PointLike)
 	}
 	_ = dimension
 	var x float32
-	p, ok10 := isPointToPoint_OfFloat(topLeft)
-	if ok10 {
+	p, ok6 := isPointToPoint_OfFloat(topLeft)
+	if ok6 {
 		x = p.GetX()
 	} else {
 		x = float32(topLeft.X)
 	}
 	var y float32
-	p, ok11 := isPointToPoint_OfFloat(topLeft)
-	if ok11 {
+	p, ok7 := isPointToPoint_OfFloat(topLeft)
+	if ok7 {
 		y = p.GetY()
 	} else {
 		y = float32(topLeft.Y)
 	}
 	var w float32
-	p, ok12 := isPointToPoint_OfFloat(dimension)
-	if ok12 {
+	p, ok8 := isPointToPoint_OfFloat(dimension)
+	if ok8 {
 		w = p.GetX()
 	} else {
 		w = float32(dimension.X)
 	}
 	var h float32
-	p, ok13 := isPointToPoint_OfFloat(dimension)
-	if ok13 {
+	p, ok9 := isPointToPoint_OfFloat(dimension)
+	if ok9 {
 		h = p.GetY()
 	} else {
 		h = float32(dimension.Y)
 	}
-	pm, ok14 := isPointToPoint_WithMonitor(topLeft)
-	if ok14 {
+	pm, ok10 := isPointToPoint_WithMonitor(topLeft)
+	if ok10 {
 		return upcastRectangle_WithMonitorToRectangle(newRectangleWithMonitorXYWidthHeightMonitor(x, y, w, h, pm.GetMonitor()))
 	}
-	_, ok15 := isPointToPoint_OfFloat(topLeft)
-	if ok15 || func() bool { _, ok16 := isPointToPoint_OfFloat(dimension); return ok16 }() {
+	_, ok11 := isPointToPoint_OfFloat(topLeft)
+	if ok11 || func() bool { _, ok12 := isPointToPoint_OfFloat(dimension); return ok12 }() {
 		return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeight(x, y, w, h))
 	}
 	return NewRectangle(topLeft.X, topLeft.Y, dimension.X, dimension.Y)
@@ -537,11 +537,11 @@ func RectangleOfFloatFrom(rectangleLike RectangleLike) *Rectangle_OfFloat {
 		rectangle = rectangleLike.AsRectangle()
 	}
 	_ = rectangle
-	rectangleOfFloat, ok17 := isRectangleToRectangle_OfFloat(rectangle)
-	if ok17 {
-		t18 := rectangleOfFloat.impl.clone_()
-		t19, _ := rectangleImplAsOfFloat(t18.impl)
-		return t19
+	rectangleOfFloat, ok13 := isRectangleToRectangle_OfFloat(rectangle)
+	if ok13 {
+		t14 := rectangleOfFloat.impl.clone_()
+		t15, _ := rectangleImplAsOfFloat(t14.impl)
+		return t15
 	}
 	return NewRectangleOfFloat(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
 }

@@ -42,9 +42,9 @@ func (this *EventTable) GetListeners(eventType int32) []Listener {
 	count = 0
 	for i := int32(0); i < int32(len(this.types)); i++ {
 		if this.types[i] == eventType {
-			t24 := count
+			t1 := count
 			count++
-			result[t24] = this.listeners[i]
+			result[t1] = this.listeners[i]
 		}
 	}
 	return result
@@ -99,24 +99,24 @@ func (this *EventTable) SendEvent(eventLike EventLike) {
 	if this.types == (nil) {
 		return
 	}
-	var cond25 int32
+	var cond2 int32
 	if this.level >= 0 {
-		cond25 = 1
+		cond2 = 1
 	} else {
-		cond25 = -1
+		cond2 = -1
 	}
-	this.level += cond25
+	this.level += cond2
 	{
 		var exceptions *ExceptionStash = NewExceptionStash()
 		defer func() {
 			var compact bool = this.level < 0
-			var cond26 int32
+			var cond3 int32
 			if this.level >= 0 {
-				cond26 = 1
+				cond3 = 1
 			} else {
-				cond26 = -1
+				cond3 = -1
 			}
-			this.level -= cond26
+			this.level -= cond3
 			if compact && this.level == 0 {
 				var index int32 = 0
 				for i := int32(0); i < int32(len(this.types)); i++ {
@@ -207,8 +207,8 @@ func (this *EventTable) UnhookEventTypeListener(eventType int32, listener any) {
 	}
 	for i := int32(0); i < int32(len(this.types)); i++ {
 		if this.types[i] == eventType {
-			typedListener, ok27 := typedListenerImplAsTypedListener(this.listeners[i])
-			if ok27 {
+			typedListener, ok4 := typedListenerImplAsTypedListener(this.listeners[i])
+			if ok4 {
 				if typedListener.eventListener == listener {
 					this.Remove(i)
 					return

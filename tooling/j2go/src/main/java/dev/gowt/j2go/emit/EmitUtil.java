@@ -81,7 +81,7 @@ final class EmitUtil {
 
 	static boolean collidesWithTypeName(TypeModel model, String name) {
 		for (TypeModel.ClassInfo c : model.all()) {
-			if (c.goTypeName.equals(name)) return true;
+			if (c.goPackage.equals("swt") && c.goTypeName.equals(name)) return true;
 		}
 		return dev.gowt.j2go.Manual.ownPackageTypeNames().contains(name);
 	}

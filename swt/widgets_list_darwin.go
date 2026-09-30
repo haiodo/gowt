@@ -67,9 +67,9 @@ func (this *List) Add(string_ string) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t588 := this.itemCount
+	t1 := this.itemCount
 	this.itemCount++
-	this.items[t588] = string_
+	this.items[t1] = string_
 	this.UpdateRowCount()
 	this.SetScrollWidth(string_)
 }
@@ -87,9 +87,9 @@ func (this *List) AddStringIndex(string_ string, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t589 := this.itemCount
+	t2 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t589-index])
+	copy(this.items[index+1:], this.items[index:index+t2-index])
 	this.items[index] = string_
 	this.UpdateRowCount()
 	if index != this.itemCount {
@@ -152,13 +152,13 @@ func (this *List) createHandle_() {
 		scrollWidget.SetHasVerticalScroller(true)
 	}
 	scrollWidget.SetAutohidesScrollers(true)
-	var cond590 int32
+	var cond3 int32
 	if (this.style & BORDER) != 0 {
-		cond590 = cocoa.OSNSBezelBorder
+		cond3 = cocoa.OSNSBezelBorder
 	} else {
-		cond590 = cocoa.OSNSNoBorder
+		cond3 = cocoa.OSNSNoBorder
 	}
-	scrollWidget.SetBorderType(int64(cond590))
+	scrollWidget.SetBorderType(int64(cond3))
 	var widget *cocoa.NSTableView = castcocoaNSObjectTococoaNSTableView(cocoa.NewSWTTableView().Alloc())
 	widget.Init()
 	widget.SetAllowsMultipleSelection((this.style & MULTI) != 0)
@@ -297,18 +297,18 @@ func (this *List) FixSelection(index int32, add bool) {
 		if !add && selection[i] == index {
 			fix = true
 		} else {
-			t591 := newCount
+			t4 := newCount
 			newCount++
-			var newIndex int32 = t591
+			var newIndex int32 = t4
 			selection[newIndex] = selection[i]
 			if selection[newIndex] >= index {
-				var cond592 int32
+				var cond5 int32
 				if add {
-					cond592 = 1
+					cond5 = 1
 				} else {
-					cond592 = -1
+					cond5 = -1
 				}
-				selection[newIndex] += cond592
+				selection[newIndex] += cond5
 				fix = true
 			}
 		}
@@ -892,9 +892,9 @@ func (this *List) SetSelectionIndices(indices []int32) {
 	for i := int32(0); i < length; i++ {
 		var index int32 = indices[length-i-1]
 		if index >= 0 && index < this.itemCount {
-			t593 := count
+			t6 := count
 			count++
-			newIndices[t593] = index
+			newIndices[t6] = index
 		}
 	}
 	if count > 0 {
@@ -926,9 +926,9 @@ func (this *List) SetSelectionItems(items []string) {
 		} else {
 			var index int32 = 0
 			for {
-				cond594 := this.IndexOfStringStart(string_, index)
-				index = cond594
-				if !((cond594) != -1) {
+				cond7 := this.IndexOfStringStart(string_, index)
+				index = cond7
+				if !((cond7) != -1) {
 					break
 				}
 				if count == int32(len(indices)) {
@@ -936,9 +936,9 @@ func (this *List) SetSelectionItems(items []string) {
 					copy(newIds[0:], indices[0:0+int32(len(indices))])
 					indices = newIds
 				}
-				t595 := count
+				t8 := count
 				count++
-				indices[t595] = index
+				indices[t8] = index
 				index++
 			}
 		}

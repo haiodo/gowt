@@ -49,13 +49,13 @@ func (this *NSClipView) SetCopiesOnScroll(copiesOnScroll bool) {
 }
 
 func (this *NSClipView) SetDocumentCursor(documentCursor *NSCursor) {
-	var cond151 int64
+	var cond1 int64
 	if documentCursor != (nil) {
-		cond151 = documentCursor.Id
+		cond1 = documentCursor.Id
 	} else {
-		cond151 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDocumentCursor_, cond151)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDocumentCursor_, cond1)
 }
 
 func (this *NSClipView) SetDrawsBackground(drawsBackground bool) {

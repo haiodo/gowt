@@ -156,8 +156,8 @@ func (this *SystemTab) createExampleWidgets_() {
 		tableColumn.SetToolTipText(ControlExampleGetResourceStringKeyArgs("Tooltip", []any{columnTitle}))
 	}
 	var emptyLineFlag bool = false
-	for _, elem44 := range this.hmap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem44)
+	for _, elem1 := range this.hmap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem1)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		if !emptyLineFlag {
@@ -193,8 +193,8 @@ func (this *SystemTab) createExampleWidgets_() {
 	this.cursors.SetHeaderVisible(true)
 	var tableColumn *swt.TableColumn = swt.NewTableColumn(this.cursors, swt.NONE)
 	tableColumn.SetText("Cursor")
-	for _, elem45 := range this.cmap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem45)
+	for _, elem2 := range this.cmap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem2)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		var item *swt.TableItem = swt.NewTableItem(this.cursors, swt.NONE)
@@ -220,8 +220,8 @@ func (this *SystemTab) createExampleWidgets_() {
 		tableColumn1.SetText(columnTitle)
 		tableColumn1.SetToolTipText(ControlExampleGetResourceStringKeyArgs("Tooltip", []any{columnTitle}))
 	}
-	for _, elem46 := range this.imap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem46)
+	for _, elem3 := range this.imap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem3)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		var item *swt.TableItem = swt.NewTableItem(this.images, swt.NONE)

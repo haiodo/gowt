@@ -47,13 +47,13 @@ func (this *Test_org_eclipse_swt_widgets_Slider) test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_widgets_Slider) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon87 := &Test_org_eclipse_swt_widgets_SliderAnon1{}
-	anon87.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon1 := &Test_org_eclipse_swt_widgets_SliderAnon1{}
+	anon1.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon87.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon1.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon87
+	var listener swt.SelectionListener = anon1
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.slider.AddSelectionListener(nil)
 	})

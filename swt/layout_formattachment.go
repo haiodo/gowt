@@ -123,16 +123,16 @@ func (this *FormAttachment) Divide(value int32) *FormAttachment {
 
 func (this *FormAttachment) Gcd(m int32, n int32) int32 {
 	var temp int32
-	abs116 := m
-	if abs116 < 0 {
-		abs116 = -abs116
+	abs1 := m
+	if abs1 < 0 {
+		abs1 = -abs1
 	}
-	m = abs116
-	abs117 := n
-	if abs117 < 0 {
-		abs117 = -abs117
+	m = abs1
+	abs2 := n
+	if abs2 < 0 {
+		abs2 = -abs2
 	}
-	n = abs117
+	n = abs2
 	if m < n {
 		temp = m
 		m = n
@@ -207,11 +207,11 @@ func (this *FormAttachment) String() string {
 	} else {
 		string_ = fmt.Sprintf("%d/%d", this.Numerator, this.Denominator)
 	}
-	var cond118 string
+	var cond3 string
 	if this.Offset >= 0 {
-		cond118 = fmt.Sprintf(")x + %d", this.Offset)
+		cond3 = fmt.Sprintf(")x + %d", this.Offset)
 	} else {
-		cond118 = fmt.Sprintf(")x - %d", (-this.Offset))
+		cond3 = fmt.Sprintf(")x - %d", (-this.Offset))
 	}
-	return fmt.Sprintf("{y = (%s%s}", string_, (cond118))
+	return fmt.Sprintf("{y = (%s%s}", string_, (cond3))
 }

@@ -101,7 +101,7 @@ public class Emitter {
 		fileHelperSource = new ArrayList<>();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
-		anonCounter = 0;
+		anonCounter = tempCounter = 0; // per file, so a shared file reads the same whichever platform generated it
 		StringBuilder out = new StringBuilder();
 		for (Object t : cu.types()) {
 			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);

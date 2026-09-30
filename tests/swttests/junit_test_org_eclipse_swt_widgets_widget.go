@@ -617,8 +617,8 @@ func (this *Test_org_eclipse_swt_widgets_Widget) Test_notifyListenersILorg_eclip
 	this.widget.NotifyListeners(0, nil)
 	var event *swt.Event = swt.NewEvent()
 	var gc *swt.GC = nil
-	_, ok51 := isswtWidgetToswtControl(this.widget)
-	if ok51 {
+	_, ok1 := isswtWidgetToswtControl(this.widget)
+	if ok1 {
 		event.Gc = swt.NewGCDrawable(castswtWidgetToswtControl(this.widget))
 		gc = event.Gc
 	}
@@ -780,8 +780,8 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 		display = displayLike.AsDisplay()
 	}
 	_ = display
-	var tret52 []*swt.Widget
-	tretd53 := false
+	var tret2 []*swt.Widget
+	tretd3 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -791,8 +791,8 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 			if t, ok := r.(error); ok {
 				_ = t
 				fmt.Fprintln(os.Stderr, t)
-				tret52 = nil
-				tretd53 = true
+				tret2 = nil
+				tretd3 = true
 				return
 			} else {
 				panic(r)
@@ -804,12 +804,12 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 		}()
 		func() any { _ = []any{field, true}; panic("j2go: unresolved call setAccessible") }()
 		var widgetTable []*swt.Widget = func() any { _ = []any{field, display}; panic("j2go: unresolved call get") }().([]*swt.Widget)
-		tret52 = widgetTable
-		tretd53 = true
+		tret2 = widgetTable
+		tretd3 = true
 		return
 	}()
-	_ = tretd53
-	return tret52
+	_ = tretd3
+	return tret2
 }
 
 // j2go: func adapter for DisposeListener.

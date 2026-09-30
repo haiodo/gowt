@@ -11,48 +11,48 @@ type ShellListener interface {
 }
 
 func ShellListenerShellActivatedAdapter(c func(*ShellEvent)) ShellListener {
-	anon49 := &ShellListenerAnon1{}
-	anon49.initShellAdapter()
-	anon49.fnShellActivated = func(e *ShellEvent) {
+	anon1 := &ShellListenerAnon1{}
+	anon1.initShellAdapter()
+	anon1.fnShellActivated = func(e *ShellEvent) {
 		c(e)
 	}
-	return anon49
+	return anon1
 }
 
 func ShellListenerShellClosedAdapter(c func(*ShellEvent)) ShellListener {
-	anon50 := &ShellListenerAnon2{}
-	anon50.initShellAdapter()
-	anon50.fnShellClosed = func(e *ShellEvent) {
+	anon2 := &ShellListenerAnon2{}
+	anon2.initShellAdapter()
+	anon2.fnShellClosed = func(e *ShellEvent) {
 		c(e)
 	}
-	return anon50
+	return anon2
 }
 
 func ShellListenerShellDeactivatedAdapter(c func(*ShellEvent)) ShellListener {
-	anon51 := &ShellListenerAnon3{}
-	anon51.initShellAdapter()
-	anon51.fnShellDeactivated = func(e *ShellEvent) {
+	anon3 := &ShellListenerAnon3{}
+	anon3.initShellAdapter()
+	anon3.fnShellDeactivated = func(e *ShellEvent) {
 		c(e)
 	}
-	return anon51
+	return anon3
 }
 
 func ShellListenerShellDeiconifiedAdapter(c func(*ShellEvent)) ShellListener {
-	anon52 := &ShellListenerAnon4{}
-	anon52.initShellAdapter()
-	anon52.fnShellDeiconified = func(e *ShellEvent) {
+	anon4 := &ShellListenerAnon4{}
+	anon4.initShellAdapter()
+	anon4.fnShellDeiconified = func(e *ShellEvent) {
 		c(e)
 	}
-	return anon52
+	return anon4
 }
 
 func ShellListenerShellIconifiedAdapter(c func(*ShellEvent)) ShellListener {
-	anon53 := &ShellListenerAnon5{}
-	anon53.initShellAdapter()
-	anon53.fnShellIconified = func(e *ShellEvent) {
+	anon5 := &ShellListenerAnon5{}
+	anon5.initShellAdapter()
+	anon5.fnShellIconified = func(e *ShellEvent) {
 		c(e)
 	}
-	return anon53
+	return anon5
 }
 
 // j2go: anonymous ShellAdapter subclass.

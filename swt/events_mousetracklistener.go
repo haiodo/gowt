@@ -9,30 +9,30 @@ type MouseTrackListener interface {
 }
 
 func MouseTrackListenerMouseEnterAdapter(c func(*MouseEvent)) MouseTrackListener {
-	anon44 := &MouseTrackListenerAnon1{}
-	anon44.initMouseTrackAdapter()
-	anon44.fnMouseEnter = func(e *MouseEvent) {
+	anon1 := &MouseTrackListenerAnon1{}
+	anon1.initMouseTrackAdapter()
+	anon1.fnMouseEnter = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon44
+	return anon1
 }
 
 func MouseTrackListenerMouseExitAdapter(c func(*MouseEvent)) MouseTrackListener {
-	anon45 := &MouseTrackListenerAnon2{}
-	anon45.initMouseTrackAdapter()
-	anon45.fnMouseExit = func(e *MouseEvent) {
+	anon2 := &MouseTrackListenerAnon2{}
+	anon2.initMouseTrackAdapter()
+	anon2.fnMouseExit = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon45
+	return anon2
 }
 
 func MouseTrackListenerMouseHoverAdapter(c func(*MouseEvent)) MouseTrackListener {
-	anon46 := &MouseTrackListenerAnon3{}
-	anon46.initMouseTrackAdapter()
-	anon46.fnMouseHover = func(e *MouseEvent) {
+	anon3 := &MouseTrackListenerAnon3{}
+	anon3.initMouseTrackAdapter()
+	anon3.fnMouseHover = func(e *MouseEvent) {
 		c(e)
 	}
-	return anon46
+	return anon3
 }
 
 // j2go: anonymous MouseTrackAdapter subclass.

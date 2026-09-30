@@ -59,13 +59,13 @@ func (this *Test_org_eclipse_swt_widgets_DateTime) test_ConstructorLorg_eclipse_
 
 func (this *Test_org_eclipse_swt_widgets_DateTime) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon114 := &Test_org_eclipse_swt_widgets_DateTimeAnon1{}
-	anon114.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon1 := &Test_org_eclipse_swt_widgets_DateTimeAnon1{}
+	anon1.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon114.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
+	anon1.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon114
+	var listener swt.SelectionListener = anon1
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.datetime.AddSelectionListener(nil)
 	})

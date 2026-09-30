@@ -124,13 +124,13 @@ func (this *Link) createHandle_() {
 	scrollWidget.Init()
 	scrollWidget.SetDrawsBackground(false)
 	scrollWidget.SetAutoresizesSubviews(true)
-	var cond599 int32
+	var cond1 int32
 	if this.impl.hasBorder_() {
-		cond599 = cocoa.OSNSBezelBorder
+		cond1 = cocoa.OSNSBezelBorder
 	} else {
-		cond599 = cocoa.OSNSNoBorder
+		cond1 = cocoa.OSNSNoBorder
 	}
-	scrollWidget.SetBorderType(int64(cond599))
+	scrollWidget.SetBorderType(int64(cond1))
 	scrollWidget.SetVerticalScrollElasticity(int64(cocoa.OSNSScrollElasticityNone))
 	var widget *cocoa.NSTextView = castcocoaNSObjectTococoaNSTextView(cocoa.NewSWTTextView().Alloc())
 	widget.Init()
@@ -637,13 +637,13 @@ func (this *Link) SetLinkColor(enabled bool) {
 	var count int32 = int32(linkTextAttributes.Count())
 	var dict *cocoa.NSMutableDictionary = cocoa.NSMutableDictionaryDictionaryWithCapacity(int64(count))
 	dict.SetDictionary(linkTextAttributes)
-	var cond600 *cocoa.Id
+	var cond2 *cocoa.Id
 	if enabled {
-		cond600 = upcastcocoaNSColorTococoaId(this.GetLinkForegroundColor())
+		cond2 = upcastcocoaNSColorTococoaId(this.GetLinkForegroundColor())
 	} else {
-		cond600 = upcastcocoaNSColorTococoaId(this.GetTextColor(false))
+		cond2 = upcastcocoaNSColorTococoaId(this.GetTextColor(false))
 	}
-	dict.Impl().SetValueOnNSObject(cond600, cocoa.OSNSForegroundColorAttributeName_)
+	dict.Impl().SetValueOnNSObject(cond2, cocoa.OSNSForegroundColorAttributeName_)
 	widget.SetLinkTextAttributes(upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
 }
 
@@ -774,13 +774,13 @@ func (this *Link) updateCursorRects_(enabled bool) {
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSScrollViewTococoaNSView(this.scrollView))
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSClipViewTococoaNSView(contentView))
-	var cond601 *cocoa.NSCursor
+	var cond3 *cocoa.NSCursor
 	if enabled {
-		cond601 = cocoa.NSCursorArrowCursor()
+		cond3 = cocoa.NSCursorArrowCursor()
 	} else {
-		cond601 = nil
+		cond3 = nil
 	}
-	contentView.SetDocumentCursor(cond601)
+	contentView.SetDocumentCursor(cond3)
 }
 
 func (this *Link) UpdateThemeColors() {

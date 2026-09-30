@@ -66,13 +66,13 @@ func (this *NSString) CharacterAtIndex(index int64) uint16 {
 }
 
 func (this *NSString) Compare(string_ *NSString) int64 {
-	var cond673 int64
+	var cond1 int64
 	if string_ != (nil) {
-		cond673 = string_.Id
+		cond1 = string_.Id
 	} else {
-		cond673 = int64(0)
+		cond1 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_compare_, cond673)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_compare_, cond1)
 }
 
 func (this *NSString) GetCharacters(buffer []uint16) {
@@ -85,46 +85,46 @@ func (this *NSString) GetCharactersBufferRange(buffer []uint16, range_ NSRange) 
 
 func (this *NSString) InitWithCharacters(characters []uint16, length int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload34(this.Id, OSSel_initWithCharacters_length_, characters, length)
-	var cond674 *NSString
-	var cond675 *NSString
+	var cond2 *NSString
+	var cond3 *NSString
 	if result != 0 {
-		cond675 = NewNSStringOverload1(result)
+		cond3 = NewNSStringOverload1(result)
 	} else {
-		cond675 = nil
+		cond3 = nil
 	}
 	if result == this.Id {
-		cond674 = this
+		cond2 = this
 	} else {
-		cond674 = (cond675)
+		cond2 = (cond3)
 	}
-	return cond674
+	return cond2
 }
 
 func (this *NSString) IsEqualToString(aString *NSString) bool {
-	var cond676 int64
+	var cond4 int64
 	if aString != (nil) {
-		cond676 = aString.Id
+		cond4 = aString.Id
 	} else {
-		cond676 = int64(0)
+		cond4 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isEqualToString_, cond676)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isEqualToString_, cond4)
 }
 
 func (this *NSString) LastPathComponent() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_lastPathComponent)
-	var cond677 *NSString
-	var cond678 *NSString
+	var cond5 *NSString
+	var cond6 *NSString
 	if result != 0 {
-		cond678 = NewNSStringOverload1(result)
+		cond6 = NewNSStringOverload1(result)
 	} else {
-		cond678 = nil
+		cond6 = nil
 	}
 	if result == this.Id {
-		cond677 = this
+		cond5 = this
 	} else {
-		cond677 = (cond678)
+		cond5 = (cond6)
 	}
-	return cond677
+	return cond5
 }
 
 func (this *NSString) Length() int64 {
@@ -133,202 +133,202 @@ func (this *NSString) Length() int64 {
 
 func (this *NSString) LowercaseString() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_lowercaseString)
-	var cond679 *NSString
-	var cond680 *NSString
+	var cond7 *NSString
+	var cond8 *NSString
 	if result != 0 {
-		cond680 = NewNSStringOverload1(result)
+		cond8 = NewNSStringOverload1(result)
 	} else {
-		cond680 = nil
+		cond8 = nil
 	}
 	if result == this.Id {
-		cond679 = this
+		cond7 = this
 	} else {
-		cond679 = (cond680)
+		cond7 = (cond8)
 	}
-	return cond679
+	return cond7
 }
 
 func (this *NSString) PathExtension() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_pathExtension)
-	var cond681 *NSString
-	var cond682 *NSString
+	var cond9 *NSString
+	var cond10 *NSString
 	if result != 0 {
-		cond682 = NewNSStringOverload1(result)
+		cond10 = NewNSStringOverload1(result)
 	} else {
-		cond682 = nil
+		cond10 = nil
 	}
 	if result == this.Id {
-		cond681 = this
+		cond9 = this
 	} else {
-		cond681 = (cond682)
+		cond9 = (cond10)
 	}
-	return cond681
+	return cond9
 }
 
 func (this *NSString) StringByAddingPercentEscapesUsingEncoding(enc int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAddingPercentEscapesUsingEncoding_, enc)
-	var cond683 *NSString
-	var cond684 *NSString
+	var cond11 *NSString
+	var cond12 *NSString
 	if result != 0 {
-		cond684 = NewNSStringOverload1(result)
+		cond12 = NewNSStringOverload1(result)
 	} else {
-		cond684 = nil
+		cond12 = nil
 	}
 	if result == this.Id {
-		cond683 = this
+		cond11 = this
 	} else {
-		cond683 = (cond684)
+		cond11 = (cond12)
 	}
-	return cond683
+	return cond11
 }
 
 func (this *NSString) StringByAppendingPathComponent(str *NSString) *NSString {
-	var cond685 int64
+	var cond13 int64
 	if str != (nil) {
-		cond685 = str.Id
+		cond13 = str.Id
 	} else {
-		cond685 = int64(0)
+		cond13 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingPathComponent_, cond685)
-	var cond686 *NSString
-	var cond687 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingPathComponent_, cond13)
+	var cond14 *NSString
+	var cond15 *NSString
 	if result != 0 {
-		cond687 = NewNSStringOverload1(result)
+		cond15 = NewNSStringOverload1(result)
 	} else {
-		cond687 = nil
+		cond15 = nil
 	}
 	if result == this.Id {
-		cond686 = this
+		cond14 = this
 	} else {
-		cond686 = (cond687)
+		cond14 = (cond15)
 	}
-	return cond686
+	return cond14
 }
 
 func (this *NSString) StringByAppendingPathExtension(str *NSString) *NSString {
-	var cond688 int64
+	var cond16 int64
 	if str != (nil) {
-		cond688 = str.Id
+		cond16 = str.Id
 	} else {
-		cond688 = int64(0)
+		cond16 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingPathExtension_, cond688)
-	var cond689 *NSString
-	var cond690 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingPathExtension_, cond16)
+	var cond17 *NSString
+	var cond18 *NSString
 	if result != 0 {
-		cond690 = NewNSStringOverload1(result)
+		cond18 = NewNSStringOverload1(result)
 	} else {
-		cond690 = nil
+		cond18 = nil
 	}
 	if result == this.Id {
-		cond689 = this
+		cond17 = this
 	} else {
-		cond689 = (cond690)
+		cond17 = (cond18)
 	}
-	return cond689
+	return cond17
 }
 
 func (this *NSString) StringByAppendingString(aString *NSString) *NSString {
-	var cond691 int64
+	var cond19 int64
 	if aString != (nil) {
-		cond691 = aString.Id
+		cond19 = aString.Id
 	} else {
-		cond691 = int64(0)
+		cond19 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingString_, cond691)
-	var cond692 *NSString
-	var cond693 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByAppendingString_, cond19)
+	var cond20 *NSString
+	var cond21 *NSString
 	if result != 0 {
-		cond693 = NewNSStringOverload1(result)
+		cond21 = NewNSStringOverload1(result)
 	} else {
-		cond693 = nil
+		cond21 = nil
 	}
 	if result == this.Id {
-		cond692 = this
+		cond20 = this
 	} else {
-		cond692 = (cond693)
+		cond20 = (cond21)
 	}
-	return cond692
+	return cond20
 }
 
 func (this *NSString) StringByDeletingLastPathComponent() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_stringByDeletingLastPathComponent)
-	var cond694 *NSString
-	var cond695 *NSString
+	var cond22 *NSString
+	var cond23 *NSString
 	if result != 0 {
-		cond695 = NewNSStringOverload1(result)
+		cond23 = NewNSStringOverload1(result)
 	} else {
-		cond695 = nil
+		cond23 = nil
 	}
 	if result == this.Id {
-		cond694 = this
+		cond22 = this
 	} else {
-		cond694 = (cond695)
+		cond22 = (cond23)
 	}
-	return cond694
+	return cond22
 }
 
 func (this *NSString) StringByDeletingPathExtension() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_stringByDeletingPathExtension)
-	var cond696 *NSString
-	var cond697 *NSString
+	var cond24 *NSString
+	var cond25 *NSString
 	if result != 0 {
-		cond697 = NewNSStringOverload1(result)
+		cond25 = NewNSStringOverload1(result)
 	} else {
-		cond697 = nil
+		cond25 = nil
 	}
 	if result == this.Id {
-		cond696 = this
+		cond24 = this
 	} else {
-		cond696 = (cond697)
+		cond24 = (cond25)
 	}
-	return cond696
+	return cond24
 }
 
 func (this *NSString) StringByReplacingOccurrencesOfString(target *NSString, replacement *NSString) *NSString {
-	var cond698 int64
+	var cond26 int64
 	if target != (nil) {
-		cond698 = target.Id
+		cond26 = target.Id
 	} else {
-		cond698 = int64(0)
+		cond26 = int64(0)
 	}
-	var cond699 int64
+	var cond27 int64
 	if replacement != (nil) {
-		cond699 = replacement.Id
+		cond27 = replacement.Id
 	} else {
-		cond699 = int64(0)
+		cond27 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_stringByReplacingOccurrencesOfString_withString_, cond698, cond699)
-	var cond700 *NSString
-	var cond701 *NSString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_stringByReplacingOccurrencesOfString_withString_, cond26, cond27)
+	var cond28 *NSString
+	var cond29 *NSString
 	if result != 0 {
-		cond701 = NewNSStringOverload1(result)
+		cond29 = NewNSStringOverload1(result)
 	} else {
-		cond701 = nil
+		cond29 = nil
 	}
 	if result == this.Id {
-		cond700 = this
+		cond28 = this
 	} else {
-		cond700 = (cond701)
+		cond28 = (cond29)
 	}
-	return cond700
+	return cond28
 }
 
 func (this *NSString) StringByReplacingPercentEscapesUsingEncoding(enc int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringByReplacingPercentEscapesUsingEncoding_, enc)
-	var cond702 *NSString
-	var cond703 *NSString
+	var cond30 *NSString
+	var cond31 *NSString
 	if result != 0 {
-		cond703 = NewNSStringOverload1(result)
+		cond31 = NewNSStringOverload1(result)
 	} else {
-		cond703 = nil
+		cond31 = nil
 	}
 	if result == this.Id {
-		cond702 = this
+		cond30 = this
 	} else {
-		cond702 = (cond703)
+		cond30 = (cond31)
 	}
-	return cond702
+	return cond30
 }
 
 func NSStringStringWith(str string) *NSString {
@@ -339,33 +339,33 @@ func NSStringStringWith(str string) *NSString {
 
 func NSStringString() *NSString {
 	var result int64 = OSObjc_msgSend(OSClass_NSString, OSSel_string)
-	var cond704 *NSString
+	var cond32 *NSString
 	if result != 0 {
-		cond704 = NewNSStringOverload1(result)
+		cond32 = NewNSStringOverload1(result)
 	} else {
-		cond704 = nil
+		cond32 = nil
 	}
-	return cond704
+	return cond32
 }
 
 func NSStringStringWithCharacters(characters []uint16, length int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload34(OSClass_NSString, OSSel_stringWithCharacters_length_, characters, length)
-	var cond705 *NSString
+	var cond33 *NSString
 	if result != 0 {
-		cond705 = NewNSStringOverload1(result)
+		cond33 = NewNSStringOverload1(result)
 	} else {
-		cond705 = nil
+		cond33 = nil
 	}
-	return cond705
+	return cond33
 }
 
 func NSStringStringWithUTF8String(nullTerminatedCString int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSString, OSSel_stringWithUTF8String_, nullTerminatedCString)
-	var cond706 *NSString
+	var cond34 *NSString
 	if result != 0 {
-		cond706 = NewNSStringOverload1(result)
+		cond34 = NewNSStringOverload1(result)
 	} else {
-		cond706 = nil
+		cond34 = nil
 	}
-	return cond706
+	return cond34
 }

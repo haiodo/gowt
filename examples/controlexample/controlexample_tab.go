@@ -287,15 +287,15 @@ func (this *Tab) createControlGroup_() {
 	})
 	var children []*swt.Control = this.styleGroup.GetChildren()
 	for _, child := range children {
-		button, ok6 := isswtControlToswtButton(child)
-		if ok6 {
+		button, ok1 := isswtControlToswtButton(child)
+		if ok1 {
 			button.AddSelectionListener(selectionListener)
 		} else {
-			composite, ok7 := isswtControlToswtComposite(child)
-			if ok7 {
+			composite, ok2 := isswtControlToswtComposite(child)
+			if ok2 {
 				for _, grandchild := range composite.GetChildren() {
-					button, ok8 := isswtControlToswtButton(grandchild)
-					if ok8 {
+					button, ok3 := isswtControlToswtButton(grandchild)
+					if ok3 {
 						button.AddSelectionListener(selectionListener)
 					}
 				}
@@ -872,9 +872,9 @@ func (this *Tab) CreateListenerSelectionDialog() {
 		}
 	}))
 	editEvent.SetEnabled(false)
-	anon9 := &TabAnon1{}
-	anon9.SelectionAdapter = swt.NewSelectionAdapter()
-	anon9.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon4 := &TabAnon1{}
+	anon4.SelectionAdapter = swt.NewSelectionAdapter()
+	anon4.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		var fields int32 = 0
 		var index int32 = table.GetSelectionIndex()
 		if index != -1 && index < int32(len(this.EVENT_INFO)) {
@@ -882,7 +882,7 @@ func (this *Tab) CreateListenerSelectionDialog() {
 		}
 		editEvent.SetEnabled(fields != 0)
 	}
-	anon9.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
+	anon4.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
 		if editEvent.GetEnabled() {
 			var pt *swt.Point = editEvent.GetLocation()
 			pt = e.Display.Map(upcastswtButtonToswtControl(editEvent), nil, pt)
@@ -892,7 +892,7 @@ func (this *Tab) CreateListenerSelectionDialog() {
 			}
 		}
 	}
-	table.AddSelectionListener(anon9)
+	table.AddSelectionListener(anon4)
 	swt.NewLabel(upcastswtShellToswtComposite(dialog), swt.NONE)
 	var ok *swt.Button = swt.NewButton(upcastswtShellToswtComposite(dialog), swt.PUSH)
 	ok.SetText(ControlExampleGetResourceString("OK"))
@@ -967,15 +967,15 @@ func (this *Tab) createListenersGroup_() {
 	data.HeightHint = 80
 	this.eventConsole.SetLayoutData(data)
 	this.CreateEventConsolePopup()
-	anon10 := &TabAnon2{}
-	anon10.KeyAdapter = swt.NewKeyAdapter()
-	anon10.fnKeyPressed = func(e *swt.KeyEvent) {
+	anon5 := &TabAnon2{}
+	anon5.KeyAdapter = swt.NewKeyAdapter()
+	anon5.fnKeyPressed = func(e *swt.KeyEvent) {
 		if (e.KeyCode == int32('A') || e.KeyCode == int32('a')) && (e.StateMask&swt.MOD1) != 0 {
 			this.eventConsole.SelectAll()
 			e.Doit = false
 		}
 	}
-	this.eventConsole.AddKeyListener(anon10)
+	this.eventConsole.AddKeyListener(anon5)
 }
 
 func (this *Tab) GetMethodNames() []string {
@@ -1061,13 +1061,13 @@ func (this *Tab) ParameterInfo(methodRoot string) string {
 	if index != -1 && index+1 < jrt.StringLength(typeName) {
 		typeNameString = jrt.Substring(typeName, index+1, -1)
 	}
-	var cond11 string
+	var cond6 string
 	if isArray {
-		cond11 = "A"
+		cond6 = "A"
 	} else {
-		cond11 = ""
+		cond6 = ""
 	}
-	var info string = ControlExampleGetResourceString(fmt.Sprintf("Info_%s%s", typeNameString, (cond11)))
+	var info string = ControlExampleGetResourceString(fmt.Sprintf("Info_%s%s", typeNameString, (cond6)))
 	if isArray {
 		typeNameString += "[]"
 	}
@@ -1079,7 +1079,7 @@ func (this *Tab) GetValue() {
 	this.getText.SetText("")
 	var widgets []*swt.Widget = this.impl.getExampleWidgets_()
 	for i := int32(0); i < int32(len(widgets)); i++ {
-		tcnt12 := false
+		tcnt7 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -1094,7 +1094,7 @@ func (this *Tab) GetValue() {
 				}
 			}()
 			if widgets[i] == (nil) {
-				tcnt12 = true
+				tcnt7 = true
 				return
 			}
 			var method any = jrt.ClassGetMethod(reflect.TypeOf(widgets[i].Impl()), methodName, []reflect.Type{})
@@ -1115,7 +1115,7 @@ func (this *Tab) GetValue() {
 				}
 			}
 		}()
-		if tcnt12 {
+		if tcnt7 {
 			continue
 		}
 		if i+1 < int32(len(widgets)) {
@@ -1153,7 +1153,7 @@ func (this *Tab) SetValue() {
 	var value string = this.setText.GetText()
 	var widgets []*swt.Widget = this.impl.getExampleWidgets_()
 	for _, widget := range widgets {
-		tcnt13 := false
+		tcnt8 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -1176,7 +1176,7 @@ func (this *Tab) SetValue() {
 				}
 			}()
 			if widget == (nil) {
-				tcnt13 = true
+				tcnt8 = true
 				return
 			}
 			var method any = jrt.ClassGetMethod(reflect.TypeOf(widget.Impl()), methodName, []reflect.Type{returnType})
@@ -1192,13 +1192,13 @@ func (this *Tab) SetValue() {
 						parameter = []any{jrt.ParseLong(value)}
 					} else {
 						if typeName == "char" {
-							var cond14 any
+							var cond9 any
 							if jrt.StringLength(value) == 1 {
-								cond14 = utf16.Encode([]rune(value))[0]
+								cond9 = utf16.Encode([]rune(value))[0]
 							} else {
-								cond14 = '\u0000'
+								cond9 = '\u0000'
 							}
-							parameter = []any{cond14}
+							parameter = []any{cond9}
 						} else {
 							if typeName == "boolean" {
 								parameter = []any{strings.EqualFold(value, "true")}
@@ -1247,7 +1247,7 @@ func (this *Tab) SetValue() {
 			}
 			method.(*jrt.Method).Invoke(widget.Impl(), parameter...)
 		}()
-		if tcnt13 {
+		if tcnt8 {
 			continue
 		}
 	}
@@ -1431,9 +1431,9 @@ func (this *Tab) ColorImage(colorLike swt.ColorLike) *swt.Image {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	anon15 := &TabAnon3{}
-	anon15.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(this.GetTransparencyColor(color))
-	anon15.fnDrawOn = func(gc *swt.GC, imageWidth int32, imageHeight int32) {
+	anon10 := &TabAnon3{}
+	anon10.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(this.GetTransparencyColor(color))
+	anon10.fnDrawOn = func(gc *swt.GC, imageWidth int32, imageHeight int32) {
 		gc.SetBackground(this.GetTransparencyColor(color))
 		gc.FillRectangle(0, 0, imageWidth, imageHeight)
 		gc.SetBackground(color)
@@ -1442,7 +1442,7 @@ func (this *Tab) ColorImage(colorLike swt.ColorLike) *swt.Image {
 		gc.DrawRectangle(0, 0, imageWidth-1, imageHeight-1)
 		gc.Dispose()
 	}
-	var iGC swt.ImageGcDrawer = anon15
+	var iGC swt.ImageGcDrawer = anon10
 	var image *swt.Image = swt.NewImageDeviceImageGcDrawerWidthHeight(upcastswtDisplayToswtDevice(this.display), iGC, TabIMAGE_SIZE, TabIMAGE_SIZE)
 	return image
 }
@@ -1454,9 +1454,9 @@ func (this *Tab) FontImage(fontLike swt.FontLike) *swt.Image {
 	}
 	_ = font
 	var transparentcolor *swt.Color = this.display.GetSystemColor(swt.COLOR_CYAN)
-	anon16 := &TabAnon4{}
-	anon16.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(transparentcolor)
-	anon16.fnDrawOn = func(gc *swt.GC, iwidth int32, iheight int32) {
+	anon11 := &TabAnon4{}
+	anon11.TransparencyColorImageGcDrawer = swt.NewTransparencyColorImageGcDrawer(transparentcolor)
+	anon11.fnDrawOn = func(gc *swt.GC, iwidth int32, iheight int32) {
 		gc.SetBackground(this.display.GetSystemColor(swt.COLOR_CYAN))
 		gc.FillRectangle(0, 0, iwidth, iheight)
 		gc.SetBackground(this.display.GetSystemColor(swt.COLOR_WHITE))
@@ -1498,7 +1498,7 @@ func (this *Tab) FontImage(fontLike swt.FontLike) *swt.Image {
 			break
 		}
 	}
-	var igc swt.ImageGcDrawer = anon16
+	var igc swt.ImageGcDrawer = anon11
 	var image *swt.Image = swt.NewImageDeviceImageGcDrawerWidthHeight(upcastswtDisplayToswtDevice(this.display), igc, TabIMAGE_SIZE, TabIMAGE_SIZE)
 	return image
 }
@@ -1529,8 +1529,8 @@ func (this *Tab) GetExampleControls() []*swt.Control {
 	var widgets []*swt.Widget = this.impl.getExampleWidgets_()
 	var controls []*swt.Control = make([]*swt.Control, 0)
 	for _, widget := range widgets {
-		control, ok17 := isswtWidgetToswtControl(widget)
-		if ok17 {
+		control, ok12 := isswtWidgetToswtControl(widget)
+		if ok12 {
 			var newControls []*swt.Control = make([]*swt.Control, int32(len(controls))+1)
 			copy(newControls[0:], controls[0:0+int32(len(controls))])
 			controls = newControls
@@ -1678,14 +1678,14 @@ func (this *Tab) Log(event *swt.Event) {
 			toString += swt.NewShellEvent(event).String()
 			break
 		case swt.Show, swt.Hide:
-			var cond18 string
-			_, ok19 := isswtWidgetToswtMenu(event.Widget)
-			if ok19 {
-				cond18 = swt.NewMenuEvent(event).String()
+			var cond13 string
+			_, ok14 := isswtWidgetToswtMenu(event.Widget)
+			if ok14 {
+				cond13 = swt.NewMenuEvent(event).String()
 			} else {
-				cond18 = event.String()
+				cond13 = event.String()
 			}
-			toString += cond18
+			toString += cond13
 			break
 		case swt.Modify:
 			toString += swt.NewModifyEvent(event).String()
@@ -1797,26 +1797,26 @@ func (this *Tab) SetExampleGroupBackgroundColor() {
 	if this.backgroundModeGroup == (nil) {
 		return
 	}
-	var cond20 *swt.Color
+	var cond15 *swt.Color
 	if this.backgroundModeColorButton.GetSelection() {
-		cond20 = this.display.GetSystemColor(swt.COLOR_BLUE)
+		cond15 = this.display.GetSystemColor(swt.COLOR_BLUE)
 	} else {
-		cond20 = nil
+		cond15 = nil
 	}
-	this.exampleGroup.SetBackgroundWithColor(cond20)
+	this.exampleGroup.SetBackgroundWithColor(cond15)
 }
 
 func (this *Tab) SetExampleGroupBackgroundImage() {
 	if this.backgroundModeGroup == (nil) {
 		return
 	}
-	var cond21 *swt.Image
+	var cond16 *swt.Image
 	if this.backgroundModeImageButton.GetSelection() {
-		cond21 = this.instance.images[ControlExampleCiParentBackground]
+		cond16 = this.instance.images[ControlExampleCiParentBackground]
 	} else {
-		cond21 = nil
+		cond16 = nil
 	}
-	this.exampleGroup.SetBackgroundImage(cond21)
+	this.exampleGroup.SetBackgroundImage(cond16)
 }
 
 func (this *Tab) SetExampleGroupBackgroundMode() {
@@ -1999,13 +1999,13 @@ func (this *Tab) SetExampleWidgetBackgroundImage() {
 	}
 	var controls []*swt.Control = this.GetExampleControls()
 	for _, control := range controls {
-		var cond22 *swt.Image
+		var cond17 *swt.Image
 		if this.backgroundImageButton.GetSelection() {
-			cond22 = this.instance.images[ControlExampleCiBackground]
+			cond17 = this.instance.images[ControlExampleCiBackground]
 		} else {
-			cond22 = nil
+			cond17 = nil
 		}
-		control.SetBackgroundImage(cond22)
+		control.SetBackgroundImage(cond17)
 	}
 }
 

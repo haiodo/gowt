@@ -414,13 +414,13 @@ func (this *MenuItem) setImageOnItem_(image *Image) {
 		return
 	}
 	this.Item.setImageOnItem_(image)
-	var cond180 *cocoa.NSImage
+	var cond1 *cocoa.NSImage
 	if image != (nil) {
-		cond180 = image.Handle
+		cond1 = image.Handle
 	} else {
-		cond180 = nil
+		cond1 = nil
 	}
-	this.nsItem.SetImage(cond180)
+	this.nsItem.SetImage(cond1)
 }
 
 func (this *MenuItem) SetMenu(menuLike MenuLike) {
@@ -488,13 +488,13 @@ func (this *MenuItem) SetSelection(selected bool) {
 	if (this.style & (CHECK | RADIO)) == 0 {
 		return
 	}
-	var cond181 int32
+	var cond2 int32
 	if selected {
-		cond181 = cocoa.OSNSControlStateValueOn
+		cond2 = cocoa.OSNSControlStateValueOn
 	} else {
-		cond181 = cocoa.OSNSControlStateValueOff
+		cond2 = cocoa.OSNSControlStateValueOff
 	}
-	this.nsItem.SetState(int64(cond181))
+	this.nsItem.SetState(int64(cond2))
 }
 
 func (this *MenuItem) setText_(string_ string) {
@@ -540,13 +540,13 @@ func (this *MenuItem) UpdateText() {
 		if int32(buffer[i]) == int32('\u0009') {
 			break
 		}
-		t183 := i
+		t4 := i
 		i++
-		cond182 := buffer[t183]
-		t184 := j
+		cond3 := buffer[t4]
+		t5 := j
 		j++
-		buffer[t184] = cond182
-		if int32((cond182)) == int32('&') {
+		buffer[t5] = cond3
+		if int32((cond3)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
@@ -603,13 +603,13 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 			if int32(buffer[i]) == int32('\u0009') {
 				break
 			}
-			t186 := i
+			t7 := i
 			i++
-			cond185 := buffer[t186]
-			t187 := j
+			cond6 := buffer[t7]
+			t8 := j
 			j++
-			buffer[t187] = cond185
-			if int32((cond185)) == int32('&') {
+			buffer[t8] = cond6
+			if int32((cond6)) == int32('&') {
 				if i == int32(len(buffer)) {
 					continue
 				}
@@ -713,13 +713,13 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	}
 	this.nsItem.SetKeyEquivalentModifierMask(int64(mask))
 	var nsstring *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-	var cond188 string
+	var cond9 string
 	if key == 0 {
-		cond188 = ""
+		cond9 = ""
 	} else {
-		cond188 = string(rune(uint16(key)))
+		cond9 = string(rune(uint16(key)))
 	}
-	nsstring = nsstring.InitWithString(cond188)
+	nsstring = nsstring.InitWithString(cond9)
 	this.nsItem.SetKeyEquivalent(nsstring.LowercaseString())
 	nsstring.Release()
 	return key != 0

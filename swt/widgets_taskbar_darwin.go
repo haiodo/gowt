@@ -54,9 +54,9 @@ func (this *TaskBar) CreateItem(itemLike TaskItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t643 := this.itemCount
+	t1 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t643-index])
+	copy(this.items[index+1:], this.items[index:index+t1-index])
 	this.items[index] = item
 }
 

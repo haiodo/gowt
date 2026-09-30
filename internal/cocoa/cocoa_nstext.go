@@ -41,23 +41,23 @@ func (this *NSText) initNSTextOverload2(id *id) {
 }
 
 func (this *NSText) Copy(sender *id) {
-	var cond748 int64
+	var cond1 int64
 	if sender != (nil) {
-		cond748 = sender.Id
+		cond1 = sender.Id
 	} else {
-		cond748 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_copy_, cond748)
+	OSObjc_msgSendOverload44(this.Id, OSSel_copy_, cond1)
 }
 
 func (this *NSText) Cut(sender *id) {
-	var cond749 int64
+	var cond2 int64
 	if sender != (nil) {
-		cond749 = sender.Id
+		cond2 = sender.Id
 	} else {
-		cond749 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_cut_, cond749)
+	OSObjc_msgSendOverload44(this.Id, OSSel_cut_, cond2)
 }
 
 func (this *NSText) IsFieldEditor() bool {
@@ -65,23 +65,23 @@ func (this *NSText) IsFieldEditor() bool {
 }
 
 func (this *NSText) Paste(sender *id) {
-	var cond750 int64
+	var cond3 int64
 	if sender != (nil) {
-		cond750 = sender.Id
+		cond3 = sender.Id
 	} else {
-		cond750 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_paste_, cond750)
+	OSObjc_msgSendOverload44(this.Id, OSSel_paste_, cond3)
 }
 
 func (this *NSText) ReplaceCharactersInRange(range_ NSRange, aString *NSString) {
-	var cond751 int64
+	var cond4 int64
 	if aString != (nil) {
-		cond751 = aString.Id
+		cond4 = aString.Id
 	} else {
-		cond751 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond751)
+	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond4)
 }
 
 func (this *NSText) ScrollRangeToVisible(range_ NSRange) {
@@ -89,13 +89,13 @@ func (this *NSText) ScrollRangeToVisible(range_ NSRange) {
 }
 
 func (this *NSText) SelectAll(sender *id) {
-	var cond752 int64
+	var cond5 int64
 	if sender != (nil) {
-		cond752 = sender.Id
+		cond5 = sender.Id
 	} else {
-		cond752 = int64(0)
+		cond5 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_selectAll_, cond752)
+	OSObjc_msgSendOverload44(this.Id, OSSel_selectAll_, cond5)
 }
 
 func (this *NSText) SelectedRange() NSRange {
@@ -109,13 +109,13 @@ func (this *NSText) SetAlignment(alignment int64) {
 }
 
 func (this *NSText) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond753 int64
+	var cond6 int64
 	if backgroundColor != (nil) {
-		cond753 = backgroundColor.Id
+		cond6 = backgroundColor.Id
 	} else {
-		cond753 = int64(0)
+		cond6 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond753)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond6)
 }
 
 func (this *NSText) SetBaseWritingDirection(baseWritingDirection int64) {
@@ -123,13 +123,13 @@ func (this *NSText) SetBaseWritingDirection(baseWritingDirection int64) {
 }
 
 func (this *NSText) SetDelegate(delegate *id) {
-	var cond754 int64
+	var cond7 int64
 	if delegate != (nil) {
-		cond754 = delegate.Id
+		cond7 = delegate.Id
 	} else {
-		cond754 = int64(0)
+		cond7 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond754)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond7)
 }
 
 func (this *NSText) SetDrawsBackground(drawsBackground bool) {
@@ -141,13 +141,13 @@ func (this *NSText) SetEditable(editable bool) {
 }
 
 func (this *NSText) SetFont(font *NSFont) {
-	var cond755 int64
+	var cond8 int64
 	if font != (nil) {
-		cond755 = font.Id
+		cond8 = font.Id
 	} else {
-		cond755 = int64(0)
+		cond8 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond755)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond8)
 }
 
 func (this *NSText) SetHorizontallyResizable(horizontallyResizable bool) {
@@ -171,32 +171,32 @@ func (this *NSText) SetSelectedRange(selectedRange NSRange) {
 }
 
 func (this *NSText) SetString(string_ *NSString) {
-	var cond756 int64
+	var cond9 int64
 	if string_ != (nil) {
-		cond756 = string_.Id
+		cond9 = string_.Id
 	} else {
-		cond756 = int64(0)
+		cond9 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setString_, cond756)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setString_, cond9)
 }
 
 func (this *NSText) SetTextColor(textColor *NSColor) {
-	var cond757 int64
+	var cond10 int64
 	if textColor != (nil) {
-		cond757 = textColor.Id
+		cond10 = textColor.Id
 	} else {
-		cond757 = int64(0)
+		cond10 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond757)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond10)
 }
 
 func (this *NSText) String() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_string)
-	var cond758 *NSString
+	var cond11 *NSString
 	if result != 0 {
-		cond758 = NewNSStringOverload1(result)
+		cond11 = NewNSStringOverload1(result)
 	} else {
-		cond758 = nil
+		cond11 = nil
 	}
-	return cond758
+	return cond11
 }

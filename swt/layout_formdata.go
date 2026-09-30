@@ -150,19 +150,19 @@ func (this *FormData) GetBottomAttachment(controlLike ControlLike, spacing int32
 		return this.cacheBottom
 	}
 	if this.isVisited {
-		cond121 := NewFormAttachmentNumeratorOffset(0, this.GetHeight(control, flushCache))
-		this.cacheBottom = cond121
-		return cond121
+		cond1 := NewFormAttachmentNumeratorOffset(0, this.GetHeight(control, flushCache))
+		this.cacheBottom = cond1
+		return cond1
 	}
 	if this.Bottom == (nil) {
 		if this.Top == (nil) {
-			cond122 := NewFormAttachmentNumeratorOffset(0, this.GetHeight(control, flushCache))
-			this.cacheBottom = cond122
-			return cond122
+			cond2 := NewFormAttachmentNumeratorOffset(0, this.GetHeight(control, flushCache))
+			this.cacheBottom = cond2
+			return cond2
 		}
-		cond123 := this.GetTopAttachment(control, spacing, flushCache).PlusValue(this.GetHeight(control, flushCache))
-		this.cacheBottom = cond123
-		return cond123
+		cond3 := this.GetTopAttachment(control, spacing, flushCache).PlusValue(this.GetHeight(control, flushCache))
+		this.cacheBottom = cond3
+		return cond3
 	}
 	var bottomControl *Control = this.Bottom.Control
 	if bottomControl != (nil) {
@@ -176,9 +176,9 @@ func (this *FormData) GetBottomAttachment(controlLike ControlLike, spacing int32
 		}
 	}
 	if bottomControl == (nil) {
-		cond124 := this.Bottom
-		this.cacheBottom = cond124
-		return cond124
+		cond4 := this.Bottom
+		this.cacheBottom = cond4
+		return cond4
 	}
 	this.isVisited = true
 	var bottomData *FormData = castanyToFormData(bottomControl.GetLayoutData())
@@ -215,19 +215,19 @@ func (this *FormData) GetLeftAttachment(controlLike ControlLike, spacing int32, 
 		return this.cacheLeft
 	}
 	if this.isVisited {
-		cond125 := NewFormAttachmentNumeratorOffset(0, 0)
-		this.cacheLeft = cond125
-		return cond125
+		cond5 := NewFormAttachmentNumeratorOffset(0, 0)
+		this.cacheLeft = cond5
+		return cond5
 	}
 	if this.Left == (nil) {
 		if this.Right == (nil) {
-			cond126 := NewFormAttachmentNumeratorOffset(0, 0)
-			this.cacheLeft = cond126
-			return cond126
+			cond6 := NewFormAttachmentNumeratorOffset(0, 0)
+			this.cacheLeft = cond6
+			return cond6
 		}
-		cond127 := this.GetRightAttachment(control, spacing, flushCache).MinusValue(this.GetWidth(control, flushCache))
-		this.cacheLeft = cond127
-		return cond127
+		cond7 := this.GetRightAttachment(control, spacing, flushCache).MinusValue(this.GetWidth(control, flushCache))
+		this.cacheLeft = cond7
+		return cond7
 	}
 	var leftControl *Control = this.Left.Control
 	if leftControl != (nil) {
@@ -241,9 +241,9 @@ func (this *FormData) GetLeftAttachment(controlLike ControlLike, spacing int32, 
 		}
 	}
 	if leftControl == (nil) {
-		cond128 := this.Left
-		this.cacheLeft = cond128
-		return cond128
+		cond8 := this.Left
+		this.cacheLeft = cond8
+		return cond8
 	}
 	this.isVisited = true
 	var leftData *FormData = castanyToFormData(leftControl.GetLayoutData())
@@ -288,19 +288,19 @@ func (this *FormData) GetRightAttachment(controlLike ControlLike, spacing int32,
 		return this.cacheRight
 	}
 	if this.isVisited {
-		cond129 := NewFormAttachmentNumeratorOffset(0, this.GetWidth(control, flushCache))
-		this.cacheRight = cond129
-		return cond129
+		cond9 := NewFormAttachmentNumeratorOffset(0, this.GetWidth(control, flushCache))
+		this.cacheRight = cond9
+		return cond9
 	}
 	if this.Right == (nil) {
 		if this.Left == (nil) {
-			cond130 := NewFormAttachmentNumeratorOffset(0, this.GetWidth(control, flushCache))
-			this.cacheRight = cond130
-			return cond130
+			cond10 := NewFormAttachmentNumeratorOffset(0, this.GetWidth(control, flushCache))
+			this.cacheRight = cond10
+			return cond10
 		}
-		cond131 := this.GetLeftAttachment(control, spacing, flushCache).PlusValue(this.GetWidth(control, flushCache))
-		this.cacheRight = cond131
-		return cond131
+		cond11 := this.GetLeftAttachment(control, spacing, flushCache).PlusValue(this.GetWidth(control, flushCache))
+		this.cacheRight = cond11
+		return cond11
 	}
 	var rightControl *Control = this.Right.Control
 	if rightControl != (nil) {
@@ -314,9 +314,9 @@ func (this *FormData) GetRightAttachment(controlLike ControlLike, spacing int32,
 		}
 	}
 	if rightControl == (nil) {
-		cond132 := this.Right
-		this.cacheRight = cond132
-		return cond132
+		cond12 := this.Right
+		this.cacheRight = cond12
+		return cond12
 	}
 	this.isVisited = true
 	var rightData *FormData = castanyToFormData(rightControl.GetLayoutData())
@@ -353,19 +353,19 @@ func (this *FormData) GetTopAttachment(controlLike ControlLike, spacing int32, f
 		return this.cacheTop
 	}
 	if this.isVisited {
-		cond133 := NewFormAttachmentNumeratorOffset(0, 0)
-		this.cacheTop = cond133
-		return cond133
+		cond13 := NewFormAttachmentNumeratorOffset(0, 0)
+		this.cacheTop = cond13
+		return cond13
 	}
 	if this.Top == (nil) {
 		if this.Bottom == (nil) {
-			cond134 := NewFormAttachmentNumeratorOffset(0, 0)
-			this.cacheTop = cond134
-			return cond134
+			cond14 := NewFormAttachmentNumeratorOffset(0, 0)
+			this.cacheTop = cond14
+			return cond14
 		}
-		cond135 := this.GetBottomAttachment(control, spacing, flushCache).MinusValue(this.GetHeight(control, flushCache))
-		this.cacheTop = cond135
-		return cond135
+		cond15 := this.GetBottomAttachment(control, spacing, flushCache).MinusValue(this.GetHeight(control, flushCache))
+		this.cacheTop = cond15
+		return cond15
 	}
 	var topControl *Control = this.Top.Control
 	if topControl != (nil) {
@@ -379,9 +379,9 @@ func (this *FormData) GetTopAttachment(controlLike ControlLike, spacing int32, f
 		}
 	}
 	if topControl == (nil) {
-		cond136 := this.Top
-		this.cacheTop = cond136
-		return cond136
+		cond16 := this.Top
+		this.cacheTop = cond16
+		return cond16
 	}
 	this.isVisited = true
 	var topData *FormData = castanyToFormData(topControl.GetLayoutData())

@@ -42,23 +42,23 @@ func (this *NSDatePicker) initNSDatePickerOverload2(id *id) {
 
 func (this *NSDatePicker) DateValue() *NSDate {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dateValue)
-	var cond229 *NSDate
+	var cond1 *NSDate
 	if result != 0 {
-		cond229 = NewNSDateOverload1(result)
+		cond1 = NewNSDateOverload1(result)
 	} else {
-		cond229 = nil
+		cond1 = nil
 	}
-	return cond229
+	return cond1
 }
 
 func (this *NSDatePicker) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond230 int64
+	var cond2 int64
 	if backgroundColor != (nil) {
-		cond230 = backgroundColor.Id
+		cond2 = backgroundColor.Id
 	} else {
-		cond230 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond230)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond2)
 }
 
 func (this *NSDatePicker) SetBezeled(bezeled bool) {
@@ -78,13 +78,13 @@ func (this *NSDatePicker) SetDatePickerStyle(datePickerStyle int64) {
 }
 
 func (this *NSDatePicker) SetDateValue(dateValue *NSDate) {
-	var cond231 int64
+	var cond3 int64
 	if dateValue != (nil) {
-		cond231 = dateValue.Id
+		cond3 = dateValue.Id
 	} else {
-		cond231 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDateValue_, cond231)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDateValue_, cond3)
 }
 
 func (this *NSDatePicker) SetDrawsBackground(drawsBackground bool) {
@@ -92,13 +92,13 @@ func (this *NSDatePicker) SetDrawsBackground(drawsBackground bool) {
 }
 
 func (this *NSDatePicker) SetTextColor(textColor *NSColor) {
-	var cond232 int64
+	var cond4 int64
 	if textColor != (nil) {
-		cond232 = textColor.Id
+		cond4 = textColor.Id
 	} else {
-		cond232 = int64(0)
+		cond4 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond232)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond4)
 }
 
 func NSDatePickerCellClass() int64 {

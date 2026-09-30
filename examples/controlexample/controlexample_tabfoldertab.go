@@ -91,13 +91,13 @@ func (this *TabFolderTab) getMethodNames_() []string {
 }
 
 func (this *TabFolderTab) setMethodName_(methodRoot string) string {
-	var cond25 string
+	var cond1 string
 	if methodRoot == "SelectionIndex" {
-		cond25 = "setSelection"
+		cond1 = "setSelection"
 	} else {
-		cond25 = fmt.Sprintf("set%s", methodRoot)
+		cond1 = fmt.Sprintf("set%s", methodRoot)
 	}
-	return cond25
+	return cond1
 }
 
 func (this *TabFolderTab) parameterForType_(typeName string, value string, widget *swt.Widget) []any {

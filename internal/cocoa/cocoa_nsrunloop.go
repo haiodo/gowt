@@ -41,44 +41,44 @@ func (this *NSRunLoop) initNSRunLoopOverload2(id *id) {
 }
 
 func (this *NSRunLoop) AddTimer(timer *NSTimer, mode *NSString) {
-	var cond633 int64
+	var cond1 int64
 	if timer != (nil) {
-		cond633 = timer.Id
+		cond1 = timer.Id
 	} else {
-		cond633 = int64(0)
+		cond1 = int64(0)
 	}
-	var cond634 int64
+	var cond2 int64
 	if mode != (nil) {
-		cond634 = mode.Id
+		cond2 = mode.Id
 	} else {
-		cond634 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_addTimer_forMode_, cond633, cond634)
+	OSObjc_msgSendOverload54(this.Id, OSSel_addTimer_forMode_, cond1, cond2)
 }
 
 func (this *NSRunLoop) RunMode(mode *NSString, limitDate *NSDate) bool {
-	var cond635 int64
+	var cond3 int64
 	if mode != (nil) {
-		cond635 = mode.Id
+		cond3 = mode.Id
 	} else {
-		cond635 = int64(0)
+		cond3 = int64(0)
 	}
-	var cond636 int64
+	var cond4 int64
 	if limitDate != (nil) {
-		cond636 = limitDate.Id
+		cond4 = limitDate.Id
 	} else {
-		cond636 = int64(0)
+		cond4 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_runMode_beforeDate_, cond635, cond636)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_runMode_beforeDate_, cond3, cond4)
 }
 
 func NSRunLoopCurrentRunLoop() *NSRunLoop {
 	var result int64 = OSObjc_msgSend(OSClass_NSRunLoop, OSSel_currentRunLoop)
-	var cond637 *NSRunLoop
+	var cond5 *NSRunLoop
 	if result != 0 {
-		cond637 = NewNSRunLoopOverload1(result)
+		cond5 = NewNSRunLoopOverload1(result)
 	} else {
-		cond637 = nil
+		cond5 = nil
 	}
-	return cond637
+	return cond5
 }

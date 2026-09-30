@@ -464,13 +464,13 @@ func (this *Tree) createHandle_() {
 	scrollWidget.SetHasHorizontalScroller((this.style & H_SCROLL) != 0)
 	scrollWidget.SetHasVerticalScroller((this.style & V_SCROLL) != 0)
 	scrollWidget.SetAutohidesScrollers(true)
-	var cond522 int32
+	var cond1 int32
 	if this.impl.hasBorder_() {
-		cond522 = cocoa.OSNSBezelBorder
+		cond1 = cocoa.OSNSBezelBorder
 	} else {
-		cond522 = cocoa.OSNSNoBorder
+		cond1 = cocoa.OSNSNoBorder
 	}
-	scrollWidget.SetBorderType(int64(cond522))
+	scrollWidget.SetBorderType(int64(cond1))
 	var widget *cocoa.NSOutlineView = castcocoaNSObjectTococoaNSOutlineView(cocoa.NewSWTOutlineView().Alloc())
 	widget.InitWithFrame(cocoa.NSRect{})
 	widget.SetAllowsMultipleSelection((this.style & MULTI) != 0)
@@ -587,9 +587,9 @@ func (this *Tree) CreateItem(columnLike TreeColumnLike, index int32) {
 	this.display.AddWidget(upcastcocoaNSTableHeaderCellTococoaNSObject(headerCell), upcastTreeColumnToWidget(column))
 	column.nsColumn = nsColumn
 	nsColumn.SetWidth(float64(0))
-	t523 := this.columnCount
+	t2 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t523-index])
+	copy(this.columns[index+1:], this.columns[index:index+t2-index])
 	this.columns[index] = column
 	for i := int32(0); i < this.itemCount; i++ {
 		var item *TreeItem = this.items[i]
@@ -637,9 +637,9 @@ func (this *Tree) CreateItemItemParentItemIndex(itemLike TreeItemLike, parentIte
 			this.items = items
 		}
 	}
-	t524 := count
+	t3 := count
 	count++
-	copy(items[index+1:], items[index:index+t524-index])
+	copy(items[index+1:], items[index:index+t3-index])
 	items[index] = item
 	item.items = make([]*TreeItem, 4)
 	var handle *cocoa.SWTTreeItem = castcocoaNSObjectTococoaSWTTreeItem(cocoa.NewSWTTreeItem().Alloc().Init())
@@ -972,20 +972,20 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 	var selectionBackground *Color = nil
 	var selectionForeground *Color = nil
 	if isSelected && (hooksErase || hooksPaint) {
-		var cond525 []float64
+		var cond4 []float64
 		if hasFocus || Display_APPEARANCEDark == this.display.appAppearance {
-			cond525 = this.display.alternateSelectedControlTextColor
+			cond4 = this.display.alternateSelectedControlTextColor
 		} else {
-			cond525 = this.display.selectedControlTextColor
+			cond4 = this.display.selectedControlTextColor
 		}
-		selectionForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond525)
-		var cond526 []float64
+		selectionForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond4)
+		var cond5 []float64
 		if hasFocus {
-			cond526 = this.display.GetAlternateSelectedControlColor()
+			cond5 = this.display.GetAlternateSelectedControlColor()
 		} else {
-			cond526 = this.display.GetSecondarySelectedControlColor()
+			cond5 = this.display.GetSecondarySelectedControlColor()
 		}
-		selectionBackground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond526)
+		selectionBackground = ColorCocoa_new(upcastDisplayToDevice(this.display), cond5)
 	}
 	var contentSize cocoa.NSSize = this.Composite.cellSize_(id, cocoa.OSSel_cellSize)
 	var image *cocoa.NSImage = cell.Image()
@@ -1207,13 +1207,13 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 			gc.SetForeground(selectionForeground)
 			gc.SetBackground(selectionBackground)
 		} else {
-			var cond527 *Color
+			var cond6 *Color
 			if userForeground != (nil) {
-				cond527 = userForeground
+				cond6 = userForeground
 			} else {
-				cond527 = item.GetForegroundIndex(columnIndex)
+				cond6 = item.GetForegroundIndex(columnIndex)
 			}
-			gc.SetForeground(cond527)
+			gc.SetForeground(cond6)
 			gc.SetBackground(item.GetBackgroundIndex(columnIndex))
 		}
 		if !this.drawExpansion {
@@ -1403,13 +1403,13 @@ func (this *Tree) GetHeaderBackground() *Color {
 }
 
 func (this *Tree) GetHeaderBackgroundColor() *Color {
-	var cond528 *Color
+	var cond7 *Color
 	if this.headerBackground != (nil) {
-		cond528 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerBackground)
+		cond7 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerBackground)
 	} else {
-		cond528 = this.impl.defaultBackground_()
+		cond7 = this.impl.defaultBackground_()
 	}
-	return cond528
+	return cond7
 }
 
 func (this *Tree) GetHeaderForeground() *Color {
@@ -1418,13 +1418,13 @@ func (this *Tree) GetHeaderForeground() *Color {
 }
 
 func (this *Tree) GetHeaderForegroundColor() *Color {
-	var cond529 *Color
+	var cond8 *Color
 	if this.headerForeground != (nil) {
-		cond529 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerForeground)
+		cond8 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.headerForeground)
 	} else {
-		cond529 = this.impl.defaultForeground_()
+		cond8 = this.impl.defaultForeground_()
 	}
-	return cond529
+	return cond8
 }
 
 func (this *Tree) GetHeaderHeight() int32 {
@@ -1475,7 +1475,7 @@ func (this *Tree) GetItemPoint(pointLike PointLike) *TreeItem {
 	}
 	var id *cocoa.Id = widget.ItemAtRow(int64(row))
 	var item *Widget = this.display.GetWidget(id.Id)
-	if item != (nil) && func() bool { _, ok530 := isWidgetToTreeItem(item); return ok530 }() {
+	if item != (nil) && func() bool { _, ok9 := isWidgetToTreeItem(item); return ok9 }() {
 		return castWidgetToTreeItem(item)
 	}
 	return nil
@@ -1492,13 +1492,13 @@ func (this *Tree) GetItemCountItem(itemLike TreeItemLike) int32 {
 		item = itemLike.AsTreeItem()
 	}
 	_ = item
-	var cond531 int32
+	var cond10 int32
 	if item == (nil) {
-		cond531 = this.itemCount
+		cond10 = this.itemCount
 	} else {
-		cond531 = item.itemCount
+		cond10 = item.itemCount
 	}
-	return cond531
+	return cond10
 }
 
 func (this *Tree) GetItemHeight() int32 {
@@ -1539,7 +1539,7 @@ func (this *Tree) GetSelection() []*TreeItem {
 	for i := int32(0); i < count; i++ {
 		var id *cocoa.Id = widget.ItemAtRow(indexBuffer[i])
 		var item *Widget = this.display.GetWidget(id.Id)
-		if item != (nil) && func() bool { _, ok532 := isWidgetToTreeItem(item); return ok532 }() {
+		if item != (nil) && func() bool { _, ok11 := isWidgetToTreeItem(item); return ok11 }() {
 			result[i] = castWidgetToTreeItem(item)
 		}
 	}
@@ -1783,21 +1783,21 @@ func (this *Tree) nextState_(id int64, sel int64) int64 {
 	}
 	var item *TreeItem = castWidgetToTreeItem(this.display.GetWidget(outlineView.ItemAtRow(int64(index)).Id))
 	if item.grayed {
-		var cond533 int32
+		var cond12 int32
 		if item.checked {
-			cond533 = cocoa.OSNSControlStateValueOff
+			cond12 = cocoa.OSNSControlStateValueOff
 		} else {
-			cond533 = cocoa.OSNSControlStateValueMixed
+			cond12 = cocoa.OSNSControlStateValueMixed
 		}
-		return int64(cond533)
+		return int64(cond12)
 	}
-	var cond534 int32
+	var cond13 int32
 	if item.checked {
-		cond534 = cocoa.OSNSControlStateValueOff
+		cond13 = cocoa.OSNSControlStateValueOff
 	} else {
-		cond534 = cocoa.OSNSControlStateValueOn
+		cond13 = cocoa.OSNSControlStateValueOn
 	}
-	return int64(cond534)
+	return int64(cond13)
 }
 
 func (this *Tree) outlineView_child_ofItem_(id int64, sel int64, outlineView int64, index int64, itemID int64) int64 {
@@ -1825,13 +1825,13 @@ func (this *Tree) outlineView_objectValueForTableColumn_byItem_(id int64, sel in
 		if item.checked && item.grayed {
 			value = cocoa.NSNumberNumberWithInt(cocoa.OSNSControlStateValueMixed)
 		} else {
-			var cond535 int32
+			var cond14 int32
 			if item.checked {
-				cond535 = cocoa.OSNSControlStateValueOn
+				cond14 = cocoa.OSNSControlStateValueOn
 			} else {
-				cond535 = cocoa.OSNSControlStateValueOff
+				cond14 = cocoa.OSNSControlStateValueOff
 			}
-			value = cocoa.NSNumberNumberWithInt(cond535)
+			value = cocoa.NSNumberNumberWithInt(cond14)
 		}
 		return value.Id
 	}
@@ -1906,25 +1906,25 @@ func (this *Tree) outlineView_willDisplayCell_forTableColumn_item_(id int64, sel
 	var textCell *cocoa.NSTextFieldCell = cocoa.NewNSTextFieldCellOverload1(cell)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_ROW, itemID)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_COLUMN, tableColumn)
-	var cond536 *Image
+	var cond15 *Image
 	if item.images == (nil) {
-		cond536 = nil
+		cond15 = nil
 	} else {
-		cond536 = item.images[index]
+		cond15 = item.images[index]
 	}
 	var image *Image
 	if index == 0 {
 		image = item.image
 	} else {
-		image = (cond536)
+		image = (cond15)
 	}
-	var cond537 *cocoa.NSImage
+	var cond16 *cocoa.NSImage
 	if image != (nil) {
-		cond537 = image.Handle
+		cond16 = image.Handle
 	} else {
-		cond537 = nil
+		cond16 = nil
 	}
-	textCell.SetImage(cond537)
+	textCell.SetImage(cond16)
 	var color *cocoa.NSColor
 	if textCell.IsEnabled() {
 		if textCell.IsHighlighted() {
@@ -2433,7 +2433,7 @@ func (this *Tree) sendMouseEvent_(nsEvent *cocoa.NSEvent, type_ int32, send bool
 					var itemID *cocoa.Id = widget.ItemAtRow(int64(this.selectedRowIndex))
 					if itemID != (nil) {
 						var item *Widget = this.display.GetWidget(itemID.Id)
-						if item != (nil) && func() bool { _, ok538 := isWidgetToTreeItem(item); return ok538 }() {
+						if item != (nil) && func() bool { _, ok17 := isWidgetToTreeItem(item); return ok17 }() {
 							event.Item = this.display.GetWidget(itemID.Id)
 							this.SendSelectionEventEventTypeEventSend(Selection, event, false)
 						}
@@ -2626,13 +2626,13 @@ func (this *Tree) SetHeaderForeground(colorLike ColorLike) {
 
 func (this *Tree) SetHeaderVisible(show bool) {
 	this.CheckWidget()
-	var cond539 *cocoa.NSTableHeaderView
+	var cond18 *cocoa.NSTableHeaderView
 	if show {
-		cond539 = this.headerView
+		cond18 = this.headerView
 	} else {
-		cond539 = nil
+		cond18 = nil
 	}
-	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetHeaderView(cond539)
+	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetHeaderView(cond18)
 	this.scrollView.Tile()
 }
 
@@ -2669,13 +2669,13 @@ func (this *Tree) SetItemCountParentItemCount(parentItemLike TreeItemLike, count
 			parentItem.itemCount = count
 		}
 		var selectedItems []*TreeItem = this.GetSelection()
-		var cond540 *cocoa.Id
+		var cond19 *cocoa.Id
 		if parentItem != (nil) {
-			cond540 = upcastcocoaSWTTreeItemTococoaId(parentItem.Handle)
+			cond19 = upcastcocoaSWTTreeItemTococoaId(parentItem.Handle)
 		} else {
-			cond540 = nil
+			cond19 = nil
 		}
-		widget.ReloadItem(cond540, expanded)
+		widget.ReloadItem(cond19, expanded)
 		for index := int32(count); index < itemCount; index++ {
 			var item *TreeItem = children[index]
 			if item != (nil) && !item.IsDisposed() {
@@ -2712,13 +2712,13 @@ func (this *Tree) SetItemCountParentItemCount(parentItemLike TreeItemLike, count
 				parentItem.itemCount = count
 			}
 			var selectedItems []*TreeItem = this.GetSelection()
-			var cond541 *cocoa.Id
+			var cond20 *cocoa.Id
 			if parentItem != (nil) {
-				cond541 = upcastcocoaSWTTreeItemTococoaId(parentItem.Handle)
+				cond20 = upcastcocoaSWTTreeItemTococoaId(parentItem.Handle)
 			} else {
-				cond541 = nil
+				cond20 = nil
 			}
-			widget.ReloadItem(cond541, expanded)
+			widget.ReloadItem(cond20, expanded)
 			this.SelectItems(selectedItems, true)
 			if parentItem != (nil) && itemCount == 0 && parentItem.expanded {
 				this.ignoreExpand = true
@@ -2782,13 +2782,13 @@ func (this *Tree) SetItemHeightImageFontSet(imageLike ImageLike, font *cocoa.NSF
 func (this *Tree) SetLinesVisible(show bool) {
 	this.CheckWidget()
 	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetUsesAlternatingRowBackgroundColors(show)
-	var cond542 int32
+	var cond21 int32
 	if show {
-		cond542 = cocoa.OSNSTableViewSolidVerticalGridLineMask
+		cond21 = cocoa.OSNSTableViewSolidVerticalGridLineMask
 	} else {
-		cond542 = cocoa.OSNSTableViewGridNone
+		cond21 = cocoa.OSNSTableViewGridNone
 	}
-	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetGridStyleMask(int64(cond542))
+	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetGridStyleMask(int64(cond21))
 }
 
 func (this *Tree) setRedraw_(redraw bool) {
@@ -3009,13 +3009,13 @@ func (this *Tree) ShowColumn(columnLike TreeColumnLike) {
 	}
 	var index int32 = this.IndexOf(column.nsColumn)
 	if !(0 <= index && func() bool {
-		var cond543 int32
+		var cond22 int32
 		if (this.style & CHECK) != 0 {
-			cond543 = 1
+			cond22 = 1
 		} else {
-			cond543 = 0
+			cond22 = 0
 		}
-		return index < this.columnCount+(cond543)
+		return index < this.columnCount+(cond22)
 	}()) {
 		return
 	}

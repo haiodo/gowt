@@ -57,8 +57,8 @@ func (this *RGBA) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	rgba, ok21 := rGBAImplAsRGBA(object)
-	if !(ok21) {
+	rgba, ok1 := rGBAImplAsRGBA(object)
+	if !(ok1) {
 		return false
 	}
 	return (rgba.Rgb.Red == this.Rgb.Red) && (rgba.Rgb.Green == this.Rgb.Green) && (rgba.Rgb.Blue == this.Rgb.Blue) && (rgba.Alpha == this.Alpha)

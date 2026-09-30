@@ -433,19 +433,19 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) ShowChevron() *swt.ToolItem 
 	}
 	var newWidth int32 = itemWidth * 3 / 4
 	this.shell.SetSize(newWidth, this.shell.GetSize().Y)
-	abs92 := newWidth - this.shell.GetSize().X
-	if abs92 < 0 {
-		abs92 = -abs92
+	abs1 := newWidth - this.shell.GetSize().X
+	if abs1 < 0 {
+		abs1 = -abs1
 	}
-	var resizeFailed bool = abs92 > 10
+	var resizeFailed bool = abs1 > 10
 	var chevron *swt.ToolItem = this.GetChevron(this.ctabFolder)
-	var cond93 string
+	var cond2 string
 	if resizeFailed {
-		cond93 = ". Shell could not be resized to the desired size. Tab row width might be smaller than the minimum shell width."
+		cond2 = ". Shell could not be resized to the desired size. Tab row width might be smaller than the minimum shell width."
 	} else {
-		cond93 = ""
+		cond2 = ""
 	}
-	junit.AssertNotNull(chevron, fmt.Sprintf("Chevron not shown%s", (cond93)))
+	junit.AssertNotNull(chevron, fmt.Sprintf("Chevron not shown%s", (cond2)))
 	return chevron
 }
 
@@ -456,8 +456,8 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) GetChevron(tabFolderLike swt
 	}
 	_ = tabFolder
 	for _, child := range tabFolder.GetChildren() {
-		toolBar, ok94 := isswtControlToswtToolBar(child)
-		if ok94 {
+		toolBar, ok3 := isswtControlToswtToolBar(child)
+		if ok3 {
 			for _, toolItem := range toolBar.GetItems() {
 				if (toolItem.GetStyle()&swt.PUSH) != 0 && (len(toolItem.GetText()) == 0) && (swt.GetMessage("SWT_ShowList") == toolItem.GetToolTipText()) && toolItem.GetImage() != (nil) {
 					return toolItem
@@ -480,15 +480,15 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) CheckElementOverlap(tabFolde
 	subControls.AddAll(jrt.ArraysAsList(tabFolder.GetItems()))
 	for i := int32(0); i < subControls.Size(); i++ {
 		var boundsA *swt.Rectangle = nil
-		c, ok95 := isswtWidgetToswtControl(jrt.Cast[*swt.Widget](subControls.Get(i)))
-		if ok95 {
+		c, ok4 := isswtWidgetToswtControl(jrt.Cast[*swt.Widget](subControls.Get(i)))
+		if ok4 {
 			if !c.IsVisible() {
 				continue
 			}
 			boundsA = c.GetBounds()
 		} else {
-			cTab, ok96 := isswtWidgetToswtCTabItem(jrt.Cast[*swt.Widget](subControls.Get(i)))
-			if ok96 {
+			cTab, ok5 := isswtWidgetToswtCTabItem(jrt.Cast[*swt.Widget](subControls.Get(i)))
+			if ok5 {
 				if !cTab.IsShowing() {
 					continue
 				}
@@ -497,15 +497,15 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) CheckElementOverlap(tabFolde
 		}
 		for j := int32(i + 1); j < subControls.Size(); j++ {
 			var boundsB *swt.Rectangle = nil
-			c, ok97 := isswtWidgetToswtControl(jrt.Cast[*swt.Widget](subControls.Get(j)))
-			if ok97 {
+			c, ok6 := isswtWidgetToswtControl(jrt.Cast[*swt.Widget](subControls.Get(j)))
+			if ok6 {
 				if !c.IsVisible() {
 					continue
 				}
 				boundsB = c.GetBounds()
 			} else {
-				cTab, ok98 := isswtWidgetToswtCTabItem(jrt.Cast[*swt.Widget](subControls.Get(j)))
-				if ok98 {
+				cTab, ok7 := isswtWidgetToswtCTabItem(jrt.Cast[*swt.Widget](subControls.Get(j)))
+				if ok7 {
 					if !cTab.IsShowing() {
 						continue
 					}
@@ -531,8 +531,8 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) AssertTabElementsInLine() {
 		panic("j2go: unresolved call forEach")
 	}()
 	for _, child := range this.ctabFolder.GetChildren() {
-		toolBarChild, ok99 := isswtControlToswtToolBar(child)
-		if ok99 {
+		toolBarChild, ok8 := isswtControlToswtToolBar(child)
+		if ok8 {
 			for _, toolItem := range toolBarChild.GetItems() {
 				if toolItem.GetImage() != (nil) {
 					tabBarElementBounds.Add(this.GetBoundsInShell(upcastswtToolItemToswtWidget(toolItem)))
@@ -541,8 +541,8 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) AssertTabElementsInLine() {
 		}
 	}
 	var maxBound *swt.Rectangle = jrt.Cast[*swt.Rectangle](tabBarElementBounds.Get(0))
-	for _, elem100 := range tabBarElementBounds.ToArray() {
-		bound := jrt.Cast[*swt.Rectangle](elem100)
+	for _, elem9 := range tabBarElementBounds.ToArray() {
+		bound := jrt.Cast[*swt.Rectangle](elem9)
 		if bound.Height > maxBound.Height {
 			junit.AssertTrue(bound.Y <= maxBound.Y && (bound.Y+bound.Height) >= (maxBound.Y+maxBound.Height))
 			maxBound = bound
@@ -555,18 +555,18 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) AssertTabElementsInLine() {
 func (this *Test_org_eclipse_swt_custom_CTabFolder) GetBoundsInShell(control *swt.Widget) *swt.Rectangle {
 	var parent *swt.Control
 	var bounds *swt.Rectangle
-	c, ok101 := isswtWidgetToswtControl(control)
-	if ok101 {
+	c, ok10 := isswtWidgetToswtControl(control)
+	if ok10 {
 		parent = upcastswtCompositeToswtControl(c.GetParent())
 		bounds = c.GetBounds()
 	} else {
-		cTab, ok102 := isswtWidgetToswtCTabItem(control)
-		if ok102 {
+		cTab, ok11 := isswtWidgetToswtCTabItem(control)
+		if ok11 {
 			parent = upcastswtCTabFolderToswtControl(cTab.GetParent())
 			bounds = cTab.GetBounds()
 		} else {
-			toolItem, ok103 := isswtWidgetToswtToolItem(control)
-			if ok103 {
+			toolItem, ok12 := isswtWidgetToswtToolItem(control)
+			if ok12 {
 				parent = upcastswtToolBarToswtControl(toolItem.GetParent())
 				bounds = toolItem.GetBounds()
 			} else {
@@ -574,7 +574,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) GetBoundsInShell(control *sw
 			}
 		}
 	}
-	if parent != (nil) && func() bool { _, ok104 := isswtControlToswtShell(parent); return !(ok104) }() {
+	if parent != (nil) && func() bool { _, ok13 := isswtControlToswtShell(parent); return !(ok13) }() {
 		var absParentBound *swt.Rectangle = this.GetBoundsInShell(upcastswtControlToswtWidget(parent))
 		bounds.X += absParentBound.X
 		bounds.Y += absParentBound.Y
@@ -695,13 +695,13 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_SelectionListener_notFi
 	this.CreateTabFolderEventsNumItems(nil, 3)
 	var selectionFired *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var selectedItem *jrt.AtomicReference = jrt.NewAtomicReference()
-	anon105 := &Test_org_eclipse_swt_custom_CTabFolderAnon1{}
-	anon105.SelectionAdapter = swt.NewSelectionAdapter()
-	anon105.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon14 := &Test_org_eclipse_swt_custom_CTabFolderAnon1{}
+	anon14.SelectionAdapter = swt.NewSelectionAdapter()
+	anon14.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		selectionFired.Set(true)
 		selectedItem.Set(e.Item)
 	}
-	this.ctabFolder.AddSelectionListener(anon105)
+	this.ctabFolder.AddSelectionListener(anon14)
 	this.ctabFolder.SetSelectionIndex(1)
 	junit.AssertFalse(selectionFired.Get(), "Programmatic setSelection should not fire SelectionListener")
 	var event *swt.Event = swt.NewEvent()
@@ -961,8 +961,8 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_getChildControls(tabFolder
 	}
 	_ = tabFolder
 	var childControlArrayName string = "controls"
-	var tret106 []*swt.Control
-	tretd107 := false
+	var tret15 []*swt.Control
+	tretd16 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -972,8 +972,8 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_getChildControls(tabFolder
 			if e, ok := r.(error); ok {
 				_ = e
 				junit.Fail("Failed to access controls via reflections.")
-				tret106 = nil
-				tretd107 = true
+				tret15 = nil
+				tretd16 = true
 				return
 			} else {
 				panic(r)
@@ -984,12 +984,12 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_getChildControls(tabFolder
 			panic("j2go: unresolved call getDeclaredField")
 		}()
 		func() any { _ = []any{field, true}; panic("j2go: unresolved call setAccessible") }()
-		tret106 = func() any { _ = []any{field, tabFolder}; panic("j2go: unresolved call get") }().([]*swt.Control)
-		tretd107 = true
+		tret15 = func() any { _ = []any{field, tabFolder}; panic("j2go: unresolved call get") }().([]*swt.Control)
+		tretd16 = true
 		return
 	}()
-	_ = tretd107
-	return tret106
+	_ = tretd16
+	return tret15
 }
 
 func Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(itemLike swt.CTabItemLike) *swt.Rectangle {
@@ -998,8 +998,8 @@ func Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(itemLike swt.CTabItemLik
 		item = itemLike.AsCTabItem()
 	}
 	_ = item
-	var tret108 *swt.Rectangle
-	tretd109 := false
+	var tret17 *swt.Rectangle
+	tretd18 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -1010,8 +1010,8 @@ func Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(itemLike swt.CTabItemLik
 				var e error
 				_ = e
 				junit.Fail(fmt.Sprintf("Failed to access closeRect via reflection: %s", e.Error()))
-				tret108 = nil
-				tretd109 = true
+				tret17 = nil
+				tretd18 = true
 				return
 			} else {
 				panic(r)
@@ -1022,12 +1022,12 @@ func Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(itemLike swt.CTabItemLik
 			panic("j2go: unresolved call getDeclaredField")
 		}()
 		func() any { _ = []any{closeRect, true}; panic("j2go: unresolved call setAccessible") }()
-		tret108 = castanyToswtRectangle(func() any { _ = []any{closeRect, item}; panic("j2go: unresolved call get") }())
-		tretd109 = true
+		tret17 = castanyToswtRectangle(func() any { _ = []any{closeRect, item}; panic("j2go: unresolved call get") }())
+		tretd18 = true
 		return
 	}()
-	_ = tretd109
-	return tret108
+	_ = tretd18
+	return tret17
 }
 
 func init() {
@@ -1286,19 +1286,19 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder_FixedSizeLayout) initTest_org
 }
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder_FixedSizeLayout) ComputeSize_(composite *swt.Composite, wHint int32, hHint int32, flushCache bool) *swt.Point {
-	var cond110 int32
+	var cond19 int32
 	if wHint == swt.DEFAULT {
-		cond110 = this.width
+		cond19 = this.width
 	} else {
-		cond110 = wHint
+		cond19 = wHint
 	}
-	var cond111 int32
+	var cond20 int32
 	if hHint == swt.DEFAULT {
-		cond111 = this.height
+		cond20 = this.height
 	} else {
-		cond111 = hHint
+		cond20 = hHint
 	}
-	return swt.NewPoint(cond110, cond111)
+	return swt.NewPoint(cond19, cond20)
 }
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder_FixedSizeLayout) LayoutFn_(composite *swt.Composite, flushCache bool) {

@@ -50,24 +50,24 @@ func (this *NSControl) Action() int64 {
 
 func (this *NSControl) Cell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cell)
-	var cond197 *NSCell
+	var cond1 *NSCell
 	if result != 0 {
-		cond197 = NewNSCellOverload1(result)
+		cond1 = NewNSCellOverload1(result)
 	} else {
-		cond197 = nil
+		cond1 = nil
 	}
-	return cond197
+	return cond1
 }
 
 func (this *NSControl) CurrentEditor() *NSText {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_currentEditor)
-	var cond198 *NSText
+	var cond2 *NSText
 	if result != 0 {
-		cond198 = NewNSTextOverload1(result)
+		cond2 = NewNSTextOverload1(result)
 	} else {
-		cond198 = nil
+		cond2 = nil
 	}
-	return cond198
+	return cond2
 }
 
 func (this *NSControl) DoubleValue() float64 {
@@ -76,13 +76,13 @@ func (this *NSControl) DoubleValue() float64 {
 
 func (this *NSControl) Font() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_font)
-	var cond199 *NSFont
+	var cond3 *NSFont
 	if result != 0 {
-		cond199 = NewNSFontOverload1(result)
+		cond3 = NewNSFontOverload1(result)
 	} else {
-		cond199 = nil
+		cond3 = nil
 	}
-	return cond199
+	return cond3
 }
 
 func (this *NSControl) IsEnabled() bool {
@@ -94,13 +94,13 @@ func (this *NSControl) IsHighlighted() bool {
 }
 
 func (this *NSControl) SendAction(theAction int64, theTarget *id) bool {
-	var cond200 int64
+	var cond4 int64
 	if theTarget != (nil) {
-		cond200 = theTarget.Id
+		cond4 = theTarget.Id
 	} else {
-		cond200 = int64(0)
+		cond4 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_sendAction_to_, theAction, cond200)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_sendAction_to_, theAction, cond4)
 }
 
 func (this *NSControl) SetAction(action int64) {
@@ -116,13 +116,13 @@ func (this *NSControl) SetBaseWritingDirection(baseWritingDirection int64) {
 }
 
 func (this *NSControl) SetCell(cell *NSCell) {
-	var cond201 int64
+	var cond5 int64
 	if cell != (nil) {
-		cond201 = cell.Id
+		cond5 = cell.Id
 	} else {
-		cond201 = int64(0)
+		cond5 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setCell_, cond201)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setCell_, cond5)
 }
 
 func (this *NSControl) SetDoubleValue(doubleValue float64) {
@@ -134,43 +134,43 @@ func (this *NSControl) SetEnabled(enabled bool) {
 }
 
 func (this *NSControl) SetFont(font *NSFont) {
-	var cond202 int64
+	var cond6 int64
 	if font != (nil) {
-		cond202 = font.Id
+		cond6 = font.Id
 	} else {
-		cond202 = int64(0)
+		cond6 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond202)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond6)
 }
 
 func (this *NSControl) SetFormatter(formatter *NSFormatter) {
-	var cond203 int64
+	var cond7 int64
 	if formatter != (nil) {
-		cond203 = formatter.Id
+		cond7 = formatter.Id
 	} else {
-		cond203 = int64(0)
+		cond7 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFormatter_, cond203)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFormatter_, cond7)
 }
 
 func (this *NSControl) SetStringValue(stringValue *NSString) {
-	var cond204 int64
+	var cond8 int64
 	if stringValue != (nil) {
-		cond204 = stringValue.Id
+		cond8 = stringValue.Id
 	} else {
-		cond204 = int64(0)
+		cond8 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setStringValue_, cond204)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setStringValue_, cond8)
 }
 
 func (this *NSControl) SetTarget(target *id) {
-	var cond205 int64
+	var cond9 int64
 	if target != (nil) {
-		cond205 = target.Id
+		cond9 = target.Id
 	} else {
-		cond205 = int64(0)
+		cond9 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond205)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond9)
 }
 
 func (this *NSControl) SizeToFit() {
@@ -179,24 +179,24 @@ func (this *NSControl) SizeToFit() {
 
 func (this *NSControl) StringValue() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_stringValue)
-	var cond206 *NSString
+	var cond10 *NSString
 	if result != 0 {
-		cond206 = NewNSStringOverload1(result)
+		cond10 = NewNSStringOverload1(result)
 	} else {
-		cond206 = nil
+		cond10 = nil
 	}
-	return cond206
+	return cond10
 }
 
 func (this *NSControl) Target() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_target)
-	var cond207 *id
+	var cond11 *id
 	if result != 0 {
-		cond207 = NewidOverload1(result)
+		cond11 = NewidOverload1(result)
 	} else {
-		cond207 = nil
+		cond11 = nil
 	}
-	return cond207
+	return cond11
 }
 
 func NSControlCellClass() int64 {

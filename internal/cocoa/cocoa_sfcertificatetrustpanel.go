@@ -41,46 +41,46 @@ func (this *SFCertificateTrustPanel) initSFCertificateTrustPanelOverload2(id *id
 }
 
 func (this *SFCertificateTrustPanel) BeginSheetForWindow(docWindow *NSWindow, delegate *id, didEndSelector int64, contextInfo int64, trust int64, message *NSString) {
-	var cond947 int64
+	var cond1 int64
 	if docWindow != (nil) {
-		cond947 = docWindow.Id
+		cond1 = docWindow.Id
 	} else {
-		cond947 = int64(0)
+		cond1 = int64(0)
 	}
-	var cond948 int64
+	var cond2 int64
 	if delegate != (nil) {
-		cond948 = delegate.Id
+		cond2 = delegate.Id
 	} else {
-		cond948 = int64(0)
+		cond2 = int64(0)
 	}
-	var cond949 int64
+	var cond3 int64
 	if message != (nil) {
-		cond949 = message.Id
+		cond3 = message.Id
 	} else {
-		cond949 = int64(0)
+		cond3 = int64(0)
 	}
-	OSObjc_msgSendOverload63(this.Id, OSSel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_, cond947, cond948, didEndSelector, contextInfo, trust, cond949)
+	OSObjc_msgSendOverload63(this.Id, OSSel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_, cond1, cond2, didEndSelector, contextInfo, trust, cond3)
 }
 
 func SFCertificateTrustPanelSharedCertificateTrustPanel() *SFCertificateTrustPanel {
 	var result int64 = OSObjc_msgSend(OSClass_SFCertificateTrustPanel, OSSel_sharedCertificateTrustPanel)
-	var cond950 *SFCertificateTrustPanel
+	var cond4 *SFCertificateTrustPanel
 	if result != 0 {
-		cond950 = NewSFCertificateTrustPanelOverload1(result)
+		cond4 = NewSFCertificateTrustPanelOverload1(result)
 	} else {
-		cond950 = nil
+		cond4 = nil
 	}
-	return cond950
+	return cond4
 }
 
 func SFCertificateTrustPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond951 int64
+	var cond5 int64
 	if aTitle != (nil) {
-		cond951 = aTitle.Id
+		cond5 = aTitle.Id
 	} else {
-		cond951 = int64(0)
+		cond5 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_SFCertificateTrustPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond951, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_SFCertificateTrustPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond5, aStyle)
 }
 
 func SFCertificateTrustPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

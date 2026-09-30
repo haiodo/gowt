@@ -159,8 +159,8 @@ func ConsistencyUtilityPostDoubleClick(displayLike swt.DisplayLike, ptLike swt.P
 	}
 	_ = pt
 	var ret bool = ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
-	b115 := ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
-	ret = ret && b115
+	b1 := ConsistencyUtilityPostClickDisplayPtButton(display, pt, button)
+	ret = ret && b1
 	return ret
 }
 
@@ -292,8 +292,8 @@ func ConsistencyUtilityPostSelection(displayLike swt.DisplayLike, pt1Like swt.Po
 	display.SyncExec(any(jrt.NewThread(jrt.NewRunnable(func() {
 		display.Update()
 	}))).(jrt.Runnable))
-	b116 := ConsistencyUtilityPostClickDisplayPtButton(display, pt2, 1)
-	ret = ret && b116
+	b2 := ConsistencyUtilityPostClickDisplayPtButton(display, pt2, 1)
+	ret = ret && b2
 	return ret
 }
 

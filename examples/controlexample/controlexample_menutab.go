@@ -49,9 +49,9 @@ func (this *MenuTab) initMenuTab(instance *ControlExample) {
 
 func (this *MenuTab) CloseAllShells() {
 	for i := int32(0); i < this.shellCount; i++ {
-		b23 := this.shells[i] != (nil)
-		b24 := !this.shells[i].IsDisposed()
-		if b23 && b24 {
+		b1 := this.shells[i] != (nil)
+		b2 := !this.shells[i].IsDisposed()
+		if b1 && b2 {
 			this.shells[i].Dispose()
 		}
 	}

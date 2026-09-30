@@ -342,13 +342,13 @@ func (this *TrayItem) mouseUp_(id int64, sel int64, theEvent int64) {
 	if this.highlight {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 		if nsEvent.Type() == int64(cocoa.OSNSLeftMouseUp) {
-			var cond642 int32
+			var cond1 int32
 			if nsEvent.ClickCount() == 2 {
-				cond642 = DefaultSelection
+				cond1 = DefaultSelection
 			} else {
-				cond642 = Selection
+				cond1 = Selection
 			}
-			this.SendSelectionEvent(cond642)
+			this.SendSelectionEvent(cond1)
 		}
 		this.highlight = false
 		this.UpdateImage()

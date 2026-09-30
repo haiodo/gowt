@@ -132,13 +132,13 @@ func (this *Group) isTransparent_() bool {
 }
 
 func (this *Group) getThemeAlpha_() float32 {
-	var cond193 float32
+	var cond1 float32
 	if this.background != (nil) {
-		cond193 = float32(1)
+		cond1 = float32(1)
 	} else {
-		cond193 = 0.25
+		cond1 = 0.25
 	}
-	return (cond193) * this.parent.impl.getThemeAlpha_()
+	return (cond1) * this.parent.impl.getThemeAlpha_()
 }
 
 func (this *Group) register_() {
@@ -198,13 +198,13 @@ func (this *Group) SetText(string_ string) {
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)
 	var box *cocoa.NSBox = castcocoaNSViewTococoaNSBox(this.View)
-	var cond194 int32
+	var cond2 int32
 	if length == 0 {
-		cond194 = cocoa.OSNSNoTitle
+		cond2 = cocoa.OSNSNoTitle
 	} else {
-		cond194 = cocoa.OSNSAtTop
+		cond2 = cocoa.OSNSAtTop
 	}
-	box.SetTitlePosition(int64(cond194))
+	box.SetTitlePosition(int64(cond2))
 	box.SetTitle(cocoa.NSStringStringWithCharacters(buffer, int64(length)))
 }
 

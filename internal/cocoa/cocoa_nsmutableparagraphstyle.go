@@ -41,13 +41,13 @@ func (this *NSMutableParagraphStyle) initNSMutableParagraphStyleOverload2(id *id
 }
 
 func (this *NSMutableParagraphStyle) AddTabStop(anObject *NSTextTab) {
-	var cond436 int64
+	var cond1 int64
 	if anObject != (nil) {
-		cond436 = anObject.Id
+		cond1 = anObject.Id
 	} else {
-		cond436 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addTabStop_, cond436)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addTabStop_, cond1)
 }
 
 func (this *NSMutableParagraphStyle) SetAlignment(alignment int64) {
@@ -79,11 +79,11 @@ func (this *NSMutableParagraphStyle) SetLineSpacing(lineSpacing float64) {
 }
 
 func (this *NSMutableParagraphStyle) SetTabStops(tabStops *NSArray) {
-	var cond437 int64
+	var cond2 int64
 	if tabStops != (nil) {
-		cond437 = tabStops.Id
+		cond2 = tabStops.Id
 	} else {
-		cond437 = int64(0)
+		cond2 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTabStops_, cond437)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTabStops_, cond2)
 }

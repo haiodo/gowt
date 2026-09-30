@@ -46,52 +46,52 @@ func (this *NSPopUpButton) IndexOfSelectedItem() int64 {
 
 func (this *NSPopUpButton) InitWithFrame(buttonFrame NSRect, flag bool) *NSPopUpButton {
 	var result int64 = OSObjc_msgSendOverload17(this.Id, OSSel_initWithFrame_pullsDown_, buttonFrame, flag)
-	var cond567 *NSPopUpButton
-	var cond568 *NSPopUpButton
+	var cond1 *NSPopUpButton
+	var cond2 *NSPopUpButton
 	if result != 0 {
-		cond568 = NewNSPopUpButtonOverload1(result)
+		cond2 = NewNSPopUpButtonOverload1(result)
 	} else {
-		cond568 = nil
+		cond2 = nil
 	}
 	if result == this.Id {
-		cond567 = this
+		cond1 = this
 	} else {
-		cond567 = (cond568)
+		cond1 = (cond2)
 	}
-	return cond567
+	return cond1
 }
 
 func (this *NSPopUpButton) ItemAtIndex(index int64) *NSMenuItem {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemAtIndex_, index)
-	var cond569 *NSMenuItem
+	var cond3 *NSMenuItem
 	if result != 0 {
-		cond569 = NewNSMenuItemOverload1(result)
+		cond3 = NewNSMenuItemOverload1(result)
 	} else {
-		cond569 = nil
+		cond3 = nil
 	}
-	return cond569
+	return cond3
 }
 
 func (this *NSPopUpButton) ItemTitleAtIndex(index int64) *NSString {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemTitleAtIndex_, index)
-	var cond570 *NSString
+	var cond4 *NSString
 	if result != 0 {
-		cond570 = NewNSStringOverload1(result)
+		cond4 = NewNSStringOverload1(result)
 	} else {
-		cond570 = nil
+		cond4 = nil
 	}
-	return cond570
+	return cond4
 }
 
 func (this *NSPopUpButton) Menu() *NSMenu {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_menu)
-	var cond571 *NSMenu
+	var cond5 *NSMenu
 	if result != 0 {
-		cond571 = NewNSMenuOverload1(result)
+		cond5 = NewNSMenuOverload1(result)
 	} else {
-		cond571 = nil
+		cond5 = nil
 	}
-	return cond571
+	return cond5
 }
 
 func (this *NSPopUpButton) NumberOfItems() int64 {
@@ -107,13 +107,13 @@ func (this *NSPopUpButton) RemoveItemAtIndex(index int64) {
 }
 
 func (this *NSPopUpButton) SelectItem(item *NSMenuItem) {
-	var cond572 int64
+	var cond6 int64
 	if item != (nil) {
-		cond572 = item.Id
+		cond6 = item.Id
 	} else {
-		cond572 = int64(0)
+		cond6 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_selectItem_, cond572)
+	OSObjc_msgSendOverload44(this.Id, OSSel_selectItem_, cond6)
 }
 
 func (this *NSPopUpButton) SelectItemAtIndex(index int64) {
@@ -130,13 +130,13 @@ func (this *NSPopUpButton) SetPullsDown(pullsDown bool) {
 
 func (this *NSPopUpButton) TitleOfSelectedItem() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_titleOfSelectedItem)
-	var cond573 *NSString
+	var cond7 *NSString
 	if result != 0 {
-		cond573 = NewNSStringOverload1(result)
+		cond7 = NewNSStringOverload1(result)
 	} else {
-		cond573 = nil
+		cond7 = nil
 	}
-	return cond573
+	return cond7
 }
 
 func NSPopUpButtonCellClass() int64 {

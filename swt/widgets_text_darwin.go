@@ -601,13 +601,13 @@ func (this *Text) GetCaretLocation() *Point {
 func (this *Text) GetCaretPosition() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond189 int32
+		var cond1 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond189 = int32(this.selectionRange.Location)
+			cond1 = int32(this.selectionRange.Location)
 		} else {
-			cond189 = 0
+			cond1 = 0
 		}
-		return cond189
+		return cond1
 	} else {
 		var range_ cocoa.NSRange = (castcocoaNSViewTococoaNSTextView(this.View)).SelectedRange()
 		return int32(range_.Location)
@@ -714,9 +714,9 @@ func (this *Text) GetLineCount() int32 {
 	var length int64 = string_.Length()
 	var c int64
 	if length == 0 || func() bool {
-		cond190 := int64(string_.CharacterAtIndex(length - 1))
-		c = cond190
-		return (cond190) == int64(int32('\u000a'))
+		cond2 := int64(string_.CharacterAtIndex(length - 1))
+		c = cond2
+		return (cond2) == int64(int32('\u000a'))
 	}() || c == int64(int32('\u000d')) {
 		count++
 	}
@@ -789,13 +789,13 @@ func (this *Text) GetSelection() *Point {
 func (this *Text) GetSelectionCount() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond191 int32
+		var cond3 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond191 = int32(this.selectionRange.Length)
+			cond3 = int32(this.selectionRange.Length)
 		} else {
-			cond191 = 0
+			cond3 = 0
 		}
-		return cond191
+		return cond3
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var range_ cocoa.NSRange = widget.SelectedRange()
@@ -1658,13 +1658,13 @@ func (this *Text) updateCursorRects_(enabled bool) {
 		return
 	}
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
-	var cond192 *cocoa.NSCursor
+	var cond4 *cocoa.NSCursor
 	if enabled {
-		cond192 = cocoa.NSCursorIBeamCursor()
+		cond4 = cocoa.NSCursorIBeamCursor()
 	} else {
-		cond192 = nil
+		cond4 = nil
 	}
-	contentView.SetDocumentCursor(cond192)
+	contentView.SetDocumentCursor(cond4)
 }
 
 func (this *Text) UpdateThemeColors() {

@@ -15,57 +15,57 @@ func CTabFolder2ListenerDefaultItemsCount(this CTabFolder2Listener, event *CTabF
 }
 
 func CTabFolder2ListenerItemsCountAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon793 := &CTabFolder2ListenerAnon1{}
-	anon793.initCTabFolder2Adapter()
-	anon793.fnItemsCount = func(e *CTabFolderEvent) {
+	anon1 := &CTabFolder2ListenerAnon1{}
+	anon1.initCTabFolder2Adapter()
+	anon1.fnItemsCount = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon793
+	return anon1
 }
 
 func CTabFolder2ListenerCloseAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon794 := &CTabFolder2ListenerAnon2{}
-	anon794.initCTabFolder2Adapter()
-	anon794.fnClose = func(e *CTabFolderEvent) {
+	anon2 := &CTabFolder2ListenerAnon2{}
+	anon2.initCTabFolder2Adapter()
+	anon2.fnClose = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon794
+	return anon2
 }
 
 func CTabFolder2ListenerMinimizeAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon795 := &CTabFolder2ListenerAnon3{}
-	anon795.initCTabFolder2Adapter()
-	anon795.fnMinimize = func(e *CTabFolderEvent) {
+	anon3 := &CTabFolder2ListenerAnon3{}
+	anon3.initCTabFolder2Adapter()
+	anon3.fnMinimize = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon795
+	return anon3
 }
 
 func CTabFolder2ListenerMaximizeAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon796 := &CTabFolder2ListenerAnon4{}
-	anon796.initCTabFolder2Adapter()
-	anon796.fnMaximize = func(e *CTabFolderEvent) {
+	anon4 := &CTabFolder2ListenerAnon4{}
+	anon4.initCTabFolder2Adapter()
+	anon4.fnMaximize = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon796
+	return anon4
 }
 
 func CTabFolder2ListenerRestoreAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon797 := &CTabFolder2ListenerAnon5{}
-	anon797.initCTabFolder2Adapter()
-	anon797.fnRestore = func(e *CTabFolderEvent) {
+	anon5 := &CTabFolder2ListenerAnon5{}
+	anon5.initCTabFolder2Adapter()
+	anon5.fnRestore = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon797
+	return anon5
 }
 
 func CTabFolder2ListenerShowListAdapter(c func(*CTabFolderEvent)) CTabFolder2Listener {
-	anon798 := &CTabFolder2ListenerAnon6{}
-	anon798.initCTabFolder2Adapter()
-	anon798.fnShowList = func(e *CTabFolderEvent) {
+	anon6 := &CTabFolder2ListenerAnon6{}
+	anon6.initCTabFolder2Adapter()
+	anon6.fnShowList = func(e *CTabFolderEvent) {
 		c(e)
 	}
-	return anon798
+	return anon6
 }
 
 // j2go: anonymous CTabFolder2Adapter subclass.

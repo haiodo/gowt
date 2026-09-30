@@ -41,13 +41,13 @@ func (this *NSTableHeaderCell) initNSTableHeaderCellOverload2(id *id) {
 }
 
 func (this *NSTableHeaderCell) DrawSortIndicatorWithFrame(cellFrame NSRect, controlView *NSView, ascending bool, priority int64) {
-	var cond726 int64
+	var cond1 int64
 	if controlView != (nil) {
-		cond726 = controlView.Id
+		cond1 = controlView.Id
 	} else {
-		cond726 = int64(0)
+		cond1 = int64(0)
 	}
-	OSObjc_msgSendOverload22(this.Id, OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_, cellFrame, cond726, ascending, priority)
+	OSObjc_msgSendOverload22(this.Id, OSSel_drawSortIndicatorWithFrame_inView_ascending_priority_, cellFrame, cond1, ascending, priority)
 }
 
 func (this *NSTableHeaderCell) SortIndicatorRectForBounds(theRect NSRect) NSRect {

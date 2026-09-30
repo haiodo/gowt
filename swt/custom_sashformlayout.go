@@ -217,6 +217,9 @@ func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
 func widgetImplAsSashForm(x any) (*SashForm, bool) {
 	switch v := x.(type) {
 	case *SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -237,6 +240,9 @@ func castCompositeToSashForm(x *Composite) *SashForm {
 func sashFormDataImplAsSashFormData(x any) (*SashFormData, bool) {
 	switch v := x.(type) {
 	case *SashFormData:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

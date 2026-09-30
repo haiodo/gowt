@@ -153,6 +153,9 @@ func (this *RGB) String() string {
 func rGBImplAsRGB(x any) (*RGB, bool) {
 	switch v := x.(type) {
 	case *RGB:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

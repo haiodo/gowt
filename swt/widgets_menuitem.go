@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
 	"unicode/utf16"
 )
@@ -498,7 +499,7 @@ func (this *MenuItem) SetSelection(selected bool) {
 
 func (this *MenuItem) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if (this.style & SEPARATOR) != 0 {
@@ -517,11 +518,11 @@ func (this *MenuItem) SetToolTipText(toolTip string) {
 		this.toolTipText = ""
 		this.nsItem.SetToolTip(nil)
 	}
-	if toolTip == "" || int32(len(strings.TrimSpace(toolTip))) == 0 || (toolTip == this.toolTipText) {
+	if toolTip == "" || jrt.StringLength(strings.TrimSpace(toolTip)) == 0 || (toolTip == this.toolTipText) {
 		return
 	}
 	this.toolTipText = toolTip
-	var chars []uint16 = make([]uint16, int32(len(this.toolTipText)))
+	var chars []uint16 = make([]uint16, jrt.StringLength(this.toolTipText))
 	copy(chars, utf16.Encode([]rune(this.toolTipText)))
 	var length int32 = this.FixMnemonic(chars)
 	this.nsItem.SetToolTip(cocoa.NSStringStringWithCharacters(chars, int64(length)))
@@ -531,7 +532,7 @@ func (this *MenuItem) UpdateText() {
 	if this.IsDisposed() || this.parent.IsDisposed() {
 		return
 	}
-	var buffer []uint16 = make([]uint16, int32(len(this.text)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var i int32 = 0
 	var j int32 = 0
@@ -579,7 +580,7 @@ func (this *MenuItem) UpdateText() {
 		var attribStr *cocoa.NSAttributedString = (castcocoaNSObjectTococoaNSAttributedString(cocoa.NewNSAttributedString().Alloc())).InitWithStringStrAttrs(label, upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
 		dict.Release()
 		this.nsItem.SetAttributedTitle(attribStr)
-		if int32(len(text)) == 0 {
+		if jrt.StringLength(text) == 0 {
 			this.nsItem.SetTitle(cocoa.NSStringString())
 		}
 		attribStr.Release()
@@ -594,7 +595,7 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	var mask int32 = 0
 	var key int32 = 0
 	if show {
-		var buffer []uint16 = make([]uint16, int32(len(this.text)))
+		var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 		copy(buffer, utf16.Encode([]rune(this.text)))
 		var i int32 = 0
 		var j int32 = 0

@@ -188,7 +188,7 @@ func (this *Test_org_eclipse_swt_graphics_Rectangle) Test_isEmpty() {
 func (this *Test_org_eclipse_swt_graphics_Rectangle) Test_toString() {
 	var r *swt.Rectangle = swt.NewRectangle(3, 4, 5, 6)
 	junit.AssertNotNull(r.String())
-	junit.AssertTrue(int32(len(r.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(r.String()) > 0)
 	junit.AssertEquals("Rectangle {3, 4, 5, 6}", r.String())
 }
 
@@ -306,8 +306,14 @@ func upcastswtPoint_OfFloatToswtPoint(x *swt.Point_OfFloat) *swt.Point {
 func rectangleImplAsOfFloat(x any) (*swt.Rectangle_OfFloat, bool) {
 	switch v := x.(type) {
 	case *swt.Rectangle_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *swt.Rectangle_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Rectangle_OfFloat, true
 	}
 	return nil, false

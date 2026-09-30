@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
 	"unicode/utf16"
@@ -98,7 +99,7 @@ func (this *Text) AddVerifyListener(listener VerifyListener) {
 
 func (this *Text) Append(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
@@ -127,7 +128,7 @@ func (this *Text) Append(string_ string) {
 		widget.ScrollRangeToVisible(range_)
 		widget.SetSelectedRange(range_)
 	}
-	if int32(len(string_)) != 0 {
+	if jrt.StringLength(string_) != 0 {
 		this.SendEventEventType(Modify)
 	}
 }
@@ -393,7 +394,7 @@ func (this *Text) Cut() {
 			if newText == "" {
 				return
 			}
-			if int32(len(newText)) != 0 {
+			if jrt.StringLength(newText) != 0 {
 				this.CopyToClipboard(oldText)
 				if (this.style & SINGLE) != 0 {
 					this.InsertEditText(newText)
@@ -685,7 +686,7 @@ func (this *Text) GetEditTextStartEnd(start int32, end int32) []uint16 {
 func (this *Text) GetInsertString(string_ string, range_ cocoa.NSRange) *cocoa.NSString {
 	var str *cocoa.NSString
 	var charCount int32 = this.GetCharCount()
-	var length int32 = int32(len(string_))
+	var length int32 = jrt.StringLength(string_)
 	var selectionLength int32
 	if range_ != (cocoa.NSRange{}) {
 		selectionLength = int32((range_.Length))
@@ -894,7 +895,7 @@ func (this *Text) GetTopPixel() int32 {
 
 func (this *Text) Insert(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
@@ -917,7 +918,7 @@ func (this *Text) Insert(string_ string) {
 		}
 		widget.TextStorage().ReplaceCharactersInRange(range_, str)
 	}
-	if int32(len(string_)) != 0 {
+	if jrt.StringLength(string_) != 0 {
 		this.SendEventEventType(Modify)
 	}
 }
@@ -927,7 +928,7 @@ func (this *Text) InsertEditText(string_ string) {
 }
 
 func (this *Text) _insertEditText(string_ string, enableUndo bool) {
-	var length int32 = int32(len(string_))
+	var length int32 = jrt.StringLength(string_)
 	var selection *Point = this.GetSelection()
 	if this.HasFocus() && this.hiddenText == (nil) {
 		if this.textLimit != TextLIMIT {
@@ -963,14 +964,14 @@ func (this *Text) _insertEditText(string_ string, enableUndo bool) {
 	} else {
 		var oldText string = this.GetText()
 		if this.textLimit != TextLIMIT {
-			var charCount int32 = int32(len(oldText))
+			var charCount int32 = jrt.StringLength(oldText)
 			if charCount-(selection.Y-selection.X)+length > this.textLimit {
-				string_ = string_[0 : this.textLimit-charCount+(selection.Y-selection.X)]
+				string_ = jrt.Substring(string_, 0, this.textLimit-charCount+(selection.Y-selection.X))
 			}
 		}
-		var newText string = fmt.Sprintf("%s%s%s", oldText[0:selection.X], string_, oldText[selection.Y:])
+		var newText string = fmt.Sprintf("%s%s%s", jrt.Substring(oldText, 0, selection.X), string_, jrt.Substring(oldText, selection.Y, -1))
 		this.SetEditText(newText)
-		this.SetSelection(selection.X + int32(len(string_)))
+		this.SetSelection(selection.X + jrt.StringLength(string_))
 	}
 }
 
@@ -1291,7 +1292,7 @@ func (this *Text) SetEditable(editable bool) {
 }
 
 func (this *Text) SetEditText(string_ string) {
-	var text []uint16 = make([]uint16, int32(len(string_)))
+	var text []uint16 = make([]uint16, jrt.StringLength(string_))
 	copy(text, utf16.Encode([]rune(string_)))
 	this.SetEditTextText(text)
 }
@@ -1386,7 +1387,7 @@ func (this *Text) setOrientationOnWidget_() {
 
 func (this *Text) SetMessage(message string) {
 	this.CheckWidget()
-	if false {
+	if message == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.message = message
@@ -1468,7 +1469,7 @@ func (this *Text) SetTabs(tabs int32) {
 
 func (this *Text) SetText(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
@@ -1487,7 +1488,7 @@ func (this *Text) SetText(string_ string) {
 		}
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
-		var buffer []uint16 = make([]uint16, int32(math.Min(float64(int32(len(string_))), float64(this.textLimit))))
+		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
 		copy(buffer, utf16.Encode([]rune(string_)))
 		var str *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 		widget.SetString(str)
@@ -1506,7 +1507,7 @@ func (this *Text) SetTextChars(text []uint16) {
 		if string_ == "" {
 			return
 		}
-		text = make([]uint16, int32(len(string_)))
+		text = make([]uint16, jrt.StringLength(string_))
 		copy(text, utf16.Encode([]rune(string_)))
 	}
 	if (this.style & SINGLE) != 0 {
@@ -1574,7 +1575,7 @@ func (this *Text) shouldChangeTextInRange_replacementString_(id int64, sel int64
 	if newText == "" {
 		return false
 	}
-	if int64(this.GetCharCount())-range_.Length+int64(int32(len(newText))) > int64(this.textLimit) {
+	if int64(this.GetCharCount())-range_.Length+int64(jrt.StringLength(newText)) > int64(this.textLimit) {
 		return false
 	}
 	if (this.style & SINGLE) != 0 {
@@ -1734,8 +1735,14 @@ func TextCheckStyle(style int32) int32 {
 func idImplAsNSSearchField(x any) (*cocoa.NSSearchField, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSSearchField, true
 	}
 	return nil, false
@@ -1756,8 +1763,14 @@ func castcocoaNSViewTococoaNSSearchField(x *cocoa.NSView) *cocoa.NSSearchField {
 func idImplAsNSTextView(x any) (*cocoa.NSTextView, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextView, true
 	}
 	return nil, false
@@ -1789,6 +1802,9 @@ func castcocoaNSViewTococoaNSTextField(x *cocoa.NSView) *cocoa.NSTextField {
 func idImplAsNSLayoutManager(x any) (*cocoa.NSLayoutManager, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSLayoutManager:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -1809,6 +1825,9 @@ func castcocoaNSObjectTococoaNSLayoutManager(x *cocoa.NSObject) *cocoa.NSLayoutM
 func idImplAsNSTextContainer(x any) (*cocoa.NSTextContainer, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextContainer:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -1829,6 +1848,9 @@ func castcocoaNSObjectTococoaNSTextContainer(x *cocoa.NSObject) *cocoa.NSTextCon
 func idImplAsNSTextStorage(x any) (*cocoa.NSTextStorage, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextStorage:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -1856,10 +1878,19 @@ func upcastcocoaNSTextStorageTococoaNSAttributedString(x *cocoa.NSTextStorage) *
 func idImplAsNSText(x any) (*cocoa.NSText, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSText:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSText, true
 	case *cocoa.SWTTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSText, true
 	}
 	return nil, false
@@ -1912,28 +1943,64 @@ func upcastTextToControl(x *Text) *Control {
 func idImplAsNSCell(x any) (*cocoa.NSCell, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSCell:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSActionCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.NSButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.SWTButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.NSTextFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.NSComboBoxCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.NSSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.SWTSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.NSTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.SWTTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.SWTImageTextCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	case *cocoa.SWTTextAttachmentCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSCell, true
 	}
 	return nil, false

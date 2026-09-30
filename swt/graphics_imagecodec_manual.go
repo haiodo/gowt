@@ -23,9 +23,13 @@ import (
 // ImageDataLoader.load overloads collapse to this one Go func (Manual.staticMember has no
 // per-overload dispatch for a manual type's static members).
 func ImageDataLoaderLoad(source any) *ImageData {
-	images := decodeImages(readAllImageBytes(source))
+	if source == nil || source == jrt.NullString {
+		Error(ERROR_NULL_ARGUMENT)
+	}
+	data := readAllImageBytes(source)
+	images := decodeImages(data)
 	if len(images) == 0 {
-		Error(ERROR_UNSUPPORTED_FORMAT)
+		errorUndecodable(data)
 		return nil
 	}
 	return images[0]
@@ -49,7 +53,12 @@ func (this *ImageLoader) LoadByZoomStub(stream jrt.InputStream, fileZoom int32, 
 		this.Data = decodeImages(data)
 	}
 	if len(this.Data) == 0 {
-		Error(ERROR_UNSUPPORTED_FORMAT)
+		errorUndecodable(data)
+	}
+	// Only interlaced PNGs report progress in SWT; the Adam7 passes are not replayed (ceiling),
+	// listeners get one final event with the finished image.
+	if this.HasListeners() && len(data) > 28 && bytes.HasPrefix(data, []byte("\x89PNG")) && data[28] == 1 {
+		this.NotifyListeners(NewImageLoaderEvent(this, this.Data[0].Clone().(*ImageData), 6, true))
 	}
 	list := jrt.NewList()
 	for _, d := range this.Data {
@@ -61,6 +70,10 @@ func (this *ImageLoader) LoadByZoomStub(stream jrt.InputStream, fileZoom int32, 
 // NativeImageLoaderSave replaces org.eclipse.swt.internal.NativeImageLoader.save (a cocoa PI
 // file never translated) - encodes loader.Data[0] (loader.Data[1:] only for an animated GIF).
 func NativeImageLoaderSave(stream jrt.OutputStream, format int32, loader *ImageLoader) {
+	// FileFormat.save checks the format before the data.
+	if format < IMAGE_BMP || format > IMAGE_PNG || format == IMAGE_ICO {
+		Error(ERROR_UNSUPPORTED_FORMAT)
+	}
 	if len(loader.Data) == 0 {
 		Error(ERROR_INVALID_ARGUMENT)
 		return
@@ -95,11 +108,33 @@ func FileFormatIsDynamicallySizableFormat(stream jrt.InputStream) bool { return 
 // scope - the call site already panics building that argument), so this body is unreachable.
 func FileFormatCanLoadAtZoom(elementAtZoom any, targetZoom int32) bool { return false }
 
+// errorUndecodable: like SWT's FileFormat, a recognised signature with undecodable data is an invalid image.
+func errorUndecodable(data []byte) {
+	for _, sig := range []string{"\x89PNG", "GIF8", "BM", "\xff\xd8"} {
+		if bytes.HasPrefix(data, []byte(sig)) {
+			Error(ERROR_INVALID_IMAGE)
+		}
+	}
+	Error(ERROR_UNSUPPORTED_FORMAT)
+}
+
+func openImageFile(name string) (stream jrt.InputStream) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(*jrt.IOException); !ok {
+				panic(r)
+			}
+			ErrorCodeThrowable(ERROR_IO, nil)
+		}
+	}()
+	return jrt.NewFileInputStream(name)
+}
+
 func readAllImageBytes(source any) []byte {
 	var stream jrt.InputStream
 	switch v := source.(type) {
 	case string:
-		stream = jrt.NewFileInputStream(v)
+		stream = openImageFile(v)
 		defer stream.Close()
 	case jrt.InputStream:
 		stream = v

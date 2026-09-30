@@ -73,6 +73,9 @@ func (this *RGBA) String() string {
 func rGBAImplAsRGBA(x any) (*RGBA, bool) {
 	switch v := x.(type) {
 	case *RGBA:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type Font struct {
@@ -233,7 +234,7 @@ func (this *Font) HashCode() int32 {
 }
 
 func (this *Font) Init(name string, height float32, style int32, nsName string) {
-	if false {
+	if name == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	if height < 0 {

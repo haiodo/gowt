@@ -218,7 +218,9 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	}})
 	shell.Open()
 	var timeoutMillis int32 = 2000
-	SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMillis, func() any { panic("j2go: unsupported LambdaExpression") }())
+	SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMillis, func() bool {
+		return func() bool { _ = []any{paintListenerCalled}; panic("j2go: unresolved call get") }()
+	})
 	junit.AssertTrue(func() bool { _ = []any{paintListenerCalled}; panic("j2go: unresolved call get") }(), "paint listener was never called")
 	var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), canvasWidth, canvasHeight)
 	var gcCopy *swt.GC = swt.NewGCDrawable(canvas)
@@ -963,7 +965,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_textExtentLjava_lang_StringI_
 func (this *Test_org_eclipse_swt_graphics_GC) Test_toString() {
 	var s string = this.gc.String()
 	junit.AssertNotNull(s)
-	junit.AssertTrue(int32(len(s)) > 0)
+	junit.AssertTrue(jrt.StringLength(s) > 0)
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_bug493455_drawImageAlpha_srcPos() {
@@ -1028,33 +1030,30 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawLine_noSingularitiesIn45D
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFromNonDisplayThread() {
-	var exceptionReference any = func() any { panic("j2go: unresolved new AtomicReference<Exception>") }()
-	var thread any = func() any {
-		_ = []any{jrt.NewRunnable(func() {
-			func() {
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
-					}
-					if e, ok := r.(error); ok {
-						_ = e
-						func() any { _ = []any{exceptionReference, e}; panic("j2go: unresolved call set") }()
-					} else {
-						panic(r)
-					}
-				}()
-				var image *swt.Image = swt.NewImageDeviceWidthHeight(nil, 100, 100)
-				var gc *swt.GC = swt.NewGCDrawable(image)
-				gc.Dispose()
-				image.Dispose()
+	var exceptionReference *jrt.AtomicReference = jrt.NewAtomicReference()
+	var thread any = jrt.NewThread(jrt.NewRunnable(func() {
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					return
+				}
+				if e, ok := r.(error); ok {
+					_ = e
+					exceptionReference.Set(e)
+				} else {
+					panic(r)
+				}
 			}()
-		})}
-		return nil
-	}()
-	func() any { _ = []any{thread}; panic("j2go: unresolved call start") }()
-	func() any { _ = []any{thread}; panic("j2go: unresolved call join") }()
-	junit.AssertNull(func() error { _ = []any{exceptionReference}; panic("j2go: unresolved call get") }(), "Creating a GC from an Image without a device threw an exception")
+			var image *swt.Image = swt.NewImageDeviceWidthHeight(nil, 100, 100)
+			var gc *swt.GC = swt.NewGCDrawable(image)
+			gc.Dispose()
+			image.Dispose()
+		}()
+	}))
+	jrt.ThreadStart(thread)
+	jrt.ThreadJoin(thread)
+	junit.AssertNull(jrt.Cast[error](exceptionReference.Get()), "Creating a GC from an Image without a device threw an exception")
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_noMemoryLeakAfterDispose() {

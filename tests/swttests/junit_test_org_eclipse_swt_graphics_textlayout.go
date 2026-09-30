@@ -43,7 +43,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getLevel() {
 		layout.GetLevel(-1)
 	})
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		layout.GetLevel(int32(len(text)) + 1)
+		layout.GetLevel(jrt.StringLength(text) + 1)
 	})
 	layout.Dispose()
 }
@@ -66,7 +66,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getSegments() {
 	layout.SetText("Line")
 	layout.SetAscent(20)
 	layout.SetDescent(6)
-	layout.SetSegments([]int32{0, int32(len(layout.GetText()))})
+	layout.SetSegments([]int32{0, jrt.StringLength(layout.GetText())})
 	layout.GetBounds()
 	layout.Dispose()
 	layout = swt.NewTextLayout(upcastswtDisplayToswtDevice(this.display))
@@ -101,9 +101,9 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getSegments() {
 	layout.SetText("MNMNMN")
 	layout.SetSegments([]int32{0, 1, 6})
 	layout.GetBounds()
-	junit.AssertEquals(int32(int32(len(layout.GetText()))-1), int32(layout.GetOffsetXYTrailing(layout.GetBounds().Width, 0, nil)))
+	junit.AssertEquals(int32(jrt.StringLength(layout.GetText())-1), int32(layout.GetOffsetXYTrailing(layout.GetBounds().Width, 0, nil)))
 	layout.SetAscent(9)
-	junit.AssertEquals(int32(int32(len(layout.GetText()))-1), int32(layout.GetOffsetXYTrailing(layout.GetBounds().Width, 0, nil)))
+	junit.AssertEquals(int32(jrt.StringLength(layout.GetText())-1), int32(layout.GetOffsetXYTrailing(layout.GetBounds().Width, 0, nil)))
 	layout.Dispose()
 	layout = swt.NewTextLayout(upcastswtDisplayToswtDevice(this.display))
 	layout.SetText("Abcdef\nGhij\nKl")
@@ -126,7 +126,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getSegments() {
 	layout = swt.NewTextLayout(upcastswtDisplayToswtDevice(this.display))
 	var doit bool = false
 	if doit {
-		var length int32 = int32(len(layout.GetText()))
+		var length int32 = jrt.StringLength(layout.GetText())
 		layout.SetSegments([]int32{length})
 		trailing = make([]int32, 1)
 		var width int32 = layout.GetBounds().Width + 20
@@ -152,7 +152,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getSegmentsChars() {
 	}
 	var layout *swt.TextLayout = swt.NewTextLayout(upcastswtDisplayToswtDevice(this.display))
 	var text string = "abאב.גcd"
-	var textLength int32 = int32(len(text))
+	var textLength int32 = jrt.StringLength(text)
 	layout.SetText(text)
 	var messages []string = []string{"no segments", "Embedding RTL dir test", "Embedding LTR dir test", "LRO test", "RLO test", "Traditional segments", "Traditional segments invalid"}
 	var segments [][]int32 = [][]int32{nil, []int32{0, 0, 4, 4, 5, 5, 8, 8}, []int32{0, 0, 4, 4, 5, 5, 8, 8}, []int32{0, textLength}, []int32{0, textLength}, []int32{0, 4, 8}, []int32{1}}
@@ -232,7 +232,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getLineIndex() {
 		layout.GetLineIndex(-1)
 	})
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		layout.GetLineIndex(int32(len(text)) + 1)
+		layout.GetLineIndex(jrt.StringLength(text) + 1)
 	})
 	layout.Dispose()
 }
@@ -580,7 +580,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getNextOffset() {
 	offset = layout.GetNextOffset(offset, swt.MOVEMENT_WORD_START)
 	junit.AssertEquals(int32(9), int32(offset))
 	offset = layout.GetNextOffset(offset, swt.MOVEMENT_WORD_START)
-	junit.AssertEquals(int32(int32(len(text))), int32(offset))
+	junit.AssertEquals(int32(jrt.StringLength(text)), int32(offset))
 	offset = layout.GetPreviousOffset(offset, swt.MOVEMENT_WORD_START)
 	junit.AssertEquals(int32(9), int32(offset))
 	offset = layout.GetPreviousOffset(offset, swt.MOVEMENT_WORD_START)
@@ -595,10 +595,10 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getNextOffset() {
 	junit.AssertEquals(int32(8), int32(offset))
 	offset = layout.GetPreviousOffset(offset, swt.MOVEMENT_CLUSTER)
 	junit.AssertEquals(int32(7), int32(offset))
-	for i := int32(0); i < int32(len(text)); i++ {
+	for i := int32(0); i < jrt.StringLength(text); i++ {
 		junit.AssertEquals(int32(i+1), int32(layout.GetNextOffset(i, swt.MOVEMENT_CLUSTER)))
 	}
-	for i := int32(int32(len(text))); i > 0; i-- {
+	for i := int32(jrt.StringLength(text)); i > 0; i-- {
 		junit.AssertEquals(int32(i-1), int32(layout.GetPreviousOffset(i, swt.MOVEMENT_CLUSTER)))
 	}
 	layout.Dispose()
@@ -718,14 +718,14 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_getOffset() {
 	var width int32 = layout.GetBounds().Width
 	layout.SetAlignment(swt.LEFT)
 	junit.AssertEquals(int32(0), int32(layout.GetOffsetXYTrailing(1, 0, nil)))
-	junit.AssertEquals(int32(int32(len(text))-1), int32(layout.GetOffsetXYTrailing(width-1, 0, nil)))
+	junit.AssertEquals(int32(jrt.StringLength(text)-1), int32(layout.GetOffsetXYTrailing(width-1, 0, nil)))
 	layout.SetWidth(width + 100)
 	layout.SetAlignment(swt.CENTER)
 	junit.AssertEquals(int32(0), int32(layout.GetOffsetXYTrailing(1+50, 0, nil)))
-	junit.AssertEquals(int32(int32(len(text))-1), int32(layout.GetOffsetXYTrailing(width-1+50, 0, nil)))
+	junit.AssertEquals(int32(jrt.StringLength(text)-1), int32(layout.GetOffsetXYTrailing(width-1+50, 0, nil)))
 	layout.SetAlignment(swt.RIGHT)
 	junit.AssertEquals(int32(0), int32(layout.GetOffsetXYTrailing(1+100, 0, nil)))
-	junit.AssertEquals(int32(int32(len(text))-1), int32(layout.GetOffsetXYTrailing(width-1+100, 0, nil)))
+	junit.AssertEquals(int32(jrt.StringLength(text)-1), int32(layout.GetOffsetXYTrailing(width-1+100, 0, nil)))
 	layout.Dispose()
 }
 

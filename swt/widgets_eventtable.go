@@ -222,6 +222,9 @@ func (this *EventTable) UnhookEventTypeListener(eventType int32, listener any) {
 func typedListenerImplAsTypedListener(x any) (*TypedListener, bool) {
 	switch v := x.(type) {
 	case *TypedListener:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

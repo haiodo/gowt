@@ -84,7 +84,7 @@ final class FunctionalEmitter {
 			emitter.fileImports.add(JRT_IMPORT);
 			return "jrt.NewRunnable(" + fn + ")";
 		}
-		if (qualified.equals("java.util.function.Consumer")) return fn;
+		if (qualified.equals("java.util.function.Consumer") || GoTypes.isJdkFunctional(qualified)) return fn;
 		TypeModel.ClassInfo ifaceCi = emitter.model.lookup(target);
 		IMethodBinding sam = target.getFunctionalInterfaceMethod();
 		if (ifaceCi == null || !ifaceCi.isInterface || sam == null) return null;

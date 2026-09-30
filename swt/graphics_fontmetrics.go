@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
-	"strings"
 )
 
 type FontMetrics struct {
@@ -86,11 +85,11 @@ func (this *FontMetrics) HashCode() int32 {
 
 func (this *FontMetrics) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *FontMetrics) String() string {
@@ -121,6 +120,9 @@ func FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent int32
 func fontMetricsImplAsFontMetrics(x any) (*FontMetrics, bool) {
 	switch v := x.(type) {
 	case *FontMetrics:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

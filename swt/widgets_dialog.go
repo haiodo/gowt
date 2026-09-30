@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
 )
 
@@ -94,7 +95,7 @@ func (this *Dialog) GetText() string {
 }
 
 func (this *Dialog) SetText(string_ string) {
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.title = string_
@@ -110,13 +111,13 @@ func DialogCheckStyle(parentLike ShellLike, style int32) int32 {
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
 		if (style & mask) == 0 {
-			var cond552 int32
+			var cond555 int32
 			if parent == (nil) {
-				cond552 = APPLICATION_MODAL
+				cond555 = APPLICATION_MODAL
 			} else {
-				cond552 = PRIMARY_MODAL
+				cond555 = PRIMARY_MODAL
 			}
-			style |= cond552
+			style |= cond555
 		}
 	}
 	if (style & mask) == 0 {

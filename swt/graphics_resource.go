@@ -239,6 +239,9 @@ func (this *Resource_ResourceTrackerThreadFactory) NewThread(r jrt.Runnable) any
 func resourceImplAsColor(x any) (*Color, bool) {
 	switch v := x.(type) {
 	case *Color:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

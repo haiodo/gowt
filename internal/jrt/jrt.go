@@ -8,6 +8,7 @@ package jrt
 import (
 	"fmt"
 	"os"
+	"reflect"
 )
 
 // RuntimeException and JavaError carry their own Message/Cause instead of sharing an embedded
@@ -71,6 +72,12 @@ type EventObject struct {
 	Source any
 }
 
-func NewEventObject(source any) EventObject { return EventObject{Source: source} }
+// NewEventObject rejects a null source; a typed nil pointer boxed in the any is null too.
+func NewEventObject(source any) EventObject {
+	if v := reflect.ValueOf(source); source == nil || v.Kind() == reflect.Pointer && v.IsNil() {
+		panic(NewIllegalArgumentException("null source"))
+	}
+	return EventObject{Source: source}
+}
 
 func (e *EventObject) GetSource() any { return e.Source }

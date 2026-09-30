@@ -64,7 +64,7 @@ func (this *Test_org_eclipse_swt_graphics_Font) Test_ConstructorLorg_eclipse_swt
 		swt.NewFontDeviceFd(upcastswtDisplayToswtDevice(this.display), nil)
 	}, "No exception thrown for fontData == null")
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		swt.NewFontDeviceFd(upcastswtDisplayToswtDevice(this.display), swt.NewFontDataOverload3("", 10, swt.NORMAL))
+		swt.NewFontDeviceFd(upcastswtDisplayToswtDevice(this.display), swt.NewFontDataOverload3(jrt.NullString, 10, swt.NORMAL))
 	}, "No exception thrown for name == null")
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		swt.NewFontDeviceFd(upcastswtDisplayToswtDevice(this.display), swt.NewFontDataOverload3(SwtTestUtilTestFontName, -10, swt.NORMAL))
@@ -91,7 +91,7 @@ func (this *Test_org_eclipse_swt_graphics_Font) Test_ConstructorLorg_eclipse_swt
 	font = swt.NewFontDeviceNameHeightStyle(nil, SwtTestUtilTestFontName, 10, swt.NORMAL)
 	font.Dispose()
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		swt.NewFontDeviceNameHeightStyle(upcastswtDisplayToswtDevice(this.display), "", 10, swt.NORMAL)
+		swt.NewFontDeviceNameHeightStyle(upcastswtDisplayToswtDevice(this.display), jrt.NullString, 10, swt.NORMAL)
 	}, "No exception thrown for name == null")
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		swt.NewFontDeviceNameHeightStyle(upcastswtDisplayToswtDevice(this.display), SwtTestUtilTestFontName, -10, swt.NORMAL)

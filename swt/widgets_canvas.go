@@ -630,6 +630,9 @@ func upcastcocoaNSImageRepTococoaId(x *cocoa.NSImageRep) *cocoa.Id {
 func idImplAsNSOpenGLContext(x any) (*cocoa.NSOpenGLContext, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSOpenGLContext:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

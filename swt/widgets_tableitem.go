@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -101,32 +102,32 @@ func (this *TableItem) CalculateWidth(index int32, gcLike GCLike, rowSelected bo
 	if font == (nil) {
 		font = this.parent.impl.defaultFont_()
 	}
-	var cond583 string
+	var cond586 string
 	if this.strings == (nil) {
-		cond583 = ""
+		cond586 = ""
 	} else {
-		cond583 = this.strings[index]
+		cond586 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond583)
+		text = (cond586)
 	}
-	if (text != "") && (int32(len(text)) > ItemTEXT_LIMIT) {
-		text = fmt.Sprintf("%s%s", text[0:ItemTEXT_LIMIT-int32(len(ItemELLIPSIS))], ItemELLIPSIS)
+	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
+		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond584 *Image
+	var cond587 *Image
 	if this.images == (nil) {
-		cond584 = nil
+		cond587 = nil
 	} else {
-		cond584 = this.images[index]
+		cond587 = this.images[index]
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = (cond584)
+		image = (cond587)
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
 	if font.ExtraTraits != 0 {
@@ -136,13 +137,13 @@ func (this *TableItem) CalculateWidth(index int32, gcLike GCLike, rowSelected bo
 	} else {
 		cell.SetFont(font.Handle)
 		var str *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-		var cond585 string
+		var cond588 string
 		if text != "" {
-			cond585 = text
+			cond588 = text
 		} else {
-			cond585 = ""
+			cond588 = ""
 		}
-		str = str.InitWithString(cond585)
+		str = str.InitWithString(cond588)
 		cell.SetTitle(str)
 		str.Release()
 	}
@@ -209,28 +210,28 @@ func (this *TableItem) Clear() {
 }
 
 func (this *TableItem) CreateString(index int32) *cocoa.NSObject {
-	var cond586 string
+	var cond589 string
 	if this.strings == (nil) {
-		cond586 = ""
+		cond589 = ""
 	} else {
-		cond586 = this.strings[index]
+		cond589 = this.strings[index]
 	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
-		text = (cond586)
+		text = (cond589)
 	}
-	if (text != "") && (int32(len(text)) > ItemTEXT_LIMIT) {
-		text = fmt.Sprintf("%s%s", text[0:ItemTEXT_LIMIT-int32(len(ItemELLIPSIS))], ItemELLIPSIS)
+	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
+		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond587 string
+	var cond590 string
 	if text != "" {
-		cond587 = text
+		cond590 = text
 	} else {
-		cond587 = ""
+		cond590 = ""
 	}
-	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond587))
+	return upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(cond590))
 }
 
 func (this *TableItem) destroyWidget_() {
@@ -243,13 +244,13 @@ func (this *TableItem) GetBackground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond588 *Color
+	var cond591 *Color
 	if this.background != (nil) {
-		cond588 = this.background
+		cond591 = this.background
 	} else {
-		cond588 = this.parent.GetBackground()
+		cond591 = this.parent.GetBackground()
 	}
-	return cond588
+	return cond591
 }
 
 func (this *TableItem) GetBackgroundIndex(index int32) *Color {
@@ -360,13 +361,13 @@ func (this *TableItem) GetFont() *Font {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond589 *Font
+	var cond592 *Font
 	if this.font != (nil) {
-		cond589 = this.font
+		cond592 = this.font
 	} else {
-		cond589 = this.parent.GetFont()
+		cond592 = this.parent.GetFont()
 	}
-	return cond589
+	return cond592
 }
 
 func (this *TableItem) GetFontIndex(index int32) *Font {
@@ -389,13 +390,13 @@ func (this *TableItem) GetForeground() *Color {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond590 *Color
+	var cond593 *Color
 	if this.foreground != (nil) {
-		cond590 = this.foreground
+		cond593 = this.foreground
 	} else {
-		cond590 = this.parent.GetForeground()
+		cond593 = this.parent.GetForeground()
 	}
-	return cond590
+	return cond593
 }
 
 func (this *TableItem) GetForegroundIndex(index int32) *Color {
@@ -457,17 +458,17 @@ func (this *TableItem) GetImageBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond591 *Image
+	var cond594 *Image
 	if this.images != (nil) {
-		cond591 = this.images[index]
+		cond594 = this.images[index]
 	} else {
-		cond591 = nil
+		cond594 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond591
+		image = cond594
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {
@@ -530,13 +531,13 @@ func (this *TableItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond592 string
+			var cond595 string
 			if string_ != "" {
-				cond592 = string_
+				cond595 = string_
 			} else {
-				cond592 = ""
+				cond595 = ""
 			}
-			return cond592
+			return cond595
 		}
 	}
 	return ""
@@ -551,17 +552,17 @@ func (this *TableItem) GetTextBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond593 *Image
+	var cond596 *Image
 	if this.images != (nil) {
-		cond593 = this.images[index]
+		cond596 = this.images[index]
 	} else {
-		cond593 = nil
+		cond596 = nil
 	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
-		image = cond593
+		image = cond596
 	}
 	if this.parent.columnCount == 0 {
 		if (this.parent.style & CHECK) != 0 {
@@ -910,7 +911,7 @@ func (this *TableItem) SetTexts(strings []string) {
 
 func (this *TableItem) SetTextIndexString(index int32, string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if index == 0 {

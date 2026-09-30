@@ -78,396 +78,984 @@ func (this *id) Equals(other any) bool {
 func idImplAsid(x any) (*id, bool) {
 	switch v := x.(type) {
 	case *id:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *NSObject:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *CALayer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMDocument:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMUIEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMKeyboardEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMMouseEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *DOMWheelEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAffineTransform:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAlert:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAppearance:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAppleEventDescriptor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSArray:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableArray:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSAutoreleasePool:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSBezierPath:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSBundle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSActionCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSComboBoxCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTImageTextCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTextAttachmentCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSCoder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSKeyedArchiver:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSKeyedUnarchiver:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSColor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSColorList:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSColorSpace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSCursor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSData:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSDate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSCalendarDate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSDictionary:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableDictionary:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSDockTile:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSEnumerator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSDirectoryEnumerator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSError:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFileManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFileWrapper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFont:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFontManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFormatter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSNumberFormatter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSGradient:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSGraphicsContext:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSHTTPCookie:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSHTTPCookieStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSImage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSImageRep:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSBitmapImageRep:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSIndexSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableIndexSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSInputManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSLayoutManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSLocale:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMenu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTMenu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSNotification:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSNotificationCenter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSOpenGLContext:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSOpenGLPixelFormat:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSParagraphStyle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableParagraphStyle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPasteboard:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPrintInfo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPrintOperation:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPrintPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPrinter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSProcessInfo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSResponder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSApplication:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSClipView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSControl:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSText:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTCanvasView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTPrinterView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSWindow:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSColorPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSFontPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSavePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSOpenPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SFCertificatePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SFCertificateTrustPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTWindow:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSRunLoop:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSScreen:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSStatusBar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSStatusItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTableColumn:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextAttachment:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextContainer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTextTab:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSThread:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTimeZone:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTimer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSToolbar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTToolbar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSToolbarItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTouch:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTrackingArea:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSTypesetter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURL:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURLAuthenticationChallenge:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURLCredential:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURLDownload:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURLProtectionSpace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSURLRequest:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSMutableURLRequest:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSUndoManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSUserDefaults:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSValue:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSNumber:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *NSWorkspace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTApplicationDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTDragSourceDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTOpenSavePanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTPanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTPrintPanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTTreeItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTWebViewDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *SWTWindowDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *UTType:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebDataSource:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebDocumentRepresentation:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebFrame:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebFrameView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebOpenPanelResultListener:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebPolicyDecisionListener:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebPreferences:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebScriptObject:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *WebUndefined:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	case *Protocol:
+		if v == nil {
+			return nil, false
+		}
 		return &v.id, true
 	}
 	return nil, false

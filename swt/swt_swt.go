@@ -1140,6 +1140,9 @@ func ErrorCodeThrowableDetail(code int32, throwable error, detail string) {
 func sWTErrorImplAsSWTError(x any) (*SWTError, bool) {
 	switch v := x.(type) {
 	case *SWTError:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -1160,6 +1163,9 @@ func casterrorToSWTError(x error) *SWTError {
 func sWTExceptionImplAsSWTException(x any) (*SWTException, bool) {
 	switch v := x.(type) {
 	case *SWTException:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

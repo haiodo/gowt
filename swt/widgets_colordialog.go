@@ -164,6 +164,9 @@ func (this *ColorDialog) WindowWillClose(id int64, sel int64, sender int64) {
 func idImplAsNSColorList(x any) (*cocoa.NSColorList, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSColorList:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -184,6 +187,9 @@ func castcocoaNSObjectTococoaNSColorList(x *cocoa.NSObject) *cocoa.NSColorList {
 func idImplAsSWTPanelDelegate(x any) (*cocoa.SWTPanelDelegate, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTPanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

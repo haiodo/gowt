@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"strconv"
 )
 
@@ -53,5 +54,5 @@ func (this *GestureEvent) initGestureEvent(e *Event) {
 
 func (this *GestureEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	return fmt.Sprintf("%s stateMask=0x%s detail=%d x=%d y=%d rotation=%v xDirection=%d yDirection=%d magnification=%v}", string_[0:int32(len(string_))-1], strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Detail, this.X, this.Y, this.Rotation, this.XDirection, this.YDirection, this.Magnification)
+	return fmt.Sprintf("%s stateMask=0x%s detail=%d x=%d y=%d rotation=%v xDirection=%d yDirection=%d magnification=%v}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Detail, this.X, this.Y, this.Rotation, this.XDirection, this.YDirection, this.Magnification)
 }

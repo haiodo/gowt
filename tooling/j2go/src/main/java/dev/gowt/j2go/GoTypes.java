@@ -1,7 +1,11 @@
 package dev.gowt.j2go;
 
 import dev.gowt.j2go.emit.Emitter;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Java type -> Go type text (see contract's "Types" section). */
 public class GoTypes {
@@ -83,6 +87,7 @@ public class GoTypes {
 			String argType = args.length > 0 ? map(args[0], emitter) : "any";
 			return "func(" + argType + ")";
 		}
+		if (isJdkFunctional(qualified) && t.getFunctionalInterfaceMethod() != null) return funcType(t.getFunctionalInterfaceMethod(), emitter);
 		TypeModel.ClassInfo ci = model.lookup(t);
 		if (ci != null) {
 			String name = emitter.qualifiedTypeName(ci);
@@ -102,6 +107,18 @@ public class GoTypes {
 		// Not a real Go identifier (still undefined - go vet reports it plainly instead of gofmt
 		// choking on a qualified-name-shaped parse error).
 		return "unsupported_type_" + qualified.replace('.', '_');
+	}
+
+	/** java.util.function.* and Comparator are bare Go funcs (lambdas need no adapter, a call is a Go call). */
+	public static boolean isJdkFunctional(String qualified) {
+		return qualified.startsWith("java.util.function.") || qualified.equals("java.util.Comparator");
+	}
+
+	private static String funcType(IMethodBinding sam, Emitter emitter) {
+		List<String> params = new ArrayList<>();
+		for (ITypeBinding p : sam.getParameterTypes()) params.add(map(p, emitter));
+		String ret = sam.getReturnType().getName().equals("void") ? "" : " " + map(sam.getReturnType(), emitter);
+		return "func(" + String.join(", ", params) + ")" + ret;
 	}
 
 	/** Zero-width bit size of a Go primitive integer/float type, for >>> and cast rules. */

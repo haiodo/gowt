@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
-	"strings"
 )
 
 type TypedEventImpl interface {
@@ -63,11 +62,11 @@ func (this *TypedEvent) initTypedEventE(e *Event) {
 
 func (this *TypedEvent) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *TypedEvent) String() string {

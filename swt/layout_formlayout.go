@@ -96,11 +96,11 @@ func (this *FormLayout) flushCache_(control *Control) bool {
 
 func (this *FormLayout) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *FormLayout) ComputeWidth(controlLike ControlLike, dataLike FormDataLike, flushCache bool) int32 {
@@ -277,6 +277,9 @@ func (this *FormLayout) String() string {
 func formDataImplAsFormData(x any) (*FormData, bool) {
 	switch v := x.(type) {
 	case *FormData:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

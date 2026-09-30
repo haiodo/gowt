@@ -269,11 +269,11 @@ func (this *FormData) GetLeftAttachment(controlLike ControlLike, spacing int32, 
 
 func (this *FormData) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *FormData) GetRightAttachment(controlLike ControlLike, spacing int32, flushCache bool) *FormAttachment {

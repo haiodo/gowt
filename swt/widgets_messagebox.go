@@ -139,22 +139,22 @@ func (this *MessageBox) Open() int32 {
 		alert.AddButtonWithTitle(title)
 		break
 	}
-	var cond555 string
+	var cond558 string
 	if this.title != "" {
-		cond555 = this.title
+		cond558 = this.title
 	} else {
-		cond555 = ""
+		cond558 = ""
 	}
-	title = cocoa.NSStringStringWith(cond555)
+	title = cocoa.NSStringStringWith(cond558)
 	var panel *cocoa.NSPanel = alert.Window()
 	panel.Impl().SetTitle(title)
-	var cond556 string
+	var cond559 string
 	if this.message != "" {
-		cond556 = this.message
+		cond559 = this.message
 	} else {
-		cond556 = ""
+		cond559 = ""
 	}
-	var message *cocoa.NSString = cocoa.NSStringStringWith(cond556)
+	var message *cocoa.NSString = cocoa.NSStringStringWith(cond559)
 	alert.SetMessageText(message)
 	var jniRef int64 = int64(0)
 	var delegate *cocoa.SWTPanelDelegate = nil
@@ -297,7 +297,7 @@ func (this *MessageBox) ReleaseHandler() {
 }
 
 func (this *MessageBox) SetMessage(string_ string) {
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.message = string_
@@ -330,6 +330,9 @@ func MessageBoxCheckStyle(style int32) int32 {
 func idImplAsNSAlert(x any) (*cocoa.NSAlert, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSAlert:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

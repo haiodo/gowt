@@ -110,17 +110,7 @@ public class Emitter {
 		if (!deferredStaticInits.isEmpty()) {
 			fileImports.add("os");
 			fileImports.add("fmt");
-			out.append("func init() {\n");
-			// Some deferred fields (e.g. kUTType*) resolve only inside SWT's own native lib,
-			// which this port lacks - recover per-entry so one bad symbol doesn't sink the rest.
-			for (int i = 0; i < deferredStaticInits.size(); i++) {
-				String label = deferredStaticInitLabels.get(i);
-				out.append("\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n")
-						.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/cocoa: deferred init ")
-						.append(label).append(":\", r)\n")
-						.append("\t\t\t}\n\t\t}()\n").append(deferredStaticInits.get(i)).append("\t}()\n");
-			}
-			out.append("}\n\n");
+			out.append(EmitUtil.deferredInitFunc(deferredStaticInits, deferredStaticInitLabels));
 		}
 		// Type mapping records imports as a side effect even where the mapped text is only
 		// compared, never emitted - keep just the imports the body actually references.
@@ -315,6 +305,10 @@ public class Emitter {
 	String booleanCompoundOp(Assignment a, String lhs, String rhs) {
 		return statementEmitter.booleanCompoundOp(a, lhs, rhs);
 	}
+
+	String asBlock(Statement s, int indent) { return statementEmitter.emitAsBlock(s, indent); }
+
+	String compoundAssign(Assignment a, String lhs, String rhs) { return statementEmitter.compoundAssign(a, lhs, rhs); }
 
 	String ctorGoName(IMethodBinding ctor, String prefix) {
 		return constructorEmitter.ctorGoName(ctor, prefix);

@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode/utf16"
 )
@@ -782,7 +783,7 @@ func (this *GC) CreateString(string_ string, flags int32, draw bool) *cocoa.NSAt
 	if (flags & DRAW_TAB) == 0 {
 		dict.SetObject(upcastcocoaNSMutableParagraphStyleTococoaId(this.device.paragraphStyle), upcastcocoaNSStringTococoaId(cocoa.OSNSParagraphStyleAttributeName_))
 	}
-	var length int32 = int32(len(string_))
+	var length int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, length)
 	copy(chars, utf16.Encode([]rune(string_)))
 	if (flags&DRAW_MNEMONIC) != 0 || (flags&DRAW_DELIMITER) == 0 {
@@ -1516,7 +1517,7 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if false {
+	if string_ == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCCLIPPING | GCTRANSFORM | GCFONT | GCFOREGROUND_FILL)
@@ -1524,7 +1525,7 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 		defer func() {
 			this.UncheckGC(pool)
 		}()
-		var length int32 = int32(len(string_))
+		var length int32 = jrt.StringLength(string_)
 		if length == 0 {
 			return
 		}
@@ -2326,7 +2327,7 @@ func (this *GC) GetFontMetrics() *FontMetrics {
 			var layoutManager *cocoa.NSLayoutManager = this.data.LayoutManager
 			layoutManager.GlyphRangeForTextContainer(this.data.TextContainer)
 			var rect cocoa.NSRect = layoutManager.UsedRectForTextContainer(this.data.TextContainer)
-			var avgWidth float64 = math.Ceil(float64(rect.Width)) / float64(int32(len(s)))
+			var avgWidth float64 = math.Ceil(float64(rect.Width)) / float64(jrt.StringLength(s))
 			var ascent int32 = int32(layoutManager.DefaultBaselineOffsetForFont(this.data.Font.Handle))
 			var height int32 = int32(layoutManager.DefaultLineHeightForFont(this.data.Font.Handle))
 			this.data.Font.metrics = FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight(ascent, height-ascent, avgWidth, 0, height)
@@ -3271,7 +3272,7 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	if false {
+	if string_ == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = this.CheckGC(GCFONT)
@@ -3279,7 +3280,7 @@ func (this *GC) TextExtentStringFlags(string_ string, flags int32) *Point {
 		defer func() {
 			this.UncheckGC(pool)
 		}()
-		var length int32 = int32(len(string_))
+		var length int32 = jrt.StringLength(string_)
 		if this.data.TextStorage == (nil) {
 			this.CreateLayout()
 		}
@@ -3461,6 +3462,9 @@ func castanyToGC(x any) *GC {
 func idImplAsNSAffineTransform(x any) (*cocoa.NSAffineTransform, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSAffineTransform:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

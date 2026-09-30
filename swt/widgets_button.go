@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -71,7 +72,7 @@ func (this *Button) cellSizeForBounds_(id int64, sel int64, cellFrame cocoa.NSRe
 		}
 		size.Width += float64(ButtonEXTRA_WIDTH)
 	}
-	if (this.style&WRAP) != 0 && int32(len(this.text)) != 0 && cellFrame.Width < float64(ButtonMAX_SIZE) {
+	if (this.style&WRAP) != 0 && jrt.StringLength(this.text) != 0 && cellFrame.Width < float64(ButtonMAX_SIZE) {
 		var cell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 		var titleRect cocoa.NSRect = cell.TitleRectForBounds(cellFrame)
 		var wrapSize cocoa.NSSize = cocoa.NSSize{}
@@ -363,7 +364,7 @@ func (this *Button) drawInteriorWithFrame_inView_(id int64, sel int64, cellRect 
 }
 
 func (this *Button) drawTitleWithFrameInView_(id int64, sel int64, title int64, titleRect cocoa.NSRect, view int64) cocoa.NSRect {
-	var wrap bool = (this.style&WRAP) != 0 && int32(len(this.text)) != 0
+	var wrap bool = (this.style&WRAP) != 0 && jrt.StringLength(this.text) != 0
 	var isEnabled bool = this.impl.isEnabled_()
 	if wrap {
 		var wrapSize cocoa.NSSize = cocoa.NSSize{}
@@ -778,7 +779,7 @@ func (this *Button) SetSelection(selected bool) {
 
 func (this *Button) SetText(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if (this.style & ARROW) != 0 {
@@ -814,11 +815,11 @@ func (this *Button) traversalCode_(key int32, theEvent *cocoa.NSEvent) int32 {
 func (this *Button) UpdateAlignment() {
 	var widget *cocoa.NSButton = castcocoaNSViewTococoaNSButton(this.View)
 	if (this.style & (PUSH | TOGGLE)) != 0 {
-		if int32(len(this.text)) != 0 && this.image != (nil) {
+		if jrt.StringLength(this.text) != 0 && this.image != (nil) {
 			widget.SetImagePosition(int64(cocoa.OSNSImageLeft))
 		} else {
 			var cond173 int32
-			if int32(len(this.text)) != 0 {
+			if jrt.StringLength(this.text) != 0 {
 				cond173 = cocoa.OSNSNoImage
 			} else {
 				cond173 = cocoa.OSNSImageOnly
@@ -898,8 +899,14 @@ func castcocoaNSObjectTococoaNSButton(x *cocoa.NSObject) *cocoa.NSButton {
 func idImplAsNSButtonCell(x any) (*cocoa.NSButtonCell, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSButtonCell, true
 	}
 	return nil, false
@@ -927,6 +934,9 @@ func upcastcocoaNSButtonCellTococoaNSCell(x *cocoa.NSButtonCell) *cocoa.NSCell {
 func idImplAsSWTView(x any) (*cocoa.SWTView, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -968,6 +978,9 @@ func upcastcocoaSWTViewTococoaNSObject(x *cocoa.SWTView) *cocoa.NSObject {
 func idImplAsNSGradient(x any) (*cocoa.NSGradient, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSGradient:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

@@ -23,8 +23,11 @@ final class JdkIntrinsics {
 			"startsWith/1", "strings.HasPrefix", "endsWith/1", "strings.HasSuffix", "contains/1", "strings.Contains",
 			"toLowerCase/0", "strings.ToLower", "toUpperCase/0", "strings.ToUpper");
 
+	private final JdkCalls more;
+
 	JdkIntrinsics(Emitter emitter) {
 		this.emitter = emitter;
+		this.more = new JdkCalls(emitter);
 	}
 
 	/** Returns the emitted call text if mi is a recognized JDK intrinsic, else null (the caller
@@ -49,20 +52,11 @@ final class JdkIntrinsics {
 		if (qualified.equals("java.lang.Thread") && mb.getName().equals("currentThread")) {
 			return "ThreadCurrentThread()";
 		}
-		// str.substring(start[, end]): byte-slicing, not UTF-16-index-correct for non-ASCII - every
-		// call site in the translated set (Widget.getName()) operates on plain class-name ASCII.
 		if (qualified.equals("java.lang.String") && mb.getName().equals("substring")) {
-			String recv = emitter.expr(mi.getExpression());
-			String start = emitter.expr((Expression) mi.arguments().get(0));
-			if (mi.arguments().size() == 1) return recv + "[" + start + ":]";
-			String end = emitter.expr((Expression) mi.arguments().get(1));
-			return recv + "[" + start + ":" + end + "]";
+			return jrtCall("Substring", recv(mi) + ", " + arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "-1" : arg(mi, 1)));
 		}
 		if (qualified.equals("java.lang.String") && mb.getName().equals("lastIndexOf")) {
-			emitter.fileImports.add("strings");
-			String recv = emitter.expr(mi.getExpression());
-			String ch = emitter.expr((Expression) mi.arguments().get(0));
-			return "int32(strings.LastIndexByte(" + recv + ", byte(" + ch + ")))";
+			return jrtCall("LastIndexOf", recv(mi) + ", string(rune(" + arg(mi, 0) + "))");
 		}
 		// Integer.toHexString treats its argument as UNSIGNED 32-bit, matching Go's uint32 here.
 		if (qualified.equals("java.lang.Integer") && mb.getName().equals("toHexString")) {
@@ -112,7 +106,7 @@ final class JdkIntrinsics {
 		}
 		if (qualified.equals("java.lang.System") && mb.getName().equals("lineSeparator")) return "\"\\n\"";
 		if (qualified.equals("java.lang.String") && mb.getName().equals("length")) {
-			return "int32(len(" + emitter.expr(mi.getExpression()) + "))";
+			return jrtCall("StringLength", emitter.expr(mi.getExpression()));
 		}
 		if (qualified.equals("java.lang.String") && mb.getName().equals("trim")) {
 			emitter.fileImports.add("strings");
@@ -138,6 +132,11 @@ final class JdkIntrinsics {
 			String recv = emitter.expr(mi.getExpression());
 			String arg = emitter.expr((Expression) mi.arguments().get(0));
 			return recv + "(" + arg + ")";
+		}
+
+		// Function/Supplier/Comparator/...: a bare Go func (see GoTypes.isJdkFunctional), its one abstract method is the call.
+		if (dev.gowt.j2go.GoTypes.isJdkFunctional(qualified) && java.lang.reflect.Modifier.isAbstract(mb.getModifiers())) {
+			return recv(mi) + "(" + String.join(", ", emitter.buildArgs(mi.arguments(), mb)) + ")";
 		}
 
 		// java.lang.Throwable maps to Go's error interface (see Manual) - toString() on it is
@@ -200,10 +199,10 @@ final class JdkIntrinsics {
 			emitter.fileImports.add("fmt");
 			return "fmt.Sprint(" + recv(mi) + ")";
 		}
-		return tryMore(mi, mb, qualified, mb.getName());
+		return more.tryMore(mi, mb, qualified, mb.getName());
 	}
 
-	private static final String JRT = "github.com/haiodo/gowt/internal/jrt";
+	static final String JRT = "github.com/haiodo/gowt/internal/jrt";
 
 	private String jrtCall(String fn, String args) {
 		emitter.fileImports.add(JRT);
@@ -216,164 +215,6 @@ final class JdkIntrinsics {
 
 	private String recv(MethodInvocation mi) {
 		return mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
-	}
-
-	/** Round 6 additions: boxing, monitors, a few String/Math/System members, the Selector enum. */
-	private String tryMore(MethodInvocation mi, IMethodBinding mb, String qualified, String name) {
-		String key = qualified + "#" + name;
-		switch (key) {
-			// Selector is elided (README): Selector.valueOf(sel) is just sel, its constants OS's sel_x.
-			case "org.eclipse.swt.internal.cocoa.Selector#valueOf":
-				return arg(mi, 0);
-			case "java.lang.Math#ceil", "java.lang.Math#floor":
-				emitter.fileImports.add("math");
-				return "math." + (name.equals("ceil") ? "Ceil" : "Floor") + "(float64(" + arg(mi, 0) + "))";
-			// Java rounds half up: floor(x + 0.5), int for a float argument, long for a double.
-			case "java.lang.Math#round":
-				emitter.fileImports.add("math");
-				return (mb.getParameterTypes()[0].getName().equals("float") ? "int32" : "int64")
-						+ "(math.Floor(float64(" + arg(mi, 0) + ") + 0.5))";
-			case "java.lang.Math#hypot":
-				emitter.fileImports.add("math");
-				return "math.Hypot(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
-			case "java.lang.Float#floatToIntBits":
-				emitter.fileImports.add("math");
-				return "int32(math.Float32bits(" + arg(mi, 0) + "))";
-			// WinBMPFileFormat's BI_BITFIELDS mask conversion (LEDataInputStream is little-endian,
-			// ImageData masks are expected big-endian for depth != 16 - see its own comment).
-			case "java.lang.Integer#reverseBytes":
-				emitter.fileImports.add("math/bits");
-				return "int32(bits.ReverseBytes32(uint32(" + arg(mi, 0) + ")))";
-			// Boxed Integer is Go any (Manual); unboxing asserts back, nil reads as 0. The
-			// String overload (Set/Get dialog's numeric parameters) parses instead of boxing.
-			case "java.lang.Integer#valueOf":
-				if (mb.getParameterTypes()[0].isPrimitive()) return arg(mi, 0);
-				emitter.fileImports.add(JRT);
-				return "jrt.ParseInt(" + arg(mi, 0) + ")";
-			case "java.lang.Long#valueOf":
-				if (mb.getParameterTypes()[0].isPrimitive()) return arg(mi, 0);
-				emitter.fileImports.add(JRT);
-				return "jrt.ParseLong(" + arg(mi, 0) + ")";
-			// Character has no String-parsing overload - always a primitive-char box (no-op).
-			case "java.lang.Character#valueOf":
-				return arg(mi, 0);
-			case "java.lang.Integer#intValue":
-				emitter.fileImports.add(JRT);
-				return "jrt.Cast[int32](" + recv(mi) + ")";
-			case "java.lang.reflect.Array#getLength":
-				emitter.fileImports.add("reflect");
-				return "int32(reflect.ValueOf(" + arg(mi, 0) + ").Len())";
-			case "java.lang.reflect.Array#get":
-				emitter.fileImports.add("reflect");
-				return "reflect.ValueOf(" + arg(mi, 0) + ").Index(int(" + arg(mi, 1) + ")).Interface()";
-			case "java.lang.Boolean#booleanValue":
-				return recv(mi);
-			case "java.util.Objects#requireNonNull", "java.util.Objects#nonNull":
-				return name.equals("nonNull") ? "(" + arg(mi, 0) + " != nil)" : arg(mi, 0);
-			// Go package init already ran every static initializer Class.forName would force.
-			case "java.lang.Class#forName":
-				emitter.fileImports.add(JRT);
-				return "jrt.ClassForName(" + arg(mi, 0) + ")";
-			case "java.lang.Throwable#printStackTrace":
-				emitter.fileImports.add("fmt");
-				emitter.fileImports.add("os");
-				return "fmt.Fprintln(os.Stderr, " + recv(mi) + ")";
-			case "java.lang.Throwable#getMessage":
-				return recv(mi) + ".Error()";
-			case "java.lang.Throwable#getCause":
-				emitter.fileImports.add("errors");
-				return "errors.Unwrap(" + recv(mi) + ")";
-			case "java.lang.Boolean#parseBoolean":
-				emitter.fileImports.add("strings");
-				return "strings.EqualFold(" + arg(mi, 0) + ", \"true\")";
-			// No Java system properties in this port (see getProperty above).
-			case "java.lang.Boolean#getBoolean":
-				return "false";
-			case "java.lang.String#equalsIgnoreCase":
-				emitter.fileImports.add("strings");
-				return "strings.EqualFold(" + recv(mi) + ", " + arg(mi, 0) + ")";
-			case "java.lang.String#indexOf":
-				String needle = mb.getParameterTypes()[0].isPrimitive() ? "string(rune(" + arg(mi, 0) + "))" : arg(mi, 0);
-				if (mi.arguments().size() == 2) {
-					emitter.fileImports.add(JRT);
-					return "jrt.IndexFrom(" + recv(mi) + ", " + needle + ", " + arg(mi, 1) + ")";
-				}
-				emitter.fileImports.add("strings");
-				return "int32(strings.Index(" + recv(mi) + ", " + needle + "))";
-			case "java.lang.String#isEmpty":
-				return "(len(" + recv(mi) + ") == 0)";
-			case "java.lang.Integer#parseInt":
-				emitter.fileImports.add(JRT);
-				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : null;
-			case "java.lang.Integer#toString", "java.lang.Boolean#toString":
-				if (mi.arguments().size() != 1 || mi.getExpression() == null) return null;
-				emitter.fileImports.add("fmt");
-				return "fmt.Sprint(" + arg(mi, 0) + ")";
-			// One resource registry per process (jrt.RegisterResources), not per class loader.
-			case "java.lang.Class#getResourceAsStream":
-				emitter.fileImports.add(JRT);
-				return "jrt.ClassGetResourceAsStream(" + recv(mi) + ", " + arg(mi, 0) + ")";
-			case "java.lang.String#charAt":
-				emitter.fileImports.add("unicode/utf16");
-				return "utf16.Encode([]rune(" + recv(mi) + "))[" + arg(mi, 0) + "]";
-			case "java.lang.String#valueOf":
-				return stringValueOf(mi, mb);
-			case "java.lang.System#nanoTime":
-				emitter.fileImports.add("time");
-				return "time.Now().UnixNano()";
-			case "java.io.PrintStream#println":
-				return println(mi);
-			// Object monitors: the one global jrt monitor (see ControlFlowEmitter.emitSynchronized).
-			case "java.lang.Object#wait":
-				emitter.fileImports.add(JRT);
-				return "jrt.MonitorWait()";
-			case "java.lang.Object#notifyAll", "java.lang.Object#notify":
-				emitter.fileImports.add(JRT);
-				return "jrt.MonitorNotifyAll()";
-			// Locale is only ever asked for its language (Display's nib lookup): $LANG's, else "en".
-			case "java.util.Locale#getDefault":
-				return "any(nil)";
-			case "java.util.Locale#getLanguage":
-				emitter.fileImports.add(JRT);
-				return "jrt.LocaleLanguage(" + recv(mi) + ")";
-			// Display.getAwtRunLoopMode's JDK-version check for AWT embedding: not a JVM, so
-			// version 0 - no AWT run loop mode.
-			case "java.lang.Runtime#version":
-				return "any(nil)";
-			case "java.lang.Runtime.Version#feature":
-				emitter.fileImports.add(JRT);
-				return "jrt.JavaVersionFeature(" + recv(mi) + ")";
-			// Resource's leak tracker (off unless enabled): no Cleaner in Go, the tracker stays nil.
-			case "java.lang.ref.Cleaner#create":
-				return "any(nil)";
-			// Go has no shutdown hooks; the argument (an anonymous Thread) is not evaluated.
-			case "java.lang.Runtime#addShutdownHook":
-				return "/* Runtime.addShutdownHook dropped */";
-			default:
-				return null;
-		}
-	}
-
-	private String stringValueOf(MethodInvocation mi, IMethodBinding mb) {
-		ITypeBinding p = mb.getParameterTypes()[0];
-		String a = arg(mi, 0);
-		if (p.getName().equals("char")) return "string(rune(" + a + "))";
-		if (p.isArray() && p.getComponentType().getName().equals("char")) {
-			emitter.fileImports.add("unicode/utf16");
-			return "string(utf16.Decode(" + a + "))";
-		}
-		emitter.fileImports.add("fmt");
-		return "fmt.Sprint(" + a + ")";
-	}
-
-	/** System.out/err.println(x): the receiver is the only thing telling stdout from stderr. */
-	private String println(MethodInvocation mi) {
-		if (!(mi.getExpression() instanceof QualifiedName qn)) return null;
-		emitter.fileImports.add("fmt");
-		emitter.fileImports.add("os");
-		String stream = qn.getName().getIdentifier().equals("err") ? "os.Stderr" : "os.Stdout";
-		String a = mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0);
-		return "fmt.Fprintln(" + stream + a + ")";
 	}
 
 	/**

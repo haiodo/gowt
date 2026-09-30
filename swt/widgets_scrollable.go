@@ -383,8 +383,14 @@ func (this *Scrollable) updateCursorRects_(enabled bool) {
 func idImplAsNSScroller(x any) (*cocoa.NSScroller, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSScroller:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSScroller, true
 	}
 	return nil, false

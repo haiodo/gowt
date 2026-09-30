@@ -217,7 +217,7 @@ func (this *Test_org_eclipse_swt_graphics_RGB) Test_hashCode() {
 func (this *Test_org_eclipse_swt_graphics_RGB) Test_toString() {
 	var rgb *swt.RGB = swt.NewRGB(0, 100, 200)
 	var s string = rgb.String()
-	junit.AssertTrue(s != "" && int32(len(s)) != 0, "RGB.toString returns a null or empty String")
+	junit.AssertTrue(s != "" && jrt.StringLength(s) != 0, "RGB.toString returns a null or empty String")
 }
 
 func init() {

@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type MenuDetectEvent struct {
@@ -42,5 +43,5 @@ func (this *MenuDetectEvent) initMenuDetectEvent(e *Event) {
 
 func (this *MenuDetectEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	return fmt.Sprintf("%s x=%d y=%d doit=%t detail=%d}", string_[0:int32(len(string_))-1], this.X, this.Y, this.Doit, this.Detail)
+	return fmt.Sprintf("%s x=%d y=%d doit=%t detail=%d}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.X, this.Y, this.Doit, this.Detail)
 }

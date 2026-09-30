@@ -4410,14 +4410,6 @@ func OSDisposeRgn(rgnHandle int64) {
 	OSDisposeRgn_impl(rgnHandle)
 }
 
-var OSPtInRgn_impl func(pt []int16, rgnHandle int64) bool
-var OSPtInRgn_once sync.Once
-
-func OSPtInRgn(pt []int16, rgnHandle int64) bool {
-	OSPtInRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSPtInRgn_impl, purego.RTLD_DEFAULT, "PtInRgn") })
-	return OSPtInRgn_impl(pt, rgnHandle)
-}
-
 var OSGetRegionBounds_impl func(rgnHandle int64, bounds []int16)
 var OSGetRegionBounds_once sync.Once
 
@@ -4555,28 +4547,6 @@ func OSSecTrustCreateWithCertificates(certificates int64, policies int64, trustR
 		purego.RegisterLibFunc(&OSSecTrustCreateWithCertificates_impl, purego.RTLD_DEFAULT, "SecTrustCreateWithCertificates")
 	})
 	return OSSecTrustCreateWithCertificates_impl(certificates, policies, trustRef)
-}
-
-var OSNSIntersectionRect_impl func(result *NSRect, aRect *NSRect, bRect *NSRect)
-var OSNSIntersectionRect_once sync.Once
-
-func OSNSIntersectionRect(result *NSRect, aRect *NSRect, bRect *NSRect) {
-	OSNSIntersectionRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSIntersectionRect_impl, purego.RTLD_DEFAULT, "NSIntersectionRect")
-	})
-	OSNSIntersectionRect_impl(result, aRect, bRect)
-}
-
-var OSCGDisplayBounds_impl func(display int32, rect *CGRect)
-var OSCGDisplayBounds_once sync.Once
-
-func OSCGDisplayBounds(display int32, rect *CGRect) {
-	OSCGDisplayBounds_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGDisplayBounds_impl, purego.RTLD_DEFAULT, "CGDisplayBounds")
-	})
-	OSCGDisplayBounds_impl(display, rect)
 }
 
 func OSKUTTypeFileURL() int64 {

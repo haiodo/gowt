@@ -683,17 +683,17 @@ func (this *Test_org_eclipse_swt_graphics_Region) Test_subtractLorg_eclipse_swt_
 func (this *Test_org_eclipse_swt_graphics_Region) Test_toString() {
 	var reg *swt.Region = swt.NewRegionDevice(upcastswtDisplayToswtDevice(this.display))
 	var s string = reg.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 	reg.AddRect(swt.NewRectangle(1, 1, 10, 20))
 	s = reg.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 	reg.Dispose()
 	s = reg.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 }

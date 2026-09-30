@@ -19,7 +19,7 @@ type Test_org_eclipse_swt_graphics_Image struct {
 	display                 *swt.Display
 }
 
-var Test_org_eclipse_swt_graphics_ImageTempFolder any = nil
+var Test_org_eclipse_swt_graphics_ImageTempFolder *jrt.Path = nil
 
 func NewTest_org_eclipse_swt_graphics_Image() *Test_org_eclipse_swt_graphics_Image {
 	this := &Test_org_eclipse_swt_graphics_Image{}
@@ -333,7 +333,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
 	var e error
-	var fileName1 string = ""
+	var fileName1 string = jrt.NullString
 	e = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), fileName1)
 	})
@@ -343,10 +343,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 		swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), pathName2)
 	})
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for non-existent file name", swt.ERROR_IO, e)
-	var pathName3 string = func() string {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("empty.txt")}
-		panic("j2go: unresolved call toString")
-	}()
+	var pathName3 string = Test_org_eclipse_swt_graphics_ImageGetPath("empty.txt")
 	e = junit.AssertThrows[*swt.SWTException](func() {
 		swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), pathName3)
 	})
@@ -355,20 +352,14 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var displays []*swt.Display = []*swt.Display{this.display, nil}
 	for _, display := range displays {
 		for _, format := range SwtTestUtilImageFormats {
-			var pathName string = func() string {
-				_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath(fmt.Sprintf("%s.%s", firstFile, format))}
-				panic("j2go: unresolved call toString")
-			}()
+			var pathName string = Test_org_eclipse_swt_graphics_ImageGetPath(fmt.Sprintf("%s.%s", firstFile, format))
 			e = junit.AssertThrows[*swt.SWTException](func() {
 				swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(display), pathName)
 			})
 			SwtTestUtilAssertSWTProblem("Incorrect exception thrown for invalid image file name", swt.ERROR_INVALID_IMAGE, e)
 		}
 	}
-	var pathName4 string = func() string {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath(SwtTestUtilInvalidImageFilenames[1])}
-		panic("j2go: unresolved call toString")
-	}()
+	var pathName4 string = Test_org_eclipse_swt_graphics_ImageGetPath(SwtTestUtilInvalidImageFilenames[1])
 	e = junit.AssertThrows[*swt.SWTException](func() {
 		swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), pathName4)
 	})
@@ -376,10 +367,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	for _, display := range displays {
 		for _, fileName := range SwtTestUtilImageFilenames {
 			for _, format := range SwtTestUtilImageFormats {
-				var pathName string = func() string {
-					_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath(fmt.Sprintf("%s.%s", fileName, format))}
-					panic("j2go: unresolved call toString")
-				}()
+				var pathName string = Test_org_eclipse_swt_graphics_ImageGetPath(fmt.Sprintf("%s.%s", fileName, format))
 				var image *swt.Image = swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(display), pathName)
 				image.Dispose()
 			}
@@ -501,23 +489,14 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 }
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_inputStream() {
-	var bytes []int8 = func() []int8 {
-		_ = []any{func() any {
-			_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"), []string{}}
-			panic("j2go: unresolved call of")
-		}()}
-		panic("j2go: unresolved call readAllBytes")
-	}()
+	var bytes []int8 = jrt.FilesReadAllBytes(jrt.PathOf(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"), []string{}))
 	var sourceImage *swt.Image = swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(this.display), jrt.NewByteArrayInputStream(bytes))
 	var copiedImage *swt.Image = swt.NewImageDeviceSrcImageFlag(upcastswtDisplayToswtDevice(this.display), sourceImage, swt.IMAGE_COPY)
 	var targetImage *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 1, 1)
 	var gc *swt.GC = swt.NewGCDrawable(targetImage)
 	gc.DrawImage(sourceImage, 0, 0)
 	gc.DrawImage(targetImage, 0, 0)
-	junit.AssertEquals(int32(0), int32(func() int32 {
-		_ = []any{ImageDataTestHelperImageDataComparator(), sourceImage.GetImageData(), copiedImage.GetImageData()}
-		panic("j2go: unresolved call compare")
-	}()))
+	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(sourceImage.GetImageData(), copiedImage.GetImageData())))
 	sourceImage.Dispose()
 	copiedImage.Dispose()
 	targetImage.Dispose()
@@ -539,10 +518,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var gc *swt.GC = swt.NewGCDrawable(targetImage)
 	gc.DrawImage(sourceImage, 0, 0)
 	gc.DrawImage(targetImage, 0, 0)
-	junit.AssertEquals(int32(0), int32(func() int32 {
-		_ = []any{ImageDataTestHelperImageDataComparator(), sourceImage.GetImageData(), copiedImage.GetImageData()}
-		panic("j2go: unresolved call compare")
-	}()))
+	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(sourceImage.GetImageData(), copiedImage.GetImageData())))
 	sourceImage.Dispose()
 	copiedImage.Dispose()
 	targetImage.Dispose()
@@ -923,7 +899,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_toString() {
 			image.Dispose()
 		}()
 		junit.AssertNotNull(image.String())
-		junit.AssertTrue(int32(len(image.String())) > 0)
+		junit.AssertTrue(jrt.StringLength(image.String()) > 0)
 	}
 }
 
@@ -1105,10 +1081,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaDifferentP
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
 		if zoom == 100 {
 			{
-				var imageStream jrt.InputStream = func() jrt.InputStream {
-					_ = []any{func() any { _ = []any{imagePath, []string{}}; panic("j2go: unresolved call of") }(), []any{}}
-					panic("j2go: unresolved call newInputStream")
-				}()
+				var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
 				var tret32 *swt.ImageData
 				tretd33 := false
 				func() {
@@ -1146,10 +1119,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaDifferentP
 	var dataProviderImage *swt.Image = swt.NewImageDeviceImageDataProvider(upcastswtDisplayToswtDevice(this.display), dataProvider)
 	var dataFromFileNameProviderImage *swt.ImageData = fileNameProviderImage.GetImageDataZoom(100)
 	var dataFromImageDescriptorImage *swt.ImageData = dataProviderImage.GetImageDataZoom(100)
-	junit.AssertEquals(int32(0), int32(func() int32 {
-		_ = []any{ImageDataTestHelperImageDataComparator(), dataFromFileNameProviderImage, dataFromImageDescriptorImage}
-		panic("j2go: unresolved call compare")
-	}()))
+	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(dataFromFileNameProviderImage, dataFromImageDescriptorImage)))
 	fileNameProviderImage.Dispose()
 	dataProviderImage.Dispose()
 }
@@ -1162,10 +1132,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaProviderAn
 	}}
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(__ int32) *swt.ImageData {
 		{
-			var imageStream jrt.InputStream = func() jrt.InputStream {
-				_ = []any{func() any { _ = []any{imagePath, []string{}}; panic("j2go: unresolved call of") }(), []any{}}
-				panic("j2go: unresolved call newInputStream")
-			}()
+			var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
 			var tret34 *swt.ImageData
 			tretd35 := false
 			func() {
@@ -1202,10 +1169,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaProviderAn
 	var dataImage *swt.Image = swt.NewImageDeviceData(upcastswtDisplayToswtDevice(this.display), dataProvider.GetImageData(100))
 	var dataFromFileNameProviderImage *swt.ImageData = fileNameProviderImage.GetImageDataZoom(100)
 	var dataFromImageWithSimpleData *swt.ImageData = dataImage.GetImageDataZoom(100)
-	junit.AssertEquals(int32(0), int32(func() int32 {
-		_ = []any{ImageDataTestHelperImageDataComparator(), dataFromFileNameProviderImage, dataFromImageWithSimpleData}
-		panic("j2go: unresolved call compare")
-	}()))
+	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(dataFromFileNameProviderImage, dataFromImageWithSimpleData)))
 	fileNameProviderImage.Dispose()
 	dataImage.Dispose()
 }
@@ -1235,25 +1199,16 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_gcOnImageGcDrawer_imageDat
 }
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat() {
-	var file any = func() any {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageTempFolder, "volatile-collapseall.png"}
-		panic("j2go: unresolved call resolve")
-	}()
-	func() any {
-		_ = []any{func() any {
-			_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"), []string{}}
-			panic("j2go: unresolved call of")
-		}(), file, []any{}}
-		panic("j2go: unresolved call copy")
-	}()
+	var file *jrt.Path = Test_org_eclipse_swt_graphics_ImageTempFolder.Resolve("volatile-collapseall.png")
+	jrt.FilesCopy(jrt.PathOf(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"), []string{}), file, []any{})
 	var previousDeviceZoom int32 = swt.DPIUtilGetDeviceZoom()
 	swt.DPIUtilSetDeviceZoom(100)
 	{
 		defer func() {
 			swt.DPIUtilSetDeviceZoom(previousDeviceZoom)
-			func() bool { _ = []any{file}; panic("j2go: unresolved call deleteIfExists") }()
+			jrt.FilesDeleteIfExists(file)
 		}()
-		var image *swt.Image = swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), func() string { _ = []any{file}; panic("j2go: unresolved call toString") }())
+		var image *swt.Image = swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), file.ToString())
 		var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 64, 64)
 		var gc *swt.GC = swt.NewGCDrawable(target)
 		func() {
@@ -1264,7 +1219,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_doesNotReR
 			}()
 			var bounds *swt.Rectangle = image.GetBounds()
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, bounds.Width*2, bounds.Height*2)
-			func() any { _ = []any{file}; panic("j2go: unresolved call delete") }()
+			jrt.FilesDelete(file)
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, bounds.Width*2, bounds.Height*2)
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, bounds.Width*3, bounds.Height*3)
 		}()
@@ -1272,25 +1227,13 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_doesNotReR
 }
 
 func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges() {
-	var sizableFile any = func() any {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageTempFolder, "switchable-collapseall.svg"}
-		panic("j2go: unresolved call resolve")
-	}()
-	func() any {
-		_ = []any{func() any {
-			_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.svg"), []string{}}
-			panic("j2go: unresolved call of")
-		}(), sizableFile, []any{}}
-		panic("j2go: unresolved call copy")
-	}()
-	var currentFile any = func() any {
-		_ = []any{Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png")}
-		panic("j2go: unresolved new AtomicReference<String>")
-	}()
+	var sizableFile *jrt.Path = Test_org_eclipse_swt_graphics_ImageTempFolder.Resolve("switchable-collapseall.svg")
+	jrt.FilesCopy(jrt.PathOf(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.svg"), []string{}), sizableFile, []any{})
+	var currentFile *jrt.AtomicReference = jrt.NewAtomicReference(Test_org_eclipse_swt_graphics_ImageGetPath("collapseall.png"))
 	var switchingProvider swt.ImageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
 		var cond36 string
 		if zoom == 100 {
-			cond36 = func() string { _ = []any{currentFile}; panic("j2go: unresolved call get") }()
+			cond36 = jrt.Cast[string](currentFile.Get())
 		} else {
 			cond36 = ""
 		}
@@ -1301,7 +1244,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 	{
 		defer func() {
 			swt.DPIUtilSetDeviceZoom(previousDeviceZoom)
-			func() bool { _ = []any{sizableFile}; panic("j2go: unresolved call deleteIfExists") }()
+			jrt.FilesDeleteIfExists(sizableFile)
 		}()
 		var image *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), switchingProvider)
 		var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 64, 64)
@@ -1313,12 +1256,9 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 				image.Dispose()
 			}()
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 20, 20)
-			func() any {
-				_ = []any{currentFile, func() string { _ = []any{sizableFile}; panic("j2go: unresolved call toString") }()}
-				panic("j2go: unresolved call set")
-			}()
+			currentFile.Set(sizableFile.ToString())
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 20, 20)
-			func() any { _ = []any{sizableFile}; panic("j2go: unresolved call delete") }()
+			jrt.FilesDelete(sizableFile)
 			junit.AssertThrows[*swt.SWTException](func() {
 				gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 24, 24)
 			}, "the file of a sizable image must be read again for a new size")
@@ -1327,10 +1267,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 }
 
 func Test_org_eclipse_swt_graphics_ImageGetPath(fileName string) string {
-	return func() string {
-		_ = []any{SwtTestUtilGetPath(fileName, Test_org_eclipse_swt_graphics_ImageTempFolder)}
-		panic("j2go: unresolved call toString")
-	}()
+	return SwtTestUtilGetPath(fileName, Test_org_eclipse_swt_graphics_ImageTempFolder).ToString()
 }
 
 func Test_org_eclipse_swt_graphics_ImageScaleBounds(rectLike swt.RectangleLike, targetZoom int32, currentZoom int32) *swt.Rectangle {
@@ -1392,6 +1329,12 @@ func init() {
 	junit.Register(&junit.Class{
 		Name: "Test_org_eclipse_swt_graphics_Image",
 		New:  func() any { return NewTest_org_eclipse_swt_graphics_Image() },
+		BeforeAll: []func(){
+			func() { Test_org_eclipse_swt_graphics_ImageTempFolder = jrt.CreateTempDir() },
+		},
+		AfterAll: []func(){
+			func() { jrt.RemoveTempDir(Test_org_eclipse_swt_graphics_ImageTempFolder) },
+		},
 		BeforeEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_graphics_Image).SetUp() },
 		},

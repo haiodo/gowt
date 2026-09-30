@@ -155,4 +155,47 @@ final class EmitUtil {
 		});
 		return !read[0];
 	}
+
+	/** func init() running each deferred static initializer under its own recover(). */
+	static String deferredInitFunc(List<String> inits, List<String> labels) {
+		StringBuilder out = new StringBuilder("func init() {\n");
+		// Some deferred fields (e.g. kUTType*) resolve only inside SWT's own native lib,
+		// which this port lacks - recover per-entry so one bad symbol doesn't sink the rest.
+		for (int i = 0; i < inits.size(); i++) {
+			out.append("\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n")
+					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/cocoa: deferred init ")
+					.append(labels.get(i)).append(":\", r)\n")
+					.append("\t\t\t}\n\t\t}()\n").append(inits.get(i)).append("\t}()\n");
+		}
+		return out.append("}\n\n").toString();
+	}
+
+	/** Java null as Go text. A test's literal null String argument or initializer becomes jrt.NullString,
+	 * which the ported null-argument guards check for (NumericEmitter.stringParamNullCheck); elsewhere
+	 * String null stays "" via adaptNumeric. */
+	static String nullLiteral(Emitter emitter, Expression e) {
+		if (!emitter.degradesUnresolvedTypes()) return "nil";
+		ASTNode child = e;
+		ASTNode p = e.getParent();
+		while (p instanceof CastExpression || p instanceof ParenthesizedExpression) {
+			child = p;
+			p = p.getParent();
+		}
+		ITypeBinding target = null;
+		if (p instanceof VariableDeclarationFragment f && f.getInitializer() == child && f.resolveBinding() != null) {
+			target = f.resolveBinding().getType();
+		} else if (p instanceof MethodInvocation mi && mi.resolveMethodBinding() != null) {
+			target = paramType(mi.resolveMethodBinding(), mi.arguments().indexOf(child));
+		} else if (p instanceof ClassInstanceCreation cic && cic.resolveConstructorBinding() != null) {
+			target = paramType(cic.resolveConstructorBinding(), cic.arguments().indexOf(child));
+		}
+		if (target == null || !target.getQualifiedName().equals("java.lang.String")) return "nil";
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+		return "jrt.NullString";
+	}
+
+	private static ITypeBinding paramType(IMethodBinding mb, int i) {
+		ITypeBinding[] pt = mb.getParameterTypes();
+		return i >= 0 && i < pt.length && !(mb.isVarargs() && i == pt.length - 1) ? pt[i] : null;
+	}
 }

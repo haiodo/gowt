@@ -205,10 +205,19 @@ func (this *Point_WithMonitor) clone_() *Point {
 func pointImplAsPoint(x any) (*Point, bool) {
 	switch v := x.(type) {
 	case *Point:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Point_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Point, true
 	case *Point_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Point, true
 	}
 	return nil, false
@@ -225,8 +234,14 @@ func upcastPoint_OfFloatToPoint(x *Point_OfFloat) *Point {
 func pointImplAsOfFloat(x any) (*Point_OfFloat, bool) {
 	switch v := x.(type) {
 	case *Point_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Point_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Point_OfFloat, true
 	}
 	return nil, false

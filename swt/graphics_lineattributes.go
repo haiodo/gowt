@@ -120,6 +120,9 @@ func (this *LineAttributes) HashCode() int32 {
 func lineAttributesImplAsLineAttributes(x any) (*LineAttributes, bool) {
 	switch v := x.(type) {
 	case *LineAttributes:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

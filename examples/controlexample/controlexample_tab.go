@@ -945,9 +945,9 @@ func (this *Tab) ParameterInfo(methodRoot string) string {
 		typeName = jrt.ClassName(returnType)
 	}
 	var typeNameString string = typeName
-	var index int32 = int32(strings.LastIndexByte(typeName, byte('.')))
-	if index != -1 && index+1 < int32(len(typeName)) {
-		typeNameString = typeName[index+1:]
+	var index int32 = jrt.LastIndexOf(typeName, string(rune('.')))
+	if index != -1 && index+1 < jrt.StringLength(typeName) {
+		typeNameString = jrt.Substring(typeName, index+1, -1)
 	}
 	var cond11 string
 	if isArray {
@@ -1081,7 +1081,7 @@ func (this *Tab) SetValue() {
 					} else {
 						if typeName == "char" {
 							var cond14 any
-							if int32(len(value)) == 1 {
+							if jrt.StringLength(value) == 1 {
 								cond14 = utf16.Encode([]rune(value))[0]
 							} else {
 								cond14 = '\u0000'
@@ -1859,13 +1859,13 @@ func (this *Tab) SetExampleWidgetBackgroundImage() {
 func (this *Tab) Split(string_ string, ch uint16) []string {
 	var result []string = make([]string, 0)
 	var start int32 = 0
-	var length int32 = int32(len(string_))
+	var length int32 = jrt.StringLength(string_)
 	for start < length {
 		var end int32 = jrt.IndexFrom(string_, string(rune(ch)), start)
 		if end == -1 {
 			end = length
 		}
-		var substr string = string_[start:end]
+		var substr string = jrt.Substring(string_, start, end)
 		var newResult []string = make([]string, int32(len(result))+1)
 		copy(newResult[0:], result[0:0+int32(len(result))])
 		newResult[int32(len(result))] = substr
@@ -1908,6 +1908,9 @@ func upcastswtGridLayoutToswtLayout(x *swt.GridLayout) *swt.Layout {
 func widgetImplAsButton(x any) (*swt.Button, bool) {
 	switch v := x.(type) {
 	case *swt.Button:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -1935,26 +1938,59 @@ func isswtControlToswtButton(x *swt.Control) (*swt.Button, bool) {
 func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 	switch v := x.(type) {
 	case *swt.Composite:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *swt.Canvas:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Decorations:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Shell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Group:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Tree:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.TabFolder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Combo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.Table:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Composite, true
 	}
 	return nil, false
@@ -2078,38 +2114,89 @@ func (this *TabAnon4) DrawOn(a0 *swt.GC, a1 int32, a2 int32) {
 func widgetImplAsControl(x any) (*swt.Control, bool) {
 	switch v := x.(type) {
 	case *swt.Control:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *swt.Scrollable:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Composite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Canvas:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Decorations:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Shell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Group:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Tree:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.TabFolder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Combo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Table:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Text:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Button:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Label:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *swt.Sash:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	}
 	return nil, false
@@ -2133,6 +2220,9 @@ func upcastswtItemToswtWidget(x *swt.Item) *swt.Widget {
 func widgetImplAsMenu(x any) (*swt.Menu, bool) {
 	switch v := x.(type) {
 	case *swt.Menu:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

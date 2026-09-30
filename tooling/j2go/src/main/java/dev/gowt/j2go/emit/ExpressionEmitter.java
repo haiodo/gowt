@@ -24,7 +24,7 @@ final class ExpressionEmitter {
 		if (e instanceof CharacterLiteral cl) return runeLiteral(cl.charValue());
 		if (e instanceof BooleanLiteral bl) return Boolean.toString(bl.booleanValue());
 		if (e instanceof StringLiteral sl) return goStringLiteral(sl.getLiteralValue());
-		if (e instanceof NullLiteral) return "nil";
+		if (e instanceof NullLiteral) return EmitUtil.nullLiteral(emitter, e);
 		if (e instanceof ThisExpression te) return te.getQualifier() == null && emitter.anonThis != null ? emitter.anonThis : "this";
 		if (e instanceof ParenthesizedExpression pe) return "(" + emitExpr(pe.getExpression()) + ")";
 		if (e instanceof PrefixExpression pf) return emitPrefix(pf);

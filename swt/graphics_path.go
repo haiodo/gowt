@@ -794,8 +794,14 @@ func (this *Path) String() string {
 func idImplAsNSMutableAttributedString(x any) (*cocoa.NSMutableAttributedString, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMutableAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSTextStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSMutableAttributedString, true
 	}
 	return nil, false

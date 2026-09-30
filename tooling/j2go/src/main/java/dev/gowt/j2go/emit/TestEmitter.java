@@ -86,6 +86,7 @@ final class TestEmitter {
 		}
 		if (tests.isEmpty()) return "";
 		emitter.fileImports.add(JUNIT_IMPORT);
+		tempDirFields(cls, recv, beforeAll, afterAll, beforeEach, afterEach);
 		StringBuilder b = new StringBuilder("func init() {\n\tjunit.Register(&junit.Class{\n");
 		b.append("\t\tName: \"").append(cls.getName()).append("\",\n");
 		b.append("\t\tNew: func() any { return ").append(constructor(cls, ci)).append("() },\n");
@@ -97,6 +98,26 @@ final class TestEmitter {
 		for (String t : tests) b.append("\t\t\t").append(t).append(",\n");
 		b.append("\t\t},\n\t})\n}\n\n");
 		return b.toString();
+	}
+
+	/** @TempDir fields: a fresh directory per class (static) or per test (instance), removed afterwards. */
+	private void tempDirFields(ITypeBinding cls, String recv, List<String> beforeAll, List<String> afterAll,
+			List<String> beforeEach, List<String> afterEach) {
+		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) {
+			for (IVariableBinding f : t.getDeclaredFields()) {
+				if (find(f.getAnnotations(), "org.junit.jupiter.api.io.TempDir") == null) continue;
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+				if (Modifier.isStatic(f.getModifiers())) {
+					String var = EmitUtil.staticFieldGoName(emitter, emitter.model.lookup(t), f.getName());
+					beforeAll.add(0, "func() { " + var + " = jrt.CreateTempDir() }");
+					afterAll.add("func() { jrt.RemoveTempDir(" + var + ") }");
+				} else {
+					String var = recv + "." + emitter.fieldGoName(f);
+					beforeEach.add(0, "func(t any) { " + var + " = jrt.CreateTempDir() }");
+					afterEach.add("func(t any) { jrt.RemoveTempDir(" + var + ") }");
+				}
+			}
+		}
 	}
 
 	private static void appendList(StringBuilder b, String field, String type, List<String> items) {

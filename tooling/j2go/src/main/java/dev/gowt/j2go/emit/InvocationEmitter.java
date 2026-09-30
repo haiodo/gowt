@@ -36,6 +36,7 @@ final class InvocationEmitter {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
 				String fn = declCi != null ? emitter.qualify(manualMethodGoName, declCi) : manualMethodGoName;
+				addressStructArgs(mi, mb, args);
 				return fn + "(" + String.join(", ", args) + ")";
 			}
 			String manualRecv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
@@ -45,6 +46,10 @@ final class InvocationEmitter {
 		// A manual value type backed by a bare "any" (java.util.Map, ...) has no real Go method to
 		// dispatch to - fall through to the ordinary "unresolved call" degrade below instead.
 		if (Manual.isManual(qualified) && !Manual.isBareAny(qualified)) {
+			// A char literal is an untyped rune constant: typed, so an `any` parameter (StringBuilder.append) sees a char.
+			for (int i = 0; i < args.size() && i < mb.getParameterTypes().length; i++) {
+				if (mb.getParameterTypes()[i].getName().equals("char")) args.set(i, "uint16(" + args.get(i) + ")");
+			}
 			if (Modifier.isStatic(mb.getModifiers())) {
 				emitter.addManualImport(qualified);
 				return emitter.qualifyManual(Manual.staticMember(qualified, mb.getName()), declaring) + "(" + String.join(", ", args) + ")";
@@ -95,9 +100,7 @@ final class InvocationEmitter {
 			String goName = emitter.staticMethodGoName(mb, ci);
 			// A struct JNI passes by pointer (memmove's dest, objc_msgSend_stret's result, see
 			// NativeEmitter.paramType): Java mutates the caller's object, Go needs its address.
-			for (int i = 0; i < args.size() && Modifier.isNative(mb.getModifiers()); i++) {
-				if (emitter.model.isNativeStructPointerParam(mb, i)) args.set(i, addressOf((Expression) mi.arguments().get(i), args.get(i)));
-			}
+			addressStructArgs(mi, mb, args);
 			return goName + "(" + String.join(", ", args) + ")";
 		}
 
@@ -133,6 +136,12 @@ final class InvocationEmitter {
 			}
 		}
 		return callText;
+	}
+
+	private void addressStructArgs(MethodInvocation mi, IMethodBinding mb, List<String> args) {
+		for (int i = 0; i < args.size() && Modifier.isNative(mb.getModifiers()); i++) {
+			if (emitter.model.isNativeStructPointerParam(mb, i)) args.set(i, addressOf((Expression) mi.arguments().get(i), args.get(i)));
+		}
 	}
 
 	private String addressOf(Expression e, String text) {
@@ -294,6 +303,11 @@ final class InvocationEmitter {
 					arg += "[" + off + ":" + off + "+" + emitter.expr((Expression) cic.arguments().get(2)) + "]";
 				}
 				return "string(utf16.Decode(" + arg + "))";
+			}
+			// Thread is a bare any (Manual) except for the one shape the tests use: a runnable run by start()/join().
+			if (qualified.equals("java.lang.Thread") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
+				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
 			}
 			if (Manual.isManual(qualified)) {
 				// A value-type manual entry (any/error/...) has no real constructor function -

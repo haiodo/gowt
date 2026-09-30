@@ -564,10 +564,19 @@ func (this *Rectangle_WithMonitor) clone_() *Rectangle {
 func rectangleImplAsRectangle(x any) (*Rectangle, bool) {
 	switch v := x.(type) {
 	case *Rectangle:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Rectangle_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Rectangle, true
 	case *Rectangle_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Rectangle, true
 	}
 	return nil, false
@@ -577,6 +586,9 @@ func rectangleImplAsRectangle(x any) (*Rectangle, bool) {
 func pointImplAsWithMonitor(x any) (*Point_WithMonitor, bool) {
 	switch v := x.(type) {
 	case *Point_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -607,8 +619,14 @@ func upcastRectangle_OfFloatToRectangle(x *Rectangle_OfFloat) *Rectangle {
 func rectangleImplAsOfFloat(x any) (*Rectangle_OfFloat, bool) {
 	switch v := x.(type) {
 	case *Rectangle_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Rectangle_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Rectangle_OfFloat, true
 	}
 	return nil, false

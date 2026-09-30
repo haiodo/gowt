@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -260,7 +261,7 @@ func (this *TabItem) setImageOnItem_(image *Image) {
 
 func (this *TabItem) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var index int32 = this.parent.IndexOf(this)
@@ -347,8 +348,14 @@ func upcastTabFolderToComposite(x *TabFolder) *Composite {
 func idImplAsNSTabView(x any) (*cocoa.NSTabView, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTabView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTabView, true
 	}
 	return nil, false

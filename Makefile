@@ -67,3 +67,22 @@ run-%: %
 
 clean:
 	rm -rf $(BIN) tooling/j2go/target
+
+# Linux GUI stand (Docker + Xvfb + noVNC), see README "Linux stand".
+LINUX_IMG = gowt-linux
+LINUX_CTR = gowt-linux
+
+linux-image:
+	docker build -t $(LINUX_IMG) tooling/linux
+
+# Idempotent: starts the stand container and prints the noVNC URL.
+linux-vnc:
+	@docker ps -q -f name=^$(LINUX_CTR)$$ | grep -q . || { docker rm -f $(LINUX_CTR) >/dev/null 2>&1; \
+	  docker run -d --name $(LINUX_CTR) -p 6080:6080 -v $(CURDIR):/src -v gowt-gocache:/gocache -v gowt-gomod:/gomod $(LINUX_IMG) >/dev/null; sleep 2; }
+	@echo http://localhost:6080/vnc.html
+
+linux-shell: linux-vnc
+	docker exec -it $(LINUX_CTR) bash
+
+linux-run: linux-vnc
+	docker exec $(LINUX_CTR) sh -c '$(CMD)'

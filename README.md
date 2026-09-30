@@ -39,4 +39,20 @@ Files `swt/*.go`, `examples/*/*.go` and `tests/swttests/*.go` with the header `C
 are not edited by hand; `make gen` also copies the example's images and `.properties` next to them.
 Hand-written code lives in `*_manual.go`.
 
+## Linux stand
+
+Docker image (Debian 13, Go from `go.mod`, GTK 3.24, GIR files, Xvfb + openbox + x11vnc + noVNC, weston) for the gtk port; no window ever opens on the host.
+
+```sh
+make linux-image                       # build (arm64 native; amd64 host: same Dockerfile)
+make linux-vnc                         # start the container, prints http://localhost:6080/vnc.html
+make linux-run CMD="python3 tooling/linux/hello.py"   # runs with DISPLAY=:99, repo at /src
+make linux-shell
+```
+
+The future Linux `make test-swt` runs inside as `make linux-run CMD="make test-swt"` (DISPLAY=:99 is preset; Go cache in volumes `gowt-gocache`, `gowt-gomod`).
+GIR files are in `/usr/share/gir-1.0` (Gtk-3.0, Gdk-3.0, GObject-2.0, GLib-2.0, Gio-2.0, Pango-1.0, cairo-1.0, Atk-1.0).
+Wayland: `weston --backend=headless --socket=wayland-1` with `WAYLAND_DISPLAY=wayland-1 GDK_BACKEND=wayland` starts GTK apps, but it is not wired into the stand and has no seat/cursor theme (input and snapshots only via X11).
+Limits: one shared X screen 1280x1024, no GPU, VNC without password on localhost:6080, image ~1.9 GB.
+
 License: EPL-2.0, see `LICENSE` and `NOTICE`.

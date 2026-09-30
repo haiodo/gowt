@@ -37,7 +37,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SCRIPT_STATESizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SCRIPT_STATESizeof:", r)
 			}
 		}()
 		SCRIPT_STATESizeof = OSSCRIPT_STATE_sizeof()

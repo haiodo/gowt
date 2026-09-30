@@ -63,7 +63,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMREBARCHILDSIZESizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMREBARCHILDSIZESizeof:", r)
 			}
 		}()
 		NMREBARCHILDSIZESizeof = OSNMREBARCHILDSIZE_sizeof()

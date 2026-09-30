@@ -58,7 +58,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init GCP_RESULTSSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init GCP_RESULTSSizeof:", r)
 			}
 		}()
 		GCP_RESULTSSizeof = OSGCP_RESULTS_sizeof()

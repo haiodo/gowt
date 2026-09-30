@@ -28,7 +28,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init FLICK_POINTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init FLICK_POINTSizeof:", r)
 			}
 		}()
 		FLICK_POINTSizeof = OSFLICK_POINT_sizeof()

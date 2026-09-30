@@ -59,7 +59,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init MENUITEMINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init MENUITEMINFOSizeof:", r)
 			}
 		}()
 		MENUITEMINFOSizeof = OSMENUITEMINFO_sizeof()

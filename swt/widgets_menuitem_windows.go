@@ -47,16 +47,16 @@ var MenuItemCUSTOM_SELECTION_IMAGE int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init MenuItemCUSTOM_SELECTION_IMAGE:", e)
 		}
 	}()
-	var cond202 int32
+	var cond1 int32
 	if win32.OsVersionIS_WIN11_21H2 {
-		cond202 = jrt.Cast[int32](func() int32 {
+		cond1 = jrt.Cast[int32](func() int32 {
 			_ = []any{"org.eclipse.swt.internal.win32.menu.customSelectionImage", 2}
 			panic("j2go: unresolved call getInteger")
 		}())
 	} else {
-		cond202 = 0
+		cond1 = 0
 	}
-	r = cond202
+	r = cond1
 	return
 }()
 
@@ -291,13 +291,13 @@ func (this *MenuItem) GetSelection() bool {
 
 func (this *MenuItem) GetToolTipText() string {
 	this.CheckWidget()
-	var cond203 string
+	var cond2 string
 	if this.itemToolTip == (nil) || this.itemToolTip.IsDisposed() {
-		cond203 = ""
+		cond2 = ""
 	} else {
-		cond203 = this.itemToolTip.GetMessage()
+		cond2 = this.itemToolTip.GetMessage()
 	}
-	return cond203
+	return cond2
 }
 
 func (this *MenuItem) HideToolTip() {
@@ -313,7 +313,7 @@ func (this *MenuItem) IsEnabled() bool {
 
 func (this *MenuItem) releaseChildren_(destroy bool) {
 	if this.menu != (nil) {
-		this.menu.Release(false)
+		this.menu.impl.release_(false)
 		this.menu = nil
 	}
 	this.Item.releaseChildren_(destroy)
@@ -476,7 +476,7 @@ func (this *MenuItem) SetID(id int32) {
 	this.userId = id
 }
 
-func (this *MenuItem) setImage_(image *Image) {
+func (this *MenuItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
@@ -484,7 +484,7 @@ func (this *MenuItem) setImage_(image *Image) {
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	if this.imageSelected != (nil) {
 		this.imageSelected.impl.dispose_()
 		this.imageSelected = nil
@@ -525,25 +525,25 @@ func (this *MenuItem) InitCustomSelectedImage() {
 		return
 	}
 	var imageBounds *Rectangle = image.GetBounds()
-	var cond204 *Color
+	var cond3 *Color
 	if this.display.menuBarForegroundPixel != -1 {
-		cond204 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarForegroundPixel)
+		cond3 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarForegroundPixel)
 	} else {
-		cond204 = this.parent.GetForeground()
+		cond3 = this.parent.GetForeground()
 	}
-	var foregroundColor *Color = this.IncreaseContrast(cond204)
-	var cond205 *Color
+	var foregroundColor *Color = this.IncreaseContrast(cond3)
+	var cond4 *Color
 	if this.display.menuBarBackgroundPixel != -1 {
-		cond205 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarBackgroundPixel)
+		cond4 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarBackgroundPixel)
 	} else {
-		cond205 = this.parent.GetBackground()
+		cond4 = this.parent.GetBackground()
 	}
-	var backgroundColor *Color = this.IncreaseContrast(cond205)
-	anon206 := &MenuItemAnon1{}
-	anon206.fnGetGcStyle = func() int32 {
+	var backgroundColor *Color = this.IncreaseContrast(cond4)
+	anon5 := &MenuItemAnon1{}
+	anon5.fnGetGcStyle = func() int32 {
 		return TRANSPARENT
 	}
-	anon206.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
+	anon5.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
 		gc.SetAdvanced(true)
 		gc.DrawImage(image, imageWidth-imageBounds.Width, (imageHeight-imageBounds.Height)/2)
 		gc.SetAntialias(ON)
@@ -555,7 +555,7 @@ func (this *MenuItem) InitCustomSelectedImage() {
 			this.DrawRadio(gc, foregroundColor, backgroundColor, x, y)
 		}
 	}
-	var drawer ImageGcDrawer = anon206
+	var drawer ImageGcDrawer = anon5
 	this.imageSelected = NewImageDeviceImageGcDrawerWidthHeight(image.impl.getDevice_(), drawer, int32(math.Max(float64(imageBounds.Width), float64(16))), int32(math.Max(float64(imageBounds.Height), float64(16))))
 }
 
@@ -624,13 +624,13 @@ func (this *MenuItem) IncreaseContrast(colorLike ColorLike) *Color {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	var cond207 *Color
+	var cond6 *Color
 	if color.GetRed()+color.GetGreen()+color.GetBlue() > 127*3 {
-		cond207 = this.display.impl.getSystemColor_(COLOR_WHITE)
+		cond6 = this.display.impl.getSystemColor_(COLOR_WHITE)
 	} else {
-		cond207 = color
+		cond6 = color
 	}
-	return cond207
+	return cond6
 }
 
 func (this *MenuItem) GetMenuItemIconBitmapHandle(imageLike ImageLike) int64 {
@@ -655,9 +655,9 @@ func (this *MenuItem) GetMenuItemIconSelectedBitmapHandle() int64 {
 		win32.OSDeleteObject(this.hBitmapSelected)
 	}
 	var zoom int32 = this.AdaptZoomForMenuItem(this.NativeZoom, image)
-	cond208 := DisplayCreate32bitDIB(image, zoom)
-	this.hBitmapSelected = cond208
-	return cond208
+	cond7 := DisplayCreate32bitDIB(image, zoom)
+	this.hBitmapSelected = cond7
+	return cond7
 }
 
 func (this *MenuItem) AdaptZoomForMenuItem(currentZoom int32, imageLike ImageLike) int32 {
@@ -669,7 +669,7 @@ func (this *MenuItem) AdaptZoomForMenuItem(currentZoom int32, imageLike ImageLik
 	if !this.display.IsRescalingAtRuntime() {
 		return DPIUtilGetZoomForAutoscaleProperty(currentZoom)
 	}
-	var primaryMonitorZoomAtAppStartUp int32 = func() int32 { panic("j2go: unresolved call getPrimaryMonitorZoomAtStartup") }()
+	var primaryMonitorZoomAtAppStartUp int32 = Win32DPIUtilsGetPrimaryMonitorZoomAtStartup()
 	if primaryMonitorZoomAtAppStartUp > currentZoom && MenuItemIsQuarterZoom(currentZoom) {
 		return currentZoom - 25
 	}
@@ -971,28 +971,28 @@ func (this *MenuItem) WmDrawChild(wParam int64, lParam int64) *win32.LRESULT {
 			var fillMenuWidth int32 = DPIUtilPixelToPoint(menuItemBounds.Width, zoom)
 			var fillMenuHeight int32 = DPIUtilPixelToPoint(menuItemBounds.Height, zoom)
 			menuItemArea = NewRectangle(DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(struct_.Top, zoom), fillMenuWidth, fillMenuHeight)
-			var cond209 *Color
+			var cond8 *Color
 			if isInactive {
-				cond209 = this.display.impl.getSystemColor_(COLOR_GRAY)
+				cond8 = this.display.impl.getSystemColor_(COLOR_GRAY)
 			} else {
-				cond209 = this.display.impl.getSystemColor_(COLOR_WHITE)
+				cond8 = this.display.impl.getSystemColor_(COLOR_WHITE)
 			}
-			gc.SetForeground(cond209)
-			var cond210 *Color
+			gc.SetForeground(cond8)
+			var cond9 *Color
 			if isSelected {
-				cond210 = this.display.impl.getSystemColor_(COLOR_DARK_GRAY)
+				cond9 = this.display.impl.getSystemColor_(COLOR_DARK_GRAY)
 			} else {
-				cond210 = this.parent.GetBackground()
+				cond9 = this.parent.GetBackground()
 			}
-			gc.SetBackground(cond210)
+			gc.SetBackground(cond9)
 			gc.FillRectangleRect(menuItemArea)
-			var cond211 int32
+			var cond10 int32
 			if this.image != (nil) {
-				cond211 = this.image.GetBounds().Width + MenuItemIMAGE_TEXT_GAP
+				cond10 = this.image.GetBounds().Width + MenuItemIMAGE_TEXT_GAP
 			} else {
-				cond211 = 0
+				cond10 = 0
 			}
-			var xPositionText int32 = MenuItemLEFT_TEXT_MARGIN + DPIUtilPixelToPoint(x, zoom) + (cond211)
+			var xPositionText int32 = MenuItemLEFT_TEXT_MARGIN + DPIUtilPixelToPoint(x, zoom) + (cond10)
 			var yPositionText int32 = DPIUtilPixelToPoint(struct_.Top, zoom) + MenuItemMARGIN_HEIGHT
 			gc.DrawTextStringXYFlags(drawnText, xPositionText, yPositionText, flags)
 		}
@@ -1044,10 +1044,7 @@ func (this *MenuItem) WmMeasureChild(wParam int64, lParam int64) *win32.LRESULT 
 	var width int32 = 0
 	var height int32 = 0
 	if this.image != (nil) {
-		var rect *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		width = rect.Width
 		height = rect.Height
 	} else {
@@ -1059,10 +1056,7 @@ func (this *MenuItem) WmMeasureChild(wParam int64, lParam int64) *win32.LRESULT 
 		if (lpcmi.DwStyle & win32.OSMNS_CHECKORBMP) == 0 {
 			for _, item := range this.parent.GetItems() {
 				if item.image != (nil) {
-					var rect *Rectangle = func() *Rectangle {
-						_ = []any{item.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-						panic("j2go: unresolved call pointToPixel")
-					}()
+					var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(item.image.GetBounds(), this.impl.getAutoscalingZoom_())
 					width = int32(math.Max(float64(width), float64(rect.Width)))
 				}
 			}
@@ -1085,13 +1079,7 @@ func (this *MenuItem) CalculateRenderedTextSize() *Point {
 		var primaryMonitorZoom int32 = this.GetDisplay().impl.getDeviceZoom_()
 		var adjustedPrimaryMonitorZoom int32 = DPIUtilGetZoomForAutoscaleProperty(primaryMonitorZoom)
 		if primaryMonitorZoom != adjustedPrimaryMonitorZoom {
-			points = func() *Point {
-				_ = []any{func() *Point {
-					_ = []any{points, adjustedPrimaryMonitorZoom}
-					panic("j2go: unresolved call pointToPixelAsSize")
-				}(), primaryMonitorZoom}
-				panic("j2go: unresolved call pixelToPointAsSize")
-			}()
+			points = Win32DPIUtilsPixelToPointAsSizePointZoom(Win32DPIUtilsPointToPixelAsSizePointZoom(points, adjustedPrimaryMonitorZoom), primaryMonitorZoom)
 		}
 	}
 	return points

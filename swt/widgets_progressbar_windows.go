@@ -53,10 +53,7 @@ func (this *ProgressBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lP
 
 func (this *ProgressBar) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var border int32 = this.impl.getBorderWidthInPixels_()
 	var width int32 = border * 2
 	var height int32 = border * 2
@@ -262,7 +259,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init ProgressBar static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ProgressBar static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

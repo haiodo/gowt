@@ -113,20 +113,17 @@ func (this *TableItem) destroyWidget_() {
 
 func (this *TableItem) FontHandle(index int32) int64 {
 	if this.cellFont != (nil) && this.cellFont[index] != (nil) {
-		return func() int64 {
-			_ = []any{this.cellFont[index], this.NativeZoom}
-			panic("j2go: unresolved call getFontHandle")
-		}()
+		return SWTFontProviderGetFontHandleFontZoom(this.cellFont[index], this.NativeZoom)
 	}
 	if this.font != (nil) {
-		return func() int64 { _ = []any{this.font, this.NativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		return SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
 	}
 	return int64(-1)
 }
 
 func (this *TableItem) GetBackground() *Color {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.background == -1 {
@@ -137,7 +134,7 @@ func (this *TableItem) GetBackground() *Color {
 
 func (this *TableItem) GetBackgroundIndex(index int32) *Color {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
@@ -150,25 +147,22 @@ func (this *TableItem) GetBackgroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond767 *Color
+	var cond1 *Color
 	if pixel == -1 {
-		cond767 = this.GetBackground()
+		cond1 = this.GetBackground()
 	} else {
-		cond767 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond1 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond767
+	return cond1
 }
 
 func (this *TableItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetBoundsInPixels() *Rectangle {
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var itemIndex int32 = this.parent.IndexOfItem(this)
@@ -183,14 +177,11 @@ func (this *TableItem) GetBoundsInPixels() *Rectangle {
 
 func (this *TableItem) GetBoundsIndex(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetBoundsInPixelsIndex(index int32) *Rectangle {
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var itemIndex int32 = this.parent.IndexOfItem(this)
@@ -366,17 +357,17 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 				rect.Right = rect.Left
 			}
 			if getText {
-				var cond768 string
+				var cond2 string
 				if this.strings != (nil) {
-					cond768 = this.strings[column]
+					cond2 = this.strings[column]
 				} else {
-					cond768 = ""
+					cond2 = ""
 				}
 				var string_ string
 				if column == 0 {
 					string_ = this.text
 				} else {
-					string_ = cond768
+					string_ = cond2
 				}
 				if string_ != "" {
 					var textRect *win32.RECT = win32.NewRECT()
@@ -406,7 +397,7 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 
 func (this *TableItem) GetChecked() bool {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if (this.parent.style & CHECK) == 0 {
@@ -417,21 +408,21 @@ func (this *TableItem) GetChecked() bool {
 
 func (this *TableItem) GetFont() *Font {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond769 *Font
+	var cond3 *Font
 	if this.font != (nil) {
-		cond769 = this.font
+		cond3 = this.font
 	} else {
-		cond769 = this.parent.GetFont()
+		cond3 = this.parent.GetFont()
 	}
-	return cond769
+	return cond3
 }
 
 func (this *TableItem) GetFontIndex(index int32) *Font {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
@@ -446,18 +437,18 @@ func (this *TableItem) GetFontIndex(index int32) *Font {
 
 func (this *TableItem) GetForeground() *Color {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.foreground == -1 {
-		return this.parent.GetForeground()
+		return this.parent.impl.getForeground_()
 	}
 	return ColorWin32_new(upcastDisplayToDevice(this.display), this.foreground)
 }
 
 func (this *TableItem) GetForegroundIndex(index int32) *Color {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
@@ -470,18 +461,18 @@ func (this *TableItem) GetForegroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond770 *Color
+	var cond4 *Color
 	if pixel == -1 {
-		cond770 = this.GetForeground()
+		cond4 = this.GetForeground()
 	} else {
-		cond770 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond4 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond770
+	return cond4
 }
 
 func (this *TableItem) GetGrayed() bool {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if (this.parent.style & CHECK) == 0 {
@@ -492,7 +483,7 @@ func (this *TableItem) GetGrayed() bool {
 
 func (this *TableItem) getImage_() *Image {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	return this.Item.getImage_()
@@ -500,7 +491,7 @@ func (this *TableItem) getImage_() *Image {
 
 func (this *TableItem) GetImageIndex(index int32) *Image {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if index == 0 {
@@ -516,14 +507,11 @@ func (this *TableItem) GetImageIndex(index int32) *Image {
 
 func (this *TableItem) GetImageBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetImageBoundsInPixels(index int32) *Rectangle {
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var itemIndex int32 = this.parent.IndexOfItem(this)
@@ -538,7 +526,7 @@ func (this *TableItem) GetImageBoundsInPixels(index int32) *Rectangle {
 
 func (this *TableItem) GetImageIndent() int32 {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	return this.imageIndent
@@ -560,7 +548,7 @@ func (this *TableItem) GetParent() *Table {
 
 func (this *TableItem) getText_() string {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	return this.Item.getText_()
@@ -568,7 +556,7 @@ func (this *TableItem) getText_() string {
 
 func (this *TableItem) GetTextIndex(index int32) string {
 	this.CheckWidget()
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if index == 0 {
@@ -577,13 +565,13 @@ func (this *TableItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond771 string
+			var cond5 string
 			if string_ != "" {
-				cond771 = string_
+				cond5 = string_
 			} else {
-				cond771 = ""
+				cond5 = ""
 			}
-			return cond771
+			return cond5
 		}
 	}
 	return ""
@@ -591,14 +579,11 @@ func (this *TableItem) GetTextIndex(index int32) string {
 
 func (this *TableItem) GetTextBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetTextBoundsInPixels(index int32) *Rectangle {
-	if !this.parent.CheckData(this, true) {
+	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	var itemIndex int32 = this.parent.IndexOfItem(this)
@@ -742,7 +727,7 @@ func (this *TableItem) SetCheckedCheckedNotify(checked bool, notify bool) {
 		var event *Event = NewEvent()
 		event.Item = upcastTableItemToWidget(this)
 		event.Detail = CHECK
-		this.parent.SendSelectionEventTypeEventSend(Selection, event, false)
+		this.parent.SendSelectionEventEventTypeEventSend(Selection, event, false)
 	}
 	this.Redraw()
 }
@@ -758,13 +743,13 @@ func (this *TableItem) SetFont(fontLike FontLike) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
-	var cond772 *Font
+	var cond6 *Font
 	if font == (nil) {
-		cond772 = font
+		cond6 = font
 	} else {
-		cond772 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
+		cond6 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
 	}
-	var newFont *Font = (cond772)
+	var newFont *Font = (cond6)
 	if oldFont == newFont {
 		return
 	}
@@ -953,7 +938,7 @@ func (this *TableItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 			}
 		}
 		oldImage = this.image
-		this.Item.setImage_(image)
+		this.Item.setImageOnItem_(image)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 	if 0 > index || index > count-1 {
@@ -983,7 +968,7 @@ func (this *TableItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 	this.RedrawColumnDrawTextDrawImage(index, drawText, true)
 }
 
-func (this *TableItem) setImage_(image *Image) {
+func (this *TableItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	this.SetImageIndexImage(0, image)
 }

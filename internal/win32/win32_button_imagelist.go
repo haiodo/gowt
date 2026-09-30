@@ -51,7 +51,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init BUTTON_IMAGELISTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init BUTTON_IMAGELISTSizeof:", r)
 			}
 		}()
 		BUTTON_IMAGELISTSizeof = OSBUTTON_IMAGELIST_sizeof()

@@ -72,10 +72,7 @@ func (this *CoolBar) checkSubclass_() {
 }
 
 func (this *CoolBar) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	var border int32 = this.impl.getBorderWidthInPixels_()
@@ -203,9 +200,9 @@ func (this *CoolBar) CreateItem(itemLike CoolItemLike, index int32) {
 		this.ResizeToPreferredWidth(lastIndex)
 	}
 	win32.OSHeapFree(hHeap, 0, lpText)
-	cond742 := id
-	item.id = cond742
-	this.items[cond742] = item
+	cond1 := id
+	item.id = cond1
+	this.items[cond1] = item
 	var length int32 = int32(len(this.originalItems))
 	var newOriginals []*CoolItem = make([]*CoolItem, length+1)
 	copy(newOriginals[0:], this.originalItems[0:0+index])
@@ -273,7 +270,7 @@ func (this *CoolBar) drawThemeBackground_(hDC int64, hwnd int64, rect *win32.REC
 	if this.background == -1 && (this.style&FLAT) != 0 {
 		var control *Control = this.impl.findBackgroundControl_()
 		if control != (nil) && control.backgroundImage != (nil) {
-			this.FillBackground(hDC, control.GetBackgroundPixel(), rect)
+			this.FillBackgroundLocal1(hDC, control.GetBackgroundPixel(), rect)
 			return
 		}
 	}
@@ -290,13 +287,13 @@ func (this *CoolBar) findThemeControl_() *Control {
 	if (this.style & FLAT) != 0 {
 		return upcastCoolBarToControl(this)
 	}
-	var cond743 *Control
+	var cond2 *Control
 	if this.background == -1 && this.backgroundImage == (nil) {
-		cond743 = upcastCoolBarToControl(this)
+		cond2 = upcastCoolBarToControl(this)
 	} else {
-		cond743 = this.Composite.findThemeControl_()
+		cond2 = this.Composite.findThemeControl_()
 	}
-	return cond743
+	return cond2
 }
 
 func (this *CoolBar) GetMargin(index int32) int32 {
@@ -389,10 +386,7 @@ func (this *CoolBar) GetItemSizes() []*Point {
 	var sizes []*Point = this.GetItemSizesInPixels()
 	if sizes != (nil) {
 		for i := int32(0); i < int32(len(sizes)); i++ {
-			sizes[i] = func() *Point {
-				_ = []any{sizes[i], this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call pixelToPointAsSize")
-			}()
+			sizes[i] = Win32DPIUtilsPixelToPointAsSizePointZoom(sizes[i], this.impl.getAutoscalingZoom_())
 		}
 	}
 	return sizes
@@ -471,9 +465,9 @@ func (this *CoolBar) GetWrapIndices() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < int32(len(items)); i++ {
 		if items[i].GetWrap() {
-			t744 := count
+			t3 := count
 			count++
-			indices[t744] = i
+			indices[t3] = i
 		}
 	}
 	var result []int32 = make([]int32, count)
@@ -527,7 +521,7 @@ func (this *CoolBar) releaseChildren_(destroy bool) {
 	if this.items != (nil) {
 		for _, item := range this.items {
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
@@ -595,10 +589,7 @@ func (this *CoolBar) SetItemLayout(itemOrder []int32, wrapIndices []int32, sizes
 	}
 	var sizesInPoints []*Point = make([]*Point, int32(len(sizes)))
 	for i := int32(0); i < int32(len(sizes)); i++ {
-		sizesInPoints[i] = func() *Point {
-			_ = []any{sizes[i], this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixelAsSize")
-		}()
+		sizesInPoints[i] = Win32DPIUtilsPointToPixelAsSizePointZoom(sizes[i], this.impl.getAutoscalingZoom_())
 	}
 	this.SetItemLayoutInPixels(itemOrder, wrapIndices, sizesInPoints)
 }
@@ -834,7 +825,7 @@ func (this *CoolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 				} else {
 					event.SetLocation(DPIUtilPixelToPoint(lpnm.Left, zoom), DPIUtilPixelToPoint(lpnm.Bottom, zoom))
 				}
-				item.SendSelectionEventTypeEventSend(Selection, event, false)
+				item.SendSelectionEventEventTypeEventSend(Selection, event, false)
 			}
 			break
 		}
@@ -909,7 +900,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CoolBar static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CoolBar static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

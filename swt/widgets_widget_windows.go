@@ -16,6 +16,7 @@ type WidgetImpl interface {
 	_removeListener_(a0 int32, a1 Listener)
 	callWindowProc_(a0 int64, a1 int32, a2 int64, a3 int64) int64
 	checkOpened_()
+	checkParent_(a0 *Widget)
 	checkSubclass_()
 	destroyWidget_()
 	dispose_()
@@ -27,6 +28,7 @@ type WidgetImpl interface {
 	getStyle_() int32
 	mapEvent_(a0 int64, a1 *Event)
 	new_GC_(a0 *GCData) *GC
+	release_(a0 bool)
 	releaseChildren_(a0 bool)
 	releaseHandle_()
 	releaseParent_()
@@ -63,11 +65,12 @@ type WidgetImpl interface {
 	getInitialLocation_() *Point
 	createWidget_()
 	defaultBackground_() int32
+	defaultFont_() int64
 	defaultForeground_() int32
 	deregister_()
 	drawThemeBackground_(a0 int64, a1 int64, a2 *win32.RECT)
 	enableDrag_(a0 bool)
-	maybeEnableDarkSystemTheme_()
+	maybeEnableDarkSystemThemeNoArgs_()
 	enableWidget_(a0 bool)
 	findBackgroundControl_() *Control
 	findBrush_(a0 int64, a1 int32) int64
@@ -80,11 +83,13 @@ type WidgetImpl interface {
 	getBounds_() *Rectangle
 	getBoundsInPixels_() *Rectangle
 	getEnabled_() bool
+	getForeground_() *Color
 	getLocation_() *Point
 	getLocationInPixels_() *Point
 	getOrientation_() int32
 	getRegion_() *Region
 	getShell_() *Shell
+	getSize_() *Point
 	getSizeInPixels_() *Point
 	getToolTipText_() string
 	hasFocus_() bool
@@ -104,11 +109,11 @@ type WidgetImpl interface {
 	requestLayout_()
 	redraw_()
 	redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 bool)
-	redrawChildren_() bool
+	redrawChildrenLocal1_() bool
 	register_()
 	resolveTextDirection_() int32
 	sendResize_()
-	setBackgroundColor_(a0 *Color)
+	setBackgroundWithColor_(a0 *Color)
 	setBackgroundImage_(a0 *Image)
 	setBackgroundImageHBitmap_(a0 int64)
 	setBackgroundPixel_(a0 int32)
@@ -116,7 +121,8 @@ type WidgetImpl interface {
 	setBoundsInPixelsXYWidthHeightFlags_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32)
 	setBoundsInPixelsXYWidthHeightFlagsDefer_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 bool)
 	setBoundsRect_(a0 *Rectangle)
-	setCursor_()
+	setCursorNoArgs_()
+	setCursor_(a0 *Cursor)
 	setDefaultFont_()
 	setEnabled_(a0 bool)
 	setFocus_() bool
@@ -126,7 +132,7 @@ type WidgetImpl interface {
 	setLocation_(a0 int32, a1 int32)
 	setLocationLocation_(a0 *Point)
 	setMenu_(a0 *Menu)
-	setOrientation_(a0 int32)
+	setOrientationOnControl_(a0 int32)
 	setRadioFocus_(a0 bool) bool
 	setRadioSelection_(a0 bool) bool
 	setRedraw_(a0 bool)
@@ -139,7 +145,7 @@ type WidgetImpl interface {
 	translateAccelerator_(a0 *win32.MSG) bool
 	translateMnemonic_(a0 *Event, a1 *Control) bool
 	translateTraversal_(a0 *win32.MSG) bool
-	traverseOverload1_(a0 int32) bool
+	traverseTraversal_(a0 int32) bool
 	traverseEscape_() bool
 	traverseItem_(a0 bool) bool
 	traversePage_(a0 bool) bool
@@ -157,7 +163,7 @@ type WidgetImpl interface {
 	widgetExtStyle_() int32
 	widgetParent_() int64
 	widgetStyle_() int32
-	setParentOnControl_(a0 *Composite) bool
+	setParent_(a0 *Composite) bool
 	computeGetBoundsZoom_() int32
 	computeBoundsZoom_() int32
 	windowClass_() *win32.TCHAR
@@ -243,7 +249,7 @@ type WidgetImpl interface {
 	wmScroll_(a0 *ScrollBar, a1 bool, a2 int64, a3 int32, a4 int64, a5 int64) *win32.LRESULT
 	getImage_() *Image
 	getText_() string
-	setImage_(a0 *Image)
+	setImageOnItem_(a0 *Image)
 	setText_(a0 string)
 	findDeferredControl_() *Composite
 	getChildren_() []*Control
@@ -253,8 +259,12 @@ type WidgetImpl interface {
 	setLayout_(a0 *Layout)
 	toolTipText_(a0 *win32.NMTTDISPINFO) string
 	getMaximized_() bool
+	getMinimized_() bool
 	removeMenu_(a0 *Menu)
-	setParentOnDecorations_()
+	setMaximized_(a0 bool)
+	setMenuBar_(a0 *Menu)
+	setMinimized_(a0 bool)
+	setParentNoArgs_()
 	hwndToolTip_() int64
 }
 
@@ -310,6 +320,10 @@ func (this *Widget) defaultBackground_() int32 {
 	panic("j2go: defaultBackground_ has no default on Widget")
 }
 
+func (this *Widget) defaultFont_() int64 {
+	panic("j2go: defaultFont_ has no default on Widget")
+}
+
 func (this *Widget) defaultForeground_() int32 {
 	panic("j2go: defaultForeground_ has no default on Widget")
 }
@@ -326,8 +340,8 @@ func (this *Widget) enableDrag_(a0 bool) {
 	panic("j2go: enableDrag_ has no default on Widget")
 }
 
-func (this *Widget) maybeEnableDarkSystemTheme_() {
-	panic("j2go: maybeEnableDarkSystemTheme_ has no default on Widget")
+func (this *Widget) maybeEnableDarkSystemThemeNoArgs_() {
+	panic("j2go: maybeEnableDarkSystemThemeNoArgs_ has no default on Widget")
 }
 
 func (this *Widget) enableWidget_(a0 bool) {
@@ -378,6 +392,10 @@ func (this *Widget) getEnabled_() bool {
 	panic("j2go: getEnabled_ has no default on Widget")
 }
 
+func (this *Widget) getForeground_() *Color {
+	panic("j2go: getForeground_ has no default on Widget")
+}
+
 func (this *Widget) getLocation_() *Point {
 	panic("j2go: getLocation_ has no default on Widget")
 }
@@ -396,6 +414,10 @@ func (this *Widget) getRegion_() *Region {
 
 func (this *Widget) getShell_() *Shell {
 	panic("j2go: getShell_ has no default on Widget")
+}
+
+func (this *Widget) getSize_() *Point {
+	panic("j2go: getSize_ has no default on Widget")
 }
 
 func (this *Widget) getSizeInPixels_() *Point {
@@ -474,8 +496,8 @@ func (this *Widget) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, a3 int
 	panic("j2go: redrawXYWidthHeightAll_ has no default on Widget")
 }
 
-func (this *Widget) redrawChildren_() bool {
-	panic("j2go: redrawChildren_ has no default on Widget")
+func (this *Widget) redrawChildrenLocal1_() bool {
+	panic("j2go: redrawChildrenLocal1_ has no default on Widget")
 }
 
 func (this *Widget) register_() {
@@ -490,8 +512,8 @@ func (this *Widget) sendResize_() {
 	panic("j2go: sendResize_ has no default on Widget")
 }
 
-func (this *Widget) setBackgroundColor_(a0 *Color) {
-	panic("j2go: setBackgroundColor_ has no default on Widget")
+func (this *Widget) setBackgroundWithColor_(a0 *Color) {
+	panic("j2go: setBackgroundWithColor_ has no default on Widget")
 }
 
 func (this *Widget) setBackgroundImage_(a0 *Image) {
@@ -522,7 +544,11 @@ func (this *Widget) setBoundsRect_(a0 *Rectangle) {
 	panic("j2go: setBoundsRect_ has no default on Widget")
 }
 
-func (this *Widget) setCursor_() {
+func (this *Widget) setCursorNoArgs_() {
+	panic("j2go: setCursorNoArgs_ has no default on Widget")
+}
+
+func (this *Widget) setCursor_(a0 *Cursor) {
 	panic("j2go: setCursor_ has no default on Widget")
 }
 
@@ -562,8 +588,8 @@ func (this *Widget) setMenu_(a0 *Menu) {
 	panic("j2go: setMenu_ has no default on Widget")
 }
 
-func (this *Widget) setOrientation_(a0 int32) {
-	panic("j2go: setOrientation_ has no default on Widget")
+func (this *Widget) setOrientationOnControl_(a0 int32) {
+	panic("j2go: setOrientationOnControl_ has no default on Widget")
 }
 
 func (this *Widget) setRadioFocus_(a0 bool) bool {
@@ -614,8 +640,8 @@ func (this *Widget) translateTraversal_(a0 *win32.MSG) bool {
 	panic("j2go: translateTraversal_ has no default on Widget")
 }
 
-func (this *Widget) traverseOverload1_(a0 int32) bool {
-	panic("j2go: traverseOverload1_ has no default on Widget")
+func (this *Widget) traverseTraversal_(a0 int32) bool {
+	panic("j2go: traverseTraversal_ has no default on Widget")
 }
 
 func (this *Widget) traverseEscape_() bool {
@@ -686,8 +712,8 @@ func (this *Widget) widgetStyle_() int32 {
 	panic("j2go: widgetStyle_ has no default on Widget")
 }
 
-func (this *Widget) setParentOnControl_(a0 *Composite) bool {
-	panic("j2go: setParentOnControl_ has no default on Widget")
+func (this *Widget) setParent_(a0 *Composite) bool {
+	panic("j2go: setParent_ has no default on Widget")
 }
 
 func (this *Widget) computeGetBoundsZoom_() int32 {
@@ -1030,8 +1056,8 @@ func (this *Widget) getText_() string {
 	panic("j2go: getText_ has no default on Widget")
 }
 
-func (this *Widget) setImage_(a0 *Image) {
-	panic("j2go: setImage_ has no default on Widget")
+func (this *Widget) setImageOnItem_(a0 *Image) {
+	panic("j2go: setImageOnItem_ has no default on Widget")
 }
 
 func (this *Widget) setText_(a0 string) {
@@ -1070,12 +1096,28 @@ func (this *Widget) getMaximized_() bool {
 	panic("j2go: getMaximized_ has no default on Widget")
 }
 
+func (this *Widget) getMinimized_() bool {
+	panic("j2go: getMinimized_ has no default on Widget")
+}
+
 func (this *Widget) removeMenu_(a0 *Menu) {
 	panic("j2go: removeMenu_ has no default on Widget")
 }
 
-func (this *Widget) setParentOnDecorations_() {
-	panic("j2go: setParentOnDecorations_ has no default on Widget")
+func (this *Widget) setMaximized_(a0 bool) {
+	panic("j2go: setMaximized_ has no default on Widget")
+}
+
+func (this *Widget) setMenuBar_(a0 *Menu) {
+	panic("j2go: setMenuBar_ has no default on Widget")
+}
+
+func (this *Widget) setMinimized_(a0 bool) {
+	panic("j2go: setMinimized_ has no default on Widget")
+}
+
+func (this *Widget) setParentNoArgs_() {
+	panic("j2go: setParentNoArgs_ has no default on Widget")
 }
 
 func (this *Widget) hwndToolTip_() int64 {
@@ -1177,6 +1219,14 @@ func (this *widgetHooked) getEnabled_() bool {
 	return this.WidgetImpl.getEnabled_()
 }
 
+func (this *widgetHooked) getForeground_() *Color {
+	if h, ok := this.hook.(interface{ GetForeground_() *Color }); ok && this.active != "getForeground_" {
+		defer this.enter("getForeground_")()
+		return h.GetForeground_()
+	}
+	return this.WidgetImpl.getForeground_()
+}
+
 func (this *widgetHooked) getLocation_() *Point {
 	if h, ok := this.hook.(interface{ GetLocation_() *Point }); ok && this.active != "getLocation_" {
 		defer this.enter("getLocation_")()
@@ -1207,6 +1257,14 @@ func (this *widgetHooked) getShell_() *Shell {
 		return h.GetShell_()
 	}
 	return this.WidgetImpl.getShell_()
+}
+
+func (this *widgetHooked) getSize_() *Point {
+	if h, ok := this.hook.(interface{ GetSize_() *Point }); ok && this.active != "getSize_" {
+		defer this.enter("getSize_")()
+		return h.GetSize_()
+	}
+	return this.WidgetImpl.getSize_()
 }
 
 func (this *widgetHooked) getToolTipText_() string {
@@ -1283,12 +1341,12 @@ func (this *widgetHooked) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, 
 	this.WidgetImpl.redrawXYWidthHeightAll_(a0, a1, a2, a3, a4)
 }
 
-func (this *widgetHooked) setBackgroundColor_(a0 *Color) {
-	if h, ok := this.hook.(interface{ SetBackgroundColor_(a0 *Color) }); ok && this.active != "setBackgroundColor_" {
-		defer this.enter("setBackgroundColor_")()
-		h.SetBackgroundColor_(a0)
+func (this *widgetHooked) setBackgroundWithColor_(a0 *Color) {
+	if h, ok := this.hook.(interface{ SetBackgroundWithColor_(a0 *Color) }); ok && this.active != "setBackgroundWithColor_" {
+		defer this.enter("setBackgroundWithColor_")()
+		h.SetBackgroundWithColor_(a0)
 	}
-	this.WidgetImpl.setBackgroundColor_(a0)
+	this.WidgetImpl.setBackgroundWithColor_(a0)
 }
 
 func (this *widgetHooked) setBackgroundImage_(a0 *Image) {
@@ -1315,6 +1373,14 @@ func (this *widgetHooked) setBoundsRect_(a0 *Rectangle) {
 		h.SetBoundsRect_(a0)
 	}
 	this.WidgetImpl.setBoundsRect_(a0)
+}
+
+func (this *widgetHooked) setCursor_(a0 *Cursor) {
+	if h, ok := this.hook.(interface{ SetCursor_(a0 *Cursor) }); ok && this.active != "setCursor_" {
+		defer this.enter("setCursor_")()
+		h.SetCursor_(a0)
+	}
+	this.WidgetImpl.setCursor_(a0)
 }
 
 func (this *widgetHooked) setEnabled_(a0 bool) {
@@ -1373,12 +1439,12 @@ func (this *widgetHooked) setMenu_(a0 *Menu) {
 	this.WidgetImpl.setMenu_(a0)
 }
 
-func (this *widgetHooked) setOrientation_(a0 int32) {
-	if h, ok := this.hook.(interface{ SetOrientation_(a0 int32) }); ok && this.active != "setOrientation_" {
-		defer this.enter("setOrientation_")()
-		h.SetOrientation_(a0)
+func (this *widgetHooked) setOrientationOnControl_(a0 int32) {
+	if h, ok := this.hook.(interface{ SetOrientationOnControl_(a0 int32) }); ok && this.active != "setOrientationOnControl_" {
+		defer this.enter("setOrientationOnControl_")()
+		h.SetOrientationOnControl_(a0)
 	}
-	this.WidgetImpl.setOrientation_(a0)
+	this.WidgetImpl.setOrientationOnControl_(a0)
 }
 
 func (this *widgetHooked) setRedraw_(a0 bool) {
@@ -1413,20 +1479,20 @@ func (this *widgetHooked) setVisible_(a0 bool) {
 	this.WidgetImpl.setVisible_(a0)
 }
 
-func (this *widgetHooked) traverseOverload1_(a0 int32) bool {
-	if h, ok := this.hook.(interface{ TraverseOverload1_(a0 int32) bool }); ok && this.active != "traverseOverload1_" {
-		defer this.enter("traverseOverload1_")()
-		return h.TraverseOverload1_(a0)
+func (this *widgetHooked) traverseTraversal_(a0 int32) bool {
+	if h, ok := this.hook.(interface{ TraverseTraversal_(a0 int32) bool }); ok && this.active != "traverseTraversal_" {
+		defer this.enter("traverseTraversal_")()
+		return h.TraverseTraversal_(a0)
 	}
-	return this.WidgetImpl.traverseOverload1_(a0)
+	return this.WidgetImpl.traverseTraversal_(a0)
 }
 
-func (this *widgetHooked) setParentOnControl_(a0 *Composite) bool {
-	if h, ok := this.hook.(interface{ SetParentOnControl_(a0 *Composite) bool }); ok && this.active != "setParentOnControl_" {
-		defer this.enter("setParentOnControl_")()
-		return h.SetParentOnControl_(a0)
+func (this *widgetHooked) setParent_(a0 *Composite) bool {
+	if h, ok := this.hook.(interface{ SetParent_(a0 *Composite) bool }); ok && this.active != "setParent_" {
+		defer this.enter("setParent_")()
+		return h.SetParent_(a0)
 	}
-	return this.WidgetImpl.setParentOnControl_(a0)
+	return this.WidgetImpl.setParent_(a0)
 }
 
 func (this *widgetHooked) computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32) *Rectangle {
@@ -1463,12 +1529,12 @@ func (this *widgetHooked) getText_() string {
 	return this.WidgetImpl.getText_()
 }
 
-func (this *widgetHooked) setImage_(a0 *Image) {
-	if h, ok := this.hook.(interface{ SetImage_(a0 *Image) }); ok && this.active != "setImage_" {
-		defer this.enter("setImage_")()
-		h.SetImage_(a0)
+func (this *widgetHooked) setImageOnItem_(a0 *Image) {
+	if h, ok := this.hook.(interface{ SetImageOnItem_(a0 *Image) }); ok && this.active != "setImageOnItem_" {
+		defer this.enter("setImageOnItem_")()
+		h.SetImageOnItem_(a0)
 	}
-	this.WidgetImpl.setImage_(a0)
+	this.WidgetImpl.setImageOnItem_(a0)
 }
 
 func (this *widgetHooked) setText_(a0 string) {
@@ -1509,6 +1575,38 @@ func (this *widgetHooked) getMaximized_() bool {
 		return h.GetMaximized_()
 	}
 	return this.WidgetImpl.getMaximized_()
+}
+
+func (this *widgetHooked) getMinimized_() bool {
+	if h, ok := this.hook.(interface{ GetMinimized_() bool }); ok && this.active != "getMinimized_" {
+		defer this.enter("getMinimized_")()
+		return h.GetMinimized_()
+	}
+	return this.WidgetImpl.getMinimized_()
+}
+
+func (this *widgetHooked) setMaximized_(a0 bool) {
+	if h, ok := this.hook.(interface{ SetMaximized_(a0 bool) }); ok && this.active != "setMaximized_" {
+		defer this.enter("setMaximized_")()
+		h.SetMaximized_(a0)
+	}
+	this.WidgetImpl.setMaximized_(a0)
+}
+
+func (this *widgetHooked) setMenuBar_(a0 *Menu) {
+	if h, ok := this.hook.(interface{ SetMenuBar_(a0 *Menu) }); ok && this.active != "setMenuBar_" {
+		defer this.enter("setMenuBar_")()
+		h.SetMenuBar_(a0)
+	}
+	this.WidgetImpl.setMenuBar_(a0)
+}
+
+func (this *widgetHooked) setMinimized_(a0 bool) {
+	if h, ok := this.hook.(interface{ SetMinimized_(a0 bool) }); ok && this.active != "setMinimized_" {
+		defer this.enter("setMinimized_")()
+		h.SetMinimized_(a0)
+	}
+	this.WidgetImpl.setMinimized_(a0)
 }
 
 type Widget struct {
@@ -1623,7 +1721,7 @@ func NewWidgetParentStyle(parentLike WidgetLike, style int32) *Widget {
 
 func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
 	this.impl.checkSubclass_()
-	this.CheckParent(parent)
+	this.impl.checkParent_(parent)
 	this.style = style
 	if parent != (nil) {
 		this.NativeZoom = parent.NativeZoom
@@ -1730,7 +1828,10 @@ func (this *Widget) CheckParent(parentLike WidgetLike) {
 	if parentLike != nil {
 		parent = parentLike.AsWidget()
 	}
-	_ = parent
+	this.impl.checkParent_(parent)
+}
+
+func (this *Widget) checkParent_(parent *Widget) {
 	if parent == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -1790,7 +1891,7 @@ func (this *Widget) dispose_() {
 	if !this.IsValidThread() {
 		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
-	this.Release(true)
+	this.impl.release_(true)
 }
 
 func (this *Widget) DragDetect(hwnd int64, x int32, y int32, filter bool, detect []bool, consume []bool) bool {
@@ -1843,12 +1944,12 @@ func (this *Widget) FixMnemonicStringSpacesRemoveAppended(string_ string, spaces
 	for i < int32(len(buffer)) {
 		if int32(buffer[i]) == int32('&') {
 			if i+1 < int32(len(buffer)) && int32(buffer[i+1]) == int32('&') {
-				t56 := j
+				t1 := j
 				j++
 				if spaces {
-					buffer[t56] = ' '
+					buffer[t1] = ' '
 				} else {
-					buffer[t56] = buffer[i]
+					buffer[t1] = buffer[i]
 				}
 				i++
 			}
@@ -1856,37 +1957,37 @@ func (this *Widget) FixMnemonicStringSpacesRemoveAppended(string_ string, spaces
 		} else {
 			if int32(buffer[i]) == int32('(') && removeAppended && i+4 == jrt.StringLength(string_) && int32(buffer[i+1]) == int32('&') && int32(buffer[i+3]) == int32(')') {
 				if spaces {
-					t57 := j
+					t2 := j
 					j++
-					buffer[t57] = ' '
+					buffer[t2] = ' '
 				}
 				i += 4
 			} else {
-				t58 := j
+				t3 := j
 				j++
-				t59 := i
+				t4 := i
 				i++
-				buffer[t58] = buffer[t59]
+				buffer[t3] = buffer[t4]
 			}
 		}
 	}
 	for j < int32(len(buffer)) {
-		t60 := j
+		t5 := j
 		j++
-		buffer[t60] = uint16(0)
+		buffer[t5] = uint16(0)
 	}
 	return buffer
 }
 
 func (this *Widget) GetData() any {
 	this.CheckWidget()
-	var cond61 any
+	var cond6 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond61 = (this.data.([]any))[0]
+		cond6 = (this.data.([]any))[0]
 	} else {
-		cond61 = this.data
+		cond6 = this.data
 	}
-	return cond61
+	return cond6
 }
 
 func (this *Widget) GetDataKey(key string) any {
@@ -1898,7 +1999,7 @@ func (this *Widget) getDataKey_(key string) any {
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if (this.state&WidgetKEYED_DATA) != 0 && func() bool { table, ok62 := any(nil), false; return ok62 }() {
+	if (this.state&WidgetKEYED_DATA) != 0 && func() bool { table, ok7 := any(nil), false; return ok7 }() {
 		for i := int32(1); i < int32(len(table)); i += 2 {
 			if key == table[i] {
 				return table[i+1]
@@ -2036,6 +2137,10 @@ func (this *Widget) PostEventEventTypeEvent(eventType int32, eventLike EventLike
 }
 
 func (this *Widget) Release(destroy bool) {
+	this.impl.release_(destroy)
+}
+
+func (this *Widget) release_(destroy bool) {
 	{
 		var exceptions *ExceptionStash = NewExceptionStash()
 		defer exceptions.Close()
@@ -2220,7 +2325,7 @@ func (this *Widget) SendEvent(eventLike EventLike) {
 	var display *Display = event.Display
 	if !display.FilterEvent(event) {
 		if this.eventTable != (nil) {
-			display.SendEventEventTableEvent(this.eventTable, event)
+			display.SendEventTableEvent(this.eventTable, event)
 		}
 	}
 }
@@ -2264,10 +2369,10 @@ func (this *Widget) SendEventEventTypeEventSend(eventType int32, eventLike Event
 }
 
 func (this *Widget) SendSelectionEvent(type_ int32) {
-	this.SendSelectionEventTypeEventSend(type_, nil, false)
+	this.SendSelectionEventEventTypeEventSend(type_, nil, false)
 }
 
-func (this *Widget) SendSelectionEventTypeEventSend(type_ int32, eventLike EventLike, send bool) {
+func (this *Widget) SendSelectionEventEventTypeEventSend(type_ int32, eventLike EventLike, send bool) {
 	var event *Event
 	if eventLike != nil {
 		event = eventLike.AsEvent()
@@ -2283,7 +2388,7 @@ func (this *Widget) SendSelectionEventTypeEventSend(type_ int32, eventLike Event
 	this.SendEventEventTypeEventSend(type_, event, send)
 }
 
-func (this *Widget) SendKeyEvent(type_ int32, msg int32, wParam int64, lParam int64) bool {
+func (this *Widget) SendKeyEventLocal1(type_ int32, msg int32, wParam int64, lParam int64) bool {
 	var event *Event = NewEvent()
 	if !this.SetKeyState(event, type_, wParam, lParam) {
 		return true
@@ -2339,9 +2444,9 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 		return true
 	}
 	var vertical bool = (type_ == MouseWheel)
-	inner63 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
-	inner63.this_0 = this
-	var wheelData *Widget_MouseWheelData = inner63
+	inner8 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
+	inner8.this_0 = this
+	var wheelData *Widget_MouseWheelData = inner8
 	if wheelData.count == 0 {
 		return true
 	}
@@ -2647,10 +2752,7 @@ func (this *Widget) ShowMenuXYDetail(x int32, y int32, detail int32) bool {
 	}
 	var menu *Menu = this.impl.getMenu_()
 	if menu != (nil) && !menu.IsDisposed() {
-		var locInPixels *Point = func() *Point {
-			_ = []any{event.GetLocation(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixelAsLocation")
-		}()
+		var locInPixels *Point = Win32DPIUtilsPointToPixelAsLocationPointZoom(event.GetLocation(), this.impl.getAutoscalingZoom_())
 		if x != locInPixels.X || y != locInPixels.Y {
 			menu.SetLocationLocation(event.GetLocation())
 		}
@@ -2697,7 +2799,7 @@ func (this *Widget) WmChar(hwnd int64, wParam int64, lParam int64) *win32.LRESUL
 
 func (this *Widget) wmChar_(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
 	this.display.lastAscii = int32(wParam)
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_CHAR, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -2728,13 +2830,13 @@ func (this *Widget) WmContextMenu(hwnd int64, wParam int64, lParam int64) *win32
 		y = win32.OSGET_Y_LPARAM(int64(pos))
 		detail = MENU_KEYBOARD
 	}
-	var cond64 *win32.LRESULT
+	var cond9 *win32.LRESULT
 	if this.ShowMenuXYDetail(x, y, detail) {
-		cond64 = win32.LRESULTZERO
+		cond9 = win32.LRESULTZERO
 	} else {
-		cond64 = nil
+		cond9 = nil
 	}
-	return cond64
+	return cond9
 }
 
 func (this *Widget) WmIMEChar(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -2747,10 +2849,10 @@ func (this *Widget) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.LR
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTONE
 	}
-	this.SendKeyEvent(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.LRESULTONE
@@ -2832,7 +2934,7 @@ func (this *Widget) wmKeyDown_(hwnd int64, wParam int64, lParam int64) *win32.LR
 	if isCharPending {
 		return nil
 	}
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_KEYDOWN, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_KEYDOWN, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -2865,7 +2967,7 @@ func (this *Widget) WmKeyUp(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 		}
 	}
 	var result *win32.LRESULT = nil
-	if !this.SendKeyEvent(KeyUp, win32.OSWM_KEYUP, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyUp, win32.OSWM_KEYUP, wParam, lParam) {
 		result = win32.LRESULTONE
 	}
 	display.lastAscii = 0
@@ -3094,23 +3196,23 @@ func (this *Widget) WmMouseMove(hwnd int64, wParam int64, lParam int64) *win32.L
 }
 
 func (this *Widget) WmMouseWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond65 *win32.LRESULT
+	var cond10 *win32.LRESULT
 	if this.SendMouseWheelEvent(MouseWheel, hwnd, wParam, lParam) {
-		cond65 = nil
+		cond10 = nil
 	} else {
-		cond65 = win32.LRESULTZERO
+		cond10 = win32.LRESULTZERO
 	}
-	return cond65
+	return cond10
 }
 
 func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond66 *win32.LRESULT
+	var cond11 *win32.LRESULT
 	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
-		cond66 = nil
+		cond11 = nil
 	} else {
-		cond66 = win32.LRESULTZERO
+		cond11 = win32.LRESULTZERO
 	}
-	return cond66
+	return cond11
 }
 
 func (this *Widget) WmNCPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3143,10 +3245,7 @@ func (this *Widget) WmPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 			win32.OSSetMetaRgn(hDC)
 			var event *Event = NewEvent()
 			event.Gc = gc
-			event.SetBounds(func() *Rectangle {
-				_ = []any{NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call pixelToPoint")
-			}())
+			event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
 			this.SendEventEventTypeEvent(Paint, event)
 			event.Gc = nil
 		}
@@ -3259,17 +3358,17 @@ func (this *Widget) WmSysChar(hwnd int64, wParam int64, lParam int64) *win32.LRE
 	var result int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_SYSCHAR, wParam, lParam)
 	var consumed bool = false
 	if !display.mnemonicKeyHit {
-		consumed = !this.SendKeyEvent(KeyDown, win32.OSWM_SYSCHAR, wParam, lParam)
+		consumed = !this.SendKeyEventLocal1(KeyDown, win32.OSWM_SYSCHAR, wParam, lParam)
 	}
 	consumed = consumed || display.mnemonicKeyHit
 	display.mnemonicKeyHit = oldKeyHit
-	var cond67 *win32.LRESULT
+	var cond12 *win32.LRESULT
 	if consumed {
-		cond67 = win32.LRESULTONE
+		cond12 = win32.LRESULTONE
 	} else {
-		cond67 = win32.NewLRESULT(result)
+		cond12 = win32.NewLRESULT(result)
 	}
-	return cond67
+	return cond12
 }
 
 func (this *Widget) WmSysKeyDown(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3343,7 +3442,7 @@ func (this *Widget) wmSysKeyDown_(hwnd int64, wParam int64, lParam int64) *win32
 	if isCharPending {
 		return nil
 	}
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_SYSKEYDOWN, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_SYSKEYDOWN, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -3562,20 +3661,11 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 	this.count = delta / win32.OSWHEEL_DELTA
 }
 
-// j2go: func adapter for Listener.
-type ListenerFunc struct {
-	fn func(a0 *Event)
-}
-
-func (f *ListenerFunc) HandleEvent(a0 *Event) {
-	f.fn(a0)
-}
-
 func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Widget static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Widget static{}:", r)
 			}
 		}()
 		var icce *win32.INITCOMMONCONTROLSEX = win32.NewINITCOMMONCONTROLSEX()

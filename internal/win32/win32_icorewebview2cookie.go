@@ -34,23 +34,23 @@ func (this *ICoreWebView2Cookie) Put_Expires(expires float64) int32 {
 }
 
 func (this *ICoreWebView2Cookie) Put_IsHttpOnly(isHttpOnly bool) int32 {
-	var cond5 int32
+	var cond1 int32
 	if isHttpOnly {
-		cond5 = 1
+		cond1 = 1
 	} else {
-		cond5 = 0
+		cond1 = 0
 	}
-	return COMVtblCallOverload1(11, this.address, cond5)
+	return COMVtblCallOverload1(11, this.address, cond1)
 }
 
 func (this *ICoreWebView2Cookie) Put_IsSecure(isSecure bool) int32 {
-	var cond6 int32
+	var cond2 int32
 	if isSecure {
-		cond6 = 1
+		cond2 = 1
 	} else {
-		cond6 = 0
+		cond2 = 0
 	}
-	return COMVtblCallOverload1(15, this.address, cond6)
+	return COMVtblCallOverload1(15, this.address, cond2)
 }
 
 func (this *ICoreWebView2Cookie) Get_IsSession(isSession []int32) int32 {

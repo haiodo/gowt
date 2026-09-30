@@ -41,7 +41,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init BP_PAINTPARAMSSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init BP_PAINTPARAMSSizeof:", r)
 			}
 		}()
 		BP_PAINTPARAMSSizeof = OSBP_PAINTPARAMS_sizeof()

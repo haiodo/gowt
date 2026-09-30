@@ -51,7 +51,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TRIVERTEXSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TRIVERTEXSizeof:", r)
 			}
 		}()
 		TRIVERTEXSizeof = OSTRIVERTEX_sizeof()

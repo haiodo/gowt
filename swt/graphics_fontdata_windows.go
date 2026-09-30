@@ -48,13 +48,13 @@ func (this *FontData) initFontDataOverload1(data *win32.LOGFONT, height float32)
 	this.Height = height
 }
 
-func NewFontDataOverload2(string_ string) *FontData {
+func NewFontDataOverload1(string_ string) *FontData {
 	this := &FontData{}
-	this.initFontDataOverload2(string_)
+	this.initFontDataOverload1(string_)
 	return this
 }
 
-func (this *FontData) initFontDataOverload2(string_ string) {
+func (this *FontData) initFontDataOverload1(string_ string) {
 	if string_ == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -169,7 +169,7 @@ func (this *FontData) initFontDataOverload2(string_ string) {
 	var version2 string = jrt.Substring(string_, start, end)
 	if (platform == "WINDOWS") && (version2 == "1") {
 		var newData *win32.LOGFONT = win32.NewLOGFONT()
-		tretd268 := false
+		tretd1 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -188,7 +188,7 @@ func (this *FontData) initFontDataOverload2(string_ string) {
 					this.SetName(name)
 					this.SetHeightHeight(height)
 					this.SetStyle(style)
-					tretd268 = true
+					tretd1 = true
 					return
 				} else {
 					panic(r)
@@ -197,97 +197,97 @@ func (this *FontData) initFontDataOverload2(string_ string) {
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfHeight = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfWidth = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfEscapement = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfOrientation = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfWeight = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfItalic = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfUnderline = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfStrikeOut = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfCharSet = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfOutPrecision = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfClipPrecision = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfQuality = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd268 = true
+				tretd1 = true
 				return
 			}
 			newData.LfPitchAndFamily = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
 			start = end + 1
 		}()
-		if tretd268 {
+		if tretd1 {
 			return
 		}
 		var length int32 = int32(math.Min(float64(int32(len(newData.LfFaceName))-1), float64(jrt.StringLength(string_)-start)))
@@ -296,18 +296,18 @@ func (this *FontData) initFontDataOverload2(string_ string) {
 	}
 }
 
-func NewFontDataOverload3(fontDataLike FontDataLike) *FontData {
+func NewFontDataOverload2(fontDataLike FontDataLike) *FontData {
 	var fontData *FontData
 	if fontDataLike != nil {
 		fontData = fontDataLike.AsFontData()
 	}
 	_ = fontData
 	this := &FontData{}
-	this.initFontDataOverload3(fontData)
+	this.initFontDataOverload2(fontData)
 	return this
 }
 
-func (this *FontData) initFontDataOverload3(fontData *FontData) {
+func (this *FontData) initFontDataOverload2(fontData *FontData) {
 	if fontData == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -318,13 +318,13 @@ func (this *FontData) initFontDataOverload3(fontData *FontData) {
 	this.Data = FontDataCloneLogFont(fontData)
 }
 
-func NewFontDataOverload4(name string, height int32, style int32) *FontData {
+func NewFontDataOverload3(name string, height int32, style int32) *FontData {
 	this := &FontData{}
-	this.initFontDataOverload4(name, height, style)
+	this.initFontDataOverload3(name, height, style)
 	return this
 }
 
-func (this *FontData) initFontDataOverload4(name string, height int32, style int32) {
+func (this *FontData) initFontDataOverload3(name string, height int32, style int32) {
 	if name == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -335,13 +335,13 @@ func (this *FontData) initFontDataOverload4(name string, height int32, style int
 	this.Data.LfCharSet = int8(1)
 }
 
-func newFontDataOverload5(name string, height float32, style int32) *FontData {
+func newFontDataOverload4(name string, height float32, style int32) *FontData {
 	this := &FontData{}
-	this.initFontDataOverload5(name, height, style)
+	this.initFontDataOverload4(name, height, style)
 	return this
 }
 
-func (this *FontData) initFontDataOverload5(name string, height float32, style int32) {
+func (this *FontData) initFontDataOverload4(name string, height float32, style int32) {
 	if name == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -356,8 +356,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok269 := fontDataImplAsFontData(object)
-	if !(ok269) {
+	_, ok2 := fontDataImplAsFontData(object)
+	if !(ok2) {
 		return false
 	}
 	var fd *FontData = castanyToFontData(object)

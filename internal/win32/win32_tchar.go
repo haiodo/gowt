@@ -31,13 +31,13 @@ func NewTCHARChTerminate(ch uint16, terminate bool) *TCHAR {
 }
 
 func (this *TCHAR) initTCHARChTerminate(ch uint16, terminate bool) {
-	var cond24 []uint16
+	var cond1 []uint16
 	if terminate {
-		cond24 = []uint16{ch, '\u0000'}
+		cond1 = []uint16{ch, '\u0000'}
 	} else {
-		cond24 = []uint16{ch}
+		cond1 = []uint16{ch}
 	}
-	this.initTCHARCharsTerminate(cond24, false)
+	this.initTCHARCharsTerminate(cond1, false)
 }
 
 func NewTCHARCharsTerminate(chars []uint16, terminate bool) *TCHAR {
@@ -99,13 +99,13 @@ func (this *TCHAR) StringStartLength(start int32, length int32) string {
 
 func TCHARGetChars(string_ string, terminate bool) []uint16 {
 	var length int32 = jrt.StringLength(string_)
-	var cond25 int32
+	var cond2 int32
 	if terminate {
-		cond25 = 1
+		cond2 = 1
 	} else {
-		cond25 = 0
+		cond2 = 0
 	}
-	var chars []uint16 = make([]uint16, length+(cond25))
+	var chars []uint16 = make([]uint16, length+(cond2))
 	copy(chars, utf16.Encode([]rune(string_)))
 	return chars
 }

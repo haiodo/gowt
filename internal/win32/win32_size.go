@@ -39,7 +39,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SIZESizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SIZESizeof:", r)
 			}
 		}()
 		SIZESizeof = OSSIZE_sizeof()

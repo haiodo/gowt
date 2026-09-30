@@ -45,7 +45,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SCRIPT_ITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SCRIPT_ITEMSizeof:", r)
 			}
 		}()
 		SCRIPT_ITEMSizeof = OSSCRIPT_ITEM_sizeof()

@@ -53,10 +53,7 @@ func (this *Canvas) DrawBackgroundGC(gcLike GCLike, x int32, y int32, width int3
 	}
 	_ = gc
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var rectangle *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(x, y, width, height), zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
 	this.DrawBackgroundInPixels(gc, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, 0, 0)
 }
 
@@ -76,11 +73,11 @@ func (this *Canvas) isUseWsBorder_() bool {
 
 func (this *Canvas) releaseChildren_(destroy bool) {
 	if this.caret != (nil) {
-		this.caret.Release(false)
+		this.caret.impl.release_(false)
 		this.caret = nil
 	}
 	if this.ime != (nil) {
-		this.ime.Release(false)
+		this.ime.impl.release_(false)
 		this.ime = nil
 	}
 	this.Composite.releaseChildren_(destroy)
@@ -91,7 +88,7 @@ func (this *Canvas) reskinChildren_(flags int32) {
 		this.caret.impl.reskin_(flags)
 	}
 	if this.ime != (nil) {
-		this.ime.Reskin(flags)
+		this.ime.impl.reskin_(flags)
 	}
 	this.Composite.reskinChildren_(flags)
 }
@@ -101,10 +98,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	var zoom int32 = this.impl.getAutoscalingZoom_()
 	destX = DPIUtilPointToPixel(destX, zoom)
 	destY = DPIUtilPointToPixel(destY, zoom)
-	var rectangle *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(x, y, width, height), zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
 	this.ScrollInPixels(destX, destY, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, all)
 }
 
@@ -180,7 +174,12 @@ func (this *Canvas) setFont_(font *Font) {
 	this.Composite.setFont_(font)
 }
 
-func (this *Canvas) SetIME(ime *IME) {
+func (this *Canvas) SetIME(imeLike IMELike) {
+	var ime *IME
+	if imeLike != nil {
+		ime = imeLike.AsIME()
+	}
+	_ = ime
 	this.CheckWidget()
 	if ime != (nil) && ime.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)

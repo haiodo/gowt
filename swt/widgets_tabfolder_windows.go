@@ -14,7 +14,7 @@ import (
 type TabFolder struct {
 	Composite
 	items        []*TabItem
-	imageList    unsupported_type_org_eclipse_swt_internal_ImageList
+	imageList    *ImageList
 	createdAsRTL bool
 }
 
@@ -125,7 +125,7 @@ func (this *TabFolder) CreateItem(itemLike TabItemLike, index int32) {
 	if count == 0 {
 		var event *Event = NewEvent()
 		event.Item = upcastTabItemToWidget(this.items[0])
-		this.SendSelectionEventTypeEventSend(Selection, event, true)
+		this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	}
 }
 
@@ -271,19 +271,16 @@ func (this *TabFolder) ImageIndex(imageLike ImageLike) int32 {
 	if this.imageList == (nil) {
 		var boundsInPoints *Rectangle = image.GetBounds()
 		this.imageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, boundsInPoints.Width, boundsInPoints.Height, this.impl.getAutoscalingZoom_())
-		var index int32 = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
-		var hImageList int64 = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		var index int32 = this.imageList.Add(image)
+		var hImageList int64 = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTCM_SETIMAGELIST, int64(0), hImageList)
 		return index
 	}
-	var index int32 = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call indexOf") }()
+	var index int32 = this.imageList.IndexOf(image)
 	if index == -1 {
-		index = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
+		index = this.imageList.Add(image)
 	} else {
-		func() any { _ = []any{this.imageList, index, image}; panic("j2go: unresolved call put") }()
+		this.imageList.Put(index, image)
 	}
 	return index
 }
@@ -368,7 +365,7 @@ func (this *TabFolder) releaseChildren_(destroy bool) {
 		for i := int32(0); i < count; i++ {
 			var item *TabItem = this.items[i]
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
@@ -502,7 +499,7 @@ func (this *TabFolder) SetSelectionIndexNotify(index int32, notify bool) {
 		if notify {
 			var event *Event = NewEvent()
 			event.Item = upcastTabItemToWidget(item)
-			this.SendSelectionEventTypeEventSend(Selection, event, true)
+			this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		}
 	}
 }
@@ -605,13 +602,10 @@ func (this *TabFolder) updateOrientation_() {
 	win32.OSSetWindowPos(this.Handle, int64(0), 0, 0, width-1, height-1, win32.OSSWP_NOMOVE|win32.OSSWP_NOZORDER)
 	win32.OSSetWindowPos(this.Handle, int64(0), 0, 0, width, height, win32.OSSWP_NOMOVE|win32.OSSWP_NOZORDER)
 	if this.imageList != (nil) {
-		var sizeInPoints *Point = func() *Point { _ = []any{this.imageList}; panic("j2go: unresolved call getImageSize") }()
+		var sizeInPoints *Point = this.imageList.GetImageSize()
 		this.display.ReleaseImageList(this.imageList)
 		this.imageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, sizeInPoints.X, sizeInPoints.Y, this.impl.getAutoscalingZoom_())
-		var hImageList int64 = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		var hImageList int64 = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTCM_SETIMAGELIST, int64(0), hImageList)
 		var tcItem *win32.TCITEM = win32.NewTCITEM()
 		tcItem.Mask = win32.OSTCIF_IMAGE
@@ -672,13 +666,13 @@ func (this *TabFolder) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_LEFT, win32.OSVK_RIGHT:
 		var isRTL bool = (this.style & RIGHT_TO_LEFT) != 0
 		if isRTL != this.createdAsRTL {
-			var cond669 int32
+			var cond1 int32
 			if wParam == int64(win32.OSVK_RIGHT) {
-				cond669 = win32.OSVK_LEFT
+				cond1 = win32.OSVK_LEFT
 			} else {
-				cond669 = win32.OSVK_RIGHT
+				cond1 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond669), lParam)
+			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond1), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -835,7 +829,7 @@ func (this *TabFolder) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int
 		if code == win32.OSTCN_SELCHANGE {
 			var event *Event = NewEvent()
 			event.Item = upcastTabItemToWidget(item)
-			this.SendSelectionEventTypeEventSend(Selection, event, false)
+			this.SendSelectionEventEventTypeEventSend(Selection, event, false)
 		}
 	}
 	return this.Composite.wmNotifyChild_(hdr, wParam, lParam)
@@ -878,7 +872,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TabFolder static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TabFolder static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

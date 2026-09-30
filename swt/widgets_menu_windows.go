@@ -282,13 +282,13 @@ func (this *Menu) FixMenus(newParentLike DecorationsLike) {
 
 func (this *Menu) GetBackground() *Color {
 	this.CheckWidget()
-	var cond195 int32
+	var cond1 int32
 	if this.background != -1 {
-		cond195 = this.background
+		cond1 = this.background
 	} else {
-		cond195 = this.DefaultBackground()
+		cond1 = this.DefaultBackground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond195)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond1)
 }
 
 func (this *Menu) GetBackgroundImage() *Image {
@@ -351,13 +351,13 @@ func (this *Menu) GetEnabled() bool {
 
 func (this *Menu) GetForeground() *Color {
 	this.CheckWidget()
-	var cond196 int32
+	var cond2 int32
 	if this.foreground != -1 {
-		cond196 = this.foreground
+		cond2 = this.foreground
 	} else {
-		cond196 = this.DefaultForeground()
+		cond2 = this.DefaultForeground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond196)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond2)
 }
 
 func (this *Menu) GetItem(index int32) *MenuItem {
@@ -399,9 +399,9 @@ func (this *Menu) GetItems() []*MenuItem {
 		}
 		var item *MenuItem = this.display.GetMenuItem(int32(info.DwItemData))
 		if item != (nil) {
-			t197 := count
+			t3 := count
 			count++
-			items[t197] = item
+			items[t3] = item
 		}
 		index++
 	}
@@ -419,19 +419,19 @@ func (this *Menu) getNameText_() string {
 	var length int32 = int32(len(items))
 	if length > 0 {
 		for i := int32(0); i <= length-1; i++ {
-			var cond198 string
+			var cond4 string
 			if items[i] == (nil) {
-				cond198 = "null"
+				cond4 = "null"
 			} else {
-				cond198 = items[i].impl.getNameText_()
+				cond4 = items[i].impl.getNameText_()
 			}
-			var cond199 string
+			var cond5 string
 			if i < (length - 1) {
-				cond199 = ", "
+				cond5 = ", "
 			} else {
-				cond199 = ""
+				cond5 = ""
 			}
-			result += fmt.Sprintf("%s%s", (cond198), (cond199))
+			result += fmt.Sprintf("%s%s", (cond4), (cond5))
 		}
 	}
 	return result
@@ -572,7 +572,7 @@ func (this *Menu) releaseHandle_() {
 func (this *Menu) releaseChildren_(destroy bool) {
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
-			item.Release(false)
+			item.impl.release_(false)
 		}
 	}
 	this.Widget.releaseChildren_(destroy)
@@ -583,7 +583,7 @@ func (this *Menu) releaseParent_() {
 	if (this.style & BAR) != 0 {
 		this.display.RemoveBar(this)
 		if this == this.parent.menuBar {
-			this.parent.SetMenuBar(nil)
+			this.parent.impl.setMenuBar_(nil)
 		}
 	} else {
 		if (this.style & POP_UP) != 0 {
@@ -667,7 +667,7 @@ func (this *Menu) SetBackgroundImage(imageLike ImageLike) {
 		if image.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		if image.Type != SWTBITMAP {
+		if image.Type != BITMAP {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -804,16 +804,16 @@ func (this *Menu) Update() {
 	var hasImage bool = false
 	for _, item := range this.GetItems() {
 		if item.image != (nil) {
-			cond200 := true
-			hasImage = cond200
-			if (cond200) && hasCheck {
+			cond6 := true
+			hasImage = cond6
+			if (cond6) && hasCheck {
 				break
 			}
 		}
 		if (item.style & (CHECK | RADIO)) != 0 {
-			cond201 := true
-			hasCheck = cond201
-			if (cond201) && hasImage {
+			cond7 := true
+			hasCheck = cond7
+			if (cond7) && hasImage {
 				break
 			}
 		}

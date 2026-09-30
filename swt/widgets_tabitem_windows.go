@@ -68,9 +68,9 @@ func (this *TabItem) _setText(index int32, string_ string) {
 			var j int32 = 0
 			for i = 0; i < length; i++ {
 				if int32(text[i]) != int32('&') {
-					t668 := j
+					t1 := j
 					j++
-					text[t668] = text[i]
+					text[t1] = text[i]
 				}
 			}
 			if j < i {
@@ -109,10 +109,7 @@ func (this *TabItem) GetControl() *Control {
 
 func (this *TabItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TabItem) GetBoundsInPixels() *Rectangle {
@@ -199,13 +196,13 @@ func (this *TabItem) SetControl(controlLike ControlLike) {
 	}
 }
 
-func (this *TabItem) setImage_(image *Image) {
+func (this *TabItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	var index int32 = this.parent.IndexOf(this)
 	if index == -1 {
 		return
 	}
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	if jrt.IndexFrom(this.text, string(rune('&')), 0) != -1 {
 		this._setText(index, this.text)
 	}

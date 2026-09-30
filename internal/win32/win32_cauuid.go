@@ -37,7 +37,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CAUUIDSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CAUUIDSizeof:", r)
 			}
 		}()
 		CAUUIDSizeof = COMCAUUID_sizeof()

@@ -63,7 +63,7 @@ func (this *Font) initFontDeviceFd(device *Device, fd *FontData) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.zoom = DPIUtilGetNativeDeviceZoom()
-	this.fontData = NewFontDataOverload3(fd)
+	this.fontData = NewFontDataOverload2(fd)
 	this.fontHeight = fd.Height
 	this.impl.init_()
 }
@@ -81,7 +81,7 @@ func (this *Font) initFontDeviceFdZoom(device *Device, fd *FontData, zoom int32)
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.zoom = zoom
-	this.fontData = NewFontDataOverload3(fd)
+	this.fontData = NewFontDataOverload2(fd)
 	this.fontHeight = fd.Height
 	this.impl.init_()
 }
@@ -113,7 +113,7 @@ func (this *Font) initFontDeviceFds(device *Device, fds []*FontData) {
 	}
 	this.zoom = DPIUtilGetNativeDeviceZoom()
 	var fd *FontData = fds[0]
-	this.fontData = NewFontDataOverload3(fd)
+	this.fontData = NewFontDataOverload2(fd)
 	this.fontHeight = fd.Height
 	this.impl.init_()
 }
@@ -136,7 +136,7 @@ func (this *Font) initFontDeviceNameHeightStyle(device *Device, name string, hei
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.zoom = DPIUtilGetNativeDeviceZoom()
-	this.fontData = NewFontDataOverload4(name, height, style)
+	this.fontData = NewFontDataOverload3(name, height, style)
 	this.fontHeight = float32(height)
 	this.impl.init_()
 }
@@ -151,8 +151,8 @@ func (this *Font) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok267 := resourceImplAsFont(object)
-	if !(ok267) {
+	_, ok1 := resourceImplAsFont(object)
+	if !(ok1) {
 		return false
 	}
 	var font *Font = castanyToFont(object)
@@ -177,7 +177,7 @@ func (this *Font) HashCode() int32 {
 	return int32(FontWin32_getHandle(this))
 }
 
-func (this *Font) Init(fdLike FontDataLike) {
+func (this *Font) InitFd(fdLike FontDataLike) {
 	var fd *FontData
 	if fdLike != nil {
 		fd = fdLike.AsFontData()
@@ -214,7 +214,7 @@ func FontWin32_getHandle(fontLike FontLike) int64 {
 	}
 	_ = font
 	if font.handle == 0 && font.fontData != (nil) && !font.isDestroyed {
-		font.Init(font.fontData)
+		font.InitFd(font.fontData)
 	}
 	return font.handle
 }
@@ -263,10 +263,7 @@ func FontWin32_newFontTargetZoom(fontLike FontLike, targetZoom int32) *Font {
 	if targetZoom == font.zoom {
 		return font
 	}
-	return func() *Font {
-		_ = []any{font.impl.getDevice_(), font.GetFontData()[0], targetZoom}
-		panic("j2go: unresolved call getFont")
-	}()
+	return SWTFontProviderGetFont(font.impl.getDevice_(), font.GetFontData()[0], targetZoom)
 }
 
 func castanyToFont(x any) *Font {

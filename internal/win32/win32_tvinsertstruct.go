@@ -72,7 +72,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TVINSERTSTRUCTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TVINSERTSTRUCTSizeof:", r)
 			}
 		}()
 		TVINSERTSTRUCTSizeof = OSTVINSERTSTRUCT_sizeof()

@@ -274,7 +274,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "setBackground", []reflect.Type{reflect.TypeFor[swt.ColorLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Control](target).SetBackgroundColor(jrt.ArgAs[swt.ColorLike](args[0]))
+		jrt.Narrow[*swt.Control](target).SetBackgroundWithColor(jrt.ArgAs[swt.ColorLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "setBackgroundImage", []reflect.Type{reflect.TypeFor[swt.ImageLike]()}, nil, func(target any, args []any) any {
@@ -297,7 +297,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "setCursor", []reflect.Type{reflect.TypeFor[swt.CursorLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Control](target).SetCursorCursor(jrt.ArgAs[swt.CursorLike](args[0]))
+		jrt.Narrow[*swt.Control](target).SetCursor(jrt.ArgAs[swt.CursorLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "setDragDetect", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
@@ -382,13 +382,13 @@ func init() {
 		return jrt.Narrow[*swt.Control](target).ToDisplayPoint(jrt.ArgAs[swt.PointLike](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "traverse", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Control](target).TraverseOverload1(jrt.ArgAs[int32](args[0]))
+		return jrt.Narrow[*swt.Control](target).TraverseTraversal(jrt.ArgAs[int32](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "traverse", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[swt.EventLike]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Control](target).TraverseOverload2(jrt.ArgAs[int32](args[0]), jrt.ArgAs[swt.EventLike](args[1]))
+		return jrt.Narrow[*swt.Control](target).Traverse(jrt.ArgAs[int32](args[0]), jrt.ArgAs[swt.EventLike](args[1]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "traverse", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[swt.KeyEventLike]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Control](target).TraverseOverload3(jrt.ArgAs[int32](args[0]), jrt.ArgAs[swt.KeyEventLike](args[1]))
+		return jrt.Narrow[*swt.Control](target).TraverseTraversalEvent(jrt.ArgAs[int32](args[0]), jrt.ArgAs[swt.KeyEventLike](args[1]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "update", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Control](target).Update(); return nil })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Control](), "setParent", []reflect.Type{reflect.TypeFor[swt.CompositeLike]()}, reflect.TypeFor[bool](), func(target any, args []any) any {
@@ -480,8 +480,8 @@ func init() {
 		jrt.Narrow[*swt.Canvas](target).SetCaret(jrt.ArgAs[swt.CaretLike](args[0]))
 		return nil
 	})
-	jrt.RegisterMethod(reflect.TypeFor[*swt.Canvas](), "setIME", []reflect.Type{reflect.TypeFor[*swt.IME]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Canvas](target).SetIME(jrt.ArgAs[*swt.IME](args[0]))
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Canvas](), "setIME", []reflect.Type{reflect.TypeFor[swt.IMELike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Canvas](target).SetIME(jrt.ArgAs[swt.IMELike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Decorations](), "getDefaultButton", nil, reflect.TypeFor[*swt.Button](), func(target any, args []any) any { return jrt.Narrow[*swt.Decorations](target).GetDefaultButton() })
@@ -1078,25 +1078,25 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "clear", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).Clear(jrt.ArgAs[int32](args[0]), jrt.ArgAs[bool](args[1]))
+		jrt.Narrow[*swt.Tree](target).ClearIndexAll(jrt.ArgAs[int32](args[0]), jrt.ArgAs[bool](args[1]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "clearAll", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).ClearAll(jrt.ArgAs[bool](args[0]))
+		jrt.Narrow[*swt.Tree](target).ClearAllAll(jrt.ArgAs[bool](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "deselect", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, nil, func(target any, args []any) any {
 		jrt.Narrow[*swt.Tree](target).DeselectItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
 		return nil
 	})
-	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tree](target).DeselectAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tree](target).DeselectAll0(); return nil })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getGridLineWidth", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetGridLineWidth() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getHeaderBackground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetHeaderBackground() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getHeaderForeground", nil, reflect.TypeFor[*swt.Color](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetHeaderForeground() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getHeaderHeight", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetHeaderHeight() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getHeaderVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetHeaderVisible() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getColumn", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.TreeColumn](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Tree](target).GetColumn(jrt.ArgAs[int32](args[0]))
+		return jrt.Narrow[*swt.Tree](target).GetColumnIndex(jrt.ArgAs[int32](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getColumnCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetColumnCount() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getColumnOrder", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetColumnOrder() })
@@ -1118,7 +1118,7 @@ func init() {
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSortDirection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSortDirection() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getTopItem", nil, reflect.TypeFor[*swt.TreeItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetTopItem() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "indexOf", []reflect.Type{reflect.TypeFor[swt.TreeColumnLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Tree](target).IndexOf(jrt.ArgAs[swt.TreeColumnLike](args[0]))
+		return jrt.Narrow[*swt.Tree](target).IndexOfColumn(jrt.ArgAs[swt.TreeColumnLike](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "indexOf", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.Tree](target).IndexOfItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
@@ -1166,7 +1166,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "setSelection", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).SetSelectionItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
+		jrt.Narrow[*swt.Tree](target).SetSelection(jrt.ArgAs[swt.TreeItemLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "setSelection", []reflect.Type{reflect.TypeFor[[]*swt.TreeItem]()}, nil, func(target any, args []any) any {
@@ -1190,7 +1190,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "showItem", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).ShowItemItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
+		jrt.Narrow[*swt.Tree](target).ShowItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "showSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tree](target).ShowSelection(); return nil })
@@ -1566,20 +1566,20 @@ func init() {
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "clearAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Table](target).ClearAll(); return nil })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "deselect", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).Deselect(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.Table](target).DeselectIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "deselect", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).DeselectIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.Table](target).Deselect(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "deselect", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
 		jrt.Narrow[*swt.Table](target).DeselectStartEnd(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
 		return nil
 	})
-	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Table](target).DeselectAll(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Table](target).DeselectAll0(); return nil })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "getColumn", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.TableColumn](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Table](target).GetColumn(jrt.ArgAs[int32](args[0]))
+		return jrt.Narrow[*swt.Table](target).GetColumnIndex(jrt.ArgAs[int32](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "getColumnCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Table](target).GetColumnCount() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "getColumnOrder", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Table](target).GetColumnOrder() })
@@ -1607,7 +1607,7 @@ func init() {
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "getSortDirection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Table](target).GetSortDirection() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "getTopIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Table](target).GetTopIndex() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "indexOf", []reflect.Type{reflect.TypeFor[swt.TableColumnLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Table](target).IndexOf(jrt.ArgAs[swt.TableColumnLike](args[0]))
+		return jrt.Narrow[*swt.Table](target).IndexOfColumn(jrt.ArgAs[swt.TableColumnLike](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "indexOf", []reflect.Type{reflect.TypeFor[swt.TableItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.Table](target).IndexOfItem(jrt.ArgAs[swt.TableItemLike](args[0]))
@@ -1616,11 +1616,11 @@ func init() {
 		return jrt.Narrow[*swt.Table](target).IsSelected(jrt.ArgAs[int32](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "remove", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).Remove(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.Table](target).RemoveIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "remove", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).RemoveIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.Table](target).Remove(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "remove", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1633,11 +1633,11 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "select", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).Select(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.Table](target).SelectIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "select", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).SelectIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.Table](target).Select(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "select", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1670,7 +1670,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "setSelection", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).SetSelection(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.Table](target).SetSelectionIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "setSelection", []reflect.Type{reflect.TypeFor[swt.TableItemLike]()}, nil, func(target any, args []any) any {
@@ -1682,7 +1682,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).SetSelectionIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.Table](target).SetSelection(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "setSelection", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1723,11 +1723,11 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "deselect", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).Deselect(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.List](target).DeselectIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "deselect", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).DeselectIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.List](target).Deselect(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "deselect", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1757,11 +1757,11 @@ func init() {
 		return jrt.Narrow[*swt.List](target).IsSelected(jrt.ArgAs[int32](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "remove", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).Remove(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.List](target).RemoveIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "remove", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).RemoveIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.List](target).Remove(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "remove", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1778,11 +1778,11 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "select", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).Select(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.List](target).SelectIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "select", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).SelectIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.List](target).Select(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "select", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -1795,7 +1795,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "setSelection", []reflect.Type{reflect.TypeFor[[]int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).SetSelection(jrt.ArgAs[[]int32](args[0]))
+		jrt.Narrow[*swt.List](target).SetSelectionIndices(jrt.ArgAs[[]int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "setSelection", []reflect.Type{reflect.TypeFor[[]string]()}, nil, func(target any, args []any) any {
@@ -1803,7 +1803,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "setSelection", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.List](target).SetSelectionIndex(jrt.ArgAs[int32](args[0]))
+		jrt.Narrow[*swt.List](target).SetSelection(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.List](), "setSelection", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
@@ -2527,6 +2527,123 @@ func init() {
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Caret](), "setVisible", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
 		jrt.Narrow[*swt.Caret](target).SetVisible(jrt.ArgAs[bool](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).Map(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToXYWidthHeight(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "mapMonitorBounds", []reflect.Type{reflect.TypeFor[*swt.Rectangle_WithMonitor]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapMonitorBounds(jrt.ArgAs[*swt.Rectangle_WithMonitor](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "translateFromDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).TranslateFromDisplayCoordinates(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "translateToDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).TranslateToDisplayCoordinates(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "translateFromDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).TranslateFromDisplayCoordinatesRect(jrt.ArgAs[*swt.Rectangle](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "translateToDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).TranslateToDisplayCoordinatesRect(jrt.ArgAs[*swt.Rectangle](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "getCursorLocation", nil, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).GetCursorLocation()
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "setCursorLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).SetCursorLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "getContainingMonitorBoundsInPixels", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).GetContainingMonitorBoundsInPixels(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).Map(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToXYWidthHeight(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "mapMonitorBounds", []reflect.Type{reflect.TypeFor[*swt.Rectangle_WithMonitor]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapMonitorBounds(jrt.ArgAs[*swt.Rectangle_WithMonitor](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "translateFromDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).TranslateFromDisplayCoordinates(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "translateToDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).TranslateToDisplayCoordinates(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "translateFromDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).TranslateFromDisplayCoordinatesRect(jrt.ArgAs[*swt.Rectangle](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "translateToDisplayCoordinates", []reflect.Type{reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).TranslateToDisplayCoordinatesRect(jrt.ArgAs[*swt.Rectangle](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "getCursorLocation", nil, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).GetCursorLocation()
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "setCursorLocation", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).SetCursorLocation(jrt.ArgAs[int32](args[0]), jrt.ArgAs[int32](args[1]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "getContainingMonitorBoundsInPixels", []reflect.Type{reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).GetContainingMonitorBoundsInPixels(jrt.ArgAs[*swt.Point](args[0]))
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getCaretOffset", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetCaretOffset() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getCommitCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetCommitCount() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getCompositionOffset", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetCompositionOffset() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getRanges", nil, reflect.TypeFor[[]int32](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetRanges() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getStyles", nil, reflect.TypeFor[[]*swt.TextStyle](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetStyles() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getText", nil, reflect.TypeFor[string](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetText() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "getWideCaret", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.IME](target).GetWideCaret() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.IME](), "setCompositionOffset", []reflect.Type{reflect.TypeFor[int32]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.IME](target).SetCompositionOffset(jrt.ArgAs[int32](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "addControlListener", []reflect.Type{reflect.TypeFor[swt.ControlListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).AddControlListener(jrt.ArgAs[swt.ControlListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "addKeyListener", []reflect.Type{reflect.TypeFor[swt.KeyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).AddKeyListener(jrt.ArgAs[swt.KeyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "close", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tracker](target).Close(); return nil })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "getRectangles", nil, reflect.TypeFor[[]*swt.Rectangle](), func(target any, args []any) any { return jrt.Narrow[*swt.Tracker](target).GetRectangles() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "getStippled", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Tracker](target).GetStippled() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "open", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Tracker](target).Open() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "removeControlListener", []reflect.Type{reflect.TypeFor[swt.ControlListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).RemoveControlListener(jrt.ArgAs[swt.ControlListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "removeKeyListener", []reflect.Type{reflect.TypeFor[swt.KeyListener]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).RemoveKeyListener(jrt.ArgAs[swt.KeyListener](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "setCursor", []reflect.Type{reflect.TypeFor[swt.CursorLike]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).SetCursor(jrt.ArgAs[swt.CursorLike](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "setRectangles", []reflect.Type{reflect.TypeFor[[]*swt.Rectangle]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).SetRectangles(jrt.ArgAs[[]*swt.Rectangle](args[0]))
+		return nil
+	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tracker](), "setStippled", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
+		jrt.Narrow[*swt.Tracker](target).SetStippled(jrt.ArgAs[bool](args[0]))
 		return nil
 	})
 }

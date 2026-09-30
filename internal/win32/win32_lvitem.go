@@ -62,7 +62,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init LVITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init LVITEMSizeof:", r)
 			}
 		}()
 		LVITEMSizeof = OSLVITEM_sizeof()

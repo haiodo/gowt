@@ -243,12 +243,6 @@ if [ "$PLATFORM" = win32 ]; then
 	SWT_FILES=("${SWT_FILES[@]/org\/eclipse\/swt\/internal\/graphics\/ImageUtil.java/}")
 	for i in "${!SWT_FILES[@]}"; do [ -n "${SWT_FILES[$i]}" ] || unset 'SWT_FILES[i]'; done
 	SWT_FILES+=(
-		org/eclipse/swt/internal/DPIUtil.java
-		org/eclipse/swt/internal/AutoScaleCalculation.java
-		org/eclipse/swt/internal/Compatibility.java
-		org/eclipse/swt/internal/DefaultExceptionHandler.java
-		org/eclipse/swt/internal/StrictChecks.java
-		org/eclipse/swt/internal/WidgetSpy.java
 		org/eclipse/swt/internal/Win32DPIUtils.java
 		org/eclipse/swt/internal/BidiUtil.java
 		org/eclipse/swt/internal/ImageList.java

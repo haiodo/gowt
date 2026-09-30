@@ -65,25 +65,19 @@ func (this *Caret) DefaultFont() int64 {
 		hFont = win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0))
 	}
 	if hFont == 0 {
-		return this.parent.DefaultFont()
+		return this.parent.impl.defaultFont_()
 	}
 	return hFont
 }
 
 func (this *Caret) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Caret) GetBoundsInPixels() *Rectangle {
 	if this.image != (nil) {
-		var rect *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), rect.Width, rect.Height)
 	}
 	if this.width == 0 {
@@ -98,7 +92,7 @@ func (this *Caret) GetBoundsInPixels() *Rectangle {
 func (this *Caret) GetSystemCaretWidthInPixelsForCurrentMonitor() any {
 	var buffer []int32 = make([]int32, 1)
 	if win32.OSSystemParametersInfoOverload3(win32.OSSPI_GETCARETWIDTH, 0, buffer, 0) {
-		var width int32 = DPIUtilPixelToPoint(buffer[0], func() int32 { panic("j2go: unresolved call getPrimaryMonitorZoomAtStartup") }())
+		var width int32 = DPIUtilPixelToPoint(buffer[0], Win32DPIUtilsGetPrimaryMonitorZoomAtStartup())
 		var widthInPixels int32 = DPIUtilPointToPixel(width, this.NativeZoom)
 		return func() any { _ = []any{widthInPixels}; panic("j2go: unresolved call of") }()
 	}
@@ -131,18 +125,12 @@ func (this *Caret) GetParent() *Canvas {
 
 func (this *Caret) GetSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Caret) GetSizeInPixels() *Point {
 	if this.image != (nil) {
-		var rect *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		return NewPoint(rect.Width, rect.Height)
 	}
 	if this.width == 0 {
@@ -407,7 +395,7 @@ func (this *Caret) SetIMEFont() {
 	}
 	var hFont int64 = int64(0)
 	if this.font != (nil) {
-		hFont = func() int64 { _ = []any{this.font, this.NativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		hFont = SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
 	}
 	if hFont == 0 {
 		hFont = this.DefaultFont()

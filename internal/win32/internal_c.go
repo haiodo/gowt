@@ -173,7 +173,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CPTR_SIZEOF:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CPTR_SIZEOF:", r)
 			}
 		}()
 		CPTR_SIZEOF = CPTR_sizeof()
@@ -181,7 +181,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init C static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init C static{}:", r)
 			}
 		}()
 		PlatformExitIfNotLoadable()

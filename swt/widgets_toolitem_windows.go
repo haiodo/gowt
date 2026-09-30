@@ -88,13 +88,13 @@ func (this *ToolItem) Click(dropDown bool) {
 	win32.OSSendMessageOverload13(hwnd, win32.OSTB_GETITEMRECT, int64(index), rect)
 	var hotIndex int32 = int32(win32.OSSendMessageOverload4(hwnd, win32.OSTB_GETHOTITEM, int64(0), int64(0)))
 	var y int32 = rect.Top + (rect.Bottom-rect.Top)/2
-	var cond732 int32
+	var cond1 int32
 	if dropDown {
-		cond732 = rect.Right - 1
+		cond1 = rect.Right - 1
 	} else {
-		cond732 = rect.Left
+		cond1 = rect.Left
 	}
-	var lParam int64 = win32.OSMAKELPARAM(cond732, y)
+	var lParam int64 = win32.OSMAKELPARAM(cond1, y)
 	this.parent.ignoreMouse = true
 	win32.OSSendMessageOverload4(hwnd, win32.OSWM_LBUTTONDOWN, int64(0), lParam)
 	win32.OSSendMessageOverload4(hwnd, win32.OSWM_LBUTTONUP, int64(0), lParam)
@@ -126,10 +126,7 @@ func (this *ToolItem) destroyWidget_() {
 
 func (this *ToolItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ToolItem) GetBoundsInPixels() *Rectangle {
@@ -154,7 +151,7 @@ func (this *ToolItem) GetDisabledImage() *Image {
 
 func (this *ToolItem) GetBackground() *Color {
 	this.CheckWidget()
-	return ColorWin32_new(upcastDisplayToDevice(this.display), this.parent.GetBackgroundPixel(this))
+	return ColorWin32_new(upcastDisplayToDevice(this.display), this.parent.GetBackgroundPixelItem(this))
 }
 
 func (this *ToolItem) GetEnabled() bool {
@@ -169,7 +166,7 @@ func (this *ToolItem) GetEnabled() bool {
 
 func (this *ToolItem) GetForeground() *Color {
 	this.CheckWidget()
-	return ColorWin32_new(upcastDisplayToDevice(this.display), this.parent.GetForegroundPixel(this))
+	return ColorWin32_new(upcastDisplayToDevice(this.display), this.parent.GetForegroundPixelItem(this))
 }
 
 func (this *ToolItem) GetHotImage() *Image {
@@ -489,7 +486,7 @@ func (this *ToolItem) SetHotImage(imageLike ImageLike) {
 	this.UpdateImages(this.GetEnabled() && this.parent.impl.getEnabled_())
 }
 
-func (this *ToolItem) setImage_(image *Image) {
+func (this *ToolItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
@@ -501,7 +498,7 @@ func (this *ToolItem) setImage_(image *Image) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.parent.impl.layoutOverload1_(this.IsImageSizeChanged(func() *Image { panic("j2go: unsupported SuperFieldAccess") }() /* TODO(gowt-port): super.image */, image))
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	this.UpdateImages(this.GetEnabled() && this.parent.impl.getEnabled_())
 }
 
@@ -691,13 +688,13 @@ func (this *ToolItem) UpdateImages(enabled bool) {
 				image2 = hot
 			}
 		}
-		var cond733 *Image
+		var cond2 *Image
 		if hot != (nil) {
-			cond733 = hot
+			cond2 = hot
 		} else {
-			cond733 = image2
+			cond2 = image2
 		}
-		info.IImage = this.parent.AddImage(this.image.GetBounds(), image2, cond733, disabled)
+		info.IImage = this.parent.AddImage(this.image.GetBounds(), image2, cond2, disabled)
 	} else {
 		var disabled *Image = nil
 		if this.image != (nil) {
@@ -722,19 +719,19 @@ func (this *ToolItem) UpdateImages(enabled bool) {
 				image2 = hot
 			}
 		}
-		var cond734 *Image
-		var cond735 *Image
+		var cond3 *Image
+		var cond4 *Image
 		if hot != (nil) {
-			cond735 = hot
+			cond4 = hot
 		} else {
-			cond735 = image2
+			cond4 = image2
 		}
 		if image2 != (nil) {
-			cond734 = (cond735)
+			cond3 = (cond4)
 		} else {
-			cond734 = nil
+			cond3 = nil
 		}
-		this.parent.PutImage(info.IImage, image2, cond734, disabled)
+		this.parent.PutImage(info.IImage, image2, cond3, disabled)
 		if this.image == (nil) {
 			info.IImage = win32.OSI_IMAGENONE
 		}

@@ -58,7 +58,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init RECTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init RECTSizeof:", r)
 			}
 		}()
 		RECTSizeof = OSRECT_sizeof()

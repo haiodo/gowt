@@ -147,7 +147,7 @@ func (this *TreeItem) ClearIndexAll(index int32, all bool) {
 	if hItem == 0 {
 		this.Error(ERROR_INVALID_RANGE)
 	}
-	hItem = this.parent.FindItemHFirstItemIndex(hItem, index)
+	hItem = this.parent.FindItemHFirstItemIndexHFirstItemIndex(hItem, index)
 	if hItem == 0 {
 		this.Error(ERROR_INVALID_RANGE)
 	}
@@ -182,13 +182,10 @@ func (this *TreeItem) destroyWidget_() {
 
 func (this *TreeItem) FontHandle(index int32) int64 {
 	if this.cellFont != (nil) && this.cellFont[index] != (nil) {
-		return func() int64 {
-			_ = []any{this.cellFont[index], this.NativeZoom}
-			panic("j2go: unresolved call getFontHandle")
-		}()
+		return SWTFontProviderGetFontHandleFontZoom(this.cellFont[index], this.NativeZoom)
 	}
 	if this.font != (nil) {
-		return func() int64 { _ = []any{this.font, this.NativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		return SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
 	}
 	return int64(-1)
 }
@@ -219,21 +216,18 @@ func (this *TreeItem) GetBackgroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond654 *Color
+	var cond1 *Color
 	if pixel == -1 {
-		cond654 = this.GetBackground()
+		cond1 = this.GetBackground()
 	} else {
-		cond654 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond1 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond654
+	return cond1
 }
 
 func (this *TreeItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TreeItem) GetBoundsInPixels() *Rectangle {
@@ -248,10 +242,7 @@ func (this *TreeItem) GetBoundsInPixels() *Rectangle {
 
 func (this *TreeItem) GetBoundsIndex(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TreeItem) GetBoundsInPixelsIndex(index int32) *Rectangle {
@@ -367,17 +358,17 @@ func (this *TreeItem) GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(inde
 					rect.Left = rect.Right + TreeINSET
 					rect.Right = headerRect.Right
 				} else {
-					var cond655 string
+					var cond2 string
 					if this.strings != (nil) {
-						cond655 = this.strings[index]
+						cond2 = this.strings[index]
 					} else {
-						cond655 = ""
+						cond2 = ""
 					}
 					var string_ string
 					if index == 0 {
 						string_ = this.text
 					} else {
-						string_ = cond655
+						string_ = cond2
 					}
 					if string_ != "" {
 						var textRect *win32.RECT = win32.NewRECT()
@@ -454,13 +445,13 @@ func (this *TreeItem) GetFont() *Font {
 	if !this.parent.CheckData(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond656 *Font
+	var cond3 *Font
 	if this.font != (nil) {
-		cond656 = this.font
+		cond3 = this.font
 	} else {
-		cond656 = this.parent.GetFont()
+		cond3 = this.parent.GetFont()
 	}
-	return cond656
+	return cond3
 }
 
 func (this *TreeItem) GetFontIndex(index int32) *Font {
@@ -484,7 +475,7 @@ func (this *TreeItem) GetForeground() *Color {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.foreground == -1 {
-		return this.parent.GetForeground()
+		return this.parent.impl.getForeground_()
 	}
 	return ColorWin32_new(upcastDisplayToDevice(this.display), this.foreground)
 }
@@ -504,13 +495,13 @@ func (this *TreeItem) GetForegroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond657 *Color
+	var cond4 *Color
 	if pixel == -1 {
-		cond657 = this.GetForeground()
+		cond4 = this.GetForeground()
 	} else {
-		cond657 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond4 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond657
+	return cond4
 }
 
 func (this *TreeItem) GetGrayed() bool {
@@ -543,7 +534,7 @@ func (this *TreeItem) GetItem(index int32) *TreeItem {
 	if hFirstItem == 0 {
 		this.Error(ERROR_INVALID_RANGE)
 	}
-	var hItem int64 = this.parent.FindItemHFirstItemIndex(hFirstItem, index)
+	var hItem int64 = this.parent.FindItemHFirstItemIndexHFirstItemIndex(hFirstItem, index)
 	if hItem == 0 {
 		this.Error(ERROR_INVALID_RANGE)
 	}
@@ -602,10 +593,7 @@ func (this *TreeItem) GetImageIndex(index int32) *Image {
 
 func (this *TreeItem) GetImageBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TreeItem) GetImageBoundsInPixels(index int32) *Rectangle {
@@ -627,13 +615,13 @@ func (this *TreeItem) GetParentItem() *TreeItem {
 	this.CheckWidget()
 	var hwnd int64 = this.parent.Handle
 	var hItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_PARENT), this.Handle)
-	var cond658 *TreeItem
+	var cond5 *TreeItem
 	if hItem != 0 {
-		cond658 = this.parent._getItem(hItem)
+		cond5 = this.parent._getItem(hItem)
 	} else {
-		cond658 = nil
+		cond5 = nil
 	}
-	return cond658
+	return cond5
 }
 
 func (this *TreeItem) getText_() string {
@@ -655,13 +643,13 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond659 string
+			var cond6 string
 			if string_ != "" {
-				cond659 = string_
+				cond6 = string_
 			} else {
-				cond659 = ""
+				cond6 = ""
 			}
-			return cond659
+			return cond6
 		}
 	}
 	return ""
@@ -669,10 +657,7 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 
 func (this *TreeItem) GetTextBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TreeItem) GetTextBoundsInPixels(index int32) *Rectangle {
@@ -705,13 +690,13 @@ func (this *TreeItem) IndexOf(itemLike TreeItemLike) int32 {
 	}
 	var hwnd int64 = this.parent.Handle
 	var hItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), this.Handle)
-	var cond660 int32
+	var cond7 int32
 	if hItem == 0 {
-		cond660 = -1
+		cond7 = -1
 	} else {
-		cond660 = this.parent.FindIndex(hItem, item.Handle)
+		cond7 = this.parent.FindIndex(hItem, item.Handle)
 	}
-	return cond660
+	return cond7
 }
 
 func (this *TreeItem) Redraw() {
@@ -943,9 +928,9 @@ func (this *TreeItem) SetExpanded(expanded bool) {
 			for hItem != 0 && (noAnimate || hItem != this.Handle) && index < count {
 				var rect *win32.RECT = win32.NewRECT()
 				if win32.OSTreeView_GetItemRect(hwnd, hItem, rect, true) {
-					t661 := index
+					t8 := index
 					index++
-					rects[t661] = rect
+					rects[t8] = rect
 				}
 				hItem = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXTVISIBLE), hItem)
 			}
@@ -967,13 +952,13 @@ func (this *TreeItem) SetExpanded(expanded bool) {
 	}
 	var hOldItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
 	this.parent.ignoreExpand = true
-	var cond662 int32
+	var cond9 int32
 	if expanded {
-		cond662 = win32.OSTVE_EXPAND
+		cond9 = win32.OSTVE_EXPAND
 	} else {
-		cond662 = win32.OSTVE_COLLAPSE
+		cond9 = win32.OSTVE_COLLAPSE
 	}
-	win32.OSSendMessageOverload4(hwnd, win32.OSTVM_EXPAND, int64(cond662), this.Handle)
+	win32.OSSendMessageOverload4(hwnd, win32.OSTVM_EXPAND, int64(cond9), this.Handle)
 	this.parent.ignoreExpand = false
 	if noScroll && hTopItem != 0 {
 		var collapsed bool = false
@@ -1053,7 +1038,7 @@ func (this *TreeItem) SetExpanded(expanded bool) {
 			event.Item = upcastTreeItemToWidget(this.parent._getItem(hNewItem))
 			this.parent.hAnchor = hNewItem
 		}
-		this.parent.SendSelectionEventTypeEventSend(Selection, event, true)
+		this.parent.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	}
 }
 
@@ -1068,13 +1053,13 @@ func (this *TreeItem) SetFont(fontLike FontLike) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
-	var cond663 *Font
+	var cond10 *Font
 	if font == (nil) {
-		cond663 = font
+		cond10 = font
 	} else {
-		cond663 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
+		cond10 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
 	}
-	var newFont *Font = (cond663)
+	var newFont *Font = (cond10)
 	if oldFont == newFont {
 		return
 	}
@@ -1280,7 +1265,7 @@ func (this *TreeItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 			}
 		}
 		oldImage = this.image
-		this.Item.setImage_(image)
+		this.Item.setImageOnItem_(image)
 	}
 	var count int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 	if 0 > index || index > count-1 {
@@ -1322,7 +1307,7 @@ func (this *TreeItem) SetImageIndexImage(index int32, imageLike ImageLike) {
 	}
 }
 
-func (this *TreeItem) setImage_(image *Image) {
+func (this *TreeItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	this.SetImageIndexImage(0, image)
 }
@@ -1399,7 +1384,7 @@ func (this *TreeItem) Sort() {
 	if (this.parent.style & VIRTUAL) != 0 {
 		return
 	}
-	this.parent.SortHParentAll(this.Handle, false)
+	this.parent.SortHParentAllHParentAll(this.Handle, false)
 }
 
 func (this *TreeItem) getNameText_() string {
@@ -1468,7 +1453,7 @@ func TreeItemFindPrevious(parentLike TreeLike, index int32) int64 {
 	}
 	var hwnd int64 = parent.Handle
 	var hFirstItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-	var hItem int64 = parent.FindItemHFirstItemIndex(hFirstItem, index-1)
+	var hItem int64 = parent.FindItemHFirstItemIndexHFirstItemIndex(hFirstItem, index-1)
 	if hItem == 0 {
 		Error(ERROR_INVALID_RANGE)
 	}
@@ -1494,7 +1479,7 @@ func TreeItemFindPreviousParentItemIndex(parentItemLike TreeItemLike, index int3
 	var hwnd int64 = parent.Handle
 	var hParent int64 = parentItem.Handle
 	var hFirstItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hParent)
-	var hItem int64 = parent.FindItemHFirstItemIndex(hFirstItem, index-1)
+	var hItem int64 = parent.FindItemHFirstItemIndexHFirstItemIndex(hFirstItem, index-1)
 	if hItem == 0 {
 		Error(ERROR_INVALID_RANGE)
 	}

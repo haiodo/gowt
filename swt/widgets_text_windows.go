@@ -145,25 +145,25 @@ func (this *Text) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 						var alignment int32 = this.style & (LEFT | CENTER | RIGHT)
 						switch alignment {
 						case LEFT:
-							var cond212 int32
+							var cond1 int32
 							if rtl {
-								cond212 = win32.OSDT_RIGHT
+								cond1 = win32.OSDT_RIGHT
 							} else {
-								cond212 = win32.OSDT_LEFT
+								cond1 = win32.OSDT_LEFT
 							}
-							uFormat |= (cond212)
+							uFormat |= (cond1)
 							break
 						case CENTER:
 							uFormat |= win32.OSDT_CENTER
 							fallthrough
 						case RIGHT:
-							var cond213 int32
+							var cond2 int32
 							if rtl {
-								cond213 = win32.OSDT_LEFT
+								cond2 = win32.OSDT_LEFT
 							} else {
-								cond213 = win32.OSDT_RIGHT
+								cond2 = win32.OSDT_RIGHT
 							}
-							uFormat |= (cond213)
+							uFormat |= (cond2)
 							break
 						}
 						var hFont int64 = win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0))
@@ -233,7 +233,7 @@ func (this *Text) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 					}
 					this.impl.setFocus_()
 					this.SelectAll()
-					this.SendSelectionEventTypeEventSend(DefaultSelection, e, false)
+					this.SendSelectionEventEventTypeEventSend(DefaultSelection, e, false)
 				}
 				break
 			}
@@ -290,13 +290,13 @@ func (this *Text) createHandle_() {
 }
 
 func (this *Text) applyThemeBackground_() int32 {
-	var cond214 int32
+	var cond3 int32
 	if this.backgroundAlpha == 0 || (this.style&(BORDER|H_SCROLL|V_SCROLL)) == 0 {
-		cond214 = 1
+		cond3 = 1
 	} else {
-		cond214 = 0
+		cond3 = 0
 	}
-	return cond214
+	return cond3
 }
 
 func (this *Text) AddModifyListener(listener ModifyListener) {
@@ -394,9 +394,9 @@ func (this *Text) ApplySegments() {
 				i++
 			}() {
 				if int32(segmentsChars[i]) == int32('\u000a') && int32(segmentsCharsCrLf[i+c]) == int32('\u000d') {
-					t215 := c
+					t4 := c
 					c++
-					segmentsCrLf[i+t215] = this.segments[i]
+					segmentsCrLf[i+t4] = this.segments[i]
 				}
 				segmentsCrLf[i+c] = this.segments[i]
 			}
@@ -425,16 +425,16 @@ func (this *Text) ApplySegments() {
 			} else {
 				separator = defaultSeparator
 			}
-			t216 := charCount
+			t5 := charCount
 			charCount++
-			newChars[t216] = separator
+			newChars[t5] = separator
 			segmentCount++
 		} else {
 			if string_ != "" {
-				idx218 := charCount
-				t217 := charCount
+				idx7 := charCount
+				t6 := charCount
 				charCount++
-				newChars[idx218] = utf16.Encode([]rune(string_))[t217-segmentCount]
+				newChars[idx7] = utf16.Encode([]rune(string_))[t6-segmentCount]
 			}
 		}
 	}
@@ -446,9 +446,9 @@ func (this *Text) ApplySegments() {
 		} else {
 			separator = defaultSeparator
 		}
-		t219 := charCount
+		t8 := charCount
 		charCount++
-		newChars[t219] = separator
+		newChars[t8] = separator
 		segmentCount++
 	}
 	var start []int32 = make([]int32, 1)
@@ -473,9 +473,9 @@ func (this *Text) ApplySegments() {
 }
 
 func (this *Text) ClearSegments(applyText bool) {
-	t220 := this.clearSegmentsCount
+	t9 := this.clearSegmentsCount
 	this.clearSegmentsCount++
-	if t220 != 0 {
+	if t9 != 0 {
 		return
 	}
 	if this.segments == (nil) {
@@ -527,10 +527,7 @@ func (this *Text) ClearSelection() {
 
 func (this *Text) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var height int32 = 0
 	var width int32 = 0
 	if hintInPoints.X == DEFAULT || hintInPoints.Y == DEFAULT {
@@ -630,22 +627,22 @@ func (this *Text) Copy() {
 }
 
 func (this *Text) createScrollBar_(type_ int32) *ScrollBar {
-	var cond221 *ScrollBar
+	var cond10 *ScrollBar
 	if (this.style & SEARCH) == 0 {
-		cond221 = this.Scrollable.createScrollBar_(type_)
+		cond10 = this.Scrollable.createScrollBar_(type_)
 	} else {
-		cond221 = nil
+		cond10 = nil
 	}
-	return cond221
+	return cond10
 }
 
 func (this *Text) createWidget_() {
 	this.Scrollable.createWidget_()
 	this.message = ""
 	this.doubleClick = true
-	cond222 := 8
-	this.tabs = cond222
-	this.SetTabStops(cond222)
+	cond11 := 8
+	this.tabs = cond11
+	this.SetTabStops(cond11)
 	this.FixAlignment()
 }
 
@@ -729,9 +726,9 @@ func (this *Text) dragDetect_(hwnd int64, x int32, y int32, filter bool, detect 
 	return this.Scrollable.dragDetect_(hwnd, x, y, filter, detect, consume)
 }
 
-func (this *Text) maybeEnableDarkSystemTheme_() {
+func (this *Text) maybeEnableDarkSystemThemeNoArgs_() {
 	if this.HasCustomBackground() || this.HasCustomForeground() {
-		this.Scrollable.maybeEnableDarkSystemTheme_()
+		this.Scrollable.maybeEnableDarkSystemThemeNoArgs_()
 	}
 }
 
@@ -779,10 +776,7 @@ func (this *Text) GetCaretLineNumber() int32 {
 
 func (this *Text) GetCaretLocation() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetCaretLocationInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocationPointZoom(this.GetCaretLocationInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Text) GetCaretLocationInPixels() *Point {
@@ -1292,7 +1286,7 @@ func (this *Text) setBackgroundImageHBitmap_(hBitmap int64) {
 }
 
 func (this *Text) setBackgroundPixel_(pixel int32) {
-	this.impl.maybeEnableDarkSystemTheme_()
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 	var flags int32 = win32.OSRDW_ERASE | win32.OSRDW_ALLCHILDREN | win32.OSRDW_INVALIDATE
 	win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
 }
@@ -1373,13 +1367,13 @@ func (this *Text) SetEditable(editable bool) {
 	if !editable {
 		this.style |= READ_ONLY
 	}
-	var cond223 int32
+	var cond12 int32
 	if editable {
-		cond223 = 0
+		cond12 = 0
 	} else {
-		cond223 = 1
+		cond12 = 1
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond223), int64(0))
+	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond12), int64(0))
 }
 
 func (this *Text) setFont_(font *Font) {
@@ -1390,7 +1384,7 @@ func (this *Text) setFont_(font *Font) {
 }
 
 func (this *Text) setForegroundPixel_(pixel int32) {
-	this.impl.maybeEnableDarkSystemTheme_()
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 	this.Scrollable.setForegroundPixel_(pixel)
 }
 
@@ -1438,8 +1432,8 @@ func (this *Text) SetMessage(message string) {
 	}
 }
 
-func (this *Text) setOrientation_(orientation int32) {
-	this.Scrollable.setOrientation_(orientation)
+func (this *Text) setOrientationOnControl_(orientation int32) {
+	this.Scrollable.setOrientationOnControl_(orientation)
 }
 
 func (this *Text) SetSelection(start int32) {
@@ -1495,9 +1489,9 @@ func (this *Text) SetTabs(tabs int32) {
 	if tabs < 0 {
 		return
 	}
-	cond224 := tabs
-	this.tabs = cond224
-	this.SetTabStops(cond224)
+	cond13 := tabs
+	this.tabs = cond13
+	this.SetTabStops(cond13)
 }
 
 func (this *Text) SetTabStops(tabs int32) {
@@ -1953,7 +1947,7 @@ func (this *Text) wM_IME_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTZERO
 	}
 	this.ignoreCharacter = true
@@ -1965,7 +1959,7 @@ func (this *Text) wM_IME_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSDispatchMessage(msg)
 	}
 	this.ignoreCharacter = false
-	this.SendKeyEvent(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.NewLRESULT(result)
@@ -2036,20 +2030,20 @@ func (this *Text) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	if (this.style & SEARCH) != 0 {
 		var rtl bool = (this.style & RIGHT_TO_LEFT) != 0
-		var cond225 int32
+		var cond14 int32
 		if rtl {
-			cond225 = ICON_CANCEL
+			cond14 = ICON_CANCEL
 		} else {
-			cond225 = ICON_SEARCH
+			cond14 = ICON_SEARCH
 		}
-		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond225)
-		var cond226 int32
+		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond14)
+		var cond15 int32
 		if rtl {
-			cond226 = ICON_SEARCH
+			cond15 = ICON_SEARCH
 		} else {
-			cond226 = ICON_CANCEL
+			cond15 = ICON_CANCEL
 		}
-		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond226)
+		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond15)
 		var width int32 = win32.OSLOWORD(lParam)
 		var height int32 = win32.OSHIWORD(lParam)
 		var iconWidth int32 = this.impl.getSystemMetrics_(win32.OSSM_CXSMICON)
@@ -2181,13 +2175,13 @@ func (this *Text) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 			var showCancel bool = win32.OSGetWindowTextLength(this.Handle) != 0
 			var hwndCancel int64 = win32.OSGetDlgItem(this.Handle, ICON_CANCEL)
 			if hwndCancel != 0 {
-				var cond227 int32
+				var cond16 int32
 				if showCancel {
-					cond227 = win32.OSSW_SHOW
+					cond16 = win32.OSSW_SHOW
 				} else {
-					cond227 = win32.OSSW_HIDE
+					cond16 = win32.OSSW_HIDE
 				}
-				win32.OSShowWindow(hwndCancel, cond227)
+				win32.OSShowWindow(hwndCancel, cond16)
 			}
 		}
 		if this.ignoreModify {
@@ -2320,7 +2314,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Text static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Text static{}:", r)
 			}
 		}()
 		TextLIMIT = 0x7FFFFFFF
@@ -2329,7 +2323,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Text static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Text static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

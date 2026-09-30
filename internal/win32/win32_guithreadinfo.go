@@ -69,7 +69,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init GUITHREADINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init GUITHREADINFOSizeof:", r)
 			}
 		}()
 		GUITHREADINFOSizeof = OSGUITHREADINFO_sizeof()

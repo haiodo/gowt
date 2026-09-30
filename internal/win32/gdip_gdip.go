@@ -1006,7 +1006,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Gdip static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Gdip static{}:", r)
 			}
 		}()
 		LibraryLoadLibrary("swt-gdip")

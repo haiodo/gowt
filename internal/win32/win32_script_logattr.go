@@ -32,7 +32,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SCRIPT_LOGATTRSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SCRIPT_LOGATTRSizeof:", r)
 			}
 		}()
 		SCRIPT_LOGATTRSizeof = OSSCRIPT_LOGATTR_sizeof()

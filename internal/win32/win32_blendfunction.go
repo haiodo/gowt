@@ -45,7 +45,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init BLENDFUNCTIONSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init BLENDFUNCTIONSizeof:", r)
 			}
 		}()
 		BLENDFUNCTIONSizeof = OSBLENDFUNCTION_sizeof()

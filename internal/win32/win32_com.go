@@ -2117,7 +2117,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_CMultiLanguage:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_CMultiLanguage:", r)
 			}
 		}()
 		COMCLSID_CMultiLanguage = COMIIDFromString("{275c23e2-3747-11d0-9fea-00aa003f8646}")
@@ -2125,7 +2125,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_DestinationList:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_DestinationList:", r)
 			}
 		}()
 		COMCLSID_DestinationList = COMIIDFromString("{77f10cf0-3db5-4966-b520-b7c54fd35ed6}")
@@ -2133,7 +2133,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_DragDropHelper:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_DragDropHelper:", r)
 			}
 		}()
 		COMCLSID_DragDropHelper = COMIIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}")
@@ -2141,7 +2141,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_EnumerableObjectCollection:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_EnumerableObjectCollection:", r)
 			}
 		}()
 		COMCLSID_EnumerableObjectCollection = COMIIDFromString("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}")
@@ -2149,7 +2149,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_FileOpenDialog:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_FileOpenDialog:", r)
 			}
 		}()
 		COMCLSID_FileOpenDialog = COMIIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}")
@@ -2157,7 +2157,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_FileSaveDialog:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_FileSaveDialog:", r)
 			}
 		}()
 		COMCLSID_FileSaveDialog = COMIIDFromString("{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}")
@@ -2165,7 +2165,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_ShellLink:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_ShellLink:", r)
 			}
 		}()
 		COMCLSID_ShellLink = COMIIDFromString("{00021401-0000-0000-C000-000000000046}")
@@ -2173,7 +2173,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_TaskbarList:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_TaskbarList:", r)
 			}
 		}()
 		COMCLSID_TaskbarList = COMIIDFromString("{56FDF344-FD6D-11d0-958A-006097C9A090}")
@@ -2181,7 +2181,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCLSID_TF_InputProcessorProfiles:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCLSID_TF_InputProcessorProfiles:", r)
 			}
 		}()
 		COMCLSID_TF_InputProcessorProfiles = COMIIDFromString("{33C53A50-F456-4884-B049-85FD643ECFED}")
@@ -2189,7 +2189,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMGUID_TFCAT_TIP_KEYBOARD:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMGUID_TFCAT_TIP_KEYBOARD:", r)
 			}
 		}()
 		COMGUID_TFCAT_TIP_KEYBOARD = COMIIDFromString("{34745C63-B2F0-4784-8B67-5E12C8701A31}")
@@ -2197,7 +2197,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICustomDestinationList:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICustomDestinationList:", r)
 			}
 		}()
 		COMIID_ICustomDestinationList = COMIIDFromString("{6332debf-87b5-4670-90c0-5e57b408a49e}")
@@ -2205,7 +2205,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IDropTargetHelper:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IDropTargetHelper:", r)
 			}
 		}()
 		COMIID_IDropTargetHelper = COMIIDFromString("{4657278B-411B-11D2-839A-00C04FD918D0}")
@@ -2213,7 +2213,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IFileOpenDialog:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IFileOpenDialog:", r)
 			}
 		}()
 		COMIID_IFileOpenDialog = COMIIDFromString("{d57c7288-d4ad-4768-be02-9d969532d960}")
@@ -2221,7 +2221,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IFileSaveDialog:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IFileSaveDialog:", r)
 			}
 		}()
 		COMIID_IFileSaveDialog = COMIIDFromString("{84bccd23-5fde-4cdb-aea4-af64b83d78ab}")
@@ -2229,7 +2229,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IMLangFontLink2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IMLangFontLink2:", r)
 			}
 		}()
 		COMIID_IMLangFontLink2 = COMIIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}")
@@ -2237,7 +2237,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IObjectArray:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IObjectArray:", r)
 			}
 		}()
 		COMIID_IObjectArray = COMIIDFromString("{92CA9DCD-5622-4bba-A805-5E9F541BD8C9}")
@@ -2245,7 +2245,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IObjectCollection:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IObjectCollection:", r)
 			}
 		}()
 		COMIID_IObjectCollection = COMIIDFromString("{5632b1a4-e38a-400a-928a-d4cd63230295}")
@@ -2253,7 +2253,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IPropertyStore:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IPropertyStore:", r)
 			}
 		}()
 		COMIID_IPropertyStore = COMIIDFromString("{886d8eeb-8cf2-4446-8d02-cdba1dbdcf99}")
@@ -2261,7 +2261,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IShellItem:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IShellItem:", r)
 			}
 		}()
 		COMIID_IShellItem = COMIIDFromString("{43826d1e-e718-42ee-bc55-a1e261c37bfe}")
@@ -2269,7 +2269,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_IShellLinkW:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_IShellLinkW:", r)
 			}
 		}()
 		COMIID_IShellLinkW = COMIIDFromString("{000214F9-0000-0000-C000-000000000046}")
@@ -2277,7 +2277,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ITaskbarList3:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ITaskbarList3:", r)
 			}
 		}()
 		COMIID_ITaskbarList3 = COMIIDFromString("{ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf}")
@@ -2285,7 +2285,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ITfDisplayAttributeProvider:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ITfDisplayAttributeProvider:", r)
 			}
 		}()
 		COMIID_ITfDisplayAttributeProvider = COMIIDFromString("{fee47777-163c-4769-996a-6e9c50ad8f54}")
@@ -2293,7 +2293,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ITfInputProcessorProfiles:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ITfInputProcessorProfiles:", r)
 			}
 		}()
 		COMIID_ITfInputProcessorProfiles = COMIIDFromString("{1F02B6C5-7842-4EE6-8A0B-9A24183A95CA}")
@@ -2301,7 +2301,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDJavaBeansBridge:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDJavaBeansBridge:", r)
 			}
 		}()
 		COMIIDJavaBeansBridge = COMIIDFromString("{8AD9C840-044E-11D1-B3E9-00805F499D93}")
@@ -2309,7 +2309,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDShockwaveActiveXControl:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDShockwaveActiveXControl:", r)
 			}
 		}()
 		COMIIDShockwaveActiveXControl = COMIIDFromString("{166B1BCA-3F9C-11CF-8075-444553540000}")
@@ -2317,7 +2317,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessible:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessible:", r)
 			}
 		}()
 		COMIIDIAccessible = COMIIDFromString("{618736E0-3C3D-11CF-810C-00AA00389B71}")
@@ -2325,7 +2325,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAdviseSink:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAdviseSink:", r)
 			}
 		}()
 		COMIIDIAdviseSink = COMIIDFromString("{0000010F-0000-0000-C000-000000000046}")
@@ -2333,7 +2333,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIClassFactory:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIClassFactory:", r)
 			}
 		}()
 		COMIIDIClassFactory = COMIIDFromString("{00000001-0000-0000-C000-000000000046}")
@@ -2341,7 +2341,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIClassFactory2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIClassFactory2:", r)
 			}
 		}()
 		COMIIDIClassFactory2 = COMIIDFromString("{B196B28F-BAB4-101A-B69C-00AA00341D07}")
@@ -2349,7 +2349,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIConnectionPointContainer:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIConnectionPointContainer:", r)
 			}
 		}()
 		COMIIDIConnectionPointContainer = COMIIDFromString("{B196B284-BAB4-101A-B69C-00AA00341D07}")
@@ -2357,7 +2357,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDataObject:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDataObject:", r)
 			}
 		}()
 		COMIIDIDataObject = COMIIDFromString("{0000010E-0000-0000-C000-000000000046}")
@@ -2365,7 +2365,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDispatch:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDispatch:", r)
 			}
 		}()
 		COMIIDIDispatch = COMIIDFromString("{00020400-0000-0000-C000-000000000046}")
@@ -2373,7 +2373,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDispatchEx:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDispatchEx:", r)
 			}
 		}()
 		COMIIDIDispatchEx = COMIIDFromString("{A6EF9860-C720-11D0-9337-00A0C90DCAA9}")
@@ -2381,7 +2381,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDocHostUIHandler:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDocHostUIHandler:", r)
 			}
 		}()
 		COMIIDIDocHostUIHandler = COMIIDFromString("{BD3F23C0-D43E-11CF-893B-00AA00BDCE1A}")
@@ -2389,7 +2389,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDocHostShowUI:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDocHostShowUI:", r)
 			}
 		}()
 		COMIIDIDocHostShowUI = COMIIDFromString("{C4D244B0-D43E-11CF-893B-00AA00BDCE1A}")
@@ -2397,7 +2397,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDropSource:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDropSource:", r)
 			}
 		}()
 		COMIIDIDropSource = COMIIDFromString("{00000121-0000-0000-C000-000000000046}")
@@ -2405,7 +2405,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIDropTarget:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIDropTarget:", r)
 			}
 		}()
 		COMIIDIDropTarget = COMIIDFromString("{00000122-0000-0000-C000-000000000046}")
@@ -2413,7 +2413,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIEnumFORMATETC:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIEnumFORMATETC:", r)
 			}
 		}()
 		COMIIDIEnumFORMATETC = COMIIDFromString("{00000103-0000-0000-C000-000000000046}")
@@ -2421,7 +2421,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIEnumVARIANT:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIEnumVARIANT:", r)
 			}
 		}()
 		COMIIDIEnumVARIANT = COMIIDFromString("{00020404-0000-0000-C000-000000000046}")
@@ -2429,7 +2429,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIInternetSecurityManager:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIInternetSecurityManager:", r)
 			}
 		}()
 		COMIIDIInternetSecurityManager = COMIIDFromString("{79eac9ee-baf9-11ce-8c82-00aa004ba90b}")
@@ -2437,7 +2437,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAuthenticate:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAuthenticate:", r)
 			}
 		}()
 		COMIIDIAuthenticate = COMIIDFromString("{79eac9d0-baf9-11ce-8c82-00aa004ba90b}")
@@ -2445,7 +2445,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIJScriptTypeInfo:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIJScriptTypeInfo:", r)
 			}
 		}()
 		COMIIDIJScriptTypeInfo = COMIIDFromString("{C59C6B12-F6C1-11CF-8835-00A0C911E8B2}")
@@ -2453,7 +2453,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleClientSite:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleClientSite:", r)
 			}
 		}()
 		COMIIDIOleClientSite = COMIIDFromString("{00000118-0000-0000-C000-000000000046}")
@@ -2461,7 +2461,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleCommandTarget:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleCommandTarget:", r)
 			}
 		}()
 		COMIIDIOleCommandTarget = COMIIDFromString("{B722BCCB-4E68-101B-A2BC-00AA00404770}")
@@ -2469,7 +2469,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleControl:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleControl:", r)
 			}
 		}()
 		COMIIDIOleControl = COMIIDFromString("{B196B288-BAB4-101A-B69C-00AA00341D07}")
@@ -2477,7 +2477,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleControlSite:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleControlSite:", r)
 			}
 		}()
 		COMIIDIOleControlSite = COMIIDFromString("{B196B289-BAB4-101A-B69C-00AA00341D07}")
@@ -2485,7 +2485,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleDocument:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleDocument:", r)
 			}
 		}()
 		COMIIDIOleDocument = COMIIDFromString("{B722BCC5-4E68-101B-A2BC-00AA00404770}")
@@ -2493,7 +2493,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleDocumentSite:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleDocumentSite:", r)
 			}
 		}()
 		COMIIDIOleDocumentSite = COMIIDFromString("{B722BCC7-4E68-101B-A2BC-00AA00404770}")
@@ -2501,7 +2501,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleInPlaceFrame:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleInPlaceFrame:", r)
 			}
 		}()
 		COMIIDIOleInPlaceFrame = COMIIDFromString("{00000116-0000-0000-C000-000000000046}")
@@ -2509,7 +2509,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleInPlaceObject:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleInPlaceObject:", r)
 			}
 		}()
 		COMIIDIOleInPlaceObject = COMIIDFromString("{00000113-0000-0000-C000-000000000046}")
@@ -2517,7 +2517,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleInPlaceSite:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleInPlaceSite:", r)
 			}
 		}()
 		COMIIDIOleInPlaceSite = COMIIDFromString("{00000119-0000-0000-C000-000000000046}")
@@ -2525,7 +2525,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleLink:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleLink:", r)
 			}
 		}()
 		COMIIDIOleLink = COMIIDFromString("{0000011D-0000-0000-C000-000000000046}")
@@ -2533,7 +2533,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIOleObject:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIOleObject:", r)
 			}
 		}()
 		COMIIDIOleObject = COMIIDFromString("{00000112-0000-0000-C000-000000000046}")
@@ -2541,7 +2541,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIPersist:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIPersist:", r)
 			}
 		}()
 		COMIIDIPersist = COMIIDFromString("{0000010C-0000-0000-C000-000000000046}")
@@ -2549,7 +2549,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIPersistFile:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIPersistFile:", r)
 			}
 		}()
 		COMIIDIPersistFile = COMIIDFromString("{0000010B-0000-0000-C000-000000000046}")
@@ -2557,7 +2557,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIPersistStorage:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIPersistStorage:", r)
 			}
 		}()
 		COMIIDIPersistStorage = COMIIDFromString("{0000010A-0000-0000-C000-000000000046}")
@@ -2565,7 +2565,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIPersistStreamInit:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIPersistStreamInit:", r)
 			}
 		}()
 		COMIIDIPersistStreamInit = COMIIDFromString("{7FD52380-4E07-101B-AE2D-08002B2EC713}")
@@ -2573,7 +2573,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIPropertyNotifySink:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIPropertyNotifySink:", r)
 			}
 		}()
 		COMIIDIPropertyNotifySink = COMIIDFromString("{9BFBBC02-EFF1-101A-84ED-00AA00341D07}")
@@ -2581,7 +2581,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIProvideClassInfo:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIProvideClassInfo:", r)
 			}
 		}()
 		COMIIDIProvideClassInfo = COMIIDFromString("{B196B283-BAB4-101A-B69C-00AA00341D07}")
@@ -2589,7 +2589,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIProvideClassInfo2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIProvideClassInfo2:", r)
 			}
 		}()
 		COMIIDIProvideClassInfo2 = COMIIDFromString("{A6BC3AC0-DBAA-11CE-9DE3-00AA004BB851}")
@@ -2597,7 +2597,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIServiceProvider:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIServiceProvider:", r)
 			}
 		}()
 		COMIIDIServiceProvider = COMIIDFromString("{6d5140c1-7436-11ce-8034-00aa006009fa}")
@@ -2605,7 +2605,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDISpecifyPropertyPages:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDISpecifyPropertyPages:", r)
 			}
 		}()
 		COMIIDISpecifyPropertyPages = COMIIDFromString("{B196B28B-BAB4-101A-B69C-00AA00341D07}")
@@ -2613,7 +2613,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIUnknown:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIUnknown:", r)
 			}
 		}()
 		COMIIDIUnknown = COMIIDFromString("{00000000-0000-0000-C000-000000000046}")
@@ -2621,7 +2621,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIViewObject2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIViewObject2:", r)
 			}
 		}()
 		COMIIDIViewObject2 = COMIIDFromString("{00000127-0000-0000-C000-000000000046}")
@@ -2629,7 +2629,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCGID_DocHostCommandHandler:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCGID_DocHostCommandHandler:", r)
 			}
 		}()
 		COMCGID_DocHostCommandHandler = COMIIDFromString("{f38bc242-b950-11d1-8918-00c04fc2c836}")
@@ -2637,7 +2637,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMCGID_Explorer:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMCGID_Explorer:", r)
 			}
 		}()
 		COMCGID_Explorer = COMIIDFromString("{000214D0-0000-0000-C000-000000000046}")
@@ -2645,7 +2645,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2Environment2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2Environment2:", r)
 			}
 		}()
 		COMIID_ICoreWebView2Environment2 = COMIIDFromString("{41F3632B-5EF4-404F-AD82-2D606C5A9A21}")
@@ -2653,7 +2653,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2_2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2_2:", r)
 			}
 		}()
 		COMIID_ICoreWebView2_2 = COMIIDFromString("{9E8F0CF8-E670-4B5E-B2BC-73E061E3184C}")
@@ -2661,7 +2661,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2_10:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2_10:", r)
 			}
 		}()
 		COMIID_ICoreWebView2_10 = COMIIDFromString("{B1690564-6F5A-4983-8E48-31D1143FECDB}")
@@ -2669,7 +2669,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2_11:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2_11:", r)
 			}
 		}()
 		COMIID_ICoreWebView2_11 = COMIIDFromString("{0BE78E56-C193-4051-B943-23B460C08BDB}")
@@ -2677,7 +2677,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2_12:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2_12:", r)
 			}
 		}()
 		COMIID_ICoreWebView2_12 = COMIIDFromString("{35D69927-BCFA-4566-9349-6B3E0D154CAC}")
@@ -2685,7 +2685,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIID_ICoreWebView2_13:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIID_ICoreWebView2_13:", r)
 			}
 		}()
 		COMIID_ICoreWebView2_13 = COMIIDFromString("{F75F09A8-667E-4983-88D6-C8773F315E84}")
@@ -2693,7 +2693,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessible2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessible2:", r)
 			}
 		}()
 		COMIIDIAccessible2 = COMIIDFromString("{E89F726E-C4F4-4c19-BB19-B647D7FA8478}")
@@ -2701,7 +2701,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleRelation:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleRelation:", r)
 			}
 		}()
 		COMIIDIAccessibleRelation = COMIIDFromString("{7CDF86EE-C3DA-496a-BDA4-281B336E1FDC}")
@@ -2709,7 +2709,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleAction:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleAction:", r)
 			}
 		}()
 		COMIIDIAccessibleAction = COMIIDFromString("{B70D9F59-3B5A-4dba-AB9E-22012F607DF5}")
@@ -2717,7 +2717,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleComponent:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleComponent:", r)
 			}
 		}()
 		COMIIDIAccessibleComponent = COMIIDFromString("{1546D4B0-4C98-4bda-89AE-9A64748BDDE4}")
@@ -2725,7 +2725,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleValue:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleValue:", r)
 			}
 		}()
 		COMIIDIAccessibleValue = COMIIDFromString("{35855B5B-C566-4fd0-A7B1-E65465600394}")
@@ -2733,7 +2733,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleText:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleText:", r)
 			}
 		}()
 		COMIIDIAccessibleText = COMIIDFromString("{24FD2FFB-3AAD-4a08-8335-A3AD89C0FB4B}")
@@ -2741,7 +2741,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleEditableText:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleEditableText:", r)
 			}
 		}()
 		COMIIDIAccessibleEditableText = COMIIDFromString("{A59AA09A-7011-4b65-939D-32B1FB5547E3}")
@@ -2749,7 +2749,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleHyperlink:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleHyperlink:", r)
 			}
 		}()
 		COMIIDIAccessibleHyperlink = COMIIDFromString("{01C20F2B-3DD2-400f-949F-AD00BDAB1D41}")
@@ -2757,7 +2757,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleHypertext:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleHypertext:", r)
 			}
 		}()
 		COMIIDIAccessibleHypertext = COMIIDFromString("{6B4F8BBF-F1F2-418a-B35E-A195BC4103B9}")
@@ -2765,7 +2765,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleTable:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleTable:", r)
 			}
 		}()
 		COMIIDIAccessibleTable = COMIIDFromString("{35AD8070-C20C-4fb4-B094-F4F7275DD469}")
@@ -2773,7 +2773,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleTable2:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleTable2:", r)
 			}
 		}()
 		COMIIDIAccessibleTable2 = COMIIDFromString("{6167f295-06f0-4cdd-a1fa-02e25153d869}")
@@ -2781,7 +2781,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleTableCell:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleTableCell:", r)
 			}
 		}()
 		COMIIDIAccessibleTableCell = COMIIDFromString("{594116B1-C99F-4847-AD06-0A7A86ECE645}")
@@ -2789,7 +2789,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleImage:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleImage:", r)
 			}
 		}()
 		COMIIDIAccessibleImage = COMIIDFromString("{FE5ABB3D-615E-4f7b-909F-5F0EDA9E8DDE}")
@@ -2797,7 +2797,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleApplication:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleApplication:", r)
 			}
 		}()
 		COMIIDIAccessibleApplication = COMIIDFromString("{D49DED83-5B25-43F4-9B95-93B44595979E}")
@@ -2805,7 +2805,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMIIDIAccessibleContext:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMIIDIAccessibleContext:", r)
 			}
 		}()
 		COMIIDIAccessibleContext = COMIIDFromString("{77A123E4-5794-44e0-B8BF-DE600C9D29BD}")

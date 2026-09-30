@@ -47,7 +47,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init ColorPaletteSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ColorPaletteSizeof:", r)
 			}
 		}()
 		ColorPaletteSizeof = GdipColorPalette_sizeof()

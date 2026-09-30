@@ -26,7 +26,7 @@ type CursorLike interface {
 
 const CursorDEFAULT_ZOOM int32 = 100
 
-func NewCursor(deviceLike DeviceLike, style int32) *Cursor {
+func NewCursorDeviceStyle(deviceLike DeviceLike, style int32) *Cursor {
 	var device *Device
 	if deviceLike != nil {
 		device = deviceLike.AsDevice()
@@ -34,11 +34,11 @@ func NewCursor(deviceLike DeviceLike, style int32) *Cursor {
 	_ = device
 	this := &Cursor{}
 	this.impl = this
-	this.initCursor(device, style)
+	this.initCursorDeviceStyle(device, style)
 	return this
 }
 
-func (this *Cursor) initCursor(device *Device, style int32) {
+func (this *Cursor) initCursorDeviceStyle(device *Device, style int32) {
 	this.Resource.initResourceDevice(device)
 	this.zoomLevelToHandle = jrt.NewMap()
 	this.cursorHandleProvider = NewCursorStyleCursorHandleProvider(style)
@@ -135,8 +135,8 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	cursor, ok566 := resourceImplAsCursor(object)
-	if !(ok566) {
+	cursor, ok1 := resourceImplAsCursor(object)
+	if !(ok1) {
 		return false
 	}
 	return this.device == cursor.device && CursorWin32_getHandle(this, CursorDEFAULT_ZOOM) == CursorWin32_getHandle(cursor, CursorDEFAULT_ZOOM)

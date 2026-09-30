@@ -71,10 +71,7 @@ func (this *CoolItem) checkSubclass_() {
 func (this *CoolItem) ComputeSize(wHint int32, hHint int32) *Point {
 	this.CheckWidget()
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	return func() *Point {
-		_ = []any{this.ComputeSizeInPixels(NewPoint(wHint, hHint)), zoom}
-		panic("j2go: unresolved call pixelToPointAsSufficientlyLargeSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSufficientlyLargeSizePointZoom(this.ComputeSizeInPixels(NewPoint(wHint, hHint)), zoom)
 }
 
 func (this *CoolItem) ComputeSizeInPixels(sizeHintInPointsLike PointLike) *Point {
@@ -84,10 +81,7 @@ func (this *CoolItem) ComputeSizeInPixels(sizeHintInPointsLike PointLike) *Point
 	}
 	_ = sizeHintInPoints
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var sizeHintInPixels *Point = func() *Point {
-		_ = []any{sizeHintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var sizeHintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(sizeHintInPoints, zoom)
 	var index int32 = this.parent.IndexOf(this)
 	if index == -1 {
 		return NewPoint(0, 0)
@@ -115,10 +109,7 @@ func (this *CoolItem) destroyWidget_() {
 
 func (this *CoolItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *CoolItem) GetBoundsInPixels() *Rectangle {
@@ -134,13 +125,13 @@ func (this *CoolItem) GetBoundsInPixels() *Rectangle {
 	rect.Left -= margins.CxLeftWidth
 	rect.Right += margins.CxRightWidth
 	if !this.parent.IsLastItemOfRow(index) {
-		var cond745 int32
+		var cond1 int32
 		if (this.parent.style & FLAT) == 0 {
-			cond745 = CoolBarSEPARATOR_WIDTH
+			cond1 = CoolBarSEPARATOR_WIDTH
 		} else {
-			cond745 = 0
+			cond1 = 0
 		}
-		rect.Right += cond745
+		rect.Right += cond1
 	}
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top
@@ -254,10 +245,7 @@ func (this *CoolItem) SetControl(controlLike ControlLike) {
 
 func (this *CoolItem) GetPreferredSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetPreferredSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetPreferredSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *CoolItem) GetPreferredSizeInPixels() *Point {
@@ -324,19 +312,13 @@ func (this *CoolItem) SetPreferredSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	size = func() *Point {
-		_ = []any{size, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsSize")
-	}()
+	size = Win32DPIUtilsPointToPixelAsSizePointZoom(size, this.impl.getAutoscalingZoom_())
 	this.SetPreferredSizeInPixels(size.X, size.Y)
 }
 
 func (this *CoolItem) GetSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *CoolItem) GetSizeInPixels() *Point {
@@ -352,13 +334,13 @@ func (this *CoolItem) GetSizeInPixels() *Point {
 	rect.Left -= margins.CxLeftWidth
 	rect.Right += margins.CxRightWidth
 	if !this.parent.IsLastItemOfRow(index) {
-		var cond746 int32
+		var cond2 int32
 		if (this.parent.style & FLAT) == 0 {
-			cond746 = CoolBarSEPARATOR_WIDTH
+			cond2 = CoolBarSEPARATOR_WIDTH
 		} else {
-			cond746 = 0
+			cond2 = 0
 		}
-		rect.Right += cond746
+		rect.Right += cond2
 	}
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top
@@ -431,19 +413,13 @@ func (this *CoolItem) SetSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	size = func() *Point {
-		_ = []any{size, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsSize")
-	}()
+	size = Win32DPIUtilsPointToPixelAsSizePointZoom(size, this.impl.getAutoscalingZoom_())
 	this.SetSizeInPixels(size.X, size.Y)
 }
 
 func (this *CoolItem) GetMinimumSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetMinimumSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetMinimumSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *CoolItem) GetMinimumSizeInPixels() *Point {
@@ -505,10 +481,7 @@ func (this *CoolItem) SetMinimumSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	size = func() *Point {
-		_ = []any{size, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsSize")
-	}()
+	size = Win32DPIUtilsPointToPixelAsSizePointZoom(size, this.impl.getAutoscalingZoom_())
 	this.SetMinimumSizeInPixels(size.X, size.Y)
 }
 

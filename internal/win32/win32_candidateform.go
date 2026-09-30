@@ -57,7 +57,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CANDIDATEFORMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CANDIDATEFORMSizeof:", r)
 			}
 		}()
 		CANDIDATEFORMSizeof = OSCANDIDATEFORM_sizeof()

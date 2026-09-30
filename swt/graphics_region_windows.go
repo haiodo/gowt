@@ -130,11 +130,11 @@ func (this *Region) Contains(x int32, y int32) bool {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return func() bool {
-		_ = []any{func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) bool {
-			var zoom int32 = func() int32 { _ = []any{regionHandle}; panic("j2go: unresolved call zoom") }()
+		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+			var zoom int32 = regionHandle.Zoom()
 			var xInPixels int32 = DPIUtilPointToPixel(x, zoom)
 			var yInPixels int32 = DPIUtilPointToPixel(y, zoom)
-			return this.ContainsInPixels(func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), xInPixels, yInPixels)
+			return this.ContainsInPixels(regionHandle.Handle(), xInPixels, yInPixels)
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
 	}()
@@ -157,10 +157,10 @@ func (this *Region) ContainsPt(ptLike PointLike) bool {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	return func() bool {
-		_ = []any{func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) bool {
-			var zoom int32 = func() int32 { _ = []any{regionHandle}; panic("j2go: unresolved call zoom") }()
-			var p *Point = func() *Point { _ = []any{pt, zoom}; panic("j2go: unresolved call pointToPixelAsLocation") }()
-			return this.ContainsInPixels(func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), p.X, p.Y)
+		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+			var zoom int32 = regionHandle.Zoom()
+			var p *Point = Win32DPIUtilsPointToPixelAsLocationPointZoom(pt, zoom)
+			return this.ContainsInPixels(regionHandle.Handle(), p.X, p.Y)
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
 	}()
@@ -169,7 +169,7 @@ func (this *Region) ContainsPt(ptLike PointLike) bool {
 func (this *Region) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastRegionToResource(this))
 	func() any {
-		_ = []any{this.zoomToHandle.Values(), func() func(any) { panic("j2go: unsupported ExpressionMethodReference") }()}
+		_ = []any{this.zoomToHandle.Values(), (*Region_RegionHandle).Destroy}
 		panic("j2go: unresolved call forEach")
 	}()
 	this.zoomToHandle.Clear()
@@ -182,10 +182,7 @@ func (this *Region) destroyHandlesExcept_(zoomLevels *jrt.List) {
 	this.zoomToHandle.EntrySet().RemoveIf(func(entry *jrt.MapEntry) bool {
 		var zoom any = entry.GetKey()
 		if !zoomLevels.Contains(zoom) {
-			func() any {
-				_ = []any{jrt.Cast[unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle](entry.GetValue())}
-				panic("j2go: unresolved call destroy")
-			}()
+			jrt.Cast[*Region_RegionHandle](entry.GetValue()).Destroy()
 			return true
 		}
 		return false
@@ -201,11 +198,8 @@ func (this *Region) GetBounds() *Rectangle {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return func() *Rectangle {
-		_ = []any{func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) *Rectangle {
-			return func() *Rectangle {
-				_ = []any{this.GetBoundsInPixels(func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }()), func() int32 { _ = []any{regionHandle}; panic("j2go: unresolved call zoom") }()}
-				panic("j2go: unresolved call pixelToPoint")
-			}()
+		_ = []any{func(regionHandle *Region_RegionHandle) *Rectangle {
+			return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(regionHandle.Handle()), regionHandle.Zoom())
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
 	}()
@@ -293,12 +287,9 @@ func (this *Region) IntersectsRect(rectLike RectangleLike) bool {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	return func() bool {
-		_ = []any{func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) bool {
-			var r *Rectangle = func() *Rectangle {
-				_ = []any{rect, func() int32 { _ = []any{regionHandle}; panic("j2go: unresolved call zoom") }()}
-				panic("j2go: unresolved call pointToPixel")
-			}()
-			return this.IntersectsInPixels(func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), r.X, r.Y, r.Width, r.Height)
+		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+			var r *Rectangle = Win32DPIUtilsPointToPixelOverload8(rect, regionHandle.Zoom())
+			return this.IntersectsInPixels(regionHandle.Handle(), r.X, r.Y, r.Width, r.Height)
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
 	}()
@@ -313,9 +304,9 @@ func (this *Region) IsEmpty() bool {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return func() bool {
-		_ = []any{func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) bool {
+		_ = []any{func(regionHandle *Region_RegionHandle) bool {
 			var rect *win32.RECT = win32.NewRECT()
-			var result int32 = win32.OSGetRgnBox(func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), rect)
+			var result int32 = win32.OSGetRgnBox(regionHandle.Handle(), rect)
 			if result == win32.OSNULLREGION {
 				return true
 			}
@@ -424,13 +415,13 @@ func (this *Region) StoreAndApplyOperationForAllHandles(operationLike Region_Ope
 	}
 	_ = operation
 	this.operations.Add(operation)
-	this.zoomToHandle.ForEach(func(zoom any, handle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) {
+	this.zoomToHandle.ForEach(func(zoom any, handle *Region_RegionHandle) {
 		operation.Apply(handle)
 	})
 }
 
-func (this *Region) GetRegionHandle(zoom int32) unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle {
-	return jrt.Cast[unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle {
+func (this *Region) GetRegionHandle(zoom int32) *Region_RegionHandle {
+	return jrt.Cast[*Region_RegionHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) *Region_RegionHandle {
 		return RegionNewRegionHandle(jrt.Cast[int32](z), this.operations)
 	}))
 }
@@ -450,10 +441,7 @@ func (this *Region) String() string {
 	return fmt.Sprintf("Region {%s}", func() string {
 		_ = []any{func() any {
 			_ = []any{this.zoomToHandle.EntrySet().Stream(), func(entry *jrt.MapEntry) string {
-				return func() string {
-					_ = []any{jrt.Cast[unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle](entry.GetValue())}
-					panic("j2go: unresolved call toString")
-				}()
+				return fmt.Sprint(jrt.Cast[*Region_RegionHandle](entry.GetValue()))
 			}}
 			panic("j2go: unresolved call map")
 		}(), func() any { _ = []any{","}; panic("j2go: unresolved call joining") }()}
@@ -461,24 +449,24 @@ func (this *Region) String() string {
 	}())
 }
 
-func RegionApplyUsingTemporaryHandle(zoom int32, operations *jrt.List, function func(unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) any) any {
-	var temporaryHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle = RegionNewRegionHandle(zoom, operations)
+func RegionApplyUsingTemporaryHandle(zoom int32, operations *jrt.List, function func(*Region_RegionHandle) any) any {
+	var temporaryHandle *Region_RegionHandle = RegionNewRegionHandle(zoom, operations)
 	{
 		defer func() {
-			func() any { _ = []any{temporaryHandle}; panic("j2go: unresolved call destroy") }()
+			temporaryHandle.Destroy()
 		}()
 		return function(temporaryHandle)
 	}
 }
 
-func RegionNewRegionHandle(zoom int32, operations *jrt.List) unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle {
+func RegionNewRegionHandle(zoom int32, operations *jrt.List) *Region_RegionHandle {
 	var newHandle int64 = win32.OSCreateRectRgn(0, 0, 0, 0)
 	if newHandle == 0 {
 		Error(ERROR_NO_HANDLES)
 	}
-	var newRegionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle = func() any { _ = []any{newHandle, zoom}; panic("j2go: unresolved new RegionHandle") }()
-	for _, elem436 := range operations.ToArray() {
-		operation := jrt.Cast[*Region_Operation](elem436)
+	var newRegionHandle *Region_RegionHandle = newRegionRegionHandle(newHandle, zoom)
+	for _, elem1 := range operations.ToArray() {
+		operation := jrt.Cast[*Region_Operation](elem1)
 		operation.Apply(newRegionHandle)
 	}
 	return newRegionHandle
@@ -490,7 +478,7 @@ func RegionWin32_getHandle(regionLike RegionLike, zoom int32) int64 {
 		region = regionLike.AsRegion()
 	}
 	_ = region
-	return func() int64 { _ = []any{region.GetRegionHandle(zoom)}; panic("j2go: unresolved call handle") }()
+	return region.GetRegionHandle(zoom).Handle()
 }
 
 type Region_ZoomToRegionMap struct {
@@ -547,6 +535,42 @@ func (this *Region_ZoomToRegionMap) Dispose() {
 		this.zoomToRegionHandleMap.Clear()
 		this.disposed = true
 	}
+}
+
+type Region_RegionHandle struct {
+	handle int64
+	zoom   int32
+}
+
+func init() { jrt.RegisterClassPackage("Region_RegionHandle", "org.eclipse.swt.graphics") }
+
+func (this *Region_RegionHandle) AsRegion_RegionHandle() *Region_RegionHandle { return this }
+
+type Region_RegionHandleLike interface {
+	AsRegion_RegionHandle() *Region_RegionHandle
+}
+
+func newRegionRegionHandle(handle int64, zoom int32) *Region_RegionHandle {
+	this := &Region_RegionHandle{}
+	this.initRegionRegionHandle(handle, zoom)
+	return this
+}
+
+func (this *Region_RegionHandle) initRegionRegionHandle(handle int64, zoom int32) {
+	this.handle = handle
+	this.zoom = zoom
+}
+
+func (this *Region_RegionHandle) Handle() int64 {
+	return this.handle
+}
+
+func (this *Region_RegionHandle) Zoom() int32 {
+	return this.zoom
+}
+
+func (this *Region_RegionHandle) Destroy() {
+	win32.OSDeleteObject(this.Handle())
 }
 
 type Region_OperationStrategy interface {
@@ -632,8 +656,13 @@ func (this *Region_Operation) initRegionOperation(operationStrategy Region_Opera
 	this.operationStrategy = operationStrategy
 }
 
-func (this *Region_Operation) Apply(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) {
-	this.operationStrategy.Apply(this, func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), func() int32 { _ = []any{regionHandle}; panic("j2go: unresolved call zoom") }())
+func (this *Region_Operation) Apply(regionHandleLike Region_RegionHandleLike) {
+	var regionHandle *Region_RegionHandle
+	if regionHandleLike != nil {
+		regionHandle = regionHandleLike.AsRegion_RegionHandle()
+	}
+	_ = regionHandle
+	this.operationStrategy.Apply(this, regionHandle.Handle(), regionHandle.Zoom())
 }
 
 func (this *Region_Operation) Set(handle int64, zoom int32) {
@@ -725,7 +754,7 @@ func (this *Region_OperationWithRectangle) translate_(handle int64, zoom int32) 
 }
 
 func (this *Region_OperationWithRectangle) GetScaledRectangle(zoom int32) *Rectangle {
-	return func() *Rectangle { _ = []any{this.data, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	return Win32DPIUtilsPointToPixelOverload8(this.data, zoom)
 }
 
 func RegionOperationWithRectangleCombineWithRectInPixels(handle int64, x int32, y int32, width int32, height int32, mode int32) {
@@ -785,7 +814,7 @@ func (this *Region_OperationWithArray) translate_(handle int64, zoom int32) {
 }
 
 func (this *Region_OperationWithArray) GetScaledPoints(zoom int32) []int32 {
-	return func() []int32 { _ = []any{this.data, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	return Win32DPIUtilsPointToPixel(this.data, zoom)
 }
 
 func RegionOperationWithArrayCombineWithPolyInPixels(handle int64, pointArray []int32, mode int32) {
@@ -838,10 +867,7 @@ func (this *Region_OperationWithPoint) intersect_(handle int64, zoom int32) {
 }
 
 func (this *Region_OperationWithPoint) translate_(handle int64, zoom int32) {
-	var pt *Point = func() *Point {
-		_ = []any{castPointToPoint(this.data), zoom}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}()
+	var pt *Point = Win32DPIUtilsPointToPixelAsLocationPointZoom(castPointToPoint(this.data), zoom)
 	win32.OSOffsetRgn(handle, pt.X, pt.Y)
 }
 
@@ -878,8 +904,8 @@ func (this *Region_OperationWithRegion) set_(handle int64, zoom int32) {
 
 func (this *Region_OperationWithRegion) add_(handle int64, zoom int32) {
 	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), win32.OSRGN_OR))
+		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_OR))
 		}}
 		panic("j2go: unresolved call applyUsingTemporaryHandle")
 	}()
@@ -887,8 +913,8 @@ func (this *Region_OperationWithRegion) add_(handle int64, zoom int32) {
 
 func (this *Region_OperationWithRegion) subtract_(handle int64, zoom int32) {
 	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), win32.OSRGN_DIFF))
+		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_DIFF))
 		}}
 		panic("j2go: unresolved call applyUsingTemporaryHandle")
 	}()
@@ -896,8 +922,8 @@ func (this *Region_OperationWithRegion) subtract_(handle int64, zoom int32) {
 
 func (this *Region_OperationWithRegion) intersect_(handle int64, zoom int32) {
 	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle unsupported_type_org_eclipse_swt_graphics_Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, func() int64 { _ = []any{regionHandle}; panic("j2go: unresolved call handle") }(), win32.OSRGN_AND))
+		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_AND))
 		}}
 		panic("j2go: unresolved call applyUsingTemporaryHandle")
 	}()

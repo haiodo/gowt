@@ -4441,13 +4441,13 @@ func OSTOUCH_COORD_TO_PIXEL(touchCoord int32) int32 {
 }
 
 func OSHRESULT_FROM_WIN32(x int32) int32 {
-	var cond23 int32
+	var cond1 int32
 	if x <= 0 {
-		cond23 = x
+		cond1 = x
 	} else {
-		cond23 = ((x & 0x0000FFFF) | -2147024896)
+		cond1 = ((x & 0x0000FFFF) | -2147024896)
 	}
-	return cond23
+	return cond1
 }
 
 var proc_OSAbortDoc = newProc("AbortDoc")
@@ -10184,7 +10184,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSDPI_AWARENESS_CONTEXT_UNAWARE_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSDPI_AWARENESS_CONTEXT_UNAWARE_:", r)
 			}
 		}()
 		OSDPI_AWARENESS_CONTEXT_UNAWARE_ = OSDPI_AWARENESS_CONTEXT_UNAWARE()
@@ -10192,7 +10192,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSDPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSDPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED_:", r)
 			}
 		}()
 		OSDPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED_ = OSDPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED()
@@ -10200,7 +10200,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSDPI_AWARENESS_CONTEXT_SYSTEM_AWARE_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSDPI_AWARENESS_CONTEXT_SYSTEM_AWARE_:", r)
 			}
 		}()
 		OSDPI_AWARENESS_CONTEXT_SYSTEM_AWARE_ = OSDPI_AWARENESS_CONTEXT_SYSTEM_AWARE()
@@ -10208,7 +10208,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_:", r)
 			}
 		}()
 		OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_ = OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE()
@@ -10216,7 +10216,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2_:", r)
 			}
 		}()
 		OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2_ = OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2()
@@ -10224,7 +10224,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OSNOTIFYICONDATA_V2_SIZE_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNOTIFYICONDATA_V2_SIZE_:", r)
 			}
 		}()
 		OSNOTIFYICONDATA_V2_SIZE_ = OSNOTIFYICONDATA_V2_SIZE()
@@ -10232,7 +10232,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OS static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OS static{}:", r)
 			}
 		}()
 		LibraryLoadLibrary("swt")
@@ -10240,7 +10240,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OS static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OS static{}:", r)
 			}
 		}()
 		if jrt.GetProperty(OSNO_MANIFEST, "") == "" {

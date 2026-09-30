@@ -43,7 +43,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CONTROLINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CONTROLINFOSizeof:", r)
 			}
 		}()
 		CONTROLINFOSizeof = COMCONTROLINFO_sizeof()

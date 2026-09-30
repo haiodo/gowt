@@ -51,7 +51,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init GdiplusStartupInputSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init GdiplusStartupInputSizeof:", r)
 			}
 		}()
 		GdiplusStartupInputSizeof = GdipGdiplusStartupInput_sizeof()

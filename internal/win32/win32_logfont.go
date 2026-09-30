@@ -80,7 +80,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init LOGFONTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init LOGFONTSizeof:", r)
 			}
 		}()
 		LOGFONTSizeof = OSLOGFONT_sizeof()

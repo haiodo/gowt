@@ -48,7 +48,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init FORMATETCSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init FORMATETCSizeof:", r)
 			}
 		}()
 		FORMATETCSizeof = COMFORMATETC_sizeof()

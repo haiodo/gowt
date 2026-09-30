@@ -30,13 +30,13 @@ func (this *ICoreWebView2NewWindowRequestedEventArgs) Get_NewWindow(newWindow []
 }
 
 func (this *ICoreWebView2NewWindowRequestedEventArgs) Put_Handled(handled bool) int32 {
-	var cond10 int32
+	var cond1 int32
 	if handled {
-		cond10 = 1
+		cond1 = 1
 	} else {
-		cond10 = 0
+		cond1 = 0
 	}
-	return COMVtblCallOverload1(6, this.address, cond10)
+	return COMVtblCallOverload1(6, this.address, cond1)
 }
 
 func (this *ICoreWebView2NewWindowRequestedEventArgs) Get_Handled(handled []int32) int32 {

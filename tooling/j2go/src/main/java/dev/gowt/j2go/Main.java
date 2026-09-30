@@ -131,7 +131,11 @@ public class Main {
 		selectors.load(Path.of("tooling/j2go/selectors.properties"));
 		TypeModel model = new TypeModel();
 		Path cascadePins = Path.of("tooling/j2go/cascade.properties");
-		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(TypeModel.PINNED_CASCADE::add);
+		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(l -> {
+			int eq = l.indexOf('=');
+			if (eq < 0) TypeModel.PINNED_CASCADE.add(l);
+			else TypeModel.PINNED_CASCADE_NAMES.put(l.substring(0, eq), l.substring(eq + 1));
+		});
 		model.build(orderedUnits, names);
 		if (System.getenv("J2GO_DUMP_CASCADE") != null) model.dumpCascade(Path.of(System.getenv("J2GO_DUMP_CASCADE")));
 
@@ -148,8 +152,12 @@ public class Main {
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
-			boolean sharedFile = !reference && platformRoots.stream().noneMatch(absPath::startsWith)
-					&& !GoTypes.goPackageDir(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals(platform.piDir);
+			String unitPkg = cu.getPackage().getName().getFullyQualifiedName();
+			String unitType = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
+			String unitDir = GoTypes.goPackageDir(unitPkg, unitType);
+			boolean commonSource = !reference && platformRoots.stream().noneMatch(absPath::startsWith) && !unitDir.equals(platform.piDir);
+			// A common source the reference platform has no file for (it stubs the class by hand) is this platform's own.
+			boolean sharedFile = commonSource && Files.exists(Path.of(outDir, unitDir, lastSegment(unitPkg) + "_" + unitType.toLowerCase(Locale.ROOT) + ".go"));
 			emitter.separateHelpers = sharedFile;
 			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
 			// The reference platform owns the shared files; here only the helpers they need are kept.
@@ -171,7 +179,7 @@ public class Main {
 			// swt file built only for this GOOS: read from a platform root (a same-named sibling per platform).
 			final String srcPath = absPath;
 			boolean piFile = outDirName.equals(platform.piDir);
-			boolean platformFile = !piFile && platformRoots.stream().anyMatch(srcPath::startsWith);
+			boolean platformFile = !piFile && (commonSource || platformRoots.stream().anyMatch(srcPath::startsWith));
 			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
 			String header = buildHeader(relPath, source, cu);
 			// A PI package is wholly one OS's: a tag, not a rename (swt files share names across platforms, PI files do not).

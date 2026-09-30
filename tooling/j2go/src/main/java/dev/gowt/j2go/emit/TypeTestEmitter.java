@@ -60,9 +60,9 @@ final class TypeTestEmitter {
 		TypeModel.ClassInfo subjectCi = emitter.model.lookup(st);
 		String targetName = emitter.qualifiedTypeName(target);
 		String name = "cast" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
+		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
 			String impl = subjectCi == null || subjectCi.isInterface ? "x" : "x" + emitter.implAccess(subjectCi.root);
-			String as = ensureCascadeHelper(target.root, target);
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
 					+ "\tv, ok := " + as + "(" + impl + ")\n\tif !ok {\n\t\tpanic(\"java.lang.ClassCastException: " + targetName + "\")\n\t}\n\treturn v\n}\n\n");
 		}
@@ -127,8 +127,9 @@ final class TypeTestEmitter {
 		String fromGo = dev.gowt.j2go.GoTypes.map(st, emitter);
 		String targetName = emitter.qualifiedTypeName(target);
 		String name = "is" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
+		// Also when a shared file defines `name` already: the cascade helper it calls may belong to another platform's files.
+		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
-			String as = ensureCascadeHelper(target.root, target);
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
 					+ "\treturn " + as + "(x" + emitter.implAccess(subjectCi.root) + ")\n}\n\n");
 		}

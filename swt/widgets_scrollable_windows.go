@@ -75,14 +75,8 @@ func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32)
 func (this *Scrollable) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var rectangle *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(x, y, width, height), zoom}
-		panic("j2go: unresolved call pointToPixelWithSufficientlyLargeSize")
-	}()
-	return func() *Rectangle {
-		_ = []any{this.impl.computeTrimInPixels_(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), zoom}
-		panic("j2go: unresolved call pixelToPointWithSufficientlyLargeSize")
-	}()
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelWithSufficientlyLargeSize(NewRectangle(x, y, width, height), zoom)
+	return Win32DPIUtilsPixelToPointWithSufficientlyLargeSize(this.impl.computeTrimInPixels_(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), zoom)
 }
 
 func (this *Scrollable) ComputeTrimInPixels(x int32, y int32, width int32, height int32) *Rectangle {
@@ -109,7 +103,7 @@ func (this *Scrollable) computeTrimInPixels_(x int32, y int32, width int32, heig
 
 func (this *Scrollable) createHandle_() {
 	this.Control.createHandle_()
-	this.impl.maybeEnableDarkSystemTheme_()
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 }
 
 func (this *Scrollable) CreateScrollBar(type_ int32) *ScrollBar {
@@ -153,13 +147,13 @@ func (this *Scrollable) ApplyThemeBackground() int32 {
 }
 
 func (this *Scrollable) applyThemeBackground_() int32 {
-	var cond96 int32
+	var cond1 int32
 	if this.backgroundAlpha == 0 {
-		cond96 = 1
+		cond1 = 1
 	} else {
-		cond96 = 0
+		cond1 = 0
 	}
-	return cond96
+	return cond1
 }
 
 func (this *Scrollable) DestroyScrollBar(type_ int32) {
@@ -186,10 +180,7 @@ func (this *Scrollable) GetClientArea() *Rectangle {
 
 func (this *Scrollable) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.impl.getClientAreaInPixels_(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.impl.getClientAreaInPixels_(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Scrollable) GetClientAreaInPixels() *Rectangle {
@@ -235,11 +226,11 @@ func (this *Scrollable) GetVerticalBar() *ScrollBar {
 
 func (this *Scrollable) releaseChildren_(destroy bool) {
 	if this.horizontalBar != (nil) {
-		this.horizontalBar.Release(false)
+		this.horizontalBar.impl.release_(false)
 		this.horizontalBar = nil
 	}
 	if this.verticalBar != (nil) {
-		this.verticalBar.Release(false)
+		this.verticalBar.impl.release_(false)
 		this.verticalBar = nil
 	}
 	this.Control.releaseChildren_(destroy)
@@ -354,9 +345,9 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 		} else {
 			bar = this.horizontalBar
 		}
-		inner97 := newWidgetMouseWheelData(vertical, bar, wParam, this.display.scrollRemainderBar)
-		inner97.this_0 = this
-		var wheelData *Widget_MouseWheelData = inner97
+		inner2 := newWidgetMouseWheelData(vertical, bar, wParam, this.display.scrollRemainderBar)
+		inner2.this_0 = this
+		var wheelData *Widget_MouseWheelData = inner2
 		if wheelData.count == 0 {
 			return nil
 		}
@@ -397,7 +388,7 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 			} else {
 				event.Detail = PAGE_DOWN
 			}
-			this.verticalBar.SendSelectionEventTypeEventSend(Selection, event, true)
+			this.verticalBar.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		}
 	}
 	if this.horizontalBar != (nil) {
@@ -409,7 +400,7 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 			} else {
 				event.Detail = PAGE_DOWN
 			}
-			this.horizontalBar.SendSelectionEventTypeEventSend(Selection, event, true)
+			this.horizontalBar.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		}
 	}
 	return win32.NewLRESULT(code)

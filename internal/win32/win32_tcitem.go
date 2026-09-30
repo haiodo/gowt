@@ -48,7 +48,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TCITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TCITEMSizeof:", r)
 			}
 		}()
 		TCITEMSizeof = OSTCITEM_sizeof()

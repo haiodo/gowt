@@ -26,13 +26,13 @@ func (this *IPersistStorage) Load(pStg int64) int32 {
 }
 
 func (this *IPersistStorage) Save(pStgSave int64, fSameAsLoad bool) int32 {
-	var cond22 int32
+	var cond1 int32
 	if fSameAsLoad {
-		cond22 = 1
+		cond1 = 1
 	} else {
-		cond22 = 0
+		cond1 = 0
 	}
-	return COMVtblCallOverload45(7, this.address, pStgSave, cond22)
+	return COMVtblCallOverload45(7, this.address, pStgSave, cond1)
 }
 
 func (this *IPersistStorage) SaveCompleted(pStgNew int64) int32 {

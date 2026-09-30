@@ -61,10 +61,7 @@ func (this *Label) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam i
 
 func (this *Label) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	var border int32 = this.impl.getBorderWidthInPixels_()
@@ -88,10 +85,7 @@ func (this *Label) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed
 		return NewPoint(width, height)
 	}
 	if this.isImageMode {
-		var rect *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100}
-			panic("j2go: unresolved call scaleBounds")
-		}()
+		var rect *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 		width += rect.Width
 		height += rect.Height
 	} else {
@@ -212,13 +206,13 @@ func (this *Label) releaseWidget_() {
 }
 
 func (this *Label) resolveTextDirection_() int32 {
-	var cond194 int32
+	var cond1 int32
 	if (this.style & SEPARATOR) != 0 {
-		cond194 = NONE
+		cond1 = NONE
 	} else {
-		cond194 = BidiUtilResolveTextDirection(this.text)
+		cond1 = BidiUtilResolveTextDirection(this.text)
 	}
-	return cond194
+	return cond1
 }
 
 func (this *Label) SetAlignment(alignment int32) {
@@ -433,10 +427,7 @@ func (this *Label) WmDrawChildImage(struct_ *win32.DRAWITEMSTRUCT) {
 		return
 	}
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var imageRect *Rectangle = func() *Rectangle {
-		_ = []any{this.image.GetBounds(), zoom, 100}
-		panic("j2go: unresolved call scaleBounds")
-	}()
+	var imageRect *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), zoom, 100)
 	var x int32 = 0
 	if (this.style & CENTER) != 0 {
 		x = int32(math.Max(float64(0), float64((width-imageRect.Width)/2)))
@@ -544,7 +535,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Label static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Label static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

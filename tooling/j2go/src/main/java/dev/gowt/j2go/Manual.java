@@ -216,9 +216,7 @@ public class Manual {
 			"org.eclipse.swt.internal.win32.version.OsVersion#checkCompatibleWindowsVersion");
 
 	// Cocoa stands in for these by hand (swt/*_manual_darwin.go); win32 translates the real sources.
-	private static final Set<String> WIN32_TRANSLATED = Set.of("org.eclipse.swt.internal.DPIUtil", "org.eclipse.swt.internal.BidiUtil",
-			"org.eclipse.swt.internal.Compatibility", "org.eclipse.swt.internal.DefaultExceptionHandler", IME, WIDGET_SPY,
-			"org.eclipse.swt.internal.StrictChecks", "org.eclipse.swt.internal.DPIUtil.ElementAtZoom");
+	private static final Set<String> WIN32_TRANSLATED = Set.of("org.eclipse.swt.internal.BidiUtil", IME);
 
 	public static boolean isManual(String qualifiedTypeName) {
 		return ENTRIES.containsKey(qualifiedTypeName) && !(GoTypes.platform == Platform.WIN32 && WIN32_TRANSLATED.contains(qualifiedTypeName));

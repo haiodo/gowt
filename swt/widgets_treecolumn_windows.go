@@ -125,7 +125,7 @@ func (this *TreeColumn) GetWidth() int32 {
 }
 
 func (this *TreeColumn) GetWidthInPixels() int32 {
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return 0
 	}
@@ -141,7 +141,7 @@ func (this *TreeColumn) GetWidthInPixels() int32 {
 
 func (this *TreeColumn) Pack() {
 	this.CheckWidget()
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -203,10 +203,7 @@ func (this *TreeColumn) Pack() {
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 	var headerWidth int32 = rect.Right - rect.Left + DPIUtilPointToPixel(TreeHEADER_MARGIN+TreeHEADER_EXTRA, this.impl.getAutoscalingZoom_())
 	if this.image != (nil) {
-		var bounds *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		headerWidth += bounds.Width
 		var margin int32 = 0
 		if hwndHeader != 0 {
@@ -270,7 +267,7 @@ func (this *TreeColumn) SetAlignment(alignment int32) {
 	if (alignment & (LEFT | RIGHT | CENTER)) == 0 {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 || index == 0 {
 		return
 	}
@@ -307,24 +304,24 @@ func (this *TreeColumn) SetAlignment(alignment int32) {
 	}
 }
 
-func (this *TreeColumn) setImage_(image *Image) {
+func (this *TreeColumn) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	if this.parent.sortColumn != this || this.parent.sortDirection != NONE {
-		this.SetImageImageSortRight(image, false, false)
+		this.SetImageImageSortRightImageSortRight(image, false, false)
 	}
 }
 
-func (this *TreeColumn) SetImageImageSortRight(imageLike ImageLike, sort bool, right bool) {
+func (this *TreeColumn) SetImageImageSortRightImageSortRight(imageLike ImageLike, sort bool, right bool) {
 	var image *Image
 	if imageLike != nil {
 		image = imageLike.AsImage()
 	}
 	_ = image
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -371,7 +368,7 @@ func (this *TreeColumn) SetResizable(resizable bool) {
 func (this *TreeColumn) SetSortDirection(direction int32) {
 	var hwndHeader int64 = this.parent.hwndHeader
 	if hwndHeader != 0 {
-		var index int32 = this.parent.IndexOf(this)
+		var index int32 = this.parent.IndexOfColumn(this)
 		if index == -1 {
 			return
 		}
@@ -425,7 +422,7 @@ func (this *TreeColumn) setText_(string_ string) {
 	if string_ == this.text {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -470,7 +467,7 @@ func (this *TreeColumn) SetWidthInPixels(width int32) {
 	if width < 0 {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -521,7 +518,7 @@ func (this *TreeColumn) handleDPIChange_(event *Event, scalingFactor float32) {
 	this.SetWidthInPixels(newColumnWidth)
 	tree.ignoreColumnResize = ignoreColumnResize
 	if this.image != (nil) {
-		this.impl.setImage_(this.image)
+		this.impl.setImageOnItem_(this.image)
 	}
 }
 

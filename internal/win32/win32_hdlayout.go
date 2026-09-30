@@ -39,7 +39,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init HDLAYOUTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init HDLAYOUTSizeof:", r)
 			}
 		}()
 		HDLAYOUTSizeof = OSHDLAYOUT_sizeof()

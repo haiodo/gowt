@@ -19,8 +19,8 @@ type Table struct {
 	columnCount          int32
 	customCount          int32
 	keyCount             int32
-	imageList            unsupported_type_org_eclipse_swt_internal_ImageList
-	headerImageList      unsupported_type_org_eclipse_swt_internal_ImageList
+	imageList            *ImageList
+	headerImageList      *ImageList
 	currentItem          *TableItem
 	sortColumn           *TableColumn
 	focusRect            *win32.RECT
@@ -233,9 +233,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 		if this.items[index] != (nil) {
 			return this.items[index]
 		}
-		cond685 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-		this.items[index] = cond685
-		return cond685
+		cond1 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+		this.items[index] = cond1
+		return cond1
 	} else {
 		if (this.style&VIRTUAL) == 0 || !create {
 			if this.keyCount == 0 {
@@ -247,13 +247,13 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 		}
 		var keyIndex int32 = this.BinarySearch(this.keys, 0, this.keyCount, index)
 		if (this.style&VIRTUAL) == 0 || !create {
-			var cond686 *TableItem
+			var cond2 *TableItem
 			if keyIndex < 0 {
-				cond686 = nil
+				cond2 = nil
 			} else {
-				cond686 = this.items[keyIndex]
+				cond2 = this.items[keyIndex]
 			}
-			return cond686
+			return cond2
 		}
 		if keyIndex < 0 {
 			if count == -1 {
@@ -263,9 +263,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 				if this.items[index] != (nil) {
 					return this.items[index]
 				}
-				cond687 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-				this.items[index] = cond687
-				return cond687
+				cond3 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+				this.items[index] = cond3
+				return cond3
 			}
 			keyIndex = -keyIndex - 1
 			if keyIndex < this.keyCount {
@@ -279,9 +279,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 				return this.items[keyIndex]
 			}
 		}
-		cond688 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-		this.items[keyIndex] = cond688
-		return cond688
+		cond4 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+		this.items[keyIndex] = cond4
+		return cond4
 	}
 }
 
@@ -417,10 +417,10 @@ func (this *Table) AddSelectionListener(listener SelectionListener) {
 }
 
 func (this *Table) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
-	return this.CallWindowProcHwndMsgWParamLParamForceSelect(hwnd, msg, wParam, lParam, false)
+	return this.CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(hwnd, msg, wParam, lParam, false)
 }
 
-func (this *Table) CallWindowProcHwndMsgWParamLParamForceSelect(hwnd int64, msg int32, wParam int64, lParam int64, forceSelect bool) int64 {
+func (this *Table) CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(hwnd int64, msg int32, wParam int64, lParam int64, forceSelect bool) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -522,7 +522,7 @@ func (this *Table) CallWindowProcHwndMsgWParamLParamForceSelect(hwnd int64, msg 
 			if index != -1 {
 				event.Item = upcastTableItemToWidget(this._getItem(index))
 			}
-			this.SendSelectionEventTypeEventSend(Selection, event, false)
+			this.SendSelectionEventEventTypeEventSend(Selection, event, false)
 		}
 		this.wasSelected = oldSelected
 	}
@@ -666,9 +666,9 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 	if this.ignoreCustomDraw {
 		return win32.NewLRESULT(int64(win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT))
 	}
-	t689 := this.customCount
+	t5 := this.customCount
 	this.customCount++
-	if t689 == 0 && win32.OSIsWindowVisible(this.Handle) {
+	if t5 == 0 && win32.OSIsWindowVisible(this.Handle) {
 		if !this.explorerTheme && (this.style&FULL_SELECTION) != 0 {
 			if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) == win32.OSCLR_NONE {
 				var dwExStyle int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETEXTENDEDLISTVIEWSTYLE, int64(0), int64(0)))
@@ -696,7 +696,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 			if win32.OSIsWindowEnabled(this.Handle) || this.FindImageControl() != (nil) || this.HasCustomBackground() {
 				this.DrawBackgroundHDCRect(hDC, rect)
 			} else {
-				this.FillBackground(hDC, win32.OSGetSysColor(win32.OSCOLOR_3DFACE), rect)
+				this.FillBackgroundLocal1(hDC, win32.OSGetSysColor(win32.OSCOLOR_3DFACE), rect)
 			}
 		} else {
 			var control *Control = this.impl.findBackgroundControl_()
@@ -708,9 +708,9 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 					if control == (nil) {
 						control = upcastTableToControl(this)
 					}
-					this.FillBackground(nmcd.Hdc, control.GetBackgroundPixel(), rect)
+					this.FillBackgroundLocal1(nmcd.Hdc, control.GetBackgroundPixel(), rect)
 					if this.sortColumn != (nil) && this.sortDirection != NONE {
-						var index int32 = this.IndexOf(this.sortColumn)
+						var index int32 = this.IndexOfColumn(this.sortColumn)
 						if index != -1 {
 							this.parent.impl.forceResize_()
 							var clrSortBk int32 = this.GetSortColumnPixel()
@@ -723,7 +723,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 								columnRect.Left = headerRect.Left
 								columnRect.Right = headerRect.Right
 								if win32.OSIntersectRect(columnRect, columnRect, rect) {
-									this.FillBackground(nmcd.Hdc, clrSortBk, columnRect)
+									this.FillBackgroundLocal1(nmcd.Hdc, clrSortBk, columnRect)
 								}
 							}
 						}
@@ -752,7 +752,7 @@ func (this *Table) CDDS_SUBITEMPOSTPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int6
 				if this.sortColumn != (nil) && !this.sortColumn.IsDisposed() {
 					var oldColumn int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETSELECTEDCOLUMN, int64(0), int64(0)))
 					if oldColumn == -1 {
-						var newColumn int32 = this.IndexOf(this.sortColumn)
+						var newColumn int32 = this.IndexOfColumn(this.sortColumn)
 						var rgn int64 = win32.OSCreateRectRgn(0, 0, 0, 0)
 						var result int32 = win32.OSGetUpdateRgn(this.Handle, rgn, true)
 						win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETSELECTEDCOLUMN, int64(newColumn), int64(0))
@@ -793,13 +793,13 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 		win32.OSSelectObject(hDC, hFont)
 	}
 	if this.ignoreCustomDraw || (nmcd.Left == nmcd.Right) {
-		var cond690 int32
+		var cond6 int32
 		if hFont == -1 {
-			cond690 = win32.OSCDRF_DODEFAULT
+			cond6 = win32.OSCDRF_DODEFAULT
 		} else {
-			cond690 = win32.OSCDRF_NEWFONT
+			cond6 = win32.OSCDRF_NEWFONT
 		}
-		return win32.NewLRESULT(int64(cond690))
+		return win32.NewLRESULT(int64(cond6))
 	}
 	var code int32 = win32.OSCDRF_DODEFAULT
 	this.selectionForeground = -1
@@ -881,7 +881,7 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 					}
 					if clrSelection != -1 {
 						var rect *win32.RECT = item.GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(int32(nmcd.DwItemSpec), nmcd.ISubItem, true, nmcd.ISubItem != 0, true, false, hDC)
-						this.FillBackground(hDC, clrSelection, rect)
+						this.FillBackgroundLocal1(hDC, clrSelection, rect)
 					}
 				}
 			}
@@ -964,7 +964,7 @@ func (this *Table) checkBuffered_() {
 	this.style |= DOUBLE_BUFFERED
 }
 
-func (this *Table) CheckData(itemLike TableItemLike, redraw bool) bool {
+func (this *Table) CheckDataLocal1(itemLike TableItemLike, redraw bool) bool {
 	var item *TableItem
 	if itemLike != nil {
 		item = itemLike.AsTableItem()
@@ -1162,10 +1162,7 @@ func (this *Table) ClearAll() {
 }
 
 func (this *Table) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	if this.fixScrollWidth {
 		this.SetScrollWidthItemForce(nil, true)
 	}
@@ -1346,9 +1343,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 			}
 		}
 	}
-	t691 := this.columnCount
+	t7 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t691-index])
+	copy(this.columns[index+1:], this.columns[index:index+t7-index])
 	this.columns[index] = column
 	this.ignoreColumnResize = true
 	if index == 0 {
@@ -1413,9 +1410,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 			lpti.CbSize = win32.TOOLINFOSizeof
 			lpti.UFlags = win32.OSTTF_SUBCLASS
 			lpti.Hwnd = this.hwndHeader
-			t692 := this.display.nextToolTipId
+			t8 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t692
+			column.id = t8
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -1482,7 +1479,7 @@ func (this *Table) deregister_() {
 	}
 }
 
-func (this *Table) Deselect(indices []int32) {
+func (this *Table) DeselectIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -1501,7 +1498,7 @@ func (this *Table) Deselect(indices []int32) {
 	}
 }
 
-func (this *Table) DeselectIndex(index int32) {
+func (this *Table) Deselect(index int32) {
 	this.CheckWidget()
 	if index < 0 {
 		return
@@ -1517,7 +1514,7 @@ func (this *Table) DeselectStartEnd(start int32, end int32) {
 	this.CheckWidget()
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETITEMCOUNT, int64(0), int64(0)))
 	if start == 0 && end == count-1 {
-		this.DeselectAll()
+		this.DeselectAll0()
 	} else {
 		var lvItem *win32.LVITEM = win32.NewLVITEM()
 		lvItem.StateMask = win32.OSLVIS_SELECTED
@@ -1530,7 +1527,7 @@ func (this *Table) DeselectStartEnd(start int32, end int32) {
 	}
 }
 
-func (this *Table) DeselectAll() {
+func (this *Table) DeselectAll0() {
 	this.CheckWidget()
 	var lvItem *win32.LVITEM = win32.NewLVITEM()
 	lvItem.Mask = win32.OSLVIF_STATE
@@ -1718,9 +1715,9 @@ func (this *Table) DestroyItem(columnLike TableColumnLike) {
 				} else {
 					newIndex = element - 1
 				}
-				t693 := count
+				t9 := count
 				count++
-				newOrder[t693] = newIndex
+				newOrder[t9] = newIndex
 			}
 		}
 		win32.OSSendMessageOverload3(this.Handle, win32.OSLVM_GETCOLUMNORDERARRAY, int64(this.columnCount), oldOrder)
@@ -1827,7 +1824,7 @@ func (this *Table) FixCheckboxImageListColor(fixScroll bool) {
 	this.SetCheckboxImageList(cx[0], cy[0], fixScroll)
 }
 
-func (this *Table) GetColumn(index int32) *TableColumn {
+func (this *Table) GetColumnIndex(index int32) *TableColumn {
 	this.CheckWidget()
 	if !(0 <= index && index < this.columnCount) {
 		this.Error(ERROR_INVALID_RANGE)
@@ -1876,13 +1873,13 @@ func (this *Table) GetHeaderBackground() *Color {
 }
 
 func (this *Table) GetHeaderBackgroundPixel() int32 {
-	var cond694 int32
+	var cond10 int32
 	if this.headerBackground != -1 {
-		cond694 = this.headerBackground
+		cond10 = this.headerBackground
 	} else {
-		cond694 = this.impl.defaultBackground_()
+		cond10 = this.impl.defaultBackground_()
 	}
-	return cond694
+	return cond10
 }
 
 func (this *Table) GetHeaderForeground() *Color {
@@ -1891,13 +1888,13 @@ func (this *Table) GetHeaderForeground() *Color {
 }
 
 func (this *Table) GetHeaderForegroundPixel() int32 {
-	var cond695 int32
+	var cond11 int32
 	if this.headerForeground != -1 {
-		cond695 = this.headerForeground
+		cond11 = this.headerForeground
 	} else {
-		cond695 = this.impl.defaultForeground_()
+		cond11 = this.impl.defaultForeground_()
 	}
-	return cond695
+	return cond11
 }
 
 func (this *Table) GetHeaderHeight() int32 {
@@ -1939,10 +1936,7 @@ func (this *Table) GetItemPoint(pointLike PointLike) *TableItem {
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.GetItemInPixels(func() *Point {
-		_ = []any{point, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}())
+	return this.GetItemInPixels(Win32DPIUtilsPointToPixelAsLocationPointZoom(point, this.impl.getAutoscalingZoom_()))
 }
 
 func (this *Table) GetItemInPixels(pointLike PointLike) *TableItem {
@@ -2055,14 +2049,14 @@ func (this *Table) GetSelection() []*TableItem {
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETSELECTEDCOUNT, int64(0), int64(0)))
 	var result []*TableItem = make([]*TableItem, count)
 	for {
-		cond696 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
-		i = cond696
-		if !((cond696) != -1) {
+		cond12 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
+		i = cond12
+		if !((cond12) != -1) {
 			break
 		}
-		t697 := j
+		t13 := j
 		j++
-		result[t697] = this._getItem(i)
+		result[t13] = this._getItem(i)
 	}
 	return result
 }
@@ -2081,9 +2075,9 @@ func (this *Table) GetSelectionIndex() int32 {
 	}
 	var i int32 = -1
 	for {
-		cond698 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
-		i = cond698
-		if !((cond698) != -1) {
+		cond14 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
+		i = cond14
+		if !((cond14) != -1) {
 			break
 		}
 		if i == focusIndex {
@@ -2166,10 +2160,7 @@ func (this *Table) HitTestSelection(index int32, x int32, y int32) bool {
 			hFont = win32.OSSelectObject(hDC, hFont)
 		}
 		var event *Event = this.SendMeasureItemEvent(item, index, 0, hDC)
-		if func() *Rectangle {
-			_ = []any{event.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}().Contains(x, y) {
+		if Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_()).Contains(x, y) {
 			result = true
 		}
 		if hFont != -1 {
@@ -2200,14 +2191,11 @@ func (this *Table) ImageIndex(imageLike ImageLike, column int32) int32 {
 	if this.imageList == (nil) {
 		var boundsInPoints *Rectangle = image.GetBounds()
 		this.imageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, boundsInPoints.Width, boundsInPoints.Height, this.impl.getAutoscalingZoom_())
-		var index int32 = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call indexOf") }()
+		var index int32 = this.imageList.IndexOf(image)
 		if index == -1 {
-			index = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
+			index = this.imageList.Add(image)
 		}
-		var hImageList int64 = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		var hImageList int64 = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		var topIndex int32 = this.GetTopIndex()
 		if topIndex != 0 {
 			this.impl.setRedraw_(false)
@@ -2215,25 +2203,22 @@ func (this *Table) ImageIndex(imageLike ImageLike, column int32) int32 {
 		}
 		win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETIMAGELIST, int64(win32.OSLVSIL_SMALL), hImageList)
 		if this.headerImageList != (nil) {
-			var hHeaderImageList int64 = func() int64 {
-				_ = []any{this.headerImageList, this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call getHandle")
-			}()
+			var hHeaderImageList int64 = this.headerImageList.GetHandle(this.impl.getAutoscalingZoom_())
 			win32.OSSendMessageOverload4(this.hwndHeader, win32.OSHDM_SETIMAGELIST, int64(0), hHeaderImageList)
 		}
 		this.FixCheckboxImageList(false)
-		this.SetItemHeight(false)
+		this.SetItemHeightLocal1(false)
 		if topIndex != 0 {
 			this.SetTopIndex(topIndex)
 			this.impl.setRedraw_(true)
 		}
 		return index
 	}
-	var index int32 = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call indexOf") }()
+	var index int32 = this.imageList.IndexOf(image)
 	if index != -1 {
 		return index
 	}
-	return func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
+	return this.imageList.Add(image)
 }
 
 func (this *Table) ImageIndexHeader(imageLike ImageLike) int32 {
@@ -2248,25 +2233,22 @@ func (this *Table) ImageIndexHeader(imageLike ImageLike) int32 {
 	if this.headerImageList == (nil) {
 		var boundsInPoints *Rectangle = image.GetBounds()
 		this.headerImageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, boundsInPoints.Width, boundsInPoints.Height, this.impl.getAutoscalingZoom_())
-		var index int32 = func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call indexOf") }()
+		var index int32 = this.headerImageList.IndexOf(image)
 		if index == -1 {
-			index = func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call add") }()
+			index = this.headerImageList.Add(image)
 		}
-		var hImageList int64 = func() int64 {
-			_ = []any{this.headerImageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		var hImageList int64 = this.headerImageList.GetHandle(this.impl.getAutoscalingZoom_())
 		win32.OSSendMessageOverload4(this.hwndHeader, win32.OSHDM_SETIMAGELIST, int64(0), hImageList)
 		return index
 	}
-	var index int32 = func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call indexOf") }()
+	var index int32 = this.headerImageList.IndexOf(image)
 	if index != -1 {
 		return index
 	}
-	return func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call add") }()
+	return this.headerImageList.Add(image)
 }
 
-func (this *Table) IndexOf(columnLike TableColumnLike) int32 {
+func (this *Table) IndexOfColumn(columnLike TableColumnLike) int32 {
 	var column *TableColumn
 	if columnLike != nil {
 		column = columnLike.AsTableColumn()
@@ -2312,17 +2294,17 @@ func (this *Table) IndexOfItem(itemLike TableItemLike) int32 {
 		if this.lastIndexOf < count/2 {
 			for i := int32(0); i < count; i++ {
 				if this._getItemIndexCreate(i, false) == item {
-					cond699 := i
-					this.lastIndexOf = cond699
-					return cond699
+					cond15 := i
+					this.lastIndexOf = cond15
+					return cond15
 				}
 			}
 		} else {
 			for i := int32(count - 1); i >= 0; i-- {
 				if this._getItemIndexCreate(i, false) == item {
-					cond700 := i
-					this.lastIndexOf = cond700
-					return cond700
+					cond16 := i
+					this.lastIndexOf = cond16
+					return cond16
 				}
 			}
 		}
@@ -2375,14 +2357,14 @@ func (this *Table) releaseChildren_(destroy bool) {
 			for i := int32(0); i < itemCount; i++ {
 				var item *TableItem = this._getItemIndexCreate(i, false)
 				if item != (nil) && !item.IsDisposed() {
-					item.Release(false)
+					item.impl.release_(false)
 				}
 			}
 		} else {
 			for i := int32(0); i < this.keyCount; i++ {
 				var item *TableItem = this.items[i]
 				if item != (nil) && !item.IsDisposed() {
-					item.Release(false)
+					item.impl.release_(false)
 				}
 			}
 		}
@@ -2392,7 +2374,7 @@ func (this *Table) releaseChildren_(destroy bool) {
 		for i := int32(0); i < this.columnCount; i++ {
 			var column *TableColumn = this.columns[i]
 			if !column.IsDisposed() {
-				column.Release(false)
+				column.impl.release_(false)
 			}
 		}
 		this.columns = nil
@@ -2425,7 +2407,7 @@ func (this *Table) releaseWidget_() {
 	this.headerToolTipHandle = int64(0)
 }
 
-func (this *Table) Remove(indices []int32) {
+func (this *Table) RemoveIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -2448,7 +2430,7 @@ func (this *Table) Remove(indices []int32) {
 		if index != last {
 			var item *TableItem = this._getItemIndexCreate(index, false)
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 			this.ignoreShrink = true
 			this.ignoreSelect = this.ignoreShrink
@@ -2469,7 +2451,7 @@ func (this *Table) Remove(indices []int32) {
 	this.SetDeferResize(false)
 }
 
-func (this *Table) RemoveIndex(index int32) {
+func (this *Table) Remove(index int32) {
 	this.CheckWidget()
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETITEMCOUNT, int64(0), int64(0)))
 	if !(0 <= index && index < count) {
@@ -2477,7 +2459,7 @@ func (this *Table) RemoveIndex(index int32) {
 	}
 	var item *TableItem = this._getItemIndexCreate(index, false)
 	if item != (nil) && !item.IsDisposed() {
-		item.Release(false)
+		item.impl.release_(false)
 	}
 	this.SetDeferResize(true)
 	this.ignoreShrink = true
@@ -2513,7 +2495,7 @@ func (this *Table) RemoveStartEnd(start int32, end int32) {
 		for index <= end {
 			var item *TableItem = this._getItemIndexCreate(index, false)
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 			this.ignoreShrink = true
 			this.ignoreSelect = this.ignoreShrink
@@ -2539,7 +2521,7 @@ func (this *Table) RemoveAll() {
 	for i := int32(0); i < itemCount; i++ {
 		var item *TableItem = this._getItemIndexCreate(i, false)
 		if item != (nil) && !item.IsDisposed() {
-			item.Release(false)
+			item.impl.release_(false)
 		}
 	}
 	this.SetDeferResize(true)
@@ -2567,7 +2549,7 @@ func (this *Table) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *Table) Select(indices []int32) {
+func (this *Table) SelectIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -2609,7 +2591,7 @@ func (this *Table) reskinChildren_(flags int32) {
 	this.Composite.reskinChildren_(flags)
 }
 
-func (this *Table) SelectIndex(index int32) {
+func (this *Table) Select(index int32) {
 	this.CheckWidget()
 	if index < 0 {
 		return
@@ -2790,12 +2772,9 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 	if drawBackground {
 		event.Detail |= BACKGROUND
 	}
-	var bounds *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_())
 	event.SetBounds(bounds)
-	gc.SetClippingRect(bounds)
+	gc.SetClippingOverload2(bounds)
 	this.SendEventEventTypeEvent(EraseItem, event)
 	event.Gc = nil
 	var clrSelectionText int32 = data.Foreground
@@ -2836,7 +2815,7 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 	if this.ignoreDrawForeground && this.ignoreDrawHot && !drawDrophilited {
 		if !this.ignoreDrawBackground && drawBackground {
 			var backgroundRect *win32.RECT = item.GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(int32(nmcd.DwItemSpec), nmcd.ISubItem, true, false, true, false, hDC)
-			this.FillBackground(hDC, clrTextBk, backgroundRect)
+			this.FillBackgroundLocal1(hDC, clrTextBk, backgroundRect)
 		}
 	}
 	this.focusRect = nil
@@ -2845,10 +2824,7 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 		var textRect *win32.RECT = item.GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(int32(nmcd.DwItemSpec), nmcd.ISubItem, true, false, fullText, false, hDC)
 		if (this.style & FULL_SELECTION) == 0 {
 			if measureEvent != (nil) {
-				var boundsInPixels *Rectangle = func() *Rectangle {
-					_ = []any{measureEvent.GetBounds(), this.impl.getAutoscalingZoom_()}
-					panic("j2go: unresolved call pointToPixel")
-				}()
+				var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(measureEvent.GetBounds(), this.impl.getAutoscalingZoom_())
 				textRect.Right = int32(math.Min(float64(cellRect.Right), float64(boundsInPixels.X+boundsInPixels.Width)))
 			}
 			if !this.ignoreDrawFocus {
@@ -2900,7 +2876,7 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 			}
 		} else {
 			if !this.ignoreDrawSelection && clrSelectionBk != -1 {
-				this.FillBackground(hDC, clrSelectionBk, textRect)
+				this.FillBackgroundLocal1(hDC, clrSelectionBk, textRect)
 			}
 		}
 	}
@@ -2937,10 +2913,7 @@ func (this *Table) SendEraseItemEventItemNmcdColumnCellRect(itemLike TableItemLi
 	event.Index = column
 	event.Gc = gc
 	event.Detail |= FOREGROUND
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_()))
 	this.SendEventEventTypeEvent(EraseItem, event)
 	event.Gc = nil
 	gc.impl.dispose_()
@@ -2964,10 +2937,7 @@ func (this *Table) SendMeasureItemEvent(itemLike TableItemLike, row int32, colum
 	event.Item = upcastTableItemToWidget(item)
 	event.Gc = gc
 	event.Index = column
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 	var drawSelected bool = false
 	if win32.OSIsWindowEnabled(this.Handle) {
 		var lvItem *win32.LVITEM = win32.NewLVITEM()
@@ -2992,14 +2962,11 @@ func (this *Table) SendMeasureItemEvent(itemLike TableItemLike, row int32, colum
 	gc.impl.dispose_()
 	win32.OSRestoreDC(hDC, nSavedDC)
 	if !this.IsDisposed() && !item.IsDisposed() {
-		var boundsInPixels *Rectangle = func() *Rectangle {
-			_ = []any{event.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
 		if this.columnCount == 0 {
 			var width int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETCOLUMNWIDTH, int64(0), int64(0)))
 			if boundsInPixels.X+boundsInPixels.Width > width {
-				this.SetScrollWidth(boundsInPixels.X + boundsInPixels.Width)
+				this.SetScrollWidthLocal1(boundsInPixels.X + boundsInPixels.Width)
 			}
 		}
 		var empty int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_APPROXIMATEVIEWRECT, int64(0), int64(0))
@@ -3007,7 +2974,7 @@ func (this *Table) SendMeasureItemEvent(itemLike TableItemLike, row int32, colum
 		var itemHeight int32 = win32.OSHIWORD(oneItem) - win32.OSHIWORD(empty)
 		if !this.settingItemHeight && boundsInPixels.Height > itemHeight {
 			this.settingItemHeight = true
-			this.SetItemHeightItemHeight(boundsInPixels.Height)
+			this.SetItemHeight(boundsInPixels.Height)
 			this.settingItemHeight = false
 		}
 	}
@@ -3110,7 +3077,7 @@ func (this *Table) SendMouseDownEvent(type_ int32, button int32, msg int32, wPar
 	if !dragDetect {
 		display.runDragDrop = false
 	}
-	var code int64 = this.CallWindowProcHwndMsgWParamLParamForceSelect(this.Handle, msg, wParam, lParam, forceSelect)
+	var code int64 = this.CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(this.Handle, msg, wParam, lParam, forceSelect)
 	if !dragDetect {
 		display.runDragDrop = true
 	}
@@ -3266,17 +3233,11 @@ func (this *Table) SendPaintItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 	if drawBackground {
 		event.Detail |= BACKGROUND
 	}
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 	var cellRect *win32.RECT = item.GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(int32(nmcd.DwItemSpec), nmcd.ISubItem, true, true, true, true, hDC)
 	var cellWidth int32 = cellRect.Right - cellRect.Left
 	var cellHeight int32 = cellRect.Bottom - cellRect.Top
-	gc.SetClippingRect(func() *Rectangle {
-		_ = []any{NewRectangle(cellRect.Left, cellRect.Top, cellWidth, cellHeight), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellWidth, cellHeight), this.impl.getAutoscalingZoom_()))
 	this.SendEventEventTypeEvent(PaintItem, event)
 	if data.FocusDrawn {
 		this.focusRect = nil
@@ -3307,10 +3268,7 @@ func (this *Table) SendPaintItemEventItemNmcdColumnItemRect(itemLike TableItemLi
 	event.Index = column
 	event.Gc = gc
 	event.Detail |= FOREGROUND
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 	this.SendEventEventTypeEvent(PaintItem, event)
 	event.Gc = nil
 	gc.impl.dispose_()
@@ -3390,7 +3348,7 @@ func (this *Table) SetBackgroundTransparent(transparent bool) {
 			}
 			if (this.sortDirection & (UP | DOWN)) != 0 {
 				if this.sortColumn != (nil) && !this.sortColumn.IsDisposed() {
-					var column int32 = this.IndexOf(this.sortColumn)
+					var column int32 = this.IndexOfColumn(this.sortColumn)
 					if column != -1 {
 						win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETSELECTEDCOLUMN, int64(column), int64(0))
 						win32.OSInvalidateRect(this.Handle, nil, true)
@@ -3474,14 +3432,14 @@ func (this *Table) SetCustomDraw(customDraw bool) {
 
 func (this *Table) SetDeferResize(defer_ bool) {
 	if defer_ {
-		t701 := this.resizeCount
+		t17 := this.resizeCount
 		this.resizeCount++
-		if t701 == 0 {
+		if t17 == 0 {
 			this.wasResized = false
 			if this.Hooks(MeasureItem) || this.Hooks(EraseItem) || this.Hooks(PaintItem) {
-				t702 := this.drawCount
+				t18 := this.drawCount
 				this.drawCount++
-				if t702 == 0 && win32.OSIsWindowVisible(this.Handle) {
+				if t18 == 0 && win32.OSIsWindowVisible(this.Handle) {
 					win32.OSDefWindowProc(this.Handle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 					win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(0xFFFFFF))
 				}
@@ -3540,7 +3498,7 @@ func (this *Table) SetCheckboxImageList(width int32, height int32, fixScroll boo
 	var hBrush int64 = win32.OSCreateSolidBrush(clrBackground)
 	win32.OSFillRect(memDC, rect, hBrush)
 	win32.OSDeleteObject(hBrush)
-	var oldFont int64 = win32.OSSelectObject(hDC, this.DefaultFont())
+	var oldFont int64 = win32.OSSelectObject(hDC, this.impl.defaultFont_())
 	var tm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 	win32.OSGetTextMetrics(hDC, tm)
 	win32.OSSelectObject(hDC, oldFont)
@@ -3728,7 +3686,7 @@ func (this *Table) SetItemCount(count int32) {
 	for index < itemCount {
 		var item *TableItem = this._getItemIndexCreate(index, false)
 		if item != (nil) && !item.IsDisposed() {
-			item.Release(false)
+			item.impl.release_(false)
 		}
 		if !isVirtual {
 			this.ignoreShrink = true
@@ -3766,7 +3724,7 @@ func (this *Table) SetItemCount(count int32) {
 	this.SetDeferResize(false)
 }
 
-func (this *Table) SetItemHeight(fixScroll bool) {
+func (this *Table) SetItemHeightLocal1(fixScroll bool) {
 	var topIndex int32 = this.GetTopIndex()
 	if fixScroll && topIndex != 0 {
 		this.impl.setRedraw_(false)
@@ -3796,13 +3754,13 @@ func (this *Table) SetItemHeight(fixScroll bool) {
 	}
 }
 
-func (this *Table) SetItemHeightItemHeight(itemHeight int32) {
+func (this *Table) SetItemHeight(itemHeight int32) {
 	this.CheckWidget()
 	if itemHeight < -1 {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.itemHeight = itemHeight
-	this.SetItemHeight(true)
+	this.SetItemHeightLocal1(true)
 	this.SetScrollWidthItemForce(nil, true)
 }
 
@@ -3845,9 +3803,9 @@ func (this *Table) setRedraw_(redraw bool) {
 			this.SetDeferResize(false)
 		}
 	} else {
-		t703 := this.drawCount
+		t19 := this.drawCount
 		this.drawCount++
-		if t703 == 0 {
+		if t19 == 0 {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 			if this.hwndHeader != 0 {
 				win32.OSSendMessageOverload4(this.hwndHeader, win32.OSWM_SETREDRAW, int64(0), int64(0))
@@ -3856,7 +3814,7 @@ func (this *Table) setRedraw_(redraw bool) {
 	}
 }
 
-func (this *Table) SetScrollWidth(width int32) {
+func (this *Table) SetScrollWidthLocal1(width int32) {
 	if width != int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETCOLUMNWIDTH, int64(0), int64(0))) {
 		var redraw bool = false
 		if this.Hooks(MeasureItem) {
@@ -3955,24 +3913,24 @@ func (this *Table) SetScrollWidthItemForce(itemLike TableItemLike, force bool) b
 		newWidth += TableINSET*2 + DPIUtilPointToPixel(TableVISTA_EXTRA, this.impl.getAutoscalingZoom_())
 		var oldWidth int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETCOLUMNWIDTH, int64(0), int64(0)))
 		if newWidth > oldWidth {
-			this.SetScrollWidth(newWidth)
+			this.SetScrollWidthLocal1(newWidth)
 			return true
 		}
 	}
 	return false
 }
 
-func (this *Table) SetSelection(indices []int32) {
+func (this *Table) SetSelectionIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.DeselectAll()
+	this.DeselectAll0()
 	var length int32 = int32(len(indices))
 	if length == 0 || ((this.style&SINGLE) != 0 && length > 1) {
 		return
 	}
-	this.Select(indices)
+	this.SelectIndices(indices)
 	var focusIndex int32 = indices[0]
 	if focusIndex != -1 {
 		this.SetFocusIndex(focusIndex)
@@ -3998,7 +3956,7 @@ func (this *Table) SetSelectionItems(items []*TableItem) {
 	if items == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.DeselectAll()
+	this.DeselectAll0()
 	var length int32 = int32(len(items))
 	if length == 0 || ((this.style&SINGLE) != 0 && length > 1) {
 		return
@@ -4007,9 +3965,9 @@ func (this *Table) SetSelectionItems(items []*TableItem) {
 	for i := int32(length - 1); i >= 0; i-- {
 		var index int32 = this.IndexOfItem(items[i])
 		if index != -1 {
-			cond704 := index
-			focusIndex = cond704
-			this.SelectIndex(cond704)
+			cond20 := index
+			focusIndex = cond20
+			this.Select(cond20)
 		}
 	}
 	if focusIndex != -1 {
@@ -4018,10 +3976,10 @@ func (this *Table) SetSelectionItems(items []*TableItem) {
 	this.ShowSelection()
 }
 
-func (this *Table) SetSelectionIndex(index int32) {
+func (this *Table) SetSelection(index int32) {
 	this.CheckWidget()
-	this.DeselectAll()
-	this.SelectIndex(index)
+	this.DeselectAll0()
+	this.Select(index)
 	if index != -1 {
 		this.SetFocusIndex(index)
 	}
@@ -4030,7 +3988,7 @@ func (this *Table) SetSelectionIndex(index int32) {
 
 func (this *Table) SetSelectionStartEnd(start int32, end int32) {
 	this.CheckWidget()
-	this.DeselectAll()
+	this.DeselectAll0()
 	if end < 0 || start > end || ((this.style&SINGLE) != 0 && start != end) {
 		return
 	}
@@ -4095,10 +4053,7 @@ func (this *Table) SetTableEmpty() {
 		win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETIMAGELIST, int64(win32.OSLVSIL_SMALL), hImageList)
 		win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETIMAGELIST, int64(win32.OSLVSIL_SMALL), int64(0))
 		if this.headerImageList != (nil) {
-			var hHeaderImageList int64 = func() int64 {
-				_ = []any{this.headerImageList, this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call getHandle")
-			}()
+			var hHeaderImageList int64 = this.headerImageList.GetHandle(this.impl.getAutoscalingZoom_())
 			var hwndHeader int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETHEADER, int64(0), int64(0))
 			win32.OSSendMessageOverload4(hwndHeader, win32.OSHDM_SETIMAGELIST, int64(0), hHeaderImageList)
 		}
@@ -4106,7 +4061,7 @@ func (this *Table) SetTableEmpty() {
 		this.display.ReleaseImageList(this.imageList)
 		this.imageList = nil
 		if this.itemHeight != -1 {
-			this.SetItemHeight(false)
+			this.SetItemHeightLocal1(false)
 		}
 	}
 	if !this.Hooks(MeasureItem) && !this.Hooks(EraseItem) && !this.Hooks(PaintItem) {
@@ -4167,7 +4122,7 @@ func (this *Table) ShowColumn(columnLike TableColumnLike) {
 	if column.parent != this {
 		return
 	}
-	var index int32 = this.IndexOf(column)
+	var index int32 = this.IndexOfColumn(column)
 	if !(0 <= index && index < this.columnCount) {
 		return
 	}
@@ -4269,7 +4224,7 @@ func (this *Table) ShowSelection() {
 	}
 }
 
-func (this *Table) Sort() {
+func (this *Table) SortNoArgs() {
 	this.CheckWidget()
 }
 
@@ -4344,9 +4299,9 @@ func (this *Table) UpdateHeaderToolTips() {
 	for i := int32(0); i < this.columnCount; i++ {
 		var column *TableColumn = this.columns[i]
 		if win32.OSSendMessageOverload13(hwndHeader, win32.OSHDM_GETITEMRECT, int64(i), rect) != 0 {
-			t705 := this.display.nextToolTipId
+			t21 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t705
+			column.id = t21
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -4419,7 +4374,7 @@ func (this *Table) updateOrientation_() {
 		this.FixCheckboxImageListColor(false)
 	}
 	if this.imageList != (nil) {
-		var sizeInPoints *Point = func() *Point { _ = []any{this.imageList}; panic("j2go: unresolved call getImageSize") }()
+		var sizeInPoints *Point = this.imageList.GetImageSize()
 		this.display.ReleaseImageList(this.imageList)
 		this.imageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, sizeInPoints.X, sizeInPoints.Y, this.impl.getAutoscalingZoom_())
 		var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETITEMCOUNT, int64(0), int64(0)))
@@ -4428,22 +4383,19 @@ func (this *Table) updateOrientation_() {
 			if item != (nil) {
 				var image *Image = item.image
 				if image != (nil) {
-					var index int32 = func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call indexOf") }()
+					var index int32 = this.imageList.IndexOf(image)
 					if index == -1 {
-						func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
+						this.imageList.Add(image)
 					}
 				}
 			}
 		}
-		var hImageList int64 = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		var hImageList int64 = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETIMAGELIST, int64(win32.OSLVSIL_SMALL), hImageList)
 	}
 	if hwndHeader != 0 {
 		if this.headerImageList != (nil) {
-			var sizeInPoints *Point = func() *Point { _ = []any{this.headerImageList}; panic("j2go: unresolved call getImageSize") }()
+			var sizeInPoints *Point = this.headerImageList.GetImageSize()
 			this.display.ReleaseImageList(this.headerImageList)
 			this.headerImageList = this.display.GetImageList(this.style&RIGHT_TO_LEFT, sizeInPoints.X, sizeInPoints.Y, this.impl.getAutoscalingZoom_())
 			if this.columns != (nil) {
@@ -4456,9 +4408,9 @@ func (this *Table) updateOrientation_() {
 							lvColumn.Mask = win32.OSLVCF_FMT
 							win32.OSSendMessageOverload5(hwndHeader, win32.OSLVM_GETCOLUMN, int64(i), lvColumn)
 							if (lvColumn.Fmt & win32.OSLVCFMT_IMAGE) != 0 {
-								var index int32 = func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call indexOf") }()
+								var index int32 = this.headerImageList.IndexOf(image)
 								if index == -1 {
-									func() int32 { _ = []any{this.headerImageList, image}; panic("j2go: unresolved call add") }()
+									this.headerImageList.Add(image)
 								}
 								lvColumn.IImage = index
 								lvColumn.Mask = win32.OSLVCF_IMAGE
@@ -4468,10 +4420,7 @@ func (this *Table) updateOrientation_() {
 					}
 				}
 			}
-			var hHeaderImageList int64 = func() int64 {
-				_ = []any{this.headerImageList, this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call getHandle")
-			}()
+			var hHeaderImageList int64 = this.headerImageList.GetHandle(this.impl.getAutoscalingZoom_())
 			win32.OSSendMessageOverload4(hwndHeader, win32.OSHDM_SETIMAGELIST, int64(0), hHeaderImageList)
 		}
 	}
@@ -4482,13 +4431,13 @@ func (this *Table) updateTextDirection_(textDirection int32) bool {
 		if textDirection == WidgetAUTO_TEXT_DIRECTION || (this.state&WidgetHAS_AUTO_DIRECTION) != 0 {
 			for _, item := range this.items {
 				if item != (nil) {
-					var cond706 int32
+					var cond22 int32
 					if textDirection == WidgetAUTO_TEXT_DIRECTION {
-						cond706 = WidgetAUTO_TEXT_DIRECTION
+						cond22 = WidgetAUTO_TEXT_DIRECTION
 					} else {
-						cond706 = this.style & FLIP_TEXT_DIRECTION
+						cond22 = this.style & FLIP_TEXT_DIRECTION
 					}
-					item.impl.updateTextDirection_(cond706)
+					item.impl.updateTextDirection_(cond22)
 				}
 			}
 		}
@@ -4604,9 +4553,9 @@ func (this *Table) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 		}
 		var hRgn int64 = win32.OSCreateRectRgn(rect.Left, rect.Top, rect.Right, rect.Bottom)
 		for {
-			cond707 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(selection), int64(win32.OSLVNI_SELECTED)))
-			selection = cond707
-			if !((cond707) != -1) {
+			cond23 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(selection), int64(win32.OSLVNI_SELECTED)))
+			selection = cond23
+			if !((cond23) != -1) {
 				break
 			}
 			if rect.Bottom-rect.Top > dragImageSizeInPixel {
@@ -4677,9 +4626,9 @@ func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 		if (this.style & CHECK) != 0 {
 			var index int32 = -1
 			for {
-				cond708 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(index), int64(win32.OSLVNI_SELECTED)))
-				index = cond708
-				if !((cond708) != -1) {
+				cond24 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(index), int64(win32.OSLVNI_SELECTED)))
+				index = cond24
+				if !((cond24) != -1) {
 					break
 				}
 				var item *TableItem = this._getItem(index)
@@ -4694,7 +4643,7 @@ func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 		if index != -1 {
 			var event *Event = NewEvent()
 			event.Item = upcastTableItemToWidget(this._getItem(index))
-			this.SendSelectionEventTypeEventSend(DefaultSelection, event, false)
+			this.SendSelectionEventEventTypeEventSend(DefaultSelection, event, false)
 		}
 		return win32.LRESULTZERO
 	}
@@ -4944,13 +4893,13 @@ func (this *Table) wM_SETREDRAW_(wParam int64, lParam int64) *win32.LRESULT {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(0xFFFFFF))
 		}
 	}
-	var cond709 *win32.LRESULT
+	var cond25 *win32.LRESULT
 	if code == 0 {
-		cond709 = win32.LRESULTZERO
+		cond25 = win32.LRESULTZERO
 	} else {
-		cond709 = win32.NewLRESULT(code)
+		cond25 = win32.NewLRESULT(code)
 	}
-	return cond709
+	return cond25
 }
 
 func (this *Table) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
@@ -5293,9 +5242,9 @@ func (this *Table) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) 
 						}
 						length -= shift
 					}
-					t710 := length
+					t26 := length
 					length++
-					buffer[t710] = uint16(0)
+					buffer[t26] = uint16(0)
 					win32.OSMoveMemoryOverload12(plvfi.PszText, buffer, length*2)
 				}
 			}
@@ -5424,7 +5373,7 @@ func (this *Table) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) 
 			if pnmlv.IItem != -1 {
 				var event *Event = NewEvent()
 				event.Item = upcastTableItemToWidget(this._getItem(pnmlv.IItem))
-				this.SendSelectionEventTypeEventSend(DefaultSelection, event, false)
+				this.SendSelectionEventEventTypeEventSend(DefaultSelection, event, false)
 			}
 			break
 		}
@@ -5511,13 +5460,13 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 			switch nmcd.DwDrawStage {
 			case win32.OSCDDS_PREPAINT:
 				{
-					var cond711 int32
+					var cond27 int32
 					if this.CustomHeaderDrawing() {
-						cond711 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
+						cond27 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
 					} else {
-						cond711 = win32.OSCDRF_DODEFAULT
+						cond27 = win32.OSCDRF_DODEFAULT
 					}
-					return win32.NewLRESULT(int64(cond711))
+					return win32.NewLRESULT(int64(cond27))
 				}
 			case win32.OSCDDS_ITEMPREPAINT:
 				{
@@ -5599,16 +5548,10 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 							var data *GCData = NewGCData()
 							data.Device = upcastDisplayToDevice(this.display)
 							var gc *GC = this.impl.createNewGC_(nmcd.Hdc, data)
-							var y int32 = int32(math.Max(float64(0), float64((nmcd.Bottom-func() *Rectangle {
-								_ = []any{this.columns[i].image.GetBounds(), this.impl.getAutoscalingZoom_()}
-								panic("j2go: unresolved call pointToPixel")
-							}().Height)/2)))
+							var y int32 = int32(math.Max(float64(0), float64((nmcd.Bottom-Win32DPIUtilsPointToPixelOverload8(this.columns[i].image.GetBounds(), this.impl.getAutoscalingZoom_()).Height)/2)))
 							var zoom int32 = this.impl.getAutoscalingZoom_()
 							gc.DrawImage(this.columns[i].image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom))
-							x += func() *Rectangle {
-								_ = []any{this.columns[i].image.GetBounds(), this.impl.getAutoscalingZoom_()}
-								panic("j2go: unresolved call pointToPixel")
-							}().Width + 12
+							x += Win32DPIUtilsPointToPixelOverload8(this.columns[i].image.GetBounds(), this.impl.getAutoscalingZoom_()).Width + 12
 							gc.impl.dispose_()
 						}
 						if this.columns[i].text != "" {
@@ -5632,13 +5575,13 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 					}
 					if lastColumnRight < nmcd.Right {
 						var rect *win32.RECT = win32.NewRECT()
-						var cond712 int32
+						var cond28 int32
 						if this._getLinesVisible() {
-							cond712 = 1
+							cond28 = 1
 						} else {
-							cond712 = 0
+							cond28 = 0
 						}
-						lastColumnRight += cond712
+						lastColumnRight += cond28
 						win32.OSSetRect(rect, lastColumnRight, nmcd.Top, nmcd.Right, nmcd.Bottom-1)
 						var brush int64 = win32.OSCreateSolidBrush(this.GetHeaderBackgroundPixel())
 						win32.OSFillRect(nmcd.Hdc, rect, brush)
@@ -5818,13 +5761,13 @@ func (this *Table) WmNotifyToolTip(hdr *win32.NMHDR, wParam int64, lParam int64)
 			if this.toolTipText != "" {
 				break
 			}
-			var cond713 *win32.LRESULT
+			var cond29 *win32.LRESULT
 			if this.PositionTooltip(hdr, lParam) {
-				cond713 = win32.LRESULTONE
+				cond29 = win32.LRESULTONE
 			} else {
-				cond713 = nil
+				cond29 = nil
 			}
-			return cond713
+			return cond29
 		}
 	}
 	return nil
@@ -5884,7 +5827,7 @@ func (this *Table) PositionTooltip(hdr *win32.NMHDR, lParam int64) bool {
 						var shell *Shell = this.impl.getShell_()
 						var chars []uint16 = make([]uint16, jrt.StringLength(string_)+1)
 						copy(chars, utf16.Encode([]rune(string_)))
-						shell.SetToolTipTextLpnmtdiBuffer(lpnmtdi, chars)
+						shell.SetToolTipTextLpnmtdiBufferLpnmtdiBuffer(lpnmtdi, chars)
 						win32.OSMoveMemoryOverload23(lParam, lpnmtdi, win32.NMTTDISPINFOSizeof)
 						return true
 					}
@@ -5910,10 +5853,7 @@ func (this *Table) GetItemBounds(pinfo *win32.LVHITTESTINFO, itemLike TableItemL
 	_ = item
 	var event *Event = this.SendMeasureItemEvent(item, pinfo.IItem, pinfo.ISubItem, hDC)
 	var itemRect *win32.RECT = win32.NewRECT()
-	var boundsInPixels *Rectangle = func() *Rectangle {
-		_ = []any{event.GetBounds(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
 	win32.OSSetRect(itemRect, boundsInPixels.X, boundsInPixels.Y, boundsInPixels.X+boundsInPixels.Width, boundsInPixels.Y+boundsInPixels.Height)
 	return itemRect
 }
@@ -5979,30 +5919,24 @@ func (this *Table) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam 
 					}
 					var image *Image = item.GetImageIndex(pinfo.ISubItem)
 					if image != (nil) {
-						var rect *Rectangle = func() *Rectangle {
-							_ = []any{image.GetBounds(), this.impl.getAutoscalingZoom_()}
-							panic("j2go: unresolved call pointToPixel")
-						}()
+						var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(image.GetBounds(), this.impl.getAutoscalingZoom_())
 						var imageRect *win32.RECT = item.GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(pinfo.IItem, pinfo.ISubItem, false, true, false, false, hDC)
 						var size *Point
 						if this.imageList == (nil) {
 							size = NewPoint(rect.Width, rect.Height)
 						} else {
-							size = func() *Point {
-								_ = []any{func() *Point { _ = []any{this.imageList}; panic("j2go: unresolved call getImageSize") }(), this.impl.getAutoscalingZoom_()}
-								panic("j2go: unresolved call pointToPixelAsSize")
-							}()
+							size = Win32DPIUtilsPointToPixelAsSizePointZoom(this.imageList.GetImageSize(), this.impl.getAutoscalingZoom_())
 						}
 						var y int32 = imageRect.Top + int32(math.Max(float64(0), float64((imageRect.Bottom-imageRect.Top-size.Y)/2)))
 						var zoom int32 = this.impl.getAutoscalingZoom_()
 						gc.DrawImageImageDestXDestYDestWidthDestHeight(image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom), DPIUtilPixelToPoint(size.X, zoom), DPIUtilPixelToPoint(size.Y, zoom))
-						var cond714 int32
+						var cond30 int32
 						if pinfo.ISubItem == 0 {
-							cond714 = -2
+							cond30 = -2
 						} else {
-							cond714 = 4
+							cond30 = 4
 						}
-						x += size.X + TableINSET + (cond714)
+						x += size.X + TableINSET + (cond30)
 					} else {
 						x += TableINSET + 2
 					}
@@ -6075,7 +6009,7 @@ func (this *Table) handleDPIChange_(event *Event, scalingFactor float32) {
 		var size int32 = this.GetItemHeightInPixels()
 		this.SetCheckboxImageList(size, size, true)
 	}
-	this.SetItemHeightItemHeight(-1)
+	this.SetItemHeight(-1)
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
 			item.NotifyListeners(ZoomChanged, event)
@@ -6087,7 +6021,7 @@ func (this *Table) handleDPIChange_(event *Event, scalingFactor float32) {
 		}
 	}
 	if int32(len(this.GetColumns())) == 0 && scrollWidth != 0 {
-		this.SetScrollWidth(scrollWidth)
+		this.SetScrollWidthLocal1(scrollWidth)
 	}
 	this.settingItemHeight = false
 }
@@ -6117,7 +6051,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Table static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Table static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

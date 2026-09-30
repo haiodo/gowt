@@ -44,7 +44,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OLEINPLACEFRAMEINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OLEINPLACEFRAMEINFOSizeof:", r)
 			}
 		}()
 		OLEINPLACEFRAMEINFOSizeof = COMOLEINPLACEFRAMEINFO_sizeof()

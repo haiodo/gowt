@@ -18,7 +18,7 @@ type Button struct {
 	message                  string
 	image                    *Image
 	disabledImage            *Image
-	imageList                unsupported_type_org_eclipse_swt_internal_ImageList
+	imageList                *ImageList
 	ignoreMouse              bool
 	grayed                   bool
 	useDarkModeExplorerTheme bool
@@ -90,28 +90,22 @@ func (this *Button) _setImage(imageLike ImageLike) {
 		return
 	}
 	if this.imageList != (nil) {
-		func() any { _ = []any{this.imageList}; panic("j2go: unresolved call dispose") }()
+		this.imageList.Dispose()
 	}
 	this.imageList = nil
 	if image != (nil) {
-		this.imageList = func() any {
-			_ = []any{this.style & RIGHT_TO_LEFT, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved new ImageList")
-		}()
+		this.imageList = NewImageList(this.style&RIGHT_TO_LEFT, this.impl.getAutoscalingZoom_())
 		if win32.OSIsWindowEnabled(this.Handle) {
-			func() int32 { _ = []any{this.imageList, image}; panic("j2go: unresolved call add") }()
+			this.imageList.Add(image)
 		} else {
 			if this.disabledImage != (nil) {
 				this.disabledImage.impl.dispose_()
 			}
 			this.disabledImage = NewImageDeviceSrcImageFlag(upcastDisplayToDevice(this.display), image, IMAGE_DISABLE)
-			func() int32 { _ = []any{this.imageList, this.disabledImage}; panic("j2go: unresolved call add") }()
+			this.imageList.Add(this.disabledImage)
 		}
 		var buttonImageList *win32.BUTTON_IMAGELIST = win32.NewBUTTON_IMAGELIST()
-		buttonImageList.Himl = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		buttonImageList.Himl = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		var oldBits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_STYLE)
 		var newBits int32 = oldBits
 		newBits &= ^(win32.OSBS_LEFT | win32.OSBS_CENTER | win32.OSBS_RIGHT)
@@ -167,10 +161,7 @@ func (this *Button) _setText(text string) {
 	}
 	if this.imageList != (nil) {
 		var buttonImageList *win32.BUTTON_IMAGELIST = win32.NewBUTTON_IMAGELIST()
-		buttonImageList.Himl = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		buttonImageList.Himl = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		if jrt.StringLength(text) == 0 {
 			if (this.style & LEFT) != 0 {
 				buttonImageList.UAlign = win32.OSBUTTON_IMAGELIST_ALIGN_LEFT
@@ -224,10 +215,7 @@ func (this *Button) ComputeLeftMargin() int32 {
 	}
 	var margin int32 = 0
 	if this.image != (nil) && jrt.StringLength(this.text) != 0 {
-		var bounds *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100}
-			panic("j2go: unresolved call scaleBounds")
-		}()
+		var bounds *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 		margin += bounds.Width + ButtonMARGIN*2
 		var oldFont int64 = int64(0)
 		var hDC int64 = win32.OSGetDC(this.Handle)
@@ -260,10 +248,7 @@ func (this *Button) ComputeLeftMargin() int32 {
 
 func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	var border int32 = this.impl.getBorderWidthInPixels_()
@@ -289,9 +274,9 @@ func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 				height = size.Cy
 				size.Cy = 0
 				for size.Cy != height {
-					t185 := width
+					t1 := width
 					width++
-					size.Cx = t185
+					size.Cx = t1
 					size.Cy = 0
 					win32.OSSendMessageOverload30(this.Handle, win32.OSBCM_GETIDEALSIZE, int64(0), size)
 				}
@@ -302,10 +287,7 @@ func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 			var hasText bool = true
 			if hasImage {
 				if this.image != (nil) {
-					var rect *Rectangle = func() *Rectangle {
-						_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100}
-						panic("j2go: unresolved call scaleBounds")
-					}()
+					var rect *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 					width = rect.Width
 					if hasText && jrt.StringLength(this.text) != 0 {
 						width += DPIUtilPointToPixel(ButtonMARGIN*2, this.impl.getAutoscalingZoom_())
@@ -381,7 +363,7 @@ func (this *Button) createHandle_() {
 		this.state |= WidgetDRAW_BACKGROUND
 	}
 	this.useDarkModeExplorerTheme = this.display.useDarkModeExplorerTheme
-	this.impl.maybeEnableDarkSystemTheme_()
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 }
 
 func (this *Button) CustomBackgroundDrawing() bool {
@@ -522,7 +504,7 @@ func (this *Button) mnemonicMatch_(key uint16) bool {
 func (this *Button) releaseWidget_() {
 	this.Control.releaseWidget_()
 	if this.imageList != (nil) {
-		func() any { _ = []any{this.imageList}; panic("j2go: unresolved call dispose") }()
+		this.imageList.Dispose()
 	}
 	this.imageList = nil
 	if this.disabledImage != (nil) {
@@ -546,13 +528,13 @@ func (this *Button) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *Button) resolveTextDirection_() int32 {
-	var cond186 int32
+	var cond2 int32
 	if (this.style & ARROW) != 0 {
-		cond186 = NONE
+		cond2 = NONE
 	} else {
-		cond186 = BidiUtilResolveTextDirection(this.text)
+		cond2 = BidiUtilResolveTextDirection(this.text)
 	}
-	return cond186
+	return cond2
 }
 
 func (this *Button) SelectRadio() {
@@ -594,10 +576,7 @@ func (this *Button) SetAlignment(alignment int32) {
 	}
 	if this.imageList != (nil) {
 		var buttonImageList *win32.BUTTON_IMAGELIST = win32.NewBUTTON_IMAGELIST()
-		buttonImageList.Himl = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		buttonImageList.Himl = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		if jrt.StringLength(this.text) == 0 {
 			if (this.style & LEFT) != 0 {
 				buttonImageList.UAlign = win32.OSBUTTON_IMAGELIST_ALIGN_LEFT
@@ -623,8 +602,8 @@ func (this *Button) SetAlignment(alignment int32) {
 	}
 }
 
-func (this *Button) setBackgroundColor_(color *Color) {
-	this.Control.setBackgroundColor_(color)
+func (this *Button) setBackgroundWithColor_(color *Color) {
+	this.Control.setBackgroundWithColor_(color)
 }
 
 func (this *Button) SetDefault(value bool) {
@@ -704,13 +683,13 @@ func (this *Button) setRadioFocus_(tabbing bool) bool {
 	if (this.style&RADIO) == 0 || !this.GetSelection() {
 		return false
 	}
-	var cond187 bool
+	var cond3 bool
 	if tabbing {
-		cond187 = this.impl.setTabItemFocus_()
+		cond3 = this.impl.setTabItemFocus_()
 	} else {
-		cond187 = this.impl.setFocus_()
+		cond3 = this.impl.setFocus_()
 	}
-	return cond187
+	return cond3
 }
 
 func (this *Button) setRadioSelection_(value bool) bool {
@@ -767,25 +746,19 @@ func (this *Button) UpdateImageList() {
 		var buttonImageList *win32.BUTTON_IMAGELIST = win32.NewBUTTON_IMAGELIST()
 		win32.OSSendMessageOverload29(this.Handle, win32.OSBCM_GETIMAGELIST, int64(0), buttonImageList)
 		if this.imageList != (nil) {
-			func() any { _ = []any{this.imageList}; panic("j2go: unresolved call dispose") }()
+			this.imageList.Dispose()
 		}
-		this.imageList = func() any {
-			_ = []any{this.style & RIGHT_TO_LEFT, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved new ImageList")
-		}()
+		this.imageList = NewImageList(this.style&RIGHT_TO_LEFT, this.impl.getAutoscalingZoom_())
 		if win32.OSIsWindowEnabled(this.Handle) {
-			func() int32 { _ = []any{this.imageList, this.image}; panic("j2go: unresolved call add") }()
+			this.imageList.Add(this.image)
 		} else {
 			if this.disabledImage != (nil) {
 				this.disabledImage.impl.dispose_()
 			}
 			this.disabledImage = NewImageDeviceSrcImageFlag(upcastDisplayToDevice(this.display), this.image, IMAGE_DISABLE)
-			func() int32 { _ = []any{this.imageList, this.disabledImage}; panic("j2go: unresolved call add") }()
+			this.imageList.Add(this.disabledImage)
 		}
-		buttonImageList.Himl = func() int64 {
-			_ = []any{this.imageList, this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call getHandle")
-		}()
+		buttonImageList.Himl = this.imageList.GetHandle(this.impl.getAutoscalingZoom_())
 		win32.OSSendMessageOverload29(this.Handle, win32.OSBCM_SETIMAGELIST, int64(0), buttonImageList)
 		win32.OSInvalidateRect(this.Handle, nil, true)
 	}
@@ -869,19 +842,19 @@ func (this *Button) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 		return this.Control.wmColorChild_(wParam, lParam)
 	} else {
 		var oldFlag int32 = this.parent.state & WidgetTHEME_BACKGROUND
-		var tret188 *win32.LRESULT
-		tretd189 := false
+		var tret4 *win32.LRESULT
+		tretd5 := false
 		func() {
 			defer func() {
 				this.parent.state |= oldFlag
 			}()
 			this.parent.state &= ^WidgetTHEME_BACKGROUND
-			tret188 = this.parent.impl.wmColorChild_(wParam, lParam)
-			tretd189 = true
+			tret4 = this.parent.impl.wmColorChild_(wParam, lParam)
+			tretd5 = true
 			return
 		}()
-		if tretd189 {
-			return tret188
+		if tretd5 {
+			return tret4
 		}
 	}
 }
@@ -1088,37 +1061,34 @@ func (this *Button) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64)
 						data.Device = upcastDisplayToDevice(this.display)
 						var gc *GC = this.impl.createNewGC_(nmcd.Hdc, data)
 						var margin int32 = this.ComputeLeftMargin()
-						var imageBounds *Rectangle = func() *Rectangle {
-							_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100}
-							panic("j2go: unresolved call scaleBounds")
-						}()
+						var imageBounds *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 						var imageWidth int32 = imageBounds.Width
-						var cond190 int32
+						var cond6 int32
 						if this.IsRadioOrCheck() {
-							cond190 = 2 * ButtonMARGIN
+							cond6 = 2 * ButtonMARGIN
 						} else {
-							cond190 = ButtonMARGIN
+							cond6 = ButtonMARGIN
 						}
-						left += (imageWidth + (cond190))
-						var cond191 int32
+						left += (imageWidth + (cond6))
+						var cond7 int32
 						if this.IsRadioOrCheck() {
-							cond191 = radioOrCheckTextPadding
+							cond7 = radioOrCheckTextPadding
 						} else {
-							cond191 = 3
+							cond7 = 3
 						}
-						var x int32 = margin + (cond191)
+						var x int32 = margin + (cond7)
 						var y int32 = int32(math.Max(float64(0), float64((nmcd.Bottom-imageBounds.Height)/2)))
 						var zoom int32 = this.impl.getAutoscalingZoom_()
 						gc.DrawImage(this.image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom))
 						gc.impl.dispose_()
 					}
-					var cond192 int32
+					var cond8 int32
 					if this.IsRadioOrCheck() {
-						cond192 = radioOrCheckTextPadding
+						cond8 = radioOrCheckTextPadding
 					} else {
-						cond192 = 0
+						cond8 = 0
 					}
-					left += cond192
+					left += cond8
 					var textRect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(textRect, left, nmcd.Top+border, right, nmcd.Bottom-border)
 					var buffer []uint16 = utf16.Encode([]rune(this.text))
@@ -1203,13 +1173,13 @@ func (this *Button) handleDPIChange_(event *Event, scalingFactor float32) {
 }
 
 func ButtonCheckStyle(style int32) int32 {
-	var cond193 int32
+	var cond9 int32
 	if ButtonCOMMAND_LINK {
-		cond193 = COMMAND
+		cond9 = COMMAND
 	} else {
-		cond193 = 0
+		cond9 = 0
 	}
-	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond193)
+	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond9)
 	if (style & (PUSH | TOGGLE)) != 0 {
 		return WidgetCheckBits(style, CENTER, LEFT, RIGHT, 0, 0, 0)
 	}
@@ -1293,7 +1263,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Button static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Button static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

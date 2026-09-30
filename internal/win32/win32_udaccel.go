@@ -39,7 +39,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init UDACCELSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init UDACCELSizeof:", r)
 			}
 		}()
 		UDACCELSizeof = OSUDACCEL_sizeof()

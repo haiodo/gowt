@@ -65,7 +65,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMLINKSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMLINKSizeof:", r)
 			}
 		}()
 		NMLINKSizeof = OSNMLINK_sizeof()

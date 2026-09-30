@@ -69,9 +69,9 @@ func (this *Composite) _getChildren() []*Control {
 	for hwndChild != 0 {
 		var control *Control = this.display.GetControl(hwndChild)
 		if control != (nil) && control != upcastCompositeToControl(this) {
-			t146 := index
+			t1 := index
 			index++
-			children[t146] = control
+			children[t1] = control
 		}
 		hwndChild = win32.OSGetWindow(hwndChild, win32.OSGW_HWNDNEXT)
 	}
@@ -100,9 +100,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for _, element := range this.tabList {
 		if !element.IsDisposed() {
-			t147 := index
+			t2 := index
 			index++
-			newList[t147] = element
+			newList[t2] = element
 		}
 	}
 	this.tabList = newList
@@ -182,10 +182,7 @@ func (this *Composite) computeSizeInPixels_(hintInPoints *Point, zoom int32, cha
 	if hintInPoints.Y != DEFAULT {
 		sizeInPoints.Y = hintInPoints.Y
 	}
-	var trim *Rectangle = func() *Rectangle {
-		_ = []any{this.impl.computeTrim_(0, 0, sizeInPoints.X, sizeInPoints.Y), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelWithSufficientlyLargeSize")
-	}()
+	var trim *Rectangle = Win32DPIUtilsPointToPixelWithSufficientlyLargeSize(this.impl.computeTrim_(0, 0, sizeInPoints.X, sizeInPoints.Y), this.impl.getAutoscalingZoom_())
 	return NewPoint(trim.Width, trim.Height)
 }
 
@@ -242,13 +239,13 @@ func (this *Composite) createHandle_() {
 }
 
 func (this *Composite) applyThemeBackground_() int32 {
-	var cond148 int32
+	var cond3 int32
 	if this.backgroundAlpha == 0 || (this.style&(H_SCROLL|V_SCROLL)) == 0 || this.impl.findThemeControl_() == upcastCompositeToControl(this.parent) {
-		cond148 = 1
+		cond3 = 1
 	} else {
-		cond148 = 0
+		cond3 = 0
 	}
-	return cond148
+	return cond3
 }
 
 func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int32, height int32, offsetX int32, offsetY int32) {
@@ -259,10 +256,7 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 	_ = gc
 	this.CheckWidget()
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var rectangle *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(x, y, width, height), zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
 	offsetX = DPIUtilPointToPixel(offsetX, zoom)
 	offsetY = DPIUtilPointToPixel(offsetY, zoom)
 	this.DrawBackgroundInPixels(gc, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, offsetX, offsetY)
@@ -297,13 +291,13 @@ func (this *Composite) FindDeferredControl() *Composite {
 }
 
 func (this *Composite) findDeferredControl_() *Composite {
-	var cond149 *Composite
+	var cond4 *Composite
 	if this.layoutCount > 0 {
-		cond149 = this
+		cond4 = this
 	} else {
-		cond149 = this.parent.impl.findDeferredControl_()
+		cond4 = this.parent.impl.findDeferredControl_()
 	}
-	return cond149
+	return cond4
 }
 
 func (this *Composite) findMenus_(control *Control) []*Menu {
@@ -355,9 +349,9 @@ func (this *Composite) FixTabList(controlLike ControlLike) {
 		var index int32 = 0
 		for _, element := range this.tabList {
 			if element != control {
-				t150 := index
+				t5 := index
 				index++
-				newList[t150] = element
+				newList[t5] = element
 			}
 		}
 	}
@@ -408,9 +402,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for _, element := range list {
 			if element.impl.isTabGroup_() {
-				t151 := index
+				t6 := index
 				index++
-				tabList[t151] = element
+				tabList[t6] = element
 			}
 		}
 	}
@@ -454,7 +448,7 @@ func (this *Composite) LayoutOverload2(changed bool, all bool) {
 		return
 	}
 	this.impl.markLayout_(changed, all)
-	this.UpdateLayout(all)
+	this.UpdateLayoutAll(all)
 }
 
 func (this *Composite) LayoutOverload3(changed []*Control) {
@@ -506,10 +500,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t152 := updateCount
+				t7 := updateCount
 				updateCount++
-				update[t152] = composite
-				child = upcastCompositeToControl(update[t152])
+				update[t7] = composite
+				child = upcastCompositeToControl(update[t7])
 				composite = child.parent
 			}
 		}
@@ -518,7 +512,7 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 			this.display.AddLayoutDeferred(this)
 		}
 		for i := int32(updateCount - 1); i >= 0; i-- {
-			update[i].UpdateLayout(false)
+			update[i].UpdateLayoutAll(false)
 		}
 	} else {
 		if this.layout == (nil) && (flags&ALL) == 0 {
@@ -529,7 +523,7 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 			this.SetLayoutDeferred(true)
 			this.display.AddLayoutDeferred(this)
 		}
-		this.UpdateLayout((flags & ALL) != 0)
+		this.UpdateLayoutAll((flags & ALL) != 0)
 	}
 }
 
@@ -567,12 +561,12 @@ func (this *Composite) minimumSize_(hintInPoints *Point, changed bool) *Point {
 	return NewPoint(width, height)
 }
 
-func (this *Composite) redrawChildren_() bool {
-	if !this.Scrollable.redrawChildren_() {
+func (this *Composite) redrawChildrenLocal1_() bool {
+	if !this.Scrollable.redrawChildrenLocal1_() {
 		return false
 	}
 	for _, element := range this._getChildren() {
-		element.impl.redrawChildren_()
+		element.impl.redrawChildrenLocal1_()
 	}
 	return true
 }
@@ -620,7 +614,7 @@ func (this *Composite) releaseChildren_(destroy bool) {
 						panic(r)
 					}
 				}()
-				child.Release(false)
+				child.impl.release_(false)
 			}()
 		}
 		this.Scrollable.releaseChildren_(destroy)
@@ -810,7 +804,7 @@ func (this *Composite) SetLayoutDeferred(defer_ bool) {
 		this.layoutCount--
 		if this.layoutCount == 0 {
 			if (this.state&WidgetLAYOUT_CHILD) != 0 || (this.state&WidgetLAYOUT_NEEDED) != 0 {
-				this.UpdateLayout(true)
+				this.UpdateLayoutAll(true)
 			}
 		}
 	} else {
@@ -886,9 +880,9 @@ func (this *Composite) updateTextDirection_(textDirection int32) bool {
 	var children []*Control = this._getChildren()
 	var i int32 = int32(len(children))
 	for {
-		t153 := i
+		t8 := i
 		i--
-		if !(t153 > 0) {
+		if !(t8 > 0) {
 			break
 		}
 		if children[i] != (nil) && !children[i].IsDisposed() {
@@ -921,13 +915,13 @@ func (this *Composite) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	shell.SetToolTipTitle(hdr.HwndFrom, "", 0)
 	win32.OSSendMessageOverload4(hdr.HwndFrom, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 	var control *Control = this.display.GetControl(hdr.IdFrom)
-	var cond154 string
+	var cond9 string
 	if control != (nil) {
-		cond154 = control.toolTipText
+		cond9 = control.toolTipText
 	} else {
-		cond154 = ""
+		cond9 = ""
 	}
-	return cond154
+	return cond9
 }
 
 func (this *Composite) translateMnemonic_(event *Event, control *Control) bool {
@@ -995,7 +989,7 @@ func (this *Composite) updateFont_(oldFont *Font, newFont *Font) {
 	}
 }
 
-func (this *Composite) UpdateLayout(all bool) {
+func (this *Composite) UpdateLayoutAll(all bool) {
 	this.impl.updateLayout_(true, all)
 }
 
@@ -1030,9 +1024,9 @@ func (this *Composite) updateOrientation_() {
 	var rects []*win32.RECT = make([]*win32.RECT, int32(len(controls)))
 	for i := int32(0); i < int32(len(controls)); i++ {
 		var control *Control = controls[i]
-		cond155 := win32.NewRECT()
-		rects[i] = cond155
-		var rect *win32.RECT = cond155
+		cond10 := win32.NewRECT()
+		rects[i] = cond10
+		var rect *win32.RECT = cond10
 		control.impl.forceResize_()
 		win32.OSGetWindowRect(control.impl.topHandle_(), rect)
 		win32.OSMapWindowPointsHWndFromHWndToLpPointsCPoints(int64(0), this.Handle, rect, 2)
@@ -1042,7 +1036,7 @@ func (this *Composite) updateOrientation_() {
 	for i := int32(0); i < int32(len(controls)); i++ {
 		var control *Control = controls[i]
 		var rect *win32.RECT = rects[i]
-		control.impl.setOrientation_(orientation)
+		control.impl.setOrientationOnControl_(orientation)
 		var flags int32 = win32.OSSWP_NOSIZE | win32.OSSWP_NOZORDER | win32.OSSWP_NOACTIVATE
 		win32.OSSetWindowPos(control.impl.topHandle_(), int64(0), rect.Left, rect.Top, 0, 0, flags)
 	}
@@ -1105,13 +1099,13 @@ func (this *Composite) wM_GETFONT_(wParam int64, lParam int64) *win32.LRESULT {
 	if code != 0 {
 		return win32.NewLRESULT(code)
 	}
-	var cond156 int64
+	var cond11 int64
 	if this.font != (nil) {
-		cond156 = func() int64 { _ = []any{this.font, this.NativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		cond11 = SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
 	} else {
-		cond156 = this.DefaultFont()
+		cond11 = this.impl.defaultFont_()
 	}
-	return win32.NewLRESULT(cond156)
+	return win32.NewLRESULT(cond11)
 }
 
 func (this *Composite) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1203,10 +1197,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						control = upcastCompositeToControl(this)
 					}
 					data.Background = control.GetBackgroundPixel()
-					data.Font = func() *Font {
-						_ = []any{upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0)), this.NativeZoom}
-						panic("j2go: unresolved call getFont")
-					}()
+					data.Font = SWTFontProviderGetFontDeviceFontHandleZoom(upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0)), this.NativeZoom)
 					data.UiState = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSWM_QUERYUISTATE, int64(0), int64(0)))
 					if (this.style & NO_BACKGROUND) != 0 {
 					} else {
@@ -1217,10 +1208,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 					var gc *GC = this.impl.createNewGC_(phdc[0], data)
 					var event *Event = NewEvent()
 					event.Gc = gc
-					event.SetBounds(func() *Rectangle {
-						_ = []any{upcastRectangle_OfFloatToRectangle(NewRectangleOfFloat(ps.Left, ps.Top, width, height)), this.impl.getAutoscalingZoom_()}
-						panic("j2go: unresolved call pixelToPoint")
-					}())
+					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(upcastRectangle_OfFloatToRectangle(NewRectangleOfFloat(ps.Left, ps.Top, width, height)), this.impl.getAutoscalingZoom_()))
 					this.SendEventEventTypeEvent(Paint, event)
 					if data.FocusDrawn && !this.IsDisposed() {
 						this.UpdateUIState()
@@ -1263,7 +1251,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 					gc = NewGCDrawableStyle(image, paintGC.GetStyle()&RIGHT_TO_LEFT)
 					var gcData *GCData = gc.GetGCData()
 					gcData.UiState = data.UiState
-					gc.SetForeground(this.GetForeground())
+					gc.SetForeground(this.impl.getForeground_())
 					gc.SetBackground(this.GetBackground())
 					gc.SetFont(this.GetFont())
 					if (this.style & TRANSPARENT) != 0 {
@@ -1287,9 +1275,9 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				var rect *win32.RECT = nil
 				var zoom int32 = this.impl.getAutoscalingZoom_()
 				if (this.style&NO_MERGE_PAINTS) != 0 && func() bool {
-					cond157 := win32.NewRECT()
-					rect = cond157
-					return win32.OSGetRgnBox(sysRgn, cond157) == win32.OSCOMPLEXREGION
+					cond12 := win32.NewRECT()
+					rect = cond12
+					return win32.OSGetRgnBox(sysRgn, cond12) == win32.OSCOMPLEXREGION
 				}() {
 					var nBytes int32 = win32.OSGetRegionData(sysRgn, 0, nil)
 					var lpRgnData []int32 = make([]int32, nBytes/4)
@@ -1301,10 +1289,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						if (this.style & (DOUBLE_BUFFERED | NO_BACKGROUND | TRANSPARENT)) == 0 {
 							this.DrawBackgroundHDCRect(gc.Handle, rect)
 						}
-						event.SetBounds(func() *Rectangle {
-							_ = []any{NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), zoom}
-							panic("j2go: unresolved call pixelToPoint")
-						}())
+						event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), zoom))
 						event.Count = count - 1 - i
 						this.SendEventEventTypeEvent(Paint, event)
 					}
@@ -1316,10 +1301,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
 						this.DrawBackgroundHDCRect(gc.Handle, rect)
 					}
-					event.SetBounds(func() *Rectangle {
-						_ = []any{NewRectangle(ps.Left, ps.Top, width, height), zoom}
-						panic("j2go: unresolved call pixelToPoint")
-					}())
+					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(ps.Left, ps.Top, width, height), zoom))
 					this.SendEventEventTypeEvent(Paint, event)
 				}
 				event.Gc = nil
@@ -1391,10 +1373,7 @@ func (this *Composite) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESUL
 			var gc *GC = this.impl.createNewGC_(wParam, data)
 			var event *Event = NewEvent()
 			event.Gc = gc
-			event.SetBounds(func() *Rectangle {
-				_ = []any{NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), this.impl.getAutoscalingZoom_()}
-				panic("j2go: unresolved call pixelToPoint")
-			}())
+			event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), this.impl.getAutoscalingZoom_()))
 			this.SendEventEventTypeEvent(Paint, event)
 			event.Gc = nil
 			gc.impl.dispose_()
@@ -1436,7 +1415,7 @@ func (this *Composite) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 			}
 		}
 		if this.impl.findThemeControl_() != (nil) {
-			this.impl.redrawChildren_()
+			this.impl.redrawChildrenLocal1_()
 		}
 	}
 	if (this.state&WidgetCANVAS) != 0 && (this.style&EMBEDDED) != 0 {
@@ -1592,7 +1571,7 @@ func (this *Composite) wmNotify_(hdr *win32.NMHDR, wParam int64, lParam int64) *
 						lpnmtdi.UFlags &= ^win32.OSTTF_RTLREADING
 					}
 				}
-				shell.SetToolTipTextLpnmtdiBuffer(lpnmtdi, chars)
+				shell.SetToolTipTextLpnmtdiBufferLpnmtdiBuffer(lpnmtdi, chars)
 				win32.OSMoveMemoryOverload23(lParam, lpnmtdi, win32.NMTTDISPINFOSizeof)
 				return win32.LRESULTZERO
 			}

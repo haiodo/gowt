@@ -115,13 +115,13 @@ func (this *ToolTip) HwndToolTip() int64 {
 }
 
 func (this *ToolTip) hwndToolTip_() int64 {
-	var cond741 int64
+	var cond1 int64
 	if (this.style & BALLOON) != 0 {
-		cond741 = this.parent.BalloonTipHandle()
+		cond1 = this.parent.BalloonTipHandle()
 	} else {
-		cond741 = this.parent.ToolTipHandle()
+		cond1 = this.parent.ToolTipHandle()
 	}
-	return cond741
+	return cond1
 }
 
 func (this *ToolTip) IsVisible() bool {
@@ -206,10 +206,7 @@ func (this *ToolTip) SetLocationLocation(locationLike PointLike) {
 	if location == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	location = func() *Point {
-		_ = []any{location, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}()
+	location = Win32DPIUtilsPointToPixelAsLocationPointZoom(location, this.impl.getAutoscalingZoom_())
 	this.SetLocationInPixels(location.X, location.Y)
 }
 

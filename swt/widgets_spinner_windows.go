@@ -123,10 +123,7 @@ func (this *Spinner) AddVerifyListener(listener VerifyListener) {
 
 func (this *Spinner) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	if hintInPoints.X == DEFAULT || hintInPoints.Y == DEFAULT {
@@ -266,13 +263,13 @@ func (this *Spinner) GetDigits() int32 {
 func (this *Spinner) GetDecimalSeparator() string {
 	var data []uint16 = make([]uint16, 4)
 	var size int32 = win32.OSGetLocaleInfoLocaleLCTypeLpLCDataCchData(win32.OSLOCALE_USER_DEFAULT, win32.OSLOCALE_SDECIMAL, data, 4)
-	var cond723 string
+	var cond1 string
 	if size != 0 {
-		cond723 = string(utf16.Decode(data[0 : 0+size-1]))
+		cond1 = string(utf16.Decode(data[0 : 0+size-1]))
 	} else {
-		cond723 = "."
+		cond1 = "."
 	}
-	return cond723
+	return cond1
 }
 
 func (this *Spinner) GetIncrement() int32 {
@@ -311,8 +308,8 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 	var buffer []uint16 = make([]uint16, length+1)
 	win32.OSGetWindowTextHWndLpStringNMaxCount(this.hwndText, buffer, length+1)
 	var string_ string = string(utf16.Decode(buffer[0 : 0+length]))
-	var tret724 int32
-	tretd725 := false
+	var tret2 int32
+	tretd3 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -380,13 +377,13 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 		var min []int32 = make([]int32, 1)
 		win32.OSSendMessageOverload1(this.hwndUpDown, win32.OSUDM_GETRANGE32, min, max)
 		if min[0] <= value && value <= max[0] {
-			tret724 = value
-			tretd725 = true
+			tret2 = value
+			tretd3 = true
 			return
 		}
 	}()
-	if tretd725 {
-		return tret724
+	if tretd3 {
+		return tret2
 	}
 	parseFail[0] = true
 	return -1
@@ -651,11 +648,11 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 		if this.digits == 0 {
 			string_ = fmt.Sprint(value)
 		} else {
-			abs726 := value
-			if abs726 < 0 {
-				abs726 = -abs726
+			abs4 := value
+			if abs4 < 0 {
+				abs4 = -abs4
 			}
-			string_ = fmt.Sprint(abs726)
+			string_ = fmt.Sprint(abs4)
 			var decimalSeparator string = this.GetDecimalSeparator()
 			var index int32 = jrt.StringLength(string_) - this.digits
 			var buffer *jrt.StringBuilder = jrt.NewStringBuilder()
@@ -670,9 +667,9 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 				buffer.Append("0")
 				buffer.Append(decimalSeparator)
 				for {
-					t727 := index
+					t5 := index
 					index++
-					if !(t727 < 0) {
+					if !(t5 < 0) {
 						break
 					}
 					buffer.Append("0")
@@ -707,8 +704,8 @@ func (this *Spinner) SetTextLimit(limit int32) {
 }
 
 func (this *Spinner) setToolTipTextShellString_(shell *Shell, string_ string) {
-	shell.SetToolTipText(this.hwndText, string_)
-	shell.SetToolTipText(this.hwndUpDown, string_)
+	shell.SetToolTipTextHwndText(this.hwndText, string_)
+	shell.SetToolTipTextHwndText(this.hwndUpDown, string_)
 }
 
 func (this *Spinner) SetValues(selection int32, minimum int32, maximum int32, digits int32, increment int32, pageIncrement int32) {
@@ -965,7 +962,7 @@ func (this *Spinner) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.L
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTZERO
 	}
 	this.ignoreCharacter = true
@@ -977,7 +974,7 @@ func (this *Spinner) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.L
 		win32.OSDispatchMessage(msg)
 	}
 	this.ignoreCharacter = false
-	this.SendKeyEvent(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.NewLRESULT(result)
@@ -1210,7 +1207,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Spinner static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Spinner static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()
@@ -1222,7 +1219,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Spinner static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Spinner static{}:", r)
 			}
 		}()
 		SpinnerLIMIT = 0x7FFFFFFF

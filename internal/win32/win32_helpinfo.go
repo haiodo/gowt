@@ -48,7 +48,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init HELPINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init HELPINFOSizeof:", r)
 			}
 		}()
 		HELPINFOSizeof = OSHELPINFO_sizeof()

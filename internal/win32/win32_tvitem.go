@@ -61,7 +61,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TVITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TVITEMSizeof:", r)
 			}
 		}()
 		TVITEMSizeof = OSTVITEM_sizeof()

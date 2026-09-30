@@ -83,9 +83,9 @@ func (this *TaskBar) CreateItem(itemLike TaskItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t758 := this.itemCount
+	t1 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t758-index])
+	copy(this.items[index+1:], this.items[index:index+t1-index])
 	this.items[index] = item
 }
 
@@ -170,8 +170,8 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 				icon = fmt.Sprintf("%s\\menu%d.ico", directory, item.id)
 				var data *ImageData
 				if item.hBitmap != 0 {
-					var handle int64 = win32.OSCopyImage(item.hBitmap, SWTBITMAP, 0, 0, 0)
-					var image2 *Image = ImageWin32_new(upcastDisplayToDevice(this.display), SWTBITMAP, handle, this.NativeZoom)
+					var handle int64 = win32.OSCopyImage(item.hBitmap, BITMAP, 0, 0, 0)
+					var image2 *Image = ImageWin32_new(upcastDisplayToDevice(this.display), BITMAP, handle, this.NativeZoom)
 					data = image2.GetImageDataZoom(DPIUtilGetDeviceZoom())
 					image2.impl.dispose_()
 				} else {
@@ -280,9 +280,9 @@ func (this *TaskBar) GetIconsDir() string {
 			return ""
 		}
 	}
-	cond759 := func() string { _ = []any{dir}; panic("j2go: unresolved call getPath") }()
-	this.iconsDir = cond759
-	return cond759
+	cond2 := func() string { _ = []any{dir}; panic("j2go: unresolved call getPath") }()
+	this.iconsDir = cond2
+	return cond2
 }
 
 func (this *TaskBar) GetItem(index int32) *TaskItem {
@@ -331,7 +331,7 @@ func (this *TaskBar) releaseChildren_(destroy bool) {
 	if this.items != (nil) {
 		for _, item := range this.items {
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
@@ -383,7 +383,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 		copy(buffer, utf16.Encode([]rune(appName)))
 	}
 	var items []*MenuItem = nil
-	if menu != (nil) && func() bool { cond760 := menu.GetItems(); items = cond760; return int32(len((cond760))) != 0 }() {
+	if menu != (nil) && func() bool { cond3 := menu.GetItems(); items = cond3; return int32(len((cond3))) != 0 }() {
 		var poa *win32.IObjectArray = this.CreateShellLinkArray(items)
 		if poa != (nil) {
 			hr = pDestList.SetAppID(buffer)
@@ -461,7 +461,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TaskBar static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TaskBar static{}:", r)
 			}
 		}()
 		win32.OSPSPropertyKeyFromString(utf16.Encode([]rune("{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 2\u0000")), TaskBarPKEY_Title)

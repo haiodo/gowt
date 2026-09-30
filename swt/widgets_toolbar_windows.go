@@ -25,7 +25,7 @@ type ToolBar struct {
 	tabItemList            []*ToolItem
 	ignoreResize           bool
 	ignoreMouse            bool
-	imageLists             unsupported_type_org_eclipse_swt_widgets_ToolBarImageLists
+	imageLists             *ToolBarImageLists
 }
 
 func (this *ToolBar) AsToolBar() *ToolBar { return this }
@@ -95,10 +95,7 @@ func (this *ToolBar) AddImage(imageBoundsLike RectangleLike, imageLike ImageLike
 	if this.imageLists == (nil) {
 		this.imageLists = this.CreateImageLists(imageBounds.Width, imageBounds.Height)
 	}
-	var index int32 = func() int32 {
-		_ = []any{this.imageLists, image, hotImage, disabledImage}
-		panic("j2go: unresolved call add")
-	}()
+	var index int32 = this.imageLists.Add(image, hotImage, disabledImage)
 	this.RefreshImageLists(true)
 	return index
 }
@@ -135,14 +132,14 @@ func (this *ToolBar) ClearAndReleaseImageLists() {
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTB_SETIMAGELIST, int64(0), int64(0))
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTB_SETHOTIMAGELIST, int64(0), int64(0))
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTB_SETDISABLEDIMAGELIST, int64(0), int64(0))
-		func() any { _ = []any{this.imageLists}; panic("j2go: unresolved call release") }()
+		this.imageLists.Release()
 		this.imageLists = nil
 	}
 }
 
 func (this *ToolBar) ClearImage(index int32) {
 	if this.imageLists != (nil) {
-		func() any { _ = []any{this.imageLists, index}; panic("j2go: unresolved call clear") }()
+		this.imageLists.Clear(index)
 	}
 }
 
@@ -155,10 +152,7 @@ func (this *ToolBar) ClearSizeCache(changed bool) {
 }
 
 func (this *ToolBar) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTB_BUTTONCOUNT, int64(0), int64(0)))
 	if count == this._count && hintInPixels.X == this._wHint && hintInPixels.Y == this._hHint {
 		return NewPoint(this._width, this._height)
@@ -324,11 +318,8 @@ func (this *ToolBar) createHandle_() {
 	win32.OSSendMessageOverload4(this.Handle, win32.OSTB_SETEXTENDEDSTYLE, int64(0), int64(bits))
 }
 
-func (this *ToolBar) CreateImageLists(width int32, height int32) unsupported_type_org_eclipse_swt_widgets_ToolBarImageLists {
-	return func() any {
-		_ = []any{this.display, this.style & RIGHT_TO_LEFT, width, height, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call create")
-	}()
+func (this *ToolBar) CreateImageLists(width int32, height int32) *ToolBarImageLists {
+	return ToolBarImageListsCreate(this.display, this.style&RIGHT_TO_LEFT, width, height, this.impl.getAutoscalingZoom_())
 }
 
 func (this *ToolBar) CreateItem(itemLike ToolItemLike, index int32) {
@@ -361,9 +352,9 @@ func (this *ToolBar) CreateItem(itemLike ToolItemLike, index int32) {
 	if win32.OSSendMessageOverload16(this.Handle, win32.OSTB_INSERTBUTTON, int64(index), lpButton) == 0 {
 		this.Error(ERROR_ITEM_NOT_ADDED)
 	}
-	cond729 := id
-	item.id = cond729
-	this.items[cond729] = item
+	cond1 := id
+	item.id = cond1
+	this.items[cond1] = item
 	if (this.style & VERTICAL) != 0 {
 		this.SetRowCount(count + 1)
 	}
@@ -394,7 +385,7 @@ func (this *ToolBar) DestroyItem(itemLike ToolItemLike) {
 	var index int32 = int32(win32.OSSendMessageOverload17(this.Handle, win32.OSTB_GETBUTTONINFO, int64(item.id), info))
 	if (int32(info.FsStyle)&win32.OSBTNS_SEP) == 0 && info.IImage != win32.OSI_IMAGENONE {
 		if this.imageLists != (nil) {
-			func() any { _ = []any{this.imageLists, info.IImage}; panic("j2go: unresolved call clear") }()
+			this.imageLists.Clear(info.IImage)
 		}
 	}
 	win32.OSSendMessageOverload4(this.Handle, win32.OSTB_DELETEBUTTON, int64(index), int64(0))
@@ -455,10 +446,7 @@ func (this *ToolBar) GetItemPoint(pointLike PointLike) *ToolItem {
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.GetItemInPixels(func() *Point {
-		_ = []any{point, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}())
+	return this.GetItemInPixels(Win32DPIUtilsPointToPixelAsLocationPointZoom(point, this.impl.getAutoscalingZoom_()))
 }
 
 func (this *ToolBar) GetItemInPixels(pointLike PointLike) *ToolItem {
@@ -522,9 +510,9 @@ func (this *ToolBar) _getTabItemList() []*ToolItem {
 	var index int32 = 0
 	for _, item := range this.tabItemList {
 		if !item.IsDisposed() {
-			t730 := index
+			t2 := index
 			index++
-			newList[t730] = item
+			newList[t2] = item
 		}
 	}
 	this.tabItemList = newList
@@ -716,10 +704,7 @@ func (this *ToolBar) PutImage(index int32, imageLike ImageLike, hotImageLike Ima
 	}
 	_ = disabledImage
 	if this.imageLists != (nil) {
-		func() any {
-			_ = []any{this.imageLists, index, image, hotImage, disabledImage}
-			panic("j2go: unresolved call put")
-		}()
+		this.imageLists.Put(index, image, hotImage, disabledImage)
 	}
 }
 
@@ -728,12 +713,9 @@ func (this *ToolBar) RefreshImageLists(itemsChanged bool) {
 		return
 	}
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var imageListHandle int64 = func() int64 { _ = []any{this.imageLists, zoom}; panic("j2go: unresolved call getImageListHandle") }()
-	var hotImageListHandle int64 = func() int64 { _ = []any{this.imageLists, zoom}; panic("j2go: unresolved call getHotImageListHandle") }()
-	var disabledImageListHandle int64 = func() int64 {
-		_ = []any{this.imageLists, zoom}
-		panic("j2go: unresolved call getDisabledImageListHandle")
-	}()
+	var imageListHandle int64 = this.imageLists.GetImageListHandle(zoom)
+	var hotImageListHandle int64 = this.imageLists.GetHotImageListHandle(zoom)
+	var disabledImageListHandle int64 = this.imageLists.GetDisabledImageListHandle(zoom)
 	var imageListOutdated bool = this.IsImageListOutdated(win32.OSTB_GETIMAGELIST, imageListHandle)
 	var hotImageListOutdated bool = this.IsImageListOutdated(win32.OSTB_GETHOTIMAGELIST, hotImageListHandle)
 	var disabledImageListOutdated bool = this.IsImageListOutdated(win32.OSTB_GETDISABLEDIMAGELIST, disabledImageListHandle)
@@ -765,7 +747,7 @@ func (this *ToolBar) releaseChildren_(destroy bool) {
 	if this.items != (nil) {
 		for _, item := range this.items {
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
@@ -882,9 +864,9 @@ func (this *ToolBar) setFont_(font *Font) {
 	this.LayoutItems()
 }
 
-func (this *ToolBar) setParentOnControl_(parent *Composite) bool {
+func (this *ToolBar) setParent_(parent *Composite) bool {
 	this.CheckWidget()
-	if !this.Composite.setParentOnControl_(parent) {
+	if !this.Composite.setParent_(parent) {
 		return false
 	}
 	var hwndParent int64 = parent.Handle
@@ -959,9 +941,9 @@ func (this *ToolBar) updateTextDirection_(textDirection int32) bool {
 		var items []*ToolItem = this._getItems()
 		var i int32 = int32(len(items))
 		for {
-			t731 := i
+			t3 := i
 			i--
-			if !(t731 > 0) {
+			if !(t3 > 0) {
 				break
 			}
 			items[i].impl.updateTextDirection_(this.style & FLIP_TEXT_DIRECTION)
@@ -1010,8 +992,8 @@ func (this *ToolBar) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 func (this *ToolBar) updateOrientation_() {
 	this.Composite.updateOrientation_()
 	if this.imageLists != (nil) {
-		var size *Point = func() *Point { _ = []any{this.imageLists}; panic("j2go: unresolved call getImageSize") }()
-		var oldImageLists unsupported_type_org_eclipse_swt_widgets_ToolBarImageLists = this.imageLists
+		var size *Point = this.imageLists.GetImageSize()
+		var oldImageLists *ToolBarImageLists = this.imageLists
 		this.imageLists = this.CreateImageLists(size.X, size.Y)
 		var info *win32.TBBUTTONINFO = win32.NewTBBUTTONINFO()
 		info.CbSize = win32.TBBUTTONINFOSizeof
@@ -1027,15 +1009,12 @@ func (this *ToolBar) updateOrientation_() {
 			}
 			win32.OSSendMessageOverload17(this.Handle, win32.OSTB_GETBUTTONINFO, int64(item.id), info)
 			if info.IImage != win32.OSI_IMAGENONE {
-				info.IImage = func() int32 {
-					_ = []any{this.imageLists, oldImageLists, info.IImage}
-					panic("j2go: unresolved call moveFrom")
-				}()
+				info.IImage = this.imageLists.MoveFrom(oldImageLists, info.IImage)
 				win32.OSSendMessageOverload17(this.Handle, win32.OSTB_SETBUTTONINFO, int64(item.id), info)
 			}
 		}
 		this.RefreshImageLists(false)
-		func() any { _ = []any{oldImageLists}; panic("j2go: unresolved call release") }()
+		oldImageLists.Release()
 		win32.OSInvalidateRect(this.Handle, nil, true)
 	}
 }
@@ -1280,7 +1259,7 @@ func (this *ToolBar) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT 
 	return child.WmCommandChild(wParam, lParam)
 }
 
-func (this *ToolBar) GetForegroundPixel(itemLike ToolItemLike) int32 {
+func (this *ToolBar) GetForegroundPixelItem(itemLike ToolItemLike) int32 {
 	var item *ToolItem
 	if itemLike != nil {
 		item = itemLike.AsToolItem()
@@ -1292,7 +1271,7 @@ func (this *ToolBar) GetForegroundPixel(itemLike ToolItemLike) int32 {
 	return this.GetForegroundPixel()
 }
 
-func (this *ToolBar) GetBackgroundPixel(itemLike ToolItemLike) int32 {
+func (this *ToolBar) GetBackgroundPixelItem(itemLike ToolItemLike) int32 {
 	var item *ToolItem
 	if itemLike != nil {
 		item = itemLike.AsToolItem()
@@ -1319,7 +1298,7 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 			win32.OSSendMessageOverload13(this.Handle, win32.OSTB_GETITEMRECT, int64(index), rect)
 			var zoom int32 = this.impl.getAutoscalingZoom_()
 			event.SetLocation(DPIUtilPixelToPoint(rect.Left, zoom), DPIUtilPixelToPoint(rect.Bottom, zoom))
-			child.SendSelectionEventTypeEventSend(Selection, event, false)
+			child.SendSelectionEventEventTypeEventSend(Selection, event, false)
 		}
 		break
 	case win32.OSNM_CUSTOMDRAW:
@@ -1350,10 +1329,10 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 		case win32.OSCDDS_ITEMPREPAINT:
 			{
 				var result int64 = int64(win32.OSTBCDRF_USECDCOLORS)
-				var bgPixel int32 = this.GetBackgroundPixel(child)
+				var bgPixel int32 = this.GetBackgroundPixelItem(child)
 				nmcd.ClrBtnFace = bgPixel
 				nmcd.ClrBtnHighlight = this.GetDifferentColor(bgPixel)
-				nmcd.ClrText = this.GetForegroundPixel(child)
+				nmcd.ClrText = this.GetForegroundPixelItem(child)
 				win32.OSMoveMemoryOverload53(lParam, nmcd, win32.NMTBCUSTOMDRAWSizeof)
 				if this.display.useDarkModeExplorerTheme && (nmcd.UItemState&(win32.OSCDIS_CHECKED|win32.OSCDIS_HOT)) != 0 {
 					var pixel int32
@@ -1420,7 +1399,7 @@ func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
 	if itemCount == 0 {
 		return
 	}
-	func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): record ToolItemData  (ToolItem toolItem,TBBUTTON button){}
+	func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): final class ToolItemData {   private final ToolItem toolItem;   private final TBBUTTON button;   ToolItemData(  ToolItem toolItem,  TBBUTTON button){     this.toolItem=toolItem;     this.button=button;   }   public ToolItem toolItem(){     return toolItem;   }   public TBBUTTON button(){     return button;   } }
 	var buttondata any = func() any { panic("j2go: unresolved new Stack<ToolItemData>") }()
 	for i := int32(itemCount - 1); i >= 0; i-- {
 		var item *ToolItem = toolItems[i]
@@ -1490,7 +1469,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init ToolBar static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ToolBar static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

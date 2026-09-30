@@ -58,10 +58,7 @@ func (this *ExpandBar) checkSubclass_() {
 }
 
 func (this *ExpandBar) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var height int32 = 0
 	var width int32 = 0
 	if hintInPoints.X == DEFAULT || hintInPoints.Y == DEFAULT {
@@ -279,24 +276,24 @@ func (this *ExpandBar) findBackgroundControl_() *Control {
 }
 
 func (this *ExpandBar) findThemeControl_() *Control {
-	var cond736 *Control
+	var cond1 *Control
 	if this.IsAppThemed() {
-		cond736 = upcastExpandBarToControl(this)
+		cond1 = upcastExpandBarToControl(this)
 	} else {
-		cond736 = this.Composite.findThemeControl_()
+		cond1 = this.Composite.findThemeControl_()
 	}
-	return cond736
+	return cond1
 }
 
 func (this *ExpandBar) GetBandHeight() int32 {
 	var hDC int64 = win32.OSGetDC(this.Handle)
-	var cond737 int64
+	var cond2 int64
 	if this.hFont == 0 {
-		cond737 = this.DefaultFont()
+		cond2 = this.impl.defaultFont_()
 	} else {
-		cond737 = this.hFont
+		cond2 = this.hFont
 	}
-	var oldHFont int64 = win32.OSSelectObject(hDC, cond737)
+	var oldHFont int64 = win32.OSSelectObject(hDC, cond2)
 	var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 	win32.OSGetTextMetrics(hDC, lptm)
 	win32.OSSelectObject(hDC, oldHFont)
@@ -392,7 +389,7 @@ func (this *ExpandBar) releaseChildren_(destroy bool) {
 	if this.items != (nil) {
 		for _, item := range this.items {
 			if item != (nil) && !item.IsDisposed() {
-				item.Release(false)
+				item.impl.release_(false)
 			}
 		}
 		this.items = nil
@@ -433,7 +430,7 @@ func (this *ExpandBar) setBackgroundPixel_(pixel int32) {
 func (this *ExpandBar) setFont_(font *Font) {
 	this.Composite.setFont_(font)
 	if font != (nil) {
-		this.hFont = func() int64 { _ = []any{font, this.NativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		this.hFont = SWTFontProviderGetFontHandleFontZoom(font, this.NativeZoom)
 	} else {
 		this.hFont = int64(0)
 	}
@@ -509,13 +506,13 @@ func (this *ExpandBar) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
 		for _, item := range this.items {
 			if item != (nil) {
-				var cond738 int32
+				var cond3 int32
 				if textDirection == WidgetAUTO_TEXT_DIRECTION {
-					cond738 = WidgetAUTO_TEXT_DIRECTION
+					cond3 = WidgetAUTO_TEXT_DIRECTION
 				} else {
-					cond738 = this.style & FLIP_TEXT_DIRECTION
+					cond3 = this.style & FLIP_TEXT_DIRECTION
 				}
-				item.impl.updateTextDirection_(cond738)
+				item.impl.updateTextDirection_(cond3)
 			}
 		}
 		return true
@@ -594,13 +591,13 @@ func (this *ExpandBar) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_SPACE, win32.OSVK_RETURN:
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond739 int32
+		var cond4 int32
 		if this.focusItem.expanded {
-			cond739 = Collapse
+			cond4 = Collapse
 		} else {
-			cond739 = Expand
+			cond4 = Expand
 		}
-		this.SendEventEventTypeEvent(cond739, event)
+		this.SendEventEventTypeEvent(cond4, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 		return win32.LRESULTZERO
@@ -675,13 +672,13 @@ func (this *ExpandBar) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT 
 	if hover {
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond740 int32
+		var cond5 int32
 		if this.focusItem.expanded {
-			cond740 = Collapse
+			cond5 = Collapse
 		} else {
-			cond740 = Expand
+			cond5 = Expand
 		}
-		this.SendEventEventTypeEvent(cond740, event)
+		this.SendEventEventTypeEvent(cond5, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 	}
@@ -745,10 +742,7 @@ func (this *ExpandBar) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 			if this.Hooks(Paint) || this.Filters(Paint) {
 				var event *Event = NewEvent()
 				event.Gc = gc
-				event.SetBounds(func() *Rectangle {
-					_ = []any{NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()}
-					panic("j2go: unresolved call pixelToPoint")
-				}())
+				event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
 				this.SendEventEventTypeEvent(Paint, event)
 				event.Gc = nil
 			}

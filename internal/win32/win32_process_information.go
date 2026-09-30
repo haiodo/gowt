@@ -45,7 +45,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init PROCESS_INFORMATIONSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init PROCESS_INFORMATIONSizeof:", r)
 			}
 		}()
 		PROCESS_INFORMATIONSizeof = OSPROCESS_INFORMATION_sizeof()

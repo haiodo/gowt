@@ -124,10 +124,7 @@ func (this *List) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 
 func (this *List) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	if hintInPoints.X == DEFAULT {
@@ -198,7 +195,7 @@ func (this *List) defaultBackground_() int32 {
 	return win32.OSGetSysColor(win32.OSCOLOR_WINDOW)
 }
 
-func (this *List) Deselect(indices []int32) {
+func (this *List) DeselectIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -226,7 +223,7 @@ func (this *List) Deselect(indices []int32) {
 	}
 }
 
-func (this *List) DeselectIndex(index int32) {
+func (this *List) Deselect(index int32) {
 	this.CheckWidget()
 	if index == -1 {
 		return
@@ -299,13 +296,13 @@ func (this *List) GetItem(index int32) string {
 		var buffer []uint16 = make([]uint16, length+1)
 		var result int32 = int32(win32.OSSendMessageOverload2(this.Handle, win32.OSLB_GETTEXT, int64(index), buffer))
 		if result != win32.OSLB_ERR {
-			var cond715 string
+			var cond1 string
 			if (this.state & WidgetHAS_AUTO_DIRECTION) != 0 {
-				cond715 = string(utf16.Decode(buffer[1 : 1+length-1]))
+				cond1 = string(utf16.Decode(buffer[1 : 1+length-1]))
 			} else {
-				cond715 = string(utf16.Decode(buffer[0 : 0+length]))
+				cond1 = string(utf16.Decode(buffer[0 : 0+length]))
 			}
-			return cond715
+			return cond1
 		}
 	}
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCOUNT, int64(0), int64(0)))
@@ -454,9 +451,9 @@ func (this *List) IndexOfStringStart(string_ string, start int32) int32 {
 	var last int32
 	var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(string_, true)
 	for {
-		cond716 := index
-		last = cond716
-		index = int32(win32.OSSendMessage(this.Handle, win32.OSLB_FINDSTRINGEXACT, int64(cond716), buffer))
+		cond2 := index
+		last = cond2
+		index = int32(win32.OSSendMessage(this.Handle, win32.OSLB_FINDSTRINGEXACT, int64(cond2), buffer))
 		if index == win32.OSLB_ERR || index <= last {
 			return -1
 		}
@@ -477,7 +474,7 @@ func (this *List) isUseWsBorder_() bool {
 	return this.Scrollable.isUseWsBorder_() || ((this.display != (nil)) && this.display.useWsBorderList)
 }
 
-func (this *List) Remove(indices []int32) {
+func (this *List) RemoveIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -559,7 +556,7 @@ func (this *List) Remove(indices []int32) {
 	}
 }
 
-func (this *List) RemoveIndex(index int32) {
+func (this *List) Remove(index int32) {
 	this.CheckWidget()
 	var buffer []uint16 = nil
 	if (this.style & H_SCROLL) != 0 {
@@ -677,7 +674,7 @@ func (this *List) RemoveString(string_ string) {
 	if index == -1 {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.RemoveIndex(index)
+	this.Remove(index)
 }
 
 func (this *List) RemoveAll() {
@@ -700,7 +697,7 @@ func (this *List) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *List) Select(indices []int32) {
+func (this *List) SelectIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -726,7 +723,7 @@ func (this *List) SelectIndicesScroll(indices []int32, scroll bool) {
 	}
 }
 
-func (this *List) SelectIndex(index int32) {
+func (this *List) Select(index int32) {
 	this.CheckWidget()
 	this.SelectIndexScroll(index, false)
 }
@@ -833,7 +830,7 @@ func (this *List) setFont_(font *Font) {
 	this.CheckWidget()
 	this.Scrollable.setFont_(font)
 	if (this.style & H_SCROLL) != 0 {
-		this.SetScrollWidth()
+		this.SetScrollWidth0()
 	}
 }
 
@@ -844,7 +841,7 @@ func (this *List) SetItem(index int32, string_ string) {
 	}
 	var topIndex int32 = this.GetTopIndex()
 	var isSelected bool = this.IsSelected(index)
-	this.RemoveIndex(index)
+	this.Remove(index)
 	this.AddStringIndex(string_, index)
 	if isSelected {
 		this.SelectIndexScroll(index, false)
@@ -916,7 +913,7 @@ func (this *List) SetItems(items []string) {
 	}
 }
 
-func (this *List) SetScrollWidth() {
+func (this *List) SetScrollWidth0() {
 	var newWidth int32 = 0
 	var rect *win32.RECT = win32.NewRECT()
 	var newFont int64
@@ -976,11 +973,11 @@ func (this *List) SetScrollWidthNewWidthGrow(newWidth int32, grow bool) {
 		if newWidth < width {
 			return
 		}
-		this.SetScrollWidth()
+		this.SetScrollWidth0()
 	}
 }
 
-func (this *List) SetSelection(indices []int32) {
+func (this *List) SetSelectionIndices(indices []int32) {
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -1016,9 +1013,9 @@ func (this *List) SetSelectionItems(items []string) {
 		if string_ != "" {
 			var localFocus int32 = -1
 			for {
-				cond717 := this.IndexOfStringStart(string_, index)
-				index = cond717
-				if !((cond717) != -1) {
+				cond3 := this.IndexOfStringStart(string_, index)
+				index = cond3
+				if !((cond3) != -1) {
 					break
 				}
 				if localFocus == -1 {
@@ -1043,7 +1040,7 @@ func (this *List) SetSelectionItems(items []string) {
 	}
 }
 
-func (this *List) SetSelectionIndex(index int32) {
+func (this *List) SetSelection(index int32) {
 	this.CheckWidget()
 	this.DeselectAll()
 	this.SelectIndexScroll(index, true)
@@ -1178,9 +1175,9 @@ func (this *List) updateTextDirection_(textDirection int32) bool {
 	var selection int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCURSEL, int64(0), int64(0)))
 	this.addedUCC = false
 	for {
-		t718 := count
+		t4 := count
 		count--
-		if !(t718 > 0) {
+		if !(t4 > 0) {
 			break
 		}
 		var length int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETTEXTLEN, int64(count), int64(0)))
@@ -1248,13 +1245,13 @@ func (this *List) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 					direction = LEFT_TO_RIGHT
 				}
 			}
-			var cond719 uint16
+			var cond5 uint16
 			if direction == RIGHT_TO_LEFT {
-				cond719 = WidgetRLE
+				cond5 = WidgetRLE
 			} else {
-				cond719 = WidgetLRE
+				cond5 = WidgetLRE
 			}
-			string_ = fmt.Sprintf("%c%s", (cond719), string_)
+			string_ = fmt.Sprintf("%c%s", (cond5), string_)
 			buffer = win32.NewTCHARStringTerminate(string_, true)
 			var hHeap int64 = win32.OSGetProcessHeap()
 			length = buffer.Length() * win32.TCHARSizeof
@@ -1285,13 +1282,13 @@ func (this *List) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 					if code == win32.OSLB_ERR {
 						break
 					}
-					var cond720 int32
+					var cond6 int32
 					if code != 0 {
-						cond720 = 0
+						cond6 = 0
 					} else {
-						cond720 = 1
+						cond6 = 1
 					}
-					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETSEL, int64(cond720), int64(index))
+					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETSEL, int64(cond6), int64(index))
 					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETANCHORINDEX, int64(index), int64(0))
 					this.SendSelectionEvent(Selection)
 					return win32.LRESULTZERO
@@ -1319,13 +1316,13 @@ func (this *List) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			case win32.OSVK_UP, win32.OSVK_DOWN:
 				{
 					var oldIndex int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCARETINDEX, int64(0), int64(0)))
-					var cond721 int32
+					var cond7 int32
 					if (int32(wParam)) == win32.OSVK_UP {
-						cond721 = -1
+						cond7 = -1
 					} else {
-						cond721 = 1
+						cond7 = 1
 					}
-					newIndex = int32(math.Max(float64(0), float64(oldIndex+(cond721))))
+					newIndex = int32(math.Max(float64(0), float64(oldIndex+(cond7))))
 					break
 				}
 			case win32.OSVK_PRIOR:
@@ -1442,7 +1439,7 @@ func (this *List) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 func (this *List) handleDPIChange_(event *Event, scalingFactor float32) {
 	this.Scrollable.handleDPIChange_(event, scalingFactor)
 	if (this.style & H_SCROLL) != 0 {
-		this.SetScrollWidth()
+		this.SetScrollWidth0()
 	}
 }
 
@@ -1454,7 +1451,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init List static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init List static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

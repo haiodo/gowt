@@ -45,7 +45,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init HDHITTESTINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init HDHITTESTINFOSizeof:", r)
 			}
 		}()
 		HDHITTESTINFOSizeof = OSHDHITTESTINFO_sizeof()

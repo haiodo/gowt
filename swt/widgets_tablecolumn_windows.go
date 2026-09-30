@@ -124,7 +124,7 @@ func (this *TableColumn) GetWidth() int32 {
 }
 
 func (this *TableColumn) GetWidthInPixels() int32 {
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return 0
 	}
@@ -176,24 +176,18 @@ func (this *TableColumn) CalcAutoWidth(index int32, withHeader bool) int32 {
 
 func (this *TableColumn) Pack() {
 	this.CheckWidget()
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
 	var hwnd int64 = this.parent.Handle
 	var oldWidth int32 = int32(win32.OSSendMessageOverload4(hwnd, win32.OSLVM_GETCOLUMNWIDTH, int64(index), int64(0)))
 	var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(this.text, true)
-	var headerWidth int32 = int32((float32(win32.OSSendMessage(hwnd, win32.OSLVM_GETSTRINGWIDTH, int64(0), buffer)) + func() float32 {
-		_ = []any{float32(TableHEADER_MARGIN + TableHEADER_EXTRA), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixel")
-	}()))
+	var headerWidth int32 = int32((float32(win32.OSSendMessage(hwnd, win32.OSLVM_GETSTRINGWIDTH, int64(0), buffer)) + Win32DPIUtilsPointToPixelOverload4(float32(TableHEADER_MARGIN+TableHEADER_EXTRA), this.impl.getAutoscalingZoom_())))
 	var hasHeaderImage bool = false
 	if this.image != (nil) {
 		hasHeaderImage = true
-		var bounds *Rectangle = func() *Rectangle {
-			_ = []any{this.image.GetBounds(), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		headerWidth += bounds.Width
 		var hwndHeader int64 = win32.OSSendMessageOverload4(hwnd, win32.OSLVM_GETHEADER, int64(0), int64(0))
 		var margin int32 = int32(win32.OSSendMessageOverload4(hwndHeader, win32.OSHDM_GETBITMAPMARGIN, int64(0), int64(0)))
@@ -323,7 +317,7 @@ func (this *TableColumn) SetAlignment(alignment int32) {
 	if (alignment & (LEFT | RIGHT | CENTER)) == 0 {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 || index == 0 {
 		return
 	}
@@ -360,24 +354,24 @@ func (this *TableColumn) SetAlignment(alignment int32) {
 	}
 }
 
-func (this *TableColumn) setImage_(image *Image) {
+func (this *TableColumn) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	if this.parent.sortColumn != this || this.parent.sortDirection != NONE {
-		this.SetImageImageSortRight(image, false, false)
+		this.SetImageImageSortRightImageSortRight(image, false, false)
 	}
 }
 
-func (this *TableColumn) SetImageImageSortRight(imageLike ImageLike, sort bool, right bool) {
+func (this *TableColumn) SetImageImageSortRightImageSortRight(imageLike ImageLike, sort bool, right bool) {
 	var image *Image
 	if imageLike != nil {
 		image = imageLike.AsImage()
 	}
 	_ = image
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -410,7 +404,7 @@ func (this *TableColumn) SetResizable(resizable bool) {
 }
 
 func (this *TableColumn) SetSortDirection(direction int32) {
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -485,7 +479,7 @@ func (this *TableColumn) setText_(string_ string) {
 	if string_ == this.text {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -529,7 +523,7 @@ func (this *TableColumn) SetWidthInPixels(width int32) {
 	if width < 0 {
 		return
 	}
-	var index int32 = this.parent.IndexOf(this)
+	var index int32 = this.parent.IndexOfColumn(this)
 	if index == -1 {
 		return
 	}
@@ -569,7 +563,7 @@ func (this *TableColumn) handleDPIChange_(event *Event, scalingFactor float32) {
 	table.ignoreColumnResize = ignoreColumnResize
 	var image *Image = this.impl.getImage_()
 	if image != (nil) {
-		this.impl.setImage_(image)
+		this.impl.setImageOnItem_(image)
 	}
 }
 

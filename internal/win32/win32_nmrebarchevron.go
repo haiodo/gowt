@@ -55,7 +55,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMREBARCHEVRONSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMREBARCHEVRONSizeof:", r)
 			}
 		}()
 		NMREBARCHEVRONSizeof = OSNMREBARCHEVRON_sizeof()

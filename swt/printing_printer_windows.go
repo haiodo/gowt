@@ -419,7 +419,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Printer static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Printer static{}:", r)
 			}
 		}()
 		PrinterProfile = win32.NewTCHARStringTerminate("PrinterPorts", true)

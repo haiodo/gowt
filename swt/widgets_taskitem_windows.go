@@ -238,7 +238,7 @@ func (this *TaskItem) UpdateImage() {
 	var image2 *Image = nil
 	var hIcon int64 = int64(0)
 	switch this.overlayImage.Type {
-	case SWTBITMAP:
+	case BITMAP:
 		image2 = DisplayCreateIcon(this.overlayImage, this.impl.getAutoscalingZoom_())
 		hIcon = ImageWin32_getHandle(image2, this.impl.getAutoscalingZoom_())
 		break

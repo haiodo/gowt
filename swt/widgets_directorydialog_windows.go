@@ -66,8 +66,8 @@ func (this *DirectoryDialog) GetMessage() string {
 }
 
 func (this *DirectoryDialog) Open() string {
-	var tret763 string
-	tretd764 := false
+	var tret1 string
+	tretd2 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -84,8 +84,8 @@ func (this *DirectoryDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret763 = ""
-					tretd764 = true
+					tret1 = ""
+					tretd2 = true
 					return
 				}
 				panic(e)
@@ -93,12 +93,12 @@ func (this *DirectoryDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret763 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd764 = true
+		tret1 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd2 = true
 		return
 	}()
-	_ = tretd764
-	return tret763
+	_ = tretd2
+	return tret1
 }
 
 func (this *DirectoryDialog) OpenDialog() *jrt.Optional {

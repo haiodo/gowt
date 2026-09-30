@@ -51,7 +51,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SCRIPT_FONTPROPERTIESSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SCRIPT_FONTPROPERTIESSizeof:", r)
 			}
 		}()
 		SCRIPT_FONTPROPERTIESSizeof = OSSCRIPT_FONTPROPERTIES_sizeof()

@@ -76,7 +76,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init CHOOSEFONTSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CHOOSEFONTSizeof:", r)
 			}
 		}()
 		CHOOSEFONTSizeof = OSCHOOSEFONT_sizeof()

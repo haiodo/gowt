@@ -54,7 +54,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init WINDOWPOSSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init WINDOWPOSSizeof:", r)
 			}
 		}()
 		WINDOWPOSSizeof = OSWINDOWPOS_sizeof()

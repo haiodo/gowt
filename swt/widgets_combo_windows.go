@@ -59,13 +59,13 @@ var ComboStateFlagsOffset int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init ComboStateFlagsOffset:", e)
 		}
 	}()
-	var cond670 int32
+	var cond1 int32
 	if win32.CPTR_SIZEOF == 8 {
-		cond670 = 0x68
+		cond1 = 0x68
 	} else {
-		cond670 = 0x54
+		cond1 = 0x54
 	}
-	r = cond670
+	r = cond1
 	return
 }()
 
@@ -199,16 +199,16 @@ func (this *Combo) ApplyEditSegments() {
 			} else {
 				separator = defaultSeparator
 			}
-			t671 := charCount
+			t2 := charCount
 			charCount++
-			newChars[t671] = separator
+			newChars[t2] = separator
 			segmentCount++
 		} else {
 			if string_ != "" {
-				idx673 := charCount
-				t672 := charCount
+				idx4 := charCount
+				t3 := charCount
 				charCount++
-				newChars[idx673] = utf16.Encode([]rune(string_))[t672-segmentCount]
+				newChars[idx4] = utf16.Encode([]rune(string_))[t3-segmentCount]
 			}
 		}
 	}
@@ -220,9 +220,9 @@ func (this *Combo) ApplyEditSegments() {
 		} else {
 			separator = defaultSeparator
 		}
-		t674 := charCount
+		t5 := charCount
 		charCount++
-		newChars[t674] = separator
+		newChars[t5] = separator
 		segmentCount++
 	}
 	var start []int32 = make([]int32, 1)
@@ -271,9 +271,9 @@ func (this *Combo) ApplyListSegments() {
 		selection = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSCB_GETCURSEL, int64(0), int64(0)))
 	}
 	for {
-		t675 := index
+		t6 := index
 		index--
-		if !(t675 > 0) {
+		if !(t6 > 0) {
 			break
 		}
 		buffer = nil
@@ -372,9 +372,9 @@ func (this *Combo) checkSubclass_() {
 }
 
 func (this *Combo) ClearSegments(applyText bool) {
-	t676 := this.clearSegmentsCount
+	t7 := this.clearSegmentsCount
 	this.clearSegmentsCount++
-	if t676 != 0 {
+	if t7 != 0 {
 		return
 	}
 	if this.segments == (nil) {
@@ -424,10 +424,7 @@ func (this *Combo) ClearSelection() {
 
 func (this *Combo) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32 = 0
 	var height int32 = 0
 	if hintInPoints.X == DEFAULT {
@@ -695,10 +692,7 @@ func (this *Combo) dragDetect_(hwnd int64, x int32, y int32, filter bool, detect
 
 func (this *Combo) GetCaretLocation() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetCaretLocationInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocationPointZoom(this.GetCaretLocationInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Combo) GetCaretLocationInPixels() *Point {
@@ -834,13 +828,13 @@ func (this *Combo) getNameText_() string {
 
 func (this *Combo) SetListVisible(visible bool) {
 	this.CheckWidget()
-	var cond677 int32
+	var cond8 int32
 	if visible {
-		cond677 = 1
+		cond8 = 1
 	} else {
-		cond677 = 0
+		cond8 = 0
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSCB_SHOWDROPDOWN, int64(cond677), int64(0))
+	win32.OSSendMessageOverload4(this.Handle, win32.OSCB_SHOWDROPDOWN, int64(cond8), int64(0))
 }
 
 func (this *Combo) getOrientation_() int32 {
@@ -857,13 +851,13 @@ func (this *Combo) GetSegments(string_ string) *Event {
 			{
 				var i int32 = 1
 				var segmentCount int32 = int32(len(event.Segments))
-				var cond678 int32
+				var cond9 int32
 				if string_ == "" {
-					cond678 = 0
+					cond9 = 0
 				} else {
-					cond678 = jrt.StringLength(string_)
+					cond9 = jrt.StringLength(string_)
 				}
-				var lineLength int32 = cond678
+				var lineLength int32 = cond9
 				for ; i < segmentCount; func() {
 					i++
 				}() {
@@ -953,14 +947,14 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 			} else {
 				separator = defaultSeparator
 			}
-			t679 := segmentCount
+			t10 := segmentCount
 			segmentCount++
-			newChars[charCount+t679] = separator
+			newChars[charCount+t10] = separator
 		} else {
-			idx681 := charCount + segmentCount
-			t680 := charCount
+			idx12 := charCount + segmentCount
+			t11 := charCount
 			charCount++
-			newChars[idx681] = oldChars[t680]
+			newChars[idx12] = oldChars[t11]
 		}
 	}
 	for segmentCount < nSegments {
@@ -971,9 +965,9 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 		} else {
 			separator = defaultSeparator
 		}
-		t682 := segmentCount
+		t13 := segmentCount
 		segmentCount++
-		newChars[charCount+t682] = separator
+		newChars[charCount+t13] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1027,13 +1021,13 @@ func (this *Combo) GetTextHeightInPixels() int32 {
 	if result == win32.OSCB_ERR {
 		this.Error(ERROR_CANNOT_GET_ITEM_HEIGHT)
 	}
-	var cond683 int32
+	var cond14 int32
 	if (this.style & DROP_DOWN) != 0 {
-		cond683 = result + 6
+		cond14 = result + 6
 	} else {
-		cond683 = result + 10
+		cond14 = result + 10
 	}
-	return cond683
+	return cond14
 }
 
 func (this *Combo) GetTextLimit() int32 {
@@ -1099,9 +1093,9 @@ func (this *Combo) IndexOfStringStart(string_ string, start int32) int32 {
 	var last int32 = 0
 	var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(string_, true)
 	for {
-		cond684 := index
-		last = cond684
-		index = int32(win32.OSSendMessage(this.Handle, win32.OSCB_FINDSTRINGEXACT, int64(cond684), buffer))
+		cond15 := index
+		last = cond15
+		index = int32(win32.OSSendMessage(this.Handle, win32.OSCB_FINDSTRINGEXACT, int64(cond15), buffer))
 		if index == win32.OSCB_ERR || index <= last {
 			return -1
 		}
@@ -1589,8 +1583,8 @@ func (this *Combo) SetItems(items []string) {
 	this.SendEventEventType(Modify)
 }
 
-func (this *Combo) setOrientation_(orientation int32) {
-	this.Composite.setOrientation_(orientation)
+func (this *Combo) setOrientationOnControl_(orientation int32) {
+	this.Composite.setOrientationOnControl_(orientation)
 }
 
 func (this *Combo) SetScrollWidth() {
@@ -1748,12 +1742,12 @@ func (this *Combo) setToolTipTextShellString_(shell *Shell, string_ string) {
 	var hwndText int64 = win32.OSGetDlgItem(this.Handle, ComboCBID_EDIT)
 	var hwndList int64 = win32.OSGetDlgItem(this.Handle, ComboCBID_LIST)
 	if hwndText != 0 {
-		shell.SetToolTipText(hwndText, string_)
+		shell.SetToolTipTextHwndText(hwndText, string_)
 	}
 	if hwndList != 0 {
-		shell.SetToolTipText(hwndList, string_)
+		shell.SetToolTipTextHwndText(hwndList, string_)
 	}
-	shell.SetToolTipText(this.Handle, string_)
+	shell.SetToolTipTextHwndText(this.Handle, string_)
 }
 
 func (this *Combo) SetVisibleItemCount(count int32) {
@@ -2297,7 +2291,7 @@ func (this *Combo) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			if this.IsDisposed() {
 				return win32.LRESULTZERO
 			}
-			this.SendSelectionEventTypeEventSend(Selection, nil, true)
+			this.SendSelectionEventEventTypeEventSend(Selection, nil, true)
 			if this.IsDisposed() {
 				return win32.LRESULTZERO
 			}
@@ -2577,7 +2571,7 @@ func (this *Combo) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 		break
 	case win32.OSCBN_DROPDOWN:
-		this.impl.setCursor_()
+		this.impl.setCursorNoArgs_()
 		this.UpdateDropDownHeight()
 		this.UpdateDropDownTheme()
 		break
@@ -2621,7 +2615,7 @@ func (this *Combo) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.LRE
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEvent(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTZERO
 	}
 	this.ignoreCharacter = true
@@ -2633,7 +2627,7 @@ func (this *Combo) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.LRE
 		win32.OSDispatchMessage(msg)
 	}
 	this.ignoreCharacter = false
-	this.SendKeyEvent(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.NewLRESULT(result)
@@ -2709,7 +2703,7 @@ func (this *Combo) wmSysKeyDown_(hwnd int64, wParam int64, lParam int64) *win32.
 				if this.IsDisposed() {
 					return win32.LRESULTZERO
 				}
-				this.SendSelectionEventTypeEventSend(Selection, nil, true)
+				this.SendSelectionEventEventTypeEventSend(Selection, nil, true)
 				if this.IsDisposed() {
 					return win32.LRESULTZERO
 				}
@@ -2749,7 +2743,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Combo static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Combo static{}:", r)
 			}
 		}()
 		ComboLIMIT = 0x7FFFFFFF
@@ -2757,7 +2751,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Combo static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Combo static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

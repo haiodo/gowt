@@ -66,7 +66,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init BITMAPINFOHEADERSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init BITMAPINFOHEADERSizeof:", r)
 			}
 		}()
 		BITMAPINFOHEADERSizeof = OSBITMAPINFOHEADER_sizeof()

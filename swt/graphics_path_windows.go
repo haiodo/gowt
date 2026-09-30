@@ -76,7 +76,7 @@ func (this *Path) initPathDevicePathFlatness(device *Device, path *Path, flatnes
 	flatness = float32(math.Max(float64(0), float64(flatness)))
 	path.operations.ForEach(this.StoreAndApplyOperationOnAllHandles)
 	if flatness != 0 {
-		this.StoreAndApplyOperationOnAllHandles(func() any { _ = []any{flatness}; panic("j2go: unresolved new FlattenOperation") }())
+		this.StoreAndApplyOperationOnAllHandles(newPathFlattenOperation(flatness))
 	}
 	this.impl.init_()
 	this.device.RegisterResourceWithZoomSupport(upcastPathToResource(this))
@@ -104,16 +104,16 @@ func (this *Path) initPathDeviceData(device *Device, data *PathData) {
 	if data == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	this.Init(data)
+	this.InitData(data)
 }
 
 func (this *Path) AddArc(x float32, y float32, width float32, height float32, startAngle float32, arcAngle float32) {
 	if width == 0 || height == 0 || arcAngle == 0 {
 		return
 	}
-	inner408 := NewPathAddArcOperation(x, y, width, height, startAngle, arcAngle)
-	inner408.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner408)
+	inner1 := NewPathAddArcOperation(x, y, width, height, startAngle, arcAngle)
+	inner1.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner1)
 }
 
 func (this *Path) AddPath(pathLike PathLike) {
@@ -131,18 +131,18 @@ func (this *Path) AddPath(pathLike PathLike) {
 	if path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner409 := NewPathAddPathOperation(path)
-	inner409.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner409)
+	inner2 := NewPathAddPathOperation(path)
+	inner2.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner2)
 }
 
 func (this *Path) AddRectangle(x float32, y float32, width float32, height float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner410 := NewPathAddRectangleOperation(x, y, width, height)
-	inner410.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner410)
+	inner3 := NewPathAddRectangleOperation(x, y, width, height)
+	inner3.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner3)
 }
 
 func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontLike) {
@@ -160,16 +160,16 @@ func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontL
 	if font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner411 := NewPathAddStringOperation(string_, x, y, font)
-	inner411.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner411)
+	inner4 := NewPathAddStringOperation(string_, x, y, font)
+	inner4.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner4)
 }
 
 func (this *Path) Close() {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationOnAllHandles(func() any { panic("j2go: unresolved new CloseOperation") }())
+	this.StoreAndApplyOperationOnAllHandles(newPathCloseOperation())
 }
 
 func (this *Path) Contains(x float32, y float32, gcLike GCLike, outline bool) bool {
@@ -199,9 +199,9 @@ func (this *Path) CubicTo(cx1 float32, cy1 float32, cx2 float32, cy2 float32, x 
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner412 := NewPathCubicToOperation(cx1, cy1, cx2, cy2, x, y)
-	inner412.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner412)
+	inner5 := NewPathCubicToOperation(cx1, cy1, cx2, cy2, x, y)
+	inner5.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner5)
 }
 
 func (this *Path) destroy_() {
@@ -279,12 +279,12 @@ func (this *Path) LineTo(x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner413 := NewPathLineToOperation(x, y)
-	inner413.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner413)
+	inner6 := NewPathLineToOperation(x, y)
+	inner6.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner6)
 }
 
-func (this *Path) Init(dataLike PathDataLike) {
+func (this *Path) InitData(dataLike PathDataLike) {
 	var data *PathData
 	if dataLike != nil {
 		data = dataLike.AsPathData()
@@ -300,44 +300,44 @@ func (this *Path) Init(dataLike PathDataLike) {
 		}() {
 			switch types[i] {
 			case int8(PATH_MOVE_TO):
-				t414 := j
+				t7 := j
 				j++
-				t415 := j
+				t8 := j
 				j++
-				this.MoveTo(points[t414], points[t415])
+				this.MoveTo(points[t7], points[t8])
 				break
 			case int8(PATH_LINE_TO):
-				t416 := j
+				t9 := j
 				j++
-				t417 := j
+				t10 := j
 				j++
-				this.LineTo(points[t416], points[t417])
+				this.LineTo(points[t9], points[t10])
 				break
 			case int8(PATH_CUBIC_TO):
-				t418 := j
+				t11 := j
 				j++
-				t419 := j
+				t12 := j
 				j++
-				t420 := j
+				t13 := j
 				j++
-				t421 := j
+				t14 := j
 				j++
-				t422 := j
+				t15 := j
 				j++
-				t423 := j
+				t16 := j
 				j++
-				this.CubicTo(points[t418], points[t419], points[t420], points[t421], points[t422], points[t423])
+				this.CubicTo(points[t11], points[t12], points[t13], points[t14], points[t15], points[t16])
 				break
 			case int8(PATH_QUAD_TO):
-				t424 := j
+				t17 := j
 				j++
-				t425 := j
+				t18 := j
 				j++
-				t426 := j
+				t19 := j
 				j++
-				t427 := j
+				t20 := j
 				j++
-				this.QuadTo(points[t424], points[t425], points[t426], points[t427])
+				this.QuadTo(points[t17], points[t18], points[t19], points[t20])
 				break
 			case int8(PATH_CLOSE):
 				this.Close()
@@ -358,18 +358,18 @@ func (this *Path) MoveTo(x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner428 := NewPathMoveToOperation(x, y)
-	inner428.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner428)
+	inner21 := NewPathMoveToOperation(x, y)
+	inner21.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner21)
 }
 
 func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner429 := NewPathQuadToOperation(cx, cy, x, y)
-	inner429.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner429)
+	inner22 := NewPathQuadToOperation(cx, cy, x, y)
+	inner22.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner22)
 }
 
 func (this *Path) StoreAndApplyOperationOnAllHandles(operation Path_Operation) {
@@ -389,8 +389,8 @@ func (this *Path) String() string {
 
 func (this *Path) NewPathHandle(zoom int32) *Path_PathHandle {
 	var newPathHandle *Path_PathHandle = PathNewEmptyPathHandle(this.impl.getDevice_(), zoom)
-	for _, elem430 := range this.operations.ToArray() {
-		operation := jrt.Cast[Path_Operation](elem430)
+	for _, elem23 := range this.operations.ToArray() {
+		operation := jrt.Cast[Path_Operation](elem23)
 		operation.Apply(newPathHandle)
 	}
 	return newPathHandle
@@ -420,8 +420,8 @@ func PathApplyOnTemporaryHandle(deviceLike DeviceLike, zoom int32, operations *j
 		defer func() {
 			temporaryHandle.Destroy()
 		}()
-		for _, elem431 := range operations.ToArray() {
-			operation := jrt.Cast[Path_Operation](elem431)
+		for _, elem24 := range operations.ToArray() {
+			operation := jrt.Cast[Path_Operation](elem24)
 			operation.Apply(temporaryHandle)
 		}
 		return function(temporaryHandle)
@@ -483,8 +483,8 @@ func (this *Path_PathHandle) Contains(x float32, y float32, gcLike GCLike, outli
 		gc = gcLike.AsGC()
 	}
 	_ = gc
-	var xInPixels float32 = func() float32 { _ = []any{this.device, x, this.zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{this.device, y, this.zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(this.device, x, this.zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(this.device, y, this.zoom)
 	return this.ContainsInPixels(xInPixels, yInPixels, gc, outline)
 }
 
@@ -516,10 +516,7 @@ func (this *Path_PathHandle) Destroy() {
 
 func (this *Path_PathHandle) FillBounds(bounds []float32) {
 	this.GetBoundsInPixels(bounds)
-	var scaledbounds []float32 = func() []float32 {
-		_ = []any{this.device, bounds, this.zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	var scaledbounds []float32 = Win32DPIUtilsPixelToPointOverload1(this.device, bounds, this.zoom)
 	copy(bounds[0:], scaledbounds[0:0+4])
 }
 
@@ -534,10 +531,7 @@ func (this *Path_PathHandle) GetBoundsInPixels(bounds []float32) {
 
 func (this *Path_PathHandle) FillCurrentPoint(point []float32) {
 	this.GetCurrentPointInPixels(point)
-	var scaledpoint []float32 = func() []float32 {
-		_ = []any{this.device, point, this.zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	var scaledpoint []float32 = Win32DPIUtilsPixelToPointOverload1(this.device, point, this.zoom)
 	copy(point[0:], scaledpoint[0:0+2])
 }
 
@@ -548,10 +542,7 @@ func (this *Path_PathHandle) GetCurrentPointInPixels(point []float32) {
 
 func (this *Path_PathHandle) GetPathData() *PathData {
 	var result *PathData = this.GetPathDataInPixels()
-	result.Points = func() []float32 {
-		_ = []any{this.device, result.Points, this.zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	result.Points = Win32DPIUtilsPixelToPointOverload1(this.device, result.Points, this.zoom)
 	return result
 }
 
@@ -569,23 +560,23 @@ func (this *Path_PathHandle) GetPathDataInPixels() *PathData {
 		var close bool = false
 		switch int32(type_) & win32.GdipPathPointTypePathTypeMask {
 		case win32.GdipPathPointTypeStart:
-			t432 := typesIndex
+			t25 := typesIndex
 			typesIndex++
-			types[t432] = int8(PATH_MOVE_TO)
+			types[t25] = int8(PATH_MOVE_TO)
 			close = (int32(type_) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 1
 			break
 		case win32.GdipPathPointTypeLine:
-			t433 := typesIndex
+			t26 := typesIndex
 			typesIndex++
-			types[t433] = int8(PATH_LINE_TO)
+			types[t26] = int8(PATH_LINE_TO)
 			close = (int32(type_) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 1
 			break
 		case win32.GdipPathPointTypeBezier:
-			t434 := typesIndex
+			t27 := typesIndex
 			typesIndex++
-			types[t434] = int8(PATH_CUBIC_TO)
+			types[t27] = int8(PATH_CUBIC_TO)
 			close = (int32(gdipTypes[index+2]) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 3
 			break
@@ -593,9 +584,9 @@ func (this *Path_PathHandle) GetPathDataInPixels() *PathData {
 			index++
 		}
 		if close {
-			t435 := typesIndex
+			t28 := typesIndex
 			typesIndex++
-			types[t435] = int8(PATH_CLOSE)
+			types[t28] = int8(PATH_CLOSE)
 		}
 	}
 	if typesIndex != int32(len(types)) {
@@ -652,10 +643,10 @@ func (this *Path_AddArcOperation) Apply(pathHandle *Path_PathHandle) {
 	}
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	var xInPixels float32 = func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var widthInPixels float32 = func() float32 { _ = []any{drawable, this.width, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var heightInPixels float32 = func() float32 { _ = []any{drawable, this.height, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
+	var widthInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.width, zoom)
+	var heightInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.height, zoom)
 	this.AddArcInPixels(pathHandle, xInPixels, yInPixels, widthInPixels, heightInPixels, this.startAngle, this.arcAngle)
 }
 
@@ -729,10 +720,10 @@ func (this *Path_AddRectangleOperation) initPathAddRectangleOperation(x float32,
 func (this *Path_AddRectangleOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	var xInPixels float32 = func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var widthInPixels float32 = func() float32 { _ = []any{drawable, this.width, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var heightInPixels float32 = func() float32 { _ = []any{drawable, this.height, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
+	var widthInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.width, zoom)
+	var heightInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.height, zoom)
 	this.AddRectangleInPixels(pathHandle, xInPixels, yInPixels, widthInPixels, heightInPixels)
 }
 
@@ -833,8 +824,8 @@ func (this *Path_AddStringOperation) initPathAddStringOperation(string_ string, 
 func (this *Path_AddStringOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	var xInPixels float32 = func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	this.AddStringInPixels(pathHandle, xInPixels, yInPixels)
 }
 
@@ -850,10 +841,7 @@ func (this *Path_AddStringOperation) AddStringInPixels(pathHandleLike Path_PathH
 	var buffer []uint16 = utf16.Encode([]rune(this.string))
 	var hDC int64 = this.this_0.device.impl.internal_new_GC_(nil)
 	var family []int64 = make([]int64, 1)
-	var gdipFont int64 = GCCreateGdipFont(hDC, func() int64 {
-		_ = []any{this.this_0.device, this.fontData, zoom}
-		panic("j2go: unresolved call getFontHandle")
-	}(), int64(0), this.this_0.device.fontCollection, family, nil)
+	var gdipFont int64 = GCCreateGdipFont(hDC, SWTFontProviderGetFontHandle(this.this_0.device, this.fontData, zoom), int64(0), this.this_0.device.fontCollection, family, nil)
 	var point *win32.PointF = win32.NewPointF()
 	point.X = x - (win32.GdipFont_GetSize(gdipFont) / 6)
 	point.Y = y
@@ -864,6 +852,66 @@ func (this *Path_AddStringOperation) AddStringInPixels(pathHandleLike Path_PathH
 	win32.GdipFontFamily_delete(family[0])
 	win32.GdipFont_delete(gdipFont)
 	this.this_0.device.impl.internal_dispose_GC_(hDC, nil)
+}
+
+type Path_CloseOperation struct {
+}
+
+func init() { jrt.RegisterClassPackage("Path_CloseOperation", "org.eclipse.swt.graphics") }
+
+func (this *Path_CloseOperation) AsPath_CloseOperation() *Path_CloseOperation { return this }
+
+type Path_CloseOperationLike interface {
+	AsPath_CloseOperation() *Path_CloseOperation
+}
+
+func newPathCloseOperation() *Path_CloseOperation {
+	this := &Path_CloseOperation{}
+	this.initPathCloseOperation()
+	return this
+}
+
+func (this *Path_CloseOperation) initPathCloseOperation() {
+}
+
+func (this *Path_CloseOperation) Apply(pathHandle *Path_PathHandle) {
+	var startPoint *win32.PointF = pathHandle.startPoint
+	var currentPoint *win32.PointF = pathHandle.currentPoint
+	var handle int64 = pathHandle.handle
+	win32.GdipGraphicsPath_CloseFigure(handle)
+	currentPoint.X = startPoint.X
+	currentPoint.Y = startPoint.Y
+}
+
+type Path_FlattenOperation struct {
+	flatness float32
+}
+
+func init() { jrt.RegisterClassPackage("Path_FlattenOperation", "org.eclipse.swt.graphics") }
+
+func (this *Path_FlattenOperation) AsPath_FlattenOperation() *Path_FlattenOperation { return this }
+
+type Path_FlattenOperationLike interface {
+	AsPath_FlattenOperation() *Path_FlattenOperation
+}
+
+func newPathFlattenOperation(flatness float32) *Path_FlattenOperation {
+	this := &Path_FlattenOperation{}
+	this.initPathFlattenOperation(flatness)
+	return this
+}
+
+func (this *Path_FlattenOperation) initPathFlattenOperation(flatness float32) {
+	this.flatness = flatness
+}
+
+func (this *Path_FlattenOperation) Flatness() float32 {
+	return this.flatness
+}
+
+func (this *Path_FlattenOperation) Apply(pathHandle *Path_PathHandle) {
+	var handle int64 = pathHandle.handle
+	win32.GdipGraphicsPath_Flatten(handle, int64(0), this.flatness)
 }
 
 type Path_CubicToOperation struct {
@@ -902,12 +950,12 @@ func (this *Path_CubicToOperation) initPathCubicToOperation(cx1 float32, cy1 flo
 func (this *Path_CubicToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	var cx1InPixels float32 = func() float32 { _ = []any{drawable, this.cx1, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var cy1InPixels float32 = func() float32 { _ = []any{drawable, this.cy1, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var cx2InPixels float32 = func() float32 { _ = []any{drawable, this.cx2, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var cy2InPixels float32 = func() float32 { _ = []any{drawable, this.cy2, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var xInPixels float32 = func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var cx1InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx1, zoom)
+	var cy1InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cy1, zoom)
+	var cx2InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx2, zoom)
+	var cy2InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cy2, zoom)
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	this.CubicToInPixels(pathHandle, cx1InPixels, cy1InPixels, cx2InPixels, cy2InPixels, xInPixels, yInPixels)
 }
 
@@ -951,7 +999,7 @@ func (this *Path_LineToOperation) initPathLineToOperation(x float32, y float32) 
 func (this *Path_LineToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	this.LineToInPixels(pathHandle, func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }(), func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }())
+	this.LineToInPixels(pathHandle, Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom), Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom))
 }
 
 func (this *Path_LineToOperation) LineToInPixels(pathHandleLike Path_PathHandleLike, x float32, y float32) {
@@ -994,7 +1042,7 @@ func (this *Path_MoveToOperation) initPathMoveToOperation(x float32, y float32) 
 func (this *Path_MoveToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
 	var drawable Drawable = this.this_0.impl.getDevice_()
-	this.MoveToInPixels(pathHandle, func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }(), func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }())
+	this.MoveToInPixels(pathHandle, Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom), Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom))
 }
 
 func (this *Path_MoveToOperation) MoveToInPixels(pathHandleLike Path_PathHandleLike, x float32, y float32) {
@@ -1045,10 +1093,10 @@ func (this *Path_QuadToOperation) initPathQuadToOperation(cx float32, cy float32
 func (this *Path_QuadToOperation) Apply(pathHandle *Path_PathHandle) {
 	var drawable Drawable = this.this_0.impl.getDevice_()
 	var zoom int32 = pathHandle.zoom
-	var cxInPixels float32 = func() float32 { _ = []any{drawable, this.cx, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var cyInPixels float32 = func() float32 { _ = []any{drawable, this.cy, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var xInPixels float32 = func() float32 { _ = []any{drawable, this.x, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var yInPixels float32 = func() float32 { _ = []any{drawable, this.y, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var cxInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx, zoom)
+	var cyInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cy, zoom)
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	this.QuadToInPixels(pathHandle, cxInPixels, cyInPixels, xInPixels, yInPixels)
 }
 

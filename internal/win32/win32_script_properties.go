@@ -41,7 +41,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SCRIPT_PROPERTIESSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SCRIPT_PROPERTIESSizeof:", r)
 			}
 		}()
 		SCRIPT_PROPERTIESSizeof = OSSCRIPT_PROPERTIES_sizeof()

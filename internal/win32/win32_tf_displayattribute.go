@@ -72,7 +72,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TF_DISPLAYATTRIBUTESizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TF_DISPLAYATTRIBUTESizeof:", r)
 			}
 		}()
 		TF_DISPLAYATTRIBUTESizeof = OSTF_DISPLAYATTRIBUTE_sizeof()

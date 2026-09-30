@@ -74,7 +74,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMTOOLBARSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMTOOLBARSizeof:", r)
 			}
 		}()
 		NMTOOLBARSizeof = OSNMTOOLBAR_sizeof()

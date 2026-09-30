@@ -97,12 +97,12 @@ func (this *TextLayout) initTextLayout(device *Device) {
 	this.orientation = LEFT_TO_RIGHT
 	this.textDirection = LEFT_TO_RIGHT
 	this.styles = make([]*TextLayout_StyleItem, 2)
-	inner567 := newTextLayoutStyleItem()
-	inner567.this_0 = this
-	this.styles[0] = inner567
-	inner568 := newTextLayoutStyleItem()
-	inner568.this_0 = this
-	this.styles[1] = inner568
+	inner1 := newTextLayoutStyleItem()
+	inner1.this_0 = this
+	this.styles[0] = inner1
+	inner2 := newTextLayoutStyleItem()
+	inner2.this_0 = this
+	this.styles[1] = inner2
 	this.stylesCount = 2
 	this.text = ""
 	var ppv []int64 = make([]int64, 1)
@@ -201,7 +201,7 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 	var wrapIndentInPixels int32 = DPIUtilPointToPixel(this.wrapIndent, this.GetZoom(gc))
 	var indentInPixels int32 = DPIUtilPointToPixel(this.indent, this.GetZoom(gc))
 	var wrapWidthInPixels int32 = DPIUtilPointToPixel(this.wrapWidth, this.GetZoom(gc))
-	var tabsInPixels []int32 = func() []int32 { _ = []any{this.tabs, this.GetZoom(gc)}; panic("j2go: unresolved call pointToPixel") }()
+	var tabsInPixels []int32 = Win32DPIUtilsPointToPixel(this.tabs, this.GetZoom(gc))
 	var lineWidth int32 = indentInPixels
 	var lineStart int32 = 0
 	var lineCount int32 = 1
@@ -262,9 +262,9 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 			var width int32 = 0
 			var maxWidth int32 = wrapWidthInPixels - lineWidth
 			for width+piDx[start] < maxWidth {
-				t569 := start
+				t3 := start
 				start++
-				width += piDx[t569]
+				width += piDx[t3]
 			}
 			var firstStart int32 = start
 			var firstIndice int32 = i
@@ -331,9 +331,9 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 				start++
 			}
 			if 0 < start && start < run.length {
-				inner570 := newTextLayoutStyleItem()
-				inner570.this_0 = this
-				var newRun *TextLayout_StyleItem = inner570
+				inner4 := newTextLayoutStyleItem()
+				inner4.this_0 = this
+				var newRun *TextLayout_StyleItem = inner4
 				newRun.start = run.start + start
 				newRun.length = run.length - start
 				newRun.style = run.style
@@ -380,9 +380,9 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 	var lineRuns []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, int32(len(this.allRuns)))
 	for i := int32(0); i < int32(len(this.allRuns)); i++ {
 		var run *TextLayout_StyleItem = this.allRuns[i]
-		t571 := lineRunCount
+		t5 := lineRunCount
 		lineRunCount++
-		lineRuns[t571] = run
+		lineRuns[t5] = run
 		lineWidth += run.width
 		ascentInPoints = int32(math.Max(float64(ascentInPoints), float64(run.ascentInPoints)))
 		descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
@@ -391,14 +391,8 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 				var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 				win32.OSSelectObject(srcHdc, this.GetItemFont(run, gc))
 				this.metricsAdapter.GetTextMetrics(srcHdc, lptm)
-				run.ascentInPoints = func() int32 {
-					_ = []any{this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc)}
-					panic("j2go: unresolved call pixelToPoint")
-				}()
-				run.descentInPoints = func() int32 {
-					_ = []any{this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc)}
-					panic("j2go: unresolved call pixelToPoint")
-				}()
+				run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
+				run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
 				ascentInPoints = int32(math.Max(float64(ascentInPoints), float64(run.ascentInPoints)))
 				descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
 			}
@@ -736,31 +730,16 @@ func (this *TextLayout) DrawInPixelsGcXInPointsYInPointsSelectionStartSelectionE
 			selectionEnd = this.TranslateOffset(int32(math.Min(float64(int32(math.Max(float64(0), float64(selectionEnd)))), float64(length-1))))
 		}
 	}
-	var x int32 = func() int32 {
-		_ = []any{this.impl.getDevice_(), xInPoints, this.GetZoom(gc)}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var x int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), xInPoints, this.GetZoom(gc))
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSSetBkMode(hdc, win32.OSTRANSPARENT)
 	for line := int32(0); line < int32(len(this.runs)); line++ {
 		var drawX int32 = x + this.GetLineIndentInPixel(line)
-		var drawY int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), yInPoints + this.lineY[line], this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var drawY int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line], this.GetZoom(gc))
 		var lineRuns []*TextLayout_StyleItem = this.runs[line]
-		var drawYWithLineHeight int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), yInPoints + this.lineY[line+1] - this.lineSpacingInPoints, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
-		var drawYWithLineHeightWithSpacing int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), yInPoints + this.lineY[line+1], this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
-		var lineHeight int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), this.lineY[line+1] - this.lineY[line] - this.lineSpacingInPoints, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var drawYWithLineHeight int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line+1]-this.lineSpacingInPoints, this.GetZoom(gc))
+		var drawYWithLineHeightWithSpacing int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line+1], this.GetZoom(gc))
+		var lineHeight int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line+1]-this.lineY[line]-this.lineSpacingInPoints, this.GetZoom(gc))
 		var lineHeightWithSpacing int32 = drawYWithLineHeightWithSpacing - drawY
 		var extents bool = false
 		if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && (hasSelection || (flags&LAST_LINE_SELECTION) != 0) {
@@ -824,16 +803,10 @@ func (this *TextLayout) DrawInPixelsGcXInPointsYInPointsSelectionStartSelectionE
 			}
 			drawX += run.width
 		}
-		var baselineInPixels int32 = int32(math.Max(float64(0), float64(func() int32 {
-			_ = []any{this.impl.getDevice_(), this.ascent, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}())))
+		var baselineInPixels int32 = int32(math.Max(float64(0), float64(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.ascent, this.GetZoom(gc)))))
 		var lineUnderlinePos int32 = 0
 		for _, run := range lineRuns {
-			baselineInPixels = int32(math.Max(float64(baselineInPixels), float64(func() int32 {
-				_ = []any{this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)}
-				panic("j2go: unresolved call pointToPixel")
-			}())))
+			baselineInPixels = int32(math.Max(float64(baselineInPixels), float64(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)))))
 			lineUnderlinePos = int32(math.Min(float64(lineUnderlinePos), float64(run.underlinePos)))
 		}
 		var borderClip *win32.RECT = nil
@@ -1209,10 +1182,7 @@ func (this *TextLayout) DrawRunText(gcLike GCLike, hdc int64, runLike TextLayout
 		offset = 0
 	}
 	var x int32 = rect.Left + offset
-	var y int32 = rect.Top + (baselineInPixels - func() int32 {
-		_ = []any{this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)}
-		panic("j2go: unresolved call pointToPixel")
-	}())
+	var y int32 = rect.Top + (baselineInPixels - Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)))
 	var hFont int64 = this.GetItemFont(run, gc)
 	win32.OSSelectObject(hdc, hFont)
 	if fullSelection {
@@ -1229,13 +1199,13 @@ func (this *TextLayout) DrawRunText(gcLike GCLike, hdc int64, runLike TextLayout
 		win32.OSSetTextColor(hdc, selectionColor)
 		this.metricsAdapter.ScriptTextOut(hdc, run.psc, x, y, win32.OSETO_CLIPPED, rect, run.analysis, int64(0), 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets)
 	}
-	var cond572 *win32.RECT
+	var cond6 *win32.RECT
 	if fullSelection || partialSelection {
-		cond572 = rect
+		cond6 = rect
 	} else {
-		cond572 = nil
+		cond6 = nil
 	}
-	return cond572
+	return cond6
 }
 
 func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike TextLayout_StyleItemLike, rect *win32.RECT, gdipFont int64, baselineInPixels int32, color int64, selectionColor int64, selectionStart int32, selectionEnd int32, alpha int32) *win32.RECT {
@@ -1255,10 +1225,7 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	var partialSelection bool = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd)
 	var drawY int32 = rect.Top + baselineInPixels
 	if run.style != (nil) && run.style.Rise != 0 {
-		drawY -= func() int32 {
-			_ = []any{this.impl.getDevice_(), run.style.Rise, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		drawY -= Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.style.Rise, this.GetZoom(gc))
 	}
 	var drawX int32 = rect.Left
 	var brush int64 = color
@@ -1300,13 +1267,13 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	}
 	var advances []int32 = make([]int32, run.glyphCount)
 	var points []float32 = make([]float32, run.glyphCount*2)
-	var cond573 int64
+	var cond7 int64
 	if run.justify != 0 {
-		cond573 = run.justify
+		cond7 = run.justify
 	} else {
-		cond573 = run.advances
+		cond7 = run.advances
 	}
-	win32.CMemmoveOverload15(advances, cond573, int64(run.glyphCount*4))
+	win32.CMemmoveOverload15(advances, cond7, int64(run.glyphCount*4))
 	var glyphX int32 = drawX
 	{
 		var h int32 = 0
@@ -1314,12 +1281,12 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 		for ; h < int32(len(advances)); func() {
 			h++
 		}() {
-			t574 := j
+			t8 := j
 			j++
-			points[t574] = float32(glyphX)
-			t575 := j
+			points[t8] = float32(glyphX)
+			t9 := j
 			j++
-			points[t575] = float32(drawY)
+			points[t9] = float32(drawY)
 			glyphX += advances[h]
 		}
 	}
@@ -1353,13 +1320,13 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	if brush != selectionColor && brush != color {
 		win32.GdipSolidBrush_delete(brush)
 	}
-	var cond576 *win32.RECT
+	var cond10 *win32.RECT
 	if fullSelection || partialSelection {
-		cond576 = rect
+		cond10 = rect
 	} else {
-		cond576 = nil
+		cond10 = nil
 	}
-	return cond576
+	return cond10
 }
 
 func (this *TextLayout) DrawRunTextGDIPRaster(gcLike GCLike, graphics int64, runLike TextLayout_StyleItemLike, rect *win32.RECT, baselineInPixels int32, color int32, selectionColor int32, selectionStart int32, selectionEnd int32) *win32.RECT {
@@ -1462,10 +1429,7 @@ func (this *TextLayout) DrawStrikeout(gcLike GCLike, hdc int64, x int32, baselin
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), style.Rise, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-run.strikeoutPos-riseInPixels, x+run.x+run.width, baselineInPixels-run.strikeoutPos+run.strikeoutThickness-riseInPixels)
 		var brush int64 = win32.OSCreateSolidBrush(color)
 		win32.OSFillRect(hdc, rect, brush)
@@ -1533,10 +1497,7 @@ func (this *TextLayout) DrawStrikeoutGDIP(gcLike GCLike, graphics int64, x int32
 				}
 			}
 		}
-		var riseInPixels int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), style.Rise, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
 		if clipRect != (nil) {
 			var gstate int32 = win32.GdipGraphics_Save(graphics)
 			if clipRect.Left == -1 {
@@ -1614,10 +1575,7 @@ func (this *TextLayout) DrawUnderline(gcLike GCLike, hdc int64, x int32, baselin
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), style.Rise, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-lineUnderlinePos-riseInPixels, x+run.x+run.width, baselineInPixels-lineUnderlinePos+run.underlineThickness-riseInPixels)
 		if clipRect != (nil) {
 			if clipRect.Left == -1 {
@@ -1708,10 +1666,7 @@ func (this *TextLayout) DrawUnderline(gcLike GCLike, hdc int64, x int32, baselin
 				}
 				var pen int64 = win32.OSCreatePen(penStyle, 1, color)
 				var oldPen int64 = win32.OSSelectObject(hdc, pen)
-				var descentInPixels int32 = func() int32 {
-					_ = []any{this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc)}
-					panic("j2go: unresolved call pointToPixel")
-				}()
+				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc))
 				win32.OSSetRect(rect, rect.Left, baselineInPixels+descentInPixels, rect.Right, baselineInPixels+descentInPixels+run.underlineThickness)
 				win32.OSMoveToEx(hdc, rect.Left, rect.Top, int64(0))
 				win32.OSLineTo(hdc, rect.Right, rect.Top)
@@ -1781,10 +1736,7 @@ func (this *TextLayout) DrawUnderlineGDIP(gcLike GCLike, graphics int64, x int32
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = func() int32 {
-			_ = []any{this.impl.getDevice_(), style.Rise, this.GetZoom(gc)}
-			panic("j2go: unresolved call pointToPixel")
-		}()
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-lineUnderlinePos-riseInPixels, x+run.x+run.width, baselineInPixels-lineUnderlinePos+run.underlineThickness-riseInPixels)
 		var gdipRect *win32.Rect = nil
 		if clipRect != (nil) {
@@ -1893,10 +1845,7 @@ func (this *TextLayout) DrawUnderlineGDIP(gcLike GCLike, graphics int64, x int32
 					gstate = win32.GdipGraphics_Save(graphics)
 					win32.GdipGraphics_SetClipGraphicsRectCombineMode(graphics, gdipRect, win32.GdipCombineModeExclude)
 				}
-				var descentInPixels int32 = func() int32 {
-					_ = []any{this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc)}
-					panic("j2go: unresolved call pointToPixel")
-				}()
+				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc))
 				win32.GdipGraphics_DrawLine(graphics, pen, rect.Left, baselineInPixels+descentInPixels, run.width-run.length, baselineInPixels+descentInPixels)
 				if gdipRect != (nil) {
 					win32.GdipGraphics_Restore(graphics, gstate)
@@ -1960,10 +1909,7 @@ func (this *TextLayout) GetBounds() *Rectangle {
 
 func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 	this.CheckLayout()
-	return func() *Rectangle {
-		_ = []any{this.impl.getDevice_(), this.GetBoundsInPixels(start, end), this.GetZoom(nil)}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload8(this.impl.getDevice_(), this.GetBoundsInPixels(start, end), this.GetZoom(nil))
 }
 
 func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
@@ -2018,10 +1964,7 @@ func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
 			var cx int32 = 0
 			if run.style != (nil) && run.style.Metrics != (nil) {
 				var metrics *GlyphMetrics = run.style.Metrics
-				cx = func() int32 {
-					_ = []any{this.impl.getDevice_(), metrics.Width, this.GetZoom0()}
-					panic("j2go: unresolved call pointToPixel")
-				}() * (start - run.start)
+				cx = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (start - run.start)
 			} else {
 				if !run.tab {
 					var iX int32 = this.ScriptCPtoX(start-run.start, false, run)
@@ -2042,10 +1985,7 @@ func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
 			var cx int32 = run.width
 			if run.style != (nil) && run.style.Metrics != (nil) {
 				var metrics *GlyphMetrics = run.style.Metrics
-				cx = func() int32 {
-					_ = []any{this.impl.getDevice_(), metrics.Width, this.GetZoom0()}
-					panic("j2go: unresolved call pointToPixel")
-				}() * (end - run.start + 1)
+				cx = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (end - run.start + 1)
 			} else {
 				if !run.tab {
 					var iX int32 = this.ScriptCPtoX(end-run.start, true, run)
@@ -2110,12 +2050,12 @@ func (this *TextLayout) GetItemFont(itemLike TextLayout_StyleItemLike, gcLike GC
 	}
 	var zoom int32 = this.GetNativeZoom(gc)
 	if item.style != (nil) && item.style.Font != (nil) {
-		return func() int64 { _ = []any{item.style.Font, zoom}; panic("j2go: unresolved call getFontHandle") }()
+		return SWTFontProviderGetFontHandleFontZoom(item.style.Font, zoom)
 	}
 	if this.font != (nil) {
-		return func() int64 { _ = []any{this.font, zoom}; panic("j2go: unresolved call getFontHandle") }()
+		return SWTFontProviderGetFontHandleFontZoom(this.font, zoom)
 	}
-	return func() int64 { _ = []any{this.device, zoom}; panic("j2go: unresolved call getSystemFontHandle") }()
+	return SWTFontProviderGetSystemFontHandle(this.device, zoom)
 }
 
 func (this *TextLayout) GetLevel(offset int32) int32 {
@@ -2131,21 +2071,18 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 			return int32(this.allRuns[i-1].analysis.S.UBidiLevel)
 		}
 	}
-	var cond577 int32
+	var cond11 int32
 	if (this.ResolveTextDirection() & RIGHT_TO_LEFT) != 0 {
-		cond577 = 1
+		cond11 = 1
 	} else {
-		cond577 = 0
+		cond11 = 0
 	}
-	return cond577
+	return cond11
 }
 
 func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
 	this.CheckLayout()
-	return func() *Rectangle {
-		_ = []any{this.impl.getDevice_(), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload8(this.impl.getDevice_(), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0())
 }
 
 func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32) *Rectangle {
@@ -2154,15 +2091,9 @@ func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32) *Rectangle {
 		Error(ERROR_INVALID_RANGE)
 	}
 	var x int32 = this.GetLineIndentInPixel(lineIndex)
-	var y int32 = func() int32 {
-		_ = []any{this.impl.getDevice_(), this.lineY[lineIndex], this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var y int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[lineIndex], this.GetZoom0())
 	var width int32 = this.lineWidthInPixels[lineIndex]
-	var height int32 = func() int32 {
-		_ = []any{this.impl.getDevice_(), this.lineY[lineIndex+1] - this.lineY[lineIndex] - this.lineSpacingInPoints, this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var height int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[lineIndex+1]-this.lineY[lineIndex]-this.lineSpacingInPoints, this.GetZoom0())
 	return NewRectangle(x, y, width, height)
 }
 
@@ -2238,26 +2169,17 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 	var zoom int32 = this.GetZoom0()
 	var availableFont int64
 	if this.font != (nil) {
-		availableFont = func() int64 { _ = []any{this.font, this.nativeZoom}; panic("j2go: unresolved call getFontHandle") }()
+		availableFont = SWTFontProviderGetFontHandleFontZoom(this.font, this.nativeZoom)
 	} else {
-		availableFont = func() int64 {
-			_ = []any{this.device, this.nativeZoom}
-			panic("j2go: unresolved call getSystemFontHandle")
-		}()
+		availableFont = SWTFontProviderGetSystemFontHandle(this.device, this.nativeZoom)
 	}
 	win32.OSSelectObject(srcHdc, availableFont)
 	this.metricsAdapter.GetTextMetrics(srcHdc, lptm)
 	win32.OSDeleteDC(srcHdc)
 	this.device.impl.internal_dispose_GC_(hDC, nil)
-	var ascentInPoints int32 = int32(math.Max(float64(func() int32 { _ = []any{this.device, lptm.TmAscent, zoom}; panic("j2go: unresolved call pixelToPoint") }()), float64(this.ascent)))
-	var descentInPoints int32 = int32(math.Max(float64(func() int32 {
-		_ = []any{this.device, lptm.TmDescent, zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()), float64(this.descent)))
-	var leadingInPoints int32 = func() int32 {
-		_ = []any{this.device, lptm.TmInternalLeading, zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	var ascentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmAscent, zoom)), float64(this.ascent)))
+	var descentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmDescent, zoom)), float64(this.descent)))
+	var leadingInPoints int32 = Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmInternalLeading, zoom)
 	if jrt.StringLength(this.text) != 0 {
 		for _, run := range this.runs[lineIndex] {
 			if run.ascentInPoints > ascentInPoints {
@@ -2267,22 +2189,10 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 			descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
 		}
 	}
-	lptm.TmAscent = func() int32 {
-		_ = []any{this.device, ascentInPoints, zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
-	lptm.TmDescent = func() int32 {
-		_ = []any{this.device, descentInPoints, zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
-	lptm.TmHeight = func() int32 {
-		_ = []any{this.device, ascentInPoints + descentInPoints, zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
-	lptm.TmInternalLeading = func() int32 {
-		_ = []any{this.device, leadingInPoints, zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	lptm.TmAscent = Win32DPIUtilsPointToPixelOverload3(this.device, ascentInPoints, zoom)
+	lptm.TmDescent = Win32DPIUtilsPointToPixelOverload3(this.device, descentInPoints, zoom)
+	lptm.TmHeight = Win32DPIUtilsPointToPixelOverload3(this.device, ascentInPoints+descentInPoints, zoom)
+	lptm.TmInternalLeading = Win32DPIUtilsPointToPixelOverload3(this.device, leadingInPoints, zoom)
 	lptm.TmAveCharWidth = 0
 	return FontMetricsWin32_new(lptm, this.nativeZoom)
 }
@@ -2299,10 +2209,7 @@ func (this *TextLayout) GetLineOffsets() []int32 {
 
 func (this *TextLayout) GetLocation(offset int32, trailing bool) *Point {
 	this.CheckLayout()
-	return func() *Point {
-		_ = []any{this.impl.getDevice_(), this.GetLocationInPixels(offset, trailing), this.GetZoom0()}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocation(this.impl.getDevice_(), this.GetLocationInPixels(offset, trailing), this.GetZoom0())
 }
 
 func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point {
@@ -2321,10 +2228,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 	}
 	line = int32(math.Min(float64(line), float64(int32(len(this.runs))-1)))
 	if offset == length {
-		return NewPoint(this.GetLineIndentInPixel(line)+this.lineWidthInPixels[line], func() int32 {
-			_ = []any{this.impl.getDevice_(), this.lineY[line], this.GetZoom0()}
-			panic("j2go: unresolved call pointToPixel")
-		}())
+		return NewPoint(this.GetLineIndentInPixel(line)+this.lineWidthInPixels[line], Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line], this.GetZoom0()))
 	}
 	var ch uint16 = utf16.Encode([]rune(this.segmentsText))[offset]
 	if trailing {
@@ -2360,16 +2264,13 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 				var width int32
 				if run.style != (nil) && run.style.Metrics != (nil) {
 					var metrics *GlyphMetrics = run.style.Metrics
-					var cond578 int32
+					var cond12 int32
 					if trailing {
-						cond578 = 1
+						cond12 = 1
 					} else {
-						cond578 = 0
+						cond12 = 0
 					}
-					width = func() int32 {
-						_ = []any{this.impl.getDevice_(), metrics.Width, this.GetZoom0()}
-						panic("j2go: unresolved call pointToPixel")
-					}() * (offset - run.start + (cond578))
+					width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (offset - run.start + (cond12))
 				} else {
 					if run.tab {
 						if trailing || (offset == length) {
@@ -2387,10 +2288,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 						}
 					}
 				}
-				return NewPoint(run.x+width, func() int32 {
-					_ = []any{this.impl.getDevice_(), this.lineY[line], this.GetZoom0()}
-					panic("j2go: unresolved call pointToPixel")
-				}()+this.GetScaledVerticalIndent())
+				return NewPoint(run.x+width, Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line], this.GetZoom0())+this.GetScaledVerticalIndent())
 			}
 		}
 	}
@@ -2537,13 +2435,13 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 			break
 		}
 	}
-	var cond579 int32
+	var cond13 int32
 	if forward {
-		cond579 = jrt.StringLength(this.text)
+		cond13 = jrt.StringLength(this.text)
 	} else {
-		cond579 = 0
+		cond13 = 0
 	}
-	return cond579
+	return cond13
 }
 
 func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
@@ -2556,10 +2454,7 @@ func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
 	if point == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.GetOffsetInPixels(func() *Point {
-		_ = []any{this.impl.getDevice_(), point, this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}(), trailing)
+	return this.GetOffsetInPixels(Win32DPIUtilsPointToPixelAsLocation(this.impl.getDevice_(), point, this.GetZoom0()), trailing)
 }
 
 func (this *TextLayout) GetOffsetInPixels(pointLike PointLike, trailing []int32) int32 {
@@ -2573,13 +2468,7 @@ func (this *TextLayout) GetOffsetInPixels(pointLike PointLike, trailing []int32)
 
 func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) int32 {
 	this.CheckLayout()
-	return this.GetOffsetInPixelsXYTrailing(func() int32 {
-		_ = []any{this.impl.getDevice_(), x, this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixel")
-	}(), func() int32 {
-		_ = []any{this.impl.getDevice_(), y, this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixel")
-	}(), trailing)
+	return this.GetOffsetInPixelsXYTrailing(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), x, this.GetZoom0()), Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), y, this.GetZoom0()), trailing)
 }
 
 func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing []int32) int32 {
@@ -2590,10 +2479,7 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 	var line int32
 	var lineCount int32 = int32(len(this.runs))
 	for line = 0; line < lineCount; line++ {
-		if func() int32 {
-			_ = []any{this.impl.getDevice_(), this.lineY[line+1], this.GetZoom0()}
-			panic("j2go: unresolved call pointToPixel")
-		}() > y {
+		if Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line+1], this.GetZoom0()) > y {
 			break
 		}
 	}
@@ -2624,10 +2510,7 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 				if run.style != (nil) && run.style.Metrics != (nil) {
 					var metrics *GlyphMetrics = run.style.Metrics
 					if metrics.Width > 0 {
-						var metricsWidthInPixels int32 = func() int32 {
-							_ = []any{this.impl.getDevice_(), metrics.Width, this.GetZoom0()}
-							panic("j2go: unresolved call pointToPixel")
-						}()
+						var metricsWidthInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0())
 						if trailing != (nil) {
 							if xRun%metricsWidthInPixels < metricsWidthInPixels/2 {
 								trailing[0] = 0
@@ -2755,12 +2638,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t580 := count
+			t14 := count
 			count++
-			result[t580] = this.styles[i].start
-			t581 := count
+			result[t14] = this.styles[i].start
+			t15 := count
 			count++
-			result[t581] = this.styles[i+1].start - 1
+			result[t15] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -2822,14 +2705,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t582 := segmentCount
+			t16 := segmentCount
 			segmentCount++
-			newChars[charCount+t582] = separator
+			newChars[charCount+t16] = separator
 		} else {
-			idx584 := charCount + segmentCount
-			t583 := charCount
+			idx18 := charCount + segmentCount
+			t17 := charCount
 			charCount++
-			newChars[idx584] = oldChars[t583]
+			newChars[idx18] = oldChars[t17]
 		}
 	}
 	for segmentCount < nSegments {
@@ -2840,9 +2723,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t585 := segmentCount
+		t19 := segmentCount
 		segmentCount++
-		newChars[charCount+t585] = separator
+		newChars[charCount+t19] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -2861,10 +2744,7 @@ func (this *TextLayout) GetScaledVerticalIndent() int32 {
 	if this.verticalIndentInPoints == 0 {
 		return this.verticalIndentInPoints
 	}
-	return func() int32 {
-		_ = []any{this.impl.getDevice_(), this.verticalIndentInPoints, this.GetZoom0()}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	return Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.verticalIndentInPoints, this.GetZoom0())
 }
 
 func (this *TextLayout) GetStyle(offset int32) *TextStyle {
@@ -2887,9 +2767,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t586 := count
+			t20 := count
 			count++
-			result[t586] = this.styles[i].style
+			result[t20] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -2967,11 +2847,11 @@ func (this *TextLayout) Itemize() []*TextLayout_StyleItem {
 						continue
 					}
 				}
-				abs587 := latestNeutralIndex - latestUnicodeIndex
-				if abs587 < 0 {
-					abs587 = -abs587
+				abs21 := latestNeutralIndex - latestUnicodeIndex
+				if abs21 < 0 {
+					abs21 = -abs21
 				}
-				if abs587 == 1 {
+				if abs21 == 1 {
 					chars[latestNeutralIndex] = 'A'
 				}
 			}
@@ -3001,9 +2881,9 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 	var merge bool = itemCount > TextLayoutTOO_MANY_RUNS
 	var sp *win32.SCRIPT_PROPERTIES = win32.NewSCRIPT_PROPERTIES()
 	for start < end {
-		inner588 := newTextLayoutStyleItem()
-		inner588.this_0 = this
-		var item *TextLayout_StyleItem = inner588
+		inner22 := newTextLayoutStyleItem()
+		inner22.this_0 = this
+		var item *TextLayout_StyleItem = inner22
 		item.start = start
 		item.style = this.styles[styleIndex].style
 		runs.Add(item)
@@ -3089,9 +2969,9 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 		}
 		item.length = start - item.start
 	}
-	inner589 := newTextLayoutStyleItem()
-	inner589.this_0 = this
-	var item *TextLayout_StyleItem = inner589
+	inner23 := newTextLayoutStyleItem()
+	inner23.this_0 = this
+	var item *TextLayout_StyleItem = inner23
 	item.start = end
 	win32.OSMoveMemoryOverload81(scriptItem, items+int64(itemCount*win32.SCRIPT_ITEMSizeof), win32.SCRIPT_ITEMSizeof)
 	item.analysis = scriptItem.A
@@ -3130,13 +3010,13 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 }
 
 func (this *TextLayout) ResolveTextDirection() int32 {
-	var cond590 int32
+	var cond24 int32
 	if this.textDirection == AUTO_TEXT_DIRECTION {
-		cond590 = BidiUtilResolveTextDirection(this.text)
+		cond24 = BidiUtilResolveTextDirection(this.text)
 	} else {
-		cond590 = this.textDirection
+		cond24 = this.textDirection
 	}
-	return cond590
+	return cond24
 }
 
 func (this *TextLayout) Reorder(runs []*TextLayout_StyleItem, terminate bool) []*TextLayout_StyleItem {
@@ -3420,15 +3300,15 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 				this.styles = newStyles
 			}
 			copy(this.styles[modifyEnd+3:], this.styles[modifyEnd+1:modifyEnd+1+this.stylesCount-modifyEnd-1])
-			inner591 := newTextLayoutStyleItem()
-			inner591.this_0 = this
-			var item *TextLayout_StyleItem = inner591
+			inner25 := newTextLayoutStyleItem()
+			inner25.this_0 = this
+			var item *TextLayout_StyleItem = inner25
 			item.start = start
 			item.style = style
 			this.styles[modifyStart+1] = item
-			inner592 := newTextLayoutStyleItem()
-			inner592.this_0 = this
-			item = inner592
+			inner26 := newTextLayoutStyleItem()
+			inner26.this_0 = this
+			item = inner26
 			item.start = end + 1
 			item.style = this.styles[modifyStart].style
 			this.styles[modifyStart+2] = item
@@ -3450,9 +3330,9 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 		this.styles = newStyles
 	}
 	copy(this.styles[modifyStart+2:], this.styles[modifyEnd:modifyEnd+this.stylesCount-modifyEnd])
-	inner593 := newTextLayoutStyleItem()
-	inner593.this_0 = this
-	var item *TextLayout_StyleItem = inner593
+	inner27 := newTextLayoutStyleItem()
+	inner27.this_0 = this
+	var item *TextLayout_StyleItem = inner27
 	item.start = start
 	item.style = style
 	this.styles[modifyStart+1] = item
@@ -3483,12 +3363,12 @@ func (this *TextLayout) SetText(text string) {
 	this.FreeRuns()
 	this.text = text
 	this.styles = make([]*TextLayout_StyleItem, 2)
-	inner594 := newTextLayoutStyleItem()
-	inner594.this_0 = this
-	this.styles[0] = inner594
-	inner595 := newTextLayoutStyleItem()
-	inner595.this_0 = this
-	this.styles[1] = inner595
+	inner28 := newTextLayoutStyleItem()
+	inner28.this_0 = this
+	this.styles[0] = inner28
+	inner29 := newTextLayoutStyleItem()
+	inner29.this_0 = this
+	this.styles[1] = inner29
 	this.styles[1].start = jrt.StringLength(text)
 	this.stylesCount = 2
 }
@@ -3664,9 +3544,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		for i := int32(0); i < int32(len(chars)); i++ {
 			win32.OSMoveMemoryOverload82(logAttr, run.psla+int64((i*win32.SCRIPT_LOGATTRSizeof)), win32.SCRIPT_LOGATTRSizeof)
 			if !logAttr.FWhiteSpace {
-				t596 := count
+				t30 := count
 				count++
-				sampleChars[t596] = chars[i]
+				sampleChars[t30] = chars[i]
 				if count == int32(len(sampleChars)) {
 					break
 				}
@@ -3723,18 +3603,18 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		}
 		if newFont != 0 {
 			win32.OSSelectObject(hdc, newFont)
-			cond597 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-			shapeSucceed = cond597
-			if cond597 {
+			cond31 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+			shapeSucceed = cond31
+			if cond31 {
 				run.fallbackFont = newFont
 			}
 		}
 		if !shapeSucceed {
 			if !sp.FComplex {
 				run.analysis.FNoGlyphIndex = true
-				cond598 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-				shapeSucceed = cond598
-				if cond598 {
+				cond32 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+				shapeSucceed = cond32
+				if cond32 {
 					run.fallbackFont = newFont
 				} else {
 					run.analysis.FNoGlyphIndex = false
@@ -3753,9 +3633,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 					this.mLangFontLink2.ReleaseFont(hNewFont[0])
 					var mLangFont int64 = win32.OSCreateFontIndirectLplf(logFont)
 					var oldFont int64 = win32.OSSelectObject(hdc, mLangFont)
-					cond599 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-					shapeSucceed = cond599
-					if cond599 {
+					cond33 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+					shapeSucceed = cond33
+					if cond33 {
 						run.fallbackFont = mLangFont
 					} else {
 						win32.OSSelectObject(hdc, oldFont)
@@ -3797,10 +3677,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		}
 		if style.Metrics != (nil) {
 			var metrics *GlyphMetrics = style.Metrics
-			run.width = func() int32 {
-				_ = []any{this.impl.getDevice_(), metrics.Width, this.GetZoom0()}
-				panic("j2go: unresolved call pointToPixel")
-			}() * int32(math.Max(float64(1), float64(run.glyphCount)))
+			run.width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * int32(math.Max(float64(1), float64(run.glyphCount)))
 			run.ascentInPoints = metrics.Ascent
 			run.descentInPoints = metrics.Descent
 			run.leadingInPoints = 0
@@ -3812,18 +3689,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 				lptm = win32.NewTEXTMETRIC()
 				this.metricsAdapter.GetTextMetrics(hdc, lptm)
 			}
-			run.ascentInPoints = func() int32 {
-				_ = []any{this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc)}
-				panic("j2go: unresolved call pixelToPoint")
-			}()
-			run.descentInPoints = func() int32 {
-				_ = []any{this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc)}
-				panic("j2go: unresolved call pixelToPoint")
-			}()
-			run.leadingInPoints = func() int32 {
-				_ = []any{this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc)}
-				panic("j2go: unresolved call pixelToPoint")
-			}()
+			run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
+			run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
+			run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc))
 		}
 		if lotm != (nil) {
 			run.underlinePos = lotm.OtmsUnderscorePosition
@@ -3833,10 +3701,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		} else {
 			run.underlinePos = 1
 			run.underlineThickness = 1
-			run.strikeoutPos = func() int32 {
-				_ = []any{this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)}
-				panic("j2go: unresolved call pointToPixel")
-			}() / 2
+			run.strikeoutPos = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)) / 2
 			run.strikeoutThickness = 1
 		}
 		run.ascentInPoints += style.Rise
@@ -3844,18 +3709,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 	} else {
 		var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 		this.metricsAdapter.GetTextMetrics(hdc, lptm)
-		run.ascentInPoints = func() int32 {
-			_ = []any{this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc)}
-			panic("j2go: unresolved call pixelToPoint")
-		}()
-		run.descentInPoints = func() int32 {
-			_ = []any{this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc)}
-			panic("j2go: unresolved call pixelToPoint")
-		}()
-		run.leadingInPoints = func() int32 {
-			_ = []any{this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc)}
-			panic("j2go: unresolved call pixelToPoint")
-		}()
+		run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
+		run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
+		run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc))
 	}
 }
 

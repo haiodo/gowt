@@ -43,7 +43,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMUPDOWNSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMUPDOWNSizeof:", r)
 			}
 		}()
 		NMUPDOWNSizeof = OSNMUPDOWN_sizeof()

@@ -22,11 +22,11 @@ func (this *ICoreWebView2MoveFocusRequestedEventArgs) Get_Reason(value []int32) 
 }
 
 func (this *ICoreWebView2MoveFocusRequestedEventArgs) Put_Handled(value bool) int32 {
-	var cond8 int32
+	var cond1 int32
 	if value {
-		cond8 = 1
+		cond1 = 1
 	} else {
-		cond8 = 0
+		cond1 = 0
 	}
-	return COMVtblCallOverload1(5, this.address, cond8)
+	return COMVtblCallOverload1(5, this.address, cond1)
 }

@@ -36,7 +36,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init FLICK_DATASizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init FLICK_DATASizeof:", r)
 			}
 		}()
 		FLICK_DATASizeof = OSFLICK_DATA_sizeof()

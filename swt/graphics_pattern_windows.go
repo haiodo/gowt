@@ -141,17 +141,17 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 
 func (this *Pattern) GetPatternHandle(zoom int32) *Pattern_PatternHandle {
 	return jrt.Cast[*Pattern_PatternHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) *Pattern_PatternHandle {
-		var cond404 *Pattern_PatternHandle
-		inner405 := newPatternImagePatternHandle(jrt.Cast[int32](z))
-		inner405.this_0 = this
-		inner406 := newPatternBasePatternHandle(jrt.Cast[int32](z))
-		inner406.this_0 = this
+		var cond1 *Pattern_PatternHandle
+		inner2 := newPatternImagePatternHandle(jrt.Cast[int32](z))
+		inner2.this_0 = this
+		inner3 := newPatternBasePatternHandle(jrt.Cast[int32](z))
+		inner3.this_0 = this
 		if this.image != (nil) {
-			cond404 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(inner405)
+			cond1 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(inner2)
 		} else {
-			cond404 = upcastPattern_BasePatternHandleToPattern_PatternHandle(inner406)
+			cond1 = upcastPattern_BasePatternHandleToPattern_PatternHandle(inner3)
 		}
-		return cond404
+		return cond1
 	}))
 }
 
@@ -230,10 +230,10 @@ func (this *Pattern_BasePatternHandle) initPatternBasePatternHandle(zoom int32) 
 
 func (this *Pattern_BasePatternHandle) createHandle_(zoom int32) int64 {
 	var handle int64
-	var x1 float32 = func() float32 { _ = []any{this.this_0.baseX1, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var y1 float32 = func() float32 { _ = []any{this.this_0.baseY1, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var x2 float32 = func() float32 { _ = []any{this.this_0.baseX2, zoom}; panic("j2go: unresolved call pointToPixel") }()
-	var y2 float32 = func() float32 { _ = []any{this.this_0.baseY2, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var x1 float32 = Win32DPIUtilsPointToPixelOverload4(this.this_0.baseX1, zoom)
+	var y1 float32 = Win32DPIUtilsPointToPixelOverload4(this.this_0.baseY1, zoom)
+	var x2 float32 = Win32DPIUtilsPointToPixelOverload4(this.this_0.baseX2, zoom)
+	var y2 float32 = Win32DPIUtilsPointToPixelOverload4(this.this_0.baseY2, zoom)
 	if this.this_0.color1.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
@@ -276,7 +276,7 @@ func (this *Pattern_BasePatternHandle) createHandle_(zoom int32) int64 {
 type Pattern_ImagePatternHandle struct {
 	Pattern_PatternHandle
 	this_0    *Pattern
-	gdipImage unsupported_type_org_eclipse_swt_graphics_Image_GdipImage
+	gdipImage *Image_GdipImage
 }
 
 func init() { jrt.RegisterClassPackage("Pattern_ImagePatternHandle", "org.eclipse.swt.graphics") }
@@ -302,7 +302,7 @@ func (this *Pattern_ImagePatternHandle) initPatternImagePatternHandle(zoom int32
 
 func (this *Pattern_ImagePatternHandle) createHandle_(zoom int32) int64 {
 	this.gdipImage = this.this_0.image.CreateGdipImage(int32(zoom))
-	var img int64 = func() int64 { _ = []any{this.gdipImage}; panic("j2go: unresolved call bitmap") }()
+	var img int64 = this.gdipImage.Bitmap()
 	var width int32 = win32.GdipImage_GetWidth(img)
 	var height int32 = win32.GdipImage_GetHeight(img)
 	var handle int64 = win32.GdipTextureBrush_new(img, win32.GdipWrapModeTile, float32(0), float32(0), float32(width), float32(height))
@@ -322,9 +322,9 @@ func (this *Pattern_ImagePatternHandle) CleanupBitmap() {
 	if this.gdipImage == (nil) {
 		return
 	}
-	var tempGdipImage unsupported_type_org_eclipse_swt_graphics_Image_GdipImage = this.gdipImage
+	var tempGdipImage *Image_GdipImage = this.gdipImage
 	this.gdipImage = nil
-	func() any { _ = []any{tempGdipImage}; panic("j2go: unresolved call destroy") }()
+	tempGdipImage.Destroy()
 }
 
 type Pattern_PatternHandleImpl interface {

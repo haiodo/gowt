@@ -48,7 +48,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init LICINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init LICINFOSizeof:", r)
 			}
 		}()
 		LICINFOSizeof = COMLICINFO_sizeof()

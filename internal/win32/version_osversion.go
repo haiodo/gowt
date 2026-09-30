@@ -71,7 +71,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OsVersionWIN32_BUILD:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OsVersionWIN32_BUILD:", r)
 			}
 		}()
 		OsVersionWIN32_BUILD = OsVersionGetCurrentOsVersion()
@@ -79,7 +79,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init OsVersion static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OsVersion static{}:", r)
 			}
 		}()
 		LibraryLoadLibrary("swt-osversion")

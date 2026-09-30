@@ -107,7 +107,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init TYPEATTRSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init TYPEATTRSizeof:", r)
 			}
 		}()
 		TYPEATTRSizeof = COMTYPEATTR_sizeof()

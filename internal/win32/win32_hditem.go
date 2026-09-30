@@ -62,7 +62,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init HDITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init HDITEMSizeof:", r)
 			}
 		}()
 		HDITEMSizeof = OSHDITEM_sizeof()

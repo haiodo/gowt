@@ -52,7 +52,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init COMPOSITIONFORMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init COMPOSITIONFORMSizeof:", r)
 			}
 		}()
 		COMPOSITIONFORMSizeof = OSCOMPOSITIONFORM_sizeof()

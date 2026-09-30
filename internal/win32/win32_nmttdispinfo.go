@@ -57,7 +57,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMTTDISPINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMTTDISPINFOSizeof:", r)
 			}
 		}()
 		NMTTDISPINFOSizeof = OSNMTTDISPINFO_sizeof()

@@ -69,10 +69,7 @@ func (this *Link) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 
 func (this *Link) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var width int32
 	var height int32
 	if len(this.text) == 0 {
@@ -121,12 +118,12 @@ func (this *Link) createWidget_() {
 	this.text = ""
 	this.ids = make([]string, 0)
 	this.mnemonics = make([]uint16, 0)
-	anon728 := &LinkAnon1{}
-	anon728.initAccessibleAdapter()
-	anon728.fnGetName = func(e *AccessibleEvent) {
+	anon1 := &LinkAnon1{}
+	anon1.initAccessibleAdapter()
+	anon1.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.text
 	}
-	this.GetAccessible().AddAccessibleListener(anon728)
+	this.GetAccessible().AddAccessibleListener(anon1)
 }
 
 func (this *Link) enableWidget_(enabled bool) {
@@ -568,7 +565,7 @@ func (this *Link) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *
 		win32.OSMoveMemoryOverload61(item, lParam, win32.NMLINKSizeof)
 		var event *Event = NewEvent()
 		event.Text = this.ids[item.ILink]
-		this.SendSelectionEventTypeEventSend(Selection, event, true)
+		this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		break
 	case win32.OSNM_CUSTOMDRAW:
 		var nmcd *win32.NMCUSTOMDRAW = win32.NewNMCUSTOMDRAW()
@@ -608,7 +605,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Link static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Link static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

@@ -59,10 +59,7 @@ func (this *Slider) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam 
 
 func (this *Slider) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var border int32 = this.impl.getBorderWidthInPixels_()
 	var width int32 = border * 2
 	var height int32 = border * 2
@@ -84,7 +81,7 @@ func (this *Slider) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 
 func (this *Slider) createHandle_() {
 	this.Control.createHandle_()
-	this.impl.maybeEnableDarkSystemTheme_()
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 }
 
 func (this *Slider) createWidget_() {
@@ -468,7 +465,7 @@ func (this *Slider) wmScrollChild_(wParam int64, lParam int64) *win32.LRESULT {
 		break
 	}
 	win32.OSSetScrollInfo(this.Handle, win32.OSSB_CTL, info, true)
-	this.SendSelectionEventTypeEventSend(Selection, event, true)
+	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	return nil
 }
 
@@ -480,7 +477,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Slider static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Slider static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

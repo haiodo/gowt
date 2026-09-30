@@ -46,7 +46,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NMTBHOTITEMSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NMTBHOTITEMSizeof:", r)
 			}
 		}()
 		NMTBHOTITEMSizeof = OSNMTBHOTITEM_sizeof()

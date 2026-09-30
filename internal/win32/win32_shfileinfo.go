@@ -58,7 +58,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SHFILEINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SHFILEINFOSizeof:", r)
 			}
 		}()
 		SHFILEINFOSizeof = OSSHFILEINFO_sizeof()

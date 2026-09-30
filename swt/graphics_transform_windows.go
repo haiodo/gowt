@@ -72,10 +72,7 @@ func (this *Transform) initTransformDeviceM11M12M21M22DxDy(device *Device, m11 f
 	this.zoomToHandle = jrt.NewMap()
 	this.operations = jrt.NewList()
 	this.device.CheckGDIP()
-	this.StoreAndApplyOperationForAllHandles(func() any {
-		_ = []any{this.impl.getDevice_(), m11, m12, m21, m22, dx, dy}
-		panic("j2go: unresolved new SetElementsOperation")
-	}())
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), m11, m12, m21, m22, dx, dy))
 	this.impl.init_()
 	this.device.RegisterResourceWithZoomSupport(upcastTransformToResource(this))
 }
@@ -92,7 +89,7 @@ func (this *Transform) destroyHandlesExcept_(zoomLevels *jrt.List) {
 
 func (this *Transform) DestroyAllHandles() {
 	func() any {
-		_ = []any{this.zoomToHandle.Values(), func() func(any) { panic("j2go: unsupported ExpressionMethodReference") }()}
+		_ = []any{this.zoomToHandle.Values(), (*Transform_TransformHandle).Destroy}
 		panic("j2go: unresolved call forEach")
 	}()
 	this.zoomToHandle.Clear()
@@ -109,12 +106,12 @@ func (this *Transform) GetElements(elements []float32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	func() bool {
-		_ = []any{func(transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle) bool {
+		_ = []any{func(transformHandle *Transform_TransformHandle) bool {
 			win32.GdipMatrix_GetElements(transformHandle.handle, elements)
 			var drawable Drawable = this.impl.getDevice_()
 			var zoom int32 = transformHandle.zoom
-			elements[4] = func() float32 { _ = []any{drawable, elements[4], zoom}; panic("j2go: unresolved call pixelToPoint") }()
-			elements[5] = func() float32 { _ = []any{drawable, elements[5], zoom}; panic("j2go: unresolved call pixelToPoint") }()
+			elements[4] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[4], zoom)
+			elements[5] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[5], zoom)
 			return true
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
@@ -126,17 +123,14 @@ func (this *Transform) Identity() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	this.operations.Clear()
-	this.StoreAndApplyOperationForAllHandles(func() any {
-		_ = []any{this.impl.getDevice_(), float32(1), float32(0), float32(0), float32(1), float32(0), float32(0)}
-		panic("j2go: unresolved new SetElementsOperation")
-	}())
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), float32(1), float32(0), float32(0), float32(1), float32(0), float32(0)))
 }
 
 func (this *Transform) Invert() {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(func() any { panic("j2go: unresolved new InvertOperation") }())
+	this.StoreAndApplyOperationForAllHandles(newTransformInvertOperation())
 }
 
 func (this *Transform) isDisposed_() bool {
@@ -148,7 +142,7 @@ func (this *Transform) IsIdentity() bool {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return func() bool {
-		_ = []any{func(transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle) bool {
+		_ = []any{func(transformHandle *Transform_TransformHandle) bool {
 			return win32.GdipMatrix_IsIdentity(transformHandle.handle)
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
@@ -177,14 +171,14 @@ func (this *Transform) Rotate(angle float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(func() any { _ = []any{angle}; panic("j2go: unresolved new RotateOperation") }())
+	this.StoreAndApplyOperationForAllHandles(newTransformRotateOperation(angle))
 }
 
 func (this *Transform) Scale(scaleX float32, scaleY float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(func() any { _ = []any{scaleX, scaleY}; panic("j2go: unresolved new ScaleOperation") }())
+	this.StoreAndApplyOperationForAllHandles(newTransformScaleOperation(scaleX, scaleY))
 }
 
 func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 float32, dx float32, dy float32) {
@@ -192,17 +186,14 @@ func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 fl
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	this.operations.Clear()
-	this.StoreAndApplyOperationForAllHandles(func() any {
-		_ = []any{this.impl.getDevice_(), m11, m12, m21, m22, dx, dy}
-		panic("j2go: unresolved new SetElementsOperation")
-	}())
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), m11, m12, m21, m22, dx, dy))
 }
 
 func (this *Transform) Shear(shearX float32, shearY float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(func() any { _ = []any{shearX, shearY}; panic("j2go: unresolved new ShearOperation") }())
+	this.StoreAndApplyOperationForAllHandles(newTransformShearOperation(shearX, shearY))
 }
 
 func (this *Transform) TransformFn(pointArray []float32) {
@@ -214,20 +205,14 @@ func (this *Transform) TransformFn(pointArray []float32) {
 	}
 	var drawable Drawable = this.impl.getDevice_()
 	func() []float32 {
-		_ = []any{func(transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle) []float32 {
+		_ = []any{func(transformHandle *Transform_TransformHandle) []float32 {
 			var length int32 = int32(len(pointArray))
 			for i := int32(0); i < length; i++ {
-				pointArray[i] = func() float32 {
-					_ = []any{drawable, pointArray[i], transformHandle.zoom}
-					panic("j2go: unresolved call pointToPixel")
-				}()
+				pointArray[i] = Win32DPIUtilsPointToPixelOverload5(drawable, pointArray[i], transformHandle.zoom)
 			}
 			win32.GdipMatrix_TransformPointsMatrixPtsCount(transformHandle.handle, pointArray, length/2)
 			for i := int32(0); i < length; i++ {
-				pointArray[i] = func() float32 {
-					_ = []any{drawable, pointArray[i], transformHandle.zoom}
-					panic("j2go: unresolved call pixelToPoint")
-				}()
+				pointArray[i] = Win32DPIUtilsPixelToPointOverload3(drawable, pointArray[i], transformHandle.zoom)
 			}
 			return pointArray
 		}}
@@ -239,15 +224,12 @@ func (this *Transform) Translate(offsetX float32, offsetY float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(func() any {
-		_ = []any{this.impl.getDevice_(), offsetX, offsetY}
-		panic("j2go: unresolved new TranslateOperation")
-	}())
+	this.StoreAndApplyOperationForAllHandles(newTransformTranslateOperation(this.impl.getDevice_(), offsetX, offsetY))
 }
 
 func (this *Transform) StoreAndApplyOperationForAllHandles(operation Transform_Operation) {
 	this.operations.Add(operation)
-	this.zoomToHandle.ForEach(func(zoom any, handle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle) {
+	this.zoomToHandle.ForEach(func(zoom any, handle *Transform_TransformHandle) {
 		operation.Apply(handle)
 	})
 }
@@ -261,21 +243,21 @@ func (this *Transform) String() string {
 	return fmt.Sprintf("Transform {%v,%v,%v,%v,%v,%v}", elements[0], elements[1], elements[2], elements[3], elements[4], elements[5])
 }
 
-func (this *Transform) NewTransformHandle(zoom int32) unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle {
+func (this *Transform) NewTransformHandle(zoom int32) *Transform_TransformHandle {
 	var newHandle int64 = win32.GdipMatrix_new(float32(0), float32(0), float32(0), float32(0), float32(0), float32(0))
 	if newHandle == 0 {
 		Error(ERROR_NO_HANDLES)
 	}
-	var transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle = func() any { _ = []any{newHandle, zoom}; panic("j2go: unresolved new TransformHandle") }()
-	for _, elem407 := range this.operations.ToArray() {
-		operation := jrt.Cast[Transform_Operation](elem407)
+	var transformHandle *Transform_TransformHandle = newTransformTransformHandle(newHandle, zoom)
+	for _, elem1 := range this.operations.ToArray() {
+		operation := jrt.Cast[Transform_Operation](elem1)
 		operation.Apply(transformHandle)
 	}
 	return transformHandle
 }
 
-func (this *Transform) GetTransformHandle(zoom int32) unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle {
-	return jrt.Cast[unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), this.NewTransformHandle))
+func (this *Transform) GetTransformHandle(zoom int32) *Transform_TransformHandle {
+	return jrt.Cast[*Transform_TransformHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), this.NewTransformHandle))
 }
 
 func (this *Transform) GetHandle(zoom int32) int64 {
@@ -290,6 +272,72 @@ func TransformCheckTransform(elements []float32) []float32 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	return elements
+}
+
+type Transform_TransformHandle struct {
+	handle int64
+	zoom   int32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_TransformHandle", "org.eclipse.swt.graphics") }
+
+func (this *Transform_TransformHandle) AsTransform_TransformHandle() *Transform_TransformHandle {
+	return this
+}
+
+type Transform_TransformHandleLike interface {
+	AsTransform_TransformHandle() *Transform_TransformHandle
+}
+
+func newTransformTransformHandle(handle int64, zoom int32) *Transform_TransformHandle {
+	this := &Transform_TransformHandle{}
+	this.initTransformTransformHandle(handle, zoom)
+	return this
+}
+
+func (this *Transform_TransformHandle) initTransformTransformHandle(handle int64, zoom int32) {
+	this.handle = handle
+	this.zoom = zoom
+}
+
+func (this *Transform_TransformHandle) Handle() int64 {
+	return this.handle
+}
+
+func (this *Transform_TransformHandle) Zoom() int32 {
+	return this.zoom
+}
+
+func (this *Transform_TransformHandle) Destroy() {
+	win32.GdipMatrix_delete(this.handle)
+}
+
+type Transform_InvertOperation struct {
+}
+
+func init() { jrt.RegisterClassPackage("Transform_InvertOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_InvertOperation) AsTransform_InvertOperation() *Transform_InvertOperation {
+	return this
+}
+
+type Transform_InvertOperationLike interface {
+	AsTransform_InvertOperation() *Transform_InvertOperation
+}
+
+func newTransformInvertOperation() *Transform_InvertOperation {
+	this := &Transform_InvertOperation{}
+	this.initTransformInvertOperation()
+	return this
+}
+
+func (this *Transform_InvertOperation) initTransformInvertOperation() {
+}
+
+func (this *Transform_InvertOperation) Apply(transformHandle *Transform_TransformHandle) {
+	if win32.GdipMatrix_Invert(transformHandle.handle) != 0 {
+		Error(ERROR_CANNOT_INVERT_MATRIX)
+	}
 }
 
 type Transform_MultiplyOperation struct {
@@ -322,10 +370,10 @@ func (this *Transform_MultiplyOperation) initTransformMultiplyOperation(matrix *
 	matrix.GetElements(this.elements)
 }
 
-func (this *Transform_MultiplyOperation) Apply(transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle) {
+func (this *Transform_MultiplyOperation) Apply(transformHandle *Transform_TransformHandle) {
 	var handle int64 = transformHandle.handle
 	var zoom int32 = transformHandle.zoom
-	var newHandle int64 = win32.GdipMatrix_new(this.elements[0], this.elements[1], this.elements[2], this.elements[3], func() float32 { _ = []any{this.elements[4], zoom}; panic("j2go: unresolved call pointToPixel") }(), func() float32 { _ = []any{this.elements[5], zoom}; panic("j2go: unresolved call pointToPixel") }())
+	var newHandle int64 = win32.GdipMatrix_new(this.elements[0], this.elements[1], this.elements[2], this.elements[3], Win32DPIUtilsPointToPixelOverload4(this.elements[4], zoom), Win32DPIUtilsPointToPixelOverload4(this.elements[5], zoom))
 	if newHandle == 0 {
 		Error(ERROR_NO_HANDLES)
 	}
@@ -337,6 +385,226 @@ func (this *Transform_MultiplyOperation) Apply(transformHandle unsupported_type_
 	}
 }
 
+type Transform_RotateOperation struct {
+	angle float32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_RotateOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_RotateOperation) AsTransform_RotateOperation() *Transform_RotateOperation {
+	return this
+}
+
+type Transform_RotateOperationLike interface {
+	AsTransform_RotateOperation() *Transform_RotateOperation
+}
+
+func newTransformRotateOperation(angle float32) *Transform_RotateOperation {
+	this := &Transform_RotateOperation{}
+	this.initTransformRotateOperation(angle)
+	return this
+}
+
+func (this *Transform_RotateOperation) initTransformRotateOperation(angle float32) {
+	this.angle = angle
+}
+
+func (this *Transform_RotateOperation) Angle() float32 {
+	return this.angle
+}
+
+func (this *Transform_RotateOperation) Apply(transformHandle *Transform_TransformHandle) {
+	win32.GdipMatrix_Rotate(transformHandle.handle, this.angle, win32.GdipMatrixOrderPrepend)
+}
+
+type Transform_ScaleOperation struct {
+	scaleX float32
+	scaleY float32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_ScaleOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_ScaleOperation) AsTransform_ScaleOperation() *Transform_ScaleOperation {
+	return this
+}
+
+type Transform_ScaleOperationLike interface {
+	AsTransform_ScaleOperation() *Transform_ScaleOperation
+}
+
+func newTransformScaleOperation(scaleX float32, scaleY float32) *Transform_ScaleOperation {
+	this := &Transform_ScaleOperation{}
+	this.initTransformScaleOperation(scaleX, scaleY)
+	return this
+}
+
+func (this *Transform_ScaleOperation) initTransformScaleOperation(scaleX float32, scaleY float32) {
+	this.scaleX = scaleX
+	this.scaleY = scaleY
+}
+
+func (this *Transform_ScaleOperation) ScaleX() float32 {
+	return this.scaleX
+}
+
+func (this *Transform_ScaleOperation) ScaleY() float32 {
+	return this.scaleY
+}
+
+func (this *Transform_ScaleOperation) Apply(transformHandle *Transform_TransformHandle) {
+	win32.GdipMatrix_Scale(transformHandle.handle, this.scaleX, this.scaleY, win32.GdipMatrixOrderPrepend)
+}
+
+type Transform_SetElementsOperation struct {
+	device Drawable
+	m11    float32
+	m12    float32
+	m21    float32
+	m22    float32
+	dx     float32
+	dy     float32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_SetElementsOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_SetElementsOperation) AsTransform_SetElementsOperation() *Transform_SetElementsOperation {
+	return this
+}
+
+type Transform_SetElementsOperationLike interface {
+	AsTransform_SetElementsOperation() *Transform_SetElementsOperation
+}
+
+func newTransformSetElementsOperation(device Drawable, m11 float32, m12 float32, m21 float32, m22 float32, dx float32, dy float32) *Transform_SetElementsOperation {
+	this := &Transform_SetElementsOperation{}
+	this.initTransformSetElementsOperation(device, m11, m12, m21, m22, dx, dy)
+	return this
+}
+
+func (this *Transform_SetElementsOperation) initTransformSetElementsOperation(device Drawable, m11 float32, m12 float32, m21 float32, m22 float32, dx float32, dy float32) {
+	this.device = device
+	this.m11 = m11
+	this.m12 = m12
+	this.m21 = m21
+	this.m22 = m22
+	this.dx = dx
+	this.dy = dy
+}
+
+func (this *Transform_SetElementsOperation) Device() Drawable {
+	return this.device
+}
+
+func (this *Transform_SetElementsOperation) M11() float32 {
+	return this.m11
+}
+
+func (this *Transform_SetElementsOperation) M12() float32 {
+	return this.m12
+}
+
+func (this *Transform_SetElementsOperation) M21() float32 {
+	return this.m21
+}
+
+func (this *Transform_SetElementsOperation) M22() float32 {
+	return this.m22
+}
+
+func (this *Transform_SetElementsOperation) Dx() float32 {
+	return this.dx
+}
+
+func (this *Transform_SetElementsOperation) Dy() float32 {
+	return this.dy
+}
+
+func (this *Transform_SetElementsOperation) Apply(transformHandle *Transform_TransformHandle) {
+	win32.GdipMatrix_SetElements(transformHandle.handle, this.m11, this.m12, this.m21, this.m22, Win32DPIUtilsPointToPixelOverload5(this.device, this.dx, transformHandle.zoom), Win32DPIUtilsPointToPixelOverload5(this.device, this.dy, transformHandle.zoom))
+}
+
+type Transform_ShearOperation struct {
+	shearX float32
+	shearY float32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_ShearOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_ShearOperation) AsTransform_ShearOperation() *Transform_ShearOperation {
+	return this
+}
+
+type Transform_ShearOperationLike interface {
+	AsTransform_ShearOperation() *Transform_ShearOperation
+}
+
+func newTransformShearOperation(shearX float32, shearY float32) *Transform_ShearOperation {
+	this := &Transform_ShearOperation{}
+	this.initTransformShearOperation(shearX, shearY)
+	return this
+}
+
+func (this *Transform_ShearOperation) initTransformShearOperation(shearX float32, shearY float32) {
+	this.shearX = shearX
+	this.shearY = shearY
+}
+
+func (this *Transform_ShearOperation) ShearX() float32 {
+	return this.shearX
+}
+
+func (this *Transform_ShearOperation) ShearY() float32 {
+	return this.shearY
+}
+
+func (this *Transform_ShearOperation) Apply(transformHandle *Transform_TransformHandle) {
+	win32.GdipMatrix_Shear(transformHandle.handle, this.shearX, this.shearY, win32.GdipMatrixOrderPrepend)
+}
+
+type Transform_TranslateOperation struct {
+	device  Drawable
+	offsetX float32
+	offsetY float32
+}
+
+func init() { jrt.RegisterClassPackage("Transform_TranslateOperation", "org.eclipse.swt.graphics") }
+
+func (this *Transform_TranslateOperation) AsTransform_TranslateOperation() *Transform_TranslateOperation {
+	return this
+}
+
+type Transform_TranslateOperationLike interface {
+	AsTransform_TranslateOperation() *Transform_TranslateOperation
+}
+
+func newTransformTranslateOperation(device Drawable, offsetX float32, offsetY float32) *Transform_TranslateOperation {
+	this := &Transform_TranslateOperation{}
+	this.initTransformTranslateOperation(device, offsetX, offsetY)
+	return this
+}
+
+func (this *Transform_TranslateOperation) initTransformTranslateOperation(device Drawable, offsetX float32, offsetY float32) {
+	this.device = device
+	this.offsetX = offsetX
+	this.offsetY = offsetY
+}
+
+func (this *Transform_TranslateOperation) Device() Drawable {
+	return this.device
+}
+
+func (this *Transform_TranslateOperation) OffsetX() float32 {
+	return this.offsetX
+}
+
+func (this *Transform_TranslateOperation) OffsetY() float32 {
+	return this.offsetY
+}
+
+func (this *Transform_TranslateOperation) Apply(transformHandle *Transform_TransformHandle) {
+	win32.GdipMatrix_Translate(transformHandle.handle, Win32DPIUtilsPointToPixelOverload5(this.device, this.offsetX, transformHandle.zoom), Win32DPIUtilsPointToPixelOverload5(this.device, this.offsetY, transformHandle.zoom), win32.GdipMatrixOrderPrepend)
+}
+
 type Transform_Operation interface {
-	Apply(transformHandle unsupported_type_org_eclipse_swt_graphics_Transform_TransformHandle)
+	Apply(transformHandle *Transform_TransformHandle)
 }

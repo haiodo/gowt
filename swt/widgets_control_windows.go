@@ -245,10 +245,7 @@ func (this *Control) ComputeSizeWHintHHintChanged(wHint int32, hHint int32, chan
 func (this *Control) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var zoom int32 = this.impl.computeBoundsZoom_()
-	return func() *Point {
-		_ = []any{this.impl.computeSizeInPixels_(NewPoint(wHint, hHint), zoom, changed), zoom}
-		panic("j2go: unresolved call pixelToPointAsSufficientlyLargeSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSufficientlyLargeSizePointZoom(this.impl.computeSizeInPixels_(NewPoint(wHint, hHint), zoom, changed), zoom)
 }
 
 func (this *Control) ComputeSizeInPixels(hintInPointsLike PointLike, zoom int32, changed bool) *Point {
@@ -262,10 +259,7 @@ func (this *Control) ComputeSizeInPixels(hintInPointsLike PointLike, zoom int32,
 func (this *Control) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	if hintInPoints.X != DEFAULT {
 		width = hintInPixels.X
 	}
@@ -394,10 +388,11 @@ func (this *Control) defaultBackground_() int32 {
 }
 
 func (this *Control) DefaultFont() int64 {
-	return func() int64 {
-		_ = []any{upcastDisplayToDevice(this.display), this.NativeZoom}
-		panic("j2go: unresolved call getSystemFontHandle")
-	}()
+	return this.impl.defaultFont_()
+}
+
+func (this *Control) defaultFont_() int64 {
+	return SWTFontProviderGetSystemFontHandle(upcastDisplayToDevice(this.display), this.NativeZoom)
 }
 
 func (this *Control) DefaultForeground() int32 {
@@ -529,7 +524,7 @@ func (this *Control) DrawBackgroundHDCRectPixelTxTy(hDC int64, rect *win32.RECT,
 	if pixel == -1 {
 		pixel = this.GetBackgroundPixel()
 	}
-	this.FillBackground(hDC, pixel, rect)
+	this.FillBackgroundLocal1(hDC, pixel, rect)
 }
 
 func (this *Control) DrawImageBackground(hDC int64, hwnd int64, hBitmap int64, rect *win32.RECT, tx int32, ty int32) {
@@ -560,11 +555,11 @@ func (this *Control) EnableDrag(enabled bool) {
 func (this *Control) enableDrag_(enabled bool) {
 }
 
-func (this *Control) MaybeEnableDarkSystemTheme() {
-	this.impl.maybeEnableDarkSystemTheme_()
+func (this *Control) MaybeEnableDarkSystemThemeNoArgs() {
+	this.impl.maybeEnableDarkSystemThemeNoArgs_()
 }
 
-func (this *Control) maybeEnableDarkSystemTheme_() {
+func (this *Control) maybeEnableDarkSystemThemeNoArgs_() {
 	this.MaybeEnableDarkSystemTheme(this.Handle)
 }
 
@@ -576,7 +571,7 @@ func (this *Control) enableWidget_(enabled bool) {
 	win32.OSEnableWindow(this.Handle, enabled)
 }
 
-func (this *Control) FillBackground(hDC int64, pixel int32, rect *win32.RECT) {
+func (this *Control) FillBackgroundLocal1(hDC int64, pixel int32, rect *win32.RECT) {
 	if rect.Left > rect.Right || rect.Top > rect.Bottom {
 		return
 	}
@@ -622,13 +617,13 @@ func (this *Control) findBackgroundControl_() *Control {
 	if (this.background != -1 || this.backgroundImage != (nil)) && this.backgroundAlpha > 0 {
 		return this
 	}
-	var cond68 *Control
+	var cond1 *Control
 	if this.parent != (nil) && (this.state&WidgetPARENT_BACKGROUND) != 0 {
-		cond68 = this.parent.impl.findBackgroundControl_()
+		cond1 = this.parent.impl.findBackgroundControl_()
 	} else {
-		cond68 = nil
+		cond1 = nil
 	}
-	return cond68
+	return cond1
 }
 
 func (this *Control) FindBrush(value int64, lbStyle int32) int64 {
@@ -652,13 +647,13 @@ func (this *Control) findCursor_() *Cursor {
 
 func (this *Control) FindImageControl() *Control {
 	var control *Control = this.impl.findBackgroundControl_()
-	var cond69 *Control
+	var cond2 *Control
 	if control != (nil) && control.backgroundImage != (nil) {
-		cond69 = control
+		cond2 = control
 	} else {
-		cond69 = nil
+		cond2 = nil
 	}
-	return cond69
+	return cond2
 }
 
 func (this *Control) FindThemeControl() *Control {
@@ -666,13 +661,13 @@ func (this *Control) FindThemeControl() *Control {
 }
 
 func (this *Control) findThemeControl_() *Control {
-	var cond70 *Control
+	var cond3 *Control
 	if this.background == -1 && this.backgroundImage == (nil) {
-		cond70 = this.parent.impl.findThemeControl_()
+		cond3 = this.parent.impl.findThemeControl_()
 	} else {
-		cond70 = nil
+		cond3 = nil
 	}
-	return cond70
+	return cond3
 }
 
 func (this *Control) FindMenus(controlLike ControlLike) []*Menu {
@@ -746,9 +741,9 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) && func() bool {
-		cond71 := upcastCompositeToControl(control.parent)
-		control = cond71
-		return (cond71) != (nil)
+		cond4 := upcastCompositeToControl(control.parent)
+		control = cond4
+		return (cond4) != (nil)
 	}() {
 		if control.impl.setFocus_() {
 			return
@@ -837,13 +832,13 @@ func (this *Control) GetBackgroundImage() *Image {
 }
 
 func (this *Control) GetBackgroundPixel() int32 {
-	var cond72 int32
+	var cond5 int32
 	if this.background != -1 {
-		cond72 = this.background
+		cond5 = this.background
 	} else {
-		cond72 = this.impl.defaultBackground_()
+		cond5 = this.impl.defaultBackground_()
 	}
-	return cond72
+	return cond5
 }
 
 func (this *Control) GetBorderWidth() int32 {
@@ -880,10 +875,7 @@ func (this *Control) GetBounds() *Rectangle {
 
 func (this *Control) getBounds_() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.impl.getBoundsInPixels_(), this.impl.computeGetBoundsZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.impl.getBoundsInPixels_(), this.impl.computeGetBoundsZoom_())
 }
 
 func (this *Control) GetBoundsInPixels() *Rectangle {
@@ -933,13 +925,13 @@ func (this *Control) GetCursor() *Cursor {
 func (this *Control) getDataKey_(key string) any {
 	if ControlDATA_SHELL_ZOOM == key {
 		var shell *Shell = this.impl.getShell_()
-		var cond73 any
+		var cond6 any
 		if shell == (nil) {
-			cond73 = nil
+			cond6 = nil
 		} else {
-			cond73 = int32(DPIUtilMapDPIToZoom(win32.OSGetDpiForWindow(shell.Handle)))
+			cond6 = int32(DPIUtilMapDPIToZoom(win32.OSGetDpiForWindow(shell.Handle)))
 		}
-		return cond73
+		return cond6
 	}
 	return this.Widget.getDataKey_(key)
 }
@@ -993,27 +985,28 @@ func (this *Control) GetFont() *Font {
 	}
 	var hFont int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0))
 	if hFont == 0 {
-		hFont = this.DefaultFont()
+		hFont = this.impl.defaultFont_()
 	}
-	return func() *Font {
-		_ = []any{upcastDisplayToDevice(this.display), hFont, this.NativeZoom}
-		panic("j2go: unresolved call getFont")
-	}()
+	return SWTFontProviderGetFontDeviceFontHandleZoom(upcastDisplayToDevice(this.display), hFont, this.NativeZoom)
 }
 
 func (this *Control) GetForeground() *Color {
+	return this.impl.getForeground_()
+}
+
+func (this *Control) getForeground_() *Color {
 	this.CheckWidget()
 	return ColorWin32_new(upcastDisplayToDevice(this.display), this.GetForegroundPixel())
 }
 
 func (this *Control) GetForegroundPixel() int32 {
-	var cond74 int32
+	var cond7 int32
 	if this.foreground != -1 {
-		cond74 = this.foreground
+		cond7 = this.foreground
 	} else {
-		cond74 = this.impl.defaultForeground_()
+		cond7 = this.impl.defaultForeground_()
 	}
-	return cond74
+	return cond7
 }
 
 func (this *Control) GetLayoutData() any {
@@ -1027,10 +1020,7 @@ func (this *Control) GetLocation() *Point {
 
 func (this *Control) getLocation_() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.impl.getLocationInPixels_(), this.impl.computeGetBoundsZoom_()}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocationPointZoom(this.impl.getLocationInPixels_(), this.impl.computeGetBoundsZoom_())
 }
 
 func (this *Control) GetLocationInPixels() *Point {
@@ -1113,11 +1103,12 @@ func (this *Control) getShell_() *Shell {
 }
 
 func (this *Control) GetSize() *Point {
+	return this.impl.getSize_()
+}
+
+func (this *Control) getSize_() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.impl.getSizeInPixels_(), this.impl.computeGetBoundsZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.impl.getSizeInPixels_(), this.impl.computeGetBoundsZoom_())
 }
 
 func (this *Control) GetSizeInPixels() *Point {
@@ -1186,13 +1177,13 @@ func (this *Control) GetTextDirection() int32 {
 	this.CheckWidget()
 	var flags int32 = win32.OSWS_EX_LAYOUTRTL | win32.OSWS_EX_RTLREADING
 	var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_EXSTYLE) & flags
-	var cond75 int32
+	var cond8 int32
 	if bits == 0 || bits == flags {
-		cond75 = LEFT_TO_RIGHT
+		cond8 = LEFT_TO_RIGHT
 	} else {
-		cond75 = RIGHT_TO_LEFT
+		cond8 = RIGHT_TO_LEFT
 	}
-	return cond75
+	return cond8
 }
 
 func (this *Control) GetToolTipText() string {
@@ -1305,10 +1296,7 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		if this.font != (nil) {
 			data.Font = this.font
 		} else {
-			data.Font = func() *Font {
-				_ = []any{upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0)), data.NativeZoom}
-				panic("j2go: unresolved call getFont")
-			}()
+			data.Font = SWTFontProviderGetFontDeviceFontHandleZoom(upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0)), data.NativeZoom)
 		}
 		data.UiState = int32(win32.OSSendMessageOverload4(hwnd, win32.OSWM_QUERYUISTATE, int64(0), int64(0)))
 	}
@@ -1408,7 +1396,7 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for control != (nil) && control != this && func() bool { _, ok76 := isControlToShell(control); return !(ok76) }() {
+	for control != (nil) && control != this && func() bool { _, ok9 := isControlToShell(control); return !(ok9) }() {
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -1607,9 +1595,9 @@ func (this *Control) MoveBelow(controlLike ControlLike) {
 				if win32.OSGetWindow(hwndAbove, win32.OSGW_OWNER) == hwndParent {
 					break
 				}
-				cond77 := hwndAbove
-				hwnd = cond77
-				hwndAbove = win32.OSGetWindow(cond77, win32.OSGW_HWNDPREV)
+				cond10 := hwndAbove
+				hwnd = cond10
+				hwndAbove = win32.OSGetWindow(cond10, win32.OSGW_HWNDPREV)
 			}
 			if hwndAbove == hwnd {
 				return
@@ -1839,10 +1827,7 @@ func (this *Control) redrawXYWidthHeightAll_(x int32, y int32, width int32, heig
 	if width <= 0 || height <= 0 {
 		return
 	}
-	var rectangle *Rectangle = func() *Rectangle {
-		_ = []any{NewRectangle(x, y, width, height), zoom}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSSetRect(rect, rectangle.X, rectangle.Y, rectangle.X+rectangle.Width, rectangle.Y+rectangle.Height)
 	this.RedrawInPixels(rect, all)
@@ -1859,11 +1844,11 @@ func (this *Control) RedrawInPixels(rect *win32.RECT, all bool) {
 	win32.OSRedrawWindow(this.Handle, rect, int64(0), flags)
 }
 
-func (this *Control) RedrawChildren() bool {
-	return this.impl.redrawChildren_()
+func (this *Control) RedrawChildrenLocal1() bool {
+	return this.impl.redrawChildrenLocal1_()
 }
 
-func (this *Control) redrawChildren_() bool {
+func (this *Control) redrawChildrenLocal1_() bool {
 	if !win32.OSIsWindowVisible(this.Handle) {
 		return false
 	}
@@ -2094,21 +2079,21 @@ func (this *Control) resolveTextDirection_() int32 {
 
 func (this *Control) ShowWidget(visible bool) {
 	var topHandle int64 = this.impl.topHandle_()
-	var cond78 int32
+	var cond11 int32
 	if visible {
-		cond78 = win32.OSSW_SHOW
+		cond11 = win32.OSSW_SHOW
 	} else {
-		cond78 = win32.OSSW_HIDE
+		cond11 = win32.OSSW_HIDE
 	}
-	win32.OSShowWindow(topHandle, cond78)
+	win32.OSShowWindow(topHandle, cond11)
 	if this.Handle != topHandle {
-		var cond79 int32
+		var cond12 int32
 		if visible {
-			cond79 = win32.OSSW_SHOW
+			cond12 = win32.OSSW_SHOW
 		} else {
-			cond79 = win32.OSSW_HIDE
+			cond12 = win32.OSSW_HIDE
 		}
-		win32.OSShowWindow(this.Handle, cond79)
+		win32.OSShowWindow(this.Handle, cond12)
 	}
 }
 
@@ -2270,25 +2255,25 @@ func (this *Control) SetBackground() {
 		shell.ReleaseBrushes()
 		this.impl.setBackgroundImageHBitmap_(ImageWin32_getHandle(control.backgroundImage, this.impl.getAutoscalingZoom_()))
 	} else {
-		var cond80 int32
+		var cond13 int32
 		if control.background == -1 {
-			cond80 = control.impl.defaultBackground_()
+			cond13 = control.impl.defaultBackground_()
 		} else {
-			cond80 = control.background
+			cond13 = control.background
 		}
-		this.impl.setBackgroundPixel_(cond80)
+		this.impl.setBackgroundPixel_(cond13)
 	}
 }
 
-func (this *Control) SetBackgroundColor(colorLike ColorLike) {
+func (this *Control) SetBackgroundWithColor(colorLike ColorLike) {
 	var color *Color
 	if colorLike != nil {
 		color = colorLike.AsColor()
 	}
-	this.impl.setBackgroundColor_(color)
+	this.impl.setBackgroundWithColor_(color)
 }
 
-func (this *Control) setBackgroundColor_(color *Color) {
+func (this *Control) setBackgroundWithColor_(color *Color) {
 	this.CheckWidget()
 	this._setBackground(color)
 	if color != (nil) {
@@ -2333,7 +2318,7 @@ func (this *Control) setBackgroundImage_(image *Image) {
 		if image.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		if image.Type != SWTBITMAP {
+		if image.Type != BITMAP {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2448,7 +2433,7 @@ func (this *Control) setBoundsRect_(rect *Rectangle) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var zoom int32 = this.impl.computeBoundsZoom_()
-	var boundsInPixels *Rectangle = func() *Rectangle { _ = []any{rect, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(rect, zoom)
 	this.FitInParentBounds(boundsInPixels, zoom)
 	this.SetBoundsInPixelsRect(boundsInPixels)
 }
@@ -2464,12 +2449,12 @@ func (this *Control) FitInParentBounds(boundsInPixelsLike RectangleLike, zoom in
 	}
 	var parentBoundsInPixels *Rectangle = this.parent.impl.getBoundsInPixels_()
 	var childNotFittingHorizontally bool = parentBoundsInPixels.Width < boundsInPixels.X+boundsInPixels.Width
-	var childFittingHorizontallyWithOffByOne bool = float32(parentBoundsInPixels.Width) >= float32(boundsInPixels.X+boundsInPixels.Width)-func() float32 { _ = []any{1.0, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var childFittingHorizontallyWithOffByOne bool = float32(parentBoundsInPixels.Width) >= float32(boundsInPixels.X+boundsInPixels.Width)-Win32DPIUtilsPointToPixelOverload4(1.0, zoom)
 	if childNotFittingHorizontally && childFittingHorizontallyWithOffByOne {
 		boundsInPixels.Width = parentBoundsInPixels.Width - boundsInPixels.X
 	}
 	var childNotFittingVertically bool = parentBoundsInPixels.Height < boundsInPixels.Y+boundsInPixels.Height
-	var childFittingVerticallyWithOffByOne bool = float32(parentBoundsInPixels.Height) >= float32(boundsInPixels.Y+boundsInPixels.Height)-func() float32 { _ = []any{1.0, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var childFittingVerticallyWithOffByOne bool = float32(parentBoundsInPixels.Height) >= float32(boundsInPixels.Y+boundsInPixels.Height)-Win32DPIUtilsPointToPixelOverload4(1.0, zoom)
 	if childNotFittingVertically && childFittingVerticallyWithOffByOne {
 		boundsInPixels.Height = parentBoundsInPixels.Height - boundsInPixels.Y
 	}
@@ -2517,21 +2502,24 @@ func (this *Control) SetCapture(capture bool) {
 	}
 }
 
-func (this *Control) SetCursor() {
-	this.impl.setCursor_()
+func (this *Control) SetCursorNoArgs() {
+	this.impl.setCursorNoArgs_()
 }
 
-func (this *Control) setCursor_() {
+func (this *Control) setCursorNoArgs_() {
 	var lParam int64 = win32.OSMAKELPARAM(win32.OSHTCLIENT, win32.OSWM_MOUSEMOVE)
 	win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETCURSOR, this.Handle, lParam)
 }
 
-func (this *Control) SetCursorCursor(cursorLike CursorLike) {
+func (this *Control) SetCursor(cursorLike CursorLike) {
 	var cursor *Cursor
 	if cursorLike != nil {
 		cursor = cursorLike.AsCursor()
 	}
-	_ = cursor
+	this.impl.setCursor_(cursor)
+}
+
+func (this *Control) setCursor_(cursor *Cursor) {
 	this.CheckWidget()
 	if cursor != (nil) && cursor.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
@@ -2543,9 +2531,9 @@ func (this *Control) SetCursorCursor(cursorLike CursorLike) {
 		if !win32.OSGetCursorPos(pt) {
 			return
 		}
-		cond81 := win32.OSWindowFromPoint(pt)
-		hwndCursor = cond81
-		var hwnd int64 = cond81
+		cond14 := win32.OSWindowFromPoint(pt)
+		hwndCursor = cond14
+		var hwnd int64 = cond14
 		for hwnd != 0 && hwnd != this.Handle {
 			hwnd = win32.OSGetParent(hwnd)
 		}
@@ -2557,7 +2545,7 @@ func (this *Control) SetCursorCursor(cursorLike CursorLike) {
 	if control == (nil) {
 		control = this
 	}
-	control.impl.setCursor_()
+	control.impl.setCursorNoArgs_()
 }
 
 func (this *Control) SetDefaultFont() {
@@ -2565,10 +2553,7 @@ func (this *Control) SetDefaultFont() {
 }
 
 func (this *Control) setDefaultFont_() {
-	var hFont int64 = func() int64 {
-		_ = []any{upcastDisplayToDevice(this.display), this.NativeZoom}
-		panic("j2go: unresolved call getSystemFontHandle")
-	}()
+	var hFont int64 = SWTFontProviderGetSystemFontHandle(upcastDisplayToDevice(this.display), this.NativeZoom)
 	win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETFONT, hFont, int64(0))
 }
 
@@ -2640,7 +2625,7 @@ func (this *Control) setFont_(font *Font) {
 	}
 	this.font = newFont
 	if hFont == 0 {
-		hFont = this.DefaultFont()
+		hFont = this.impl.defaultFont_()
 	}
 	win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETFONT, hFont, int64(1))
 }
@@ -2712,10 +2697,7 @@ func (this *Control) setLocationLocation_(location *Point) {
 	if location == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	location = func() *Point {
-		_ = []any{location, this.impl.computeBoundsZoom_()}
-		panic("j2go: unresolved call pointToPixelAsLocation")
-	}()
+	location = Win32DPIUtilsPointToPixelAsLocationPointZoom(location, this.impl.computeBoundsZoom_())
 	this.SetLocationInPixels(location.X, location.Y)
 }
 
@@ -2744,10 +2726,10 @@ func (this *Control) setMenu_(menu *Menu) {
 }
 
 func (this *Control) SetOrientation(orientation int32) {
-	this.impl.setOrientation_(orientation)
+	this.impl.setOrientationOnControl_(orientation)
 }
 
-func (this *Control) setOrientation_(orientation int32) {
+func (this *Control) setOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 	var flags int32 = RIGHT_TO_LEFT | LEFT_TO_RIGHT
 	if (orientation&flags) == 0 || (orientation&flags) == flags {
@@ -2813,9 +2795,9 @@ func (this *Control) setRedraw_(redraw bool) {
 			}
 		}
 	} else {
-		t82 := this.drawCount
+		t15 := this.drawCount
 		this.drawCount++
-		if t82 == 0 {
+		if t15 == 0 {
 			var topHandle int64 = this.impl.topHandle_()
 			win32.OSSendMessageOverload4(topHandle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 			if this.Handle != topHandle {
@@ -2829,16 +2811,16 @@ func (this *Control) EmbedsWin32Control() bool {
 	if this.IsDisposed() || !this.impl.isVisible_() {
 		return false
 	}
-	browser, ok83 := any(nil), false
-	if ok83 {
+	browser, ok16 := any(nil), false
+	if ok16 {
 		return ("edge" == func() string { _ = []any{browser}; panic("j2go: unresolved call getBrowserType") }())
 	}
-	_, ok84 := any(nil), false
-	if ok84 {
+	_, ok17 := any(nil), false
+	if ok17 {
 		return true
 	}
-	comp, ok85 := isControlToComposite(this)
-	if ok85 {
+	comp, ok18 := isControlToComposite(this)
+	if ok18 {
 		return func() bool {
 			_ = []any{func() any { _ = []any{comp.impl.getChildren_()}; panic("j2go: unresolved call of") }(), (*Control).EmbedsWin32Control}
 			panic("j2go: unresolved call anyMatch")
@@ -2900,13 +2882,10 @@ func (this *Control) SetSizeSizeZoom(sizeLike PointLike, zoom int32) {
 		size = sizeLike.AsPoint()
 	}
 	_ = size
-	var bounds *Rectangle = func() *Rectangle {
-		_ = []any{upcastRectangle_OfFloatToRectangle(RectangleOfFloatFrom(this.impl.getBoundsInPixels_())), zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload6(upcastRectangle_OfFloatToRectangle(RectangleOfFloatFrom(this.impl.getBoundsInPixels_())), zoom)
 	bounds.Width = size.X
 	bounds.Height = size.Y
-	var boundsInPixels *Rectangle = func() *Rectangle { _ = []any{bounds, zoom}; panic("j2go: unresolved call pointToPixel") }()
+	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(bounds, zoom)
 	this.FitInParentBounds(boundsInPixels, zoom)
 	this.SetSizeInPixels(boundsInPixels.Width, boundsInPixels.Height)
 }
@@ -2950,7 +2929,7 @@ func (this *Control) SetToolTipTextShellString(shellLike ShellLike, string_ stri
 }
 
 func (this *Control) setToolTipTextShellString_(shell *Shell, string_ string) {
-	shell.SetToolTipText(this.Handle, string_)
+	shell.SetToolTipTextHwndText(this.Handle, string_)
 }
 
 func (this *Control) SetTouchEnabled(enabled bool) {
@@ -3047,10 +3026,7 @@ func (this *Control) ToControl(x int32, y int32) *Point {
 	this.CheckWidget()
 	var displayPointInPixels *Point = this.GetDisplay().TranslateToDisplayCoordinates(NewPoint(x, y))
 	var controlPointInPixels *Point = this.ToControlInPixels(displayPointInPixels.X, displayPointInPixels.Y)
-	return func() *Point {
-		_ = []any{controlPointInPixels, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocationPointZoom(controlPointInPixels, this.impl.getAutoscalingZoom_())
 }
 
 func (this *Control) ToControlInPixels(x int32, y int32) *Point {
@@ -3138,7 +3114,7 @@ func (this *Control) translateMnemonic_(event *Event, control *Control) bool {
 		return false
 	}
 	event.Doit = this.impl.mnemonicMatch_(event.Character)
-	return this.Traverse(event)
+	return this.TraverseEvent(event)
 }
 
 func (this *Control) TranslateMnemonicMsg(msg *win32.MSG) bool {
@@ -3289,7 +3265,7 @@ func (this *Control) translateTraversal_(msg *win32.MSG) bool {
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
 	for {
-		if control.Traverse(event) {
+		if control.TraverseEvent(event) {
 			win32.OSSendMessageOverload4(hwnd, win32.OSWM_CHANGEUISTATE, int64(win32.OSUIS_INITIALIZE), int64(0))
 			return true
 		}
@@ -3307,7 +3283,7 @@ func (this *Control) translateTraversal_(msg *win32.MSG) bool {
 	return false
 }
 
-func (this *Control) Traverse(eventLike EventLike) bool {
+func (this *Control) TraverseEvent(eventLike EventLike) bool {
 	var event *Event
 	if eventLike != nil {
 		event = eventLike.AsEvent()
@@ -3345,19 +3321,19 @@ func (this *Control) Traverse(eventLike EventLike) bool {
 	return false
 }
 
-func (this *Control) TraverseOverload1(traversal int32) bool {
-	return this.impl.traverseOverload1_(traversal)
+func (this *Control) TraverseTraversal(traversal int32) bool {
+	return this.impl.traverseTraversal_(traversal)
 }
 
-func (this *Control) traverseOverload1_(traversal int32) bool {
+func (this *Control) traverseTraversal_(traversal int32) bool {
 	this.CheckWidget()
 	var event *Event = NewEvent()
 	event.Doit = true
 	event.Detail = traversal
-	return this.Traverse(event)
+	return this.TraverseEvent(event)
 }
 
-func (this *Control) TraverseOverload2(traversal int32, eventLike EventLike) bool {
+func (this *Control) Traverse(traversal int32, eventLike EventLike) bool {
 	var event *Event
 	if eventLike != nil {
 		event = eventLike.AsEvent()
@@ -3367,10 +3343,10 @@ func (this *Control) TraverseOverload2(traversal int32, eventLike EventLike) boo
 	if event == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.TraverseOverload4(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
+	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
 }
 
-func (this *Control) TraverseOverload3(traversal int32, eventLike KeyEventLike) bool {
+func (this *Control) TraverseTraversalEvent(traversal int32, eventLike KeyEventLike) bool {
 	var event *KeyEvent
 	if eventLike != nil {
 		event = eventLike.AsKeyEvent()
@@ -3380,10 +3356,10 @@ func (this *Control) TraverseOverload3(traversal int32, eventLike KeyEventLike) 
 	if event == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.TraverseOverload4(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
+	return this.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal, event.Character, event.KeyCode, event.KeyLocation, event.StateMask, event.Doit)
 }
 
-func (this *Control) TraverseOverload4(traversal int32, character uint16, keyCode int32, keyLocation int32, stateMask int32, doit bool) bool {
+func (this *Control) TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(traversal int32, character uint16, keyCode int32, keyLocation int32, stateMask int32, doit bool) bool {
 	if traversal == TRAVERSE_NONE {
 		switch keyCode {
 		case int32(ESC):
@@ -3476,7 +3452,7 @@ func (this *Control) TraverseOverload4(traversal int32, character uint16, keyCod
 	}
 	var control *Control = this
 	for {
-		if control.Traverse(event) {
+		if control.TraverseEvent(event) {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSWM_CHANGEUISTATE, int64(win32.OSUIS_INITIALIZE), int64(0))
 			return true
 		}
@@ -3525,9 +3501,9 @@ func (this *Control) TraverseGroup(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond86 := ((index + offset + length) % length)
-		index = cond86
-		if !((cond86) != start) {
+		cond19 := ((index + offset + length) % length)
+		index = cond19
+		if !((cond19) != start) {
 			break
 		}
 		var widget *Widget = list[index]
@@ -3566,9 +3542,9 @@ func (this *Control) traverseItem_(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond87 := (index + offset + length) % length
-		index = cond87
-		if !((cond87) != start) {
+		cond20 := (index + offset + length) % length
+		index = cond20
+		if !((cond20) != start) {
 			break
 		}
 		var child *Control = children[index]
@@ -3659,13 +3635,13 @@ func (this *Control) updateBackgroundImage_() {
 	} else {
 		image = this.backgroundImage
 	}
-	var cond88 int64
+	var cond21 int64
 	if image != (nil) {
-		cond88 = ImageWin32_getHandle(image, this.impl.getAutoscalingZoom_())
+		cond21 = ImageWin32_getHandle(image, this.impl.getAutoscalingZoom_())
 	} else {
-		cond88 = int64(0)
+		cond21 = int64(0)
 	}
-	this.impl.setBackgroundImageHBitmap_(cond88)
+	this.impl.setBackgroundImageHBitmap_(cond21)
 }
 
 func (this *Control) UpdateBackgroundMode() {
@@ -3811,10 +3787,10 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	if parentLike != nil {
 		parent = parentLike.AsComposite()
 	}
-	return this.impl.setParentOnControl_(parent)
+	return this.impl.setParent_(parent)
 }
 
-func (this *Control) setParentOnControl_(parent *Composite) bool {
+func (this *Control) setParent_(parent *Composite) bool {
 	this.CheckWidget()
 	if parent == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -3856,10 +3832,7 @@ func (this *Control) setParentOnControl_(parent *Composite) bool {
 func (this *Control) createNewGC_(hDC int64, data *GCData) *GC {
 	data.NativeZoom = this.NativeZoom
 	if this.IsAutoscalingDisabled() && data.Font != (nil) {
-		data.Font = func() *Font {
-			_ = []any{upcastDisplayToDevice(this.display), data.Font.GetFontData()[0], 100}
-			panic("j2go: unresolved call getFont")
-		}()
+		data.Font = SWTFontProviderGetFont(upcastDisplayToDevice(this.display), data.Font.GetFontData()[0], 100)
 	}
 	return GCWin32_newHDCData(hDC, data)
 }
@@ -3872,8 +3845,8 @@ func (this *Control) getAutoscalingZoom_() int32 {
 }
 
 func (this *Control) GetShellZoom() int32 {
-	shellZoom, ok89 := any(nil), false
-	if ok89 {
+	shellZoom, ok22 := any(nil), false
+	if ok22 {
 		return jrt.Cast[int32](shellZoom)
 	}
 	return this.NativeZoom
@@ -4822,13 +4795,13 @@ func (this *Control) wM_MOVE_(wParam int64, lParam int64) *win32.LRESULT {
 	this.state |= WidgetMOVE_OCCURRED
 	if this.FindImageControl() != (nil) {
 		if this != upcastShellToControl(this.impl.getShell_()) {
-			this.impl.redrawChildren_()
+			this.impl.redrawChildrenLocal1_()
 		}
 	} else {
 		if (this.state & WidgetTHEME_BACKGROUND) != 0 {
 			if win32.OSIsWindowVisible(this.Handle) {
 				if this.impl.findThemeControl_() != (nil) {
-					this.impl.redrawChildren_()
+					this.impl.redrawChildrenLocal1_()
 				}
 			}
 		}
@@ -5169,13 +5142,13 @@ func (this *Control) WM_TABLET_FLICK(wParam int64, lParam int64) *win32.LRESULT 
 	event.Detail = GESTURE_SWIPE
 	this.SetInputState(event, Gesture)
 	this.SendEventEventTypeEvent(Gesture, event)
-	var cond90 *win32.LRESULT
+	var cond23 *win32.LRESULT
 	if event.Doit {
-		cond90 = nil
+		cond23 = nil
 	} else {
-		cond90 = win32.LRESULTONE
+		cond23 = win32.LRESULTONE
 	}
-	return cond90
+	return cond23
 }
 
 func (this *Control) WM_TOUCH(wParam int64, lParam int64) *win32.LRESULT {
@@ -5252,13 +5225,13 @@ func (this *Control) wM_WINDOWPOSCHANGED_(wParam int64, lParam int64) *win32.LRE
 		}()
 		this.display.resizeCount++
 		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_WINDOWPOSCHANGED, wParam, lParam)
-		var cond91 *win32.LRESULT
+		var cond24 *win32.LRESULT
 		if code == 0 {
-			cond91 = win32.LRESULTZERO
+			cond24 = win32.LRESULTZERO
 		} else {
-			cond91 = win32.NewLRESULT(code)
+			cond24 = win32.NewLRESULT(code)
 		}
-		return cond91
+		return cond24
 	}
 }
 
@@ -5434,8 +5407,8 @@ func (this *Control) SendZoomChangedEvent(eventLike EventLike, shellLike ShellLi
 		shell = shellLike.AsShell()
 	}
 	_ = shell
-	dpiExecData, ok92 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok92 {
+	dpiExecData, ok25 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok25 {
 		ControlStartZoomChangeTask(event)
 		dpiExecData.Process(this, jrt.NewRunnable(func() {
 			func() {
@@ -5501,8 +5474,8 @@ func ControlStartZoomChangeTask(eventLike EventLike) {
 		event = eventLike.AsEvent()
 	}
 	_ = event
-	execution, ok93 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok93 {
+	execution, ok26 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok26 {
 		execution.StartTask()
 	}
 }
@@ -5518,8 +5491,8 @@ func ControlCompleteZoomChangeTask(eventLike EventLike, shellLike ShellLike) {
 		shell = shellLike.AsShell()
 	}
 	_ = shell
-	execution, ok94 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok94 {
+	execution, ok27 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok27 {
 		execution.CompleteTask(shell)
 	}
 }
@@ -5535,10 +5508,7 @@ func ControlResizeFont(controlLike ControlLike, newZoom int32) {
 	if font == (nil) {
 		var currentFontHandle int64 = win32.OSSendMessageOverload4(control.Handle, win32.OSWM_GETFONT, int64(0), int64(0))
 		if currentFontHandle != 0 {
-			var newFontHandle int64 = func() int64 {
-				_ = []any{upcastDisplayToDevice(display), newZoom}
-				panic("j2go: unresolved call getSystemFontHandle")
-			}()
+			var newFontHandle int64 = SWTFontProviderGetSystemFontHandle(upcastDisplayToDevice(display), newZoom)
 			win32.OSSendMessageOverload4(control.Handle, win32.OSWM_SETFONT, newFontHandle, int64(1))
 		}
 	} else {
@@ -5602,8 +5572,8 @@ func (this *Control_DPIChangeExecution) Process(controlLike ControlLike, operati
 	}
 	_ = control
 	var currentAsyncExec bool = this.asyncExec
-	comp, ok95 := isControlToComposite(control)
-	if ok95 {
+	comp, ok28 := isControlToComposite(control)
+	if ok28 {
 		this.asyncExec = this.asyncExec && (comp.layout != (nil))
 	}
 	if this.asyncExec {
@@ -5764,121 +5734,6 @@ func isControlToShell(x *Control) (*Shell, bool) {
 		return nil, false
 	}
 	return widgetImplAsShell(x.impl)
-}
-
-// j2go: instanceof helper for Composite and its subclasses within the translated set.
-func widgetImplAsComposite(x any) (*Composite, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *Composite:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	case *Canvas:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Decorations:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Shell:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *CLabel:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Group:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *SashForm:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Tree:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *TabFolder:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Combo:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Table:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *Spinner:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *ToolBar:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *ExpandBar:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *CoolBar:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *DateTime:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *ScrolledComposite:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *CCombo:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	case *CTabFolder:
-		if v == nil {
-			return nil, false
-		}
-		return &v.Composite, true
-	}
-	if l, ok := x.(interface{ AsComposite() *Composite }); ok {
-		return l.AsComposite(), true
-	}
-	return nil, false
-}
-
-func isControlToComposite(x *Control) (*Composite, bool) {
-	if x == nil {
-		return nil, false
-	}
-	return widgetImplAsComposite(x.impl)
 }
 
 func upcastMenuItemToWidget(x *MenuItem) *Widget {

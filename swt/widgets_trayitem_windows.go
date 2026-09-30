@@ -64,26 +64,26 @@ func (this *TrayItem) checkSubclass_() {
 func (this *TrayItem) CreateUpdateWidget(newIcon bool) {
 	var iconData *win32.NOTIFYICONDATA = win32.NewNOTIFYICONDATA()
 	iconData.CbSize = win32.NOTIFYICONDATASizeof
-	var cond755 int32
-	t756 := this.display.nextTrayId
+	var cond1 int32
+	t2 := this.display.nextTrayId
 	this.display.nextTrayId++
 	if newIcon {
-		cond755 = t756
+		cond1 = t2
 	} else {
-		cond755 = this.id
+		cond1 = this.id
 	}
-	this.id = (cond755)
+	this.id = (cond1)
 	iconData.UID = this.id
 	iconData.HWnd = this.display.hwndMessage
 	iconData.UFlags = win32.OSNIF_MESSAGE
 	iconData.UCallbackMessage = DisplaySWT_TRAYICONMSG
-	var cond757 int32
+	var cond3 int32
 	if newIcon {
-		cond757 = win32.OSNIM_ADD
+		cond3 = win32.OSNIM_ADD
 	} else {
-		cond757 = win32.OSNIM_MODIFY
+		cond3 = win32.OSNIM_MODIFY
 	}
-	win32.OSShell_NotifyIcon((cond757), iconData)
+	win32.OSShell_NotifyIcon((cond3), iconData)
 }
 
 func (this *TrayItem) destroyWidget_() {
@@ -190,7 +190,7 @@ func (this *TrayItem) Recreate() {
 		this.impl.setText_(this.text)
 	}
 	if this.image != (nil) {
-		this.impl.setImage_(this.image)
+		this.impl.setImageOnItem_(this.image)
 	}
 	if this.toolTipText != "" {
 		this.SetToolTipText(this.toolTipText)
@@ -257,12 +257,12 @@ func (this *TrayItem) SetHighlightImage(imageLike ImageLike) {
 	this.highlightImage = image
 }
 
-func (this *TrayItem) setImage_(image *Image) {
+func (this *TrayItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.setImage_(image)
+	this.Item.setImageOnItem_(image)
 	if this.image2 != (nil) {
 		this.image2.impl.dispose_()
 	}
@@ -271,7 +271,7 @@ func (this *TrayItem) setImage_(image *Image) {
 	var icon *Image = image
 	if icon != (nil) {
 		switch icon.Type {
-		case SWTBITMAP:
+		case BITMAP:
 			this.image2 = DisplayCreateIcon(image, this.impl.getAutoscalingZoom_())
 			hIcon = ImageWin32_getHandle(this.image2, this.impl.getAutoscalingZoom_())
 			break

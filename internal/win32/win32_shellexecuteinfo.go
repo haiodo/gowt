@@ -74,7 +74,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init SHELLEXECUTEINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SHELLEXECUTEINFOSizeof:", r)
 			}
 		}()
 		SHELLEXECUTEINFOSizeof = OSSHELLEXECUTEINFO_sizeof()

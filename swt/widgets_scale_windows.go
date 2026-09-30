@@ -54,10 +54,7 @@ func (this *Scale) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam i
 
 func (this *Scale) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var border int32 = this.impl.getBorderWidthInPixels_()
 	var width int32 = border * 2
 	var height int32 = border * 2
@@ -223,13 +220,13 @@ func (this *Scale) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_LEFT, win32.OSVK_RIGHT:
 		var isRTL bool = (this.style & RIGHT_TO_LEFT) != 0
 		if isRTL != this.createdAsRTL {
-			var cond722 int32
+			var cond1 int32
 			if wParam == int64(win32.OSVK_RIGHT) {
-				cond722 = win32.OSVK_LEFT
+				cond1 = win32.OSVK_LEFT
 			} else {
-				cond722 = win32.OSVK_RIGHT
+				cond1 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond722), lParam)
+			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond1), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -248,7 +245,7 @@ func (this *Scale) wM_MOUSEWHEEL_(wParam int64, lParam int64) *win32.LRESULT {
 	this.ignoreSelection = false
 	var newPosition int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTBM_GETPOS, int64(0), int64(0)))
 	if oldPosition != newPosition {
-		this.SendSelectionEventTypeEventSend(Selection, nil, true)
+		this.SendSelectionEventEventTypeEventSend(Selection, nil, true)
 	}
 	return win32.NewLRESULT(code)
 }
@@ -289,7 +286,7 @@ func (this *Scale) wmScrollChild_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	if !this.ignoreSelection {
 		var event *Event = NewEvent()
-		this.SendSelectionEventTypeEventSend(Selection, event, true)
+		this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	}
 	return nil
 }
@@ -302,7 +299,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Scale static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Scale static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

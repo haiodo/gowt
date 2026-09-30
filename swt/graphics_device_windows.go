@@ -397,16 +397,16 @@ func (this *Device) destroy_() {
 
 func (this *Device) Dispose() {
 	jrt.MonitorEnter()
-	tretd246 := false
+	tretd1 := false
 	func() {
 		defer jrt.MonitorExit()
 		{
 			var exceptions *ExceptionStash = NewExceptionStash()
-			tretd247 := false
+			tretd2 := false
 			func() {
 				defer exceptions.Close()
 				if this.IsDisposed() {
-					tretd247 = true
+					tretd2 = true
 					return
 				}
 				this.impl.checkDevice_()
@@ -438,32 +438,32 @@ func (this *Device) Dispose() {
 					}()
 				}
 			}()
-			if tretd247 {
-				tretd246 = true
+			if tretd2 {
+				tretd1 = true
 				return
 			}
 		}
 	}()
-	if tretd246 {
+	if tretd1 {
 		return
 	}
 }
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd248 := false
+	tretd3 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd248 = true
+				tretd3 = true
 				return
 			}
 		}
 	}()
-	if tretd248 {
+	if tretd3 {
 		return
 	}
 }
@@ -503,10 +503,7 @@ func (this *Device) GetBounds() *Rectangle {
 
 func (this *Device) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return func() *Rectangle {
-		_ = []any{this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
 }
 
 func (this *Device) GetBoundsInPixels() *Rectangle {
@@ -583,10 +580,7 @@ func (this *Device) getDPI_() *Point {
 	var primaryZoomAtStartup int32 = DPIUtilMapDPIToZoom(dpiX)
 	var dpiY int32 = win32.OSGetDeviceCaps(hDC, win32.OSLOGPIXELSY)
 	this.impl.internal_dispose_GC_(hDC, nil)
-	return func() *Point {
-		_ = []any{NewPoint(dpiX, dpiY), DPIUtilGetZoomForAutoscaleProperty(primaryZoomAtStartup)}
-		panic("j2go: unresolved call pixelToPointAsLocation")
-	}()
+	return Win32DPIUtilsPixelToPointAsLocationPointZoom(NewPoint(dpiX, dpiY), DPIUtilGetZoomForAutoscaleProperty(primaryZoomAtStartup))
 }
 
 func (this *Device) _getDPIx() int32 {
@@ -610,33 +604,33 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 	var offset int32 = 0
 	var hDC int64 = this.impl.internal_new_GC_(nil)
 	if faceName == "" {
-		var cond249 int32
+		var cond4 int32
 		if scalable {
-			cond249 = 1
+			cond4 = 1
 		} else {
-			cond249 = 0
+			cond4 = 0
 		}
-		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond249))
+		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond4))
 		offset = this.nFonts
 		for i := int32(0); i < offset; i++ {
 			var lf *win32.LOGFONT = this.logFonts[i]
-			var cond250 int32
+			var cond5 int32
 			if scalable {
-				cond250 = 1
+				cond5 = 1
 			} else {
-				cond250 = 0
+				cond5 = 0
 			}
-			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond250))
+			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond5))
 		}
 	} else {
 		var lpFaceName *win32.TCHAR = win32.NewTCHARStringTerminate(faceName, true)
-		var cond251 int32
+		var cond6 int32
 		if scalable {
-			cond251 = 1
+			cond6 = 1
 		} else {
-			cond251 = 0
+			cond6 = 0
 		}
-		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond251))
+		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond6))
 	}
 	var logPixelsY int32 = win32.OSGetDeviceCaps(hDC, win32.OSLOGPIXELSY)
 	this.impl.internal_dispose_GC_(hDC, nil)
@@ -651,9 +645,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			}
 		}
 		if j == count {
-			t252 := count
+			t7 := count
 			count++
-			result[t252] = fd
+			result[t7] = fd
 		}
 	}
 	if count != int32(len(result)) {
@@ -811,14 +805,14 @@ func (this *Device) LoadFont(path string) bool {
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd253 := false
+	tretd8 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if jrt.IsNil(this.objects[i]) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd253 = true
+				tretd8 = true
 				return
 			}
 		}
@@ -831,7 +825,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd253 {
+	if tretd8 {
 		return
 	}
 }
@@ -842,11 +836,11 @@ func (this *Device) PrintErrors() {
 	}
 	if this.tracking {
 		jrt.MonitorEnter()
-		tretd254 := false
+		tretd9 := false
 		func() {
 			defer jrt.MonitorExit()
 			if this.objects == (nil) || this.errors == (nil) {
-				tretd254 = true
+				tretd9 = true
 				return
 			}
 			var objectCount int32 = 0
@@ -863,44 +857,44 @@ func (this *Device) PrintErrors() {
 			for _, object := range this.objects {
 				if !jrt.IsNil(object) {
 					objectCount++
-					_, ok255 := resourceImplAsColor(object)
-					if ok255 {
+					_, ok10 := resourceImplAsColor(object)
+					if ok10 {
 						colors++
 					}
-					_, ok256 := resourceImplAsCursor(object)
-					if ok256 {
+					_, ok11 := resourceImplAsCursor(object)
+					if ok11 {
 						cursors++
 					}
-					_, ok257 := resourceImplAsFont(object)
-					if ok257 {
+					_, ok12 := resourceImplAsFont(object)
+					if ok12 {
 						fonts++
 					}
-					_, ok258 := resourceImplAsGC(object)
-					if ok258 {
+					_, ok13 := resourceImplAsGC(object)
+					if ok13 {
 						gcs++
 					}
-					_, ok259 := resourceImplAsImage(object)
-					if ok259 {
+					_, ok14 := resourceImplAsImage(object)
+					if ok14 {
 						images++
 					}
-					_, ok260 := resourceImplAsPath(object)
-					if ok260 {
+					_, ok15 := resourceImplAsPath(object)
+					if ok15 {
 						paths++
 					}
-					_, ok261 := resourceImplAsPattern(object)
-					if ok261 {
+					_, ok16 := resourceImplAsPattern(object)
+					if ok16 {
 						patterns++
 					}
-					_, ok262 := resourceImplAsRegion(object)
-					if ok262 {
+					_, ok17 := resourceImplAsRegion(object)
+					if ok17 {
 						regions++
 					}
-					_, ok263 := resourceImplAsTextLayout(object)
-					if ok263 {
+					_, ok18 := resourceImplAsTextLayout(object)
+					if ok18 {
 						textLayouts++
 					}
-					_, ok264 := resourceImplAsTransform(object)
-					if ok264 {
+					_, ok19 := resourceImplAsTransform(object)
+					if ok19 {
 						transforms++
 					}
 				}
@@ -948,7 +942,7 @@ func (this *Device) PrintErrors() {
 				}
 			}
 		}()
-		if tretd254 {
+		if tretd9 {
 			return
 		}
 	}
@@ -966,7 +960,7 @@ func (this *Device) release_() {
 		this.fontCollection = int64(0)
 		win32.GdipGdiplusShutdown(this.gdipToken[0])
 	}
-	func() any { _ = []any{this}; panic("j2go: unresolved call disposeFontRegistry") }()
+	SWTFontProviderDisposeFontRegistry(this)
 	this.resourcesWithZoomSupport.Clear()
 	this.resourcesWithZoomSupport = nil
 	this.gdipToken = nil
@@ -1072,8 +1066,8 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 	if this == obj {
 		return true
 	}
-	passedResource, ok265 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
-	if !(ok265) {
+	passedResource, ok20 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
+	if !(ok20) {
 		return false
 	}
 	return jrt.ObjectsEquals(func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }(), func() *Resource { _ = []any{passedResource}; panic("j2go: unresolved call get") }())
@@ -1081,13 +1075,13 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 
 func (this *Device_ResourceReference) HashCode() int32 {
 	var resource *Resource = func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }()
-	var cond266 int32
+	var cond21 int32
 	if resource != (nil) {
-		cond266 = jrt.HashCodeOf(resource)
+		cond21 = jrt.HashCodeOf(resource)
 	} else {
-		cond266 = 0
+		cond21 = 0
 	}
-	return cond266
+	return cond21
 }
 
 // j2go: instanceof helper for Cursor and its subclasses within the translated set.
@@ -1312,7 +1306,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Device static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Device static{}:", r)
 			}
 		}()
 		func() {

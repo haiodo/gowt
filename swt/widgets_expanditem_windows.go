@@ -384,8 +384,8 @@ func (this *ExpandItem) SetHeightInPixels(height int32) {
 	}
 }
 
-func (this *ExpandItem) setImage_(image *Image) {
-	this.Item.setImage_(image)
+func (this *ExpandItem) setImageOnItem_(image *Image) {
+	this.Item.setImageOnItem_(image)
 	var oldImageHeight int32 = this.imageHeight
 	if image != (nil) {
 		var bounds *Rectangle = image.GetBounds()

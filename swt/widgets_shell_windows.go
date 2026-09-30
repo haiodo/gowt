@@ -177,13 +177,13 @@ func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
 }
 
 func (this *Shell) initShellParentStyle(parent *Shell, style int32) {
-	var cond171 *Display
+	var cond1 *Display
 	if parent != (nil) {
-		cond171 = parent.display
+		cond1 = parent.display
 	} else {
-		cond171 = nil
+		cond1 = nil
 	}
-	this.initShellDisplayParentStyleHandleEmbedded(cond171, parent, style, int64(0), false)
+	this.initShellDisplayParentStyleHandleEmbedded(cond1, parent, style, int64(0), false)
 }
 
 func (this *Shell) AddShellListener(listener ShellListener) {
@@ -281,13 +281,13 @@ func (this *Shell) SetTitleColoring(preferred bool) {
 			return
 		}
 	}
-	var cond172 int32
+	var cond2 int32
 	if preferred {
-		cond172 = 1
+		cond2 = 1
 	} else {
-		cond172 = 0
+		cond2 = 0
 	}
-	var value []int32 = []int32{cond172}
+	var value []int32 = []int32{cond2}
 	win32.OSDwmSetWindowAttribute(this.Handle, attributeID, value, 4)
 }
 
@@ -491,19 +491,19 @@ func (this *Shell) findBrush_(value int64, lbStyle int32) int64 {
 		hBrush = win32.OSCreatePatternBrush(value)
 		break
 	}
-	cond173 := hBrush
-	this.brushes[0] = cond173
-	return cond173
+	cond3 := hBrush
+	this.brushes[0] = cond3
+	return cond3
 }
 
 func (this *Shell) findBackgroundControl_() *Control {
-	var cond174 *Control
+	var cond4 *Control
 	if this.background != -1 || this.backgroundImage != (nil) {
-		cond174 = upcastShellToControl(this)
+		cond4 = upcastShellToControl(this)
 	} else {
-		cond174 = nil
+		cond4 = nil
 	}
-	return cond174
+	return cond4
 }
 
 func (this *Shell) findCursor_() *Cursor {
@@ -519,13 +519,13 @@ func (this *Shell) FindToolTip(id int32) *ToolTip {
 		return nil
 	}
 	id = id - DisplayID_START
-	var cond175 *ToolTip
+	var cond5 *ToolTip
 	if 0 <= id && id < int32(len(this.toolTips)) {
-		cond175 = this.toolTips[id]
+		cond5 = this.toolTips[id]
 	} else {
-		cond175 = nil
+		cond5 = nil
 	}
-	return cond175
+	return cond5
 }
 
 func (this *Shell) FixActiveShell() {
@@ -710,10 +710,7 @@ func (this *Shell) getMaximized_() bool {
 
 func (this *Shell) GetMaximumSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetMaximumSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetMaximumSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Shell) GetMaximumSizeInPixels() *Point {
@@ -739,10 +736,7 @@ func (this *Shell) GetMaximumSizeInPixels() *Point {
 
 func (this *Shell) GetMinimumSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetMinimumSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetMinimumSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Shell) GetMinimumSizeInPixels() *Point {
@@ -819,9 +813,9 @@ func (this *Shell) GetShells() []*Shell {
 			}
 		}
 		if shell == upcastShellToControl(this) {
-			t176 := index
+			t6 := index
 			index++
-			result[t176] = activeshell
+			result[t6] = activeshell
 		}
 	}
 	return result
@@ -837,13 +831,13 @@ func (this *Shell) GetZoom() int32 {
 }
 
 func (this *Shell) findDeferredControl_() *Composite {
-	var cond177 *Composite
+	var cond7 *Composite
 	if this.layoutCount > 0 {
-		cond177 = upcastShellToComposite(this)
+		cond7 = upcastShellToComposite(this)
 	} else {
-		cond177 = nil
+		cond7 = nil
 	}
-	return cond177
+	return cond7
 }
 
 func (this *Shell) isEnabled_() bool {
@@ -894,8 +888,8 @@ func (this *Shell) Open() {
 	}
 	if restored {
 		var focusControl *Control = this.display.GetFocusControl()
-		_, ok178 := isControlToButton(focusControl)
-		if ok178 && (focusControl.style&PUSH) != 0 {
+		_, ok8 := isControlToButton(focusControl)
+		if ok8 && (focusControl.style&PUSH) != 0 {
 			restored = false
 		}
 	}
@@ -963,13 +957,13 @@ func (this *Shell) ReleaseBrushes() {
 func (this *Shell) releaseChildren_(destroy bool) {
 	for _, shell := range this.GetShells() {
 		if shell != (nil) && !shell.IsDisposed() {
-			shell.Release(false)
+			shell.impl.release_(false)
 		}
 	}
 	if this.toolTips != (nil) {
 		for _, toolTip := range this.toolTips {
 			if toolTip != (nil) && !toolTip.IsDisposed() {
-				toolTip.Release(false)
+				toolTip.impl.release_(false)
 			}
 		}
 	}
@@ -1306,10 +1300,7 @@ func (this *Shell) SetMaximumSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	size = func() *Point {
-		_ = []any{size, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsSize")
-	}()
+	size = Win32DPIUtilsPointToPixelAsSizePointZoom(size, this.impl.getAutoscalingZoom_())
 	this.SetMaximumSizeInPixels(size.X, size.Y)
 }
 
@@ -1393,10 +1384,7 @@ func (this *Shell) SetMinimumSizeSize(sizeLike PointLike) {
 	if size == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	size = func() *Point {
-		_ = []any{size, this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixelAsSize")
-	}()
+	size = Win32DPIUtilsPointToPixelAsSizePointZoom(size, this.impl.getAutoscalingZoom_())
 	this.SetMinimumSizeInPixels(size.X, size.Y)
 }
 
@@ -1417,7 +1405,7 @@ func (this *Shell) SetItemEnabled(cmd int32, enabled bool) {
 	win32.OSEnableMenuItem(hMenu, cmd, win32.OSMF_BYCOMMAND|flags)
 }
 
-func (this *Shell) setParentOnDecorations_() {
+func (this *Shell) setParentNoArgs_() {
 }
 
 func (this *Shell) setRegion_(region *Region) {
@@ -1432,7 +1420,7 @@ func (this *Shell) setRegion_(region *Region) {
 	this.Decorations.setRegion_(region)
 }
 
-func (this *Shell) SetToolTipText(hwnd int64, text string) {
+func (this *Shell) SetToolTipTextHwndText(hwnd int64, text string) {
 	var lpti *win32.TOOLINFO = win32.NewTOOLINFO()
 	lpti.CbSize = win32.TOOLINFOSizeof
 	lpti.Hwnd = this.Handle
@@ -1456,7 +1444,7 @@ func (this *Shell) SetToolTipText(hwnd int64, text string) {
 	}
 }
 
-func (this *Shell) SetToolTipTextLpnmtdiBuffer(lpnmtdi *win32.NMTTDISPINFO, buffer []uint16) {
+func (this *Shell) SetToolTipTextLpnmtdiBufferLpnmtdiBuffer(lpnmtdi *win32.NMTTDISPINFO, buffer []uint16) {
 	if !this.HasCursor() {
 		return
 	}
@@ -1646,13 +1634,13 @@ func (this *Shell) widgetParent_() int64 {
 	if this.Handle != 0 {
 		return this.Handle
 	}
-	var cond179 int64
+	var cond9 int64
 	if this.parent != (nil) {
-		cond179 = this.parent.Handle
+		cond9 = this.parent.Handle
 	} else {
-		cond179 = int64(0)
+		cond9 = int64(0)
 	}
-	return cond179
+	return cond9
 }
 
 func (this *Shell) widgetExtStyle_() int32 {
@@ -1681,13 +1669,13 @@ func (this *Shell) windowClass_() *win32.TCHAR {
 			return this.display.windowShadowClass
 		}
 	}
-	var cond180 *win32.TCHAR
+	var cond10 *win32.TCHAR
 	if this.parent != (nil) {
-		cond180 = ShellDialogClass
+		cond10 = ShellDialogClass
 	} else {
-		cond180 = this.Decorations.windowClass_()
+		cond10 = this.Decorations.windowClass_()
 	}
-	return cond180
+	return cond10
 }
 
 func (this *Shell) windowProc_() int64 {
@@ -1700,13 +1688,13 @@ func (this *Shell) windowProc_() int64 {
 			return this.Decorations.windowProc_()
 		}
 	}
-	var cond181 int64
+	var cond11 int64
 	if this.parent != (nil) {
-		cond181 = ShellDialogProc
+		cond11 = ShellDialogProc
 	} else {
-		cond181 = this.Decorations.windowProc_()
+		cond11 = this.Decorations.windowProc_()
 	}
-	return cond181
+	return cond11
 }
 
 func (this *Shell) GetClientRectInWindow() *Rectangle {
@@ -1843,13 +1831,13 @@ func (this *Shell) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT {
 			}
 		}
 	}
-	var cond182 *win32.LRESULT
+	var cond12 *win32.LRESULT
 	if this.parent != (nil) {
-		cond182 = win32.LRESULTZERO
+		cond12 = win32.LRESULTZERO
 	} else {
-		cond182 = result
+		cond12 = result
 	}
-	return cond182
+	return cond12
 }
 
 func (this *Shell) wM_DESTROY_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1857,7 +1845,7 @@ func (this *Shell) wM_DESTROY_(wParam int64, lParam int64) *win32.LRESULT {
 	var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_STYLE)
 	if (bits & win32.OSWS_CHILD) != 0 {
 		this.impl.releaseParent_()
-		this.Release(false)
+		this.impl.release_(false)
 	}
 	return result
 }
@@ -1995,7 +1983,7 @@ func (this *Shell) wM_MOUSEACTIVATE_(wParam int64, lParam int64) *win32.LRESULT 
 	if hwnd == 0 {
 		return nil
 	}
-	var control *Control = this.display.FindControl(hwnd)
+	var control *Control = this.display.FindControlLocal1(hwnd)
 	if control != (nil) && (control.state&WidgetCANVAS) != 0 {
 		if (control.style & NO_FOCUS) != 0 {
 			var bits int32 = ON_TOP | NO_FOCUS
@@ -2202,21 +2190,21 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
-		var cond183 int32
+		var cond13 int32
 		if parent == (nil) {
-			cond183 = SHELL_TRIM
+			cond13 = SHELL_TRIM
 		} else {
-			cond183 = DIALOG_TRIM
+			cond13 = DIALOG_TRIM
 		}
-		style |= cond183
+		style |= cond13
 		if (style & mask) == 0 {
-			var cond184 int32
+			var cond14 int32
 			if parent == (nil) {
-				cond184 = APPLICATION_MODAL
+				cond14 = APPLICATION_MODAL
 			} else {
-				cond184 = PRIMARY_MODAL
+				cond14 = PRIMARY_MODAL
 			}
-			style |= cond184
+			style |= cond14
 		}
 	}
 	var bits int32 = style & ^mask
@@ -2268,7 +2256,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Shell static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Shell static{}:", r)
 			}
 		}()
 		var lpWndClass *win32.WNDCLASS = win32.NewWNDCLASS()

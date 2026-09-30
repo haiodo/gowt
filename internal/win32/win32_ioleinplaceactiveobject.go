@@ -22,21 +22,21 @@ func (this *IOleInPlaceActiveObject) TranslateAccelerator(lpmsg *MSG) int32 {
 }
 
 func (this *IOleInPlaceActiveObject) OnFrameWindowActivate(fActivate bool) {
-	var cond20 int32
+	var cond1 int32
 	if fActivate {
-		cond20 = 1
+		cond1 = 1
 	} else {
-		cond20 = 0
+		cond1 = 0
 	}
-	COMVtblCallOverload1(6, this.address, cond20)
+	COMVtblCallOverload1(6, this.address, cond1)
 }
 
 func (this *IOleInPlaceActiveObject) ResizeBorder(prcBorder *RECT, pUIWindow int64, fFrameWindow bool) int32 {
-	var cond21 int32
+	var cond2 int32
 	if fFrameWindow {
-		cond21 = 1
+		cond2 = 1
 	} else {
-		cond21 = 0
+		cond2 = 0
 	}
-	return COMVtblCallOverload58(8, this.address, prcBorder, pUIWindow, cond21)
+	return COMVtblCallOverload58(8, this.address, prcBorder, pUIWindow, cond2)
 }

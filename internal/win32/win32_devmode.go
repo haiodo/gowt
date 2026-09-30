@@ -145,7 +145,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init DEVMODESizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init DEVMODESizeof:", r)
 			}
 		}()
 		DEVMODESizeof = OSDEVMODE_sizeof()

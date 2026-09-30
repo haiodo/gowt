@@ -42,7 +42,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init ICONINFOSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ICONINFOSizeof:", r)
 			}
 		}()
 		ICONINFOSizeof = OSICONINFO_sizeof()

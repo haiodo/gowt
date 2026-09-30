@@ -108,7 +108,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init NONCLIENTMETRICSSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NONCLIENTMETRICSSizeof:", r)
 			}
 		}()
 		NONCLIENTMETRICSSizeof = OSNONCLIENTMETRICS_sizeof()

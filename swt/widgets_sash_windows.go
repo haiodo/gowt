@@ -60,10 +60,7 @@ func (this *Sash) createHandle_() {
 
 func (this *Sash) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
 	this.CheckWidget()
-	var hintInPixels *Point = func() *Point {
-		_ = []any{hintInPoints, zoom}
-		panic("j2go: unresolved call pointToPixelAsSufficientlyLargeSize")
-	}()
+	var hintInPixels *Point = Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(hintInPoints, zoom)
 	var border int32 = this.impl.getBorderWidthInPixels_()
 	var width int32 = border * 2
 	var height int32 = border * 2
@@ -188,11 +185,8 @@ func (this *Sash) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSClientToScreen(hwndTrack, cursorPt)
 		win32.OSSetCursorPos(cursorPt.X, cursorPt.Y)
 		var event *Event = NewEvent()
-		event.SetBounds(func() *Rectangle {
-			_ = []any{NewRectangle(newX, newY, width, height), this.impl.getAutoscalingZoom_()}
-			panic("j2go: unresolved call pixelToPoint")
-		}())
-		this.SendSelectionEventTypeEventSend(Selection, event, true)
+		event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(newX, newY, width, height), this.impl.getAutoscalingZoom_()))
+		this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		if this.IsDisposed() {
 			return win32.LRESULTZERO
 		}
@@ -229,21 +223,15 @@ func (this *Sash) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top
 	var event *Event = NewEvent()
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(this.lastX, this.lastY, width, height), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(this.lastX, this.lastY, width, height), this.impl.getAutoscalingZoom_()))
 	if (this.style & SMOOTH) == 0 {
 		event.Detail = DRAG
 	}
-	this.SendSelectionEventTypeEventSend(Selection, event, true)
+	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	if this.IsDisposed() {
 		return win32.LRESULTZERO
 	}
-	var boundsInPixels *Rectangle = func() *Rectangle {
-		_ = []any{event.GetBounds(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pointToPixel")
-	}()
+	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
 	if event.Doit {
 		this.dragging = true
 		this.lastX = boundsInPixels.X
@@ -276,12 +264,9 @@ func (this *Sash) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT {
 	var widthInPixels int32 = rect.Right - rect.Left
 	var heightInPixels int32 = rect.Bottom - rect.Top
 	var event *Event = NewEvent()
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(this.lastX, this.lastY, widthInPixels, heightInPixels), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(this.lastX, this.lastY, widthInPixels, heightInPixels), this.impl.getAutoscalingZoom_()))
 	this.DrawBand(this.lastX, this.lastY, widthInPixels, heightInPixels)
-	this.SendSelectionEventTypeEventSend(Selection, event, true)
+	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	if this.IsDisposed() {
 		return result
 	}
@@ -329,14 +314,11 @@ func (this *Sash) wM_MOUSEMOVE_(wParam int64, lParam int64) *win32.LRESULT {
 	this.DrawBand(this.lastX, this.lastY, width, height)
 	var zoom int32 = this.impl.getAutoscalingZoom_()
 	var event *Event = NewEvent()
-	event.SetBounds(func() *Rectangle {
-		_ = []any{NewRectangle(newX, newY, width, height), zoom}
-		panic("j2go: unresolved call pixelToPoint")
-	}())
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(newX, newY, width, height), zoom))
 	if (this.style & SMOOTH) == 0 {
 		event.Detail = DRAG
 	}
-	this.SendSelectionEventTypeEventSend(Selection, event, true)
+	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	if this.IsDisposed() {
 		return win32.LRESULTZERO
 	}

@@ -124,10 +124,7 @@ func (this *ScrollBar) GetSelection() int32 {
 
 func (this *ScrollBar) GetSize() *Point {
 	this.CheckWidget()
-	return func() *Point {
-		_ = []any{this.GetSizeInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPointAsSize")
-	}()
+	return Win32DPIUtilsPixelToPointAsSizePointZoom(this.GetSizeInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ScrollBar) GetSizeInPixels() *Point {
@@ -162,10 +159,7 @@ func (this *ScrollBar) GetThumb() int32 {
 
 func (this *ScrollBar) GetThumbBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetThumbBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetThumbBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ScrollBar) GetThumbBoundsInPixels() *Rectangle {
@@ -200,10 +194,7 @@ func (this *ScrollBar) GetThumbBoundsInPixels() *Rectangle {
 
 func (this *ScrollBar) GetThumbTrackBounds() *Rectangle {
 	this.CheckWidget()
-	return func() *Rectangle {
-		_ = []any{this.GetThumbTrackBoundsInPixels(), this.impl.getAutoscalingZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetThumbTrackBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ScrollBar) GetThumbTrackBoundsInPixels() *Rectangle {
@@ -306,13 +297,13 @@ func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *ScrollBar) ScrollBarType() int32 {
-	var cond602 int32
+	var cond1 int32
 	if (this.style & VERTICAL) != 0 {
-		cond602 = win32.OSSB_VERT
+		cond1 = win32.OSSB_VERT
 	} else {
-		cond602 = win32.OSSB_HORZ
+		cond1 = win32.OSSB_HORZ
 	}
-	return cond602
+	return cond1
 }
 
 func (this *ScrollBar) SetEnabled(enabled bool) {
@@ -403,22 +394,22 @@ func (this *ScrollBar) SetScrollInfo(hwnd int64, flags int32, info *win32.SCROLL
 	}
 	var result bool = win32.OSSetScrollInfo(hwnd, flags, info, fRedraw)
 	if !visible {
-		var cond603 int32
+		var cond2 int32
 		if !barVisible {
-			cond603 = win32.OSSB_BOTH
+			cond2 = win32.OSSB_BOTH
 		} else {
-			cond603 = flags
+			cond2 = flags
 		}
-		win32.OSShowScrollBar(hwnd, cond603, false)
+		win32.OSShowScrollBar(hwnd, cond2, false)
 	}
 	if visible && bar != (nil) && !barVisible {
-		var cond604 int32
+		var cond3 int32
 		if flags == win32.OSSB_HORZ {
-			cond604 = win32.OSSB_VERT
+			cond3 = win32.OSSB_VERT
 		} else {
-			cond604 = win32.OSSB_HORZ
+			cond3 = win32.OSSB_HORZ
 		}
-		win32.OSShowScrollBar(hwnd, cond604, false)
+		win32.OSShowScrollBar(hwnd, cond3, false)
 	}
 	if (this.state & WidgetDISABLED) != 0 {
 		win32.OSEnableScrollBar(hwnd, flags, win32.OSESB_DISABLE_BOTH)
@@ -512,13 +503,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 		}
 		win32.OSGetScrollBarInfo(hwnd, idObject, psbi)
 		if (psbi.Rgstate[0] & win32.OSSTATE_SYSTEM_INVISIBLE) != 0 {
-			var cond605 int32
+			var cond4 int32
 			if type_ == win32.OSSB_VERT {
-				cond605 = win32.OSSB_HORZ
+				cond4 = win32.OSSB_HORZ
 			} else {
-				cond605 = win32.OSSB_VERT
+				cond4 = win32.OSSB_VERT
 			}
-			win32.OSShowScrollBar(hwnd, cond605, true)
+			win32.OSShowScrollBar(hwnd, cond4, true)
 			type_ = win32.OSSB_BOTH
 		}
 	}
@@ -532,13 +523,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 				win32.OSEnableScrollBar(hwnd, type_, win32.OSESB_ENABLE_BOTH)
 			}
 		}
-		var cond606 int32
+		var cond5 int32
 		if visible {
-			cond606 = Show
+			cond5 = Show
 		} else {
-			cond606 = Hide
+			cond5 = Hide
 		}
-		this.SendEventEventType(cond606)
+		this.SendEventEventType(cond5)
 	}
 }
 
@@ -574,7 +565,7 @@ func (this *ScrollBar) WmScrollChild(wParam int64, lParam int64) *win32.LRESULT 
 		event.Detail = PAGE_UP
 		break
 	}
-	this.SendSelectionEventTypeEventSend(Selection, event, true)
+	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	return nil
 }
 

@@ -29,7 +29,7 @@ type Display struct {
 	filterTable                  *EventTable
 	useOwnDC                     bool
 	externalEventLoop            bool
-	coordinateSystemMapper       unsupported_type_org_eclipse_swt_widgets_CoordinateSystemMapper
+	coordinateSystemMapper       CoordinateSystemMapper
 	rescalingAtRuntime           bool
 	controlByHandle              *jrt.Map
 	themeDataMap                 *jrt.Map
@@ -126,10 +126,10 @@ type Display struct {
 	warningIcon                  *Image
 	cursors                      []*Cursor
 	resources                    []*Resource
-	imageList                    []unsupported_type_org_eclipse_swt_internal_ImageList
-	toolImageList                []unsupported_type_org_eclipse_swt_internal_ImageList
-	toolHotImageList             []unsupported_type_org_eclipse_swt_internal_ImageList
-	toolDisabledImageList        []unsupported_type_org_eclipse_swt_internal_ImageList
+	imageList                    []*ImageList
+	toolImageList                []*ImageList
+	toolHotImageList             []*ImageList
+	toolDisabledImageList        []*ImageList
 	lpCustColors                 int64
 	tableBuffer                  []uint16
 	resizeCount                  int32
@@ -348,7 +348,7 @@ func (this *Display) initDisplayData(data *DeviceData) {
 }
 
 func (this *Display) _getFocusControl() *Control {
-	return this.FindControl(win32.OSGetFocus())
+	return this.FindControlLocal1(win32.OSGetFocus())
 }
 
 func (this *Display) AddBar(menuLike MenuLike) {
@@ -404,9 +404,9 @@ func (this *Display) AddSkinnableWidget(widgetLike WidgetLike) {
 		copy(newSkinWidgets[0:], this.skinList[0:0+int32(len(this.skinList))])
 		this.skinList = newSkinWidgets
 	}
-	t273 := this.skinCount
+	t1 := this.skinCount
 	this.skinCount++
-	this.skinList[t273] = widget
+	this.skinList[t1] = widget
 }
 
 func (this *Display) AddFilter(eventType int32, listener Listener) {
@@ -434,9 +434,9 @@ func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
 		copy(temp[0:], this.layoutDeferred[0:0+int32(len(this.layoutDeferred))])
 		this.layoutDeferred = temp
 	}
-	t274 := this.layoutDeferredCount
+	t2 := this.layoutDeferredCount
 	this.layoutDeferredCount++
-	this.layoutDeferred[t274] = comp
+	this.layoutDeferred[t2] = comp
 }
 
 func (this *Display) AddListener(eventType int32, listener Listener) {
@@ -515,13 +515,13 @@ func (this *Display) AsciiKey(key int32) int32 {
 	for len == -1 {
 		len = win32.OSToUnicode(key, key, this.keyboard, buffer, 1, 0)
 	}
-	var cond275 uint16
+	var cond3 uint16
 	if len != 0 {
-		cond275 = buffer[0]
+		cond3 = buffer[0]
 	} else {
-		cond275 = uint16(0)
+		cond3 = uint16(0)
 	}
-	return int32(cond275)
+	return int32(cond3)
 }
 
 func (this *Display) AsyncExec(runnable jrt.Runnable) {
@@ -626,9 +626,9 @@ func (this *Display) Close() {
 
 func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
-	cond276 := jrt.CurrentThread()
-	this.thread = cond276
-	DisplayCheckDisplay(cond276, true)
+	cond4 := jrt.CurrentThread()
+	this.thread = cond4
+	DisplayCheckDisplay(cond4, true)
 	this.InitializeAutoscaling(DPIUtilIsMonitorSpecificScalingActive())
 	this.CreateDisplay(data)
 	DisplayRegister(this)
@@ -783,7 +783,7 @@ func (this *Display) Filters(eventType int32) bool {
 func (this *Display) FilterMessage(msg *win32.MSG) bool {
 	var message int32 = msg.Message
 	if win32.OSWM_KEYFIRST <= message && message <= win32.OSWM_KEYLAST {
-		var control *Control = this.FindControl(msg.Hwnd)
+		var control *Control = this.FindControlLocal1(msg.Hwnd)
 		if control != (nil) {
 			if this.TranslateAccelerator(msg, control) || this.TranslateMnemonic(msg, control) || this.TranslateTraversal(msg, control) {
 				this.lastKey = 0
@@ -797,7 +797,7 @@ func (this *Display) FilterMessage(msg *win32.MSG) bool {
 	return false
 }
 
-func (this *Display) FindControl(handle int64) *Control {
+func (this *Display) FindControlLocal1(handle int64) *Control {
 	if handle == 0 {
 		return nil
 	}
@@ -824,13 +824,13 @@ func (this *Display) FindWidget(handle int64) *Widget {
 func (this *Display) FindWidgetHandleId(handle int64, id int64) *Widget {
 	this.impl.checkDevice_()
 	var control *Control = this.GetControl(handle)
-	var cond277 *Widget
+	var cond5 *Widget
 	if control != (nil) {
-		cond277 = control.impl.findItem_(id)
+		cond5 = control.impl.findItem_(id)
 	} else {
-		cond277 = nil
+		cond5 = nil
 	}
-	return cond277
+	return cond5
 }
 
 func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget {
@@ -840,8 +840,8 @@ func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget
 	}
 	_ = widget
 	this.impl.checkDevice_()
-	_, ok278 := isWidgetToControl(widget)
-	if ok278 {
+	_, ok6 := isWidgetToControl(widget)
+	if ok6 {
 		return this.FindWidgetHandleId((castWidgetToControl(widget)).Handle, id)
 	}
 	return nil
@@ -903,21 +903,21 @@ func (this *Display) FindTouchSource(touchDevice int64, monitorLike MonitorLike)
 		copy(newTouchSources[0:], this.touchSources[0:0+length])
 		this.touchSources = newTouchSources
 	}
-	cond279 := newTouchSource(touchDevice, true, monitor.GetBounds())
-	this.touchSources[index] = cond279
-	return cond279
+	cond7 := newTouchSource(touchDevice, true, monitor.GetBounds())
+	this.touchSources[index] = cond7
+	return cond7
 }
 
 func (this *Display) GetActiveShell() *Shell {
 	this.impl.checkDevice_()
-	var control *Control = this.FindControl(win32.OSGetActiveWindow())
-	var cond280 *Shell
+	var control *Control = this.FindControlLocal1(win32.OSGetActiveWindow())
+	var cond8 *Shell
 	if control != (nil) {
-		cond280 = control.impl.getShell_()
+		cond8 = control.impl.getShell_()
 	} else {
-		cond280 = nil
+		cond8 = nil
 	}
-	return cond280
+	return cond8
 }
 
 func (this *Display) GetMenuBar() *Menu {
@@ -927,10 +927,7 @@ func (this *Display) GetMenuBar() *Menu {
 
 func (this *Display) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return func() *Rectangle {
-		_ = []any{this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
 }
 
 func (this *Display) getBoundsInPixels_() *Rectangle {
@@ -954,11 +951,11 @@ func (this *Display) GetClickCount(type_ int32, button int32, hwnd int64, lParam
 		if this.clickRect == (nil) {
 			this.clickRect = win32.NewRECT()
 		}
-		abs281 := this.lastTime - this.GetLastEventTime()
-		if abs281 < 0 {
-			abs281 = -abs281
+		abs9 := this.lastTime - this.GetLastEventTime()
+		if abs9 < 0 {
+			abs9 = -abs9
 		}
-		var deltaTime int32 = abs281
+		var deltaTime int32 = abs9
 		var pt *win32.POINT = win32.NewPOINT()
 		win32.OSPOINTSTOPOINT(pt, lParam)
 		if this.lastClickHwnd == hwnd && this.lastButton == button && (deltaTime <= doubleClick) && win32.OSPtInRect(this.clickRect, pt) {
@@ -985,10 +982,7 @@ func (this *Display) GetClickCount(type_ int32, button int32, hwnd int64, lParam
 
 func (this *Display) getClientArea_() *Rectangle {
 	this.impl.checkDevice_()
-	return func() *Rectangle {
-		_ = []any{this.GetClientAreaInPixels(), this.impl.getDeviceZoom_()}
-		panic("j2go: unresolved call pixelToPoint")
-	}()
+	return Win32DPIUtilsPixelToPointOverload6(this.GetClientAreaInPixels(), this.impl.getDeviceZoom_())
 }
 
 func (this *Display) GetClientAreaInPixels() *Rectangle {
@@ -1018,22 +1012,16 @@ func (this *Display) GetCursorControl() *Control {
 	if !win32.OSGetCursorPos(pt) {
 		return nil
 	}
-	return this.FindControl(win32.OSWindowFromPoint(pt))
+	return this.FindControlLocal1(win32.OSWindowFromPoint(pt))
 }
 
 func (this *Display) GetCursorLocation() *Point {
 	this.impl.checkDevice_()
-	return func() *Point {
-		_ = []any{this.coordinateSystemMapper}
-		panic("j2go: unresolved call getCursorLocation")
-	}()
+	return this.coordinateSystemMapper.GetCursorLocation()
 }
 
 func (this *Display) FitRectangleBoundsIntoMonitorWithCursor(rect *win32.RECT) *Rectangle {
-	var monitorBounds *Rectangle = func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, this.GetCursorLocation()}
-		panic("j2go: unresolved call getContainingMonitorBoundsInPixels")
-	}()
+	var monitorBounds *Rectangle = this.coordinateSystemMapper.GetContainingMonitorBoundsInPixels(this.GetCursorLocation())
 	if monitorBounds == (nil) {
 		return nil
 	}
@@ -1194,115 +1182,115 @@ func (this *Display) GetIconSizes() []*Point {
 	return []*Point{NewPoint(win32.OSGetSystemMetrics(win32.OSSM_CXSMICON), win32.OSGetSystemMetrics(win32.OSSM_CYSMICON)), NewPoint(win32.OSGetSystemMetrics(win32.OSSM_CXICON), win32.OSGetSystemMetrics(win32.OSSM_CYICON))}
 }
 
-func (this *Display) GetImageList(style int32, width int32, height int32, zoom int32) unsupported_type_org_eclipse_swt_internal_ImageList {
+func (this *Display) GetImageList(style int32, width int32, height int32, zoom int32) *ImageList {
 	if this.imageList == (nil) {
-		this.imageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, 4)
+		this.imageList = make([]*ImageList, 4)
 	}
 	var i int32 = 0
 	var length int32 = int32(len(this.imageList))
 	for i < length {
-		var list unsupported_type_org_eclipse_swt_internal_ImageList = this.imageList[i]
+		var list *ImageList = this.imageList[i]
 		if list == (nil) {
 			break
 		}
-		if func() bool { _ = []any{list, style, width, height}; panic("j2go: unresolved call isFittingFor") }() {
-			func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+		if list.IsFittingFor(style, width, height) {
+			list.AddRef()
 			return list
 		}
 		i++
 	}
 	if i == length {
-		var newList []unsupported_type_org_eclipse_swt_internal_ImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, length+4)
+		var newList []*ImageList = make([]*ImageList, length+4)
 		copy(newList[0:], this.imageList[0:0+length])
 		this.imageList = newList
 	}
-	var list unsupported_type_org_eclipse_swt_internal_ImageList = func() any { _ = []any{style, width, height, zoom}; panic("j2go: unresolved new ImageList") }()
+	var list *ImageList = NewImageListStyleWidthHeightZoom(style, width, height, zoom)
 	this.imageList[i] = list
-	func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+	list.AddRef()
 	return list
 }
 
-func (this *Display) GetImageListToolBar(style int32, width int32, height int32, zoom int32) unsupported_type_org_eclipse_swt_internal_ImageList {
+func (this *Display) GetImageListToolBar(style int32, width int32, height int32, zoom int32) *ImageList {
 	if this.toolImageList == (nil) {
-		this.toolImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, 4)
+		this.toolImageList = make([]*ImageList, 4)
 	}
 	var i int32 = 0
 	var length int32 = int32(len(this.toolImageList))
 	for i < length {
-		var list unsupported_type_org_eclipse_swt_internal_ImageList = this.toolImageList[i]
+		var list *ImageList = this.toolImageList[i]
 		if list == (nil) {
 			break
 		}
-		if func() bool { _ = []any{list, style, width, height}; panic("j2go: unresolved call isFittingFor") }() {
-			func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+		if list.IsFittingFor(style, width, height) {
+			list.AddRef()
 			return list
 		}
 		i++
 	}
 	if i == length {
-		var newList []unsupported_type_org_eclipse_swt_internal_ImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, length+4)
+		var newList []*ImageList = make([]*ImageList, length+4)
 		copy(newList[0:], this.toolImageList[0:0+length])
 		this.toolImageList = newList
 	}
-	var list unsupported_type_org_eclipse_swt_internal_ImageList = func() any { _ = []any{style, width, height, zoom}; panic("j2go: unresolved new ImageList") }()
+	var list *ImageList = NewImageListStyleWidthHeightZoom(style, width, height, zoom)
 	this.toolImageList[i] = list
-	func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+	list.AddRef()
 	return list
 }
 
-func (this *Display) GetImageListToolBarDisabled(style int32, width int32, height int32, zoom int32) unsupported_type_org_eclipse_swt_internal_ImageList {
+func (this *Display) GetImageListToolBarDisabled(style int32, width int32, height int32, zoom int32) *ImageList {
 	if this.toolDisabledImageList == (nil) {
-		this.toolDisabledImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, 4)
+		this.toolDisabledImageList = make([]*ImageList, 4)
 	}
 	var i int32 = 0
 	var length int32 = int32(len(this.toolDisabledImageList))
 	for i < length {
-		var list unsupported_type_org_eclipse_swt_internal_ImageList = this.toolDisabledImageList[i]
+		var list *ImageList = this.toolDisabledImageList[i]
 		if list == (nil) {
 			break
 		}
-		if func() bool { _ = []any{list, style, width, height}; panic("j2go: unresolved call isFittingFor") }() {
-			func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+		if list.IsFittingFor(style, width, height) {
+			list.AddRef()
 			return list
 		}
 		i++
 	}
 	if i == length {
-		var newList []unsupported_type_org_eclipse_swt_internal_ImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, length+4)
+		var newList []*ImageList = make([]*ImageList, length+4)
 		copy(newList[0:], this.toolDisabledImageList[0:0+length])
 		this.toolDisabledImageList = newList
 	}
-	var list unsupported_type_org_eclipse_swt_internal_ImageList = func() any { _ = []any{style, width, height, zoom}; panic("j2go: unresolved new ImageList") }()
+	var list *ImageList = NewImageListStyleWidthHeightZoom(style, width, height, zoom)
 	this.toolDisabledImageList[i] = list
-	func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+	list.AddRef()
 	return list
 }
 
-func (this *Display) GetImageListToolBarHot(style int32, width int32, height int32, zoom int32) unsupported_type_org_eclipse_swt_internal_ImageList {
+func (this *Display) GetImageListToolBarHot(style int32, width int32, height int32, zoom int32) *ImageList {
 	if this.toolHotImageList == (nil) {
-		this.toolHotImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, 4)
+		this.toolHotImageList = make([]*ImageList, 4)
 	}
 	var i int32 = 0
 	var length int32 = int32(len(this.toolHotImageList))
 	for i < length {
-		var list unsupported_type_org_eclipse_swt_internal_ImageList = this.toolHotImageList[i]
+		var list *ImageList = this.toolHotImageList[i]
 		if list == (nil) {
 			break
 		}
-		if func() bool { _ = []any{list, style, width, height}; panic("j2go: unresolved call isFittingFor") }() {
-			func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+		if list.IsFittingFor(style, width, height) {
+			list.AddRef()
 			return list
 		}
 		i++
 	}
 	if i == length {
-		var newList []unsupported_type_org_eclipse_swt_internal_ImageList = make([]unsupported_type_org_eclipse_swt_internal_ImageList, length+4)
+		var newList []*ImageList = make([]*ImageList, length+4)
 		copy(newList[0:], this.toolHotImageList[0:0+length])
 		this.toolHotImageList = newList
 	}
-	var list unsupported_type_org_eclipse_swt_internal_ImageList = func() any { _ = []any{style, width, height, zoom}; panic("j2go: unresolved new ImageList") }()
+	var list *ImageList = NewImageListStyleWidthHeightZoom(style, width, height, zoom)
 	this.toolHotImageList[i] = list
-	func() int32 { _ = []any{list}; panic("j2go: unresolved call addRef") }()
+	list.AddRef()
 	return list
 }
 
@@ -1369,14 +1357,8 @@ func (this *Display) GetMonitor(hmonitor int64) *Monitor {
 	monitor.zoom = result
 	var boundsInPixels *Rectangle_WithMonitor = NewRectangleWithMonitor(lpmi.RcMonitor_left, lpmi.RcMonitor_top, lpmi.RcMonitor_right-lpmi.RcMonitor_left, lpmi.RcMonitor_bottom-lpmi.RcMonitor_top, monitor)
 	var clientAreaInPixels *Rectangle_WithMonitor = NewRectangleWithMonitor(lpmi.RcWork_left, lpmi.RcWork_top, lpmi.RcWork_right-lpmi.RcWork_left, lpmi.RcWork_bottom-lpmi.RcWork_top, monitor)
-	monitor.SetBounds(func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, boundsInPixels}
-		panic("j2go: unresolved call mapMonitorBounds")
-	}())
-	monitor.SetClientArea(func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, clientAreaInPixels}
-		panic("j2go: unresolved call mapMonitorBounds")
-	}())
+	monitor.SetBounds(this.coordinateSystemMapper.MapMonitorBounds(boundsInPixels))
+	monitor.SetClientArea(this.coordinateSystemMapper.MapMonitorBounds(clientAreaInPixels))
 	return monitor
 }
 
@@ -1407,7 +1389,7 @@ func (this *Display) GetMsgProc(code int64, wParam int64, lParam int64) int64 {
 		switch msg.Message {
 		case win32.OSWM_KEYDOWN, win32.OSWM_KEYUP, win32.OSWM_SYSKEYDOWN, win32.OSWM_SYSKEYUP:
 			{
-				var control *Control = this.FindControl(msg.Hwnd)
+				var control *Control = this.FindControlLocal1(msg.Hwnd)
 				if control != (nil) {
 					var hHeap int64 = win32.OSGetProcessHeap()
 					var keyMsg int64 = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, win32.MSGSizeof)
@@ -1453,19 +1435,19 @@ func (this *Display) GetSynchronizer() *Synchronizer {
 
 func (this *Display) GetSyncThread() any {
 	jrt.MonitorEnter()
-	var tret282 any
-	tretd283 := false
+	var tret10 any
+	tretd11 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret282 = this.synchronizer.syncThread
-		tretd283 = true
+		tret10 = this.synchronizer.syncThread
+		tretd11 = true
 		return
 	}()
-	_ = tretd283
-	return tret282
+	_ = tretd11
+	return tret10
 }
 
 func (this *Display) getSystemColor_(id int32) *Color {
@@ -1550,21 +1532,18 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 		return nil
 	}
 	if this.cursors[id] == (nil) {
-		this.cursors[id] = NewCursor(upcastDisplayToDevice(this), id)
+		this.cursors[id] = NewCursorDeviceStyle(upcastDisplayToDevice(this), id)
 	}
 	return this.cursors[id]
 }
 
 func (this *Display) getSystemFont_() *Font {
-	return this.GetSystemFontZoom(this.GetPrimaryMonitor().GetZoom())
+	return this.GetSystemFontZoomZoom(this.GetPrimaryMonitor().GetZoom())
 }
 
-func (this *Display) GetSystemFontZoom(zoom int32) *Font {
+func (this *Display) GetSystemFontZoomZoom(zoom int32) *Font {
 	this.impl.checkDevice_()
-	var systemFont *Font = func() *Font {
-		_ = []any{upcastDisplayToDevice(this), zoom}
-		panic("j2go: unresolved call getSystemFont")
-	}()
+	var systemFont *Font = SWTFontProviderGetSystemFont(upcastDisplayToDevice(this), zoom)
 	if this.systemFont == (nil) {
 		this.systemFont = systemFont
 		if systemFont != (nil) {
@@ -1635,8 +1614,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 	if this.taskBar != (nil) {
 		return this.taskBar
 	}
-	var tret284 *TaskBar
-	tretd285 := false
+	var tret12 *TaskBar
+	tretd13 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -1653,8 +1632,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 				e := r.(*SWTError)
 				_ = e
 				if e.Code == ERROR_NOT_IMPLEMENTED {
-					tret284 = nil
-					tretd285 = true
+					tret12 = nil
+					tretd13 = true
 					return
 				}
 				panic(e)
@@ -1664,8 +1643,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 		}()
 		this.taskBar = newTaskBar(this, NONE)
 	}()
-	if tretd285 {
-		return tret284
+	if tretd13 {
+		return tret12
 	}
 	return this.taskBar
 }
@@ -1680,19 +1659,19 @@ func (this *Display) GetSystemTray() *Tray {
 
 func (this *Display) GetThread() any {
 	jrt.MonitorEnter()
-	var tret286 any
-	tretd287 := false
+	var tret14 any
+	tretd15 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret286 = this.thread
-		tretd287 = true
+		tret14 = this.thread
+		tretd15 = true
 		return
 	}()
-	_ = tretd287
-	return tret286
+	_ = tretd15
+	return tret14
 }
 
 func (this *Display) GetTouchEnabled() bool {
@@ -1780,7 +1759,7 @@ func (this *Display) init_() {
 	this.controlByHandle = jrt.NewMap()
 	this.synchronizer = NewSynchronizer(this)
 	if this.coordinateSystemMapper == (nil) {
-		this.coordinateSystemMapper = func() any { _ = []any{this}; panic("j2go: unresolved new SingleZoomCoordinateSystemMapper") }()
+		this.coordinateSystemMapper = newSingleZoomCoordinateSystemMapper(this)
 	}
 	this.Device.init_()
 	DPIUtilSetDeviceZoom(this.impl.getDeviceZoom_())
@@ -1797,7 +1776,7 @@ func (this *Display) init_() {
 			win32.OSCoTaskMemFree(appID[0])
 		}
 	}
-	this.windowCallback = NewCallbackFn(func(args []int64) int64 { return this.WindowProc(args[0], args[1], args[2], args[3]) }, 4)
+	this.windowCallback = NewCallbackFn(func(args []int64) int64 { return this.WindowProcIdSelArg0Arg1(args[0], args[1], args[2], args[3]) }, 4)
 	this.windowProc = this.windowCallback.GetAddress()
 	this.threadId = win32.OSGetCurrentThreadId()
 	this.windowClass = win32.NewTCHARStringTerminate(fmt.Sprintf("%s%d", DisplayWindowName, DisplayWindowClassCount), true)
@@ -1887,10 +1866,7 @@ func (this *Display) Map(fromLike ControlLike, toLike ControlLike, pointLike Poi
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return func() *Point {
-		_ = []any{this.coordinateSystemMapper, from, to, point}
-		panic("j2go: unresolved call map")
-	}()
+	return this.coordinateSystemMapper.MapFromToPoint(from, to, point)
 }
 
 func (this *Display) MapInPixels(fromLike ControlLike, toLike ControlLike, pointLike PointLike) *Point {
@@ -1924,10 +1900,7 @@ func (this *Display) MapFromToXY(fromLike ControlLike, toLike ControlLike, x int
 	}
 	_ = to
 	this.impl.checkDevice_()
-	return func() *Point {
-		_ = []any{this.coordinateSystemMapper, from, to, x, y}
-		panic("j2go: unresolved call map")
-	}()
+	return this.coordinateSystemMapper.MapFromToXY(from, to, x, y)
 }
 
 func (this *Display) MapInPixelsFromToXY(fromLike ControlLike, toLike ControlLike, x int32, y int32) *Point {
@@ -1989,10 +1962,7 @@ func (this *Display) MapFromToRectangle(fromLike ControlLike, toLike ControlLike
 	if rectangle == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, from, to, rectangle}
-		panic("j2go: unresolved call map")
-	}()
+	return this.coordinateSystemMapper.Map(from, to, rectangle)
 }
 
 func (this *Display) MapInPixelsFromToRectangle(fromLike ControlLike, toLike ControlLike, rectangleLike RectangleLike) *Rectangle {
@@ -2026,10 +1996,7 @@ func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike Control
 	}
 	_ = to
 	this.impl.checkDevice_()
-	return func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, from, to, x, y, width, height}
-		panic("j2go: unresolved call map")
-	}()
+	return this.coordinateSystemMapper.MapFromToXYWidthHeight(from, to, x, y, width, height)
 }
 
 func (this *Display) MapInPixelsFromToXYWidthHeight(fromLike ControlLike, toLike ControlLike, x int32, y int32, width int32, height int32) *Rectangle {
@@ -2079,10 +2046,7 @@ func (this *Display) TranslateFromDisplayCoordinates(pointLike PointLike) *Point
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return func() *Point {
-		_ = []any{this.coordinateSystemMapper, point}
-		panic("j2go: unresolved call translateFromDisplayCoordinates")
-	}()
+	return this.coordinateSystemMapper.TranslateFromDisplayCoordinates(point)
 }
 
 func (this *Display) TranslateToDisplayCoordinates(pointLike PointLike) *Point {
@@ -2091,10 +2055,7 @@ func (this *Display) TranslateToDisplayCoordinates(pointLike PointLike) *Point {
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return func() *Point {
-		_ = []any{this.coordinateSystemMapper, point}
-		panic("j2go: unresolved call translateToDisplayCoordinates")
-	}()
+	return this.coordinateSystemMapper.TranslateToDisplayCoordinates(point)
 }
 
 func (this *Display) TranslateFromDisplayCoordinatesRect(rectLike RectangleLike) *Rectangle {
@@ -2103,10 +2064,7 @@ func (this *Display) TranslateFromDisplayCoordinatesRect(rectLike RectangleLike)
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, rect}
-		panic("j2go: unresolved call translateFromDisplayCoordinates")
-	}()
+	return this.coordinateSystemMapper.TranslateFromDisplayCoordinatesRect(rect)
 }
 
 func (this *Display) TranslateToDisplayCoordinatesRect(rectLike RectangleLike) *Rectangle {
@@ -2115,10 +2073,7 @@ func (this *Display) TranslateToDisplayCoordinatesRect(rectLike RectangleLike) *
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return func() *Rectangle {
-		_ = []any{this.coordinateSystemMapper, rect}
-		panic("j2go: unresolved call translateToDisplayCoordinates")
-	}()
+	return this.coordinateSystemMapper.TranslateToDisplayCoordinatesRect(rect)
 }
 
 func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int64) int64 {
@@ -2135,7 +2090,7 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 			var consumed bool = false
 			var keyMsg *win32.MSG = win32.NewMSG()
 			win32.OSMoveMemoryOverload74(keyMsg, lParam, win32.MSGSizeof)
-			var control *Control = this.FindControl(keyMsg.Hwnd)
+			var control *Control = this.FindControlLocal1(keyMsg.Hwnd)
 			if control != (nil) {
 				var accentKey bool = false
 				switch keyMsg.Message {
@@ -2174,12 +2129,12 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 					keyMsg.Hwnd = control.Handle
 					var flags int32 = win32.OSPM_REMOVE | win32.OSPM_NOYIELD | win32.OSPM_QS_INPUT | win32.OSPM_QS_POSTMESSAGE
 					for {
-						b289 := this.FilterMessage(keyMsg)
-						consumed = consumed || b289
+						b17 := this.FilterMessage(keyMsg)
+						consumed = consumed || b17
 						if !(consumed) {
 							win32.OSTranslateMessage(keyMsg)
-							b290 := win32.OSDispatchMessage(keyMsg) == 1
-							consumed = consumed || b290
+							b18 := win32.OSDispatchMessage(keyMsg) == 1
+							consumed = consumed || b18
 						}
 						if !(win32.OSPeekMessage(keyMsg, keyMsg.Hwnd, win32.OSWM_KEYFIRST, win32.OSWM_KEYLAST, flags)) {
 							break
@@ -2379,9 +2334,9 @@ func (this *Display) MonitorEnumProc(hmonitor int64, hdc int64, lprcMonitor int6
 		copy(newMonitors[0:], this.monitors[0:0+int32(len(this.monitors))])
 		this.monitors = newMonitors
 	}
-	t291 := this.monitorCount
+	t19 := this.monitorCount
 	this.monitorCount++
-	this.monitors[t291] = this.GetMonitor(hmonitor)
+	this.monitors[t19] = this.GetMonitor(hmonitor)
 	return int64(1)
 }
 
@@ -2467,8 +2422,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 	}
 	_ = event
 	jrt.MonitorEnter()
-	var tret292 bool
-	tretd293 := false
+	var tret20 bool
+	tretd21 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
@@ -2502,15 +2457,15 @@ func (this *Display) Post(eventLike EventLike) bool {
 						inputs.WVk = int16(9)
 						break
 					case LF:
-						tret292 = false
-						tretd293 = true
+						tret20 = false
+						tretd21 = true
 						return
 					default:
 						{
 							inputs.WVk = win32.OSVkKeyScan(int16(key))
 							if int32(inputs.WVk) == -1 {
-								tret292 = false
-								tretd293 = true
+								tret20 = false
+								tretd21 = true
 								return
 							}
 							inputs.WVk &= int16(0xFF)
@@ -2529,8 +2484,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 				var pInputs *win32.INPUT = win32.NewINPUT()
 				pInputs.Type = win32.OSINPUT_KEYBOARD
 				pInputs.Ki = inputs
-				tret292 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
-				tretd293 = true
+				tret20 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
+				tretd21 = true
 				return
 			}
 		case MouseDown, MouseMove, MouseUp, MouseWheel:
@@ -2558,8 +2513,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 							inputs.MouseData = event.Count * win32.OSWHEEL_DELTA / value[0]
 							break
 						default:
-							tret292 = false
-							tretd293 = true
+							tret20 = false
+							tretd21 = true
 							return
 						}
 					} else {
@@ -2606,8 +2561,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 								break
 							}
 						default:
-							tret292 = false
-							tretd293 = true
+							tret20 = false
+							tretd21 = true
 							return
 						}
 					}
@@ -2615,17 +2570,17 @@ func (this *Display) Post(eventLike EventLike) bool {
 				var pInputs *win32.INPUT = win32.NewINPUT()
 				pInputs.Type = win32.OSINPUT_MOUSE
 				pInputs.Mi = inputs
-				tret292 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
-				tretd293 = true
+				tret20 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
+				tretd21 = true
 				return
 			}
 		}
-		tret292 = false
-		tretd293 = true
+		tret20 = false
+		tretd21 = true
 		return
 	}()
-	_ = tretd293
-	return tret292
+	_ = tretd21
+	return tret20
 }
 
 func (this *Display) PostEvent(eventLike EventLike) {
@@ -2747,7 +2702,7 @@ func (this *Display) release_() {
 		this.taskBar = nil
 		{
 			for {
-				tbrk294 := false
+				tbrk22 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -2762,11 +2717,11 @@ func (this *Display) release_() {
 						}
 					}()
 					if !this.ReadAndDispatch() {
-						tbrk294 = true
+						tbrk22 = true
 						return
 					}
 				}()
-				if tbrk294 {
+				if tbrk22 {
 					break
 				}
 			}
@@ -2927,15 +2882,20 @@ func (this *Display) ReleaseDisplay() {
 	this.threadId = 0
 }
 
-func (this *Display) ReleaseImageList(list unsupported_type_org_eclipse_swt_internal_ImageList) {
+func (this *Display) ReleaseImageList(listLike ImageListLike) {
+	var list *ImageList
+	if listLike != nil {
+		list = listLike.AsImageList()
+	}
+	_ = list
 	var i int32 = 0
 	var length int32 = int32(len(this.imageList))
 	for i < length {
 		if this.imageList[i] == list {
-			if func() int32 { _ = []any{list}; panic("j2go: unresolved call removeRef") }() > 0 {
+			if list.RemoveRef() > 0 {
 				return
 			}
-			func() any { _ = []any{list}; panic("j2go: unresolved call dispose") }()
+			list.Dispose()
 			length--
 			copy(this.imageList[i:], this.imageList[i+1:i+1+length-i])
 			this.imageList[length] = nil
@@ -2951,15 +2911,20 @@ func (this *Display) ReleaseImageList(list unsupported_type_org_eclipse_swt_inte
 	}
 }
 
-func (this *Display) ReleaseToolImageList(list unsupported_type_org_eclipse_swt_internal_ImageList) {
+func (this *Display) ReleaseToolImageList(listLike ImageListLike) {
+	var list *ImageList
+	if listLike != nil {
+		list = listLike.AsImageList()
+	}
+	_ = list
 	var i int32 = 0
 	var length int32 = int32(len(this.toolImageList))
 	for i < length {
 		if this.toolImageList[i] == list {
-			if func() int32 { _ = []any{list}; panic("j2go: unresolved call removeRef") }() > 0 {
+			if list.RemoveRef() > 0 {
 				return
 			}
-			func() any { _ = []any{list}; panic("j2go: unresolved call dispose") }()
+			list.Dispose()
 			length--
 			copy(this.toolImageList[i:], this.toolImageList[i+1:i+1+length-i])
 			this.toolImageList[length] = nil
@@ -2975,15 +2940,20 @@ func (this *Display) ReleaseToolImageList(list unsupported_type_org_eclipse_swt_
 	}
 }
 
-func (this *Display) ReleaseToolHotImageList(list unsupported_type_org_eclipse_swt_internal_ImageList) {
+func (this *Display) ReleaseToolHotImageList(listLike ImageListLike) {
+	var list *ImageList
+	if listLike != nil {
+		list = listLike.AsImageList()
+	}
+	_ = list
 	var i int32 = 0
 	var length int32 = int32(len(this.toolHotImageList))
 	for i < length {
 		if this.toolHotImageList[i] == list {
-			if func() int32 { _ = []any{list}; panic("j2go: unresolved call removeRef") }() > 0 {
+			if list.RemoveRef() > 0 {
 				return
 			}
-			func() any { _ = []any{list}; panic("j2go: unresolved call dispose") }()
+			list.Dispose()
 			length--
 			copy(this.toolHotImageList[i:], this.toolHotImageList[i+1:i+1+length-i])
 			this.toolHotImageList[length] = nil
@@ -2999,15 +2969,20 @@ func (this *Display) ReleaseToolHotImageList(list unsupported_type_org_eclipse_s
 	}
 }
 
-func (this *Display) ReleaseToolDisabledImageList(list unsupported_type_org_eclipse_swt_internal_ImageList) {
+func (this *Display) ReleaseToolDisabledImageList(listLike ImageListLike) {
+	var list *ImageList
+	if listLike != nil {
+		list = listLike.AsImageList()
+	}
+	_ = list
 	var i int32 = 0
 	var length int32 = int32(len(this.toolDisabledImageList))
 	for i < length {
 		if this.toolDisabledImageList[i] == list {
-			if func() int32 { _ = []any{list}; panic("j2go: unresolved call removeRef") }() > 0 {
+			if list.RemoveRef() > 0 {
 				return
 			}
-			func() any { _ = []any{list}; panic("j2go: unresolved call dispose") }()
+			list.Dispose()
 			length--
 			copy(this.toolDisabledImageList[i:], this.toolDisabledImageList[i+1:i+1+length-i])
 			this.toolDisabledImageList[length] = nil
@@ -3260,33 +3235,33 @@ func (this *Display) SaveResources() {
 		if win32.OSSystemParametersInfoOverload2(win32.OSSPI_GETNONCLIENTMETRICS, 0, info, 0) {
 			var logFont *win32.LOGFONT = info.LfMessageFont
 			if this.lfSystemFont == (nil) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || logFont.LfHeight != this.lfSystemFont.LfHeight || logFont.LfWidth != this.lfSystemFont.LfWidth || logFont.LfEscapement != this.lfSystemFont.LfEscapement || logFont.LfOrientation != this.lfSystemFont.LfOrientation || logFont.LfWeight != this.lfSystemFont.LfWeight || int32(logFont.LfItalic) != int32(this.lfSystemFont.LfItalic) || int32(logFont.LfUnderline) != int32(this.lfSystemFont.LfUnderline) || int32(logFont.LfStrikeOut) != int32(this.lfSystemFont.LfStrikeOut) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || int32(logFont.LfOutPrecision) != int32(this.lfSystemFont.LfOutPrecision) || int32(logFont.LfClipPrecision) != int32(this.lfSystemFont.LfClipPrecision) || int32(logFont.LfQuality) != int32(this.lfSystemFont.LfQuality) || int32(logFont.LfPitchAndFamily) != int32(this.lfSystemFont.LfPitchAndFamily) || !(this.GetFontName(logFont) == this.GetFontName(this.lfSystemFont)) {
-				t295 := resourceCount
+				t23 := resourceCount
 				resourceCount++
-				this.resources[t295] = upcastFontToResource(this.systemFont)
+				this.resources[t23] = upcastFontToResource(this.systemFont)
 				this.lfSystemFont = logFont
 				this.systemFont = nil
 			}
 		}
 	}
 	if this.errorImage != (nil) {
-		t296 := resourceCount
+		t24 := resourceCount
 		resourceCount++
-		this.resources[t296] = upcastImageToResource(this.errorImage)
+		this.resources[t24] = upcastImageToResource(this.errorImage)
 	}
 	if this.infoImage != (nil) {
-		t297 := resourceCount
+		t25 := resourceCount
 		resourceCount++
-		this.resources[t297] = upcastImageToResource(this.infoImage)
+		this.resources[t25] = upcastImageToResource(this.infoImage)
 	}
 	if this.questionImage != (nil) {
-		t298 := resourceCount
+		t26 := resourceCount
 		resourceCount++
-		this.resources[t298] = upcastImageToResource(this.questionImage)
+		this.resources[t26] = upcastImageToResource(this.questionImage)
 	}
 	if this.warningIcon != (nil) {
-		t299 := resourceCount
+		t27 := resourceCount
 		resourceCount++
-		this.resources[t299] = upcastImageToResource(this.warningIcon)
+		this.resources[t27] = upcastImageToResource(this.warningIcon)
 	}
 	this.warningIcon = nil
 	this.questionImage = this.warningIcon
@@ -3294,9 +3269,9 @@ func (this *Display) SaveResources() {
 	this.errorImage = this.infoImage
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			t300 := resourceCount
+			t28 := resourceCount
 			resourceCount++
-			this.resources[t300] = upcastCursorToResource(this.cursors[i])
+			this.resources[t28] = upcastCursorToResource(this.cursors[i])
 		}
 		this.cursors[i] = nil
 	}
@@ -3321,7 +3296,7 @@ func (this *Display) SendJDKInternalEventEventTypeDetail(eventType int32, detail
 	event.Type = eventType
 	event.Time = int32((time.Now().UnixNano() / 1000_000))
 	if !this.FilterEvent(event) {
-		this.SendEventEventTableEvent(this.eventTable, event)
+		this.SendEventTableEvent(this.eventTable, event)
 	}
 }
 
@@ -3344,12 +3319,12 @@ func (this *Display) SendEvent(eventType int32, eventLike EventLike) {
 	}
 	if !this.FilterEvent(event) {
 		if this.eventTable != (nil) {
-			this.SendEventEventTableEvent(this.eventTable, event)
+			this.SendEventTableEvent(this.eventTable, event)
 		}
 	}
 }
 
-func (this *Display) SendEventEventTableEvent(eventTableLike EventTableLike, eventLike EventLike) {
+func (this *Display) SendEventTableEvent(eventTableLike EventTableLike, eventLike EventLike) {
 	var eventTable *EventTable
 	if eventTableLike != nil {
 		eventTable = eventTableLike.AsEventTable()
@@ -3392,10 +3367,7 @@ func (this *Display) SendPostExternalEventDispatchEvent() {
 
 func (this *Display) SetCursorLocation(x int32, y int32) {
 	this.impl.checkDevice_()
-	func() any {
-		_ = []any{this.coordinateSystemMapper, x, y}
-		panic("j2go: unresolved call setCursorLocation")
-	}()
+	this.coordinateSystemMapper.SetCursorLocation(x, y)
 }
 
 func (this *Display) SetCursorLocationInPixels(x int32, y int32) {
@@ -3742,9 +3714,9 @@ func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
 			}
 			index++
 		}
-		t301 := this.nextTimerId
+		t29 := this.nextTimerId
 		this.nextTimerId++
-		timerId = t301
+		timerId = t29
 		if index == int32(len(this.timerList)) {
 			var newTimerList []jrt.Runnable = make([]jrt.Runnable, int32(len(this.timerList))+4)
 			copy(newTimerList[0:], this.timerList[0:0+int32(len(this.timerList))])
@@ -3826,19 +3798,19 @@ func (this *Display) Update() {
 
 func (this *Display) Wake() {
 	jrt.MonitorEnter()
-	tretd302 := false
+	tretd30 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if this.thread == jrt.CurrentThread() {
-			tretd302 = true
+			tretd30 = true
 			return
 		}
 		this.WakeThread()
 	}()
-	if tretd302 {
+	if tretd30 {
 		return
 	}
 }
@@ -3847,7 +3819,7 @@ func (this *Display) WakeThread() {
 	win32.OSPostThreadMessage(this.threadId, win32.OSWM_NULL, int64(0), int64(0))
 }
 
-func (this *Display) WindowProc(hwnd int64, msg int64, wParam int64, lParam int64) int64 {
+func (this *Display) WindowProcIdSelArg0Arg1(hwnd int64, msg int64, wParam int64, lParam int64) int64 {
 	var control *Control = this.GetControl(hwnd)
 	if control != (nil) {
 		return control.impl.windowProcHwndMsgWParamLParam_(hwnd, int32(msg), wParam, lParam)
@@ -3947,9 +3919,9 @@ func (this *Display) GetOrCreateThemeData(dpi int32) *Display_ThemeData {
 	if this.themeDataMap.ContainsKey(int32(dpi)) {
 		return jrt.Cast[*Display_ThemeData](this.themeDataMap.Get(int32(dpi)))
 	}
-	inner303 := newDisplayThemeData(dpi)
-	inner303.this_0 = this
-	var themeData *Display_ThemeData = inner303
+	inner31 := newDisplayThemeData(dpi)
+	inner31.this_0 = this
+	var themeData *Display_ThemeData = inner31
 	jrt.Cast[*Display_ThemeData](this.themeDataMap.Put(int32(dpi), themeData))
 	return themeData
 }
@@ -3964,20 +3936,17 @@ func (this *Display) SetRescalingAtRuntime(activate bool) bool {
 
 func (this *Display) InitializeAutoscaling(useMonitorSpecificScaling bool) bool {
 	var successfullySetDpiAwareness bool = true
-	if !func() bool { panic("j2go: unresolved call initializeCustomDpiAwareness") }() && !DPIUtilIsCustomAutoScale() {
+	if !Win32DPIUtilsInitializeCustomDpiAwareness() && !DPIUtilIsCustomAutoScale() {
 		successfullySetDpiAwareness = this.SetDpiAwareness(useMonitorSpecificScaling)
 	}
-	this.rescalingAtRuntime = useMonitorSpecificScaling && func() bool { panic("j2go: unresolved call hasProperDpiAwarenessForMonitorSpecificScaling") }()
+	this.rescalingAtRuntime = useMonitorSpecificScaling && Win32DPIUtilsHasProperDpiAwarenessForMonitorSpecificScaling()
 	DPIUtilSetMonitorSpecificScaling(this.rescalingAtRuntime)
 	if this.rescalingAtRuntime {
-		this.coordinateSystemMapper = func() any {
-			_ = []any{this, this.GetMonitors}
-			panic("j2go: unresolved new MultiZoomCoordinateSystemMapper")
-		}()
+		this.coordinateSystemMapper = newMultiZoomCoordinateSystemMapperDisplayMonitorSupplier(this, this.GetMonitors)
 	} else {
-		this.coordinateSystemMapper = func() any { _ = []any{this}; panic("j2go: unresolved new SingleZoomCoordinateSystemMapper") }()
+		this.coordinateSystemMapper = newSingleZoomCoordinateSystemMapper(this)
 	}
-	func() any { _ = []any{upcastDisplayToDevice(this)}; panic("j2go: unresolved call disposeFontRegistry") }()
+	SWTFontProviderDisposeFontRegistry(upcastDisplayToDevice(this))
 	return successfullySetDpiAwareness
 }
 
@@ -3988,7 +3957,7 @@ func (this *Display) SetDpiAwareness(useMonitorSpecificScaling bool) bool {
 	} else {
 		desiredApiAwareness = win32.OSDPI_AWARENESS_CONTEXT_SYSTEM_AWARE_
 	}
-	return func() bool { _ = []any{desiredApiAwareness}; panic("j2go: unresolved call setDPIAwareness") }()
+	return Win32DPIUtilsSetDPIAwareness(desiredApiAwareness)
 }
 
 func DisplayRetrieveDefaultIconSize() int32 {
@@ -4040,7 +4009,7 @@ func DisplayCreate32bitDIB(imageLike ImageLike, zoom int32) int64 {
 		hBitmap = info.HbmColor
 		hMask = info.HbmMask
 		break
-	case SWTBITMAP:
+	case BITMAP:
 		var data *ImageData = image.GetImageDataZoom(zoom)
 		hBitmap = handle
 		alpha = data.Alpha
@@ -4274,9 +4243,9 @@ func DisplayCreate32bitDIBHBitmapAlphaAlphaDataTransparentPixel(hBitmap int64, a
 					y++
 				}() {
 					for x := int32(0); x < imgWidth; x++ {
-						t304 := ap
+						t32 := ap
 						ap++
-						var a int32 = int32(alphaData[t304]) & 0xFF
+						var a int32 = int32(alphaData[t32]) & 0xFF
 						if a != 0 {
 							srcData[dp] = int8(((((int32(srcData[dp]) & 0xFF) * 0xFF) + a/2) / a))
 							srcData[dp+1] = int8(((((int32(srcData[dp+1]) & 0xFF) * 0xFF) + a/2) / a))
@@ -4372,23 +4341,23 @@ func DisplayDeregister(displayLike DisplayLike) {
 
 func DisplayFindDisplay(thread any) *Display {
 	jrt.MonitorEnter()
-	var tret305 *Display
-	tretd306 := false
+	var tret33 *Display
+	tretd34 := false
 	func() {
 		defer jrt.MonitorExit()
 		for _, display := range DisplayDisplays {
 			if display != (nil) && display.thread == thread {
-				tret305 = display
-				tretd306 = true
+				tret33 = display
+				tretd34 = true
 				return
 			}
 		}
-		tret305 = nil
-		tretd306 = true
+		tret33 = nil
+		tretd34 = true
 		return
 	}()
-	_ = tretd306
-	return tret305
+	_ = tretd34
+	return tret33
 }
 
 func DisplayGetCurrent() *Display {
@@ -4397,19 +4366,19 @@ func DisplayGetCurrent() *Display {
 
 func DisplayGetDefault() *Display {
 	jrt.MonitorEnter()
-	var tret307 *Display
-	tretd308 := false
+	var tret35 *Display
+	tretd36 := false
 	func() {
 		defer jrt.MonitorExit()
 		if DisplayDefault == (nil) {
 			DisplayDefault = NewDisplay()
 		}
-		tret307 = DisplayDefault
-		tretd308 = true
+		tret35 = DisplayDefault
+		tretd36 = true
 		return
 	}()
-	_ = tretd308
-	return tret307
+	_ = tretd36
+	return tret35
 }
 
 func DisplayIsSystemDarkTheme() bool {
@@ -4430,13 +4399,13 @@ func DisplayRegister(displayLike DisplayLike) {
 	}
 	_ = display
 	jrt.MonitorEnter()
-	tretd309 := false
+	tretd37 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			if DisplayDisplays[i] == (nil) {
 				DisplayDisplays[i] = display
-				tretd309 = true
+				tretd37 = true
 				return
 			}
 		}
@@ -4445,7 +4414,7 @@ func DisplayRegister(displayLike DisplayLike) {
 		newDisplays[int32(len(DisplayDisplays))] = display
 		DisplayDisplays = newDisplays
 	}()
-	if tretd309 {
+	if tretd37 {
 		return
 	}
 }
@@ -4498,9 +4467,9 @@ func DisplayWithCrLf(string_ string) string {
 				j = length
 			}
 			result.Append(jrt.Substring(string_, i, j))
-			cond310 := j
-			i = cond310
-			if (cond310) < length {
+			cond38 := j
+			i = cond38
+			if (cond38) < length {
 				result.Append("\r\n")
 				i++
 			}
@@ -4538,13 +4507,13 @@ func DisplayWithCrLfString(string_ []uint16) []uint16 {
 			i++
 		}() {
 			if int32(string_[i]) == int32('\u000a') {
-				t311 := j
+				t39 := j
 				j++
-				result[t311] = '\u000d'
+				result[t39] = '\u000d'
 			}
-			t312 := j
+			t40 := j
 			j++
-			result[t312] = string_[i]
+			result[t40] = string_[i]
 		}
 	}
 	return result
@@ -4587,9 +4556,9 @@ func (this *Display_ThemeData) HButtonTheme() int64 {
 		return this.hButtonTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("BUTTON\u0000"))
-	cond313 := this.OpenThemeData(themeName)
-	this.hButtonTheme = cond313
-	return cond313
+	cond41 := this.OpenThemeData(themeName)
+	this.hButtonTheme = cond41
+	return cond41
 }
 
 func (this *Display_ThemeData) HButtonThemeDark() int64 {
@@ -4597,9 +4566,9 @@ func (this *Display_ThemeData) HButtonThemeDark() int64 {
 		return this.hButtonThemeDark
 	}
 	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::BUTTON\u0000"))
-	cond314 := this.OpenThemeData(themeName)
-	this.hButtonThemeDark = cond314
-	return cond314
+	cond42 := this.OpenThemeData(themeName)
+	this.hButtonThemeDark = cond42
+	return cond42
 }
 
 func (this *Display_ThemeData) HEditTheme() int64 {
@@ -4607,9 +4576,9 @@ func (this *Display_ThemeData) HEditTheme() int64 {
 		return this.hEditTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("EDIT\u0000"))
-	cond315 := this.OpenThemeData(themeName)
-	this.hEditTheme = cond315
-	return cond315
+	cond43 := this.OpenThemeData(themeName)
+	this.hEditTheme = cond43
+	return cond43
 }
 
 func (this *Display_ThemeData) HExplorerBarTheme() int64 {
@@ -4617,9 +4586,9 @@ func (this *Display_ThemeData) HExplorerBarTheme() int64 {
 		return this.hExplorerBarTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("EXPLORERBAR\u0000"))
-	cond316 := this.OpenThemeData(themeName)
-	this.hExplorerBarTheme = cond316
-	return cond316
+	cond44 := this.OpenThemeData(themeName)
+	this.hExplorerBarTheme = cond44
+	return cond44
 }
 
 func (this *Display_ThemeData) HScrollBarTheme() int64 {
@@ -4627,9 +4596,9 @@ func (this *Display_ThemeData) HScrollBarTheme() int64 {
 		return this.hScrollBarTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("SCROLLBAR\u0000"))
-	cond317 := this.OpenThemeData(themeName)
-	this.hScrollBarTheme = cond317
-	return cond317
+	cond45 := this.OpenThemeData(themeName)
+	this.hScrollBarTheme = cond45
+	return cond45
 }
 
 func (this *Display_ThemeData) HScrollBarThemeDark() int64 {
@@ -4637,9 +4606,9 @@ func (this *Display_ThemeData) HScrollBarThemeDark() int64 {
 		return this.hScrollBarThemeDark
 	}
 	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::SCROLLBAR\u0000"))
-	cond318 := this.OpenThemeData(themeName)
-	this.hScrollBarThemeDark = cond318
-	return cond318
+	cond46 := this.OpenThemeData(themeName)
+	this.hScrollBarThemeDark = cond46
+	return cond46
 }
 
 func (this *Display_ThemeData) HTabTheme() int64 {
@@ -4647,9 +4616,9 @@ func (this *Display_ThemeData) HTabTheme() int64 {
 		return this.hTabTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("TAB\u0000"))
-	cond319 := this.OpenThemeData(themeName)
-	this.hTabTheme = cond319
-	return cond319
+	cond47 := this.OpenThemeData(themeName)
+	this.hTabTheme = cond47
+	return cond47
 }
 
 func (this *Display_ThemeData) Reset() {
@@ -4902,7 +4871,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DisplayLpStartupInfo = win32.NewSTARTUPINFO()
@@ -4912,7 +4881,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/win32: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DeviceDeviceFinder = jrt.NewRunnable(func() {

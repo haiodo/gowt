@@ -138,23 +138,12 @@ public class Names {
 		if (pinned != null) return baseName + pinned;
 		String name = computeMemberName(m, baseName);
 		if (shadowsAncestorOverload(m.getMethodDeclaration())) name += shadowSuffix(m.getMethodDeclaration());
-		if (overloaded(m) && name.startsWith(baseName)) {
-			// An unpinned overload (a platform's own) must not take a name the pins gave to a sibling.
-			for (int n = 1; !pinnedSuffix.isEmpty() && siblingPinnedNames(m, baseName).contains(name); n++) name = baseName + "Local" + n;
-			computedOverloads.put(key, name.substring(baseName.length()));
-		}
+		// An unpinned member (a platform's own) must not take a name the pins gave to another member of its class.
+		// (Statics are functions named by class: they cannot clash with a method.)
+		Set<String> taken = Modifier.isStatic(m.getModifiers()) ? Set.of() : pinnedNamesOf(m.getMethodDeclaration().getDeclaringClass().getErasure().getBinaryName());
+		for (int n = 1; taken.contains(name); n++) name = baseName + "Local" + n;
+		if (overloaded(m) && name.startsWith(baseName)) computedOverloads.put(key, name.substring(baseName.length()));
 		return name;
-	}
-
-	private Set<String> siblingPinnedNames(IMethodBinding m, String baseName) {
-		IMethodBinding decl = m.getMethodDeclaration();
-		String declName = decl.isConstructor() ? "<init>" : decl.getName();
-		Set<String> r = new HashSet<>();
-		for (String k : overloadOrder.getOrDefault(decl.getDeclaringClass().getErasure().getBinaryName() + "#" + declName, List.of())) {
-			String suffix = pinnedSuffix.get(k);
-			if (suffix != null) r.add(baseName + suffix);
-		}
-		return r;
 	}
 
 	// Go has no overloading: a subclass's method named like an ancestor's overload (other parameters) would hide it.
@@ -183,6 +172,20 @@ public class Names {
 		return sb.length() == 0 ? "NoArgs" : sb.toString();
 	}
 
+	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
+
+	private Set<String> pinnedNamesOf(String classBinaryName) {
+		if (pinnedNamesByClass.isEmpty() && !pinnedSuffix.isEmpty()) {
+			for (var e : pinnedSuffix.entrySet()) {
+				int hash = e.getKey().indexOf('#');
+				int paren = e.getKey().indexOf('(');
+				String method = e.getKey().substring(hash + 1, paren);
+				if (method.equals("<init>")) continue;
+				pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash), k -> new HashSet<>()).add(javaMethodBaseGoName(method) + e.getValue());
+			}
+		}
+		return pinnedNamesByClass.getOrDefault(classBinaryName, Set.of());
+	}
 
 	private boolean overloaded(IMethodBinding m) {
 		IMethodBinding decl = m.getMethodDeclaration();

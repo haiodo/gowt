@@ -290,8 +290,20 @@ public class Manual {
 		return dot < 0 ? ("New" + t) : (t.substring(0, dot) + ".New" + t.substring(dot + 1));
 	}
 
+	/** Static method of a manual type: its name plus a tag for the overloads the hand-written stand-in tells apart by type. */
+	public static String staticMethod(String qualifiedTypeName, org.eclipse.jdt.core.dom.IMethodBinding mb) {
+		String name = staticMember(qualifiedTypeName, mb.getName());
+		if (!qualifiedTypeName.equals("org.eclipse.swt.internal.DPIUtil") || mb.getParameterTypes().length == 0) return name;
+		String first = mb.getParameterTypes()[0].getName();
+		if (first.equals("float") || first.equals("double")) return name + Names.capitalize(first);
+		if (mb.getName().equals("scaleImageData") && mb.getParameterTypes().length == 3) return name + "Element";
+		if (mb.getName().equals("getScalingFactor") && mb.getParameterTypes().length == 2) return name + "Zooms";
+		return name;
+	}
+
 	/** Static field/method reference on a manual type: always Class+Name (no special-casing left). */
 	public static String staticMember(String qualifiedTypeName, String javaMemberName) {
+		if (qualifiedTypeName.equals(JAVA_BOOLEAN) && (javaMemberName.equals("TRUE") || javaMemberName.equals("FALSE"))) return javaMemberName.toLowerCase();
 		return goTypeName(qualifiedTypeName) + Names.capitalize(javaMemberName);
 	}
 

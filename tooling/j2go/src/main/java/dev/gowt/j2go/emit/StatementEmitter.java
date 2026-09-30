@@ -94,6 +94,8 @@ final class StatementEmitter {
 			String rhs = emitter.adaptNumeric(rhsText, a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
 			String boolOp = booleanCompoundOp(a, lhs, rhs);
 			if (boolOp != null) return ind(indent) + boolOp + "\n";
+			String wide = NumericExtras.wideCompound(emitter, a, lhs, rhsText);
+			if (wide != null) return ind(indent) + wide + "\n";
 			return ind(indent) + compoundAssign(a, lhs, rhs) + "\n";
 		}
 		// x++;/--x; as their own statement: Go's native x++/x-- directly, no throwaway temp

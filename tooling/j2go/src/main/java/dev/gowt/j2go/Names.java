@@ -124,6 +124,7 @@ public class Names {
 		String key = erasureKey(m);
 		overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()).add(key);
 		paramNamesByKey.put(key, paramNames);
+		if (!m.isConstructor()) declsByName.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
 	}
 
 	/**
@@ -158,6 +159,12 @@ public class Names {
 						&& !Arrays.equals(erasedParams(o), erasedParams(decl))) return true;
 			}
 		}
+		// ... or a descendant's overload that hides this one.
+		for (IMethodBinding o : declsByName.getOrDefault(decl.getName(), List.of())) {
+			ITypeBinding oc = o.getDeclaringClass();
+			if (!Modifier.isStatic(o.getModifiers()) && !oc.isEqualTo(decl.getDeclaringClass()) && oc.getErasure().isSubTypeCompatible(decl.getDeclaringClass().getErasure())
+					&& !Arrays.equals(erasedParams(o), erasedParams(decl))) return true;
+		}
 		return false;
 	}
 
@@ -171,6 +178,9 @@ public class Names {
 		for (String p : params) sb.append(capitalize(p));
 		return sb.length() == 0 ? "NoArgs" : sb.toString();
 	}
+
+	// Every registered method by Java name: an ancestor's overload hidden by a descendant's is found through it.
+	private final Map<String, List<IMethodBinding>> declsByName = new HashMap<>();
 
 	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
 

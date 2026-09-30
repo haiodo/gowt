@@ -67,7 +67,9 @@ final class JdkCalls {
 				return "jrt.Matches(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.Math#hypot":
 				emitter.fileImports.add("math");
-				return "math.Hypot(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+				String[] h = new String[2];
+				for (int i = 0; i < 2; i++) h[i] = mb.getParameterTypes()[i].getName().equals("float") ? "float64(" + arg(mi, i) + ")" : arg(mi, i);
+				return "math.Hypot(" + h[0] + ", " + h[1] + ")";
 			case "java.lang.Float#floatToIntBits":
 				emitter.fileImports.add("math");
 				return "int32(math.Float32bits(" + arg(mi, 0) + "))";

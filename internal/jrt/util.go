@@ -106,7 +106,8 @@ type List struct {
 	items []any
 }
 
-func NewList() *List { return &List{} }
+// NewList is new ArrayList<>() or new ArrayList<>(initialCapacity).
+func NewList(capacity ...int32) *List { return &List{} }
 
 func (l *List) Add(v any) bool {
 	l.mu.Lock()

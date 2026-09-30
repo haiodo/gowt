@@ -37,6 +37,7 @@ final class SourcePrep {
 
 	static String desugar(String src) {
 		StringBuilder out = new StringBuilder();
+		StringBuilder hoisted = new StringBuilder();
 		int pos = 0;
 		Matcher m = RECORD.matcher(src);
 		while (m.find(pos)) {
@@ -53,16 +54,17 @@ final class SourcePrep {
 			String body = src.substring(bodyOpen + 1, bodyClose);
 			List<String[]> comps = components(src.substring(open + 1, close));
 			out.append(src, pos, m.start());
+			StringBuilder rec = new StringBuilder();
 			String mods = m.group(2).trim();
 			boolean nested = depthAt(src, m.start()) > 0;
 			// A record is implicitly static; a local one (inside a method body) cannot say so.
 			boolean local = nested && !isMemberPosition(src, m.start());
-			if (nested && !local && !mods.contains("static")) mods = (mods + " static").trim();
-			out.append(m.group(1)).append(mods.isEmpty() ? "" : mods + " ").append("final class ").append(m.group(3))
+			// A local record moves to the end of the file, as a static member: the emitter has no local classes.
+			if (nested && !mods.contains("static")) mods = (mods + " static").trim();
+			rec.append(m.group(1)).append(mods.isEmpty() ? "" : mods + " ").append("final class ").append(m.group(3))
 					.append(m.group(4) == null ? "" : m.group(4)).append(header.isEmpty() ? "" : " " + header).append(" {\n");
-			for (String[] c : comps) out.append(m.group(1)).append("\tprivate final ").append(c[0]).append(' ').append(c[1]).append(";\n");
+			for (String[] c : comps) rec.append(m.group(1)).append("\tprivate final ").append(c[0]).append(' ').append(c[1]).append(";\n");
 			String params = String.join(", ", comps.stream().map(c -> c[0] + " " + c[1]).toList());
-			String compact = "(?s)^\\s*(?:public\\s+)?" + m.group(3) + "\\s*\\{";
 			Matcher cm = Pattern.compile("(?m)^\\s*(?:public\\s+)?" + m.group(3) + "\\s*\\{").matcher(body);
 			String ctorBody = "";
 			if (cm.find()) {
@@ -72,17 +74,21 @@ final class SourcePrep {
 				body = body.substring(0, cm.start()) + body.substring(cClose + 1);
 			}
 			String access = mods.contains("public") ? "public " : mods.contains("protected") ? "protected " : mods.contains("private") ? "private " : "";
-			out.append(m.group(1)).append('\t').append(access).append(m.group(3)).append('(').append(params).append(") {\n").append(ctorBody);
-			for (String[] c : comps) out.append(m.group(1)).append("\t\tthis.").append(c[1]).append(" = ").append(c[1]).append(";\n");
-			out.append(m.group(1)).append("\t}\n");
+			rec.append(m.group(1)).append('\t').append(access).append(m.group(3)).append('(').append(params).append(") {\n").append(ctorBody);
+			for (String[] c : comps) rec.append(m.group(1)).append("\t\tthis.").append(c[1]).append(" = ").append(c[1]).append(";\n");
+			rec.append(m.group(1)).append("\t}\n");
 			for (String[] c : comps) {
 				if (Pattern.compile("\\b" + c[1] + "\\s*\\(\\s*\\)\\s*\\{").matcher(body).find()) continue;
-				out.append(m.group(1)).append("\tpublic ").append(c[0]).append(' ').append(c[1]).append("() { return ").append(c[1]).append("; }\n");
+				rec.append(m.group(1)).append("\tpublic ").append(c[0]).append(' ').append(c[1]).append("() { return ").append(c[1]).append("; }\n");
 			}
-			out.append(body).append(m.group(1)).append("}");
+			rec.append(body).append(m.group(1)).append("}");
+			if (local) hoisted.append("\n\t").append(rec.toString().strip()).append("\n");
+			else out.append(rec);
 			pos = bodyClose + 1;
 		}
-		return out.append(src.substring(pos)).toString();
+		out.append(src.substring(pos));
+		if (hoisted.length() > 0) out.insert(out.lastIndexOf("}"), hoisted);
+		return out.toString();
 	}
 
 	private static List<String[]> components(String list) {

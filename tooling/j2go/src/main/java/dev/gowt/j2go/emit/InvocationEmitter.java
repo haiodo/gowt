@@ -20,6 +20,13 @@ final class InvocationEmitter {
 	// ---------------------------------------------------------------- calls / new
 
 	String emitMethodInvocation(MethodInvocation mi) {
+		String call = emitMethodInvocation0(mi);
+		IMethodBinding declared = mi.resolveMethodBinding();
+		if (declared == null || call.startsWith("jrt.Cast[")) return call;
+		return ErasedGenerics.castCall(emitter, call, declared);
+	}
+
+	private String emitMethodInvocation0(MethodInvocation mi) {
 		IMethodBinding mb = mi.resolveMethodBinding();
 		ITypeBinding declaring = mb.getDeclaringClass();
 		String qualified = declaring.getErasure().getQualifiedName();
@@ -60,7 +67,7 @@ final class InvocationEmitter {
 			}
 			if (Modifier.isStatic(mb.getModifiers())) {
 				emitter.addManualImport(qualified);
-				return emitter.qualifyManual(Manual.staticMember(qualified, mb.getName()), declaring) + "(" + String.join(", ", args) + ")";
+				return emitter.qualifyManual(Manual.staticMethod(qualified, mb), declaring) + "(" + String.join(", ", args) + ")";
 			}
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 			return castErased(recv + "." + Manual.instanceMember(mb.getName()) + "(" + String.join(", ", args) + ")", mb);
@@ -371,7 +378,11 @@ final class InvocationEmitter {
 		// Set after construction: fine as long as the inner ctor itself doesn't reach the outer.
 		String tmp = "inner" + (++emitter.tempCounter);
 		emitter.prelude.add(tmp + " := " + goName + "(" + String.join(", ", args) + ")");
-		emitter.prelude.add(tmp + "." + EmitUtil.OUTER_FIELD + " = " + (cic.getExpression() != null ? emitter.expr(cic.getExpression()) : "this"));
+		// The outer instance: the explicit one (outer.new Inner()), else the enclosing instance of the outer type.
+		ITypeBinding outer = declaring.getDeclaringClass();
+		String outerInstance = cic.getExpression() != null ? emitter.upcastObject(emitter.expr(cic.getExpression()), cic.getExpression().resolveTypeBinding(), outer)
+				: OuterThis.path(emitter, outer);
+		emitter.prelude.add(tmp + "." + EmitUtil.OUTER_FIELD + " = " + outerInstance);
 		return tmp;
 	}
 }

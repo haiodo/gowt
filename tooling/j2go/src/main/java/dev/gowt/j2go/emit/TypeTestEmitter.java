@@ -106,6 +106,10 @@ final class TypeTestEmitter {
 			if (dev.gowt.j2go.Manual.isManual(qualified) && !dev.gowt.j2go.Manual.isValueType(qualified)) {
 				return varName + ", " + okVar + " := " + implSubjectText + ".(*" + dev.gowt.j2go.Manual.goTypeName(qualified) + ")";
 			}
+			// An Object holding an array: the Go slice type asserts like any other value.
+			if (target.isArray() && dev.gowt.j2go.GoTypes.map(target, emitter).startsWith("[]")) {
+				return varName + ", " + okVar + " := " + subjectText + ".(" + dev.gowt.j2go.GoTypes.map(target, emitter) + ")";
+			}
 			emitter.unsupported.add("instanceof: unresolved target type " + target.getQualifiedName());
 			return varName + ", " + okVar + " := any(nil), false";
 		}

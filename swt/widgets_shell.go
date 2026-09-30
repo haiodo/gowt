@@ -1536,7 +1536,7 @@ func (this *Shell) SetDarkThemePreferred(preferred bool) {
 
 func (this *Shell) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.window == (nil) {
@@ -1837,7 +1837,7 @@ func (this *Shell) view_stringForToolTip_point_userData_(id int64, sel int64, vi
 	if string_ == "" {
 		return int64(0)
 	}
-	var chars []uint16 = make([]uint16, int32(len(string_)))
+	var chars []uint16 = make([]uint16, jrt.StringLength(string_))
 	copy(chars, utf16.Encode([]rune(string_)))
 	var length int32 = this.FixMnemonic(chars)
 	return cocoa.NSStringStringWithCharacters(chars, int64(length)).Id
@@ -2202,24 +2202,54 @@ func upcastcocoaNSWindowTococoaId(x *cocoa.NSWindow) *cocoa.Id {
 func idImplAsNSWindow(x any) (*cocoa.NSWindow, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSWindow:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.NSColorPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.NSFontPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.NSSavePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.NSOpenPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.SFCertificatePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.SFCertificateTrustPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.SWTPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	case *cocoa.SWTWindow:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSWindow, true
 	}
 	return nil, false
@@ -2240,20 +2270,44 @@ func castcocoaNSObjectTococoaNSWindow(x *cocoa.NSObject) *cocoa.NSWindow {
 func idImplAsNSPanel(x any) (*cocoa.NSPanel, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSPanel:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSColorPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.NSFontPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.NSSavePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.NSOpenPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.SFCertificatePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.SFCertificateTrustPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	case *cocoa.SWTPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPanel, true
 	}
 	return nil, false
@@ -2274,6 +2328,9 @@ func castcocoaNSWindowTococoaNSPanel(x *cocoa.NSWindow) *cocoa.NSPanel {
 func idImplAsSWTWindowDelegate(x any) (*cocoa.SWTWindowDelegate, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTWindowDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

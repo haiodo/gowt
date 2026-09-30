@@ -4,7 +4,6 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"strings"
 	"unicode/utf16"
 )
 
@@ -41,15 +40,15 @@ func NewFontDataOverload1(string_ string) *FontData {
 }
 
 func (this *FontData) initFontDataOverload1(string_ string) {
-	if false {
+	if string_ == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var start int32 = 0
-	var end int32 = int32(strings.Index(string_, string(rune('|'))))
+	var end int32 = jrt.IndexFrom(string_, string(rune('|')), 0)
 	if end == -1 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var version1 string = string_[start:end]
+	var version1 string = jrt.Substring(string_, start, end)
 	func() {
 		defer func() {
 			r := recover()
@@ -79,7 +78,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	if end == -1 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var name string = string_[start:end]
+	var name string = jrt.Substring(string_, start, end)
 	start = end + 1
 	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
@@ -106,7 +105,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 				panic(r)
 			}
 		}()
-		height = func() float32 { _ = []any{string_[start:end]}; panic("j2go: unresolved call parseFloat") }()
+		height = jrt.ParseFloat(jrt.Substring(string_, start, end))
 	}()
 	start = end + 1
 	end = jrt.IndexFrom(string_, string(rune('|')), start)
@@ -134,7 +133,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 				panic(r)
 			}
 		}()
-		style = jrt.ParseInt(string_[start:end])
+		style = jrt.ParseInt(jrt.Substring(string_, start, end))
 	}()
 	start = end + 1
 	end = jrt.IndexFrom(string_, string(rune('|')), start)
@@ -144,18 +143,18 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	if end == -1 {
 		return
 	}
-	var platform string = string_[start:end]
+	var platform string = jrt.Substring(string_, start, end)
 	start = end + 1
 	end = jrt.IndexFrom(string_, string(rune('|')), start)
 	if end == -1 {
 		return
 	}
-	var version2 string = string_[start:end]
+	var version2 string = jrt.Substring(string_, start, end)
 	if (platform == "COCOA") && (version2 == "1") {
 		start = end + 1
-		end = int32(len(string_))
+		end = jrt.StringLength(string_)
 		if start < end {
-			this.NsName = string_[start:end]
+			this.NsName = jrt.Substring(string_, start, end)
 		}
 	}
 }
@@ -228,24 +227,24 @@ func (this *FontData) GetHeightF() float32 {
 }
 
 func (this *FontData) GetLocale() string {
-	var buffer any = func() any { panic("j2go: unresolved new StringBuilder") }()
+	var buffer *jrt.StringBuilder = jrt.NewStringBuilder()
 	var sep uint16 = '_'
 	if this.lang != "" {
-		func() any { _ = []any{buffer, this.lang}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, sep}; panic("j2go: unresolved call append") }()
+		buffer.Append(this.lang)
+		buffer.Append(uint16(sep))
 	}
 	if this.country != "" {
-		func() any { _ = []any{buffer, this.country}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, sep}; panic("j2go: unresolved call append") }()
+		buffer.Append(this.country)
+		buffer.Append(uint16(sep))
 	}
 	if this.variant != "" {
-		func() any { _ = []any{buffer, this.variant}; panic("j2go: unresolved call append") }()
+		buffer.Append(this.variant)
 	}
-	var result string = func() string { _ = []any{buffer}; panic("j2go: unresolved call toString") }()
-	var length int32 = int32(len(result))
+	var result string = buffer.ToString()
+	var length int32 = jrt.StringLength(result)
 	if length > 0 {
 		if int32(utf16.Encode([]rune(result))[length-1]) == int32(sep) {
-			result = result[0 : length-1]
+			result = jrt.Substring(result, 0, length-1)
 		}
 	}
 	return result
@@ -283,10 +282,10 @@ func (this *FontData) SetLocale(locale string) {
 	this.lang = this.country
 	if locale != "" {
 		var sep uint16 = '_'
-		var length int32 = int32(len(locale))
+		var length int32 = jrt.StringLength(locale)
 		var firstSep int32
 		var secondSep int32
-		firstSep = int32(strings.Index(locale, string(rune(sep))))
+		firstSep = jrt.IndexFrom(locale, string(rune(sep)), 0)
 		if firstSep == -1 {
 			secondSep = length
 			firstSep = secondSep
@@ -297,19 +296,19 @@ func (this *FontData) SetLocale(locale string) {
 			}
 		}
 		if firstSep > 0 {
-			this.lang = locale[0:firstSep]
+			this.lang = jrt.Substring(locale, 0, firstSep)
 		}
 		if secondSep > firstSep+1 {
-			this.country = locale[firstSep+1 : secondSep]
+			this.country = jrt.Substring(locale, firstSep+1, secondSep)
 		}
 		if length > secondSep+1 {
-			this.variant = locale[secondSep+1:]
+			this.variant = jrt.Substring(locale, secondSep+1, -1)
 		}
 	}
 }
 
 func (this *FontData) SetName(name string) {
-	if false {
+	if name == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Name = name
@@ -322,25 +321,28 @@ func (this *FontData) SetStyle(style int32) {
 }
 
 func (this *FontData) String() string {
-	var buffer any = func() any { _ = []any{128}; panic("j2go: unresolved new StringBuilder") }()
-	func() any { _ = []any{buffer, "1|"}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, this.GetName()}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, "|"}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, this.GetHeightF()}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, "|"}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, this.GetStyle()}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, "|"}; panic("j2go: unresolved call append") }()
-	func() any { _ = []any{buffer, "COCOA|1|"}; panic("j2go: unresolved call append") }()
+	var buffer *jrt.StringBuilder = jrt.NewStringBuilder(128)
+	buffer.Append("1|")
+	buffer.Append(this.GetName())
+	buffer.Append("|")
+	buffer.Append(this.GetHeightF())
+	buffer.Append("|")
+	buffer.Append(this.GetStyle())
+	buffer.Append("|")
+	buffer.Append("COCOA|1|")
 	if this.NsName != "" {
-		func() any { _ = []any{buffer, this.NsName}; panic("j2go: unresolved call append") }()
+		buffer.Append(this.NsName)
 	}
-	return func() string { _ = []any{buffer}; panic("j2go: unresolved call toString") }()
+	return buffer.ToString()
 }
 
 // j2go: instanceof helper for FontData and its subclasses within the translated set.
 func fontDataImplAsFontData(x any) (*FontData, bool) {
 	switch v := x.(type) {
 	case *FontData:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

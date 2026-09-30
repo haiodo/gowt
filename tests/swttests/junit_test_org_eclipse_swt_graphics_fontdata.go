@@ -40,7 +40,7 @@ func (this *Test_org_eclipse_swt_graphics_FontData) Test_ConstructorLjava_lang_S
 	swt.NewFontDataOverload3(SwtTestUtilTestFontName, 10, swt.ITALIC)
 	swt.NewFontDataOverload3(SwtTestUtilTestFontName, 10, swt.BOLD|swt.ITALIC)
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		swt.NewFontDataOverload3("", 10, swt.NORMAL)
+		swt.NewFontDataOverload3(jrt.NullString, 10, swt.NORMAL)
 	}, "No exception thrown for name == null")
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		swt.NewFontDataOverload3(SwtTestUtilTestFontName, -10, swt.NORMAL)
@@ -95,12 +95,9 @@ func (this *Test_org_eclipse_swt_graphics_FontData) Test_setHeightI() {
 
 func (this *Test_org_eclipse_swt_graphics_FontData) Test_setLocaleLjava_lang_String() {
 	var fd *swt.FontData = swt.NewFontDataOverload3(SwtTestUtilTestFontName, 10, swt.NORMAL)
-	var locale any = func() any { panic("j2go: unresolved static field ENGLISH") }()
-	fd.SetLocale(func() string { _ = []any{locale}; panic("j2go: unresolved call toString") }())
-	junit.AssertEquals(func() string {
-		_ = []any{func() any { panic("j2go: unresolved static field ENGLISH") }()}
-		panic("j2go: unresolved call toString")
-	}(), fd.GetLocale())
+	var locale *jrt.Locale = jrt.LocaleENGLISH
+	fd.SetLocale(locale.ToString())
+	junit.AssertEquals(jrt.LocaleENGLISH.ToString(), fd.GetLocale())
 }
 
 func (this *Test_org_eclipse_swt_graphics_FontData) Test_setNameLjava_lang_String() {
@@ -115,7 +112,7 @@ func (this *Test_org_eclipse_swt_graphics_FontData) Test_setNameLjava_lang_Strin
 	fontData.SetName(SwtTestUtilTestFontName)
 	junit.AssertEquals(fontData.GetName(), SwtTestUtilTestFontName)
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
-		fontData.SetName("")
+		fontData.SetName(jrt.NullString)
 	}, "No exception thrown for name == null")
 }
 
@@ -137,7 +134,7 @@ func (this *Test_org_eclipse_swt_graphics_FontData) Test_setStyleI() {
 func (this *Test_org_eclipse_swt_graphics_FontData) Test_toString() {
 	var data *swt.FontData = swt.NewFontData()
 	junit.AssertNotNull(data.String())
-	junit.AssertTrue(int32(len(data.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(data.String()) > 0)
 }
 
 func init() {

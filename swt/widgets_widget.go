@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
-	"strings"
 )
 
 type WidgetImpl interface {
@@ -1712,7 +1711,7 @@ func (this *Widget) GetData() any {
 
 func (this *Widget) GetDataKey(key string) any {
 	this.CheckWidget()
-	if false {
+	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == WidgetIS_ACTIVE {
@@ -1755,11 +1754,11 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 
 func (this *Widget) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *Widget) GetNameText() string {
@@ -2653,7 +2652,7 @@ func (this *Widget) setIsStyledText_() {
 
 func (this *Widget) SetDataKeyValue(key string, value any) {
 	this.CheckWidget()
-	if false {
+	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if WidgetGLCONTEXT_KEY == key {
@@ -3555,6 +3554,9 @@ func upcastcocoaNSViewTococoaId(x *cocoa.NSView) *cocoa.Id {
 func idImplAsNSMutableArray(x any) (*cocoa.NSMutableArray, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMutableArray:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

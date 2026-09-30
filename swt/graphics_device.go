@@ -539,7 +539,7 @@ func (this *Device) IsDisposed() bool {
 
 func (this *Device) LoadFont(path string) bool {
 	this.impl.checkDevice_()
-	if false {
+	if path == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var nsPath *cocoa.NSString = cocoa.NSStringStringWith(path)
@@ -679,8 +679,8 @@ func (this *Device) PrintErrors() {
 				if transforms != 0 {
 					string_ += fmt.Sprintf("%d Transforms(s), ", transforms)
 				}
-				if int32(len(string_)) != 0 {
-					string_ = string_[0 : int32(len(string_))-2]
+				if jrt.StringLength(string_) != 0 {
+					string_ = jrt.Substring(string_, 0, jrt.StringLength(string_)-2)
 					fmt.Fprintln(os.Stdout, string_)
 				}
 				for i := int32(0); i < int32(len(this.errors)); i++ {
@@ -760,6 +760,9 @@ func (this *Device) IsAutoScalable() bool {
 func idImplAsNSAutoreleasePool(x any) (*cocoa.NSAutoreleasePool, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSAutoreleasePool:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -780,6 +783,9 @@ func castcocoaNSObjectTococoaNSAutoreleasePool(x *cocoa.NSObject) *cocoa.NSAutor
 func resourceImplAsCursor(x any) (*Cursor, bool) {
 	switch v := x.(type) {
 	case *Cursor:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -789,6 +795,9 @@ func resourceImplAsCursor(x any) (*Cursor, bool) {
 func resourceImplAsFont(x any) (*Font, bool) {
 	switch v := x.(type) {
 	case *Font:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -798,6 +807,9 @@ func resourceImplAsFont(x any) (*Font, bool) {
 func resourceImplAsGC(x any) (*GC, bool) {
 	switch v := x.(type) {
 	case *GC:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -807,6 +819,9 @@ func resourceImplAsGC(x any) (*GC, bool) {
 func resourceImplAsImage(x any) (*Image, bool) {
 	switch v := x.(type) {
 	case *Image:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -816,6 +831,9 @@ func resourceImplAsImage(x any) (*Image, bool) {
 func resourceImplAsPath(x any) (*Path, bool) {
 	switch v := x.(type) {
 	case *Path:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -825,6 +843,9 @@ func resourceImplAsPath(x any) (*Path, bool) {
 func resourceImplAsPattern(x any) (*Pattern, bool) {
 	switch v := x.(type) {
 	case *Pattern:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -834,6 +855,9 @@ func resourceImplAsPattern(x any) (*Pattern, bool) {
 func resourceImplAsRegion(x any) (*Region, bool) {
 	switch v := x.(type) {
 	case *Region:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -843,6 +867,9 @@ func resourceImplAsRegion(x any) (*Region, bool) {
 func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
 	switch v := x.(type) {
 	case *TextLayout:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -852,6 +879,9 @@ func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
 func resourceImplAsTransform(x any) (*Transform, bool) {
 	switch v := x.(type) {
 	case *Transform:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

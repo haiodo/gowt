@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type Item struct {
 	Widget
 	text  string
@@ -108,7 +112,7 @@ func (this *Item) SetText(string_ string) {
 
 func (this *Item) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_

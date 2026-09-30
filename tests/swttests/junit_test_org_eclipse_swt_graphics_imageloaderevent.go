@@ -30,7 +30,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoaderEvent) Test_ConstructorLorg
 func (this *Test_org_eclipse_swt_graphics_ImageLoaderEvent) Test_toString() {
 	var event *swt.ImageLoaderEvent = swt.NewImageLoaderEvent(swt.NewImageLoader(), nil, 0, true)
 	junit.AssertNotNull(event.String())
-	junit.AssertTrue(int32(len(event.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(event.String()) > 0)
 }
 
 func init() {

@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 )
 
@@ -396,7 +397,7 @@ func (this *Label) SetImage(imageLike ImageLike) {
 
 func (this *Label) SetText(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if (this.style & SEPARATOR) != 0 {
@@ -426,8 +427,14 @@ func LabelCheckStyle(style int32) int32 {
 func idImplAsNSBox(x any) (*cocoa.NSBox, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSBox:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSBox, true
 	}
 	return nil, false
@@ -466,8 +473,14 @@ func upcastcocoaNSBoxTococoaNSView(x *cocoa.NSBox) *cocoa.NSView {
 func idImplAsNSImageView(x any) (*cocoa.NSImageView, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSImageView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSImageView, true
 	}
 	return nil, false
@@ -488,20 +501,44 @@ func castcocoaNSObjectTococoaNSImageView(x *cocoa.NSObject) *cocoa.NSImageView {
 func idImplAsNSTextField(x any) (*cocoa.NSTextField, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextField:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.NSSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.SWTSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	case *cocoa.SWTTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTextField, true
 	}
 	return nil, false

@@ -82,12 +82,12 @@ func TestTypedListenerSwitchDispatch(t *testing.T) {
 	sl := &fakeShellListener{}
 	tl := NewTypedListener(sl)
 
-	tl.HandleEvent(&Event{Type: Activate})
+	tl.HandleEvent(&Event{Type: Activate, Widget: &Widget{}})
 	if !sl.activated {
 		t.Fatal("case SWT.Activate did not dispatch to ShellActivated")
 	}
 
-	e := &Event{Type: Close}
+	e := &Event{Type: Close, Widget: &Widget{}}
 	tl.HandleEvent(e)
 	if !sl.closed {
 		t.Fatal("case SWT.Close did not dispatch to ShellClosed")

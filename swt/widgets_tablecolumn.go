@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode/utf16"
 )
@@ -237,7 +238,7 @@ func (this *TableColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cell
 		}
 		drawX += int32(destRect.Width)
 	}
-	if this.displayText != "" && int32(len(this.displayText)) > 0 {
+	if this.displayText != "" && jrt.StringLength(this.displayText) > 0 {
 		if this.image != (nil) {
 			drawX += TableColumnMARGIN
 		}
@@ -408,22 +409,22 @@ func (this *TableColumn) SetMoveable(moveable bool) {
 
 func (this *TableColumn) SetResizable(resizable bool) {
 	this.CheckWidget()
-	var cond594 int32
+	var cond597 int32
 	if resizable {
-		cond594 = cocoa.OSNSTableColumnUserResizingMask
+		cond597 = cocoa.OSNSTableColumnUserResizingMask
 	} else {
-		cond594 = cocoa.OSNSTableColumnNoResizing
+		cond597 = cocoa.OSNSTableColumnNoResizing
 	}
-	this.nsColumn.SetResizingMask(int64(cond594))
+	this.nsColumn.SetResizingMask(int64(cond597))
 }
 
 func (this *TableColumn) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Item.setText_(string_)
-	var buffer []uint16 = make([]uint16, int32(len(this.text)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)
 	this.displayText = string(utf16.Decode(buffer[0 : 0+length]))

@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type Decorations struct {
@@ -436,7 +437,7 @@ func (this *Decorations) SetText(string_ string) {
 
 func (this *Decorations) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
@@ -521,12 +522,24 @@ func upcastButtonToControl(x *Button) *Control {
 func idImplAsNSButton(x any) (*cocoa.NSButton, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSButton:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSButton, true
 	case *cocoa.SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSButton, true
 	case *cocoa.SWTButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSButton, true
 	}
 	return nil, false

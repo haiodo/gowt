@@ -240,13 +240,13 @@ func (this *TabFolder) GetSelectionIndex() int32 {
 }
 
 func (this *TabFolder) getThemeAlpha_() float32 {
-	var cond557 float32
+	var cond560 float32
 	if this.background != (nil) {
-		cond557 = float32(1)
+		cond560 = float32(1)
 	} else {
-		cond557 = 0.25
+		cond560 = 0.25
 	}
-	return (cond557) * this.parent.impl.getThemeAlpha_()
+	return (cond560) * this.parent.impl.getThemeAlpha_()
 }
 
 func (this *TabFolder) IndexOf(itemLike TabItemLike) int32 {
@@ -549,8 +549,14 @@ func upcastcocoaNSTabViewTococoaNSView(x *cocoa.NSTabView) *cocoa.NSView {
 func idImplAsNSTabViewItem(x any) (*cocoa.NSTabViewItem, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSTabViewItem, true
 	}
 	return nil, false

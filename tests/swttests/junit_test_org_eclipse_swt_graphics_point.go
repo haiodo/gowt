@@ -3,6 +3,7 @@
 package swttests
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -51,7 +52,7 @@ func (this *Test_org_eclipse_swt_graphics_Point) Test_hashCode() {
 func (this *Test_org_eclipse_swt_graphics_Point) Test_toString() {
 	var p *swt.Point = swt.NewPoint(3, 4)
 	junit.AssertNotNull(p.String())
-	junit.AssertTrue(int32(len(p.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(p.String()) > 0)
 	junit.AssertEquals("Point {3, 4}", p.String())
 }
 
@@ -94,8 +95,14 @@ func init() {
 func pointImplAsOfFloat(x any) (*swt.Point_OfFloat, bool) {
 	switch v := x.(type) {
 	case *swt.Point_OfFloat:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *swt.Point_WithMonitor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Point_OfFloat, true
 	}
 	return nil, false

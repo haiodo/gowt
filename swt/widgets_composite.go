@@ -1035,38 +1035,89 @@ func (this *Composite) string_() string {
 func widgetImplAsControl(x any) (*Control, bool) {
 	switch v := x.(type) {
 	case *Control:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Scrollable:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Composite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Canvas:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Decorations:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Shell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Group:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Tree:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *TabFolder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Combo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Table:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Text:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Button:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Label:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	case *Sash:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Control, true
 	}
 	return nil, false
@@ -1094,8 +1145,14 @@ func castWidgetToControl(x *Widget) *Control {
 func idImplAsNSScrollView(x any) (*cocoa.NSScrollView, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSScrollView, true
 	}
 	return nil, false
@@ -1116,96 +1173,234 @@ func castcocoaNSObjectTococoaNSScrollView(x *cocoa.NSObject) *cocoa.NSScrollView
 func idImplAsNSView(x any) (*cocoa.NSView, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSView:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSClipView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSControl:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSText:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.NSTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTCanvasView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTPrinterView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.SWTView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	case *cocoa.WebView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSView, true
 	}
 	return nil, false

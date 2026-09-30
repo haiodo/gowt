@@ -27,7 +27,7 @@ final class TypeTestEmitter {
 		String expr = emitter.expr(ce.getExpression());
 		// (Display) null: a disambiguating cast Java needs to pick an overload, not a runtime
 		// check - Go's nil has no interface to assert against, so this stays bare "nil".
-		if (ce.getExpression() instanceof NullLiteral) return "nil";
+		if (ce.getExpression() instanceof NullLiteral) return EmitUtil.nullLiteral(emitter, ce);
 		// A Java reference cast (e.g. (id)other) is a type assertion in Go, not a conversion:
 		// Go's T(x) conversion syntax doesn't apply between an interface and an unrelated pointer type.
 		TypeModel.ClassInfo target = emitter.model.lookup(t);
@@ -159,7 +159,8 @@ final class TypeTestEmitter {
 		b.append("func ").append(name).append("(x any) (*").append(targetName).append(", bool) {\n");
 		b.append("\tswitch v := x.(type) {\n");
 		for (TypeModel.ClassInfo c : concrete) {
-			b.append("\tcase *").append(emitter.qualifiedTypeName(c)).append(":\n");
+			// A typed nil pointer boxed in the any is Java's null: instanceof is false for it.
+			b.append("\tcase *").append(emitter.qualifiedTypeName(c)).append(":\n\t\tif v == nil {\n\t\t\treturn nil, false\n\t\t}\n");
 			if (c == target) {
 				b.append("\t\treturn v, true\n");
 			} else {

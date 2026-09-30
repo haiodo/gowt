@@ -62,13 +62,13 @@ func (this *ImageLoader) LoadFilename(filename string) []*ImageData {
 }
 
 func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, fileZoom int32, targetZoom int32) *jrt.List {
-	if false {
+	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	{
 		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret499 *jrt.List
-		tretd500 := false
+		var tret501 *jrt.List
+		tretd502 := false
 		func() {
 			defer stream.Close()
 			defer func() {
@@ -90,12 +90,12 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 					panic(r)
 				}
 			}()
-			tret499 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
-			tretd500 = true
+			tret501 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
+			tretd502 = true
 			return
 		}()
-		if tretd500 {
-			return tret499
+		if tretd502 {
+			return tret501
 		}
 	}
 	return nil
@@ -109,7 +109,7 @@ func (this *ImageLoader) Save(stream jrt.OutputStream, format int32) {
 }
 
 func (this *ImageLoader) SaveFilenameFormat(filename string, format int32) {
-	if false {
+	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	{
@@ -188,13 +188,13 @@ func ImageLoaderCanLoadAtZoom(stream jrt.InputStream, fileZoom int32, targetZoom
 }
 
 func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoom int32, targetZoom int32) bool {
-	if false {
+	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	{
 		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret501 bool
-		tretd502 := false
+		var tret503 bool
+		tretd504 := false
 		func() {
 			defer stream.Close()
 			defer func() {
@@ -216,12 +216,12 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 					panic(r)
 				}
 			}()
-			tret501 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
-			tretd502 = true
+			tret503 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
+			tretd504 = true
 			return
 		}()
-		if tretd502 {
-			return tret501
+		if tretd504 {
+			return tret503
 		}
 	}
 	return false

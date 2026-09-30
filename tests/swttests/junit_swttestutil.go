@@ -170,7 +170,7 @@ func SwtTestUtilAssertSWTProblem(message string, expectedCode int32, actualThrow
 					}
 					if expectedThrowable, ok := r.(error); ok {
 						_ = expectedThrowable
-						if int32(len(actualThrowable.Error())) > int32(len(expectedThrowable.Error())) {
+						if jrt.StringLength(actualThrowable.Error()) > jrt.StringLength(expectedThrowable.Error()) {
 							junit.AssertTrue(strings.HasPrefix(actualThrowable.Error(), expectedThrowable.Error()), message)
 						} else {
 							junit.AssertEquals(expectedThrowable.Error(), actualThrowable.Error(), message)
@@ -324,15 +324,15 @@ func SwtTestUtilDumpShellState(out any) {
 	if focusControl == (nil) {
 		func() any { _ = []any{out, "  <null>"}; panic("j2go: unresolved call println") }()
 	} else {
-		var indent any = func() any { panic("j2go: unresolved new StringBuilder") }()
+		var indent *jrt.StringBuilder = jrt.NewStringBuilder()
 		for {
 			var bounds *swt.Rectangle = focusControl.GetBounds()
 			func() any {
-				_ = []any{out, "  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{func() int32 { _ = []any{focusControl}; panic("j2go: unresolved call hashCode") }(), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}}
+				_ = []any{out, "  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{jrt.HashCodeOf(focusControl), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}}
 				panic("j2go: unresolved call format")
 			}()
 			focusControl = upcastswtCompositeToswtControl(focusControl.GetParent())
-			func() any { _ = []any{indent, "  "}; panic("j2go: unresolved call append") }()
+			indent.Append("  ")
 			if !(focusControl != (nil)) {
 				break
 			}
@@ -358,7 +358,7 @@ func SwtTestUtilDumpShellState(out any) {
 				cond7 = 'N'
 			}
 			func() any {
-				_ = []any{out, "  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{func() int32 { _ = []any{shell}; panic("j2go: unresolved call hashCode") }(), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}}
+				_ = []any{out, "  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{jrt.HashCodeOf(shell), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}}
 				panic("j2go: unresolved call format")
 			}()
 		}
@@ -423,13 +423,15 @@ func SwtTestUtilProcessEvents() {
 	}
 }
 
-func SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMs int32, breakCondition any) {
+func SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMs int32, breakCondition func() bool) {
 	if breakCondition == (nil) {
-		breakCondition = func() any { panic("j2go: unsupported LambdaExpression") }()
+		breakCondition = func() bool {
+			return false
+		}
 	}
 	var targetTimestamp int64 = func() int64 { panic("j2go: unresolved call currentTimeMillis") }() + int64(timeoutMs)
 	var display *swt.Display = swt.DisplayGetCurrent()
-	for !func() bool { _ = []any{breakCondition}; panic("j2go: unresolved call getAsBoolean") }() {
+	for !breakCondition() {
 		for display.ReadAndDispatch() {
 			if func() int64 { panic("j2go: unresolved call currentTimeMillis") }() >= targetTimestamp {
 				return
@@ -491,7 +493,9 @@ func SwtTestUtilWaitAllEvents(trigger jrt.Runnable, controlLike swt.ControlLike,
 	tretd11 := false
 	func() {
 		defer func() {
-			eventsLeftToReceive.ForEach(func() any { panic("j2go: unsupported LambdaExpression") }())
+			eventsLeftToReceive.ForEach(func(swtEvent any, listener swt.Listener) {
+				control.RemoveListener(jrt.Cast[int32](swtEvent), listener)
+			})
 		}()
 		if trigger != (nil) {
 			trigger.Run()
@@ -646,16 +650,13 @@ func SwtTestUtilHasPixelNotMatching(imageLike swt.ImageLike, nonMatchingColorLik
 	return false
 }
 
-func SwtTestUtilGetPath(fileName string, tempFolder any) any {
-	var filePath any = func() any {
-		_ = []any{func() any { _ = []any{tempFolder, "image-resources"}; panic("j2go: unresolved call resolve") }(), func() any { _ = []any{fileName, []string{}}; panic("j2go: unresolved call of") }()}
-		panic("j2go: unresolved call resolve")
-	}()
+func SwtTestUtilGetPath(fileName string, tempFolder *jrt.Path) *jrt.Path {
+	var filePath *jrt.Path = tempFolder.Resolve("image-resources").Resolve(jrt.PathOf(fileName, []string{}))
 	return SwtTestUtilCopyFile(fileName, filePath)
 }
 
-func SwtTestUtilCopyFile(sourceFilename string, destinationPath any) any {
-	if !func() bool { _ = []any{destinationPath, []any{}}; panic("j2go: unresolved call isRegularFile") }() {
+func SwtTestUtilCopyFile(sourceFilename string, destinationPath *jrt.Path) *jrt.Path {
+	if !jrt.FilesIsRegularFile(destinationPath, []any{}) {
 		{
 			var inStream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), sourceFilename)
 			func() {
@@ -680,11 +681,8 @@ func SwtTestUtilCopyFile(sourceFilename string, destinationPath any) any {
 					}
 				}()
 				junit.AssertNotNull(inStream, fmt.Sprintf("InputStream == null for file %s", sourceFilename))
-				func() any {
-					_ = []any{func() any { _ = []any{destinationPath}; panic("j2go: unresolved call getParent") }(), []any{}}
-					panic("j2go: unresolved call createDirectories")
-				}()
-				func() int64 { _ = []any{inStream, destinationPath, []any{}}; panic("j2go: unresolved call copy") }()
+				jrt.FilesCreateDirectories(destinationPath.GetParent(), []any{})
+				jrt.FilesCopy(inStream, destinationPath, []any{})
 			}()
 		}
 	}
@@ -721,8 +719,10 @@ func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier 
 		return nil
 	}()
 	func() any { _ = []any{thread, true}; panic("j2go: unresolved call setDaemon") }()
-	func() any { _ = []any{thread}; panic("j2go: unresolved call start") }()
-	var done any = func() any { panic("j2go: unsupported LambdaExpression") }()
+	jrt.ThreadStart(thread)
+	var done func() bool = func() bool {
+		return !func() bool { _ = []any{thread}; panic("j2go: unresolved call isAlive") }()
+	}
 	func() {
 		defer func() {
 			r := recover()
@@ -739,7 +739,7 @@ func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier 
 		}()
 		SwtTestUtilProcessEventsTimeoutMsBreakCondition(timeoutMs, done)
 	}()
-	junit.AssertTrue(func() bool { _ = []any{done}; panic("j2go: unresolved call getAsBoolean") }())
+	junit.AssertTrue(done())
 	if supplierException[0] != (nil) {
 		panic(&jrt.RuntimeException{Message: "Failed while running thread"})
 	}
@@ -764,6 +764,9 @@ type SwtTestUtil_ExceptionalSupplier interface {
 func sWTErrorImplAsSWTError(x any) (*swt.SWTError, bool) {
 	switch v := x.(type) {
 	case *swt.SWTError:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -784,6 +787,9 @@ func casterrorToswtSWTError(x error) *swt.SWTError {
 func sWTExceptionImplAsSWTException(x any) (*swt.SWTException, bool) {
 	switch v := x.(type) {
 	case *swt.SWTException:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -811,6 +817,9 @@ func upcastswtShellToswtControl(x *swt.Shell) *swt.Control {
 func deviceImplAsDisplay(x any) (*swt.Display, bool) {
 	switch v := x.(type) {
 	case *swt.Display:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

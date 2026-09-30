@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type TraverseEvent struct {
@@ -36,5 +37,5 @@ func (this *TraverseEvent) initTraverseEvent(e *Event) {
 
 func (this *TraverseEvent) string_() string {
 	var string_ string = this.KeyEvent.string_()
-	return fmt.Sprintf("%s detail=%d}", string_[0:int32(len(string_))-1], this.Detail)
+	return fmt.Sprintf("%s detail=%d}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Detail)
 }

@@ -5,8 +5,8 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"strings"
 )
 
 type Menu struct {
@@ -565,10 +565,10 @@ func (this *Menu) menuWillOpen_(id int64, sel int64, menu int64) {
 		if item.accelerator != 0 || strs[i] == (nil) || (this.style&BAR) != 0 || (item.style&CASCADE) != 0 {
 			continue
 		}
-		var accelIndex int32 = int32(strings.Index(item.text, string(rune('\u0009'))))
+		var accelIndex int32 = jrt.IndexFrom(item.text, string(rune('\u0009')), 0)
 		if accelIndex != -1 {
-			var accelText string = item.text[accelIndex:]
-			var length int32 = int32(len(accelText))
+			var accelText string = jrt.Substring(item.text, accelIndex, -1)
+			var length int32 = jrt.StringLength(accelText)
 			if length > 1 {
 				var nsItem *cocoa.NSMenuItem = item.nsItem
 				var nsImage *cocoa.NSImage = nsItem.Image()
@@ -804,8 +804,14 @@ func MenuCheckStyle(style int32) int32 {
 func idImplAsNSMenu(x any) (*cocoa.NSMenu, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMenu:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTMenu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSMenu, true
 	}
 	return nil, false
@@ -833,8 +839,14 @@ func upcastcocoaNSMenuTococoaId(x *cocoa.NSMenu) *cocoa.Id {
 func idImplAsNSMenuItem(x any) (*cocoa.NSMenuItem, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSMenuItem, true
 	}
 	return nil, false
@@ -869,6 +881,9 @@ func upcastcocoaNSMenuTococoaNSObject(x *cocoa.NSMenu) *cocoa.NSObject {
 func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
 	switch v := x.(type) {
 	case *MenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -885,6 +900,9 @@ func isWidgetToMenuItem(x *Widget) (*MenuItem, bool) {
 func idImplAsNSTextTab(x any) (*cocoa.NSTextTab, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextTab:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

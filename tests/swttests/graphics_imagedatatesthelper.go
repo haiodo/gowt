@@ -50,10 +50,10 @@ func ImageDataTestHelperMakeTestPalette(depth int32, isDirect bool) *swt.Palette
 }
 
 func ImageDataTestHelperMakeTestImageData(depth int32, scale int32, byteOrder int32, isDirect bool, isClean bool) *swt.ImageData {
-	var random any = func() any { _ = []any{int64(0)}; panic("j2go: unresolved new Random") }()
+	var random *jrt.Random = jrt.NewRandom(int64(0))
 	var width int32 = 8
 	var height int32 = 4
-	var bytesPad int32 = func() int32 { _ = []any{random, 8}; panic("j2go: unresolved call nextInt") }() * 2
+	var bytesPad int32 = random.NextInt(8) * 2
 	var bytesPerLine int32 = ((width * depth / 8) * scale) + bytesPad
 	var palette *swt.PaletteData = ImageDataTestHelperMakeTestPalette(depth, isDirect)
 	var data []int8 = make([]int8, bytesPerLine*(height*scale))
@@ -71,10 +71,7 @@ func ImageDataTestHelperMakeTestImageData(depth int32, scale int32, byteOrder in
 	}
 	for y := int32(0); y < height; y++ {
 		for x := int32(0); x < width; x++ {
-			var colorIndex int32 = func() int32 {
-				_ = []any{random, int32(len(indexedPalette.Colors))}
-				panic("j2go: unresolved call nextInt")
-			}()
+			var colorIndex int32 = random.NextInt(int32(len(indexedPalette.Colors)))
 			var pixel int32
 			if isDirect {
 				pixel = pixelValues[colorIndex]
@@ -135,17 +132,26 @@ func ImageDataTestHelperBlit(srcInfo *ImageDataTestHelper_BlitTestInfo, dstInfo_
 	return NewImageDataTestHelperBlitTestInfo(dstInfo_depth, dstInfo_scale, dstInfo_byteOrder, dstInfo_isDirect, dst)
 }
 
-func ImageDataTestHelperImageDataComparator() any {
-	return func() any {
-		_ = []any{func() any {
-			_ = []any{func() any {
-				_ = []any{func() any { panic("j2go: unsupported LambdaExpression") }()}
-				panic("j2go: unresolved call comparingInt")
-			}(), func() any { panic("j2go: unsupported LambdaExpression") }()}
-			panic("j2go: unresolved call thenComparing")
-		}(), func() any { panic("j2go: unsupported LambdaExpression") }()}
-		panic("j2go: unresolved call thenComparing")
-	}()
+func ImageDataTestHelperImageDataComparator() func(*swt.ImageData, *swt.ImageData) int32 {
+	return jrt.ThenComparing(jrt.ThenComparing(jrt.ComparingInt(func(d *swt.ImageData) int32 {
+		return d.Width
+	}), func(d *swt.ImageData) any {
+		return d.Height
+	}), func(firstData *swt.ImageData, secondData *swt.ImageData) int32 {
+		for x := int32(0); x < firstData.Width; x++ {
+			for y := int32(0); y < firstData.Height; y++ {
+				var first *swt.RGB = firstData.Palette.GetRGB(firstData.GetPixel(x, y))
+				var second *swt.RGB = secondData.Palette.GetRGB(secondData.GetPixel(x, y))
+				if !first.Equals(second) {
+					return -1
+				}
+				if firstData.GetAlpha(x, y) != secondData.GetAlpha(x, y) {
+					return -1
+				}
+			}
+		}
+		return 0
+	})
 }
 
 func ImageDataTestHelperAssertImageDataEqual(sourceLike swt.ImageDataLike, actualLike swt.ImageDataLike, expectedLike swt.ImageDataLike) {

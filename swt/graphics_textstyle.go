@@ -2,6 +2,10 @@
 
 package swt
 
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
 type TextStyle struct {
 	Font           *Font
 	Foreground     *Color
@@ -106,8 +110,8 @@ func (this *TextStyle) Equals(object any) bool {
 	if object == (nil) {
 		return false
 	}
-	style, ok515 := textStyleImplAsTextStyle(object)
-	if !(ok515) {
+	style, ok518 := textStyleImplAsTextStyle(object)
+	if !(ok518) {
 		return false
 	}
 	if this.Foreground != (nil) {
@@ -349,109 +353,112 @@ func (this *TextStyle) IsAdherentStrikeout(styleLike TextStyleLike) bool {
 }
 
 func (this *TextStyle) String() string {
-	var buffer any = func() any { _ = []any{"TextStyle {"}; panic("j2go: unresolved new StringBuilder") }()
-	var startLength int32 = func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }()
+	var buffer *jrt.StringBuilder = jrt.NewStringBuilder("TextStyle {")
+	var startLength int32 = buffer.Length()
 	if this.Font != (nil) {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "font="}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, this.Font}; panic("j2go: unresolved call append") }()
+		buffer.Append("font=")
+		buffer.Append(this.Font)
 	}
 	if this.Foreground != (nil) {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "foreground="}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, this.Foreground}; panic("j2go: unresolved call append") }()
+		buffer.Append("foreground=")
+		buffer.Append(this.Foreground)
 	}
 	if this.Background != (nil) {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "background="}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, this.Background}; panic("j2go: unresolved call append") }()
+		buffer.Append("background=")
+		buffer.Append(this.Background)
 	}
 	if this.Underline {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "underline="}; panic("j2go: unresolved call append") }()
+		buffer.Append("underline=")
 		switch this.UnderlineStyle {
 		case UNDERLINE_SINGLE:
-			func() any { _ = []any{buffer, "single"}; panic("j2go: unresolved call append") }()
+			buffer.Append("single")
 			break
 		case UNDERLINE_DOUBLE:
-			func() any { _ = []any{buffer, "double"}; panic("j2go: unresolved call append") }()
+			buffer.Append("double")
 			break
 		case UNDERLINE_SQUIGGLE:
-			func() any { _ = []any{buffer, "squiggle"}; panic("j2go: unresolved call append") }()
+			buffer.Append("squiggle")
 			break
 		case UNDERLINE_ERROR:
-			func() any { _ = []any{buffer, "error"}; panic("j2go: unresolved call append") }()
+			buffer.Append("error")
 			break
 		case UNDERLINE_LINK:
-			func() any { _ = []any{buffer, "link"}; panic("j2go: unresolved call append") }()
+			buffer.Append("link")
 			break
 		}
 		if this.UnderlineColor != (nil) {
-			func() any { _ = []any{buffer, ", underlineColor="}; panic("j2go: unresolved call append") }()
-			func() any { _ = []any{buffer, this.UnderlineColor}; panic("j2go: unresolved call append") }()
+			buffer.Append(", underlineColor=")
+			buffer.Append(this.UnderlineColor)
 		}
 	}
 	if this.Strikeout {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "striked out"}; panic("j2go: unresolved call append") }()
+		buffer.Append("striked out")
 		if this.StrikeoutColor != (nil) {
-			func() any { _ = []any{buffer, ", strikeoutColor="}; panic("j2go: unresolved call append") }()
-			func() any { _ = []any{buffer, this.StrikeoutColor}; panic("j2go: unresolved call append") }()
+			buffer.Append(", strikeoutColor=")
+			buffer.Append(this.StrikeoutColor)
 		}
 	}
 	if this.BorderStyle != NONE {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "border="}; panic("j2go: unresolved call append") }()
+		buffer.Append("border=")
 		switch this.BorderStyle {
 		case BORDER_SOLID:
-			func() any { _ = []any{buffer, "solid"}; panic("j2go: unresolved call append") }()
+			buffer.Append("solid")
 			break
 		case BORDER_DOT:
-			func() any { _ = []any{buffer, "dot"}; panic("j2go: unresolved call append") }()
+			buffer.Append("dot")
 			break
 		case BORDER_DASH:
-			func() any { _ = []any{buffer, "dash"}; panic("j2go: unresolved call append") }()
+			buffer.Append("dash")
 			break
 		}
 		if this.BorderColor != (nil) {
-			func() any { _ = []any{buffer, ", borderColor="}; panic("j2go: unresolved call append") }()
-			func() any { _ = []any{buffer, this.BorderColor}; panic("j2go: unresolved call append") }()
+			buffer.Append(", borderColor=")
+			buffer.Append(this.BorderColor)
 		}
 	}
 	if this.Rise != 0 {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "rise="}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, this.Rise}; panic("j2go: unresolved call append") }()
+		buffer.Append("rise=")
+		buffer.Append(this.Rise)
 	}
 	if this.Metrics != (nil) {
-		if func() int32 { _ = []any{buffer}; panic("j2go: unresolved call length") }() > startLength {
-			func() any { _ = []any{buffer, ", "}; panic("j2go: unresolved call append") }()
+		if buffer.Length() > startLength {
+			buffer.Append(", ")
 		}
-		func() any { _ = []any{buffer, "metrics="}; panic("j2go: unresolved call append") }()
-		func() any { _ = []any{buffer, this.Metrics}; panic("j2go: unresolved call append") }()
+		buffer.Append("metrics=")
+		buffer.Append(this.Metrics)
 	}
-	func() any { _ = []any{buffer, "}"}; panic("j2go: unresolved call append") }()
-	return func() string { _ = []any{buffer}; panic("j2go: unresolved call toString") }()
+	buffer.Append("}")
+	return buffer.ToString()
 }
 
 // j2go: instanceof helper for TextStyle and its subclasses within the translated set.
 func textStyleImplAsTextStyle(x any) (*TextStyle, bool) {
 	switch v := x.(type) {
 	case *TextStyle:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

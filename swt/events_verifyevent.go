@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type VerifyEvent struct {
@@ -40,5 +41,5 @@ func (this *VerifyEvent) initVerifyEvent(e *Event) {
 
 func (this *VerifyEvent) string_() string {
 	var string_ string = this.KeyEvent.string_()
-	return fmt.Sprintf("%s start=%d end=%d text=%s}", string_[0:int32(len(string_))-1], this.Start, this.End, this.Text)
+	return fmt.Sprintf("%s start=%d end=%d text=%s}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Start, this.End, this.Text)
 }

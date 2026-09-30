@@ -3,6 +3,7 @@
 package swttests
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -62,17 +63,17 @@ func (this *Test_org_eclipse_swt_graphics_Transform) DisposeTransform() {
 func (this *Test_org_eclipse_swt_graphics_Transform) TestToString() {
 	var transform *swt.Transform = swt.NewTransform(upcastswtDisplayToswtDevice(this.display))
 	var s string = transform.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 	transform.SetElements(float32(2), float32(3), float32(4), float32(5), float32(6), float32(7))
 	s = transform.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 	transform.Dispose()
 	s = transform.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("toString returns null or empty string")
 	}
 }

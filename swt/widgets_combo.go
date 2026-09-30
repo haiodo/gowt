@@ -5,9 +5,9 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
-	"strings"
 	"unicode/utf16"
 )
 
@@ -51,7 +51,7 @@ func (this *Combo) initCombo(parent *Composite, style int32) {
 
 func (this *Combo) Add(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var str *cocoa.NSAttributedString = this.CreateAttributedString(string_)
@@ -75,7 +75,7 @@ func (this *Combo) Add(string_ string) {
 
 func (this *Combo) AddStringIndex(string_ string, index int32) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var count int32 = this.GetItemCount()
@@ -140,13 +140,13 @@ func (this *Combo) ClearSelection() {
 }
 
 func (this *Combo) setObjectValue_(id int64, sel int64, arg0 int64) {
-	var cond558 int64
+	var cond561 int64
 	if this.ignoreSetObject {
-		cond558 = arg0
+		cond561 = arg0
 	} else {
-		cond558 = this.CreateAttributedString(this.text).Id
+		cond561 = this.CreateAttributedString(this.text).Id
 	}
-	this.Composite.setObjectValue_(id, sel, cond558)
+	this.Composite.setObjectValue_(id, sel, cond561)
 }
 
 func (this *Combo) comboBoxSelectionDidChange_(id int64, sel int64, notification int64) {
@@ -191,7 +191,7 @@ func (this *Combo) computeSizeWHintHHintChanged_(wHint int32, hHint int32, chang
 		var nsStr *cocoa.NSString = widget.StringValue()
 		if nsStr != (nil) {
 			var str string = nsStr.GetString()
-			if str != "" && (int32(strings.Index(str, string(rune('\u000a')))) >= 0 || int32(strings.Index(str, string(rune('\u000d')))) >= 0) {
+			if str != "" && (jrt.IndexFrom(str, string(rune('\u000a')), 0) >= 0 || jrt.IndexFrom(str, string(rune('\u000d')), 0) >= 0) {
 				var frameHeight int32 = int32(this.View.Frame().Height)
 				if frameHeight > 0 {
 					height = frameHeight
@@ -293,9 +293,9 @@ func (this *Combo) Cut() {
 	var start int32 = selection.X
 	var end int32 = selection.Y
 	var text string = this.GetText()
-	var leftText string = text[0:start]
-	var rightText string = text[end:int32(len(text))]
-	var oldText string = text[start:end]
+	var leftText string = jrt.Substring(text, 0, start)
+	var rightText string = jrt.Substring(text, end, jrt.StringLength(text))
+	var oldText string = jrt.Substring(text, start, end)
 	var newText string = ""
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		newText = this.VerifyText(newText, start, end, nil)
@@ -303,11 +303,11 @@ func (this *Combo) Cut() {
 			return
 		}
 	}
-	var buffer []uint16 = make([]uint16, int32(len(oldText)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(oldText))
 	copy(buffer, utf16.Encode([]rune(oldText)))
 	this.CopyToClipboard(buffer)
 	this.SetTextStringNotify(fmt.Sprintf("%s%s%s", leftText, newText, rightText), false)
-	start += int32(len(newText))
+	start += jrt.StringLength(newText)
 	this.SetSelection(NewPoint(start, start))
 	this.SendEventEventType(Modify)
 }
@@ -393,13 +393,13 @@ func (this *Combo) focusRingMaskBoundsForFrame_(id int64, sel int64, cellFrame c
 
 func (this *Combo) GetCaretPosition() int32 {
 	this.CheckWidget()
-	var cond559 int32
+	var cond562 int32
 	if this.selectionRange != (cocoa.NSRange{}) {
-		cond559 = int32(this.selectionRange.Location)
+		cond562 = int32(this.selectionRange.Location)
 	} else {
-		cond559 = 0
+		cond562 = 0
 	}
-	return cond559
+	return cond562
 }
 
 func (this *Combo) GetCaretLocation() *Point {
@@ -584,7 +584,7 @@ func (this *Combo) IndexOf(string_ string) int32 {
 
 func (this *Combo) IndexOfStringStart(string_ string, start int32) int32 {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var count int32 = this.GetItemCount()
@@ -630,8 +630,8 @@ func (this *Combo) Paste() {
 	var start int32 = selection.X
 	var end int32 = selection.Y
 	var text string = this.GetText()
-	var leftText string = text[0:start]
-	var rightText string = text[end:int32(len(text))]
+	var leftText string = jrt.Substring(text, 0, start)
+	var rightText string = jrt.Substring(text, end, jrt.StringLength(text))
 	var newText string = this.GetClipboardText()
 	if newText == "" {
 		return
@@ -643,13 +643,13 @@ func (this *Combo) Paste() {
 		}
 	}
 	if this.textLimit != ComboLIMIT {
-		var charCount int32 = int32(len(text))
-		if charCount-(end-start)+int32(len(newText)) > this.textLimit {
-			newText = newText[0 : this.textLimit-charCount+(end-start)]
+		var charCount int32 = jrt.StringLength(text)
+		if charCount-(end-start)+jrt.StringLength(newText) > this.textLimit {
+			newText = jrt.Substring(newText, 0, this.textLimit-charCount+(end-start))
 		}
 	}
 	this.SetTextStringNotify(fmt.Sprintf("%s%s%s", leftText, newText, rightText), false)
-	start += int32(len(newText))
+	start += jrt.StringLength(newText)
 	this.SetSelection(NewPoint(start, start))
 	this.SendEventEventType(Modify)
 }
@@ -704,7 +704,7 @@ func (this *Combo) RemoveStartEnd(start int32, end int32) {
 
 func (this *Combo) RemoveString(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var index int32 = this.IndexOfStringStart(string_, 0)
@@ -873,7 +873,7 @@ func (this *Combo) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int
 		var nsStr *cocoa.NSString = widget.StringValue()
 		if nsStr != (nil) {
 			var str string = nsStr.GetString()
-			if str != "" && (int32(strings.Index(str, string(rune('\u000a')))) >= 0 || int32(strings.Index(str, string(rune('\u000d')))) >= 0) {
+			if str != "" && (jrt.IndexFrom(str, string(rune('\u000a')), 0) >= 0 || jrt.IndexFrom(str, string(rune('\u000d')), 0) >= 0) {
 				var frameHeight int32 = int32(this.View.Frame().Height)
 				if frameHeight > 0 {
 					hLimit = frameHeight
@@ -910,7 +910,7 @@ func (this *Combo) setForegroundColor_(color []float64) {
 
 func (this *Combo) SetItem(index int32, string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	var count int32 = this.GetItemCount()
@@ -923,7 +923,7 @@ func (this *Combo) SetItem(index int32, string_ string) {
 	if (this.style & READ_ONLY) != 0 {
 		var nsItem *cocoa.NSMenuItem = (castcocoaNSViewTococoaNSPopUpButton(this.View)).ItemAtIndex(int64(index))
 		nsItem.SetAttributedTitle(str)
-		if int32(len(string_)) == 0 {
+		if jrt.StringLength(string_) == 0 {
 			nsItem.SetTitle(cocoa.NSStringString())
 		}
 	} else {
@@ -1020,7 +1020,7 @@ func (this *Combo) SetSelection(selectionLike PointLike) {
 
 func (this *Combo) SetText(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.SetTextStringNotify(string_, true)
@@ -1041,7 +1041,7 @@ func (this *Combo) SetTextStringNotify(string_ string, notify bool) {
 			this.Select(index)
 		}
 	} else {
-		var buffer []uint16 = make([]uint16, int32(math.Min(float64(int32(len(string_))), float64(this.textLimit))))
+		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
 		copy(buffer, utf16.Encode([]rune(string_)))
 		this.text = string(utf16.Decode(buffer[0 : 0+int32(len(buffer))]))
 		(castcocoaNSViewTococoaNSComboBox(this.View)).Cell().SetAttributedStringValue(this.CreateAttributedString(this.text))
@@ -1087,7 +1087,7 @@ func (this *Combo) shouldChangeTextInRange_replacementString_(id int64, sel int6
 			return false
 		}
 		if !(string_ == newText) {
-			var length int32 = int32(len(newText))
+			var length int32 = jrt.StringLength(newText)
 			var selection *Point = this.GetSelection()
 			if this.textLimit != ComboLIMIT {
 				var charCount int32 = this.GetCharCount()
@@ -1106,7 +1106,7 @@ func (this *Combo) shouldChangeTextInRange_replacementString_(id int64, sel int6
 		}
 	}
 	if result {
-		var chars []uint16 = make([]uint16, int32(len(this.text)))
+		var chars []uint16 = make([]uint16, jrt.StringLength(this.text))
 		copy(chars, utf16.Encode([]rune(this.text)))
 		var mutable *cocoa.NSMutableString = castcocoaNSMutableStringTococoaNSMutableString(cocoa.NSMutableStringStringWithCharacters(chars, int64(int32(len(chars)))))
 		mutable.ReplaceCharactersInRange(range_, cocoa.NewNSStringOverload1(replacementString))
@@ -1188,8 +1188,14 @@ func ComboCheckStyle(style int32) int32 {
 func idImplAsNSPopUpButton(x any) (*cocoa.NSPopUpButton, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSPopUpButton, true
 	}
 	return nil, false
@@ -1217,8 +1223,14 @@ func upcastcocoaNSAttributedStringTococoaId(x *cocoa.NSAttributedString) *cocoa.
 func idImplAsNSComboBox(x any) (*cocoa.NSComboBox, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSComboBox, true
 	}
 	return nil, false
@@ -1303,6 +1315,9 @@ func upcastComboToWidget(x *Combo) *Widget {
 func idImplAsNSMutableString(x any) (*cocoa.NSMutableString, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMutableString:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

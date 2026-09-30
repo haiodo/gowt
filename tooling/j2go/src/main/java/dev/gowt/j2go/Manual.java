@@ -147,6 +147,11 @@ public class Manual {
 		reg("java.util.MissingResourceException", "jrt.MissingResourceException", JRT_IMPORT, false);
 		reg("java.text.MessageFormat", "jrt.MessageFormat", JRT_IMPORT, false);
 		reg("java.lang.NumberFormatException", "jrt.NumberFormatException", JRT_IMPORT, false);
+		// Round 13: JDK types the swt/tests sources construct or pass around (internal/jrt/jdk.go, nio.go).
+		for (String q : new String[]{"java.lang.StringBuilder", "java.util.Random", "java.util.Locale",
+				"java.util.concurrent.atomic.AtomicReference", "java.nio.file.Path", "java.nio.file.Files"}) {
+			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
+		}
 	}
 
 	// Methods hand-written in *_manual.go instead of translated (key: Names.erasureKey).
@@ -169,6 +174,11 @@ public class Manual {
 			// Compares a Java class name to "org.eclipse.swt.widgets." - a Go type's name can't
 			// match that, so it checks the Go package instead (swt/widgets_stubs3_manual.go).
 			Map.entry("org.eclipse.swt.widgets.Display#isValidClass(java.lang.Class)", "DisplayIsValidClass"),
+			// os_custom.c's out-parameter wrappers over the by-value C functions (internal/cocoa/os_custom_manual.go).
+			Map.entry(COCOA_PKG + "OS#NSIntersectionRect(" + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect)", "OSNSIntersectionRect"),
+			Map.entry(COCOA_PKG + "OS#CGDisplayBounds(I," + COCOA_PKG + "CGRect)", "OSCGDisplayBounds"),
+			// PtInRgn takes the Carbon Point struct by value, os.c derefs the short[] into it.
+			Map.entry(COCOA_PKG + "OS#PtInRgn([S,J)", "OSPtInRgn"),
 			Map.entry("java.lang.Thread#currentThread()", "ThreadCurrentThread"),
 			// Round 9 images: loadByZoom's HiDPI @2x-variant dispatch (Stream/Optional/
 			// ElementAtZoom<T>, no translator rule) is out of scope; NativeImageLoader.save's own

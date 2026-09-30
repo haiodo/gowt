@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode/utf16"
 )
@@ -189,11 +190,11 @@ func (this *Group) setOrientationOnWidget_() {
 
 func (this *Group) SetText(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.text = string_
-	var buffer []uint16 = make([]uint16, int32(len(this.text)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)
 	var box *cocoa.NSBox = castcocoaNSViewTococoaNSBox(this.View)
@@ -216,6 +217,9 @@ func GroupCheckStyle(style int32) int32 {
 func idImplAsSWTBox(x any) (*cocoa.SWTBox, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTBox:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

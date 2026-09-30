@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
 	"slices"
@@ -610,7 +611,7 @@ func (this *Control) CreateString(string_ string, fontLike FontLike, foreground 
 	}
 	dict.SetObject(upcastcocoaNSMutableParagraphStyleTococoaId(paragraphStyle), upcastcocoaNSStringTococoaId(cocoa.OSNSParagraphStyleAttributeName_))
 	paragraphStyle.Release()
-	var length int32 = int32(len(string_))
+	var length int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, length)
 	copy(chars, utf16.Encode([]rune(string_)))
 	if mnemonics {
@@ -4309,58 +4310,139 @@ func upcastCompositeToWidget(x *Composite) *Widget {
 func idImplAsNSControl(x any) (*cocoa.NSControl, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSControl:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.NSSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	case *cocoa.SWTTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSControl, true
 	}
 	return nil, false
@@ -4430,6 +4512,9 @@ func upcastControlToWidget(x *Control) *Widget {
 func idImplAsNSMutableDictionary(x any) (*cocoa.NSMutableDictionary, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMutableDictionary:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -4464,6 +4549,9 @@ func upcastcocoaNSColorTococoaId(x *cocoa.NSColor) *cocoa.Id {
 func idImplAsNSMutableParagraphStyle(x any) (*cocoa.NSMutableParagraphStyle, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSMutableParagraphStyle:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -4491,8 +4579,14 @@ func upcastcocoaNSMutableParagraphStyleTococoaId(x *cocoa.NSMutableParagraphStyl
 func idImplAsNSString(x any) (*cocoa.NSString, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSString:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSMutableString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSString, true
 	}
 	return nil, false
@@ -4520,10 +4614,19 @@ func upcastcocoaNSMutableDictionaryTococoaNSDictionary(x *cocoa.NSMutableDiction
 func idImplAsNSAttributedString(x any) (*cocoa.NSAttributedString, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.NSMutableAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSAttributedString, true
 	case *cocoa.NSTextStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSAttributedString, true
 	}
 	return nil, false
@@ -4579,6 +4682,9 @@ func upcastcocoaNSViewTococoaNSResponder(x *cocoa.NSView) *cocoa.NSResponder {
 func idImplAsNSBitmapImageRep(x any) (*cocoa.NSBitmapImageRep, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSBitmapImageRep:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -4599,6 +4705,9 @@ func castcocoaNSObjectTococoaNSBitmapImageRep(x *cocoa.NSObject) *cocoa.NSBitmap
 func widgetImplAsShell(x any) (*Shell, bool) {
 	switch v := x.(type) {
 	case *Shell:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

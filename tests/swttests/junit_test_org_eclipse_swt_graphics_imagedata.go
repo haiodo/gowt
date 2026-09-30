@@ -210,7 +210,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_ConstructorLjava_io_In
 }
 
 func (this *Test_org_eclipse_swt_graphics_ImageData) Test_ConstructorLjava_lang_String() {
-	var filename string = ""
+	var filename string = jrt.NullString
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		swt.NewImageDataFilename(filename)
 	})
@@ -1054,6 +1054,9 @@ func init() {
 func imageDataImplAsImageData(x any) (*swt.ImageData, bool) {
 	switch v := x.(type) {
 	case *swt.ImageData:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

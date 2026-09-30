@@ -70,8 +70,8 @@ names, current class, prelude buffer, temp-var counter, escape/label stack) plus
 cross-component delegators (`expr`/`stmt`/`block`/...); components call each other only through
 it, never directly. Where to add a new construct:
 
-- **new JDK method mapping** (`Math.min`, `String.equals`, ...) -> `JdkIntrinsics`
-- **new statement form** -> `StatementEmitter`
+- **new JDK method mapping** (`Math.min`, `String.equals`, ...) -> `JdkCalls` (the `Class#method` table), or `JdkIntrinsics` for a mapping that needs more than one line
+- **new statement form** -> `StatementEmitter`; **for/while/do** -> `LoopEmitter`
 - **new Java construct in a class body** (field, method shell) -> `ClassEmitter`
 - **constructors, instance initializers, `super(...)`/`this(...)`/`super.method()`** ->
   `ConstructorEmitter` (split out of `ClassEmitter` in Round 5 - line budget)
@@ -2772,3 +2772,35 @@ renumbers `condN`/`okN`/`tN`/`anonN`/`innerN` temp names - collateral from `temp
 single counter shared across the whole invocation, shifted by the new hoists earlier in the run;
 same file set, same logic, verified via a digit-stripped diff against the pre-Round-12 output.
 
+
+## Round 13 test failures (TSK-2026-09-23-051)
+
+Component split first (pure refactor, `make gen` output byte-identical): `StatementEmitter` -> +`LoopEmitter`
+(for/enhanced-for/while/do, owned by `StatementEmitter`), `JdkIntrinsics` -> +`JdkCalls` (the `Class#method`
+table), `Emitter` -> `EmitUtil.deferredInitFunc`.
+
+Rules added (the numbers are in `tests/RESULTS.md`):
+
+- **JDK types in `internal/jrt`** (`jdk.go`, `nio.go`), registered in `Manual`: `StringBuilder` (byte indices, `append`
+  takes `any`; a char argument of a manual call is wrapped `uint16(...)`), `java.util.Random` (Java's LCG, so a seed gives
+  Java's sequence), `Locale` (`ENGLISH`, `getDefault`), `AtomicReference`, `nio.file.Path/Files` (string-backed; option
+  varargs ignored), `Arrays.asList(array)`, `Float.parseFloat`, `String.toString`, `Object.hashCode` on interface receivers.
+  `new Thread(Runnable)` + `start`/`join` run a goroutine; `Thread` itself stays a bare `any`.
+- **Lambdas for `java.util.function.*` and `Comparator`**: a bare Go func (`GoTypes.isJdkFunctional`), the one abstract
+  method is a plain call, `Comparator.comparingInt/thenComparing` are `jrt` generics. Unboxing `any` into a primitive
+  (`Integer` lambda parameter) is `jrt.Cast[T]`.
+- **`@TempDir`** fields: `TestEmitter.tempDirFields` creates the directory in BeforeAll (static) / BeforeEach and removes it after.
+- **Null String arguments**: a test's literal `null` String argument or initializer is `jrt.NullString`
+  (`EmitUtil.nullLiteral`, only in package `swttests`); the null-argument guards of Round 11 became
+  `param == jrt.NullString` instead of constant `false`. `""` stays a valid String, production callers cannot pass null.
+- **instanceof helpers** return false for a typed nil pointer boxed in `any` (Java null); it fixed `TextStyle.equals(null)`.
+- **`a[i] = f(i++)`**: the index is pinned to a temp before the right side's hoisted statements (`StatementEmitter.pinIndex`).
+- **`String.length()`/`substring`** are UTF-16-correct (`jrt.StringLength`/`Substring`, ASCII fast path). `length()` used to be
+  the byte length, so `NSString.stringWith` padded every non-ASCII string with NULs. `indexOf`/`lastIndexOf` are still
+  byte offsets: mixing them with `substring` on non-ASCII text is wrong (ceiling: make them UTF-16 too).
+- **By-value struct natives** (`internal/cocoa/os_custom_manual.go`): `NSIntersectionRect`/`CGDisplayBounds` (os_custom.c
+  out-parameter wrappers, were dlsym'd as if the C function took pointers: the result was never written, hence
+  `GC.getClipping` = the full image) and `PtInRgn` (Point by value, hence `Region.contains` always false).
+
+Not done: private-method reflection (`getDeclaredMethod` of `ImageData.blit`), `WeakReference`/`System.gc`,
+anonymous subclass of a class from another Go package, the HiDPI image path (TSK-048).

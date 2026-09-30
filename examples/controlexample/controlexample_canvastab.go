@@ -269,6 +269,9 @@ func upcastswtScrollBarToswtWidget(x *swt.ScrollBar) *swt.Widget {
 func widgetImplAsScrollBar(x any) (*swt.ScrollBar, bool) {
 	switch v := x.(type) {
 	case *swt.ScrollBar:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

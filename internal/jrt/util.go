@@ -243,3 +243,13 @@ func (l *List) ToArray() []any {
 	defer l.mu.Unlock()
 	return append([]any(nil), l.items...)
 }
+
+// ArraysAsList is Arrays.asList(array) for any slice type.
+func ArraysAsList(array any) *List {
+	v := reflect.ValueOf(array)
+	l := &List{items: make([]any, v.Len())}
+	for i := range l.items {
+		l.items[i] = v.Index(i).Interface()
+	}
+	return l
+}

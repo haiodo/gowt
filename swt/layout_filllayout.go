@@ -163,11 +163,11 @@ func (this *FillLayout) flushCache_(control *Control) bool {
 
 func (this *FillLayout) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this.Impl()))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *FillLayout) layoutFn_(composite *Composite, flushCache bool) {
@@ -247,6 +247,9 @@ func (this *FillLayout) String() string {
 func fillDataImplAsFillData(x any) (*FillData, bool) {
 	switch v := x.(type) {
 	case *FillData:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -267,30 +270,69 @@ func castanyToFillData(x any) *FillData {
 func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 	switch v := x.(type) {
 	case *Scrollable:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Composite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Canvas:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Decorations:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Shell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Group:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Tree:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *TabFolder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Combo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Table:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	case *Text:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Scrollable, true
 	}
 	return nil, false

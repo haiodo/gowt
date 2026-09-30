@@ -3,6 +3,7 @@
 package swttests
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -61,7 +62,7 @@ func (this *Test_org_eclipse_swt_layout_FormAttachment) Test_ConstructorLorg_ecl
 func (this *Test_org_eclipse_swt_layout_FormAttachment) Test_toString() {
 	var attachment *swt.FormAttachment = swt.NewFormAttachmentNumerator(50)
 	junit.AssertNotNull(attachment.String())
-	junit.AssertTrue(int32(len(attachment.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(attachment.String()) > 0)
 }
 
 func init() {

@@ -237,7 +237,7 @@ func (this *Test_org_eclipse_swt_graphics_RGBA) Test_hashCode() {
 func (this *Test_org_eclipse_swt_graphics_RGBA) Test_toString() {
 	var rgba *swt.RGBA = swt.NewRGBA(0, 100, 200, 255)
 	var s string = rgba.String()
-	if s == "" || int32(len(s)) == 0 {
+	if s == "" || jrt.StringLength(s) == 0 {
 		junit.Fail("RGBA.toString returns a null or empty String")
 	}
 }

@@ -5,6 +5,7 @@ package swt
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode/utf16"
 )
@@ -126,7 +127,7 @@ func (this *TextLayout) ComputeRuns() {
 	} else {
 		segmentsText = this.GetSegmentsText()
 	}
-	var chars []uint16 = make([]uint16, int32(len(segmentsText)))
+	var chars []uint16 = make([]uint16, jrt.StringLength(segmentsText))
 	copy(chars, utf16.Encode([]rune(segmentsText)))
 	var str *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	str = str.InitWithCharacters(chars, int64(int32(len(chars))))
@@ -169,13 +170,13 @@ func (this *TextLayout) ComputeRuns() {
 	paragraph.SetLineSpacing(float64(this.spacing))
 	paragraph.SetFirstLineHeadIndent(float64(this.indent))
 	paragraph.SetHeadIndent(float64(this.wrapIndent))
-	var cond507 int32
+	var cond509 int32
 	if this.wrapWidth != -1 {
-		cond507 = cocoa.OSNSLineBreakByWordWrapping
+		cond509 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond507 = cocoa.OSNSLineBreakByClipping
+		cond509 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraph.SetLineBreakMode(int64(cond507))
+	paragraph.SetLineBreakMode(int64(cond509))
 	paragraph.SetTabStops(cocoa.NSArrayArray())
 	if this.tabs != (nil) && int32(len(this.tabs)) > 0 {
 		var count int32 = int32(len(this.tabs))
@@ -468,7 +469,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 			gc.UncheckGC(pool)
 		}()
 		this.ComputeRuns()
-		var length int32 = this.TranslateOffset(int32(len(this.text)))
+		var length int32 = this.TranslateOffset(jrt.StringLength(this.text))
 		if length == 0 && flags == 0 {
 			return
 		}
@@ -741,13 +742,13 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 										rect.Width -= float64(0.5)
 										rect.Height -= float64(0.5)
 										var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
-										var cond508 int32
+										var cond510 int32
 										if lengths != (nil) {
-											cond508 = int32(len(lengths))
+											cond510 = int32(len(lengths))
 										} else {
-											cond508 = 0
+											cond510 = 0
 										}
-										path.SetLineDash(lengths, int64(cond508), float64(0))
+										path.SetLineDash(lengths, int64(cond510), float64(0))
 										path.AppendBezierPathWithRect(rect)
 										path.Stroke()
 									}
@@ -818,7 +819,7 @@ func (this *TextLayout) GetBounds() *Rectangle {
 		if this.wrapWidth != -1 {
 			rect.Width = float64(this.wrapWidth)
 		}
-		if int32(len(this.text)) == 0 {
+		if jrt.StringLength(this.text) == 0 {
 			var font *Font
 			if this.font != (nil) {
 				font = this.font
@@ -849,7 +850,7 @@ func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 			}
 		}()
 		this.ComputeRuns()
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if length == 0 {
 			return NewRectangle(0, 0, 0, 0)
 		}
@@ -924,7 +925,7 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 			}
 		}()
 		this.ComputeRuns()
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if !(0 <= offset && offset <= length) {
 			Error(ERROR_INVALID_RANGE)
 		}
@@ -973,7 +974,7 @@ func (this *TextLayout) GetLineIndex(offset int32) int32 {
 			}
 		}()
 		this.ComputeRuns()
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if !(0 <= offset && offset <= length) {
 			Error(ERROR_INVALID_RANGE)
 		}
@@ -1046,7 +1047,7 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 		if this.fixedLineMetrics != (nil) {
 			return this.fixedLineMetrics.MakeCopy()
 		}
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if length == 0 {
 			var font *Font
 			if this.font != (nil) {
@@ -1090,7 +1091,7 @@ func (this *TextLayout) GetLocation(offset int32, trailing bool) *Point {
 			}
 		}()
 		this.ComputeRuns()
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if !(0 <= offset && offset <= length) {
 			Error(ERROR_INVALID_RANGE)
 		}
@@ -1147,7 +1148,7 @@ func (this *TextLayout) GetNextOffset(offset int32, movement int32) int32 {
 func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) int32 {
 	this.CheckLayout()
 	this.ComputeRuns()
-	var length int32 = int32(len(this.text))
+	var length int32 = jrt.StringLength(this.text)
 	if !(0 <= offset && offset <= length) {
 		Error(ERROR_INVALID_RANGE)
 	}
@@ -1257,7 +1258,7 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 		if trailing != (nil) && int32(len(trailing)) < 1 {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if length == 0 {
 			return 0
 		}
@@ -1316,12 +1317,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t509 := count
+			t511 := count
 			count++
-			result[t509] = this.styles[i].start
-			t510 := count
+			result[t511] = this.styles[i].start
+			t512 := count
 			count++
-			result[t510] = this.styles[i+1].start - 1
+			result[t512] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1343,7 +1344,7 @@ func (this *TextLayout) GetSegmentsChars() []uint16 {
 }
 
 func (this *TextLayout) GetSegmentsText() string {
-	var length int32 = int32(len(this.text))
+	var length int32 = jrt.StringLength(this.text)
 	if length == 0 {
 		return this.text
 	}
@@ -1383,13 +1384,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t511 := segmentCount
+			t513 := segmentCount
 			segmentCount++
-			newChars[charCount+t511] = separator
+			newChars[charCount+t513] = separator
 		} else {
-			t512 := charCount
+			idx515 := charCount + segmentCount
+			t514 := charCount
 			charCount++
-			newChars[charCount+segmentCount] = oldChars[t512]
+			newChars[idx515] = oldChars[t514]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1400,9 +1402,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t513 := segmentCount
+		t516 := segmentCount
 		segmentCount++
-		newChars[charCount+t513] = separator
+		newChars[charCount+t516] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1419,7 +1421,7 @@ func (this *TextLayout) GetVerticalIndent() int32 {
 
 func (this *TextLayout) GetStyle(offset int32) *TextStyle {
 	this.CheckLayout()
-	var length int32 = int32(len(this.text))
+	var length int32 = jrt.StringLength(this.text)
 	if !(0 <= offset && offset < length) {
 		Error(ERROR_INVALID_RANGE)
 	}
@@ -1438,9 +1440,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t514 := count
+			t517 := count
 			count++
-			result[t514] = this.styles[i].style
+			result[t517] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -1865,7 +1867,7 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 				pool.Release()
 			}
 		}()
-		var length int32 = int32(len(this.text))
+		var length int32 = jrt.StringLength(this.text)
 		if length == 0 {
 			return
 		}
@@ -1993,7 +1995,7 @@ func (this *TextLayout) SetTabs(tabs []int32) {
 
 func (this *TextLayout) SetText(text string) {
 	this.CheckLayout()
-	if false {
+	if text == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	if text == this.text {
@@ -2014,7 +2016,7 @@ func (this *TextLayout) SetText(text string) {
 		this.styles = make([]*TextLayout_StyleItem, 2)
 		this.styles[0] = newTextLayoutStyleItem()
 		this.styles[1] = newTextLayoutStyleItem()
-		this.styles[1].start = int32(len(text))
+		this.styles[1].start = jrt.StringLength(text)
 		this.stylesCount = 2
 	}
 }
@@ -2054,7 +2056,7 @@ func (this *TextLayout) String() string {
 }
 
 func (this *TextLayout) TranslateOffset(offset int32) int32 {
-	var length int32 = int32(len(this.text))
+	var length int32 = jrt.StringLength(this.text)
 	if length == 0 {
 		return offset
 	}
@@ -2082,7 +2084,7 @@ func (this *TextLayout) TranslateOffset(offset int32) int32 {
 }
 
 func (this *TextLayout) UntranslateOffset(offset int32) int32 {
-	var length int32 = int32(len(this.text))
+	var length int32 = jrt.StringLength(this.text)
 	if length == 0 {
 		return offset
 	}
@@ -2115,11 +2117,11 @@ func (this *TextLayout) SetDefaultTabWidth(tabLength int32) {
 	}
 	this.CheckLayout()
 	var oldString string = this.GetText()
-	var tabBuffer any = func() any { _ = []any{tabLength}; panic("j2go: unresolved new StringBuilder") }()
+	var tabBuffer *jrt.StringBuilder = jrt.NewStringBuilder(tabLength)
 	for i := int32(0); i < tabLength; i++ {
-		func() any { _ = []any{tabBuffer, ' '}; panic("j2go: unresolved call append") }()
+		tabBuffer.Append(uint16(' '))
 	}
-	this.SetText(func() string { _ = []any{tabBuffer}; panic("j2go: unresolved call toString") }())
+	this.SetText(tabBuffer.ToString())
 	this.ignoreSegments = true
 	this.defaultTabWidth = this.GetTabWidth()
 	this.ignoreSegments = false
@@ -2217,6 +2219,9 @@ func (this *TextLayout_StyleItem) String() string {
 func idImplAsSWTTextAttachmentCell(x any) (*cocoa.SWTTextAttachmentCell, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTTextAttachmentCell:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -2244,6 +2249,9 @@ func upcastcocoaSWTTextAttachmentCellTococoaNSCell(x *cocoa.SWTTextAttachmentCel
 func idImplAsNSTextAttachment(x any) (*cocoa.NSTextAttachment, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSTextAttachment:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -2271,6 +2279,9 @@ func upcastcocoaNSTextAttachmentTococoaId(x *cocoa.NSTextAttachment) *cocoa.Id {
 func textLayoutStyleItemImplAsTextLayoutStyleItem(x any) (*TextLayout_StyleItem, bool) {
 	switch v := x.(type) {
 	case *TextLayout_StyleItem:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

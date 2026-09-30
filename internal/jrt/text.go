@@ -5,8 +5,10 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
+	"slices"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 )
 
 // ResourceBundle is java.util.ResourceBundle backed by a <name>.properties file in the registered
@@ -172,19 +174,43 @@ func ParseLong(s string) int64 {
 	return n
 }
 
-// IndexFrom is String.indexOf(str, fromIndex): byte offsets, like the rest of this port's strings.
+// IndexFrom is String.indexOf(str, fromIndex) in UTF-16 units.
 func IndexFrom(s, needle string, from int32) int32 {
 	if from < 0 {
 		from = 0
 	}
-	if int(from) > len(s) {
+	if isASCII(s) {
+		if int(from) > len(s) {
+			return -1
+		}
+		if i := strings.Index(s[from:], needle); i >= 0 {
+			return from + int32(i)
+		}
 		return -1
 	}
-	i := strings.Index(s[from:], needle)
-	if i < 0 {
-		return -1
+	u := utf16.Encode([]rune(s))
+	n := utf16.Encode([]rune(needle))
+	for i := int(from); i+len(n) <= len(u); i++ {
+		if slices.Equal(u[i:i+len(n)], n) {
+			return int32(i)
+		}
 	}
-	return from + int32(i)
+	return -1
+}
+
+// LastIndexOf is String.lastIndexOf(str) in UTF-16 units.
+func LastIndexOf(s, needle string) int32 {
+	if isASCII(s) {
+		return int32(strings.LastIndex(s, needle))
+	}
+	u := utf16.Encode([]rune(s))
+	n := utf16.Encode([]rune(needle))
+	for i := len(u) - len(n); i >= 0; i-- {
+		if slices.Equal(u[i:i+len(n)], n) {
+			return int32(i)
+		}
+	}
+	return -1
 }
 
 // ClassGetResourceAsStream is Class.getResourceAsStream: the class is ignored, names resolve

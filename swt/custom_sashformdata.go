@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"reflect"
-	"strings"
 )
 
 type SashFormData struct {
@@ -30,11 +29,11 @@ func (this *SashFormData) initSashFormData() {
 
 func (this *SashFormData) GetName() string {
 	var string_ string = jrt.ClassName(reflect.TypeOf(this))
-	var index int32 = int32(strings.LastIndexByte(string_, byte('.')))
+	var index int32 = jrt.LastIndexOf(string_, string(rune('.')))
 	if index == -1 {
 		return string_
 	}
-	return string_[index+1 : int32(len(string_))]
+	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
 func (this *SashFormData) String() string {

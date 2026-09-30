@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type ShellEvent struct {
@@ -36,5 +37,5 @@ func (this *ShellEvent) initShellEvent(e *Event) {
 
 func (this *ShellEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	return fmt.Sprintf("%s doit=%t}", string_[0:int32(len(string_))-1], this.Doit)
+	return fmt.Sprintf("%s doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Doit)
 }

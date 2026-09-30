@@ -86,6 +86,9 @@ func (this *Monitor) HashCode() int32 {
 func monitorImplAsMonitor(x any) (*Monitor, bool) {
 	switch v := x.(type) {
 	case *Monitor:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

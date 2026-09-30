@@ -3,6 +3,7 @@
 package swttests
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -50,7 +51,7 @@ func (this *Test_org_eclipse_swt_events_TypedEvent) Test_toString() {
 	event.Widget = upcastswtShellToswtWidget(this.Shell)
 	var typedEvent *swt.TypedEvent = this.impl.newTypedEvent_(event)
 	junit.AssertNotNull(typedEvent.String())
-	junit.AssertTrue(int32(len(typedEvent.String())) > 0)
+	junit.AssertTrue(jrt.StringLength(typedEvent.String()) > 0)
 }
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) NewTypedEvent(eventLike swt.EventLike) *swt.TypedEvent {

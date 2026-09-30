@@ -192,16 +192,17 @@ final class NumericEmitter {
 				|| op == InfixExpression.Operator.OR || op == InfixExpression.Operator.XOR;
 	}
 
-	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter: the
-	 * check becomes constant false (`!=`: true). A Go caller cannot pass null, so it must not fire
-	 * for "" (README "Round 11 null-string"). Every other String null check keeps `== ""`. */
+	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter: it
+	 * fires only for jrt.NullString, which a test's literal null argument becomes; "" is a valid
+	 * String (README "Round 11 null-string"). Every other String null check keeps `== ""`. */
 	private String stringParamNullCheck(InfixExpression ie, InfixExpression.Operator op) {
 		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
 		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
 		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
 		if (!(other instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return null;
 		if (!vb.isParameter() || !isGoString(other) || !isNullArgumentGuard(ie)) return null;
-		return op == InfixExpression.Operator.EQUALS ? "false" : "true";
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
 	}
 
 	// e is the condition of an if (alone or inside a || chain) whose then-branch is
@@ -331,6 +332,12 @@ final class NumericEmitter {
 			if (bareEnum) return goType + "(0)";
 		}
 		if (from == null || to == null) return text;
+		// A boxed Integer is Go any (Manual): unboxing into a primitive asserts it back (nil reads as 0).
+		if (from.isCapture() && from.getWildcard() != null && from.getWildcard().getBound() != null) from = from.getWildcard().getBound();
+		if (to.isPrimitive() && !from.isPrimitive() && dev.gowt.j2go.GoTypes.map(from, emitter).equals("any")) {
+			emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+			return "jrt.Cast[" + dev.gowt.j2go.GoTypes.map(to, emitter) + "](" + text + ")";
+		}
 		if (!from.isPrimitive() || !to.isPrimitive()) return upcastObject(text, from, to);
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);

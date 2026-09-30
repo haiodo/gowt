@@ -91,7 +91,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_loadLjava_io_InputSt
 
 func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_loadLjava_lang_String() {
 	var loader *swt.ImageLoader = swt.NewImageLoader()
-	var filename string = ""
+	var filename string = jrt.NullString
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		loader.LoadFilename(filename)
 	}, "No exception thrown for load filename == null")
@@ -107,7 +107,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_saveLjava_io_OutputS
 	junit.AssertThrows[*swt.SWTException](func() {
 		loader.Save(outStream2, -1)
 	}, "No exception thrown for save to invalid outputStream format")
-	var jpgSupported bool = func() *jrt.List { _ = []any{SwtTestUtilImageFormats}; panic("j2go: unresolved call asList") }().Contains("jpg")
+	var jpgSupported bool = jrt.ArraysAsList(SwtTestUtilImageFormats).Contains("jpg")
 	if jpgSupported {
 		var filename string = SwtTestUtilImageFilenames[0]
 		var filetype string = "jpg"
@@ -133,7 +133,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_saveLjava_io_OutputS
 
 func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_saveLjava_lang_StringI() {
 	var loader *swt.ImageLoader = swt.NewImageLoader()
-	var filename string = ""
+	var filename string = jrt.NullString
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		loader.SaveFilenameFormat(filename, 0)
 	}, "No exception thrown for save filename == null")

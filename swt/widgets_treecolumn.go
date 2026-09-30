@@ -4,6 +4,7 @@ package swt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode/utf16"
 )
@@ -237,7 +238,7 @@ func (this *TreeColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cellR
 		}
 		drawX += int32(destRect.Width)
 	}
-	if this.displayText != "" && int32(len(this.displayText)) > 0 {
+	if this.displayText != "" && jrt.StringLength(this.displayText) > 0 {
 		if this.image != (nil) {
 			drawX += TreeColumnMARGIN
 		}
@@ -407,22 +408,22 @@ func (this *TreeColumn) SetMoveable(moveable bool) {
 
 func (this *TreeColumn) SetResizable(resizable bool) {
 	this.CheckWidget()
-	var cond551 int32
+	var cond554 int32
 	if resizable {
-		cond551 = cocoa.OSNSTableColumnUserResizingMask
+		cond554 = cocoa.OSNSTableColumnUserResizingMask
 	} else {
-		cond551 = cocoa.OSNSTableColumnNoResizing
+		cond554 = cocoa.OSNSTableColumnNoResizing
 	}
-	this.nsColumn.SetResizingMask(int64(cond551))
+	this.nsColumn.SetResizingMask(int64(cond554))
 }
 
 func (this *TreeColumn) setText_(string_ string) {
 	this.CheckWidget()
-	if false {
+	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Item.setText_(string_)
-	var buffer []uint16 = make([]uint16, int32(len(this.text)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)
 	this.displayText = string(utf16.Decode(buffer[0 : 0+length]))

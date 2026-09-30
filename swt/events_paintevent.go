@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type PaintEvent struct {
@@ -46,5 +47,5 @@ func (this *PaintEvent) initPaintEvent(e *Event) {
 
 func (this *PaintEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	return fmt.Sprintf("%s gc=%v x=%d y=%d width=%d height=%d count=%d}", string_[0:int32(len(string_))-1], this.Gc, this.X, this.Y, this.Width, this.Height, this.Count)
+	return fmt.Sprintf("%s gc=%v x=%d y=%d width=%d height=%d count=%d}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Gc, this.X, this.Y, this.Width, this.Height, this.Count)
 }

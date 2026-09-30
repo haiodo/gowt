@@ -1047,7 +1047,7 @@ func (this *Display) GetCursorSizes() []*Point {
 
 func (this *Display) GetData(key string) any {
 	this.impl.checkDevice_()
-	if false {
+	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.keys == (nil) {
@@ -3789,7 +3789,7 @@ func (this *Display) SetCursorLocationPoint(pointLike PointLike) {
 
 func (this *Display) SetData(key string, value any) {
 	this.impl.checkDevice_()
-	if false {
+	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == DisplayADD_WIDGET_KEY {
@@ -4456,8 +4456,8 @@ func (this *Display) ApplicationDidFinishLaunching(id int64, sel int64, notifica
 
 func (this *Display) ApplicationWillFinishLaunching(id int64, sel int64, notification int64) {
 	var loaded bool = false
-	var loc any = any(nil)
-	var languageISOValue string = jrt.LocaleLanguage(loc)
+	var loc *jrt.Locale = jrt.LocaleDefault()
+	var languageISOValue string = loc.GetLanguage()
 	var englishLocale *cocoa.NSLocale = castcocoaNSObjectTococoaNSLocale(cocoa.NewNSLocale().Alloc())
 	englishLocale = cocoa.NewNSLocaleOverload2(upcastcocoaNSLocaleTococoaId(englishLocale.InitWithLocaleIdentifier(cocoa.NSStringStringWith("en_US"))))
 	var languageDisplayName *cocoa.NSString = englishLocale.DisplayNameForKey(upcastcocoaNSStringTococoaId(cocoa.OSNSLocaleLanguageCode_), upcastcocoaNSStringTococoaId(cocoa.NSStringStringWith(languageISOValue)))
@@ -4546,7 +4546,7 @@ func DisplaySetDevice(deviceLike DeviceLike) {
 }
 
 func DisplayAscii(name string) []int8 {
-	var length int32 = int32(len(name))
+	var length int32 = jrt.StringLength(name)
 	var chars []uint16 = make([]uint16, length)
 	copy(chars, utf16.Encode([]rune(name)))
 	var buffer []int8 = make([]int8, length+1)
@@ -4594,7 +4594,7 @@ func DisplayCheckDisplay(thread any, multiple bool) {
 func DisplayConvertToLf(text string) string {
 	var Cr uint16 = '\u000d'
 	var Lf uint16 = '\u000a'
-	var length int32 = int32(len(text))
+	var length int32 = jrt.StringLength(text)
 	if length == 0 {
 		return text
 	}
@@ -4606,18 +4606,18 @@ func DisplayConvertToLf(text string) string {
 		return text
 	}
 	i = 0
-	var result any = func() any { panic("j2go: unresolved new StringBuilder") }()
+	var result *jrt.StringBuilder = jrt.NewStringBuilder()
 	for i < length {
 		var j int32 = jrt.IndexFrom(text, string(rune(Cr)), i)
 		if j == -1 {
 			j = length
 		}
-		var s string = text[i:j]
-		func() any { _ = []any{result, s}; panic("j2go: unresolved call append") }()
+		var s string = jrt.Substring(text, i, j)
+		result.Append(s)
 		i = j + 2
-		func() any { _ = []any{result, Lf}; panic("j2go: unresolved call append") }()
+		result.Append(uint16(Lf))
 	}
-	return func() string { _ = []any{result}; panic("j2go: unresolved call toString") }()
+	return result.ToString()
 }
 
 func DisplayConfigureSystemOption(option string, value bool) {
@@ -6098,6 +6098,9 @@ func DisplayIsActivateShellOnForceFocus() bool {
 func idImplAsNSImage(x any) (*cocoa.NSImage, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSImage:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -6118,6 +6121,9 @@ func castcocoaNSObjectTococoaNSImage(x *cocoa.NSObject) *cocoa.NSImage {
 func idImplAsSWTApplicationDelegate(x any) (*cocoa.SWTApplicationDelegate, bool) {
 	switch v := x.(type) {
 	case *cocoa.SWTApplicationDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -6138,60 +6144,144 @@ func castcocoaNSObjectTococoaSWTApplicationDelegate(x *cocoa.NSObject) *cocoa.SW
 func widgetImplAsWidget(x any) (*Widget, bool) {
 	switch v := x.(type) {
 	case *Widget:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *Control:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Scrollable:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Composite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Canvas:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Decorations:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Shell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Group:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *SashForm:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Tree:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TabFolder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Combo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Table:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Text:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Button:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Label:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Sash:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Item:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *MenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TreeItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TreeColumn:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TabItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TableItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *TableColumn:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Menu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *ScrollBar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	case *Caret:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Widget, true
 	}
 	return nil, false
@@ -6212,392 +6302,974 @@ func castanyToWidget(x any) *Widget {
 func idImplAsNSObject(x any) (*cocoa.NSObject, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSObject:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *cocoa.CALayer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMDocument:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMUIEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMKeyboardEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMMouseEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.DOMWheelEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAffineTransform:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAlert:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAppearance:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAppleEventDescriptor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSArray:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableArray:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableAttributedString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSAutoreleasePool:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSBezierPath:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSBundle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSActionCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTButtonCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSComboBoxCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTSearchFieldCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTableHeaderCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTImageTextCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTextAttachmentCell:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSCoder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSKeyedArchiver:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSKeyedUnarchiver:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSColor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSColorList:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSColorSpace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSCursor:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSData:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSDate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSCalendarDate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSDictionary:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableDictionary:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSDockTile:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSEnumerator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSDirectoryEnumerator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSError:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSEvent:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFileManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFileWrapper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFont:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFontManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFormatter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSNumberFormatter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSGradient:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSGraphicsContext:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSHTTPCookie:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSHTTPCookieStorage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSImage:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSImageRep:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSBitmapImageRep:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSIndexSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableIndexSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSInputManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSLayoutManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSLocale:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMenu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTMenu:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTMenuItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSNotification:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSNotificationCenter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSOpenGLContext:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSOpenGLPixelFormat:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSParagraphStyle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableParagraphStyle:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPasteboard:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPrintInfo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPrintOperation:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPrintPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPrinter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSProcessInfo:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSResponder:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSApplication:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSClipView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSControl:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTPopUpButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTButton:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTDatePicker:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTImageView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTScroller:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTSlider:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTStepper:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTOutlineView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTableView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTComboBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTSearchField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTSecureTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTextField:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTProgressIndicator:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTScrollView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTabView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTableHeaderView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSText:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTextView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTCanvasView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTPrinterView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSWindow:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSColorPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSFontPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSavePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSOpenPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SFCertificatePanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SFCertificateTrustPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTPanel:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTWindow:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSRunLoop:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSScreen:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableSet:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSStatusBar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSStatusItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableString:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTabViewItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTableColumn:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextAttachment:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextContainer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTextTab:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSThread:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTimeZone:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTimer:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSToolbar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTToolbar:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSToolbarItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTouch:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTrackingArea:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSTypesetter:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURL:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURLAuthenticationChallenge:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURLCredential:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURLDownload:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURLProtectionSpace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSURLRequest:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSMutableURLRequest:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSUndoManager:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSUserDefaults:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSValue:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSNumber:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.NSWorkspace:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTApplicationDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTDragSourceDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTOpenSavePanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTPanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTPrintPanelDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTTreeItem:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTWebViewDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.SWTWindowDelegate:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.UTType:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebDataSource:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebDocumentRepresentation:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebFrame:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebFrameView:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebOpenPanelResultListener:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebPolicyDecisionListener:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebPreferences:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebScriptObject:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	case *cocoa.WebUndefined:
+		if v == nil {
+			return nil, false
+		}
 		return &v.NSObject, true
 	}
 	return nil, false
@@ -6618,12 +7290,24 @@ func castanyTococoaNSObject(x any) *cocoa.NSObject {
 func dialogImplAsDialog(x any) (*Dialog, bool) {
 	switch v := x.(type) {
 	case *Dialog:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	case *ColorDialog:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Dialog, true
 	case *FontDialog:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Dialog, true
 	case *MessageBox:
+		if v == nil {
+			return nil, false
+		}
 		return &v.Dialog, true
 	}
 	return nil, false
@@ -6644,6 +7328,9 @@ func castanyToDialog(x any) *Dialog {
 func idImplAsNSLocale(x any) (*cocoa.NSLocale, bool) {
 	switch v := x.(type) {
 	case *cocoa.NSLocale:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -6671,6 +7358,9 @@ func upcastcocoaNSLocaleTococoaId(x *cocoa.NSLocale) *cocoa.Id {
 func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
 	switch v := x.(type) {
 	case *ColorDialog:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false
@@ -6680,6 +7370,9 @@ func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
 func dialogImplAsFontDialog(x any) (*FontDialog, bool) {
 	switch v := x.(type) {
 	case *FontDialog:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

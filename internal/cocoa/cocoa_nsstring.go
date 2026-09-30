@@ -3,6 +3,7 @@
 package cocoa
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"unicode/utf16"
 )
 
@@ -50,7 +51,7 @@ func (this *NSString) GetString() string {
 }
 
 func (this *NSString) InitWithString(str string) *NSString {
-	var buffer []uint16 = make([]uint16, int32(len(str)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(str))
 	copy(buffer, utf16.Encode([]rune(str)))
 	return this.InitWithCharacters(buffer, int64(int32(len(buffer))))
 }
@@ -330,7 +331,7 @@ func (this *NSString) StringByReplacingPercentEscapesUsingEncoding(enc int64) *N
 }
 
 func NSStringStringWith(str string) *NSString {
-	var buffer []uint16 = make([]uint16, int32(len(str)))
+	var buffer []uint16 = make([]uint16, jrt.StringLength(str))
 	copy(buffer, utf16.Encode([]rune(str)))
 	return NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 }

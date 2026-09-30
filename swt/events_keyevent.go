@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"strconv"
 )
 
@@ -51,5 +52,5 @@ func (this *KeyEvent) string_() string {
 	} else {
 		cond36 = string(rune(this.Character))
 	}
-	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", string_[0:int32(len(string_))-1], (cond36), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
+	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), (cond36), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
 }

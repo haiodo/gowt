@@ -149,6 +149,9 @@ func (this *ScrolledCompositeLayout) layoutFn_(composite *Composite, flushCache 
 func widgetImplAsScrolledComposite(x any) (*ScrolledComposite, bool) {
 	switch v := x.(type) {
 	case *ScrolledComposite:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

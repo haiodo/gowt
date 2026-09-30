@@ -370,6 +370,9 @@ func upcastSashFormToComposite(x *SashForm) *Composite {
 func widgetImplAsSash(x any) (*Sash, bool) {
 	switch v := x.(type) {
 	case *Sash:
+		if v == nil {
+			return nil, false
+		}
 		return v, true
 	}
 	return nil, false

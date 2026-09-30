@@ -209,7 +209,7 @@ func (this *Test_org_eclipse_swt_graphics_Cursor) Test_toString() {
 			cursor.Dispose()
 		}()
 		junit.AssertNotNull(cursor.String())
-		junit.AssertTrue(int32(len(cursor.String())) > 0)
+		junit.AssertTrue(jrt.StringLength(cursor.String()) > 0)
 	}
 }
 

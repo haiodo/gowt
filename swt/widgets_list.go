@@ -102,7 +102,7 @@ func (this *List) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *List) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *List) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	if wHint == DEFAULT {
@@ -138,7 +138,7 @@ func (this *List) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, change
 	if height <= 0 {
 		height = WidgetDEFAULT_HEIGHT
 	}
-	var rect *Rectangle = this.impl.ComputeTrim_(0, 0, width, height)
+	var rect *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 	return NewPoint(rect.Width, rect.Height)
 }
 
@@ -1016,12 +1016,12 @@ func (this *List) UpdateRowCount() {
 		this.rowsChanged = true
 	} else {
 		var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
-		this.impl.SetRedraw_(false)
+		this.impl.setRedraw_(false)
 		this.ignoreSelect = true
 		widget.NoteNumberOfRowsChanged()
 		this.ignoreSelect = false
 		widget.Tile()
-		this.impl.SetRedraw_(true)
+		this.impl.setRedraw_(true)
 	}
 }
 

@@ -82,7 +82,7 @@ func (this *RowLayout) initRowLayoutType(type_ int32) {
 	this.Type = type_
 }
 
-func (this *RowLayout) ComputeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *RowLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var extent *Point
 	if this.Type == HORIZONTAL {
 		extent = this.LayoutHorizontal(composite, false, (wHint != DEFAULT) && this.Wrap, wHint, flushCache)
@@ -111,10 +111,10 @@ func (this *RowLayout) ComputeSizeControlFlushCache(controlLike ControlLike, flu
 		wHint = data.Width
 		hHint = data.Height
 	}
-	return control.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, flushCache)
+	return control.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 }
 
-func (this *RowLayout) FlushCache_(control *Control) bool {
+func (this *RowLayout) flushCache_(control *Control) bool {
 	return true
 }
 
@@ -127,8 +127,8 @@ func (this *RowLayout) GetName() string {
 	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
-func (this *RowLayout) LayoutFn_(composite *Composite, flushCache bool) {
-	var clientArea *Rectangle = composite.impl.GetClientArea_()
+func (this *RowLayout) layoutFn_(composite *Composite, flushCache bool) {
+	var clientArea *Rectangle = composite.impl.getClientArea_()
 	if this.Type == HORIZONTAL {
 		this.LayoutHorizontal(composite, true, this.Wrap, clientArea.Width, flushCache)
 	} else {
@@ -170,7 +170,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 				} else {
 					cond94 = (castanyToRowData(child.GetLayoutData())).Height
 				}
-				size = child.impl.ComputeSizeWHintHHintChanged_(width, cond94, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(width, cond94, flushCache)
 			}
 			childWidth = int32(math.Max(float64(childWidth), float64(size.X)))
 			childHeight = int32(math.Max(float64(childHeight), float64(size.Y)))
@@ -180,7 +180,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 	var clientX int32 = 0
 	var clientY int32 = 0
 	if move {
-		var rect *Rectangle = composite.impl.GetClientArea_()
+		var rect *Rectangle = composite.impl.getClientArea_()
 		clientX = rect.X
 		clientY = rect.Y
 	}
@@ -205,7 +205,7 @@ func (this *RowLayout) LayoutHorizontal(compositeLike CompositeLike, move bool, 
 				} else {
 					cond95 = (castanyToRowData(child.GetLayoutData())).Height
 				}
-				size = child.impl.ComputeSizeWHintHHintChanged_(width, cond95, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(width, cond95, flushCache)
 			}
 			childWidth = size.X
 			childHeight = size.Y
@@ -333,7 +333,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 				} else {
 					cond97 = (castanyToRowData(child.GetLayoutData())).Width
 				}
-				size = child.impl.ComputeSizeWHintHHintChanged_(cond97, height, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(cond97, height, flushCache)
 			}
 			childWidth = int32(math.Max(float64(childWidth), float64(size.X)))
 			childHeight = int32(math.Max(float64(childHeight), float64(size.Y)))
@@ -343,7 +343,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 	var clientX int32 = 0
 	var clientY int32 = 0
 	if move {
-		var rect *Rectangle = composite.impl.GetClientArea_()
+		var rect *Rectangle = composite.impl.getClientArea_()
 		clientX = rect.X
 		clientY = rect.Y
 	}
@@ -368,7 +368,7 @@ func (this *RowLayout) LayoutVertical(compositeLike CompositeLike, move bool, wr
 				} else {
 					cond98 = (castanyToRowData(child.GetLayoutData())).Width
 				}
-				size = child.impl.ComputeSizeWHintHHintChanged_(cond98, height, flushCache)
+				size = child.impl.computeSizeWHintHHintChanged_(cond98, height, flushCache)
 			}
 			childWidth = size.X
 			childHeight = size.Y

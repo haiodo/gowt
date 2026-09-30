@@ -48,7 +48,7 @@ func (this *Pattern) initPattern(device *Device, image *Image) {
 	if image == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if image.impl.IsDisposed_() {
+	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -121,13 +121,13 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 	if color1 == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color1.impl.IsDisposed_() {
+	if color1.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	if color2 == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color2.impl.IsDisposed_() {
+	if color2.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -171,12 +171,12 @@ func (this *Pattern) destroy_() {
 	this.color1 = this.color2
 }
 
-func (this *Pattern) IsDisposed_() bool {
+func (this *Pattern) isDisposed_() bool {
 	return this.device == (nil)
 }
 
 func (this *Pattern) String() string {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		return "Pattern {*DISPOSED*}"
 	}
 	var cond374 int64

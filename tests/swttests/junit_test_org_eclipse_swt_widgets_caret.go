@@ -25,11 +25,11 @@ func (this *Test_org_eclipse_swt_widgets_Caret) initTest_org_eclipse_swt_widgets
 	this.Test_org_eclipse_swt_widgets_Widget.initTest_org_eclipse_swt_widgets_Widget()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Caret) SetUp_() {
-	this.Test_org_eclipse_swt_widgets_Widget.SetUp_()
+func (this *Test_org_eclipse_swt_widgets_Caret) setUp_() {
+	this.Test_org_eclipse_swt_widgets_Widget.setUp_()
 	this.canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(this.shell), swt.NULL)
 	this.caret = swt.NewCaret(this.canvas, swt.NULL)
-	this.impl.SetWidget_(upcastswtCaretToswtWidget(this.caret))
+	this.impl.setWidget_(upcastswtCaretToswtWidget(this.caret))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Caret) Test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
@@ -130,7 +130,7 @@ func init() {
 		New:  func() any { return NewTest_org_eclipse_swt_widgets_Caret() },
 		BeforeEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).SetupBase(junit.Current) },
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).impl.SetUp_() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).impl.setUp_() },
 		},
 		AfterEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Caret).TearDown() },

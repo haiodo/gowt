@@ -2973,3 +2973,34 @@ Fixes after the first batch run:
   reach a released widget (nil `display`/`parent`). Defensive; the trigger was not reproduced.
 - `char` in string concatenation is `%c` (was `%d`: `name + '.' + ext` gave "name46png").
 - `new BufferedInputStream(s)` is `s` (the stub returned nil, live since `drawImageAtSize` reads files).
+
+## Round 16 hidden dispatch names, ControlExample tabs (TSK-2026-09-23-057, -031)
+
+Static verification only (no GUI run): `make gen && make` green; `tests/expected.txt` is refreshed after a batch run.
+
+Dispatch names (`TypeModel.putCascadeName`, `HookEmitter`, `ClassEmitter`):
+
+- The cascade names of swt are unexported again (`setFocus_`); `apidump` lost the ~2100 `SetFocus_`/`Internal_*` lines
+  (17633 lines at `4ee1354~1`, 19761 at HEAD, 18325 now; the rest of the diff to the old API is `List`, `DPIUtil`/`SyncCall`
+  additions and one `SetImpl_` per class of a root).
+- A public/protected override point also has an exported *hook name* (`ClassInfo.overriddenRootHookNames`). Each split root
+  gets an unexported `<root>Hooked` wrapper (`widgetHooked`, ...): `SetImpl_(x)` installs it around the object's own impl, each
+  dispatch method first asks `x` for an `interface{ SetFocus_() bool }` and only then calls the default. `Impl()` returns `x`.
+  An anonymous subclass from another package therefore defines `SetFocus_` on its own type; swt's types do not have it.
+- `super.m()` in such a body is the public natural-name call (`x.Composite.SetFocus()`): while a hook runs, the wrapper sends a
+  call of the same method to the default (`active` name). Ceiling: a real recursion into the override from itself reaches the
+  default, and calls made by the base constructor bypass the hook (as in Round 15).
+- Test classes' own cascade names (`Test_..._Tree.setUp_`) are unexported again as well.
+
+Translator additions needed by the tabs:
+
+- Anonymous class with instance fields (`FunctionalEmitter.emitStructAnon`): a struct field per declaration, initialised in the
+  prelude (`TreeEditor`'s `final Runnable runnable = ...` inside a `TreeListener`). `custom.TreeEditor` is translated.
+- Array covariance (`Item[] a = tabFolder.getItems()`): `NumericEmitter.upcastArray` emits a copying `upcastArr<From>To<To>`
+  helper. Ceiling: a store into the copy does not reach the source array.
+- `ShellTab` is translated; its manual stub (`Manual.java`, `manual.txt`, `controlexample_manual.go`) is gone.
+
+ControlExample tabs (`port.sh`, `CreateTabs` in `controlexample_manual.go`): Button, Canvas, Combo, Group, Label, List, Menu, Sash,
+Shell, TabFolder, Table, Text, Tree. Not in: Scale, Slider, Spinner, ProgressBar, Link, ToolBar, ToolTip, CoolBar, ExpandBar,
+DateTime, Dialog (no widget or stub-only widget), CTabFolder/CCombo/CLabel/StyledText (custom widgets not translated), System, Browser.
+`SashFormTab` is not in the tab list of `ControlExample` (CustomControlExample) and is not translated.

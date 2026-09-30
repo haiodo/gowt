@@ -26,10 +26,10 @@ func (this *Test_org_eclipse_swt_widgets_Menu) initTest_org_eclipse_swt_widgets_
 	this.Test_org_eclipse_swt_widgets_Widget.initTest_org_eclipse_swt_widgets_Widget()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Menu) SetUp_() {
-	this.Test_org_eclipse_swt_widgets_Widget.SetUp_()
+func (this *Test_org_eclipse_swt_widgets_Menu) setUp_() {
+	this.Test_org_eclipse_swt_widgets_Widget.setUp_()
 	this.menu = swt.NewMenu(upcastswtShellToswtControl(this.shell))
-	this.impl.SetWidget_(upcastswtMenuToswtWidget(this.menu))
+	this.impl.setWidget_(upcastswtMenuToswtWidget(this.menu))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_ConstructorLorg_eclipse_swt_widgets_Control() {
@@ -253,7 +253,7 @@ func init() {
 		New:  func() any { return NewTest_org_eclipse_swt_widgets_Menu() },
 		BeforeEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).SetupBase(junit.Current) },
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.SetUp_() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).impl.setUp_() },
 		},
 		AfterEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Menu).TearDown() },

@@ -69,7 +69,7 @@ func (this *Label) addRelation_(control *Control) {
 	}
 }
 
-func (this *Label) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Label) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = WidgetDEFAULT_WIDTH
 	var height int32 = WidgetDEFAULT_HEIGHT
@@ -374,7 +374,7 @@ func (this *Label) SetImage(imageLike ImageLike) {
 		return
 	}
 	if image != (nil) {
-		if image.impl.IsDisposed_() {
+		if image.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		this.image = image

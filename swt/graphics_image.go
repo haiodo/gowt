@@ -114,7 +114,7 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 	if srcImage == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if srcImage.impl.IsDisposed_() {
+	if srcImage.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	switch flag {
@@ -662,8 +662,8 @@ func (this *Image) DrawWithImageGcDrawer(imageGcDrawer ImageGcDrawer, width int3
 	var gc *GC = NewGCDrawableStyle(image, gcStyle)
 	{
 		defer func() {
-			gc.impl.Dispose_()
-			image.impl.Dispose_()
+			gc.impl.dispose_()
+			image.impl.dispose_()
 		}()
 		imageGcDrawer.DrawOn(gc, width, height)
 		var imageData *ImageData = image.GetImageDataZoom(zoom)
@@ -975,7 +975,7 @@ func (this *Image) CreateRepresentation(imageDataLike ImageDataLike, alphaInfoLi
 func (this *Image) destroy_() {
 	this.cachedImageAtSize.Destroy()
 	if this.memGC != (nil) {
-		this.memGC.impl.Dispose_()
+		this.memGC.impl.dispose_()
 	}
 	this.Handle.Release()
 	this.Handle = nil
@@ -1046,7 +1046,7 @@ func (this *Image) GetTargetSize(scaleFactor int32) cocoa.NSSize {
 }
 
 func (this *Image) GetBackground() *Color {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var imageRep *cocoa.NSBitmapImageRep = this.GetRepresentation0()
@@ -1061,7 +1061,7 @@ func (this *Image) GetBackground() *Color {
 }
 
 func (this *Image) GetBounds() *Rectangle {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1103,7 +1103,7 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 }
 
 func (this *Image) GetImageDataZoom(zoom int32) *ImageData {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1436,7 +1436,7 @@ func (this *Image) Internal_dispose_GC(hDC int64, data *GCData) {
 	}
 }
 
-func (this *Image) IsDisposed_() bool {
+func (this *Image) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
@@ -1446,13 +1446,13 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	if color == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	if color.impl.IsDisposed_() {
+	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var pool *cocoa.NSAutoreleasePool = nil
@@ -1517,7 +1517,7 @@ func (this *Image) SetBackground(colorLike ColorLike) {
 }
 
 func (this *Image) String() string {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		return "Image {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Image {%v}", this.Handle)
@@ -1582,7 +1582,7 @@ func ImageDrawAtSize(gcLike GCLike, imageDataLike ImageDataLike, width int32, he
 			return imageData
 		}})
 		gc.DrawImageImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeight(imageToDraw, 0, 0, DPIUtilPixelToPoint(imageData.Width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(imageData.Height, DPIUtilGetDeviceZoom()), 0, 0, DPIUtilPixelToPoint(width, DPIUtilGetDeviceZoom()), DPIUtilPixelToPoint(height, DPIUtilGetDeviceZoom()))
-		imageToDraw.impl.Dispose_()
+		imageToDraw.impl.dispose_()
 	}))
 }
 
@@ -1722,7 +1722,7 @@ func (this *Image_CachedImageAtSize) initImageCachedImageAtSize() {
 
 func (this *Image_CachedImageAtSize) Destroy() {
 	if this.image != (nil) {
-		this.image.impl.Dispose_()
+		this.image.impl.dispose_()
 		this.image = nil
 	}
 }

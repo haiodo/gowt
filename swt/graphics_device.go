@@ -11,24 +11,117 @@ import (
 )
 
 type DeviceImpl interface {
-	CheckDevice_()
-	Create_(a0 *DeviceData)
-	Destroy_()
-	GetBounds_() *Rectangle
-	GetClientArea_() *Rectangle
-	GetSystemColor_(a0 int32) *Color
-	Init_()
-	Internal_new_GC_(a0 *GCData) int64
-	Internal_dispose_GC_(a0 int64, a1 *GCData)
-	Release_()
+	checkDevice_()
+	create_(a0 *DeviceData)
+	destroy_()
+	getBounds_() *Rectangle
+	getClientArea_() *Rectangle
+	getSystemColor_(a0 int32) *Color
+	init_()
+	internal_new_GC_(a0 *GCData) int64
+	internal_dispose_GC_(a0 int64, a1 *GCData)
+	release_()
 }
 
-func (this *Device) Internal_new_GC_(a0 *GCData) int64 {
-	panic("j2go: Internal_new_GC_ has no default on Device")
+func (this *Device) internal_new_GC_(a0 *GCData) int64 {
+	panic("j2go: internal_new_GC_ has no default on Device")
 }
 
-func (this *Device) Internal_dispose_GC_(a0 int64, a1 *GCData) {
-	panic("j2go: Internal_dispose_GC_ has no default on Device")
+func (this *Device) internal_dispose_GC_(a0 int64, a1 *GCData) {
+	panic("j2go: internal_dispose_GC_ has no default on Device")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type deviceHooked struct {
+	DeviceImpl
+	hook   DeviceImpl
+	active string
+}
+
+func (this *deviceHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *deviceHooked) checkDevice_() {
+	if h, ok := this.hook.(interface{ CheckDevice_() }); ok && this.active != "checkDevice_" {
+		defer this.enter("checkDevice_")()
+		h.CheckDevice_()
+	}
+	this.DeviceImpl.checkDevice_()
+}
+
+func (this *deviceHooked) create_(a0 *DeviceData) {
+	if h, ok := this.hook.(interface{ Create_(a0 *DeviceData) }); ok && this.active != "create_" {
+		defer this.enter("create_")()
+		h.Create_(a0)
+	}
+	this.DeviceImpl.create_(a0)
+}
+
+func (this *deviceHooked) destroy_() {
+	if h, ok := this.hook.(interface{ Destroy_() }); ok && this.active != "destroy_" {
+		defer this.enter("destroy_")()
+		h.Destroy_()
+	}
+	this.DeviceImpl.destroy_()
+}
+
+func (this *deviceHooked) getBounds_() *Rectangle {
+	if h, ok := this.hook.(interface{ GetBounds_() *Rectangle }); ok && this.active != "getBounds_" {
+		defer this.enter("getBounds_")()
+		return h.GetBounds_()
+	}
+	return this.DeviceImpl.getBounds_()
+}
+
+func (this *deviceHooked) getClientArea_() *Rectangle {
+	if h, ok := this.hook.(interface{ GetClientArea_() *Rectangle }); ok && this.active != "getClientArea_" {
+		defer this.enter("getClientArea_")()
+		return h.GetClientArea_()
+	}
+	return this.DeviceImpl.getClientArea_()
+}
+
+func (this *deviceHooked) getSystemColor_(a0 int32) *Color {
+	if h, ok := this.hook.(interface{ GetSystemColor_(a0 int32) *Color }); ok && this.active != "getSystemColor_" {
+		defer this.enter("getSystemColor_")()
+		return h.GetSystemColor_(a0)
+	}
+	return this.DeviceImpl.getSystemColor_(a0)
+}
+
+func (this *deviceHooked) init_() {
+	if h, ok := this.hook.(interface{ Init_() }); ok && this.active != "init_" {
+		defer this.enter("init_")()
+		h.Init_()
+	}
+	this.DeviceImpl.init_()
+}
+
+func (this *deviceHooked) internal_new_GC_(a0 *GCData) int64 {
+	if h, ok := this.hook.(interface{ Internal_new_GC_(a0 *GCData) int64 }); ok && this.active != "internal_new_GC_" {
+		defer this.enter("internal_new_GC_")()
+		return h.Internal_new_GC_(a0)
+	}
+	return this.DeviceImpl.internal_new_GC_(a0)
+}
+
+func (this *deviceHooked) internal_dispose_GC_(a0 int64, a1 *GCData) {
+	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok && this.active != "internal_dispose_GC_" {
+		defer this.enter("internal_dispose_GC_")()
+		h.Internal_dispose_GC_(a0, a1)
+	}
+	this.DeviceImpl.internal_dispose_GC_(a0, a1)
+}
+
+func (this *deviceHooked) release_() {
+	if h, ok := this.hook.(interface{ Release_() }); ok && this.active != "release_" {
+		defer this.enter("release_")()
+		h.Release_()
+	}
+	this.DeviceImpl.release_()
 }
 
 type Device struct {
@@ -62,9 +155,16 @@ type Device struct {
 	impl               DeviceImpl
 }
 
-func (this *Device) Impl() DeviceImpl { return this.impl }
+func (this *Device) Impl() DeviceImpl {
+	if h, ok := this.impl.(*deviceHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Device) SetImpl_(impl DeviceImpl) { this.impl = impl }
+func (this *Device) SetImpl_(impl DeviceImpl) {
+	this.impl = &deviceHooked{DeviceImpl: this.impl, hook: impl}
+}
 
 func (this *Device) AsDevice() *Device { return this }
 
@@ -127,18 +227,18 @@ func (this *Device) initDeviceData(data *DeviceData) {
 				pool.Release()
 			}
 		}
-		this.impl.Create_(data)
-		this.impl.Init_()
+		this.impl.create_(data)
+		this.impl.init_()
 	}()
 }
 
 func (this *Device) IsTracking() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.tracking
 }
 
 func (this *Device) SetTracking(tracking bool) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if tracking == this.tracking {
 		return
 	}
@@ -167,10 +267,10 @@ func (this *Device) StopTracking() {
 }
 
 func (this *Device) CheckDevice() {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 }
 
-func (this *Device) CheckDevice_() {
+func (this *Device) checkDevice_() {
 	if this.disposed {
 		Error(ERROR_DEVICE_DISPOSED)
 	}
@@ -181,10 +281,10 @@ func (this *Device) Create(dataLike DeviceDataLike) {
 	if dataLike != nil {
 		data = dataLike.AsDeviceData()
 	}
-	this.impl.Create_(data)
+	this.impl.create_(data)
 }
 
-func (this *Device) Create_(data *DeviceData) {
+func (this *Device) create_(data *DeviceData) {
 }
 
 func (this *Device) Dispose() {
@@ -201,7 +301,7 @@ func (this *Device) Dispose() {
 					tretd207 = true
 					return
 				}
-				this.impl.CheckDevice_()
+				this.impl.checkDevice_()
 				func() {
 					defer func() {
 						r := recover()
@@ -215,9 +315,9 @@ func (this *Device) Dispose() {
 							panic(r)
 						}
 					}()
-					this.impl.Release_()
+					this.impl.release_()
 				}()
-				this.impl.Destroy_()
+				this.impl.destroy_()
 				this.disposed = true
 				if this.tracking {
 					jrt.MonitorEnter()
@@ -261,18 +361,18 @@ func (this *Device) Dispose_Object(object any) {
 }
 
 func (this *Device) Destroy() {
-	this.impl.Destroy_()
+	this.impl.destroy_()
 }
 
-func (this *Device) Destroy_() {
+func (this *Device) destroy_() {
 }
 
 func (this *Device) GetBounds() *Rectangle {
-	return this.impl.GetBounds_()
+	return this.impl.getBounds_()
 }
 
-func (this *Device) GetBounds_() *Rectangle {
-	this.impl.CheckDevice_()
+func (this *Device) getBounds_() *Rectangle {
+	this.impl.checkDevice_()
 	var primaryScreen *cocoa.NSScreen = this.GetPrimaryScreen()
 	if primaryScreen == (nil) {
 		return NewRectangle(0, 0, 0, 0)
@@ -282,7 +382,7 @@ func (this *Device) GetBounds_() *Rectangle {
 }
 
 func (this *Device) GetDeviceData() *DeviceData {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var data *DeviceData = NewDeviceData()
 	data.Debug = this.debug
 	data.Tracking = this.tracking
@@ -316,16 +416,16 @@ func (this *Device) GetDeviceData() *DeviceData {
 }
 
 func (this *Device) GetClientArea() *Rectangle {
-	return this.impl.GetClientArea_()
+	return this.impl.getClientArea_()
 }
 
-func (this *Device) GetClientArea_() *Rectangle {
-	this.impl.CheckDevice_()
-	return this.impl.GetBounds_()
+func (this *Device) getClientArea_() *Rectangle {
+	this.impl.checkDevice_()
+	return this.impl.getBounds_()
 }
 
 func (this *Device) GetDepth() int32 {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var primaryScreen *cocoa.NSScreen = this.GetPrimaryScreen()
 	if primaryScreen == (nil) {
 		return 0
@@ -334,7 +434,7 @@ func (this *Device) GetDepth() int32 {
 }
 
 func (this *Device) GetDPI() *Point {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.GetScreenDPI()
 }
 
@@ -350,7 +450,7 @@ func (this *Device) GetPrimaryScreen() *cocoa.NSScreen {
 }
 
 func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if !scalable {
 		return make([]*FontData, 0)
 	}
@@ -429,11 +529,11 @@ func (this *Device) GetScreenDPI() *Point {
 }
 
 func (this *Device) GetSystemColor(id int32) *Color {
-	return this.impl.GetSystemColor_(id)
+	return this.impl.getSystemColor_(id)
 }
 
-func (this *Device) GetSystemColor_(id int32) *Color {
-	this.impl.CheckDevice_()
+func (this *Device) getSystemColor_(id int32) *Color {
+	this.impl.checkDevice_()
 	switch id {
 	case COLOR_TRANSPARENT:
 		return this.COLOR_TRANSPARENT
@@ -474,20 +574,20 @@ func (this *Device) GetSystemColor_(id int32) *Color {
 }
 
 func (this *Device) GetSystemFont() *Font {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.systemFont
 }
 
 func (this *Device) GetWarnings() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.warnings
 }
 
 func (this *Device) Init() {
-	this.impl.Init_()
+	this.impl.init_()
 }
 
-func (this *Device) Init_() {
+func (this *Device) init_() {
 	this.COLOR_TRANSPARENT = NewColorRedGreenBlueAlpha(0xFF, 0xFF, 0xFF, 0)
 	this.COLOR_BLACK = NewColorRedGreenBlue(0, 0, 0)
 	this.COLOR_DARK_RED = NewColorRedGreenBlue(0x80, 0, 0)
@@ -528,11 +628,11 @@ func (this *Device) Init_() {
 }
 
 func (this *Device) Internal_new_GC(data *GCData) int64 {
-	return this.impl.Internal_new_GC_(data)
+	return this.impl.internal_new_GC_(data)
 }
 
 func (this *Device) Internal_dispose_GC(hDC int64, data *GCData) {
-	this.impl.Internal_dispose_GC_(hDC, data)
+	this.impl.internal_dispose_GC_(hDC, data)
 }
 
 func (this *Device) IsDisposed() bool {
@@ -540,7 +640,7 @@ func (this *Device) IsDisposed() bool {
 }
 
 func (this *Device) LoadFont(path string) bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if path == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -699,16 +799,16 @@ func (this *Device) PrintErrors() {
 }
 
 func (this *Device) Release() {
-	this.impl.Release_()
+	this.impl.release_()
 }
 
-func (this *Device) Release_() {
+func (this *Device) release_() {
 	if this.paragraphStyle != (nil) {
 		this.paragraphStyle.Release()
 	}
 	this.paragraphStyle = nil
 	if this.systemFont != (nil) {
-		this.systemFont.impl.Dispose_()
+		this.systemFont.impl.dispose_()
 	}
 	this.systemFont = nil
 	this.COLOR_WHITE = nil
@@ -730,7 +830,7 @@ func (this *Device) Release_() {
 }
 
 func (this *Device) SetWarnings(warnings bool) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	this.warnings = warnings
 }
 
@@ -783,6 +883,9 @@ func castcocoaNSObjectTococoaNSAutoreleasePool(x *cocoa.NSObject) *cocoa.NSAutor
 
 // j2go: instanceof helper for Cursor and its subclasses within the translated set.
 func resourceImplAsCursor(x any) (*Cursor, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Cursor:
 		if v == nil {
@@ -798,6 +901,9 @@ func resourceImplAsCursor(x any) (*Cursor, bool) {
 
 // j2go: instanceof helper for Font and its subclasses within the translated set.
 func resourceImplAsFont(x any) (*Font, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Font:
 		if v == nil {
@@ -813,6 +919,9 @@ func resourceImplAsFont(x any) (*Font, bool) {
 
 // j2go: instanceof helper for GC and its subclasses within the translated set.
 func resourceImplAsGC(x any) (*GC, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *GC:
 		if v == nil {
@@ -828,6 +937,9 @@ func resourceImplAsGC(x any) (*GC, bool) {
 
 // j2go: instanceof helper for Image and its subclasses within the translated set.
 func resourceImplAsImage(x any) (*Image, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Image:
 		if v == nil {
@@ -843,6 +955,9 @@ func resourceImplAsImage(x any) (*Image, bool) {
 
 // j2go: instanceof helper for Path and its subclasses within the translated set.
 func resourceImplAsPath(x any) (*Path, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Path:
 		if v == nil {
@@ -858,6 +973,9 @@ func resourceImplAsPath(x any) (*Path, bool) {
 
 // j2go: instanceof helper for Pattern and its subclasses within the translated set.
 func resourceImplAsPattern(x any) (*Pattern, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Pattern:
 		if v == nil {
@@ -873,6 +991,9 @@ func resourceImplAsPattern(x any) (*Pattern, bool) {
 
 // j2go: instanceof helper for Region and its subclasses within the translated set.
 func resourceImplAsRegion(x any) (*Region, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Region:
 		if v == nil {
@@ -888,6 +1009,9 @@ func resourceImplAsRegion(x any) (*Region, bool) {
 
 // j2go: instanceof helper for TextLayout and its subclasses within the translated set.
 func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *TextLayout:
 		if v == nil {
@@ -903,6 +1027,9 @@ func resourceImplAsTextLayout(x any) (*TextLayout, bool) {
 
 // j2go: instanceof helper for Transform and its subclasses within the translated set.
 func resourceImplAsTransform(x any) (*Transform, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Transform:
 		if v == nil {

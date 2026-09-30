@@ -10,6 +10,19 @@ import (
 type DialogImpl interface {
 }
 
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type dialogHooked struct {
+	DialogImpl
+	hook   DialogImpl
+	active string
+}
+
+func (this *dialogHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
 type Dialog struct {
 	style  int32
 	parent *Shell
@@ -17,9 +30,16 @@ type Dialog struct {
 	impl   DialogImpl
 }
 
-func (this *Dialog) Impl() DialogImpl { return this.impl }
+func (this *Dialog) Impl() DialogImpl {
+	if h, ok := this.impl.(*dialogHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Dialog) SetImpl_(impl DialogImpl) { this.impl = impl }
+func (this *Dialog) SetImpl_(impl DialogImpl) {
+	this.impl = &dialogHooked{DialogImpl: this.impl, hook: impl}
+}
 
 func (this *Dialog) AsDialog() *Dialog { return this }
 

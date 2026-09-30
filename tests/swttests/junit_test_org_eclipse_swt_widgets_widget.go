@@ -13,118 +13,315 @@ import (
 )
 
 type Test_org_eclipse_swt_widgets_WidgetImpl interface {
-	SetUp_()
-	SetWidget_(a0 *swt.Widget)
+	setUp_()
+	setWidget_(a0 *swt.Widget)
 	test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
-	Test_computeSizeIIZ_()
-	Test_getLocation_()
-	Test_getParent_()
-	Test_getShell_()
-	Test_isEnabled_()
-	Test_isReparentable_()
-	Test_isVisible_()
-	Test_setBoundsIIII_()
-	Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
-	Test_setEnabledZ_()
-	Test_setFocus_()
-	Test_setFontLorg_eclipse_swt_graphics_Font_()
-	Test_setLocationII_()
-	Test_setLocationLorg_eclipse_swt_graphics_Point_()
-	Test_setRedrawZ_()
-	Test_setSizeII_()
-	Test_setSizeLorg_eclipse_swt_graphics_Point_()
-	Test_setVisibleZ_()
-	Test_computeTrimIIII_()
-	Test_getClientArea_()
-	Test_getChildren_()
+	test_computeSizeIIZ_()
+	test_getLocation_()
+	test_getParent_()
+	test_getShell_()
+	test_isEnabled_()
+	test_isReparentable_()
+	test_isVisible_()
+	test_setBoundsIIII_()
+	test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+	test_setEnabledZ_()
+	test_setFocus_()
+	test_setFontLorg_eclipse_swt_graphics_Font_()
+	test_setLocationII_()
+	test_setLocationLorg_eclipse_swt_graphics_Point_()
+	test_setRedrawZ_()
+	test_setSizeII_()
+	test_setSizeLorg_eclipse_swt_graphics_Point_()
+	test_setVisibleZ_()
+	test_computeTrimIIII_()
+	test_getClientArea_()
+	test_getChildren_()
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_ConstructorLorg_eclipse_swt_widgets_CompositeI_() {
 	panic("j2go: test_ConstructorLorg_eclipse_swt_widgets_CompositeI_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_computeSizeIIZ_() {
-	panic("j2go: Test_computeSizeIIZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_computeSizeIIZ_() {
+	panic("j2go: test_computeSizeIIZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_getLocation_() {
-	panic("j2go: Test_getLocation_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_getLocation_() {
+	panic("j2go: test_getLocation_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_getParent_() {
-	panic("j2go: Test_getParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_getParent_() {
+	panic("j2go: test_getParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_getShell_() {
-	panic("j2go: Test_getShell_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_getShell_() {
+	panic("j2go: test_getShell_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_isEnabled_() {
-	panic("j2go: Test_isEnabled_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_isEnabled_() {
+	panic("j2go: test_isEnabled_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_isReparentable_() {
-	panic("j2go: Test_isReparentable_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_isReparentable_() {
+	panic("j2go: test_isReparentable_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_isVisible_() {
-	panic("j2go: Test_isVisible_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_isVisible_() {
+	panic("j2go: test_isVisible_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setBoundsIIII_() {
-	panic("j2go: Test_setBoundsIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setBoundsIIII_() {
+	panic("j2go: test_setBoundsIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
-	panic("j2go: Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
+	panic("j2go: test_setBoundsLorg_eclipse_swt_graphics_Rectangle_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setEnabledZ_() {
-	panic("j2go: Test_setEnabledZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setEnabledZ_() {
+	panic("j2go: test_setEnabledZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setFocus_() {
-	panic("j2go: Test_setFocus_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_() {
+	panic("j2go: test_setFocus_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setFontLorg_eclipse_swt_graphics_Font_() {
-	panic("j2go: Test_setFontLorg_eclipse_swt_graphics_Font_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFontLorg_eclipse_swt_graphics_Font_() {
+	panic("j2go: test_setFontLorg_eclipse_swt_graphics_Font_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setLocationII_() {
-	panic("j2go: Test_setLocationII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setLocationII_() {
+	panic("j2go: test_setLocationII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setLocationLorg_eclipse_swt_graphics_Point_() {
-	panic("j2go: Test_setLocationLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setLocationLorg_eclipse_swt_graphics_Point_() {
+	panic("j2go: test_setLocationLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setRedrawZ_() {
-	panic("j2go: Test_setRedrawZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setRedrawZ_() {
+	panic("j2go: test_setRedrawZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setSizeII_() {
-	panic("j2go: Test_setSizeII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setSizeII_() {
+	panic("j2go: test_setSizeII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setSizeLorg_eclipse_swt_graphics_Point_() {
-	panic("j2go: Test_setSizeLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setSizeLorg_eclipse_swt_graphics_Point_() {
+	panic("j2go: test_setSizeLorg_eclipse_swt_graphics_Point_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_setVisibleZ_() {
-	panic("j2go: Test_setVisibleZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setVisibleZ_() {
+	panic("j2go: test_setVisibleZ_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_computeTrimIIII_() {
-	panic("j2go: Test_computeTrimIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_computeTrimIIII_() {
+	panic("j2go: test_computeTrimIIII_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_getClientArea_() {
-	panic("j2go: Test_getClientArea_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_getClientArea_() {
+	panic("j2go: test_getClientArea_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) Test_getChildren_() {
-	panic("j2go: Test_getChildren_ has no default on Test_org_eclipse_swt_widgets_Widget")
+func (this *Test_org_eclipse_swt_widgets_Widget) test_getChildren_() {
+	panic("j2go: test_getChildren_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type test_org_eclipse_swt_widgets_WidgetHooked struct {
+	Test_org_eclipse_swt_widgets_WidgetImpl
+	hook   Test_org_eclipse_swt_widgets_WidgetImpl
+	active string
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) setUp_() {
+	if h, ok := this.hook.(interface{ SetUp_() }); ok && this.active != "setUp_" {
+		defer this.enter("setUp_")()
+		h.SetUp_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.setUp_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) setWidget_(a0 *swt.Widget) {
+	if h, ok := this.hook.(interface{ SetWidget_(a0 *swt.Widget) }); ok && this.active != "setWidget_" {
+		defer this.enter("setWidget_")()
+		h.SetWidget_(a0)
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.setWidget_(a0)
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_computeSizeIIZ_() {
+	if h, ok := this.hook.(interface{ Test_computeSizeIIZ_() }); ok && this.active != "test_computeSizeIIZ_" {
+		defer this.enter("test_computeSizeIIZ_")()
+		h.Test_computeSizeIIZ_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_computeSizeIIZ_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getLocation_() {
+	if h, ok := this.hook.(interface{ Test_getLocation_() }); ok && this.active != "test_getLocation_" {
+		defer this.enter("test_getLocation_")()
+		h.Test_getLocation_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getLocation_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getParent_() {
+	if h, ok := this.hook.(interface{ Test_getParent_() }); ok && this.active != "test_getParent_" {
+		defer this.enter("test_getParent_")()
+		h.Test_getParent_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getParent_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getShell_() {
+	if h, ok := this.hook.(interface{ Test_getShell_() }); ok && this.active != "test_getShell_" {
+		defer this.enter("test_getShell_")()
+		h.Test_getShell_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getShell_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isEnabled_() {
+	if h, ok := this.hook.(interface{ Test_isEnabled_() }); ok && this.active != "test_isEnabled_" {
+		defer this.enter("test_isEnabled_")()
+		h.Test_isEnabled_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isEnabled_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isReparentable_() {
+	if h, ok := this.hook.(interface{ Test_isReparentable_() }); ok && this.active != "test_isReparentable_" {
+		defer this.enter("test_isReparentable_")()
+		h.Test_isReparentable_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isReparentable_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isVisible_() {
+	if h, ok := this.hook.(interface{ Test_isVisible_() }); ok && this.active != "test_isVisible_" {
+		defer this.enter("test_isVisible_")()
+		h.Test_isVisible_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isVisible_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBoundsIIII_() {
+	if h, ok := this.hook.(interface{ Test_setBoundsIIII_() }); ok && this.active != "test_setBoundsIIII_" {
+		defer this.enter("test_setBoundsIIII_")()
+		h.Test_setBoundsIIII_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBoundsIIII_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
+	if h, ok := this.hook.(interface{ Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() }); ok && this.active != "test_setBoundsLorg_eclipse_swt_graphics_Rectangle_" {
+		defer this.enter("test_setBoundsLorg_eclipse_swt_graphics_Rectangle_")()
+		h.Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setEnabledZ_() {
+	if h, ok := this.hook.(interface{ Test_setEnabledZ_() }); ok && this.active != "test_setEnabledZ_" {
+		defer this.enter("test_setEnabledZ_")()
+		h.Test_setEnabledZ_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setEnabledZ_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_() {
+	if h, ok := this.hook.(interface{ Test_setFocus_() }); ok && this.active != "test_setFocus_" {
+		defer this.enter("test_setFocus_")()
+		h.Test_setFocus_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFontLorg_eclipse_swt_graphics_Font_() {
+	if h, ok := this.hook.(interface{ Test_setFontLorg_eclipse_swt_graphics_Font_() }); ok && this.active != "test_setFontLorg_eclipse_swt_graphics_Font_" {
+		defer this.enter("test_setFontLorg_eclipse_swt_graphics_Font_")()
+		h.Test_setFontLorg_eclipse_swt_graphics_Font_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFontLorg_eclipse_swt_graphics_Font_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setLocationII_() {
+	if h, ok := this.hook.(interface{ Test_setLocationII_() }); ok && this.active != "test_setLocationII_" {
+		defer this.enter("test_setLocationII_")()
+		h.Test_setLocationII_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setLocationII_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setLocationLorg_eclipse_swt_graphics_Point_() {
+	if h, ok := this.hook.(interface{ Test_setLocationLorg_eclipse_swt_graphics_Point_() }); ok && this.active != "test_setLocationLorg_eclipse_swt_graphics_Point_" {
+		defer this.enter("test_setLocationLorg_eclipse_swt_graphics_Point_")()
+		h.Test_setLocationLorg_eclipse_swt_graphics_Point_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setLocationLorg_eclipse_swt_graphics_Point_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setRedrawZ_() {
+	if h, ok := this.hook.(interface{ Test_setRedrawZ_() }); ok && this.active != "test_setRedrawZ_" {
+		defer this.enter("test_setRedrawZ_")()
+		h.Test_setRedrawZ_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setRedrawZ_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setSizeII_() {
+	if h, ok := this.hook.(interface{ Test_setSizeII_() }); ok && this.active != "test_setSizeII_" {
+		defer this.enter("test_setSizeII_")()
+		h.Test_setSizeII_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setSizeII_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setSizeLorg_eclipse_swt_graphics_Point_() {
+	if h, ok := this.hook.(interface{ Test_setSizeLorg_eclipse_swt_graphics_Point_() }); ok && this.active != "test_setSizeLorg_eclipse_swt_graphics_Point_" {
+		defer this.enter("test_setSizeLorg_eclipse_swt_graphics_Point_")()
+		h.Test_setSizeLorg_eclipse_swt_graphics_Point_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setSizeLorg_eclipse_swt_graphics_Point_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setVisibleZ_() {
+	if h, ok := this.hook.(interface{ Test_setVisibleZ_() }); ok && this.active != "test_setVisibleZ_" {
+		defer this.enter("test_setVisibleZ_")()
+		h.Test_setVisibleZ_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setVisibleZ_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_computeTrimIIII_() {
+	if h, ok := this.hook.(interface{ Test_computeTrimIIII_() }); ok && this.active != "test_computeTrimIIII_" {
+		defer this.enter("test_computeTrimIIII_")()
+		h.Test_computeTrimIIII_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_computeTrimIIII_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getClientArea_() {
+	if h, ok := this.hook.(interface{ Test_getClientArea_() }); ok && this.active != "test_getClientArea_" {
+		defer this.enter("test_getClientArea_")()
+		h.Test_getClientArea_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getClientArea_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getChildren_() {
+	if h, ok := this.hook.(interface{ Test_getChildren_() }); ok && this.active != "test_getChildren_" {
+		defer this.enter("test_getChildren_")()
+		h.Test_getChildren_()
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getChildren_()
 }
 
 type Test_org_eclipse_swt_widgets_Widget struct {
@@ -138,11 +335,14 @@ type Test_org_eclipse_swt_widgets_Widget struct {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) Impl() Test_org_eclipse_swt_widgets_WidgetImpl {
+	if h, ok := this.impl.(*test_org_eclipse_swt_widgets_WidgetHooked); ok {
+		return h.hook
+	}
 	return this.impl
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) SetImpl_(impl Test_org_eclipse_swt_widgets_WidgetImpl) {
-	this.impl = impl
+	this.impl = &test_org_eclipse_swt_widgets_WidgetHooked{Test_org_eclipse_swt_widgets_WidgetImpl: this.impl, hook: impl}
 }
 
 func newTest_org_eclipse_swt_widgets_Widget() *Test_org_eclipse_swt_widgets_Widget {
@@ -160,10 +360,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) SetupBase(testInfo *junit.TestI
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) SetUp() {
-	this.impl.SetUp_()
+	this.impl.setUp_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) SetUp_() {
+func (this *Test_org_eclipse_swt_widgets_Widget) setUp_() {
 	this.shell = swt.NewShell()
 }
 
@@ -283,10 +483,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) SetWidget(wLike swt.WidgetLike)
 	if wLike != nil {
 		w = wLike.AsWidget()
 	}
-	this.impl.SetWidget_(w)
+	this.impl.setWidget_(w)
 }
 
-func (this *Test_org_eclipse_swt_widgets_Widget) SetWidget_(w *swt.Widget) {
+func (this *Test_org_eclipse_swt_widgets_Widget) setWidget_(w *swt.Widget) {
 	this.widget = w
 }
 

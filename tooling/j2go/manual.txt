@@ -143,7 +143,6 @@ java.util.MissingResourceException
 java.text.MessageFormat
 java.lang.NumberFormatException
 
-# Round 10 controlexample: only the tabs translated so far - createTabs is hand-written, ShellTab
-# (a field of ControlExample) is an opaque stub (examples/controlexample/controlexample_manual.go).
-org.eclipse.swt.examples.controlexample.ShellTab
+# Round 10 controlexample: only the tabs translated so far - createTabs is hand-written
+# (examples/controlexample/controlexample_manual.go).
 org.eclipse.swt.examples.controlexample.ControlExample#createTabs()

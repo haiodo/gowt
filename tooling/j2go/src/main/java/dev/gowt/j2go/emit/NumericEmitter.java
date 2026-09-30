@@ -324,6 +324,7 @@ final class NumericEmitter {
 	 * the target (real or manual chain, e.g. `control = control.parent`) needs an explicit upcast. */
 	String upcastObject(String text, ITypeBinding from, ITypeBinding to) {
 		if (from.isPrimitive() || to.isPrimitive()) return text;
+		if (from.isArray() && to.isArray()) return upcastArray(text, from, to);
 		// A foreign anonymous subclass embeds its base by pointer (FunctionalEmitter.emitStructAnon).
 		if (from.isAnonymous() && from.getSuperclass() != null) {
 			TypeModel.ClassInfo baseCi = emitter.model.lookup(from.getSuperclass());
@@ -348,6 +349,23 @@ final class NumericEmitter {
 		if (path == null && toBare == null) return text;
 		if (path == null) path = "&x." + toBare;
 		return ensureUpcastHelper(fromGo, toGo, path) + "(" + text + ")";
+	}
+
+	// Java arrays are covariant (TabItem[] as Item[]); the copy is the ceiling: a store into it doesn't reach the source.
+	private String upcastArray(String text, ITypeBinding from, ITypeBinding to) {
+		ITypeBinding fe = from.getComponentType();
+		ITypeBinding te = to.getComponentType();
+		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
+		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
+		if (fromGo.equals(toGo) || fe.isPrimitive() || te.isPrimitive() || fe.isArray()) return text;
+		String elem = upcastObject("e", fe, te);
+		if (elem.equals("e")) return text;
+		String name = "upcastArr" + fromGo.replaceAll("[\\[\\]*.]", "") + "To" + toGo.replaceAll("[\\[\\]*.]", "");
+		if (emitter.generatedHelpers.add(name)) {
+			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
+					+ "\tr := make(" + toGo + ", len(x))\n\tfor i, e := range x {\n\t\tr[i] = " + elem + "\n\t}\n\treturn r\n}\n\n");
+		}
+		return name + "(" + text + ")";
 	}
 
 	/** .Impl() always normalizes to the concrete leaf pointer regardless of hierarchy shape -

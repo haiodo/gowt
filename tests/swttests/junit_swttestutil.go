@@ -41,15 +41,55 @@ var SwtTestUtilTestFontName string = ""
 
 var SwtTestUtilTestFontNameFixedWidth string = ""
 
-var SwtTestUtilIsWindows bool
+var SwtTestUtilIsWindows bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsWindows:", e)
+		}
+	}()
+	r = strings.HasPrefix(swt.GetPlatform(), "win32")
+	return
+}()
 
-var SwtTestUtilIsCocoa bool
+var SwtTestUtilIsCocoa bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsCocoa:", e)
+		}
+	}()
+	r = strings.HasPrefix(swt.GetPlatform(), "cocoa")
+	return
+}()
 
-var SwtTestUtilIsGTK bool
+var SwtTestUtilIsGTK bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsGTK:", e)
+		}
+	}()
+	r = (swt.GetPlatform() == "gtk")
+	return
+}()
 
-var SwtTestUtilIsWindowsOS bool
+var SwtTestUtilIsWindowsOS bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsWindowsOS:", e)
+		}
+	}()
+	r = strings.HasPrefix("Mac OS X", "Windows")
+	return
+}()
 
-var SwtTestUtilIsLinux bool
+var SwtTestUtilIsLinux bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsLinux:", e)
+		}
+	}()
+	r = ("Mac OS X" == "Linux")
+	return
+}()
 
 const SwtTestUtilGITHUB_DETECT_ENV_VAR string = "GITHUB_ACTIONS"
 
@@ -905,46 +945,6 @@ func (this *ImageGcDrawerFunc) PostProcess(a0 *swt.ImageData) {
 }
 
 func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtilIsWindows:", r)
-			}
-		}()
-		SwtTestUtilIsWindows = strings.HasPrefix(swt.GetPlatform(), "win32")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtilIsCocoa:", r)
-			}
-		}()
-		SwtTestUtilIsCocoa = strings.HasPrefix(swt.GetPlatform(), "cocoa")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtilIsGTK:", r)
-			}
-		}()
-		SwtTestUtilIsGTK = (swt.GetPlatform() == "gtk")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtilIsWindowsOS:", r)
-			}
-		}()
-		SwtTestUtilIsWindowsOS = strings.HasPrefix("Mac OS X", "Windows")
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SwtTestUtilIsLinux:", r)
-			}
-		}()
-		SwtTestUtilIsLinux = ("Mac OS X" == "Linux")
-	}()
 	func() {
 		defer func() {
 			if r := recover(); r != nil {

@@ -245,7 +245,7 @@ func (this *Tree) CheckData(itemLike TreeItemLike) bool {
 	return true
 }
 
-func (this *Tree) CheckSubclass_() {
+func (this *Tree) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -366,7 +366,7 @@ func (this *Tree) columnAtPoint_(id int64, sel int64, point cocoa.NSPoint) int64
 	return this.Composite.columnAtPoint_(id, sel, point)
 }
 
-func (this *Tree) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Tree) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -378,7 +378,7 @@ func (this *Tree) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, change
 		} else {
 			var gc *GC = NewGCDrawable(this)
 			width = this.CalculateWidth(this.items, 0, gc, true) + TreeCELL_GAP
-			gc.impl.Dispose_()
+			gc.impl.dispose_()
 		}
 		if (this.style & CHECK) != 0 {
 			width += this.GetCheckColumnWidth()
@@ -397,7 +397,7 @@ func (this *Tree) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, change
 	if height <= 0 {
 		height = WidgetDEFAULT_HEIGHT
 	}
-	var rect *Rectangle = this.impl.ComputeTrim_(0, 0, width, height)
+	var rect *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 	return NewPoint(rect.Width, rect.Height)
 }
 
@@ -1070,7 +1070,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 			userForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), gc.GetForeground().Handle)
 		}
 		if this.IsDisposed() || item.IsDisposed() {
-			gc.impl.Dispose_()
+			gc.impl.dispose_()
 			context.RestoreGraphicsState()
 			return
 		}
@@ -1079,7 +1079,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 			gc.FillRectangle(int32(cellRect.X), int32(cellRect.Y), int32(cellRect.Width), int32(cellRect.Height))
 			cellRect.Height += spacing.Height
 		}
-		gc.impl.Dispose_()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	} else {
 		if isSelected && (this.style&HIDE_SELECTION) != 0 && !hasFocus {
@@ -1102,7 +1102,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 		var gc *GC = GCCocoa_new(this, data)
 		gc.SetClipping(int32((contentRect.X - offsetX)), int32((contentRect.Y - offsetY)), int32(contentRect.Width), int32(contentRect.Height))
 		var itemRect *Rectangle = this.insertItem.GetImageBounds(0).Union(this.insertItem.GetBounds())
-		var clientRect *Rectangle = this.impl.GetClientArea_()
+		var clientRect *Rectangle = this.impl.getClientArea_()
 		var x int32 = clientRect.X + clientRect.Width
 		var posY int32
 		if this.insertBefore {
@@ -1111,7 +1111,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 			posY = itemRect.Y + itemRect.Height - 1
 		}
 		gc.DrawLine(itemRect.X, posY, x, posY)
-		gc.impl.Dispose_()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	}
 	if drawForeground {
@@ -1238,7 +1238,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 		event.Width = contentWidth
 		event.Height = itemHeight
 		this.SendEventEventTypeEvent(PaintItem, event)
-		gc.impl.Dispose_()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	}
 }
@@ -1343,9 +1343,9 @@ func (this *Tree) GetCheckColumnWidth() int32 {
 	return int32(this.checkColumn.DataCell().CellSize().Width)
 }
 
-func (this *Tree) GetClientArea_() *Rectangle {
+func (this *Tree) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	var rect *Rectangle = this.Composite.GetClientArea_()
+	var rect *Rectangle = this.Composite.getClientArea_()
 	return rect
 }
 
@@ -2388,7 +2388,7 @@ func (this *Tree) SendMeasureItem(itemLike TreeItemLike, selected bool, columnIn
 		event.Detail |= SELECTED
 	}
 	this.SendEventEventTypeEvent(MeasureItem, event)
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	if !this.IsDisposed() && !item.IsDisposed() {
 		size.Width = float64(event.Width)
 		size.Height = float64(event.Height)
@@ -2578,7 +2578,7 @@ func (this *Tree) SetHeaderBackground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed_() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2605,7 +2605,7 @@ func (this *Tree) SetHeaderForeground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed_() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2791,9 +2791,9 @@ func (this *Tree) SetLinesVisible(show bool) {
 	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetGridStyleMask(int64(cond540))
 }
 
-func (this *Tree) SetRedraw_(redraw bool) {
+func (this *Tree) setRedraw_(redraw bool) {
 	this.CheckWidget()
-	this.Composite.SetRedraw_(redraw)
+	this.Composite.setRedraw_(redraw)
 	if redraw && this.drawCount == 0 {
 		this.CheckItems()
 		this.SetScrollWidth()
@@ -2816,7 +2816,7 @@ func (this *Tree) SetScrollWidthSetItemsRecurse(set bool, items []*TreeItem, rec
 	}
 	var gc *GC = NewGCDrawable(this)
 	var newWidth int32 = this.CalculateWidth(items, 0, gc, recurse)
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	if !set {
 		var oldWidth int32 = int32(this.firstColumn.Width())
 		if oldWidth >= newWidth {
@@ -2848,7 +2848,7 @@ func (this *Tree) SetScrollWidthItem(itemLike TreeItemLike) bool {
 	}
 	var gc *GC = NewGCDrawable(this)
 	var newWidth int32 = item.CalculateWidth(0, gc)
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	var oldWidth int32 = int32(this.firstColumn.Width())
 	if oldWidth < newWidth {
 		this.firstColumn.SetWidth(float64(newWidth))
@@ -3152,6 +3152,9 @@ func castcocoaNSViewTococoaNSTableView(x *cocoa.NSView) *cocoa.NSTableView {
 
 // j2go: instanceof helper for TreeItem and its subclasses within the translated set.
 func widgetImplAsTreeItem(x any) (*TreeItem, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *TreeItem:
 		if v == nil {

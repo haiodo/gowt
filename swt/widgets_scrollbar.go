@@ -123,7 +123,7 @@ func (this *ScrollBar) GetVisible() bool {
 
 func (this *ScrollBar) IsEnabled() bool {
 	this.CheckWidget()
-	return this.GetEnabled() && this.parent.impl.IsEnabled_()
+	return this.GetEnabled() && this.parent.impl.isEnabled_()
 }
 
 func (this *ScrollBar) isDrawing_() bool {
@@ -132,7 +132,7 @@ func (this *ScrollBar) isDrawing_() bool {
 
 func (this *ScrollBar) IsVisible() bool {
 	this.CheckWidget()
-	return this.GetVisible() && this.parent.impl.IsVisible_()
+	return this.GetVisible() && this.parent.impl.isVisible_()
 }
 
 func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
@@ -178,7 +178,7 @@ func (this *ScrollBar) releaseWidget_() {
 func (this *ScrollBar) sendSelection_() {
 	var window *cocoa.NSWindow = this.view.Window()
 	if this.target == (nil) {
-		this.parent.impl.GetShell_().DeferFlushing()
+		this.parent.impl.getShell_().DeferFlushing()
 	}
 	var value int32 = 0
 	if this.target != (nil) {

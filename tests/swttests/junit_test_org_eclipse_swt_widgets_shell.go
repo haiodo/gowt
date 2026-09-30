@@ -29,10 +29,10 @@ func (this *Test_org_eclipse_swt_widgets_Shell) initTest_org_eclipse_swt_widgets
 	this.Test_org_eclipse_swt_widgets_Decorations.initTest_org_eclipse_swt_widgets_Decorations()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) SetUp_() {
-	this.Test_org_eclipse_swt_widgets_Decorations.SetUp_()
+func (this *Test_org_eclipse_swt_widgets_Shell) setUp_() {
+	this.Test_org_eclipse_swt_widgets_Decorations.setUp_()
 	this.testShell = swt.NewShellParentStyle(this.shell, swt.NULL)
-	this.impl.SetWidget_(upcastswtShellToswtWidget(this.shell))
+	this.impl.setWidget_(upcastswtShellToswtWidget(this.shell))
 	junit.AssertEquals(this.shell, this.testShell.GetParent())
 }
 
@@ -315,7 +315,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_getImeInputMode() {
 	junit.AssertTrue(mode >= 0)
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_getLocation_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_getLocation_() {
 	if SwtTestUtilIsGTK4() {
 		return
 	}
@@ -324,7 +324,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_getLocation_() {
 	junit.AssertEquals(int32(15), int32(this.shell.GetLocation().Y))
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_getShell_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_getShell_() {
 	junit.AssertEquals(this.shell, this.shell.GetShell())
 	var shell_1 *swt.Shell = swt.NewShellParent(this.shell)
 	junit.AssertEquals(shell_1, shell_1.GetShell())
@@ -342,7 +342,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_getShells() {
 	junit.AssertEquals(int32(1), int32(num))
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_isEnabled_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_isEnabled_() {
 	junit.AssertTrue(this.shell.IsEnabled())
 	this.shell.SetEnabled(false)
 	junit.AssertTrue(!this.shell.IsEnabled())
@@ -393,7 +393,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_setActive() {
 	shell2.Dispose()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setEnabledZ_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setEnabledZ_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_setImeInputModeI() {
@@ -401,14 +401,14 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_setImeInputModeI() {
 	junit.AssertEquals(int32(swt.NONE), int32(this.shell.GetImeInputMode()))
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setVisibleZ_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setVisibleZ_() {
 	this.shell.SetVisible(false)
 	junit.AssertTrue(!this.shell.IsVisible())
 	this.shell.SetVisible(true)
 	junit.AssertTrue(this.shell.IsVisible())
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_getParent_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_getParent_() {
 	junit.AssertNull(this.shell.GetParent())
 	junit.AssertEquals(this.shell, this.testShell.GetParent())
 }
@@ -423,7 +423,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_getStyle() {
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_isVisible_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_isVisible_() {
 	this.testShell.SetVisible(true)
 	junit.AssertTrue(this.testShell.IsVisible())
 	this.shell.SetVisible(true)
@@ -438,10 +438,10 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_isVisible_() {
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setBoundsIIII_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setBoundsIIII_() {
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_activateEventSend() {
@@ -576,7 +576,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) A_test_setRegion() {
 	junit.AssertNull(shell2.GetRegion())
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setSizeII_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setSizeII_() {
 	if SwtTestUtilIsWindows {
 		var newSize *swt.Point = swt.NewPoint(112, 27)
 		for i := int32(0); i < 10; i++ {
@@ -606,7 +606,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_setSizeCustomResize() {
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setSizeLorg_eclipse_swt_graphics_Point_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setSizeLorg_eclipse_swt_graphics_Point_() {
 	if SwtTestUtilIsWindows {
 		var newSize *swt.Point = swt.NewPoint(112, 27)
 		for i := int32(0); i < 10; i++ {
@@ -663,7 +663,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) CreateShell() {
 	this.testShell.SetSize(100, 300)
 	this.testShell.SetText("Shell")
 	this.testShell.SetLayout(upcastswtFillLayoutToswtLayout(swt.NewFillLayout()))
-	this.impl.SetWidget_(upcastswtShellToswtWidget(this.testShell))
+	this.impl.setWidget_(upcastswtShellToswtWidget(this.testShell))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Open() {
@@ -686,7 +686,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Open() {
 				display.Sleep()
 			}
 		}
-		this.impl.SetUp_()
+		this.impl.setUp_()
 		var results []string = jrt.ToSlice[string](events)
 		junit.AssertArrayEquals(temp, results)
 	}
@@ -817,18 +817,18 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_Issue450_NoShellActivateOnS
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setLocationLorg_eclipse_swt_graphics_Point_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setLocationLorg_eclipse_swt_graphics_Point_() {
 	if SwtTestUtilIsGTK4() {
 		return
 	}
-	this.Test_org_eclipse_swt_widgets_Decorations.Test_setLocationLorg_eclipse_swt_graphics_Point_()
+	this.Test_org_eclipse_swt_widgets_Decorations.test_setLocationLorg_eclipse_swt_graphics_Point_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Shell) Test_setLocationII_() {
+func (this *Test_org_eclipse_swt_widgets_Shell) test_setLocationII_() {
 	if SwtTestUtilIsGTK4() {
 		return
 	}
-	this.Test_org_eclipse_swt_widgets_Decorations.Test_setLocationII_()
+	this.Test_org_eclipse_swt_widgets_Decorations.test_setLocationII_()
 }
 
 func init() {
@@ -837,7 +837,7 @@ func init() {
 		New:  func() any { return NewTest_org_eclipse_swt_widgets_Shell() },
 		BeforeEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).SetupBase(junit.Current) },
-			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.SetUp_() },
+			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.setUp_() },
 		},
 		AfterEach: []func(any){
 			func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).TearDown() },
@@ -919,7 +919,7 @@ func init() {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener()
 			}},
 			{Name: "test_computeSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_computeSizeII() }},
-			{Name: "test_computeSizeIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_computeSizeIIZ_() }},
+			{Name: "test_computeSizeIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_computeSizeIIZ_() }},
 			{Name: "test_getAccessible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getAccessible() }},
 			{Name: "test_getBorderWidth", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getBorderWidth() }},
 			{Name: "test_getMonitor", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getMonitor() }},
@@ -942,7 +942,7 @@ func init() {
 			}},
 			{Name: "test_setCaptureZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCaptureZ() }},
 			{Name: "test_setCursorLorg_eclipse_swt_graphics_Cursor", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCursorLorg_eclipse_swt_graphics_Cursor() }},
-			{Name: "test_setFocus", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setFocus_() }},
+			{Name: "test_setFocus", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setFocus_() }},
 			{Name: "test_setForegroundAlphaLorg_eclipse_swt_graphics_Color", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setForegroundAlphaLorg_eclipse_swt_graphics_Color()
 			}},
@@ -957,7 +957,7 @@ func init() {
 			{Name: "test_setParentLorg_eclipse_swt_widgets_Composite", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setParentLorg_eclipse_swt_widgets_Composite()
 			}},
-			{Name: "test_setRedrawZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setRedrawZ_() }},
+			{Name: "test_setRedrawZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setRedrawZ_() }},
 			{Name: "test_setTextDirection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setTextDirection() }},
 			{Name: "test_setToolTipTextLjava_lang_String", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setToolTipTextLjava_lang_String() }},
 			{Name: "test_toControlII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_toControlII() }},
@@ -969,7 +969,7 @@ func init() {
 			{Name: "test_getHorizontalBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getHorizontalBar() }},
 			{Name: "test_getVerticalBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getVerticalBar() }},
 			{Name: "test_bug2162_transparentStyle", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_bug2162_transparentStyle() }},
-			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_getChildren_() }},
+			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getChildren_() }},
 			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_toChild_afterOpen() }},
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_toChild_beforeOpen() }},
 			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setFocus_withInvisibleChild() }},
@@ -986,18 +986,18 @@ func init() {
 			{Name: "test_scrollIIIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_scrollIIIIIIZ() }},
 			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCaretLorg_eclipse_swt_widgets_Caret() }},
 			{Name: "test_setFontLorg_eclipse_swt_graphics_Font", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setFontLorg_eclipse_swt_graphics_Font_()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setFontLorg_eclipse_swt_graphics_Font_()
 			}},
 			{Name: "test_ConstructorLorg_eclipse_swt_widgets_CompositeI", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
 			}},
-			{Name: "test_computeTrimIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_computeTrimIIII_() }},
-			{Name: "test_getClientArea", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_getClientArea_() }},
+			{Name: "test_computeTrimIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_computeTrimIIII_() }},
+			{Name: "test_getClientArea", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getClientArea_() }},
 			{Name: "test_getDefaultButton", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getDefaultButton() }},
 			{Name: "test_getImage", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getImage() }},
 			{Name: "test_getMenuBar", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getMenuBar() }},
 			{Name: "test_getText", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getText() }},
-			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_isReparentable_() }},
+			{Name: "test_isReparentable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_isReparentable_() }},
 			{Name: "test_setDefaultButtonLorg_eclipse_swt_widgets_Button", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).Test_setDefaultButtonLorg_eclipse_swt_widgets_Button()
 			}},
@@ -1048,33 +1048,33 @@ func init() {
 			{Name: "test_forceActive", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_forceActive() }},
 			{Name: "test_getEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getEnabled() }},
 			{Name: "test_getImeInputMode", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getImeInputMode() }},
-			{Name: "test_getLocation", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_getLocation_() }},
-			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_getParent_() }},
-			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_getShell_() }},
+			{Name: "test_getLocation", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getLocation_() }},
+			{Name: "test_getParent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getParent_() }},
+			{Name: "test_getShell", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_getShell_() }},
 			{Name: "test_getShells", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getShells() }},
 			{Name: "test_getStyle", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_getStyle() }},
-			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_isEnabled_() }},
-			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_isVisible_() }},
+			{Name: "test_isEnabled", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_isEnabled_() }},
+			{Name: "test_isVisible", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_isVisible_() }},
 			{Name: "test_open", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_open() }},
 			{Name: "test_setActive", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setActive() }},
 			{Name: "test_setAlpha", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setAlpha() }},
 			{Name: "test_setBounds", Tags: []string{"gtk4-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setBounds() }},
-			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setBoundsIIII_() }},
+			{Name: "test_setBoundsIIII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setBoundsIIII_() }},
 			{Name: "test_setBoundsLorg_eclipse_swt_graphics_Rectangle", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
 			}},
-			{Name: "test_setEnabledZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setEnabledZ_() }},
+			{Name: "test_setEnabledZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setEnabledZ_() }},
 			{Name: "test_setImeInputModeI", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setImeInputModeI() }},
-			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setLocationII_() }},
+			{Name: "test_setLocationII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setLocationII_() }},
 			{Name: "test_setLocationLorg_eclipse_swt_graphics_Point", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setLocationLorg_eclipse_swt_graphics_Point_()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setLocationLorg_eclipse_swt_graphics_Point_()
 			}},
 			{Name: "test_setSizeCustomResize", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setSizeCustomResize() }},
-			{Name: "test_setSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setSizeII_() }},
+			{Name: "test_setSizeII", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setSizeII_() }},
 			{Name: "test_setSizeLorg_eclipse_swt_graphics_Point", Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setSizeLorg_eclipse_swt_graphics_Point_()
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setSizeLorg_eclipse_swt_graphics_Point_()
 			}},
-			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.Test_setVisibleZ_() }},
+			{Name: "test_setVisibleZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setVisibleZ_() }},
 		},
 	})
 }

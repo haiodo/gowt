@@ -9,7 +9,28 @@ import (
 )
 
 type TypedEventImpl interface {
-	String_() string
+	string_() string
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type typedEventHooked struct {
+	TypedEventImpl
+	hook   TypedEventImpl
+	active string
+}
+
+func (this *typedEventHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *typedEventHooked) string_() string {
+	if h, ok := this.hook.(interface{ String_() string }); ok && this.active != "string_" {
+		defer this.enter("string_")()
+		return h.String_()
+	}
+	return this.TypedEventImpl.string_()
 }
 
 type TypedEvent struct {
@@ -21,9 +42,16 @@ type TypedEvent struct {
 	impl    TypedEventImpl
 }
 
-func (this *TypedEvent) Impl() TypedEventImpl { return this.impl }
+func (this *TypedEvent) Impl() TypedEventImpl {
+	if h, ok := this.impl.(*typedEventHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *TypedEvent) SetImpl_(impl TypedEventImpl) { this.impl = impl }
+func (this *TypedEvent) SetImpl_(impl TypedEventImpl) {
+	this.impl = &typedEventHooked{TypedEventImpl: this.impl, hook: impl}
+}
 
 func (this *TypedEvent) AsTypedEvent() *TypedEvent { return this }
 
@@ -72,9 +100,9 @@ func (this *TypedEvent) GetName() string {
 }
 
 func (this *TypedEvent) String() string {
-	return this.impl.String_()
+	return this.impl.string_()
 }
 
-func (this *TypedEvent) String_() string {
+func (this *TypedEvent) string_() string {
 	return fmt.Sprintf("%s{%v time=%d data=%v}", this.GetName(), this.Widget, this.Time, this.Data)
 }

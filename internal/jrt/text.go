@@ -14,6 +14,7 @@ import (
 // ResourceBundle is java.util.ResourceBundle backed by a <name>.properties file in the registered
 // resource FS (RegisterResources). No locale fallback chain: only the base bundle is read.
 type ResourceBundle struct {
+	name   string
 	values map[string]string
 }
 
@@ -32,18 +33,20 @@ func (e *NumberFormatException) Error() string {
 // MessageFormat only names the static MessageFormatFormat (java.text.MessageFormat.format).
 type MessageFormat struct{}
 
-func ResourceBundleGetBundle(name string) *ResourceBundle {
-	if resourceFS == nil {
-		panic(&MissingResourceException{Key: name})
-	}
-	data, err := fs.ReadFile(resourceFS, name+".properties")
-	if err != nil {
-		panic(&MissingResourceException{Key: name})
-	}
-	return &ResourceBundle{values: parseProperties(data)}
-}
+// Read on first GetString: a package var initializer may run before the embedding package registers its FS.
+func ResourceBundleGetBundle(name string) *ResourceBundle { return &ResourceBundle{name: name} }
 
 func (b *ResourceBundle) GetString(key string) string {
+	if b.values == nil {
+		if resourceFS == nil {
+			panic(&MissingResourceException{Key: b.name})
+		}
+		data, err := fs.ReadFile(resourceFS, b.name+".properties")
+		if err != nil {
+			panic(&MissingResourceException{Key: b.name})
+		}
+		b.values = parseProperties(data)
+	}
 	v, ok := b.values[key]
 	if !ok {
 		panic(&MissingResourceException{Key: key})

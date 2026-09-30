@@ -154,9 +154,6 @@ public class Manual {
 		}
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
-		// Round 10: ControlExample keeps a ShellTab field, but ShellTab is not translated yet -
-		// an opaque stub in examples/controlexample/controlexample_manual.go.
-		reg(CONTROL_EXAMPLE_PKG + "ShellTab", "ShellTab", null, false);
 		// java.util.ResourceBundle over the registered resource FS, java.text.MessageFormat's
 		// {n} substitution, and the exceptions they (and Integer.parseInt) throw - internal/jrt/text.go.
 		reg("java.util.ResourceBundle", "jrt.ResourceBundle", JRT_IMPORT, false);

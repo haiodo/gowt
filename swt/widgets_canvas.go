@@ -331,7 +331,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	if isFocus {
 		this.caret.KillFocus()
 	}
-	var clientRect *Rectangle = this.impl.GetClientArea_()
+	var clientRect *Rectangle = this.impl.getClientArea_()
 	var sourceRect *Rectangle = NewRectangle(x, y, width, height)
 	var control *Control = this.impl.findBackgroundControl_()
 	var redraw bool = control != (nil) && control.backgroundImage != (nil)
@@ -342,7 +342,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 		redraw = this.IsObscured()
 	}
 	if !redraw && sourceRect.IntersectsRect(clientRect) {
-		this.impl.GetShell_().SetScrolling()
+		this.impl.getShell_().SetScrolling()
 		redraw = !this.UpdateAll(all)
 	}
 	if redraw {
@@ -437,7 +437,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 		var children []*Control = this._getChildren()
 		for i := int32(0); i < int32(len(children)); i++ {
 			var child *Control = children[i]
-			var rect *Rectangle = child.impl.GetBounds_()
+			var rect *Rectangle = child.impl.getBounds_()
 			if int32(math.Min(float64(x+width), float64(rect.X+rect.Width))) >= int32(math.Max(float64(x), float64(rect.X))) && int32(math.Min(float64(y+height), float64(rect.Y+rect.Height))) >= int32(math.Max(float64(y), float64(rect.Y))) {
 				child.SetLocation(rect.X+deltaX, rect.Y+deltaY)
 			}
@@ -485,17 +485,17 @@ func (this *Canvas) SetCaret(caretLike CaretLike) {
 	}
 }
 
-func (this *Canvas) SetFont_(font *Font) {
+func (this *Canvas) setFont_(font *Font) {
 	this.CheckWidget()
 	if this.caret != (nil) {
 		this.caret.SetFont(font)
 	}
-	this.Composite.SetFont_(font)
+	this.Composite.setFont_(font)
 }
 
 func (this *Canvas) setOpenGLContext_(value any) {
 	this.glcontext = castanyTococoaNSOpenGLContext(value)
-	var shell *Shell = this.impl.GetShell_()
+	var shell *Shell = this.impl.getShell_()
 	if this.glcontext != (nil) {
 		shell.glContextCount++
 	} else {
@@ -567,7 +567,7 @@ func (this *Canvas) viewWillMoveToWindow_(id int64, sel int64, arg0 int64) {
 			(castWidgetToShell(newShell)).glContextCount++
 			(castWidgetToShell(newShell)).UpdateOpaque()
 		}
-		var shell *Shell = this.impl.GetShell_()
+		var shell *Shell = this.impl.getShell_()
 		shell.glContextCount--
 		shell.UpdateOpaque()
 	}

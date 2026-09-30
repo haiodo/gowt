@@ -55,7 +55,7 @@ func (this *FillLayout) initFillLayoutType(type_ int32) {
 	this.Type = type_
 }
 
-func (this *FillLayout) ComputeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *FillLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var children []*Control = composite.GetChildren()
 	var count int32 = int32(len(children))
 	var maxWidth int32 = 0
@@ -127,7 +127,7 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 		var trimY int32
 		_, ok90 := isControlToScrollable(control)
 		if ok90 {
-			var rect *Rectangle = (castControlToScrollable(control)).impl.ComputeTrim_(0, 0, 0, 0)
+			var rect *Rectangle = (castControlToScrollable(control)).impl.computeTrim_(0, 0, 0, 0)
 			trimX = rect.Width
 			trimY = rect.Height
 		} else {
@@ -151,7 +151,7 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 	return size
 }
 
-func (this *FillLayout) FlushCache_(control *Control) bool {
+func (this *FillLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
 	_, ok91 := fillDataImplAsFillData(data)
 	if ok91 {
@@ -170,8 +170,8 @@ func (this *FillLayout) GetName() string {
 	return jrt.Substring(string_, index+1, jrt.StringLength(string_))
 }
 
-func (this *FillLayout) LayoutFn_(composite *Composite, flushCache bool) {
-	var rect *Rectangle = composite.impl.GetClientArea_()
+func (this *FillLayout) layoutFn_(composite *Composite, flushCache bool) {
+	var rect *Rectangle = composite.impl.getClientArea_()
 	var children []*Control = composite.GetChildren()
 	var count int32 = int32(len(children))
 	if count == 0 {
@@ -271,6 +271,9 @@ func castanyToFillData(x any) *FillData {
 
 // j2go: instanceof helper for Scrollable and its subclasses within the translated set.
 func widgetImplAsScrollable(x any) (*Scrollable, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Scrollable:
 		if v == nil {

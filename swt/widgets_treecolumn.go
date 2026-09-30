@@ -70,7 +70,7 @@ func (this *TreeColumn) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *TreeColumn) CheckSubclass_() {
+func (this *TreeColumn) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -270,7 +270,7 @@ func (this *TreeColumn) GetAlignment() int32 {
 }
 
 func (this *TreeColumn) getNameText_() string {
-	return this.impl.GetText_()
+	return this.impl.getText_()
 }
 
 func (this *TreeColumn) GetParent() *Tree {
@@ -318,7 +318,7 @@ func (this *TreeColumn) Pack() {
 	}
 	var gc *GC = NewGCDrawable(this.parent)
 	width = int32(math.Max(float64(width), float64(this.parent.CalculateWidth(this.parent.items, this.parent.IndexOfColumn(this), gc, true))))
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	this.SetWidth(width)
 }
 
@@ -386,12 +386,12 @@ func (this *TreeColumn) SetAlignment(alignment int32) {
 	this.parent.View.SetNeedsDisplayInRect(rect)
 }
 
-func (this *TreeColumn) SetImageOnItem_(image *Image) {
+func (this *TreeColumn) setImageOnItem_(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed_() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.SetImageOnItem_(image)
+	this.Item.setImageOnItem_(image)
 	var headerView *cocoa.NSTableHeaderView = (castcocoaNSViewTococoaNSOutlineView(this.parent.View)).HeaderView()
 	if headerView == (nil) {
 		return
@@ -417,12 +417,12 @@ func (this *TreeColumn) SetResizable(resizable bool) {
 	this.nsColumn.SetResizingMask(int64(cond554))
 }
 
-func (this *TreeColumn) SetText_(string_ string) {
+func (this *TreeColumn) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.Item.SetText_(string_)
+	this.Item.setText_(string_)
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)

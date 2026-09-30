@@ -89,7 +89,7 @@ func (this *MenuItem) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *MenuItem) CheckSubclass_() {
+func (this *MenuItem) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -330,7 +330,7 @@ func (this *MenuItem) sendSelection_() {
 		this.SetSelection(!this.GetSelection())
 	} else {
 		if (this.style & RADIO) != 0 {
-			if (this.parent.impl.GetStyle_() & NO_RADIO_GROUP) != 0 {
+			if (this.parent.impl.getStyle_() & NO_RADIO_GROUP) != 0 {
 				this.SetSelection(!this.GetSelection())
 			} else {
 				this.SelectRadio()
@@ -405,7 +405,7 @@ func (this *MenuItem) SetID(id int32) {
 	this.nsItem.SetTag(int64(id))
 }
 
-func (this *MenuItem) SetImageOnItem_(image *Image) {
+func (this *MenuItem) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
@@ -413,7 +413,7 @@ func (this *MenuItem) SetImageOnItem_(image *Image) {
 	if (this.style & SEPARATOR) != 0 {
 		return
 	}
-	this.Item.SetImageOnItem_(image)
+	this.Item.setImageOnItem_(image)
 	var cond178 *cocoa.NSImage
 	if image != (nil) {
 		cond178 = image.Handle
@@ -497,7 +497,7 @@ func (this *MenuItem) SetSelection(selected bool) {
 	this.nsItem.SetState(int64(cond179))
 }
 
-func (this *MenuItem) SetText_(string_ string) {
+func (this *MenuItem) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -508,7 +508,7 @@ func (this *MenuItem) SetText_(string_ string) {
 	if this.text == string_ {
 		return
 	}
-	this.Item.SetText_(string_)
+	this.Item.setText_(string_)
 	this.UpdateText()
 }
 
@@ -561,11 +561,11 @@ func (this *MenuItem) UpdateText() {
 	var submenu *cocoa.NSMenu = this.nsItem.Submenu()
 	var label *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	label = label.InitWithString(text)
-	if submenu != (nil) && (this.parent.impl.GetStyle_()&BAR) != 0 {
+	if submenu != (nil) && (this.parent.impl.getStyle_()&BAR) != 0 {
 		submenu.SetTitle(label)
 	} else {
 		var direction int32
-		if (this.parent.impl.GetStyle_() & RIGHT_TO_LEFT) != 0 {
+		if (this.parent.impl.getStyle_() & RIGHT_TO_LEFT) != 0 {
 			direction = cocoa.OSNSWritingDirectionRightToLeft
 		} else {
 			direction = cocoa.OSNSWritingDirectionLeftToRight

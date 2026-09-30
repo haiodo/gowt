@@ -40,23 +40,23 @@ func (this *TabFolder) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *TabFolder) CheckSubclass_() {
+func (this *TabFolder) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
 }
 
-func (this *TabFolder) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
-	var size *Point = this.Composite.ComputeSizeWHintHHintChanged_(wHint, hHint, changed)
+func (this *TabFolder) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+	var size *Point = this.Composite.computeSizeWHintHHintChanged_(wHint, hHint, changed)
 	if wHint == DEFAULT && int32(len(this.items)) > 0 {
 		var minSize cocoa.NSSize = (castcocoaNSViewTococoaNSTabView(this.View)).MinimumSize()
-		var trim *Rectangle = this.impl.ComputeTrim_(0, 0, int32(math.Ceil(float64(minSize.Width))), 0)
+		var trim *Rectangle = this.impl.computeTrim_(0, 0, int32(math.Ceil(float64(minSize.Width))), 0)
 		size.X = int32(math.Max(float64(trim.Width), float64(size.X)))
 	}
 	return size
 }
 
-func (this *TabFolder) ComputeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+func (this *TabFolder) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	var widget *cocoa.NSTabView = castcocoaNSViewTococoaNSTabView(this.View)
 	var rect cocoa.NSRect = widget.ContentRect()
@@ -65,7 +65,7 @@ func (this *TabFolder) ComputeTrim_(x int32, y int32, width int32, height int32)
 	var frame cocoa.NSRect = widget.Frame()
 	width += int32(math.Ceil(float64(frame.Width - rect.Width)))
 	height += int32(math.Ceil(float64(frame.Height - rect.Height)))
-	return this.Composite.ComputeTrim_(x, y, width, height)
+	return this.Composite.computeTrim_(x, y, width, height)
 }
 
 func (this *TabFolder) createHandle_() {
@@ -160,7 +160,7 @@ func (this *TabFolder) findTooltip_(pt cocoa.NSPoint) *Widget {
 	return this.Composite.findTooltip_(pt)
 }
 
-func (this *TabFolder) GetClientArea_() *Rectangle {
+func (this *TabFolder) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	var rect cocoa.NSRect = (castcocoaNSViewTococoaNSTabView(this.View)).ContentRect()
 	var x int32 = int32(math.Max(float64(0), float64(int32(rect.X))))
@@ -287,11 +287,11 @@ func (this *TabFolder) minimumSize_(wHint int32, hHint int32, flushCache bool) *
 			index++
 		}
 		if index == count {
-			var rect *Rectangle = child.impl.GetBounds_()
+			var rect *Rectangle = child.impl.getBounds_()
 			width = int32(math.Max(float64(width), float64(rect.X+rect.Width)))
 			height = int32(math.Max(float64(height), float64(rect.Y+rect.Height)))
 		} else {
-			var size *Point = child.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, flushCache)
+			var size *Point = child.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
 			width = int32(math.Max(float64(width), float64(size.X)))
 			height = int32(math.Max(float64(height), float64(size.Y)))
 		}
@@ -415,7 +415,7 @@ func (this *TabFolder) SetSelectionIndexNotifyForce(index int32, notify bool, fo
 		if item != (nil) {
 			var control *Control = item.control
 			if control != (nil) && !control.IsDisposed() {
-				control.impl.SetVisible_(false)
+				control.impl.setVisible_(false)
 			}
 		}
 	}
@@ -428,7 +428,7 @@ func (this *TabFolder) SetSelectionIndexNotifyForce(index int32, notify bool, fo
 		if item != (nil) {
 			var control *Control = item.control
 			if control != (nil) && !control.IsDisposed() {
-				control.impl.SetVisible_(true)
+				control.impl.setVisible_(true)
 			}
 			if notify {
 				var event *Event = NewEvent()
@@ -478,13 +478,13 @@ func (this *TabFolder) tabView_willSelectTabViewItem_(id int64, sel int64, tabVi
 					selected.UpdateTextSelected(false)
 					var control *Control = selected.control
 					if control != (nil) && !control.IsDisposed() {
-						control.impl.SetVisible_(false)
+						control.impl.setVisible_(false)
 					}
 				}
 			}
 			var control *Control = item.control
 			if control != (nil) && !control.IsDisposed() {
-				control.impl.SetVisible_(true)
+				control.impl.setVisible_(true)
 			}
 			item.UpdateTextSelected(true)
 			break

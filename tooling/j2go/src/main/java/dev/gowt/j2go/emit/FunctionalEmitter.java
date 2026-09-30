@@ -170,12 +170,18 @@ final class FunctionalEmitter {
 			base = anonType.getInterfaces().length > 0 ? anonType.getInterfaces()[0] : null;
 		}
 		List<MethodDeclaration> methods = new ArrayList<>();
-		boolean onlyMethods = true;
+		List<FieldDeclaration> fields = new ArrayList<>();
+		boolean onlyMembers = true;
 		for (Object o : acd.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md) methods.add(md);
-			else onlyMethods = false;
+			else if (o instanceof FieldDeclaration fd && !Modifier.isStatic(fd.getModifiers())) fields.add(fd);
+			else onlyMembers = false;
 		}
-		if (base == null || !onlyMethods) return marker(cic, "AnonymousClass");
+		if (base == null || !onlyMembers) return marker(cic, "AnonymousClass");
+		if (!fields.isEmpty()) {
+			TypeModel.ClassInfo fieldBase = emitter.model.lookup(base);
+			return fieldBase == null ? marker(cic, "AnonymousClass") : emitStructAnon(cic, fieldBase, anonType, methods, fields);
+		}
 		// `new Thread() { run() {...} }`: jrt.Thread runs the body; no other Thread member is modeled.
 		if (base.getErasure().getQualifiedName().equals("java.lang.Thread") && cic.arguments().isEmpty()
 				&& methods.size() == 1 && methods.get(0).getName().getIdentifier().equals("run")) {
@@ -199,7 +205,7 @@ final class FunctionalEmitter {
 				&& base.getFunctionalInterfaceMethod() != null;
 		if ((runnable || singleMethodIface) && methods.size() == 1) return emitFunctionalAnon(cic, base, anonType, methods.get(0));
 		if (baseCi == null) return marker(cic, "AnonymousClass");
-		return emitStructAnon(cic, baseCi, anonType, methods);
+		return emitStructAnon(cic, baseCi, anonType, methods, List.of());
 	}
 
 	private String emitFunctionalAnon(ClassInstanceCreation cic, ITypeBinding base, ITypeBinding anonType, MethodDeclaration md) {
@@ -216,7 +222,7 @@ final class FunctionalEmitter {
 	}
 
 	private String emitStructAnon(ClassInstanceCreation cic, TypeModel.ClassInfo baseCi, ITypeBinding anonType,
-			List<MethodDeclaration> methods) {
+			List<MethodDeclaration> methods, List<FieldDeclaration> fields) {
 		String typeName = emitter.currentClassGoTypeName + "Anon" + (++emitter.anonCounter);
 		StringBuilder decl = new StringBuilder("// j2go: anonymous ").append(baseCi.goTypeName).append(" subclass.\n");
 		decl.append("type ").append(typeName).append(" struct {\n");
@@ -226,11 +232,23 @@ final class FunctionalEmitter {
 		StringBuilder forwarders = new StringBuilder();
 		String v = "anon" + (++emitter.tempCounter);
 		List<String> assigns = new ArrayList<>();
+		for (FieldDeclaration fd : fields) {
+			for (Object o : fd.fragments()) {
+				VariableDeclarationFragment f = (VariableDeclarationFragment) o;
+				ITypeBinding ft = f.resolveBinding().getType();
+				String fname = Modifier.isPublic(fd.getModifiers()) ? Names.capitalize(f.getName().getIdentifier())
+						: EmitUtil.fieldIdent(f.getName().getIdentifier());
+				decl.append('\t').append(fname).append(' ').append(dev.gowt.j2go.GoTypes.map(ft, emitter)).append('\n');
+				if (f.getInitializer() == null) continue;
+				String init = withAnonThis(v, anonType, () -> emitter.adaptNumeric(emitter.expr(f.getInitializer()), f.getInitializer().resolveTypeBinding(), ft));
+				assigns.add(v + "." + fname + " = " + init);
+			}
+		}
 		for (MethodDeclaration md : methods) {
 			IMethodBinding mb = md.resolveBinding();
 			IMethodBinding overridden = findOverridden(mb, anonType);
 			IMethodBinding sigSource = overridden != null ? overridden : mb;
-			String goName = overridden != null ? memberGoName(overridden) : Names.javaMethodBaseGoName(mb.getName());
+			String goName = overridden != null ? memberGoName(overridden, foreign) : Names.javaMethodBaseGoName(mb.getName());
 			String params = emitter.paramList(sigSource, null);
 			String ret = emitter.retType(sigSource);
 			String field = "fn" + goName;
@@ -246,7 +264,7 @@ final class FunctionalEmitter {
 		}
 		decl.append("}\n\n").append(forwarders).append(emitter.defaultForwarders(anonType, "*" + typeName));
 		// Another package's impl and init<Base> are unexported: build with the public constructor, then
-		// SetImpl_. Ceiling: virtual calls the constructor makes still reach the base implementation.
+		// SetImpl_ (installs the hook wrapper). Ceiling: virtual calls the constructor makes still reach the base implementation.
 		if (foreign && !baseCi.root.children.isEmpty() && !baseCi.root.splitsDispatch()) return marker(cic, "AnonymousClass");
 		emitter.fileHelperSource.add(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
@@ -309,10 +327,14 @@ final class FunctionalEmitter {
 	}
 
 	/** The Go name a call to m resolves to - the cascade name when m is an override point. */
-	private String memberGoName(IMethodBinding m) {
+	private String memberGoName(IMethodBinding m, boolean foreign) {
 		TypeModel.ClassInfo ci = emitter.model.lookup(m.getDeclaringClass());
 		String sig = TypeModel.signature(m);
-		if (ci != null && ci.overridePoint(sig) != null) return ci.root.overriddenRootMethodGoNames.get(sig);
+		if (ci != null && ci.overridePoint(sig) != null) {
+			// Another package overrides through the exported hook name, not the unexported dispatch one.
+			String hook = foreign ? ci.root.overriddenRootHookNames.get(sig) : null;
+			return hook != null ? hook : ci.root.overriddenRootMethodGoNames.get(sig);
+		}
 		return emitter.names.goMemberName(m, Names.javaMethodBaseGoName(m.getName()));
 	}
 

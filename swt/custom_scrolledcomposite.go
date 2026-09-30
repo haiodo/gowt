@@ -47,7 +47,7 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 	this.alwaysShowScroll = false
 	this.showFocusedControl = false
 	this.showNextFocusedControl = true
-	this.Composite.SetLayout_(upcastScrolledCompositeLayoutToLayout(newScrolledCompositeLayout()))
+	this.Composite.setLayout_(upcastScrolledCompositeLayoutToLayout(newScrolledCompositeLayout()))
 	var hBar *ScrollBar = this.GetHorizontalBar()
 	if hBar != (nil) {
 		hBar.SetVisible(false)
@@ -84,7 +84,7 @@ func (this *ScrolledComposite) initScrolledComposite(parent *Composite, style in
 			var w *Widget = event.Widget
 			_, ok607 := isWidgetToControl(w)
 			if ok607 {
-				this.showNextFocusedControl = w.GetDisplay().GetActiveShell() == (castWidgetToControl(w)).impl.GetShell_()
+				this.showNextFocusedControl = w.GetDisplay().GetActiveShell() == (castWidgetToControl(w)).impl.getShell_()
 			}
 		}
 	}}
@@ -150,7 +150,7 @@ func (this *ScrolledComposite) HScroll() {
 	if this.content == (nil) {
 		return
 	}
-	var location *Point = this.content.impl.GetLocation_()
+	var location *Point = this.content.impl.getLocation_()
 	var hBar *ScrollBar = this.GetHorizontalBar()
 	var hSelection int32 = hBar.GetSelection()
 	this.content.SetLocation(-hSelection, location.Y)
@@ -166,7 +166,7 @@ func (this *ScrolledComposite) NeedHScroll(contentRectLike RectangleLike, vVisib
 	if hBar == (nil) {
 		return false
 	}
-	var hostRect *Rectangle = this.impl.GetBounds_()
+	var hostRect *Rectangle = this.impl.getBounds_()
 	var border int32 = this.GetBorderWidth()
 	hostRect.Width -= 2 * border
 	var vBar *ScrollBar = this.GetVerticalBar()
@@ -192,7 +192,7 @@ func (this *ScrolledComposite) NeedVScroll(contentRectLike RectangleLike, hVisib
 	if vBar == (nil) {
 		return false
 	}
-	var hostRect *Rectangle = this.impl.GetBounds_()
+	var hostRect *Rectangle = this.impl.getBounds_()
 	var border int32 = this.GetBorderWidth()
 	hostRect.Height -= 2 * border
 	var hBar *ScrollBar = this.GetHorizontalBar()
@@ -213,7 +213,7 @@ func (this *ScrolledComposite) GetOrigin() *Point {
 	if this.content == (nil) {
 		return NewPoint(0, 0)
 	}
-	var location *Point = this.content.impl.GetLocation_()
+	var location *Point = this.content.impl.getLocation_()
 	return NewPoint(-location.X, -location.Y)
 }
 
@@ -321,7 +321,7 @@ func (this *ScrolledComposite) SetExpandVertical(expand bool) {
 	this.LayoutOverload1(false)
 }
 
-func (this *ScrolledComposite) SetLayout_(layout *Layout) {
+func (this *ScrolledComposite) setLayout_(layout *Layout) {
 	this.CheckWidget()
 	return
 }
@@ -393,8 +393,8 @@ func (this *ScrolledComposite) ShowControl(controlLike ControlLike) {
 	if !this.Contains(control) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var itemRect *Rectangle = this.GetDisplay().MapFromToRectangle(upcastCompositeToControl(control.GetParent()), upcastScrolledCompositeToControl(this), control.impl.GetBounds_())
-	var area *Rectangle = this.impl.GetClientArea_()
+	var itemRect *Rectangle = this.GetDisplay().MapFromToRectangle(upcastCompositeToControl(control.GetParent()), upcastScrolledCompositeToControl(this), control.impl.getBounds_())
+	var area *Rectangle = this.impl.getClientArea_()
 	var origin *Point = this.GetOrigin()
 	if itemRect.X < 0 {
 		origin.X = int32(math.Max(float64(0), float64(origin.X+itemRect.X)))
@@ -417,7 +417,7 @@ func (this *ScrolledComposite) VScroll() {
 	if this.content == (nil) {
 		return
 	}
-	var location *Point = this.content.impl.GetLocation_()
+	var location *Point = this.content.impl.getLocation_()
 	var vBar *ScrollBar = this.GetVerticalBar()
 	var vSelection int32 = vBar.GetSelection()
 	this.content.SetLocation(location.X, -vSelection)

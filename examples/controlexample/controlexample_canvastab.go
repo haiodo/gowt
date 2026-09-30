@@ -151,7 +151,7 @@ func (this *CanvasTab) createStyleGroup_() {
 func (this *CanvasTab) createTabFolderPage_(tabFolder *swt.TabFolder) *swt.Composite {
 	this.Tab.createTabFolderPage_(tabFolder)
 	this.tabFolderPage.AddControlListener(swt.ControlListenerControlResizedAdapter(func(e *swt.ControlEvent) {
-		this.SetExampleWidgetSize()
+		this.impl.setExampleWidgetSize_()
 	}))
 	return this.tabFolderPage
 }

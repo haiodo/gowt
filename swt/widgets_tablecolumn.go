@@ -70,7 +70,7 @@ func (this *TableColumn) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *TableColumn) CheckSubclass_() {
+func (this *TableColumn) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -270,7 +270,7 @@ func (this *TableColumn) GetAlignment() int32 {
 }
 
 func (this *TableColumn) getNameText_() string {
-	return this.impl.GetText_()
+	return this.impl.getText_()
 }
 
 func (this *TableColumn) GetParent() *Table {
@@ -319,7 +319,7 @@ func (this *TableColumn) Pack() {
 	var gc *GC = NewGCDrawable(this.parent)
 	var index int32 = this.parent.IndexOfColumn(this)
 	width = int32(math.Max(float64(width), float64(this.parent.CalculateWidth(this.parent.items, index, gc))))
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	this.SetWidth(width)
 }
 
@@ -387,12 +387,12 @@ func (this *TableColumn) SetAlignment(alignment int32) {
 	this.parent.View.SetNeedsDisplayInRect(rect)
 }
 
-func (this *TableColumn) SetImageOnItem_(image *Image) {
+func (this *TableColumn) setImageOnItem_(image *Image) {
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed_() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.Item.SetImageOnItem_(image)
+	this.Item.setImageOnItem_(image)
 	var headerView *cocoa.NSTableHeaderView = (castcocoaNSViewTococoaNSTableView(this.parent.View)).HeaderView()
 	if headerView == (nil) {
 		return
@@ -418,12 +418,12 @@ func (this *TableColumn) SetResizable(resizable bool) {
 	this.nsColumn.SetResizingMask(int64(cond605))
 }
 
-func (this *TableColumn) SetText_(string_ string) {
+func (this *TableColumn) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	this.Item.SetText_(string_)
+	this.Item.setText_(string_)
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	copy(buffer, utf16.Encode([]rune(this.text)))
 	var length int32 = this.FixMnemonic(buffer)

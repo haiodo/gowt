@@ -41,6 +41,9 @@ public class TypeModel {
 		// same keys -> the Go name to use everywhere (two unrelated chains sharing a bare Java
 		// name, e.g. Cocoa's "setValue", can't both be plain "SetValue" in one Go interface).
 		public final Map<String, String> overriddenRootMethodGoNames = new LinkedHashMap<>();
+		// split dispatch, public/protected root declaration only: the exported name another package's
+		// anonymous subclass defines to override that method (routed by the <root>Hooked wrapper).
+		public final Map<String, String> overriddenRootHookNames = new LinkedHashMap<>();
 
 		// Topmost ancestor (inclusive) declaring `sig` with a descendant also declaring it -
 		// null for an unrelated overload of a same-named method (needs matching erased params).
@@ -251,10 +254,12 @@ public class TypeModel {
 
 	private void putCascadeName(ClassInfo ci, Set<String> treeTypeNames, Map.Entry<String, IMethodBinding> e, String name) {
 		if (ci.splitsDispatch()) {
-			// public/protected: exported so a subclass in another Go package can override it.
 			int mods = e.getValue().getModifiers();
-			boolean overridable = java.lang.reflect.Modifier.isPublic(mods) || java.lang.reflect.Modifier.isProtected(mods);
-			ci.overriddenRootMethodGoNames.put(e.getKey(), (overridable ? name : Names.decapitalize(name)) + "_");
+			String dispatch = Names.decapitalize(name) + "_";
+			ci.overriddenRootMethodGoNames.put(e.getKey(), dispatch);
+			if (java.lang.reflect.Modifier.isPublic(mods) || java.lang.reflect.Modifier.isProtected(mods)) {
+				ci.overriddenRootHookNames.put(e.getKey(), Names.capitalize(dispatch));
+			}
 			return;
 		}
 		// A cascade name equal to a subclass's embedded field name - Go rejects a field and

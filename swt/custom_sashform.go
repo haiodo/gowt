@@ -46,7 +46,7 @@ func (this *SashForm) initSashForm(parent *Composite, style int32) {
 	this.foreground = nil
 	this.controls = make([]*Control, 0)
 	this.maxControl = nil
-	this.Composite.SetLayout_(upcastSashFormLayoutToLayout(newSashFormLayout()))
+	this.Composite.setLayout_(upcastSashFormLayoutToLayout(newSashFormLayout()))
 	if (style & VERTICAL) != 0 {
 		this.sashStyle = HORIZONTAL
 	} else {
@@ -63,14 +63,14 @@ func (this *SashForm) initSashForm(parent *Composite, style int32) {
 
 func (this *SashForm) CreateSash() *Sash {
 	var sash *Sash = NewSash(upcastSashFormToComposite(this), this.sashStyle)
-	sash.impl.SetBackgroundWithColor_(this.background)
-	sash.impl.SetForeground_(this.foreground)
-	sash.impl.SetToolTipText_(this.GetToolTipText())
+	sash.impl.setBackgroundWithColor_(this.background)
+	sash.impl.setForeground_(this.foreground)
+	sash.impl.setToolTipText_(this.GetToolTipText())
 	sash.AddListener(Selection, this.sashListener)
 	return sash
 }
 
-func (this *SashForm) GetOrientation_() int32 {
+func (this *SashForm) getOrientation_() int32 {
 	var cond195 int32
 	if (this.sashStyle & VERTICAL) != 0 {
 		cond195 = HORIZONTAL
@@ -85,10 +85,10 @@ func (this *SashForm) GetSashWidth() int32 {
 	return this.SASH_WIDTH
 }
 
-func (this *SashForm) GetStyle_() int32 {
-	var style int32 = this.Composite.GetStyle_()
+func (this *SashForm) getStyle_() int32 {
+	var style int32 = this.Composite.getStyle_()
 	var cond196 int32
-	if this.impl.GetOrientation_() == VERTICAL {
+	if this.impl.getOrientation_() == VERTICAL {
 		cond196 = VERTICAL
 	} else {
 		cond196 = HORIZONTAL
@@ -152,12 +152,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 	}
 	var c1 *Control = this.controls[sashIndex]
 	var c2 *Control = this.controls[sashIndex+1]
-	var b1 *Rectangle = c1.impl.GetBounds_()
-	var b2 *Rectangle = c2.impl.GetBounds_()
-	var sashBounds *Rectangle = sash.impl.GetBounds_()
-	var area *Rectangle = this.impl.GetClientArea_()
+	var b1 *Rectangle = c1.impl.getBounds_()
+	var b2 *Rectangle = c2.impl.getBounds_()
+	var sashBounds *Rectangle = sash.impl.getBounds_()
+	var area *Rectangle = this.impl.getClientArea_()
 	var correction bool = false
-	if this.impl.GetOrientation_() == HORIZONTAL {
+	if this.impl.getOrientation_() == HORIZONTAL {
 		correction = b1.Width < SashFormDRAG_MINIMUM || b2.Width < SashFormDRAG_MINIMUM
 		var totalWidth int32 = b2.X + b2.Width - b1.X
 		var shift int32 = event.X - sashBounds.X
@@ -231,13 +231,13 @@ func (this *SashForm) OnDragSash(event *Event) {
 	}
 }
 
-func (this *SashForm) SetOrientationOnControl_(orientation int32) {
+func (this *SashForm) setOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 	if orientation == RIGHT_TO_LEFT || orientation == LEFT_TO_RIGHT {
-		this.Composite.SetOrientationOnControl_(orientation)
+		this.Composite.setOrientationOnControl_(orientation)
 		return
 	}
-	if this.impl.GetOrientation_() == orientation {
+	if this.impl.getOrientation_() == orientation {
 		return
 	}
 	if orientation != HORIZONTAL && orientation != VERTICAL {
@@ -258,23 +258,23 @@ func (this *SashForm) SetOrientationOnControl_(orientation int32) {
 	this.LayoutOverload1(false)
 }
 
-func (this *SashForm) SetBackgroundWithColor_(color *Color) {
-	this.Composite.SetBackgroundWithColor_(color)
+func (this *SashForm) setBackgroundWithColor_(color *Color) {
+	this.Composite.setBackgroundWithColor_(color)
 	this.background = color
 	for _, sash := range this.sashes {
-		sash.impl.SetBackgroundWithColor_(this.background)
+		sash.impl.setBackgroundWithColor_(this.background)
 	}
 }
 
-func (this *SashForm) SetForeground_(color *Color) {
-	this.Composite.SetForeground_(color)
+func (this *SashForm) setForeground_(color *Color) {
+	this.Composite.setForeground_(color)
 	this.foreground = color
 	for _, sash := range this.sashes {
-		sash.impl.SetForeground_(this.foreground)
+		sash.impl.setForeground_(this.foreground)
 	}
 }
 
-func (this *SashForm) SetLayout_(layout *Layout) {
+func (this *SashForm) setLayout_(layout *Layout) {
 	this.CheckWidget()
 	return
 }
@@ -291,13 +291,13 @@ func (this *SashForm) SetMaximizedControl(controlLike ControlLike) {
 			this.maxControl = nil
 			this.LayoutOverload1(false)
 			for _, sashe := range this.sashes {
-				sashe.impl.SetVisible_(true)
+				sashe.impl.setVisible_(true)
 			}
 		}
 		return
 	}
 	for _, sash := range this.sashes {
-		sash.impl.SetVisible_(false)
+		sash.impl.setVisible_(false)
 	}
 	this.maxControl = control
 	this.LayoutOverload1(false)
@@ -312,10 +312,10 @@ func (this *SashForm) SetSashWidth(width int32) {
 	this.LayoutOverload1(false)
 }
 
-func (this *SashForm) SetToolTipText_(string_ string) {
-	this.Composite.SetToolTipText_(string_)
+func (this *SashForm) setToolTipText_(string_ string) {
+	this.Composite.setToolTipText_(string_)
 	for _, sash := range this.sashes {
-		sash.impl.SetToolTipText_(string_)
+		sash.impl.setToolTipText_(string_)
 	}
 }
 
@@ -367,6 +367,9 @@ func upcastSashFormToComposite(x *SashForm) *Composite {
 
 // j2go: instanceof helper for Sash and its subclasses within the translated set.
 func widgetImplAsSash(x any) (*Sash, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Sash:
 		if v == nil {

@@ -61,7 +61,7 @@ func NewMenuParentStyle(parentLike DecorationsLike, style int32) *Menu {
 
 func (this *Menu) initMenuParentStyle(parent *Decorations, style int32) {
 	this.Widget.initWidget()
-	this.impl.CheckSubclass_()
+	this.impl.checkSubclass_()
 	this.impl.checkParent_(upcastDecorationsToWidget(parent))
 	this.style = MenuCheckStyle(style)
 	if parent != (nil) {
@@ -456,7 +456,7 @@ func (this *Menu) GetParentMenu() *Menu {
 func (this *Menu) GetShell() *Shell {
 	this.CheckWidget()
 	if this.parent != (nil) {
-		return this.parent.impl.GetShell_()
+		return this.parent.impl.getShell_()
 	}
 	return nil
 }
@@ -512,7 +512,7 @@ func (this *Menu) IsEnabled() bool {
 	}
 	var parentMenu *Menu = this.GetParentMenu()
 	if parentMenu == (nil) {
-		return this.GetEnabled() && this.parent.impl.IsEnabled_()
+		return this.GetEnabled() && this.parent.impl.isEnabled_()
 	}
 	return this.GetEnabled() && parentMenu.IsEnabled()
 }
@@ -651,7 +651,7 @@ func (this *Menu) releaseParent_() {
 		this.cascade.SetMenu(nil)
 	}
 	if (this.style&BAR) != 0 && this.parent != (nil) && this == this.parent.menuBar {
-		this.parent.impl.SetMenuBar_(nil)
+		this.parent.impl.setMenuBar_(nil)
 	}
 }
 
@@ -879,6 +879,9 @@ func upcastcocoaNSMenuTococoaNSObject(x *cocoa.NSMenu) *cocoa.NSObject {
 
 // j2go: instanceof helper for MenuItem and its subclasses within the translated set.
 func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *MenuItem:
 		if v == nil {

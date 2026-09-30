@@ -35,12 +35,12 @@ func (this *ScrolledCompositeLayout) initScrolledCompositeLayout() {
 	this.inLayout = false
 }
 
-func (this *ScrolledCompositeLayout) ComputeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
+func (this *ScrolledCompositeLayout) computeSize_(composite *Composite, wHint int32, hHint int32, flushCache bool) *Point {
 	var sc *ScrolledComposite = castCompositeToScrolledComposite(composite)
 	var size *Point = NewPoint(ScrolledCompositeLayoutDEFAULT_WIDTH, ScrolledCompositeLayoutDEFAULT_HEIGHT)
 	if sc.content != (nil) {
-		var preferredSize *Point = sc.content.impl.ComputeSizeWHintHHintChanged_(wHint, hHint, flushCache)
-		var currentSize *Point = sc.content.impl.GetSize_()
+		var preferredSize *Point = sc.content.impl.computeSizeWHintHHintChanged_(wHint, hHint, flushCache)
+		var currentSize *Point = sc.content.impl.getSize_()
 		if sc.GetExpandHorizontal() {
 			size.X = preferredSize.X
 		} else {
@@ -63,11 +63,11 @@ func (this *ScrolledCompositeLayout) ComputeSize_(composite *Composite, wHint in
 	return size
 }
 
-func (this *ScrolledCompositeLayout) FlushCache_(control *Control) bool {
+func (this *ScrolledCompositeLayout) flushCache_(control *Control) bool {
 	return true
 }
 
-func (this *ScrolledCompositeLayout) LayoutFn_(composite *Composite, flushCache bool) {
+func (this *ScrolledCompositeLayout) layoutFn_(composite *Composite, flushCache bool) {
 	if this.inLayout {
 		return
 	}
@@ -78,17 +78,17 @@ func (this *ScrolledCompositeLayout) LayoutFn_(composite *Composite, flushCache 
 	var hBar *ScrollBar = sc.GetHorizontalBar()
 	var vBar *ScrollBar = sc.GetVerticalBar()
 	if hBar != (nil) {
-		if hBar.GetSize().Y >= sc.impl.GetSize_().Y {
+		if hBar.GetSize().Y >= sc.impl.getSize_().Y {
 			return
 		}
 	}
 	if vBar != (nil) {
-		if vBar.GetSize().X >= sc.impl.GetSize_().X {
+		if vBar.GetSize().X >= sc.impl.getSize_().X {
 			return
 		}
 	}
 	this.inLayout = true
-	var contentRect *Rectangle = sc.content.impl.GetBounds_()
+	var contentRect *Rectangle = sc.content.impl.getBounds_()
 	if !sc.alwaysShowScroll {
 		var hVisible bool = sc.NeedHScroll(contentRect, false)
 		var vVisible bool = sc.NeedVScroll(contentRect, hVisible)
@@ -102,7 +102,7 @@ func (this *ScrolledCompositeLayout) LayoutFn_(composite *Composite, flushCache 
 			vBar.SetVisible(vVisible)
 		}
 	}
-	var hostRect *Rectangle = sc.impl.GetClientArea_()
+	var hostRect *Rectangle = sc.impl.getClientArea_()
 	if sc.expandHorizontal {
 		contentRect.Width = int32(math.Max(float64(sc.minWidth), float64(hostRect.Width)))
 	}
@@ -140,13 +140,16 @@ func (this *ScrolledCompositeLayout) LayoutFn_(composite *Composite, flushCache 
 			contentRect.Y = -vSelection
 		}
 	}
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	sc.content.SetBoundsRect(contentRect)
 	this.inLayout = false
 }
 
 // j2go: instanceof helper for ScrolledComposite and its subclasses within the translated set.
 func widgetImplAsScrolledComposite(x any) (*ScrolledComposite, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *ScrolledComposite:
 		if v == nil {

@@ -19,7 +19,15 @@ type ControlExample struct {
 	startup   bool
 }
 
-var ControlExampleResourceBundle *jrt.ResourceBundle
+var ControlExampleResourceBundle *jrt.ResourceBundle = func() (r *jrt.ResourceBundle) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init ControlExampleResourceBundle:", e)
+		}
+	}()
+	r = jrt.ResourceBundleGetBundle("examples_control")
+	return
+}()
 
 const ControlExampleCiClosedFolder int32 = 0
 const ControlExampleCiOpenFolder int32 = 1
@@ -66,7 +74,7 @@ func (this *ControlExample) initControlExample(parent *swt.Composite) {
 	if size.X > monitorArea.Width && isMac {
 		var tabItems []*swt.TabItem = this.tabFolder.GetItems()
 		for i := int32(0); i < int32(len(tabItems)); i++ {
-			tabItems[i].SetText(this.tabs[i].GetShortTabText())
+			tabItems[i].SetText(this.tabs[i].impl.getShortTabText_())
 		}
 	}
 	this.startup = false
@@ -281,15 +289,4 @@ func upcastswtShellToswtComposite(x *swt.Shell) *swt.Composite {
 		return nil
 	}
 	return &x.Composite
-}
-
-func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init ControlExampleResourceBundle:", r)
-			}
-		}()
-		ControlExampleResourceBundle = jrt.ResourceBundleGetBundle("examples_control")
-	}()
 }

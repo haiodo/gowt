@@ -10,14 +10,51 @@ import (
 
 type ResourceImpl interface {
 	destroy_()
-	Dispose_()
-	GetDevice_() *Device
+	dispose_()
+	getDevice_() *Device
 	init_()
-	IsDisposed_() bool
+	isDisposed_() bool
 }
 
-func (this *Resource) IsDisposed_() bool {
-	panic("j2go: IsDisposed_ has no default on Resource")
+func (this *Resource) isDisposed_() bool {
+	panic("j2go: isDisposed_ has no default on Resource")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type resourceHooked struct {
+	ResourceImpl
+	hook   ResourceImpl
+	active string
+}
+
+func (this *resourceHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *resourceHooked) dispose_() {
+	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
+		defer this.enter("dispose_")()
+		h.Dispose_()
+	}
+	this.ResourceImpl.dispose_()
+}
+
+func (this *resourceHooked) getDevice_() *Device {
+	if h, ok := this.hook.(interface{ GetDevice_() *Device }); ok && this.active != "getDevice_" {
+		defer this.enter("getDevice_")()
+		return h.GetDevice_()
+	}
+	return this.ResourceImpl.getDevice_()
+}
+
+func (this *resourceHooked) isDisposed_() bool {
+	if h, ok := this.hook.(interface{ IsDisposed_() bool }); ok && this.active != "isDisposed_" {
+		defer this.enter("isDisposed_")()
+		return h.IsDisposed_()
+	}
+	return this.ResourceImpl.isDisposed_()
 }
 
 type Resource struct {
@@ -27,9 +64,16 @@ type Resource struct {
 	impl      ResourceImpl
 }
 
-func (this *Resource) Impl() ResourceImpl { return this.impl }
+func (this *Resource) Impl() ResourceImpl {
+	if h, ok := this.impl.(*resourceHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Resource) SetImpl_(impl ResourceImpl) { this.impl = impl }
+func (this *Resource) SetImpl_(impl ResourceImpl) {
+	this.impl = &resourceHooked{ResourceImpl: this.impl, hook: impl}
+}
 
 func (this *Resource) AsResource() *Resource { return this }
 
@@ -79,10 +123,10 @@ func (this *Resource) DestroyHandlesExcept(zoomLevels any) {
 }
 
 func (this *Resource) Dispose() {
-	this.impl.Dispose_()
+	this.impl.dispose_()
 }
 
-func (this *Resource) Dispose_() {
+func (this *Resource) dispose_() {
 	if this.tracker != (nil) {
 		this.tracker.reporting.Set(false)
 	}
@@ -103,12 +147,12 @@ func (this *Resource) Dispose_() {
 }
 
 func (this *Resource) GetDevice() *Device {
-	return this.impl.GetDevice_()
+	return this.impl.getDevice_()
 }
 
-func (this *Resource) GetDevice_() *Device {
+func (this *Resource) getDevice_() *Device {
 	var device *Device = this.device
-	if device == (nil) || this.impl.IsDisposed_() {
+	if device == (nil) || this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return device
@@ -152,7 +196,7 @@ func (this *Resource) InitNonDisposeTracking() {
 }
 
 func (this *Resource) IsDisposed() bool {
-	return this.impl.IsDisposed_()
+	return this.impl.isDisposed_()
 }
 
 func ResourceSetNonDisposeHandler(reporter func(error)) {
@@ -172,7 +216,15 @@ type Resource_ResourceTrackerLike interface {
 	AsResource_ResourceTracker() *Resource_ResourceTracker
 }
 
-var ResourceResourceTrackerCleaner any
+var ResourceResourceTrackerCleaner any = func() (r any) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init ResourceResourceTrackerCleaner:", e)
+		}
+	}()
+	r = any(nil)
+	return
+}()
 
 func newResourceResourceTracker(allocationStack error) *Resource_ResourceTracker {
 	this := &Resource_ResourceTracker{}
@@ -236,6 +288,9 @@ func (this *Resource_ResourceTrackerThreadFactory) NewThread(r jrt.Runnable) any
 
 // j2go: instanceof helper for Color and its subclasses within the translated set.
 func resourceImplAsColor(x any) (*Color, bool) {
+	if h, ok := x.(*resourceHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Color:
 		if v == nil {
@@ -273,13 +328,5 @@ func init() {
 				}
 			})
 		}
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init ResourceResourceTrackerCleaner:", r)
-			}
-		}()
-		ResourceResourceTrackerCleaner = any(nil)
 	}()
 }

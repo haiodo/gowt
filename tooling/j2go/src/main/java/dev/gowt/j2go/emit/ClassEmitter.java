@@ -95,6 +95,7 @@ final class ClassEmitter {
 						.append("\tpanic(\"j2go: ").append(goName).append(" has no default on ")
 						.append(ci.goTypeName).append("\")\n}\n\n");
 			}
+			if (ci.splitsDispatch()) HookEmitter.emit(emitter, ci, out);
 		}
 
 		out.append("type ").append(ci.goTypeName).append(" struct {\n");
@@ -120,10 +121,12 @@ final class ClassEmitter {
 		// Another package's instanceof/cast reads the dynamic type through this (cocoa's id has a
 		// hand-written one): the impl field itself is unexported.
 		if (ci == ci.root && needsImpl && ci.splitsDispatch()) {
-			out.append("func (this *").append(ci.goTypeName).append(") Impl() ").append(ci.goTypeName)
-					.append("Impl { return this.impl }\n\n");
+			String hooked = Names.decapitalize(ci.goTypeName) + "Hooked";
+			out.append("func (this *").append(ci.goTypeName).append(") Impl() ").append(ci.goTypeName).append("Impl {\n")
+					.append("\tif h, ok := this.impl.(*").append(hooked).append("); ok {\n\t\treturn h.hook\n\t}\n")
+					.append("\treturn this.impl\n}\n\n");
 			out.append("func (this *").append(ci.goTypeName).append(") SetImpl_(impl ").append(ci.goTypeName)
-					.append("Impl) { this.impl = impl }\n\n");
+					.append("Impl) { this.impl = &").append(hooked).append("{").append(ci.goTypeName).append("Impl: this.impl, hook: impl} }\n\n");
 		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
 
@@ -306,12 +309,25 @@ final class ClassEmitter {
 			List<String> myPrelude = emitter.prelude;
 			emitter.prelude = saved;
 			if (!myPrelude.isEmpty() || emitter.containsCall(initExpr)) {
-				out.append("var ").append(goName).append(" ").append(dev.gowt.j2go.GoTypes.map(type, emitter)).append('\n');
-				StringBuilder b = new StringBuilder();
-				for (String p : myPrelude) b.append('\t').append(p).append('\n');
-				b.append('\t').append(goName).append(" = ").append(text).append('\n');
-				emitter.deferredStaticInits.add(b.toString());
-				emitter.deferredStaticInitLabels.add(goName);
+				// cocoa's inits depend on native-library side effects, so they stay in init() (file order).
+				if (ci.goPackage.equals("cocoa")) {
+					out.append("var ").append(goName).append(" ").append(dev.gowt.j2go.GoTypes.map(type, emitter)).append('\n');
+					StringBuilder b = new StringBuilder();
+					for (String p : myPrelude) b.append('\t').append(p).append('\n');
+					b.append('\t').append(goName).append(" = ").append(text).append('\n');
+					emitter.deferredStaticInits.add(b.toString());
+					emitter.deferredStaticInitLabels.add(goName);
+					continue;
+				}
+				// A package var initializer: Go orders these by the vars/functions they reach, like Java's lazy class init.
+				String goType = dev.gowt.j2go.GoTypes.map(type, emitter);
+				emitter.fileImports.add("os");
+				emitter.fileImports.add("fmt");
+				out.append("var ").append(goName).append(' ').append(goType).append(" = func() (r ").append(goType).append(") {\n")
+						.append("\tdefer func() {\n\t\tif e := recover(); e != nil {\n\t\t\tfmt.Fprintln(os.Stderr, \"gowt: deferred init ")
+						.append(goName).append(":\", e)\n\t\t}\n\t}()\n");
+				for (String p : myPrelude) out.append('\t').append(p).append('\n');
+				out.append("\tr = ").append(text).append("\n\treturn\n}()\n");
 				continue;
 			}
 			text = emitter.adaptNumeric(text, initExpr.resolveTypeBinding(), type);

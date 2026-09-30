@@ -141,7 +141,21 @@ type DisplayLike interface {
 var DisplayTypes []int8 = []int8{int8('*'), int8('\u0000')}
 
 var DisplaySize int32 = cocoa.CPTR_SIZEOF
-var DisplayAlign int32
+var DisplayAlign int32 = func() (r int32) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init DisplayAlign:", e)
+		}
+	}()
+	var cond232 int32
+	if cocoa.CPTR_SIZEOF == 4 {
+		cond232 = 2
+	} else {
+		cond232 = 3
+	}
+	r = cond232
+	return
+}()
 
 const DisplayUSE_SYSTEM_THEME string = "org.eclipse.swt.display.useSystemTheme"
 
@@ -304,7 +318,7 @@ func (this *Display) AddContext(contextLike GCDataLike) {
 }
 
 func (this *Display) AddFilter(eventType int32, listener Listener) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if listener == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -334,7 +348,7 @@ func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
 }
 
 func (this *Display) AddListener(eventType int32, listener Listener) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if listener == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -479,7 +493,7 @@ func (this *Display) Execute(runnable jrt.Runnable) {
 }
 
 func (this *Display) Beep() {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	cocoa.OSNSBeep()
 }
 
@@ -512,7 +526,7 @@ func (this *Display) CascadeWindow(window *cocoa.NSWindow, screen *cocoa.NSScree
 	window.CascadeTopLeftFromPoint(cascade)
 }
 
-func (this *Display) CheckDevice_() {
+func (this *Display) checkDevice_() {
 	if jrt.IsNil(this.thread) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
@@ -622,7 +636,7 @@ func (this *Display) ClearPool() {
 }
 
 func (this *Display) Close() {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var event *Event = NewEvent()
 	this.SendEvent(Close, event)
 	if event.Doit {
@@ -630,7 +644,7 @@ func (this *Display) Close() {
 	}
 }
 
-func (this *Display) Create_(data *DeviceData) {
+func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
 	cond239 := jrt.CurrentThread()
 	this.thread = cond239
@@ -819,7 +833,7 @@ func (this *Display) CursorSetProc(id int64, sel int64) int64 {
 	return int64(0)
 }
 
-func (this *Display) Destroy_() {
+func (this *Display) destroy_() {
 	if this == DisplayDefault {
 		DisplayDefault = nil
 	}
@@ -832,7 +846,7 @@ func (this *Display) DestroyDisplay() {
 }
 
 func (this *Display) DisposeExec(runnable jrt.Runnable) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.disposeList == (nil) {
 		this.disposeList = make([]jrt.Runnable, 4)
 	}
@@ -879,12 +893,12 @@ func (this *Display) Filters(eventType int32) bool {
 }
 
 func (this *Display) FindWidget(handle int64) *Widget {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.GetWidget(handle)
 }
 
 func (this *Display) FindWidgetHandleId(handle int64, id int64) *Widget {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.GetWidget(handle)
 }
 
@@ -894,7 +908,7 @@ func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget
 		widget = widgetLike.AsWidget()
 	}
 	_ = widget
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return nil
 }
 
@@ -928,7 +942,7 @@ func (this *Display) FindTouchSource(touch *cocoa.NSTouch) *TouchSource {
 }
 
 func (this *Display) GetActiveShell() *Shell {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var window *cocoa.NSWindow
 	if this.keyWindow != (nil) {
 		window = this.keyWindow
@@ -956,8 +970,8 @@ func (this *Display) GetActiveShell() *Shell {
 	return nil
 }
 
-func (this *Display) GetBounds_() *Rectangle {
-	this.impl.CheckDevice_()
+func (this *Display) getBounds_() *Rectangle {
+	this.impl.checkDevice_()
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
 	return this.GetBoundsScreens(screens)
 }
@@ -1012,8 +1026,8 @@ func (this *Display) GetCaretBlinkTime() int32 {
 	return this.blinkTime
 }
 
-func (this *Display) GetClientArea_() *Rectangle {
-	this.impl.CheckDevice_()
+func (this *Display) getClientArea_() *Rectangle {
+	this.impl.checkDevice_()
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
 	if screens == (nil) {
 		return NewRectangle(0, 0, 0, 0)
@@ -1029,24 +1043,24 @@ func (this *Display) GetClientArea_() *Rectangle {
 }
 
 func (this *Display) GetCursorControl() *Control {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.FindControl(false)
 }
 
 func (this *Display) GetCursorLocation() *Point {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var location cocoa.NSPoint = cocoa.NSEventMouseLocation()
 	var primaryFrame cocoa.NSRect = this.GetPrimaryFrame()
 	return NewPoint(int32(location.X), int32((primaryFrame.Height - location.Y)))
 }
 
 func (this *Display) GetCursorSizes() []*Point {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return []*Point{NewPoint(16, 16)}
 }
 
 func (this *Display) GetData(key string) any {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -1062,22 +1076,22 @@ func (this *Display) GetData(key string) any {
 }
 
 func (this *Display) GetData0() any {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.data
 }
 
 func (this *Display) GetDismissalAlignment() int32 {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return RIGHT
 }
 
 func (this *Display) GetDoubleClickTime() int32 {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return int32((cocoa.NSEventDoubleClickInterval() * 1000))
 }
 
 func (this *Display) GetFocusControl() *Control {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.focusControl != (nil) && !this.focusControl.IsDisposed() {
 		return this.focusControl
 	}
@@ -1115,7 +1129,7 @@ func (this *Display) _getFocusControl(window *cocoa.NSWindow) *Control {
 }
 
 func (this *Display) GetHighContrast() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return false
 }
 
@@ -1124,12 +1138,12 @@ func (this *Display) GetIconDepth() int32 {
 }
 
 func (this *Display) GetIconSizes() []*Point {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return []*Point{NewPoint(16, 16), NewPoint(32, 32), NewPoint(64, 64), NewPoint(128, 128)}
 }
 
 func (this *Display) SetDarkThemePreferred(preferred bool) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	cocoa.OSSetTheme(preferred)
 }
 
@@ -1188,7 +1202,7 @@ func (this *Display) GetModalPanel() *cocoa.NSPanel {
 }
 
 func (this *Display) GetMonitors() []*Monitor {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
 	if screens == (nil) {
 		return []*Monitor{}
@@ -1228,7 +1242,7 @@ func (this *Display) GetPrimaryFrame() cocoa.NSRect {
 }
 
 func (this *Display) GetPrimaryMonitor() *Monitor {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var monitor *Monitor = newMonitor()
 	var screens *cocoa.NSArray = cocoa.NSScreenScreens()
 	if screens == (nil) {
@@ -1251,7 +1265,7 @@ func (this *Display) GetPrimaryMonitor() *Monitor {
 }
 
 func (this *Display) GetShells() []*Shell {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var windows *cocoa.NSArray = this.application.Windows()
 	var index int32 = 0
 	var result []*Shell = make([]*Shell, int32(windows.Count()))
@@ -1274,7 +1288,7 @@ func (this *Display) GetShells() []*Shell {
 }
 
 func (this *Display) GetSynchronizer() *Synchronizer {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return this.synchronizer
 }
 
@@ -1295,13 +1309,13 @@ func (this *Display) GetSyncThread() any {
 	return tret249
 }
 
-func (this *Display) GetSystemColor_(id int32) *Color {
-	this.impl.CheckDevice_()
+func (this *Display) getSystemColor_(id int32) *Color {
+	this.impl.checkDevice_()
 	var color *Color = this.GetWidgetColor(id)
 	if color != (nil) {
 		return color
 	}
-	return this.Device.GetSystemColor_(id)
+	return this.Device.getSystemColor_(id)
 }
 
 func (this *Display) GetWidgetColor(id int32) *Color {
@@ -1399,7 +1413,7 @@ func (this *Display) GetNSColorRGB(color *cocoa.NSColor) []float64 {
 }
 
 func (this *Display) GetSystemCursor(id int32) *Cursor {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if !(0 <= id && id < int32(len(this.cursors))) {
 		return nil
 	}
@@ -1410,7 +1424,7 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 }
 
 func (this *Display) GetSystemImage(id int32) *Image {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	switch id {
 	case ICON_ERROR:
 		{
@@ -1449,7 +1463,7 @@ func (this *Display) GetSystemImage(id int32) *Image {
 }
 
 func (this *Display) GetMenuBar() *Menu {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.appMenuBar != (nil) {
 		return this.appMenuBar
 	}
@@ -1458,7 +1472,7 @@ func (this *Display) GetMenuBar() *Menu {
 }
 
 func (this *Display) GetSystemMenu() *Menu {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.appMenu == (nil) {
 		var mainMenu *cocoa.NSMenu = cocoa.NSApplicationSharedApplication().MainMenu()
 		var nsAppMenu *cocoa.NSMenu = mainMenu.ItemAtIndex(int64(0)).Submenu()
@@ -1473,7 +1487,7 @@ func (this *Display) GetSystemMenu() *Menu {
 }
 
 func (this *Display) GetSystemTray() *Tray {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.tray != (nil) {
 		return this.tray
 	}
@@ -1483,7 +1497,7 @@ func (this *Display) GetSystemTray() *Tray {
 }
 
 func (this *Display) GetSystemTaskBar() *TaskBar {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.taskBar != (nil) {
 		return this.taskBar
 	}
@@ -1523,12 +1537,12 @@ func (this *Display) GetThread() any {
 }
 
 func (this *Display) GetTouchEnabled() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return true
 }
 
 func (this *Display) GetToolTipTime() int32 {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	return 560
 }
 
@@ -1555,8 +1569,8 @@ func (this *Display) HasDefaultButton() bool {
 	return false
 }
 
-func (this *Display) Init_() {
-	this.Device.Init_()
+func (this *Display) init_() {
+	this.Device.init_()
 	if strings.EqualFold("true", jrt.GetProperty(DisplayUSE_SYSTEM_THEME, "")) {
 		if cocoa.OSIsSystemDarkAppearance() {
 			this.SetAppAppearance(Display_APPEARANCEDark)
@@ -2382,7 +2396,7 @@ func (this *Display) InitFonts() {
 	this.progressIndicatorFont = this.GetFont(cocoa.OSClass_NSProgressIndicator, cocoa.OSSel_font)
 }
 
-func (this *Display) Internal_new_GC_(data *GCData) int64 {
+func (this *Display) internal_new_GC_(data *GCData) int64 {
 	if this.IsDisposed() {
 		this.Error(ERROR_DEVICE_DISPOSED)
 	}
@@ -2408,14 +2422,14 @@ func (this *Display) Internal_new_GC_(data *GCData) int64 {
 			data.Style |= LEFT_TO_RIGHT
 		}
 		data.Device = upcastDisplayToDevice(this)
-		data.Background = this.impl.GetSystemColor_(COLOR_WHITE).Handle
-		data.Foreground = this.impl.GetSystemColor_(COLOR_BLACK).Handle
+		data.Background = this.impl.getSystemColor_(COLOR_WHITE).Handle
+		data.Foreground = this.impl.getSystemColor_(COLOR_BLACK).Handle
 		data.Font = this.GetSystemFont()
 	}
 	return context.Id
 }
 
-func (this *Display) Internal_dispose_GC_(hDC int64, data *GCData) {
+func (this *Display) internal_dispose_GC_(hDC int64, data *GCData) {
 	if this.IsDisposed() {
 		this.Error(ERROR_DEVICE_DISPOSED)
 	}
@@ -2664,7 +2678,7 @@ func (this *Display) Map(fromLike ControlLike, toLike ControlLike, pointLike Poi
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -2682,7 +2696,7 @@ func (this *Display) MapFromToXY(fromLike ControlLike, toLike ControlLike, x int
 		to = toLike.AsControl()
 	}
 	_ = to
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if from != (nil) && from.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
@@ -2758,7 +2772,7 @@ func (this *Display) MapFromToRectangle(fromLike ControlLike, toLike ControlLike
 		rectangle = rectangleLike.AsRectangle()
 	}
 	_ = rectangle
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if rectangle == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -2776,7 +2790,7 @@ func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike Control
 		to = toLike.AsControl()
 	}
 	_ = to
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if from != (nil) && from.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
@@ -2896,7 +2910,7 @@ func (this *Display) PerformKeyEquivalent(window *cocoa.NSWindow, nsEvent *cocoa
 }
 
 func (this *Display) ReadAndDispatch() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if this.sendEventCount == 0 && this.loopCount == this.poolCount-1 && CallbackGetEntryCount() == 0 {
 		this.RemovePool()
 	}
@@ -2937,7 +2951,7 @@ func (this *Display) ReadAndDispatch() bool {
 	return events
 }
 
-func (this *Display) Release_() {
+func (this *Display) release_() {
 	{
 		var exceptions *ExceptionStash = NewExceptionStash()
 		defer exceptions.Close()
@@ -3100,19 +3114,19 @@ func (this *Display) Release_() {
 		}()
 		this.appMenuBar = nil
 		this.ReleaseDisplay()
-		this.Device.Release_()
+		this.Device.release_()
 	}
 }
 
 func (this *Display) ReleaseDisplay() {
 	if this.errorImage != (nil) {
-		this.errorImage.impl.Dispose_()
+		this.errorImage.impl.dispose_()
 	}
 	if this.infoImage != (nil) {
-		this.infoImage.impl.Dispose_()
+		this.infoImage.impl.dispose_()
 	}
 	if this.warningImage != (nil) {
-		this.warningImage.impl.Dispose_()
+		this.warningImage.impl.dispose_()
 	}
 	this.warningImage = nil
 	this.infoImage = this.warningImage
@@ -3141,7 +3155,7 @@ func (this *Display) ReleaseDisplay() {
 	this.timerDelegate = nil
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			this.cursors[i].impl.Dispose_()
+			this.cursors[i].impl.dispose_()
 		}
 	}
 	this.cursors = nil
@@ -3302,7 +3316,7 @@ func (this *Display) RemoveContext(contextLike GCDataLike) {
 }
 
 func (this *Display) RemoveFilter(eventType int32, listener Listener) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if listener == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -3316,7 +3330,7 @@ func (this *Display) RemoveFilter(eventType int32, listener Listener) {
 }
 
 func (this *Display) RemoveListener(eventType int32, listener Listener) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if listener == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -3766,7 +3780,7 @@ func (this *Display) SetCursor(controlLike ControlLike) {
 }
 
 func (this *Display) SetCursorLocation(x int32, y int32) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var e *Event = NewEvent()
 	e.Type = MouseMove
 	e.X = x
@@ -3780,7 +3794,7 @@ func (this *Display) SetCursorLocationPoint(pointLike PointLike) {
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -3788,7 +3802,7 @@ func (this *Display) SetCursorLocationPoint(pointLike PointLike) {
 }
 
 func (this *Display) SetData(key string, value any) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -3960,7 +3974,7 @@ func (this *Display) SetModalShell(shellLike ShellLike) {
 }
 
 func (this *Display) SetDataData(data any) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	this.data = data
 }
 
@@ -3970,7 +3984,7 @@ func (this *Display) SetSynchronizer(synchronizerLike SynchronizerLike) {
 		synchronizer = synchronizerLike.AsSynchronizer()
 	}
 	_ = synchronizer
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if synchronizer == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -3990,7 +4004,7 @@ func (this *Display) SetSynchronizer(synchronizerLike SynchronizerLike) {
 }
 
 func (this *Display) SetRuntimeExceptionHandler(runtimeExceptionHandler func(error)) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	this.runtimeExceptionHandler = runtimeExceptionHandler
 }
 
@@ -3999,7 +4013,7 @@ func (this *Display) GetRuntimeExceptionHandler() func(error) {
 }
 
 func (this *Display) SetErrorHandler(errorHandler func(error)) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	this.errorHandler = errorHandler
 }
 
@@ -4008,7 +4022,7 @@ func (this *Display) GetErrorHandler() func(error) {
 }
 
 func (this *Display) Sleep() bool {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if !this.synchronizer.IsMessagesEmpty() {
 		return true
 	}
@@ -4046,7 +4060,7 @@ func (this *Display) SyncExec(runnable jrt.Runnable) {
 }
 
 func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	if runnable == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
@@ -4164,7 +4178,7 @@ func (this *Display) TimerProc(id int64, sel int64, timerID int64) int64 {
 }
 
 func (this *Display) Update() {
-	this.impl.CheckDevice_()
+	this.impl.checkDevice_()
 	var shells []*Shell = this.GetShells()
 	for i := int32(0); i < int32(len(shells)); i++ {
 		var shell *Shell = shells[i]
@@ -4193,7 +4207,7 @@ func (this *Display) UpdateQuitMenu() {
 	var mask int32 = PRIMARY_MODAL | APPLICATION_MODAL | SYSTEM_MODAL
 	for i := int32(0); i < int32(len(shells)); i++ {
 		var shell *Shell = shells[i]
-		if (shell.style&mask) != 0 && shell.impl.IsVisible_() {
+		if (shell.style&mask) != 0 && shell.impl.isVisible_() {
 			enabled = false
 			break
 		}
@@ -6137,6 +6151,9 @@ func castcocoaNSObjectTococoaSWTApplicationDelegate(x *cocoa.NSObject) *cocoa.SW
 
 // j2go: instanceof helper for Widget and its subclasses within the translated set.
 func widgetImplAsWidget(x any) (*Widget, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Widget:
 		if v == nil {
@@ -7291,6 +7308,9 @@ func castanyTococoaNSObject(x any) *cocoa.NSObject {
 
 // j2go: instanceof helper for Dialog and its subclasses within the translated set.
 func dialogImplAsDialog(x any) (*Dialog, bool) {
+	if h, ok := x.(*dialogHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Dialog:
 		if v == nil {
@@ -7362,6 +7382,9 @@ func upcastcocoaNSLocaleTococoaId(x *cocoa.NSLocale) *cocoa.Id {
 
 // j2go: instanceof helper for ColorDialog and its subclasses within the translated set.
 func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
+	if h, ok := x.(*dialogHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *ColorDialog:
 		if v == nil {
@@ -7377,6 +7400,9 @@ func dialogImplAsColorDialog(x any) (*ColorDialog, bool) {
 
 // j2go: instanceof helper for FontDialog and its subclasses within the translated set.
 func dialogImplAsFontDialog(x any) (*FontDialog, bool) {
+	if h, ok := x.(*dialogHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *FontDialog:
 		if v == nil {
@@ -7402,20 +7428,6 @@ func castanyToFontDialog(x any) *FontDialog {
 }
 
 func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init DisplayAlign:", r)
-			}
-		}()
-		var cond232 int32
-		if cocoa.CPTR_SIZEOF == 4 {
-			cond232 = 2
-		} else {
-			cond232 = 3
-		}
-		DisplayAlign = cond232
-	}()
 	func() {
 		defer func() {
 			if r := recover(); r != nil {

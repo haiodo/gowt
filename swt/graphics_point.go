@@ -8,7 +8,28 @@ import (
 )
 
 type PointImpl interface {
-	Clone_() *Point
+	clone_() *Point
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type pointHooked struct {
+	PointImpl
+	hook   PointImpl
+	active string
+}
+
+func (this *pointHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *pointHooked) clone_() *Point {
+	if h, ok := this.hook.(interface{ Clone_() *Point }); ok && this.active != "clone_" {
+		defer this.enter("clone_")()
+		return h.Clone_()
+	}
+	return this.PointImpl.clone_()
 }
 
 type Point struct {
@@ -17,9 +38,16 @@ type Point struct {
 	impl PointImpl
 }
 
-func (this *Point) Impl() PointImpl { return this.impl }
+func (this *Point) Impl() PointImpl {
+	if h, ok := this.impl.(*pointHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Point) SetImpl_(impl PointImpl) { this.impl = impl }
+func (this *Point) SetImpl_(impl PointImpl) {
+	this.impl = &pointHooked{PointImpl: this.impl, hook: impl}
+}
 
 func (this *Point) AsPoint() *Point { return this }
 
@@ -62,10 +90,10 @@ func (this *Point) String() string {
 }
 
 func (this *Point) Clone() *Point {
-	return this.impl.Clone_()
+	return this.impl.clone_()
 }
 
-func (this *Point) Clone_() *Point {
+func (this *Point) clone_() *Point {
 	return NewPoint(this.X, this.Y)
 }
 
@@ -137,7 +165,7 @@ func (this *Point_OfFloat) SetY(y float32) {
 	this.ResidualY = y - float32(this.Y)
 }
 
-func (this *Point_OfFloat) Clone_() *Point {
+func (this *Point_OfFloat) clone_() *Point {
 	return upcastPoint_OfFloatToPoint(NewPointOfFloatXYRoundingMode(this.GetX(), this.GetY(), this.roundingMode))
 }
 
@@ -149,7 +177,7 @@ func PointOfFloatFrom(pointLike PointLike) *Point_OfFloat {
 	_ = point
 	pointOfFloat, ok2 := isPointToPoint_OfFloat(point)
 	if ok2 {
-		t3 := pointOfFloat.impl.Clone_()
+		t3 := pointOfFloat.impl.clone_()
 		t4, _ := pointImplAsOfFloat(t3.impl)
 		return t4
 	}
@@ -200,12 +228,15 @@ func (this *Point_WithMonitor) GetMonitor() *Monitor {
 	return this.monitor
 }
 
-func (this *Point_WithMonitor) Clone_() *Point {
+func (this *Point_WithMonitor) clone_() *Point {
 	return upcastPoint_WithMonitorToPoint(newPointWithMonitorXYMonitor(this.GetX(), this.GetY(), this.monitor))
 }
 
 // j2go: instanceof helper for Point and its subclasses within the translated set.
 func pointImplAsPoint(x any) (*Point, bool) {
+	if h, ok := x.(*pointHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Point:
 		if v == nil {
@@ -238,6 +269,9 @@ func upcastPoint_OfFloatToPoint(x *Point_OfFloat) *Point {
 
 // j2go: instanceof helper for Point_OfFloat and its subclasses within the translated set.
 func pointImplAsOfFloat(x any) (*Point_OfFloat, bool) {
+	if h, ok := x.(*pointHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Point_OfFloat:
 		if v == nil {

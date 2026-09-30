@@ -154,6 +154,7 @@ SWT_FILES=(
 	org/eclipse/swt/custom/ScrolledComposite.java
 	org/eclipse/swt/custom/ControlEditor.java
 	org/eclipse/swt/custom/TableEditor.java
+	org/eclipse/swt/custom/TreeEditor.java
 	org/eclipse/swt/internal/TransparencyColorImageGcDrawer.java
 	org/eclipse/swt/widgets/Caret.java
 	org/eclipse/swt/internal/graphics/ImageUtil.java
@@ -175,6 +176,7 @@ CE=org/eclipse/swt/examples/controlexample
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 	$CE/ControlExample.java $CE/Tab.java $CE/AlignableTab.java $CE/ScrollableTab.java \
 	$CE/ButtonTab.java $CE/LabelTab.java $CE/TextTab.java $CE/GroupTab.java $CE/CanvasTab.java $CE/MenuTab.java \
+	$CE/ListTab.java $CE/ComboTab.java $CE/TabFolderTab.java $CE/SashTab.java $CE/TableTab.java $CE/TreeTab.java $CE/ShellTab.java \
 	-- \
 	"${SWT_FILES[@]}" \
 	org/eclipse/swt/internal/C.java \
@@ -182,7 +184,8 @@ java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . \
 
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
-cp "$EX_SRC/$CE"/*.png "$EX_SRC/$CE"/*.gif "$EX_SRC/$CE"/*.bmp "$EX_SRC/examples_control.properties" examples/controlexample/
+mkdir -p examples/controlexample/res
+cp "$EX_SRC/$CE"/*.png "$EX_SRC/$CE"/*.gif "$EX_SRC/$CE"/*.bmp "$EX_SRC/examples_control.properties" examples/controlexample/res/
 
 # Round 12 tests: SWT's JUnit 5 tests -> tests/swttests (package swttests), run by cmd/swttest on
 # the main thread. JUnit's own jars are only on the parser classpath (pom.xml "provided").

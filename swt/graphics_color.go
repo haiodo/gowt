@@ -231,16 +231,16 @@ func (this *Color) destroy_() {
 	this.Handle = nil
 }
 
-func (this *Color) Dispose_() {
+func (this *Color) dispose_() {
 	this.impl.destroy_()
 	this.device = nil
 }
 
-func (this *Color) GetDevice_() *Device {
+func (this *Color) getDevice_() *Device {
 	if this.device == (nil) && this.Handle != (nil) {
 		return DeviceGetDevice()
 	}
-	return this.Resource.GetDevice_()
+	return this.Resource.getDevice_()
 }
 
 func (this *Color) Equals(object any) bool {
@@ -251,7 +251,7 @@ func (this *Color) Equals(object any) bool {
 	if !(ok229) {
 		return false
 	}
-	if this.impl.IsDisposed_() || color.impl.IsDisposed_() {
+	if this.impl.isDisposed_() || color.impl.isDisposed_() {
 		return false
 	}
 	var rgbColor []float64 = color.Handle
@@ -262,49 +262,49 @@ func (this *Color) Equals(object any) bool {
 }
 
 func (this *Color) GetAlpha() int32 {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[3] * 255))
 }
 
 func (this *Color) GetBlue() int32 {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[2] * 255))
 }
 
 func (this *Color) GetGreen() int32 {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[1] * 255))
 }
 
 func (this *Color) GetRed() int32 {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return int32((this.Handle[0] * 255))
 }
 
 func (this *Color) HashCode() int32 {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		return 0
 	}
 	return int32((this.Handle[0] * 255)) ^ int32((this.Handle[1] * 255)) ^ int32((this.Handle[2] * 255)) ^ int32((this.Handle[3] * 255))
 }
 
 func (this *Color) GetRGB() *RGB {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGB(this.GetRed(), this.GetGreen(), this.GetBlue())
 }
 
 func (this *Color) GetRGBA() *RGBA {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	return NewRGBA(this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())
@@ -325,12 +325,12 @@ func (this *Color) Init(red int32, green int32, blue int32, alpha int32) {
 func (this *Color) init_() {
 }
 
-func (this *Color) IsDisposed_() bool {
+func (this *Color) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Color) String() string {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		return "Color {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Color {%d, %d, %d, %d}", this.GetRed(), this.GetGreen(), this.GetBlue(), this.GetAlpha())

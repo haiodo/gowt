@@ -31,12 +31,12 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) initTest_org_eclipse_swt_w
 func (this *Test_org_eclipse_swt_widgets_Decorations) test_ConstructorLorg_eclipse_swt_widgets_CompositeI_() {
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) Test_computeTrimIIII_() {
+func (this *Test_org_eclipse_swt_widgets_Decorations) test_computeTrimIIII_() {
 	this.decorations.ComputeTrim(0, 0, 0, 0)
 	this.decorations.ComputeTrim(0, 0, 10, 20)
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) Test_getClientArea_() {
+func (this *Test_org_eclipse_swt_widgets_Decorations) test_getClientArea_() {
 	var rect *swt.Rectangle = this.decorations.GetClientArea()
 	junit.AssertTrue(rect.Height >= 0)
 	junit.AssertTrue(rect.Width >= 0)
@@ -61,7 +61,7 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) Test_getImage() {
 	}
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) Test_getLocation_() {
+func (this *Test_org_eclipse_swt_widgets_Decorations) test_getLocation_() {
 	this.decorations.SetLocation(10, 15)
 	junit.AssertEquals(int32(10), int32(this.decorations.GetLocation().X))
 	junit.AssertEquals(int32(15), int32(this.decorations.GetLocation().Y))
@@ -79,7 +79,7 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) Test_getText() {
 	junit.AssertEquals("test", this.decorations.GetText())
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) Test_isReparentable_() {
+func (this *Test_org_eclipse_swt_widgets_Decorations) test_isReparentable_() {
 	junit.AssertFalse(this.decorations.IsReparentable())
 }
 
@@ -144,15 +144,15 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) Test_setTextLjava_lang_Str
 	}, "No exception thrown for string == null")
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) Test_setVisibleZ_() {
+func (this *Test_org_eclipse_swt_widgets_Decorations) test_setVisibleZ_() {
 }
 
-func (this *Test_org_eclipse_swt_widgets_Decorations) SetWidget_(w *swt.Widget) {
+func (this *Test_org_eclipse_swt_widgets_Decorations) setWidget_(w *swt.Widget) {
 	if this.decorations != (nil) && !this.decorations.IsDisposed() {
 		this.decorations.Dispose()
 	}
 	this.decorations = castswtWidgetToswtDecorations(w)
-	this.Test_org_eclipse_swt_widgets_Canvas.SetWidget_(w)
+	this.Test_org_eclipse_swt_widgets_Canvas.setWidget_(w)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Decorations) LoadImages() {

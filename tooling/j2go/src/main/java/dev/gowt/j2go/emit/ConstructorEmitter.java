@@ -200,7 +200,15 @@ final class ConstructorEmitter {
 		// Inside an anonymous subclass `this` is the holder variable and its base is the embedded field.
 		if (emitter.anonThis != null) {
 			TypeModel.ClassInfo baseCi = emitter.model.lookup(emitter.anonType.getSuperclass());
-			if (baseCi != null) return emitter.anonThis + "." + baseCi.goTypeName + "." + base + "(" + String.join(", ", args) + ")";
+			if (baseCi != null) {
+				// Another package can't name the unexported dispatch: the public wrapper reaches the default
+				// because the hook wrapper is running that method.
+				TypeModel.ClassInfo point = baseCi.overridePoint(TypeModel.signature(mb));
+				if (point != null && baseCi.splitsDispatch() && !baseCi.goPackage.equals(emitter.currentGoPackage)) {
+					base = emitter.names.goMemberName(point.declaredBinding(TypeModel.signature(mb)), Names.javaMethodBaseGoName(smi.getName().getIdentifier()));
+				}
+				return emitter.anonThis + "." + baseCi.goTypeName + "." + base + "(" + String.join(", ", args) + ")";
+			}
 		}
 		if (emitter.currentClassInfo.superclass != null) {
 			fieldPath = emitter.currentClassInfo.superclass.goTypeName;

@@ -26,18 +26,18 @@ func (this *Test_org_eclipse_swt_widgets_Scrollable) test_ConstructorLorg_eclips
 }
 
 func (this *Test_org_eclipse_swt_widgets_Scrollable) Test_computeTrimIIII() {
-	this.impl.Test_computeTrimIIII_()
+	this.impl.test_computeTrimIIII_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Scrollable) Test_computeTrimIIII_() {
+func (this *Test_org_eclipse_swt_widgets_Scrollable) test_computeTrimIIII_() {
 	this.scrollable.ComputeTrim(0, 0, 0, 0)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Scrollable) Test_getClientArea() {
-	this.impl.Test_getClientArea_()
+	this.impl.test_getClientArea_()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Scrollable) Test_getClientArea_() {
+func (this *Test_org_eclipse_swt_widgets_Scrollable) test_getClientArea_() {
 	this.scrollable.GetClientArea()
 }
 
@@ -49,9 +49,9 @@ func (this *Test_org_eclipse_swt_widgets_Scrollable) Test_getVerticalBar() {
 	this.scrollable.GetVerticalBar()
 }
 
-func (this *Test_org_eclipse_swt_widgets_Scrollable) SetWidget_(w *swt.Widget) {
+func (this *Test_org_eclipse_swt_widgets_Scrollable) setWidget_(w *swt.Widget) {
 	this.scrollable = castswtWidgetToswtScrollable(w)
-	this.Test_org_eclipse_swt_widgets_Control.SetWidget_(w)
+	this.Test_org_eclipse_swt_widgets_Control.setWidget_(w)
 }
 
 // j2go: instanceof helper for swt.Scrollable and its subclasses within the translated set.

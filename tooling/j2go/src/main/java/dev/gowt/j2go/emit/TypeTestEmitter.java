@@ -157,6 +157,11 @@ final class TypeTestEmitter {
 		b.append("// j2go: instanceof helper for ").append(targetName)
 				.append(" and its subclasses within the translated set.\n");
 		b.append("func ").append(name).append("(x any) (*").append(targetName).append(", bool) {\n");
+		// SetImpl_ wraps a subclass from another package (HookEmitter): test the subclass itself.
+		TypeModel.ClassInfo root = target.root;
+		if (root.splitsDispatch() && !root.children.isEmpty() && root.goPackage.equals(emitter.currentGoPackage)) {
+			b.append("\tif h, ok := x.(*").append(Names.decapitalize(root.goTypeName)).append("Hooked); ok {\n\t\tx = h.hook\n\t}\n");
+		}
 		b.append("\tswitch v := x.(type) {\n");
 		for (TypeModel.ClassInfo c : concrete) {
 			// A typed nil pointer boxed in the any is Java's null: instanceof is false for it.

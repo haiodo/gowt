@@ -16,7 +16,15 @@ type Test_org_eclipse_swt_widgets_Display struct {
 	disposeExecRan bool
 }
 
-var Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson bool
+var Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson:", e)
+		}
+	}()
+	r = strings.EqualFold("hudsonbuild", jrt.GetProperty("user.name", "")) || strings.EqualFold("genie.platform", jrt.GetProperty("user.name", ""))
+	return
+}()
 
 var Test_org_eclipse_swt_widgets_DisplayBUG_492569 bool = SwtTestUtilIsWindows && Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson
 
@@ -1608,15 +1616,4 @@ func init() {
 			{Name: "test_wake", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_wake() }},
 		},
 	})
-}
-
-func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson:", r)
-			}
-		}()
-		Test_org_eclipse_swt_widgets_DisplayIsRunningOnEclipseOrgHudson = strings.EqualFold("hudsonbuild", jrt.GetProperty("user.name", "")) || strings.EqualFold("genie.platform", jrt.GetProperty("user.name", ""))
-	}()
 }

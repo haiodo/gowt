@@ -158,7 +158,7 @@ func (this *Caret) HideCaret() bool {
 
 func (this *Caret) IsVisible() bool {
 	this.CheckWidget()
-	return this.isVisible && this.parent.impl.IsVisible_() && this.parent.HasFocus()
+	return this.isVisible && this.parent.impl.isVisible_() && this.parent.HasFocus()
 }
 
 func (this *Caret) IsFocusCaret() bool {
@@ -244,7 +244,7 @@ func (this *Caret) SetFont(fontLike FontLike) {
 	}
 	_ = font
 	this.CheckWidget()
-	if font != (nil) && font.impl.IsDisposed_() {
+	if font != (nil) && font.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.font = font
@@ -257,7 +257,7 @@ func (this *Caret) SetImage(imageLike ImageLike) {
 	}
 	_ = image
 	this.CheckWidget()
-	if image != (nil) && image.impl.IsDisposed_() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var isFocus bool = this.IsFocusCaret()

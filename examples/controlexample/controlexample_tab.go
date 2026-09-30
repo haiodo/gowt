@@ -16,20 +16,54 @@ import (
 type TabImpl interface {
 	createControlGroup_()
 	createControlWidgets_()
+	createColorAndFontGroup_()
+	changeFontOrColor_(a0 int32)
 	createOtherGroup_()
 	createExampleGroup_()
 	createExampleWidgets_()
 	getMethodNames_() []string
+	setMethodName_(a0 string) string
+	parameterForType_(a0 string, a1 string, a2 *swt.Widget) []any
+	createSizeGroup_()
 	createStyleGroup_()
 	createTabFolderPage_(a0 *swt.TabFolder) *swt.Composite
+	specialPopupMenuItems_(a0 *swt.Menu, a1 *swt.Event)
+	disposeExampleWidgets_()
 	getExampleWidgets_() []*swt.Widget
+	getExampleWidgetItems_() []*swt.Item
+	getShortTabText_() string
 	getTabText_() string
+	resetColorsAndFonts_()
+	setExampleWidgetSize_()
 	setExampleWidgetState_()
 	setExampleWidgetAlignment_()
 }
 
 func (this *Tab) setExampleWidgetAlignment_() {
 	panic("j2go: setExampleWidgetAlignment_ has no default on Tab")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type tabHooked struct {
+	TabImpl
+	hook   TabImpl
+	active string
+}
+
+func (this *tabHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *tabHooked) specialPopupMenuItems_(a0 *swt.Menu, a1 *swt.Event) {
+	if h, ok := this.hook.(interface {
+		SpecialPopupMenuItems_(a0 *swt.Menu, a1 *swt.Event)
+	}); ok && this.active != "specialPopupMenuItems_" {
+		defer this.enter("specialPopupMenuItems_")()
+		h.SpecialPopupMenuItems_(a0, a1)
+	}
+	this.TabImpl.specialPopupMenuItems_(a0, a1)
 }
 
 type Tab struct {
@@ -94,9 +128,14 @@ type Tab struct {
 	impl                      TabImpl
 }
 
-func (this *Tab) Impl() TabImpl { return this.impl }
+func (this *Tab) Impl() TabImpl {
+	if h, ok := this.impl.(*tabHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Tab) SetImpl_(impl TabImpl) { this.impl = impl }
+func (this *Tab) SetImpl_(impl TabImpl) { this.impl = &tabHooked{TabImpl: this.impl, hook: impl} }
 
 const TabTOO_SMALL_SIZE int32 = 10
 
@@ -108,7 +147,15 @@ const TabSMALL_SIZE int32 = 50
 
 const TabLARGE_SIZE int32 = 100
 
-var TabRTL_SUPPORT_ENABLE bool
+var TabRTL_SUPPORT_ENABLE bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init TabRTL_SUPPORT_ENABLE:", e)
+		}
+	}()
+	r = ("win32" == swt.GetPlatform()) || ("gtk" == swt.GetPlatform())
+	return
+}()
 
 const TabIMAGE_SIZE int32 = 12
 
@@ -140,7 +187,15 @@ const TabDETAIL_TRAVERSE int32 = 2
 
 var TabDETAIL_CONSTANTS [][]string = [][]string{[]string{"SWT.COMPOSITION_CHANGED", "SWT.COMPOSITION_OFFSET", "SWT.COMPOSITION_SELECTION"}, []string{"SWT.SELECTED", "SWT.FOCUSED", "SWT.BACKGROUND", "SWT.FOREGROUND", "SWT.HOT"}, []string{"SWT.TRAVERSE_NONE", "SWT.TRAVERSE_ESCAPE", "SWT.TRAVERSE_RETURN", "SWT.TRAVERSE_TAB_PREVIOUS", "SWT.TRAVERSE_TAB_NEXT", "SWT.TRAVERSE_ARROW_PREVIOUS", "SWT.TRAVERSE_ARROW_NEXT", "SWT.TRAVERSE_MNEMONIC", "SWT.TRAVERSE_PAGE_PREVIOUS", "SWT.TRAVERSE_PAGE_NEXT"}}
 
-var TabDETAIL_VALUES []any
+var TabDETAIL_VALUES []any = func() (r []any) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init TabDETAIL_VALUES:", e)
+		}
+	}()
+	r = []any{"SWT.COMPOSITION_CHANGED", swt.COMPOSITION_CHANGED, "SWT.COMPOSITION_OFFSET", swt.COMPOSITION_OFFSET, "SWT.COMPOSITION_SELECTION", swt.COMPOSITION_SELECTION, "SWT.SELECTED", swt.SELECTED, "SWT.FOCUSED", swt.FOCUSED, "SWT.BACKGROUND", swt.BACKGROUND, "SWT.FOREGROUND", swt.FOREGROUND, "SWT.HOT", swt.HOT, "SWT.TRAVERSE_NONE", swt.TRAVERSE_NONE, "SWT.TRAVERSE_ESCAPE", swt.TRAVERSE_ESCAPE, "SWT.TRAVERSE_RETURN", swt.TRAVERSE_RETURN, "SWT.TRAVERSE_TAB_PREVIOUS", swt.TRAVERSE_TAB_PREVIOUS, "SWT.TRAVERSE_TAB_NEXT", swt.TRAVERSE_TAB_NEXT, "SWT.TRAVERSE_ARROW_PREVIOUS", swt.TRAVERSE_ARROW_PREVIOUS, "SWT.TRAVERSE_ARROW_NEXT", swt.TRAVERSE_ARROW_NEXT, "SWT.TRAVERSE_MNEMONIC", swt.TRAVERSE_MNEMONIC, "SWT.TRAVERSE_PAGE_PREVIOUS", swt.TRAVERSE_PAGE_PREVIOUS, "SWT.TRAVERSE_PAGE_NEXT", swt.TRAVERSE_PAGE_NEXT}
+	return
+}()
 
 func newTab(instance *ControlExample) *Tab {
 	this := &Tab{}
@@ -172,8 +227,8 @@ func (this *Tab) createControlGroup_() {
 	this.impl.createStyleGroup_()
 	this.impl.createOtherGroup_()
 	this.CreateSetGetGroup()
-	this.CreateSizeGroup()
-	this.CreateColorAndFontGroup()
+	this.impl.createSizeGroup_()
+	this.impl.createColorAndFontGroup_()
 	if this.RtlSupport() {
 		this.CreateOrientationGroup()
 		this.CreateDirectionGroup()
@@ -251,6 +306,10 @@ func (this *Tab) createControlWidgets_() {
 }
 
 func (this *Tab) CreateColorAndFontGroup() {
+	this.impl.createColorAndFontGroup_()
+}
+
+func (this *Tab) createColorAndFontGroup_() {
 	this.colorGroup = swt.NewGroup(upcastswtGroupToswtComposite(this.controlGroup), swt.NONE)
 	this.colorGroup.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(2, true)))
 	this.colorGroup.SetLayoutData(swt.NewGridDataHorizontalAlignmentVerticalAlignmentGrabExcessHorizontalSpaceGrabExcessVerticalSpace(swt.FILL, swt.FILL, false, false))
@@ -273,13 +332,13 @@ func (this *Tab) CreateColorAndFontGroup() {
 	this.colorDialog = swt.NewColorDialog(this.shell)
 	this.fontDialog = swt.NewFontDialog(this.shell)
 	this.colorAndFontTable.AddSelectionListener(swt.SelectionListenerWidgetDefaultSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.ChangeFontOrColor(this.colorAndFontTable.GetSelectionIndex())
+		this.impl.changeFontOrColor_(this.colorAndFontTable.GetSelectionIndex())
 	}))
 	changeButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.ChangeFontOrColor(this.colorAndFontTable.GetSelectionIndex())
+		this.impl.changeFontOrColor_(this.colorAndFontTable.GetSelectionIndex())
 	}))
 	defaultsButton.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {
-		this.ResetColorsAndFonts()
+		this.impl.resetColorsAndFonts_()
 	}))
 	this.shell.AddDisposeListener(&DisposeListenerFunc{fn: func(event *swt.DisposeEvent) {
 		if this.font != (nil) {
@@ -301,6 +360,10 @@ func (this *Tab) CreateColorAndFontGroup() {
 }
 
 func (this *Tab) ChangeFontOrColor(index int32) {
+	this.impl.changeFontOrColor_(index)
+}
+
+func (this *Tab) changeFontOrColor_(index int32) {
 	switch index {
 	case TabFOREGROUND_COLOR:
 		{
@@ -361,7 +424,7 @@ func (this *Tab) ChangeFontOrColor(index int32) {
 			oldFont = this.font
 			this.font = swt.NewFontDeviceFd(upcastswtDisplayToswtDevice(this.display), fontData)
 			this.SetExampleWidgetFont()
-			this.SetExampleWidgetSize()
+			this.impl.setExampleWidgetSize_()
 			if oldFont != (nil) {
 				oldFont.Dispose()
 			}
@@ -925,7 +988,7 @@ func (this *Tab) CreateSetGetDialog(methodNames []string) *swt.Shell {
 func (this *Tab) ResetLabels() {
 	var methodRoot string = this.nameCombo.GetText()
 	this.returnTypeLabel.SetText(this.ParameterInfo(methodRoot))
-	this.setButton.SetText(this.SetMethodName(methodRoot))
+	this.setButton.SetText(this.impl.setMethodName_(methodRoot))
 	this.getButton.SetText(fmt.Sprintf("get%s", methodRoot))
 	this.setText.SetText("")
 	this.getText.SetText("")
@@ -934,6 +997,10 @@ func (this *Tab) ResetLabels() {
 }
 
 func (this *Tab) SetMethodName(methodRoot string) string {
+	return this.impl.setMethodName_(methodRoot)
+}
+
+func (this *Tab) setMethodName_(methodRoot string) string {
 	return fmt.Sprintf("set%s", methodRoot)
 }
 
@@ -1039,7 +1106,7 @@ func (this *Tab) GetReturnType(methodRoot string) reflect.Type {
 func (this *Tab) SetValue() {
 	var methodRoot string = this.nameCombo.GetText()
 	var returnType reflect.Type = this.GetReturnType(methodRoot)
-	var methodName string = this.SetMethodName(methodRoot)
+	var methodName string = this.impl.setMethodName_(methodRoot)
 	var value string = this.setText.GetText()
 	var widgets []*swt.Widget = this.impl.getExampleWidgets_()
 	for _, widget := range widgets {
@@ -1123,7 +1190,7 @@ func (this *Tab) SetValue() {
 													if typeName == "[Ljava.lang.String;" {
 														parameter = []any{this.Split(value, ',')}
 													} else {
-														parameter = this.ParameterForType(typeName, value, widget)
+														parameter = this.impl.parameterForType_(typeName, value, widget)
 													}
 												}
 											}
@@ -1148,7 +1215,10 @@ func (this *Tab) ParameterForType(typeName string, value string, widgetLike swt.
 	if widgetLike != nil {
 		widget = widgetLike.AsWidget()
 	}
-	_ = widget
+	return this.impl.parameterForType_(typeName, value, widget)
+}
+
+func (this *Tab) parameterForType_(typeName string, value string, widget *swt.Widget) []any {
 	return []any{value}
 }
 
@@ -1183,6 +1253,10 @@ func (this *Tab) CreateDirectionGroup() {
 }
 
 func (this *Tab) CreateSizeGroup() {
+	this.impl.createSizeGroup_()
+}
+
+func (this *Tab) createSizeGroup_() {
 	this.sizeGroup = swt.NewGroup(upcastswtGroupToswtComposite(this.controlGroup), swt.NONE)
 	this.sizeGroup.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayout()))
 	this.sizeGroup.SetLayoutData(swt.NewGridDataHorizontalAlignmentVerticalAlignmentGrabExcessHorizontalSpaceGrabExcessVerticalSpace(swt.FILL, swt.FILL, false, false))
@@ -1202,7 +1276,7 @@ func (this *Tab) CreateSizeGroup() {
 	this.fillVButton = swt.NewButton(upcastswtGroupToswtComposite(this.sizeGroup), swt.CHECK)
 	this.fillVButton.SetText(ControlExampleGetResourceString("Fill_Y"))
 	var selectionListener swt.SelectionListener = swt.SelectionListenerWidgetSelectedAdapter(func(event *swt.SelectionEvent) {
-		this.SetExampleWidgetSize()
+		this.impl.setExampleWidgetSize_()
 	})
 	this.preferredButton.AddSelectionListener(selectionListener)
 	this.tooSmallButton.AddSelectionListener(selectionListener)
@@ -1261,7 +1335,7 @@ func (this *Tab) SetExampleWidgetPopupMenu() {
 				menu = swt.NewMenuParentStyle(upcastswtShellToswtDecorations(this.shell), swt.POP_UP|(control.GetStyle()&(swt.RIGHT_TO_LEFT|swt.LEFT_TO_RIGHT)))
 				var item *swt.MenuItem = swt.NewMenuItem(menu, swt.PUSH)
 				item.SetText("Sample popup menu item")
-				this.SpecialPopupMenuItems(menu, event)
+				this.impl.specialPopupMenuItems_(menu, event)
 				control.SetMenu(menu)
 				this.samplePopup = true
 			}
@@ -1274,15 +1348,21 @@ func (this *Tab) SpecialPopupMenuItems(menuLike swt.MenuLike, eventLike swt.Even
 	if menuLike != nil {
 		menu = menuLike.AsMenu()
 	}
-	_ = menu
 	var event *swt.Event
 	if eventLike != nil {
 		event = eventLike.AsEvent()
 	}
-	_ = event
+	this.impl.specialPopupMenuItems_(menu, event)
+}
+
+func (this *Tab) specialPopupMenuItems_(menu *swt.Menu, event *swt.Event) {
 }
 
 func (this *Tab) DisposeExampleWidgets() {
+	this.impl.disposeExampleWidgets_()
+}
+
+func (this *Tab) disposeExampleWidgets_() {
 	var widgets []*swt.Widget = this.impl.getExampleWidgets_()
 	for _, widget := range widgets {
 		widget.Dispose()
@@ -1418,10 +1498,18 @@ func (this *Tab) GetExampleControls() []*swt.Control {
 }
 
 func (this *Tab) GetExampleWidgetItems() []*swt.Item {
+	return this.impl.getExampleWidgetItems_()
+}
+
+func (this *Tab) getExampleWidgetItems_() []*swt.Item {
 	return make([]*swt.Item, 0)
 }
 
 func (this *Tab) GetShortTabText() string {
+	return this.impl.getShortTabText_()
+}
+
+func (this *Tab) getShortTabText_() string {
 	return this.impl.getTabText_()
 }
 
@@ -1476,7 +1564,7 @@ func (this *Tab) HookExampleWidgetListeners() {
 		for _, widget := range widgets {
 			this.HookListeners(widget)
 		}
-		var exampleItems []*swt.Item = this.GetExampleWidgetItems()
+		var exampleItems []*swt.Item = this.impl.getExampleWidgetItems_()
 		for _, exampleItem := range exampleItems {
 			this.HookListeners(upcastswtItemToswtWidget(exampleItem))
 		}
@@ -1626,13 +1714,17 @@ func (this *Tab) LogEventNameEvent(eventName string, eventLike swt.TypedEventLik
 }
 
 func (this *Tab) RecreateExampleWidgets() {
-	this.DisposeExampleWidgets()
+	this.impl.disposeExampleWidgets_()
 	this.impl.createExampleWidgets_()
 	this.HookExampleWidgetListeners()
 	this.impl.setExampleWidgetState_()
 }
 
 func (this *Tab) ResetColorsAndFonts() {
+	this.impl.resetColorsAndFonts_()
+}
+
+func (this *Tab) resetColorsAndFonts_() {
 	this.foregroundColor = nil
 	this.SetExampleWidgetForeground()
 	this.backgroundColor = nil
@@ -1640,7 +1732,7 @@ func (this *Tab) ResetColorsAndFonts() {
 	var oldFont *swt.Font = this.font
 	this.font = nil
 	this.SetExampleWidgetFont()
-	this.SetExampleWidgetSize()
+	this.impl.setExampleWidgetSize_()
 	if oldFont != (nil) {
 		oldFont.Dispose()
 	}
@@ -1776,6 +1868,10 @@ func (this *Tab) SetExampleWidgetForeground() {
 }
 
 func (this *Tab) SetExampleWidgetSize() {
+	this.impl.setExampleWidgetSize_()
+}
+
+func (this *Tab) setExampleWidgetSize_() {
 	var size int32 = swt.DEFAULT
 	if this.preferredButton == (nil) {
 		return
@@ -1831,7 +1927,7 @@ func (this *Tab) setExampleWidgetState_() {
 		this.SetExampleGroupBackgroundImage()
 		this.SetExampleWidgetBackgroundImage()
 		this.SetExampleWidgetPopupMenu()
-		this.SetExampleWidgetSize()
+		this.impl.setExampleWidgetSize_()
 	}
 }
 
@@ -2240,23 +2336,4 @@ func isswtWidgetToswtMenu(x *swt.Widget) (*swt.Menu, bool) {
 		return nil, false
 	}
 	return widgetImplAsMenu(x.Impl())
-}
-
-func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init TabRTL_SUPPORT_ENABLE:", r)
-			}
-		}()
-		TabRTL_SUPPORT_ENABLE = ("win32" == swt.GetPlatform()) || ("gtk" == swt.GetPlatform())
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init TabDETAIL_VALUES:", r)
-			}
-		}()
-		TabDETAIL_VALUES = []any{"SWT.COMPOSITION_CHANGED", swt.COMPOSITION_CHANGED, "SWT.COMPOSITION_OFFSET", swt.COMPOSITION_OFFSET, "SWT.COMPOSITION_SELECTION", swt.COMPOSITION_SELECTION, "SWT.SELECTED", swt.SELECTED, "SWT.FOCUSED", swt.FOCUSED, "SWT.BACKGROUND", swt.BACKGROUND, "SWT.FOREGROUND", swt.FOREGROUND, "SWT.HOT", swt.HOT, "SWT.TRAVERSE_NONE", swt.TRAVERSE_NONE, "SWT.TRAVERSE_ESCAPE", swt.TRAVERSE_ESCAPE, "SWT.TRAVERSE_RETURN", swt.TRAVERSE_RETURN, "SWT.TRAVERSE_TAB_PREVIOUS", swt.TRAVERSE_TAB_PREVIOUS, "SWT.TRAVERSE_TAB_NEXT", swt.TRAVERSE_TAB_NEXT, "SWT.TRAVERSE_ARROW_PREVIOUS", swt.TRAVERSE_ARROW_PREVIOUS, "SWT.TRAVERSE_ARROW_NEXT", swt.TRAVERSE_ARROW_NEXT, "SWT.TRAVERSE_MNEMONIC", swt.TRAVERSE_MNEMONIC, "SWT.TRAVERSE_PAGE_PREVIOUS", swt.TRAVERSE_PAGE_PREVIOUS, "SWT.TRAVERSE_PAGE_NEXT", swt.TRAVERSE_PAGE_NEXT}
-	}()
 }

@@ -409,12 +409,12 @@ func (this *Cursor) HashCode() int32 {
 	return cond507
 }
 
-func (this *Cursor) IsDisposed_() bool {
+func (this *Cursor) isDisposed_() bool {
 	return this.Handle == (nil)
 }
 
 func (this *Cursor) String() string {
-	if this.impl.IsDisposed_() {
+	if this.impl.isDisposed_() {
 		return "Cursor {*DISPOSED*}"
 	}
 	return fmt.Sprintf("Cursor {%v}", this.Handle)

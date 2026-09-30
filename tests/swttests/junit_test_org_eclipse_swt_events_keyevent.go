@@ -22,7 +22,7 @@ func (this *Test_org_eclipse_swt_events_KeyEvent) initTest_org_eclipse_swt_event
 	this.Test_org_eclipse_swt_events_TypedEvent.initTest_org_eclipse_swt_events_TypedEvent()
 }
 
-func (this *Test_org_eclipse_swt_events_KeyEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_KeyEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return upcastswtKeyEventToswtTypedEvent(swt.NewKeyEvent(event))
 }
 

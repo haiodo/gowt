@@ -22,7 +22,7 @@ func (this *Test_org_eclipse_swt_events_DisposeEvent) initTest_org_eclipse_swt_e
 	this.Test_org_eclipse_swt_events_TypedEvent.initTest_org_eclipse_swt_events_TypedEvent()
 }
 
-func (this *Test_org_eclipse_swt_events_DisposeEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_DisposeEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return upcastswtDisposeEventToswtTypedEvent(swt.NewDisposeEvent(event))
 }
 

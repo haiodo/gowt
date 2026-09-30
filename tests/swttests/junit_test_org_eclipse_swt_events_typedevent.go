@@ -9,7 +9,30 @@ import (
 )
 
 type Test_org_eclipse_swt_events_TypedEventImpl interface {
-	NewTypedEvent_(a0 *swt.Event) *swt.TypedEvent
+	newTypedEvent_(a0 *swt.Event) *swt.TypedEvent
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type test_org_eclipse_swt_events_TypedEventHooked struct {
+	Test_org_eclipse_swt_events_TypedEventImpl
+	hook   Test_org_eclipse_swt_events_TypedEventImpl
+	active string
+}
+
+func (this *test_org_eclipse_swt_events_TypedEventHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *test_org_eclipse_swt_events_TypedEventHooked) newTypedEvent_(a0 *swt.Event) *swt.TypedEvent {
+	if h, ok := this.hook.(interface {
+		NewTypedEvent_(a0 *swt.Event) *swt.TypedEvent
+	}); ok && this.active != "newTypedEvent_" {
+		defer this.enter("newTypedEvent_")()
+		return h.NewTypedEvent_(a0)
+	}
+	return this.Test_org_eclipse_swt_events_TypedEventImpl.newTypedEvent_(a0)
 }
 
 type Test_org_eclipse_swt_events_TypedEvent struct {
@@ -18,11 +41,14 @@ type Test_org_eclipse_swt_events_TypedEvent struct {
 }
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) Impl() Test_org_eclipse_swt_events_TypedEventImpl {
+	if h, ok := this.impl.(*test_org_eclipse_swt_events_TypedEventHooked); ok {
+		return h.hook
+	}
 	return this.impl
 }
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) SetImpl_(impl Test_org_eclipse_swt_events_TypedEventImpl) {
-	this.impl = impl
+	this.impl = &test_org_eclipse_swt_events_TypedEventHooked{Test_org_eclipse_swt_events_TypedEventImpl: this.impl, hook: impl}
 }
 
 func NewTest_org_eclipse_swt_events_TypedEvent() *Test_org_eclipse_swt_events_TypedEvent {
@@ -46,14 +72,14 @@ func (this *Test_org_eclipse_swt_events_TypedEvent) TearDown() {
 func (this *Test_org_eclipse_swt_events_TypedEvent) Test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	var event *swt.Event = swt.NewEvent()
 	event.Widget = upcastswtShellToswtWidget(this.Shell)
-	var typedEvent *swt.TypedEvent = this.impl.NewTypedEvent_(event)
+	var typedEvent *swt.TypedEvent = this.impl.newTypedEvent_(event)
 	junit.AssertNotNull(typedEvent)
 }
 
 func (this *Test_org_eclipse_swt_events_TypedEvent) Test_toString() {
 	var event *swt.Event = swt.NewEvent()
 	event.Widget = upcastswtShellToswtWidget(this.Shell)
-	var typedEvent *swt.TypedEvent = this.impl.NewTypedEvent_(event)
+	var typedEvent *swt.TypedEvent = this.impl.newTypedEvent_(event)
 	junit.AssertNotNull(typedEvent.String())
 	junit.AssertTrue(jrt.StringLength(typedEvent.String()) > 0)
 }
@@ -63,10 +89,10 @@ func (this *Test_org_eclipse_swt_events_TypedEvent) NewTypedEvent(eventLike swt.
 	if eventLike != nil {
 		event = eventLike.AsEvent()
 	}
-	return this.impl.NewTypedEvent_(event)
+	return this.impl.newTypedEvent_(event)
 }
 
-func (this *Test_org_eclipse_swt_events_TypedEvent) NewTypedEvent_(event *swt.Event) *swt.TypedEvent {
+func (this *Test_org_eclipse_swt_events_TypedEvent) newTypedEvent_(event *swt.Event) *swt.TypedEvent {
 	return swt.NewTypedEventE(event)
 }
 

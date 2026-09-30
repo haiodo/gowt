@@ -167,14 +167,14 @@ func (this *Composite) Changed(changed []*Control) {
 	this.LayoutOverload4(changed, DEFER)
 }
 
-func (this *Composite) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Composite) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	this.display.RunSkin()
 	var size *Point
 	if this.layout != (nil) {
 		if (wHint == DEFAULT) || (hHint == DEFAULT) {
 			changed = changed || (this.state&WidgetLAYOUT_CHANGED) != 0
-			size = this.layout.impl.ComputeSize_(this, wHint, hHint, changed)
+			size = this.layout.impl.computeSize_(this, wHint, hHint, changed)
 			this.state &= ^WidgetLAYOUT_CHANGED
 		} else {
 			size = NewPoint(wHint, hHint)
@@ -194,11 +194,11 @@ func (this *Composite) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, c
 	if hHint != DEFAULT {
 		size.Y = hHint
 	}
-	var trim *Rectangle = this.impl.ComputeTrim_(0, 0, size.X, size.Y)
+	var trim *Rectangle = this.impl.computeTrim_(0, 0, size.X, size.Y)
 	return NewPoint(trim.Width, trim.Height)
 }
 
-func (this *Composite) CheckSubclass_() {
+func (this *Composite) checkSubclass_() {
 }
 
 func (this *Composite) computeTabList_() []*Widget {
@@ -271,7 +271,7 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.IsDisposed_() {
+	if gc.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var control *Control = this.impl.findBackgroundControl_()
@@ -474,7 +474,7 @@ func (this *Composite) isTabGroup_() bool {
 func (this *Composite) keyDown_(id int64, sel int64, theEvent int64) {
 	if this.HasFocus() {
 		if (this.state & WidgetCANVAS) != 0 {
-			var s *Shell = this.impl.GetShell_()
+			var s *Shell = this.impl.getShell_()
 			s.DeferFlushing()
 			var array *cocoa.NSArray = cocoa.NSArrayArrayWithObject(upcastcocoaNSEventTococoaId(cocoa.NewNSEventOverload1(theEvent)))
 			s.keyInputHappened = false
@@ -567,7 +567,7 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 			for child != upcastCompositeToControl(this) {
 				if composite.layout != (nil) {
 					composite.state |= WidgetLAYOUT_NEEDED
-					if !composite.layout.impl.FlushCache_(child) {
+					if !composite.layout.impl.flushCache_(child) {
 						composite.state |= WidgetLAYOUT_CHANGED
 					}
 				}
@@ -624,11 +624,11 @@ func (this *Composite) MinimumSize(wHint int32, Hint int32, changed bool) *Point
 
 func (this *Composite) minimumSize_(wHint int32, Hint int32, changed bool) *Point {
 	var children []*Control = this._getChildren()
-	var clientArea *Rectangle = this.impl.GetClientArea_()
+	var clientArea *Rectangle = this.impl.getClientArea_()
 	var width int32 = 0
 	var height int32 = 0
 	for i := int32(0); i < int32(len(children)); i++ {
-		var rect *Rectangle = children[i].impl.GetBounds_()
+		var rect *Rectangle = children[i].impl.getBounds_()
 		width = int32(math.Max(float64(width), float64(rect.X-clientArea.X+rect.Width)))
 		height = int32(math.Max(float64(height), float64(rect.Y-clientArea.Y+rect.Height)))
 	}
@@ -665,26 +665,26 @@ func (this *Composite) redrawWidget_(view *cocoa.NSView, redrawChildren bool) {
 	if redrawChildren {
 		var _getChildren []*Control = this._getChildren()
 		for _, child := range _getChildren {
-			if child != (nil) && !child.IsDisposed() && child.impl.IsVisible_() {
+			if child != (nil) && !child.IsDisposed() && child.impl.isVisible_() {
 				child.impl.redrawWidget_(child.View, redrawChildren)
 			}
 		}
 	}
 }
 
-func (this *Composite) RedrawXYWidthHeightAll_(x int32, y int32, width int32, height int32, all bool) {
-	this.Scrollable.RedrawXYWidthHeightAll_(x, y, width, height, all)
+func (this *Composite) redrawXYWidthHeightAll_(x int32, y int32, width int32, height int32, all bool) {
+	this.Scrollable.redrawXYWidthHeightAll_(x, y, width, height, all)
 	if all {
 		var children []*Control = this._getChildren()
 		for _, child := range children {
-			if child != (nil) && !child.IsDisposed() && child.impl.IsVisible_() {
+			if child != (nil) && !child.IsDisposed() && child.impl.isVisible_() {
 				var rect cocoa.NSRect = cocoa.NSRect{}
 				rect.X = float64(x)
 				rect.Y = float64(y)
 				rect.Width = float64(width)
 				rect.Height = float64(height)
 				rect = this.View.ConvertRect_toView_(rect, child.View)
-				child.impl.RedrawXYWidthHeightAll_(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height), all)
+				child.impl.redrawXYWidthHeightAll_(int32(rect.X), int32(rect.Y), int32(rect.Width), int32(rect.Height), all)
 			}
 		}
 	}
@@ -774,7 +774,7 @@ func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 			view = this.View
 		}
 		if id == view.Id {
-			this.impl.GetShell_().DeferFlushing()
+			this.impl.getShell_().DeferFlushing()
 			var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 			var handled bool = false
 			var deltaY float64 = nsEvent.DeltaY()
@@ -862,15 +862,15 @@ func (this *Composite) SetBackgroundMode(mode int32) {
 	}
 }
 
-func (this *Composite) SetFocus_() bool {
+func (this *Composite) setFocus_() bool {
 	this.CheckWidget()
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
-		if children[i].GetVisible() && children[i].impl.SetFocus_() {
+		if children[i].GetVisible() && children[i].impl.setFocus_() {
 			return true
 		}
 	}
-	return this.Scrollable.SetFocus_()
+	return this.Scrollable.setFocus_()
 }
 
 func (this *Composite) setIsStyledText_() {
@@ -882,10 +882,10 @@ func (this *Composite) SetLayout(layoutLike LayoutLike) {
 	if layoutLike != nil {
 		layout = layoutLike.AsLayout()
 	}
-	this.impl.SetLayout_(layout)
+	this.impl.setLayout_(layout)
 }
 
-func (this *Composite) SetLayout_(layout *Layout) {
+func (this *Composite) setLayout_(layout *Layout) {
 	this.CheckWidget()
 	this.layout = layout
 }
@@ -1001,7 +1001,7 @@ func (this *Composite) updateCursorRects_(enabled bool) {
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var control *Control = children[i]
-		control.impl.updateCursorRects_(enabled && control.impl.IsEnabled_())
+		control.impl.updateCursorRects_(enabled && control.impl.isEnabled_())
 	}
 }
 
@@ -1015,7 +1015,7 @@ func (this *Composite) updateLayout_(all bool) {
 		var changed bool = (this.state & WidgetLAYOUT_CHANGED) != 0
 		this.state &= ^(WidgetLAYOUT_NEEDED | WidgetLAYOUT_CHANGED)
 		this.display.RunSkin()
-		this.layout.impl.LayoutFn_(this, changed)
+		this.layout.impl.layoutFn_(this, changed)
 	}
 	if all {
 		this.state &= ^WidgetLAYOUT_CHILD
@@ -1026,12 +1026,15 @@ func (this *Composite) updateLayout_(all bool) {
 	}
 }
 
-func (this *Composite) String_() string {
-	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.String_(), this.layout)
+func (this *Composite) string_() string {
+	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.string_(), this.layout)
 }
 
 // j2go: instanceof helper for Control and its subclasses within the translated set.
 func widgetImplAsControl(x any) (*Control, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Control:
 		if v == nil {

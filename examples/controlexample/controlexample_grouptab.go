@@ -104,7 +104,7 @@ func (this *GroupTab) SetTitleText() {
 	} else {
 		this.group1.SetText("")
 	}
-	this.SetExampleWidgetSize()
+	this.impl.setExampleWidgetSize_()
 }
 
 func (this *GroupTab) setExampleWidgetState_() {

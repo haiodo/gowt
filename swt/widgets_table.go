@@ -218,7 +218,7 @@ func (this *Table) CheckDataItemIndex(itemLike TableItemLike, index int32) bool 
 	return true
 }
 
-func (this *Table) CheckSubclass_() {
+func (this *Table) checkSubclass_() {
 	if !this.IsValidSubclass() {
 		this.Error(ERROR_INVALID_SUBCLASS)
 	}
@@ -310,7 +310,7 @@ func (this *Table) columnAtPoint_(id int64, sel int64, point cocoa.NSPoint) int6
 	return this.Composite.columnAtPoint_(id, sel, point)
 }
 
-func (this *Table) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Table) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	if wHint == DEFAULT {
@@ -321,7 +321,7 @@ func (this *Table) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, chang
 		} else {
 			var gc *GC = NewGCDrawable(this)
 			width += this.CalculateWidth(this.items, 0, gc) + TableCELL_GAP
-			gc.impl.Dispose_()
+			gc.impl.dispose_()
 		}
 		if (this.style & CHECK) != 0 {
 			width += this.GetCheckColumnWidth()
@@ -341,7 +341,7 @@ func (this *Table) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, chang
 	if height <= 0 {
 		height = WidgetDEFAULT_HEIGHT
 	}
-	var rect *Rectangle = this.impl.ComputeTrim_(0, 0, width, height)
+	var rect *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 	return NewPoint(rect.Width, rect.Height)
 }
 
@@ -936,7 +936,7 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 			userForeground = ColorCocoa_new(upcastDisplayToDevice(this.display), gc.GetForeground().Handle)
 		}
 		if this.IsDisposed() || item.IsDisposed() {
-			gc.impl.Dispose_()
+			gc.impl.dispose_()
 			context.RestoreGraphicsState()
 			return
 		}
@@ -945,7 +945,7 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 			gc.FillRectangle(int32(cellRect.X), int32(cellRect.Y), int32(cellRect.Width), int32(cellRect.Height))
 			cellRect.Height += spacing.Height
 		}
-		gc.impl.Dispose_()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	} else {
 		if isSelected && (this.style&HIDE_SELECTION) != 0 && !hasFocus {
@@ -1080,7 +1080,7 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 		event.Width = contentWidth
 		event.Height = itemHeight
 		this.SendEventEventTypeEvent(PaintItem, event)
-		gc.impl.Dispose_()
+		gc.impl.dispose_()
 		context.RestoreGraphicsState()
 	}
 }
@@ -1204,9 +1204,9 @@ func (this *Table) GetCheckColumnWidth() int32 {
 	return int32(this.checkColumn.DataCell().CellSize().Width)
 }
 
-func (this *Table) GetClientArea_() *Rectangle {
+func (this *Table) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	var rect *Rectangle = this.Composite.GetClientArea_()
+	var rect *Rectangle = this.Composite.getClientArea_()
 	return rect
 }
 
@@ -2084,7 +2084,7 @@ func (this *Table) SetHeaderBackground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed_() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2111,7 +2111,7 @@ func (this *Table) SetHeaderForeground(colorLike ColorLike) {
 	_ = color
 	this.CheckWidget()
 	if color != (nil) {
-		if color.impl.IsDisposed_() {
+		if color.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -2162,7 +2162,7 @@ func (this *Table) SetItemCount(count int32) {
 		}
 	}
 	if count > this.itemCount {
-		if (this.impl.GetStyle_() & VIRTUAL) == 0 {
+		if (this.impl.getStyle_() & VIRTUAL) == 0 {
 			for i := int32(this.itemCount); i < count; i++ {
 				newTableItemParentStyleIndexCreate(this, NONE, i, true)
 			}
@@ -2229,9 +2229,9 @@ func (this *Table) SetItemHeightImageFontSet(imageLike ImageLike, font *cocoa.NS
 	}
 }
 
-func (this *Table) SetRedraw_(redraw bool) {
+func (this *Table) setRedraw_(redraw bool) {
 	this.CheckWidget()
-	this.Composite.SetRedraw_(redraw)
+	this.Composite.setRedraw_(redraw)
 	if redraw && this.drawCount == 0 {
 		if int32(len(this.items)) > 4 && int32(len(this.items))-this.itemCount > 3 {
 			var length int32 = int32(math.Max(float64(4), float64((this.itemCount+3)/4*4)))
@@ -2279,7 +2279,7 @@ func (this *Table) SetScrollWidthItem(itemLike TableItemLike) bool {
 	}
 	var gc *GC = NewGCDrawable(this)
 	var newWidth int32 = item.CalculateWidth(0, gc, this.IsSelected(this.IndexOfItem(item)))
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	var oldWidth int32 = int32(this.firstColumn.Width())
 	if oldWidth < newWidth {
 		this.firstColumn.SetWidth(float64(newWidth))
@@ -2313,7 +2313,7 @@ func (this *Table) SetScrollWidthItemsSet(items []*TableItem, set bool) bool {
 			newWidth = int32(math.Max(float64(newWidth), float64(item.CalculateWidth(0, gc, this.IsSelected(this.IndexOfItem(item))))))
 		}
 	}
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	if !set {
 		var oldWidth int32 = int32(this.firstColumn.Width())
 		if oldWidth >= newWidth {
@@ -2654,7 +2654,7 @@ func (this *Table) SendMeasureItem(itemLike TableItemLike, columnIndex int32, si
 		event.Detail |= SELECTED
 	}
 	this.SendEventEventTypeEvent(MeasureItem, event)
-	gc.impl.Dispose_()
+	gc.impl.dispose_()
 	if !this.IsDisposed() && !item.IsDisposed() {
 		size.Width = float64(event.Width)
 		size.Height = float64(event.Height)
@@ -3045,12 +3045,12 @@ func (this *Table) updateCursorRects_(enabled bool) {
 
 func (this *Table) UpdateRowCount() {
 	var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
-	this.impl.SetRedraw_(false)
+	this.impl.setRedraw_(false)
 	this.ignoreSelect = true
 	widget.NoteNumberOfRowsChanged()
 	this.ignoreSelect = false
 	widget.Tile()
-	this.impl.SetRedraw_(true)
+	this.impl.setRedraw_(true)
 }
 
 func TableCheckStyle(style int32) int32 {

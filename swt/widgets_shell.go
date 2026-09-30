@@ -110,7 +110,7 @@ func newShellDisplayParentStyleHandleEmbedded(display *Display, parent *Shell, s
 
 func (this *Shell) initShellDisplayParentStyleHandleEmbedded(display *Display, parent *Shell, style int32, handle int64, embedded bool) {
 	this.Decorations.initDecorations()
-	this.impl.CheckSubclass_()
+	this.impl.checkSubclass_()
 	if display == (nil) {
 		display = DisplayGetCurrent()
 	}
@@ -238,7 +238,7 @@ func (this *Shell) becomeKeyWindow_(id int64, sel int64) {
 }
 
 func (this *Shell) bringToTop_(force bool) {
-	if this.impl.GetMinimized_() {
+	if this.impl.getMinimized_() {
 		return
 	}
 	if force {
@@ -283,8 +283,8 @@ func (this *Shell) Center() {
 	if this.parent == (nil) {
 		return
 	}
-	var rect *Rectangle = this.impl.GetBounds_()
-	var parentRect *Rectangle = this.display.MapFromToRectangle(upcastCompositeToControl(this.parent), nil, this.parent.impl.GetClientArea_())
+	var rect *Rectangle = this.impl.getBounds_()
+	var parentRect *Rectangle = this.display.MapFromToRectangle(upcastCompositeToControl(this.parent), nil, this.parent.impl.getClientArea_())
 	var x int32 = int32(math.Max(float64(parentRect.X), float64(parentRect.X+(parentRect.Width-rect.Width)/2)))
 	var y int32 = int32(math.Max(float64(parentRect.Y), float64(parentRect.Y+(parentRect.Height-rect.Height)/2)))
 	var monitorRect *Rectangle = this.parent.GetMonitor().GetClientArea()
@@ -325,8 +325,8 @@ func (this *Shell) CloseWidget(force bool) {
 	}
 }
 
-func (this *Shell) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
-	var size *Point = this.Decorations.ComputeSizeWHintHHintChanged_(wHint, hHint, changed)
+func (this *Shell) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+	var size *Point = this.Decorations.computeSizeWHintHHintChanged_(wHint, hHint, changed)
 	if this.toolBar != (nil) {
 		if wHint == DEFAULT && this.toolBar.itemCount > 0 {
 			var tbSize *Point = this.toolBar.ComputeSize(DEFAULT, DEFAULT)
@@ -336,9 +336,9 @@ func (this *Shell) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, chang
 	return size
 }
 
-func (this *Shell) ComputeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+func (this *Shell) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
-	var trim *Rectangle = this.Decorations.ComputeTrim_(x, y, width, height)
+	var trim *Rectangle = this.Decorations.computeTrim_(x, y, width, height)
 	var rect cocoa.NSRect = cocoa.NSRect{}
 	rect.X = float64(trim.X)
 	rect.Y = float64(trim.Y)
@@ -598,7 +598,7 @@ func (this *Shell) FixShell(newShellLike ShellLike, controlLike ControlLike) {
 
 func (this *Shell) ForceActive() {
 	this.CheckWidget()
-	if !this.impl.IsVisible_() {
+	if !this.impl.isVisible_() {
 		return
 	}
 	if this.window == (nil) {
@@ -617,7 +617,7 @@ func (this *Shell) GetAlpha() int32 {
 	return int32((this.window.AlphaValue() * 255))
 }
 
-func (this *Shell) GetBounds_() *Rectangle {
+func (this *Shell) getBounds_() *Rectangle {
 	this.CheckWidget()
 	if this.window != (nil) {
 		var frame cocoa.NSRect = this.window.Frame()
@@ -637,7 +637,7 @@ func (this *Shell) GetBounds_() *Rectangle {
 	}
 }
 
-func (this *Shell) GetClientArea_() *Rectangle {
+func (this *Shell) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	var rect cocoa.NSRect
 	if this.window != (nil) {
@@ -685,7 +685,7 @@ func (this *Shell) GetImeInputMode() int32 {
 	return NONE
 }
 
-func (this *Shell) GetLocation_() *Point {
+func (this *Shell) getLocation_() *Point {
 	this.CheckWidget()
 	if this.window != (nil) {
 		var frame cocoa.NSRect = this.window.Frame()
@@ -704,7 +704,7 @@ func (this *Shell) GetLocation_() *Point {
 	}
 }
 
-func (this *Shell) GetMaximized_() bool {
+func (this *Shell) getMaximized_() bool {
 	this.CheckWidget()
 	if this.window == (nil) {
 		return false
@@ -740,7 +740,7 @@ func (this *Shell) GetModalShell() *Shell {
 				}
 				if (modal.style & PRIMARY_MODAL) != 0 {
 					if shell == (nil) {
-						shell = this.impl.GetShell_()
+						shell = this.impl.getShell_()
 					}
 					if modal.parent == upcastShellToComposite(shell) {
 						return modal
@@ -757,10 +757,10 @@ func (this *Shell) GetModified() bool {
 	return this.window.IsDocumentEdited()
 }
 
-func (this *Shell) GetMinimized_() bool {
+func (this *Shell) getMinimized_() bool {
 	this.CheckWidget()
 	if !this.GetVisible() {
-		return this.Decorations.GetMinimized_()
+		return this.Decorations.getMinimized_()
 	}
 	if this.window == (nil) {
 		return false
@@ -786,12 +786,12 @@ func (this *Shell) GetMinimumSize() *Point {
 	return NewPoint(int32(size.Width), int32(size.Height))
 }
 
-func (this *Shell) GetRegion_() *Region {
+func (this *Shell) getRegion_() *Region {
 	this.CheckWidget()
 	return this.region
 }
 
-func (this *Shell) GetShell_() *Shell {
+func (this *Shell) getShell_() *Shell {
 	this.CheckWidget()
 	return this
 }
@@ -831,7 +831,7 @@ func (this *Shell) GetShells() []*Shell {
 	return result
 }
 
-func (this *Shell) GetSize_() *Point {
+func (this *Shell) getSize_() *Point {
 	this.CheckWidget()
 	var cond154 cocoa.NSRect
 	if this.window != (nil) {
@@ -888,7 +888,7 @@ func (this *Shell) isDrawing_() bool {
 	return this.impl.getDrawing_()
 }
 
-func (this *Shell) IsEnabled_() bool {
+func (this *Shell) isEnabled_() bool {
 	this.CheckWidget()
 	return this.GetEnabled()
 }
@@ -905,7 +905,7 @@ func (this *Shell) isTransparent_() bool {
 	return false
 }
 
-func (this *Shell) IsVisible_() bool {
+func (this *Shell) isVisible_() bool {
 	this.CheckWidget()
 	return this.GetVisible()
 }
@@ -957,7 +957,7 @@ func (this *Shell) Open() {
 	}
 	if !this.RestoreFocus() && !this.TraverseGroup(true) {
 		if this.parent == (nil) || !this.ParentWindow().IsMiniaturized() {
-			this.impl.SetFocus_()
+			this.impl.setFocus_()
 		}
 	}
 }
@@ -969,23 +969,23 @@ func (this *Shell) ParentWindow() *cocoa.NSWindow {
 	return this.parent.View.Window()
 }
 
-func (this *Shell) Print_(gc *GC) bool {
+func (this *Shell) print_(gc *GC) bool {
 	this.CheckWidget()
 	if gc == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if gc.impl.IsDisposed_() {
+	if gc.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var children []*Control = this._getChildren()
 	for _, child := range children {
-		var bounds *Rectangle = child.impl.GetBounds_()
+		var bounds *Rectangle = child.impl.getBounds_()
 		cocoa.NSGraphicsContextStatic_saveGraphicsState()
 		cocoa.NSGraphicsContextSetCurrentContext(gc.Handle)
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
 		transform.TranslateXBy(float64(bounds.X), float64(bounds.Y))
 		transform.Concat()
-		child.impl.Print_(gc)
+		child.impl.print_(gc)
 		cocoa.NSGraphicsContextStatic_restoreGraphicsState()
 	}
 	return true
@@ -1081,7 +1081,7 @@ func (this *Shell) RemoveShellListener(listener ShellListener) {
 	this.eventTable.UnhookEventTypeListener(Deiconify, listener)
 }
 
-func (this *Shell) RequestLayout_() {
+func (this *Shell) requestLayout_() {
 	this.LayoutOverload4(nil, DEFER)
 }
 
@@ -1100,7 +1100,7 @@ func (this *Shell) reskinChildren_(flags int32) {
 }
 
 func (this *Shell) SendToolTipEvent(enter bool) {
-	if !this.impl.IsVisible_() {
+	if !this.impl.isVisible_() {
 		return
 	}
 	var eventWindow *cocoa.NSWindow = this.View.Window()
@@ -1148,7 +1148,7 @@ func (this *Shell) SetActive() {
 		return
 	}
 	this.CheckWidget()
-	if !this.impl.IsVisible_() {
+	if !this.impl.isVisible_() {
 		return
 	}
 	this.MakeKeyAndOrderFront()
@@ -1258,18 +1258,18 @@ func (this *Shell) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int
 	}
 	if sheet {
 		y = screenHeight - int32((frame.Y + frame.Height))
-		var parentRect cocoa.NSRect = this.parent.impl.GetShell_().window.Frame()
+		var parentRect cocoa.NSRect = this.parent.impl.getShell_().window.Frame()
 		frame.Width = float64(width)
 		frame.Height = float64(height)
 		frame.X = parentRect.X + (parentRect.Width-frame.Width)/2
 		frame.Y = float64(screenHeight - int32((float64(y) + frame.Height)))
-		this.window.SetFrameFrameRectDisplayFlagAnimateFlag(frame, this.impl.IsVisible_(), true)
+		this.window.SetFrameFrameRectDisplayFlagAnimateFlag(frame, this.impl.isVisible_(), true)
 	} else {
 		frame.X = float64(x)
 		frame.Y = float64(screenHeight - int32((y + height)))
 		frame.Width = float64(width)
 		frame.Height = float64(height)
-		this.window.SetFrame(frame, this.impl.IsVisible_())
+		this.window.SetFrame(frame, this.impl.isVisible_())
 	}
 }
 
@@ -1289,12 +1289,12 @@ func (this *Shell) setClipRegion_(view *cocoa.NSView) {
 	}
 }
 
-func (this *Shell) SetEnabled_(enabled bool) {
+func (this *Shell) setEnabled_(enabled bool) {
 	this.CheckWidget()
 	if ((this.state & WidgetDISABLED) == 0) == enabled {
 		return
 	}
-	this.Decorations.SetEnabled_(enabled)
+	this.Decorations.setEnabled_(enabled)
 	if enabled && this.window != (nil) && this.window.IsMainWindow() {
 		if !this.RestoreFocus() {
 			this.TraverseGroup(false)
@@ -1346,9 +1346,9 @@ func (this *Shell) SetFullScreen(fullScreen bool) {
 	}
 }
 
-func (this *Shell) SetMenuBar_(menu *Menu) {
+func (this *Shell) setMenuBar_(menu *Menu) {
 	this.CheckWidget()
-	this.Decorations.SetMenuBar_(menu)
+	this.Decorations.setMenuBar_(menu)
 	if this.display.GetActiveShell() == this {
 		this.display.SetMenuBar(this.menuBar)
 	}
@@ -1358,9 +1358,9 @@ func (this *Shell) SetImeInputMode(mode int32) {
 	this.CheckWidget()
 }
 
-func (this *Shell) SetMaximized_(maximized bool) {
+func (this *Shell) setMaximized_(maximized bool) {
 	this.CheckWidget()
-	this.Decorations.SetMaximized_(maximized)
+	this.Decorations.setMaximized_(maximized)
 	if this.window == (nil) {
 		return
 	}
@@ -1412,9 +1412,9 @@ func (this *Shell) SetMaximumSizeSize(sizeLike PointLike) {
 	this.SetMaximumSize(size.X, size.Y)
 }
 
-func (this *Shell) SetMinimized_(minimized bool) {
+func (this *Shell) setMinimized_(minimized bool) {
 	this.CheckWidget()
-	this.Decorations.SetMinimized_(minimized)
+	this.Decorations.setMinimized_(minimized)
 	if this.window == (nil) {
 		return
 	}
@@ -1479,7 +1479,7 @@ func (this *Shell) GetZoom() int32 {
 	return DPIUtilGetNativeDeviceZoom()
 }
 
-func (this *Shell) SetRegion_(region *Region) {
+func (this *Shell) setRegion_(region *Region) {
 	this.CheckWidget()
 	if (this.style & NO_TRIM) == 0 {
 		return
@@ -1488,7 +1488,7 @@ func (this *Shell) SetRegion_(region *Region) {
 		return
 	}
 	if region != (nil) {
-		if region.impl.IsDisposed_() {
+		if region.impl.isDisposed_() {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		var bounds *Rectangle = region.GetBounds()
@@ -1506,7 +1506,7 @@ func (this *Shell) SetRegion_(region *Region) {
 	}
 	this.UpdateOpaque()
 	this.window.ContentView().SetNeedsDisplay(true)
-	if this.impl.IsVisible_() && this.window.HasShadow() {
+	if this.impl.isVisible_() && this.window.HasShadow() {
 		this.window.Display()
 		this.window.InvalidateShadow()
 	}
@@ -1534,7 +1534,7 @@ func (this *Shell) SetDarkThemePreferred(preferred bool) {
 	}
 }
 
-func (this *Shell) SetText_(string_ string) {
+func (this *Shell) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -1542,12 +1542,12 @@ func (this *Shell) SetText_(string_ string) {
 	if this.window == (nil) {
 		return
 	}
-	this.Decorations.SetText_(string_)
+	this.Decorations.setText_(string_)
 	var str *cocoa.NSString = cocoa.NSStringStringWith(string_)
 	this.window.Impl().SetTitle(str)
 }
 
-func (this *Shell) SetVisible_(visible bool) {
+func (this *Shell) setVisible_(visible bool) {
 	this.CheckWidget()
 	var mask int32 = PRIMARY_MODAL | APPLICATION_MODAL | SYSTEM_MODAL
 	if (this.style & mask) != 0 {
@@ -1560,7 +1560,7 @@ func (this *Shell) SetVisible_(visible bool) {
 		this.UpdateModal()
 	}
 	if this.window == (nil) {
-		this.Decorations.SetVisible_(visible)
+		this.Decorations.setVisible_(visible)
 	} else {
 		this.SetWindowVisible(visible, false)
 	}
@@ -1673,7 +1673,7 @@ func (this *Shell) SetWindowVisible(visible bool, key bool) {
 	}
 	var hitView []*cocoa.NSView = make([]*cocoa.NSView, 1)
 	var control *Control = this.display.FindControlCheckTrimHitView(false, hitView)
-	if control != (nil) && (!control.impl.isActive_() || !control.impl.IsEnabled_()) {
+	if control != (nil) && (!control.impl.isActive_() || !control.impl.isEnabled_()) {
 		control = nil
 	}
 	var trimControl *Control = control
@@ -1719,7 +1719,7 @@ func (this *Shell) setZOrderSiblingAbove_(control *Control, above bool) {
 			this.window.OrderBack(nil)
 		}
 	} else {
-		var otherWindow *cocoa.NSWindow = control.impl.GetShell_().window
+		var otherWindow *cocoa.NSWindow = control.impl.getShell_().window
 		var cond162 int32
 		if above {
 			cond162 = cocoa.OSNSWindowAbove
@@ -1734,7 +1734,7 @@ func (this *Shell) traverseEscape_() bool {
 	if this.parent == (nil) {
 		return false
 	}
-	if !this.impl.IsVisible_() || !this.impl.IsEnabled_() {
+	if !this.impl.isVisible_() || !this.impl.isEnabled_() {
 		return false
 	}
 	this.Close()
@@ -1870,7 +1870,7 @@ func (this *Shell) windowDidBecomeKey_(id int64, sel int64, notification int64) 
 		return
 	}
 	if !this.RestoreFocus() && !this.TraverseGroup(true) {
-		this.impl.SetFocus_()
+		this.impl.setFocus_()
 	}
 	if this.IsDisposed() {
 		return
@@ -1963,7 +1963,7 @@ func (this *Shell) windowSendEvent_(id int64, sel int64, event int64) {
 	case cocoa.OSNSLeftMouseUp, cocoa.OSNSRightMouseUp, cocoa.OSNSOtherMouseUp, cocoa.OSNSMouseMoved:
 		var hitView []*cocoa.NSView = make([]*cocoa.NSView, 1)
 		var control *Control = this.display.FindControlCheckTrimHitView(false, hitView)
-		if control != (nil) && (!control.impl.isActive_() || !control.impl.IsEnabled_()) {
+		if control != (nil) && (!control.impl.isActive_() || !control.impl.isEnabled_()) {
 			control = nil
 		}
 		if type_ == cocoa.OSNSMouseMoved {
@@ -1995,13 +1995,13 @@ func (this *Shell) windowSendEvent_(id int64, sel int64, event int64) {
 			var oldControl *Control = this.display.tooltipControl
 			var oldShell *Shell
 			if oldControl != (nil) && !oldControl.IsDisposed() {
-				oldShell = oldControl.impl.GetShell_()
+				oldShell = oldControl.impl.getShell_()
 			} else {
 				oldShell = nil
 			}
 			var shell *Shell
 			if control != (nil) && !control.IsDisposed() {
-				shell = control.impl.GetShell_()
+				shell = control.impl.getShell_()
 			} else {
 				shell = nil
 			}
@@ -2080,7 +2080,7 @@ func (this *Shell) SearchForEscMenuItem(menuLike MenuLike) bool {
 				this.escMenuItem = item
 				return true
 			} else {
-				if (item.impl.GetStyle_() & CASCADE) != 0 {
+				if (item.impl.getStyle_() & CASCADE) != 0 {
 					var subMenu *Menu = item.GetMenu()
 					if this.SearchForEscMenuItem(subMenu) {
 						return true
@@ -2093,7 +2093,7 @@ func (this *Shell) SearchForEscMenuItem(menuLike MenuLike) bool {
 }
 
 func (this *Shell) windowShouldClose_(id int64, sel int64, window int64) bool {
-	if this.impl.IsEnabled_() {
+	if this.impl.isEnabled_() {
 		this.CloseWidget(false)
 	}
 	return false

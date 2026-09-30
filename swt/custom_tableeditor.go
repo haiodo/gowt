@@ -42,10 +42,10 @@ func (this *TableEditor) initTableEditor(table *Table) {
 	this.table = table
 	anon609 := &TableEditorAnon1{}
 	anon609.fnControlMoved = func(e *ControlEvent) {
-		this.impl.Layout_()
+		this.impl.layout_()
 	}
 	anon609.fnControlResized = func(e *ControlEvent) {
-		this.impl.Layout_()
+		this.impl.layout_()
 	}
 	this.columnListener = anon609
 	this.timer = jrt.NewRunnable(this.Layout)
@@ -63,7 +63,7 @@ func (this *TableEditor) computeBounds_() *Rectangle {
 		cell.X = rect.X + rect.Width
 		cell.Width -= (imageGap + rect.Width)
 	}
-	var area *Rectangle = this.table.impl.GetClientArea_()
+	var area *Rectangle = this.table.impl.getClientArea_()
 	if cell.X < area.X+area.Width {
 		if cell.X+cell.Width > area.X+area.Width {
 			cell.Width = area.X + area.Width - cell.X
@@ -95,7 +95,7 @@ func (this *TableEditor) computeBounds_() *Rectangle {
 	return editorRect
 }
 
-func (this *TableEditor) Dispose_() {
+func (this *TableEditor) dispose_() {
 	if this.table != (nil) && !this.table.IsDisposed() {
 		if this.column > -1 && this.column < this.table.GetColumnCount() {
 			var tableColumn *TableColumn = this.table.GetColumnIndex(this.column)
@@ -107,7 +107,7 @@ func (this *TableEditor) Dispose_() {
 	this.item = nil
 	this.column = -1
 	this.timer = nil
-	this.ControlEditor.Dispose_()
+	this.ControlEditor.dispose_()
 }
 
 func (this *TableEditor) GetColumn() int32 {
@@ -119,7 +119,7 @@ func (this *TableEditor) GetItem() *TableItem {
 }
 
 func (this *TableEditor) Resize() {
-	this.impl.Layout_()
+	this.impl.layout_()
 	if this.table != (nil) {
 		var display *Display = this.table.GetDisplay()
 		display.TimerExec(-1, this.timer)
@@ -162,8 +162,8 @@ func (this *TableEditor) SetItem(itemLike TableItemLike) {
 	this.Resize()
 }
 
-func (this *TableEditor) SetEditor_(editor *Control) {
-	this.ControlEditor.SetEditor_(editor)
+func (this *TableEditor) setEditor_(editor *Control) {
+	this.ControlEditor.setEditor_(editor)
 	this.Resize()
 }
 
@@ -180,10 +180,10 @@ func (this *TableEditor) SetEditorEditorItemColumn(editorLike ControlLike, itemL
 	_ = item
 	this.SetItem(item)
 	this.SetColumn(column)
-	this.impl.SetEditor_(editor)
+	this.impl.setEditor_(editor)
 }
 
-func (this *TableEditor) Layout_() {
+func (this *TableEditor) layout_() {
 	if this.table == (nil) || this.table.IsDisposed() {
 		return
 	}
@@ -197,7 +197,7 @@ func (this *TableEditor) Layout_() {
 	if columnCount > 0 && (this.column < 0 || this.column >= columnCount) {
 		return
 	}
-	this.ControlEditor.Layout_()
+	this.ControlEditor.layout_()
 }
 
 func upcastTableToComposite(x *Table) *Composite {

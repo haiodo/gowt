@@ -56,27 +56,27 @@ func (this *Item) initItemParentStyleIndex(parent *Widget, style int32, index in
 	this.initItem(parent, style)
 }
 
-func (this *Item) CheckSubclass_() {
+func (this *Item) checkSubclass_() {
 }
 
 func (this *Item) GetImage() *Image {
-	return this.impl.GetImage_()
+	return this.impl.getImage_()
 }
 
-func (this *Item) GetImage_() *Image {
+func (this *Item) getImage_() *Image {
 	this.CheckWidget()
 	return this.image
 }
 
 func (this *Item) getNameText_() string {
-	return this.impl.GetText_()
+	return this.impl.getText_()
 }
 
 func (this *Item) GetText() string {
-	return this.impl.GetText_()
+	return this.impl.getText_()
 }
 
-func (this *Item) GetText_() string {
+func (this *Item) getText_() string {
 	this.CheckWidget()
 	return this.text
 }
@@ -92,25 +92,25 @@ func (this *Item) SetImage(imageLike ImageLike) {
 	if imageLike != nil {
 		image = imageLike.AsImage()
 	}
-	this.impl.SetImageOnItem_(image)
+	this.impl.setImageOnItem_(image)
 }
 
-func (this *Item) SetImageOnItem_(image *Image) {
+func (this *Item) setImageOnItem_(image *Image) {
 	this.CheckWidget()
 	if this.image == image {
 		return
 	}
-	if image != (nil) && image.impl.IsDisposed_() {
+	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.image = image
 }
 
 func (this *Item) SetText(string_ string) {
-	this.impl.SetText_(string_)
+	this.impl.setText_(string_)
 }
 
-func (this *Item) SetText_(string_ string) {
+func (this *Item) setText_(string_ string) {
 	this.CheckWidget()
 	if string_ == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -140,9 +140,9 @@ func (this *Item) UpdateTextDirection(textDirection int32) bool {
 }
 
 func (this *Item) HandleDPIChange(event *Event) {
-	var image *Image = this.impl.GetImage_()
+	var image *Image = this.impl.getImage_()
 	if image != (nil) {
-		this.impl.SetImageOnItem_(image)
+		this.impl.setImageOnItem_(image)
 	}
 }
 

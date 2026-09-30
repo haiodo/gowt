@@ -3,26 +3,72 @@
 package swt
 
 type LayoutImpl interface {
-	ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
-	FlushCache_(a0 *Control) bool
-	LayoutFn_(a0 *Composite, a1 bool)
+	computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
+	flushCache_(a0 *Control) bool
+	layoutFn_(a0 *Composite, a1 bool)
 }
 
-func (this *Layout) ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
-	panic("j2go: ComputeSize_ has no default on Layout")
+func (this *Layout) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
+	panic("j2go: computeSize_ has no default on Layout")
 }
 
-func (this *Layout) LayoutFn_(a0 *Composite, a1 bool) {
-	panic("j2go: LayoutFn_ has no default on Layout")
+func (this *Layout) layoutFn_(a0 *Composite, a1 bool) {
+	panic("j2go: layoutFn_ has no default on Layout")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type layoutHooked struct {
+	LayoutImpl
+	hook   LayoutImpl
+	active string
+}
+
+func (this *layoutHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *layoutHooked) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
+	if h, ok := this.hook.(interface {
+		ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
+	}); ok && this.active != "computeSize_" {
+		defer this.enter("computeSize_")()
+		return h.ComputeSize_(a0, a1, a2, a3)
+	}
+	return this.LayoutImpl.computeSize_(a0, a1, a2, a3)
+}
+
+func (this *layoutHooked) flushCache_(a0 *Control) bool {
+	if h, ok := this.hook.(interface{ FlushCache_(a0 *Control) bool }); ok && this.active != "flushCache_" {
+		defer this.enter("flushCache_")()
+		return h.FlushCache_(a0)
+	}
+	return this.LayoutImpl.flushCache_(a0)
+}
+
+func (this *layoutHooked) layoutFn_(a0 *Composite, a1 bool) {
+	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok && this.active != "layoutFn_" {
+		defer this.enter("layoutFn_")()
+		h.LayoutFn_(a0, a1)
+	}
+	this.LayoutImpl.layoutFn_(a0, a1)
 }
 
 type Layout struct {
 	impl LayoutImpl
 }
 
-func (this *Layout) Impl() LayoutImpl { return this.impl }
+func (this *Layout) Impl() LayoutImpl {
+	if h, ok := this.impl.(*layoutHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Layout) SetImpl_(impl LayoutImpl) { this.impl = impl }
+func (this *Layout) SetImpl_(impl LayoutImpl) {
+	this.impl = &layoutHooked{LayoutImpl: this.impl, hook: impl}
+}
 
 func (this *Layout) AsLayout() *Layout { return this }
 
@@ -45,7 +91,7 @@ func (this *Layout) ComputeSize(compositeLike CompositeLike, wHint int32, hHint 
 	if compositeLike != nil {
 		composite = compositeLike.AsComposite()
 	}
-	return this.impl.ComputeSize_(composite, wHint, hHint, flushCache)
+	return this.impl.computeSize_(composite, wHint, hHint, flushCache)
 }
 
 func (this *Layout) FlushCache(controlLike ControlLike) bool {
@@ -53,10 +99,10 @@ func (this *Layout) FlushCache(controlLike ControlLike) bool {
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
-	return this.impl.FlushCache_(control)
+	return this.impl.flushCache_(control)
 }
 
-func (this *Layout) FlushCache_(control *Control) bool {
+func (this *Layout) flushCache_(control *Control) bool {
 	return false
 }
 
@@ -65,5 +111,5 @@ func (this *Layout) LayoutFn(compositeLike CompositeLike, flushCache bool) {
 	if compositeLike != nil {
 		composite = compositeLike.AsComposite()
 	}
-	this.impl.LayoutFn_(composite, flushCache)
+	this.impl.layoutFn_(composite, flushCache)
 }

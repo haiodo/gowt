@@ -149,7 +149,7 @@ func (this *Text) ClearSelection() {
 	this.SetSelection(selection.X)
 }
 
-func (this *Text) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
+func (this *Text) computeSizeWHintHHintChanged_(wHint int32, hHint int32, changed bool) *Point {
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
@@ -226,15 +226,15 @@ func (this *Text) ComputeSizeWHintHHintChanged_(wHint int32, hHint int32, change
 		if hHint != DEFAULT {
 			height = hHint
 		}
-		var trim *Rectangle = this.impl.ComputeTrim_(0, 0, width, height)
+		var trim *Rectangle = this.impl.computeTrim_(0, 0, width, height)
 		width = trim.Width
 		height = trim.Height
 	}
 	return NewPoint(width, height)
 }
 
-func (this *Text) ComputeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
-	var result *Rectangle = this.Scrollable.ComputeTrim_(x, y, width, height)
+func (this *Text) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+	var result *Rectangle = this.Scrollable.computeTrim_(x, y, width, height)
 	if (this.style & SINGLE) != 0 {
 		var widget *cocoa.NSTextField = castcocoaNSViewTococoaNSTextField(this.View)
 		if (this.style & SEARCH) != 0 {
@@ -478,7 +478,7 @@ func (this *Text) drawInteriorWithFrame_inView_(id int64, sel int64, cellFrame c
 		control = upcastTextToControl(this)
 	}
 	var image *Image = control.backgroundImage
-	if image != (nil) && !image.impl.IsDisposed_() {
+	if image != (nil) && !image.impl.isDisposed_() {
 		var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 		control.FillBackground(this.View, context, cellFrame, -1)
 	} else {
@@ -749,7 +749,7 @@ func (this *Text) GetLineHeight() int32 {
 	}
 }
 
-func (this *Text) GetOrientation_() int32 {
+func (this *Text) getOrientation_() int32 {
 	this.CheckWidget()
 	return this.style & (LEFT_TO_RIGHT | RIGHT_TO_LEFT)
 }
@@ -1350,12 +1350,12 @@ func (this *Text) setForegroundColor_(color []float64) {
 	var nsColor *cocoa.NSColor
 	if color == (nil) {
 		nsColor = cocoa.NSColorTextColor()
-		if (this.style&MULTI) != 0 && !this.impl.IsEnabled_() {
+		if (this.style&MULTI) != 0 && !this.impl.isEnabled_() {
 			nsColor = cocoa.NSColorDisabledControlTextColor()
 		}
 	} else {
 		var alpha float64 = float64(1)
-		if (this.style&MULTI) != 0 && !this.impl.IsEnabled_() {
+		if (this.style&MULTI) != 0 && !this.impl.isEnabled_() {
 			alpha = float64(0.5)
 		}
 		nsColor = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], alpha)
@@ -1367,7 +1367,7 @@ func (this *Text) setForegroundColor_(color []float64) {
 	}
 }
 
-func (this *Text) SetOrientationOnControl_(orientation int32) {
+func (this *Text) setOrientationOnControl_(orientation int32) {
 	this.CheckWidget()
 }
 

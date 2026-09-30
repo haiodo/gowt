@@ -47,10 +47,10 @@ func (this *Scrollable) initScrollableParentStyle(parent *Composite, style int32
 }
 
 func (this *Scrollable) ComputeTrim(x int32, y int32, width int32, height int32) *Rectangle {
-	return this.impl.ComputeTrim_(x, y, width, height)
+	return this.impl.computeTrim_(x, y, width, height)
 }
 
-func (this *Scrollable) ComputeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
+func (this *Scrollable) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
 	if this.scrollView != (nil) {
 		var size cocoa.NSSize = cocoa.NSSize{}
@@ -142,10 +142,10 @@ func (this *Scrollable) deregister_() {
 }
 
 func (this *Scrollable) GetClientArea() *Rectangle {
-	return this.impl.GetClientArea_()
+	return this.impl.getClientArea_()
 }
 
-func (this *Scrollable) GetClientArea_() *Rectangle {
+func (this *Scrollable) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	if this.scrollView != (nil) {
 		var size cocoa.NSSize = this.scrollView.ContentSize()

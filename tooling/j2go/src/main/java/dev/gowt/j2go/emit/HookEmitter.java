@@ -1,0 +1,42 @@
+package dev.gowt.j2go.emit;
+
+import dev.gowt.j2go.Names;
+import dev.gowt.j2go.TypeModel;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** The <root>Hooked wrapper of a split cascade: SetImpl_ installs it around an anonymous subclass from
+ * another Go package, which overrides a public/protected method by an exported name that the exported
+ * API of the root does not have. While a hook runs, a call of the same method reaches the default (super). */
+final class HookEmitter {
+	private HookEmitter() {}
+
+	static void emit(Emitter emitter, TypeModel.ClassInfo root, StringBuilder out) {
+		String impl = root.goTypeName + "Impl";
+		String hooked = Names.decapitalize(root.goTypeName) + "Hooked";
+		out.append("// j2go: wraps a subclass from another package; its exported hook names override the defaults.\n");
+		out.append("type ").append(hooked).append(" struct {\n\t").append(impl).append("\n\thook   ").append(impl)
+				.append("\n\tactive string\n}\n\n");
+		out.append("func (this *").append(hooked).append(") enter(name string) func() {\n")
+				.append("\tprev := this.active\n\tthis.active = name\n\treturn func() { this.active = prev }\n}\n\n");
+		for (var e : root.overriddenRootHookNames.entrySet()) {
+			IMethodBinding decl = root.overriddenRootMethods.get(e.getKey());
+			String dispatch = root.overriddenRootMethodGoNames.get(e.getKey());
+			String params = emitter.paramList(decl, null);
+			String ret = emitter.retType(decl);
+			List<String> args = new ArrayList<>();
+			for (int i = 0; i < decl.getParameterTypes().length; i++) args.add("a" + i);
+			String argList = String.join(", ", args);
+			String r = ret.isEmpty() ? "" : "return ";
+			out.append("func (this *").append(hooked).append(") ").append(dispatch).append('(').append(params).append(") ")
+					.append(ret).append(ret.isEmpty() ? "" : " ").append("{\n");
+			out.append("\tif h, ok := this.hook.(interface{ ").append(e.getValue()).append('(').append(params).append(") ")
+					.append(ret).append(" }); ok && this.active != \"").append(dispatch).append("\" {\n");
+			out.append("\t\tdefer this.enter(\"").append(dispatch).append("\")()\n");
+			out.append("\t\t").append(r).append("h.").append(e.getValue()).append('(').append(argList).append(")\n\t}\n");
+			out.append('\t').append(r).append("this.").append(impl).append('.').append(dispatch).append('(').append(argList).append(")\n}\n\n");
+		}
+	}
+}

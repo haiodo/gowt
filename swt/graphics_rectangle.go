@@ -8,7 +8,28 @@ import (
 )
 
 type RectangleImpl interface {
-	Clone_() *Rectangle
+	clone_() *Rectangle
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type rectangleHooked struct {
+	RectangleImpl
+	hook   RectangleImpl
+	active string
+}
+
+func (this *rectangleHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *rectangleHooked) clone_() *Rectangle {
+	if h, ok := this.hook.(interface{ Clone_() *Rectangle }); ok && this.active != "clone_" {
+		defer this.enter("clone_")()
+		return h.Clone_()
+	}
+	return this.RectangleImpl.clone_()
 }
 
 type Rectangle struct {
@@ -19,9 +40,16 @@ type Rectangle struct {
 	impl   RectangleImpl
 }
 
-func (this *Rectangle) Impl() RectangleImpl { return this.impl }
+func (this *Rectangle) Impl() RectangleImpl {
+	if h, ok := this.impl.(*rectangleHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
 
-func (this *Rectangle) SetImpl_(impl RectangleImpl) { this.impl = impl }
+func (this *Rectangle) SetImpl_(impl RectangleImpl) {
+	this.impl = &rectangleHooked{RectangleImpl: this.impl, hook: impl}
+}
 
 func (this *Rectangle) AsRectangle() *Rectangle { return this }
 
@@ -324,10 +352,10 @@ func (this *Rectangle) Union(rectLike RectangleLike) *Rectangle {
 }
 
 func (this *Rectangle) Clone() *Rectangle {
-	return this.impl.Clone_()
+	return this.impl.clone_()
 }
 
-func (this *Rectangle) Clone_() *Rectangle {
+func (this *Rectangle) clone_() *Rectangle {
 	return NewRectangle(this.X, this.Y, this.Width, this.Height)
 }
 
@@ -495,7 +523,7 @@ func (this *Rectangle_OfFloat) GetBottomRight() *Point_OfFloat {
 	return NewPointOfFloatXYRoundingMode(this.GetX()+this.GetWidth(), this.GetY()+this.GetHeight(), this.sizeRounding)
 }
 
-func (this *Rectangle_OfFloat) Clone_() *Rectangle {
+func (this *Rectangle_OfFloat) clone_() *Rectangle {
 	return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.locationRounding, this.sizeRounding))
 }
 
@@ -507,7 +535,7 @@ func RectangleOfFloatFrom(rectangleLike RectangleLike) *Rectangle_OfFloat {
 	_ = rectangle
 	rectangleOfFloat, ok17 := isRectangleToRectangle_OfFloat(rectangle)
 	if ok17 {
-		t18 := rectangleOfFloat.impl.Clone_()
+		t18 := rectangleOfFloat.impl.clone_()
 		t19, _ := rectangleImplAsOfFloat(t18.impl)
 		return t19
 	}
@@ -558,12 +586,15 @@ func (this *Rectangle_WithMonitor) GetMonitor() *Monitor {
 	return this.monitor
 }
 
-func (this *Rectangle_WithMonitor) Clone_() *Rectangle {
+func (this *Rectangle_WithMonitor) clone_() *Rectangle {
 	return upcastRectangle_WithMonitorToRectangle(newRectangleWithMonitorXYWidthHeightMonitor(this.GetX(), this.GetY(), this.GetWidth(), this.GetHeight(), this.monitor))
 }
 
 // j2go: instanceof helper for Rectangle and its subclasses within the translated set.
 func rectangleImplAsRectangle(x any) (*Rectangle, bool) {
+	if h, ok := x.(*rectangleHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Rectangle:
 		if v == nil {
@@ -589,6 +620,9 @@ func rectangleImplAsRectangle(x any) (*Rectangle, bool) {
 
 // j2go: instanceof helper for Point_WithMonitor and its subclasses within the translated set.
 func pointImplAsWithMonitor(x any) (*Point_WithMonitor, bool) {
+	if h, ok := x.(*pointHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Point_WithMonitor:
 		if v == nil {
@@ -625,6 +659,9 @@ func upcastRectangle_OfFloatToRectangle(x *Rectangle_OfFloat) *Rectangle {
 
 // j2go: instanceof helper for Rectangle_OfFloat and its subclasses within the translated set.
 func rectangleImplAsOfFloat(x any) (*Rectangle_OfFloat, bool) {
+	if h, ok := x.(*rectangleHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *Rectangle_OfFloat:
 		if v == nil {

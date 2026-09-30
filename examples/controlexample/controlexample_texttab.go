@@ -120,7 +120,7 @@ func (this *TextTab) createStyleGroup_() {
 func (this *TextTab) createTabFolderPage_(tabFolder *swt.TabFolder) *swt.Composite {
 	this.ScrollableTab.createTabFolderPage_(tabFolder)
 	this.tabFolderPage.AddControlListener(swt.ControlListenerControlResizedAdapter(func(e *swt.ControlEvent) {
-		this.SetExampleWidgetSize()
+		this.impl.setExampleWidgetSize_()
 	}))
 	return this.tabFolderPage
 }

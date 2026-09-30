@@ -24,9 +24,25 @@ const SynchronizerGROW_SIZE int32 = 4
 
 const SynchronizerMESSAGE_LIMIT int32 = 64
 
-var SynchronizerIS_COCOA bool
+var SynchronizerIS_COCOA bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SynchronizerIS_COCOA:", e)
+		}
+	}()
+	r = ("cocoa" == GetPlatform())
+	return
+}()
 
-var SynchronizerIS_GTK bool
+var SynchronizerIS_GTK bool = func() (r bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintln(os.Stderr, "gowt: deferred init SynchronizerIS_GTK:", e)
+		}
+	}()
+	r = ("gtk" == GetPlatform())
+	return
+}()
 
 func NewSynchronizer(displayLike DisplayLike) *Synchronizer {
 	var display *Display
@@ -223,24 +239,5 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 		if lock.throwable != (nil) {
 			ErrorCodeThrowable(ERROR_FAILED_EXEC, lock.throwable)
 		}
-	}()
-}
-
-func init() {
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SynchronizerIS_COCOA:", r)
-			}
-		}()
-		SynchronizerIS_COCOA = ("cocoa" == GetPlatform())
-	}()
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SynchronizerIS_GTK:", r)
-			}
-		}()
-		SynchronizerIS_GTK = ("gtk" == GetPlatform())
 	}()
 }

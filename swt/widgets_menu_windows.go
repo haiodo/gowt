@@ -882,8 +882,8 @@ func (this *Menu) WmTimer(wParam int64, lParam int64) *win32.LRESULT {
 	return nil
 }
 
-func (this *Menu) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Widget.handleDPIChange_(event, scalingFactor)
+func (this *Menu) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Widget.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
 			item.NotifyListeners(ZoomChanged, event)

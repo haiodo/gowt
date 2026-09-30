@@ -509,8 +509,8 @@ func (this *TreeColumn) UpdateToolTip(index int32) {
 	}
 }
 
-func (this *TreeColumn) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChange_(event, scalingFactor)
+func (this *TreeColumn) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var tree *Tree = this.GetParent()
 	var ignoreColumnResize bool = tree.ignoreColumnResize
 	tree.ignoreColumnResize = true

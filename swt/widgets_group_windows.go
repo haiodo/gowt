@@ -46,7 +46,7 @@ func (this *Group) initGroup(parent *Composite, style int32) {
 	this.text = ""
 }
 
-func (this *Group) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Group) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -309,7 +309,7 @@ func (this *Group) windowClass_() *win32.TCHAR {
 	return GroupGroupClass
 }
 
-func (this *Group) windowProc_() int64 {
+func (this *Group) windowProcNoArgs_() int64 {
 	return GroupGroupProc
 }
 
@@ -318,7 +318,7 @@ func (this *Group) wM_ERASEBKGND_(wParam int64, lParam int64) *win32.LRESULT {
 	if result != (nil) {
 		return result
 	}
-	this.DrawBackground(wParam)
+	this.DrawBackgroundHDC(wParam)
 	return win32.LRESULTONE
 }
 
@@ -327,7 +327,7 @@ func (this *Group) wM_NCHITTEST_(wParam int64, lParam int64) *win32.LRESULT {
 	if result != (nil) {
 		return result
 	}
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
 	if code == int64(win32.OSHTTRANSPARENT) {
 		code = int64(win32.OSHTCLIENT)
 	}
@@ -365,9 +365,9 @@ func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, win32.OSDT_SINGLELINE|win32.OSDT_LEFT|win32.OSDT_TOP|win32.OSDT_CALCRECT)
 		rect.Right += GroupCLIENT_INSET
-		this.DrawBackgroundHDCRect(hDC, rect)
+		this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 		win32.OSSetBkMode(hDC, win32.OSTRANSPARENT)
-		win32.OSSetTextColor(hDC, this.GetForegroundPixel())
+		win32.OSSetTextColor(hDC, this.GetForegroundPixelNoArgs())
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, win32.OSDT_SINGLELINE|win32.OSDT_LEFT|win32.OSDT_TOP)
 		if newFont != 0 {
 			win32.OSSelectObject(hDC, oldFont)
@@ -384,7 +384,7 @@ func (this *Group) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESULT {
 		return result
 	}
 	var nSavedDC int32 = win32.OSSaveDC(wParam)
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_PRINTCLIENT, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_PRINTCLIENT, wParam, lParam)
 	win32.OSRestoreDC(wParam, nSavedDC)
 	return win32.NewLRESULT(code)
 }

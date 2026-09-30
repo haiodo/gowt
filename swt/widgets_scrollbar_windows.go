@@ -576,10 +576,3 @@ func (this *ScrollBar) getSystemMetrics_(nIndex int32) int32 {
 func ScrollBarCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, HORIZONTAL, VERTICAL, 0, 0, 0, 0)
 }
-
-func upcastScrollableToWidget(x *Scrollable) *Widget {
-	if x == nil {
-		return nil
-	}
-	return &x.Widget
-}

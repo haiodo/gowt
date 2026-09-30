@@ -46,7 +46,7 @@ func (this *FontMetrics) GetAscent() int32 {
 }
 
 func (this *FontMetrics) GetAverageCharacterWidth() float64 {
-	return DPIUtilPixelToPoint(float64(this.Handle.TmAveCharWidth), this.GetZoom())
+	return DPIUtilPixelToPointDouble(float64(this.Handle.TmAveCharWidth), this.GetZoom())
 }
 
 func (this *FontMetrics) GetAverageCharWidth() int32 {

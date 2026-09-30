@@ -416,7 +416,7 @@ func (this *Table) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Table) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Table) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	return this.CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(hwnd, msg, wParam, lParam, false)
 }
 
@@ -694,7 +694,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 		if this.explorerTheme && this.columnCount == 0 {
 			var hDC int64 = nmcd.Hdc
 			if win32.OSIsWindowEnabled(this.Handle) || this.FindImageControl() != (nil) || this.HasCustomBackground() {
-				this.DrawBackgroundHDCRect(hDC, rect)
+				this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 			} else {
 				this.FillBackgroundLocal1(hDC, win32.OSGetSysColor(win32.OSCOLOR_3DFACE), rect)
 			}
@@ -708,7 +708,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 					if control == (nil) {
 						control = upcastTableToControl(this)
 					}
-					this.FillBackgroundLocal1(nmcd.Hdc, control.GetBackgroundPixel(), rect)
+					this.FillBackgroundLocal1(nmcd.Hdc, control.GetBackgroundPixelNoArgs(), rect)
 					if this.sortColumn != (nil) && this.sortDirection != NONE {
 						var index int32 = this.IndexOfColumn(this.sortColumn)
 						if index != -1 {
@@ -904,7 +904,7 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 			win32.OSSelectObject(hDC, hFont)
 			if enabled {
 				if clrText == -1 {
-					nmcd.ClrText = this.GetForegroundPixel()
+					nmcd.ClrText = this.GetForegroundPixelNoArgs()
 				} else {
 					nmcd.ClrText = clrText
 				}
@@ -917,7 +917,7 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 						}
 						if control.backgroundImage == (nil) {
 							if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) != win32.OSCLR_NONE {
-								nmcd.ClrTextBk = control.GetBackgroundPixel()
+								nmcd.ClrTextBk = control.GetBackgroundPixelNoArgs()
 							}
 						}
 					}
@@ -1216,7 +1216,7 @@ func (this *Table) createHandle_() {
 	this.explorerTheme = true
 	win32.OSSetWindowTheme(this.Handle, DisplayEXPLORER, nil)
 	this.hwndHeader = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETHEADER, int64(0), int64(0))
-	this.MaybeEnableDarkSystemTheme(this.hwndHeader)
+	this.MaybeEnableDarkSystemThemeHandle(this.hwndHeader)
 	if (this.style & CHECK) != 0 {
 		var empty int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_APPROXIMATEVIEWRECT, int64(0), int64(0))
 		var oneItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_APPROXIMATEVIEWRECT, int64(1), int64(0))
@@ -1264,7 +1264,7 @@ func (this *Table) CreateHeaderToolTips() {
 	if this.headerToolTipHandle == 0 {
 		this.Error(ERROR_NO_HANDLES)
 	}
-	this.MaybeEnableDarkSystemTheme(this.headerToolTipHandle)
+	this.MaybeEnableDarkSystemThemeHandle(this.headerToolTipHandle)
 	win32.OSSendMessageOverload4(this.headerToolTipHandle, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 }
 
@@ -2110,7 +2110,7 @@ func (this *Table) GetSortColumn() *TableColumn {
 func (this *Table) GetSortColumnPixel() int32 {
 	var pixel int32
 	if win32.OSIsWindowEnabled(this.Handle) || this.HasCustomBackground() {
-		pixel = this.GetBackgroundPixel()
+		pixel = this.GetBackgroundPixelNoArgs()
 	} else {
 		pixel = win32.OSGetSysColor(win32.OSCOLOR_3DFACE)
 	}
@@ -2417,7 +2417,7 @@ func (this *Table) RemoveIndices(indices []int32) {
 	}
 	var newIndices []int32 = make([]int32, int32(len(indices)))
 	copy(newIndices[0:], indices[0:0+int32(len(indices))])
-	this.Sort(newIndices)
+	this.SortItems(newIndices)
 	var start int32 = newIndices[int32(len(newIndices))-1]
 	var end int32 = newIndices[0]
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETITEMCOUNT, int64(0), int64(0)))
@@ -2707,7 +2707,7 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 				if clrText != -1 {
 					data.Foreground = clrText
 				} else {
-					data.Foreground = this.GetForegroundPixel()
+					data.Foreground = this.GetForegroundPixelNoArgs()
 				}
 			}
 		} else {
@@ -2718,10 +2718,10 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 					control = upcastTableToControl(this)
 				}
 				if clrText == -1 {
-					clrText = control.GetForegroundPixel()
+					clrText = control.GetForegroundPixelNoArgs()
 				}
 				if clrTextBk == -1 {
-					clrTextBk = control.GetBackgroundPixel()
+					clrTextBk = control.GetBackgroundPixelNoArgs()
 				}
 			}
 			if clrText != -1 {
@@ -3155,7 +3155,7 @@ func (this *Table) SendPaintItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 				if clrText != -1 {
 					data.Foreground = clrText
 				} else {
-					data.Foreground = this.GetForegroundPixel()
+					data.Foreground = this.GetForegroundPixelNoArgs()
 				}
 			}
 		} else {
@@ -3184,10 +3184,10 @@ func (this *Table) SendPaintItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 					control = upcastTableToControl(this)
 				}
 				if clrText == -1 {
-					clrText = control.GetForegroundPixel()
+					clrText = control.GetForegroundPixelNoArgs()
 				}
 				if clrTextBk == -1 {
-					clrTextBk = control.GetBackgroundPixel()
+					clrTextBk = control.GetBackgroundPixelNoArgs()
 				}
 			}
 			if clrText != -1 {
@@ -3276,8 +3276,8 @@ func (this *Table) SendPaintItemEventItemNmcdColumnItemRect(itemLike TableItemLi
 	return event
 }
 
-func (this *Table) setBackgroundImageHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmap_(hBitmap)
+func (this *Table) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
 	if hBitmap != 0 {
 		this.SetBackgroundTransparent(true)
 	} else {
@@ -3332,7 +3332,7 @@ func (this *Table) SetBackgroundTransparent(transparent bool) {
 				control = upcastTableToControl(this)
 			}
 			if control.backgroundImage == (nil) {
-				var newPixel int32 = control.GetBackgroundPixel()
+				var newPixel int32 = control.GetBackgroundPixelNoArgs()
 				win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(newPixel))
 				win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETTEXTBKCOLOR, int64(0), int64(newPixel))
 				if (this.style & CHECK) != 0 {
@@ -3359,9 +3359,9 @@ func (this *Table) SetBackgroundTransparent(transparent bool) {
 	}
 }
 
-func (this *Table) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Table) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	this.SetDeferResize(true)
-	this.Composite.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
+	this.Composite.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
 	this.SetDeferResize(false)
 }
 
@@ -3466,7 +3466,7 @@ func (this *Table) SetDeferResize(defer_ bool) {
 				}
 				if this.layout != (nil) {
 					this.impl.markLayout_(false, false)
-					this.impl.updateLayout_(false, false)
+					this.impl.updateLayoutResizeAll_(false, false)
 				}
 				this.SetResizeChildren(true)
 			}
@@ -3494,7 +3494,7 @@ func (this *Table) SetCheckboxImageList(width int32, height int32, fixScroll boo
 	if control == (nil) {
 		control = upcastTableToControl(this)
 	}
-	var clrBackground int32 = control.GetBackgroundPixel()
+	var clrBackground int32 = control.GetBackgroundPixelNoArgs()
 	var hBrush int64 = win32.OSCreateSolidBrush(clrBackground)
 	win32.OSFillRect(memDC, rect, hBrush)
 	win32.OSDeleteObject(hBrush)
@@ -4466,11 +4466,11 @@ func (this *Table) windowClass_() *win32.TCHAR {
 	return TableTableClass
 }
 
-func (this *Table) windowProc_() int64 {
+func (this *Table) windowProcNoArgs_() int64 {
 	return TableTableProc
 }
 
-func (this *Table) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Table) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -4525,7 +4525,7 @@ func (this *Table) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 				break
 			}
 		}
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
 	if msg == DisplayDI_GETDRAGIMAGE {
 		var topIndex int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETTOPINDEX, int64(0), int64(0)))
@@ -4613,7 +4613,7 @@ func (this *Table) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 		win32.OSMoveMemoryOverload70(lParam, shdi, win32.SHDRAGIMAGESizeof)
 		return int64(1)
 	}
-	return this.Composite.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Composite.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
@@ -4636,7 +4636,7 @@ func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 				win32.OSNotifyWinEvent(win32.OSEVENT_OBJECT_FOCUS, this.Handle, win32.OSOBJID_CLIENT, index+1)
 			}
 		}
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 		return win32.NewLRESULT(code)
 	case int32(CR):
 		var index int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(-1), int64(win32.OSLVNI_FOCUSED)))
@@ -4712,7 +4712,7 @@ func (this *Table) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			oldTableProc = win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TableTableProc)
 			oldHeaderProc = win32.OSSetWindowLongPtr(hwndHeader, win32.OSGWLP_WNDPROC, TableHeaderProc)
 		}
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 		if code == 0 {
 			result = win32.LRESULTZERO
 		} else {
@@ -4755,7 +4755,7 @@ func (this *Table) wM_LBUTTONDBLCLK_(wParam int64, lParam int64) *win32.LRESULT 
 		return win32.LRESULTZERO
 	}
 	if pinfo.IItem != -1 {
-		this.impl.callWindowProc_(this.Handle, win32.OSWM_LBUTTONDBLCLK, wParam, lParam)
+		this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_LBUTTONDBLCLK, wParam, lParam)
 	}
 	if !display.captureChanged && !this.IsDisposed() {
 		if win32.OSGetCapture() != this.Handle {
@@ -4826,7 +4826,7 @@ func (this *Table) wM_RBUTTONDBLCLK_(wParam int64, lParam int64) *win32.LRESULT 
 	this.SendMouseEvent(MouseDown, 3, this.Handle, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, 3, this.Handle, lParam) {
 		if pinfo.IItem != -1 {
-			this.impl.callWindowProc_(this.Handle, win32.OSWM_RBUTTONDBLCLK, wParam, lParam)
+			this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_RBUTTONDBLCLK, wParam, lParam)
 		}
 	}
 	if !display.captureChanged && !this.IsDisposed() {
@@ -4887,7 +4887,7 @@ func (this *Table) wM_SETREDRAW_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 	}
 	win32.OSDefWindowProc(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
 	if wParam == 0 {
 		if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) == win32.OSCLR_NONE {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(0xFFFFFF))
@@ -5112,7 +5112,7 @@ func (this *Table) wmNotify_(hdr *win32.NMHDR, wParam int64, lParam int64) *win3
 	var hwndToolTip int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETTOOLTIPS, int64(0), int64(0))
 	if hdr.HwndFrom == hwndToolTip {
 		if hdr.HwndFrom != this.itemToolTipHandle {
-			this.MaybeEnableDarkSystemTheme(hdr.HwndFrom)
+			this.MaybeEnableDarkSystemThemeHandle(hdr.HwndFrom)
 			this.itemToolTipHandle = hdr.HwndFrom
 		}
 		var result *win32.LRESULT = this.WmNotifyToolTip(hdr, wParam, lParam)
@@ -5988,8 +5988,8 @@ func (this *Table) DestroyImageList() {
 	win32.OSImageList_Destroy(hImageList)
 }
 
-func (this *Table) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChange_(event, scalingFactor)
+func (this *Table) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	this.settingItemHeight = true
 	var scrollWidth int32 = 0
 	if int32(len(this.GetColumns())) == 0 {

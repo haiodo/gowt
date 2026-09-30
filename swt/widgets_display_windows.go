@@ -826,7 +826,7 @@ func (this *Display) FindWidgetHandleId(handle int64, id int64) *Widget {
 	var control *Control = this.GetControl(handle)
 	var cond5 *Widget
 	if control != (nil) {
-		cond5 = control.impl.findItem_(id)
+		cond5 = control.impl.findItemId_(id)
 	} else {
 		cond5 = nil
 	}
@@ -3644,7 +3644,7 @@ func (this *Display) ShiftedKey(key int32) int32 {
 	for i := int32(0); i < int32(len(this.keyboard)); i++ {
 		this.keyboard[i] = int8(0)
 	}
-	this.keyboard[win32.OSVK_SHIFT] |= int8(0x80)
+	this.keyboard[win32.OSVK_SHIFT] |= int8(-128)
 	var result []uint16 = make([]uint16, 1)
 	if win32.OSToUnicode(key, key, this.keyboard, result, 1, 0) == 1 {
 		return int32(result[0])
@@ -3754,7 +3754,7 @@ func (this *Display) TranslateMnemonic(msg *win32.MSG, controlLike ControlLike) 
 	_ = control
 	switch msg.Message {
 	case win32.OSWM_CHAR, win32.OSWM_SYSCHAR:
-		return control.TranslateMnemonicMsg(msg)
+		return control.TranslateMnemonicMsgMsg(msg)
 	}
 	return false
 }
@@ -3822,7 +3822,7 @@ func (this *Display) WakeThread() {
 func (this *Display) WindowProcIdSelArg0Arg1(hwnd int64, msg int64, wParam int64, lParam int64) int64 {
 	var control *Control = this.GetControl(hwnd)
 	if control != (nil) {
-		return control.impl.windowProcHwndMsgWParamLParam_(hwnd, int32(msg), wParam, lParam)
+		return control.impl.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, int32(msg), wParam, lParam)
 	}
 	return win32.OSDefWindowProc(hwnd, int32(msg), wParam, lParam)
 }

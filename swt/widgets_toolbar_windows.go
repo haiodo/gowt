@@ -100,7 +100,7 @@ func (this *ToolBar) AddImage(imageBoundsLike RectangleLike, imageLike ImageLike
 	return index
 }
 
-func (this *ToolBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *ToolBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -780,8 +780,8 @@ func (this *ToolBar) reskinChildren_(flags int32) {
 	this.Composite.reskinChildren_(flags)
 }
 
-func (this *ToolBar) setBackgroundImageHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmap_(hBitmap)
+func (this *ToolBar) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
 	this.SetBackgroundTransparent(hBitmap != 0)
 }
 
@@ -793,14 +793,14 @@ func (this *ToolBar) setBackgroundPixel_(pixel int32) {
 func (this *ToolBar) SetBackgroundTransparent(transparent bool) {
 }
 
-func (this *ToolBar) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+func (this *ToolBar) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
 	if this.parent.lpwp != (nil) {
 		if this.GetDrawing() && win32.OSIsWindowVisible(this.Handle) {
 			this.parent.SetResizeChildren(false)
 			this.parent.SetResizeChildren(true)
 		}
 	}
-	this.Composite.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
+	this.Composite.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
 }
 
 func (this *ToolBar) setDefaultFont_() {
@@ -964,7 +964,7 @@ func (this *ToolBar) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	var hwndToolTip int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTB_GETTOOLTIPS, int64(0), int64(0))
 	if hwndToolTip == hdr.HwndFrom {
 		if this.currentToolItemToolTip != hwndToolTip {
-			this.MaybeEnableDarkSystemTheme(hdr.HwndFrom)
+			this.MaybeEnableDarkSystemThemeHandle(hdr.HwndFrom)
 			this.currentToolItemToolTip = hdr.HwndFrom
 		}
 		var flags int32 = RIGHT_TO_LEFT | FLIP_TEXT_DIRECTION
@@ -1037,7 +1037,7 @@ func (this *ToolBar) windowClass_() *win32.TCHAR {
 	return ToolBarToolBarClass
 }
 
-func (this *ToolBar) windowProc_() int64 {
+func (this *ToolBar) windowProcNoArgs_() int64 {
 	return ToolBarToolBarProc
 }
 
@@ -1173,7 +1173,7 @@ func (this *ToolBar) wM_SETFOCUS_(wParam int64, lParam int64) *win32.LRESULT {
 
 func (this *ToolBar) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	if this.ignoreResize {
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
 		if code == 0 {
 			return win32.LRESULTZERO
 		}
@@ -1268,7 +1268,7 @@ func (this *ToolBar) GetForegroundPixelItem(itemLike ToolItemLike) int32 {
 	if item != (nil) && item.foreground != -1 {
 		return item.foreground
 	}
-	return this.GetForegroundPixel()
+	return this.GetForegroundPixelNoArgs()
 }
 
 func (this *ToolBar) GetBackgroundPixelItem(itemLike ToolItemLike) int32 {
@@ -1280,7 +1280,7 @@ func (this *ToolBar) GetBackgroundPixelItem(itemLike ToolItemLike) int32 {
 	if item != (nil) && item.background != -1 {
 		return item.background
 	}
-	return this.GetBackgroundPixel()
+	return this.GetBackgroundPixelNoArgs()
 }
 
 func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *win32.LRESULT {
@@ -1310,11 +1310,11 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 			{
 				var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_STYLE)
 				if (bits & win32.OSTBSTYLE_FLAT) == 0 {
-					this.DrawBackground(nmcd.Hdc)
+					this.DrawBackgroundHDC(nmcd.Hdc)
 				} else {
 					var rect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(rect, nmcd.Left, nmcd.Top, nmcd.Right, nmcd.Bottom)
-					this.DrawBackgroundHDCRect(nmcd.Hdc, rect)
+					this.DrawBackgroundHDCRectHDCRect(nmcd.Hdc, rect)
 				}
 				return win32.NewLRESULT(int64(win32.OSCDRF_SKIPDEFAULT))
 			}
@@ -1391,15 +1391,14 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 	return this.Composite.wmNotifyChild_(hdr, wParam, lParam)
 }
 
-func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChange_(event, scalingFactor)
+func (this *ToolBar) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var toolItems []*ToolItem = this._getItems()
 	var seperatorWidth []int32 = make([]int32, int32(len(toolItems)))
 	var itemCount int32 = int32(len(toolItems))
 	if itemCount == 0 {
 		return
 	}
-	func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): final class ToolItemData {   private final ToolItem toolItem;   private final TBBUTTON button;   ToolItemData(  ToolItem toolItem,  TBBUTTON button){     this.toolItem=toolItem;     this.button=button;   }   public ToolItem toolItem(){     return toolItem;   }   public TBBUTTON button(){     return button;   } }
 	var buttondata any = func() any { panic("j2go: unresolved new Stack<ToolItemData>") }()
 	for i := int32(itemCount - 1); i >= 0; i-- {
 		var item *ToolItem = toolItems[i]
@@ -1409,15 +1408,15 @@ func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
 		item.NotifyListeners(ZoomChanged, event)
 		var lpButton *win32.TBBUTTON = win32.NewTBBUTTON()
 		win32.OSSendMessageOverload16(this.Handle, win32.OSTB_GETBUTTON, int64(i), lpButton)
-		func() any {
-			_ = []any{buttondata, func() any { _ = []any{item, lpButton}; panic("j2go: unresolved new ToolItemData") }()}
+		func() *ToolBar_ToolItemData {
+			_ = []any{buttondata, newToolBarToolItemData(item, lpButton)}
 			panic("j2go: unresolved call push")
 		}()
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTB_DELETEBUTTON, int64(i), int64(0))
 	}
 	win32.OSSendMessageOverload4(this.Handle, win32.OSTB_BUTTONSTRUCTSIZE, int64(win32.TBBUTTONSizeof), int64(0))
 	for !func() bool { _ = []any{buttondata}; panic("j2go: unresolved call isEmpty") }() {
-		var itemData unsupported_type_ = func() any { _ = []any{buttondata}; panic("j2go: unresolved call pop") }()
+		var itemData *ToolBar_ToolItemData = func() *ToolBar_ToolItemData { _ = []any{buttondata}; panic("j2go: unresolved call pop") }()
 		win32.OSSendMessageOverload16(this.Handle, win32.OSTB_ADDBUTTONS, int64(1), itemData.button)
 		var item *ToolItem = itemData.toolItem
 		if item != (nil) {
@@ -1449,6 +1448,36 @@ func ToolBarCheckStyle(style int32) int32 {
 		style &= ^WRAP
 	}
 	return style & ^(H_SCROLL | V_SCROLL)
+}
+
+type ToolBar_ToolItemData struct {
+	toolItem *ToolItem
+	button   *win32.TBBUTTON
+}
+
+func (this *ToolBar_ToolItemData) AsToolBar_ToolItemData() *ToolBar_ToolItemData { return this }
+
+type ToolBar_ToolItemDataLike interface {
+	AsToolBar_ToolItemData() *ToolBar_ToolItemData
+}
+
+func newToolBarToolItemData(toolItem *ToolItem, button *win32.TBBUTTON) *ToolBar_ToolItemData {
+	this := &ToolBar_ToolItemData{}
+	this.initToolBarToolItemData(toolItem, button)
+	return this
+}
+
+func (this *ToolBar_ToolItemData) initToolBarToolItemData(toolItem *ToolItem, button *win32.TBBUTTON) {
+	this.toolItem = toolItem
+	this.button = button
+}
+
+func (this *ToolBar_ToolItemData) ToolItem() *ToolItem {
+	return this.toolItem
+}
+
+func (this *ToolBar_ToolItemData) Button() *win32.TBBUTTON {
+	return this.button
 }
 
 func upcastToolItemToWidget(x *ToolItem) *Widget {

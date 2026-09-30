@@ -141,7 +141,15 @@ public class Names {
 		if (shadowsAncestorOverload(m.getMethodDeclaration())) name += shadowSuffix(m.getMethodDeclaration());
 		// An unpinned member (a platform's own) must not take a name the pins gave to another member of its class.
 		// (Statics are functions named by class: they cannot clash with a method.)
-		Set<String> taken = Modifier.isStatic(m.getModifiers()) ? Set.of() : pinnedNamesOf(m.getMethodDeclaration().getDeclaringClass().getErasure().getBinaryName());
+		String declClass = m.getMethodDeclaration().getDeclaringClass().getErasure().getBinaryName();
+		if (m.isConstructor() && name.startsWith(baseName)) {
+			// Constructors: the pins' suffixes of this class (the base differs per Go function: New<C>, new<C>, init<C>).
+			Set<String> suffixes = pinnedNamesOf(declClass + "#<init>");
+			String suffix = name.substring(baseName.length());
+			for (int n = 1; suffixes.contains(suffix); n++) suffix = "Local" + n;
+			name = baseName + suffix;
+		}
+		Set<String> taken = Modifier.isStatic(m.getModifiers()) || m.isConstructor() ? Set.of() : pinnedNamesOf(declClass);
 		for (int n = 1; taken.contains(name); n++) name = baseName + "Local" + n;
 		if (overloaded(m) && name.startsWith(baseName)) computedOverloads.put(key, name.substring(baseName.length()));
 		return name;
@@ -190,8 +198,9 @@ public class Names {
 				int hash = e.getKey().indexOf('#');
 				int paren = e.getKey().indexOf('(');
 				String method = e.getKey().substring(hash + 1, paren);
-				if (method.equals("<init>")) continue;
-				pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash), k -> new HashSet<>()).add(javaMethodBaseGoName(method) + e.getValue());
+				// Constructors are filed under "<class>#<init>" with the bare suffix.
+				if (method.equals("<init>")) pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash) + "#<init>", k -> new HashSet<>()).add(e.getValue());
+				else pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash), k -> new HashSet<>()).add(javaMethodBaseGoName(method) + e.getValue());
 			}
 		}
 		return pinnedNamesByClass.getOrDefault(classBinaryName, Set.of());

@@ -553,8 +553,8 @@ func (this *TableColumn) UpdateToolTip(index int32) {
 	}
 }
 
-func (this *TableColumn) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChange_(event, scalingFactor)
+func (this *TableColumn) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var table *Table = this.GetParent()
 	var ignoreColumnResize bool = table.ignoreColumnResize
 	table.ignoreColumnResize = true

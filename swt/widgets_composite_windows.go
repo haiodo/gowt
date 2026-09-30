@@ -119,7 +119,7 @@ func (this *Composite) checkBuffered_() {
 	}
 }
 
-func (this *Composite) checkComposited_() {
+func (this *Composite) checkCompositedNoArgs_() {
 	if (this.state & WidgetCANVAS) != 0 {
 		if (this.style & TRANSPARENT) != 0 {
 			var hwndParent int64 = this.parent.Handle
@@ -283,7 +283,7 @@ func (this *Composite) DrawBackgroundInPixels(gcLike GCLike, x int32, y int32, w
 	} else {
 		pixel = -1
 	}
-	this.DrawBackgroundHDCRectPixelTxTy(hDC, rect, pixel, offsetX, offsetY)
+	this.DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC, rect, pixel, offsetX, offsetY)
 }
 
 func (this *Composite) FindDeferredControl() *Composite {
@@ -734,7 +734,7 @@ func (this *Composite) sendResize_() {
 	}
 	if this.layout != (nil) {
 		this.impl.markLayout_(false, false)
-		this.impl.updateLayout_(false, false)
+		this.impl.updateLayoutResizeAll_(false, false)
 	}
 	this.SetResizeChildren(true)
 }
@@ -747,7 +747,7 @@ func (this *Composite) SetBackgroundMode(mode int32) {
 	}
 }
 
-func (this *Composite) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Composite) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	if this.display.resizeCount > DisplayRESIZE_LIMIT {
 		defer_ = false
 	}
@@ -755,7 +755,7 @@ func (this *Composite) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int3
 		this.state &= ^(WidgetRESIZE_OCCURRED | WidgetMOVE_OCCURRED)
 		this.state |= WidgetRESIZE_DEFERRED | WidgetMOVE_DEFERRED
 	}
-	this.Scrollable.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
+	this.Scrollable.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
 	if !defer_ && (this.state&WidgetCANVAS) != 0 {
 		var wasMoved bool = (this.state & WidgetMOVE_OCCURRED) != 0
 		var wasResized bool = (this.state & WidgetRESIZE_OCCURRED) != 0
@@ -990,10 +990,10 @@ func (this *Composite) updateFont_(oldFont *Font, newFont *Font) {
 }
 
 func (this *Composite) UpdateLayoutAll(all bool) {
-	this.impl.updateLayout_(true, all)
+	this.impl.updateLayoutResizeAll_(true, all)
 }
 
-func (this *Composite) updateLayout_(resize bool, all bool) {
+func (this *Composite) updateLayoutResizeAll_(resize bool, all bool) {
 	var parent *Composite = this.impl.findDeferredControl_()
 	if parent != (nil) {
 		parent.state |= WidgetLAYOUT_CHILD
@@ -1014,7 +1014,7 @@ func (this *Composite) updateLayout_(resize bool, all bool) {
 	if all {
 		this.state &= ^WidgetLAYOUT_CHILD
 		for _, element := range this._getChildren() {
-			element.impl.updateLayout_(resize, all)
+			element.impl.updateLayoutResizeAll_(resize, all)
 		}
 	}
 }
@@ -1095,7 +1095,7 @@ func (this *Composite) wM_GETFONT_(wParam int64, lParam int64) *win32.LRESULT {
 	if result != (nil) {
 		return result
 	}
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_GETFONT, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_GETFONT, wParam, lParam)
 	if code != 0 {
 		return win32.NewLRESULT(code)
 	}
@@ -1129,7 +1129,7 @@ func (this *Composite) wM_NCHITTEST_(wParam int64, lParam int64) *win32.LRESULT 
 		return result
 	}
 	if (this.state & WidgetCANVAS) != 0 {
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
 		if code == int64(win32.OSHTCLIENT) {
 			var rect *win32.RECT = win32.NewRECT()
 			win32.OSGetClientRect(this.Handle, rect)
@@ -1191,19 +1191,19 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				if hBufferedPaint != 0 && phdc[0] != 0 {
 					var data *GCData = NewGCData()
 					data.Device = upcastDisplayToDevice(this.display)
-					data.Foreground = this.GetForegroundPixel()
+					data.Foreground = this.GetForegroundPixelNoArgs()
 					var control *Control = this.impl.findBackgroundControl_()
 					if control == (nil) {
 						control = upcastCompositeToControl(this)
 					}
-					data.Background = control.GetBackgroundPixel()
+					data.Background = control.GetBackgroundPixelNoArgs()
 					data.Font = SWTFontProviderGetFontDeviceFontHandleZoom(upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0)), this.NativeZoom)
 					data.UiState = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSWM_QUERYUISTATE, int64(0), int64(0)))
 					if (this.style & NO_BACKGROUND) != 0 {
 					} else {
 						var rect *win32.RECT = win32.NewRECT()
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-						this.DrawBackgroundHDCRect(phdc[0], rect)
+						this.DrawBackgroundHDCRectHDCRect(phdc[0], rect)
 					}
 					var gc *GC = this.impl.createNewGC_(phdc[0], data)
 					var event *Event = NewEvent()
@@ -1267,7 +1267,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 					} else {
 						var rect *win32.RECT = win32.NewRECT()
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-						this.DrawBackgroundHDCRect(gc.Handle, rect)
+						this.DrawBackgroundHDCRectHDCRect(gc.Handle, rect)
 					}
 				}
 				var event *Event = NewEvent()
@@ -1287,7 +1287,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						var offset int32 = 8 + (i << 2)
 						win32.OSSetRect(rect, lpRgnData[offset], lpRgnData[offset+1], lpRgnData[offset+2], lpRgnData[offset+3])
 						if (this.style & (DOUBLE_BUFFERED | NO_BACKGROUND | TRANSPARENT)) == 0 {
-							this.DrawBackgroundHDCRect(gc.Handle, rect)
+							this.DrawBackgroundHDCRectHDCRect(gc.Handle, rect)
 						}
 						event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), zoom))
 						event.Count = count - 1 - i
@@ -1299,7 +1299,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 							rect = win32.NewRECT()
 						}
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-						this.DrawBackgroundHDCRect(gc.Handle, rect)
+						this.DrawBackgroundHDCRectHDCRect(gc.Handle, rect)
 					}
 					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(ps.Left, ps.Top, width, height), zoom))
 					this.SendEventEventTypeEvent(Paint, event)
@@ -1332,7 +1332,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 		if (this.style & (NO_BACKGROUND | TRANSPARENT)) == 0 {
 			var rect *win32.RECT = win32.NewRECT()
 			win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-			this.DrawBackgroundHDCRect(hDC, rect)
+			this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 		}
 		win32.OSEndPaint(this.Handle, ps)
 	}
@@ -1357,17 +1357,17 @@ func (this *Composite) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESUL
 		var rect *win32.RECT = win32.NewRECT()
 		win32.OSGetClientRect(this.Handle, rect)
 		if (this.style & (NO_BACKGROUND | TRANSPARENT)) == 0 {
-			this.DrawBackgroundHDCRect(wParam, rect)
+			this.DrawBackgroundHDCRectHDCRect(wParam, rect)
 		}
 		if this.Hooks(Paint) || this.Filters(Paint) {
 			var data *GCData = NewGCData()
 			data.Device = upcastDisplayToDevice(this.display)
-			data.Foreground = this.GetForegroundPixel()
+			data.Foreground = this.GetForegroundPixelNoArgs()
 			var control *Control = this.impl.findBackgroundControl_()
 			if control == (nil) {
 				control = upcastCompositeToControl(this)
 			}
-			data.Background = control.GetBackgroundPixel()
+			data.Background = control.GetBackgroundPixelNoArgs()
 			data.Font = FontWin32_new(upcastDisplayToDevice(this.display), win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0)))
 			data.UiState = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSWM_QUERYUISTATE, int64(0), int64(0)))
 			var gc *GC = this.impl.createNewGC_(wParam, data)
@@ -1402,7 +1402,7 @@ func (this *Composite) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 		if this.layout != (nil) {
 			this.impl.markLayout_(false, false)
-			this.impl.updateLayout_(false, false)
+			this.impl.updateLayoutResizeAll_(false, false)
 		}
 		this.SetResizeChildren(true)
 	}
@@ -1450,7 +1450,7 @@ func (this *Composite) wM_SYSCOMMAND_(wParam int64, lParam int64) *win32.LRESULT
 	case win32.OSSC_HSCROLL, win32.OSSC_VSCROLL:
 		var showHBar bool = this.horizontalBar != (nil) && this.horizontalBar.GetVisible()
 		var showVBar bool = this.verticalBar != (nil) && this.verticalBar.GetVisible()
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SYSCOMMAND, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SYSCOMMAND, wParam, lParam)
 		if (showHBar != (this.horizontalBar != (nil) && this.horizontalBar.GetVisible())) || (showVBar != (this.verticalBar != (nil) && this.verticalBar.GetVisible())) {
 			var flags int32 = win32.OSRDW_FRAME | win32.OSRDW_INVALIDATE | win32.OSRDW_UPDATENOW
 			win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
@@ -1486,7 +1486,7 @@ func (this *Composite) wmNCPaint_(hwnd int64, wParam int64, lParam int64) *win32
 			var code int64 = int64(0)
 			var bits2 int32 = win32.OSGetWindowLong(hwnd, win32.OSGWL_STYLE)
 			if (bits2 & (win32.OSWS_HSCROLL | win32.OSWS_VSCROLL)) != 0 {
-				code = this.impl.callWindowProc_(hwnd, win32.OSWM_NCPAINT, wParam, lParam)
+				code = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_NCPAINT, wParam, lParam)
 			}
 			var hDC int64 = win32.OSGetWindowDC(hwnd)
 			var rect *win32.RECT = win32.NewRECT()
@@ -1585,8 +1585,8 @@ func (this *Composite) string_() string {
 	return fmt.Sprintf("%s [layout=%v]", this.Scrollable.string_(), this.layout)
 }
 
-func (this *Composite) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Scrollable.handleDPIChange_(event, scalingFactor)
+func (this *Composite) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Scrollable.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	for _, child := range this.impl.getChildren_() {
 		child.SendZoomChangedEvent(event, this.impl.getShell_())
 	}

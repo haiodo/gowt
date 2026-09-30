@@ -50,7 +50,7 @@ func (this *TabFolder) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *TabFolder) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *TabFolder) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -460,7 +460,7 @@ func (this *TabFolder) setFont_(font *Font) {
 			var item *TabItem = this.items[index]
 			var control *Control = item.control
 			if control != (nil) && !control.IsDisposed() {
-				control.SetBoundsInPixelsRect(this.impl.getClientAreaInPixels_())
+				control.SetBoundsInPixelsRectRect(this.impl.getClientAreaInPixels_())
 			}
 		}
 	}
@@ -493,7 +493,7 @@ func (this *TabFolder) SetSelectionIndexNotify(index int32, notify bool) {
 		var item *TabItem = this.items[newIndex]
 		var control *Control = item.control
 		if control != (nil) && !control.IsDisposed() {
-			control.SetBoundsInPixelsRect(this.impl.getClientAreaInPixels_())
+			control.SetBoundsInPixelsRectRect(this.impl.getClientAreaInPixels_())
 			control.impl.setVisible_(true)
 		}
 		if notify {
@@ -638,7 +638,7 @@ func (this *TabFolder) windowClass_() *win32.TCHAR {
 	return TabFolderTabFolderClass
 }
 
-func (this *TabFolder) windowProc_() int64 {
+func (this *TabFolder) windowProcNoArgs_() int64 {
 	return TabFolderTabFolderProc
 }
 
@@ -672,7 +672,7 @@ func (this *TabFolder) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			} else {
 				cond1 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond1), lParam)
+			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, int64(cond1), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -747,7 +747,7 @@ func (this *TabFolder) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 		var item *TabItem = this.items[index]
 		var control *Control = item.control
 		if control != (nil) && !control.IsDisposed() {
-			control.SetBoundsInPixelsRect(this.impl.getClientAreaInPixels_())
+			control.SetBoundsInPixelsRectRect(this.impl.getClientAreaInPixels_())
 		}
 	}
 	return result
@@ -821,7 +821,7 @@ func (this *TabFolder) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int
 			var control *Control = item.control
 			if control != (nil) && !control.IsDisposed() {
 				if code == win32.OSTCN_SELCHANGE {
-					control.SetBoundsInPixelsRect(this.impl.getClientAreaInPixels_())
+					control.SetBoundsInPixelsRectRect(this.impl.getClientAreaInPixels_())
 				}
 				control.impl.setVisible_(code == win32.OSTCN_SELCHANGE)
 			}
@@ -835,8 +835,8 @@ func (this *TabFolder) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int
 	return this.Composite.wmNotifyChild_(hdr, wParam, lParam)
 }
 
-func (this *TabFolder) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChange_(event, scalingFactor)
+func (this *TabFolder) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var display *Display = this.GetDisplay()
 	if this.imageList != (nil) {
 		display.ReleaseImageList(this.imageList)

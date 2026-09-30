@@ -1910,7 +1910,7 @@ func (this *Image_HandleAtSize) GetOrCreateImageHandleAtClosestSize(widthHint in
 		this.temporaryHandleContainer = previousHandle
 		return previousHandle.Handle()
 	}
-	var imageData *DPIUtilElementAtZoom = this.this_0.imageProvider.impl.loadImageData_(imageZoom)
+	var imageData *DPIUtilElementAtZoom = this.this_0.imageProvider.impl.loadImageDataZoom_(imageZoom)
 	this.temporaryHandleContainer = newImageHandleAtSizeTemporaryHandleForZoom(this.this_0.InitImageImageZoom(jrt.Cast[*ImageData](imageData.Element()), -1), imageData.Zoom())
 	return this.temporaryHandleContainer.Handle()
 }
@@ -2144,7 +2144,7 @@ type Image_AbstractImageProviderWrapperImpl interface {
 	getPreservedZoomLevels_() any
 	isPersistentImageHandleRequriedForImageData_() bool
 	nearestAvailableZoom_(a0 int32) int32
-	loadImageData_(a0 int32) *DPIUtilElementAtZoom
+	loadImageDataZoom_(a0 int32) *DPIUtilElementAtZoom
 	newImageData_(a0 int32) *ImageData
 	createCopy_(a0 *Image) *Image_AbstractImageProviderWrapper
 	loadImageDataAtExactSize_(a0 int32, a1 int32) *jrt.Optional
@@ -2162,8 +2162,8 @@ func (this *Image_AbstractImageProviderWrapper) nearestAvailableZoom_(a0 int32) 
 	panic("j2go: nearestAvailableZoom_ has no default on Image_AbstractImageProviderWrapper")
 }
 
-func (this *Image_AbstractImageProviderWrapper) loadImageData_(a0 int32) *DPIUtilElementAtZoom {
-	panic("j2go: loadImageData_ has no default on Image_AbstractImageProviderWrapper")
+func (this *Image_AbstractImageProviderWrapper) loadImageDataZoom_(a0 int32) *DPIUtilElementAtZoom {
+	panic("j2go: loadImageDataZoom_ has no default on Image_AbstractImageProviderWrapper")
 }
 
 func (this *Image_AbstractImageProviderWrapper) newImageData_(a0 int32) *ImageData {
@@ -2245,14 +2245,14 @@ func (this *image_AbstractImageProviderWrapperHooked) isPersistentImageHandleReq
 	return this.Image_AbstractImageProviderWrapperImpl.isPersistentImageHandleRequriedForImageData_()
 }
 
-func (this *image_AbstractImageProviderWrapperHooked) loadImageData_(a0 int32) *DPIUtilElementAtZoom {
+func (this *image_AbstractImageProviderWrapperHooked) loadImageDataZoom_(a0 int32) *DPIUtilElementAtZoom {
 	if h, ok := this.hook.(interface {
-		LoadImageData_(a0 int32) *DPIUtilElementAtZoom
-	}); ok && this.active != "loadImageData_" {
-		defer this.enter("loadImageData_")()
-		return h.LoadImageData_(a0)
+		LoadImageDataZoom_(a0 int32) *DPIUtilElementAtZoom
+	}); ok && this.active != "loadImageDataZoom_" {
+		defer this.enter("loadImageDataZoom_")()
+		return h.LoadImageDataZoom_(a0)
 	}
-	return this.Image_AbstractImageProviderWrapperImpl.loadImageData_(a0)
+	return this.Image_AbstractImageProviderWrapperImpl.loadImageDataZoom_(a0)
 }
 
 func (this *image_AbstractImageProviderWrapperHooked) loadImageDataAtExactSize_(a0 int32, a1 int32) *jrt.Optional {
@@ -2363,8 +2363,8 @@ func (this *Image_AbstractImageProviderWrapper) NearestAvailableZoom(zoom int32)
 	return this.impl.nearestAvailableZoom_(zoom)
 }
 
-func (this *Image_AbstractImageProviderWrapper) LoadImageData(zoom int32) *DPIUtilElementAtZoom {
-	return this.impl.loadImageData_(zoom)
+func (this *Image_AbstractImageProviderWrapper) LoadImageDataZoom(zoom int32) *DPIUtilElementAtZoom {
+	return this.impl.loadImageDataZoom_(zoom)
 }
 
 func (this *Image_AbstractImageProviderWrapper) NewImageData(zoom int32) *ImageData {
@@ -2401,7 +2401,7 @@ func (this *Image_AbstractImageProviderWrapper) NewImageHandle(zoomContextLike I
 	return this.impl.newImageHandle_(zoomContext)
 }
 
-func (this *Image_AbstractImageProviderWrapper) NewImageHandleDataZoomContext(dataLike ImageDataLike, zoomContextLike Image_ZoomContextLike) *Image_DestroyableImageHandle {
+func (this *Image_AbstractImageProviderWrapper) NewImageHandleDataZoomContextDataZoomContext(dataLike ImageDataLike, zoomContextLike Image_ZoomContextLike) *Image_DestroyableImageHandle {
 	var data *ImageData
 	if dataLike != nil {
 		data = dataLike.AsImageData()
@@ -2451,7 +2451,7 @@ func (this *Image_ExistingImageHandleProviderWrapper) initImageExistingImageHand
 	this.baseZoom = zoomForHandle
 	var imageHandle Image_InternalImageHandle = this.this_0.imageHandleManager.GetOrCreate(zoomForHandle, func() *Image_DestroyableImageHandle {
 		inner53 := newImageDestroyableImageHandle(handle, zoomForHandle, -1)
-		inner53.this_0 = this
+		inner53.this_0 = this.this_0
 		return inner53
 	})
 	var baseData *ImageData = imageHandle.GetImageData()
@@ -2479,7 +2479,7 @@ func (this *Image_ExistingImageHandleProviderWrapper) getBounds_(zoom int32) *Re
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) newImageData_(zoom int32) *ImageData {
-	var closestAvailableImageData *DPIUtilElementAtZoom = this.impl.loadImageData_(zoom)
+	var closestAvailableImageData *DPIUtilElementAtZoom = this.impl.loadImageDataZoom_(zoom)
 	return DPIUtilScaleImageData(this.this_0.device, jrt.Cast[*ImageData](closestAvailableImageData.Element()), zoom, closestAvailableImageData.Zoom())
 }
 
@@ -2493,13 +2493,13 @@ func (this *Image_ExistingImageHandleProviderWrapper) getPreservedZoomLevels_() 
 	return func() *jrt.List { _ = []any{int32(this.baseZoom)}; panic("j2go: unresolved call singleton") }()
 }
 
-func (this *Image_ExistingImageHandleProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_ExistingImageHandleProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	return this.GetClosestAvailableImageData(zoom)
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) newImageHandle_(zoomContext *Image_ZoomContext) *Image_DestroyableImageHandle {
 	var resizedData *ImageData = this.impl.newImageData_(zoomContext.TargetZoom())
-	return this.NewImageHandleDataZoomContext(resizedData, zoomContext)
+	return this.NewImageHandleDataZoomContextDataZoomContext(resizedData, zoomContext)
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) nearestAvailableZoom_(zoom int32) int32 {
@@ -2553,7 +2553,7 @@ func (this *Image_ImageFromImageDataProviderWrapper) newImageData_(zoom int32) *
 func (this *Image_ImageFromImageDataProviderWrapper) newImageHandle_(zoomContext *Image_ZoomContext) *Image_DestroyableImageHandle {
 	var cachedData *ImageData = jrt.Cast[*ImageData](this.cachedImageData.Remove(int32(zoomContext.TargetZoom())))
 	if cachedData != (nil) {
-		return this.NewImageHandleDataZoomContext(cachedData, zoomContext)
+		return this.NewImageHandleDataZoomContextDataZoomContext(cachedData, zoomContext)
 	}
 	return this.InitializeHandleFromSource(zoomContext)
 }
@@ -2564,9 +2564,9 @@ func (this *Image_ImageFromImageDataProviderWrapper) InitializeHandleFromSource(
 		zoomContext = zoomContextLike.AsImage_ZoomContext()
 	}
 	_ = zoomContext
-	var imageDataAtZoom *DPIUtilElementAtZoom = this.impl.loadImageData_(zoomContext.TargetZoom())
+	var imageDataAtZoom *DPIUtilElementAtZoom = this.impl.loadImageDataZoom_(zoomContext.TargetZoom())
 	var imageData *ImageData = DPIUtilScaleImageData(this.this_0.device, jrt.Cast[*ImageData](imageDataAtZoom.Element()), zoomContext.TargetZoom(), imageDataAtZoom.Zoom())
-	return this.NewImageHandleDataZoomContext(imageData, zoomContext)
+	return this.NewImageHandleDataZoomContextDataZoomContext(imageData, zoomContext)
 }
 
 type Image_PlainImageDataProviderWrapper struct {
@@ -2619,7 +2619,7 @@ func (this *Image_PlainImageDataProviderWrapper) getBounds_(zoom int32) *Rectang
 	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
 }
 
-func (this *Image_PlainImageDataProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_PlainImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	var adaptedImageData *ImageData = this.this_0.AdaptImageDataIfDisabledOrGrayData(this.imageDataAtBaseZoom)
 	return NewDPIUtilElementAtZoom(adaptedImageData, this.baseZoom)
 }
@@ -2672,7 +2672,7 @@ func (this *Image_MaskedImageDataProviderWrapper) getBounds_(zoom int32) *Rectan
 	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
 }
 
-func (this *Image_MaskedImageDataProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_MaskedImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	var scaledSource *ImageData = DPIUtilScaleImageData(this.this_0.device, this.srcAt100, zoom, 100)
 	var scaledMask *ImageData = DPIUtilScaleImageData(this.this_0.device, this.maskAt100, zoom, 100)
 	scaledMask = ImageDataConvertMask(scaledMask)
@@ -2755,7 +2755,7 @@ func (this *Image_ImageDataLoaderStreamProviderWrapper) initImageImageDataLoader
 	this.inputStreamData = inputStreamData
 }
 
-func (this *Image_ImageDataLoaderStreamProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_ImageDataLoaderStreamProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	var imageDataAtZoom *DPIUtilElementAtZoom = ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(this.inputStreamData), FileFormatDEFAULT_ZOOM, zoom)
 	return this.this_0.AdaptImageDataIfDisabledOrGray(imageDataAtZoom)
 }
@@ -2845,11 +2845,11 @@ func (this *Image_PlainImageProviderWrapper) isPersistentImageHandleRequriedForI
 }
 
 func (this *Image_PlainImageProviderWrapper) newImageData_(zoom int32) *ImageData {
-	var closestAvailableImageData *DPIUtilElementAtZoom = this.impl.loadImageData_(zoom)
+	var closestAvailableImageData *DPIUtilElementAtZoom = this.impl.loadImageDataZoom_(zoom)
 	return DPIUtilScaleImageData(this.this_0.device, jrt.Cast[*ImageData](closestAvailableImageData.Element()), zoom, closestAvailableImageData.Zoom())
 }
 
-func (this *Image_PlainImageProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_PlainImageProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	return this.GetClosestAvailableImageData(zoom)
 }
 
@@ -2869,11 +2869,11 @@ func (this *Image_PlainImageProviderWrapper) newImageHandle_(zoomContext *Image_
 		var currentGC *GC = this.this_0.memGC
 		this.this_0.memGC = nil
 		var imageHandle *Image_DestroyableImageHandle = this.CreateHandle(targetZoom)
-		currentGC.ReapplyTo(NewImageDrawableWrapper(this, zoomContext), imageHandle)
+		currentGC.ReapplyTo(NewImageDrawableWrapper(this.this_0, zoomContext), imageHandle)
 		return imageHandle
 	}
 	var resizedData *ImageData = this.impl.newImageData_(targetZoom)
-	return this.NewImageHandleDataZoomContext(resizedData, zoomContext)
+	return this.NewImageHandleDataZoomContextDataZoomContext(resizedData, zoomContext)
 }
 
 func (this *Image_PlainImageProviderWrapper) CreateBaseHandle(zoom int32) *Image_DestroyableImageHandle {
@@ -2884,7 +2884,7 @@ func (this *Image_PlainImageProviderWrapper) CreateBaseHandle(zoom int32) *Image
 func (this *Image_PlainImageProviderWrapper) CreateHandle(zoom int32) *Image_DestroyableImageHandle {
 	var handle int64 = this.InitHandle(zoom)
 	inner58 := newImageDestroyableImageHandle(handle, zoom, -1)
-	inner58.this_0 = this
+	inner58.this_0 = this.this_0
 	var imageHandle *Image_DestroyableImageHandle = inner58
 	return imageHandle
 }
@@ -3045,7 +3045,7 @@ func (this *Image_BaseImageProviderWrapper) newImageHandle_(zoomContext *Image_Z
 }
 
 func (this *Image_BaseImageProviderWrapper) InitializeHandleFromSource(zoom int32) *Image_DestroyableImageHandle {
-	var imageDataAtZoom *DPIUtilElementAtZoom = this.impl.loadImageData_(zoom)
+	var imageDataAtZoom *DPIUtilElementAtZoom = this.impl.loadImageDataZoom_(zoom)
 	var imageData *ImageData = DPIUtilScaleImageData(this.this_0.device, jrt.Cast[*ImageData](imageDataAtZoom.Element()), zoom, imageDataAtZoom.Zoom())
 	return this.this_0.InitImageImageZoom(imageData, zoom)
 }
@@ -3085,8 +3085,8 @@ func (this *Image_ImageFileNameProviderWrapper) initImageImageFileNameProviderWr
 	this.impl.newImageData_(DPIUtilGetDeviceZoom())
 }
 
-func (this *Image_ImageFileNameProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
-	var fileForZoom *DPIUtilElementAtZoom = DPIUtilValidateAndGetImagePathAtZoom(this.provider, zoom)
+func (this *Image_ImageFileNameProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
+	var fileForZoom *DPIUtilElementAtZoom = DPIUtilValidateAndGetImagePathAtZoom(jrt.Cast[ImageFileNameProvider](this.provider), zoom)
 	if fileForZoom.Zoom() != zoom && ImageDataLoaderCanLoadAtZoom(jrt.Cast[string](fileForZoom.Element()), fileForZoom.Zoom(), zoom) {
 		var imageDataAtZoom *DPIUtilElementAtZoom = ImageDataLoaderLoadByZoom(jrt.Cast[string](fileForZoom.Element()), fileForZoom.Zoom(), zoom)
 		var adaptedImageData *ImageData = this.this_0.AdaptImageDataIfDisabledOrGrayData(jrt.Cast[*ImageData](imageDataAtZoom.Element()))
@@ -3113,15 +3113,15 @@ func (this *Image_ImageFileNameProviderWrapper) loadImageData_(zoom int32) *DPIU
 }
 
 func (this *Image_ImageFileNameProviderWrapper) nearestAvailableZoom_(zoom int32) int32 {
-	return DPIUtilValidateAndGetImagePathAtZoom(this.provider, zoom).Zoom()
+	return DPIUtilValidateAndGetImagePathAtZoom(jrt.Cast[ImageFileNameProvider](this.provider), zoom).Zoom()
 }
 
 func (this *Image_ImageFileNameProviderWrapper) hashCode_() int32 {
-	return jrt.ObjectsHash(this.provider, this.this_0.styleFlag)
+	return jrt.ObjectsHash(jrt.Cast[ImageFileNameProvider](this.provider), this.this_0.styleFlag)
 }
 
 func (this *Image_ImageFileNameProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner61 := newImageImageFileNameProviderWrapper(this.provider)
+	inner61 := newImageImageFileNameProviderWrapper(jrt.Cast[ImageFileNameProvider](this.provider))
 	inner61.this_0 = image
 	return upcastImage_ImageFileNameProviderWrapperToImage_AbstractImageProviderWrapper(inner61)
 }
@@ -3158,7 +3158,7 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 			status = win32.GdipBitmap_GetHICON(bitmap, hicon)
 			handle = hicon[0]
 			inner62 := newImageDestroyableImageHandle(handle, zoom, -1)
-			inner62.this_0 = this
+			inner62.this_0 = this.this_0
 			imageMetadata = inner62
 		} else {
 			this.this_0.Type = BITMAP
@@ -3187,7 +3187,7 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 				win32.OSDeleteDC(srcHDC)
 				this.this_0.device.impl.internal_dispose_GC_(hDC, nil)
 				inner63 := newImageDestroyableImageHandle(handle, zoom, -1)
-				inner63.this_0 = this
+				inner63.this_0 = this.this_0
 				imageMetadata = inner63
 			} else {
 				var lockedBitmapData int64 = win32.GdipBitmapData_new()
@@ -3347,7 +3347,7 @@ func (this *Image_ImageFileNameProviderWrapper) ExtractHandleForPixelFormat(widt
 }
 
 func (this *Image_ImageFileNameProviderWrapper) loadImageDataAtExactSize_(targetWidth int32, targetHeight int32) *jrt.Optional {
-	var fileName string = jrt.Cast[string](DPIUtilValidateAndGetImagePathAtZoom(this.provider, 100).Element())
+	var fileName string = jrt.Cast[string](DPIUtilValidateAndGetImagePathAtZoom(jrt.Cast[ImageFileNameProvider](this.provider), 100).Element())
 	if fileName == this.nonSizableFileName {
 		return jrt.OptionalEmpty()
 	}
@@ -3418,19 +3418,19 @@ func (this *Image_ImageDataProviderWrapper) initImageImageDataProviderWrapper(pr
 	this.Image_BaseImageProviderWrapper.initImageBaseImageProviderWrapper(provider, reflect.TypeFor[ImageDataProvider]())
 }
 
-func (this *Image_ImageDataProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
-	var imageDataAtZoom *DPIUtilElementAtZoom = DPIUtilValidateAndGetImageDataAtZoom(this.provider, zoom)
+func (this *Image_ImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
+	var imageDataAtZoom *DPIUtilElementAtZoom = DPIUtilValidateAndGetImageDataAtZoom(jrt.Cast[ImageDataProvider](this.provider), zoom)
 	return this.this_0.AdaptImageDataIfDisabledOrGray(imageDataAtZoom)
 }
 
 func (this *Image_ImageDataProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner68 := newImageImageDataProviderWrapper(this.provider)
+	inner68 := newImageImageDataProviderWrapper(jrt.Cast[ImageDataProvider](this.provider))
 	inner68.this_0 = image
 	return upcastImage_ImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner68)
 }
 
 func (this *Image_ImageDataProviderWrapper) loadImageDataAtExactSize_(targetWidth int32, targetHeight int32) *jrt.Optional {
-	imageDataAtSizeProvider, ok69 := this.provider.(ImageDataAtSizeProvider)
+	imageDataAtSizeProvider, ok69 := jrt.Cast[ImageDataProvider](this.provider).(ImageDataAtSizeProvider)
 	if ok69 {
 		var imageData *ImageData = imageDataAtSizeProvider.GetImageDataWidthHeight(targetWidth, targetHeight)
 		if imageData == (nil) {
@@ -3443,7 +3443,7 @@ func (this *Image_ImageDataProviderWrapper) loadImageDataAtExactSize_(targetWidt
 }
 
 func (this *Image_ImageDataProviderWrapper) nearestAvailableZoom_(zoom int32) int32 {
-	return DPIUtilValidateAndGetImageDataAtZoom(this.provider, zoom).Zoom()
+	return DPIUtilValidateAndGetImageDataAtZoom(jrt.Cast[ImageDataProvider](this.provider), zoom).Zoom()
 }
 
 type Image_ImageGcDrawerWrapper struct {
@@ -3495,10 +3495,10 @@ func (this *Image_ImageGcDrawerWrapper) configureGCData_(data *GCData) int64 {
 }
 
 func (this *Image_ImageGcDrawerWrapper) newImageData_(zoom int32) *ImageData {
-	return jrt.Cast[*ImageData](this.impl.loadImageData_(zoom).Element())
+	return jrt.Cast[*ImageData](this.impl.loadImageDataZoom_(zoom).Element())
 }
 
-func (this *Image_ImageGcDrawerWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
+func (this *Image_ImageGcDrawerWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
 	return NewDPIUtilElementAtZoom(this.LoadImageDataZoomContextZoomContext(newImageZoomContextTargetZoom(zoom)), zoom)
 }
 

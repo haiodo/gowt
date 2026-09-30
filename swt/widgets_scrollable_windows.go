@@ -61,7 +61,7 @@ func (this *Scrollable) initScrollableParentStyle(parent *Composite, style int32
 	this.Control.initControlParentStyle(parent, style)
 }
 
-func (this *Scrollable) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Scrollable) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -269,7 +269,7 @@ func (this *Scrollable) windowClass_() *win32.TCHAR {
 	return this.display.windowClass
 }
 
-func (this *Scrollable) windowProc_() int64 {
+func (this *Scrollable) windowProcNoArgs_() int64 {
 	return this.display.windowProc
 }
 
@@ -293,7 +293,7 @@ func (this *Scrollable) wM_MOUSEHWHEEL_(wParam int64, lParam int64) *win32.LRESU
 }
 
 func (this *Scrollable) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
 	this.Control.wM_SIZE_(wParam, lParam)
 	if code == 0 {
 		return win32.LRESULTZERO
@@ -346,7 +346,7 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 			bar = this.horizontalBar
 		}
 		inner2 := newWidgetMouseWheelData(vertical, bar, wParam, this.display.scrollRemainderBar)
-		inner2.this_0 = this
+		inner2.this_0 = upcastScrollableToWidget(this)
 		var wheelData *Widget_MouseWheelData = inner2
 		if wheelData.count == 0 {
 			return nil
@@ -378,7 +378,7 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 	} else {
 		hPosition = this.horizontalBar.GetSelection()
 	}
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_MOUSEWHEEL, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_MOUSEWHEEL, wParam, lParam)
 	if this.verticalBar != (nil) {
 		var position int32 = this.verticalBar.GetSelection()
 		if position != vPosition {
@@ -458,7 +458,7 @@ func (this *Scrollable) wmScroll_(bar *ScrollBar, update bool, hwnd int64, msg i
 		}
 		win32.OSSetScrollInfo(hwnd, type_, info, true)
 	} else {
-		var code int64 = this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 		if code == 0 {
 			result = win32.LRESULTZERO
 		} else {
@@ -467,4 +467,11 @@ func (this *Scrollable) wmScroll_(bar *ScrollBar, update bool, hwnd int64, msg i
 	}
 	bar.WmScrollChild(wParam, lParam)
 	return result
+}
+
+func upcastScrollableToWidget(x *Scrollable) *Widget {
+	if x == nil {
+		return nil
+	}
+	return &x.Widget
 }

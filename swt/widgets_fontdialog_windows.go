@@ -126,6 +126,8 @@ func (this *FontDialog) Open() *FontData {
 	display.SendPreExternalEventDispatchEvent()
 	var currentDpiAwarenessContext int64 = win32.OSGetThreadDpiAwarenessContext()
 	var success bool = false
+	var tret1 *FontData
+	tretd2 := false
 	func() {
 		defer func() {
 			if display.IsRescalingAtRuntime() {
@@ -142,7 +144,9 @@ func (this *FontDialog) Open() *FontData {
 				win32.OSDestroyWindow(hwndOwner)
 			}
 			if !success {
-				return nil
+				tret1 = nil
+				tretd2 = true
+				return
 			}
 		}()
 		if display.IsRescalingAtRuntime() {
@@ -166,6 +170,9 @@ func (this *FontDialog) Open() *FontData {
 			}
 		}
 	}()
+	if tretd2 {
+		return tret1
+	}
 	return this.fontData
 }
 

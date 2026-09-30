@@ -1085,8 +1085,8 @@ func (this *MenuItem) CalculateRenderedTextSize() *Point {
 	return points
 }
 
-func (this *MenuItem) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChange_(event, scalingFactor)
+func (this *MenuItem) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	if this.impl.getImage_() != (nil) {
 		this.UpdateImage()
 	}
@@ -1134,7 +1134,7 @@ func NewMenuItemMenuItemToolTip(parentLike ShellLike) *MenuItem_MenuItemToolTip 
 
 func (this *MenuItem_MenuItemToolTip) initMenuItemMenuItemToolTip(parent *Shell) {
 	this.ToolTip.initToolTip(parent, 0)
-	this.MaybeEnableDarkSystemTheme(this.impl.hwndToolTip_())
+	this.MaybeEnableDarkSystemThemeHandle(this.impl.hwndToolTip_())
 }
 
 func (this *MenuItem_MenuItemToolTip) hwndToolTip_() int64 {

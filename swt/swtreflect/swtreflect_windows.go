@@ -6,6 +6,7 @@ package swtreflect
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
 	"reflect"
 )
@@ -1999,6 +2000,8 @@ func init() {
 	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar](), "indexOf", []reflect.Type{reflect.TypeFor[swt.ToolItemLike]()}, reflect.TypeFor[int32](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.ToolBar](target).IndexOf(jrt.ArgAs[swt.ToolItemLike](args[0]))
 	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar_ToolItemData](), "toolItem", nil, reflect.TypeFor[*swt.ToolItem](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolBar_ToolItemData](target).ToolItem() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolBar_ToolItemData](), "button", nil, reflect.TypeFor[*win32.TBBUTTON](), func(target any, args []any) any { return jrt.Narrow[*swt.ToolBar_ToolItemData](target).Button() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.ToolItem](), "addSelectionListener", []reflect.Type{reflect.TypeFor[swt.SelectionListener]()}, nil, func(target any, args []any) any {
 		jrt.Narrow[*swt.ToolItem](target).AddSelectionListener(jrt.ArgAs[swt.SelectionListener](args[0]))
 		return nil

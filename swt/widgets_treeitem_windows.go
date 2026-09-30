@@ -1396,8 +1396,8 @@ func (this *TreeItem) getNameText_() string {
 	return this.Item.getNameText_()
 }
 
-func (this *TreeItem) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChange_(event, scalingFactor)
+func (this *TreeItem) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	if this.images != (nil) {
 		for i := int32(1); i < int32(len(this.images)); i++ {
 			this.SetImageIndexImage(i, this.images[i])

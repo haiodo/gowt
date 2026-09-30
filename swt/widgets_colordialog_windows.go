@@ -147,6 +147,8 @@ func (this *ColorDialog) Open() *RGB {
 	display.SendPreExternalEventDispatchEvent()
 	var currentDpiAwarenessContext int64 = win32.OSGetThreadDpiAwarenessContext()
 	var success bool = false
+	var tret1 *RGB
+	tretd2 := false
 	func() {
 		defer func() {
 			if display.IsRescalingAtRuntime() {
@@ -161,7 +163,9 @@ func (this *ColorDialog) Open() *RGB {
 				win32.OSDestroyWindow(hwndOwner)
 			}
 			if !success {
-				return nil
+				tret1 = nil
+				tretd2 = true
+				return
 			}
 		}()
 		if display.IsRescalingAtRuntime() {
@@ -198,6 +202,9 @@ func (this *ColorDialog) Open() *RGB {
 			this.rgb = NewRGB(red, green, blue)
 		}
 	}()
+	if tretd2 {
+		return tret1
+	}
 	return this.rgb
 }
 

@@ -132,7 +132,7 @@ func Win32DPIUtilsPixelToPointOverload3(drawable Drawable, size float32, zoom in
 	if drawable != (nil) && !drawable.IsAutoScalable() {
 		return size
 	}
-	return DPIUtilPixelToPoint(size, zoom)
+	return DPIUtilPixelToPointFloat(size, zoom)
 }
 
 func Win32DPIUtilsPixelToPointAsSize(drawable Drawable, pointLike PointLike, zoom int32) *Point {
@@ -311,7 +311,7 @@ func Win32DPIUtilsScaleBoundsRectTargetZoomCurrentZoom(rectLike Rectangle_OfFloa
 		return upcastRectangle_OfFloatToRectangle(rect)
 	}
 	var fRect *Rectangle_OfFloat = RectangleOfFloatFrom(upcastRectangle_OfFloatToRectangle(rect))
-	var scaleFactor float32 = DPIUtilGetScalingFactor(targetZoom, currentZoom)
+	var scaleFactor float32 = DPIUtilGetScalingFactorZooms(targetZoom, currentZoom)
 	var scaledX float32 = fRect.GetX() * scaleFactor
 	var scaledY float32 = fRect.GetY() * scaleFactor
 	var scaledWidth float32 = fRect.GetWidth() * scaleFactor

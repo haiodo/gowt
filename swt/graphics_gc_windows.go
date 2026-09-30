@@ -714,7 +714,7 @@ func (this *GC) DrawArcInPixels(x int32, y int32, width int32, height int32, sta
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			x--
 		}
 	}
@@ -1572,7 +1572,7 @@ func (this *GC) DrawLineInPixels(x1 int32, y1 int32, x2 int32, y2 int32) {
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			x1--
 			x2--
 		}
@@ -1601,7 +1601,7 @@ func (this *GC) DrawOvalInPixels(x int32, y int32, width int32, height int32) {
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			x--
 		}
 	}
@@ -1662,7 +1662,7 @@ func (this *GC) DrawPolygonInPixels(pointArray []int32) {
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			for i := int32(0); i < int32(len(pointArray)); i += 2 {
 				pointArray[i]--
 			}
@@ -1670,7 +1670,7 @@ func (this *GC) DrawPolygonInPixels(pointArray []int32) {
 	}
 	win32.OSPolygon(this.Handle, pointArray, int32(len(pointArray))/2)
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			for i := int32(0); i < int32(len(pointArray)); i += 2 {
 				pointArray[i]++
 			}
@@ -1698,7 +1698,7 @@ func (this *GC) DrawPolylineInPixels(pointArray []int32) {
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			for i := int32(0); i < int32(len(pointArray)); i += 2 {
 				pointArray[i]--
 			}
@@ -1712,7 +1712,7 @@ func (this *GC) DrawPolylineInPixels(pointArray []int32) {
 		}
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			for i := int32(0); i < int32(len(pointArray)); i += 2 {
 				pointArray[i]++
 			}
@@ -1746,7 +1746,7 @@ func (this *GC) DrawRectangleInPixels(x int32, y int32, width int32, height int3
 	}
 	if (this.data.Style & MIRRORED) != 0 {
 		if this.data.LineWidth > 1 {
-			if (this.data.LineWidth % 2) == 1 {
+			if (float32(math.Mod(float64(this.data.LineWidth), float64(2)))) == 1 {
 				x++
 			}
 		} else {
@@ -1787,7 +1787,7 @@ func (this *GC) DrawRoundRectangleInPixels(x int32, y int32, width int32, height
 		return
 	}
 	if (this.data.Style & MIRRORED) != 0 {
-		if this.data.LineWidth != 0 && this.data.LineWidth%2 == 0 {
+		if this.data.LineWidth != 0 && float32(math.Mod(float64(this.data.LineWidth), float64(2))) == 0 {
 			x--
 		}
 	}
@@ -2131,7 +2131,7 @@ func (this *GC) DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics int64, string
 				if (flags & DRAW_TAB) != 0 {
 					var l int32 = end - start - 1
 					var bounds *win32.RectF = this.DrawTextGdipGraphicsBufferStartLengthXYFlagsMnemonicIndexLptmDraw(gdipGraphics, chars, start, l, drawX, drawY, flags, mnemonicIndex, lptm, size == (nil))
-					drawX += int32(math.Ceil(float64(bounds.Width)))
+					drawX = int32(float64(drawX) + math.Ceil(float64(bounds.Width)))
 					drawX = x + (((drawX-x)/tabWidth)+1)*tabWidth
 					mnemonicIndex = -1
 					start = end
@@ -2159,7 +2159,7 @@ func (this *GC) DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics int64, string
 						i++
 					}
 					var bounds *win32.RectF = this.DrawTextGdipGraphicsBufferStartLengthXYFlagsMnemonicIndexLptmDraw(gdipGraphics, chars, start, l, drawX, drawY, flags, mnemonicIndex, lptm, size == (nil))
-					drawY += int32(math.Ceil(float64(bounds.Height)))
+					drawY = int32(float64(drawY) + math.Ceil(float64(bounds.Height)))
 					width = int32(math.Max(float64(width), float64(drawX+int32(math.Ceil(float64(bounds.Width))))))
 					drawX = x
 					mnemonicIndex = -1
@@ -2172,7 +2172,7 @@ func (this *GC) DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics int64, string
 	}
 	var bounds *win32.RectF = this.DrawTextGdipGraphicsBufferStartLengthXYFlagsMnemonicIndexLptmDraw(gdipGraphics, chars, start, length-start, drawX, drawY, flags, mnemonicIndex, lptm, size == (nil))
 	if size != (nil) {
-		drawY += int32(math.Ceil(float64(bounds.Height)))
+		drawY = int32(float64(drawY) + math.Ceil(float64(bounds.Height)))
 		width = int32(math.Max(float64(width), float64(drawX+int32(math.Ceil(float64(bounds.Width))))))
 		size.X = width
 		size.Y = drawY
@@ -4109,7 +4109,7 @@ func (this *GC_ImageOperation) SetImage(imageLike ImageLike) {
 }
 
 func (this *GC_ImageOperation) SetCopyOfImage(image *Image) {
-	if !this.impl.isDisposed_() {
+	if !this.this_0.impl.isDisposed_() {
 		var copiedImage *Image = NewImageDeviceSrcImageFlag(image.device, image, IMAGE_COPY)
 		this.SetImage(copiedImage)
 		this.RegisterForDisposal(upcastImageToResource(copiedImage))

@@ -55,7 +55,7 @@ func (this *Spinner) initSpinner(parent *Composite, style int32) {
 	this.Composite.initCompositeParentStyle(parent, SpinnerCheckStyle(style))
 }
 
-func (this *Spinner) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Spinner) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -542,8 +542,8 @@ func (this *Spinner) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int3
 	return false
 }
 
-func (this *Spinner) setBackgroundImageHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmap_(hBitmap)
+func (this *Spinner) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
 	win32.OSInvalidateRect(this.hwndText, nil, true)
 }
 
@@ -703,7 +703,7 @@ func (this *Spinner) SetTextLimit(limit int32) {
 	win32.OSSendMessageOverload4(this.hwndText, win32.OSEM_SETLIMITTEXT, int64(limit), int64(0))
 }
 
-func (this *Spinner) setToolTipTextShellString_(shell *Shell, string_ string) {
+func (this *Spinner) setToolTipTextShellStringShellString_(shell *Shell, string_ string) {
 	shell.SetToolTipTextHwndText(this.hwndText, string_)
 	shell.SetToolTipTextHwndText(this.hwndUpDown, string_)
 }
@@ -809,7 +809,7 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 	return event.Text
 }
 
-func (this *Spinner) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Spinner) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if hwnd == this.hwndText || hwnd == this.hwndUpDown {
 		var result *win32.LRESULT = nil
 		switch msg {
@@ -906,14 +906,14 @@ func (this *Spinner) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wPara
 		if result != (nil) {
 			return result.Value
 		}
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
-	return this.Composite.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Composite.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Spinner) wM_ERASEBKGND_(wParam int64, lParam int64) *win32.LRESULT {
 	this.Composite.wM_ERASEBKGND_(wParam, lParam)
-	this.DrawBackground(wParam)
+	this.DrawBackgroundHDC(wParam)
 	return win32.LRESULTONE
 }
 
@@ -962,11 +962,11 @@ func (this *Spinner) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.L
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTZERO
 	}
 	this.ignoreCharacter = true
-	var result int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_IME_CHAR, wParam, lParam)
+	var result int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_IME_CHAR, wParam, lParam)
 	var msg *win32.MSG = win32.NewMSG()
 	var flags int32 = win32.OSPM_REMOVE | win32.OSPM_NOYIELD | win32.OSPM_QS_INPUT | win32.OSPM_QS_POSTMESSAGE
 	for win32.OSPeekMessage(msg, hwnd, win32.OSWM_CHAR, win32.OSWM_CHAR, flags) {
@@ -974,7 +974,7 @@ func (this *Spinner) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.L
 		win32.OSDispatchMessage(msg)
 	}
 	this.ignoreCharacter = false
-	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventTypeMsgWParamLParam(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.NewLRESULT(result)

@@ -83,11 +83,11 @@ func (this *DateTime) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *DateTime) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *DateTime) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
-	return win32.OSCallWindowProc(this.impl.windowProc_(), hwnd, msg, wParam, lParam)
+	return win32.OSCallWindowProc(this.impl.windowProcNoArgs_(), hwnd, msg, wParam, lParam)
 }
 
 func (this *DateTime) checkSubclass_() {
@@ -556,7 +556,7 @@ func (this *DateTime) windowClass_() *win32.TCHAR {
 	return cond5
 }
 
-func (this *DateTime) windowProc_() int64 {
+func (this *DateTime) windowProcNoArgs_() int64 {
 	var cond6 int64
 	if (this.style & CALENDAR) != 0 {
 		cond6 = DateTimeCalendarProc
@@ -666,7 +666,7 @@ func (this *DateTime) wM_TIMER_(wParam int64, lParam int64) *win32.LRESULT {
 		return result
 	}
 	this.ignoreSelection = true
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_TIMER, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_TIMER, wParam, lParam)
 	this.ignoreSelection = false
 	var cond7 *win32.LRESULT
 	if code == 0 {

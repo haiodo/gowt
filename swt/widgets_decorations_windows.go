@@ -160,7 +160,7 @@ func (this *Decorations) checkSubclass_() {
 	}
 }
 
-func (this *Decorations) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Decorations) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -590,7 +590,7 @@ func (this *Decorations) SaveFocus() {
 	}
 }
 
-func (this *Decorations) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Decorations) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	this.swFlags = win32.OSSW_SHOWNOACTIVATE
 	if win32.OSIsIconic(this.Handle) {
 		this.SetPlacement(x, y, width, height, flags)
@@ -621,7 +621,7 @@ func (this *Decorations) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y in
 		this._setMaximized(false)
 		return
 	}
-	this.Canvas.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
+	this.Canvas.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
 }
 
 func (this *Decorations) SetDefaultButton(buttonLike ButtonLike) {
@@ -918,7 +918,7 @@ func (this *Decorations) SetPlacement(x int32, y int32, width int32, height int3
 			}
 			if this.layout != (nil) {
 				this.impl.markLayout_(false, false)
-				this.impl.updateLayout_(true, false)
+				this.impl.updateLayoutResizeAll_(true, false)
 			}
 		}
 	}
@@ -1230,7 +1230,7 @@ func (this *Decorations) widgetStyle_() int32 {
 	return bits
 }
 
-func (this *Decorations) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Decorations) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	switch msg {
 	case DisplaySWT_GETACCEL, DisplaySWT_GETACCELCOUNT:
 		if this.hAccel == -1 {
@@ -1244,7 +1244,7 @@ func (this *Decorations) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, w
 		}
 		return cond6
 	}
-	return this.Canvas.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Canvas.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Decorations) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1471,8 +1471,8 @@ func (this *Decorations) wM_WINDOWPOSCHANGING_(wParam int64, lParam int64) *win3
 	return result
 }
 
-func (this *Decorations) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Canvas.handleDPIChange_(event, scalingFactor)
+func (this *Decorations) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Canvas.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var menuBar *Menu = this.GetMenuBar()
 	if menuBar != (nil) && !menuBar.IsDisposed() {
 		menuBar.NotifyListeners(ZoomChanged, event)
@@ -1552,11 +1552,11 @@ func DecorationsIsCloserThan(dataToTestLike ImageDataLike, referenceDataLike Ima
 	_ = referenceData
 	var widthDifferenceOfTestData int32 = dataToTest.Width - targetWidth
 	if widthDifferenceOfTestData < 0 {
-		widthDifferenceOfTestData *= int32(-1.5)
+		widthDifferenceOfTestData = int32(float64(widthDifferenceOfTestData) * -1.5)
 	}
 	var widthDifferenceOfReferenceData int32 = referenceData.Width - targetWidth
 	if widthDifferenceOfReferenceData < 0 {
-		widthDifferenceOfReferenceData *= int32(-1.5)
+		widthDifferenceOfReferenceData = int32(float64(widthDifferenceOfReferenceData) * -1.5)
 	}
 	if widthDifferenceOfTestData < widthDifferenceOfReferenceData {
 		return true

@@ -286,7 +286,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 		if this.explorerTheme {
 			var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_STYLE)
 			if (bits & win32.OSTVS_TRACKSELECT) != 0 {
-				win32.OSSetTextColor(hDC, this.GetForegroundPixel())
+				win32.OSSetTextColor(hDC, this.GetForegroundPixelNoArgs())
 			}
 		}
 	}
@@ -471,8 +471,8 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 				var drawForeground bool = false
 				if selected {
 					if i != 0 && (this.style&FULL_SELECTION) == 0 {
-						win32.OSSetTextColor(hDC, this.GetForegroundPixel())
-						win32.OSSetBkColor(hDC, this.GetBackgroundPixel())
+						win32.OSSetTextColor(hDC, this.GetForegroundPixelNoArgs())
+						win32.OSSetBkColor(hDC, this.GetBackgroundPixelNoArgs())
 						drawBackground = true
 						drawForeground = drawBackground
 					}
@@ -678,7 +678,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 											if control == (nil) {
 												control = upcastTreeToControl(this)
 											}
-											clrTextBk = control.GetBackgroundPixel()
+											clrTextBk = control.GetBackgroundPixelNoArgs()
 										}
 									}
 								}
@@ -1073,10 +1073,10 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 			win32.OSSetRect(rect, nmcd.Left, nmcd.Top, nmcd.Right, nmcd.Bottom)
 			var cellRect *win32.RECT = item.GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(index, true, true, true, true, true, hDC)
 			if clrSortBk != -1 {
-				this.DrawBackgroundHDCRectPixelTxTy(hDC, cellRect, clrSortBk, 0, 0)
+				this.DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC, cellRect, clrSortBk, 0, 0)
 			} else {
 				if win32.OSIsWindowEnabled(this.Handle) || this.FindImageControl() != (nil) {
-					this.DrawBackgroundHDCRect(hDC, rect)
+					this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 				} else {
 					this.FillBackgroundLocal1(hDC, win32.OSGetBkColor(hDC), rect)
 				}
@@ -1235,7 +1235,7 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 					nmcd.UItemState |= win32.OSCDIS_DISABLED
 					var newColor int32
 					if clrText == -1 {
-						newColor = this.GetForegroundPixel()
+						newColor = this.GetForegroundPixelNoArgs()
 					} else {
 						newColor = clrText
 					}
@@ -1292,7 +1292,7 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 					this.FillBackgroundLocal1(hDC, win32.OSGetBkColor(hDC), rect)
 				} else {
 					if win32.OSIsWindowEnabled(this.Handle) {
-						this.DrawBackgroundHDCRect(hDC, rect)
+						this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 					}
 				}
 				nmcd.UItemState &= ^win32.OSCDIS_FOCUS
@@ -1338,12 +1338,12 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 			}
 			if !selected {
 				if clrText == -1 {
-					nmcd.ClrText = this.GetForegroundPixel()
+					nmcd.ClrText = this.GetForegroundPixelNoArgs()
 				} else {
 					nmcd.ClrText = clrText
 				}
 				if clrTextBk == -1 {
-					nmcd.ClrTextBk = this.GetBackgroundPixel()
+					nmcd.ClrTextBk = this.GetBackgroundPixelNoArgs()
 				} else {
 					nmcd.ClrTextBk = clrTextBk
 				}
@@ -1358,7 +1358,7 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 					nmcd.UItemState |= win32.OSCDIS_DISABLED
 					var newColor int32
 					if clrText == -1 {
-						newColor = this.GetForegroundPixel()
+						newColor = this.GetForegroundPixelNoArgs()
 					} else {
 						newColor = clrText
 					}
@@ -1486,13 +1486,13 @@ func (this *Tree) CDDS_PREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lParam
 		if (win32.OSIsWindowEnabled(this.Handle) && this.Hooks(EraseItem)) || this.HasCustomBackground() || this.FindImageControl() != (nil) {
 			var rect *win32.RECT = win32.NewRECT()
 			win32.OSSetRect(rect, nmcd.Left, nmcd.Top, nmcd.Right, nmcd.Bottom)
-			this.DrawBackgroundHDCRect(nmcd.Hdc, rect)
+			this.DrawBackgroundHDCRectHDCRect(nmcd.Hdc, rect)
 		}
 	}
 	return win32.NewLRESULT(int64(win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT))
 }
 
-func (this *Tree) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Tree) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -1848,7 +1848,7 @@ func (this *Tree) CreateHeaderToolTips() {
 	if this.headerToolTipHandle == 0 {
 		this.Error(ERROR_NO_HANDLES)
 	}
-	this.MaybeEnableDarkSystemTheme(this.headerToolTipHandle)
+	this.MaybeEnableDarkSystemThemeHandle(this.headerToolTipHandle)
 	win32.OSSendMessageOverload4(this.headerToolTipHandle, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 }
 
@@ -2128,7 +2128,7 @@ func (this *Tree) CreateItemToolTips() {
 	if this.itemToolTipHandle == 0 {
 		this.Error(ERROR_NO_HANDLES)
 	}
-	this.MaybeEnableDarkSystemTheme(this.itemToolTipHandle)
+	this.MaybeEnableDarkSystemThemeHandle(this.itemToolTipHandle)
 	win32.OSSendMessageOverload4(this.itemToolTipHandle, win32.OSTTM_SETDELAYTIME, int64(win32.OSTTDT_INITIAL), int64(0))
 	win32.OSSendMessageOverload4(this.itemToolTipHandle, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 	var lpti *win32.TOOLINFO = win32.NewTOOLINFO()
@@ -2160,7 +2160,7 @@ func (this *Tree) CreateParent() {
 		this.Error(ERROR_NO_HANDLES)
 	}
 	win32.OSSetWindowLongPtr(this.hwndParent, win32.OSGWLP_ID, this.hwndParent)
-	this.MaybeEnableDarkSystemTheme(this.hwndParent)
+	this.MaybeEnableDarkSystemThemeHandle(this.hwndParent)
 	var bits int32 = win32.OSWS_EX_NOINHERITLAYOUT
 	if (this.style & RIGHT_TO_LEFT) != 0 {
 		bits |= win32.OSWS_EX_LAYOUTRTL
@@ -2170,7 +2170,7 @@ func (this *Tree) CreateParent() {
 		this.Error(ERROR_NO_HANDLES)
 	}
 	win32.OSSetWindowLongPtr(this.hwndHeader, win32.OSGWLP_ID, this.hwndHeader)
-	this.MaybeEnableDarkSystemTheme(this.hwndHeader)
+	this.MaybeEnableDarkSystemThemeHandle(this.hwndHeader)
 	var hFont int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSWM_GETFONT, int64(0), int64(0))
 	if hFont != 0 {
 		win32.OSSendMessageOverload4(this.hwndHeader, win32.OSWM_SETFONT, hFont, int64(0))
@@ -2548,7 +2548,7 @@ func (this *Tree) enableWidget_(enabled bool) {
 	if control.backgroundImage == (nil) {
 		var cond10 int32
 		if this.HasCustomBackground() {
-			cond10 = control.GetBackgroundPixel()
+			cond10 = control.GetBackgroundPixelNoArgs()
 		} else {
 			cond10 = -1
 		}
@@ -2651,7 +2651,7 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 	if hFirstItem == this.cachedFirstItem {
 		if this.cachedFirstItem == hItem {
 			this.cachedIndexItem = this.cachedFirstItem
-			cond11 := 0
+			var cond11 int32 = 0
 			this.cachedIndex = cond11
 			return cond11
 		}
@@ -2711,7 +2711,7 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 	return -1
 }
 
-func (this *Tree) findItem_(hItem int64) *Widget {
+func (this *Tree) findItemId_(hItem int64) *Widget {
 	return upcastTreeItemToWidget(this._getItem(hItem))
 }
 
@@ -3278,7 +3278,7 @@ func (this *Tree) GetSortColumn() *TreeColumn {
 func (this *Tree) GetSortColumnPixel() int32 {
 	var pixel int32
 	if win32.OSIsWindowEnabled(this.Handle) || this.HasCustomBackground() {
-		pixel = this.GetBackgroundPixel()
+		pixel = this.GetBackgroundPixelNoArgs()
 	} else {
 		pixel = win32.OSGetSysColor(win32.OSCOLOR_3DFACE)
 	}
@@ -4081,8 +4081,8 @@ func (this *Tree) SendPaintItemEvent(itemLike TreeItemLike, nmcd *win32.NMTTCUST
 	return event
 }
 
-func (this *Tree) setBackgroundImageHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmap_(hBitmap)
+func (this *Tree) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
 	if hBitmap != 0 {
 		if win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETBKCOLOR, int64(0), int64(0)) == -1 {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETBKCOLOR, int64(0), int64(-1))
@@ -4094,7 +4094,7 @@ func (this *Tree) setBackgroundImageHBitmap_(hBitmap int64) {
 			control = upcastTreeToControl(this)
 		}
 		if control.backgroundImage == (nil) {
-			this.impl.setBackgroundPixel_(control.GetBackgroundPixel())
+			this.impl.setBackgroundPixel_(control.GetBackgroundPixelNoArgs())
 		}
 	}
 	this.UpdateFullSelection()
@@ -4199,7 +4199,7 @@ func (this *Tree) SetCheckboxImageList() {
 	if control == (nil) {
 		control = upcastTreeToControl(this)
 	}
-	var clrBackground int32 = control.GetBackgroundPixel()
+	var clrBackground int32 = control.GetBackgroundPixelNoArgs()
 	var hBrush int64 = win32.OSCreateSolidBrush(clrBackground)
 	win32.OSFillRect(memDC, rect, hBrush)
 	win32.OSDeleteObject(hBrush)
@@ -5216,11 +5216,11 @@ func (this *Tree) windowClass_() *win32.TCHAR {
 	return TreeTreeClass
 }
 
-func (this *Tree) windowProc_() int64 {
+func (this *Tree) windowProcNoArgs_() int64 {
 	return TreeTreeProc
 }
 
-func (this *Tree) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Tree) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.hwndHeader != 0 && hwnd == this.hwndHeader {
 		switch msg {
 		case win32.OSWM_CONTEXTMENU:
@@ -5271,7 +5271,7 @@ func (this *Tree) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 				break
 			}
 		}
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
 	if this.hwndParent != 0 && hwnd == this.hwndParent {
 		switch msg {
@@ -5287,14 +5287,14 @@ func (this *Tree) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 					return int64(0)
 				}
 				this.SetResizeChildren(false)
-				var code int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_SIZE, wParam, lParam)
+				var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_SIZE, wParam, lParam)
 				this.SendEventEventType(Resize)
 				if this.IsDisposed() {
 					return int64(0)
 				}
 				if this.layout != (nil) {
 					this.impl.markLayout_(false, false)
-					this.impl.updateLayout_(false, false)
+					this.impl.updateLayoutResizeAll_(false, false)
 				}
 				this.SetResizeChildren(true)
 				this.UpdateScrollBar()
@@ -5344,7 +5344,7 @@ func (this *Tree) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 				return code
 			}
 		}
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
 	if msg == DisplayDI_GETDRAGIMAGE {
 		if (this.style&MULTI) != 0 || this.Hooks(EraseItem) || this.Hooks(PaintItem) {
@@ -5441,7 +5441,7 @@ func (this *Tree) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 			return int64(1)
 		}
 	}
-	return this.Composite.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Composite.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Tree) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
@@ -5573,7 +5573,7 @@ func (this *Tree) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			} else {
 				cond39 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond39), lParam)
+			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, int64(cond39), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -5610,7 +5610,7 @@ func (this *Tree) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 					}
 					this.ignoreDeselect = true
 					this.ignoreSelect = this.ignoreDeselect
-					var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+					var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 					this.ignoreDeselect = false
 					this.ignoreSelect = this.ignoreDeselect
 					var hNewItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
@@ -5757,7 +5757,7 @@ func (this *Tree) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 					}
 				}
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 			this.hAnchor = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
 			return win32.NewLRESULT(code)
 		}
@@ -5913,7 +5913,7 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			this.ignoreSelect = this.lockSelection
 			this.ignoreDeselect = this.ignoreSelect
 		}
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
 		if win32.OSGetFocus() != this.Handle {
 			win32.OSSetFocus(this.Handle)
 		}
@@ -6026,7 +6026,7 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 				}
 				return win32.LRESULTZERO
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
+			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
 			if win32.OSGetFocus() != this.Handle {
 				win32.OSSetFocus(this.Handle)
 			}
@@ -6077,7 +6077,7 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	this.dragStarted = this.gestureCompleted
 	this.ignoreSelect = true
 	this.ignoreDeselect = this.ignoreSelect
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_LBUTTONDOWN, wParam, lParam)
 	if win32.OSGetFocus() != this.Handle {
 		win32.OSSetFocus(this.Handle)
 	}
@@ -6088,7 +6088,7 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			hNewItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
 		}
 		if !this.dragStarted && (this.state&WidgetDRAG_DETECT) != 0 && this.Hooks(DragDetect) {
-			this.dragStarted = this.impl.dragDetect_(this.Handle, lpht.X, lpht.Y, false, nil, nil)
+			this.dragStarted = this.impl.dragDetectHwndXYFilterDetectConsume_(this.Handle, lpht.X, lpht.Y, false, nil, nil)
 		}
 	}
 	this.ignoreSelect = false
@@ -6376,8 +6376,8 @@ func (this *Tree) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				var hOldBitmap int64 = win32.OSSelectObject(hDC, hBitmap)
 				var rect *win32.RECT = win32.NewRECT()
 				win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-				this.DrawBackgroundHDCRect(hDC, rect)
-				this.impl.callWindowProc_(this.Handle, win32.OSWM_PAINT, hDC, int64(0))
+				this.DrawBackgroundHDCRectHDCRect(hDC, rect)
+				this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_PAINT, hDC, int64(0))
 				win32.OSSetWindowOrgEx(hDC, lpPoint1.X, lpPoint1.Y, nil)
 				win32.OSSetBrushOrgEx(hDC, lpPoint2.X, lpPoint2.Y, nil)
 				win32.OSBitBlt(paintDC, ps.Left, ps.Top, width, height, hDC, 0, 0, win32.OSSRCCOPY)
@@ -7469,8 +7469,8 @@ func (this *Tree) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam i
 	return nil
 }
 
-func (this *Tree) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChange_(event, scalingFactor)
+func (this *Tree) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var display *Display = this.GetDisplay()
 	if this.headerImageList != (nil) {
 		display.ReleaseImageList(this.headerImageList)

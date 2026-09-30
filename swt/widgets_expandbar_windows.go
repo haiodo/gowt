@@ -44,7 +44,7 @@ func (this *ExpandBar) AddExpandListener(listener ExpandListener) {
 	this.AddTypedListener(listener, []int32{Expand, Collapse})
 }
 
-func (this *ExpandBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *ExpandBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -226,7 +226,7 @@ func (this *ExpandBar) DrawWidget(gcLike GCLike, clipRect *win32.RECT) {
 		win32.OSGetClientRect(this.Handle, rect)
 		win32.OSDrawThemeBackground(hTheme, gc.Handle, win32.OSEBP_HEADERBACKGROUND, 0, rect, clipRect)
 	} else {
-		this.DrawBackground(gc.Handle)
+		this.DrawBackgroundHDC(gc.Handle)
 	}
 	var drawFocus bool = false
 	if this.Handle == win32.OSGetFocus() {
@@ -575,7 +575,7 @@ func (this *ExpandBar) windowClass_() *win32.TCHAR {
 	return this.display.windowClass
 }
 
-func (this *ExpandBar) windowProc_() int64 {
+func (this *ExpandBar) windowProcNoArgs_() int64 {
 	return this.display.windowProc
 }
 
@@ -758,7 +758,7 @@ func (this *ExpandBar) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESUL
 	win32.OSGetClientRect(this.Handle, rect)
 	var data *GCData = NewGCData()
 	data.Device = upcastDisplayToDevice(this.display)
-	data.Foreground = this.GetForegroundPixel()
+	data.Foreground = this.GetForegroundPixelNoArgs()
 	var gc *GC = this.impl.createNewGC_(wParam, data)
 	this.DrawWidget(gc, rect)
 	gc.impl.dispose_()
@@ -825,8 +825,8 @@ func (this *ExpandBar) wmScroll_(bar *ScrollBar, update bool, hwnd int64, msg in
 	return result
 }
 
-func (this *ExpandBar) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChange_(event, scalingFactor)
+func (this *ExpandBar) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
 			item.NotifyListeners(ZoomChanged, event)

@@ -196,7 +196,7 @@ func (this *Button) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Button) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Button) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -833,7 +833,7 @@ func (this *Button) windowClass_() *win32.TCHAR {
 	return ButtonButtonClass
 }
 
-func (this *Button) windowProc_() int64 {
+func (this *Button) windowProcNoArgs_() int64 {
 	return ButtonButtonProc
 }
 
@@ -853,9 +853,8 @@ func (this *Button) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 			tretd5 = true
 			return
 		}()
-		if tretd5 {
-			return tret4
-		}
+		_ = tretd5
+		return tret4
 	}
 }
 
@@ -1162,8 +1161,8 @@ func (this *Button) wmDrawChild_(wParam int64, lParam int64) *win32.LRESULT {
 	return nil
 }
 
-func (this *Button) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Control.handleDPIChange_(event, scalingFactor)
+func (this *Button) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Control.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var newZoom int32 = event.Detail
 	this.RefreshCheckSize(newZoom)
 	if this.image != (nil) {

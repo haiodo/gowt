@@ -46,7 +46,7 @@ func (this *Sash) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Sash) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Sash) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -113,13 +113,13 @@ func (this *Sash) windowClass_() *win32.TCHAR {
 	return this.display.windowClass
 }
 
-func (this *Sash) windowProc_() int64 {
+func (this *Sash) windowProcNoArgs_() int64 {
 	return this.display.windowProc
 }
 
 func (this *Sash) wM_ERASEBKGND_(wParam int64, lParam int64) *win32.LRESULT {
 	this.Control.wM_ERASEBKGND_(wParam, lParam)
-	this.DrawBackground(wParam)
+	this.DrawBackgroundHDC(wParam)
 	return win32.LRESULTONE
 }
 
@@ -244,7 +244,7 @@ func (this *Sash) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSRedrawWindow(hwndTrack, nil, int64(0), flags)
 		this.DrawBand(boundsInPixels.X, boundsInPixels.Y, width, height)
 		if (this.style & SMOOTH) != 0 {
-			this.SetBoundsInPixels(boundsInPixels.X, boundsInPixels.Y, width, height)
+			this.SetBoundsInPixelsXYWidthHeight(boundsInPixels.X, boundsInPixels.Y, width, height)
 		}
 	}
 	return result
@@ -275,7 +275,7 @@ func (this *Sash) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT {
 		if (this.style & SMOOTH) != 0 {
 			var xInPixels int32 = DPIUtilPointToPixel(bounds.X, this.impl.getAutoscalingZoom_())
 			var yInPixels int32 = DPIUtilPointToPixel(bounds.Y, this.impl.getAutoscalingZoom_())
-			this.SetBoundsInPixels(xInPixels, yInPixels, widthInPixels, heightInPixels)
+			this.SetBoundsInPixelsXYWidthHeight(xInPixels, yInPixels, widthInPixels, heightInPixels)
 		}
 	}
 	return result
@@ -331,7 +331,7 @@ func (this *Sash) wM_MOUSEMOVE_(wParam int64, lParam int64) *win32.LRESULT {
 	win32.OSRedrawWindow(hwndTrack, nil, int64(0), flags)
 	this.DrawBand(this.lastX, this.lastY, width, height)
 	if (this.style & SMOOTH) != 0 {
-		this.SetBoundsInPixels(this.lastX, this.lastY, width, height)
+		this.SetBoundsInPixelsXYWidthHeight(this.lastX, this.lastY, width, height)
 	}
 	return result
 }

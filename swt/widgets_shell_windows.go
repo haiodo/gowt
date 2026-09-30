@@ -197,7 +197,7 @@ func (this *Shell) BalloonTipHandle() int64 {
 	return this.balloonTipHandle
 }
 
-func (this *Shell) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Shell) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -556,8 +556,8 @@ func (this *Shell) FixShell(newShellLike ShellLike, controlLike ControlLike) {
 	}
 	var toolTipText string = control.toolTipText
 	if toolTipText != "" {
-		control.impl.setToolTipTextShellString_(this, "")
-		control.impl.setToolTipTextShellString_(newShell, toolTipText)
+		control.impl.setToolTipTextShellStringShellString_(this, "")
+		control.impl.setToolTipTextShellStringShellString_(newShell, toolTipText)
 	}
 }
 
@@ -1156,14 +1156,14 @@ func (this *Shell) setBoundsRect_(rect *Rectangle) {
 	}
 	this.CheckWidget()
 	var boundsInPixels *Rectangle = this.GetDisplay().TranslateToDisplayCoordinatesRect(rect)
-	this.SetBoundsInPixels(boundsInPixels.X, boundsInPixels.Y, DPIUtilPointToPixel(rect.Width, this.impl.getAutoscalingZoom_()), DPIUtilPointToPixel(rect.Height, this.impl.getAutoscalingZoom_()))
+	this.SetBoundsInPixelsXYWidthHeight(boundsInPixels.X, boundsInPixels.Y, DPIUtilPointToPixel(rect.Width, this.impl.getAutoscalingZoom_()), DPIUtilPointToPixel(rect.Height, this.impl.getAutoscalingZoom_()))
 }
 
 func (this *Shell) setBounds_(x int32, y int32, width int32, height int32) {
 	this.impl.setBoundsRect_(NewRectangle(x, y, width, height))
 }
 
-func (this *Shell) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Shell) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	if this.fullScreen {
 		this.SetFullScreen(false)
 	}
@@ -1171,7 +1171,7 @@ func (this *Shell) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, w
 	if (bits & win32.OSWS_EX_LAYERED) != 0 {
 		flags &= ^win32.OSSWP_DRAWFRAME
 	}
-	this.Decorations.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
+	this.Decorations.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
 }
 
 func (this *Shell) setEnabled_(enabled bool) {
@@ -1426,7 +1426,7 @@ func (this *Shell) SetToolTipTextHwndText(hwnd int64, text string) {
 	lpti.Hwnd = this.Handle
 	lpti.UId = hwnd
 	var hwndToolTip int64 = this.ToolTipHandle()
-	this.MaybeEnableDarkSystemTheme(hwndToolTip)
+	this.MaybeEnableDarkSystemThemeHandle(hwndToolTip)
 	if text == "" {
 		win32.OSSendMessageOverload20(hwndToolTip, win32.OSTTM_DELTOOL, int64(0), lpti)
 		return
@@ -1678,21 +1678,21 @@ func (this *Shell) windowClass_() *win32.TCHAR {
 	return cond10
 }
 
-func (this *Shell) windowProc_() int64 {
+func (this *Shell) windowProcNoArgs_() int64 {
 	if this.windowProc != 0 {
 		return this.windowProc
 	}
 	if (this.style & TOOL) != 0 {
 		var trim int32 = TITLE | CLOSE | MIN | MAX | BORDER | RESIZE
 		if (this.style & trim) == 0 {
-			return this.Decorations.windowProc_()
+			return this.Decorations.windowProcNoArgs_()
 		}
 	}
 	var cond11 int64
 	if this.parent != (nil) {
 		cond11 = ShellDialogProc
 	} else {
-		cond11 = this.Decorations.windowProc_()
+		cond11 = this.Decorations.windowProcNoArgs_()
 	}
 	return cond11
 }
@@ -1756,7 +1756,7 @@ func (this *Shell) FillUnpaintedRegionInShellWindow() {
 	win32.OSReleaseDC(this.Handle, dc)
 }
 
-func (this *Shell) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Shell) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -1786,7 +1786,7 @@ func (this *Shell) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 				break
 			}
 		}
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
 	if hwnd == this.Handle {
 		if msg == DisplayTASKBARBUTTONCREATED {
@@ -1803,13 +1803,13 @@ func (this *Shell) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 	switch msg {
 	case win32.OSWM_NCACTIVATE, win32.OSWM_NCPAINT:
 		{
-			var ret int64 = this.Decorations.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+			var ret int64 = this.Decorations.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 			this.OverpaintMenuBorder()
 			this.FillUnpaintedRegionInShellWindow()
 			return ret
 		}
 	}
-	return this.Decorations.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Decorations.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Shell) widgetStyle_() int32 {
@@ -1902,7 +1902,7 @@ func (this *Shell) HandleMonitorSpecificDpiChange(newNativeZoom int32, newBounds
 			ControlCompleteZoomChangeTask(zoomChangedEvent, this)
 		}()
 		this.NotifyListeners(ZoomChanged, zoomChangedEvent)
-		this.SetBoundsInPixels(newBoundsInPixels.X, newBoundsInPixels.Y, newBoundsInPixels.Width, newBoundsInPixels.Height)
+		this.SetBoundsInPixelsXYWidthHeight(newBoundsInPixels.X, newBoundsInPixels.Y, newBoundsInPixels.Width, newBoundsInPixels.Height)
 	}
 }
 
@@ -1994,7 +1994,7 @@ func (this *Shell) wM_MOUSEACTIVATE_(wParam int64, lParam int64) *win32.LRESULT 
 			}
 		}
 	}
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_MOUSEACTIVATE, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_MOUSEACTIVATE, wParam, lParam)
 	this.SetActiveControlControlType(control, MouseDown)
 	return win32.NewLRESULT(code)
 }
@@ -2019,14 +2019,14 @@ func (this *Shell) wM_NCHITTEST_(wParam int64, lParam int64) *win32.LRESULT {
 		if !DisplayTrimEnabled {
 			return win32.NewLRESULT(int64(win32.OSHTNOWHERE))
 		}
-		var hittest int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
+		var hittest int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
 		if hittest == int64(win32.OSHTCLIENT) || hittest == int64(win32.OSHTMENU) {
 			hittest = int64(win32.OSHTBORDER)
 		}
 		return win32.NewLRESULT(hittest)
 	}
 	if this.menuBar != (nil) && !this.menuBar.GetEnabled() {
-		var hittest int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
+		var hittest int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
 		if hittest == int64(win32.OSHTMENU) {
 			hittest = int64(win32.OSHTBORDER)
 		}
@@ -2046,7 +2046,7 @@ func (this *Shell) wM_NCLBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT 
 	}
 	var display *Display = this.display
 	display.lockActiveWindow = true
-	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCLBUTTONDOWN, wParam, lParam)
+	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCLBUTTONDOWN, wParam, lParam)
 	display.lockActiveWindow = false
 	var focusControl *Control = display.lastHittestControl
 	if focusControl != (nil) && !focusControl.IsDisposed() {

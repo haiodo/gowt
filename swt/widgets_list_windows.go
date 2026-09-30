@@ -93,7 +93,7 @@ func (this *List) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *List) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *List) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -484,7 +484,7 @@ func (this *List) RemoveIndices(indices []int32) {
 	}
 	var newIndices []int32 = make([]int32, int32(len(indices)))
 	copy(newIndices[0:], indices[0:0+int32(len(indices))])
-	this.Sort(newIndices)
+	this.SortItems(newIndices)
 	var start int32 = newIndices[int32(len(newIndices))-1]
 	var end int32 = newIndices[0]
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCOUNT, int64(0), int64(0)))
@@ -1225,11 +1225,11 @@ func (this *List) windowClass_() *win32.TCHAR {
 	return ListListClass
 }
 
-func (this *List) windowProc_() int64 {
+func (this *List) windowProcNoArgs_() int64 {
 	return ListListProc
 }
 
-func (this *List) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *List) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle != 0 && lParam != 0 && (this.state&WidgetHAS_AUTO_DIRECTION) != 0 {
 		switch msg {
 		case win32.OSLB_ADDSTRING, win32.OSLB_INSERTSTRING, win32.OSLB_FINDSTRINGEXACT:
@@ -1257,13 +1257,13 @@ func (this *List) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam i
 			length = buffer.Length() * win32.TCHARSizeof
 			var pszText int64 = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, length)
 			win32.OSMoveMemory(pszText, buffer, length)
-			var code int64 = this.Scrollable.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, pszText)
+			var code int64 = this.Scrollable.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, pszText)
 			win32.OSHeapFree(hHeap, 0, pszText)
 			this.addedUCC = true
 			return code
 		}
 	}
-	return this.Scrollable.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Scrollable.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *List) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1436,8 +1436,8 @@ func (this *List) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 	return this.Scrollable.wmCommandChild_(wParam, lParam)
 }
 
-func (this *List) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Scrollable.handleDPIChange_(event, scalingFactor)
+func (this *List) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Scrollable.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	if (this.style & H_SCROLL) != 0 {
 		this.SetScrollWidth0()
 	}

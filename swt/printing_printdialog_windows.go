@@ -164,10 +164,10 @@ func (this *PrintDialog) Open() *PrinterData {
 	var externalLoopKey string = "org.eclipse.swt.internal.win32.externalEventLoop"
 	if !success {
 		pd.Flags = win32.OSPD_RETURNDEFAULT
-		display.SetData(externalLoopKey, boolTRUE)
+		display.SetData(externalLoopKey, true)
 		display.SendPreExternalEventDispatchEvent()
 		success = win32.OSPrintDlg(pd)
-		display.SetData(externalLoopKey, boolFALSE)
+		display.SetData(externalLoopKey, false)
 		display.SendPostExternalEventDispatchEvent()
 		if success {
 			if pd.HDevNames != 0 {
@@ -261,11 +261,11 @@ func (this *PrintDialog) Open() *PrinterData {
 		}
 		var key string = "org.eclipse.swt.internal.win32.runMessagesInIdle"
 		var oldValue any = display.GetData(key)
-		display.SetData(key, boolTRUE)
-		display.SetData(externalLoopKey, boolTRUE)
+		display.SetData(key, true)
+		display.SetData(externalLoopKey, true)
 		display.SendPreExternalEventDispatchEvent()
 		success = win32.OSPrintDlg(pd)
-		display.SetData(externalLoopKey, boolFALSE)
+		display.SetData(externalLoopKey, false)
 		display.SendPostExternalEventDispatchEvent()
 		display.SetData(key, oldValue)
 		if (this.GetStyle() & (APPLICATION_MODAL | SYSTEM_MODAL)) != 0 {

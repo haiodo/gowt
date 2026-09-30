@@ -48,7 +48,7 @@ func (this *Label) initLabel(parent *Composite, style int32) {
 	this.text = ""
 }
 
-func (this *Label) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Label) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -341,7 +341,7 @@ func (this *Label) windowClass_() *win32.TCHAR {
 	return LabelLabelClass
 }
 
-func (this *Label) windowProc_() int64 {
+func (this *Label) windowProcNoArgs_() int64 {
 	return LabelLabelProc
 }
 
@@ -494,7 +494,7 @@ func (this *Label) WmDrawChildText(struct_ *win32.DRAWITEMSTRUCT) {
 func (this *Label) wmDrawChild_(wParam int64, lParam int64) *win32.LRESULT {
 	var struct_ *win32.DRAWITEMSTRUCT = win32.NewDRAWITEMSTRUCT()
 	win32.OSMoveMemoryOverload33(struct_, lParam, win32.DRAWITEMSTRUCTSizeof)
-	this.DrawBackground(struct_.HDC)
+	this.DrawBackgroundHDC(struct_.HDC)
 	if (this.style & SEPARATOR) != 0 {
 		this.WmDrawChildSeparator(struct_)
 	} else {
@@ -507,8 +507,8 @@ func (this *Label) wmDrawChild_(wParam int64, lParam int64) *win32.LRESULT {
 	return nil
 }
 
-func (this *Label) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Control.handleDPIChange_(event, scalingFactor)
+func (this *Label) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Control.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	var image *Image = this.GetImage()
 	if image != (nil) {
 		this.SetImage(image)

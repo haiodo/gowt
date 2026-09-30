@@ -1063,8 +1063,8 @@ func (this *TableItem) setText_(string_ string) {
 	this.SetTextIndexString(0, string_)
 }
 
-func (this *TableItem) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChange_(event, scalingFactor)
+func (this *TableItem) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	if this.font != (nil) {
 		this.SetFont(this.font)
 	}

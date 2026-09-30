@@ -218,11 +218,11 @@ func (this *Control) checkBuffered_() {
 	this.style &= ^DOUBLE_BUFFERED
 }
 
-func (this *Control) CheckComposited() {
-	this.impl.checkComposited_()
+func (this *Control) CheckCompositedNoArgs() {
+	this.impl.checkCompositedNoArgs_()
 }
 
-func (this *Control) checkComposited_() {
+func (this *Control) checkCompositedNoArgs_() {
 }
 
 func (this *Control) CheckMirrored() {
@@ -367,7 +367,7 @@ func (this *Control) createWidget_() {
 	this.impl.createHandle_()
 	this.CheckBackground()
 	this.impl.checkBuffered_()
-	this.impl.checkComposited_()
+	this.impl.checkCompositedNoArgs_()
 	this.impl.register_()
 	this.impl.subclass_()
 	this.impl.setDefaultFont_()
@@ -452,7 +452,7 @@ func (this *Control) DragDetectButtonCountStateMaskXY(button int32, count int32,
 	if button != 1 || count != 1 {
 		return false
 	}
-	var dragging bool = this.impl.dragDetect_(this.Handle, x, y, false, nil, nil)
+	var dragging bool = this.impl.dragDetectHwndXYFilterDetectConsume_(this.Handle, x, y, false, nil, nil)
 	if int32(win32.OSGetKeyState(win32.OSVK_LBUTTON)) < 0 {
 		if win32.OSGetCapture() != this.Handle {
 			win32.OSSetCapture(this.Handle)
@@ -493,24 +493,24 @@ func (this *Control) DragDetectButtonCountStateMaskXY(button int32, count int32,
 	return this.SendDragEventButtonStateMaskXY(button, stateMask, x, y)
 }
 
-func (this *Control) DrawBackground(hDC int64) {
+func (this *Control) DrawBackgroundHDC(hDC int64) {
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSGetClientRect(this.Handle, rect)
-	this.DrawBackgroundHDCRect(hDC, rect)
+	this.DrawBackgroundHDCRectHDCRect(hDC, rect)
 }
 
-func (this *Control) DrawBackgroundHDCRect(hDC int64, rect *win32.RECT) {
-	this.DrawBackgroundHDCRectPixelTxTy(hDC, rect, -1, 0, 0)
+func (this *Control) DrawBackgroundHDCRectHDCRect(hDC int64, rect *win32.RECT) {
+	this.DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC, rect, -1, 0, 0)
 }
 
-func (this *Control) DrawBackgroundHDCRectPixelTxTy(hDC int64, rect *win32.RECT, pixel int32, tx int32, ty int32) {
+func (this *Control) DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC int64, rect *win32.RECT, pixel int32, tx int32, ty int32) {
 	var control *Control = this.impl.findBackgroundControl_()
 	if control != (nil) {
 		if control.backgroundImage != (nil) {
 			this.FillImageBackground(hDC, control, rect, tx, ty)
 			return
 		}
-		pixel = control.GetBackgroundPixel()
+		pixel = control.GetBackgroundPixelNoArgs()
 	}
 	if pixel == -1 {
 		if (this.state & WidgetTHEME_BACKGROUND) != 0 {
@@ -522,7 +522,7 @@ func (this *Control) DrawBackgroundHDCRectPixelTxTy(hDC int64, rect *win32.RECT,
 		}
 	}
 	if pixel == -1 {
-		pixel = this.GetBackgroundPixel()
+		pixel = this.GetBackgroundPixelNoArgs()
 	}
 	this.FillBackgroundLocal1(hDC, pixel, rect)
 }
@@ -560,7 +560,7 @@ func (this *Control) MaybeEnableDarkSystemThemeNoArgs() {
 }
 
 func (this *Control) maybeEnableDarkSystemThemeNoArgs_() {
-	this.MaybeEnableDarkSystemTheme(this.Handle)
+	this.MaybeEnableDarkSystemThemeHandle(this.Handle)
 }
 
 func (this *Control) EnableWidget(enabled bool) {
@@ -818,7 +818,7 @@ func (this *Control) GetBackground() *Color {
 		if control == (nil) {
 			control = this
 		}
-		return ColorWin32_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), control.GetBackgroundPixel(), this.backgroundAlpha)
+		return ColorWin32_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), control.GetBackgroundPixelNoArgs(), this.backgroundAlpha)
 	}
 }
 
@@ -831,7 +831,7 @@ func (this *Control) GetBackgroundImage() *Image {
 	return control.backgroundImage
 }
 
-func (this *Control) GetBackgroundPixel() int32 {
+func (this *Control) GetBackgroundPixelNoArgs() int32 {
 	var cond5 int32
 	if this.background != -1 {
 		cond5 = this.background
@@ -996,10 +996,10 @@ func (this *Control) GetForeground() *Color {
 
 func (this *Control) getForeground_() *Color {
 	this.CheckWidget()
-	return ColorWin32_new(upcastDisplayToDevice(this.display), this.GetForegroundPixel())
+	return ColorWin32_new(upcastDisplayToDevice(this.display), this.GetForegroundPixelNoArgs())
 }
 
-func (this *Control) GetForegroundPixel() int32 {
+func (this *Control) GetForegroundPixelNoArgs() int32 {
 	var cond7 int32
 	if this.foreground != -1 {
 		cond7 = this.foreground
@@ -1281,7 +1281,7 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		}
 		data.Device = upcastDisplayToDevice(this.display)
 		data.NativeZoom = this.NativeZoom
-		var foreground int32 = this.GetForegroundPixel()
+		var foreground int32 = this.GetForegroundPixelNoArgs()
 		if foreground != win32.OSGetTextColor(hDC) {
 			data.Foreground = foreground
 		}
@@ -1289,7 +1289,7 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		if control == (nil) {
 			control = this
 		}
-		var background int32 = control.GetBackgroundPixel()
+		var background int32 = control.GetBackgroundPixelNoArgs()
 		if background != win32.OSGetBkColor(hDC) {
 			data.Background = background
 		}
@@ -1888,7 +1888,7 @@ func (this *Control) releaseParent_() {
 func (this *Control) releaseWidget_() {
 	this.Widget.releaseWidget_()
 	if this.toolTipText != "" {
-		this.impl.setToolTipTextShellString_(this.impl.getShell_(), "")
+		this.impl.setToolTipTextShellStringShellString_(this.impl.getShell_(), "")
 	}
 	this.toolTipText = ""
 	if this.menu != (nil) && !this.menu.IsDisposed() {
@@ -2253,7 +2253,7 @@ func (this *Control) SetBackground() {
 	if control.backgroundImage != (nil) {
 		var shell *Shell = this.impl.getShell_()
 		shell.ReleaseBrushes()
-		this.impl.setBackgroundImageHBitmap_(ImageWin32_getHandle(control.backgroundImage, this.impl.getAutoscalingZoom_()))
+		this.impl.setBackgroundImageHBitmapHBitmap_(ImageWin32_getHandle(control.backgroundImage, this.impl.getAutoscalingZoom_()))
 	} else {
 		var cond13 int32
 		if control.background == -1 {
@@ -2332,11 +2332,11 @@ func (this *Control) setBackgroundImage_(image *Image) {
 	this.impl.updateBackgroundImage_()
 }
 
-func (this *Control) SetBackgroundImageHBitmap(hBitmap int64) {
-	this.impl.setBackgroundImageHBitmap_(hBitmap)
+func (this *Control) SetBackgroundImageHBitmapHBitmap(hBitmap int64) {
+	this.impl.setBackgroundImageHBitmapHBitmap_(hBitmap)
 }
 
-func (this *Control) setBackgroundImageHBitmap_(hBitmap int64) {
+func (this *Control) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
 	var flags int32 = win32.OSRDW_ERASE | win32.OSRDW_FRAME | win32.OSRDW_INVALIDATE
 	win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
 }
@@ -2358,24 +2358,24 @@ func (this *Control) setBounds_(x int32, y int32, width int32, height int32) {
 	this.impl.setBoundsRect_(NewRectangle(x, y, width, height))
 }
 
-func (this *Control) SetBoundsInPixels(x int32, y int32, width int32, height int32) {
+func (this *Control) SetBoundsInPixelsXYWidthHeight(x int32, y int32, width int32, height int32) {
 	var flags int32 = win32.OSSWP_NOZORDER | win32.OSSWP_DRAWFRAME | win32.OSSWP_NOACTIVATE
-	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
 }
 
-func (this *Control) SetBoundsInPixelsXYWidthHeightFlags(x int32, y int32, width int32, height int32, flags int32) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
+func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags(x int32, y int32, width int32, height int32, flags int32) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
 }
 
-func (this *Control) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
+func (this *Control) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
 }
 
-func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsDefer(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
+func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
 }
 
-func (this *Control) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Control) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	if this.FindImageControl() != (nil) {
 		if this.backgroundImage == (nil) {
 			flags |= win32.OSSWP_NOCOPYBITS
@@ -2435,7 +2435,7 @@ func (this *Control) setBoundsRect_(rect *Rectangle) {
 	var zoom int32 = this.impl.computeBoundsZoom_()
 	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(rect, zoom)
 	this.FitInParentBounds(boundsInPixels, zoom)
-	this.SetBoundsInPixelsRect(boundsInPixels)
+	this.SetBoundsInPixelsRectRect(boundsInPixels)
 }
 
 func (this *Control) FitInParentBounds(boundsInPixelsLike RectangleLike, zoom int32) {
@@ -2482,13 +2482,13 @@ func (this *Control) SetAutoscalingMode(autoscalingMode AutoscalingMode) bool {
 	return true
 }
 
-func (this *Control) SetBoundsInPixelsRect(rectLike RectangleLike) {
+func (this *Control) SetBoundsInPixelsRectRect(rectLike RectangleLike) {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	this.SetBoundsInPixels(rect.X, rect.Y, rect.Width, rect.Height)
+	this.SetBoundsInPixelsXYWidthHeight(rect.X, rect.Y, rect.Width, rect.Height)
 }
 
 func (this *Control) SetCapture(capture bool) {
@@ -2681,7 +2681,7 @@ func (this *Control) setLocation_(x int32, y int32) {
 
 func (this *Control) SetLocationInPixels(x int32, y int32) {
 	var flags int32 = win32.OSSWP_NOSIZE | win32.OSSWP_NOZORDER | win32.OSSWP_NOACTIVATE | win32.OSSWP_DRAWFRAME
-	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, 0, 0, flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, 0, 0, flags)
 }
 
 func (this *Control) SetLocationLocation(locationLike PointLike) {
@@ -2859,7 +2859,7 @@ func (this *Control) SetSize(width int32, height int32) {
 
 func (this *Control) SetSizeInPixels(width int32, height int32) {
 	var flags int32 = win32.OSSWP_NOMOVE | win32.OSSWP_NOZORDER | win32.OSSWP_DRAWFRAME | win32.OSSWP_NOACTIVATE
-	this.impl.setBoundsInPixelsXYWidthHeightFlags_(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
 }
 
 func (this *Control) SetSizeSize(sizeLike PointLike) {
@@ -2916,19 +2916,19 @@ func (this *Control) setToolTipText_(string_ string) {
 	this.CheckWidget()
 	if !(string_ == this.toolTipText) {
 		this.toolTipText = string_
-		this.impl.setToolTipTextShellString_(this.impl.getShell_(), string_)
+		this.impl.setToolTipTextShellStringShellString_(this.impl.getShell_(), string_)
 	}
 }
 
-func (this *Control) SetToolTipTextShellString(shellLike ShellLike, string_ string) {
+func (this *Control) SetToolTipTextShellStringShellString(shellLike ShellLike, string_ string) {
 	var shell *Shell
 	if shellLike != nil {
 		shell = shellLike.AsShell()
 	}
-	this.impl.setToolTipTextShellString_(shell, string_)
+	this.impl.setToolTipTextShellStringShellString_(shell, string_)
 }
 
-func (this *Control) setToolTipTextShellString_(shell *Shell, string_ string) {
+func (this *Control) setToolTipTextShellStringShellString_(shell *Shell, string_ string) {
 	shell.SetToolTipTextHwndText(this.Handle, string_)
 }
 
@@ -2994,7 +2994,7 @@ func (this *Control) setVisible_(visible bool) {
 	}
 }
 
-func (this *Control) Sort(items []int32) {
+func (this *Control) SortItems(items []int32) {
 	var length int32 = int32(len(items))
 	for gap := int32(length / 2); gap > 0; gap /= 2 {
 		for i := int32(gap); i < length; i++ {
@@ -3014,7 +3014,7 @@ func (this *Control) Subclass() {
 }
 
 func (this *Control) subclass_() {
-	var oldProc int64 = this.impl.windowProc_()
+	var oldProc int64 = this.impl.windowProcNoArgs_()
 	var newProc int64 = this.display.windowProc
 	if oldProc == newProc {
 		return
@@ -3117,7 +3117,7 @@ func (this *Control) translateMnemonic_(event *Event, control *Control) bool {
 	return this.TraverseEvent(event)
 }
 
-func (this *Control) TranslateMnemonicMsg(msg *win32.MSG) bool {
+func (this *Control) TranslateMnemonicMsgMsg(msg *win32.MSG) bool {
 	if msg.WParam < 0x20 {
 		return false
 	}
@@ -3586,7 +3586,7 @@ func (this *Control) Unsubclass() {
 }
 
 func (this *Control) unsubclass_() {
-	var newProc int64 = this.impl.windowProc_()
+	var newProc int64 = this.impl.windowProcNoArgs_()
 	var oldProc int64 = this.display.windowProc
 	if oldProc == newProc {
 		return
@@ -3641,7 +3641,7 @@ func (this *Control) updateBackgroundImage_() {
 	} else {
 		cond21 = int64(0)
 	}
-	this.impl.setBackgroundImageHBitmap_(cond21)
+	this.impl.setBackgroundImageHBitmapHBitmap_(cond21)
 }
 
 func (this *Control) UpdateBackgroundMode() {
@@ -3674,11 +3674,11 @@ func (this *Control) updateFont_(oldFont *Font, newFont *Font) {
 	}
 }
 
-func (this *Control) UpdateLayout(resize bool, all bool) {
-	this.impl.updateLayout_(resize, all)
+func (this *Control) UpdateLayoutResizeAll(resize bool, all bool) {
+	this.impl.updateLayoutResizeAll_(resize, all)
 }
 
-func (this *Control) updateLayout_(resize bool, all bool) {
+func (this *Control) updateLayoutResizeAll_(resize bool, all bool) {
 }
 
 func (this *Control) UpdateOrientation() {
@@ -3878,15 +3878,15 @@ func (this *Control) WindowClass() *win32.TCHAR {
 	return this.impl.windowClass_()
 }
 
-func (this *Control) WindowProc() int64 {
-	return this.impl.windowProc_()
+func (this *Control) WindowProcNoArgs() int64 {
+	return this.impl.windowProcNoArgs_()
 }
 
-func (this *Control) WindowProcHwndMsgWParamLParam(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
-	return this.impl.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+func (this *Control) WindowProcHwndMsgWParamLParamHwndMsgWParamLParam(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+	return this.impl.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
-func (this *Control) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Control) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	var display *Display = this.display
 	var result *win32.LRESULT = nil
 	switch msg {
@@ -4181,7 +4181,7 @@ func (this *Control) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wPara
 		defer func() {
 			display.SendPostExternalEventDispatchEvent()
 		}()
-		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	}
 }
 
@@ -5224,7 +5224,7 @@ func (this *Control) wM_WINDOWPOSCHANGED_(wParam int64, lParam int64) *win32.LRE
 			this.display.resizeCount--
 		}()
 		this.display.resizeCount++
-		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_WINDOWPOSCHANGED, wParam, lParam)
+		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_WINDOWPOSCHANGED, wParam, lParam)
 		var cond24 *win32.LRESULT
 		if code == 0 {
 			cond24 = win32.LRESULTZERO
@@ -5296,8 +5296,8 @@ func (this *Control) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 			if control != (nil) {
 				var rect *win32.RECT = win32.NewRECT()
 				win32.OSGetClientRect(this.Handle, rect)
-				win32.OSSetTextColor(wParam, this.GetForegroundPixel())
-				win32.OSSetBkColor(wParam, this.GetBackgroundPixel())
+				win32.OSSetTextColor(wParam, this.GetForegroundPixelNoArgs())
+				win32.OSSetBkColor(wParam, this.GetBackgroundPixelNoArgs())
 				this.FillThemeBackground(wParam, control, rect)
 				win32.OSSetBkMode(wParam, win32.OSTRANSPARENT)
 				return win32.NewLRESULT(win32.OSGetStockObject(win32.OSNULL_BRUSH))
@@ -5310,8 +5310,8 @@ func (this *Control) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 	if control == (nil) {
 		control = this
 	}
-	var forePixel int32 = this.GetForegroundPixel()
-	var backPixel int32 = control.GetBackgroundPixel()
+	var forePixel int32 = this.GetForegroundPixelNoArgs()
+	var backPixel int32 = control.GetBackgroundPixelNoArgs()
 	win32.OSSetTextColor(wParam, forePixel)
 	win32.OSSetBkColor(wParam, backPixel)
 	if control.backgroundImage != (nil) {
@@ -5427,8 +5427,8 @@ func (this *Control) IsAutoscalingDisabled() bool {
 	return this.autoscalingMode != AutoscalingModeENABLED
 }
 
-func (this *Control) handleDPIChange_(event *Event, scalingFactor float32) {
-	this.Widget.handleDPIChange_(event, scalingFactor)
+func (this *Control) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+	this.Widget.handleDPIChangeEventScalingFactor_(event, scalingFactor)
 	if this.IsAutoscalingDisabled() {
 		this.NativeZoom = 100
 	}

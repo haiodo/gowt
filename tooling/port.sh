@@ -260,6 +260,7 @@ TEST_FILES=(
 java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --classpath "$JUNIT_CP" \
 	"${TEST_FILES[@]}" \
 	-- \
+	org/eclipse/swt/graphics/ImageDataLoader.java \
 	"${SWT_FILES[@]}" \
 	org/eclipse/swt/internal/C.java \
 	"${COCOA_FILES[@]}"

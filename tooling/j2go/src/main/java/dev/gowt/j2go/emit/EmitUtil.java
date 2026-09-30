@@ -178,8 +178,8 @@ final class EmitUtil {
 	}
 
 	/** Java null as Go text. A test's literal null String argument or initializer becomes jrt.NullString,
-	 * which the ported null-argument guards check for (NumericEmitter.stringParamNullCheck); elsewhere
-	 * String null stays "" via adaptNumeric. */
+	 * which the ported null-argument guards check for (NumericEmitter.stringParamNullCheck), but only
+	 * when the callee guards that parameter (NullArgGuards); any other String null is "". */
 	static String nullLiteral(Emitter emitter, Expression e) {
 		if (!emitter.degradesUnresolvedTypes()) return "nil";
 		ASTNode child = e;
@@ -189,14 +189,21 @@ final class EmitUtil {
 			p = p.getParent();
 		}
 		ITypeBinding target = null;
+		boolean guarded = false;
 		if (p instanceof VariableDeclarationFragment f && f.getInitializer() == child && f.resolveBinding() != null) {
 			target = f.resolveBinding().getType();
+			guarded = NullArgGuards.localReachesGuard(emitter.model, f);
 		} else if (p instanceof MethodInvocation mi && mi.resolveMethodBinding() != null) {
-			target = paramType(mi.resolveMethodBinding(), mi.arguments().indexOf(child));
+			int i = mi.arguments().indexOf(child);
+			target = paramType(mi.resolveMethodBinding(), i);
+			guarded = target != null && NullArgGuards.guards(emitter.model, mi.resolveMethodBinding(), i);
 		} else if (p instanceof ClassInstanceCreation cic && cic.resolveConstructorBinding() != null) {
-			target = paramType(cic.resolveConstructorBinding(), cic.arguments().indexOf(child));
+			int i = cic.arguments().indexOf(child);
+			target = paramType(cic.resolveConstructorBinding(), i);
+			guarded = target != null && NullArgGuards.guards(emitter.model, cic.resolveConstructorBinding(), i);
 		}
 		if (target == null || !target.getQualifiedName().equals("java.lang.String")) return "nil";
+		if (!guarded) return "\"\"";
 		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return "jrt.NullString";
 	}

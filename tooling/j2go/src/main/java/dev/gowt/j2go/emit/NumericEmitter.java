@@ -198,13 +198,22 @@ final class NumericEmitter {
 	 * fires only for jrt.NullString, which a test's literal null argument becomes; "" is a valid
 	 * String (README "Round 11 null-string"). Every other String null check keeps `== ""`. */
 	private String stringParamNullCheck(InfixExpression ie, InfixExpression.Operator op) {
+		if (nullGuardedParam(ie) == null) return null;
+		Expression other = ie.getRightOperand() instanceof NullLiteral ? ie.getLeftOperand() : ie.getRightOperand();
+		if (!isGoString(other)) return null;
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
+	}
+
+	/** The parameter of a null-argument guard `param ==/!= null`, or null if ie is not one. Shared
+	 * with NullArgGuards, which asks the same question of a callee's body. */
+	static IVariableBinding nullGuardedParam(InfixExpression ie) {
+		InfixExpression.Operator op = ie.getOperator();
 		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
 		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
 		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
 		if (!(other instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return null;
-		if (!vb.isParameter() || !isGoString(other) || !isNullArgumentGuard(ie)) return null;
-		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
-		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
+		return vb.isParameter() && isNullArgumentGuard(ie) ? vb : null;
 	}
 
 	// e is the condition of an if (alone or inside a || chain) whose then-branch is

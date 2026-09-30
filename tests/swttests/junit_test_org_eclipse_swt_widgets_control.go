@@ -815,7 +815,7 @@ func (this *Test_org_eclipse_swt_widgets_Control) test_setSizeLorg_eclipse_swt_g
 func (this *Test_org_eclipse_swt_widgets_Control) Test_setToolTipTextLjava_lang_String() {
 	this.control.SetToolTipText("This is a tip")
 	junit.AssertEquals("This is a tip", this.control.GetToolTipText())
-	this.control.SetToolTipText(jrt.NullString)
+	this.control.SetToolTipText("")
 	junit.AssertNull(this.control.GetToolTipText())
 }
 

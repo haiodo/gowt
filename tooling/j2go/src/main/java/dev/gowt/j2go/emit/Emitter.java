@@ -23,16 +23,14 @@ public class Emitter {
 	final Natives natives;
 	final Selectors selectors;
 	public final List<String> unsupported = new ArrayList<>();
-	final Set<String> generatedHelpers = new LinkedHashSet<>();
+	public final Set<String> generatedHelpers = new LinkedHashSet<>();
 
 	Set<String> fileImports;
 	List<String> fileHelperSource;
 	List<String> prelude;
-	// func init() body: static-field assignments whose initializer needs prelude or calls
-	// something (a native's own lazy binding happens on its first call - see README).
+	// func init() body: static-field assignments whose initializer needs prelude or calls something (see README).
 	List<String> deferredStaticInits;
-	// Parallel to deferredStaticInits: a human-readable label (the field's Go name, or the
-	// enclosing class for a static {} block) for the per-entry recover() diagnostic.
+	// Parallel to deferredStaticInits: a label (field Go name or enclosing class) for the recover() diagnostic.
 	List<String> deferredStaticInitLabels;
 	int tempCounter;
 	ITypeBinding currentReturnType; // declared Go return type of the method body being emitted, or null
@@ -92,7 +90,8 @@ public class Emitter {
 		this.testEmitter = new TestEmitter(this);
 	}
 
-	public record EmitResult(String body, Set<String> imports) {}
+	public record EmitResult(String body, Set<String> imports, String helpers) {}
+	public boolean separateHelpers; // non-reference platform run: a shared file's helpers come out separately
 
 	public EmitResult emitCompilationUnit(CompilationUnit cu) {
 		currentJavaPackage = cu.getPackage().getName().getFullyQualifiedName();
@@ -106,7 +105,8 @@ public class Emitter {
 		for (Object t : cu.types()) {
 			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);
 		}
-		for (String h : fileHelperSource) out.append(h);
+		StringBuilder helpers = new StringBuilder();
+		for (String h : fileHelperSource) if (!separateHelpers) out.append(h); else if (!h.startsWith("// j2go: anonymous")) helpers.append(h);
 		if (!deferredStaticInits.isEmpty()) {
 			fileImports.add("os");
 			fileImports.add("fmt");
@@ -116,7 +116,7 @@ public class Emitter {
 		// compared, never emitted - keep just the imports the body actually references.
 		String body = out.toString();
 		fileImports.removeIf(imp -> !body.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
-		return new EmitResult(body, fileImports);
+		return new EmitResult(body, fileImports, helpers.toString());
 	}
 
 	// ---------------------------------------------------------------- cross-component delegators

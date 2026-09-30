@@ -264,7 +264,7 @@ final class ClassEmitter {
 		Set<String> s = new HashSet<>();
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
-				s.add(emitter.names.goMemberName(md.resolveBinding(), Names.capitalize(md.getName().getIdentifier())));
+				s.add(Names.javaMethodBaseGoName(md.getName().getIdentifier()));
 			}
 		}
 		return s;

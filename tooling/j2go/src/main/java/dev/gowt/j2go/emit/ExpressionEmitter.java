@@ -190,7 +190,13 @@ final class ExpressionEmitter {
 		// unexported field there wouldn't even be visible from swt's promoted-field access.
 		String declaringQualified = vb.getDeclaringClass().getErasure().getQualifiedName();
 		if (Manual.isManualSuper(declaringQualified)) return Names.capitalize(n);
-		if (Modifier.isPublic(vb.getModifiers())) return Names.capitalize(n);
+		if (Modifier.isPublic(vb.getModifiers())) {
+			// Same rule as ClassEmitter.emitStructFields: a public field named like a method gets an underscore.
+			for (IMethodBinding m : vb.getDeclaringClass().getDeclaredMethods()) {
+				if (!m.isConstructor() && !Modifier.isStatic(m.getModifiers()) && Names.javaMethodBaseGoName(m.getName()).equals(Names.capitalize(n))) return Names.capitalize(n) + "_";
+			}
+			return Names.capitalize(n);
+		}
 		return EmitUtil.fieldIdent(n);
 	}
 

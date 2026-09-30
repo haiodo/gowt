@@ -1,3 +1,5 @@
+//go:build darwin
+
 // Hand-written: dlopen's the system libraries the translated OS natives resolve against - no
 // JNI/Library.loadLibrary equivalent exists in Go (see tooling/j2go/manual.txt). Every native
 // binds its own C symbol lazily via purego.Dlsym(purego.RTLD_DEFAULT, ...) on its first call

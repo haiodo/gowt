@@ -1,0 +1,3 @@
+package swt
+
+func Both() {}

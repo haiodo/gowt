@@ -1,3 +1,5 @@
+//go:build darwin
+
 // Hand-written: org.eclipse.swt.internal.cocoa.id#objc_getClass()/toString() both call
 // getClass().getName(), Java reflection with no Go equivalent (see tooling/j2go/manual.txt).
 // this.impl always holds the pointer to the most-derived allocated type (set once, in the

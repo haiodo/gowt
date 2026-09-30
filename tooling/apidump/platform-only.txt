@@ -1,0 +1,5 @@
+# Public swt API that SWT itself declares on some platforms only. One entry per line:
+#   <goos>[,<goos>...] <apidump line>
+# with the goos list in platforms.txt order naming the platforms that HAVE the symbol. A difference
+# between platforms that is not listed here fails `apidump -check`; so does a listed one that is gone.
+# Empty while darwin is the only platform.

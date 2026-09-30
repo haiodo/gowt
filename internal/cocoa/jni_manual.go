@@ -1,3 +1,5 @@
+//go:build darwin
+
 // JNI global references (OS.NewGlobalRef/JNIGetObject/DeleteGlobalRef): SWT stores a widget's
 // handle in its NSView's SWT_OBJECT ivar and maps it back in Display.getWidget. A Go handle table
 // does the same job - the ivar holds a small integer, never a Go pointer.

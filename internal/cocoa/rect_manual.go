@@ -1,3 +1,5 @@
+//go:build darwin
+
 // os.c wraps NSIntersectionRect and CGDisplayBounds, which take/return their rect by value, as
 // void functions writing through a pointer, and PtInRgn, which takes a Carbon Point by value, with a
 // short[]. Binding the literal symbol with those pointer arguments (the generic native binding)

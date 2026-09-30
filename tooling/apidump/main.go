@@ -1,43 +1,80 @@
-// Command apidump prints the exported API of package swt, one symbol per line, sorted:
-// package-level funcs/vars/consts/types and the full method set (promoted included) of
-// every exported type. Diff two dumps to see what a regeneration changed.
+// Command apidump prints the exported API of package swt for one GOOS, one symbol per line, sorted:
+// package-level funcs/vars/consts/types and the full method set (promoted included) of every
+// exported type. Diff two dumps to see what a regeneration changed.
+//
+//	apidump [-goos os] [dir]    dump (GOOS from -goos, else $GOOS, else the host)
+//	apidump -check [dir]        dump every platform in platforms.txt and compare them: each platform
+//	                            lacking a symbol another one has is listed; the run fails unless
+//	                            every difference is in platform-only.txt (see README "Round 19")
 package main
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 )
 
+const cfgDir = "tooling/apidump"
+
 func main() {
+	goos := flag.String("goos", "", "target GOOS (default $GOOS, else the host)")
+	check := flag.Bool("check", false, "compare the platforms listed in "+cfgDir+"/platforms.txt")
+	flag.Parse()
 	dir := "swt"
-	if len(os.Args) > 1 {
-		dir = os.Args[1]
+	if flag.NArg() > 0 {
+		dir = flag.Arg(0)
+	}
+	if *check {
+		os.Exit(compare(dir))
+	}
+	if *goos == "" {
+		*goos = os.Getenv("GOOS")
+	}
+	if *goos == "" {
+		*goos = runtime.GOOS
+	}
+	lines, err := dump(dir, *goos)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Println(strings.Join(lines, "\n"))
+}
+
+// dump type-checks dir as built for goos (file suffixes and tags apply) and lists its exported API.
+func dump(dir, goos string) ([]string, error) {
+	ctx := build.Default
+	ctx.GOOS, ctx.CgoEnabled = goos, false
+	build.Default = ctx // the source importer of the dependencies reads this one
+	bp, err := ctx.ImportDir(dir, 0)
+	if err != nil {
+		return nil, fmt.Errorf("GOOS=%s: %v", goos, err)
 	}
 	fset := token.NewFileSet()
-	matches, _ := filepath.Glob(filepath.Join(dir, "*.go"))
 	var files []*ast.File
-	for _, m := range matches {
-		if strings.HasSuffix(m, "_test.go") {
-			continue
-		}
-		f, err := parser.ParseFile(fset, m, nil, 0)
+	for _, name := range bp.GoFiles {
+		f, err := parser.ParseFile(fset, filepath.Join(dir, name), nil, 0)
 		if err != nil {
-			fail(err)
+			return nil, err
 		}
 		files = append(files, f)
 	}
-	conf := types.Config{Importer: importer.ForCompiler(fset, "source", nil)}
-	pkg, err := conf.Check("github.com/haiodo/gowt/swt", fset, files, nil)
-	if err != nil {
-		fail(err)
+	var errs []error
+	conf := types.Config{Importer: importer.ForCompiler(fset, "source", nil), Error: func(e error) { errs = append(errs, e) }}
+	pkg, _ := conf.Check("github.com/haiodo/gowt/swt", fset, files, nil)
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("GOOS=%s: %s does not type-check, %d errors, first: %v", goos, dir, len(errs), errs[0])
 	}
 	qual := types.RelativeTo(pkg)
 	var lines []string
@@ -64,10 +101,95 @@ func main() {
 		}
 	}
 	sort.Strings(lines)
-	fmt.Println(strings.Join(lines, "\n"))
+	return lines, nil
 }
 
-func fail(err error) {
-	fmt.Fprintln(os.Stderr, err)
-	os.Exit(1)
+// compare returns the exit code: 0 when the platforms agree up to platform-only.txt.
+func compare(dir string) int {
+	platforms := readList(filepath.Join(cfgDir, "platforms.txt"))
+	// platform-only.txt: "<goos>[,<goos>...] <dump line>" - API SWT itself has on those platforms only.
+	allowed := map[string]bool{}
+	for _, l := range readList(filepath.Join(cfgDir, "platform-only.txt")) {
+		allowed[l] = true
+	}
+	report, bad, err := diff(dir, platforms, allowed)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	for _, l := range report {
+		fmt.Println(l)
+	}
+	fmt.Printf("apidump: platforms %s, %d unexplained difference(s)\n", strings.Join(platforms, " "), bad)
+	if bad > 0 {
+		return 1
+	}
+	return 0
+}
+
+// diff lists every symbol some platform lacks, except the allowed "<platforms having it> <line>" ones.
+func diff(dir string, platforms []string, allowed map[string]bool) (report []string, bad int, err error) {
+	has := map[string]map[string]bool{} // symbol -> platforms that have it
+	for _, goos := range platforms {
+		lines, err := dump(dir, goos)
+		if err != nil {
+			return nil, 0, err
+		}
+		for _, l := range lines {
+			if has[l] == nil {
+				has[l] = map[string]bool{}
+			}
+			has[l][goos] = true
+		}
+	}
+	used := map[string]bool{}
+	var syms []string
+	for l := range has {
+		syms = append(syms, l)
+	}
+	sort.Strings(syms)
+	for _, l := range syms {
+		var on, lacks []string
+		for _, goos := range platforms {
+			if has[l][goos] {
+				on = append(on, goos)
+			} else {
+				lacks = append(lacks, goos)
+			}
+		}
+		if len(lacks) == 0 {
+			continue
+		}
+		key := strings.Join(on, ",") + " " + l
+		used[key] = true
+		if !allowed[key] {
+			bad++
+			report = append(report, strings.Join(lacks, ",")+" lacks "+l)
+		}
+	}
+	for k := range allowed {
+		if !used[k] {
+			bad++
+			report = append(report, "stale platform-only.txt entry: "+k)
+		}
+	}
+	sort.Strings(report)
+	return report, bad, nil
+}
+
+func readList(path string) []string {
+	f, err := os.Open(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	defer f.Close()
+	var out []string
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		if l := strings.TrimSpace(sc.Text()); l != "" && !strings.HasPrefix(l, "#") {
+			out = append(out, l)
+		}
+	}
+	return out
 }

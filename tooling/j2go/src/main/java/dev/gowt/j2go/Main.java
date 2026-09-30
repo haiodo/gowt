@@ -13,32 +13,6 @@ import java.util.*;
 /** CLI: --swt <repo root> --out <dir> <java files relative to source roots or absolute...> */
 public class Main {
 
-	private static final String[] SOURCE_ROOTS = {
-			"bundles/org.eclipse.swt/Eclipse SWT/common",
-			"bundles/org.eclipse.swt/Eclipse SWT/cocoa",
-			"bundles/org.eclipse.swt/Eclipse SWT PI/common",
-			"bundles/org.eclipse.swt/Eclipse SWT PI/cocoa",
-			// org.eclipse.swt.accessibility.Accessible/ACC: not translated (manual.txt), but
-			// Control.java declares fields of these types - JDT still needs to resolve them.
-			"bundles/org.eclipse.swt/Eclipse SWT Accessibility/common",
-			"bundles/org.eclipse.swt/Eclipse SWT Accessibility/cocoa",
-			// BidiUtil: not on win32's real sourcepath for cocoa, but the real cocoa build fragment
-			// (binaries/org.eclipse.swt.cocoa.macosx.*/build.properties) pulls this one in too.
-			"bundles/org.eclipse.swt/Eclipse SWT/emulated/bidi",
-			// Cocoa has no ToolTip/CoolBar/ExpandBar of its own: the emulated ones (Round 17).
-			"bundles/org.eclipse.swt/Eclipse SWT/emulated/tooltip",
-			"bundles/org.eclipse.swt/Eclipse SWT/emulated/coolbar",
-			"bundles/org.eclipse.swt/Eclipse SWT/emulated/expand",
-			"bundles/org.eclipse.swt/Eclipse SWT Printing/common",
-			"bundles/org.eclipse.swt/Eclipse SWT Printing/cocoa",
-			// org.eclipse.swt.custom: StackLayout/SashForm/SashFormLayout/SashFormData (Round 8).
-			"bundles/org.eclipse.swt/Eclipse SWT Custom Widgets/common",
-			// org.eclipse.swt.examples.* (Round 10): each example package is its own Go package.
-			"examples/org.eclipse.swt.examples/src",
-			// Round 12: the SWT JUnit tests (org.eclipse.swt.tests.junit -> tests/swttests).
-			"tests/org.eclipse.swt.tests/JUnit Tests",
-	};
-
 	// Java stubs for test-harness classes outside the SWT repo (org.eclipse.test.Screenshots).
 	private static final String STUB_ROOT = "tooling/j2go/stubs";
 
@@ -47,6 +21,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		String swtRoot = null;
 		String outDir = null;
+		Platform platform = Platform.COCOA;
 		String[] classpath = new String[0];
 		List<String> files = new ArrayList<>();
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
@@ -58,21 +33,32 @@ public class Main {
 			switch (args[i]) {
 				case "--swt" -> swtRoot = args[++i];
 				case "--out" -> outDir = args[++i];
+				case "--platform" -> platform = Platform.parse(args[++i]);
 				case "--classpath" -> classpath = args[++i].split(":");
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
 		}
 		if (swtRoot == null || outDir == null || files.isEmpty()) {
-			System.err.println("usage: j2go --swt <swt repo root> --out <dir> <java files...> [-- <reference-only java files...>]");
+			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] <java files...> [-- <reference-only java files...>]");
+			System.exit(2);
+		}
+
+		if (!platform.implemented()) {
+			System.err.println("j2go: platform " + platform.swtName + " is not implemented yet");
 			System.exit(2);
 		}
 
 		Path swtRootPath = Path.of(swtRoot).toAbsolutePath().normalize();
 		List<String> sourceRoots = new ArrayList<>();
-		for (String r : SOURCE_ROOTS) {
+		List<String> platformRoots = new ArrayList<>();
+		List<String> allRoots = new ArrayList<>(platform.roots());
+		allRoots.addAll(Platform.commonRoots());
+		for (String r : allRoots) {
 			Path p = swtRootPath.resolve(r);
-			if (Files.isDirectory(p)) sourceRoots.add(p.toString());
+			if (!Files.isDirectory(p)) continue;
+			sourceRoots.add(p.toString());
+			if (platform.roots().contains(r)) platformRoots.add(p + "/");
 		}
 		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
 
@@ -143,11 +129,18 @@ public class Main {
 			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
 
 			String relPath = swtRootPath.relativize(Path.of(absPath)).toString();
-			String header = buildHeader(relPath, source, cu);
 			String javaPackage = cu.getPackage().getName().getFullyQualifiedName();
 			String pkgLastSegment = lastSegment(javaPackage);
 			String typeName = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
-			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + ".go";
+			String outDirName = GoTypes.goPackageDir(javaPackage, typeName);
+			// swt file built only for this GOOS: read from a platform root (a same-named sibling per platform).
+			final String srcPath = absPath;
+			boolean piFile = outDirName.equals(platform.piDir);
+			boolean platformFile = !piFile && platformRoots.stream().anyMatch(srcPath::startsWith);
+			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
+			String header = buildHeader(relPath, source, cu);
+			// A PI package is wholly one OS's: a tag, not a rename (swt files share names across platforms, PI files do not).
+			if (piFile) header = header.replaceFirst("\n", "\n//go:build " + platform.goos + "\n\n");
 
 			StringBuilder file = new StringBuilder();
 			file.append(header).append('\n');
@@ -159,7 +152,7 @@ public class Main {
 			}
 			file.append(result.body());
 
-			Path outPath = Path.of(outDir, GoTypes.goPackageDir(javaPackage, typeName), outName);
+			Path outPath = Path.of(outDir, outDirName, outName);
 			Files.createDirectories(outPath.getParent());
 			Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
 			System.out.println("wrote " + outPath);
@@ -168,7 +161,7 @@ public class Main {
 		// Written only by the run that emits widgets classes; the other runs leave it alone.
 		String registry = emitter.reflectRegistryFile();
 		if (registry != null) {
-			Path outPath = Path.of(outDir, "swt", "swtreflect", "swtreflect.go");
+			Path outPath = Path.of(outDir, "swt", "swtreflect", "swtreflect_" + platform.goos + ".go");
 			Files.createDirectories(outPath.getParent());
 			Files.writeString(outPath, "// Code generated by j2go. DO NOT EDIT.\n\n" + registry, StandardCharsets.UTF_8);
 			System.out.println("wrote " + outPath);

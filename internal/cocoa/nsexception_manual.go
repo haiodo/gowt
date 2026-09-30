@@ -1,3 +1,5 @@
+//go:build darwin
+
 // SWT's os.c wraps every native call in @try/@catch and hands back 0 when AppKit throws, and a
 // few SWT call sites rely on that. purego can't catch an NSException (it aborts the process), so
 // each such selector is guarded here so that it never throws in the first place.

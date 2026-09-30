@@ -3,14 +3,18 @@ export CGO_ENABLED := 0
 SWT_REPO ?= $(HOME)/Develop/repos/eclipse.platform.swt
 export SWT_REPO
 
+# Platform port.sh translates: cocoa now, win32 and gtk are prepared slots.
+PLATFORM ?= cocoa
+export PLATFORM
+
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: all gen build release release-sizes-update vet test check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
-# Rebuilds the translator and regenerates swt/, internal/cocoa/ and examples/ from the SWT sources.
+# Rebuilds the translator and regenerates swt/, internal/<PLATFORM>/, examples/ and tests/swttests/ from the SWT sources.
 gen:
 	bash tooling/port.sh
 
@@ -37,7 +41,19 @@ vet:
 test:
 	go test ./...
 
-check: vet test
+check: vet test xcheck api-check
+
+# Platform-neutral code must build for every OS and must not import a platform's PI package; the
+# platform-specific rest (swt, cmd, ...) builds only where that platform's port exists.
+XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res
+xcheck:
+	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
+	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
+	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
+
+# Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).
+api-check:
+	go run ./tooling/apidump -check
 
 # Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).

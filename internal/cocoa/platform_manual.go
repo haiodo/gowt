@@ -1,3 +1,5 @@
+//go:build darwin
+
 // Hand-written no-ops for org.eclipse.swt.internal.Platform/Library, which C.java's static
 // block calls before loading SWT's own bundled native library - no Go equivalent, see
 // tooling/j2go/manual.txt. The frameworks OS.java's natives need are loaded by libs_manual.go.

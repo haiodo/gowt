@@ -1,3 +1,5 @@
+//go:build darwin
+
 // Hand-written replacement for org.eclipse.swt.internal.Callback's native half (callback.c) and
 // for os.c's by-value-struct trampolines (see tooling/j2go/README.md "Callback design").
 package cocoa

@@ -10,7 +10,8 @@ SWT_REPO="${SWT_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.swt}"
 PLATFORM="${PLATFORM:-cocoa}"
 case "$PLATFORM" in
 	cocoa) GOOS_NAME=darwin ;;
-	win32 | gtk) echo "port.sh: PLATFORM=$PLATFORM is not implemented yet (TSK-2026-09-23-039, -043)" >&2; exit 2 ;;
+	win32) GOOS_NAME=windows ;;
+	gtk) echo "port.sh: PLATFORM=gtk is not implemented yet (TSK-2026-09-23-043)" >&2; exit 2 ;;
 	*) echo "port.sh: unknown PLATFORM=$PLATFORM (cocoa, win32, gtk)" >&2; exit 2 ;;
 esac
 PI_DIR="internal/$PLATFORM"
@@ -41,6 +42,11 @@ mapfile -t EVENTS_FILES < <(find "$EVENTS_DIR" -maxdepth 1 -name '*.java' -exec 
 # structural sel_x.value -> OSSel_registerName(...) rewrite (see README "Selector enum elision").
 # -printf is a GNU find extension, not on macOS's BSD find - list + basename instead.
 mapfile -t PI_FILES < <(find "$PI_SRC" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed "s#^#org/eclipse/swt/internal/$PLATFORM/#")
+# win32's PI is four packages (win32, win32/version, gdip, ole/win32), all Go package internal/win32.
+if [ "$PLATFORM" = win32 ]; then
+	PI_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/win32"
+	mapfile -t PI_FILES < <(cd "$PI_ROOT" && find org/eclipse/swt/internal -name '*.java' ! -name Platform.java | sort)
+fi
 
 # Round 4: Widget/Control/Scrollable join stage-1's swt-package file set. They call straight into
 # internal/cocoa (OS.objc_msgSend, NSView, ...) - the whole cocoa file set is fed after "--" as

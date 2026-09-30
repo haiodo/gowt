@@ -49,6 +49,7 @@ public class Main {
 			System.exit(2);
 		}
 
+		GoTypes.platform = platform;
 		Path swtRootPath = Path.of(swtRoot).toAbsolutePath().normalize();
 		List<String> sourceRoots = new ArrayList<>();
 		List<String> platformRoots = new ArrayList<>();
@@ -110,6 +111,7 @@ public class Main {
 
 		Names names = new Names();
 		names.loadOverrides(Path.of("tooling/j2go/names.properties"));
+		dev.gowt.j2go.emit.WinLayout.load(Path.of("tooling/j2go/win32_layout.txt"));
 		Natives natives = new Natives();
 		natives.load(Path.of("tooling/j2go/natives.properties"));
 		Selectors selectors = new Selectors();

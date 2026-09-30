@@ -185,7 +185,7 @@ final class EmitUtil {
 		// which this port lacks - recover per-entry so one bad symbol doesn't sink the rest.
 		for (int i : rest) {
 			out.append("\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n")
-					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/cocoa: deferred init ")
+					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/" + dev.gowt.j2go.GoTypes.platform.swtName + ": deferred init ")
 					.append(labels.get(i)).append(":\", r)\n")
 					.append("\t\t\t}\n\t\t}()\n").append(inits.get(i)).append("\t}()\n");
 		}

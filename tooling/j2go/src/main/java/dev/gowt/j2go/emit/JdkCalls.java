@@ -148,6 +148,13 @@ final class JdkCalls {
 				for (int i = 0; i < 2; i++) r[i] = mb.getParameterTypes()[i].isPrimitive() ? "string(rune(" + arg(mi, i) + "))" : arg(mi, i);
 				return "strings.ReplaceAll(" + recv(mi) + ", " + r[0] + ", " + r[1] + ")";
 			}
+			case "java.util.Arrays#fill":
+				if (mi.arguments().size() != 2) return null;
+				emitter.fileImports.add(JRT);
+				return "jrt.Fill(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.lang.String#toCharArray":
+				emitter.fileImports.add("unicode/utf16");
+				return "utf16.Encode([]rune(" + recv(mi) + "))";
 			case "java.util.Arrays#copyOf":
 				emitter.fileImports.add(JRT);
 				return "jrt.CopyOf(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";

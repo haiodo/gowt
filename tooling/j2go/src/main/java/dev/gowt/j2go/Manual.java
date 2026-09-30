@@ -209,7 +209,11 @@ public class Manual {
 
 	// Dropped: Selector.java's own bookkeeping is elided (see README). Matched by name only.
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
-			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector");
+			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector",
+			// Takes a Display and Colors: a PI package cannot reference swt (dark-theme tweaks, not ported).
+			"org.eclipse.swt.internal.win32.OS#setTheme",
+			// Exits the process on an old Windows build; a no-op in internal/win32/custom_manual.go.
+			"org.eclipse.swt.internal.win32.version.OsVersion#checkCompatibleWindowsVersion");
 
 	public static boolean isManual(String qualifiedTypeName) {
 		return ENTRIES.containsKey(qualifiedTypeName);

@@ -11,9 +11,11 @@ import java.util.List;
 final class NativeEmitter {
 
 	private final Emitter emitter;
+	private final WinNativeEmitter win;
 
 	NativeEmitter(Emitter emitter) {
 		this.emitter = emitter;
+		this.win = new WinNativeEmitter(emitter);
 	}
 
 	/** static native OS.<Type>_sizeof(): a Go struct's size is already known at compile time. */
@@ -29,6 +31,10 @@ final class NativeEmitter {
 	// Every static native binds its C symbol lazily on first call (sync.Once + RTLD_DEFAULT),
 	// so a missing/wrong symbol panics when that native is actually invoked, not at package init.
 	void emitStaticNativeMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+		if (dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.WIN32) {
+			win.emit(md, ci, out);
+			return;
+		}
 		IMethodBinding mb = md.resolveBinding();
 		String javaName = md.getName().getIdentifier();
 		String goName = ci.goFuncPrefix + emitter.names.goMemberName(mb, Names.capitalize(javaName));

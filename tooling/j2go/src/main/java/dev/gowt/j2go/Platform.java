@@ -19,9 +19,14 @@ public enum Platform {
 		this.piDir = piDir;
 	}
 
-	/** win32 and gtk are slots only: their PI bindings and widgets are TSK-039 and TSK-043. */
+	/** gtk is a slot only (TSK-043). */
 	public boolean implemented() {
-		return this == COCOA;
+		return this != GTK;
+	}
+
+	/** Go package name of this platform's PI bindings (internal/<swtName>). */
+	public String piPackage() {
+		return swtName;
 	}
 
 	public static Platform parse(String name) {

@@ -12,8 +12,32 @@ public class GoTypes {
 
 	// Java package -> Go package routing: shared by Main (a file's own output dir) and the
 	// cross-package qualification below (whether a referenced type needs "cocoa." + an import).
+	// Set once by Main: the platform whose PI bindings are translated into internal/<swtName>.
+	public static Platform platform = Platform.COCOA;
+
+	/** A Go package that holds a platform's PI bindings (bottom layer, no swt imports). */
+	public static boolean isPiGoPackage(String goPackage) {
+		return goPackage.equals("cocoa") || goPackage.equals("win32") || goPackage.equals("gtk");
+	}
+
+	/** Java packages whose classes land in the current platform's PI Go package (win32: the GDI+ and COM bindings join Win32's). */
+	public static boolean isPiJavaPackage(String javaPackage) {
+		if (platform == Platform.WIN32) {
+			return javaPackage.equals("org.eclipse.swt.internal.win32") || javaPackage.equals("org.eclipse.swt.internal.win32.version")
+					|| javaPackage.equals("org.eclipse.swt.internal.gdip")
+					|| javaPackage.equals("org.eclipse.swt.internal.ole.win32");
+		}
+		return javaPackage.equals("org.eclipse.swt.internal.cocoa");
+	}
+
+	/** PI layer for the import guard, plus the common org.eclipse.swt.internal helpers it uses (C, Library). */
 	public static boolean isCocoaPackage(String javaPackage) {
-		return javaPackage.equals("org.eclipse.swt.internal.cocoa") || javaPackage.equals("org.eclipse.swt.internal");
+		return isPiJavaPackage(javaPackage) || javaPackage.equals("org.eclipse.swt.internal");
+	}
+
+	/** Go value types mirroring C structs: cocoa only (Win32's Java structs are reference classes laid out like the C ones). */
+	public static boolean isStructPackage(String javaPackage) {
+		return platform == Platform.COCOA && isCocoaPackage(javaPackage);
 	}
 
 	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
@@ -23,8 +47,8 @@ public class GoTypes {
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
 	public static String goPackageDir(String javaPackage, String topLevelName) {
-		if (javaPackage.equals("org.eclipse.swt.internal.cocoa")) return "internal/cocoa";
-		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/cocoa";
+		if (isPiJavaPackage(javaPackage)) return platform.piDir;
+		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return platform.piDir;
 		if (javaPackage.startsWith(TESTS_PACKAGE)) return "tests/swttests";
 		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
 		return "swt";
@@ -39,6 +63,7 @@ public class GoTypes {
 	public static String importPath(String goPackage) {
 		return "github.com/haiodo/gowt/" + switch (goPackage) {
 			case "cocoa" -> "internal/cocoa";
+			case "win32" -> "internal/win32";
 			case "swt" -> "swt";
 			case "swttests" -> "tests/swttests";
 			default -> "examples/" + goPackage;
@@ -48,7 +73,7 @@ public class GoTypes {
 	/** Import layering: cocoa < swt < examples; a package may only reference lower layers. */
 	public static int layer(String goPackage) {
 		return switch (goPackage) {
-			case "cocoa" -> 0;
+			case "cocoa", "win32" -> 0;
 			case "swt" -> 1;
 			default -> 2;
 		};

@@ -300,3 +300,10 @@ func CopyOf[T any](a []T, n int32) []T {
 	copy(out, a)
 	return out
 }
+
+// Fill is Arrays.fill(a, v).
+func Fill[T any](a []T, v T) {
+	for i := range a {
+		a[i] = v
+	}
+}

@@ -136,6 +136,7 @@ final class ClassEmitter {
 			out.append("func init() { jrt.RegisterClassPackage(\"").append(ci.goTypeName).append("\", \"").append(ci.javaPackage).append("\") }\n\n");
 		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
+		out.append(WinPack.emit(emitter, ci));
 
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd && Modifier.isStatic(fd.getModifiers())) {
@@ -317,7 +318,7 @@ final class ClassEmitter {
 			emitter.prelude = saved;
 			if (!myPrelude.isEmpty() || emitter.containsCall(initExpr)) {
 				// cocoa's inits depend on native-library side effects, so they stay in init() (file order).
-				if (ci.goPackage.equals("cocoa")) {
+				if (dev.gowt.j2go.GoTypes.isPiGoPackage(ci.goPackage)) {
 					out.append("var ").append(goName).append(" ").append(dev.gowt.j2go.GoTypes.map(type, emitter)).append('\n');
 					StringBuilder b = new StringBuilder();
 					for (String p : myPrelude) b.append('\t').append(p).append('\n');

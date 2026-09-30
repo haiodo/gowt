@@ -73,7 +73,7 @@ public class TypeModel {
 		// unexported names, exported names are wrappers (README "Round 9 api"). internal/cocoa
 		// keeps exported cascade names.
 		public boolean splitsDispatch() {
-			return !root.goPackage.equals("cocoa");
+			return !GoTypes.isPiGoPackage(root.goPackage);
 		}
 	}
 
@@ -201,7 +201,9 @@ public class TypeModel {
 				ci.foreignSuper = ci.superclass;
 				ci.superclass = null;
 			}
-			if (ci.superclass != null) ci.superclass.children.add(ci);
+			// Win32 PI structs embed their base (DIBSECTION has a BITMAP first, like C): no impl field may change the layout.
+			boolean pureStruct = GoTypes.platform == Platform.WIN32 && GoTypes.isPiJavaPackage(ci.javaPackage);
+			if (ci.superclass != null && !pureStruct) ci.superclass.children.add(ci);
 			if (ci.superclass == null && superBinding != null) {
 				String q = superBinding.getErasure().getQualifiedName();
 				if (Manual.isManualSuper(q)) ci.manualSuperQualifiedName = q;
@@ -396,6 +398,6 @@ public class TypeModel {
 				|| ci.declaredMethodNames.equals(Set.of("toString"));
 		// Only the cocoa C-struct mirrors (NSRect, ...) are Go value types; an swt data class
 		// (DeviceData) is nullable in Java and stays a pointer.
-		ci.isStruct = !ci.isInterface && superIsObject && onlyToString && GoTypes.isCocoaPackage(ci.javaPackage);
+		ci.isStruct = !ci.isInterface && superIsObject && onlyToString && GoTypes.isStructPackage(ci.javaPackage);
 	}
 }

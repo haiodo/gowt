@@ -855,7 +855,7 @@ func (this *List) SetItems(items []string) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	for _, item := range items {
-		if item == "" {
+		if item == jrt.NullString {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 	}

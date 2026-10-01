@@ -18,7 +18,7 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `cmd/form/` | GridLayout form: Label + Text, OK button, File > Quit menu |
 | `cmd/tree/` | Tree (NSOutlineView): three root items with children, Selection and Expand listeners |
 | `cmd/images/` | Loads PNG/GIF/BMP via `getResourceAsStream` -> `ImageData(InputStream)` -> `Image`, draws with `gc.DrawImage` |
-| `cmd/controlexample/` | Runs ControlExample (`bin/controlexample`); `-snap <dir>` writes a PNG per tab and exits |
+| `cmd/controlexample/` | Runs ControlExample (`bin/controlexample`); `-snap <dir>` writes a PNG per tab and exits (Windows: `make win-snap-update` / `win-snap-check` in the CrossOver bottle, references `tests/snapshots_windows`) |
 | `tests/swttests/` | SWT's JUnit tests (`graphics`, `layout`, `events`), translated by j2go; results in `tests/RESULTS.md` |
 | `internal/junit/` | JUnit 5 shim for the translated tests: assertions, assumptions, the test registry |
 | `cmd/swttest/` | Runs the translated tests on the main thread with one Display (`make test-swt`) |

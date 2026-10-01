@@ -1024,12 +1024,12 @@ func DeviceWin32_destroyUnusedHandles(displayLike DisplayLike) {
 		availableZoomLevels.Add(int32(DPIUtilGetZoomForAutoscaleProperty(monitor.GetZoom())))
 	}
 	var resources *jrt.List = (castDisplayToDevice(display)).resourcesWithZoomSupport
-	var iterator any = resources.Iterator()
-	for func() bool { _ = []any{iterator}; panic("j2go: unresolved call hasNext") }() {
-		var ref *Device_ResourceReference = func() *Device_ResourceReference { _ = []any{iterator}; panic("j2go: unresolved call next") }()
+	var iterator *jrt.Iterator = resources.Iterator()
+	for iterator.HasNext() {
+		var ref *Device_ResourceReference = jrt.Cast[*Device_ResourceReference](iterator.Next())
 		var resource *Resource = func() *Resource { _ = []any{ref}; panic("j2go: unresolved call get") }()
 		if resource == (nil) {
-			func() any { _ = []any{iterator}; panic("j2go: unresolved call remove") }()
+			iterator.Remove()
 			continue
 		}
 		resource.impl.destroyHandlesExcept_(availableZoomLevels)

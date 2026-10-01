@@ -1753,9 +1753,9 @@ func (this *Tree) CompareFunc(lParam1 int64, lParam2 int64, lParamSort int64) in
 	var text2 string = item2.GetTextIndex(int32(lParamSort))
 	var cond516 int32
 	if this.sortDirection == UP {
-		cond516 = func() int32 { _ = []any{text1, text2}; panic("j2go: unresolved call compareTo") }()
+		cond516 = jrt.StringCompareTo(text1, text2)
 	} else {
-		cond516 = func() int32 { _ = []any{text2, text1}; panic("j2go: unresolved call compareTo") }()
+		cond516 = jrt.StringCompareTo(text2, text1)
 	}
 	return int64(cond516)
 }

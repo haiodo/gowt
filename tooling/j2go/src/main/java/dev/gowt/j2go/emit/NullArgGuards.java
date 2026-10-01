@@ -20,8 +20,12 @@ final class NullArgGuards {
 
 	/** A local String initialized to null: sentinel only if it is later passed straight to a guarded parameter. */
 	static boolean localReachesGuard(TypeModel model, VariableDeclarationFragment f) {
-		IVariableBinding vb = f.resolveBinding();
-		ASTNode scope = f;
+		return localReachesGuard(model, f.resolveBinding(), f);
+	}
+
+	/** Same for the String[] local that `arr[i] = null` fills (the callee's guard is on an element). */
+	static boolean localReachesGuard(TypeModel model, IVariableBinding vb, ASTNode from) {
+		ASTNode scope = from;
 		while (scope != null && !(scope instanceof MethodDeclaration) && !(scope instanceof Initializer)) scope = scope.getParent();
 		if (vb == null || scope == null) return false;
 		boolean[] hit = {false};
@@ -48,6 +52,7 @@ final class NullArgGuards {
 				@Override
 				public boolean visit(InfixExpression ie) {
 					IVariableBinding g = nullGuardedParam(ie);
+					if (g == null) g = elementGuardArray(ie);
 					if (g != null && g.isEqualTo(param)) hit[0] = true;
 					return !hit[0];
 				}
@@ -77,12 +82,14 @@ final class NullArgGuards {
 		else if (p instanceof SuperMethodInvocation c) { callee = c.resolveMethodBinding(); args = c.arguments(); }
 		else return false;
 		int i = args.indexOf(n);
-		return callee != null && i >= 0 && !(callee.isVarargs() && i >= callee.getParameterTypes().length - 1)
-				&& guards(model, callee, i, seen);
+		// An array passed as the varargs parameter is the parameter itself, not one of its elements.
+		boolean element = callee != null && callee.isVarargs() && i >= callee.getParameterTypes().length - 1
+				&& !(n.resolveTypeBinding() != null && n.resolveTypeBinding().isArray());
+		return callee != null && i >= 0 && !element && guards(model, callee, i, seen);
 	}
 
 	/** `if (param == null) error(SWT.ERROR_NULL_ARGUMENT)` (or a throw) on a String parameter, or
-	 * `if (items[i] == null) error(...)` on a String[] element: it fires only for jrt.NullString, which
+	 * `if (items[i] == null) error(...)` on a String[] element (or its for-each variable): it fires only for jrt.NullString, which
 	 * a test's literal null becomes; "" is a valid String (README "Round 11 null-string"). Every
 	 * other String null check keeps `== ""`. Null when ie is neither. */
 	static String stringNullCheck(Emitter emitter, InfixExpression ie, InfixExpression.Operator op) {
@@ -105,7 +112,33 @@ final class NullArgGuards {
 		InfixExpression.Operator op = ie.getOperator();
 		return (op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS)
 				&& (ie.getLeftOperand() instanceof NullLiteral || ie.getRightOperand() instanceof NullLiteral)
-				&& other instanceof ArrayAccess && isGuardCondition(ie, false);
+				&& (other instanceof ArrayAccess || isForEachVariable(other)) && isGuardCondition(ie, false);
+	}
+
+	/** The array parameter whose element is null-checked by an error guard (`items[i] == null`, or the for-each variable over it), or null. */
+	static IVariableBinding elementGuardArray(InfixExpression ie) {
+		InfixExpression.Operator op = ie.getOperator();
+		if (op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) return null;
+		Expression l = ie.getLeftOperand(), r = ie.getRightOperand();
+		Expression other = r instanceof NullLiteral ? l : l instanceof NullLiteral ? r : null;
+		if (other == null || !isGuardCondition(ie, false)) return null;
+		Expression arr = null;
+		if (other instanceof ArrayAccess aa) arr = aa.getArray();
+		else if (other instanceof SimpleName n && n.resolveBinding() instanceof IVariableBinding vb) {
+			for (ASTNode p = n.getParent(); p != null && arr == null; p = p.getParent()) {
+				if (p instanceof EnhancedForStatement f && f.getParameter().resolveBinding() != null && f.getParameter().resolveBinding().isEqualTo(vb)) arr = f.getExpression();
+			}
+		}
+		return arr instanceof SimpleName a && a.resolveBinding() instanceof IVariableBinding av && av.isParameter() ? av : null;
+	}
+
+	// `for (String item : items)`: the loop variable stands for an element like items[i].
+	private static boolean isForEachVariable(Expression e) {
+		if (!(e instanceof SimpleName n) || !(n.resolveBinding() instanceof IVariableBinding vb)) return false;
+		for (ASTNode p = e.getParent(); p != null; p = p.getParent()) {
+			if (p instanceof EnhancedForStatement f && f.getParameter().resolveBinding() != null && f.getParameter().resolveBinding().isEqualTo(vb)) return true;
+		}
+		return false;
 	}
 
 	/** The parameter of a null-argument guard `param ==/!= null`, or null if ie is not one. Shared

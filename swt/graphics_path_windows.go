@@ -358,10 +358,7 @@ func (this *Path) ApplyUsingAnyHandle(function func(*Path_PathHandle) any) any {
 	if this.zoomToHandle.IsEmpty() {
 		return PathApplyOnTemporaryHandle(this.impl.getDevice_(), DPIUtilGetDeviceZoom(), this.operations, function)
 	} else {
-		return function(func() *Path_PathHandle {
-			_ = []any{this.zoomToHandle.Values().Iterator()}
-			panic("j2go: unresolved call next")
-		}())
+		return function(jrt.Cast[*Path_PathHandle](this.zoomToHandle.Values().Iterator().Next()))
 	}
 }
 

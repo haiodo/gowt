@@ -2385,14 +2385,8 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 							}
 						} else {
 							if offset > 0 {
-								var letterOrDigit bool = func() bool {
-									_ = []any{utf16.Encode([]rune(this.segmentsText))[offset]}
-									panic("j2go: unresolved call isLetterOrDigit")
-								}()
-								var previousLetterOrDigit bool = func() bool {
-									_ = []any{utf16.Encode([]rune(this.segmentsText))[offset-1]}
-									panic("j2go: unresolved call isLetterOrDigit")
-								}()
+								var letterOrDigit bool = (unicode.IsLetter(rune(utf16.Encode([]rune(this.segmentsText))[offset])) || unicode.IsDigit(rune(utf16.Encode([]rune(this.segmentsText))[offset])))
+								var previousLetterOrDigit bool = (unicode.IsLetter(rune(utf16.Encode([]rune(this.segmentsText))[offset-1])) || unicode.IsDigit(rune(utf16.Encode([]rune(this.segmentsText))[offset-1])))
 								if letterOrDigit != previousLetterOrDigit || !letterOrDigit {
 									if !unicode.IsSpace(rune(utf16.Encode([]rune(this.segmentsText))[offset])) {
 										return this.UntranslateOffset(offset)
@@ -2405,14 +2399,8 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 				case MOVEMENT_WORD_END:
 					{
 						if offset > 0 {
-							var isLetterOrDigit bool = func() bool {
-								_ = []any{utf16.Encode([]rune(this.segmentsText))[offset]}
-								panic("j2go: unresolved call isLetterOrDigit")
-							}()
-							var previousLetterOrDigit bool = func() bool {
-								_ = []any{utf16.Encode([]rune(this.segmentsText))[offset-1]}
-								panic("j2go: unresolved call isLetterOrDigit")
-							}()
+							var isLetterOrDigit bool = (unicode.IsLetter(rune(utf16.Encode([]rune(this.segmentsText))[offset])) || unicode.IsDigit(rune(utf16.Encode([]rune(this.segmentsText))[offset])))
+							var previousLetterOrDigit bool = (unicode.IsLetter(rune(utf16.Encode([]rune(this.segmentsText))[offset-1])) || unicode.IsDigit(rune(utf16.Encode([]rune(this.segmentsText))[offset-1])))
 							if !isLetterOrDigit && previousLetterOrDigit {
 								return this.UntranslateOffset(offset)
 							}
@@ -2989,10 +2977,7 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 			break
 		}
 	}
-	if func() bool {
-		_ = []any{utf16.Encode([]rune(this.segmentsText))[run.start+best-1]}
-		panic("j2go: unresolved call isHighSurrogate")
-	}() {
+	if jrt.IsHighSurrogate(rune(utf16.Encode([]rune(this.segmentsText))[run.start+best-1])) {
 		best--
 	}
 	return best

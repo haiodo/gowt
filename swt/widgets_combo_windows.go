@@ -2440,10 +2440,10 @@ func (this *Combo) wmChar_(hwnd int64, wParam int64, lParam int64) *win32.LRESUL
 			var y int32 = selection.Y
 			if x == y {
 				var actText string = jrt.Substring(this.GetText(), 0, x)
-				var m any = func() any { _ = []any{ScrollableCTRL_BS_PATTERN, actText}; panic("j2go: unresolved call matcher") }()
-				if func() bool { _ = []any{m}; panic("j2go: unresolved call find") }() {
-					x = func() int32 { _ = []any{m}; panic("j2go: unresolved call start") }()
-					y = func() int32 { _ = []any{m}; panic("j2go: unresolved call end") }()
+				var m *jrt.Matcher = ScrollableCTRL_BS_PATTERN.Matcher(actText)
+				if m.Find() {
+					x = m.Start()
+					y = m.End()
 					win32.OSSendMessageOverload4(hwndText, win32.OSEM_SETSEL, int64(x), int64(y))
 				}
 			}

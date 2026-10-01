@@ -3119,3 +3119,51 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 `examples/controlexample/`, `tests/swttests/` compared with the tree at b62a729 by old name (new name minus `_darwin`): 558 identical,
 0 different, none added or removed; `tests/expected.txt`, `tests/snapshots`, testdata and `res` unchanged. `make gen && make` and
 `make release` green on darwin; binary sizes within the 5% gate.
+
+## Round 20 (win32): the Windows port (TSK-2026-09-23-039..042, -047)
+
+`PLATFORM=win32 make gen` translates `Eclipse SWT/win32` into `swt/*_windows.go` and `Eclipse SWT PI/win32` (win32, win32/version, gdip,
+ole/win32) into `internal/win32`; `GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build ./... && go vet ./...` passes on the Mac.
+
+**Binding layer: stdlib `syscall`, no cgo, no new dependency.** Each `OS.*`/`COM.*` native is a lazy proc (`internal/win32/dll_manual.go`):
+the first DLL of a fixed list (user32, gdi32, kernel32, comctl32, ... usp10, ucrtbase, ntdll) that exports `<name>W`, else `<name>`, wins; the call is
+`syscall.SyscallN`. Floats go through the integer slots (the Go runtime copies the first four words into XMM too); `//go:uintptrescapes` helpers
+keep Go pointers alive for GDI+. Callbacks (`Callback`, window procedures) are `syscall.NewCallback` with 0..8 word arguments (2000 slots, never freed).
+Why not purego or mingw cgo: purego's Windows support is the same SyscallN underneath, cgo needs a cross C toolchain. `COM.VtblCall*` reads the vtable slot.
+`dynamic` natives that a Windows lacks return 0 (`GetDpiForMonitor`). `setenv`, `PathToPIDL`, `CreateSwtWebView2Options` have no export: panic stubs.
+- **Struct layout.** SWT's Java structs are not C mirrors (flattened `rcPaint.left`, reordered fields, BOOL as boolean, bitfields, partial structs), so the
+  Go structs keep the Java shape and every native copies them through a C-layout buffer: `toC`/`fromC` (generated, `WinPack`; `flags=no_in/no_out` honoured, by-value
+  `flags=struct`). Offsets and sizes come from `tooling/j2go/win32_layout.txt`, measured with mingw-w64 and run under Wine by `tooling/j2go/win32/layout.py`
+  (135 structs; a Go test of sizes against C was run once: all agree). Bitfield structs (SCRIPT_*, MENUBARINFO) are packed by hand in `bitfields_manual.go`.
+- **GDI+.** `Gdip.java` wraps C++ classes (gdip.cpp); `internal/win32/gdip_manual.go` calls the flat API instead. Handles are the flat pointers; a FontFamily handle is a
+  cell holding the `GpFontFamily*` (SWT creates an empty one and fills it). `Image.getLastStatus` is always Ok (the constructor returns 0 on failure).
+- **Manifest.** SWT activates a manifest from its JNI DLL resources; `custom_manual.go` writes the embedded `swt.manifest` (common controls 6) to the temp dir and
+  activates it in `init`. The process is DPI-unaware: `DPIUtil` is the shared single-zoom stand-in (zoom 100), Windows scales the window.
+- **`make win-probe`** (console, no window): every proc the bindings call must resolve in the bottle (819 procs, 0 missing, 2 optional absent), and
+  package `swt` initialises without a "deferred init" error.
+
+**Translator changes (general rules).** Records are rewritten to final classes before parsing (`SourcePrep`, local ones hoisted to the file's class); qualified
+`this` and the implicit outer instance walk `this_0` (`OuterThis`); a member declared with a type variable is cast back where read (`ErasedGenerics`, `jrt.Cast`);
+float `%` is `math.Mod`, a compound assignment through a wider type (`int *= -1.5`) computes in the wider type, an out-of-range literal narrowing wraps (`NumericExtras`);
+`return` inside `finally` escapes through the same flags as one in the body; a try/finally ending an if-branch at the tail of a method returns; a local declared in one case group and used
+in another is declared before the `switch`; `x instanceof Object[] t` asserts the slice; a pattern test in `&&` is hoisted so its variable stays visible; repeated pure
+operands of a long `&&`/`||` chain are dropped (go vet); `Names` keeps an implementation's name from what it implements, keeps public overloads first and gives a package-private
+overload that a public one hides a suffix (non-reference platforms only). `Boolean.TRUE/FALSE`, `ConcurrentHashMap`, `HashSet`, `String.getChars`, `Map.values/keySet/
+computeIfAbsent`, `Iterator`, `Optional.orElseGet`, `regex.Pattern/Matcher` are in `jrt`.
+
+**One shared file per class.** Common-derived files (`swt/*.go` unsuffixed, `examples/`, `tests/`) belong to the cocoa run; other platforms keep them and declare
+what they call: `overloads.properties` (overload names), `cascade.properties` (dispatch points and their names, incl. `Resource.destroyHandlesExcept`), `names.properties`
+(`Control.setCursor`, `CoordinateSystemMapper.map`). Helpers a shared file needs and only cocoa's files define land in `swt/helpers_windows.go`.
+No file differs per platform today. Hand-written, per OS: `widgets_stubs2/3_manual_windows.go` (Accessible stub, Callback), `graphics_dpiutil_manual_windows.go`,
+`internal_platform_manual_windows.go`; shared since this round: `graphics_stubs_manual.go`, `widgets_stubs3_manual.go` (lifted from the darwin files).
+
+**API gate.** `apidump` compares only SWT's public Java API: `tooling/apidump/public-api.txt` (`J2GO_DUMP_PUBLIC=<file>` on a run of each platform, merged) lists the Go names of public/
+protected members of public non-internal classes; platform-named glue (`ShellWin32_new`) and signatures naming a PI type are skipped. `platform-only.txt` has `* <regexp>` lines
+for what a port declares differently (IME, Tracker, `setIME`). windows is in `platforms.txt`.
+
+**Running (these open windows).** `make win-hello`, then `make win-swttest-update` (writes `tests/expected_windows.txt` from a full run) and `make win-swttest`; all cross-build with
+`GOOS=windows GOARCH=amd64` into `bin/windows/` and run in the CrossOver bottle `gowt` (`WINE`, `WINBOTTLE` override). `controlexample.exe` builds; its snapshot capture is not ported.
+
+**Gaps.** Not run yet: any GUI (hello, swttest, controlexample). Multi-zoom `Image`/`Region`/`Transform`/`Path`/`Pattern` are translated with the generic `applyUsingAnyHandle<T>` family left as
+panic markers (type-parameterised methods are not translated): drawing paths that use them panic. `TextLayout` (Uniscribe) translates, untested; `Accessible` (MSAA) is a stub; drag and drop, OLE
+and Browser are not translated (reference-only source roots); dark-mode ordinals unavailable; WebView2 absent.

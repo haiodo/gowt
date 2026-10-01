@@ -143,6 +143,8 @@ public class Manual {
 		}
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
+		reg("java.util.regex.Pattern", "jrt.Pattern", JRT_IMPORT, false);
+		reg("java.util.regex.Matcher", "jrt.Matcher", JRT_IMPORT, false);
 		reg("java.util.StringTokenizer", "jrt.StringTokenizer", JRT_IMPORT, false);
 		// java.util.ResourceBundle over the registered resource FS, java.text.MessageFormat's
 		// {n} substitution, and the exceptions they (and Integer.parseInt) throw - internal/jrt/text.go.

@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/haiodo/gowt/internal/win32"
+	_ "github.com/haiodo/gowt/swt" // its package init (static initialisers) runs too: any failure prints "deferred init"
 )
 
 func main() {

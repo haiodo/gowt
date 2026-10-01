@@ -1,0 +1,2 @@
+# Regression gate of the Windows port (same format as expected.txt). Empty until the first full run under Wine:
+#   make win-swttest-update

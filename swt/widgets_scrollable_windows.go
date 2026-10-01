@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
@@ -21,16 +22,13 @@ type ScrollableLike interface {
 	AsScrollable() *Scrollable
 }
 
-var ScrollableCTRL_BS_PATTERN any = func() (r any) {
+var ScrollableCTRL_BS_PATTERN *jrt.Pattern = func() (r *jrt.Pattern) {
 	defer func() {
 		if e := recover(); e != nil {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init ScrollableCTRL_BS_PATTERN:", e)
 		}
 	}()
-	r = func() any {
-		_ = []any{"\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z"}
-		panic("j2go: unresolved call compile")
-	}()
+	r = jrt.PatternCompile("\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z")
 	return
 }()
 

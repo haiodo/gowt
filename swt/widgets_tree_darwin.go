@@ -189,7 +189,7 @@ func (this *Tree) cellSize_(id int64, sel int64) cocoa.NSSize {
 				break
 			}
 		}
-		this.SendMeasureItem(item, cell.IsHighlighted(), columnIndex, size)
+		this.SendMeasureItem(item, cell.IsHighlighted(), columnIndex, &size)
 	}
 	return size
 }
@@ -1017,7 +1017,7 @@ func (this *Tree) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa.
 	var itemY int32 = int32((rect.Y - offsetY))
 	var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 	if hooksMeasure {
-		this.SendMeasureItem(item, cell.IsHighlighted(), columnIndex, contentSize)
+		this.SendMeasureItem(item, cell.IsHighlighted(), columnIndex, &contentSize)
 	}
 	var userForeground *Color = nil
 	if hooksErase {
@@ -2364,7 +2364,7 @@ func (this *Tree) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	return result
 }
 
-func (this *Tree) SendMeasureItem(itemLike TreeItemLike, selected bool, columnIndex int32, size cocoa.NSSize) {
+func (this *Tree) SendMeasureItem(itemLike TreeItemLike, selected bool, columnIndex int32, size *cocoa.NSSize) {
 	var item *TreeItem
 	if itemLike != nil {
 		item = itemLike.AsTreeItem()

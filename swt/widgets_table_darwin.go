@@ -158,7 +158,7 @@ func (this *Table) cellSize_(id int64, sel int64) cocoa.NSSize {
 				break
 			}
 		}
-		this.SendMeasureItem(item, columnIndex, size, cell.IsHighlighted())
+		this.SendMeasureItem(item, columnIndex, &size, cell.IsHighlighted())
 	}
 	return size
 }
@@ -883,7 +883,7 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 	var itemY int32 = int32((rect.Y - offsetY))
 	var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 	if hooksMeasure {
-		this.SendMeasureItem(item, columnIndex, contentSize, isSelected)
+		this.SendMeasureItem(item, columnIndex, &contentSize, isSelected)
 	}
 	var userForeground *Color = nil
 	if hooksErase {
@@ -2630,7 +2630,7 @@ func (this *Table) sendKeyEvent_(nsEvent *cocoa.NSEvent, type_ int32) bool {
 	return result
 }
 
-func (this *Table) SendMeasureItem(itemLike TableItemLike, columnIndex int32, size cocoa.NSSize, isSelected bool) {
+func (this *Table) SendMeasureItem(itemLike TableItemLike, columnIndex int32, size *cocoa.NSSize, isSelected bool) {
 	var item *TableItem
 	if itemLike != nil {
 		item = itemLike.AsTableItem()

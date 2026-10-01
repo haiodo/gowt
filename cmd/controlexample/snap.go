@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"sync/atomic"
+	"time"
 
 	"github.com/haiodo/gowt/swt"
 )
@@ -26,29 +29,56 @@ type snapHooks struct {
 
 // snapRun selects each tab, waits for layout and paint, snapshots the window, clicks one checkbox on
 // some tabs and snapshots again, then closes the shell. Steps are timers 500 ms apart.
+// stepTimeout bounds one step (and the wait for the next timer): a stuck native call or a timer that
+// never fires ends the run with the step's name and all goroutine stacks instead of hanging.
+const stepTimeout = 20 * time.Second
+
 func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string, h snapHooks) {
 	var steps []func()
+	var progress atomic.Int64 // unix nanos of the last step start
+	var current atomic.Value  // name of the running step
+	progress.Store(time.Now().UnixNano())
+	current.Store("start")
+	go func() {
+		for range time.Tick(time.Second) {
+			if time.Since(time.Unix(0, progress.Load())) > stepTimeout {
+				buf := make([]byte, 1<<18)
+				fmt.Fprintf(os.Stderr, "snap: step %q stuck for more than %v\n%s\n", current.Load(), stepTimeout, buf[:runtime.Stack(buf, true)])
+				os.Exit(3)
+			}
+		}
+	}()
+	named := func(name string, f func()) func() {
+		return func() {
+			current.Store(name)
+			progress.Store(time.Now().UnixNano())
+			fmt.Fprintln(os.Stderr, "snap step:", name)
+			f()
+			current.Store("after " + name)
+			progress.Store(time.Now().UnixNano())
+		}
+	}
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		panic(err)
 	}
-	steps = append(steps, func() { h.meta(filepath.Join(dir, "meta.txt")) })
+	steps = append(steps, named("meta", func() { h.meta(filepath.Join(dir, "meta.txt")) }))
 	for i, item := range folder.GetItems() {
 		name := item.GetText()
-		steps = append(steps, func() { h.selectTab(folder, i) }, func() { h.shot(filepath.Join(dir, name+".png")) })
+		steps = append(steps, named("select tab "+name, func() { h.selectTab(folder, i) }), named("shot "+name, func() { h.shot(filepath.Join(dir, name+".png")) }))
 		if click, ok := clicks[name]; ok {
 			var before *swt.Button
-			steps = append(steps, func() {
+			steps = append(steps, named("click "+name+" "+click, func() {
 				before = findButton(item.GetControl(), "One")
 				h.click(item.GetControl(), click)
-			}, func() {
+			}), named("shot "+name+" "+click, func() {
 				if before != nil {
 					fmt.Println("example widgets recreated:", before.IsDisposed() && findButton(item.GetControl(), "One") != nil)
 				}
 				h.shot(filepath.Join(dir, name+"_"+click+".png"))
-			})
+			}))
 		}
 	}
-	steps = append(steps, func() { shell.Close() })
+	steps = append(steps, named("close", func() { shell.Close() }))
 	for i, step := range steps {
 		display.TimerExec(int32(500*(i+1)), &task{step})
 	}

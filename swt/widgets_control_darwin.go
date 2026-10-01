@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"unicode/utf16"
 )
 
 type Control struct {
@@ -625,7 +624,7 @@ func (this *Control) CreateString(string_ string, fontLike FontLike, foreground 
 	paragraphStyle.Release()
 	var length int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, length)
-	copy(chars, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 	if mnemonics {
 		length = this.FixMnemonic(chars)
 	}

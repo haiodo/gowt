@@ -46,8 +46,26 @@ final class FunctionalEmitter {
 			if (fn != null) return fn;
 		}
 		if (sam == null || declCi == null) return marker(emr, "ExpressionMethodReference");
-		String wrapped = wrap(fType, methodRefFunc(emr, target, declCi));
+		String wrapped = wrap(fType, unboxParams(methodRefFunc(emr, target, declCi), sam, target));
 		return wrapped != null ? wrapped : marker(emr, "ExpressionMethodReference");
+	}
+
+	/** A method value whose params are primitives where the JDK interface's are boxed (Function<Long,Long>, Go any): a forwarding func. */
+	private String unboxParams(String fn, IMethodBinding sam, IMethodBinding target) {
+		ITypeBinding[] sp = sam.getParameterTypes(), tp = target.getParameterTypes();
+		if (sp.length != tp.length) return fn;
+		List<String> params = new ArrayList<>(), args = new ArrayList<>();
+		boolean differ = false;
+		for (int i = 0; i < sp.length; i++) {
+			String s = GoTypes.map(sp[i], emitter), t = GoTypes.map(tp[i], emitter);
+			params.add("a" + i + " " + s);
+			args.add(s.equals(t) ? "a" + i : "jrt.Cast[" + t + "](a" + i + ")");
+			differ |= !s.equals(t) && s.equals("any") && tp[i].isPrimitive();
+		}
+		if (!differ) return fn;
+		emitter.fileImports.add(JRT_IMPORT);
+		String ret = emitter.retType(sam);
+		return "func(" + String.join(", ", params) + ") " + ret + " { " + (ret.isEmpty() ? "" : "return ") + fn + "(" + String.join(", ", args) + ") }";
 	}
 
 	/** `recv.M` for `expr::m`; `Type::m` (JDT parses it the same way) is a static func or the

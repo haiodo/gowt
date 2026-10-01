@@ -782,9 +782,9 @@ func (this *Tab) CreateEventConsolePopup() {
 	cut.AddListener(swt.Selection, &ListenerFunc{fn: func(event *swt.Event) {
 		this.eventConsole.Cut()
 	}})
-	var copy *swt.MenuItem = swt.NewMenuItem(popup, swt.PUSH)
-	copy.SetText(ControlExampleGetResourceString("MenuItem_Copy"))
-	copy.AddListener(swt.Selection, &ListenerFunc{fn: func(event *swt.Event) {
+	var copy_ *swt.MenuItem = swt.NewMenuItem(popup, swt.PUSH)
+	copy_.SetText(ControlExampleGetResourceString("MenuItem_Copy"))
+	copy_.AddListener(swt.Selection, &ListenerFunc{fn: func(event *swt.Event) {
 		this.eventConsole.Copy()
 	}})
 	var paste *swt.MenuItem = swt.NewMenuItem(popup, swt.PUSH)

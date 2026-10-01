@@ -8,6 +8,7 @@ import (
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 	"os"
+	"slices"
 )
 
 type Test_org_eclipse_swt_graphics_TextLayout struct {
@@ -896,7 +897,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat
 				}()
 				var extepectedColumn []int32 = pixelsOnce[x]
 				var actualColumn []int32 = pixelsRepeated[x+int32(len(pixelsOnce))*i]
-				if func() bool { _ = []any{extepectedColumn, actualColumn}; panic("j2go: unresolved call equals") }() {
+				if slices.Equal(extepectedColumn, actualColumn) {
 					tcnt50 = true
 					return
 				}

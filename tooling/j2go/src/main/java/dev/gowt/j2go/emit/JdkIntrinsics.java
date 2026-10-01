@@ -85,13 +85,10 @@ final class JdkIntrinsics {
 			if (mi.arguments().get(0) instanceof StringLiteral sl && sl.getLiteralValue().equals("os.name")) return "\"Mac OS X\"";
 			return jrtCall("GetProperty", arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "\"\"" : arg(mi, 1)));
 		}
-		// str.getChars(0, n, dst, 0): every call site in the translated set copies the whole
-		// string, so this only needs to encode str as UTF-16 into dst (see NSString.getChars).
 		if (qualified.equals("java.lang.String") && mb.getName().equals("getChars")) {
-			emitter.fileImports.add("unicode/utf16");
-			String recv = emitter.expr(mi.getExpression());
-			String dst = emitter.expr((Expression) mi.arguments().get(2));
-			return "copy(" + dst + ", utf16.Encode([]rune(" + recv + ")))";
+			List<Expression> a = mi.arguments();
+			return jrtCall("GetChars", emitter.expr(mi.getExpression()) + ", " + emitter.expr(a.get(0)) + ", " + emitter.expr(a.get(1)) + ", "
+					+ emitter.expr(a.get(2)) + ", " + emitter.expr(a.get(3)));
 		}
 		String stringFunc = STRING_FUNCS.get(mb.getName() + "/" + mi.arguments().size());
 		if (qualified.equals("java.lang.String") && stringFunc != null) {

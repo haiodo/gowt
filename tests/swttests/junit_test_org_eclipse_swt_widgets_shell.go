@@ -688,7 +688,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Open() {
 		}
 		this.impl.setUp_()
 		var results []string = jrt.ToSlice[string](events)
-		junit.AssertArrayEquals(temp, results)
+		junit.AssertArrayEquals(upcastArrstringToany(temp), upcastArrstringToany(results))
 	}
 }
 

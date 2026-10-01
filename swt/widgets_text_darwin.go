@@ -698,7 +698,7 @@ func (this *Text) GetInsertString(string_ string, range_ cocoa.NSRange) *cocoa.N
 		length = int32(math.Max(float64(0), float64(length)))
 	}
 	var buffer []uint16 = make([]uint16, length)
-	copy(buffer, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 	str = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 	return str
 }
@@ -942,7 +942,7 @@ func (this *Text) _insertEditText(string_ string, enableUndo bool) {
 			}
 		}
 		var buffer []uint16 = make([]uint16, length)
-		copy(buffer, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 		var nsstring *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 		var fieldEditor *cocoa.NSText = (castcocoaNSViewTococoaNSTextField(this.View)).CurrentEditor()
 		if fieldEditor != (nil) {
@@ -1295,7 +1295,7 @@ func (this *Text) SetEditable(editable bool) {
 
 func (this *Text) SetEditText(string_ string) {
 	var text []uint16 = make([]uint16, jrt.StringLength(string_))
-	copy(text, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(text)), text, 0)
 	this.SetEditTextText(text)
 }
 
@@ -1491,7 +1491,7 @@ func (this *Text) SetText(string_ string) {
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
-		copy(buffer, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 		var str *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 		widget.SetString(str)
 		widget.SetSelectedRange(cocoa.NSRange{})
@@ -1510,7 +1510,7 @@ func (this *Text) SetTextChars(text []uint16) {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
-		copy(text, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(text)), text, 0)
 	}
 	if (this.style & SINGLE) != 0 {
 		this.SetEditTextText(text)
@@ -2037,7 +2037,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Text static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Text static{}:", r)
 			}
 		}()
 		TextLIMIT = 0x7FFFFFFF

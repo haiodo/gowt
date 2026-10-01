@@ -1,5 +1,6 @@
 package dev.gowt.j2go.emit;
 
+import dev.gowt.j2go.GoTypes;
 import dev.gowt.j2go.Manual;
 import dev.gowt.j2go.Names;
 import dev.gowt.j2go.TypeModel;
@@ -39,6 +40,11 @@ final class InvocationEmitter {
 		// Per-signature override first: the generic per-type Manual dispatch below has no
 		// overload awareness, so an overloaded manual method (e.g. Display.map) needs this.
 		String manualMethodGoName = Manual.manualMethod(Names.erasureKey(mb));
+		// PI structs cannot name swt types: GdkRectangle.toRectangle() is inlined at the call site.
+		if (manualMethodGoName != null && manualMethodGoName.equals(Manual.GDK_RECTANGLE_TO_RECTANGLE)) {
+			String r = emitter.expr(mi.getExpression());
+			return "NewRectangle(" + r + ".X, " + r + ".Y, " + r + ".Width, " + r + ".Height)";
+		}
 		if (manualMethodGoName != null) {
 			if (Modifier.isStatic(mb.getModifiers())) {
 				TypeModel.ClassInfo declCi = emitter.model.lookup(declaring);
@@ -130,6 +136,7 @@ final class InvocationEmitter {
 			return goName + "(" + String.join(", ", args) + ")";
 		}
 
+		addressStructArgs(mi, mb, args);
 		String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.implicitThis(declaring);
 		String base = Names.javaMethodBaseGoName(mb.getName());
 		String sig = TypeModel.signature(mb);
@@ -165,12 +172,14 @@ final class InvocationEmitter {
 	}
 
 	private void addressStructArgs(MethodInvocation mi, IMethodBinding mb, List<String> args) {
-		for (int i = 0; i < args.size() && Modifier.isNative(mb.getModifiers()); i++) {
-			if (emitter.model.isNativeStructPointerParam(mb, i)) args.set(i, addressOf((Expression) mi.arguments().get(i), args.get(i)));
+		for (int i = 0; i < args.size(); i++) {
+			boolean byAddress = Modifier.isNative(mb.getModifiers()) ? Modifier.isStatic(mb.getModifiers()) && emitter.model.isNativeStructPointerParam(mb, i) : emitter.model.mutatedParams.isMutated(mb, i);
+			if (byAddress) args.set(i, addressOf((Expression) mi.arguments().get(i), args.get(i)));
 		}
 	}
 
 	private String addressOf(Expression e, String text) {
+		if (e instanceof Name n && n.resolveBinding() instanceof IVariableBinding v && emitter.model.mutatedParams.isMutatedParam(v)) return text; // already a pointer
 		if (e instanceof Name || e instanceof FieldAccess || e instanceof ArrayAccess || e instanceof ClassInstanceCreation) {
 			return "&" + text;
 		}
@@ -254,6 +263,7 @@ final class InvocationEmitter {
 	private String emitCallback(ClassInstanceCreation cic) {
 		List<?> a = cic.arguments();
 		Expression recv = (Expression) a.get(0);
+		if (a.size() == 4) return emitTypedCallback(cic, recv);
 		if (a.size() != 3 || !(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof NumberLiteral argc)) {
 			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
 			return emitter.panicClosure(cic, "unsupported Callback");
@@ -278,6 +288,39 @@ final class InvocationEmitter {
 		}
 		String body = target.getReturnType().getName().equals("void") ? call + "; return 0" : "return " + call;
 		return "NewCallbackFn(func(args []int64) int64 { " + body + " }, " + n + ")";
+	}
+
+	/** new Callback(target, "method", ret.class, new Type[]{long.class, double.class, ...}): a closure with those Go
+	 * param types, so floating-point arguments arrive in their own registers. */
+	private String emitTypedCallback(ClassInstanceCreation cic, Expression recv) {
+		List<?> a = cic.arguments();
+		if (!(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof TypeLiteral ret) || !(a.get(3) instanceof ArrayCreation ac) || ac.getInitializer() == null) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		List<String> params = new ArrayList<>(), args = new ArrayList<>();
+		for (Object o : ac.getInitializer().expressions()) {
+			String t = GoTypes.map(((TypeLiteral) o).getType().resolveBinding(), emitter);
+			params.add("a" + params.size() + " " + t);
+			args.add("a" + args.size());
+		}
+		ITypeBinding cls = recv instanceof TypeLiteral tl ? tl.getType().resolveBinding() : emitter.currentClassInfo.binding;
+		IMethodBinding target = findCallbackTarget(cls, name.getLiteralValue(), args.size());
+		if (target == null) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback target not found " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		String retGo = GoTypes.map(ret.getType().resolveBinding(), emitter);
+		TypeModel.ClassInfo tci = emitter.model.lookup(target.getDeclaringClass());
+		String call = Modifier.isStatic(target.getModifiers()) ? emitter.staticMethodGoName(target, tci) + "(" + String.join(", ", args) + ")"
+				: callText(isClassValue(recv) ? "this" : emitter.expr(recv), target, tci, args);
+		return "NewCallbackTyped(func(" + String.join(", ", params) + ") " + retGo + " { " + (retGo.isEmpty() ? "" : "return ") + call + " })";
+	}
+
+	// `getClass()`, `X.class` or a Class variable name the receiver's class, not an object.
+	private static boolean isClassValue(Expression recv) {
+		ITypeBinding t = recv.resolveTypeBinding();
+		return t != null && t.getErasure().getQualifiedName().equals("java.lang.Class");
 	}
 
 	private IMethodBinding findCallbackTarget(ITypeBinding cls, String name, int argc) {

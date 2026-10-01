@@ -130,7 +130,7 @@ func (this *TextLayout) ComputeRuns() {
 		segmentsText = this.GetSegmentsText()
 	}
 	var chars []uint16 = make([]uint16, jrt.StringLength(segmentsText))
-	copy(chars, utf16.Encode([]rune(segmentsText)))
+	jrt.GetChars(segmentsText, 0, int32(len(chars)), chars, 0)
 	var str *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	str = str.InitWithCharacters(chars, int64(int32(len(chars))))
 	var attrStr *cocoa.NSMutableAttributedString = castcocoaNSObjectTococoaNSMutableAttributedString(cocoa.NewNSMutableAttributedString().Alloc())
@@ -1368,7 +1368,7 @@ func (this *TextLayout) GetSegmentsText() string {
 		}
 	}
 	var oldChars []uint16 = make([]uint16, length)
-	copy(oldChars, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, length, oldChars, 0)
 	var newChars []uint16 = make([]uint16, length+nSegments)
 	var charCount int32 = 0
 	var segmentCount int32 = 0

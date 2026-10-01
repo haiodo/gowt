@@ -5,7 +5,6 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type TrayItem struct {
@@ -226,7 +225,7 @@ func (this *TrayItem) SetToolTipText(string_ string) {
 func (this *TrayItem) _setToolTipText(string_ string) {
 	if string_ != "" {
 		var chars []uint16 = make([]uint16, jrt.StringLength(string_))
-		copy(chars, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		var str *cocoa.NSString = cocoa.NSStringStringWithCharacters(chars, int64(length))
 		this.view.SetToolTip(str)

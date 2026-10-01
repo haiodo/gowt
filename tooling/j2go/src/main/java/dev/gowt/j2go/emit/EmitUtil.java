@@ -58,7 +58,7 @@ final class EmitUtil {
 	/** Java allows a class to declare a static field and a static method with the same name. */
 	static boolean staticFieldClashesWithMethod(ITypeBinding declaringType, String javaFieldName) {
 		for (IMethodBinding m : declaringType.getDeclaredMethods()) {
-			if (Modifier.isStatic(m.getModifiers()) && m.getName().equals(javaFieldName)) return true;
+			if (Modifier.isStatic(m.getModifiers()) && Names.capitalize(m.getName()).equals(Names.capitalize(javaFieldName))) return true;
 		}
 		return false;
 	}
@@ -123,7 +123,7 @@ final class EmitUtil {
 				preludeOut.add("if " + n + "Like != nil { " + n + " = " + n + "Like." + ci.asMethodName + "() }");
 				preludeOut.add("_ = " + n); // a Java body that never reads this param still compiles
 			} else {
-				parts.add(n + " " + dev.gowt.j2go.GoTypes.map(types[i], emitter));
+				parts.add(n + " " + (emitter.model.mutatedParams.isMutated(mb, i) ? "*" : "") + dev.gowt.j2go.GoTypes.map(types[i], emitter));
 			}
 		}
 		return String.join(", ", parts);
@@ -185,7 +185,7 @@ final class EmitUtil {
 		// which this port lacks - recover per-entry so one bad symbol doesn't sink the rest.
 		for (int i : rest) {
 			out.append("\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n")
-					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt/internal/cocoa: deferred init ")
+					.append("\t\t\t\tfmt.Fprintln(os.Stderr, \"gowt: deferred init ")
 					.append(labels.get(i)).append(":\", r)\n")
 					.append("\t\t\t}\n\t\t}()\n").append(inits.get(i)).append("\t}()\n");
 		}
@@ -235,9 +235,40 @@ final class EmitUtil {
 		List<String> saved = emitter.prelude;
 		emitter.prelude = new java.util.ArrayList<>();
 		String text = emitter.expr(e);
-		List<String> own = emitter.prelude;
+		List<String> own = new java.util.ArrayList<>();
+		for (String line : emitter.prelude) {
+			// `x instanceof T v && v.f`: v must outlive this closure, so it is declared outside and assigned inside.
+			java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\w+), (ok\\d+) := (.*)").matcher(line);
+			if (m.matches() && TypeTestEmitter.PATTERN_TYPES.containsKey(m.group(1))) {
+				saved.add("var " + m.group(1) + " " + TypeTestEmitter.PATTERN_TYPES.get(m.group(1)));
+				own.add("pv, " + m.group(2) + " := " + m.group(3));
+				own.add(m.group(1) + " = pv");
+			} else {
+				own.add(line);
+			}
+		}
 		emitter.prelude = saved;
 		return own.isEmpty() ? text : "func() bool { " + String.join("; ", own) + "; return " + text + " }()";
+	}
+
+	/** A boxed Integer (Go any) used as a number: unboxed by assertion (ceiling: null would panic). */
+	static String unboxInteger(Emitter emitter, Expression e, Expression other, InfixExpression.Operator op, String text) {
+		ITypeBinding t = e.resolveTypeBinding();
+		if (t == null || !t.getErasure().getQualifiedName().equals("java.lang.Integer")) return text;
+		boolean eq = op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS;
+		ITypeBinding o = other.resolveTypeBinding();
+		if (eq && (o == null || !o.isPrimitive())) return text;
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		return "jrt.Cast[int32](" + text + ")";
+	}
+
+	/** `x++` on a boxed Integer: Go's x++ needs a number. */
+	static String incDec(Emitter emitter, Expression operand, String op) {
+		String x = emitter.expr(operand);
+		ITypeBinding t = operand.resolveTypeBinding();
+		if (t == null || !t.getErasure().getQualifiedName().equals("java.lang.Integer")) return x + op;
+		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		return x + " = jrt.Cast[int32](" + x + ") " + op.charAt(0) + " 1";
 	}
 
 	/** `x == null` on an Object (Go any): a typed nil pointer inside the interface is null too,
@@ -247,6 +278,8 @@ final class EmitUtil {
 		if ((op != InfixExpression.Operator.EQUALS && op != InfixExpression.Operator.NOT_EQUALS) || !ie.extendedOperands().isEmpty()
 				|| !(right.equals("nil") ^ left.equals("nil"))) return null;
 		ITypeBinding t = (right.equals("nil") ? ie.getLeftOperand() : ie.getRightOperand()).resolveTypeBinding();
+		// A Boolean is a Go bool with no null: "unset" reads as false (ceiling: a tri-state Boolean field).
+		if (t != null && t.getErasure().getQualifiedName().equals("java.lang.Boolean")) return op == InfixExpression.Operator.EQUALS ? "false" : "true";
 		if (t == null || t.isNullType() || !dev.gowt.j2go.GoTypes.map(t, emitter).equals("any")) return null;
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 		return (op == InfixExpression.Operator.NOT_EQUALS ? "!" : "") + "jrt.IsNil(" + (right.equals("nil") ? left : right) + ")";

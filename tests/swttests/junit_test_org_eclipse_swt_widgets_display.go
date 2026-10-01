@@ -144,13 +144,13 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_Executor() {
 		var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 		jrt.ThreadStart(jrt.NewThread(jrt.NewRunnable(func() {
 			display.Execute(jrt.NewRunnable(func() {
-				func() {
+				{
 					defer func() {
 						latch.CountDown()
 					}()
 					junit.AssertEquals(display, swt.DisplayGetCurrent())
 					integer.Set(2)
-				}()
+				}
 			}))
 		})))
 		for !latch.Await(int64(10), jrt.TimeUnitMILLISECONDS) {

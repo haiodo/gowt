@@ -523,7 +523,7 @@ func (this *MenuItem) SetToolTipText(toolTip string) {
 	}
 	this.toolTipText = toolTip
 	var chars []uint16 = make([]uint16, jrt.StringLength(this.toolTipText))
-	copy(chars, utf16.Encode([]rune(this.toolTipText)))
+	jrt.GetChars(this.toolTipText, 0, int32(len(chars)), chars, 0)
 	var length int32 = this.FixMnemonic(chars)
 	this.nsItem.SetToolTip(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 }
@@ -533,7 +533,7 @@ func (this *MenuItem) UpdateText() {
 		return
 	}
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-	copy(buffer, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 	var i int32 = 0
 	var j int32 = 0
 	for i < int32(len(buffer)) {
@@ -596,7 +596,7 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	var key int32 = 0
 	if show {
 		var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-		copy(buffer, utf16.Encode([]rune(this.text)))
+		jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 		var i int32 = 0
 		var j int32 = 0
 		for i < int32(len(buffer)) {

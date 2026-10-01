@@ -196,7 +196,7 @@ final class ConstructorEmitter {
 		// api") even though super.x() bypasses the cascade's .impl dispatch.
 		TypeModel.ClassInfo declaringCi = emitter.model.lookup(mb.getDeclaringClass());
 		String cascadeName = (declaringCi != null ? declaringCi.root : emitter.currentClassInfo.root).overriddenRootMethodGoNames.get(TypeModel.signature(mb));
-		String base = cascadeName != null ? cascadeName : Names.javaMethodBaseGoName(smi.getName().getIdentifier());
+		String base = cascadeName != null ? cascadeName : emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(smi.getName().getIdentifier()));
 		List<String> args = emitter.buildArgs(smi.arguments(), mb);
 		// Object's own equals/hashCode: reference identity.
 		if (mb.getDeclaringClass().getQualifiedName().equals("java.lang.Object")) {

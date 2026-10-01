@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type Shell struct {
@@ -1838,7 +1837,7 @@ func (this *Shell) view_stringForToolTip_point_userData_(id int64, sel int64, vi
 		return int64(0)
 	}
 	var chars []uint16 = make([]uint16, jrt.StringLength(string_))
-	copy(chars, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 	var length int32 = this.FixMnemonic(chars)
 	return cocoa.NSStringStringWithCharacters(chars, int64(length)).Id
 }

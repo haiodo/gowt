@@ -19,7 +19,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init CGSizeSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init CGSizeSizeof:", r)
 			}
 		}()
 		CGSizeSizeof = OSCGSize_sizeof()

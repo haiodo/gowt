@@ -2666,7 +2666,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 			widths = maxWidths
 		} else {
 			var extra int32 = (tabAreaWidth - minWidth) / int32(len(this.items))
-			for true {
+			for {
 				var large int32 = 0
 				var totalWidth int32 = 0
 				for i := int32(0); i < int32(len(this.items)); i++ {

@@ -20,7 +20,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init NSOperatingSystemVersionSizeof:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init NSOperatingSystemVersionSizeof:", r)
 			}
 		}()
 		NSOperatingSystemVersionSizeof = OSNSOperatingSystemVersion_sizeof()

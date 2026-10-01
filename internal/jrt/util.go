@@ -108,10 +108,16 @@ type List struct {
 
 func NewList() *List { return &List{} }
 
-func (l *List) Add(v any) bool {
+// Add covers add(E) and add(int index, E).
+func (l *List) Add(a ...any) bool {
 	l.mu.Lock()
-	l.items = append(l.items, v)
-	l.mu.Unlock()
+	defer l.mu.Unlock()
+	if len(a) == 2 {
+		i := int(a[0].(int32))
+		l.items = append(l.items[:i], append([]any{a[1]}, l.items[i:]...)...)
+		return true
+	}
+	l.items = append(l.items, a[0])
 	return true
 }
 

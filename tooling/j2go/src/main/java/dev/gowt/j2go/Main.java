@@ -49,11 +49,12 @@ public class Main {
 			System.exit(2);
 		}
 
+		GoTypes.piPackage = platform.swtName;
 		Path swtRootPath = Path.of(swtRoot).toAbsolutePath().normalize();
 		List<String> sourceRoots = new ArrayList<>();
 		List<String> platformRoots = new ArrayList<>();
 		List<String> allRoots = new ArrayList<>(platform.roots());
-		allRoots.addAll(Platform.commonRoots());
+		allRoots.addAll(Platform.commonRoots(platform != Platform.GTK));
 		for (String r : allRoots) {
 			Path p = swtRootPath.resolve(r);
 			if (!Files.isDirectory(p)) continue;
@@ -61,6 +62,8 @@ public class Main {
 			if (platform.roots().contains(r)) platformRoots.add(p + "/");
 		}
 		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
+		if (platform == Platform.GTK) for (String d : new String[] { "tooling/j2go/gtkstubs", "tooling/j2go/gtkstubs-gen" })
+			if (Files.isDirectory(Path.of(d))) sourceRoots.add(Path.of(d).toAbsolutePath().toString());
 
 		List<String> absFiles = resolveSources(files, sourceRoots);
 		List<String> absRefFiles = resolveSources(refFiles, sourceRoots);
@@ -109,16 +112,26 @@ public class Main {
 		}
 
 		Names names = new Names();
+		names.loadPins(Path.of("tooling/j2go/overloads.properties"));
 		names.loadOverrides(Path.of("tooling/j2go/names.properties"));
+		if (platform == Platform.GTK) names.loadOverrides(Path.of("tooling/j2go/gtkstubs-gen/names.properties"));
 		Natives natives = new Natives();
 		natives.load(Path.of("tooling/j2go/natives.properties"));
 		Selectors selectors = new Selectors();
 		selectors.load(Path.of("tooling/j2go/selectors.properties"));
 		TypeModel model = new TypeModel();
+		Path cascadePins = Path.of("tooling/j2go/cascade.properties");
+		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(l -> { int eq = l.indexOf('='); if (eq < 0) TypeModel.PINNED_CASCADE.add(l); else TypeModel.PINNED_CASCADE_NAMES.put(l.substring(0, eq), l.substring(eq + 1)); });
 		model.build(orderedUnits, names);
+		if (System.getenv("J2GO_DUMP_CASCADE") != null) model.dumpCascade(Path.of(System.getenv("J2GO_DUMP_CASCADE")));
 
 		Emitter emitter = new Emitter(model, names, natives, selectors);
 
+		boolean reference = platform == Platform.COCOA;
+		boolean emittedSwtPlatformFile = false;
+		StringBuilder sharedHelpers = new StringBuilder();
+		Set<String> sharedHelperImports = new LinkedHashSet<>();
+		if (!reference) emitter.generatedHelpers.addAll(definedNames(Path.of(outDir, "swt")));
 		// Only the primary (pre "--") files are emitted; reference files only fed the model above.
 		for (int i = 0; i < absFiles.size(); i++) {
 			CompilationUnit cu = orderedUnits.get(i);
@@ -126,7 +139,18 @@ public class Main {
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
+			boolean sharedFile = !reference && platformRoots.stream().noneMatch(absPath::startsWith)
+					&& !GoTypes.goPackageDir(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals(platform.piDir);
+			emitter.separateHelpers = sharedFile;
 			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
+			// The reference platform owns the shared files; here only the helpers they need are kept.
+			if (sharedFile) {
+				if (GoTypes.goPackageOf(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals("swt")) {
+					sharedHelpers.append(result.helpers());
+					sharedHelperImports.addAll(result.imports());
+				}
+				continue;
+			}
 
 			String relPath = swtRootPath.relativize(Path.of(absPath)).toString();
 			String javaPackage = cu.getPackage().getName().getFullyQualifiedName();
@@ -138,6 +162,7 @@ public class Main {
 			boolean piFile = outDirName.equals(platform.piDir);
 			boolean platformFile = !piFile && platformRoots.stream().anyMatch(srcPath::startsWith);
 			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
+			emittedSwtPlatformFile |= platformFile && outDirName.equals("swt");
 			String header = buildHeader(relPath, source, cu);
 			// A PI package is wholly one OS's: a tag, not a rename (swt files share names across platforms, PI files do not).
 			if (piFile) header = header.replaceFirst("\n", "\n//go:build " + platform.goos + "\n\n");
@@ -158,6 +183,28 @@ public class Main {
 			System.out.println("wrote " + outPath);
 		}
 
+		if (!reference && emittedSwtPlatformFile) {
+			// The committed shared files also call helpers the reference platform defined in its own files.
+			Set<String> called = new HashSet<>();
+			var m = java.util.regex.Pattern.compile("\\b((?:upcast|is)[A-Z]\\w*To[A-Z]\\w*|[a-z]\\w*ImplAs\\w+)\\(").matcher(sharedSource(Path.of(outDir, "swt")));
+			while (m.find()) called.add(m.group(1));
+			called.removeAll(emitter.generatedHelpers);
+			sharedHelpers.append(dev.gowt.j2go.emit.HelperFiller.fill(emitter, called));
+		}
+		if (sharedHelpers.length() > 0) {
+			String text = sharedHelpers.toString();
+			StringBuilder f = new StringBuilder("// Code generated by j2go. DO NOT EDIT.\n//go:build " + platform.goos + "\n\n// Helpers the committed shared files need and only the reference platform defines in them.\npackage swt\n\n");
+			sharedHelperImports.removeIf(imp -> imp.endsWith("/swt") || !text.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
+			if (!sharedHelperImports.isEmpty()) {
+				f.append("import (\n");
+				for (String imp : sharedHelperImports) f.append("\t\"").append(imp).append("\"\n");
+				f.append(")\n\n");
+			}
+			Path outPath = Path.of(outDir, "swt", "helpers_" + platform.goos + ".go");
+			Files.writeString(outPath, f.append(text).toString(), StandardCharsets.UTF_8);
+			System.out.println("wrote " + outPath);
+		}
+
 		// Written only by the run that emits widgets classes; the other runs leave it alone.
 		String registry = emitter.reflectRegistryFile();
 		if (registry != null) {
@@ -167,7 +214,35 @@ public class Main {
 			System.out.println("wrote " + outPath);
 		}
 
+		if (System.getenv("J2GO_DUMP_OVERLOADS") != null) names.dumpOverloads(Path.of(System.getenv("J2GO_DUMP_OVERLOADS")));
 		printSummary(emitter);
+	}
+
+	/** Top-level func and type names of the committed shared (GOOS-suffix-free) files of dir. */
+	private static Set<String> definedNames(Path dir) throws IOException {
+		Set<String> names = new HashSet<>();
+		if (!Files.isDirectory(dir)) return names;
+		var decl = java.util.regex.Pattern.compile("^(?:func|type) ([A-Za-z_][A-Za-z0-9_]*)", java.util.regex.Pattern.MULTILINE);
+		try (var files = Files.list(dir)) {
+			for (Path f : (Iterable<Path>) files::iterator) {
+				String n = f.getFileName().toString();
+				if (!n.endsWith(".go") || n.matches(".*_(darwin|windows|linux)(_test)?\\.go")) continue;
+				var m = decl.matcher(Files.readString(f));
+				while (m.find()) names.add(m.group(1));
+			}
+		}
+		return names;
+	}
+
+	private static String sharedSource(Path dir) throws IOException {
+		StringBuilder all = new StringBuilder();
+		try (var files = Files.list(dir)) {
+			for (Path f : (Iterable<Path>) files::iterator) {
+				String n = f.getFileName().toString();
+				if (n.endsWith(".go") && !n.matches(".*_(darwin|windows|linux)(_test)?\\.go")) all.append(Files.readString(f));
+			}
+		}
+		return all.toString();
 	}
 
 	private static List<String> resolveSources(List<String> relOrAbs, List<String> sourceRoots) {

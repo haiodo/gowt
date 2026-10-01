@@ -12,8 +12,17 @@ public class GoTypes {
 
 	// Java package -> Go package routing: shared by Main (a file's own output dir) and the
 	// cross-package qualification below (whether a referenced type needs "cocoa." + an import).
+	/** Go package of the PI bindings being generated ("cocoa", "gtk"); set once by Main. */
+	public static String piPackage = "cocoa";
+
 	public static boolean isCocoaPackage(String javaPackage) {
-		return javaPackage.equals("org.eclipse.swt.internal.cocoa") || javaPackage.equals("org.eclipse.swt.internal");
+		return isPiJavaPackage(javaPackage) || javaPackage.equals("org.eclipse.swt.internal");
+	}
+
+	// gtk's PI is several Java packages (gtk, gtk3, gtk4, cairo), one Go package.
+	private static boolean isPiJavaPackage(String javaPackage) {
+		return javaPackage.equals("org.eclipse.swt.internal." + piPackage)
+				|| piPackage.equals("gtk") && javaPackage.matches("org\\.eclipse\\.swt\\.internal\\.(gtk3|gtk4|cairo)");
 	}
 
 	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
@@ -23,8 +32,10 @@ public class GoTypes {
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
 	public static String goPackageDir(String javaPackage, String topLevelName) {
-		if (javaPackage.equals("org.eclipse.swt.internal.cocoa")) return "internal/cocoa";
-		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/cocoa";
+		if (isPiJavaPackage(javaPackage)) return "internal/" + piPackage;
+		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/" + piPackage;
+		// Converter is PI's own (OS.getThemeName calls it) and needs nothing above it.
+		if (piPackage.equals("gtk") && javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("Converter")) return "internal/gtk";
 		if (javaPackage.startsWith(TESTS_PACKAGE)) return "tests/swttests";
 		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
 		return "swt";
@@ -38,7 +49,7 @@ public class GoTypes {
 	/** Import path of a Go package produced by goPackageDir (package names are unique). */
 	public static String importPath(String goPackage) {
 		return "github.com/haiodo/gowt/" + switch (goPackage) {
-			case "cocoa" -> "internal/cocoa";
+			case "cocoa", "gtk" -> "internal/" + goPackage;
 			case "swt" -> "swt";
 			case "swttests" -> "tests/swttests";
 			default -> "examples/" + goPackage;
@@ -48,7 +59,7 @@ public class GoTypes {
 	/** Import layering: cocoa < swt < examples; a package may only reference lower layers. */
 	public static int layer(String goPackage) {
 		return switch (goPackage) {
-			case "cocoa" -> 0;
+			case "cocoa", "gtk" -> 0;
 			case "swt" -> 1;
 			default -> 2;
 		};

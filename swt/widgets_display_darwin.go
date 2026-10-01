@@ -4562,7 +4562,7 @@ func DisplaySetDevice(deviceLike DeviceLike) {
 func DisplayAscii(name string) []int8 {
 	var length int32 = jrt.StringLength(name)
 	var chars []uint16 = make([]uint16, length)
-	copy(chars, utf16.Encode([]rune(name)))
+	jrt.GetChars(name, 0, length, chars, 0)
 	var buffer []int8 = make([]int8, length+1)
 	for i := int32(0); i < length; i++ {
 		buffer[i] = int8(chars[i])
@@ -7580,7 +7580,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DeviceDeviceFinder = jrt.NewRunnable(func() {
@@ -7594,7 +7594,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Display static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Display static{}:", r)
 			}
 		}()
 		DisplayConfigureSystemOptions()

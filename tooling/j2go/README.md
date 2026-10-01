@@ -3119,3 +3119,42 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 `examples/controlexample/`, `tests/swttests/` compared with the tree at b62a729 by old name (new name minus `_darwin`): 558 identical,
 0 different, none added or removed; `tests/expected.txt`, `tests/snapshots`, testdata and `res` unchanged. `make gen && make` and
 `make release` green on darwin; binary sizes within the 5% gate.
+
+## Round 20 (gtk): Linux port (TSK-2026-09-23-043..047), WIP
+
+- **Clean-room binding layer: GIR, purego** (no cgo). `internal/gtk` is not translated from SWT's `Eclipse SWT PI/gtk` Java or its C glue (os.c, os_custom.c, SwtFixed): that
+  code is LGPL-2.1 and neither it nor any earlier translation of it may be read, diffed or reused for the binding. Allowed sources: the GIR files (`/usr/share/gir-1.0` in the
+  stand: Gtk-3.0, Gdk-3.0, GdkX11, GObject, GLib, Gio, Pango, PangoCairo, cairo, Atk, GdkPixbuf; Gtk-4.0, Gdk-4.0, Gsk, Graphene for the GTK 4 names), public GTK/GLib/Pango/cairo
+  documentation, C headers for facts only (prototypes, struct layout, macro meaning: cairo.h, X.h, Xlib.h), and the EPL-2.0 widget code (`Eclipse SWT/gtk`, `Eclipse SWT/common`
+  and the generated `swt/*_linux.go`), which tells which functions, structs, constants and callbacks are called and with which Go types. `swt/gtkres/*.css` are our own empty stand-ins (the stock theme is used; SWT's theming fixes were PI data and are dropped).
+  `PLATFORM=gtk make gen` reads no PI source: j2go gets the type information for `OS`, `GTK`, `GDK`, ... from Java declarations that `girgen -jstubs` writes into
+  `tooling/j2go/gtkstubs-gen/` (gitignored) from internal/gtk's own Go declarations, the call-site types of `swt/` and the spelling of members in the EPL Java sources, plus
+  `names.properties` there (pins the Go name of every overload); hand stubs for the PI/common classes the widgets use (LONG, Platform, Library) are in `tooling/j2go/gtkstubs/`.
+  The EPL `Converter.java` is read as is. The PI-derived gtk entries of natives.properties and names.properties are gone.
+- **tooling/girgen** (Go, own `encoding/xml` reader) emits `internal/gtk/gen_*.go` (`//go:build linux`) for exactly the `gtk.<Name>` selectors found in `swt/`, `tests/`, `cmd/`,
+  `examples/`. The call-site name is the interface: `<Class><c_name>` with Class one of `GTK GTK3 GTK4 GDK Cairo OS C Converter`, e.g. `GTKGtk_widget_show`, `OSG_object_unref`,
+  `GDKGDK_BUTTON_PRESS`; `<Type>Sizeof` / `<Type>_sizeof()` are struct sizes. It resolves a name to a C function (GIR, cairo headers), constant or enum member (untyped Go consts),
+  signal/property/style-property name (`OSCommit` -> `[]int8("commit")`), record (struct) or `<x>_get_type` / `X_TYPE_Y` / `X_IS_Y` macro. Functions become a lazily bound
+  purego function (`lz[F]`) plus a wrapper: handles are `int64`, C ints `int32`, `gboolean` `bool`, C strings `[]int8`, out parameters slices, struct pointers `*Struct`.
+  Whatever a name does not resolve to is listed by `go run ./tooling/girgen -report` and is hand-written in `internal/gtk/glue_*.go` (a name declared there is skipped by the generator).
+- **shapes.txt directives:** `arg Name idx Type`, `ret Name Type`, `func Name csym(params) ret`, `str Name text`, `const Name value`, `extra CType Field Type` (Go-only trailing field), `wide CType` (int32 fields over 8/16-bit C fields), `bitbool CType` (bitfields as bool), `need Type` (structs only the glue uses).
+- **Fitting to call sites.** `tooling/girgen/shapes.txt` (hand-written: variadics and Java-style overload names as `func Name csym(params) ret`, `ret`, `arg`, `const`, `str`,
+  `need`, `extra`, `wide`, `bitbool`) and `shapes_fit.txt` (written by `girgen -fit-log build.log` from `go build` errors: parameter types the call sites pass; mixed string and
+  `[]int8` become `any`). Loop: `go run ./tooling/girgen && go build ./swt`, `girgen -fit-log`, repeat until the log is quiet; `make gtk-gen` runs the generator and the layout check in the stand.
+- **Struct layouts** come from GIR field types with the LP64 C rules (nested structs flattened Java-style `analysis_level`, bitfields kept in their unit and exposed as fields,
+  unions by their first member), emitted with explicit padding. `tooling/girgen/verify.sh` prints the same table from a C program built against the headers (offsetof/sizeof of
+  every struct) and diffs it, then runs the generated `gen_layout_test.go`. arm64 and amd64 are both LP64 with identical sizes and alignments for these field types, so one table covers both.
+- **Hand-written glue** (written from the GTK/GLib docs): `libs.go` (dlopen, lazy symbols), `glue_fixed.go` (SwtFixed: a GtkContainer subclass registered through g_type_register_static,
+  children at explicit x/y/size, own GdkWindow, GtkScrollable so GtkScrolledWindow accepts it, restack, topmost-first child order), `glue_callback.go` (callback pool: purego never frees
+  a callback, `Callback.dispose` returns the slot), `glue_mem.go` (one `memmove` for all Java overloads, C calls), `glue_glib.go` (GList, UTF-16 offsets, GType/GObject macros,
+  signal connect), `glue_convert.go`, `glue_platform.go` (backend, theme, GDK lock, X11 constants and events), `glue_geom.go`, `glue_misc.go`.
+- **Shared files belong to the reference platform (cocoa).** A non-reference run writes only its `_<goos>` files and `swt/helpers_<goos>.go`; to keep the committed shared files
+  compiling it reads `overloads.properties` (overload suffixes), `cascade.properties` (dispatch points and names; regenerate both with
+  `J2GO_DUMP_OVERLOADS=... J2GO_DUMP_CASCADE=... PLATFORM=cocoa make gen`) and seeds the helper names the shared files define.
+- Manual linux stubs: `swt/*_manual_linux.go` (Callback, DPIUtil, Accessible, WidgetSpy, CSS resources). Per-OS test gate: `tests/expected_linux.txt` (`$(EXPECTED)` in the Makefile).
+- State: `GOOS=linux go build ./...` passes in the stand, `cmd/hello` runs on Xvfb, `make test-swt` 2950 passed / 385 failed / 6 skipped (3341; the previous translated-PI binding:
+  2938 / 397 / 6). Not done: `cmd/*/snap_linux.go` (stubs), api parity of package-private methods (apidump cannot tell Java visibility), DateTime/GDBus/GTK4 paths (GTK 4 names compile
+  and panic when called), the failures' causes in `tests/expected_linux.txt`.
+- **Struct parameters written through (gtk).** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
+  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. Only gtk: cocoa has three such parameters
+  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`) left by value until a GUI run on the Mac can check them.

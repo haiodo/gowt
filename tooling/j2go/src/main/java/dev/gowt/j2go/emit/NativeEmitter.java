@@ -33,6 +33,7 @@ final class NativeEmitter {
 		String javaName = md.getName().getIdentifier();
 		String goName = ci.goFuncPrefix + emitter.names.goMemberName(mb, Names.capitalize(javaName));
 
+		if (emitter.natives.isManual(javaName)) return;
 		TypeModel.ClassInfo sizeofTarget = sizeofStructTarget(javaName, mb);
 		if (sizeofTarget != null) {
 			emitter.fileImports.add("unsafe");
@@ -49,8 +50,8 @@ final class NativeEmitter {
 		// A zero-arg native shadowed by a same-named field (kUTTypeFileURL(), ~165 of these) is
 		// a constant-global accessor, not a real function - calling it can SIGBUS (see README).
 		// flags=const, or Apple's kName convention (os_custom.c's no_gen kTISPropertyUnicodeKeyLayoutData).
-		boolean isConst = TypeModel.javadocTag(md, "@method", null).contains("flags=const")
-				|| javaName.matches("k[A-Z].*");
+		boolean isConst = !emitter.natives.isFunction(javaName) && (TypeModel.javadocTag(md, "@method", null).contains("flags=const")
+				|| javaName.matches("k[A-Z].*"));
 		if (mb.getParameterTypes().length == 0 && (isConst || isShadowedByField(ci.binding, javaName))) {
 			emitConstantAccessor(md, mb, javaName, goName, out);
 			return;

@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type ToolItem struct {
@@ -1029,7 +1028,7 @@ func (this *ToolItem) setText_(string_ string) {
 	var widget *cocoa.NSButton = castcocoaNSButtonTococoaNSButton(this.button)
 	if this.parent.nsToolbar != (nil) {
 		var chars []uint16 = make([]uint16, jrt.StringLength(this.text))
-		copy(chars, utf16.Encode([]rune(this.text)))
+		jrt.GetChars(this.text, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		this.nsMenuRep.SetTitle(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 	}
@@ -1063,7 +1062,7 @@ func (this *ToolItem) SetToolTipText(string_ string) {
 	this.toolTipText = string_
 	if this.parent.nsToolbar != (nil) {
 		var chars []uint16 = make([]uint16, jrt.StringLength(this.toolTipText))
-		copy(chars, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		this.nsItem.SetToolTip(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 	} else {

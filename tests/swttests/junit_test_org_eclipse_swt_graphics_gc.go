@@ -52,7 +52,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 		var image *swt.Image = nil
 		var gc1 *swt.GC = nil
 		var gc2 *swt.GC = nil
-		func() {
+		{
 			defer func() {
 				if image != (nil) {
 					image.Dispose()
@@ -67,7 +67,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 			image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 10, 10)
 			gc1 = swt.NewGCDrawable(image)
 			gc2 = swt.NewGCDrawable(image)
-		}()
+		}
 	}, "No exception thrown for more than one GC on one image")
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for more than one GC on one image", swt.ERROR_INVALID_ARGUMENT, e1)
 }
@@ -81,7 +81,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 		var image *swt.Image = nil
 		var gc1 *swt.GC = nil
 		var gc2 *swt.GC = nil
-		func() {
+		{
 			defer func() {
 				if image != (nil) {
 					image.Dispose()
@@ -96,7 +96,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 			image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 10, 10)
 			swt.NewGCDrawableStyle(image, swt.RIGHT_TO_LEFT)
 			swt.NewGCDrawableStyle(image, swt.LEFT_TO_RIGHT)
-		}()
+		}
 	}, "No exception thrown for more than one GC on one image")
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for more than one GC on one image", swt.ERROR_INVALID_ARGUMENT, e1)
 	var canvas *swt.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(this.shell), swt.NULL)

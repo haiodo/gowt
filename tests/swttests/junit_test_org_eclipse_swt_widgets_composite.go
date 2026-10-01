@@ -47,20 +47,20 @@ func (this *Test_org_eclipse_swt_widgets_Composite) Test_getChildren() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Composite) test_getChildren_() {
-	junit.AssertArrayEquals([]*swt.Control{}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{}), upcastArrswtControlToany(this.composite.GetChildren()))
 	var c1 *swt.Composite = swt.NewCompositeParentStyle(this.composite, 0)
-	junit.AssertArrayEquals([]*swt.Control{upcastswtCompositeToswtControl(c1)}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{upcastswtCompositeToswtControl(c1)}), upcastArrswtControlToany(this.composite.GetChildren()))
 	var c2 *swt.List = swt.NewList(this.composite, 0)
-	junit.AssertArrayEquals([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtListToswtControl(c2)}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtListToswtControl(c2)}), upcastArrswtControlToany(this.composite.GetChildren()))
 	var c3 *swt.Button = swt.NewButton(this.composite, 0)
-	junit.AssertArrayEquals([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtListToswtControl(c2), upcastswtButtonToswtControl(c3)}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtListToswtControl(c2), upcastswtButtonToswtControl(c3)}), upcastArrswtControlToany(this.composite.GetChildren()))
 	c2.Dispose()
-	junit.AssertArrayEquals([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtButtonToswtControl(c3)}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{upcastswtCompositeToswtControl(c1), upcastswtButtonToswtControl(c3)}), upcastArrswtControlToany(this.composite.GetChildren()))
 	var children []*swt.Control = this.composite.GetChildren()
 	for _, element := range children {
 		element.Dispose()
 	}
-	junit.AssertArrayEquals([]*swt.Control{}, this.composite.GetChildren())
+	junit.AssertArrayEquals(upcastArrswtControlToany([]*swt.Control{}), upcastArrswtControlToany(this.composite.GetChildren()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Composite) Test_setVisibility_and_sizing() {
@@ -152,7 +152,7 @@ func (this *Test_org_eclipse_swt_widgets_Composite) Test_setTabList_Lorg_eclipse
 	var button2 *swt.Button = swt.NewButton(this.composite, swt.PUSH)
 	var tablist []*swt.Control = []*swt.Control{upcastswtButtonToswtControl(button1), upcastswtButtonToswtControl(button2)}
 	this.composite.SetTabList(tablist)
-	junit.AssertArrayEquals(tablist, this.composite.GetTabList())
+	junit.AssertArrayEquals(upcastArrswtControlToany(tablist), upcastArrswtControlToany(this.composite.GetTabList()))
 	button1.Dispose()
 	button2.Dispose()
 }
@@ -381,6 +381,17 @@ func upcastswtCompositeToswtWidget(x *swt.Composite) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastArrswtControlToany(x []*swt.Control) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }
 
 func upcastswtListToswtControl(x *swt.List) *swt.Control {

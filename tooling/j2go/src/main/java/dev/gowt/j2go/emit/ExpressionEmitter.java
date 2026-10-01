@@ -190,7 +190,13 @@ final class ExpressionEmitter {
 		// unexported field there wouldn't even be visible from swt's promoted-field access.
 		String declaringQualified = vb.getDeclaringClass().getErasure().getQualifiedName();
 		if (Manual.isManualSuper(declaringQualified)) return Names.capitalize(n);
-		if (Modifier.isPublic(vb.getModifiers())) return Names.capitalize(n);
+		if (Modifier.isPublic(vb.getModifiers())) {
+			// Same rule as ClassEmitter.emitStructFields: a public field named like a method gets an underscore.
+			for (IMethodBinding m : vb.getDeclaringClass().getDeclaredMethods()) {
+				if (!m.isConstructor() && !Modifier.isStatic(m.getModifiers()) && Names.javaMethodBaseGoName(m.getName()).equals(Names.capitalize(n))) return Names.capitalize(n) + "_";
+			}
+			return Names.capitalize(n);
+		}
 		return EmitUtil.fieldIdent(n);
 	}
 
@@ -282,12 +288,23 @@ final class ExpressionEmitter {
 		return panicClosureTyped(dev.gowt.j2go.GoTypes.map(vb.getType(), emitter), "unresolved static field " + vb.getName());
 	}
 
-	private static final java.util.Map<String, String> JDK_CONSTANTS = java.util.Map.of(
-			"java.lang.Integer.MAX_VALUE", "math.MaxInt32", "java.lang.Integer.MIN_VALUE", "math.MinInt32",
-			"java.lang.Long.MAX_VALUE", "math.MaxInt64", "java.lang.Long.MIN_VALUE", "math.MinInt64",
-			"java.lang.Double.MAX_VALUE", "math.MaxFloat64", "java.lang.Double.MIN_VALUE", "math.SmallestNonzeroFloat64",
-			"java.lang.Float.MAX_VALUE", "math.MaxFloat32", "java.lang.Float.MIN_VALUE", "math.SmallestNonzeroFloat32",
-			"java.lang.Thread.MAX_PRIORITY", "10", "java.lang.System.out", "os.Stdout");
+	private static final java.util.Map<String, String> JDK_CONSTANTS = java.util.Map.ofEntries(
+			java.util.Map.entry("java.lang.Integer.MAX_VALUE", "math.MaxInt32"),
+			java.util.Map.entry("java.lang.Integer.MIN_VALUE", "math.MinInt32"),
+			java.util.Map.entry("java.lang.Long.MAX_VALUE", "math.MaxInt64"),
+			java.util.Map.entry("java.lang.Long.MIN_VALUE", "math.MinInt64"),
+			java.util.Map.entry("java.lang.Double.MAX_VALUE", "math.MaxFloat64"),
+			java.util.Map.entry("java.lang.Double.MIN_VALUE", "math.SmallestNonzeroFloat64"),
+			java.util.Map.entry("java.lang.Float.MAX_VALUE", "math.MaxFloat32"),
+			java.util.Map.entry("java.lang.Float.MIN_VALUE", "math.SmallestNonzeroFloat32"),
+			java.util.Map.entry("java.lang.Thread.MAX_PRIORITY", "10"),
+			java.util.Map.entry("java.lang.System.out", "os.Stdout"),
+			java.util.Map.entry("java.lang.Float.POSITIVE_INFINITY", "float32(math.Inf(1))"),
+			java.util.Map.entry("java.lang.Float.NEGATIVE_INFINITY", "float32(math.Inf(-1))"),
+			java.util.Map.entry("java.lang.Double.POSITIVE_INFINITY", "math.Inf(1)"),
+			java.util.Map.entry("java.lang.Double.NEGATIVE_INFINITY", "math.Inf(-1)"),
+			java.util.Map.entry("java.lang.Boolean.TRUE", "true"),
+			java.util.Map.entry("java.lang.Boolean.FALSE", "false"));
 
 	/** True if any call appears anywhere in e (own AST subtree only, not into other methods). */
 	boolean containsCall(Expression e) {

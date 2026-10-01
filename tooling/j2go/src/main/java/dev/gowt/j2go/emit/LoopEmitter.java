@@ -21,7 +21,7 @@ final class LoopEmitter {
 	private String loopHead(Expression cond, String post, int indent) {
 		List<String> hoisted = new ArrayList<>();
 		String c = cond == null ? "" : withPrelude(() -> emitter.expr(cond), hoisted);
-		String inHead = hoisted.isEmpty() ? c : "";
+		String inHead = hoisted.isEmpty() && !c.equals("true") ? c : ""; // `for {` is a terminating statement, `for true {` is not
 		StringBuilder b = new StringBuilder(ind(indent)).append("for ");
 		b.append(post.isEmpty() ? inHead : "; " + inHead + "; " + post).append(" {\n");
 		if (hoisted.isEmpty()) return b.toString();

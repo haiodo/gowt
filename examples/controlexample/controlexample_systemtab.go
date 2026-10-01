@@ -169,7 +169,7 @@ func (this *SystemTab) createExampleWidgets_() {
 			item.SetTextIndexString(3, fmt.Sprintf("%s ", this.GetHTMLColor(jrt.Cast[int32](key))))
 			item.SetTextIndexString(4, "            ")
 			item.SetBackgroundIndexColor(4, this.display.GetSystemColor(jrt.Cast[int32](key)))
-			if key == SystemTabNamedColorEnd {
+			if jrt.Cast[int32](key) == SystemTabNamedColorEnd {
 				var emptyItem *swt.TableItem = swt.NewTableItem(this.colors, swt.NONE)
 				emptyItem.SetText("")
 				emptyLineFlag = true

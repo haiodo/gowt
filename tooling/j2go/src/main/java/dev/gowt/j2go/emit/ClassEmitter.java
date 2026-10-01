@@ -263,7 +263,7 @@ final class ClassEmitter {
 		Set<String> s = new HashSet<>();
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
-				s.add(emitter.names.goMemberName(md.resolveBinding(), Names.capitalize(md.getName().getIdentifier())));
+				s.add(Names.javaMethodBaseGoName(md.getName().getIdentifier()));
 			}
 		}
 		return s;
@@ -317,7 +317,7 @@ final class ClassEmitter {
 			emitter.prelude = saved;
 			if (!myPrelude.isEmpty() || emitter.containsCall(initExpr)) {
 				// cocoa's inits depend on native-library side effects, so they stay in init() (file order).
-				if (ci.goPackage.equals("cocoa")) {
+				if (ci.goPackage.equals(dev.gowt.j2go.GoTypes.piPackage)) {
 					out.append("var ").append(goName).append(" ").append(dev.gowt.j2go.GoTypes.map(type, emitter)).append('\n');
 					StringBuilder b = new StringBuilder();
 					for (String p : myPrelude) b.append('\t').append(p).append('\n');

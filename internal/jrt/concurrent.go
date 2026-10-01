@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 	"unsafe"
@@ -196,4 +197,15 @@ func Getenv(name string) string { return os.Getenv(name) }
 func Matches(s, regex string) bool {
 	re, err := regexp.Compile("^(?:" + regex + ")$")
 	return err == nil && re.MatchString(s)
+}
+
+// Environ is System.getenv(): a snapshot of the process environment.
+func Environ() *Map {
+	m := NewMap()
+	for _, kv := range os.Environ() {
+		if k, v, ok := strings.Cut(kv, "="); ok {
+			m.Put(k, v)
+		}
+	}
+	return m
 }

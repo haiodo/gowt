@@ -271,7 +271,7 @@ final class ControlFlowEmitter {
 	}
 
 	private static boolean isLastInMethodBody(ASTNode stmt) {
-		if (!(stmt.getParent() instanceof Block b) || !(b.getParent() instanceof MethodDeclaration)) return false;
+		if (!(stmt.getParent() instanceof Block b) || !(b.getParent() instanceof MethodDeclaration || b.getParent() instanceof LambdaExpression)) return false;
 		List<?> stmts = b.statements();
 		return stmts.get(stmts.size() - 1) == stmt;
 	}

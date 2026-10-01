@@ -255,7 +255,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_chevronAppearanceChange
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_childControlOverlap() {
 	var setTopRightAndCheckOverlap func(*swt.Control, any) = func(control *swt.Control, style any) {
-		if style == 0 {
+		if jrt.Cast[int32](style) == 0 {
 			this.ctabFolder.SetTopRight(control)
 		} else {
 			this.ctabFolder.SetTopRightControlAlignment(control, jrt.Cast[int32](style))
@@ -873,7 +873,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_moveItem_forward() {
 	var original []*swt.CTabItem = this.ctabFolder.GetItems()
 	this.ctabFolder.MoveItem(1, 3)
 	var reordered []*swt.CTabItem = this.ctabFolder.GetItems()
-	junit.AssertArrayEquals([]*swt.CTabItem{original[0], original[2], original[3], original[1], original[4]}, reordered)
+	junit.AssertArrayEquals(upcastArrswtCTabItemToany([]*swt.CTabItem{original[0], original[2], original[3], original[1], original[4]}), upcastArrswtCTabItemToany(reordered))
 }
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_moveItem_backward() {
@@ -881,7 +881,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_moveItem_backward() {
 	var original []*swt.CTabItem = this.ctabFolder.GetItems()
 	this.ctabFolder.MoveItem(3, 0)
 	var reordered []*swt.CTabItem = this.ctabFolder.GetItems()
-	junit.AssertArrayEquals([]*swt.CTabItem{original[3], original[0], original[1], original[2], original[4]}, reordered)
+	junit.AssertArrayEquals(upcastArrswtCTabItemToany([]*swt.CTabItem{original[3], original[0], original[1], original[2], original[4]}), upcastArrswtCTabItemToany(reordered))
 }
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_moveItem_keepsSelection() {
@@ -899,7 +899,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_moveItem_sameIndexIsNoO
 	var original []*swt.CTabItem = this.ctabFolder.GetItems()
 	this.ctabFolder.SetSelection(this.ctabFolder.GetItem(2))
 	this.ctabFolder.MoveItem(2, 2)
-	junit.AssertArrayEquals(original, this.ctabFolder.GetItems())
+	junit.AssertArrayEquals(upcastArrswtCTabItemToany(original), upcastArrswtCTabItemToany(this.ctabFolder.GetItems()))
 	junit.AssertEquals(int32(2), int32(this.ctabFolder.GetSelectionIndex()))
 }
 
@@ -1458,4 +1458,15 @@ func castanyToswtRectangle(x any) *swt.Rectangle {
 		panic("java.lang.ClassCastException: swt.Rectangle")
 	}
 	return v
+}
+
+func upcastArrswtCTabItemToany(x []*swt.CTabItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

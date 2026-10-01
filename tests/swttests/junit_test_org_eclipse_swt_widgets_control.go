@@ -967,7 +967,7 @@ func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32,
 		this.impl.setUp_()
 		var results []string = make([]string, events.Size())
 		results = jrt.ToSlice[string](events)
-		junit.AssertArrayEquals(expectedEvents, results)
+		junit.AssertArrayEquals(upcastArrstringToany(expectedEvents), upcastArrstringToany(results))
 	}
 }
 
@@ -1208,4 +1208,15 @@ func castswtControlToswtShell(x *swt.Control) *swt.Shell {
 		panic("java.lang.ClassCastException: swt.Shell")
 	}
 	return v
+}
+
+func upcastArrstringToany(x []string) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

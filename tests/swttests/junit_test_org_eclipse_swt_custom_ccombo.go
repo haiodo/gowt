@@ -731,7 +731,7 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItemILjava_lang_String()
 	for i := int32(0); i < number; i++ {
 		this.ccombo.SetItem(i, fmt.Sprintf("fang%d", i))
 	}
-	junit.AssertArrayEquals([]string{"fang0", "fang1", "fang2", "fang3", "fang4"}, this.ccombo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fang0", "fang1", "fang2", "fang3", "fang4"}), upcastArrstringToany(this.ccombo.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItems_Ljava_lang_String() {
@@ -746,7 +746,7 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItems_Ljava_lang_String(
 	var items [][]string = [][]string{[]string{}, []string{""}, []string{"", ""}, []string{"fang"}, []string{"fang0", "fang0"}, []string{"fang", "fang"}}
 	for i := int32(0); i < int32(len(items)); i++ {
 		this.ccombo.SetItems(items[i])
-		junit.AssertArrayEquals(items[i], this.ccombo.GetItems())
+		junit.AssertArrayEquals(upcastArrstringToany(items[i]), upcastArrstringToany(this.ccombo.GetItems()))
 	}
 }
 

@@ -98,9 +98,9 @@ final class StatementEmitter {
 		}
 		// x++;/--x; as their own statement: Go's native x++/x-- directly, no throwaway temp
 		// (the generic emitExpr path below would leave a bare, unused-value statement).
-		if (e instanceof PostfixExpression pf) return ind(indent) + emitter.expr(pf.getOperand()) + pf.getOperator().toString() + "\n";
+		if (e instanceof PostfixExpression pf) return ind(indent) + EmitUtil.incDec(emitter, pf.getOperand(), pf.getOperator().toString()) + "\n";
 		if (e instanceof PrefixExpression pf && (pf.getOperator().toString().equals("++") || pf.getOperator().toString().equals("--"))) {
-			return ind(indent) + emitter.expr(pf.getOperand()) + pf.getOperator().toString() + "\n";
+			return ind(indent) + EmitUtil.incDec(emitter, pf.getOperand(), pf.getOperator().toString()) + "\n";
 		}
 		String text = emitter.expr(e);
 		// An intrinsic can lower a call to a bare value (Objects.requireNonNull(x) -> x) - Go

@@ -39,8 +39,8 @@ final class NumericEmitter {
 		String goOp = goOperator(ie);
 		String hoisted = hoistBooleanChainIfNeeded(ie, op, goOp);
 		if (hoisted != null) return hoisted;
-		String left = parenthesize(ie.getLeftOperand(), emitter.expr(ie.getLeftOperand()), goOp, false);
-		String right = parenthesize(ie.getRightOperand(), EmitUtil.lazyOperand(emitter, ie.getRightOperand(), goOp), goOp, true);
+		String left = parenthesize(ie.getLeftOperand(), EmitUtil.unboxInteger(emitter, ie.getLeftOperand(), ie.getRightOperand(), op, emitter.expr(ie.getLeftOperand())), goOp, false);
+		String right = parenthesize(ie.getRightOperand(), EmitUtil.unboxInteger(emitter, ie.getRightOperand(), ie.getLeftOperand(), op, EmitUtil.lazyOperand(emitter, ie.getRightOperand(), goOp)), goOp, true);
 		if (op == InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED && ie.extendedOperands().isEmpty()) {
 			return unsignedShift(left, resultType, right);
 		}
@@ -363,8 +363,7 @@ final class NumericEmitter {
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
 		if (fromGo.equals(toGo) || fe.isPrimitive() || te.isPrimitive() || fe.isArray()) return text;
-		String elem = upcastObject("e", fe, te);
-		if (elem.equals("e")) return text;
+		String elem = upcastObject("e", fe, te); // the Go slice types differ (here), so even an unchanged element needs the copy
 		String name = "upcastArr" + fromGo.replaceAll("[\\[\\]*.]", "") + "To" + toGo.replaceAll("[\\[\\]*.]", "");
 		if (emitter.generatedHelpers.add(name)) {
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"

@@ -28,6 +28,11 @@ final class JdkCalls {
 	/** boxing, monitors, a few String/Math/System members, the Selector enum. */
 	String tryMore(MethodInvocation mi, IMethodBinding mb, String qualified, String name) {
 		String key = qualified + "#" + name;
+		// Errors are Go values with no suppressed list: dropped (only OS.java's library-load fallback calls it).
+		if (key.equals("java.lang.Throwable#addSuppressed")) {
+			emitter.fileImports.add(JRT);
+			return "jrt.AddSuppressed(" + recv(mi) + ", " + arg(mi, 0) + ")";
+		}
 		switch (key) {
 			// Selector is elided (README): Selector.valueOf(sel) is just sel, its constants OS's sel_x.
 			case "org.eclipse.swt.internal.cocoa.Selector#valueOf":
@@ -56,8 +61,8 @@ final class JdkCalls {
 				emitter.fileImports.add(JRT);
 				return "jrt.SystemProperties";
 			case "java.lang.System#getenv":
-				if (mi.arguments().size() != 1) return null;
 				emitter.fileImports.add(JRT);
+				if (mi.arguments().isEmpty()) return "jrt.Environ()";
 				return "jrt.Getenv(" + arg(mi, 0) + ")";
 			case "java.lang.String#isBlank":
 				emitter.fileImports.add("strings");
@@ -234,7 +239,7 @@ final class JdkCalls {
 			case "java.lang.Runtime#addShutdownHook":
 				return "/* Runtime.addShutdownHook dropped */";
 			default:
-				return null;
+				return JdkCallsExtra.tryMore(emitter, mi, mb, qualified, name);
 		}
 	}
 

@@ -315,7 +315,7 @@ func (this *Link) Parse(string_ string) string {
 	this.mnemonics = make([]int32, length/4+1)
 	var result *jrt.StringBuilder = jrt.NewStringBuilder()
 	var buffer []uint16 = make([]uint16, length)
-	copy(buffer, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, jrt.StringLength(string_), buffer, 0)
 	var index int32 = 0
 	var state int32 = 0
 	var linkIndex int32 = 0

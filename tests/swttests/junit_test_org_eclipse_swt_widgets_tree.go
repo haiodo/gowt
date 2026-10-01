@@ -184,7 +184,7 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_getItems() {
 			var ti *swt.TreeItem = swt.NewTreeItem(this.tree, 0)
 			items[j][i] = ti
 		}
-		junit.AssertArrayEquals(items[j], this.tree.GetItems())
+		junit.AssertArrayEquals(upcastArrswtTreeItemToany(items[j]), upcastArrswtTreeItemToany(this.tree.GetItems()))
 		this.tree.RemoveAll()
 		junit.AssertEquals(int32(0), int32(this.tree.GetItemCount()))
 	}
@@ -361,15 +361,15 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_setSelection_Lorg_eclipse_sw
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTreeItem(this.tree, 0)
 	}
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[5], items[16], items[19]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[5], items[16], items[19]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[5], items[16], items[19]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems(items)
-	junit.AssertArrayEquals(items, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany(items), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems(this.tree.GetItems())
-	junit.AssertArrayEquals(this.tree.GetItems(), this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany(this.tree.GetItems()), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	junit.AssertEquals(int32(0), int32(this.tree.GetSelectionCount()))
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.tree.SetSelectionItems(nil)
@@ -377,89 +377,89 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_setSelection_Lorg_eclipse_sw
 	this.tree.SetSelectionItems([]*swt.TreeItem{nil})
 	junit.AssertEquals(int32(0), int32(this.tree.GetSelectionCount()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[10]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[10]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[10]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[number-1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[number-1]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[number-1]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[10], items[number-1], items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2], items[10], items[number-1]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2], items[10], items[number-1]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0], items[3], items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[0], items[2], items[3]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[0], items[2], items[3]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[3], items[2], items[1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[1], items[2], items[3]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[1], items[2], items[3]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[1], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[0], items[1], items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[0], items[1], items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[0], items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[0], items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2], items[3], items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2], items[3], items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2], items[3], items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[4], items[4], items[4], items[4], items[4], items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[0]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[0]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[3]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[3]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[3]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[1]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[1]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.RemoveAll()
 	this.tree.SetSelectionItems([]*swt.TreeItem{})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.MakeCleanEnvironment(true)
 	items = make([]*swt.TreeItem, number)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTreeItem(this.tree, 0)
 	}
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[5], items[16], items[19]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems(items)
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems(this.tree.GetItems())
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	junit.AssertEquals(int32(0), int32(this.tree.GetSelectionCount()))
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.tree.SetSelectionItems(nil)
 	}, "No exception thrown for items == null")
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[10]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[10]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[10]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[number-1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[number-1]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[number-1]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[10], items[number-1], items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0], items[3], items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[3], items[2], items[1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[1], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2], items[3], items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[4], items[4], items[4], items[4], items[4], items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[0]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[0]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[0]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[3]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[3]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[3]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[4]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[4]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[2]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[2]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.SetSelectionItems([]*swt.TreeItem{items[1]})
-	junit.AssertArrayEquals([]*swt.TreeItem{items[1]}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{items[1]}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 	this.tree.RemoveAll()
 	this.tree.SetSelectionItems([]*swt.TreeItem{})
-	junit.AssertArrayEquals([]*swt.TreeItem{}, this.tree.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTreeItemToany([]*swt.TreeItem{}), upcastArrswtTreeItemToany(this.tree.GetSelection()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Tree) Test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
@@ -812,7 +812,7 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_setData() {
 
 func (this *Test_org_eclipse_swt_widgets_Tree) WaitUntilIdle() {
 	var lastActive int64 = jrt.CurrentTimeMillis()
-	for true {
+	for {
 		if jrt.Interrupted() {
 			panic(&jrt.JavaError{})
 		}
@@ -1213,6 +1213,17 @@ func upcastswtTreeToswtWidget(x *swt.Tree) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastArrswtTreeItemToany(x []*swt.TreeItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }
 
 func upcastswtTreeItemToswtWidget(x *swt.TreeItem) *swt.Widget {

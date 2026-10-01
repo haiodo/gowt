@@ -731,7 +731,7 @@ func (this *Spinner) shouldChangeTextInRange_replacementString_(id int64, sel in
 					}
 				}
 				var buffer []uint16 = make([]uint16, length)
-				copy(buffer, utf16.Encode([]rune(newText)))
+				jrt.GetChars(newText, 0, int32(len(buffer)), buffer, 0)
 				var nsstring *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 				fieldEditor.ReplaceCharactersInRange(fieldEditor.SelectedRange(), nsstring)
 				result = false
@@ -933,7 +933,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init Spinner static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init Spinner static{}:", r)
 			}
 		}()
 		SpinnerLIMIT = 0x7FFFFFFF

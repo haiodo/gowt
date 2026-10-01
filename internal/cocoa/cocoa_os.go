@@ -10424,7 +10424,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSIS_X86_64:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSIS_X86_64:", r)
 			}
 		}()
 		OSIS_X86_64 = (jrt.GetProperty("os.arch", "") == "x86_64")
@@ -10432,7 +10432,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSKUTTypeFileURL_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSKUTTypeFileURL_:", r)
 			}
 		}()
 		OSKUTTypeFileURL_ = NewNSStringOverload1(OSKUTTypeFileURL())
@@ -10440,7 +10440,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSKUTTypeURL_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSKUTTypeURL_:", r)
 			}
 		}()
 		OSKUTTypeURL_ = NewNSStringOverload1(OSKUTTypeURL())
@@ -10448,7 +10448,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentCenter:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSTextAlignmentCenter:", r)
 			}
 		}()
 		var cond941 int32
@@ -10462,7 +10462,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTextAlignmentRight:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSTextAlignmentRight:", r)
 			}
 		}()
 		var cond942 int32
@@ -10476,7 +10476,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityAttributedStringForRangeParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityAttributedStringForRangeParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityAttributedStringForRangeParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityAttributedStringForRangeParameterizedAttribute())
@@ -10484,7 +10484,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityBackgroundColorTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityBackgroundColorTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityBackgroundColorTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityBackgroundColorTextAttribute())
@@ -10492,7 +10492,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityBoundsForRangeParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityBoundsForRangeParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityBoundsForRangeParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityBoundsForRangeParameterizedAttribute())
@@ -10500,7 +10500,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityButtonRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityButtonRole_:", r)
 			}
 		}()
 		OSNSAccessibilityButtonRole_ = NewNSStringOverload1(OSNSAccessibilityButtonRole())
@@ -10508,7 +10508,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityCellForColumnAndRowParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityCellForColumnAndRowParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityCellForColumnAndRowParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityCellForColumnAndRowParameterizedAttribute())
@@ -10516,7 +10516,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityCheckBoxRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityCheckBoxRole_:", r)
 			}
 		}()
 		OSNSAccessibilityCheckBoxRole_ = NewNSStringOverload1(OSNSAccessibilityCheckBoxRole())
@@ -10524,7 +10524,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityChildrenAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityChildrenAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityChildrenAttribute_ = NewNSStringOverload1(OSNSAccessibilityChildrenAttribute())
@@ -10532,7 +10532,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityColumnIndexRangeAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityColumnIndexRangeAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityColumnIndexRangeAttribute_ = NewNSStringOverload1(OSNSAccessibilityColumnIndexRangeAttribute())
@@ -10540,7 +10540,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityColumnRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityColumnRole_:", r)
 			}
 		}()
 		OSNSAccessibilityColumnRole_ = NewNSStringOverload1(OSNSAccessibilityColumnRole())
@@ -10548,7 +10548,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityColumnsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityColumnsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityColumnsAttribute_ = NewNSStringOverload1(OSNSAccessibilityColumnsAttribute())
@@ -10556,7 +10556,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityComboBoxRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityComboBoxRole_:", r)
 			}
 		}()
 		OSNSAccessibilityComboBoxRole_ = NewNSStringOverload1(OSNSAccessibilityComboBoxRole())
@@ -10564,7 +10564,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityConfirmAction_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityConfirmAction_:", r)
 			}
 		}()
 		OSNSAccessibilityConfirmAction_ = NewNSStringOverload1(OSNSAccessibilityConfirmAction())
@@ -10572,7 +10572,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityContentsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityContentsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityContentsAttribute_ = NewNSStringOverload1(OSNSAccessibilityContentsAttribute())
@@ -10580,7 +10580,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityDescriptionAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityDescriptionAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityDescriptionAttribute_ = NewNSStringOverload1(OSNSAccessibilityDescriptionAttribute())
@@ -10588,7 +10588,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityDialogSubrole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityDialogSubrole_:", r)
 			}
 		}()
 		OSNSAccessibilityDialogSubrole_ = NewNSStringOverload1(OSNSAccessibilityDialogSubrole())
@@ -10596,7 +10596,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityEnabledAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityEnabledAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityEnabledAttribute_ = NewNSStringOverload1(OSNSAccessibilityEnabledAttribute())
@@ -10604,7 +10604,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityExpandedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityExpandedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityExpandedAttribute_ = NewNSStringOverload1(OSNSAccessibilityExpandedAttribute())
@@ -10612,7 +10612,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFocusedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFocusedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityFocusedAttribute_ = NewNSStringOverload1(OSNSAccessibilityFocusedAttribute())
@@ -10620,7 +10620,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFocusedUIElementChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFocusedUIElementChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilityFocusedUIElementChangedNotification_ = NewNSStringOverload1(OSNSAccessibilityFocusedUIElementChangedNotification())
@@ -10628,7 +10628,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFontFamilyKey_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFontFamilyKey_:", r)
 			}
 		}()
 		OSNSAccessibilityFontFamilyKey_ = NewNSStringOverload1(OSNSAccessibilityFontFamilyKey())
@@ -10636,7 +10636,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFontNameKey_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFontNameKey_:", r)
 			}
 		}()
 		OSNSAccessibilityFontNameKey_ = NewNSStringOverload1(OSNSAccessibilityFontNameKey())
@@ -10644,7 +10644,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFontSizeKey_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFontSizeKey_:", r)
 			}
 		}()
 		OSNSAccessibilityFontSizeKey_ = NewNSStringOverload1(OSNSAccessibilityFontSizeKey())
@@ -10652,7 +10652,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityFontTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityFontTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityFontTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityFontTextAttribute())
@@ -10660,7 +10660,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityForegroundColorTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityForegroundColorTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityForegroundColorTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityForegroundColorTextAttribute())
@@ -10668,7 +10668,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityGroupRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityGroupRole_:", r)
 			}
 		}()
 		OSNSAccessibilityGroupRole_ = NewNSStringOverload1(OSNSAccessibilityGroupRole())
@@ -10676,7 +10676,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityHeaderAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityHeaderAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityHeaderAttribute_ = NewNSStringOverload1(OSNSAccessibilityHeaderAttribute())
@@ -10684,7 +10684,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityHelpAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityHelpAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityHelpAttribute_ = NewNSStringOverload1(OSNSAccessibilityHelpAttribute())
@@ -10692,7 +10692,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityHelpTagRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityHelpTagRole_:", r)
 			}
 		}()
 		OSNSAccessibilityHelpTagRole_ = NewNSStringOverload1(OSNSAccessibilityHelpTagRole())
@@ -10700,7 +10700,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityHorizontalOrientationValue_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityHorizontalOrientationValue_:", r)
 			}
 		}()
 		OSNSAccessibilityHorizontalOrientationValue_ = NewNSStringOverload1(OSNSAccessibilityHorizontalOrientationValue())
@@ -10708,7 +10708,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityImageRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityImageRole_:", r)
 			}
 		}()
 		OSNSAccessibilityImageRole_ = NewNSStringOverload1(OSNSAccessibilityImageRole())
@@ -10716,7 +10716,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityIndexAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityIndexAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityIndexAttribute_ = NewNSStringOverload1(OSNSAccessibilityIndexAttribute())
@@ -10724,7 +10724,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityInsertionPointLineNumberAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityInsertionPointLineNumberAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityInsertionPointLineNumberAttribute_ = NewNSStringOverload1(OSNSAccessibilityInsertionPointLineNumberAttribute())
@@ -10732,7 +10732,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityLineForIndexParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityLineForIndexParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityLineForIndexParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityLineForIndexParameterizedAttribute())
@@ -10740,7 +10740,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityLinkRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityLinkRole_:", r)
 			}
 		}()
 		OSNSAccessibilityLinkRole_ = NewNSStringOverload1(OSNSAccessibilityLinkRole())
@@ -10748,7 +10748,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityLinkTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityLinkTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityLinkTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityLinkTextAttribute())
@@ -10756,7 +10756,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMaxValueAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMaxValueAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityMaxValueAttribute_ = NewNSStringOverload1(OSNSAccessibilityMaxValueAttribute())
@@ -10764,7 +10764,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMenuBarRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMenuBarRole_:", r)
 			}
 		}()
 		OSNSAccessibilityMenuBarRole_ = NewNSStringOverload1(OSNSAccessibilityMenuBarRole())
@@ -10772,7 +10772,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMenuButtonRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMenuButtonRole_:", r)
 			}
 		}()
 		OSNSAccessibilityMenuButtonRole_ = NewNSStringOverload1(OSNSAccessibilityMenuButtonRole())
@@ -10780,7 +10780,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMenuItemRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMenuItemRole_:", r)
 			}
 		}()
 		OSNSAccessibilityMenuItemRole_ = NewNSStringOverload1(OSNSAccessibilityMenuItemRole())
@@ -10788,7 +10788,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMenuRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMenuRole_:", r)
 			}
 		}()
 		OSNSAccessibilityMenuRole_ = NewNSStringOverload1(OSNSAccessibilityMenuRole())
@@ -10796,7 +10796,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMinValueAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMinValueAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityMinValueAttribute_ = NewNSStringOverload1(OSNSAccessibilityMinValueAttribute())
@@ -10804,7 +10804,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMisspelledTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMisspelledTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityMisspelledTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityMisspelledTextAttribute())
@@ -10812,7 +10812,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityMovedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityMovedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilityMovedNotification_ = NewNSStringOverload1(OSNSAccessibilityMovedNotification())
@@ -10820,7 +10820,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityNextContentsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityNextContentsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityNextContentsAttribute_ = NewNSStringOverload1(OSNSAccessibilityNextContentsAttribute())
@@ -10828,7 +10828,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityNumberOfCharactersAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityNumberOfCharactersAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityNumberOfCharactersAttribute_ = NewNSStringOverload1(OSNSAccessibilityNumberOfCharactersAttribute())
@@ -10836,7 +10836,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityOrientationAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityOrientationAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityOrientationAttribute_ = NewNSStringOverload1(OSNSAccessibilityOrientationAttribute())
@@ -10844,7 +10844,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityOutlineRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityOutlineRole_:", r)
 			}
 		}()
 		OSNSAccessibilityOutlineRole_ = NewNSStringOverload1(OSNSAccessibilityOutlineRole())
@@ -10852,7 +10852,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityOutlineRowSubrole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityOutlineRowSubrole_:", r)
 			}
 		}()
 		OSNSAccessibilityOutlineRowSubrole_ = NewNSStringOverload1(OSNSAccessibilityOutlineRowSubrole())
@@ -10860,7 +10860,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityParentAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityParentAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityParentAttribute_ = NewNSStringOverload1(OSNSAccessibilityParentAttribute())
@@ -10868,7 +10868,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityPositionAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityPositionAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityPositionAttribute_ = NewNSStringOverload1(OSNSAccessibilityPositionAttribute())
@@ -10876,7 +10876,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityPressAction_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityPressAction_:", r)
 			}
 		}()
 		OSNSAccessibilityPressAction_ = NewNSStringOverload1(OSNSAccessibilityPressAction())
@@ -10884,7 +10884,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityPreviousContentsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityPreviousContentsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityPreviousContentsAttribute_ = NewNSStringOverload1(OSNSAccessibilityPreviousContentsAttribute())
@@ -10892,7 +10892,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityProgressIndicatorRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityProgressIndicatorRole_:", r)
 			}
 		}()
 		OSNSAccessibilityProgressIndicatorRole_ = NewNSStringOverload1(OSNSAccessibilityProgressIndicatorRole())
@@ -10900,7 +10900,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRadioButtonRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRadioButtonRole_:", r)
 			}
 		}()
 		OSNSAccessibilityRadioButtonRole_ = NewNSStringOverload1(OSNSAccessibilityRadioButtonRole())
@@ -10908,7 +10908,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRangeForIndexParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRangeForIndexParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRangeForIndexParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityRangeForIndexParameterizedAttribute())
@@ -10916,7 +10916,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRangeForLineParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRangeForLineParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRangeForLineParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityRangeForLineParameterizedAttribute())
@@ -10924,7 +10924,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRangeForPositionParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRangeForPositionParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRangeForPositionParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityRangeForPositionParameterizedAttribute())
@@ -10932,7 +10932,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRoleAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRoleAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRoleAttribute_ = NewNSStringOverload1(OSNSAccessibilityRoleAttribute())
@@ -10940,7 +10940,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRoleDescriptionAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRoleDescriptionAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRoleDescriptionAttribute_ = NewNSStringOverload1(OSNSAccessibilityRoleDescriptionAttribute())
@@ -10948,7 +10948,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRowCountChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRowCountChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilityRowCountChangedNotification_ = NewNSStringOverload1(OSNSAccessibilityRowCountChangedNotification())
@@ -10956,7 +10956,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRowIndexRangeAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRowIndexRangeAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRowIndexRangeAttribute_ = NewNSStringOverload1(OSNSAccessibilityRowIndexRangeAttribute())
@@ -10964,7 +10964,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRowRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRowRole_:", r)
 			}
 		}()
 		OSNSAccessibilityRowRole_ = NewNSStringOverload1(OSNSAccessibilityRowRole())
@@ -10972,7 +10972,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityRowsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityRowsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityRowsAttribute_ = NewNSStringOverload1(OSNSAccessibilityRowsAttribute())
@@ -10980,7 +10980,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityScrollBarRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityScrollBarRole_:", r)
 			}
 		}()
 		OSNSAccessibilityScrollBarRole_ = NewNSStringOverload1(OSNSAccessibilityScrollBarRole())
@@ -10988,7 +10988,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedAttribute())
@@ -10996,7 +10996,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedChildrenAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedChildrenAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedChildrenAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedChildrenAttribute())
@@ -11004,7 +11004,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedChildrenChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedChildrenChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedChildrenChangedNotification_ = NewNSStringOverload1(OSNSAccessibilitySelectedChildrenChangedNotification())
@@ -11012,7 +11012,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedColumnsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedColumnsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedColumnsAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedColumnsAttribute())
@@ -11020,7 +11020,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedRowsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedRowsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedRowsAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedRowsAttribute())
@@ -11028,7 +11028,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedRowsChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedRowsChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedRowsChangedNotification_ = NewNSStringOverload1(OSNSAccessibilitySelectedRowsChangedNotification())
@@ -11036,7 +11036,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedTextAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedTextAttribute())
@@ -11044,7 +11044,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedTextChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedTextChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedTextChangedNotification_ = NewNSStringOverload1(OSNSAccessibilitySelectedTextChangedNotification())
@@ -11052,7 +11052,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedTextRangeAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedTextRangeAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedTextRangeAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedTextRangeAttribute())
@@ -11060,7 +11060,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySelectedTextRangesAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySelectedTextRangesAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySelectedTextRangesAttribute_ = NewNSStringOverload1(OSNSAccessibilitySelectedTextRangesAttribute())
@@ -11068,7 +11068,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityServesAsTitleForUIElementsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityServesAsTitleForUIElementsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityServesAsTitleForUIElementsAttribute_ = NewNSStringOverload1(OSNSAccessibilityServesAsTitleForUIElementsAttribute())
@@ -11076,7 +11076,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityShowMenuAction_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityShowMenuAction_:", r)
 			}
 		}()
 		OSNSAccessibilityShowMenuAction_ = NewNSStringOverload1(OSNSAccessibilityShowMenuAction())
@@ -11084,7 +11084,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySizeAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySizeAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySizeAttribute_ = NewNSStringOverload1(OSNSAccessibilitySizeAttribute())
@@ -11092,7 +11092,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySliderRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySliderRole_:", r)
 			}
 		}()
 		OSNSAccessibilitySliderRole_ = NewNSStringOverload1(OSNSAccessibilitySliderRole())
@@ -11100,7 +11100,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySplitterRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySplitterRole_:", r)
 			}
 		}()
 		OSNSAccessibilitySplitterRole_ = NewNSStringOverload1(OSNSAccessibilitySplitterRole())
@@ -11108,7 +11108,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityStaticTextRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityStaticTextRole_:", r)
 			}
 		}()
 		OSNSAccessibilityStaticTextRole_ = NewNSStringOverload1(OSNSAccessibilityStaticTextRole())
@@ -11116,7 +11116,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityStrikethroughColorTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityStrikethroughColorTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityStrikethroughColorTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityStrikethroughColorTextAttribute())
@@ -11124,7 +11124,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityStrikethroughTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityStrikethroughTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityStrikethroughTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityStrikethroughTextAttribute())
@@ -11132,7 +11132,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityStringForRangeParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityStringForRangeParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityStringForRangeParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityStringForRangeParameterizedAttribute())
@@ -11140,7 +11140,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityStyleRangeForIndexParameterizedAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityStyleRangeForIndexParameterizedAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityStyleRangeForIndexParameterizedAttribute_ = NewNSStringOverload1(OSNSAccessibilityStyleRangeForIndexParameterizedAttribute())
@@ -11148,7 +11148,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilitySubroleAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilitySubroleAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilitySubroleAttribute_ = NewNSStringOverload1(OSNSAccessibilitySubroleAttribute())
@@ -11156,7 +11156,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTabGroupRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTabGroupRole_:", r)
 			}
 		}()
 		OSNSAccessibilityTabGroupRole_ = NewNSStringOverload1(OSNSAccessibilityTabGroupRole())
@@ -11164,7 +11164,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTableRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTableRole_:", r)
 			}
 		}()
 		OSNSAccessibilityTableRole_ = NewNSStringOverload1(OSNSAccessibilityTableRole())
@@ -11172,7 +11172,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTableRowSubrole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTableRowSubrole_:", r)
 			}
 		}()
 		OSNSAccessibilityTableRowSubrole_ = NewNSStringOverload1(OSNSAccessibilityTableRowSubrole())
@@ -11180,7 +11180,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTabsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTabsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityTabsAttribute_ = NewNSStringOverload1(OSNSAccessibilityTabsAttribute())
@@ -11188,7 +11188,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTextAreaRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTextAreaRole_:", r)
 			}
 		}()
 		OSNSAccessibilityTextAreaRole_ = NewNSStringOverload1(OSNSAccessibilityTextAreaRole())
@@ -11196,7 +11196,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTextFieldRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTextFieldRole_:", r)
 			}
 		}()
 		OSNSAccessibilityTextFieldRole_ = NewNSStringOverload1(OSNSAccessibilityTextFieldRole())
@@ -11204,7 +11204,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTitleAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTitleAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityTitleAttribute_ = NewNSStringOverload1(OSNSAccessibilityTitleAttribute())
@@ -11212,7 +11212,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTitleChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTitleChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilityTitleChangedNotification_ = NewNSStringOverload1(OSNSAccessibilityTitleChangedNotification())
@@ -11220,7 +11220,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTitleUIElementAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTitleUIElementAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityTitleUIElementAttribute_ = NewNSStringOverload1(OSNSAccessibilityTitleUIElementAttribute())
@@ -11228,7 +11228,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityToolbarRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityToolbarRole_:", r)
 			}
 		}()
 		OSNSAccessibilityToolbarRole_ = NewNSStringOverload1(OSNSAccessibilityToolbarRole())
@@ -11236,7 +11236,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityTopLevelUIElementAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityTopLevelUIElementAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityTopLevelUIElementAttribute_ = NewNSStringOverload1(OSNSAccessibilityTopLevelUIElementAttribute())
@@ -11244,7 +11244,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityUnderlineColorTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityUnderlineColorTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityUnderlineColorTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityUnderlineColorTextAttribute())
@@ -11252,7 +11252,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityUnderlineTextAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityUnderlineTextAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityUnderlineTextAttribute_ = NewNSStringOverload1(OSNSAccessibilityUnderlineTextAttribute())
@@ -11260,7 +11260,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityUnknownRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityUnknownRole_:", r)
 			}
 		}()
 		OSNSAccessibilityUnknownRole_ = NewNSStringOverload1(OSNSAccessibilityUnknownRole())
@@ -11268,7 +11268,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityUnknownSubrole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityUnknownSubrole_:", r)
 			}
 		}()
 		OSNSAccessibilityUnknownSubrole_ = NewNSStringOverload1(OSNSAccessibilityUnknownSubrole())
@@ -11276,7 +11276,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityValueAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityValueAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityValueAttribute_ = NewNSStringOverload1(OSNSAccessibilityValueAttribute())
@@ -11284,7 +11284,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityValueChangedNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityValueChangedNotification_:", r)
 			}
 		}()
 		OSNSAccessibilityValueChangedNotification_ = NewNSStringOverload1(OSNSAccessibilityValueChangedNotification())
@@ -11292,7 +11292,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVerticalOrientationValue_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVerticalOrientationValue_:", r)
 			}
 		}()
 		OSNSAccessibilityVerticalOrientationValue_ = NewNSStringOverload1(OSNSAccessibilityVerticalOrientationValue())
@@ -11300,7 +11300,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVisibleCharacterRangeAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVisibleCharacterRangeAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityVisibleCharacterRangeAttribute_ = NewNSStringOverload1(OSNSAccessibilityVisibleCharacterRangeAttribute())
@@ -11308,7 +11308,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVisibleChildrenAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVisibleChildrenAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityVisibleChildrenAttribute_ = NewNSStringOverload1(OSNSAccessibilityVisibleChildrenAttribute())
@@ -11316,7 +11316,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVisibleColumnsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVisibleColumnsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityVisibleColumnsAttribute_ = NewNSStringOverload1(OSNSAccessibilityVisibleColumnsAttribute())
@@ -11324,7 +11324,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVisibleNameKey_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVisibleNameKey_:", r)
 			}
 		}()
 		OSNSAccessibilityVisibleNameKey_ = NewNSStringOverload1(OSNSAccessibilityVisibleNameKey())
@@ -11332,7 +11332,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityVisibleRowsAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityVisibleRowsAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityVisibleRowsAttribute_ = NewNSStringOverload1(OSNSAccessibilityVisibleRowsAttribute())
@@ -11340,7 +11340,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityWindowAttribute_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityWindowAttribute_:", r)
 			}
 		}()
 		OSNSAccessibilityWindowAttribute_ = NewNSStringOverload1(OSNSAccessibilityWindowAttribute())
@@ -11348,7 +11348,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAccessibilityWindowRole_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAccessibilityWindowRole_:", r)
 			}
 		}()
 		OSNSAccessibilityWindowRole_ = NewNSStringOverload1(OSNSAccessibilityWindowRole())
@@ -11356,7 +11356,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSApplicationDidChangeScreenParametersNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSApplicationDidChangeScreenParametersNotification_:", r)
 			}
 		}()
 		OSNSApplicationDidChangeScreenParametersNotification_ = NewNSStringOverload1(OSNSApplicationDidChangeScreenParametersNotification())
@@ -11364,7 +11364,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSAttachmentAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSAttachmentAttributeName_:", r)
 			}
 		}()
 		OSNSAttachmentAttributeName_ = NewNSStringOverload1(OSNSAttachmentAttributeName())
@@ -11372,7 +11372,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSBackgroundColorAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSBackgroundColorAttributeName_:", r)
 			}
 		}()
 		OSNSBackgroundColorAttributeName_ = NewNSStringOverload1(OSNSBackgroundColorAttributeName())
@@ -11380,7 +11380,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSBaselineOffsetAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSBaselineOffsetAttributeName_:", r)
 			}
 		}()
 		OSNSBaselineOffsetAttributeName_ = NewNSStringOverload1(OSNSBaselineOffsetAttributeName())
@@ -11388,7 +11388,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSCursorAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSCursorAttributeName_:", r)
 			}
 		}()
 		OSNSCursorAttributeName_ = NewNSStringOverload1(OSNSCursorAttributeName())
@@ -11396,7 +11396,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSDeviceRGBColorSpace_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSDeviceRGBColorSpace_:", r)
 			}
 		}()
 		OSNSDeviceRGBColorSpace_ = NewNSStringOverload1(OSNSDeviceRGBColorSpace())
@@ -11404,7 +11404,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSDeviceResolution_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSDeviceResolution_:", r)
 			}
 		}()
 		OSNSDeviceResolution_ = NewNSStringOverload1(OSNSDeviceResolution())
@@ -11412,7 +11412,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSDragPboard_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSDragPboard_:", r)
 			}
 		}()
 		OSNSDragPboard_ = NewNSStringOverload1(OSNSDragPboard())
@@ -11420,7 +11420,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSEventTrackingRunLoopMode_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSEventTrackingRunLoopMode_:", r)
 			}
 		}()
 		OSNSEventTrackingRunLoopMode_ = NewNSStringOverload1(OSNSEventTrackingRunLoopMode())
@@ -11428,7 +11428,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSFilenamesPboardType_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSFilenamesPboardType_:", r)
 			}
 		}()
 		OSNSFilenamesPboardType_ = NewNSStringOverload1(OSNSFilenamesPboardType())
@@ -11436,7 +11436,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSFontAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSFontAttributeName_:", r)
 			}
 		}()
 		OSNSFontAttributeName_ = NewNSStringOverload1(OSNSFontAttributeName())
@@ -11444,7 +11444,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSForegroundColorAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSForegroundColorAttributeName_:", r)
 			}
 		}()
 		OSNSForegroundColorAttributeName_ = NewNSStringOverload1(OSNSForegroundColorAttributeName())
@@ -11452,7 +11452,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSImageNameCaution_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSImageNameCaution_:", r)
 			}
 		}()
 		OSNSImageNameCaution_ = NewNSStringOverload1(OSNSImageNameCaution())
@@ -11460,7 +11460,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSImageNameInfo_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSImageNameInfo_:", r)
 			}
 		}()
 		OSNSImageNameInfo_ = NewNSStringOverload1(OSNSImageNameInfo())
@@ -11468,7 +11468,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSLigatureAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSLigatureAttributeName_:", r)
 			}
 		}()
 		OSNSLigatureAttributeName_ = NewNSStringOverload1(OSNSLigatureAttributeName())
@@ -11476,7 +11476,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSLinkAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSLinkAttributeName_:", r)
 			}
 		}()
 		OSNSLinkAttributeName_ = NewNSStringOverload1(OSNSLinkAttributeName())
@@ -11484,7 +11484,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSModalPanelRunLoopMode_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSModalPanelRunLoopMode_:", r)
 			}
 		}()
 		OSNSModalPanelRunLoopMode_ = NewNSStringOverload1(OSNSModalPanelRunLoopMode())
@@ -11492,7 +11492,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSObliquenessAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSObliquenessAttributeName_:", r)
 			}
 		}()
 		OSNSObliquenessAttributeName_ = NewNSStringOverload1(OSNSObliquenessAttributeName())
@@ -11500,7 +11500,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSParagraphStyleAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSParagraphStyleAttributeName_:", r)
 			}
 		}()
 		OSNSParagraphStyleAttributeName_ = NewNSStringOverload1(OSNSParagraphStyleAttributeName())
@@ -11508,7 +11508,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPasteboardTypeHTML_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPasteboardTypeHTML_:", r)
 			}
 		}()
 		OSNSPasteboardTypeHTML_ = NewNSStringOverload1(OSNSPasteboardTypeHTML())
@@ -11516,7 +11516,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPasteboardTypeRTF_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPasteboardTypeRTF_:", r)
 			}
 		}()
 		OSNSPasteboardTypeRTF_ = NewNSStringOverload1(OSNSPasteboardTypeRTF())
@@ -11524,7 +11524,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPasteboardTypeString_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPasteboardTypeString_:", r)
 			}
 		}()
 		OSNSPasteboardTypeString_ = NewNSStringOverload1(OSNSPasteboardTypeString())
@@ -11532,7 +11532,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintAllPages_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintAllPages_:", r)
 			}
 		}()
 		OSNSPrintAllPages_ = NewNSStringOverload1(OSNSPrintAllPages())
@@ -11540,7 +11540,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintCopies_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintCopies_:", r)
 			}
 		}()
 		OSNSPrintCopies_ = NewNSStringOverload1(OSNSPrintCopies())
@@ -11548,7 +11548,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintFirstPage_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintFirstPage_:", r)
 			}
 		}()
 		OSNSPrintFirstPage_ = NewNSStringOverload1(OSNSPrintFirstPage())
@@ -11556,7 +11556,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintJobDisposition_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintJobDisposition_:", r)
 			}
 		}()
 		OSNSPrintJobDisposition_ = NewNSStringOverload1(OSNSPrintJobDisposition())
@@ -11564,7 +11564,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintLastPage_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintLastPage_:", r)
 			}
 		}()
 		OSNSPrintLastPage_ = NewNSStringOverload1(OSNSPrintLastPage())
@@ -11572,7 +11572,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintMustCollate_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintMustCollate_:", r)
 			}
 		}()
 		OSNSPrintMustCollate_ = NewNSStringOverload1(OSNSPrintMustCollate())
@@ -11580,7 +11580,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintOrientation_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintOrientation_:", r)
 			}
 		}()
 		OSNSPrintOrientation_ = NewNSStringOverload1(OSNSPrintOrientation())
@@ -11588,7 +11588,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintPreviewJob_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintPreviewJob_:", r)
 			}
 		}()
 		OSNSPrintPreviewJob_ = NewNSStringOverload1(OSNSPrintPreviewJob())
@@ -11596,7 +11596,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintSaveJob_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintSaveJob_:", r)
 			}
 		}()
 		OSNSPrintSaveJob_ = NewNSStringOverload1(OSNSPrintSaveJob())
@@ -11604,7 +11604,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintSavePath_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintSavePath_:", r)
 			}
 		}()
 		OSNSPrintSavePath_ = NewNSStringOverload1(OSNSPrintSavePath())
@@ -11612,7 +11612,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSPrintScalingFactor_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSPrintScalingFactor_:", r)
 			}
 		}()
 		OSNSPrintScalingFactor_ = NewNSStringOverload1(OSNSPrintScalingFactor())
@@ -11620,7 +11620,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSStrikethroughColorAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSStrikethroughColorAttributeName_:", r)
 			}
 		}()
 		OSNSStrikethroughColorAttributeName_ = NewNSStringOverload1(OSNSStrikethroughColorAttributeName())
@@ -11628,7 +11628,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSStrikethroughStyleAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSStrikethroughStyleAttributeName_:", r)
 			}
 		}()
 		OSNSStrikethroughStyleAttributeName_ = NewNSStringOverload1(OSNSStrikethroughStyleAttributeName())
@@ -11636,7 +11636,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSStrokeWidthAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSStrokeWidthAttributeName_:", r)
 			}
 		}()
 		OSNSStrokeWidthAttributeName_ = NewNSStringOverload1(OSNSStrokeWidthAttributeName())
@@ -11644,7 +11644,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSSystemColorsDidChangeNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSSystemColorsDidChangeNotification_:", r)
 			}
 		}()
 		OSNSSystemColorsDidChangeNotification_ = NewNSStringOverload1(OSNSSystemColorsDidChangeNotification())
@@ -11652,7 +11652,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSTIFFPboardType_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSTIFFPboardType_:", r)
 			}
 		}()
 		OSNSTIFFPboardType_ = NewNSStringOverload1(OSNSTIFFPboardType())
@@ -11660,7 +11660,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSToolbarFlexibleSpaceItemIdentifier_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSToolbarFlexibleSpaceItemIdentifier_:", r)
 			}
 		}()
 		OSNSToolbarFlexibleSpaceItemIdentifier_ = NewNSStringOverload1(OSNSToolbarFlexibleSpaceItemIdentifier())
@@ -11668,7 +11668,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSToolbarSpaceItemIdentifier_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSToolbarSpaceItemIdentifier_:", r)
 			}
 		}()
 		OSNSToolbarSpaceItemIdentifier_ = NewNSStringOverload1(OSNSToolbarSpaceItemIdentifier())
@@ -11676,7 +11676,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSURLPboardType_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSURLPboardType_:", r)
 			}
 		}()
 		OSNSURLPboardType_ = NewNSStringOverload1(OSNSURLPboardType())
@@ -11684,7 +11684,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSUnderlineColorAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSUnderlineColorAttributeName_:", r)
 			}
 		}()
 		OSNSUnderlineColorAttributeName_ = NewNSStringOverload1(OSNSUnderlineColorAttributeName())
@@ -11692,7 +11692,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSUnderlineStyleAttributeName_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSUnderlineStyleAttributeName_:", r)
 			}
 		}()
 		OSNSUnderlineStyleAttributeName_ = NewNSStringOverload1(OSNSUnderlineStyleAttributeName())
@@ -11700,7 +11700,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSViewGlobalFrameDidChangeNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSViewGlobalFrameDidChangeNotification_:", r)
 			}
 		}()
 		OSNSViewGlobalFrameDidChangeNotification_ = NewNSStringOverload1(OSNSViewGlobalFrameDidChangeNotification())
@@ -11708,7 +11708,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidBecomeKeyNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidBecomeKeyNotification_:", r)
 			}
 		}()
 		OSNSWindowDidBecomeKeyNotification_ = NewNSStringOverload1(OSNSWindowDidBecomeKeyNotification())
@@ -11716,7 +11716,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidDeminiaturizeNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidDeminiaturizeNotification_:", r)
 			}
 		}()
 		OSNSWindowDidDeminiaturizeNotification_ = NewNSStringOverload1(OSNSWindowDidDeminiaturizeNotification())
@@ -11724,7 +11724,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidMiniaturizeNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidMiniaturizeNotification_:", r)
 			}
 		}()
 		OSNSWindowDidMiniaturizeNotification_ = NewNSStringOverload1(OSNSWindowDidMiniaturizeNotification())
@@ -11732,7 +11732,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidMoveNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidMoveNotification_:", r)
 			}
 		}()
 		OSNSWindowDidMoveNotification_ = NewNSStringOverload1(OSNSWindowDidMoveNotification())
@@ -11740,7 +11740,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidResignKeyNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidResignKeyNotification_:", r)
 			}
 		}()
 		OSNSWindowDidResignKeyNotification_ = NewNSStringOverload1(OSNSWindowDidResignKeyNotification())
@@ -11748,7 +11748,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowDidResizeNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowDidResizeNotification_:", r)
 			}
 		}()
 		OSNSWindowDidResizeNotification_ = NewNSStringOverload1(OSNSWindowDidResizeNotification())
@@ -11756,7 +11756,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSWindowWillCloseNotification_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSWindowWillCloseNotification_:", r)
 			}
 		}()
 		OSNSWindowWillCloseNotification_ = NewNSStringOverload1(OSNSWindowWillCloseNotification())
@@ -11764,7 +11764,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSDefaultRunLoopMode_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSDefaultRunLoopMode_:", r)
 			}
 		}()
 		OSNSDefaultRunLoopMode_ = NewNSStringOverload1(OSNSDefaultRunLoopMode())
@@ -11772,7 +11772,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OSNSLocaleLanguageCode_:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSLocaleLanguageCode_:", r)
 			}
 		}()
 		OSNSLocaleLanguageCode_ = NewNSStringOverload1(OSNSLocaleLanguageCode())
@@ -11780,7 +11780,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OS static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OS static{}:", r)
 			}
 		}()
 		LibraryLoadLibrary("swt-pi")
@@ -11788,7 +11788,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init OS static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init OS static{}:", r)
 			}
 		}()
 		var version NSOperatingSystemVersion = NSProcessInfoProcessInfo().OperatingSystemVersion()

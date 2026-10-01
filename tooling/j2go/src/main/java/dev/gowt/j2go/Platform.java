@@ -19,9 +19,9 @@ public enum Platform {
 		this.piDir = piDir;
 	}
 
-	/** win32 and gtk are slots only: their PI bindings and widgets are TSK-039 and TSK-043. */
+	/** win32 is still a slot only (TSK-039). */
 	public boolean implemented() {
-		return this == COCOA;
+		return this != WIN32;
 	}
 
 	public static Platform parse(String name) {
@@ -31,7 +31,12 @@ public enum Platform {
 
 	/** Roots every platform shares: their output carries no GOOS suffix. */
 	public static List<String> commonRoots() {
-		return List.of(
+		return commonRoots(true);
+	}
+
+	/** gtk's type information for the PI classes comes from tooling/j2go/gtkstubs (generated from internal/gtk), not from SWT's PI sources. */
+	public static List<String> commonRoots(boolean withPi) {
+		List<String> roots = List.of(
 				B + "Eclipse SWT/common",
 				B + "Eclipse SWT PI/common",
 				// org.eclipse.swt.accessibility.Accessible/ACC: not translated (manual.txt), but
@@ -44,13 +49,17 @@ public enum Platform {
 				"examples/org.eclipse.swt.examples/src",
 				// Round 12: the SWT JUnit tests (org.eclipse.swt.tests.junit -> tests/swttests).
 				"tests/org.eclipse.swt.tests/JUnit Tests");
+		if (withPi) return roots;
+		List<String> r = new ArrayList<>(roots);
+		r.remove(B + "Eclipse SWT PI/common");
+		return r;
 	}
 
 	/** Roots of this platform; its emulated dirs count here too, each platform picks its own set. */
 	public List<String> roots() {
 		List<String> r = new ArrayList<>();
 		for (String bundle : new String[] { "Eclipse SWT", "Eclipse SWT PI", "Eclipse SWT Accessibility", "Eclipse SWT Printing" })
-			r.add(B + bundle + "/" + swtName);
+			if (this != GTK || !bundle.equals("Eclipse SWT PI")) r.add(B + bundle + "/" + swtName);
 		if (this == COCOA) {
 			// BidiUtil: not on win32's real sourcepath for cocoa, but the real cocoa build fragment
 			// (binaries/org.eclipse.swt.cocoa.macosx.*/build.properties) pulls this one in too.
@@ -59,6 +68,13 @@ public enum Platform {
 			r.add(B + "Eclipse SWT/emulated/tooltip");
 			r.add(B + "Eclipse SWT/emulated/coolbar");
 			r.add(B + "Eclipse SWT/emulated/expand");
+		}
+		if (this == GTK) {
+			// The real gtk build fragment's extra roots: cairo Transform/Pattern/Path, PI/cairo, bidi/coolbar/taskbar.
+			r.add(B + "Eclipse SWT/cairo");
+			r.add(B + "Eclipse SWT/emulated/bidi");
+			r.add(B + "Eclipse SWT/emulated/coolbar");
+			r.add(B + "Eclipse SWT/emulated/taskbar");
 		}
 		return r;
 	}

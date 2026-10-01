@@ -53,7 +53,7 @@ func (this *NSString) GetString() string {
 
 func (this *NSString) InitWithString(str string) *NSString {
 	var buffer []uint16 = make([]uint16, jrt.StringLength(str))
-	copy(buffer, utf16.Encode([]rune(str)))
+	jrt.GetChars(str, 0, int32(len(buffer)), buffer, 0)
 	return this.InitWithCharacters(buffer, int64(int32(len(buffer))))
 }
 
@@ -333,7 +333,7 @@ func (this *NSString) StringByReplacingPercentEscapesUsingEncoding(enc int64) *N
 
 func NSStringStringWith(str string) *NSString {
 	var buffer []uint16 = make([]uint16, jrt.StringLength(str))
-	copy(buffer, utf16.Encode([]rune(str)))
+	jrt.GetChars(str, 0, int32(len(buffer)), buffer, 0)
 	return NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 }
 

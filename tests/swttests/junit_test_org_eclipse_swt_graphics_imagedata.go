@@ -670,7 +670,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getRGBs() {
 	junit.AssertNull(this.imageData.GetRGBs())
 	var rgbs []*swt.RGB = []*swt.RGB{swt.NewRGB(0, 0, 0), swt.NewRGB(255, 255, 255)}
 	this.imageData = swt.NewImageData(this.IMAGE_DIMENSION, this.IMAGE_DIMENSION, 8, swt.NewPaletteData(rgbs))
-	junit.AssertArrayEquals(rgbs, this.imageData.GetRGBs())
+	junit.AssertArrayEquals(upcastArrswtRGBToany(rgbs), upcastArrswtRGBToany(this.imageData.GetRGBs()))
 }
 
 func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getTransparencyMask() {
@@ -1071,4 +1071,15 @@ func castanyToswtImageData(x any) *swt.ImageData {
 		panic("java.lang.ClassCastException: swt.ImageData")
 	}
 	return v
+}
+
+func upcastArrswtRGBToany(x []*swt.RGB) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

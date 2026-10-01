@@ -1194,7 +1194,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init SWT static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init SWT static{}:", r)
 			}
 		}()
 		BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3 | BUTTON4 | BUTTON5

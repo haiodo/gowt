@@ -787,7 +787,7 @@ func (this *GC) CreateString(string_ string, flags int32, draw bool) *cocoa.NSAt
 	}
 	var length int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, length)
-	copy(chars, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, length, chars, 0)
 	if (flags&DRAW_MNEMONIC) != 0 || (flags&DRAW_DELIMITER) == 0 {
 		var i int32 = 0
 		var j int32 = 0

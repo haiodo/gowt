@@ -351,28 +351,28 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_getSelection() {
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2], items[number-1], items[10]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[2], items[10], items[number-1]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[2], items[10], items[number-1]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems(items)
-	junit.AssertArrayEquals(items, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItem(items[0])
-	junit.AssertArrayEquals([]*swt.TableItem{items[0]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.MakeCleanEnvironment(true)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[10]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[10]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[10]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[number-1]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[number-1]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[number-1]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[2]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[2]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[10], items[number-1], items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems(items)
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Table) Test_getSelectionCount() {
@@ -632,7 +632,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeAll() {
 	}
 	this.table.RemoveAll()
 	this.table.RemoveAll()
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
@@ -650,7 +650,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(2, 3)
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[1], items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[1], items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	junit.AssertFalse(items[0].IsDisposed())
 	junit.AssertFalse(items[1].IsDisposed())
 	junit.AssertTrue(items[2].IsDisposed())
@@ -664,7 +664,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.table.RemoveStartEnd(2, 100)
 	}, "No exception thrown for illegal index range")
-	junit.AssertArrayEquals(items, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	items = make([]*swt.TableItem, number)
 	for i := int32(0); i < number; i++ {
@@ -673,14 +673,14 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.table.RemoveStartEnd(2, number)
 	}, "No exception thrown for illegal index range")
-	junit.AssertArrayEquals(items, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	items = make([]*swt.TableItem, number)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(2, number-1)
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[1]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[1]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	for i := int32(0); i < 2; i++ {
 		junit.AssertFalse(items[i].IsDisposed())
 	}
@@ -692,7 +692,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(0, 3)
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	for i := int32(0); i <= 3; i++ {
 		junit.AssertTrue(items[i].IsDisposed())
 	}
@@ -704,7 +704,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(0, number-1)
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetItems()))
 	for i := int32(0); i <= number-1; i++ {
 		junit.AssertTrue(items[i].IsDisposed())
 	}
@@ -721,7 +721,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.table.RemoveStartEnd(-20, -10)
 	}, "No exception thrown for illegal index range")
-	junit.AssertArrayEquals(items, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
@@ -729,19 +729,19 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.table.RemoveStartEnd(20, 40)
 	}, "No exception thrown for illegal index range")
-	junit.AssertArrayEquals(items, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(200, 40)
-	junit.AssertArrayEquals(items, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany(items), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(2, 2)
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[1], items[3], items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[1], items[3], items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	junit.AssertTrue(items[2].IsDisposed())
 	for i := int32(0); i < number && i != 2; i++ {
 		junit.AssertFalse(items[i].IsDisposed())
@@ -751,7 +751,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(0, 0)
-	junit.AssertArrayEquals([]*swt.TableItem{items[1], items[2], items[3], items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[1], items[2], items[3], items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	junit.AssertTrue(items[0].IsDisposed())
 	for i := int32(1); i < number; i++ {
 		junit.AssertFalse(items[i].IsDisposed())
@@ -761,7 +761,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.RemoveStartEnd(4, 4)
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[1], items[2], items[3]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[1], items[2], items[3]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	junit.AssertTrue(items[4].IsDisposed())
 	for i := int32(0); i < number && i != 4; i++ {
 		junit.AssertFalse(items[i].IsDisposed())
@@ -781,7 +781,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 	}
 	this.table.RemoveStartEnd(0, 2)
 	junit.AssertEquals(int32(number-3), int32(this.table.GetItemCount()))
-	junit.AssertArrayEquals([]*swt.TableItem{items[3], items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[3], items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	for i := int32(0); i < 2; i++ {
 		junit.AssertTrue(items[i].IsDisposed())
 	}
@@ -792,7 +792,7 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_removeII() {
 		this.table.RemoveStartEnd(1, 200)
 	}, "No exception thrown for illegal index range")
 	junit.AssertEquals(int32(number-3), int32(this.table.GetItemCount()))
-	junit.AssertArrayEquals([]*swt.TableItem{items[3], items[4]}, this.table.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[3], items[4]}), upcastArrswtTableItemToany(this.table.GetItems()))
 	this.MakeCleanEnvironment(false)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
@@ -1227,33 +1227,33 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_setSelection_Lorg_eclipse_s
 	this.table.SetSelectionItem(items[0])
 	junit.AssertEquals(int32(1), int32(this.table.GetSelectionCount()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[0], items[3], items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[2], items[3]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[2], items[3]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[3], items[2], items[1]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[1], items[2], items[3]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[1], items[2], items[3]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[1], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[1], items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[1], items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[0], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[0], items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0], items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2], items[3], items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[2], items[3], items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[2], items[3], items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4], items[4], items[4], items[4], items[4], items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.MakeCleanEnvironment(false)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
 	}
 	this.table.SetSelectionItems([]*swt.TableItem{items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[0]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[3]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[3]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[3]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[2]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[2]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[1]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[1]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[1]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.MakeCleanEnvironment(true)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTableItem(this.table, 0)
@@ -1261,29 +1261,29 @@ func (this *Test_org_eclipse_swt_widgets_Table) Test_setSelection_Lorg_eclipse_s
 	this.table.SetSelectionItems([]*swt.TableItem{})
 	junit.AssertEquals(int32(0), int32(this.table.GetSelectionCount()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[0], items[3], items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[3], items[2], items[1]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[1], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[0], items[4], items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2], items[3], items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[0]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[0]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[0]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[3]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[3]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[3]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[4]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[4]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[2]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[2]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[1]})
-	junit.AssertArrayEquals([]*swt.TableItem{items[1]}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{items[1]}), upcastArrswtTableItemToany(this.table.GetSelection()))
 	this.table.SetSelectionItems([]*swt.TableItem{items[4], items[4], items[4], items[4], items[4], items[4]})
-	junit.AssertArrayEquals([]*swt.TableItem{}, this.table.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTableItemToany([]*swt.TableItem{}), upcastArrswtTableItemToany(this.table.GetSelection()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Table) Test_setSelectionI() {
@@ -1725,6 +1725,17 @@ func init() {
 			{Name: "test_showSelection", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Table).Test_showSelection() }},
 		},
 	})
+}
+
+func upcastArrswtTableItemToany(x []*swt.TableItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }
 
 func upcastswtTableToswtWidget(x *swt.Table) *swt.Widget {

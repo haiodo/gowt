@@ -186,21 +186,25 @@ func ReadAllBytes(s InputStream) []int8 {
 // NewFileInputStream/NewFileOutputStream back `new FileInputStream(filename)`/`new
 // FileOutputStream(filename)` (ImageLoader.load/save(String)) - "FileInputStream"/
 // "FileOutputStream" name no real Go type (see Manual), only these two constructors exist.
-func NewFileInputStream(filename string) InputStream {
-	f, err := os.Open(filename)
+func NewFileInputStream(file any) *FileInputStream {
+	f, err := os.Open(pathOf(file))
 	if err != nil {
 		panic(NewIOException())
 	}
-	return NewInputStream(f)
+	return &FileInputStream{NewInputStream(f)}
 }
 
-func NewFileOutputStream(filename string) OutputStream {
-	f, err := os.Create(filename)
+func NewFileOutputStream(file any) *FileOutputStream {
+	f, err := os.Create(pathOf(file))
 	if err != nil {
 		panic(NewIOException())
 	}
-	return NewOutputStream(f)
+	return &FileOutputStream{NewOutputStream(f)}
 }
+
+// FileInputStream/FileOutputStream are their stream interface plus a name to declare variables with.
+type FileInputStream struct{ InputStream }
+type FileOutputStream struct{ OutputStream }
 
 // ByteArrayInputStream is java.io.ByteArrayInputStream.
 type ByteArrayInputStream struct{ readerInputStream }

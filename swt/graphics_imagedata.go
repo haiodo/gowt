@@ -2521,7 +2521,7 @@ func init() {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Fprintln(os.Stderr, "gowt/internal/cocoa: deferred init ImageData static{}:", r)
+				fmt.Fprintln(os.Stderr, "gowt: deferred init ImageData static{}:", r)
 			}
 		}()
 		for b := int32(0); b < 9; b++ {

@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type Group struct {
@@ -195,7 +194,7 @@ func (this *Group) SetText(string_ string) {
 	}
 	this.text = string_
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-	copy(buffer, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 	var length int32 = this.FixMnemonic(buffer)
 	var box *cocoa.NSBox = castcocoaNSViewTococoaNSBox(this.View)
 	var cond194 int32

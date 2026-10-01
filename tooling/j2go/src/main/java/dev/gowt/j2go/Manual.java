@@ -27,6 +27,7 @@ public class Manual {
 	private static final String SWT_LONG = "org.eclipse.swt.internal.LONG";
 	private static final String DISPLAY_APPEARANCE = "org.eclipse.swt.widgets.Display.APPEARANCE";
 	private static final String COCOA_PKG = "org.eclipse.swt.internal.cocoa.";
+	public static final String GDK_RECTANGLE_TO_RECTANGLE = "GdkRectangleToRectangle";
 	private static final String CONTROL_EXAMPLE_PKG = "org.eclipse.swt.examples.controlexample.";
 
 	// java.lang/java.util base types some translated classes extend (SWTException/SWTError,
@@ -81,7 +82,7 @@ public class Manual {
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.concurrent.ConcurrentLinkedQueue"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg(SWT_LONG, "LONG", null, false);
@@ -143,6 +144,10 @@ public class Manual {
 		}
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
+		// Device (gtk) reads its CSS through these; one Go Reader serves all three reader classes (jrt/jdkio.go).
+		for (String n : new String[]{"File", "BufferedReader", "InputStreamReader", "FileReader"}) reg("java.io." + n, "jrt." + n, JRT_IMPORT, false);
+		reg("java.util.regex.Pattern", "jrt.Pattern", JRT_IMPORT, false);
+		reg("java.util.regex.Matcher", "jrt.Matcher", JRT_IMPORT, false);
 		reg("java.util.StringTokenizer", "jrt.StringTokenizer", JRT_IMPORT, false);
 		// java.util.ResourceBundle over the registered resource FS, java.text.MessageFormat's
 		// {n} substitution, and the exceptions they (and Integer.parseInt) throw - internal/jrt/text.go.
@@ -178,6 +183,8 @@ public class Manual {
 			// An out-of-range index (-1: nothing selected) throws NSRangeException, which os.c swallows.
 			Map.entry(COCOA_PKG + "NSComboBox#selectItemAtIndex(J)", "SelectItemAtIndex"),
 			Map.entry(COCOA_PKG + "NSComboBox#itemObjectValueAtIndex(J)", "ItemObjectValueAtIndex"),
+			Map.entry("org.eclipse.swt.internal.gtk.GdkRectangle#toRectangle()", GDK_RECTANGLE_TO_RECTANGLE),
+			Map.entry("org.eclipse.swt.widgets.Display#dumpWidgetTableInfo()", "DumpWidgetTableInfoManual"),
 			Map.entry("java.lang.Thread#sleep(J)", "jrt.Sleep"),
 			Map.entry("java.lang.Thread#interrupted()", "jrt.Interrupted"),
 			Map.entry("java.lang.Thread#yield()", "jrt.Yield"),
@@ -211,8 +218,11 @@ public class Manual {
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
 			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector");
 
+	// Hand-written for cocoa only: gtk translates its own IME.
+	private static final Set<String> COCOA_ONLY = Set.of(IME);
+
 	public static boolean isManual(String qualifiedTypeName) {
-		return ENTRIES.containsKey(qualifiedTypeName);
+		return ENTRIES.containsKey(qualifiedTypeName) && !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"));
 	}
 
 	/** A value type with no Go method surface mirroring Java's (a bare "any", or java.lang.Class

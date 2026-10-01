@@ -199,7 +199,7 @@ func (this *GridLayout) LayoutCompositeMoveXYWidthHeightFlushCache(compositeLike
 		var data *GridData = castanyToGridData(child.GetLayoutData())
 		var hSpan int32 = int32(math.Max(float64(1), float64(int32(math.Min(float64(data.HorizontalSpan), float64(columnCount))))))
 		var vSpan int32 = int32(math.Max(float64(1), float64(data.VerticalSpan)))
-		for true {
+		for {
 			var lastRow int32 = row + vSpan
 			if lastRow >= int32(len(grid)) {
 				var newGrid [][]*Control = func() [][]*Control {

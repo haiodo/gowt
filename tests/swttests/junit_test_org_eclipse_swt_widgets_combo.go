@@ -48,11 +48,11 @@ func (this *Test_org_eclipse_swt_widgets_Combo) Test_addLjava_lang_String() {
 		this.combo.Add(jrt.NullString)
 	})
 	this.combo.Add("")
-	junit.AssertArrayEquals([]string{""}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{""}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.Add("")
-	junit.AssertArrayEquals([]string{"", ""}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"", ""}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.Add("fred")
-	junit.AssertArrayEquals([]string{"", "", "fred"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"", "", "fred"}), upcastArrstringToany(this.combo.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Combo) Test_addLjava_lang_StringI() {
@@ -68,29 +68,29 @@ func (this *Test_org_eclipse_swt_widgets_Combo) Test_addLjava_lang_StringI() {
 	})
 	this.combo.RemoveAll()
 	this.combo.AddStringIndex("fred", 0)
-	junit.AssertArrayEquals([]string{"fred"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.AddStringIndex("fred", 0)
-	junit.AssertArrayEquals([]string{"fred", "fred"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred", "fred"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.Add("fred")
-	junit.AssertArrayEquals([]string{"fred", "fred", "fred"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred", "fred", "fred"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.RemoveAll()
 	var number int32 = 3
 	for i := int32(0); i < number; i++ {
 		this.combo.Add(fmt.Sprintf("fred%d", i))
 	}
 	this.combo.AddStringIndex("fred", number)
-	junit.AssertArrayEquals([]string{"fred0", "fred1", "fred2", "fred"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred0", "fred1", "fred2", "fred"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.RemoveAll()
 	number = 3
 	for i := int32(0); i < number; i++ {
 		this.combo.Add(fmt.Sprintf("fred%d", i))
 	}
 	this.combo.AddStringIndex("fred", 1)
-	junit.AssertArrayEquals([]string{"fred0", "fred", "fred1", "fred2"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred0", "fred", "fred1", "fred2"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.AddStringIndex("fred", 0)
-	junit.AssertArrayEquals([]string{"fred", "fred0", "fred", "fred1", "fred2"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred", "fred0", "fred", "fred1", "fred2"}), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.AddStringIndex("fred", 4)
-	junit.AssertArrayEquals([]string{"fred", "fred0", "fred", "fred1", "fred", "fred2"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred", "fred0", "fred", "fred1", "fred", "fred2"}), upcastArrstringToany(this.combo.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Combo) Test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
@@ -768,7 +768,7 @@ func (this *Test_org_eclipse_swt_widgets_Combo) Test_setItemILjava_lang_String()
 	for i := int32(0); i < number; i++ {
 		this.combo.SetItem(i, fmt.Sprintf("fred%d", i))
 	}
-	junit.AssertArrayEquals([]string{"fred0", "fred1", "fred2", "fred3", "fred4"}, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fred0", "fred1", "fred2", "fred3", "fred4"}), upcastArrstringToany(this.combo.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Combo) Test_setItems_Ljava_lang_String() {
@@ -778,7 +778,7 @@ func (this *Test_org_eclipse_swt_widgets_Combo) Test_setItems_Ljava_lang_String(
 	var items [][]string = [][]string{[]string{}, []string{""}, []string{"", ""}, []string{"fred"}, []string{"fred0", "fred0"}, []string{"fred", "fred"}}
 	for i := int32(0); i < int32(len(items)); i++ {
 		this.combo.SetItems(items[i])
-		junit.AssertArrayEquals(items[i], this.combo.GetItems())
+		junit.AssertArrayEquals(upcastArrstringToany(items[i]), upcastArrstringToany(this.combo.GetItems()))
 	}
 }
 
@@ -942,7 +942,7 @@ func (this *Test_org_eclipse_swt_widgets_Combo) DoSegmentsTest(isListening bool)
 	this.combo.SetItems(items)
 	junit.AssertEquals(isListening, this.listenerCalled)
 	this.listenerCalled = false
-	junit.AssertArrayEquals(items, this.combo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany(items), upcastArrstringToany(this.combo.GetItems()))
 	this.combo.SetText(string_)
 	junit.AssertEquals(isListening, this.listenerCalled)
 	this.listenerCalled = false

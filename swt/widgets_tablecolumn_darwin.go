@@ -425,7 +425,7 @@ func (this *TableColumn) setText_(string_ string) {
 	}
 	this.Item.setText_(string_)
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-	copy(buffer, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 	var length int32 = this.FixMnemonic(buffer)
 	this.displayText = string(utf16.Decode(buffer[0 : 0+length]))
 	var title *cocoa.NSString = cocoa.NSStringStringWith(this.displayText)

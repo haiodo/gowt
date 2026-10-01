@@ -54,11 +54,11 @@ final class PackageQualifier {
 
 	/** Same guard, for a type GoTypes.map could not resolve at all (not in model, not manual). */
 	void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {
-		if (!emitter.currentGoPackage.equals("cocoa")) return;
+		if (!emitter.currentGoPackage.equals(GoTypes.piPackage)) return;
 		int dot = qualifiedJavaTypeName.lastIndexOf('.');
 		String javaPackage = dot < 0 ? "" : qualifiedJavaTypeName.substring(0, dot);
 		if (javaPackage.startsWith("org.eclipse.swt") && !GoTypes.isCocoaPackage(javaPackage)) {
-			System.err.println("j2go: guard violated: cocoa file " + emitter.currentJavaPackage
+			System.err.println("j2go: guard violated: " + GoTypes.piPackage + " file " + emitter.currentJavaPackage
 					+ " must not reference swt type " + qualifiedJavaTypeName);
 			System.exit(1);
 		}

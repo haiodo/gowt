@@ -25,11 +25,13 @@ type HDITEM struct {
 
 func (this *HDITEM) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.CchTextMax)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.Cxy)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.Fmt)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.Hbm)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.IImage)
 	*(*int32)(unsafe.Add(p, 44)) = int32(this.IOrder)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.LParam)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Mask)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.PszText)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.PvFilter)
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.Type)
@@ -37,11 +39,13 @@ func (this *HDITEM) toC(p unsafe.Pointer) {
 
 func (this *HDITEM) fromC(p unsafe.Pointer) {
 	this.CchTextMax = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.Cxy = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.Fmt = int32(*(*int32)(unsafe.Add(p, 28)))
 	this.Hbm = int64(*(*int64)(unsafe.Add(p, 16)))
 	this.IImage = int32(*(*int32)(unsafe.Add(p, 40)))
 	this.IOrder = int32(*(*int32)(unsafe.Add(p, 44)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 32)))
+	this.Mask = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PszText = int64(*(*int64)(unsafe.Add(p, 8)))
 	this.PvFilter = int64(*(*int64)(unsafe.Add(p, 56)))
 	this.Type = int32(*(*int32)(unsafe.Add(p, 48)))

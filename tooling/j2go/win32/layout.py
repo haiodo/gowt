@@ -53,7 +53,7 @@ for cls, ctype in sorted(pairs.items()):
         continue
     c += 'printf("%s %%d\\n", (int)sizeof(%s));\n' % (cls, ctype)
     src = re.sub(r"(?m)^\s*//.*$", "", open(path).read())
-    for m in re.finditer(r"(?:/\*\*(.*?)\*/\s*)?public\s+(?!static)([A-Za-z_0-9]+)\s*(\[\s*\])?\s+([A-Za-z_0-9]+)\s*(\[\s*\])?\s*(=[^;]*)?;", src, re.S):
+    for m in re.finditer(r"(?:/\*\*((?:(?!\*/).)*)\*/\s*)?public\s+(?!static)([A-Za-z_0-9]+)\s*(\[\s*\])?\s+([A-Za-z_0-9]+)\s*(\[\s*\])?\s*(=[^;]*)?;", src, re.S):
         doc, typ, _, name, _, _ = m.groups()
         if typ == "class":
             continue

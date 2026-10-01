@@ -161,10 +161,7 @@ func (this *Pattern) GetHandle(zoom int32) int64 {
 
 func (this *Pattern) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastPatternToResource(this))
-	func() any {
-		_ = []any{this.zoomToHandle.Values(), (*Pattern_PatternHandle).Destroy}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().ForEach((*Pattern_PatternHandle).Destroy)
 	this.zoomToHandle.Clear()
 	this.disposed = true
 }
@@ -204,7 +201,6 @@ func PatternColorRefToArgb(colorRef int32, alpha int32) int32 {
 
 type Pattern_BasePatternHandle struct {
 	Pattern_PatternHandle
-	this_0 *Pattern
 }
 
 func init() { jrt.RegisterClassPackage("Pattern_BasePatternHandle", "org.eclipse.swt.graphics") }
@@ -275,7 +271,6 @@ func (this *Pattern_BasePatternHandle) createHandle_(zoom int32) int64 {
 
 type Pattern_ImagePatternHandle struct {
 	Pattern_PatternHandle
-	this_0    *Pattern
 	gdipImage *Image_GdipImage
 }
 

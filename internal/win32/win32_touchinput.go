@@ -31,6 +31,8 @@ func (this *TOUCHINPUT) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.DwMask)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.DwTime)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.HSource)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.X)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.Y)
 }
 
 func (this *TOUCHINPUT) fromC(p unsafe.Pointer) {
@@ -42,6 +44,8 @@ func (this *TOUCHINPUT) fromC(p unsafe.Pointer) {
 	this.DwMask = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.DwTime = int32(*(*int32)(unsafe.Add(p, 28)))
 	this.HSource = int64(*(*int64)(unsafe.Add(p, 8)))
+	this.X = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.Y = int32(*(*int32)(unsafe.Add(p, 4)))
 }
 
 var TOUCHINPUTSizeof int32

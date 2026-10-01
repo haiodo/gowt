@@ -18,11 +18,15 @@ type NMHEADER struct {
 
 func (this *NMHEADER) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
+	*(*int32)(unsafe.Add(p, 28)) = int32(this.IButton)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.IItem)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.Pitem)
 }
 
 func (this *NMHEADER) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
+	this.IButton = int32(*(*int32)(unsafe.Add(p, 28)))
+	this.IItem = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.Pitem = int64(*(*int64)(unsafe.Add(p, 32)))
 }
 

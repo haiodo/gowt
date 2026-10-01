@@ -17,11 +17,13 @@ type STGMEDIUM struct {
 
 func (this *STGMEDIUM) toC(p unsafe.Pointer) {
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PUnkForRelease)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Tymed)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.UnionField)
 }
 
 func (this *STGMEDIUM) fromC(p unsafe.Pointer) {
 	this.PUnkForRelease = int64(*(*int64)(unsafe.Add(p, 16)))
+	this.Tymed = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.UnionField = int64(*(*int64)(unsafe.Add(p, 8)))
 }
 

@@ -15,10 +15,12 @@ type CAUUID struct {
 }
 
 func (this *CAUUID) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CElems)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.PElems)
 }
 
 func (this *CAUUID) fromC(p unsafe.Pointer) {
+	this.CElems = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PElems = int64(*(*int64)(unsafe.Add(p, 8)))
 }
 

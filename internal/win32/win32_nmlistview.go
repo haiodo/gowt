@@ -23,14 +23,24 @@ type NMLISTVIEW struct {
 
 func (this *NMLISTVIEW) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.IItem)
+	*(*int32)(unsafe.Add(p, 28)) = int32(this.ISubItem)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.LParam)
+	*(*int32)(unsafe.Add(p, 40)) = int32(this.UChanged)
+	*(*int32)(unsafe.Add(p, 32)) = int32(this.UNewState)
+	*(*int32)(unsafe.Add(p, 36)) = int32(this.UOldState)
 	*(*int32)(unsafe.Add(p, 44)) = int32(this.X)
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.Y)
 }
 
 func (this *NMLISTVIEW) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
+	this.IItem = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.ISubItem = int32(*(*int32)(unsafe.Add(p, 28)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 56)))
+	this.UChanged = int32(*(*int32)(unsafe.Add(p, 40)))
+	this.UNewState = int32(*(*int32)(unsafe.Add(p, 32)))
+	this.UOldState = int32(*(*int32)(unsafe.Add(p, 36)))
 	this.X = int32(*(*int32)(unsafe.Add(p, 44)))
 	this.Y = int32(*(*int32)(unsafe.Add(p, 48)))
 }

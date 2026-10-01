@@ -18,12 +18,14 @@ type CONTROLINFO struct {
 
 func (this *CONTROLINFO) toC(p unsafe.Pointer) {
 	*(*int16)(unsafe.Add(p, 16)) = int16(this.CAccel)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Cb)
 	*(*int32)(unsafe.Add(p, 20)) = int32(this.DwFlags)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.HAccel)
 }
 
 func (this *CONTROLINFO) fromC(p unsafe.Pointer) {
 	this.CAccel = int16(*(*int16)(unsafe.Add(p, 16)))
+	this.Cb = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 20)))
 	this.HAccel = int64(*(*int64)(unsafe.Add(p, 8)))
 }

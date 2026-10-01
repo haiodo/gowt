@@ -20,14 +20,22 @@ type MENUINFO struct {
 }
 
 func (this *MENUINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.CyMax)
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.DwContextHelpID)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.DwMenuData)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.DwStyle)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.FMask)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.HbrBack)
 }
 
 func (this *MENUINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.CyMax = int32(*(*int32)(unsafe.Add(p, 12)))
 	this.DwContextHelpID = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.DwMenuData = int64(*(*int64)(unsafe.Add(p, 32)))
+	this.DwStyle = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.FMask = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.HbrBack = int64(*(*int64)(unsafe.Add(p, 16)))
 }
 

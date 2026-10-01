@@ -33,6 +33,8 @@ func (this *NMREBARCHILDSIZE) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.RcChild_left)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.RcChild_right)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.RcChild_top)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.UBand)
+	*(*int32)(unsafe.Add(p, 28)) = int32(this.WID)
 }
 
 func (this *NMREBARCHILDSIZE) fromC(p unsafe.Pointer) {
@@ -45,6 +47,8 @@ func (this *NMREBARCHILDSIZE) fromC(p unsafe.Pointer) {
 	this.RcChild_left = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.RcChild_right = int32(*(*int32)(unsafe.Add(p, 40)))
 	this.RcChild_top = int32(*(*int32)(unsafe.Add(p, 36)))
+	this.UBand = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.WID = int32(*(*int32)(unsafe.Add(p, 28)))
 }
 
 var NMREBARCHILDSIZESizeof int32

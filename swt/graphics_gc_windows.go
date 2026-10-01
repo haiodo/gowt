@@ -2331,7 +2331,7 @@ func (this *GC) DrawTextGDIP(gdipGraphics int64, string_ string, x int32, y int3
 	var needsBounds bool = !draw || (flags&DRAW_TRANSPARENT) == 0
 	var buffer []uint16
 	if (flags & DRAW_DELIMITER) == 0 {
-		string_ = func() string { _ = []any{string_, "[\\r\\n]+", ""}; panic("j2go: unresolved call replaceAll") }()
+		string_ = jrt.ReplaceAll(string_, "[\\r\\n]+", "")
 	} else {
 		string_ = strings.ReplaceAll(strings.ReplaceAll(string_, "\r\n", "\n"), "\r", "\n")
 	}
@@ -4072,7 +4072,6 @@ func GCSin(angle int32, length int32) int32 {
 
 type GC_ImageOperation struct {
 	GC_Operation
-	this_0          *GC
 	image           *Image
 	disposeCallback func(*Image)
 }
@@ -4127,9 +4126,8 @@ func (this *GC_ImageOperation) disposeAll_() {
 
 type GC_CopyAreaToImageOperation struct {
 	GC_ImageOperation
-	this_0 *GC
-	x      int32
-	y      int32
+	x int32
+	y int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_CopyAreaToImageOperation", "org.eclipse.swt.graphics") }
@@ -4164,7 +4162,6 @@ func (this *GC_CopyAreaToImageOperation) apply_() {
 
 type GC_CopyAreaOperation struct {
 	GC_Operation
-	this_0      *GC
 	source      *Rectangle
 	destination *Rectangle
 	paint       bool
@@ -4201,7 +4198,6 @@ func (this *GC_CopyAreaOperation) apply_() {
 
 type GC_DrawArcOperation struct {
 	GC_Operation
-	this_0     *GC
 	rectangle  *Rectangle
 	startAngle int32
 	arcAngle   int32
@@ -4236,7 +4232,6 @@ func (this *GC_DrawArcOperation) apply_() {
 
 type GC_DrawFocusOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 }
 
@@ -4267,7 +4262,6 @@ func (this *GC_DrawFocusOperation) apply_() {
 
 type GC_DrawImageOperation struct {
 	GC_ImageOperation
-	this_0   *GC
 	location *Point
 }
 
@@ -4315,7 +4309,6 @@ func (this *GC_DrawImageOperation) DrawImageInPixels(imageLike ImageLike, locati
 
 type GC_DrawScalingImageToImageOperation struct {
 	GC_ImageOperation
-	this_0      *GC
 	source      *Rectangle
 	destination *Rectangle
 }
@@ -4421,7 +4414,6 @@ func (this *GC_DrawScalingImageToImageOperation) CalculateZoomForImage(gcZoom in
 
 type GC_DrawScaledImageOperation struct {
 	GC_ImageOperation
-	this_0      *GC
 	destination *Rectangle
 }
 
@@ -4472,7 +4464,6 @@ func (this *GC_DrawScaledImageOperation) Draw(imageLike ImageLike, destX int32, 
 
 type GC_DrawImageToImageOperation struct {
 	GC_ImageOperation
-	this_0      *GC
 	source      *Rectangle
 	destination *Rectangle
 	simple      bool
@@ -4509,9 +4500,8 @@ func (this *GC_DrawImageToImageOperation) apply_() {
 
 type GC_DrawLineOperation struct {
 	GC_Operation
-	this_0 *GC
-	start  *Point
-	end    *Point
+	start *Point
+	end   *Point
 }
 
 func init() { jrt.RegisterClassPackage("GC_DrawLineOperation", "org.eclipse.swt.graphics") }
@@ -4544,7 +4534,6 @@ func (this *GC_DrawLineOperation) apply_() {
 
 type GC_DrawOvalOperation struct {
 	GC_Operation
-	this_0 *GC
 	bounds *Rectangle
 }
 
@@ -4575,7 +4564,6 @@ func (this *GC_DrawOvalOperation) apply_() {
 
 type GC_DrawPathOperation struct {
 	GC_Operation
-	this_0   *GC
 	pathData *PathData
 }
 
@@ -4620,7 +4608,6 @@ func (this *GC_DrawPathOperation) apply_() {
 
 type GC_DrawPointOperation struct {
 	GC_Operation
-	this_0   *GC
 	location *Point
 }
 
@@ -4651,7 +4638,6 @@ func (this *GC_DrawPointOperation) apply_() {
 
 type GC_DrawPolygonOperation struct {
 	GC_Operation
-	this_0     *GC
 	pointArray []int32
 }
 
@@ -4683,7 +4669,6 @@ func (this *GC_DrawPolygonOperation) apply_() {
 
 type GC_DrawPolylineOperation struct {
 	GC_Operation
-	this_0     *GC
 	pointArray []int32
 }
 
@@ -4715,7 +4700,6 @@ func (this *GC_DrawPolylineOperation) apply_() {
 
 type GC_DrawRectangleOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 }
 
@@ -4748,7 +4732,6 @@ func (this *GC_DrawRectangleOperation) apply_() {
 
 type GC_DrawRoundRectangleOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 	arcWidth  int32
 	arcHeight int32
@@ -4788,7 +4771,6 @@ func (this *GC_DrawRoundRectangleOperation) apply_() {
 
 type GC_DrawStringOperation struct {
 	GC_Operation
-	this_0        *GC
 	string        string
 	location      *Point
 	isTransparent bool
@@ -4823,7 +4805,6 @@ func (this *GC_DrawStringOperation) apply_() {
 
 type GC_DrawTextOperation struct {
 	GC_Operation
-	this_0   *GC
 	string   string
 	location *Point
 	flags    int32
@@ -4858,7 +4839,6 @@ func (this *GC_DrawTextOperation) apply_() {
 
 type GC_FillArcOperation struct {
 	GC_Operation
-	this_0     *GC
 	bounds     *Rectangle
 	startAngle int32
 	arcAngle   int32
@@ -4893,7 +4873,6 @@ func (this *GC_FillArcOperation) apply_() {
 
 type GC_FillGradientRectangleOperation struct {
 	GC_FillRectangleOperation
-	this_0   *GC
 	vertical bool
 }
 
@@ -4928,7 +4907,6 @@ func (this *GC_FillGradientRectangleOperation) apply_() {
 
 type GC_FillOvalOperation struct {
 	GC_Operation
-	this_0 *GC
 	bounds *Rectangle
 }
 
@@ -4959,7 +4937,6 @@ func (this *GC_FillOvalOperation) apply_() {
 
 type GC_FillPathOperation struct {
 	GC_Operation
-	this_0   *GC
 	pathData *PathData
 }
 
@@ -5008,7 +4985,6 @@ func (this *GC_FillPathOperation) apply_() {
 
 type GC_FillPolygonOperation struct {
 	GC_Operation
-	this_0     *GC
 	pointArray []int32
 }
 
@@ -5040,7 +5016,6 @@ func (this *GC_FillPolygonOperation) apply_() {
 
 type GC_FillRectangleOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 }
 
@@ -5073,7 +5048,6 @@ func (this *GC_FillRectangleOperation) apply_() {
 
 type GC_FillRoundRectangleOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 	arcWidth  int32
 	arcHeight int32
@@ -5113,7 +5087,6 @@ func (this *GC_FillRoundRectangleOperation) apply_() {
 
 type GC_GetClippingOperation struct {
 	GC_Operation
-	this_0             *GC
 	zoomToRegionHandle *Region_ZoomToRegionMap
 }
 
@@ -5157,7 +5130,6 @@ func (this *GC_GetClippingOperation) disposeAll_() {
 
 type GC_SetAdvancedOperation struct {
 	GC_Operation
-	this_0   *GC
 	advanced bool
 }
 
@@ -5204,7 +5176,6 @@ func (this *GC_SetAdvancedOperation) apply_() {
 
 type GC_SetAntialiasOperation struct {
 	GC_Operation
-	this_0    *GC
 	antialias int32
 }
 
@@ -5254,8 +5225,7 @@ func (this *GC_SetAntialiasOperation) apply_() {
 
 type GC_SetAlphaOperation struct {
 	GC_Operation
-	this_0 *GC
-	alpha  int32
+	alpha int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetAlphaOperation", "org.eclipse.swt.graphics") }
@@ -5297,8 +5267,7 @@ func (this *GC_SetAlphaOperation) apply_() {
 
 type GC_SetBackgroundOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	color  *Color
+	color *Color
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetBackgroundOperation", "org.eclipse.swt.graphics") }
@@ -5335,7 +5304,6 @@ func (this *GC_SetBackgroundOperation) apply_() {
 
 type GC_PatternOperation struct {
 	GC_Operation
-	this_0  *GC
 	pattern *Pattern
 }
 
@@ -5369,7 +5337,6 @@ func (this *GC_PatternOperation) GetPattern() *Pattern {
 
 type GC_SetBackgroundPatternOperation struct {
 	GC_PatternOperation
-	this_0 *GC
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetBackgroundPatternOperation", "org.eclipse.swt.graphics") }
@@ -5412,7 +5379,6 @@ func (this *GC_SetBackgroundPatternOperation) apply_() {
 
 type GC_SetClippingRegionOperation struct {
 	GC_Operation
-	this_0  *GC
 	clipRgn *Region
 }
 
@@ -5455,7 +5421,6 @@ func (this *GC_SetClippingRegionOperation) apply_() {
 
 type GC_SetClippingOperation struct {
 	GC_Operation
-	this_0    *GC
 	rectangle *Rectangle
 }
 
@@ -5488,7 +5453,6 @@ func (this *GC_SetClippingOperation) apply_() {
 
 type GC_SetClippingPathOperation struct {
 	GC_Operation
-	this_0   *GC
 	pathData *PathData
 }
 
@@ -5538,8 +5502,7 @@ func (this *GC_SetClippingPathOperation) apply_() {
 
 type GC_SetFillRuleOperation struct {
 	GC_Operation
-	this_0 *GC
-	rule   int32
+	rule int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetFillRuleOperation", "org.eclipse.swt.graphics") }
@@ -5581,8 +5544,7 @@ func (this *GC_SetFillRuleOperation) apply_() {
 
 type GC_SetFontOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	font   *Font
+	font *Font
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetFontOperation", "org.eclipse.swt.graphics") }
@@ -5620,8 +5582,7 @@ func (this *GC_SetFontOperation) apply_() {
 
 type GC_SetForegroundOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	color  *Color
+	color *Color
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetForegroundOperation", "org.eclipse.swt.graphics") }
@@ -5658,7 +5619,6 @@ func (this *GC_SetForegroundOperation) apply_() {
 
 type GC_SetForegroundPatternOperation struct {
 	GC_PatternOperation
-	this_0 *GC
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetForegroundPatternOperation", "org.eclipse.swt.graphics") }
@@ -5701,7 +5661,6 @@ func (this *GC_SetForegroundPatternOperation) apply_() {
 
 type GC_SetInterpolationOperation struct {
 	GC_Operation
-	this_0        *GC
 	interpolation int32
 }
 
@@ -5754,7 +5713,6 @@ func (this *GC_SetInterpolationOperation) apply_() {
 
 type GC_SetLineAttributesOperation struct {
 	GC_ReplaceableOperation
-	this_0     *GC
 	attributes *LineAttributes
 }
 
@@ -5800,8 +5758,7 @@ func (this *GC_SetLineAttributesOperation) ConvertToPixels(attributesLike LineAt
 
 type GC_SetLineCapOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	cap    int32
+	cap int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetLineCapOperation", "org.eclipse.swt.graphics") }
@@ -5840,7 +5797,6 @@ func (this *GC_SetLineCapOperation) apply_() {
 
 type GC_SetLineDashOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
 	dashes []int32
 }
 
@@ -5902,8 +5858,7 @@ func (this *GC_SetLineDashOperation) apply_() {
 
 type GC_SetLineJoinOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	join   int32
+	join int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetLineJoinOperation", "org.eclipse.swt.graphics") }
@@ -5944,7 +5899,6 @@ func (this *GC_SetLineJoinOperation) apply_() {
 
 type GC_SetLineStyleOperation struct {
 	GC_ReplaceableOperation
-	this_0    *GC
 	lineStyle int32
 }
 
@@ -5992,8 +5946,7 @@ func (this *GC_SetLineStyleOperation) apply_() {
 
 type GC_SetLineWidthOperation struct {
 	GC_ReplaceableOperation
-	this_0 *GC
-	width  int32
+	width int32
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetLineWidthOperation", "org.eclipse.swt.graphics") }
@@ -6025,8 +5978,7 @@ func (this *GC_SetLineWidthOperation) apply_() {
 
 type GC_SetXORModeOperation struct {
 	GC_Operation
-	this_0 *GC
-	xor    bool
+	xor bool
 }
 
 func init() { jrt.RegisterClassPackage("GC_SetXORModeOperation", "org.eclipse.swt.graphics") }
@@ -6061,7 +6013,6 @@ func (this *GC_SetXORModeOperation) apply_() {
 
 type GC_SetTextAntialiasOperation struct {
 	GC_Operation
-	this_0    *GC
 	antialias int32
 }
 
@@ -6117,7 +6068,6 @@ func (this *GC_SetTextAntialiasOperation) apply_() {
 
 type GC_SetTransformOperation struct {
 	GC_Operation
-	this_0    *GC
 	transform *Transform
 }
 
@@ -6264,7 +6214,6 @@ func (this *GC_Operation) canBeReplacedBy_(operation *GC_Operation) bool {
 
 type GC_ReplaceableOperation struct {
 	GC_Operation
-	this_0 *GC
 }
 
 func init() { jrt.RegisterClassPackage("GC_ReplaceableOperation", "org.eclipse.swt.graphics") }

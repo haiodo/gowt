@@ -24,6 +24,14 @@ type OSVERSIONINFOEX struct {
 }
 
 func (this *OSVERSIONINFOEX) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.DwBuildNumber)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwMajorVersion)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.DwMinorVersion)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.DwOSVersionInfoSize)
+	*(*int32)(unsafe.Add(p, 16)) = int32(this.DwPlatformId)
+	for i := 0; i < 128 && i < len(this.SzCSDVersion); i++ {
+		*(*uint16)(unsafe.Add(unsafe.Add(p, 20), i*2)) = uint16(this.SzCSDVersion[i])
+	}
 	*(*uint8)(unsafe.Add(p, 282)) = uint8(this.WProductType)
 	*(*uint8)(unsafe.Add(p, 283)) = uint8(this.WReserved)
 	*(*uint16)(unsafe.Add(p, 276)) = uint16(this.WServicePackMajor)
@@ -32,6 +40,14 @@ func (this *OSVERSIONINFOEX) toC(p unsafe.Pointer) {
 }
 
 func (this *OSVERSIONINFOEX) fromC(p unsafe.Pointer) {
+	this.DwBuildNumber = int32(*(*int32)(unsafe.Add(p, 12)))
+	this.DwMajorVersion = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.DwMinorVersion = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.DwOSVersionInfoSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwPlatformId = int32(*(*int32)(unsafe.Add(p, 16)))
+	for i := 0; i < 128 && i < len(this.SzCSDVersion); i++ {
+		this.SzCSDVersion[i] = uint16(*(*uint16)(unsafe.Add(unsafe.Add(p, 20), i*2)))
+	}
 	this.WProductType = int32(*(*uint8)(unsafe.Add(p, 282)))
 	this.WReserved = int32(*(*uint8)(unsafe.Add(p, 283)))
 	this.WServicePackMajor = int32(*(*uint16)(unsafe.Add(p, 276)))

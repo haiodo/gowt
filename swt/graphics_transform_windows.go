@@ -88,10 +88,7 @@ func (this *Transform) destroyHandlesExcept_(zoomLevels *jrt.List) {
 }
 
 func (this *Transform) DestroyAllHandles() {
-	func() any {
-		_ = []any{this.zoomToHandle.Values(), (*Transform_TransformHandle).Destroy}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().ForEach((*Transform_TransformHandle).Destroy)
 	this.zoomToHandle.Clear()
 }
 

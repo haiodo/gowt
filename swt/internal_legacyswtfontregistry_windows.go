@@ -90,5 +90,10 @@ func (this *LegacySWTFontRegistry) RegisterFont(fontDataLike FontDataLike, fontL
 }
 
 func (this *LegacySWTFontRegistry) Dispose() {
-	func() { panic("j2go: unsupported EnhancedForStatement over non-array") }()
+	for _, elem1 := range this.fontsMap.Values().ToArray() {
+		font := jrt.Cast[*Font](elem1)
+		if font != (nil) {
+			font.impl.dispose_()
+		}
+	}
 }

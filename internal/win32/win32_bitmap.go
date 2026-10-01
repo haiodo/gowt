@@ -21,10 +21,22 @@ type BITMAP struct {
 
 func (this *BITMAP) toC(p unsafe.Pointer) {
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.BmBits)
+	*(*int16)(unsafe.Add(p, 18)) = int16(this.BmBitsPixel)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.BmHeight)
+	*(*int16)(unsafe.Add(p, 16)) = int16(this.BmPlanes)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.BmType)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.BmWidth)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.BmWidthBytes)
 }
 
 func (this *BITMAP) fromC(p unsafe.Pointer) {
 	this.BmBits = int64(*(*int64)(unsafe.Add(p, 24)))
+	this.BmBitsPixel = int16(*(*int16)(unsafe.Add(p, 18)))
+	this.BmHeight = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.BmPlanes = int16(*(*int16)(unsafe.Add(p, 16)))
+	this.BmType = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.BmWidth = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.BmWidthBytes = int32(*(*int32)(unsafe.Add(p, 12)))
 }
 
 var BITMAPSizeof int32

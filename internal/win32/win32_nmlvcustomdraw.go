@@ -29,6 +29,15 @@ type NMLVCUSTOMDRAW struct {
 
 func (this *NMLVCUSTOMDRAW) toC(p unsafe.Pointer) {
 	this.NMCUSTOMDRAW.toC(p)
+	*(*int32)(unsafe.Add(p, 96)) = int32(this.ClrFace)
+	*(*int32)(unsafe.Add(p, 80)) = int32(this.ClrText)
+	*(*int32)(unsafe.Add(p, 84)) = int32(this.ClrTextBk)
+	*(*int32)(unsafe.Add(p, 92)) = int32(this.DwItemType)
+	*(*int32)(unsafe.Add(p, 100)) = int32(this.IIconEffect)
+	*(*int32)(unsafe.Add(p, 104)) = int32(this.IIconPhase)
+	*(*int32)(unsafe.Add(p, 108)) = int32(this.IPartId)
+	*(*int32)(unsafe.Add(p, 112)) = int32(this.IStateId)
+	*(*int32)(unsafe.Add(p, 88)) = int32(this.ISubItem)
 	*(*int32)(unsafe.Add(p, 128)) = int32(this.RcText_bottom)
 	*(*int32)(unsafe.Add(p, 116)) = int32(this.RcText_left)
 	*(*int32)(unsafe.Add(p, 124)) = int32(this.RcText_right)
@@ -38,6 +47,15 @@ func (this *NMLVCUSTOMDRAW) toC(p unsafe.Pointer) {
 
 func (this *NMLVCUSTOMDRAW) fromC(p unsafe.Pointer) {
 	this.NMCUSTOMDRAW.fromC(p)
+	this.ClrFace = int32(*(*int32)(unsafe.Add(p, 96)))
+	this.ClrText = int32(*(*int32)(unsafe.Add(p, 80)))
+	this.ClrTextBk = int32(*(*int32)(unsafe.Add(p, 84)))
+	this.DwItemType = int32(*(*int32)(unsafe.Add(p, 92)))
+	this.IIconEffect = int32(*(*int32)(unsafe.Add(p, 100)))
+	this.IIconPhase = int32(*(*int32)(unsafe.Add(p, 104)))
+	this.IPartId = int32(*(*int32)(unsafe.Add(p, 108)))
+	this.IStateId = int32(*(*int32)(unsafe.Add(p, 112)))
+	this.ISubItem = int32(*(*int32)(unsafe.Add(p, 88)))
 	this.RcText_bottom = int32(*(*int32)(unsafe.Add(p, 128)))
 	this.RcText_left = int32(*(*int32)(unsafe.Add(p, 116)))
 	this.RcText_right = int32(*(*int32)(unsafe.Add(p, 124)))

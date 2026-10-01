@@ -31,6 +31,7 @@ type STARTUPINFO struct {
 }
 
 func (this *STARTUPINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Cb)
 	*(*int16)(unsafe.Add(p, 66)) = int16(this.CbReserved2)
 	*(*int32)(unsafe.Add(p, 56)) = int32(this.DwFillAttribute)
 	*(*int32)(unsafe.Add(p, 60)) = int32(this.DwFlags)
@@ -51,6 +52,7 @@ func (this *STARTUPINFO) toC(p unsafe.Pointer) {
 }
 
 func (this *STARTUPINFO) fromC(p unsafe.Pointer) {
+	this.Cb = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.CbReserved2 = int16(*(*int16)(unsafe.Add(p, 66)))
 	this.DwFillAttribute = int32(*(*int32)(unsafe.Add(p, 56)))
 	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 60)))

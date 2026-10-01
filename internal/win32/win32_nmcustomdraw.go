@@ -25,6 +25,7 @@ type NMCUSTOMDRAW struct {
 func (this *NMCUSTOMDRAW) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
 	*(*int32)(unsafe.Add(p, 52)) = int32(this.Bottom)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.DwDrawStage)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.DwItemSpec)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.Hdc)
 	*(*int64)(unsafe.Add(p, 72)) = int64(this.LItemlParam)
@@ -37,6 +38,7 @@ func (this *NMCUSTOMDRAW) toC(p unsafe.Pointer) {
 func (this *NMCUSTOMDRAW) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 52)))
+	this.DwDrawStage = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.DwItemSpec = int64(*(*int64)(unsafe.Add(p, 56)))
 	this.Hdc = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.LItemlParam = int64(*(*int64)(unsafe.Add(p, 72)))

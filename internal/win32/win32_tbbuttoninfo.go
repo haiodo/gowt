@@ -23,12 +23,28 @@ type TBBUTTONINFO struct {
 }
 
 func (this *TBBUTTONINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.CchText)
+	*(*int16)(unsafe.Add(p, 18)) = int16(this.Cx)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwMask)
+	*(*int8)(unsafe.Add(p, 16)) = int8(this.FsState)
+	*(*int8)(unsafe.Add(p, 17)) = int8(this.FsStyle)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.IImage)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.IdCommand)
+	*(*int64)(unsafe.Add(p, 24)) = int64(this.LParam)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.PszText)
 }
 
 func (this *TBBUTTONINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.CchText = int32(*(*int32)(unsafe.Add(p, 40)))
+	this.Cx = int16(*(*int16)(unsafe.Add(p, 18)))
+	this.DwMask = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.FsState = int8(*(*int8)(unsafe.Add(p, 16)))
+	this.FsStyle = int8(*(*int8)(unsafe.Add(p, 17)))
+	this.IImage = int32(*(*int32)(unsafe.Add(p, 12)))
+	this.IdCommand = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.LParam = int64(*(*int64)(unsafe.Add(p, 24)))
 	this.PszText = int64(*(*int64)(unsafe.Add(p, 32)))
 }
 

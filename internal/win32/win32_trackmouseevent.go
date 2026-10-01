@@ -17,11 +17,15 @@ type TRACKMOUSEEVENT struct {
 }
 
 func (this *TRACKMOUSEEVENT) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
 	*(*int32)(unsafe.Add(p, 16)) = int32(this.DwHoverTime)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.HwndTrack)
 }
 
 func (this *TRACKMOUSEEVENT) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.DwHoverTime = int32(*(*int32)(unsafe.Add(p, 16)))
 	this.HwndTrack = int64(*(*int64)(unsafe.Add(p, 8)))
 }

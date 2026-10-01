@@ -107,7 +107,9 @@ final class ClassEmitter {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			out.append('\t').append(Manual.goTypeName(ci.manualSuperQualifiedName)).append('\n');
 		}
-		if (EmitUtil.isInnerClass(ci.binding)) {
+		// An inner subclass of an inner class of the same outer shares the base's this_0 (a second one would hide it).
+		if (EmitUtil.isInnerClass(ci.binding) && !(ci.superclass != null && EmitUtil.isInnerClass(ci.superclass.binding)
+				&& ci.superclass.binding.getDeclaringClass().isEqualTo(ci.binding.getDeclaringClass()))) {
 			out.append('\t').append(EmitUtil.OUTER_FIELD).append(' ').append(dev.gowt.j2go.GoTypes.map(ci.binding.getDeclaringClass(), emitter)).append('\n');
 		}
 		Set<String> methodGoNames = collectMethodGoNames(td);

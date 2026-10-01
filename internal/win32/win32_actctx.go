@@ -22,6 +22,8 @@ type ACTCTX struct {
 }
 
 func (this *ACTCTX) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.HModule)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.LpApplicationName)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.LpAssemblyDirectory)
@@ -32,6 +34,8 @@ func (this *ACTCTX) toC(p unsafe.Pointer) {
 }
 
 func (this *ACTCTX) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.HModule = int64(*(*int64)(unsafe.Add(p, 48)))
 	this.LpApplicationName = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.LpAssemblyDirectory = int64(*(*int64)(unsafe.Add(p, 24)))

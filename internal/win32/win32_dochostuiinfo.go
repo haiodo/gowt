@@ -18,11 +18,17 @@ type DOCHOSTUIINFO struct {
 }
 
 func (this *DOCHOSTUIINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.DwDoubleClick)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PchHostCss)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.PchHostNS)
 }
 
 func (this *DOCHOSTUIINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwDoubleClick = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.PchHostCss = int64(*(*int64)(unsafe.Add(p, 16)))
 	this.PchHostNS = int64(*(*int64)(unsafe.Add(p, 24)))
 }

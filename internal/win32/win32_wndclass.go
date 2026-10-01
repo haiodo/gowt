@@ -32,6 +32,7 @@ func (this *WNDCLASS) toC(p unsafe.Pointer) {
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.LpfnWndProc)
 	*(*int64)(unsafe.Add(p, 64)) = int64(this.LpszClassName)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.LpszMenuName)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Style)
 }
 
 func (this *WNDCLASS) fromC(p unsafe.Pointer) {
@@ -44,6 +45,7 @@ func (this *WNDCLASS) fromC(p unsafe.Pointer) {
 	this.LpfnWndProc = int64(*(*int64)(unsafe.Add(p, 8)))
 	this.LpszClassName = int64(*(*int64)(unsafe.Add(p, 64)))
 	this.LpszMenuName = int64(*(*int64)(unsafe.Add(p, 56)))
+	this.Style = int32(*(*int32)(unsafe.Add(p, 0)))
 }
 
 var WNDCLASSSizeof int32

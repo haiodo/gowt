@@ -990,10 +990,7 @@ func (this *Image) DestroyHandles() {
 
 func (this *Image) destroyHandlesExcept_(zoomLevels *jrt.List) {
 	this.imageHandleManager.DestroyHandles(func(zoom any) bool {
-		return !zoomLevels.Contains(zoom) && !func() bool {
-			_ = []any{this.imageProvider.impl.getPreservedZoomLevels_(), zoom}
-			panic("j2go: unresolved call contains")
-		}()
+		return !zoomLevels.Contains(zoom) && !this.imageProvider.impl.getPreservedZoomLevels_().Contains(zoom)
 	})
 }
 
@@ -1776,7 +1773,7 @@ func (this *Image_ImageHandleManager) IsEmpty() bool {
 
 func (this *Image_ImageHandleManager) GetAllImageHandles() *jrt.List {
 	return func() *jrt.List {
-		_ = []any{func() any { _ = []any{this.zoomLevelToImageHandle.Values()}; panic("j2go: unresolved call stream") }(), func() any { panic("j2go: unresolved call toList") }()}
+		_ = []any{this.zoomLevelToImageHandle.Values().Stream(), func() any { panic("j2go: unresolved call toList") }()}
 		panic("j2go: unresolved call collect")
 	}()
 }
@@ -2140,7 +2137,7 @@ type Image_AbstractImageProviderWrapperImpl interface {
 	getBounds_(a0 int32) *Rectangle
 	getFittingZoomContext_(a0 int32, a1 int32) *Image_ZoomContext
 	configureGCData_(a0 *GCData) int64
-	getPreservedZoomLevels_() any
+	getPreservedZoomLevels_() *jrt.List
 	isPersistentImageHandleRequriedForImageData_() bool
 	nearestAvailableZoom_(a0 int32) int32
 	loadImageDataZoom_(a0 int32) *DPIUtilElementAtZoom
@@ -2228,8 +2225,8 @@ func (this *image_AbstractImageProviderWrapperHooked) configureGCData_(a0 *GCDat
 	return this.Image_AbstractImageProviderWrapperImpl.configureGCData_(a0)
 }
 
-func (this *image_AbstractImageProviderWrapperHooked) getPreservedZoomLevels_() any {
-	if h, ok := this.hook.(interface{ GetPreservedZoomLevels_() any }); ok && this.active != "getPreservedZoomLevels_" {
+func (this *image_AbstractImageProviderWrapperHooked) getPreservedZoomLevels_() *jrt.List {
+	if h, ok := this.hook.(interface{ GetPreservedZoomLevels_() *jrt.List }); ok && this.active != "getPreservedZoomLevels_" {
 		defer this.enter("getPreservedZoomLevels_")()
 		return h.GetPreservedZoomLevels_()
 	}
@@ -2342,11 +2339,11 @@ func (this *Image_AbstractImageProviderWrapper) configureGCData_(data *GCData) i
 	return this.this_0.ConfigureGC(data, newImageZoomContextTargetZoom(100))
 }
 
-func (this *Image_AbstractImageProviderWrapper) GetPreservedZoomLevels() any {
+func (this *Image_AbstractImageProviderWrapper) GetPreservedZoomLevels() *jrt.List {
 	return this.impl.getPreservedZoomLevels_()
 }
 
-func (this *Image_AbstractImageProviderWrapper) getPreservedZoomLevels_() any {
+func (this *Image_AbstractImageProviderWrapper) getPreservedZoomLevels_() *jrt.List {
 	return func() *jrt.List { panic("j2go: unresolved call emptySet") }()
 }
 
@@ -2420,7 +2417,6 @@ func (this *Image_AbstractImageProviderWrapper) NewImageHandleDataZoomContextDat
 
 type Image_ExistingImageHandleProviderWrapper struct {
 	Image_AbstractImageProviderWrapper
-	this_0   *Image
 	width    int32
 	height   int32
 	baseZoom int32
@@ -2488,7 +2484,7 @@ func (this *Image_ExistingImageHandleProviderWrapper) createCopy_(image *Image) 
 	return upcastImage_ExistingImageHandleProviderWrapperToImage_AbstractImageProviderWrapper(inner55)
 }
 
-func (this *Image_ExistingImageHandleProviderWrapper) getPreservedZoomLevels_() any {
+func (this *Image_ExistingImageHandleProviderWrapper) getPreservedZoomLevels_() *jrt.List {
 	return func() *jrt.List { _ = []any{int32(this.baseZoom)}; panic("j2go: unresolved call singleton") }()
 }
 
@@ -2507,7 +2503,6 @@ func (this *Image_ExistingImageHandleProviderWrapper) nearestAvailableZoom_(zoom
 
 type Image_ImageFromImageDataProviderWrapper struct {
 	Image_AbstractImageProviderWrapper
-	this_0          *Image
 	cachedImageData *jrt.Map
 }
 
@@ -2570,7 +2565,6 @@ func (this *Image_ImageFromImageDataProviderWrapper) InitializeHandleFromSource(
 
 type Image_PlainImageDataProviderWrapper struct {
 	Image_ImageFromImageDataProviderWrapper
-	this_0              *Image
 	imageDataAtBaseZoom *ImageData
 	baseZoom            int32
 }
@@ -2635,7 +2629,6 @@ func (this *Image_PlainImageDataProviderWrapper) nearestAvailableZoom_(zoom int3
 
 type Image_MaskedImageDataProviderWrapper struct {
 	Image_ImageFromImageDataProviderWrapper
-	this_0    *Image
 	srcAt100  *ImageData
 	maskAt100 *ImageData
 }
@@ -2692,7 +2685,6 @@ func (this *Image_MaskedImageDataProviderWrapper) nearestAvailableZoom_(zoom int
 
 type Image_ImageDataLoaderStreamProviderWrapper struct {
 	Image_ImageFromImageDataProviderWrapper
-	this_0          *Image
 	inputStreamData []int8
 }
 
@@ -2785,7 +2777,6 @@ func (this *Image_ImageDataLoaderStreamProviderWrapper) nearestAvailableZoom_(zo
 
 type Image_PlainImageProviderWrapper struct {
 	Image_AbstractImageProviderWrapper
-	this_0   *Image
 	width    int32
 	height   int32
 	baseZoom int32
@@ -2825,7 +2816,7 @@ func (this *Image_PlainImageProviderWrapper) getFittingZoomContext_(targetZoom i
 	return this.Image_AbstractImageProviderWrapper.getFittingZoomContext_(targetZoom, nativeZoom)
 }
 
-func (this *Image_PlainImageProviderWrapper) getPreservedZoomLevels_() any {
+func (this *Image_PlainImageProviderWrapper) getPreservedZoomLevels_() *jrt.List {
 	return func() *jrt.List { _ = []any{int32(this.baseZoom)}; panic("j2go: unresolved call singleton") }()
 }
 
@@ -2930,7 +2921,6 @@ func (this *Image_PlainImageProviderWrapper) createCopy_(image *Image) *Image_Ab
 
 type Image_DynamicImageProviderWrapper struct {
 	Image_AbstractImageProviderWrapper
-	this_0 *Image
 }
 
 func init() {
@@ -2991,7 +2981,6 @@ func (this *Image_DynamicImageProviderWrapper) equals_(otherProvider any) bool {
 
 type Image_BaseImageProviderWrapper struct {
 	Image_DynamicImageProviderWrapper
-	this_0          *Image
 	cachedImageData *jrt.Map
 	provider        any
 }
@@ -3056,7 +3045,6 @@ func (this *Image_BaseImageProviderWrapper) getBounds_(zoom int32) *Rectangle {
 
 type Image_ImageFileNameProviderWrapper struct {
 	Image_BaseImageProviderWrapper
-	this_0             *Image
 	nonSizableFileName string
 }
 
@@ -3393,7 +3381,6 @@ func (this *Image_ImageFileNameProviderWrapper) loadImageDataAtExactSize_(target
 
 type Image_ImageDataProviderWrapper struct {
 	Image_BaseImageProviderWrapper
-	this_0 *Image
 }
 
 func init() { jrt.RegisterClassPackage("Image_ImageDataProviderWrapper", "org.eclipse.swt.graphics") }
@@ -3447,7 +3434,6 @@ func (this *Image_ImageDataProviderWrapper) nearestAvailableZoom_(zoom int32) in
 
 type Image_ImageGcDrawerWrapper struct {
 	Image_DynamicImageProviderWrapper
-	this_0      *Image
 	drawer      ImageGcDrawer
 	width       int32
 	height      int32

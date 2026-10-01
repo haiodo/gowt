@@ -20,15 +20,21 @@ type HELPINFO struct {
 }
 
 func (this *HELPINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.DwContextId)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.HItemHandle)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.IContextType)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.ICtrlId)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.X)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.Y)
 }
 
 func (this *HELPINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.DwContextId = int32(*(*int64)(unsafe.Add(p, 24)))
 	this.HItemHandle = int64(*(*int64)(unsafe.Add(p, 16)))
+	this.IContextType = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.ICtrlId = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.X = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.Y = int32(*(*int32)(unsafe.Add(p, 36)))
 }

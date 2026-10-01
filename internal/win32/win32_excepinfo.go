@@ -29,6 +29,8 @@ func (this *EXCEPINFO) toC(p unsafe.Pointer) {
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.PfnDeferredFillIn)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.PvReserved)
 	*(*int32)(unsafe.Add(p, 56)) = int32(this.Scode)
+	*(*int16)(unsafe.Add(p, 0)) = int16(this.WCode)
+	*(*int16)(unsafe.Add(p, 2)) = int16(this.WReserved)
 }
 
 func (this *EXCEPINFO) fromC(p unsafe.Pointer) {
@@ -39,6 +41,8 @@ func (this *EXCEPINFO) fromC(p unsafe.Pointer) {
 	this.PfnDeferredFillIn = int64(*(*int64)(unsafe.Add(p, 48)))
 	this.PvReserved = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.Scode = int32(*(*int32)(unsafe.Add(p, 56)))
+	this.WCode = int16(*(*int16)(unsafe.Add(p, 0)))
+	this.WReserved = int16(*(*int16)(unsafe.Add(p, 2)))
 }
 
 var EXCEPINFOSizeof int32

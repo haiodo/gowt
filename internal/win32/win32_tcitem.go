@@ -21,15 +21,21 @@ type TCITEM struct {
 
 func (this *TCITEM) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.CchTextMax)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwState)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.DwStateMask)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.IImage)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.LParam)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Mask)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PszText)
 }
 
 func (this *TCITEM) fromC(p unsafe.Pointer) {
 	this.CchTextMax = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.DwState = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.DwStateMask = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.IImage = int32(*(*int32)(unsafe.Add(p, 28)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 32)))
+	this.Mask = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PszText = int64(*(*int64)(unsafe.Add(p, 16)))
 }
 

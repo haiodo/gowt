@@ -31,9 +31,14 @@ func (this *LVITEM) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 52)) = int32(this.IGroupId)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.IImage)
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.IIndent)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.IItem)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.ISubItem)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.LParam)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Mask)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.PszText)
 	*(*int64)(unsafe.Add(p, 64)) = int64(this.PuColumns)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.State)
+	*(*int32)(unsafe.Add(p, 16)) = int32(this.StateMask)
 }
 
 func (this *LVITEM) fromC(p unsafe.Pointer) {
@@ -42,9 +47,14 @@ func (this *LVITEM) fromC(p unsafe.Pointer) {
 	this.IGroupId = int32(*(*int32)(unsafe.Add(p, 52)))
 	this.IImage = int32(*(*int32)(unsafe.Add(p, 36)))
 	this.IIndent = int32(*(*int32)(unsafe.Add(p, 48)))
+	this.IItem = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.ISubItem = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 40)))
+	this.Mask = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PszText = int64(*(*int64)(unsafe.Add(p, 24)))
 	this.PuColumns = int64(*(*int64)(unsafe.Add(p, 64)))
+	this.State = int32(*(*int32)(unsafe.Add(p, 12)))
+	this.StateMask = int32(*(*int32)(unsafe.Add(p, 16)))
 }
 
 var LVITEMSizeof int32

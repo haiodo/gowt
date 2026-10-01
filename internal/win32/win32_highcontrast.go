@@ -16,10 +16,14 @@ type HIGHCONTRAST struct {
 }
 
 func (this *HIGHCONTRAST) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.LpszDefaultScheme)
 }
 
 func (this *HIGHCONTRAST) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.LpszDefaultScheme = int64(*(*int64)(unsafe.Add(p, 8)))
 }
 

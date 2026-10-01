@@ -46,3 +46,8 @@ func (m *Matcher) units(byteOffset int) int32 { return int32(len(utf16.Encode([]
 
 func (m *Matcher) Start() int32 { return m.units(m.m[0]) }
 func (m *Matcher) End() int32   { return m.units(m.m[1]) }
+
+// ReplaceAll is String.replaceAll(regex, replacement).
+func ReplaceAll(s, regex, repl string) string {
+	return PatternCompile(regex).re.ReplaceAllString(s, strings.ReplaceAll(repl, "$", "$$"))
+}

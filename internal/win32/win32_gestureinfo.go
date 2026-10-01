@@ -24,6 +24,9 @@ type GESTUREINFO struct {
 
 func (this *GESTUREINFO) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.CbExtraArgs)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.DwID)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.DwInstanceID)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.DwSequenceID)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.HwndTarget)
@@ -34,6 +37,9 @@ func (this *GESTUREINFO) toC(p unsafe.Pointer) {
 
 func (this *GESTUREINFO) fromC(p unsafe.Pointer) {
 	this.CbExtraArgs = int32(*(*int32)(unsafe.Add(p, 48)))
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.DwID = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.DwInstanceID = int32(*(*int32)(unsafe.Add(p, 28)))
 	this.DwSequenceID = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.HwndTarget = int64(*(*int64)(unsafe.Add(p, 16)))

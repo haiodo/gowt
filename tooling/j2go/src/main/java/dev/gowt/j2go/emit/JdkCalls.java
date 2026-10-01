@@ -153,6 +153,9 @@ final class JdkCalls {
 			case "java.util.concurrent.ConcurrentHashMap#newKeySet":
 				emitter.fileImports.add(JRT);
 				return "jrt.NewList()";
+			case "java.lang.String#replaceAll":
+				emitter.fileImports.add(JRT);
+				return "jrt.ReplaceAll(" + recv(mi) + ", " + arg(mi, 0) + ", " + arg(mi, 1) + ")";
 			case "java.util.Arrays#fill":
 				if (mi.arguments().size() != 2) return null;
 				emitter.fileImports.add(JRT);

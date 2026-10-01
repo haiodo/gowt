@@ -15,7 +15,7 @@ var dllNames = []string{
 	"user32.dll", "gdi32.dll", "kernel32.dll", "comctl32.dll", "comdlg32.dll", "shell32.dll",
 	"ole32.dll", "oleaut32.dll", "uxtheme.dll", "imm32.dll", "msimg32.dll", "advapi32.dll",
 	"usp10.dll", "dwmapi.dll", "shlwapi.dll", "oleacc.dll", "wininet.dll", "propsys.dll",
-	"urlmon.dll", "winspool.drv", "gdiplus.dll", "ucrtbase.dll", "ntdll.dll",
+	"urlmon.dll", "shcore.dll", "winspool.drv", "gdiplus.dll", "ucrtbase.dll", "ntdll.dll",
 }
 
 var dlls = func() []*syscall.LazyDLL {

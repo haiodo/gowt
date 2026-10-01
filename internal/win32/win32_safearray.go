@@ -19,6 +19,10 @@ type SAFEARRAY struct {
 }
 
 func (this *SAFEARRAY) toC(p unsafe.Pointer) {
+	*(*int16)(unsafe.Add(p, 0)) = int16(this.CDims)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.CLocks)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.CbElements)
+	*(*int16)(unsafe.Add(p, 2)) = int16(this.FFeatures)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PvData)
 	if this.Rgsabound != nil {
 		this.Rgsabound.toC(unsafe.Add(p, 24))
@@ -26,6 +30,10 @@ func (this *SAFEARRAY) toC(p unsafe.Pointer) {
 }
 
 func (this *SAFEARRAY) fromC(p unsafe.Pointer) {
+	this.CDims = int16(*(*int16)(unsafe.Add(p, 0)))
+	this.CLocks = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.CbElements = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.FFeatures = int16(*(*int16)(unsafe.Add(p, 2)))
 	this.PvData = int64(*(*int64)(unsafe.Add(p, 16)))
 	if this.Rgsabound == nil {
 		this.Rgsabound = NewSAFEARRAYBOUND()

@@ -33,7 +33,10 @@ type REBARBANDINFO struct {
 }
 
 func (this *REBARBANDINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.Cch)
+	*(*int32)(unsafe.Add(p, 16)) = int32(this.ClrBack)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.ClrFore)
 	*(*int32)(unsafe.Add(p, 56)) = int32(this.Cx)
 	*(*int32)(unsafe.Add(p, 104)) = int32(this.CxHeader)
 	*(*int32)(unsafe.Add(p, 88)) = int32(this.CxIdeal)
@@ -42,6 +45,8 @@ func (this *REBARBANDINFO) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 84)) = int32(this.CyIntegral)
 	*(*int32)(unsafe.Add(p, 80)) = int32(this.CyMaxChild)
 	*(*int32)(unsafe.Add(p, 52)) = int32(this.CyMinChild)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.FMask)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.FStyle)
 	*(*int64)(unsafe.Add(p, 64)) = int64(this.HbmBack)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.HwndChild)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.IImage)
@@ -51,7 +56,10 @@ func (this *REBARBANDINFO) toC(p unsafe.Pointer) {
 }
 
 func (this *REBARBANDINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.Cch = int32(*(*int32)(unsafe.Add(p, 32)))
+	this.ClrBack = int32(*(*int32)(unsafe.Add(p, 16)))
+	this.ClrFore = int32(*(*int32)(unsafe.Add(p, 12)))
 	this.Cx = int32(*(*int32)(unsafe.Add(p, 56)))
 	this.CxHeader = int32(*(*int32)(unsafe.Add(p, 104)))
 	this.CxIdeal = int32(*(*int32)(unsafe.Add(p, 88)))
@@ -60,6 +68,8 @@ func (this *REBARBANDINFO) fromC(p unsafe.Pointer) {
 	this.CyIntegral = int32(*(*int32)(unsafe.Add(p, 84)))
 	this.CyMaxChild = int32(*(*int32)(unsafe.Add(p, 80)))
 	this.CyMinChild = int32(*(*int32)(unsafe.Add(p, 52)))
+	this.FMask = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.FStyle = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.HbmBack = int64(*(*int64)(unsafe.Add(p, 64)))
 	this.HwndChild = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.IImage = int32(*(*int32)(unsafe.Add(p, 36)))

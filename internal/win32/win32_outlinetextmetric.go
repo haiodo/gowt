@@ -57,6 +57,7 @@ func (this *OUTLINETEXTMETRIC) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 100)) = int32(this.OtmAscent)
 	*(*int32)(unsafe.Add(p, 104)) = int32(this.OtmDescent)
 	*(*int32)(unsafe.Add(p, 96)) = int32(this.OtmEMSquare)
+	*(*int8)(unsafe.Add(p, 64)) = int8(this.OtmFiller)
 	*(*int32)(unsafe.Add(p, 92)) = int32(this.OtmItalicAngle)
 	*(*int32)(unsafe.Add(p, 108)) = int32(this.OtmLineGap)
 	*(*int32)(unsafe.Add(p, 136)) = int32(this.OtmMacAscent)
@@ -72,6 +73,10 @@ func (this *OUTLINETEXTMETRIC) toC(p unsafe.Pointer) {
 	*(*int8)(unsafe.Add(p, 70)) = int8(this.OtmPanoseNumber_bStrokeVariation)
 	*(*int8)(unsafe.Add(p, 67)) = int8(this.OtmPanoseNumber_bWeight)
 	*(*int8)(unsafe.Add(p, 74)) = int8(this.OtmPanoseNumber_bXHeight)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.OtmSize)
+	if this.OtmTextMetrics != nil {
+		this.OtmTextMetrics.toC(unsafe.Add(p, 4))
+	}
 	*(*int32)(unsafe.Add(p, 76)) = int32(this.OtmfsSelection)
 	*(*int32)(unsafe.Add(p, 80)) = int32(this.OtmfsType)
 	*(*int64)(unsafe.Add(p, 208)) = int64(this.OtmpFaceName)
@@ -108,6 +113,7 @@ func (this *OUTLINETEXTMETRIC) fromC(p unsafe.Pointer) {
 	this.OtmAscent = int32(*(*int32)(unsafe.Add(p, 100)))
 	this.OtmDescent = int32(*(*int32)(unsafe.Add(p, 104)))
 	this.OtmEMSquare = int32(*(*int32)(unsafe.Add(p, 96)))
+	this.OtmFiller = int8(*(*int8)(unsafe.Add(p, 64)))
 	this.OtmItalicAngle = int32(*(*int32)(unsafe.Add(p, 92)))
 	this.OtmLineGap = int32(*(*int32)(unsafe.Add(p, 108)))
 	this.OtmMacAscent = int32(*(*int32)(unsafe.Add(p, 136)))
@@ -123,6 +129,11 @@ func (this *OUTLINETEXTMETRIC) fromC(p unsafe.Pointer) {
 	this.OtmPanoseNumber_bStrokeVariation = int8(*(*int8)(unsafe.Add(p, 70)))
 	this.OtmPanoseNumber_bWeight = int8(*(*int8)(unsafe.Add(p, 67)))
 	this.OtmPanoseNumber_bXHeight = int8(*(*int8)(unsafe.Add(p, 74)))
+	this.OtmSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	if this.OtmTextMetrics == nil {
+		this.OtmTextMetrics = NewTEXTMETRIC()
+	}
+	this.OtmTextMetrics.fromC(unsafe.Add(p, 4))
 	this.OtmfsSelection = int32(*(*int32)(unsafe.Add(p, 76)))
 	this.OtmfsType = int32(*(*int32)(unsafe.Add(p, 80)))
 	this.OtmpFaceName = int64(*(*int64)(unsafe.Add(p, 208)))

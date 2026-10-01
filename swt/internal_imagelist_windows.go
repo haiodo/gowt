@@ -354,7 +354,7 @@ func (this *ImageList) CreateMask(hBitmap int64, destWidth int32, destHeight int
 func (this *ImageList) Dispose() {
 	func() any {
 		_ = []any{func() any {
-			_ = []any{func() any { _ = []any{this.zoomToHandle.Values()}; panic("j2go: unresolved call stream") }(), func(it any) bool {
+			_ = []any{this.zoomToHandle.Values().Stream(), func(it any) bool {
 				return it != 0
 			}}
 			panic("j2go: unresolved call filter")

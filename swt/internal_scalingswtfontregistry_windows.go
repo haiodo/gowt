@@ -62,10 +62,7 @@ func (this *ScalingSWTFontRegistry) GetFontFontHandleZoom(fontHandle int64, zoom
 }
 
 func (this *ScalingSWTFontRegistry) Dispose() {
-	func() any {
-		_ = []any{this.fontsKeyMap.Values(), (*ScalingSWTFontRegistry_ScaledFontContainer).Dispose}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.fontsKeyMap.Values().ForEach((*ScalingSWTFontRegistry_ScaledFontContainer).Dispose)
 	this.fontsKeyMap.Clear()
 }
 
@@ -182,7 +179,6 @@ func (this *ScalingSWTFontRegistry_ScaledFontContainer) Dispose() {
 
 type ScalingSWTFontRegistry_ScaledCustomFontContainer struct {
 	ScalingSWTFontRegistry_ScaledFontContainer
-	this_0   *ScalingSWTFontRegistry
 	fontData *FontData
 }
 
@@ -215,12 +211,14 @@ func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) createFont_(zoom i
 }
 
 func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) dispose_() {
-	func() { panic("j2go: unsupported EnhancedForStatement over non-array") }()
+	for _, elem3 := range this.scaledFonts.Values().ToArray() {
+		font := jrt.Cast[*Font](elem3)
+		font.impl.dispose_()
+	}
 }
 
 type ScalingSWTFontRegistry_ScaledSystemFontContainer struct {
 	ScalingSWTFontRegistry_ScaledFontContainer
-	this_0 *ScalingSWTFontRegistry
 }
 
 func init() {

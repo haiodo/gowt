@@ -23,6 +23,7 @@ type NMLVFINDITEM struct {
 func (this *NMLVFINDITEM) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.Flags)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.IStart)
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.LParam)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.Psz)
 	*(*int32)(unsafe.Add(p, 64)) = int32(this.VkDirection)
@@ -33,6 +34,7 @@ func (this *NMLVFINDITEM) toC(p unsafe.Pointer) {
 func (this *NMLVFINDITEM) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
 	this.Flags = int32(*(*int32)(unsafe.Add(p, 32)))
+	this.IStart = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 48)))
 	this.Psz = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.VkDirection = int32(*(*int32)(unsafe.Add(p, 64)))

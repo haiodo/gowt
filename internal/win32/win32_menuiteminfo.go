@@ -25,23 +25,33 @@ type MENUITEMINFO struct {
 }
 
 func (this *MENUITEMINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 64)) = int32(this.Cch)
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.DwItemData)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.DwTypeData)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.FMask)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.FState)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.FType)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.HSubMenu)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.HbmpChecked)
 	*(*int64)(unsafe.Add(p, 72)) = int64(this.HbmpItem)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.HbmpUnchecked)
+	*(*int32)(unsafe.Add(p, 16)) = int32(this.WID)
 }
 
 func (this *MENUITEMINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.Cch = int32(*(*int32)(unsafe.Add(p, 64)))
 	this.DwItemData = int64(*(*int64)(unsafe.Add(p, 48)))
 	this.DwTypeData = int64(*(*int64)(unsafe.Add(p, 56)))
+	this.FMask = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.FState = int32(*(*int32)(unsafe.Add(p, 12)))
+	this.FType = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.HSubMenu = int64(*(*int64)(unsafe.Add(p, 24)))
 	this.HbmpChecked = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.HbmpItem = int64(*(*int64)(unsafe.Add(p, 72)))
 	this.HbmpUnchecked = int64(*(*int64)(unsafe.Add(p, 40)))
+	this.WID = int32(*(*int32)(unsafe.Add(p, 16)))
 }
 
 var MENUITEMINFOSizeof int32

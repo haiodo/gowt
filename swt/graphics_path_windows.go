@@ -206,10 +206,7 @@ func (this *Path) CubicTo(cx1 float32, cy1 float32, cx2 float32, cy2 float32, x 
 
 func (this *Path) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastPathToResource(this))
-	func() any {
-		_ = []any{this.zoomToHandle.Values(), (*Path_PathHandle).Destroy}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().ForEach((*Path_PathHandle).Destroy)
 	this.zoomToHandle.Clear()
 	this.isDestroyed = true
 }
@@ -374,10 +371,7 @@ func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
 
 func (this *Path) StoreAndApplyOperationOnAllHandles(operation Path_Operation) {
 	this.operations.Add(operation)
-	func() any {
-		_ = []any{this.zoomToHandle.Values(), operation.Apply}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().ForEach(operation.Apply)
 }
 
 func (this *Path) String() string {

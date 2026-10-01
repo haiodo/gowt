@@ -24,6 +24,7 @@ type NOTIFYICONDATA struct {
 }
 
 func (this *NOTIFYICONDATA) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 948)) = int32(this.DwInfoFlags)
 	*(*int32)(unsafe.Add(p, 296)) = int32(this.DwState)
 	*(*int32)(unsafe.Add(p, 300)) = int32(this.DwStateMask)
@@ -45,6 +46,7 @@ func (this *NOTIFYICONDATA) toC(p unsafe.Pointer) {
 }
 
 func (this *NOTIFYICONDATA) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.DwInfoFlags = int32(*(*int32)(unsafe.Add(p, 948)))
 	this.DwState = int32(*(*int32)(unsafe.Add(p, 296)))
 	this.DwStateMask = int32(*(*int32)(unsafe.Add(p, 300)))

@@ -18,13 +18,22 @@ type ICONINFO struct {
 }
 
 func (this *ICONINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = 0
+	if this.FIcon {
+		*(*int32)(unsafe.Add(p, 0)) = 1
+	}
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.HbmColor)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.HbmMask)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.XHotspot)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.YHotspot)
 }
 
 func (this *ICONINFO) fromC(p unsafe.Pointer) {
+	this.FIcon = *(*int32)(unsafe.Add(p, 0)) != 0
 	this.HbmColor = int64(*(*int64)(unsafe.Add(p, 24)))
 	this.HbmMask = int64(*(*int64)(unsafe.Add(p, 16)))
+	this.XHotspot = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.YHotspot = int32(*(*int32)(unsafe.Add(p, 8)))
 }
 
 var ICONINFOSizeof int32

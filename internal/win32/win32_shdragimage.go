@@ -19,11 +19,25 @@ type SHDRAGIMAGE struct {
 func (this *SHDRAGIMAGE) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.CrColorKey)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.HbmpDragImage)
+	if this.PtOffset != nil {
+		this.PtOffset.toC(unsafe.Add(p, 8))
+	}
+	if this.SizeDragImage != nil {
+		this.SizeDragImage.toC(unsafe.Add(p, 0))
+	}
 }
 
 func (this *SHDRAGIMAGE) fromC(p unsafe.Pointer) {
 	this.CrColorKey = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.HbmpDragImage = int64(*(*int64)(unsafe.Add(p, 16)))
+	if this.PtOffset == nil {
+		this.PtOffset = NewPOINT()
+	}
+	this.PtOffset.fromC(unsafe.Add(p, 8))
+	if this.SizeDragImage == nil {
+		this.SizeDragImage = NewSIZE()
+	}
+	this.SizeDragImage.fromC(unsafe.Add(p, 0))
 }
 
 var SHDRAGIMAGESizeof int32

@@ -18,6 +18,7 @@ type DOCINFO struct {
 }
 
 func (this *DOCINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.FwType)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.LpszDatatype)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.LpszDocName)
@@ -25,6 +26,7 @@ func (this *DOCINFO) toC(p unsafe.Pointer) {
 }
 
 func (this *DOCINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.FwType = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.LpszDatatype = int64(*(*int64)(unsafe.Add(p, 24)))
 	this.LpszDocName = int64(*(*int64)(unsafe.Add(p, 8)))

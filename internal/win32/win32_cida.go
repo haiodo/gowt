@@ -16,10 +16,12 @@ type CIDA struct {
 
 func (this *CIDA) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 4)) = int32(this.Aoffset)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Cidl)
 }
 
 func (this *CIDA) fromC(p unsafe.Pointer) {
 	this.Aoffset = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.Cidl = int32(*(*int32)(unsafe.Add(p, 0)))
 }
 
 var CIDASizeof int32

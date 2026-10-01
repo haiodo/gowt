@@ -21,6 +21,7 @@ type COMPOSITIONFORM struct {
 
 func (this *COMPOSITIONFORM) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.Bottom)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.DwStyle)
 	*(*int32)(unsafe.Add(p, 12)) = int32(this.Left)
 	*(*int32)(unsafe.Add(p, 20)) = int32(this.Right)
 	*(*int32)(unsafe.Add(p, 16)) = int32(this.Top)
@@ -30,6 +31,7 @@ func (this *COMPOSITIONFORM) toC(p unsafe.Pointer) {
 
 func (this *COMPOSITIONFORM) fromC(p unsafe.Pointer) {
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.DwStyle = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.Left = int32(*(*int32)(unsafe.Add(p, 12)))
 	this.Right = int32(*(*int32)(unsafe.Add(p, 20)))
 	this.Top = int32(*(*int32)(unsafe.Add(p, 16)))

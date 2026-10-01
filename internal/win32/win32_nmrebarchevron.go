@@ -24,19 +24,25 @@ type NMREBARCHEVRON struct {
 func (this *NMREBARCHEVRON) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
 	*(*int32)(unsafe.Add(p, 52)) = int32(this.Bottom)
+	*(*int64)(unsafe.Add(p, 32)) = int64(this.LParam)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.LParamNM)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.Left)
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.Right)
 	*(*int32)(unsafe.Add(p, 44)) = int32(this.Top)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.UBand)
+	*(*int32)(unsafe.Add(p, 28)) = int32(this.WID)
 }
 
 func (this *NMREBARCHEVRON) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 52)))
+	this.LParam = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.LParamNM = int64(*(*int64)(unsafe.Add(p, 56)))
 	this.Left = int32(*(*int32)(unsafe.Add(p, 40)))
 	this.Right = int32(*(*int32)(unsafe.Add(p, 48)))
 	this.Top = int32(*(*int32)(unsafe.Add(p, 44)))
+	this.UBand = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.WID = int32(*(*int32)(unsafe.Add(p, 28)))
 }
 
 var NMREBARCHEVRONSizeof int32

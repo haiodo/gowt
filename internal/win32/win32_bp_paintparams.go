@@ -17,11 +17,15 @@ type BP_PAINTPARAMS struct {
 }
 
 func (this *BP_PAINTPARAMS) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.DwFlags)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PBlendFunction)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.PrcExclude)
 }
 
 func (this *BP_PAINTPARAMS) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.PBlendFunction = int64(*(*int64)(unsafe.Add(p, 16)))
 	this.PrcExclude = int64(*(*int64)(unsafe.Add(p, 8)))
 }

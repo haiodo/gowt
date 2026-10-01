@@ -19,12 +19,16 @@ type OLEINPLACEFRAMEINFO struct {
 
 func (this *OLEINPLACEFRAMEINFO) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.CAccelEntries)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Cb)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.FMDIApp)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.Haccel)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.HwndFrame)
 }
 
 func (this *OLEINPLACEFRAMEINFO) fromC(p unsafe.Pointer) {
 	this.CAccelEntries = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.Cb = int32(*(*int32)(unsafe.Add(p, 0)))
+	this.FMDIApp = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.Haccel = int64(*(*int64)(unsafe.Add(p, 16)))
 	this.HwndFrame = int64(*(*int64)(unsafe.Add(p, 8)))
 }

@@ -168,10 +168,7 @@ func (this *Region) ContainsPt(ptLike PointLike) bool {
 
 func (this *Region) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastRegionToResource(this))
-	func() any {
-		_ = []any{this.zoomToHandle.Values(), (*Region_RegionHandle).Destroy}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().ForEach((*Region_RegionHandle).Destroy)
 	this.zoomToHandle.Clear()
 	this.operations.ForEach((*Region_Operation).Dereference)
 	this.operations.Clear()
@@ -517,7 +514,7 @@ func (this *Region_ZoomToRegionMap) Get(zoom int32) int64 {
 	if !this.zoomToRegionHandleMap.ContainsKey(int32(zoom)) {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("No handle for %d has been created", zoom))
 		return jrt.Cast[int64](func() int64 {
-			_ = []any{func() any { _ = []any{this.zoomToRegionHandleMap.Values()}; panic("j2go: unresolved call iterator") }()}
+			_ = []any{this.zoomToRegionHandleMap.Values().Iterator()}
 			panic("j2go: unresolved call next")
 		}())
 	}
@@ -526,12 +523,9 @@ func (this *Region_ZoomToRegionMap) Get(zoom int32) int64 {
 
 func (this *Region_ZoomToRegionMap) Dispose() {
 	if !this.disposed {
-		func() any {
-			_ = []any{this.zoomToRegionHandleMap.Values(), func(handle any) {
-				win32.OSDeleteObject(jrt.Cast[int64](handle))
-			}}
-			panic("j2go: unresolved call forEach")
-		}()
+		this.zoomToRegionHandleMap.Values().ForEach(func(handle any) {
+			win32.OSDeleteObject(jrt.Cast[int64](handle))
+		})
 		this.zoomToRegionHandleMap.Clear()
 		this.disposed = true
 	}

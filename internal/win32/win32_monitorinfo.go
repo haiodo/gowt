@@ -23,6 +23,7 @@ type MONITORINFO struct {
 }
 
 func (this *MONITORINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.DwFlags)
 	*(*int32)(unsafe.Add(p, 16)) = int32(this.RcMonitor_bottom)
 	*(*int32)(unsafe.Add(p, 4)) = int32(this.RcMonitor_left)
@@ -35,6 +36,7 @@ func (this *MONITORINFO) toC(p unsafe.Pointer) {
 }
 
 func (this *MONITORINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.DwFlags = int32(*(*int32)(unsafe.Add(p, 36)))
 	this.RcMonitor_bottom = int32(*(*int32)(unsafe.Add(p, 16)))
 	this.RcMonitor_left = int32(*(*int32)(unsafe.Add(p, 4)))

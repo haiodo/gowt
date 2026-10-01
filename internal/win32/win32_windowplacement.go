@@ -25,23 +25,29 @@ type WINDOWPLACEMENT struct {
 
 func (this *WINDOWPLACEMENT) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.Bottom)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.Flags)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.Left)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Length)
 	*(*int32)(unsafe.Add(p, 20)) = int32(this.PtMaxPosition_x)
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.PtMaxPosition_y)
 	*(*int32)(unsafe.Add(p, 12)) = int32(this.PtMinPosition_x)
 	*(*int32)(unsafe.Add(p, 16)) = int32(this.PtMinPosition_y)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.Right)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.ShowCmd)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.Top)
 }
 
 func (this *WINDOWPLACEMENT) fromC(p unsafe.Pointer) {
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 40)))
+	this.Flags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.Left = int32(*(*int32)(unsafe.Add(p, 28)))
+	this.Length = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PtMaxPosition_x = int32(*(*int32)(unsafe.Add(p, 20)))
 	this.PtMaxPosition_y = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.PtMinPosition_x = int32(*(*int32)(unsafe.Add(p, 12)))
 	this.PtMinPosition_y = int32(*(*int32)(unsafe.Add(p, 16)))
 	this.Right = int32(*(*int32)(unsafe.Add(p, 36)))
+	this.ShowCmd = int32(*(*int32)(unsafe.Add(p, 8)))
 	this.Top = int32(*(*int32)(unsafe.Add(p, 32)))
 }
 

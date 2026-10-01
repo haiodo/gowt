@@ -28,7 +28,9 @@ type SHELLEXECUTEINFO struct {
 }
 
 func (this *SHELLEXECUTEINFO) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int32)(unsafe.Add(p, 88)) = int32(this.DwHotKey)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.FMask)
 	*(*int64)(unsafe.Add(p, 96)) = int64(this.HIcon)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.HInstApp)
 	*(*int64)(unsafe.Add(p, 104)) = int64(this.HProcess)
@@ -44,7 +46,9 @@ func (this *SHELLEXECUTEINFO) toC(p unsafe.Pointer) {
 }
 
 func (this *SHELLEXECUTEINFO) fromC(p unsafe.Pointer) {
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.DwHotKey = int32(*(*int32)(unsafe.Add(p, 88)))
+	this.FMask = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.HIcon = int64(*(*int64)(unsafe.Add(p, 96)))
 	this.HInstApp = int64(*(*int64)(unsafe.Add(p, 56)))
 	this.HProcess = int64(*(*int64)(unsafe.Add(p, 104)))

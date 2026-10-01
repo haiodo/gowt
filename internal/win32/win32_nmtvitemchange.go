@@ -22,6 +22,7 @@ func (this *NMTVITEMCHANGE) toC(p unsafe.Pointer) {
 	this.NMHDR.toC(p)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.HItem)
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.LParam)
+	*(*int32)(unsafe.Add(p, 24)) = int32(this.UChanged)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.UStateNew)
 	*(*int32)(unsafe.Add(p, 44)) = int32(this.UStateOld)
 }
@@ -30,6 +31,7 @@ func (this *NMTVITEMCHANGE) fromC(p unsafe.Pointer) {
 	this.NMHDR.fromC(p)
 	this.HItem = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 48)))
+	this.UChanged = int32(*(*int32)(unsafe.Add(p, 24)))
 	this.UStateNew = int32(*(*int32)(unsafe.Add(p, 40)))
 	this.UStateOld = int32(*(*int32)(unsafe.Add(p, 44)))
 }

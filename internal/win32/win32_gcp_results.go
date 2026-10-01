@@ -22,6 +22,7 @@ type GCP_RESULTS struct {
 }
 
 func (this *GCP_RESULTS) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.LStructSize)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.LpCaretPos)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.LpClass)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.LpDx)
@@ -33,6 +34,7 @@ func (this *GCP_RESULTS) toC(p unsafe.Pointer) {
 }
 
 func (this *GCP_RESULTS) fromC(p unsafe.Pointer) {
+	this.LStructSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.LpCaretPos = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.LpClass = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.LpDx = int64(*(*int64)(unsafe.Add(p, 24)))

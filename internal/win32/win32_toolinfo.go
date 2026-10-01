@@ -26,6 +26,7 @@ type TOOLINFO struct {
 
 func (this *TOOLINFO) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.Bottom)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CbSize)
 	*(*int64)(unsafe.Add(p, 40)) = int64(this.Hinst)
 	*(*int64)(unsafe.Add(p, 8)) = int64(this.Hwnd)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.LParam)
@@ -34,11 +35,13 @@ func (this *TOOLINFO) toC(p unsafe.Pointer) {
 	*(*int64)(unsafe.Add(p, 48)) = int64(this.LpszText)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.Right)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.Top)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.UFlags)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.UId)
 }
 
 func (this *TOOLINFO) fromC(p unsafe.Pointer) {
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 36)))
+	this.CbSize = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.Hinst = int64(*(*int64)(unsafe.Add(p, 40)))
 	this.Hwnd = int64(*(*int64)(unsafe.Add(p, 8)))
 	this.LParam = int64(*(*int64)(unsafe.Add(p, 56)))
@@ -47,6 +50,7 @@ func (this *TOOLINFO) fromC(p unsafe.Pointer) {
 	this.LpszText = int64(*(*int64)(unsafe.Add(p, 48)))
 	this.Right = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.Top = int32(*(*int32)(unsafe.Add(p, 28)))
+	this.UFlags = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.UId = int64(*(*int64)(unsafe.Add(p, 16)))
 }
 

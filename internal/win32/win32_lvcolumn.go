@@ -22,17 +22,23 @@ type LVCOLUMN struct {
 
 func (this *LVCOLUMN) toC(p unsafe.Pointer) {
 	*(*int32)(unsafe.Add(p, 24)) = int32(this.CchTextMax)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.Cx)
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.Fmt)
 	*(*int32)(unsafe.Add(p, 32)) = int32(this.IImage)
 	*(*int32)(unsafe.Add(p, 36)) = int32(this.IOrder)
 	*(*int32)(unsafe.Add(p, 28)) = int32(this.ISubItem)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.Mask)
 	*(*int64)(unsafe.Add(p, 16)) = int64(this.PszText)
 }
 
 func (this *LVCOLUMN) fromC(p unsafe.Pointer) {
 	this.CchTextMax = int32(*(*int32)(unsafe.Add(p, 24)))
+	this.Cx = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.Fmt = int32(*(*int32)(unsafe.Add(p, 4)))
 	this.IImage = int32(*(*int32)(unsafe.Add(p, 32)))
 	this.IOrder = int32(*(*int32)(unsafe.Add(p, 36)))
 	this.ISubItem = int32(*(*int32)(unsafe.Add(p, 28)))
+	this.Mask = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.PszText = int64(*(*int64)(unsafe.Add(p, 16)))
 }
 

@@ -25,20 +25,30 @@ type DRAWITEMSTRUCT struct {
 }
 
 func (this *DRAWITEMSTRUCT) toC(p unsafe.Pointer) {
+	*(*int32)(unsafe.Add(p, 4)) = int32(this.CtlID)
+	*(*int32)(unsafe.Add(p, 0)) = int32(this.CtlType)
 	*(*int32)(unsafe.Add(p, 52)) = int32(this.Bottom)
 	*(*int64)(unsafe.Add(p, 32)) = int64(this.HDC)
 	*(*int64)(unsafe.Add(p, 24)) = int64(this.HwndItem)
+	*(*int32)(unsafe.Add(p, 12)) = int32(this.ItemAction)
 	*(*int64)(unsafe.Add(p, 56)) = int64(this.ItemData)
+	*(*int32)(unsafe.Add(p, 8)) = int32(this.ItemID)
+	*(*int32)(unsafe.Add(p, 16)) = int32(this.ItemState)
 	*(*int32)(unsafe.Add(p, 40)) = int32(this.Left)
 	*(*int32)(unsafe.Add(p, 48)) = int32(this.Right)
 	*(*int32)(unsafe.Add(p, 44)) = int32(this.Top)
 }
 
 func (this *DRAWITEMSTRUCT) fromC(p unsafe.Pointer) {
+	this.CtlID = int32(*(*int32)(unsafe.Add(p, 4)))
+	this.CtlType = int32(*(*int32)(unsafe.Add(p, 0)))
 	this.Bottom = int32(*(*int32)(unsafe.Add(p, 52)))
 	this.HDC = int64(*(*int64)(unsafe.Add(p, 32)))
 	this.HwndItem = int64(*(*int64)(unsafe.Add(p, 24)))
+	this.ItemAction = int32(*(*int32)(unsafe.Add(p, 12)))
 	this.ItemData = int64(*(*int64)(unsafe.Add(p, 56)))
+	this.ItemID = int32(*(*int32)(unsafe.Add(p, 8)))
+	this.ItemState = int32(*(*int32)(unsafe.Add(p, 16)))
 	this.Left = int32(*(*int32)(unsafe.Add(p, 40)))
 	this.Right = int32(*(*int32)(unsafe.Add(p, 48)))
 	this.Top = int32(*(*int32)(unsafe.Add(p, 44)))

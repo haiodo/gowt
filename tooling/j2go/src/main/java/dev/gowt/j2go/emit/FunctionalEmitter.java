@@ -45,6 +45,14 @@ final class FunctionalEmitter {
 			String fn = wrap(fType, emitter.expr(emr.getExpression()));
 			if (fn != null) return fn;
 		}
+		// `collection::add` as a Predicate/Consumer (jrt.List.Add is variadic, so the bare method value has the wrong type)
+		if (sam != null && target != null && declCi == null && target.getName().equals("add") && sam.getParameterTypes().length == 1
+				&& target.getDeclaringClass().getErasure().getQualifiedName().startsWith("java.util.")) {
+			String ret = emitter.retType(sam);
+			String fn = "func(a0 " + GoTypes.map(sam.getParameterTypes()[0], emitter) + ")" + (ret.isEmpty() ? "" : " " + ret) + " { " + (ret.isEmpty() ? "" : "return ") + emitter.expr(emr.getExpression()) + ".Add(a0) }";
+			String wrapped = wrap(fType, fn);
+			if (wrapped != null) return wrapped;
+		}
 		if (sam == null || declCi == null) return marker(emr, "ExpressionMethodReference");
 		String wrapped = wrap(fType, unboxParams(methodRefFunc(emr, target, declCi), sam, target));
 		return wrapped != null ? wrapped : marker(emr, "ExpressionMethodReference");

@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgtk-3-dev libglib2.0-dev libcairo2-dev libpango1.0-dev libatk1.0-dev libgdk-pixbuf-2.0-dev \
     gobject-introspection libgirepository1.0-dev \
     gir1.2-gtk-3.0 gir1.2-gdkpixbuf-2.0 gir1.2-pango-1.0 gir1.2-atk-1.0 \
-    gir1.2-gtk-4.0 gir1.2-graphene-1.0 \
+    gir1.2-gtk-4.0 gir1.2-graphene-1.0 libgtk-4-dev libgraphene-1.0-dev \
     python3-gi python3-gi-cairo \
     xvfb openbox x11vnc novnc websockify x11-apps scrot \
     weston \

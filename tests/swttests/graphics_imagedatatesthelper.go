@@ -85,11 +85,8 @@ func ImageDataTestHelperMakeTestImageData(depth int32, scale int32, byteOrder in
 			}
 		}
 	}
-	var method any = func() any {
-		_ = []any{reflect.TypeFor[*swt.ImageData](), "getByteOrder", []reflect.Type{}}
-		panic("j2go: unresolved call getDeclaredMethod")
-	}()
-	func() any { _ = []any{method, true}; panic("j2go: unresolved call setAccessible") }()
+	var method any = jrt.ClassGetMethod(reflect.TypeFor[*swt.ImageData](), "getByteOrder", []reflect.Type{})
+	func() any { return nil }()
 	var defaultByteOrderForDepth int32 = method.(*jrt.Method).Invoke(imageData, []any{}...).(int32)
 	if defaultByteOrderForDepth != byteOrder {
 		var actualInfo *ImageDataTestHelper_BlitTestInfo = NewImageDataTestHelperBlitTestInfo(depth, scale, defaultByteOrderForDepth, isDirect, imageData)
@@ -103,29 +100,20 @@ func ImageDataTestHelperBlit(srcInfo *ImageDataTestHelper_BlitTestInfo, dstInfo_
 	var dst *swt.ImageData = ImageDataTestHelperMakeTestImageData(dstInfo_depth, dstInfo_scale, dstInfo_byteOrder, dstInfo_isDirect, true)
 	if srcInfo.IsDirect {
 		if dstInfo_isDirect {
-			var blitMethod any = func() any {
-				_ = []any{reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool](), reflect.TypeFor[bool]()}}
-				panic("j2go: unresolved call getDeclaredMethod")
-			}()
-			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
+			var blitMethod any = jrt.ClassGetMethod(reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool](), reflect.TypeFor[bool]()})
+			func() any { return nil }()
 			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), int32(src.Width), int32(src.Height), int32(src.Palette.RedMask), int32(src.Palette.GreenMask), int32(src.Palette.BlueMask), dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Width), int32(dst.Height), int32(dst.Palette.RedMask), int32(dst.Palette.GreenMask), int32(dst.Palette.BlueMask), false, false}...)
 		} else {
 			panic(&jrt.RuntimeException{})
 		}
 	} else {
 		if dstInfo_isDirect {
-			var blitMethod any = func() any {
-				_ = []any{reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}}
-				panic("j2go: unresolved call getDeclaredMethod")
-			}()
-			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
+			var blitMethod any = jrt.ClassGetMethod(reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()})
+			func() any { return nil }()
 			blitMethod.(*jrt.Method).Invoke(nil, []any{int32(src.Width), int32(src.Height), src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), srcInfo.PaletteR, srcInfo.PaletteG, srcInfo.PaletteB, dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Palette.RedMask), int32(dst.Palette.GreenMask), int32(dst.Palette.BlueMask)}...)
 		} else {
-			var blitMethod any = func() any {
-				_ = []any{reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool](), reflect.TypeFor[bool]()}}
-				panic("j2go: unresolved call getDeclaredMethod")
-			}()
-			func() any { _ = []any{blitMethod, true}; panic("j2go: unresolved call setAccessible") }()
+			var blitMethod any = jrt.ClassGetMethod(reflect.TypeFor[*swt.ImageData](), "blit", []reflect.Type{reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[[]int8](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[bool](), reflect.TypeFor[bool]()})
+			func() any { return nil }()
 			blitMethod.(*jrt.Method).Invoke(nil, []any{src.Data, int32(src.Depth), int32(src.BytesPerLine), int32(srcInfo.ByteOrder), int32(src.Width), int32(src.Height), dst.Data, int32(dst.Depth), int32(dst.BytesPerLine), int32(dstInfo_byteOrder), int32(dst.Width), int32(dst.Height), false, false}...)
 		}
 	}

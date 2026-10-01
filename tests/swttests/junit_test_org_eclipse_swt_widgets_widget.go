@@ -834,12 +834,9 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 				panic(r)
 			}
 		}()
-		var field any = func() any {
-			_ = []any{reflect.TypeFor[*swt.Display](), "widgetTable"}
-			panic("j2go: unresolved call getDeclaredField")
-		}()
-		func() any { _ = []any{field, true}; panic("j2go: unresolved call setAccessible") }()
-		var widgetTable []*swt.Widget = func() any { _ = []any{field, display}; panic("j2go: unresolved call get") }().([]*swt.Widget)
+		var field any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.Display](), "widgetTable")
+		func() any { return nil }()
+		var widgetTable []*swt.Widget = field.(*jrt.Field).Get(display.Impl()).([]*swt.Widget)
 		tret52 = widgetTable
 		tretd53 = true
 		return

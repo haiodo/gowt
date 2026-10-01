@@ -41,6 +41,22 @@ func (m *Map) ComputeIfAbsent(k any, fn any) any {
 	return v
 }
 
+// upcast walks a translated class pointer down its field-0 superclass embedding until it fits t (Java passes
+// a subclass where the func takes a superclass); v is returned unchanged when nothing fits.
+func upcast(v reflect.Value, t reflect.Type) reflect.Value {
+	for w := v; w.Kind() == reflect.Ptr && w.Elem().Kind() == reflect.Struct && w.Elem().NumField() > 0; {
+		if w.Type().AssignableTo(t) {
+			return w
+		}
+		f := w.Elem().Field(0)
+		if !f.CanAddr() || !w.Type().Elem().Field(0).Anonymous {
+			break
+		}
+		w = f.Addr()
+	}
+	return v
+}
+
 // callFunc calls a Go func value with erased arguments and returns its first result (nil if none).
 func callFunc(fn any, args ...any) any {
 	f := reflect.ValueOf(fn)
@@ -48,7 +64,7 @@ func callFunc(fn any, args ...any) any {
 	for i, a := range args {
 		in[i] = reflect.Zero(f.Type().In(i))
 		if a != nil {
-			in[i] = reflect.ValueOf(a)
+			in[i] = upcast(reflect.ValueOf(a), f.Type().In(i))
 		}
 	}
 	out := f.Call(in)

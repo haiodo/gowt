@@ -739,7 +739,7 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItems_Ljava_lang_String(
 		this.ccombo.SetItems(nil)
 	})
 	var nullItem []string = make([]string, 1)
-	nullItem[0] = ""
+	nullItem[0] = jrt.NullString
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.ccombo.SetItems(nullItem)
 	})

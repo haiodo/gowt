@@ -1147,21 +1147,17 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setSynchronizerLorg_eclip
 			display.SetSynchronizer(nil)
 		}, "No exception thrown for post with null argument")
 		SwtTestUtilAssertSWTProblem("Incorrect exception thrown for set synchronizer with null argument", swt.ERROR_NULL_ARGUMENT, ex)
-		func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): class MySynchronizer extends Synchronizer {   boolean invoked=false;   MySynchronizer(  Display d){     super(d);   }   @Override protected void asyncExec(  Runnable runnable){     invoked=true;     super.asyncExec(runnable);   } }
-		var mySynchronizer any = func() any { _ = []any{display}; panic("j2go: unresolved new MySynchronizer") }()
-		func() any {
-			_ = []any{mySynchronizer, jrt.NewRunnable(func() {
-				asyncExec3Ran[0] = asyncExec2Ran[0]
-			})}
-			panic("j2go: unresolved call asyncExec")
-		}()
+		var mySynchronizer *Test_org_eclipse_swt_widgets_Display_MySynchronizer = newTest_org_eclipse_swt_widgets_DisplayMySynchronizer(display)
+		mySynchronizer.AsyncExec(jrt.NewRunnable(func() {
+			asyncExec3Ran[0] = asyncExec2Ran[0]
+		}))
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec0Ran[0] = true
 		}))
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec2Ran[0] = asyncExec0Ran[0]
 		}))
-		display.SetSynchronizer(mySynchronizer.(*swt.Synchronizer))
+		display.SetSynchronizer(mySynchronizer.Synchronizer)
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec1Ran[0] = true
 		}))
@@ -1170,7 +1166,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setSynchronizerLorg_eclip
 		junit.AssertFalse(asyncExec2Ran[0])
 		for display.ReadAndDispatch() {
 		}
-		junit.AssertTrue(func() bool { panic("j2go: unresolved field invoked") }())
+		junit.AssertTrue(mySynchronizer.invoked)
 		junit.AssertTrue(asyncExec0Ran[0])
 		junit.AssertTrue(asyncExec1Ran[0])
 		junit.AssertTrue(asyncExec2Ran[0])
@@ -1616,4 +1612,25 @@ func init() {
 			{Name: "test_wake", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_wake() }},
 		},
 	})
+}
+
+type Test_org_eclipse_swt_widgets_Display_MySynchronizer struct {
+	*swt.Synchronizer
+	invoked bool
+}
+
+func newTest_org_eclipse_swt_widgets_DisplayMySynchronizer(d *swt.Display) *Test_org_eclipse_swt_widgets_Display_MySynchronizer {
+	this := &Test_org_eclipse_swt_widgets_Display_MySynchronizer{}
+	this.initTest_org_eclipse_swt_widgets_DisplayMySynchronizer(d)
+	return this
+}
+
+func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) initTest_org_eclipse_swt_widgets_DisplayMySynchronizer(d *swt.Display) {
+	this.Synchronizer = swt.NewSynchronizer(d)
+	this.invoked = false
+}
+
+func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) AsyncExec(runnable jrt.Runnable) {
+	this.invoked = true
+	this.Synchronizer.AsyncExec(runnable)
 }

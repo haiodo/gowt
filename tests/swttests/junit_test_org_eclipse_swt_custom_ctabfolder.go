@@ -520,7 +520,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) CheckElementOverlap(tabFolde
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder) AssertTabElementsInLine() {
 	var tabBarElementBounds *jrt.List = jrt.NewList()
-	jrt.ArraysAsList(this.ctabFolder.GetItems()).Filter((*swt.CTabItem).IsShowing).Map(this.GetBoundsInShell).ForEach(func() func(any) { _ = []any{tabBarElementBounds}; panic("j2go: unsupported ExpressionMethodReference") }())
+	jrt.ArraysAsList(this.ctabFolder.GetItems()).Filter((*swt.CTabItem).IsShowing).Map(this.GetBoundsInShell).ForEach(func(a0 *swt.Rectangle) { tabBarElementBounds.Add(a0) })
 	for _, child := range this.ctabFolder.GetChildren() {
 		toolBarChild, ok99 := isswtControlToswtToolBar(child)
 		if ok99 {
@@ -801,12 +801,9 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_dirtyIndicator_closesWh
 				panic(r)
 			}
 		}()
-		var closeRectField any = func() any {
-			_ = []any{reflect.TypeFor[*swt.CTabItem](), "closeRect"}
-			panic("j2go: unresolved call getDeclaredField")
-		}()
-		func() any { _ = []any{closeRectField, true}; panic("j2go: unresolved call setAccessible") }()
-		var closeRectValue *swt.Rectangle = castanyToswtRectangle(func() any { _ = []any{closeRectField, dirtyItem}; panic("j2go: unresolved call get") }())
+		var closeRectField any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.CTabItem](), "closeRect")
+		func() any { return nil }()
+		var closeRectValue *swt.Rectangle = castanyToswtRectangle(closeRectField.(*jrt.Field).Get(dirtyItem.Impl()))
 		junit.AssertTrue(closeRectValue.Width > 0 && closeRectValue.Height > 0, "closeRect should be allocated for dirty item")
 		var mouseDown *swt.Event = swt.NewEvent()
 		mouseDown.Type = swt.MouseDown
@@ -933,11 +930,8 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_shouldHighlight(partStackT
 				panic(r)
 			}
 		}()
-		var method any = func() any {
-			_ = []any{cTabFolderClass, shouldHighlightMethodName, []reflect.Type{}}
-			panic("j2go: unresolved call getDeclaredMethod")
-		}()
-		func() any { _ = []any{method, true}; panic("j2go: unresolved call setAccessible") }()
+		var method any = jrt.ClassGetMethod(cTabFolderClass, shouldHighlightMethodName, []reflect.Type{})
+		func() any { return nil }()
 		var result any = method.(*jrt.Method).Invoke(partStackTabs.Impl(), []any{}...)
 		var shouldHighlight bool = result.(bool)
 		shouldHighlightConsoleViewTab = shouldHighlight
@@ -970,12 +964,9 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_getChildControls(tabFolder
 				panic(r)
 			}
 		}()
-		var field any = func() any {
-			_ = []any{reflect.TypeFor[*swt.CTabFolder](), childControlArrayName}
-			panic("j2go: unresolved call getDeclaredField")
-		}()
-		func() any { _ = []any{field, true}; panic("j2go: unresolved call setAccessible") }()
-		tret106 = func() any { _ = []any{field, tabFolder}; panic("j2go: unresolved call get") }().([]*swt.Control)
+		var field any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.CTabFolder](), childControlArrayName)
+		func() any { return nil }()
+		tret106 = field.(*jrt.Field).Get(tabFolder.Impl()).([]*swt.Control)
 		tretd107 = true
 		return
 	}()
@@ -1008,12 +999,9 @@ func Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(itemLike swt.CTabItemLik
 				panic(r)
 			}
 		}()
-		var closeRect any = func() any {
-			_ = []any{reflect.TypeFor[*swt.CTabItem](), "closeRect"}
-			panic("j2go: unresolved call getDeclaredField")
-		}()
-		func() any { _ = []any{closeRect, true}; panic("j2go: unresolved call setAccessible") }()
-		tret108 = castanyToswtRectangle(func() any { _ = []any{closeRect, item}; panic("j2go: unresolved call get") }())
+		var closeRect any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.CTabItem](), "closeRect")
+		func() any { return nil }()
+		tret108 = castanyToswtRectangle(closeRect.(*jrt.Field).Get(item.Impl()))
 		tretd109 = true
 		return
 	}()

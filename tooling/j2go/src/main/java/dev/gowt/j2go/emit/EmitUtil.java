@@ -213,6 +213,10 @@ final class EmitUtil {
 		if (p instanceof VariableDeclarationFragment f && f.getInitializer() == child && f.resolveBinding() != null) {
 			target = f.resolveBinding().getType();
 			guarded = NullArgGuards.localReachesGuard(emitter.model, f);
+		} else if (p instanceof Assignment a && a.getRightHandSide() == child && a.getLeftHandSide() instanceof ArrayAccess aa) {
+			// a null element in a String[] the test hands to a callee that rejects null elements
+			target = aa.resolveTypeBinding();
+			guarded = true;
 		} else if (p instanceof MethodInvocation mi && mi.resolveMethodBinding() != null) {
 			int i = mi.arguments().indexOf(child);
 			target = paramType(mi.resolveMethodBinding(), i);

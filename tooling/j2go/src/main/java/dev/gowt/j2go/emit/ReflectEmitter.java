@@ -14,6 +14,9 @@ final class ReflectEmitter {
 	private static final String WIDGETS_PACKAGE = "org.eclipse.swt.widgets";
 	static final String REFLECT_PACKAGE = "swtreflect";
 
+	// Non-public methods tests reach via getDeclaredMethod; only an exported Go name is callable from swtreflect.
+	private static final Set<String> PRIVATE_USED = Set.of("org.eclipse.swt.custom.CTabFolder#shouldHighlight");
+
 	private final Emitter emitter;
 	private final List<String> registrations = new ArrayList<>();
 	private final Set<String> imports = new TreeSet<>();
@@ -27,7 +30,9 @@ final class ReflectEmitter {
 	 * see internal/jrt/reflect.go. Types are spelled as seen from package swtreflect. Skipped for
 	 * anything GoTypes couldn't map to a real Go type - simply not reflectable. */
 	void registerReflectMethod(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, boolean widen) {
-		if (!ci.javaPackage.equals(WIDGETS_PACKAGE) || !Modifier.isPublic(mb.getModifiers()) || mb.isVarargs()) return;
+		boolean widgetsApi = ci.javaPackage.equals(WIDGETS_PACKAGE) && Modifier.isPublic(mb.getModifiers());
+		boolean listed = PRIVATE_USED.contains(ci.javaPackage + "." + ci.binding.getName() + "#" + javaName) && Character.isUpperCase(goName.charAt(0));
+		if (!(widgetsApi || listed) || mb.isVarargs()) return;
 		String savedPackage = emitter.currentGoPackage;
 		Set<String> savedImports = emitter.fileImports;
 		emitter.currentGoPackage = REFLECT_PACKAGE;

@@ -56,8 +56,8 @@ public class Main {
 		List<String> platformRoots = new ArrayList<>();
 		List<String> allRoots = new ArrayList<>(platform.roots());
 		allRoots.addAll(Platform.commonRoots(platform != Platform.GTK));
-		// Win32 sources use records: a mirror with them rewritten shadows the real root for parsing.
-		Path mirrorDir = platform == Platform.WIN32 ? Files.createTempDirectory("j2go-mirror") : null;
+		// Records (win32) and local classes are rewritten in a mirror that shadows the real root for parsing.
+		Path mirrorDir = Files.createTempDirectory("j2go-mirror");
 		Map<String, String> mirrorToReal = new HashMap<>();
 		for (String r : allRoots) {
 			Path p = swtRootPath.resolve(r);

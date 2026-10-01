@@ -53,6 +53,8 @@ func main() {
 		f := d.GetSystemFont()
 		fmt.Println("system font:", f.GetFontData()[0].GetName(), f.GetFontData()[0].GetHeight())
 		fmt.Println("dpi:", d.GetDPI().X, d.GetDPI().Y)
+		sysDPI, _, _ := syscall.NewLazyDLL("user32.dll").NewProc("GetDpiForSystem").Call()
+		fmt.Println("awareness context:", win32.OSGetThreadDpiAwarenessContext(), "system dpi:", sysDPI, "device zoom:", swt.DPIUtilGetDeviceZoom(), "native:", swt.DPIUtilGetNativeDeviceZoom())
 		hm := win32.OSMonitorFromWindow(0, win32.OSMONITOR_DEFAULTTOPRIMARY)
 		mi := win32.NewMONITORINFO()
 		mi.CbSize = win32.MONITORINFOSizeof

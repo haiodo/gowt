@@ -507,7 +507,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 						pArray += int64(cocoa.NSRectSizeof)
 					}() {
 						cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-						this.FixRect(rect)
+						this.FixRect(&rect)
 						rect.X += pt.X
 						rect.Y += pt.Y
 						if this.fixedLineMetrics != (nil) {
@@ -628,7 +628,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 										pArray += int64(cocoa.NSRectSizeof)
 									}() {
 										cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-										this.FixRect(rect)
+										this.FixRect(&rect)
 										var underlineX float64 = pt.X + rect.X
 										var underlineY float64 = pt.Y + rect.Y + rect.Height - baseline + 1
 										var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
@@ -738,7 +738,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 										pArray += int64(cocoa.NSRectSizeof)
 									}() {
 										cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-										this.FixRect(rect)
+										this.FixRect(&rect)
 										rect.X += pt.X + 0.5
 										rect.Y += pt.Y + 0.5
 										rect.Width -= float64(0.5)
@@ -766,7 +766,7 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 	}
 }
 
-func (this *TextLayout) FixRect(rect cocoa.NSRect) {
+func (this *TextLayout) FixRect(rect *cocoa.NSRect) {
 	var right float64 = float64(-1)
 	for j := int32(0); j < int32(len(this.lineBounds)); j++ {
 		var line cocoa.NSRect = this.lineBounds[j]
@@ -880,7 +880,7 @@ func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 				pArray += int64(cocoa.NSRectSizeof)
 			}() {
 				cocoa.OSMemmoveOverload7(&rect, pArray, int64(cocoa.NSRectSizeof))
-				this.FixRect(rect)
+				this.FixRect(&rect)
 				left = int32(math.Min(float64(left), float64(int32(rect.X))))
 				right = int32(math.Max(float64(right), float64(int32(math.Ceil(float64(rect.X+rect.Width))))))
 				top = int32(math.Min(float64(top), float64(int32(rect.Y))))
@@ -1123,7 +1123,7 @@ func (this *TextLayout) GetLocation(offset int32, trailing bool) *Point {
 				if rectCount[0] > 0 {
 					var bounds cocoa.NSRect = cocoa.NSRect{}
 					cocoa.OSMemmoveOverload7(&bounds, pArray, int64(cocoa.NSRectSizeof))
-					this.FixRect(bounds)
+					this.FixRect(&bounds)
 					point.X += bounds.Width
 				}
 			}

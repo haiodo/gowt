@@ -1,5 +1,5 @@
-// DPIUtil as win32 needs it on top of the shared single-zoom stand-in (graphics_stubs_manual.go): the
-// process runs at 100% (the OS stretches a DPI-unaware process), so every zoom conversion is the identity.
+// DPIUtil as win32 needs it. The process is system DPI aware (manifest, and Display.create sets the thread context):
+// the native zoom is the system DPI, the device zoom is SWT's default "integer" autoscale of it. No runtime rescaling.
 package swt
 
 const (
@@ -8,13 +8,15 @@ const (
 	AutoscalingModeENABLED
 )
 
-func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 { return 100 }
-func DPIUtilMapDPIToZoom(dpi int32) int32                             { return dpi * 100 / 96 }
-func DPIUtilMapZoomToDPI(zoom int32) int32                            { return zoom * 96 / 100 }
-func DPIUtilGetScalingFactor(zoom int32) float32                      { return float32(zoom) / 100 }
-func DPIUtilSetMonitorSpecificScaling(active bool)                    {}
-func DPIUtilIsMonitorSpecificScalingActive() bool                     { return false }
-func DPIUtilIsCustomAutoScale() bool                                  { return false }
+func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 {
+	return max((nativeDeviceZoom+25)/100*100, 100)
+}
+func DPIUtilMapDPIToZoom(dpi int32) int32          { return dpi * 100 / 96 }
+func DPIUtilMapZoomToDPI(zoom int32) int32         { return zoom * 96 / 100 }
+func DPIUtilGetScalingFactor(zoom int32) float32   { return float32(zoom) / 100 }
+func DPIUtilSetMonitorSpecificScaling(active bool) {}
+func DPIUtilIsMonitorSpecificScalingActive() bool  { return false }
+func DPIUtilIsCustomAutoScale() bool               { return false }
 
 func DPIUtilPixelToPointFloat(size float32, zoom int32) float32 {
 	if zoom == 100 {

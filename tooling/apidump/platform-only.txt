@@ -2,7 +2,7 @@
 #   <goos>[,<goos>...] <apidump line>
 # with the goos list in platforms.txt order naming the platforms that HAVE the symbol. A difference
 # between platforms that is not listed here fails `apidump -check`; so does a listed one that is gone.
-# Empty while darwin is the only platform.
+
 # "* <regexp>" exempts every symbol it matches. IME and Tracker are translated on win32 only (darwin stubs IME by hand
 # and has no Tracker), so the types, their constructors and the setIME() taking them differ; ToolBar.layout is
 # a package-private method named like a public one on one side.
@@ -14,3 +14,9 @@
 * ^FontMetrics\.String\(
 # Widget.getTypedListeners is declared in the win32 SWT sources only.
 * \.GetTypedListeners\(
+# Declared in the gtk SWT sources only.
+linux Device.GetPrimaryMonitorDisplay(display int64) int64
+linux Display.GetPrimaryMonitorDisplay(display int64) int64
+linux Printer.GetPrimaryMonitorDisplay(display int64) int64
+linux Image.Internal_gtk_refreshImageForZoom()
+linux func DisplayExtractFreeGError(errorPtr int64) string

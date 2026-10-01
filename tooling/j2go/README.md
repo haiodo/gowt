@@ -3155,9 +3155,9 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 - State: `GOOS=linux go build ./...` passes in the stand, `cmd/hello` runs on Xvfb, `make test-swt` 2950 passed / 385 failed / 6 skipped (3341; the previous translated-PI binding:
   2938 / 397 / 6). Not done: `cmd/*/snap_linux.go` (stubs), api parity of package-private methods (apidump cannot tell Java visibility), DateTime/GDBus/GTK4 paths (GTK 4 names compile
   and panic when called), the failures' causes in `tests/expected_linux.txt`.
-- **Struct parameters written through (gtk).** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
-  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. Only gtk: cocoa has three such parameters
-  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`) left by value until a GUI run on the Mac can check them.
+- **Struct parameters written through.** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
+  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. All platforms; cocoa gets three
+  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`), win32 none (its output is unchanged).
 ## Round 20 (win32): the Windows port (TSK-2026-09-23-039..042, -047)
 
 `PLATFORM=win32 make gen` translates `Eclipse SWT/win32` into `swt/*_windows.go` and `Eclipse SWT PI/win32` (win32, win32/version, gdip,
@@ -3176,7 +3176,7 @@ Why not purego or mingw cgo: purego's Windows support is the same SyscallN under
 - **GDI+.** `Gdip.java` wraps C++ classes (gdip.cpp); `internal/win32/gdip_manual.go` calls the flat API instead. Handles are the flat pointers; a FontFamily handle is a
   cell holding the `GpFontFamily*` (SWT creates an empty one and fills it). `Image.getLastStatus` is always Ok (the constructor returns 0 on failure).
 - **Manifest.** SWT activates a manifest from its JNI DLL resources; `custom_manual.go` writes the embedded `swt.manifest` (common controls 6) to the temp dir and
-  activates it in `init`. The process is DPI-unaware: `DPIUtil` is the shared single-zoom stand-in (zoom 100), Windows scales the window.
+  activates it in `init`. The manifest marks the process system-DPI aware (Display.create also sets the thread context): native zoom = system DPI, device zoom = SWT's default "integer" autoscale of it (`graphics_dpiutil_manual_windows.go`). Per-monitor awareness / runtime rescaling is not enabled (monitor-specific scaling stays off). `winprobe -display` prints dpi, awareness context and zoom; CrossOver reports 96 whatever `LogPixels` is, so zoom > 100 is not verified.
 - **`make win-probe`** (console, no window): every proc the bindings call must resolve in the bottle (819 procs, 0 missing, 2 optional absent), and
   package `swt` initialises without a "deferred init" error.
 
@@ -3195,7 +3195,7 @@ what they call: `overloads.properties` (overload names), `cascade.properties` (d
 No file differs per platform today. Hand-written, per OS: `widgets_stubs2/3_manual_windows.go` (Accessible stub, Callback), `graphics_dpiutil_manual_windows.go`,
 `internal_platform_manual_windows.go`; `graphics_stubs_manual_windows.go` and `widgets_stubs_shared_manual_windows.go` are the win32 copies of the darwin/linux stand-ins (DPIUtil, LONG, Compatibility, ...).
 
-**API gate.** `apidump` compares only SWT's public Java API: `tooling/apidump/public-api.txt` (`J2GO_DUMP_PUBLIC=<file>` on a run of each platform, merged) lists the Go names of public/
+**API gate.** `apidump` compares only SWT's public Java API: `tooling/apidump/public-api.txt` (`J2GO_DUMP_PUBLIC=<abs file> PLATFORM=<cocoa|win32|gtk> make gen` for each platform, merged; the gtk run needs no PI/gtk, revert the `_linux.go` churn it leaves) lists the Go names of public/
 protected members of public non-internal classes; platform-named glue (`ShellWin32_new`) and signatures naming a PI type are skipped. `platform-only.txt` has `* <regexp>` lines
 for what a port declares differently (IME, Tracker, `setIME`). windows is in `platforms.txt`.
 

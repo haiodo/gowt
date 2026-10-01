@@ -160,6 +160,7 @@ public class TypeModel {
 	// (hand-written Manual classes included: their Java source is still the guard reference).
 	private final Map<String, MethodDeclaration> declarations = new HashMap<>();
 	public final MutatedStructParams mutatedParams = new MutatedStructParams(this);
+	public final NullableStrings nullableStrings = new NullableStrings(this);
 
 	Collection<MethodDeclaration> allDeclarations() { return declarations.values(); }
 

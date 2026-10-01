@@ -35,7 +35,9 @@ final class HookEmitter {
 			out.append("\tif h, ok := this.hook.(interface{ ").append(e.getValue()).append('(').append(params).append(") ")
 					.append(ret).append(" }); ok && this.active != \"").append(dispatch).append("\" {\n");
 			out.append("\t\tdefer this.enter(\"").append(dispatch).append("\")()\n");
-			out.append("\t\t").append(r).append("h.").append(e.getValue()).append('(').append(argList).append(")\n\t}\n");
+			out.append("\t\t").append(r).append("h.").append(e.getValue()).append('(').append(argList).append(")\n");
+			if (ret.isEmpty()) out.append("\t\treturn\n"); // a void hook replaces the default, it does not precede it
+			out.append("\t}\n");
 			out.append('\t').append(r).append("this.").append(impl).append('.').append(dispatch).append('(').append(argList).append(")\n}\n\n");
 		}
 	}

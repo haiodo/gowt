@@ -148,13 +148,13 @@ func (this *ScrollBar) GetThumbBounds() *Rectangle {
 		var origin_y []float64 = make([]float64, 1)
 		var success bool = gtk.GTK4Gtk_widget_translate_coordinates(this.parent.scrolledHandle, this.parent.impl.getShell_().shellHandle, float64(0), float64(0), origin_x, origin_y)
 		if success {
-			rect.X += int32(origin_x[0])
-			rect.Y += int32(origin_y[0])
+			rect.X = int32(float64(rect.X) + origin_x[0])
+			rect.Y = int32(float64(rect.Y) + origin_y[0])
 		}
 		success = gtk.GTK4Gtk_widget_translate_coordinates(this.parent.Handle, this.parent.impl.getShell_().shellHandle, float64(0), float64(0), origin_x, origin_y)
 		if success {
-			rect.X -= int32(origin_x[0])
-			rect.Y -= int32(origin_y[0])
+			rect.X = int32(float64(rect.X) - origin_x[0])
+			rect.Y = int32(float64(rect.Y) - origin_y[0])
 		}
 	} else {
 		var origin_x []int32 = make([]int32, 1)
@@ -265,13 +265,13 @@ func (this *ScrollBar) GetThumbTrackBounds() *Rectangle {
 		var origin_y []float64 = make([]float64, 1)
 		var success bool = gtk.GTK4Gtk_widget_translate_coordinates(this.parent.scrolledHandle, this.parent.impl.getShell_().shellHandle, float64(0), float64(0), origin_x, origin_y)
 		if success {
-			rect.X += int32(origin_x[0])
-			rect.Y += int32(origin_y[0])
+			rect.X = int32(float64(rect.X) + origin_x[0])
+			rect.Y = int32(float64(rect.Y) + origin_y[0])
 		}
 		success = gtk.GTK4Gtk_widget_translate_coordinates(this.parent.Handle, this.parent.impl.getShell_().shellHandle, float64(0), float64(0), origin_x, origin_y)
 		if success {
-			rect.X -= int32(origin_x[0])
-			rect.Y -= int32(origin_y[0])
+			rect.X = int32(float64(rect.X) - origin_x[0])
+			rect.Y = int32(float64(rect.Y) - origin_y[0])
 		}
 	} else {
 		var origin_x []int32 = make([]int32, 1)
@@ -568,13 +568,13 @@ func (this *ScrollBar) SetValues(selection int32, minimum int32, maximum int32, 
 func (this *ScrollBar) SetVisible(visible bool) {
 	this.CheckWidget()
 	if this.parent.impl.setScrollBarVisible_(this, visible) {
-		var cond446 int32
+		var cond451 int32
 		if visible {
-			cond446 = Show
+			cond451 = Show
 		} else {
-			cond446 = Hide
+			cond451 = Hide
 		}
-		this.SendEventEventType(cond446)
+		this.SendEventEventType(cond451)
 		this.parent.SendEventEventType(Resize)
 	}
 }

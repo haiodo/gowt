@@ -226,13 +226,13 @@ func (this *GC) CheckGC(mask int32) {
 		gtk.CairoCairo_set_line_join(cairo, join_style)
 	}
 	if (state & GCLINE_WIDTH) != 0 {
-		var cond303 float32
+		var cond308 float32
 		if this.data.LineWidth == 0 {
-			cond303 = float32(1)
+			cond308 = float32(1)
 		} else {
-			cond303 = this.data.LineWidth
+			cond308 = this.data.LineWidth
 		}
-		gtk.CairoCairo_set_line_width(cairo, float64(cond303))
+		gtk.CairoCairo_set_line_width(cairo, float64(cond308))
 		switch this.data.LineStyle {
 		case LINE_DOT, LINE_DASH, LINE_DASHDOT, LINE_DASHDOTDOT:
 			state |= GCLINE_STYLE
@@ -490,11 +490,11 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int3
 				}
 				rect.X = newX
 				rect.Y = srcY
-				abs304 := deltaX
-				if abs304 < 0 {
-					abs304 = -abs304
+				abs309 := deltaX
+				if abs309 < 0 {
+					abs309 = -abs309
 				}
-				rect.Width = abs304
+				rect.Width = abs309
 				rect.Height = int32(math.Max(float64(0), float64(height)))
 				if gtk.GTKGTK4 {
 				} else {
@@ -509,11 +509,11 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int3
 				rect.X = srcX
 				rect.Y = newY
 				rect.Width = int32(math.Max(float64(0), float64(width)))
-				abs305 := deltaY
-				if abs305 < 0 {
-					abs305 = -abs305
+				abs310 := deltaY
+				if abs310 < 0 {
+					abs310 = -abs310
 				}
-				rect.Height = abs305
+				rect.Height = abs310
 				if gtk.GTKGTK4 {
 				} else {
 					gtk.GDKGdk_window_invalidate_rect(drawable, &rect, false)
@@ -541,13 +541,13 @@ func (this *GC) CreateLayout() {
 	}
 	this.data.Layout = layout
 	gtk.OSPango_context_set_language(context, gtk.GTKGtk_get_default_language())
-	var cond306 int32
+	var cond311 int32
 	if (this.data.Style & MIRRORED) != 0 {
-		cond306 = gtk.OSPANGO_DIRECTION_RTL
+		cond311 = gtk.OSPANGO_DIRECTION_RTL
 	} else {
-		cond306 = gtk.OSPANGO_DIRECTION_LTR
+		cond311 = gtk.OSPANGO_DIRECTION_LTR
 	}
-	gtk.OSPango_context_set_base_dir(context, cond306)
+	gtk.OSPango_context_set_base_dir(context, cond311)
 	gtk.OSPango_layout_set_auto_dir(layout, false)
 }
 
@@ -1019,13 +1019,13 @@ func (this *GC) DrawString(string_ string, x int32, y int32) {
 }
 
 func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32, isTransparent bool) {
-	var cond307 int32
+	var cond312 int32
 	if isTransparent {
-		cond307 = DRAW_TRANSPARENT
+		cond312 = DRAW_TRANSPARENT
 	} else {
-		cond307 = 0
+		cond312 = 0
 	}
-	this.DrawTextStringXYFlags(string_, x, y, cond307)
+	this.DrawTextStringXYFlags(string_, x, y, cond312)
 }
 
 func (this *GC) DrawText(string_ string, x int32, y int32) {
@@ -1082,8 +1082,8 @@ func (this *GC) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok308 := resourceImplAsGC(object)
-	if !(ok308) {
+	_, ok313 := resourceImplAsGC(object)
+	if !(ok313) {
 		return false
 	}
 	return this.Handle == (castanyToGC(object)).Handle
@@ -1342,13 +1342,13 @@ func (this *GC) FixMnemonic(buffer []uint16) int32 {
 	var j int32 = 0
 	var mnemonic int32 = -1
 	for i < int32(len(buffer)) {
-		t310 := i
+		t315 := i
 		i++
-		cond309 := buffer[t310]
-		t311 := j
+		cond314 := buffer[t315]
+		t316 := j
 		j++
-		buffer[t311] = cond309
-		if int32((cond309)) == int32('&') {
+		buffer[t316] = cond314
+		if int32((cond314)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
@@ -1363,9 +1363,9 @@ func (this *GC) FixMnemonic(buffer []uint16) int32 {
 		}
 	}
 	for j < int32(len(buffer)) {
-		t312 := j
+		t317 := j
 		j++
-		buffer[t312] = uint16(0)
+		buffer[t317] = uint16(0)
 	}
 	return mnemonic
 }
@@ -1534,13 +1534,13 @@ func (this *GC) GetFillRule() int32 {
 	if cairo == 0 {
 		return FILL_EVEN_ODD
 	}
-	var cond313 int32
+	var cond318 int32
 	if gtk.CairoCairo_get_fill_rule(cairo) == gtk.CairoCAIRO_FILL_RULE_WINDING {
-		cond313 = FILL_WINDING
+		cond318 = FILL_WINDING
 	} else {
-		cond313 = FILL_EVEN_ODD
+		cond318 = FILL_EVEN_ODD
 	}
-	return cond313
+	return cond318
 }
 
 func (this *GC) GetFont() *Font {
@@ -1796,9 +1796,9 @@ func (this *GC) InitDrawableDataGdkGC(drawable Drawable, dataLike GCDataLike, gd
 	this.drawable = drawable
 	this.data = data
 	this.Handle = gdkGC
-	cond314 := this.Handle
-	data.Cairo = cond314
-	var cairo int64 = cond314
+	cond319 := this.Handle
+	data.Cairo = cond319
+	var cairo int64 = cond319
 	gtk.CairoCairo_set_fill_rule(cairo, gtk.CairoCAIRO_FILL_RULE_EVEN_ODD)
 	data.State &= ^(GCBACKGROUND | GCFOREGROUND | GCFONT | GCLINE_WIDTH | GCLINE_CAP | GCLINE_JOIN | GCLINE_STYLE | GCDRAW_OFFSET)
 	this.SetClippingClipRgn(data.ClipRgn)
@@ -2442,7 +2442,7 @@ func (this *GC) SetString(string_ string, flags int32) {
 	var layout int64 = this.data.Layout
 	var text []uint16 = make([]uint16, length)
 	jrt.GetChars(string_, 0, length, text, 0)
-	if (flags&DRAW_MNEMONIC) != 0 && func() bool { cond315 := this.FixMnemonic(text); mnemonic = cond315; return (cond315) != -1 }() {
+	if (flags&DRAW_MNEMONIC) != 0 && func() bool { cond321 := this.FixMnemonic(text); mnemonic = cond321; return (cond321) != -1 }() {
 		var text1 []uint16 = make([]uint16, mnemonic-1)
 		copy(text1[0:], text[0:0+int32(len(text1))])
 		var buffer1 []int8 = gtk.ConverterWcsToMbcsCharsTerminate(text1, false)
@@ -2468,13 +2468,13 @@ func (this *GC) SetString(string_ string, flags int32) {
 	}
 	gtk.OSPango_layout_set_text(layout, buffer, int32(len(buffer)))
 	gtk.OSPango_layout_set_single_paragraph_mode(layout, (flags&DRAW_DELIMITER) == 0)
-	var cond316 int64
+	var cond322 int64
 	if (flags & DRAW_TAB) != 0 {
-		cond316 = int64(0)
+		cond322 = int64(0)
 	} else {
-		cond316 = this.data.Device.emptyTab
+		cond322 = this.data.Device.emptyTab
 	}
-	gtk.OSPango_layout_set_tabs(layout, cond316)
+	gtk.OSPango_layout_set_tabs(layout, cond322)
 	this.data.String = string_
 	this.data.StringHeight = -1
 	this.data.StringWidth = this.data.StringHeight
@@ -2546,13 +2546,13 @@ func (this *GC) SetXORMode(xor bool) {
 	if this.Handle == 0 {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	var cond317 int32
+	var cond323 int32
 	if xor {
-		cond317 = gtk.CairoCAIRO_OPERATOR_DIFFERENCE
+		cond323 = gtk.CairoCAIRO_OPERATOR_DIFFERENCE
 	} else {
-		cond317 = gtk.CairoCAIRO_OPERATOR_OVER
+		cond323 = gtk.CairoCAIRO_OPERATOR_OVER
 	}
-	gtk.CairoCairo_set_operator(this.Handle, cond317)
+	gtk.CairoCairo_set_operator(this.Handle, cond323)
 	this.data.XorMode = xor
 }
 
@@ -2734,16 +2734,16 @@ func GCGetTransformedClippingRectangle(pointsArray []int32) *Rectangle {
 	var y4 int32 = pointsArray[7]
 	var x int32 = int32(math.Min(float64(int32(math.Min(float64(x1), float64(x2)))), float64(int32(math.Min(float64(x3), float64(x4))))))
 	var y int32 = int32(math.Min(float64(int32(math.Min(float64(y1), float64(y2)))), float64(int32(math.Min(float64(y3), float64(y4))))))
-	abs318 := x1 - x2
-	if abs318 < 0 {
-		abs318 = -abs318
+	abs324 := x1 - x2
+	if abs324 < 0 {
+		abs324 = -abs324
 	}
-	var width int32 = abs318
-	abs319 := y1 - y4
-	if abs319 < 0 {
-		abs319 = -abs319
+	var width int32 = abs324
+	abs325 := y1 - y4
+	if abs325 < 0 {
+		abs325 = -abs325
 	}
-	var height int32 = abs319
+	var height int32 = abs325
 	var r *Rectangle = NewRectangle(x, y, width, height)
 	return r
 }

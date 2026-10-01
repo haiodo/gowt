@@ -461,9 +461,9 @@ func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
 		copy(temp[0:], this.layoutDeferred[0:0+int32(len(this.layoutDeferred))])
 		this.layoutDeferred = temp
 	}
-	t250 := this.layoutDeferredCount
+	t252 := this.layoutDeferredCount
 	this.layoutDeferredCount++
-	this.layoutDeferred[t250] = comp
+	this.layoutDeferred[t252] = comp
 }
 
 func (this *Display) AddGdkEvent(event int64) {
@@ -487,7 +487,7 @@ func (this *Display) AddGdkEvent(event int64) {
 	if handle != 0 {
 		for {
 			widget = this.GetWidget(handle)
-			if !(widget == (nil) && func() bool { cond251 := gtk.GTKGtk_widget_get_parent(handle); handle = cond251; return (cond251) != 0 }()) {
+			if !(widget == (nil) && func() bool { cond254 := gtk.GTKGtk_widget_get_parent(handle); handle = cond254; return (cond254) != 0 }()) {
 				break
 			}
 		}
@@ -528,11 +528,11 @@ func (this *Display) AddListener(eventType int32, listener Listener) {
 
 func (this *Display) Gdbus_init_methods() {
 	var methods []*GDBus_GDBusMethod = []*GDBus_GDBusMethod{NewGDBusGDBusMethod("FileOpen", [][]string{[]string{gtk.OSDBUS_TYPE_STRING_ARRAY, "A String array containing file paths or URLs for OpenDocument/OpenUrl signal"}}, func() [][]string {
-		a252 := make([][]string, 0)
-		for i := range a252 {
-			a252[i] = make([]string, 0)
+		a255 := make([][]string, 0)
+		for i := range a255 {
+			a255[i] = make([]string, 0)
 		}
-		return a252
+		return a255
 	}(), func(args []any) []any {
 		var fileNames []string = args[0].([]string)
 		for i := int32(0); i < int32(len(fileNames)); i++ {
@@ -634,9 +634,9 @@ func (this *Display) AddSkinnableWidget(widgetLike WidgetLike) {
 		copy(newSkinWidgets[0:], this.skinList[0:0+int32(len(this.skinList))])
 		this.skinList = newSkinWidgets
 	}
-	t253 := this.skinCount
+	t256 := this.skinCount
 	this.skinCount++
-	this.skinList[t253] = widget
+	this.skinList[t256] = widget
 }
 
 func (this *Display) AddWidget(handle int64, widgetLike WidgetLike) {
@@ -649,9 +649,9 @@ func (this *Display) AddWidget(handle int64, widgetLike WidgetLike) {
 		return
 	}
 	if this.freeSlot == DisplayLAST_TABLE_INDEX {
-		cond254 := int32(len(this.indexTable))
-		this.freeSlot = cond254
-		var length int32 = (cond254) + DisplayGROW_SIZE
+		cond257 := int32(len(this.indexTable))
+		this.freeSlot = cond257
+		var length int32 = (cond257) + DisplayGROW_SIZE
 		var newIndexTable []int32 = make([]int32, length)
 		var newWidgetTable []*Widget = make([]*Widget, length)
 		copy(newIndexTable[0:], this.indexTable[0:0+this.freeSlot])
@@ -766,9 +766,9 @@ func (this *Display) CheckIfEventProc(display int64, xEvent int64, userData int6
 				if tempWindow == this.flushWindow {
 					break
 				}
-				cond255 := gtk.GDKGdk_window_get_parent(tempWindow)
-				tempWindow = cond255
-				if !((cond255) != 0) {
+				cond258 := gtk.GDKGdk_window_get_parent(tempWindow)
+				tempWindow = cond258
+				if !((cond258) != 0) {
 					break
 				}
 			}
@@ -850,9 +850,9 @@ func (this *Display) Close() {
 
 func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
-	cond256 := jrt.CurrentThread()
-	this.thread = cond256
-	DisplayCheckDisplay(cond256, false)
+	cond259 := jrt.CurrentThread()
+	this.thread = cond259
+	DisplayCheckDisplay(cond259, false)
 	this.CreateDisplay(data)
 	DisplayRegister(this)
 	if DisplayDefault == (nil) {
@@ -1084,8 +1084,8 @@ func (this *Display) FindLatinKeyGroup() int32 {
 		}
 	}
 	var max_keys_count int32 = 0
-	for _, elem257 := range this.groupKeysCount.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem257)
+	for _, elem260 := range this.groupKeysCount.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem260)
 		var group any = entry.GetKey()
 		var keys_count any = entry.GetValue()
 		if jrt.Cast[int32](keys_count) > max_keys_count {
@@ -1434,9 +1434,9 @@ func (this *Display) GetCursorControl() *Control {
 					handle = int64(0)
 					break
 				}
-				cond258 := buffer[0]
-				xWindow = cond258
-				if (cond258) != 0 {
+				cond261 := buffer[0]
+				xWindow = cond261
+				if (cond261) != 0 {
 					xParent = xWindow
 					var gdkWindow int64 = gtk.GDKGdk_x11_window_lookup_for_display(gdkDisplay, xWindow)
 					if gdkWindow != 0 {
@@ -1460,15 +1460,15 @@ func (this *Display) GetCursorControl() *Control {
 	}
 	for {
 		var widget *Widget = this.GetWidget(handle)
-		if widget != (nil) && func() bool { _, ok259 := isWidgetToControl(widget); return ok259 }() {
+		if widget != (nil) && func() bool { _, ok263 := isWidgetToControl(widget); return ok263 }() {
 			var control *Control = castWidgetToControl(widget)
 			if control.impl.isEnabled_() {
 				return control
 			}
 		}
-		cond260 := gtk.GTKGtk_widget_get_parent(handle)
-		handle = cond260
-		if !((cond260) != 0) {
+		cond264 := gtk.GTKGtk_widget_get_parent(handle)
+		handle = cond264
+		if !((cond264) != 0) {
 			break
 		}
 	}
@@ -1743,13 +1743,13 @@ func (this *Display) GetDismissalAlignment() int32 {
 	var buffer []int32 = make([]int32, 1)
 	var settings int64 = gtk.GTKGtk_settings_get_default()
 	gtk.OSG_object_get(settings, gtk.GTKGtk_alternative_button_order, buffer, int64(0))
-	var cond261 int32
+	var cond265 int32
 	if buffer[0] == 1 {
-		cond261 = LEFT
+		cond265 = LEFT
 	} else {
-		cond261 = RIGHT
+		cond265 = RIGHT
 	}
-	return cond261
+	return cond265
 }
 
 func (this *Display) GetDoubleClickTime() int32 {
@@ -1774,19 +1774,19 @@ func (this *Display) GetFocusControl() *Control {
 	}
 	for {
 		var widget *Widget = this.GetWidget(handle)
-		if widget != (nil) && func() bool { _, ok262 := isWidgetToControl(widget); return ok262 }() {
+		if widget != (nil) && func() bool { _, ok267 := isWidgetToControl(widget); return ok267 }() {
 			var control *Control = castWidgetToControl(widget)
-			var cond263 *Control
+			var cond268 *Control
 			if control.impl.isEnabled_() {
-				cond263 = control
+				cond268 = control
 			} else {
-				cond263 = nil
+				cond268 = nil
 			}
-			return cond263
+			return cond268
 		}
-		cond264 := gtk.GTKGtk_widget_get_parent(handle)
-		handle = cond264
-		if !((cond264) != 0) {
+		cond269 := gtk.GTKGtk_widget_get_parent(handle)
+		handle = cond269
+		if !((cond269) != 0) {
 			break
 		}
 	}
@@ -1967,8 +1967,8 @@ func (this *Display) GetShells() []*Shell {
 	var result []*Shell = make([]*Shell, 16)
 	for i := int32(0); i < int32(len(this.widgetTable)); i++ {
 		var widget *Widget = this.widgetTable[i]
-		_, ok265 := isWidgetToShell(widget)
-		if !(ok265) {
+		_, ok270 := isWidgetToShell(widget)
+		if !(ok270) {
 			continue
 		}
 		if !widget.IsDisposed() {
@@ -1985,9 +1985,9 @@ func (this *Display) GetShells() []*Shell {
 					copy(newResult[0:], result[0:0+index])
 					result = newResult
 				}
-				t266 := index
+				t271 := index
 				index++
-				result[t266] = castWidgetToShell(widget)
+				result[t271] = castWidgetToShell(widget)
 			}
 		} else {
 			fmt.Fprintln(os.Stderr, fmt.Sprintf("SWT ERROR: disposed shell detected in the table%s", this.DebugInfoForIndex(int64(i))))
@@ -2013,19 +2013,19 @@ func (this *Display) GetSynchronizer() *Synchronizer {
 
 func (this *Display) GetSyncThread() any {
 	jrt.MonitorEnter()
-	var tret267 any
-	tretd268 := false
+	var tret272 any
+	tretd273 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret267 = this.synchronizer.syncThread
-		tretd268 = true
+		tret272 = this.synchronizer.syncThread
+		tretd273 = true
 		return
 	}()
-	_ = tretd268
-	return tret267
+	_ = tretd273
+	return tret272
 }
 
 func (this *Display) getSystemColor_(id int32) *Color {
@@ -2169,23 +2169,23 @@ func (this *Display) ToGdkRGBA(rgba gtk.GdkRGBA, brightness float64) gtk.GdkRGBA
 	}
 	var luminosity float64 = ((2 - saturationHSV[0]) * value[0]) / 2
 	var saturationHSL float64 = saturationHSV[0] * value[0]
-	var cond269 float64
+	var cond274 float64
 	if luminosity <= 1 {
-		cond269 = luminosity
+		cond274 = luminosity
 	} else {
-		cond269 = 2 - luminosity
+		cond274 = 2 - luminosity
 	}
-	saturationHSL /= cond269
+	saturationHSL /= cond274
 	saturationHSL = float64(math.Max(float64(0), float64(float64(math.Min(float64(1), float64(saturationHSL*brightness))))))
 	luminosity = float64(math.Max(float64(0), float64(float64(math.Min(float64(1), float64(luminosity*brightness))))))
 	luminosity *= float64(2)
-	var cond270 float64
+	var cond275 float64
 	if luminosity <= 1 {
-		cond270 = luminosity
+		cond275 = luminosity
 	} else {
-		cond270 = 2 - luminosity
+		cond275 = 2 - luminosity
 	}
-	saturationHSL *= cond270
+	saturationHSL *= cond275
 	value[0] = (luminosity + saturationHSL) / 2
 	saturationHSV[0] = (2 * saturationHSL) / (luminosity + saturationHSL)
 	if gtk.GTKGTK4 {
@@ -2372,26 +2372,26 @@ func (this *Display) GetSystemTray() *Tray {
 	if this.tray != (nil) {
 		return this.tray
 	}
-	cond271 := newTray(this, NONE)
-	this.tray = cond271
-	return cond271
+	cond276 := newTray(this, NONE)
+	this.tray = cond276
+	return cond276
 }
 
 func (this *Display) GetThread() any {
 	jrt.MonitorEnter()
-	var tret272 any
-	tretd273 := false
+	var tret277 any
+	tretd278 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret272 = this.thread
-		tretd273 = true
+		tret277 = this.thread
+		tretd278 = true
 		return
 	}()
-	_ = tretd273
-	return tret272
+	_ = tretd278
+	return tret277
 }
 
 func (this *Display) GetTouchEnabled() bool {
@@ -2409,9 +2409,9 @@ func (this *Display) GetWidget(handle int64) *Widget {
 	var index int64 = gtk.OSG_object_get_qdata(handle, DisplaySWT_OBJECT_INDEX) - 1
 	if 0 <= index && index < int64(int32(len(this.widgetTable))) {
 		this.lastHandle = handle
-		cond274 := this.widgetTable[int32(index)]
-		this.lastWidget = cond274
-		return cond274
+		cond279 := this.widgetTable[int32(index)]
+		this.lastWidget = cond279
+		return cond279
 	}
 	return nil
 }
@@ -2425,13 +2425,13 @@ func (this *Display) IdleProc(data int64) int64 {
 			this.idleHandle = 0
 		}()
 	}
-	var cond275 int32
+	var cond280 int32
 	if result {
-		cond275 = 1
+		cond280 = 1
 	} else {
-		cond275 = 0
+		cond280 = 0
 	}
-	return int64(cond275)
+	return int64(cond280)
 }
 
 func (this *Display) init_() {
@@ -2740,9 +2740,9 @@ func (this *Display) InitializeWidgetTable() {
 
 func (this *Display) InitializeSessionManager() {
 	this.sessionManagerDBus = NewSessionManagerDBus()
-	inner276 := NewDisplaySessionManagerListener(this)
-	inner276.this_0 = this
-	this.sessionManagerListener = inner276
+	inner281 := NewDisplaySessionManagerListener(this)
+	inner281.this_0 = this
+	this.sessionManagerListener = inner281
 	this.sessionManagerDBus.AddListener(this.sessionManagerListener)
 }
 
@@ -2920,9 +2920,9 @@ func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike Control
 		} else {
 			origin = from.impl.getWindowOrigin_()
 		}
-		cond277 := (from.style & MIRRORED) != 0
-		fromRTL = cond277
-		if cond277 {
+		cond282 := (from.style & MIRRORED) != 0
+		fromRTL = cond282
+		if cond282 {
 			rect.X = from.impl.getClientWidth_() - rect.X
 		}
 		rect.X += origin.X
@@ -2937,9 +2937,9 @@ func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike Control
 		}
 		rect.X -= origin.X
 		rect.Y -= origin.Y
-		cond278 := (to.style & MIRRORED) != 0
-		toRTL = cond278
-		if cond278 {
+		cond283 := (to.style & MIRRORED) != 0
+		toRTL = cond283
+		if cond283 {
 			rect.X = to.impl.getClientWidth_() - rect.X
 		}
 	}
@@ -2985,8 +2985,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 	}
 	_ = event
 	jrt.MonitorEnter()
-	var tret279 bool
-	tretd280 := false
+	var tret284 bool
+	tretd285 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
@@ -2996,16 +2996,16 @@ func (this *Display) Post(eventLike EventLike) bool {
 			this.Error(ERROR_NULL_ARGUMENT)
 		}
 		if gtk.GTKGTK4 {
-			tret279 = false
-			tretd280 = true
+			tret284 = false
+			tretd285 = true
 			return
 		}
 		var type_ int32 = event.Type
 		if type_ == MouseMove {
 			var loc *Rectangle = event.GetBounds()
 			this.SetCursorLocationPoint(NewPoint(loc.X, loc.Y))
-			tret279 = true
-			tretd280 = true
+			tret284 = true
+			tretd285 = true
 			return
 		}
 		var gdkDisplay int64 = gtk.GDKGdk_display_get_default()
@@ -3015,8 +3015,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 			{
 				var gdkWindow int64 = this.FindFocusedWindow()
 				if gdkWindow == 0 {
-					tret279 = false
-					tretd280 = true
+					tret284 = false
+					tretd285 = true
 					return
 				}
 				var state int32
@@ -3092,13 +3092,13 @@ func (this *Display) Post(eventLike EventLike) bool {
 						final_keyval = keyval[0]
 					}
 				}
-				var cond281 int32
+				var cond286 int32
 				if type_ == KeyDown {
-					cond281 = gtk.GDKGDK_KEY_PRESS
+					cond286 = gtk.GDKGDK_KEY_PRESS
 				} else {
-					cond281 = gtk.GDKGDK_KEY_RELEASE
+					cond286 = gtk.GDKGDK_KEY_RELEASE
 				}
-				var eventPtr int64 = gtk.GDKGdk_event_new(cond281)
+				var eventPtr int64 = gtk.GDKGdk_event_new(cond286)
 				var newKeyEvent gtk.GdkEventKey = gtk.GdkEventKey{}
 				if type_ == KeyDown {
 					newKeyEvent.Type = gtk.GDKGDK_KEY_PRESS
@@ -3125,8 +3125,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 				} else {
 					gtk.GDKGdk_event_free(eventPtr)
 				}
-				tret279 = true
-				tretd280 = true
+				tret284 = true
+				tretd285 = true
 				return
 			}
 		case MouseDown, MouseUp:
@@ -3137,18 +3137,18 @@ func (this *Display) Post(eventLike EventLike) bool {
 				var gdkPointerDevice int64 = gtk.GDKGdk_seat_get_pointer(gdkSeat)
 				var gdkWindow int64 = gtk.GDKGdk_device_get_window_at_position(gdkPointerDevice, x, y)
 				if gdkWindow == 0 {
-					tret279 = false
-					tretd280 = true
+					tret284 = false
+					tretd285 = true
 					return
 				}
 				gtk.OSG_object_ref(gdkWindow)
-				var cond282 int32
+				var cond287 int32
 				if type_ == MouseDown {
-					cond282 = gtk.GDKGDK_BUTTON_PRESS
+					cond287 = gtk.GDKGDK_BUTTON_PRESS
 				} else {
-					cond282 = gtk.GDKGDK_BUTTON_RELEASE
+					cond287 = gtk.GDKGDK_BUTTON_RELEASE
 				}
-				var eventPtr int64 = gtk.GDKGdk_event_new(cond282)
+				var eventPtr int64 = gtk.GDKGdk_event_new(cond287)
 				var newButtonEvent gtk.GdkEventButton = gtk.GdkEventButton{}
 				if type_ == MouseDown {
 					newButtonEvent.Type = gtk.GDKGDK_BUTTON_PRESS
@@ -3171,17 +3171,17 @@ func (this *Display) Post(eventLike EventLike) bool {
 				} else {
 					gtk.GDKGdk_event_free(eventPtr)
 				}
-				tret279 = true
-				tretd280 = true
+				tret284 = true
+				tretd285 = true
 				return
 			}
 		}
-		tret279 = false
-		tretd280 = true
+		tret284 = false
+		tretd285 = true
 		return
 	}()
-	_ = tretd280
-	return tret279
+	_ = tretd285
+	return tret284
 }
 
 func (this *Display) PostEvent(eventLike EventLike) {
@@ -3239,16 +3239,16 @@ func (this *Display) ReadAndDispatch() bool {
 	this.RunSkin()
 	this.RunDeferredLayouts()
 	var events bool = false
-	b283 := this.RunSettings()
-	events = events || b283
-	b284 := this.RunPopups()
-	events = events || b284
+	b288 := this.RunSettings()
+	events = events || b288
+	b289 := this.RunPopups()
+	events = events || b289
 	if gtk.GTKGTK4 {
-		b285 := gtk.OSG_main_context_iteration(int64(0), false)
-		events = events || b285
+		b290 := gtk.OSG_main_context_iteration(int64(0), false)
+		events = events || b290
 	} else {
-		b286 := gtk.GTK3Gtk_events_pending()
-		events = events || b286
+		b291 := gtk.GTK3Gtk_events_pending()
+		events = events || b291
 		gtk.GTK3Gtk_main_iteration_do(false)
 	}
 	if events {
@@ -3316,7 +3316,7 @@ func (this *Display) release_() {
 		this.tray = nil
 		{
 			for {
-				tbrk287 := false
+				tbrk292 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -3331,11 +3331,11 @@ func (this *Display) release_() {
 						}
 					}()
 					if !this.ReadAndDispatch() {
-						tbrk287 = true
+						tbrk292 = true
 						return
 					}
 				}()
-				if tbrk287 {
+				if tbrk292 {
 					break
 				}
 			}
@@ -3962,7 +3962,7 @@ func (this *Display) SetData(key string, value any) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == DisplayDISPATCH_EVENT_KEY {
-		if jrt.IsNil(value) || func() bool { _, ok288 := value.([]int32); return ok288 }() {
+		if jrt.IsNil(value) || func() bool { _, ok294 := value.([]int32); return ok294 }() {
 			this.dispatchEvents = value.([]int32)
 			if jrt.IsNil(value) {
 				this.PutGdkEvents()
@@ -4196,8 +4196,7 @@ func (this *Display) ShowIMWindow(controlLike ControlLike) {
 		var point *Point = control.ToDisplayPoint(control.impl.getIMCaretPos_())
 		gtk.GTK3Gtk_window_move(this.preeditWindow, point.X, point.Y)
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t289 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(this.preeditLabel, &requisition, &t289)
+		gtk.GTKGtk_widget_get_preferred_size(this.preeditLabel, &requisition, nil)
 		gtk.GTK3Gtk_window_resize(this.preeditWindow, requisition.Width, requisition.Height)
 		gtk.GTK3Gtk_widget_show(this.preeditWindow)
 	} else {
@@ -4242,9 +4241,9 @@ func (this *Display) Sleep() bool {
 			result = gtk.OSG_main_context_prepare(context, this.max_priority)
 			var nfds int32
 			for {
-				cond290 := gtk.OSG_main_context_query(context, this.max_priority[0], this.timeout, this.fds, this.allocated_nfds)
-				nfds = cond290
-				if !((cond290) > this.allocated_nfds) {
+				cond295 := gtk.OSG_main_context_query(context, this.max_priority[0], this.timeout, this.fds, this.allocated_nfds)
+				nfds = cond295
+				if !((cond295) > this.allocated_nfds) {
 					break
 				}
 				gtk.OSG_free(this.fds)
@@ -4427,24 +4426,24 @@ func (this *Display) SaveResources() {
 		this.resources = newResources
 	}
 	if this.errorImage != (nil) {
-		t291 := resourceCount
+		t296 := resourceCount
 		resourceCount++
-		this.resources[t291] = upcastImageToResource(this.errorImage)
+		this.resources[t296] = upcastImageToResource(this.errorImage)
 	}
 	if this.infoImage != (nil) {
-		t292 := resourceCount
+		t297 := resourceCount
 		resourceCount++
-		this.resources[t292] = upcastImageToResource(this.infoImage)
+		this.resources[t297] = upcastImageToResource(this.infoImage)
 	}
 	if this.questionImage != (nil) {
-		t293 := resourceCount
+		t298 := resourceCount
 		resourceCount++
-		this.resources[t293] = upcastImageToResource(this.questionImage)
+		this.resources[t298] = upcastImageToResource(this.questionImage)
 	}
 	if this.warningImage != (nil) {
-		t294 := resourceCount
+		t299 := resourceCount
 		resourceCount++
-		this.resources[t294] = upcastImageToResource(this.warningImage)
+		this.resources[t299] = upcastImageToResource(this.warningImage)
 	}
 	this.warningImage = nil
 	this.questionImage = this.warningImage
@@ -4452,9 +4451,9 @@ func (this *Display) SaveResources() {
 	this.errorImage = this.infoImage
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			t295 := resourceCount
+			t300 := resourceCount
 			resourceCount++
-			this.resources[t295] = upcastCursorToResource(this.cursors[i])
+			this.resources[t300] = upcastCursorToResource(this.cursors[i])
 		}
 		this.cursors[i] = nil
 	}
@@ -4618,19 +4617,19 @@ func (this *Display) Update() {
 
 func (this *Display) Wake() {
 	jrt.MonitorEnter()
-	tretd296 := false
+	tretd301 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if this.thread == jrt.CurrentThread() {
-			tretd296 = true
+			tretd301 = true
 			return
 		}
 		this.WakeThread()
 	}()
-	if tretd296 {
+	if tretd301 {
 		return
 	}
 }
@@ -4710,8 +4709,8 @@ func (this *Display) ActivateProc(action int64, parameter int64, user_data int64
 
 func (this *Display) MenuItemsChangedProc(model int64, position int32, removed int32, added int32, user_data int64) {
 	var widget *Widget = this.GetWidget(user_data)
-	menu, ok297 := isWidgetToMenu(widget)
-	if ok297 {
+	menu, ok302 := isWidgetToMenu(widget)
+	if ok302 {
 		menu.ModelItemsChanged()
 	}
 }
@@ -4911,24 +4910,24 @@ func DisplayDeregister(displayLike DisplayLike) {
 
 func DisplayFindDisplay(thread any) *Display {
 	jrt.MonitorEnter()
-	var tret298 *Display
-	tretd299 := false
+	var tret303 *Display
+	tretd304 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			var display *Display = DisplayDisplays[i]
 			if display != (nil) && display.thread == thread {
-				tret298 = display
-				tretd299 = true
+				tret303 = display
+				tretd304 = true
 				return
 			}
 		}
-		tret298 = nil
-		tretd299 = true
+		tret303 = nil
+		tretd304 = true
 		return
 	}()
-	_ = tretd299
-	return tret298
+	_ = tretd304
+	return tret303
 }
 
 func DisplayRendererClassInitProc(g_class int64, class_data int64) int64 {
@@ -4977,19 +4976,19 @@ func DisplayGetCurrent() *Display {
 
 func DisplayGetDefault() *Display {
 	jrt.MonitorEnter()
-	var tret300 *Display
-	tretd301 := false
+	var tret305 *Display
+	tretd306 := false
 	func() {
 		defer jrt.MonitorExit()
 		if DisplayDefault == (nil) {
 			DisplayDefault = NewDisplay()
 		}
-		tret300 = DisplayDefault
-		tretd301 = true
+		tret305 = DisplayDefault
+		tretd306 = true
 		return
 	}()
-	_ = tretd301
-	return tret300
+	_ = tretd306
+	return tret305
 }
 
 func DisplayIsSystemDarkTheme() bool {
@@ -5027,13 +5026,13 @@ func DisplayRegister(displayLike DisplayLike) {
 	}
 	_ = display
 	jrt.MonitorEnter()
-	tretd302 := false
+	tretd307 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			if DisplayDisplays[i] == (nil) {
 				DisplayDisplays[i] = display
-				tretd302 = true
+				tretd307 = true
 				return
 			}
 		}
@@ -5042,7 +5041,7 @@ func DisplayRegister(displayLike DisplayLike) {
 		newDisplays[int32(len(DisplayDisplays))] = display
 		DisplayDisplays = newDisplays
 	}()
-	if tretd302 {
+	if tretd307 {
 		return
 	}
 }

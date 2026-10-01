@@ -97,6 +97,7 @@ func (this *tabHooked) specialPopupMenuItems_(a0 *swt.Menu, a1 *swt.Event) {
 	}); ok && this.active != "specialPopupMenuItems_" {
 		defer this.enter("specialPopupMenuItems_")()
 		h.SpecialPopupMenuItems_(a0, a1)
+		return
 	}
 	this.TabImpl.specialPopupMenuItems_(a0, a1)
 }

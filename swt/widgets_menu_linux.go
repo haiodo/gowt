@@ -317,9 +317,9 @@ func (this *Menu) createHandle_(index int32) {
 		if firstSection == 0 {
 			this.Error(ERROR_NO_HANDLES)
 		}
-		inner199 := NewMenuSectionSectionHandle(firstSection)
-		inner199.this_0 = this
-		this.sections.Add(inner199)
+		inner197 := NewMenuSectionSectionHandle(firstSection)
+		inner197.this_0 = this
+		this.sections.Add(inner197)
 		var defaultSection int64 = gtk.OSG_menu_item_new_section(nil, firstSection)
 		gtk.OSG_menu_insert_item(this.modelHandle, 0, defaultSection)
 		gtk.OSG_object_unref(defaultSection)
@@ -449,9 +449,9 @@ func (this *Menu) GetItems() []*MenuItem {
 			var data int64 = gtk.OSG_list_data(list)
 			var item *MenuItem = castWidgetToMenuItem(this.display.GetWidget(data))
 			if item != (nil) {
-				t200 := index
+				t198 := index
 				index++
-				items[t200] = item
+				items[t198] = item
 			}
 			list = gtk.OSG_list_next(list)
 		}
@@ -600,8 +600,8 @@ func (this *Menu) ConnectDropDownMenuSignals() {
 	if this.items == (nil) {
 		return
 	}
-	for _, elem201 := range this.items.ToArray() {
-		menuItem := jrt.Cast[*MenuItem](elem201)
+	for _, elem199 := range this.items.ToArray() {
+		menuItem := jrt.Cast[*MenuItem](elem199)
 		if menuItem.menu == (nil) {
 			continue
 		}
@@ -633,8 +633,8 @@ func (this *Menu) ConnectCascadeSubMenuSignalsMenuParentPopoverHandle(menuLike M
 	if menu == (nil) || parentPopoverHandle == 0 || menu.items == (nil) {
 		return
 	}
-	for _, elem202 := range menu.items.ToArray() {
-		item := jrt.Cast[*MenuItem](elem202)
+	for _, elem200 := range menu.items.ToArray() {
+		item := jrt.Cast[*MenuItem](elem200)
 		if (item.style&CASCADE) != 0 && item.menu != (nil) {
 			var nestedPopover int64 = this.FindNestedPopoverForModel(parentPopoverHandle, item.menu.modelHandle)
 			if nestedPopover != 0 {
@@ -1157,13 +1157,13 @@ func (this *Menu_Section) initMenuSectionSectionHandle(sectionHandle int64) {
 }
 
 func (this *Menu_Section) GetSectionHandle() int64 {
-	var cond203 int64
+	var cond201 int64
 	if this.sectionHandle != 0 {
-		cond203 = this.sectionHandle
+		cond201 = this.sectionHandle
 	} else {
-		cond203 = this.separator.modelHandle
+		cond201 = this.separator.modelHandle
 	}
-	return cond203
+	return cond201
 }
 
 func (this *Menu_Section) GetItemPosition(itemLike MenuItemLike) int32 {
@@ -1181,6 +1181,24 @@ func (this *Menu_Section) GetSectionSize() int32 {
 
 func (this *Menu_Section) GetSectionPosition() int32 {
 	return this.this_0.items.IndexOf(this.separator)
+}
+
+// j2go: instanceof helper for MenuItem and its subclasses within the translated set.
+func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
+	if h, ok := x.(*widgetHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *MenuItem:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	if l, ok := x.(interface{ AsMenuItem() *MenuItem }); ok {
+		return l.AsMenuItem(), true
+	}
+	return nil, false
 }
 
 func upcastMenuToWidget(x *Menu) *Widget {

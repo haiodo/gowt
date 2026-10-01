@@ -398,57 +398,57 @@ func (this *Path) GetPathData() *PathData {
 			gtk.CairoMemmoveOverload1(&data, offset, int64(gtk.Cairo_path_data_tSizeof))
 			switch data.Type {
 			case gtk.CairoCAIRO_PATH_MOVE_TO:
-				t322 := typeIndex
-				typeIndex++
-				types[t322] = int8(PATH_MOVE_TO)
-				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof))
-				t323 := ptsIndex
-				ptsIndex++
-				pts[t323] = float32(points[0])
-				t324 := ptsIndex
-				ptsIndex++
-				pts[t324] = float32(points[1])
-				break
-			case gtk.CairoCAIRO_PATH_LINE_TO:
-				t325 := typeIndex
-				typeIndex++
-				types[t325] = int8(PATH_LINE_TO)
-				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof))
-				t326 := ptsIndex
-				ptsIndex++
-				pts[t326] = float32(points[0])
-				t327 := ptsIndex
-				ptsIndex++
-				pts[t327] = float32(points[1])
-				break
-			case gtk.CairoCAIRO_PATH_CURVE_TO:
 				t328 := typeIndex
 				typeIndex++
-				types[t328] = int8(PATH_CUBIC_TO)
-				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof*3))
+				types[t328] = int8(PATH_MOVE_TO)
+				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof))
 				t329 := ptsIndex
 				ptsIndex++
 				pts[t329] = float32(points[0])
 				t330 := ptsIndex
 				ptsIndex++
 				pts[t330] = float32(points[1])
-				t331 := ptsIndex
-				ptsIndex++
-				pts[t331] = float32(points[2])
+				break
+			case gtk.CairoCAIRO_PATH_LINE_TO:
+				t331 := typeIndex
+				typeIndex++
+				types[t331] = int8(PATH_LINE_TO)
+				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof))
 				t332 := ptsIndex
 				ptsIndex++
-				pts[t332] = float32(points[3])
+				pts[t332] = float32(points[0])
 				t333 := ptsIndex
 				ptsIndex++
-				pts[t333] = float32(points[4])
-				t334 := ptsIndex
+				pts[t333] = float32(points[1])
+				break
+			case gtk.CairoCAIRO_PATH_CURVE_TO:
+				t334 := typeIndex
+				typeIndex++
+				types[t334] = int8(PATH_CUBIC_TO)
+				gtk.CairoMemmoveOverload3(points, offset+int64(gtk.Cairo_path_data_tSizeof), int64(gtk.Cairo_path_data_tSizeof*3))
+				t335 := ptsIndex
 				ptsIndex++
-				pts[t334] = float32(points[5])
+				pts[t335] = float32(points[0])
+				t336 := ptsIndex
+				ptsIndex++
+				pts[t336] = float32(points[1])
+				t337 := ptsIndex
+				ptsIndex++
+				pts[t337] = float32(points[2])
+				t338 := ptsIndex
+				ptsIndex++
+				pts[t338] = float32(points[3])
+				t339 := ptsIndex
+				ptsIndex++
+				pts[t339] = float32(points[4])
+				t340 := ptsIndex
+				ptsIndex++
+				pts[t340] = float32(points[5])
 				break
 			case gtk.CairoCAIRO_PATH_CLOSE_PATH:
-				t335 := typeIndex
+				t341 := typeIndex
 				typeIndex++
-				types[t335] = int8(PATH_CLOSE)
+				types[t341] = int8(PATH_CLOSE)
 				break
 			}
 			i += data.Length
@@ -537,35 +537,20 @@ func (this *Path) InitData(dataLike PathDataLike) {
 		}() {
 			switch types[i] {
 			case int8(PATH_MOVE_TO):
-				t336 := j
-				j++
-				t337 := j
-				j++
-				this.MoveTo(points[t336], points[t337])
-				break
-			case int8(PATH_LINE_TO):
-				t338 := j
-				j++
-				t339 := j
-				j++
-				this.LineTo(points[t338], points[t339])
-				break
-			case int8(PATH_CUBIC_TO):
-				t340 := j
-				j++
-				t341 := j
-				j++
 				t342 := j
 				j++
 				t343 := j
 				j++
+				this.MoveTo(points[t342], points[t343])
+				break
+			case int8(PATH_LINE_TO):
 				t344 := j
 				j++
 				t345 := j
 				j++
-				this.CubicTo(points[t340], points[t341], points[t342], points[t343], points[t344], points[t345])
+				this.LineTo(points[t344], points[t345])
 				break
-			case int8(PATH_QUAD_TO):
+			case int8(PATH_CUBIC_TO):
 				t346 := j
 				j++
 				t347 := j
@@ -574,7 +559,22 @@ func (this *Path) InitData(dataLike PathDataLike) {
 				j++
 				t349 := j
 				j++
-				this.QuadTo(points[t346], points[t347], points[t348], points[t349])
+				t350 := j
+				j++
+				t351 := j
+				j++
+				this.CubicTo(points[t346], points[t347], points[t348], points[t349], points[t350], points[t351])
+				break
+			case int8(PATH_QUAD_TO):
+				t352 := j
+				j++
+				t353 := j
+				j++
+				t354 := j
+				j++
+				t355 := j
+				j++
+				this.QuadTo(points[t352], points[t353], points[t354], points[t355])
 				break
 			case int8(PATH_CLOSE):
 				this.Close()

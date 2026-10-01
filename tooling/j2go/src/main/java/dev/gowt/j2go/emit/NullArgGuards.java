@@ -94,6 +94,13 @@ final class NullArgGuards {
 		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
 	}
 
+	/** `x == null` against jrt.NullString, for an x that came from a NullableStrings method. */
+	static String nullSentinelCompare(Emitter emitter, InfixExpression ie, InfixExpression.Operator op) {
+		Expression other = ie.getRightOperand() instanceof NullLiteral ? ie.getLeftOperand() : ie.getRightOperand();
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+		return "(" + emitter.expr(other) + (op == InfixExpression.Operator.EQUALS ? " == " : " != ") + "jrt.NullString)";
+	}
+
 	private static boolean isElementGuard(InfixExpression ie, Expression other) {
 		InfixExpression.Operator op = ie.getOperator();
 		return (op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS)

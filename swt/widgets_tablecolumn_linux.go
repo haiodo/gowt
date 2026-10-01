@@ -174,11 +174,11 @@ func (this *TableColumn) gtk_clicked_(widget int64) int64 {
 			{
 				var clickTime int32 = this.display.GetDoubleClickTime()
 				if this.lastButton == eventButton[0] && this.lastTime != 0 && func() bool {
-					abs597 := this.lastTime - eventTime
-					if abs597 < 0 {
-						abs597 = -abs597
+					abs594 := this.lastTime - eventTime
+					if abs594 < 0 {
+						abs594 = -abs594
 					}
-					return abs597 <= clickTime
+					return abs594 <= clickTime
 				}() {
 					doubleClick = true
 				}
@@ -194,13 +194,13 @@ func (this *TableColumn) gtk_clicked_(widget int64) int64 {
 		this.Gdk_event_free(eventPtr)
 	}
 	if postEvent {
-		var cond598 int32
+		var cond595 int32
 		if doubleClick {
-			cond598 = DefaultSelection
+			cond595 = DefaultSelection
 		} else {
-			cond598 = Selection
+			cond595 = Selection
 		}
-		this.SendSelectionEvent(cond598)
+		this.SendSelectionEvent(cond595)
 	}
 	return int64(0)
 }

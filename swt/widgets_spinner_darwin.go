@@ -649,7 +649,7 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 		if this.Hooks(Verify) || this.Filters(Verify) {
 			var length int32 = int32(cell.Impl().Title().Length())
 			string_ = this.VerifyText(string_, 0, length, nil)
-			if string_ == "" {
+			if string_ == jrt.NullString {
 				return
 			}
 		}
@@ -716,7 +716,7 @@ func (this *Spinner) shouldChangeTextInRange_replacementString_(id int64, sel in
 			currentEvent = nil
 		}
 		var newText string = this.VerifyText(text, int32(range_.Location), int32((range_.Location + range_.Length)), currentEvent)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return false
 		}
 		if text != newText {
@@ -805,7 +805,7 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 	event.Doit = index == jrt.StringLength(string_)
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }

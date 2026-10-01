@@ -178,13 +178,13 @@ func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
 }
 
 func (this *Shell) initShellParentStyle(parent *Shell, style int32) {
-	var cond182 *Display
+	var cond180 *Display
 	if parent != (nil) {
-		cond182 = parent.display
+		cond180 = parent.display
 	} else {
-		cond182 = nil
+		cond180 = nil
 	}
-	this.initShellDisplayParentStyleHandleEmbedded(cond182, parent, style, int64(0), false)
+	this.initShellDisplayParentStyleHandleEmbedded(cond180, parent, style, int64(0), false)
 }
 
 func (this *Shell) AddShellListener(listener ShellListener) {
@@ -584,8 +584,7 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 					return int64(0)
 				}
 				if this.IsCustomResize() {
-					t183 := gtk.GdkRectangle{}
-					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), &t183, false)
+					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), nil, false)
 				}
 				break
 			}
@@ -606,8 +605,7 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 					return int64(0)
 				}
 				if this.IsCustomResize() {
-					t184 := gtk.GdkRectangle{}
-					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), &t184, false)
+					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), nil, false)
 				}
 				break
 			}
@@ -618,23 +616,23 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 }
 
 func (this *Shell) findBackgroundControl_() *Control {
-	var cond185 *Control
+	var cond181 *Control
 	if (this.state&WidgetBACKGROUND) != 0 || this.backgroundImage != (nil) {
-		cond185 = upcastShellToControl(this)
+		cond181 = upcastShellToControl(this)
 	} else {
-		cond185 = nil
+		cond181 = nil
 	}
-	return cond185
+	return cond181
 }
 
 func (this *Shell) findDeferredControl_() *Composite {
-	var cond186 *Composite
+	var cond182 *Composite
 	if this.layoutCount > 0 {
-		cond186 = upcastShellToComposite(this)
+		cond182 = upcastShellToComposite(this)
 	} else {
-		cond186 = nil
+		cond182 = nil
 	}
-	return cond186
+	return cond182
 }
 
 func (this *Shell) GetToolBar() *ToolBar {
@@ -840,8 +838,8 @@ func (this *Shell) ForceResizeWidthHeight(width int32, height int32) {
 			var window_offset_y []float64 = make([]float64, 1)
 			var validTranslation bool = gtk.GTK4Gtk_widget_translate_coordinates(this.vboxHandle, this.shellHandle, float64(0), float64(0), window_offset_x, window_offset_y)
 			if validTranslation && !this.IsMappedToPopup() {
-				allocation.X += int32(window_offset_x[0])
-				allocation.Y += int32(window_offset_y[0])
+				allocation.X = int32(float64(allocation.X) + window_offset_x[0])
+				allocation.Y = int32(float64(allocation.Y) + window_offset_y[0])
 			}
 		} else {
 			var dest_x []int32 = make([]int32, 1)
@@ -1079,9 +1077,9 @@ func (this *Shell) GetShells() []*Shell {
 			}
 		}
 		if shell == upcastShellToControl(this) {
-			t187 := index
+			t183 := index
 			index++
-			result[t187] = activeshell
+			result[t183] = activeshell
 		}
 	}
 	return result
@@ -1410,13 +1408,13 @@ func (this *Shell) gtk_size_allocate_(widget int64, allocation int64) int64 {
 	width = widthA[0]
 	height = heightA[0]
 	if (!this.resized || this.oldWidth != width || this.oldHeight != height) && func() bool {
-		var cond188 bool
+		var cond185 bool
 		if gtk.OSIsWayland() {
-			cond188 = ((this.style & RESIZE) != 0)
+			cond185 = ((this.style & RESIZE) != 0)
 		} else {
-			cond188 = true
+			cond185 = true
 		}
-		return (cond188)
+		return (cond185)
 	}() {
 		this.oldWidth = width
 		this.oldHeight = height
@@ -1537,7 +1535,6 @@ func (this *Shell) gtk_window_state_event_(widget int64, event int64) int64 {
 }
 
 func (this *Shell) notifyState_(object int64, arg0 int64) int64 {
-	func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert GTK.GTK4;
 	var gdkSurfaceState int32 = gtk.GTK4Gdk_toplevel_get_state(object)
 	this.minimized = (gdkSurfaceState & gtk.GDKGDK_SURFACE_STATE_MINIMIZED) != 0
 	this.maximized = (gdkSurfaceState & gtk.GDKGDK_SURFACE_STATE_MAXIMIZED) != 0
@@ -1566,8 +1563,8 @@ func (this *Shell) Open() {
 	}
 	if restored {
 		var focusControl *Control = this.display.GetFocusControl()
-		_, ok189 := isControlToButton(focusControl)
-		if ok189 && (focusControl.style&PUSH) != 0 {
+		_, ok187 := isControlToButton(focusControl)
+		if ok187 && (focusControl.style&PUSH) != 0 {
 			restored = false
 		}
 	}
@@ -2401,7 +2398,7 @@ func (this *Shell) setVisible_(visible bool) {
 	}
 }
 
-func (this *Shell) setZOrder_(sibling *Control, above bool, fixRelations bool) {
+func (this *Shell) setZOrderLocal1_(sibling *Control, above bool, fixRelations bool) {
 	if this.mapped {
 		this.SetZOrderSiblingAboveFixRelationsFixChildren(sibling, above, false, false)
 	}
@@ -2665,7 +2662,7 @@ func (this *Shell) UpdateMinimized(minimized bool) {
 func (this *Shell) deregister_() {
 	this.Decorations.deregister_()
 	var disposed *Widget = this.display.RemoveWidget(this.shellHandle)
-	if this.shellHandle != 0 && func() bool { _, ok190 := isWidgetToShell(disposed); return !(ok190) }() {
+	if this.shellHandle != 0 && func() bool { _, ok189 := isWidgetToShell(disposed); return !(ok189) }() {
 		ErrorCodeThrowableDetail(ERROR_INVALID_RETURN_VALUE, nil, fmt.Sprintf(". Wrong widgetTable entry: %v removed for shell: %v%s", disposed, this, this.display.DumpWidgetTableInfoManual()))
 	}
 	StrictChecksRunIfStrictChecksEnabled(jrt.NewRunnable(func() {
@@ -2852,21 +2849,21 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
-		var cond191 int32
+		var cond190 int32
 		if parent == (nil) {
-			cond191 = SHELL_TRIM
+			cond190 = SHELL_TRIM
 		} else {
-			cond191 = DIALOG_TRIM
+			cond190 = DIALOG_TRIM
 		}
-		style |= cond191
+		style |= cond190
 		if (style & mask) == 0 {
-			var cond192 int32
+			var cond191 int32
 			if parent == (nil) {
-				cond192 = APPLICATION_MODAL
+				cond191 = APPLICATION_MODAL
 			} else {
-				cond192 = PRIMARY_MODAL
+				cond191 = PRIMARY_MODAL
 			}
-			style |= cond192
+			style |= cond191
 		}
 	}
 	var bits int32 = style & ^mask

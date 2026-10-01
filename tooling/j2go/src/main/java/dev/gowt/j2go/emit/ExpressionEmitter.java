@@ -151,6 +151,7 @@ final class ExpressionEmitter {
 	private String emitPrefix(PrefixExpression pf) {
 		String op = pf.getOperator().toString();
 		if (op.equals("-") || op.equals("!")) return op + emitExpr(pf.getOperand());
+		if (op.equals("+")) return emitExpr(pf.getOperand());
 		if (op.equals("~")) return "^" + emitExpr(pf.getOperand()); // Java's bitwise complement is Go's ^x
 		if (op.equals("++") || op.equals("--")) {
 			// Go has no pre-increment expression: bump first, then read the now-new value.

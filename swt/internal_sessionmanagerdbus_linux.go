@@ -146,8 +146,8 @@ func (this *SessionManagerDBus) HandleEndSession() {
 }
 
 func (this *SessionManagerDBus) HandleStop() {
-	for _, elem736 := range this.listeners.ToArray() {
-		listener := jrt.Cast[SessionManagerDBus_IListener](elem736)
+	for _, elem737 := range this.listeners.ToArray() {
+		listener := jrt.Cast[SessionManagerDBus_IListener](elem737)
 		listener.Stop()
 	}
 }
@@ -206,7 +206,7 @@ func (this *SessionManagerDBus) ClaimDesktopAutostartID() string {
 	var DESKTOP_AUTOSTART_ID []int8 = gtk.ConverterJavaStringToCString("DESKTOP_AUTOSTART_ID")
 	var valueC int64 = gtk.OSG_getenv(DESKTOP_AUTOSTART_ID)
 	if valueC == 0 {
-		return ""
+		return jrt.NullString
 	}
 	var result string = gtk.ConverterCCharPtrToJavaString(valueC, false)
 	gtk.OSG_unsetenv(DESKTOP_AUTOSTART_ID)
@@ -225,7 +225,7 @@ func (this *SessionManagerDBus) RegisterClient(appID string, clientStartupID str
 	}
 	this.clientObjectPath = SessionManagerDBusExtractVariantTupleS(clientInfo)
 	gtk.OSG_variant_unref(clientInfo)
-	return ""
+	return jrt.NullString
 }
 
 func (this *SessionManagerDBus) RegisterClient0() bool {
@@ -234,9 +234,9 @@ func (this *SessionManagerDBus) RegisterClient0() bool {
 		appID = "org.eclipse.swt.Application"
 	}
 	var desktopAutostartID string = this.ClaimDesktopAutostartID()
-	if desktopAutostartID != "" {
+	if desktopAutostartID != jrt.NullString {
 		var errorText string = this.RegisterClient(appID, desktopAutostartID)
-		if errorText == "" {
+		if errorText == jrt.NullString {
 			return true
 		}
 		var parentLeakedID bool = strings.HasPrefix(errorText, "GDBus.Error:org.gnome.SessionManager.AlreadyRegistered:")
@@ -245,7 +245,7 @@ func (this *SessionManagerDBus) RegisterClient0() bool {
 		}
 	}
 	var errorText string = this.RegisterClient(appID, "")
-	if errorText == "" {
+	if errorText == jrt.NullString {
 		return true
 	}
 	if !this.isGnome && strings.HasPrefix(errorText, "GDBus.Error:org.freedesktop.DBus.Error.UnknownMethod: ") {

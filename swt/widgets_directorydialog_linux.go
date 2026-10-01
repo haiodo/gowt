@@ -67,8 +67,8 @@ func (this *DirectoryDialog) GetMessage() string {
 }
 
 func (this *DirectoryDialog) Open() string {
-	var tret585 string
-	tretd586 := false
+	var tret582 string
+	tretd583 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -85,8 +85,8 @@ func (this *DirectoryDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret585 = ""
-					tretd586 = true
+					tret582 = ""
+					tretd583 = true
 					return
 				}
 				panic(e)
@@ -94,12 +94,12 @@ func (this *DirectoryDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret585 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd586 = true
+		tret582 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd583 = true
 		return
 	}()
-	_ = tretd586
-	return tret585
+	_ = tretd583
+	return tret582
 }
 
 func (this *DirectoryDialog) OpenDialog() *jrt.Optional {
@@ -161,14 +161,14 @@ func (this *DirectoryDialog) OpenNativeChooserDialog() *jrt.Optional {
 	var file int64 = int64(0)
 	if gtk.GTKGTK4 {
 		if gtk.GTKGTK_VERSION >= gtk.OSVERSION(4, 10, 0) {
-			anon587 := &DirectoryDialogAnon1{}
-			anon587.fnAsync = func(result int64) {
+			anon584 := &DirectoryDialogAnon1{}
+			anon584.fnAsync = func(result int64) {
 				gtk.GTK4Gtk_file_dialog_select_folder(handle, shellHandle, int64(0), result, int64(0))
 			}
-			anon587.fnAwait = func(result int64) int64 {
+			anon584.fnAwait = func(result int64) int64 {
 				return gtk.GTK4Gtk_file_dialog_select_folder_finish(handle, result, nil)
 			}
-			file = SyncDialogUtilRun(display, anon587)
+			file = SyncDialogUtilRun(display, anon584)
 			if file != 0 {
 				response = gtk.GTKGTK_RESPONSE_ACCEPT
 			} else {

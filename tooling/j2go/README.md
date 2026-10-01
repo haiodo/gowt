@@ -3158,6 +3158,22 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 - **Struct parameters written through.** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
   body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. All platforms; cocoa gets three
   (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`), win32 none (its output is unchanged).
+
+- State: `GOOS=linux go build ./...` passes in the stand, `cmd/hello` runs on Xvfb, `make test-swt` 3314 passed / 21 failed / 6 skipped (3341); every failure has its cause in
+  `tests/expected_linux.txt`. `cmd/controlexample -snap` and `cmd/images` capture the window (`internal/shot`); references in `tests/snapshots_linux`.
+  Not done: api parity of package-private methods (apidump cannot tell Java visibility), GDBus/GTK4 paths (GTK 4 names compile and panic when called).
+- **Round 20b (linuxfix).** The linux files were regenerated with the current translator (the assert no-op and the generic-lambda tail return were missing: 38 tests). Translator and jrt
+  changes that came out of the failure groups: `java.util.Calendar/Date` and `java.text.DateFormat/FieldPosition/AttributedCharacterIterator` over `time` in `internal/jrt/datetime.go`
+  (English/US patterns only; gtk's DateTime, 318 tests); unary `+`; `Character.isAlphabetic/toString`; a block lambda ending in try/finally returns like a method; `x instanceof T` / `(T) x`
+  where x already has the manual Go type; void hook dispatchers (`<class>Hooked`) return after the hook instead of also running the default (a Layout subclass in a test did both);
+  a struct parameter that is also null-tested stays a pointer (`TextLayout.MetricsAdapter.pango_layout_iter_get_line_extents` never filled its out rectangle); `NullableStrings`: a non-public
+  String method that `return null` whose caller tests the result (`Text.verifyText`) returns `jrt.NullString` to safe call sites (`call() == null`, or `v = call();` and an `if (v == null ...)` that
+  keeps v away from the null branch) and `jrt.NullToEmpty(...)` elsewhere; before, a Verify listener turned every deletion (cut, Delete) into "rejected". The cocoa files of those classes changed too.
+  `GTKGtk_im_context_set_client_window` (internal/gtk/glue_misc.go) holds a reference on the window it gave a GtkIMMulticontext: GTK reads the previous client window on the next call and
+  the SwtFixed window it pointed to was already freed (SIGSEGV in gdk_window_get_screen when ControlExample switched tabs). `make gtk-gen` needs the stand image rebuilt (Gtk-4.0.gir).
+- **Struct parameters written through (gtk).** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
+  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. Only gtk: cocoa has three such parameters
+  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`) left by value until a GUI run on the Mac can check them.
 ## Round 20 (win32): the Windows port (TSK-2026-09-23-039..042, -047)
 
 `PLATFORM=win32 make gen` translates `Eclipse SWT/win32` into `swt/*_windows.go` and `Eclipse SWT PI/win32` (win32, win32/version, gdip,

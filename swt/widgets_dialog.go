@@ -28,6 +28,7 @@ func (this *dialogHooked) checkSubclass_() {
 	if h, ok := this.hook.(interface{ CheckSubclass_() }); ok && this.active != "checkSubclass_" {
 		defer this.enter("checkSubclass_")()
 		h.CheckSubclass_()
+		return
 	}
 	this.DialogImpl.checkSubclass_()
 }

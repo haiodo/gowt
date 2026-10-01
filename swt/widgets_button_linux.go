@@ -126,8 +126,7 @@ func (this *Button) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint int
 			if gtk.GTKGTK4 {
 				var icon int64 = gtk.GTK4Gtk_widget_get_first_child(this.Handle)
 				var minimum gtk.GtkRequisition = gtk.GtkRequisition{}
-				t193 := gtk.GtkRequisition{}
-				gtk.GTKGtk_widget_get_preferred_size(icon, &minimum, &t193)
+				gtk.GTKGtk_widget_get_preferred_size(icon, &minimum, nil)
 				var context int64 = gtk.GTKGtk_widget_get_style_context(icon)
 				var margin gtk.GtkBorder = gtk.GtkBorder{}
 				gtk.GTK4Gtk_style_context_get_margin(context, &margin)
@@ -182,20 +181,20 @@ func (this *Button) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint int
 		gtk.OSPango_layout_get_pixel_size(labelLayout, w, h)
 		gtk.OSPango_layout_set_width(labelLayout, pangoWidth)
 		size = NewPoint(0, 0)
-		var cond194 int32
+		var cond192 int32
 		if wHint == DEFAULT {
-			cond194 = w[0] + imageWidth + trimWidth
+			cond192 = w[0] + imageWidth + trimWidth
 		} else {
-			cond194 = wHint
+			cond192 = wHint
 		}
-		size.X += cond194
-		var cond195 int32
+		size.X += cond192
+		var cond193 int32
 		if hHint == DEFAULT {
-			cond195 = int32(math.Max(float64(int32(math.Max(float64(imageHeight), float64(indicatorHeight)))), float64(h[0]))) + trimHeight
+			cond193 = int32(math.Max(float64(int32(math.Max(float64(imageHeight), float64(indicatorHeight)))), float64(h[0]))) + trimHeight
 		} else {
-			cond195 = hHint
+			cond193 = hHint
 		}
-		size.Y += cond195
+		size.Y += cond193
 	} else {
 		size = this.impl.computeNativeSize_(this.Handle, wHint, hHint, changed)
 	}
@@ -1076,13 +1075,13 @@ func (this *Button) SetText(string_ string) {
 	gtk.GTKGtk_label_set_text_with_mnemonic(this.labelHandle, buffer)
 	this.UpdateWidgetsVisibility()
 	this._setAlignment(this.style)
-	var cond196 int64
+	var cond194 int64
 	if this.font == (nil) {
-		cond196 = this.impl.defaultFont_().Handle
+		cond194 = this.impl.defaultFont_().Handle
 	} else {
-		cond196 = this.font.Handle
+		cond194 = this.font.Handle
 	}
-	this.impl.setFontDescriptionFont_(cond196)
+	this.impl.setFontDescriptionFont_(cond194)
 }
 
 func (this *Button) UpdateWidgetsVisibility() {

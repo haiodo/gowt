@@ -116,8 +116,8 @@ func (this *Font) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok245 := resourceImplAsFont(object)
-	if !(ok245) {
+	_, ok247 := resourceImplAsFont(object)
+	if !(ok247) {
 		return false
 	}
 	return this.Handle == (castanyToFont(object)).Handle

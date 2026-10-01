@@ -155,13 +155,13 @@ func (this *Decorations) Compare(data1Like ImageDataLike, data2Like ImageDataLik
 		}
 		return 0
 	}
-	var cond180 int32
+	var cond178 int32
 	if data1.Width > data2.Width || data1.Height > data2.Height {
-		cond180 = -1
+		cond178 = -1
 	} else {
-		cond180 = 1
+		cond178 = 1
 	}
-	return cond180
+	return cond178
 }
 
 func (this *Decorations) computeTabGroup_() *Widget {
@@ -449,13 +449,13 @@ func (this *Decorations) SetImage(imageLike ImageLike) {
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond181 []*Image
+	var cond179 []*Image
 	if image != (nil) {
-		cond181 = []*Image{image}
+		cond179 = []*Image{image}
 	} else {
-		cond181 = nil
+		cond179 = nil
 	}
-	this._setImages(cond181)
+	this._setImages(cond179)
 }
 
 func (this *Decorations) SetImages(images []*Image) {

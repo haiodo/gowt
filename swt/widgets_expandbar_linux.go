@@ -261,9 +261,9 @@ func (this *ExpandBar) gtk3_key_press_event_(widget int64, event int64) int64 {
 		offset = -1
 	}
 	for {
-		cond538 := (index + offset + this.itemCount) % this.itemCount
-		index = cond538
-		if !((cond538) != start) {
+		cond536 := (index + offset + this.itemCount) % this.itemCount
+		index = cond536
+		if !((cond536) != start) {
 			break
 		}
 		var item *ExpandItem = this.items[index]

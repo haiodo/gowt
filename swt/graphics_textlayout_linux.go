@@ -181,19 +181,19 @@ func (this *TextLayout) ComputeRuns() {
 		for i := int32(0); i < int32(len(chars)); i++ {
 			var c uint16 = chars[i]
 			if int32(c) == int32(TextLayoutZWS) && lineOffsets != (nil) && lineIndex < int32(len(lineOffsets)) && i == lineOffsets[lineIndex] {
-				t428 := offsetCount
+				t434 := offsetCount
 				offsetCount++
-				this.invalidOffsets[t428] = i
-				t429 := offsetCount
+				this.invalidOffsets[t434] = i
+				t435 := offsetCount
 				offsetCount++
 				i++
-				this.invalidOffsets[t429] = i
+				this.invalidOffsets[t435] = i
 				lineIndex++
 			} else {
 				if segmentCount < nSegments && i-offsetCount == this.segments[segmentCount] {
-					t430 := offsetCount
+					t436 := offsetCount
 					offsetCount++
-					this.invalidOffsets[t430] = i
+					this.invalidOffsets[t436] = i
 					segmentCount++
 				}
 			}
@@ -492,7 +492,7 @@ func (this *TextLayout) DrawInPixels(gcLike GCLike, x int32, y int32, selectionS
 		var lineIndex int32 = 0
 		for {
 			var lineEnd int32
-			this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, gtk.PangoRectangle{}, rect)
+			this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, nil, &rect)
 			if gtk.OSPango_layout_iter_next_line(iter) {
 				var bytePos int32 = gtk.OSPango_layout_iter_get_index(iter)
 				lineEnd = int32(gtk.OSG_utf16_pointer_to_offset(ptr, ptr+int64(bytePos)))
@@ -762,21 +762,21 @@ func (this *TextLayout) GetAlignment() int32 {
 	var rtl bool = gtk.OSPango_context_get_base_dir(this.context) == gtk.OSPANGO_DIRECTION_RTL
 	switch align {
 	case gtk.OSPANGO_ALIGN_LEFT:
-		var cond431 int32
+		var cond437 int32
 		if rtl {
-			cond431 = RIGHT
+			cond437 = RIGHT
 		} else {
-			cond431 = LEFT
+			cond437 = LEFT
 		}
-		return cond431
+		return cond437
 	case gtk.OSPANGO_ALIGN_RIGHT:
-		var cond432 int32
+		var cond438 int32
 		if rtl {
-			cond432 = LEFT
+			cond438 = LEFT
 		} else {
-			cond432 = RIGHT
+			cond438 = RIGHT
 		}
-		return cond432
+		return cond438
 	}
 	return CENTER
 }
@@ -845,7 +845,7 @@ func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 	}
 	var lineEnd int32 = 0
 	for {
-		this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, gtk.PangoRectangle{}, pangoRect)
+		this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, nil, &pangoRect)
 		if gtk.OSPango_layout_iter_next_line(iter) {
 			lineEnd = gtk.OSPango_layout_iter_get_index(iter) - 1
 		} else {
@@ -950,7 +950,7 @@ func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32, iter int64) *Rect
 		Error(ERROR_NO_HANDLES)
 	}
 	var rect gtk.PangoRectangle = gtk.PangoRectangle{}
-	this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, gtk.PangoRectangle{}, rect)
+	this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, nil, &rect)
 	var x int32 = gtk.OSPANGO_PIXELS(rect.X)
 	var y int32 = gtk.OSPANGO_PIXELS(rect.Y)
 	var width int32 = gtk.OSPANGO_PIXELS(rect.Width)
@@ -1025,7 +1025,7 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 		gtk.OSPango_font_metrics_unref(metrics)
 	} else {
 		var rect gtk.PangoRectangle = gtk.PangoRectangle{}
-		this.metricsAdapter.Pango_layout_line_get_extents(gtk.OSPango_layout_get_line(this.layout, lineIndex), gtk.PangoRectangle{}, rect)
+		this.metricsAdapter.Pango_layout_line_get_extents(gtk.OSPango_layout_get_line(this.layout, lineIndex), nil, &rect)
 		ascentInPoints = gtk.OSPANGO_PIXELS(-rect.Y)
 		heightInPoints = gtk.OSPANGO_PIXELS(rect.Height)
 	}
@@ -1214,7 +1214,7 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 	}
 	var rect gtk.PangoRectangle = gtk.PangoRectangle{}
 	for {
-		this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, gtk.PangoRectangle{}, rect)
+		this.metricsAdapter.Pango_layout_iter_get_line_extents(iter, nil, &rect)
 		rect.Y = gtk.OSPANGO_PIXELS(rect.Y)
 		rect.Height = gtk.OSPANGO_PIXELS(rect.Height)
 		if rect.Y <= y && y < rect.Y+rect.Height {
@@ -1250,13 +1250,13 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 func (this *TextLayout) GetOrientation() int32 {
 	this.CheckLayout()
 	var baseDir int32 = gtk.OSPango_context_get_base_dir(this.context)
-	var cond433 int32
+	var cond439 int32
 	if baseDir == gtk.OSPANGO_DIRECTION_RTL {
-		cond433 = RIGHT_TO_LEFT
+		cond439 = RIGHT_TO_LEFT
 	} else {
-		cond433 = LEFT_TO_RIGHT
+		cond439 = LEFT_TO_RIGHT
 	}
-	return cond433
+	return cond439
 }
 
 func (this *TextLayout) GetPreviousOffset(offset int32, movement int32) int32 {
@@ -1269,12 +1269,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t434 := count
+			t440 := count
 			count++
-			result[t434] = this.styles[i].start
-			t435 := count
+			result[t440] = this.styles[i].start
+			t441 := count
 			count++
-			result[t435] = this.styles[i+1].start - 1
+			result[t441] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1336,14 +1336,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t436 := segmentCount
+			t442 := segmentCount
 			segmentCount++
-			newChars[charCount+t436] = separator
+			newChars[charCount+t442] = separator
 		} else {
-			idx438 := charCount + segmentCount
-			t437 := charCount
+			idx444 := charCount + segmentCount
+			t443 := charCount
 			charCount++
-			newChars[idx438] = oldChars[t437]
+			newChars[idx444] = oldChars[t443]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1354,9 +1354,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t439 := segmentCount
+		t445 := segmentCount
 		segmentCount++
-		newChars[charCount+t439] = separator
+		newChars[charCount+t445] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1399,9 +1399,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t440 := count
+			t446 := count
 			count++
-			result[t440] = this.styles[i].style
+			result[t446] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -1530,13 +1530,13 @@ func (this *TextLayout) SetFont(fontLike FontLike) {
 	if oldFont != (nil) && oldFont.Equals(font) {
 		return
 	}
-	var cond441 int64
+	var cond447 int64
 	if font != (nil) {
-		cond441 = font.Handle
+		cond447 = font.Handle
 	} else {
-		cond441 = this.device.systemFont.Handle
+		cond447 = this.device.systemFont.Handle
 	}
-	gtk.OSPango_layout_set_font_description(this.layout, cond441)
+	gtk.OSPango_layout_set_font_description(this.layout, cond447)
 }
 
 func (this *TextLayout) SetIndent(indent int32) {
@@ -1822,13 +1822,13 @@ func (this *TextLayout) SetWidth0() {
 	if this.wrapWidth == -1 {
 		gtk.OSPango_layout_set_width(this.layout, -1)
 		var rtl bool = gtk.OSPango_context_get_base_dir(this.context) == gtk.OSPANGO_DIRECTION_RTL
-		var cond442 int32
+		var cond448 int32
 		if rtl {
-			cond442 = gtk.OSPANGO_ALIGN_RIGHT
+			cond448 = gtk.OSPANGO_ALIGN_RIGHT
 		} else {
-			cond442 = gtk.OSPANGO_ALIGN_LEFT
+			cond448 = gtk.OSPANGO_ALIGN_LEFT
 		}
-		gtk.OSPango_layout_set_alignment(this.layout, cond442)
+		gtk.OSPango_layout_set_alignment(this.layout, cond448)
 	} else {
 		var margin int32 = int32(math.Min(float64(this.indent), float64(this.wrapIndent)))
 		gtk.OSPango_layout_set_width(this.layout, (this.wrapWidth-margin)*gtk.OSPANGO_SCALE)
@@ -1977,8 +1977,7 @@ func (this *TextLayout_MetricsAdapter) WantToRealInPango(realMetrics *gtk.PangoR
 
 func (this *TextLayout_MetricsAdapter) WantToRealInPangoLine(line int64) int32 {
 	var rect gtk.PangoRectangle = gtk.PangoRectangle{}
-	t443 := gtk.PangoRectangle{}
-	gtk.OSPango_layout_line_get_extents(line, &t443, &rect)
+	gtk.OSPango_layout_line_get_extents(line, nil, &rect)
 	return this.WantToRealInPango(&rect)
 }
 
@@ -2069,25 +2068,25 @@ func (this *TextLayout_MetricsAdapter) Pango_layout_get_size(layout int64, width
 	}
 }
 
-func (this *TextLayout_MetricsAdapter) Pango_layout_iter_get_line_extents(iter int64, ink_rect gtk.PangoRectangle, logical_rect gtk.PangoRectangle) {
-	gtk.OSPango_layout_iter_get_line_extents(iter, &ink_rect, &logical_rect)
+func (this *TextLayout_MetricsAdapter) Pango_layout_iter_get_line_extents(iter int64, ink_rect *gtk.PangoRectangle, logical_rect *gtk.PangoRectangle) {
+	gtk.OSPango_layout_iter_get_line_extents(iter, ink_rect, logical_rect)
 	if this.IsFixedMetrics() {
-		if ink_rect != (gtk.PangoRectangle{}) {
+		if ink_rect != nil {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
-		if logical_rect != (gtk.PangoRectangle{}) {
+		if logical_rect != nil {
 			logical_rect.Height = gtk.OSPANGO_SCALE * this.lineMetricsInPixels.GetHeight()
 		}
 	}
 }
 
-func (this *TextLayout_MetricsAdapter) Pango_layout_line_get_extents(line int64, ink_rect gtk.PangoRectangle, logical_rect gtk.PangoRectangle) {
-	gtk.OSPango_layout_line_get_extents(line, &ink_rect, &logical_rect)
+func (this *TextLayout_MetricsAdapter) Pango_layout_line_get_extents(line int64, ink_rect *gtk.PangoRectangle, logical_rect *gtk.PangoRectangle) {
+	gtk.OSPango_layout_line_get_extents(line, ink_rect, logical_rect)
 	if this.IsFixedMetrics() {
-		if ink_rect != (gtk.PangoRectangle{}) {
+		if ink_rect != nil {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
-		if logical_rect != (gtk.PangoRectangle{}) {
+		if logical_rect != nil {
 			logical_rect.Height = gtk.OSPANGO_SCALE * this.lineMetricsInPixels.GetHeight()
 		}
 	}

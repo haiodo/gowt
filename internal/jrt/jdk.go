@@ -207,6 +207,14 @@ func compareOrdered(a, b any) int32 {
 // null-argument guards compare against it, since an ordinary "" is a legal String.
 const NullString = "\x00null"
 
+// NullToEmpty turns the NullString sentinel back into "" where a null String result is used as a plain value.
+func NullToEmpty(s string) string {
+	if s == NullString {
+		return ""
+	}
+	return s
+}
+
 func isASCII(s string) bool {
 	for i := 0; i < len(s); i++ {
 		if s[i] >= 0x80 {

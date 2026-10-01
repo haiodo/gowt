@@ -38,6 +38,7 @@ func (this *resourceHooked) dispose_() {
 	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
 		defer this.enter("dispose_")()
 		h.Dispose_()
+		return
 	}
 	this.ResourceImpl.dispose_()
 }

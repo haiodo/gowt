@@ -144,9 +144,9 @@ func (this *Tree) _getItemParentIterIterIndex(parentIter int64, iter int64, inde
 	if this.items[id] != (nil) {
 		return this.items[id]
 	}
-	cond447 := newTreeItemParentParentIterStyleIndexIter(this, parentIter, NONE, index, iter)
-	this.items[id] = cond447
-	return cond447
+	cond452 := newTreeItemParentParentIterStyleIndexIter(this, parentIter, NONE, index, iter)
+	this.items[id] = cond452
+	return cond452
 }
 
 func (this *Tree) ReallocateIds(newSize int32) {
@@ -281,7 +281,7 @@ func (this *Tree) cellDataProc_(tree_column int64, cell int64, tree_model int64,
 	}
 	if setData || updated {
 		this.ignoreCell = cell
-		this.SetScrollWidth(tree_column, item)
+		this.SetScrollWidthLocal1(tree_column, item)
 		this.ignoreCell = int64(0)
 	}
 	return int64(0)
@@ -360,8 +360,7 @@ func (this *Tree) CalculateWidth(column int64, iter int64, recurse bool) int32 {
 			if gtk.GTKGTK4 {
 				var image int64 = gtk.GTK4Gtk_image_new_from_icon_name(gtk.GTKGTK_NAMED_ICON_PAN_DOWN)
 				var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-				t448 := gtk.GtkRequisition{}
-				gtk.GTKGtk_widget_get_preferred_size(image, &requisition, &t448)
+				gtk.GTKGtk_widget_get_preferred_size(image, &requisition, nil)
 				width += requisition.Width + TreeItemEXPANDER_EXTRA_PADDING
 			} else {
 				gtk.GTK3Gtk_widget_style_get(this.Handle, gtk.OSExpander_size, w, int64(0))
@@ -532,9 +531,9 @@ func (this *Tree) CopyModel(oldModel int64, oldStart int32, newModel int64, newS
 				item = this.items[index]
 				if item != (nil) {
 					var oldIterator int64 = item.Handle
-					t449 := oldIndex
+					t453 := oldIndex
 					oldIndex++
-					oldItems[t449] = oldIterator
+					oldItems[t453] = oldIterator
 					for iColumn := int32(0); iColumn < TreeFIRST_COLUMN; iColumn++ {
 						gtk.GTKGtk_tree_model_get_value(oldModel, oldIterator, iColumn, value)
 						gtk.GTKGtk_tree_store_set_value(newModel, newIterator, iColumn, value)
@@ -613,13 +612,13 @@ func (this *Tree) CreateColumn(columnLike TreeColumnLike, index int32) {
 		var checkColumn *TreeColumn = this.columns[0]
 		this.CreateRenderers(checkColumn.Handle, checkColumn.modelIndex, false, checkColumn.style)
 	}
-	var cond450 int32
+	var cond454 int32
 	if column == (nil) {
-		cond450 = 0
+		cond454 = 0
 	} else {
-		cond450 = column.style
+		cond454 = column.style
 	}
-	this.CreateRenderers(columnHandle, modelIndex, index == 0, cond450)
+	this.CreateRenderers(columnHandle, modelIndex, index == 0, cond454)
 	if (this.style&VIRTUAL) == 0 && this.columnCount == 0 {
 		gtk.GTKGtk_tree_view_column_set_sizing(columnHandle, gtk.GTKGTK_TREE_VIEW_COLUMN_GROW_ONLY)
 	} else {
@@ -802,9 +801,9 @@ func (this *Tree) CreateItem(columnLike TreeColumnLike, index int32) {
 		copy(newColumns[0:], this.columns[0:0+int32(len(this.columns))])
 		this.columns = newColumns
 	}
-	t451 := this.columnCount
+	t455 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t451-index])
+	copy(this.columns[index+1:], this.columns[index:index+t455-index])
 	this.columns[index] = column
 	if (this.state & WidgetFONT) != 0 {
 		var fontDesc int64 = this.GetFontDescription()
@@ -1264,9 +1263,9 @@ func (this *Tree) GetColumnOrder() []int32 {
 		if column != 0 {
 			for j := int32(0); j < this.columnCount; j++ {
 				if this.columns[j].Handle == column {
-					t452 := i
+					t456 := i
 					i++
-					order[t452] = j
+					order[t456] = j
 					break
 				}
 			}
@@ -1346,24 +1345,24 @@ func (this *Tree) GetGridLineWidth() int32 {
 
 func (this *Tree) GetHeaderBackground() *Color {
 	this.CheckWidget()
-	var cond453 *Color
+	var cond457 *Color
 	if this.headerBackground != (nil) {
-		cond453 = this.headerBackground
+		cond457 = this.headerBackground
 	} else {
-		cond453 = this.display.impl.getSystemColor_(COLOR_LIST_BACKGROUND)
+		cond457 = this.display.impl.getSystemColor_(COLOR_LIST_BACKGROUND)
 	}
-	return cond453
+	return cond457
 }
 
 func (this *Tree) GetHeaderForeground() *Color {
 	this.CheckWidget()
-	var cond454 *Color
+	var cond458 *Color
 	if this.headerForeground != (nil) {
-		cond454 = this.headerForeground
+		cond458 = this.headerForeground
 	} else {
-		cond454 = this.display.impl.getSystemColor_(COLOR_LIST_FOREGROUND)
+		cond458 = this.display.impl.getSystemColor_(COLOR_LIST_FOREGROUND)
 	}
-	return cond454
+	return cond458
 }
 
 func (this *Tree) GetHeaderHeight() int32 {
@@ -1487,8 +1486,7 @@ func (this *Tree) GetItemHeight() int32 {
 		if gtk.GTKGTK4 {
 			gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, h)
 		} else {
-			t455 := gtk.GdkRectangle{}
-			gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t455, nil, nil, nil, h)
+			gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, nil, h)
 		}
 		height = h[0]
 		var textRenderer int64 = this.GetTextRenderer(column)
@@ -1508,8 +1506,7 @@ func (this *Tree) GetItemHeight() int32 {
 			if gtk.GTKGTK4 {
 				gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, h)
 			} else {
-				t456 := gtk.GdkRectangle{}
-				gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t456, nil, nil, nil, h)
+				gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, nil, h)
 			}
 			var textRenderer int64 = this.GetTextRenderer(column)
 			var ypad []int32 = make([]int32, 1)
@@ -3063,13 +3060,13 @@ func (this *Tree) SetHeaderVisible(show bool) {
 
 func (this *Tree) SetLinesVisible(show bool) {
 	this.CheckWidget()
-	var cond457 int32
+	var cond459 int32
 	if show {
-		cond457 = gtk.GTKGTK_TREE_VIEW_GRID_LINES_VERTICAL
+		cond459 = gtk.GTKGTK_TREE_VIEW_GRID_LINES_VERTICAL
 	} else {
-		cond457 = gtk.GTKGTK_TREE_VIEW_GRID_LINES_NONE
+		cond459 = gtk.GTKGTK_TREE_VIEW_GRID_LINES_NONE
 	}
-	gtk.GTKGtk_tree_view_set_grid_lines(this.Handle, cond457)
+	gtk.GTKGtk_tree_view_set_grid_lines(this.Handle, cond459)
 }
 
 func (this *Tree) SetModel(newModel int64) {
@@ -3112,7 +3109,7 @@ func (this *Tree) setParentGdkResource_(child *Control) {
 	}
 }
 
-func (this *Tree) SetScrollWidth(column int64, itemLike TreeItemLike) {
+func (this *Tree) SetScrollWidthLocal1(column int64, itemLike TreeItemLike) {
 	var item *TreeItem
 	if itemLike != nil {
 		item = itemLike.AsTreeItem()
@@ -3197,13 +3194,13 @@ func (this *Tree) SetSortColumn(columnLike TreeColumnLike) {
 	this.sortColumn = column
 	if this.sortColumn != (nil) && this.sortDirection != NONE {
 		gtk.GTKGtk_tree_view_column_set_sort_indicator(this.sortColumn.Handle, true)
-		var cond458 int32
+		var cond460 int32
 		if this.sortDirection == DOWN {
-			cond458 = 0
+			cond460 = 0
 		} else {
-			cond458 = 1
+			cond460 = 1
 		}
-		gtk.GTKGtk_tree_view_column_set_sort_order(this.sortColumn.Handle, cond458)
+		gtk.GTKGtk_tree_view_column_set_sort_order(this.sortColumn.Handle, cond460)
 	}
 }
 
@@ -3220,13 +3217,13 @@ func (this *Tree) SetSortDirection(direction int32) {
 		gtk.GTKGtk_tree_view_column_set_sort_indicator(this.sortColumn.Handle, false)
 	} else {
 		gtk.GTKGtk_tree_view_column_set_sort_indicator(this.sortColumn.Handle, true)
-		var cond459 int32
+		var cond461 int32
 		if this.sortDirection == DOWN {
-			cond459 = 0
+			cond461 = 0
 		} else {
-			cond459 = 1
+			cond461 = 1
 		}
-		gtk.GTKGtk_tree_view_column_set_sort_order(this.sortColumn.Handle, cond459)
+		gtk.GTKGtk_tree_view_column_set_sort_order(this.sortColumn.Handle, cond461)
 	}
 }
 
@@ -3435,9 +3432,9 @@ func (this *Tree) Gtk3_paintEvent(cairo int64) {
 		data.RegionSet = this.eventRegion
 	}
 	data.Cairo = cairo
-	cond460 := GCGtk_newDrawableData(this, data)
-	event.Gc = cond460
-	var gc *GC = cond460
+	cond462 := GCGtk_newDrawableData(this, data)
+	event.Gc = cond462
+	var gc *GC = cond462
 	gc.SetClipping(eventBounds.X, eventBounds.Y, eventBounds.Width, eventBounds.Height)
 	this.impl.drawWidget_(gc)
 	this.SendEventEventTypeEvent(Paint, event)

@@ -682,9 +682,9 @@ func (this *Combo) eventWindow_() int64 {
 		var childrenIterator int64 = children
 		for {
 			window = gtk.OSG_list_data(childrenIterator)
-			cond478 := gtk.OSG_list_next(childrenIterator)
-			childrenIterator = cond478
-			if !((cond478) != 0) {
+			cond483 := gtk.OSG_list_next(childrenIterator)
+			childrenIterator = cond483
+			if !((cond483) != 0) {
 				break
 			}
 		}
@@ -840,13 +840,13 @@ func (this *Combo) GetText() string {
 		}
 	} else {
 		var index int32 = gtk.GTKGtk_combo_box_get_active(this.Handle)
-		var cond479 string
+		var cond484 string
 		if index != -1 {
-			cond479 = this.GetItem(index)
+			cond484 = this.GetItem(index)
 		} else {
-			cond479 = ""
+			cond484 = ""
 		}
-		return cond479
+		return cond484
 	}
 }
 
@@ -869,13 +869,13 @@ func (this *Combo) GetTextLimit() int32 {
 	} else {
 		limit = 0
 	}
-	var cond480 int32
+	var cond485 int32
 	if limit == 0 {
-		cond480 = ComboLIMIT
+		cond485 = ComboLIMIT
 	} else {
-		cond480 = limit
+		cond485 = limit
 	}
-	return cond480
+	return cond485
 }
 
 func (this *Combo) GetVisibleItemCount() int32 {
@@ -996,7 +996,7 @@ func (this *Combo) gtk_delete_text_(widget int64, start_pos int64, end_pos int64
 	var start int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, start_pos))
 	var end int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, end_pos))
 	var newText string = this.VerifyText("", start, end)
-	if newText == "" {
+	if newText == jrt.NullString {
 		gtk.OSG_signal_stop_emission_by_name(this.entryHandle, gtk.OSDelete_text)
 	} else {
 		if jrt.StringLength(newText) > 0 {
@@ -1127,7 +1127,7 @@ func (this *Combo) gtk_insert_text_(widget int64, new_text int64, new_text_lengt
 		pos[0] = int32(gtk.OSG_utf8_strlen(ptr, int64(-1)))
 	}
 	var start int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, int64(pos[0])))
-	var newText string = this.VerifyText(oldText, start, start)
+	var newText string = jrt.NullToEmpty(this.VerifyText(oldText, start, start))
 	if newText != oldText {
 		var newStart []int32 = make([]int32, 1)
 		var newEnd []int32 = make([]int32, 1)
@@ -1540,9 +1540,7 @@ func (this *Combo) setInitialBounds_() {
 		if gtk.GTKGTK4 {
 			gtk.GTK4Gtk_widget_size_allocate(topHandle, &allocation, -1)
 		} else {
-			t481 := gtk.GtkRequisition{}
-			t482 := gtk.GtkRequisition{}
-			gtk.GTKGtk_widget_get_preferred_size(topHandle, &t481, &t482)
+			gtk.GTKGtk_widget_get_preferred_size(topHandle, nil, nil)
 			gtk.GTK3Gtk_widget_set_allocation(topHandle, &allocation)
 		}
 	} else {
@@ -1684,7 +1682,7 @@ func (this *Combo) SetText(string_ string) {
 			ptr = gtk.GTK3Gtk_entry_get_text(this.entryHandle)
 		}
 		string_ = this.VerifyText(string_, 0, int32(gtk.OSG_utf16_strlen(ptr, int64(-1))))
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1809,7 +1807,7 @@ func (this *Combo) UpdateCss() {
 
 func (this *Combo) VerifyText(string_ string, start int32, end int32) string {
 	if jrt.StringLength(string_) == 0 && start == end {
-		return ""
+		return jrt.NullString
 	}
 	var event *Event = NewEvent()
 	event.Text = string_
@@ -1832,7 +1830,7 @@ func (this *Combo) VerifyText(string_ string, start int32, end int32) string {
 	}
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }

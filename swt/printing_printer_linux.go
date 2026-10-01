@@ -299,17 +299,17 @@ func (this *Printer) init_() {
 	gtk.GTKGtk_print_settings_set_n_copies(this.settings, this.data.CopyCount)
 	gtk.GTKGtk_print_settings_set_collate(this.settings, this.data.Collate)
 	if this.data.Duplex != DEFAULT {
-		var cond588 int32
+		var cond585 int32
 		if this.data.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
-			cond588 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
+			cond585 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
 		} else {
-			cond588 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
+			cond585 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
 		}
 		var duplex int32
 		if this.data.Duplex == PrinterDataDUPLEX_LONG_EDGE {
 			duplex = gtk.GTKGTK_PRINT_DUPLEX_HORIZONTAL
 		} else {
-			duplex = cond588
+			duplex = cond585
 		}
 		gtk.GTKGtk_print_settings_set_duplex(this.settings, duplex)
 		var cupsDuplexType string = ""

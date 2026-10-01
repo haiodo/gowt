@@ -1,0 +1,4 @@
+os=linux
+gtk=3.24.49
+scale=1
+screen=1280x1024

@@ -273,6 +273,10 @@ final class StatementEmitter {
 		if (emitter.currentReturnType != null) {
 			text = emitter.adaptNumeric(text, e.resolveTypeBinding(), emitter.currentReturnType);
 		}
+		if (emitter.model.nullableStrings.isNullReturn(rs)) {
+			emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+			text = "jrt.NullString";
+		}
 		b.append(returnOrEscape(indent, text));
 		return b.toString();
 	}

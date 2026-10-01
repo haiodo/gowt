@@ -51,6 +51,7 @@ func (this *layoutHooked) layoutFn_(a0 *Composite, a1 bool) {
 	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok && this.active != "layoutFn_" {
 		defer this.enter("layoutFn_")()
 		h.LayoutFn_(a0, a1)
+		return
 	}
 	this.LayoutImpl.layoutFn_(a0, a1)
 }

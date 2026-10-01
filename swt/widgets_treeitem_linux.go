@@ -108,7 +108,6 @@ func (this *TreeItem) initTreeItemParentParentIterStyleIndexIter(parent *Tree, p
 	if iter == 0 {
 		parent.CreateItemItemParentIterIndex(this, parentIter, index)
 	} else {
-		func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert handle == 0;
 		this.Handle = gtk.OSG_malloc(int64(gtk.GTKGtkTreeIter_sizeof()))
 		if this.Handle == 0 {
 			this.Error(ERROR_NO_HANDLES)
@@ -415,13 +414,13 @@ func (this *TreeItem) GetFont() *Font {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond461 *Font
+	var cond463 *Font
 	if this.font != (nil) {
-		cond461 = this.font
+		cond463 = this.font
 	} else {
-		cond461 = this.parent.GetFont()
+		cond463 = this.parent.GetFont()
 	}
-	return cond461
+	return cond463
 }
 
 func (this *TreeItem) GetFontIndex(index int32) *Font {
@@ -623,13 +622,13 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond462 string
+			var cond464 string
 			if string_ != "" {
-				cond462 = string_
+				cond464 = string_
 			} else {
-				cond462 = ""
+				cond464 = ""
 			}
-			return cond462
+			return cond464
 		}
 	}
 	return this._getText(index)
@@ -914,13 +913,13 @@ func (this *TreeItem) SetChecked(checked bool) {
 		return
 	}
 	gtk.GTKGtk_tree_store_setOverload4(this.parent.modelHandle, this.Handle, TreeCHECKED_COLUMN, checked, -1)
-	var cond463 bool
+	var cond465 bool
 	if !checked {
-		cond463 = false
+		cond465 = false
 	} else {
-		cond463 = this.grayed
+		cond465 = this.grayed
 	}
-	gtk.GTKGtk_tree_store_setOverload4(this.parent.modelHandle, this.Handle, TreeGRAYED_COLUMN, cond463, -1)
+	gtk.GTKGtk_tree_store_setOverload4(this.parent.modelHandle, this.Handle, TreeGRAYED_COLUMN, cond465, -1)
 	this.cached = true
 }
 
@@ -1148,13 +1147,13 @@ func (this *TreeItem) SetGrayed(grayed bool) {
 	this.grayed = grayed
 	var ptr []int32 = make([]int32, 1)
 	gtk.GTKGtk_tree_model_getTree_modelIterColumnValueTerminator(this.parent.modelHandle, this.Handle, TreeCHECKED_COLUMN, ptr, -1)
-	var cond464 bool
+	var cond466 bool
 	if ptr[0] == 0 {
-		cond464 = false
+		cond466 = false
 	} else {
-		cond464 = grayed
+		cond466 = grayed
 	}
-	gtk.GTKGtk_tree_store_setOverload4(this.parent.modelHandle, this.Handle, TreeGRAYED_COLUMN, cond464, -1)
+	gtk.GTKGtk_tree_store_setOverload4(this.parent.modelHandle, this.Handle, TreeGRAYED_COLUMN, cond466, -1)
 	this.cached = true
 }
 

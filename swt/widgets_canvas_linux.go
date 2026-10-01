@@ -368,11 +368,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 				}
 				rect.X = newX
 				rect.Y = y
-				abs178 := deltaX
-				if abs178 < 0 {
-					abs178 = -abs178
+				abs176 := deltaX
+				if abs176 < 0 {
+					abs176 = -abs176
 				}
-				rect.Width = abs178
+				rect.Width = abs176
 				rect.Height = height
 				gtk.CairoCairo_region_union_rectangle(invalidateRegion, &rect)
 			}
@@ -384,11 +384,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 				rect.X = x
 				rect.Y = newY
 				rect.Width = width
-				abs179 := deltaY
-				if abs179 < 0 {
-					abs179 = -abs179
+				abs177 := deltaY
+				if abs177 < 0 {
+					abs177 = -abs177
 				}
-				rect.Height = abs179
+				rect.Height = abs177
 				gtk.CairoCairo_region_union_rectangle(invalidateRegion, &rect)
 			}
 		}

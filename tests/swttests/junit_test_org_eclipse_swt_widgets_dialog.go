@@ -29,6 +29,7 @@ func (this *test_org_eclipse_swt_widgets_DialogHooked) setUp_() {
 	if h, ok := this.hook.(interface{ SetUp_() }); ok && this.active != "setUp_" {
 		defer this.enter("setUp_")()
 		h.SetUp_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_DialogImpl.setUp_()
 }

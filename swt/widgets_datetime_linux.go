@@ -24,13 +24,13 @@ type DateTime struct {
 	containerHandle    int64
 	calendarHandle     int64
 	editableHandle     int64
-	calendar           any
+	calendar           *jrt.Calendar
 	down               *Button
-	currentField       any
+	currentField       *jrt.FieldPosition
 	typeBuffer         *jrt.StringBuilder
 	typeBufferPos      int32
 	firstTime          bool
-	dateFormat         any
+	dateFormat         *jrt.DateFormat
 	fg                 *Color
 	bg                 *Color
 	hasFocus           bool
@@ -93,10 +93,7 @@ func (this *DateTime) initDateTime(parent *Composite, style int32) {
 		this.CreateText()
 	}
 	if this.IsCalendar() {
-		gtk.GTKGtk_calendar_mark_day(this.calendarHandle, func() int32 {
-			_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 5}
-			panic("j2go: unresolved call get")
-		}())
+		gtk.GTKGtk_calendar_mark_day(this.calendarHandle, jrt.CalendarGetInstance().Get(jrt.CalendarDAY_OF_MONTH))
 	}
 	if this.IsDateWithDropDownButton() {
 		this.CreateDropDownButton()
@@ -120,28 +117,28 @@ func (this *DateTime) CreateText() {
 		this.locale = jrt.LocaleForLanguageTag(property)
 	}
 	this.dateFormat = this.GetFormat(this.locale, this.style)
-	func() any { _ = []any{this.dateFormat, false}; panic("j2go: unresolved call setLenient") }()
-	this.calendar = func() any { _ = []any{this.locale}; panic("j2go: unresolved call getInstance") }()
+	this.dateFormat.SetLenient(false)
+	this.calendar = jrt.CalendarGetInstance(this.locale)
 	this.UpdateControl()
 	this.SelectFieldFieldPosition(this.UpdateField(this.currentField))
 }
 
-func (this *DateTime) GetFormat(locale *jrt.Locale, style int32) any {
+func (this *DateTime) GetFormat(locale *jrt.Locale, style int32) *jrt.DateFormat {
 	var dfStyle int32
 	if (style & SWTLONG) != 0 {
-		dfStyle = 1
+		dfStyle = jrt.DateFormatLONG
 	} else {
 		if (style & SHORT) != 0 {
-			dfStyle = 3
+			dfStyle = jrt.DateFormatSHORT
 		} else {
-			dfStyle = 2
+			dfStyle = jrt.DateFormatMEDIUM
 		}
 	}
 	if this.IsDate() {
-		return func() any { _ = []any{dfStyle, locale}; panic("j2go: unresolved call getDateInstance") }()
+		return jrt.DateFormatGetDateInstance(dfStyle, locale)
 	} else {
 		if this.IsTime() {
-			return func() any { _ = []any{dfStyle, locale}; panic("j2go: unresolved call getTimeInstance") }()
+			return jrt.DateFormatGetTimeInstance(dfStyle, locale)
 		} else {
 			panic(&jrt.RuntimeException{Message: "can only be called for date or time widgets!"})
 		}
@@ -167,16 +164,10 @@ func (this *DateTime) ComputeMaxTextSize(wHint int32, hHint int32, changed bool)
 		this.SetText(longDateText)
 		break
 	case DateTimeDEFAULT_LONG_DATE_FORMAT:
-		var months *jrt.List = func() *jrt.Map {
-			_ = []any{this.calendar, 2, 2, this.locale}
-			panic("j2go: unresolved call getDisplayNames")
-		}().KeySet()
-		var longestMonth string = func() string {
-			_ = []any{months, func(s1 string, s2 string) int32 {
-				return jrt.StringLength(s1) - jrt.StringLength(s2)
-			}}
-			panic("j2go: unresolved call max")
-		}()
+		var months *jrt.List = this.calendar.GetDisplayNames(jrt.CalendarMONTH, jrt.CalendarLONG, this.locale).KeySet()
+		var longestMonth string = jrt.CollectionsMax(months, func(s1 string, s2 string) int32 {
+			return jrt.StringLength(s1) - jrt.StringLength(s2)
+		})
 		var doubleDigitDate string = jrt.ReplaceFirst(currentText, "\\d{1,2}", "00")
 		var longText string = jrt.ReplaceFirst(doubleDigitDate, "[^\\s]+", longestMonth)
 		this.SetText(longText)
@@ -187,13 +178,13 @@ func (this *DateTime) ComputeMaxTextSize(wHint int32, hHint int32, changed bool)
 		break
 	default:
 	}
-	var cond552 int64
+	var cond550 int64
 	if gtk.GTKGTK4 {
-		cond552 = this.Handle
+		cond550 = this.Handle
 	} else {
-		cond552 = this.textEntryHandle
+		cond550 = this.textEntryHandle
 	}
-	var textSize *Point = this.impl.computeNativeSize_(cond552, wHint, hHint, changed)
+	var textSize *Point = this.impl.computeNativeSize_(cond550, wHint, hHint, changed)
 	this.UpdateControl()
 	return textSize
 }
@@ -265,33 +256,33 @@ func (this *DateTime) computeTrimInPixels_(x int32, y int32, width int32, height
 	var xborder int32 = 0
 	var yborder int32 = 0
 	var tmp gtk.GtkBorder = gtk.GtkBorder{}
-	var cond553 int64
+	var cond551 int64
 	if gtk.GTKGTK4 {
-		cond553 = this.editableHandle
+		cond551 = this.editableHandle
 	} else {
-		cond553 = this.textEntryHandle
+		cond551 = this.textEntryHandle
 	}
-	var context int64 = gtk.GTKGtk_widget_get_style_context(cond553)
-	var cond554 int64
+	var context int64 = gtk.GTKGtk_widget_get_style_context(cond551)
+	var cond552 int64
 	if gtk.GTKGTK4 {
-		cond554 = this.editableHandle
+		cond552 = this.editableHandle
 	} else {
-		cond554 = this.textEntryHandle
+		cond552 = this.textEntryHandle
 	}
-	var state_flag int32 = gtk.GTKGtk_widget_get_state_flags(cond554)
+	var state_flag int32 = gtk.GTKGtk_widget_get_state_flags(cond552)
 	this.Gtk_style_context_get_padding(context, state_flag, &tmp)
 	trim.X -= tmp.Left
 	trim.Y -= tmp.Top
 	trim.Width += tmp.Left + tmp.Right
 	trim.Height += tmp.Top + tmp.Bottom
 	if (this.style & BORDER) != 0 {
-		var cond555 int64
+		var cond553 int64
 		if gtk.GTKGTK4 {
-			cond555 = this.editableHandle
+			cond553 = this.editableHandle
 		} else {
-			cond555 = this.textEntryHandle
+			cond553 = this.textEntryHandle
 		}
-		var state int32 = gtk.GTKGtk_widget_get_state_flags(cond555)
+		var state int32 = gtk.GTKGtk_widget_get_state_flags(cond553)
 		this.Gtk_style_context_get_border(context, state, &tmp)
 		trim.X -= tmp.Left
 		trim.Y -= tmp.Top
@@ -460,8 +451,8 @@ func (this *DateTime) CreatePopupShell(year int32, month int32, day int32) {
 		this.popupCalendar.impl.setBackgroundWithColor_(this.bg)
 	}
 	this.mouseEventListener = &ListenerFunc{fn: func(event *Event) {
-		_, ok556 := isWidgetToControl(event.Widget)
-		if ok556 {
+		_, ok554 := isWidgetToControl(event.Widget)
+		if ok554 {
 			var c *Control = castWidgetToControl(event.Widget)
 			if c != upcastButtonToControl(this.down) && c.impl.getShell_() != this.popupShell {
 				this.DropDownCalendar(false)
@@ -625,19 +616,10 @@ func (this *DateTime) CalculateCalendarXpos(calendarSizeLike PointLike, coordsRe
 }
 
 func (this *DateTime) FocusDayOnPopupCalendar() {
-	var currentYear int32 = func() int32 {
-		_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 1}
-		panic("j2go: unresolved call get")
-	}()
-	var currentMonth int32 = func() int32 {
-		_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 2}
-		panic("j2go: unresolved call get")
-	}()
+	var currentYear int32 = jrt.CalendarGetInstance().Get(jrt.CalendarYEAR)
+	var currentMonth int32 = jrt.CalendarGetInstance().Get(jrt.CalendarMONTH)
 	if this.savedYear == currentYear && this.savedMonth == currentMonth {
-		var currentDay int32 = func() int32 {
-			_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 5}
-			panic("j2go: unresolved call get")
-		}()
+		var currentDay int32 = jrt.CalendarGetInstance().Get(jrt.CalendarDAY_OF_MONTH)
 		gtk.GTKGtk_calendar_mark_day(this.popupCalendar.Handle, currentDay)
 	}
 }
@@ -668,40 +650,37 @@ func (this *DateTime) HideDropDownCalendar() {
 
 func (this *DateTime) GetComputeSizeString(style int32) string {
 	if (style & DATE) != 0 {
-		var cond557 string
-		var cond558 string
+		var cond555 string
+		var cond556 string
 		if (style & SWTLONG) != 0 {
-			cond558 = DateTimeDEFAULT_LONG_DATE_FORMAT
+			cond556 = DateTimeDEFAULT_LONG_DATE_FORMAT
 		} else {
-			cond558 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
+			cond556 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
 		}
 		if (style & SHORT) != 0 {
-			cond557 = DateTimeDEFAULT_SHORT_DATE_FORMAT
+			cond555 = DateTimeDEFAULT_SHORT_DATE_FORMAT
 		} else {
-			cond557 = cond558
+			cond555 = cond556
 		}
-		return cond557
+		return cond555
 	}
-	var cond559 string
-	var cond560 string
+	var cond557 string
+	var cond558 string
 	if (style & SWTLONG) != 0 {
-		cond560 = DateTimeDEFAULT_LONG_TIME_FORMAT
+		cond558 = DateTimeDEFAULT_LONG_TIME_FORMAT
 	} else {
-		cond560 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
+		cond558 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
 	}
 	if (style & SHORT) != 0 {
-		cond559 = DateTimeDEFAULT_SHORT_TIME_FORMAT
+		cond557 = DateTimeDEFAULT_SHORT_TIME_FORMAT
 	} else {
-		cond559 = cond560
+		cond557 = cond558
 	}
-	return cond559
+	return cond557
 }
 
 func (this *DateTime) GetFormattedString() string {
-	return func() string {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call format")
-	}()
+	return this.dateFormat.Format(this.calendar.GetTime())
 }
 
 func (this *DateTime) GetDate() {
@@ -728,7 +707,7 @@ func (this *DateTime) GetDay() int32 {
 		this.GetDate()
 		return this.day
 	} else {
-		return func() int32 { _ = []any{this.calendar, 5}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarDAY_OF_MONTH)
 	}
 }
 
@@ -737,7 +716,7 @@ func (this *DateTime) GetHours() int32 {
 	if this.IsCalendar() {
 		return this.hours
 	} else {
-		return func() int32 { _ = []any{this.calendar, 11}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarHOUR_OF_DAY)
 	}
 }
 
@@ -746,7 +725,7 @@ func (this *DateTime) GetMinutes() int32 {
 	if this.IsCalendar() {
 		return this.minutes
 	} else {
-		return func() int32 { _ = []any{this.calendar, 12}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarMINUTE)
 	}
 }
 
@@ -756,12 +735,12 @@ func (this *DateTime) GetMonth() int32 {
 		this.GetDate()
 		return this.month
 	} else {
-		return func() int32 { _ = []any{this.calendar, 2}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarMONTH)
 	}
 }
 
 func (this *DateTime) getNameText_() string {
-	if jrt.IsNil(this.calendar) {
+	if this.calendar == (nil) {
 		return ""
 	}
 	if this.IsTime() {
@@ -776,30 +755,21 @@ func (this *DateTime) GetSeconds() int32 {
 	if this.IsCalendar() {
 		return this.seconds
 	} else {
-		return func() int32 { _ = []any{this.calendar, 13}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarSECOND)
 	}
 }
 
 func (this *DateTime) GetSpokenText() string {
 	if this.IsTime() {
-		return func() string {
-			_ = []any{func() any { _ = []any{0}; panic("j2go: unresolved call getTimeInstance") }(), func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-			panic("j2go: unresolved call format")
-		}()
+		return jrt.DateFormatGetTimeInstance(jrt.DateFormatFULL).Format(this.calendar.GetTime())
 	} else {
 		if this.IsDate() {
-			return func() string {
-				_ = []any{func() any { _ = []any{0}; panic("j2go: unresolved call getDateInstance") }(), func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-				panic("j2go: unresolved call format")
-			}()
+			return jrt.DateFormatGetDateInstance(jrt.DateFormatFULL).Format(this.calendar.GetTime())
 		} else {
-			var cal any = func() any { panic("j2go: unresolved call getInstance") }()
+			var cal *jrt.Calendar = jrt.CalendarGetInstance()
 			this.GetDate()
-			func() any { _ = []any{cal, this.year, this.month, this.day}; panic("j2go: unresolved call set") }()
-			return func() string {
-				_ = []any{func() any { _ = []any{0}; panic("j2go: unresolved call getDateInstance") }(), func() any { _ = []any{cal}; panic("j2go: unresolved call getTime") }()}
-				panic("j2go: unresolved call format")
-			}()
+			cal.Set(this.year, this.month, this.day)
+			return jrt.DateFormatGetDateInstance(jrt.DateFormatFULL).Format(cal.GetTime())
 		}
 	}
 }
@@ -810,7 +780,7 @@ func (this *DateTime) GetYear() int32 {
 		this.GetDate()
 		return this.year
 	} else {
-		return func() int32 { _ = []any{this.calendar, 1}; panic("j2go: unresolved call get") }()
+		return this.calendar.Get(jrt.CalendarYEAR)
 	}
 }
 
@@ -900,18 +870,18 @@ func (this *DateTime) HookEventsForMenu() {
 }
 
 func (this *DateTime) IncrementField(amount int32) {
-	if !jrt.IsNil(this.currentField) {
+	if this.currentField != (nil) {
 		var field int32 = DateTimeGetCalendarField(this.currentField)
-		if field == 10 && this.HasAmPm() {
-			var max int32 = func() int32 { _ = []any{this.calendar, 10}; panic("j2go: unresolved call getMaximum") }()
-			var min int32 = func() int32 { _ = []any{this.calendar, 10}; panic("j2go: unresolved call getMinimum") }()
-			var value int32 = func() int32 { _ = []any{this.calendar, 10}; panic("j2go: unresolved call get") }()
+		if field == jrt.CalendarHOUR && this.HasAmPm() {
+			var max int32 = this.calendar.GetMaximum(jrt.CalendarHOUR)
+			var min int32 = this.calendar.GetMinimum(jrt.CalendarHOUR)
+			var value int32 = this.calendar.Get(jrt.CalendarHOUR)
 			if (value == max && amount == 1) || (value == min && amount == -1) {
-				func() any { _ = []any{this.calendar, 9, amount}; panic("j2go: unresolved call roll") }()
+				this.calendar.Roll(jrt.CalendarAM_PM, amount)
 			}
 		}
 		if field > -1 {
-			func() any { _ = []any{this.calendar, field, amount}; panic("j2go: unresolved call roll") }()
+			this.calendar.Roll(field, amount)
 			this.UpdateControl()
 			this.SelectFieldFieldPosition(this.UpdateField(this.currentField))
 		}
@@ -919,24 +889,15 @@ func (this *DateTime) IncrementField(amount int32) {
 }
 
 func (this *DateTime) HasAmPm() bool {
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	for int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535) {
-		for _, elem561 := range func() *jrt.Map { _ = []any{iterator}; panic("j2go: unresolved call getAttributes") }().KeySet().ToArray() {
-			attribute := jrt.Cast[any](elem561)
-			if func() bool {
-				_ = []any{func() any { panic("j2go: unresolved static field AM_PM") }(), attribute}
-				panic("j2go: unresolved call equals")
-			}() {
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
+		for _, elem559 := range iterator.GetAttributes().KeySet().ToArray() {
+			attribute := jrt.Cast[*jrt.DateFormatField](elem559)
+			if jrt.DateFormatFieldAM_PM.Equals(attribute) {
 				return true
 			}
 		}
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
+		iterator.SetIndex(iterator.GetRunLimit())
 	}
 	return false
 }
@@ -971,65 +932,65 @@ func (this *DateTime) ShowWeekNumbers() bool {
 
 func (this *DateTime) InitAccessible() {
 	var accessible *Accessible = this.GetAccessible()
-	anon562 := &DateTimeAnon1{}
-	anon562.initAccessibleAdapter()
-	anon562.fnGetName = func(e *AccessibleEvent) {
+	anon560 := &DateTimeAnon1{}
+	anon560.initAccessibleAdapter()
+	anon560.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.GetSpokenText()
 	}
-	anon562.fnGetHelp = func(e *AccessibleEvent) {
+	anon560.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	accessible.AddAccessibleListener(anon562)
-	anon563 := &DateTimeAnon2{}
-	anon563.initAccessibleControlAdapter()
-	anon563.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	accessible.AddAccessibleListener(anon560)
+	anon561 := &DateTimeAnon2{}
+	anon561.initAccessibleControlAdapter()
+	anon561.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		e.ChildID = ACCCHILDID_SELF
 	}
-	anon563.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon561.fnGetLocation = func(e *AccessibleControlEvent) {
 		var rect *Rectangle = this.display.MapFromToRectangle(upcastCompositeToControl(this.GetParent()), nil, this.impl.getBounds_())
 		e.X = rect.X
 		e.Y = rect.Y
 		e.Width = rect.Width
 		e.Height = rect.Height
 	}
-	anon563.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon561.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = 0
 	}
-	anon563.fnGetRole = func(e *AccessibleControlEvent) {
+	anon561.fnGetRole = func(e *AccessibleControlEvent) {
 		if this.IsCalendar() {
 			e.Detail = ACCROLE_LABEL
 		} else {
 			e.Detail = ACCROLE_TEXT
 		}
 	}
-	anon563.fnGetState = func(e *AccessibleControlEvent) {
+	anon561.fnGetState = func(e *AccessibleControlEvent) {
 		e.Detail = ACCSTATE_FOCUSABLE
 		if this.impl.hasFocus_() {
 			e.Detail |= ACCSTATE_FOCUSED
 		}
 	}
-	anon563.fnGetSelection = func(e *AccessibleControlEvent) {
+	anon561.fnGetSelection = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	anon563.fnGetFocus = func(e *AccessibleControlEvent) {
+	anon561.fnGetFocus = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	accessible.AddAccessibleControlListener(anon563)
+	accessible.AddAccessibleControlListener(anon561)
 }
 
 func (this *DateTime) IsValidTime(fieldName int32, value int32) bool {
-	var validCalendar any
+	var validCalendar *jrt.Calendar
 	if this.IsCalendar() {
-		validCalendar = func() any { panic("j2go: unresolved call getInstance") }()
+		validCalendar = jrt.CalendarGetInstance()
 	} else {
 		validCalendar = this.calendar
 	}
-	var min int32 = func() int32 { _ = []any{validCalendar, fieldName}; panic("j2go: unresolved call getActualMinimum") }()
-	var max int32 = func() int32 { _ = []any{validCalendar, fieldName}; panic("j2go: unresolved call getActualMaximum") }()
+	var min int32 = validCalendar.GetActualMinimum(fieldName)
+	var max int32 = validCalendar.GetActualMaximum(fieldName)
 	return value >= min && value <= max
 }
 
@@ -1037,9 +998,9 @@ func (this *DateTime) IsValidDate(year int32, month int32, day int32) bool {
 	if year < DateTimeMIN_YEAR || year > DateTimeMAX_YEAR {
 		return false
 	}
-	var valid any = func() any { panic("j2go: unresolved call getInstance") }()
-	func() any { _ = []any{valid, year, month, day}; panic("j2go: unresolved call set") }()
-	return func() int32 { _ = []any{valid, 1}; panic("j2go: unresolved call get") }() == year && func() int32 { _ = []any{valid, 2}; panic("j2go: unresolved call get") }() == month && func() int32 { _ = []any{valid, 5}; panic("j2go: unresolved call get") }() == day
+	var valid *jrt.Calendar = jrt.CalendarGetInstance()
+	valid.Set(year, month, day)
+	return valid.Get(jrt.CalendarYEAR) == year && valid.Get(jrt.CalendarMONTH) == month && valid.Get(jrt.CalendarDAY_OF_MONTH) == day
 }
 
 func (this *DateTime) PopupCalendarEvent(eventLike EventLike) {
@@ -1231,27 +1192,21 @@ func (this *DateTime) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *DateTime) SelectField(field any) {
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	for int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535) {
-		for _, elem564 := range func() *jrt.Map { _ = []any{iterator}; panic("j2go: unresolved call getAttributes") }().KeySet().ToArray() {
-			attribute := jrt.Cast[any](elem564)
-			if func() bool { _ = []any{attribute, field}; panic("j2go: unresolved call equals") }() {
+func (this *DateTime) SelectField(field *jrt.DateFormatField) {
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
+		for _, elem562 := range iterator.GetAttributes().KeySet().ToArray() {
+			attribute := jrt.Cast[*jrt.DateFormatField](elem562)
+			if attribute.Equals(field) {
 				this.SelectFieldFieldPosition(DateTimeGetFieldPositionFieldIterator(field, iterator))
 				return
 			}
 		}
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
+		iterator.SetIndex(iterator.GetRunLimit())
 	}
 }
 
-func (this *DateTime) SelectFieldFieldPosition(fieldPosition any) {
+func (this *DateTime) SelectFieldFieldPosition(fieldPosition *jrt.FieldPosition) {
 	var sameField bool = DateTimeIsSameField(fieldPosition, this.currentField)
 	if sameField {
 		if this.typeBufferPos > -1 {
@@ -1263,8 +1218,8 @@ func (this *DateTime) SelectFieldFieldPosition(fieldPosition any) {
 		fieldPosition = this.UpdateField(fieldPosition)
 	}
 	var pt *Point = this.GetTextSelection()
-	var start int32 = func() int32 { _ = []any{fieldPosition}; panic("j2go: unresolved call getBeginIndex") }()
-	var end int32 = func() int32 { _ = []any{fieldPosition}; panic("j2go: unresolved call getEndIndex") }()
+	var start int32 = fieldPosition.GetBeginIndex()
+	var end int32 = fieldPosition.GetEndIndex()
 	if sameField && start == pt.X && end == pt.Y {
 		return
 	}
@@ -1298,17 +1253,8 @@ func (this *DateTime) SendSelectionEvent0() {
 		this.year = y[0]
 		this.month = m[0]
 		this.day = d[0]
-		if this.year == func() int32 {
-			_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 1}
-			panic("j2go: unresolved call get")
-		}() && this.month == func() int32 {
-			_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 2}
-			panic("j2go: unresolved call get")
-		}() {
-			gtk.GTKGtk_calendar_mark_day(this.calendarHandle, func() int32 {
-				_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 5}
-				panic("j2go: unresolved call get")
-			}())
+		if this.year == jrt.CalendarGetInstance().Get(jrt.CalendarYEAR) && this.month == jrt.CalendarGetInstance().Get(jrt.CalendarMONTH) {
+			gtk.GTKGtk_calendar_mark_day(this.calendarHandle, jrt.CalendarGetInstance().Get(jrt.CalendarDAY_OF_MONTH))
 		} else {
 			gtk.GTKGtk_calendar_clear_marks(this.calendarHandle)
 		}
@@ -1368,17 +1314,17 @@ func (this *DateTime) setForeground_(color *Color) {
 	}
 }
 
-func (this *DateTime) SetFieldOfInternalDataStructure(field any, value int32) {
+func (this *DateTime) SetFieldOfInternalDataStructure(field *jrt.FieldPosition, value int32) {
 	var calendarField int32 = DateTimeGetCalendarField(field)
-	if func() int32 { _ = []any{this.calendar, calendarField}; panic("j2go: unresolved call get") }() == value {
+	if this.calendar.Get(calendarField) == value {
 		return
 	}
-	if calendarField == 9 && this.HasAmPm() {
-		func() any { _ = []any{this.calendar, 11, 12}; panic("j2go: unresolved call roll") }()
+	if calendarField == jrt.CalendarAM_PM && this.HasAmPm() {
+		this.calendar.Roll(jrt.CalendarHOUR_OF_DAY, 12)
 	}
-	func() any { _ = []any{this.calendar, calendarField, value}; panic("j2go: unresolved call set") }()
-	if func() int32 { _ = []any{this.calendar, calendarField}; panic("j2go: unresolved call get") }() != value {
-		func() any { _ = []any{this.calendar, calendarField, value}; panic("j2go: unresolved call set") }()
+	this.calendar.Set(calendarField, value)
+	if this.calendar.Get(calendarField) != value {
+		this.calendar.Set(calendarField, value)
 	}
 	this.SendSelectionEvent(Selection)
 }
@@ -1405,7 +1351,7 @@ func (this *DateTime) SetDate(year int32, month int32, day int32) {
 			gtk.GTK3Gtk_calendar_select_day(this.calendarHandle, day)
 		}
 	} else {
-		func() any { _ = []any{this.calendar, year, month, day}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(year, month, day)
 		this.UpdateControl()
 	}
 }
@@ -1424,20 +1370,20 @@ func (this *DateTime) SetDay(day int32) {
 			gtk.GTK3Gtk_calendar_select_day(this.calendarHandle, day)
 		}
 	} else {
-		func() any { _ = []any{this.calendar, 5, day}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarDAY_OF_MONTH, day)
 		this.UpdateControl()
 	}
 }
 
 func (this *DateTime) SetHours(hours int32) {
 	this.CheckWidget()
-	if !this.IsValidTime(11, hours) {
+	if !this.IsValidTime(jrt.CalendarHOUR_OF_DAY, hours) {
 		return
 	}
 	if this.IsCalendar() {
 		this.hours = hours
 	} else {
-		func() any { _ = []any{this.calendar, 11, hours}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarHOUR_OF_DAY, hours)
 		this.UpdateControl()
 	}
 }
@@ -1451,13 +1397,13 @@ func (this *DateTime) setMenu_(menu *Menu) {
 
 func (this *DateTime) SetMinutes(minutes int32) {
 	this.CheckWidget()
-	if !this.IsValidTime(12, minutes) {
+	if !this.IsValidTime(jrt.CalendarMINUTE, minutes) {
 		return
 	}
 	if this.IsCalendar() {
 		this.minutes = minutes
 	} else {
-		func() any { _ = []any{this.calendar, 12, minutes}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarMINUTE, minutes)
 		this.UpdateControl()
 	}
 }
@@ -1477,33 +1423,33 @@ func (this *DateTime) SetMonth(month int32) {
 			gtk.GTK3Gtk_calendar_select_month(this.calendarHandle, month, this.year)
 		}
 	} else {
-		func() any { _ = []any{this.calendar, 2, month}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarMONTH, month)
 		this.UpdateControl()
 	}
 }
 
 func (this *DateTime) SetSeconds(seconds int32) {
 	this.CheckWidget()
-	if !this.IsValidTime(13, seconds) {
+	if !this.IsValidTime(jrt.CalendarSECOND, seconds) {
 		return
 	}
 	if this.IsCalendar() {
 		this.seconds = seconds
 	} else {
-		func() any { _ = []any{this.calendar, 13, seconds}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarSECOND, seconds)
 		this.UpdateControl()
 	}
 }
 
 func (this *DateTime) SetTime(hours int32, minutes int32, seconds int32) {
 	this.CheckWidget()
-	if !this.IsValidTime(11, hours) {
+	if !this.IsValidTime(jrt.CalendarHOUR_OF_DAY, hours) {
 		return
 	}
-	if !this.IsValidTime(12, minutes) {
+	if !this.IsValidTime(jrt.CalendarMINUTE, minutes) {
 		return
 	}
-	if !this.IsValidTime(13, seconds) {
+	if !this.IsValidTime(jrt.CalendarSECOND, seconds) {
 		return
 	}
 	if this.IsCalendar() {
@@ -1511,9 +1457,9 @@ func (this *DateTime) SetTime(hours int32, minutes int32, seconds int32) {
 		this.minutes = minutes
 		this.seconds = seconds
 	} else {
-		func() any { _ = []any{this.calendar, 11, hours}; panic("j2go: unresolved call set") }()
-		func() any { _ = []any{this.calendar, 12, minutes}; panic("j2go: unresolved call set") }()
-		func() any { _ = []any{this.calendar, 13, seconds}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarHOUR_OF_DAY, hours)
+		this.calendar.Set(jrt.CalendarMINUTE, minutes)
+		this.calendar.Set(jrt.CalendarSECOND, seconds)
 		this.UpdateControl()
 	}
 }
@@ -1533,7 +1479,7 @@ func (this *DateTime) SetYear(year int32) {
 			gtk.GTK3Gtk_calendar_select_month(this.calendarHandle, this.month, year)
 		}
 	} else {
-		func() any { _ = []any{this.calendar, 1, year}; panic("j2go: unresolved call set") }()
+		this.calendar.Set(jrt.CalendarYEAR, year)
 		this.UpdateControl()
 	}
 }
@@ -1547,17 +1493,16 @@ func (this *DateTime) setBoundsInPixelsXYWidthHeight_(x int32, y int32, width in
 			sizingHandle = this.textEntryHandle
 		}
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t565 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(sizingHandle, &t565, &requisition)
+		gtk.GTKGtk_widget_get_preferred_size(sizingHandle, nil, &requisition)
 		var oldHeight int32 = requisition.Height
 		var newWidth int32 = width - (this.down.impl.getSizeInPixels_().X + this.GetGtkBorderPadding().Right)
-		var cond566 int32
+		var cond563 int32
 		if newWidth >= 0 {
-			cond566 = newWidth
+			cond563 = newWidth
 		} else {
-			cond566 = 0
+			cond563 = 0
 		}
-		gtk.GTKGtk_widget_set_size_request(sizingHandle, cond566, oldHeight)
+		gtk.GTKGtk_widget_set_size_request(sizingHandle, cond563, oldHeight)
 	}
 	this.Composite.setBoundsInPixelsXYWidthHeight_(x, y, width, height)
 }
@@ -1567,13 +1512,13 @@ func (this *DateTime) SetDropDownButtonSize() {
 	var parentWidth int32 = rect.Width
 	var parentHeight int32 = rect.Height
 	var buttonSize *Point = this.down.ComputeSizeInPixels(DEFAULT, parentHeight)
-	var cond567 int64
+	var cond564 int64
 	if gtk.GTKGTK4 {
-		cond567 = this.editableHandle
+		cond564 = this.editableHandle
 	} else {
-		cond567 = this.textEntryHandle
+		cond564 = this.textEntryHandle
 	}
-	var dateEntryHeight int32 = this.impl.computeNativeSize_(cond567, DEFAULT, DEFAULT, false).Y
+	var dateEntryHeight int32 = this.impl.computeNativeSize_(cond564, DEFAULT, DEFAULT, false).Y
 	var newXpos int32 = parentWidth - buttonSize.X - this.GetGtkBorderPadding().Left - this.GetGtkBorderPadding().Right
 	var newYPos int32 = parentHeight/2 - dateEntryHeight/2
 	this.down.impl.setBoundsInPixelsXYWidthHeight_(newXpos, newYPos, buttonSize.X, dateEntryHeight)
@@ -1594,18 +1539,15 @@ func (this *DateTime) GetGtkBorderPadding() gtk.GtkBorder {
 }
 
 func (this *DateTime) OnNumberKeyInput(key int32) bool {
-	if jrt.IsNil(this.currentField) {
+	if this.currentField == (nil) {
 		return false
 	}
 	var fieldName int32 = DateTimeGetCalendarField(this.currentField)
 	var prefix *jrt.StringBuilder = jrt.NewStringBuilder()
 	var current *jrt.StringBuilder = jrt.NewStringBuilder()
 	var suffix *jrt.StringBuilder = jrt.NewStringBuilder()
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	var c uint16 = func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call first") }()
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	var c uint16 = iterator.First()
 	for {
 		if DateTimeIsSameField(this.currentField, DateTimeGetFieldPosition(iterator)) {
 			current.Append(uint16(c))
@@ -1616,9 +1558,9 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				suffix.Append(uint16(c))
 			}
 		}
-		cond568 := func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call next") }()
-		c = cond568
-		if !(int32((cond568)) != int32(65535)) {
+		cond565 := iterator.Next()
+		c = cond565
+		if !(int32((cond565)) != int32(jrt.CharacterIteratorDONE)) {
 			break
 		}
 	}
@@ -1639,32 +1581,29 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 			}
 		} else {
 			var newText uint16 = this.KeyToString(key)
-			if (this.style&TIME) != 0 && fieldName != 9 && !unicode.IsDigit(rune(newText)) {
+			if (this.style&TIME) != 0 && fieldName != jrt.CalendarAM_PM && !unicode.IsDigit(rune(newText)) {
 				return false
 			}
-			if !func() bool { _ = []any{int32(newText)}; panic("j2go: unresolved call isAlphabetic") }() && !unicode.IsDigit(rune(newText)) {
+			if !unicode.IsLetter(rune(newText)) && !unicode.IsDigit(rune(newText)) {
 				return false
 			}
-			if fieldName == 9 {
-				_, ok569 := any(nil), false
-				if ok569 {
-					var amPmStrings []string = func() []string {
-						_ = []any{func() any { _ = []any{(any(this.dateFormat))}; panic("j2go: unresolved call getDateFormatSymbols") }()}
-						panic("j2go: unresolved call getAmPmStrings")
-					}()
-					if int32(utf16.Encode([]rune(amPmStrings[0]))[0]) == int32(newText) {
-						this.SetTextField(this.currentField, 0)
+			if fieldName == jrt.CalendarAM_PM {
+				_, ok566 := this.dateFormat, this.dateFormat != nil
+				if ok566 {
+					var amPmStrings []string = (this.dateFormat).GetDateFormatSymbols().GetAmPmStrings()
+					if int32(utf16.Encode([]rune(amPmStrings[jrt.CalendarAM]))[0]) == int32(newText) {
+						this.SetTextField(this.currentField, jrt.CalendarAM)
 						return false
 					} else {
-						if int32(utf16.Encode([]rune(amPmStrings[1]))[0]) == int32(newText) {
-							this.SetTextField(this.currentField, 1)
+						if int32(utf16.Encode([]rune(amPmStrings[jrt.CalendarPM]))[0]) == int32(newText) {
+							this.SetTextField(this.currentField, jrt.CalendarPM)
 							return false
 						}
 					}
 				}
 			}
 			if this.typeBufferPos < this.typeBuffer.Length() {
-				this.typeBuffer.Replace(this.typeBufferPos, this.typeBufferPos+1, func() string { _ = []any{newText}; panic("j2go: unresolved call toString") }())
+				this.typeBuffer.Replace(this.typeBufferPos, this.typeBufferPos+1, string(rune(newText)))
 			} else {
 				this.typeBuffer.Append(uint16(newText))
 			}
@@ -1676,14 +1615,8 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 	newText.Append(suffix)
 	this.SetText(newText.ToString())
 	this.SetTextSelection(prefix.Length()+this.typeBufferPos, prefix.Length()+this.typeBuffer.Length())
-	func() any {
-		_ = []any{this.currentField, prefix.Length()}
-		panic("j2go: unresolved call setBeginIndex")
-	}()
-	func() any {
-		_ = []any{this.currentField, prefix.Length() + this.typeBuffer.Length()}
-		panic("j2go: unresolved call setEndIndex")
-	}()
+	this.currentField.SetBeginIndex(prefix.Length())
+	this.currentField.SetEndIndex(prefix.Length() + this.typeBuffer.Length())
 	if !this.IsCalendar() {
 		func() {
 			defer func() {
@@ -1691,15 +1624,21 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				if r == nil {
 					return
 				}
-				if false {
-					var e error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.ParseException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.ParseException)
 					_ = e
 				} else {
 					panic(r)
 				}
 			}()
-			var date any = func() any { _ = []any{this.dateFormat, this.GetText()}; panic("j2go: unresolved call parse") }()
-			func() any { _ = []any{this.calendar, date}; panic("j2go: unresolved call setTime") }()
+			var date *jrt.Date = this.dateFormat.Parse(this.GetText())
+			this.calendar.SetTime(date)
 		}()
 	}
 	return false
@@ -1754,13 +1693,10 @@ func (this *DateTime) GetArrow(widget int64) int32 {
 	var adj_value int32 = int32(gtk.GTKGtk_adjustment_get_value(gtk.GTKGtk_spin_button_get_adjustment(widget)))
 	var new_value int32 = 0
 	if this.IsDate() {
-		var firstField any = this.GetNextField(nil)
+		var firstField *jrt.FieldPosition = this.GetNextField(nil)
 		var firstFieldConstant int32 = DateTimeGetCalendarField(firstField)
-		new_value = func() int32 {
-			_ = []any{this.calendar, DateTimeGetCalendarField(firstField)}
-			panic("j2go: unresolved call get")
-		}()
-		if firstFieldConstant == 2 {
+		new_value = this.calendar.Get(DateTimeGetCalendarField(firstField))
+		if firstFieldConstant == jrt.CalendarMONTH {
 			if (this.style & SHORT) != 0 {
 				adj_value--
 			} else {
@@ -1768,13 +1704,13 @@ func (this *DateTime) GetArrow(widget int64) int32 {
 					if adj_value == 0 {
 						return 0
 					} else {
-						var cond570 int32
+						var cond567 int32
 						if adj_value > 0 {
-							cond570 = ARROW_UP
+							cond567 = ARROW_UP
 						} else {
-							cond570 = ARROW_DOWN
+							cond567 = ARROW_DOWN
 						}
-						return cond570
+						return cond567
 					}
 				}
 			}
@@ -1799,13 +1735,13 @@ func (this *DateTime) GetArrow(widget int64) int32 {
 	if adj_value == new_value {
 		return 0
 	}
-	var cond571 int32
+	var cond568 int32
 	if adj_value > new_value {
-		cond571 = ARROW_UP
+		cond568 = ARROW_UP
 	} else {
-		cond571 = ARROW_DOWN
+		cond568 = ARROW_DOWN
 	}
-	return cond571
+	return cond568
 }
 
 func (this *DateTime) SetText(dateTimeText string) {
@@ -1822,32 +1758,38 @@ func (this *DateTime) SetText(dateTimeText string) {
 			gtk.GTK3Gtk_entry_set_width_chars(this.textEntryHandle, jrt.StringLength(dateTimeText))
 			gtk.GTK3Gtk_entry_set_text(this.textEntryHandle, dateTimeConverted)
 		}
-		if this.popupCalendar != (nil) && !jrt.IsNil(this.calendar) {
-			var parse any
-			tretd572 := false
+		if this.popupCalendar != (nil) && this.calendar != (nil) {
+			var parse *jrt.Date
+			tretd569 := false
 			func() {
 				defer func() {
 					r := recover()
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.ParseException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.ParseException)
 						_ = e
-						tretd572 = true
+						tretd569 = true
 						return
 					} else {
 						panic(r)
 					}
 				}()
-				parse = func() any { _ = []any{this.dateFormat, dateTimeText}; panic("j2go: unresolved call parse") }()
+				parse = this.dateFormat.Parse(dateTimeText)
 			}()
-			if tretd572 {
+			if tretd569 {
 				return
 			}
-			var clone any = any(func() any { _ = []any{this.calendar}; panic("j2go: unresolved call clone") }())
-			func() any { _ = []any{clone, parse}; panic("j2go: unresolved call setTime") }()
-			tretd573 := false
+			var clone *jrt.Calendar = this.calendar.Clone().(*jrt.Calendar)
+			clone.SetTime(parse)
+			tretd570 := false
 			func() {
 				defer func() {
 					r := recover()
@@ -1864,7 +1806,7 @@ func (this *DateTime) SetText(dateTimeText string) {
 						e := r.(*SWTException)
 						_ = e
 						if e.Code == ERROR_WIDGET_DISPOSED {
-							tretd573 = true
+							tretd570 = true
 							return
 						}
 						panic(e)
@@ -1872,9 +1814,9 @@ func (this *DateTime) SetText(dateTimeText string) {
 						panic(r)
 					}
 				}()
-				this.popupCalendar.SetDate(func() int32 { _ = []any{clone, 1}; panic("j2go: unresolved call get") }(), func() int32 { _ = []any{clone, 2}; panic("j2go: unresolved call get") }(), func() int32 { _ = []any{clone, 5}; panic("j2go: unresolved call get") }())
+				this.popupCalendar.SetDate(clone.Get(jrt.CalendarYEAR), clone.Get(jrt.CalendarMONTH), clone.Get(jrt.CalendarDAY_OF_MONTH))
 			}()
-			if tretd573 {
+			if tretd570 {
 				return
 			}
 		}
@@ -1885,7 +1827,7 @@ func (this *DateTime) gtk4_key_press_event_(controller int64, keyval int32, keyc
 	if !this.IsReadOnly() && (this.IsTime() || this.IsDate()) {
 		switch keyval {
 		case gtk.GDKGDK_Up, gtk.GDKGDK_KP_Up:
-			this.IncrementField(func() int32 { panic("j2go: unsupported PrefixExpression +1") }())
+			this.IncrementField(1)
 			break
 		case gtk.GDKGDK_Down, gtk.GDKGDK_KP_Down:
 			this.IncrementField(-1)
@@ -1899,19 +1841,13 @@ func (this *DateTime) gtk4_key_press_event_(controller int64, keyval int32, keyc
 			this.SendEventEventType(Traverse)
 			break
 		case gtk.GDKGDK_Home, gtk.GDKGDK_KP_Home:
-			if !jrt.IsNil(this.currentField) {
-				this.SetTextField(this.currentField, func() int32 {
-					_ = []any{this.calendar, DateTimeGetCalendarField(this.currentField)}
-					panic("j2go: unresolved call getActualMinimum")
-				}())
+			if this.currentField != (nil) {
+				this.SetTextField(this.currentField, this.calendar.GetActualMinimum(DateTimeGetCalendarField(this.currentField)))
 			}
 			break
 		case gtk.GDKGDK_End, gtk.GDKGDK_KP_End:
-			if !jrt.IsNil(this.currentField) {
-				this.SetTextField(this.currentField, func() int32 {
-					_ = []any{this.calendar, DateTimeGetCalendarField(this.currentField)}
-					panic("j2go: unresolved call getActualMaximum")
-				}())
+			if this.currentField != (nil) {
+				this.SetTextField(this.currentField, this.calendar.GetActualMaximum(DateTimeGetCalendarField(this.currentField)))
 			}
 			break
 		default:
@@ -1927,7 +1863,7 @@ func (this *DateTime) gtk3_key_press_event_(widget int64, event int64) int64 {
 		gtk.GDKGdk_event_get_keyval(event, key)
 		switch key[0] {
 		case gtk.GDKGDK_Up, gtk.GDKGDK_KP_Up:
-			this.IncrementField(func() int32 { panic("j2go: unsupported PrefixExpression +1") }())
+			this.IncrementField(1)
 			this.CommitData()
 			break
 		case gtk.GDKGDK_Down, gtk.GDKGDK_KP_Down:
@@ -1943,19 +1879,13 @@ func (this *DateTime) gtk3_key_press_event_(widget int64, event int64) int64 {
 			this.SendEventEventType(Traverse)
 			break
 		case gtk.GDKGDK_Home, gtk.GDKGDK_KP_Home:
-			if !jrt.IsNil(this.currentField) {
-				this.SetTextField(this.currentField, func() int32 {
-					_ = []any{this.calendar, DateTimeGetCalendarField(this.currentField)}
-					panic("j2go: unresolved call getActualMinimum")
-				}())
+			if this.currentField != (nil) {
+				this.SetTextField(this.currentField, this.calendar.GetActualMinimum(DateTimeGetCalendarField(this.currentField)))
 			}
 			break
 		case gtk.GDKGDK_End, gtk.GDKGDK_KP_End:
-			if !jrt.IsNil(this.currentField) {
-				this.SetTextField(this.currentField, func() int32 {
-					_ = []any{this.calendar, DateTimeGetCalendarField(this.currentField)}
-					panic("j2go: unresolved call getActualMaximum")
-				}())
+			if this.currentField != (nil) {
+				this.SetTextField(this.currentField, this.calendar.GetActualMaximum(DateTimeGetCalendarField(this.currentField)))
 			}
 			break
 		default:
@@ -1972,15 +1902,21 @@ func (this *DateTime) CommitData() {
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.ParseException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.ParseException)
 				_ = e
 			} else {
 				panic(r)
 			}
 		}()
-		var date any = func() any { _ = []any{this.dateFormat, this.GetText()}; panic("j2go: unresolved call parse") }()
-		func() any { _ = []any{this.calendar, date}; panic("j2go: unresolved call setTime") }()
+		var date *jrt.Date = this.dateFormat.Parse(this.GetText())
+		this.calendar.SetTime(date)
 	}()
 	this.UpdateControl()
 }
@@ -2050,27 +1986,24 @@ func (this *DateTime) SetTextSelection(start int32, end int32) {
 	gtk.GTKGtk_editable_select_region(this.textEntryHandle, start, end)
 }
 
-func (this *DateTime) SetTextField(field any, value int32) {
+func (this *DateTime) SetTextField(field *jrt.FieldPosition, value int32) {
 	var validValue int32 = this.ValidateValueBounds(field, value)
 	this.SetFieldOfInternalDataStructure(field, validValue)
 	this.SetFieldOfInternalDataStructure(field, value)
 	this.UpdateControl()
-	if !jrt.IsNil(this.currentField) {
+	if this.currentField != (nil) {
 		this.SelectFieldFieldPosition(this.currentField)
 	}
 }
 
-func (this *DateTime) ValidateValueBounds(field any, value int32) int32 {
+func (this *DateTime) ValidateValueBounds(field *jrt.FieldPosition, value int32) int32 {
 	var calendarField int32 = DateTimeGetCalendarField(field)
-	var max int32 = func() int32 { _ = []any{this.calendar, calendarField}; panic("j2go: unresolved call getActualMaximum") }()
-	var min int32 = func() int32 { _ = []any{this.calendar, calendarField}; panic("j2go: unresolved call getActualMinimum") }()
-	if calendarField == 1 {
+	var max int32 = this.calendar.GetActualMaximum(calendarField)
+	var min int32 = this.calendar.GetActualMinimum(calendarField)
+	if calendarField == jrt.CalendarYEAR {
 		max = DateTimeMAX_YEAR
 		min = DateTimeMIN_YEAR
-		var currentYear int32 = func() int32 {
-			_ = []any{func() any { panic("j2go: unresolved call getInstance") }(), 1}
-			panic("j2go: unresolved call get")
-		}()
+		var currentYear int32 = jrt.CalendarGetInstance().Get(jrt.CalendarYEAR)
 		var currentCentury int32 = (currentYear / 100) * 100
 		if value < (currentYear+30)%100 {
 			value += currentCentury
@@ -2111,14 +2044,14 @@ func (this *DateTime) gtk_gesture_release_event_(gesture int64, n_press int32, x
 }
 
 func (this *DateTime) gtk_output_(widget int64) int64 {
-	if jrt.IsNil(this.calendar) {
+	if this.calendar == (nil) {
 		return int64(0)
 	}
 	var arrowType int32 = this.GetArrow(widget)
 	switch arrowType {
 	case ARROW_UP:
 		this.CommitData()
-		this.IncrementField(func() int32 { panic("j2go: unsupported PrefixExpression +1") }())
+		this.IncrementField(1)
 		break
 	case ARROW_DOWN:
 		this.CommitData()
@@ -2143,41 +2076,32 @@ func (this *DateTime) ReplaceCurrentlySelectedTextRegion(string_ string) {
 }
 
 func (this *DateTime) OnTextMouseClick() {
-	if jrt.IsNil(this.calendar) {
+	if this.calendar == (nil) {
 		return
 	}
 	var clickPosition int32 = this.GetTextSelection().X
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call first") }()
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	iterator.First()
 	var pos int32 = 0
 	for {
-		var position any = DateTimeGetFieldPosition(iterator)
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
+		var position *jrt.FieldPosition = DateTimeGetFieldPosition(iterator)
+		iterator.SetIndex(iterator.GetRunLimit())
 		if DateTimeIsSameField(position, this.currentField) {
 			position = this.currentField
 		}
-		var fieldWidth int32 = func() int32 { _ = []any{position}; panic("j2go: unresolved call getEndIndex") }() - func() int32 { _ = []any{position}; panic("j2go: unresolved call getBeginIndex") }()
+		var fieldWidth int32 = position.GetEndIndex() - position.GetBeginIndex()
 		pos += fieldWidth
-		if jrt.IsNil(func() any { _ = []any{position}; panic("j2go: unresolved call getFieldAttribute") }()) {
+		if position.GetFieldAttribute() == (nil) {
 			continue
 		}
 		if pos >= clickPosition {
-			var selectField any = func() any {
-				_ = []any{func() any { _ = []any{position}; panic("j2go: unresolved call getFieldAttribute") }()}
-				panic("j2go: unresolved new FieldPosition")
-			}()
-			func() any { _ = []any{selectField, pos - fieldWidth}; panic("j2go: unresolved call setBeginIndex") }()
-			func() any { _ = []any{selectField, pos}; panic("j2go: unresolved call setEndIndex") }()
+			var selectField *jrt.FieldPosition = jrt.NewFieldPosition(position.GetFieldAttribute())
+			selectField.SetBeginIndex(pos - fieldWidth)
+			selectField.SetEndIndex(pos)
 			this.SelectFieldFieldPosition(selectField)
 			break
 		}
-		if !(int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535)) {
+		if !(int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE)) {
 			break
 		}
 	}
@@ -2218,44 +2142,32 @@ func (this *DateTime) releaseWidget_() {
 	}
 }
 
-func (this *DateTime) UpdateField(field any) any {
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	for int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535) {
-		var current any = DateTimeGetFieldPosition(iterator)
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
-		if jrt.IsNil(field) || DateTimeIsSameField(current, field) {
+func (this *DateTime) UpdateField(field *jrt.FieldPosition) *jrt.FieldPosition {
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
+		var current *jrt.FieldPosition = DateTimeGetFieldPosition(iterator)
+		iterator.SetIndex(iterator.GetRunLimit())
+		if field == (nil) || DateTimeIsSameField(current, field) {
 			return current
 		}
 	}
 	return field
 }
 
-func (this *DateTime) GetNextField(field any) any {
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	var first any = nil
+func (this *DateTime) GetNextField(field *jrt.FieldPosition) *jrt.FieldPosition {
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	var first *jrt.FieldPosition = nil
 	var found bool = false
-	for int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535) {
-		var current any = DateTimeGetFieldPosition(iterator)
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
-		if jrt.IsNil(func() any { _ = []any{current}; panic("j2go: unresolved call getFieldAttribute") }()) {
+	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
+		var current *jrt.FieldPosition = DateTimeGetFieldPosition(iterator)
+		iterator.SetIndex(iterator.GetRunLimit())
+		if current.GetFieldAttribute() == (nil) {
 			continue
 		}
 		if found {
 			return current
 		}
-		if jrt.IsNil(first) {
+		if first == (nil) {
 			first = current
 		}
 		if DateTimeIsSameField(current, field) {
@@ -2265,27 +2177,21 @@ func (this *DateTime) GetNextField(field any) any {
 	return first
 }
 
-func (this *DateTime) GetPreviousField(field any) any {
-	var iterator any = func() any {
-		_ = []any{this.dateFormat, func() any { _ = []any{this.calendar}; panic("j2go: unresolved call getTime") }()}
-		panic("j2go: unresolved call formatToCharacterIterator")
-	}()
-	var last any = nil
+func (this *DateTime) GetPreviousField(field *jrt.FieldPosition) *jrt.FieldPosition {
+	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
+	var last *jrt.FieldPosition = nil
 	for {
-		var current any = DateTimeGetFieldPosition(iterator)
+		var current *jrt.FieldPosition = DateTimeGetFieldPosition(iterator)
 		if DateTimeIsSameField(current, field) {
-			if !jrt.IsNil(last) {
+			if last != (nil) {
 				return last
 			}
 		}
-		if !jrt.IsNil(func() any { _ = []any{current}; panic("j2go: unresolved call getFieldAttribute") }()) {
+		if current.GetFieldAttribute() != (nil) {
 			last = current
 		}
-		func() uint16 {
-			_ = []any{iterator, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-			panic("j2go: unresolved call setIndex")
-		}()
-		if !(int32(func() uint16 { _ = []any{iterator}; panic("j2go: unresolved call current") }()) != int32(65535)) {
+		iterator.SetIndex(iterator.GetRunLimit())
+		if !(int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE)) {
 			break
 		}
 	}
@@ -2301,74 +2207,59 @@ func DateTimeCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, MEDIUM, SHORT, SWTLONG, 0, 0, 0)
 }
 
-func DateTimeGetFieldPosition(iterator any) any {
-	var keySet *jrt.List = func() *jrt.Map { _ = []any{iterator}; panic("j2go: unresolved call getAttributes") }().KeySet()
-	for _, elem574 := range keySet.ToArray() {
-		attribute := jrt.Cast[any](elem574)
-		_, ok575 := any(nil), false
-		if ok575 {
-			return DateTimeGetFieldPositionFieldIterator(any(attribute), iterator)
+func DateTimeGetFieldPosition(iterator *jrt.AttributedCharacterIterator) *jrt.FieldPosition {
+	var keySet *jrt.List = iterator.GetAttributes().KeySet()
+	for _, elem571 := range keySet.ToArray() {
+		attribute := jrt.Cast[*jrt.DateFormatField](elem571)
+		_, ok572 := attribute, attribute != nil
+		if ok572 {
+			return DateTimeGetFieldPositionFieldIterator(attribute, iterator)
 		}
 	}
 	return DateTimeGetFieldPositionFieldIterator(nil, iterator)
 }
 
-func DateTimeGetFieldPositionFieldIterator(field any, iterator any) any {
-	var position any = func() any { _ = []any{field}; panic("j2go: unresolved new FieldPosition") }()
-	func() any {
-		_ = []any{position, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunStart") }()}
-		panic("j2go: unresolved call setBeginIndex")
-	}()
-	func() any {
-		_ = []any{position, func() int32 { _ = []any{iterator}; panic("j2go: unresolved call getRunLimit") }()}
-		panic("j2go: unresolved call setEndIndex")
-	}()
+func DateTimeGetFieldPositionFieldIterator(field *jrt.DateFormatField, iterator *jrt.AttributedCharacterIterator) *jrt.FieldPosition {
+	var position *jrt.FieldPosition = jrt.NewFieldPosition(field)
+	position.SetBeginIndex(iterator.GetRunStart())
+	position.SetEndIndex(iterator.GetRunLimit())
 	return position
 }
 
-func DateTimeIsSameField(p1 any, p2 any) bool {
+func DateTimeIsSameField(p1 *jrt.FieldPosition, p2 *jrt.FieldPosition) bool {
 	if p1 == p2 {
 		return true
 	}
-	if jrt.IsNil(p1) || jrt.IsNil(p2) {
+	if p1 == (nil) || p2 == (nil) {
 		return false
 	}
-	if jrt.IsNil(func() any { _ = []any{p1}; panic("j2go: unresolved call getFieldAttribute") }()) && jrt.IsNil(func() any { _ = []any{p2}; panic("j2go: unresolved call getFieldAttribute") }()) {
-		return func() bool { _ = []any{p1, p2}; panic("j2go: unresolved call equals") }()
+	if p1.GetFieldAttribute() == (nil) && p2.GetFieldAttribute() == (nil) {
+		return p1.Equals(p2)
 	}
-	if jrt.IsNil(func() any { _ = []any{p1}; panic("j2go: unresolved call getFieldAttribute") }()) {
+	if p1.GetFieldAttribute() == (nil) {
 		return false
 	}
-	return func() bool {
-		_ = []any{func() any { _ = []any{p1}; panic("j2go: unresolved call getFieldAttribute") }(), func() any { _ = []any{p2}; panic("j2go: unresolved call getFieldAttribute") }()}
-		panic("j2go: unresolved call equals")
-	}()
+	return p1.GetFieldAttribute().Equals(p2.GetFieldAttribute())
 }
 
-func DateTimeGetCalendarField(fieldPosition any) int32 {
-	_, ok576 := any(nil), false
-	if ok576 {
-		return DateTimeGetCalendarFieldField(any(func() any { _ = []any{fieldPosition}; panic("j2go: unresolved call getFieldAttribute") }()))
+func DateTimeGetCalendarField(fieldPosition *jrt.FieldPosition) int32 {
+	_, ok573 := fieldPosition.GetFieldAttribute(), fieldPosition.GetFieldAttribute() != nil
+	if ok573 {
+		return DateTimeGetCalendarFieldField(fieldPosition.GetFieldAttribute())
 	} else {
 		return -1
 	}
 }
 
-func DateTimeGetCalendarFieldField(field any) int32 {
-	if func() bool {
-		_ = []any{func() any { panic("j2go: unresolved static field HOUR1") }(), field}
-		panic("j2go: unresolved call equals")
-	}() {
-		field = func() any { panic("j2go: unresolved static field HOUR0") }()
+func DateTimeGetCalendarFieldField(field *jrt.DateFormatField) int32 {
+	if jrt.DateFormatFieldHOUR1.Equals(field) {
+		field = jrt.DateFormatFieldHOUR0
 	} else {
-		if func() bool {
-			_ = []any{func() any { panic("j2go: unresolved static field HOUR_OF_DAY1") }(), field}
-			panic("j2go: unresolved call equals")
-		}() {
-			field = func() any { panic("j2go: unresolved static field HOUR_OF_DAY0") }()
+		if jrt.DateFormatFieldHOUR_OF_DAY1.Equals(field) {
+			field = jrt.DateFormatFieldHOUR_OF_DAY0
 		}
 	}
-	return func() int32 { _ = []any{field}; panic("j2go: unresolved call getCalendarField") }()
+	return field.GetCalendarField()
 }
 
 func upcastDateTimeToComposite(x *DateTime) *Composite {

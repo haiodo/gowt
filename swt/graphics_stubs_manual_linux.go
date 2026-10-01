@@ -25,21 +25,17 @@ func DPIUtilPointToPixel(size int32, zoom int32) int32 {
 	return int32(math.Round(float64(size) * float64(zoom) / 100))
 }
 
-// DPIUtil.scaleImageData in both its forms: (device, ImageData, targetZoom, currentZoom) and
-// (device, ElementAtZoom<ImageData>, targetZoom). Only reached for zooms other than 100.
-func DPIUtilScaleImageData(device *Device, data any, zooms ...int32) *ImageData {
-	target, current := zooms[0], int32(0)
-	var imageData *ImageData
-	if e, ok := data.(*DPIUtilElementAtZoom); ok {
-		imageData, current = e.Element().(*ImageData), e.Zoom()
-	} else {
-		imageData, current = data.(*ImageData), zooms[1]
-	}
+// DPIUtil.scaleImageData(device, ImageData, targetZoom, currentZoom): only reached for zooms other than 100.
+func DPIUtilScaleImageData(device *Device, imageData *ImageData, target int32, current int32) *ImageData {
 	if imageData == nil || target == current {
 		return imageData
 	}
 	return imageData.ScaledTo(DPIUtilPointToPixel(DPIUtilPixelToPoint(imageData.Width, current), target),
 		DPIUtilPointToPixel(DPIUtilPixelToPoint(imageData.Height, current), target))
+}
+
+func DPIUtilScaleImageDataElement(device *Device, e *DPIUtilElementAtZoom, target int32) *ImageData {
+	return DPIUtilScaleImageData(device, e.Element().(*ImageData), target, e.Zoom())
 }
 
 // DPIUtil.autoScaleImageData(device, data, dataZoom): scale to the device zoom.

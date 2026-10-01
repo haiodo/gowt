@@ -24,21 +24,3 @@ func upcastToolBarToControl(x *ToolBar) *Control {
 	}
 	return &x.Control
 }
-
-// j2go: instanceof helper for MenuItem and its subclasses within the translated set.
-func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *MenuItem:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsMenuItem() *MenuItem }); ok {
-		return l.AsMenuItem(), true
-	}
-	return nil, false
-}

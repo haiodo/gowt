@@ -122,9 +122,9 @@ func (this *Table) _getItem(index int32) *TableItem {
 	if this.items[index] != (nil) {
 		return this.items[index]
 	}
-	cond483 := newTableItemParentStyleIndexCreate(this, NONE, index, false)
-	this.items[index] = cond483
-	return cond483
+	cond486 := newTableItemParentStyleIndexCreate(this, NONE, index, false)
+	this.items[index] = cond486
+	return cond486
 }
 
 func (this *Table) cellDataProc_(tree_column int64, cell int64, tree_model int64, iter int64, data int64) int64 {
@@ -215,7 +215,7 @@ func (this *Table) cellDataProc_(tree_column int64, cell int64, tree_model int64
 	}
 	if setData {
 		this.ignoreCell = cell
-		this.SetScrollWidth(tree_column, item)
+		this.SetScrollWidthLocal1(tree_column, item)
 		this.ignoreCell = int64(0)
 	}
 	return int64(0)
@@ -270,8 +270,7 @@ func (this *Table) CalculateWidth(column int64, iter int64) int32 {
 	if gtk.GTKGTK4 {
 		gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, width, nil)
 	} else {
-		t484 := gtk.GdkRectangle{}
-		gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t484, nil, nil, width, nil)
+		gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, width, nil)
 	}
 	var textRenderer int64 = this.GetTextRenderer(column)
 	var xpad []int32 = make([]int32, 1)
@@ -451,13 +450,13 @@ func (this *Table) CreateColumn(columnLike TableColumnLike, index int32) {
 		var checkColumn *TableColumn = this.columns[0]
 		this.CreateRenderers(checkColumn.Handle, checkColumn.modelIndex, false, checkColumn.style)
 	}
-	var cond485 int32
+	var cond487 int32
 	if column == (nil) {
-		cond485 = 0
+		cond487 = 0
 	} else {
-		cond485 = column.style
+		cond487 = column.style
 	}
-	this.CreateRenderers(columnHandle, modelIndex, index == 0, cond485)
+	this.CreateRenderers(columnHandle, modelIndex, index == 0, cond487)
 	if (this.style&VIRTUAL) == 0 && this.columnCount == 0 {
 		gtk.GTKGtk_tree_view_column_set_sizing(columnHandle, gtk.GTKGTK_TREE_VIEW_COLUMN_GROW_ONLY)
 	} else {
@@ -620,9 +619,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 		copy(newColumns[0:], this.columns[0:0+int32(len(this.columns))])
 		this.columns = newColumns
 	}
-	t486 := this.columnCount
+	t488 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t486-index])
+	copy(this.columns[index+1:], this.columns[index:index+t488-index])
 	this.columns[index] = column
 	if (this.state & WidgetFONT) != 0 {
 		var fontDesc int64 = this.GetFontDescription()
@@ -689,9 +688,9 @@ func (this *Table) CreateItemItemIndex(itemLike TableItemLike, index int32) {
 	} else {
 		gtk.GTKGtk_list_store_insert(this.modelHandle, item.Handle, index)
 	}
-	t487 := this.itemCount
+	t489 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t487-index])
+	copy(this.items[index+1:], this.items[index:index+t489-index])
 	this.items[index] = item
 }
 
@@ -1135,9 +1134,9 @@ func (this *Table) GetColumnOrder() []int32 {
 		if column != 0 {
 			for j := int32(0); j < this.columnCount; j++ {
 				if this.columns[j].Handle == column {
-					t488 := i
+					t490 := i
 					i++
-					order[t488] = j
+					order[t490] = j
 					break
 				}
 			}
@@ -1195,24 +1194,24 @@ func (this *Table) GetGridLineWidth() int32 {
 
 func (this *Table) GetHeaderBackground() *Color {
 	this.CheckWidget()
-	var cond489 *Color
+	var cond491 *Color
 	if this.headerBackground != (nil) {
-		cond489 = this.headerBackground
+		cond491 = this.headerBackground
 	} else {
-		cond489 = this.display.impl.getSystemColor_(COLOR_LIST_BACKGROUND)
+		cond491 = this.display.impl.getSystemColor_(COLOR_LIST_BACKGROUND)
 	}
-	return cond489
+	return cond491
 }
 
 func (this *Table) GetHeaderForeground() *Color {
 	this.CheckWidget()
-	var cond490 *Color
+	var cond492 *Color
 	if this.headerForeground != (nil) {
-		cond490 = this.headerForeground
+		cond492 = this.headerForeground
 	} else {
-		cond490 = this.display.impl.getSystemColor_(COLOR_LIST_FOREGROUND)
+		cond492 = this.display.impl.getSystemColor_(COLOR_LIST_FOREGROUND)
 	}
-	return cond490
+	return cond492
 }
 
 func (this *Table) GetHeaderHeight() int32 {
@@ -1316,8 +1315,7 @@ func (this *Table) GetItemHeight() int32 {
 		if gtk.GTKGTK4 {
 			gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, h)
 		} else {
-			t491 := gtk.GdkRectangle{}
-			gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t491, nil, nil, nil, h)
+			gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, nil, h)
 		}
 		height = h[0]
 		var textRenderer int64 = this.GetTextRenderer(column)
@@ -1337,8 +1335,7 @@ func (this *Table) GetItemHeight() int32 {
 			if gtk.GTKGTK4 {
 				gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, h)
 			} else {
-				t492 := gtk.GdkRectangle{}
-				gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t492, nil, nil, nil, h)
+				gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, nil, h)
 			}
 			var textRenderer int64 = this.GetTextRenderer(column)
 			var ypad []int32 = make([]int32, 1)
@@ -2971,7 +2968,7 @@ func (this *Table) setRedraw_(redraw bool) {
 	}
 }
 
-func (this *Table) SetScrollWidth(column int64, itemLike TableItemLike) {
+func (this *Table) SetScrollWidthLocal1(column int64, itemLike TableItemLike) {
 	var item *TableItem
 	if itemLike != nil {
 		item = itemLike.AsTableItem()

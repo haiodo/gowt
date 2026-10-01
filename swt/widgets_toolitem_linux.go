@@ -213,13 +213,13 @@ func (this *ToolItem) createHandle_(index int32) {
 			}
 			gtk.GTKGtk_widget_set_halign(this.imageHandle, gtk.GTKGTK_ALIGN_CENTER)
 			gtk.GTKGtk_widget_set_valign(this.imageHandle, gtk.GTKGTK_ALIGN_CENTER)
-			var cond533 int32
+			var cond531 int32
 			if boxOrientation == gtk.GTKGTK_ORIENTATION_VERTICAL {
-				cond533 = gtk.GTKGTK_ORIENTATION_HORIZONTAL
+				cond531 = gtk.GTKGTK_ORIENTATION_HORIZONTAL
 			} else {
-				cond533 = gtk.GTKGTK_ORIENTATION_VERTICAL
+				cond531 = gtk.GTKGTK_ORIENTATION_VERTICAL
 			}
-			this.imageBoxHandle = gtk.GTKGtk_box_new(cond533, 0)
+			this.imageBoxHandle = gtk.GTKGtk_box_new(cond531, 0)
 			if this.imageBoxHandle == 0 {
 				this.Error(ERROR_NO_HANDLES)
 			}
@@ -299,13 +299,13 @@ func (this *ToolItem) dispose_() {
 
 func (this *ToolItem) GetBackground() *Color {
 	this.CheckWidget()
-	var cond534 *Color
+	var cond532 *Color
 	if this.background != (nil) {
-		cond534 = this.background
+		cond532 = this.background
 	} else {
-		cond534 = this.parent.GetBackground()
+		cond532 = this.parent.GetBackground()
 	}
-	return cond534
+	return cond532
 }
 
 func (this *ToolItem) GetBounds() *Rectangle {
@@ -345,13 +345,13 @@ func (this *ToolItem) GetEnabled() bool {
 
 func (this *ToolItem) GetForeground() *Color {
 	this.CheckWidget()
-	var cond535 *Color
+	var cond533 *Color
 	if this.foreground != (nil) {
-		cond535 = this.foreground
+		cond533 = this.foreground
 	} else {
-		cond535 = this.parent.impl.getForeground_()
+		cond533 = this.parent.impl.getForeground_()
 	}
-	return cond535
+	return cond533
 }
 
 func (this *ToolItem) GetHotImage() *Image {
@@ -1161,13 +1161,13 @@ func (this *ToolItem) SetToolTipText(string_ string) {
 					this.SetToolTipTextTipWidgetString(this.arrowHandle, string_)
 				}
 			}
-			var cond536 int64
+			var cond534 int64
 			if child != 0 {
-				cond536 = child
+				cond534 = child
 			} else {
-				cond536 = this.Handle
+				cond534 = this.Handle
 			}
-			this.SetToolTipTextTipWidgetString(cond536, string_)
+			this.SetToolTipTextTipWidgetString(cond534, string_)
 		}
 	}
 	this.toolTipText = string_
@@ -1182,13 +1182,13 @@ func (this *ToolItem) SetWidth(width int32) {
 	if width < 0 {
 		return
 	}
-	var cond537 int32
+	var cond535 int32
 	if (this.parent.style & VERTICAL) != 0 {
-		cond537 = 6
+		cond535 = 6
 	} else {
-		cond537 = 15
+		cond535 = 15
 	}
-	this.ResizeHandle(width, cond537)
+	this.ResizeHandle(width, cond535)
 	this.parent.Relayout()
 }
 

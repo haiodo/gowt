@@ -115,20 +115,20 @@ func (this *Label) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint int3
 		} else {
 			size = NewPoint(0, 0)
 		}
-		var cond197 int32
+		var cond195 int32
 		if wHint == DEFAULT {
-			cond197 = w[0]
+			cond195 = w[0]
 		} else {
-			cond197 = wHint
+			cond195 = wHint
 		}
-		size.X += cond197
-		var cond198 int32
+		size.X += cond195
+		var cond196 int32
 		if hHint == DEFAULT {
-			cond198 = h[0]
+			cond196 = h[0]
 		} else {
-			cond198 = hHint
+			cond196 = hHint
 		}
-		size.Y += cond198
+		size.Y += cond196
 	} else {
 		if this.frameHandle != 0 {
 			var reqWidth []int32 = make([]int32, 1)

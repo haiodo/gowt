@@ -345,8 +345,7 @@ func (this *TableItem) GetBoundsIndex(index int32) *Rectangle {
 	if gtk.GTKGTK4 {
 		gtk.GTK4Gtk_tree_view_column_cell_get_size(column, nil, nil, columnWidth, columnHeight)
 	} else {
-		t592 := gtk.GdkRectangle{}
-		gtk.GTK3Gtk_tree_view_column_cell_get_size(column, &t592, nil, nil, columnWidth, columnHeight)
+		gtk.GTK3Gtk_tree_view_column_cell_get_size(column, nil, nil, nil, columnWidth, columnHeight)
 	}
 	this.parent.ignoreSize = false
 	rect.Height = columnHeight[0]
@@ -389,13 +388,13 @@ func (this *TableItem) GetFont() *Font {
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond593 *Font
+	var cond589 *Font
 	if this.font != (nil) {
-		cond593 = this.font
+		cond589 = this.font
 	} else {
-		cond593 = this.parent.GetFont()
+		cond589 = this.parent.GetFont()
 	}
-	return cond593
+	return cond589
 }
 
 func (this *TableItem) GetFontIndex(index int32) *Font {
@@ -548,13 +547,13 @@ func (this *TableItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond594 string
+			var cond590 string
 			if string_ != "" {
-				cond594 = string_
+				cond590 = string_
 			} else {
-				cond594 = ""
+				cond590 = ""
 			}
-			return cond594
+			return cond590
 		}
 	}
 	return this._getText(index)
@@ -747,13 +746,13 @@ func (this *TableItem) SetChecked(checked bool) {
 		return
 	}
 	gtk.GTKGtk_list_store_setOverload4(this.parent.modelHandle, this.Handle, TableCHECKED_COLUMN, checked, -1)
-	var cond595 bool
+	var cond591 bool
 	if !checked {
-		cond595 = false
+		cond591 = false
 	} else {
-		cond595 = this.grayed
+		cond591 = this.grayed
 	}
-	gtk.GTKGtk_list_store_setOverload4(this.parent.modelHandle, this.Handle, TableGRAYED_COLUMN, cond595, -1)
+	gtk.GTKGtk_list_store_setOverload4(this.parent.modelHandle, this.Handle, TableGRAYED_COLUMN, cond591, -1)
 	this.cached = true
 }
 
@@ -958,13 +957,13 @@ func (this *TableItem) SetGrayed(grayed bool) {
 	this.grayed = grayed
 	var ptr []int32 = make([]int32, 1)
 	gtk.GTKGtk_tree_model_getTree_modelIterColumnValueTerminator(this.parent.modelHandle, this.Handle, TableCHECKED_COLUMN, ptr, -1)
-	var cond596 bool
+	var cond592 bool
 	if ptr[0] == 0 {
-		cond596 = false
+		cond592 = false
 	} else {
-		cond596 = grayed
+		cond592 = grayed
 	}
-	gtk.GTKGtk_list_store_setOverload4(this.parent.modelHandle, this.Handle, TableGRAYED_COLUMN, cond596, -1)
+	gtk.GTKGtk_list_store_setOverload4(this.parent.modelHandle, this.Handle, TableGRAYED_COLUMN, cond592, -1)
 	this.cached = true
 }
 

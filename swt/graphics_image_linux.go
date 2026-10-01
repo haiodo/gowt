@@ -50,9 +50,9 @@ func (this *Image) initImage(device *Device) {
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner372 := newImageCachedImageAtSize()
-	inner372.this_0 = this
-	this.cachedImageAtSize = inner372
+	inner356 := newImageCachedImageAtSize()
+	inner356.this_0 = this
+	this.cachedImageAtSize = inner356
 	this.currentDeviceZoom = DPIUtilGetDeviceZoom()
 }
 
@@ -75,9 +75,9 @@ func (this *Image) initImageDeviceWidthHeight(device *Device, width int32, heigh
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner373 := newImageCachedImageAtSize()
-	inner373.this_0 = this
-	this.cachedImageAtSize = inner373
+	inner357 := newImageCachedImageAtSize()
+	inner357.this_0 = this
+	this.cachedImageAtSize = inner357
 	var size *Point = NewPoint(width, height)
 	this.Init(size.X, size.Y)
 	this.impl.init_()
@@ -107,9 +107,9 @@ func (this *Image) initImageDeviceSrcImageFlag(device *Device, srcImage *Image, 
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner374 := newImageCachedImageAtSize()
-	inner374.this_0 = this
-	this.cachedImageAtSize = inner374
+	inner358 := newImageCachedImageAtSize()
+	inner358.this_0 = this
+	this.cachedImageAtSize = inner358
 	if srcImage == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -280,9 +280,9 @@ func (this *Image) initImageDeviceBounds(device *Device, bounds *Rectangle) {
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner375 := newImageCachedImageAtSize()
-	inner375.this_0 = this
-	this.cachedImageAtSize = inner375
+	inner359 := newImageCachedImageAtSize()
+	inner359.this_0 = this
+	this.cachedImageAtSize = inner359
 	if bounds == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -325,9 +325,9 @@ func (this *Image) initImageDeviceDataZoom(device *Device, data *ImageData, zoom
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner376 := newImageCachedImageAtSize()
-	inner376.this_0 = this
-	this.cachedImageAtSize = inner376
+	inner360 := newImageCachedImageAtSize()
+	inner360.this_0 = this
+	this.cachedImageAtSize = inner360
 	if data == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -365,9 +365,9 @@ func (this *Image) initImageDeviceSourceMask(device *Device, source *ImageData, 
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner377 := newImageCachedImageAtSize()
-	inner377.this_0 = this
-	this.cachedImageAtSize = inner377
+	inner361 := newImageCachedImageAtSize()
+	inner361.this_0 = this
+	this.cachedImageAtSize = inner361
 	if source == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -407,9 +407,9 @@ func (this *Image) initImageDeviceStream(device *Device, stream jrt.InputStream)
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner378 := newImageCachedImageAtSize()
-	inner378.this_0 = this
-	this.cachedImageAtSize = inner378
+	inner362 := newImageCachedImageAtSize()
+	inner362.this_0 = this
+	this.cachedImageAtSize = inner362
 	if stream == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -459,20 +459,20 @@ func (this *Image) initImageDeviceFilename(device *Device, filename string) {
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner379 := newImageCachedImageAtSize()
-	inner379.this_0 = this
-	this.cachedImageAtSize = inner379
+	inner363 := newImageCachedImageAtSize()
+	inner363.this_0 = this
+	this.cachedImageAtSize = inner363
 	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.imageFileNameProvider = &ImageFileNameProviderFunc{fn: func(zoom int32) string {
-		var cond380 string
+		var cond364 string
 		if zoom == 100 {
-			cond380 = filename
+			cond364 = filename
 		} else {
-			cond380 = ""
+			cond364 = ""
 		}
-		return cond380
+		return cond364
 	}}
 	this.currentDeviceZoom = DPIUtilGetDeviceZoom()
 	this.InitFromFileNameProvider(this.currentDeviceZoom)
@@ -498,9 +498,9 @@ func (this *Image) initImageDeviceImageFileNameProvider(device *Device, imageFil
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner381 := newImageCachedImageAtSize()
-	inner381.this_0 = this
-	this.cachedImageAtSize = inner381
+	inner365 := newImageCachedImageAtSize()
+	inner365.this_0 = this
+	this.cachedImageAtSize = inner365
 	this.imageFileNameProvider = imageFileNameProvider
 	this.currentDeviceZoom = DPIUtilGetDeviceZoom()
 	this.InitFromFileNameProvider(this.currentDeviceZoom)
@@ -526,9 +526,9 @@ func (this *Image) initImageDeviceImageDataProvider(device *Device, imageDataPro
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner382 := newImageCachedImageAtSize()
-	inner382.this_0 = this
-	this.cachedImageAtSize = inner382
+	inner366 := newImageCachedImageAtSize()
+	inner366.this_0 = this
+	this.cachedImageAtSize = inner366
 	this.imageDataProvider = imageDataProvider
 	this.currentDeviceZoom = DPIUtilGetDeviceZoom()
 	this.InitFromImageDataProvider(this.currentDeviceZoom)
@@ -557,9 +557,9 @@ func (this *Image) initImageDeviceImageGcDrawerWidthHeight(device *Device, image
 	this.height = -1
 	this.styleFlag = IMAGE_COPY
 	this.currentDeviceZoom = 100
-	inner383 := newImageCachedImageAtSize()
-	inner383.this_0 = this
-	this.cachedImageAtSize = inner383
+	inner367 := newImageCachedImageAtSize()
+	inner367.this_0 = this
+	this.cachedImageAtSize = inner367
 	if imageGcDrawer == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
@@ -846,8 +846,8 @@ func (this *Image) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok384 := resourceImplAsImage(object)
-	if !(ok384) {
+	_, ok368 := resourceImplAsImage(object)
+	if !(ok368) {
 		return false
 	}
 	var image *Image = castanyToImage(object)
@@ -934,9 +934,9 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 	var palette *PaletteData = NewPaletteDataRedMaskGreenMaskBlueMask(0xFF0000, 0xFF00, 0xFF)
 	var data *ImageData = NewImageDataWidthHeightDepthPaletteScanlinePadData(width, height, 32, palette, 4, srcData)
 	if hasAlpha {
-		cond385 := make([]int8, width*height)
-		data.AlphaData = cond385
-		var alphaData []int8 = cond385
+		cond369 := make([]int8, width*height)
+		data.AlphaData = cond369
+		var alphaData []int8 = cond369
 		{
 			var y int32 = 0
 			var offset int32 = 0
@@ -955,9 +955,9 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 						var g int32 = int32(srcData[offset+og]) & 0xFF
 						var b int32 = int32(srcData[offset+ob]) & 0xFF
 						srcData[offset+0] = int8(0)
-						t386 := alphaOffset
+						t370 := alphaOffset
 						alphaOffset++
-						alphaData[t386] = int8(a)
+						alphaData[t370] = int8(a)
 						if a != 0 {
 							srcData[offset+1] = int8((((r * 0xFF) + a/2) / a))
 							srcData[offset+2] = int8((((g * 0xFF) + a/2) / a))
@@ -1365,25 +1365,25 @@ func (this *Image) String() string {
 func ImageCreateImageDataProvider(stream jrt.InputStream) ImageDataProvider {
 	var streamData []int8 = jrt.ReadAllBytes(stream)
 	if ImageDataLoaderIsDynamicallySizable(jrt.NewByteArrayInputStream(streamData)) {
-		anon387 := &ImageAnon1{}
-		anon387.fnGetImageData = func(zoom int32) *ImageData {
+		anon371 := &ImageAnon1{}
+		anon371.fnGetImageData = func(zoom int32) *ImageData {
 			return jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, zoom).Element())
 		}
-		anon387.fnGetImageDataWidthHeight = func(width int32, height int32) *ImageData {
+		anon371.fnGetImageDataWidthHeight = func(width int32, height int32) *ImageData {
 			return ImageDataLoaderLoadBySize(jrt.NewByteArrayInputStream(streamData), width, height)
 		}
-		var imageDataAtSizeProvider ImageDataAtSizeProvider = anon387
+		var imageDataAtSizeProvider ImageDataAtSizeProvider = anon371
 		return imageDataAtSizeProvider
 	}
 	var imageData *ImageData = jrt.Cast[*ImageData](ImageDataLoaderLoadByZoom(jrt.NewByteArrayInputStream(streamData), FileFormatDEFAULT_ZOOM, 100).Element())
 	return &ImageDataProviderFunc{fn: func(zoom int32) *ImageData {
-		var cond388 *ImageData
+		var cond372 *ImageData
 		if zoom == 100 {
-			cond388 = imageData
+			cond372 = imageData
 		} else {
-			cond388 = nil
+			cond372 = nil
 		}
-		return cond388
+		return cond372
 	}}
 }
 
@@ -1500,8 +1500,8 @@ func (this *Image_CachedImageAtSize) LoadImageAtSize(destWidth int32, destHeight
 }
 
 func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32, targetHeight int32) *jrt.Optional {
-	imageDataAtSizeProvider, ok389 := this.this_0.imageDataProvider.(ImageDataAtSizeProvider)
-	if ok389 {
+	imageDataAtSizeProvider, ok373 := this.this_0.imageDataProvider.(ImageDataAtSizeProvider)
+	if ok373 {
 		var imageData *ImageData = imageDataAtSizeProvider.GetImageDataWidthHeight(targetWidth, targetHeight)
 		if imageData == (nil) {
 			ErrorCodeThrowableDetail(ERROR_INVALID_ARGUMENT, nil, fmt.Sprintf(" ImageDataAtSizeProvider returned null for width=%d, height=%d", targetWidth, targetHeight))
@@ -1515,8 +1515,8 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 		}
 		{
 			var stream jrt.InputStream = jrt.NewFileInputStream(fileName)
-			var tret390 *jrt.Optional
-			tretd391 := false
+			var tret374 *jrt.Optional
+			tretd375 := false
 			func() {
 				defer stream.Close()
 				defer func() {
@@ -1540,14 +1540,14 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 				}()
 				if ImageDataLoaderIsDynamicallySizable(stream) {
 					this.nonSizableFileName = ""
-					tret390 = jrt.OptionalOf(ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight))
-					tretd391 = true
+					tret374 = jrt.OptionalOf(ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight))
+					tretd375 = true
 					return
 				}
 				this.nonSizableFileName = fileName
 			}()
-			if tretd391 {
-				return tret390
+			if tretd375 {
+				return tret374
 			}
 		}
 	}

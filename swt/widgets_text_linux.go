@@ -222,13 +222,13 @@ func (this *Text) createHandle_(index int32) {
 }
 
 func (this *Text) applyThemeBackground_() int32 {
-	var cond222 int32
+	var cond208 int32
 	if this.backgroundAlpha == 0 || (this.style&(BORDER|H_SCROLL|V_SCROLL)) == 0 {
-		cond222 = 1
+		cond208 = 1
 	} else {
-		cond222 = 0
+		cond208 = 0
 	}
-	return cond222
+	return cond208
 }
 
 func (this *Text) createWidget_(index int32) {
@@ -294,13 +294,13 @@ func (this *Text) ApplySegments() {
 	}
 	{
 		var i int32 = 1
-		var cond223 int32
+		var cond209 int32
 		if string_ == "" {
-			cond223 = 0
+			cond209 = 0
 		} else {
-			cond223 = jrt.StringLength(string_)
+			cond209 = jrt.StringLength(string_)
 		}
-		var length int32 = cond223
+		var length int32 = cond209
 		for ; i < nSegments; func() {
 			i++
 		}() {
@@ -310,13 +310,13 @@ func (this *Text) ApplySegments() {
 		}
 	}
 	var segmentsChars []uint16 = event.SegmentsChars
-	var cond224 uint16
+	var cond210 uint16
 	if this.impl.getOrientation_() == RIGHT_TO_LEFT {
-		cond224 = TextRTL_MARK
+		cond210 = TextRTL_MARK
 	} else {
-		cond224 = TextLTR_MARK
+		cond210 = TextLTR_MARK
 	}
-	var separator []uint16 = []uint16{cond224}
+	var separator []uint16 = []uint16{cond210}
 	if (this.style & SINGLE) != 0 {
 		gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 		gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
@@ -663,9 +663,9 @@ func (this *Text) eventWindow_() int64 {
 			var childrenIterator int64 = children
 			for {
 				window = gtk.OSG_list_data(childrenIterator)
-				cond225 := gtk.OSG_list_next(childrenIterator)
-				childrenIterator = cond225
-				if !((cond225) != 0) {
+				cond211 := gtk.OSG_list_next(childrenIterator)
+				childrenIterator = cond211
+				if !((cond211) != 0) {
 					break
 				}
 			}
@@ -921,11 +921,11 @@ func (this *Text) GetSelection() *Point {
 func (this *Text) GetSelectionCount() int32 {
 	this.CheckWidget()
 	var selection *Point = this.GetSelection()
-	abs226 := selection.Y - selection.X
-	if abs226 < 0 {
-		abs226 = -abs226
+	abs212 := selection.Y - selection.X
+	if abs212 < 0 {
+		abs212 = -abs212
 	}
-	return abs226
+	return abs212
 }
 
 func (this *Text) GetSelectionText() string {
@@ -1006,13 +1006,13 @@ func (this *Text) GetTextLimit() int32 {
 		return TextLIMIT
 	}
 	var limit int32 = gtk.GTKGtk_entry_get_max_length(this.Handle)
-	var cond227 int32
+	var cond213 int32
 	if limit == 0 {
-		cond227 = 0xFFFF
+		cond213 = 0xFFFF
 	} else {
-		cond227 = this.UntranslateOffset(limit)
+		cond213 = this.UntranslateOffset(limit)
 	}
-	return cond227
+	return cond213
 }
 
 func (this *Text) GetTopIndex() int32 {
@@ -1163,7 +1163,7 @@ func (this *Text) gtk_delete_range_(widget int64, iter1 int64, iter2 int64) int6
 	end = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, int64(end)))
 	gtk.OSG_free(ptr)
 	var newText string = this.VerifyText("", start, end)
-	if newText == "" {
+	if newText == jrt.NullString {
 		gtk.GTKGtk_text_buffer_get_selection_bounds(this.bufferHandle, startIter, endIter)
 		start = gtk.GTKGtk_text_iter_get_offset(startIter)
 		end = gtk.GTKGtk_text_iter_get_offset(endIter)
@@ -1206,7 +1206,7 @@ func (this *Text) gtk_delete_text_(widget int64, start_pos int64, end_pos int64)
 	var start int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, start_pos))
 	var end int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, end_pos))
 	var newText string = this.VerifyText("", start, end)
-	if newText == "" {
+	if newText == jrt.NullString {
 		var newStart []int32 = make([]int32, 1)
 		var newEnd []int32 = make([]int32, 1)
 		gtk.GTKGtk_editable_get_selection_bounds(this.Handle, newStart, newEnd)
@@ -1323,7 +1323,7 @@ func (this *Text) gtk_insert_text_(widget int64, new_text int64, new_text_length
 	}
 	start = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, int64(start)))
 	end = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, int64(end)))
-	var newText string = this.VerifyText(oldText, start, end)
+	var newText string = jrt.NullToEmpty(this.VerifyText(oldText, start, end))
 	if newText != oldText && this.Handle != 0 {
 		var newStart []int32 = make([]int32, 1)
 		var newEnd []int32 = make([]int32, 1)
@@ -1418,7 +1418,7 @@ func (this *Text) gtk_text_buffer_insert_text_(widget int64, iter int64, text in
 	gtk.CMemmoveOverload8(buffer, text, int64(int32(len(buffer))))
 	var oldText string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
 	var newText string = this.VerifyText(oldText, start, end)
-	if newText == "" {
+	if newText == jrt.NullString {
 		gtk.OSG_signal_stop_emission_by_name(this.bufferHandle, gtk.OSInsert_text)
 	} else {
 		if newText != oldText {
@@ -1716,13 +1716,13 @@ func (this *Text) setCursorCursor_(cursor int64) {
 			defaultCursor = gtk.GDKGdk_cursor_new_from_name(gtk.GDKGdk_display_get_default(), "xterm")
 		}
 	}
-	var cond228 int64
+	var cond214 int64
 	if cursor != 0 {
-		cond228 = cursor
+		cond214 = cursor
 	} else {
-		cond228 = defaultCursor
+		cond214 = defaultCursor
 	}
-	this.Scrollable.setCursorCursor_(cond228)
+	this.Scrollable.setCursorCursor_(cond214)
 	if cursor == 0 {
 		gtk.OSG_object_unref(defaultCursor)
 	}
@@ -1854,9 +1854,9 @@ func (this *Text) SetTabs(tabs int32) {
 	if tabs < 0 {
 		return
 	}
-	cond229 := tabs
-	this.tabs = cond229
-	this.SetTabStops(cond229)
+	cond215 := tabs
+	this.tabs = cond215
+	this.SetTabStops(cond215)
 }
 
 func (this *Text) SetTabStops(tabs int32) {
@@ -1882,7 +1882,7 @@ func (this *Text) SetText(string_ string) {
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		string_ = this.VerifyText(string_, 0, this.GetCharCount())
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1898,7 +1898,7 @@ func (this *Text) SetTextChars(text []uint16) {
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, this.GetCharCount())
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
@@ -1954,13 +1954,13 @@ func (this *Text) SetTextLimit(limit int32) {
 		this.Error(ERROR_CANNOT_BE_ZERO)
 	}
 	if (this.style & SINGLE) != 0 {
-		var cond230 int32
+		var cond216 int32
 		if this.segments != (nil) {
-			cond230 = int32(math.Min(float64(TextLIMIT), float64(this.TranslateOffset(limit))))
+			cond216 = int32(math.Min(float64(TextLIMIT), float64(this.TranslateOffset(limit))))
 		} else {
-			cond230 = limit
+			cond216 = limit
 		}
-		gtk.GTKGtk_entry_set_max_length(this.Handle, cond230)
+		gtk.GTKGtk_entry_set_max_length(this.Handle, cond216)
 	}
 }
 
@@ -2072,7 +2072,7 @@ func (this *Text) UntranslateOffset(offset int32) int32 {
 
 func (this *Text) VerifyText(string_ string, start int32, end int32) string {
 	if string_ != "" && jrt.StringLength(string_) == 0 && start == end {
-		return ""
+		return jrt.NullString
 	}
 	var event *Event = NewEvent()
 	event.Text = string_
@@ -2095,7 +2095,7 @@ func (this *Text) VerifyText(string_ string, start int32, end int32) string {
 	}
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }

@@ -139,9 +139,9 @@ func (this *FileDialog) ComputeResultChooserDialog(file int64) string {
 					gtk.CMemmoveOverload10(chars, utf16Ptr, int64(clength*2))
 					gtk.OSG_free(utf16Ptr)
 					this.fullPath = string(utf16.Decode(chars))
-					t604 := writePos
+					t576 := writePos
 					writePos++
-					this.fileNames[t604] = jrt.Substring(this.fullPath, jrt.LastIndexOf(this.fullPath, string(rune(FileDialogSEPARATOR)))+1, -1)
+					this.fileNames[t576] = jrt.Substring(this.fullPath, jrt.LastIndexOf(this.fullPath, string(rune(FileDialogSEPARATOR)))+1, -1)
 				}
 			}
 			if !gtk.GTKGTK4 {
@@ -270,8 +270,8 @@ func (this *FileDialog) GetOverwrite() bool {
 }
 
 func (this *FileDialog) Open() string {
-	var tret605 string
-	tretd606 := false
+	var tret577 string
+	tretd578 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -288,8 +288,8 @@ func (this *FileDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret605 = ""
-					tretd606 = true
+					tret577 = ""
+					tretd578 = true
 					return
 				}
 				panic(e)
@@ -297,12 +297,12 @@ func (this *FileDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret605 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd606 = true
+		tret577 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd578 = true
 		return
 	}()
-	_ = tretd606
-	return tret605
+	_ = tretd578
+	return tret577
 }
 
 func (this *FileDialog) OpenDialog() *jrt.Optional {
@@ -351,33 +351,33 @@ func (this *FileDialog) OpenNativeChooserDialog() *jrt.Optional {
 	if gtk.GTKGTK4 {
 		if gtk.GTKGTK_VERSION >= gtk.OSVERSION(4, 10, 0) {
 			if (this.style & MULTI) != 0 {
-				anon607 := &FileDialogAnon1{}
-				anon607.fnAsync = func(callback int64) {
+				anon579 := &FileDialogAnon1{}
+				anon579.fnAsync = func(callback int64) {
 					gtk.GTK4Gtk_file_dialog_open_multiple(this.handle, shellHandle, int64(0), callback, int64(0))
 				}
-				anon607.fnAwait = func(result int64) int64 {
+				anon579.fnAwait = func(result int64) int64 {
 					return gtk.GTK4Gtk_file_dialog_open_multiple_finish(this.handle, result, nil)
 				}
-				file = SyncDialogUtilRun(display, anon607)
+				file = SyncDialogUtilRun(display, anon579)
 			} else {
 				if (this.style & SAVE) != 0 {
-					anon608 := &FileDialogAnon2{}
-					anon608.fnAsync = func(callback int64) {
+					anon580 := &FileDialogAnon2{}
+					anon580.fnAsync = func(callback int64) {
 						gtk.GTK4Gtk_file_dialog_save(this.handle, shellHandle, int64(0), callback, int64(0))
 					}
-					anon608.fnAwait = func(result int64) int64 {
+					anon580.fnAwait = func(result int64) int64 {
 						return gtk.GTK4Gtk_file_dialog_save_finish(this.handle, result, nil)
 					}
-					file = SyncDialogUtilRun(display, anon608)
+					file = SyncDialogUtilRun(display, anon580)
 				} else {
-					anon609 := &FileDialogAnon3{}
-					anon609.fnAsync = func(callback int64) {
+					anon581 := &FileDialogAnon3{}
+					anon581.fnAsync = func(callback int64) {
 						gtk.GTK4Gtk_file_dialog_open(this.handle, shellHandle, int64(0), callback, int64(0))
 					}
-					anon609.fnAwait = func(result int64) int64 {
+					anon581.fnAwait = func(result int64) int64 {
 						return gtk.GTK4Gtk_file_dialog_open_finish(this.handle, result, nil)
 					}
-					file = SyncDialogUtilRun(display, anon609)
+					file = SyncDialogUtilRun(display, anon581)
 				}
 			}
 			if file != 0 {

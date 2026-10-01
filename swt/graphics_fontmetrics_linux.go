@@ -33,8 +33,8 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok342 := fontMetricsImplAsFontMetrics(object)
-	if !(ok342) {
+	_, ok326 := fontMetricsImplAsFontMetrics(object)
+	if !(ok326) {
 		return false
 	}
 	var metrics *FontMetrics = castanyToFontMetrics(object)

@@ -317,9 +317,9 @@ func (this *Menu) createHandle_(index int32) {
 		if firstSection == 0 {
 			this.Error(ERROR_NO_HANDLES)
 		}
-		inner211 := NewMenuSectionSectionHandle(firstSection)
-		inner211.this_0 = this
-		this.sections.Add(inner211)
+		inner197 := NewMenuSectionSectionHandle(firstSection)
+		inner197.this_0 = this
+		this.sections.Add(inner197)
 		var defaultSection int64 = gtk.OSG_menu_item_new_section(nil, firstSection)
 		gtk.OSG_menu_insert_item(this.modelHandle, 0, defaultSection)
 		gtk.OSG_object_unref(defaultSection)
@@ -449,9 +449,9 @@ func (this *Menu) GetItems() []*MenuItem {
 			var data int64 = gtk.OSG_list_data(list)
 			var item *MenuItem = castWidgetToMenuItem(this.display.GetWidget(data))
 			if item != (nil) {
-				t212 := index
+				t198 := index
 				index++
-				items[t212] = item
+				items[t198] = item
 			}
 			list = gtk.OSG_list_next(list)
 		}
@@ -600,8 +600,8 @@ func (this *Menu) ConnectDropDownMenuSignals() {
 	if this.items == (nil) {
 		return
 	}
-	for _, elem213 := range this.items.ToArray() {
-		menuItem := jrt.Cast[*MenuItem](elem213)
+	for _, elem199 := range this.items.ToArray() {
+		menuItem := jrt.Cast[*MenuItem](elem199)
 		if menuItem.menu == (nil) {
 			continue
 		}
@@ -633,8 +633,8 @@ func (this *Menu) ConnectCascadeSubMenuSignalsMenuParentPopoverHandle(menuLike M
 	if menu == (nil) || parentPopoverHandle == 0 || menu.items == (nil) {
 		return
 	}
-	for _, elem214 := range menu.items.ToArray() {
-		item := jrt.Cast[*MenuItem](elem214)
+	for _, elem200 := range menu.items.ToArray() {
+		item := jrt.Cast[*MenuItem](elem200)
 		if (item.style&CASCADE) != 0 && item.menu != (nil) {
 			var nestedPopover int64 = this.FindNestedPopoverForModel(parentPopoverHandle, item.menu.modelHandle)
 			if nestedPopover != 0 {
@@ -1157,13 +1157,13 @@ func (this *Menu_Section) initMenuSectionSectionHandle(sectionHandle int64) {
 }
 
 func (this *Menu_Section) GetSectionHandle() int64 {
-	var cond215 int64
+	var cond201 int64
 	if this.sectionHandle != 0 {
-		cond215 = this.sectionHandle
+		cond201 = this.sectionHandle
 	} else {
-		cond215 = this.separator.modelHandle
+		cond201 = this.separator.modelHandle
 	}
-	return cond215
+	return cond201
 }
 
 func (this *Menu_Section) GetItemPosition(itemLike MenuItemLike) int32 {

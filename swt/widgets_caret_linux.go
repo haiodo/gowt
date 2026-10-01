@@ -47,8 +47,8 @@ func (this *Caret) initCaret(parent *Canvas, style int32) {
 	this.impl.createWidget_(0)
 	var p *Composite = parent.GetParent()
 	for p != (nil) {
-		_, ok755 := isCompositeToTree(p)
-		if ok755 || func() bool { _, ok756 := isCompositeToTable(p); return ok756 }() {
+		_, ok726 := isCompositeToTree(p)
+		if ok726 || func() bool { _, ok727 := isCompositeToTable(p); return ok727 }() {
 			this.embeddedInto = p
 			break
 		}

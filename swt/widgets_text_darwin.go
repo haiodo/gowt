@@ -105,7 +105,7 @@ func (this *Text) Append(string_ string) {
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var charCount int32 = this.GetCharCount()
 		string_ = this.VerifyText(string_, charCount, charCount, nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -391,7 +391,7 @@ func (this *Text) Cut() {
 		if oldSelection.X != oldSelection.Y {
 			oldText = this.GetEditTextStartEnd(oldSelection.X, oldSelection.Y-1)
 			var newText string = this.VerifyText("", oldSelection.X, oldSelection.Y, nil)
-			if newText == "" {
+			if newText == jrt.NullString {
 				return
 			}
 			if jrt.StringLength(newText) != 0 {
@@ -903,7 +903,7 @@ func (this *Text) Insert(string_ string) {
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var selection *Point = this.GetSelection()
 		string_ = this.VerifyText(string_, selection.X, selection.Y, nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1014,7 +1014,7 @@ func (this *Text) _paste(enableUndo bool) {
 		if oldText != "" {
 			var selection *Point = this.GetSelection()
 			var newText string = this.VerifyText(oldText, selection.X, selection.Y, nil)
-			if newText == "" {
+			if newText == jrt.NullString {
 				return
 			}
 			if !(newText == oldText) {
@@ -1476,7 +1476,7 @@ func (this *Text) SetText(string_ string) {
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		string_ = this.VerifyText(string_, 0, this.GetCharCount(), nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1506,7 +1506,7 @@ func (this *Text) SetTextChars(text []uint16) {
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, this.GetCharCount(), nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
@@ -1572,7 +1572,7 @@ func (this *Text) shouldChangeTextInRange_replacementString_(id int64, sel int64
 		if type_ != int64(cocoa.OSNSKeyDown) && type_ != int64(cocoa.OSNSKeyUp) {
 			currentEvent = nil
 		}
-		newText = this.VerifyText(text, int32(range_.Location), int32((range_.Location + range_.Length)), currentEvent)
+		newText = jrt.NullToEmpty(this.VerifyText(text, int32(range_.Location), int32((range_.Location + range_.Length)), currentEvent))
 	}
 	if newText == "" {
 		return false
@@ -1700,7 +1700,7 @@ func (this *Text) VerifyText(string_ string, start int32, end int32, keyEvent *c
 	event.End = end
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }

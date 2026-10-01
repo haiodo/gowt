@@ -31,6 +31,7 @@ func (this *controlEditorHooked) dispose_() {
 	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
 		defer this.enter("dispose_")()
 		h.Dispose_()
+		return
 	}
 	this.ControlEditorImpl.dispose_()
 }
@@ -39,6 +40,7 @@ func (this *controlEditorHooked) layout_() {
 	if h, ok := this.hook.(interface{ Layout_() }); ok && this.active != "layout_" {
 		defer this.enter("layout_")()
 		h.Layout_()
+		return
 	}
 	this.ControlEditorImpl.layout_()
 }
@@ -47,6 +49,7 @@ func (this *controlEditorHooked) setEditor_(a0 *Control) {
 	if h, ok := this.hook.(interface{ SetEditor_(a0 *Control) }); ok && this.active != "setEditor_" {
 		defer this.enter("setEditor_")()
 		h.SetEditor_(a0)
+		return
 	}
 	this.ControlEditorImpl.setEditor_(a0)
 }

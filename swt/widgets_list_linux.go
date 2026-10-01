@@ -1039,9 +1039,9 @@ func (this *List) SetSelectionItems(items []string) {
 		var string_ string = items[i]
 		if string_ != "" {
 			for {
-				cond524 := this.IndexOfStringStart(string_, index)
-				index = cond524
-				if !((cond524) != -1) {
+				cond499 := this.IndexOfStringStart(string_, index)
+				index = cond499
+				if !((cond499) != -1) {
 					break
 				}
 				if (this.style & MULTI) != 0 {

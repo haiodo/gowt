@@ -568,13 +568,13 @@ func (this *ScrollBar) SetValues(selection int32, minimum int32, maximum int32, 
 func (this *ScrollBar) SetVisible(visible bool) {
 	this.CheckWidget()
 	if this.parent.impl.setScrollBarVisible_(this, visible) {
-		var cond468 int32
+		var cond451 int32
 		if visible {
-			cond468 = Show
+			cond451 = Show
 		} else {
-			cond468 = Hide
+			cond451 = Hide
 		}
-		this.SendEventEventType(cond468)
+		this.SendEventEventType(cond451)
 		this.parent.SendEventEventType(Resize)
 	}
 }

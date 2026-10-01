@@ -275,8 +275,7 @@ func (this *Group) showWidget_() {
 
 func (this *Group) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int32, height int32, move bool, resize bool) int32 {
 	var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-	t231 := gtk.GtkRequisition{}
-	gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, &t231)
+	gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, nil)
 	if (width - (requisition.Width - width)) < 0 {
 		width = requisition.Width
 	} else {

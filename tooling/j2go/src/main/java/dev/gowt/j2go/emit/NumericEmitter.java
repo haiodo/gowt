@@ -36,6 +36,7 @@ final class NumericEmitter {
 			if (folded != null) return folded;
 		}
 		String paramNullCheck = NullArgGuards.stringNullCheck(emitter, ie, op);
+		if (paramNullCheck == null && emitter.model.nullableStrings.isNullCompare(ie)) paramNullCheck = NullArgGuards.nullSentinelCompare(emitter, ie, op);
 		if (paramNullCheck != null) return paramNullCheck;
 		String goOp = goOperator(ie);
 		String hoisted = hoistBooleanChainIfNeeded(ie, op, goOp);
@@ -53,8 +54,8 @@ final class NumericEmitter {
 		if (anyNull != null) return anyNull;
 		// Same for a cocoa struct (NSPoint): null is stored as its zero value (adaptNumeric).
 		// Parenthesized: a bare composite literal in an `if` condition is a Go parse error.
-		if (right.equals("nil")) right = "(" + emitter.adaptNumeric(right, null, ie.getLeftOperand().resolveTypeBinding()) + ")";
-		if (left.equals("nil")) left = "(" + emitter.adaptNumeric(left, null, ie.getRightOperand().resolveTypeBinding()) + ")";
+		if (right.equals("nil") && !EmitUtil.isMutatedParam(emitter, ie.getLeftOperand())) right = "(" + emitter.adaptNumeric(right, null, ie.getLeftOperand().resolveTypeBinding()) + ")";
+		if (left.equals("nil") && !EmitUtil.isMutatedParam(emitter, ie.getRightOperand())) left = "(" + emitter.adaptNumeric(left, null, ie.getRightOperand().resolveTypeBinding()) + ")";
 		if (op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS) {
 			ITypeBinding lt = ie.getLeftOperand().resolveTypeBinding();
 			ITypeBinding rt = ie.getRightOperand().resolveTypeBinding();

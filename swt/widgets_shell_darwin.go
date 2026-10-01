@@ -1833,7 +1833,7 @@ func (this *Shell) view_stringForToolTip_point_userData_(id int64, sel int64, vi
 	}
 	var target *Widget = control.impl.findTooltip_(cocoa.NewNSViewOverload1(view).ConvertPoint_toView_(pt, nil))
 	var string_ string = target.impl.tooltipText_()
-	if string_ == "" {
+	if string_ == jrt.NullString {
 		return int64(0)
 	}
 	var chars []uint16 = make([]uint16, jrt.StringLength(string_))

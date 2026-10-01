@@ -23,6 +23,10 @@ final class InvocationEmitter {
 	String emitMethodInvocation(MethodInvocation mi) {
 		String call = emitMethodInvocation0(mi);
 		IMethodBinding declared = mi.resolveMethodBinding();
+		if (emitter.model.nullableStrings.needsNormalizing(mi)) {
+			emitter.fileImports.add(Manual.JRT_IMPORT);
+			return "jrt.NullToEmpty(" + call + ")";
+		}
 		if (declared == null || call.startsWith("jrt.Cast[")) return call;
 		return ErasedGenerics.castCall(emitter, call, declared);
 	}
@@ -186,6 +190,7 @@ final class InvocationEmitter {
 	}
 
 	private String addressOf(Expression e, String text) {
+		if (e instanceof NullLiteral) return "nil";
 		if (e instanceof Name n && n.resolveBinding() instanceof IVariableBinding v && emitter.model.mutatedParams.isMutatedParam(v)) return text; // already a pointer
 		if (e instanceof Name || e instanceof FieldAccess || e instanceof ArrayAccess || e instanceof ClassInstanceCreation) {
 			return "&" + text;

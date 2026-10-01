@@ -156,11 +156,11 @@ func (this *TreeColumn) gtk_clicked_(widget int64) int64 {
 		if eventType == gtk.GDKGDK_BUTTON_RELEASE {
 			var clickTime int32 = this.display.GetDoubleClickTime()
 			if this.lastTime != 0 && func() bool {
-				abs488 := this.lastTime - eventTime
-				if abs488 < 0 {
-					abs488 = -abs488
+				abs468 := this.lastTime - eventTime
+				if abs468 < 0 {
+					abs468 = -abs468
 				}
-				return abs488 <= clickTime
+				return abs468 <= clickTime
 			}() {
 				doubleClick = true
 			}
@@ -172,13 +172,13 @@ func (this *TreeColumn) gtk_clicked_(widget int64) int64 {
 		}
 		this.Gdk_event_free(eventPtr)
 	}
-	var cond489 int32
+	var cond469 int32
 	if doubleClick {
-		cond489 = DefaultSelection
+		cond469 = DefaultSelection
 	} else {
-		cond489 = Selection
+		cond469 = Selection
 	}
-	this.SendSelectionEvent(cond489)
+	this.SendSelectionEvent(cond469)
 	return int64(0)
 }
 
@@ -189,13 +189,13 @@ func (this *TreeColumn) gtk_gesture_press_event_(gesture int64, n_press int32, x
 	} else {
 		doubleClick = false
 	}
-	var cond490 int32
+	var cond470 int32
 	if doubleClick {
-		cond490 = DefaultSelection
+		cond470 = DefaultSelection
 	} else {
-		cond490 = Selection
+		cond470 = Selection
 	}
-	this.SendSelectionEvent(cond490)
+	this.SendSelectionEvent(cond470)
 	return gtk.GTK4GTK_EVENT_SEQUENCE_NONE
 }
 

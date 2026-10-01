@@ -178,13 +178,13 @@ func (this *DateTime) ComputeMaxTextSize(wHint int32, hHint int32, changed bool)
 		break
 	default:
 	}
-	var cond577 int64
+	var cond550 int64
 	if gtk.GTKGTK4 {
-		cond577 = this.Handle
+		cond550 = this.Handle
 	} else {
-		cond577 = this.textEntryHandle
+		cond550 = this.textEntryHandle
 	}
-	var textSize *Point = this.impl.computeNativeSize_(cond577, wHint, hHint, changed)
+	var textSize *Point = this.impl.computeNativeSize_(cond550, wHint, hHint, changed)
 	this.UpdateControl()
 	return textSize
 }
@@ -256,33 +256,33 @@ func (this *DateTime) computeTrimInPixels_(x int32, y int32, width int32, height
 	var xborder int32 = 0
 	var yborder int32 = 0
 	var tmp gtk.GtkBorder = gtk.GtkBorder{}
-	var cond578 int64
+	var cond551 int64
 	if gtk.GTKGTK4 {
-		cond578 = this.editableHandle
+		cond551 = this.editableHandle
 	} else {
-		cond578 = this.textEntryHandle
+		cond551 = this.textEntryHandle
 	}
-	var context int64 = gtk.GTKGtk_widget_get_style_context(cond578)
-	var cond579 int64
+	var context int64 = gtk.GTKGtk_widget_get_style_context(cond551)
+	var cond552 int64
 	if gtk.GTKGTK4 {
-		cond579 = this.editableHandle
+		cond552 = this.editableHandle
 	} else {
-		cond579 = this.textEntryHandle
+		cond552 = this.textEntryHandle
 	}
-	var state_flag int32 = gtk.GTKGtk_widget_get_state_flags(cond579)
+	var state_flag int32 = gtk.GTKGtk_widget_get_state_flags(cond552)
 	this.Gtk_style_context_get_padding(context, state_flag, &tmp)
 	trim.X -= tmp.Left
 	trim.Y -= tmp.Top
 	trim.Width += tmp.Left + tmp.Right
 	trim.Height += tmp.Top + tmp.Bottom
 	if (this.style & BORDER) != 0 {
-		var cond580 int64
+		var cond553 int64
 		if gtk.GTKGTK4 {
-			cond580 = this.editableHandle
+			cond553 = this.editableHandle
 		} else {
-			cond580 = this.textEntryHandle
+			cond553 = this.textEntryHandle
 		}
-		var state int32 = gtk.GTKGtk_widget_get_state_flags(cond580)
+		var state int32 = gtk.GTKGtk_widget_get_state_flags(cond553)
 		this.Gtk_style_context_get_border(context, state, &tmp)
 		trim.X -= tmp.Left
 		trim.Y -= tmp.Top
@@ -451,8 +451,8 @@ func (this *DateTime) CreatePopupShell(year int32, month int32, day int32) {
 		this.popupCalendar.impl.setBackgroundWithColor_(this.bg)
 	}
 	this.mouseEventListener = &ListenerFunc{fn: func(event *Event) {
-		_, ok581 := isWidgetToControl(event.Widget)
-		if ok581 {
+		_, ok554 := isWidgetToControl(event.Widget)
+		if ok554 {
 			var c *Control = castWidgetToControl(event.Widget)
 			if c != upcastButtonToControl(this.down) && c.impl.getShell_() != this.popupShell {
 				this.DropDownCalendar(false)
@@ -650,33 +650,33 @@ func (this *DateTime) HideDropDownCalendar() {
 
 func (this *DateTime) GetComputeSizeString(style int32) string {
 	if (style & DATE) != 0 {
-		var cond582 string
-		var cond583 string
+		var cond555 string
+		var cond556 string
 		if (style & SWTLONG) != 0 {
-			cond583 = DateTimeDEFAULT_LONG_DATE_FORMAT
+			cond556 = DateTimeDEFAULT_LONG_DATE_FORMAT
 		} else {
-			cond583 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
+			cond556 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
 		}
 		if (style & SHORT) != 0 {
-			cond582 = DateTimeDEFAULT_SHORT_DATE_FORMAT
+			cond555 = DateTimeDEFAULT_SHORT_DATE_FORMAT
 		} else {
-			cond582 = cond583
+			cond555 = cond556
 		}
-		return cond582
+		return cond555
 	}
-	var cond584 string
-	var cond585 string
+	var cond557 string
+	var cond558 string
 	if (style & SWTLONG) != 0 {
-		cond585 = DateTimeDEFAULT_LONG_TIME_FORMAT
+		cond558 = DateTimeDEFAULT_LONG_TIME_FORMAT
 	} else {
-		cond585 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
+		cond558 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
 	}
 	if (style & SHORT) != 0 {
-		cond584 = DateTimeDEFAULT_SHORT_TIME_FORMAT
+		cond557 = DateTimeDEFAULT_SHORT_TIME_FORMAT
 	} else {
-		cond584 = cond585
+		cond557 = cond558
 	}
-	return cond584
+	return cond557
 }
 
 func (this *DateTime) GetFormattedString() string {
@@ -891,8 +891,8 @@ func (this *DateTime) IncrementField(amount int32) {
 func (this *DateTime) HasAmPm() bool {
 	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
 	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
-		for _, elem586 := range iterator.GetAttributes().KeySet().ToArray() {
-			attribute := jrt.Cast[*jrt.DateFormatField](elem586)
+		for _, elem559 := range iterator.GetAttributes().KeySet().ToArray() {
+			attribute := jrt.Cast[*jrt.DateFormatField](elem559)
 			if jrt.DateFormatFieldAM_PM.Equals(attribute) {
 				return true
 			}
@@ -932,54 +932,54 @@ func (this *DateTime) ShowWeekNumbers() bool {
 
 func (this *DateTime) InitAccessible() {
 	var accessible *Accessible = this.GetAccessible()
-	anon587 := &DateTimeAnon1{}
-	anon587.initAccessibleAdapter()
-	anon587.fnGetName = func(e *AccessibleEvent) {
+	anon560 := &DateTimeAnon1{}
+	anon560.initAccessibleAdapter()
+	anon560.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.GetSpokenText()
 	}
-	anon587.fnGetHelp = func(e *AccessibleEvent) {
+	anon560.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	accessible.AddAccessibleListener(anon587)
-	anon588 := &DateTimeAnon2{}
-	anon588.initAccessibleControlAdapter()
-	anon588.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	accessible.AddAccessibleListener(anon560)
+	anon561 := &DateTimeAnon2{}
+	anon561.initAccessibleControlAdapter()
+	anon561.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		e.ChildID = ACCCHILDID_SELF
 	}
-	anon588.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon561.fnGetLocation = func(e *AccessibleControlEvent) {
 		var rect *Rectangle = this.display.MapFromToRectangle(upcastCompositeToControl(this.GetParent()), nil, this.impl.getBounds_())
 		e.X = rect.X
 		e.Y = rect.Y
 		e.Width = rect.Width
 		e.Height = rect.Height
 	}
-	anon588.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon561.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = 0
 	}
-	anon588.fnGetRole = func(e *AccessibleControlEvent) {
+	anon561.fnGetRole = func(e *AccessibleControlEvent) {
 		if this.IsCalendar() {
 			e.Detail = ACCROLE_LABEL
 		} else {
 			e.Detail = ACCROLE_TEXT
 		}
 	}
-	anon588.fnGetState = func(e *AccessibleControlEvent) {
+	anon561.fnGetState = func(e *AccessibleControlEvent) {
 		e.Detail = ACCSTATE_FOCUSABLE
 		if this.impl.hasFocus_() {
 			e.Detail |= ACCSTATE_FOCUSED
 		}
 	}
-	anon588.fnGetSelection = func(e *AccessibleControlEvent) {
+	anon561.fnGetSelection = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	anon588.fnGetFocus = func(e *AccessibleControlEvent) {
+	anon561.fnGetFocus = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	accessible.AddAccessibleControlListener(anon588)
+	accessible.AddAccessibleControlListener(anon561)
 }
 
 func (this *DateTime) IsValidTime(fieldName int32, value int32) bool {
@@ -1195,8 +1195,8 @@ func (this *DateTime) RemoveSelectionListener(listener SelectionListener) {
 func (this *DateTime) SelectField(field *jrt.DateFormatField) {
 	var iterator *jrt.AttributedCharacterIterator = this.dateFormat.FormatToCharacterIterator(this.calendar.GetTime())
 	for int32(iterator.Current()) != int32(jrt.CharacterIteratorDONE) {
-		for _, elem589 := range iterator.GetAttributes().KeySet().ToArray() {
-			attribute := jrt.Cast[*jrt.DateFormatField](elem589)
+		for _, elem562 := range iterator.GetAttributes().KeySet().ToArray() {
+			attribute := jrt.Cast[*jrt.DateFormatField](elem562)
 			if attribute.Equals(field) {
 				this.SelectFieldFieldPosition(DateTimeGetFieldPositionFieldIterator(field, iterator))
 				return
@@ -1493,17 +1493,16 @@ func (this *DateTime) setBoundsInPixelsXYWidthHeight_(x int32, y int32, width in
 			sizingHandle = this.textEntryHandle
 		}
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t590 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(sizingHandle, &t590, &requisition)
+		gtk.GTKGtk_widget_get_preferred_size(sizingHandle, nil, &requisition)
 		var oldHeight int32 = requisition.Height
 		var newWidth int32 = width - (this.down.impl.getSizeInPixels_().X + this.GetGtkBorderPadding().Right)
-		var cond591 int32
+		var cond563 int32
 		if newWidth >= 0 {
-			cond591 = newWidth
+			cond563 = newWidth
 		} else {
-			cond591 = 0
+			cond563 = 0
 		}
-		gtk.GTKGtk_widget_set_size_request(sizingHandle, cond591, oldHeight)
+		gtk.GTKGtk_widget_set_size_request(sizingHandle, cond563, oldHeight)
 	}
 	this.Composite.setBoundsInPixelsXYWidthHeight_(x, y, width, height)
 }
@@ -1513,13 +1512,13 @@ func (this *DateTime) SetDropDownButtonSize() {
 	var parentWidth int32 = rect.Width
 	var parentHeight int32 = rect.Height
 	var buttonSize *Point = this.down.ComputeSizeInPixels(DEFAULT, parentHeight)
-	var cond592 int64
+	var cond564 int64
 	if gtk.GTKGTK4 {
-		cond592 = this.editableHandle
+		cond564 = this.editableHandle
 	} else {
-		cond592 = this.textEntryHandle
+		cond564 = this.textEntryHandle
 	}
-	var dateEntryHeight int32 = this.impl.computeNativeSize_(cond592, DEFAULT, DEFAULT, false).Y
+	var dateEntryHeight int32 = this.impl.computeNativeSize_(cond564, DEFAULT, DEFAULT, false).Y
 	var newXpos int32 = parentWidth - buttonSize.X - this.GetGtkBorderPadding().Left - this.GetGtkBorderPadding().Right
 	var newYPos int32 = parentHeight/2 - dateEntryHeight/2
 	this.down.impl.setBoundsInPixelsXYWidthHeight_(newXpos, newYPos, buttonSize.X, dateEntryHeight)
@@ -1559,9 +1558,9 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				suffix.Append(uint16(c))
 			}
 		}
-		cond593 := iterator.Next()
-		c = cond593
-		if !(int32((cond593)) != int32(jrt.CharacterIteratorDONE)) {
+		cond565 := iterator.Next()
+		c = cond565
+		if !(int32((cond565)) != int32(jrt.CharacterIteratorDONE)) {
 			break
 		}
 	}
@@ -1589,8 +1588,8 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				return false
 			}
 			if fieldName == jrt.CalendarAM_PM {
-				_, ok594 := this.dateFormat, this.dateFormat != nil
-				if ok594 {
+				_, ok566 := this.dateFormat, this.dateFormat != nil
+				if ok566 {
 					var amPmStrings []string = (this.dateFormat).GetDateFormatSymbols().GetAmPmStrings()
 					if int32(utf16.Encode([]rune(amPmStrings[jrt.CalendarAM]))[0]) == int32(newText) {
 						this.SetTextField(this.currentField, jrt.CalendarAM)
@@ -1705,13 +1704,13 @@ func (this *DateTime) GetArrow(widget int64) int32 {
 					if adj_value == 0 {
 						return 0
 					} else {
-						var cond595 int32
+						var cond567 int32
 						if adj_value > 0 {
-							cond595 = ARROW_UP
+							cond567 = ARROW_UP
 						} else {
-							cond595 = ARROW_DOWN
+							cond567 = ARROW_DOWN
 						}
-						return cond595
+						return cond567
 					}
 				}
 			}
@@ -1736,13 +1735,13 @@ func (this *DateTime) GetArrow(widget int64) int32 {
 	if adj_value == new_value {
 		return 0
 	}
-	var cond596 int32
+	var cond568 int32
 	if adj_value > new_value {
-		cond596 = ARROW_UP
+		cond568 = ARROW_UP
 	} else {
-		cond596 = ARROW_DOWN
+		cond568 = ARROW_DOWN
 	}
-	return cond596
+	return cond568
 }
 
 func (this *DateTime) SetText(dateTimeText string) {
@@ -1761,7 +1760,7 @@ func (this *DateTime) SetText(dateTimeText string) {
 		}
 		if this.popupCalendar != (nil) && this.calendar != (nil) {
 			var parse *jrt.Date
-			tretd597 := false
+			tretd569 := false
 			func() {
 				defer func() {
 					r := recover()
@@ -1777,7 +1776,7 @@ func (this *DateTime) SetText(dateTimeText string) {
 					}() {
 						e := r.(*jrt.ParseException)
 						_ = e
-						tretd597 = true
+						tretd569 = true
 						return
 					} else {
 						panic(r)
@@ -1785,12 +1784,12 @@ func (this *DateTime) SetText(dateTimeText string) {
 				}()
 				parse = this.dateFormat.Parse(dateTimeText)
 			}()
-			if tretd597 {
+			if tretd569 {
 				return
 			}
 			var clone *jrt.Calendar = this.calendar.Clone().(*jrt.Calendar)
 			clone.SetTime(parse)
-			tretd598 := false
+			tretd570 := false
 			func() {
 				defer func() {
 					r := recover()
@@ -1807,7 +1806,7 @@ func (this *DateTime) SetText(dateTimeText string) {
 						e := r.(*SWTException)
 						_ = e
 						if e.Code == ERROR_WIDGET_DISPOSED {
-							tretd598 = true
+							tretd570 = true
 							return
 						}
 						panic(e)
@@ -1817,7 +1816,7 @@ func (this *DateTime) SetText(dateTimeText string) {
 				}()
 				this.popupCalendar.SetDate(clone.Get(jrt.CalendarYEAR), clone.Get(jrt.CalendarMONTH), clone.Get(jrt.CalendarDAY_OF_MONTH))
 			}()
-			if tretd598 {
+			if tretd570 {
 				return
 			}
 		}
@@ -2210,10 +2209,10 @@ func DateTimeCheckStyle(style int32) int32 {
 
 func DateTimeGetFieldPosition(iterator *jrt.AttributedCharacterIterator) *jrt.FieldPosition {
 	var keySet *jrt.List = iterator.GetAttributes().KeySet()
-	for _, elem599 := range keySet.ToArray() {
-		attribute := jrt.Cast[*jrt.DateFormatField](elem599)
-		_, ok600 := attribute, attribute != nil
-		if ok600 {
+	for _, elem571 := range keySet.ToArray() {
+		attribute := jrt.Cast[*jrt.DateFormatField](elem571)
+		_, ok572 := attribute, attribute != nil
+		if ok572 {
 			return DateTimeGetFieldPositionFieldIterator(attribute, iterator)
 		}
 	}
@@ -2244,8 +2243,8 @@ func DateTimeIsSameField(p1 *jrt.FieldPosition, p2 *jrt.FieldPosition) bool {
 }
 
 func DateTimeGetCalendarField(fieldPosition *jrt.FieldPosition) int32 {
-	_, ok601 := fieldPosition.GetFieldAttribute(), fieldPosition.GetFieldAttribute() != nil
-	if ok601 {
+	_, ok573 := fieldPosition.GetFieldAttribute(), fieldPosition.GetFieldAttribute() != nil
+	if ok573 {
 		return DateTimeGetCalendarFieldField(fieldPosition.GetFieldAttribute())
 	} else {
 		return -1

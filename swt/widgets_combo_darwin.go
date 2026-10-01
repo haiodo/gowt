@@ -299,7 +299,7 @@ func (this *Combo) Cut() {
 	var newText string = ""
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		newText = this.VerifyText(newText, start, end, nil)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return
 		}
 	}
@@ -638,7 +638,7 @@ func (this *Combo) Paste() {
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		newText = this.VerifyText(newText, start, end, nil)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return
 		}
 	}
@@ -1030,7 +1030,7 @@ func (this *Combo) SetTextStringNotify(string_ string, notify bool) {
 	if notify {
 		if this.Hooks(Verify) || this.Filters(Verify) {
 			string_ = this.VerifyText(string_, 0, this.GetCharCount(), nil)
-			if string_ == "" {
+			if string_ == jrt.NullString {
 				return
 			}
 		}
@@ -1083,7 +1083,7 @@ func (this *Combo) shouldChangeTextInRange_replacementString_(id int64, sel int6
 			currentEvent = nil
 		}
 		var newText string = this.VerifyText(string_, int32(range_.Location), int32((range_.Location + range_.Length)), currentEvent)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return false
 		}
 		if !(string_ == newText) {
@@ -1169,7 +1169,7 @@ func (this *Combo) VerifyText(string_ string, start int32, end int32, keyEvent *
 	event.End = end
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }

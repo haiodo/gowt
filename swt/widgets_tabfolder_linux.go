@@ -193,9 +193,9 @@ func (this *TabFolder) CreateItem(itemLike TabItemLike, index int32) {
 	item.labelHandle = labelHandle
 	item.imageHandle = imageHandle
 	item.pageHandle = pageHandle
-	t497 := itemCount
+	t477 := itemCount
 	itemCount++
-	copy(this.items[index+1:], this.items[index:index+t497-index])
+	copy(this.items[index+1:], this.items[index:index+t477-index])
 	this.items[index] = item
 	if (this.state & WidgetFOREGROUND) != 0 {
 		item.SetForegroundGdkRGBA(item.Handle, this.GetForegroundGdkRGBA())
@@ -276,7 +276,7 @@ func (this *TabFolder) _getChildren_() []*Control {
 			if gtk.GTKGTK4 {
 				for child := int64(gtk.GTK4Gtk_widget_get_first_child(parentHandle)); child != 0; child = gtk.GTK4Gtk_widget_get_next_sibling(child) {
 					var childWidget *Widget = this.display.GetWidget(child)
-					if childWidget != (nil) && func() bool { _, ok500 := isWidgetToControl(childWidget); return ok500 }() && childWidget != upcastTabFolderToWidget(this) {
+					if childWidget != (nil) && func() bool { _, ok480 := isWidgetToControl(childWidget); return ok480 }() && childWidget != upcastTabFolderToWidget(this) {
 						children[childrenCount] = castWidgetToControl(childWidget)
 						childrenCount++
 					}
@@ -288,11 +288,11 @@ func (this *TabFolder) _getChildren_() []*Control {
 					if handle != 0 {
 						var widget *Widget = this.display.GetWidget(handle)
 						if widget != (nil) && widget != upcastTabFolderToWidget(this) {
-							_, ok501 := isWidgetToControl(widget)
-							if ok501 {
-								t502 := childrenCount
+							_, ok481 := isWidgetToControl(widget)
+							if ok481 {
+								t482 := childrenCount
 								childrenCount++
-								children[t502] = castWidgetToControl(widget)
+								children[t482] = castWidgetToControl(widget)
 							}
 						}
 					}

@@ -91,7 +91,9 @@ public final class MutatedStructParams {
 						int i = mi.arguments().indexOf(n);
 						writtenArg = Modifier.isNative(callee.getModifiers()) ? model.isNativeStructPointerParam(callee, i) : isMutated(callee, i);
 					}
-					if (!fieldOwner && !writtenArg) bare.add(params.get(v));
+					boolean nullTest = parent instanceof InfixExpression ie && (ie.getOperator() == InfixExpression.Operator.EQUALS || ie.getOperator() == InfixExpression.Operator.NOT_EQUALS)
+							&& (ie.getLeftOperand() instanceof NullLiteral || ie.getRightOperand() instanceof NullLiteral);
+					if (!fieldOwner && !writtenArg && !nullTest) bare.add(params.get(v));
 					return true;
 				}
 

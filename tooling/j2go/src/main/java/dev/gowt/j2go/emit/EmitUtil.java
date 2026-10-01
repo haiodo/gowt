@@ -192,6 +192,11 @@ final class EmitUtil {
 		return out.append("}\n\n").toString();
 	}
 
+	/** A struct parameter that is a pointer in Go (MutatedStructParams): null stays nil instead of the zero value. */
+	static boolean isMutatedParam(Emitter emitter, Expression e) {
+		return e instanceof Name n && n.resolveBinding() instanceof IVariableBinding v && emitter.model.mutatedParams.isMutatedParam(v);
+	}
+
 	/** Java null as Go text. A test's literal null String argument or initializer becomes jrt.NullString,
 	 * which the ported null-argument guards check for (NumericEmitter.stringParamNullCheck), but only
 	 * when the callee guards that parameter (NullArgGuards); any other String null is "". */

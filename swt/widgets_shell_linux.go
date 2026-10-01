@@ -178,13 +178,13 @@ func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
 }
 
 func (this *Shell) initShellParentStyle(parent *Shell, style int32) {
-	var cond191 *Display
+	var cond180 *Display
 	if parent != (nil) {
-		cond191 = parent.display
+		cond180 = parent.display
 	} else {
-		cond191 = nil
+		cond180 = nil
 	}
-	this.initShellDisplayParentStyleHandleEmbedded(cond191, parent, style, int64(0), false)
+	this.initShellDisplayParentStyleHandleEmbedded(cond180, parent, style, int64(0), false)
 }
 
 func (this *Shell) AddShellListener(listener ShellListener) {
@@ -584,8 +584,7 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 					return int64(0)
 				}
 				if this.IsCustomResize() {
-					t192 := gtk.GdkRectangle{}
-					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), &t192, false)
+					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), nil, false)
 				}
 				break
 			}
@@ -606,8 +605,7 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 					return int64(0)
 				}
 				if this.IsCustomResize() {
-					t193 := gtk.GdkRectangle{}
-					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), &t193, false)
+					gtk.GDKGdk_window_invalidate_rect(this.Gtk_widget_get_window(this.shellHandle), nil, false)
 				}
 				break
 			}
@@ -618,23 +616,23 @@ func (this *Shell) filterProc_(xEvent int64, gdkEvent int64, data2 int64) int64 
 }
 
 func (this *Shell) findBackgroundControl_() *Control {
-	var cond194 *Control
+	var cond181 *Control
 	if (this.state&WidgetBACKGROUND) != 0 || this.backgroundImage != (nil) {
-		cond194 = upcastShellToControl(this)
+		cond181 = upcastShellToControl(this)
 	} else {
-		cond194 = nil
+		cond181 = nil
 	}
-	return cond194
+	return cond181
 }
 
 func (this *Shell) findDeferredControl_() *Composite {
-	var cond195 *Composite
+	var cond182 *Composite
 	if this.layoutCount > 0 {
-		cond195 = upcastShellToComposite(this)
+		cond182 = upcastShellToComposite(this)
 	} else {
-		cond195 = nil
+		cond182 = nil
 	}
-	return cond195
+	return cond182
 }
 
 func (this *Shell) GetToolBar() *ToolBar {
@@ -1079,9 +1077,9 @@ func (this *Shell) GetShells() []*Shell {
 			}
 		}
 		if shell == upcastShellToControl(this) {
-			t196 := index
+			t183 := index
 			index++
-			result[t196] = activeshell
+			result[t183] = activeshell
 		}
 	}
 	return result
@@ -1410,13 +1408,13 @@ func (this *Shell) gtk_size_allocate_(widget int64, allocation int64) int64 {
 	width = widthA[0]
 	height = heightA[0]
 	if (!this.resized || this.oldWidth != width || this.oldHeight != height) && func() bool {
-		var cond198 bool
+		var cond185 bool
 		if gtk.OSIsWayland() {
-			cond198 = ((this.style & RESIZE) != 0)
+			cond185 = ((this.style & RESIZE) != 0)
 		} else {
-			cond198 = true
+			cond185 = true
 		}
-		return (cond198)
+		return (cond185)
 	}() {
 		this.oldWidth = width
 		this.oldHeight = height
@@ -1565,8 +1563,8 @@ func (this *Shell) Open() {
 	}
 	if restored {
 		var focusControl *Control = this.display.GetFocusControl()
-		_, ok200 := isControlToButton(focusControl)
-		if ok200 && (focusControl.style&PUSH) != 0 {
+		_, ok187 := isControlToButton(focusControl)
+		if ok187 && (focusControl.style&PUSH) != 0 {
 			restored = false
 		}
 	}
@@ -2664,7 +2662,7 @@ func (this *Shell) UpdateMinimized(minimized bool) {
 func (this *Shell) deregister_() {
 	this.Decorations.deregister_()
 	var disposed *Widget = this.display.RemoveWidget(this.shellHandle)
-	if this.shellHandle != 0 && func() bool { _, ok202 := isWidgetToShell(disposed); return !(ok202) }() {
+	if this.shellHandle != 0 && func() bool { _, ok189 := isWidgetToShell(disposed); return !(ok189) }() {
 		ErrorCodeThrowableDetail(ERROR_INVALID_RETURN_VALUE, nil, fmt.Sprintf(". Wrong widgetTable entry: %v removed for shell: %v%s", disposed, this, this.display.DumpWidgetTableInfoManual()))
 	}
 	StrictChecksRunIfStrictChecksEnabled(jrt.NewRunnable(func() {
@@ -2851,21 +2849,21 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
-		var cond203 int32
+		var cond190 int32
 		if parent == (nil) {
-			cond203 = SHELL_TRIM
+			cond190 = SHELL_TRIM
 		} else {
-			cond203 = DIALOG_TRIM
+			cond190 = DIALOG_TRIM
 		}
-		style |= cond203
+		style |= cond190
 		if (style & mask) == 0 {
-			var cond204 int32
+			var cond191 int32
 			if parent == (nil) {
-				cond204 = APPLICATION_MODAL
+				cond191 = APPLICATION_MODAL
 			} else {
-				cond204 = PRIMARY_MODAL
+				cond191 = PRIMARY_MODAL
 			}
-			style |= cond204
+			style |= cond191
 		}
 	}
 	var bits int32 = style & ^mask

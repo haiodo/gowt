@@ -291,13 +291,13 @@ func (this *ToolTip) GetSize(maxWidth int32) *Point {
 	}
 	var messageTrim int32 = 2*ToolTipINSET + 2*ToolTipBORDER + 2*ToolTipPADDING
 	var hasImage bool = this.layoutText != 0 && (this.style&(ICON_ERROR|ICON_INFORMATION|ICON_WARNING)) != 0
-	var cond564 int32
+	var cond537 int32
 	if hasImage {
-		cond564 = ToolTipIMAGE_SIZE
+		cond537 = ToolTipIMAGE_SIZE
 	} else {
-		cond564 = 0
+		cond537 = 0
 	}
-	var textTrim int32 = messageTrim + (cond564)
+	var textTrim int32 = messageTrim + (cond537)
 	var width int32 = int32(math.Min(float64(maxWidth), float64(int32(math.Max(float64(textWidth+textTrim), float64(messageWidth+messageTrim))))))
 	var textHeight int32 = 0
 	var messageHeight int32 = 0

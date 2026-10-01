@@ -79,7 +79,7 @@ func (this *Composite) _getChildren_() []*Control {
 		var childrenList *jrt.List = jrt.NewList()
 		for child := int64(gtk.GTK4Gtk_widget_get_last_child(parentHandle)); child != 0; child = gtk.GTK4Gtk_widget_get_prev_sibling(child) {
 			var childWidget *Widget = this.display.GetWidget(child)
-			if childWidget != (nil) && func() bool { _, ok174 := isWidgetToControl(childWidget); return ok174 }() && childWidget != upcastCompositeToWidget(this) {
+			if childWidget != (nil) && func() bool { _, ok163 := isWidgetToControl(childWidget); return ok163 }() && childWidget != upcastCompositeToWidget(this) {
 				childrenList.Add(castWidgetToControl(childWidget))
 			}
 		}
@@ -98,11 +98,11 @@ func (this *Composite) _getChildren_() []*Control {
 			if handle != 0 {
 				var widget *Widget = this.display.GetWidget(handle)
 				if widget != (nil) && widget != upcastCompositeToWidget(this) {
-					_, ok175 := isWidgetToControl(widget)
-					if ok175 {
-						t176 := i
+					_, ok164 := isWidgetToControl(widget)
+					if ok164 {
+						t165 := i
 						i++
-						children[t176] = castWidgetToControl(widget)
+						children[t165] = castWidgetToControl(widget)
 					}
 				}
 			}
@@ -135,9 +135,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for i := int32(0); i < int32(len(this.tabList)); i++ {
 		if !this.tabList[i].IsDisposed() {
-			t177 := index
+			t166 := index
 			index++
-			newList[t177] = this.tabList[i]
+			newList[t166] = this.tabList[i]
 		}
 	}
 	this.tabList = newList
@@ -229,13 +229,13 @@ func (this *Composite) createHandle_(index int32) {
 }
 
 func (this *Composite) applyThemeBackground_() int32 {
-	var cond178 int32
+	var cond167 int32
 	if this.backgroundAlpha == 0 || (this.style&(H_SCROLL|V_SCROLL)) == 0 {
-		cond178 = 1
+		cond167 = 1
 	} else {
-		cond178 = 0
+		cond167 = 0
 	}
-	return cond178
+	return cond167
 }
 
 func (this *Composite) CreateHandleIndexFixedScrolled(index int32, fixed bool, scrolled bool) {
@@ -537,13 +537,13 @@ func (this *Composite) FindDeferredControl() *Composite {
 }
 
 func (this *Composite) findDeferredControl_() *Composite {
-	var cond179 *Composite
+	var cond168 *Composite
 	if this.layoutCount > 0 {
-		cond179 = this
+		cond168 = this
 	} else {
-		cond179 = this.parent.impl.findDeferredControl_()
+		cond168 = this.parent.impl.findDeferredControl_()
 	}
-	return cond179
+	return cond168
 }
 
 func (this *Composite) findMenus_(control *Control) []*Menu {
@@ -617,9 +617,9 @@ func (this *Composite) FixTabList(controlLike ControlLike) {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(this.tabList)); i++ {
 			if this.tabList[i] != control {
-				t180 := index
+				t169 := index
 				index++
-				newList[t180] = this.tabList[i]
+				newList[t169] = this.tabList[i]
 			}
 		}
 	}
@@ -767,9 +767,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for _, element := range list {
 			if element.impl.isTabGroup_() {
-				t181 := index
+				t170 := index
 				index++
-				tabList[t181] = element
+				tabList[t170] = element
 			}
 		}
 	}
@@ -833,24 +833,24 @@ func (this *Composite) gtk_focus_(widget int64, directionType int64) int64 {
 
 func (this *Composite) gtk_focus_in_event_(widget int64, event int64) int64 {
 	var result int64 = this.Scrollable.gtk_focus_in_event_(widget, event)
-	var cond182 int64
+	var cond171 int64
 	if (this.state & WidgetCANVAS) != 0 {
-		cond182 = int64(1)
+		cond171 = int64(1)
 	} else {
-		cond182 = result
+		cond171 = result
 	}
-	return cond182
+	return cond171
 }
 
 func (this *Composite) gtk_focus_out_event_(widget int64, event int64) int64 {
 	var result int64 = this.Scrollable.gtk_focus_out_event_(widget, event)
-	var cond183 int64
+	var cond172 int64
 	if (this.state & WidgetCANVAS) != 0 {
-		cond183 = int64(1)
+		cond172 = int64(1)
 	} else {
-		cond183 = result
+		cond172 = result
 	}
-	return cond183
+	return cond172
 }
 
 func (this *Composite) gtk_map_(widget int64) int64 {
@@ -998,10 +998,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t184 := updateCount
+				t173 := updateCount
 				updateCount++
-				update[t184] = composite
-				child = upcastCompositeToControl(update[t184])
+				update[t173] = composite
+				child = upcastCompositeToControl(update[t173])
 				composite = child.parent
 			}
 		}
@@ -1062,13 +1062,13 @@ func (this *Composite) MoveBelowChildSibling(child int64, sibling int64) {
 	}
 	var parentHandle int64 = this.impl.parentingHandle_()
 	if !gtk.GTKGTK4 && sibling == 0 && parentHandle == this.fixedHandle {
-		var cond185 int64
+		var cond174 int64
 		if this.scrolledHandle != 0 {
-			cond185 = this.scrolledHandle
+			cond174 = this.scrolledHandle
 		} else {
-			cond185 = this.Handle
+			cond174 = this.Handle
 		}
-		this.MoveAboveChildSibling(child, cond185)
+		this.MoveAboveChildSibling(child, cond174)
 		return
 	}
 	if gtk.GTKGTK4 {
@@ -1145,13 +1145,13 @@ func (this *Composite) parentingHandle_() int64 {
 	if (this.state & WidgetCANVAS) != 0 {
 		return this.Handle
 	}
-	var cond186 int64
+	var cond175 int64
 	if this.fixedHandle != 0 {
-		cond186 = this.fixedHandle
+		cond175 = this.fixedHandle
 	} else {
-		cond186 = this.Handle
+		cond175 = this.Handle
 	}
-	return cond186
+	return cond175
 }
 
 func (this *Composite) printWidget_(gc *GC, drawable int64, depth int32, x int32, y int32) {

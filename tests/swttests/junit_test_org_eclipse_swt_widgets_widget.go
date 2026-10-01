@@ -210,6 +210,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) setUp_() {
 	if h, ok := this.hook.(interface{ SetUp_() }); ok && this.active != "setUp_" {
 		defer this.enter("setUp_")()
 		h.SetUp_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.setUp_()
 }
@@ -218,6 +219,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) tearDown_() {
 	if h, ok := this.hook.(interface{ TearDown_() }); ok && this.active != "tearDown_" {
 		defer this.enter("tearDown_")()
 		h.TearDown_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.tearDown_()
 }
@@ -226,6 +228,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) setWidget_(a0 *swt.Widget
 	if h, ok := this.hook.(interface{ SetWidget_(a0 *swt.Widget) }); ok && this.active != "setWidget_" {
 		defer this.enter("setWidget_")()
 		h.SetWidget_(a0)
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.setWidget_(a0)
 }
@@ -234,6 +237,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_computeSizeIIZ_() {
 	if h, ok := this.hook.(interface{ Test_computeSizeIIZ_() }); ok && this.active != "test_computeSizeIIZ_" {
 		defer this.enter("test_computeSizeIIZ_")()
 		h.Test_computeSizeIIZ_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_computeSizeIIZ_()
 }
@@ -242,6 +246,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getLocation_() {
 	if h, ok := this.hook.(interface{ Test_getLocation_() }); ok && this.active != "test_getLocation_" {
 		defer this.enter("test_getLocation_")()
 		h.Test_getLocation_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getLocation_()
 }
@@ -250,6 +255,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getParent_() {
 	if h, ok := this.hook.(interface{ Test_getParent_() }); ok && this.active != "test_getParent_" {
 		defer this.enter("test_getParent_")()
 		h.Test_getParent_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getParent_()
 }
@@ -258,6 +264,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getShell_() {
 	if h, ok := this.hook.(interface{ Test_getShell_() }); ok && this.active != "test_getShell_" {
 		defer this.enter("test_getShell_")()
 		h.Test_getShell_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getShell_()
 }
@@ -266,6 +273,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isEnabled_() {
 	if h, ok := this.hook.(interface{ Test_isEnabled_() }); ok && this.active != "test_isEnabled_" {
 		defer this.enter("test_isEnabled_")()
 		h.Test_isEnabled_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isEnabled_()
 }
@@ -274,6 +282,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isFocusControl_() {
 	if h, ok := this.hook.(interface{ Test_isFocusControl_() }); ok && this.active != "test_isFocusControl_" {
 		defer this.enter("test_isFocusControl_")()
 		h.Test_isFocusControl_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isFocusControl_()
 }
@@ -282,6 +291,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isReparentable_() {
 	if h, ok := this.hook.(interface{ Test_isReparentable_() }); ok && this.active != "test_isReparentable_" {
 		defer this.enter("test_isReparentable_")()
 		h.Test_isReparentable_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isReparentable_()
 }
@@ -290,6 +300,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_isVisible_() {
 	if h, ok := this.hook.(interface{ Test_isVisible_() }); ok && this.active != "test_isVisible_" {
 		defer this.enter("test_isVisible_")()
 		h.Test_isVisible_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_isVisible_()
 }
@@ -298,6 +309,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_redraw_() {
 	if h, ok := this.hook.(interface{ Test_redraw_() }); ok && this.active != "test_redraw_" {
 		defer this.enter("test_redraw_")()
 		h.Test_redraw_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_redraw_()
 }
@@ -306,6 +318,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_redrawIIIIZ_() {
 	if h, ok := this.hook.(interface{ Test_redrawIIIIZ_() }); ok && this.active != "test_redrawIIIIZ_" {
 		defer this.enter("test_redrawIIIIZ_")()
 		h.Test_redrawIIIIZ_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_redrawIIIIZ_()
 }
@@ -314,6 +327,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBackgroundLorg_ec
 	if h, ok := this.hook.(interface{ Test_setBackgroundLorg_eclipse_swt_graphics_Color_() }); ok && this.active != "test_setBackgroundLorg_eclipse_swt_graphics_Color_" {
 		defer this.enter("test_setBackgroundLorg_eclipse_swt_graphics_Color_")()
 		h.Test_setBackgroundLorg_eclipse_swt_graphics_Color_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBackgroundLorg_eclipse_swt_graphics_Color_()
 }
@@ -322,6 +336,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBoundsIIII_() {
 	if h, ok := this.hook.(interface{ Test_setBoundsIIII_() }); ok && this.active != "test_setBoundsIIII_" {
 		defer this.enter("test_setBoundsIIII_")()
 		h.Test_setBoundsIIII_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBoundsIIII_()
 }
@@ -330,6 +345,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setBoundsLorg_eclips
 	if h, ok := this.hook.(interface{ Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_() }); ok && this.active != "test_setBoundsLorg_eclipse_swt_graphics_Rectangle_" {
 		defer this.enter("test_setBoundsLorg_eclipse_swt_graphics_Rectangle_")()
 		h.Test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setBoundsLorg_eclipse_swt_graphics_Rectangle_()
 }
@@ -338,6 +354,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setEnabledZ_() {
 	if h, ok := this.hook.(interface{ Test_setEnabledZ_() }); ok && this.active != "test_setEnabledZ_" {
 		defer this.enter("test_setEnabledZ_")()
 		h.Test_setEnabledZ_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setEnabledZ_()
 }
@@ -346,6 +363,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_() {
 	if h, ok := this.hook.(interface{ Test_setFocus_() }); ok && this.active != "test_setFocus_" {
 		defer this.enter("test_setFocus_")()
 		h.Test_setFocus_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_()
 }
@@ -354,6 +372,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFontLorg_eclipse_
 	if h, ok := this.hook.(interface{ Test_setFontLorg_eclipse_swt_graphics_Font_() }); ok && this.active != "test_setFontLorg_eclipse_swt_graphics_Font_" {
 		defer this.enter("test_setFontLorg_eclipse_swt_graphics_Font_")()
 		h.Test_setFontLorg_eclipse_swt_graphics_Font_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFontLorg_eclipse_swt_graphics_Font_()
 }
@@ -362,6 +381,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setForegroundLorg_ec
 	if h, ok := this.hook.(interface{ Test_setForegroundLorg_eclipse_swt_graphics_Color_() }); ok && this.active != "test_setForegroundLorg_eclipse_swt_graphics_Color_" {
 		defer this.enter("test_setForegroundLorg_eclipse_swt_graphics_Color_")()
 		h.Test_setForegroundLorg_eclipse_swt_graphics_Color_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setForegroundLorg_eclipse_swt_graphics_Color_()
 }
@@ -370,6 +390,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setLocationII_() {
 	if h, ok := this.hook.(interface{ Test_setLocationII_() }); ok && this.active != "test_setLocationII_" {
 		defer this.enter("test_setLocationII_")()
 		h.Test_setLocationII_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setLocationII_()
 }
@@ -378,6 +399,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setLocationLorg_ecli
 	if h, ok := this.hook.(interface{ Test_setLocationLorg_eclipse_swt_graphics_Point_() }); ok && this.active != "test_setLocationLorg_eclipse_swt_graphics_Point_" {
 		defer this.enter("test_setLocationLorg_eclipse_swt_graphics_Point_")()
 		h.Test_setLocationLorg_eclipse_swt_graphics_Point_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setLocationLorg_eclipse_swt_graphics_Point_()
 }
@@ -386,6 +408,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setRedrawZ_() {
 	if h, ok := this.hook.(interface{ Test_setRedrawZ_() }); ok && this.active != "test_setRedrawZ_" {
 		defer this.enter("test_setRedrawZ_")()
 		h.Test_setRedrawZ_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setRedrawZ_()
 }
@@ -394,6 +417,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setSizeII_() {
 	if h, ok := this.hook.(interface{ Test_setSizeII_() }); ok && this.active != "test_setSizeII_" {
 		defer this.enter("test_setSizeII_")()
 		h.Test_setSizeII_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setSizeII_()
 }
@@ -402,6 +426,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setSizeLorg_eclipse_
 	if h, ok := this.hook.(interface{ Test_setSizeLorg_eclipse_swt_graphics_Point_() }); ok && this.active != "test_setSizeLorg_eclipse_swt_graphics_Point_" {
 		defer this.enter("test_setSizeLorg_eclipse_swt_graphics_Point_")()
 		h.Test_setSizeLorg_eclipse_swt_graphics_Point_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setSizeLorg_eclipse_swt_graphics_Point_()
 }
@@ -410,6 +435,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setToolTipTextLjava_
 	if h, ok := this.hook.(interface{ Test_setToolTipTextLjava_lang_String_() }); ok && this.active != "test_setToolTipTextLjava_lang_String_" {
 		defer this.enter("test_setToolTipTextLjava_lang_String_")()
 		h.Test_setToolTipTextLjava_lang_String_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setToolTipTextLjava_lang_String_()
 }
@@ -418,6 +444,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setVisibleZ_() {
 	if h, ok := this.hook.(interface{ Test_setVisibleZ_() }); ok && this.active != "test_setVisibleZ_" {
 		defer this.enter("test_setVisibleZ_")()
 		h.Test_setVisibleZ_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setVisibleZ_()
 }
@@ -426,6 +453,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_computeTrimIIII_() {
 	if h, ok := this.hook.(interface{ Test_computeTrimIIII_() }); ok && this.active != "test_computeTrimIIII_" {
 		defer this.enter("test_computeTrimIIII_")()
 		h.Test_computeTrimIIII_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_computeTrimIIII_()
 }
@@ -434,6 +462,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getClientArea_() {
 	if h, ok := this.hook.(interface{ Test_getClientArea_() }); ok && this.active != "test_getClientArea_" {
 		defer this.enter("test_getClientArea_")()
 		h.Test_getClientArea_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getClientArea_()
 }
@@ -442,6 +471,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_getChildren_() {
 	if h, ok := this.hook.(interface{ Test_getChildren_() }); ok && this.active != "test_getChildren_" {
 		defer this.enter("test_getChildren_")()
 		h.Test_getChildren_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_getChildren_()
 }
@@ -450,6 +480,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_toChild_aft
 	if h, ok := this.hook.(interface{ Test_setFocus_toChild_afterOpen_() }); ok && this.active != "test_setFocus_toChild_afterOpen_" {
 		defer this.enter("test_setFocus_toChild_afterOpen_")()
 		h.Test_setFocus_toChild_afterOpen_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_toChild_afterOpen_()
 }
@@ -458,6 +489,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_toChild_bef
 	if h, ok := this.hook.(interface{ Test_setFocus_toChild_beforeOpen_() }); ok && this.active != "test_setFocus_toChild_beforeOpen_" {
 		defer this.enter("test_setFocus_toChild_beforeOpen_")()
 		h.Test_setFocus_toChild_beforeOpen_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_toChild_beforeOpen_()
 }
@@ -476,6 +508,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_consistency_MenuDete
 	if h, ok := this.hook.(interface{ Test_consistency_MenuDetect_() }); ok && this.active != "test_consistency_MenuDetect_" {
 		defer this.enter("test_consistency_MenuDetect_")()
 		h.Test_consistency_MenuDetect_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_consistency_MenuDetect_()
 }
@@ -484,6 +517,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_consistency_DragDete
 	if h, ok := this.hook.(interface{ Test_consistency_DragDetect_() }); ok && this.active != "test_consistency_DragDetect_" {
 		defer this.enter("test_consistency_DragDetect_")()
 		h.Test_consistency_DragDetect_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_consistency_DragDetect_()
 }
@@ -492,6 +526,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setImageLorg_eclipse
 	if h, ok := this.hook.(interface{ Test_setImageLorg_eclipse_swt_graphics_Image_() }); ok && this.active != "test_setImageLorg_eclipse_swt_graphics_Image_" {
 		defer this.enter("test_setImageLorg_eclipse_swt_graphics_Image_")()
 		h.Test_setImageLorg_eclipse_swt_graphics_Image_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setImageLorg_eclipse_swt_graphics_Image_()
 }
@@ -500,6 +535,7 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setTextLjava_lang_St
 	if h, ok := this.hook.(interface{ Test_setTextLjava_lang_String_() }); ok && this.active != "test_setTextLjava_lang_String_" {
 		defer this.enter("test_setTextLjava_lang_String_")()
 		h.Test_setTextLjava_lang_String_()
+		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setTextLjava_lang_String_()
 }

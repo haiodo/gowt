@@ -571,7 +571,7 @@ func (this *CCombo) GetAssociatedLabel() string {
 			break
 		}
 	}
-	return ""
+	return jrt.NullString
 }
 
 func (this *CCombo) GetAlignment() int32 {
@@ -750,7 +750,7 @@ func (this *CCombo) InitAccessible() {
 	anon692.fnGetName = func(e *AccessibleEvent) {
 		var name string = ""
 		var text string = this.GetAssociatedLabel()
-		if text != "" {
+		if text != jrt.NullString {
 			name = this.StripMnemonic(text)
 		}
 		e.Result = name
@@ -758,7 +758,7 @@ func (this *CCombo) InitAccessible() {
 	anon692.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		var shortcut string = ""
 		var text string = this.GetAssociatedLabel()
-		if text != "" {
+		if text != jrt.NullString {
 			var mnemonic uint16 = this._findMnemonic(text)
 			if int32(mnemonic) != int32('\u0000') {
 				shortcut = fmt.Sprintf("Alt+%c", mnemonic)

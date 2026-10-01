@@ -49,11 +49,11 @@ func NewCoolBar(parentLike CompositeLike, style int32) *CoolBar {
 func (this *CoolBar) initCoolBar(parent *Composite, style int32) {
 	this.Composite.initCompositeParentStyle(parent, CoolBarCheckStyle(style))
 	this.items = func() [][]*CoolItem {
-		a565 := make([][]*CoolItem, 0)
-		for i := range a565 {
-			a565[i] = make([]*CoolItem, 0)
+		a538 := make([][]*CoolItem, 0)
+		for i := range a538 {
+			a538[i] = make([]*CoolItem, 0)
 		}
-		return a565
+		return a538
 	}()
 	this.originalItems = make([]*CoolItem, 0)
 	this.dragging = nil
@@ -123,13 +123,13 @@ func (this *CoolBar) computeSizeWHintHHintChanged_(wHint int32, hHint int32, cha
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
-	var cond566 int32
+	var cond539 int32
 	if (this.style & VERTICAL) != 0 {
-		cond566 = hHint
+		cond539 = hHint
 	} else {
-		cond566 = wHint
+		cond539 = wHint
 	}
-	this.WrapItems(cond566)
+	this.WrapItems(cond539)
 	var flat bool = (this.style & FLAT) != 0
 	for row := int32(0); row < int32(len(this.items)); row++ {
 		var rowWidth int32 = 0
@@ -293,13 +293,13 @@ func (this *CoolBar) InsertItemIntoRow(itemLike CoolItemLike, rowIndex int32, x_
 	if rowIndex < 0 || rowIndex >= int32(len(this.items)) {
 		var bottom bool = rowIndex >= int32(len(this.items))
 		var newRows [][]*CoolItem = make([][]*CoolItem, int32(len(this.items))+1)
-		var cond567 int32
+		var cond540 int32
 		if bottom {
-			cond567 = 0
+			cond540 = 0
 		} else {
-			cond567 = 1
+			cond540 = 1
 		}
-		copy(newRows[cond567:], this.items[0:0+int32(len(this.items))])
+		copy(newRows[cond540:], this.items[0:0+int32(len(this.items))])
 		var row int32
 		if bottom {
 			row = int32(len(this.items))
@@ -316,11 +316,11 @@ func (this *CoolBar) InsertItemIntoRow(itemLike CoolItemLike, rowIndex int32, x_
 	var bounds *Rectangle = this.items[rowIndex][0].InternalGetBounds()
 	var rowY int32 = bounds.Y
 	var oldRowHeight int32 = bounds.Height
-	abs568 := x_root - this.ToDisplay(0, 0).X
-	if abs568 < 0 {
-		abs568 = -abs568
+	abs541 := x_root - this.ToDisplay(0, 0).X
+	if abs541 < 0 {
+		abs541 = -abs541
 	}
-	var x int32 = int32(math.Max(float64(0), float64(abs568)))
+	var x int32 = int32(math.Max(float64(0), float64(abs541)))
 	var index int32
 	for index = 0; index < int32(len(this.items[rowIndex])); index++ {
 		if x < this.items[rowIndex][index].InternalGetBounds().X {
@@ -395,11 +395,11 @@ func (this *CoolBar) CreateItem(itemLike CoolItemLike, index int32) {
 	}
 	if int32(len(this.items)) == 0 {
 		this.items = func() [][]*CoolItem {
-			a569 := make([][]*CoolItem, 1)
-			for i := range a569 {
-				a569[i] = make([]*CoolItem, 1)
+			a542 := make([][]*CoolItem, 1)
+			for i := range a542 {
+				a542[i] = make([]*CoolItem, 1)
 			}
-			return a569
+			return a542
 		}()
 		this.items[0][0] = item
 	} else {
@@ -495,8 +495,8 @@ func (this *CoolBar) MoveDown(itemLike CoolItemLike, x_root int32) {
 	var resize bool = this.RemoveItemFromRow(item, oldRowIndex, false)
 	var old *Rectangle = item.InternalGetBounds()
 	this.InternalRedraw(old.X, old.Y, CoolItemMINIMUM_WIDTH, old.Height)
-	b570 := this.InsertItemIntoRow(item, newRowIndex, x_root)
-	resize = resize || b570
+	b543 := this.InsertItemIntoRow(item, newRowIndex, x_root)
+	resize = resize || b543
 	if resize {
 		this.Relayout()
 	} else {
@@ -603,8 +603,8 @@ func (this *CoolBar) MoveUp(itemLike CoolItemLike, x_root int32) {
 	var old *Rectangle = item.InternalGetBounds()
 	this.InternalRedraw(old.X, old.Y, CoolItemMINIMUM_WIDTH, old.Height)
 	var newRowIndex int32 = oldRowIndex - 1
-	b571 := this.InsertItemIntoRow(item, newRowIndex, x_root)
-	resize = resize || b571
+	b544 := this.InsertItemIntoRow(item, newRowIndex, x_root)
+	resize = resize || b544
 	if resize {
 		this.Relayout()
 	} else {
@@ -963,11 +963,11 @@ func (this *CoolBar) LayoutItems() int32 {
 					} else {
 						if oldBounds.X != newBounds.X {
 							damage.X = int32(math.Min(float64(oldBounds.X), float64(newBounds.X)))
-							abs572 := oldBounds.X - newBounds.X
-							if abs572 < 0 {
-								abs572 = -abs572
+							abs545 := oldBounds.X - newBounds.X
+							if abs545 < 0 {
+								abs545 = -abs545
 							}
-							damage.Width = abs572 + CoolItemMINIMUM_WIDTH
+							damage.Width = abs545 + CoolItemMINIMUM_WIDTH
 							damage.Y = oldBounds.Y
 							damage.Height = oldBounds.Height
 						}
@@ -1016,9 +1016,9 @@ func (this *CoolBar) GetItemOrder() []int32 {
 			if index == int32(len(this.originalItems)) {
 				this.Error(ERROR_CANNOT_GET_ITEM)
 			}
-			t573 := count
+			t546 := count
 			count++
-			indices[t573] = index
+			indices[t546] = index
 		}
 	}
 	return indices
@@ -1060,11 +1060,11 @@ func (this *CoolBar) SetItemOrder(itemOrder []int32) {
 		row[i] = this.originalItems[itemOrder[i]]
 	}
 	this.items = func() [][]*CoolItem {
-		a574 := make([][]*CoolItem, 1)
-		for i := range a574 {
-			a574[i] = make([]*CoolItem, count)
+		a547 := make([][]*CoolItem, 1)
+		for i := range a547 {
+			a547[i] = make([]*CoolItem, count)
 		}
-		return a574
+		return a547
 	}()
 	this.items[0] = row
 }
@@ -1114,9 +1114,9 @@ func (this *CoolBar) GetWrapIndices() []int32 {
 	var nextWrap int32 = int32(len(this.items[0]))
 	for row := int32(1); row < int32(len(this.items)); row++ {
 		if this.items[row][0].wrap {
-			t575 := i
+			t548 := i
 			i++
-			wrapIndices[t575] = nextWrap
+			wrapIndices[t548] = nextWrap
 		}
 		nextWrap += int32(len(this.items[row]))
 	}
@@ -1180,9 +1180,9 @@ func (this *CoolBar) reskinChildren_(flags int32) {
 
 func (this *CoolBar) setCursor_(cursor *Cursor) {
 	this.CheckWidget()
-	cond576 := cursor
-	this.cursor = cond576
-	this.Composite.setCursor_(cond576)
+	cond549 := cursor
+	this.cursor = cond549
+	this.Composite.setCursor_(cond549)
 }
 
 func (this *CoolBar) SetItemLayout(itemOrder []int32, wrapIndices []int32, sizes []*Point) {

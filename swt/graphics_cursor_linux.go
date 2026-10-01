@@ -490,8 +490,8 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok449 := resourceImplAsCursor(object)
-	if !(ok449) {
+	_, ok433 := resourceImplAsCursor(object)
+	if !(ok433) {
 		return false
 	}
 	var cursor *Cursor = castanyToCursor(object)

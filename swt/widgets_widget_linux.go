@@ -909,6 +909,7 @@ func (this *widgetHooked) checkSubclass_() {
 	if h, ok := this.hook.(interface{ CheckSubclass_() }); ok && this.active != "checkSubclass_" {
 		defer this.enter("checkSubclass_")()
 		h.CheckSubclass_()
+		return
 	}
 	this.WidgetImpl.checkSubclass_()
 }
@@ -917,6 +918,7 @@ func (this *widgetHooked) dispose_() {
 	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
 		defer this.enter("dispose_")()
 		h.Dispose_()
+		return
 	}
 	this.WidgetImpl.dispose_()
 }
@@ -933,6 +935,7 @@ func (this *widgetHooked) reskin_(a0 int32) {
 	if h, ok := this.hook.(interface{ Reskin_(a0 int32) }); ok && this.active != "reskin_" {
 		defer this.enter("reskin_")()
 		h.Reskin_(a0)
+		return
 	}
 	this.WidgetImpl.reskin_(a0)
 }
@@ -999,6 +1002,7 @@ func (this *widgetHooked) setRegion_(a0 *Region) {
 	if h, ok := this.hook.(interface{ SetRegion_(a0 *Region) }); ok && this.active != "setRegion_" {
 		defer this.enter("setRegion_")()
 		h.SetRegion_(a0)
+		return
 	}
 	this.WidgetImpl.setRegion_(a0)
 }
@@ -1087,6 +1091,7 @@ func (this *widgetHooked) requestLayout_() {
 	if h, ok := this.hook.(interface{ RequestLayout_() }); ok && this.active != "requestLayout_" {
 		defer this.enter("requestLayout_")()
 		h.RequestLayout_()
+		return
 	}
 	this.WidgetImpl.requestLayout_()
 }
@@ -1095,6 +1100,7 @@ func (this *widgetHooked) redraw_() {
 	if h, ok := this.hook.(interface{ Redraw_() }); ok && this.active != "redraw_" {
 		defer this.enter("redraw_")()
 		h.Redraw_()
+		return
 	}
 	this.WidgetImpl.redraw_()
 }
@@ -1105,6 +1111,7 @@ func (this *widgetHooked) redrawXYWidthHeightAll_(a0 int32, a1 int32, a2 int32, 
 	}); ok && this.active != "redrawXYWidthHeightAll_" {
 		defer this.enter("redrawXYWidthHeightAll_")()
 		h.RedrawXYWidthHeightAll_(a0, a1, a2, a3, a4)
+		return
 	}
 	this.WidgetImpl.redrawXYWidthHeightAll_(a0, a1, a2, a3, a4)
 }
@@ -1113,6 +1120,7 @@ func (this *widgetHooked) setBackgroundWithColor_(a0 *Color) {
 	if h, ok := this.hook.(interface{ SetBackgroundWithColor_(a0 *Color) }); ok && this.active != "setBackgroundWithColor_" {
 		defer this.enter("setBackgroundWithColor_")()
 		h.SetBackgroundWithColor_(a0)
+		return
 	}
 	this.WidgetImpl.setBackgroundWithColor_(a0)
 }
@@ -1121,6 +1129,7 @@ func (this *widgetHooked) setBackgroundImage_(a0 *Image) {
 	if h, ok := this.hook.(interface{ SetBackgroundImage_(a0 *Image) }); ok && this.active != "setBackgroundImage_" {
 		defer this.enter("setBackgroundImage_")()
 		h.SetBackgroundImage_(a0)
+		return
 	}
 	this.WidgetImpl.setBackgroundImage_(a0)
 }
@@ -1129,6 +1138,7 @@ func (this *widgetHooked) setCursor_(a0 *Cursor) {
 	if h, ok := this.hook.(interface{ SetCursor_(a0 *Cursor) }); ok && this.active != "setCursor_" {
 		defer this.enter("setCursor_")()
 		h.SetCursor_(a0)
+		return
 	}
 	this.WidgetImpl.setCursor_(a0)
 }
@@ -1137,6 +1147,7 @@ func (this *widgetHooked) setEnabled_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetEnabled_(a0 bool) }); ok && this.active != "setEnabled_" {
 		defer this.enter("setEnabled_")()
 		h.SetEnabled_(a0)
+		return
 	}
 	this.WidgetImpl.setEnabled_(a0)
 }
@@ -1153,6 +1164,7 @@ func (this *widgetHooked) setFont_(a0 *Font) {
 	if h, ok := this.hook.(interface{ SetFont_(a0 *Font) }); ok && this.active != "setFont_" {
 		defer this.enter("setFont_")()
 		h.SetFont_(a0)
+		return
 	}
 	this.WidgetImpl.setFont_(a0)
 }
@@ -1161,6 +1173,7 @@ func (this *widgetHooked) setForeground_(a0 *Color) {
 	if h, ok := this.hook.(interface{ SetForeground_(a0 *Color) }); ok && this.active != "setForeground_" {
 		defer this.enter("setForeground_")()
 		h.SetForeground_(a0)
+		return
 	}
 	this.WidgetImpl.setForeground_(a0)
 }
@@ -1169,6 +1182,7 @@ func (this *widgetHooked) setMenu_(a0 *Menu) {
 	if h, ok := this.hook.(interface{ SetMenu_(a0 *Menu) }); ok && this.active != "setMenu_" {
 		defer this.enter("setMenu_")()
 		h.SetMenu_(a0)
+		return
 	}
 	this.WidgetImpl.setMenu_(a0)
 }
@@ -1177,6 +1191,7 @@ func (this *widgetHooked) setOrientationOnControl_(a0 int32) {
 	if h, ok := this.hook.(interface{ SetOrientationOnControl_(a0 int32) }); ok && this.active != "setOrientationOnControl_" {
 		defer this.enter("setOrientationOnControl_")()
 		h.SetOrientationOnControl_(a0)
+		return
 	}
 	this.WidgetImpl.setOrientationOnControl_(a0)
 }
@@ -1185,6 +1200,7 @@ func (this *widgetHooked) setRedraw_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetRedraw_(a0 bool) }); ok && this.active != "setRedraw_" {
 		defer this.enter("setRedraw_")()
 		h.SetRedraw_(a0)
+		return
 	}
 	this.WidgetImpl.setRedraw_(a0)
 }
@@ -1193,6 +1209,7 @@ func (this *widgetHooked) setToolTipText_(a0 string) {
 	if h, ok := this.hook.(interface{ SetToolTipText_(a0 string) }); ok && this.active != "setToolTipText_" {
 		defer this.enter("setToolTipText_")()
 		h.SetToolTipText_(a0)
+		return
 	}
 	this.WidgetImpl.setToolTipText_(a0)
 }
@@ -1201,6 +1218,7 @@ func (this *widgetHooked) setVisible_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetVisible_(a0 bool) }); ok && this.active != "setVisible_" {
 		defer this.enter("setVisible_")()
 		h.SetVisible_(a0)
+		return
 	}
 	this.WidgetImpl.setVisible_(a0)
 }
@@ -1251,6 +1269,7 @@ func (this *widgetHooked) setImageOnItem_(a0 *Image) {
 	if h, ok := this.hook.(interface{ SetImageOnItem_(a0 *Image) }); ok && this.active != "setImageOnItem_" {
 		defer this.enter("setImageOnItem_")()
 		h.SetImageOnItem_(a0)
+		return
 	}
 	this.WidgetImpl.setImageOnItem_(a0)
 }
@@ -1259,6 +1278,7 @@ func (this *widgetHooked) setText_(a0 string) {
 	if h, ok := this.hook.(interface{ SetText_(a0 string) }); ok && this.active != "setText_" {
 		defer this.enter("setText_")()
 		h.SetText_(a0)
+		return
 	}
 	this.WidgetImpl.setText_(a0)
 }
@@ -1275,6 +1295,7 @@ func (this *widgetHooked) setLayout_(a0 *Layout) {
 	if h, ok := this.hook.(interface{ SetLayout_(a0 *Layout) }); ok && this.active != "setLayout_" {
 		defer this.enter("setLayout_")()
 		h.SetLayout_(a0)
+		return
 	}
 	this.WidgetImpl.setLayout_(a0)
 }
@@ -1299,6 +1320,7 @@ func (this *widgetHooked) setMaximized_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetMaximized_(a0 bool) }); ok && this.active != "setMaximized_" {
 		defer this.enter("setMaximized_")()
 		h.SetMaximized_(a0)
+		return
 	}
 	this.WidgetImpl.setMaximized_(a0)
 }
@@ -1307,6 +1329,7 @@ func (this *widgetHooked) setMenuBar_(a0 *Menu) {
 	if h, ok := this.hook.(interface{ SetMenuBar_(a0 *Menu) }); ok && this.active != "setMenuBar_" {
 		defer this.enter("setMenuBar_")()
 		h.SetMenuBar_(a0)
+		return
 	}
 	this.WidgetImpl.setMenuBar_(a0)
 }
@@ -1315,6 +1338,7 @@ func (this *widgetHooked) setMinimized_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetMinimized_(a0 bool) }); ok && this.active != "setMinimized_" {
 		defer this.enter("setMinimized_")()
 		h.SetMinimized_(a0)
+		return
 	}
 	this.WidgetImpl.setMinimized_(a0)
 }
@@ -4034,8 +4058,7 @@ func (this *Widget) WindowProcHandleArg0Arg1Arg2Arg3User_data(handle int64, arg0
 
 func (this *Widget) Gtk_cell_renderer_get_preferred_size(cell int64, widget int64, width []int32, height []int32) {
 	var minimum_size gtk.GtkRequisition = gtk.GtkRequisition{}
-	t74 := gtk.GtkRequisition{}
-	gtk.GTKGtk_cell_renderer_get_preferred_size(cell, widget, &minimum_size, &t74)
+	gtk.GTKGtk_cell_renderer_get_preferred_size(cell, widget, &minimum_size, nil)
 	if width != (nil) {
 		width[0] = minimum_size.Width
 	}
@@ -4049,8 +4072,7 @@ func (this *Widget) Gtk_widget_get_preferred_size(widget int64, requisition *gtk
 }
 
 func (this *Widget) gtk_widget_get_preferred_size_(widget int64, requisition *gtk.GtkRequisition) {
-	t75 := gtk.GtkRequisition{}
-	gtk.GTKGtk_widget_get_preferred_size(widget, requisition, &t75)
+	gtk.GTKGtk_widget_get_preferred_size(widget, requisition, nil)
 }
 
 func (this *Widget) Gtk_container_get_border_width_or_margin(handle int64) int32 {

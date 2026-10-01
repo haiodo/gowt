@@ -153,61 +153,61 @@ func (this *Link) InitAccessible() {
 		return
 	}
 	var accessible *Accessible = this.GetAccessible()
-	anon544 := &LinkAnon1{}
-	anon544.initAccessibleAdapter()
-	anon544.fnGetName = func(e *AccessibleEvent) {
+	anon517 := &LinkAnon1{}
+	anon517.initAccessibleAdapter()
+	anon517.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.Parse(this.text)
 	}
-	accessible.AddAccessibleListener(anon544)
-	anon545 := &LinkAnon2{}
-	anon545.initAccessibleControlAdapter()
-	anon545.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	accessible.AddAccessibleListener(anon517)
+	anon518 := &LinkAnon2{}
+	anon518.initAccessibleControlAdapter()
+	anon518.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		e.ChildID = ACCCHILDID_SELF
 	}
-	anon545.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon518.fnGetLocation = func(e *AccessibleControlEvent) {
 		var rect *Rectangle = this.display.MapFromToRectangle(upcastCompositeToControl(this.GetParent()), nil, this.impl.getBounds_())
 		e.X = rect.X
 		e.Y = rect.Y
 		e.Width = rect.Width
 		e.Height = rect.Height
 	}
-	anon545.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon518.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = 0
 	}
-	anon545.fnGetRole = func(e *AccessibleControlEvent) {
+	anon518.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_LINK
 	}
-	anon545.fnGetState = func(e *AccessibleControlEvent) {
+	anon518.fnGetState = func(e *AccessibleControlEvent) {
 		e.Detail = ACCSTATE_FOCUSABLE
 		if this.impl.hasFocus_() {
 			e.Detail |= ACCSTATE_FOCUSED
 		}
 	}
-	anon545.fnGetDefaultAction = func(e *AccessibleControlEvent) {
+	anon518.fnGetDefaultAction = func(e *AccessibleControlEvent) {
 		e.Result = GetMessage("SWT_Press")
 	}
-	anon545.fnGetSelection = func(e *AccessibleControlEvent) {
+	anon518.fnGetSelection = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	anon545.fnGetFocus = func(e *AccessibleControlEvent) {
+	anon518.fnGetFocus = func(e *AccessibleControlEvent) {
 		if this.impl.hasFocus_() {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	accessible.AddAccessibleControlListener(anon545)
+	accessible.AddAccessibleControlListener(anon518)
 }
 
 func (this *Link) GetLinkForeground() *Color {
 	this.CheckWidget()
-	var cond546 *Color
+	var cond519 *Color
 	if this.linkColor != (nil) {
-		cond546 = this.linkColor
+		cond519 = this.linkColor
 	} else {
-		cond546 = this.display.impl.getSystemColor_(COLOR_LINK_FOREGROUND)
+		cond519 = this.display.impl.getSystemColor_(COLOR_LINK_FOREGROUND)
 	}
-	return cond546
+	return cond519
 }
 
 func (this *Link) getNameText_() string {
@@ -229,21 +229,21 @@ func (this *Link) GetRectanglesInPixels(linkIndex int32) []*Rectangle {
 	}
 	var index int32 = 0
 	if lineStart == lineEnd {
-		t547 := index
+		t520 := index
 		index++
-		rects[t547] = this.layout.GetBoundsStartEnd(point.X, point.Y)
+		rects[t520] = this.layout.GetBoundsStartEnd(point.X, point.Y)
 	} else {
-		t548 := index
+		t521 := index
 		index++
-		rects[t548] = this.layout.GetBoundsStartEnd(point.X, lineOffsets[lineStart]-1)
-		t549 := index
+		rects[t521] = this.layout.GetBoundsStartEnd(point.X, lineOffsets[lineStart]-1)
+		t522 := index
 		index++
-		rects[t549] = this.layout.GetBoundsStartEnd(lineOffsets[lineEnd-1], point.Y)
+		rects[t522] = this.layout.GetBoundsStartEnd(lineOffsets[lineEnd-1], point.Y)
 		if lineEnd-lineStart > 1 {
 			for i := int32(lineStart); i < lineEnd-1; i++ {
-				t550 := index
+				t523 := index
 				index++
-				rects[t550] = this.layout.GetLineBounds(i)
+				rects[t523] = this.layout.GetLineBounds(i)
 			}
 		}
 	}
@@ -781,13 +781,13 @@ func (this *Link) ParseMnemonics(buffer []uint16, start int32, end int32, result
 func (this *Link) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int32, height int32, move bool, resize bool) int32 {
 	var result int32 = this.Control.setBoundsXYWidthHeightMoveResize_(x, y, width, height, move, resize)
 	if (result & WidgetRESIZED) != 0 {
-		var cond551 int32
+		var cond524 int32
 		if width > 0 {
-			cond551 = width
+			cond524 = width
 		} else {
-			cond551 = -1
+			cond524 = -1
 		}
-		this.layout.SetWidth((cond551))
+		this.layout.SetWidth((cond524))
 		this.impl.redraw_()
 	}
 	return result
@@ -875,13 +875,13 @@ func (this *Link) showWidget_() {
 
 func (this *Link) StyleLinkParts() {
 	var enabled bool = (this.state & WidgetDISABLED) == 0
-	var cond552 *Color
+	var cond525 *Color
 	if enabled {
-		cond552 = this.GetLinkForeground()
+		cond525 = this.GetLinkForeground()
 	} else {
-		cond552 = this.disabledColor
+		cond525 = this.disabledColor
 	}
-	var linkStyle *TextStyle = NewTextStyleFontForegroundBackground(nil, cond552, nil)
+	var linkStyle *TextStyle = NewTextStyleFontForegroundBackground(nil, cond525, nil)
 	linkStyle.Underline = true
 	for i := int32(0); i < int32(len(this.offsets)); i++ {
 		var point *Point = this.offsets[i]

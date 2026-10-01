@@ -136,20 +136,20 @@ func (this *FontDialog) Open() *FontData {
 			} else {
 				font = nil
 			}
-			anon495 := &FontDialogAnon1{}
-			anon495.fnAsync = func(callback int64) {
-				var cond496 int64
+			anon475 := &FontDialogAnon1{}
+			anon475.fnAsync = func(callback int64) {
+				var cond476 int64
 				if font != (nil) {
-					cond496 = font.Handle
+					cond476 = font.Handle
 				} else {
-					cond496 = int64(0)
+					cond476 = int64(0)
 				}
-				gtk.GTK4Gtk_font_dialog_choose_font(handle, shellHandle, cond496, int64(0), callback, int64(0))
+				gtk.GTK4Gtk_font_dialog_choose_font(handle, shellHandle, cond476, int64(0), callback, int64(0))
 			}
-			anon495.fnAwait = func(result int64) int64 {
+			anon475.fnAwait = func(result int64) int64 {
 				return gtk.GTK4Gtk_font_dialog_choose_font_finish(handle, result, nil)
 			}
-			fontDesc = SyncDialogUtilRun(display, anon495)
+			fontDesc = SyncDialogUtilRun(display, anon475)
 			if font != (nil) {
 				font.impl.dispose_()
 			}

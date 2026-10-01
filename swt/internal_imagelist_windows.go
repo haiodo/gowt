@@ -352,15 +352,9 @@ func (this *ImageList) CreateMask(hBitmap int64, destWidth int32, destHeight int
 }
 
 func (this *ImageList) Dispose() {
-	func() any {
-		_ = []any{func() any {
-			_ = []any{this.zoomToHandle.Values().Stream(), func(it any) bool {
-				return it != 0
-			}}
-			panic("j2go: unresolved call filter")
-		}(), func(a0 any) { win32.OSImageList_Destroy(jrt.Cast[int64](a0)) }}
-		panic("j2go: unresolved call forEach")
-	}()
+	this.zoomToHandle.Values().Stream().Filter(func(it any) bool {
+		return it != 0
+	}).ForEach(func(a0 any) { win32.OSImageList_Destroy(jrt.Cast[int64](a0)) })
 	this.zoomToHandle.Clear()
 	this.handle = int64(0)
 	this.images = nil

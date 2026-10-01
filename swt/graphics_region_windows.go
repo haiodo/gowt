@@ -446,12 +446,9 @@ func (this *Region) String() string {
 	if this.impl.isDisposed_() {
 		return "Region {*DISPOSED*}"
 	}
-	return fmt.Sprintf("Region {%s}", any(func() any {
-		_ = []any{this.zoomToHandle.EntrySet().Stream(), func(entry *jrt.MapEntry) string {
-			return fmt.Sprint(jrt.Cast[*Region_RegionHandle](entry.GetValue()))
-		}}
-		panic("j2go: unresolved call map")
-	}()).(*jrt.LineStream).Collect(jrt.CollectorsJoining(",")))
+	return fmt.Sprintf("Region {%s}", this.zoomToHandle.EntrySet().Stream().Map(func(entry *jrt.MapEntry) string {
+		return fmt.Sprint(jrt.Cast[*Region_RegionHandle](entry.GetValue()))
+	}).Collect(jrt.CollectorsJoining(",")).(string))
 }
 
 func RegionApplyUsingTemporaryHandle(zoom int32, operations *jrt.List, function func(*Region_RegionHandle) any) any {

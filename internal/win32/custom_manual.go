@@ -1,48 +1,13 @@
 //go:build windows
 
-// os_custom.c natives that are not DLL exports, and the manifest SWT loads from its JNI DLL's resources.
+// os_custom.c natives that are not DLL exports.
 package win32
 
 import (
-	_ "embed"
 	"math"
-	"os"
-	"path/filepath"
 	"syscall"
 	"unsafe"
 )
-
-// SWT loads this manifest (visual styles, common controls 6) from its JNI DLL's resources; a Go exe has none,
-// so it is written next to the temp files and activated for the process before comctl32 loads.
-//
-//go:embed swt.manifest
-var manifest []byte
-
-func init() {
-	path := filepath.Join(os.TempDir(), "gowt-swt.manifest")
-	if os.WriteFile(path, manifest, 0o644) != nil {
-		return
-	}
-	src, _ := syscall.UTF16PtrFromString(path)
-	ctx := struct {
-		cbSize                 uint32
-		dwFlags                uint32
-		lpSource               *uint16
-		wProcessorArchitecture uint16
-		wLangId                uint16
-		lpAssemblyDirectory    uintptr
-		lpResourceName         uintptr
-		lpApplicationName      uintptr
-		hModule                uintptr
-	}{dwFlags: 0x10, lpSource: src} // ACTCTX_FLAG_SET_PROCESS_DEFAULT: every thread gets common controls 6, as with SWT's own
-	ctx.cbSize = uint32(unsafe.Sizeof(ctx))
-	h, _, _ := kernel32.NewProc("CreateActCtxW").Call(uintptr(unsafe.Pointer(&ctx)))
-	if h == ^uintptr(0) {
-		return
-	}
-	var cookie uintptr
-	kernel32.NewProc("ActivateActCtx").Call(h, uintptr(unsafe.Pointer(&cookie)))
-}
 
 // OS.GID_ROTATE_ANGLE_FROM_ARGUMENT: the macro maps the 16-bit argument to radians.
 func custom_GID_ROTATE_ANGLE_FROM_ARGUMENT(arg int64) float64 {

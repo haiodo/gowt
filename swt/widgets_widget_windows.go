@@ -2027,22 +2027,10 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 	return this.eventTable.GetListeners(eventType)
 }
 
-func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) any {
-	return func() any {
-		_ = []any{func() any {
-			_ = []any{func() any {
-				_ = []any{func() any {
-					_ = []any{func() any { _ = []any{this.GetListeners(eventType)}; panic("j2go: unresolved call stream") }(), func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()}
-					panic("j2go: unresolved call filter")
-				}(), func(l Listener) any {
-					return (castListenerToTypedListener(l)).eventListener
-				}}
-				panic("j2go: unresolved call map")
-			}(), func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()}
-			panic("j2go: unresolved call filter")
-		}(), func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()}
-		panic("j2go: unresolved call map")
-	}()
+func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) *jrt.List {
+	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()).Map(func(l Listener) any {
+		return (castListenerToTypedListener(l)).eventListener
+	}).Filter(func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()).Map(func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }())
 }
 
 func (this *Widget) GetMenu0() *Menu {

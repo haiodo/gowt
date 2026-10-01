@@ -497,7 +497,7 @@ func (this *ToolItem) setImageOnItem_(image *Image) {
 	if image != (nil) && image.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.parent.impl.layoutOverload1_(this.IsImageSizeChanged(func() *Image { panic("j2go: unsupported SuperFieldAccess") }() /* TODO(gowt-port): super.image */, image))
+	this.parent.impl.layoutOverload1_(this.IsImageSizeChanged(this.Item.image, image))
 	this.Item.setImageOnItem_(image)
 	this.UpdateImages(this.GetEnabled() && this.parent.impl.getEnabled_())
 }

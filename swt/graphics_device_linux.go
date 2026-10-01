@@ -750,7 +750,7 @@ func (this *Device) OverrideThemeValues() {
 			} else {
 				buffer = jrt.NewBufferedReader(jrt.NewFileReader(jrt.NewFile(path)))
 			}
-			tret240 = any(buffer.Lines()).(*jrt.LineStream).Collect(jrt.CollectorsJoining("\n"))
+			tret240 = buffer.Lines().Collect(jrt.CollectorsJoining("\n")).(string)
 			tretd241 = true
 			return
 		}()

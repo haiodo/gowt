@@ -30,12 +30,19 @@ func bucketKey(k any) any {
 	if h, ok := k.(hasher); ok {
 		return h.HashCode()
 	}
+	if v := reflect.ValueOf(k); v.Kind() == reflect.Func {
+		return v.Pointer() // ponytail: code pointer, so closures of one literal collide; Go funcs are not hashable
+	}
 	return k
 }
 
 func keysEqual(a, b any) bool {
 	if h, ok := a.(hasher); ok {
 		return h.Equals(b)
+	}
+	if va := reflect.ValueOf(a); va.Kind() == reflect.Func {
+		vb := reflect.ValueOf(b)
+		return vb.Kind() == reflect.Func && va.Pointer() == vb.Pointer()
 	}
 	return a == b
 }
@@ -104,6 +111,7 @@ func (m *Map) Clear() { m.buckets = map[any][]mapEntry{} }
 type List struct {
 	mu    sync.Mutex
 	items []any
+	owner *Map // set on Map.EntrySet(): removals reach the map
 }
 
 // NewList is new ArrayList<>() or new ArrayList<>(initialCapacity).
@@ -185,13 +193,20 @@ func (l *List) Remove(v any) bool {
 // RemoveIf takes Java's Predicate as a func(any) bool; typed any because a translated
 // method-reference argument has no Go type of its own yet.
 func (l *List) RemoveIf(predicate any) bool {
-	pred := predicate.(func(any) bool)
+	pred := func(v any) bool {
+		if p, ok := predicate.(func(any) bool); ok {
+			return p(v)
+		}
+		return callFunc(predicate, v).(bool) // a typed func(*Elem) bool
+	}
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	kept := l.items[:0]
 	for _, v := range l.items {
 		if !pred(v) {
 			kept = append(kept, v)
+		} else if e, ok := v.(*MapEntry); ok && l.owner != nil {
+			l.owner.Remove(e.key) // an entry set is a live view of its map
 		}
 	}
 	removed := len(kept) != len(l.items)
@@ -254,7 +269,9 @@ func (m *Map) EntrySet() *List {
 		b, bok := entries[j].(*MapEntry).key.(int32)
 		return aok && bok && a < b
 	})
-	return ListOf(entries...)
+	l := ListOf(entries...)
+	l.owner = m
+	return l
 }
 
 func callErased(fn any, args ...any) {

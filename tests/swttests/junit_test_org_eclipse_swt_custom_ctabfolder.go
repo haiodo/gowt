@@ -520,16 +520,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) CheckElementOverlap(tabFolde
 
 func (this *Test_org_eclipse_swt_custom_CTabFolder) AssertTabElementsInLine() {
 	var tabBarElementBounds *jrt.List = jrt.NewList()
-	func() any {
-		_ = []any{func() any {
-			_ = []any{func() any {
-				_ = []any{func() any { _ = []any{this.ctabFolder.GetItems()}; panic("j2go: unresolved call stream") }(), (*swt.CTabItem).IsShowing}
-				panic("j2go: unresolved call filter")
-			}(), this.GetBoundsInShell}
-			panic("j2go: unresolved call map")
-		}(), func() func(any) { _ = []any{tabBarElementBounds}; panic("j2go: unsupported ExpressionMethodReference") }()}
-		panic("j2go: unresolved call forEach")
-	}()
+	jrt.ArraysAsList(this.ctabFolder.GetItems()).Filter((*swt.CTabItem).IsShowing).Map(this.GetBoundsInShell).ForEach(func() func(any) { _ = []any{tabBarElementBounds}; panic("j2go: unsupported ExpressionMethodReference") }())
 	for _, child := range this.ctabFolder.GetChildren() {
 		toolBarChild, ok99 := isswtControlToswtToolBar(child)
 		if ok99 {

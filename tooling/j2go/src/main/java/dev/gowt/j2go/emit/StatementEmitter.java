@@ -48,8 +48,8 @@ final class StatementEmitter {
 	}
 
 	private String emitStatementInner(Statement s, int indent) {
-		// SWT runs without -ea: an assert is a no-op (win32; the reference output keeps its marker).
-		if (s instanceof AssertStatement && dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.WIN32) return "";
+		// SWT runs without -ea: an assert is a no-op on every platform.
+		if (s instanceof AssertStatement) return "";
 		if (s instanceof ExpressionStatement es) return emitExpressionStatement(es.getExpression(), indent);
 		if (s instanceof ReturnStatement rs) return emitReturn(rs, indent);
 		if (s instanceof IfStatement is) return emitIf(is, indent);

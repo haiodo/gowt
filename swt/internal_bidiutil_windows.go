@@ -191,7 +191,7 @@ func BidiUtilResolveTextDirection(text string) int32 {
 	var textDirection int32 = NONE
 	for i := int32(0); i < jrt.StringLength(text); i++ {
 		var c uint16 = utf16.Encode([]rune(text))[i]
-		var directionality int8 = func() int8 { _ = []any{c}; panic("j2go: unresolved call getDirectionality") }()
+		var directionality int8 = jrt.Directionality(rune(c))
 		var strongDirection int32 = BidiUtilGetStrongDirection(directionality)
 		if strongDirection != NONE {
 			textDirection = strongDirection

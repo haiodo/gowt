@@ -70,16 +70,14 @@ func toBytes(b []int8) []byte {
 	return out
 }
 
-// LineStream is the Stream<String> of BufferedReader.lines(), consumed by Collectors.joining only.
-type LineStream struct{ lines []string }
-
-func (r *Reader) Lines() *LineStream {
-	var lines []string
+// Lines is BufferedReader.lines(): a stream is an eager *List here.
+func (r *Reader) Lines() *List {
+	l := NewList()
 	sc := bufio.NewScanner(r.r)
 	for sc.Scan() {
-		lines = append(lines, sc.Text())
+		l.Add(sc.Text())
 	}
-	return &LineStream{lines}
+	return l
 }
 
 func (r *Reader) Close() {
@@ -88,11 +86,12 @@ func (r *Reader) Close() {
 	}
 }
 
-type Collector struct{ sep string }
+// Collector is Collectors.joining(sep), toList() or toSet() (kind "list"/"set"; sets keep insertion order).
+type Collector struct{ sep, kind string }
 
-func CollectorsJoining(sep string) *Collector { return &Collector{sep} }
-
-func (s *LineStream) Collect(c *Collector) string { return strings.Join(s.lines, c.sep) }
+func CollectorsJoining(sep string) *Collector { return &Collector{sep: sep} }
+func CollectorsToList() *Collector            { return &Collector{kind: "list"} }
+func CollectorsToSet() *Collector             { return &Collector{kind: "set"} }
 
 // Properties (a Map): key=value lines in, sorted key=value lines out.
 func (m *Map) Load(in InputStream) {

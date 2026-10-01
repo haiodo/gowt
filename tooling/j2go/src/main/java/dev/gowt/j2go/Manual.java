@@ -82,9 +82,11 @@ public class Manual {
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
+		reg("java.util.TreeSet", "jrt.TreeSet", JRT_IMPORT, false);
+		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
 		// only their static members are used, hand-written in swt/internal_helpers_manual.go.

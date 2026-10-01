@@ -27,15 +27,28 @@ final class JdkCallsExtra {
 				return "any(nil)";
 			case "java.lang.Runtime#removeShutdownHook":
 				return "false";
-			// BufferedReader.lines().collect(Collectors.joining(sep)), the one stream chain the gtk sources use.
+			// Streams are eager *jrt.List values; Collect returns any, so the Java result type is asserted back.
 			case "java.util.stream.Collectors#joining":
 				e.fileImports.add(JRT);
 				return "jrt.CollectorsJoining(" + arg(e, mi, 0) + ")";
-			case "java.util.stream.Stream#collect":
-				// Only the joining collector exists; any other stays an unresolved call.
-				if (!(mi.arguments().get(0) instanceof MethodInvocation c && c.getName().getIdentifier().equals("joining"))) return null;
+			case "java.util.stream.Collectors#toList", "java.util.stream.Collectors#toSet":
 				e.fileImports.add(JRT);
-				return "any(" + recv(e, mi) + ").(*jrt.LineStream).Collect(" + arg(e, mi, 0) + ")";
+				return "jrt.CollectorsTo" + (name.equals("toList") ? "List" : "Set") + "()";
+			case "java.util.stream.Stream#collect": {
+				e.fileImports.add(JRT);
+				String t = dev.gowt.j2go.GoTypes.map(mi.resolveTypeBinding(), e);
+				return recv(e, mi) + ".Collect(" + arg(e, mi, 0) + ")" + (t.equals("any") ? "" : ".(" + t + ")");
+			}
+			case "java.util.Arrays#stream":
+				if (mi.arguments().size() != 1) return null;
+				e.fileImports.add(JRT);
+				return "jrt.ArraysAsList(" + arg(e, mi, 0) + ")";
+			case "java.lang.String#repeat":
+				e.fileImports.add("strings");
+				return "strings.Repeat(" + recv(e, mi) + ", int(" + arg(e, mi, 0) + "))";
+			case "java.lang.Character#getDirectionality":
+				e.fileImports.add(JRT);
+				return "jrt.Directionality(rune(" + arg(e, mi, 0) + "))";
 			case "java.lang.Byte#toUnsignedInt":
 				return "int32(uint8(" + arg(e, mi, 0) + "))";
 			case "java.util.Arrays#fill":

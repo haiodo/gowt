@@ -1707,10 +1707,7 @@ func (this *Image_ImageHandleManager) IsEmpty() bool {
 }
 
 func (this *Image_ImageHandleManager) GetAllImageHandles() *jrt.List {
-	return func() *jrt.List {
-		_ = []any{this.zoomLevelToImageHandle.Values().Stream(), func() any { panic("j2go: unresolved call toList") }()}
-		panic("j2go: unresolved call collect")
-	}()
+	return this.zoomLevelToImageHandle.Values().Stream().Collect(jrt.CollectorsToList()).(*jrt.List)
 }
 
 func (this *Image_ImageHandleManager) GetAllZooms() *jrt.List {
@@ -1718,16 +1715,16 @@ func (this *Image_ImageHandleManager) GetAllZooms() *jrt.List {
 }
 
 func (this *Image_ImageHandleManager) GetNearestAvailableZoom(zoom int32) any {
-	var availableZooms any = func() any { _ = []any{this.GetAllZooms()}; panic("j2go: unresolved new TreeSet<Integer>") }()
-	if func() bool { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call contains") }() {
+	var availableZooms *jrt.TreeSet = jrt.NewTreeSet(this.GetAllZooms())
+	if availableZooms.Contains(int32(zoom)) {
 		return int32(zoom)
 	}
-	var higher any = func() int32 { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call higher") }()
+	var higher any = availableZooms.Higher(int32(zoom))
 	var cond406 any
 	if !jrt.IsNil(higher) {
 		cond406 = higher
 	} else {
-		cond406 = func() int32 { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call lower") }()
+		cond406 = availableZooms.Lower(int32(zoom))
 	}
 	return cond406
 }
@@ -1902,13 +1899,7 @@ func (this *Image_HandleAtSize) GetShellZooms() *jrt.List {
 					panic(r)
 				}
 			}()
-			tret408 = func() *jrt.List {
-				_ = []any{func() any {
-					_ = []any{func() any { _ = []any{display.GetShells()}; panic("j2go: unresolved call stream") }(), (*Shell).GetZoom}
-					panic("j2go: unresolved call map")
-				}(), func() any { panic("j2go: unresolved call toSet") }()}
-				panic("j2go: unresolved call collect")
-			}()
+			tret408 = jrt.ArraysAsList(display.GetShells()).Map((*Shell).GetZoom).Collect(jrt.CollectorsToSet()).(*jrt.List)
 			tretd409 = true
 			return
 		}()

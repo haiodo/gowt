@@ -41,6 +41,10 @@ final class ExpressionEmitter {
 		if (e instanceof FieldAccess fa) return emitFieldAccess(fa);
 		if (e instanceof QualifiedName qn) return emitQualifiedName(qn);
 		if (e instanceof MethodInvocation mi) return emitter.emitMethodInvocation(mi);
+		if (e instanceof SuperFieldAccess sfa && emitter.anonThis == null && emitter.currentClassInfo.superclass != null) {
+			IVariableBinding vb = sfa.resolveFieldBinding();
+			return erasedField(sfa, "this." + emitter.currentClassInfo.superclass.goTypeName + "." + fieldGoName(vb), vb);
+		}
 		if (e instanceof SuperMethodInvocation smi) return emitter.emitSuperMethodInvocation(smi);
 		if (e instanceof ClassInstanceCreation cic) return emitter.emitNew(cic);
 		if (e instanceof ConditionalExpression ce) return emitConditionalHoisted(ce);

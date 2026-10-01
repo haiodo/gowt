@@ -2825,10 +2825,7 @@ func (this *Control) EmbedsWin32Control() bool {
 	}
 	comp, ok88 := isControlToComposite(this)
 	if ok88 {
-		return func() bool {
-			_ = []any{func() any { _ = []any{comp.impl.getChildren_()}; panic("j2go: unresolved call of") }(), (*Control).EmbedsWin32Control}
-			panic("j2go: unresolved call anyMatch")
-		}()
+		return jrt.ListOf(comp.impl.getChildren_()).AnyMatch((*Control).EmbedsWin32Control)
 	}
 	return false
 }

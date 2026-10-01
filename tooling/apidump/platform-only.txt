@@ -12,3 +12,5 @@
 * \.SetIME\(
 * ^ToolBar\.Layout\(
 * ^FontMetrics\.String\(
+# Widget.getTypedListeners is declared in the win32 SWT sources only.
+* \.GetTypedListeners\(

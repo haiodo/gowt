@@ -210,7 +210,7 @@ final class JdkCalls {
 				return "(len(" + recv(mi) + ") == 0)";
 			case "java.lang.Integer#parseInt":
 				emitter.fileImports.add(JRT);
-				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : null;
+				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : "jrt.ParseIntRadix(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
 			case "java.lang.Integer#toString", "java.lang.Boolean#toString":
 				if (mi.arguments().size() != 1 || mi.getExpression() == null) return null;
 				emitter.fileImports.add("fmt");

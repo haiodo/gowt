@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"syscall"
+	"unsafe"
 
 	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt" // package init (static initialisers) runs too: any failure prints "deferred init"
@@ -16,6 +18,7 @@ import (
 func init() { runtime.LockOSThread() }
 
 func main() {
+	link := flag.Bool("link", false, "InitCommonControlsEx + GetClassInfoEx of SysLink and a few other classes (no window)")
 	display := flag.Bool("display", false, "also create a Display (hidden message window only, no Shell) and print fonts, DPI, monitors")
 	flag.Parse()
 	total, missing, optional := win32.Probe()
@@ -25,6 +28,25 @@ func main() {
 	}
 	for _, m := range optional {
 		fmt.Println("optional", m)
+	}
+	if *link {
+		icex := [2]uint32{8, 0xffff} // all classes
+		r, _, e := syscall.NewLazyDLL("comctl32.dll").NewProc("InitCommonControlsEx").Call(uintptr(unsafe.Pointer(&icex)))
+		fmt.Println("InitCommonControlsEx:", r, e)
+		for _, c := range []string{"SysLink", "SysListView32", "SysTreeView32", "msctls_progress32", "ComboBox"} {
+			var wc [80]byte
+			*(*uint32)(unsafe.Pointer(&wc)) = 80
+			n, _ := syscall.UTF16PtrFromString(c)
+			r, _, e := syscall.NewLazyDLL("user32.dll").NewProc("GetClassInfoExW").Call(0, uintptr(unsafe.Pointer(n)), uintptr(unsafe.Pointer(&wc)))
+			fmt.Println("class", c, r, e)
+		}
+		hm, _, _ := syscall.NewLazyDLL("kernel32.dll").NewProc("GetModuleHandleW").Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("comctl32.dll"))))
+		var buf [260]uint16
+		syscall.NewLazyDLL("kernel32.dll").NewProc("GetModuleFileNameW").Call(hm, uintptr(unsafe.Pointer(&buf[0])), 260)
+		fmt.Println("comctl32 module:", syscall.UTF16ToString(buf[:]))
+		vi := [5]uint32{20}
+		v, _, _ := syscall.NewLazyDLL("comctl32.dll").NewProc("DllGetVersion").Call(uintptr(unsafe.Pointer(&vi)))
+		fmt.Println("comctl32 version", vi[1], vi[2], "hr", v)
 	}
 	if *display {
 		d := swt.NewDisplay()

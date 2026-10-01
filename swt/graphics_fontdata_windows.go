@@ -370,10 +370,7 @@ func (this *FontData) EnumLocalesProc(lpLocaleString int64) int64 {
 	var buffer *win32.TCHAR = win32.NewTCHAR(length)
 	var byteCount int32 = length * win32.TCHARSizeof
 	win32.OSMoveMemoryOverload1(buffer, lpLocaleString, byteCount)
-	var lcid int32 = func() int32 {
-		_ = []any{buffer.StringStartLength(0, buffer.Strlen()), 16}
-		panic("j2go: unresolved call parseInt")
-	}()
+	var lcid int32 = jrt.ParseIntRadix(buffer.StringStartLength(0, buffer.Strlen()), 16)
 	var size int32 = win32.OSGetLocaleInfo(lcid, win32.OSLOCALE_SISO639LANGNAME, buffer, length)
 	if size <= 0 || !(this.lang == buffer.StringStartLength(0, size-1)) {
 		return int64(1)

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode/utf16"
 )
 
 // File is java.io.File over a path.
@@ -69,16 +70,14 @@ func toBytes(b []int8) []byte {
 	return out
 }
 
-// LineStream is the Stream<String> of BufferedReader.lines(), consumed by Collectors.joining only.
-type LineStream struct{ lines []string }
-
-func (r *Reader) Lines() *LineStream {
-	var lines []string
+// Lines is BufferedReader.lines(): a stream is an eager *List here.
+func (r *Reader) Lines() *List {
+	l := NewList()
 	sc := bufio.NewScanner(r.r)
 	for sc.Scan() {
-		lines = append(lines, sc.Text())
+		l.Add(sc.Text())
 	}
-	return &LineStream{lines}
+	return l
 }
 
 func (r *Reader) Close() {
@@ -87,11 +86,12 @@ func (r *Reader) Close() {
 	}
 }
 
-type Collector struct{ sep string }
+// Collector is Collectors.joining(sep), toList() or toSet() (kind "list"/"set"; sets keep insertion order).
+type Collector struct{ sep, kind string }
 
-func CollectorsJoining(sep string) *Collector { return &Collector{sep} }
-
-func (s *LineStream) Collect(c *Collector) string { return strings.Join(s.lines, c.sep) }
+func CollectorsJoining(sep string) *Collector { return &Collector{sep: sep} }
+func CollectorsToList() *Collector            { return &Collector{kind: "list"} }
+func CollectorsToSet() *Collector             { return &Collector{kind: "set"} }
 
 // Properties (a Map): key=value lines in, sorted key=value lines out.
 func (m *Map) Load(in InputStream) {
@@ -163,13 +163,18 @@ const (
 // Pattern and Matcher are java.util.regex over Go's RE2 (no backreferences or lookaround).
 type Pattern struct{ re *regexp.Regexp }
 
-func PatternCompile(regex string) *Pattern { return &Pattern{regexp.MustCompile(regex)} }
+// \p{Punct} (Java) is [:punct:] inside a Go class.
+func PatternCompile(regex string) *Pattern {
+	return &Pattern{regexp.MustCompile(strings.ReplaceAll(regex, `\p{Punct}`, `[:punct:]`))}
+}
 
 type Matcher struct {
 	p    *Pattern
 	s    string
 	from int
 	m    []string
+	lo   int // byte offsets of the last match
+	hi   int
 }
 
 func (p *Pattern) Matcher(s string) *Matcher { return &Matcher{p: p, s: s} }
@@ -187,9 +192,14 @@ func (m *Matcher) Find() bool {
 			m.m = append(m.m, m.s[m.from+loc[i]:m.from+loc[i+1]])
 		}
 	}
+	m.lo, m.hi = m.from+loc[0], m.from+loc[1]
 	m.from += max(loc[1], 1)
 	return true
 }
+
+// Start and End are UTF-16 offsets of the last match, as in Java.
+func (m *Matcher) Start() int32 { return int32(len(utf16.Encode([]rune(m.s[:m.lo])))) }
+func (m *Matcher) End() int32   { return int32(len(utf16.Encode([]rune(m.s[:m.hi])))) }
 
 func (m *Matcher) Group(i ...int32) string {
 	if len(i) == 0 {

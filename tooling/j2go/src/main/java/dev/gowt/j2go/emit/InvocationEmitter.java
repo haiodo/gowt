@@ -21,6 +21,13 @@ final class InvocationEmitter {
 	// ---------------------------------------------------------------- calls / new
 
 	String emitMethodInvocation(MethodInvocation mi) {
+		String call = emitMethodInvocation0(mi);
+		IMethodBinding declared = mi.resolveMethodBinding();
+		if (declared == null || call.startsWith("jrt.Cast[")) return call;
+		return ErasedGenerics.castCall(emitter, call, declared);
+	}
+
+	private String emitMethodInvocation0(MethodInvocation mi) {
 		IMethodBinding mb = mi.resolveMethodBinding();
 		ITypeBinding declaring = mb.getDeclaringClass();
 		String qualified = declaring.getErasure().getQualifiedName();
@@ -66,7 +73,7 @@ final class InvocationEmitter {
 			}
 			if (Modifier.isStatic(mb.getModifiers())) {
 				emitter.addManualImport(qualified);
-				return emitter.qualifyManual(Manual.staticMember(qualified, mb.getName()), declaring) + "(" + String.join(", ", args) + ")";
+				return emitter.qualifyManual(Manual.staticMethod(qualified, mb), declaring) + "(" + String.join(", ", args) + ")";
 			}
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : "this";
 			return castErased(recv + "." + Manual.instanceMember(mb.getName()) + "(" + String.join(", ", args) + ")", mb);
@@ -111,7 +118,7 @@ final class InvocationEmitter {
 		}
 
 		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.
-		if (mb.getMethodDeclaration().getTypeParameters().length > 0) {
+		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 			emitter.unsupported.add("MethodInvocation: generic method " + qualified + "." + mb.getName() + " not translated");
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
@@ -206,7 +213,8 @@ final class InvocationEmitter {
 		int fixedCount = mb.isVarargs() ? paramTypes.length - 1 : paramTypes.length;
 		for (int i = 0; i < fixedCount && i < javaArgs.size(); i++) {
 			Expression a = (Expression) javaArgs.get(i);
-			args.add(emitter.adaptNumeric(emitter.expr(a), a.resolveTypeBinding(), paramTypes[i]));
+			String text = emitter.adaptNumeric(emitter.expr(a), a.resolveTypeBinding(), paramTypes[i]);
+			args.add(ErasedGenerics.erasedFunc(emitter, text, a, mb, i));
 		}
 		if (!mb.isVarargs()) {
 			for (int i = fixedCount; i < javaArgs.size(); i++) {
@@ -411,10 +419,20 @@ final class InvocationEmitter {
 		String goName = emitter.ctorGoName(ctor, prefix);
 		List<String> args = buildArgs(cic.arguments(), ctor);
 		if (!EmitUtil.isInnerClass(declaring)) return goName + "(" + String.join(", ", args) + ")";
+		if (ConstructorEmitter.outerFirst(ci)) {
+			ITypeBinding outerType = declaring.getDeclaringClass();
+			String outerInst = cic.getExpression() != null ? emitter.upcastObject(emitter.expr(cic.getExpression()), cic.getExpression().resolveTypeBinding(), outerType)
+					: OuterThis.path(emitter, outerType);
+			return goName + "(" + outerInst + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
+		}
 		// Set after construction: fine as long as the inner ctor itself doesn't reach the outer.
 		String tmp = "inner" + (++emitter.tempCounter);
 		emitter.prelude.add(tmp + " := " + goName + "(" + String.join(", ", args) + ")");
-		emitter.prelude.add(tmp + "." + EmitUtil.OUTER_FIELD + " = " + (cic.getExpression() != null ? emitter.expr(cic.getExpression()) : "this"));
+		// The outer instance: the explicit one (outer.new Inner()), else the enclosing instance of the outer type.
+		ITypeBinding outer = declaring.getDeclaringClass();
+		String outerInstance = cic.getExpression() != null ? emitter.upcastObject(emitter.expr(cic.getExpression()), cic.getExpression().resolveTypeBinding(), outer)
+				: OuterThis.path(emitter, outer);
+		emitter.prelude.add(tmp + "." + EmitUtil.OUTER_FIELD + " = " + outerInstance);
 		return tmp;
 	}
 }

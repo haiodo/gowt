@@ -80,11 +80,13 @@ public class Manual {
 		reg(JAVA_CLASS, "reflect.Type", "reflect", true);
 		reg(JAVA_RUNNABLE, "jrt.Runnable", JRT_IMPORT, true);
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
-		for (String q : new String[]{"java.util.Map", "java.util.HashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
+		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
+		reg("java.util.TreeSet", "jrt.TreeSet", JRT_IMPORT, false);
+		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
 		// only their static members are used, hand-written in swt/internal_helpers_manual.go.
@@ -137,6 +139,7 @@ public class Manual {
 		// TestInfo: internal/junit; Optional: internal/jrt/jdk.go.
 		reg("org.junit.jupiter.api.TestInfo", "junit.TestInfo", "github.com/haiodo/gowt/internal/junit", false);
 		reg("java.util.Optional", "jrt.Optional", JRT_IMPORT, false);
+		reg("java.util.OptionalInt", "jrt.Optional", JRT_IMPORT, false);
 		// internal/jrt/concurrent.go; TimeUnit is a value type (jrt.TimeUnitMILLISECONDS, ...).
 		for (String q : new String[]{"java.util.concurrent.CountDownLatch", "java.util.concurrent.CompletableFuture",
 				"java.lang.ref.WeakReference"}) {
@@ -216,13 +219,21 @@ public class Manual {
 
 	// Dropped: Selector.java's own bookkeeping is elided (see README). Matched by name only.
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
-			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector");
+			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector",
+			// Takes a Display and Colors: a PI package cannot reference swt (dark-theme tweaks, not ported).
+			"org.eclipse.swt.internal.win32.OS#setTheme",
+			// Exits the process on an old Windows build; a no-op in internal/win32/custom_manual.go.
+			"org.eclipse.swt.internal.win32.version.OsVersion#checkCompatibleWindowsVersion");
+
+	// Cocoa stands in for these by hand (swt/*_manual_darwin.go); win32 translates the real sources.
+	private static final Set<String> WIN32_TRANSLATED = Set.of("org.eclipse.swt.internal.BidiUtil", IME);
 
 	// Hand-written for cocoa only: gtk translates its own IME.
 	private static final Set<String> COCOA_ONLY = Set.of(IME);
 
 	public static boolean isManual(String qualifiedTypeName) {
-		return ENTRIES.containsKey(qualifiedTypeName) && !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"));
+		return ENTRIES.containsKey(qualifiedTypeName) && !(GoTypes.platform == Platform.WIN32 && WIN32_TRANSLATED.contains(qualifiedTypeName))
+				&& !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"));
 	}
 
 	/** A value type with no Go method surface mirroring Java's (a bare "any", or java.lang.Class
@@ -293,8 +304,20 @@ public class Manual {
 		return dot < 0 ? ("New" + t) : (t.substring(0, dot) + ".New" + t.substring(dot + 1));
 	}
 
+	/** Static method of a manual type: its name plus a tag for the overloads the hand-written stand-in tells apart by type. */
+	public static String staticMethod(String qualifiedTypeName, org.eclipse.jdt.core.dom.IMethodBinding mb) {
+		String name = staticMember(qualifiedTypeName, mb.getName());
+		if (!qualifiedTypeName.equals("org.eclipse.swt.internal.DPIUtil") || mb.getParameterTypes().length == 0) return name;
+		String first = mb.getParameterTypes()[0].getName();
+		if (first.equals("float") || first.equals("double")) return name + Names.capitalize(first);
+		if (mb.getName().equals("scaleImageData") && mb.getParameterTypes().length == 3) return name + "Element";
+		if (mb.getName().equals("getScalingFactor") && mb.getParameterTypes().length == 2) return name + "Zooms";
+		return name;
+	}
+
 	/** Static field/method reference on a manual type: always Class+Name (no special-casing left). */
 	public static String staticMember(String qualifiedTypeName, String javaMemberName) {
+		if (qualifiedTypeName.equals(JAVA_BOOLEAN) && (javaMemberName.equals("TRUE") || javaMemberName.equals("FALSE"))) return javaMemberName.toLowerCase();
 		return goTypeName(qualifiedTypeName) + Names.capitalize(javaMemberName);
 	}
 
@@ -307,8 +330,8 @@ public class Manual {
 	 * (jrt.*, reflect.Type) can't collide with an swt-package identifier. */
 	public static Set<String> ownPackageTypeNames() {
 		Set<String> s = new java.util.HashSet<>();
-		for (Entry e : ENTRIES.values()) {
-			if (e.importPath() == null) s.add(e.goType());
+		for (var e : ENTRIES.entrySet()) {
+			if (e.getValue().importPath() == null && isManual(e.getKey())) s.add(e.getValue().goType());
 		}
 		return s;
 	}

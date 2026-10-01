@@ -32,6 +32,21 @@ final class ConstructorEmitter {
 		return name;
 	}
 
+	/** win32: an inner class's constructor takes its outer instance first, set before init runs (init may reach the outer). */
+	static boolean outerFirst(TypeModel.ClassInfo ci) {
+		return dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.WIN32 && EmitUtil.isInnerClass(ci.binding);
+	}
+
+	private String outerParam(TypeModel.ClassInfo ci, String params) {
+		if (!outerFirst(ci)) return params;
+		String outer = EmitUtil.OUTER_FIELD + " " + dev.gowt.j2go.GoTypes.map(ci.binding.getDeclaringClass(), emitter);
+		return params.isEmpty() ? outer : outer + ", " + params;
+	}
+
+	private static String outerAssign(TypeModel.ClassInfo ci) {
+		return outerFirst(ci) ? "\tthis." + EmitUtil.OUTER_FIELD + " = " + EmitUtil.OUTER_FIELD + "\n" : "";
+	}
+
 	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
 		boolean pub = Modifier.isPublic(md.getModifiers());
@@ -44,10 +59,10 @@ final class ConstructorEmitter {
 		// (below) is always unexported and keeps concrete *C, cheap for generated-code callers.
 		List<String> pubPrelude = new ArrayList<>();
 		String ctorParams = pub ? EmitUtil.publicParamList(emitter, mb, md, pubPrelude) : emitter.paramList(mb, md);
-		out.append("func ").append(goName).append('(').append(ctorParams).append(") *")
+		out.append("func ").append(goName).append('(').append(outerParam(ci, ctorParams)).append(") *")
 				.append(ci.goTypeName).append(" {\n");
 		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n");
+		out.append("\tthis := &").append(ci.goTypeName).append("{}\n").append(outerAssign(ci));
 		if (needsImpl) out.append("\tthis.impl = this\n");
 		out.append("\tthis.").append(initName).append('(').append(emitter.argNames(md)).append(")\n");
 		out.append("\treturn this\n}\n\n");
@@ -66,8 +81,8 @@ final class ConstructorEmitter {
 		// JLS 8.8.9: the implicit constructor's own accessibility matches the class's.
 		boolean pub = Modifier.isPublic(td.getModifiers());
 		String initName = "init" + ci.goFuncPrefix; // init methods are always unexported by shape
-		out.append("func ").append(pub ? "New" : "new").append(ci.goFuncPrefix).append("() *").append(ci.goTypeName).append(" {\n");
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n");
+		out.append("func ").append(pub ? "New" : "new").append(ci.goFuncPrefix).append('(').append(outerParam(ci, "")).append(") *").append(ci.goTypeName).append(" {\n");
+		out.append("\tthis := &").append(ci.goTypeName).append("{}\n").append(outerAssign(ci));
 		if (needsImpl) out.append("\tthis.impl = this\n");
 		out.append("\tthis.").append(initName).append("()\n");
 		out.append("\treturn this\n}\n\n");

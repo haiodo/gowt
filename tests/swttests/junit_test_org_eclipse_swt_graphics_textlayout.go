@@ -9,6 +9,7 @@ import (
 	"github.com/haiodo/gowt/swt"
 	"os"
 	"slices"
+	"strings"
 )
 
 type Test_org_eclipse_swt_graphics_TextLayout struct {
@@ -877,7 +878,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) DrawInputAntialias(input s
 
 func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat int32, antialias int32) {
 	var pixelsOnce [][]int32 = this.DrawInputAntialias(input, antialias)
-	var pixelsRepeated [][]int32 = this.DrawInputAntialias(func() string { _ = []any{input, repeat}; panic("j2go: unresolved call repeat") }(), antialias)
+	var pixelsRepeated [][]int32 = this.DrawInputAntialias(strings.Repeat(input, int(repeat)), antialias)
 	for i := int32(0); i < repeat; i++ {
 		for x := int32(1); x < int32(len(pixelsOnce))-1; x++ {
 			tcnt50 := false
@@ -977,7 +978,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Test_Bug579335_win32_Style
 		font = swt.NewFontDeviceNameHeightStyle(upcastswtDisplayToswtDevice(this.display), SwtTestUtilTestFontName, 16, swt.NORMAL)
 		layout = swt.NewTextLayout(upcastswtDisplayToswtDevice(this.display))
 		layout.SetFont(font)
-		layout.SetText(func() string { _ = []any{"a", 33000}; panic("j2go: unresolved call repeat") }())
+		layout.SetText(strings.Repeat("a", int(33000)))
 		var red *swt.Color = this.display.GetSystemColor(swt.COLOR_RED)
 		var white *swt.Color = this.display.GetSystemColor(swt.COLOR_WHITE)
 		var green *swt.Color = this.display.GetSystemColor(swt.COLOR_GREEN)

@@ -107,7 +107,9 @@ final class ClassEmitter {
 			emitter.addManualImport(ci.manualSuperQualifiedName);
 			out.append('\t').append(Manual.goTypeName(ci.manualSuperQualifiedName)).append('\n');
 		}
-		if (EmitUtil.isInnerClass(ci.binding)) {
+		// An inner subclass of an inner class of the same outer shares the base's this_0 (a second one would hide it).
+		if (EmitUtil.isInnerClass(ci.binding) && !(ci.superclass != null && EmitUtil.isInnerClass(ci.superclass.binding)
+				&& ci.superclass.binding.getDeclaringClass().isEqualTo(ci.binding.getDeclaringClass()))) {
 			out.append('\t').append(EmitUtil.OUTER_FIELD).append(' ').append(dev.gowt.j2go.GoTypes.map(ci.binding.getDeclaringClass(), emitter)).append('\n');
 		}
 		Set<String> methodGoNames = collectMethodGoNames(td);
@@ -136,6 +138,7 @@ final class ClassEmitter {
 			out.append("func init() { jrt.RegisterClassPackage(\"").append(ci.goTypeName).append("\", \"").append(ci.javaPackage).append("\") }\n\n");
 		}
 		if (ci.asMethodName != null) emitLikeAccessor(ci, out);
+		out.append(WinPack.emit(emitter, ci));
 
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd && Modifier.isStatic(fd.getModifiers())) {
@@ -168,7 +171,7 @@ final class ClassEmitter {
 				}
 				// A generic method (e.g. getTypedListeners<L>) has no Go equivalent for its own
 				// signature (no generics, no Stream) - skipped entirely rather than emitted broken.
-				if (!md.typeParameters().isEmpty()) {
+				if (!md.typeParameters().isEmpty() && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 					emitter.unsupported.add("MethodDeclaration: generic method " + ci.binaryName + "." + md.getName() + " skipped");
 					continue;
 				}
@@ -317,7 +320,7 @@ final class ClassEmitter {
 			emitter.prelude = saved;
 			if (!myPrelude.isEmpty() || emitter.containsCall(initExpr)) {
 				// cocoa's inits depend on native-library side effects, so they stay in init() (file order).
-				if (ci.goPackage.equals(dev.gowt.j2go.GoTypes.piPackage)) {
+				if (dev.gowt.j2go.GoTypes.isPiGoPackage(ci.goPackage)) {
 					out.append("var ").append(goName).append(" ").append(dev.gowt.j2go.GoTypes.map(type, emitter)).append('\n');
 					StringBuilder b = new StringBuilder();
 					for (String p : myPrelude) b.append('\t').append(p).append('\n');
@@ -394,7 +397,7 @@ final class ClassEmitter {
 	private void emitDispatchWrapper(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
 		String sig = TypeModel.signature(mb);
-		if (!ci.splitsDispatch() || ci.overridePoint(sig) != ci) return;
+		if (!ci.splitsDispatch() || ci.overridePoint(sig) != ci && !WrapperRules.firstPublicBelowHidden(mb, ci, sig)) return;
 		String natural = emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
 		boolean widen = !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
 		List<String> pre = new ArrayList<>();

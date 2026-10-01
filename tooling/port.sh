@@ -10,8 +10,8 @@ SWT_REPO="${SWT_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.swt}"
 PLATFORM="${PLATFORM:-cocoa}"
 case "$PLATFORM" in
 	cocoa) GOOS_NAME=darwin ;;
+	win32) GOOS_NAME=windows ;;
 	gtk) GOOS_NAME=linux ;;
-	win32) echo "port.sh: PLATFORM=$PLATFORM is not implemented yet (TSK-2026-09-23-039)" >&2; exit 2 ;;
 	*) echo "port.sh: unknown PLATFORM=$PLATFORM (cocoa, win32, gtk)" >&2; exit 2 ;;
 esac
 PI_DIR="internal/$PLATFORM"
@@ -61,6 +61,10 @@ if [ "$PLATFORM" = gtk ]; then
 	for d in tooling/j2go/gtkstubs-gen tooling/j2go/gtkstubs; do
 		while IFS= read -r f; do PI_FILES+=("${f#$d/}"); done < <(find "$d" -name '*.java' | sort)
 	done
+elif [ "$PLATFORM" = win32 ]; then
+	# win32's PI is four packages (win32, win32/version, gdip, ole/win32), all Go package internal/win32.
+	PI_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/win32"
+	mapfile -t PI_FILES < <(cd "$PI_ROOT" && find org/eclipse/swt/internal -name '*.java' ! -name Platform.java | sort)
 else
 	mapfile -t PI_FILES < <(find "$PI_SRC" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed "s#^#org/eclipse/swt/internal/$PLATFORM/#")
 fi
@@ -251,6 +255,26 @@ if [ "$PLATFORM" = gtk ]; then
 		org/eclipse/swt/internal/GDBus.java org/eclipse/swt/internal/SessionManagerDBus.java org/eclipse/swt/internal/AsyncReadyCallback.java
 		org/eclipse/swt/internal/GAsyncReadyCallbackHelper.java org/eclipse/swt/internal/SyncDialogUtil.java org/eclipse/swt/internal/GTK4GlibFuture.java
 		org/eclipse/swt/widgets/Tracker.java org/eclipse/swt/widgets/IME.java)
+fi
+# Win32: no ImageUtil; the DPI/zoom layer, font registry, image lists, bidi and IME of Eclipse SWT/win32, and the common helpers cocoa stubs by hand.
+if [ "$PLATFORM" = win32 ]; then
+	SWT_FILES=("${SWT_FILES[@]/org\/eclipse\/swt\/internal\/graphics\/ImageUtil.java/}")
+	for i in "${!SWT_FILES[@]}"; do [ -n "${SWT_FILES[$i]}" ] || unset 'SWT_FILES[i]'; done
+	SWT_FILES+=(
+		org/eclipse/swt/internal/Win32DPIUtils.java
+		org/eclipse/swt/internal/BidiUtil.java
+		org/eclipse/swt/internal/ImageList.java
+		org/eclipse/swt/internal/SWTFontRegistry.java
+		org/eclipse/swt/internal/LegacySWTFontRegistry.java
+		org/eclipse/swt/internal/ScalingSWTFontRegistry.java
+		org/eclipse/swt/internal/SWTFontProvider.java
+		org/eclipse/swt/widgets/CoordinateSystemMapper.java
+		org/eclipse/swt/widgets/SingleZoomCoordinateSystemMapper.java
+		org/eclipse/swt/widgets/MultiZoomCoordinateSystemMapper.java
+		org/eclipse/swt/widgets/ToolBarImageLists.java
+		org/eclipse/swt/widgets/IME.java
+		org/eclipse/swt/widgets/Tracker.java
+	)
 fi
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \

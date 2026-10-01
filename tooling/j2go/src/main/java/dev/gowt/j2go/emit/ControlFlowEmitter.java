@@ -74,9 +74,10 @@ final class ControlFlowEmitter {
 		StringBuilder b = new StringBuilder();
 		String subject = emitter.exprInto(sw.getExpression(), b, indent);
 		ITypeBinding subjectType = sw.getExpression().resolveTypeBinding();
+		List<?> stmts = sw.statements();
+		hoistSharedLocals(sw, stmts, b, indent);
 		b.append(ind(indent)).append("switch ").append(subject).append(" {\n");
 		emitter.loopSwitchDepth++;
-		List<?> stmts = sw.statements();
 		int i = 0;
 		while (i < stmts.size()) {
 			List<SwitchCase> labelGroup = new ArrayList<>();
@@ -121,6 +122,38 @@ final class ControlFlowEmitter {
 		emitter.loopSwitchDepth--;
 		b.append(ind(indent)).append("}\n");
 		return b.toString();
+	}
+
+	private void hoistSharedLocals(SwitchStatement sw, List<?> stmts, StringBuilder b, int indent) {
+		int group = -1;
+		java.util.Map<ASTNode, Integer> groupOf = new java.util.HashMap<>();
+		for (Object o : stmts) {
+			if (o instanceof SwitchCase) group++;
+			groupOf.put((ASTNode) o, group);
+		}
+		for (Object o : stmts) {
+			if (!(o instanceof VariableDeclarationStatement vds)) continue;
+			for (Object fo : vds.fragments()) {
+				VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
+				IVariableBinding vb = f.resolveBinding();
+				boolean[] other = {false};
+				sw.accept(new ASTVisitor() {
+					@Override public boolean visit(SimpleName n) {
+						if (vb.isEqualTo(n.resolveBinding())) {
+							ASTNode top = n;
+							while (top != null && !groupOf.containsKey(top)) top = top.getParent();
+							if (top != null && !groupOf.get(top).equals(groupOf.get(vds))) other[0] = true;
+						}
+						return true;
+					}
+				});
+				if (other[0]) {
+					EmitUtil.HOISTED.add(vb);
+					b.append(ind(indent)).append("var ").append(emitter.sanitizeIdent(f.getName().getIdentifier())).append(' ')
+							.append(dev.gowt.j2go.GoTypes.map(vb.getType(), emitter)).append('\n');
+				}
+			}
+		}
 	}
 
 	private boolean bodyExits(List<Statement> body) {
@@ -168,7 +201,11 @@ final class ControlFlowEmitter {
 		}
 		@SuppressWarnings("unchecked")
 		List<CatchClause> catches = (List<CatchClause>) ts.catchClauses();
-		List<String> cleanup = cleanupDefers(resourceCloses, ts.getFinally(), indent);
+		// A return inside finally is emitted with the escape flags in place (emitClosure), so its defer is built there.
+		EscapeScanner inFinally = new EscapeScanner();
+		if (ts.getFinally() != null) ts.getFinally().accept(inFinally);
+		Block lazyFinally = inFinally.hasReturn && !(catches.isEmpty() && isLastInMethodBody(ts)) ? ts.getFinally() : null;
+		List<String> cleanup = cleanupDefers(resourceCloses, lazyFinally != null ? null : ts.getFinally(), indent);
 		// The method's last statement without a catch: a function-level defer already runs right
 		// after the body, so no closure; the block keeps the body's locals scoped.
 		if (catches.isEmpty() && isLastInMethodBody(ts)) {
@@ -177,7 +214,7 @@ final class ControlFlowEmitter {
 			return ind(indent) + "{\n" + b + ind(indent) + "}\n";
 		}
 		// Anywhere else finally must run when the try ends, not at function exit: a closure's defer.
-		b.append(emitClosure(ts.getBody(), catches, cleanup, indent));
+		b.append(emitClosure(ts.getBody(), catches, cleanup, lazyFinally, indent));
 		// Resource variables are scoped to the try statement.
 		return resourceCloses.isEmpty() ? b.toString() : ind(indent) + "{\n" + b + ind(indent) + "}\n";
 	}
@@ -195,15 +232,17 @@ final class ControlFlowEmitter {
 	 * by a defer inside a block-scoped closure - the lock expression itself is not evaluated. */
 	String emitSynchronized(SynchronizedStatement ss, int indent) {
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
-		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), List.of("jrt.MonitorExit()"), indent);
+		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), List.of("jrt.MonitorExit()"), null, indent);
 	}
 
 	/** body inside `func() { defer ...; body }()`: catches become a recover() dispatch, defers
 	 * plain defers; return/break/continue escape via flags re-played after the call. */
-	private String emitClosure(Block body, List<CatchClause> catches, List<String> defers, int indent) {
+	private String emitClosure(Block body, List<CatchClause> catches, List<String> defers, Block finallyBlock, int indent) {
 		EscapeScanner scan = new EscapeScanner();
 		body.accept(scan);
 		for (CatchClause cc : catches) cc.getBody().accept(scan);
+		// A return in finally overrides the try's: it escapes like the body's, so the flags must exist before it is emitted.
+		if (finallyBlock != null) finallyBlock.accept(scan);
 
 		StringBuilder b = new StringBuilder();
 		boolean voidReturn = emitter.currentReturnType == null || dev.gowt.j2go.GoTypes.map(emitter.currentReturnType, emitter).isEmpty();
@@ -229,6 +268,7 @@ final class ControlFlowEmitter {
 		emitter.loopSwitchDepth = 0;
 
 		b.append(ind(indent)).append("func() {\n");
+		if (finallyBlock != null) for (String d : cleanupDefers(List.of(), finallyBlock, indent)) b.append(ind(indent + 1)).append("defer ").append(d).append('\n');
 		for (String d : defers) b.append(ind(indent + 1)).append("defer ").append(d).append('\n');
 		if (!catches.isEmpty()) {
 			b.append(ind(indent + 1)).append("defer func() {\n");
@@ -249,7 +289,7 @@ final class ControlFlowEmitter {
 
 		// Last statement of a non-void method: Java guarantees the body returned or threw, and Go
 		// needs a terminating statement here, not a conditional one.
-		if (retVar != null && isLastInMethodBody(body.getParent())) {
+		if (retVar != null && isTail(body.getParent())) {
 			b.append(ind(indent)).append("_ = ").append(returnedFlag).append('\n');
 			b.append(emitter.returnOrEscape(indent, retVar));
 		} else if (returnedFlag != null) {
@@ -274,6 +314,17 @@ final class ControlFlowEmitter {
 		if (!(stmt.getParent() instanceof Block b) || !(b.getParent() instanceof MethodDeclaration || b.getParent() instanceof LambdaExpression)) return false;
 		List<?> stmts = b.statements();
 		return stmts.get(stmts.size() - 1) == stmt;
+	}
+
+	/** The statement ends the method on every path: last of its block, and the block (or the if holding it) is too. */
+	private static boolean isTail(ASTNode stmt) {
+		ASTNode parent = stmt.getParent();
+		if (parent instanceof IfStatement is) return isTail(is);
+		if (!(parent instanceof Block b)) return false;
+		List<?> stmts = b.statements();
+		if (stmts.get(stmts.size() - 1) != stmt) return false;
+		ASTNode holder = b.getParent();
+		return holder instanceof MethodDeclaration || holder instanceof IfStatement is2 && isTail(is2) || holder instanceof Block && isTail(b);
 	}
 
 	private String emitCatchDispatch(List<CatchClause> catches, int indent) {

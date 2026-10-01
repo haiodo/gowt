@@ -54,7 +54,7 @@ final class PackageQualifier {
 
 	/** Same guard, for a type GoTypes.map could not resolve at all (not in model, not manual). */
 	void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {
-		if (!emitter.currentGoPackage.equals(GoTypes.piPackage)) return;
+		if (!GoTypes.isPiGoPackage(emitter.currentGoPackage)) return;
 		int dot = qualifiedJavaTypeName.lastIndexOf('.');
 		String javaPackage = dot < 0 ? "" : qualifiedJavaTypeName.substring(0, dot);
 		if (javaPackage.startsWith("org.eclipse.swt") && !GoTypes.isCocoaPackage(javaPackage)) {

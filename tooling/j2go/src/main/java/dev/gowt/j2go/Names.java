@@ -122,7 +122,7 @@ public class Names {
 		String declKey = m.getDeclaringClass().getErasure().getBinaryName();
 		String name = m.isConstructor() ? "<init>" : m.getName();
 		String key = erasureKey(m);
-		overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()).add(key);
+		{ var l = overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()); if (!l.contains(key)) l.add(key); }
 		paramNamesByKey.put(key, paramNames);
 		accessByKey.put(key, access(m));
 		if (!m.isConstructor()) instanceDecls.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
@@ -138,13 +138,63 @@ public class Names {
 		if (override != null) return override;
 		String pinned = pinnedSuffix.get(key);
 		if (pinned != null) return baseName + pinned;
+		// An implementation or override keeps the name pinned (names.properties) on what it implements.
+		String inherited = inheritedPin(m.getMethodDeclaration());
+		if (inherited != null) return inherited;
 		String name = computeMemberName(m, baseName);
+		// A platform's own member must not take a name the pins gave to another member of its class (constructors: the suffix).
+		String declClass = m.getMethodDeclaration().getDeclaringClass().getErasure().getBinaryName();
+		if (m.isConstructor() && name.startsWith(baseName)) {
+			Set<String> suffixes = pinnedNamesOf(declClass + "#<init>");
+			String suffix = name.substring(baseName.length());
+			for (int n = 1; suffixes.contains(suffix); n++) suffix = "Local" + n;
+			name = baseName + suffix;
+		}
+		Set<String> taken = Modifier.isStatic(m.getModifiers()) || m.isConstructor() ? Set.of() : pinnedNamesOf(declClass);
+		for (int n = 1; taken.contains(name); n++) name = baseName + "Local" + n;
 		if (overloaded(m) && name.startsWith(baseName)) {
 			// An unpinned overload (a platform's own) must not take a name the pins gave to a sibling.
 			for (int n = 1; !pinnedSuffix.isEmpty() && siblingPinnedNames(m, baseName).contains(name); n++) name = baseName + "Local" + n;
 			computedOverloads.put(key, name.substring(baseName.length()));
 		}
 		return name;
+	}
+
+	private String inheritedPin(IMethodBinding decl) {
+		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers())) return null;
+		List<ITypeBinding> todo = new ArrayList<>();
+		for (ITypeBinding t = decl.getDeclaringClass(); t != null; t = t.getSuperclass()) {
+			todo.add(t);
+			todo.addAll(List.of(t.getInterfaces()));
+		}
+		for (int i = 0; i < todo.size(); i++) {
+			ITypeBinding t = todo.get(i);
+			for (ITypeBinding x : t.getInterfaces()) if (!todo.contains(x)) todo.add(x);
+			if (t.getErasure().isEqualTo(decl.getDeclaringClass().getErasure())) continue;
+			for (IMethodBinding o : t.getDeclaredMethods()) {
+				if (!decl.overrides(o)) continue;
+				String ov = overrides.get(erasureKey(o));
+				if (ov != null) return ov;
+				// An implementation of an interface method is named as the interface names it (Go interfaces need equal names).
+				if (t.isInterface()) return goMemberName(o, javaMethodBaseGoName(o.getName()));
+			}
+		}
+		return null;
+	}
+
+	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
+
+	private Set<String> pinnedNamesOf(String classBinaryName) {
+		if (pinnedNamesByClass.isEmpty() && !pinnedSuffix.isEmpty()) {
+			for (var e : pinnedSuffix.entrySet()) {
+				int hash = e.getKey().indexOf('#');
+				int paren = e.getKey().indexOf('(');
+				String method = e.getKey().substring(hash + 1, paren);
+				if (method.equals("<init>")) pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash) + "#<init>", k -> new HashSet<>()).add(e.getValue());
+				else pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash), k -> new HashSet<>()).add(javaMethodBaseGoName(method) + e.getValue());
+			}
+		}
+		return pinnedNamesByClass.getOrDefault(classBinaryName, Set.of());
 	}
 
 	private Set<String> siblingPinnedNames(IMethodBinding m, String baseName) {

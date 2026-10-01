@@ -20,6 +20,7 @@ import (
 	"go/types"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -101,17 +102,74 @@ func dump(dir, goos string) ([]string, error) {
 		}
 	}
 	sort.Strings(lines)
-	return lines, nil
+	return publicOnly(lines), nil
+}
+
+// publicOnly keeps the symbols of SWT's public Java API (public-api.txt, written by j2go with J2GO_DUMP_PUBLIC):
+// a Java package-private member is exported in Go too, and differs between platform sources without being API.
+func publicOnly(lines []string) []string {
+	f, err := os.Open(filepath.Join(cfgDir, "public-api.txt"))
+	if err != nil {
+		return lines
+	}
+	defer f.Close()
+	public := map[string]bool{}
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		if l := sc.Text(); !strings.HasPrefix(l, "#") {
+			public[l] = true
+		}
+	}
+	var out []string
+	for _, l := range lines {
+		// Functions named for a platform (ShellWin32_new, ColorCocoa_new) are glue, not API.
+		if strings.Contains(strings.SplitN(l, "(", 2)[0], "Cocoa_") || strings.Contains(strings.SplitN(l, "(", 2)[0], "Win32_") || strings.Contains(strings.SplitN(l, "(", 2)[0], "Gtk_") {
+			continue
+		}
+		// A signature naming a platform's PI type is that platform's own, never API.
+		if strings.Contains(l, "internal/cocoa") || strings.Contains(l, "internal/win32") || strings.Contains(l, "internal/gtk") {
+			continue
+		}
+		switch {
+		case strings.HasPrefix(l, "type "):
+			if public[l] {
+				out = append(out, l)
+			}
+		case strings.HasPrefix(l, "func "):
+			if public["func "+strings.TrimPrefix(strings.SplitN(l, "(", 2)[0], "func ")] {
+				out = append(out, l)
+			}
+		case strings.Contains(strings.SplitN(l, "(", 2)[0], "."):
+			head := strings.SplitN(l, "(", 2)[0]
+			if public["method "+head] {
+				out = append(out, l)
+			}
+		default: // const/var: the shared SWT constants and the statics j2go lists
+			name := strings.Fields(l)
+			if len(name) > 1 && public["func "+name[1]] {
+				out = append(out, l)
+			}
+		}
+	}
+	return out
 }
 
 // compare returns the exit code: 0 when the platforms agree up to platform-only.txt.
+var exemptions []*regexp.Regexp
+
 func compare(dir string) int {
 	platforms := readList(filepath.Join(cfgDir, "platforms.txt"))
 	// platform-only.txt: "<goos>[,<goos>...] <dump line>" - API SWT itself has on those platforms only.
 	allowed := map[string]bool{}
+	var exempt []*regexp.Regexp // "* <regexp>" lines: symbols the ports legitimately declare differently (a class one port stubs by hand)
 	for _, l := range readList(filepath.Join(cfgDir, "platform-only.txt")) {
+		if strings.HasPrefix(l, "* ") {
+			exempt = append(exempt, regexp.MustCompile(l[2:]))
+			continue
+		}
 		allowed[l] = true
 	}
+	exemptions = exempt
 	report, bad, err := diff(dir, platforms, allowed)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -161,6 +219,15 @@ func diff(dir string, platforms []string, allowed map[string]bool) (report []str
 			continue
 		}
 		key := strings.Join(on, ",") + " " + l
+		exempted := false
+		for _, re := range exemptions {
+			if re.MatchString(l) {
+				exempted = true
+			}
+		}
+		if exempted {
+			continue
+		}
 		used[key] = true
 		if !allowed[key] {
 			bad++

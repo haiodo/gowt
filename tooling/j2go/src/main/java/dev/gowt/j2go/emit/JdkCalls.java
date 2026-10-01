@@ -72,7 +72,9 @@ final class JdkCalls {
 				return "jrt.Matches(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.Math#hypot":
 				emitter.fileImports.add("math");
-				return "math.Hypot(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+				String[] h = new String[2];
+				for (int i = 0; i < 2; i++) h[i] = ((Expression) mi.arguments().get(i)).resolveTypeBinding().getName().equals("float") ? "float64(" + arg(mi, i) + ")" : arg(mi, i);
+				return "math.Hypot(" + h[0] + ", " + h[1] + ")";
 			case "java.lang.Float#floatToIntBits":
 				emitter.fileImports.add("math");
 				return "int32(math.Float32bits(" + arg(mi, 0) + "))";
@@ -153,6 +155,25 @@ final class JdkCalls {
 				for (int i = 0; i < 2; i++) r[i] = mb.getParameterTypes()[i].isPrimitive() ? "string(rune(" + arg(mi, i) + "))" : arg(mi, i);
 				return "strings.ReplaceAll(" + recv(mi) + ", " + r[0] + ", " + r[1] + ")";
 			}
+			case "java.lang.Byte#parseByte":
+				emitter.fileImports.add(JRT);
+				return "int8(jrt.ParseInt(" + arg(mi, 0) + "))";
+			case "java.lang.Class#isAssignableFrom":
+				emitter.fileImports.add(JRT);
+				return "jrt.IsAssignableFrom(" + recv(mi) + ", " + arg(mi, 0) + ")";
+			case "java.util.concurrent.ConcurrentHashMap#newKeySet":
+				emitter.fileImports.add(JRT);
+				return "jrt.NewList()";
+			case "java.lang.String#replaceAll":
+				emitter.fileImports.add(JRT);
+				return "jrt.ReplaceAll(" + recv(mi) + ", " + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.util.Arrays#fill":
+				if (mi.arguments().size() != 2) return null;
+				emitter.fileImports.add(JRT);
+				return "jrt.Fill(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
+			case "java.lang.String#toCharArray":
+				emitter.fileImports.add("unicode/utf16");
+				return "utf16.Encode([]rune(" + recv(mi) + "))";
 			case "java.util.Arrays#copyOf":
 				emitter.fileImports.add(JRT);
 				return "jrt.CopyOf(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
@@ -189,7 +210,7 @@ final class JdkCalls {
 				return "(len(" + recv(mi) + ") == 0)";
 			case "java.lang.Integer#parseInt":
 				emitter.fileImports.add(JRT);
-				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : null;
+				return mi.arguments().size() == 1 ? "jrt.ParseInt(" + arg(mi, 0) + ")" : "jrt.ParseIntRadix(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
 			case "java.lang.Integer#toString", "java.lang.Boolean#toString":
 				if (mi.arguments().size() != 1 || mi.getExpression() == null) return null;
 				emitter.fileImports.add("fmt");

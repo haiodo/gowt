@@ -28,9 +28,10 @@ final class NumericEmitter {
 				&& resultType.getQualifiedName().equals("java.lang.String")) {
 			return emitStringConcat(ie);
 		}
+		String floatMod = NumericExtras.floatRemainder(emitter, ie);
+		if (floatMod != null) return floatMod;
 		// Go rejects `1 << 31` as an overflowing int32 constant - fold it to the decimal instead.
-		if (op == InfixExpression.Operator.LEFT_SHIFT
-				&& ie.getLeftOperand() instanceof NumberLiteral ln && ie.getRightOperand() instanceof NumberLiteral rn) {
+		if (op == InfixExpression.Operator.LEFT_SHIFT && ie.getLeftOperand() instanceof NumberLiteral ln && ie.getRightOperand() instanceof NumberLiteral rn) {
 			String folded = foldShift(ln, rn, resultType);
 			if (folded != null) return folded;
 		}
@@ -317,7 +318,7 @@ final class NumericEmitter {
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
 		if (fromGo.equals(toGo) || fromGo.equals("bool") || toGo.equals("bool")) return text;
-		return toGo + "(" + text + ")";
+		return NumericExtras.convert(toGo, text);
 	}
 
 	/** Go has no covariant object assignment: a value whose static type is a proper descendant of

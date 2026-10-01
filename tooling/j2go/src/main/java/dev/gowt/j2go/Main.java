@@ -49,17 +49,30 @@ public class Main {
 			System.exit(2);
 		}
 
+		GoTypes.platform = platform;
 		GoTypes.piPackage = platform.swtName;
 		Path swtRootPath = Path.of(swtRoot).toAbsolutePath().normalize();
 		List<String> sourceRoots = new ArrayList<>();
 		List<String> platformRoots = new ArrayList<>();
 		List<String> allRoots = new ArrayList<>(platform.roots());
 		allRoots.addAll(Platform.commonRoots(platform != Platform.GTK));
+		// Win32 sources use records: a mirror with them rewritten shadows the real root for parsing.
+		Path mirrorDir = platform == Platform.WIN32 ? Files.createTempDirectory("j2go-mirror") : null;
+		Map<String, String> mirrorToReal = new HashMap<>();
 		for (String r : allRoots) {
 			Path p = swtRootPath.resolve(r);
 			if (!Files.isDirectory(p)) continue;
+			boolean platformRoot = platform.roots().contains(r);
+			if (mirrorDir != null) {
+				Path mirror = mirrorDir.resolve(Integer.toString(sourceRoots.size()));
+				if (SourcePrep.mirror(p, mirror)) {
+					sourceRoots.add(mirror.toString());
+					mirrorToReal.put(mirror.toString(), p.toString());
+					if (platformRoot) platformRoots.add(mirror + "/");
+				}
+			}
 			sourceRoots.add(p.toString());
-			if (platform.roots().contains(r)) platformRoots.add(p + "/");
+			if (platformRoot) platformRoots.add(p + "/");
 		}
 		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
 		if (platform == Platform.GTK) for (String d : new String[] { "tooling/j2go/gtkstubs", "tooling/j2go/gtkstubs-gen" })
@@ -114,6 +127,7 @@ public class Main {
 		Names names = new Names();
 		names.loadPins(Path.of("tooling/j2go/overloads.properties"));
 		names.loadOverrides(Path.of("tooling/j2go/names.properties"));
+		dev.gowt.j2go.emit.WinLayout.load(Path.of("tooling/j2go/win32_layout.txt"));
 		if (platform == Platform.GTK) names.loadOverrides(Path.of("tooling/j2go/gtkstubs-gen/names.properties"));
 		Natives natives = new Natives();
 		natives.load(Path.of("tooling/j2go/natives.properties"));
@@ -139,8 +153,12 @@ public class Main {
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
-			boolean sharedFile = !reference && platformRoots.stream().noneMatch(absPath::startsWith)
-					&& !GoTypes.goPackageDir(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals(platform.piDir);
+			String unitPkg = cu.getPackage().getName().getFullyQualifiedName();
+			String unitType = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
+			String unitDir = GoTypes.goPackageDir(unitPkg, unitType);
+			boolean commonSource = !reference && platformRoots.stream().noneMatch(absPath::startsWith) && !unitDir.equals(platform.piDir);
+			// A common source the reference platform has no file for (it stubs the class by hand) is this platform's own.
+			boolean sharedFile = commonSource && Files.exists(Path.of(outDir, unitDir, lastSegment(unitPkg) + "_" + unitType.toLowerCase(Locale.ROOT) + ".go"));
 			emitter.separateHelpers = sharedFile;
 			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
 			// The reference platform owns the shared files; here only the helpers they need are kept.
@@ -152,7 +170,9 @@ public class Main {
 				continue;
 			}
 
-			String relPath = swtRootPath.relativize(Path.of(absPath)).toString();
+			String realPath = absPath;
+			for (var e : mirrorToReal.entrySet()) if (absPath.startsWith(e.getKey() + "/")) realPath = e.getValue() + absPath.substring(e.getKey().length());
+			String relPath = swtRootPath.relativize(Path.of(realPath)).toString();
 			String javaPackage = cu.getPackage().getName().getFullyQualifiedName();
 			String pkgLastSegment = lastSegment(javaPackage);
 			String typeName = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
@@ -160,7 +180,7 @@ public class Main {
 			// swt file built only for this GOOS: read from a platform root (a same-named sibling per platform).
 			final String srcPath = absPath;
 			boolean piFile = outDirName.equals(platform.piDir);
-			boolean platformFile = !piFile && platformRoots.stream().anyMatch(srcPath::startsWith);
+			boolean platformFile = !piFile && (commonSource || platformRoots.stream().anyMatch(srcPath::startsWith));
 			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
 			emittedSwtPlatformFile |= platformFile && outDirName.equals("swt");
 			String header = buildHeader(relPath, source, cu);
@@ -215,6 +235,7 @@ public class Main {
 		}
 
 		if (System.getenv("J2GO_DUMP_OVERLOADS") != null) names.dumpOverloads(Path.of(System.getenv("J2GO_DUMP_OVERLOADS")));
+		if (System.getenv("J2GO_DUMP_PUBLIC") != null) dev.gowt.j2go.emit.PublicApi.dump(emitter, Path.of(System.getenv("J2GO_DUMP_PUBLIC")));
 		printSummary(emitter);
 	}
 

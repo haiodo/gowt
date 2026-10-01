@@ -48,6 +48,8 @@ final class StatementEmitter {
 	}
 
 	private String emitStatementInner(Statement s, int indent) {
+		// SWT runs without -ea: an assert is a no-op on every platform.
+		if (s instanceof AssertStatement) return "";
 		if (s instanceof ExpressionStatement es) return emitExpressionStatement(es.getExpression(), indent);
 		if (s instanceof ReturnStatement rs) return emitReturn(rs, indent);
 		if (s instanceof IfStatement is) return emitIf(is, indent);
@@ -94,6 +96,8 @@ final class StatementEmitter {
 			String rhs = emitter.adaptNumeric(rhsText, a.getRightHandSide().resolveTypeBinding(), a.getLeftHandSide().resolveTypeBinding());
 			String boolOp = booleanCompoundOp(a, lhs, rhs);
 			if (boolOp != null) return ind(indent) + boolOp + "\n";
+			String wide = NumericExtras.wideCompound(emitter, a, lhs, rhsText);
+			if (wide != null) return ind(indent) + wide + "\n";
 			return ind(indent) + compoundAssign(a, lhs, rhs) + "\n";
 		}
 		// x++;/--x; as their own statement: Go's native x++/x-- directly, no throwaway temp
@@ -181,6 +185,11 @@ final class StatementEmitter {
 			ITypeBinding fragType = f.resolveBinding() != null ? f.resolveBinding().getType() : declType;
 			String goType = dev.gowt.j2go.GoTypes.map(fragType, emitter);
 			String name = emitter.sanitizeIdent(f.getName().getIdentifier());
+			if (EmitUtil.HOISTED.contains(f.resolveBinding())) {
+				if (f.getInitializer() != null) b.append(ind(indent)).append(name).append(" = ")
+						.append(emitter.adaptNumeric(emitExprInto(f.getInitializer(), b, indent), f.getInitializer().resolveTypeBinding(), fragType)).append('\n');
+				continue;
+			}
 			if (f.getInitializer() == null) {
 				b.append(ind(indent)).append("var ").append(name).append(' ').append(goType).append('\n');
 				continue;

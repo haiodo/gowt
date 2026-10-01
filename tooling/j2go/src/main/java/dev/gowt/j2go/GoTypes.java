@@ -12,17 +12,30 @@ public class GoTypes {
 
 	// Java package -> Go package routing: shared by Main (a file's own output dir) and the
 	// cross-package qualification below (whether a referenced type needs "cocoa." + an import).
-	/** Go package of the PI bindings being generated ("cocoa", "gtk"); set once by Main. */
+	/** Go package of the PI bindings being generated ("cocoa", "win32", "gtk"); set once by Main. */
 	public static String piPackage = "cocoa";
+	// Set once by Main: the platform being generated.
+	public static Platform platform = Platform.COCOA;
+
+	/** A Go package that holds a platform's PI bindings (bottom layer, no swt imports). */
+	public static boolean isPiGoPackage(String goPackage) {
+		return goPackage.equals("cocoa") || goPackage.equals("win32") || goPackage.equals("gtk");
+	}
 
 	public static boolean isCocoaPackage(String javaPackage) {
 		return isPiJavaPackage(javaPackage) || javaPackage.equals("org.eclipse.swt.internal");
 	}
 
-	// gtk's PI is several Java packages (gtk, gtk3, gtk4, cairo), one Go package.
-	private static boolean isPiJavaPackage(String javaPackage) {
+	/** Go value types mirroring C structs: cocoa's and gtk's (Win32's Java structs are reference classes, packed by toC/fromC). */
+	public static boolean isStructPackage(String javaPackage) {
+		return platform != Platform.WIN32 && isCocoaPackage(javaPackage);
+	}
+
+	// gtk's PI is several Java packages (gtk, gtk3, gtk4, cairo), win32's is four (win32, win32.version, gdip, ole.win32): one Go package each.
+	public static boolean isPiJavaPackage(String javaPackage) {
 		return javaPackage.equals("org.eclipse.swt.internal." + piPackage)
-				|| piPackage.equals("gtk") && javaPackage.matches("org\\.eclipse\\.swt\\.internal\\.(gtk3|gtk4|cairo)");
+				|| piPackage.equals("gtk") && javaPackage.matches("org\\.eclipse\\.swt\\.internal\\.(gtk3|gtk4|cairo)")
+				|| piPackage.equals("win32") && javaPackage.matches("org\\.eclipse\\.swt\\.internal\\.(win32\\.version|gdip|ole\\.win32)");
 	}
 
 	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
@@ -49,7 +62,7 @@ public class GoTypes {
 	/** Import path of a Go package produced by goPackageDir (package names are unique). */
 	public static String importPath(String goPackage) {
 		return "github.com/haiodo/gowt/" + switch (goPackage) {
-			case "cocoa", "gtk" -> "internal/" + goPackage;
+			case "cocoa", "win32", "gtk" -> "internal/" + goPackage;
 			case "swt" -> "swt";
 			case "swttests" -> "tests/swttests";
 			default -> "examples/" + goPackage;
@@ -59,7 +72,7 @@ public class GoTypes {
 	/** Import layering: cocoa < swt < examples; a package may only reference lower layers. */
 	public static int layer(String goPackage) {
 		return switch (goPackage) {
-			case "cocoa", "gtk" -> 0;
+			case "cocoa", "win32", "gtk" -> 0;
 			case "swt" -> 1;
 			default -> 2;
 		};
@@ -117,6 +130,8 @@ public class GoTypes {
 		emitter.checkNoForeignPackageLeak(qualified);
 		// Not a real Go identifier (still undefined - go vet reports it plainly instead of gofmt
 		// choking on a qualified-name-shaped parse error).
+		// A local class has no qualified name: the caller's own panic marker needs only some type.
+		if (qualified.isEmpty()) return "any";
 		return "unsupported_type_" + qualified.replace('.', '_');
 	}
 

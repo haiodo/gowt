@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: gtk-gen all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -87,6 +87,36 @@ run-%: %
 
 clean:
 	rm -rf $(BIN) tooling/j2go/target
+
+# Windows port (CrossOver bottle "gowt"): cross-build the exes, run them under Wine. win-probe opens no window;
+# the others do. Paths are absolute (Wine reads the host file system as drive Z:).
+WINE ?= /Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine
+WINBOTTLE ?= gowt
+WINBIN := $(BIN)/windows
+WINCMDS := hello swttest controlexample winprobe
+
+# cmd/*/rsrc_windows_amd64.syso carries tooling/win32/swt.manifest (comctl32 v6: SysLink, visual styles) as the exe's
+# manifest resource; rebuild after editing it (needs x86_64-w64-mingw32-windres).
+win-syso:
+	cd tooling/win32 && x86_64-w64-mingw32-windres -O coff -F pe-x86-64 swt.rc swt.syso
+	@for c in $(WINCMDS); do cp tooling/win32/swt.syso cmd/$$c/rsrc_windows_amd64.syso; done; rm tooling/win32/swt.syso
+
+win-build:
+	@mkdir -p $(WINBIN)
+	@for c in $(WINCMDS); do GOOS=windows GOARCH=amd64 go build -o $(WINBIN)/$$c.exe ./cmd/$$c || exit 1; done
+
+win-probe: win-build
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/winprobe.exe
+
+win-hello: win-build
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/hello.exe
+
+# The translated SWT JUnit tests against tests/expected_windows.txt (win-swttest-update writes it from a full run).
+win-swttest: win-build
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/swttest.exe -expected tests/expected_windows.txt $(SWTTEST_FLAGS)
+
+win-swttest-update: win-build
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/swttest.exe -update tests/expected_windows.txt $(SWTTEST_FLAGS)
 
 # Linux GUI stand (Docker + Xvfb + noVNC), see README "Linux stand".
 LINUX_IMG = gowt-linux

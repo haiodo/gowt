@@ -27,7 +27,10 @@ final class ExpressionEmitter {
 		if (e instanceof BooleanLiteral bl) return Boolean.toString(bl.booleanValue());
 		if (e instanceof StringLiteral sl) return goStringLiteral(sl.getLiteralValue());
 		if (e instanceof NullLiteral) return EmitUtil.nullLiteral(emitter, e);
-		if (e instanceof ThisExpression te) return te.getQualifier() == null && emitter.anonThis != null ? emitter.anonThis : "this";
+		if (e instanceof ThisExpression te) {
+			if (te.getQualifier() == null) return emitter.anonThis != null ? emitter.anonThis : "this";
+			return emitter.anonThis != null ? "this" : OuterThis.path(emitter, te.getQualifier().resolveTypeBinding());
+		}
 		if (e instanceof ParenthesizedExpression pe) return "(" + emitExpr(pe.getExpression()) + ")";
 		if (e instanceof PrefixExpression pf) return emitPrefix(pf);
 		if (e instanceof PostfixExpression pf) return emitPostfix(pf);
@@ -38,6 +41,10 @@ final class ExpressionEmitter {
 		if (e instanceof FieldAccess fa) return emitFieldAccess(fa);
 		if (e instanceof QualifiedName qn) return emitQualifiedName(qn);
 		if (e instanceof MethodInvocation mi) return emitter.emitMethodInvocation(mi);
+		if (e instanceof SuperFieldAccess sfa && emitter.anonThis == null && emitter.currentClassInfo.superclass != null) {
+			IVariableBinding vb = sfa.resolveFieldBinding();
+			return erasedField(sfa, "this." + emitter.currentClassInfo.superclass.goTypeName + "." + fieldGoName(vb), vb);
+		}
 		if (e instanceof SuperMethodInvocation smi) return emitter.emitSuperMethodInvocation(smi);
 		if (e instanceof ClassInstanceCreation cic) return emitter.emitNew(cic);
 		if (e instanceof ConditionalExpression ce) return emitConditionalHoisted(ce);
@@ -134,7 +141,9 @@ final class ExpressionEmitter {
 			}
 			return lhs;
 		}
-		emitter.prelude.add(tmp + " := " + rhs);
+		// A bare numeric literal would make the temp a Go int (or float64): type it like the target.
+		emitter.prelude.add(rhs.matches("-?[0-9][0-9.]*") ? "var " + tmp + " " + dev.gowt.j2go.GoTypes.map(a.getLeftHandSide().resolveTypeBinding(), emitter) + " = " + rhs
+				: tmp + " := " + rhs);
 		emitter.prelude.add(emitExpr(a.getLeftHandSide()) + " = " + tmp);
 		return tmp;
 	}
@@ -178,9 +187,15 @@ final class ExpressionEmitter {
 		IBinding b = sn.resolveBinding();
 		if (b instanceof IVariableBinding vb && vb.isField()) {
 			if (Modifier.isStatic(vb.getModifiers())) return staticFieldRef(vb);
-			return emitter.implicitThis(vb.getDeclaringClass()) + "." + fieldGoName(vb);
+			return erasedField(sn, emitter.implicitThis(vb.getDeclaringClass()) + "." + fieldGoName(vb), vb);
 		}
 		return emitter.sanitizeIdent(sn.getIdentifier());
+	}
+
+	/** A read of a field declared with a type variable (Go any) gets the substituted type back; an assignment target stays raw. */
+	private String erasedField(Expression use, String text, IVariableBinding vb) {
+		if (use.getLocationInParent() == Assignment.LEFT_HAND_SIDE_PROPERTY) return text;
+		return ErasedGenerics.cast(emitter, text, vb.getVariableDeclaration().getType(), use.resolveTypeBinding());
 	}
 
 	String fieldGoName(IVariableBinding vb) {
@@ -221,7 +236,7 @@ final class ExpressionEmitter {
 		IVariableBinding vb = fa.resolveFieldBinding();
 		if (isDegradedReceiver(fa.getExpression())) return panicClosure(fa, "unresolved field " + fa.getName().getIdentifier());
 		String recv = emitExpr(fa.getExpression());
-		return recv + "." + fieldGoName(vb);
+		return erasedField(fa, recv + "." + fieldGoName(vb), vb);
 	}
 
 	/** The selector string for a `Selector.sel_x.value`-shaped QualifiedName, or null. */
@@ -255,7 +270,7 @@ final class ExpressionEmitter {
 			}
 			if (isDegradedReceiver(qn.getQualifier())) return panicClosure(qn, "unresolved field " + qn.getName().getIdentifier());
 			String recv = emitExpr(qn.getQualifier());
-			return recv + "." + fieldGoName(vb);
+			return erasedField(qn, recv + "." + fieldGoName(vb), vb);
 		}
 		// A type or package qualifier (Foo.Bar as a type name, not a value): just the bare name.
 		return qn.getName().getIdentifier();

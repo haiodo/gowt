@@ -113,7 +113,7 @@ func update(path string) error {
 	old, _ := readExpected(path)
 	slices.SortFunc(collected, func(a, b outcome) int { return strings.Compare(a.name, b.name) })
 	var b strings.Builder
-	b.WriteString("# Regression gate for make test-swt (cmd/swttest -expected). Format and refresh: tooling/j2go/README.md \"Round 14 widget tests\".\n")
+	b.WriteString("# Regression gate for make test-swt (cmd/swttest -expected). Refresh with the per-OS swttest -update target (see Makefile).\n")
 	for _, r := range collected {
 		e, listed := old[r.name]
 		one := strings.ReplaceAll(strings.ReplaceAll(r.message, "\t", " "), "\n", " ")

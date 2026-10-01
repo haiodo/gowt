@@ -254,7 +254,7 @@ pass	Test_org_eclipse_swt_custom_CTabFolder.test_addPaintListenerLorg_eclipse_sw
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_bug2162_transparentStyle
 skip	Test_org_eclipse_swt_custom_CTabFolder.test_checkSize	@Disabled: Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59
-fail	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged	pending rerun: super.field emitted as this.<Super>.field
+fail	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged	not analysed (win32 run 3): Different color
 fail	Test_org_eclipse_swt_custom_CTabFolder.test_childControlOverlap	Java reflection (getDeclaredField/getDeclaredMethod) is not translated
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeII
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeIIZ
@@ -283,7 +283,7 @@ pass	Test_org_eclipse_swt_custom_CTabFolder.test_getParent
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_getSelection_empty
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_getShell
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_getVerticalBar
-fail	Test_org_eclipse_swt_custom_CTabFolder.test_iconWrappedOnNextLine	pending rerun: super.field emitted as this.<Super>.field
+fail	Test_org_eclipse_swt_custom_CTabFolder.test_iconWrappedOnNextLine	not analysed (win32 run 3): panic: reflect: Call using *swt.CTabItem as type *swt.Widget
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_isDisposed
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_isEnabled
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_isFocusControl
@@ -478,18 +478,18 @@ pass	Test_org_eclipse_swt_graphics_GC.test_drawFocusIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII
-fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[1]	pending rerun: Stream/Collectors map to jrt.List
-fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[2]	pending rerun: Stream/Collectors map to jrt.List
-fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[3]	pending rerun: Stream/Collectors map to jrt.List
-fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[4]	pending rerun: Stream/Collectors map to jrt.List
+fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[1]	not analysed (win32 run 3): panic: j2go: unresolved call next
+fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[2]	not analysed (win32 run 3): panic: j2go: unresolved call next
+fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[3]	not analysed (win32 run 3): panic: j2go: unresolved call next
+fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider[4]	not analysed (win32 run 3): panic: j2go: unresolved call next
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataAtSizeProvider_invalid
-fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider	pending rerun: Stream/Collectors map to jrt.List
+fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_ImageDataProvider	not analysed (win32 run 3): panic: j2go: unresolved call next
 fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform	ImageLoader rejects the image stream data (InitImage via ImageDataLoaderStreamProviderWrapper); not analysed
 fail	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_ImageIIII_withTransform_zeroTargetSize	ImageLoader rejects the image stream data (InitImage via ImageDataLoaderStreamProviderWrapper); not analysed
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImage_emptyImage
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImage_nonAutoScalableGC_bug_2504
 pass	Test_org_eclipse_swt_graphics_GC.test_drawLineIIII
-fail	Test_org_eclipse_swt_graphics_GC.test_drawLine_noSingularitiesIn45DregreeRotation	pending rerun: jrt.List.RemoveIf accepts typed predicates
+fail	Test_org_eclipse_swt_graphics_GC.test_drawLine_noSingularitiesIn45DregreeRotation	not analysed (win32 run 3): line is not drawn with 45 degree rotation ==> expected: not equal but was: <-1>
 pass	Test_org_eclipse_swt_graphics_GC.test_drawOvalIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawPointII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawPolygon$I
@@ -519,7 +519,7 @@ pass	Test_org_eclipse_swt_graphics_GC.test_getStyle
 pass	Test_org_eclipse_swt_graphics_GC.test_hashCode
 pass	Test_org_eclipse_swt_graphics_GC.test_isClipped
 pass	Test_org_eclipse_swt_graphics_GC.test_isDisposed
-fail	Test_org_eclipse_swt_graphics_GC.test_noMemoryLeakAfterDispose	pending rerun: Stream/Collectors map to jrt.List
+fail	Test_org_eclipse_swt_graphics_GC.test_noMemoryLeakAfterDispose	not analysed (win32 run 3): expected: <null> but was: <GC {*DISPOSED*}>
 pass	Test_org_eclipse_swt_graphics_GC.test_setBackgroundLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_graphics_GC.test_setClippingIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_setClippingLorg_eclipse_swt_graphics_Rectangle
@@ -550,12 +550,12 @@ pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphi
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_int_int
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataAtSizeProvider
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider
-fail	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider	pending rerun: jrt.List.RemoveIf accepts typed predicates
+fail	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider	not analysed (win32 run 3): Unexpected exception type thrown, expected: <*swt.SWTException> but was: <runtime.errorString>: runtime error: invalid memory address or nil pointer dereference
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer
 pass	Test_org_eclipse_swt_graphics_Image.test_bug566545_efficientGrayscaleImage
 pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat
-fail	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges	pending rerun: jrt.List.RemoveIf accepts typed predicates
-fail	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object	pending rerun: jrt.List.RemoveIf accepts typed predicates
+fail	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges	not analysed (win32 run 3): the file of a sizable image must be read again for a new size ==> Unexpected exception type thrown, expected: <*swt.SWTException> but was: <*jrt.IOException>: I
+fail	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object	not analysed (win32 run 3): expected: <true> but was: <false>
 pass	Test_org_eclipse_swt_graphics_Image.test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom
 pass	Test_org_eclipse_swt_graphics_Image.test_getBackground
 pass	Test_org_eclipse_swt_graphics_Image.test_getBounds
@@ -569,7 +569,7 @@ pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_changingImageDataDoes
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromFiles
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImage
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImageForCustomImageData
-fail	Test_org_eclipse_swt_graphics_Image.test_hashCode	pending rerun: jrt.List.RemoveIf accepts typed predicates
+fail	Test_org_eclipse_swt_graphics_Image.test_hashCode	not analysed (win32 run 3): expected: <-531534272> but was: <-531534656>
 pass	Test_org_eclipse_swt_graphics_Image.test_imageDataIsCached
 fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders	assertion differs under Wine/Win32, not analysed: expected: <0> but was: <-1>
 fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData	assertion differs under Wine/Win32, not analysed: expected: <0> but was: <-1>
@@ -688,21 +688,21 @@ pass	Test_org_eclipse_swt_graphics_Region.test_subtract$I
 pass	Test_org_eclipse_swt_graphics_Region.test_subtractLorg_eclipse_swt_graphics_Rectangle
 pass	Test_org_eclipse_swt_graphics_Region.test_subtractLorg_eclipse_swt_graphics_Region
 pass	Test_org_eclipse_swt_graphics_Region.test_toString
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_Bug579335_win32_StyledText_LongLine	pending rerun: String.repeat -> strings.Repeat
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug23406_longLines	pending rerun: jrt.Directionality (block-based approximation)
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug568740_multilineTextStyle	pending rerun: jrt.List.RemoveIf accepts typed predicates
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_Bug579335_win32_StyledText_LongLine	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug23406_longLines	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug568740_multilineTextStyle	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getAlignment
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLevel
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineBounds	pending rerun: jrt.Directionality (block-based approximation)
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineIndex	pending rerun: jrt.Directionality (block-based approximation)
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineOffsets	pending rerun: jrt.Directionality (block-based approximation)
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineBounds	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineIndex	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getLineOffsets	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLineSpacing
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLocation
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset	pending rerun: jrt.Directionality (block-based approximation)
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset2	pending rerun: jrt.Directionality (block-based approximation)
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getOffset	pending rerun: jrt.Directionality (block-based approximation)
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset2	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getOffset	not analysed (win32 run 3): panic: j2go: unsupported TypeDeclarationStatement
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getOrientation
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getSegments	pending rerun: jrt.Directionality (block-based approximation)
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getSegments	not analysed (win32 run 3): panic: j2go: unresolved call isAlphabetic
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getSegmentsChars
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getTabs
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getText

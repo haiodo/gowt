@@ -843,8 +843,8 @@ func (this *GC) CalculateTransformationScale() float32 {
 	this.GetTransform(current)
 	var m []float32 = make([]float32, 6)
 	current.GetElements(m)
-	var scaleWidth float32 = float32(math.Hypot(m[0], m[2]))
-	var scaleHeight float32 = float32(math.Hypot(m[1], m[3]))
+	var scaleWidth float32 = float32(math.Hypot(float64(m[0]), float64(m[2])))
+	var scaleHeight float32 = float32(math.Hypot(float64(m[1]), float64(m[3])))
 	current.impl.dispose_()
 	return float32(math.Max(float64(scaleWidth), float64(scaleHeight)))
 }
@@ -3910,7 +3910,7 @@ func GCCreateGdipFont(hDC int64, hFont int64, graphics int64, fontCollection int
 			name = "Courier New"
 		}
 		var buffer []uint16 = make([]uint16, jrt.StringLength(name)+1)
-		copy(buffer, utf16.Encode([]rune(name)))
+		jrt.GetChars(name, 0, jrt.StringLength(name), buffer, 0)
 		if fontCollection != 0 {
 			family = win32.GdipFontFamily_newNameFontCollection(buffer, fontCollection)
 			if !win32.GdipFontFamily_IsAvailable(family) {

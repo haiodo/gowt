@@ -74,9 +74,10 @@ final class ControlFlowEmitter {
 		StringBuilder b = new StringBuilder();
 		String subject = emitter.exprInto(sw.getExpression(), b, indent);
 		ITypeBinding subjectType = sw.getExpression().resolveTypeBinding();
+		List<?> stmts = sw.statements();
+		hoistSharedLocals(sw, stmts, b, indent);
 		b.append(ind(indent)).append("switch ").append(subject).append(" {\n");
 		emitter.loopSwitchDepth++;
-		List<?> stmts = sw.statements();
 		int i = 0;
 		while (i < stmts.size()) {
 			List<SwitchCase> labelGroup = new ArrayList<>();
@@ -121,6 +122,38 @@ final class ControlFlowEmitter {
 		emitter.loopSwitchDepth--;
 		b.append(ind(indent)).append("}\n");
 		return b.toString();
+	}
+
+	private void hoistSharedLocals(SwitchStatement sw, List<?> stmts, StringBuilder b, int indent) {
+		int group = -1;
+		java.util.Map<ASTNode, Integer> groupOf = new java.util.HashMap<>();
+		for (Object o : stmts) {
+			if (o instanceof SwitchCase) group++;
+			groupOf.put((ASTNode) o, group);
+		}
+		for (Object o : stmts) {
+			if (!(o instanceof VariableDeclarationStatement vds)) continue;
+			for (Object fo : vds.fragments()) {
+				VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
+				IVariableBinding vb = f.resolveBinding();
+				boolean[] other = {false};
+				sw.accept(new ASTVisitor() {
+					@Override public boolean visit(SimpleName n) {
+						if (vb.isEqualTo(n.resolveBinding())) {
+							ASTNode top = n;
+							while (top != null && !groupOf.containsKey(top)) top = top.getParent();
+							if (top != null && !groupOf.get(top).equals(groupOf.get(vds))) other[0] = true;
+						}
+						return true;
+					}
+				});
+				if (other[0]) {
+					EmitUtil.HOISTED.add(vb);
+					b.append(ind(indent)).append("var ").append(emitter.sanitizeIdent(f.getName().getIdentifier())).append(' ')
+							.append(dev.gowt.j2go.GoTypes.map(vb.getType(), emitter)).append('\n');
+				}
+			}
+		}
 	}
 
 	private boolean bodyExits(List<Statement> body) {

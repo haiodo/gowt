@@ -137,6 +137,9 @@ public class Names {
 		if (override != null) return override;
 		String pinned = pinnedSuffix.get(key);
 		if (pinned != null) return baseName + pinned;
+		// An implementation or override keeps the name pinned on what it implements.
+		String inherited = inheritedPin(m.getMethodDeclaration());
+		if (inherited != null) return inherited;
 		String name = computeMemberName(m, baseName);
 		if (shadowsAncestorOverload(m.getMethodDeclaration())) name += shadowSuffix(m.getMethodDeclaration());
 		// An unpinned member (a platform's own) must not take a name the pins gave to another member of its class.
@@ -189,6 +192,26 @@ public class Names {
 
 	// Every registered method by Java name: an ancestor's overload hidden by a descendant's is found through it.
 	private final Map<String, List<IMethodBinding>> declsByName = new HashMap<>();
+
+	private String inheritedPin(IMethodBinding decl) {
+		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers())) return null;
+		List<ITypeBinding> todo = new ArrayList<>();
+		for (ITypeBinding t = decl.getDeclaringClass(); t != null; t = t.getSuperclass()) {
+			todo.add(t);
+			todo.addAll(List.of(t.getInterfaces()));
+		}
+		for (int i = 0; i < todo.size(); i++) {
+			ITypeBinding t = todo.get(i);
+			for (ITypeBinding x : t.getInterfaces()) if (!todo.contains(x)) todo.add(x);
+			if (t.getErasure().isEqualTo(decl.getDeclaringClass().getErasure())) continue;
+			for (IMethodBinding o : t.getDeclaredMethods()) {
+				if (!decl.overrides(o)) continue;
+				String ov = overrides.get(erasureKey(o));
+				if (ov != null) return ov;
+			}
+		}
+		return null;
+	}
 
 	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
 

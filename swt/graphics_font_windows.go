@@ -25,14 +25,14 @@ type FontLike interface {
 	AsFont() *Font
 }
 
-func newFont(device *Device, handle int64, zoom int32) *Font {
+func newFontLocal1(device *Device, handle int64, zoom int32) *Font {
 	this := &Font{}
 	this.impl = this
-	this.initFont(device, handle, zoom)
+	this.initFontLocal1(device, handle, zoom)
 	return this
 }
 
-func (this *Font) initFont(device *Device, handle int64, zoom int32) {
+func (this *Font) initFontLocal1(device *Device, handle int64, zoom int32) {
 	this.Resource.initResourceDevice(device)
 	this.fontData = nil
 	this.handle = handle
@@ -235,7 +235,7 @@ func FontWin32_newDeviceHandleZoom(deviceLike DeviceLike, handle int64, zoom int
 		device = deviceLike.AsDevice()
 	}
 	_ = device
-	var font *Font = newFont(device, handle, zoom)
+	var font *Font = newFontLocal1(device, handle, zoom)
 	font.IgnoreNonDisposed()
 	return font
 }

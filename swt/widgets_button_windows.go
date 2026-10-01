@@ -674,7 +674,7 @@ func (this *Button) SetMessage(message string) {
 	if (this.style & COMMAND) != 0 {
 		var length int32 = jrt.StringLength(message)
 		var chars []uint16 = make([]uint16, length+1)
-		copy(chars, utf16.Encode([]rune(message)))
+		jrt.GetChars(message, 0, length, chars, 0)
 		win32.OSSendMessageOverload2(this.Handle, win32.OSBCM_SETNOTE, int64(0), chars)
 	}
 }

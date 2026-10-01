@@ -63,7 +63,7 @@ func (this *TabItem) _setText(index int32, string_ string) {
 		if jrt.IndexFrom(string_, string(rune('&')), 0) != -1 {
 			var length int32 = jrt.StringLength(string_)
 			var text []uint16 = make([]uint16, length)
-			copy(text, utf16.Encode([]rune(string_)))
+			jrt.GetChars(string_, 0, length, text, 0)
 			var i int32 = 0
 			var j int32 = 0
 			for i = 0; i < length; i++ {

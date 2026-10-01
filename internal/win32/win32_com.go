@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"syscall"
-	"unicode/utf16"
 	"unsafe"
 )
 
@@ -714,7 +713,7 @@ func (this *COM) initCOM() {
 func COMIIDFromString(lpsz string) *GUID {
 	var length int32 = jrt.StringLength(lpsz)
 	var buffer []uint16 = make([]uint16, length+1)
-	copy(buffer, utf16.Encode([]rune(lpsz)))
+	jrt.GetChars(lpsz, 0, length, buffer, 0)
 	var lpiid *GUID = NewGUID()
 	if COMIIDFromStringLpszLpiid(buffer, lpiid) == COMS_OK {
 		return lpiid

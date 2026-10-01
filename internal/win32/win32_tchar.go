@@ -106,6 +106,6 @@ func TCHARGetChars(string_ string, terminate bool) []uint16 {
 		cond2 = 0
 	}
 	var chars []uint16 = make([]uint16, length+(cond2))
-	copy(chars, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, length, chars, 0)
 	return chars
 }

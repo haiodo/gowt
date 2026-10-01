@@ -183,6 +183,11 @@ final class StatementEmitter {
 			ITypeBinding fragType = f.resolveBinding() != null ? f.resolveBinding().getType() : declType;
 			String goType = dev.gowt.j2go.GoTypes.map(fragType, emitter);
 			String name = emitter.sanitizeIdent(f.getName().getIdentifier());
+			if (EmitUtil.HOISTED.contains(f.resolveBinding())) {
+				if (f.getInitializer() != null) b.append(ind(indent)).append(name).append(" = ")
+						.append(emitter.adaptNumeric(emitExprInto(f.getInitializer(), b, indent), f.getInitializer().resolveTypeBinding(), fragType)).append('\n');
+				continue;
+			}
 			if (f.getInitializer() == null) {
 				b.append(ind(indent)).append("var ").append(name).append(' ').append(goType).append('\n');
 				continue;

@@ -1427,7 +1427,7 @@ func (this *Text) SetMessage(message string) {
 	if (bits & win32.OSES_MULTILINE) == 0 {
 		var length int32 = jrt.StringLength(message)
 		var chars []uint16 = make([]uint16, length+1)
-		copy(chars, utf16.Encode([]rune(message)))
+		jrt.GetChars(message, 0, length, chars, 0)
 		win32.OSSendMessageOverload2(this.Handle, win32.OSEM_SETCUEBANNER, int64(0), chars)
 	}
 }
@@ -1542,7 +1542,7 @@ func (this *Text) SetTextChars(text []uint16) {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
-		copy(text, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(text)), text, 0)
 	}
 	this.ClearSegments(false)
 	var limit int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSEM_GETLIMITTEXT, int64(0), int64(0))) & 0x7FFFFFFF

@@ -5226,7 +5226,7 @@ func (this *Table) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) 
 						this.display.tableBuffer = make([]uint16, plvfi.CchTextMax)
 						buffer = this.display.tableBuffer
 					}
-					copy(buffer, utf16.Encode([]rune(string_)))
+					jrt.GetChars(string_, 0, length, buffer, 0)
 					if this.tipRequested {
 						var shift int32 = 0
 						for i := int32(0); i < length; i++ {
@@ -5826,7 +5826,7 @@ func (this *Table) PositionTooltip(hdr *win32.NMHDR, lParam int64) bool {
 						var string_ string = " "
 						var shell *Shell = this.impl.getShell_()
 						var chars []uint16 = make([]uint16, jrt.StringLength(string_)+1)
-						copy(chars, utf16.Encode([]rune(string_)))
+						jrt.GetChars(string_, 0, jrt.StringLength(string_), chars, 0)
 						shell.SetToolTipTextLpnmtdiBufferLpnmtdiBuffer(lpnmtdi, chars)
 						win32.OSMoveMemoryOverload23(lParam, lpnmtdi, win32.NMTTDISPINFOSizeof)
 						return true

@@ -91,6 +91,10 @@ final class JdkIntrinsics {
 			emitter.fileImports.add("unicode/utf16");
 			String recv = emitter.expr(mi.getExpression());
 			String dst = emitter.expr((Expression) mi.arguments().get(2));
+			if (dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.COCOA) {
+				emitter.fileImports.add(Manual.JRT_IMPORT);
+				return "jrt.GetChars(" + recv + ", " + arg(mi, 0) + ", " + arg(mi, 1) + ", " + dst + ", " + arg(mi, 3) + ")";
+			}
 			return "copy(" + dst + ", utf16.Encode([]rune(" + recv + ")))";
 		}
 		String stringFunc = STRING_FUNCS.get(mb.getName() + "/" + mi.arguments().size());

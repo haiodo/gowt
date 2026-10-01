@@ -37,13 +37,13 @@ func (this *FontData) initFontData() {
 	this.Height = float32(12)
 }
 
-func newFontDataOverload1(data *win32.LOGFONT, height float32) *FontData {
+func newFontDataLocal1(data *win32.LOGFONT, height float32) *FontData {
 	this := &FontData{}
-	this.initFontDataOverload1(data, height)
+	this.initFontDataLocal1(data, height)
 	return this
 }
 
-func (this *FontData) initFontDataOverload1(data *win32.LOGFONT, height float32) {
+func (this *FontData) initFontDataLocal1(data *win32.LOGFONT, height float32) {
 	this.Data = data
 	this.Height = height
 }
@@ -291,7 +291,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			return
 		}
 		var length int32 = int32(math.Min(float64(int32(len(newData.LfFaceName))-1), float64(jrt.StringLength(string_)-start)))
-		copy(newData.LfFaceName, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, start, start+length, newData.LfFaceName, 0)
 		this.Data = newData
 	}
 }
@@ -513,7 +513,7 @@ func (this *FontData) SetName(name string) {
 	}
 	var lfFaceName []uint16 = this.Data.LfFaceName
 	var length int32 = int32(math.Min(float64(int32(len(lfFaceName))-1), float64(jrt.StringLength(name))))
-	copy(lfFaceName, utf16.Encode([]rune(name)))
+	jrt.GetChars(name, 0, length, lfFaceName, 0)
 	for i := int32(length); i < int32(len(lfFaceName)); i++ {
 		lfFaceName[i] = uint16(0)
 	}
@@ -605,7 +605,7 @@ func FontDataCloneLogFont(fontDataLike FontDataLike) *win32.LOGFONT {
 }
 
 func FontDataWin32_new(data *win32.LOGFONT, height float32) *FontData {
-	return newFontDataOverload1(data, height)
+	return newFontDataLocal1(data, height)
 }
 
 // j2go: instanceof helper for FontData and its subclasses within the translated set.

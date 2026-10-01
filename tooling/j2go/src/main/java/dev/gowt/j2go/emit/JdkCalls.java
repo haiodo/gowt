@@ -68,7 +68,7 @@ final class JdkCalls {
 			case "java.lang.Math#hypot":
 				emitter.fileImports.add("math");
 				String[] h = new String[2];
-				for (int i = 0; i < 2; i++) h[i] = mb.getParameterTypes()[i].getName().equals("float") ? "float64(" + arg(mi, i) + ")" : arg(mi, i);
+				for (int i = 0; i < 2; i++) h[i] = ((Expression) mi.arguments().get(i)).resolveTypeBinding().getName().equals("float") ? "float64(" + arg(mi, i) + ")" : arg(mi, i);
 				return "math.Hypot(" + h[0] + ", " + h[1] + ")";
 			case "java.lang.Float#floatToIntBits":
 				emitter.fileImports.add("math");
@@ -150,6 +150,9 @@ final class JdkCalls {
 				for (int i = 0; i < 2; i++) r[i] = mb.getParameterTypes()[i].isPrimitive() ? "string(rune(" + arg(mi, i) + "))" : arg(mi, i);
 				return "strings.ReplaceAll(" + recv(mi) + ", " + r[0] + ", " + r[1] + ")";
 			}
+			case "java.util.concurrent.ConcurrentHashMap#newKeySet":
+				emitter.fileImports.add(JRT);
+				return "jrt.NewList()";
 			case "java.util.Arrays#fill":
 				if (mi.arguments().size() != 2) return null;
 				emitter.fileImports.add(JRT);

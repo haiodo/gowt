@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type ToolTip struct {
@@ -300,10 +299,10 @@ func (this *ToolTip) SetVisible(visible bool) {
 			var iconData *win32.NOTIFYICONDATA = win32.NewNOTIFYICONDATA()
 			var szInfoTitle []uint16 = iconData.SzInfoTitle
 			var length1 int32 = int32(math.Min(float64(int32(len(szInfoTitle))-1), float64(jrt.StringLength(this.text))))
-			copy(szInfoTitle, utf16.Encode([]rune(this.text)))
+			jrt.GetChars(this.text, 0, length1, szInfoTitle, 0)
 			var szInfo []uint16 = iconData.SzInfo
 			var length2 int32 = int32(math.Min(float64(int32(len(szInfo))-1), float64(jrt.StringLength(this.message))))
-			copy(szInfo, utf16.Encode([]rune(this.message)))
+			jrt.GetChars(this.message, 0, length2, szInfo, 0)
 			var display *Display = this.item.GetDisplay()
 			iconData.CbSize = win32.NOTIFYICONDATASizeof
 			iconData.UID = this.item.id

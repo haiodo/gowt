@@ -124,7 +124,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		var text string = item.impl.getText_()
 		var length int32 = jrt.StringLength(text)
 		var buffer []uint16 = make([]uint16, length+1)
-		copy(buffer, utf16.Encode([]rune(text)))
+		jrt.GetChars(text, 0, length, buffer, 0)
 		titlePtr = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, int32(len(buffer))*2)
 		win32.OSMoveMemoryOverload12(titlePtr, buffer, int32(len(buffer))*2)
 		win32.OSMoveMemoryOverload80(pv, []int16{int16(win32.OSVT_LPWSTR)}, 2)
@@ -134,7 +134,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		if exePath != "" {
 			length = jrt.StringLength(exePath)
 			buffer = make([]uint16, length+1)
-			copy(buffer, utf16.Encode([]rune(exePath)))
+			jrt.GetChars(exePath, 0, length, buffer, 0)
 		} else {
 			buffer = TaskBarEXE_PATH
 		}
@@ -148,7 +148,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		}
 		length = jrt.StringLength(text)
 		buffer = make([]uint16, length+1)
-		copy(buffer, utf16.Encode([]rune(text)))
+		jrt.GetChars(text, 0, length, buffer, 0)
 		hr = pLink.SetArguments(buffer)
 		if hr != win32.OSS_OK {
 			this.Error(ERROR_INVALID_ARGUMENT)
@@ -185,7 +185,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		if icon != "" {
 			length = jrt.StringLength(icon)
 			buffer = make([]uint16, length+1)
-			copy(buffer, utf16.Encode([]rune(icon)))
+			jrt.GetChars(icon, 0, length, buffer, 0)
 			hr = pLink.SetIconLocation(buffer, index)
 			if hr != win32.OSS_OK {
 				this.Error(ERROR_INVALID_ARGUMENT)
@@ -380,7 +380,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 	if appName != "" && jrt.StringLength(appName) > 0 {
 		var length int32 = jrt.StringLength(appName)
 		buffer = make([]uint16, length+1)
-		copy(buffer, utf16.Encode([]rune(appName)))
+		jrt.GetChars(appName, 0, length, buffer, 0)
 	}
 	var items []*MenuItem = nil
 	if menu != (nil) && func() bool { cond3 := menu.GetItems(); items = cond3; return int32(len((cond3))) != 0 }() {
@@ -416,7 +416,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 								var text string = item.impl.getText_()
 								var length int32 = jrt.StringLength(text)
 								var buffer2 []uint16 = make([]uint16, length+1)
-								copy(buffer2, utf16.Encode([]rune(text)))
+								jrt.GetChars(text, 0, length, buffer2, 0)
 								hr = pDestList.AppendCategory(buffer2, poa2)
 								if hr != win32.OSS_OK {
 									this.Error(ERROR_INVALID_ARGUMENT)

@@ -117,13 +117,13 @@ func (this *DirectoryDialog) OpenDialog() *jrt.Optional {
 		}
 		if jrt.StringLength(this.title) > 0 {
 			var buffer []uint16 = make([]uint16, jrt.StringLength(this.title)+1)
-			copy(buffer, utf16.Encode([]rune(this.title)))
+			jrt.GetChars(this.title, 0, jrt.StringLength(this.title), buffer, 0)
 			fileDialog.SetTitle(buffer)
 		}
 		if this.filterPath != "" && jrt.StringLength(this.filterPath) > 0 {
 			var path string = strings.ReplaceAll(this.filterPath, string(rune('/')), string(rune('\u005c')))
 			var buffer []uint16 = make([]uint16, jrt.StringLength(path)+1)
-			copy(buffer, utf16.Encode([]rune(path)))
+			jrt.GetChars(path, 0, jrt.StringLength(path), buffer, 0)
 			if win32.COMSHCreateItemFromParsingName(buffer, int64(0), win32.COMIID_IShellItem, ppv) == win32.OSS_OK {
 				var psi *win32.IShellItem = win32.NewIShellItem(ppv[0])
 				fileDialog.ClearClientData()

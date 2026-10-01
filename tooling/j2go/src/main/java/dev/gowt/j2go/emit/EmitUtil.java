@@ -230,6 +230,9 @@ final class EmitUtil {
 
 	/** A right operand of &&/|| runs only when reached: prelude lines it needs (an inline
 	 * assignment) go inside a closure, not before the whole condition. */
+	/** Locals declared in one case group of a switch and used in another: declared before the switch (Java scopes them to the whole block). */
+	static final java.util.Set<IVariableBinding> HOISTED = new java.util.HashSet<>();
+
 	static String lazyOperand(Emitter emitter, Expression e, String goOp) {
 		if (!goOp.equals("&&") && !goOp.equals("||")) return emitter.expr(e);
 		List<String> saved = emitter.prelude;
@@ -237,6 +240,11 @@ final class EmitUtil {
 		String text = emitter.expr(e);
 		List<String> own = emitter.prelude;
 		emitter.prelude = saved;
+		// A pattern variable must stay visible to the guarded code: a side-effect-free test of a field is hoisted instead.
+		if (e instanceof PatternInstanceofExpression pie && (pie.getLeftOperand() instanceof Name || pie.getLeftOperand() instanceof FieldAccess)) {
+			saved.addAll(own);
+			return text;
+		}
 		return own.isEmpty() ? text : "func() bool { " + String.join("; ", own) + "; return " + text + " }()";
 	}
 

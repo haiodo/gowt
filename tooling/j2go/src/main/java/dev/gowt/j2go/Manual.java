@@ -79,9 +79,9 @@ public class Manual {
 		reg(JAVA_CLASS, "reflect.Type", "reflect", true);
 		reg(JAVA_RUNNABLE, "jrt.Runnable", JRT_IMPORT, true);
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
-		for (String q : new String[]{"java.util.Map", "java.util.HashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
+		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.concurrent.ConcurrentLinkedQueue"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg(SWT_LONG, "LONG", null, false);

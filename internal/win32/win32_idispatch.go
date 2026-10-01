@@ -5,7 +5,6 @@ package win32
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type IDispatch struct {
@@ -38,7 +37,7 @@ func (this *IDispatch) GetIDsOfNames(riid *GUID, rgszNames []string, cNames int3
 		for i := int32(0); i < size; i++ {
 			var nameSize int32 = jrt.StringLength(rgszNames[i])
 			buffer = make([]uint16, nameSize+1)
-			copy(buffer, utf16.Encode([]rune(rgszNames[i])))
+			jrt.GetChars(rgszNames[i], 0, nameSize, buffer, 0)
 			var pName int64 = OSHeapAlloc(hHeap, OSHEAP_ZERO_MEMORY, int32(len(buffer))*2)
 			OSMoveMemoryOverload12(pName, buffer, int32(len(buffer))*2)
 			OSMoveMemoryOverload79(ppNames+int64(CPTR_SIZEOF*i), []int64{pName}, CPTR_SIZEOF)

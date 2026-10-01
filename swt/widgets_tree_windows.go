@@ -6670,7 +6670,7 @@ func (this *Tree) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *
 				if string_ != "" {
 					var length int32 = int32(math.Min(float64(jrt.StringLength(string_)+1), float64(lptvdi.CchTextMax)))
 					var buffer []uint16 = make([]uint16, length)
-					copy(buffer, utf16.Encode([]rune(string_)))
+					jrt.GetChars(string_, 0, length-1, buffer, 0)
 					win32.OSMoveMemoryOverload12(lptvdi.PszText, buffer, length*win32.TCHARSizeof)
 					lptvdi.CchTextMax = length
 				}

@@ -18,7 +18,7 @@ type SWTFontProviderLike interface {
 	AsSWTFontProvider() *SWTFontProvider
 }
 
-var SWTFontProviderFontRegistries *jrt.Map = func() any { panic("j2go: unresolved new ConcurrentHashMap<Device,SWTFontRegistry>") }()
+var SWTFontProviderFontRegistries *jrt.Map = jrt.NewMap()
 
 const SWTFontProviderSWT_FONT_REGISTRY string = "swt.fontRegistry"
 
@@ -128,7 +128,8 @@ func SWTFontProviderNewFontRegistry(deviceLike DeviceLike) SWTFontRegistry {
 		device = deviceLike.AsDevice()
 	}
 	_ = device
-	if strings.EqualFold("legacy", jrt.GetProperty(SWTFontProviderSWT_FONT_REGISTRY, "")) && func() bool { display, ok1 := isDeviceToDisplay(device); return ok1 }() && !display.IsRescalingAtRuntime() {
+	display, ok1 := isDeviceToDisplay(device)
+	if strings.EqualFold("legacy", jrt.GetProperty(SWTFontProviderSWT_FONT_REGISTRY, "")) && ok1 && !display.IsRescalingAtRuntime() {
 		return newLegacySWTFontRegistry(device)
 	}
 	return newScalingSWTFontRegistry(device)

@@ -1,6 +1,9 @@
 package jrt
 
-import "reflect"
+import (
+	"reflect"
+	"unicode/utf16"
+)
 
 // entries lists the map's pairs in EntrySet order.
 func (m *Map) entries() []*MapEntry {
@@ -92,3 +95,12 @@ func (o *Optional) OrElseGet(supplier any) any {
 
 // Equals is Path.equals.
 func (p *Path) Equals(other *Path) bool { return other != nil && p.s == other.s }
+
+// GetChars is String.getChars(srcBegin, srcEnd, dst, dstBegin) for UTF-16 code units.
+func GetChars(s string, srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
+	u := utf16.Encode([]rune(s))
+	copy(dst[dstBegin:], u[srcBegin:srcEnd])
+}
+
+// Stream is List.stream() for the one chain Region.toString builds; the stages are not run.
+func (l *List) Stream() *List { return l }

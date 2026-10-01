@@ -131,6 +131,8 @@ public class GoTypes {
 		emitter.checkNoForeignPackageLeak(qualified);
 		// Not a real Go identifier (still undefined - go vet reports it plainly instead of gofmt
 		// choking on a qualified-name-shaped parse error).
+		// A local class has no qualified name: the caller's own panic marker needs only some type.
+		if (qualified.isEmpty()) return "any";
 		return "unsupported_type_" + qualified.replace('.', '_');
 	}
 

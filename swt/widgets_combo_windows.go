@@ -929,7 +929,7 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 	var segmentsChars []uint16 = event.SegmentsChars
 	var length int32 = jrt.StringLength(text)
 	var oldChars []uint16 = make([]uint16, length)
-	copy(oldChars, utf16.Encode([]rune(text)))
+	jrt.GetChars(text, 0, length, oldChars, 0)
 	var newChars []uint16 = make([]uint16, length+nSegments)
 	var charCount int32 = 0
 	var segmentCount int32 = 0

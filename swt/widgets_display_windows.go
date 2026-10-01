@@ -1767,7 +1767,7 @@ func (this *Display) init_() {
 	if DisplayAPP_NAME != "" && !strings.EqualFold("SWT", DisplayAPP_NAME) {
 		var length int32 = jrt.StringLength(DisplayAPP_NAME)
 		appName = make([]uint16, length+1)
-		copy(appName, utf16.Encode([]rune(DisplayAPP_NAME)))
+		jrt.GetChars(DisplayAPP_NAME, 0, length, appName, 0)
 		var appID []int64 = make([]int64, 1)
 		if win32.OSGetCurrentProcessExplicitAppUserModelID(appID) != 0 {
 			win32.OSSetCurrentProcessExplicitAppUserModelID(appName)
@@ -1866,7 +1866,7 @@ func (this *Display) Map(fromLike ControlLike, toLike ControlLike, pointLike Poi
 	if point == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.coordinateSystemMapper.MapFromToPoint(from, to, point)
+	return this.coordinateSystemMapper.MapPoint(from, to, point)
 }
 
 func (this *Display) MapInPixels(fromLike ControlLike, toLike ControlLike, pointLike PointLike) *Point {
@@ -1900,7 +1900,7 @@ func (this *Display) MapFromToXY(fromLike ControlLike, toLike ControlLike, x int
 	}
 	_ = to
 	this.impl.checkDevice_()
-	return this.coordinateSystemMapper.MapFromToXY(from, to, x, y)
+	return this.coordinateSystemMapper.MapXY(from, to, x, y)
 }
 
 func (this *Display) MapInPixelsFromToXY(fromLike ControlLike, toLike ControlLike, x int32, y int32) *Point {
@@ -1962,7 +1962,7 @@ func (this *Display) MapFromToRectangle(fromLike ControlLike, toLike ControlLike
 	if rectangle == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.coordinateSystemMapper.Map(from, to, rectangle)
+	return this.coordinateSystemMapper.MapRectangle(from, to, rectangle)
 }
 
 func (this *Display) MapInPixelsFromToRectangle(fromLike ControlLike, toLike ControlLike, rectangleLike RectangleLike) *Rectangle {
@@ -1996,7 +1996,7 @@ func (this *Display) MapFromToXYWidthHeight(fromLike ControlLike, toLike Control
 	}
 	_ = to
 	this.impl.checkDevice_()
-	return this.coordinateSystemMapper.MapFromToXYWidthHeight(from, to, x, y, width, height)
+	return this.coordinateSystemMapper.MapBounds(from, to, x, y, width, height)
 }
 
 func (this *Display) MapInPixelsFromToXYWidthHeight(fromLike ControlLike, toLike ControlLike, x int32, y int32, width int32, height int32) *Rectangle {

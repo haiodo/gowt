@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type TrayItem struct {
@@ -314,7 +313,7 @@ func (this *TrayItem) SetToolTipText(string_ string) {
 	if string_ != "" {
 		var szTip []uint16 = iconData.SzTip
 		var length int32 = int32(math.Min(float64(int32(len(szTip))-1), float64(jrt.StringLength(string_))))
-		copy(szTip, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, length, szTip, 0)
 	}
 	iconData.CbSize = win32.NOTIFYICONDATASizeof
 	iconData.UID = this.id

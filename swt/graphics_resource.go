@@ -10,6 +10,7 @@ import (
 
 type ResourceImpl interface {
 	destroy_()
+	destroyHandlesExcept_(a0 *jrt.List)
 	dispose_()
 	getDevice_() *Device
 	init_()
@@ -122,6 +123,10 @@ func (this *Resource) destroy_() {
 }
 
 func (this *Resource) DestroyHandlesExcept(zoomLevels *jrt.List) {
+	this.impl.destroyHandlesExcept_(zoomLevels)
+}
+
+func (this *Resource) destroyHandlesExcept_(zoomLevels *jrt.List) {
 }
 
 func (this *Resource) Dispose() {

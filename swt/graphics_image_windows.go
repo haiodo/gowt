@@ -10,7 +10,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"unicode/utf16"
 )
 
 type Image struct {
@@ -37,14 +36,14 @@ type ImageLike interface {
 
 const ImageDEFAULT_SCANLINE_PAD int32 = 4
 
-func newImage(device *Device, type_ int32, handle int64, nativeZoom int32) *Image {
+func newImageLocal1(device *Device, type_ int32, handle int64, nativeZoom int32) *Image {
 	this := &Image{}
 	this.impl = this
-	this.initImage(device, type_, handle, nativeZoom)
+	this.initImageLocal1(device, type_, handle, nativeZoom)
 	return this
 }
 
-func (this *Image) initImage(device *Device, type_ int32, handle int64, nativeZoom int32) {
+func (this *Image) initImageLocal1(device *Device, type_ int32, handle int64, nativeZoom int32) {
 	this.Resource.initResourceDevice(device)
 	this.styleFlag = IMAGE_COPY
 	inner1 := newImageImageHandleManager()
@@ -1718,7 +1717,7 @@ func ImageWin32_new(deviceLike DeviceLike, type_ int32, handle int64, nativeZoom
 		device = deviceLike.AsDevice()
 	}
 	_ = device
-	return newImage(device, type_, handle, nativeZoom)
+	return newImageLocal1(device, type_, handle, nativeZoom)
 }
 
 func (this *Image) IsAutoScalable() bool {
@@ -1747,7 +1746,7 @@ func newImageImageHandleManager() *Image_ImageHandleManager {
 }
 
 func (this *Image_ImageHandleManager) initImageImageHandleManager() {
-	this.zoomLevelToImageHandle = func() any { panic("j2go: unresolved new ConcurrentHashMap<Integer,DestroyableImageHandle>") }()
+	this.zoomLevelToImageHandle = jrt.NewMap()
 }
 
 func (this *Image_ImageHandleManager) Get(zoom int32) Image_InternalImageHandle {
@@ -3144,7 +3143,7 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 	}
 	var length int32 = jrt.StringLength(filename)
 	var chars []uint16 = make([]uint16, length+1)
-	copy(chars, utf16.Encode([]rune(filename)))
+	jrt.GetChars(filename, 0, length, chars, 0)
 	var bitmap int64 = win32.GdipBitmap_newFilenameUseIcm(chars, false)
 	if bitmap == 0 {
 		return nil

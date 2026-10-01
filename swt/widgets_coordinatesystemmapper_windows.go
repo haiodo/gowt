@@ -3,10 +3,10 @@
 package swt
 
 type CoordinateSystemMapper interface {
-	Map(from *Control, to *Control, rectangle *Rectangle) *Rectangle
-	MapFromToXYWidthHeight(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle
-	MapFromToPoint(from *Control, to *Control, point *Point) *Point
-	MapFromToXY(from *Control, to *Control, x int32, y int32) *Point
+	MapRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle
+	MapBounds(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle
+	MapPoint(from *Control, to *Control, point *Point) *Point
+	MapXY(from *Control, to *Control, x int32, y int32) *Point
 	MapMonitorBounds(rectangle *Rectangle_WithMonitor) *Rectangle
 	TranslateFromDisplayCoordinates(point *Point) *Point
 	TranslateToDisplayCoordinates(point *Point) *Point

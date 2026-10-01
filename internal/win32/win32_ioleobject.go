@@ -5,7 +5,6 @@ package win32
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type IOleObject struct {
@@ -55,13 +54,13 @@ func (this *IOleObject) SetHostNames(szContainerApp string, szContainerObj strin
 	if szContainerApp != "" {
 		var count1 int32 = jrt.StringLength(szContainerApp)
 		buffer1 = make([]uint16, count1+1)
-		copy(buffer1, utf16.Encode([]rune(szContainerApp)))
+		jrt.GetChars(szContainerApp, 0, count1, buffer1, 0)
 	}
 	var buffer2 []uint16 = nil
 	if szContainerObj != "" {
 		var count2 int32 = jrt.StringLength(szContainerObj)
 		buffer2 = make([]uint16, count2+1)
-		copy(buffer2, utf16.Encode([]rune(szContainerObj)))
+		jrt.GetChars(szContainerObj, 0, count2, buffer2, 0)
 	}
 	return COMVtblCallOverload23(5, this.address, buffer1, buffer2)
 }

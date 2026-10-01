@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
 	"reflect"
-	"unicode/utf16"
 )
 
 type WidgetImpl interface {
@@ -1938,7 +1937,7 @@ func (this *Widget) FixMnemonicStringSpaces(string_ string, spaces bool) []uint1
 
 func (this *Widget) FixMnemonicStringSpacesRemoveAppended(string_ string, spaces bool, removeAppended bool) []uint16 {
 	var buffer []uint16 = make([]uint16, jrt.StringLength(string_)+1)
-	copy(buffer, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, jrt.StringLength(string_), buffer, 0)
 	var i int32 = 0
 	var j int32 = 0
 	for i < int32(len(buffer)) {
@@ -1999,7 +1998,8 @@ func (this *Widget) getDataKey_(key string) any {
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	if (this.state&WidgetKEYED_DATA) != 0 && func() bool { table, ok7 := this.data.([]any); return ok7 }() {
+	table, ok7 := this.data.([]any)
+	if (this.state&WidgetKEYED_DATA) != 0 && ok7 {
 		for i := int32(1); i < int32(len(table)); i += 2 {
 			if key == table[i] {
 				return table[i+1]

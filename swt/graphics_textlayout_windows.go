@@ -153,7 +153,7 @@ func (this *TextLayout) BreakRun(runLike TextLayout_StyleItemLike) {
 		return
 	}
 	var chars []uint16 = make([]uint16, run.length)
-	copy(chars, utf16.Encode([]rune(this.segmentsText)))
+	jrt.GetChars(this.segmentsText, run.start, run.start+run.length, chars, 0)
 	var hHeap int64 = win32.OSGetProcessHeap()
 	run.pslaAllocSize = win32.SCRIPT_LOGATTRSizeof * int32(len(chars))
 	run.psla = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, win32.SCRIPT_LOGATTRSizeof*int32(len(chars)))
@@ -2687,7 +2687,7 @@ func (this *TextLayout) GetSegmentsText() string {
 		}
 	}
 	var oldChars []uint16 = make([]uint16, length)
-	copy(oldChars, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, length, oldChars, 0)
 	var newChars []uint16 = make([]uint16, length+nSegments)
 	var charCount int32 = 0
 	var segmentCount int32 = 0
@@ -2827,7 +2827,7 @@ func (this *TextLayout) Itemize() []*TextLayout_StyleItem {
 	}
 	var pcItems []int32 = make([]int32, 1)
 	var chars []uint16 = make([]uint16, length)
-	copy(chars, utf16.Encode([]rune(this.segmentsText)))
+	jrt.GetChars(this.segmentsText, 0, length, chars, 0)
 	scriptControl.FMergeNeutralItems = true
 	if BidiUtilResolveTextDirection(this.text) != RIGHT_TO_LEFT {
 		{
@@ -3505,7 +3505,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 	}
 	var buffer []int32 = make([]int32, 1)
 	var chars []uint16 = make([]uint16, run.length)
-	copy(chars, utf16.Encode([]rune(this.segmentsText)))
+	jrt.GetChars(this.segmentsText, run.start, run.start+run.length, chars, 0)
 	var maxGlyphs int32 = (int32(len(chars)) * 3 / 2) + 16
 	var hHeap int64 = win32.OSGetProcessHeap()
 	run.glyphs = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, maxGlyphs*2)
@@ -3556,7 +3556,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 			var metaFile int64 = this.CreateMetafileWithChars(hdc, hFont, sampleChars, count)
 			var emr *win32.EMREXTCREATEFONTINDIRECTW = win32.NewEMREXTCREATEFONTINDIRECTW()
 			func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): class MetaFileEnumProc {   long metaFileEnumProc(  long hDC,  long table,  long record,  long nObj,  long lpData){     OS.MoveMemory(emr.emr,record,EMR.sizeof); switch (emr.emr.iType) { case OS.EMR_EXTCREATEFONTINDIRECTW:      OS.MoveMemory(emr,record,EMREXTCREATEFONTINDIRECTW.sizeof);     break; case OS.EMR_EXTTEXTOUTW:  return 0; } return 1; } }
-			var object unsupported_type_ = func() any { panic("j2go: unresolved new MetaFileEnumProc") }()
+			var object any = func() any { panic("j2go: unresolved new MetaFileEnumProc") }()
 			var compilerWarningWorkaround bool = false
 			if compilerWarningWorkaround {
 				func() int64 {

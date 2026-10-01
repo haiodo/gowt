@@ -20,3 +20,6 @@ func custom_AllowDarkModeForWindow(hWnd int64, allow bool) bool { return false }
 func custom_SetPreferredAppMode(mode int32) int32 { return 0 }
 
 func OsVersionCheckCompatibleWindowsVersion() {}
+
+// OS.setTheme(boolean) took a Display and Colors; the dark-theme tweaks are not ported.
+func OSSetTheme(isDarkTheme bool) {}

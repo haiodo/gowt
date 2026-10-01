@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
 	"strconv"
-	"unicode/utf16"
 )
 
 type DeviceImpl interface {
@@ -225,7 +224,7 @@ func (this *Device) initDeviceData(data *DeviceData) {
 	this.debug = DeviceDEBUG
 	this.tracking = DeviceDEBUG
 	this.nFonts = 256
-	this.resourcesWithZoomSupport = func() any { panic("j2go: unresolved call newKeySet") }()
+	this.resourcesWithZoomSupport = jrt.NewList()
 	jrt.MonitorEnter()
 	func() {
 		defer jrt.MonitorExit()
@@ -332,7 +331,7 @@ func (this *Device) CheckGDIP() {
 			}
 			var length int32 = jrt.StringLength(path)
 			var buffer []uint16 = make([]uint16, length+1)
-			copy(buffer, utf16.Encode([]rune(path)))
+			jrt.GetChars(path, 0, length, buffer, 0)
 			win32.GdipPrivateFontCollection_AddFontFile(this.fontCollection, buffer)
 		}
 		this.loadedFonts = nil
@@ -794,7 +793,7 @@ func (this *Device) LoadFont(path string) bool {
 			}
 			var length int32 = jrt.StringLength(path)
 			var buffer []uint16 = make([]uint16, length+1)
-			copy(buffer, utf16.Encode([]rune(path)))
+			jrt.GetChars(path, 0, length, buffer, 0)
 			win32.GdipPrivateFontCollection_AddFontFile(this.fontCollection, buffer)
 		} else {
 			this.AddFont(path)

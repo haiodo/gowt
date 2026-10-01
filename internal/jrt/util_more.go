@@ -49,7 +49,7 @@ func callFunc(fn any, args ...any) any {
 	for i, a := range args {
 		in[i] = reflect.Zero(f.Type().In(i))
 		if a != nil {
-			in[i] = reflect.ValueOf(a)
+			in[i] = widenTo(reflect.ValueOf(a), f.Type().In(i))
 		}
 	}
 	out := f.Call(in)
@@ -57,6 +57,18 @@ func callFunc(fn any, args ...any) any {
 		return nil
 	}
 	return out[0].Interface()
+}
+
+// widenTo is Java's implicit upcast of an argument: v itself, or the field-0 link of its embedding chain that has type want.
+func widenTo(v reflect.Value, want reflect.Type) reflect.Value {
+	for w := v; ; w = w.Elem().Field(0).Addr() {
+		if w.Type().AssignableTo(want) {
+			return w
+		}
+		if w.Kind() != reflect.Ptr || w.Elem().Kind() != reflect.Struct || w.Elem().NumField() == 0 || !w.Elem().Type().Field(0).Anonymous {
+			return v
+		}
+	}
 }
 
 // Iterator is java.util.Iterator over a List snapshot; Remove deletes the last returned element from the list.

@@ -83,41 +83,53 @@ public class Main {
 		List<String> allAbsFiles = new ArrayList<>(absFiles);
 		allAbsFiles.addAll(absRefFiles);
 
-		ASTParser parser = ASTParser.newParser(AST.JLS21);
-		Map<String, String> options = JavaCore.getOptions();
-		JavaCore.setComplianceOptions(JavaCore.VERSION_21, options);
-		parser.setCompilerOptions(options);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setResolveBindings(true);
-		parser.setBindingsRecovery(true);
-		parser.setStatementsRecovery(true);
-		parser.setEnvironment(classpath, sourceRoots.toArray(new String[0]), null, true);
-
 		Map<String, CompilationUnit> unitsByPath = new LinkedHashMap<>();
 		String[] encodings = new String[allAbsFiles.size()];
 		Arrays.fill(encodings, "UTF-8");
-		parser.createASTs(allAbsFiles.toArray(new String[0]), encodings, new String[0], new FileASTRequestor() {
-			@Override
-			public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-				unitsByPath.put(sourceFilePath, ast);
-			}
-		}, null);
-
 		List<CompilationUnit> orderedUnits = new ArrayList<>();
 		int problemCount = 0;
-		for (String f : allAbsFiles) {
-			CompilationUnit cu = unitsByPath.get(f);
-			if (cu == null) {
-				System.err.println("j2go: failed to parse " + f);
-				System.exit(1);
-			}
-			orderedUnits.add(cu);
-			for (IProblem p : cu.getProblems()) {
-				if (p.isError()) {
-					System.err.println("j2go: [error] " + f + ": " + p);
-					problemCount++;
+		// A hoisted local class that captures a variable breaks binding: retry those files with records desugared only.
+		for (boolean retry = true; ; retry = false) {
+			unitsByPath.clear();
+			ASTParser parser = ASTParser.newParser(AST.JLS21);
+			Map<String, String> options = JavaCore.getOptions();
+			JavaCore.setComplianceOptions(JavaCore.VERSION_21, options);
+			parser.setCompilerOptions(options);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			parser.setResolveBindings(true);
+			parser.setBindingsRecovery(true);
+			parser.setStatementsRecovery(true);
+			parser.setEnvironment(classpath, sourceRoots.toArray(new String[0]), null, true);
+			orderedUnits.clear();
+			parser.createASTs(allAbsFiles.toArray(new String[0]), encodings, new String[0], new FileASTRequestor() {
+				@Override
+				public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+					unitsByPath.put(sourceFilePath, ast);
 				}
+			}, null);
+			boolean unhoisted = false;
+			List<String> errors = new ArrayList<>();
+			for (String f : allAbsFiles) {
+				CompilationUnit cu = unitsByPath.get(f);
+				if (cu == null) {
+					System.err.println("j2go: failed to parse " + f);
+					System.exit(1);
+				}
+				orderedUnits.add(cu);
+				boolean bad = false;
+				for (IProblem p : cu.getProblems()) {
+					if (p.isError()) {
+						bad = true;
+						errors.add("j2go: [error] " + f + ": " + p);
+					}
+				}
+				if (bad && retry) for (var e : mirrorToReal.entrySet())
+					if (f.startsWith(e.getKey() + "/")) unhoisted |= SourcePrep.unhoist(Path.of(f), Path.of(e.getValue() + f.substring(e.getKey().length())));
 			}
+			if (unhoisted) continue;
+			errors.forEach(System.err::println);
+			problemCount = errors.size();
+			break;
 		}
 		if (problemCount > 0) {
 			System.err.println("j2go: " + problemCount + " binding/compile errors, aborting");

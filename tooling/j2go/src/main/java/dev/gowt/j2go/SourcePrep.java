@@ -35,6 +35,14 @@ final class SourcePrep {
 		return any;
 	}
 
+	/** Rewrites a mirror file without hoisting; true if that changed it. */
+	static boolean unhoist(Path mirrorFile, Path realFile) throws IOException {
+		String plain = desugar(Files.readString(realFile, StandardCharsets.UTF_8));
+		if (plain.equals(Files.readString(mirrorFile, StandardCharsets.UTF_8))) return false;
+		Files.writeString(mirrorFile, plain, StandardCharsets.UTF_8);
+		return true;
+	}
+
 	static String desugar(String src) {
 		StringBuilder out = new StringBuilder();
 		StringBuilder hoisted = new StringBuilder();

@@ -213,6 +213,10 @@ final class EmitUtil {
 		if (p instanceof VariableDeclarationFragment f && f.getInitializer() == child && f.resolveBinding() != null) {
 			target = f.resolveBinding().getType();
 			guarded = NullArgGuards.localReachesGuard(emitter.model, f);
+		} else if (p instanceof Assignment a && a.getRightHandSide() == child && a.getLeftHandSide() instanceof ArrayAccess aa
+				&& aa.getArray() instanceof SimpleName arr && arr.resolveBinding() instanceof IVariableBinding av && !av.isField()) {
+			target = aa.resolveTypeBinding();
+			guarded = NullArgGuards.localReachesGuard(emitter.model, av, a);
 		} else if (p instanceof MethodInvocation mi && mi.resolveMethodBinding() != null) {
 			int i = mi.arguments().indexOf(child);
 			target = paramType(mi.resolveMethodBinding(), i);

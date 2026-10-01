@@ -244,10 +244,7 @@ func (this *Transform) ApplyUsingAnyHandle(function func(*Transform_TransformHan
 		_ = tretd371
 		return tret370
 	} else {
-		return function(func() *Transform_TransformHandle {
-			_ = []any{this.zoomToHandle.Values().Iterator()}
-			panic("j2go: unresolved call next")
-		}())
+		return function(jrt.Cast[*Transform_TransformHandle](this.zoomToHandle.Values().Iterator().Next()))
 	}
 }
 

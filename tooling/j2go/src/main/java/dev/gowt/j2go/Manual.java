@@ -85,6 +85,7 @@ public class Manual {
 		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
+		reg("java.util.Iterator", "jrt.Iterator", JRT_IMPORT, false);
 		reg("java.util.TreeSet", "jrt.TreeSet", JRT_IMPORT, false);
 		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);

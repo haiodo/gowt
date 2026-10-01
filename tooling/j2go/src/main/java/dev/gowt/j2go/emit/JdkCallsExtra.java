@@ -49,6 +49,15 @@ final class JdkCallsExtra {
 			case "java.lang.Character#getDirectionality":
 				e.fileImports.add(JRT);
 				return "jrt.Directionality(rune(" + arg(e, mi, 0) + "))";
+			case "java.lang.Character#isLetterOrDigit":
+				e.fileImports.add("unicode");
+				return "(unicode.IsLetter(rune(" + arg(e, mi, 0) + ")) || unicode.IsDigit(rune(" + arg(e, mi, 0) + ")))";
+			case "java.lang.Character#isHighSurrogate":
+				e.fileImports.add(JRT);
+				return "jrt.IsHighSurrogate(rune(" + arg(e, mi, 0) + "))";
+			case "java.lang.String#compareTo":
+				e.fileImports.add(JRT);
+				return "jrt.StringCompareTo(" + recv(e, mi) + ", " + arg(e, mi, 0) + ")";
 			case "java.lang.Byte#toUnsignedInt":
 				return "int32(uint8(" + arg(e, mi, 0) + "))";
 			case "java.util.Arrays#fill":

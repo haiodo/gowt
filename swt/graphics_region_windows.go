@@ -422,10 +422,7 @@ func (this *Region) ApplyUsingAnyHandle(function func(*Region_RegionHandle) any)
 		}
 		return RegionApplyUsingTemporaryHandle(temporaryHandleZoom, this.operations, function)
 	}
-	return function(func() *Region_RegionHandle {
-		_ = []any{this.zoomToHandle.Values().Iterator()}
-		panic("j2go: unresolved call next")
-	}())
+	return function(jrt.Cast[*Region_RegionHandle](this.zoomToHandle.Values().Iterator().Next()))
 }
 
 func (this *Region) GetRegionHandle(zoom int32) *Region_RegionHandle {
@@ -518,10 +515,7 @@ func (this *Region_ZoomToRegionMap) Register(zoom int32, handleSupplier func() a
 func (this *Region_ZoomToRegionMap) Get(zoom int32) int64 {
 	if !this.zoomToRegionHandleMap.ContainsKey(int32(zoom)) {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("No handle for %d has been created", zoom))
-		return jrt.Cast[int64](func() int64 {
-			_ = []any{this.zoomToRegionHandleMap.Values().Iterator()}
-			panic("j2go: unresolved call next")
-		}())
+		return jrt.Cast[int64](this.zoomToRegionHandleMap.Values().Iterator().Next())
 	}
 	return jrt.Cast[int64](this.zoomToRegionHandleMap.Get(int32(zoom)))
 }

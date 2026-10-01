@@ -24,6 +24,11 @@ func main() {
 	instance := controlexample.NewControlExample(shell)
 	shell.SetText(controlexample.ControlExampleGetResourceString("window.title"))
 	controlexample.ControlExampleSetShellSize(shell)
+	if *snapDir != "" {
+		// New windows follow the key window or mouse; the references are taken on the primary monitor.
+		area := display.GetPrimaryMonitor().GetClientArea()
+		shell.SetLocation(area.X+50, area.Y+50)
+	}
 	shell.Open()
 	if *snapDir != "" {
 		snapAll(display, shell, instance.TabFolder(), *snapDir)

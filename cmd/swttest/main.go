@@ -53,7 +53,7 @@ func main() {
 	if *runFlag != "" {
 		runRe = regexp.MustCompile(*runFlag)
 	}
-	display := swt.NewDisplay()
+	display := newDisplay()
 	var passed, failed, skipped int
 	start := time.Now()
 	index := 0
@@ -84,7 +84,7 @@ func main() {
 			if strings.HasSuffix(c.Name, "_widgets_Display") {
 				disposeCurrent()
 			} else if display.IsDisposed() {
-				display = swt.NewDisplay()
+				display = newDisplay()
 			}
 			name := c.Name + "." + t.Name
 			event("run", name, 0, "")
@@ -125,6 +125,26 @@ func summarize(passed, failed, skipped int, start time.Time) {
 	} else {
 		fmt.Println(summary)
 	}
+}
+
+type primaryFilter struct{}
+
+// Shells land on the screen of the key window or mouse, which on a mixed-scale setup changes
+// snapshots, focus and pixel bounds; a shell the test placed on the primary monitor stays put.
+func (primaryFilter) HandleEvent(e *swt.Event) {
+	area := e.Display.GetPrimaryMonitor().GetClientArea()
+	for _, s := range e.Display.GetShells() {
+		if b := s.GetBounds(); !area.Intersects(b.X, b.Y, b.Width, b.Height) {
+			s.SetLocation(area.X+50, area.Y+50)
+		}
+	}
+}
+
+func newDisplay() *swt.Display {
+	d := swt.NewDisplay()
+	d.AddFilter(swt.Show, primaryFilter{})
+	d.AddFilter(swt.Activate, primaryFilter{})
+	return d
 }
 
 // disposeCurrent disposes the Display of this thread, if any.

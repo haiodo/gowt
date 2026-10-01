@@ -100,6 +100,7 @@ func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) dispose_() {
 	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
 		defer this.enter("dispose_")()
 		h.Dispose_()
+		return
 	}
 	this.ScalingSWTFontRegistry_ScaledFontContainerImpl.dispose_()
 }

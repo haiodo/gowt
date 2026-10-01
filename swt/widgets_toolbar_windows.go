@@ -955,7 +955,7 @@ func (this *ToolBar) updateTextDirection_(textDirection int32) bool {
 
 func (this *ToolBar) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	if (hdr.UFlags & win32.OSTTF_IDISHWND) != 0 {
-		return ""
+		return jrt.NullString
 	}
 	if !this.HasCursor() {
 		return ""

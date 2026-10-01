@@ -52,6 +52,7 @@ func (this *deviceHooked) checkDevice_() {
 	if h, ok := this.hook.(interface{ CheckDevice_() }); ok && this.active != "checkDevice_" {
 		defer this.enter("checkDevice_")()
 		h.CheckDevice_()
+		return
 	}
 	this.DeviceImpl.checkDevice_()
 }
@@ -60,6 +61,7 @@ func (this *deviceHooked) create_(a0 *DeviceData) {
 	if h, ok := this.hook.(interface{ Create_(a0 *DeviceData) }); ok && this.active != "create_" {
 		defer this.enter("create_")()
 		h.Create_(a0)
+		return
 	}
 	this.DeviceImpl.create_(a0)
 }
@@ -68,6 +70,7 @@ func (this *deviceHooked) destroy_() {
 	if h, ok := this.hook.(interface{ Destroy_() }); ok && this.active != "destroy_" {
 		defer this.enter("destroy_")()
 		h.Destroy_()
+		return
 	}
 	this.DeviceImpl.destroy_()
 }
@@ -116,6 +119,7 @@ func (this *deviceHooked) init_() {
 	if h, ok := this.hook.(interface{ Init_() }); ok && this.active != "init_" {
 		defer this.enter("init_")()
 		h.Init_()
+		return
 	}
 	this.DeviceImpl.init_()
 }
@@ -132,6 +136,7 @@ func (this *deviceHooked) internal_dispose_GC_(a0 int64, a1 *GCData) {
 	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok && this.active != "internal_dispose_GC_" {
 		defer this.enter("internal_dispose_GC_")()
 		h.Internal_dispose_GC_(a0, a1)
+		return
 	}
 	this.DeviceImpl.internal_dispose_GC_(a0, a1)
 }
@@ -140,6 +145,7 @@ func (this *deviceHooked) release_() {
 	if h, ok := this.hook.(interface{ Release_() }); ok && this.active != "release_" {
 		defer this.enter("release_")()
 		h.Release_()
+		return
 	}
 	this.DeviceImpl.release_()
 }

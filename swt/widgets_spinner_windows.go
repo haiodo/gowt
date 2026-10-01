@@ -530,7 +530,7 @@ func (this *Spinner) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int3
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
-	if newText == "" {
+	if newText == jrt.NullString {
 		return false
 	}
 	if newText == oldText {
@@ -681,7 +681,7 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 		if this.Hooks(Verify) || this.Filters(Verify) {
 			var length int32 = win32.OSGetWindowTextLength(this.hwndText)
 			string_ = this.VerifyText(string_, 0, length, nil)
-			if string_ == "" {
+			if string_ == jrt.NullString {
 				return
 			}
 		}
@@ -804,7 +804,7 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 	event.Doit = index == jrt.StringLength(string_)
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }
@@ -1042,7 +1042,7 @@ func (this *Spinner) WmClipboard(hwndText int64, msg int32, wParam int64, lParam
 	if newText != "" {
 		var oldText string = newText
 		newText = this.VerifyText(newText, start[0], end[0], nil)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return win32.LRESULTZERO
 		}
 		if !(newText == oldText) {

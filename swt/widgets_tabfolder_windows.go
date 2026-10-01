@@ -4,6 +4,7 @@ package swt
 
 import (
 	"fmt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
@@ -525,7 +526,7 @@ func (this *TabFolder) updateTextDirection_(textDirection int32) bool {
 
 func (this *TabFolder) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	if (hdr.UFlags & win32.OSTTF_IDISHWND) != 0 {
-		return ""
+		return jrt.NullString
 	}
 	var index int32 = int32(hdr.IdFrom)
 	var hwndToolTip int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTCM_GETTOOLTIPS, int64(0), int64(0))

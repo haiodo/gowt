@@ -1892,7 +1892,7 @@ func (this *Image_HandleAtSize) GetShellZooms() *jrt.List {
 				}() {
 					e := r.(*SWTException)
 					_ = e
-					tret408 = func() *jrt.List { panic("j2go: unresolved call emptySet") }()
+					tret408 = jrt.CollectionsEmptySet()
 					tretd409 = true
 					return
 				} else {
@@ -1907,7 +1907,7 @@ func (this *Image_HandleAtSize) GetShellZooms() *jrt.List {
 			return tret408
 		}
 	}
-	return func() *jrt.List { panic("j2go: unresolved call emptySet") }()
+	return jrt.CollectionsEmptySet()
 }
 
 type Image_HandleAtSize_TemporaryHandleForZoom struct {
@@ -2282,7 +2282,7 @@ func (this *Image_AbstractImageProviderWrapper) GetPreservedZoomLevels() *jrt.Li
 }
 
 func (this *Image_AbstractImageProviderWrapper) getPreservedZoomLevels_() *jrt.List {
-	return func() *jrt.List { panic("j2go: unresolved call emptySet") }()
+	return jrt.CollectionsEmptySet()
 }
 
 func (this *Image_AbstractImageProviderWrapper) IsPersistentImageHandleRequriedForImageData() bool {
@@ -2421,7 +2421,7 @@ func (this *Image_ExistingImageHandleProviderWrapper) createCopy_(image *Image) 
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) getPreservedZoomLevels_() *jrt.List {
-	return func() *jrt.List { _ = []any{int32(this.baseZoom)}; panic("j2go: unresolved call singleton") }()
+	return jrt.CollectionsSingleton(int32(this.baseZoom))
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) loadImageData_(zoom int32) *DPIUtilElementAtZoom {
@@ -2770,7 +2770,7 @@ func (this *Image_PlainImageProviderWrapper) getFittingZoomContext_(targetZoom i
 }
 
 func (this *Image_PlainImageProviderWrapper) getPreservedZoomLevels_() *jrt.List {
-	return func() *jrt.List { _ = []any{int32(this.baseZoom)}; panic("j2go: unresolved call singleton") }()
+	return jrt.CollectionsSingleton(int32(this.baseZoom))
 }
 
 func (this *Image_PlainImageProviderWrapper) configureGCData_(data *GCData) int64 {

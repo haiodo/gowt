@@ -548,8 +548,12 @@ func (f *DateFormat) Parse(s string) *Date {
 	return &Date{t}
 }
 
-// Collections is only the static max(collection, comparator).
+// Collections holds the static helpers the translated sources call: max, emptySet, singleton.
 type Collections struct{}
+
+func CollectionsEmptySet() *List { return NewList() }
+
+func CollectionsSingleton(v any) *List { return ListOf(v) }
 
 func CollectionsMax[T any](c *List, cmp func(T, T) int32) T {
 	best := c.items[0].(T)

@@ -1416,7 +1416,7 @@ func (this *Combo) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int32,
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
-	if newText == "" {
+	if newText == jrt.NullString {
 		return false
 	}
 	if newText == oldText {
@@ -1963,7 +1963,7 @@ func (this *Combo) VerifyText(string_ string, start int32, end int32, keyEventLi
 	event.End = this.UntranslateOffset(event.End)
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }
@@ -2140,7 +2140,7 @@ func (this *Combo) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam 
 						var length int32 = win32.OSGetWindowTextLength(this.Handle)
 						oldText = newText
 						newText = this.VerifyText(newText, 0, length, nil)
-						if newText == "" {
+						if newText == jrt.NullString {
 							return int64(0)
 						}
 						if !(newText == oldText) {
@@ -2514,7 +2514,7 @@ func (this *Combo) WmClipboard(hwndText int64, msg int32, wParam int64, lParam i
 	if newText != "" {
 		var oldText string = newText
 		newText = this.VerifyText(newText, start[0], end[0], nil)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return win32.LRESULTZERO
 		}
 		if !(newText == oldText) {

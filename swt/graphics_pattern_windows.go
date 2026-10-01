@@ -346,6 +346,7 @@ func (this *pattern_PatternHandleHooked) destroy_() {
 	if h, ok := this.hook.(interface{ Destroy_() }); ok && this.active != "destroy_" {
 		defer this.enter("destroy_")()
 		h.Destroy_()
+		return
 	}
 	this.Pattern_PatternHandleImpl.destroy_()
 }

@@ -326,7 +326,7 @@ func (this *Text) Append(string_ string) {
 	var length int32 = win32.OSGetWindowTextLength(this.Handle)
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		string_ = this.VerifyText(string_, length, length, nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1071,7 +1071,7 @@ func (this *Text) Insert(string_ string) {
 		var end []int32 = make([]int32, 1)
 		win32.OSSendMessageOverload1(this.Handle, win32.OSEM_GETSEL, start, end)
 		string_ = this.VerifyText(string_, start[0], end[0], nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1265,7 +1265,7 @@ func (this *Text) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int32, 
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
-	if newText == "" {
+	if newText == jrt.NullString {
 		return false
 	}
 	if newText == oldText {
@@ -1508,7 +1508,7 @@ func (this *Text) SetText(string_ string) {
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var length int32 = win32.OSGetWindowTextLength(this.Handle)
 		string_ = this.VerifyText(string_, 0, length, nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 	}
@@ -1538,7 +1538,7 @@ func (this *Text) SetTextChars(text []uint16) {
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var length int32 = win32.OSGetWindowTextLength(this.Handle)
 		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, length, nil)
-		if string_ == "" {
+		if string_ == jrt.NullString {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
@@ -1672,7 +1672,7 @@ func (this *Text) VerifyText(string_ string, start int32, end int32, keyEventLik
 	event.End = this.UntranslateOffset(event.End)
 	this.SendEventEventTypeEvent(Verify, event)
 	if !event.Doit || this.IsDisposed() {
-		return ""
+		return jrt.NullString
 	}
 	return event.Text
 }
@@ -2115,7 +2115,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 	if newText != "" {
 		var oldText string = newText
 		newText = this.VerifyText(newText, start[0], end[0], nil)
-		if newText == "" {
+		if newText == jrt.NullString {
 			return win32.LRESULTZERO
 		}
 		if !(newText == oldText) {

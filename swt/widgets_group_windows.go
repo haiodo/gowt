@@ -68,7 +68,7 @@ func (this *Group) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed
 	var size *Point = this.Composite.computeSizeInPixels_(hintInPoints, zoom, changed)
 	var length int32 = jrt.StringLength(this.text)
 	if length != 0 {
-		var string_ string = this.FixText()
+		var string_ string = jrt.NullToEmpty(this.FixText())
 		var cond237 string
 		if string_ == "" {
 			cond237 = this.text
@@ -129,7 +129,7 @@ func (this *Group) createHandle_() {
 func (this *Group) enableWidget_(enabled bool) {
 	this.Composite.enableWidget_(enabled)
 	var string_ string = this.FixText()
-	if string_ != "" {
+	if string_ != jrt.NullString {
 		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(string_, true)
 		win32.OSSetWindowText(this.Handle, buffer)
 	}
@@ -140,7 +140,7 @@ func (this *Group) enableWidget_(enabled bool) {
 
 func (this *Group) FixText() string {
 	if jrt.StringLength(this.text) == 0 {
-		return ""
+		return jrt.NullString
 	}
 	if (this.style & RIGHT_TO_LEFT) != 0 {
 		var cond238 string
@@ -155,7 +155,7 @@ func (this *Group) FixText() string {
 			return fmt.Sprintf("%c%s", WidgetRLE, this.text)
 		}
 	}
-	return ""
+	return jrt.NullString
 }
 
 func (this *Group) getClientAreaInPixels_() *Rectangle {
@@ -273,7 +273,7 @@ func (this *Group) SetText(string_ string) {
 	}
 	this.text = string_
 	if (this.state&WidgetHAS_AUTO_DIRECTION) == 0 || !this.impl.updateTextDirection_(WidgetAUTO_TEXT_DIRECTION) {
-		string_ = this.FixText()
+		string_ = jrt.NullToEmpty(this.FixText())
 		var cond239 string
 		if string_ == "" {
 			cond239 = this.text
@@ -287,7 +287,7 @@ func (this *Group) SetText(string_ string) {
 
 func (this *Group) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
-		var string_ string = this.FixText()
+		var string_ string = jrt.NullToEmpty(this.FixText())
 		var cond240 string
 		if string_ == "" {
 			cond240 = this.text
@@ -345,7 +345,7 @@ func (this *Group) wM_MOUSEMOVE_(wParam int64, lParam int64) *win32.LRESULT {
 func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 	var result *win32.LRESULT = this.Composite.wM_PAINT_(wParam, lParam)
 	if this.HasCustomForeground() && jrt.StringLength(this.text) != 0 {
-		var string_ string = this.FixText()
+		var string_ string = jrt.NullToEmpty(this.FixText())
 		var cond241 string
 		if string_ == "" {
 			cond241 = this.text

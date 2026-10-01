@@ -1546,7 +1546,7 @@ func (this *Composite) wmNotify_(hdr *win32.NMHDR, wParam int64, lParam int64) *
 			var lpnmtdi *win32.NMTTDISPINFO = win32.NewNMTTDISPINFO()
 			win32.OSMoveMemoryOverload67(lpnmtdi, lParam, win32.NMTTDISPINFOSizeof)
 			var string_ string = this.impl.toolTipText_(lpnmtdi)
-			if string_ != "" {
+			if string_ != jrt.NullString {
 				var shell *Shell = this.impl.getShell_()
 				string_ = DisplayWithCrLf(string_)
 				if jrt.StringLength(string_) > CompositeTOOLTIP_LIMIT {

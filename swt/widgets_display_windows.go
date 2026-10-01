@@ -2282,7 +2282,7 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 			}
 			if int32(msg) == DisplaySWT_OPENDOC {
 				var filename string = this.GetSharedData(int32(wParam), int32(lParam))
-				if filename != "" {
+				if filename != jrt.NullString {
 					if strings.HasPrefix(filename, DisplayTASKBAR_EVENT) {
 						var text string = jrt.Substring(filename, jrt.StringLength(DisplayTASKBAR_EVENT), -1)
 						var id int32 = jrt.ParseInt(text)
@@ -2326,14 +2326,14 @@ func (this *Display) GetSharedData(pid int32, handle int32) string {
 	} else {
 		var processHandle int64 = win32.OSOpenProcess(win32.OSPROCESS_VM_READ|win32.OSPROCESS_DUP_HANDLE, false, pid)
 		if processHandle == 0 {
-			return ""
+			return jrt.NullString
 		}
 		win32.OSDuplicateHandle(processHandle, int64(handle), win32.OSGetCurrentProcess(), mapHandle, win32.OSDUPLICATE_SAME_ACCESS, false, win32.OSDUPLICATE_SAME_ACCESS)
 		win32.OSCloseHandle(processHandle)
 	}
 	var sharedData int64 = win32.OSMapViewOfFile(mapHandle[0], win32.OSFILE_MAP_READ, 0, 0, 0)
 	if sharedData == 0 {
-		return ""
+		return jrt.NullString
 	}
 	var length int32 = win32.OSWcslen(sharedData)
 	var buffer *win32.TCHAR = win32.NewTCHAR(length)

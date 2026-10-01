@@ -2831,7 +2831,7 @@ func (this *TextLayout) Itemize() []*TextLayout_StyleItem {
 				i++
 			}() {
 				var c uint16 = chars[i]
-				if int32(c) >= int32(' ') && int32(c) <= int32('~') && !func() bool { _ = []any{int32(c)}; panic("j2go: unresolved call isAlphabetic") }() {
+				if int32(c) >= int32(' ') && int32(c) <= int32('~') && !unicode.IsLetter(rune(c)) {
 					latestNeutralIndex = i
 				} else {
 					if int32(c) > 255 {

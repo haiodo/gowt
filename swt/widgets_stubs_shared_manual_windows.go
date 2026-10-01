@@ -61,3 +61,8 @@ func (widgetSpy) WidgetCreated(w *Widget)  {}
 func (widgetSpy) WidgetDisposed(w *Widget) {}
 
 func WidgetSpyGetInstance() widgetSpy { return widgetSpy{} }
+
+// Item.updateTextDirection is a dispatch point on win32 (Control declares it too); the shared Item has the plain method only.
+func (this *Item) updateTextDirection_(textDirection int32) bool {
+	return this.UpdateTextDirection(textDirection)
+}

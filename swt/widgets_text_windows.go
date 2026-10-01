@@ -145,25 +145,25 @@ func (this *Text) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 						var alignment int32 = this.style & (LEFT | CENTER | RIGHT)
 						switch alignment {
 						case LEFT:
-							var cond223 int32
+							var cond221 int32
 							if rtl {
-								cond223 = win32.OSDT_RIGHT
+								cond221 = win32.OSDT_RIGHT
 							} else {
-								cond223 = win32.OSDT_LEFT
+								cond221 = win32.OSDT_LEFT
 							}
-							uFormat |= (cond223)
+							uFormat |= (cond221)
 							break
 						case CENTER:
 							uFormat |= win32.OSDT_CENTER
 							fallthrough
 						case RIGHT:
-							var cond224 int32
+							var cond222 int32
 							if rtl {
-								cond224 = win32.OSDT_LEFT
+								cond222 = win32.OSDT_LEFT
 							} else {
-								cond224 = win32.OSDT_RIGHT
+								cond222 = win32.OSDT_RIGHT
 							}
-							uFormat |= (cond224)
+							uFormat |= (cond222)
 							break
 						}
 						var hFont int64 = win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0))
@@ -290,13 +290,13 @@ func (this *Text) createHandle_() {
 }
 
 func (this *Text) applyThemeBackground_() int32 {
-	var cond225 int32
+	var cond223 int32
 	if this.backgroundAlpha == 0 || (this.style&(BORDER|H_SCROLL|V_SCROLL)) == 0 {
-		cond225 = 1
+		cond223 = 1
 	} else {
-		cond225 = 0
+		cond223 = 0
 	}
-	return cond225
+	return cond223
 }
 
 func (this *Text) AddModifyListener(listener ModifyListener) {
@@ -394,9 +394,9 @@ func (this *Text) ApplySegments() {
 				i++
 			}() {
 				if int32(segmentsChars[i]) == int32('\u000a') && int32(segmentsCharsCrLf[i+c]) == int32('\u000d') {
-					t226 := c
+					t224 := c
 					c++
-					segmentsCrLf[i+t226] = this.segments[i]
+					segmentsCrLf[i+t224] = this.segments[i]
 				}
 				segmentsCrLf[i+c] = this.segments[i]
 			}
@@ -425,16 +425,16 @@ func (this *Text) ApplySegments() {
 			} else {
 				separator = defaultSeparator
 			}
-			t227 := charCount
+			t225 := charCount
 			charCount++
-			newChars[t227] = separator
+			newChars[t225] = separator
 			segmentCount++
 		} else {
 			if string_ != "" {
-				idx229 := charCount
-				t228 := charCount
+				idx227 := charCount
+				t226 := charCount
 				charCount++
-				newChars[idx229] = utf16.Encode([]rune(string_))[t228-segmentCount]
+				newChars[idx227] = utf16.Encode([]rune(string_))[t226-segmentCount]
 			}
 		}
 	}
@@ -446,9 +446,9 @@ func (this *Text) ApplySegments() {
 		} else {
 			separator = defaultSeparator
 		}
-		t230 := charCount
+		t228 := charCount
 		charCount++
-		newChars[t230] = separator
+		newChars[t228] = separator
 		segmentCount++
 	}
 	var start []int32 = make([]int32, 1)
@@ -473,9 +473,9 @@ func (this *Text) ApplySegments() {
 }
 
 func (this *Text) ClearSegments(applyText bool) {
-	t231 := this.clearSegmentsCount
+	t229 := this.clearSegmentsCount
 	this.clearSegmentsCount++
-	if t231 != 0 {
+	if t229 != 0 {
 		return
 	}
 	if this.segments == (nil) {
@@ -627,22 +627,22 @@ func (this *Text) Copy() {
 }
 
 func (this *Text) createScrollBar_(type_ int32) *ScrollBar {
-	var cond232 *ScrollBar
+	var cond230 *ScrollBar
 	if (this.style & SEARCH) == 0 {
-		cond232 = this.Scrollable.createScrollBar_(type_)
+		cond230 = this.Scrollable.createScrollBar_(type_)
 	} else {
-		cond232 = nil
+		cond230 = nil
 	}
-	return cond232
+	return cond230
 }
 
 func (this *Text) createWidget_() {
 	this.Scrollable.createWidget_()
 	this.message = ""
 	this.doubleClick = true
-	var cond233 int32 = 8
-	this.tabs = cond233
-	this.SetTabStops(cond233)
+	var cond231 int32 = 8
+	this.tabs = cond231
+	this.SetTabStops(cond231)
 	this.FixAlignment()
 }
 
@@ -1367,13 +1367,13 @@ func (this *Text) SetEditable(editable bool) {
 	if !editable {
 		this.style |= READ_ONLY
 	}
-	var cond234 int32
+	var cond232 int32
 	if editable {
-		cond234 = 0
+		cond232 = 0
 	} else {
-		cond234 = 1
+		cond232 = 1
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond234), int64(0))
+	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond232), int64(0))
 }
 
 func (this *Text) setFont_(font *Font) {
@@ -1489,9 +1489,9 @@ func (this *Text) SetTabs(tabs int32) {
 	if tabs < 0 {
 		return
 	}
-	cond235 := tabs
-	this.tabs = cond235
-	this.SetTabStops(cond235)
+	cond233 := tabs
+	this.tabs = cond233
+	this.SetTabStops(cond233)
 }
 
 func (this *Text) SetTabStops(tabs int32) {
@@ -2030,20 +2030,20 @@ func (this *Text) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	if (this.style & SEARCH) != 0 {
 		var rtl bool = (this.style & RIGHT_TO_LEFT) != 0
-		var cond236 int32
+		var cond234 int32
 		if rtl {
-			cond236 = ICON_CANCEL
+			cond234 = ICON_CANCEL
 		} else {
-			cond236 = ICON_SEARCH
+			cond234 = ICON_SEARCH
 		}
-		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond236)
-		var cond237 int32
+		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond234)
+		var cond235 int32
 		if rtl {
-			cond237 = ICON_SEARCH
+			cond235 = ICON_SEARCH
 		} else {
-			cond237 = ICON_CANCEL
+			cond235 = ICON_CANCEL
 		}
-		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond237)
+		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond235)
 		var width int32 = win32.OSLOWORD(lParam)
 		var height int32 = win32.OSHIWORD(lParam)
 		var iconWidth int32 = this.impl.getSystemMetrics_(win32.OSSM_CXSMICON)
@@ -2175,13 +2175,13 @@ func (this *Text) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 			var showCancel bool = win32.OSGetWindowTextLength(this.Handle) != 0
 			var hwndCancel int64 = win32.OSGetDlgItem(this.Handle, ICON_CANCEL)
 			if hwndCancel != 0 {
-				var cond238 int32
+				var cond236 int32
 				if showCancel {
-					cond238 = win32.OSSW_SHOW
+					cond236 = win32.OSSW_SHOW
 				} else {
-					cond238 = win32.OSSW_HIDE
+					cond236 = win32.OSSW_HIDE
 				}
-				win32.OSShowWindow(hwndCancel, cond238)
+				win32.OSShowWindow(hwndCancel, cond236)
 			}
 		}
 		if this.ignoreModify {

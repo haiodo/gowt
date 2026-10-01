@@ -100,8 +100,8 @@ func (this *FileDialog) GetOverwrite() bool {
 }
 
 func (this *FileDialog) Open() string {
-	var tret796 string
-	tretd797 := false
+	var tret671 string
+	tretd672 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -118,8 +118,8 @@ func (this *FileDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret796 = ""
-					tretd797 = true
+					tret671 = ""
+					tretd672 = true
 					return
 				}
 				panic(e)
@@ -127,12 +127,12 @@ func (this *FileDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret796 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd797 = true
+		tret671 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd672 = true
 		return
 	}()
-	_ = tretd797
-	return tret796
+	_ = tretd672
+	return tret671
 }
 
 func (this *FileDialog) OpenDialog() *jrt.Optional {

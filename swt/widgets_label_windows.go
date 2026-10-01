@@ -206,13 +206,13 @@ func (this *Label) releaseWidget_() {
 }
 
 func (this *Label) resolveTextDirection_() int32 {
-	var cond203 int32
+	var cond201 int32
 	if (this.style & SEPARATOR) != 0 {
-		cond203 = NONE
+		cond201 = NONE
 	} else {
-		cond203 = BidiUtilResolveTextDirection(this.text)
+		cond201 = BidiUtilResolveTextDirection(this.text)
 	}
-	return cond203
+	return cond201
 }
 
 func (this *Label) SetAlignment(alignment int32) {

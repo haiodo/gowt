@@ -34,7 +34,7 @@ func init() {
 		lpResourceName         uintptr
 		lpApplicationName      uintptr
 		hModule                uintptr
-	}{lpSource: src}
+	}{dwFlags: 0x10, lpSource: src} // ACTCTX_FLAG_SET_PROCESS_DEFAULT: every thread gets common controls 6, as with SWT's own
 	ctx.cbSize = uint32(unsafe.Sizeof(ctx))
 	h, _, _ := kernel32.NewProc("CreateActCtxW").Call(uintptr(unsafe.Pointer(&ctx)))
 	if h == ^uintptr(0) {

@@ -145,13 +145,13 @@ func (this *Scrollable) ApplyThemeBackground() int32 {
 }
 
 func (this *Scrollable) applyThemeBackground_() int32 {
-	var cond100 int32
+	var cond99 int32
 	if this.backgroundAlpha == 0 {
-		cond100 = 1
+		cond99 = 1
 	} else {
-		cond100 = 0
+		cond99 = 0
 	}
-	return cond100
+	return cond99
 }
 
 func (this *Scrollable) DestroyScrollBar(type_ int32) {
@@ -343,9 +343,7 @@ func (this *Scrollable) WmScrollWheel(update bool, wParam int64, lParam int64, h
 		} else {
 			bar = this.horizontalBar
 		}
-		inner101 := newWidgetMouseWheelData(vertical, bar, wParam, this.display.scrollRemainderBar)
-		inner101.this_0 = upcastScrollableToWidget(this)
-		var wheelData *Widget_MouseWheelData = inner101
+		var wheelData *Widget_MouseWheelData = newWidgetMouseWheelData(upcastScrollableToWidget(this), vertical, bar, wParam, this.display.scrollRemainderBar)
 		if wheelData.count == 0 {
 			return nil
 		}

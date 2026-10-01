@@ -666,13 +666,13 @@ func (this *TabFolder) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_LEFT, win32.OSVK_RIGHT:
 		var isRTL bool = (this.style & RIGHT_TO_LEFT) != 0
 		if isRTL != this.createdAsRTL {
-			var cond701 int32
+			var cond576 int32
 			if wParam == int64(win32.OSVK_RIGHT) {
-				cond701 = win32.OSVK_LEFT
+				cond576 = win32.OSVK_LEFT
 			} else {
-				cond701 = win32.OSVK_RIGHT
+				cond576 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond701), lParam)
+			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond576), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break

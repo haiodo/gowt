@@ -171,7 +171,7 @@ final class ClassEmitter {
 				}
 				// A generic method (e.g. getTypedListeners<L>) has no Go equivalent for its own
 				// signature (no generics, no Stream) - skipped entirely rather than emitted broken.
-				if (!md.typeParameters().isEmpty()) {
+				if (!md.typeParameters().isEmpty() && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 					emitter.unsupported.add("MethodDeclaration: generic method " + ci.binaryName + "." + md.getName() + " skipped");
 					continue;
 				}

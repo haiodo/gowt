@@ -396,16 +396,16 @@ func (this *Device) destroy_() {
 
 func (this *Device) Dispose() {
 	jrt.MonitorEnter()
-	tretd262 := false
+	tretd260 := false
 	func() {
 		defer jrt.MonitorExit()
 		{
 			var exceptions *ExceptionStash = NewExceptionStash()
-			tretd263 := false
+			tretd261 := false
 			func() {
 				defer exceptions.Close()
 				if this.IsDisposed() {
-					tretd263 = true
+					tretd261 = true
 					return
 				}
 				this.impl.checkDevice_()
@@ -437,32 +437,32 @@ func (this *Device) Dispose() {
 					}()
 				}
 			}()
-			if tretd263 {
-				tretd262 = true
+			if tretd261 {
+				tretd260 = true
 				return
 			}
 		}
 	}()
-	if tretd262 {
+	if tretd260 {
 		return
 	}
 }
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd264 := false
+	tretd262 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd264 = true
+				tretd262 = true
 				return
 			}
 		}
 	}()
-	if tretd264 {
+	if tretd262 {
 		return
 	}
 }
@@ -603,33 +603,33 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 	var offset int32 = 0
 	var hDC int64 = this.impl.internal_new_GC_(nil)
 	if faceName == "" {
+		var cond263 int32
+		if scalable {
+			cond263 = 1
+		} else {
+			cond263 = 0
+		}
+		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond263))
+		offset = this.nFonts
+		for i := int32(0); i < offset; i++ {
+			var lf *win32.LOGFONT = this.logFonts[i]
+			var cond264 int32
+			if scalable {
+				cond264 = 1
+			} else {
+				cond264 = 0
+			}
+			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond264))
+		}
+	} else {
+		var lpFaceName *win32.TCHAR = win32.NewTCHARStringTerminate(faceName, true)
 		var cond265 int32
 		if scalable {
 			cond265 = 1
 		} else {
 			cond265 = 0
 		}
-		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond265))
-		offset = this.nFonts
-		for i := int32(0); i < offset; i++ {
-			var lf *win32.LOGFONT = this.logFonts[i]
-			var cond266 int32
-			if scalable {
-				cond266 = 1
-			} else {
-				cond266 = 0
-			}
-			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond266))
-		}
-	} else {
-		var lpFaceName *win32.TCHAR = win32.NewTCHARStringTerminate(faceName, true)
-		var cond267 int32
-		if scalable {
-			cond267 = 1
-		} else {
-			cond267 = 0
-		}
-		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond267))
+		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond265))
 	}
 	var logPixelsY int32 = win32.OSGetDeviceCaps(hDC, win32.OSLOGPIXELSY)
 	this.impl.internal_dispose_GC_(hDC, nil)
@@ -644,9 +644,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			}
 		}
 		if j == count {
-			t268 := count
+			t266 := count
 			count++
-			result[t268] = fd
+			result[t266] = fd
 		}
 	}
 	if count != int32(len(result)) {
@@ -804,14 +804,14 @@ func (this *Device) LoadFont(path string) bool {
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd269 := false
+	tretd267 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if jrt.IsNil(this.objects[i]) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd269 = true
+				tretd267 = true
 				return
 			}
 		}
@@ -824,7 +824,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd269 {
+	if tretd267 {
 		return
 	}
 }
@@ -835,11 +835,11 @@ func (this *Device) PrintErrors() {
 	}
 	if this.tracking {
 		jrt.MonitorEnter()
-		tretd270 := false
+		tretd268 := false
 		func() {
 			defer jrt.MonitorExit()
 			if this.objects == (nil) || this.errors == (nil) {
-				tretd270 = true
+				tretd268 = true
 				return
 			}
 			var objectCount int32 = 0
@@ -856,44 +856,44 @@ func (this *Device) PrintErrors() {
 			for _, object := range this.objects {
 				if !jrt.IsNil(object) {
 					objectCount++
-					_, ok271 := resourceImplAsColor(object)
-					if ok271 {
+					_, ok269 := resourceImplAsColor(object)
+					if ok269 {
 						colors++
 					}
-					_, ok272 := resourceImplAsCursor(object)
-					if ok272 {
+					_, ok270 := resourceImplAsCursor(object)
+					if ok270 {
 						cursors++
 					}
-					_, ok273 := resourceImplAsFont(object)
-					if ok273 {
+					_, ok271 := resourceImplAsFont(object)
+					if ok271 {
 						fonts++
 					}
-					_, ok274 := resourceImplAsGC(object)
-					if ok274 {
+					_, ok272 := resourceImplAsGC(object)
+					if ok272 {
 						gcs++
 					}
-					_, ok275 := resourceImplAsImage(object)
-					if ok275 {
+					_, ok273 := resourceImplAsImage(object)
+					if ok273 {
 						images++
 					}
-					_, ok276 := resourceImplAsPath(object)
-					if ok276 {
+					_, ok274 := resourceImplAsPath(object)
+					if ok274 {
 						paths++
 					}
-					_, ok277 := resourceImplAsPattern(object)
-					if ok277 {
+					_, ok275 := resourceImplAsPattern(object)
+					if ok275 {
 						patterns++
 					}
-					_, ok278 := resourceImplAsRegion(object)
-					if ok278 {
+					_, ok276 := resourceImplAsRegion(object)
+					if ok276 {
 						regions++
 					}
-					_, ok279 := resourceImplAsTextLayout(object)
-					if ok279 {
+					_, ok277 := resourceImplAsTextLayout(object)
+					if ok277 {
 						textLayouts++
 					}
-					_, ok280 := resourceImplAsTransform(object)
-					if ok280 {
+					_, ok278 := resourceImplAsTransform(object)
+					if ok278 {
 						transforms++
 					}
 				}
@@ -941,7 +941,7 @@ func (this *Device) PrintErrors() {
 				}
 			}
 		}()
-		if tretd270 {
+		if tretd268 {
 			return
 		}
 	}
@@ -1065,8 +1065,8 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 	if this == obj {
 		return true
 	}
-	passedResource, ok281 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
-	if !(ok281) {
+	passedResource, ok279 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
+	if !(ok279) {
 		return false
 	}
 	return jrt.ObjectsEquals(func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }(), func() *Resource { _ = []any{passedResource}; panic("j2go: unresolved call get") }())
@@ -1074,13 +1074,13 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 
 func (this *Device_ResourceReference) HashCode() int32 {
 	var resource *Resource = func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }()
-	var cond282 int32
+	var cond280 int32
 	if resource != (nil) {
-		cond282 = jrt.HashCodeOf(resource)
+		cond280 = jrt.HashCodeOf(resource)
 	} else {
-		cond282 = 0
+		cond280 = 0
 	}
-	return cond282
+	return cond280
 }
 
 // j2go: instanceof helper for Cursor and its subclasses within the translated set.

@@ -88,8 +88,6 @@ func (this *TextLayout) initTextLayout(device *Device) {
 	this.Resource.initResourceDevice(device)
 	this.metricsAdapter = newTextLayoutMetricsAdapter()
 	this.nativeZoom = DPIUtilGetNativeDeviceZoom()
-	func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert MAX_RUN_LENGTH > 1;
-	func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert MAX_SEARCH_RUN_BREAK < MAX_RUN_LENGTH;
 	this.descent = -1
 	this.ascent = this.descent
 	this.wrapWidth = this.ascent
@@ -98,12 +96,8 @@ func (this *TextLayout) initTextLayout(device *Device) {
 	this.orientation = LEFT_TO_RIGHT
 	this.textDirection = LEFT_TO_RIGHT
 	this.styles = make([]*TextLayout_StyleItem, 2)
-	inner595 := newTextLayoutStyleItem()
-	inner595.this_0 = this
-	this.styles[0] = inner595
-	inner596 := newTextLayoutStyleItem()
-	inner596.this_0 = this
-	this.styles[1] = inner596
+	this.styles[0] = newTextLayoutStyleItem(this)
+	this.styles[1] = newTextLayoutStyleItem(this)
 	this.stylesCount = 2
 	this.text = ""
 	var ppv []int64 = make([]int64, 1)
@@ -263,9 +257,9 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 			var width int32 = 0
 			var maxWidth int32 = wrapWidthInPixels - lineWidth
 			for width+piDx[start] < maxWidth {
-				t597 := start
+				t480 := start
 				start++
-				width += piDx[t597]
+				width += piDx[t480]
 			}
 			var firstStart int32 = start
 			var firstIndice int32 = i
@@ -332,9 +326,7 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 				start++
 			}
 			if 0 < start && start < run.length {
-				inner598 := newTextLayoutStyleItem()
-				inner598.this_0 = this
-				var newRun *TextLayout_StyleItem = inner598
+				var newRun *TextLayout_StyleItem = newTextLayoutStyleItem(this)
 				newRun.start = run.start + start
 				newRun.length = run.length - start
 				newRun.style = run.style
@@ -381,9 +373,9 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 	var lineRuns []*TextLayout_StyleItem = make([]*TextLayout_StyleItem, int32(len(this.allRuns)))
 	for i := int32(0); i < int32(len(this.allRuns)); i++ {
 		var run *TextLayout_StyleItem = this.allRuns[i]
-		t599 := lineRunCount
+		t481 := lineRunCount
 		lineRunCount++
-		lineRuns[t599] = run
+		lineRuns[t481] = run
 		lineWidth += run.width
 		ascentInPoints = int32(math.Max(float64(ascentInPoints), float64(run.ascentInPoints)))
 		descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
@@ -1200,13 +1192,13 @@ func (this *TextLayout) DrawRunText(gcLike GCLike, hdc int64, runLike TextLayout
 		win32.OSSetTextColor(hdc, selectionColor)
 		this.metricsAdapter.ScriptTextOut(hdc, run.psc, x, y, win32.OSETO_CLIPPED, rect, run.analysis, int64(0), 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets)
 	}
-	var cond600 *win32.RECT
+	var cond482 *win32.RECT
 	if fullSelection || partialSelection {
-		cond600 = rect
+		cond482 = rect
 	} else {
-		cond600 = nil
+		cond482 = nil
 	}
-	return cond600
+	return cond482
 }
 
 func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike TextLayout_StyleItemLike, rect *win32.RECT, gdipFont int64, baselineInPixels int32, color int64, selectionColor int64, selectionStart int32, selectionEnd int32, alpha int32) *win32.RECT {
@@ -1268,13 +1260,13 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	}
 	var advances []int32 = make([]int32, run.glyphCount)
 	var points []float32 = make([]float32, run.glyphCount*2)
-	var cond601 int64
+	var cond483 int64
 	if run.justify != 0 {
-		cond601 = run.justify
+		cond483 = run.justify
 	} else {
-		cond601 = run.advances
+		cond483 = run.advances
 	}
-	win32.CMemmoveOverload15(advances, cond601, int64(run.glyphCount*4))
+	win32.CMemmoveOverload15(advances, cond483, int64(run.glyphCount*4))
 	var glyphX int32 = drawX
 	{
 		var h int32 = 0
@@ -1282,12 +1274,12 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 		for ; h < int32(len(advances)); func() {
 			h++
 		}() {
-			t602 := j
+			t484 := j
 			j++
-			points[t602] = float32(glyphX)
-			t603 := j
+			points[t484] = float32(glyphX)
+			t485 := j
 			j++
-			points[t603] = float32(drawY)
+			points[t485] = float32(drawY)
 			glyphX += advances[h]
 		}
 	}
@@ -1321,13 +1313,13 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	if brush != selectionColor && brush != color {
 		win32.GdipSolidBrush_delete(brush)
 	}
-	var cond604 *win32.RECT
+	var cond486 *win32.RECT
 	if fullSelection || partialSelection {
-		cond604 = rect
+		cond486 = rect
 	} else {
-		cond604 = nil
+		cond486 = nil
 	}
-	return cond604
+	return cond486
 }
 
 func (this *TextLayout) DrawRunTextGDIPRaster(gcLike GCLike, graphics int64, runLike TextLayout_StyleItemLike, rect *win32.RECT, baselineInPixels int32, color int32, selectionColor int32, selectionStart int32, selectionEnd int32) *win32.RECT {
@@ -2072,13 +2064,13 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 			return int32(this.allRuns[i-1].analysis.S.UBidiLevel)
 		}
 	}
-	var cond605 int32
+	var cond487 int32
 	if (this.ResolveTextDirection() & RIGHT_TO_LEFT) != 0 {
-		cond605 = 1
+		cond487 = 1
 	} else {
-		cond605 = 0
+		cond487 = 0
 	}
-	return cond605
+	return cond487
 }
 
 func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
@@ -2265,13 +2257,13 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 				var width int32
 				if run.style != (nil) && run.style.Metrics != (nil) {
 					var metrics *GlyphMetrics = run.style.Metrics
-					var cond606 int32
+					var cond488 int32
 					if trailing {
-						cond606 = 1
+						cond488 = 1
 					} else {
-						cond606 = 0
+						cond488 = 0
 					}
-					width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (offset - run.start + (cond606))
+					width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (offset - run.start + (cond488))
 				} else {
 					if run.tab {
 						if trailing || (offset == length) {
@@ -2436,13 +2428,13 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 			break
 		}
 	}
-	var cond607 int32
+	var cond489 int32
 	if forward {
-		cond607 = jrt.StringLength(this.text)
+		cond489 = jrt.StringLength(this.text)
 	} else {
-		cond607 = 0
+		cond489 = 0
 	}
-	return cond607
+	return cond489
 }
 
 func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
@@ -2639,12 +2631,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t608 := count
+			t490 := count
 			count++
-			result[t608] = this.styles[i].start
-			t609 := count
+			result[t490] = this.styles[i].start
+			t491 := count
 			count++
-			result[t609] = this.styles[i+1].start - 1
+			result[t491] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -2706,14 +2698,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t610 := segmentCount
+			t492 := segmentCount
 			segmentCount++
-			newChars[charCount+t610] = separator
+			newChars[charCount+t492] = separator
 		} else {
-			idx612 := charCount + segmentCount
-			t611 := charCount
+			idx494 := charCount + segmentCount
+			t493 := charCount
 			charCount++
-			newChars[idx612] = oldChars[t611]
+			newChars[idx494] = oldChars[t493]
 		}
 	}
 	for segmentCount < nSegments {
@@ -2724,9 +2716,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t613 := segmentCount
+		t495 := segmentCount
 		segmentCount++
-		newChars[charCount+t613] = separator
+		newChars[charCount+t495] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -2768,9 +2760,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t614 := count
+			t496 := count
 			count++
-			result[t614] = this.styles[i].style
+			result[t496] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -2848,11 +2840,11 @@ func (this *TextLayout) Itemize() []*TextLayout_StyleItem {
 						continue
 					}
 				}
-				abs615 := latestNeutralIndex - latestUnicodeIndex
-				if abs615 < 0 {
-					abs615 = -abs615
+				abs497 := latestNeutralIndex - latestUnicodeIndex
+				if abs497 < 0 {
+					abs497 = -abs497
 				}
-				if abs615 == 1 {
+				if abs497 == 1 {
 					chars[latestNeutralIndex] = 'A'
 				}
 			}
@@ -2882,9 +2874,7 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 	var merge bool = itemCount > TextLayoutTOO_MANY_RUNS
 	var sp *win32.SCRIPT_PROPERTIES = win32.NewSCRIPT_PROPERTIES()
 	for start < end {
-		inner616 := newTextLayoutStyleItem()
-		inner616.this_0 = this
-		var item *TextLayout_StyleItem = inner616
+		var item *TextLayout_StyleItem = newTextLayoutStyleItem(this)
 		item.start = start
 		item.style = this.styles[styleIndex].style
 		runs.Add(item)
@@ -2970,9 +2960,7 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 		}
 		item.length = start - item.start
 	}
-	inner617 := newTextLayoutStyleItem()
-	inner617.this_0 = this
-	var item *TextLayout_StyleItem = inner617
+	var item *TextLayout_StyleItem = newTextLayoutStyleItem(this)
 	item.start = end
 	win32.OSMoveMemoryOverload81(scriptItem, items+int64(itemCount*win32.SCRIPT_ITEMSizeof), win32.SCRIPT_ITEMSizeof)
 	item.analysis = scriptItem.A
@@ -3011,13 +2999,13 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 }
 
 func (this *TextLayout) ResolveTextDirection() int32 {
-	var cond618 int32
+	var cond498 int32
 	if this.textDirection == AUTO_TEXT_DIRECTION {
-		cond618 = BidiUtilResolveTextDirection(this.text)
+		cond498 = BidiUtilResolveTextDirection(this.text)
 	} else {
-		cond618 = this.textDirection
+		cond498 = this.textDirection
 	}
-	return cond618
+	return cond498
 }
 
 func (this *TextLayout) Reorder(runs []*TextLayout_StyleItem, terminate bool) []*TextLayout_StyleItem {
@@ -3301,15 +3289,11 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 				this.styles = newStyles
 			}
 			copy(this.styles[modifyEnd+3:], this.styles[modifyEnd+1:modifyEnd+1+this.stylesCount-modifyEnd-1])
-			inner619 := newTextLayoutStyleItem()
-			inner619.this_0 = this
-			var item *TextLayout_StyleItem = inner619
+			var item *TextLayout_StyleItem = newTextLayoutStyleItem(this)
 			item.start = start
 			item.style = style
 			this.styles[modifyStart+1] = item
-			inner620 := newTextLayoutStyleItem()
-			inner620.this_0 = this
-			item = inner620
+			item = newTextLayoutStyleItem(this)
 			item.start = end + 1
 			item.style = this.styles[modifyStart].style
 			this.styles[modifyStart+2] = item
@@ -3331,9 +3315,7 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 		this.styles = newStyles
 	}
 	copy(this.styles[modifyStart+2:], this.styles[modifyEnd:modifyEnd+this.stylesCount-modifyEnd])
-	inner621 := newTextLayoutStyleItem()
-	inner621.this_0 = this
-	var item *TextLayout_StyleItem = inner621
+	var item *TextLayout_StyleItem = newTextLayoutStyleItem(this)
 	item.start = start
 	item.style = style
 	this.styles[modifyStart+1] = item
@@ -3364,12 +3346,8 @@ func (this *TextLayout) SetText(text string) {
 	this.FreeRuns()
 	this.text = text
 	this.styles = make([]*TextLayout_StyleItem, 2)
-	inner622 := newTextLayoutStyleItem()
-	inner622.this_0 = this
-	this.styles[0] = inner622
-	inner623 := newTextLayoutStyleItem()
-	inner623.this_0 = this
-	this.styles[1] = inner623
+	this.styles[0] = newTextLayoutStyleItem(this)
+	this.styles[1] = newTextLayoutStyleItem(this)
 	this.styles[1].start = jrt.StringLength(text)
 	this.stylesCount = 2
 }
@@ -3545,9 +3523,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		for i := int32(0); i < int32(len(chars)); i++ {
 			win32.OSMoveMemoryOverload82(logAttr, run.psla+int64((i*win32.SCRIPT_LOGATTRSizeof)), win32.SCRIPT_LOGATTRSizeof)
 			if !logAttr.FWhiteSpace {
-				t624 := count
+				t499 := count
 				count++
-				sampleChars[t624] = chars[i]
+				sampleChars[t499] = chars[i]
 				if count == int32(len(sampleChars)) {
 					break
 				}
@@ -3604,18 +3582,18 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		}
 		if newFont != 0 {
 			win32.OSSelectObject(hdc, newFont)
-			cond625 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-			shapeSucceed = cond625
-			if cond625 {
+			cond500 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+			shapeSucceed = cond500
+			if cond500 {
 				run.fallbackFont = newFont
 			}
 		}
 		if !shapeSucceed {
 			if !sp.FComplex {
 				run.analysis.FNoGlyphIndex = true
-				cond626 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-				shapeSucceed = cond626
-				if cond626 {
+				cond501 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+				shapeSucceed = cond501
+				if cond501 {
 					run.fallbackFont = newFont
 				} else {
 					run.analysis.FNoGlyphIndex = false
@@ -3634,9 +3612,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 					this.mLangFontLink2.ReleaseFont(hNewFont[0])
 					var mLangFont int64 = win32.OSCreateFontIndirectLplf(logFont)
 					var oldFont int64 = win32.OSSelectObject(hdc, mLangFont)
-					cond627 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-					shapeSucceed = cond627
-					if cond627 {
+					cond502 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+					shapeSucceed = cond502
+					if cond502 {
 						run.fallbackFont = mLangFont
 					} else {
 						win32.OSSelectObject(hdc, oldFont)
@@ -3826,8 +3804,9 @@ type TextLayout_StyleItemLike interface {
 	AsTextLayout_StyleItem() *TextLayout_StyleItem
 }
 
-func newTextLayoutStyleItem() *TextLayout_StyleItem {
+func newTextLayoutStyleItem(this_0 *TextLayout) *TextLayout_StyleItem {
 	this := &TextLayout_StyleItem{}
+	this.this_0 = this_0
 	this.initTextLayoutStyleItem()
 	return this
 }

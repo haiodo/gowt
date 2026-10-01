@@ -271,8 +271,8 @@ func (this *Decorations) dispose_() {
 	if !this.IsValidThread() {
 		this.Error(ERROR_THREAD_INVALID_ACCESS)
 	}
-	_, ok163 := isDecorationsToShell(this)
-	if !(ok163) {
+	_, ok161 := isDecorationsToShell(this)
+	if !(ok161) {
 		if !this.TraverseDecorations(true) {
 			var shell *Shell = this.impl.getShell_()
 			shell.impl.setFocus_()
@@ -671,9 +671,9 @@ func (this *Decorations) SetDefaultButtonButtonSave(buttonLike ButtonLike, save 
 			this.defaultButton.SetDefault(false)
 		}
 	}
-	cond164 := button
-	this.defaultButton = cond164
-	if (cond164) == (nil) {
+	cond162 := button
+	this.defaultButton = cond162
+	if (cond162) == (nil) {
 		this.defaultButton = this.saveDefault
 	}
 	if this.defaultButton != (nil) {
@@ -1093,8 +1093,8 @@ func (this *Decorations) TranslateMenuAccelerator(msg *win32.MSG) bool {
 }
 
 func (this *Decorations) TranslateMDIAccelerator(msg *win32.MSG) bool {
-	_, ok165 := isDecorationsToShell(this)
-	if !(ok165) {
+	_, ok163 := isDecorationsToShell(this)
+	if !(ok163) {
 		var shell *Shell = this.impl.getShell_()
 		var hwndMDIClient int64 = shell.hwndMDIClient
 		if hwndMDIClient != 0 && win32.OSTranslateMDISysAccel(hwndMDIClient, msg) {
@@ -1145,13 +1145,13 @@ func (this *Decorations) TraverseDecorations(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond166 := (index + offset + length) % length
-		index = cond166
-		if !((cond166) != start) {
+		cond164 := (index + offset + length) % length
+		index = cond164
+		if !((cond164) != start) {
 			break
 		}
 		var child *Control = children[index]
-		if !child.IsDisposed() && func() bool { _, ok168 := isControlToDecorations(child); return ok168 }() {
+		if !child.IsDisposed() && func() bool { _, ok166 := isControlToDecorations(child); return ok166 }() {
 			if child.impl.setFocus_() {
 				return true
 			}
@@ -1236,13 +1236,13 @@ func (this *Decorations) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, w
 		if this.hAccel == -1 {
 			this.CreateAccelerators()
 		}
-		var cond169 int64
+		var cond167 int64
 		if msg == DisplaySWT_GETACCELCOUNT {
-			cond169 = int64(this.nAccel)
+			cond167 = int64(this.nAccel)
 		} else {
-			cond169 = this.hAccel
+			cond167 = this.hAccel
 		}
-		return cond169
+		return cond167
 	}
 	return this.Canvas.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
@@ -1266,9 +1266,9 @@ func (this *Decorations) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT
 			return result
 		}
 		var control *Control = this.display.FindControlLocal1(lParam)
-		if control == (nil) || func() bool { _, ok171 := isControlToShell(control); return ok171 }() {
-			_, ok172 := isDecorationsToShell(this)
-			if ok172 {
+		if control == (nil) || func() bool { _, ok169 := isControlToShell(control); return ok169 }() {
+			_, ok170 := isDecorationsToShell(this)
+			if ok170 {
 				var event *Event = NewEvent()
 				if loWord == int32(win32.OSWA_CLICKACTIVE) {
 					event.Detail = MouseDown
@@ -1291,9 +1291,9 @@ func (this *Decorations) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT
 			display.lockActiveWindow = true
 		}
 		var control *Control = display.FindControlLocal1(lParam)
-		if control == (nil) || func() bool { _, ok174 := isControlToShell(control); return ok174 }() {
-			_, ok175 := isDecorationsToShell(this)
-			if ok175 {
+		if control == (nil) || func() bool { _, ok172 := isControlToShell(control); return ok172 }() {
+			_, ok173 := isDecorationsToShell(this)
+			if ok173 {
 				this.SendEventEventType(Deactivate)
 				if !this.IsDisposed() {
 					var shell *Shell = this.impl.getShell_()
@@ -1355,8 +1355,8 @@ func (this *Decorations) wM_NCACTIVATE_(wParam int64, lParam int64) *win32.LRESU
 			var shell *Shell = this.impl.getShell_()
 			var decorations *Decorations = control.impl.menuShell_()
 			if decorations.impl.getShell_() == shell {
-				_, ok176 := isDecorationsToShell(this)
-				if ok176 {
+				_, ok174 := isDecorationsToShell(this)
+				if ok174 {
 					return win32.LRESULTONE
 				}
 				if this.display.ignoreRestoreFocus {
@@ -1367,8 +1367,8 @@ func (this *Decorations) wM_NCACTIVATE_(wParam int64, lParam int64) *win32.LRESU
 			}
 		}
 	}
-	_, ok177 := isDecorationsToShell(this)
-	if !(ok177) {
+	_, ok175 := isDecorationsToShell(this)
+	if !(ok175) {
 		var hwndShell int64 = this.impl.getShell_().Handle
 		win32.OSSendMessageOverload4(hwndShell, win32.OSWM_NCACTIVATE, wParam, lParam)
 	}
@@ -1438,8 +1438,8 @@ func (this *Decorations) wM_SYSCOMMAND_(wParam int64, lParam int64) *win32.LRESU
 	if result != (nil) {
 		return result
 	}
-	_, ok178 := isDecorationsToShell(this)
-	if !(ok178) {
+	_, ok176 := isDecorationsToShell(this)
+	if !(ok176) {
 		var cmd int32 = int32(wParam) & 0xFFF0
 		switch cmd {
 		case win32.OSSC_CLOSE:

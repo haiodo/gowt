@@ -126,8 +126,8 @@ func (this *Cursor) initCursorDeviceImageDataProviderHotspotXHotspotY(device *De
 
 func (this *Cursor) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastCursorToResource(this))
-	for _, elem593 := range this.zoomLevelToHandle.Values().ToArray() {
-		handle := jrt.Cast[*Cursor_CursorHandle](elem593)
+	for _, elem478 := range this.zoomLevelToHandle.Values().ToArray() {
+		handle := jrt.Cast[*Cursor_CursorHandle](elem478)
 		handle.impl.destroy_()
 	}
 	this.zoomLevelToHandle.Clear()
@@ -138,8 +138,8 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	cursor, ok594 := resourceImplAsCursor(object)
-	if !(ok594) {
+	cursor, ok479 := resourceImplAsCursor(object)
+	if !(ok479) {
 		return false
 	}
 	return this.device == cursor.device && CursorWin32_getHandle(this, CursorDEFAULT_ZOOM) == CursorWin32_getHandle(cursor, CursorDEFAULT_ZOOM)

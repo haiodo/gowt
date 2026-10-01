@@ -151,8 +151,8 @@ func (this *Font) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok283 := resourceImplAsFont(object)
-	if !(ok283) {
+	_, ok281 := resourceImplAsFont(object)
+	if !(ok281) {
 		return false
 	}
 	var font *Font = castanyToFont(object)

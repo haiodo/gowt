@@ -83,9 +83,9 @@ func (this *TaskBar) CreateItem(itemLike TaskItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t792 := this.itemCount
+	t667 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t792-index])
+	copy(this.items[index+1:], this.items[index:index+t667-index])
 	this.items[index] = item
 }
 
@@ -277,9 +277,9 @@ func (this *TaskBar) GetIconsDir() string {
 			return ""
 		}
 	}
-	cond793 := dir.GetPath()
-	this.iconsDir = cond793
-	return cond793
+	cond668 := dir.GetPath()
+	this.iconsDir = cond668
+	return cond668
 }
 
 func (this *TaskBar) GetItem(index int32) *TaskItem {
@@ -380,7 +380,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 		jrt.GetChars(appName, 0, length, buffer, 0)
 	}
 	var items []*MenuItem = nil
-	if menu != (nil) && func() bool { cond795 := menu.GetItems(); items = cond795; return int32(len((cond795))) != 0 }() {
+	if menu != (nil) && func() bool { cond670 := menu.GetItems(); items = cond670; return int32(len((cond670))) != 0 }() {
 		var poa *win32.IObjectArray = this.CreateShellLinkArray(items)
 		if poa != (nil) {
 			hr = pDestList.SetAppID(buffer)

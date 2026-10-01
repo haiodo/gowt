@@ -2027,6 +2027,24 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 	return this.eventTable.GetListeners(eventType)
 }
 
+func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) any {
+	return func() any {
+		_ = []any{func() any {
+			_ = []any{func() any {
+				_ = []any{func() any {
+					_ = []any{func() any { _ = []any{this.GetListeners(eventType)}; panic("j2go: unresolved call stream") }(), func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()}
+					panic("j2go: unresolved call filter")
+				}(), func(l Listener) any {
+					return (castListenerToTypedListener(l)).eventListener
+				}}
+				panic("j2go: unresolved call map")
+			}(), func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()}
+			panic("j2go: unresolved call filter")
+		}(), func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()}
+		panic("j2go: unresolved call map")
+	}()
+}
+
 func (this *Widget) GetMenu0() *Menu {
 	return this.impl.getMenu_()
 }
@@ -2446,9 +2464,7 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 		return true
 	}
 	var vertical bool = (type_ == MouseWheel)
-	inner65 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
-	inner65.this_0 = this
-	var wheelData *Widget_MouseWheelData = inner65
+	var wheelData *Widget_MouseWheelData = newWidgetMouseWheelData(this, vertical, nil, wParam, this.display.scrollRemainderEvt)
 	if wheelData.count == 0 {
 		return true
 	}
@@ -2832,13 +2848,13 @@ func (this *Widget) WmContextMenu(hwnd int64, wParam int64, lParam int64) *win32
 		y = win32.OSGET_Y_LPARAM(int64(pos))
 		detail = MENU_KEYBOARD
 	}
-	var cond66 *win32.LRESULT
+	var cond65 *win32.LRESULT
 	if this.ShowMenuXYDetail(x, y, detail) {
-		cond66 = win32.LRESULTZERO
+		cond65 = win32.LRESULTZERO
 	} else {
-		cond66 = nil
+		cond65 = nil
 	}
-	return cond66
+	return cond65
 }
 
 func (this *Widget) WmIMEChar(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3198,23 +3214,23 @@ func (this *Widget) WmMouseMove(hwnd int64, wParam int64, lParam int64) *win32.L
 }
 
 func (this *Widget) WmMouseWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond67 *win32.LRESULT
+	var cond66 *win32.LRESULT
 	if this.SendMouseWheelEvent(MouseWheel, hwnd, wParam, lParam) {
+		cond66 = nil
+	} else {
+		cond66 = win32.LRESULTZERO
+	}
+	return cond66
+}
+
+func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
+	var cond67 *win32.LRESULT
+	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
 		cond67 = nil
 	} else {
 		cond67 = win32.LRESULTZERO
 	}
 	return cond67
-}
-
-func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond68 *win32.LRESULT
-	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
-		cond68 = nil
-	} else {
-		cond68 = win32.LRESULTZERO
-	}
-	return cond68
 }
 
 func (this *Widget) WmNCPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3364,13 +3380,13 @@ func (this *Widget) WmSysChar(hwnd int64, wParam int64, lParam int64) *win32.LRE
 	}
 	consumed = consumed || display.mnemonicKeyHit
 	display.mnemonicKeyHit = oldKeyHit
-	var cond69 *win32.LRESULT
+	var cond68 *win32.LRESULT
 	if consumed {
-		cond69 = win32.LRESULTONE
+		cond68 = win32.LRESULTONE
 	} else {
-		cond69 = win32.NewLRESULT(result)
+		cond68 = win32.NewLRESULT(result)
 	}
-	return cond69
+	return cond68
 }
 
 func (this *Widget) WmSysKeyDown(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3619,8 +3635,9 @@ type Widget_MouseWheelDataLike interface {
 	AsWidget_MouseWheelData() *Widget_MouseWheelData
 }
 
-func newWidgetMouseWheelData(isVertical bool, scrollBar *ScrollBar, wParam int64, remainder *Point) *Widget_MouseWheelData {
+func newWidgetMouseWheelData(this_0 *Widget, isVertical bool, scrollBar *ScrollBar, wParam int64, remainder *Point) *Widget_MouseWheelData {
 	this := &Widget_MouseWheelData{}
+	this.this_0 = this_0
 	this.initWidgetMouseWheelData(isVertical, scrollBar, wParam, remainder)
 	return this
 }
@@ -3661,6 +3678,17 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 		remainder.X = delta % win32.OSWHEEL_DELTA
 	}
 	this.count = delta / win32.OSWHEEL_DELTA
+}
+
+func castListenerToTypedListener(x Listener) *TypedListener {
+	if x == nil {
+		return nil
+	}
+	v, ok := typedListenerImplAsTypedListener(x)
+	if !ok {
+		panic("java.lang.ClassCastException: TypedListener")
+	}
+	return v
 }
 
 func init() {

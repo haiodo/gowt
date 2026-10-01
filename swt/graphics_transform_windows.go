@@ -102,17 +102,16 @@ func (this *Transform) GetElements(elements []float32) {
 	if int32(len(elements)) < 6 {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	func() bool {
-		_ = []any{func(transformHandle *Transform_TransformHandle) bool {
+	jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Transform_TransformHandle) any {
+		return func(transformHandle *Transform_TransformHandle) bool {
 			win32.GdipMatrix_GetElements(transformHandle.handle, elements)
 			var drawable Drawable = this.impl.getDevice_()
 			var zoom int32 = transformHandle.zoom
 			elements[4] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[4], zoom)
 			elements[5] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[5], zoom)
 			return true
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Transform) Identity() {
@@ -138,12 +137,11 @@ func (this *Transform) IsIdentity() bool {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return func() bool {
-		_ = []any{func(transformHandle *Transform_TransformHandle) bool {
+	return jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Transform_TransformHandle) any {
+		return func(transformHandle *Transform_TransformHandle) bool {
 			return win32.GdipMatrix_IsIdentity(transformHandle.handle)
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Transform) Multiply(matrixLike TransformLike) {
@@ -201,8 +199,8 @@ func (this *Transform) TransformFn(pointArray []float32) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var drawable Drawable = this.impl.getDevice_()
-	func() []float32 {
-		_ = []any{func(transformHandle *Transform_TransformHandle) []float32 {
+	jrt.Cast[[]float32](this.ApplyUsingAnyHandle(func(a0 *Transform_TransformHandle) any {
+		return func(transformHandle *Transform_TransformHandle) []float32 {
 			var length int32 = int32(len(pointArray))
 			for i := int32(0); i < length; i++ {
 				pointArray[i] = Win32DPIUtilsPointToPixelOverload5(drawable, pointArray[i], transformHandle.zoom)
@@ -212,9 +210,8 @@ func (this *Transform) TransformFn(pointArray []float32) {
 				pointArray[i] = Win32DPIUtilsPixelToPointOverload3(drawable, pointArray[i], transformHandle.zoom)
 			}
 			return pointArray
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Transform) Translate(offsetX float32, offsetY float32) {
@@ -229,6 +226,29 @@ func (this *Transform) StoreAndApplyOperationForAllHandles(operation Transform_O
 	this.zoomToHandle.ForEach(func(zoom any, handle *Transform_TransformHandle) {
 		operation.Apply(handle)
 	})
+}
+
+func (this *Transform) ApplyUsingAnyHandle(function func(*Transform_TransformHandle) any) any {
+	if this.zoomToHandle.IsEmpty() {
+		var temporaryHandle *Transform_TransformHandle = this.NewTransformHandle(DPIUtilGetDeviceZoom())
+		var tret370 any
+		tretd371 := false
+		func() {
+			defer func() {
+				temporaryHandle.Destroy()
+			}()
+			tret370 = function(temporaryHandle)
+			tretd371 = true
+			return
+		}()
+		_ = tretd371
+		return tret370
+	} else {
+		return function(func() *Transform_TransformHandle {
+			_ = []any{this.zoomToHandle.Values().Iterator()}
+			panic("j2go: unresolved call next")
+		}())
+	}
 }
 
 func (this *Transform) String() string {
@@ -246,8 +266,8 @@ func (this *Transform) NewTransformHandle(zoom int32) *Transform_TransformHandle
 		Error(ERROR_NO_HANDLES)
 	}
 	var transformHandle *Transform_TransformHandle = newTransformTransformHandle(newHandle, zoom)
-	for _, elem430 := range this.operations.ToArray() {
-		operation := jrt.Cast[Transform_Operation](elem430)
+	for _, elem372 := range this.operations.ToArray() {
+		operation := jrt.Cast[Transform_Operation](elem372)
 		operation.Apply(transformHandle)
 	}
 	return transformHandle

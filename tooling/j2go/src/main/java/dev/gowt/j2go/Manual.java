@@ -137,6 +137,7 @@ public class Manual {
 		// TestInfo: internal/junit; Optional: internal/jrt/jdk.go.
 		reg("org.junit.jupiter.api.TestInfo", "junit.TestInfo", "github.com/haiodo/gowt/internal/junit", false);
 		reg("java.util.Optional", "jrt.Optional", JRT_IMPORT, false);
+		reg("java.util.OptionalInt", "jrt.Optional", JRT_IMPORT, false);
 		// internal/jrt/concurrent.go; TimeUnit is a value type (jrt.TimeUnitMILLISECONDS, ...).
 		for (String q : new String[]{"java.util.concurrent.CountDownLatch", "java.util.concurrent.CompletableFuture",
 				"java.lang.ref.WeakReference"}) {

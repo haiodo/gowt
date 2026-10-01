@@ -3,6 +3,7 @@
 package swt
 
 import (
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 )
 
@@ -81,22 +82,22 @@ func (this *Caret) GetBoundsInPixels() *Rectangle {
 		return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), rect.Width, rect.Height)
 	}
 	if this.width == 0 {
-		var widthInPixels any = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
-		if func() bool { _ = []any{widthInPixels}; panic("j2go: unresolved call isPresent") }() {
-			return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), func() int32 { _ = []any{widthInPixels}; panic("j2go: unresolved call getAsInt") }(), this.GetHeightInPixels())
+		var widthInPixels *jrt.Optional = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
+		if widthInPixels.IsPresent() {
+			return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), widthInPixels.GetAsInt(), this.GetHeightInPixels())
 		}
 	}
 	return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), this.GetWidthInPixels(), this.GetHeightInPixels())
 }
 
-func (this *Caret) GetSystemCaretWidthInPixelsForCurrentMonitor() any {
+func (this *Caret) GetSystemCaretWidthInPixelsForCurrentMonitor() *jrt.Optional {
 	var buffer []int32 = make([]int32, 1)
 	if win32.OSSystemParametersInfoOverload3(win32.OSSPI_GETCARETWIDTH, 0, buffer, 0) {
 		var width int32 = DPIUtilPixelToPoint(buffer[0], Win32DPIUtilsGetPrimaryMonitorZoomAtStartup())
 		var widthInPixels int32 = DPIUtilPointToPixel(width, this.NativeZoom)
-		return func() any { _ = []any{widthInPixels}; panic("j2go: unresolved call of") }()
+		return jrt.OptionalOf(widthInPixels)
 	}
-	return func() any { panic("j2go: unresolved call empty") }()
+	return jrt.OptionalEmpty()
 }
 
 func (this *Caret) GetFont() *Font {
@@ -134,9 +135,9 @@ func (this *Caret) GetSizeInPixels() *Point {
 		return NewPoint(rect.Width, rect.Height)
 	}
 	if this.width == 0 {
-		var widthInPixels any = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
-		if func() bool { _ = []any{widthInPixels}; panic("j2go: unresolved call isPresent") }() {
-			return NewPoint(func() int32 { _ = []any{widthInPixels}; panic("j2go: unresolved call getAsInt") }(), this.GetHeightInPixels())
+		var widthInPixels *jrt.Optional = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
+		if widthInPixels.IsPresent() {
+			return NewPoint(widthInPixels.GetAsInt(), this.GetHeightInPixels())
 		}
 	}
 	return NewPoint(this.GetWidthInPixels(), this.GetHeightInPixels())
@@ -259,15 +260,9 @@ func (this *Caret) Resize() {
 	}
 	var widthInPixels int32 = this.GetWidthInPixels()
 	if this.image == (nil) && widthInPixels == 0 {
-		var systemCaretWidthInPixelsForCurrentMonitor any = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
-		if func() bool {
-			_ = []any{systemCaretWidthInPixelsForCurrentMonitor}
-			panic("j2go: unresolved call isPresent")
-		}() {
-			widthInPixels = func() int32 {
-				_ = []any{systemCaretWidthInPixelsForCurrentMonitor}
-				panic("j2go: unresolved call getAsInt")
-			}()
+		var systemCaretWidthInPixelsForCurrentMonitor *jrt.Optional = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
+		if systemCaretWidthInPixelsForCurrentMonitor.IsPresent() {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.GetAsInt()
 		}
 	}
 	win32.OSCreateCaret(hwnd, hBitmap, widthInPixels, this.GetHeightInPixels())
@@ -334,15 +329,9 @@ func (this *Caret) SetFocus() {
 	}
 	var widthInPixels int32 = this.GetWidthInPixels()
 	if this.image == (nil) && widthInPixels == 0 {
-		var systemCaretWidthInPixelsForCurrentMonitor any = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
-		if func() bool {
-			_ = []any{systemCaretWidthInPixelsForCurrentMonitor}
-			panic("j2go: unresolved call isPresent")
-		}() {
-			widthInPixels = func() int32 {
-				_ = []any{systemCaretWidthInPixelsForCurrentMonitor}
-				panic("j2go: unresolved call getAsInt")
-			}()
+		var systemCaretWidthInPixelsForCurrentMonitor *jrt.Optional = this.GetSystemCaretWidthInPixelsForCurrentMonitor()
+		if systemCaretWidthInPixelsForCurrentMonitor.IsPresent() {
+			widthInPixels = systemCaretWidthInPixelsForCurrentMonitor.GetAsInt()
 		}
 	}
 	win32.OSCreateCaret(hwnd, hBitmap, widthInPixels, this.GetHeightInPixels())

@@ -177,13 +177,13 @@ func NewShellParentStyle(parentLike ShellLike, style int32) *Shell {
 }
 
 func (this *Shell) initShellParentStyle(parent *Shell, style int32) {
-	var cond179 *Display
+	var cond177 *Display
 	if parent != (nil) {
-		cond179 = parent.display
+		cond177 = parent.display
 	} else {
-		cond179 = nil
+		cond177 = nil
 	}
-	this.initShellDisplayParentStyleHandleEmbedded(cond179, parent, style, int64(0), false)
+	this.initShellDisplayParentStyleHandleEmbedded(cond177, parent, style, int64(0), false)
 }
 
 func (this *Shell) AddShellListener(listener ShellListener) {
@@ -281,13 +281,13 @@ func (this *Shell) SetTitleColoring(preferred bool) {
 			return
 		}
 	}
-	var cond180 int32
+	var cond178 int32
 	if preferred {
-		cond180 = 1
+		cond178 = 1
 	} else {
-		cond180 = 0
+		cond178 = 0
 	}
-	var value []int32 = []int32{cond180}
+	var value []int32 = []int32{cond178}
 	win32.OSDwmSetWindowAttribute(this.Handle, attributeID, value, 4)
 }
 
@@ -491,19 +491,19 @@ func (this *Shell) findBrush_(value int64, lbStyle int32) int64 {
 		hBrush = win32.OSCreatePatternBrush(value)
 		break
 	}
-	cond181 := hBrush
-	this.brushes[0] = cond181
-	return cond181
+	cond179 := hBrush
+	this.brushes[0] = cond179
+	return cond179
 }
 
 func (this *Shell) findBackgroundControl_() *Control {
-	var cond182 *Control
+	var cond180 *Control
 	if this.background != -1 || this.backgroundImage != (nil) {
-		cond182 = upcastShellToControl(this)
+		cond180 = upcastShellToControl(this)
 	} else {
-		cond182 = nil
+		cond180 = nil
 	}
-	return cond182
+	return cond180
 }
 
 func (this *Shell) findCursor_() *Cursor {
@@ -519,13 +519,13 @@ func (this *Shell) FindToolTip(id int32) *ToolTip {
 		return nil
 	}
 	id = id - DisplayID_START
-	var cond183 *ToolTip
+	var cond181 *ToolTip
 	if 0 <= id && id < int32(len(this.toolTips)) {
-		cond183 = this.toolTips[id]
+		cond181 = this.toolTips[id]
 	} else {
-		cond183 = nil
+		cond181 = nil
 	}
-	return cond183
+	return cond181
 }
 
 func (this *Shell) FixActiveShell() {
@@ -813,9 +813,9 @@ func (this *Shell) GetShells() []*Shell {
 			}
 		}
 		if shell == upcastShellToControl(this) {
-			t184 := index
+			t182 := index
 			index++
-			result[t184] = activeshell
+			result[t182] = activeshell
 		}
 	}
 	return result
@@ -831,13 +831,13 @@ func (this *Shell) GetZoom() int32 {
 }
 
 func (this *Shell) findDeferredControl_() *Composite {
-	var cond185 *Composite
+	var cond183 *Composite
 	if this.layoutCount > 0 {
-		cond185 = upcastShellToComposite(this)
+		cond183 = upcastShellToComposite(this)
 	} else {
-		cond185 = nil
+		cond183 = nil
 	}
-	return cond185
+	return cond183
 }
 
 func (this *Shell) isEnabled_() bool {
@@ -888,8 +888,8 @@ func (this *Shell) Open() {
 	}
 	if restored {
 		var focusControl *Control = this.display.GetFocusControl()
-		_, ok187 := isControlToButton(focusControl)
-		if ok187 && (focusControl.style&PUSH) != 0 {
+		_, ok185 := isControlToButton(focusControl)
+		if ok185 && (focusControl.style&PUSH) != 0 {
 			restored = false
 		}
 	}
@@ -1634,13 +1634,13 @@ func (this *Shell) widgetParent_() int64 {
 	if this.Handle != 0 {
 		return this.Handle
 	}
-	var cond188 int64
+	var cond186 int64
 	if this.parent != (nil) {
-		cond188 = this.parent.Handle
+		cond186 = this.parent.Handle
 	} else {
-		cond188 = int64(0)
+		cond186 = int64(0)
 	}
-	return cond188
+	return cond186
 }
 
 func (this *Shell) widgetExtStyle_() int32 {
@@ -1669,13 +1669,13 @@ func (this *Shell) windowClass_() *win32.TCHAR {
 			return this.display.windowShadowClass
 		}
 	}
-	var cond189 *win32.TCHAR
+	var cond187 *win32.TCHAR
 	if this.parent != (nil) {
-		cond189 = ShellDialogClass
+		cond187 = ShellDialogClass
 	} else {
-		cond189 = this.Decorations.windowClass_()
+		cond187 = this.Decorations.windowClass_()
 	}
-	return cond189
+	return cond187
 }
 
 func (this *Shell) windowProc_() int64 {
@@ -1688,13 +1688,13 @@ func (this *Shell) windowProc_() int64 {
 			return this.Decorations.windowProc_()
 		}
 	}
-	var cond190 int64
+	var cond188 int64
 	if this.parent != (nil) {
-		cond190 = ShellDialogProc
+		cond188 = ShellDialogProc
 	} else {
-		cond190 = this.Decorations.windowProc_()
+		cond188 = this.Decorations.windowProc_()
 	}
-	return cond190
+	return cond188
 }
 
 func (this *Shell) GetClientRectInWindow() *Rectangle {
@@ -1831,13 +1831,13 @@ func (this *Shell) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT {
 			}
 		}
 	}
-	var cond191 *win32.LRESULT
+	var cond189 *win32.LRESULT
 	if this.parent != (nil) {
-		cond191 = win32.LRESULTZERO
+		cond189 = win32.LRESULTZERO
 	} else {
-		cond191 = result
+		cond189 = result
 	}
-	return cond191
+	return cond189
 }
 
 func (this *Shell) wM_DESTROY_(wParam int64, lParam int64) *win32.LRESULT {
@@ -2190,21 +2190,21 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
-		var cond192 int32
+		var cond190 int32
 		if parent == (nil) {
-			cond192 = SHELL_TRIM
+			cond190 = SHELL_TRIM
 		} else {
-			cond192 = DIALOG_TRIM
+			cond190 = DIALOG_TRIM
 		}
-		style |= cond192
+		style |= cond190
 		if (style & mask) == 0 {
-			var cond193 int32
+			var cond191 int32
 			if parent == (nil) {
-				cond193 = APPLICATION_MODAL
+				cond191 = APPLICATION_MODAL
 			} else {
-				cond193 = PRIMARY_MODAL
+				cond191 = PRIMARY_MODAL
 			}
-			style |= cond193
+			style |= cond191
 		}
 	}
 	var bits int32 = style & ^mask

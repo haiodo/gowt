@@ -69,13 +69,13 @@ func (this *Group) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed
 	var length int32 = jrt.StringLength(this.text)
 	if length != 0 {
 		var string_ string = this.FixText()
-		var cond239 string
+		var cond237 string
 		if string_ == "" {
-			cond239 = this.text
+			cond237 = this.text
 		} else {
-			cond239 = string_
+			cond237 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond239)))
+		var buffer []uint16 = utf16.Encode([]rune((cond237)))
 		var newFont int64
 		var oldFont int64 = int64(0)
 		var hDC int64 = win32.OSGetDC(this.Handle)
@@ -143,13 +143,13 @@ func (this *Group) FixText() string {
 		return ""
 	}
 	if (this.style & RIGHT_TO_LEFT) != 0 {
-		var cond240 string
+		var cond238 string
 		if (this.style & FLIP_TEXT_DIRECTION) == 0 {
-			cond240 = ""
+			cond238 = ""
 		} else {
-			cond240 = fmt.Sprintf("%c%s", WidgetLRE, this.text)
+			cond238 = fmt.Sprintf("%c%s", WidgetLRE, this.text)
 		}
-		return cond240
+		return cond238
 	} else {
 		if (this.style & FLIP_TEXT_DIRECTION) != 0 {
 			return fmt.Sprintf("%c%s", WidgetRLE, this.text)
@@ -274,13 +274,13 @@ func (this *Group) SetText(string_ string) {
 	this.text = string_
 	if (this.state&WidgetHAS_AUTO_DIRECTION) == 0 || !this.impl.updateTextDirection_(WidgetAUTO_TEXT_DIRECTION) {
 		string_ = this.FixText()
-		var cond241 string
+		var cond239 string
 		if string_ == "" {
-			cond241 = this.text
+			cond239 = this.text
 		} else {
-			cond241 = string_
+			cond239 = string_
 		}
-		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond241, true)
+		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond239, true)
 		win32.OSSetWindowText(this.Handle, buffer)
 	}
 }
@@ -288,13 +288,13 @@ func (this *Group) SetText(string_ string) {
 func (this *Group) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
 		var string_ string = this.FixText()
-		var cond242 string
+		var cond240 string
 		if string_ == "" {
-			cond242 = this.text
+			cond240 = this.text
 		} else {
-			cond242 = string_
+			cond240 = string_
 		}
-		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond242, true)
+		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond240, true)
 		win32.OSSetWindowText(this.Handle, buffer)
 		return true
 	}
@@ -346,13 +346,13 @@ func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 	var result *win32.LRESULT = this.Composite.wM_PAINT_(wParam, lParam)
 	if this.HasCustomForeground() && jrt.StringLength(this.text) != 0 {
 		var string_ string = this.FixText()
-		var cond243 string
+		var cond241 string
 		if string_ == "" {
-			cond243 = this.text
+			cond241 = this.text
 		} else {
-			cond243 = string_
+			cond241 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond243)))
+		var buffer []uint16 = utf16.Encode([]rune((cond241)))
 		var hDC int64 = win32.OSGetDC(this.Handle)
 		var rect *win32.RECT = win32.NewRECT()
 		win32.OSGetClientRect(this.Handle, rect)

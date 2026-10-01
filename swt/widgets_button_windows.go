@@ -274,9 +274,9 @@ func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 				height = size.Cy
 				size.Cy = 0
 				for size.Cy != height {
-					t194 := width
+					t192 := width
 					width++
-					size.Cx = t194
+					size.Cx = t192
 					size.Cy = 0
 					win32.OSSendMessageOverload30(this.Handle, win32.OSBCM_GETIDEALSIZE, int64(0), size)
 				}
@@ -528,13 +528,13 @@ func (this *Button) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *Button) resolveTextDirection_() int32 {
-	var cond195 int32
+	var cond193 int32
 	if (this.style & ARROW) != 0 {
-		cond195 = NONE
+		cond193 = NONE
 	} else {
-		cond195 = BidiUtilResolveTextDirection(this.text)
+		cond193 = BidiUtilResolveTextDirection(this.text)
 	}
-	return cond195
+	return cond193
 }
 
 func (this *Button) SelectRadio() {
@@ -683,13 +683,13 @@ func (this *Button) setRadioFocus_(tabbing bool) bool {
 	if (this.style&RADIO) == 0 || !this.GetSelection() {
 		return false
 	}
-	var cond196 bool
+	var cond194 bool
 	if tabbing {
-		cond196 = this.impl.setTabItemFocus_()
+		cond194 = this.impl.setTabItemFocus_()
 	} else {
-		cond196 = this.impl.setFocus_()
+		cond194 = this.impl.setFocus_()
 	}
-	return cond196
+	return cond194
 }
 
 func (this *Button) setRadioSelection_(value bool) bool {
@@ -842,19 +842,19 @@ func (this *Button) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 		return this.Control.wmColorChild_(wParam, lParam)
 	} else {
 		var oldFlag int32 = this.parent.state & WidgetTHEME_BACKGROUND
-		var tret197 *win32.LRESULT
-		tretd198 := false
+		var tret195 *win32.LRESULT
+		tretd196 := false
 		func() {
 			defer func() {
 				this.parent.state |= oldFlag
 			}()
 			this.parent.state &= ^WidgetTHEME_BACKGROUND
-			tret197 = this.parent.impl.wmColorChild_(wParam, lParam)
-			tretd198 = true
+			tret195 = this.parent.impl.wmColorChild_(wParam, lParam)
+			tretd196 = true
 			return
 		}()
-		_ = tretd198
-		return tret197
+		_ = tretd196
+		return tret195
 	}
 }
 
@@ -1062,32 +1062,32 @@ func (this *Button) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64)
 						var margin int32 = this.ComputeLeftMargin()
 						var imageBounds *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 						var imageWidth int32 = imageBounds.Width
-						var cond199 int32
+						var cond197 int32
 						if this.IsRadioOrCheck() {
-							cond199 = 2 * ButtonMARGIN
+							cond197 = 2 * ButtonMARGIN
 						} else {
-							cond199 = ButtonMARGIN
+							cond197 = ButtonMARGIN
 						}
-						left += (imageWidth + (cond199))
-						var cond200 int32
+						left += (imageWidth + (cond197))
+						var cond198 int32
 						if this.IsRadioOrCheck() {
-							cond200 = radioOrCheckTextPadding
+							cond198 = radioOrCheckTextPadding
 						} else {
-							cond200 = 3
+							cond198 = 3
 						}
-						var x int32 = margin + (cond200)
+						var x int32 = margin + (cond198)
 						var y int32 = int32(math.Max(float64(0), float64((nmcd.Bottom-imageBounds.Height)/2)))
 						var zoom int32 = this.impl.getAutoscalingZoom_()
 						gc.DrawImage(this.image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom))
 						gc.impl.dispose_()
 					}
-					var cond201 int32
+					var cond199 int32
 					if this.IsRadioOrCheck() {
-						cond201 = radioOrCheckTextPadding
+						cond199 = radioOrCheckTextPadding
 					} else {
-						cond201 = 0
+						cond199 = 0
 					}
-					left += cond201
+					left += cond199
 					var textRect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(textRect, left, nmcd.Top+border, right, nmcd.Bottom-border)
 					var buffer []uint16 = utf16.Encode([]rune(this.text))
@@ -1172,13 +1172,13 @@ func (this *Button) handleDPIChange_(event *Event, scalingFactor float32) {
 }
 
 func ButtonCheckStyle(style int32) int32 {
-	var cond202 int32
+	var cond200 int32
 	if ButtonCOMMAND_LINK {
-		cond202 = COMMAND
+		cond200 = COMMAND
 	} else {
-		cond202 = 0
+		cond200 = 0
 	}
-	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond202)
+	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond200)
 	if (style & (PUSH | TOGGLE)) != 0 {
 		return WidgetCheckBits(style, CENTER, LEFT, RIGHT, 0, 0, 0)
 	}

@@ -129,15 +129,14 @@ func (this *Region) Contains(x int32, y int32) bool {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return func() bool {
-		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+	return jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Region_RegionHandle) any {
+		return func(regionHandle *Region_RegionHandle) bool {
 			var zoom int32 = regionHandle.Zoom()
 			var xInPixels int32 = DPIUtilPointToPixel(x, zoom)
 			var yInPixels int32 = DPIUtilPointToPixel(y, zoom)
 			return this.ContainsInPixels(regionHandle.Handle(), xInPixels, yInPixels)
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Region) ContainsInPixels(handle int64, x int32, y int32) bool {
@@ -156,14 +155,13 @@ func (this *Region) ContainsPt(ptLike PointLike) bool {
 	if pt == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	return func() bool {
-		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+	return jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Region_RegionHandle) any {
+		return func(regionHandle *Region_RegionHandle) bool {
 			var zoom int32 = regionHandle.Zoom()
 			var p *Point = Win32DPIUtilsPointToPixelAsLocationPointZoom(pt, zoom)
 			return this.ContainsInPixels(regionHandle.Handle(), p.X, p.Y)
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Region) destroy_() {
@@ -194,12 +192,11 @@ func (this *Region) GetBounds() *Rectangle {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return func() *Rectangle {
-		_ = []any{func(regionHandle *Region_RegionHandle) *Rectangle {
+	return jrt.Cast[*Rectangle](this.ApplyUsingAnyHandle(func(a0 *Region_RegionHandle) any {
+		return func(regionHandle *Region_RegionHandle) *Rectangle {
 			return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(regionHandle.Handle()), regionHandle.Zoom())
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Region) GetBoundsInPixels(handle int64) *Rectangle {
@@ -283,13 +280,12 @@ func (this *Region) IntersectsRect(rectLike RectangleLike) bool {
 	if rect == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	return func() bool {
-		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+	return jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Region_RegionHandle) any {
+		return func(regionHandle *Region_RegionHandle) bool {
 			var r *Rectangle = Win32DPIUtilsPointToPixelOverload6(rect, regionHandle.Zoom())
 			return this.IntersectsInPixels(regionHandle.Handle(), r.X, r.Y, r.Width, r.Height)
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Region) isDisposed_() bool {
@@ -300,17 +296,16 @@ func (this *Region) IsEmpty() bool {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return func() bool {
-		_ = []any{func(regionHandle *Region_RegionHandle) bool {
+	return jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Region_RegionHandle) any {
+		return func(regionHandle *Region_RegionHandle) bool {
 			var rect *win32.RECT = win32.NewRECT()
 			var result int32 = win32.OSGetRgnBox(regionHandle.Handle(), rect)
 			if result == win32.OSNULLREGION {
 				return true
 			}
 			return ((rect.Right - rect.Left) <= 0) || ((rect.Bottom - rect.Top) <= 0)
-		}}
-		panic("j2go: unresolved call applyUsingAnyHandle")
-	}()
+		}(a0)
+	}))
 }
 
 func (this *Region) Set(zoomToRegionHandleMapLike Region_ZoomToRegionMapLike, contextZoom int32) {
@@ -417,6 +412,22 @@ func (this *Region) StoreAndApplyOperationForAllHandles(operationLike Region_Ope
 	})
 }
 
+func (this *Region) ApplyUsingAnyHandle(function func(*Region_RegionHandle) any) any {
+	if this.zoomToHandle.IsEmpty() {
+		var temporaryHandleZoom int32
+		if this.temporaryHandleZoomHint != 0 {
+			temporaryHandleZoom = this.temporaryHandleZoomHint
+		} else {
+			temporaryHandleZoom = this.device.impl.getDeviceZoom_()
+		}
+		return RegionApplyUsingTemporaryHandle(temporaryHandleZoom, this.operations, function)
+	}
+	return function(func() *Region_RegionHandle {
+		_ = []any{this.zoomToHandle.Values().Iterator()}
+		panic("j2go: unresolved call next")
+	}())
+}
+
 func (this *Region) GetRegionHandle(zoom int32) *Region_RegionHandle {
 	return jrt.Cast[*Region_RegionHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) *Region_RegionHandle {
 		return RegionNewRegionHandle(jrt.Cast[int32](z), this.operations)
@@ -459,8 +470,8 @@ func RegionNewRegionHandle(zoom int32, operations *jrt.List) *Region_RegionHandl
 		Error(ERROR_NO_HANDLES)
 	}
 	var newRegionHandle *Region_RegionHandle = newRegionRegionHandle(newHandle, zoom)
-	for _, elem459 := range operations.ToArray() {
-		operation := jrt.Cast[*Region_Operation](elem459)
+	for _, elem393 := range operations.ToArray() {
+		operation := jrt.Cast[*Region_Operation](elem393)
 		operation.Apply(newRegionHandle)
 	}
 	return newRegionHandle
@@ -894,30 +905,21 @@ func (this *Region_OperationWithRegion) set_(handle int64, zoom int32) {
 }
 
 func (this *Region_OperationWithRegion) add_(handle int64, zoom int32) {
-	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_OR))
-		}}
-		panic("j2go: unresolved call applyUsingTemporaryHandle")
-	}()
+	RegionApplyUsingTemporaryHandle(zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+		return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_OR))
+	})
 }
 
 func (this *Region_OperationWithRegion) subtract_(handle int64, zoom int32) {
-	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_DIFF))
-		}}
-		panic("j2go: unresolved call applyUsingTemporaryHandle")
-	}()
+	RegionApplyUsingTemporaryHandle(zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+		return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_DIFF))
+	})
 }
 
 func (this *Region_OperationWithRegion) intersect_(handle int64, zoom int32) {
-	func() int32 {
-		_ = []any{zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
-			return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_AND))
-		}}
-		panic("j2go: unresolved call applyUsingTemporaryHandle")
-	}()
+	RegionApplyUsingTemporaryHandle(zoom, this.operations, func(regionHandle *Region_RegionHandle) any {
+		return int32(win32.OSCombineRgn(handle, handle, regionHandle.Handle(), win32.OSRGN_AND))
+	})
 }
 
 func (this *Region_OperationWithRegion) translate_(handle int64, zoom int32) {

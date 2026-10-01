@@ -125,13 +125,13 @@ func (this *CoolItem) GetBoundsInPixels() *Rectangle {
 	rect.Left -= margins.CxLeftWidth
 	rect.Right += margins.CxRightWidth
 	if !this.parent.IsLastItemOfRow(index) {
-		var cond779 int32
+		var cond654 int32
 		if (this.parent.style & FLAT) == 0 {
-			cond779 = CoolBarSEPARATOR_WIDTH
+			cond654 = CoolBarSEPARATOR_WIDTH
 		} else {
-			cond779 = 0
+			cond654 = 0
 		}
-		rect.Right += cond779
+		rect.Right += cond654
 	}
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top
@@ -334,13 +334,13 @@ func (this *CoolItem) GetSizeInPixels() *Point {
 	rect.Left -= margins.CxLeftWidth
 	rect.Right += margins.CxRightWidth
 	if !this.parent.IsLastItemOfRow(index) {
-		var cond780 int32
+		var cond655 int32
 		if (this.parent.style & FLAT) == 0 {
-			cond780 = CoolBarSEPARATOR_WIDTH
+			cond655 = CoolBarSEPARATOR_WIDTH
 		} else {
-			cond780 = 0
+			cond655 = 0
 		}
-		rect.Right += cond780
+		rect.Right += cond655
 	}
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top

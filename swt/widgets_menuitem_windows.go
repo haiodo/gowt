@@ -47,16 +47,16 @@ var MenuItemCUSTOM_SELECTION_IMAGE int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init MenuItemCUSTOM_SELECTION_IMAGE:", e)
 		}
 	}()
-	var cond213 int32
+	var cond211 int32
 	if win32.OsVersionIS_WIN11_21H2 {
-		cond213 = jrt.Cast[int32](func() int32 {
+		cond211 = jrt.Cast[int32](func() int32 {
 			_ = []any{"org.eclipse.swt.internal.win32.menu.customSelectionImage", 2}
 			panic("j2go: unresolved call getInteger")
 		}())
 	} else {
-		cond213 = 0
+		cond211 = 0
 	}
-	r = cond213
+	r = cond211
 	return
 }()
 
@@ -295,13 +295,13 @@ func (this *MenuItem) GetSelection() bool {
 
 func (this *MenuItem) GetToolTipText() string {
 	this.CheckWidget()
-	var cond214 string
+	var cond212 string
 	if this.itemToolTip == (nil) || this.itemToolTip.IsDisposed() {
-		cond214 = ""
+		cond212 = ""
 	} else {
-		cond214 = this.itemToolTip.GetMessage()
+		cond212 = this.itemToolTip.GetMessage()
 	}
-	return cond214
+	return cond212
 }
 
 func (this *MenuItem) HideToolTip() {
@@ -529,25 +529,25 @@ func (this *MenuItem) InitCustomSelectedImage() {
 		return
 	}
 	var imageBounds *Rectangle = image.GetBounds()
-	var cond215 *Color
+	var cond213 *Color
 	if this.display.menuBarForegroundPixel != -1 {
-		cond215 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarForegroundPixel)
+		cond213 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarForegroundPixel)
 	} else {
-		cond215 = this.parent.GetForeground()
+		cond213 = this.parent.GetForeground()
 	}
-	var foregroundColor *Color = this.IncreaseContrast(cond215)
-	var cond216 *Color
+	var foregroundColor *Color = this.IncreaseContrast(cond213)
+	var cond214 *Color
 	if this.display.menuBarBackgroundPixel != -1 {
-		cond216 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarBackgroundPixel)
+		cond214 = ColorWin32_new(upcastDisplayToDevice(this.display), this.display.menuBarBackgroundPixel)
 	} else {
-		cond216 = this.parent.GetBackground()
+		cond214 = this.parent.GetBackground()
 	}
-	var backgroundColor *Color = this.IncreaseContrast(cond216)
-	anon217 := &MenuItemAnon1{}
-	anon217.fnGetGcStyle = func() int32 {
+	var backgroundColor *Color = this.IncreaseContrast(cond214)
+	anon215 := &MenuItemAnon1{}
+	anon215.fnGetGcStyle = func() int32 {
 		return TRANSPARENT
 	}
-	anon217.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
+	anon215.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
 		gc.SetAdvanced(true)
 		gc.DrawImage(image, imageWidth-imageBounds.Width, (imageHeight-imageBounds.Height)/2)
 		gc.SetAntialias(ON)
@@ -559,7 +559,7 @@ func (this *MenuItem) InitCustomSelectedImage() {
 			this.DrawRadio(gc, foregroundColor, backgroundColor, x, y)
 		}
 	}
-	var drawer ImageGcDrawer = anon217
+	var drawer ImageGcDrawer = anon215
 	this.imageSelected = NewImageDeviceImageGcDrawerWidthHeight(image.impl.getDevice_(), drawer, int32(math.Max(float64(imageBounds.Width), float64(16))), int32(math.Max(float64(imageBounds.Height), float64(16))))
 }
 
@@ -628,13 +628,13 @@ func (this *MenuItem) IncreaseContrast(colorLike ColorLike) *Color {
 		color = colorLike.AsColor()
 	}
 	_ = color
-	var cond218 *Color
+	var cond216 *Color
 	if color.GetRed()+color.GetGreen()+color.GetBlue() > 127*3 {
-		cond218 = this.display.impl.getSystemColor_(COLOR_WHITE)
+		cond216 = this.display.impl.getSystemColor_(COLOR_WHITE)
 	} else {
-		cond218 = color
+		cond216 = color
 	}
-	return cond218
+	return cond216
 }
 
 func (this *MenuItem) GetMenuItemIconBitmapHandle(imageLike ImageLike) int64 {
@@ -659,9 +659,9 @@ func (this *MenuItem) GetMenuItemIconSelectedBitmapHandle() int64 {
 		win32.OSDeleteObject(this.hBitmapSelected)
 	}
 	var zoom int32 = this.AdaptZoomForMenuItem(this.NativeZoom, image)
-	cond219 := DisplayCreate32bitDIB(image, zoom)
-	this.hBitmapSelected = cond219
-	return cond219
+	cond217 := DisplayCreate32bitDIB(image, zoom)
+	this.hBitmapSelected = cond217
+	return cond217
 }
 
 func (this *MenuItem) AdaptZoomForMenuItem(currentZoom int32, imageLike ImageLike) int32 {
@@ -975,28 +975,28 @@ func (this *MenuItem) WmDrawChild(wParam int64, lParam int64) *win32.LRESULT {
 			var fillMenuWidth int32 = DPIUtilPixelToPoint(menuItemBounds.Width, zoom)
 			var fillMenuHeight int32 = DPIUtilPixelToPoint(menuItemBounds.Height, zoom)
 			menuItemArea = NewRectangle(DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(struct_.Top, zoom), fillMenuWidth, fillMenuHeight)
-			var cond220 *Color
+			var cond218 *Color
 			if isInactive {
-				cond220 = this.display.impl.getSystemColor_(COLOR_GRAY)
+				cond218 = this.display.impl.getSystemColor_(COLOR_GRAY)
 			} else {
-				cond220 = this.display.impl.getSystemColor_(COLOR_WHITE)
+				cond218 = this.display.impl.getSystemColor_(COLOR_WHITE)
 			}
-			gc.SetForeground(cond220)
-			var cond221 *Color
+			gc.SetForeground(cond218)
+			var cond219 *Color
 			if isSelected {
-				cond221 = this.display.impl.getSystemColor_(COLOR_DARK_GRAY)
+				cond219 = this.display.impl.getSystemColor_(COLOR_DARK_GRAY)
 			} else {
-				cond221 = this.parent.GetBackground()
+				cond219 = this.parent.GetBackground()
 			}
-			gc.SetBackground(cond221)
+			gc.SetBackground(cond219)
 			gc.FillRectangleRect(menuItemArea)
-			var cond222 int32
+			var cond220 int32
 			if this.image != (nil) {
-				cond222 = this.image.GetBounds().Width + MenuItemIMAGE_TEXT_GAP
+				cond220 = this.image.GetBounds().Width + MenuItemIMAGE_TEXT_GAP
 			} else {
-				cond222 = 0
+				cond220 = 0
 			}
-			var xPositionText int32 = MenuItemLEFT_TEXT_MARGIN + DPIUtilPixelToPoint(x, zoom) + (cond222)
+			var xPositionText int32 = MenuItemLEFT_TEXT_MARGIN + DPIUtilPixelToPoint(x, zoom) + (cond220)
 			var yPositionText int32 = DPIUtilPixelToPoint(struct_.Top, zoom) + MenuItemMARGIN_HEIGHT
 			gc.DrawTextStringXYFlags(drawnText, xPositionText, yPositionText, flags)
 		}

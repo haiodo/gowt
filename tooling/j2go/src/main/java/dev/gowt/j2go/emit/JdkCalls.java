@@ -155,6 +155,12 @@ final class JdkCalls {
 				for (int i = 0; i < 2; i++) r[i] = mb.getParameterTypes()[i].isPrimitive() ? "string(rune(" + arg(mi, i) + "))" : arg(mi, i);
 				return "strings.ReplaceAll(" + recv(mi) + ", " + r[0] + ", " + r[1] + ")";
 			}
+			case "java.lang.Byte#parseByte":
+				emitter.fileImports.add(JRT);
+				return "int8(jrt.ParseInt(" + arg(mi, 0) + "))";
+			case "java.lang.Class#isAssignableFrom":
+				emitter.fileImports.add(JRT);
+				return "jrt.IsAssignableFrom(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.util.concurrent.ConcurrentHashMap#newKeySet":
 				emitter.fileImports.add(JRT);
 				return "jrt.NewList()";

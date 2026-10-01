@@ -69,9 +69,9 @@ func (this *Composite) _getChildren() []*Control {
 	for hwndChild != 0 {
 		var control *Control = this.display.GetControl(hwndChild)
 		if control != (nil) && control != upcastCompositeToControl(this) {
-			t150 := index
+			t148 := index
 			index++
-			children[t150] = control
+			children[t148] = control
 		}
 		hwndChild = win32.OSGetWindow(hwndChild, win32.OSGW_HWNDNEXT)
 	}
@@ -100,9 +100,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for _, element := range this.tabList {
 		if !element.IsDisposed() {
-			t151 := index
+			t149 := index
 			index++
-			newList[t151] = element
+			newList[t149] = element
 		}
 	}
 	this.tabList = newList
@@ -239,13 +239,13 @@ func (this *Composite) createHandle_() {
 }
 
 func (this *Composite) applyThemeBackground_() int32 {
-	var cond152 int32
+	var cond150 int32
 	if this.backgroundAlpha == 0 || (this.style&(H_SCROLL|V_SCROLL)) == 0 || this.impl.findThemeControl_() == upcastCompositeToControl(this.parent) {
-		cond152 = 1
+		cond150 = 1
 	} else {
-		cond152 = 0
+		cond150 = 0
 	}
-	return cond152
+	return cond150
 }
 
 func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int32, height int32, offsetX int32, offsetY int32) {
@@ -291,13 +291,13 @@ func (this *Composite) FindDeferredControl() *Composite {
 }
 
 func (this *Composite) findDeferredControl_() *Composite {
-	var cond153 *Composite
+	var cond151 *Composite
 	if this.layoutCount > 0 {
-		cond153 = this
+		cond151 = this
 	} else {
-		cond153 = this.parent.impl.findDeferredControl_()
+		cond151 = this.parent.impl.findDeferredControl_()
 	}
-	return cond153
+	return cond151
 }
 
 func (this *Composite) findMenus_(control *Control) []*Menu {
@@ -349,9 +349,9 @@ func (this *Composite) FixTabList(controlLike ControlLike) {
 		var index int32 = 0
 		for _, element := range this.tabList {
 			if element != control {
-				t154 := index
+				t152 := index
 				index++
-				newList[t154] = element
+				newList[t152] = element
 			}
 		}
 	}
@@ -402,9 +402,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for _, element := range list {
 			if element.impl.isTabGroup_() {
-				t155 := index
+				t153 := index
 				index++
-				tabList[t155] = element
+				tabList[t153] = element
 			}
 		}
 	}
@@ -500,10 +500,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t156 := updateCount
+				t154 := updateCount
 				updateCount++
-				update[t156] = composite
-				child = upcastCompositeToControl(update[t156])
+				update[t154] = composite
+				child = upcastCompositeToControl(update[t154])
 				composite = child.parent
 			}
 		}
@@ -880,9 +880,9 @@ func (this *Composite) updateTextDirection_(textDirection int32) bool {
 	var children []*Control = this._getChildren()
 	var i int32 = int32(len(children))
 	for {
-		t157 := i
+		t155 := i
 		i--
-		if !(t157 > 0) {
+		if !(t155 > 0) {
 			break
 		}
 		if children[i] != (nil) && !children[i].IsDisposed() {
@@ -915,13 +915,13 @@ func (this *Composite) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	shell.SetToolTipTitle(hdr.HwndFrom, "", 0)
 	win32.OSSendMessageOverload4(hdr.HwndFrom, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 	var control *Control = this.display.GetControl(hdr.IdFrom)
-	var cond158 string
+	var cond156 string
 	if control != (nil) {
-		cond158 = control.toolTipText
+		cond156 = control.toolTipText
 	} else {
-		cond158 = ""
+		cond156 = ""
 	}
-	return cond158
+	return cond156
 }
 
 func (this *Composite) translateMnemonic_(event *Event, control *Control) bool {
@@ -1024,9 +1024,9 @@ func (this *Composite) updateOrientation_() {
 	var rects []*win32.RECT = make([]*win32.RECT, int32(len(controls)))
 	for i := int32(0); i < int32(len(controls)); i++ {
 		var control *Control = controls[i]
-		cond159 := win32.NewRECT()
-		rects[i] = cond159
-		var rect *win32.RECT = cond159
+		cond157 := win32.NewRECT()
+		rects[i] = cond157
+		var rect *win32.RECT = cond157
 		control.impl.forceResize_()
 		win32.OSGetWindowRect(control.impl.topHandle_(), rect)
 		win32.OSMapWindowPointsHWndFromHWndToLpPointsCPoints(int64(0), this.Handle, rect, 2)
@@ -1099,13 +1099,13 @@ func (this *Composite) wM_GETFONT_(wParam int64, lParam int64) *win32.LRESULT {
 	if code != 0 {
 		return win32.NewLRESULT(code)
 	}
-	var cond160 int64
+	var cond158 int64
 	if this.font != (nil) {
-		cond160 = SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
+		cond158 = SWTFontProviderGetFontHandleFontZoom(this.font, this.NativeZoom)
 	} else {
-		cond160 = this.impl.defaultFont_()
+		cond158 = this.impl.defaultFont_()
 	}
-	return win32.NewLRESULT(cond160)
+	return win32.NewLRESULT(cond158)
 }
 
 func (this *Composite) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1275,9 +1275,9 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				var rect *win32.RECT = nil
 				var zoom int32 = this.impl.getAutoscalingZoom_()
 				if (this.style&NO_MERGE_PAINTS) != 0 && func() bool {
-					cond162 := win32.NewRECT()
-					rect = cond162
-					return win32.OSGetRgnBox(sysRgn, cond162) == win32.OSCOMPLEXREGION
+					cond160 := win32.NewRECT()
+					rect = cond160
+					return win32.OSGetRgnBox(sysRgn, cond160) == win32.OSCOMPLEXREGION
 				}() {
 					var nBytes int32 = win32.OSGetRegionData(sysRgn, 0, nil)
 					var lpRgnData []int32 = make([]int32, nBytes/4)

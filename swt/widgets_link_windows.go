@@ -118,12 +118,12 @@ func (this *Link) createWidget_() {
 	this.text = ""
 	this.ids = make([]string, 0)
 	this.mnemonics = make([]uint16, 0)
-	anon762 := &LinkAnon1{}
-	anon762.initAccessibleAdapter()
-	anon762.fnGetName = func(e *AccessibleEvent) {
+	anon637 := &LinkAnon1{}
+	anon637.initAccessibleAdapter()
+	anon637.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.text
 	}
-	this.GetAccessible().AddAccessibleListener(anon762)
+	this.GetAccessible().AddAccessibleListener(anon637)
 }
 
 func (this *Link) enableWidget_(enabled bool) {

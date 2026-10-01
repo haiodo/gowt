@@ -297,13 +297,13 @@ func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *ScrollBar) ScrollBarType() int32 {
-	var cond630 int32
+	var cond505 int32
 	if (this.style & VERTICAL) != 0 {
-		cond630 = win32.OSSB_VERT
+		cond505 = win32.OSSB_VERT
 	} else {
-		cond630 = win32.OSSB_HORZ
+		cond505 = win32.OSSB_HORZ
 	}
-	return cond630
+	return cond505
 }
 
 func (this *ScrollBar) SetEnabled(enabled bool) {
@@ -394,22 +394,22 @@ func (this *ScrollBar) SetScrollInfo(hwnd int64, flags int32, info *win32.SCROLL
 	}
 	var result bool = win32.OSSetScrollInfo(hwnd, flags, info, fRedraw)
 	if !visible {
-		var cond631 int32
+		var cond506 int32
 		if !barVisible {
-			cond631 = win32.OSSB_BOTH
+			cond506 = win32.OSSB_BOTH
 		} else {
-			cond631 = flags
+			cond506 = flags
 		}
-		win32.OSShowScrollBar(hwnd, cond631, false)
+		win32.OSShowScrollBar(hwnd, cond506, false)
 	}
 	if visible && bar != (nil) && !barVisible {
-		var cond632 int32
+		var cond507 int32
 		if flags == win32.OSSB_HORZ {
-			cond632 = win32.OSSB_VERT
+			cond507 = win32.OSSB_VERT
 		} else {
-			cond632 = win32.OSSB_HORZ
+			cond507 = win32.OSSB_HORZ
 		}
-		win32.OSShowScrollBar(hwnd, cond632, false)
+		win32.OSShowScrollBar(hwnd, cond507, false)
 	}
 	if (this.state & WidgetDISABLED) != 0 {
 		win32.OSEnableScrollBar(hwnd, flags, win32.OSESB_DISABLE_BOTH)
@@ -503,13 +503,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 		}
 		win32.OSGetScrollBarInfo(hwnd, idObject, psbi)
 		if (psbi.Rgstate[0] & win32.OSSTATE_SYSTEM_INVISIBLE) != 0 {
-			var cond633 int32
+			var cond508 int32
 			if type_ == win32.OSSB_VERT {
-				cond633 = win32.OSSB_HORZ
+				cond508 = win32.OSSB_HORZ
 			} else {
-				cond633 = win32.OSSB_VERT
+				cond508 = win32.OSSB_VERT
 			}
-			win32.OSShowScrollBar(hwnd, cond633, true)
+			win32.OSShowScrollBar(hwnd, cond508, true)
 			type_ = win32.OSSB_BOTH
 		}
 	}
@@ -523,13 +523,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 				win32.OSEnableScrollBar(hwnd, type_, win32.OSESB_ENABLE_BOTH)
 			}
 		}
-		var cond634 int32
+		var cond509 int32
 		if visible {
-			cond634 = Show
+			cond509 = Show
 		} else {
-			cond634 = Hide
+			cond509 = Hide
 		}
-		this.SendEventEventType(cond634)
+		this.SendEventEventType(cond509)
 	}
 }
 

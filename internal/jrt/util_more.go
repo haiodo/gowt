@@ -106,3 +106,25 @@ func (f *File) ListFiles() []*File {
 
 // Delete is File.delete().
 func (f *File) Delete() bool { return os.Remove(f.path) == nil }
+
+// IsAssignableFrom is Class.isAssignableFrom for the reflect types the translator uses as Class values.
+func IsAssignableFrom(to, from reflect.Type) bool {
+	if to == nil || from == nil {
+		return false
+	}
+	return from == to || to.Kind() == reflect.Interface && from.Implements(to) || from.AssignableTo(to)
+}
+
+// Compute is Map.compute(key, (k, old) -> new): a nil result removes the key.
+func (m *Map) Compute(k any, fn any) any {
+	v := callFunc(fn, k, m.Get(k))
+	if IsNil(v) {
+		m.Remove(k)
+		return nil
+	}
+	m.Put(k, v)
+	return v
+}
+
+// GetAsInt is OptionalInt.getAsInt (an OptionalInt is an Optional of an int32).
+func (o *Optional) GetAsInt() int32 { return Cast[int32](o.Get()) }

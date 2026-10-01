@@ -118,7 +118,7 @@ final class InvocationEmitter {
 		}
 
 		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.
-		if (mb.getMethodDeclaration().getTypeParameters().length > 0) {
+		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 			emitter.unsupported.add("MethodInvocation: generic method " + qualified + "." + mb.getName() + " not translated");
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
@@ -213,7 +213,8 @@ final class InvocationEmitter {
 		int fixedCount = mb.isVarargs() ? paramTypes.length - 1 : paramTypes.length;
 		for (int i = 0; i < fixedCount && i < javaArgs.size(); i++) {
 			Expression a = (Expression) javaArgs.get(i);
-			args.add(emitter.adaptNumeric(emitter.expr(a), a.resolveTypeBinding(), paramTypes[i]));
+			String text = emitter.adaptNumeric(emitter.expr(a), a.resolveTypeBinding(), paramTypes[i]);
+			args.add(ErasedGenerics.erasedFunc(emitter, text, a, mb, i));
 		}
 		if (!mb.isVarargs()) {
 			for (int i = fixedCount; i < javaArgs.size(); i++) {
@@ -418,6 +419,12 @@ final class InvocationEmitter {
 		String goName = emitter.ctorGoName(ctor, prefix);
 		List<String> args = buildArgs(cic.arguments(), ctor);
 		if (!EmitUtil.isInnerClass(declaring)) return goName + "(" + String.join(", ", args) + ")";
+		if (ConstructorEmitter.outerFirst(ci)) {
+			ITypeBinding outerType = declaring.getDeclaringClass();
+			String outerInst = cic.getExpression() != null ? emitter.upcastObject(emitter.expr(cic.getExpression()), cic.getExpression().resolveTypeBinding(), outerType)
+					: OuterThis.path(emitter, outerType);
+			return goName + "(" + outerInst + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
+		}
 		// Set after construction: fine as long as the inner ctor itself doesn't reach the outer.
 		String tmp = "inner" + (++emitter.tempCounter);
 		emitter.prelude.add(tmp + " := " + goName + "(" + String.join(", ", args) + ")");

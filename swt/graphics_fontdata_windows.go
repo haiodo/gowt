@@ -169,7 +169,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 	var version2 string = jrt.Substring(string_, start, end)
 	if (platform == "WINDOWS") && (version2 == "1") {
 		var newData *win32.LOGFONT = win32.NewLOGFONT()
-		tretd284 := false
+		tretd282 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -188,7 +188,7 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 					this.SetName(name)
 					this.SetHeightHeight(height)
 					this.SetStyle(style)
-					tretd284 = true
+					tretd282 = true
 					return
 				} else {
 					panic(r)
@@ -197,97 +197,97 @@ func (this *FontData) initFontDataOverload1(string_ string) {
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
 			newData.LfHeight = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
 			newData.LfWidth = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
 			newData.LfEscapement = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
 			newData.LfOrientation = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
 			newData.LfWeight = jrt.ParseInt(jrt.Substring(string_, start, end))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfItalic = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfItalic = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfUnderline = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfUnderline = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfStrikeOut = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfStrikeOut = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfCharSet = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfCharSet = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfOutPrecision = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfOutPrecision = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfClipPrecision = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfClipPrecision = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfQuality = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfQuality = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 			end = jrt.IndexFrom(string_, string(rune('|')), start)
 			if end == -1 {
-				tretd284 = true
+				tretd282 = true
 				return
 			}
-			newData.LfPitchAndFamily = func() int8 { _ = []any{jrt.Substring(string_, start, end)}; panic("j2go: unresolved call parseByte") }()
+			newData.LfPitchAndFamily = int8(jrt.ParseInt(jrt.Substring(string_, start, end)))
 			start = end + 1
 		}()
-		if tretd284 {
+		if tretd282 {
 			return
 		}
 		var length int32 = int32(math.Min(float64(int32(len(newData.LfFaceName))-1), float64(jrt.StringLength(string_)-start)))
@@ -356,8 +356,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok285 := fontDataImplAsFontData(object)
-	if !(ok285) {
+	_, ok283 := fontDataImplAsFontData(object)
+	if !(ok283) {
 		return false
 	}
 	var fd *FontData = castanyToFontData(object)

@@ -141,17 +141,13 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 
 func (this *Pattern) GetPatternHandle(zoom int32) *Pattern_PatternHandle {
 	return jrt.Cast[*Pattern_PatternHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) *Pattern_PatternHandle {
-		var cond427 *Pattern_PatternHandle
-		inner428 := newPatternImagePatternHandle(jrt.Cast[int32](z))
-		inner428.this_0 = this
-		inner429 := newPatternBasePatternHandle(jrt.Cast[int32](z))
-		inner429.this_0 = this
+		var cond369 *Pattern_PatternHandle
 		if this.image != (nil) {
-			cond427 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(inner428)
+			cond369 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(newPatternImagePatternHandle(this, jrt.Cast[int32](z)))
 		} else {
-			cond427 = upcastPattern_BasePatternHandleToPattern_PatternHandle(inner429)
+			cond369 = upcastPattern_BasePatternHandleToPattern_PatternHandle(newPatternBasePatternHandle(this, jrt.Cast[int32](z)))
 		}
-		return cond427
+		return cond369
 	}))
 }
 
@@ -213,8 +209,9 @@ type Pattern_BasePatternHandleLike interface {
 	AsPattern_BasePatternHandle() *Pattern_BasePatternHandle
 }
 
-func newPatternBasePatternHandle(zoom int32) *Pattern_BasePatternHandle {
+func newPatternBasePatternHandle(this_0 *Pattern, zoom int32) *Pattern_BasePatternHandle {
 	this := &Pattern_BasePatternHandle{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initPatternBasePatternHandle(zoom)
 	return this
@@ -284,8 +281,9 @@ type Pattern_ImagePatternHandleLike interface {
 	AsPattern_ImagePatternHandle() *Pattern_ImagePatternHandle
 }
 
-func newPatternImagePatternHandle(zoom int32) *Pattern_ImagePatternHandle {
+func newPatternImagePatternHandle(this_0 *Pattern, zoom int32) *Pattern_ImagePatternHandle {
 	this := &Pattern_ImagePatternHandle{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initPatternImagePatternHandle(zoom)
 	return this
@@ -377,8 +375,9 @@ type Pattern_PatternHandleLike interface {
 	AsPattern_PatternHandle() *Pattern_PatternHandle
 }
 
-func newPatternPatternHandle(zoom int32) *Pattern_PatternHandle {
+func newPatternPatternHandle(this_0 *Pattern, zoom int32) *Pattern_PatternHandle {
 	this := &Pattern_PatternHandle{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initPatternPatternHandle(zoom)
 	return this

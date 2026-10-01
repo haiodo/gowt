@@ -427,13 +427,13 @@ func (this *GC) CheckGC(mask int32) {
 			}
 		}
 		if (state & GCLINE_STYLE) != 0 {
-			var cond340 int32
+			var cond337 int32
 			if this.data.LineStyle == LINE_SOLID {
-				cond340 = win32.OSOPAQUE
+				cond337 = win32.OSOPAQUE
 			} else {
-				cond340 = win32.OSTRANSPARENT
+				cond337 = win32.OSTRANSPARENT
 			}
-			win32.OSSetBkMode(this.Handle, cond340)
+			win32.OSSetBkMode(this.Handle, cond337)
 		}
 		var joinStyle int32 = 0
 		switch this.data.LineJoin {
@@ -467,13 +467,13 @@ func (this *GC) CheckGC(mask int32) {
 			var logBrush *win32.LOGBRUSH = win32.NewLOGBRUSH()
 			logBrush.LbStyle = win32.OSBS_SOLID
 			logBrush.LbColor = color
-			var cond341 int32
+			var cond338 int32
 			if dashes != (nil) {
-				cond341 = int32(len(dashes))
+				cond338 = int32(len(dashes))
 			} else {
-				cond341 = 0
+				cond338 = 0
 			}
-			newPen = win32.OSExtCreatePen(style|win32.OSPS_GEOMETRIC, int32(math.Max(float64(1), float64(width))), logBrush, cond341, dashes)
+			newPen = win32.OSExtCreatePen(style|win32.OSPS_GEOMETRIC, int32(math.Max(float64(1), float64(width))), logBrush, cond338, dashes)
 		}
 		win32.OSSelectObject(this.Handle, newPen)
 		this.data.State |= GCPEN
@@ -540,9 +540,7 @@ func (this *GC) CopyArea(imageLike ImageLike, x int32, y int32) {
 	if image.Type != BITMAP || image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner342 := newGCCopyAreaToImageOperation(image, x, y)
-	inner342.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_CopyAreaToImageOperationToGC_Operation(inner342))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_CopyAreaToImageOperationToGC_Operation(newGCCopyAreaToImageOperation(this, image, x, y)))
 }
 
 func (this *GC) CopyAreaInPixels(imageLike ImageLike, x int32, y int32) {
@@ -569,9 +567,7 @@ func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestY(srcX int32, srcY int32, wi
 
 func (this *GC) CopyAreaSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int32, width int32, height int32, destX int32, destY int32, paint bool) {
 	this.CheckNonDisposed()
-	inner343 := newGCCopyAreaOperation(NewRectangle(srcX, srcY, width, height), NewRectangle(destX, destY, width, height), paint)
-	inner343.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_CopyAreaOperationToGC_Operation(inner343))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_CopyAreaOperationToGC_Operation(newGCCopyAreaOperation(this, NewRectangle(srcX, srcY, width, height), NewRectangle(destX, destY, width, height), paint)))
 }
 
 func (this *GC) CopyAreaInPixelsSrcXSrcYWidthHeightDestXDestYPaint(srcX int32, srcY int32, width int32, height int32, destX int32, destY int32, paint bool) {
@@ -672,9 +668,7 @@ func (this *GC) DisposeGdip() {
 
 func (this *GC) DrawArc(x int32, y int32, width int32, height int32, startAngle int32, arcAngle int32) {
 	this.CheckNonDisposed()
-	inner344 := newGCDrawArcOperation(NewRectangle(x, y, width, height), startAngle, arcAngle)
-	inner344.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawArcOperationToGC_Operation(inner344))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawArcOperationToGC_Operation(newGCDrawArcOperation(this, NewRectangle(x, y, width, height), startAngle, arcAngle)))
 }
 
 func (this *GC) DrawArcInPixels(x int32, y int32, width int32, height int32, startAngle int32, arcAngle int32) {
@@ -747,9 +741,7 @@ func (this *GC) DrawArcInPixels(x int32, y int32, width int32, height int32, sta
 
 func (this *GC) DrawFocus(x int32, y int32, width int32, height int32) {
 	this.CheckNonDisposed()
-	inner345 := newGCDrawFocusOperation(NewRectangle(x, y, width, height))
-	inner345.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawFocusOperationToGC_Operation(inner345))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawFocusOperationToGC_Operation(newGCDrawFocusOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) DrawFocusInPixels(x int32, y int32, width int32, height int32) {
@@ -828,9 +820,7 @@ func (this *GC) DrawImage(imageLike ImageLike, x int32, y int32) {
 		}()
 		this.GetTransform(transform)
 		if transform.IsIdentity() {
-			inner346 := newGCDrawImageOperation(image, NewPoint(x, y))
-			inner346.this_0 = this
-			this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawImageOperationToGC_Operation(inner346))
+			this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawImageOperationToGC_Operation(newGCDrawImageOperation(this, image, NewPoint(x, y))))
 		} else {
 			var imageBounds *Rectangle = image.GetBounds()
 			this.DrawImageImageDestXDestYDestWidthDestHeight(image, x, y, imageBounds.Width, imageBounds.Height)
@@ -868,9 +858,7 @@ func (this *GC) DrawImageImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHe
 	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner347 := newGCDrawScalingImageToImageOperation(image, NewRectangle(srcX, srcY, srcWidth, srcHeight), NewRectangle(destX, destY, destWidth, destHeight))
-	inner347.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawScalingImageToImageOperationToGC_Operation(inner347))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawScalingImageToImageOperationToGC_Operation(newGCDrawScalingImageToImageOperation(this, image, NewRectangle(srcX, srcY, srcWidth, srcHeight), NewRectangle(destX, destY, destWidth, destHeight))))
 }
 
 func (this *GC) DrawImageImageDestXDestYDestWidthDestHeight(imageLike ImageLike, destX int32, destY int32, destWidth int32, destHeight int32) {
@@ -892,9 +880,7 @@ func (this *GC) DrawImageImageDestXDestYDestWidthDestHeight(imageLike ImageLike,
 	if image.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner348 := newGCDrawScaledImageOperation(image, NewRectangle(destX, destY, destWidth, destHeight))
-	inner348.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawScaledImageOperationToGC_Operation(inner348))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawScaledImageOperationToGC_Operation(newGCDrawScaledImageOperation(this, image, NewRectangle(destX, destY, destWidth, destHeight))))
 }
 
 func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeightSimple(srcImageLike ImageLike, srcX int32, srcY int32, srcWidth int32, srcHeight int32, destX int32, destY int32, destWidth int32, destHeight int32, simple bool) {
@@ -903,9 +889,7 @@ func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDes
 		srcImage = srcImageLike.AsImage()
 	}
 	_ = srcImage
-	inner349 := newGCDrawImageToImageOperation(srcImage, NewRectangle(srcX, srcY, srcWidth, srcHeight), NewRectangle(destX, destY, destWidth, destHeight), simple)
-	inner349.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawImageToImageOperationToGC_Operation(inner349))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawImageToImageOperationToGC_Operation(newGCDrawImageToImageOperation(this, srcImage, NewRectangle(srcX, srcY, srcWidth, srcHeight), NewRectangle(destX, destY, destWidth, destHeight), simple)))
 }
 
 func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDestHeightSimpleTempImageHandle(srcImageLike ImageLike, srcX int32, srcY int32, srcWidth int32, srcHeight int32, destX int32, destY int32, destWidth int32, destHeight int32, simple bool, tempImageHandle Image_ImageHandle) {
@@ -1341,13 +1325,13 @@ func (this *GC) DrawBitmapTransparentByClipping(srcHdc int64, maskHdc int64, src
 	} else {
 		win32.OSBitBlt(this.Handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop)
 	}
-	var cond350 int64
+	var cond339 int64
 	if result == 1 {
-		cond350 = clip
+		cond339 = clip
 	} else {
-		cond350 = int64(0)
+		cond339 = int64(0)
 	}
-	win32.OSSelectClipRgn(this.Handle, cond350)
+	win32.OSSelectClipRgn(this.Handle, cond339)
 	win32.OSDeleteObject(clip)
 	win32.OSDeleteObject(rgn)
 }
@@ -1557,9 +1541,7 @@ func (this *GC) DrawBitmapColor(imageHandle int64, srcX int32, srcY int32, srcWi
 
 func (this *GC) DrawLine(x1 int32, y1 int32, x2 int32, y2 int32) {
 	this.CheckNonDisposed()
-	inner351 := newGCDrawLineOperation(x1, y1, x2, y2)
-	inner351.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawLineOperationToGC_Operation(inner351))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawLineOperationToGC_Operation(newGCDrawLineOperation(this, x1, y1, x2, y2)))
 }
 
 func (this *GC) DrawLineInPixels(x1 int32, y1 int32, x2 int32, y2 int32) {
@@ -1586,9 +1568,7 @@ func (this *GC) DrawLineInPixels(x1 int32, y1 int32, x2 int32, y2 int32) {
 
 func (this *GC) DrawOval(x int32, y int32, width int32, height int32) {
 	this.CheckNonDisposed()
-	inner352 := newGCDrawOvalOperation(NewRectangle(x, y, width, height))
-	inner352.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawOvalOperationToGC_Operation(inner352))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawOvalOperationToGC_Operation(newGCDrawOvalOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) DrawOvalInPixels(x int32, y int32, width int32, height int32) {
@@ -1621,16 +1601,12 @@ func (this *GC) DrawPath(pathLike PathLike) {
 	if path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner353 := newGCDrawPathOperation(path)
-	inner353.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPathOperationToGC_Operation(inner353))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPathOperationToGC_Operation(newGCDrawPathOperation(this, path)))
 }
 
 func (this *GC) DrawPoint(x int32, y int32) {
 	this.CheckNonDisposed()
-	inner354 := newGCDrawPointOperation(x, y)
-	inner354.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPointOperationToGC_Operation(inner354))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPointOperationToGC_Operation(newGCDrawPointOperation(this, x, y)))
 }
 
 func (this *GC) DrawPointInPixels(x int32, y int32) {
@@ -1647,9 +1623,7 @@ func (this *GC) DrawPolygon(pointArray []int32) {
 	if pointArray == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	inner355 := newGCDrawPolygonOperation(pointArray)
-	inner355.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPolygonOperationToGC_Operation(inner355))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPolygonOperationToGC_Operation(newGCDrawPolygonOperation(this, pointArray)))
 }
 
 func (this *GC) DrawPolygonInPixels(pointArray []int32) {
@@ -1683,9 +1657,7 @@ func (this *GC) DrawPolyline(pointArray []int32) {
 	if pointArray == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	inner356 := newGCDrawPolylineOperation(pointArray)
-	inner356.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPolylineOperationToGC_Operation(inner356))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawPolylineOperationToGC_Operation(newGCDrawPolylineOperation(this, pointArray)))
 }
 
 func (this *GC) DrawPolylineInPixels(pointArray []int32) {
@@ -1722,9 +1694,7 @@ func (this *GC) DrawPolylineInPixels(pointArray []int32) {
 
 func (this *GC) DrawRectangle(x int32, y int32, width int32, height int32) {
 	this.CheckNonDisposed()
-	inner357 := newGCDrawRectangleOperation(NewRectangle(x, y, width, height))
-	inner357.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRectangleOperationToGC_Operation(inner357))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRectangleOperationToGC_Operation(newGCDrawRectangleOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) DrawRectangleInPixels(x int32, y int32, width int32, height int32) {
@@ -1768,16 +1738,12 @@ func (this *GC) DrawRectangleRect(rectLike RectangleLike) {
 	if rect == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	inner358 := newGCDrawRectangleOperation(rect)
-	inner358.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRectangleOperationToGC_Operation(inner358))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRectangleOperationToGC_Operation(newGCDrawRectangleOperation(this, rect)))
 }
 
 func (this *GC) DrawRoundRectangle(x int32, y int32, width int32, height int32, arcWidth int32, arcHeight int32) {
 	this.CheckNonDisposed()
-	inner359 := newGCDrawRoundRectangleOperation(NewRectangle(x, y, width, height), arcWidth, arcHeight)
-	inner359.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRoundRectangleOperationToGC_Operation(inner359))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawRoundRectangleOperationToGC_Operation(newGCDrawRoundRectangleOperation(this, NewRectangle(x, y, width, height), arcWidth, arcHeight)))
 }
 
 func (this *GC) DrawRoundRectangleInPixels(x int32, y int32, width int32, height int32, arcWidth int32, arcHeight int32) {
@@ -1850,9 +1816,7 @@ func (this *GC) DrawRoundRectangleGdip(gdipGraphics int64, pen int64, x int32, y
 
 func (this *GC) DrawString(string_ string, x int32, y int32) {
 	this.CheckNonDisposed()
-	inner360 := newGCDrawStringOperation(string_, NewPoint(x, y), false)
-	inner360.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawStringOperationToGC_Operation(inner360))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawStringOperationToGC_Operation(newGCDrawStringOperation(this, string_, NewPoint(x, y), false)))
 }
 
 func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32, isTransparent bool) {
@@ -1863,39 +1827,37 @@ func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32
 	if len(string_) == 0 {
 		return
 	}
-	inner361 := newGCDrawStringOperation(string_, NewPoint(x, y), isTransparent)
-	inner361.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawStringOperationToGC_Operation(inner361))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawStringOperationToGC_Operation(newGCDrawStringOperation(this, string_, NewPoint(x, y), isTransparent)))
 }
 
 func (this *GC) DrawStringInPixels(string_ string, x int32, y int32, isTransparent bool) {
 	var buffer []uint16 = utf16.Encode([]rune(string_))
 	var gdipGraphics int64 = this.data.GdipGraphics
 	if gdipGraphics != 0 {
-		var cond362 int32
+		var cond340 int32
 		if isTransparent {
-			cond362 = 0
+			cond340 = 0
 		} else {
-			cond362 = GCBACKGROUND
+			cond340 = GCBACKGROUND
 		}
-		this.CheckGC(GCFONT | GCFOREGROUND | (cond362))
-		var cond363 int32
+		this.CheckGC(GCFONT | GCFOREGROUND | (cond340))
+		var cond341 int32
 		if isTransparent {
-			cond363 = DRAW_TRANSPARENT
+			cond341 = DRAW_TRANSPARENT
 		} else {
-			cond363 = 0
+			cond341 = 0
 		}
-		this.DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics, string_, x, y, cond363, nil)
+		this.DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics, string_, x, y, cond341, nil)
 		return
 	}
 	this.CheckGC(GCFONT | GCFOREGROUND_TEXT | GCBACKGROUND_TEXT)
-	var cond364 int32
+	var cond342 int32
 	if isTransparent {
-		cond364 = win32.OSTRANSPARENT
+		cond342 = win32.OSTRANSPARENT
 	} else {
-		cond364 = win32.OSOPAQUE
+		cond342 = win32.OSOPAQUE
 	}
-	var oldBkMode int32 = win32.OSSetBkMode(this.Handle, cond364)
+	var oldBkMode int32 = win32.OSSetBkMode(this.Handle, cond342)
 	var rect *win32.RECT = nil
 	var size *win32.SIZE = nil
 	var flags int32 = 0
@@ -1956,9 +1918,7 @@ func (this *GC) DrawText(string_ string, x int32, y int32) {
 	if len(string_) == 0 {
 		return
 	}
-	inner365 := newGCDrawTextOperation(string_, NewPoint(x, y), DRAW_DELIMITER|DRAW_TAB)
-	inner365.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(inner365))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(newGCDrawTextOperation(this, string_, NewPoint(x, y), DRAW_DELIMITER|DRAW_TAB)))
 }
 
 func (this *GC) DrawTextStringXYIsTransparent(string_ string, x int32, y int32, isTransparent bool) {
@@ -1973,9 +1933,7 @@ func (this *GC) DrawTextStringXYIsTransparent(string_ string, x int32, y int32, 
 	if isTransparent {
 		flags |= DRAW_TRANSPARENT
 	}
-	inner366 := newGCDrawTextOperation(string_, NewPoint(x, y), flags)
-	inner366.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(inner366))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(newGCDrawTextOperation(this, string_, NewPoint(x, y), flags)))
 }
 
 func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags int32) {
@@ -1986,21 +1944,19 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 	if len(string_) == 0 {
 		return
 	}
-	inner367 := newGCDrawTextOperation(string_, NewPoint(x, y), flags)
-	inner367.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(inner367))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_DrawTextOperationToGC_Operation(newGCDrawTextOperation(this, string_, NewPoint(x, y), flags)))
 }
 
 func (this *GC) DrawTextInPixels(string_ string, x int32, y int32, flags int32) {
 	var gdipGraphics int64 = this.data.GdipGraphics
 	if gdipGraphics != 0 {
-		var cond368 int32
+		var cond343 int32
 		if (flags & DRAW_TRANSPARENT) != 0 {
-			cond368 = 0
+			cond343 = 0
 		} else {
-			cond368 = GCBACKGROUND
+			cond343 = GCBACKGROUND
 		}
-		this.CheckGC(GCFONT | GCFOREGROUND | (cond368))
+		this.CheckGC(GCFONT | GCFOREGROUND | (cond343))
 		this.DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics, string_, x, y, flags, nil)
 		return
 	}
@@ -2021,13 +1977,13 @@ func (this *GC) DrawTextInPixels(string_ string, x int32, y int32, flags int32) 
 		uFormat |= win32.OSDT_HIDEPREFIX
 	}
 	this.CheckGC(GCFONT | GCFOREGROUND_TEXT | GCBACKGROUND_TEXT)
-	var cond369 int32
+	var cond344 int32
 	if (flags & DRAW_TRANSPARENT) != 0 {
-		cond369 = win32.OSTRANSPARENT
+		cond344 = win32.OSTRANSPARENT
 	} else {
-		cond369 = win32.OSOPAQUE
+		cond344 = win32.OSOPAQUE
 	}
-	var oldBkMode int32 = win32.OSSetBkMode(this.Handle, cond369)
+	var oldBkMode int32 = win32.OSSetBkMode(this.Handle, cond344)
 	if win32.OSGetROP2(this.Handle) != win32.OSR2_XORPEN {
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(this.Handle, buffer, int32(len(buffer)), rect, uFormat)
 	} else {
@@ -2119,13 +2075,13 @@ func (this *GC) DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics int64, string
 	if (flags & (DRAW_DELIMITER | DRAW_TAB | DRAW_MNEMONIC)) != 0 {
 		var tabWidth int32 = lptm.TmAveCharWidth * 8
 		for i < length {
-			t371 := i
+			t346 := i
 			i++
-			cond370 := chars[t371]
-			t372 := end
+			cond345 := chars[t346]
+			t347 := end
 			end++
-			chars[t372] = cond370
-			var c uint16 = cond370
+			chars[t347] = cond345
+			var c uint16 = cond345
 			switch c {
 			case '\u0009':
 				if (flags & DRAW_TAB) != 0 {
@@ -2195,12 +2151,12 @@ func (this *GC) DrawTextGdipGraphicsBufferStartLengthXYFlagsMnemonicIndexLptmDra
 	result.LStructSize = win32.GCP_RESULTSSizeof
 	result.NGlyphs = nGlyphs
 	var hHeap int64 = win32.OSGetProcessHeap()
-	cond373 := win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, nGlyphs*4)
-	result.LpDx = cond373
-	var lpDx int64 = cond373
-	cond374 := win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, nGlyphs*2)
-	result.LpGlyphs = cond374
-	var lpGlyphs int64 = cond374
+	cond348 := win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, nGlyphs*4)
+	result.LpDx = cond348
+	var lpDx int64 = cond348
+	cond349 := win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, nGlyphs*2)
+	result.LpGlyphs = cond349
+	var lpGlyphs int64 = cond349
 	var lpOrder int64 = int64(0)
 	var dwFlags int32 = win32.OSGCP_GLYPHSHAPE | win32.OSGCP_REORDER | win32.OSGCP_LIGATE
 	if drawMnemonic {
@@ -2244,12 +2200,12 @@ func (this *GC) DrawTextGdipGraphicsBufferStartLengthXYFlagsMnemonicIndexLptmDra
 		for ; i < int32(len(dx)); func() {
 			i++
 		}() {
-			t375 := j
+			t350 := j
 			j++
-			points[t375] = float32(drawX)
-			t376 := j
+			points[t350] = float32(drawX)
+			t351 := j
 			j++
-			points[t376] = float32(drawY)
+			points[t351] = float32(drawY)
 			drawX += dx[i]
 		}
 	}
@@ -2421,16 +2377,14 @@ func (this *GC) DrawTextGDIP(gdipGraphics int64, string_ string, x int32, y int3
 
 func (this *GC) Equals(object any) bool {
 	return (object == this) || func() bool {
-		_, ok380 := resourceImplAsGC(object)
-		return ((ok380) && (this.Handle == (castanyToGC(object)).Handle))
+		_, ok355 := resourceImplAsGC(object)
+		return ((ok355) && (this.Handle == (castanyToGC(object)).Handle))
 	}()
 }
 
 func (this *GC) FillArc(x int32, y int32, width int32, height int32, startAngle int32, arcAngle int32) {
 	this.CheckNonDisposed()
-	inner381 := newGCFillArcOperation(NewRectangle(x, y, width, height), startAngle, arcAngle)
-	inner381.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillArcOperationToGC_Operation(inner381))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillArcOperationToGC_Operation(newGCFillArcOperation(this, NewRectangle(x, y, width, height), startAngle, arcAngle)))
 }
 
 func (this *GC) FillArcInPixels(x int32, y int32, width int32, height int32, startAngle int32, arcAngle int32) {
@@ -2492,9 +2446,7 @@ func (this *GC) FillArcInPixels(x int32, y int32, width int32, height int32, sta
 
 func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int32, vertical bool) {
 	this.CheckNonDisposed()
-	inner382 := newGCFillGradientRectangleOperation(NewRectangle(x, y, width, height), vertical)
-	inner382.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillGradientRectangleOperationToGC_Operation(inner382))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillGradientRectangleOperationToGC_Operation(newGCFillGradientRectangleOperation(this, NewRectangle(x, y, width, height), vertical)))
 }
 
 func (this *GC) FillGradientRectangleInPixels(x int32, y int32, width int32, height int32, vertical bool, zoom int32) {
@@ -2578,39 +2530,37 @@ func (this *GC) FillGradientRectangleInPixels(x int32, y int32, width int32, hei
 		trivertex.Blue = int16(((toRGB.Blue << 8) | toRGB.Blue))
 		trivertex.Alpha = int16(-1)
 		win32.OSMoveMemoryOverload27(pVertex+int64(win32.TRIVERTEXSizeof), trivertex, win32.TRIVERTEXSizeof)
-		var cond383 int32
+		var cond356 int32
 		if vertical {
-			cond383 = win32.OSGRADIENT_FILL_RECT_V
+			cond356 = win32.OSGRADIENT_FILL_RECT_V
 		} else {
-			cond383 = win32.OSGRADIENT_FILL_RECT_H
+			cond356 = win32.OSGRADIENT_FILL_RECT_H
 		}
-		var success bool = win32.OSGradientFill(this.Handle, pVertex, 2, pMesh, 1, cond383)
+		var success bool = win32.OSGradientFill(this.Handle, pVertex, 2, pMesh, 1, cond356)
 		win32.OSHeapFree(hHeap, 0, pMesh)
 		if success {
 			return
 		}
 	}
 	var depth int32 = win32.OSGetDeviceCaps(this.Handle, win32.OSBITSPIXEL)
-	var cond384 int32
+	var cond357 int32
 	if depth >= 15 {
-		cond384 = 5
+		cond357 = 5
 	} else {
-		cond384 = 0
+		cond357 = 0
 	}
 	var bitResolution int32
 	if depth >= 24 {
 		bitResolution = 8
 	} else {
-		bitResolution = cond384
+		bitResolution = cond357
 	}
 	ImageDataFillGradientRectangle(this, this.data.Device, x, y, width, height, vertical, fromRGB, toRGB, bitResolution, bitResolution, bitResolution, zoom)
 }
 
 func (this *GC) FillOval(x int32, y int32, width int32, height int32) {
 	this.CheckNonDisposed()
-	inner385 := newGCFillOvalOperation(NewRectangle(x, y, width, height))
-	inner385.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillOvalOperationToGC_Operation(inner385))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillOvalOperationToGC_Operation(newGCFillOvalOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) FillOvalInPixels(x int32, y int32, width int32, height int32) {
@@ -2639,9 +2589,7 @@ func (this *GC) FillPath(pathLike PathLike) {
 	if path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner386 := newGCFillPathOperation(path)
-	inner386.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillPathOperationToGC_Operation(inner386))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillPathOperationToGC_Operation(newGCFillPathOperation(this, path)))
 }
 
 func (this *GC) FillPolygon(pointArray []int32) {
@@ -2649,9 +2597,7 @@ func (this *GC) FillPolygon(pointArray []int32) {
 	if pointArray == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	inner387 := newGCFillPolygonOperation(pointArray)
-	inner387.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillPolygonOperationToGC_Operation(inner387))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillPolygonOperationToGC_Operation(newGCFillPolygonOperation(this, pointArray)))
 }
 
 func (this *GC) FillPolygonInPixels(pointArray []int32) {
@@ -2684,9 +2630,7 @@ func (this *GC) FillPolygonInPixels(pointArray []int32) {
 }
 
 func (this *GC) FillRectangle(x int32, y int32, width int32, height int32) {
-	inner388 := newGCFillRectangleOperation(NewRectangle(x, y, width, height))
-	inner388.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRectangleOperationToGC_Operation(inner388))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRectangleOperationToGC_Operation(newGCFillRectangleOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) FillRectangleInPixels(x int32, y int32, width int32, height int32) {
@@ -2723,16 +2667,12 @@ func (this *GC) FillRectangleRect(rectLike RectangleLike) {
 	if rect == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	inner389 := newGCFillRectangleOperation(rect)
-	inner389.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRectangleOperationToGC_Operation(inner389))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRectangleOperationToGC_Operation(newGCFillRectangleOperation(this, rect)))
 }
 
 func (this *GC) FillRoundRectangle(x int32, y int32, width int32, height int32, arcWidth int32, arcHeight int32) {
 	this.CheckNonDisposed()
-	inner390 := newGCFillRoundRectangleOperation(NewRectangle(x, y, width, height), arcWidth, arcHeight)
-	inner390.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRoundRectangleOperationToGC_Operation(inner390))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_FillRoundRectangleOperationToGC_Operation(newGCFillRoundRectangleOperation(this, NewRectangle(x, y, width, height), arcWidth, arcHeight)))
 }
 
 func (this *GC) FillRoundRectangleInPixels(x int32, y int32, width int32, height int32, arcWidth int32, arcHeight int32) {
@@ -2899,9 +2839,7 @@ func (this *GC) GetClippingRegion(regionLike RegionLike) {
 	if region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner391 := NewGCGetClippingOperation(region)
-	inner391.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_GetClippingOperationToGC_Operation(inner391))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_GetClippingOperationToGC_Operation(NewGCGetClippingOperation(this, region)))
 }
 
 func (this *GC) GetClippingRegionLocal1() int64 {
@@ -2972,24 +2910,24 @@ func (this *GC) GetClippingRegionLocal1() int64 {
 }
 
 func (this *GC) GetFgBrush() int64 {
-	var cond392 int64
+	var cond358 int64
 	if this.data.ForegroundPattern != (nil) {
-		cond392 = this.data.ForegroundPattern.GetHandle(this.GetZoom())
+		cond358 = this.data.ForegroundPattern.GetHandle(this.GetZoom())
 	} else {
-		cond392 = this.data.GdipFgBrush
+		cond358 = this.data.GdipFgBrush
 	}
-	return cond392
+	return cond358
 }
 
 func (this *GC) GetFillRule() int32 {
 	this.CheckNonDisposed()
-	var cond393 int32
+	var cond359 int32
 	if win32.OSGetPolyFillMode(this.Handle) == win32.OSWINDING {
-		cond393 = FILL_WINDING
+		cond359 = FILL_WINDING
 	} else {
-		cond393 = FILL_EVEN_ODD
+		cond359 = FILL_EVEN_ODD
 	}
-	return cond393
+	return cond359
 }
 
 func (this *GC) GetFont() *Font {
@@ -3321,23 +3259,17 @@ func (this *GC) isDisposed_() bool {
 
 func (this *GC) SetAdvanced(advanced bool) {
 	this.CheckNonDisposed()
-	inner394 := newGCSetAdvancedOperation(advanced)
-	inner394.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAdvancedOperationToGC_Operation(inner394))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAdvancedOperationToGC_Operation(newGCSetAdvancedOperation(this, advanced)))
 }
 
 func (this *GC) SetAntialias(antialias int32) {
 	this.CheckNonDisposed()
-	inner395 := newGCSetAntialiasOperation(antialias)
-	inner395.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAntialiasOperationToGC_Operation(inner395))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAntialiasOperationToGC_Operation(newGCSetAntialiasOperation(this, antialias)))
 }
 
 func (this *GC) SetAlpha(alpha int32) {
 	this.CheckNonDisposed()
-	inner396 := newGCSetAlphaOperation(alpha)
-	inner396.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAlphaOperationToGC_Operation(inner396))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetAlphaOperationToGC_Operation(newGCSetAlphaOperation(this, alpha)))
 }
 
 func (this *GC) SetBackground(colorLike ColorLike) {
@@ -3353,9 +3285,7 @@ func (this *GC) SetBackground(colorLike ColorLike) {
 	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner397 := newGCSetBackgroundOperation(color)
-	inner397.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetBackgroundOperationToGC_Operation(inner397))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetBackgroundOperationToGC_Operation(newGCSetBackgroundOperation(this, color)))
 }
 
 func (this *GC) SetBackgroundPattern(patternLike PatternLike) {
@@ -3368,9 +3298,7 @@ func (this *GC) SetBackgroundPattern(patternLike PatternLike) {
 	if pattern != (nil) && pattern.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner398 := newGCSetBackgroundPatternOperation(pattern)
-	inner398.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetBackgroundPatternOperationToGC_Operation(inner398))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetBackgroundPatternOperationToGC_Operation(newGCSetBackgroundPatternOperation(this, pattern)))
 }
 
 func (this *GC) SetClippingClipRgn(clipRgn int64) {
@@ -3404,9 +3332,7 @@ func (this *GC) SetClippingRegion(hRgn int64) {
 
 func (this *GC) SetClipping(x int32, y int32, width int32, height int32) {
 	this.CheckNonDisposed()
-	inner399 := newGCSetClippingOperation(NewRectangle(x, y, width, height))
-	inner399.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingOperationToGC_Operation(inner399))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingOperationToGC_Operation(newGCSetClippingOperation(this, NewRectangle(x, y, width, height))))
 }
 
 func (this *GC) SetClippingInPixels(x int32, y int32, width int32, height int32) {
@@ -3426,9 +3352,7 @@ func (this *GC) SetClippingOverload1(pathLike PathLike) {
 	if path != (nil) && path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner400 := newGCSetClippingPathOperation(path)
-	inner400.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingPathOperationToGC_Operation(inner400))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingPathOperationToGC_Operation(newGCSetClippingPathOperation(this, path)))
 }
 
 func (this *GC) SetClippingOverload2(rectLike RectangleLike) {
@@ -3439,13 +3363,9 @@ func (this *GC) SetClippingOverload2(rectLike RectangleLike) {
 	_ = rect
 	this.CheckNonDisposed()
 	if rect == (nil) {
-		inner401 := newGCSetClippingRegionOperation(nil)
-		inner401.this_0 = this
-		this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingRegionOperationToGC_Operation(inner401))
+		this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingRegionOperationToGC_Operation(newGCSetClippingRegionOperation(this, nil)))
 	} else {
-		inner402 := newGCSetClippingOperation(rect)
-		inner402.this_0 = this
-		this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingOperationToGC_Operation(inner402))
+		this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingOperationToGC_Operation(newGCSetClippingOperation(this, rect)))
 	}
 }
 
@@ -3459,16 +3379,12 @@ func (this *GC) SetClippingOverload3(regionLike RegionLike) {
 	if region != (nil) && region.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner403 := newGCSetClippingRegionOperation(region)
-	inner403.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingRegionOperationToGC_Operation(inner403))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetClippingRegionOperationToGC_Operation(newGCSetClippingRegionOperation(this, region)))
 }
 
 func (this *GC) SetFillRule(rule int32) {
 	this.CheckNonDisposed()
-	inner404 := newGCSetFillRuleOperation(rule)
-	inner404.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetFillRuleOperationToGC_Operation(inner404))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetFillRuleOperationToGC_Operation(newGCSetFillRuleOperation(this, rule)))
 }
 
 func (this *GC) SetFont(fontLike FontLike) {
@@ -3481,9 +3397,7 @@ func (this *GC) SetFont(fontLike FontLike) {
 	if font != (nil) && font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner405 := newGCSetFontOperation(font)
-	inner405.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetFontOperationToGC_Operation(inner405))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetFontOperationToGC_Operation(newGCSetFontOperation(this, font)))
 }
 
 func (this *GC) SetForeground(colorLike ColorLike) {
@@ -3499,9 +3413,7 @@ func (this *GC) SetForeground(colorLike ColorLike) {
 	if color.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner406 := newGCSetForegroundOperation(color)
-	inner406.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetForegroundOperationToGC_Operation(inner406))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetForegroundOperationToGC_Operation(newGCSetForegroundOperation(this, color)))
 }
 
 func (this *GC) SetForegroundPattern(patternLike PatternLike) {
@@ -3514,16 +3426,12 @@ func (this *GC) SetForegroundPattern(patternLike PatternLike) {
 	if pattern != (nil) && pattern.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner407 := newGCSetForegroundPatternOperation(pattern)
-	inner407.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetForegroundPatternOperationToGC_Operation(inner407))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetForegroundPatternOperationToGC_Operation(newGCSetForegroundPatternOperation(this, pattern)))
 }
 
 func (this *GC) SetInterpolation(interpolation int32) {
 	this.CheckNonDisposed()
-	inner408 := newGCSetInterpolationOperation(interpolation)
-	inner408.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetInterpolationOperationToGC_Operation(inner408))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetInterpolationOperationToGC_Operation(newGCSetInterpolationOperation(this, interpolation)))
 }
 
 func (this *GC) SetLineAttributes(attributesLike LineAttributesLike) {
@@ -3536,9 +3444,7 @@ func (this *GC) SetLineAttributes(attributesLike LineAttributesLike) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.CheckNonDisposed()
-	inner409 := newGCSetLineAttributesOperation(attributes)
-	inner409.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineAttributesOperationToGC_Operation(inner409))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineAttributesOperationToGC_Operation(newGCSetLineAttributesOperation(this, attributes)))
 }
 
 func (this *GC) SetLineAttributesInPixels(attributesLike LineAttributesLike) {
@@ -3637,37 +3543,27 @@ func (this *GC) SetLineAttributesInPixels(attributesLike LineAttributesLike) {
 
 func (this *GC) SetLineCap(cap int32) {
 	this.CheckNonDisposed()
-	inner410 := newGCSetLineCapOperation(cap)
-	inner410.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineCapOperationToGC_Operation(inner410))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineCapOperationToGC_Operation(newGCSetLineCapOperation(this, cap)))
 }
 
 func (this *GC) SetLineDash(dashes []int32) {
 	this.CheckNonDisposed()
-	inner411 := newGCSetLineDashOperation(dashes)
-	inner411.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineDashOperationToGC_Operation(inner411))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineDashOperationToGC_Operation(newGCSetLineDashOperation(this, dashes)))
 }
 
 func (this *GC) SetLineJoin(join int32) {
 	this.CheckNonDisposed()
-	inner412 := newGCSetLineJoinOperation(join)
-	inner412.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineJoinOperationToGC_Operation(inner412))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineJoinOperationToGC_Operation(newGCSetLineJoinOperation(this, join)))
 }
 
 func (this *GC) SetLineStyle(lineStyle int32) {
 	this.CheckNonDisposed()
-	inner413 := newGCSetLineStyleOperation(lineStyle)
-	inner413.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineStyleOperationToGC_Operation(inner413))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineStyleOperationToGC_Operation(newGCSetLineStyleOperation(this, lineStyle)))
 }
 
 func (this *GC) SetLineWidth(lineWidth int32) {
 	this.CheckNonDisposed()
-	inner414 := newGCSetLineWidthOperation(lineWidth)
-	inner414.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineWidthOperationToGC_Operation(inner414))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetLineWidthOperationToGC_Operation(newGCSetLineWidthOperation(this, lineWidth)))
 }
 
 func (this *GC) SetLineWidthInPixels(lineWidth int32) {
@@ -3680,16 +3576,12 @@ func (this *GC) SetLineWidthInPixels(lineWidth int32) {
 
 func (this *GC) SetXORMode(xor bool) {
 	this.CheckNonDisposed()
-	inner415 := newGCSetXORModeOperation(xor)
-	inner415.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetXORModeOperationToGC_Operation(inner415))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetXORModeOperationToGC_Operation(newGCSetXORModeOperation(this, xor)))
 }
 
 func (this *GC) SetTextAntialias(antialias int32) {
 	this.CheckNonDisposed()
-	inner416 := newGCSetTextAntialiasOperation(antialias)
-	inner416.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetTextAntialiasOperationToGC_Operation(inner416))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetTextAntialiasOperationToGC_Operation(newGCSetTextAntialiasOperation(this, antialias)))
 }
 
 func (this *GC) SetTransform(transformLike TransformLike) {
@@ -3702,9 +3594,7 @@ func (this *GC) SetTransform(transformLike TransformLike) {
 	if transform != (nil) && transform.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner417 := newGCSetTransformOperation(transform)
-	inner417.this_0 = this
-	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetTransformOperationToGC_Operation(inner417))
+	this.StoreAndApplyOperationForExistingHandle(upcastGC_SetTransformOperationToGC_Operation(newGCSetTransformOperation(this, transform)))
 }
 
 func (this *GC) StringExtent(string_ string) *Point {
@@ -3843,8 +3733,8 @@ func (this *GC) CreateGcHandle(drawable Drawable, newDataLike GCDataLike, imageH
 		Error(ERROR_NO_HANDLES)
 	}
 	this.InitDrawableDataHDCImageHandle(drawable, newData, gcHandle, imageHandle)
-	for _, elem418 := range this.operations.ToArray() {
-		operation := jrt.Cast[*GC_Operation](elem418)
+	for _, elem360 := range this.operations.ToArray() {
+		operation := jrt.Cast[*GC_Operation](elem360)
 		operation.impl.apply_()
 	}
 }
@@ -3855,8 +3745,8 @@ func (this *GC) dispose_() {
 }
 
 func (this *GC) DisposeOperations() {
-	for _, elem419 := range this.operations.ToArray() {
-		op := jrt.Cast[*GC_Operation](elem419)
+	for _, elem361 := range this.operations.ToArray() {
+		op := jrt.Cast[*GC_Operation](elem361)
 		op.impl.disposeAll_()
 	}
 	this.operations.Clear()
@@ -3879,11 +3769,11 @@ func GCCreateGdipFont(hDC int64, hFont int64, graphics int64, fontCollection int
 		win32.GdipFont_delete(font)
 		var logFont *win32.LOGFONT = win32.NewLOGFONT()
 		win32.OSGetObjectOverload3(hFont, win32.LOGFONTSizeof, logFont)
-		abs420 := logFont.LfHeight
-		if abs420 < 0 {
-			abs420 = -abs420
+		abs362 := logFont.LfHeight
+		if abs362 < 0 {
+			abs362 = -abs362
 		}
-		var size int32 = abs420
+		var size int32 = abs362
 		var style int32 = win32.GdipFontStyleRegular
 		if logFont.LfWeight == 700 {
 			style |= win32.GdipFontStyleBold
@@ -4021,13 +3911,13 @@ func GCExtractZoom(hDC int64) int32 {
 	var dpiX []int32 = make([]int32, 1)
 	var dpiY []int32 = make([]int32, 1)
 	var result int32 = win32.OSGetDpiForMonitor(monitorParent, win32.OSMDT_EFFECTIVE_DPI, dpiX, dpiY)
-	var cond421 int32
+	var cond363 int32
 	if result == win32.OSS_OK {
-		cond421 = DPIUtilMapDPIToZoom(dpiX[0])
+		cond363 = DPIUtilMapDPIToZoom(dpiX[0])
 	} else {
-		cond421 = DPIUtilGetNativeDeviceZoom()
+		cond363 = DPIUtilGetNativeDeviceZoom()
 	}
-	return cond421
+	return cond363
 }
 
 func GCWin32_new(drawable Drawable, dataLike GCDataLike) *GC {
@@ -4084,8 +3974,9 @@ type GC_ImageOperationLike interface {
 	AsGC_ImageOperation() *GC_ImageOperation
 }
 
-func newGCImageOperation(image *Image) *GC_ImageOperation {
+func newGCImageOperation(this_0 *GC, image *Image) *GC_ImageOperation {
 	this := &GC_ImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCImageOperation(image)
 	return this
@@ -4140,8 +4031,9 @@ type GC_CopyAreaToImageOperationLike interface {
 	AsGC_CopyAreaToImageOperation() *GC_CopyAreaToImageOperation
 }
 
-func newGCCopyAreaToImageOperation(image *Image, x int32, y int32) *GC_CopyAreaToImageOperation {
+func newGCCopyAreaToImageOperation(this_0 *GC, image *Image, x int32, y int32) *GC_CopyAreaToImageOperation {
 	this := &GC_CopyAreaToImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCCopyAreaToImageOperation(image, x, y)
 	return this
@@ -4175,8 +4067,9 @@ type GC_CopyAreaOperationLike interface {
 	AsGC_CopyAreaOperation() *GC_CopyAreaOperation
 }
 
-func newGCCopyAreaOperation(source *Rectangle, destination *Rectangle, paint bool) *GC_CopyAreaOperation {
+func newGCCopyAreaOperation(this_0 *GC, source *Rectangle, destination *Rectangle, paint bool) *GC_CopyAreaOperation {
 	this := &GC_CopyAreaOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCCopyAreaOperation(source, destination, paint)
 	return this
@@ -4211,8 +4104,9 @@ type GC_DrawArcOperationLike interface {
 	AsGC_DrawArcOperation() *GC_DrawArcOperation
 }
 
-func newGCDrawArcOperation(rectangle *Rectangle, startAngle int32, arcAngle int32) *GC_DrawArcOperation {
+func newGCDrawArcOperation(this_0 *GC, rectangle *Rectangle, startAngle int32, arcAngle int32) *GC_DrawArcOperation {
 	this := &GC_DrawArcOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawArcOperation(rectangle, startAngle, arcAngle)
 	return this
@@ -4243,8 +4137,9 @@ type GC_DrawFocusOperationLike interface {
 	AsGC_DrawFocusOperation() *GC_DrawFocusOperation
 }
 
-func newGCDrawFocusOperation(rectangle *Rectangle) *GC_DrawFocusOperation {
+func newGCDrawFocusOperation(this_0 *GC, rectangle *Rectangle) *GC_DrawFocusOperation {
 	this := &GC_DrawFocusOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawFocusOperation(rectangle)
 	return this
@@ -4273,8 +4168,9 @@ type GC_DrawImageOperationLike interface {
 	AsGC_DrawImageOperation() *GC_DrawImageOperation
 }
 
-func newGCDrawImageOperation(image *Image, location *Point) *GC_DrawImageOperation {
+func newGCDrawImageOperation(this_0 *GC, image *Image, location *Point) *GC_DrawImageOperation {
 	this := &GC_DrawImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawImageOperation(image, location)
 	return this
@@ -4325,8 +4221,9 @@ type GC_DrawScalingImageToImageOperationLike interface {
 	AsGC_DrawScalingImageToImageOperation() *GC_DrawScalingImageToImageOperation
 }
 
-func newGCDrawScalingImageToImageOperation(image *Image, source *Rectangle, destination *Rectangle) *GC_DrawScalingImageToImageOperation {
+func newGCDrawScalingImageToImageOperation(this_0 *GC, image *Image, source *Rectangle, destination *Rectangle) *GC_DrawScalingImageToImageOperation {
 	this := &GC_DrawScalingImageToImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawScalingImageToImageOperation(image, source, destination)
 	return this
@@ -4427,8 +4324,9 @@ type GC_DrawScaledImageOperationLike interface {
 	AsGC_DrawScaledImageOperation() *GC_DrawScaledImageOperation
 }
 
-func newGCDrawScaledImageOperation(image *Image, destination *Rectangle) *GC_DrawScaledImageOperation {
+func newGCDrawScaledImageOperation(this_0 *GC, image *Image, destination *Rectangle) *GC_DrawScaledImageOperation {
 	this := &GC_DrawScaledImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawScaledImageOperation(image, destination)
 	return this
@@ -4479,8 +4377,9 @@ type GC_DrawImageToImageOperationLike interface {
 	AsGC_DrawImageToImageOperation() *GC_DrawImageToImageOperation
 }
 
-func newGCDrawImageToImageOperation(image *Image, source *Rectangle, destination *Rectangle, simple bool) *GC_DrawImageToImageOperation {
+func newGCDrawImageToImageOperation(this_0 *GC, image *Image, source *Rectangle, destination *Rectangle, simple bool) *GC_DrawImageToImageOperation {
 	this := &GC_DrawImageToImageOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawImageToImageOperation(image, source, destination, simple)
 	return this
@@ -4512,8 +4411,9 @@ type GC_DrawLineOperationLike interface {
 	AsGC_DrawLineOperation() *GC_DrawLineOperation
 }
 
-func newGCDrawLineOperation(x1 int32, y1 int32, x2 int32, y2 int32) *GC_DrawLineOperation {
+func newGCDrawLineOperation(this_0 *GC, x1 int32, y1 int32, x2 int32, y2 int32) *GC_DrawLineOperation {
 	this := &GC_DrawLineOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawLineOperation(x1, y1, x2, y2)
 	return this
@@ -4545,8 +4445,9 @@ type GC_DrawOvalOperationLike interface {
 	AsGC_DrawOvalOperation() *GC_DrawOvalOperation
 }
 
-func newGCDrawOvalOperation(bounds *Rectangle) *GC_DrawOvalOperation {
+func newGCDrawOvalOperation(this_0 *GC, bounds *Rectangle) *GC_DrawOvalOperation {
 	this := &GC_DrawOvalOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawOvalOperation(bounds)
 	return this
@@ -4575,8 +4476,9 @@ type GC_DrawPathOperationLike interface {
 	AsGC_DrawPathOperation() *GC_DrawPathOperation
 }
 
-func newGCDrawPathOperation(path *Path) *GC_DrawPathOperation {
+func newGCDrawPathOperation(this_0 *GC, path *Path) *GC_DrawPathOperation {
 	this := &GC_DrawPathOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawPathOperation(path)
 	return this
@@ -4619,8 +4521,9 @@ type GC_DrawPointOperationLike interface {
 	AsGC_DrawPointOperation() *GC_DrawPointOperation
 }
 
-func newGCDrawPointOperation(x int32, y int32) *GC_DrawPointOperation {
+func newGCDrawPointOperation(this_0 *GC, x int32, y int32) *GC_DrawPointOperation {
 	this := &GC_DrawPointOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawPointOperation(x, y)
 	return this
@@ -4651,8 +4554,9 @@ type GC_DrawPolygonOperationLike interface {
 	AsGC_DrawPolygonOperation() *GC_DrawPolygonOperation
 }
 
-func newGCDrawPolygonOperation(pointArray []int32) *GC_DrawPolygonOperation {
+func newGCDrawPolygonOperation(this_0 *GC, pointArray []int32) *GC_DrawPolygonOperation {
 	this := &GC_DrawPolygonOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawPolygonOperation(pointArray)
 	return this
@@ -4682,8 +4586,9 @@ type GC_DrawPolylineOperationLike interface {
 	AsGC_DrawPolylineOperation() *GC_DrawPolylineOperation
 }
 
-func newGCDrawPolylineOperation(pointArray []int32) *GC_DrawPolylineOperation {
+func newGCDrawPolylineOperation(this_0 *GC, pointArray []int32) *GC_DrawPolylineOperation {
 	this := &GC_DrawPolylineOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawPolylineOperation(pointArray)
 	return this
@@ -4713,8 +4618,9 @@ type GC_DrawRectangleOperationLike interface {
 	AsGC_DrawRectangleOperation() *GC_DrawRectangleOperation
 }
 
-func newGCDrawRectangleOperation(rectangle *Rectangle) *GC_DrawRectangleOperation {
+func newGCDrawRectangleOperation(this_0 *GC, rectangle *Rectangle) *GC_DrawRectangleOperation {
 	this := &GC_DrawRectangleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawRectangleOperation(rectangle)
 	return this
@@ -4747,8 +4653,9 @@ type GC_DrawRoundRectangleOperationLike interface {
 	AsGC_DrawRoundRectangleOperation() *GC_DrawRoundRectangleOperation
 }
 
-func newGCDrawRoundRectangleOperation(rectangle *Rectangle, arcWidth int32, arcHeight int32) *GC_DrawRoundRectangleOperation {
+func newGCDrawRoundRectangleOperation(this_0 *GC, rectangle *Rectangle, arcWidth int32, arcHeight int32) *GC_DrawRoundRectangleOperation {
 	this := &GC_DrawRoundRectangleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawRoundRectangleOperation(rectangle, arcWidth, arcHeight)
 	return this
@@ -4784,8 +4691,9 @@ type GC_DrawStringOperationLike interface {
 	AsGC_DrawStringOperation() *GC_DrawStringOperation
 }
 
-func newGCDrawStringOperation(string_ string, location *Point, isTransparent bool) *GC_DrawStringOperation {
+func newGCDrawStringOperation(this_0 *GC, string_ string, location *Point, isTransparent bool) *GC_DrawStringOperation {
 	this := &GC_DrawStringOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawStringOperation(string_, location, isTransparent)
 	return this
@@ -4818,8 +4726,9 @@ type GC_DrawTextOperationLike interface {
 	AsGC_DrawTextOperation() *GC_DrawTextOperation
 }
 
-func newGCDrawTextOperation(string_ string, location *Point, flags int32) *GC_DrawTextOperation {
+func newGCDrawTextOperation(this_0 *GC, string_ string, location *Point, flags int32) *GC_DrawTextOperation {
 	this := &GC_DrawTextOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCDrawTextOperation(string_, location, flags)
 	return this
@@ -4852,8 +4761,9 @@ type GC_FillArcOperationLike interface {
 	AsGC_FillArcOperation() *GC_FillArcOperation
 }
 
-func newGCFillArcOperation(bounds *Rectangle, startAngle int32, arcAngle int32) *GC_FillArcOperation {
+func newGCFillArcOperation(this_0 *GC, bounds *Rectangle, startAngle int32, arcAngle int32) *GC_FillArcOperation {
 	this := &GC_FillArcOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillArcOperation(bounds, startAngle, arcAngle)
 	return this
@@ -4888,8 +4798,9 @@ type GC_FillGradientRectangleOperationLike interface {
 	AsGC_FillGradientRectangleOperation() *GC_FillGradientRectangleOperation
 }
 
-func newGCFillGradientRectangleOperation(rectangle *Rectangle, vertical bool) *GC_FillGradientRectangleOperation {
+func newGCFillGradientRectangleOperation(this_0 *GC, rectangle *Rectangle, vertical bool) *GC_FillGradientRectangleOperation {
 	this := &GC_FillGradientRectangleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillGradientRectangleOperation(rectangle, vertical)
 	return this
@@ -4918,8 +4829,9 @@ type GC_FillOvalOperationLike interface {
 	AsGC_FillOvalOperation() *GC_FillOvalOperation
 }
 
-func newGCFillOvalOperation(bounds *Rectangle) *GC_FillOvalOperation {
+func newGCFillOvalOperation(this_0 *GC, bounds *Rectangle) *GC_FillOvalOperation {
 	this := &GC_FillOvalOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillOvalOperation(bounds)
 	return this
@@ -4948,8 +4860,9 @@ type GC_FillPathOperationLike interface {
 	AsGC_FillPathOperation() *GC_FillPathOperation
 }
 
-func newGCFillPathOperation(path *Path) *GC_FillPathOperation {
+func newGCFillPathOperation(this_0 *GC, path *Path) *GC_FillPathOperation {
 	this := &GC_FillPathOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillPathOperation(path)
 	return this
@@ -4998,8 +4911,9 @@ type GC_FillPolygonOperationLike interface {
 	AsGC_FillPolygonOperation() *GC_FillPolygonOperation
 }
 
-func newGCFillPolygonOperation(pointArray []int32) *GC_FillPolygonOperation {
+func newGCFillPolygonOperation(this_0 *GC, pointArray []int32) *GC_FillPolygonOperation {
 	this := &GC_FillPolygonOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillPolygonOperation(pointArray)
 	return this
@@ -5029,8 +4943,9 @@ type GC_FillRectangleOperationLike interface {
 	AsGC_FillRectangleOperation() *GC_FillRectangleOperation
 }
 
-func newGCFillRectangleOperation(rectangle *Rectangle) *GC_FillRectangleOperation {
+func newGCFillRectangleOperation(this_0 *GC, rectangle *Rectangle) *GC_FillRectangleOperation {
 	this := &GC_FillRectangleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillRectangleOperation(rectangle)
 	return this
@@ -5063,8 +4978,9 @@ type GC_FillRoundRectangleOperationLike interface {
 	AsGC_FillRoundRectangleOperation() *GC_FillRoundRectangleOperation
 }
 
-func newGCFillRoundRectangleOperation(rectangle *Rectangle, arcWidth int32, arcHeight int32) *GC_FillRoundRectangleOperation {
+func newGCFillRoundRectangleOperation(this_0 *GC, rectangle *Rectangle, arcWidth int32, arcHeight int32) *GC_FillRoundRectangleOperation {
 	this := &GC_FillRoundRectangleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCFillRoundRectangleOperation(rectangle, arcWidth, arcHeight)
 	return this
@@ -5100,13 +5016,14 @@ type GC_GetClippingOperationLike interface {
 	AsGC_GetClippingOperation() *GC_GetClippingOperation
 }
 
-func NewGCGetClippingOperation(regionLike RegionLike) *GC_GetClippingOperation {
+func NewGCGetClippingOperation(this_0 *GC, regionLike RegionLike) *GC_GetClippingOperation {
 	var region *Region
 	if regionLike != nil {
 		region = regionLike.AsRegion()
 	}
 	_ = region
 	this := &GC_GetClippingOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCGetClippingOperation(region)
 	return this
@@ -5143,8 +5060,9 @@ type GC_SetAdvancedOperationLike interface {
 	AsGC_SetAdvancedOperation() *GC_SetAdvancedOperation
 }
 
-func newGCSetAdvancedOperation(advanced bool) *GC_SetAdvancedOperation {
+func newGCSetAdvancedOperation(this_0 *GC, advanced bool) *GC_SetAdvancedOperation {
 	this := &GC_SetAdvancedOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetAdvancedOperation(advanced)
 	return this
@@ -5189,8 +5107,9 @@ type GC_SetAntialiasOperationLike interface {
 	AsGC_SetAntialiasOperation() *GC_SetAntialiasOperation
 }
 
-func newGCSetAntialiasOperation(antialias int32) *GC_SetAntialiasOperation {
+func newGCSetAntialiasOperation(this_0 *GC, antialias int32) *GC_SetAntialiasOperation {
 	this := &GC_SetAntialiasOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetAntialiasOperation(antialias)
 	return this
@@ -5236,8 +5155,9 @@ type GC_SetAlphaOperationLike interface {
 	AsGC_SetAlphaOperation() *GC_SetAlphaOperation
 }
 
-func newGCSetAlphaOperation(alpha int32) *GC_SetAlphaOperation {
+func newGCSetAlphaOperation(this_0 *GC, alpha int32) *GC_SetAlphaOperation {
 	this := &GC_SetAlphaOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetAlphaOperation(alpha)
 	return this
@@ -5280,8 +5200,9 @@ type GC_SetBackgroundOperationLike interface {
 	AsGC_SetBackgroundOperation() *GC_SetBackgroundOperation
 }
 
-func newGCSetBackgroundOperation(color *Color) *GC_SetBackgroundOperation {
+func newGCSetBackgroundOperation(this_0 *GC, color *Color) *GC_SetBackgroundOperation {
 	this := &GC_SetBackgroundOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetBackgroundOperation(color)
 	return this
@@ -5315,8 +5236,9 @@ type GC_PatternOperationLike interface {
 	AsGC_PatternOperation() *GC_PatternOperation
 }
 
-func newGCPatternOperation(pattern *Pattern) *GC_PatternOperation {
+func newGCPatternOperation(this_0 *GC, pattern *Pattern) *GC_PatternOperation {
 	this := &GC_PatternOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCPatternOperation(pattern)
 	return this
@@ -5349,8 +5271,9 @@ type GC_SetBackgroundPatternOperationLike interface {
 	AsGC_SetBackgroundPatternOperation() *GC_SetBackgroundPatternOperation
 }
 
-func newGCSetBackgroundPatternOperation(pattern *Pattern) *GC_SetBackgroundPatternOperation {
+func newGCSetBackgroundPatternOperation(this_0 *GC, pattern *Pattern) *GC_SetBackgroundPatternOperation {
 	this := &GC_SetBackgroundPatternOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetBackgroundPatternOperation(pattern)
 	return this
@@ -5392,8 +5315,9 @@ type GC_SetClippingRegionOperationLike interface {
 	AsGC_SetClippingRegionOperation() *GC_SetClippingRegionOperation
 }
 
-func newGCSetClippingRegionOperation(clipRgn *Region) *GC_SetClippingRegionOperation {
+func newGCSetClippingRegionOperation(this_0 *GC, clipRgn *Region) *GC_SetClippingRegionOperation {
 	this := &GC_SetClippingRegionOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetClippingRegionOperation(clipRgn)
 	return this
@@ -5410,13 +5334,13 @@ func (this *GC_SetClippingRegionOperation) initGCSetClippingRegionOperation(clip
 }
 
 func (this *GC_SetClippingRegionOperation) apply_() {
-	var cond422 int64
+	var cond364 int64
 	if this.clipRgn != (nil) {
-		cond422 = RegionWin32_getHandle(this.clipRgn, this.this_0.GetZoom())
+		cond364 = RegionWin32_getHandle(this.clipRgn, this.this_0.GetZoom())
 	} else {
-		cond422 = int64(0)
+		cond364 = int64(0)
 	}
-	this.this_0.SetClippingRegion(cond422)
+	this.this_0.SetClippingRegion(cond364)
 }
 
 type GC_SetClippingOperation struct {
@@ -5434,8 +5358,9 @@ type GC_SetClippingOperationLike interface {
 	AsGC_SetClippingOperation() *GC_SetClippingOperation
 }
 
-func newGCSetClippingOperation(rectangle *Rectangle) *GC_SetClippingOperation {
+func newGCSetClippingOperation(this_0 *GC, rectangle *Rectangle) *GC_SetClippingOperation {
 	this := &GC_SetClippingOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetClippingOperation(rectangle)
 	return this
@@ -5466,8 +5391,9 @@ type GC_SetClippingPathOperationLike interface {
 	AsGC_SetClippingPathOperation() *GC_SetClippingPathOperation
 }
 
-func newGCSetClippingPathOperation(path *Path) *GC_SetClippingPathOperation {
+func newGCSetClippingPathOperation(this_0 *GC, path *Path) *GC_SetClippingPathOperation {
 	this := &GC_SetClippingPathOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetClippingPathOperation(path)
 	return this
@@ -5515,8 +5441,9 @@ type GC_SetFillRuleOperationLike interface {
 	AsGC_SetFillRuleOperation() *GC_SetFillRuleOperation
 }
 
-func newGCSetFillRuleOperation(rule int32) *GC_SetFillRuleOperation {
+func newGCSetFillRuleOperation(this_0 *GC, rule int32) *GC_SetFillRuleOperation {
 	this := &GC_SetFillRuleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetFillRuleOperation(rule)
 	return this
@@ -5555,8 +5482,9 @@ type GC_SetFontOperationLike interface {
 	AsGC_SetFontOperation() *GC_SetFontOperation
 }
 
-func newGCSetFontOperation(font *Font) *GC_SetFontOperation {
+func newGCSetFontOperation(this_0 *GC, font *Font) *GC_SetFontOperation {
 	this := &GC_SetFontOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetFontOperation(font)
 	return this
@@ -5595,8 +5523,9 @@ type GC_SetForegroundOperationLike interface {
 	AsGC_SetForegroundOperation() *GC_SetForegroundOperation
 }
 
-func newGCSetForegroundOperation(color *Color) *GC_SetForegroundOperation {
+func newGCSetForegroundOperation(this_0 *GC, color *Color) *GC_SetForegroundOperation {
 	this := &GC_SetForegroundOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetForegroundOperation(color)
 	return this
@@ -5631,8 +5560,9 @@ type GC_SetForegroundPatternOperationLike interface {
 	AsGC_SetForegroundPatternOperation() *GC_SetForegroundPatternOperation
 }
 
-func newGCSetForegroundPatternOperation(pattern *Pattern) *GC_SetForegroundPatternOperation {
+func newGCSetForegroundPatternOperation(this_0 *GC, pattern *Pattern) *GC_SetForegroundPatternOperation {
 	this := &GC_SetForegroundPatternOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetForegroundPatternOperation(pattern)
 	return this
@@ -5674,8 +5604,9 @@ type GC_SetInterpolationOperationLike interface {
 	AsGC_SetInterpolationOperation() *GC_SetInterpolationOperation
 }
 
-func newGCSetInterpolationOperation(interpolation int32) *GC_SetInterpolationOperation {
+func newGCSetInterpolationOperation(this_0 *GC, interpolation int32) *GC_SetInterpolationOperation {
 	this := &GC_SetInterpolationOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetInterpolationOperation(interpolation)
 	return this
@@ -5726,8 +5657,9 @@ type GC_SetLineAttributesOperationLike interface {
 	AsGC_SetLineAttributesOperation() *GC_SetLineAttributesOperation
 }
 
-func newGCSetLineAttributesOperation(attributes *LineAttributes) *GC_SetLineAttributesOperation {
+func newGCSetLineAttributesOperation(this_0 *GC, attributes *LineAttributes) *GC_SetLineAttributesOperation {
 	this := &GC_SetLineAttributesOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineAttributesOperation(attributes)
 	return this
@@ -5769,8 +5701,9 @@ type GC_SetLineCapOperationLike interface {
 	AsGC_SetLineCapOperation() *GC_SetLineCapOperation
 }
 
-func newGCSetLineCapOperation(cap int32) *GC_SetLineCapOperation {
+func newGCSetLineCapOperation(this_0 *GC, cap int32) *GC_SetLineCapOperation {
 	this := &GC_SetLineCapOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineCapOperation(cap)
 	return this
@@ -5810,8 +5743,9 @@ type GC_SetLineDashOperationLike interface {
 	AsGC_SetLineDashOperation() *GC_SetLineDashOperation
 }
 
-func newGCSetLineDashOperation(dashes []int32) *GC_SetLineDashOperation {
+func newGCSetLineDashOperation(this_0 *GC, dashes []int32) *GC_SetLineDashOperation {
 	this := &GC_SetLineDashOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineDashOperation(dashes)
 	return this
@@ -5871,8 +5805,9 @@ type GC_SetLineJoinOperationLike interface {
 	AsGC_SetLineJoinOperation() *GC_SetLineJoinOperation
 }
 
-func newGCSetLineJoinOperation(join int32) *GC_SetLineJoinOperation {
+func newGCSetLineJoinOperation(this_0 *GC, join int32) *GC_SetLineJoinOperation {
 	this := &GC_SetLineJoinOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineJoinOperation(join)
 	return this
@@ -5912,8 +5847,9 @@ type GC_SetLineStyleOperationLike interface {
 	AsGC_SetLineStyleOperation() *GC_SetLineStyleOperation
 }
 
-func newGCSetLineStyleOperation(lineStyle int32) *GC_SetLineStyleOperation {
+func newGCSetLineStyleOperation(this_0 *GC, lineStyle int32) *GC_SetLineStyleOperation {
 	this := &GC_SetLineStyleOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineStyleOperation(lineStyle)
 	return this
@@ -5959,8 +5895,9 @@ type GC_SetLineWidthOperationLike interface {
 	AsGC_SetLineWidthOperation() *GC_SetLineWidthOperation
 }
 
-func newGCSetLineWidthOperation(width int32) *GC_SetLineWidthOperation {
+func newGCSetLineWidthOperation(this_0 *GC, width int32) *GC_SetLineWidthOperation {
 	this := &GC_SetLineWidthOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetLineWidthOperation(width)
 	return this
@@ -5989,8 +5926,9 @@ type GC_SetXORModeOperationLike interface {
 	AsGC_SetXORModeOperation() *GC_SetXORModeOperation
 }
 
-func newGCSetXORModeOperation(xor bool) *GC_SetXORModeOperation {
+func newGCSetXORModeOperation(this_0 *GC, xor bool) *GC_SetXORModeOperation {
 	this := &GC_SetXORModeOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetXORModeOperation(xor)
 	return this
@@ -6002,13 +5940,13 @@ func (this *GC_SetXORModeOperation) initGCSetXORModeOperation(xor bool) {
 }
 
 func (this *GC_SetXORModeOperation) apply_() {
-	var cond423 int32
+	var cond365 int32
 	if this.xor {
-		cond423 = win32.OSR2_XORPEN
+		cond365 = win32.OSR2_XORPEN
 	} else {
-		cond423 = win32.OSR2_COPYPEN
+		cond365 = win32.OSR2_COPYPEN
 	}
-	win32.OSSetROP2(this.this_0.Handle, cond423)
+	win32.OSSetROP2(this.this_0.Handle, cond365)
 }
 
 type GC_SetTextAntialiasOperation struct {
@@ -6026,8 +5964,9 @@ type GC_SetTextAntialiasOperationLike interface {
 	AsGC_SetTextAntialiasOperation() *GC_SetTextAntialiasOperation
 }
 
-func newGCSetTextAntialiasOperation(antialias int32) *GC_SetTextAntialiasOperation {
+func newGCSetTextAntialiasOperation(this_0 *GC, antialias int32) *GC_SetTextAntialiasOperation {
 	this := &GC_SetTextAntialiasOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetTextAntialiasOperation(antialias)
 	return this
@@ -6081,8 +6020,9 @@ type GC_SetTransformOperationLike interface {
 	AsGC_SetTransformOperation() *GC_SetTransformOperation
 }
 
-func newGCSetTransformOperation(transform *Transform) *GC_SetTransformOperation {
+func newGCSetTransformOperation(this_0 *GC, transform *Transform) *GC_SetTransformOperation {
 	this := &GC_SetTransformOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCSetTransformOperation(transform)
 	return this
@@ -6162,8 +6102,9 @@ type GC_OperationLike interface {
 	AsGC_Operation() *GC_Operation
 }
 
-func newGCOperation() *GC_Operation {
+func newGCOperation(this_0 *GC) *GC_Operation {
 	this := &GC_Operation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCOperation()
 	return this
@@ -6193,8 +6134,8 @@ func (this *GC_Operation) DisposeAll() {
 }
 
 func (this *GC_Operation) disposeAll_() {
-	for _, elem424 := range this.disposables.ToArray() {
-		r := jrt.Cast[*Resource](elem424)
+	for _, elem366 := range this.disposables.ToArray() {
+		r := jrt.Cast[*Resource](elem366)
 		r.impl.dispose_()
 	}
 	this.disposables.Clear()
@@ -6226,8 +6167,9 @@ type GC_ReplaceableOperationLike interface {
 	AsGC_ReplaceableOperation() *GC_ReplaceableOperation
 }
 
-func newGCReplaceableOperation() *GC_ReplaceableOperation {
+func newGCReplaceableOperation(this_0 *GC) *GC_ReplaceableOperation {
 	this := &GC_ReplaceableOperation{}
+	this.this_0 = this_0
 	this.impl = this
 	this.initGCReplaceableOperation()
 	return this

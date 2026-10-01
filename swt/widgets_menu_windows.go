@@ -282,13 +282,13 @@ func (this *Menu) FixMenus(newParentLike DecorationsLike) {
 
 func (this *Menu) GetBackground() *Color {
 	this.CheckWidget()
-	var cond204 int32
+	var cond202 int32
 	if this.background != -1 {
-		cond204 = this.background
+		cond202 = this.background
 	} else {
-		cond204 = this.DefaultBackground()
+		cond202 = this.DefaultBackground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond204)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond202)
 }
 
 func (this *Menu) GetBackgroundImage() *Image {
@@ -351,13 +351,13 @@ func (this *Menu) GetEnabled() bool {
 
 func (this *Menu) GetForeground() *Color {
 	this.CheckWidget()
-	var cond205 int32
+	var cond203 int32
 	if this.foreground != -1 {
-		cond205 = this.foreground
+		cond203 = this.foreground
 	} else {
-		cond205 = this.DefaultForeground()
+		cond203 = this.DefaultForeground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond205)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond203)
 }
 
 func (this *Menu) GetItem(index int32) *MenuItem {
@@ -399,9 +399,9 @@ func (this *Menu) GetItems() []*MenuItem {
 		}
 		var item *MenuItem = this.display.GetMenuItem(int32(info.DwItemData))
 		if item != (nil) {
-			t206 := count
+			t204 := count
 			count++
-			items[t206] = item
+			items[t204] = item
 		}
 		index++
 	}
@@ -419,19 +419,19 @@ func (this *Menu) getNameText_() string {
 	var length int32 = int32(len(items))
 	if length > 0 {
 		for i := int32(0); i <= length-1; i++ {
-			var cond207 string
+			var cond205 string
 			if items[i] == (nil) {
-				cond207 = "null"
+				cond205 = "null"
 			} else {
-				cond207 = items[i].impl.getNameText_()
+				cond205 = items[i].impl.getNameText_()
 			}
-			var cond208 string
+			var cond206 string
 			if i < (length - 1) {
-				cond208 = ", "
+				cond206 = ", "
 			} else {
-				cond208 = ""
+				cond206 = ""
 			}
-			result += fmt.Sprintf("%s%s", (cond207), (cond208))
+			result += fmt.Sprintf("%s%s", (cond205), (cond206))
 		}
 	}
 	return result
@@ -804,16 +804,16 @@ func (this *Menu) Update() {
 	var hasImage bool = false
 	for _, item := range this.GetItems() {
 		if item.image != (nil) {
-			cond210 := true
-			hasImage = cond210
-			if (cond210) && hasCheck {
+			cond208 := true
+			hasImage = cond208
+			if (cond208) && hasCheck {
 				break
 			}
 		}
 		if (item.style & (CHECK | RADIO)) != 0 {
-			cond212 := true
-			hasCheck = cond212
-			if (cond212) && hasImage {
+			cond210 := true
+			hasCheck = cond210
+			if (cond210) && hasImage {
 				break
 			}
 		}

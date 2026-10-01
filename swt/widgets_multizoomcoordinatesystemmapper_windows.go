@@ -89,8 +89,8 @@ func (this *MultiZoomCoordinateSystemMapper) MapMonitorBounds(rect *Rectangle_Wi
 
 func (this *MultiZoomCoordinateSystemMapper) TranslateFromDisplayCoordinates(point *Point) *Point {
 	var monitor *Monitor
-	pointWithMonitor, ok956 := isPointToPoint_WithMonitor(point)
-	if ok956 {
+	pointWithMonitor, ok829 := isPointToPoint_WithMonitor(point)
+	if ok829 {
 		monitor = pointWithMonitor.GetMonitor()
 	} else {
 		monitor = nil
@@ -100,8 +100,8 @@ func (this *MultiZoomCoordinateSystemMapper) TranslateFromDisplayCoordinates(poi
 
 func (this *MultiZoomCoordinateSystemMapper) TranslateToDisplayCoordinates(point *Point) *Point {
 	var monitor *Monitor
-	pointWithMonitor, ok957 := isPointToPoint_WithMonitor(point)
-	if ok957 {
+	pointWithMonitor, ok830 := isPointToPoint_WithMonitor(point)
+	if ok830 {
 		monitor = pointWithMonitor.GetMonitor()
 	} else {
 		monitor = nil
@@ -111,8 +111,8 @@ func (this *MultiZoomCoordinateSystemMapper) TranslateToDisplayCoordinates(point
 
 func (this *MultiZoomCoordinateSystemMapper) TranslateFromDisplayCoordinatesRect(rect *Rectangle) *Rectangle {
 	var monitor *Monitor
-	rectWithMonitor, ok958 := isRectangleToRectangle_WithMonitor(rect)
-	if ok958 {
+	rectWithMonitor, ok831 := isRectangleToRectangle_WithMonitor(rect)
+	if ok831 {
 		monitor = rectWithMonitor.GetMonitor()
 	} else {
 		monitor = nil
@@ -122,8 +122,8 @@ func (this *MultiZoomCoordinateSystemMapper) TranslateFromDisplayCoordinatesRect
 
 func (this *MultiZoomCoordinateSystemMapper) TranslateToDisplayCoordinatesRect(rect *Rectangle) *Rectangle {
 	var monitor *Monitor
-	rectWithMonitor, ok959 := isRectangleToRectangle_WithMonitor(rect)
-	if ok959 {
+	rectWithMonitor, ok832 := isRectangleToRectangle_WithMonitor(rect)
+	if ok832 {
 		monitor = rectWithMonitor.GetMonitor()
 	} else {
 		monitor = nil
@@ -205,22 +205,22 @@ func (this *MultiZoomCoordinateSystemMapper) GetValidMonitorIfApplicable(x int32
 			return monitor
 		}
 		var containingMonitor *Monitor = this.GetContainingMonitorForPointsXYWidthHeight(x, y, width, height)
-		var cond960 *Monitor
+		var cond833 *Monitor
 		if containingMonitor != (nil) {
-			cond960 = containingMonitor
+			cond833 = containingMonitor
 		} else {
-			cond960 = monitor
+			cond833 = monitor
 		}
-		return cond960
+		return cond833
 	}
 	var containingMonitor *Monitor = this.GetContainingMonitorForPointsXYWidthHeight(x, y, width, height)
-	var cond961 *Monitor
+	var cond834 *Monitor
 	if containingMonitor != (nil) {
-		cond961 = containingMonitor
+		cond834 = containingMonitor
 	} else {
-		cond961 = this.monitorSupplier()[0]
+		cond834 = this.monitorSupplier()[0]
 	}
-	return cond961
+	return cond834
 }
 
 func (this *MultiZoomCoordinateSystemMapper) GetValidMonitorIfApplicableXYMonitor(x int32, y int32, monitorLike MonitorLike) *Monitor {
@@ -234,22 +234,22 @@ func (this *MultiZoomCoordinateSystemMapper) GetValidMonitorIfApplicableXYMonito
 			return monitor
 		}
 		var containingMonitor *Monitor = this.GetContainingMonitorForPoints(x, y)
-		var cond962 *Monitor
+		var cond835 *Monitor
 		if containingMonitor != (nil) {
-			cond962 = containingMonitor
+			cond835 = containingMonitor
 		} else {
-			cond962 = monitor
+			cond835 = monitor
 		}
-		return cond962
+		return cond835
 	}
 	var containingMonitor *Monitor = this.GetContainingMonitorForPoints(x, y)
-	var cond963 *Monitor
+	var cond836 *Monitor
 	if containingMonitor != (nil) {
-		cond963 = containingMonitor
+		cond836 = containingMonitor
 	} else {
-		cond963 = this.monitorSupplier()[0]
+		cond836 = this.monitorSupplier()[0]
 	}
-	return cond963
+	return cond836
 }
 
 func (this *MultiZoomCoordinateSystemMapper) GetContainingMonitorForPoints(x int32, y int32) *Monitor {
@@ -363,8 +363,8 @@ func (this *MultiZoomCoordinateSystemMapper) GetApplicableMonitorZoom(monitorLik
 
 func (this *MultiZoomCoordinateSystemMapper) GetContainingMonitorBoundsInPixels(point *Point) *Rectangle {
 	var monitor *Monitor
-	monitorAwarePoint, ok964 := isPointToPoint_WithMonitor(point)
-	if ok964 {
+	monitorAwarePoint, ok837 := isPointToPoint_WithMonitor(point)
+	if ok837 {
 		monitor = monitorAwarePoint.GetMonitor()
 	} else {
 		monitor = this.GetContainingMonitorForPoints(point.X, point.Y)

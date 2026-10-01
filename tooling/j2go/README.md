@@ -3176,7 +3176,7 @@ Why not purego or mingw cgo: purego's Windows support is the same SyscallN under
 - **GDI+.** `Gdip.java` wraps C++ classes (gdip.cpp); `internal/win32/gdip_manual.go` calls the flat API instead. Handles are the flat pointers; a FontFamily handle is a
   cell holding the `GpFontFamily*` (SWT creates an empty one and fills it). `Image.getLastStatus` is always Ok (the constructor returns 0 on failure).
 - **Manifest.** SWT activates a manifest from its JNI DLL resources; `custom_manual.go` writes the embedded `swt.manifest` (common controls 6) to the temp dir and
-  activates it in `init`. The process is DPI-unaware: `DPIUtil` is the shared single-zoom stand-in (zoom 100), Windows scales the window.
+  activates it in `init`. The manifest marks the process system-DPI aware (Display.create also sets the thread context): native zoom = system DPI, device zoom = SWT's default "integer" autoscale of it (`graphics_dpiutil_manual_windows.go`). Per-monitor awareness / runtime rescaling is not enabled (monitor-specific scaling stays off). `winprobe -display` prints dpi, awareness context and zoom; CrossOver reports 96 whatever `LogPixels` is, so zoom > 100 is not verified.
 - **`make win-probe`** (console, no window): every proc the bindings call must resolve in the bottle (819 procs, 0 missing, 2 optional absent), and
   package `swt` initialises without a "deferred init" error.
 

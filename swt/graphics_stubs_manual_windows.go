@@ -9,7 +9,7 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 )
 
-func DPIUtilGetDeviceZoom() int32 { return dpiNativeDeviceZoom }
+func DPIUtilGetDeviceZoom() int32 { return DPIUtilGetZoomForAutoscaleProperty(dpiNativeDeviceZoom) }
 
 func DPIUtilPixelToPoint(size int32, zoom int32) int32 {
 	if zoom == 100 || size == DEFAULT {

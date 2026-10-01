@@ -66,3 +66,23 @@ func OSG_object_setOverload4(obj int64, name []int8, value float32, _ int64) {
 	gObjectSetProp.get()(uintptr(obj), sp(name), unsafe.Pointer(&v))
 	gValueUnset.get()(unsafe.Pointer(&v))
 }
+
+var (
+	imSetClientWindow = lz[func(uintptr, uintptr)]{sym: "gtk_im_context_set_client_window"}
+	imClientWindow    = map[int64]int64{}
+)
+
+// GTKGtk_im_context_set_client_window keeps a reference on the window an input context was given until it is
+// replaced: GtkIMMulticontext reads its previous client window when the next one is set, and a window GDK has
+// already destroyed and freed (SwtFixed recreates its window on realize) crashes gdk_window_get_screen. The
+// reference of a context that is finalized without a final call leaks one window.
+func GTKGtk_im_context_set_client_window(context int64, window int64) {
+	if window != 0 {
+		gObjectRef.get()(uintptr(window))
+	}
+	imSetClientWindow.get()(uintptr(context), uintptr(window))
+	if old := imClientWindow[context]; old != 0 {
+		gObjectUnref.get()(uintptr(old))
+	}
+	imClientWindow[context] = window
+}

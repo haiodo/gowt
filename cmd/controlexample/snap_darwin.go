@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"structs"
 
@@ -13,42 +12,10 @@ import (
 )
 
 // The -snap driver talks to AppKit, so it is per platform: main calls snapAll, each OS provides it.
-type task struct{ fn func() }
-
-func (t *task) Run() { t.fn() }
-
-// The checkbox clicked on a tab after its first snapshot: each one makes the example recreate or
-// reconfigure its sample widgets.
-var clicks = map[string]string{"Button": "SWT.BORDER", "Canvas": "Caret", "Text": "SWT.BORDER", "Label": "SWT.SEPARATOR"}
-
 // snapAll selects each tab the way a click does (NSTabView selectTabViewItemAtIndex:, which
 // runs TabFolder's own delegate path), waits for layout and paint, then snapshots the window.
 func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string) {
-	var steps []func()
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		panic(err)
-	}
-	steps = append(steps, func() { writeMeta(filepath.Join(dir, "meta.txt")) })
-	for i, item := range folder.GetItems() {
-		name := item.GetText()
-		steps = append(steps, func() { selectTab(folder, i) }, func() { snapshot(filepath.Join(dir, name+".png")) })
-		if click, ok := clicks[name]; ok {
-			var before *swt.Button
-			steps = append(steps, func() {
-				before = findButton(item.GetControl(), "One")
-				clickButton(item.GetControl(), click)
-			}, func() {
-				if before != nil {
-					fmt.Println("example widgets recreated:", before.IsDisposed() && findButton(item.GetControl(), "One") != nil)
-				}
-				snapshot(filepath.Join(dir, name+"_"+click+".png"))
-			})
-		}
-	}
-	steps = append(steps, func() { shell.Close() })
-	for i, step := range steps {
-		display.TimerExec(int32(500*(i+1)), &task{step})
-	}
+	snapRun(display, shell, folder, dir, snapHooks{writeMeta, selectTab, clickButton, snapshot})
 }
 
 // writeMeta records what the pixels depend on; snapcheck skips the comparison when it differs
@@ -82,22 +49,6 @@ func clickButton(root *swt.Control, text string) {
 	}
 	objc.ID(b.View.Id).Send(objc.RegisterName("performClick:"), 0)
 	fmt.Printf("clicked %s: selection=%v\n", text, b.GetSelection())
-}
-
-func findButton(c *swt.Control, text string) *swt.Button {
-	if b, ok := c.Impl().(*swt.Button); ok && b.GetText() == text {
-		return b
-	}
-	composite, ok := c.Impl().(interface{ AsComposite() *swt.Composite })
-	if !ok {
-		return nil
-	}
-	for _, child := range composite.AsComposite().GetChildren() {
-		if b := findButton(child, text); b != nil {
-			return b
-		}
-	}
-	return nil
 }
 
 type nsRect struct {

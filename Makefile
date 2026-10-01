@@ -68,19 +68,22 @@ test-swt: swttest
 test-swt-update: swttest
 	./$(BIN)/swttest -update $(EXPECTED) $(SWTTEST_FLAGS)
 
-# ControlExample tab snapshots against tests/snapshots (cmd/snapcheck: per-pixel threshold + allowed
-# fraction). Skips with a message when scale / macOS version / appearance differ from the references.
+# Per-OS references: tests/snapshots is darwin's, tests/snapshots_<goos> another OS's.
+SNAPDIR ?= tests/snapshots$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS))
+
+# ControlExample tab snapshots against $(SNAPDIR) (cmd/snapcheck: per-pixel threshold + allowed
+# fraction). Skips with a message when the environment (meta.txt: scale, OS and GTK version, ...) differs from the references.
 # Failures leave diff images in bin/snap/diff.
 snap-check: controlexample snapcheck
 	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
 	./$(BIN)/controlexample -snap $(BIN)/snap/got > $(BIN)/snap/run.log
-	./$(BIN)/snapcheck -ref tests/snapshots -got $(BIN)/snap/got -diff $(BIN)/snap/diff
+	./$(BIN)/snapcheck -ref $(SNAPDIR) -got $(BIN)/snap/got -diff $(BIN)/snap/diff
 
-# Rewrites tests/snapshots (PNGs + meta.txt) from a fresh run.
+# Rewrites $(SNAPDIR) (PNGs + meta.txt) from a fresh run.
 snap-update: controlexample snapcheck
 	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
 	./$(BIN)/controlexample -snap $(BIN)/snap/got > $(BIN)/snap/run.log
-	./$(BIN)/snapcheck -update -ref tests/snapshots -got $(BIN)/snap/got
+	./$(BIN)/snapcheck -update -ref $(SNAPDIR) -got $(BIN)/snap/got
 
 run-%: %
 	./$(BIN)/$*

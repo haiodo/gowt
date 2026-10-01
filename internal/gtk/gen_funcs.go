@@ -4592,12 +4592,6 @@ func GTKGtk_im_context_reset(context int64) {
 	r_GTKGtk_im_context_reset.get()(uintptr(context))
 }
 
-var r_GTKGtk_im_context_set_client_window = lz[func(uintptr, uintptr)]{sym: "gtk_im_context_set_client_window"}
-
-func GTKGtk_im_context_set_client_window(context int64, window int64) {
-	r_GTKGtk_im_context_set_client_window.get()(uintptr(context), uintptr(window))
-}
-
 var r_GTKGtk_im_context_set_cursor_location = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_im_context_set_cursor_location"}
 
 func GTKGtk_im_context_set_cursor_location(context int64, area *GdkRectangle) {

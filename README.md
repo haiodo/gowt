@@ -63,6 +63,8 @@ make linux-shell
 
 Linux `make test-swt` runs inside as `make linux-run CMD="make test-swt"` (DISPLAY=:99 is preset; Go cache in volumes `gowt-gocache`, `gowt-gomod`).
 GIR files are in `/usr/share/gir-1.0` (Gtk-3.0, Gdk-3.0, GObject-2.0, GLib-2.0, Gio-2.0, Pango-1.0, cairo-1.0, Atk-1.0, plus Gtk-4.0 and Graphene for the GTK 4 names).
+Snapshots: `make linux-run CMD="make snap-update"` / `snap-check` capture the ControlExample tabs (`cmd/controlexample -snap`, window read back through GDK in `internal/shot`)
+against `tests/snapshots_linux` (`SNAPDIR`; `tests/snapshots` is darwin's). `meta.txt` holds the GTK version, scale and screen size; a different environment skips the comparison.
 Wayland: `weston --backend=headless --socket=wayland-1` with `WAYLAND_DISPLAY=wayland-1 GDK_BACKEND=wayland` starts GTK apps, but it is not wired into the stand and has no seat/cursor theme (input and snapshots only via X11).
 Limits: one shared X screen 1280x1024, no GPU, VNC without password on localhost:6080, image ~1.9 GB.
 

@@ -2,8 +2,15 @@ package main
 
 import (
 	"fmt"
-	"os"
+
+	"github.com/haiodo/gowt/internal/shot"
+	"github.com/haiodo/gowt/swt"
 )
 
-// Window capture on linux is not ported yet: use the container's scrot or an X11 screenshot.
-func snapshot(path string) { fmt.Fprintln(os.Stderr, "snapshot: not implemented on linux:", path) }
+// snapshot reads the only Shell's window back from the X server through GDK.
+func snapshot(path string) {
+	if err := shot.WindowPNG(swt.DisplayGetCurrent().GetShells()[0].Handle, path); err != nil {
+		panic(err)
+	}
+	fmt.Println("snapshot", path)
+}

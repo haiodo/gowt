@@ -1,6 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-// Window capture is per platform: main calls snapshot, each OS provides it. Not ported on win32.
-func snapshot(path string) { fmt.Println("snapshot: not supported on windows") }
+	"github.com/haiodo/gowt/internal/shot"
+	"github.com/haiodo/gowt/swt"
+)
+
+// snapshot renders the only Shell's window through PrintWindow.
+func snapshot(path string) {
+	if err := shot.WindowPNG(swt.DisplayGetCurrent().GetShells()[0].Handle, path); err != nil {
+		panic(err)
+	}
+	fmt.Println("snapshot", path)
+}

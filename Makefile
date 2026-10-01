@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -120,6 +120,20 @@ win-swttest: win-build
 
 win-swttest-update: win-build
 	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/swttest.exe -update tests/expected_windows.txt $(SWTTEST_FLAGS)
+
+# Snapshots of the Windows port: the exe runs in the bottle (Z: is the host file system), snapcheck on the host.
+# References are tests/snapshots_windows; meta.txt (Wine version, DPI, theme, screen) makes snap-check SKIP elsewhere.
+WINSNAPDIR := tests/snapshots_windows
+
+win-snap-check: win-build snapcheck
+	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/controlexample.exe -snap Z:$(abspath $(BIN)/snap/got) > $(BIN)/snap/run.log
+	./$(BIN)/snapcheck -ref $(WINSNAPDIR) -got $(BIN)/snap/got -diff $(BIN)/snap/diff
+
+win-snap-update: win-build snapcheck
+	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
+	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/controlexample.exe -snap Z:$(abspath $(BIN)/snap/got) > $(BIN)/snap/run.log
+	./$(BIN)/snapcheck -update -ref $(WINSNAPDIR) -got $(BIN)/snap/got
 
 # Linux GUI stand (Docker + Xvfb + noVNC), see README "Linux stand".
 LINUX_IMG = gowt-linux

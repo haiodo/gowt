@@ -3155,9 +3155,9 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 - State: `GOOS=linux go build ./...` passes in the stand, `cmd/hello` runs on Xvfb, `make test-swt` 2950 passed / 385 failed / 6 skipped (3341; the previous translated-PI binding:
   2938 / 397 / 6). Not done: `cmd/*/snap_linux.go` (stubs), api parity of package-private methods (apidump cannot tell Java visibility), DateTime/GDBus/GTK4 paths (GTK 4 names compile
   and panic when called), the failures' causes in `tests/expected_linux.txt`.
-- **Struct parameters written through (gtk).** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
-  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. Only gtk: cocoa has three such parameters
-  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`) left by value until a GUI run on the Mac can check them.
+- **Struct parameters written through.** Java passes PI structs by reference; a Go struct is copied. `MutatedStructParams` makes a struct-typed parameter a pointer when the method
+  body assigns its fields or hands it to a native or to another such method (and never uses it as a whole value); call sites pass `&x`. All platforms; cocoa gets three
+  (`TextLayout.FixRect`, `Table/Tree.SendMeasureItem`), win32 none (its output is unchanged).
 ## Round 20 (win32): the Windows port (TSK-2026-09-23-039..042, -047)
 
 `PLATFORM=win32 make gen` translates `Eclipse SWT/win32` into `swt/*_windows.go` and `Eclipse SWT PI/win32` (win32, win32/version, gdip,

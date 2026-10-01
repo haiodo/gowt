@@ -31,7 +31,7 @@ public final class MutatedStructParams {
 
 	/** Whether parameter index of mb, or of any declaration with the same name and parameter types, is written through. */
 	public boolean isMutated(IMethodBinding mb, int index) {
-		if (GoTypes.piPackage.equals("win32") || mb == null || Modifier.isNative(mb.getModifiers()) || mb.isConstructor() || index >= mb.getParameterTypes().length) return false;
+		if (mb == null || Modifier.isNative(mb.getModifiers()) || mb.isConstructor() || index >= mb.getParameterTypes().length) return false;
 		TypeModel.ClassInfo ci = model.lookup(mb.getParameterTypes()[index]);
 		if (ci == null || !ci.isStruct) return false;
 		if (family == null) {

@@ -176,7 +176,19 @@ final class JdkIntrinsics {
 		if (qualified.equals("java.lang.Class") && mb.getName().equals("getComponentType")) {
 			return recv(mi) + ".Elem()";
 		}
-		if (qualified.equals("java.lang.Class") && mb.getName().equals("getMethod")) {
+		if (qualified.equals("java.lang.Class") && mb.getName().equals("getDeclaredField")) {
+			emitter.fileImports.add(JRT);
+			return "jrt.ClassGetDeclaredField(" + recv(mi) + ", " + arg(mi, 0) + ")";
+		}
+		if ((qualified.equals("java.lang.reflect.Field") || qualified.equals("java.lang.reflect.Method")) && mb.getName().equals("setAccessible")) {
+			return "func() any { return nil }()";
+		}
+		if (qualified.equals("java.lang.reflect.Field") && mb.getName().equals("get")) {
+			ITypeBinding targetType = ((Expression) mi.arguments().get(0)).resolveTypeBinding();
+			String target = targetType != null && hasImpl(emitter.model.lookup(targetType)) ? arg(mi, 0) + ".Impl()" : arg(mi, 0);
+			return recv(mi) + ".(*jrt.Field).Get(" + target + ")";
+		}
+		if (qualified.equals("java.lang.Class") && (mb.getName().equals("getMethod") || mb.getName().equals("getDeclaredMethod"))) {
 			List<String> args = emitter.buildArgs(mi.arguments(), mb);
 			emitter.fileImports.add(JRT);
 			return "jrt.ClassGetMethod(" + recv(mi) + ", " + args.get(0) + ", " + args.get(1) + ")";

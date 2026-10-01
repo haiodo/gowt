@@ -3221,3 +3221,23 @@ for what a port declares differently (IME, Tracker, `setIME`). windows is in `pl
 **Gaps.** Not run yet: any GUI (hello, swttest, controlexample). Multi-zoom `Image`/`Region`/`Transform`/`Path`/`Pattern` are translated with the generic `applyUsingAnyHandle<T>` family left as
 panic markers (type-parameterised methods are not translated): drawing paths that use them panic. `TextLayout` (Uniscribe) translates, untested; `Accessible` (MSAA) is a stub; drag and drop, OLE
 and Browser are not translated (reference-only source roots); dark-mode ordinals unavailable; WebView2 absent.
+
+## Round 21 (linux2): reflection on non-public members, local classes, `collection::add`
+
+Linux `make test-swt` 3314/21/6 -> 3320/15/6, snap-check 29/0.
+
+- **gtk-gen reproducibility.** `girgen` already skips every generated name the hand-written `glue_*.go` declares (`glueNames`), so `im_context_set_client_window` needs no extra mechanism; the
+  committed tree matches `make gtk-gen`. What was missing was `Gtk-4.0.gir`/`Graphene-1.0.gir` in the stand image: `tooling/linux/Dockerfile` now installs `libgtk-4-dev libgraphene-1.0-dev`.
+- **Null element of a `String[]`** (`a[i] = null`, `EmitUtil.nullLiteral`): `jrt.NullString`, the sentinel the ported `items[i] == null` guards look for (CCombo.setItems). Test code only.
+- **Local classes** (`SourcePrep.hoistLocalClasses`): a class declared in a method body moves to the end of the file as a static member, in a mirror source root that shadows the real one (the
+  mirror used to exist for win32 records only, now for every platform). Valid only for a class that captures no local variable and no outer instance; the one user is
+  Test_org_eclipse_swt_widgets_Display.test_setSynchronizer.
+- **`coll::add`** (`FunctionalEmitter.emitMethodReference`): a bound `add` of a `java.util` collection as Predicate/Consumer is a forwarding func (`jrt.List.Add` is variadic, a bare method value had
+  the wrong type); fixes `Synchronizer.moveAllEventsTo`.
+- **Subclass where a superclass is expected through `any`** (`jrt.upcast`): `callFunc` (stream/RemoveIf callbacks) and `jrt.Cast[*T]` walk a `*CTabItem` down the field-0 embedding to `*Widget`.
+- **Reflection on non-public members.** `Class.getDeclaredField` -> `jrt.ClassGetDeclaredField`/`Field.get` (`internal/jrt/reflect_field.go`): struct-field reflection by Java name, read through the
+  address, no registry (does not defeat dead-code elimination). `Class.getDeclaredMethod` is `getMethod`; `setAccessible` is a no-op. Methods need a registry entry because the Go linker must see
+  the call: `ReflectEmitter.PRIVATE_USED` lists the non-public instance methods tests reach (only `CTabFolder.shouldHighlight`), registered in `swt/swtreflect` and only if the Go name is exported.
+  `cmd/swttest` imports `swtreflect`. Not covered: static or overloaded private methods (`ImageData.blit`, 2 tests).
+- **Not fixed.** CoolItem x4: GTK's own `Control.showWidget` sets ZERO_WIDTH|ZERO_HEIGHT, so a fresh CoolBar has a 0-wide client area and the emulated `layoutItems` gives width 0; the real SWT code is
+  the same, so the cause upstream is unknown (needs a real GTK SWT run). childControlOverlap: two children really overlap after layout. SVG (3), pixbuf-vs-Go-decoder (3), openbox activation (1): unchanged.

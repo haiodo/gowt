@@ -23,8 +23,8 @@ final class SourcePrep {
 		try (Stream<Path> files = Files.walk(root)) {
 			for (Path f : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".java"))::iterator) {
 				String text = Files.readString(f, StandardCharsets.UTF_8);
-				if (!text.contains("record ")) continue;
-				String out = desugar(text);
+				if (!text.contains("record ") && !text.contains("class ")) continue;
+				String out = hoistLocalClasses(desugar(text));
 				if (out.equals(text)) continue;
 				Path dst = mirror.resolve(root.relativize(f));
 				Files.createDirectories(dst.getParent());
@@ -89,6 +89,28 @@ final class SourcePrep {
 		out.append(src.substring(pos));
 		if (hoisted.length() > 0) out.insert(out.lastIndexOf("}"), hoisted);
 		return out.toString();
+	}
+
+	private static final Pattern LOCAL_CLASS = Pattern.compile("(?m)^([ \\t]+)((?:final|abstract)\\s+)?class\\s+\\w+");
+
+	/** A local class (declared in a method body) moves to the end of the file as a static member: the emitter has
+	 * no local classes. Only for one that captures no local variable and no outer instance. */
+	static String hoistLocalClasses(String src) {
+		StringBuilder hoisted = new StringBuilder();
+		Matcher m = LOCAL_CLASS.matcher(src);
+		for (int from = 0; m.find(from); ) {
+			if (insideCommentOrString(src, m.start()) || depthAt(src, m.start()) == 0 || isMemberPosition(src, m.start())) {
+				from = m.end();
+				continue;
+			}
+			int close = matching(src, src.indexOf('{', m.end()), '{', '}');
+			hoisted.append("\n\tstatic ").append(src, m.start() + m.group(1).length(), close + 1).append("\n");
+			src = src.substring(0, m.start()) + src.substring(close + 1);
+			m = LOCAL_CLASS.matcher(src);
+			from = 0;
+		}
+		if (hoisted.length() > 0) src = src.substring(0, src.lastIndexOf('}')) + hoisted + "}\n";
+		return src;
 	}
 
 	private static List<String[]> components(String list) {

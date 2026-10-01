@@ -2483,6 +2483,7 @@ func init() {
 		jrt.Narrow[*swt.TableColumn](target).SetWidth(jrt.ArgAs[int32](args[0]))
 		return nil
 	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.CTabFolder](), "shouldHighlight", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.CTabFolder](target).ShouldHighlight() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Caret](), "getBounds", nil, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any { return jrt.Narrow[*swt.Caret](target).GetBounds() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Caret](), "getFont", nil, reflect.TypeFor[*swt.Font](), func(target any, args []any) any { return jrt.Narrow[*swt.Caret](target).GetFont() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Caret](), "getImage", nil, reflect.TypeFor[*swt.Image](), func(target any, args []any) any { return jrt.Narrow[*swt.Caret](target).GetImage() })

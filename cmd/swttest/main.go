@@ -17,6 +17,7 @@ import (
 
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
+	_ "github.com/haiodo/gowt/swt/swtreflect"
 	_ "github.com/haiodo/gowt/tests/swttests"
 )
 

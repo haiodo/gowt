@@ -28,9 +28,17 @@ func NewRunnable(fn func()) *RunnableFunc { return &RunnableFunc{Fn: fn} }
 func (r *RunnableFunc) Run() { r.Fn() }
 
 // Cast is a Java reference cast of an erased generic result (Map.get, Queue.poll): nil stays
-// the zero value instead of panicking like a bare Go type assertion would.
+// the zero value instead of panicking like a bare Go type assertion would. A subclass pointer
+// (*CTabItem held as a Widget) is walked down to the superclass embedding.
 func Cast[T any](x any) T {
-	v, _ := x.(T)
+	v, ok := x.(T)
+	if !ok && x != nil {
+		if t := reflect.TypeFor[T](); t.Kind() == reflect.Ptr {
+			if u := upcast(reflect.ValueOf(x), t); u.Type() == t {
+				return u.Interface().(T)
+			}
+		}
+	}
 	return v
 }
 

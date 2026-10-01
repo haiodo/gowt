@@ -67,11 +67,8 @@ func (this *Synchronizer) MoveAllEventsTo(toReceiveTheEventsLike SynchronizerLik
 	}
 	_ = toReceiveTheEvents
 	var tail *jrt.List = jrt.NewList()
-	toReceiveTheEvents.messages.RemoveIf(func() func(*RunnableLock) bool { _ = []any{tail}; panic("j2go: unsupported ExpressionMethodReference") }())
-	this.messages.RemoveIf(func() func(*RunnableLock) bool {
-		_ = []any{toReceiveTheEvents}
-		panic("j2go: unsupported ExpressionMethodReference")
-	}())
+	toReceiveTheEvents.messages.RemoveIf(func(a0 *RunnableLock) bool { return tail.Add(a0) })
+	this.messages.RemoveIf(func(a0 *RunnableLock) bool { return toReceiveTheEvents.messages.Add(a0) })
 	toReceiveTheEvents.messages.AddAll(tail)
 }
 

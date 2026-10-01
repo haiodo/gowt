@@ -166,13 +166,13 @@ func (this *Scrollable) ApplyThemeBackground() int32 {
 }
 
 func (this *Scrollable) applyThemeBackground_() int32 {
-	var cond116 int32
+	var cond123 int32
 	if this.backgroundAlpha == 0 {
-		cond116 = 1
+		cond123 = 1
 	} else {
-		cond116 = 0
+		cond123 = 0
 	}
-	return cond116
+	return cond123
 }
 
 func (this *Scrollable) deregister_() {

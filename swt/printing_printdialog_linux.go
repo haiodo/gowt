@@ -172,17 +172,17 @@ func (this *PrintDialog) Open() *PrinterData {
 	var keyBuffer []int8 = gtk.ConverterWcsToMbcs("cups-Duplex", true)
 	gtk.GTKGtk_print_settings_set(settings, keyBuffer, nil)
 	if this.printerData.Duplex != DEFAULT {
-		var cond589 int32
+		var cond614 int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
-			cond589 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
+			cond614 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
 		} else {
-			cond589 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
+			cond614 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
 		}
 		var duplex int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_LONG_EDGE {
 			duplex = gtk.GTKGTK_PRINT_DUPLEX_HORIZONTAL
 		} else {
-			duplex = cond589
+			duplex = cond614
 		}
 		gtk.GTKGtk_print_settings_set_duplex(settings, duplex)
 	}
@@ -289,16 +289,16 @@ func (this *PrintDialog) Open() *PrinterData {
 			data.CopyCount = gtk.GTKGtk_print_settings_get_n_copies(settings)
 			data.Collate = gtk.GTKGtk_print_settings_get_collate(settings)
 			var duplex int32 = gtk.GTKGtk_print_settings_get_duplex(settings)
-			var cond590 int32
+			var cond615 int32
 			if duplex == gtk.GTKGTK_PRINT_DUPLEX_VERTICAL {
-				cond590 = PrinterDataDUPLEX_SHORT_EDGE
+				cond615 = PrinterDataDUPLEX_SHORT_EDGE
 			} else {
-				cond590 = PrinterDataDUPLEX_NONE
+				cond615 = PrinterDataDUPLEX_NONE
 			}
 			if duplex == gtk.GTKGTK_PRINT_DUPLEX_HORIZONTAL {
 				data.Duplex = PrinterDataDUPLEX_LONG_EDGE
 			} else {
-				data.Duplex = cond590
+				data.Duplex = cond615
 			}
 			if gtk.GTKGtk_page_setup_get_orientation(page_setup) == gtk.GTKGTK_PAGE_ORIENTATION_LANDSCAPE {
 				data.Orientation = PrinterDataLANDSCAPE
@@ -421,13 +421,13 @@ func PrintDialogCheckStyleBit(parentLike ShellLike, style int32) int32 {
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
 		if (style & mask) == 0 {
-			var cond591 int32
+			var cond616 int32
 			if parent == (nil) {
-				cond591 = APPLICATION_MODAL
+				cond616 = APPLICATION_MODAL
 			} else {
-				cond591 = PRIMARY_MODAL
+				cond616 = PRIMARY_MODAL
 			}
-			style |= cond591
+			style |= cond616
 		}
 	}
 	if (style & mask) == 0 {

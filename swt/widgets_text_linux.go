@@ -222,13 +222,13 @@ func (this *Text) createHandle_(index int32) {
 }
 
 func (this *Text) applyThemeBackground_() int32 {
-	var cond210 int32
+	var cond222 int32
 	if this.backgroundAlpha == 0 || (this.style&(BORDER|H_SCROLL|V_SCROLL)) == 0 {
-		cond210 = 1
+		cond222 = 1
 	} else {
-		cond210 = 0
+		cond222 = 0
 	}
-	return cond210
+	return cond222
 }
 
 func (this *Text) createWidget_(index int32) {
@@ -294,13 +294,13 @@ func (this *Text) ApplySegments() {
 	}
 	{
 		var i int32 = 1
-		var cond211 int32
+		var cond223 int32
 		if string_ == "" {
-			cond211 = 0
+			cond223 = 0
 		} else {
-			cond211 = jrt.StringLength(string_)
+			cond223 = jrt.StringLength(string_)
 		}
-		var length int32 = cond211
+		var length int32 = cond223
 		for ; i < nSegments; func() {
 			i++
 		}() {
@@ -310,13 +310,13 @@ func (this *Text) ApplySegments() {
 		}
 	}
 	var segmentsChars []uint16 = event.SegmentsChars
-	var cond212 uint16
+	var cond224 uint16
 	if this.impl.getOrientation_() == RIGHT_TO_LEFT {
-		cond212 = TextRTL_MARK
+		cond224 = TextRTL_MARK
 	} else {
-		cond212 = TextLTR_MARK
+		cond224 = TextLTR_MARK
 	}
-	var separator []uint16 = []uint16{cond212}
+	var separator []uint16 = []uint16{cond224}
 	if (this.style & SINGLE) != 0 {
 		gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 		gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
@@ -469,7 +469,7 @@ func (this *Text) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint int32
 	if (this.style&SINGLE) != 0 && jrt.StringLength(this.message) > 0 {
 		var buffer []int8 = gtk.ConverterWcsToMbcs(this.message, true)
 		var layout int64 = gtk.GTKGtk_widget_create_pango_layout(this.Handle, buffer)
-		jrt.ArraysFill(buffer, int8(0))
+		jrt.Fill(buffer, int8(0))
 		gtk.OSPango_layout_get_pixel_size(layout, w, h)
 		gtk.OSG_object_unref(layout)
 		width = int32(math.Max(float64(width), float64(w[0])))
@@ -663,9 +663,9 @@ func (this *Text) eventWindow_() int64 {
 			var childrenIterator int64 = children
 			for {
 				window = gtk.OSG_list_data(childrenIterator)
-				cond213 := gtk.OSG_list_next(childrenIterator)
-				childrenIterator = cond213
-				if !((cond213) != 0) {
+				cond225 := gtk.OSG_list_next(childrenIterator)
+				childrenIterator = cond225
+				if !((cond225) != 0) {
 					break
 				}
 			}
@@ -921,11 +921,11 @@ func (this *Text) GetSelection() *Point {
 func (this *Text) GetSelectionCount() int32 {
 	this.CheckWidget()
 	var selection *Point = this.GetSelection()
-	abs214 := selection.Y - selection.X
-	if abs214 < 0 {
-		abs214 = -abs214
+	abs226 := selection.Y - selection.X
+	if abs226 < 0 {
+		abs226 = -abs226
 	}
-	return abs214
+	return abs226
 }
 
 func (this *Text) GetSelectionText() string {
@@ -993,7 +993,7 @@ func (this *Text) GetTextChars() []uint16 {
 		gtk.OSG_free(address)
 	}
 	var result []uint16 = gtk.ConverterMbcsToWcs(buffer)
-	jrt.ArraysFill(buffer, int8(0))
+	jrt.Fill(buffer, int8(0))
 	if this.segments != (nil) {
 		result = this.DeprocessText(result, 0, -1)
 	}
@@ -1006,13 +1006,13 @@ func (this *Text) GetTextLimit() int32 {
 		return TextLIMIT
 	}
 	var limit int32 = gtk.GTKGtk_entry_get_max_length(this.Handle)
-	var cond215 int32
+	var cond227 int32
 	if limit == 0 {
-		cond215 = 0xFFFF
+		cond227 = 0xFFFF
 	} else {
-		cond215 = this.UntranslateOffset(limit)
+		cond227 = this.UntranslateOffset(limit)
 	}
-	return cond215
+	return cond227
 }
 
 func (this *Text) GetTopIndex() int32 {
@@ -1115,7 +1115,7 @@ func (this *Text) gtk_commit_(imContext int64, text int64) int64 {
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, text, int64(length))
 	var chars []uint16 = gtk.ConverterMbcsToWcs(buffer)
-	jrt.ArraysFill(buffer, int8(0))
+	jrt.Fill(buffer, int8(0))
 	var newChars []uint16 = this.SendIMKeyEvent(KeyDown, int64(0), chars)
 	if newChars == (nil) {
 		return int64(0)
@@ -1131,7 +1131,7 @@ func (this *Text) gtk_commit_(imContext int64, text int64) int64 {
 	} else {
 		buffer = gtk.ConverterWcsToMbcsCharsTerminate(newChars, true)
 		gtk.OSG_signal_emit_by_nameOverload4(imContext, gtk.OSCommit, buffer)
-		jrt.ArraysFill(buffer, int8(0))
+		jrt.Fill(buffer, int8(0))
 	}
 	gtk.OSG_signal_handlers_unblock_matched(imContext, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCOMMIT))
 	gtk.OSG_signal_handlers_block_matched(imContext, mask, id, 0, int64(0), int64(0), this.Handle)
@@ -1184,7 +1184,7 @@ func (this *Text) gtk_delete_range_(widget int64, iter1 int64, iter2 int64) int6
 			gtk.GTKGtk_text_buffer_insert(this.bufferHandle, startIter, buffer, int32(len(buffer)))
 			gtk.OSG_signal_handlers_unblock_matched(this.bufferHandle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetTEXT_BUFFER_INSERT_TEXT))
 			gtk.OSG_signal_stop_emission_by_name(this.bufferHandle, gtk.OSDelete_range)
-			jrt.ArraysFill(buffer, int8(0))
+			jrt.Fill(buffer, int8(0))
 		}
 	}
 	return int64(0)
@@ -1226,7 +1226,7 @@ func (this *Text) gtk_delete_text_(widget int64, start_pos int64, end_pos int64)
 			gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
 			gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 			gtk.GTKGtk_editable_set_position(this.Handle, pos[0])
-			jrt.ArraysFill(buffer, int8(0))
+			jrt.Fill(buffer, int8(0))
 		}
 	}
 	return int64(0)
@@ -1716,13 +1716,13 @@ func (this *Text) setCursorCursor_(cursor int64) {
 			defaultCursor = gtk.GDKGdk_cursor_new_from_name(gtk.GDKGdk_display_get_default(), "xterm")
 		}
 	}
-	var cond216 int64
+	var cond228 int64
 	if cursor != 0 {
-		cond216 = cursor
+		cond228 = cursor
 	} else {
-		cond216 = defaultCursor
+		cond228 = defaultCursor
 	}
-	this.Scrollable.setCursorCursor_(cond216)
+	this.Scrollable.setCursorCursor_(cond228)
 	if cursor == 0 {
 		gtk.OSG_object_unref(defaultCursor)
 	}
@@ -1854,9 +1854,9 @@ func (this *Text) SetTabs(tabs int32) {
 	if tabs < 0 {
 		return
 	}
-	cond217 := tabs
-	this.tabs = cond217
-	this.SetTabStops(cond217)
+	cond229 := tabs
+	this.tabs = cond229
+	this.SetTabStops(cond229)
 }
 
 func (this *Text) SetTabStops(tabs int32) {
@@ -1922,7 +1922,7 @@ func (this *Text) SetTextText(text []uint16) {
 		gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 		gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetDELETE_TEXT))
 		gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
-		jrt.ArraysFill(buffer, int8(0))
+		jrt.Fill(buffer, int8(0))
 	} else {
 		var buffer []int8 = gtk.ConverterWcsToMbcsCharsTerminate(text, false)
 		var position []int8 = make([]int8, TextITER_SIZEOF)
@@ -1937,7 +1937,7 @@ func (this *Text) SetTextText(text []uint16) {
 		gtk.GTKGtk_text_buffer_place_cursor(this.bufferHandle, position)
 		var mark int64 = gtk.GTKGtk_text_buffer_get_insert(this.bufferHandle)
 		gtk.GTKGtk_text_view_scroll_to_mark(this.Handle, mark, float64(0), true, float64(0), float64(0))
-		jrt.ArraysFill(buffer, int8(0))
+		jrt.Fill(buffer, int8(0))
 	}
 	this.SendEventEventType(Modify)
 	if (this.style&SEARCH) != 0 && !gtk.GTKGTK4 {
@@ -1954,13 +1954,13 @@ func (this *Text) SetTextLimit(limit int32) {
 		this.Error(ERROR_CANNOT_BE_ZERO)
 	}
 	if (this.style & SINGLE) != 0 {
-		var cond218 int32
+		var cond230 int32
 		if this.segments != (nil) {
-			cond218 = int32(math.Min(float64(TextLIMIT), float64(this.TranslateOffset(limit))))
+			cond230 = int32(math.Min(float64(TextLIMIT), float64(this.TranslateOffset(limit))))
 		} else {
-			cond218 = limit
+			cond230 = limit
 		}
-		gtk.GTKGtk_entry_set_max_length(this.Handle, cond218)
+		gtk.GTKGtk_entry_set_max_length(this.Handle, cond230)
 	}
 }
 

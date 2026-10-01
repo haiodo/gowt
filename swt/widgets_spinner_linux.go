@@ -85,8 +85,8 @@ func (this *Spinner) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint in
 	if gtk.GTKGTK4 {
 		gtk.GTKGtk_widget_set_size_request(this.Handle, wHint, hHint)
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t500 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, &t500)
+		t525 := gtk.GtkRequisition{}
+		gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, &t525)
 		var width int32
 		if wHint == DEFAULT {
 			width = requisition.Width
@@ -133,8 +133,8 @@ func (this *Spinner) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint in
 		gtk.GTKGtk_widget_realize(this.Handle)
 		gtk.GTKGtk_widget_set_size_request(this.Handle, wHint, hHint)
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t501 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, &t501)
+		t526 := gtk.GtkRequisition{}
+		gtk.GTKGtk_widget_get_preferred_size(this.Handle, &requisition, &t526)
 		if wHint == DEFAULT {
 			width = requisition.Width
 		} else {
@@ -307,13 +307,13 @@ func (this *Spinner) GetIncrement() int32 {
 	for i := int32(0); i < digits; i++ {
 		value *= float64(10)
 	}
-	var cond502 float64
+	var cond527 float64
 	if value > 0 {
-		cond502 = value + 0.5
+		cond527 = value + 0.5
 	} else {
-		cond502 = value - 0.5
+		cond527 = value - 0.5
 	}
-	return int32((cond502))
+	return int32((cond527))
 }
 
 func (this *Spinner) GetMaximum() int32 {
@@ -324,13 +324,13 @@ func (this *Spinner) GetMaximum() int32 {
 	for i := int32(0); i < digits; i++ {
 		value *= float64(10)
 	}
-	var cond503 float64
+	var cond528 float64
 	if value > 0 {
-		cond503 = value + 0.5
+		cond528 = value + 0.5
 	} else {
-		cond503 = value - 0.5
+		cond528 = value - 0.5
 	}
-	return int32((cond503))
+	return int32((cond528))
 }
 
 func (this *Spinner) GetMinimum() int32 {
@@ -341,13 +341,13 @@ func (this *Spinner) GetMinimum() int32 {
 	for i := int32(0); i < digits; i++ {
 		value *= float64(10)
 	}
-	var cond504 float64
+	var cond529 float64
 	if value > 0 {
-		cond504 = value + 0.5
+		cond529 = value + 0.5
 	} else {
-		cond504 = value - 0.5
+		cond529 = value - 0.5
 	}
-	return int32((cond504))
+	return int32((cond529))
 }
 
 func (this *Spinner) GetPageIncrement() int32 {
@@ -358,13 +358,13 @@ func (this *Spinner) GetPageIncrement() int32 {
 	for i := int32(0); i < digits; i++ {
 		value *= float64(10)
 	}
-	var cond505 float64
+	var cond530 float64
 	if value > 0 {
-		cond505 = value + 0.5
+		cond530 = value + 0.5
 	} else {
-		cond505 = value - 0.5
+		cond530 = value - 0.5
 	}
-	return int32((cond505))
+	return int32((cond530))
 }
 
 func (this *Spinner) GetSelection() int32 {
@@ -375,13 +375,13 @@ func (this *Spinner) GetSelection() int32 {
 	for i := int32(0); i < digits; i++ {
 		value *= float64(10)
 	}
-	var cond506 float64
+	var cond531 float64
 	if value > 0 {
-		cond506 = value + 0.5
+		cond531 = value + 0.5
 	} else {
-		cond506 = value - 0.5
+		cond531 = value - 0.5
 	}
-	return int32((cond506))
+	return int32((cond531))
 }
 
 func (this *Spinner) GetText() string {
@@ -410,13 +410,13 @@ func (this *Spinner) GetTextLimit() int32 {
 	} else {
 		limit = gtk.GTKGtk_entry_get_max_length(this.Handle)
 	}
-	var cond507 int32
+	var cond532 int32
 	if limit == 0 {
-		cond507 = SpinnerLIMIT
+		cond532 = SpinnerLIMIT
 	} else {
-		cond507 = limit
+		cond532 = limit
 	}
-	return cond507
+	return cond532
 }
 
 func (this *Spinner) GetDigits() int32 {
@@ -492,13 +492,13 @@ func (this *Spinner) gtk_commit_(imContext int64, text int64) int64 {
 	if text == 0 {
 		return int64(0)
 	}
-	var cond508 int64
+	var cond533 int64
 	if gtk.GTKGTK4 {
-		cond508 = this.entryHandle
+		cond533 = this.entryHandle
 	} else {
-		cond508 = this.Handle
+		cond533 = this.Handle
 	}
-	if !gtk.GTKGtk_editable_get_editable(cond508) {
+	if !gtk.GTKGtk_editable_get_editable(cond533) {
 		return int64(0)
 	}
 	var length int32 = gtk.CStrlen(text)
@@ -527,20 +527,20 @@ func (this *Spinner) gtk_commit_(imContext int64, text int64) int64 {
 	gtk.OSG_signal_handlers_unblock_matched(imContext, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCOMMIT))
 	gtk.OSG_signal_handlers_block_matched(imContext, mask, id, 0, int64(0), int64(0), this.Handle)
 	if this.fixStart != -1 && this.fixEnd != -1 {
-		var cond509 int64
+		var cond534 int64
 		if gtk.GTKGTK4 {
-			cond509 = this.entryHandle
+			cond534 = this.entryHandle
 		} else {
-			cond509 = this.Handle
+			cond534 = this.Handle
 		}
-		gtk.GTKGtk_editable_set_position(cond509, this.fixStart)
-		var cond510 int64
+		gtk.GTKGtk_editable_set_position(cond534, this.fixStart)
+		var cond535 int64
 		if gtk.GTKGTK4 {
-			cond510 = this.entryHandle
+			cond535 = this.entryHandle
 		} else {
-			cond510 = this.Handle
+			cond535 = this.Handle
 		}
-		gtk.GTKGtk_editable_select_region(cond510, this.fixStart, this.fixEnd)
+		gtk.GTKGtk_editable_select_region(cond535, this.fixStart, this.fixEnd)
 	}
 	this.fixEnd = -1
 	this.fixStart = this.fixEnd
@@ -572,22 +572,22 @@ func (this *Spinner) gtk_delete_text_(widget int64, start_pos int64, end_pos int
 			var buffer []int8 = gtk.ConverterWcsToMbcs(newText, false)
 			gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 			gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
-			var cond511 int64
+			var cond536 int64
 			if gtk.GTKGTK4 {
-				cond511 = this.entryHandle
+				cond536 = this.entryHandle
 			} else {
-				cond511 = this.Handle
+				cond536 = this.Handle
 			}
-			gtk.GTKGtk_editable_insert_text(cond511, buffer, int32(len(buffer)), pos)
+			gtk.GTKGtk_editable_insert_text(cond536, buffer, int32(len(buffer)), pos)
 			gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
 			gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
-			var cond512 int64
+			var cond537 int64
 			if gtk.GTKGTK4 {
-				cond512 = this.entryHandle
+				cond537 = this.entryHandle
 			} else {
-				cond512 = this.Handle
+				cond537 = this.Handle
 			}
-			gtk.GTKGtk_editable_set_position(cond512, pos[0])
+			gtk.GTKGtk_editable_set_position(cond537, pos[0])
 		}
 	}
 	return int64(0)
@@ -628,36 +628,36 @@ func (this *Spinner) gtk_insert_text_(widget int64, new_text int64, new_text_len
 	if newText != oldText {
 		var newStart []int32 = make([]int32, 1)
 		var newEnd []int32 = make([]int32, 1)
-		var cond513 int64
+		var cond538 int64
 		if gtk.GTKGTK4 {
-			cond513 = this.entryHandle
+			cond538 = this.entryHandle
 		} else {
-			cond513 = this.Handle
+			cond538 = this.Handle
 		}
-		gtk.GTKGtk_editable_get_selection_bounds(cond513, newStart, newEnd)
+		gtk.GTKGtk_editable_get_selection_bounds(cond538, newStart, newEnd)
 		if newText != "" {
 			if newStart[0] != newEnd[0] {
 				gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetDELETE_TEXT))
 				gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
-				var cond514 int64
+				var cond539 int64
 				if gtk.GTKGTK4 {
-					cond514 = this.entryHandle
+					cond539 = this.entryHandle
 				} else {
-					cond514 = this.Handle
+					cond539 = this.Handle
 				}
-				gtk.GTKGtk_editable_delete_selection(cond514)
+				gtk.GTKGtk_editable_delete_selection(cond539)
 				gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetDELETE_TEXT))
 				gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetCHANGED))
 			}
 			var buffer3 []int8 = gtk.ConverterWcsToMbcs(newText, false)
 			gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
-			var cond515 int64
+			var cond540 int64
 			if gtk.GTKGTK4 {
-				cond515 = this.entryHandle
+				cond540 = this.entryHandle
 			} else {
-				cond515 = this.Handle
+				cond540 = this.Handle
 			}
-			gtk.GTKGtk_editable_insert_text(cond515, buffer3, int32(len(buffer3)), pos)
+			gtk.GTKGtk_editable_insert_text(cond540, buffer3, int32(len(buffer3)), pos)
 			gtk.OSG_signal_handlers_unblock_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetINSERT_TEXT))
 			newEnd[0] = pos[0]
 			newStart[0] = newEnd[0]
@@ -744,13 +744,13 @@ func (this *Spinner) paintSurface_() int64 {
 
 func (this *Spinner) Paste() {
 	this.CheckWidget()
-	var cond516 int64
+	var cond541 int64
 	if gtk.GTKGTK4 {
-		cond516 = this.entryHandle
+		cond541 = this.entryHandle
 	} else {
-		cond516 = this.Handle
+		cond541 = this.Handle
 	}
-	gtk.GTK3Gtk_editable_paste_clipboard(cond516)
+	gtk.GTK3Gtk_editable_paste_clipboard(cond541)
 }
 
 func (this *Spinner) register_() {
@@ -833,13 +833,13 @@ func (this *Spinner) setCursorCursor_(cursor int64) {
 			defaultCursor = gtk.GDKGdk_cursor_new_from_name(gtk.GDKGdk_display_get_default(), "xterm")
 		}
 	}
-	var cond517 int64
+	var cond542 int64
 	if cursor != 0 {
-		cond517 = cursor
+		cond542 = cursor
 	} else {
-		cond517 = defaultCursor
+		cond542 = defaultCursor
 	}
-	this.Composite.setCursorCursor_(cond517)
+	this.Composite.setCursorCursor_(cond542)
 	if cursor == 0 {
 		gtk.OSG_object_unref(defaultCursor)
 	}
@@ -949,11 +949,11 @@ func (this *Spinner) SetDigits(value int32) {
 	var hAdjustment int64 = gtk.GTKGtk_spin_button_get_adjustment(this.Handle)
 	var adjustment gtk.GtkAdjustment = gtk.GtkAdjustment{}
 	this.Gtk_adjustment_get(hAdjustment, &adjustment)
-	abs518 := value - digits
-	if abs518 < 0 {
-		abs518 = -abs518
+	abs543 := value - digits
+	if abs543 < 0 {
+		abs543 = -abs543
 	}
-	var diff int32 = abs518
+	var diff int32 = abs543
 	var factor int32 = 1
 	for i := int32(0); i < diff; i++ {
 		factor *= 10

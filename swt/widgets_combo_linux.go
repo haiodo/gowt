@@ -682,9 +682,9 @@ func (this *Combo) eventWindow_() int64 {
 		var childrenIterator int64 = children
 		for {
 			window = gtk.OSG_list_data(childrenIterator)
-			cond478 := gtk.OSG_list_next(childrenIterator)
-			childrenIterator = cond478
-			if !((cond478) != 0) {
+			cond503 := gtk.OSG_list_next(childrenIterator)
+			childrenIterator = cond503
+			if !((cond503) != 0) {
 				break
 			}
 		}
@@ -840,13 +840,13 @@ func (this *Combo) GetText() string {
 		}
 	} else {
 		var index int32 = gtk.GTKGtk_combo_box_get_active(this.Handle)
-		var cond479 string
+		var cond504 string
 		if index != -1 {
-			cond479 = this.GetItem(index)
+			cond504 = this.GetItem(index)
 		} else {
-			cond479 = ""
+			cond504 = ""
 		}
-		return cond479
+		return cond504
 	}
 }
 
@@ -869,13 +869,13 @@ func (this *Combo) GetTextLimit() int32 {
 	} else {
 		limit = 0
 	}
-	var cond480 int32
+	var cond505 int32
 	if limit == 0 {
-		cond480 = ComboLIMIT
+		cond505 = ComboLIMIT
 	} else {
-		cond480 = limit
+		cond505 = limit
 	}
-	return cond480
+	return cond505
 }
 
 func (this *Combo) GetVisibleItemCount() int32 {
@@ -1540,9 +1540,9 @@ func (this *Combo) setInitialBounds_() {
 		if gtk.GTKGTK4 {
 			gtk.GTK4Gtk_widget_size_allocate(topHandle, &allocation, -1)
 		} else {
-			t481 := gtk.GtkRequisition{}
-			t482 := gtk.GtkRequisition{}
-			gtk.GTKGtk_widget_get_preferred_size(topHandle, &t481, &t482)
+			t506 := gtk.GtkRequisition{}
+			t507 := gtk.GtkRequisition{}
+			gtk.GTKGtk_widget_get_preferred_size(topHandle, &t506, &t507)
 			gtk.GTK3Gtk_widget_set_allocation(topHandle, &allocation)
 		}
 	} else {

@@ -263,8 +263,8 @@ func (this *Color) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok247 := resourceImplAsColor(object)
-	if !(ok247) {
+	_, ok264 := resourceImplAsColor(object)
+	if !(ok264) {
 		return false
 	}
 	var color *Color = castanyToColor(object)

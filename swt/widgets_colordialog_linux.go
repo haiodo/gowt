@@ -117,13 +117,13 @@ func (this *ColorDialog) Open() *RGB {
 	}
 	display.AddIdleProc()
 	var oldModal *Dialog = nil
-	var cond469 bool
+	var cond492 bool
 	if gtk.GTKGTK_VERSION >= gtk.OSVERSION(4, 10, 0) {
-		cond469 = gtk.GTK4Gtk_color_dialog_get_modal(handle)
+		cond492 = gtk.GTK4Gtk_color_dialog_get_modal(handle)
 	} else {
-		cond469 = gtk.GTKGtk_window_get_modal(handle)
+		cond492 = gtk.GTKGtk_window_get_modal(handle)
 	}
-	if cond469 {
+	if cond492 {
 		oldModal = display.GetModalDialog()
 		display.SetModalDialog(upcastColorDialogToDialog(this))
 	}
@@ -143,14 +143,14 @@ func (this *ColorDialog) Open() *RGB {
 				shellHandle = int64(0)
 			}
 			var initialColor gtk.GdkRGBA = rgba
-			anon470 := &ColorDialogAnon1{}
-			anon470.fnAsync = func(callback int64) {
+			anon493 := &ColorDialogAnon1{}
+			anon493.fnAsync = func(callback int64) {
 				gtk.GTK4Gtk_color_dialog_choose_rgba(handle, shellHandle, &initialColor, int64(0), callback, int64(0))
 			}
-			anon470.fnAwait = func(result int64) int64 {
+			anon493.fnAwait = func(result int64) int64 {
 				return gtk.GTK4Gtk_color_dialog_choose_rgba_finish(handle, result, nil)
 			}
-			var gdkRGBA int64 = SyncDialogUtilRun(display, anon470)
+			var gdkRGBA int64 = SyncDialogUtilRun(display, anon493)
 			if gdkRGBA != 0 {
 				gtk.OSMemmoveOverload10(&rgba, gdkRGBA, int64(gtk.GdkRGBASizeof))
 				gtk.GDKGdk_rgba_free(gdkRGBA)
@@ -171,13 +171,13 @@ func (this *ColorDialog) Open() *RGB {
 	if (this.style & RIGHT_TO_LEFT) != 0 {
 		gtk.OSG_signal_remove_emission_hook(signalId, hookId)
 	}
-	var cond471 bool
+	var cond494 bool
 	if gtk.GTKGTK_VERSION >= gtk.OSVERSION(4, 10, 0) {
-		cond471 = gtk.GTK4Gtk_color_dialog_get_modal(handle)
+		cond494 = gtk.GTK4Gtk_color_dialog_get_modal(handle)
 	} else {
-		cond471 = gtk.GTKGtk_window_get_modal(handle)
+		cond494 = gtk.GTKGtk_window_get_modal(handle)
 	}
-	if cond471 {
+	if cond494 {
 		display.SetModalDialog(oldModal)
 	}
 	var success bool = response == gtk.GTKGTK_RESPONSE_OK

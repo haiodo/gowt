@@ -181,19 +181,19 @@ func (this *TextLayout) ComputeRuns() {
 		for i := int32(0); i < int32(len(chars)); i++ {
 			var c uint16 = chars[i]
 			if int32(c) == int32(TextLayoutZWS) && lineOffsets != (nil) && lineIndex < int32(len(lineOffsets)) && i == lineOffsets[lineIndex] {
-				t428 := offsetCount
+				t450 := offsetCount
 				offsetCount++
-				this.invalidOffsets[t428] = i
-				t429 := offsetCount
+				this.invalidOffsets[t450] = i
+				t451 := offsetCount
 				offsetCount++
 				i++
-				this.invalidOffsets[t429] = i
+				this.invalidOffsets[t451] = i
 				lineIndex++
 			} else {
 				if segmentCount < nSegments && i-offsetCount == this.segments[segmentCount] {
-					t430 := offsetCount
+					t452 := offsetCount
 					offsetCount++
-					this.invalidOffsets[t430] = i
+					this.invalidOffsets[t452] = i
 					segmentCount++
 				}
 			}
@@ -762,21 +762,21 @@ func (this *TextLayout) GetAlignment() int32 {
 	var rtl bool = gtk.OSPango_context_get_base_dir(this.context) == gtk.OSPANGO_DIRECTION_RTL
 	switch align {
 	case gtk.OSPANGO_ALIGN_LEFT:
-		var cond431 int32
+		var cond453 int32
 		if rtl {
-			cond431 = RIGHT
+			cond453 = RIGHT
 		} else {
-			cond431 = LEFT
+			cond453 = LEFT
 		}
-		return cond431
+		return cond453
 	case gtk.OSPANGO_ALIGN_RIGHT:
-		var cond432 int32
+		var cond454 int32
 		if rtl {
-			cond432 = LEFT
+			cond454 = LEFT
 		} else {
-			cond432 = RIGHT
+			cond454 = RIGHT
 		}
-		return cond432
+		return cond454
 	}
 	return CENTER
 }
@@ -1250,13 +1250,13 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 func (this *TextLayout) GetOrientation() int32 {
 	this.CheckLayout()
 	var baseDir int32 = gtk.OSPango_context_get_base_dir(this.context)
-	var cond433 int32
+	var cond455 int32
 	if baseDir == gtk.OSPANGO_DIRECTION_RTL {
-		cond433 = RIGHT_TO_LEFT
+		cond455 = RIGHT_TO_LEFT
 	} else {
-		cond433 = LEFT_TO_RIGHT
+		cond455 = LEFT_TO_RIGHT
 	}
-	return cond433
+	return cond455
 }
 
 func (this *TextLayout) GetPreviousOffset(offset int32, movement int32) int32 {
@@ -1269,12 +1269,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t434 := count
+			t456 := count
 			count++
-			result[t434] = this.styles[i].start
-			t435 := count
+			result[t456] = this.styles[i].start
+			t457 := count
 			count++
-			result[t435] = this.styles[i+1].start - 1
+			result[t457] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -1336,14 +1336,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t436 := segmentCount
+			t458 := segmentCount
 			segmentCount++
-			newChars[charCount+t436] = separator
+			newChars[charCount+t458] = separator
 		} else {
-			idx438 := charCount + segmentCount
-			t437 := charCount
+			idx460 := charCount + segmentCount
+			t459 := charCount
 			charCount++
-			newChars[idx438] = oldChars[t437]
+			newChars[idx460] = oldChars[t459]
 		}
 	}
 	for segmentCount < nSegments {
@@ -1354,9 +1354,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t439 := segmentCount
+		t461 := segmentCount
 		segmentCount++
-		newChars[charCount+t439] = separator
+		newChars[charCount+t461] = separator
 	}
 	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
 }
@@ -1399,9 +1399,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t440 := count
+			t462 := count
 			count++
-			result[t440] = this.styles[i].style
+			result[t462] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -1530,13 +1530,13 @@ func (this *TextLayout) SetFont(fontLike FontLike) {
 	if oldFont != (nil) && oldFont.Equals(font) {
 		return
 	}
-	var cond441 int64
+	var cond463 int64
 	if font != (nil) {
-		cond441 = font.Handle
+		cond463 = font.Handle
 	} else {
-		cond441 = this.device.systemFont.Handle
+		cond463 = this.device.systemFont.Handle
 	}
-	gtk.OSPango_layout_set_font_description(this.layout, cond441)
+	gtk.OSPango_layout_set_font_description(this.layout, cond463)
 }
 
 func (this *TextLayout) SetIndent(indent int32) {
@@ -1822,13 +1822,13 @@ func (this *TextLayout) SetWidth0() {
 	if this.wrapWidth == -1 {
 		gtk.OSPango_layout_set_width(this.layout, -1)
 		var rtl bool = gtk.OSPango_context_get_base_dir(this.context) == gtk.OSPANGO_DIRECTION_RTL
-		var cond442 int32
+		var cond464 int32
 		if rtl {
-			cond442 = gtk.OSPANGO_ALIGN_RIGHT
+			cond464 = gtk.OSPANGO_ALIGN_RIGHT
 		} else {
-			cond442 = gtk.OSPANGO_ALIGN_LEFT
+			cond464 = gtk.OSPANGO_ALIGN_LEFT
 		}
-		gtk.OSPango_layout_set_alignment(this.layout, cond442)
+		gtk.OSPango_layout_set_alignment(this.layout, cond464)
 	} else {
 		var margin int32 = int32(math.Min(float64(this.indent), float64(this.wrapIndent)))
 		gtk.OSPango_layout_set_width(this.layout, (this.wrapWidth-margin)*gtk.OSPANGO_SCALE)
@@ -1977,8 +1977,8 @@ func (this *TextLayout_MetricsAdapter) WantToRealInPango(realMetrics *gtk.PangoR
 
 func (this *TextLayout_MetricsAdapter) WantToRealInPangoLine(line int64) int32 {
 	var rect gtk.PangoRectangle = gtk.PangoRectangle{}
-	t443 := gtk.PangoRectangle{}
-	gtk.OSPango_layout_line_get_extents(line, &t443, &rect)
+	t465 := gtk.PangoRectangle{}
+	gtk.OSPango_layout_line_get_extents(line, &t465, &rect)
 	return this.WantToRealInPango(&rect)
 }
 

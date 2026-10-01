@@ -145,6 +145,15 @@ public class Manual {
 				"java.lang.ref.WeakReference"}) {
 			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
 		}
+		// gtk DateTime: Calendar/DateFormat over time (internal/jrt/datetime.go); Field, Format.Field and Attribute share one Go type.
+		for (String q : new String[]{"java.util.Calendar", "java.util.Date", "java.text.FieldPosition", "java.text.ParseException",
+				"java.text.AttributedCharacterIterator", "java.text.CharacterIterator", "java.text.DateFormatSymbols", "java.util.Collections"}) {
+			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
+		}
+		for (String q : new String[]{"java.text.DateFormat", "java.text.SimpleDateFormat"}) reg(q, "jrt.DateFormat", JRT_IMPORT, false);
+		for (String q : new String[]{"java.text.DateFormat.Field", "java.text.Format.Field", "java.text.AttributedCharacterIterator.Attribute"}) {
+			reg(q, "jrt.DateFormatField", JRT_IMPORT, false);
+		}
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
 		// Device (gtk) reads its CSS through these; one Go Reader serves all three reader classes (jrt/jdkio.go).

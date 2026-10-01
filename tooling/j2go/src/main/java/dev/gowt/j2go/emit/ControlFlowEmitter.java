@@ -324,7 +324,7 @@ final class ControlFlowEmitter {
 		List<?> stmts = b.statements();
 		if (stmts.get(stmts.size() - 1) != stmt) return false;
 		ASTNode holder = b.getParent();
-		return holder instanceof MethodDeclaration || holder instanceof IfStatement is2 && isTail(is2) || holder instanceof Block && isTail(b);
+		return holder instanceof MethodDeclaration || holder instanceof LambdaExpression || holder instanceof IfStatement is2 && isTail(is2) || holder instanceof Block && isTail(b);
 	}
 
 	private String emitCatchDispatch(List<CatchClause> catches, int indent) {

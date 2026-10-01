@@ -220,8 +220,8 @@ func (this *ToolBar) GetItemCount() int32 {
 	var itemCount int32 = 0
 	if gtk.GTKGTK4 {
 		for child := int64(gtk.GTK4Gtk_widget_get_first_child(this.Handle)); child != 0; child = gtk.GTK4Gtk_widget_get_next_sibling(child) {
-			_, ok528 := isWidgetToToolItem(this.display.GetWidget(child))
-			if ok528 {
+			_, ok553 := isWidgetToToolItem(this.display.GetWidget(child))
+			if ok553 {
 				itemCount++
 			}
 		}
@@ -246,8 +246,8 @@ func (this *ToolBar) _getItems() []*ToolItem {
 		var childrenList *jrt.List = jrt.NewList()
 		for child := int64(gtk.GTK4Gtk_widget_get_first_child(this.Handle)); child != 0; child = gtk.GTK4Gtk_widget_get_next_sibling(child) {
 			var childWidget *Widget = this.display.GetWidget(child)
-			toolItem, ok529 := isWidgetToToolItem(childWidget)
-			if ok529 {
+			toolItem, ok554 := isWidgetToToolItem(childWidget)
+			if ok554 {
 				childrenList.Add(toolItem)
 			}
 		}
@@ -265,9 +265,9 @@ func (this *ToolBar) _getItems() []*ToolItem {
 			var data int64 = gtk.OSG_list_data(list)
 			var widget *Widget = this.display.GetWidget(data)
 			if widget != (nil) {
-				t530 := index
+				t555 := index
 				index++
-				items[t530] = castWidgetToToolItem(widget)
+				items[t555] = castWidgetToToolItem(widget)
 			}
 			list = gtk.OSG_list_next(list)
 		}
@@ -303,9 +303,9 @@ func (this *ToolBar) _getTabItemList() []*ToolItem {
 	var index int32 = 0
 	for i := int32(0); i < int32(len(this.tabItemList)); i++ {
 		if !this.tabItemList[i].IsDisposed() {
-			t531 := index
+			t556 := index
 			index++
-			newList[t531] = this.tabItemList[i]
+			newList[t556] = this.tabItemList[i]
 		}
 	}
 	this.tabItemList = newList
@@ -411,8 +411,8 @@ func (this *ToolBar) Relayout() {
 		var item *ToolItem = items[i]
 		if item != (nil) {
 			item.ResizeControl()
-			b532 := item.text != "" && jrt.StringLength(item.text) > 0
-			hasText = hasText || b532
+			b557 := item.text != "" && jrt.StringLength(item.text) > 0
+			hasText = hasText || b557
 			hasImage = hasImage || item.image != (nil)
 		}
 	}

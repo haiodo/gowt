@@ -154,8 +154,8 @@ func (this *MenuItem) createHandle_(index int32) {
 			break
 		}
 		var selectedSection *Menu_Section = jrt.Cast[*Menu_Section](this.parent.sections.GetLast())
-		for _, elem204 := range this.parent.sections.ToArray() {
-			section := jrt.Cast[*Menu_Section](elem204)
+		for _, elem216 := range this.parent.sections.ToArray() {
+			section := jrt.Cast[*Menu_Section](elem216)
 			var sectionPosition int32 = section.GetSectionPosition()
 			var sectionLength int32 = section.GetSectionSize()
 			if index > sectionPosition && index <= sectionPosition+sectionLength+1 {
@@ -165,9 +165,9 @@ func (this *MenuItem) createHandle_(index int32) {
 		}
 		var sectionRelativeIndex int32 = index - (selectedSection.GetSectionPosition() + 1)
 		if (this.style & SEPARATOR) != 0 {
-			inner205 := NewMenuSectionSeparator(this)
-			inner205.this_0 = this.parent
-			this.section = inner205
+			inner217 := NewMenuSectionSeparator(this)
+			inner217.this_0 = this.parent
+			this.section = inner217
 			var itemsToMove int32 = selectedSection.sectionItems.Size() - sectionRelativeIndex
 			for i := int32(0); i < itemsToMove; i++ {
 				var removedItem *MenuItem = jrt.Cast[*MenuItem](selectedSection.sectionItems.Remove(sectionRelativeIndex))
@@ -348,13 +348,13 @@ func (this *MenuItem) GetAccelGroup() int64 {
 	if shell == (nil) {
 		return int64(0)
 	}
-	var cond206 int64
+	var cond218 int64
 	if shell.menuBar == menu {
-		cond206 = shell.accelGroup
+		cond218 = shell.accelGroup
 	} else {
-		cond206 = int64(0)
+		cond218 = int64(0)
 	}
-	return cond206
+	return cond218
 }
 
 func (this *MenuItem) GetEnabled() bool {
@@ -514,8 +514,8 @@ func (this *MenuItem) destroyWidget_() {
 		if (this.style & SEPARATOR) != 0 {
 			var aboveSection *Menu_Section = jrt.Cast[*Menu_Section](this.parent.sections.Get(this.parent.sections.IndexOf(this.section) - 1))
 			aboveSection.sectionItems.AddAll(this.section.sectionItems)
-			for _, elem207 := range this.section.sectionItems.ToArray() {
-				item := jrt.Cast[*MenuItem](elem207)
+			for _, elem219 := range this.section.sectionItems.ToArray() {
+				item := jrt.Cast[*MenuItem](elem219)
 				item.section = aboveSection
 				gtk.OSG_menu_insert_item(aboveSection.GetSectionHandle(), aboveSection.sectionItems.IndexOf(item), item.Handle)
 			}
@@ -834,9 +834,9 @@ func (this *MenuItem) SetMenu(menuLike MenuLike) {
 			gtk.OSG_object_ref(oldMenu.Handle)
 			gtk.GTK3Gtk_menu_item_set_submenu(this.Handle, int64(0))
 		}
-		cond208 := menu
-		this.menu = cond208
-		if (cond208) != (nil) {
+		cond220 := menu
+		this.menu = cond220
+		if (cond220) != (nil) {
 			menu.cascade = this
 			gtk.GTK3Gtk_menu_item_set_submenu(this.Handle, menu.Handle)
 		}
@@ -883,13 +883,13 @@ func (this *MenuItem) SetSelection(selected bool) {
 		if (this.style & CHECK) != 0 {
 			gtk.OSG_simple_action_set_state(this.actionHandle, gtk.OSG_variant_new_boolean(selected))
 		} else {
-			var cond209 string
+			var cond221 string
 			if selected {
-				cond209 = "toggled"
+				cond221 = "toggled"
 			} else {
-				cond209 = "untoggled"
+				cond221 = "untoggled"
 			}
-			gtk.OSG_simple_action_set_state(this.actionHandle, gtk.OSG_variant_new_string(gtk.ConverterJavaStringToCString(cond209)))
+			gtk.OSG_simple_action_set_state(this.actionHandle, gtk.OSG_variant_new_string(gtk.ConverterJavaStringToCString(cond221)))
 		}
 	} else {
 		gtk.OSG_signal_handlers_block_matched(this.Handle, gtk.OSG_SIGNAL_MATCH_DATA, 0, 0, int64(0), int64(0), int64(WidgetACTIVATE))

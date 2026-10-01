@@ -297,9 +297,9 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) && func() bool {
-		cond73 := upcastCompositeToControl(control.parent)
-		control = cond73
-		return (cond73) != (nil)
+		cond77 := upcastCompositeToControl(control.parent)
+		control = cond77
+		return (cond77) != (nil)
 	}() {
 		if control.impl.setFocus_() {
 			return
@@ -606,8 +606,8 @@ func (this *Control) print_(gc *GC) bool {
 		if widgetPaintable == 0 {
 			return false
 		}
-		var tret74 bool
-		tretd75 := false
+		var tret78 bool
+		tretd79 := false
 		func() {
 			defer func() {
 				gtk.OSG_object_unref(widgetPaintable)
@@ -616,12 +616,12 @@ func (this *Control) print_(gc *GC) bool {
 			var height int32 = gtk.GTK4Gtk_widget_get_height(topHandle)
 			var snapshot int64 = gtk.GTK4Gtk_snapshot_new()
 			if snapshot == 0 {
-				tret74 = false
-				tretd75 = true
+				tret78 = false
+				tretd79 = true
 				return
 			}
-			var tret76 bool
-			tretd77 := false
+			var tret80 bool
+			tretd81 := false
 			func() {
 				defer func() {
 					if snapshot != 0 {
@@ -632,28 +632,28 @@ func (this *Control) print_(gc *GC) bool {
 				var renderNode int64 = gtk.GTK4Gtk_snapshot_free_to_node(snapshot)
 				snapshot = int64(0)
 				if renderNode == 0 {
-					tret76 = false
-					tretd77 = true
+					tret80 = false
+					tretd81 = true
 					return
 				}
 				gtk.GTK4Gsk_render_node_draw(renderNode, gc.Handle)
 				gtk.GTK4Gsk_render_node_unref(renderNode)
 			}()
-			if tretd77 {
-				tret74 = tret76
-				tretd75 = true
+			if tretd81 {
+				tret78 = tret80
+				tretd79 = true
 				return
 			}
 		}()
-		if tretd75 {
-			return tret74
+		if tretd79 {
+			return tret78
 		}
 	} else {
 		var allocation gtk.GtkAllocation = gtk.GtkAllocation{}
 		gtk.GTKGtk_widget_get_allocation(topHandle, &allocation)
-		t78 := gtk.GtkRequisition{}
-		t79 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(topHandle, &t78, &t79)
+		t82 := gtk.GtkRequisition{}
+		t83 := gtk.GtkRequisition{}
+		gtk.GTKGtk_widget_get_preferred_size(topHandle, &t82, &t83)
 		gtk.GTK3Gtk_widget_size_allocate(topHandle, &allocation)
 		gtk.GTK3Gtk_widget_draw(topHandle, gc.Handle)
 	}
@@ -834,7 +834,7 @@ func (this *Control) createWidget_(index int32) {
 	this.impl.checkBuffered_()
 	this.impl.showWidget_()
 	this.impl.setInitialBounds_()
-	this.impl.setZOrder_(nil, false, false)
+	this.impl.setZOrderLocal1_(nil, false, false)
 	if !gtk.GTKGTK4 {
 		this.impl.setRelations_()
 	}
@@ -881,8 +881,8 @@ func (this *Control) computeNativeSize_(h int64, wHint int32, hHint int32, chang
 	var height int32 = hHint
 	if wHint == DEFAULT && hHint == DEFAULT {
 		var requisition gtk.GtkRequisition = gtk.GtkRequisition{}
-		t80 := gtk.GtkRequisition{}
-		gtk.GTKGtk_widget_get_preferred_size(h, &t80, &requisition)
+		t84 := gtk.GtkRequisition{}
+		gtk.GTKGtk_widget_get_preferred_size(h, &t84, &requisition)
 		width = requisition.Width
 		height = requisition.Height
 	} else {
@@ -890,26 +890,26 @@ func (this *Control) computeNativeSize_(h int64, wHint int32, hHint int32, chang
 			var natural_size []int32 = make([]int32, 1)
 			if wHint == DEFAULT {
 				if gtk.GTKGTK4 {
-					var cond81 int32
+					var cond85 int32
 					if height > 0 {
-						cond81 = height
+						cond85 = height
 					} else {
-						cond81 = -1
+						cond85 = -1
 					}
-					gtk.GTK4Gtk_widget_measure(h, gtk.GTKGTK_ORIENTATION_HORIZONTAL, cond81, nil, natural_size, nil, nil)
+					gtk.GTK4Gtk_widget_measure(h, gtk.GTKGTK_ORIENTATION_HORIZONTAL, cond85, nil, natural_size, nil, nil)
 				} else {
 					gtk.GTK3Gtk_widget_get_preferred_width_for_height(h, height, nil, natural_size)
 				}
 				width = natural_size[0]
 			} else {
 				if gtk.GTKGTK4 {
-					var cond82 int32
+					var cond86 int32
 					if width > 0 {
-						cond82 = width
+						cond86 = width
 					} else {
-						cond82 = -1
+						cond86 = -1
 					}
-					gtk.GTK4Gtk_widget_measure(h, gtk.GTKGTK_ORIENTATION_VERTICAL, cond82, nil, natural_size, nil, nil)
+					gtk.GTK4Gtk_widget_measure(h, gtk.GTKGTK_ORIENTATION_VERTICAL, cond86, nil, natural_size, nil, nil)
 				} else {
 					gtk.GTK3Gtk_widget_get_preferred_height_for_width(h, width, nil, natural_size)
 				}
@@ -1101,22 +1101,22 @@ func (this *Control) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width i
 		var oldX int32 = clientWidth - oldWidth - allocation.X
 		if move {
 			sendMove = sendMove && x != oldX
-			var cond83 int32
+			var cond87 int32
 			if resize {
-				cond83 = width
+				cond87 = width
 			} else {
-				cond83 = oldWidth
+				cond87 = oldWidth
 			}
-			x = clientWidth - (cond83) - x
+			x = clientWidth - (cond87) - x
 		} else {
 			move = true
-			var cond84 int32
+			var cond88 int32
 			if resize {
-				cond84 = width
+				cond88 = width
 			} else {
-				cond84 = oldWidth
+				cond88 = oldWidth
 			}
-			x = clientWidth - (cond84) - oldX
+			x = clientWidth - (cond88) - oldX
 			y = allocation.Y
 		}
 	}
@@ -1191,14 +1191,14 @@ func (this *Control) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width i
 			}
 		} else {
 			if gtk.GTKGTK4 {
-				t85 := gtk.GtkRequisition{}
-				t86 := gtk.GtkRequisition{}
-				gtk.GTKGtk_widget_get_preferred_size(topHandle, &t85, &t86)
+				t89 := gtk.GtkRequisition{}
+				t90 := gtk.GtkRequisition{}
+				gtk.GTKGtk_widget_get_preferred_size(topHandle, &t89, &t90)
 				gtk.GTK4Gtk_widget_size_allocate(topHandle, &allocation, -1)
 			} else {
-				t87 := gtk.GtkRequisition{}
-				t88 := gtk.GtkRequisition{}
-				gtk.GTKGtk_widget_get_preferred_size(topHandle, &t87, &t88)
+				t91 := gtk.GtkRequisition{}
+				t92 := gtk.GtkRequisition{}
+				gtk.GTKGtk_widget_get_preferred_size(topHandle, &t91, &t92)
 				gtk.GTK3Gtk_widget_size_allocate(topHandle, &allocation)
 			}
 		}
@@ -1428,8 +1428,8 @@ func (this *Control) setRelations_() {
 	if handle != 0 {
 		var widget *Widget = this.display.GetWidget(handle)
 		if widget != (nil) && widget != upcastControlToWidget(this) {
-			_, ok89 := isWidgetToControl(widget)
-			if ok89 {
+			_, ok93 := isWidgetToControl(widget)
+			if ok93 {
 				var sibling *Control = castWidgetToControl(widget)
 				sibling.impl.addRelation_(this)
 			}
@@ -1490,7 +1490,7 @@ func (this *Control) MoveAbove(controlLike ControlLike) {
 			return
 		}
 	}
-	this.impl.setZOrder_(control, true, true)
+	this.impl.setZOrderLocal1_(control, true, true)
 }
 
 func (this *Control) MoveBelow(controlLike ControlLike) {
@@ -1511,7 +1511,7 @@ func (this *Control) MoveBelow(controlLike ControlLike) {
 			return
 		}
 	}
-	this.impl.setZOrder_(control, false, true)
+	this.impl.setZOrderLocal1_(control, false, true)
 }
 
 func (this *Control) MoveChildren(oldWidth int32) {
@@ -2068,13 +2068,13 @@ func (this *Control) findBackgroundControl_() *Control {
 	if ((this.state&WidgetBACKGROUND) != 0 || this.backgroundImage != (nil)) && this.backgroundAlpha > 0 {
 		return this
 	}
-	var cond90 *Control
+	var cond94 *Control
 	if this.parent != (nil) && (this.state&WidgetPARENT_BACKGROUND) != 0 {
-		cond90 = this.parent.impl.findBackgroundControl_()
+		cond94 = this.parent.impl.findBackgroundControl_()
 	} else {
-		cond90 = nil
+		cond94 = nil
 	}
-	return cond90
+	return cond94
 }
 
 func (this *Control) FindMenus(controlLike ControlLike) []*Menu {
@@ -2170,7 +2170,7 @@ func (this *Control) forceFocusFocusHandle_(focusHandle int64) bool {
 			return true
 		}
 		var widget *Widget = this.display.GetWidget(handle)
-		if widget != (nil) && func() bool { _, ok91 := isWidgetToControl(widget); return ok91 }() {
+		if widget != (nil) && func() bool { _, ok96 := isWidgetToControl(widget); return ok96 }() {
 			return widget == upcastControlToWidget(this)
 		}
 		handle = gtk.GTKGtk_widget_get_parent(handle)
@@ -2280,13 +2280,13 @@ func (this *Control) GetEnabled() bool {
 
 func (this *Control) GetFont() *Font {
 	this.CheckWidget()
-	var cond92 *Font
+	var cond97 *Font
 	if this.font != (nil) {
-		cond92 = this.font
+		cond97 = this.font
 	} else {
-		cond92 = this.impl.defaultFont_()
+		cond97 = this.impl.defaultFont_()
 	}
-	return cond92
+	return cond97
 }
 
 func (this *Control) GetFontDescription() int64 {
@@ -2671,13 +2671,13 @@ func (this *Control) gtk3_button_release_event_(widget int64, event int64) int64
 	if this.ContainedInRegion(this.lastInput.X, this.lastInput.Y) {
 		return int64(0)
 	}
-	var cond93 int32
+	var cond98 int32
 	if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseUp, eventButton[0], this.display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) {
-		cond93 = 0
+		cond98 = 0
 	} else {
-		cond93 = 1
+		cond98 = 1
 	}
-	return int64(cond93)
+	return int64(cond98)
 }
 
 func (this *Control) gtk_commit_(imcontext int64, text int64) int64 {
@@ -2762,13 +2762,13 @@ func (this *Control) gtk_enter_notify_event_(widget int64, event int64) int64 {
 	}
 	if !this.IsDisposed() {
 		this.display.currentControl = this
-		var cond94 int32
+		var cond99 int32
 		if this.SendMouseEvent(MouseEnter, 0, time, eventRX[0], eventRY[0], false, state[0]) {
-			cond94 = 0
+			cond99 = 0
 		} else {
-			cond94 = 1
+			cond99 = 1
 		}
-		return int64(cond94)
+		return int64(cond99)
 	}
 	return int64(0)
 }
@@ -2825,13 +2825,13 @@ func (this *Control) gtk3_event_after_(widget int64, gdkEvent int64) int64 {
 					}
 				}
 			}
-			var cond95 int32
+			var cond100 int32
 			if focusIn {
-				cond95 = FocusIn
+				cond100 = FocusIn
 			} else {
-				cond95 = FocusOut
+				cond100 = FocusOut
 			}
-			this.impl.sendFocusEvent_(cond95)
+			this.impl.sendFocusEvent_(cond100)
 			break
 		}
 	}
@@ -2942,9 +2942,9 @@ func (this *Control) gtk_draw_(widget int64, cairo int64) int64 {
 		data.RegionSet = this.eventRegion
 	}
 	data.Cairo = cairo
-	cond96 := GCGtk_newDrawableData(this, data)
-	event.Gc = cond96
-	var gc *GC = cond96
+	cond101 := GCGtk_newDrawableData(this, data)
+	event.Gc = cond101
+	var gc *GC = cond101
 	gc.SetClipping(eventBounds.X, eventBounds.Y, eventBounds.Width, eventBounds.Height)
 	this.impl.drawWidget_(gc)
 	this.SendEventEventTypeEvent(Paint, event)
@@ -3261,13 +3261,13 @@ func (this *Control) gtk3_motion_notify_event_(widget int64, event int64) int64 
 			this.SendMouseEvent(MouseEnter, 0, time, x, y, isHint, state[0])
 		}
 	}
-	var cond97 int32
+	var cond102 int32
 	if this.SendMouseEvent(MouseMove, 0, time, x, y, isHint, state[0]) {
-		cond97 = 0
+		cond102 = 0
 	} else {
-		cond97 = 1
+		cond102 = 1
 	}
-	return int64(cond97)
+	return int64(cond102)
 }
 
 func (this *Control) gtk3_popup_menu_(widget int64) int64 {
@@ -3277,13 +3277,13 @@ func (this *Control) gtk3_popup_menu_(widget int64) int64 {
 	var x []int32 = make([]int32, 1)
 	var y []int32 = make([]int32, 1)
 	this.display.GetWindowPointerPosition(int64(0), x, y, nil)
-	var cond98 int32
+	var cond103 int32
 	if this.ShowMenuXYDetail(x[0], y[0], MENU_KEYBOARD) {
-		cond98 = 1
+		cond103 = 1
 	} else {
-		cond98 = 0
+		cond103 = 0
 	}
-	return int64(cond98)
+	return int64(cond103)
 }
 
 func (this *Control) gtk_preedit_changed_(imcontext int64) int64 {
@@ -3358,37 +3358,37 @@ func (this *Control) gtk_scroll_event_(widget int64, eventPtr int64) int64 {
 	if fetched {
 		switch direction[0] {
 		case gtk.GDKGDK_SCROLL_UP:
-			var cond99 int32
+			var cond104 int32
 			if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseWheel, 0, 3, SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) {
-				cond99 = 0
+				cond104 = 0
 			} else {
-				cond99 = 1
+				cond104 = 1
 			}
-			return int64(cond99)
+			return int64(cond104)
 		case gtk.GDKGDK_SCROLL_DOWN:
-			var cond100 int32
+			var cond105 int32
 			if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseWheel, 0, -3, SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) {
-				cond100 = 0
+				cond105 = 0
 			} else {
-				cond100 = 1
+				cond105 = 1
 			}
-			return int64(cond100)
+			return int64(cond105)
 		case gtk.GDKGDK_SCROLL_LEFT:
-			var cond101 int32
+			var cond106 int32
 			if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseHorizontalWheel, 0, 3, 0, true, time, eventRX[0], eventRY[0], false, state[0]) {
-				cond101 = 0
+				cond106 = 0
 			} else {
-				cond101 = 1
+				cond106 = 1
 			}
-			return int64(cond101)
+			return int64(cond106)
 		case gtk.GDKGDK_SCROLL_RIGHT:
-			var cond102 int32
+			var cond107 int32
 			if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseHorizontalWheel, 0, -3, 0, true, time, eventRX[0], eventRY[0], false, state[0]) {
-				cond102 = 0
+				cond107 = 0
 			} else {
-				cond102 = 1
+				cond107 = 1
 			}
-			return int64(cond102)
+			return int64(cond107)
 		}
 	} else {
 		var delta_x []float64 = make([]float64, 1)
@@ -3396,22 +3396,22 @@ func (this *Control) gtk_scroll_event_(widget int64, eventPtr int64) int64 {
 		var deltasAvailable bool = gtk.GDKGdk_event_get_scroll_deltas(eventPtr, delta_x, delta_y)
 		if deltasAvailable {
 			if delta_x[0] != 0 {
-				var cond103 int32
+				var cond108 int32
 				if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseHorizontalWheel, 0, int32((-3 * delta_x[0])), 0, true, time, eventRX[0], eventRY[0], false, state[0]) {
-					cond103 = 0
+					cond108 = 0
 				} else {
-					cond103 = 1
+					cond108 = 1
 				}
-				result = int64((cond103))
+				result = int64((cond108))
 			}
 			if delta_y[0] != 0 {
-				var cond104 int32
+				var cond109 int32
 				if this.SendMouseEventTypeButtonCountDetailSendTimeXYIs_hintState(MouseWheel, 0, int32((-3 * delta_y[0])), SCROLL_LINE, true, time, eventRX[0], eventRY[0], false, state[0]) {
-					cond104 = 0
+					cond109 = 0
 				} else {
-					cond104 = 1
+					cond109 = 1
 				}
-				result = int64((cond104))
+				result = int64((cond109))
 			}
 		}
 	}
@@ -3422,13 +3422,13 @@ func (this *Control) gtk3_show_help_(widget int64, helpType int64) int64 {
 	if !this.impl.hasFocus_() {
 		return int64(0)
 	}
-	var cond105 int32
+	var cond110 int32
 	if this.SendHelpEvent(helpType) {
-		cond105 = 1
+		cond110 = 1
 	} else {
-		cond105 = 0
+		cond110 = 0
 	}
-	return int64(cond105)
+	return int64(cond110)
 }
 
 func (this *Control) gtk_style_updated_(widget int64) int64 {
@@ -3588,7 +3588,7 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for control != (nil) && control != this && func() bool { _, ok106 := isControlToShell(control); return !(ok106) }() {
+	for control != (nil) && control != this && func() bool { _, ok112 := isControlToShell(control); return !(ok112) }() {
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -3690,11 +3690,11 @@ func (this *Control) redrawXYWidthHeightAll_(x int32, y int32, width int32, heig
 	this.impl.redrawWidget_(x, y, width, height, false, all, false)
 }
 
-func (this *Control) RedrawChildren_225() {
-	this.impl.redrawChildren_()
+func (this *Control) RedrawChildrenLocal1() {
+	this.impl.redrawChildrenLocal1_()
 }
 
-func (this *Control) redrawChildren_() {
+func (this *Control) redrawChildrenLocal1_() {
 }
 
 func (this *Control) RedrawWidget(x int32, y int32, width int32, height int32, redrawAll bool, all bool, trim bool) {
@@ -3824,7 +3824,6 @@ func (this *Control) destroyWidget_() {
 			if this.parent != (nil) {
 				gtk.OSSwt_fixed_remove(this.parent.impl.parentingHandle_(), currHandle)
 			} else {
-				func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert false : "widgets must have a parent or be a GtkWindow";
 			}
 		}
 		this.impl.releaseHandle_()
@@ -4086,7 +4085,6 @@ func (this *Control) SendOrPost(type_ int32, eventLike EventLike) bool {
 		event = eventLike.AsEvent()
 	}
 	_ = event
-	func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert event.data != null : "event.data should have been a Boolean, but received null";
 	var send bool = event.Data.(bool)
 	event.Data = nil
 	if send {
@@ -4164,7 +4162,7 @@ func (this *Control) _setBackground(colorLike ColorLike) {
 		this.state |= WidgetBACKGROUND
 	}
 	this.impl.setBackgroundGdkRGBARgba_(rgba)
-	this.impl.redrawChildren_()
+	this.impl.redrawChildrenLocal1_()
 }
 
 func (this *Control) SetBackgroundGdkRGBA(context int64, handle int64, rgba gtk.GdkRGBA) {
@@ -4246,7 +4244,7 @@ func (this *Control) setBackgroundImage_(image *Image) {
 	} else {
 		this.impl.setWidgetBackground_()
 	}
-	this.impl.redrawChildren_()
+	this.impl.redrawChildrenLocal1_()
 }
 
 func (this *Control) SetBackgroundSurface(imageLike ImageLike) {
@@ -4278,13 +4276,13 @@ func (this *Control) setCursor_(cursor *Cursor) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.cursor = cursor
-	var cond107 int64
+	var cond113 int64
 	if cursor != (nil) {
-		cond107 = cursor.Handle
+		cond113 = cursor.Handle
 	} else {
-		cond107 = int64(0)
+		cond113 = int64(0)
 	}
-	this.impl.setCursorCursor_(cond107)
+	this.impl.setCursorCursor_(cond113)
 }
 
 func (this *Control) SetCursorCursor(cursor int64) {
@@ -4525,9 +4523,9 @@ func (this *Control) setInitialBounds_() {
 			if this.impl.mustBeVisibleOnInitBounds_() {
 				gtk.GTKGtk_widget_set_visible(topHandle, true)
 			}
-			t108 := gtk.GtkRequisition{}
-			t109 := gtk.GtkRequisition{}
-			gtk.GTKGtk_widget_get_preferred_size(topHandle, &t108, &t109)
+			t114 := gtk.GtkRequisition{}
+			t115 := gtk.GtkRequisition{}
+			gtk.GTKGtk_widget_get_preferred_size(topHandle, &t114, &t115)
 			gtk.GTK3Gtk_widget_size_allocate(topHandle, &allocation)
 		}
 	} else {
@@ -4707,7 +4705,7 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	allocation.Height = height
 	this.Gtk_widget_size_allocate(topHandle, &allocation, -1)
 	this.parent = parent
-	this.impl.setZOrder_(nil, false, true)
+	this.impl.setZOrderLocal1_(nil, false, true)
 	this.impl.reskin_(ALL)
 	if focusControlBeforeReparent != (nil) && !focusControlBeforeReparent.IsDisposed() && this.display.GetFocusControl() == (nil) {
 		focusControlBeforeReparent.impl.setFocus_()
@@ -4765,9 +4763,9 @@ func (this *Control) setRedraw_(redraw bool) {
 			}
 		}
 	} else {
-		t110 := this.drawCount
+		t116 := this.drawCount
 		this.drawCount++
-		if t110 == 0 {
+		if t116 == 0 {
 			if gtk.GTKGtk_widget_get_realized(this.Handle) {
 				var bounds *Rectangle = this.impl.getBoundsInPixels_()
 				if !gtk.GTKGTK4 {
@@ -4854,7 +4852,7 @@ func (this *Control) setVisible_(visible bool) {
 			}
 			this.Gtk_widget_show(topHandle)
 			var composite *Composite
-			if gtk.GTKGTK4 && func() bool { pv, ok111 := isControlToComposite(this); composite = pv; return ok111 }() && composite.layout != (nil) {
+			if gtk.GTKGTK4 && func() bool { pv, ok118 := isControlToComposite(this); composite = pv; return ok118 }() && composite.layout != (nil) {
 				this.parent.impl.forceResize_()
 				composite.LayoutOverload2(true, true)
 			}
@@ -4888,15 +4886,15 @@ func (this *Control) setVisible_(visible bool) {
 	}
 }
 
-func (this *Control) SetZOrder(siblingLike ControlLike, above bool, fixRelations bool) {
+func (this *Control) SetZOrderLocal1(siblingLike ControlLike, above bool, fixRelations bool) {
 	var sibling *Control
 	if siblingLike != nil {
 		sibling = siblingLike.AsControl()
 	}
-	this.impl.setZOrder_(sibling, above, fixRelations)
+	this.impl.setZOrderLocal1_(sibling, above, fixRelations)
 }
 
-func (this *Control) setZOrder_(sibling *Control, above bool, fixRelations bool) {
+func (this *Control) setZOrderLocal1_(sibling *Control, above bool, fixRelations bool) {
 	this.SetZOrderSiblingAboveFixRelationsFixChildren(sibling, above, fixRelations, true)
 }
 
@@ -5011,21 +5009,21 @@ func (this *Control) SetZOrderSiblingAboveFixRelationsFixChildren(siblingLike Co
 	if fixRelations {
 		if sibling != (nil) {
 			if above {
-				var cond112 int32
+				var cond119 int32
 				if index < siblingIndex {
-					cond112 = 1
+					cond119 = 1
 				} else {
-					cond112 = 0
+					cond119 = 0
 				}
-				index = siblingIndex - (cond112)
+				index = siblingIndex - (cond119)
 			} else {
-				var cond113 int32
+				var cond120 int32
 				if siblingIndex < index {
-					cond113 = 1
+					cond120 = 1
 				} else {
-					cond113 = 0
+					cond120 = 0
 				}
-				index = siblingIndex + (cond113)
+				index = siblingIndex + (cond120)
 			}
 		} else {
 			if above {
@@ -5544,9 +5542,9 @@ func (this *Control) TraverseGroup(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond114 := ((index + offset + length) % length)
-		index = cond114
-		if !((cond114) != start) {
+		cond121 := ((index + offset + length) % length)
+		index = cond121
+		if !((cond121) != start) {
 			break
 		}
 		var widget *Widget = list[index]
@@ -5585,9 +5583,9 @@ func (this *Control) traverseItem_(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond115 := (index + offset + length) % length
-		index = cond115
-		if !((cond115) != start) {
+		cond122 := (index + offset + length) % length
+		index = cond122
+		if !((cond122) != start) {
 			break
 		}
 		var child *Control = children[index]
@@ -5762,7 +5760,6 @@ func ControlGtk_widget_reparent(controlLike ControlLike, newParentHandle int64) 
 	_ = control
 	var widget int64 = control.impl.topHandle_()
 	var parentContainer int64 = gtk.GTKGtk_widget_get_parent(widget)
-	func() { panic("j2go: unsupported AssertStatement") }() // TODO(gowt-port): assert parentContainer != 0 : "Improper use of Control.gtk_widget_reparent. Widget currently has no parent.";
 	if parentContainer != 0 {
 		if gtk.GTKGTK4 {
 			gtk.OSG_object_ref(widget)

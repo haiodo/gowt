@@ -213,8 +213,8 @@ func (this *FontData) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok246 := fontDataImplAsFontData(object)
-	if !(ok246) {
+	_, ok263 := fontDataImplAsFontData(object)
+	if !(ok263) {
 		return false
 	}
 	var data *FontData = castanyToFontData(object)

@@ -327,16 +327,16 @@ func (this *Device) create_(data *DeviceData) {
 
 func (this *Device) Dispose() {
 	jrt.MonitorEnter()
-	tretd235 := false
+	tretd252 := false
 	func() {
 		defer jrt.MonitorExit()
 		{
 			var exceptions *ExceptionStash = NewExceptionStash()
-			tretd236 := false
+			tretd253 := false
 			func() {
 				defer exceptions.Close()
 				if this.IsDisposed() {
-					tretd236 = true
+					tretd253 = true
 					return
 				}
 				this.impl.checkDevice_()
@@ -364,32 +364,32 @@ func (this *Device) Dispose() {
 					this.StopTracking()
 				}
 			}()
-			if tretd236 {
-				tretd235 = true
+			if tretd253 {
+				tretd252 = true
 				return
 			}
 		}
 	}()
-	if tretd235 {
+	if tretd252 {
 		return
 	}
 }
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd237 := false
+	tretd254 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd237 = true
+				tretd254 = true
 				return
 			}
 		}
 	}()
-	if tretd237 {
+	if tretd254 {
 		return
 	}
 }
@@ -490,13 +490,13 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 	}
 	gtk.OSPango_context_list_families(context, families, n_families)
 	var nFds int32 = 0
-	var cond238 int32
+	var cond255 int32
 	if faceName != "" {
-		cond238 = 4
+		cond255 = 4
 	} else {
-		cond238 = n_families[0]
+		cond255 = n_families[0]
 	}
-	var fds []*FontData = make([]*FontData, cond238)
+	var fds []*FontData = make([]*FontData, cond255)
 	for i := int32(0); i < n_families[0]; i++ {
 		gtk.CMemmoveOverload16(family, families[0]+int64(i*gtk.CPTR_SIZEOF), int64(gtk.CPTR_SIZEOF))
 		var match bool = true
@@ -520,9 +520,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 					copy(newFds[0:], fds[0:0+nFds])
 					fds = newFds
 				}
-				t239 := nFds
+				t256 := nFds
 				nFds++
-				fds[t239] = data
+				fds[t256] = data
 				gtk.OSPango_font_description_free(fontDesc)
 			}
 			gtk.OSG_free(faces[0])
@@ -713,8 +713,8 @@ func (this *Device) init_() {
 func (this *Device) OverrideThemeValues() {
 	var provider int64 = gtk.GTKGtk_css_provider_new()
 	var load func(string, bool) string = func(path string, isResource bool) string {
-		var tret240 string
-		tretd241 := false
+		var tret257 string
+		tretd258 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -730,15 +730,15 @@ func (this *Device) OverrideThemeValues() {
 				}() {
 					e := r.(*jrt.IOException)
 					_ = e
-					var cond242 string
+					var cond259 string
 					if isResource {
-						cond242 = "resource: "
+						cond259 = "resource: "
 					} else {
-						cond242 = "file: "
+						cond259 = "file: "
 					}
-					fmt.Fprintln(os.Stderr, fmt.Sprintf("SWT Warning: Failed to load %s%s", (cond242), path))
-					tret240 = ""
-					tretd241 = true
+					fmt.Fprintln(os.Stderr, fmt.Sprintf("SWT Warning: Failed to load %s%s", (cond259), path))
+					tret257 = ""
+					tretd258 = true
 					return
 				} else {
 					panic(r)
@@ -750,12 +750,12 @@ func (this *Device) OverrideThemeValues() {
 			} else {
 				buffer = jrt.NewBufferedReader(jrt.NewFileReader(jrt.NewFile(path)))
 			}
-			tret240 = buffer.Lines().Collect(jrt.CollectorsJoining("\n")).(string)
-			tretd241 = true
+			tret257 = buffer.Lines().Collect(jrt.CollectorsJoining("\n")).(string)
+			tretd258 = true
 			return
 		}()
-		_ = tretd241
-		return tret240
+		_ = tretd258
+		return tret257
 	}
 	var combinedCSS *jrt.StringBuilder = jrt.NewStringBuilder()
 	if !gtk.GTKGTK4 {
@@ -832,14 +832,14 @@ func (this *Device) LogProc(log_domain int64, log_level int64, message int64, us
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd243 := false
+	tretd260 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if jrt.IsNil(this.objects[i]) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd243 = true
+				tretd260 = true
 				return
 			}
 		}
@@ -852,7 +852,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd243 {
+	if tretd260 {
 		return
 	}
 }
@@ -918,9 +918,9 @@ func (this *Device) SetWarnings(warnings bool) {
 			}
 		}
 	} else {
-		t244 := this.warningLevel
+		t261 := this.warningLevel
 		this.warningLevel++
-		if t244 == 0 {
+		if t261 == 0 {
 			if this.debug {
 				return
 			}

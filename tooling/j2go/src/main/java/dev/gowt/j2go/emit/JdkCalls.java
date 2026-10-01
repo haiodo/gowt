@@ -133,6 +133,12 @@ final class JdkCalls {
 			case "java.lang.Character#isDigit", "java.lang.Character#isWhitespace", "java.lang.Character#isLetter":
 				emitter.fileImports.add("unicode");
 				return "unicode.Is" + (name.equals("isWhitespace") ? "Space" : dev.gowt.j2go.Names.capitalize(name).substring(2)) + "(rune(" + arg(mi, 0) + "))";
+			case "java.lang.Character#isAlphabetic":
+				emitter.fileImports.add("unicode");
+				return "unicode.IsLetter(rune(" + arg(mi, 0) + "))";
+			case "java.lang.Character#toString":
+				if (mi.arguments().size() != 1) return null;
+				return "string(rune(" + arg(mi, 0) + "))";
 			case "java.lang.Character#toLowerCase", "java.lang.Character#toUpperCase":
 				emitter.fileImports.add("unicode");
 				return dev.gowt.j2go.GoTypes.map(mb.getReturnType(), emitter) + "(unicode.To" + (name.equals("toLowerCase") ? "Lower" : "Upper") + "(rune(" + arg(mi, 0) + ")))";

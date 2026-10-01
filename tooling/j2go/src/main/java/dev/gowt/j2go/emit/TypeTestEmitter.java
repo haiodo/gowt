@@ -39,6 +39,7 @@ final class TypeTestEmitter {
 		// A manual (untranslated) reference type - Composite, Shell, ... - needs the same
 		// assertion syntax as a translated one; only a manual VALUE type (any/error) converts.
 		if (target == null && dev.gowt.j2go.Manual.isManual(qualified) && !dev.gowt.j2go.Manual.isValueType(qualified)) {
+			if (staticallyManual(ce.getExpression(), qualified)) return expr;
 			return implSubject(expr, ce.getExpression()) + ".(*" + dev.gowt.j2go.Manual.goTypeName(qualified) + ")";
 		}
 		String goType = dev.gowt.j2go.GoTypes.map(t, emitter);
@@ -98,6 +99,12 @@ final class TypeTestEmitter {
 		return (subjectCi == null || subjectCi.isInterface) ? subjectText : subjectText + emitter.implAccess(subjectCi.root);
 	}
 
+	/** The subject already has the manual target's Go pointer type: no interface to assert against (Format.Field, SimpleDateFormat). */
+	private boolean staticallyManual(Expression subject, String qualified) {
+		ITypeBinding st = subject.resolveTypeBinding();
+		return st != null && dev.gowt.j2go.GoTypes.map(st, emitter).equals("*" + dev.gowt.j2go.Manual.goTypeName(qualified));
+	}
+
 	private String instanceofCheck(Expression subject, ITypeBinding target, String varName, String okVar) {
 		TypeModel.ClassInfo targetCi = emitter.model.lookup(target);
 		String subjectText = emitter.expr(subject);
@@ -117,6 +124,7 @@ final class TypeTestEmitter {
 			// entry of its own; asserting against .impl always compiles (it's an interface) but can
 			// never actually match today, since nothing manual ever gets assigned into .impl.
 			if (dev.gowt.j2go.Manual.isManual(qualified) && !dev.gowt.j2go.Manual.isValueType(qualified)) {
+				if (staticallyManual(subject, qualified)) return varName + ", " + okVar + " := " + subjectText + ", " + subjectText + " != nil";
 				return varName + ", " + okVar + " := " + implSubjectText + ".(*" + dev.gowt.j2go.Manual.goTypeName(qualified) + ")";
 			}
 			// An Object holding an array: the Go slice type asserts like any other value.

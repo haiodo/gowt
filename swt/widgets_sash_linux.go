@@ -601,13 +601,13 @@ func (this *Sash) gtk3_motion_notify_event_(widget int64, eventPtr int64) int64 
 }
 
 func (this *Sash) gtk_realize_(widget int64) int64 {
-	var cond220 int64
+	var cond232 int64
 	if this.cursor != (nil) {
-		cond220 = this.cursor.Handle
+		cond232 = this.cursor.Handle
 	} else {
-		cond220 = int64(0)
+		cond232 = int64(0)
 	}
-	this.impl.setCursorCursor_(cond220)
+	this.impl.setCursorCursor_(cond232)
 	return this.Control.gtk_realize_(widget)
 }
 
@@ -639,13 +639,13 @@ func (this *Sash) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *Sash) setCursorCursor_(cursor int64) {
-	var cond221 int64
+	var cond233 int64
 	if cursor != 0 {
-		cond221 = cursor
+		cond233 = cursor
 	} else {
-		cond221 = this.defaultCursor
+		cond233 = this.defaultCursor
 	}
-	this.Control.setCursorCursor_(cond221)
+	this.Control.setCursorCursor_(cond233)
 }
 
 func (this *Sash) traversalCode_(key int32, event int64) int32 {

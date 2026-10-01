@@ -41,66 +41,66 @@ func (this *NSUserDefaults) initNSUserDefaultsOverload2(id *id) {
 }
 
 func (this *NSUserDefaults) ObjectForKey(defaultName *NSString) *id {
-	var cond1 int64
+	var cond839 int64
 	if defaultName != (nil) {
-		cond1 = defaultName.Id
+		cond839 = defaultName.Id
 	} else {
-		cond1 = int64(0)
+		cond839 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond1)
-	var cond2 *id
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond839)
+	var cond840 *id
 	if result != 0 {
-		cond2 = NewidOverload1(result)
+		cond840 = NewidOverload1(result)
 	} else {
-		cond2 = nil
+		cond840 = nil
 	}
-	return cond2
+	return cond840
 }
 
 func (this *NSUserDefaults) RegisterDefaults(registrationDictionary *NSDictionary) {
-	var cond3 int64
+	var cond841 int64
 	if registrationDictionary != (nil) {
-		cond3 = registrationDictionary.Id
+		cond841 = registrationDictionary.Id
 	} else {
-		cond3 = int64(0)
+		cond841 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_registerDefaults_, cond3)
+	OSObjc_msgSendOverload44(this.Id, OSSel_registerDefaults_, cond841)
 }
 
 func (this *NSUserDefaults) SetInteger(value int64, defaultName *NSString) {
-	var cond4 int64
+	var cond842 int64
 	if defaultName != (nil) {
-		cond4 = defaultName.Id
+		cond842 = defaultName.Id
 	} else {
-		cond4 = int64(0)
+		cond842 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setInteger_forKey_, value, cond4)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setInteger_forKey_, value, cond842)
 }
 
 func (this *NSUserDefaults) StringForKey(defaultName *NSString) *NSString {
-	var cond5 int64
+	var cond843 int64
 	if defaultName != (nil) {
-		cond5 = defaultName.Id
+		cond843 = defaultName.Id
 	} else {
-		cond5 = int64(0)
+		cond843 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForKey_, cond5)
-	var cond6 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForKey_, cond843)
+	var cond844 *NSString
 	if result != 0 {
-		cond6 = NewNSStringOverload1(result)
+		cond844 = NewNSStringOverload1(result)
 	} else {
-		cond6 = nil
+		cond844 = nil
 	}
-	return cond6
+	return cond844
 }
 
 func NSUserDefaultsStandardUserDefaults() *NSUserDefaults {
 	var result int64 = OSObjc_msgSend(OSClass_NSUserDefaults, OSSel_standardUserDefaults)
-	var cond7 *NSUserDefaults
+	var cond845 *NSUserDefaults
 	if result != 0 {
-		cond7 = NewNSUserDefaultsOverload1(result)
+		cond845 = NewNSUserDefaultsOverload1(result)
 	} else {
-		cond7 = nil
+		cond845 = nil
 	}
-	return cond7
+	return cond845
 }

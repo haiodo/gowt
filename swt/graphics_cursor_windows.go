@@ -126,8 +126,8 @@ func (this *Cursor) initCursorDeviceImageDataProviderHotspotXHotspotY(device *De
 
 func (this *Cursor) destroy_() {
 	this.device.DeregisterResourceWithZoomSupport(upcastCursorToResource(this))
-	for _, elem1 := range this.zoomLevelToHandle.Values().ToArray() {
-		handle := jrt.Cast[*Cursor_CursorHandle](elem1)
+	for _, elem593 := range this.zoomLevelToHandle.Values().ToArray() {
+		handle := jrt.Cast[*Cursor_CursorHandle](elem593)
 		handle.impl.destroy_()
 	}
 	this.zoomLevelToHandle.Clear()
@@ -138,8 +138,8 @@ func (this *Cursor) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	cursor, ok2 := resourceImplAsCursor(object)
-	if !(ok2) {
+	cursor, ok594 := resourceImplAsCursor(object)
+	if !(ok594) {
 		return false
 	}
 	return this.device == cursor.device && CursorWin32_getHandle(this, CursorDEFAULT_ZOOM) == CursorWin32_getHandle(cursor, CursorDEFAULT_ZOOM)
@@ -163,7 +163,7 @@ func (this *Cursor) String() string {
 func (this *Cursor) destroyHandlesExcept_(zoomLevels *jrt.List) {
 	this.zoomLevelToHandle.EntrySet().RemoveIf(func(entry *jrt.MapEntry) bool {
 		var zoom any = entry.GetKey()
-		if !zoomLevels.Contains(zoom) && zoom != DPIUtilGetZoomForAutoscaleProperty(CursorDEFAULT_ZOOM) {
+		if !zoomLevels.Contains(zoom) && jrt.Cast[int32](zoom) != DPIUtilGetZoomForAutoscaleProperty(CursorDEFAULT_ZOOM) {
 			jrt.Cast[*Cursor_CursorHandle](entry.GetValue()).impl.destroy_()
 			return true
 		}

@@ -15,7 +15,7 @@ type DeviceImpl interface {
 	create_(a0 *DeviceData)
 	destroy_()
 	getBounds_() *Rectangle
-	getBoundsInPixels_() *Rectangle
+	getBoundsInPixels0_() *Rectangle
 	getClientArea_() *Rectangle
 	getDPI_() *Point
 	getSystemColor_(a0 int32) *Color
@@ -396,16 +396,16 @@ func (this *Device) destroy_() {
 
 func (this *Device) Dispose() {
 	jrt.MonitorEnter()
-	tretd1 := false
+	tretd262 := false
 	func() {
 		defer jrt.MonitorExit()
 		{
 			var exceptions *ExceptionStash = NewExceptionStash()
-			tretd2 := false
+			tretd263 := false
 			func() {
 				defer exceptions.Close()
 				if this.IsDisposed() {
-					tretd2 = true
+					tretd263 = true
 					return
 				}
 				this.impl.checkDevice_()
@@ -437,32 +437,32 @@ func (this *Device) Dispose() {
 					}()
 				}
 			}()
-			if tretd2 {
-				tretd1 = true
+			if tretd263 {
+				tretd262 = true
 				return
 			}
 		}
 	}()
-	if tretd1 {
+	if tretd262 {
 		return
 	}
 }
 
 func (this *Device) Dispose_Object(object any) {
 	jrt.MonitorEnter()
-	tretd3 := false
+	tretd264 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if this.objects[i] == object {
 				this.objects[i] = nil
 				this.errors[i] = nil
-				tretd3 = true
+				tretd264 = true
 				return
 			}
 		}
 	}()
-	if tretd3 {
+	if tretd264 {
 		return
 	}
 }
@@ -502,14 +502,14 @@ func (this *Device) GetBounds() *Rectangle {
 
 func (this *Device) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels0_(), this.impl.getDeviceZoom_())
 }
 
-func (this *Device) GetBoundsInPixels() *Rectangle {
-	return this.impl.getBoundsInPixels_()
+func (this *Device) GetBoundsInPixels0() *Rectangle {
+	return this.impl.getBoundsInPixels0_()
 }
 
-func (this *Device) getBoundsInPixels_() *Rectangle {
+func (this *Device) getBoundsInPixels0_() *Rectangle {
 	var hDC int64 = this.impl.internal_new_GC_(nil)
 	var width int32 = win32.OSGetDeviceCaps(hDC, win32.OSHORZRES)
 	var height int32 = win32.OSGetDeviceCaps(hDC, win32.OSVERTRES)
@@ -603,33 +603,33 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 	var offset int32 = 0
 	var hDC int64 = this.impl.internal_new_GC_(nil)
 	if faceName == "" {
-		var cond4 int32
+		var cond265 int32
 		if scalable {
-			cond4 = 1
+			cond265 = 1
 		} else {
-			cond4 = 0
+			cond265 = 0
 		}
-		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond4))
+		win32.OSEnumFontFamilies(hDC, nil, lpEnumFontFamProc, int64(cond265))
 		offset = this.nFonts
 		for i := int32(0); i < offset; i++ {
 			var lf *win32.LOGFONT = this.logFonts[i]
-			var cond5 int32
+			var cond266 int32
 			if scalable {
-				cond5 = 1
+				cond266 = 1
 			} else {
-				cond5 = 0
+				cond266 = 0
 			}
-			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond5))
+			win32.OSEnumFontFamilies(hDC, lf.LfFaceName, lpEnumFontFamProc, int64(cond266))
 		}
 	} else {
 		var lpFaceName *win32.TCHAR = win32.NewTCHARStringTerminate(faceName, true)
-		var cond6 int32
+		var cond267 int32
 		if scalable {
-			cond6 = 1
+			cond267 = 1
 		} else {
-			cond6 = 0
+			cond267 = 0
 		}
-		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond6))
+		win32.OSEnumFontFamilies(hDC, lpFaceName.Chars, lpEnumFontFamProc, int64(cond267))
 	}
 	var logPixelsY int32 = win32.OSGetDeviceCaps(hDC, win32.OSLOGPIXELSY)
 	this.impl.internal_dispose_GC_(hDC, nil)
@@ -644,9 +644,9 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			}
 		}
 		if j == count {
-			t7 := count
+			t268 := count
 			count++
-			result[t7] = fd
+			result[t268] = fd
 		}
 	}
 	if count != int32(len(result)) {
@@ -804,14 +804,14 @@ func (this *Device) LoadFont(path string) bool {
 
 func (this *Device) New_Object(object any) {
 	jrt.MonitorEnter()
-	tretd8 := false
+	tretd269 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(this.objects)); i++ {
 			if jrt.IsNil(this.objects[i]) {
 				this.objects[i] = object
 				this.errors[i] = &jrt.JavaError{}
-				tretd8 = true
+				tretd269 = true
 				return
 			}
 		}
@@ -824,7 +824,7 @@ func (this *Device) New_Object(object any) {
 		newErrors[int32(len(this.errors))] = &jrt.JavaError{}
 		this.errors = newErrors
 	}()
-	if tretd8 {
+	if tretd269 {
 		return
 	}
 }
@@ -835,11 +835,11 @@ func (this *Device) PrintErrors() {
 	}
 	if this.tracking {
 		jrt.MonitorEnter()
-		tretd9 := false
+		tretd270 := false
 		func() {
 			defer jrt.MonitorExit()
 			if this.objects == (nil) || this.errors == (nil) {
-				tretd9 = true
+				tretd270 = true
 				return
 			}
 			var objectCount int32 = 0
@@ -856,44 +856,44 @@ func (this *Device) PrintErrors() {
 			for _, object := range this.objects {
 				if !jrt.IsNil(object) {
 					objectCount++
-					_, ok10 := resourceImplAsColor(object)
-					if ok10 {
+					_, ok271 := resourceImplAsColor(object)
+					if ok271 {
 						colors++
 					}
-					_, ok11 := resourceImplAsCursor(object)
-					if ok11 {
+					_, ok272 := resourceImplAsCursor(object)
+					if ok272 {
 						cursors++
 					}
-					_, ok12 := resourceImplAsFont(object)
-					if ok12 {
+					_, ok273 := resourceImplAsFont(object)
+					if ok273 {
 						fonts++
 					}
-					_, ok13 := resourceImplAsGC(object)
-					if ok13 {
+					_, ok274 := resourceImplAsGC(object)
+					if ok274 {
 						gcs++
 					}
-					_, ok14 := resourceImplAsImage(object)
-					if ok14 {
+					_, ok275 := resourceImplAsImage(object)
+					if ok275 {
 						images++
 					}
-					_, ok15 := resourceImplAsPath(object)
-					if ok15 {
+					_, ok276 := resourceImplAsPath(object)
+					if ok276 {
 						paths++
 					}
-					_, ok16 := resourceImplAsPattern(object)
-					if ok16 {
+					_, ok277 := resourceImplAsPattern(object)
+					if ok277 {
 						patterns++
 					}
-					_, ok17 := resourceImplAsRegion(object)
-					if ok17 {
+					_, ok278 := resourceImplAsRegion(object)
+					if ok278 {
 						regions++
 					}
-					_, ok18 := resourceImplAsTextLayout(object)
-					if ok18 {
+					_, ok279 := resourceImplAsTextLayout(object)
+					if ok279 {
 						textLayouts++
 					}
-					_, ok19 := resourceImplAsTransform(object)
-					if ok19 {
+					_, ok280 := resourceImplAsTransform(object)
+					if ok280 {
 						transforms++
 					}
 				}
@@ -941,7 +941,7 @@ func (this *Device) PrintErrors() {
 				}
 			}
 		}()
-		if tretd9 {
+		if tretd270 {
 			return
 		}
 	}
@@ -1065,8 +1065,8 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 	if this == obj {
 		return true
 	}
-	passedResource, ok20 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
-	if !(ok20) {
+	passedResource, ok281 := deviceResourceReferenceImplAsDeviceResourceReference(obj)
+	if !(ok281) {
 		return false
 	}
 	return jrt.ObjectsEquals(func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }(), func() *Resource { _ = []any{passedResource}; panic("j2go: unresolved call get") }())
@@ -1074,13 +1074,13 @@ func (this *Device_ResourceReference) Equals(obj any) bool {
 
 func (this *Device_ResourceReference) HashCode() int32 {
 	var resource *Resource = func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }()
-	var cond21 int32
+	var cond282 int32
 	if resource != (nil) {
-		cond21 = jrt.HashCodeOf(resource)
+		cond282 = jrt.HashCodeOf(resource)
 	} else {
-		cond21 = 0
+		cond282 = 0
 	}
-	return cond21
+	return cond282
 }
 
 // j2go: instanceof helper for Cursor and its subclasses within the translated set.

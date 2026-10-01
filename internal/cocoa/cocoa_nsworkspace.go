@@ -41,155 +41,155 @@ func (this *NSWorkspace) initNSWorkspaceOverload2(id *id) {
 }
 
 func (this *NSWorkspace) URLForApplicationToOpenURL(url *NSURL) *NSURL {
-	var cond1 int64
+	var cond923 int64
 	if url != (nil) {
-		cond1 = url.Id
+		cond923 = url.Id
 	} else {
-		cond1 = int64(0)
+		cond923 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenURL_, cond1)
-	var cond2 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenURL_, cond923)
+	var cond924 *NSURL
 	if result != 0 {
-		cond2 = NewNSURLOverload1(result)
+		cond924 = NewNSURLOverload1(result)
 	} else {
-		cond2 = nil
+		cond924 = nil
 	}
-	return cond2
+	return cond924
 }
 
 func (this *NSWorkspace) URLForApplicationToOpenContentType(contentType *UTType) *NSURL {
-	var cond3 int64
+	var cond925 int64
 	if contentType != (nil) {
-		cond3 = contentType.Id
+		cond925 = contentType.Id
 	} else {
-		cond3 = int64(0)
+		cond925 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenContentType_, cond3)
-	var cond4 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_URLForApplicationToOpenContentType_, cond925)
+	var cond926 *NSURL
 	if result != 0 {
-		cond4 = NewNSURLOverload1(result)
+		cond926 = NewNSURLOverload1(result)
 	} else {
-		cond4 = nil
+		cond926 = nil
 	}
-	return cond4
+	return cond926
 }
 
 func (this *NSWorkspace) FullPathForApplication(appName *NSString) *NSString {
-	var cond5 int64
+	var cond927 int64
 	if appName != (nil) {
-		cond5 = appName.Id
+		cond927 = appName.Id
 	} else {
-		cond5 = int64(0)
+		cond927 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_fullPathForApplication_, cond5)
-	var cond6 *NSString
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_fullPathForApplication_, cond927)
+	var cond928 *NSString
 	if result != 0 {
-		cond6 = NewNSStringOverload1(result)
+		cond928 = NewNSStringOverload1(result)
 	} else {
-		cond6 = nil
+		cond928 = nil
 	}
-	return cond6
+	return cond928
 }
 
 func (this *NSWorkspace) IconForFile(fullPath *NSString) *NSImage {
-	var cond7 int64
+	var cond929 int64
 	if fullPath != (nil) {
-		cond7 = fullPath.Id
+		cond929 = fullPath.Id
 	} else {
-		cond7 = int64(0)
+		cond929 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_iconForFile_, cond7)
-	var cond8 *NSImage
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_iconForFile_, cond929)
+	var cond930 *NSImage
 	if result != 0 {
-		cond8 = NewNSImageOverload1(result)
+		cond930 = NewNSImageOverload1(result)
 	} else {
-		cond8 = nil
+		cond930 = nil
 	}
-	return cond8
+	return cond930
 }
 
 func (this *NSWorkspace) IsFilePackageAtPath(fullPath *NSString) bool {
-	var cond9 int64
+	var cond931 int64
 	if fullPath != (nil) {
-		cond9 = fullPath.Id
+		cond931 = fullPath.Id
 	} else {
-		cond9 = int64(0)
+		cond931 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isFilePackageAtPath_, cond9)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isFilePackageAtPath_, cond931)
 }
 
 func (this *NSWorkspace) OpenURL(url *NSURL) bool {
-	var cond10 int64
+	var cond932 int64
 	if url != (nil) {
-		cond10 = url.Id
+		cond932 = url.Id
 	} else {
-		cond10 = int64(0)
+		cond932 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_openURL_, cond10)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_openURL_, cond932)
 }
 
 func (this *NSWorkspace) OpenURLs(urls *NSArray, bundleIdentifier *NSString, options int64, descriptor *NSAppleEventDescriptor, identifiers int64) bool {
-	var cond11 int64
+	var cond933 int64
 	if urls != (nil) {
-		cond11 = urls.Id
+		cond933 = urls.Id
 	} else {
-		cond11 = int64(0)
+		cond933 = int64(0)
 	}
-	var cond12 int64
+	var cond934 int64
 	if bundleIdentifier != (nil) {
-		cond12 = bundleIdentifier.Id
+		cond934 = bundleIdentifier.Id
 	} else {
-		cond12 = int64(0)
+		cond934 = int64(0)
 	}
-	var cond13 int64
+	var cond935 int64
 	if descriptor != (nil) {
-		cond13 = descriptor.Id
+		cond935 = descriptor.Id
 	} else {
-		cond13 = int64(0)
+		cond935 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload11(this.Id, OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, cond11, cond12, options, cond13, identifiers)
+	return OSObjc_msgSend_boolOverload11(this.Id, OSSel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, cond933, cond934, options, cond935, identifiers)
 }
 
 func (this *NSWorkspace) Type(firstTypeName *NSString, secondTypeName *NSString) bool {
-	var cond14 int64
+	var cond936 int64
 	if firstTypeName != (nil) {
-		cond14 = firstTypeName.Id
+		cond936 = firstTypeName.Id
 	} else {
-		cond14 = int64(0)
+		cond936 = int64(0)
 	}
-	var cond15 int64
+	var cond937 int64
 	if secondTypeName != (nil) {
-		cond15 = secondTypeName.Id
+		cond937 = secondTypeName.Id
 	} else {
-		cond15 = int64(0)
+		cond937 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_type_conformsToType_, cond14, cond15)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_type_conformsToType_, cond936, cond937)
 }
 
 func (this *NSWorkspace) TypeOfFile(absoluteFilePath *NSString, outError int64) *NSString {
-	var cond16 int64
+	var cond938 int64
 	if absoluteFilePath != (nil) {
-		cond16 = absoluteFilePath.Id
+		cond938 = absoluteFilePath.Id
 	} else {
-		cond16 = int64(0)
+		cond938 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_typeOfFile_error_, cond16, outError)
-	var cond17 *NSString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_typeOfFile_error_, cond938, outError)
+	var cond939 *NSString
 	if result != 0 {
-		cond17 = NewNSStringOverload1(result)
+		cond939 = NewNSStringOverload1(result)
 	} else {
-		cond17 = nil
+		cond939 = nil
 	}
-	return cond17
+	return cond939
 }
 
 func NSWorkspaceSharedWorkspace() *NSWorkspace {
 	var result int64 = OSObjc_msgSend(OSClass_NSWorkspace, OSSel_sharedWorkspace)
-	var cond18 *NSWorkspace
+	var cond940 *NSWorkspace
 	if result != 0 {
-		cond18 = NewNSWorkspaceOverload1(result)
+		cond940 = NewNSWorkspaceOverload1(result)
 	} else {
-		cond18 = nil
+		cond940 = nil
 	}
-	return cond18
+	return cond940
 }

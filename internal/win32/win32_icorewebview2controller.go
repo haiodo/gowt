@@ -18,13 +18,13 @@ func (this *ICoreWebView2Controller) initICoreWebView2Controller(address int64) 
 }
 
 func (this *ICoreWebView2Controller) Put_IsVisible(isVisible bool) int32 {
-	var cond1 int32
+	var cond4 int32
 	if isVisible {
-		cond1 = 1
+		cond4 = 1
 	} else {
-		cond1 = 0
+		cond4 = 0
 	}
-	return COMVtblCallOverload1(4, this.address, cond1)
+	return COMVtblCallOverload1(4, this.address, cond4)
 }
 
 func (this *ICoreWebView2Controller) Put_Bounds(bounds *RECT) int32 {

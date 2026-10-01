@@ -80,14 +80,14 @@ func (this *Test_org_eclipse_swt_widgets_Menu) Test_addHelpListenerLorg_eclipse_
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	this.listenerCalled = false
-	anon1 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
-	anon1.fnMenuShown = func(e *swt.MenuEvent) {
+	anon86 := &Test_org_eclipse_swt_widgets_MenuAnon1{}
+	anon86.fnMenuShown = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	anon1.fnMenuHidden = func(e *swt.MenuEvent) {
+	anon86.fnMenuHidden = func(e *swt.MenuEvent) {
 		this.listenerCalled = true
 	}
-	var menuListener swt.MenuListener = anon1
+	var menuListener swt.MenuListener = anon86
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.menu.AddMenuListener(nil)
 	}, "No exception thrown for addMenuListener with null argument")
@@ -165,13 +165,13 @@ func (this *Test_org_eclipse_swt_widgets_Menu) Test_getItems() {
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewMenuItem(this.menu, 0)
 	}
-	junit.AssertArrayEquals(items, this.menu.GetItems())
+	junit.AssertArrayEquals(upcastArrswtMenuItemToany(items), upcastArrswtMenuItemToany(this.menu.GetItems()))
 	this.menu.GetItems()[0].Dispose()
-	junit.AssertArrayEquals([]*swt.MenuItem{items[1], items[2], items[3], items[4]}, this.menu.GetItems())
+	junit.AssertArrayEquals(upcastArrswtMenuItemToany([]*swt.MenuItem{items[1], items[2], items[3], items[4]}), upcastArrswtMenuItemToany(this.menu.GetItems()))
 	this.menu.GetItems()[3].Dispose()
-	junit.AssertArrayEquals([]*swt.MenuItem{items[1], items[2], items[3]}, this.menu.GetItems())
+	junit.AssertArrayEquals(upcastArrswtMenuItemToany([]*swt.MenuItem{items[1], items[2], items[3]}), upcastArrswtMenuItemToany(this.menu.GetItems()))
 	this.menu.GetItems()[1].Dispose()
-	junit.AssertArrayEquals([]*swt.MenuItem{items[1], items[3]}, this.menu.GetItems())
+	junit.AssertArrayEquals(upcastArrswtMenuItemToany([]*swt.MenuItem{items[1], items[3]}), upcastArrswtMenuItemToany(this.menu.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_Menu) Test_getParent() {
@@ -340,4 +340,15 @@ func (this *Test_org_eclipse_swt_widgets_MenuAnon1) MenuShown(a0 *swt.MenuEvent)
 
 func (this *Test_org_eclipse_swt_widgets_MenuAnon1) MenuHidden(a0 *swt.MenuEvent) {
 	this.fnMenuHidden(a0)
+}
+
+func upcastArrswtMenuItemToany(x []*swt.MenuItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

@@ -18,11 +18,11 @@ func (this *ICoreWebView2Environment2) initICoreWebView2Environment2(address int
 }
 
 func (this *ICoreWebView2Environment2) CreateWebResourceRequest(uri []uint16, method []uint16, postData *IStream, headers []uint16, request []int64) int32 {
-	var cond1 int64
+	var cond7 int64
 	if postData != (nil) {
-		cond1 = postData.address
+		cond7 = postData.address
 	} else {
-		cond1 = int64(0)
+		cond7 = int64(0)
 	}
-	return COMVtblCallOverload31(8, this.address, uri, method, cond1, headers, request)
+	return COMVtblCallOverload31(8, this.address, uri, method, cond7, headers, request)
 }

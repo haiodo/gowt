@@ -41,36 +41,36 @@ func (this *NSToolbar) initNSToolbarOverload2(id *id) {
 }
 
 func (this *NSToolbar) InitWithIdentifier(identifier *NSString) *NSToolbar {
-	var cond1 int64
+	var cond795 int64
 	if identifier != (nil) {
-		cond1 = identifier.Id
+		cond795 = identifier.Id
 	} else {
-		cond1 = int64(0)
+		cond795 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond1)
-	var cond2 *NSToolbar
-	var cond3 *NSToolbar
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond795)
+	var cond796 *NSToolbar
+	var cond797 *NSToolbar
 	if result != 0 {
-		cond3 = NewNSToolbarOverload1(result)
+		cond797 = NewNSToolbarOverload1(result)
 	} else {
-		cond3 = nil
+		cond797 = nil
 	}
 	if result == this.Id {
-		cond2 = this
+		cond796 = this
 	} else {
-		cond2 = (cond3)
+		cond796 = (cond797)
 	}
-	return cond2
+	return cond796
 }
 
 func (this *NSToolbar) InsertItemWithItemIdentifier(itemIdentifier *NSString, index int64) {
-	var cond4 int64
+	var cond798 int64
 	if itemIdentifier != (nil) {
-		cond4 = itemIdentifier.Id
+		cond798 = itemIdentifier.Id
 	} else {
-		cond4 = int64(0)
+		cond798 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithItemIdentifier_atIndex_, cond4, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_insertItemWithItemIdentifier_atIndex_, cond798, index)
 }
 
 func (this *NSToolbar) IsVisible() bool {
@@ -86,13 +86,13 @@ func (this *NSToolbar) SetAllowsUserCustomization(allowsUserCustomization bool) 
 }
 
 func (this *NSToolbar) SetDelegate(delegate *id) {
-	var cond5 int64
+	var cond799 int64
 	if delegate != (nil) {
-		cond5 = delegate.Id
+		cond799 = delegate.Id
 	} else {
-		cond5 = int64(0)
+		cond799 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond5)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond799)
 }
 
 func (this *NSToolbar) SetDisplayMode(displayMode int64) {
@@ -100,13 +100,13 @@ func (this *NSToolbar) SetDisplayMode(displayMode int64) {
 }
 
 func (this *NSToolbar) SetSelectedItemIdentifier(selectedItemIdentifier *NSString) {
-	var cond6 int64
+	var cond800 int64
 	if selectedItemIdentifier != (nil) {
-		cond6 = selectedItemIdentifier.Id
+		cond800 = selectedItemIdentifier.Id
 	} else {
-		cond6 = int64(0)
+		cond800 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setSelectedItemIdentifier_, cond6)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setSelectedItemIdentifier_, cond800)
 }
 
 func (this *NSToolbar) SetVisible(visible bool) {

@@ -361,11 +361,11 @@ func (this *TableColumn) setImageOnItem_(image *Image) {
 	}
 	this.Item.setImageOnItem_(image)
 	if this.parent.sortColumn != this || this.parent.sortDirection != NONE {
-		this.SetImageImageSortRightImageSortRight(image, false, false)
+		this.SetImageImageSortRight(image, false, false)
 	}
 }
 
-func (this *TableColumn) SetImageImageSortRightImageSortRight(imageLike ImageLike, sort bool, right bool) {
+func (this *TableColumn) SetImageImageSortRight(imageLike ImageLike, sort bool, right bool) {
 	var image *Image
 	if imageLike != nil {
 		image = imageLike.AsImage()
@@ -553,8 +553,8 @@ func (this *TableColumn) UpdateToolTip(index int32) {
 	}
 }
 
-func (this *TableColumn) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *TableColumn) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChange_(event, scalingFactor)
 	var table *Table = this.GetParent()
 	var ignoreColumnResize bool = table.ignoreColumnResize
 	table.ignoreColumnResize = true

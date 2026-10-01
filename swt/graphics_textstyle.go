@@ -112,8 +112,8 @@ func (this *TextStyle) Equals(object any) bool {
 	if jrt.IsNil(object) {
 		return false
 	}
-	style, ok1 := textStyleImplAsTextStyle(object)
-	if !(ok1) {
+	style, ok520 := textStyleImplAsTextStyle(object)
+	if !(ok520) {
 		return false
 	}
 	if this.Foreground != (nil) {

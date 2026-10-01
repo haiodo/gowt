@@ -46,13 +46,13 @@ func (this *Test_org_eclipse_swt_widgets_Button) test_ConstructorLorg_eclipse_sw
 
 func (this *Test_org_eclipse_swt_widgets_Button) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon1 := &Test_org_eclipse_swt_widgets_ButtonAnon1{}
-	anon1.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon75 := &Test_org_eclipse_swt_widgets_ButtonAnon1{}
+	anon75.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon1.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
+	anon75.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon1
+	var listener swt.SelectionListener = anon75
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.button.AddSelectionListener(nil)
 	}, "No exception thrown for addSelectionListener with null argument")
@@ -489,13 +489,13 @@ func (this *Test_org_eclipse_swt_widgets_Button) Test_Bug381668() {
 		return t.IsFocusControl()
 	})
 	junit.AssertTrue(t.IsFocusControl())
-	anon2 := &Test_org_eclipse_swt_widgets_ButtonAnon2{}
-	anon2.FocusAdapter = swt.NewFocusAdapter()
-	anon2.fnFocusLost = func(e *swt.FocusEvent) {
+	anon76 := &Test_org_eclipse_swt_widgets_ButtonAnon2{}
+	anon76.FocusAdapter = swt.NewFocusAdapter()
+	anon76.fnFocusLost = func(e *swt.FocusEvent) {
 		r1.Dispose()
 		r2.Dispose()
 	}
-	t.AddFocusListener(anon2)
+	t.AddFocusListener(anon76)
 	junit.AssertFalse(r1.IsDisposed())
 	junit.AssertFalse(r2.IsDisposed())
 	t.TraverseTraversal(swt.TRAVERSE_TAB_NEXT)

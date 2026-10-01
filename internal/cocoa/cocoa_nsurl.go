@@ -42,24 +42,24 @@ func (this *NSURL) initNSURLOverload2(id *id) {
 
 func (this *NSURL) AbsoluteString() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_absoluteString)
-	var cond1 *NSString
+	var cond816 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond816 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond816 = nil
 	}
-	return cond1
+	return cond816
 }
 
 func (this *NSURL) Host() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_host)
-	var cond2 *NSString
+	var cond817 *NSString
 	if result != 0 {
-		cond2 = NewNSStringOverload1(result)
+		cond817 = NewNSStringOverload1(result)
 	} else {
-		cond2 = nil
+		cond817 = nil
 	}
-	return cond2
+	return cond817
 }
 
 func (this *NSURL) IsFileURL() bool {
@@ -68,62 +68,62 @@ func (this *NSURL) IsFileURL() bool {
 
 func (this *NSURL) Path() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_path)
-	var cond3 *NSString
+	var cond818 *NSString
 	if result != 0 {
-		cond3 = NewNSStringOverload1(result)
+		cond818 = NewNSStringOverload1(result)
 	} else {
-		cond3 = nil
+		cond818 = nil
 	}
-	return cond3
+	return cond818
 }
 
 func NSURLURLFromPasteboard(pasteBoard *NSPasteboard) *NSURL {
-	var cond4 int64
+	var cond819 int64
 	if pasteBoard != (nil) {
-		cond4 = pasteBoard.Id
+		cond819 = pasteBoard.Id
 	} else {
-		cond4 = int64(0)
+		cond819 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_URLFromPasteboard_, cond4)
-	var cond5 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_URLFromPasteboard_, cond819)
+	var cond820 *NSURL
 	if result != 0 {
-		cond5 = NewNSURLOverload1(result)
+		cond820 = NewNSURLOverload1(result)
 	} else {
-		cond5 = nil
+		cond820 = nil
 	}
-	return cond5
+	return cond820
 }
 
 func NSURLURLWithString(URLString *NSString) *NSURL {
-	var cond6 int64
+	var cond821 int64
 	if URLString != (nil) {
-		cond6 = URLString.Id
+		cond821 = URLString.Id
 	} else {
-		cond6 = int64(0)
+		cond821 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_URLWithString_, cond6)
-	var cond7 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_URLWithString_, cond821)
+	var cond822 *NSURL
 	if result != 0 {
-		cond7 = NewNSURLOverload1(result)
+		cond822 = NewNSURLOverload1(result)
 	} else {
-		cond7 = nil
+		cond822 = nil
 	}
-	return cond7
+	return cond822
 }
 
 func NSURLFileURLWithPath(path *NSString) *NSURL {
-	var cond8 int64
+	var cond823 int64
 	if path != (nil) {
-		cond8 = path.Id
+		cond823 = path.Id
 	} else {
-		cond8 = int64(0)
+		cond823 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_fileURLWithPath_, cond8)
-	var cond9 *NSURL
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURL, OSSel_fileURLWithPath_, cond823)
+	var cond824 *NSURL
 	if result != 0 {
-		cond9 = NewNSURLOverload1(result)
+		cond824 = NewNSURLOverload1(result)
 	} else {
-		cond9 = nil
+		cond824 = nil
 	}
-	return cond9
+	return cond824
 }

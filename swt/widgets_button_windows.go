@@ -196,7 +196,7 @@ func (this *Button) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Button) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Button) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -274,9 +274,9 @@ func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 				height = size.Cy
 				size.Cy = 0
 				for size.Cy != height {
-					t1 := width
+					t194 := width
 					width++
-					size.Cx = t1
+					size.Cx = t194
 					size.Cy = 0
 					win32.OSSendMessageOverload30(this.Handle, win32.OSBCM_GETIDEALSIZE, int64(0), size)
 				}
@@ -363,7 +363,7 @@ func (this *Button) createHandle_() {
 		this.state |= WidgetDRAW_BACKGROUND
 	}
 	this.useDarkModeExplorerTheme = this.display.useDarkModeExplorerTheme
-	this.impl.maybeEnableDarkSystemThemeNoArgs_()
+	this.impl.maybeEnableDarkSystemTheme0_()
 }
 
 func (this *Button) CustomBackgroundDrawing() bool {
@@ -528,13 +528,13 @@ func (this *Button) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *Button) resolveTextDirection_() int32 {
-	var cond2 int32
+	var cond195 int32
 	if (this.style & ARROW) != 0 {
-		cond2 = NONE
+		cond195 = NONE
 	} else {
-		cond2 = BidiUtilResolveTextDirection(this.text)
+		cond195 = BidiUtilResolveTextDirection(this.text)
 	}
-	return cond2
+	return cond195
 }
 
 func (this *Button) SelectRadio() {
@@ -683,13 +683,13 @@ func (this *Button) setRadioFocus_(tabbing bool) bool {
 	if (this.style&RADIO) == 0 || !this.GetSelection() {
 		return false
 	}
-	var cond3 bool
+	var cond196 bool
 	if tabbing {
-		cond3 = this.impl.setTabItemFocus_()
+		cond196 = this.impl.setTabItemFocus_()
 	} else {
-		cond3 = this.impl.setFocus_()
+		cond196 = this.impl.setFocus_()
 	}
-	return cond3
+	return cond196
 }
 
 func (this *Button) setRadioSelection_(value bool) bool {
@@ -833,7 +833,7 @@ func (this *Button) windowClass_() *win32.TCHAR {
 	return ButtonButtonClass
 }
 
-func (this *Button) windowProcNoArgs_() int64 {
+func (this *Button) windowProc_() int64 {
 	return ButtonButtonProc
 }
 
@@ -842,19 +842,19 @@ func (this *Button) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 		return this.Control.wmColorChild_(wParam, lParam)
 	} else {
 		var oldFlag int32 = this.parent.state & WidgetTHEME_BACKGROUND
-		var tret4 *win32.LRESULT
-		tretd5 := false
+		var tret197 *win32.LRESULT
+		tretd198 := false
 		func() {
 			defer func() {
 				this.parent.state |= oldFlag
 			}()
 			this.parent.state &= ^WidgetTHEME_BACKGROUND
-			tret4 = this.parent.impl.wmColorChild_(wParam, lParam)
-			tretd5 = true
+			tret197 = this.parent.impl.wmColorChild_(wParam, lParam)
+			tretd198 = true
 			return
 		}()
-		_ = tretd5
-		return tret4
+		_ = tretd198
+		return tret197
 	}
 }
 
@@ -1062,32 +1062,32 @@ func (this *Button) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64)
 						var margin int32 = this.ComputeLeftMargin()
 						var imageBounds *Rectangle = Win32DPIUtilsScaleBounds(this.image.GetBounds(), this.impl.getAutoscalingZoom_(), 100)
 						var imageWidth int32 = imageBounds.Width
-						var cond6 int32
+						var cond199 int32
 						if this.IsRadioOrCheck() {
-							cond6 = 2 * ButtonMARGIN
+							cond199 = 2 * ButtonMARGIN
 						} else {
-							cond6 = ButtonMARGIN
+							cond199 = ButtonMARGIN
 						}
-						left += (imageWidth + (cond6))
-						var cond7 int32
+						left += (imageWidth + (cond199))
+						var cond200 int32
 						if this.IsRadioOrCheck() {
-							cond7 = radioOrCheckTextPadding
+							cond200 = radioOrCheckTextPadding
 						} else {
-							cond7 = 3
+							cond200 = 3
 						}
-						var x int32 = margin + (cond7)
+						var x int32 = margin + (cond200)
 						var y int32 = int32(math.Max(float64(0), float64((nmcd.Bottom-imageBounds.Height)/2)))
 						var zoom int32 = this.impl.getAutoscalingZoom_()
 						gc.DrawImage(this.image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom))
 						gc.impl.dispose_()
 					}
-					var cond8 int32
+					var cond201 int32
 					if this.IsRadioOrCheck() {
-						cond8 = radioOrCheckTextPadding
+						cond201 = radioOrCheckTextPadding
 					} else {
-						cond8 = 0
+						cond201 = 0
 					}
-					left += cond8
+					left += cond201
 					var textRect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(textRect, left, nmcd.Top+border, right, nmcd.Bottom-border)
 					var buffer []uint16 = utf16.Encode([]rune(this.text))
@@ -1161,8 +1161,8 @@ func (this *Button) wmDrawChild_(wParam int64, lParam int64) *win32.LRESULT {
 	return nil
 }
 
-func (this *Button) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Control.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Button) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Control.handleDPIChange_(event, scalingFactor)
 	var newZoom int32 = event.Detail
 	this.RefreshCheckSize(newZoom)
 	if this.image != (nil) {
@@ -1172,13 +1172,13 @@ func (this *Button) handleDPIChangeEventScalingFactor_(event *Event, scalingFact
 }
 
 func ButtonCheckStyle(style int32) int32 {
-	var cond9 int32
+	var cond202 int32
 	if ButtonCOMMAND_LINK {
-		cond9 = COMMAND
+		cond202 = COMMAND
 	} else {
-		cond9 = 0
+		cond202 = 0
 	}
-	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond9)
+	style = WidgetCheckBits(style, PUSH, ARROW, CHECK, RADIO, TOGGLE, cond202)
 	if (style & (PUSH | TOGGLE)) != 0 {
 		return WidgetCheckBits(style, CENTER, LEFT, RIGHT, 0, 0, 0)
 	}

@@ -363,7 +363,7 @@ func (this *Tracker) Open() bool {
 	var newProc *Callback = nil
 	var mouseDown bool = int32(win32.OSGetKeyState(win32.OSVK_LBUTTON)) < 0
 	if this.parent == (nil) {
-		var bounds *Rectangle = this.display.impl.getBoundsInPixels_()
+		var bounds *Rectangle = this.display.impl.getBoundsInPixels0_()
 		this.hwndTransparent = win32.OSCreateWindowEx(win32.OSWS_EX_LAYERED|win32.OSWS_EX_NOACTIVATE|win32.OSWS_EX_TOOLWINDOW, this.display.windowClass, nil, win32.OSWS_POPUP, bounds.X, bounds.Y, bounds.Width, bounds.Height, int64(0), int64(0), win32.OSGetModuleHandle(nil), nil)
 		win32.OSSetLayeredWindowAttributes(this.hwndTransparent, 0, int8(1), win32.OSLWA_ALPHA)
 		this.hwndOpaque = win32.OSCreateWindowEx(win32.OSWS_EX_LAYERED|win32.OSWS_EX_NOACTIVATE|win32.OSWS_EX_TOOLWINDOW, this.display.windowClass, nil, win32.OSWS_POPUP, bounds.X, bounds.Y, bounds.Width, bounds.Height, this.hwndTransparent, int64(0), win32.OSGetModuleHandle(nil), nil)
@@ -379,7 +379,7 @@ func (this *Tracker) Open() bool {
 		win32.OSShowWindow(this.hwndOpaque, win32.OSSW_SHOWNOACTIVATE)
 	} else {
 		if !mouseDown {
-			var bounds *Rectangle = this.display.impl.getBoundsInPixels_()
+			var bounds *Rectangle = this.display.impl.getBoundsInPixels0_()
 			this.hwndTransparent = win32.OSCreateWindowEx(win32.OSWS_EX_TRANSPARENT, this.display.windowClass, nil, win32.OSWS_POPUP, bounds.X, bounds.Y, bounds.Width, bounds.Height, int64(0), int64(0), win32.OSGetModuleHandle(nil), nil)
 			newProc = NewCallbackFn(func(args []int64) int64 { return this.TransparentProc(args[0], args[1], args[2], args[3]) }, 4)
 			var newProcAddress int64 = newProc.GetAddress()
@@ -643,13 +643,13 @@ func (this *Tracker) SetCursor(newCursorLike CursorLike) {
 	this.clientCursor = newCursor
 	if newCursor != (nil) {
 		if this.inEvent {
-			var cond1 int32
+			var cond970 int32
 			if this.parent != (nil) {
-				cond1 = this.parent.GetShellZoom()
+				cond970 = this.parent.GetShellZoom()
 			} else {
-				cond1 = this.NativeZoom
+				cond970 = this.NativeZoom
 			}
-			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond1)))
+			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond970)))
 		}
 	}
 }
@@ -696,13 +696,13 @@ func (this *Tracker) TransparentProc(hwnd int64, msg int64, wParam int64, lParam
 		break
 	case win32.OSWM_SETCURSOR:
 		if this.clientCursor != (nil) {
-			var cond2 int32
+			var cond971 int32
 			if this.parent != (nil) {
-				cond2 = this.parent.GetShellZoom()
+				cond971 = this.parent.GetShellZoom()
 			} else {
-				cond2 = this.NativeZoom
+				cond971 = this.NativeZoom
 			}
-			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond2)))
+			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond971)))
 			return int64(1)
 		}
 		if this.resizeCursor != 0 {
@@ -760,13 +760,13 @@ func (this *Tracker) TransparentProc(hwnd int64, msg int64, wParam int64, lParam
 			return int64(0)
 		}
 	}
-	var cond3 int64
+	var cond972 int64
 	if hwnd == this.hwndTransparent {
-		cond3 = this.oldTransparentProc
+		cond972 = this.oldTransparentProc
 	} else {
-		cond3 = this.oldOpaqueProc
+		cond972 = this.oldOpaqueProc
 	}
-	return win32.OSCallWindowProc(cond3, hwnd, int32(msg), wParam, lParam)
+	return win32.OSCallWindowProc(cond972, hwnd, int32(msg), wParam, lParam)
 }
 
 func (this *Tracker) Update() {

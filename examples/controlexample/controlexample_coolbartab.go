@@ -97,27 +97,27 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.PUSH")
 	this.pushItem = swt.NewCoolItem(this.coolBar, itemStyle)
 	this.pushItem.SetControl(upcastswtToolBarToswtControl(toolBar))
-	inner1 := newCoolBarTabCoolItemSelectionListener()
-	inner1.this_0 = this
-	this.pushItem.AddSelectionListener(inner1)
+	inner31 := newCoolBarTabCoolItemSelectionListener()
+	inner31.this_0 = this
+	this.pushItem.AddSelectionListener(inner31)
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.DROP_DOWN)
 	item.SetImage(this.instance.images[ControlExampleCiOpenFolder])
 	item.SetToolTipText("SWT.DROP_DOWN")
-	inner2 := newCoolBarTabDropDownSelectionListener()
-	inner2.this_0 = this
-	item.AddSelectionListener(inner2)
+	inner32 := newCoolBarTabDropDownSelectionListener()
+	inner32.this_0 = this
+	item.AddSelectionListener(inner32)
 	item = swt.NewToolItem(toolBar, swt.DROP_DOWN)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
 	item.SetToolTipText("SWT.DROP_DOWN")
-	inner3 := newCoolBarTabDropDownSelectionListener()
-	inner3.this_0 = this
-	item.AddSelectionListener(inner3)
+	inner33 := newCoolBarTabDropDownSelectionListener()
+	inner33.this_0 = this
+	item.AddSelectionListener(inner33)
 	this.dropDownItem = swt.NewCoolItem(this.coolBar, itemStyle)
 	this.dropDownItem.SetControl(upcastswtToolBarToswtControl(toolBar))
-	inner4 := newCoolBarTabCoolItemSelectionListener()
-	inner4.this_0 = this
-	this.dropDownItem.AddSelectionListener(inner4)
+	inner34 := newCoolBarTabCoolItemSelectionListener()
+	inner34.this_0 = this
+	this.dropDownItem.AddSelectionListener(inner34)
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.RADIO)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
@@ -130,9 +130,9 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.RADIO")
 	this.radioItem = swt.NewCoolItem(this.coolBar, itemStyle)
 	this.radioItem.SetControl(upcastswtToolBarToswtControl(toolBar))
-	inner5 := newCoolBarTabCoolItemSelectionListener()
-	inner5.this_0 = this
-	this.radioItem.AddSelectionListener(inner5)
+	inner35 := newCoolBarTabCoolItemSelectionListener()
+	inner35.this_0 = this
+	this.radioItem.AddSelectionListener(inner35)
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.CHECK)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
@@ -148,16 +148,16 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.CHECK")
 	this.checkItem = swt.NewCoolItem(this.coolBar, itemStyle)
 	this.checkItem.SetControl(upcastswtToolBarToswtControl(toolBar))
-	inner6 := newCoolBarTabCoolItemSelectionListener()
-	inner6.this_0 = this
-	this.checkItem.AddSelectionListener(inner6)
+	inner36 := newCoolBarTabCoolItemSelectionListener()
+	inner36.this_0 = this
+	this.checkItem.AddSelectionListener(inner36)
 	if !vertical {
 		var text *swt.Text = swt.NewText(upcastswtCoolBarToswtComposite(this.coolBar), swt.BORDER|swt.SINGLE)
 		this.textItem = swt.NewCoolItem(this.coolBar, itemStyle)
 		this.textItem.SetControl(upcastswtTextToswtControl(text))
-		inner7 := newCoolBarTabCoolItemSelectionListener()
-		inner7.this_0 = this
-		this.textItem.AddSelectionListener(inner7)
+		inner37 := newCoolBarTabCoolItemSelectionListener()
+		inner37.this_0 = this
+		this.textItem.AddSelectionListener(inner37)
 		var textSize *swt.Point = text.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 		textSize = this.textItem.ComputeSize(textSize.X, textSize.Y)
 		this.textItem.SetMinimumSizeSize(textSize)
@@ -169,8 +169,8 @@ func (this *CoolBarTab) createExampleWidgets_() {
 		var control *swt.Control = coolItem.GetControl()
 		var size *swt.Point = control.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 		var coolSize *swt.Point = coolItem.ComputeSize(size.X, size.Y)
-		bar, ok8 := isswtControlToswtToolBar(control)
-		if ok8 {
+		bar, ok38 := isswtControlToswtToolBar(control)
+		if ok38 {
 			if bar.GetItemCount() > 0 {
 				if vertical {
 					size.Y = bar.GetItem(0).GetBounds().Height

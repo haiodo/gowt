@@ -151,13 +151,13 @@ func (this *ImageList) CopyBitmap(hImage int64, width int32, height int32) int64
 
 func (this *ImageList) CopyIcon(hImage int64, width int32, height int32) int64 {
 	var hIcon int64 = win32.OSCopyImage(hImage, win32.OSIMAGE_ICON, width, height, 0)
-	var cond1 int64
+	var cond945 int64
 	if hIcon != 0 {
-		cond1 = hIcon
+		cond945 = hIcon
 	} else {
-		cond1 = hImage
+		cond945 = hImage
 	}
-	return cond1
+	return cond945
 }
 
 func (this *ImageList) CopyWithAlpha(hBitmap int64, background int32, alphaData []int8, destWidth int32, destHeight int32) int64 {
@@ -196,9 +196,9 @@ func (this *ImageList) CopyWithAlpha(hBitmap int64, background int32, alphaData 
 		var sp int32 = 0
 		for y := int32(0); y < srcHeight; y++ {
 			for x := int32(0); x < srcWidth; x++ {
-				t2 := ap
+				t946 := ap
 				ap++
-				var a int32 = int32(alphaData[t2]) & 0xFF
+				var a int32 = int32(alphaData[t946]) & 0xFF
 				if a != 0 {
 					srcData[sp] = int8(((((int32(srcData[sp]) & 0xFF) * 0xFF) + a/2) / a))
 					srcData[sp+1] = int8(((((int32(srcData[sp+1]) & 0xFF) * 0xFF) + a/2) / a))
@@ -272,15 +272,15 @@ func (this *ImageList) CreateMaskFromAlpha(dataLike ImageDataLike, destWidth int
 	var ap int32 = 0
 	for y := int32(0); y < mask.Height; y++ {
 		for x := int32(0); x < mask.Width; x++ {
-			var cond3 int32
-			t4 := ap
+			var cond947 int32
+			t948 := ap
 			ap++
-			if (int32(data.AlphaData[t4]) & 0xff) <= 127 {
-				cond3 = 1
+			if (int32(data.AlphaData[t948]) & 0xff) <= 127 {
+				cond947 = 1
 			} else {
-				cond3 = 0
+				cond947 = 0
 			}
-			mask.SetPixel(x, y, cond3)
+			mask.SetPixel(x, y, cond947)
 		}
 	}
 	var hMask int64 = win32.OSCreateBitmap(srcWidth, srcHeight, 1, 1, mask.Data)
@@ -358,7 +358,7 @@ func (this *ImageList) Dispose() {
 				return it != 0
 			}}
 			panic("j2go: unresolved call filter")
-		}(), win32.OSImageList_Destroy}
+		}(), func(a0 any) { win32.OSImageList_Destroy(jrt.Cast[int64](a0)) }}
 		panic("j2go: unresolved call forEach")
 	}()
 	this.zoomToHandle.Clear()
@@ -534,13 +534,13 @@ func (this *ImageList) Set(index int32, imageLike ImageLike, count int32, listHa
 	case ICON:
 		{
 			var hIcon int64 = this.CopyIcon(hImage, cx[0], cy[0])
-			var cond5 int32
+			var cond949 int32
 			if index == count {
-				cond5 = -1
+				cond949 = -1
 			} else {
-				cond5 = index
+				cond949 = index
 			}
-			win32.OSImageList_ReplaceIcon(listHandle, cond5, hIcon)
+			win32.OSImageList_ReplaceIcon(listHandle, cond949, hIcon)
 			win32.OSDestroyIcon(hIcon)
 			break
 		}

@@ -46,45 +46,45 @@ func (this *NSHTTPCookie) IsSessionOnly() bool {
 
 func (this *NSHTTPCookie) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond1 *NSString
+	var cond300 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond300 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond300 = nil
 	}
-	return cond1
+	return cond300
 }
 
 func (this *NSHTTPCookie) Value() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_value)
-	var cond2 *NSString
+	var cond301 *NSString
 	if result != 0 {
-		cond2 = NewNSStringOverload1(result)
+		cond301 = NewNSStringOverload1(result)
 	} else {
-		cond2 = nil
+		cond301 = nil
 	}
-	return cond2
+	return cond301
 }
 
 func NSHTTPCookieCookiesWithResponseHeaderFields(headerFields *NSDictionary, URL *NSURL) *NSArray {
-	var cond3 int64
+	var cond302 int64
 	if headerFields != (nil) {
-		cond3 = headerFields.Id
+		cond302 = headerFields.Id
 	} else {
-		cond3 = int64(0)
+		cond302 = int64(0)
 	}
-	var cond4 int64
+	var cond303 int64
 	if URL != (nil) {
-		cond4 = URL.Id
+		cond303 = URL.Id
 	} else {
-		cond4 = int64(0)
+		cond303 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(OSClass_NSHTTPCookie, OSSel_cookiesWithResponseHeaderFields_forURL_, cond3, cond4)
-	var cond5 *NSArray
+	var result int64 = OSObjc_msgSendOverload54(OSClass_NSHTTPCookie, OSSel_cookiesWithResponseHeaderFields_forURL_, cond302, cond303)
+	var cond304 *NSArray
 	if result != 0 {
-		cond5 = NewNSArrayOverload1(result)
+		cond304 = NewNSArrayOverload1(result)
 	} else {
-		cond5 = nil
+		cond304 = nil
 	}
-	return cond5
+	return cond304
 }

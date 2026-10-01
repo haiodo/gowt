@@ -41,43 +41,43 @@ func (this *NSOutlineView) initNSOutlineViewOverload2(id *id) {
 }
 
 func (this *NSOutlineView) CollapseItem(item *id) {
-	var cond1 int64
+	var cond532 int64
 	if item != (nil) {
-		cond1 = item.Id
+		cond532 = item.Id
 	} else {
-		cond1 = int64(0)
+		cond532 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_collapseItem_, cond1)
+	OSObjc_msgSendOverload44(this.Id, OSSel_collapseItem_, cond532)
 }
 
 func (this *NSOutlineView) CollapseItemItemCollapseChildren(item *id, collapseChildren bool) {
-	var cond2 int64
+	var cond533 int64
 	if item != (nil) {
-		cond2 = item.Id
+		cond533 = item.Id
 	} else {
-		cond2 = int64(0)
+		cond533 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_collapseItem_collapseChildren_, cond2, collapseChildren)
+	OSObjc_msgSendOverload52(this.Id, OSSel_collapseItem_collapseChildren_, cond533, collapseChildren)
 }
 
 func (this *NSOutlineView) ExpandItem(item *id) {
-	var cond3 int64
+	var cond534 int64
 	if item != (nil) {
-		cond3 = item.Id
+		cond534 = item.Id
 	} else {
-		cond3 = int64(0)
+		cond534 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_expandItem_, cond3)
+	OSObjc_msgSendOverload44(this.Id, OSSel_expandItem_, cond534)
 }
 
 func (this *NSOutlineView) ExpandItemItemExpandChildren(item *id, expandChildren bool) {
-	var cond4 int64
+	var cond535 int64
 	if item != (nil) {
-		cond4 = item.Id
+		cond535 = item.Id
 	} else {
-		cond4 = int64(0)
+		cond535 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_expandItem_expandChildren_, cond4, expandChildren)
+	OSObjc_msgSendOverload52(this.Id, OSSel_expandItem_expandChildren_, cond535, expandChildren)
 }
 
 func (this *NSOutlineView) FrameOfOutlineCellAtRow(row int64) NSRect {
@@ -91,54 +91,54 @@ func (this *NSOutlineView) IndentationPerLevel() float64 {
 }
 
 func (this *NSOutlineView) IsItemExpanded(item *id) bool {
-	var cond5 int64
+	var cond536 int64
 	if item != (nil) {
-		cond5 = item.Id
+		cond536 = item.Id
 	} else {
-		cond5 = int64(0)
+		cond536 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isItemExpanded_, cond5)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isItemExpanded_, cond536)
 }
 
 func (this *NSOutlineView) ItemAtRow(row int64) *id {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemAtRow_, row)
-	var cond6 *id
+	var cond537 *id
 	if result != 0 {
-		cond6 = NewidOverload1(result)
+		cond537 = NewidOverload1(result)
 	} else {
-		cond6 = nil
+		cond537 = nil
 	}
-	return cond6
+	return cond537
 }
 
 func (this *NSOutlineView) LevelForItem(item *id) int64 {
-	var cond7 int64
+	var cond538 int64
 	if item != (nil) {
-		cond7 = item.Id
+		cond538 = item.Id
 	} else {
-		cond7 = int64(0)
+		cond538 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_levelForItem_, cond7)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_levelForItem_, cond538)
 }
 
 func (this *NSOutlineView) ReloadItem(item *id, reloadChildren bool) {
-	var cond8 int64
+	var cond539 int64
 	if item != (nil) {
-		cond8 = item.Id
+		cond539 = item.Id
 	} else {
-		cond8 = int64(0)
+		cond539 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_reloadItem_reloadChildren_, cond8, reloadChildren)
+	OSObjc_msgSendOverload52(this.Id, OSSel_reloadItem_reloadChildren_, cond539, reloadChildren)
 }
 
 func (this *NSOutlineView) RowForItem(item *id) int64 {
-	var cond9 int64
+	var cond540 int64
 	if item != (nil) {
-		cond9 = item.Id
+		cond540 = item.Id
 	} else {
-		cond9 = int64(0)
+		cond540 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_rowForItem_, cond9)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_rowForItem_, cond540)
 }
 
 func (this *NSOutlineView) SetAutoresizesOutlineColumn(autoresizesOutlineColumn bool) {
@@ -150,23 +150,23 @@ func (this *NSOutlineView) SetAutosaveExpandedItems(autosaveExpandedItems bool) 
 }
 
 func (this *NSOutlineView) SetDropItem(item *id, index int64) {
-	var cond10 int64
+	var cond541 int64
 	if item != (nil) {
-		cond10 = item.Id
+		cond541 = item.Id
 	} else {
-		cond10 = int64(0)
+		cond541 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_setDropItem_dropChildIndex_, cond10, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_setDropItem_dropChildIndex_, cond541, index)
 }
 
 func (this *NSOutlineView) SetOutlineTableColumn(outlineTableColumn *NSTableColumn) {
-	var cond11 int64
+	var cond542 int64
 	if outlineTableColumn != (nil) {
-		cond11 = outlineTableColumn.Id
+		cond542 = outlineTableColumn.Id
 	} else {
-		cond11 = int64(0)
+		cond542 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setOutlineTableColumn_, cond11)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setOutlineTableColumn_, cond542)
 }
 
 func NSOutlineViewCellClass() int64 {

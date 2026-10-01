@@ -112,8 +112,8 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 	_ = control
 	var data any = control.GetLayoutData()
 	var fillData *FillData
-	_, ok1 := fillDataImplAsFillData(data)
-	if ok1 {
+	_, ok89 := fillDataImplAsFillData(data)
+	if ok89 {
 		fillData = castanyToFillData(data)
 	} else {
 		fillData = newFillData()
@@ -127,8 +127,8 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 	} else {
 		var trimX int32
 		var trimY int32
-		_, ok2 := isControlToScrollable(control)
-		if ok2 {
+		_, ok90 := isControlToScrollable(control)
+		if ok90 {
 			var rect *Rectangle = (castControlToScrollable(control)).impl.computeTrim_(0, 0, 0, 0)
 			trimX = rect.Width
 			trimY = rect.Height
@@ -155,8 +155,8 @@ func (this *FillLayout) ComputeChildSize(controlLike ControlLike, wHint int32, h
 
 func (this *FillLayout) flushCache_(control *Control) bool {
 	var data any = control.GetLayoutData()
-	_, ok3 := fillDataImplAsFillData(data)
-	if ok3 {
+	_, ok91 := fillDataImplAsFillData(data)
+	if ok91 {
 		(castanyToFillData(data)).FlushCache()
 		return true
 	}
@@ -224,13 +224,13 @@ func (this *FillLayout) layoutFn_(composite *Composite, flushCache bool) {
 
 func (this *FillLayout) String() string {
 	var string_ string = fmt.Sprintf("%s {", this.GetName())
-	var cond4 string
+	var cond92 string
 	if this.Type == VERTICAL {
-		cond4 = "SWT.VERTICAL"
+		cond92 = "SWT.VERTICAL"
 	} else {
-		cond4 = "SWT.HORIZONTAL"
+		cond92 = "SWT.HORIZONTAL"
 	}
-	string_ += fmt.Sprintf("type=%s ", (cond4))
+	string_ += fmt.Sprintf("type=%s ", (cond92))
 	if this.MarginWidth != 0 {
 		string_ += fmt.Sprintf("marginWidth=%d ", this.MarginWidth)
 	}

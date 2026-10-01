@@ -41,51 +41,51 @@ func (this *NSFontPanel) initNSFontPanelOverload2(id *id) {
 }
 
 func (this *NSFontPanel) PanelConvertFont(fontObj *NSFont) *NSFont {
-	var cond1 int64
+	var cond278 int64
 	if fontObj != (nil) {
-		cond1 = fontObj.Id
+		cond278 = fontObj.Id
 	} else {
-		cond1 = int64(0)
+		cond278 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond1)
-	var cond2 *NSFont
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond278)
+	var cond279 *NSFont
 	if result != 0 {
-		cond2 = NewNSFontOverload1(result)
+		cond279 = NewNSFontOverload1(result)
 	} else {
-		cond2 = nil
+		cond279 = nil
 	}
-	return cond2
+	return cond279
 }
 
 func (this *NSFontPanel) SetPanelFont(fontObj *NSFont, flag bool) {
-	var cond3 int64
+	var cond280 int64
 	if fontObj != (nil) {
-		cond3 = fontObj.Id
+		cond280 = fontObj.Id
 	} else {
-		cond3 = int64(0)
+		cond280 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond3, flag)
+	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond280, flag)
 }
 
 func NSFontPanelSharedFontPanel() *NSFontPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSFontPanel, OSSel_sharedFontPanel)
-	var cond4 *NSFontPanel
+	var cond281 *NSFontPanel
 	if result != 0 {
-		cond4 = NewNSFontPanelOverload1(result)
+		cond281 = NewNSFontPanelOverload1(result)
 	} else {
-		cond4 = nil
+		cond281 = nil
 	}
-	return cond4
+	return cond281
 }
 
 func NSFontPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond5 int64
+	var cond282 int64
 	if aTitle != (nil) {
-		cond5 = aTitle.Id
+		cond282 = aTitle.Id
 	} else {
-		cond5 = int64(0)
+		cond282 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond5, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond282, aStyle)
 }
 
 func NSFontPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

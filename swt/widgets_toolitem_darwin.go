@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type ToolItem struct {
@@ -135,29 +134,29 @@ func (this *ToolItem) accessibilityAttributeNames_(id int64, sel int64) int64 {
 func (this *ToolItem) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	var nsAttributeName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleAttribute_) || nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleDescriptionAttribute_) {
-		var cond1 *cocoa.NSString
-		var cond2 *cocoa.NSString
-		var cond3 *cocoa.NSString
+		var cond609 *cocoa.NSString
+		var cond610 *cocoa.NSString
+		var cond611 *cocoa.NSString
 		if (this.style & DROP_DOWN) != 0 {
-			cond3 = cocoa.OSNSAccessibilityMenuButtonRole_
+			cond611 = cocoa.OSNSAccessibilityMenuButtonRole_
 		} else {
-			cond3 = nil
+			cond611 = nil
 		}
 		if (this.style & CHECK) != 0 {
-			cond2 = cocoa.OSNSAccessibilityCheckBoxRole_
+			cond610 = cocoa.OSNSAccessibilityCheckBoxRole_
 		} else {
-			cond2 = cond3
+			cond610 = cond611
 		}
 		if (this.style & RADIO) != 0 {
-			cond1 = cocoa.OSNSAccessibilityRadioButtonRole_
+			cond609 = cocoa.OSNSAccessibilityRadioButtonRole_
 		} else {
-			cond1 = cond2
+			cond609 = cond610
 		}
 		var roleText *cocoa.NSString
 		if (this.style & PUSH) != 0 {
 			roleText = cocoa.OSNSAccessibilityButtonRole_
 		} else {
-			roleText = cond1
+			roleText = cond609
 		}
 		if roleText != (nil) {
 			if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleAttribute_) {
@@ -190,13 +189,13 @@ func (this *ToolItem) accessibilityAttributeValue_(id int64, sel int64, arg0 int
 				}
 			} else {
 				if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityValueAttribute_) && (this.style&(CHECK|RADIO)) != 0 {
-					var cond4 int32
+					var cond612 int32
 					if this.selection {
-						cond4 = 1
+						cond612 = 1
 					} else {
-						cond4 = 0
+						cond612 = 0
 					}
-					var value *cocoa.NSNumber = cocoa.NSNumberNumberWithInt(cond4)
+					var value *cocoa.NSNumber = cocoa.NSNumberNumberWithInt(cond612)
 					return value.Id
 				} else {
 					if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityEnabledAttribute_) {
@@ -295,9 +294,9 @@ func (this *ToolItem) ComputeSize() *Point {
 
 func (this *ToolItem) createHandle_() {
 	if this.parent.nsToolbar != (nil) {
-		t5 := ToolBarNEXT_ID
+		t613 := ToolBarNEXT_ID
 		ToolBarNEXT_ID++
-		this.id = cocoa.NSStringStringWith(fmt.Sprint(t5))
+		this.id = cocoa.NSStringStringWith(fmt.Sprint(t613))
 		this.id.Retain()
 		this.nsItem = (castcocoaNSObjectTococoaNSToolbarItem(cocoa.NewNSToolbarItem().Alloc())).InitWithItemIdentifier(this.id)
 		this.nsItem.SetAction(cocoa.OSSel_sendSelection)
@@ -502,13 +501,13 @@ func (this *ToolItem) EnableWidget(enabled bool) {
 
 func (this *ToolItem) GetBackground() *Color {
 	this.CheckWidget()
-	var cond6 *Color
+	var cond614 *Color
 	if this.background != (nil) {
-		cond6 = this.background
+		cond614 = this.background
 	} else {
-		cond6 = this.parent.GetBackground()
+		cond614 = this.parent.GetBackground()
 	}
-	return cond6
+	return cond614
 }
 
 func (this *ToolItem) GetBounds() *Rectangle {
@@ -547,13 +546,13 @@ func (this *ToolItem) GetEnabled() bool {
 
 func (this *ToolItem) GetForeground() *Color {
 	this.CheckWidget()
-	var cond7 *Color
+	var cond615 *Color
 	if this.foreground != (nil) {
-		cond7 = this.foreground
+		cond615 = this.foreground
 	} else {
-		cond7 = this.parent.impl.getForeground_()
+		cond615 = this.parent.impl.getForeground_()
 	}
-	return cond7
+	return cond615
 }
 
 func (this *ToolItem) GetHotImage() *Image {
@@ -873,13 +872,13 @@ func (this *ToolItem) SetControl(controlLike ControlLike) {
 			widget.SetBoxType(int64(cocoa.OSNSBoxCustom))
 		}
 	} else {
-		var cond8 *cocoa.NSMenuItem
+		var cond616 *cocoa.NSMenuItem
 		if control == (nil) {
-			cond8 = this.nsMenuRep
+			cond616 = this.nsMenuRep
 		} else {
-			cond8 = cocoa.NSMenuItemSeparatorItem()
+			cond616 = cocoa.NSMenuItemSeparatorItem()
 		}
-		this.nsItem.SetMenuFormRepresentation(cond8)
+		this.nsItem.SetMenuFormRepresentation(cond616)
 	}
 	this.control = control
 	this.view.SetHidden(control != (nil))
@@ -1029,7 +1028,7 @@ func (this *ToolItem) setText_(string_ string) {
 	var widget *cocoa.NSButton = castcocoaNSButtonTococoaNSButton(this.button)
 	if this.parent.nsToolbar != (nil) {
 		var chars []uint16 = make([]uint16, jrt.StringLength(this.text))
-		copy(chars, utf16.Encode([]rune(this.text)))
+		jrt.GetChars(this.text, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		this.nsMenuRep.SetTitle(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 	}
@@ -1041,13 +1040,13 @@ func (this *ToolItem) setText_(string_ string) {
 			widget.SetImagePosition(int64(cocoa.OSNSImageAbove))
 		}
 	} else {
-		var cond9 int32
+		var cond617 int32
 		if jrt.StringLength(this.text) != 0 {
-			cond9 = cocoa.OSNSNoImage
+			cond617 = cocoa.OSNSNoImage
 		} else {
-			cond9 = cocoa.OSNSImageOnly
+			cond617 = cocoa.OSNSImageOnly
 		}
-		widget.SetImagePosition(int64(cond9))
+		widget.SetImagePosition(int64(cond617))
 	}
 	this.parent.Relayout()
 }
@@ -1063,7 +1062,7 @@ func (this *ToolItem) SetToolTipText(string_ string) {
 	this.toolTipText = string_
 	if this.parent.nsToolbar != (nil) {
 		var chars []uint16 = make([]uint16, jrt.StringLength(this.toolTipText))
-		copy(chars, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		this.nsItem.SetToolTip(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 	} else {
@@ -1123,13 +1122,13 @@ func (this *ToolItem) UpdateImage(layout bool) {
 		}
 	}
 	var widget *cocoa.NSButton = castcocoaNSButtonTococoaNSButton(this.button)
-	var cond10 *cocoa.NSImage
+	var cond618 *cocoa.NSImage
 	if newImage != (nil) {
-		cond10 = newImage.Handle
+		cond618 = newImage.Handle
 	} else {
-		cond10 = nil
+		cond618 = nil
 	}
-	widget.SetImage(cond10)
+	widget.SetImage(cond618)
 	widget.SetNeedsDisplay(true)
 	if jrt.StringLength(this.text) != 0 && newImage != (nil) {
 		if (this.parent.style & RIGHT) != 0 {
@@ -1138,13 +1137,13 @@ func (this *ToolItem) UpdateImage(layout bool) {
 			widget.SetImagePosition(int64(cocoa.OSNSImageAbove))
 		}
 	} else {
-		var cond11 int32
+		var cond619 int32
 		if jrt.StringLength(this.text) != 0 {
-			cond11 = cocoa.OSNSNoImage
+			cond619 = cocoa.OSNSNoImage
 		} else {
-			cond11 = cocoa.OSNSImageOnly
+			cond619 = cocoa.OSNSImageOnly
 		}
-		widget.SetImagePosition(int64(cond11))
+		widget.SetImagePosition(int64(cond619))
 	}
 	this.parent.Relayout()
 }

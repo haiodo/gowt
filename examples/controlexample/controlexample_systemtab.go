@@ -156,8 +156,8 @@ func (this *SystemTab) createExampleWidgets_() {
 		tableColumn.SetToolTipText(ControlExampleGetResourceStringKeyArgs("Tooltip", []any{columnTitle}))
 	}
 	var emptyLineFlag bool = false
-	for _, elem1 := range this.hmap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem1)
+	for _, elem44 := range this.hmap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem44)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		if !emptyLineFlag {
@@ -169,7 +169,7 @@ func (this *SystemTab) createExampleWidgets_() {
 			item.SetTextIndexString(3, fmt.Sprintf("%s ", this.GetHTMLColor(jrt.Cast[int32](key))))
 			item.SetTextIndexString(4, "            ")
 			item.SetBackgroundIndexColor(4, this.display.GetSystemColor(jrt.Cast[int32](key)))
-			if key == SystemTabNamedColorEnd {
+			if jrt.Cast[int32](key) == SystemTabNamedColorEnd {
 				var emptyItem *swt.TableItem = swt.NewTableItem(this.colors, swt.NONE)
 				emptyItem.SetText("")
 				emptyLineFlag = true
@@ -193,8 +193,8 @@ func (this *SystemTab) createExampleWidgets_() {
 	this.cursors.SetHeaderVisible(true)
 	var tableColumn *swt.TableColumn = swt.NewTableColumn(this.cursors, swt.NONE)
 	tableColumn.SetText("Cursor")
-	for _, elem2 := range this.cmap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem2)
+	for _, elem45 := range this.cmap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem45)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		var item *swt.TableItem = swt.NewTableItem(this.cursors, swt.NONE)
@@ -220,8 +220,8 @@ func (this *SystemTab) createExampleWidgets_() {
 		tableColumn1.SetText(columnTitle)
 		tableColumn1.SetToolTipText(ControlExampleGetResourceStringKeyArgs("Tooltip", []any{columnTitle}))
 	}
-	for _, elem3 := range this.imap.EntrySet().ToArray() {
-		entry := jrt.Cast[*jrt.MapEntry](elem3)
+	for _, elem46 := range this.imap.EntrySet().ToArray() {
+		entry := jrt.Cast[*jrt.MapEntry](elem46)
 		var key any = entry.GetKey()
 		var value string = jrt.Cast[string](entry.GetValue())
 		var item *swt.TableItem = swt.NewTableItem(this.images, swt.NONE)

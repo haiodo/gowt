@@ -68,8 +68,8 @@ func (this *SashFormLayout) computeSize_(composite *Composite, wHint int32, hHin
 	var total int64 = int64(0)
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		_, ok1 := sashFormDataImplAsSashFormData(data)
-		if ok1 {
+		_, ok195 := sashFormDataImplAsSashFormData(data)
+		if ok195 {
 			ratios[i] = (castanyToSashFormData(data)).weight
 		} else {
 			data = newSashFormData()
@@ -160,8 +160,8 @@ func (this *SashFormLayout) layoutFn_(composite *Composite, flushCache bool) {
 	var total int64 = int64(0)
 	for i := int32(0); i < int32(len(controls)); i++ {
 		var data any = controls[i].GetLayoutData()
-		_, ok2 := sashFormDataImplAsSashFormData(data)
-		if ok2 {
+		_, ok196 := sashFormDataImplAsSashFormData(data)
+		if ok196 {
 			ratios[i] = (castanyToSashFormData(data)).weight
 		} else {
 			data = newSashFormData()

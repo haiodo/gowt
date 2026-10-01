@@ -191,8 +191,8 @@ func (this *Resource) init_() {
 }
 
 func (this *Resource) InitNonDisposeTracking() {
-	_, ok1 := isResourceToColor(this)
-	if ok1 {
+	_, ok207 := isResourceToColor(this)
+	if ok207 {
 		return
 	}
 	if ResourceNonDisposedReporter == (nil) {

@@ -58,59 +58,59 @@ func (this *NSBitmapImageRep) BytesPerRow() int64 {
 
 func (this *NSBitmapImageRep) ColorAtX(x int64, y int64) *NSColor {
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_colorAtX_y_, x, y)
-	var cond1 *NSColor
+	var cond81 *NSColor
 	if result != 0 {
-		cond1 = NewNSColorOverload1(result)
+		cond81 = NewNSColorOverload1(result)
 	} else {
-		cond1 = nil
+		cond81 = nil
 	}
-	return cond1
+	return cond81
 }
 
 func (this *NSBitmapImageRep) InitWithBitmapDataPlanes(planes int64, width int64, height int64, bps int64, spp int64, alpha bool, isPlanar bool, colorSpaceName *NSString, bitmapFormat int64, rBytes int64, pBits int64) *NSBitmapImageRep {
-	var cond2 int64
+	var cond82 int64
 	if colorSpaceName != (nil) {
-		cond2 = colorSpaceName.Id
+		cond82 = colorSpaceName.Id
 	} else {
-		cond2 = int64(0)
+		cond82 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload62(this.Id, OSSel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, cond2, bitmapFormat, rBytes, pBits)
-	var cond3 *NSBitmapImageRep
-	var cond4 *NSBitmapImageRep
+	var result int64 = OSObjc_msgSendOverload62(this.Id, OSSel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, cond82, bitmapFormat, rBytes, pBits)
+	var cond83 *NSBitmapImageRep
+	var cond84 *NSBitmapImageRep
 	if result != 0 {
-		cond4 = NewNSBitmapImageRepOverload1(result)
+		cond84 = NewNSBitmapImageRepOverload1(result)
 	} else {
-		cond4 = nil
+		cond84 = nil
 	}
 	if result == this.Id {
-		cond3 = this
+		cond83 = this
 	} else {
-		cond3 = (cond4)
+		cond83 = (cond84)
 	}
-	return cond3
+	return cond83
 }
 
 func (this *NSBitmapImageRep) InitWithData(data *NSData) *NSBitmapImageRep {
-	var cond5 int64
+	var cond85 int64
 	if data != (nil) {
-		cond5 = data.Id
+		cond85 = data.Id
 	} else {
-		cond5 = int64(0)
+		cond85 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithData_, cond5)
-	var cond6 *NSBitmapImageRep
-	var cond7 *NSBitmapImageRep
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithData_, cond85)
+	var cond86 *NSBitmapImageRep
+	var cond87 *NSBitmapImageRep
 	if result != 0 {
-		cond7 = NewNSBitmapImageRepOverload1(result)
+		cond87 = NewNSBitmapImageRepOverload1(result)
 	} else {
-		cond7 = nil
+		cond87 = nil
 	}
 	if result == this.Id {
-		cond6 = this
+		cond86 = this
 	} else {
-		cond6 = (cond7)
+		cond86 = (cond87)
 	}
-	return cond6
+	return cond86
 }
 
 func (this *NSBitmapImageRep) IsPlanar() bool {
@@ -122,18 +122,18 @@ func (this *NSBitmapImageRep) SamplesPerPixel() int64 {
 }
 
 func NSBitmapImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep {
-	var cond8 int64
+	var cond88 int64
 	if filename != (nil) {
-		cond8 = filename.Id
+		cond88 = filename.Id
 	} else {
-		cond8 = int64(0)
+		cond88 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSBitmapImageRep, OSSel_imageRepWithContentsOfFile_, cond8)
-	var cond9 *NSImageRep
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSBitmapImageRep, OSSel_imageRepWithContentsOfFile_, cond88)
+	var cond89 *NSImageRep
 	if result != 0 {
-		cond9 = NewNSImageRepOverload1(result)
+		cond89 = NewNSImageRepOverload1(result)
 	} else {
-		cond9 = nil
+		cond89 = nil
 	}
-	return cond9
+	return cond89
 }

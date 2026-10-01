@@ -19,3 +19,9 @@ func (c *Callback) GetAddress() int64 { return c.address }
 func (c *Callback) Dispose() {}
 
 func CallbackGetEntryCount() int32 { return 0 }
+
+// NewCallbackTyped: `new Callback(obj, "m", n)` whose method takes typed arguments (int32, ...).
+func NewCallbackTyped(fn any) *Callback { return &Callback{address: win32.NewCallbackAny(fn)} }
+
+// Callback.setEnabled: callbacks need no gate here.
+func CallbackSetEnabled(enabled bool) {}

@@ -10,39 +10,39 @@ type AccessibleListener interface {
 }
 
 func AccessibleListenerGetNameAdapter(c func(*AccessibleEvent)) AccessibleListener {
-	anon1 := &AccessibleListenerAnon1{}
-	anon1.initAccessibleAdapter()
-	anon1.fnGetName = func(e *AccessibleEvent) {
+	anon678 := &AccessibleListenerAnon1{}
+	anon678.initAccessibleAdapter()
+	anon678.fnGetName = func(e *AccessibleEvent) {
 		c(e)
 	}
-	return anon1
+	return anon678
 }
 
 func AccessibleListenerGetHelpAdapter(c func(*AccessibleEvent)) AccessibleListener {
-	anon2 := &AccessibleListenerAnon2{}
-	anon2.initAccessibleAdapter()
-	anon2.fnGetHelp = func(e *AccessibleEvent) {
+	anon679 := &AccessibleListenerAnon2{}
+	anon679.initAccessibleAdapter()
+	anon679.fnGetHelp = func(e *AccessibleEvent) {
 		c(e)
 	}
-	return anon2
+	return anon679
 }
 
 func AccessibleListenerGetKeyboardShortcutAdapter(c func(*AccessibleEvent)) AccessibleListener {
-	anon3 := &AccessibleListenerAnon3{}
-	anon3.initAccessibleAdapter()
-	anon3.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon680 := &AccessibleListenerAnon3{}
+	anon680.initAccessibleAdapter()
+	anon680.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		c(e)
 	}
-	return anon3
+	return anon680
 }
 
 func AccessibleListenerGetDescriptionAdapter(c func(*AccessibleEvent)) AccessibleListener {
-	anon4 := &AccessibleListenerAnon4{}
-	anon4.initAccessibleAdapter()
-	anon4.fnGetDescription = func(e *AccessibleEvent) {
+	anon681 := &AccessibleListenerAnon4{}
+	anon681.initAccessibleAdapter()
+	anon681.fnGetDescription = func(e *AccessibleEvent) {
 		c(e)
 	}
-	return anon4
+	return anon681
 }
 
 // j2go: anonymous AccessibleAdapter subclass.

@@ -202,3 +202,11 @@ func IsNil(v any) bool {
 	}
 	return false
 }
+
+// AddSuppressed drops the suppressed error: Go errors carry no suppressed list.
+func AddSuppressed(e, s error) {}
+
+// GetChars is String.getChars: the UTF-16 units [srcBegin, srcEnd) of s copied into dst at dstBegin.
+func GetChars(s string, srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
+	copy(dst[dstBegin:], utf16.Encode([]rune(s))[srcBegin:srcEnd])
+}

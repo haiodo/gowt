@@ -41,34 +41,34 @@ func (this *NSTextAttachment) initNSTextAttachmentOverload2(id *id) {
 }
 
 func (this *NSTextAttachment) InitWithFileWrapper(fileWrapper *NSFileWrapper) *NSTextAttachment {
-	var cond1 int64
+	var cond759 int64
 	if fileWrapper != (nil) {
-		cond1 = fileWrapper.Id
+		cond759 = fileWrapper.Id
 	} else {
-		cond1 = int64(0)
+		cond759 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithFileWrapper_, cond1)
-	var cond2 *NSTextAttachment
-	var cond3 *NSTextAttachment
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithFileWrapper_, cond759)
+	var cond760 *NSTextAttachment
+	var cond761 *NSTextAttachment
 	if result != 0 {
-		cond3 = NewNSTextAttachmentOverload1(result)
+		cond761 = NewNSTextAttachmentOverload1(result)
 	} else {
-		cond3 = nil
+		cond761 = nil
 	}
 	if result == this.Id {
-		cond2 = this
+		cond760 = this
 	} else {
-		cond2 = (cond3)
+		cond760 = (cond761)
 	}
-	return cond2
+	return cond760
 }
 
 func (this *NSTextAttachment) SetAttachmentCell(attachmentCell *id) {
-	var cond4 int64
+	var cond762 int64
 	if attachmentCell != (nil) {
-		cond4 = attachmentCell.Id
+		cond762 = attachmentCell.Id
 	} else {
-		cond4 = int64(0)
+		cond762 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttachmentCell_, cond4)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttachmentCell_, cond762)
 }

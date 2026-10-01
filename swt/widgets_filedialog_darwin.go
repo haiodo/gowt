@@ -108,13 +108,13 @@ func (this *FileDialog) _performKeyEquivalent(id int64, sel int64, event int64) 
 	if window != (nil) {
 		result = this.parent.display.PerformKeyEquivalent(window, nsEvent)
 	}
-	var cond1 int32
+	var cond645 int32
 	if result {
-		cond1 = 1
+		cond645 = 1
 	} else {
-		cond1 = 0
+		cond645 = 0
 	}
-	return int64(cond1)
+	return int64(cond645)
 }
 
 func (this *FileDialog) AppendSelectedExtension(filename *cocoa.NSString) *cocoa.NSString {
@@ -268,8 +268,8 @@ func (this *FileDialog) HandleResponse(response int64) {
 }
 
 func (this *FileDialog) Open() string {
-	var tret2 string
-	tretd3 := false
+	var tret646 string
+	tretd647 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -286,8 +286,8 @@ func (this *FileDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret2 = ""
-					tretd3 = true
+					tret646 = ""
+					tretd647 = true
 					return
 				}
 				panic(e)
@@ -295,12 +295,12 @@ func (this *FileDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret2 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd3 = true
+		tret646 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd647 = true
 		return
 	}()
-	_ = tretd3
-	return tret2
+	_ = tretd647
+	return tret646
 }
 
 func (this *FileDialog) OpenDialog() *jrt.Optional {
@@ -334,13 +334,13 @@ func (this *FileDialog) OpenDialog() *jrt.Optional {
 		this.methodImpl_performKeyEquivalent = cocoa.OSMethod_setImplementation(this.method_performKeyEquivalent, proc)
 	}
 	this.panel.SetCanCreateDirectories(true)
-	var cond4 string
+	var cond648 string
 	if this.title != "" {
-		cond4 = this.title
+		cond648 = this.title
 	} else {
-		cond4 = ""
+		cond648 = ""
 	}
-	this.panel.Impl().SetTitle(cocoa.NSStringStringWith(cond4))
+	this.panel.Impl().SetTitle(cocoa.NSStringStringWith(cond648))
 	if this.filterPath != "" && jrt.StringLength(this.filterPath) > 0 {
 		var dir *cocoa.NSString = cocoa.NSStringStringWith(this.filterPath)
 		this.panel.SetDirectoryURL(cocoa.NSURLFileURLWithPath(dir))

@@ -100,7 +100,7 @@ public class Emitter {
 		fileHelperSource = new ArrayList<>();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
-		anonCounter = tempCounter = 0; // per file, so a shared file reads the same whichever platform generated it
+		anonCounter = 0;
 		StringBuilder out = new StringBuilder();
 		for (Object t : cu.types()) {
 			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);
@@ -361,7 +361,7 @@ public class Emitter {
 	// A Java local named "string" (common in toString() methods) legally shadows Go's builtin
 	// string type for the rest of the function, breaking a later `func() string {...}` closure.
 	private static final Set<String> GO_BUILTIN_TYPE_NAMES = Set.of(
-			"string", "error", "any", "byte", "rune", "bool");
+			"string", "error", "any", "byte", "rune", "bool", "copy");
 
 	// A Go keyword/builtin type name, or a name that shadows the enclosing class's own Go type
 	// (id.java's `id(id id)` ctor: param "id" would hide the type "id" for &id{} in its body).
@@ -382,7 +382,7 @@ public class Emitter {
 		List<String> parts = new ArrayList<>();
 		for (int i = 0; i < types.length; i++) {
 			String n = i < names_.size() ? sanitizeIdent(names_.get(i)) : "a" + i;
-			parts.add(n + " " + dev.gowt.j2go.GoTypes.map(types[i], this));
+			parts.add(n + " " + (model.mutatedParams.isMutated(mb, i) ? "*" : "") + dev.gowt.j2go.GoTypes.map(types[i], this));
 		}
 		return String.join(", ", parts);
 	}

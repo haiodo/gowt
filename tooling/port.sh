@@ -11,7 +11,7 @@ PLATFORM="${PLATFORM:-cocoa}"
 case "$PLATFORM" in
 	cocoa) GOOS_NAME=darwin ;;
 	win32) GOOS_NAME=windows ;;
-	gtk) echo "port.sh: PLATFORM=gtk is not implemented yet (TSK-2026-09-23-043)" >&2; exit 2 ;;
+	gtk) GOOS_NAME=linux ;;
 	*) echo "port.sh: unknown PLATFORM=$PLATFORM (cocoa, win32, gtk)" >&2; exit 2 ;;
 esac
 PI_DIR="internal/$PLATFORM"
@@ -20,6 +20,14 @@ J2GO=(java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --platfor
 EVENTS_DIR="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/events"
 
 mvn -q -f tooling/j2go/pom.xml package
+
+# gtk: Java declarations of internal/gtk's API for j2go (type information; no PI sources), made from the call
+# sites in swt/ before the cleanup below removes them.
+if [ "$PLATFORM" = gtk ]; then
+	rm -rf tooling/j2go/gtkstubs-gen
+	go build -o bin/girgen ./tooling/girgen
+	GOOS=linux ./bin/girgen -jstubs tooling/j2go/gtkstubs-gen
+fi
 
 # Drops the generated files of the shared set (cocoa only: it is the reference platform that owns the shared
 # files, see README "Round 20") and of this platform (a renamed or removed source then leaves nothing stale);
@@ -46,11 +54,19 @@ mapfile -t EVENTS_FILES < <(find "$EVENTS_DIR" -maxdepth 1 -name '*.java' -exec 
 # list - not parsed as a translation target at all, only resolved via sourcepath for the
 # structural sel_x.value -> OSSel_registerName(...) rewrite (see README "Selector enum elision").
 # -printf is a GNU find extension, not on macOS's BSD find - list + basename instead.
-mapfile -t PI_FILES < <(find "$PI_SRC" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed "s#^#org/eclipse/swt/internal/$PLATFORM/#")
-# win32's PI is four packages (win32, win32/version, gdip, ole/win32), all Go package internal/win32.
-if [ "$PLATFORM" = win32 ]; then
+if [ "$PLATFORM" = gtk ]; then
+	# gtk: type information for the PI classes comes from Java declarations generated out of internal/gtk's own
+	# Go declarations (tooling/girgen -jstubs) plus hand stubs for the few PI/common classes the widgets use.
+	PI_FILES=(org/eclipse/swt/internal/Converter.java) # EPL, under Eclipse SWT/gtk; calls the stubs
+	for d in tooling/j2go/gtkstubs-gen tooling/j2go/gtkstubs; do
+		while IFS= read -r f; do PI_FILES+=("${f#$d/}"); done < <(find "$d" -name '*.java' | sort)
+	done
+elif [ "$PLATFORM" = win32 ]; then
+	# win32's PI is four packages (win32, win32/version, gdip, ole/win32), all Go package internal/win32.
 	PI_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/win32"
 	mapfile -t PI_FILES < <(cd "$PI_ROOT" && find org/eclipse/swt/internal -name '*.java' ! -name Platform.java | sort)
+else
+	mapfile -t PI_FILES < <(find "$PI_SRC" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed "s#^#org/eclipse/swt/internal/$PLATFORM/#")
 fi
 
 # Round 4: Widget/Control/Scrollable join stage-1's swt-package file set. They call straight into
@@ -235,8 +251,10 @@ if [ "$PLATFORM" = gtk ]; then
 	SWT_FILES=("${SWT_FILES[@]/org\/eclipse\/swt\/internal\/graphics\/ImageUtil.java/}")
 	for i in "${!SWT_FILES[@]}"; do [ -n "${SWT_FILES[$i]}" ] || unset 'SWT_FILES[i]'; done
 	# gtk helpers the widgets and Image/GC call straight into.
-	SWT_FILES+=(org/eclipse/swt/internal/Converter.java org/eclipse/swt/internal/ImageList.java org/eclipse/swt/internal/SWTGeometry.java
-		org/eclipse/swt/widgets/Tracker.java)
+	SWT_FILES+=(org/eclipse/swt/internal/ImageList.java org/eclipse/swt/internal/SWTGeometry.java
+		org/eclipse/swt/internal/GDBus.java org/eclipse/swt/internal/SessionManagerDBus.java org/eclipse/swt/internal/AsyncReadyCallback.java
+		org/eclipse/swt/internal/GAsyncReadyCallbackHelper.java org/eclipse/swt/internal/SyncDialogUtil.java org/eclipse/swt/internal/GTK4GlibFuture.java
+		org/eclipse/swt/widgets/Tracker.java org/eclipse/swt/widgets/IME.java)
 fi
 # Win32: no ImageUtil; the DPI/zoom layer, font registry, image lists, bidi and IME of Eclipse SWT/win32, and the common helpers cocoa stubs by hand.
 if [ "$PLATFORM" = win32 ]; then
@@ -264,9 +282,12 @@ fi
 	org/eclipse/swt/internal/C.java \
 	"${PI_FILES[@]}"
 
-"${J2GO[@]}" \
-	org/eclipse/swt/internal/C.java \
-	"${PI_FILES[@]}"
+# gtk: internal/gtk is generated from GIR by tooling/girgen (make gtk-gen), not translated from PI sources.
+if [ "$PLATFORM" != gtk ]; then
+	"${J2GO[@]}" \
+		org/eclipse/swt/internal/C.java \
+		"${PI_FILES[@]}"
+fi
 
 # Round 10 controlexample: the example's own package, examples/controlexample, imports swt. The
 # swt and cocoa file sets are reference-only here (names resolve exactly as when translated).

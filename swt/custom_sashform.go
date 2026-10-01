@@ -73,13 +73,13 @@ func (this *SashForm) CreateSash() *Sash {
 }
 
 func (this *SashForm) getOrientation_() int32 {
-	var cond1 int32
+	var cond197 int32
 	if (this.sashStyle & VERTICAL) != 0 {
-		cond1 = HORIZONTAL
+		cond197 = HORIZONTAL
 	} else {
-		cond1 = VERTICAL
+		cond197 = VERTICAL
 	}
-	return cond1
+	return cond197
 }
 
 func (this *SashForm) GetSashWidth() int32 {
@@ -89,13 +89,13 @@ func (this *SashForm) GetSashWidth() int32 {
 
 func (this *SashForm) getStyle_() int32 {
 	var style int32 = this.Composite.getStyle_()
-	var cond2 int32
+	var cond198 int32
 	if this.impl.getOrientation_() == VERTICAL {
-		cond2 = VERTICAL
+		cond198 = VERTICAL
 	} else {
-		cond2 = HORIZONTAL
+		cond198 = HORIZONTAL
 	}
-	style |= cond2
+	style |= cond198
 	if (this.sashStyle & SMOOTH) != 0 {
 		style |= SMOOTH
 	}
@@ -112,8 +112,8 @@ func (this *SashForm) GetWeights() []int32 {
 	var ratios []int32 = make([]int32, int32(len(cArray)))
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		_, ok3 := sashFormDataImplAsSashFormData(data)
-		if ok3 {
+		_, ok199 := sashFormDataImplAsSashFormData(data)
+		if ok199 {
 			ratios[i] = int32(((castanyToSashFormData(data)).weight * 1000 >> 16))
 		} else {
 			ratios[i] = 200
@@ -125,8 +125,8 @@ func (this *SashForm) GetWeights() []int32 {
 func (this *SashForm) GetControls(onlyVisible bool) []*Control {
 	var result []*Control = make([]*Control, 0)
 	for _, element := range this.impl.getChildren_() {
-		_, ok4 := isControlToSash(element)
-		if ok4 {
+		_, ok200 := isControlToSash(element)
+		if ok200 {
 			continue
 		}
 		if onlyVisible && !element.GetVisible() {
@@ -181,12 +181,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		if jrt.IsNil(data1) || func() bool { _, ok5 := sashFormDataImplAsSashFormData(data1); return !(ok5) }() {
+		if jrt.IsNil(data1) || func() bool { _, ok201 := sashFormDataImplAsSashFormData(data1); return !(ok201) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		if jrt.IsNil(data2) || func() bool { _, ok6 := sashFormDataImplAsSashFormData(data2); return !(ok6) }() {
+		if jrt.IsNil(data2) || func() bool { _, ok202 := sashFormDataImplAsSashFormData(data2); return !(ok202) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -214,12 +214,12 @@ func (this *SashForm) OnDragSash(event *Event) {
 			event.Doit = false
 		}
 		var data1 any = c1.GetLayoutData()
-		if jrt.IsNil(data1) || func() bool { _, ok7 := sashFormDataImplAsSashFormData(data1); return !(ok7) }() {
+		if jrt.IsNil(data1) || func() bool { _, ok203 := sashFormDataImplAsSashFormData(data1); return !(ok203) }() {
 			data1 = newSashFormData()
 			c1.SetLayoutData(data1)
 		}
 		var data2 any = c2.GetLayoutData()
-		if jrt.IsNil(data2) || func() bool { _, ok8 := sashFormDataImplAsSashFormData(data2); return !(ok8) }() {
+		if jrt.IsNil(data2) || func() bool { _, ok204 := sashFormDataImplAsSashFormData(data2); return !(ok204) }() {
 			data2 = newSashFormData()
 			c2.SetLayoutData(data2)
 		}
@@ -246,13 +246,13 @@ func (this *SashForm) setOrientationOnControl_(orientation int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	this.sashStyle &= ^(HORIZONTAL | VERTICAL)
-	var cond9 int32
+	var cond205 int32
 	if orientation == VERTICAL {
-		cond9 = HORIZONTAL
+		cond205 = HORIZONTAL
 	} else {
-		cond9 = VERTICAL
+		cond205 = VERTICAL
 	}
-	this.sashStyle |= cond9
+	this.sashStyle |= cond205
 	for i := int32(0); i < int32(len(this.sashes)); i++ {
 		this.sashes[i].impl.dispose_()
 		this.sashes[i] = this.CreateSash()
@@ -339,7 +339,7 @@ func (this *SashForm) SetWeights(weights []int32) {
 	}
 	for i := int32(0); i < int32(len(cArray)); i++ {
 		var data any = cArray[i].GetLayoutData()
-		if jrt.IsNil(data) || func() bool { _, ok10 := sashFormDataImplAsSashFormData(data); return !(ok10) }() {
+		if jrt.IsNil(data) || func() bool { _, ok206 := sashFormDataImplAsSashFormData(data); return !(ok206) }() {
 			data = newSashFormData()
 			cArray[i].SetLayoutData(data)
 		}

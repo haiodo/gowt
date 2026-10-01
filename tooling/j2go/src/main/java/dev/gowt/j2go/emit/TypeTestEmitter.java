@@ -77,10 +77,14 @@ final class TypeTestEmitter {
 		return okVar;
 	}
 
+	/** Go type of each pattern variable emitted so far, for EmitUtil.lazyOperand's hoisting. */
+	static final java.util.Map<String, String> PATTERN_TYPES = new java.util.HashMap<>();
+
 	String emitPatternInstanceof(PatternInstanceofExpression pie) {
 		TypePattern tp = (TypePattern) pie.getPattern();
 		String varName = tp.getPatternVariable().getName().getIdentifier();
 		ITypeBinding target = tp.getPatternVariable().getType().resolveBinding();
+		PATTERN_TYPES.put(varName, dev.gowt.j2go.GoTypes.map(target, emitter));
 		String okVar = "ok" + (++emitter.tempCounter);
 		emitter.prelude.add(instanceofCheck(pie.getLeftOperand(), target, varName, okVar));
 		return okVar;
@@ -97,6 +101,15 @@ final class TypeTestEmitter {
 	private String instanceofCheck(Expression subject, ITypeBinding target, String varName, String okVar) {
 		TypeModel.ClassInfo targetCi = emitter.model.lookup(target);
 		String subjectText = emitter.expr(subject);
+		// An array target is a plain assertion to its Go slice type.
+		if (target.isArray()) {
+			ITypeBinding sub = subject.resolveTypeBinding();
+			if (sub != null && sub.isArray()) return varName + ", " + okVar + " := " + subjectText + ", " + subjectText + " != nil";
+			return varName + ", " + okVar + " := " + subjectText + ".(" + dev.gowt.j2go.GoTypes.map(target, emitter) + ")";
+		}
+		// A java.lang value type (String, Boolean) held in an Object is its Go value.
+		String goValue = dev.gowt.j2go.GoTypes.map(target, emitter);
+		if (goValue.equals("string") || goValue.equals("bool")) return varName + ", " + okVar + " := " + subjectText + ".(" + goValue + ")";
 		String implSubjectText = implSubject(subjectText, subject);
 		if (targetCi == null) {
 			String qualified = target.getErasure().getQualifiedName();
@@ -127,7 +140,7 @@ final class TypeTestEmitter {
 	}
 
 	/** `x instanceof T` on a class-typed x: false for null, where reading x.impl would panic. */
-	private String nilSafeInstanceof(ITypeBinding st, TypeModel.ClassInfo subjectCi, TypeModel.ClassInfo target) {
+	String nilSafeInstanceof(ITypeBinding st, TypeModel.ClassInfo subjectCi, TypeModel.ClassInfo target) {
 		String fromGo = dev.gowt.j2go.GoTypes.map(st, emitter);
 		String targetName = emitter.qualifiedTypeName(target);
 		String name = "is" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
@@ -140,14 +153,18 @@ final class TypeTestEmitter {
 		return name;
 	}
 
-	String ensureCascadeHelper(TypeModel.ClassInfo root, TypeModel.ClassInfo target) {
+	static String cascadeHelperName(TypeModel.ClassInfo root, TypeModel.ClassInfo target) {
 		// Nested classes (Point/Point.OfFloat) share a textual prefix; unrelated top-level roots
 		// (Widget/Shell) don't - fall back to target's own full name for those.
 		String targetLabel = target == root ? target.goFuncPrefix
 				: target.goFuncPrefix.startsWith(root.goFuncPrefix)
 				? target.goFuncPrefix.substring(root.goFuncPrefix.length())
 				: target.goFuncPrefix;
-		String name = Names.decapitalize(root.goFuncPrefix) + "ImplAs" + targetLabel;
+		return Names.decapitalize(root.goFuncPrefix) + "ImplAs" + targetLabel;
+	}
+
+	String ensureCascadeHelper(TypeModel.ClassInfo root, TypeModel.ClassInfo target) {
+		String name = cascadeHelperName(root, target);
 		if (emitter.generatedHelpers.add(name)) {
 			emitter.fileHelperSource.add(buildCascadeHelper(name, target));
 		}

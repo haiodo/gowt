@@ -4,13 +4,17 @@ SWT_REPO ?= $(HOME)/Develop/repos/eclipse.platform.swt
 export SWT_REPO
 
 # Platform port.sh translates: cocoa now, win32 and gtk are prepared slots.
-PLATFORM ?= cocoa
+PLATFORM ?= $(if $(filter linux,$(shell go env GOOS)),gtk,cocoa)
 export PLATFORM
+
+# Per-OS gate: tests/expected.txt is darwin's, tests/expected_<goos>.txt another OS's.
+HOSTOS := $(shell go env GOOS)
+EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: win-build win-probe win-hello win-swttest win-swttest-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: gtk-gen win-build win-probe win-hello win-swttest win-swttest-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -58,11 +62,11 @@ api-check:
 # Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).
 test-swt: swttest
-	./$(BIN)/swttest -expected tests/expected.txt $(SWTTEST_FLAGS)
+	./$(BIN)/swttest -expected $(EXPECTED) $(SWTTEST_FLAGS)
 
-# Rewrites tests/expected.txt from a full run; a new failure comes out as UNDESCRIBED until its cause is written.
+# Rewrites the expected file from a full run; a new failure comes out as UNDESCRIBED until its cause is written.
 test-swt-update: swttest
-	./$(BIN)/swttest -update tests/expected.txt $(SWTTEST_FLAGS)
+	./$(BIN)/swttest -update $(EXPECTED) $(SWTTEST_FLAGS)
 
 # ControlExample tab snapshots against tests/snapshots (cmd/snapcheck: per-pixel threshold + allowed
 # fraction). Skips with a message when scale / macOS version / appearance differ from the references.
@@ -120,6 +124,11 @@ linux-vnc:
 	@docker ps -q -f name=^$(LINUX_CTR)$$ | grep -q . || { docker rm -f $(LINUX_CTR) >/dev/null 2>&1; \
 	  docker run -d --name $(LINUX_CTR) -p 6080:6080 -v $(CURDIR):/src -v gowt-gocache:/gocache -v gowt-gomod:/gomod $(LINUX_IMG) >/dev/null; sleep 2; }
 	@echo http://localhost:6080/vnc.html
+
+# Regenerates internal/gtk from the GIR files in the stand (tooling/girgen) and checks the generated
+# struct layouts against the C compiler.
+gtk-gen: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && go run ./tooling/girgen && sh tooling/girgen/verify.sh'
 
 linux-shell: linux-vnc
 	docker exec -it $(LINUX_CTR) bash

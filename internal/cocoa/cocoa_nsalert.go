@@ -41,36 +41,36 @@ func (this *NSAlert) initNSAlertOverload2(id *id) {
 }
 
 func (this *NSAlert) AddButtonWithTitle(title *NSString) *NSButton {
-	var cond1 int64
+	var cond9 int64
 	if title != (nil) {
-		cond1 = title.Id
+		cond9 = title.Id
 	} else {
-		cond1 = int64(0)
+		cond9 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_addButtonWithTitle_, cond1)
-	var cond2 *NSButton
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_addButtonWithTitle_, cond9)
+	var cond10 *NSButton
 	if result != 0 {
-		cond2 = NewNSButtonOverload1(result)
+		cond10 = NewNSButtonOverload1(result)
 	} else {
-		cond2 = nil
+		cond10 = nil
 	}
-	return cond2
+	return cond10
 }
 
 func (this *NSAlert) BeginSheetModalForWindow(window *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
-	var cond3 int64
+	var cond11 int64
 	if window != (nil) {
-		cond3 = window.Id
+		cond11 = window.Id
 	} else {
-		cond3 = int64(0)
+		cond11 = int64(0)
 	}
-	var cond4 int64
+	var cond12 int64
 	if delegate != (nil) {
-		cond4 = delegate.Id
+		cond12 = delegate.Id
 	} else {
-		cond4 = int64(0)
+		cond12 = int64(0)
 	}
-	OSObjc_msgSendOverload60(this.Id, OSSel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_, cond3, cond4, didEndSelector, contextInfo)
+	OSObjc_msgSendOverload60(this.Id, OSSel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_, cond11, cond12, didEndSelector, contextInfo)
 }
 
 func (this *NSAlert) RunModal() int64 {
@@ -82,32 +82,32 @@ func (this *NSAlert) SetAlertStyle(alertStyle int64) {
 }
 
 func (this *NSAlert) SetIcon(icon *NSImage) {
-	var cond5 int64
+	var cond13 int64
 	if icon != (nil) {
-		cond5 = icon.Id
+		cond13 = icon.Id
 	} else {
-		cond5 = int64(0)
+		cond13 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond5)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond13)
 }
 
 func (this *NSAlert) SetMessageText(messageText *NSString) {
-	var cond6 int64
+	var cond14 int64
 	if messageText != (nil) {
-		cond6 = messageText.Id
+		cond14 = messageText.Id
 	} else {
-		cond6 = int64(0)
+		cond14 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMessageText_, cond6)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMessageText_, cond14)
 }
 
 func (this *NSAlert) Window() *NSPanel {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond7 *NSPanel
+	var cond15 *NSPanel
 	if result != 0 {
-		cond7 = NewNSPanelOverload1(result)
+		cond15 = NewNSPanelOverload1(result)
 	} else {
-		cond7 = nil
+		cond15 = nil
 	}
-	return cond7
+	return cond15
 }

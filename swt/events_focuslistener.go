@@ -8,21 +8,21 @@ type FocusListener interface {
 }
 
 func FocusListenerFocusGainedAdapter(c func(*FocusEvent)) FocusListener {
-	anon1 := &FocusListenerAnon1{}
-	anon1.initFocusAdapter()
-	anon1.fnFocusGained = func(e *FocusEvent) {
+	anon34 := &FocusListenerAnon1{}
+	anon34.initFocusAdapter()
+	anon34.fnFocusGained = func(e *FocusEvent) {
 		c(e)
 	}
-	return anon1
+	return anon34
 }
 
 func FocusListenerFocusLostAdapter(c func(*FocusEvent)) FocusListener {
-	anon2 := &FocusListenerAnon2{}
-	anon2.initFocusAdapter()
-	anon2.fnFocusLost = func(e *FocusEvent) {
+	anon35 := &FocusListenerAnon2{}
+	anon35.initFocusAdapter()
+	anon35.fnFocusLost = func(e *FocusEvent) {
 		c(e)
 	}
-	return anon2
+	return anon35
 }
 
 // j2go: anonymous FocusAdapter subclass.

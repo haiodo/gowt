@@ -137,8 +137,8 @@ func (this *RGB) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	rgb, ok1 := rGBImplAsRGB(object)
-	if !(ok1) {
+	rgb, ok20 := rGBImplAsRGB(object)
+	if !(ok20) {
 		return false
 	}
 	return (rgb.Red == this.Red) && (rgb.Green == this.Green) && (rgb.Blue == this.Blue)

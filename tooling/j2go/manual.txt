@@ -139,3 +139,6 @@ java.lang.NumberFormatException
 # Round 10 controlexample: only the tabs translated so far - createTabs is hand-written
 # (examples/controlexample/controlexample_manual.go).
 org.eclipse.swt.examples.controlexample.ControlExample#createTabs()
+
+# gtk: GdkRectangle.toRectangle needs swt.Rectangle, which a PI package cannot import; its 6 callers get an intrinsic.
+org.eclipse.swt.internal.gtk.GdkRectangle#toRectangle()

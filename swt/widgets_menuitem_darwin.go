@@ -414,13 +414,13 @@ func (this *MenuItem) setImageOnItem_(image *Image) {
 		return
 	}
 	this.Item.setImageOnItem_(image)
-	var cond1 *cocoa.NSImage
+	var cond180 *cocoa.NSImage
 	if image != (nil) {
-		cond1 = image.Handle
+		cond180 = image.Handle
 	} else {
-		cond1 = nil
+		cond180 = nil
 	}
-	this.nsItem.SetImage(cond1)
+	this.nsItem.SetImage(cond180)
 }
 
 func (this *MenuItem) SetMenu(menuLike MenuLike) {
@@ -488,13 +488,13 @@ func (this *MenuItem) SetSelection(selected bool) {
 	if (this.style & (CHECK | RADIO)) == 0 {
 		return
 	}
-	var cond2 int32
+	var cond181 int32
 	if selected {
-		cond2 = cocoa.OSNSControlStateValueOn
+		cond181 = cocoa.OSNSControlStateValueOn
 	} else {
-		cond2 = cocoa.OSNSControlStateValueOff
+		cond181 = cocoa.OSNSControlStateValueOff
 	}
-	this.nsItem.SetState(int64(cond2))
+	this.nsItem.SetState(int64(cond181))
 }
 
 func (this *MenuItem) setText_(string_ string) {
@@ -523,7 +523,7 @@ func (this *MenuItem) SetToolTipText(toolTip string) {
 	}
 	this.toolTipText = toolTip
 	var chars []uint16 = make([]uint16, jrt.StringLength(this.toolTipText))
-	copy(chars, utf16.Encode([]rune(this.toolTipText)))
+	jrt.GetChars(this.toolTipText, 0, int32(len(chars)), chars, 0)
 	var length int32 = this.FixMnemonic(chars)
 	this.nsItem.SetToolTip(cocoa.NSStringStringWithCharacters(chars, int64(length)))
 }
@@ -533,20 +533,20 @@ func (this *MenuItem) UpdateText() {
 		return
 	}
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-	copy(buffer, utf16.Encode([]rune(this.text)))
+	jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 	var i int32 = 0
 	var j int32 = 0
 	for i < int32(len(buffer)) {
 		if int32(buffer[i]) == int32('\u0009') {
 			break
 		}
-		t4 := i
+		t183 := i
 		i++
-		cond3 := buffer[t4]
-		t5 := j
+		cond182 := buffer[t183]
+		t184 := j
 		j++
-		buffer[t5] = cond3
-		if int32((cond3)) == int32('&') {
+		buffer[t184] = cond182
+		if int32((cond182)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
@@ -596,20 +596,20 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	var key int32 = 0
 	if show {
 		var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
-		copy(buffer, utf16.Encode([]rune(this.text)))
+		jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 		var i int32 = 0
 		var j int32 = 0
 		for i < int32(len(buffer)) {
 			if int32(buffer[i]) == int32('\u0009') {
 				break
 			}
-			t7 := i
+			t186 := i
 			i++
-			cond6 := buffer[t7]
-			t8 := j
+			cond185 := buffer[t186]
+			t187 := j
 			j++
-			buffer[t8] = cond6
-			if int32((cond6)) == int32('&') {
+			buffer[t187] = cond185
+			if int32((cond185)) == int32('&') {
 				if i == int32(len(buffer)) {
 					continue
 				}
@@ -713,13 +713,13 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	}
 	this.nsItem.SetKeyEquivalentModifierMask(int64(mask))
 	var nsstring *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
-	var cond9 string
+	var cond188 string
 	if key == 0 {
-		cond9 = ""
+		cond188 = ""
 	} else {
-		cond9 = string(rune(uint16(key)))
+		cond188 = string(rune(uint16(key)))
 	}
-	nsstring = nsstring.InitWithString(cond9)
+	nsstring = nsstring.InitWithString(cond188)
 	this.nsItem.SetKeyEquivalent(nsstring.LowercaseString())
 	nsstring.Release()
 	return key != 0

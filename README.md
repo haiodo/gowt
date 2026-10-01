@@ -6,10 +6,12 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 |---|---|
 | `swt/` | Public API, one Go package: Java packages `org.eclipse.swt`, `graphics`, `widgets`, `layout`, `events` import each other in a cycle, Go does not allow that. `*_darwin.go` files are the cocoa port, the rest is shared |
 | `internal/cocoa/` | AppKit bindings (darwin only), translated by j2go from SWT's `Eclipse SWT PI/cocoa` Java sources |
-| `internal/win32/`, `internal/gtk/` | Reserved for the Windows and Linux PI bindings (not present yet) |
+| `internal/gtk/` | GTK 3 / GLib / Pango / cairo bindings for linux (purego), generated from GIR by `tooling/girgen` plus hand-written `glue_*.go`; clean-room, see `tooling/j2go/README.md` "Round 20" |
+| `internal/win32/` | Reserved for the Windows PI binding (not present yet) |
 | `internal/jrt/` | The subset of the Java runtime the translated code uses |
 | `examples/controlexample/` | SWT's ControlExample (`org.eclipse.swt.examples.controlexample`), translated by j2go into its own package on top of `swt`; tabs Button, Canvas, Group, Label, Menu, Text |
 | `tooling/j2go/` | Java -> Go translator on Eclipse JDT |
+| `tooling/girgen/` | GIR -> `internal/gtk` generator (`make gtk-gen`, in the Linux stand) |
 | `tooling/apidump/` | Prints package `swt`'s exported API per GOOS; `-check` compares the platforms (`make api-check`) |
 | `cmd/hello/` | Smallest program: a Shell with one "Hello" button (`CGO_ENABLED=0 go run ./cmd/hello`) |
 | `cmd/paint/` | A Canvas with a PaintListener drawing through `GC` (`CGO_ENABLED=0 go run ./cmd/paint`) |
@@ -55,11 +57,12 @@ Docker image (Debian 13, Go from `go.mod`, GTK 3.24, GIR files, Xvfb + openbox +
 make linux-image                       # build (arm64 native; amd64 host: same Dockerfile)
 make linux-vnc                         # start the container, prints http://localhost:6080/vnc.html
 make linux-run CMD="python3 tooling/linux/hello.py"   # runs with DISPLAY=:99, repo at /src
+make gtk-gen                           # regenerate internal/gtk from the GIR files and diff the struct layouts against the C compiler
 make linux-shell
 ```
 
-The future Linux `make test-swt` runs inside as `make linux-run CMD="make test-swt"` (DISPLAY=:99 is preset; Go cache in volumes `gowt-gocache`, `gowt-gomod`).
-GIR files are in `/usr/share/gir-1.0` (Gtk-3.0, Gdk-3.0, GObject-2.0, GLib-2.0, Gio-2.0, Pango-1.0, cairo-1.0, Atk-1.0).
+Linux `make test-swt` runs inside as `make linux-run CMD="make test-swt"` (DISPLAY=:99 is preset; Go cache in volumes `gowt-gocache`, `gowt-gomod`).
+GIR files are in `/usr/share/gir-1.0` (Gtk-3.0, Gdk-3.0, GObject-2.0, GLib-2.0, Gio-2.0, Pango-1.0, cairo-1.0, Atk-1.0, plus Gtk-4.0 and Graphene for the GTK 4 names).
 Wayland: `weston --backend=headless --socket=wayland-1` with `WAYLAND_DISPLAY=wayland-1 GDK_BACKEND=wayland` starts GTK apps, but it is not wired into the stand and has no seat/cursor theme (input and snapshots only via X11).
 Limits: one shared X screen 1280x1024, no GPU, VNC without password on localhost:6080, image ~1.9 GB.
 

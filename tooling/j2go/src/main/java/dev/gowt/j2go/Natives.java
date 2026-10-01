@@ -23,8 +23,19 @@ public class Natives {
 		}
 	}
 
+	/** `name=manual`: the Go function is hand-written in the PI package (JNI glue with no C symbol of its own). */
+	public boolean isManual(String javaMethodName) {
+		return "manual".equals(overrides.get(javaMethodName));
+	}
+
 	/** The C symbol a native method's Go wrapper should Dlsym for. */
 	public String symbolFor(String javaMethodName) {
-		return overrides.getOrDefault(javaMethodName, javaMethodName);
+		String s = overrides.getOrDefault(javaMethodName, javaMethodName);
+		return s.startsWith("fn:") ? s.substring(3) : s;
+	}
+
+	/** `name=fn:symbol`: a call of a function even where the Java name looks like a constant accessor (GTK_TYPE_X). */
+	public boolean isFunction(String javaMethodName) {
+		return overrides.getOrDefault(javaMethodName, "").startsWith("fn:");
 	}
 }

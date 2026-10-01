@@ -45,13 +45,13 @@ func (this *NSStatusItem) DrawStatusBarBackgroundInRect(rect NSRect, highlight b
 }
 
 func (this *NSStatusItem) PopUpStatusItemMenu(menu *NSMenu) {
-	var cond1 int64
+	var cond671 int64
 	if menu != (nil) {
-		cond1 = menu.Id
+		cond671 = menu.Id
 	} else {
-		cond1 = int64(0)
+		cond671 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_popUpStatusItemMenu_, cond1)
+	OSObjc_msgSendOverload44(this.Id, OSSel_popUpStatusItemMenu_, cond671)
 }
 
 func (this *NSStatusItem) SetHighlightMode(highlightMode bool) {
@@ -63,11 +63,11 @@ func (this *NSStatusItem) SetLength(length float64) {
 }
 
 func (this *NSStatusItem) SetView(view *NSView) {
-	var cond2 int64
+	var cond672 int64
 	if view != (nil) {
-		cond2 = view.Id
+		cond672 = view.Id
 	} else {
-		cond2 = int64(0)
+		cond672 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond2)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond672)
 }

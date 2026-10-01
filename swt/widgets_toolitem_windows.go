@@ -88,13 +88,13 @@ func (this *ToolItem) Click(dropDown bool) {
 	win32.OSSendMessageOverload13(hwnd, win32.OSTB_GETITEMRECT, int64(index), rect)
 	var hotIndex int32 = int32(win32.OSSendMessageOverload4(hwnd, win32.OSTB_GETHOTITEM, int64(0), int64(0)))
 	var y int32 = rect.Top + (rect.Bottom-rect.Top)/2
-	var cond1 int32
+	var cond766 int32
 	if dropDown {
-		cond1 = rect.Right - 1
+		cond766 = rect.Right - 1
 	} else {
-		cond1 = rect.Left
+		cond766 = rect.Left
 	}
-	var lParam int64 = win32.OSMAKELPARAM(cond1, y)
+	var lParam int64 = win32.OSMAKELPARAM(cond766, y)
 	this.parent.ignoreMouse = true
 	win32.OSSendMessageOverload4(hwnd, win32.OSWM_LBUTTONDOWN, int64(0), lParam)
 	win32.OSSendMessageOverload4(hwnd, win32.OSWM_LBUTTONUP, int64(0), lParam)
@@ -688,13 +688,13 @@ func (this *ToolItem) UpdateImages(enabled bool) {
 				image2 = hot
 			}
 		}
-		var cond2 *Image
+		var cond767 *Image
 		if hot != (nil) {
-			cond2 = hot
+			cond767 = hot
 		} else {
-			cond2 = image2
+			cond767 = image2
 		}
-		info.IImage = this.parent.AddImage(this.image.GetBounds(), image2, cond2, disabled)
+		info.IImage = this.parent.AddImage(this.image.GetBounds(), image2, cond767, disabled)
 	} else {
 		var disabled *Image = nil
 		if this.image != (nil) {
@@ -719,19 +719,19 @@ func (this *ToolItem) UpdateImages(enabled bool) {
 				image2 = hot
 			}
 		}
-		var cond3 *Image
-		var cond4 *Image
+		var cond768 *Image
+		var cond769 *Image
 		if hot != (nil) {
-			cond4 = hot
+			cond769 = hot
 		} else {
-			cond4 = image2
+			cond769 = image2
 		}
 		if image2 != (nil) {
-			cond3 = (cond4)
+			cond768 = (cond769)
 		} else {
-			cond3 = nil
+			cond768 = nil
 		}
-		this.parent.PutImage(info.IImage, image2, cond3, disabled)
+		this.parent.PutImage(info.IImage, image2, cond768, disabled)
 		if this.image == (nil) {
 			info.IImage = win32.OSI_IMAGENONE
 		}

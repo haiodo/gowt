@@ -45,13 +45,13 @@ func (this *Test_org_eclipse_swt_widgets_Link) test_ConstructorLorg_eclipse_swt_
 
 func (this *Test_org_eclipse_swt_widgets_Link) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon1 := &Test_org_eclipse_swt_widgets_LinkAnon1{}
-	anon1.fnWidgetSelected = func(e *swt.SelectionEvent) {
+	anon88 := &Test_org_eclipse_swt_widgets_LinkAnon1{}
+	anon88.fnWidgetSelected = func(e *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon1.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
+	anon88.fnWidgetDefaultSelected = func(e *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon1
+	var listener swt.SelectionListener = anon88
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.link.AddSelectionListener(nil)
 	}, "No exception thrown for addSelectionListener with null argument")

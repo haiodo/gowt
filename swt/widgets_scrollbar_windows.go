@@ -297,13 +297,13 @@ func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *ScrollBar) ScrollBarType() int32 {
-	var cond1 int32
+	var cond630 int32
 	if (this.style & VERTICAL) != 0 {
-		cond1 = win32.OSSB_VERT
+		cond630 = win32.OSSB_VERT
 	} else {
-		cond1 = win32.OSSB_HORZ
+		cond630 = win32.OSSB_HORZ
 	}
-	return cond1
+	return cond630
 }
 
 func (this *ScrollBar) SetEnabled(enabled bool) {
@@ -394,22 +394,22 @@ func (this *ScrollBar) SetScrollInfo(hwnd int64, flags int32, info *win32.SCROLL
 	}
 	var result bool = win32.OSSetScrollInfo(hwnd, flags, info, fRedraw)
 	if !visible {
-		var cond2 int32
+		var cond631 int32
 		if !barVisible {
-			cond2 = win32.OSSB_BOTH
+			cond631 = win32.OSSB_BOTH
 		} else {
-			cond2 = flags
+			cond631 = flags
 		}
-		win32.OSShowScrollBar(hwnd, cond2, false)
+		win32.OSShowScrollBar(hwnd, cond631, false)
 	}
 	if visible && bar != (nil) && !barVisible {
-		var cond3 int32
+		var cond632 int32
 		if flags == win32.OSSB_HORZ {
-			cond3 = win32.OSSB_VERT
+			cond632 = win32.OSSB_VERT
 		} else {
-			cond3 = win32.OSSB_HORZ
+			cond632 = win32.OSSB_HORZ
 		}
-		win32.OSShowScrollBar(hwnd, cond3, false)
+		win32.OSShowScrollBar(hwnd, cond632, false)
 	}
 	if (this.state & WidgetDISABLED) != 0 {
 		win32.OSEnableScrollBar(hwnd, flags, win32.OSESB_DISABLE_BOTH)
@@ -503,13 +503,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 		}
 		win32.OSGetScrollBarInfo(hwnd, idObject, psbi)
 		if (psbi.Rgstate[0] & win32.OSSTATE_SYSTEM_INVISIBLE) != 0 {
-			var cond4 int32
+			var cond633 int32
 			if type_ == win32.OSSB_VERT {
-				cond4 = win32.OSSB_HORZ
+				cond633 = win32.OSSB_HORZ
 			} else {
-				cond4 = win32.OSSB_VERT
+				cond633 = win32.OSSB_VERT
 			}
-			win32.OSShowScrollBar(hwnd, cond4, true)
+			win32.OSShowScrollBar(hwnd, cond633, true)
 			type_ = win32.OSSB_BOTH
 		}
 	}
@@ -523,13 +523,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 				win32.OSEnableScrollBar(hwnd, type_, win32.OSESB_ENABLE_BOTH)
 			}
 		}
-		var cond5 int32
+		var cond634 int32
 		if visible {
-			cond5 = Show
+			cond634 = Show
 		} else {
-			cond5 = Hide
+			cond634 = Hide
 		}
-		this.SendEventEventType(cond5)
+		this.SendEventEventType(cond634)
 	}
 }
 

@@ -22,13 +22,13 @@ func (this *ICoreWebView2Settings) Get_IsScriptEnabled(isScriptEnabled []int32) 
 }
 
 func (this *ICoreWebView2Settings) Put_IsScriptEnabled(isScriptEnabled bool) int32 {
-	var cond1 int32
+	var cond11 int32
 	if isScriptEnabled {
-		cond1 = 1
+		cond11 = 1
 	} else {
-		cond1 = 0
+		cond11 = 0
 	}
-	return COMVtblCallOverload1(4, this.address, cond1)
+	return COMVtblCallOverload1(4, this.address, cond11)
 }
 
 func (this *ICoreWebView2Settings) Get_IsWebMessageEnabled(isWebMessageEnabled []int32) int32 {
@@ -36,13 +36,13 @@ func (this *ICoreWebView2Settings) Get_IsWebMessageEnabled(isWebMessageEnabled [
 }
 
 func (this *ICoreWebView2Settings) Put_IsWebMessageEnabled(isWebMessageEnabled bool) int32 {
-	var cond2 int32
+	var cond12 int32
 	if isWebMessageEnabled {
-		cond2 = 1
+		cond12 = 1
 	} else {
-		cond2 = 0
+		cond12 = 0
 	}
-	return COMVtblCallOverload1(6, this.address, cond2)
+	return COMVtblCallOverload1(6, this.address, cond12)
 }
 
 func (this *ICoreWebView2Settings) Get_AreDefaultScriptDialogsEnabled(areDefaultScriptDialogsEnabled []int32) int32 {
@@ -50,13 +50,13 @@ func (this *ICoreWebView2Settings) Get_AreDefaultScriptDialogsEnabled(areDefault
 }
 
 func (this *ICoreWebView2Settings) Put_AreDefaultScriptDialogsEnabled(areDefaultScriptDialogsEnabled bool) int32 {
-	var cond3 int32
+	var cond13 int32
 	if areDefaultScriptDialogsEnabled {
-		cond3 = 1
+		cond13 = 1
 	} else {
-		cond3 = 0
+		cond13 = 0
 	}
-	return COMVtblCallOverload1(8, this.address, cond3)
+	return COMVtblCallOverload1(8, this.address, cond13)
 }
 
 func (this *ICoreWebView2Settings) Get_IsStatusBarEnabled(isStatusBarEnabled []int32) int32 {
@@ -64,13 +64,13 @@ func (this *ICoreWebView2Settings) Get_IsStatusBarEnabled(isStatusBarEnabled []i
 }
 
 func (this *ICoreWebView2Settings) Put_IsStatusBarEnabled(isStatusBarEnabled bool) int32 {
-	var cond4 int32
+	var cond14 int32
 	if isStatusBarEnabled {
-		cond4 = 1
+		cond14 = 1
 	} else {
-		cond4 = 0
+		cond14 = 0
 	}
-	return COMVtblCallOverload1(10, this.address, cond4)
+	return COMVtblCallOverload1(10, this.address, cond14)
 }
 
 func (this *ICoreWebView2Settings) Get_AreDevToolsEnabled(areDevToolsEnabled []int32) int32 {
@@ -78,13 +78,13 @@ func (this *ICoreWebView2Settings) Get_AreDevToolsEnabled(areDevToolsEnabled []i
 }
 
 func (this *ICoreWebView2Settings) Put_AreDevToolsEnabled(areDevToolsEnabled bool) int32 {
-	var cond5 int32
+	var cond15 int32
 	if areDevToolsEnabled {
-		cond5 = 1
+		cond15 = 1
 	} else {
-		cond5 = 0
+		cond15 = 0
 	}
-	return COMVtblCallOverload1(12, this.address, cond5)
+	return COMVtblCallOverload1(12, this.address, cond15)
 }
 
 func (this *ICoreWebView2Settings) Get_AreDefaultContextMenusEnabled(enabled []int32) int32 {
@@ -92,13 +92,13 @@ func (this *ICoreWebView2Settings) Get_AreDefaultContextMenusEnabled(enabled []i
 }
 
 func (this *ICoreWebView2Settings) Put_AreDefaultContextMenusEnabled(enabled bool) int32 {
-	var cond6 int32
+	var cond16 int32
 	if enabled {
-		cond6 = 1
+		cond16 = 1
 	} else {
-		cond6 = 0
+		cond16 = 0
 	}
-	return COMVtblCallOverload1(14, this.address, cond6)
+	return COMVtblCallOverload1(14, this.address, cond16)
 }
 
 func (this *ICoreWebView2Settings) Get_AreHostObjectsAllowed(allowed []int32) int32 {
@@ -106,13 +106,13 @@ func (this *ICoreWebView2Settings) Get_AreHostObjectsAllowed(allowed []int32) in
 }
 
 func (this *ICoreWebView2Settings) Put_AreHostObjectsAllowed(allowed bool) int32 {
-	var cond7 int32
+	var cond17 int32
 	if allowed {
-		cond7 = 1
+		cond17 = 1
 	} else {
-		cond7 = 0
+		cond17 = 0
 	}
-	return COMVtblCallOverload1(16, this.address, cond7)
+	return COMVtblCallOverload1(16, this.address, cond17)
 }
 
 func (this *ICoreWebView2Settings) Get_IsZoomControlEnabled(enabled []int32) int32 {
@@ -120,13 +120,13 @@ func (this *ICoreWebView2Settings) Get_IsZoomControlEnabled(enabled []int32) int
 }
 
 func (this *ICoreWebView2Settings) Put_IsZoomControlEnabled(enabled bool) int32 {
-	var cond8 int32
+	var cond18 int32
 	if enabled {
-		cond8 = 1
+		cond18 = 1
 	} else {
-		cond8 = 0
+		cond18 = 0
 	}
-	return COMVtblCallOverload1(18, this.address, cond8)
+	return COMVtblCallOverload1(18, this.address, cond18)
 }
 
 func (this *ICoreWebView2Settings) Get_IsBuiltInErrorPageEnabled(enabled []int32) int32 {
@@ -134,11 +134,11 @@ func (this *ICoreWebView2Settings) Get_IsBuiltInErrorPageEnabled(enabled []int32
 }
 
 func (this *ICoreWebView2Settings) Put_IsBuiltInErrorPageEnabled(enabled bool) int32 {
-	var cond9 int32
+	var cond19 int32
 	if enabled {
-		cond9 = 1
+		cond19 = 1
 	} else {
-		cond9 = 0
+		cond19 = 0
 	}
-	return COMVtblCallOverload1(20, this.address, cond9)
+	return COMVtblCallOverload1(20, this.address, cond19)
 }

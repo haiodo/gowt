@@ -70,44 +70,44 @@ func (this *NSValue) SizeValue() NSSize {
 
 func NSValueValueWithPoint(point NSPoint) *NSValue {
 	var result int64 = OSObjc_msgSendOverload2(OSClass_NSValue, OSSel_valueWithPoint_, point)
-	var cond1 *NSValue
+	var cond846 *NSValue
 	if result != 0 {
-		cond1 = NewNSValueOverload1(result)
+		cond846 = NewNSValueOverload1(result)
 	} else {
-		cond1 = nil
+		cond846 = nil
 	}
-	return cond1
+	return cond846
 }
 
 func NSValueValueWithRange(range_ NSRange) *NSValue {
 	var result int64 = OSObjc_msgSendOverload8(OSClass_NSValue, OSSel_valueWithRange_, range_)
-	var cond2 *NSValue
+	var cond847 *NSValue
 	if result != 0 {
-		cond2 = NewNSValueOverload1(result)
+		cond847 = NewNSValueOverload1(result)
 	} else {
-		cond2 = nil
+		cond847 = nil
 	}
-	return cond2
+	return cond847
 }
 
 func NSValueValueWithRect(rect NSRect) *NSValue {
 	var result int64 = OSObjc_msgSendOverload13(OSClass_NSValue, OSSel_valueWithRect_, rect)
-	var cond3 *NSValue
+	var cond848 *NSValue
 	if result != 0 {
-		cond3 = NewNSValueOverload1(result)
+		cond848 = NewNSValueOverload1(result)
 	} else {
-		cond3 = nil
+		cond848 = nil
 	}
-	return cond3
+	return cond848
 }
 
 func NSValueValueWithSize(size NSSize) *NSValue {
 	var result int64 = OSObjc_msgSendOverload26(OSClass_NSValue, OSSel_valueWithSize_, size)
-	var cond4 *NSValue
+	var cond849 *NSValue
 	if result != 0 {
-		cond4 = NewNSValueOverload1(result)
+		cond849 = NewNSValueOverload1(result)
 	} else {
-		cond4 = nil
+		cond849 = nil
 	}
-	return cond4
+	return cond849
 }

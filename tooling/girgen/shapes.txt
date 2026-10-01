@@ -1,0 +1,91 @@
+# Hand-written signature corrections; see shapes.go for the directives. Types the glue uses
+# that no call site names:
+need GObjectClass GtkContainerClass GInterfaceInfo GtkContainer GtkScrollableInterface
+
+# libc, fontconfig and Xlib: not in GIR
+func CMemset memset(dst int64, c int32, n int64) int64
+func CStrlen strlen(s int64) int32
+func OSRealpath realpath(path []int8, resolved []int8) int64
+func OSFcConfigAppFontAddFile FcConfigAppFontAddFile(config int64, file []int8) bool
+func OSXSetInputFocus XSetInputFocus(display int64, focus int64, revert_to int32, time int32) int32
+func OSXCheckIfEvent XCheckIfEvent(display int64, event int64, predicate int64, arg int64) bool
+func OSXDefaultRootWindow XDefaultRootWindow(display int64) int64
+func OSXQueryPointer XQueryPointer(display int64, w int64, root int64, child int64, root_x int64, root_y int64, win_x int64, win_y int64, mask int64) int32
+func OSXSetErrorHandler XSetErrorHandler(handler int64) int64
+func OSXSetIOErrorHandler XSetIOErrorHandler(handler int64) int64
+func OSXSynchronize XSynchronize(display int64, onoff bool) int64
+
+# variadic C functions: the Go side fixes the argument kinds the call sites use
+func GTKGtk_tree_model_get gtk_tree_model_get(tree_model int64, iter int64, column int32, value int64, terminator int32)
+func GTKGtk_tree_model_getTree_modelIterColumnValueTerminator gtk_tree_model_get(tree_model int64, iter int64, column int32, value int64, terminator int32)
+func GTK3Gtk_widget_style_get gtk_widget_style_get(widget int64, property_name []int8, value int64, terminator int64)
+func GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator gtk_widget_style_get(widget int64, property_name []int8, value int64, terminator int64)
+func GTK3Gtk_style_context_get gtk_style_context_get(context int64, state int32, property_name []int8, value int64, terminator int64)
+func OSG_object_get g_object_get(object int64, property_name []int8, value int64, terminator int64)
+func OSG_object_getObjectFirst_property_nameValueTerminator g_object_get(object int64, property_name []int8, value int64, terminator int64)
+func OSG_object_new g_object_new(object_type int64, first_property_name int64) int64
+func OSG_object_setOverload1 g_object_set(object int64, property_name []int8, value []int8, terminator int64)
+func OSG_object_setOverload2 g_object_set(object int64, property_name []int8, value *GdkRGBA, terminator int64)
+func OSG_object_setOverload3 g_object_set(object int64, property_name []int8, value int32, terminator int64)
+func OSG_object_setOverload5 g_object_set(object int64, property_name []int8, value int64, terminator int64)
+func OSG_signal_emit_by_name g_signal_emit_by_name(instance int64, detailed_signal []int8)
+func OSG_signal_emit_by_nameOverload1 g_signal_emit_by_name(instance int64, detailed_signal []int8, a int64)
+func OSG_signal_emit_by_nameOverload4 g_signal_emit_by_name(instance int64, detailed_signal []int8, a []int8)
+func OSG_variant_new g_variant_new(format []int8, a []int8) int64
+func OSG_variant_newOverload1 g_variant_new(format []int8, a bool, b []int8) int64
+func OSG_variant_newOverload2 g_variant_new(format []int8, a []int8, b []int8) int64
+func GTKGtk_cell_layout_set_attributes gtk_cell_layout_set_attributes(cell_layout int64, cell int64, attribute []int8, column int32, terminator int64)
+func OSG_menu_item_set_attribute g_menu_item_set_attribute(menu_item int64, attribute []int8, format_string []int8, value int64)
+func GTKGtk_message_dialog_new gtk_message_dialog_new(parent int64, flags int32, type int32, buttons int32, message_format []int8, arg []int8) int64
+func GTKGtk_message_dialog_format_secondary_text gtk_message_dialog_format_secondary_text(message_dialog int64, message_format []int8, arg []int8)
+func GTKGtk_list_store_set gtk_list_store_set(list_store int64, iter int64, column int32, value []int8, terminator int32)
+func GTKGtk_list_store_setOverload1 gtk_list_store_set(list_store int64, iter int64, column int32, value int32, terminator int32)
+func GTKGtk_list_store_setOverload2 gtk_list_store_set(list_store int64, iter int64, column int32, value int64, terminator int32)
+func GTKGtk_list_store_setOverload3 gtk_list_store_set(list_store int64, iter int64, column int32, value *GdkRGBA, terminator int32)
+func GTKGtk_list_store_setOverload4 gtk_list_store_set(list_store int64, iter int64, column int32, value bool, terminator int32)
+func GTKGtk_tree_store_set gtk_tree_store_set(tree_store int64, iter int64, column int32, value []int8, terminator int32)
+func GTKGtk_tree_store_setOverload1 gtk_tree_store_set(tree_store int64, iter int64, column int32, value int32, terminator int32)
+func GTKGtk_tree_store_setOverload2 gtk_tree_store_set(tree_store int64, iter int64, column int32, value int64, terminator int32)
+func GTKGtk_tree_store_setOverload3 gtk_tree_store_set(tree_store int64, iter int64, column int32, value *GdkRGBA, terminator int32)
+func GTKGtk_tree_store_setOverload4 gtk_tree_store_set(tree_store int64, iter int64, column int32, value bool, terminator int32)
+
+# Java-style overload names for functions GIR lists once: the suffix is the parameter names
+func GTKGtk_label_set_textLabelStr gtk_label_set_text(label int64, str []int8)
+func GTKGtk_text_buffer_insertBufferIterTextLen gtk_text_buffer_insert(buffer int64, iter int64, text []int8, len int32)
+func GTKGtk_tree_path_new_from_stringPath gtk_tree_path_new_from_string(path []int8) int64
+func GTKGtk_widget_create_pango_layoutWidgetText gtk_widget_create_pango_layout(widget int64, text []int8) int64
+func GTKGtk_accelerator_parseAcceleratorAccelerator_keyAccelerator_mods gtk_accelerator_parse(accelerator []int8, accelerator_key []int32, accelerator_mods []int32)
+func GDKGdk_cursor_new_from_nameCursor_nameFallback gdk_cursor_new_from_name(display int64, name string) int64
+func OSG_utf8_to_utf16StrLenItems_readItems_writtenError g_utf8_to_utf16(str int64, len int64, items_read []int64, items_written []int64, error []int64) int64
+
+# GTK 4 only; compile-only stubs, calling one panics
+func GDKGdk_x11_surface_get_xid gdk_x11_surface_get_xid(surface int64) int64
+func GTK4Gtk_calendar_set_date gtk_calendar_set_date(calendar int64, date int64)
+func OSG_object_set g_object_set(object int64, property_name []int8, value bool, terminator int64)
+func GTK4Gtk_widget_class_add_binding_signal gtk_widget_class_add_binding_signal(widget_class int64, keyval int32, mods int32, signal []int8, format_string []int8, a bool, b bool, c bool)
+func GTK3Gtk_init_check gtk_init_check(argc []int64, argv []int64) bool
+str GTKGtk_style_property_font font
+
+# macros and constants GIR does not carry
+const GDKGDK_NONE 0
+const GDKGDK_EVEN_ODD_RULE 0
+const GDKGDK_NO_EXPOSE 30
+const GDKGDK_SURFACE_STATE_MINIMIZED 1
+const GDKGDK_SURFACE_STATE_MAXIMIZED 2
+const GDKGDK_SURFACE_STATE_FULLSCREEN 8
+str GTKGTK_NAMED_ICON_GO_DOWN go-down-symbolic
+str GTKGTK_NAMED_ICON_GO_UP go-up-symbolic
+str GTKGTK_NAMED_ICON_GO_NEXT go-next-symbolic
+str GTKGTK_NAMED_ICON_GO_PREVIOUS go-previous-symbolic
+str GTKGTK_NAMED_ICON_PAN_DOWN pan-down-symbolic
+
+# GTK 4 vfunc slots the GTK 3 class structs lack: Go-only, so the code compiles
+extra GtkWidgetClass Snapshot int64
+extra GtkCellRendererClass Snapshot int64
+
+wide GtkBorder
+bitbool PangoLogAttr
+ret CairoCairo_in_stroke int32
+ret CairoCairo_in_fill int32
+ret CairoCairo_region_contains_rectangle int64
+arg GTKGtk_text_buffer_paste_clipboard 2 []int64

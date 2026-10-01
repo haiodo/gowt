@@ -58,7 +58,7 @@ func (this *CoolBar) initCoolBar(parent *Composite, style int32) {
 	}
 }
 
-func (this *CoolBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *CoolBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -200,9 +200,9 @@ func (this *CoolBar) CreateItem(itemLike CoolItemLike, index int32) {
 		this.ResizeToPreferredWidth(lastIndex)
 	}
 	win32.OSHeapFree(hHeap, 0, lpText)
-	cond1 := id
-	item.id = cond1
-	this.items[cond1] = item
+	cond776 := id
+	item.id = cond776
+	this.items[cond776] = item
 	var length int32 = int32(len(this.originalItems))
 	var newOriginals []*CoolItem = make([]*CoolItem, length+1)
 	copy(newOriginals[0:], this.originalItems[0:0+index])
@@ -270,7 +270,7 @@ func (this *CoolBar) drawThemeBackground_(hDC int64, hwnd int64, rect *win32.REC
 	if this.background == -1 && (this.style&FLAT) != 0 {
 		var control *Control = this.impl.findBackgroundControl_()
 		if control != (nil) && control.backgroundImage != (nil) {
-			this.FillBackgroundLocal1(hDC, control.GetBackgroundPixelNoArgs(), rect)
+			this.FillBackgroundLocal1(hDC, control.GetBackgroundPixel(), rect)
 			return
 		}
 	}
@@ -287,13 +287,13 @@ func (this *CoolBar) findThemeControl_() *Control {
 	if (this.style & FLAT) != 0 {
 		return upcastCoolBarToControl(this)
 	}
-	var cond2 *Control
+	var cond777 *Control
 	if this.background == -1 && this.backgroundImage == (nil) {
-		cond2 = upcastCoolBarToControl(this)
+		cond777 = upcastCoolBarToControl(this)
 	} else {
-		cond2 = this.Composite.findThemeControl_()
+		cond777 = this.Composite.findThemeControl_()
 	}
-	return cond2
+	return cond777
 }
 
 func (this *CoolBar) GetMargin(index int32) int32 {
@@ -465,9 +465,9 @@ func (this *CoolBar) GetWrapIndices() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < int32(len(items)); i++ {
 		if items[i].GetWrap() {
-			t3 := count
+			t778 := count
 			count++
-			indices[t3] = i
+			indices[t778] = i
 		}
 	}
 	var result []int32 = make([]int32, count)
@@ -724,7 +724,7 @@ func (this *CoolBar) windowClass_() *win32.TCHAR {
 	return CoolBarReBarClass
 }
 
-func (this *CoolBar) windowProcNoArgs_() int64 {
+func (this *CoolBar) windowProc_() int64 {
 	return CoolBarReBarProc
 }
 
@@ -754,7 +754,7 @@ func (this *CoolBar) wM_SETREDRAW_(wParam int64, lParam int64) *win32.LRESULT {
 
 func (this *CoolBar) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	if this.ignoreResize {
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
 		if code == 0 {
 			return win32.LRESULTZERO
 		}
@@ -792,7 +792,7 @@ func (this *CoolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 				if control != (nil) {
 					var width int32 = lprbcs.RcChild_right - lprbcs.RcChild_left
 					var height int32 = lprbcs.RcChild_bottom - lprbcs.RcChild_top
-					control.SetBoundsInPixelsXYWidthHeight(lprbcs.RcChild_left, lprbcs.RcChild_top, width, height)
+					control.SetBoundsInPixels(lprbcs.RcChild_left, lprbcs.RcChild_top, width, height)
 				}
 			}
 			break
@@ -848,8 +848,8 @@ func (this *CoolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 	return this.Composite.wmNotifyChild_(hdr, wParam, lParam)
 }
 
-func (this *CoolBar) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *CoolBar) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChange_(event, scalingFactor)
 	var sizes []*Point = this.GetItemSizesInPixels()
 	var scaledSizes []*Point = make([]*Point, int32(len(sizes)))
 	var prefSizes []*Point = make([]*Point, int32(len(sizes)))

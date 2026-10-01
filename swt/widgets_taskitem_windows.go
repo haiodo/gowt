@@ -61,6 +61,10 @@ func (this *TaskItem) destroyWidget_() {
 	this.impl.releaseHandle_()
 }
 
+func (this *TaskItem) GetMenu() *Menu {
+	return this.impl.getMenu_()
+}
+
 func (this *TaskItem) getMenu_() *Menu {
 	this.CheckWidget()
 	return this.menu

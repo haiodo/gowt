@@ -46,22 +46,22 @@ func (this *NSError) Code() int64 {
 
 func (this *NSError) LocalizedDescription() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_localizedDescription)
-	var cond1 *NSString
+	var cond245 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond245 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond245 = nil
 	}
-	return cond1
+	return cond245
 }
 
 func (this *NSError) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond2 *NSDictionary
+	var cond246 *NSDictionary
 	if result != 0 {
-		cond2 = NewNSDictionaryOverload1(result)
+		cond246 = NewNSDictionaryOverload1(result)
 	} else {
-		cond2 = nil
+		cond246 = nil
 	}
-	return cond2
+	return cond246
 }

@@ -144,13 +144,13 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_Executor() {
 		var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 		jrt.ThreadStart(jrt.NewThread(jrt.NewRunnable(func() {
 			display.Execute(jrt.NewRunnable(func() {
-				func() {
+				{
 					defer func() {
 						latch.CountDown()
 					}()
 					junit.AssertEquals(display, swt.DisplayGetCurrent())
 					integer.Set(2)
-				}()
+				}
 			}))
 		})))
 		for !latch.Await(int64(10), jrt.TimeUnitMILLISECONDS) {
@@ -1455,9 +1455,9 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getWarnings() {
 func (this *Test_org_eclipse_swt_widgets_Display) Test_manyDispose() {
 	var i int32 = 0
 	for {
-		t1 := i
+		t74 := i
 		i++
-		if !(t1 < 300) {
+		if !(t74 < 300) {
 			break
 		}
 		var display *swt.Display = swt.NewDisplay()

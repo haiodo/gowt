@@ -8,21 +8,21 @@ type ControlListener interface {
 }
 
 func ControlListenerControlMovedAdapter(c func(*ControlEvent)) ControlListener {
-	anon1 := &ControlListenerAnon1{}
-	anon1.initControlAdapter()
-	anon1.fnControlMoved = func(e *ControlEvent) {
+	anon30 := &ControlListenerAnon1{}
+	anon30.initControlAdapter()
+	anon30.fnControlMoved = func(e *ControlEvent) {
 		c(e)
 	}
-	return anon1
+	return anon30
 }
 
 func ControlListenerControlResizedAdapter(c func(*ControlEvent)) ControlListener {
-	anon2 := &ControlListenerAnon2{}
-	anon2.initControlAdapter()
-	anon2.fnControlResized = func(e *ControlEvent) {
+	anon31 := &ControlListenerAnon2{}
+	anon31.initControlAdapter()
+	anon31.fnControlResized = func(e *ControlEvent) {
 		c(e)
 	}
-	return anon2
+	return anon31
 }
 
 // j2go: anonymous ControlAdapter subclass.

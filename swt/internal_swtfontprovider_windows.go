@@ -128,8 +128,10 @@ func SWTFontProviderNewFontRegistry(deviceLike DeviceLike) SWTFontRegistry {
 		device = deviceLike.AsDevice()
 	}
 	_ = device
-	display, ok2 := isDeviceToDisplay(device)
-	if strings.EqualFold("legacy", jrt.GetProperty(SWTFontProviderSWT_FONT_REGISTRY, "")) && ok2 && !display.IsRescalingAtRuntime() {
+	var display *Display
+	pv, ok955 := isDeviceToDisplay(device)
+	display = pv
+	if strings.EqualFold("legacy", jrt.GetProperty(SWTFontProviderSWT_FONT_REGISTRY, "")) && ok955 && !display.IsRescalingAtRuntime() {
 		return newLegacySWTFontRegistry(device)
 	}
 	return newScalingSWTFontRegistry(device)

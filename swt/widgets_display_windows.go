@@ -404,9 +404,9 @@ func (this *Display) AddSkinnableWidget(widgetLike WidgetLike) {
 		copy(newSkinWidgets[0:], this.skinList[0:0+int32(len(this.skinList))])
 		this.skinList = newSkinWidgets
 	}
-	t1 := this.skinCount
+	t289 := this.skinCount
 	this.skinCount++
-	this.skinList[t1] = widget
+	this.skinList[t289] = widget
 }
 
 func (this *Display) AddFilter(eventType int32, listener Listener) {
@@ -434,9 +434,9 @@ func (this *Display) AddLayoutDeferred(compLike CompositeLike) {
 		copy(temp[0:], this.layoutDeferred[0:0+int32(len(this.layoutDeferred))])
 		this.layoutDeferred = temp
 	}
-	t2 := this.layoutDeferredCount
+	t290 := this.layoutDeferredCount
 	this.layoutDeferredCount++
-	this.layoutDeferred[t2] = comp
+	this.layoutDeferred[t290] = comp
 }
 
 func (this *Display) AddListener(eventType int32, listener Listener) {
@@ -515,13 +515,13 @@ func (this *Display) AsciiKey(key int32) int32 {
 	for len == -1 {
 		len = win32.OSToUnicode(key, key, this.keyboard, buffer, 1, 0)
 	}
-	var cond3 uint16
+	var cond291 uint16
 	if len != 0 {
-		cond3 = buffer[0]
+		cond291 = buffer[0]
 	} else {
-		cond3 = uint16(0)
+		cond291 = uint16(0)
 	}
-	return int32(cond3)
+	return int32(cond291)
 }
 
 func (this *Display) AsyncExec(runnable jrt.Runnable) {
@@ -626,9 +626,9 @@ func (this *Display) Close() {
 
 func (this *Display) create_(data *DeviceData) {
 	this.CheckSubclass()
-	cond4 := jrt.CurrentThread()
-	this.thread = cond4
-	DisplayCheckDisplay(cond4, true)
+	cond292 := jrt.CurrentThread()
+	this.thread = cond292
+	DisplayCheckDisplay(cond292, true)
 	this.InitializeAutoscaling(DPIUtilIsMonitorSpecificScalingActive())
 	this.CreateDisplay(data)
 	DisplayRegister(this)
@@ -824,13 +824,13 @@ func (this *Display) FindWidget(handle int64) *Widget {
 func (this *Display) FindWidgetHandleId(handle int64, id int64) *Widget {
 	this.impl.checkDevice_()
 	var control *Control = this.GetControl(handle)
-	var cond5 *Widget
+	var cond293 *Widget
 	if control != (nil) {
-		cond5 = control.impl.findItemId_(id)
+		cond293 = control.impl.findItem_(id)
 	} else {
-		cond5 = nil
+		cond293 = nil
 	}
-	return cond5
+	return cond293
 }
 
 func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget {
@@ -840,8 +840,8 @@ func (this *Display) FindWidgetWidgetId(widgetLike WidgetLike, id int64) *Widget
 	}
 	_ = widget
 	this.impl.checkDevice_()
-	_, ok6 := isWidgetToControl(widget)
-	if ok6 {
+	_, ok294 := isWidgetToControl(widget)
+	if ok294 {
 		return this.FindWidgetHandleId((castWidgetToControl(widget)).Handle, id)
 	}
 	return nil
@@ -903,21 +903,21 @@ func (this *Display) FindTouchSource(touchDevice int64, monitorLike MonitorLike)
 		copy(newTouchSources[0:], this.touchSources[0:0+length])
 		this.touchSources = newTouchSources
 	}
-	cond7 := newTouchSource(touchDevice, true, monitor.GetBounds())
-	this.touchSources[index] = cond7
-	return cond7
+	cond295 := newTouchSource(touchDevice, true, monitor.GetBounds())
+	this.touchSources[index] = cond295
+	return cond295
 }
 
 func (this *Display) GetActiveShell() *Shell {
 	this.impl.checkDevice_()
 	var control *Control = this.FindControlLocal1(win32.OSGetActiveWindow())
-	var cond8 *Shell
+	var cond296 *Shell
 	if control != (nil) {
-		cond8 = control.impl.getShell_()
+		cond296 = control.impl.getShell_()
 	} else {
-		cond8 = nil
+		cond296 = nil
 	}
-	return cond8
+	return cond296
 }
 
 func (this *Display) GetMenuBar() *Menu {
@@ -927,10 +927,10 @@ func (this *Display) GetMenuBar() *Menu {
 
 func (this *Display) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels0_(), this.impl.getDeviceZoom_())
 }
 
-func (this *Display) getBoundsInPixels_() *Rectangle {
+func (this *Display) getBoundsInPixels0_() *Rectangle {
 	this.impl.checkDevice_()
 	if win32.OSGetSystemMetrics(win32.OSSM_CMONITORS) < 2 {
 		var width int32 = win32.OSGetSystemMetrics(win32.OSSM_CXSCREEN)
@@ -951,11 +951,11 @@ func (this *Display) GetClickCount(type_ int32, button int32, hwnd int64, lParam
 		if this.clickRect == (nil) {
 			this.clickRect = win32.NewRECT()
 		}
-		abs9 := this.lastTime - this.GetLastEventTime()
-		if abs9 < 0 {
-			abs9 = -abs9
+		abs297 := this.lastTime - this.GetLastEventTime()
+		if abs297 < 0 {
+			abs297 = -abs297
 		}
-		var deltaTime int32 = abs9
+		var deltaTime int32 = abs297
 		var pt *win32.POINT = win32.NewPOINT()
 		win32.OSPOINTSTOPOINT(pt, lParam)
 		if this.lastClickHwnd == hwnd && this.lastButton == button && (deltaTime <= doubleClick) && win32.OSPtInRect(this.clickRect, pt) {
@@ -1419,10 +1419,10 @@ func (this *Display) GetShells() []*Shell {
 	this.impl.checkDevice_()
 	var index int32 = 0
 	var result []*Shell = make([]*Shell, 16)
-	for _, elem10 := range this.controlByHandle.Values().ToArray() {
-		control := jrt.Cast[*Control](elem10)
-		_, ok11 := isControlToShell(control)
-		if ok11 {
+	for _, elem298 := range this.controlByHandle.Values().ToArray() {
+		control := jrt.Cast[*Control](elem298)
+		_, ok299 := isControlToShell(control)
+		if ok299 {
 			var j int32 = 0
 			for j < index {
 				if upcastShellToControl(result[j]) == control {
@@ -1436,9 +1436,9 @@ func (this *Display) GetShells() []*Shell {
 					copy(newResult[0:], result[0:0+index])
 					result = newResult
 				}
-				t12 := index
+				t300 := index
 				index++
-				result[t12] = castControlToShell(control)
+				result[t300] = castControlToShell(control)
 			}
 		}
 	}
@@ -1457,19 +1457,19 @@ func (this *Display) GetSynchronizer() *Synchronizer {
 
 func (this *Display) GetSyncThread() any {
 	jrt.MonitorEnter()
-	var tret13 any
-	tretd14 := false
+	var tret301 any
+	tretd302 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret13 = this.synchronizer.syncThread
-		tretd14 = true
+		tret301 = this.synchronizer.syncThread
+		tretd302 = true
 		return
 	}()
-	_ = tretd14
-	return tret13
+	_ = tretd302
+	return tret301
 }
 
 func (this *Display) getSystemColor_(id int32) *Color {
@@ -1560,10 +1560,10 @@ func (this *Display) GetSystemCursor(id int32) *Cursor {
 }
 
 func (this *Display) getSystemFont_() *Font {
-	return this.GetSystemFontZoomZoom(this.GetPrimaryMonitor().GetZoom())
+	return this.GetSystemFontZoom(this.GetPrimaryMonitor().GetZoom())
 }
 
-func (this *Display) GetSystemFontZoomZoom(zoom int32) *Font {
+func (this *Display) GetSystemFontZoom(zoom int32) *Font {
 	this.impl.checkDevice_()
 	var systemFont *Font = SWTFontProviderGetSystemFont(upcastDisplayToDevice(this), zoom)
 	if this.systemFont == (nil) {
@@ -1636,8 +1636,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 	if this.taskBar != (nil) {
 		return this.taskBar
 	}
-	var tret15 *TaskBar
-	tretd16 := false
+	var tret303 *TaskBar
+	tretd304 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -1654,8 +1654,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 				e := r.(*SWTError)
 				_ = e
 				if e.Code == ERROR_NOT_IMPLEMENTED {
-					tret15 = nil
-					tretd16 = true
+					tret303 = nil
+					tretd304 = true
 					return
 				}
 				panic(e)
@@ -1665,8 +1665,8 @@ func (this *Display) GetSystemTaskBar() *TaskBar {
 		}()
 		this.taskBar = newTaskBar(this, NONE)
 	}()
-	if tretd16 {
-		return tret15
+	if tretd304 {
+		return tret303
 	}
 	return this.taskBar
 }
@@ -1681,19 +1681,19 @@ func (this *Display) GetSystemTray() *Tray {
 
 func (this *Display) GetThread() any {
 	jrt.MonitorEnter()
-	var tret17 any
-	tretd18 := false
+	var tret305 any
+	tretd306 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
-		tret17 = this.thread
-		tretd18 = true
+		tret305 = this.thread
+		tretd306 = true
 		return
 	}()
-	_ = tretd18
-	return tret17
+	_ = tretd306
+	return tret305
 }
 
 func (this *Display) GetTouchEnabled() bool {
@@ -1747,8 +1747,8 @@ func (this *Display) HTabTheme(dpi int32) int64 {
 }
 
 func (this *Display) ResetThemes() {
-	for _, elem19 := range this.themeDataMap.Values().ToArray() {
-		themeData := jrt.Cast[*Display_ThemeData](elem19)
+	for _, elem307 := range this.themeDataMap.Values().ToArray() {
+		themeData := jrt.Cast[*Display_ThemeData](elem307)
 		themeData.Reset()
 	}
 	this.themeDataMap.Clear()
@@ -2151,12 +2151,12 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 					keyMsg.Hwnd = control.Handle
 					var flags int32 = win32.OSPM_REMOVE | win32.OSPM_NOYIELD | win32.OSPM_QS_INPUT | win32.OSPM_QS_POSTMESSAGE
 					for {
-						b21 := this.FilterMessage(keyMsg)
-						consumed = consumed || b21
+						b309 := this.FilterMessage(keyMsg)
+						consumed = consumed || b309
 						if !(consumed) {
 							win32.OSTranslateMessage(keyMsg)
-							b22 := win32.OSDispatchMessage(keyMsg) == 1
-							consumed = consumed || b22
+							b310 := win32.OSDispatchMessage(keyMsg) == 1
+							consumed = consumed || b310
 						}
 						if !(win32.OSPeekMessage(keyMsg, keyMsg.Hwnd, win32.OSWM_KEYFIRST, win32.OSWM_KEYLAST, flags)) {
 							break
@@ -2356,9 +2356,9 @@ func (this *Display) MonitorEnumProc(hmonitor int64, hdc int64, lprcMonitor int6
 		copy(newMonitors[0:], this.monitors[0:0+int32(len(this.monitors))])
 		this.monitors = newMonitors
 	}
-	t23 := this.monitorCount
+	t311 := this.monitorCount
 	this.monitorCount++
-	this.monitors[t23] = this.GetMonitor(hmonitor)
+	this.monitors[t311] = this.GetMonitor(hmonitor)
 	return int64(1)
 }
 
@@ -2444,8 +2444,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 	}
 	_ = event
 	jrt.MonitorEnter()
-	var tret24 bool
-	tretd25 := false
+	var tret312 bool
+	tretd313 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
@@ -2479,15 +2479,15 @@ func (this *Display) Post(eventLike EventLike) bool {
 						inputs.WVk = int16(9)
 						break
 					case LF:
-						tret24 = false
-						tretd25 = true
+						tret312 = false
+						tretd313 = true
 						return
 					default:
 						{
 							inputs.WVk = win32.OSVkKeyScan(int16(key))
 							if int32(inputs.WVk) == -1 {
-								tret24 = false
-								tretd25 = true
+								tret312 = false
+								tretd313 = true
 								return
 							}
 							inputs.WVk &= int16(0xFF)
@@ -2506,8 +2506,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 				var pInputs *win32.INPUT = win32.NewINPUT()
 				pInputs.Type = win32.OSINPUT_KEYBOARD
 				pInputs.Ki = inputs
-				tret24 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
-				tretd25 = true
+				tret312 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
+				tretd313 = true
 				return
 			}
 		case MouseDown, MouseMove, MouseUp, MouseWheel:
@@ -2535,8 +2535,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 							inputs.MouseData = event.Count * win32.OSWHEEL_DELTA / value[0]
 							break
 						default:
-							tret24 = false
-							tretd25 = true
+							tret312 = false
+							tretd313 = true
 							return
 						}
 					} else {
@@ -2583,8 +2583,8 @@ func (this *Display) Post(eventLike EventLike) bool {
 								break
 							}
 						default:
-							tret24 = false
-							tretd25 = true
+							tret312 = false
+							tretd313 = true
 							return
 						}
 					}
@@ -2592,17 +2592,17 @@ func (this *Display) Post(eventLike EventLike) bool {
 				var pInputs *win32.INPUT = win32.NewINPUT()
 				pInputs.Type = win32.OSINPUT_MOUSE
 				pInputs.Mi = inputs
-				tret24 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
-				tretd25 = true
+				tret312 = win32.OSSendInput(1, pInputs, win32.INPUTSizeof) != 0
+				tretd313 = true
 				return
 			}
 		}
-		tret24 = false
-		tretd25 = true
+		tret312 = false
+		tretd313 = true
 		return
 	}()
-	_ = tretd25
-	return tret24
+	_ = tretd313
+	return tret312
 }
 
 func (this *Display) PostEvent(eventLike EventLike) {
@@ -2724,7 +2724,7 @@ func (this *Display) release_() {
 		this.taskBar = nil
 		{
 			for {
-				tbrk26 := false
+				tbrk314 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -2739,11 +2739,11 @@ func (this *Display) release_() {
 						}
 					}()
 					if !this.ReadAndDispatch() {
-						tbrk26 = true
+						tbrk314 = true
 						return
 					}
 				}()
-				if tbrk26 {
+				if tbrk314 {
 					break
 				}
 			}
@@ -3251,33 +3251,33 @@ func (this *Display) SaveResources() {
 		if win32.OSSystemParametersInfoOverload2(win32.OSSPI_GETNONCLIENTMETRICS, 0, info, 0) {
 			var logFont *win32.LOGFONT = info.LfMessageFont
 			if this.lfSystemFont == (nil) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || logFont.LfHeight != this.lfSystemFont.LfHeight || logFont.LfWidth != this.lfSystemFont.LfWidth || logFont.LfEscapement != this.lfSystemFont.LfEscapement || logFont.LfOrientation != this.lfSystemFont.LfOrientation || logFont.LfWeight != this.lfSystemFont.LfWeight || int32(logFont.LfItalic) != int32(this.lfSystemFont.LfItalic) || int32(logFont.LfUnderline) != int32(this.lfSystemFont.LfUnderline) || int32(logFont.LfStrikeOut) != int32(this.lfSystemFont.LfStrikeOut) || int32(logFont.LfOutPrecision) != int32(this.lfSystemFont.LfOutPrecision) || int32(logFont.LfClipPrecision) != int32(this.lfSystemFont.LfClipPrecision) || int32(logFont.LfQuality) != int32(this.lfSystemFont.LfQuality) || int32(logFont.LfPitchAndFamily) != int32(this.lfSystemFont.LfPitchAndFamily) || !(this.GetFontName(logFont) == this.GetFontName(this.lfSystemFont)) {
-				t27 := resourceCount
+				t315 := resourceCount
 				resourceCount++
-				this.resources[t27] = upcastFontToResource(this.systemFont)
+				this.resources[t315] = upcastFontToResource(this.systemFont)
 				this.lfSystemFont = logFont
 				this.systemFont = nil
 			}
 		}
 	}
 	if this.errorImage != (nil) {
-		t28 := resourceCount
+		t316 := resourceCount
 		resourceCount++
-		this.resources[t28] = upcastImageToResource(this.errorImage)
+		this.resources[t316] = upcastImageToResource(this.errorImage)
 	}
 	if this.infoImage != (nil) {
-		t29 := resourceCount
+		t317 := resourceCount
 		resourceCount++
-		this.resources[t29] = upcastImageToResource(this.infoImage)
+		this.resources[t317] = upcastImageToResource(this.infoImage)
 	}
 	if this.questionImage != (nil) {
-		t30 := resourceCount
+		t318 := resourceCount
 		resourceCount++
-		this.resources[t30] = upcastImageToResource(this.questionImage)
+		this.resources[t318] = upcastImageToResource(this.questionImage)
 	}
 	if this.warningIcon != (nil) {
-		t31 := resourceCount
+		t319 := resourceCount
 		resourceCount++
-		this.resources[t31] = upcastImageToResource(this.warningIcon)
+		this.resources[t319] = upcastImageToResource(this.warningIcon)
 	}
 	this.warningIcon = nil
 	this.questionImage = this.warningIcon
@@ -3285,9 +3285,9 @@ func (this *Display) SaveResources() {
 	this.errorImage = this.infoImage
 	for i := int32(0); i < int32(len(this.cursors)); i++ {
 		if this.cursors[i] != (nil) {
-			t32 := resourceCount
+			t320 := resourceCount
 			resourceCount++
-			this.resources[t32] = upcastCursorToResource(this.cursors[i])
+			this.resources[t320] = upcastCursorToResource(this.cursors[i])
 		}
 		this.cursors[i] = nil
 	}
@@ -3730,9 +3730,9 @@ func (this *Display) TimerExec(milliseconds int32, runnable jrt.Runnable) {
 			}
 			index++
 		}
-		t33 := this.nextTimerId
+		t321 := this.nextTimerId
 		this.nextTimerId++
-		timerId = t33
+		timerId = t321
 		if index == int32(len(this.timerList)) {
 			var newTimerList []jrt.Runnable = make([]jrt.Runnable, int32(len(this.timerList))+4)
 			copy(newTimerList[0:], this.timerList[0:0+int32(len(this.timerList))])
@@ -3770,7 +3770,7 @@ func (this *Display) TranslateMnemonic(msg *win32.MSG, controlLike ControlLike) 
 	_ = control
 	switch msg.Message {
 	case win32.OSWM_CHAR, win32.OSWM_SYSCHAR:
-		return control.TranslateMnemonicMsgMsg(msg)
+		return control.TranslateMnemonicMsg(msg)
 	}
 	return false
 }
@@ -3814,19 +3814,19 @@ func (this *Display) Update() {
 
 func (this *Display) Wake() {
 	jrt.MonitorEnter()
-	tretd34 := false
+	tretd322 := false
 	func() {
 		defer jrt.MonitorExit()
 		if this.IsDisposed() {
 			this.Error(ERROR_DEVICE_DISPOSED)
 		}
 		if this.thread == jrt.CurrentThread() {
-			tretd34 = true
+			tretd322 = true
 			return
 		}
 		this.WakeThread()
 	}()
-	if tretd34 {
+	if tretd322 {
 		return
 	}
 }
@@ -3838,7 +3838,7 @@ func (this *Display) WakeThread() {
 func (this *Display) WindowProcIdSelArg0Arg1(hwnd int64, msg int64, wParam int64, lParam int64) int64 {
 	var control *Control = this.GetControl(hwnd)
 	if control != (nil) {
-		return control.impl.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, int32(msg), wParam, lParam)
+		return control.impl.windowProcHwndMsgWParamLParam_(hwnd, int32(msg), wParam, lParam)
 	}
 	return win32.OSDefWindowProc(hwnd, int32(msg), wParam, lParam)
 }
@@ -3935,9 +3935,9 @@ func (this *Display) GetOrCreateThemeData(dpi int32) *Display_ThemeData {
 	if this.themeDataMap.ContainsKey(int32(dpi)) {
 		return jrt.Cast[*Display_ThemeData](this.themeDataMap.Get(int32(dpi)))
 	}
-	inner35 := newDisplayThemeData(dpi)
-	inner35.this_0 = this
-	var themeData *Display_ThemeData = inner35
+	inner323 := newDisplayThemeData(dpi)
+	inner323.this_0 = this
+	var themeData *Display_ThemeData = inner323
 	jrt.Cast[*Display_ThemeData](this.themeDataMap.Put(int32(dpi), themeData))
 	return themeData
 }
@@ -3958,7 +3958,7 @@ func (this *Display) InitializeAutoscaling(useMonitorSpecificScaling bool) bool 
 	this.rescalingAtRuntime = useMonitorSpecificScaling && Win32DPIUtilsHasProperDpiAwarenessForMonitorSpecificScaling()
 	DPIUtilSetMonitorSpecificScaling(this.rescalingAtRuntime)
 	if this.rescalingAtRuntime {
-		this.coordinateSystemMapper = newMultiZoomCoordinateSystemMapperDisplayMonitorSupplier(this, this.GetMonitors)
+		this.coordinateSystemMapper = newMultiZoomCoordinateSystemMapper(this, this.GetMonitors)
 	} else {
 		this.coordinateSystemMapper = newSingleZoomCoordinateSystemMapper(this)
 	}
@@ -4259,9 +4259,9 @@ func DisplayCreate32bitDIBHBitmapAlphaAlphaDataTransparentPixel(hBitmap int64, a
 					y++
 				}() {
 					for x := int32(0); x < imgWidth; x++ {
-						t36 := ap
+						t324 := ap
 						ap++
-						var a int32 = int32(alphaData[t36]) & 0xFF
+						var a int32 = int32(alphaData[t324]) & 0xFF
 						if a != 0 {
 							srcData[dp] = int8(((((int32(srcData[dp]) & 0xFF) * 0xFF) + a/2) / a))
 							srcData[dp+1] = int8(((((int32(srcData[dp+1]) & 0xFF) * 0xFF) + a/2) / a))
@@ -4357,23 +4357,23 @@ func DisplayDeregister(displayLike DisplayLike) {
 
 func DisplayFindDisplay(thread any) *Display {
 	jrt.MonitorEnter()
-	var tret37 *Display
-	tretd38 := false
+	var tret325 *Display
+	tretd326 := false
 	func() {
 		defer jrt.MonitorExit()
 		for _, display := range DisplayDisplays {
 			if display != (nil) && display.thread == thread {
-				tret37 = display
-				tretd38 = true
+				tret325 = display
+				tretd326 = true
 				return
 			}
 		}
-		tret37 = nil
-		tretd38 = true
+		tret325 = nil
+		tretd326 = true
 		return
 	}()
-	_ = tretd38
-	return tret37
+	_ = tretd326
+	return tret325
 }
 
 func DisplayGetCurrent() *Display {
@@ -4382,19 +4382,19 @@ func DisplayGetCurrent() *Display {
 
 func DisplayGetDefault() *Display {
 	jrt.MonitorEnter()
-	var tret39 *Display
-	tretd40 := false
+	var tret327 *Display
+	tretd328 := false
 	func() {
 		defer jrt.MonitorExit()
 		if DisplayDefault == (nil) {
 			DisplayDefault = NewDisplay()
 		}
-		tret39 = DisplayDefault
-		tretd40 = true
+		tret327 = DisplayDefault
+		tretd328 = true
 		return
 	}()
-	_ = tretd40
-	return tret39
+	_ = tretd328
+	return tret327
 }
 
 func DisplayIsSystemDarkTheme() bool {
@@ -4415,13 +4415,13 @@ func DisplayRegister(displayLike DisplayLike) {
 	}
 	_ = display
 	jrt.MonitorEnter()
-	tretd41 := false
+	tretd329 := false
 	func() {
 		defer jrt.MonitorExit()
 		for i := int32(0); i < int32(len(DisplayDisplays)); i++ {
 			if DisplayDisplays[i] == (nil) {
 				DisplayDisplays[i] = display
-				tretd41 = true
+				tretd329 = true
 				return
 			}
 		}
@@ -4430,7 +4430,7 @@ func DisplayRegister(displayLike DisplayLike) {
 		newDisplays[int32(len(DisplayDisplays))] = display
 		DisplayDisplays = newDisplays
 	}()
-	if tretd41 {
+	if tretd329 {
 		return
 	}
 }
@@ -4483,9 +4483,9 @@ func DisplayWithCrLf(string_ string) string {
 				j = length
 			}
 			result.Append(jrt.Substring(string_, i, j))
-			cond42 := j
-			i = cond42
-			if (cond42) < length {
+			cond330 := j
+			i = cond330
+			if (cond330) < length {
 				result.Append("\r\n")
 				i++
 			}
@@ -4523,13 +4523,13 @@ func DisplayWithCrLfString(string_ []uint16) []uint16 {
 			i++
 		}() {
 			if int32(string_[i]) == int32('\u000a') {
-				t43 := j
+				t331 := j
 				j++
-				result[t43] = '\u000d'
+				result[t331] = '\u000d'
 			}
-			t44 := j
+			t332 := j
 			j++
-			result[t44] = string_[i]
+			result[t332] = string_[i]
 		}
 	}
 	return result
@@ -4572,9 +4572,9 @@ func (this *Display_ThemeData) HButtonTheme() int64 {
 		return this.hButtonTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("BUTTON\u0000"))
-	cond45 := this.OpenThemeData(themeName)
-	this.hButtonTheme = cond45
-	return cond45
+	cond333 := this.OpenThemeData(themeName)
+	this.hButtonTheme = cond333
+	return cond333
 }
 
 func (this *Display_ThemeData) HButtonThemeDark() int64 {
@@ -4582,9 +4582,9 @@ func (this *Display_ThemeData) HButtonThemeDark() int64 {
 		return this.hButtonThemeDark
 	}
 	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::BUTTON\u0000"))
-	cond46 := this.OpenThemeData(themeName)
-	this.hButtonThemeDark = cond46
-	return cond46
+	cond334 := this.OpenThemeData(themeName)
+	this.hButtonThemeDark = cond334
+	return cond334
 }
 
 func (this *Display_ThemeData) HEditTheme() int64 {
@@ -4592,9 +4592,9 @@ func (this *Display_ThemeData) HEditTheme() int64 {
 		return this.hEditTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("EDIT\u0000"))
-	cond47 := this.OpenThemeData(themeName)
-	this.hEditTheme = cond47
-	return cond47
+	cond335 := this.OpenThemeData(themeName)
+	this.hEditTheme = cond335
+	return cond335
 }
 
 func (this *Display_ThemeData) HExplorerBarTheme() int64 {
@@ -4602,9 +4602,9 @@ func (this *Display_ThemeData) HExplorerBarTheme() int64 {
 		return this.hExplorerBarTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("EXPLORERBAR\u0000"))
-	cond48 := this.OpenThemeData(themeName)
-	this.hExplorerBarTheme = cond48
-	return cond48
+	cond336 := this.OpenThemeData(themeName)
+	this.hExplorerBarTheme = cond336
+	return cond336
 }
 
 func (this *Display_ThemeData) HScrollBarTheme() int64 {
@@ -4612,9 +4612,9 @@ func (this *Display_ThemeData) HScrollBarTheme() int64 {
 		return this.hScrollBarTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("SCROLLBAR\u0000"))
-	cond49 := this.OpenThemeData(themeName)
-	this.hScrollBarTheme = cond49
-	return cond49
+	cond337 := this.OpenThemeData(themeName)
+	this.hScrollBarTheme = cond337
+	return cond337
 }
 
 func (this *Display_ThemeData) HScrollBarThemeDark() int64 {
@@ -4622,9 +4622,9 @@ func (this *Display_ThemeData) HScrollBarThemeDark() int64 {
 		return this.hScrollBarThemeDark
 	}
 	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::SCROLLBAR\u0000"))
-	cond50 := this.OpenThemeData(themeName)
-	this.hScrollBarThemeDark = cond50
-	return cond50
+	cond338 := this.OpenThemeData(themeName)
+	this.hScrollBarThemeDark = cond338
+	return cond338
 }
 
 func (this *Display_ThemeData) HTabTheme() int64 {
@@ -4632,9 +4632,9 @@ func (this *Display_ThemeData) HTabTheme() int64 {
 		return this.hTabTheme
 	}
 	var themeName []uint16 = utf16.Encode([]rune("TAB\u0000"))
-	cond51 := this.OpenThemeData(themeName)
-	this.hTabTheme = cond51
-	return cond51
+	cond339 := this.OpenThemeData(themeName)
+	this.hTabTheme = cond339
+	return cond339
 }
 
 func (this *Display_ThemeData) Reset() {

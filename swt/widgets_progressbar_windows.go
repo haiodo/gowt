@@ -44,7 +44,7 @@ func (this *ProgressBar) initProgressBar(parent *Composite, style int32) {
 	this.Control.initControlParentStyle(parent, ProgressBarCheckStyle(style))
 }
 
-func (this *ProgressBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *ProgressBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -214,7 +214,7 @@ func (this *ProgressBar) windowClass_() *win32.TCHAR {
 	return ProgressBarProgressBarClass
 }
 
-func (this *ProgressBar) windowProcNoArgs_() int64 {
+func (this *ProgressBar) windowProc_() int64 {
 	return ProgressBarProgressBarProc
 }
 

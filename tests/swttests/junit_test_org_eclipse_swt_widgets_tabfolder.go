@@ -56,7 +56,7 @@ func (this *Test_org_eclipse_swt_widgets_TabFolder) Test_TabFolder_getChildren()
 	var label *swt.Label = swt.NewLabel(upcastswtTabFolderToswtComposite(this.tabFolder), swt.NONE)
 	label.SetText("Unused Child")
 	children.Add(upcastswtLabelToswtControl(label))
-	junit.AssertArrayEquals(children.ToArray(), this.tabFolder.GetChildren())
+	junit.AssertArrayEquals(children.ToArray(), upcastArrswtControlToany(this.tabFolder.GetChildren()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_TabFolder) test_getClientArea_() {
@@ -97,13 +97,13 @@ func (this *Test_org_eclipse_swt_widgets_TabFolder) Test_getItems() {
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTabItem(this.tabFolder, 0)
 	}
-	junit.AssertArrayEquals(items, this.tabFolder.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany(items), upcastArrswtTabItemToany(this.tabFolder.GetItems()))
 	this.tabFolder.GetItems()[0].Dispose()
-	junit.AssertArrayEquals([]*swt.TabItem{items[1], items[2], items[3], items[4]}, this.tabFolder.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1], items[2], items[3], items[4]}), upcastArrswtTabItemToany(this.tabFolder.GetItems()))
 	this.tabFolder.GetItems()[3].Dispose()
-	junit.AssertArrayEquals([]*swt.TabItem{items[1], items[2], items[3]}, this.tabFolder.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1], items[2], items[3]}), upcastArrswtTabItemToany(this.tabFolder.GetItems()))
 	this.tabFolder.GetItems()[1].Dispose()
-	junit.AssertArrayEquals([]*swt.TabItem{items[1], items[3]}, this.tabFolder.GetItems())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1], items[3]}), upcastArrswtTabItemToany(this.tabFolder.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_TabFolder) Test_setControl() {
@@ -232,44 +232,44 @@ func (this *Test_org_eclipse_swt_widgets_TabFolder) Test_setSelectionI() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.tabFolder.SetSelection(nil)
 	}, "No exception thrown for selection == null")
-	junit.AssertArrayEquals([]*swt.TabItem{items[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.tabFolder.SetSelectionItems(nil)
 	}, "No exception thrown for selection == null")
-	junit.AssertArrayEquals([]*swt.TabItem{items[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.MakeCleanEnvironment()
 	items = make([]*swt.TabItem, number)
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTabItem(this.tabFolder, 0)
 	}
 	this.tabFolder.SetSelectionIndex(0)
-	junit.AssertArrayEquals([]*swt.TabItem{items[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionIndex(4)
-	junit.AssertArrayEquals([]*swt.TabItem{items[4]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[4]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionIndex(2)
-	junit.AssertArrayEquals([]*swt.TabItem{items[2]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[2]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionIndex(1)
-	junit.AssertArrayEquals([]*swt.TabItem{items[1]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionIndex(number + 1)
-	junit.AssertArrayEquals([]*swt.TabItem{items[1]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionIndex(3)
-	junit.AssertArrayEquals([]*swt.TabItem{items[3]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[3]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.MakeCleanEnvironment()
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewTabItem(this.tabFolder, 0)
 	}
 	this.tabFolder.SetSelection(items[0])
-	junit.AssertArrayEquals([]*swt.TabItem{items[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionItems([]*swt.TabItem{items[0]})
-	junit.AssertArrayEquals([]*swt.TabItem{items[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionItems([]*swt.TabItem{items[3]})
-	junit.AssertArrayEquals([]*swt.TabItem{items[3]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[3]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionItems([]*swt.TabItem{items[4]})
-	junit.AssertArrayEquals([]*swt.TabItem{items[4]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[4]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionItems([]*swt.TabItem{items[2]})
-	junit.AssertArrayEquals([]*swt.TabItem{items[2]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[2]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.tabFolder.SetSelectionItems([]*swt.TabItem{items[1]})
-	junit.AssertArrayEquals([]*swt.TabItem{items[1]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{items[1]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 	this.MakeCleanEnvironment()
 	var recreatedItems []*swt.TabItem = make([]*swt.TabItem, number)
 	for i := int32(0); i < number; i++ {
@@ -281,7 +281,7 @@ func (this *Test_org_eclipse_swt_widgets_TabFolder) Test_setSelectionI() {
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.tabFolder.SetSelectionItems([]*swt.TabItem{nil})
 	}, "No exception thrown for selection == null")
-	junit.AssertArrayEquals([]*swt.TabItem{recreatedItems[0]}, this.tabFolder.GetSelection())
+	junit.AssertArrayEquals(upcastArrswtTabItemToany([]*swt.TabItem{recreatedItems[0]}), upcastArrswtTabItemToany(this.tabFolder.GetSelection()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_TabFolder) MakeCleanEnvironment() {
@@ -563,6 +563,17 @@ func upcastswtLabelToswtControl(x *swt.Label) *swt.Control {
 		return nil
 	}
 	return &x.Control
+}
+
+func upcastArrswtTabItemToany(x []*swt.TabItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }
 
 func upcastswtTabFolderToswtWidget(x *swt.TabFolder) *swt.Widget {

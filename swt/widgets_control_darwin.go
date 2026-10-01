@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"unicode/utf16"
 )
 
 type Control struct {
@@ -102,8 +101,8 @@ func (this *Control) acceptsFirstMouse_(id int64, sel int64, theEvent int64) boo
 
 func (this *Control) accessibleHandle_() int64 {
 	var returnValue int64 = this.View.Id
-	_, ok1 := iscocoaNSViewTococoaNSControl(this.View)
-	if ok1 {
+	_, ok61 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok61 {
 		if (castcocoaNSViewTococoaNSControl(this.View)).Cell() != (nil) {
 			returnValue = (castcocoaNSViewTococoaNSControl(this.View)).Cell().Id
 		}
@@ -146,13 +145,13 @@ func (this *Control) accessibilityAttributeNames_(id int64, sel int64) int64 {
 	var returnValue int64 = int64(0)
 	if this.impl.handleIsAccessible_(id) && this.accessible != (nil) {
 		var value *cocoa.Id = upcastcocoaNSArrayTococoaId(this.accessible.Internal_accessibilityAttributeNames(ACCCHILDID_SELF))
-		var cond2 int64
+		var cond62 int64
 		if value != (nil) {
-			cond2 = value.Id
+			cond62 = value.Id
 		} else {
-			cond2 = int64(0)
+			cond62 = int64(0)
 		}
-		returnValue = (cond2)
+		returnValue = (cond62)
 		if returnValue == 0 {
 			returnValue = this.Widget.accessibilityAttributeNames_(id, sel)
 		}
@@ -598,13 +597,13 @@ func (this *Control) CreateString(string_ string, fontLike FontLike, foreground 
 		dict.SetObject(upcastcocoaNSColorTococoaId(cocoa.NSColorDisabledControlTextColor()), upcastcocoaNSStringTococoaId(cocoa.OSNSForegroundColorAttributeName_))
 	}
 	var paragraphStyle *cocoa.NSMutableParagraphStyle = castcocoaNSObjectTococoaNSMutableParagraphStyle(cocoa.NewNSMutableParagraphStyle().Alloc().Init())
-	var cond3 int32
+	var cond63 int32
 	if wrap {
-		cond3 = cocoa.OSNSLineBreakByWordWrapping
+		cond63 = cocoa.OSNSLineBreakByWordWrapping
 	} else {
-		cond3 = cocoa.OSNSLineBreakByClipping
+		cond63 = cocoa.OSNSLineBreakByClipping
 	}
-	paragraphStyle.SetLineBreakMode(int64(cond3))
+	paragraphStyle.SetLineBreakMode(int64(cond63))
 	if alignment != 0 {
 		var align int32 = cocoa.OSNSTextAlignmentLeft
 		if (alignment & CENTER) != 0 {
@@ -625,7 +624,7 @@ func (this *Control) CreateString(string_ string, fontLike FontLike, foreground 
 	paragraphStyle.Release()
 	var length int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, length)
-	copy(chars, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 	if mnemonics {
 		length = this.FixMnemonic(chars)
 	}
@@ -859,8 +858,8 @@ func (this *Control) EnableWidget(enabled bool) {
 }
 
 func (this *Control) enableWidget_(enabled bool) {
-	_, ok4 := iscocoaNSViewTococoaNSControl(this.View)
-	if ok4 {
+	_, ok64 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok64 {
 		(castcocoaNSViewTococoaNSControl(this.View)).SetEnabled(enabled)
 	}
 	this.impl.updateCursorRects_(this.impl.isEnabled_())
@@ -969,13 +968,13 @@ func (this *Control) findBackgroundControl_() *Control {
 	if (this.backgroundImage != (nil) || this.background != (nil)) && this.backgroundAlpha > 0 {
 		return this
 	}
-	var cond5 *Control
+	var cond65 *Control
 	if this.parent != (nil) && !this.impl.isTransparent_() && (this.state&WidgetPARENT_BACKGROUND) != 0 {
-		cond5 = this.parent.impl.findBackgroundControl_()
+		cond65 = this.parent.impl.findBackgroundControl_()
 	} else {
-		cond5 = nil
+		cond65 = nil
 	}
-	return cond5
+	return cond65
 }
 
 func (this *Control) FindMenus(controlLike ControlLike) []*Menu {
@@ -1035,9 +1034,9 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) && func() bool {
-		cond6 := upcastCompositeToControl(control.parent)
-		control = cond6
-		return (cond6) != (nil)
+		cond66 := upcastCompositeToControl(control.parent)
+		control = cond66
+		return (cond66) != (nil)
 	}() {
 		if control.impl.setFocus_() {
 			return
@@ -1246,13 +1245,13 @@ func (this *Control) GetBackground() *Color {
 }
 
 func (this *Control) GetBackgroundColor() *Color {
-	var cond7 *Color
+	var cond67 *Color
 	if this.background != (nil) {
-		cond7 = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, this.backgroundAlpha)
+		cond67 = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, this.backgroundAlpha)
 	} else {
-		cond7 = this.impl.defaultBackground_()
+		cond67 = this.impl.defaultBackground_()
 	}
-	return cond7
+	return cond67
 }
 
 func (this *Control) GetBackgroundImage() *Image {
@@ -1300,13 +1299,13 @@ func (this *Control) GetEnabled() bool {
 
 func (this *Control) GetFont() *Font {
 	this.CheckWidget()
-	var cond8 *Font
+	var cond68 *Font
 	if this.font != (nil) {
-		cond8 = this.font
+		cond68 = this.font
 	} else {
-		cond8 = this.impl.defaultFont_()
+		cond68 = this.impl.defaultFont_()
 	}
-	return cond8
+	return cond68
 }
 
 func (this *Control) GetForeground() *Color {
@@ -1319,13 +1318,13 @@ func (this *Control) getForeground_() *Color {
 }
 
 func (this *Control) GetForegroundColor() *Color {
-	var cond9 *Color
+	var cond69 *Color
 	if this.foreground != (nil) {
-		cond9 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.foreground)
+		cond69 = ColorCocoa_new(upcastDisplayToDevice(this.display), this.foreground)
 	} else {
-		cond9 = this.impl.defaultForeground_()
+		cond69 = this.impl.defaultForeground_()
 	}
-	return cond9
+	return cond69
 }
 
 func (this *Control) GetLayoutData() any {
@@ -1387,29 +1386,29 @@ func (this *Control) GetMonitor() *Monitor {
 	var centerY int32 = bounds.Y + bounds.Height/2
 	for i := int32(0); i < int32(len(monitors)); i++ {
 		var rect *Rectangle = monitors[i].GetBounds()
-		var cond10 int32
+		var cond70 int32
 		if centerX > rect.X+rect.Width {
-			cond10 = centerX - rect.X - rect.Width
+			cond70 = centerX - rect.X - rect.Width
 		} else {
-			cond10 = 0
+			cond70 = 0
 		}
 		var x int32
 		if centerX < rect.X {
 			x = rect.X - centerX
 		} else {
-			x = cond10
+			x = cond70
 		}
-		var cond11 int32
+		var cond71 int32
 		if centerY > rect.Y+rect.Height {
-			cond11 = centerY - rect.Y - rect.Height
+			cond71 = centerY - rect.Y - rect.Height
 		} else {
-			cond11 = 0
+			cond71 = 0
 		}
 		var y int32
 		if centerY < rect.Y {
 			y = rect.Y - centerY
 		} else {
-			y = cond11
+			y = cond71
 		}
 		var distance int32 = x*x + y*y
 		if index == -1 || distance < value {
@@ -1797,7 +1796,7 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for control != (nil) && control != this && func() bool { _, ok12 := isControlToShell(control); return !(ok12) }() {
+	for control != (nil) && control != this && func() bool { _, ok72 := isControlToShell(control); return !(ok72) }() {
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -2588,8 +2587,8 @@ func (this *Control) removeRelation_() {
 		return
 	}
 	var accessibleElement *cocoa.NSObject = upcastcocoaNSViewTococoaNSObject(this.impl.focusView_())
-	viewAsControl, ok13 := iscocoaNSObjectTococoaNSControl(accessibleElement)
-	if ok13 {
+	viewAsControl, ok73 := iscocoaNSObjectTococoaNSControl(accessibleElement)
+	if ok73 {
 		if viewAsControl.Cell() != (nil) {
 			accessibleElement = upcastcocoaNSCellTococoaNSObject(viewAsControl.Cell())
 		}
@@ -3109,13 +3108,13 @@ func (this *Control) setFont_(font *Font) {
 		}
 	}
 	this.font = font
-	var cond14 *cocoa.NSFont
+	var cond74 *cocoa.NSFont
 	if font != (nil) {
-		cond14 = font.Handle
+		cond74 = font.Handle
 	} else {
-		cond14 = this.impl.defaultFont_().Handle
+		cond74 = this.impl.defaultFont_().Handle
 	}
-	this.impl.setFontFont_(cond14)
+	this.impl.setFontFont_(cond74)
 }
 
 func (this *Control) SetFontFont(font *cocoa.NSFont) {
@@ -3123,8 +3122,8 @@ func (this *Control) SetFontFont(font *cocoa.NSFont) {
 }
 
 func (this *Control) setFontFont_(font *cocoa.NSFont) {
-	_, ok15 := iscocoaNSViewTococoaNSControl(this.View)
-	if ok15 {
+	_, ok75 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok75 {
 		(castcocoaNSViewTococoaNSControl(this.View)).SetFont(font)
 	}
 }
@@ -3390,8 +3389,8 @@ func (this *Control) SetSmallSize() {
 }
 
 func (this *Control) setSmallSize_() {
-	_, ok16 := iscocoaNSViewTococoaNSControl(this.View)
-	if ok16 {
+	_, ok76 := iscocoaNSViewTococoaNSControl(this.View)
+	if ok76 {
 		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
 		if cell != (nil) {
 			cell.SetControlSize(int64(cocoa.OSNSControlSizeSmall))
@@ -3543,32 +3542,32 @@ func (this *Control) setZOrderSiblingAbove_(sibling *Control, above bool) {
 	var topView *cocoa.NSView = this.impl.topView_()
 	topView.Retain()
 	topView.RemoveFromSuperview()
-	var cond17 int32
+	var cond77 int32
 	if above {
-		cond17 = cocoa.OSNSWindowAbove
+		cond77 = cocoa.OSNSWindowAbove
 	} else {
-		cond17 = cocoa.OSNSWindowBelow
+		cond77 = cocoa.OSNSWindowBelow
 	}
-	this.parent.impl.contentView_().AddSubviewAViewPlaceOtherView(topView, int64(cond17), otherView)
+	this.parent.impl.contentView_().AddSubviewAViewPlaceOtherView(topView, int64(cond77), otherView)
 	topView.Release()
 	this.impl.invalidateVisibleRegion_()
 	if sibling != (nil) {
 		if above {
-			var cond18 int32
+			var cond78 int32
 			if index < siblingIndex {
-				cond18 = 1
+				cond78 = 1
 			} else {
-				cond18 = 0
+				cond78 = 0
 			}
-			index = siblingIndex - (cond18)
+			index = siblingIndex - (cond78)
 		} else {
-			var cond19 int32
+			var cond79 int32
 			if siblingIndex < index {
-				cond19 = 1
+				cond79 = 1
 			} else {
-				cond19 = 0
+				cond79 = 0
 			}
-			index = siblingIndex + (cond19)
+			index = siblingIndex + (cond79)
 		}
 	} else {
 		if above {
@@ -3707,9 +3706,9 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 		if endedTouch != (nil) {
 			currentTouches.RemoveObject(upcastcocoaNSTouchTococoaId(endedTouch))
 		}
-		t20 := currTouchIndex
+		t80 := currTouchIndex
 		currTouchIndex++
-		touches[t20] = this.TouchStateFromNSTouch(touch)
+		touches[t80] = this.TouchStateFromNSTouch(touch)
 	}
 	if currentTouches.Count() == 0 {
 		this.display.touchCounter = 0
@@ -3722,9 +3721,9 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 		if activeTouch == (nil) {
 			currentTouches.AddObject(upcastcocoaNSTouchTococoaId(touch))
 		}
-		t21 := currTouchIndex
+		t81 := currTouchIndex
 		currTouchIndex++
-		touches[t21] = this.TouchStateFromNSTouch(touch)
+		touches[t81] = this.TouchStateFromNSTouch(touch)
 	}
 	if activeTouches.Count() != currentTouches.Count() {
 		for j := int64(currentTouches.Count() - 1); j >= 0; j-- {
@@ -3739,9 +3738,9 @@ func (this *Control) TouchEvent(id int64, sel int64, eventPtr int64) bool {
 					copy(newTouchStates[0:], touches[0:0+int32(len(touches))])
 					touches = newTouchStates
 				}
-				t22 := currTouchIndex
+				t82 := currTouchIndex
 				currTouchIndex++
-				touches[t22] = fakeTouchUp
+				touches[t82] = fakeTouchUp
 				currentTouches.RemoveObject(upcastcocoaNSTouchTococoaId(activeTouch))
 			}
 		}
@@ -4091,9 +4090,9 @@ func (this *Control) TraverseGroup(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond23 := ((index + offset + length) % length)
-		index = cond23
-		if !((cond23) != start) {
+		cond83 := ((index + offset + length) % length)
+		index = cond83
+		if !((cond83) != start) {
 			break
 		}
 		var widget *Widget = list[index]
@@ -4132,9 +4131,9 @@ func (this *Control) traverseItem_(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond24 := (index + offset + length) % length
-		index = cond24
-		if !((cond24) != start) {
+		cond84 := (index + offset + length) % length
+		index = cond84
+		if !((cond84) != start) {
 			break
 		}
 		var child *Control = children[index]
@@ -4264,13 +4263,13 @@ func (this *Control) updateBackgroundImage_() {
 	} else {
 		image = this.backgroundImage
 	}
-	var cond25 *cocoa.NSImage
+	var cond85 *cocoa.NSImage
 	if image != (nil) {
-		cond25 = image.Handle
+		cond85 = image.Handle
 	} else {
-		cond25 = nil
+		cond85 = nil
 	}
-	this.impl.setBackgroundImageImage_(cond25)
+	this.impl.setBackgroundImageImage_(cond85)
 }
 
 func (this *Control) UpdateBackgroundMode() {

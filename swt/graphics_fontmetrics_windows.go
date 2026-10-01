@@ -33,8 +33,8 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	_, ok1 := fontMetricsImplAsFontMetrics(object)
-	if !(ok1) {
+	_, ok425 := fontMetricsImplAsFontMetrics(object)
+	if !(ok425) {
 		return false
 	}
 	var metric *win32.TEXTMETRIC = (castanyToFontMetrics(object)).Handle

@@ -43,17 +43,17 @@ func (this *TreeEditor) initTreeEditor(tree *Tree) {
 	this.ControlEditor.initControlEditor(upcastTreeToComposite(tree))
 	this.column = 0
 	this.tree = tree
-	anon1 := &TreeEditorAnon1{}
-	anon1.fnControlMoved = func(e *ControlEvent) {
+	anon676 := &TreeEditorAnon1{}
+	anon676.fnControlMoved = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	anon1.fnControlResized = func(e *ControlEvent) {
+	anon676.fnControlResized = func(e *ControlEvent) {
 		this.impl.layout_()
 	}
-	this.columnListener = anon1
+	this.columnListener = anon676
 	this.timer = jrt.NewRunnable(this.Layout)
-	anon2 := &TreeEditorAnon2{}
-	anon2.runnable = jrt.NewRunnable(func() {
+	anon677 := &TreeEditorAnon2{}
+	anon677.runnable = jrt.NewRunnable(func() {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
@@ -63,21 +63,21 @@ func (this *TreeEditor) initTreeEditor(tree *Tree) {
 		this.impl.layout_()
 		this.editor.impl.setVisible_(true)
 	})
-	anon2.fnTreeCollapsed = func(e *TreeEvent) {
+	anon677.fnTreeCollapsed = func(e *TreeEvent) {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
 		this.editor.impl.setVisible_(false)
-		e.Display.AsyncExec(anon2.runnable)
+		e.Display.AsyncExec(anon677.runnable)
 	}
-	anon2.fnTreeExpanded = func(e *TreeEvent) {
+	anon677.fnTreeExpanded = func(e *TreeEvent) {
 		if this.editor == (nil) || this.editor.IsDisposed() {
 			return
 		}
 		this.editor.impl.setVisible_(false)
-		e.Display.AsyncExec(anon2.runnable)
+		e.Display.AsyncExec(anon677.runnable)
 	}
-	this.treeListener = anon2
+	this.treeListener = anon677
 	tree.AddTreeListener(this.treeListener)
 	this.GrabVertical = true
 }

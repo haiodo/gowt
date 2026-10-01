@@ -365,10 +365,7 @@ func SwtTestUtilDumpShellState(out any) {
 		var indent *jrt.StringBuilder = jrt.NewStringBuilder()
 		for {
 			var bounds *swt.Rectangle = focusControl.GetBounds()
-			func() any {
-				_ = []any{out, "  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{int32(jrt.HashCodeOf(focusControl)), int32(bounds.X), int32(bounds.Y), int32(bounds.Width), int32(bounds.Height), indent, focusControl}}
-				panic("j2go: unresolved call format")
-			}()
+			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{jrt.HashCodeOf(focusControl), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}))
 			focusControl = upcastswtCompositeToswtControl(focusControl.GetParent())
 			indent.Append("  ")
 			if !(focusControl != (nil)) {
@@ -395,10 +392,7 @@ func SwtTestUtilDumpShellState(out any) {
 			} else {
 				cond7 = 'N'
 			}
-			func() any {
-				_ = []any{out, "  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{int32(jrt.HashCodeOf(shell)), uint16(cond6), uint16(cond7), int32(bounds.X), int32(bounds.Y), int32(bounds.Width), int32(bounds.Height), shell.GetText()}}
-				panic("j2go: unresolved call format")
-			}()
+			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{jrt.HashCodeOf(shell), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}))
 		}
 	}
 }

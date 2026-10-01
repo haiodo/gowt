@@ -66,13 +66,13 @@ func (this *Test_org_eclipse_swt_widgets_Text) Test_addModifyListenerLorg_eclips
 
 func (this *Test_org_eclipse_swt_widgets_Text) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon1 := &Test_org_eclipse_swt_widgets_TextAnon1{}
-	anon1.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon77 := &Test_org_eclipse_swt_widgets_TextAnon1{}
+	anon77.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon1.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon77.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon1
+	var listener swt.SelectionListener = anon77
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.text.AddSelectionListener(nil)
 	})
@@ -1137,21 +1137,21 @@ func (this *Test_org_eclipse_swt_widgets_Text) MakeCleanEnvironmentSingleBorder(
 		this.text.Dispose()
 	}
 	if single == true {
-		var cond2 int32
+		var cond78 int32
 		if border {
-			cond2 = swt.BORDER
+			cond78 = swt.BORDER
 		} else {
-			cond2 = swt.NULL
+			cond78 = swt.NULL
 		}
-		this.text = swt.NewText(upcastswtShellToswtComposite(this.shell), swt.SINGLE|(cond2))
+		this.text = swt.NewText(upcastswtShellToswtComposite(this.shell), swt.SINGLE|(cond78))
 	} else {
-		var cond3 int32
+		var cond79 int32
 		if border {
-			cond3 = swt.BORDER
+			cond79 = swt.BORDER
 		} else {
-			cond3 = swt.NULL
+			cond79 = swt.NULL
 		}
-		this.text = swt.NewText(upcastswtShellToswtComposite(this.shell), swt.MULTI|swt.V_SCROLL|swt.H_SCROLL|(cond3))
+		this.text = swt.NewText(upcastswtShellToswtComposite(this.shell), swt.MULTI|swt.V_SCROLL|swt.H_SCROLL|(cond79))
 	}
 	this.impl.setWidget_(upcastswtTextToswtWidget(this.text))
 	this.delimiterString = swt.TextDELIMITER
@@ -1206,9 +1206,9 @@ func (this *Test_org_eclipse_swt_widgets_Text) Test_consistency_Segments() {
 	{
 		var i int32 = int32(len(singleLine))
 		for {
-			t5 := i
+			t81 := i
 			i--
-			if !(t5 > 0) {
+			if !(t81 > 0) {
 				break
 			}
 			this.MakeCleanEnvironment(singleLine[i])

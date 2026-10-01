@@ -307,13 +307,13 @@ func (this *ShellTab) getMethodNames_() []string {
 }
 
 func (this *ShellTab) getExampleWidgets_() []*swt.Widget {
-	var cond1 []*swt.Widget
+	var cond27 []*swt.Widget
 	if this.shellCount == 0 {
-		cond1 = make([]*swt.Widget, 0)
+		cond27 = make([]*swt.Widget, 0)
 	} else {
-		cond1 = upcastArrswtShellToswtWidget(this.shells)
+		cond27 = upcastArrswtShellToswtWidget(this.shells)
 	}
-	return cond1
+	return cond27
 }
 
 func upcastswtShellToswtWidget(x *swt.Shell) *swt.Widget {

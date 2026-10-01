@@ -13,14 +13,14 @@ import (
 type WidgetImpl interface {
 	_addListener_(a0 int32, a1 Listener)
 	_removeListener_(a0 int32, a1 Listener)
-	callWindowProcHwndMsgWParamLParam_(a0 int64, a1 int32, a2 int64, a3 int64) int64
+	callWindowProc_(a0 int64, a1 int32, a2 int64, a3 int64) int64
 	checkOpened_()
 	checkParent_(a0 *Widget)
 	checkSubclass_()
 	destroyWidget_()
 	dispose_()
 	dragDetectHwndXYFilterDetectConsume_(a0 int64, a1 int32, a2 int32, a3 bool, a4 []bool, a5 []bool) bool
-	findItemId_(a0 int64) *Widget
+	findItem_(a0 int64) *Widget
 	getDataKey_(a0 string) any
 	getMenu_() *Menu
 	getNameText_() string
@@ -49,12 +49,12 @@ type WidgetImpl interface {
 	wmSysKeyDown_(a0 int64, a1 int64, a2 int64) *win32.LRESULT
 	createNewGC_(a0 int64, a1 *GCData) *GC
 	getAutoscalingZoom_() int32
-	handleDPIChangeEventScalingFactor_(a0 *Event, a1 float32)
+	handleDPIChange_(a0 *Event, a1 float32)
 	getSystemMetrics_(a0 int32) int32
 	borderHandle_() int64
 	checkBorder_()
 	checkBuffered_()
-	checkCompositedNoArgs_()
+	checkComposited_()
 	computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point
 	computeSizeInPixels_(a0 *Point, a1 int32, a2 bool) *Point
 	computeTabGroup_() *Widget
@@ -69,7 +69,7 @@ type WidgetImpl interface {
 	deregister_()
 	drawThemeBackground_(a0 int64, a1 int64, a2 *win32.RECT)
 	enableDrag_(a0 bool)
-	maybeEnableDarkSystemThemeNoArgs_()
+	maybeEnableDarkSystemTheme0_()
 	enableWidget_(a0 bool)
 	findBackgroundControl_() *Control
 	findBrush_(a0 int64, a1 int32) int64
@@ -114,11 +114,11 @@ type WidgetImpl interface {
 	sendResize_()
 	setBackgroundWithColor_(a0 *Color)
 	setBackgroundImage_(a0 *Image)
-	setBackgroundImageHBitmapHBitmap_(a0 int64)
+	setBackgroundImageHBitmap_(a0 int64)
 	setBackgroundPixel_(a0 int32)
 	setBounds_(a0 int32, a1 int32, a2 int32, a3 int32)
-	setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32)
-	setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 bool)
+	setBoundsInPixelsXYWidthHeightFlags_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32)
+	setBoundsInPixelsXYWidthHeightFlagsDefer_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 bool)
 	setBoundsRect_(a0 *Rectangle)
 	setCursorNoArgs_()
 	setCursor_(a0 *Cursor)
@@ -137,7 +137,7 @@ type WidgetImpl interface {
 	setRedraw_(a0 bool)
 	setRegion_(a0 *Region)
 	setToolTipText_(a0 string)
-	setToolTipTextShellStringShellString_(a0 *Shell, a1 string)
+	setToolTipTextShellString_(a0 *Shell, a1 string)
 	setVisible_(a0 bool)
 	subclass_()
 	topHandle_() int64
@@ -155,7 +155,7 @@ type WidgetImpl interface {
 	updateBackgroundImage_()
 	updateBackgroundMode_()
 	updateFont_(a0 *Font, a1 *Font)
-	updateLayoutResizeAll_(a0 bool, a1 bool)
+	updateLayout_(a0 bool, a1 bool)
 	updateOrientation_()
 	updateTextDirection_(a0 int32) bool
 	widgetCreateStruct_() *win32.CREATESTRUCT
@@ -166,8 +166,8 @@ type WidgetImpl interface {
 	computeGetBoundsZoom_() int32
 	computeBoundsZoom_() int32
 	windowClass_() *win32.TCHAR
-	windowProcNoArgs_() int64
-	windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(a0 int64, a1 int32, a2 int64, a3 int64) int64
+	windowProc_() int64
+	windowProcHwndMsgWParamLParam_(a0 int64, a1 int32, a2 int64, a3 int64) int64
 	wM_ACTIVATE_(a0 int64, a1 int64) *win32.LRESULT
 	wM_CAPTURECHANGED_(a0 int64, a1 int64) *win32.LRESULT
 	wM_CHAR_(a0 int64, a1 int64) *win32.LRESULT
@@ -263,7 +263,7 @@ type WidgetImpl interface {
 	setMaximized_(a0 bool)
 	setMenuBar_(a0 *Menu)
 	setMinimized_(a0 bool)
-	setParentNoArgs_()
+	setParent0_()
 	hwndToolTip_() int64
 }
 
@@ -279,8 +279,8 @@ func (this *Widget) checkBuffered_() {
 	panic("j2go: checkBuffered_ has no default on Widget")
 }
 
-func (this *Widget) checkCompositedNoArgs_() {
-	panic("j2go: checkCompositedNoArgs_ has no default on Widget")
+func (this *Widget) checkComposited_() {
+	panic("j2go: checkComposited_ has no default on Widget")
 }
 
 func (this *Widget) computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 bool) *Point {
@@ -339,8 +339,8 @@ func (this *Widget) enableDrag_(a0 bool) {
 	panic("j2go: enableDrag_ has no default on Widget")
 }
 
-func (this *Widget) maybeEnableDarkSystemThemeNoArgs_() {
-	panic("j2go: maybeEnableDarkSystemThemeNoArgs_ has no default on Widget")
+func (this *Widget) maybeEnableDarkSystemTheme0_() {
+	panic("j2go: maybeEnableDarkSystemTheme0_ has no default on Widget")
 }
 
 func (this *Widget) enableWidget_(a0 bool) {
@@ -519,8 +519,8 @@ func (this *Widget) setBackgroundImage_(a0 *Image) {
 	panic("j2go: setBackgroundImage_ has no default on Widget")
 }
 
-func (this *Widget) setBackgroundImageHBitmapHBitmap_(a0 int64) {
-	panic("j2go: setBackgroundImageHBitmapHBitmap_ has no default on Widget")
+func (this *Widget) setBackgroundImageHBitmap_(a0 int64) {
+	panic("j2go: setBackgroundImageHBitmap_ has no default on Widget")
 }
 
 func (this *Widget) setBackgroundPixel_(a0 int32) {
@@ -531,12 +531,12 @@ func (this *Widget) setBounds_(a0 int32, a1 int32, a2 int32, a3 int32) {
 	panic("j2go: setBounds_ has no default on Widget")
 }
 
-func (this *Widget) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32) {
-	panic("j2go: setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_ has no default on Widget")
+func (this *Widget) setBoundsInPixelsXYWidthHeightFlags_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32) {
+	panic("j2go: setBoundsInPixelsXYWidthHeightFlags_ has no default on Widget")
 }
 
-func (this *Widget) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 bool) {
-	panic("j2go: setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_ has no default on Widget")
+func (this *Widget) setBoundsInPixelsXYWidthHeightFlagsDefer_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 bool) {
+	panic("j2go: setBoundsInPixelsXYWidthHeightFlagsDefer_ has no default on Widget")
 }
 
 func (this *Widget) setBoundsRect_(a0 *Rectangle) {
@@ -611,8 +611,8 @@ func (this *Widget) setToolTipText_(a0 string) {
 	panic("j2go: setToolTipText_ has no default on Widget")
 }
 
-func (this *Widget) setToolTipTextShellStringShellString_(a0 *Shell, a1 string) {
-	panic("j2go: setToolTipTextShellStringShellString_ has no default on Widget")
+func (this *Widget) setToolTipTextShellString_(a0 *Shell, a1 string) {
+	panic("j2go: setToolTipTextShellString_ has no default on Widget")
 }
 
 func (this *Widget) setVisible_(a0 bool) {
@@ -683,8 +683,8 @@ func (this *Widget) updateFont_(a0 *Font, a1 *Font) {
 	panic("j2go: updateFont_ has no default on Widget")
 }
 
-func (this *Widget) updateLayoutResizeAll_(a0 bool, a1 bool) {
-	panic("j2go: updateLayoutResizeAll_ has no default on Widget")
+func (this *Widget) updateLayout_(a0 bool, a1 bool) {
+	panic("j2go: updateLayout_ has no default on Widget")
 }
 
 func (this *Widget) updateOrientation_() {
@@ -727,12 +727,12 @@ func (this *Widget) windowClass_() *win32.TCHAR {
 	panic("j2go: windowClass_ has no default on Widget")
 }
 
-func (this *Widget) windowProcNoArgs_() int64 {
-	panic("j2go: windowProcNoArgs_ has no default on Widget")
+func (this *Widget) windowProc_() int64 {
+	panic("j2go: windowProc_ has no default on Widget")
 }
 
-func (this *Widget) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(a0 int64, a1 int32, a2 int64, a3 int64) int64 {
-	panic("j2go: windowProcHwndMsgWParamLParamHwndMsgWParamLParam_ has no default on Widget")
+func (this *Widget) windowProcHwndMsgWParamLParam_(a0 int64, a1 int32, a2 int64, a3 int64) int64 {
+	panic("j2go: windowProcHwndMsgWParamLParam_ has no default on Widget")
 }
 
 func (this *Widget) wM_ACTIVATE_(a0 int64, a1 int64) *win32.LRESULT {
@@ -1115,8 +1115,8 @@ func (this *Widget) setMinimized_(a0 bool) {
 	panic("j2go: setMinimized_ has no default on Widget")
 }
 
-func (this *Widget) setParentNoArgs_() {
-	panic("j2go: setParentNoArgs_ has no default on Widget")
+func (this *Widget) setParent0_() {
+	panic("j2go: setParent0_ has no default on Widget")
 }
 
 func (this *Widget) hwndToolTip_() int64 {
@@ -1737,7 +1737,7 @@ func (this *Widget) RegisterDPIChangeListener() {
 	if this.display.IsRescalingAtRuntime() {
 		this.impl._addListener_(ZoomChanged, &ListenerFunc{fn: func(event *Event) {
 			var scalingFactor float32 = 1 * float32(DPIUtilGetZoomForAutoscaleProperty(event.Detail)) / float32(DPIUtilGetZoomForAutoscaleProperty(this.NativeZoom))
-			this.impl.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+			this.impl.handleDPIChange_(event, scalingFactor)
 		}})
 	}
 }
@@ -1787,11 +1787,11 @@ func (this *Widget) AddDisposeListener(listener DisposeListener) {
 	this.AddTypedListener(listener, []int32{Dispose})
 }
 
-func (this *Widget) CallWindowProcHwndMsgWParamLParam(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
-	return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+func (this *Widget) CallWindowProc(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+	return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
 }
 
-func (this *Widget) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Widget) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	return int64(0)
 }
 
@@ -1841,7 +1841,7 @@ func (this *Widget) checkParent_(parent *Widget) {
 	parent.impl.checkOpened_()
 }
 
-func (this *Widget) MaybeEnableDarkSystemThemeHandle(handle int64) {
+func (this *Widget) MaybeEnableDarkSystemTheme(handle int64) {
 	if this.display.useDarkModeExplorerTheme {
 		win32.OSAllowDarkModeForWindow(handle, true)
 		win32.OSSetWindowTheme(handle, DisplayEXPLORER, nil)
@@ -1919,11 +1919,11 @@ func (this *Widget) Filters(eventType int32) bool {
 	return this.display.Filters(eventType)
 }
 
-func (this *Widget) FindItemId(id int64) *Widget {
-	return this.impl.findItemId_(id)
+func (this *Widget) FindItem(id int64) *Widget {
+	return this.impl.findItem_(id)
 }
 
-func (this *Widget) findItemId_(id int64) *Widget {
+func (this *Widget) findItem_(id int64) *Widget {
 	return nil
 }
 
@@ -1943,12 +1943,12 @@ func (this *Widget) FixMnemonicStringSpacesRemoveAppended(string_ string, spaces
 	for i < int32(len(buffer)) {
 		if int32(buffer[i]) == int32('&') {
 			if i+1 < int32(len(buffer)) && int32(buffer[i+1]) == int32('&') {
-				t1 := j
+				t57 := j
 				j++
 				if spaces {
-					buffer[t1] = ' '
+					buffer[t57] = ' '
 				} else {
-					buffer[t1] = buffer[i]
+					buffer[t57] = buffer[i]
 				}
 				i++
 			}
@@ -1956,37 +1956,37 @@ func (this *Widget) FixMnemonicStringSpacesRemoveAppended(string_ string, spaces
 		} else {
 			if int32(buffer[i]) == int32('(') && removeAppended && i+4 == jrt.StringLength(string_) && int32(buffer[i+1]) == int32('&') && int32(buffer[i+3]) == int32(')') {
 				if spaces {
-					t2 := j
+					t58 := j
 					j++
-					buffer[t2] = ' '
+					buffer[t58] = ' '
 				}
 				i += 4
 			} else {
-				t3 := j
+				t59 := j
 				j++
-				t4 := i
+				t60 := i
 				i++
-				buffer[t3] = buffer[t4]
+				buffer[t59] = buffer[t60]
 			}
 		}
 	}
 	for j < int32(len(buffer)) {
-		t5 := j
+		t61 := j
 		j++
-		buffer[t5] = uint16(0)
+		buffer[t61] = uint16(0)
 	}
 	return buffer
 }
 
 func (this *Widget) GetData() any {
 	this.CheckWidget()
-	var cond6 any
+	var cond62 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond6 = (this.data.([]any))[0]
+		cond62 = (this.data.([]any))[0]
 	} else {
-		cond6 = this.data
+		cond62 = this.data
 	}
-	return cond6
+	return cond62
 }
 
 func (this *Widget) GetDataKey(key string) any {
@@ -1998,8 +1998,10 @@ func (this *Widget) getDataKey_(key string) any {
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	table, ok8 := this.data.([]any)
-	if (this.state&WidgetKEYED_DATA) != 0 && ok8 {
+	var table []any
+	pv, ok64 := this.data.([]any)
+	table = pv
+	if (this.state&WidgetKEYED_DATA) != 0 && ok64 {
 		for i := int32(1); i < int32(len(table)); i += 2 {
 			if key == table[i] {
 				return table[i+1]
@@ -2025,7 +2027,7 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 	return this.eventTable.GetListeners(eventType)
 }
 
-func (this *Widget) GetMenu() *Menu {
+func (this *Widget) GetMenu0() *Menu {
 	return this.impl.getMenu_()
 }
 
@@ -2388,7 +2390,7 @@ func (this *Widget) SendSelectionEventEventTypeEventSend(type_ int32, eventLike 
 	this.SendEventEventTypeEventSend(type_, event, send)
 }
 
-func (this *Widget) SendKeyEventTypeMsgWParamLParam(type_ int32, msg int32, wParam int64, lParam int64) bool {
+func (this *Widget) SendKeyEventLocal1(type_ int32, msg int32, wParam int64, lParam int64) bool {
 	var event *Event = NewEvent()
 	if !this.SetKeyState(event, type_, wParam, lParam) {
 		return true
@@ -2444,9 +2446,9 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 		return true
 	}
 	var vertical bool = (type_ == MouseWheel)
-	inner9 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
-	inner9.this_0 = this
-	var wheelData *Widget_MouseWheelData = inner9
+	inner65 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
+	inner65.this_0 = this
+	var wheelData *Widget_MouseWheelData = inner65
 	if wheelData.count == 0 {
 		return true
 	}
@@ -2799,7 +2801,7 @@ func (this *Widget) WmChar(hwnd int64, wParam int64, lParam int64) *win32.LRESUL
 
 func (this *Widget) wmChar_(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
 	this.display.lastAscii = int32(wParam)
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_CHAR, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -2830,13 +2832,13 @@ func (this *Widget) WmContextMenu(hwnd int64, wParam int64, lParam int64) *win32
 		y = win32.OSGET_Y_LPARAM(int64(pos))
 		detail = MENU_KEYBOARD
 	}
-	var cond10 *win32.LRESULT
+	var cond66 *win32.LRESULT
 	if this.ShowMenuXYDetail(x, y, detail) {
-		cond10 = win32.LRESULTZERO
+		cond66 = win32.LRESULTZERO
 	} else {
-		cond10 = nil
+		cond66 = nil
 	}
-	return cond10
+	return cond66
 }
 
 func (this *Widget) WmIMEChar(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -2849,10 +2851,10 @@ func (this *Widget) wmIMEChar_(hwnd int64, wParam int64, lParam int64) *win32.LR
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTONE
 	}
-	this.SendKeyEventTypeMsgWParamLParam(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.LRESULTONE
@@ -2934,7 +2936,7 @@ func (this *Widget) wmKeyDown_(hwnd int64, wParam int64, lParam int64) *win32.LR
 	if isCharPending {
 		return nil
 	}
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_KEYDOWN, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_KEYDOWN, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -2967,7 +2969,7 @@ func (this *Widget) WmKeyUp(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 		}
 	}
 	var result *win32.LRESULT = nil
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyUp, win32.OSWM_KEYUP, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyUp, win32.OSWM_KEYUP, wParam, lParam) {
 		result = win32.LRESULTONE
 	}
 	display.lastAscii = 0
@@ -2986,7 +2988,7 @@ func (this *Widget) wmKillFocus_(hwnd int64, wParam int64, lParam int64) *win32.
 	this.display.scrollRemainderEvt.Y = 0
 	this.display.scrollRemainderBar.X = 0
 	this.display.scrollRemainderBar.Y = 0
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_KILLFOCUS, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_KILLFOCUS, wParam, lParam)
 	this.impl.sendFocusEvent_(FocusOut)
 	if this.IsDisposed() {
 		return win32.LRESULTZERO
@@ -3003,7 +3005,7 @@ func (this *Widget) WmLButtonDblClk(hwnd int64, wParam int64, lParam int64) *win
 	display.captureChanged = false
 	this.SendMouseEvent(MouseDown, 1, hwnd, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, 1, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_LBUTTONDBLCLK, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_LBUTTONDBLCLK, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3037,7 +3039,7 @@ func (this *Widget) WmLButtonDown(hwnd int64, wParam int64, lParam int64) *win32
 	display.captureChanged = false
 	var dispatch bool = this.SendMouseEventTypeButtonCountDetailSendHwndLParam(MouseDown, 1, count, 0, false, hwnd, lParam)
 	if dispatch && (consume == (nil) || !consume[0]) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_LBUTTONDOWN, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_LBUTTONDOWN, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3064,7 +3066,7 @@ func (this *Widget) WmLButtonUp(hwnd int64, wParam int64, lParam int64) *win32.L
 	var display *Display = this.display
 	var result *win32.LRESULT = nil
 	if this.SendMouseEvent(MouseUp, 1, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_LBUTTONUP, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_LBUTTONUP, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3086,7 +3088,7 @@ func (this *Widget) WmMButtonDblClk(hwnd int64, wParam int64, lParam int64) *win
 	display.captureChanged = false
 	this.SendMouseEvent(MouseDown, 2, hwnd, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, 2, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_MBUTTONDBLCLK, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_MBUTTONDBLCLK, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3103,7 +3105,7 @@ func (this *Widget) WmMButtonDown(hwnd int64, wParam int64, lParam int64) *win32
 	var display *Display = this.display
 	display.captureChanged = false
 	if this.SendMouseEvent(MouseDown, 2, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_MBUTTONDOWN, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_MBUTTONDOWN, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3119,7 +3121,7 @@ func (this *Widget) WmMButtonUp(hwnd int64, wParam int64, lParam int64) *win32.L
 	var display *Display = this.display
 	var result *win32.LRESULT = nil
 	if this.SendMouseEvent(MouseUp, 2, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_MBUTTONUP, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_MBUTTONUP, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3196,23 +3198,23 @@ func (this *Widget) WmMouseMove(hwnd int64, wParam int64, lParam int64) *win32.L
 }
 
 func (this *Widget) WmMouseWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond11 *win32.LRESULT
+	var cond67 *win32.LRESULT
 	if this.SendMouseWheelEvent(MouseWheel, hwnd, wParam, lParam) {
-		cond11 = nil
+		cond67 = nil
 	} else {
-		cond11 = win32.LRESULTZERO
+		cond67 = win32.LRESULTZERO
 	}
-	return cond11
+	return cond67
 }
 
 func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond12 *win32.LRESULT
+	var cond68 *win32.LRESULT
 	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
-		cond12 = nil
+		cond68 = nil
 	} else {
-		cond12 = win32.LRESULTZERO
+		cond68 = win32.LRESULTZERO
 	}
-	return cond12
+	return cond68
 }
 
 func (this *Widget) WmNCPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3229,7 +3231,7 @@ func (this *Widget) WmPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 	}
 	var rgn int64 = win32.OSCreateRectRgn(0, 0, 0, 0)
 	win32.OSGetUpdateRgn(hwnd, rgn, false)
-	var result int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_PAINT, wParam, lParam)
+	var result int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_PAINT, wParam, lParam)
 	var data *GCData = NewGCData()
 	data.Hwnd = hwnd
 	var gc *GC = this.impl.new_GC_(data)
@@ -3263,7 +3265,7 @@ func (this *Widget) WmPrint(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 	if (lParam & int64(win32.OSPRF_NONCLIENT)) != 0 {
 		var bits int32 = win32.OSGetWindowLong(hwnd, win32.OSGWL_EXSTYLE)
 		if (bits & win32.OSWS_EX_CLIENTEDGE) != 0 {
-			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_PRINT, wParam, lParam)
+			var code int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_PRINT, wParam, lParam)
 			var rect *win32.RECT = win32.NewRECT()
 			win32.OSGetWindowRect(hwnd, rect)
 			rect.Right -= rect.Left
@@ -3285,7 +3287,7 @@ func (this *Widget) WmRButtonDblClk(hwnd int64, wParam int64, lParam int64) *win
 	display.captureChanged = false
 	this.SendMouseEvent(MouseDown, 3, hwnd, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, 3, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_RBUTTONDBLCLK, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_RBUTTONDBLCLK, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3302,7 +3304,7 @@ func (this *Widget) WmRButtonDown(hwnd int64, wParam int64, lParam int64) *win32
 	var display *Display = this.display
 	display.captureChanged = false
 	if this.SendMouseEvent(MouseDown, 3, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_RBUTTONDOWN, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_RBUTTONDOWN, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3318,7 +3320,7 @@ func (this *Widget) WmRButtonUp(hwnd int64, wParam int64, lParam int64) *win32.L
 	var display *Display = this.display
 	var result *win32.LRESULT = nil
 	if this.SendMouseEvent(MouseUp, 3, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_RBUTTONUP, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_RBUTTONUP, wParam, lParam))
 	} else {
 		win32.OSDefWindowProc(hwnd, win32.OSWM_RBUTTONUP, wParam, lParam)
 		result = win32.LRESULTZERO
@@ -3336,7 +3338,7 @@ func (this *Widget) WmRButtonUp(hwnd int64, wParam int64, lParam int64) *win32.L
 }
 
 func (this *Widget) WmSetFocus(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_SETFOCUS, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_SETFOCUS, wParam, lParam)
 	this.impl.sendFocusEvent_(FocusIn)
 	if this.IsDisposed() {
 		return win32.LRESULTZERO
@@ -3355,20 +3357,20 @@ func (this *Widget) WmSysChar(hwnd int64, wParam int64, lParam int64) *win32.LRE
 	}
 	var oldKeyHit bool = display.mnemonicKeyHit
 	display.mnemonicKeyHit = true
-	var result int64 = this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_SYSCHAR, wParam, lParam)
+	var result int64 = this.impl.callWindowProc_(hwnd, win32.OSWM_SYSCHAR, wParam, lParam)
 	var consumed bool = false
 	if !display.mnemonicKeyHit {
-		consumed = !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_SYSCHAR, wParam, lParam)
+		consumed = !this.SendKeyEventLocal1(KeyDown, win32.OSWM_SYSCHAR, wParam, lParam)
 	}
 	consumed = consumed || display.mnemonicKeyHit
 	display.mnemonicKeyHit = oldKeyHit
-	var cond13 *win32.LRESULT
+	var cond69 *win32.LRESULT
 	if consumed {
-		cond13 = win32.LRESULTONE
+		cond69 = win32.LRESULTONE
 	} else {
-		cond13 = win32.NewLRESULT(result)
+		cond69 = win32.NewLRESULT(result)
 	}
-	return cond13
+	return cond69
 }
 
 func (this *Widget) WmSysKeyDown(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3442,7 +3444,7 @@ func (this *Widget) wmSysKeyDown_(hwnd int64, wParam int64, lParam int64) *win32
 	if isCharPending {
 		return nil
 	}
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_SYSKEYDOWN, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_SYSKEYDOWN, wParam, lParam) {
 		return win32.LRESULTONE
 	}
 	return nil
@@ -3464,7 +3466,7 @@ func (this *Widget) WmXButtonDblClk(hwnd int64, wParam int64, lParam int64) *win
 	}
 	this.SendMouseEvent(MouseDown, button, hwnd, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, button, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_XBUTTONDBLCLK, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_XBUTTONDBLCLK, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3488,7 +3490,7 @@ func (this *Widget) WmXButtonDown(hwnd int64, wParam int64, lParam int64) *win32
 		button = 5
 	}
 	if this.SendMouseEvent(MouseDown, button, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_XBUTTONDOWN, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_XBUTTONDOWN, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3510,7 +3512,7 @@ func (this *Widget) WmXButtonUp(hwnd int64, wParam int64, lParam int64) *win32.L
 		button = 5
 	}
 	if this.SendMouseEvent(MouseUp, button, hwnd, lParam) {
-		result = win32.NewLRESULT(this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_XBUTTONUP, wParam, lParam))
+		result = win32.NewLRESULT(this.impl.callWindowProc_(hwnd, win32.OSWM_XBUTTONUP, wParam, lParam))
 	} else {
 		result = win32.LRESULTZERO
 	}
@@ -3559,15 +3561,15 @@ func (this *Widget) getAutoscalingZoom_() int32 {
 	return DPIUtilGetZoomForAutoscaleProperty(this.NativeZoom)
 }
 
-func (this *Widget) HandleDPIChangeEventScalingFactor(eventLike EventLike, scalingFactor float32) {
+func (this *Widget) HandleDPIChange(eventLike EventLike, scalingFactor float32) {
 	var event *Event
 	if eventLike != nil {
 		event = eventLike.AsEvent()
 	}
-	this.impl.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+	this.impl.handleDPIChange_(event, scalingFactor)
 }
 
-func (this *Widget) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
+func (this *Widget) handleDPIChange_(event *Event, scalingFactor float32) {
 	this.NativeZoom = event.Detail
 }
 

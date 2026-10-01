@@ -46,7 +46,7 @@ func (this *Group) initGroup(parent *Composite, style int32) {
 	this.text = ""
 }
 
-func (this *Group) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Group) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -69,13 +69,13 @@ func (this *Group) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed
 	var length int32 = jrt.StringLength(this.text)
 	if length != 0 {
 		var string_ string = this.FixText()
-		var cond1 string
+		var cond239 string
 		if string_ == "" {
-			cond1 = this.text
+			cond239 = this.text
 		} else {
-			cond1 = string_
+			cond239 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond1)))
+		var buffer []uint16 = utf16.Encode([]rune((cond239)))
 		var newFont int64
 		var oldFont int64 = int64(0)
 		var hDC int64 = win32.OSGetDC(this.Handle)
@@ -143,13 +143,13 @@ func (this *Group) FixText() string {
 		return ""
 	}
 	if (this.style & RIGHT_TO_LEFT) != 0 {
-		var cond2 string
+		var cond240 string
 		if (this.style & FLIP_TEXT_DIRECTION) == 0 {
-			cond2 = ""
+			cond240 = ""
 		} else {
-			cond2 = fmt.Sprintf("%c%s", WidgetLRE, this.text)
+			cond240 = fmt.Sprintf("%c%s", WidgetLRE, this.text)
 		}
-		return cond2
+		return cond240
 	} else {
 		if (this.style & FLIP_TEXT_DIRECTION) != 0 {
 			return fmt.Sprintf("%c%s", WidgetRLE, this.text)
@@ -274,13 +274,13 @@ func (this *Group) SetText(string_ string) {
 	this.text = string_
 	if (this.state&WidgetHAS_AUTO_DIRECTION) == 0 || !this.impl.updateTextDirection_(WidgetAUTO_TEXT_DIRECTION) {
 		string_ = this.FixText()
-		var cond3 string
+		var cond241 string
 		if string_ == "" {
-			cond3 = this.text
+			cond241 = this.text
 		} else {
-			cond3 = string_
+			cond241 = string_
 		}
-		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond3, true)
+		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond241, true)
 		win32.OSSetWindowText(this.Handle, buffer)
 	}
 }
@@ -288,13 +288,13 @@ func (this *Group) SetText(string_ string) {
 func (this *Group) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
 		var string_ string = this.FixText()
-		var cond4 string
+		var cond242 string
 		if string_ == "" {
-			cond4 = this.text
+			cond242 = this.text
 		} else {
-			cond4 = string_
+			cond242 = string_
 		}
-		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond4, true)
+		var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(cond242, true)
 		win32.OSSetWindowText(this.Handle, buffer)
 		return true
 	}
@@ -309,7 +309,7 @@ func (this *Group) windowClass_() *win32.TCHAR {
 	return GroupGroupClass
 }
 
-func (this *Group) windowProcNoArgs_() int64 {
+func (this *Group) windowProc_() int64 {
 	return GroupGroupProc
 }
 
@@ -327,7 +327,7 @@ func (this *Group) wM_NCHITTEST_(wParam int64, lParam int64) *win32.LRESULT {
 	if result != (nil) {
 		return result
 	}
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_NCHITTEST, wParam, lParam)
 	if code == int64(win32.OSHTTRANSPARENT) {
 		code = int64(win32.OSHTCLIENT)
 	}
@@ -346,13 +346,13 @@ func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 	var result *win32.LRESULT = this.Composite.wM_PAINT_(wParam, lParam)
 	if this.HasCustomForeground() && jrt.StringLength(this.text) != 0 {
 		var string_ string = this.FixText()
-		var cond5 string
+		var cond243 string
 		if string_ == "" {
-			cond5 = this.text
+			cond243 = this.text
 		} else {
-			cond5 = string_
+			cond243 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond5)))
+		var buffer []uint16 = utf16.Encode([]rune((cond243)))
 		var hDC int64 = win32.OSGetDC(this.Handle)
 		var rect *win32.RECT = win32.NewRECT()
 		win32.OSGetClientRect(this.Handle, rect)
@@ -365,9 +365,9 @@ func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, win32.OSDT_SINGLELINE|win32.OSDT_LEFT|win32.OSDT_TOP|win32.OSDT_CALCRECT)
 		rect.Right += GroupCLIENT_INSET
-		this.DrawBackgroundHDCRectHDCRect(hDC, rect)
+		this.DrawBackgroundHDCRect(hDC, rect)
 		win32.OSSetBkMode(hDC, win32.OSTRANSPARENT)
-		win32.OSSetTextColor(hDC, this.GetForegroundPixelNoArgs())
+		win32.OSSetTextColor(hDC, this.GetForegroundPixel())
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, win32.OSDT_SINGLELINE|win32.OSDT_LEFT|win32.OSDT_TOP)
 		if newFont != 0 {
 			win32.OSSelectObject(hDC, oldFont)
@@ -384,7 +384,7 @@ func (this *Group) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESULT {
 		return result
 	}
 	var nSavedDC int32 = win32.OSSaveDC(wParam)
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_PRINTCLIENT, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_PRINTCLIENT, wParam, lParam)
 	win32.OSRestoreDC(wParam, nSavedDC)
 	return win32.NewLRESULT(code)
 }

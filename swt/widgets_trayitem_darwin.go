@@ -5,7 +5,6 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type TrayItem struct {
@@ -226,7 +225,7 @@ func (this *TrayItem) SetToolTipText(string_ string) {
 func (this *TrayItem) _setToolTipText(string_ string) {
 	if string_ != "" {
 		var chars []uint16 = make([]uint16, jrt.StringLength(string_))
-		copy(chars, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(chars)), chars, 0)
 		var length int32 = this.FixMnemonic(chars)
 		var str *cocoa.NSString = cocoa.NSStringStringWithCharacters(chars, int64(length))
 		this.view.SetToolTip(str)
@@ -342,13 +341,13 @@ func (this *TrayItem) mouseUp_(id int64, sel int64, theEvent int64) {
 	if this.highlight {
 		var nsEvent *cocoa.NSEvent = cocoa.NewNSEventOverload1(theEvent)
 		if nsEvent.Type() == int64(cocoa.OSNSLeftMouseUp) {
-			var cond1 int32
+			var cond642 int32
 			if nsEvent.ClickCount() == 2 {
-				cond1 = DefaultSelection
+				cond642 = DefaultSelection
 			} else {
-				cond1 = Selection
+				cond642 = Selection
 			}
-			this.SendSelectionEvent(cond1)
+			this.SendSelectionEvent(cond642)
 		}
 		this.highlight = false
 		this.UpdateImage()

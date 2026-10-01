@@ -1098,12 +1098,12 @@ func ErrorCodeThrowable(code int32, throwable error) {
 
 func ErrorCodeThrowableDetail(code int32, throwable error, detail string) {
 	if code != ERROR_FAILED_EXEC {
-		_, ok1 := sWTErrorImplAsSWTError(throwable)
-		if ok1 {
+		_, ok22 := sWTErrorImplAsSWTError(throwable)
+		if ok22 {
 			panic(casterrorToSWTError(throwable))
 		}
-		_, ok2 := sWTExceptionImplAsSWTException(throwable)
-		if ok2 {
+		_, ok23 := sWTExceptionImplAsSWTException(throwable)
+		if ok23 {
 			panic(casterrorToSWTException(throwable))
 		}
 	}

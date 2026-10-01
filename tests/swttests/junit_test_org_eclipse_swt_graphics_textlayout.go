@@ -8,6 +8,7 @@ import (
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 	"os"
+	"slices"
 )
 
 type Test_org_eclipse_swt_graphics_TextLayout struct {
@@ -879,7 +880,7 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat
 	var pixelsRepeated [][]int32 = this.DrawInputAntialias(func() string { _ = []any{input, repeat}; panic("j2go: unresolved call repeat") }(), antialias)
 	for i := int32(0); i < repeat; i++ {
 		for x := int32(1); x < int32(len(pixelsOnce))-1; x++ {
-			tcnt1 := false
+			tcnt50 := false
 			func() {
 				defer func() {
 					r := recover()
@@ -896,15 +897,15 @@ func (this *Test_org_eclipse_swt_graphics_TextLayout) Check(input string, repeat
 				}()
 				var extepectedColumn []int32 = pixelsOnce[x]
 				var actualColumn []int32 = pixelsRepeated[x+int32(len(pixelsOnce))*i]
-				if func() bool { _ = []any{extepectedColumn, actualColumn}; panic("j2go: unresolved call equals") }() {
-					tcnt1 = true
+				if slices.Equal(extepectedColumn, actualColumn) {
+					tcnt50 = true
 					return
 				}
 				for y := int32(0); y < int32(len(extepectedColumn)); y++ {
 					SwtTestUtilAssertSimilarBrightness("", extepectedColumn[y], actualColumn[y])
 				}
 			}()
-			if tcnt1 {
+			if tcnt50 {
 				continue
 			}
 		}

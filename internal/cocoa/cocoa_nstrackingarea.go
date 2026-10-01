@@ -42,22 +42,22 @@ func (this *NSTrackingArea) initNSTrackingAreaOverload2(id *id) {
 
 func (this *NSTrackingArea) Owner() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_owner)
-	var cond1 *id
+	var cond813 *id
 	if result != 0 {
-		cond1 = NewidOverload1(result)
+		cond813 = NewidOverload1(result)
 	} else {
-		cond1 = nil
+		cond813 = nil
 	}
-	return cond1
+	return cond813
 }
 
 func (this *NSTrackingArea) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond2 *NSDictionary
+	var cond814 *NSDictionary
 	if result != 0 {
-		cond2 = NewNSDictionaryOverload1(result)
+		cond814 = NewNSDictionaryOverload1(result)
 	} else {
-		cond2 = nil
+		cond814 = nil
 	}
-	return cond2
+	return cond814
 }

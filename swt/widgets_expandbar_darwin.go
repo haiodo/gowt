@@ -418,13 +418,13 @@ func (this *ExpandBar) OnKeyDown(eventLike EventLike) {
 	case 13, 32:
 		var ev *Event = NewEvent()
 		ev.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond1 int32
+		var cond620 int32
 		if this.focusItem.expanded {
-			cond1 = Collapse
+			cond620 = Collapse
 		} else {
-			cond1 = Expand
+			cond620 = Expand
 		}
-		this.SendEventEventTypeEvent(cond1, ev)
+		this.SendEventEventTypeEvent(cond620, ev)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 		break
@@ -493,13 +493,13 @@ func (this *ExpandBar) OnMouseUp(eventLike EventLike) {
 	if hover {
 		var ev *Event = NewEvent()
 		ev.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond2 int32
+		var cond621 int32
 		if this.focusItem.expanded {
-			cond2 = Collapse
+			cond621 = Collapse
 		} else {
-			cond2 = Expand
+			cond621 = Expand
 		}
-		this.NotifyListeners(cond2, ev)
+		this.NotifyListeners(cond621, ev)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 	}

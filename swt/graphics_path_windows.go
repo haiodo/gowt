@@ -111,9 +111,9 @@ func (this *Path) AddArc(x float32, y float32, width float32, height float32, st
 	if width == 0 || height == 0 || arcAngle == 0 {
 		return
 	}
-	inner1 := NewPathAddArcOperation(x, y, width, height, startAngle, arcAngle)
-	inner1.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner1)
+	inner431 := NewPathAddArcOperation(x, y, width, height, startAngle, arcAngle)
+	inner431.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner431)
 }
 
 func (this *Path) AddPath(pathLike PathLike) {
@@ -131,18 +131,18 @@ func (this *Path) AddPath(pathLike PathLike) {
 	if path.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner2 := NewPathAddPathOperation(path)
-	inner2.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner2)
+	inner432 := NewPathAddPathOperation(path)
+	inner432.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner432)
 }
 
 func (this *Path) AddRectangle(x float32, y float32, width float32, height float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner3 := NewPathAddRectangleOperation(x, y, width, height)
-	inner3.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner3)
+	inner433 := NewPathAddRectangleOperation(x, y, width, height)
+	inner433.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner433)
 }
 
 func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontLike) {
@@ -160,9 +160,9 @@ func (this *Path) AddString(string_ string, x float32, y float32, fontLike FontL
 	if font.impl.isDisposed_() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	inner4 := NewPathAddStringOperation(string_, x, y, font)
-	inner4.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner4)
+	inner434 := NewPathAddStringOperation(string_, x, y, font)
+	inner434.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner434)
 }
 
 func (this *Path) Close() {
@@ -199,9 +199,9 @@ func (this *Path) CubicTo(cx1 float32, cy1 float32, cx2 float32, cy2 float32, x 
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner5 := NewPathCubicToOperation(cx1, cy1, cx2, cy2, x, y)
-	inner5.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner5)
+	inner435 := NewPathCubicToOperation(cx1, cy1, cx2, cy2, x, y)
+	inner435.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner435)
 }
 
 func (this *Path) destroy_() {
@@ -276,9 +276,9 @@ func (this *Path) LineTo(x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner6 := NewPathLineToOperation(x, y)
-	inner6.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner6)
+	inner436 := NewPathLineToOperation(x, y)
+	inner436.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner436)
 }
 
 func (this *Path) InitData(dataLike PathDataLike) {
@@ -297,44 +297,44 @@ func (this *Path) InitData(dataLike PathDataLike) {
 		}() {
 			switch types[i] {
 			case int8(PATH_MOVE_TO):
-				t7 := j
+				t437 := j
 				j++
-				t8 := j
+				t438 := j
 				j++
-				this.MoveTo(points[t7], points[t8])
+				this.MoveTo(points[t437], points[t438])
 				break
 			case int8(PATH_LINE_TO):
-				t9 := j
+				t439 := j
 				j++
-				t10 := j
+				t440 := j
 				j++
-				this.LineTo(points[t9], points[t10])
+				this.LineTo(points[t439], points[t440])
 				break
 			case int8(PATH_CUBIC_TO):
-				t11 := j
+				t441 := j
 				j++
-				t12 := j
+				t442 := j
 				j++
-				t13 := j
+				t443 := j
 				j++
-				t14 := j
+				t444 := j
 				j++
-				t15 := j
+				t445 := j
 				j++
-				t16 := j
+				t446 := j
 				j++
-				this.CubicTo(points[t11], points[t12], points[t13], points[t14], points[t15], points[t16])
+				this.CubicTo(points[t441], points[t442], points[t443], points[t444], points[t445], points[t446])
 				break
 			case int8(PATH_QUAD_TO):
-				t17 := j
+				t447 := j
 				j++
-				t18 := j
+				t448 := j
 				j++
-				t19 := j
+				t449 := j
 				j++
-				t20 := j
+				t450 := j
 				j++
-				this.QuadTo(points[t17], points[t18], points[t19], points[t20])
+				this.QuadTo(points[t447], points[t448], points[t449], points[t450])
 				break
 			case int8(PATH_CLOSE):
 				this.Close()
@@ -355,18 +355,18 @@ func (this *Path) MoveTo(x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner21 := NewPathMoveToOperation(x, y)
-	inner21.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner21)
+	inner451 := NewPathMoveToOperation(x, y)
+	inner451.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner451)
 }
 
 func (this *Path) QuadTo(cx float32, cy float32, x float32, y float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	inner22 := NewPathQuadToOperation(cx, cy, x, y)
-	inner22.this_0 = this
-	this.StoreAndApplyOperationOnAllHandles(inner22)
+	inner452 := NewPathQuadToOperation(cx, cy, x, y)
+	inner452.this_0 = this
+	this.StoreAndApplyOperationOnAllHandles(inner452)
 }
 
 func (this *Path) StoreAndApplyOperationOnAllHandles(operation Path_Operation) {
@@ -383,8 +383,8 @@ func (this *Path) String() string {
 
 func (this *Path) NewPathHandle(zoom int32) *Path_PathHandle {
 	var newPathHandle *Path_PathHandle = PathNewEmptyPathHandle(this.impl.getDevice_(), zoom)
-	for _, elem23 := range this.operations.ToArray() {
-		operation := jrt.Cast[Path_Operation](elem23)
+	for _, elem453 := range this.operations.ToArray() {
+		operation := jrt.Cast[Path_Operation](elem453)
 		operation.Apply(newPathHandle)
 	}
 	return newPathHandle
@@ -414,8 +414,8 @@ func PathApplyOnTemporaryHandle(deviceLike DeviceLike, zoom int32, operations *j
 		defer func() {
 			temporaryHandle.Destroy()
 		}()
-		for _, elem24 := range operations.ToArray() {
-			operation := jrt.Cast[Path_Operation](elem24)
+		for _, elem454 := range operations.ToArray() {
+			operation := jrt.Cast[Path_Operation](elem454)
 			operation.Apply(temporaryHandle)
 		}
 		return function(temporaryHandle)
@@ -554,23 +554,23 @@ func (this *Path_PathHandle) GetPathDataInPixels() *PathData {
 		var close bool = false
 		switch int32(type_) & win32.GdipPathPointTypePathTypeMask {
 		case win32.GdipPathPointTypeStart:
-			t25 := typesIndex
+			t455 := typesIndex
 			typesIndex++
-			types[t25] = int8(PATH_MOVE_TO)
+			types[t455] = int8(PATH_MOVE_TO)
 			close = (int32(type_) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 1
 			break
 		case win32.GdipPathPointTypeLine:
-			t26 := typesIndex
+			t456 := typesIndex
 			typesIndex++
-			types[t26] = int8(PATH_LINE_TO)
+			types[t456] = int8(PATH_LINE_TO)
 			close = (int32(type_) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 1
 			break
 		case win32.GdipPathPointTypeBezier:
-			t27 := typesIndex
+			t457 := typesIndex
 			typesIndex++
-			types[t27] = int8(PATH_CUBIC_TO)
+			types[t457] = int8(PATH_CUBIC_TO)
 			close = (int32(gdipTypes[index+2]) & win32.GdipPathPointTypeCloseSubpath) != 0
 			index += 3
 			break
@@ -578,9 +578,9 @@ func (this *Path_PathHandle) GetPathDataInPixels() *PathData {
 			index++
 		}
 		if close {
-			t28 := typesIndex
+			t458 := typesIndex
 			typesIndex++
-			types[t28] = int8(PATH_CLOSE)
+			types[t458] = int8(PATH_CLOSE)
 		}
 	}
 	if typesIndex != int32(len(types)) {

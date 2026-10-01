@@ -71,7 +71,7 @@ func (this *Text) initText(parent *Composite, style int32) {
 	this.clearSegmentsCount = 0
 }
 
-func (this *Text) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Text) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -121,7 +121,7 @@ func (this *Text) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wPar
 						hOldBitmap = win32.OSSelectObject(hDC, hBitmap)
 						var rect *win32.RECT = win32.NewRECT()
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
-						this.DrawBackgroundHDCRectHDCRect(hDC, rect)
+						this.DrawBackgroundHDCRect(hDC, rect)
 					}
 					win32.OSCallWindowProc(TextEditProc, hwnd, win32.OSWM_PAINT, hDC, lParam)
 					if drawMessage {
@@ -145,25 +145,25 @@ func (this *Text) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wPar
 						var alignment int32 = this.style & (LEFT | CENTER | RIGHT)
 						switch alignment {
 						case LEFT:
-							var cond1 int32
+							var cond223 int32
 							if rtl {
-								cond1 = win32.OSDT_RIGHT
+								cond223 = win32.OSDT_RIGHT
 							} else {
-								cond1 = win32.OSDT_LEFT
+								cond223 = win32.OSDT_LEFT
 							}
-							uFormat |= (cond1)
+							uFormat |= (cond223)
 							break
 						case CENTER:
 							uFormat |= win32.OSDT_CENTER
 							fallthrough
 						case RIGHT:
-							var cond2 int32
+							var cond224 int32
 							if rtl {
-								cond2 = win32.OSDT_LEFT
+								cond224 = win32.OSDT_LEFT
 							} else {
-								cond2 = win32.OSDT_RIGHT
+								cond224 = win32.OSDT_RIGHT
 							}
-							uFormat |= (cond2)
+							uFormat |= (cond224)
 							break
 						}
 						var hFont int64 = win32.OSSendMessageOverload4(hwnd, win32.OSWM_GETFONT, int64(0), int64(0))
@@ -290,13 +290,13 @@ func (this *Text) createHandle_() {
 }
 
 func (this *Text) applyThemeBackground_() int32 {
-	var cond3 int32
+	var cond225 int32
 	if this.backgroundAlpha == 0 || (this.style&(BORDER|H_SCROLL|V_SCROLL)) == 0 {
-		cond3 = 1
+		cond225 = 1
 	} else {
-		cond3 = 0
+		cond225 = 0
 	}
-	return cond3
+	return cond225
 }
 
 func (this *Text) AddModifyListener(listener ModifyListener) {
@@ -394,9 +394,9 @@ func (this *Text) ApplySegments() {
 				i++
 			}() {
 				if int32(segmentsChars[i]) == int32('\u000a') && int32(segmentsCharsCrLf[i+c]) == int32('\u000d') {
-					t4 := c
+					t226 := c
 					c++
-					segmentsCrLf[i+t4] = this.segments[i]
+					segmentsCrLf[i+t226] = this.segments[i]
 				}
 				segmentsCrLf[i+c] = this.segments[i]
 			}
@@ -425,16 +425,16 @@ func (this *Text) ApplySegments() {
 			} else {
 				separator = defaultSeparator
 			}
-			t5 := charCount
+			t227 := charCount
 			charCount++
-			newChars[t5] = separator
+			newChars[t227] = separator
 			segmentCount++
 		} else {
 			if string_ != "" {
-				idx7 := charCount
-				t6 := charCount
+				idx229 := charCount
+				t228 := charCount
 				charCount++
-				newChars[idx7] = utf16.Encode([]rune(string_))[t6-segmentCount]
+				newChars[idx229] = utf16.Encode([]rune(string_))[t228-segmentCount]
 			}
 		}
 	}
@@ -446,9 +446,9 @@ func (this *Text) ApplySegments() {
 		} else {
 			separator = defaultSeparator
 		}
-		t8 := charCount
+		t230 := charCount
 		charCount++
-		newChars[t8] = separator
+		newChars[t230] = separator
 		segmentCount++
 	}
 	var start []int32 = make([]int32, 1)
@@ -473,9 +473,9 @@ func (this *Text) ApplySegments() {
 }
 
 func (this *Text) ClearSegments(applyText bool) {
-	t9 := this.clearSegmentsCount
+	t231 := this.clearSegmentsCount
 	this.clearSegmentsCount++
-	if t9 != 0 {
+	if t231 != 0 {
 		return
 	}
 	if this.segments == (nil) {
@@ -627,22 +627,22 @@ func (this *Text) Copy() {
 }
 
 func (this *Text) createScrollBar_(type_ int32) *ScrollBar {
-	var cond10 *ScrollBar
+	var cond232 *ScrollBar
 	if (this.style & SEARCH) == 0 {
-		cond10 = this.Scrollable.createScrollBar_(type_)
+		cond232 = this.Scrollable.createScrollBar_(type_)
 	} else {
-		cond10 = nil
+		cond232 = nil
 	}
-	return cond10
+	return cond232
 }
 
 func (this *Text) createWidget_() {
 	this.Scrollable.createWidget_()
 	this.message = ""
 	this.doubleClick = true
-	var cond11 int32 = 8
-	this.tabs = cond11
-	this.SetTabStops(cond11)
+	var cond233 int32 = 8
+	this.tabs = cond233
+	this.SetTabStops(cond233)
 	this.FixAlignment()
 }
 
@@ -726,9 +726,9 @@ func (this *Text) dragDetectHwndXYFilterDetectConsume_(hwnd int64, x int32, y in
 	return this.Scrollable.dragDetectHwndXYFilterDetectConsume_(hwnd, x, y, filter, detect, consume)
 }
 
-func (this *Text) maybeEnableDarkSystemThemeNoArgs_() {
+func (this *Text) maybeEnableDarkSystemTheme0_() {
 	if this.HasCustomBackground() || this.HasCustomForeground() {
-		this.Scrollable.maybeEnableDarkSystemThemeNoArgs_()
+		this.Scrollable.maybeEnableDarkSystemTheme0_()
 	}
 }
 
@@ -1280,18 +1280,18 @@ func (this *Text) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int32, 
 	return false
 }
 
-func (this *Text) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+func (this *Text) setBackgroundImageHBitmap_(hBitmap int64) {
 	var flags int32 = win32.OSRDW_ERASE | win32.OSRDW_ALLCHILDREN | win32.OSRDW_INVALIDATE
 	win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
 }
 
 func (this *Text) setBackgroundPixel_(pixel int32) {
-	this.impl.maybeEnableDarkSystemThemeNoArgs_()
+	this.impl.maybeEnableDarkSystemTheme0_()
 	var flags int32 = win32.OSRDW_ERASE | win32.OSRDW_ALLCHILDREN | win32.OSRDW_INVALIDATE
 	win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
 }
 
-func (this *Text) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+func (this *Text) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
 	if (flags&win32.OSSWP_NOSIZE) == 0 && width != 0 {
 		var rect *win32.RECT = win32.NewRECT()
 		win32.OSGetWindowRect(this.Handle, rect)
@@ -1309,7 +1309,7 @@ func (this *Text) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32
 			}
 		}
 	}
-	this.Scrollable.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
+	this.Scrollable.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
 	if (flags & win32.OSSWP_NOSIZE) == 0 {
 		var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_STYLE)
 		if (bits & win32.OSES_MULTILINE) != 0 {
@@ -1367,13 +1367,13 @@ func (this *Text) SetEditable(editable bool) {
 	if !editable {
 		this.style |= READ_ONLY
 	}
-	var cond12 int32
+	var cond234 int32
 	if editable {
-		cond12 = 0
+		cond234 = 0
 	} else {
-		cond12 = 1
+		cond234 = 1
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond12), int64(0))
+	win32.OSSendMessageOverload4(this.Handle, win32.OSEM_SETREADONLY, int64(cond234), int64(0))
 }
 
 func (this *Text) setFont_(font *Font) {
@@ -1384,7 +1384,7 @@ func (this *Text) setFont_(font *Font) {
 }
 
 func (this *Text) setForegroundPixel_(pixel int32) {
-	this.impl.maybeEnableDarkSystemThemeNoArgs_()
+	this.impl.maybeEnableDarkSystemTheme0_()
 	this.Scrollable.setForegroundPixel_(pixel)
 }
 
@@ -1489,9 +1489,9 @@ func (this *Text) SetTabs(tabs int32) {
 	if tabs < 0 {
 		return
 	}
-	cond13 := tabs
-	this.tabs = cond13
-	this.SetTabStops(cond13)
+	cond235 := tabs
+	this.tabs = cond235
+	this.SetTabStops(cond235)
 }
 
 func (this *Text) SetTabStops(tabs int32) {
@@ -1717,11 +1717,11 @@ func (this *Text) windowClass_() *win32.TCHAR {
 	return TextEditClass
 }
 
-func (this *Text) windowProcNoArgs_() int64 {
+func (this *Text) windowProc_() int64 {
 	return TextEditProc
 }
 
-func (this *Text) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Text) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	var processSegments bool = this.Hooks(Segments) || this.Filters(Segments)
 	var redraw bool = false
 	var updateDirection bool = (this.state & WidgetHAS_AUTO_DIRECTION) != 0
@@ -1776,7 +1776,7 @@ func (this *Text) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, 
 			if result != (nil) {
 				return result.Value
 			}
-			return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSEM_UNDO, wParam, lParam)
+			return this.impl.callWindowProc_(hwnd, win32.OSEM_UNDO, wParam, lParam)
 		}
 	}
 	if msg == win32.OSEM_SETPASSWORDCHAR {
@@ -1785,11 +1785,11 @@ func (this *Text) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, 
 		}
 	}
 	if msg == DisplaySWT_RESTORECARET {
-		this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_KILLFOCUS, int64(0), int64(0))
-		this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, win32.OSWM_SETFOCUS, int64(0), int64(0))
+		this.impl.callWindowProc_(hwnd, win32.OSWM_KILLFOCUS, int64(0), int64(0))
+		this.impl.callWindowProc_(hwnd, win32.OSWM_SETFOCUS, int64(0), int64(0))
 		return int64(1)
 	}
-	code = this.Scrollable.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	code = this.Scrollable.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 	if updateDirection {
 		this.Scrollable.updateTextDirection_(WidgetAUTO_TEXT_DIRECTION)
 	}
@@ -1871,7 +1871,7 @@ func (this *Text) wM_DRAWITEM_(wParam int64, lParam int64) *win32.LRESULT {
 	win32.OSSetRect(rect, struct_.Left, struct_.Top, struct_.Right, struct_.Bottom)
 	var pt *win32.POINT = win32.NewPOINT()
 	win32.OSMapWindowPoints(struct_.HwndItem, this.Handle, pt, 1)
-	this.DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(struct_.HDC, rect, -1, pt.X, pt.Y)
+	this.DrawBackgroundHDCRectPixelTxTy(struct_.HDC, rect, -1, pt.X, pt.Y)
 	if struct_.CtlID == ICON_CANCEL && struct_.HwndItem == this.hwndActiveIcon {
 		var state int32
 		if int32(win32.OSGetKeyState(win32.OSVK_LBUTTON)) < 0 {
@@ -1925,7 +1925,7 @@ func (this *Text) wM_GETDLGCODE_(wParam int64, lParam int64) *win32.LRESULT {
 		return result
 	}
 	if (this.style & READ_ONLY) != 0 {
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_GETDLGCODE, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_GETDLGCODE, wParam, lParam)
 		code &= int64(^(win32.OSDLGC_WANTALLKEYS | win32.OSDLGC_WANTTAB))
 		return win32.NewLRESULT(code)
 	}
@@ -1947,11 +1947,11 @@ func (this *Text) wM_IME_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 	display.lastAscii = int32(wParam)
 	display.lastDead = false
 	display.lastVirtual = display.lastDead
-	if !this.SendKeyEventTypeMsgWParamLParam(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
+	if !this.SendKeyEventLocal1(KeyDown, win32.OSWM_IME_CHAR, wParam, lParam) {
 		return win32.LRESULTZERO
 	}
 	this.ignoreCharacter = true
-	var result int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_IME_CHAR, wParam, lParam)
+	var result int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_IME_CHAR, wParam, lParam)
 	var msg *win32.MSG = win32.NewMSG()
 	var flags int32 = win32.OSPM_REMOVE | win32.OSPM_NOYIELD | win32.OSPM_QS_INPUT | win32.OSPM_QS_POSTMESSAGE
 	for win32.OSPeekMessage(msg, this.Handle, win32.OSWM_CHAR, win32.OSWM_CHAR, flags) {
@@ -1959,7 +1959,7 @@ func (this *Text) wM_IME_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSDispatchMessage(msg)
 	}
 	this.ignoreCharacter = false
-	this.SendKeyEventTypeMsgWParamLParam(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
+	this.SendKeyEventLocal1(KeyUp, win32.OSWM_IME_CHAR, wParam, lParam)
 	display.lastAscii = 0
 	display.lastKey = display.lastAscii
 	return win32.NewLRESULT(result)
@@ -2030,20 +2030,20 @@ func (this *Text) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	if (this.style & SEARCH) != 0 {
 		var rtl bool = (this.style & RIGHT_TO_LEFT) != 0
-		var cond14 int32
+		var cond236 int32
 		if rtl {
-			cond14 = ICON_CANCEL
+			cond236 = ICON_CANCEL
 		} else {
-			cond14 = ICON_SEARCH
+			cond236 = ICON_SEARCH
 		}
-		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond14)
-		var cond15 int32
+		var hwndLeading int64 = win32.OSGetDlgItem(this.Handle, cond236)
+		var cond237 int32
 		if rtl {
-			cond15 = ICON_SEARCH
+			cond237 = ICON_SEARCH
 		} else {
-			cond15 = ICON_CANCEL
+			cond237 = ICON_CANCEL
 		}
-		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond15)
+		var hwndTrailing int64 = win32.OSGetDlgItem(this.Handle, cond237)
 		var width int32 = win32.OSLOWORD(lParam)
 		var height int32 = win32.OSHIWORD(lParam)
 		var iconWidth int32 = this.impl.getSystemMetrics_(win32.OSSM_CXSMICON)
@@ -2093,7 +2093,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 		if win32.OSSendMessageOverload4(this.Handle, win32.OSEM_CANUNDO, int64(0), int64(0)) != 0 {
 			this.ignoreCharacter = true
 			this.ignoreModify = this.ignoreCharacter
-			this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, msg, wParam, lParam)
+			this.impl.callWindowProc_(this.Handle, msg, wParam, lParam)
 			var length int32 = win32.OSGetWindowTextLength(this.Handle)
 			var newStart []int32 = make([]int32, 1)
 			var newEnd []int32 = make([]int32, 1)
@@ -2105,7 +2105,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 			} else {
 				newText = ""
 			}
-			this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, msg, wParam, lParam)
+			this.impl.callWindowProc_(this.Handle, msg, wParam, lParam)
 			win32.OSSendMessageOverload1(this.Handle, win32.OSEM_GETSEL, start, end)
 			this.ignoreCharacter = false
 			this.ignoreModify = this.ignoreCharacter
@@ -2120,7 +2120,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 		}
 		if !(newText == oldText) {
 			if call {
-				this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, msg, wParam, lParam)
+				this.impl.callWindowProc_(this.Handle, msg, wParam, lParam)
 			}
 			newText = DisplayWithCrLf(newText)
 			var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(newText, true)
@@ -2133,7 +2133,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 	if msg == win32.OSWM_UNDO {
 		this.ignoreCharacter = true
 		this.ignoreVerify = this.ignoreCharacter
-		this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_UNDO, wParam, lParam)
+		this.impl.callWindowProc_(this.Handle, win32.OSWM_UNDO, wParam, lParam)
 		this.ignoreCharacter = false
 		this.ignoreVerify = this.ignoreCharacter
 		return win32.LRESULTONE
@@ -2151,8 +2151,8 @@ func (this *Text) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 					if (this.state & WidgetTHEME_BACKGROUND) != 0 {
 						control = this.impl.findThemeControl_()
 						if control != (nil) {
-							win32.OSSetTextColor(wParam, this.GetForegroundPixelNoArgs())
-							win32.OSSetBkColor(wParam, this.GetBackgroundPixelNoArgs())
+							win32.OSSetTextColor(wParam, this.GetForegroundPixel())
+							win32.OSSetBkColor(wParam, this.GetBackgroundPixel())
 							win32.OSSetBkMode(wParam, win32.OSTRANSPARENT)
 							return win32.NewLRESULT(win32.OSGetStockObject(win32.OSNULL_BRUSH))
 						}
@@ -2175,13 +2175,13 @@ func (this *Text) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 			var showCancel bool = win32.OSGetWindowTextLength(this.Handle) != 0
 			var hwndCancel int64 = win32.OSGetDlgItem(this.Handle, ICON_CANCEL)
 			if hwndCancel != 0 {
-				var cond16 int32
+				var cond238 int32
 				if showCancel {
-					cond16 = win32.OSSW_SHOW
+					cond238 = win32.OSSW_SHOW
 				} else {
-					cond16 = win32.OSSW_HIDE
+					cond238 = win32.OSSW_HIDE
 				}
-				win32.OSShowWindow(hwndCancel, cond16)
+				win32.OSShowWindow(hwndCancel, cond238)
 			}
 		}
 		if this.ignoreModify {
@@ -2240,8 +2240,8 @@ func (this *Text) wmKeyDown_(hwnd int64, wParam int64, lParam int64) *win32.LRES
 			var newStart []int32 = make([]int32, 1)
 			var newEnd []int32 = make([]int32, 1)
 			win32.OSSendMessageOverload1(this.Handle, win32.OSEM_GETSEL, start, end)
-			for true {
-				code = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+			for {
+				code = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 				win32.OSSendMessageOverload1(this.Handle, win32.OSEM_GETSEL, newStart, newEnd)
 				if newStart[0] != start[0] {
 					if this.UntranslateOffset(newStart[0]) != this.UntranslateOffset(start[0]) {
@@ -2269,8 +2269,8 @@ func (this *Text) wmKeyDown_(hwnd int64, wParam int64, lParam int64) *win32.LRES
 	return result
 }
 
-func (this *Text) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Scrollable.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Text) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Scrollable.handleDPIChange_(event, scalingFactor)
 	this.SetMargins()
 }
 

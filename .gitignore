@@ -1,3 +1,4 @@
 tooling/j2go/target/
 tooling/j2go/dependency-reduced-pom.xml
 bin/
+tooling/j2go/gtkstubs-gen/

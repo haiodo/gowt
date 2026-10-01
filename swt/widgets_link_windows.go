@@ -52,7 +52,7 @@ func (this *Link) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Link) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Link) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -118,12 +118,12 @@ func (this *Link) createWidget_() {
 	this.text = ""
 	this.ids = make([]string, 0)
 	this.mnemonics = make([]uint16, 0)
-	anon1 := &LinkAnon1{}
-	anon1.initAccessibleAdapter()
-	anon1.fnGetName = func(e *AccessibleEvent) {
+	anon762 := &LinkAnon1{}
+	anon762.initAccessibleAdapter()
+	anon762.fnGetName = func(e *AccessibleEvent) {
 		e.Result = this.text
 	}
-	this.GetAccessible().AddAccessibleListener(anon1)
+	this.GetAccessible().AddAccessibleListener(anon762)
 }
 
 func (this *Link) enableWidget_(enabled bool) {
@@ -460,7 +460,7 @@ func (this *Link) windowClass_() *win32.TCHAR {
 	return LinkLinkClass
 }
 
-func (this *Link) windowProcNoArgs_() int64 {
+func (this *Link) windowProc_() int64 {
 	return LinkLinkProc
 }
 
@@ -471,7 +471,7 @@ func (this *Link) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	switch int32(wParam) {
 	case int32(SPACE), int32(CR), int32(TAB):
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 		return win32.NewLRESULT(code)
 	}
 	return result
@@ -486,7 +486,7 @@ func (this *Link) wM_ERASEBKGND_(wParam int64, lParam int64) *win32.LRESULT {
 }
 
 func (this *Link) wM_GETDLGCODE_(wParam int64, lParam int64) *win32.LRESULT {
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_GETDLGCODE, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_GETDLGCODE, wParam, lParam)
 	var count int32 = int32(len(this.ids))
 	if count == 0 {
 		code |= int64(win32.OSDLGC_STATIC)
@@ -536,7 +536,7 @@ func (this *Link) wM_SETCURSOR_(wParam int64, lParam int64) *win32.LRESULT {
 	if result != (nil) {
 		return result
 	}
-	var fDone int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SETCURSOR, wParam, lParam)
+	var fDone int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SETCURSOR, wParam, lParam)
 	if fDone == 0 {
 		win32.OSDefWindowProc(this.Handle, win32.OSWM_SETCURSOR, wParam, lParam)
 	}

@@ -107,17 +107,17 @@ func (this *Printer) create_(deviceData *DeviceData) {
 		}
 		if this.data.Duplex != DEFAULT {
 			var settings int64 = this.printInfo.PMPrintSettings()
-			var cond1 int32
+			var cond654 int32
 			if this.data.Duplex == PrinterDataDUPLEX_LONG_EDGE {
-				cond1 = cocoa.OSKPMDuplexNoTumble
+				cond654 = cocoa.OSKPMDuplexNoTumble
 			} else {
-				cond1 = cocoa.OSKPMDuplexNone
+				cond654 = cocoa.OSKPMDuplexNone
 			}
 			var duplex int32
 			if this.data.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
 				duplex = cocoa.OSKPMDuplexTumble
 			} else {
-				duplex = cond1
+				duplex = cond654
 			}
 			cocoa.OSPMSetDuplex(settings, duplex)
 		}
@@ -129,13 +129,13 @@ func (this *Printer) create_(deviceData *DeviceData) {
 		if this.data.CopyCount != 1 {
 			dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(this.data.CopyCount)), cocoa.OSNSPrintCopies_)
 		}
-		var cond2 int32
+		var cond655 int32
 		if this.data.Orientation == PrinterDataLANDSCAPE {
-			cond2 = cocoa.OSNSLandscapeOrientation
+			cond655 = cocoa.OSNSLandscapeOrientation
 		} else {
-			cond2 = cocoa.OSNSPortraitOrientation
+			cond655 = cocoa.OSNSPortraitOrientation
 		}
-		dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(cond2)), cocoa.OSNSPrintOrientation_)
+		dict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(cond655)), cocoa.OSNSPrintOrientation_)
 		if this.data.PrintToFile {
 			dict.Impl().SetValueOnNSObject(upcastcocoaNSStringTococoaId(cocoa.OSNSPrintSaveJob_), cocoa.OSNSPrintJobDisposition_)
 			if this.data.FileName != "" {

@@ -601,13 +601,13 @@ func (this *Text) GetCaretLocation() *Point {
 func (this *Text) GetCaretPosition() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond1 int32
+		var cond189 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond1 = int32(this.selectionRange.Location)
+			cond189 = int32(this.selectionRange.Location)
 		} else {
-			cond1 = 0
+			cond189 = 0
 		}
-		return cond1
+		return cond189
 	} else {
 		var range_ cocoa.NSRange = (castcocoaNSViewTococoaNSTextView(this.View)).SelectedRange()
 		return int32(range_.Location)
@@ -698,7 +698,7 @@ func (this *Text) GetInsertString(string_ string, range_ cocoa.NSRange) *cocoa.N
 		length = int32(math.Max(float64(0), float64(length)))
 	}
 	var buffer []uint16 = make([]uint16, length)
-	copy(buffer, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 	str = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 	return str
 }
@@ -714,9 +714,9 @@ func (this *Text) GetLineCount() int32 {
 	var length int64 = string_.Length()
 	var c int64
 	if length == 0 || func() bool {
-		cond2 := int64(string_.CharacterAtIndex(length - 1))
-		c = cond2
-		return (cond2) == int64(int32('\u000a'))
+		cond190 := int64(string_.CharacterAtIndex(length - 1))
+		c = cond190
+		return (cond190) == int64(int32('\u000a'))
 	}() || c == int64(int32('\u000d')) {
 		count++
 	}
@@ -789,13 +789,13 @@ func (this *Text) GetSelection() *Point {
 func (this *Text) GetSelectionCount() int32 {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
-		var cond3 int32
+		var cond191 int32
 		if this.selectionRange != (cocoa.NSRange{}) {
-			cond3 = int32(this.selectionRange.Length)
+			cond191 = int32(this.selectionRange.Length)
 		} else {
-			cond3 = 0
+			cond191 = 0
 		}
-		return cond3
+		return cond191
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var range_ cocoa.NSRange = widget.SelectedRange()
@@ -942,7 +942,7 @@ func (this *Text) _insertEditText(string_ string, enableUndo bool) {
 			}
 		}
 		var buffer []uint16 = make([]uint16, length)
-		copy(buffer, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 		var nsstring *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 		var fieldEditor *cocoa.NSText = (castcocoaNSViewTococoaNSTextField(this.View)).CurrentEditor()
 		if fieldEditor != (nil) {
@@ -1295,7 +1295,7 @@ func (this *Text) SetEditable(editable bool) {
 
 func (this *Text) SetEditText(string_ string) {
 	var text []uint16 = make([]uint16, jrt.StringLength(string_))
-	copy(text, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, int32(len(text)), text, 0)
 	this.SetEditTextText(text)
 }
 
@@ -1491,7 +1491,7 @@ func (this *Text) SetText(string_ string) {
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
-		copy(buffer, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 		var str *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 		widget.SetString(str)
 		widget.SetSelectedRange(cocoa.NSRange{})
@@ -1510,7 +1510,7 @@ func (this *Text) SetTextChars(text []uint16) {
 			return
 		}
 		text = make([]uint16, jrt.StringLength(string_))
-		copy(text, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(text)), text, 0)
 	}
 	if (this.style & SINGLE) != 0 {
 		this.SetEditTextText(text)
@@ -1658,13 +1658,13 @@ func (this *Text) updateCursorRects_(enabled bool) {
 		return
 	}
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
-	var cond4 *cocoa.NSCursor
+	var cond192 *cocoa.NSCursor
 	if enabled {
-		cond4 = cocoa.NSCursorIBeamCursor()
+		cond192 = cocoa.NSCursorIBeamCursor()
 	} else {
-		cond4 = nil
+		cond192 = nil
 	}
-	contentView.SetDocumentCursor(cond4)
+	contentView.SetDocumentCursor(cond192)
 }
 
 func (this *Text) UpdateThemeColors() {

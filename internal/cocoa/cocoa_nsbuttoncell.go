@@ -41,57 +41,57 @@ func (this *NSButtonCell) initNSButtonCellOverload2(id *id) {
 }
 
 func (this *NSButtonCell) DrawBezelWithFrame(frame NSRect, controlView *NSView) {
-	var cond1 int64
+	var cond122 int64
 	if controlView != (nil) {
-		cond1 = controlView.Id
+		cond122 = controlView.Id
 	} else {
-		cond1 = int64(0)
+		cond122 = int64(0)
 	}
-	OSObjc_msgSendOverload21(this.Id, OSSel_drawBezelWithFrame_inView_, frame, cond1)
+	OSObjc_msgSendOverload21(this.Id, OSSel_drawBezelWithFrame_inView_, frame, cond122)
 }
 
 func (this *NSButtonCell) DrawImage(image *NSImage, frame NSRect, controlView *NSView) {
-	var cond2 int64
+	var cond123 int64
 	if image != (nil) {
-		cond2 = image.Id
+		cond123 = image.Id
 	} else {
-		cond2 = int64(0)
+		cond123 = int64(0)
 	}
-	var cond3 int64
+	var cond124 int64
 	if controlView != (nil) {
-		cond3 = controlView.Id
+		cond124 = controlView.Id
 	} else {
-		cond3 = int64(0)
+		cond124 = int64(0)
 	}
-	OSObjc_msgSendOverload51(this.Id, OSSel_drawImage_withFrame_inView_, cond2, frame, cond3)
+	OSObjc_msgSendOverload51(this.Id, OSSel_drawImage_withFrame_inView_, cond123, frame, cond124)
 }
 
 func (this *NSButtonCell) DrawTitle(title *NSAttributedString, frame NSRect, controlView *NSView) NSRect {
 	var result NSRect = NSRect{}
-	var cond4 int64
+	var cond125 int64
 	if title != (nil) {
-		cond4 = title.Id
+		cond125 = title.Id
 	} else {
-		cond4 = int64(0)
+		cond125 = int64(0)
 	}
-	var cond5 int64
+	var cond126 int64
 	if controlView != (nil) {
-		cond5 = controlView.Id
+		cond126 = controlView.Id
 	} else {
-		cond5 = int64(0)
+		cond126 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload15(&result, this.Id, OSSel_drawTitle_withFrame_inView_, cond4, frame, cond5)
+	OSObjc_msgSend_stretOverload15(&result, this.Id, OSSel_drawTitle_withFrame_inView_, cond125, frame, cond126)
 	return result
 }
 
 func (this *NSButtonCell) SetBackgroundColor(backgroundColor *NSColor) {
-	var cond6 int64
+	var cond127 int64
 	if backgroundColor != (nil) {
-		cond6 = backgroundColor.Id
+		cond127 = backgroundColor.Id
 	} else {
-		cond6 = int64(0)
+		cond127 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond6)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setBackgroundColor_, cond127)
 }
 
 func (this *NSButtonCell) SetButtonType(aType int64) {
@@ -108,11 +108,11 @@ func (this *NSButtonCell) SetImagePosition(imagePosition int64) {
 
 func (this *NSButtonCell) Title() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond7 *NSString
+	var cond128 *NSString
 	if result != 0 {
-		cond7 = NewNSStringOverload1(result)
+		cond128 = NewNSStringOverload1(result)
 	} else {
-		cond7 = nil
+		cond128 = nil
 	}
-	return cond7
+	return cond128
 }

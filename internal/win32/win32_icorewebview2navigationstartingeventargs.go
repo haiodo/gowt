@@ -38,13 +38,13 @@ func (this *ICoreWebView2NavigationStartingEventArgs) Get_Cancel(cancel []int32)
 }
 
 func (this *ICoreWebView2NavigationStartingEventArgs) Put_Cancel(cancel bool) int32 {
-	var cond1 int32
+	var cond9 int32
 	if cancel {
-		cond1 = 1
+		cond9 = 1
 	} else {
-		cond1 = 0
+		cond9 = 0
 	}
-	return COMVtblCallOverload1(8, this.address, cond1)
+	return COMVtblCallOverload1(8, this.address, cond9)
 }
 
 func (this *ICoreWebView2NavigationStartingEventArgs) Get_NavigationId(navigationId []int64) int32 {

@@ -100,7 +100,7 @@ func (this *ToolBar) AddImage(imageBoundsLike RectangleLike, imageLike ImageLike
 	return index
 }
 
-func (this *ToolBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *ToolBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -352,9 +352,9 @@ func (this *ToolBar) CreateItem(itemLike ToolItemLike, index int32) {
 	if win32.OSSendMessageOverload16(this.Handle, win32.OSTB_INSERTBUTTON, int64(index), lpButton) == 0 {
 		this.Error(ERROR_ITEM_NOT_ADDED)
 	}
-	cond1 := id
-	item.id = cond1
-	this.items[cond1] = item
+	cond763 := id
+	item.id = cond763
+	this.items[cond763] = item
 	if (this.style & VERTICAL) != 0 {
 		this.SetRowCount(count + 1)
 	}
@@ -510,9 +510,9 @@ func (this *ToolBar) _getTabItemList() []*ToolItem {
 	var index int32 = 0
 	for _, item := range this.tabItemList {
 		if !item.IsDisposed() {
-			t2 := index
+			t764 := index
 			index++
-			newList[t2] = item
+			newList[t764] = item
 		}
 	}
 	this.tabItemList = newList
@@ -780,8 +780,8 @@ func (this *ToolBar) reskinChildren_(flags int32) {
 	this.Composite.reskinChildren_(flags)
 }
 
-func (this *ToolBar) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
+func (this *ToolBar) setBackgroundImageHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmap_(hBitmap)
 	this.SetBackgroundTransparent(hBitmap != 0)
 }
 
@@ -793,14 +793,14 @@ func (this *ToolBar) setBackgroundPixel_(pixel int32) {
 func (this *ToolBar) SetBackgroundTransparent(transparent bool) {
 }
 
-func (this *ToolBar) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+func (this *ToolBar) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
 	if this.parent.lpwp != (nil) {
 		if this.GetDrawing() && win32.OSIsWindowVisible(this.Handle) {
 			this.parent.SetResizeChildren(false)
 			this.parent.SetResizeChildren(true)
 		}
 	}
-	this.Composite.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
+	this.Composite.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
 }
 
 func (this *ToolBar) setDefaultFont_() {
@@ -941,9 +941,9 @@ func (this *ToolBar) updateTextDirection_(textDirection int32) bool {
 		var items []*ToolItem = this._getItems()
 		var i int32 = int32(len(items))
 		for {
-			t3 := i
+			t765 := i
 			i--
-			if !(t3 > 0) {
+			if !(t765 > 0) {
 				break
 			}
 			items[i].impl.updateTextDirection_(this.style & FLIP_TEXT_DIRECTION)
@@ -964,7 +964,7 @@ func (this *ToolBar) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 	var hwndToolTip int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTB_GETTOOLTIPS, int64(0), int64(0))
 	if hwndToolTip == hdr.HwndFrom {
 		if this.currentToolItemToolTip != hwndToolTip {
-			this.MaybeEnableDarkSystemThemeHandle(hdr.HwndFrom)
+			this.MaybeEnableDarkSystemTheme(hdr.HwndFrom)
 			this.currentToolItemToolTip = hdr.HwndFrom
 		}
 		var flags int32 = RIGHT_TO_LEFT | FLIP_TEXT_DIRECTION
@@ -1037,7 +1037,7 @@ func (this *ToolBar) windowClass_() *win32.TCHAR {
 	return ToolBarToolBarClass
 }
 
-func (this *ToolBar) windowProcNoArgs_() int64 {
+func (this *ToolBar) windowProc_() int64 {
 	return ToolBarToolBarProc
 }
 
@@ -1173,7 +1173,7 @@ func (this *ToolBar) wM_SETFOCUS_(wParam int64, lParam int64) *win32.LRESULT {
 
 func (this *ToolBar) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
 	if this.ignoreResize {
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SIZE, wParam, lParam)
 		if code == 0 {
 			return win32.LRESULTZERO
 		}
@@ -1268,7 +1268,7 @@ func (this *ToolBar) GetForegroundPixelItem(itemLike ToolItemLike) int32 {
 	if item != (nil) && item.foreground != -1 {
 		return item.foreground
 	}
-	return this.GetForegroundPixelNoArgs()
+	return this.GetForegroundPixel()
 }
 
 func (this *ToolBar) GetBackgroundPixelItem(itemLike ToolItemLike) int32 {
@@ -1280,7 +1280,7 @@ func (this *ToolBar) GetBackgroundPixelItem(itemLike ToolItemLike) int32 {
 	if item != (nil) && item.background != -1 {
 		return item.background
 	}
-	return this.GetBackgroundPixelNoArgs()
+	return this.GetBackgroundPixel()
 }
 
 func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *win32.LRESULT {
@@ -1314,7 +1314,7 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 				} else {
 					var rect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(rect, nmcd.Left, nmcd.Top, nmcd.Right, nmcd.Bottom)
-					this.DrawBackgroundHDCRectHDCRect(nmcd.Hdc, rect)
+					this.DrawBackgroundHDCRect(nmcd.Hdc, rect)
 				}
 				return win32.NewLRESULT(int64(win32.OSCDRF_SKIPDEFAULT))
 			}
@@ -1391,8 +1391,8 @@ func (this *ToolBar) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64
 	return this.Composite.wmNotifyChild_(hdr, wParam, lParam)
 }
 
-func (this *ToolBar) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChange_(event, scalingFactor)
 	var toolItems []*ToolItem = this._getItems()
 	var seperatorWidth []int32 = make([]int32, int32(len(toolItems)))
 	var itemCount int32 = int32(len(toolItems))

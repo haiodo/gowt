@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/fs"
 	"math"
 	"regexp"
 	"slices"
@@ -40,11 +39,8 @@ func ResourceBundleGetBundle(name string) *ResourceBundle { return &ResourceBund
 
 func (b *ResourceBundle) GetString(key string) string {
 	if b.values == nil {
-		if resourceFS == nil {
-			panic(&MissingResourceException{Key: b.name})
-		}
-		data, err := fs.ReadFile(resourceFS, b.name+".properties")
-		if err != nil {
+		data, ok := readResource(b.name + ".properties")
+		if !ok {
 			panic(&MissingResourceException{Key: b.name})
 		}
 		b.values = parseProperties(data)
@@ -267,7 +263,11 @@ func Split(s, regex string) []string {
 // StringTokenizer is java.util.StringTokenizer over a set of delimiter characters.
 type StringTokenizer struct{ tokens []string }
 
-func NewStringTokenizer(s, delims string) *StringTokenizer {
+func NewStringTokenizer(s string, delim ...string) *StringTokenizer {
+	delims := " \t\n\r\f"
+	if len(delim) > 0 {
+		delims = delim[0]
+	}
 	return &StringTokenizer{strings.FieldsFunc(s, func(r rune) bool { return strings.ContainsRune(delims, r) })}
 }
 

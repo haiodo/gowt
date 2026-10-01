@@ -373,11 +373,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 					newX = destX + width
 				}
 				damage.X = float64(newX)
-				abs1 := deltaX
-				if abs1 < 0 {
-					abs1 = -abs1
+				abs146 := deltaX
+				if abs146 < 0 {
+					abs146 = -abs146
 				}
-				damage.Width = float64(abs1)
+				damage.Width = float64(abs146)
 				this.View.SetNeedsDisplayInRect(damage)
 			}
 			if deltaY != 0 {
@@ -388,11 +388,11 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 				damage.X = float64(x)
 				damage.Y = float64(newY)
 				damage.Width = float64(width)
-				abs2 := deltaY
-				if abs2 < 0 {
-					abs2 = -abs2
+				abs147 := deltaY
+				if abs147 < 0 {
+					abs147 = -abs147
 				}
-				damage.Height = float64(abs2)
+				damage.Height = float64(abs147)
 				this.View.SetNeedsDisplayInRect(damage)
 			}
 		}
@@ -562,8 +562,8 @@ func (this *Canvas) viewWillMoveToWindow_(id int64, sel int64, arg0 int64) {
 	this.Composite.viewWillMoveToWindow_(id, sel, arg0)
 	if this.glcontext != (nil) && id == this.View.Id && arg0 != 0 {
 		var newShell *Widget = this.display.GetWidgetView(cocoa.NewNSWindowOverload1(arg0).ContentView())
-		_, ok3 := isWidgetToShell(newShell)
-		if ok3 {
+		_, ok148 := isWidgetToShell(newShell)
+		if ok148 {
 			(castWidgetToShell(newShell)).glContextCount++
 			(castWidgetToShell(newShell)).UpdateOpaque()
 		}

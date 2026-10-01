@@ -34,11 +34,11 @@ func (this *ICoreWebView2BasicAuthenticationRequestedEventArgs) Get_Cancel(cance
 }
 
 func (this *ICoreWebView2BasicAuthenticationRequestedEventArgs) Put_Cancel(cancel bool) int32 {
-	var cond1 int32
+	var cond2 int32
 	if cancel {
-		cond1 = 1
+		cond2 = 1
 	} else {
-		cond1 = 0
+		cond2 = 0
 	}
-	return COMVtblCallOverload1(7, this.address, cond1)
+	return COMVtblCallOverload1(7, this.address, cond2)
 }

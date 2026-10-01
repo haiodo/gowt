@@ -141,17 +141,17 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 
 func (this *Pattern) GetPatternHandle(zoom int32) *Pattern_PatternHandle {
 	return jrt.Cast[*Pattern_PatternHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(z any) *Pattern_PatternHandle {
-		var cond1 *Pattern_PatternHandle
-		inner2 := newPatternImagePatternHandle(jrt.Cast[int32](z))
-		inner2.this_0 = this
-		inner3 := newPatternBasePatternHandle(jrt.Cast[int32](z))
-		inner3.this_0 = this
+		var cond427 *Pattern_PatternHandle
+		inner428 := newPatternImagePatternHandle(jrt.Cast[int32](z))
+		inner428.this_0 = this
+		inner429 := newPatternBasePatternHandle(jrt.Cast[int32](z))
+		inner429.this_0 = this
 		if this.image != (nil) {
-			cond1 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(inner2)
+			cond427 = upcastPattern_ImagePatternHandleToPattern_PatternHandle(inner428)
 		} else {
-			cond1 = upcastPattern_BasePatternHandleToPattern_PatternHandle(inner3)
+			cond427 = upcastPattern_BasePatternHandleToPattern_PatternHandle(inner429)
 		}
-		return cond1
+		return cond427
 	}))
 }
 

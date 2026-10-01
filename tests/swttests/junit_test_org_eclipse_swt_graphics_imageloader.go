@@ -122,9 +122,9 @@ func (this *Test_org_eclipse_swt_graphics_ImageLoader) Test_saveLjava_io_OutputS
 		var i int32 = 0
 		for _, format := range SwtTestUtilImageFormats {
 			if format == filetype {
-				t1 := i
+				t41 := i
 				i++
-				loader.Save(outStream, t1)
+				loader.Save(outStream, t41)
 				break
 			}
 		}

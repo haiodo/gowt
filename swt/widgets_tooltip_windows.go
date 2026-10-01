@@ -114,13 +114,13 @@ func (this *ToolTip) HwndToolTip() int64 {
 }
 
 func (this *ToolTip) hwndToolTip_() int64 {
-	var cond1 int64
+	var cond775 int64
 	if (this.style & BALLOON) != 0 {
-		cond1 = this.parent.BalloonTipHandle()
+		cond775 = this.parent.BalloonTipHandle()
 	} else {
-		cond1 = this.parent.ToolTipHandle()
+		cond775 = this.parent.ToolTipHandle()
 	}
-	return cond1
+	return cond775
 }
 
 func (this *ToolTip) IsVisible() bool {

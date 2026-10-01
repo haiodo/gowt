@@ -33,14 +33,14 @@ func (this *Test_org_eclipse_swt_widgets_ExpandBar) setUp_() {
 
 func (this *Test_org_eclipse_swt_widgets_ExpandBar) Test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	var listenerCalled []bool = []bool{false}
-	anon1 := &Test_org_eclipse_swt_widgets_ExpandBarAnon1{}
-	anon1.fnItemCollapsed = func(e *swt.ExpandEvent) {
+	anon112 := &Test_org_eclipse_swt_widgets_ExpandBarAnon1{}
+	anon112.fnItemCollapsed = func(e *swt.ExpandEvent) {
 		listenerCalled[0] = true
 	}
-	anon1.fnItemExpanded = func(e *swt.ExpandEvent) {
+	anon112.fnItemExpanded = func(e *swt.ExpandEvent) {
 		listenerCalled[0] = true
 	}
-	var expandListener swt.ExpandListener = anon1
+	var expandListener swt.ExpandListener = anon112
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.expandBar.AddExpandListener(nil)
 	}, "No exception thrown for addExpandListener with null argument")
@@ -136,13 +136,13 @@ func (this *Test_org_eclipse_swt_widgets_ExpandBar) Test_getItems() {
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewExpandItem(this.expandBar, 0)
 	}
-	junit.AssertArrayEquals(items, this.expandBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtExpandItemToany(items), upcastArrswtExpandItemToany(this.expandBar.GetItems()))
 	this.expandBar.GetItems()[0].Dispose()
-	junit.AssertArrayEquals([]*swt.ExpandItem{items[1], items[2], items[3], items[4]}, this.expandBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtExpandItemToany([]*swt.ExpandItem{items[1], items[2], items[3], items[4]}), upcastArrswtExpandItemToany(this.expandBar.GetItems()))
 	this.expandBar.GetItems()[3].Dispose()
-	junit.AssertArrayEquals([]*swt.ExpandItem{items[1], items[2], items[3]}, this.expandBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtExpandItemToany([]*swt.ExpandItem{items[1], items[2], items[3]}), upcastArrswtExpandItemToany(this.expandBar.GetItems()))
 	this.expandBar.GetItems()[1].Dispose()
-	junit.AssertArrayEquals([]*swt.ExpandItem{items[1], items[3]}, this.expandBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtExpandItemToany([]*swt.ExpandItem{items[1], items[3]}), upcastArrswtExpandItemToany(this.expandBar.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_ExpandBar) Test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
@@ -445,6 +445,17 @@ func (this *Test_org_eclipse_swt_widgets_ExpandBarAnon1) ItemCollapsed(a0 *swt.E
 
 func (this *Test_org_eclipse_swt_widgets_ExpandBarAnon1) ItemExpanded(a0 *swt.ExpandEvent) {
 	this.fnItemExpanded(a0)
+}
+
+func upcastArrswtExpandItemToany(x []*swt.ExpandItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }
 
 func upcastswtExpandItemToswtWidget(x *swt.ExpandItem) *swt.Widget {

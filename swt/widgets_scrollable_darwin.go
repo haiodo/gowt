@@ -62,19 +62,19 @@ func (this *Scrollable) computeTrim_(x int32, y int32, width int32, height int32
 		} else {
 			border = cocoa.OSNSNoBorder
 		}
-		var cond1 int64
+		var cond86 int64
 		if (this.style & H_SCROLL) != 0 {
-			cond1 = cocoa.OSClass_NSScroller
+			cond86 = cocoa.OSClass_NSScroller
 		} else {
-			cond1 = int64(0)
+			cond86 = int64(0)
 		}
-		var cond2 int64
+		var cond87 int64
 		if (this.style & V_SCROLL) != 0 {
-			cond2 = cocoa.OSClass_NSScroller
+			cond87 = cocoa.OSClass_NSScroller
 		} else {
-			cond2 = int64(0)
+			cond87 = int64(0)
 		}
-		size = cocoa.NSScrollViewFrameSizeForContentSizeCSizeHorizontalScrollerClassVerticalScrollerClassATypeControlSizeScrollerStyle(size, cond1, cond2, int64(border), int64(cocoa.OSNSControlSizeRegular), int64(cocoa.OSNSScrollerStyleLegacy))
+		size = cocoa.NSScrollViewFrameSizeForContentSizeCSizeHorizontalScrollerClassVerticalScrollerClassATypeControlSizeScrollerStyle(size, cond86, cond87, int64(border), int64(cocoa.OSNSControlSizeRegular), int64(cocoa.OSNSScrollerStyleLegacy))
 		width = int32(size.Width)
 		height = int32(size.Height)
 		var frame cocoa.NSRect = this.scrollView.ContentView().Frame()
@@ -344,13 +344,13 @@ func (this *Scrollable) setScrollBarVisible_(bar *ScrollBar, visible bool) bool 
 	} else {
 		this.scrollView.SetHasVerticalScroller(visible)
 	}
-	var cond3 int32
+	var cond88 int32
 	if visible {
-		cond3 = Show
+		cond88 = Show
 	} else {
-		cond3 = Hide
+		cond88 = Hide
 	}
-	bar.SendEventEventType(cond3)
+	bar.SendEventEventType(cond88)
 	this.SendEventEventType(Resize)
 	return true
 }

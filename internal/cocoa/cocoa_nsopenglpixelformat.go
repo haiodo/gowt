@@ -46,17 +46,17 @@ func (this *NSOpenGLPixelFormat) GetValues(vals []int64, attrib int32, screen in
 
 func (this *NSOpenGLPixelFormat) InitWithAttributes(attribs []int32) *NSOpenGLPixelFormat {
 	var result int64 = OSObjc_msgSendOverload42(this.Id, OSSel_initWithAttributes_, attribs)
-	var cond1 *NSOpenGLPixelFormat
-	var cond2 *NSOpenGLPixelFormat
+	var cond526 *NSOpenGLPixelFormat
+	var cond527 *NSOpenGLPixelFormat
 	if result != 0 {
-		cond2 = NewNSOpenGLPixelFormatOverload1(result)
+		cond527 = NewNSOpenGLPixelFormatOverload1(result)
 	} else {
-		cond2 = nil
+		cond527 = nil
 	}
 	if result == this.Id {
-		cond1 = this
+		cond526 = this
 	} else {
-		cond1 = (cond2)
+		cond526 = (cond527)
 	}
-	return cond1
+	return cond526
 }

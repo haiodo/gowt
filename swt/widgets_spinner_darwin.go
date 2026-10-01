@@ -253,8 +253,8 @@ func (this *Spinner) GetSelection() int32 {
 
 func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 	var string_ string = this.textView.StringValue().GetString()
-	var tret1 int32
-	tretd2 := false
+	var tret596 int32
+	tretd597 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -321,13 +321,13 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 		var max int32 = this.GetMaximum()
 		var min int32 = this.GetMinimum()
 		if min <= value && value <= max {
-			tret1 = value
-			tretd2 = true
+			tret596 = value
+			tretd597 = true
 			return
 		}
 	}()
-	if tretd2 {
-		return tret1
+	if tretd597 {
+		return tret596
 	}
 	parseFail[0] = true
 	return -1
@@ -634,9 +634,9 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 				buffer.Append("0")
 				buffer.Append(decimalSeparator)
 				for {
-					t3 := index
+					t598 := index
 					index++
-					if !(t3 < 0) {
+					if !(t598 < 0) {
 						break
 					}
 					buffer.Append("0")
@@ -731,7 +731,7 @@ func (this *Spinner) shouldChangeTextInRange_replacementString_(id int64, sel in
 					}
 				}
 				var buffer []uint16 = make([]uint16, length)
-				copy(buffer, utf16.Encode([]rune(newText)))
+				jrt.GetChars(newText, 0, int32(len(buffer)), buffer, 0)
 				var nsstring *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 				fieldEditor.ReplaceCharactersInRange(fieldEditor.SelectedRange(), nsstring)
 				result = false

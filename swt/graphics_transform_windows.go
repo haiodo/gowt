@@ -246,15 +246,15 @@ func (this *Transform) NewTransformHandle(zoom int32) *Transform_TransformHandle
 		Error(ERROR_NO_HANDLES)
 	}
 	var transformHandle *Transform_TransformHandle = newTransformTransformHandle(newHandle, zoom)
-	for _, elem1 := range this.operations.ToArray() {
-		operation := jrt.Cast[Transform_Operation](elem1)
+	for _, elem430 := range this.operations.ToArray() {
+		operation := jrt.Cast[Transform_Operation](elem430)
 		operation.Apply(transformHandle)
 	}
 	return transformHandle
 }
 
 func (this *Transform) GetTransformHandle(zoom int32) *Transform_TransformHandle {
-	return jrt.Cast[*Transform_TransformHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), this.NewTransformHandle))
+	return jrt.Cast[*Transform_TransformHandle](this.zoomToHandle.ComputeIfAbsent(int32(zoom), func(a0 any) *Transform_TransformHandle { return this.NewTransformHandle(jrt.Cast[int32](a0)) }))
 }
 
 func (this *Transform) GetHandle(zoom int32) int64 {

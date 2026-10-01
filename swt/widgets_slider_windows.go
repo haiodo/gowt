@@ -46,7 +46,7 @@ func (this *Slider) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Slider) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Slider) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -81,7 +81,7 @@ func (this *Slider) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 
 func (this *Slider) createHandle_() {
 	this.Control.createHandle_()
-	this.impl.maybeEnableDarkSystemThemeNoArgs_()
+	this.impl.maybeEnableDarkSystemTheme0_()
 }
 
 func (this *Slider) createWidget_() {
@@ -186,8 +186,8 @@ func (this *Slider) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *Slider) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
-	this.Control.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
+func (this *Slider) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+	this.Control.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
 	if win32.OSGetFocus() == this.Handle {
 		this.ignoreFocus = true
 		win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETFOCUS, int64(0), int64(0))
@@ -340,7 +340,7 @@ func (this *Slider) windowClass_() *win32.TCHAR {
 	return SliderScrollBarClass
 }
 
-func (this *Slider) windowProcNoArgs_() int64 {
+func (this *Slider) windowProc_() int64 {
 	return SliderScrollBarProc
 }
 
@@ -362,7 +362,7 @@ func (this *Slider) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 				} else {
 					key = win32.OSVK_LEFT
 				}
-				var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, int64(key), lParam)
+				var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(key), lParam)
 				return win32.NewLRESULT(code)
 			}
 		}

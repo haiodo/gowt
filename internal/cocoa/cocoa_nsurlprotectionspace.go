@@ -42,13 +42,13 @@ func (this *NSURLProtectionSpace) initNSURLProtectionSpaceOverload2(id *id) {
 
 func (this *NSURLProtectionSpace) Host() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_host)
-	var cond1 *NSString
+	var cond834 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond834 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond834 = nil
 	}
-	return cond1
+	return cond834
 }
 
 func (this *NSURLProtectionSpace) Port() int64 {
@@ -57,11 +57,11 @@ func (this *NSURLProtectionSpace) Port() int64 {
 
 func (this *NSURLProtectionSpace) Realm() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_realm)
-	var cond2 *NSString
+	var cond835 *NSString
 	if result != 0 {
-		cond2 = NewNSStringOverload1(result)
+		cond835 = NewNSStringOverload1(result)
 	} else {
-		cond2 = nil
+		cond835 = nil
 	}
-	return cond2
+	return cond835
 }

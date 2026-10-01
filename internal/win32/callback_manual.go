@@ -4,7 +4,10 @@
 // result, like a window procedure. syscall.NewCallback slots are never freed (a pool of 2000).
 package win32
 
-import "syscall"
+import (
+	"reflect"
+	"syscall"
+)
 
 // NewCallbackN returns the C address of a stdcall function taking argCount words, which calls fn.
 func NewCallbackN(argCount int, fn func(args []int64) int64) int64 {
@@ -39,4 +42,23 @@ func NewCallbackN(argCount int, fn func(args []int64) int64) int64 {
 		panic("gowt/internal/win32: unsupported callback arg count")
 	}
 	return int64(syscall.NewCallback(f))
+}
+
+// NewCallbackAny is a callback whose Go func has typed integer arguments (int32, int64, ...) and a result or none;
+// syscall.NewCallback wants exactly one uintptr result, so a func without one is wrapped.
+func NewCallbackAny(fn any) int64 {
+	v := reflect.ValueOf(fn)
+	t := v.Type()
+	if t.NumOut() == 1 {
+		return int64(syscall.NewCallback(fn))
+	}
+	in := make([]reflect.Type, t.NumIn())
+	for i := range in {
+		in[i] = t.In(i)
+	}
+	wrapped := reflect.MakeFunc(reflect.FuncOf(in, []reflect.Type{reflect.TypeOf(uintptr(0))}, false), func(args []reflect.Value) []reflect.Value {
+		v.Call(args)
+		return []reflect.Value{reflect.ValueOf(uintptr(0))}
+	})
+	return int64(syscall.NewCallback(wrapped.Interface()))
 }

@@ -46,77 +46,77 @@ func (this *NSApplication) ActivateIgnoringOtherApps(flag bool) {
 
 func (this *NSApplication) ApplicationIconImage() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_applicationIconImage)
-	var cond1 *NSImage
+	var cond22 *NSImage
 	if result != 0 {
-		cond1 = NewNSImageOverload1(result)
+		cond22 = NewNSImageOverload1(result)
 	} else {
-		cond1 = nil
+		cond22 = nil
 	}
-	return cond1
+	return cond22
 }
 
 func (this *NSApplication) ArrangeInFront(sender *id) {
-	var cond2 int64
+	var cond23 int64
 	if sender != (nil) {
-		cond2 = sender.Id
+		cond23 = sender.Id
 	} else {
-		cond2 = int64(0)
+		cond23 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_arrangeInFront_, cond2)
+	OSObjc_msgSendOverload44(this.Id, OSSel_arrangeInFront_, cond23)
 }
 
 func (this *NSApplication) BeginSheet(sheet *NSWindow, docWindow *NSWindow, modalDelegate *id, didEndSelector int64, contextInfo int64) {
-	var cond3 int64
+	var cond24 int64
 	if sheet != (nil) {
-		cond3 = sheet.Id
+		cond24 = sheet.Id
 	} else {
-		cond3 = int64(0)
+		cond24 = int64(0)
 	}
-	var cond4 int64
+	var cond25 int64
 	if docWindow != (nil) {
-		cond4 = docWindow.Id
+		cond25 = docWindow.Id
 	} else {
-		cond4 = int64(0)
+		cond25 = int64(0)
 	}
-	var cond5 int64
+	var cond26 int64
 	if modalDelegate != (nil) {
-		cond5 = modalDelegate.Id
+		cond26 = modalDelegate.Id
 	} else {
-		cond5 = int64(0)
+		cond26 = int64(0)
 	}
-	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_, cond3, cond4, cond5, didEndSelector, contextInfo)
+	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_, cond24, cond25, cond26, didEndSelector, contextInfo)
 }
 
 func (this *NSApplication) CurrentEvent() *NSEvent {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_currentEvent)
-	var cond6 *NSEvent
+	var cond27 *NSEvent
 	if result != 0 {
-		cond6 = NewNSEventOverload1(result)
+		cond27 = NewNSEventOverload1(result)
 	} else {
-		cond6 = nil
+		cond27 = nil
 	}
-	return cond6
+	return cond27
 }
 
 func (this *NSApplication) DockTile() *NSDockTile {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dockTile)
-	var cond7 *NSDockTile
+	var cond28 *NSDockTile
 	if result != 0 {
-		cond7 = NewNSDockTileOverload1(result)
+		cond28 = NewNSDockTileOverload1(result)
 	} else {
-		cond7 = nil
+		cond28 = nil
 	}
-	return cond7
+	return cond28
 }
 
 func (this *NSApplication) EndSheet(sheet *NSWindow, returnCode int64) {
-	var cond8 int64
+	var cond29 int64
 	if sheet != (nil) {
-		cond8 = sheet.Id
+		cond29 = sheet.Id
 	} else {
-		cond8 = int64(0)
+		cond29 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_endSheet_returnCode_, cond8, returnCode)
+	OSObjc_msgSendOverload54(this.Id, OSSel_endSheet_returnCode_, cond29, returnCode)
 }
 
 func (this *NSApplication) FinishLaunching() {
@@ -124,23 +124,23 @@ func (this *NSApplication) FinishLaunching() {
 }
 
 func (this *NSApplication) Hide(sender *id) {
-	var cond9 int64
+	var cond30 int64
 	if sender != (nil) {
-		cond9 = sender.Id
+		cond30 = sender.Id
 	} else {
-		cond9 = int64(0)
+		cond30 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_hide_, cond9)
+	OSObjc_msgSendOverload44(this.Id, OSSel_hide_, cond30)
 }
 
 func (this *NSApplication) HideOtherApplications(sender *id) {
-	var cond10 int64
+	var cond31 int64
 	if sender != (nil) {
-		cond10 = sender.Id
+		cond31 = sender.Id
 	} else {
-		cond10 = int64(0)
+		cond31 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_hideOtherApplications_, cond10)
+	OSObjc_msgSendOverload44(this.Id, OSSel_hideOtherApplications_, cond31)
 }
 
 func (this *NSApplication) IsActive() bool {
@@ -153,67 +153,67 @@ func (this *NSApplication) IsRunning() bool {
 
 func (this *NSApplication) KeyWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_keyWindow)
-	var cond11 *NSWindow
+	var cond32 *NSWindow
 	if result != 0 {
-		cond11 = NewNSWindowOverload1(result)
+		cond32 = NewNSWindowOverload1(result)
 	} else {
-		cond11 = nil
+		cond32 = nil
 	}
-	return cond11
+	return cond32
 }
 
 func (this *NSApplication) MainMenu() *NSMenu {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mainMenu)
-	var cond12 *NSMenu
+	var cond33 *NSMenu
 	if result != 0 {
-		cond12 = NewNSMenuOverload1(result)
+		cond33 = NewNSMenuOverload1(result)
 	} else {
-		cond12 = nil
+		cond33 = nil
 	}
-	return cond12
+	return cond33
 }
 
 func (this *NSApplication) NextEventMatchingMask(mask int64, expiration *NSDate, mode *NSString, deqFlag bool) *NSEvent {
-	var cond13 int64
+	var cond34 int64
 	if expiration != (nil) {
-		cond13 = expiration.Id
+		cond34 = expiration.Id
 	} else {
-		cond13 = int64(0)
+		cond34 = int64(0)
 	}
-	var cond14 int64
+	var cond35 int64
 	if mode != (nil) {
-		cond14 = mode.Id
+		cond35 = mode.Id
 	} else {
-		cond14 = int64(0)
+		cond35 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload59(this.Id, OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, cond13, cond14, deqFlag)
-	var cond15 *NSEvent
+	var result int64 = OSObjc_msgSendOverload59(this.Id, OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, cond34, cond35, deqFlag)
+	var cond36 *NSEvent
 	if result != 0 {
-		cond15 = NewNSEventOverload1(result)
+		cond36 = NewNSEventOverload1(result)
 	} else {
-		cond15 = nil
+		cond36 = nil
 	}
-	return cond15
+	return cond36
 }
 
 func (this *NSApplication) OrderFrontStandardAboutPanel(sender *id) {
-	var cond16 int64
+	var cond37 int64
 	if sender != (nil) {
-		cond16 = sender.Id
+		cond37 = sender.Id
 	} else {
-		cond16 = int64(0)
+		cond37 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_orderFrontStandardAboutPanel_, cond16)
+	OSObjc_msgSendOverload44(this.Id, OSSel_orderFrontStandardAboutPanel_, cond37)
 }
 
 func (this *NSApplication) PostEvent(event *NSEvent, flag bool) {
-	var cond17 int64
+	var cond38 int64
 	if event != (nil) {
-		cond17 = event.Id
+		cond38 = event.Id
 	} else {
-		cond17 = int64(0)
+		cond38 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_postEvent_atStart_, cond17, flag)
+	OSObjc_msgSendOverload52(this.Id, OSSel_postEvent_atStart_, cond38, flag)
 }
 
 func (this *NSApplication) ReplyToOpenOrPrint(reply int64) {
@@ -221,39 +221,39 @@ func (this *NSApplication) ReplyToOpenOrPrint(reply int64) {
 }
 
 func (this *NSApplication) RunModalForWindow(theWindow *NSWindow) int64 {
-	var cond18 int64
+	var cond39 int64
 	if theWindow != (nil) {
-		cond18 = theWindow.Id
+		cond39 = theWindow.Id
 	} else {
-		cond18 = int64(0)
+		cond39 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalForWindow_, cond18)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalForWindow_, cond39)
 }
 
 func (this *NSApplication) SendAction(theAction int64, theTarget *id, sender *id) bool {
-	var cond19 int64
+	var cond40 int64
 	if theTarget != (nil) {
-		cond19 = theTarget.Id
+		cond40 = theTarget.Id
 	} else {
-		cond19 = int64(0)
+		cond40 = int64(0)
 	}
-	var cond20 int64
+	var cond41 int64
 	if sender != (nil) {
-		cond20 = sender.Id
+		cond41 = sender.Id
 	} else {
-		cond20 = int64(0)
+		cond41 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_sendAction_to_from_, theAction, cond19, cond20)
+	return OSObjc_msgSend_boolOverload9(this.Id, OSSel_sendAction_to_from_, theAction, cond40, cond41)
 }
 
 func (this *NSApplication) SendEvent(theEvent *NSEvent) {
-	var cond21 int64
+	var cond42 int64
 	if theEvent != (nil) {
-		cond21 = theEvent.Id
+		cond42 = theEvent.Id
 	} else {
-		cond21 = int64(0)
+		cond42 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_sendEvent_, cond21)
+	OSObjc_msgSendOverload44(this.Id, OSSel_sendEvent_, cond42)
 }
 
 func (this *NSApplication) SetActivationPolicy(activationPolicy int64) bool {
@@ -261,63 +261,63 @@ func (this *NSApplication) SetActivationPolicy(activationPolicy int64) bool {
 }
 
 func (this *NSApplication) SetApplicationIconImage(applicationIconImage *NSImage) {
-	var cond22 int64
+	var cond43 int64
 	if applicationIconImage != (nil) {
-		cond22 = applicationIconImage.Id
+		cond43 = applicationIconImage.Id
 	} else {
-		cond22 = int64(0)
+		cond43 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setApplicationIconImage_, cond22)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setApplicationIconImage_, cond43)
 }
 
 func (this *NSApplication) SetDelegate(delegate *id) {
-	var cond23 int64
+	var cond44 int64
 	if delegate != (nil) {
-		cond23 = delegate.Id
+		cond44 = delegate.Id
 	} else {
-		cond23 = int64(0)
+		cond44 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond23)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond44)
 }
 
 func (this *NSApplication) SetHelpMenu(helpMenu *NSMenu) {
-	var cond24 int64
+	var cond45 int64
 	if helpMenu != (nil) {
-		cond24 = helpMenu.Id
+		cond45 = helpMenu.Id
 	} else {
-		cond24 = int64(0)
+		cond45 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHelpMenu_, cond24)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHelpMenu_, cond45)
 }
 
 func (this *NSApplication) SetMainMenu(mainMenu *NSMenu) {
-	var cond25 int64
+	var cond46 int64
 	if mainMenu != (nil) {
-		cond25 = mainMenu.Id
+		cond46 = mainMenu.Id
 	} else {
-		cond25 = int64(0)
+		cond46 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMainMenu_, cond25)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMainMenu_, cond46)
 }
 
 func (this *NSApplication) SetServicesMenu(servicesMenu *NSMenu) {
-	var cond26 int64
+	var cond47 int64
 	if servicesMenu != (nil) {
-		cond26 = servicesMenu.Id
+		cond47 = servicesMenu.Id
 	} else {
-		cond26 = int64(0)
+		cond47 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setServicesMenu_, cond26)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setServicesMenu_, cond47)
 }
 
 func (this *NSApplication) Stop(sender *id) {
-	var cond27 int64
+	var cond48 int64
 	if sender != (nil) {
-		cond27 = sender.Id
+		cond48 = sender.Id
 	} else {
-		cond27 = int64(0)
+		cond48 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_stop_, cond27)
+	OSObjc_msgSendOverload44(this.Id, OSSel_stop_, cond48)
 }
 
 func (this *NSApplication) StopModal() {
@@ -325,54 +325,54 @@ func (this *NSApplication) StopModal() {
 }
 
 func (this *NSApplication) Terminate(sender *id) {
-	var cond28 int64
+	var cond49 int64
 	if sender != (nil) {
-		cond28 = sender.Id
+		cond49 = sender.Id
 	} else {
-		cond28 = int64(0)
+		cond49 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_terminate_, cond28)
+	OSObjc_msgSendOverload44(this.Id, OSSel_terminate_, cond49)
 }
 
 func (this *NSApplication) UnhideAllApplications(sender *id) {
-	var cond29 int64
+	var cond50 int64
 	if sender != (nil) {
-		cond29 = sender.Id
+		cond50 = sender.Id
 	} else {
-		cond29 = int64(0)
+		cond50 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_unhideAllApplications_, cond29)
+	OSObjc_msgSendOverload44(this.Id, OSSel_unhideAllApplications_, cond50)
 }
 
 func (this *NSApplication) WindowWithWindowNumber(windowNum int64) *NSWindow {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_windowWithWindowNumber_, windowNum)
-	var cond30 *NSWindow
+	var cond51 *NSWindow
 	if result != 0 {
-		cond30 = NewNSWindowOverload1(result)
+		cond51 = NewNSWindowOverload1(result)
 	} else {
-		cond30 = nil
+		cond51 = nil
 	}
-	return cond30
+	return cond51
 }
 
 func (this *NSApplication) Windows() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_windows)
-	var cond31 *NSArray
+	var cond52 *NSArray
 	if result != 0 {
-		cond31 = NewNSArrayOverload1(result)
+		cond52 = NewNSArrayOverload1(result)
 	} else {
-		cond31 = nil
+		cond52 = nil
 	}
-	return cond31
+	return cond52
 }
 
 func NSApplicationSharedApplication() *NSApplication {
 	var result int64 = OSObjc_msgSend(OSClass_NSApplication, OSSel_sharedApplication)
-	var cond32 *NSApplication
+	var cond53 *NSApplication
 	if result != 0 {
-		cond32 = NewNSApplicationOverload1(result)
+		cond53 = NewNSApplicationOverload1(result)
 	} else {
-		cond32 = nil
+		cond53 = nil
 	}
-	return cond32
+	return cond53
 }

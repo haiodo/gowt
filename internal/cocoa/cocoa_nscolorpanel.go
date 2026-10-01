@@ -41,55 +41,55 @@ func (this *NSColorPanel) initNSColorPanelOverload2(id *id) {
 }
 
 func (this *NSColorPanel) AttachColorList(colorList *NSColorList) {
-	var cond1 int64
+	var cond189 int64
 	if colorList != (nil) {
-		cond1 = colorList.Id
+		cond189 = colorList.Id
 	} else {
-		cond1 = int64(0)
+		cond189 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond1)
+	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond189)
 }
 
 func (this *NSColorPanel) Color() *NSColor {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_color)
-	var cond2 *NSColor
+	var cond190 *NSColor
 	if result != 0 {
-		cond2 = NewNSColorOverload1(result)
+		cond190 = NewNSColorOverload1(result)
 	} else {
-		cond2 = nil
+		cond190 = nil
 	}
-	return cond2
+	return cond190
 }
 
 func (this *NSColorPanel) SetColor(color *NSColor) {
-	var cond3 int64
+	var cond191 int64
 	if color != (nil) {
-		cond3 = color.Id
+		cond191 = color.Id
 	} else {
-		cond3 = int64(0)
+		cond191 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond3)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond191)
 }
 
 func NSColorPanelSharedColorPanel() *NSColorPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSColorPanel, OSSel_sharedColorPanel)
-	var cond4 *NSColorPanel
+	var cond192 *NSColorPanel
 	if result != 0 {
-		cond4 = NewNSColorPanelOverload1(result)
+		cond192 = NewNSColorPanelOverload1(result)
 	} else {
-		cond4 = nil
+		cond192 = nil
 	}
-	return cond4
+	return cond192
 }
 
 func NSColorPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond5 int64
+	var cond193 int64
 	if aTitle != (nil) {
-		cond5 = aTitle.Id
+		cond193 = aTitle.Id
 	} else {
-		cond5 = int64(0)
+		cond193 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond5, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond193, aStyle)
 }
 
 func NSColorPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

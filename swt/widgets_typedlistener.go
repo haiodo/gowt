@@ -57,8 +57,8 @@ func (this *TypedListener) HandleEvent(e *Event) {
 		}
 	case Collapse:
 		{
-			_, ok1 := this.eventListener.(TreeListener)
-			if ok1 {
+			_, ok28 := this.eventListener.(TreeListener)
+			if ok28 {
 				(this.eventListener.(TreeListener)).TreeCollapsed(NewTreeEvent(e))
 			} else {
 				(this.eventListener.(ExpandListener)).ItemCollapsed(NewExpandEvent(e))
@@ -92,8 +92,8 @@ func (this *TypedListener) HandleEvent(e *Event) {
 		}
 	case Expand:
 		{
-			_, ok2 := this.eventListener.(TreeListener)
-			if ok2 {
+			_, ok29 := this.eventListener.(TreeListener)
+			if ok29 {
 				(this.eventListener.(TreeListener)).TreeExpanded(NewTreeEvent(e))
 			} else {
 				(this.eventListener.(ExpandListener)).ItemExpanded(NewExpandEvent(e))

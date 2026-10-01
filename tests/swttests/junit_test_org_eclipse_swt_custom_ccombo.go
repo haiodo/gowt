@@ -184,8 +184,8 @@ func (this *Test_org_eclipse_swt_custom_CCombo) test_setFocus_() {
 		}()
 		junit.AssertTrue(this.ccombo.IsFocusControl())
 		var focusControl *swt.Control = this.ccombo.GetDisplay().GetFocusControl()
-		_, ok1 := isswtControlToswtText(focusControl)
-		junit.AssertTrue(ok1)
+		_, ok89 := isswtControlToswtText(focusControl)
+		junit.AssertTrue(ok89)
 		junit.AssertEquals(this.ccombo, focusControl.GetParent())
 	}
 }
@@ -312,13 +312,13 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_addModifyListenerLorg_eclip
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.ccombo = swt.NewCCombo(upcastswtShellToswtComposite(this.shell), 0)
 	this.listenerCalled = false
-	anon2 := &Test_org_eclipse_swt_custom_CComboAnon1{}
-	anon2.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon90 := &Test_org_eclipse_swt_custom_CComboAnon1{}
+	anon90.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon2.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon90.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon2
+	var listener swt.SelectionListener = anon90
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.ccombo.AddSelectionListener(nil)
 	})
@@ -660,13 +660,13 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_removeModifyListenerLorg_ec
 
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	this.listenerCalled = false
-	anon3 := &Test_org_eclipse_swt_custom_CComboAnon2{}
-	anon3.fnWidgetSelected = func(event *swt.SelectionEvent) {
+	anon91 := &Test_org_eclipse_swt_custom_CComboAnon2{}
+	anon91.fnWidgetSelected = func(event *swt.SelectionEvent) {
 		this.listenerCalled = true
 	}
-	anon3.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
+	anon91.fnWidgetDefaultSelected = func(event *swt.SelectionEvent) {
 	}
-	var listener swt.SelectionListener = anon3
+	var listener swt.SelectionListener = anon91
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.ccombo.AddSelectionListener(nil)
 	})
@@ -731,7 +731,7 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItemILjava_lang_String()
 	for i := int32(0); i < number; i++ {
 		this.ccombo.SetItem(i, fmt.Sprintf("fang%d", i))
 	}
-	junit.AssertArrayEquals([]string{"fang0", "fang1", "fang2", "fang3", "fang4"}, this.ccombo.GetItems())
+	junit.AssertArrayEquals(upcastArrstringToany([]string{"fang0", "fang1", "fang2", "fang3", "fang4"}), upcastArrstringToany(this.ccombo.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItems_Ljava_lang_String() {
@@ -746,7 +746,7 @@ func (this *Test_org_eclipse_swt_custom_CCombo) Test_setItems_Ljava_lang_String(
 	var items [][]string = [][]string{[]string{}, []string{""}, []string{"", ""}, []string{"fang"}, []string{"fang0", "fang0"}, []string{"fang", "fang"}}
 	for i := int32(0); i < int32(len(items)); i++ {
 		this.ccombo.SetItems(items[i])
-		junit.AssertArrayEquals(items[i], this.ccombo.GetItems())
+		junit.AssertArrayEquals(upcastArrstringToany(items[i]), upcastArrstringToany(this.ccombo.GetItems()))
 	}
 }
 

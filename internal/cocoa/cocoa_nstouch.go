@@ -42,13 +42,13 @@ func (this *NSTouch) initNSTouchOverload2(id *id) {
 
 func (this *NSTouch) Device() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_device)
-	var cond1 *id
+	var cond812 *id
 	if result != 0 {
-		cond1 = NewidOverload1(result)
+		cond812 = NewidOverload1(result)
 	} else {
-		cond1 = nil
+		cond812 = nil
 	}
-	return cond1
+	return cond812
 }
 
 func (this *NSTouch) DeviceSize() NSSize {

@@ -49,26 +49,26 @@ func (this *NSAffineTransform) Set() {
 }
 
 func (this *NSAffineTransform) InitWithTransform(transform *NSAffineTransform) *NSAffineTransform {
-	var cond1 int64
+	var cond4 int64
 	if transform != (nil) {
-		cond1 = transform.Id
+		cond4 = transform.Id
 	} else {
-		cond1 = int64(0)
+		cond4 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithTransform_, cond1)
-	var cond2 *NSAffineTransform
-	var cond3 *NSAffineTransform
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithTransform_, cond4)
+	var cond5 *NSAffineTransform
+	var cond6 *NSAffineTransform
 	if result != 0 {
-		cond3 = NewNSAffineTransformOverload1(result)
+		cond6 = NewNSAffineTransformOverload1(result)
 	} else {
-		cond3 = nil
+		cond6 = nil
 	}
 	if result == this.Id {
-		cond2 = this
+		cond5 = this
 	} else {
-		cond2 = (cond3)
+		cond5 = (cond6)
 	}
-	return cond2
+	return cond5
 }
 
 func (this *NSAffineTransform) Invert() {
@@ -76,13 +76,13 @@ func (this *NSAffineTransform) Invert() {
 }
 
 func (this *NSAffineTransform) PrependTransform(transform *NSAffineTransform) {
-	var cond4 int64
+	var cond7 int64
 	if transform != (nil) {
-		cond4 = transform.Id
+		cond7 = transform.Id
 	} else {
-		cond4 = int64(0)
+		cond7 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_prependTransform_, cond4)
+	OSObjc_msgSendOverload44(this.Id, OSSel_prependTransform_, cond7)
 }
 
 func (this *NSAffineTransform) RotateByDegrees(angle float64) {
@@ -121,11 +121,11 @@ func (this *NSAffineTransform) TranslateXBy(deltaX float64, deltaY float64) {
 
 func NSAffineTransformTransform() *NSAffineTransform {
 	var result int64 = OSObjc_msgSend(OSClass_NSAffineTransform, OSSel_transform)
-	var cond5 *NSAffineTransform
+	var cond8 *NSAffineTransform
 	if result != 0 {
-		cond5 = NewNSAffineTransformOverload1(result)
+		cond8 = NewNSAffineTransformOverload1(result)
 	} else {
-		cond5 = nil
+		cond8 = nil
 	}
-	return cond5
+	return cond8
 }

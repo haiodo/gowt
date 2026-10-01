@@ -74,7 +74,7 @@ func (this *Test_org_eclipse_swt_graphics_PaletteData) Test_getRGBI() {
 func (this *Test_org_eclipse_swt_graphics_PaletteData) Test_getRGBs() {
 	var rgbs []*swt.RGB = []*swt.RGB{swt.NewRGB(0, 0, 0), swt.NewRGB(255, 255, 255)}
 	var data *swt.PaletteData = swt.NewPaletteData(rgbs)
-	junit.AssertArrayEquals(rgbs, data.GetRGBs())
+	junit.AssertArrayEquals(upcastArrswtRGBToany(rgbs), upcastArrswtRGBToany(data.GetRGBs()))
 	data = swt.NewPaletteDataRedMaskGreenMaskBlueMask(0xff0000, 0x00ff00, 0x0000ff)
 	junit.AssertNull(data.GetRGBs())
 }

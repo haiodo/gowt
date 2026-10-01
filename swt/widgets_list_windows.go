@@ -93,7 +93,7 @@ func (this *List) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *List) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *List) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -296,13 +296,13 @@ func (this *List) GetItem(index int32) string {
 		var buffer []uint16 = make([]uint16, length+1)
 		var result int32 = int32(win32.OSSendMessageOverload2(this.Handle, win32.OSLB_GETTEXT, int64(index), buffer))
 		if result != win32.OSLB_ERR {
-			var cond1 string
+			var cond749 string
 			if (this.state & WidgetHAS_AUTO_DIRECTION) != 0 {
-				cond1 = string(utf16.Decode(buffer[1 : 1+length-1]))
+				cond749 = string(utf16.Decode(buffer[1 : 1+length-1]))
 			} else {
-				cond1 = string(utf16.Decode(buffer[0 : 0+length]))
+				cond749 = string(utf16.Decode(buffer[0 : 0+length]))
 			}
-			return cond1
+			return cond749
 		}
 	}
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCOUNT, int64(0), int64(0)))
@@ -451,9 +451,9 @@ func (this *List) IndexOfStringStart(string_ string, start int32) int32 {
 	var last int32
 	var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(string_, true)
 	for {
-		cond2 := index
-		last = cond2
-		index = int32(win32.OSSendMessage(this.Handle, win32.OSLB_FINDSTRINGEXACT, int64(cond2), buffer))
+		cond750 := index
+		last = cond750
+		index = int32(win32.OSSendMessage(this.Handle, win32.OSLB_FINDSTRINGEXACT, int64(cond750), buffer))
 		if index == win32.OSLB_ERR || index <= last {
 			return -1
 		}
@@ -484,7 +484,7 @@ func (this *List) RemoveIndices(indices []int32) {
 	}
 	var newIndices []int32 = make([]int32, int32(len(indices)))
 	copy(newIndices[0:], indices[0:0+int32(len(indices))])
-	this.SortItems(newIndices)
+	this.Sort(newIndices)
 	var start int32 = newIndices[int32(len(newIndices))-1]
 	var end int32 = newIndices[0]
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCOUNT, int64(0), int64(0)))
@@ -1013,9 +1013,9 @@ func (this *List) SetSelectionItems(items []string) {
 		if string_ != "" {
 			var localFocus int32 = -1
 			for {
-				cond3 := this.IndexOfStringStart(string_, index)
-				index = cond3
-				if !((cond3) != -1) {
+				cond751 := this.IndexOfStringStart(string_, index)
+				index = cond751
+				if !((cond751) != -1) {
 					break
 				}
 				if localFocus == -1 {
@@ -1175,9 +1175,9 @@ func (this *List) updateTextDirection_(textDirection int32) bool {
 	var selection int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCURSEL, int64(0), int64(0)))
 	this.addedUCC = false
 	for {
-		t4 := count
+		t752 := count
 		count--
-		if !(t4 > 0) {
+		if !(t752 > 0) {
 			break
 		}
 		var length int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETTEXTLEN, int64(count), int64(0)))
@@ -1225,11 +1225,11 @@ func (this *List) windowClass_() *win32.TCHAR {
 	return ListListClass
 }
 
-func (this *List) windowProcNoArgs_() int64 {
+func (this *List) windowProc_() int64 {
 	return ListListProc
 }
 
-func (this *List) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *List) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle != 0 && lParam != 0 && (this.state&WidgetHAS_AUTO_DIRECTION) != 0 {
 		switch msg {
 		case win32.OSLB_ADDSTRING, win32.OSLB_INSERTSTRING, win32.OSLB_FINDSTRINGEXACT:
@@ -1245,25 +1245,25 @@ func (this *List) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, 
 					direction = LEFT_TO_RIGHT
 				}
 			}
-			var cond5 uint16
+			var cond753 uint16
 			if direction == RIGHT_TO_LEFT {
-				cond5 = WidgetRLE
+				cond753 = WidgetRLE
 			} else {
-				cond5 = WidgetLRE
+				cond753 = WidgetLRE
 			}
-			string_ = fmt.Sprintf("%c%s", (cond5), string_)
+			string_ = fmt.Sprintf("%c%s", (cond753), string_)
 			buffer = win32.NewTCHARStringTerminate(string_, true)
 			var hHeap int64 = win32.OSGetProcessHeap()
 			length = buffer.Length() * win32.TCHARSizeof
 			var pszText int64 = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, length)
 			win32.OSMoveMemory(pszText, buffer, length)
-			var code int64 = this.Scrollable.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, pszText)
+			var code int64 = this.Scrollable.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, pszText)
 			win32.OSHeapFree(hHeap, 0, pszText)
 			this.addedUCC = true
 			return code
 		}
 	}
-	return this.Scrollable.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Scrollable.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *List) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
@@ -1282,13 +1282,13 @@ func (this *List) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 					if code == win32.OSLB_ERR {
 						break
 					}
-					var cond6 int32
+					var cond754 int32
 					if code != 0 {
-						cond6 = 0
+						cond754 = 0
 					} else {
-						cond6 = 1
+						cond754 = 1
 					}
-					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETSEL, int64(cond6), int64(index))
+					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETSEL, int64(cond754), int64(index))
 					win32.OSSendMessageOverload4(this.Handle, win32.OSLB_SETANCHORINDEX, int64(index), int64(0))
 					this.SendSelectionEvent(Selection)
 					return win32.LRESULTZERO
@@ -1316,13 +1316,13 @@ func (this *List) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			case win32.OSVK_UP, win32.OSVK_DOWN:
 				{
 					var oldIndex int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLB_GETCARETINDEX, int64(0), int64(0)))
-					var cond7 int32
+					var cond755 int32
 					if (int32(wParam)) == win32.OSVK_UP {
-						cond7 = -1
+						cond755 = -1
 					} else {
-						cond7 = 1
+						cond755 = 1
 					}
-					newIndex = int32(math.Max(float64(0), float64(oldIndex+(cond7))))
+					newIndex = int32(math.Max(float64(0), float64(oldIndex+(cond755))))
 					break
 				}
 			case win32.OSVK_PRIOR:
@@ -1436,8 +1436,8 @@ func (this *List) wmCommandChild_(wParam int64, lParam int64) *win32.LRESULT {
 	return this.Scrollable.wmCommandChild_(wParam, lParam)
 }
 
-func (this *List) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Scrollable.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *List) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Scrollable.handleDPIChange_(event, scalingFactor)
 	if (this.style & H_SCROLL) != 0 {
 		this.SetScrollWidth0()
 	}

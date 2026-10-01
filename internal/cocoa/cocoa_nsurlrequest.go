@@ -42,28 +42,28 @@ func (this *NSURLRequest) initNSURLRequestOverload2(id *id) {
 
 func (this *NSURLRequest) URL() *NSURL {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_URL)
-	var cond1 *NSURL
+	var cond836 *NSURL
 	if result != 0 {
-		cond1 = NewNSURLOverload1(result)
+		cond836 = NewNSURLOverload1(result)
 	} else {
-		cond1 = nil
+		cond836 = nil
 	}
-	return cond1
+	return cond836
 }
 
 func NSURLRequestRequestWithURL(URL *NSURL) *NSURLRequest {
-	var cond2 int64
+	var cond837 int64
 	if URL != (nil) {
-		cond2 = URL.Id
+		cond837 = URL.Id
 	} else {
-		cond2 = int64(0)
+		cond837 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURLRequest, OSSel_requestWithURL_, cond2)
-	var cond3 *NSURLRequest
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSURLRequest, OSSel_requestWithURL_, cond837)
+	var cond838 *NSURLRequest
 	if result != 0 {
-		cond3 = NewNSURLRequestOverload1(result)
+		cond838 = NewNSURLRequestOverload1(result)
 	} else {
-		cond3 = nil
+		cond838 = nil
 	}
-	return cond3
+	return cond838
 }

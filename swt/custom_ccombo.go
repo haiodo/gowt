@@ -50,9 +50,9 @@ func NewCCombo(parentLike CompositeLike, style int32) *CCombo {
 }
 
 func (this *CCombo) initCCombo(parent *Composite, style int32) {
-	cond1 := CComboCheckStyle(style)
-	style = cond1
-	this.Composite.initCompositeParentStyle(parent, cond1)
+	cond687 := CComboCheckStyle(style)
+	style = cond687
+	this.Composite.initCompositeParentStyle(parent, cond687)
 	this.visibleItemCount = 5
 	this._shell = this.Composite.getShell_()
 	this.listener = &ListenerFunc{fn: func(event *Event) {
@@ -99,14 +99,14 @@ func (this *CCombo) initCCombo(parent *Composite, style int32) {
 			return
 		}
 		if event.Type == Selection {
-			_, ok2 := isWidgetToScrollBar(event.Widget)
-			if ok2 {
+			_, ok688 := isWidgetToScrollBar(event.Widget)
+			if ok688 {
 				this.HandleScroll(event)
 			}
 			return
 		}
-		_, ok3 := isWidgetToControl(event.Widget)
-		if ok3 {
+		_, ok689 := isWidgetToControl(event.Widget)
+		if ok689 {
 			var shell *Shell = (castWidgetToControl(event.Widget)).impl.getShell_()
 			if shell == this.impl.getShell_() {
 				this.HandleFocus(FocusOut)
@@ -559,12 +559,12 @@ func (this *CCombo) GetAssociatedLabel() string {
 		if siblings[i] == upcastCComboToControl(this) {
 			if i > 0 {
 				var sibling *Control = siblings[i-1]
-				_, ok4 := isControlToLabel(sibling)
-				if ok4 {
+				_, ok690 := isControlToLabel(sibling)
+				if ok690 {
 					return (castControlToLabel(sibling)).GetText()
 				}
-				_, ok5 := isControlToCLabel(sibling)
-				if ok5 {
+				_, ok691 := isControlToCLabel(sibling)
+				if ok691 {
 					return (castControlToCLabel(sibling)).GetText()
 				}
 			}
@@ -745,9 +745,9 @@ func (this *CCombo) IndexOfStringStart(string_ string, start int32) int32 {
 }
 
 func (this *CCombo) InitAccessible() {
-	anon6 := &CComboAnon1{}
-	anon6.initAccessibleAdapter()
-	anon6.fnGetName = func(e *AccessibleEvent) {
+	anon692 := &CComboAnon1{}
+	anon692.initAccessibleAdapter()
+	anon692.fnGetName = func(e *AccessibleEvent) {
 		var name string = ""
 		var text string = this.GetAssociatedLabel()
 		if text != "" {
@@ -755,7 +755,7 @@ func (this *CCombo) InitAccessible() {
 		}
 		e.Result = name
 	}
-	anon6.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon692.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		var shortcut string = ""
 		var text string = this.GetAssociatedLabel()
 		if text != "" {
@@ -766,49 +766,49 @@ func (this *CCombo) InitAccessible() {
 		}
 		e.Result = shortcut
 	}
-	anon6.fnGetHelp = func(e *AccessibleEvent) {
+	anon692.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	var accessibleAdapter *AccessibleAdapter = &anon6.AccessibleAdapter
+	var accessibleAdapter *AccessibleAdapter = &anon692.AccessibleAdapter
 	this.GetAccessible().AddAccessibleListener(accessibleAdapter)
 	this.text.GetAccessible().AddAccessibleListener(accessibleAdapter)
 	this.list.GetAccessible().AddAccessibleListener(accessibleAdapter)
-	anon7 := &CComboAnon2{}
-	anon7.initAccessibleAdapter()
-	anon7.fnGetName = func(e *AccessibleEvent) {
+	anon693 := &CComboAnon2{}
+	anon693.initAccessibleAdapter()
+	anon693.fnGetName = func(e *AccessibleEvent) {
 		if this.IsDropped() {
 			e.Result = GetMessage("SWT_Close")
 		} else {
 			e.Result = GetMessage("SWT_Open")
 		}
 	}
-	anon7.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon693.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		e.Result = "Alt+Down Arrow"
 	}
-	anon7.fnGetHelp = func(e *AccessibleEvent) {
+	anon693.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	this.arrow.GetAccessible().AddAccessibleListener(anon7)
-	anon8 := &CComboAnon3{}
-	anon8.initAccessibleTextAdapter()
-	anon8.fnGetCaretOffset = func(e *AccessibleTextEvent) {
+	this.arrow.GetAccessible().AddAccessibleListener(anon693)
+	anon694 := &CComboAnon3{}
+	anon694.initAccessibleTextAdapter()
+	anon694.fnGetCaretOffset = func(e *AccessibleTextEvent) {
 		e.Offset = this.text.GetCaretPosition()
 	}
-	anon8.fnGetSelectionRange = func(e *AccessibleTextEvent) {
+	anon694.fnGetSelectionRange = func(e *AccessibleTextEvent) {
 		var sel *Point = this.text.GetSelection()
 		e.Offset = sel.X
 		e.Length = sel.Y - sel.X
 	}
-	this.GetAccessible().AddAccessibleTextListener(anon8)
-	anon9 := &CComboAnon4{}
-	anon9.initAccessibleControlAdapter()
-	anon9.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	this.GetAccessible().AddAccessibleTextListener(anon694)
+	anon695 := &CComboAnon4{}
+	anon695.initAccessibleControlAdapter()
+	anon695.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		var testPoint *Point = this.ToControl(e.X, e.Y)
 		if this.impl.getBounds_().ContainsPt(testPoint) {
 			e.ChildID = ACCCHILDID_SELF
 		}
 	}
-	anon9.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon695.fnGetLocation = func(e *AccessibleControlEvent) {
 		var location *Rectangle = this.impl.getBounds_()
 		var pt *Point = this.GetParent().ToDisplay(location.X, location.Y)
 		e.X = pt.X
@@ -816,39 +816,39 @@ func (this *CCombo) InitAccessible() {
 		e.Width = location.Width
 		e.Height = location.Height
 	}
-	anon9.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon695.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = 0
 	}
-	anon9.fnGetRole = func(e *AccessibleControlEvent) {
+	anon695.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_COMBOBOX
 	}
-	anon9.fnGetState = func(e *AccessibleControlEvent) {
+	anon695.fnGetState = func(e *AccessibleControlEvent) {
 		e.Detail = ACCSTATE_NORMAL
 	}
-	anon9.fnGetValue = func(e *AccessibleControlEvent) {
+	anon695.fnGetValue = func(e *AccessibleControlEvent) {
 		e.Result = this.GetText()
 	}
-	this.GetAccessible().AddAccessibleControlListener(anon9)
-	anon10 := &CComboAnon5{}
-	anon10.initAccessibleControlAdapter()
-	anon10.fnGetRole = func(e *AccessibleControlEvent) {
+	this.GetAccessible().AddAccessibleControlListener(anon695)
+	anon696 := &CComboAnon5{}
+	anon696.initAccessibleControlAdapter()
+	anon696.fnGetRole = func(e *AccessibleControlEvent) {
 		if this.text.GetEditable() {
 			e.Detail = ACCROLE_TEXT
 		} else {
 			e.Detail = ACCROLE_LABEL
 		}
 	}
-	this.text.GetAccessible().AddAccessibleControlListener(anon10)
-	anon11 := &CComboAnon6{}
-	anon11.initAccessibleControlAdapter()
-	anon11.fnGetDefaultAction = func(e *AccessibleControlEvent) {
+	this.text.GetAccessible().AddAccessibleControlListener(anon696)
+	anon697 := &CComboAnon6{}
+	anon697.initAccessibleControlAdapter()
+	anon697.fnGetDefaultAction = func(e *AccessibleControlEvent) {
 		if this.IsDropped() {
 			e.Result = GetMessage("SWT_Close")
 		} else {
 			e.Result = GetMessage("SWT_Open")
 		}
 	}
-	this.arrow.GetAccessible().AddAccessibleControlListener(anon11)
+	this.arrow.GetAccessible().AddAccessibleControlListener(anon697)
 }
 
 func (this *CCombo) IsDropped() bool {

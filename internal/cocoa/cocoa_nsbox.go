@@ -46,13 +46,13 @@ func (this *NSBox) BorderWidth() float64 {
 
 func (this *NSBox) ContentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond1 *NSView
+	var cond90 *NSView
 	if result != 0 {
-		cond1 = NewNSViewOverload1(result)
+		cond90 = NewNSViewOverload1(result)
 	} else {
-		cond1 = nil
+		cond90 = nil
 	}
-	return cond1
+	return cond90
 }
 
 func (this *NSBox) ContentViewMargins() NSSize {
@@ -74,13 +74,13 @@ func (this *NSBox) SetBoxType(boxType int64) {
 }
 
 func (this *NSBox) SetContentView(contentView *NSView) {
-	var cond2 int64
+	var cond91 int64
 	if contentView != (nil) {
-		cond2 = contentView.Id
+		cond91 = contentView.Id
 	} else {
-		cond2 = int64(0)
+		cond91 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setContentView_, cond2)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setContentView_, cond91)
 }
 
 func (this *NSBox) SetContentViewMargins(contentViewMargins NSSize) {
@@ -88,13 +88,13 @@ func (this *NSBox) SetContentViewMargins(contentViewMargins NSSize) {
 }
 
 func (this *NSBox) SetFillColor(fillColor *NSColor) {
-	var cond3 int64
+	var cond92 int64
 	if fillColor != (nil) {
-		cond3 = fillColor.Id
+		cond92 = fillColor.Id
 	} else {
-		cond3 = int64(0)
+		cond92 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFillColor_, cond3)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFillColor_, cond92)
 }
 
 func (this *NSBox) SetFrameFromContentFrame(contentFrame NSRect) {
@@ -102,23 +102,23 @@ func (this *NSBox) SetFrameFromContentFrame(contentFrame NSRect) {
 }
 
 func (this *NSBox) SetTitle(title *NSString) {
-	var cond4 int64
+	var cond93 int64
 	if title != (nil) {
-		cond4 = title.Id
+		cond93 = title.Id
 	} else {
-		cond4 = int64(0)
+		cond93 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond4)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond93)
 }
 
 func (this *NSBox) SetTitleFont(titleFont *NSFont) {
-	var cond5 int64
+	var cond94 int64
 	if titleFont != (nil) {
-		cond5 = titleFont.Id
+		cond94 = titleFont.Id
 	} else {
-		cond5 = int64(0)
+		cond94 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitleFont_, cond5)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitleFont_, cond94)
 }
 
 func (this *NSBox) SetTitlePosition(titlePosition int64) {
@@ -127,22 +127,22 @@ func (this *NSBox) SetTitlePosition(titlePosition int64) {
 
 func (this *NSBox) TitleCell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_titleCell)
-	var cond6 *NSCell
+	var cond95 *NSCell
 	if result != 0 {
-		cond6 = NewNSCellOverload1(result)
+		cond95 = NewNSCellOverload1(result)
 	} else {
-		cond6 = nil
+		cond95 = nil
 	}
-	return cond6
+	return cond95
 }
 
 func (this *NSBox) TitleFont() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_titleFont)
-	var cond7 *NSFont
+	var cond96 *NSFont
 	if result != 0 {
-		cond7 = NewNSFontOverload1(result)
+		cond96 = NewNSFontOverload1(result)
 	} else {
-		cond7 = nil
+		cond96 = nil
 	}
-	return cond7
+	return cond96
 }

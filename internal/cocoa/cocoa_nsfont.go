@@ -50,35 +50,35 @@ func (this *NSFont) Descender() float64 {
 
 func (this *NSFont) DisplayName() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_displayName)
-	var cond1 *NSString
+	var cond263 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond263 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond263 = nil
 	}
-	return cond1
+	return cond263
 }
 
 func (this *NSFont) FamilyName() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_familyName)
-	var cond2 *NSString
+	var cond264 *NSString
 	if result != 0 {
-		cond2 = NewNSStringOverload1(result)
+		cond264 = NewNSStringOverload1(result)
 	} else {
-		cond2 = nil
+		cond264 = nil
 	}
-	return cond2
+	return cond264
 }
 
 func (this *NSFont) FontName() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_fontName)
-	var cond3 *NSString
+	var cond265 *NSString
 	if result != 0 {
-		cond3 = NewNSStringOverload1(result)
+		cond265 = NewNSStringOverload1(result)
 	} else {
-		cond3 = nil
+		cond265 = nil
 	}
-	return cond3
+	return cond265
 }
 
 func (this *NSFont) Leading() float64 {
@@ -91,41 +91,41 @@ func (this *NSFont) PointSize() float64 {
 
 func NSFontBoldSystemFontOfSize(fontSize float64) *NSFont {
 	var result int64 = OSObjc_msgSendOverload35(OSClass_NSFont, OSSel_boldSystemFontOfSize_, fontSize)
-	var cond4 *NSFont
+	var cond266 *NSFont
 	if result != 0 {
-		cond4 = NewNSFontOverload1(result)
+		cond266 = NewNSFontOverload1(result)
 	} else {
-		cond4 = nil
+		cond266 = nil
 	}
-	return cond4
+	return cond266
 }
 
 func NSFontFontWithName(fontName *NSString, fontSize float64) *NSFont {
-	var cond5 int64
+	var cond267 int64
 	if fontName != (nil) {
-		cond5 = fontName.Id
+		cond267 = fontName.Id
 	} else {
-		cond5 = int64(0)
+		cond267 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload53(OSClass_NSFont, OSSel_fontWithName_size_, cond5, fontSize)
-	var cond6 *NSFont
+	var result int64 = OSObjc_msgSendOverload53(OSClass_NSFont, OSSel_fontWithName_size_, cond267, fontSize)
+	var cond268 *NSFont
 	if result != 0 {
-		cond6 = NewNSFontOverload1(result)
+		cond268 = NewNSFontOverload1(result)
 	} else {
-		cond6 = nil
+		cond268 = nil
 	}
-	return cond6
+	return cond268
 }
 
 func NSFontMenuBarFontOfSize(fontSize float64) *NSFont {
 	var result int64 = OSObjc_msgSendOverload35(OSClass_NSFont, OSSel_menuBarFontOfSize_, fontSize)
-	var cond7 *NSFont
+	var cond269 *NSFont
 	if result != 0 {
-		cond7 = NewNSFontOverload1(result)
+		cond269 = NewNSFontOverload1(result)
 	} else {
-		cond7 = nil
+		cond269 = nil
 	}
-	return cond7
+	return cond269
 }
 
 func NSFontSmallSystemFontSize() float64 {
@@ -134,13 +134,13 @@ func NSFontSmallSystemFontSize() float64 {
 
 func NSFontSystemFontOfSize(fontSize float64) *NSFont {
 	var result int64 = OSObjc_msgSendOverload35(OSClass_NSFont, OSSel_systemFontOfSize_, fontSize)
-	var cond8 *NSFont
+	var cond270 *NSFont
 	if result != 0 {
-		cond8 = NewNSFontOverload1(result)
+		cond270 = NewNSFontOverload1(result)
 	} else {
-		cond8 = nil
+		cond270 = nil
 	}
-	return cond8
+	return cond270
 }
 
 func NSFontSystemFontSize() float64 {

@@ -77,13 +77,13 @@ func (this *Test_org_eclipse_swt_widgets_ToolBar) Test_getItems() {
 	for i := int32(0); i < number; i++ {
 		items[i] = swt.NewToolItem(this.toolBar, 0)
 	}
-	junit.AssertArrayEquals(items, this.toolBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtToolItemToany(items), upcastArrswtToolItemToany(this.toolBar.GetItems()))
 	this.toolBar.GetItems()[0].Dispose()
-	junit.AssertArrayEquals([]*swt.ToolItem{items[1], items[2], items[3], items[4]}, this.toolBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtToolItemToany([]*swt.ToolItem{items[1], items[2], items[3], items[4]}), upcastArrswtToolItemToany(this.toolBar.GetItems()))
 	this.toolBar.GetItems()[3].Dispose()
-	junit.AssertArrayEquals([]*swt.ToolItem{items[1], items[2], items[3]}, this.toolBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtToolItemToany([]*swt.ToolItem{items[1], items[2], items[3]}), upcastArrswtToolItemToany(this.toolBar.GetItems()))
 	this.toolBar.GetItems()[1].Dispose()
-	junit.AssertArrayEquals([]*swt.ToolItem{items[1], items[3]}, this.toolBar.GetItems())
+	junit.AssertArrayEquals(upcastArrswtToolItemToany([]*swt.ToolItem{items[1], items[3]}), upcastArrswtToolItemToany(this.toolBar.GetItems()))
 }
 
 func (this *Test_org_eclipse_swt_widgets_ToolBar) Test_getRowCount() {
@@ -373,4 +373,15 @@ func upcastswtToolBarToswtWidget(x *swt.ToolBar) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastArrswtToolItemToany(x []*swt.ToolItem) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

@@ -104,13 +104,13 @@ func (this *Decorations) Compare(data1Like ImageDataLike, data2Like ImageDataLik
 		}
 		return 0
 	}
-	var cond1 int32
+	var cond149 int32
 	if data1.Width > data2.Width || data1.Height > data2.Height {
-		cond1 = -1
+		cond149 = -1
 	} else {
-		cond1 = 1
+		cond149 = 1
 	}
-	return cond1
+	return cond149
 }
 
 func (this *Decorations) computeTabGroup_() *Widget {
@@ -338,13 +338,13 @@ func (this *Decorations) SetImage(imageLike ImageLike) {
 		return
 	}
 	if this.display.dockImage == (nil) && !this.display.IsBundledIconSet() {
-		var cond2 *cocoa.NSImage
+		var cond150 *cocoa.NSImage
 		if image != (nil) {
-			cond2 = image.Handle
+			cond150 = image.Handle
 		} else {
-			cond2 = nil
+			cond150 = nil
 		}
-		this.display.application.SetApplicationIconImage(cond2)
+		this.display.application.SetApplicationIconImage(cond150)
 	}
 }
 

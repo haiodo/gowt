@@ -233,9 +233,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 		if this.items[index] != (nil) {
 			return this.items[index]
 		}
-		cond1 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-		this.items[index] = cond1
-		return cond1
+		cond717 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+		this.items[index] = cond717
+		return cond717
 	} else {
 		if (this.style&VIRTUAL) == 0 || !create {
 			if this.keyCount == 0 {
@@ -247,13 +247,13 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 		}
 		var keyIndex int32 = this.BinarySearch(this.keys, 0, this.keyCount, index)
 		if (this.style&VIRTUAL) == 0 || !create {
-			var cond2 *TableItem
+			var cond718 *TableItem
 			if keyIndex < 0 {
-				cond2 = nil
+				cond718 = nil
 			} else {
-				cond2 = this.items[keyIndex]
+				cond718 = this.items[keyIndex]
 			}
-			return cond2
+			return cond718
 		}
 		if keyIndex < 0 {
 			if count == -1 {
@@ -263,9 +263,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 				if this.items[index] != (nil) {
 					return this.items[index]
 				}
-				cond3 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-				this.items[index] = cond3
-				return cond3
+				cond719 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+				this.items[index] = cond719
+				return cond719
 			}
 			keyIndex = -keyIndex - 1
 			if keyIndex < this.keyCount {
@@ -279,9 +279,9 @@ func (this *Table) _getItemIndexCreateCount(index int32, create bool, count int3
 				return this.items[keyIndex]
 			}
 		}
-		cond4 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
-		this.items[keyIndex] = cond4
-		return cond4
+		cond720 := newTableItemParentStyleIndexCreate(this, NONE, -1, false)
+		this.items[keyIndex] = cond720
+		return cond720
 	}
 }
 
@@ -416,11 +416,11 @@ func (this *Table) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Table) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
-	return this.CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(hwnd, msg, wParam, lParam, false)
+func (this *Table) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+	return this.CallWindowProcHwndMsgWParamLParamForceSelect(hwnd, msg, wParam, lParam, false)
 }
 
-func (this *Table) CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(hwnd int64, msg int32, wParam int64, lParam int64, forceSelect bool) int64 {
+func (this *Table) CallWindowProcHwndMsgWParamLParamForceSelect(hwnd int64, msg int32, wParam int64, lParam int64, forceSelect bool) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -666,9 +666,9 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 	if this.ignoreCustomDraw {
 		return win32.NewLRESULT(int64(win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT))
 	}
-	t6 := this.customCount
+	t722 := this.customCount
 	this.customCount++
-	if t6 == 0 && win32.OSIsWindowVisible(this.Handle) {
+	if t722 == 0 && win32.OSIsWindowVisible(this.Handle) {
 		if !this.explorerTheme && (this.style&FULL_SELECTION) != 0 {
 			if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) == win32.OSCLR_NONE {
 				var dwExStyle int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETEXTENDEDLISTVIEWSTYLE, int64(0), int64(0)))
@@ -694,7 +694,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 		if this.explorerTheme && this.columnCount == 0 {
 			var hDC int64 = nmcd.Hdc
 			if win32.OSIsWindowEnabled(this.Handle) || this.FindImageControl() != (nil) || this.HasCustomBackground() {
-				this.DrawBackgroundHDCRectHDCRect(hDC, rect)
+				this.DrawBackgroundHDCRect(hDC, rect)
 			} else {
 				this.FillBackgroundLocal1(hDC, win32.OSGetSysColor(win32.OSCOLOR_3DFACE), rect)
 			}
@@ -708,7 +708,7 @@ func (this *Table) CDDS_PREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64, lPara
 					if control == (nil) {
 						control = upcastTableToControl(this)
 					}
-					this.FillBackgroundLocal1(nmcd.Hdc, control.GetBackgroundPixelNoArgs(), rect)
+					this.FillBackgroundLocal1(nmcd.Hdc, control.GetBackgroundPixel(), rect)
 					if this.sortColumn != (nil) && this.sortDirection != NONE {
 						var index int32 = this.IndexOfColumn(this.sortColumn)
 						if index != -1 {
@@ -793,13 +793,13 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 		win32.OSSelectObject(hDC, hFont)
 	}
 	if this.ignoreCustomDraw || (nmcd.Left == nmcd.Right) {
-		var cond7 int32
+		var cond723 int32
 		if hFont == -1 {
-			cond7 = win32.OSCDRF_DODEFAULT
+			cond723 = win32.OSCDRF_DODEFAULT
 		} else {
-			cond7 = win32.OSCDRF_NEWFONT
+			cond723 = win32.OSCDRF_NEWFONT
 		}
-		return win32.NewLRESULT(int64(cond7))
+		return win32.NewLRESULT(int64(cond723))
 	}
 	var code int32 = win32.OSCDRF_DODEFAULT
 	this.selectionForeground = -1
@@ -904,7 +904,7 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 			win32.OSSelectObject(hDC, hFont)
 			if enabled {
 				if clrText == -1 {
-					nmcd.ClrText = this.GetForegroundPixelNoArgs()
+					nmcd.ClrText = this.GetForegroundPixel()
 				} else {
 					nmcd.ClrText = clrText
 				}
@@ -917,7 +917,7 @@ func (this *Table) CDDS_SUBITEMPREPAINT(nmcd *win32.NMLVCUSTOMDRAW, wParam int64
 						}
 						if control.backgroundImage == (nil) {
 							if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) != win32.OSCLR_NONE {
-								nmcd.ClrTextBk = control.GetBackgroundPixelNoArgs()
+								nmcd.ClrTextBk = control.GetBackgroundPixel()
 							}
 						}
 					}
@@ -1216,7 +1216,7 @@ func (this *Table) createHandle_() {
 	this.explorerTheme = true
 	win32.OSSetWindowTheme(this.Handle, DisplayEXPLORER, nil)
 	this.hwndHeader = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETHEADER, int64(0), int64(0))
-	this.MaybeEnableDarkSystemThemeHandle(this.hwndHeader)
+	this.MaybeEnableDarkSystemTheme(this.hwndHeader)
 	if (this.style & CHECK) != 0 {
 		var empty int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_APPROXIMATEVIEWRECT, int64(0), int64(0))
 		var oneItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_APPROXIMATEVIEWRECT, int64(1), int64(0))
@@ -1264,7 +1264,7 @@ func (this *Table) CreateHeaderToolTips() {
 	if this.headerToolTipHandle == 0 {
 		this.Error(ERROR_NO_HANDLES)
 	}
-	this.MaybeEnableDarkSystemThemeHandle(this.headerToolTipHandle)
+	this.MaybeEnableDarkSystemTheme(this.headerToolTipHandle)
 	win32.OSSendMessageOverload4(this.headerToolTipHandle, win32.OSTTM_SETMAXTIPWIDTH, int64(0), int64(0x7FFF))
 }
 
@@ -1343,9 +1343,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 			}
 		}
 	}
-	t8 := this.columnCount
+	t724 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t8-index])
+	copy(this.columns[index+1:], this.columns[index:index+t724-index])
 	this.columns[index] = column
 	this.ignoreColumnResize = true
 	if index == 0 {
@@ -1410,9 +1410,9 @@ func (this *Table) CreateItem(columnLike TableColumnLike, index int32) {
 			lpti.CbSize = win32.TOOLINFOSizeof
 			lpti.UFlags = win32.OSTTF_SUBCLASS
 			lpti.Hwnd = this.hwndHeader
-			t9 := this.display.nextToolTipId
+			t725 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t9
+			column.id = t725
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -1715,9 +1715,9 @@ func (this *Table) DestroyItem(columnLike TableColumnLike) {
 				} else {
 					newIndex = element - 1
 				}
-				t10 := count
+				t726 := count
 				count++
-				newOrder[t10] = newIndex
+				newOrder[t726] = newIndex
 			}
 		}
 		win32.OSSendMessageOverload3(this.Handle, win32.OSLVM_GETCOLUMNORDERARRAY, int64(this.columnCount), oldOrder)
@@ -1873,13 +1873,13 @@ func (this *Table) GetHeaderBackground() *Color {
 }
 
 func (this *Table) GetHeaderBackgroundPixel() int32 {
-	var cond11 int32
+	var cond727 int32
 	if this.headerBackground != -1 {
-		cond11 = this.headerBackground
+		cond727 = this.headerBackground
 	} else {
-		cond11 = this.impl.defaultBackground_()
+		cond727 = this.impl.defaultBackground_()
 	}
-	return cond11
+	return cond727
 }
 
 func (this *Table) GetHeaderForeground() *Color {
@@ -1888,13 +1888,13 @@ func (this *Table) GetHeaderForeground() *Color {
 }
 
 func (this *Table) GetHeaderForegroundPixel() int32 {
-	var cond12 int32
+	var cond728 int32
 	if this.headerForeground != -1 {
-		cond12 = this.headerForeground
+		cond728 = this.headerForeground
 	} else {
-		cond12 = this.impl.defaultForeground_()
+		cond728 = this.impl.defaultForeground_()
 	}
-	return cond12
+	return cond728
 }
 
 func (this *Table) GetHeaderHeight() int32 {
@@ -2049,14 +2049,14 @@ func (this *Table) GetSelection() []*TableItem {
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETSELECTEDCOUNT, int64(0), int64(0)))
 	var result []*TableItem = make([]*TableItem, count)
 	for {
-		cond13 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
-		i = cond13
-		if !((cond13) != -1) {
+		cond729 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
+		i = cond729
+		if !((cond729) != -1) {
 			break
 		}
-		t14 := j
+		t730 := j
 		j++
-		result[t14] = this._getItem(i)
+		result[t730] = this._getItem(i)
 	}
 	return result
 }
@@ -2075,9 +2075,9 @@ func (this *Table) GetSelectionIndex() int32 {
 	}
 	var i int32 = -1
 	for {
-		cond15 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
-		i = cond15
-		if !((cond15) != -1) {
+		cond731 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(i), int64(win32.OSLVNI_SELECTED)))
+		i = cond731
+		if !((cond731) != -1) {
 			break
 		}
 		if i == focusIndex {
@@ -2110,7 +2110,7 @@ func (this *Table) GetSortColumn() *TableColumn {
 func (this *Table) GetSortColumnPixel() int32 {
 	var pixel int32
 	if win32.OSIsWindowEnabled(this.Handle) || this.HasCustomBackground() {
-		pixel = this.GetBackgroundPixelNoArgs()
+		pixel = this.GetBackgroundPixel()
 	} else {
 		pixel = win32.OSGetSysColor(win32.OSCOLOR_3DFACE)
 	}
@@ -2294,17 +2294,17 @@ func (this *Table) IndexOfItem(itemLike TableItemLike) int32 {
 		if this.lastIndexOf < count/2 {
 			for i := int32(0); i < count; i++ {
 				if this._getItemIndexCreate(i, false) == item {
-					cond16 := i
-					this.lastIndexOf = cond16
-					return cond16
+					cond732 := i
+					this.lastIndexOf = cond732
+					return cond732
 				}
 			}
 		} else {
 			for i := int32(count - 1); i >= 0; i-- {
 				if this._getItemIndexCreate(i, false) == item {
-					cond17 := i
-					this.lastIndexOf = cond17
-					return cond17
+					cond733 := i
+					this.lastIndexOf = cond733
+					return cond733
 				}
 			}
 		}
@@ -2417,7 +2417,7 @@ func (this *Table) RemoveIndices(indices []int32) {
 	}
 	var newIndices []int32 = make([]int32, int32(len(indices)))
 	copy(newIndices[0:], indices[0:0+int32(len(indices))])
-	this.SortItems(newIndices)
+	this.Sort(newIndices)
 	var start int32 = newIndices[int32(len(newIndices))-1]
 	var end int32 = newIndices[0]
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETITEMCOUNT, int64(0), int64(0)))
@@ -2707,7 +2707,7 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 				if clrText != -1 {
 					data.Foreground = clrText
 				} else {
-					data.Foreground = this.GetForegroundPixelNoArgs()
+					data.Foreground = this.GetForegroundPixel()
 				}
 			}
 		} else {
@@ -2718,10 +2718,10 @@ func (this *Table) SendEraseItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 					control = upcastTableToControl(this)
 				}
 				if clrText == -1 {
-					clrText = control.GetForegroundPixelNoArgs()
+					clrText = control.GetForegroundPixel()
 				}
 				if clrTextBk == -1 {
-					clrTextBk = control.GetBackgroundPixelNoArgs()
+					clrTextBk = control.GetBackgroundPixel()
 				}
 			}
 			if clrText != -1 {
@@ -3077,7 +3077,7 @@ func (this *Table) SendMouseDownEvent(type_ int32, button int32, msg int32, wPar
 	if !dragDetect {
 		display.runDragDrop = false
 	}
-	var code int64 = this.CallWindowProcHwndMsgWParamLParamForceSelectHwndMsgWParamLParamForceSelect(this.Handle, msg, wParam, lParam, forceSelect)
+	var code int64 = this.CallWindowProcHwndMsgWParamLParamForceSelect(this.Handle, msg, wParam, lParam, forceSelect)
 	if !dragDetect {
 		display.runDragDrop = true
 	}
@@ -3155,7 +3155,7 @@ func (this *Table) SendPaintItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 				if clrText != -1 {
 					data.Foreground = clrText
 				} else {
-					data.Foreground = this.GetForegroundPixelNoArgs()
+					data.Foreground = this.GetForegroundPixel()
 				}
 			}
 		} else {
@@ -3184,10 +3184,10 @@ func (this *Table) SendPaintItemEvent(itemLike TableItemLike, nmcd *win32.NMLVCU
 					control = upcastTableToControl(this)
 				}
 				if clrText == -1 {
-					clrText = control.GetForegroundPixelNoArgs()
+					clrText = control.GetForegroundPixel()
 				}
 				if clrTextBk == -1 {
-					clrTextBk = control.GetBackgroundPixelNoArgs()
+					clrTextBk = control.GetBackgroundPixel()
 				}
 			}
 			if clrText != -1 {
@@ -3276,8 +3276,8 @@ func (this *Table) SendPaintItemEventItemNmcdColumnItemRect(itemLike TableItemLi
 	return event
 }
 
-func (this *Table) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
-	this.Composite.setBackgroundImageHBitmapHBitmap_(hBitmap)
+func (this *Table) setBackgroundImageHBitmap_(hBitmap int64) {
+	this.Composite.setBackgroundImageHBitmap_(hBitmap)
 	if hBitmap != 0 {
 		this.SetBackgroundTransparent(true)
 	} else {
@@ -3332,7 +3332,7 @@ func (this *Table) SetBackgroundTransparent(transparent bool) {
 				control = upcastTableToControl(this)
 			}
 			if control.backgroundImage == (nil) {
-				var newPixel int32 = control.GetBackgroundPixelNoArgs()
+				var newPixel int32 = control.GetBackgroundPixel()
 				win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(newPixel))
 				win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETTEXTBKCOLOR, int64(0), int64(newPixel))
 				if (this.style & CHECK) != 0 {
@@ -3359,9 +3359,9 @@ func (this *Table) SetBackgroundTransparent(transparent bool) {
 	}
 }
 
-func (this *Table) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Table) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	this.SetDeferResize(true)
-	this.Composite.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
+	this.Composite.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, false)
 	this.SetDeferResize(false)
 }
 
@@ -3432,14 +3432,14 @@ func (this *Table) SetCustomDraw(customDraw bool) {
 
 func (this *Table) SetDeferResize(defer_ bool) {
 	if defer_ {
-		t18 := this.resizeCount
+		t734 := this.resizeCount
 		this.resizeCount++
-		if t18 == 0 {
+		if t734 == 0 {
 			this.wasResized = false
 			if this.Hooks(MeasureItem) || this.Hooks(EraseItem) || this.Hooks(PaintItem) {
-				t20 := this.drawCount
+				t736 := this.drawCount
 				this.drawCount++
-				if t20 == 0 && win32.OSIsWindowVisible(this.Handle) {
+				if t736 == 0 && win32.OSIsWindowVisible(this.Handle) {
 					win32.OSDefWindowProc(this.Handle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 					win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(0xFFFFFF))
 				}
@@ -3466,7 +3466,7 @@ func (this *Table) SetDeferResize(defer_ bool) {
 				}
 				if this.layout != (nil) {
 					this.impl.markLayout_(false, false)
-					this.impl.updateLayoutResizeAll_(false, false)
+					this.impl.updateLayout_(false, false)
 				}
 				this.SetResizeChildren(true)
 			}
@@ -3494,7 +3494,7 @@ func (this *Table) SetCheckboxImageList(width int32, height int32, fixScroll boo
 	if control == (nil) {
 		control = upcastTableToControl(this)
 	}
-	var clrBackground int32 = control.GetBackgroundPixelNoArgs()
+	var clrBackground int32 = control.GetBackgroundPixel()
 	var hBrush int64 = win32.OSCreateSolidBrush(clrBackground)
 	win32.OSFillRect(memDC, rect, hBrush)
 	win32.OSDeleteObject(hBrush)
@@ -3803,9 +3803,9 @@ func (this *Table) setRedraw_(redraw bool) {
 			this.SetDeferResize(false)
 		}
 	} else {
-		t21 := this.drawCount
+		t737 := this.drawCount
 		this.drawCount++
-		if t21 == 0 {
+		if t737 == 0 {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 			if this.hwndHeader != 0 {
 				win32.OSSendMessageOverload4(this.hwndHeader, win32.OSWM_SETREDRAW, int64(0), int64(0))
@@ -3965,9 +3965,9 @@ func (this *Table) SetSelectionItems(items []*TableItem) {
 	for i := int32(length - 1); i >= 0; i-- {
 		var index int32 = this.IndexOfItem(items[i])
 		if index != -1 {
-			cond22 := index
-			focusIndex = cond22
-			this.Select(cond22)
+			cond738 := index
+			focusIndex = cond738
+			this.Select(cond738)
 		}
 	}
 	if focusIndex != -1 {
@@ -4224,7 +4224,7 @@ func (this *Table) ShowSelection() {
 	}
 }
 
-func (this *Table) SortNoArgs() {
+func (this *Table) Sort0() {
 	this.CheckWidget()
 }
 
@@ -4299,9 +4299,9 @@ func (this *Table) UpdateHeaderToolTips() {
 	for i := int32(0); i < this.columnCount; i++ {
 		var column *TableColumn = this.columns[i]
 		if win32.OSSendMessageOverload13(hwndHeader, win32.OSHDM_GETITEMRECT, int64(i), rect) != 0 {
-			t23 := this.display.nextToolTipId
+			t739 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t23
+			column.id = t739
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -4431,13 +4431,13 @@ func (this *Table) updateTextDirection_(textDirection int32) bool {
 		if textDirection == WidgetAUTO_TEXT_DIRECTION || (this.state&WidgetHAS_AUTO_DIRECTION) != 0 {
 			for _, item := range this.items {
 				if item != (nil) {
-					var cond24 int32
+					var cond740 int32
 					if textDirection == WidgetAUTO_TEXT_DIRECTION {
-						cond24 = WidgetAUTO_TEXT_DIRECTION
+						cond740 = WidgetAUTO_TEXT_DIRECTION
 					} else {
-						cond24 = this.style & FLIP_TEXT_DIRECTION
+						cond740 = this.style & FLIP_TEXT_DIRECTION
 					}
-					item.impl.updateTextDirection_(cond24)
+					item.impl.updateTextDirection_(cond740)
 				}
 			}
 		}
@@ -4466,11 +4466,11 @@ func (this *Table) windowClass_() *win32.TCHAR {
 	return TableTableClass
 }
 
-func (this *Table) windowProcNoArgs_() int64 {
+func (this *Table) windowProc_() int64 {
 	return TableTableProc
 }
 
-func (this *Table) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Table) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -4525,7 +4525,7 @@ func (this *Table) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64,
 				break
 			}
 		}
-		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
 	}
 	if msg == DisplayDI_GETDRAGIMAGE {
 		var topIndex int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETTOPINDEX, int64(0), int64(0)))
@@ -4553,9 +4553,9 @@ func (this *Table) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64,
 		}
 		var hRgn int64 = win32.OSCreateRectRgn(rect.Left, rect.Top, rect.Right, rect.Bottom)
 		for {
-			cond25 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(selection), int64(win32.OSLVNI_SELECTED)))
-			selection = cond25
-			if !((cond25) != -1) {
+			cond741 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(selection), int64(win32.OSLVNI_SELECTED)))
+			selection = cond741
+			if !((cond741) != -1) {
 				break
 			}
 			if rect.Bottom-rect.Top > dragImageSizeInPixel {
@@ -4613,7 +4613,7 @@ func (this *Table) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64,
 		win32.OSMoveMemoryOverload70(lParam, shdi, win32.SHDRAGIMAGESizeof)
 		return int64(1)
 	}
-	return this.Composite.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Composite.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
@@ -4626,9 +4626,9 @@ func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 		if (this.style & CHECK) != 0 {
 			var index int32 = -1
 			for {
-				cond26 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(index), int64(win32.OSLVNI_SELECTED)))
-				index = cond26
-				if !((cond26) != -1) {
+				cond742 := int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(index), int64(win32.OSLVNI_SELECTED)))
+				index = cond742
+				if !((cond742) != -1) {
 					break
 				}
 				var item *TableItem = this._getItem(index)
@@ -4636,7 +4636,7 @@ func (this *Table) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {
 				win32.OSNotifyWinEvent(win32.OSEVENT_OBJECT_FOCUS, this.Handle, win32.OSOBJID_CLIENT, index+1)
 			}
 		}
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 		return win32.NewLRESULT(code)
 	case int32(CR):
 		var index int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETNEXTITEM, int64(-1), int64(win32.OSLVNI_FOCUSED)))
@@ -4712,7 +4712,7 @@ func (this *Table) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 			oldTableProc = win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TableTableProc)
 			oldHeaderProc = win32.OSSetWindowLongPtr(hwndHeader, win32.OSGWLP_WNDPROC, TableHeaderProc)
 		}
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, wParam, lParam)
 		if code == 0 {
 			result = win32.LRESULTZERO
 		} else {
@@ -4755,7 +4755,7 @@ func (this *Table) wM_LBUTTONDBLCLK_(wParam int64, lParam int64) *win32.LRESULT 
 		return win32.LRESULTZERO
 	}
 	if pinfo.IItem != -1 {
-		this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_LBUTTONDBLCLK, wParam, lParam)
+		this.impl.callWindowProc_(this.Handle, win32.OSWM_LBUTTONDBLCLK, wParam, lParam)
 	}
 	if !display.captureChanged && !this.IsDisposed() {
 		if win32.OSGetCapture() != this.Handle {
@@ -4826,7 +4826,7 @@ func (this *Table) wM_RBUTTONDBLCLK_(wParam int64, lParam int64) *win32.LRESULT 
 	this.SendMouseEvent(MouseDown, 3, this.Handle, lParam)
 	if this.SendMouseEvent(MouseDoubleClick, 3, this.Handle, lParam) {
 		if pinfo.IItem != -1 {
-			this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_RBUTTONDBLCLK, wParam, lParam)
+			this.impl.callWindowProc_(this.Handle, win32.OSWM_RBUTTONDBLCLK, wParam, lParam)
 		}
 	}
 	if !display.captureChanged && !this.IsDisposed() {
@@ -4887,19 +4887,19 @@ func (this *Table) wM_SETREDRAW_(wParam int64, lParam int64) *win32.LRESULT {
 		}
 	}
 	win32.OSDefWindowProc(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
 	if wParam == 0 {
 		if int32(win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETBKCOLOR, int64(0), int64(0))) == win32.OSCLR_NONE {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_SETBKCOLOR, int64(0), int64(0xFFFFFF))
 		}
 	}
-	var cond27 *win32.LRESULT
+	var cond743 *win32.LRESULT
 	if code == 0 {
-		cond27 = win32.LRESULTZERO
+		cond743 = win32.LRESULTZERO
 	} else {
-		cond27 = win32.NewLRESULT(code)
+		cond743 = win32.NewLRESULT(code)
 	}
-	return cond27
+	return cond743
 }
 
 func (this *Table) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
@@ -5112,7 +5112,7 @@ func (this *Table) wmNotify_(hdr *win32.NMHDR, wParam int64, lParam int64) *win3
 	var hwndToolTip int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSLVM_GETTOOLTIPS, int64(0), int64(0))
 	if hdr.HwndFrom == hwndToolTip {
 		if hdr.HwndFrom != this.itemToolTipHandle {
-			this.MaybeEnableDarkSystemThemeHandle(hdr.HwndFrom)
+			this.MaybeEnableDarkSystemTheme(hdr.HwndFrom)
 			this.itemToolTipHandle = hdr.HwndFrom
 		}
 		var result *win32.LRESULT = this.WmNotifyToolTip(hdr, wParam, lParam)
@@ -5242,9 +5242,9 @@ func (this *Table) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) 
 						}
 						length -= shift
 					}
-					t28 := length
+					t744 := length
 					length++
-					buffer[t28] = uint16(0)
+					buffer[t744] = uint16(0)
 					win32.OSMoveMemoryOverload12(plvfi.PszText, buffer, length*2)
 				}
 			}
@@ -5460,13 +5460,13 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 			switch nmcd.DwDrawStage {
 			case win32.OSCDDS_PREPAINT:
 				{
-					var cond29 int32
+					var cond745 int32
 					if this.CustomHeaderDrawing() {
-						cond29 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
+						cond745 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
 					} else {
-						cond29 = win32.OSCDRF_DODEFAULT
+						cond745 = win32.OSCDRF_DODEFAULT
 					}
-					return win32.NewLRESULT(int64(cond29))
+					return win32.NewLRESULT(int64(cond745))
 				}
 			case win32.OSCDDS_ITEMPREPAINT:
 				{
@@ -5575,13 +5575,13 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 					}
 					if lastColumnRight < nmcd.Right {
 						var rect *win32.RECT = win32.NewRECT()
-						var cond30 int32
+						var cond746 int32
 						if this._getLinesVisible() {
-							cond30 = 1
+							cond746 = 1
 						} else {
-							cond30 = 0
+							cond746 = 0
 						}
-						lastColumnRight += cond30
+						lastColumnRight += cond746
 						win32.OSSetRect(rect, lastColumnRight, nmcd.Top, nmcd.Right, nmcd.Bottom-1)
 						var brush int64 = win32.OSCreateSolidBrush(this.GetHeaderBackgroundPixel())
 						win32.OSFillRect(nmcd.Hdc, rect, brush)
@@ -5761,13 +5761,13 @@ func (this *Table) WmNotifyToolTip(hdr *win32.NMHDR, wParam int64, lParam int64)
 			if this.toolTipText != "" {
 				break
 			}
-			var cond31 *win32.LRESULT
+			var cond747 *win32.LRESULT
 			if this.PositionTooltip(hdr, lParam) {
-				cond31 = win32.LRESULTONE
+				cond747 = win32.LRESULTONE
 			} else {
-				cond31 = nil
+				cond747 = nil
 			}
-			return cond31
+			return cond747
 		}
 	}
 	return nil
@@ -5827,7 +5827,7 @@ func (this *Table) PositionTooltip(hdr *win32.NMHDR, lParam int64) bool {
 						var shell *Shell = this.impl.getShell_()
 						var chars []uint16 = make([]uint16, jrt.StringLength(string_)+1)
 						jrt.GetChars(string_, 0, jrt.StringLength(string_), chars, 0)
-						shell.SetToolTipTextLpnmtdiBufferLpnmtdiBuffer(lpnmtdi, chars)
+						shell.SetToolTipTextLpnmtdiBuffer(lpnmtdi, chars)
 						win32.OSMoveMemoryOverload23(lParam, lpnmtdi, win32.NMTTDISPINFOSizeof)
 						return true
 					}
@@ -5930,13 +5930,13 @@ func (this *Table) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam 
 						var y int32 = imageRect.Top + int32(math.Max(float64(0), float64((imageRect.Bottom-imageRect.Top-size.Y)/2)))
 						var zoom int32 = this.impl.getAutoscalingZoom_()
 						gc.DrawImageImageDestXDestYDestWidthDestHeight(image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(y, zoom), DPIUtilPixelToPoint(size.X, zoom), DPIUtilPixelToPoint(size.Y, zoom))
-						var cond32 int32
+						var cond748 int32
 						if pinfo.ISubItem == 0 {
-							cond32 = -2
+							cond748 = -2
 						} else {
-							cond32 = 4
+							cond748 = 4
 						}
-						x += size.X + TableINSET + (cond32)
+						x += size.X + TableINSET + (cond748)
 					} else {
 						x += TableINSET + 2
 					}
@@ -5988,8 +5988,8 @@ func (this *Table) DestroyImageList() {
 	win32.OSImageList_Destroy(hImageList)
 }
 
-func (this *Table) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Table) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChange_(event, scalingFactor)
 	this.settingItemHeight = true
 	var scrollWidth int32 = 0
 	if int32(len(this.GetColumns())) == 0 {

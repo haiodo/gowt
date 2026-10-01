@@ -47,8 +47,8 @@ func (this *FontMetrics) Equals(object any) bool {
 	if object == this {
 		return true
 	}
-	metrics, ok1 := fontMetricsImplAsFontMetrics(object)
-	if !(ok1) {
+	metrics, ok374 := fontMetricsImplAsFontMetrics(object)
+	if !(ok374) {
 		return false
 	}
 	return this.ascent == metrics.ascent && this.descent == metrics.descent && this.leading == metrics.leading && this.height == metrics.height && (jrt.DoubleCompare(float64(this.averageCharWidth), float64(metrics.averageCharWidth)) == 0)

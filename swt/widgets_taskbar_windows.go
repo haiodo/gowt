@@ -83,9 +83,9 @@ func (this *TaskBar) CreateItem(itemLike TaskItemLike, index int32) {
 		copy(newItems[0:], this.items[0:0+int32(len(this.items))])
 		this.items = newItems
 	}
-	t1 := this.itemCount
+	t792 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t1-index])
+	copy(this.items[index+1:], this.items[index:index+t792-index])
 	this.items[index] = item
 }
 
@@ -267,22 +267,19 @@ func (this *TaskBar) GetIconsDir() string {
 	if this.iconsDir != "" {
 		return this.iconsDir
 	}
-	var dir any = func() any {
-		_ = []any{fmt.Sprintf("%s\\ico_dir", this.display.appLocalDir)}
-		panic("j2go: unresolved new File")
-	}()
-	if func() bool { _ = []any{dir}; panic("j2go: unresolved call exists") }() {
-		for _, file := range func() []any { _ = []any{dir}; panic("j2go: unresolved call listFiles") }() {
-			func() bool { _ = []any{file}; panic("j2go: unresolved call delete") }()
+	var dir *jrt.File = jrt.NewFile(fmt.Sprintf("%s\\ico_dir", this.display.appLocalDir))
+	if dir.Exists() {
+		for _, file := range dir.ListFiles() {
+			file.Delete()
 		}
 	} else {
-		if !func() bool { _ = []any{dir}; panic("j2go: unresolved call mkdirs") }() {
+		if !dir.Mkdirs() {
 			return ""
 		}
 	}
-	cond2 := func() string { _ = []any{dir}; panic("j2go: unresolved call getPath") }()
-	this.iconsDir = cond2
-	return cond2
+	cond793 := dir.GetPath()
+	this.iconsDir = cond793
+	return cond793
 }
 
 func (this *TaskBar) GetItem(index int32) *TaskItem {
@@ -383,7 +380,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 		jrt.GetChars(appName, 0, length, buffer, 0)
 	}
 	var items []*MenuItem = nil
-	if menu != (nil) && func() bool { cond4 := menu.GetItems(); items = cond4; return int32(len((cond4))) != 0 }() {
+	if menu != (nil) && func() bool { cond795 := menu.GetItems(); items = cond795; return int32(len((cond795))) != 0 }() {
 		var poa *win32.IObjectArray = this.CreateShellLinkArray(items)
 		if poa != (nil) {
 			hr = pDestList.SetAppID(buffer)

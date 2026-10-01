@@ -42,39 +42,39 @@ func (this *NSAppearance) initNSAppearanceOverload2(id *id) {
 
 func (this *NSAppearance) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond1 *NSString
+	var cond16 *NSString
 	if result != 0 {
-		cond1 = NewNSStringOverload1(result)
+		cond16 = NewNSStringOverload1(result)
 	} else {
-		cond1 = nil
+		cond16 = nil
 	}
-	return cond1
+	return cond16
 }
 
 func NSAppearanceAppearanceNamed(name *NSString) *NSAppearance {
-	var cond2 int64
+	var cond17 int64
 	if name != (nil) {
-		cond2 = name.Id
+		cond17 = name.Id
 	} else {
-		cond2 = int64(0)
+		cond17 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSAppearance, OSSel_appearanceNamed_, cond2)
-	var cond3 *NSAppearance
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSAppearance, OSSel_appearanceNamed_, cond17)
+	var cond18 *NSAppearance
 	if result != 0 {
-		cond3 = NewNSAppearanceOverload1(result)
+		cond18 = NewNSAppearanceOverload1(result)
 	} else {
-		cond3 = nil
+		cond18 = nil
 	}
-	return cond3
+	return cond18
 }
 
 func NSAppearanceCurrentAppearance() *NSAppearance {
 	var result int64 = OSObjc_msgSend(OSClass_NSAppearance, OSSel_currentAppearance)
-	var cond4 *NSAppearance
+	var cond19 *NSAppearance
 	if result != 0 {
-		cond4 = NewNSAppearanceOverload1(result)
+		cond19 = NewNSAppearanceOverload1(result)
 	} else {
-		cond4 = nil
+		cond19 = nil
 	}
-	return cond4
+	return cond19
 }

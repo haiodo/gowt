@@ -71,3 +71,14 @@ func (a *Accessible) AddAccessibleListener(l AccessibleListener)               {
 func (a *Accessible) AddAccessibleControlListener(l AccessibleControlListener) {}
 func (a *Accessible) AddAccessibleTextListener(l AccessibleTextListener)       {}
 func (a *Accessible) SetFocus(childID int32)                                   {}
+
+// org.eclipse.swt.internal.WidgetSpy: creation/disposal tracking, off by default (matches the
+// real class's own isEnabled starting false).
+var WidgetSpyIsEnabled bool
+
+type widgetSpy struct{}
+
+func (widgetSpy) WidgetCreated(w *Widget)  {}
+func (widgetSpy) WidgetDisposed(w *Widget) {}
+
+func WidgetSpyGetInstance() widgetSpy { return widgetSpy{} }

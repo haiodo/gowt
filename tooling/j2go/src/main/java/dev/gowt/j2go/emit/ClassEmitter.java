@@ -397,7 +397,7 @@ final class ClassEmitter {
 	private void emitDispatchWrapper(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
 		String sig = TypeModel.signature(mb);
-		if (!ci.splitsDispatch() || ci.overridePoint(sig) != ci) return;
+		if (!ci.splitsDispatch() || ci.overridePoint(sig) != ci && !WrapperRules.firstPublicBelowHidden(mb, ci, sig)) return;
 		String natural = emitter.names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName()));
 		boolean widen = !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
 		List<String> pre = new ArrayList<>();

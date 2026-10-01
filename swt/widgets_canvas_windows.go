@@ -194,7 +194,7 @@ func (this *Canvas) windowClass_() *win32.TCHAR {
 	return this.Composite.windowClass_()
 }
 
-func (this *Canvas) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Canvas) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if msg == DisplaySWT_RESTORECARET {
 		if (this.state & WidgetCANVAS) != 0 {
 			if this.caret != (nil) {
@@ -204,7 +204,7 @@ func (this *Canvas) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64
 			}
 		}
 	}
-	return this.Composite.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+	return this.Composite.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
 func (this *Canvas) wM_CHAR_(wParam int64, lParam int64) *win32.LRESULT {

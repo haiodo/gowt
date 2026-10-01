@@ -42,24 +42,24 @@ func (this *NSThread) initNSThreadOverload2(id *id) {
 
 func (this *NSThread) ThreadDictionary() *NSMutableDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_threadDictionary)
-	var cond1 *NSMutableDictionary
+	var cond787 *NSMutableDictionary
 	if result != 0 {
-		cond1 = NewNSMutableDictionaryOverload1(result)
+		cond787 = NewNSMutableDictionaryOverload1(result)
 	} else {
-		cond1 = nil
+		cond787 = nil
 	}
-	return cond1
+	return cond787
 }
 
 func NSThreadCurrentThread() *NSThread {
 	var result int64 = OSObjc_msgSend(OSClass_NSThread, OSSel_currentThread)
-	var cond2 *NSThread
+	var cond788 *NSThread
 	if result != 0 {
-		cond2 = NewNSThreadOverload1(result)
+		cond788 = NewNSThreadOverload1(result)
 	} else {
-		cond2 = nil
+		cond788 = nil
 	}
-	return cond2
+	return cond788
 }
 
 func NSThreadIsMainThread() bool {

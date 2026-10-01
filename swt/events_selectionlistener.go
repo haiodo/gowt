@@ -8,21 +8,21 @@ type SelectionListener interface {
 }
 
 func SelectionListenerWidgetSelectedAdapter(c func(*SelectionEvent)) SelectionListener {
-	anon1 := &SelectionListenerAnon1{}
-	anon1.initSelectionAdapter()
-	anon1.fnWidgetSelected = func(e *SelectionEvent) {
+	anon47 := &SelectionListenerAnon1{}
+	anon47.initSelectionAdapter()
+	anon47.fnWidgetSelected = func(e *SelectionEvent) {
 		c(e)
 	}
-	return anon1
+	return anon47
 }
 
 func SelectionListenerWidgetDefaultSelectedAdapter(c func(*SelectionEvent)) SelectionListener {
-	anon2 := &SelectionListenerAnon2{}
-	anon2.initSelectionAdapter()
-	anon2.fnWidgetDefaultSelected = func(e *SelectionEvent) {
+	anon48 := &SelectionListenerAnon2{}
+	anon48.initSelectionAdapter()
+	anon48.fnWidgetDefaultSelected = func(e *SelectionEvent) {
 		c(e)
 	}
-	return anon2
+	return anon48
 }
 
 // j2go: anonymous SelectionAdapter subclass.

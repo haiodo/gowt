@@ -41,37 +41,37 @@ func (this *NSToolbarItem) initNSToolbarItemOverload2(id *id) {
 }
 
 func (this *NSToolbarItem) InitWithItemIdentifier(itemIdentifier *NSString) *NSToolbarItem {
-	var cond1 int64
+	var cond801 int64
 	if itemIdentifier != (nil) {
-		cond1 = itemIdentifier.Id
+		cond801 = itemIdentifier.Id
 	} else {
-		cond1 = int64(0)
+		cond801 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithItemIdentifier_, cond1)
-	var cond2 *NSToolbarItem
-	var cond3 *NSToolbarItem
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithItemIdentifier_, cond801)
+	var cond802 *NSToolbarItem
+	var cond803 *NSToolbarItem
 	if result != 0 {
-		cond3 = NewNSToolbarItemOverload1(result)
+		cond803 = NewNSToolbarItemOverload1(result)
 	} else {
-		cond3 = nil
+		cond803 = nil
 	}
 	if result == this.Id {
-		cond2 = this
+		cond802 = this
 	} else {
-		cond2 = (cond3)
+		cond802 = (cond803)
 	}
-	return cond2
+	return cond802
 }
 
 func (this *NSToolbarItem) ItemIdentifier() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_itemIdentifier)
-	var cond4 *NSString
+	var cond804 *NSString
 	if result != 0 {
-		cond4 = NewNSStringOverload1(result)
+		cond804 = NewNSStringOverload1(result)
 	} else {
-		cond4 = nil
+		cond804 = nil
 	}
-	return cond4
+	return cond804
 }
 
 func (this *NSToolbarItem) SetAction(action int64) {
@@ -83,23 +83,23 @@ func (this *NSToolbarItem) SetEnabled(enabled bool) {
 }
 
 func (this *NSToolbarItem) SetImage(image *NSImage) {
-	var cond5 int64
+	var cond805 int64
 	if image != (nil) {
-		cond5 = image.Id
+		cond805 = image.Id
 	} else {
-		cond5 = int64(0)
+		cond805 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond5)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond805)
 }
 
 func (this *NSToolbarItem) SetLabel(label *NSString) {
-	var cond6 int64
+	var cond806 int64
 	if label != (nil) {
-		cond6 = label.Id
+		cond806 = label.Id
 	} else {
-		cond6 = int64(0)
+		cond806 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setLabel_, cond6)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setLabel_, cond806)
 }
 
 func (this *NSToolbarItem) SetMaxSize(maxSize NSSize) {
@@ -107,13 +107,13 @@ func (this *NSToolbarItem) SetMaxSize(maxSize NSSize) {
 }
 
 func (this *NSToolbarItem) SetMenuFormRepresentation(menuFormRepresentation *NSMenuItem) {
-	var cond7 int64
+	var cond807 int64
 	if menuFormRepresentation != (nil) {
-		cond7 = menuFormRepresentation.Id
+		cond807 = menuFormRepresentation.Id
 	} else {
-		cond7 = int64(0)
+		cond807 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMenuFormRepresentation_, cond7)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMenuFormRepresentation_, cond807)
 }
 
 func (this *NSToolbarItem) SetMinSize(minSize NSSize) {
@@ -121,41 +121,41 @@ func (this *NSToolbarItem) SetMinSize(minSize NSSize) {
 }
 
 func (this *NSToolbarItem) SetPaletteLabel(paletteLabel *NSString) {
-	var cond8 int64
+	var cond808 int64
 	if paletteLabel != (nil) {
-		cond8 = paletteLabel.Id
+		cond808 = paletteLabel.Id
 	} else {
-		cond8 = int64(0)
+		cond808 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPaletteLabel_, cond8)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPaletteLabel_, cond808)
 }
 
 func (this *NSToolbarItem) SetTarget(target *id) {
-	var cond9 int64
+	var cond809 int64
 	if target != (nil) {
-		cond9 = target.Id
+		cond809 = target.Id
 	} else {
-		cond9 = int64(0)
+		cond809 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond9)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTarget_, cond809)
 }
 
 func (this *NSToolbarItem) SetToolTip(toolTip *NSString) {
-	var cond10 int64
+	var cond810 int64
 	if toolTip != (nil) {
-		cond10 = toolTip.Id
+		cond810 = toolTip.Id
 	} else {
-		cond10 = int64(0)
+		cond810 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond10)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setToolTip_, cond810)
 }
 
 func (this *NSToolbarItem) SetView(view *NSView) {
-	var cond11 int64
+	var cond811 int64
 	if view != (nil) {
-		cond11 = view.Id
+		cond811 = view.Id
 	} else {
-		cond11 = int64(0)
+		cond811 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond11)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setView_, cond811)
 }

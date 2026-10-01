@@ -42,11 +42,11 @@ func (this *NSTimeZone) initNSTimeZoneOverload2(id *id) {
 
 func NSTimeZoneDefaultTimeZone() *NSTimeZone {
 	var result int64 = OSObjc_msgSend(OSClass_NSTimeZone, OSSel_defaultTimeZone)
-	var cond1 *NSTimeZone
+	var cond789 *NSTimeZone
 	if result != 0 {
-		cond1 = NewNSTimeZoneOverload1(result)
+		cond789 = NewNSTimeZoneOverload1(result)
 	} else {
-		cond1 = nil
+		cond789 = nil
 	}
-	return cond1
+	return cond789
 }

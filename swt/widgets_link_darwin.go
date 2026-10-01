@@ -124,13 +124,13 @@ func (this *Link) createHandle_() {
 	scrollWidget.Init()
 	scrollWidget.SetDrawsBackground(false)
 	scrollWidget.SetAutoresizesSubviews(true)
-	var cond1 int32
+	var cond599 int32
 	if this.impl.hasBorder_() {
-		cond1 = cocoa.OSNSBezelBorder
+		cond599 = cocoa.OSNSBezelBorder
 	} else {
-		cond1 = cocoa.OSNSNoBorder
+		cond599 = cocoa.OSNSNoBorder
 	}
-	scrollWidget.SetBorderType(int64(cond1))
+	scrollWidget.SetBorderType(int64(cond599))
 	scrollWidget.SetVerticalScrollElasticity(int64(cocoa.OSNSScrollElasticityNone))
 	var widget *cocoa.NSTextView = castcocoaNSObjectTococoaNSTextView(cocoa.NewSWTTextView().Alloc())
 	widget.Init()
@@ -315,7 +315,7 @@ func (this *Link) Parse(string_ string) string {
 	this.mnemonics = make([]int32, length/4+1)
 	var result *jrt.StringBuilder = jrt.NewStringBuilder()
 	var buffer []uint16 = make([]uint16, length)
-	copy(buffer, utf16.Encode([]rune(string_)))
+	jrt.GetChars(string_, 0, jrt.StringLength(string_), buffer, 0)
 	var index int32 = 0
 	var state int32 = 0
 	var linkIndex int32 = 0
@@ -637,13 +637,13 @@ func (this *Link) SetLinkColor(enabled bool) {
 	var count int32 = int32(linkTextAttributes.Count())
 	var dict *cocoa.NSMutableDictionary = cocoa.NSMutableDictionaryDictionaryWithCapacity(int64(count))
 	dict.SetDictionary(linkTextAttributes)
-	var cond2 *cocoa.Id
+	var cond600 *cocoa.Id
 	if enabled {
-		cond2 = upcastcocoaNSColorTococoaId(this.GetLinkForegroundColor())
+		cond600 = upcastcocoaNSColorTococoaId(this.GetLinkForegroundColor())
 	} else {
-		cond2 = upcastcocoaNSColorTococoaId(this.GetTextColor(false))
+		cond600 = upcastcocoaNSColorTococoaId(this.GetTextColor(false))
 	}
-	dict.Impl().SetValueOnNSObject(cond2, cocoa.OSNSForegroundColorAttributeName_)
+	dict.Impl().SetValueOnNSObject(cond600, cocoa.OSNSForegroundColorAttributeName_)
 	widget.SetLinkTextAttributes(upcastcocoaNSMutableDictionaryTococoaNSDictionary(dict))
 }
 
@@ -774,13 +774,13 @@ func (this *Link) updateCursorRects_(enabled bool) {
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSScrollViewTococoaNSView(this.scrollView))
 	var contentView *cocoa.NSClipView = this.scrollView.ContentView()
 	this.UpdateCursorRectsEnabledWidget(enabled, upcastcocoaNSClipViewTococoaNSView(contentView))
-	var cond3 *cocoa.NSCursor
+	var cond601 *cocoa.NSCursor
 	if enabled {
-		cond3 = cocoa.NSCursorArrowCursor()
+		cond601 = cocoa.NSCursorArrowCursor()
 	} else {
-		cond3 = nil
+		cond601 = nil
 	}
-	contentView.SetDocumentCursor(cond3)
+	contentView.SetDocumentCursor(cond601)
 }
 
 func (this *Link) UpdateThemeColors() {

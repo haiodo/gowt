@@ -42,66 +42,66 @@ func (this *NSFontManager) initNSFontManagerOverload2(id *id) {
 
 func (this *NSFontManager) AvailableFontFamilies() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_availableFontFamilies)
-	var cond1 *NSArray
+	var cond271 *NSArray
 	if result != 0 {
-		cond1 = NewNSArrayOverload1(result)
+		cond271 = NewNSArrayOverload1(result)
 	} else {
-		cond1 = nil
+		cond271 = nil
 	}
-	return cond1
+	return cond271
 }
 
 func (this *NSFontManager) AvailableMembersOfFontFamily(fam *NSString) *NSArray {
-	var cond2 int64
+	var cond272 int64
 	if fam != (nil) {
-		cond2 = fam.Id
+		cond272 = fam.Id
 	} else {
-		cond2 = int64(0)
+		cond272 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_availableMembersOfFontFamily_, cond2)
-	var cond3 *NSArray
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_availableMembersOfFontFamily_, cond272)
+	var cond273 *NSArray
 	if result != 0 {
-		cond3 = NewNSArrayOverload1(result)
+		cond273 = NewNSArrayOverload1(result)
 	} else {
-		cond3 = nil
+		cond273 = nil
 	}
-	return cond3
+	return cond273
 }
 
 func (this *NSFontManager) ConvertFont(fontObj *NSFont, trait int64) *NSFont {
-	var cond4 int64
+	var cond274 int64
 	if fontObj != (nil) {
-		cond4 = fontObj.Id
+		cond274 = fontObj.Id
 	} else {
-		cond4 = int64(0)
+		cond274 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_convertFont_toHaveTrait_, cond4, trait)
-	var cond5 *NSFont
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_convertFont_toHaveTrait_, cond274, trait)
+	var cond275 *NSFont
 	if result != 0 {
-		cond5 = NewNSFontOverload1(result)
+		cond275 = NewNSFontOverload1(result)
 	} else {
-		cond5 = nil
+		cond275 = nil
 	}
-	return cond5
+	return cond275
 }
 
 func (this *NSFontManager) TraitsOfFont(fontObj *NSFont) int64 {
-	var cond6 int64
+	var cond276 int64
 	if fontObj != (nil) {
-		cond6 = fontObj.Id
+		cond276 = fontObj.Id
 	} else {
-		cond6 = int64(0)
+		cond276 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_traitsOfFont_, cond6)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_traitsOfFont_, cond276)
 }
 
 func NSFontManagerSharedFontManager() *NSFontManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSFontManager, OSSel_sharedFontManager)
-	var cond7 *NSFontManager
+	var cond277 *NSFontManager
 	if result != 0 {
-		cond7 = NewNSFontManagerOverload1(result)
+		cond277 = NewNSFontManagerOverload1(result)
 	} else {
-		cond7 = nil
+		cond277 = nil
 	}
-	return cond7
+	return cond277
 }

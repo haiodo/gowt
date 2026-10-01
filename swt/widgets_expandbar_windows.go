@@ -44,7 +44,7 @@ func (this *ExpandBar) AddExpandListener(listener ExpandListener) {
 	this.AddTypedListener(listener, []int32{Expand, Collapse})
 }
 
-func (this *ExpandBar) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *ExpandBar) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -276,24 +276,24 @@ func (this *ExpandBar) findBackgroundControl_() *Control {
 }
 
 func (this *ExpandBar) findThemeControl_() *Control {
-	var cond1 *Control
+	var cond770 *Control
 	if this.IsAppThemed() {
-		cond1 = upcastExpandBarToControl(this)
+		cond770 = upcastExpandBarToControl(this)
 	} else {
-		cond1 = this.Composite.findThemeControl_()
+		cond770 = this.Composite.findThemeControl_()
 	}
-	return cond1
+	return cond770
 }
 
 func (this *ExpandBar) GetBandHeight() int32 {
 	var hDC int64 = win32.OSGetDC(this.Handle)
-	var cond2 int64
+	var cond771 int64
 	if this.hFont == 0 {
-		cond2 = this.impl.defaultFont_()
+		cond771 = this.impl.defaultFont_()
 	} else {
-		cond2 = this.hFont
+		cond771 = this.hFont
 	}
-	var oldHFont int64 = win32.OSSelectObject(hDC, cond2)
+	var oldHFont int64 = win32.OSSelectObject(hDC, cond771)
 	var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 	win32.OSGetTextMetrics(hDC, lptm)
 	win32.OSSelectObject(hDC, oldHFont)
@@ -506,13 +506,13 @@ func (this *ExpandBar) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
 		for _, item := range this.items {
 			if item != (nil) {
-				var cond3 int32
+				var cond772 int32
 				if textDirection == WidgetAUTO_TEXT_DIRECTION {
-					cond3 = WidgetAUTO_TEXT_DIRECTION
+					cond772 = WidgetAUTO_TEXT_DIRECTION
 				} else {
-					cond3 = this.style & FLIP_TEXT_DIRECTION
+					cond772 = this.style & FLIP_TEXT_DIRECTION
 				}
-				item.impl.updateTextDirection_(cond3)
+				item.impl.updateTextDirection_(cond772)
 			}
 		}
 		return true
@@ -575,7 +575,7 @@ func (this *ExpandBar) windowClass_() *win32.TCHAR {
 	return this.display.windowClass
 }
 
-func (this *ExpandBar) windowProcNoArgs_() int64 {
+func (this *ExpandBar) windowProc_() int64 {
 	return this.display.windowProc
 }
 
@@ -591,13 +591,13 @@ func (this *ExpandBar) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_SPACE, win32.OSVK_RETURN:
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond4 int32
+		var cond773 int32
 		if this.focusItem.expanded {
-			cond4 = Collapse
+			cond773 = Collapse
 		} else {
-			cond4 = Expand
+			cond773 = Expand
 		}
-		this.SendEventEventTypeEvent(cond4, event)
+		this.SendEventEventTypeEvent(cond773, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 		return win32.LRESULTZERO
@@ -672,13 +672,13 @@ func (this *ExpandBar) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT 
 	if hover {
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond5 int32
+		var cond774 int32
 		if this.focusItem.expanded {
-			cond5 = Collapse
+			cond774 = Collapse
 		} else {
-			cond5 = Expand
+			cond774 = Expand
 		}
-		this.SendEventEventTypeEvent(cond5, event)
+		this.SendEventEventTypeEvent(cond774, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 	}
@@ -758,7 +758,7 @@ func (this *ExpandBar) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESUL
 	win32.OSGetClientRect(this.Handle, rect)
 	var data *GCData = NewGCData()
 	data.Device = upcastDisplayToDevice(this.display)
-	data.Foreground = this.GetForegroundPixelNoArgs()
+	data.Foreground = this.GetForegroundPixel()
 	var gc *GC = this.impl.createNewGC_(wParam, data)
 	this.DrawWidget(gc, rect)
 	gc.impl.dispose_()
@@ -825,8 +825,8 @@ func (this *ExpandBar) wmScroll_(bar *ScrollBar, update bool, hwnd int64, msg in
 	return result
 }
 
-func (this *ExpandBar) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Composite.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *ExpandBar) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Composite.handleDPIChange_(event, scalingFactor)
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
 			item.NotifyListeners(ZoomChanged, event)

@@ -22,13 +22,13 @@ func (this *ICoreWebView2ContextMenuRequestedEventArgs) Get_Location(location []
 }
 
 func (this *ICoreWebView2ContextMenuRequestedEventArgs) Put_Handled(value bool) int32 {
-	var cond1 int32
+	var cond3 int32
 	if value {
-		cond1 = 1
+		cond3 = 1
 	} else {
-		cond1 = 0
+		cond3 = 0
 	}
-	return COMVtblCallOverload1(8, this.address, cond1)
+	return COMVtblCallOverload1(8, this.address, cond3)
 }
 
 func (this *ICoreWebView2ContextMenuRequestedEventArgs) Get_Handled(value []int32) int32 {

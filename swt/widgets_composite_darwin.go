@@ -64,10 +64,10 @@ func (this *Composite) _getChildren() []*Control {
 	var j int32 = 0
 	for i := int32(0); i < count; i++ {
 		var widget *Widget = this.display.GetWidget(views.ObjectAtIndex(int64(count - i - 1)).Id)
-		if widget != (nil) && widget != upcastCompositeToWidget(this) && func() bool { _, ok1 := isWidgetToControl(widget); return ok1 }() {
-			t2 := j
+		if widget != (nil) && widget != upcastCompositeToWidget(this) && func() bool { _, ok137 := isWidgetToControl(widget); return ok137 }() {
+			t138 := j
 			j++
-			children[t2] = castWidgetToControl(widget)
+			children[t138] = castWidgetToControl(widget)
 		}
 	}
 	if j == count {
@@ -95,9 +95,9 @@ func (this *Composite) _getTabList() []*Control {
 	var index int32 = 0
 	for i := int32(0); i < int32(len(this.tabList)); i++ {
 		if !this.tabList[i].IsDisposed() {
-			t3 := index
+			t139 := index
 			index++
-			newList[t3] = this.tabList[i]
+			newList[t139] = this.tabList[i]
 		}
 	}
 	this.tabList = newList
@@ -242,13 +242,13 @@ func (this *Composite) createHandle_() {
 		if (this.style & V_SCROLL) != 0 {
 			scrollWidget.SetHasVerticalScroller(true)
 		}
-		var cond4 int32
+		var cond140 int32
 		if this.impl.hasBorder_() {
-			cond4 = cocoa.OSNSBezelBorder
+			cond140 = cocoa.OSNSBezelBorder
 		} else {
-			cond4 = cocoa.OSNSNoBorder
+			cond140 = cocoa.OSNSNoBorder
 		}
-		scrollWidget.SetBorderType(int64(cond4))
+		scrollWidget.SetBorderType(int64(cond140))
 		this.scrollView = scrollWidget
 	}
 	var widget *cocoa.NSView = castcocoaNSObjectTococoaNSView(cocoa.NewSWTCanvasView().Alloc())
@@ -316,13 +316,13 @@ func (this *Composite) FindDeferredControl() *Composite {
 }
 
 func (this *Composite) findDeferredControl_() *Composite {
-	var cond5 *Composite
+	var cond141 *Composite
 	if this.layoutCount > 0 {
-		cond5 = this
+		cond141 = this
 	} else {
-		cond5 = this.parent.impl.findDeferredControl_()
+		cond141 = this.parent.impl.findDeferredControl_()
 	}
-	return cond5
+	return cond141
 }
 
 func (this *Composite) findMenus_(control *Control) []*Menu {
@@ -377,9 +377,9 @@ func (this *Composite) FixTabList(controlLike ControlLike) {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(this.tabList)); i++ {
 			if this.tabList[i] != control {
-				t6 := index
+				t142 := index
 				index++
-				newList[t6] = this.tabList[i]
+				newList[t142] = this.tabList[i]
 			}
 		}
 	}
@@ -425,9 +425,9 @@ func (this *Composite) GetTabList() []*Control {
 		var index int32 = 0
 		for i := int32(0); i < int32(len(list)); i++ {
 			if list[i].impl.isTabGroup_() {
-				t7 := index
+				t143 := index
 				index++
-				tabList[t7] = list[i]
+				tabList[t143] = list[i]
 			}
 		}
 	}
@@ -580,10 +580,10 @@ func (this *Composite) LayoutOverload4(changed []*Control, flags int32) {
 					copy(newUpdate[0:], update[0:0+int32(len(update))])
 					update = newUpdate
 				}
-				t8 := updateCount
+				t144 := updateCount
 				updateCount++
-				update[t8] = composite
-				child = upcastCompositeToControl(update[t8])
+				update[t144] = composite
+				child = upcastCompositeToControl(update[t144])
 				composite = child.parent
 			}
 		}
@@ -641,13 +641,13 @@ func (this *Composite) minimumSize_(wHint int32, Hint int32, changed bool) *Poin
 
 func (this *Composite) mouseEvent_(id int64, sel int64, theEvent int64, type_ int32) bool {
 	var result bool = this.Scrollable.mouseEvent_(id, sel, theEvent, type_)
-	var cond9 bool
+	var cond145 bool
 	if (this.state & WidgetCANVAS) == 0 {
-		cond9 = result
+		cond145 = result
 	} else {
-		cond9 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
+		cond145 = cocoa.NewNSEventOverload1(theEvent).Type() != int64(cocoa.OSNSLeftMouseDown)
 	}
-	return cond9
+	return cond145
 }
 
 func (this *Composite) pageDown_(id int64, sel int64, sender int64) {

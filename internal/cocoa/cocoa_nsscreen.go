@@ -50,13 +50,13 @@ func (this *NSScreen) Depth() int32 {
 
 func (this *NSScreen) DeviceDescription() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_deviceDescription)
-	var cond1 *NSDictionary
+	var cond651 *NSDictionary
 	if result != 0 {
-		cond1 = NewNSDictionaryOverload1(result)
+		cond651 = NewNSDictionaryOverload1(result)
 	} else {
-		cond1 = nil
+		cond651 = nil
 	}
-	return cond1
+	return cond651
 }
 
 func (this *NSScreen) Frame() NSRect {
@@ -73,22 +73,22 @@ func (this *NSScreen) VisibleFrame() NSRect {
 
 func NSScreenMainScreen() *NSScreen {
 	var result int64 = OSObjc_msgSend(OSClass_NSScreen, OSSel_mainScreen)
-	var cond2 *NSScreen
+	var cond652 *NSScreen
 	if result != 0 {
-		cond2 = NewNSScreenOverload1(result)
+		cond652 = NewNSScreenOverload1(result)
 	} else {
-		cond2 = nil
+		cond652 = nil
 	}
-	return cond2
+	return cond652
 }
 
 func NSScreenScreens() *NSArray {
 	var result int64 = OSObjc_msgSend(OSClass_NSScreen, OSSel_screens)
-	var cond3 *NSArray
+	var cond653 *NSArray
 	if result != 0 {
-		cond3 = NewNSArrayOverload1(result)
+		cond653 = NewNSArrayOverload1(result)
 	} else {
-		cond3 = nil
+		cond653 = nil
 	}
-	return cond3
+	return cond653
 }

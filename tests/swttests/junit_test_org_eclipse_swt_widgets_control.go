@@ -33,14 +33,14 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_ConstructorLorg_eclipse_s
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
-	anon1 := &Test_org_eclipse_swt_widgets_ControlAnon1{}
-	anon1.fnControlMoved = func(e *swt.ControlEvent) {
+	anon54 := &Test_org_eclipse_swt_widgets_ControlAnon1{}
+	anon54.fnControlMoved = func(e *swt.ControlEvent) {
 		this.eventOccurred = true
 	}
-	anon1.fnControlResized = func(e *swt.ControlEvent) {
+	anon54.fnControlResized = func(e *swt.ControlEvent) {
 		this.eventOccurred = true
 	}
-	var listener swt.ControlListener = anon1
+	var listener swt.ControlListener = anon54
 	this.control.AddControlListener(listener)
 	this.eventOccurred = false
 	this.control.NotifyListeners(swt.Move, swt.NewEvent())
@@ -90,14 +90,14 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addControlListenerControl
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
-	anon2 := &Test_org_eclipse_swt_widgets_ControlAnon2{}
-	anon2.fnFocusGained = func(e *swt.FocusEvent) {
+	anon55 := &Test_org_eclipse_swt_widgets_ControlAnon2{}
+	anon55.fnFocusGained = func(e *swt.FocusEvent) {
 		this.eventOccurred = true
 	}
-	anon2.fnFocusLost = func(e *swt.FocusEvent) {
+	anon55.fnFocusLost = func(e *swt.FocusEvent) {
 		this.eventOccurred = true
 	}
-	var listener swt.FocusListener = anon2
+	var listener swt.FocusListener = anon55
 	this.control.AddFocusListener(listener)
 	this.eventOccurred = false
 	this.control.NotifyListeners(swt.FocusIn, swt.NewEvent())
@@ -158,14 +158,14 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addHelpListenerLorg_eclip
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
-	anon3 := &Test_org_eclipse_swt_widgets_ControlAnon3{}
-	anon3.fnKeyPressed = func(e *swt.KeyEvent) {
+	anon56 := &Test_org_eclipse_swt_widgets_ControlAnon3{}
+	anon56.fnKeyPressed = func(e *swt.KeyEvent) {
 		this.eventOccurred = true
 	}
-	anon3.fnKeyReleased = func(e *swt.KeyEvent) {
+	anon56.fnKeyReleased = func(e *swt.KeyEvent) {
 		this.eventOccurred = true
 	}
-	var listener swt.KeyListener = anon3
+	var listener swt.KeyListener = anon56
 	this.control.AddKeyListener(listener)
 	this.eventOccurred = false
 	this.control.NotifyListeners(swt.KeyDown, swt.NewEvent())
@@ -205,17 +205,17 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addKeyListenerKeyReleased
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
-	anon4 := &Test_org_eclipse_swt_widgets_ControlAnon4{}
-	anon4.fnMouseDown = func(e *swt.MouseEvent) {
+	anon57 := &Test_org_eclipse_swt_widgets_ControlAnon4{}
+	anon57.fnMouseDown = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	anon4.fnMouseUp = func(e *swt.MouseEvent) {
+	anon57.fnMouseUp = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	anon4.fnMouseDoubleClick = func(e *swt.MouseEvent) {
+	anon57.fnMouseDoubleClick = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	var listener swt.MouseListener = anon4
+	var listener swt.MouseListener = anon57
 	this.control.AddMouseListener(listener)
 	this.eventOccurred = false
 	this.control.NotifyListeners(swt.MouseDown, swt.NewEvent())
@@ -241,17 +241,17 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addMouseMoveListenerLorg_
 }
 
 func (this *Test_org_eclipse_swt_widgets_Control) Test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
-	anon5 := &Test_org_eclipse_swt_widgets_ControlAnon5{}
-	anon5.fnMouseEnter = func(e *swt.MouseEvent) {
+	anon58 := &Test_org_eclipse_swt_widgets_ControlAnon5{}
+	anon58.fnMouseEnter = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	anon5.fnMouseExit = func(e *swt.MouseEvent) {
+	anon58.fnMouseExit = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	anon5.fnMouseHover = func(e *swt.MouseEvent) {
+	anon58.fnMouseHover = func(e *swt.MouseEvent) {
 		this.eventOccurred = true
 	}
-	var listener swt.MouseTrackListener = anon5
+	var listener swt.MouseTrackListener = anon58
 	this.control.AddMouseTrackListener(listener)
 	this.eventOccurred = false
 	this.control.NotifyListeners(swt.MouseEnter, swt.NewEvent())
@@ -344,9 +344,9 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addPaintListenerLorg_ecli
 	this.control.AddPaintListener(listener)
 	this.eventOccurred = false
 	var event *swt.Event = swt.NewEvent()
-	cond6 := swt.NewGCDrawable(this.control)
-	event.Gc = cond6
-	var gc *swt.GC = cond6
+	cond59 := swt.NewGCDrawable(this.control)
+	event.Gc = cond59
+	var gc *swt.GC = cond59
 	this.control.NotifyListeners(swt.Paint, event)
 	gc.Dispose()
 	junit.AssertTrue(this.eventOccurred)
@@ -637,9 +637,9 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setTextDirection() {
 	{
 		var i int32 = int32(len(orientations))
 		for {
-			t8 := i
+			t61 := i
 			i--
-			if !(t8 > 0) {
+			if !(t61 > 0) {
 				break
 			}
 			this.control.SetOrientation(orientations[i])
@@ -647,9 +647,9 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_setTextDirection() {
 			{
 				var j int32 = int32(len(directions))
 				for {
-					t10 := j
+					t63 := j
 					j--
-					if !(t10 > 0) {
+					if !(t63 > 0) {
 						break
 					}
 					this.control.SetTextDirection(directions[j])
@@ -909,8 +909,8 @@ func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32,
 		this.shell.SetText("Parent")
 		this.shell.Pack()
 		this.shell.Open()
-		_, ok11 := isswtControlToswtShell(this.control)
-		if ok11 {
+		_, ok64 := isswtControlToswtShell(this.control)
+		if ok64 {
 			this.control.Pack()
 			(castswtControlToswtShell(this.control)).Open()
 		}
@@ -945,8 +945,8 @@ func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32,
 				break
 			case ConsistencyUtilitySHELL_ICONIFY:
 				junit.AssertTrue(ConsistencyUtilityPostShellIconify(display, pt[1], paramA))
-				_, ok12 := isswtControlToswtShell(this.control)
-				if ok12 {
+				_, ok65 := isswtControlToswtShell(this.control)
+				if ok65 {
 					display.SyncExec(jrt.NewRunnable(func() {
 						(castswtControlToswtShell(this.control)).SetMinimized(false)
 					}))
@@ -967,7 +967,7 @@ func (this *Test_org_eclipse_swt_widgets_Control) ConsistencyEvent(paramA int32,
 		this.impl.setUp_()
 		var results []string = make([]string, events.Size())
 		results = jrt.ToSlice[string](events)
-		junit.AssertArrayEquals(expectedEvents, results)
+		junit.AssertArrayEquals(upcastArrstringToany(expectedEvents), upcastArrstringToany(results))
 	}
 }
 
@@ -1208,4 +1208,15 @@ func castswtControlToswtShell(x *swt.Control) *swt.Shell {
 		panic("java.lang.ClassCastException: swt.Shell")
 	}
 	return v
+}
+
+func upcastArrstringToany(x []string) []any {
+	if x == nil {
+		return nil
+	}
+	r := make([]any, len(x))
+	for i, e := range x {
+		r[i] = e
+	}
+	return r
 }

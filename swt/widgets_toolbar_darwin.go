@@ -154,9 +154,9 @@ func (this *ToolBar) computeTrim_(x int32, y int32, width int32, height int32) *
 
 func (this *ToolBar) createHandle_() {
 	if (this.style & SMOOTH) != 0 {
-		t1 := ToolBarNEXT_ID
+		t602 := ToolBarNEXT_ID
 		ToolBarNEXT_ID++
-		this.nsToolbar = (castcocoaNSObjectTococoaNSToolbar(cocoa.NewSWTToolbar().Alloc())).InitWithIdentifier(cocoa.NSStringStringWith(fmt.Sprint(t1)))
+		this.nsToolbar = (castcocoaNSObjectTococoaNSToolbar(cocoa.NewSWTToolbar().Alloc())).InitWithIdentifier(cocoa.NSStringStringWith(fmt.Sprint(t602)))
 		this.nsToolbar.SetDelegate(upcastcocoaNSToolbarTococoaId(this.nsToolbar))
 		this.nsToolbar.SetDisplayMode(int64(cocoa.OSNSToolbarDisplayModeIconOnly))
 		var window *cocoa.NSWindow = this.parent.View.Window()
@@ -220,9 +220,9 @@ func (this *ToolBar) CreateItem(itemLike ToolItemLike, index int32) {
 		this.items = newItems
 	}
 	item.impl.createWidget_()
-	t2 := this.itemCount
+	t603 := this.itemCount
 	this.itemCount++
-	copy(this.items[index+1:], this.items[index:index+t2-index])
+	copy(this.items[index+1:], this.items[index:index+t603-index])
 	this.items[index] = item
 	if this.nsToolbar != (nil) {
 		this.nsToolbar.InsertItemWithItemIdentifier(item.GetItemID(), int64(index))
@@ -425,9 +425,9 @@ func (this *ToolBar) LayoutHorizontal(width int32, height int32, resize bool) []
 	var itemHeight int32 = 0
 	var sizes []*Point = make([]*Point, this.itemCount)
 	for i := int32(0); i < this.itemCount; i++ {
-		cond3 := this.items[i].ComputeSize()
-		sizes[i] = cond3
-		var size *Point = cond3
+		cond604 := this.items[i].ComputeSize()
+		sizes[i] = cond604
+		var size *Point = cond604
 		itemHeight = int32(math.Max(float64(itemHeight), float64(size.Y)))
 	}
 	for i := int32(0); i < this.itemCount; i++ {
@@ -462,9 +462,9 @@ func (this *ToolBar) LayoutUnified(width int32, height int32, resize bool) []int
 	var containerRects []cocoa.NSRect = make([]cocoa.NSRect, this.itemCount)
 	var itemViewers *cocoa.NSArray = cocoa.NewNSViewOverload2(this.View.Subviews().ObjectAtIndex(int64(0))).Subviews()
 	for i := int32(0); i < this.itemCount; i++ {
-		cond4 := this.items[i].ComputeSize()
-		sizes[i] = cond4
-		var size *Point = cond4
+		cond605 := this.items[i].ComputeSize()
+		sizes[i] = cond605
+		var size *Point = cond605
 		containerRects[i] = cocoa.NewNSViewOverload2(itemViewers.ObjectAtIndex(int64(i))).Frame()
 		if containerRects[i].Width < 0 || containerRects[i].Width > 100000 {
 			containerRects[i].X = float64(0)
@@ -506,9 +506,9 @@ func (this *ToolBar) LayoutVertical(width int32, height int32, resize bool) []in
 	var itemWidth int32 = 0
 	var sizes []*Point = make([]*Point, this.itemCount)
 	for i := int32(0); i < this.itemCount; i++ {
-		cond5 := this.items[i].ComputeSize()
-		sizes[i] = cond5
-		var size *Point = cond5
+		cond606 := this.items[i].ComputeSize()
+		sizes[i] = cond606
+		var size *Point = cond606
 		itemWidth = int32(math.Max(float64(itemWidth), float64(size.X)))
 	}
 	for i := int32(0); i < this.itemCount; i++ {
@@ -766,9 +766,9 @@ func (this *ToolBar) translateTraversal_(key int32, theEvent *cocoa.NSEvent, con
 		offset = -1
 	}
 	for {
-		cond6 := (index + offset + length) % length
-		index = cond6
-		if !((cond6) != start) {
+		cond607 := (index + offset + length) % length
+		index = cond607
+		if !((cond607) != start) {
 			break
 		}
 		var child *ToolItem = items[index]
@@ -793,8 +793,8 @@ func ToolBarCheckStyle(parentLike CompositeLike, style int32, internal bool) int
 		newStyle &= ^SMOOTH
 	}
 	if (style & SMOOTH) != 0 {
-		s, ok7 := isCompositeToShell(parent)
-		if ok7 {
+		s, ok608 := isCompositeToShell(parent)
+		if ok608 {
 			if s.window.Toolbar() != (nil) {
 				newStyle &= ^SMOOTH
 			}

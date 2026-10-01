@@ -351,15 +351,15 @@ func (this *CTabFolder) ComputeControlBounds(sizeLike PointLike, position [][]bo
 	var allWidth int32 = 0
 	var spacingRight bool = false
 	for i := int32(0); i < int32(len(this.controls)); i++ {
-		var cond2 *Point
+		var cond699 *Point
 		if !this.controls[i].IsDisposed() && this.controls[i].GetVisible() {
-			cond2 = this.controls[i].ComputeSize(DEFAULT, DEFAULT)
+			cond699 = this.controls[i].ComputeSize(DEFAULT, DEFAULT)
 		} else {
-			cond2 = NewPoint(0, 0)
+			cond699 = NewPoint(0, 0)
 		}
-		cond1 := cond2
-		tabControlSize[i] = cond1
-		var ctrlSize *Point = cond1
+		cond698 := cond699
+		tabControlSize[i] = cond698
+		var ctrlSize *Point = cond698
 		var alignment int32 = this.controlAlignments[i]
 		if (alignment & LEAD) != 0 {
 			rects[i].Width = ctrlSize.X
@@ -529,9 +529,9 @@ func (this *CTabFolder) ComputeControlBounds(sizeLike PointLike, position [][]bo
 		var i int32 = 0
 		var lastIndex int32 = -1
 		for i < int32(len(this.priority)) && this.items[this.priority[i]].showing {
-			t3 := i
+			t700 := i
 			i++
-			lastIndex = int32(math.Max(float64(lastIndex), float64(this.priority[t3])))
+			lastIndex = int32(math.Max(float64(lastIndex), float64(this.priority[t700])))
 		}
 		if lastIndex == -1 {
 			lastIndex = this.selectedIndex
@@ -554,13 +554,13 @@ func (this *CTabFolder) GetControlHeight(ctrlSizeLike PointLike) int32 {
 		ctrlSize = ctrlSizeLike.AsPoint()
 	}
 	_ = ctrlSize
-	var cond4 int32
+	var cond701 int32
 	if this.fixedTabHeight == DEFAULT {
-		cond4 = int32(math.Max(float64(this.tabHeight-1), float64(ctrlSize.Y)))
+		cond701 = int32(math.Max(float64(this.tabHeight-1), float64(ctrlSize.Y)))
 	} else {
-		cond4 = ctrlSize.Y
+		cond701 = ctrlSize.Y
 	}
-	return cond4
+	return cond701
 }
 
 func (this *CTabFolder) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
@@ -589,15 +589,15 @@ func (this *CTabFolder) CreateButtonImage(displayLike DisplayLike, button int32)
 	var trim *Rectangle = this.renderer.ComputeTrim(button, NONE, 0, 0, 0, 0)
 	var imageSize *Point = NewPoint(size.X-trim.Width, size.Y-trim.Height)
 	var transColor *Color = this.renderer.parent.GetBackground()
-	anon5 := &CTabFolderAnon1{}
-	anon5.initTransparencyColorImageGcDrawer(transColor)
-	anon5.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
+	anon702 := &CTabFolderAnon1{}
+	anon702.initTransparencyColorImageGcDrawer(transColor)
+	anon702.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
 		var imageBounds *Rectangle = NewRectangle(0, 0, imageWidth, imageHeight)
 		gc.SetBackground(transColor)
 		gc.FillRectangleRect(imageBounds)
 		this.renderer.Draw(button, NONE, imageBounds, gc)
 	}
-	var imageGcDrawer ImageGcDrawer = anon5
+	var imageGcDrawer ImageGcDrawer = anon702
 	return NewImageDeviceImageGcDrawerWidthHeight(upcastDisplayToDevice(display), imageGcDrawer, imageSize.X, imageSize.Y)
 }
 
@@ -631,16 +631,16 @@ func (this *CTabFolder) CreateItem(itemLike CTabItemLike, index int32) {
 	var priorityIndex int32 = int32(len(this.priority))
 	for _, element := range this.priority {
 		if !this.mru && element == index {
-			t6 := next
+			t703 := next
 			next++
-			priorityIndex = t6
+			priorityIndex = t703
 		}
-		t7 := next
+		t704 := next
 		next++
 		if element >= index {
-			newPriority[t7] = element + 1
+			newPriority[t704] = element + 1
 		} else {
-			newPriority[t7] = element
+			newPriority[t704] = element
 		}
 	}
 	newPriority[priorityIndex] = index
@@ -692,12 +692,12 @@ func (this *CTabFolder) DestroyItem(itemLike CTabItemLike) {
 		if element == index {
 			continue
 		}
-		t8 := next
+		t705 := next
 		next++
 		if element > index {
-			newPriority[t8] = element - 1
+			newPriority[t705] = element - 1
 		} else {
-			newPriority[t8] = element
+			newPriority[t705] = element
 		}
 	}
 	this.priority = newPriority
@@ -969,21 +969,21 @@ func (this *CTabFolder) GetSingle() bool {
 func (this *CTabFolder) getStyle_() int32 {
 	var style int32 = this.Composite.getStyle_()
 	style &= ^(TOP | BOTTOM)
-	var cond9 int32
+	var cond706 int32
 	if this.onBottom {
-		cond9 = BOTTOM
+		cond706 = BOTTOM
 	} else {
-		cond9 = TOP
+		cond706 = TOP
 	}
-	style |= cond9
+	style |= cond706
 	style &= ^(SINGLE | MULTI)
-	var cond10 int32
+	var cond707 int32
 	if this.single {
-		cond10 = SINGLE
+		cond707 = SINGLE
 	} else {
-		cond10 = MULTI
+		cond707 = MULTI
 	}
-	style |= cond10
+	style |= cond707
 	if this.borderVisible {
 		style |= BORDER
 	}
@@ -1004,13 +1004,13 @@ func (this *CTabFolder) GetTabHeight() int32 {
 
 func (this *CTabFolder) GetTabPosition() int32 {
 	this.CheckWidget()
-	var cond11 int32
+	var cond708 int32
 	if this.onBottom {
-		cond11 = BOTTOM
+		cond708 = BOTTOM
 	} else {
-		cond11 = TOP
+		cond708 = TOP
 	}
-	return cond11
+	return cond708
 }
 
 func (this *CTabFolder) GetTopRight() *Control {
@@ -1058,9 +1058,9 @@ func (this *CTabFolder) IndexOf(itemLike CTabItemLike) int32 {
 
 func (this *CTabFolder) InitAccessible() {
 	var accessible *Accessible = this.GetAccessible()
-	anon12 := &CTabFolderAnon2{}
-	anon12.initAccessibleAdapter()
-	anon12.fnGetName = func(e *AccessibleEvent) {
+	anon709 := &CTabFolderAnon2{}
+	anon709.initAccessibleAdapter()
+	anon709.fnGetName = func(e *AccessibleEvent) {
 		var item *CTabItem = nil
 		var childID int32 = e.ChildID
 		if childID == ACCCHILDID_SELF {
@@ -1078,7 +1078,7 @@ func (this *CTabFolder) InitAccessible() {
 			e.Result = this.StripMnemonic(item.impl.getText_())
 		}
 	}
-	anon12.fnGetHelp = func(e *AccessibleEvent) {
+	anon709.fnGetHelp = func(e *AccessibleEvent) {
 		var help string = ""
 		var childID int32 = e.ChildID
 		if childID == ACCCHILDID_SELF {
@@ -1090,7 +1090,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Result = help
 	}
-	anon12.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon709.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		var shortcut string = ""
 		var childID int32 = e.ChildID
 		if childID >= 0 && childID < int32(len(this.items)) {
@@ -1107,10 +1107,10 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Result = shortcut
 	}
-	accessible.AddAccessibleListener(anon12)
-	anon13 := &CTabFolderAnon3{}
-	anon13.initAccessibleControlAdapter()
-	anon13.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	accessible.AddAccessibleListener(anon709)
+	anon710 := &CTabFolderAnon3{}
+	anon710.initAccessibleControlAdapter()
+	anon710.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		var testPoint *Point = this.ToControl(e.X, e.Y)
 		var childID int32 = ACCCHILDID_NONE
 		for i := int32(0); i < int32(len(this.items)); i++ {
@@ -1130,7 +1130,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.ChildID = childID
 	}
-	anon13.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon710.fnGetLocation = func(e *AccessibleControlEvent) {
 		var location *Rectangle = nil
 		var pt *Point = nil
 		var childID int32 = e.ChildID
@@ -1154,10 +1154,10 @@ func (this *CTabFolder) InitAccessible() {
 			e.Height = location.Height
 		}
 	}
-	anon13.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon710.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = int32(len(this.items))
 	}
-	anon13.fnGetDefaultAction = func(e *AccessibleControlEvent) {
+	anon710.fnGetDefaultAction = func(e *AccessibleControlEvent) {
 		var action string = ""
 		var childID int32 = e.ChildID
 		if childID >= 0 && childID < int32(len(this.items)) {
@@ -1165,7 +1165,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Result = action
 	}
-	anon13.fnGetFocus = func(e *AccessibleControlEvent) {
+	anon710.fnGetFocus = func(e *AccessibleControlEvent) {
 		var childID int32 = ACCCHILDID_NONE
 		if this.impl.isFocusControl_() {
 			if this.selectedIndex == -1 {
@@ -1176,7 +1176,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.ChildID = childID
 	}
-	anon13.fnGetRole = func(e *AccessibleControlEvent) {
+	anon710.fnGetRole = func(e *AccessibleControlEvent) {
 		var role int32 = 0
 		var childID int32 = e.ChildID
 		if childID == ACCCHILDID_SELF {
@@ -1188,14 +1188,14 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Detail = role
 	}
-	anon13.fnGetSelection = func(e *AccessibleControlEvent) {
+	anon710.fnGetSelection = func(e *AccessibleControlEvent) {
 		if this.selectedIndex == -1 {
 			e.ChildID = ACCCHILDID_NONE
 		} else {
 			e.ChildID = this.selectedIndex
 		}
 	}
-	anon13.fnGetState = func(e *AccessibleControlEvent) {
+	anon710.fnGetState = func(e *AccessibleControlEvent) {
 		var state int32 = 0
 		var childID int32 = e.ChildID
 		if childID == ACCCHILDID_SELF {
@@ -1216,7 +1216,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Detail = state
 	}
-	anon13.fnGetChildren = func(e *AccessibleControlEvent) {
+	anon710.fnGetChildren = func(e *AccessibleControlEvent) {
 		var childIdCount int32 = int32(len(this.items))
 		var children []any = make([]any, childIdCount)
 		for i := int32(0); i < childIdCount; i++ {
@@ -1224,7 +1224,7 @@ func (this *CTabFolder) InitAccessible() {
 		}
 		e.Children = children
 	}
-	accessible.AddAccessibleControlListener(anon13)
+	accessible.AddAccessibleControlListener(anon710)
 	this.AddListener(Selection, &ListenerFunc{fn: func(event *Event) {
 		if this.impl.isFocusControl_() {
 			if this.selectedIndex == -1 {
@@ -1244,9 +1244,9 @@ func (this *CTabFolder) InitAccessible() {
 }
 
 func (this *CTabFolder) InitAccessibleMinMaxTb() {
-	anon14 := &CTabFolderAnon4{}
-	anon14.initAccessibleAdapter()
-	anon14.fnGetName = func(e *AccessibleEvent) {
+	anon711 := &CTabFolderAnon4{}
+	anon711.initAccessibleAdapter()
+	anon711.fnGetName = func(e *AccessibleEvent) {
 		if e.ChildID != ACCCHILDID_SELF {
 			if this.minItem != (nil) && e.ChildID == this.minMaxTb.IndexOf(this.minItem) {
 				e.Result = this.minItem.GetToolTipText()
@@ -1257,20 +1257,20 @@ func (this *CTabFolder) InitAccessibleMinMaxTb() {
 			}
 		}
 	}
-	this.minMaxTb.GetAccessible().AddAccessibleListener(anon14)
+	this.minMaxTb.GetAccessible().AddAccessibleListener(anon711)
 }
 
 func (this *CTabFolder) InitAccessibleChevronTb() {
-	anon15 := &CTabFolderAnon5{}
-	anon15.initAccessibleAdapter()
-	anon15.fnGetName = func(e *AccessibleEvent) {
+	anon712 := &CTabFolderAnon5{}
+	anon712.initAccessibleAdapter()
+	anon712.fnGetName = func(e *AccessibleEvent) {
 		if e.ChildID != ACCCHILDID_SELF {
 			if this.chevronItem != (nil) && e.ChildID == this.chevronTb.IndexOf(this.chevronItem) {
 				e.Result = this.chevronItem.GetToolTipText()
 			}
 		}
 	}
-	this.chevronTb.GetAccessible().AddAccessibleListener(anon15)
+	this.chevronTb.GetAccessible().AddAccessibleListener(anon712)
 }
 
 func (this *CTabFolder) OnKeyDown(eventLike EventLike) {
@@ -1313,9 +1313,9 @@ func (this *CTabFolder) OnKeyDown(eventLike EventLike) {
 					if i == this.selectedIndex {
 						current = idx
 					}
-					t16 := idx
+					t713 := idx
 					idx++
-					visible[t16] = i
+					visible[t713] = i
 				}
 			}
 			if current+offset >= 0 && current+offset < idx {
@@ -1545,8 +1545,8 @@ func (this *CTabFolder) OnMouse(eventLike EventLike) {
 				this.hovering = true
 				this.UpdateItems()
 				this.hoverTimerRunning = true
-				anon17 := jrt.NewRunnable(nil)
-				anon17.Fn = func() {
+				anon714 := jrt.NewRunnable(nil)
+				anon714.Fn = func() {
 					if this.IsDisposed() {
 						return
 					}
@@ -1576,14 +1576,14 @@ func (this *CTabFolder) OnMouse(eventLike EventLike) {
 							}
 						}
 						if reschedule && this.hoverTimerRunning {
-							display.TimerExec(2000, anon17)
+							display.TimerExec(2000, anon714)
 						} else {
 							this.hovering = false
 							this.UpdateItems()
 						}
 					}
 				}
-				event.Display.TimerExec(2000, anon17)
+				event.Display.TimerExec(2000, anon714)
 				return
 			}
 			if event.Button != 1 {
@@ -1767,9 +1767,9 @@ func (this *CTabFolder) OnPageTraversal(eventLike EventLike) {
 					if i == this.selectedIndex {
 						current = idx
 					}
-					t18 := idx
+					t715 := idx
 					idx++
-					visible[t18] = i
+					visible[t715] = i
 				}
 			}
 			if current+offset >= 0 && current+offset < idx {
@@ -2194,13 +2194,13 @@ func (this *CTabFolder) UpdateButtons() {
 				this.maxImage = this.CreateButtonImage(display, CTabFolderRendererPART_MAX_BUTTON)
 			}
 			this.maxItem.impl.setImageOnItem_(this.maxImage)
-			var cond19 string
+			var cond716 string
 			if this.maximized {
-				cond19 = GetMessage("SWT_Restore")
+				cond716 = GetMessage("SWT_Restore")
 			} else {
-				cond19 = GetMessage("SWT_Maximize")
+				cond716 = GetMessage("SWT_Maximize")
 			}
-			this.maxItem.SetToolTipText(cond19)
+			this.maxItem.SetToolTipText(cond716)
 			this.maxItem.AddListener(Selection, this.listener)
 		}
 	} else {
@@ -2221,13 +2221,13 @@ func (this *CTabFolder) UpdateButtons() {
 				this.minImage = this.CreateButtonImage(display, CTabFolderRendererPART_MIN_BUTTON)
 			}
 			this.minItem.impl.setImageOnItem_(this.minImage)
-			var cond20 string
+			var cond717 string
 			if this.minimized {
-				cond20 = GetMessage("SWT_Restore")
+				cond717 = GetMessage("SWT_Restore")
 			} else {
-				cond20 = GetMessage("SWT_Minimize")
+				cond717 = GetMessage("SWT_Minimize")
 			}
-			this.minItem.SetToolTipText(cond20)
+			this.minItem.SetToolTipText(cond717)
 			this.minItem.AddListener(Selection, this.listener)
 		}
 	} else {
@@ -2249,11 +2249,11 @@ func (this *CTabFolder) SetButtonBounds() {
 	}
 	var size *Point = this.impl.getSize_()
 	var overflow [][]bool = func() [][]bool {
-		a21 := make([][]bool, 1)
-		for i := range a21 {
-			a21[i] = make([]bool, 0)
+		a718 := make([][]bool, 1)
+		for i := range a718 {
+			a718[i] = make([]bool, 0)
 		}
-		return a21
+		return a718
 	}()
 	var rects []*Rectangle = this.ComputeControlBounds(size, overflow)
 	if this.fixedTabHeight != DEFAULT {
@@ -2364,7 +2364,7 @@ func (this *CTabFolder) IsAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for control != (nil) && control != upcastCTabFolderToControl(this) && func() bool { _, ok22 := isControlToShell(control); return !(ok22) }() {
+	for control != (nil) && control != upcastCTabFolderToControl(this) && func() bool { _, ok719 := isControlToShell(control); return !(ok719) }() {
 		control = upcastCompositeToControl(control.GetParent())
 	}
 	return control == upcastCTabFolderToControl(this)
@@ -2562,10 +2562,10 @@ func (this *CTabFolder) MoveItem(from int32, to int32) {
 			if next == from {
 				next++
 			}
-			idx24 := i
-			t23 := next
+			idx721 := i
+			t720 := next
 			next++
-			order[idx24] = t23
+			order[idx721] = t720
 		}
 	}
 	this.SetItemOrder(order)
@@ -2666,7 +2666,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 			widths = maxWidths
 		} else {
 			var extra int32 = (tabAreaWidth - minWidth) / int32(len(this.items))
-			for true {
+			for {
 				var large int32 = 0
 				var totalWidth int32 = 0
 				for i := int32(0); i < int32(len(this.items)); i++ {
@@ -2742,13 +2742,13 @@ func (this *CTabFolder) SetMaximized(maximize bool) {
 		}
 		this.maxImage = this.CreateButtonImage(this.GetDisplay(), CTabFolderRendererPART_MAX_BUTTON)
 		this.maxItem.impl.setImageOnItem_(this.maxImage)
-		var cond25 string
+		var cond722 string
 		if this.maximized {
-			cond25 = GetMessage("SWT_Restore")
+			cond722 = GetMessage("SWT_Restore")
 		} else {
-			cond25 = GetMessage("SWT_Maximize")
+			cond722 = GetMessage("SWT_Maximize")
 		}
-		this.maxItem.SetToolTipText(cond25)
+		this.maxItem.SetToolTipText(cond722)
 	}
 }
 
@@ -2776,13 +2776,13 @@ func (this *CTabFolder) SetMinimized(minimize bool) {
 		}
 		this.minImage = this.CreateButtonImage(this.GetDisplay(), CTabFolderRendererPART_MIN_BUTTON)
 		this.minItem.impl.setImageOnItem_(this.minImage)
-		var cond26 string
+		var cond723 string
 		if this.minimized {
-			cond26 = GetMessage("SWT_Restore")
+			cond723 = GetMessage("SWT_Restore")
 		} else {
-			cond26 = GetMessage("SWT_Minimize")
+			cond723 = GetMessage("SWT_Minimize")
 		}
-		this.minItem.SetToolTipText(cond26)
+		this.minItem.SetToolTipText(cond723)
 	}
 }
 
@@ -2811,14 +2811,14 @@ func (this *CTabFolder) SetMRUVisible(show bool) {
 		var idx int32 = this.firstIndex
 		var next int32 = 0
 		for i := int32(this.firstIndex); i < int32(len(this.items)); i++ {
-			t27 := next
+			t724 := next
 			next++
-			this.priority[t27] = i
+			this.priority[t724] = i
 		}
 		for i := int32(0); i < idx; i++ {
-			t28 := next
+			t725 := next
 			next++
-			this.priority[t28] = i
+			this.priority[t725] = i
 		}
 		this.UpdateFolder(CTabFolderREDRAW_TABS)
 	}
@@ -3087,13 +3087,13 @@ func (this *CTabFolder) GetControlY(sizeLike PointLike, rects []*Rectangle, bord
 	} else {
 		center = (this.tabHeight - rects[i].Height) / 2
 	}
-	var cond29 int32
+	var cond726 int32
 	if this.onBottom {
-		cond29 = size.Y - borderBottom - this.tabHeight + center
+		cond726 = size.Y - borderBottom - this.tabHeight + center
 	} else {
-		cond29 = 1 + borderTop + center
+		cond726 = 1 + borderTop + center
 	}
-	return cond29
+	return cond726
 }
 
 func (this *CTabFolder) SetTabHeight(height int32) {
@@ -3256,14 +3256,14 @@ func (this *CTabFolder) ShowList(rectLike RectangleLike) {
 		item.impl.setText_(strings.ReplaceAll(tab.impl.getText_(), "\n", " "))
 		item.impl.setImageOnItem_(tab.impl.getImage_())
 		item.SetDataKeyValue(id, tab)
-		anon30 := &CTabFolderAnon6{}
-		anon30.initSelectionAdapter()
-		anon30.fnWidgetSelected = func(e *SelectionEvent) {
+		anon727 := &CTabFolderAnon6{}
+		anon727.initSelectionAdapter()
+		anon727.fnWidgetSelected = func(e *SelectionEvent) {
 			var menuItem *MenuItem = castWidgetToMenuItem(e.Widget)
 			var index int32 = this.IndexOf(castanyToCTabItem(menuItem.GetDataKey(id)))
 			this.SetSelectionIndexNotify(index, true)
 		}
-		item.AddSelectionListener(anon30)
+		item.AddSelectionListener(anon727)
 	}
 	var x int32 = rect.X
 	var y int32 = rect.Y + rect.Height
@@ -3360,14 +3360,14 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 		if firstIndex != this.priority[0] {
 			var index int32 = 0
 			for i := int32(firstIndex); i < int32(len(this.items)); i++ {
-				t31 := index
+				t728 := index
 				index++
-				this.priority[t31] = i
+				this.priority[t728] = i
 			}
 			for i := int32(firstIndex - 1); i >= 0; i-- {
-				t32 := index
+				t729 := index
 				index++
-				this.priority[t32] = i
+				this.priority[t729] = i
 			}
 		}
 	}
@@ -3377,15 +3377,15 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 	var chevronChanged bool = this.showChevron != oldShowChevron
 	if chevronChanged {
 		if this.UpdateTabHeight(false) {
-			b33 := this.SetItemSize(gc)
-			changed = changed || b33
+			b730 := this.SetItemSize(gc)
+			changed = changed || b730
 		}
 	}
 	if this.showChevron {
 		this.UpdateChevronImage(false)
 	}
-	b34 := this.SetItemLocation(gc)
-	changed = changed || b34
+	b731 := this.SetItemLocation(gc)
+	changed = changed || b731
 	this.SetButtonBounds()
 	changed = changed || chevronChanged
 	if changed && this.impl.getToolTipText_() != "" {
@@ -3468,15 +3468,15 @@ func (this *CTabFolder) UpdateBkImages(colorChanged bool) {
 			var control *Control = this.controls[i]
 			if !control.IsDisposed() {
 				if this.hovering {
-					_, ok35 := isControlToComposite(control)
-					if ok35 {
+					_, ok732 := isControlToComposite(control)
+					if ok732 {
 						(castControlToComposite(control)).SetBackgroundMode(INHERIT_NONE)
 					}
 					control.impl.setBackgroundImage_(nil)
 					control.impl.setBackgroundWithColor_(this.GetBackground())
 				} else {
-					_, ok36 := isControlToComposite(control)
-					if ok36 {
+					_, ok733 := isControlToComposite(control)
+					if ok733 {
 						(castControlToComposite(control)).SetBackgroundMode(INHERIT_DEFAULT)
 					}
 					var bounds *Rectangle = control.impl.getBounds_()
@@ -3634,8 +3634,8 @@ func (this *CTabFolder) RemoveTabControlControlUpdate(controlLike ControlLike, u
 		control.RemoveListener(ZoomChanged, this.tabControlZoomListener)
 		control.impl.setBackgroundWithColor_(nil)
 		control.impl.setBackgroundImage_(nil)
-		_, ok37 := isControlToComposite(control)
-		if ok37 {
+		_, ok734 := isControlToComposite(control)
+		if ok734 {
 			(castControlToComposite(control)).SetBackgroundMode(INHERIT_NONE)
 		}
 	}

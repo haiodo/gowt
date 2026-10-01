@@ -217,9 +217,9 @@ func Win32DPIUtilsPixelToPointOverload7(pointLike Point_OfFloatLike, zoom int32)
 		point = pointLike.AsPoint_OfFloat()
 	}
 	_ = point
-	t1 := point.impl.clone_()
-	t2, _ := pointImplAsOfFloat(t1.impl)
-	var scaledPoint *Point_OfFloat = t2
+	t937 := point.impl.clone_()
+	t938, _ := pointImplAsOfFloat(t937.impl)
+	var scaledPoint *Point_OfFloat = t938
 	var scaleFactor float32 = DPIUtilGetScalingFactor(zoom)
 	scaledPoint.SetX(point.GetX() / scaleFactor)
 	scaledPoint.SetY(point.GetY() / scaleFactor)
@@ -253,8 +253,8 @@ func Win32DPIUtilsPixelToPointOverload8(rectLike RectangleLike, zoom int32, size
 	if zoom == 100 || rect == (nil) {
 		return rect
 	}
-	_, ok3 := isRectangleToRectangle_OfFloat(rect)
-	if ok3 {
+	_, ok939 := isRectangleToRectangle_OfFloat(rect)
+	if ok939 {
 		return Win32DPIUtilsScaleBounds(rect, 100, zoom)
 	}
 	var floatRect *Rectangle_OfFloat = RectangleOfFloatFrom(rect)
@@ -288,8 +288,8 @@ func Win32DPIUtilsScaleBounds(rectLike RectangleLike, targetZoom int32, currentZ
 	if rect == (nil) || targetZoom == currentZoom {
 		return rect
 	}
-	rectOfFloat, ok4 := isRectangleToRectangle_OfFloat(rect)
-	if ok4 {
+	rectOfFloat, ok940 := isRectangleToRectangle_OfFloat(rect)
+	if ok940 {
 		return Win32DPIUtilsScaleBoundsRectTargetZoomCurrentZoom(rectOfFloat, targetZoom, currentZoom)
 	}
 	var scaleFactor float32 = (float32(targetZoom)) / float32(currentZoom)
@@ -394,9 +394,9 @@ func Win32DPIUtilsPointToPixelOfFloat(pointLike Point_OfFloatLike, zoom int32) *
 		point = pointLike.AsPoint_OfFloat()
 	}
 	_ = point
-	t5 := point.impl.clone_()
-	t6, _ := pointImplAsOfFloat(t5.impl)
-	var scaledPoint *Point_OfFloat = t6
+	t941 := point.impl.clone_()
+	t942, _ := pointImplAsOfFloat(t941.impl)
+	var scaledPoint *Point_OfFloat = t942
 	var scaleFactor float32 = DPIUtilGetScalingFactor(zoom)
 	scaledPoint.SetX(point.GetX() * scaleFactor)
 	scaledPoint.SetY(point.GetY() * scaleFactor)
@@ -491,8 +491,8 @@ func Win32DPIUtilsPointToPixelOverload10(rectLike RectangleLike, zoom int32, siz
 	if zoom == 100 || rect == (nil) {
 		return rect
 	}
-	_, ok7 := isRectangleToRectangle_OfFloat(rect)
-	if ok7 {
+	_, ok943 := isRectangleToRectangle_OfFloat(rect)
+	if ok943 {
 		return Win32DPIUtilsScaleBounds(rect, zoom, 100)
 	}
 	var floatRect *Rectangle_OfFloat = RectangleOfFloatFrom(rect)

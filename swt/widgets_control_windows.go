@@ -218,11 +218,11 @@ func (this *Control) checkBuffered_() {
 	this.style &= ^DOUBLE_BUFFERED
 }
 
-func (this *Control) CheckCompositedNoArgs() {
-	this.impl.checkCompositedNoArgs_()
+func (this *Control) CheckComposited() {
+	this.impl.checkComposited_()
 }
 
-func (this *Control) checkCompositedNoArgs_() {
+func (this *Control) checkComposited_() {
 }
 
 func (this *Control) CheckMirrored() {
@@ -367,7 +367,7 @@ func (this *Control) createWidget_() {
 	this.impl.createHandle_()
 	this.CheckBackground()
 	this.impl.checkBuffered_()
-	this.impl.checkCompositedNoArgs_()
+	this.impl.checkComposited_()
 	this.impl.register_()
 	this.impl.subclass_()
 	this.impl.setDefaultFont_()
@@ -496,21 +496,21 @@ func (this *Control) DragDetectButtonCountStateMaskXY(button int32, count int32,
 func (this *Control) DrawBackgroundHDC(hDC int64) {
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSGetClientRect(this.Handle, rect)
-	this.DrawBackgroundHDCRectHDCRect(hDC, rect)
+	this.DrawBackgroundHDCRect(hDC, rect)
 }
 
-func (this *Control) DrawBackgroundHDCRectHDCRect(hDC int64, rect *win32.RECT) {
-	this.DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC, rect, -1, 0, 0)
+func (this *Control) DrawBackgroundHDCRect(hDC int64, rect *win32.RECT) {
+	this.DrawBackgroundHDCRectPixelTxTy(hDC, rect, -1, 0, 0)
 }
 
-func (this *Control) DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC int64, rect *win32.RECT, pixel int32, tx int32, ty int32) {
+func (this *Control) DrawBackgroundHDCRectPixelTxTy(hDC int64, rect *win32.RECT, pixel int32, tx int32, ty int32) {
 	var control *Control = this.impl.findBackgroundControl_()
 	if control != (nil) {
 		if control.backgroundImage != (nil) {
 			this.FillImageBackground(hDC, control, rect, tx, ty)
 			return
 		}
-		pixel = control.GetBackgroundPixelNoArgs()
+		pixel = control.GetBackgroundPixel()
 	}
 	if pixel == -1 {
 		if (this.state & WidgetTHEME_BACKGROUND) != 0 {
@@ -522,7 +522,7 @@ func (this *Control) DrawBackgroundHDCRectPixelTxTyHDCRectPixelTxTy(hDC int64, r
 		}
 	}
 	if pixel == -1 {
-		pixel = this.GetBackgroundPixelNoArgs()
+		pixel = this.GetBackgroundPixel()
 	}
 	this.FillBackgroundLocal1(hDC, pixel, rect)
 }
@@ -555,12 +555,12 @@ func (this *Control) EnableDrag(enabled bool) {
 func (this *Control) enableDrag_(enabled bool) {
 }
 
-func (this *Control) MaybeEnableDarkSystemThemeNoArgs() {
-	this.impl.maybeEnableDarkSystemThemeNoArgs_()
+func (this *Control) MaybeEnableDarkSystemTheme0() {
+	this.impl.maybeEnableDarkSystemTheme0_()
 }
 
-func (this *Control) maybeEnableDarkSystemThemeNoArgs_() {
-	this.MaybeEnableDarkSystemThemeHandle(this.Handle)
+func (this *Control) maybeEnableDarkSystemTheme0_() {
+	this.MaybeEnableDarkSystemTheme(this.Handle)
 }
 
 func (this *Control) EnableWidget(enabled bool) {
@@ -617,13 +617,13 @@ func (this *Control) findBackgroundControl_() *Control {
 	if (this.background != -1 || this.backgroundImage != (nil)) && this.backgroundAlpha > 0 {
 		return this
 	}
-	var cond1 *Control
+	var cond70 *Control
 	if this.parent != (nil) && (this.state&WidgetPARENT_BACKGROUND) != 0 {
-		cond1 = this.parent.impl.findBackgroundControl_()
+		cond70 = this.parent.impl.findBackgroundControl_()
 	} else {
-		cond1 = nil
+		cond70 = nil
 	}
-	return cond1
+	return cond70
 }
 
 func (this *Control) FindBrush(value int64, lbStyle int32) int64 {
@@ -647,13 +647,13 @@ func (this *Control) findCursor_() *Cursor {
 
 func (this *Control) FindImageControl() *Control {
 	var control *Control = this.impl.findBackgroundControl_()
-	var cond2 *Control
+	var cond71 *Control
 	if control != (nil) && control.backgroundImage != (nil) {
-		cond2 = control
+		cond71 = control
 	} else {
-		cond2 = nil
+		cond71 = nil
 	}
-	return cond2
+	return cond71
 }
 
 func (this *Control) FindThemeControl() *Control {
@@ -661,13 +661,13 @@ func (this *Control) FindThemeControl() *Control {
 }
 
 func (this *Control) findThemeControl_() *Control {
-	var cond3 *Control
+	var cond72 *Control
 	if this.background == -1 && this.backgroundImage == (nil) {
-		cond3 = this.parent.impl.findThemeControl_()
+		cond72 = this.parent.impl.findThemeControl_()
 	} else {
-		cond3 = nil
+		cond72 = nil
 	}
-	return cond3
+	return cond72
 }
 
 func (this *Control) FindMenus(controlLike ControlLike) []*Menu {
@@ -741,9 +741,9 @@ func (this *Control) FixFocus(focusControlLike ControlLike) {
 	var shell *Shell = this.impl.getShell_()
 	var control *Control = this
 	for control != upcastShellToControl(shell) && func() bool {
-		cond5 := upcastCompositeToControl(control.parent)
-		control = cond5
-		return (cond5) != (nil)
+		cond74 := upcastCompositeToControl(control.parent)
+		control = cond74
+		return (cond74) != (nil)
 	}() {
 		if control.impl.setFocus_() {
 			return
@@ -818,7 +818,7 @@ func (this *Control) GetBackground() *Color {
 		if control == (nil) {
 			control = this
 		}
-		return ColorWin32_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), control.GetBackgroundPixelNoArgs(), this.backgroundAlpha)
+		return ColorWin32_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), control.GetBackgroundPixel(), this.backgroundAlpha)
 	}
 }
 
@@ -831,14 +831,14 @@ func (this *Control) GetBackgroundImage() *Image {
 	return control.backgroundImage
 }
 
-func (this *Control) GetBackgroundPixelNoArgs() int32 {
-	var cond6 int32
+func (this *Control) GetBackgroundPixel() int32 {
+	var cond75 int32
 	if this.background != -1 {
-		cond6 = this.background
+		cond75 = this.background
 	} else {
-		cond6 = this.impl.defaultBackground_()
+		cond75 = this.impl.defaultBackground_()
 	}
-	return cond6
+	return cond75
 }
 
 func (this *Control) GetBorderWidth() int32 {
@@ -925,13 +925,13 @@ func (this *Control) GetCursor() *Cursor {
 func (this *Control) getDataKey_(key string) any {
 	if ControlDATA_SHELL_ZOOM == key {
 		var shell *Shell = this.impl.getShell_()
-		var cond7 any
+		var cond76 any
 		if shell == (nil) {
-			cond7 = nil
+			cond76 = nil
 		} else {
-			cond7 = int32(DPIUtilMapDPIToZoom(win32.OSGetDpiForWindow(shell.Handle)))
+			cond76 = int32(DPIUtilMapDPIToZoom(win32.OSGetDpiForWindow(shell.Handle)))
 		}
-		return cond7
+		return cond76
 	}
 	return this.Widget.getDataKey_(key)
 }
@@ -996,17 +996,17 @@ func (this *Control) GetForeground() *Color {
 
 func (this *Control) getForeground_() *Color {
 	this.CheckWidget()
-	return ColorWin32_new(upcastDisplayToDevice(this.display), this.GetForegroundPixelNoArgs())
+	return ColorWin32_new(upcastDisplayToDevice(this.display), this.GetForegroundPixel())
 }
 
-func (this *Control) GetForegroundPixelNoArgs() int32 {
-	var cond8 int32
+func (this *Control) GetForegroundPixel() int32 {
+	var cond77 int32
 	if this.foreground != -1 {
-		cond8 = this.foreground
+		cond77 = this.foreground
 	} else {
-		cond8 = this.impl.defaultForeground_()
+		cond77 = this.impl.defaultForeground_()
 	}
-	return cond8
+	return cond77
 }
 
 func (this *Control) GetLayoutData() any {
@@ -1039,6 +1039,10 @@ func (this *Control) getLocationInPixels_() *Point {
 	}
 	win32.OSMapWindowPointsHWndFromHWndToLpPointsCPoints(int64(0), hwndParent, rect, 2)
 	return NewPoint(rect.Left, rect.Top)
+}
+
+func (this *Control) GetMenu() *Menu {
+	return this.impl.getMenu_()
 }
 
 func (this *Control) getMenu_() *Menu {
@@ -1177,13 +1181,13 @@ func (this *Control) GetTextDirection() int32 {
 	this.CheckWidget()
 	var flags int32 = win32.OSWS_EX_LAYOUTRTL | win32.OSWS_EX_RTLREADING
 	var bits int32 = win32.OSGetWindowLong(this.Handle, win32.OSGWL_EXSTYLE) & flags
-	var cond9 int32
+	var cond78 int32
 	if bits == 0 || bits == flags {
-		cond9 = LEFT_TO_RIGHT
+		cond78 = LEFT_TO_RIGHT
 	} else {
-		cond9 = RIGHT_TO_LEFT
+		cond78 = RIGHT_TO_LEFT
 	}
-	return cond9
+	return cond78
 }
 
 func (this *Control) GetToolTipText() string {
@@ -1281,7 +1285,7 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		}
 		data.Device = upcastDisplayToDevice(this.display)
 		data.NativeZoom = this.NativeZoom
-		var foreground int32 = this.GetForegroundPixelNoArgs()
+		var foreground int32 = this.GetForegroundPixel()
 		if foreground != win32.OSGetTextColor(hDC) {
 			data.Foreground = foreground
 		}
@@ -1289,7 +1293,7 @@ func (this *Control) Internal_new_GC(data *GCData) int64 {
 		if control == (nil) {
 			control = this
 		}
-		var background int32 = control.GetBackgroundPixelNoArgs()
+		var background int32 = control.GetBackgroundPixel()
 		if background != win32.OSGetBkColor(hDC) {
 			data.Background = background
 		}
@@ -1396,7 +1400,7 @@ func (this *Control) IsFocusAncestor(controlLike ControlLike) bool {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	for control != (nil) && control != this && func() bool { _, ok11 := isControlToShell(control); return !(ok11) }() {
+	for control != (nil) && control != this && func() bool { _, ok80 := isControlToShell(control); return !(ok80) }() {
 		control = upcastCompositeToControl(control.parent)
 	}
 	return control == this
@@ -1595,9 +1599,9 @@ func (this *Control) MoveBelow(controlLike ControlLike) {
 				if win32.OSGetWindow(hwndAbove, win32.OSGW_OWNER) == hwndParent {
 					break
 				}
-				cond12 := hwndAbove
-				hwnd = cond12
-				hwndAbove = win32.OSGetWindow(cond12, win32.OSGW_HWNDPREV)
+				cond81 := hwndAbove
+				hwnd = cond81
+				hwndAbove = win32.OSGetWindow(cond81, win32.OSGW_HWNDPREV)
 			}
 			if hwndAbove == hwnd {
 				return
@@ -1888,7 +1892,7 @@ func (this *Control) releaseParent_() {
 func (this *Control) releaseWidget_() {
 	this.Widget.releaseWidget_()
 	if this.toolTipText != "" {
-		this.impl.setToolTipTextShellStringShellString_(this.impl.getShell_(), "")
+		this.impl.setToolTipTextShellString_(this.impl.getShell_(), "")
 	}
 	this.toolTipText = ""
 	if this.menu != (nil) && !this.menu.IsDisposed() {
@@ -2079,21 +2083,21 @@ func (this *Control) resolveTextDirection_() int32 {
 
 func (this *Control) ShowWidget(visible bool) {
 	var topHandle int64 = this.impl.topHandle_()
-	var cond13 int32
+	var cond82 int32
 	if visible {
-		cond13 = win32.OSSW_SHOW
+		cond82 = win32.OSSW_SHOW
 	} else {
-		cond13 = win32.OSSW_HIDE
+		cond82 = win32.OSSW_HIDE
 	}
-	win32.OSShowWindow(topHandle, cond13)
+	win32.OSShowWindow(topHandle, cond82)
 	if this.Handle != topHandle {
-		var cond14 int32
+		var cond83 int32
 		if visible {
-			cond14 = win32.OSSW_SHOW
+			cond83 = win32.OSSW_SHOW
 		} else {
-			cond14 = win32.OSSW_HIDE
+			cond83 = win32.OSSW_HIDE
 		}
-		win32.OSShowWindow(this.Handle, cond14)
+		win32.OSShowWindow(this.Handle, cond83)
 	}
 }
 
@@ -2253,15 +2257,15 @@ func (this *Control) SetBackground() {
 	if control.backgroundImage != (nil) {
 		var shell *Shell = this.impl.getShell_()
 		shell.ReleaseBrushes()
-		this.impl.setBackgroundImageHBitmapHBitmap_(ImageWin32_getHandle(control.backgroundImage, this.impl.getAutoscalingZoom_()))
+		this.impl.setBackgroundImageHBitmap_(ImageWin32_getHandle(control.backgroundImage, this.impl.getAutoscalingZoom_()))
 	} else {
-		var cond15 int32
+		var cond84 int32
 		if control.background == -1 {
-			cond15 = control.impl.defaultBackground_()
+			cond84 = control.impl.defaultBackground_()
 		} else {
-			cond15 = control.background
+			cond84 = control.background
 		}
-		this.impl.setBackgroundPixel_(cond15)
+		this.impl.setBackgroundPixel_(cond84)
 	}
 }
 
@@ -2332,11 +2336,11 @@ func (this *Control) setBackgroundImage_(image *Image) {
 	this.impl.updateBackgroundImage_()
 }
 
-func (this *Control) SetBackgroundImageHBitmapHBitmap(hBitmap int64) {
-	this.impl.setBackgroundImageHBitmapHBitmap_(hBitmap)
+func (this *Control) SetBackgroundImageHBitmap(hBitmap int64) {
+	this.impl.setBackgroundImageHBitmap_(hBitmap)
 }
 
-func (this *Control) setBackgroundImageHBitmapHBitmap_(hBitmap int64) {
+func (this *Control) setBackgroundImageHBitmap_(hBitmap int64) {
 	var flags int32 = win32.OSRDW_ERASE | win32.OSRDW_FRAME | win32.OSRDW_INVALIDATE
 	win32.OSRedrawWindow(this.Handle, nil, int64(0), flags)
 }
@@ -2358,24 +2362,24 @@ func (this *Control) setBounds_(x int32, y int32, width int32, height int32) {
 	this.impl.setBoundsRect_(NewRectangle(x, y, width, height))
 }
 
-func (this *Control) SetBoundsInPixelsXYWidthHeight(x int32, y int32, width int32, height int32) {
+func (this *Control) SetBoundsInPixels(x int32, y int32, width int32, height int32) {
 	var flags int32 = win32.OSSWP_NOZORDER | win32.OSSWP_DRAWFRAME | win32.OSSWP_NOACTIVATE
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
 }
 
-func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags(x int32, y int32, width int32, height int32, flags int32) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, width, height, flags)
+func (this *Control) SetBoundsInPixelsXYWidthHeightFlags(x int32, y int32, width int32, height int32, flags int32) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, width, height, flags)
 }
 
-func (this *Control) setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
+func (this *Control) setBoundsInPixelsXYWidthHeightFlags_(x int32, y int32, width int32, height int32, flags int32) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
 }
 
-func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
+func (this *Control) SetBoundsInPixelsXYWidthHeightFlagsDefer(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+	this.impl.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, defer_)
 }
 
-func (this *Control) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Control) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	if this.FindImageControl() != (nil) {
 		if this.backgroundImage == (nil) {
 			flags |= win32.OSSWP_NOCOPYBITS
@@ -2435,7 +2439,7 @@ func (this *Control) setBoundsRect_(rect *Rectangle) {
 	var zoom int32 = this.impl.computeBoundsZoom_()
 	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload6(rect, zoom)
 	this.FitInParentBounds(boundsInPixels, zoom)
-	this.SetBoundsInPixelsRectRect(boundsInPixels)
+	this.SetBoundsInPixelsRect(boundsInPixels)
 }
 
 func (this *Control) FitInParentBounds(boundsInPixelsLike RectangleLike, zoom int32) {
@@ -2482,13 +2486,13 @@ func (this *Control) SetAutoscalingMode(autoscalingMode AutoscalingMode) bool {
 	return true
 }
 
-func (this *Control) SetBoundsInPixelsRectRect(rectLike RectangleLike) {
+func (this *Control) SetBoundsInPixelsRect(rectLike RectangleLike) {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	this.SetBoundsInPixelsXYWidthHeight(rect.X, rect.Y, rect.Width, rect.Height)
+	this.SetBoundsInPixels(rect.X, rect.Y, rect.Width, rect.Height)
 }
 
 func (this *Control) SetCapture(capture bool) {
@@ -2531,9 +2535,9 @@ func (this *Control) setCursor_(cursor *Cursor) {
 		if !win32.OSGetCursorPos(pt) {
 			return
 		}
-		cond16 := win32.OSWindowFromPoint(pt)
-		hwndCursor = cond16
-		var hwnd int64 = cond16
+		cond85 := win32.OSWindowFromPoint(pt)
+		hwndCursor = cond85
+		var hwnd int64 = cond85
 		for hwnd != 0 && hwnd != this.Handle {
 			hwnd = win32.OSGetParent(hwnd)
 		}
@@ -2681,7 +2685,7 @@ func (this *Control) setLocation_(x int32, y int32) {
 
 func (this *Control) SetLocationInPixels(x int32, y int32) {
 	var flags int32 = win32.OSSWP_NOSIZE | win32.OSSWP_NOZORDER | win32.OSSWP_NOACTIVATE | win32.OSSWP_DRAWFRAME
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(x, y, 0, 0, flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlags_(x, y, 0, 0, flags)
 }
 
 func (this *Control) SetLocationLocation(locationLike PointLike) {
@@ -2795,9 +2799,9 @@ func (this *Control) setRedraw_(redraw bool) {
 			}
 		}
 	} else {
-		t17 := this.drawCount
+		t86 := this.drawCount
 		this.drawCount++
-		if t17 == 0 {
+		if t86 == 0 {
 			var topHandle int64 = this.impl.topHandle_()
 			win32.OSSendMessageOverload4(topHandle, win32.OSWM_SETREDRAW, int64(0), int64(0))
 			if this.Handle != topHandle {
@@ -2811,16 +2815,16 @@ func (this *Control) EmbedsWin32Control() bool {
 	if this.IsDisposed() || !this.impl.isVisible_() {
 		return false
 	}
-	browser, ok18 := any(nil), false
-	if ok18 {
+	browser, ok87 := any(nil), false
+	if ok87 {
 		return ("edge" == func() string { _ = []any{browser}; panic("j2go: unresolved call getBrowserType") }())
 	}
-	_, ok19 := any(nil), false
-	if ok19 {
+	_, ok88 := any(nil), false
+	if ok88 {
 		return true
 	}
-	comp, ok20 := isControlToComposite(this)
-	if ok20 {
+	comp, ok89 := isControlToComposite(this)
+	if ok89 {
 		return func() bool {
 			_ = []any{func() any { _ = []any{comp.impl.getChildren_()}; panic("j2go: unresolved call of") }(), (*Control).EmbedsWin32Control}
 			panic("j2go: unresolved call anyMatch")
@@ -2859,7 +2863,7 @@ func (this *Control) SetSize(width int32, height int32) {
 
 func (this *Control) SetSizeInPixels(width int32, height int32) {
 	var flags int32 = win32.OSSWP_NOMOVE | win32.OSSWP_NOZORDER | win32.OSSWP_DRAWFRAME | win32.OSSWP_NOACTIVATE
-	this.impl.setBoundsInPixelsXYWidthHeightFlagsXYWidthHeightFlags_(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
+	this.impl.setBoundsInPixelsXYWidthHeightFlags_(0, 0, int32(math.Max(float64(0), float64(width))), int32(math.Max(float64(0), float64(height))), flags)
 }
 
 func (this *Control) SetSizeSize(sizeLike PointLike) {
@@ -2916,19 +2920,19 @@ func (this *Control) setToolTipText_(string_ string) {
 	this.CheckWidget()
 	if !(string_ == this.toolTipText) {
 		this.toolTipText = string_
-		this.impl.setToolTipTextShellStringShellString_(this.impl.getShell_(), string_)
+		this.impl.setToolTipTextShellString_(this.impl.getShell_(), string_)
 	}
 }
 
-func (this *Control) SetToolTipTextShellStringShellString(shellLike ShellLike, string_ string) {
+func (this *Control) SetToolTipTextShellString(shellLike ShellLike, string_ string) {
 	var shell *Shell
 	if shellLike != nil {
 		shell = shellLike.AsShell()
 	}
-	this.impl.setToolTipTextShellStringShellString_(shell, string_)
+	this.impl.setToolTipTextShellString_(shell, string_)
 }
 
-func (this *Control) setToolTipTextShellStringShellString_(shell *Shell, string_ string) {
+func (this *Control) setToolTipTextShellString_(shell *Shell, string_ string) {
 	shell.SetToolTipTextHwndText(this.Handle, string_)
 }
 
@@ -2994,7 +2998,7 @@ func (this *Control) setVisible_(visible bool) {
 	}
 }
 
-func (this *Control) SortItems(items []int32) {
+func (this *Control) Sort(items []int32) {
 	var length int32 = int32(len(items))
 	for gap := int32(length / 2); gap > 0; gap /= 2 {
 		for i := int32(gap); i < length; i++ {
@@ -3014,7 +3018,7 @@ func (this *Control) Subclass() {
 }
 
 func (this *Control) subclass_() {
-	var oldProc int64 = this.impl.windowProcNoArgs_()
+	var oldProc int64 = this.impl.windowProc_()
 	var newProc int64 = this.display.windowProc
 	if oldProc == newProc {
 		return
@@ -3117,7 +3121,7 @@ func (this *Control) translateMnemonic_(event *Event, control *Control) bool {
 	return this.TraverseEvent(event)
 }
 
-func (this *Control) TranslateMnemonicMsgMsg(msg *win32.MSG) bool {
+func (this *Control) TranslateMnemonicMsg(msg *win32.MSG) bool {
 	if msg.WParam < 0x20 {
 		return false
 	}
@@ -3501,9 +3505,9 @@ func (this *Control) TraverseGroup(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond21 := ((index + offset + length) % length)
-		index = cond21
-		if !((cond21) != start) {
+		cond90 := ((index + offset + length) % length)
+		index = cond90
+		if !((cond90) != start) {
 			break
 		}
 		var widget *Widget = list[index]
@@ -3542,9 +3546,9 @@ func (this *Control) traverseItem_(next bool) bool {
 		offset = -1
 	}
 	for {
-		cond22 := (index + offset + length) % length
-		index = cond22
-		if !((cond22) != start) {
+		cond91 := (index + offset + length) % length
+		index = cond91
+		if !((cond91) != start) {
 			break
 		}
 		var child *Control = children[index]
@@ -3586,7 +3590,7 @@ func (this *Control) Unsubclass() {
 }
 
 func (this *Control) unsubclass_() {
-	var newProc int64 = this.impl.windowProcNoArgs_()
+	var newProc int64 = this.impl.windowProc_()
 	var oldProc int64 = this.display.windowProc
 	if oldProc == newProc {
 		return
@@ -3635,13 +3639,13 @@ func (this *Control) updateBackgroundImage_() {
 	} else {
 		image = this.backgroundImage
 	}
-	var cond23 int64
+	var cond92 int64
 	if image != (nil) {
-		cond23 = ImageWin32_getHandle(image, this.impl.getAutoscalingZoom_())
+		cond92 = ImageWin32_getHandle(image, this.impl.getAutoscalingZoom_())
 	} else {
-		cond23 = int64(0)
+		cond92 = int64(0)
 	}
-	this.impl.setBackgroundImageHBitmapHBitmap_(cond23)
+	this.impl.setBackgroundImageHBitmap_(cond92)
 }
 
 func (this *Control) UpdateBackgroundMode() {
@@ -3674,11 +3678,11 @@ func (this *Control) updateFont_(oldFont *Font, newFont *Font) {
 	}
 }
 
-func (this *Control) UpdateLayoutResizeAll(resize bool, all bool) {
-	this.impl.updateLayoutResizeAll_(resize, all)
+func (this *Control) UpdateLayout(resize bool, all bool) {
+	this.impl.updateLayout_(resize, all)
 }
 
-func (this *Control) updateLayoutResizeAll_(resize bool, all bool) {
+func (this *Control) updateLayout_(resize bool, all bool) {
 }
 
 func (this *Control) UpdateOrientation() {
@@ -3845,8 +3849,8 @@ func (this *Control) getAutoscalingZoom_() int32 {
 }
 
 func (this *Control) GetShellZoom() int32 {
-	shellZoom, ok24 := any(nil), false
-	if ok24 {
+	shellZoom, ok93 := any(nil), false
+	if ok93 {
 		return jrt.Cast[int32](shellZoom)
 	}
 	return this.NativeZoom
@@ -3878,15 +3882,15 @@ func (this *Control) WindowClass() *win32.TCHAR {
 	return this.impl.windowClass_()
 }
 
-func (this *Control) WindowProcNoArgs() int64 {
-	return this.impl.windowProcNoArgs_()
+func (this *Control) WindowProc() int64 {
+	return this.impl.windowProc_()
 }
 
-func (this *Control) WindowProcHwndMsgWParamLParamHwndMsgWParamLParam(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
-	return this.impl.windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+func (this *Control) WindowProcHwndMsgWParamLParam(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+	return this.impl.windowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
 }
 
-func (this *Control) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Control) windowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	var display *Display = this.display
 	var result *win32.LRESULT = nil
 	switch msg {
@@ -4181,7 +4185,7 @@ func (this *Control) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int6
 		defer func() {
 			display.SendPostExternalEventDispatchEvent()
 		}()
-		return this.impl.callWindowProcHwndMsgWParamLParam_(hwnd, msg, wParam, lParam)
+		return this.impl.callWindowProc_(hwnd, msg, wParam, lParam)
 	}
 }
 
@@ -5142,13 +5146,13 @@ func (this *Control) WM_TABLET_FLICK(wParam int64, lParam int64) *win32.LRESULT 
 	event.Detail = GESTURE_SWIPE
 	this.SetInputState(event, Gesture)
 	this.SendEventEventTypeEvent(Gesture, event)
-	var cond25 *win32.LRESULT
+	var cond94 *win32.LRESULT
 	if event.Doit {
-		cond25 = nil
+		cond94 = nil
 	} else {
-		cond25 = win32.LRESULTONE
+		cond94 = win32.LRESULTONE
 	}
-	return cond25
+	return cond94
 }
 
 func (this *Control) WM_TOUCH(wParam int64, lParam int64) *win32.LRESULT {
@@ -5224,14 +5228,14 @@ func (this *Control) wM_WINDOWPOSCHANGED_(wParam int64, lParam int64) *win32.LRE
 			this.display.resizeCount--
 		}()
 		this.display.resizeCount++
-		var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_WINDOWPOSCHANGED, wParam, lParam)
-		var cond26 *win32.LRESULT
+		var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_WINDOWPOSCHANGED, wParam, lParam)
+		var cond95 *win32.LRESULT
 		if code == 0 {
-			cond26 = win32.LRESULTZERO
+			cond95 = win32.LRESULTZERO
 		} else {
-			cond26 = win32.NewLRESULT(code)
+			cond95 = win32.NewLRESULT(code)
 		}
-		return cond26
+		return cond95
 	}
 }
 
@@ -5296,8 +5300,8 @@ func (this *Control) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 			if control != (nil) {
 				var rect *win32.RECT = win32.NewRECT()
 				win32.OSGetClientRect(this.Handle, rect)
-				win32.OSSetTextColor(wParam, this.GetForegroundPixelNoArgs())
-				win32.OSSetBkColor(wParam, this.GetBackgroundPixelNoArgs())
+				win32.OSSetTextColor(wParam, this.GetForegroundPixel())
+				win32.OSSetBkColor(wParam, this.GetBackgroundPixel())
 				this.FillThemeBackground(wParam, control, rect)
 				win32.OSSetBkMode(wParam, win32.OSTRANSPARENT)
 				return win32.NewLRESULT(win32.OSGetStockObject(win32.OSNULL_BRUSH))
@@ -5310,8 +5314,8 @@ func (this *Control) wmColorChild_(wParam int64, lParam int64) *win32.LRESULT {
 	if control == (nil) {
 		control = this
 	}
-	var forePixel int32 = this.GetForegroundPixelNoArgs()
-	var backPixel int32 = control.GetBackgroundPixelNoArgs()
+	var forePixel int32 = this.GetForegroundPixel()
+	var backPixel int32 = control.GetBackgroundPixel()
 	win32.OSSetTextColor(wParam, forePixel)
 	win32.OSSetBkColor(wParam, backPixel)
 	if control.backgroundImage != (nil) {
@@ -5407,18 +5411,18 @@ func (this *Control) SendZoomChangedEvent(eventLike EventLike, shellLike ShellLi
 		shell = shellLike.AsShell()
 	}
 	_ = shell
-	dpiExecData, ok27 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok27 {
+	dpiExecData, ok96 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok96 {
 		ControlStartZoomChangeTask(event)
 		dpiExecData.Process(this, jrt.NewRunnable(func() {
-			func() {
+			{
 				defer func() {
 					ControlCompleteZoomChangeTask(event, shell)
 				}()
 				if !this.IsDisposed() && event.Doit {
 					this.NotifyListeners(ZoomChanged, event)
 				}
-			}()
+			}
 		}))
 	}
 }
@@ -5427,8 +5431,8 @@ func (this *Control) IsAutoscalingDisabled() bool {
 	return this.autoscalingMode != AutoscalingModeENABLED
 }
 
-func (this *Control) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Widget.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Control) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Widget.handleDPIChange_(event, scalingFactor)
 	if this.IsAutoscalingDisabled() {
 		this.NativeZoom = 100
 	}
@@ -5474,8 +5478,8 @@ func ControlStartZoomChangeTask(eventLike EventLike) {
 		event = eventLike.AsEvent()
 	}
 	_ = event
-	execution, ok28 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok28 {
+	execution, ok97 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok97 {
 		execution.StartTask()
 	}
 }
@@ -5491,8 +5495,8 @@ func ControlCompleteZoomChangeTask(eventLike EventLike, shellLike ShellLike) {
 		shell = shellLike.AsShell()
 	}
 	_ = shell
-	execution, ok29 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
-	if ok29 {
+	execution, ok98 := controlDPIChangeExecutionImplAsControlDPIChangeExecution(event.Data)
+	if ok98 {
 		execution.CompleteTask(shell)
 	}
 }
@@ -5572,8 +5576,8 @@ func (this *Control_DPIChangeExecution) Process(controlLike ControlLike, operati
 	}
 	_ = control
 	var currentAsyncExec bool = this.asyncExec
-	comp, ok30 := isControlToComposite(control)
-	if ok30 {
+	comp, ok99 := isControlToComposite(control)
+	if ok99 {
 		this.asyncExec = this.asyncExec && (comp.layout != (nil))
 	}
 	if this.asyncExec {
@@ -5604,16 +5608,16 @@ func newControlDPIChangeProcessingCallback(control *Control, dpiChangeProcessing
 }
 
 func (this *Control_DPIChangeProcessingCallback) initControlDPIChangeProcessingCallback(control *Control, dpiChangeProcessing jrt.Runnable) {
-	var callback *Callback = func() *Callback { panic("j2go: unsupported Callback") }()
+	var callback *Callback = NewCallbackTyped(func(a0 int32, a1 int32, a2 int32, a3 int32) { this.Run(a0, a1, a2, a3) })
 	this.operation = jrt.NewRunnable(func() {
-		func() {
+		{
 			defer func() {
 				callback.Dispose()
 			}()
 			if !control.IsDisposed() {
 				dpiChangeProcessing.Run()
 			}
-		}()
+		}
 	})
 	this.address = callback.GetAddress()
 }

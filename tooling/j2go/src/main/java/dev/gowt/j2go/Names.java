@@ -100,7 +100,7 @@ public class Names {
 
 	// gtk's C struct mirrors are named like the C type (cairo_path_t) and must still be exported across packages.
 	private static String exportedPi(String name) {
-		return GoTypes.platform == Platform.GTK ? capitalize(name) : name;
+		return GoTypes.piPackage.equals("gtk") ? capitalize(name) : name;
 	}
 
 	public static String erasureKey(IMethodBinding m) {
@@ -122,10 +122,10 @@ public class Names {
 		String declKey = m.getDeclaringClass().getErasure().getBinaryName();
 		String name = m.isConstructor() ? "<init>" : m.getName();
 		String key = erasureKey(m);
-		overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()).add(key);
+		{ var l = overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()); if (!l.contains(key)) l.add(key); }
 		paramNamesByKey.put(key, paramNames);
-		if (java.lang.reflect.Modifier.isPublic(m.getModifiers())) publicKeys.add(key);
-		if (!m.isConstructor()) declsByName.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
+		accessByKey.put(key, access(m));
+		if (!m.isConstructor()) instanceDecls.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
 	}
 
 	/**
@@ -138,16 +138,13 @@ public class Names {
 		if (override != null) return override;
 		String pinned = pinnedSuffix.get(key);
 		if (pinned != null) return baseName + pinned;
-		// An implementation or override keeps the name pinned on what it implements.
+		// An implementation or override keeps the name pinned (names.properties) on what it implements.
 		String inherited = inheritedPin(m.getMethodDeclaration());
 		if (inherited != null) return inherited;
 		String name = computeMemberName(m, baseName);
-		if (shadowsAncestorOverload(m.getMethodDeclaration())) name += shadowSuffix(m.getMethodDeclaration());
-		// An unpinned member (a platform's own) must not take a name the pins gave to another member of its class.
-		// (Statics are functions named by class: they cannot clash with a method.)
+		// A platform's own member must not take a name the pins gave to another member of its class (constructors: the suffix).
 		String declClass = m.getMethodDeclaration().getDeclaringClass().getErasure().getBinaryName();
 		if (m.isConstructor() && name.startsWith(baseName)) {
-			// Constructors: the pins' suffixes of this class (the base differs per Go function: New<C>, new<C>, init<C>).
 			Set<String> suffixes = pinnedNamesOf(declClass + "#<init>");
 			String suffix = name.substring(baseName.length());
 			for (int n = 1; suffixes.contains(suffix); n++) suffix = "Local" + n;
@@ -155,44 +152,13 @@ public class Names {
 		}
 		Set<String> taken = Modifier.isStatic(m.getModifiers()) || m.isConstructor() ? Set.of() : pinnedNamesOf(declClass);
 		for (int n = 1; taken.contains(name); n++) name = baseName + "Local" + n;
-		if (overloaded(m) && name.startsWith(baseName)) computedOverloads.put(key, name.substring(baseName.length()));
+		if (overloaded(m) && name.startsWith(baseName)) {
+			// An unpinned overload (a platform's own) must not take a name the pins gave to a sibling.
+			for (int n = 1; !pinnedSuffix.isEmpty() && siblingPinnedNames(m, baseName).contains(name); n++) name = baseName + "Local" + n;
+			computedOverloads.put(key, name.substring(baseName.length()));
+		}
 		return name;
 	}
-
-	// Go has no overloading: a subclass's method named like an ancestor's overload (other parameters) would hide it.
-	private boolean shadowsAncestorOverload(IMethodBinding decl) {
-		// Public API names stay as the overload rule gave them (one API for every platform); the reference
-		// platform's own names are what the pins freeze, so only the other platforms need this.
-		if (GoTypes.platform == Platform.COCOA || decl.isConstructor() || Modifier.isStatic(decl.getModifiers()) || Modifier.isPublic(decl.getModifiers())
-				|| decl.getDeclaringClass().getQualifiedName().contains(".internal.")) return false;
-		for (ITypeBinding t = decl.getDeclaringClass().getSuperclass(); t != null && t.getQualifiedName().startsWith("org.eclipse.swt"); t = t.getSuperclass()) {
-			for (IMethodBinding o : t.getDeclaredMethods()) {
-				if (!o.isConstructor() && !Modifier.isStatic(o.getModifiers()) && o.getName().equals(decl.getName())
-						&& !Arrays.equals(erasedParams(o), erasedParams(decl))) return true;
-			}
-		}
-		// ... or a descendant's overload that hides this one.
-		for (IMethodBinding o : declsByName.getOrDefault(decl.getName(), List.of())) {
-			ITypeBinding oc = o.getDeclaringClass();
-			if (!Modifier.isStatic(o.getModifiers()) && !oc.isEqualTo(decl.getDeclaringClass()) && oc.getErasure().isSubTypeCompatible(decl.getDeclaringClass().getErasure())
-					&& !Arrays.equals(erasedParams(o), erasedParams(decl))) return true;
-		}
-		return false;
-	}
-
-	private static String[] erasedParams(IMethodBinding m) {
-		return Arrays.stream(m.getParameterTypes()).map(p -> p.getErasure().getQualifiedName()).toArray(String[]::new);
-	}
-
-	private String shadowSuffix(IMethodBinding decl) {
-		List<String> params = paramNamesByKey.getOrDefault(erasureKey(decl), List.of());
-		StringBuilder sb = new StringBuilder();
-		for (String p : params) sb.append(capitalize(p));
-		return sb.length() == 0 ? "NoArgs" : sb.toString();
-	}
-
-	// Every registered method by Java name: an ancestor's overload hidden by a descendant's is found through it.
-	private final Map<String, List<IMethodBinding>> declsByName = new HashMap<>();
 
 	private String inheritedPin(IMethodBinding decl) {
 		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers())) return null;
@@ -209,12 +175,12 @@ public class Names {
 				if (!decl.overrides(o)) continue;
 				String ov = overrides.get(erasureKey(o));
 				if (ov != null) return ov;
+				// An implementation of an interface method is named as the interface names it (Go interfaces need equal names).
+				if (t.isInterface()) return goMemberName(o, javaMethodBaseGoName(o.getName()));
 			}
 		}
 		return null;
 	}
-
-	private final Set<String> publicKeys = new HashSet<>();
 
 	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
 
@@ -224,12 +190,22 @@ public class Names {
 				int hash = e.getKey().indexOf('#');
 				int paren = e.getKey().indexOf('(');
 				String method = e.getKey().substring(hash + 1, paren);
-				// Constructors are filed under "<class>#<init>" with the bare suffix.
 				if (method.equals("<init>")) pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash) + "#<init>", k -> new HashSet<>()).add(e.getValue());
 				else pinnedNamesByClass.computeIfAbsent(e.getKey().substring(0, hash), k -> new HashSet<>()).add(javaMethodBaseGoName(method) + e.getValue());
 			}
 		}
 		return pinnedNamesByClass.getOrDefault(classBinaryName, Set.of());
+	}
+
+	private Set<String> siblingPinnedNames(IMethodBinding m, String baseName) {
+		IMethodBinding decl = m.getMethodDeclaration();
+		String declName = decl.isConstructor() ? "<init>" : decl.getName();
+		Set<String> r = new HashSet<>();
+		for (String k : overloadOrder.getOrDefault(decl.getDeclaringClass().getErasure().getBinaryName() + "#" + declName, List.of())) {
+			String suffix = pinnedSuffix.get(k);
+			if (suffix != null) r.add(baseName + suffix);
+		}
+		return r;
 	}
 
 	private boolean overloaded(IMethodBinding m) {
@@ -260,15 +236,14 @@ public class Names {
 		String declKey = decl.getDeclaringClass().getErasure().getBinaryName();
 		String name = decl.isConstructor() ? "<init>" : decl.getName();
 		List<String> order = overloadOrder.getOrDefault(declKey + "#" + name, List.of());
-		// Other platforms: public overloads come first, so the API keeps the bare name over a package-private helper declared before it.
-		if (GoTypes.platform != Platform.COCOA && order.size() > 1) {
-			order = new ArrayList<>(order);
-			order.sort(Comparator.comparing(k -> !publicKeys.contains(k)));
-		}
+		if (!GoTypes.piPackage.equals("cocoa")) order = byAccess(order); // the public member of a family keeps the bare name
 		int idx = order.indexOf(key);
-		if (idx <= 0) return withTypeNameGuard(decl, baseName); // first declared, or external -> base name.
+		// Go has no overloading across embedding either: a subclass method of an ancestor's name (other signature) is
+		// suffixed. Not on the reference platform, whose shared output must not change (its cases are in names.properties).
+		boolean shadows = idx == 0 && !GoTypes.piPackage.equals("cocoa") && shadowsAncestorOverload(decl);
+		if (idx <= 0 && !shadows) return withTypeNameGuard(decl, baseName); // first declared, or external -> base name.
 
-		if (!nameBasedSuffixesUnique(order)) {
+		if (!shadows && !nameBasedSuffixesUnique(order)) {
 			// JNIGen natives reuse arg0/arg1/... across overloads that differ only by type.
 			return baseName + "Overload" + idx;
 		}
@@ -284,6 +259,38 @@ public class Names {
 		String name_ = baseName + sb;
 		if (!decl.isConstructor() && isNaturalNameOfOther(decl, name_)) name_ = baseName + "With" + sb;
 		return withTypeNameGuard(decl, name_);
+	}
+
+	private final Map<String, Integer> accessByKey = new HashMap<>();
+
+	// Stable: most accessible first, source order within a level.
+	private List<String> byAccess(List<String> order) {
+		List<String> r = new ArrayList<>(order);
+		r.sort(Comparator.comparingInt(k -> -accessByKey.getOrDefault(k, 1)));
+		return r;
+	}
+
+	// Every instance declaration by Java name, to find same-named methods of related classes.
+	private final Map<String, List<IMethodBinding>> instanceDecls = new HashMap<>();
+
+	private static int access(IMethodBinding m) {
+		int f = m.getModifiers();
+		return Modifier.isPublic(f) ? 3 : Modifier.isProtected(f) ? 2 : Modifier.isPrivate(f) ? 0 : 1;
+	}
+
+	// The less accessible of two related-class methods with one name and different signatures gives up the bare
+	// name (the public API keeps it); at equal access the subclass's does.
+	private boolean shadowsAncestorOverload(IMethodBinding decl) {
+		if (decl.isConstructor() || Modifier.isStatic(decl.getModifiers())) return false;
+		ITypeBinding c = decl.getDeclaringClass();
+		for (IMethodBinding o : instanceDecls.getOrDefault(decl.getName(), List.of())) {
+			ITypeBinding oc = o.getDeclaringClass();
+			if (o.getKey().equals(decl.getKey()) || decl.overrides(o) || o.overrides(decl) || access(o) == 0) continue;
+			boolean sub = c.isSubTypeCompatible(oc), sup = oc.isSubTypeCompatible(c);
+			if (!sub && !sup) continue;
+			if (access(decl) < access(o) || access(decl) == access(o) && sub && !oc.isEqualTo(c)) return true;
+		}
+		return false;
 	}
 
 	// Unsuffixed Go name of a differently-named Java method of the same kind (instance: declared

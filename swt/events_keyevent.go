@@ -48,11 +48,11 @@ func (this *KeyEvent) initKeyEvent(e *Event) {
 
 func (this *KeyEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	var cond1 string
+	var cond36 string
 	if int32(this.Character) == 0 {
-		cond1 = "\\0"
+		cond36 = "\\0"
 	} else {
-		cond1 = string(rune(this.Character))
+		cond36 = string(rune(this.Character))
 	}
-	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), (cond1), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
+	return fmt.Sprintf("%s character='%s'=0x%s keyCode=0x%s keyLocation=0x%s stateMask=0x%s doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), (cond36), strconv.FormatUint(uint64(uint32(this.Character)), 16), strconv.FormatUint(uint64(uint32(this.KeyCode)), 16), strconv.FormatUint(uint64(uint32(this.KeyLocation)), 16), strconv.FormatUint(uint64(uint32(this.StateMask)), 16), this.Doit)
 }

@@ -80,7 +80,7 @@ func (this *ExpandItem) DrawChevron(hDC int64, rect *win32.RECT) {
 	rect.Top += 4
 	rect.Right -= 4
 	rect.Bottom -= 4
-	var hPen int64 = win32.OSCreatePen(win32.OSPS_SOLID, 1, this.parent.GetForegroundPixelNoArgs())
+	var hPen int64 = win32.OSCreatePen(win32.OSPS_SOLID, 1, this.parent.GetForegroundPixel())
 	var oldPen int64 = win32.OSSelectObject(hDC, hPen)
 	var polyline1 []int32
 	var polyline2 []int32
@@ -323,7 +323,7 @@ func (this *ExpandItem) SetBoundsInPixels(x int32, y int32, width int32, height 
 			height = int32(math.Max(float64(0), float64(height-ExpandItemBORDER)))
 		}
 		if move && size {
-			this.control.SetBoundsInPixelsXYWidthHeight(x, y+headerHeightInPixels, width, height)
+			this.control.SetBoundsInPixels(x, y+headerHeightInPixels, width, height)
 		}
 		if move && !size {
 			this.control.SetLocationInPixels(x, y+headerHeightInPixels)
@@ -356,9 +356,9 @@ func (this *ExpandItem) SetControl(controlLike ControlLike) {
 		if !this.parent.IsAppThemed() {
 			var width int32 = int32(math.Max(float64(0), float64(this.width-ExpandItemBORDER*2)))
 			var height int32 = int32(math.Max(float64(0), float64(this.height-ExpandItemBORDER)))
-			control.SetBoundsInPixelsXYWidthHeight(this.x+ExpandItemBORDER, this.y+headerHeight, width, height)
+			control.SetBoundsInPixels(this.x+ExpandItemBORDER, this.y+headerHeight, width, height)
 		} else {
-			control.SetBoundsInPixelsXYWidthHeight(this.x, this.y+headerHeight, this.width, this.height)
+			control.SetBoundsInPixels(this.x, this.y+headerHeight, this.width, this.height)
 		}
 	}
 }
@@ -410,8 +410,8 @@ func (this *ExpandItem) setText_(string_ string) {
 	this.Redraw(true)
 }
 
-func (this *ExpandItem) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *ExpandItem) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChange_(event, scalingFactor)
 	if this.height != 0 || this.width != 0 {
 		var newWidth int32 = int32(math.Floor(float64(float32(this.width)*scalingFactor) + 0.5))
 		var newHeight int32 = int32(math.Floor(float64(float32(this.height)*scalingFactor) + 0.5))

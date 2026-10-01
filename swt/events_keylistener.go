@@ -8,21 +8,21 @@ type KeyListener interface {
 }
 
 func KeyListenerKeyPressedAdapter(c func(*KeyEvent)) KeyListener {
-	anon1 := &KeyListenerAnon1{}
-	anon1.initKeyAdapter()
-	anon1.fnKeyPressed = func(e *KeyEvent) {
+	anon37 := &KeyListenerAnon1{}
+	anon37.initKeyAdapter()
+	anon37.fnKeyPressed = func(e *KeyEvent) {
 		c(e)
 	}
-	return anon1
+	return anon37
 }
 
 func KeyListenerKeyReleasedAdapter(c func(*KeyEvent)) KeyListener {
-	anon2 := &KeyListenerAnon2{}
-	anon2.initKeyAdapter()
-	anon2.fnKeyReleased = func(e *KeyEvent) {
+	anon38 := &KeyListenerAnon2{}
+	anon38.initKeyAdapter()
+	anon38.fnKeyReleased = func(e *KeyEvent) {
 		c(e)
 	}
-	return anon2
+	return anon38
 }
 
 // j2go: anonymous KeyAdapter subclass.

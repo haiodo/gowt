@@ -282,13 +282,13 @@ func (this *Menu) FixMenus(newParentLike DecorationsLike) {
 
 func (this *Menu) GetBackground() *Color {
 	this.CheckWidget()
-	var cond1 int32
+	var cond204 int32
 	if this.background != -1 {
-		cond1 = this.background
+		cond204 = this.background
 	} else {
-		cond1 = this.DefaultBackground()
+		cond204 = this.DefaultBackground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond1)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond204)
 }
 
 func (this *Menu) GetBackgroundImage() *Image {
@@ -351,13 +351,13 @@ func (this *Menu) GetEnabled() bool {
 
 func (this *Menu) GetForeground() *Color {
 	this.CheckWidget()
-	var cond2 int32
+	var cond205 int32
 	if this.foreground != -1 {
-		cond2 = this.foreground
+		cond205 = this.foreground
 	} else {
-		cond2 = this.DefaultForeground()
+		cond205 = this.DefaultForeground()
 	}
-	return ColorWin32_new(upcastDisplayToDevice(this.display), cond2)
+	return ColorWin32_new(upcastDisplayToDevice(this.display), cond205)
 }
 
 func (this *Menu) GetItem(index int32) *MenuItem {
@@ -399,9 +399,9 @@ func (this *Menu) GetItems() []*MenuItem {
 		}
 		var item *MenuItem = this.display.GetMenuItem(int32(info.DwItemData))
 		if item != (nil) {
-			t3 := count
+			t206 := count
 			count++
-			items[t3] = item
+			items[t206] = item
 		}
 		index++
 	}
@@ -419,19 +419,19 @@ func (this *Menu) getNameText_() string {
 	var length int32 = int32(len(items))
 	if length > 0 {
 		for i := int32(0); i <= length-1; i++ {
-			var cond4 string
+			var cond207 string
 			if items[i] == (nil) {
-				cond4 = "null"
+				cond207 = "null"
 			} else {
-				cond4 = items[i].impl.getNameText_()
+				cond207 = items[i].impl.getNameText_()
 			}
-			var cond5 string
+			var cond208 string
 			if i < (length - 1) {
-				cond5 = ", "
+				cond208 = ", "
 			} else {
-				cond5 = ""
+				cond208 = ""
 			}
-			result += fmt.Sprintf("%s%s", (cond4), (cond5))
+			result += fmt.Sprintf("%s%s", (cond207), (cond208))
 		}
 	}
 	return result
@@ -804,16 +804,16 @@ func (this *Menu) Update() {
 	var hasImage bool = false
 	for _, item := range this.GetItems() {
 		if item.image != (nil) {
-			cond7 := true
-			hasImage = cond7
-			if (cond7) && hasCheck {
+			cond210 := true
+			hasImage = cond210
+			if (cond210) && hasCheck {
 				break
 			}
 		}
 		if (item.style & (CHECK | RADIO)) != 0 {
-			cond9 := true
-			hasCheck = cond9
-			if (cond9) && hasImage {
+			cond212 := true
+			hasCheck = cond212
+			if (cond212) && hasImage {
 				break
 			}
 		}
@@ -882,8 +882,8 @@ func (this *Menu) WmTimer(wParam int64, lParam int64) *win32.LRESULT {
 	return nil
 }
 
-func (this *Menu) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Widget.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Menu) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Widget.handleDPIChange_(event, scalingFactor)
 	for _, item := range this.GetItems() {
 		if item != (nil) && !item.IsDisposed() {
 			item.NotifyListeners(ZoomChanged, event)

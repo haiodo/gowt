@@ -79,13 +79,13 @@ func (this *DirectoryDialog) _performKeyEquivalent(id int64, sel int64, event in
 	if window != (nil) {
 		result = this.parent.display.PerformKeyEquivalent(window, nsEvent)
 	}
-	var cond1 int32
+	var cond649 int32
 	if result {
-		cond1 = 1
+		cond649 = 1
 	} else {
-		cond1 = 0
+		cond649 = 0
 	}
-	return int64(cond1)
+	return int64(cond649)
 }
 
 func (this *DirectoryDialog) GetFilterPath() string {
@@ -120,8 +120,8 @@ func (this *DirectoryDialog) HandleResponse(response int64) {
 }
 
 func (this *DirectoryDialog) Open() string {
-	var tret2 string
-	tretd3 := false
+	var tret650 string
+	tretd651 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -138,8 +138,8 @@ func (this *DirectoryDialog) Open() string {
 				e := r.(*SWTException)
 				_ = e
 				if e.Code == ERROR_INVALID_RETURN_VALUE {
-					tret2 = ""
-					tretd3 = true
+					tret650 = ""
+					tretd651 = true
 					return
 				}
 				panic(e)
@@ -147,12 +147,12 @@ func (this *DirectoryDialog) Open() string {
 				panic(r)
 			}
 		}()
-		tret2 = jrt.Cast[string](this.OpenDialog().OrElse(""))
-		tretd3 = true
+		tret650 = jrt.Cast[string](this.OpenDialog().OrElse(""))
+		tretd651 = true
 		return
 	}()
-	_ = tretd3
-	return tret2
+	_ = tretd651
+	return tret650
 }
 
 func (this *DirectoryDialog) OpenDialog() *jrt.Optional {
@@ -169,20 +169,20 @@ func (this *DirectoryDialog) OpenDialog() *jrt.Optional {
 	}
 	this.panel.SetCanCreateDirectories(true)
 	this.panel.SetAllowsMultipleSelection((this.style & MULTI) != 0)
-	var cond4 string
+	var cond652 string
 	if this.title != "" {
-		cond4 = this.title
+		cond652 = this.title
 	} else {
-		cond4 = ""
+		cond652 = ""
 	}
-	this.panel.Impl().SetTitle(cocoa.NSStringStringWith(cond4))
-	var cond5 string
+	this.panel.Impl().SetTitle(cocoa.NSStringStringWith(cond652))
+	var cond653 string
 	if this.message != "" {
-		cond5 = this.message
+		cond653 = this.message
 	} else {
-		cond5 = ""
+		cond653 = ""
 	}
-	this.panel.SetMessage(cocoa.NSStringStringWith(cond5))
+	this.panel.SetMessage(cocoa.NSStringStringWith(cond653))
 	this.panel.SetCanChooseFiles(false)
 	this.panel.SetCanChooseDirectories(true)
 	this.panel.SetTreatsFilePackagesAsDirectories(true)

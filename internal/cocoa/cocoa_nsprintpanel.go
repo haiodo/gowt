@@ -41,25 +41,25 @@ func (this *NSPrintPanel) initNSPrintPanelOverload2(id *id) {
 }
 
 func (this *NSPrintPanel) BeginSheetWithPrintInfo(printInfo *NSPrintInfo, docWindow *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
-	var cond1 int64
+	var cond588 int64
 	if printInfo != (nil) {
-		cond1 = printInfo.Id
+		cond588 = printInfo.Id
 	} else {
-		cond1 = int64(0)
+		cond588 = int64(0)
 	}
-	var cond2 int64
+	var cond589 int64
 	if docWindow != (nil) {
-		cond2 = docWindow.Id
+		cond589 = docWindow.Id
 	} else {
-		cond2 = int64(0)
+		cond589 = int64(0)
 	}
-	var cond3 int64
+	var cond590 int64
 	if delegate != (nil) {
-		cond3 = delegate.Id
+		cond590 = delegate.Id
 	} else {
-		cond3 = int64(0)
+		cond590 = int64(0)
 	}
-	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond1, cond2, cond3, didEndSelector, contextInfo)
+	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond588, cond589, cond590, didEndSelector, contextInfo)
 }
 
 func (this *NSPrintPanel) Options() int64 {
@@ -67,13 +67,13 @@ func (this *NSPrintPanel) Options() int64 {
 }
 
 func (this *NSPrintPanel) RunModalWithPrintInfo(printInfo *NSPrintInfo) int64 {
-	var cond4 int64
+	var cond591 int64
 	if printInfo != (nil) {
-		cond4 = printInfo.Id
+		cond591 = printInfo.Id
 	} else {
-		cond4 = int64(0)
+		cond591 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond4)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond591)
 }
 
 func (this *NSPrintPanel) SetOptions(options int64) {
@@ -82,11 +82,11 @@ func (this *NSPrintPanel) SetOptions(options int64) {
 
 func NSPrintPanelPrintPanel() *NSPrintPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintPanel, OSSel_printPanel)
-	var cond5 *NSPrintPanel
+	var cond592 *NSPrintPanel
 	if result != 0 {
-		cond5 = NewNSPrintPanelOverload1(result)
+		cond592 = NewNSPrintPanelOverload1(result)
 	} else {
-		cond5 = nil
+		cond592 = nil
 	}
-	return cond5
+	return cond592
 }

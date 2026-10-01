@@ -41,47 +41,47 @@ func (this *NSLocale) initNSLocaleOverload2(id *id) {
 }
 
 func (this *NSLocale) DisplayNameForKey(key *id, value *id) *NSString {
-	var cond1 int64
+	var cond360 int64
 	if key != (nil) {
-		cond1 = key.Id
+		cond360 = key.Id
 	} else {
-		cond1 = int64(0)
+		cond360 = int64(0)
 	}
-	var cond2 int64
+	var cond361 int64
 	if value != (nil) {
-		cond2 = value.Id
+		cond361 = value.Id
 	} else {
-		cond2 = int64(0)
+		cond361 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_displayNameForKey_value_, cond1, cond2)
-	var cond3 *NSString
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_displayNameForKey_value_, cond360, cond361)
+	var cond362 *NSString
 	if result != 0 {
-		cond3 = NewNSStringOverload1(result)
+		cond362 = NewNSStringOverload1(result)
 	} else {
-		cond3 = nil
+		cond362 = nil
 	}
-	return cond3
+	return cond362
 }
 
 func (this *NSLocale) InitWithLocaleIdentifier(string_ *NSString) *NSLocale {
-	var cond4 int64
+	var cond363 int64
 	if string_ != (nil) {
-		cond4 = string_.Id
+		cond363 = string_.Id
 	} else {
-		cond4 = int64(0)
+		cond363 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithLocaleIdentifier_, cond4)
-	var cond5 *NSLocale
-	var cond6 *NSLocale
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithLocaleIdentifier_, cond363)
+	var cond364 *NSLocale
+	var cond365 *NSLocale
 	if result != 0 {
-		cond6 = NewNSLocaleOverload1(result)
+		cond365 = NewNSLocaleOverload1(result)
 	} else {
-		cond6 = nil
+		cond365 = nil
 	}
 	if result == this.Id {
-		cond5 = this
+		cond364 = this
 	} else {
-		cond5 = (cond6)
+		cond364 = (cond365)
 	}
-	return cond5
+	return cond364
 }

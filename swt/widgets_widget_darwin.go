@@ -1469,13 +1469,13 @@ func (this *Widget) GetClipboardText() string {
 		return ""
 	}
 	var string_ *cocoa.NSString = pasteboard.StringForType(cocoa.OSNSPasteboardTypeString_)
-	var cond1 string
+	var cond56 string
 	if string_ != (nil) {
-		cond1 = string_.GetString()
+		cond56 = string_.GetString()
 	} else {
-		cond1 = ""
+		cond56 = ""
 	}
-	return cond1
+	return cond56
 }
 
 func (this *Widget) SetClipRegion(view *cocoa.NSView) {
@@ -2203,13 +2203,13 @@ func (this *Widget) FixMnemonic(buffer []uint16) int32 {
 	var i int32 = 0
 	var j int32 = 0
 	for i < int32(len(buffer)) {
-		t3 := i
+		t58 := i
 		i++
-		cond2 := buffer[t3]
-		t4 := j
+		cond57 := buffer[t58]
+		t59 := j
 		j++
-		buffer[t4] = cond2
-		if int32((cond2)) == int32('&') {
+		buffer[t59] = cond57
+		if int32((cond57)) == int32('&') {
 			if i == int32(len(buffer)) {
 				continue
 			}
@@ -2233,13 +2233,13 @@ func (this *Widget) focusRingMaskBoundsForFrame_(id int64, sel int64, cellFrame 
 
 func (this *Widget) GetData() any {
 	this.CheckWidget()
-	var cond5 any
+	var cond60 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond5 = (this.data.([]any))[0]
+		cond60 = (this.data.([]any))[0]
 	} else {
-		cond5 = this.data
+		cond60 = this.data
 	}
-	return cond5
+	return cond60
 }
 
 func (this *Widget) GetDataKey(key string) any {

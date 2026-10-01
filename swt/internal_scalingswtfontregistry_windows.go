@@ -32,9 +32,9 @@ func (this *ScalingSWTFontRegistry) initScalingSWTFontRegistry(device *Device) {
 	this.fontsKeyMap = jrt.NewMap()
 	this.fontHandlesKeyMap = jrt.NewMap()
 	this.device = device
-	inner1 := newScalingSWTFontRegistryScaledSystemFontContainer()
-	inner1.this_0 = this
-	this.systemFontContainer = upcastScalingSWTFontRegistry_ScaledSystemFontContainerToScalingSWTFontRegistry_ScaledFontContainer(inner1)
+	inner951 := newScalingSWTFontRegistryScaledSystemFontContainer()
+	inner951.this_0 = this
+	this.systemFontContainer = upcastScalingSWTFontRegistry_ScaledSystemFontContainerToScalingSWTFontRegistry_ScaledFontContainer(inner951)
 }
 
 func (this *ScalingSWTFontRegistry) GetSystemFont(zoom int32) *Font {
@@ -47,9 +47,9 @@ func (this *ScalingSWTFontRegistry) GetFont(fontData *FontData, zoom int32) *Fon
 		container = jrt.Cast[*ScalingSWTFontRegistry_ScaledFontContainer](this.fontsKeyMap.Get(fontData))
 	} else {
 		var clonedFontData *FontData = NewFontDataOverload2(fontData)
-		inner2 := newScalingSWTFontRegistryScaledCustomFontContainer(clonedFontData)
-		inner2.this_0 = this
-		container = upcastScalingSWTFontRegistry_ScaledCustomFontContainerToScalingSWTFontRegistry_ScaledFontContainer(inner2)
+		inner952 := newScalingSWTFontRegistryScaledCustomFontContainer(clonedFontData)
+		inner952.this_0 = this
+		container = upcastScalingSWTFontRegistry_ScaledCustomFontContainerToScalingSWTFontRegistry_ScaledFontContainer(inner952)
 	}
 	return container.GetScaledFont(zoom)
 }
@@ -211,8 +211,8 @@ func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) createFont_(zoom i
 }
 
 func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) dispose_() {
-	for _, elem3 := range this.scaledFonts.Values().ToArray() {
-		font := jrt.Cast[*Font](elem3)
+	for _, elem953 := range this.scaledFonts.Values().ToArray() {
+		font := jrt.Cast[*Font](elem953)
 		font.impl.dispose_()
 	}
 }

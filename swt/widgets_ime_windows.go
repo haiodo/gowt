@@ -113,9 +113,9 @@ func (this *IME) GetDisplayAttribute(langid int16, attInfo int32) *win32.TF_DISP
 					var pEnum *win32.IEnumTfDisplayAttributeInfo = win32.NewIEnumTfDisplayAttributeInfo(ppv[0])
 					var tempPda *win32.TF_DISPLAYATTRIBUTE = win32.NewTF_DISPLAYATTRIBUTE()
 					for {
-						cond1 := pEnum.Next(1, ppv, nil)
-						hr = cond1
-						if !((cond1) == win32.OSS_OK) {
+						cond965 := pEnum.Next(1, ppv, nil)
+						hr = cond965
+						if !((cond965) == win32.OSS_OK) {
 							break
 						}
 						var pDispInfo *win32.ITfDisplayAttributeInfo = win32.NewITfDisplayAttributeInfo(ppv[0])
@@ -238,13 +238,13 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 				event.Detail = COMPOSITION_CHANGED
 				event.Start = this.startOffset
 				event.End = this.startOffset + jrt.StringLength(this.text)
-				var cond2 string
+				var cond966 string
 				if buffer != (nil) {
-					cond2 = string(utf16.Decode(buffer))
+					cond966 = string(utf16.Decode(buffer))
 				} else {
-					cond2 = ""
+					cond966 = ""
 				}
-				this.text = cond2
+				this.text = cond966
 				event.Text = this.text
 				this.commitCount = jrt.StringLength(this.text)
 				this.SendEventEventTypeEvent(ImeComposition, event)
@@ -374,13 +374,13 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 		event.Detail = COMPOSITION_CHANGED
 		event.Start = this.startOffset
 		event.End = end
-		var cond3 string
+		var cond967 string
 		if buffer != (nil) {
-			cond3 = string(utf16.Decode(buffer))
+			cond967 = string(utf16.Decode(buffer))
 		} else {
-			cond3 = ""
+			cond967 = ""
 		}
-		this.text = cond3
+		this.text = cond967
 		event.Text = this.text
 		this.SendEventEventTypeEvent(ImeComposition, event)
 		if jrt.StringLength(this.text) == 0 {
@@ -393,25 +393,25 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 }
 
 func (this *IME) WM_IME_COMPOSITION_START(wParam int64, lParam int64) *win32.LRESULT {
-	var cond4 *win32.LRESULT
+	var cond968 *win32.LRESULT
 	if this.IsInlineEnabled() {
-		cond4 = win32.LRESULTONE
+		cond968 = win32.LRESULTONE
 	} else {
-		cond4 = nil
+		cond968 = nil
 	}
-	return cond4
+	return cond968
 }
 
 func (this *IME) WM_IME_ENDCOMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 	this.startOffset = -1
 	this.caretOffset = 0
-	var cond5 *win32.LRESULT
+	var cond969 *win32.LRESULT
 	if this.IsInlineEnabled() {
-		cond5 = win32.LRESULTONE
+		cond969 = win32.LRESULTONE
 	} else {
-		cond5 = nil
+		cond969 = nil
 	}
-	return cond5
+	return cond969
 }
 
 func (this *IME) WM_KEYDOWN(wParam int64, lParam int64) *win32.LRESULT {

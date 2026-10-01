@@ -471,13 +471,13 @@ func (this *TableTab) getMethodNames_() []string {
 }
 
 func (this *TableTab) setMethodName_(methodRoot string) string {
-	var cond1 string
+	var cond26 string
 	if methodRoot == "SelectionIndex" {
-		cond1 = "setSelection"
+		cond26 = "setSelection"
 	} else {
-		cond1 = fmt.Sprintf("set%s", methodRoot)
+		cond26 = fmt.Sprintf("set%s", methodRoot)
 	}
-	return cond1
+	return cond26
 }
 
 func (this *TableTab) PackColumns() {

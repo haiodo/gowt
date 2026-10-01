@@ -89,19 +89,19 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_ConstructorLorg_eclipse_swt
 
 func (this *Test_org_eclipse_swt_widgets_Shell) Test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	this.listenerCalled = false
-	anon1 := &Test_org_eclipse_swt_widgets_ShellAnon1{}
-	anon1.fnShellActivated = func(e *swt.ShellEvent) {
+	anon69 := &Test_org_eclipse_swt_widgets_ShellAnon1{}
+	anon69.fnShellActivated = func(e *swt.ShellEvent) {
 		this.listenerCalled = true
 	}
-	anon1.fnShellClosed = func(e *swt.ShellEvent) {
+	anon69.fnShellClosed = func(e *swt.ShellEvent) {
 	}
-	anon1.fnShellDeactivated = func(e *swt.ShellEvent) {
+	anon69.fnShellDeactivated = func(e *swt.ShellEvent) {
 	}
-	anon1.fnShellDeiconified = func(e *swt.ShellEvent) {
+	anon69.fnShellDeiconified = func(e *swt.ShellEvent) {
 	}
-	anon1.fnShellIconified = func(e *swt.ShellEvent) {
+	anon69.fnShellIconified = func(e *swt.ShellEvent) {
 	}
-	var listener swt.ShellListener = anon1
+	var listener swt.ShellListener = anon69
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.shell.AddShellListener(nil)
 	})
@@ -507,13 +507,13 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_setBounds() {
 				testShell.SetBoundsRect(bounds)
 				this.LogUnlessEquals(log, fmt.Sprintf("%d.1: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.Open()
-				var cond2 any
+				var cond70 any
 				if Test_org_eclipse_swt_widgets_ShellIS_GTK_BUG_445900 {
-					cond2 = os.Stdout
+					cond70 = os.Stdout
 				} else {
-					cond2 = log
+					cond70 = log
 				}
-				this.LogUnlessEquals(cond2, fmt.Sprintf("%d.2: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
+				this.LogUnlessEquals(cond70, fmt.Sprintf("%d.2: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.SetBoundsRect(bounds)
 				this.LogUnlessEquals(log, fmt.Sprintf("%d.3: style 0x%s", i, strconv.FormatUint(uint64(uint32(styles[i])), 16)), bounds, testShell.GetBounds())
 				testShell.SetBoundsRect(bounds2)
@@ -643,16 +643,16 @@ func (this *Test_org_eclipse_swt_widgets_Shell) AssertShellProperlySized(shellLi
 		tolerance = 0
 	}
 	var actualSize *swt.Point = shell.GetSize()
-	abs3 := expectedSize.X - actualSize.X
-	if abs3 < 0 {
-		abs3 = -abs3
+	abs71 := expectedSize.X - actualSize.X
+	if abs71 < 0 {
+		abs71 = -abs71
 	}
-	junit.AssertTrue(abs3 <= tolerance && func() bool {
-		abs4 := expectedSize.Y - actualSize.Y
-		if abs4 < 0 {
-			abs4 = -abs4
+	junit.AssertTrue(abs71 <= tolerance && func() bool {
+		abs72 := expectedSize.Y - actualSize.Y
+		if abs72 < 0 {
+			abs72 = -abs72
 		}
-		return abs4 <= tolerance
+		return abs72 <= tolerance
 	}(), fmt.Sprintf("%s%v ± %d, actual size: %v)", fmt.Sprintf("Shell is not sized correctly (expected size: "), expectedSize, tolerance, actualSize))
 }
 
@@ -688,7 +688,7 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Open() {
 		}
 		this.impl.setUp_()
 		var results []string = jrt.ToSlice[string](events)
-		junit.AssertArrayEquals(temp, results)
+		junit.AssertArrayEquals(upcastArrstringToany(temp), upcastArrstringToany(results))
 	}
 }
 
@@ -708,13 +708,13 @@ func (this *Test_org_eclipse_swt_widgets_Shell) Test_consistency_Dispose() {
 	this.CreateShell()
 	var button *swt.Button = swt.NewButton(upcastswtShellToswtComposite(this.testShell), swt.PUSH)
 	button.SetText("dispose")
-	anon5 := &Test_org_eclipse_swt_widgets_ShellAnon2{}
-	anon5.SelectionAdapter = swt.NewSelectionAdapter()
-	anon5.fnWidgetSelected = func(se *swt.SelectionEvent) {
+	anon73 := &Test_org_eclipse_swt_widgets_ShellAnon2{}
+	anon73.SelectionAdapter = swt.NewSelectionAdapter()
+	anon73.fnWidgetSelected = func(se *swt.SelectionEvent) {
 		button.Dispose()
 		this.testShell.Dispose()
 	}
-	button.AddSelectionListener(anon5)
+	button.AddSelectionListener(anon73)
 	var events *jrt.List = jrt.NewList()
 	this.ConsistencyPrePackShellShell(this.testShell)
 	var pt *swt.Point = button.GetLocation()

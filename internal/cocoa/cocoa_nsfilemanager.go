@@ -41,59 +41,59 @@ func (this *NSFileManager) initNSFileManagerOverload2(id *id) {
 }
 
 func (this *NSFileManager) EnumeratorAtPath(path *NSString) *NSDirectoryEnumerator {
-	var cond1 int64
+	var cond256 int64
 	if path != (nil) {
-		cond1 = path.Id
+		cond256 = path.Id
 	} else {
-		cond1 = int64(0)
+		cond256 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_enumeratorAtPath_, cond1)
-	var cond2 *NSDirectoryEnumerator
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_enumeratorAtPath_, cond256)
+	var cond257 *NSDirectoryEnumerator
 	if result != 0 {
-		cond2 = NewNSDirectoryEnumeratorOverload1(result)
+		cond257 = NewNSDirectoryEnumeratorOverload1(result)
 	} else {
-		cond2 = nil
+		cond257 = nil
 	}
-	return cond2
+	return cond257
 }
 
 func (this *NSFileManager) FileExistsAtPath(path *NSString) bool {
-	var cond3 int64
+	var cond258 int64
 	if path != (nil) {
-		cond3 = path.Id
+		cond258 = path.Id
 	} else {
-		cond3 = int64(0)
+		cond258 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_fileExistsAtPath_, cond3)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_fileExistsAtPath_, cond258)
 }
 
 func (this *NSFileManager) FileExistsAtPathPathIsDirectory(path *NSString, isDirectory int64) bool {
-	var cond4 int64
+	var cond259 int64
 	if path != (nil) {
-		cond4 = path.Id
+		cond259 = path.Id
 	} else {
-		cond4 = int64(0)
+		cond259 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_fileExistsAtPath_isDirectory_, cond4, isDirectory)
+	return OSObjc_msgSend_boolOverload8(this.Id, OSSel_fileExistsAtPath_isDirectory_, cond259, isDirectory)
 }
 
 func (this *NSFileManager) IsExecutableFileAtPath(path *NSString) bool {
-	var cond5 int64
+	var cond260 int64
 	if path != (nil) {
-		cond5 = path.Id
+		cond260 = path.Id
 	} else {
-		cond5 = int64(0)
+		cond260 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isExecutableFileAtPath_, cond5)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_isExecutableFileAtPath_, cond260)
 }
 
 func NSFileManagerDefaultManager() *NSFileManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSFileManager, OSSel_defaultManager)
-	var cond6 *NSFileManager
+	var cond261 *NSFileManager
 	if result != 0 {
-		cond6 = NewNSFileManagerOverload1(result)
+		cond261 = NewNSFileManagerOverload1(result)
 	} else {
-		cond6 = nil
+		cond261 = nil
 	}
-	return cond6
+	return cond261
 }

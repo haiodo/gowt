@@ -175,13 +175,13 @@ func (this *ToolTip) GetSize(maxWidth int32) *Point {
 	}
 	var messageTrim int32 = 2*ToolTipINSET + 2*ToolTipBORDER + 2*ToolTipPADDING
 	var hasImage bool = this.layoutText != (nil) && (this.style&BALLOON) != 0 && (this.style&(ICON_ERROR|ICON_INFORMATION|ICON_WARNING)) != 0
-	var cond1 int32
+	var cond622 int32
 	if hasImage {
-		cond1 = ToolTipIMAGE_SIZE
+		cond622 = ToolTipIMAGE_SIZE
 	} else {
-		cond1 = 0
+		cond622 = 0
 	}
-	var textTrim int32 = messageTrim + (cond1)
+	var textTrim int32 = messageTrim + (cond622)
 	var width int32 = int32(math.Min(float64(maxWidth), float64(int32(math.Max(float64(textWidth+textTrim), float64(messageWidth+messageTrim))))))
 	var textHeight int32 = 0
 	var messageHeight int32 = 0
@@ -202,13 +202,13 @@ func (this *ToolTip) GetSize(maxWidth int32) *Point {
 
 func (this *ToolTip) GetMessage() string {
 	this.CheckWidget()
-	var cond2 string
+	var cond623 string
 	if this.layoutMessage != (nil) {
-		cond2 = this.layoutMessage.GetText()
+		cond623 = this.layoutMessage.GetText()
 	} else {
-		cond2 = ""
+		cond623 = ""
 	}
-	return cond2
+	return cond623
 }
 
 func (this *ToolTip) GetParent() *Shell {
@@ -218,13 +218,13 @@ func (this *ToolTip) GetParent() *Shell {
 
 func (this *ToolTip) GetText() string {
 	this.CheckWidget()
-	var cond3 string
+	var cond624 string
 	if this.layoutText != (nil) {
-		cond3 = this.layoutText.GetText()
+		cond624 = this.layoutText.GetText()
 	} else {
-		cond3 = ""
+		cond624 = ""
 	}
-	return cond3
+	return cond624
 }
 
 func (this *ToolTip) GetVisible() bool {

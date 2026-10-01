@@ -68,9 +68,9 @@ func (this *TabItem) _setText(index int32, string_ string) {
 			var j int32 = 0
 			for i = 0; i < length; i++ {
 				if int32(text[i]) != int32('&') {
-					t1 := j
+					t700 := j
 					j++
-					text[t1] = text[i]
+					text[t700] = text[i]
 				}
 			}
 			if j < i {

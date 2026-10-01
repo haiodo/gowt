@@ -140,13 +140,13 @@ func (this *Combo) ClearSelection() {
 }
 
 func (this *Combo) setObjectValue_(id int64, sel int64, arg0 int64) {
-	var cond1 int64
+	var cond563 int64
 	if this.ignoreSetObject {
-		cond1 = arg0
+		cond563 = arg0
 	} else {
-		cond1 = this.CreateAttributedString(this.text).Id
+		cond563 = this.CreateAttributedString(this.text).Id
 	}
-	this.Composite.setObjectValue_(id, sel, cond1)
+	this.Composite.setObjectValue_(id, sel, cond563)
 }
 
 func (this *Combo) comboBoxSelectionDidChange_(id int64, sel int64, notification int64) {
@@ -304,7 +304,7 @@ func (this *Combo) Cut() {
 		}
 	}
 	var buffer []uint16 = make([]uint16, jrt.StringLength(oldText))
-	copy(buffer, utf16.Encode([]rune(oldText)))
+	jrt.GetChars(oldText, 0, int32(len(buffer)), buffer, 0)
 	this.CopyToClipboard(buffer)
 	this.SetTextStringNotify(fmt.Sprintf("%s%s%s", leftText, newText, rightText), false)
 	start += jrt.StringLength(newText)
@@ -393,13 +393,13 @@ func (this *Combo) focusRingMaskBoundsForFrame_(id int64, sel int64, cellFrame c
 
 func (this *Combo) GetCaretPosition() int32 {
 	this.CheckWidget()
-	var cond2 int32
+	var cond564 int32
 	if this.selectionRange != (cocoa.NSRange{}) {
-		cond2 = int32(this.selectionRange.Location)
+		cond564 = int32(this.selectionRange.Location)
 	} else {
-		cond2 = 0
+		cond564 = 0
 	}
-	return cond2
+	return cond564
 }
 
 func (this *Combo) GetCaretLocation() *Point {
@@ -1042,7 +1042,7 @@ func (this *Combo) SetTextStringNotify(string_ string, notify bool) {
 		}
 	} else {
 		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
-		copy(buffer, utf16.Encode([]rune(string_)))
+		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
 		this.text = string(utf16.Decode(buffer[0 : 0+int32(len(buffer))]))
 		(castcocoaNSViewTococoaNSComboBox(this.View)).Cell().SetAttributedStringValue(this.CreateAttributedString(this.text))
 		if notify {
@@ -1096,7 +1096,7 @@ func (this *Combo) shouldChangeTextInRange_replacementString_(id int64, sel int6
 				}
 			}
 			var buffer []uint16 = make([]uint16, length)
-			copy(buffer, utf16.Encode([]rune(newText)))
+			jrt.GetChars(newText, 0, int32(len(buffer)), buffer, 0)
 			var nsstring *cocoa.NSString = cocoa.NSStringStringWithCharacters(buffer, int64(int32(len(buffer))))
 			var fieldEditor *cocoa.NSText = (castcocoaNSViewTococoaNSTextField(this.View)).CurrentEditor()
 			fieldEditor.ReplaceCharactersInRange(fieldEditor.SelectedRange(), nsstring)
@@ -1107,7 +1107,7 @@ func (this *Combo) shouldChangeTextInRange_replacementString_(id int64, sel int6
 	}
 	if result {
 		var chars []uint16 = make([]uint16, jrt.StringLength(this.text))
-		copy(chars, utf16.Encode([]rune(this.text)))
+		jrt.GetChars(this.text, 0, int32(len(chars)), chars, 0)
 		var mutable *cocoa.NSMutableString = castcocoaNSMutableStringTococoaNSMutableString(cocoa.NSMutableStringStringWithCharacters(chars, int64(int32(len(chars)))))
 		mutable.ReplaceCharactersInRange(range_, cocoa.NewNSStringOverload1(replacementString))
 		this.text = mutable.GetString()

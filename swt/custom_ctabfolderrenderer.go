@@ -421,9 +421,9 @@ func (this *CTabFolderRenderer) DrawBackground(gcLike GCLike, boundsLike Rectang
 		image = nil
 	}
 	var colors []*Color
-	b1 := selected
-	b2 := this.parent.ShouldHighlight()
-	if b1 && b2 {
+	b735 := selected
+	b736 := this.parent.ShouldHighlight()
+	if b735 && b736 {
 		colors = this.parent.selectionGradientColors
 	} else {
 		colors = this.parent.gradientColors
@@ -481,13 +481,13 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeSelected(gcLike GCLike, sha
 	}
 	var size *Point = this.parent.impl.getSize_()
 	var width int32 = size.X
-	var cond3 int32
+	var cond737 int32
 	if (this.parent.impl.getStyle_() & FLAT) != 0 {
-		cond3 = 1
+		cond737 = 1
 	} else {
-		cond3 = 3
+		cond737 = 3
 	}
-	var height int32 = this.parent.tabHeight + (cond3)
+	var height int32 = this.parent.tabHeight + (cond737)
 	var x int32 = 0
 	var borderLeft int32
 	if this.parent.borderVisible {
@@ -728,13 +728,13 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 				if selectedIndex == -1 && this.parent.gradientColors != (nil) && int32(len(this.parent.gradientColors)) > 1 && !this.parent.gradientVertical {
 					this.DrawBackgroundGcShapeSelected(gc, shape, false)
 				} else {
-					var cond4 *Color
+					var cond738 *Color
 					if selectedIndex != -1 && this.parent.ShouldHighlight() {
-						cond4 = this.parent.selectionBackground
+						cond738 = this.parent.selectionBackground
 					} else {
-						cond4 = this.parent.GetBackground()
+						cond738 = this.parent.GetBackground()
 					}
-					gc.SetBackground(cond4)
+					gc.SetBackground(cond738)
 					gc.FillPolygon(shape)
 				}
 			}
@@ -825,13 +825,13 @@ func (this *CTabFolderRenderer) DrawCloseGcCloseRectCloseImageStateShowDirtyIndi
 	var lineLength int32 = 8
 	var x int32 = closeRect.X + int32(math.Max(float64(1), float64((closeRect.Width-lineLength)/2)))
 	var y int32 = closeRect.Y + int32(math.Max(float64(1), float64((closeRect.Height-lineLength)/2)))
-	var cond5 int32
+	var cond739 int32
 	if this.parent.onBottom {
-		cond5 = -1
+		cond739 = -1
 	} else {
-		cond5 = 1
+		cond739 = 1
 	}
-	y += cond5
+	y += cond739
 	var originalLineWidth int32 = gc.GetLineWidth()
 	var originalForeground *Color = gc.GetForeground()
 	switch closeImageState & (HOT | SELECTED | BACKGROUND) {
@@ -884,13 +884,13 @@ func (this *CTabFolderRenderer) DrawDirtyIndicator(gcLike GCLike, closeRectLike 
 	var originalAlpha int32 = gc.GetAlpha()
 	var originalAntialias int32 = gc.GetAntialias()
 	gc.SetBackground(gc.GetForeground())
-	var cond6 int32
+	var cond740 int32
 	if selected {
-		cond6 = 190
+		cond740 = 190
 	} else {
-		cond6 = 140
+		cond740 = 140
 	}
-	gc.SetAlpha(cond6)
+	gc.SetAlpha(cond740)
 	gc.SetAntialias(ON)
 	gc.FillOval(x, y, diameter, diameter)
 	gc.SetAntialias(originalAntialias)
@@ -1247,13 +1247,13 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 		if this.parent.selectionGradientColors != (nil) && !this.parent.selectionGradientVertical {
 			this.DrawBackgroundGcShapeSelected(gc, shape, this.parent.ShouldHighlight())
 		} else {
-			var cond7 *Color
+			var cond741 *Color
 			if this.parent.ShouldHighlight() {
-				cond7 = this.parent.selectionBackground
+				cond741 = this.parent.selectionBackground
 			} else {
-				cond7 = this.parent.GetBackground()
+				cond741 = this.parent.GetBackground()
 			}
-			gc.SetBackground(cond7)
+			gc.SetBackground(cond741)
 			gc.FillRectangle(xx, yy, ww, hh)
 		}
 		if this.parent.single {
@@ -1277,88 +1277,88 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			shape = make([]int32, 12)
 			if this.parent.onBottom {
 				var index int32 = 0
-				t8 := index
+				t742 := index
 				index++
-				shape[t8] = x
-				t9 := index
+				shape[t742] = x
+				t743 := index
 				index++
-				shape[t9] = y - 1
-				t10 := index
+				shape[t743] = y - 1
+				t744 := index
 				index++
-				shape[t10] = x
-				t11 := index
+				shape[t744] = x
+				t745 := index
 				index++
-				shape[t11] = y - 1
-				t12 := index
+				shape[t745] = y - 1
+				t746 := index
 				index++
-				shape[t12] = x
-				t13 := index
+				shape[t746] = x
+				t747 := index
 				index++
-				shape[t13] = y + height
+				shape[t747] = y + height
 				if borderLeft == 0 && itemIndex == this.parent.firstIndex {
 					shape[index-2] += x
 					shape[index-1] += y + height
 				}
-				t14 := index
+				t748 := index
 				index++
-				shape[t14] = rightEdge - 1
-				t15 := index
+				shape[t748] = rightEdge - 1
+				t749 := index
 				index++
-				shape[t15] = y + height - 1
-				t16 := index
+				shape[t749] = y + height - 1
+				t750 := index
 				index++
-				shape[t16] = rightEdge - 1
-				t17 := index
+				shape[t750] = rightEdge - 1
+				t751 := index
 				index++
-				shape[t17] = y - 1
-				t18 := index
+				shape[t751] = y - 1
+				t752 := index
 				index++
-				shape[t18] = rightEdge - 1
-				t19 := index
+				shape[t752] = rightEdge - 1
+				t753 := index
 				index++
-				shape[t19] = y - 1
+				shape[t753] = y - 1
 			} else {
 				var index int32 = 0
-				t20 := index
+				t754 := index
 				index++
-				shape[t20] = x
-				t21 := index
+				shape[t754] = x
+				t755 := index
 				index++
-				shape[t21] = y + height + 1
-				t22 := index
+				shape[t755] = y + height + 1
+				t756 := index
 				index++
-				shape[t22] = x
-				t23 := index
+				shape[t756] = x
+				t757 := index
 				index++
-				shape[t23] = y + height + 1
-				t24 := index
+				shape[t757] = y + height + 1
+				t758 := index
 				index++
-				shape[t24] = x
-				t25 := index
+				shape[t758] = x
+				t759 := index
 				index++
-				shape[t25] = y
+				shape[t759] = y
 				if borderLeft == 0 && itemIndex == this.parent.firstIndex {
 					shape[index-2] += x
 					shape[index-1] += y
 				}
-				t26 := index
+				t760 := index
 				index++
-				shape[t26] = rightEdge - 1
-				t27 := index
+				shape[t760] = rightEdge - 1
+				t761 := index
 				index++
-				shape[t27] = y
-				t28 := index
+				shape[t761] = y
+				t762 := index
 				index++
-				shape[t28] = rightEdge - 1
-				t29 := index
+				shape[t762] = rightEdge - 1
+				t763 := index
 				index++
-				shape[t29] = y + height + 1
-				t30 := index
+				shape[t763] = y + height + 1
+				t764 := index
 				index++
-				shape[t30] = rightEdge - 1
-				t31 := index
+				shape[t764] = rightEdge - 1
+				t765 := index
 				index++
-				shape[t31] = y + height + 1
+				shape[t765] = y + height + 1
 			}
 			var clipping *Rectangle = gc.GetClipping()
 			var clipBounds *Rectangle = item.GetBounds()
@@ -1395,13 +1395,13 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			this.DrawHighlight(gc, bounds, state, rightEdge)
 			if this.parent.selectionHighlightBarThickness > 0 {
 				var previousColor *Color = gc.GetBackground()
-				var cond32 int32
+				var cond766 int32
 				if this.parent.ShouldHighlight() {
-					cond32 = COLOR_LIST_SELECTION
+					cond766 = COLOR_LIST_SELECTION
 				} else {
-					cond32 = COLOR_WIDGET_DISABLED_FOREGROUND
+					cond766 = COLOR_WIDGET_DISABLED_FOREGROUND
 				}
-				gc.SetBackground(item.GetDisplay().impl.getSystemColor_(cond32))
+				gc.SetBackground(item.GetDisplay().impl.getSystemColor_(cond766))
 				var highlightShape []int32 = jrt.CopyOf(shape, int32(len(shape)))
 				var thickness int32 = this.parent.selectionHighlightBarThickness
 				var onBottom bool = this.parent.onBottom
@@ -1459,13 +1459,13 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			if imageBounds.Width < maxImageWidth {
 				var imageX int32 = xDraw
 				var imageY int32 = y + (height-imageBounds.Height)/2
-				var cond33 int32
+				var cond767 int32
 				if this.parent.onBottom {
-					cond33 = -1
+					cond767 = -1
 				} else {
-					cond33 = 1
+					cond767 = 1
 				}
-				imageY += cond33
+				imageY += cond767
 				gc.DrawImage(image, imageX, imageY)
 				xDraw += imageBounds.Width + CTabFolderRendererINTERNAL_SPACING
 			}
@@ -1477,33 +1477,33 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 		}
 		if textWidth > 0 {
 			var gcFont *Font = gc.GetFont()
-			var cond34 *Font
+			var cond768 *Font
 			if item.font == (nil) {
-				cond34 = this.parent.GetFont()
+				cond768 = this.parent.GetFont()
 			} else {
-				cond34 = item.font
+				cond768 = item.font
 			}
-			gc.SetFont(cond34)
+			gc.SetFont(cond768)
 			if item.shortenedText == "" || item.shortenedTextWidth != textWidth {
 				item.shortenedText = this.ShortenText(gc, item.impl.getText_(), textWidth)
 				item.shortenedTextWidth = textWidth
 			}
 			var extent *Point = gc.TextExtentStringFlags(item.shortenedText, CTabFolderRendererFLAGS)
 			var textY int32 = y + (height-extent.Y)/2
-			var cond35 int32
+			var cond769 int32
 			if this.parent.onBottom {
-				cond35 = -1
+				cond769 = -1
 			} else {
-				cond35 = 1
+				cond769 = 1
 			}
-			textY += cond35
-			var cond36 *Color
+			textY += cond769
+			var cond770 *Color
 			if item.selectionForeground == (nil) {
-				cond36 = this.parent.GetSelectionForeground()
+				cond770 = this.parent.GetSelectionForeground()
 			} else {
-				cond36 = item.selectionForeground
+				cond770 = item.selectionForeground
 			}
-			gc.SetForeground(cond36)
+			gc.SetForeground(cond770)
 			gc.DrawTextStringXYFlags(item.shortenedText, xDraw, textY, CTabFolderRendererFLAGS)
 			gc.SetFont(gcFont)
 			if this.parent.impl.isFocusControl_() {
@@ -1608,13 +1608,13 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 			if selectedIndex == -1 && this.parent.gradientColors != (nil) && int32(len(this.parent.gradientColors)) > 1 && !this.parent.gradientVertical {
 				this.DrawBackgroundGcShapeSelected(gc, shape, false)
 			} else {
-				var cond37 *Color
+				var cond771 *Color
 				if selectedIndex != -1 && this.parent.ShouldHighlight() {
-					cond37 = this.parent.selectionBackground
+					cond771 = this.parent.selectionBackground
 				} else {
-					cond37 = this.parent.GetBackground()
+					cond771 = this.parent.GetBackground()
 				}
-				gc.SetBackground(cond37)
+				gc.SetBackground(cond771)
 				gc.FillPolygon(shape)
 			}
 		}
@@ -1636,62 +1636,62 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 	var shape []int32 = make([]int32, 8)
 	if this.parent.onBottom {
 		var index int32 = 0
-		t38 := index
+		t772 := index
 		index++
-		shape[t38] = x
-		t39 := index
+		shape[t772] = x
+		t773 := index
 		index++
-		shape[t39] = y - highlight_header
-		t40 := index
+		shape[t773] = y - highlight_header
+		t774 := index
 		index++
-		shape[t40] = x
-		t41 := index
+		shape[t774] = x
+		t775 := index
 		index++
-		shape[t41] = y + height
+		shape[t775] = y + height
 		if borderLeft == 0 {
 			shape[index-1] += 1
 		}
-		t42 := index
+		t776 := index
 		index++
-		shape[t42] = x + width
-		t43 := index
+		shape[t776] = x + width
+		t777 := index
 		index++
-		shape[t43] = y + height
+		shape[t777] = y + height
 		if borderLeft == 0 {
 			shape[index-1] += 1
 		}
-		t44 := index
+		t778 := index
 		index++
-		shape[t44] = x + width
-		t45 := index
+		shape[t778] = x + width
+		t779 := index
 		index++
-		shape[t45] = y - highlight_header
+		shape[t779] = y - highlight_header
 	} else {
 		var index int32 = 0
-		t46 := index
+		t780 := index
 		index++
-		shape[t46] = x
-		t47 := index
+		shape[t780] = x
+		t781 := index
 		index++
-		shape[t47] = y + height + highlight_header + 1
-		t48 := index
+		shape[t781] = y + height + highlight_header + 1
+		t782 := index
 		index++
-		shape[t48] = x
-		t49 := index
+		shape[t782] = x
+		t783 := index
 		index++
-		shape[t49] = y
-		t50 := index
+		shape[t783] = y
+		t784 := index
 		index++
-		shape[t50] = x + width
-		t51 := index
+		shape[t784] = x + width
+		t785 := index
 		index++
-		shape[t51] = y
-		t52 := index
+		shape[t785] = y
+		t786 := index
 		index++
-		shape[t52] = x + width
-		t53 := index
+		shape[t786] = x + width
+		t787 := index
 		index++
-		shape[t53] = y + height + highlight_header + 1
+		shape[t787] = y + height + highlight_header + 1
 	}
 	var single bool = this.parent.single
 	var bkSelected bool = single && selectedIndex != -1
@@ -1759,13 +1759,13 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 				var imageX int32 = xDraw
 				var imageHeight int32 = imageBounds.Height
 				var imageY int32 = y + (height-imageHeight)/2
-				var cond54 int32
+				var cond788 int32
 				if this.parent.onBottom {
-					cond54 = -1
+					cond788 = -1
 				} else {
-					cond54 = 1
+					cond788 = 1
 				}
-				imageY += cond54
+				imageY += cond788
 				var imageWidth int32 = imageBounds.Width * imageHeight / imageBounds.Height
 				gc.DrawImageImageDestXDestYDestWidthDestHeight(image, imageX, imageY, imageWidth, imageHeight)
 				xDraw += imageWidth + CTabFolderRendererINTERNAL_SPACING
@@ -1778,33 +1778,33 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 		}
 		if textWidth > 0 {
 			var gcFont *Font = gc.GetFont()
-			var cond55 *Font
+			var cond789 *Font
 			if item.font == (nil) {
-				cond55 = this.parent.GetFont()
+				cond789 = this.parent.GetFont()
 			} else {
-				cond55 = item.font
+				cond789 = item.font
 			}
-			gc.SetFont(cond55)
+			gc.SetFont(cond789)
 			if item.shortenedText == "" || item.shortenedTextWidth != textWidth {
 				item.shortenedText = this.ShortenText(gc, item.impl.getText_(), textWidth)
 				item.shortenedTextWidth = textWidth
 			}
 			var extent *Point = gc.TextExtentStringFlags(item.shortenedText, CTabFolderRendererFLAGS)
 			var textY int32 = y + (height-extent.Y)/2
-			var cond56 int32
+			var cond790 int32
 			if this.parent.onBottom {
-				cond56 = -1
+				cond790 = -1
 			} else {
-				cond56 = 1
+				cond790 = 1
 			}
-			textY += cond56
-			var cond57 *Color
+			textY += cond790
+			var cond791 *Color
 			if item.foreground == (nil) {
-				cond57 = this.parent.impl.getForeground_()
+				cond791 = this.parent.impl.getForeground_()
 			} else {
-				cond57 = item.foreground
+				cond791 = item.foreground
 			}
-			gc.SetForeground(cond57)
+			gc.SetForeground(cond791)
 			gc.DrawTextStringXYFlags(item.shortenedText, xDraw, textY, CTabFolderRendererFLAGS)
 			gc.SetFont(gcFont)
 		}
@@ -1875,11 +1875,11 @@ func (this *CTabFolderRenderer) ShortenTextGcTextWidthEllipses(gcLike GCLike, te
 		end = layout.GetPreviousOffset(end, MOVEMENT_CLUSTER)
 	}
 	layout.impl.dispose_()
-	var cond58 string
+	var cond792 string
 	if end == 0 {
-		cond58 = jrt.Substring(text, 0, 1)
+		cond792 = jrt.Substring(text, 0, 1)
 	} else {
-		cond58 = fmt.Sprintf("%s%s", text, ellipses)
+		cond792 = fmt.Sprintf("%s%s", text, ellipses)
 	}
-	return cond58
+	return cond792
 }

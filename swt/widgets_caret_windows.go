@@ -504,8 +504,8 @@ func (this *Caret) SetVisible(visible bool) {
 	}
 }
 
-func (this *Caret) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Widget.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *Caret) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Widget.handleDPIChange_(event, scalingFactor)
 	var image *Image = this.GetImage()
 	if image != (nil) {
 		this.SetImage(image)

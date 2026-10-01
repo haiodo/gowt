@@ -311,11 +311,11 @@ func (this *TreeColumn) setImageOnItem_(image *Image) {
 	}
 	this.Item.setImageOnItem_(image)
 	if this.parent.sortColumn != this || this.parent.sortDirection != NONE {
-		this.SetImageImageSortRightImageSortRight(image, false, false)
+		this.SetImageImageSortRight(image, false, false)
 	}
 }
 
-func (this *TreeColumn) SetImageImageSortRightImageSortRight(imageLike ImageLike, sort bool, right bool) {
+func (this *TreeColumn) SetImageImageSortRight(imageLike ImageLike, sort bool, right bool) {
 	var image *Image
 	if imageLike != nil {
 		image = imageLike.AsImage()
@@ -509,8 +509,8 @@ func (this *TreeColumn) UpdateToolTip(index int32) {
 	}
 }
 
-func (this *TreeColumn) handleDPIChangeEventScalingFactor_(event *Event, scalingFactor float32) {
-	this.Item.handleDPIChangeEventScalingFactor_(event, scalingFactor)
+func (this *TreeColumn) handleDPIChange_(event *Event, scalingFactor float32) {
+	this.Item.handleDPIChange_(event, scalingFactor)
 	var tree *Tree = this.GetParent()
 	var ignoreColumnResize bool = tree.ignoreColumnResize
 	tree.ignoreColumnResize = true

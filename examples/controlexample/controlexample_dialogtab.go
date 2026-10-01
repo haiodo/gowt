@@ -243,45 +243,45 @@ func (this *DialogTab) CreateButtonSelected(event *swt.SelectionEvent) {
 		this.textWidget.Append(fmt.Sprintf("%s%s", ControlExampleGetResourceString("PrintDialog"), swt.TextDELIMITER))
 		this.textWidget.Append(fmt.Sprintf("%s%s", ControlExampleGetResourceStringKeyArgs("Result", []any{fmt.Sprintf("%v", result)}), swt.TextDELIMITER))
 		if result != (nil) {
-			var cond1 string
-			var cond2 string
+			var cond39 string
+			var cond40 string
 			if result.Scope == swt.PrinterDataSELECTION {
-				cond2 = "SELECTION"
+				cond40 = "SELECTION"
 			} else {
-				cond2 = "ALL_PAGES"
+				cond40 = "ALL_PAGES"
 			}
 			if result.Scope == swt.PrinterDataPAGE_RANGE {
-				cond1 = "PAGE_RANGE"
+				cond39 = "PAGE_RANGE"
 			} else {
-				cond1 = cond2
+				cond39 = cond40
 			}
-			this.textWidget.Append(fmt.Sprintf("printerData.scope = %s%s", (cond1), swt.TextDELIMITER))
+			this.textWidget.Append(fmt.Sprintf("printerData.scope = %s%s", (cond39), swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.startPage = %d%s", result.StartPage, swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.endPage = %d%s", result.EndPage, swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.printToFile = %t%s", result.PrintToFile, swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.fileName = %s%s", result.FileName, swt.TextDELIMITER))
-			var cond3 string
+			var cond41 string
 			if result.Orientation == swt.PrinterDataLANDSCAPE {
-				cond3 = "LANDSCAPE"
+				cond41 = "LANDSCAPE"
 			} else {
-				cond3 = "PORTRAIT"
+				cond41 = "PORTRAIT"
 			}
-			this.textWidget.Append(fmt.Sprintf("printerData.orientation = %s%s", (cond3), swt.TextDELIMITER))
+			this.textWidget.Append(fmt.Sprintf("printerData.orientation = %s%s", (cond41), swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.copyCount = %d%s", result.CopyCount, swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.collate = %t%s", result.Collate, swt.TextDELIMITER))
-			var cond4 string
-			var cond5 string
+			var cond42 string
+			var cond43 string
 			if result.Duplex == swt.PrinterDataDUPLEX_SHORT_EDGE {
-				cond5 = "DUPLEX_SHORT_EDGE"
+				cond43 = "DUPLEX_SHORT_EDGE"
 			} else {
-				cond5 = "NONE"
+				cond43 = "NONE"
 			}
 			if result.Duplex == swt.PrinterDataDUPLEX_LONG_EDGE {
-				cond4 = "DUPLEX_LONG_EDGE"
+				cond42 = "DUPLEX_LONG_EDGE"
 			} else {
-				cond4 = cond5
+				cond42 = cond43
 			}
-			this.textWidget.Append(fmt.Sprintf("printerData.duplex = %s%s", (cond4), swt.TextDELIMITER))
+			this.textWidget.Append(fmt.Sprintf("printerData.duplex = %s%s", (cond42), swt.TextDELIMITER))
 		}
 		this.textWidget.Append(swt.TextDELIMITER)
 		this.printDialogResult = result

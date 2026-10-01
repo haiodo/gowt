@@ -83,11 +83,11 @@ func (this *DateTime) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *DateTime) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *DateTime) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
-	return win32.OSCallWindowProc(this.impl.windowProcNoArgs_(), hwnd, msg, wParam, lParam)
+	return win32.OSCallWindowProc(this.impl.windowProc_(), hwnd, msg, wParam, lParam)
 }
 
 func (this *DateTime) checkSubclass_() {
@@ -155,13 +155,13 @@ func (this *DateTime) defaultBackground_() int32 {
 func (this *DateTime) GetCustomShortDateFormat() string {
 	var tchar *win32.TCHAR = win32.NewTCHAR(80)
 	var size int32 = win32.OSGetLocaleInfo(win32.OSLOCALE_USER_DEFAULT, win32.OSLOCALE_SYEARMONTH, tchar, 80)
-	var cond1 string
+	var cond781 string
 	if size != 0 {
-		cond1 = tchar.StringStartLength(0, size-1)
+		cond781 = tchar.StringStartLength(0, size-1)
 	} else {
-		cond1 = "M/yyyy"
+		cond781 = "M/yyyy"
 	}
-	return cond1
+	return cond781
 }
 
 func (this *DateTime) GetCustomShortTimeFormat() string {
@@ -198,13 +198,13 @@ func (this *DateTime) GetCustomShortTimeFormat() string {
 func (this *DateTime) GetTimeFormat() string {
 	var tchar *win32.TCHAR = win32.NewTCHAR(80)
 	var size int32 = win32.OSGetLocaleInfo(win32.OSLOCALE_USER_DEFAULT, win32.OSLOCALE_STIMEFORMAT, tchar, 80)
-	var cond2 string
+	var cond782 string
 	if size > 0 {
-		cond2 = tchar.StringStartLength(0, size-1)
+		cond782 = tchar.StringStartLength(0, size-1)
 	} else {
-		cond2 = "h:mm:ss tt"
+		cond782 = "h:mm:ss tt"
 	}
-	return cond2
+	return cond782
 }
 
 func (this *DateTime) GetDay() int32 {
@@ -266,13 +266,13 @@ func (this *DateTime) GetMonth() int32 {
 }
 
 func (this *DateTime) getNameText_() string {
-	var cond3 string
+	var cond783 string
 	if (this.style & TIME) != 0 {
-		cond3 = fmt.Sprintf("%d:%d:%d", this.GetHours(), this.GetMinutes(), this.GetSeconds())
+		cond783 = fmt.Sprintf("%d:%d:%d", this.GetHours(), this.GetMinutes(), this.GetSeconds())
 	} else {
-		cond3 = fmt.Sprintf("%d/%d/%d", (this.GetMonth() + 1), this.GetDay(), this.GetYear())
+		cond783 = fmt.Sprintf("%d/%d/%d", (this.GetMonth() + 1), this.GetDay(), this.GetYear())
 	}
-	return cond3
+	return cond783
 }
 
 func (this *DateTime) GetSeconds() int32 {
@@ -532,13 +532,13 @@ func (this *DateTime) widgetStyle_() int32 {
 		bits |= win32.OSDTS_TIMEFORMAT
 	}
 	if (this.style & DATE) != 0 {
-		var cond4 int32
+		var cond784 int32
 		if (this.style & MEDIUM) != 0 {
-			cond4 = win32.OSDTS_SHORTDATECENTURYFORMAT
+			cond784 = win32.OSDTS_SHORTDATECENTURYFORMAT
 		} else {
-			cond4 = win32.OSDTS_LONGDATEFORMAT
+			cond784 = win32.OSDTS_LONGDATEFORMAT
 		}
-		bits |= (cond4)
+		bits |= (cond784)
 		if (this.style & DROP_DOWN) == 0 {
 			bits |= win32.OSDTS_UPDOWN
 		}
@@ -547,23 +547,23 @@ func (this *DateTime) widgetStyle_() int32 {
 }
 
 func (this *DateTime) windowClass_() *win32.TCHAR {
-	var cond5 *win32.TCHAR
+	var cond785 *win32.TCHAR
 	if (this.style & CALENDAR) != 0 {
-		cond5 = DateTimeCalendarClass
+		cond785 = DateTimeCalendarClass
 	} else {
-		cond5 = DateTimeDateTimeClass
+		cond785 = DateTimeDateTimeClass
 	}
-	return cond5
+	return cond785
 }
 
-func (this *DateTime) windowProcNoArgs_() int64 {
-	var cond6 int64
+func (this *DateTime) windowProc_() int64 {
+	var cond786 int64
 	if (this.style & CALENDAR) != 0 {
-		cond6 = DateTimeCalendarProc
+		cond786 = DateTimeCalendarProc
 	} else {
-		cond6 = DateTimeDateTimeProc
+		cond786 = DateTimeDateTimeProc
 	}
-	return cond6
+	return cond786
 }
 
 func (this *DateTime) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *win32.LRESULT {
@@ -666,15 +666,15 @@ func (this *DateTime) wM_TIMER_(wParam int64, lParam int64) *win32.LRESULT {
 		return result
 	}
 	this.ignoreSelection = true
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_TIMER, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_TIMER, wParam, lParam)
 	this.ignoreSelection = false
-	var cond7 *win32.LRESULT
+	var cond787 *win32.LRESULT
 	if code == 0 {
-		cond7 = win32.LRESULTZERO
+		cond787 = win32.LRESULTZERO
 	} else {
-		cond7 = win32.NewLRESULT(code)
+		cond787 = win32.NewLRESULT(code)
 	}
-	return cond7
+	return cond787
 }
 
 func DateTimeCheckStyle(style int32) int32 {

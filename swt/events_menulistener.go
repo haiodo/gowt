@@ -8,21 +8,21 @@ type MenuListener interface {
 }
 
 func MenuListenerMenuHiddenAdapter(c func(*MenuEvent)) MenuListener {
-	anon1 := &MenuListenerAnon1{}
-	anon1.initMenuAdapter()
-	anon1.fnMenuHidden = func(e *MenuEvent) {
+	anon39 := &MenuListenerAnon1{}
+	anon39.initMenuAdapter()
+	anon39.fnMenuHidden = func(e *MenuEvent) {
 		c(e)
 	}
-	return anon1
+	return anon39
 }
 
 func MenuListenerMenuShownAdapter(c func(*MenuEvent)) MenuListener {
-	anon2 := &MenuListenerAnon2{}
-	anon2.initMenuAdapter()
-	anon2.fnMenuShown = func(e *MenuEvent) {
+	anon40 := &MenuListenerAnon2{}
+	anon40.initMenuAdapter()
+	anon40.fnMenuShown = func(e *MenuEvent) {
 		c(e)
 	}
-	return anon2
+	return anon40
 }
 
 // j2go: anonymous MenuAdapter subclass.

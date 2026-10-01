@@ -4425,13 +4425,13 @@ func OSTOUCH_COORD_TO_PIXEL(touchCoord int32) int32 {
 }
 
 func OSHRESULT_FROM_WIN32(x int32) int32 {
-	var cond1 int32
+	var cond23 int32
 	if x <= 0 {
-		cond1 = x
+		cond23 = x
 	} else {
-		cond1 = ((x & 0x0000FFFF) | -2147024896)
+		cond23 = ((x & 0x0000FFFF) | -2147024896)
 	}
-	return cond1
+	return cond23
 }
 
 var proc_OSAbortDoc = newProc("AbortDoc")

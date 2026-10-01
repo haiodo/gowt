@@ -435,15 +435,12 @@ func (this *Region) String() string {
 	if this.impl.isDisposed_() {
 		return "Region {*DISPOSED*}"
 	}
-	return fmt.Sprintf("Region {%s}", func() string {
-		_ = []any{func() any {
-			_ = []any{this.zoomToHandle.EntrySet().Stream(), func(entry *jrt.MapEntry) string {
-				return fmt.Sprint(jrt.Cast[*Region_RegionHandle](entry.GetValue()))
-			}}
-			panic("j2go: unresolved call map")
-		}(), func() any { _ = []any{","}; panic("j2go: unresolved call joining") }()}
-		panic("j2go: unresolved call collect")
-	}())
+	return fmt.Sprintf("Region {%s}", any(func() any {
+		_ = []any{this.zoomToHandle.EntrySet().Stream(), func(entry *jrt.MapEntry) string {
+			return fmt.Sprint(jrt.Cast[*Region_RegionHandle](entry.GetValue()))
+		}}
+		panic("j2go: unresolved call map")
+	}()).(*jrt.LineStream).Collect(jrt.CollectorsJoining(",")))
 }
 
 func RegionApplyUsingTemporaryHandle(zoom int32, operations *jrt.List, function func(*Region_RegionHandle) any) any {
@@ -462,8 +459,8 @@ func RegionNewRegionHandle(zoom int32, operations *jrt.List) *Region_RegionHandl
 		Error(ERROR_NO_HANDLES)
 	}
 	var newRegionHandle *Region_RegionHandle = newRegionRegionHandle(newHandle, zoom)
-	for _, elem1 := range operations.ToArray() {
-		operation := jrt.Cast[*Region_Operation](elem1)
+	for _, elem459 := range operations.ToArray() {
+		operation := jrt.Cast[*Region_Operation](elem459)
 		operation.Apply(newRegionHandle)
 	}
 	return newRegionHandle

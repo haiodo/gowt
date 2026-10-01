@@ -45,7 +45,7 @@ func (this *Scale) AddSelectionListener(listener SelectionListener) {
 	this.AddTypedListener(listener, []int32{Selection, DefaultSelection})
 }
 
-func (this *Scale) callWindowProcHwndMsgWParamLParam_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
+func (this *Scale) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam int64) int64 {
 	if this.Handle == 0 {
 		return int64(0)
 	}
@@ -128,8 +128,8 @@ func (this *Scale) RemoveSelectionListener(listener SelectionListener) {
 	this.eventTable.UnhookEventTypeListener(DefaultSelection, listener)
 }
 
-func (this *Scale) setBackgroundImageHBitmapHBitmap_(hImage int64) {
-	this.Control.setBackgroundImageHBitmapHBitmap_(hImage)
+func (this *Scale) setBackgroundImageHBitmap_(hImage int64) {
+	this.Control.setBackgroundImageHBitmap_(hImage)
 	this.ignoreResize = true
 	win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SIZE, int64(0), int64(0))
 	this.ignoreResize = false
@@ -142,9 +142,9 @@ func (this *Scale) setBackgroundPixel_(pixel int32) {
 	this.ignoreResize = false
 }
 
-func (this *Scale) setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
+func (this *Scale) setBoundsInPixelsXYWidthHeightFlagsDefer_(x int32, y int32, width int32, height int32, flags int32, defer_ bool) {
 	flags &= ^win32.OSSWP_DRAWFRAME
-	this.Control.setBoundsInPixelsXYWidthHeightFlagsDeferXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
+	this.Control.setBoundsInPixelsXYWidthHeightFlagsDefer_(x, y, width, height, flags, true)
 }
 
 func (this *Scale) SetIncrement(increment int32) {
@@ -207,7 +207,7 @@ func (this *Scale) windowClass_() *win32.TCHAR {
 	return ScaleTrackBarClass
 }
 
-func (this *Scale) windowProcNoArgs_() int64 {
+func (this *Scale) windowProc_() int64 {
 	return ScaleTrackBarProc
 }
 
@@ -220,13 +220,13 @@ func (this *Scale) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_LEFT, win32.OSVK_RIGHT:
 		var isRTL bool = (this.style & RIGHT_TO_LEFT) != 0
 		if isRTL != this.createdAsRTL {
-			var cond1 int32
+			var cond756 int32
 			if wParam == int64(win32.OSVK_RIGHT) {
-				cond1 = win32.OSVK_LEFT
+				cond756 = win32.OSVK_LEFT
 			} else {
-				cond1 = win32.OSVK_RIGHT
+				cond756 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_KEYDOWN, int64(cond1), lParam)
+			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond756), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -241,7 +241,7 @@ func (this *Scale) wM_MOUSEWHEEL_(wParam int64, lParam int64) *win32.LRESULT {
 	}
 	var oldPosition int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTBM_GETPOS, int64(0), int64(0)))
 	this.ignoreSelection = true
-	var code int64 = this.impl.callWindowProcHwndMsgWParamLParam_(this.Handle, win32.OSWM_MOUSEWHEEL, wParam, lParam)
+	var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_MOUSEWHEEL, wParam, lParam)
 	this.ignoreSelection = false
 	var newPosition int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTBM_GETPOS, int64(0), int64(0)))
 	if oldPosition != newPosition {

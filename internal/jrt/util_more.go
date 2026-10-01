@@ -1,8 +1,9 @@
 package jrt
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
-	"unicode/utf16"
 )
 
 // entries lists the map's pairs in EntrySet order.
@@ -19,15 +20,6 @@ func (m *Map) Values() *List {
 	l := NewList()
 	for _, e := range m.entries() {
 		l.Add(e.value)
-	}
-	return l
-}
-
-// KeySet is Map.keySet(): a snapshot in EntrySet order.
-func (m *Map) KeySet() *List {
-	l := NewList()
-	for _, e := range m.entries() {
-		l.Add(e.key)
 	}
 	return l
 }
@@ -96,11 +88,21 @@ func (o *Optional) OrElseGet(supplier any) any {
 // Equals is Path.equals.
 func (p *Path) Equals(other *Path) bool { return other != nil && p.s == other.s }
 
-// GetChars is String.getChars(srcBegin, srcEnd, dst, dstBegin) for UTF-16 code units.
-func GetChars(s string, srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
-	u := utf16.Encode([]rune(s))
-	copy(dst[dstBegin:], u[srcBegin:srcEnd])
-}
-
 // Stream is List.stream() for the one chain Region.toString builds; the stages are not run.
 func (l *List) Stream() *List { return l }
+
+// ListFiles is File.listFiles(): the directory's entries, nil if it cannot be read.
+func (f *File) ListFiles() []*File {
+	entries, err := os.ReadDir(f.path)
+	if err != nil {
+		return nil
+	}
+	out := make([]*File, len(entries))
+	for i, e := range entries {
+		out[i] = &File{filepath.Join(f.path, e.Name())}
+	}
+	return out
+}
+
+// Delete is File.delete().
+func (f *File) Delete() bool { return os.Remove(f.path) == nil }

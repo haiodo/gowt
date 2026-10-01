@@ -3195,7 +3195,7 @@ what they call: `overloads.properties` (overload names), `cascade.properties` (d
 No file differs per platform today. Hand-written, per OS: `widgets_stubs2/3_manual_windows.go` (Accessible stub, Callback), `graphics_dpiutil_manual_windows.go`,
 `internal_platform_manual_windows.go`; `graphics_stubs_manual_windows.go` and `widgets_stubs_shared_manual_windows.go` are the win32 copies of the darwin/linux stand-ins (DPIUtil, LONG, Compatibility, ...).
 
-**API gate.** `apidump` compares only SWT's public Java API: `tooling/apidump/public-api.txt` (`J2GO_DUMP_PUBLIC=<file>` on a run of each platform, merged) lists the Go names of public/
+**API gate.** `apidump` compares only SWT's public Java API: `tooling/apidump/public-api.txt` (`J2GO_DUMP_PUBLIC=<abs file> PLATFORM=<cocoa|win32|gtk> make gen` for each platform, merged; the gtk run needs no PI/gtk, revert the `_linux.go` churn it leaves) lists the Go names of public/
 protected members of public non-internal classes; platform-named glue (`ShellWin32_new`) and signatures naming a PI type are skipped. `platform-only.txt` has `* <regexp>` lines
 for what a port declares differently (IME, Tracker, `setIME`). windows is in `platforms.txt`.
 

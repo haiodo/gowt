@@ -289,12 +289,15 @@ func Close
 func Collapse
 func ColorCocoa_new
 func ColorCocoa_newDeviceHandleAlpha
+func ColorGtk_new
+func ColorGtk_newGdkRGBAAlpha
 func ColorWin32_new
 func ColorWin32_newDeviceHandleAlpha
 func ComboLIMIT
 func ControlListenerControlMovedAdapter
 func ControlListenerControlResizedAdapter
 func CursorCocoa_new
+func CursorGtk_new
 func CursorWin32_getHandle
 func DATE
 func DBCS
@@ -320,6 +323,7 @@ func DefaultSelection
 func Deiconify
 func DeviceDEBUG
 func DeviceWin32_destroyUnusedHandles
+func DisplayExtractFreeGError
 func DisplayFindDisplay
 func DisplayGetAppName
 func DisplayGetAppVersion
@@ -419,6 +423,7 @@ func FocusListenerFocusLostAdapter
 func FocusOut
 func FontCocoa_new
 func FontDataWin32_new
+func FontGtk_new
 func FontMetricsCocoa_new
 func FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight
 func FontMetricsWin32_new
@@ -428,6 +433,8 @@ func FontWin32_newDeviceFontDataZoom
 func FontWin32_newDeviceHandleZoom
 func FontWin32_newFontTargetZoom
 func GCCocoa_new
+func GCGtk_new
+func GCGtk_newDrawableData
 func GCWin32_new
 func GCWin32_newHDCData
 func GESTURE_BEGIN
@@ -508,6 +515,8 @@ func Iconify
 func ImageCocoa_new
 func ImageDataInternal_new
 func ImageDrawAtSize
+func ImageGtk_new
+func ImageGtk_new_from_pixbuf
 func ImageWin32_getHandle
 func ImageWin32_new
 func ImeComposition
@@ -913,6 +922,7 @@ func RectangleOf
 func RectangleOfFloatFrom
 func RectangleOfTopLeftDimension
 func RegionCocoa_new
+func RegionGtk_new
 func RegionWin32_getHandle
 func Resize
 func ResourceSetNonDisposeHandler
@@ -950,6 +960,7 @@ func SelectionListenerWidgetSelectedAdapter
 func SetData
 func Settings
 func ShellCocoa_new
+func ShellGtk_new
 func ShellInternal_new
 func ShellListenerShellActivatedAdapter
 func ShellListenerShellClosedAdapter
@@ -1296,12 +1307,15 @@ func swt.Close
 func swt.Collapse
 func swt.ColorCocoa_new
 func swt.ColorCocoa_newDeviceHandleAlpha
+func swt.ColorGtk_new
+func swt.ColorGtk_newGdkRGBAAlpha
 func swt.ColorWin32_new
 func swt.ColorWin32_newDeviceHandleAlpha
 func swt.ComboLIMIT
 func swt.ControlListenerControlMovedAdapter
 func swt.ControlListenerControlResizedAdapter
 func swt.CursorCocoa_new
+func swt.CursorGtk_new
 func swt.CursorWin32_getHandle
 func swt.DATE
 func swt.DBCS
@@ -1327,6 +1341,7 @@ func swt.DefaultSelection
 func swt.Deiconify
 func swt.DeviceDEBUG
 func swt.DeviceWin32_destroyUnusedHandles
+func swt.DisplayExtractFreeGError
 func swt.DisplayFindDisplay
 func swt.DisplayGetAppName
 func swt.DisplayGetAppVersion
@@ -1426,6 +1441,7 @@ func swt.FocusListenerFocusLostAdapter
 func swt.FocusOut
 func swt.FontCocoa_new
 func swt.FontDataWin32_new
+func swt.FontGtk_new
 func swt.FontMetricsCocoa_new
 func swt.FontMetricsCocoa_newAscentDescentAverageCharWidthLeadingHeight
 func swt.FontMetricsWin32_new
@@ -1435,6 +1451,8 @@ func swt.FontWin32_newDeviceFontDataZoom
 func swt.FontWin32_newDeviceHandleZoom
 func swt.FontWin32_newFontTargetZoom
 func swt.GCCocoa_new
+func swt.GCGtk_new
+func swt.GCGtk_newDrawableData
 func swt.GCWin32_new
 func swt.GCWin32_newHDCData
 func swt.GESTURE_BEGIN
@@ -1515,6 +1533,8 @@ func swt.Iconify
 func swt.ImageCocoa_new
 func swt.ImageDataInternal_new
 func swt.ImageDrawAtSize
+func swt.ImageGtk_new
+func swt.ImageGtk_new_from_pixbuf
 func swt.ImageWin32_getHandle
 func swt.ImageWin32_new
 func swt.ImeComposition
@@ -1667,6 +1687,7 @@ func swt.RectangleOf
 func swt.RectangleOfFloatFrom
 func swt.RectangleOfTopLeftDimension
 func swt.RegionCocoa_new
+func swt.RegionGtk_new
 func swt.RegionWin32_getHandle
 func swt.Resize
 func swt.ResourceSetNonDisposeHandler
@@ -1704,6 +1725,7 @@ func swt.SelectionListenerWidgetSelectedAdapter
 func swt.SetData
 func swt.Settings
 func swt.ShellCocoa_new
+func swt.ShellGtk_new
 func swt.ShellInternal_new
 func swt.ShellListenerShellActivatedAdapter
 func swt.ShellListenerShellClosedAdapter
@@ -1900,6 +1922,7 @@ method Button.GetVisible
 method Button.Internal_dispose_GC
 method Button.Internal_new_GC
 method Button.IsAutoDirection
+method Button.IsAutoScalable
 method Button.IsDisposed
 method Button.IsEnabled
 method Button.IsFocusControl
@@ -2043,6 +2066,7 @@ method ButtonLike.GetVisible
 method ButtonLike.Internal_dispose_GC
 method ButtonLike.Internal_new_GC
 method ButtonLike.IsAutoDirection
+method ButtonLike.IsAutoScalable
 method ButtonLike.IsDisposed
 method ButtonLike.IsEnabled
 method ButtonLike.IsFocusControl
@@ -2217,6 +2241,7 @@ method CCombo.IndexOfStringStart
 method CCombo.Internal_dispose_GC
 method CCombo.Internal_new_GC
 method CCombo.IsAutoDirection
+method CCombo.IsAutoScalable
 method CCombo.IsDisposed
 method CCombo.IsEnabled
 method CCombo.IsFocusControl
@@ -2316,6 +2341,7 @@ method CCombo.ToControlPoint
 method CCombo.ToDisplay
 method CCombo.ToDisplayPoint
 method CCombo.Traverse
+method CCombo.TraverseEvent
 method CCombo.TraverseTraversal
 method CCombo.TraverseTraversalEvent
 method CCombo.Update
@@ -2414,6 +2440,7 @@ method CComboLike.IndexOfStringStart
 method CComboLike.Internal_dispose_GC
 method CComboLike.Internal_new_GC
 method CComboLike.IsAutoDirection
+method CComboLike.IsAutoScalable
 method CComboLike.IsDisposed
 method CComboLike.IsEnabled
 method CComboLike.IsFocusControl
@@ -2513,6 +2540,7 @@ method CComboLike.ToControlPoint
 method CComboLike.ToDisplay
 method CComboLike.ToDisplayPoint
 method CComboLike.Traverse
+method CComboLike.TraverseEvent
 method CComboLike.TraverseTraversal
 method CComboLike.TraverseTraversalEvent
 method CComboLike.Update
@@ -2596,6 +2624,7 @@ method CLabel.GetVisible
 method CLabel.Internal_dispose_GC
 method CLabel.Internal_new_GC
 method CLabel.IsAutoDirection
+method CLabel.IsAutoScalable
 method CLabel.IsDisposed
 method CLabel.IsEnabled
 method CLabel.IsFocusControl
@@ -2775,6 +2804,7 @@ method CLabelLike.GetVisible
 method CLabelLike.Internal_dispose_GC
 method CLabelLike.Internal_new_GC
 method CLabelLike.IsAutoDirection
+method CLabelLike.IsAutoScalable
 method CLabelLike.IsDisposed
 method CLabelLike.IsEnabled
 method CLabelLike.IsFocusControl
@@ -2975,6 +3005,7 @@ method CTabFolder.IndexOf
 method CTabFolder.Internal_dispose_GC
 method CTabFolder.Internal_new_GC
 method CTabFolder.IsAutoDirection
+method CTabFolder.IsAutoScalable
 method CTabFolder.IsDisposed
 method CTabFolder.IsEnabled
 method CTabFolder.IsFocusControl
@@ -3223,6 +3254,7 @@ method CTabFolderLike.IndexOf
 method CTabFolderLike.Internal_dispose_GC
 method CTabFolderLike.Internal_new_GC
 method CTabFolderLike.IsAutoDirection
+method CTabFolderLike.IsAutoScalable
 method CTabFolderLike.IsDisposed
 method CTabFolderLike.IsEnabled
 method CTabFolderLike.IsFocusControl
@@ -3526,6 +3558,7 @@ method Canvas.GetVisible
 method Canvas.Internal_dispose_GC
 method Canvas.Internal_new_GC
 method Canvas.IsAutoDirection
+method Canvas.IsAutoScalable
 method Canvas.IsDisposed
 method Canvas.IsEnabled
 method Canvas.IsFocusControl
@@ -3685,6 +3718,7 @@ method CanvasLike.GetVisible
 method CanvasLike.Internal_dispose_GC
 method CanvasLike.Internal_new_GC
 method CanvasLike.IsAutoDirection
+method CanvasLike.IsAutoScalable
 method CanvasLike.IsDisposed
 method CanvasLike.IsEnabled
 method CanvasLike.IsFocusControl
@@ -4001,6 +4035,7 @@ method Combo.IndexOfStringStart
 method Combo.Internal_dispose_GC
 method Combo.Internal_new_GC
 method Combo.IsAutoDirection
+method Combo.IsAutoScalable
 method Combo.IsDisposed
 method Combo.IsEnabled
 method Combo.IsFocusControl
@@ -4197,6 +4232,7 @@ method ComboLike.IndexOfStringStart
 method ComboLike.Internal_dispose_GC
 method ComboLike.Internal_new_GC
 method ComboLike.IsAutoDirection
+method ComboLike.IsAutoScalable
 method ComboLike.IsDisposed
 method ComboLike.IsEnabled
 method ComboLike.IsFocusControl
@@ -4367,6 +4403,7 @@ method Composite.GetVisible
 method Composite.Internal_dispose_GC
 method Composite.Internal_new_GC
 method Composite.IsAutoDirection
+method Composite.IsAutoScalable
 method Composite.IsDisposed
 method Composite.IsEnabled
 method Composite.IsFocusControl
@@ -4520,6 +4557,7 @@ method CompositeLike.GetVisible
 method CompositeLike.Internal_dispose_GC
 method CompositeLike.Internal_new_GC
 method CompositeLike.IsAutoDirection
+method CompositeLike.IsAutoScalable
 method CompositeLike.IsDisposed
 method CompositeLike.IsEnabled
 method CompositeLike.IsFocusControl
@@ -4661,6 +4699,7 @@ method Control.GetVisible
 method Control.Internal_dispose_GC
 method Control.Internal_new_GC
 method Control.IsAutoDirection
+method Control.IsAutoScalable
 method Control.IsDisposed
 method Control.IsEnabled
 method Control.IsFocusControl
@@ -4811,6 +4850,7 @@ method ControlLike.GetVisible
 method ControlLike.Internal_dispose_GC
 method ControlLike.Internal_new_GC
 method ControlLike.IsAutoDirection
+method ControlLike.IsAutoScalable
 method ControlLike.IsDisposed
 method ControlLike.IsEnabled
 method ControlLike.IsFocusControl
@@ -4963,6 +5003,7 @@ method CoolBar.IndexOf
 method CoolBar.Internal_dispose_GC
 method CoolBar.Internal_new_GC
 method CoolBar.IsAutoDirection
+method CoolBar.IsAutoScalable
 method CoolBar.IsDisposed
 method CoolBar.IsEnabled
 method CoolBar.IsFocusControl
@@ -5128,6 +5169,7 @@ method CoolBarLike.IndexOf
 method CoolBarLike.Internal_dispose_GC
 method CoolBarLike.Internal_new_GC
 method CoolBarLike.IsAutoDirection
+method CoolBarLike.IsAutoScalable
 method CoolBarLike.IsDisposed
 method CoolBarLike.IsEnabled
 method CoolBarLike.IsFocusControl
@@ -5398,6 +5440,7 @@ method DateTime.GetYear
 method DateTime.Internal_dispose_GC
 method DateTime.Internal_new_GC
 method DateTime.IsAutoDirection
+method DateTime.IsAutoScalable
 method DateTime.IsDisposed
 method DateTime.IsEnabled
 method DateTime.IsFocusControl
@@ -5441,6 +5484,7 @@ method DateTime.RemoveTypedListener
 method DateTime.RequestLayout
 method DateTime.Reskin
 method DateTime.SetAutoscalingMode
+method DateTime.SetBackground
 method DateTime.SetBackgroundImage
 method DateTime.SetBackgroundMode
 method DateTime.SetBackgroundWithColor
@@ -5567,6 +5611,7 @@ method DateTimeLike.GetYear
 method DateTimeLike.Internal_dispose_GC
 method DateTimeLike.Internal_new_GC
 method DateTimeLike.IsAutoDirection
+method DateTimeLike.IsAutoScalable
 method DateTimeLike.IsDisposed
 method DateTimeLike.IsEnabled
 method DateTimeLike.IsFocusControl
@@ -5610,6 +5655,7 @@ method DateTimeLike.RemoveTypedListener
 method DateTimeLike.RequestLayout
 method DateTimeLike.Reskin
 method DateTimeLike.SetAutoscalingMode
+method DateTimeLike.SetBackground
 method DateTimeLike.SetBackgroundImage
 method DateTimeLike.SetBackgroundMode
 method DateTimeLike.SetBackgroundWithColor
@@ -5739,6 +5785,7 @@ method Decorations.GetVisible
 method Decorations.Internal_dispose_GC
 method Decorations.Internal_new_GC
 method Decorations.IsAutoDirection
+method Decorations.IsAutoScalable
 method Decorations.IsDisposed
 method Decorations.IsEnabled
 method Decorations.IsFocusControl
@@ -5912,6 +5959,7 @@ method DecorationsLike.GetVisible
 method DecorationsLike.Internal_dispose_GC
 method DecorationsLike.Internal_new_GC
 method DecorationsLike.IsAutoDirection
+method DecorationsLike.IsAutoScalable
 method DecorationsLike.IsDisposed
 method DecorationsLike.IsEnabled
 method DecorationsLike.IsFocusControl
@@ -6017,6 +6065,7 @@ method Device.GetDepth
 method Device.GetDeviceData
 method Device.GetDeviceZoom
 method Device.GetFontList
+method Device.GetPrimaryMonitorDisplay
 method Device.GetSystemColor
 method Device.GetSystemFont
 method Device.GetWarnings
@@ -6043,6 +6092,7 @@ method DeviceLike.GetDepth
 method DeviceLike.GetDeviceData
 method DeviceLike.GetDeviceZoom
 method DeviceLike.GetFontList
+method DeviceLike.GetPrimaryMonitorDisplay
 method DeviceLike.GetSystemColor
 method DeviceLike.GetSystemFont
 method DeviceLike.GetWarnings
@@ -6130,6 +6180,7 @@ method Display.GetIconSizes
 method Display.GetMenuBar
 method Display.GetMonitors
 method Display.GetPrimaryMonitor
+method Display.GetPrimaryMonitorDisplay
 method Display.GetRuntimeExceptionHandler
 method Display.GetShells
 method Display.GetSyncThread
@@ -6218,6 +6269,7 @@ method DisplayLike.GetIconSizes
 method DisplayLike.GetMenuBar
 method DisplayLike.GetMonitors
 method DisplayLike.GetPrimaryMonitor
+method DisplayLike.GetPrimaryMonitorDisplay
 method DisplayLike.GetRuntimeExceptionHandler
 method DisplayLike.GetShells
 method DisplayLike.GetSyncThread
@@ -6370,6 +6422,7 @@ method ExpandBar.IndexOf
 method ExpandBar.Internal_dispose_GC
 method ExpandBar.Internal_new_GC
 method ExpandBar.IsAutoDirection
+method ExpandBar.IsAutoScalable
 method ExpandBar.IsDisposed
 method ExpandBar.IsEnabled
 method ExpandBar.IsFocusControl
@@ -6531,6 +6584,7 @@ method ExpandBarLike.IndexOf
 method ExpandBarLike.Internal_dispose_GC
 method ExpandBarLike.Internal_new_GC
 method ExpandBarLike.IsAutoDirection
+method ExpandBarLike.IsAutoScalable
 method ExpandBarLike.IsDisposed
 method ExpandBarLike.IsEnabled
 method ExpandBarLike.IsFocusControl
@@ -7162,6 +7216,7 @@ method Group.GetVisible
 method Group.Internal_dispose_GC
 method Group.Internal_new_GC
 method Group.IsAutoDirection
+method Group.IsAutoScalable
 method Group.IsDisposed
 method Group.IsEnabled
 method Group.IsFocusControl
@@ -7317,6 +7372,7 @@ method GroupLike.GetVisible
 method GroupLike.Internal_dispose_GC
 method GroupLike.Internal_new_GC
 method GroupLike.IsAutoDirection
+method GroupLike.IsAutoScalable
 method GroupLike.IsDisposed
 method GroupLike.IsEnabled
 method GroupLike.IsFocusControl
@@ -7486,6 +7542,7 @@ method Image.GetImageDataAtCurrentZoom
 method Image.GetImageDataZoom
 method Image.HashCode
 method Image.Internal_dispose_GC
+method Image.Internal_gtk_refreshImageForZoom
 method Image.Internal_new_GC
 method Image.IsDisposed
 method Image.SetBackground
@@ -7542,6 +7599,7 @@ method ImageLike.GetImageDataAtCurrentZoom
 method ImageLike.GetImageDataZoom
 method ImageLike.HashCode
 method ImageLike.Internal_dispose_GC
+method ImageLike.Internal_gtk_refreshImageForZoom
 method ImageLike.Internal_new_GC
 method ImageLike.IsDisposed
 method ImageLike.SetBackground
@@ -7702,6 +7760,7 @@ method Label.GetVisible
 method Label.Internal_dispose_GC
 method Label.Internal_new_GC
 method Label.IsAutoDirection
+method Label.IsAutoScalable
 method Label.IsDisposed
 method Label.IsEnabled
 method Label.IsFocusControl
@@ -7838,6 +7897,7 @@ method LabelLike.GetVisible
 method LabelLike.Internal_dispose_GC
 method LabelLike.Internal_new_GC
 method LabelLike.IsAutoDirection
+method LabelLike.IsAutoScalable
 method LabelLike.IsDisposed
 method LabelLike.IsEnabled
 method LabelLike.IsFocusControl
@@ -7992,6 +8052,7 @@ method Link.GetVisible
 method Link.Internal_dispose_GC
 method Link.Internal_new_GC
 method Link.IsAutoDirection
+method Link.IsAutoScalable
 method Link.IsDisposed
 method Link.IsEnabled
 method Link.IsFocusControl
@@ -8128,6 +8189,7 @@ method LinkLike.GetVisible
 method LinkLike.Internal_dispose_GC
 method LinkLike.Internal_new_GC
 method LinkLike.IsAutoDirection
+method LinkLike.IsAutoScalable
 method LinkLike.IsDisposed
 method LinkLike.IsEnabled
 method LinkLike.IsFocusControl
@@ -8285,6 +8347,7 @@ method List.IndexOfStringStart
 method List.Internal_dispose_GC
 method List.Internal_new_GC
 method List.IsAutoDirection
+method List.IsAutoScalable
 method List.IsDisposed
 method List.IsEnabled
 method List.IsFocusControl
@@ -8459,6 +8522,7 @@ method ListLike.IndexOfStringStart
 method ListLike.Internal_dispose_GC
 method ListLike.Internal_new_GC
 method ListLike.IsAutoDirection
+method ListLike.IsAutoScalable
 method ListLike.IsDisposed
 method ListLike.IsEnabled
 method ListLike.IsFocusControl
@@ -8993,6 +9057,7 @@ method Printer.GetDepth
 method Printer.GetDeviceData
 method Printer.GetDeviceZoom
 method Printer.GetFontList
+method Printer.GetPrimaryMonitorDisplay
 method Printer.GetPrinterData
 method Printer.GetSystemColor
 method Printer.GetSystemFont
@@ -9029,6 +9094,7 @@ method PrinterLike.GetDepth
 method PrinterLike.GetDeviceData
 method PrinterLike.GetDeviceZoom
 method PrinterLike.GetFontList
+method PrinterLike.GetPrimaryMonitorDisplay
 method PrinterLike.GetPrinterData
 method PrinterLike.GetSystemColor
 method PrinterLike.GetSystemFont
@@ -9107,6 +9173,7 @@ method ProgressBar.GetVisible
 method ProgressBar.Internal_dispose_GC
 method ProgressBar.Internal_new_GC
 method ProgressBar.IsAutoDirection
+method ProgressBar.IsAutoScalable
 method ProgressBar.IsDisposed
 method ProgressBar.IsEnabled
 method ProgressBar.IsFocusControl
@@ -9245,6 +9312,7 @@ method ProgressBarLike.GetVisible
 method ProgressBarLike.Internal_dispose_GC
 method ProgressBarLike.Internal_new_GC
 method ProgressBarLike.IsAutoDirection
+method ProgressBarLike.IsAutoScalable
 method ProgressBarLike.IsDisposed
 method ProgressBarLike.IsEnabled
 method ProgressBarLike.IsFocusControl
@@ -9622,6 +9690,7 @@ method Sash.GetVisible
 method Sash.Internal_dispose_GC
 method Sash.Internal_new_GC
 method Sash.IsAutoDirection
+method Sash.IsAutoScalable
 method Sash.IsDisposed
 method Sash.IsEnabled
 method Sash.IsFocusControl
@@ -9768,6 +9837,7 @@ method SashForm.GetWeights
 method SashForm.Internal_dispose_GC
 method SashForm.Internal_new_GC
 method SashForm.IsAutoDirection
+method SashForm.IsAutoScalable
 method SashForm.IsDisposed
 method SashForm.IsEnabled
 method SashForm.IsFocusControl
@@ -9928,6 +9998,7 @@ method SashFormLike.GetWeights
 method SashFormLike.Internal_dispose_GC
 method SashFormLike.Internal_new_GC
 method SashFormLike.IsAutoDirection
+method SashFormLike.IsAutoScalable
 method SashFormLike.IsDisposed
 method SashFormLike.IsEnabled
 method SashFormLike.IsFocusControl
@@ -10074,6 +10145,7 @@ method SashLike.GetVisible
 method SashLike.Internal_dispose_GC
 method SashLike.Internal_new_GC
 method SashLike.IsAutoDirection
+method SashLike.IsAutoScalable
 method SashLike.IsDisposed
 method SashLike.IsEnabled
 method SashLike.IsFocusControl
@@ -10211,6 +10283,7 @@ method Scale.GetVisible
 method Scale.Internal_dispose_GC
 method Scale.Internal_new_GC
 method Scale.IsAutoDirection
+method Scale.IsAutoScalable
 method Scale.IsDisposed
 method Scale.IsEnabled
 method Scale.IsFocusControl
@@ -10353,6 +10426,7 @@ method ScaleLike.GetVisible
 method ScaleLike.Internal_dispose_GC
 method ScaleLike.Internal_new_GC
 method ScaleLike.IsAutoDirection
+method ScaleLike.IsAutoScalable
 method ScaleLike.IsDisposed
 method ScaleLike.IsEnabled
 method ScaleLike.IsFocusControl
@@ -10596,6 +10670,7 @@ method Scrollable.GetVisible
 method Scrollable.Internal_dispose_GC
 method Scrollable.Internal_new_GC
 method Scrollable.IsAutoDirection
+method Scrollable.IsAutoScalable
 method Scrollable.IsDisposed
 method Scrollable.IsEnabled
 method Scrollable.IsFocusControl
@@ -10732,6 +10807,7 @@ method ScrollableLike.GetVisible
 method ScrollableLike.Internal_dispose_GC
 method ScrollableLike.Internal_new_GC
 method ScrollableLike.IsAutoDirection
+method ScrollableLike.IsAutoScalable
 method ScrollableLike.IsDisposed
 method ScrollableLike.IsEnabled
 method ScrollableLike.IsFocusControl
@@ -10883,6 +10959,7 @@ method ScrolledComposite.GetVisible
 method ScrolledComposite.Internal_dispose_GC
 method ScrolledComposite.Internal_new_GC
 method ScrolledComposite.IsAutoDirection
+method ScrolledComposite.IsAutoScalable
 method ScrolledComposite.IsDisposed
 method ScrolledComposite.IsEnabled
 method ScrolledComposite.IsFocusControl
@@ -11056,6 +11133,7 @@ method ScrolledCompositeLike.GetVisible
 method ScrolledCompositeLike.Internal_dispose_GC
 method ScrolledCompositeLike.Internal_new_GC
 method ScrolledCompositeLike.IsAutoDirection
+method ScrolledCompositeLike.IsAutoScalable
 method ScrolledCompositeLike.IsDisposed
 method ScrolledCompositeLike.IsEnabled
 method ScrolledCompositeLike.IsFocusControl
@@ -11260,6 +11338,7 @@ method Shell.GetZoom
 method Shell.Internal_dispose_GC
 method Shell.Internal_new_GC
 method Shell.IsAutoDirection
+method Shell.IsAutoScalable
 method Shell.IsDisposed
 method Shell.IsEnabled
 method Shell.IsFocusControl
@@ -11475,6 +11554,7 @@ method ShellLike.GetZoom
 method ShellLike.Internal_dispose_GC
 method ShellLike.Internal_new_GC
 method ShellLike.IsAutoDirection
+method ShellLike.IsAutoScalable
 method ShellLike.IsDisposed
 method ShellLike.IsEnabled
 method ShellLike.IsFocusControl
@@ -11652,6 +11732,7 @@ method Slider.GetVisible
 method Slider.Internal_dispose_GC
 method Slider.Internal_new_GC
 method Slider.IsAutoDirection
+method Slider.IsAutoScalable
 method Slider.IsDisposed
 method Slider.IsEnabled
 method Slider.IsFocusControl
@@ -11797,6 +11878,7 @@ method SliderLike.GetVisible
 method SliderLike.Internal_dispose_GC
 method SliderLike.Internal_new_GC
 method SliderLike.IsAutoDirection
+method SliderLike.IsAutoScalable
 method SliderLike.IsDisposed
 method SliderLike.IsEnabled
 method SliderLike.IsFocusControl
@@ -11959,6 +12041,7 @@ method Spinner.GetVisible
 method Spinner.Internal_dispose_GC
 method Spinner.Internal_new_GC
 method Spinner.IsAutoDirection
+method Spinner.IsAutoScalable
 method Spinner.IsDisposed
 method Spinner.IsEnabled
 method Spinner.IsFocusControl
@@ -12135,6 +12218,7 @@ method SpinnerLike.GetVisible
 method SpinnerLike.Internal_dispose_GC
 method SpinnerLike.Internal_new_GC
 method SpinnerLike.IsAutoDirection
+method SpinnerLike.IsAutoScalable
 method SpinnerLike.IsDisposed
 method SpinnerLike.IsEnabled
 method SpinnerLike.IsFocusControl
@@ -12327,6 +12411,7 @@ method TabFolder.IndexOf
 method TabFolder.Internal_dispose_GC
 method TabFolder.Internal_new_GC
 method TabFolder.IsAutoDirection
+method TabFolder.IsAutoScalable
 method TabFolder.IsDisposed
 method TabFolder.IsEnabled
 method TabFolder.IsFocusControl
@@ -12492,6 +12577,7 @@ method TabFolderLike.IndexOf
 method TabFolderLike.Internal_dispose_GC
 method TabFolderLike.Internal_new_GC
 method TabFolderLike.IsAutoDirection
+method TabFolderLike.IsAutoScalable
 method TabFolderLike.IsDisposed
 method TabFolderLike.IsEnabled
 method TabFolderLike.IsFocusControl
@@ -12754,6 +12840,7 @@ method Table.IndexOfItem
 method Table.Internal_dispose_GC
 method Table.Internal_new_GC
 method Table.IsAutoDirection
+method Table.IsAutoScalable
 method Table.IsDisposed
 method Table.IsEnabled
 method Table.IsFocusControl
@@ -13201,6 +13288,7 @@ method TableLike.IndexOfItem
 method TableLike.Internal_dispose_GC
 method TableLike.Internal_new_GC
 method TableLike.IsAutoDirection
+method TableLike.IsAutoScalable
 method TableLike.IsDisposed
 method TableLike.IsEnabled
 method TableLike.IsFocusControl
@@ -13546,6 +13634,7 @@ method Text.Insert
 method Text.Internal_dispose_GC
 method Text.Internal_new_GC
 method Text.IsAutoDirection
+method Text.IsAutoScalable
 method Text.IsDisposed
 method Text.IsEnabled
 method Text.IsFocusControl
@@ -13849,6 +13938,7 @@ method TextLike.Insert
 method TextLike.Internal_dispose_GC
 method TextLike.Internal_new_GC
 method TextLike.IsAutoDirection
+method TextLike.IsAutoScalable
 method TextLike.IsDisposed
 method TextLike.IsEnabled
 method TextLike.IsFocusControl
@@ -14025,6 +14115,7 @@ method ToolBar.IndexOf
 method ToolBar.Internal_dispose_GC
 method ToolBar.Internal_new_GC
 method ToolBar.IsAutoDirection
+method ToolBar.IsAutoScalable
 method ToolBar.IsDisposed
 method ToolBar.IsEnabled
 method ToolBar.IsFocusControl
@@ -14184,6 +14275,7 @@ method ToolBarLike.IndexOf
 method ToolBarLike.Internal_dispose_GC
 method ToolBarLike.Internal_new_GC
 method ToolBarLike.IsAutoDirection
+method ToolBarLike.IsAutoScalable
 method ToolBarLike.IsDisposed
 method ToolBarLike.IsEnabled
 method ToolBarLike.IsFocusControl
@@ -14820,6 +14912,7 @@ method Tree.IndexOfItem
 method Tree.Internal_dispose_GC
 method Tree.Internal_new_GC
 method Tree.IsAutoDirection
+method Tree.IsAutoScalable
 method Tree.IsDisposed
 method Tree.IsEnabled
 method Tree.IsFocusControl
@@ -15286,6 +15379,7 @@ method TreeLike.IndexOfItem
 method TreeLike.Internal_dispose_GC
 method TreeLike.Internal_new_GC
 method TreeLike.IsAutoDirection
+method TreeLike.IsAutoScalable
 method TreeLike.IsDisposed
 method TreeLike.IsEnabled
 method TreeLike.IsFocusControl

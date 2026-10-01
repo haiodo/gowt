@@ -203,7 +203,7 @@ func (this *TreeColumn) Pack() {
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 	var headerWidth int32 = rect.Right - rect.Left + DPIUtilPointToPixel(TreeHEADER_MARGIN+TreeHEADER_EXTRA, this.impl.getAutoscalingZoom_())
 	if this.image != (nil) {
-		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
+		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload6(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		headerWidth += bounds.Width
 		var margin int32 = 0
 		if hwndHeader != 0 {

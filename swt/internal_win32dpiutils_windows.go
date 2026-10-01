@@ -177,7 +177,7 @@ func Win32DPIUtilsPixelToPointAsSizePointZoom(pointLike PointLike, zoom int32) *
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPixelToPointOverload4(point, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPixelToPointOverload6(point, zoom, RoundingModeROUND)
 }
 
 func Win32DPIUtilsPixelToPointAsLocationPointZoom(pointLike PointLike, zoom int32) *Point {
@@ -186,7 +186,7 @@ func Win32DPIUtilsPixelToPointAsLocationPointZoom(pointLike PointLike, zoom int3
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPixelToPointOverload4(point, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPixelToPointOverload6(point, zoom, RoundingModeROUND)
 }
 
 func Win32DPIUtilsPixelToPointAsSufficientlyLargeSizePointZoom(pointLike PointLike, zoom int32) *Point {
@@ -195,10 +195,10 @@ func Win32DPIUtilsPixelToPointAsSufficientlyLargeSizePointZoom(pointLike PointLi
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPixelToPointOverload4(point, zoom, RoundingModeUP)
+	return Win32DPIUtilsPixelToPointOverload6(point, zoom, RoundingModeUP)
 }
 
-func Win32DPIUtilsPixelToPointOverload4(pointLike PointLike, zoom int32, mode RoundingMode) *Point {
+func Win32DPIUtilsPixelToPointOverload6(pointLike PointLike, zoom int32, mode RoundingMode) *Point {
 	var point *Point
 	if pointLike != nil {
 		point = pointLike.AsPoint()
@@ -208,10 +208,10 @@ func Win32DPIUtilsPixelToPointOverload4(pointLike PointLike, zoom int32, mode Ro
 		return point
 	}
 	var floatPoint *Point_OfFloat = PointOfFloatFrom(point)
-	return upcastPoint_OfFloatToPoint(Win32DPIUtilsPixelToPointOverload5(NewPointOfFloatXYRoundingMode(floatPoint.GetX(), floatPoint.GetY(), mode), zoom))
+	return upcastPoint_OfFloatToPoint(Win32DPIUtilsPixelToPointOverload7(NewPointOfFloatXYRoundingMode(floatPoint.GetX(), floatPoint.GetY(), mode), zoom))
 }
 
-func Win32DPIUtilsPixelToPointOverload5(pointLike Point_OfFloatLike, zoom int32) *Point_OfFloat {
+func Win32DPIUtilsPixelToPointOverload7(pointLike Point_OfFloatLike, zoom int32) *Point_OfFloat {
 	var point *Point_OfFloat
 	if pointLike != nil {
 		point = pointLike.AsPoint_OfFloat()
@@ -226,13 +226,13 @@ func Win32DPIUtilsPixelToPointOverload5(pointLike Point_OfFloatLike, zoom int32)
 	return scaledPoint
 }
 
-func Win32DPIUtilsPixelToPointOverload6(rectLike RectangleLike, zoom int32) *Rectangle {
+func Win32DPIUtilsPixelToPointOverload4(rectLike RectangleLike, zoom int32) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return Win32DPIUtilsPixelToPointOverload7(rect, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPixelToPointOverload8(rect, zoom, RoundingModeROUND)
 }
 
 func Win32DPIUtilsPixelToPointWithSufficientlyLargeSize(rectLike RectangleLike, zoom int32) *Rectangle {
@@ -241,10 +241,10 @@ func Win32DPIUtilsPixelToPointWithSufficientlyLargeSize(rectLike RectangleLike, 
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return Win32DPIUtilsPixelToPointOverload7(rect, zoom, RoundingModeUP)
+	return Win32DPIUtilsPixelToPointOverload8(rect, zoom, RoundingModeUP)
 }
 
-func Win32DPIUtilsPixelToPointOverload7(rectLike RectangleLike, zoom int32, sizeRounding RoundingMode) *Rectangle {
+func Win32DPIUtilsPixelToPointOverload8(rectLike RectangleLike, zoom int32, sizeRounding RoundingMode) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
@@ -258,8 +258,8 @@ func Win32DPIUtilsPixelToPointOverload7(rectLike RectangleLike, zoom int32, size
 		return Win32DPIUtilsScaleBounds(rect, 100, zoom)
 	}
 	var floatRect *Rectangle_OfFloat = RectangleOfFloatFrom(rect)
-	var scaledTopLeft *Point_OfFloat = Win32DPIUtilsPixelToPointOverload5(floatRect.GetTopLeft(), zoom)
-	var scaledBottomRight *Point_OfFloat = Win32DPIUtilsPixelToPointOverload5(floatRect.GetBottomRight(), zoom)
+	var scaledTopLeft *Point_OfFloat = Win32DPIUtilsPixelToPointOverload7(floatRect.GetTopLeft(), zoom)
+	var scaledBottomRight *Point_OfFloat = Win32DPIUtilsPixelToPointOverload7(floatRect.GetBottomRight(), zoom)
 	var scaledX float32 = float32(scaledTopLeft.X)
 	var scaleyY float32 = float32(scaledTopLeft.Y)
 	var scaledWidth float32 = float32(scaledBottomRight.X - scaledTopLeft.X)
@@ -267,7 +267,7 @@ func Win32DPIUtilsPixelToPointOverload7(rectLike RectangleLike, zoom int32, size
 	return upcastRectangle_OfFloatToRectangle(NewRectangleOfFloatXYWidthHeightLocationRoundingSizeRounding(scaledX, scaleyY, scaledWidth, scaledHeight, RoundingModeROUND, sizeRounding))
 }
 
-func Win32DPIUtilsPixelToPointOverload8(drawable Drawable, rectLike RectangleLike, zoom int32) *Rectangle {
+func Win32DPIUtilsPixelToPointOverload5(drawable Drawable, rectLike RectangleLike, zoom int32) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
@@ -276,7 +276,7 @@ func Win32DPIUtilsPixelToPointOverload8(drawable Drawable, rectLike RectangleLik
 	if drawable != (nil) && !drawable.IsAutoScalable() {
 		return rect
 	}
-	return Win32DPIUtilsPixelToPointOverload6(rect, zoom)
+	return Win32DPIUtilsPixelToPointOverload4(rect, zoom)
 }
 
 func Win32DPIUtilsScaleBounds(rectLike RectangleLike, targetZoom int32, currentZoom int32) *Rectangle {
@@ -375,7 +375,7 @@ func Win32DPIUtilsPointToPixelOverload5(drawable Drawable, size float32, zoom in
 	return Win32DPIUtilsPointToPixelOverload4(size, zoom)
 }
 
-func Win32DPIUtilsPointToPixelOverload6(pointLike PointLike, zoom int32, mode RoundingMode) *Point {
+func Win32DPIUtilsPointToPixelOverload8(pointLike PointLike, zoom int32, mode RoundingMode) *Point {
 	var point *Point
 	if pointLike != nil {
 		point = pointLike.AsPoint()
@@ -385,7 +385,7 @@ func Win32DPIUtilsPointToPixelOverload6(pointLike PointLike, zoom int32, mode Ro
 		return point
 	}
 	var floatPoint *Point_OfFloat = PointOfFloatFrom(point)
-	return Win32DPIUtilsPointToPixelOverload7(NewPointOfFloatXYRoundingMode(floatPoint.GetX(), floatPoint.GetY(), mode), zoom)
+	return Win32DPIUtilsPointToPixelOverload9(NewPointOfFloatXYRoundingMode(floatPoint.GetX(), floatPoint.GetY(), mode), zoom)
 }
 
 func Win32DPIUtilsPointToPixelOfFloat(pointLike Point_OfFloatLike, zoom int32) *Point_OfFloat {
@@ -403,7 +403,7 @@ func Win32DPIUtilsPointToPixelOfFloat(pointLike Point_OfFloatLike, zoom int32) *
 	return scaledPoint
 }
 
-func Win32DPIUtilsPointToPixelOverload7(pointLike Point_OfFloatLike, zoom int32) *Point {
+func Win32DPIUtilsPointToPixelOverload9(pointLike Point_OfFloatLike, zoom int32) *Point {
 	var point *Point_OfFloat
 	if pointLike != nil {
 		point = pointLike.AsPoint_OfFloat()
@@ -443,7 +443,7 @@ func Win32DPIUtilsPointToPixelAsSizePointZoom(pointLike PointLike, zoom int32) *
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPointToPixelOverload6(point, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPointToPixelOverload8(point, zoom, RoundingModeROUND)
 }
 
 func Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(pointLike PointLike, zoom int32) *Point {
@@ -452,7 +452,7 @@ func Win32DPIUtilsPointToPixelAsSufficientlyLargeSize(pointLike PointLike, zoom 
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPointToPixelOverload6(point, zoom, RoundingModeUP)
+	return Win32DPIUtilsPointToPixelOverload8(point, zoom, RoundingModeUP)
 }
 
 func Win32DPIUtilsPointToPixelAsLocationPointZoom(pointLike PointLike, zoom int32) *Point {
@@ -461,16 +461,16 @@ func Win32DPIUtilsPointToPixelAsLocationPointZoom(pointLike PointLike, zoom int3
 		point = pointLike.AsPoint()
 	}
 	_ = point
-	return Win32DPIUtilsPointToPixelOverload6(point, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPointToPixelOverload8(point, zoom, RoundingModeROUND)
 }
 
-func Win32DPIUtilsPointToPixelOverload8(rectLike RectangleLike, zoom int32) *Rectangle {
+func Win32DPIUtilsPointToPixelOverload6(rectLike RectangleLike, zoom int32) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return Win32DPIUtilsPointToPixelOverload9(rect, zoom, RoundingModeROUND)
+	return Win32DPIUtilsPointToPixelOverload10(rect, zoom, RoundingModeROUND)
 }
 
 func Win32DPIUtilsPointToPixelWithSufficientlyLargeSize(rectLike RectangleLike, zoom int32) *Rectangle {
@@ -479,10 +479,10 @@ func Win32DPIUtilsPointToPixelWithSufficientlyLargeSize(rectLike RectangleLike, 
 		rect = rectLike.AsRectangle()
 	}
 	_ = rect
-	return Win32DPIUtilsPointToPixelOverload9(rect, zoom, RoundingModeUP)
+	return Win32DPIUtilsPointToPixelOverload10(rect, zoom, RoundingModeUP)
 }
 
-func Win32DPIUtilsPointToPixelOverload9(rectLike RectangleLike, zoom int32, sizeRounding RoundingMode) *Rectangle {
+func Win32DPIUtilsPointToPixelOverload10(rectLike RectangleLike, zoom int32, sizeRounding RoundingMode) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
@@ -506,7 +506,7 @@ func Win32DPIUtilsPointToPixelOverload9(rectLike RectangleLike, zoom int32, size
 	return NewRectangle(scaledRectangle.X, scaledRectangle.Y, scaledRectangle.Width, scaledRectangle.Height)
 }
 
-func Win32DPIUtilsPointToPixelOverload10(drawable Drawable, rectLike RectangleLike, zoom int32) *Rectangle {
+func Win32DPIUtilsPointToPixelOverload7(drawable Drawable, rectLike RectangleLike, zoom int32) *Rectangle {
 	var rect *Rectangle
 	if rectLike != nil {
 		rect = rectLike.AsRectangle()
@@ -515,7 +515,7 @@ func Win32DPIUtilsPointToPixelOverload10(drawable Drawable, rectLike RectangleLi
 	if drawable != (nil) && !drawable.IsAutoScalable() {
 		return rect
 	}
-	return Win32DPIUtilsPointToPixelOverload8(rect, zoom)
+	return Win32DPIUtilsPointToPixelOverload6(rect, zoom)
 }
 
 func Win32DPIUtilsGetPrimaryMonitorZoomAtStartup() int32 {

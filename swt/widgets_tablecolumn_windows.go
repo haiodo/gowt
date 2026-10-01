@@ -187,7 +187,7 @@ func (this *TableColumn) Pack() {
 	var hasHeaderImage bool = false
 	if this.image != (nil) {
 		hasHeaderImage = true
-		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
+		var bounds *Rectangle = Win32DPIUtilsPointToPixelOverload6(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		headerWidth += bounds.Width
 		var hwndHeader int64 = win32.OSSendMessageOverload4(hwnd, win32.OSLVM_GETHEADER, int64(0), int64(0))
 		var margin int32 = int32(win32.OSSendMessageOverload4(hwndHeader, win32.OSHDM_GETBITMAPMARGIN, int64(0), int64(0)))

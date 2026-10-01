@@ -199,7 +199,7 @@ func (this *Region) GetBounds() *Rectangle {
 	}
 	return func() *Rectangle {
 		_ = []any{func(regionHandle *Region_RegionHandle) *Rectangle {
-			return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(regionHandle.Handle()), regionHandle.Zoom())
+			return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(regionHandle.Handle()), regionHandle.Zoom())
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
 	}()
@@ -288,7 +288,7 @@ func (this *Region) IntersectsRect(rectLike RectangleLike) bool {
 	}
 	return func() bool {
 		_ = []any{func(regionHandle *Region_RegionHandle) bool {
-			var r *Rectangle = Win32DPIUtilsPointToPixelOverload8(rect, regionHandle.Zoom())
+			var r *Rectangle = Win32DPIUtilsPointToPixelOverload6(rect, regionHandle.Zoom())
 			return this.IntersectsInPixels(regionHandle.Handle(), r.X, r.Y, r.Width, r.Height)
 		}}
 		panic("j2go: unresolved call applyUsingAnyHandle")
@@ -754,7 +754,7 @@ func (this *Region_OperationWithRectangle) translate_(handle int64, zoom int32) 
 }
 
 func (this *Region_OperationWithRectangle) GetScaledRectangle(zoom int32) *Rectangle {
-	return Win32DPIUtilsPointToPixelOverload8(this.data, zoom)
+	return Win32DPIUtilsPointToPixelOverload6(this.data, zoom)
 }
 
 func RegionOperationWithRectangleCombineWithRectInPixels(handle int64, x int32, y int32, width int32, height int32, mode int32) {

@@ -1998,8 +1998,8 @@ func (this *Widget) getDataKey_(key string) any {
 	if key == jrt.NullString {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
-	table, ok7 := this.data.([]any)
-	if (this.state&WidgetKEYED_DATA) != 0 && ok7 {
+	table, ok8 := this.data.([]any)
+	if (this.state&WidgetKEYED_DATA) != 0 && ok8 {
 		for i := int32(1); i < int32(len(table)); i += 2 {
 			if key == table[i] {
 				return table[i+1]
@@ -2444,9 +2444,9 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 		return true
 	}
 	var vertical bool = (type_ == MouseWheel)
-	inner8 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
-	inner8.this_0 = this
-	var wheelData *Widget_MouseWheelData = inner8
+	inner9 := newWidgetMouseWheelData(vertical, nil, wParam, this.display.scrollRemainderEvt)
+	inner9.this_0 = this
+	var wheelData *Widget_MouseWheelData = inner9
 	if wheelData.count == 0 {
 		return true
 	}
@@ -2830,13 +2830,13 @@ func (this *Widget) WmContextMenu(hwnd int64, wParam int64, lParam int64) *win32
 		y = win32.OSGET_Y_LPARAM(int64(pos))
 		detail = MENU_KEYBOARD
 	}
-	var cond9 *win32.LRESULT
+	var cond10 *win32.LRESULT
 	if this.ShowMenuXYDetail(x, y, detail) {
-		cond9 = win32.LRESULTZERO
+		cond10 = win32.LRESULTZERO
 	} else {
-		cond9 = nil
+		cond10 = nil
 	}
-	return cond9
+	return cond10
 }
 
 func (this *Widget) WmIMEChar(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3196,23 +3196,23 @@ func (this *Widget) WmMouseMove(hwnd int64, wParam int64, lParam int64) *win32.L
 }
 
 func (this *Widget) WmMouseWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
-	var cond10 *win32.LRESULT
-	if this.SendMouseWheelEvent(MouseWheel, hwnd, wParam, lParam) {
-		cond10 = nil
-	} else {
-		cond10 = win32.LRESULTZERO
-	}
-	return cond10
-}
-
-func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
 	var cond11 *win32.LRESULT
-	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
+	if this.SendMouseWheelEvent(MouseWheel, hwnd, wParam, lParam) {
 		cond11 = nil
 	} else {
 		cond11 = win32.LRESULTZERO
 	}
 	return cond11
+}
+
+func (this *Widget) WmMouseHWheel(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
+	var cond12 *win32.LRESULT
+	if this.SendMouseWheelEvent(MouseHorizontalWheel, hwnd, wParam, lParam) {
+		cond12 = nil
+	} else {
+		cond12 = win32.LRESULTZERO
+	}
+	return cond12
 }
 
 func (this *Widget) WmNCPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {
@@ -3245,7 +3245,7 @@ func (this *Widget) WmPaint(hwnd int64, wParam int64, lParam int64) *win32.LRESU
 			win32.OSSetMetaRgn(hDC)
 			var event *Event = NewEvent()
 			event.Gc = gc
-			event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
+			event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
 			this.SendEventEventTypeEvent(Paint, event)
 			event.Gc = nil
 		}
@@ -3362,13 +3362,13 @@ func (this *Widget) WmSysChar(hwnd int64, wParam int64, lParam int64) *win32.LRE
 	}
 	consumed = consumed || display.mnemonicKeyHit
 	display.mnemonicKeyHit = oldKeyHit
-	var cond12 *win32.LRESULT
+	var cond13 *win32.LRESULT
 	if consumed {
-		cond12 = win32.LRESULTONE
+		cond13 = win32.LRESULTONE
 	} else {
-		cond12 = win32.NewLRESULT(result)
+		cond13 = win32.NewLRESULT(result)
 	}
-	return cond12
+	return cond13
 }
 
 func (this *Widget) WmSysKeyDown(hwnd int64, wParam int64, lParam int64) *win32.LRESULT {

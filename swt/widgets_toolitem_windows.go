@@ -126,7 +126,7 @@ func (this *ToolItem) destroyWidget_() {
 
 func (this *ToolItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ToolItem) GetBoundsInPixels() *Rectangle {

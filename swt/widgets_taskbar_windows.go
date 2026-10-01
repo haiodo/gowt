@@ -383,7 +383,7 @@ func (this *TaskBar) SetMenu(menuLike MenuLike) {
 		jrt.GetChars(appName, 0, length, buffer, 0)
 	}
 	var items []*MenuItem = nil
-	if menu != (nil) && func() bool { cond3 := menu.GetItems(); items = cond3; return int32(len((cond3))) != 0 }() {
+	if menu != (nil) && func() bool { cond4 := menu.GetItems(); items = cond4; return int32(len((cond4))) != 0 }() {
 		var poa *win32.IObjectArray = this.CreateShellLinkArray(items)
 		if poa != (nil) {
 			hr = pDestList.SetAppID(buffer)

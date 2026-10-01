@@ -53,7 +53,7 @@ func (this *Canvas) DrawBackgroundGC(gcLike GCLike, x int32, y int32, width int3
 	}
 	_ = gc
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload6(NewRectangle(x, y, width, height), zoom)
 	this.DrawBackgroundInPixels(gc, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, 0, 0)
 }
 
@@ -98,7 +98,7 @@ func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int
 	var zoom int32 = this.impl.getAutoscalingZoom_()
 	destX = DPIUtilPointToPixel(destX, zoom)
 	destY = DPIUtilPointToPixel(destY, zoom)
-	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload6(NewRectangle(x, y, width, height), zoom)
 	this.ScrollInPixels(destX, destY, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, all)
 }
 

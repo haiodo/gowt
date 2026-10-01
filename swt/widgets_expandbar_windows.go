@@ -742,7 +742,7 @@ func (this *ExpandBar) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 			if this.Hooks(Paint) || this.Filters(Paint) {
 				var event *Event = NewEvent()
 				event.Gc = gc
-				event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
+				event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(rect.Left, rect.Top, width, height), this.impl.getAutoscalingZoom_()))
 				this.SendEventEventTypeEvent(Paint, event)
 				event.Gc = nil
 			}

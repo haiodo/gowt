@@ -502,7 +502,7 @@ func (this *Device) GetBounds() *Rectangle {
 
 func (this *Device) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return Win32DPIUtilsPixelToPointOverload6(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
 }
 
 func (this *Device) GetBoundsInPixels() *Rectangle {
@@ -1013,7 +1013,7 @@ func DeviceWin32_destroyUnusedHandles(displayLike DisplayLike) {
 		display = displayLike.AsDisplay()
 	}
 	_ = display
-	var availableZoomLevels *jrt.List = func() any { panic("j2go: unresolved new HashSet<Integer>") }()
+	var availableZoomLevels *jrt.List = jrt.NewList()
 	for _, monitor := range display.GetMonitors() {
 		availableZoomLevels.Add(int32(DPIUtilGetZoomForAutoscaleProperty(monitor.GetZoom())))
 	}

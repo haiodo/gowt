@@ -185,7 +185,7 @@ func (this *Sash) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSClientToScreen(hwndTrack, cursorPt)
 		win32.OSSetCursorPos(cursorPt.X, cursorPt.Y)
 		var event *Event = NewEvent()
-		event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(newX, newY, width, height), this.impl.getAutoscalingZoom_()))
+		event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(newX, newY, width, height), this.impl.getAutoscalingZoom_()))
 		this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 		if this.IsDisposed() {
 			return win32.LRESULTZERO
@@ -223,7 +223,7 @@ func (this *Sash) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	var width int32 = rect.Right - rect.Left
 	var height int32 = rect.Bottom - rect.Top
 	var event *Event = NewEvent()
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(this.lastX, this.lastY, width, height), this.impl.getAutoscalingZoom_()))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(this.lastX, this.lastY, width, height), this.impl.getAutoscalingZoom_()))
 	if (this.style & SMOOTH) == 0 {
 		event.Detail = DRAG
 	}
@@ -231,7 +231,7 @@ func (this *Sash) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	if this.IsDisposed() {
 		return win32.LRESULTZERO
 	}
-	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
+	var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload6(event.GetBounds(), this.impl.getAutoscalingZoom_())
 	if event.Doit {
 		this.dragging = true
 		this.lastX = boundsInPixels.X
@@ -264,7 +264,7 @@ func (this *Sash) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT {
 	var widthInPixels int32 = rect.Right - rect.Left
 	var heightInPixels int32 = rect.Bottom - rect.Top
 	var event *Event = NewEvent()
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(this.lastX, this.lastY, widthInPixels, heightInPixels), this.impl.getAutoscalingZoom_()))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(this.lastX, this.lastY, widthInPixels, heightInPixels), this.impl.getAutoscalingZoom_()))
 	this.DrawBand(this.lastX, this.lastY, widthInPixels, heightInPixels)
 	this.SendSelectionEventEventTypeEventSend(Selection, event, true)
 	if this.IsDisposed() {
@@ -314,7 +314,7 @@ func (this *Sash) wM_MOUSEMOVE_(wParam int64, lParam int64) *win32.LRESULT {
 	this.DrawBand(this.lastX, this.lastY, width, height)
 	var zoom int32 = this.impl.getAutoscalingZoom_()
 	var event *Event = NewEvent()
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(newX, newY, width, height), zoom))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(newX, newY, width, height), zoom))
 	if (this.style & SMOOTH) == 0 {
 		event.Detail = DRAG
 	}

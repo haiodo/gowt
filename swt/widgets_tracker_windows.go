@@ -302,7 +302,7 @@ func (this *Tracker) GetRectangles() []*Rectangle {
 	this.CheckWidget()
 	var result []*Rectangle = this.GetRectanglesInPixels()
 	for i := int32(0); i < int32(len(result)); i++ {
-		result[i] = Win32DPIUtilsPixelToPointOverload6(result[i], this.impl.getAutoscalingZoom_())
+		result[i] = Win32DPIUtilsPixelToPointOverload4(result[i], this.impl.getAutoscalingZoom_())
 	}
 	return result
 }
@@ -662,7 +662,7 @@ func (this *Tracker) SetRectangles(rectangles []*Rectangle) {
 	var rectanglesInPixels []*Rectangle = make([]*Rectangle, int32(len(rectangles)))
 	for i := int32(0); i < int32(len(rectangles)); i++ {
 		if this.parent != (nil) {
-			rectanglesInPixels[i] = Win32DPIUtilsPointToPixelOverload8(rectangles[i], this.impl.getAutoscalingZoom_())
+			rectanglesInPixels[i] = Win32DPIUtilsPointToPixelOverload6(rectangles[i], this.impl.getAutoscalingZoom_())
 		} else {
 			rectanglesInPixels[i] = this.display.TranslateToDisplayCoordinatesRect(rectangles[i])
 		}

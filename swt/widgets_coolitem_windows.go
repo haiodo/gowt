@@ -109,7 +109,7 @@ func (this *CoolItem) destroyWidget_() {
 
 func (this *CoolItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *CoolItem) GetBoundsInPixels() *Rectangle {

@@ -1044,7 +1044,7 @@ func (this *MenuItem) WmMeasureChild(wParam int64, lParam int64) *win32.LRESULT 
 	var width int32 = 0
 	var height int32 = 0
 	if this.image != (nil) {
-		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload6(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		width = rect.Width
 		height = rect.Height
 	} else {
@@ -1056,7 +1056,7 @@ func (this *MenuItem) WmMeasureChild(wParam int64, lParam int64) *win32.LRESULT 
 		if (lpcmi.DwStyle & win32.OSMNS_CHECKORBMP) == 0 {
 			for _, item := range this.parent.GetItems() {
 				if item.image != (nil) {
-					var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(item.image.GetBounds(), this.impl.getAutoscalingZoom_())
+					var rect *Rectangle = Win32DPIUtilsPointToPixelOverload6(item.image.GetBounds(), this.impl.getAutoscalingZoom_())
 					width = int32(math.Max(float64(width), float64(rect.Width)))
 				}
 			}

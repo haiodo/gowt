@@ -158,7 +158,7 @@ func (this *TableItem) GetBackgroundIndex(index int32) *Color {
 
 func (this *TableItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetBoundsInPixels() *Rectangle {
@@ -177,7 +177,7 @@ func (this *TableItem) GetBoundsInPixels() *Rectangle {
 
 func (this *TableItem) GetBoundsIndex(index int32) *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixelsIndex(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetBoundsInPixelsIndex(index int32) *Rectangle {
@@ -507,7 +507,7 @@ func (this *TableItem) GetImageIndex(index int32) *Image {
 
 func (this *TableItem) GetImageBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetImageBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetImageBoundsInPixels(index int32) *Rectangle {
@@ -579,7 +579,7 @@ func (this *TableItem) GetTextIndex(index int32) string {
 
 func (this *TableItem) GetTextBounds(index int32) *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetTextBoundsInPixels(index), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TableItem) GetTextBoundsInPixels(index int32) *Rectangle {

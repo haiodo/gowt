@@ -180,7 +180,7 @@ func (this *Scrollable) GetClientArea() *Rectangle {
 
 func (this *Scrollable) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.impl.getClientAreaInPixels_(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.impl.getClientAreaInPixels_(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Scrollable) GetClientAreaInPixels() *Rectangle {

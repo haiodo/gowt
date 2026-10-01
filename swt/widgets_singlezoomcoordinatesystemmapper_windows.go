@@ -47,36 +47,36 @@ func (this *SingleZoomCoordinateSystemMapper) GetZoomLevelForMapping(fromLike Co
 	return from.impl.getAutoscalingZoom_()
 }
 
-func (this *SingleZoomCoordinateSystemMapper) Map(from *Control, to *Control, point *Point) *Point {
+func (this *SingleZoomCoordinateSystemMapper) MapPoint(from *Control, to *Control, point *Point) *Point {
 	var zoom int32 = this.GetZoomLevelForMapping(from, to)
 	point = Win32DPIUtilsPointToPixelAsLocationPointZoom(point, zoom)
 	return Win32DPIUtilsPixelToPointAsLocationPointZoom(this.display.MapInPixels(from, to, point), zoom)
 }
 
-func (this *SingleZoomCoordinateSystemMapper) MapFromToRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle {
+func (this *SingleZoomCoordinateSystemMapper) MapRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle {
 	var zoom int32 = this.GetZoomLevelForMapping(from, to)
-	rectangle = Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
-	return Win32DPIUtilsPixelToPointOverload6(this.display.MapInPixelsFromToRectangle(from, to, rectangle), zoom)
+	rectangle = Win32DPIUtilsPointToPixelOverload6(rectangle, zoom)
+	return Win32DPIUtilsPixelToPointOverload4(this.display.MapInPixelsFromToRectangle(from, to, rectangle), zoom)
 }
 
-func (this *SingleZoomCoordinateSystemMapper) MapFromToXY(from *Control, to *Control, x int32, y int32) *Point {
+func (this *SingleZoomCoordinateSystemMapper) MapXY(from *Control, to *Control, x int32, y int32) *Point {
 	var zoom int32 = this.GetZoomLevelForMapping(from, to)
 	x = DPIUtilPointToPixel(x, zoom)
 	y = DPIUtilPointToPixel(y, zoom)
 	return Win32DPIUtilsPixelToPointAsLocationPointZoom(this.display.MapInPixelsFromToXY(from, to, x, y), zoom)
 }
 
-func (this *SingleZoomCoordinateSystemMapper) MapFromToXYWidthHeight(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle {
+func (this *SingleZoomCoordinateSystemMapper) MapBounds(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle {
 	var zoom int32 = this.GetZoomLevelForMapping(from, to)
 	x = DPIUtilPointToPixel(x, zoom)
 	y = DPIUtilPointToPixel(y, zoom)
 	width = DPIUtilPointToPixel(width, zoom)
 	height = DPIUtilPointToPixel(height, zoom)
-	return Win32DPIUtilsPixelToPointOverload6(this.display.MapInPixelsFromToXYWidthHeight(from, to, x, y, width, height), zoom)
+	return Win32DPIUtilsPixelToPointOverload4(this.display.MapInPixelsFromToXYWidthHeight(from, to, x, y, width, height), zoom)
 }
 
 func (this *SingleZoomCoordinateSystemMapper) MapMonitorBounds(rect *Rectangle_WithMonitor) *Rectangle {
-	return Win32DPIUtilsPixelToPointOverload6(upcastRectangle_WithMonitorToRectangle(rect), DPIUtilGetDeviceZoom())
+	return Win32DPIUtilsPixelToPointOverload4(upcastRectangle_WithMonitorToRectangle(rect), DPIUtilGetDeviceZoom())
 }
 
 func (this *SingleZoomCoordinateSystemMapper) TranslateFromDisplayCoordinates(point *Point) *Point {
@@ -88,11 +88,11 @@ func (this *SingleZoomCoordinateSystemMapper) TranslateToDisplayCoordinates(poin
 }
 
 func (this *SingleZoomCoordinateSystemMapper) TranslateFromDisplayCoordinatesRect(rect *Rectangle) *Rectangle {
-	return Win32DPIUtilsPixelToPointOverload6(rect, DPIUtilGetDeviceZoom())
+	return Win32DPIUtilsPixelToPointOverload4(rect, DPIUtilGetDeviceZoom())
 }
 
 func (this *SingleZoomCoordinateSystemMapper) TranslateToDisplayCoordinatesRect(rect *Rectangle) *Rectangle {
-	return Win32DPIUtilsPointToPixelOverload8(rect, DPIUtilGetDeviceZoom())
+	return Win32DPIUtilsPointToPixelOverload6(rect, DPIUtilGetDeviceZoom())
 }
 
 func (this *SingleZoomCoordinateSystemMapper) GetCursorLocation() *Point {
@@ -110,7 +110,7 @@ func (this *SingleZoomCoordinateSystemMapper) GetContainingMonitorBoundsInPixels
 	var zoom int32 = DPIUtilGetDeviceZoom()
 	point = Win32DPIUtilsPointToPixelAsLocationPointZoom(point, zoom)
 	for _, monitor := range this.display.GetMonitors() {
-		var monitorBounds *Rectangle = Win32DPIUtilsPointToPixelOverload8(monitor.GetBounds(), zoom)
+		var monitorBounds *Rectangle = Win32DPIUtilsPointToPixelOverload6(monitor.GetBounds(), zoom)
 		if monitorBounds.ContainsPt(point) {
 			return monitorBounds
 		}

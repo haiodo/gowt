@@ -804,16 +804,16 @@ func (this *Menu) Update() {
 	var hasImage bool = false
 	for _, item := range this.GetItems() {
 		if item.image != (nil) {
-			cond6 := true
-			hasImage = cond6
-			if (cond6) && hasCheck {
+			cond7 := true
+			hasImage = cond7
+			if (cond7) && hasCheck {
 				break
 			}
 		}
 		if (item.style & (CHECK | RADIO)) != 0 {
-			cond7 := true
-			hasCheck = cond7
-			if (cond7) && hasImage {
+			cond9 := true
+			hasCheck = cond9
+			if (cond9) && hasImage {
 				break
 			}
 		}

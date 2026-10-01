@@ -362,7 +362,7 @@ func (this *FontData) Equals(object any) bool {
 	}
 	var fd *FontData = castanyToFontData(object)
 	var lf *win32.LOGFONT = fd.Data
-	return int32(this.Data.LfCharSet) == int32(lf.LfCharSet) && this.Height == fd.Height && this.Data.LfWidth == lf.LfWidth && this.Data.LfEscapement == lf.LfEscapement && this.Data.LfOrientation == lf.LfOrientation && this.Data.LfWeight == lf.LfWeight && int32(this.Data.LfItalic) == int32(lf.LfItalic) && int32(this.Data.LfUnderline) == int32(lf.LfUnderline) && int32(this.Data.LfStrikeOut) == int32(lf.LfStrikeOut) && int32(this.Data.LfCharSet) == int32(lf.LfCharSet) && int32(this.Data.LfOutPrecision) == int32(lf.LfOutPrecision) && int32(this.Data.LfClipPrecision) == int32(lf.LfClipPrecision) && int32(this.Data.LfQuality) == int32(lf.LfQuality) && int32(this.Data.LfPitchAndFamily) == int32(lf.LfPitchAndFamily) && (this.GetName() == fd.GetName())
+	return int32(this.Data.LfCharSet) == int32(lf.LfCharSet) && this.Height == fd.Height && this.Data.LfWidth == lf.LfWidth && this.Data.LfEscapement == lf.LfEscapement && this.Data.LfOrientation == lf.LfOrientation && this.Data.LfWeight == lf.LfWeight && int32(this.Data.LfItalic) == int32(lf.LfItalic) && int32(this.Data.LfUnderline) == int32(lf.LfUnderline) && int32(this.Data.LfStrikeOut) == int32(lf.LfStrikeOut) && int32(this.Data.LfOutPrecision) == int32(lf.LfOutPrecision) && int32(this.Data.LfClipPrecision) == int32(lf.LfClipPrecision) && int32(this.Data.LfQuality) == int32(lf.LfQuality) && int32(this.Data.LfPitchAndFamily) == int32(lf.LfPitchAndFamily) && (this.GetName() == fd.GetName())
 }
 
 func (this *FontData) EnumLocalesProc(lpLocaleString int64) int64 {

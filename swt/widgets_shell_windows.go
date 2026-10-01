@@ -888,8 +888,8 @@ func (this *Shell) Open() {
 	}
 	if restored {
 		var focusControl *Control = this.display.GetFocusControl()
-		_, ok8 := isControlToButton(focusControl)
-		if ok8 && (focusControl.style&PUSH) != 0 {
+		_, ok9 := isControlToButton(focusControl)
+		if ok9 && (focusControl.style&PUSH) != 0 {
 			restored = false
 		}
 	}
@@ -1634,13 +1634,13 @@ func (this *Shell) widgetParent_() int64 {
 	if this.Handle != 0 {
 		return this.Handle
 	}
-	var cond9 int64
+	var cond10 int64
 	if this.parent != (nil) {
-		cond9 = this.parent.Handle
+		cond10 = this.parent.Handle
 	} else {
-		cond9 = int64(0)
+		cond10 = int64(0)
 	}
-	return cond9
+	return cond10
 }
 
 func (this *Shell) widgetExtStyle_() int32 {
@@ -1669,13 +1669,13 @@ func (this *Shell) windowClass_() *win32.TCHAR {
 			return this.display.windowShadowClass
 		}
 	}
-	var cond10 *win32.TCHAR
+	var cond11 *win32.TCHAR
 	if this.parent != (nil) {
-		cond10 = ShellDialogClass
+		cond11 = ShellDialogClass
 	} else {
-		cond10 = this.Decorations.windowClass_()
+		cond11 = this.Decorations.windowClass_()
 	}
-	return cond10
+	return cond11
 }
 
 func (this *Shell) windowProcNoArgs_() int64 {
@@ -1688,13 +1688,13 @@ func (this *Shell) windowProcNoArgs_() int64 {
 			return this.Decorations.windowProcNoArgs_()
 		}
 	}
-	var cond11 int64
+	var cond12 int64
 	if this.parent != (nil) {
-		cond11 = ShellDialogProc
+		cond12 = ShellDialogProc
 	} else {
-		cond11 = this.Decorations.windowProcNoArgs_()
+		cond12 = this.Decorations.windowProcNoArgs_()
 	}
-	return cond11
+	return cond12
 }
 
 func (this *Shell) GetClientRectInWindow() *Rectangle {
@@ -1831,13 +1831,13 @@ func (this *Shell) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT {
 			}
 		}
 	}
-	var cond12 *win32.LRESULT
+	var cond13 *win32.LRESULT
 	if this.parent != (nil) {
-		cond12 = win32.LRESULTZERO
+		cond13 = win32.LRESULTZERO
 	} else {
-		cond12 = result
+		cond13 = result
 	}
-	return cond12
+	return cond13
 }
 
 func (this *Shell) wM_DESTROY_(wParam int64, lParam int64) *win32.LRESULT {
@@ -2190,21 +2190,21 @@ func ShellCheckStyle(parentLike ShellLike, style int32) int32 {
 	var mask int32 = SYSTEM_MODAL | APPLICATION_MODAL | PRIMARY_MODAL
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
-		var cond13 int32
+		var cond14 int32
 		if parent == (nil) {
-			cond13 = SHELL_TRIM
+			cond14 = SHELL_TRIM
 		} else {
-			cond13 = DIALOG_TRIM
+			cond14 = DIALOG_TRIM
 		}
-		style |= cond13
+		style |= cond14
 		if (style & mask) == 0 {
-			var cond14 int32
+			var cond15 int32
 			if parent == (nil) {
-				cond14 = APPLICATION_MODAL
+				cond15 = APPLICATION_MODAL
 			} else {
-				cond14 = PRIMARY_MODAL
+				cond15 = PRIMARY_MODAL
 			}
-			style |= cond14
+			style |= cond15
 		}
 	}
 	var bits int32 = style & ^mask

@@ -415,7 +415,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 									data.Device = upcastDisplayToDevice(this.display)
 									var gc *GC = this.impl.createNewGC_(hDC, data)
 									var iconRect *win32.RECT = item.GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(index, false, true, false, false, true, hDC)
-									gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload6(NewRectangle(iconRect.Left, iconRect.Top, iconRect.Right-iconRect.Left, iconRect.Bottom-iconRect.Top), zoom))
+									gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload4(NewRectangle(iconRect.Left, iconRect.Top, iconRect.Right-iconRect.Left, iconRect.Bottom-iconRect.Top), zoom))
 									gc.DrawImageImageDestXDestYDestWidthDestHeight(image, DPIUtilPixelToPoint(iconRect.Left, zoom), DPIUtilPixelToPoint(iconRect.Top, zoom), size.X, size.Y)
 									win32.OSSelectClipRgn(hDC, int64(0))
 									gc.impl.dispose_()
@@ -581,7 +581,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 								}
 							}
 						}
-						var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_())
+						var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload4(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_())
 						event.SetBounds(bounds)
 						gc.SetClippingOverload2(bounds)
 						this.SendEventEventTypeEvent(EraseItem, event)
@@ -744,7 +744,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 							var data *GCData = NewGCData()
 							data.Device = upcastDisplayToDevice(this.display)
 							var gc *GC = this.impl.createNewGC_(hDC, data)
-							gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload6(NewRectangle(x1, rect.Top, rect.Right-x1, rect.Bottom-rect.Top), zoom))
+							gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload4(NewRectangle(x1, rect.Top, rect.Right-x1, rect.Bottom-rect.Top), zoom))
 							gc.DrawImageImageDestXDestYDestWidthDestHeight(image, DPIUtilPixelToPoint(x1, zoom), DPIUtilPixelToPoint(y1, zoom), size.X, size.Y)
 							win32.OSSelectClipRgn(hDC, int64(0))
 							gc.impl.dispose_()
@@ -874,11 +874,11 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 						}
 					}
 				}
-				event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
+				event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 				var cellRect *win32.RECT = item.GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(index, true, true, true, true, true, hDC)
 				var cellWidth int32 = cellRect.Right - cellRect.Left
 				var cellHeight int32 = cellRect.Bottom - cellRect.Top
-				gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellWidth, cellHeight), zoom))
+				gc.SetClippingOverload2(Win32DPIUtilsPixelToPointOverload4(NewRectangle(cellRect.Left, cellRect.Top, cellWidth, cellHeight), zoom))
 				this.SendEventEventTypeEvent(PaintItem, event)
 				if data.FocusDrawn {
 					this.focusRect = nil
@@ -1056,7 +1056,7 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 				cond5 = 0
 			}
 			measureEvent = this.SendMeasureItemEvent(item, index, hDC, cond5)
-			boundsInPixels = Win32DPIUtilsPointToPixelOverload8(measureEvent.GetBounds(), this.impl.getAutoscalingZoom_())
+			boundsInPixels = Win32DPIUtilsPointToPixelOverload6(measureEvent.GetBounds(), this.impl.getAutoscalingZoom_())
 			if this.IsDisposed() || item.IsDisposed() {
 				return nil
 			}
@@ -1126,7 +1126,7 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 					}
 				}
 			}
-			var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_())
+			var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload4(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_())
 			event.SetBounds(bounds)
 			gc.SetClippingOverload2(bounds)
 			this.SendEventEventTypeEvent(EraseItem, event)
@@ -2229,19 +2229,19 @@ func (this *Tree) deregister_() {
 	}
 }
 
-func (this *Tree) Deselect(hItem int64, tvItem *win32.TVITEM, hIgnoreItem int64) {
+func (this *Tree) DeselectHItemTvItemHIgnoreItem(hItem int64, tvItem *win32.TVITEM, hIgnoreItem int64) {
 	for hItem != 0 {
 		if hItem != hIgnoreItem {
 			tvItem.HItem = hItem
 			win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_SETITEM, int64(0), tvItem)
 		}
 		var hFirstItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hItem)
-		this.Deselect(hFirstItem, tvItem, hIgnoreItem)
+		this.DeselectHItemTvItemHIgnoreItem(hFirstItem, tvItem, hIgnoreItem)
 		hItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), hItem)
 	}
 }
 
-func (this *Tree) DeselectItem(itemLike TreeItemLike) {
+func (this *Tree) Deselect(itemLike TreeItemLike) {
 	var item *TreeItem
 	if itemLike != nil {
 		item = itemLike.AsTreeItem()
@@ -2277,7 +2277,7 @@ func (this *Tree) DeselectAll0() {
 		win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 		if (this.style & VIRTUAL) != 0 {
 			var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-			this.Deselect(hItem, tvItem, int64(0))
+			this.DeselectHItemTvItemHIgnoreItem(hItem, tvItem, int64(0))
 		} else {
 			for _, item := range this.items {
 				if item != (nil) {
@@ -2614,7 +2614,7 @@ func (this *Tree) FindCell(x int32, y int32, item []*TreeItem, index []int32, ce
 						if this.IsDisposed() || item[0].IsDisposed() {
 							break
 						}
-						var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
+						var boundsInPixels *Rectangle = Win32DPIUtilsPointToPixelOverload6(event.GetBounds(), this.impl.getAutoscalingZoom_())
 						itemRect[0] = win32.NewRECT()
 						itemRect[0].Left = boundsInPixels.X
 						itemRect[0].Right = boundsInPixels.X + boundsInPixels.Width
@@ -3099,7 +3099,7 @@ func (this *Tree) GetParentItem() *TreeItem {
 	return nil
 }
 
-func (this *Tree) GetSelection(hItem int64, tvItem *win32.TVITEM, selection []*TreeItem, index int32, count int32, bigSelection bool, all bool) int32 {
+func (this *Tree) GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem int64, tvItem *win32.TVITEM, selection []*TreeItem, index int32, count int32, bigSelection bool, all bool) int32 {
 	for hItem != 0 {
 		var expanded bool = true
 		if bigSelection {
@@ -3140,7 +3140,7 @@ func (this *Tree) GetSelection(hItem int64, tvItem *win32.TVITEM, selection []*T
 		if all {
 			if expanded {
 				var hFirstItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hItem)
-				cond25 := this.GetSelection(hFirstItem, tvItem, selection, index, count, bigSelection, all)
+				cond25 := this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hFirstItem, tvItem, selection, index, count, bigSelection, all)
 				index = cond25
 				if (cond25) == count {
 					break
@@ -3154,7 +3154,7 @@ func (this *Tree) GetSelection(hItem int64, tvItem *win32.TVITEM, selection []*T
 	return index
 }
 
-func (this *Tree) GetSelection0() []*TreeItem {
+func (this *Tree) GetSelection() []*TreeItem {
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
 		var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
@@ -3188,7 +3188,7 @@ func (this *Tree) GetSelection0() []*TreeItem {
 		var tvItem *win32.TVITEM = win32.NewTVITEM()
 		tvItem.Mask = win32.OSTVIF_HANDLE | win32.OSTVIF_PARAM | win32.OSTVIF_STATE
 		var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-		count = this.GetSelection(hItem, tvItem, guess, 0, -1, false, true)
+		count = this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem, tvItem, guess, 0, -1, false, true)
 	} else {
 		for _, item := range this.items {
 			if item != (nil) {
@@ -3221,8 +3221,8 @@ func (this *Tree) GetSelection0() []*TreeItem {
 	var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
 	var itemCount int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETCOUNT, int64(0), int64(0)))
 	var bigSelection bool = int32(len(result)) > itemCount/2
-	if count != this.GetSelection(hItem, tvItem, result, 0, count, bigSelection, false) {
-		count = this.GetSelection(hItem, tvItem, result, 0, count, bigSelection, true)
+	if count != this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem, tvItem, result, 0, count, bigSelection, false) {
+		count = this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem, tvItem, result, 0, count, bigSelection, true)
 	}
 	if count != int32(len(result)) {
 		var newResult []*TreeItem = make([]*TreeItem, count)
@@ -3254,7 +3254,7 @@ func (this *Tree) GetSelectionCount() int32 {
 	win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 	if (this.style & VIRTUAL) != 0 {
 		var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-		count = this.GetSelection(hItem, nil, nil, 0, -1, false, true)
+		count = this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem, nil, nil, 0, -1, false, true)
 	} else {
 		for _, item := range this.items {
 			if item != (nil) {
@@ -3334,7 +3334,7 @@ func (this *Tree) HitTestSelection(hItem int64, x int32, y int32) bool {
 		detail = 0
 	}
 	var event *Event = this.SendMeasureItemEvent(item, order[index[0]], hDC, detail)
-	if Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_()).Contains(x, y) {
+	if Win32DPIUtilsPointToPixelOverload6(event.GetBounds(), this.impl.getAutoscalingZoom_()).Contains(x, y) {
 		result = true
 	}
 	if newFont != 0 {
@@ -3888,20 +3888,20 @@ func (this *Tree) scrolledHandle_() int64 {
 	return cond31
 }
 
-func (this *Tree) Select(hItem int64, tvItem *win32.TVITEM) {
+func (this *Tree) SelectHItemTvItem(hItem int64, tvItem *win32.TVITEM) {
 	for hItem != 0 {
 		tvItem.HItem = hItem
 		win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_SETITEM, int64(0), tvItem)
 		var state int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETITEMSTATE, hItem, int64(win32.OSTVIS_EXPANDED)))
 		if (state & win32.OSTVIS_EXPANDED) != 0 {
 			var hFirstItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hItem)
-			this.Select(hFirstItem, tvItem)
+			this.SelectHItemTvItem(hFirstItem, tvItem)
 		}
 		hItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), hItem)
 	}
 }
 
-func (this *Tree) SelectItem(itemLike TreeItemLike) {
+func (this *Tree) Select(itemLike TreeItemLike) {
 	var item *TreeItem
 	if itemLike != nil {
 		item = itemLike.AsTreeItem()
@@ -3978,7 +3978,7 @@ func (this *Tree) SelectAll() {
 	var oldProc int64 = win32.OSGetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC)
 	win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 	var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-	this.Select(hItem, tvItem)
+	this.SelectHItemTvItem(hItem, tvItem)
 	win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, oldProc)
 }
 
@@ -4003,7 +4003,7 @@ func (this *Tree) SendEraseItemEvent(itemLike TreeItemLike, nmcd *win32.NMTTCUST
 	event.Index = column
 	event.Gc = gc
 	event.Detail |= FOREGROUND
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_()))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(cellRect.Left, cellRect.Top, cellRect.Right-cellRect.Left, cellRect.Bottom-cellRect.Top), this.impl.getAutoscalingZoom_()))
 	this.SendEventEventTypeEvent(EraseItem, event)
 	event.Gc = nil
 	gc.impl.dispose_()
@@ -4027,7 +4027,7 @@ func (this *Tree) SendMeasureItemEvent(itemLike TreeItemLike, index int32, hDC i
 	event.Item = upcastTreeItemToWidget(item)
 	event.Gc = gc
 	event.Index = index
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 	event.Detail = detail
 	this.SendEventEventTypeEvent(MeasureItem, event)
 	event.Gc = nil
@@ -4036,7 +4036,7 @@ func (this *Tree) SendMeasureItemEvent(itemLike TreeItemLike, index int32, hDC i
 	if this.IsDisposed() || item.IsDisposed() {
 		return nil
 	}
-	var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(event.GetBounds(), this.impl.getAutoscalingZoom_())
+	var rect *Rectangle = Win32DPIUtilsPointToPixelOverload6(event.GetBounds(), this.impl.getAutoscalingZoom_())
 	if this.hwndHeader != 0 {
 		if this.columnCount == 0 {
 			if rect.X+rect.Width > this.scrollWidth {
@@ -4073,7 +4073,7 @@ func (this *Tree) SendPaintItemEvent(itemLike TreeItemLike, nmcd *win32.NMTTCUST
 	event.Index = column
 	event.Gc = gc
 	event.Detail |= FOREGROUND
-	event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
+	event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(itemRect.Left, itemRect.Top, itemRect.Right-itemRect.Left, itemRect.Bottom-itemRect.Top), this.impl.getAutoscalingZoom_()))
 	this.SendEventEventTypeEvent(PaintItem, event)
 	event.Gc = nil
 	gc.impl.dispose_()
@@ -4433,7 +4433,7 @@ func (this *Tree) SetScrollWidthWidth(width int32) {
 	this.ignoreResize = oldIgnore
 }
 
-func (this *Tree) SetSelectionLocal1(hItem int64, tvItem *win32.TVITEM, selection []*TreeItem) {
+func (this *Tree) SetSelectionHItemTvItemSelection(hItem int64, tvItem *win32.TVITEM, selection []*TreeItem) {
 	for hItem != 0 {
 		var index int32 = 0
 		for index < int32(len(selection)) {
@@ -4458,7 +4458,7 @@ func (this *Tree) SetSelectionLocal1(hItem int64, tvItem *win32.TVITEM, selectio
 			}
 		}
 		var hFirstItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hItem)
-		this.SetSelectionLocal1(hFirstItem, tvItem, selection)
+		this.SetSelectionHItemTvItemSelection(hFirstItem, tvItem, selection)
 		hItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), hItem)
 	}
 }
@@ -4521,7 +4521,7 @@ func (this *Tree) SetSelectionItems(items []*TreeItem) {
 			tvItem.StateMask = win32.OSTVIS_SELECTED
 			tvItem.HItem = hNewItem
 			win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_SETITEM, int64(0), tvItem)
-			this.ShowItemLocal1(hNewItem)
+			this.ShowItemHItem(hNewItem)
 		}
 	}
 	if (this.style & SINGLE) != 0 {
@@ -4534,7 +4534,7 @@ func (this *Tree) SetSelectionItems(items []*TreeItem) {
 	win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 	if (this.style & VIRTUAL) != 0 {
 		var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-		this.SetSelectionLocal1(hItem, tvItem, items)
+		this.SetSelectionHItemTvItemSelection(hItem, tvItem, items)
 	} else {
 		for _, item2 := range this.items {
 			item = item2
@@ -4676,7 +4676,7 @@ func (this *Tree) CalculateAndApplyIndentSize() {
 	win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETINDENT, int64(indent), int64(0))
 }
 
-func (this *Tree) ShowItemLocal1(hItem int64) {
+func (this *Tree) ShowItemHItem(hItem int64) {
 	if win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETVISIBLECOUNT, int64(0), int64(0)) == 0 {
 		var fixScroll bool = this.CheckScroll(hItem)
 		if fixScroll {
@@ -4791,7 +4791,7 @@ func (this *Tree) ShowItem(itemLike TreeItemLike) {
 	if item.IsDisposed() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
-	this.ShowItemLocal1(item.Handle)
+	this.ShowItemHItem(item.Handle)
 }
 
 func (this *Tree) ShowSelection() {
@@ -4829,7 +4829,7 @@ func (this *Tree) ShowSelection() {
 		win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, oldProc)
 	}
 	if hItem != 0 {
-		this.ShowItemLocal1(hItem)
+		this.ShowItemHItem(hItem)
 	}
 }
 
@@ -5352,7 +5352,7 @@ func (this *Tree) windowProcHwndMsgWParamLParamHwndMsgWParamLParam_(hwnd int64, 
 			var items []*TreeItem = make([]*TreeItem, 10)
 			var tvItem *win32.TVITEM = win32.NewTVITEM()
 			tvItem.Mask = win32.OSTVIF_HANDLE | win32.OSTVIF_PARAM | win32.OSTVIF_STATE
-			var count int32 = this.GetSelection(hItem, tvItem, items, 0, 10, false, true)
+			var count int32 = this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hItem, tvItem, items, 0, 10, false, true)
 			if count == 0 {
 				return int64(0)
 			}
@@ -6149,7 +6149,7 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 				win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 				if (this.style & VIRTUAL) != 0 {
 					var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-					this.Deselect(hItem, tvItem, hNewItem)
+					this.DeselectHItemTvItemHIgnoreItem(hItem, tvItem, hNewItem)
 				} else {
 					for _, item := range this.items {
 						if item != (nil) && item.Handle != hNewItem {
@@ -6387,7 +6387,7 @@ func (this *Tree) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				if hooksPaint {
 					var event *Event = NewEvent()
 					event.Gc = gc
-					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(ps.Left, ps.Top, ps.Right-ps.Left, ps.Bottom-ps.Top), this.impl.getAutoscalingZoom_()))
+					event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(ps.Left, ps.Top, ps.Right-ps.Left, ps.Bottom-ps.Top), this.impl.getAutoscalingZoom_()))
 					this.SendEventEventTypeEvent(Paint, event)
 					event.Gc = nil
 				}

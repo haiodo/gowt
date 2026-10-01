@@ -501,7 +501,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Decorations](), "setImages", []reflect.Type{reflect.TypeFor[[]*swt.Image]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Decorations](target).SetImagesImages(jrt.ArgAs[[]*swt.Image](args[0]))
+		jrt.Narrow[*swt.Decorations](target).SetImages(jrt.ArgAs[[]*swt.Image](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Decorations](), "setMaximized", []reflect.Type{reflect.TypeFor[bool]()}, nil, func(target any, args []any) any {
@@ -1087,7 +1087,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "deselect", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).DeselectItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
+		jrt.Narrow[*swt.Tree](target).Deselect(jrt.ArgAs[swt.TreeItemLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "deselectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tree](target).DeselectAll0(); return nil })
@@ -1113,7 +1113,7 @@ func init() {
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getItems", nil, reflect.TypeFor[[]*swt.TreeItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetItems() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getLinesVisible", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetLinesVisible() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getParentItem", nil, reflect.TypeFor[*swt.TreeItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetParentItem() })
-	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSelection", nil, reflect.TypeFor[[]*swt.TreeItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSelection0() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSelection", nil, reflect.TypeFor[[]*swt.TreeItem](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSelection() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSelectionCount", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSelectionCount() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSortColumn", nil, reflect.TypeFor[*swt.TreeColumn](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSortColumn() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "getSortDirection", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Tree](target).GetSortDirection() })
@@ -1146,7 +1146,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "select", []reflect.Type{reflect.TypeFor[swt.TreeItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Tree](target).SelectItem(jrt.ArgAs[swt.TreeItemLike](args[0]))
+		jrt.Narrow[*swt.Tree](target).Select(jrt.ArgAs[swt.TreeItemLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Tree](), "selectAll", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Tree](target).SelectAll(); return nil })
@@ -1707,7 +1707,7 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "showItem", []reflect.Type{reflect.TypeFor[swt.TableItemLike]()}, nil, func(target any, args []any) any {
-		jrt.Narrow[*swt.Table](target).ShowItemItem(jrt.ArgAs[swt.TableItemLike](args[0]))
+		jrt.Narrow[*swt.Table](target).ShowItem(jrt.ArgAs[swt.TableItemLike](args[0]))
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Table](), "showSelection", nil, nil, func(target any, args []any) any { jrt.Narrow[*swt.Table](target).ShowSelection(); return nil })
@@ -2533,16 +2533,16 @@ func init() {
 		return nil
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).Map(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapPoint(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapFromToXYWidthHeight(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapBounds(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.SingleZoomCoordinateSystemMapper](), "mapMonitorBounds", []reflect.Type{reflect.TypeFor[*swt.Rectangle_WithMonitor]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).MapMonitorBounds(jrt.ArgAs[*swt.Rectangle_WithMonitor](args[0]))
@@ -2570,16 +2570,16 @@ func init() {
 		return jrt.Narrow[*swt.SingleZoomCoordinateSystemMapper](target).GetContainingMonitorBoundsInPixels(jrt.ArgAs[*swt.Point](args[0]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Point]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).Map(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapPoint(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Point](args[2]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Rectangle]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapRectangle(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[*swt.Rectangle](args[2]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Point](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapXY(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "map", []reflect.Type{reflect.TypeFor[*swt.Control](), reflect.TypeFor[*swt.Control](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32](), reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapFromToXYWidthHeight(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
+		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapBounds(jrt.ArgAs[*swt.Control](args[0]), jrt.ArgAs[*swt.Control](args[1]), jrt.ArgAs[int32](args[2]), jrt.ArgAs[int32](args[3]), jrt.ArgAs[int32](args[4]), jrt.ArgAs[int32](args[5]))
 	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.MultiZoomCoordinateSystemMapper](), "mapMonitorBounds", []reflect.Type{reflect.TypeFor[*swt.Rectangle_WithMonitor]()}, reflect.TypeFor[*swt.Rectangle](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.MultiZoomCoordinateSystemMapper](target).MapMonitorBounds(jrt.ArgAs[*swt.Rectangle_WithMonitor](args[0]))

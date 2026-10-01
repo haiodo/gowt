@@ -36,14 +36,14 @@ type ImageLike interface {
 
 const ImageDEFAULT_SCANLINE_PAD int32 = 4
 
-func newImageLocal1(device *Device, type_ int32, handle int64, nativeZoom int32) *Image {
+func newImageDeviceTypeHandleNativeZoom(device *Device, type_ int32, handle int64, nativeZoom int32) *Image {
 	this := &Image{}
 	this.impl = this
-	this.initImageLocal1(device, type_, handle, nativeZoom)
+	this.initImageDeviceTypeHandleNativeZoom(device, type_, handle, nativeZoom)
 	return this
 }
 
-func (this *Image) initImageLocal1(device *Device, type_ int32, handle int64, nativeZoom int32) {
+func (this *Image) initImageDeviceTypeHandleNativeZoom(device *Device, type_ int32, handle int64, nativeZoom int32) {
 	this.Resource.initResourceDevice(device)
 	this.styleFlag = IMAGE_COPY
 	inner1 := newImageImageHandleManager()
@@ -1263,10 +1263,10 @@ func (this *Image) ConfigureGC(dataLike GCDataLike, zoomContextLike Image_ZoomCo
 
 func (this *Image) CheckImageTypeForValidCustomDrawing(zoom int32) {
 	var replacementInfo string = "It should be created with an ImageGcDrawer (see SWT Snippet 384)."
-	_, ok47 := isImage_AbstractImageProviderWrapperToImage_ImageDataProviderWrapper(this.imageProvider)
-	if ok47 || func() bool {
-		_, ok48 := isImage_AbstractImageProviderWrapperToImage_ImageFileNameProviderWrapper(this.imageProvider)
-		return ok48
+	_, ok48 := isImage_AbstractImageProviderWrapperToImage_ImageDataProviderWrapper(this.imageProvider)
+	if ok48 || func() bool {
+		_, ok49 := isImage_AbstractImageProviderWrapperToImage_ImageFileNameProviderWrapper(this.imageProvider)
+		return ok49
 	}() {
 		var message string = "***WARNING: Image initialized with ImageDataProvider or ImageFileNameProvider is not supposed to be modified."
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("%s %s", message, replacementInfo))
@@ -1717,7 +1717,7 @@ func ImageWin32_new(deviceLike DeviceLike, type_ int32, handle int64, nativeZoom
 		device = deviceLike.AsDevice()
 	}
 	_ = device
-	return newImageLocal1(device, type_, handle, nativeZoom)
+	return newImageDeviceTypeHandleNativeZoom(device, type_, handle, nativeZoom)
 }
 
 func (this *Image) IsAutoScalable() bool {
@@ -1791,13 +1791,13 @@ func (this *Image_ImageHandleManager) GetNearestAvailableZoom(zoom int32) any {
 		return int32(zoom)
 	}
 	var higher any = func() int32 { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call higher") }()
-	var cond49 any
+	var cond50 any
 	if !jrt.IsNil(higher) {
-		cond49 = higher
+		cond50 = higher
 	} else {
-		cond49 = func() int32 { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call lower") }()
+		cond50 = func() int32 { _ = []any{availableZooms, int32(zoom)}; panic("j2go: unresolved call lower") }()
 	}
-	return cond49
+	return cond50
 }
 
 func (this *Image_ImageHandleManager) DestroyHandles(filter func(any) bool) {
@@ -1933,10 +1933,10 @@ func (this *Image_HandleAtSize) GetPersistentHandle(imageZoom int32, nearestAvai
 }
 
 func (this *Image_HandleAtSize) GetShellZooms() *jrt.List {
-	display, ok50 := isDeviceToDisplay(this.this_0.impl.getDevice_())
-	if ok50 {
-		var tret51 *jrt.List
-		tretd52 := false
+	display, ok51 := isDeviceToDisplay(this.this_0.impl.getDevice_())
+	if ok51 {
+		var tret52 *jrt.List
+		tretd53 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -1952,25 +1952,25 @@ func (this *Image_HandleAtSize) GetShellZooms() *jrt.List {
 				}() {
 					e := r.(*SWTException)
 					_ = e
-					tret51 = func() *jrt.List { panic("j2go: unresolved call emptySet") }()
-					tretd52 = true
+					tret52 = func() *jrt.List { panic("j2go: unresolved call emptySet") }()
+					tretd53 = true
 					return
 				} else {
 					panic(r)
 				}
 			}()
-			tret51 = func() *jrt.List {
+			tret52 = func() *jrt.List {
 				_ = []any{func() any {
 					_ = []any{func() any { _ = []any{display.GetShells()}; panic("j2go: unresolved call stream") }(), (*Shell).GetZoom}
 					panic("j2go: unresolved call map")
 				}(), func() any { panic("j2go: unresolved call toSet") }()}
 				panic("j2go: unresolved call collect")
 			}()
-			tretd52 = true
+			tretd53 = true
 			return
 		}()
-		if tretd52 {
-			return tret51
+		if tretd53 {
+			return tret52
 		}
 	}
 	return func() *jrt.List { panic("j2go: unresolved call emptySet") }()
@@ -2449,9 +2449,9 @@ func (this *Image_ExistingImageHandleProviderWrapper) initImageExistingImageHand
 	this.Image_AbstractImageProviderWrapper.initImageAbstractImageProviderWrapper()
 	this.baseZoom = zoomForHandle
 	var imageHandle Image_InternalImageHandle = this.this_0.imageHandleManager.GetOrCreate(zoomForHandle, func() *Image_DestroyableImageHandle {
-		inner53 := newImageDestroyableImageHandle(handle, zoomForHandle, -1)
-		inner53.this_0 = this.this_0
-		return inner53
+		inner54 := newImageDestroyableImageHandle(handle, zoomForHandle, -1)
+		inner54.this_0 = this.this_0
+		return inner54
 	})
 	var baseData *ImageData = imageHandle.GetImageData()
 	this.width = DPIUtilPixelToPoint(baseData.Width, zoomForHandle)
@@ -2474,7 +2474,7 @@ func (this *Image_ExistingImageHandleProviderWrapper) initImageExistingImageHand
 
 func (this *Image_ExistingImageHandleProviderWrapper) getBounds_(zoom int32) *Rectangle {
 	var rectangle *Rectangle = NewRectangle(0, 0, this.width, this.height)
-	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
+	return Win32DPIUtilsPointToPixelOverload6(rectangle, zoom)
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) newImageData_(zoom int32) *ImageData {
@@ -2483,9 +2483,9 @@ func (this *Image_ExistingImageHandleProviderWrapper) newImageData_(zoom int32) 
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner54 := newImageExistingImageHandleProviderWrapperBaseZoomWidthHeight(this.baseZoom, this.width, this.height)
-	inner54.this_0 = image
-	return upcastImage_ExistingImageHandleProviderWrapperToImage_AbstractImageProviderWrapper(inner54)
+	inner55 := newImageExistingImageHandleProviderWrapperBaseZoomWidthHeight(this.baseZoom, this.width, this.height)
+	inner55.this_0 = image
+	return upcastImage_ExistingImageHandleProviderWrapperToImage_AbstractImageProviderWrapper(inner55)
 }
 
 func (this *Image_ExistingImageHandleProviderWrapper) getPreservedZoomLevels_() any {
@@ -2614,8 +2614,8 @@ func (this *Image_PlainImageDataProviderWrapper) initImagePlainImageDataProvider
 
 func (this *Image_PlainImageDataProviderWrapper) getBounds_(zoom int32) *Rectangle {
 	var rectangle *Rectangle = NewRectangle(0, 0, this.imageDataAtBaseZoom.Width, this.imageDataAtBaseZoom.Height)
-	rectangle = Win32DPIUtilsPixelToPointOverload6(rectangle, this.baseZoom)
-	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
+	rectangle = Win32DPIUtilsPixelToPointOverload4(rectangle, this.baseZoom)
+	return Win32DPIUtilsPointToPixelOverload6(rectangle, zoom)
 }
 
 func (this *Image_PlainImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
@@ -2624,9 +2624,9 @@ func (this *Image_PlainImageDataProviderWrapper) loadImageDataZoom_(zoom int32) 
 }
 
 func (this *Image_PlainImageDataProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner55 := newImagePlainImageDataProviderWrapper(this.imageDataAtBaseZoom)
-	inner55.this_0 = image
-	return upcastImage_PlainImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner55)
+	inner56 := newImagePlainImageDataProviderWrapper(this.imageDataAtBaseZoom)
+	inner56.this_0 = image
+	return upcastImage_PlainImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner56)
 }
 
 func (this *Image_PlainImageDataProviderWrapper) nearestAvailableZoom_(zoom int32) int32 {
@@ -2668,7 +2668,7 @@ func (this *Image_MaskedImageDataProviderWrapper) initImageMaskedImageDataProvid
 
 func (this *Image_MaskedImageDataProviderWrapper) getBounds_(zoom int32) *Rectangle {
 	var rectangle *Rectangle = NewRectangle(0, 0, this.srcAt100.Width, this.srcAt100.Height)
-	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
+	return Win32DPIUtilsPointToPixelOverload6(rectangle, zoom)
 }
 
 func (this *Image_MaskedImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIUtilElementAtZoom {
@@ -2681,9 +2681,9 @@ func (this *Image_MaskedImageDataProviderWrapper) loadImageDataZoom_(zoom int32)
 }
 
 func (this *Image_MaskedImageDataProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner56 := newImageMaskedImageDataProviderWrapper(this.srcAt100, this.maskAt100)
-	inner56.this_0 = image
-	return upcastImage_MaskedImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner56)
+	inner57 := newImageMaskedImageDataProviderWrapper(this.srcAt100, this.maskAt100)
+	inner57.this_0 = image
+	return upcastImage_MaskedImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner57)
 }
 
 func (this *Image_MaskedImageDataProviderWrapper) nearestAvailableZoom_(zoom int32) int32 {
@@ -2765,9 +2765,9 @@ func (this *Image_ImageDataLoaderStreamProviderWrapper) getBounds_(zoom int32) *
 }
 
 func (this *Image_ImageDataLoaderStreamProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner57 := newImageImageDataLoaderStreamProviderWrapperInputStreamData(this.inputStreamData)
-	inner57.this_0 = image
-	return upcastImage_ImageDataLoaderStreamProviderWrapperToImage_AbstractImageProviderWrapper(inner57)
+	inner58 := newImageImageDataLoaderStreamProviderWrapperInputStreamData(this.inputStreamData)
+	inner58.this_0 = image
+	return upcastImage_ImageDataLoaderStreamProviderWrapperToImage_AbstractImageProviderWrapper(inner58)
 }
 
 func (this *Image_ImageDataLoaderStreamProviderWrapper) loadImageDataAtExactSize_(targetWidth int32, targetHeight int32) *jrt.Optional {
@@ -2836,7 +2836,7 @@ func (this *Image_PlainImageProviderWrapper) configureGCData_(data *GCData) int6
 
 func (this *Image_PlainImageProviderWrapper) getBounds_(zoom int32) *Rectangle {
 	var rectangle *Rectangle = NewRectangle(0, 0, this.width, this.height)
-	return Win32DPIUtilsPointToPixelOverload8(rectangle, zoom)
+	return Win32DPIUtilsPointToPixelOverload6(rectangle, zoom)
 }
 
 func (this *Image_PlainImageProviderWrapper) isPersistentImageHandleRequriedForImageData_() bool {
@@ -2882,9 +2882,9 @@ func (this *Image_PlainImageProviderWrapper) CreateBaseHandle(zoom int32) *Image
 
 func (this *Image_PlainImageProviderWrapper) CreateHandle(zoom int32) *Image_DestroyableImageHandle {
 	var handle int64 = this.InitHandle(zoom)
-	inner58 := newImageDestroyableImageHandle(handle, zoom, -1)
-	inner58.this_0 = this.this_0
-	var imageHandle *Image_DestroyableImageHandle = inner58
+	inner59 := newImageDestroyableImageHandle(handle, zoom, -1)
+	inner59.this_0 = this.this_0
+	var imageHandle *Image_DestroyableImageHandle = inner59
 	return imageHandle
 }
 
@@ -2923,9 +2923,9 @@ func (this *Image_PlainImageProviderWrapper) InitHandle(zoom int32) int64 {
 }
 
 func (this *Image_PlainImageProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner59 := newImagePlainImageProviderWrapper(this.width, this.height)
-	inner59.this_0 = image
-	return upcastImage_PlainImageProviderWrapperToImage_AbstractImageProviderWrapper(inner59)
+	inner60 := newImagePlainImageProviderWrapper(this.width, this.height)
+	inner60.this_0 = image
+	return upcastImage_PlainImageProviderWrapperToImage_AbstractImageProviderWrapper(inner60)
 }
 
 type Image_DynamicImageProviderWrapper struct {
@@ -2985,8 +2985,8 @@ func (this *Image_DynamicImageProviderWrapper) Equals(otherProvider any) bool {
 }
 
 func (this *Image_DynamicImageProviderWrapper) equals_(otherProvider any) bool {
-	aip, ok60 := imageAbstractImageProviderWrapperImplAsImageDynamicImageProviderWrapper(otherProvider)
-	return ok60 && jrt.ObjectsEquals(this.impl.getProvider_(), aip.impl.getProvider_())
+	aip, ok62 := imageAbstractImageProviderWrapperImplAsImageDynamicImageProviderWrapper(otherProvider)
+	return ok62 && jrt.ObjectsEquals(this.impl.getProvider_(), aip.impl.getProvider_())
 }
 
 type Image_BaseImageProviderWrapper struct {
@@ -3120,9 +3120,9 @@ func (this *Image_ImageFileNameProviderWrapper) hashCode_() int32 {
 }
 
 func (this *Image_ImageFileNameProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner61 := newImageImageFileNameProviderWrapper(jrt.Cast[ImageFileNameProvider](this.provider))
-	inner61.this_0 = image
-	return upcastImage_ImageFileNameProviderWrapperToImage_AbstractImageProviderWrapper(inner61)
+	inner63 := newImageImageFileNameProviderWrapper(jrt.Cast[ImageFileNameProvider](this.provider))
+	inner63.this_0 = image
+	return upcastImage_ImageFileNameProviderWrapperToImage_AbstractImageProviderWrapper(inner63)
 }
 
 func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom int32) *Image_DestroyableImageHandle {
@@ -3156,9 +3156,9 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 			var hicon []int64 = make([]int64, 1)
 			status = win32.GdipBitmap_GetHICON(bitmap, hicon)
 			handle = hicon[0]
-			inner62 := newImageDestroyableImageHandle(handle, zoom, -1)
-			inner62.this_0 = this.this_0
-			imageMetadata = inner62
+			inner64 := newImageDestroyableImageHandle(handle, zoom, -1)
+			inner64.this_0 = this.this_0
+			imageMetadata = inner64
 		} else {
 			this.this_0.Type = BITMAP
 			width = win32.GdipImage_GetWidth(bitmap)
@@ -3185,9 +3185,9 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 				win32.OSSelectObject(srcHDC, oldSrcBitmap)
 				win32.OSDeleteDC(srcHDC)
 				this.this_0.device.impl.internal_dispose_GC_(hDC, nil)
-				inner63 := newImageDestroyableImageHandle(handle, zoom, -1)
-				inner63.this_0 = this.this_0
-				imageMetadata = inner63
+				inner65 := newImageDestroyableImageHandle(handle, zoom, -1)
+				inner65.this_0 = this.this_0
+				imageMetadata = inner65
 			} else {
 				var lockedBitmapData int64 = win32.GdipBitmapData_new()
 				if lockedBitmapData != 0 {
@@ -3252,14 +3252,14 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 										i += 2
 										j++
 									}() {
-										idx65 := j
-										var cond64 int32
+										idx67 := j
+										var cond66 int32
 										if (int32(data[i]) & 0x80) != 0 {
-											cond64 = 255
+											cond66 = 255
 										} else {
-											cond64 = 0
+											cond66 = 0
 										}
-										alphaData[idx65] = int8((cond64))
+										alphaData[idx67] = int8((cond66))
 									}
 								}
 								break
@@ -3352,8 +3352,8 @@ func (this *Image_ImageFileNameProviderWrapper) loadImageDataAtExactSize_(target
 	}
 	{
 		var stream jrt.InputStream = jrt.NewFileInputStream(fileName)
-		var tret66 *jrt.Optional
-		tretd67 := false
+		var tret68 *jrt.Optional
+		tretd69 := false
 		func() {
 			defer stream.Close()
 			defer func() {
@@ -3378,14 +3378,14 @@ func (this *Image_ImageFileNameProviderWrapper) loadImageDataAtExactSize_(target
 			if ImageDataLoaderIsDynamicallySizable(stream) {
 				this.nonSizableFileName = ""
 				var imageDataAtSize *ImageData = ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight)
-				tret66 = jrt.OptionalOf(this.this_0.AdaptImageDataIfDisabledOrGrayData(imageDataAtSize))
-				tretd67 = true
+				tret68 = jrt.OptionalOf(this.this_0.AdaptImageDataIfDisabledOrGrayData(imageDataAtSize))
+				tretd69 = true
 				return
 			}
 			this.nonSizableFileName = fileName
 		}()
-		if tretd67 {
-			return tret66
+		if tretd69 {
+			return tret68
 		}
 	}
 	return jrt.OptionalEmpty()
@@ -3423,14 +3423,14 @@ func (this *Image_ImageDataProviderWrapper) loadImageDataZoom_(zoom int32) *DPIU
 }
 
 func (this *Image_ImageDataProviderWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner68 := newImageImageDataProviderWrapper(jrt.Cast[ImageDataProvider](this.provider))
-	inner68.this_0 = image
-	return upcastImage_ImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner68)
+	inner70 := newImageImageDataProviderWrapper(jrt.Cast[ImageDataProvider](this.provider))
+	inner70.this_0 = image
+	return upcastImage_ImageDataProviderWrapperToImage_AbstractImageProviderWrapper(inner70)
 }
 
 func (this *Image_ImageDataProviderWrapper) loadImageDataAtExactSize_(targetWidth int32, targetHeight int32) *jrt.Optional {
-	imageDataAtSizeProvider, ok69 := jrt.Cast[ImageDataProvider](this.provider).(ImageDataAtSizeProvider)
-	if ok69 {
+	imageDataAtSizeProvider, ok71 := jrt.Cast[ImageDataProvider](this.provider).(ImageDataAtSizeProvider)
+	if ok71 {
 		var imageData *ImageData = imageDataAtSizeProvider.GetImageDataWidthHeight(targetWidth, targetHeight)
 		if imageData == (nil) {
 			ErrorCodeThrowableDetail(ERROR_INVALID_ARGUMENT, nil, fmt.Sprintf(" ImageDataAtSizeProvider returned null for width=%d, height=%d", targetWidth, targetHeight))
@@ -3545,9 +3545,9 @@ func (this *Image_ImageGcDrawerWrapper) getProvider_() any {
 }
 
 func (this *Image_ImageGcDrawerWrapper) createCopy_(image *Image) *Image_AbstractImageProviderWrapper {
-	inner70 := newImageImageGcDrawerWrapper(this.drawer, this.width, this.height)
-	inner70.this_0 = image
-	return upcastImage_ImageGcDrawerWrapperToImage_AbstractImageProviderWrapper(inner70)
+	inner72 := newImageImageGcDrawerWrapper(this.drawer, this.width, this.height)
+	inner72.this_0 = image
+	return upcastImage_ImageGcDrawerWrapperToImage_AbstractImageProviderWrapper(inner72)
 }
 
 func (this *Image_ImageGcDrawerWrapper) hashCode_() int32 {
@@ -3555,8 +3555,8 @@ func (this *Image_ImageGcDrawerWrapper) hashCode_() int32 {
 }
 
 func (this *Image_ImageGcDrawerWrapper) equals_(otherProvider any) bool {
-	aip, ok71 := imageAbstractImageProviderWrapperImplAsImageImageGcDrawerWrapper(otherProvider)
-	return ok71 && (this.impl.getProvider_() == aip.impl.getProvider_()) && this.width == aip.width && this.height == aip.height
+	aip, ok75 := imageAbstractImageProviderWrapperImplAsImageImageGcDrawerWrapper(otherProvider)
+	return ok75 && (this.impl.getProvider_() == aip.impl.getProvider_()) && this.width == aip.width && this.height == aip.height
 }
 
 type Image_DrawableWrapper struct {
@@ -3664,13 +3664,13 @@ func (this *Image_DestroyableImageHandle) initImageDestroyableImageHandle(handle
 }
 
 func (this *Image_DestroyableImageHandle) Handle() int64 {
-	var cond72 int64
+	var cond76 int64
 	if this.IsDisposed() {
-		cond72 = int64(0)
+		cond76 = int64(0)
 	} else {
-		cond72 = this.handle
+		cond76 = this.handle
 	}
-	return cond72
+	return cond76
 }
 
 func (this *Image_DestroyableImageHandle) Width() int32 {
@@ -3702,9 +3702,10 @@ func (this *Image_DestroyableImageHandle) SetTransparentColor(transparentColor i
 }
 
 func (this *Image_DestroyableImageHandle) GetBoundsInPixelsFromNative() *Point {
+	var bm *win32.BITMAP
 	switch this.this_0.Type {
 	case BITMAP:
-		var bm *win32.BITMAP = win32.NewBITMAP()
+		bm = win32.NewBITMAP()
 		if win32.OSGetObject(this.handle, win32.BITMAPSizeof, bm) == 0 {
 			Error(ERROR_INVALID_IMAGE)
 		}

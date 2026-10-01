@@ -109,7 +109,7 @@ func (this *TabItem) GetControl() *Control {
 
 func (this *TabItem) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *TabItem) GetBoundsInPixels() *Rectangle {

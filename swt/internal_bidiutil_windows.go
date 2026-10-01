@@ -94,18 +94,18 @@ func NewBidiUtil() *BidiUtil {
 func (this *BidiUtil) initBidiUtil() {
 }
 
-func BidiUtilAddLanguageListener(hwnd int64, runnable jrt.Runnable) {
+func BidiUtilAddLanguageListenerHwndRunnable(hwnd int64, runnable jrt.Runnable) {
 	jrt.Cast[jrt.Runnable](BidiUtilLanguageMap.Put(NewLONG(hwnd), runnable))
 	BidiUtilSubclass(hwnd)
 }
 
-func BidiUtilAddLanguageListenerControlRunnable(controlLike ControlLike, runnable jrt.Runnable) {
+func BidiUtilAddLanguageListener(controlLike ControlLike, runnable jrt.Runnable) {
 	var control *Control
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	BidiUtilAddLanguageListener(control.Handle, runnable)
+	BidiUtilAddLanguageListenerHwndRunnable(control.Handle, runnable)
 }
 
 func BidiUtilEnumSystemLanguageGroupsProc(lpLangGrpId int64, lpLangGrpIdString int64, lpLangGrpName int64, options int64, lParam int64) int64 {
@@ -170,18 +170,18 @@ func BidiUtilIsKeyboardBidi() bool {
 	return false
 }
 
-func BidiUtilRemoveLanguageListener(hwnd int64) {
+func BidiUtilRemoveLanguageListenerHwnd(hwnd int64) {
 	jrt.Cast[jrt.Runnable](BidiUtilLanguageMap.Remove(NewLONG(hwnd)))
 	BidiUtilUnsubclass(hwnd)
 }
 
-func BidiUtilRemoveLanguageListenerControl(controlLike ControlLike) {
+func BidiUtilRemoveLanguageListener(controlLike ControlLike) {
 	var control *Control
 	if controlLike != nil {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	BidiUtilRemoveLanguageListener(control.Handle)
+	BidiUtilRemoveLanguageListenerHwnd(control.Handle)
 }
 
 func BidiUtilResolveTextDirection(text string) int32 {

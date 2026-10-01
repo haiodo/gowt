@@ -72,12 +72,12 @@ func (this *Caret) DefaultFont() int64 {
 
 func (this *Caret) GetBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *Caret) GetBoundsInPixels() *Rectangle {
 	if this.image != (nil) {
-		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload6(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		return NewRectangle(this.GetXInPixels(), this.GetYInPixels(), rect.Width, rect.Height)
 	}
 	if this.width == 0 {
@@ -130,7 +130,7 @@ func (this *Caret) GetSize() *Point {
 
 func (this *Caret) GetSizeInPixels() *Point {
 	if this.image != (nil) {
-		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload8(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
+		var rect *Rectangle = Win32DPIUtilsPointToPixelOverload6(this.image.GetBounds(), this.impl.getAutoscalingZoom_())
 		return NewPoint(rect.Width, rect.Height)
 	}
 	if this.width == 0 {

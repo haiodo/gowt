@@ -927,7 +927,7 @@ func (this *Display) GetMenuBar() *Menu {
 
 func (this *Display) getBounds_() *Rectangle {
 	this.impl.checkDevice_()
-	return Win32DPIUtilsPixelToPointOverload6(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.impl.getBoundsInPixels_(), this.impl.getDeviceZoom_())
 }
 
 func (this *Display) getBoundsInPixels_() *Rectangle {
@@ -982,7 +982,7 @@ func (this *Display) GetClickCount(type_ int32, button int32, hwnd int64, lParam
 
 func (this *Display) getClientArea_() *Rectangle {
 	this.impl.checkDevice_()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetClientAreaInPixels(), this.impl.getDeviceZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetClientAreaInPixels(), this.impl.getDeviceZoom_())
 }
 
 func (this *Display) GetClientAreaInPixels() *Rectangle {
@@ -3234,7 +3234,7 @@ func (this *Display) SaveResources() {
 		info.CbSize = win32.NONCLIENTMETRICSSizeof
 		if win32.OSSystemParametersInfoOverload2(win32.OSSPI_GETNONCLIENTMETRICS, 0, info, 0) {
 			var logFont *win32.LOGFONT = info.LfMessageFont
-			if this.lfSystemFont == (nil) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || logFont.LfHeight != this.lfSystemFont.LfHeight || logFont.LfWidth != this.lfSystemFont.LfWidth || logFont.LfEscapement != this.lfSystemFont.LfEscapement || logFont.LfOrientation != this.lfSystemFont.LfOrientation || logFont.LfWeight != this.lfSystemFont.LfWeight || int32(logFont.LfItalic) != int32(this.lfSystemFont.LfItalic) || int32(logFont.LfUnderline) != int32(this.lfSystemFont.LfUnderline) || int32(logFont.LfStrikeOut) != int32(this.lfSystemFont.LfStrikeOut) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || int32(logFont.LfOutPrecision) != int32(this.lfSystemFont.LfOutPrecision) || int32(logFont.LfClipPrecision) != int32(this.lfSystemFont.LfClipPrecision) || int32(logFont.LfQuality) != int32(this.lfSystemFont.LfQuality) || int32(logFont.LfPitchAndFamily) != int32(this.lfSystemFont.LfPitchAndFamily) || !(this.GetFontName(logFont) == this.GetFontName(this.lfSystemFont)) {
+			if this.lfSystemFont == (nil) || int32(logFont.LfCharSet) != int32(this.lfSystemFont.LfCharSet) || logFont.LfHeight != this.lfSystemFont.LfHeight || logFont.LfWidth != this.lfSystemFont.LfWidth || logFont.LfEscapement != this.lfSystemFont.LfEscapement || logFont.LfOrientation != this.lfSystemFont.LfOrientation || logFont.LfWeight != this.lfSystemFont.LfWeight || int32(logFont.LfItalic) != int32(this.lfSystemFont.LfItalic) || int32(logFont.LfUnderline) != int32(this.lfSystemFont.LfUnderline) || int32(logFont.LfStrikeOut) != int32(this.lfSystemFont.LfStrikeOut) || int32(logFont.LfOutPrecision) != int32(this.lfSystemFont.LfOutPrecision) || int32(logFont.LfClipPrecision) != int32(this.lfSystemFont.LfClipPrecision) || int32(logFont.LfQuality) != int32(this.lfSystemFont.LfQuality) || int32(logFont.LfPitchAndFamily) != int32(this.lfSystemFont.LfPitchAndFamily) || !(this.GetFontName(logFont) == this.GetFontName(this.lfSystemFont)) {
 				t23 := resourceCount
 				resourceCount++
 				this.resources[t23] = upcastFontToResource(this.systemFont)

@@ -14,12 +14,59 @@ final class NumericExtras {
 
 	/** `a % b` on floats is math.Mod. */
 	static String floatRemainder(Emitter emitter, InfixExpression ie) {
+		// `a != b || ... || a != b` (SWT's FontData.equals has one): go vet rejects the repeat; call-free operands are pure.
+		// The reference platform's output stays as it was.
+		if (GoTypes.platform != dev.gowt.j2go.Platform.COCOA
+				&& (ie.getOperator() == InfixExpression.Operator.CONDITIONAL_AND || ie.getOperator() == InfixExpression.Operator.CONDITIONAL_OR)) {
+			java.util.List<Expression> ops = new java.util.ArrayList<>();
+			flatten(ie, ops);
+			String goOp = ie.getOperator() == InfixExpression.Operator.CONDITIONAL_AND ? "&&" : "||";
+			java.util.List<String> saved = emitter.prelude;
+			java.util.List<String> kept = new java.util.ArrayList<>();
+			java.util.Set<String> seen = new java.util.HashSet<>();
+			boolean dropped = false;
+			for (Expression e : ops) {
+				if (hasCall(e)) {
+					kept.add(EmitUtil.lazyOperand(emitter, e, goOp));
+					continue;
+				}
+				emitter.prelude = new java.util.ArrayList<>();
+				String text = emitter.expr(e);
+				boolean pure = emitter.prelude.isEmpty();
+				emitter.prelude = saved;
+				if (!pure) {
+					emitter.prelude = saved;
+					return null;
+				}
+				if (seen.add(text)) kept.add(text);
+				else dropped = true;
+			}
+			if (dropped) return String.join(" " + goOp + " ", kept);
+		}
 		ITypeBinding t = ie.resolveTypeBinding();
 		if (ie.getOperator() != InfixExpression.Operator.REMAINDER || !ie.extendedOperands().isEmpty() || t == null
 				|| !(t.getName().equals("float") || t.getName().equals("double"))) return null;
 		emitter.fileImports.add("math");
 		String call = "math.Mod(float64(" + emitter.expr(ie.getLeftOperand()) + "), float64(" + emitter.expr(ie.getRightOperand()) + "))";
 		return t.getName().equals("float") ? "float32(" + call + ")" : call;
+	}
+
+	/** The operands of a same-operator chain, whether the parser nested it or not. */
+	private static void flatten(InfixExpression ie, java.util.List<Expression> out) {
+		if (ie.getLeftOperand() instanceof InfixExpression l && l.getOperator() == ie.getOperator()) flatten(l, out);
+		else out.add(ie.getLeftOperand());
+		out.add(ie.getRightOperand());
+		for (Object o : ie.extendedOperands()) out.add((Expression) o);
+	}
+
+	private static boolean hasCall(Expression e) {
+		boolean[] found = {false};
+		e.accept(new ASTVisitor() {
+			@Override public boolean visit(MethodInvocation n) { found[0] = true; return false; }
+			@Override public boolean visit(ClassInstanceCreation n) { found[0] = true; return false; }
+			@Override public boolean visit(Assignment n) { found[0] = true; return false; }
+		});
+		return found[0];
 	}
 
 	/** An integer literal converted to a narrower integer type wraps, as a Java narrowing cast does. */

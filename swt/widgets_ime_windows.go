@@ -43,18 +43,18 @@ const IMEUNDERLINE_IME_DASH int32 = 131072
 
 const IMEUNDERLINE_IME_THICK int32 = 196608
 
-func newIME() *IME {
+func newIME0() *IME {
 	this := &IME{}
 	this.impl = this
-	this.initIME()
+	this.initIME0()
 	return this
 }
 
-func (this *IME) initIME() {
+func (this *IME) initIME0() {
 	this.Widget.initWidget()
 }
 
-func NewIMEParentStyle(parentLike CanvasLike, style int32) *IME {
+func NewIME(parentLike CanvasLike, style int32) *IME {
 	var parent *Canvas
 	if parentLike != nil {
 		parent = parentLike.AsCanvas()
@@ -62,11 +62,11 @@ func NewIMEParentStyle(parentLike CanvasLike, style int32) *IME {
 	_ = parent
 	this := &IME{}
 	this.impl = this
-	this.initIMEParentStyle(parent, style)
+	this.initIME(parent, style)
 	return this
 }
 
-func (this *IME) initIMEParentStyle(parent *Canvas, style int32) {
+func (this *IME) initIME(parent *Canvas, style int32) {
 	this.Widget.initWidgetParentStyle(upcastCanvasToWidget(parent), style)
 	this.parent = parent
 	this.CreateWidget()

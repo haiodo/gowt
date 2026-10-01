@@ -256,7 +256,7 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 	_ = gc
 	this.CheckWidget()
 	var zoom int32 = this.impl.getAutoscalingZoom_()
-	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), zoom)
+	var rectangle *Rectangle = Win32DPIUtilsPointToPixelOverload6(NewRectangle(x, y, width, height), zoom)
 	offsetX = DPIUtilPointToPixel(offsetX, zoom)
 	offsetY = DPIUtilPointToPixel(offsetY, zoom)
 	this.DrawBackgroundInPixels(gc, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, offsetX, offsetY)
@@ -1208,7 +1208,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 					var gc *GC = this.impl.createNewGC_(phdc[0], data)
 					var event *Event = NewEvent()
 					event.Gc = gc
-					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(upcastRectangle_OfFloatToRectangle(NewRectangleOfFloat(ps.Left, ps.Top, width, height)), this.impl.getAutoscalingZoom_()))
+					event.SetBounds(Win32DPIUtilsPixelToPointOverload4(upcastRectangle_OfFloatToRectangle(NewRectangleOfFloat(ps.Left, ps.Top, width, height)), this.impl.getAutoscalingZoom_()))
 					this.SendEventEventTypeEvent(Paint, event)
 					if data.FocusDrawn && !this.IsDisposed() {
 						this.UpdateUIState()
@@ -1275,9 +1275,9 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				var rect *win32.RECT = nil
 				var zoom int32 = this.impl.getAutoscalingZoom_()
 				if (this.style&NO_MERGE_PAINTS) != 0 && func() bool {
-					cond12 := win32.NewRECT()
-					rect = cond12
-					return win32.OSGetRgnBox(sysRgn, cond12) == win32.OSCOMPLEXREGION
+					cond13 := win32.NewRECT()
+					rect = cond13
+					return win32.OSGetRgnBox(sysRgn, cond13) == win32.OSCOMPLEXREGION
 				}() {
 					var nBytes int32 = win32.OSGetRegionData(sysRgn, 0, nil)
 					var lpRgnData []int32 = make([]int32, nBytes/4)
@@ -1289,7 +1289,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						if (this.style & (DOUBLE_BUFFERED | NO_BACKGROUND | TRANSPARENT)) == 0 {
 							this.DrawBackgroundHDCRectHDCRect(gc.Handle, rect)
 						}
-						event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), zoom))
+						event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), zoom))
 						event.Count = count - 1 - i
 						this.SendEventEventTypeEvent(Paint, event)
 					}
@@ -1301,7 +1301,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 						win32.OSSetRect(rect, ps.Left, ps.Top, ps.Right, ps.Bottom)
 						this.DrawBackgroundHDCRectHDCRect(gc.Handle, rect)
 					}
-					event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(ps.Left, ps.Top, width, height), zoom))
+					event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(ps.Left, ps.Top, width, height), zoom))
 					this.SendEventEventTypeEvent(Paint, event)
 				}
 				event.Gc = nil
@@ -1373,7 +1373,7 @@ func (this *Composite) wM_PRINTCLIENT_(wParam int64, lParam int64) *win32.LRESUL
 			var gc *GC = this.impl.createNewGC_(wParam, data)
 			var event *Event = NewEvent()
 			event.Gc = gc
-			event.SetBounds(Win32DPIUtilsPixelToPointOverload6(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), this.impl.getAutoscalingZoom_()))
+			event.SetBounds(Win32DPIUtilsPixelToPointOverload4(NewRectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top), this.impl.getAutoscalingZoom_()))
 			this.SendEventEventTypeEvent(Paint, event)
 			event.Gc = nil
 			gc.impl.dispose_()

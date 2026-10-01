@@ -36,15 +36,15 @@ func (this *MultiZoomCoordinateSystemMapper) initMultiZoomCoordinateSystemMapper
 	this.monitorSupplier = monitorSupplier
 }
 
-func (this *MultiZoomCoordinateSystemMapper) Map(from *Control, to *Control, point *Point) *Point {
-	return this.MapFromToXY(from, to, point.X, point.Y)
+func (this *MultiZoomCoordinateSystemMapper) MapPoint(from *Control, to *Control, point *Point) *Point {
+	return this.MapXY(from, to, point.X, point.Y)
 }
 
-func (this *MultiZoomCoordinateSystemMapper) MapFromToRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle {
-	return this.MapFromToXYWidthHeight(from, to, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
+func (this *MultiZoomCoordinateSystemMapper) MapRectangle(from *Control, to *Control, rectangle *Rectangle) *Rectangle {
+	return this.MapBounds(from, to, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
 }
 
-func (this *MultiZoomCoordinateSystemMapper) MapFromToXY(from *Control, to *Control, x int32, y int32) *Point {
+func (this *MultiZoomCoordinateSystemMapper) MapXY(from *Control, to *Control, x int32, y int32) *Point {
 	var mappedPointInPoints *Point
 	if from == (nil) {
 		var mappedPointInpixels *Point = this.display.MapInPixels(from, to, this.GetPixelsFromPoint(to.impl.getShell_().GetMonitor(), x, y))
@@ -61,18 +61,18 @@ func (this *MultiZoomCoordinateSystemMapper) MapFromToXY(from *Control, to *Cont
 	return mappedPointInPoints
 }
 
-func (this *MultiZoomCoordinateSystemMapper) MapFromToXYWidthHeight(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle {
+func (this *MultiZoomCoordinateSystemMapper) MapBounds(from *Control, to *Control, x int32, y int32, width int32, height int32) *Rectangle {
 	var mappedRectangleInPoints *Rectangle
 	if from == (nil) {
 		var mappedRectangleInPixels *Rectangle = this.display.MapInPixelsFromToRectangle(from, to, this.TranslateRectangleInPointsToPixels(x, y, width, height, to.impl.getShell_().GetMonitor()))
-		mappedRectangleInPoints = Win32DPIUtilsPixelToPointOverload6(mappedRectangleInPixels, to.impl.getAutoscalingZoom_())
+		mappedRectangleInPoints = Win32DPIUtilsPixelToPointOverload4(mappedRectangleInPixels, to.impl.getAutoscalingZoom_())
 	} else {
 		if to == (nil) {
-			var mappedRectangleInPixels *Rectangle = this.display.MapInPixelsFromToRectangle(from, to, Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), from.impl.getAutoscalingZoom_()))
+			var mappedRectangleInPixels *Rectangle = this.display.MapInPixelsFromToRectangle(from, to, Win32DPIUtilsPointToPixelOverload6(NewRectangle(x, y, width, height), from.impl.getAutoscalingZoom_()))
 			mappedRectangleInPoints = this.TranslateRectangleInPixelsToPoints(mappedRectangleInPixels.X, mappedRectangleInPixels.Y, mappedRectangleInPixels.Width, mappedRectangleInPixels.Height, from.impl.getShell_().GetMonitor())
 		} else {
-			var mappedRectangleInPixels *Rectangle = this.display.MapInPixelsFromToRectangle(from, to, Win32DPIUtilsPointToPixelOverload8(NewRectangle(x, y, width, height), from.impl.getAutoscalingZoom_()))
-			mappedRectangleInPoints = Win32DPIUtilsPixelToPointOverload6(mappedRectangleInPixels, to.impl.getAutoscalingZoom_())
+			var mappedRectangleInPixels *Rectangle = this.display.MapInPixelsFromToRectangle(from, to, Win32DPIUtilsPointToPixelOverload6(NewRectangle(x, y, width, height), from.impl.getAutoscalingZoom_()))
+			mappedRectangleInPoints = Win32DPIUtilsPixelToPointOverload4(mappedRectangleInPixels, to.impl.getAutoscalingZoom_())
 		}
 	}
 	return mappedRectangleInPoints
@@ -81,7 +81,7 @@ func (this *MultiZoomCoordinateSystemMapper) MapFromToXYWidthHeight(from *Contro
 func (this *MultiZoomCoordinateSystemMapper) MapMonitorBounds(rect *Rectangle_WithMonitor) *Rectangle {
 	var monitor *Monitor = rect.GetMonitor()
 	var zoom int32 = this.GetApplicableMonitorZoom(monitor)
-	var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload6(upcastRectangle_WithMonitorToRectangle(rect), zoom)
+	var bounds *Rectangle = Win32DPIUtilsPixelToPointOverload4(upcastRectangle_WithMonitorToRectangle(rect), zoom)
 	bounds.X = rect.X
 	bounds.Y = rect.Y
 	return bounds

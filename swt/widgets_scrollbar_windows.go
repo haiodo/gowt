@@ -159,7 +159,7 @@ func (this *ScrollBar) GetThumb() int32 {
 
 func (this *ScrollBar) GetThumbBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetThumbBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetThumbBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ScrollBar) GetThumbBoundsInPixels() *Rectangle {
@@ -194,7 +194,7 @@ func (this *ScrollBar) GetThumbBoundsInPixels() *Rectangle {
 
 func (this *ScrollBar) GetThumbTrackBounds() *Rectangle {
 	this.CheckWidget()
-	return Win32DPIUtilsPixelToPointOverload6(this.GetThumbTrackBoundsInPixels(), this.impl.getAutoscalingZoom_())
+	return Win32DPIUtilsPixelToPointOverload4(this.GetThumbTrackBoundsInPixels(), this.impl.getAutoscalingZoom_())
 }
 
 func (this *ScrollBar) GetThumbTrackBoundsInPixels() *Rectangle {

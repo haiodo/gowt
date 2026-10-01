@@ -1909,7 +1909,7 @@ func (this *TextLayout) GetBounds() *Rectangle {
 
 func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 	this.CheckLayout()
-	return Win32DPIUtilsPixelToPointOverload8(this.impl.getDevice_(), this.GetBoundsInPixels(start, end), this.GetZoom(nil))
+	return Win32DPIUtilsPixelToPointOverload5(this.impl.getDevice_(), this.GetBoundsInPixels(start, end), this.GetZoom(nil))
 }
 
 func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
@@ -2082,7 +2082,7 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 
 func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
 	this.CheckLayout()
-	return Win32DPIUtilsPixelToPointOverload8(this.impl.getDevice_(), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0())
+	return Win32DPIUtilsPixelToPointOverload5(this.impl.getDevice_(), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0())
 }
 
 func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32) *Rectangle {

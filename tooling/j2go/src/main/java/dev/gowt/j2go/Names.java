@@ -124,6 +124,7 @@ public class Names {
 		String key = erasureKey(m);
 		overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()).add(key);
 		paramNamesByKey.put(key, paramNames);
+		if (java.lang.reflect.Modifier.isPublic(m.getModifiers())) publicKeys.add(key);
 		if (!m.isConstructor()) declsByName.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
 	}
 
@@ -213,6 +214,8 @@ public class Names {
 		return null;
 	}
 
+	private final Set<String> publicKeys = new HashSet<>();
+
 	private final Map<String, Set<String>> pinnedNamesByClass = new HashMap<>();
 
 	private Set<String> pinnedNamesOf(String classBinaryName) {
@@ -257,6 +260,11 @@ public class Names {
 		String declKey = decl.getDeclaringClass().getErasure().getBinaryName();
 		String name = decl.isConstructor() ? "<init>" : decl.getName();
 		List<String> order = overloadOrder.getOrDefault(declKey + "#" + name, List.of());
+		// Other platforms: public overloads come first, so the API keeps the bare name over a package-private helper declared before it.
+		if (GoTypes.platform != Platform.COCOA && order.size() > 1) {
+			order = new ArrayList<>(order);
+			order.sort(Comparator.comparing(k -> !publicKeys.contains(k)));
+		}
 		int idx = order.indexOf(key);
 		if (idx <= 0) return withTypeNameGuard(decl, baseName); // first declared, or external -> base name.
 

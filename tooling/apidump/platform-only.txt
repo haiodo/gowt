@@ -3,3 +3,12 @@
 # with the goos list in platforms.txt order naming the platforms that HAVE the symbol. A difference
 # between platforms that is not listed here fails `apidump -check`; so does a listed one that is gone.
 # Empty while darwin is the only platform.
+# "* <regexp>" exempts every symbol it matches. IME and Tracker are translated on win32 only (darwin stubs IME by hand
+# and has no Tracker), so the types, their constructors and the setIME() taking them differ; ToolBar.layout is
+# a package-private method named like a public one on one side.
+* ^(Tracker|IME)(Like)?\.
+* ^type (Tracker|IME)(Like)?$
+* ^func New(Tracker|IME)
+* \.SetIME\(
+* ^ToolBar\.Layout\(
+* ^FontMetrics\.String\(

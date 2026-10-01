@@ -17,7 +17,7 @@ final class WinNativeEmitter {
 	// os_custom.c natives with no DLL export of their own: constants, and hand-written custom_<name> (custom_manual.go).
 	private static final Map<String, String> CONSTANTS = Map.of("DPI_AWARENESS_CONTEXT_UNAWARE", "-1", "DPI_AWARENESS_CONTEXT_SYSTEM_AWARE", "-2",
 			"DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE", "-3", "DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2", "-4", "DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED", "-5");
-	private static final java.util.Set<String> CUSTOM = java.util.Set.of("GetLibraryHandle", "AllowDarkModeForWindow", "SetPreferredAppMode", "IsDarkModeAvailable");
+	private static final java.util.Set<String> CUSTOM = java.util.Set.of("GetLibraryHandle", "AllowDarkModeForWindow", "SetPreferredAppMode", "IsDarkModeAvailable", "GID_ROTATE_ANGLE_FROM_ARGUMENT", "TreeView_GetItemRect");
 
 	private final Emitter emitter;
 	// Statements around the call for struct arguments: toC into a C-layout buffer before, fromC after.
@@ -38,10 +38,7 @@ final class WinNativeEmitter {
 		String goName = ci.goFuncPrefix + emitter.names.goMemberName(mb, Names.capitalize(javaName));
 		ITypeBinding[] types = mb.getParameterTypes();
 		// GDI+ is C++ in os: the flat API is bound by hand (internal/win32/gdip_manual.go) once GC needs it.
-		if (ci.binding.getName().equals("Gdip") && !javaName.endsWith("_sizeof")) {
-			emitter.emitUnsupportedNative(md, ci, out);
-			return;
-		}
+		if (ci.binding.getName().equals("Gdip") && !javaName.endsWith("_sizeof")) return;
 		if (javaName.endsWith("_sizeof") && types.length == 0) {
 			String typeName = javaName.substring(0, javaName.length() - "_sizeof".length());
 			Integer size = WinLayout.size(typeName);
@@ -80,6 +77,11 @@ final class WinNativeEmitter {
 			String r = emitter.retType(mb);
 			out.append("func ").append(goName).append('(').append(String.join(", ", cp)).append(") ").append(r).append(" { return custom_").append(javaName)
 					.append('(').append(String.join(", ", ca)).append(") }\n\n");
+			return;
+		}
+		// No Windows export behind these (os.c's own helpers, WebView2 glue): panic when called.
+		if (java.util.Set.of("setenv", "PathToPIDL", "CreateSwtWebView2Options").contains(javaName)) {
+			emitter.emitUnsupportedNative(md, ci, out);
 			return;
 		}
 		boolean vtbl = javaName.startsWith("VtblCall") && types.length >= 2;

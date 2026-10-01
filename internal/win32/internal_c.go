@@ -37,11 +37,8 @@ func CGetenv(env []int8) int64 {
 	return int64(r)
 }
 
-var proc_CSetenv = newProc("setenv")
-
 func CSetenv(env []int8, value []int8, overwrite int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_CSetenv.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(env))), uintptr(unsafe.Pointer(unsafe.SliceData(value))), uintptr(overwrite))
-	return int32(r)
+	panic("j2go: unsupported native setenv")
 }
 
 var proc_CMalloc = newProc("malloc")

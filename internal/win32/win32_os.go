@@ -6,7 +6,6 @@ package win32
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
-	"math"
 	"os"
 	"syscall"
 	"unsafe"
@@ -3714,12 +3713,7 @@ func OSLOGBRUSH_sizeof() int32 { return 16 }
 
 func OSLOGFONT_sizeof() int32 { return 92 }
 
-var proc_OSLOGPEN_sizeof = newProc("LOGPEN_sizeof")
-
-func OSLOGPEN_sizeof() int32 {
-	r, _, _ := syscall.SyscallN(proc_OSLOGPEN_sizeof.addr())
-	return int32(r)
-}
+func OSLOGPEN_sizeof() int32 { return 16 }
 
 func OSLVCOLUMN_sizeof() int32 { return 56 }
 
@@ -3805,12 +3799,7 @@ func OSPRINTDLG_sizeof() int32 { return 120 }
 
 func OSPROCESS_INFORMATION_sizeof() int32 { return 24 }
 
-var proc_OSPROPVARIANT_sizeof = newProc("PROPVARIANT_sizeof")
-
-func OSPROPVARIANT_sizeof() int32 {
-	r, _, _ := syscall.SyscallN(proc_OSPROPVARIANT_sizeof.addr())
-	return int32(r)
-}
+func OSPROPVARIANT_sizeof() int32 { return 24 }
 
 func OSPROPERTYKEY_sizeof() int32 { return 20 }
 
@@ -3836,12 +3825,7 @@ func OSSCRIPT_PROPERTIES_sizeof() int32 { return 8 }
 
 func OSSCRIPT_STATE_sizeof() int32 { return 2 }
 
-var proc_OSSCRIPT_STRING_ANALYSIS_sizeof = newProc("SCRIPT_STRING_ANALYSIS_sizeof")
-
-func OSSCRIPT_STRING_ANALYSIS_sizeof() int32 {
-	r, _, _ := syscall.SyscallN(proc_OSSCRIPT_STRING_ANALYSIS_sizeof.addr())
-	return int32(r)
-}
+func OSSCRIPT_STRING_ANALYSIS_sizeof() int32 { return 8 }
 
 func OSSCROLLBARINFO_sizeof() int32 { return 60 }
 
@@ -6536,11 +6520,8 @@ func OSGetWindowThreadProcessId(hWnd int64, lpdwProcessId []int32) int32 {
 	return int32(r)
 }
 
-var proc_OSGID_ROTATE_ANGLE_FROM_ARGUMENT = newProc("GID_ROTATE_ANGLE_FROM_ARGUMENT")
-
 func OSGID_ROTATE_ANGLE_FROM_ARGUMENT(dwArgument int64) float64 {
-	_, r2, _ := syscall.SyscallN(proc_OSGID_ROTATE_ANGLE_FROM_ARGUMENT.addr(), uintptr(dwArgument))
-	return math.Float64frombits(uint64(r2))
+	return custom_GID_ROTATE_ANGLE_FROM_ARGUMENT(dwArgument)
 }
 
 var proc_OSGlobalAddAtomLpString = newProc("GlobalAddAtom")
@@ -9910,20 +9891,8 @@ func OSToUnicode(wVirtKey int32, wScanCode int32, lpKeyState []int8, pwszBuff []
 	return int32(r)
 }
 
-var proc_OSTreeView_GetItemRect = newProc("TreeView_GetItemRect")
-
 func OSTreeView_GetItemRect(hwndTV int64, hitem int64, prc *RECT, fItemRect bool) bool {
-	var b_prc [2]uint64
-	var p_prc unsafe.Pointer
-	if prc != nil {
-		p_prc = unsafe.Pointer(&b_prc)
-		prc.toC(p_prc)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSTreeView_GetItemRect.addr(), uintptr(hwndTV), uintptr(hitem), uintptr(p_prc), boolToUintptr(fItemRect))
-	if prc != nil {
-		prc.fromC(p_prc)
-	}
-	return r&0xff != 0
+	return custom_TreeView_GetItemRect(hwndTV, hitem, prc, fItemRect)
 }
 
 var proc_OSTrackMouseEvent = newProc("TrackMouseEvent")

@@ -14,6 +14,8 @@ for h in ("os_structs.h", "com_structs.h", "osversion_structs.h"):
         m = re.match(r"#define (\w+)_sizeof\(\) sizeof\((.*)\)", l)
         if m:
             pairs[m.group(1)] = m.group(2)
+# sizeof natives of structs that have no Java class in the PI sources.
+pairs.update({"ELEMDESC": "ELEMDESC", "TYPEDESC": "TYPEDESC", "LOGPEN": "LOGPEN", "PROPVARIANT": "PROPVARIANT", "SCRIPT_STRING_ANALYSIS": "SCRIPT_STRING_ANALYSIS"})
 # Bitfield structs are hand-packed (bitfields_manual.go), FLICK_* is absent from the mingw headers.
 skip = {"FLICK_DATA", "FLICK_POINT", "MENUBARINFO", "SCRIPT_ANALYSIS", "SCRIPT_CONTROL", "SCRIPT_LOGATTR",
         "SCRIPT_PROPERTIES", "SCRIPT_STATE"}
@@ -47,6 +49,7 @@ for cls, ctype in sorted(pairs.items()):
         if os.path.exists(PI + d + cls + ".java"):
             path = PI + d + cls + ".java"
     if not path:
+        c += 'printf("%s %%d\\n", (int)sizeof(%s));\n' % (cls, ctype)
         continue
     c += 'printf("%s %%d\\n", (int)sizeof(%s));\n' % (cls, ctype)
     src = re.sub(r"(?m)^\s*//.*$", "", open(path).read())

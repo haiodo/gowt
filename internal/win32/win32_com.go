@@ -1154,11 +1154,8 @@ func COMOleTranslateColor(clr int32, hpal int64, pcolorref []int32) int32 {
 	return int32(r)
 }
 
-var proc_COMPathToPIDL = newProc("PathToPIDL")
-
 func COMPathToPIDL(pszName []uint16, ppidl []int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_COMPathToPIDL.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(pszName))), uintptr(unsafe.Pointer(unsafe.SliceData(ppidl))))
-	return int32(r)
+	panic("j2go: unsupported native PathToPIDL")
 }
 
 var proc_COMProgIDFromCLSID = newProc("ProgIDFromCLSID")
@@ -1320,11 +1317,8 @@ func COMCreateSwtWebView2Host(host ICoreWebView2SwtHost) int64 {
 	panic("j2go: unsupported native CreateSwtWebView2Host")
 }
 
-var proc_COMCreateSwtWebView2Options = newProc("CreateSwtWebView2Options")
-
 func COMCreateSwtWebView2Options() int64 {
-	r, _, _ := syscall.SyscallN(proc_COMCreateSwtWebView2Options.addr())
-	return int64(r)
+	panic("j2go: unsupported native CreateSwtWebView2Options")
 }
 
 func COMVtblCall(fnNumber int32, ppVtbl int64) int32 {
@@ -2076,12 +2070,7 @@ func COMCONTROLINFO_sizeof() int32 { return 24 }
 
 func COMDISPPARAMS_sizeof() int32 { return 24 }
 
-var proc_COMELEMDESC_sizeof = newProc("ELEMDESC_sizeof")
-
-func COMELEMDESC_sizeof() int32 {
-	r, _, _ := syscall.SyscallN(proc_COMELEMDESC_sizeof.addr())
-	return int32(r)
-}
+func COMELEMDESC_sizeof() int32 { return 32 }
 
 func COMEXCEPINFO_sizeof() int32 { return 64 }
 
@@ -2101,12 +2090,7 @@ func COMSTGMEDIUM_sizeof() int32 { return 24 }
 
 func COMTYPEATTR_sizeof() int32 { return 96 }
 
-var proc_COMTYPEDESC_sizeof = newProc("TYPEDESC_sizeof")
-
-func COMTYPEDESC_sizeof() int32 {
-	r, _, _ := syscall.SyscallN(proc_COMTYPEDESC_sizeof.addr())
-	return int32(r)
-}
+func COMTYPEDESC_sizeof() int32 { return 16 }
 
 func COMVARDESC_sizeof() int32 { return 64 }
 

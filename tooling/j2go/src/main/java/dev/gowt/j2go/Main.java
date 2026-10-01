@@ -225,6 +225,7 @@ public class Main {
 		}
 
 		if (System.getenv("J2GO_DUMP_OVERLOADS") != null) names.dumpOverloads(Path.of(System.getenv("J2GO_DUMP_OVERLOADS")));
+		if (System.getenv("J2GO_DUMP_PUBLIC") != null) dev.gowt.j2go.emit.PublicApi.dump(emitter, Path.of(System.getenv("J2GO_DUMP_PUBLIC")));
 		printSummary(emitter);
 	}
 

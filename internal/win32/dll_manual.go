@@ -35,8 +35,32 @@ type Proc struct {
 	ptr     uintptr
 }
 
+// allProcs lists every proc the bindings can call, for Probe.
+var allProcs []*Proc
+
 func newProc(name string, dynamic ...bool) *Proc {
-	return &Proc{name: name, dynamic: len(dynamic) > 0 && dynamic[0]}
+	p := &Proc{name: name, dynamic: len(dynamic) > 0 && dynamic[0]}
+	allProcs = append(allProcs, p)
+	return p
+}
+
+// Probe resolves every proc of the bindings and returns the names no DLL exports (dynamic ones are optional).
+func Probe() (total int, missing, optional []string) {
+	for _, n := range gdipNames {
+		gdipAddr(n)
+	}
+	for _, p := range allProcs {
+		total++
+		if Lookup(p.name) != 0 {
+			continue
+		}
+		if p.dynamic {
+			optional = append(optional, p.name)
+		} else {
+			missing = append(missing, p.name)
+		}
+	}
+	return
 }
 
 // Lookup returns the address of name, or 0.

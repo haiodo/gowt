@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: jfacetest test-jface test-jface-update gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: app jfacetest test-jface test-jface-update gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -34,6 +34,11 @@ release:
 		go build -trimpath -ldflags='-s -w' -o $(BIN)/release/$$c ./cmd/$$c || exit 1; \
 	done
 	@bash tooling/release-sizes.sh
+
+# macOS app bundles of the release binaries, e.g. make app APPS="minibrowser webviewdemo".
+APPS ?= minibrowser webviewdemo jfacedemo controlexample
+app: release
+	@for c in $(APPS); do bash tooling/darwin/mkapp.sh $(BIN)/release/$$c $(BIN)/release || exit 1; done
 
 # Records the current bin/release sizes as the reference for the 5% growth warning.
 release-sizes-update: release

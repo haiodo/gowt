@@ -52,6 +52,8 @@ func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir 
 			current.Store(name)
 			progress.Store(time.Now().UnixNano())
 			fmt.Fprintln(os.Stderr, "snap step:", name)
+			// An inactive window renders differently (grey checkboxes, no tab ring); the 500 ms to the next step lets activation land.
+			shell.ForceActive()
 			f()
 			current.Store("after " + name)
 			progress.Store(time.Now().UnixNano())

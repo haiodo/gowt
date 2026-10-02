@@ -6,7 +6,6 @@ package gtk
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"sync"
 	"unsafe"
@@ -40,9 +39,8 @@ func openLibs() []uintptr {
 		hs = append(hs, h)
 	}
 	if len(hs) == 0 {
-		// A stack trace says nothing to the user of an app built on gowt; the fix is installing a package.
-		fmt.Fprintf(os.Stderr, "gowt: GTK 3 is not installed (%v).\nInstall it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0\n", firstErr)
-		os.Exit(1)
+		// A library must not exit the process: gowt.Run returns this as an error, plain swt users see it in the panic.
+		panic(fmt.Errorf("gowt: GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0", firstErr))
 	}
 	return hs
 }

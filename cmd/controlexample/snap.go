@@ -11,10 +11,6 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-type task struct{ fn func() }
-
-func (t *task) Run() { t.fn() }
-
 // The checkbox clicked on a tab after its first snapshot: each one makes the example recreate or
 // reconfigure its sample widgets.
 var clicks = map[string]string{"Button": "SWT.BORDER", "Canvas": "Caret", "Text": "SWT.BORDER", "Label": "SWT.SEPARATOR"}
@@ -28,7 +24,7 @@ type snapHooks struct {
 }
 
 // snapRun selects each tab, waits for layout and paint, snapshots the window, clicks one checkbox on
-// some tabs and snapshots again, then closes the shell. Steps are chained 500 ms timers.
+// some tabs and snapshots again, then closes the shell. Steps run 500 ms apart from the main loop.
 // stepTimeout bounds one step (and the wait for the next timer): a stuck native call or a timer that
 // never fires ends the run with the step's name and all goroutine stacks instead of hanging.
 // stuckTrace is extra per-OS state the watchdog prints (the win32 dispatch ring).
@@ -82,19 +78,28 @@ func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir 
 		}
 	}
 	steps = append(steps, named("close", func() { shell.Close() }))
-	// One timer at a time: the next is armed when the current step is done.
-	var run func(i int)
-	run = func(i int) {
-		if i >= len(steps) {
-			return
+	// The steps run in the main loop (snapTick), never inside a WM_TIMER callback; the waker only
+	// makes Sleep return.
+	next, due := 0, time.Now().Add(500*time.Millisecond)
+	snapTick = func() {
+		if next < len(steps) && time.Now().After(due) {
+			step := steps[next]
+			next++
+			step()
+			due = time.Now().Add(500 * time.Millisecond)
 		}
-		display.TimerExec(500, &task{func() {
-			steps[i]()
-			run(i + 1)
-		}})
 	}
-	run(0)
+	go func() {
+		defer func() { recover() }() // Wake panics once the display is disposed
+		for !display.IsDisposed() {
+			time.Sleep(100 * time.Millisecond)
+			display.Wake()
+		}
+	}()
 }
+
+// snapTick is called by main between ReadAndDispatch calls while -snap runs.
+var snapTick func()
 
 func findButton(c *swt.Control, text string) *swt.Button {
 	if b, ok := c.Impl().(*swt.Button); ok && b.GetText() == text {

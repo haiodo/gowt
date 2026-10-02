@@ -34,6 +34,9 @@ func main() {
 		snapAll(display, shell, instance.TabFolder(), *snapDir)
 	}
 	for !shell.IsDisposed() {
+		if snapTick != nil {
+			snapTick()
+		}
 		if !display.ReadAndDispatch() {
 			display.Sleep()
 		}

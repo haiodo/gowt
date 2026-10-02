@@ -18,6 +18,8 @@ func main() {
 	snapDir := flag.String("snap", "", "write a PNG of every tab into this directory, then exit")
 	flag.Parse()
 
+	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
+	swt.DisplaySetAppName("SWT Controls")
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplayStyle(display, swt.SHELL_TRIM)
 	shell.SetLayout(swt.NewFillLayout())

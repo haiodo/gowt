@@ -24,6 +24,8 @@ func fill(grabV bool) *swt.GridData {
 }
 
 func main() {
+	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
+	swt.DisplaySetAppName("JFace Demo")
 	display := swt.NewDisplay()
 	shell := jface.WidgetFactoryShell(swt.SHELL_TRIM).Text("JFace factories").
 		Layout(jface.GridLayoutFactorySwtDefaults().Create()).CreateDisplay(display)

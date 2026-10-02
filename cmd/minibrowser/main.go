@@ -26,6 +26,8 @@ type page struct {
 }
 
 func main() {
+	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
+	swt.DisplaySetAppName("Mini Browser")
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
 	shell.SetText("Mini browser")

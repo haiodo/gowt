@@ -20,6 +20,8 @@ var assets embed.FS
 func init() { runtime.LockOSThread() }
 
 func main() {
+	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
+	swt.DisplaySetAppName("WebView Demo")
 	display := swt.NewDisplay()
 	shell := swt.NewShellDisplay(display)
 	shell.SetText("WebView demo")

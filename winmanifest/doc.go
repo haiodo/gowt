@@ -6,4 +6,7 @@
 //
 // The resources are manifest_windows_{amd64,arm64}.syso, made from app.manifest by
 // tooling/mksyso (make winmanifest). Elsewhere the package is empty.
+//
+// Package gowt imports it, so programs built on the facade need no import of their own. A program
+// with its own manifest resource must not link both: it uses package swt and skips this import.
 package winmanifest

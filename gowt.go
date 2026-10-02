@@ -40,6 +40,7 @@ func Run(setup func(*App)) (err error) {
 	}()
 	a := &App{display: swt.NewDisplay()}
 	defer a.display.Dispose()
+	a.display.FollowSystemTheme()
 	setup(a)
 	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
 		if !a.display.ReadAndDispatch() {

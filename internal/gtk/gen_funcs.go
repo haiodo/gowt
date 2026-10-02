@@ -7560,6 +7560,18 @@ func OSG_variant_get_type_string(value int64) int64 {
 	return int64(r_OSG_variant_get_type_string.get()(uintptr(value)))
 }
 
+var r_OSG_variant_get_uint32 = lz[func(uintptr) int32]{sym: "g_variant_get_uint32"}
+
+func OSG_variant_get_uint32(value int64) int32 {
+	return r_OSG_variant_get_uint32.get()(uintptr(value))
+}
+
+var r_OSG_variant_get_variant = lz[func(uintptr) uintptr]{sym: "g_variant_get_variant"}
+
+func OSG_variant_get_variant(value int64) int64 {
+	return int64(r_OSG_variant_get_variant.get()(uintptr(value)))
+}
+
 var r_OSG_variant_is_of_type = lz[func(uintptr, uintptr) int32]{sym: "g_variant_is_of_type"}
 
 func OSG_variant_is_of_type(value int64, a1 int64) bool {

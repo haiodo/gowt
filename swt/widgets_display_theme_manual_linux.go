@@ -4,7 +4,7 @@ import "github.com/haiodo/gowt/internal/gtk"
 
 const portalSettingsTimeoutMsec = 2000
 
-// FollowSystemTheme makes the display track org.freedesktop.appearance color-scheme from
+// FollowSystemTheme is opt-in for plain swt users (gowt.Run calls it). It makes the display track org.freedesktop.appearance color-scheme from
 // xdg-desktop-portal: the value is applied as gtk-application-prefer-dark-theme, DisplayIsSystemDarkTheme
 // reflects it and every change fires SWT.Settings. Without a portal nothing changes.
 func (this *Display) FollowSystemTheme() {

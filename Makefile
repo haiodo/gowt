@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: app jfacetest test-jface test-jface-update gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -115,11 +115,14 @@ WINBOTTLE ?= gowt
 WINBIN := $(BIN)/windows
 WINCMDS := hello swttest controlexample winprobe jfacedemo
 
-# cmd/*/rsrc_windows_amd64.syso carries tooling/win32/swt.manifest (comctl32 v6: SysLink, visual styles) as the exe's
-# manifest resource; rebuild after editing it (needs x86_64-w64-mingw32-windres).
-win-syso:
-	cd tooling/win32 && x86_64-w64-mingw32-windres -O coff -F pe-x86-64 swt.rc swt.syso
-	@for c in $(WINCMDS); do cp tooling/win32/swt.syso cmd/$$c/rsrc_windows_amd64.syso; done; rm tooling/win32/swt.syso
+# winmanifest/*.syso is app.manifest (comctl32 v6, per-monitor DPI v2) as a COFF resource; cmd/* get it by importing
+# winmanifest. tooling/mksyso writes the objects itself, no windres needed. Rebuild after editing the manifest.
+winmanifest:
+	@for a in amd64 arm64; do go run ./tooling/mksyso -arch $$a -manifest winmanifest/app.manifest -o winmanifest/manifest_windows_$$a.syso || exit 1; done
+
+# A module outside the repository (replace -> this checkout) builds for darwin, windows and linux.
+consumer-check:
+	bash tooling/consumer-check.sh
 
 win-build:
 	@mkdir -p $(WINBIN)

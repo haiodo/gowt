@@ -27,13 +27,20 @@ func libs() []uintptr {
 
 func openLibs() []uintptr {
 	var hs []uintptr
+	var firstErr error
 	for _, n := range []string{"libgtk-3.so.0", "libgdk-3.so.0", "libX11.so.6", "libcairo.so.2", "libpangocairo-1.0.so.0", "libfontconfig.so.1"} {
-		if h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL); err == nil {
-			hs = append(hs, h)
+		h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		if err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
 		}
+		hs = append(hs, h)
 	}
 	if len(hs) == 0 {
-		panic("gowt/internal/gtk: libgtk-3.so.0 not found")
+		// A library must not exit the process: gowt.Run returns this as an error, plain swt users see it in the panic.
+		panic(fmt.Errorf("gowt: GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0", firstErr))
 	}
 	return hs
 }

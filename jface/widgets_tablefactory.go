@@ -66,9 +66,110 @@ func TableFactoryNewTable(style int32) *TableFactory {
 	return newTableFactory(style)
 }
 
+func (this *TableFactory) Background(a0Like swt.ColorLike) *TableFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *TableFactory) Enabled(a0 bool) *TableFactory {
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *TableFactory) Font(a0Like swt.FontLike) *TableFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *TableFactory) Foreground(a0Like swt.ColorLike) *TableFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *TableFactory) LayoutData(a0 any) *TableFactory {
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *TableFactory) Orientation(a0 int32) *TableFactory {
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *TableFactory) SupplyLayoutData(a0 func() any) *TableFactory {
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *TableFactory) Tooltip(a0 string) *TableFactory {
+	return castAbstractControlFactoryToTableFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *TableFactory) Create(a0Like swt.CompositeLike) *swt.Table {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtTable(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *TableFactory) Data(a0 any) *TableFactory {
+	return castAbstractWidgetFactoryToTableFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *TableFactory) DataKeyValue(a0 string, a1 any) *TableFactory {
+	return castAbstractWidgetFactoryToTableFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtTableToswtWidget(x *swt.Table) *swt.Widget {
 	if x == nil {
 		return nil
 	}
 	return &x.Widget
+}
+
+// j2go: instanceof helper for TableFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsTableFactory(x any) (*TableFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *TableFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToTableFactory(x *AbstractControlFactory) *TableFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTableFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TableFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToTableFactory(x *AbstractWidgetFactory) *TableFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTableFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TableFactory")
+	}
+	return v
 }

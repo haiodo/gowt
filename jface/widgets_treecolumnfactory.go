@@ -84,9 +84,76 @@ func TreeColumnFactoryNewTreeColumn(style int32) *TreeColumnFactory {
 	return newTreeColumnFactory(style)
 }
 
+func (this *TreeColumnFactory) Image(a0Like swt.ImageLike) *TreeColumnFactory {
+	var a0 *swt.Image
+	if a0Like != nil {
+		a0 = a0Like.AsImage()
+	}
+	_ = a0
+	return castAbstractItemFactoryToTreeColumnFactory(this.AbstractItemFactory.Image(a0))
+}
+
+func (this *TreeColumnFactory) Text(a0 string) *TreeColumnFactory {
+	return castAbstractItemFactoryToTreeColumnFactory(this.AbstractItemFactory.Text(a0))
+}
+
+func (this *TreeColumnFactory) Create(a0Like swt.TreeLike) *swt.TreeColumn {
+	var a0 *swt.Tree
+	if a0Like != nil {
+		a0 = a0Like.AsTree()
+	}
+	_ = a0
+	return castswtWidgetToswtTreeColumn(this.AbstractItemFactory.Create(a0))
+}
+
+func (this *TreeColumnFactory) Data(a0 any) *TreeColumnFactory {
+	return castAbstractWidgetFactoryToTreeColumnFactory(this.AbstractItemFactory.Data(a0))
+}
+
+func (this *TreeColumnFactory) DataKeyValue(a0 string, a1 any) *TreeColumnFactory {
+	return castAbstractWidgetFactoryToTreeColumnFactory(this.AbstractItemFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtTreeColumnToswtWidget(x *swt.TreeColumn) *swt.Widget {
 	if x == nil {
 		return nil
 	}
 	return &x.Widget
+}
+
+// j2go: instanceof helper for TreeColumnFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsTreeColumnFactory(x any) (*TreeColumnFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *TreeColumnFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractItemFactoryToTreeColumnFactory(x *AbstractItemFactory) *TreeColumnFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTreeColumnFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TreeColumnFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToTreeColumnFactory(x *AbstractWidgetFactory) *TreeColumnFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTreeColumnFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TreeColumnFactory")
+	}
+	return v
 }

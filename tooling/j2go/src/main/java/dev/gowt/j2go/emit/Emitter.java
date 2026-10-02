@@ -434,11 +434,10 @@ public class Emitter {
 		return reflectEmitter.registryFile();
 	}
 
-	public String qualifyManual(String goType, ITypeBinding t) {
-		return packageQualifier.qualifyManual(goType, t);
-	}
+	public String qualifyManual(String goType, ITypeBinding t) { return packageQualifier.qualifyManual(goType, t); }
 
-	public boolean degradesUnresolvedTypes() { return "swttests".equals(currentGoPackage); }
+	// Tests reference API that may not be ported: such a type degrades to any instead of aborting.
+	public boolean degradesUnresolvedTypes() { return "swttests".equals(currentGoPackage) || "jfacetests".equals(currentGoPackage); }
 
 	public void checkNoForeignPackageLeak(String qualifiedJavaTypeName) {
 		packageQualifier.checkNoForeignPackageLeak(qualifiedJavaTypeName);

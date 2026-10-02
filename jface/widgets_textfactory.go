@@ -84,6 +84,70 @@ func TextFactoryNewText(style int32) *TextFactory {
 	return newTextFactory(style)
 }
 
+func (this *TextFactory) Background(a0Like swt.ColorLike) *TextFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *TextFactory) Enabled(a0 bool) *TextFactory {
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *TextFactory) Font(a0Like swt.FontLike) *TextFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *TextFactory) Foreground(a0Like swt.ColorLike) *TextFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *TextFactory) LayoutData(a0 any) *TextFactory {
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *TextFactory) Orientation(a0 int32) *TextFactory {
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *TextFactory) SupplyLayoutData(a0 func() any) *TextFactory {
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *TextFactory) Tooltip(a0 string) *TextFactory {
+	return castAbstractControlFactoryToTextFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *TextFactory) Create(a0Like swt.CompositeLike) *swt.Text {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtText(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *TextFactory) Data(a0 any) *TextFactory {
+	return castAbstractWidgetFactoryToTextFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *TextFactory) DataKeyValue(a0 string, a1 any) *TextFactory {
+	return castAbstractWidgetFactoryToTextFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtTextToswtWidget(x *swt.Text) *swt.Widget {
 	if x == nil {
 		return nil
@@ -110,6 +174,43 @@ func castswtWidgetToswtText(x *swt.Widget) *swt.Text {
 	v, ok := widgetImplAsText(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Text")
+	}
+	return v
+}
+
+// j2go: instanceof helper for TextFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsTextFactory(x any) (*TextFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *TextFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToTextFactory(x *AbstractControlFactory) *TextFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTextFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TextFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToTextFactory(x *AbstractWidgetFactory) *TextFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTextFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TextFactory")
 	}
 	return v
 }

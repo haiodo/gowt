@@ -10,10 +10,10 @@ final class ErasedGenerics {
 
 	private ErasedGenerics() {}
 
-	/** For a call: only a method of a translated class whose own signature has no type parameter (AssertThrows[T] is typed already). */
-	static String castCall(Emitter emitter, String text, IMethodBinding mb) {
+	/** For a call on a `recv`-typed value: only a method of a translated class whose own signature has no type parameter (AssertThrows[T] is typed already). */
+	static String castCall(Emitter emitter, String text, IMethodBinding mb, ITypeBinding recv) {
 		IMethodBinding decl = mb.getMethodDeclaration();
-		if (emitter.model.lookup(decl.getDeclaringClass()) == null) return text;
+		if (emitter.model.lookup(decl.getDeclaringClass()) == null || CovariantBridges.covers(emitter, recv, mb)) return text;
 		return cast(emitter, text, decl.getReturnType(), mb.getReturnType());
 	}
 

@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: jfacetest test-jface test-jface-update gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -64,6 +64,17 @@ api-check:
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).
 test-swt: swttest
 	./$(BIN)/swttest -expected $(EXPECTED) $(SWTTEST_FLAGS)
+
+# JFace's translated JUnit tests (tests/jfacetests): the same runner built with -tags jface, gated by tests/expected_jface[_os].txt.
+JEXPECTED ?= tests/expected_jface$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
+jfacetest:
+	go build -tags jface -o $(BIN)/jfacetest ./cmd/swttest
+
+test-jface: jfacetest
+	./$(BIN)/jfacetest -expected $(JEXPECTED) $(SWTTEST_FLAGS)
+
+test-jface-update: jfacetest
+	./$(BIN)/jfacetest -update $(JEXPECTED) $(SWTTEST_FLAGS)
 
 # Rewrites the expected file from a full run; a new failure comes out as UNDESCRIBED until its cause is written.
 test-swt-update: swttest

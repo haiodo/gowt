@@ -39,6 +39,70 @@ func SashFactoryNewSash(style int32) *SashFactory {
 	return newSashFactory(style)
 }
 
+func (this *SashFactory) Background(a0Like swt.ColorLike) *SashFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *SashFactory) Enabled(a0 bool) *SashFactory {
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *SashFactory) Font(a0Like swt.FontLike) *SashFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *SashFactory) Foreground(a0Like swt.ColorLike) *SashFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *SashFactory) LayoutData(a0 any) *SashFactory {
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *SashFactory) Orientation(a0 int32) *SashFactory {
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *SashFactory) SupplyLayoutData(a0 func() any) *SashFactory {
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *SashFactory) Tooltip(a0 string) *SashFactory {
+	return castAbstractControlFactoryToSashFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *SashFactory) Create(a0Like swt.CompositeLike) *swt.Sash {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtSash(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *SashFactory) Data(a0 any) *SashFactory {
+	return castAbstractWidgetFactoryToSashFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *SashFactory) DataKeyValue(a0 string, a1 any) *SashFactory {
+	return castAbstractWidgetFactoryToSashFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtSashToswtWidget(x *swt.Sash) *swt.Widget {
 	if x == nil {
 		return nil
@@ -65,6 +129,43 @@ func castswtWidgetToswtSash(x *swt.Widget) *swt.Sash {
 	v, ok := widgetImplAsSash(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Sash")
+	}
+	return v
+}
+
+// j2go: instanceof helper for SashFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsSashFactory(x any) (*SashFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *SashFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToSashFactory(x *AbstractControlFactory) *SashFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsSashFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: SashFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToSashFactory(x *AbstractWidgetFactory) *SashFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsSashFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: SashFactory")
 	}
 	return v
 }

@@ -62,6 +62,70 @@ func LabelFactoryNewLabel(style int32) *LabelFactory {
 	return newLabelFactory(style)
 }
 
+func (this *LabelFactory) Background(a0Like swt.ColorLike) *LabelFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *LabelFactory) Enabled(a0 bool) *LabelFactory {
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *LabelFactory) Font(a0Like swt.FontLike) *LabelFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *LabelFactory) Foreground(a0Like swt.ColorLike) *LabelFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *LabelFactory) LayoutData(a0 any) *LabelFactory {
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *LabelFactory) Orientation(a0 int32) *LabelFactory {
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *LabelFactory) SupplyLayoutData(a0 func() any) *LabelFactory {
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *LabelFactory) Tooltip(a0 string) *LabelFactory {
+	return castAbstractControlFactoryToLabelFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *LabelFactory) Create(a0Like swt.CompositeLike) *swt.Label {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtLabel(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *LabelFactory) Data(a0 any) *LabelFactory {
+	return castAbstractWidgetFactoryToLabelFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *LabelFactory) DataKeyValue(a0 string, a1 any) *LabelFactory {
+	return castAbstractWidgetFactoryToLabelFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtLabelToswtWidget(x *swt.Label) *swt.Widget {
 	if x == nil {
 		return nil
@@ -88,6 +152,43 @@ func castswtWidgetToswtLabel(x *swt.Widget) *swt.Label {
 	v, ok := widgetImplAsLabel(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Label")
+	}
+	return v
+}
+
+// j2go: instanceof helper for LabelFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsLabelFactory(x any) (*LabelFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *LabelFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToLabelFactory(x *AbstractControlFactory) *LabelFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsLabelFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: LabelFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToLabelFactory(x *AbstractWidgetFactory) *LabelFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsLabelFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: LabelFactory")
 	}
 	return v
 }

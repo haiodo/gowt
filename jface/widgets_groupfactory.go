@@ -39,6 +39,79 @@ func GroupFactoryNewGroup(style int32) *GroupFactory {
 	return newGroupFactory(style)
 }
 
+func (this *GroupFactory) Layout(a0Like swt.LayoutLike) *GroupFactory {
+	var a0 *swt.Layout
+	if a0Like != nil {
+		a0 = a0Like.AsLayout()
+	}
+	_ = a0
+	return castAbstractCompositeFactoryToGroupFactory(this.AbstractCompositeFactory.Layout(a0))
+}
+
+func (this *GroupFactory) Background(a0Like swt.ColorLike) *GroupFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Background(a0))
+}
+
+func (this *GroupFactory) Enabled(a0 bool) *GroupFactory {
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Enabled(a0))
+}
+
+func (this *GroupFactory) Font(a0Like swt.FontLike) *GroupFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Font(a0))
+}
+
+func (this *GroupFactory) Foreground(a0Like swt.ColorLike) *GroupFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Foreground(a0))
+}
+
+func (this *GroupFactory) LayoutData(a0 any) *GroupFactory {
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.LayoutData(a0))
+}
+
+func (this *GroupFactory) Orientation(a0 int32) *GroupFactory {
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Orientation(a0))
+}
+
+func (this *GroupFactory) SupplyLayoutData(a0 func() any) *GroupFactory {
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.SupplyLayoutData(a0))
+}
+
+func (this *GroupFactory) Tooltip(a0 string) *GroupFactory {
+	return castAbstractControlFactoryToGroupFactory(this.AbstractCompositeFactory.Tooltip(a0))
+}
+
+func (this *GroupFactory) Create(a0Like swt.CompositeLike) *swt.Group {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtGroup(this.AbstractCompositeFactory.Create(a0))
+}
+
+func (this *GroupFactory) Data(a0 any) *GroupFactory {
+	return castAbstractWidgetFactoryToGroupFactory(this.AbstractCompositeFactory.Data(a0))
+}
+
+func (this *GroupFactory) DataKeyValue(a0 string, a1 any) *GroupFactory {
+	return castAbstractWidgetFactoryToGroupFactory(this.AbstractCompositeFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtGroupToswtWidget(x *swt.Group) *swt.Widget {
 	if x == nil {
 		return nil
@@ -65,6 +138,54 @@ func castswtWidgetToswtGroup(x *swt.Widget) *swt.Group {
 	v, ok := widgetImplAsGroup(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Group")
+	}
+	return v
+}
+
+// j2go: instanceof helper for GroupFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsGroupFactory(x any) (*GroupFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *GroupFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractCompositeFactoryToGroupFactory(x *AbstractCompositeFactory) *GroupFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsGroupFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: GroupFactory")
+	}
+	return v
+}
+
+func castAbstractControlFactoryToGroupFactory(x *AbstractControlFactory) *GroupFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsGroupFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: GroupFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToGroupFactory(x *AbstractWidgetFactory) *GroupFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsGroupFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: GroupFactory")
 	}
 	return v
 }

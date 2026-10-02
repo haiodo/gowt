@@ -26,7 +26,7 @@ func (this *ShellFactory) initShellFactory(style int32) {
 	}})
 }
 
-func (this *ShellFactory) Create(displayLike swt.DisplayLike) *swt.Shell {
+func (this *ShellFactory) CreateDisplay(displayLike swt.DisplayLike) *swt.Shell {
 	var display *swt.Display
 	if displayLike != nil {
 		display = displayLike.AsDisplay()
@@ -131,6 +131,79 @@ func ShellFactoryNewShell(style int32) *ShellFactory {
 	return newShellFactory(style)
 }
 
+func (this *ShellFactory) Layout(a0Like swt.LayoutLike) *ShellFactory {
+	var a0 *swt.Layout
+	if a0Like != nil {
+		a0 = a0Like.AsLayout()
+	}
+	_ = a0
+	return castAbstractCompositeFactoryToShellFactory(this.AbstractCompositeFactory.Layout(a0))
+}
+
+func (this *ShellFactory) Background(a0Like swt.ColorLike) *ShellFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Background(a0))
+}
+
+func (this *ShellFactory) Enabled(a0 bool) *ShellFactory {
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Enabled(a0))
+}
+
+func (this *ShellFactory) Font(a0Like swt.FontLike) *ShellFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Font(a0))
+}
+
+func (this *ShellFactory) Foreground(a0Like swt.ColorLike) *ShellFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Foreground(a0))
+}
+
+func (this *ShellFactory) LayoutData(a0 any) *ShellFactory {
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.LayoutData(a0))
+}
+
+func (this *ShellFactory) Orientation(a0 int32) *ShellFactory {
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Orientation(a0))
+}
+
+func (this *ShellFactory) SupplyLayoutData(a0 func() any) *ShellFactory {
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.SupplyLayoutData(a0))
+}
+
+func (this *ShellFactory) Tooltip(a0 string) *ShellFactory {
+	return castAbstractControlFactoryToShellFactory(this.AbstractCompositeFactory.Tooltip(a0))
+}
+
+func (this *ShellFactory) Create(a0Like swt.CompositeLike) *swt.Shell {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtShell(this.AbstractCompositeFactory.Create(a0))
+}
+
+func (this *ShellFactory) Data(a0 any) *ShellFactory {
+	return castAbstractWidgetFactoryToShellFactory(this.AbstractCompositeFactory.Data(a0))
+}
+
+func (this *ShellFactory) DataKeyValue(a0 string, a1 any) *ShellFactory {
+	return castAbstractWidgetFactoryToShellFactory(this.AbstractCompositeFactory.DataKeyValue(a0, a1))
+}
+
 // j2go: instanceof helper for swt.Shell and its subclasses within the translated set.
 func widgetImplAsShell(x any) (*swt.Shell, bool) {
 	switch v := x.(type) {
@@ -177,4 +250,52 @@ func upcastswtShellToswtDecorations(x *swt.Shell) *swt.Decorations {
 		return nil
 	}
 	return &x.Decorations
+}
+
+// j2go: instanceof helper for ShellFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsShellFactory(x any) (*ShellFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *ShellFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractCompositeFactoryToShellFactory(x *AbstractCompositeFactory) *ShellFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsShellFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: ShellFactory")
+	}
+	return v
+}
+
+func castAbstractControlFactoryToShellFactory(x *AbstractControlFactory) *ShellFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsShellFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: ShellFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToShellFactory(x *AbstractWidgetFactory) *ShellFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsShellFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: ShellFactory")
+	}
+	return v
 }

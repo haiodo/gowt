@@ -304,24 +304,6 @@ CE=org/eclipse/swt/examples/controlexample
 	org/eclipse/swt/internal/C.java \
 	"${PI_FILES[@]}"
 
-# Round 22 jface: org.eclipse.jface layout/widgets (+ the util and viewers data classes they use) -> package jface, shared by every OS,
-# so only the reference platform emits it. swt, C.java and the cocoa files are reference-only. Browser/common is on the source path for
-# name resolution only (BrowserFactory, WidgetFactory.browser are not translated).
-if [ "$PLATFORM" = cocoa ]; then
-	UI_REPO="${UI_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.ui}"
-	JF_SRC="$UI_REPO/bundles/org.eclipse.jface/src"
-	JF=org/eclipse/jface
-	JF_FILES=($(cd "$JF_SRC" && ls $JF/layout/*.java $JF/widgets/*.java | grep -v BrowserFactory.java))
-	JF_FILES+=($JF/util/Geometry.java $JF/util/Util.java $JF/viewers/ColumnLayoutData.java $JF/viewers/ColumnPixelData.java
-		$JF/viewers/ColumnWeightData.java $JF/dialogs/IDialogConstants.java)
-	"${J2GO[@]}" --src "$JF_SRC" --src "$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Browser/common" \
-		"${JF_FILES[@]}" \
-		-- \
-		"${SWT_FILES[@]}" \
-		org/eclipse/swt/internal/C.java \
-		"${PI_FILES[@]}"
-fi
-
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res
@@ -435,5 +417,35 @@ TESTS_SRC="$SWT_REPO/tests/org.eclipse.swt.tests/JUnit Tests/$TJ"
 mkdir -p tests/swttests/testdata
 cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
 
+
+# Round 22 jface: org.eclipse.jface layout/widgets (+ the util and viewers data classes they use) -> package jface, shared by every OS,
+# so only the reference platform emits it. swt, C.java and the cocoa files are reference-only. Browser/common is on the source path for
+# name resolution only (BrowserFactory, WidgetFactory.browser are not translated).
+if [ "$PLATFORM" = cocoa ]; then
+	UI_REPO="${UI_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.ui}"
+	JF_SRC="$UI_REPO/bundles/org.eclipse.jface/src"
+	JF=org/eclipse/jface
+	JF_FILES=($(cd "$JF_SRC" && ls $JF/layout/*.java $JF/widgets/*.java | grep -v BrowserFactory.java))
+	JF_FILES+=($JF/util/Geometry.java $JF/util/Util.java $JF/viewers/ColumnLayoutData.java $JF/viewers/ColumnPixelData.java
+		$JF/viewers/ColumnWeightData.java $JF/dialogs/IDialogConstants.java)
+	"${J2GO[@]}" --src "$JF_SRC" --src "$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Browser/common" \
+		"${JF_FILES[@]}" \
+		-- \
+		"${SWT_FILES[@]}" \
+		org/eclipse/swt/internal/C.java \
+		"${PI_FILES[@]}"
+
+	# JFace's JUnit 5 tests for layout and widgets -> tests/jfacetests, run by `make test-jface`. The jface set is reference-only here.
+	JT_SRC="$UI_REPO/tests/org.eclipse.jface.tests/src"
+	JT=org/eclipse/jface/tests
+	JT_FILES=($(cd "$JT_SRC" && ls $JT/layout/*Test.java $JT/widgets/*.java | grep -v "All.*Tests.java\|BrowserFactory"))
+	"${J2GO[@]}" --classpath "$JUNIT_CP" --src "$JF_SRC" --src "$JT_SRC" --src "$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Browser/common" \
+		"${JT_FILES[@]}" \
+		-- \
+		"${JF_FILES[@]}" \
+		"${SWT_FILES[@]}" \
+		org/eclipse/swt/internal/C.java \
+		"${PI_FILES[@]}"
+fi
 
 gofmt -w swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/controlexample/*.go tests/swttests/*.go $(ls jface/*.go tests/jfacetests/*.go 2>/dev/null)

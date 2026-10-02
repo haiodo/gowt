@@ -84,6 +84,36 @@ func TableColumnFactoryNewTableColumn(style int32) *TableColumnFactory {
 	return newTableColumnFactory(style)
 }
 
+func (this *TableColumnFactory) Image(a0Like swt.ImageLike) *TableColumnFactory {
+	var a0 *swt.Image
+	if a0Like != nil {
+		a0 = a0Like.AsImage()
+	}
+	_ = a0
+	return castAbstractItemFactoryToTableColumnFactory(this.AbstractItemFactory.Image(a0))
+}
+
+func (this *TableColumnFactory) Text(a0 string) *TableColumnFactory {
+	return castAbstractItemFactoryToTableColumnFactory(this.AbstractItemFactory.Text(a0))
+}
+
+func (this *TableColumnFactory) Create(a0Like swt.TableLike) *swt.TableColumn {
+	var a0 *swt.Table
+	if a0Like != nil {
+		a0 = a0Like.AsTable()
+	}
+	_ = a0
+	return castswtWidgetToswtTableColumn(this.AbstractItemFactory.Create(a0))
+}
+
+func (this *TableColumnFactory) Data(a0 any) *TableColumnFactory {
+	return castAbstractWidgetFactoryToTableColumnFactory(this.AbstractItemFactory.Data(a0))
+}
+
+func (this *TableColumnFactory) DataKeyValue(a0 string, a1 any) *TableColumnFactory {
+	return castAbstractWidgetFactoryToTableColumnFactory(this.AbstractItemFactory.DataKeyValue(a0, a1))
+}
+
 func castswtWidgetToswtTable(x *swt.Widget) *swt.Table {
 	if x == nil {
 		return nil
@@ -100,4 +130,41 @@ func upcastswtTableColumnToswtWidget(x *swt.TableColumn) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+// j2go: instanceof helper for TableColumnFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsTableColumnFactory(x any) (*TableColumnFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *TableColumnFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractItemFactoryToTableColumnFactory(x *AbstractItemFactory) *TableColumnFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTableColumnFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TableColumnFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToTableColumnFactory(x *AbstractWidgetFactory) *TableColumnFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsTableColumnFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: TableColumnFactory")
+	}
+	return v
 }

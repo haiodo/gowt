@@ -113,12 +113,12 @@ func (this *GridDataFactory) Exclude(shouldExclude bool) *GridDataFactory {
 	return this
 }
 
-func (this *GridDataFactory) Create0() *swt.GridData {
+func (this *GridDataFactory) Create() *swt.GridData {
 	return GridDataFactoryCopyData(this.data)
 }
 
 func (this *GridDataFactory) Copy() *GridDataFactory {
-	return newGridDataFactory(this.Create0())
+	return newGridDataFactory(this.Create())
 }
 
 func (this *GridDataFactory) ApplyTo(controlLike swt.ControlLike) {
@@ -127,7 +127,7 @@ func (this *GridDataFactory) ApplyTo(controlLike swt.ControlLike) {
 		control = controlLike.AsControl()
 	}
 	_ = control
-	control.SetLayoutData(this.Create0())
+	control.SetLayoutData(this.Create())
 }
 
 func (this *GridDataFactory) String() string {

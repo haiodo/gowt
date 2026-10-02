@@ -125,6 +125,7 @@ public class Names {
 		{ var l = overloadOrder.computeIfAbsent(declKey + "#" + name, k -> new ArrayList<>()); if (!l.contains(key)) l.add(key); }
 		paramNamesByKey.put(key, paramNames);
 		accessByKey.put(key, access(m));
+		if (Modifier.isStatic(m.getModifiers())) staticKeys.add(key);
 		if (!m.isConstructor()) instanceDecls.computeIfAbsent(m.getName(), k -> new ArrayList<>()).add(m);
 	}
 
@@ -237,10 +238,14 @@ public class Names {
 		String name = decl.isConstructor() ? "<init>" : decl.getName();
 		List<String> order = overloadOrder.getOrDefault(declKey + "#" + name, List.of());
 		if (!GoTypes.piPackage.equals("cocoa")) order = byAccess(order); // the public member of a family keeps the bare name
+		boolean jface = decl.getDeclaringClass().getPackage().getName().startsWith("org.eclipse.jface");
+		// A static is a package-level func, an instance method a method: they never collide (GridDataFactory.create(int) and create()).
+		if (jface) order = order.stream().filter(k -> staticKeys.contains(k) == Modifier.isStatic(decl.getModifiers())).toList();
 		int idx = order.indexOf(key);
 		// Go has no overloading across embedding either: a subclass method of an ancestor's name (other signature) is
-		// suffixed. Not on the reference platform, whose shared output must not change (its cases are in names.properties).
-		boolean shadows = idx == 0 && !GoTypes.piPackage.equals("cocoa") && shadowsAncestorOverload(decl);
+		// suffixed. Not in swt on the reference platform, whose shared output must not change (its cases are in names.properties);
+		// jface is new, so it follows the rule (ShellFactory.create(Display) next to AbstractWidgetFactory.create(P)).
+		boolean shadows = idx == 0 && (jface || !GoTypes.piPackage.equals("cocoa")) && shadowsAncestorOverload(decl);
 		if (idx <= 0 && !shadows) return withTypeNameGuard(decl, baseName); // first declared, or external -> base name.
 
 		if (!shadows && !nameBasedSuffixesUnique(order)) {
@@ -262,6 +267,7 @@ public class Names {
 	}
 
 	private final Map<String, Integer> accessByKey = new HashMap<>();
+	private final Set<String> staticKeys = new HashSet<>();
 
 	// Stable: most accessible first, source order within a level.
 	private List<String> byAccess(List<String> order) {

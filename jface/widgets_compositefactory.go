@@ -39,6 +39,79 @@ func CompositeFactoryNewComposite(style int32) *CompositeFactory {
 	return newCompositeFactory(style)
 }
 
+func (this *CompositeFactory) Layout(a0Like swt.LayoutLike) *CompositeFactory {
+	var a0 *swt.Layout
+	if a0Like != nil {
+		a0 = a0Like.AsLayout()
+	}
+	_ = a0
+	return castAbstractCompositeFactoryToCompositeFactory(this.AbstractCompositeFactory.Layout(a0))
+}
+
+func (this *CompositeFactory) Background(a0Like swt.ColorLike) *CompositeFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Background(a0))
+}
+
+func (this *CompositeFactory) Enabled(a0 bool) *CompositeFactory {
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Enabled(a0))
+}
+
+func (this *CompositeFactory) Font(a0Like swt.FontLike) *CompositeFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Font(a0))
+}
+
+func (this *CompositeFactory) Foreground(a0Like swt.ColorLike) *CompositeFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Foreground(a0))
+}
+
+func (this *CompositeFactory) LayoutData(a0 any) *CompositeFactory {
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.LayoutData(a0))
+}
+
+func (this *CompositeFactory) Orientation(a0 int32) *CompositeFactory {
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Orientation(a0))
+}
+
+func (this *CompositeFactory) SupplyLayoutData(a0 func() any) *CompositeFactory {
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.SupplyLayoutData(a0))
+}
+
+func (this *CompositeFactory) Tooltip(a0 string) *CompositeFactory {
+	return castAbstractControlFactoryToCompositeFactory(this.AbstractCompositeFactory.Tooltip(a0))
+}
+
+func (this *CompositeFactory) Create(a0Like swt.CompositeLike) *swt.Composite {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtComposite(this.AbstractCompositeFactory.Create(a0))
+}
+
+func (this *CompositeFactory) Data(a0 any) *CompositeFactory {
+	return castAbstractWidgetFactoryToCompositeFactory(this.AbstractCompositeFactory.Data(a0))
+}
+
+func (this *CompositeFactory) DataKeyValue(a0 string, a1 any) *CompositeFactory {
+	return castAbstractWidgetFactoryToCompositeFactory(this.AbstractCompositeFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtCompositeToswtWidget(x *swt.Composite) *swt.Widget {
 	if x == nil {
 		return nil
@@ -69,6 +142,28 @@ func abstractWidgetFactoryImplAsCompositeFactory(x any) (*CompositeFactory, bool
 }
 
 func castAbstractWidgetFactoryToCompositeFactory(x *AbstractWidgetFactory) *CompositeFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsCompositeFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: CompositeFactory")
+	}
+	return v
+}
+
+func castAbstractCompositeFactoryToCompositeFactory(x *AbstractCompositeFactory) *CompositeFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsCompositeFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: CompositeFactory")
+	}
+	return v
+}
+
+func castAbstractControlFactoryToCompositeFactory(x *AbstractControlFactory) *CompositeFactory {
 	if x == nil {
 		return nil
 	}

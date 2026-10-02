@@ -48,6 +48,70 @@ func DateTimeFactoryNewDateTime(style int32) *DateTimeFactory {
 	return newDateTimeFactory(style)
 }
 
+func (this *DateTimeFactory) Background(a0Like swt.ColorLike) *DateTimeFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *DateTimeFactory) Enabled(a0 bool) *DateTimeFactory {
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *DateTimeFactory) Font(a0Like swt.FontLike) *DateTimeFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *DateTimeFactory) Foreground(a0Like swt.ColorLike) *DateTimeFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *DateTimeFactory) LayoutData(a0 any) *DateTimeFactory {
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *DateTimeFactory) Orientation(a0 int32) *DateTimeFactory {
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *DateTimeFactory) SupplyLayoutData(a0 func() any) *DateTimeFactory {
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *DateTimeFactory) Tooltip(a0 string) *DateTimeFactory {
+	return castAbstractControlFactoryToDateTimeFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *DateTimeFactory) Create(a0Like swt.CompositeLike) *swt.DateTime {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtDateTime(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *DateTimeFactory) Data(a0 any) *DateTimeFactory {
+	return castAbstractWidgetFactoryToDateTimeFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *DateTimeFactory) DataKeyValue(a0 string, a1 any) *DateTimeFactory {
+	return castAbstractWidgetFactoryToDateTimeFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtDateTimeToswtWidget(x *swt.DateTime) *swt.Widget {
 	if x == nil {
 		return nil
@@ -74,6 +138,43 @@ func castswtWidgetToswtDateTime(x *swt.Widget) *swt.DateTime {
 	v, ok := widgetImplAsDateTime(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.DateTime")
+	}
+	return v
+}
+
+// j2go: instanceof helper for DateTimeFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsDateTimeFactory(x any) (*DateTimeFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *DateTimeFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToDateTimeFactory(x *AbstractControlFactory) *DateTimeFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsDateTimeFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: DateTimeFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToDateTimeFactory(x *AbstractWidgetFactory) *DateTimeFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsDateTimeFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: DateTimeFactory")
 	}
 	return v
 }

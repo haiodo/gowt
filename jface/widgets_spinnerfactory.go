@@ -94,6 +94,70 @@ func SpinnerFactoryNewSpinner(style int32) *SpinnerFactory {
 	return newSpinnerFactory(style)
 }
 
+func (this *SpinnerFactory) Background(a0Like swt.ColorLike) *SpinnerFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *SpinnerFactory) Enabled(a0 bool) *SpinnerFactory {
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *SpinnerFactory) Font(a0Like swt.FontLike) *SpinnerFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *SpinnerFactory) Foreground(a0Like swt.ColorLike) *SpinnerFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *SpinnerFactory) LayoutData(a0 any) *SpinnerFactory {
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *SpinnerFactory) Orientation(a0 int32) *SpinnerFactory {
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *SpinnerFactory) SupplyLayoutData(a0 func() any) *SpinnerFactory {
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *SpinnerFactory) Tooltip(a0 string) *SpinnerFactory {
+	return castAbstractControlFactoryToSpinnerFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *SpinnerFactory) Create(a0Like swt.CompositeLike) *swt.Spinner {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtSpinner(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *SpinnerFactory) Data(a0 any) *SpinnerFactory {
+	return castAbstractWidgetFactoryToSpinnerFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *SpinnerFactory) DataKeyValue(a0 string, a1 any) *SpinnerFactory {
+	return castAbstractWidgetFactoryToSpinnerFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtSpinnerToswtWidget(x *swt.Spinner) *swt.Widget {
 	if x == nil {
 		return nil
@@ -120,6 +184,43 @@ func castswtWidgetToswtSpinner(x *swt.Widget) *swt.Spinner {
 	v, ok := widgetImplAsSpinner(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Spinner")
+	}
+	return v
+}
+
+// j2go: instanceof helper for SpinnerFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsSpinnerFactory(x any) (*SpinnerFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *SpinnerFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToSpinnerFactory(x *AbstractControlFactory) *SpinnerFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsSpinnerFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: SpinnerFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToSpinnerFactory(x *AbstractWidgetFactory) *SpinnerFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsSpinnerFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: SpinnerFactory")
 	}
 	return v
 }

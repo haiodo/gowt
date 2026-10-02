@@ -62,6 +62,70 @@ func ButtonFactoryNewButton(style int32) *ButtonFactory {
 	return newButtonFactory(style)
 }
 
+func (this *ButtonFactory) Background(a0Like swt.ColorLike) *ButtonFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *ButtonFactory) Enabled(a0 bool) *ButtonFactory {
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *ButtonFactory) Font(a0Like swt.FontLike) *ButtonFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *ButtonFactory) Foreground(a0Like swt.ColorLike) *ButtonFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *ButtonFactory) LayoutData(a0 any) *ButtonFactory {
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *ButtonFactory) Orientation(a0 int32) *ButtonFactory {
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *ButtonFactory) SupplyLayoutData(a0 func() any) *ButtonFactory {
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *ButtonFactory) Tooltip(a0 string) *ButtonFactory {
+	return castAbstractControlFactoryToButtonFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *ButtonFactory) Create(a0Like swt.CompositeLike) *swt.Button {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtButton(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *ButtonFactory) Data(a0 any) *ButtonFactory {
+	return castAbstractWidgetFactoryToButtonFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *ButtonFactory) DataKeyValue(a0 string, a1 any) *ButtonFactory {
+	return castAbstractWidgetFactoryToButtonFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 // j2go: func adapter for WidgetSupplier.
 type WidgetSupplierFunc struct {
 	fn func(a0 *swt.Widget) *swt.Widget
@@ -85,6 +149,43 @@ func castswtWidgetToswtButton(x *swt.Widget) *swt.Button {
 	v, ok := widgetImplAsButton(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Button")
+	}
+	return v
+}
+
+// j2go: instanceof helper for ButtonFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsButtonFactory(x any) (*ButtonFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *ButtonFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToButtonFactory(x *AbstractControlFactory) *ButtonFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsButtonFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: ButtonFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToButtonFactory(x *AbstractWidgetFactory) *ButtonFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsButtonFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: ButtonFactory")
 	}
 	return v
 }

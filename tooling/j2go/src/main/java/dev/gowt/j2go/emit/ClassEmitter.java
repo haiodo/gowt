@@ -190,7 +190,7 @@ final class ClassEmitter {
 				else emitStaticMethod(md, ci, out);
 			}
 		}
-		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName));
+		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName)).append(CovariantBridges.emit(emitter, ci));
 		out.append(emitter.testRegistration(td, ci));
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {

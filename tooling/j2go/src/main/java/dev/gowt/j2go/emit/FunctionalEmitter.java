@@ -70,10 +70,14 @@ final class FunctionalEmitter {
 			args.add(s.equals(t) ? "a" + i : "jrt.Cast[" + t + "](a" + i + ")");
 			differ |= !s.equals(t) && s.equals("any") && tp[i].isPrimitive();
 		}
-		if (!differ) return fn;
-		emitter.fileImports.add(JRT_IMPORT);
+		// A Supplier<? extends Layout> takes gridLayoutFactory::create, which returns the subclass: a func value's type is exact in Go.
 		String ret = emitter.retType(sam);
-		return "func(" + String.join(", ", params) + ") " + ret + " { " + (ret.isEmpty() ? "" : "return ") + fn + "(" + String.join(", ", args) + ") }";
+		boolean retDiffers = !ret.isEmpty() && !ret.equals(emitter.retType(target));
+		if (!differ && !retDiffers) return fn;
+		emitter.fileImports.add(JRT_IMPORT);
+		String call = fn + "(" + String.join(", ", args) + ")";
+		if (retDiffers) call = emitter.upcastObject(call, target.getReturnType(), sam.getReturnType());
+		return "func(" + String.join(", ", params) + ") " + ret + " { " + (ret.isEmpty() ? "" : "return ") + call + " }";
 	}
 
 	/** `recv.M` for `expr::m`; `Type::m` (JDT parses it the same way) is a static func or the

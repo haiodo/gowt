@@ -48,6 +48,70 @@ func LinkFactoryNewLink(style int32) *LinkFactory {
 	return newLinkFactory(style)
 }
 
+func (this *LinkFactory) Background(a0Like swt.ColorLike) *LinkFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Background(a0))
+}
+
+func (this *LinkFactory) Enabled(a0 bool) *LinkFactory {
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Enabled(a0))
+}
+
+func (this *LinkFactory) Font(a0Like swt.FontLike) *LinkFactory {
+	var a0 *swt.Font
+	if a0Like != nil {
+		a0 = a0Like.AsFont()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Font(a0))
+}
+
+func (this *LinkFactory) Foreground(a0Like swt.ColorLike) *LinkFactory {
+	var a0 *swt.Color
+	if a0Like != nil {
+		a0 = a0Like.AsColor()
+	}
+	_ = a0
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Foreground(a0))
+}
+
+func (this *LinkFactory) LayoutData(a0 any) *LinkFactory {
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.LayoutData(a0))
+}
+
+func (this *LinkFactory) Orientation(a0 int32) *LinkFactory {
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Orientation(a0))
+}
+
+func (this *LinkFactory) SupplyLayoutData(a0 func() any) *LinkFactory {
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.SupplyLayoutData(a0))
+}
+
+func (this *LinkFactory) Tooltip(a0 string) *LinkFactory {
+	return castAbstractControlFactoryToLinkFactory(this.AbstractControlFactory.Tooltip(a0))
+}
+
+func (this *LinkFactory) Create(a0Like swt.CompositeLike) *swt.Link {
+	var a0 *swt.Composite
+	if a0Like != nil {
+		a0 = a0Like.AsComposite()
+	}
+	_ = a0
+	return castswtWidgetToswtLink(this.AbstractControlFactory.Create(a0))
+}
+
+func (this *LinkFactory) Data(a0 any) *LinkFactory {
+	return castAbstractWidgetFactoryToLinkFactory(this.AbstractControlFactory.Data(a0))
+}
+
+func (this *LinkFactory) DataKeyValue(a0 string, a1 any) *LinkFactory {
+	return castAbstractWidgetFactoryToLinkFactory(this.AbstractControlFactory.DataKeyValue(a0, a1))
+}
+
 func upcastswtLinkToswtWidget(x *swt.Link) *swt.Widget {
 	if x == nil {
 		return nil
@@ -62,6 +126,43 @@ func castswtWidgetToswtLink(x *swt.Widget) *swt.Link {
 	v, ok := widgetImplAsLink(x.Impl())
 	if !ok {
 		panic("java.lang.ClassCastException: swt.Link")
+	}
+	return v
+}
+
+// j2go: instanceof helper for LinkFactory and its subclasses within the translated set.
+func abstractWidgetFactoryImplAsLinkFactory(x any) (*LinkFactory, bool) {
+	if h, ok := x.(*abstractWidgetFactoryHooked); ok {
+		x = h.hook
+	}
+	switch v := x.(type) {
+	case *LinkFactory:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castAbstractControlFactoryToLinkFactory(x *AbstractControlFactory) *LinkFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsLinkFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: LinkFactory")
+	}
+	return v
+}
+
+func castAbstractWidgetFactoryToLinkFactory(x *AbstractWidgetFactory) *LinkFactory {
+	if x == nil {
+		return nil
+	}
+	v, ok := abstractWidgetFactoryImplAsLinkFactory(x.impl)
+	if !ok {
+		panic("java.lang.ClassCastException: LinkFactory")
 	}
 	return v
 }

@@ -155,6 +155,16 @@ public class Manual {
 		for (String q : new String[]{"java.text.DateFormat.Field", "java.text.Format.Field", "java.text.AttributedCharacterIterator.Attribute"}) {
 			reg(q, "jrt.DateFormatField", JRT_IMPORT, false);
 		}
+		// jface: the org.eclipse.core.runtime subset in internal/jrt/core.go (interfaces are bare Go interfaces).
+		for (String n : new String[]{"Assert", "Status", "CoreException", "NullProgressMonitor", "ProgressMonitorWrapper", "SafeRunner", "ListenerList"}) {
+			reg("org.eclipse.core.runtime." + n, "jrt." + n, JRT_IMPORT, false);
+		}
+		for (String n : new String[]{"IStatus", "IProgressMonitor", "ISafeRunnable"}) reg("org.eclipse.core.runtime." + n, "jrt." + n, JRT_IMPORT, true);
+		reg("java.lang.NoSuchMethodException", "jrt.NoSuchMethodException", JRT_IMPORT, false);
+		reg("java.lang.SecurityException", "jrt.SecurityException", JRT_IMPORT, false);
+		// jface/dialogs_manual.go: the statics layout needs of these slice-B classes.
+		reg("org.eclipse.jface.dialogs.Dialog", "Dialog", null, false);
+		reg("org.eclipse.jface.resource.JFaceResources", "JFaceResources", null, false);
 		reg("java.util.concurrent.TimeUnit", "jrt.TimeUnit", JRT_IMPORT, true);
 		reg("java.util.Properties", "jrt.Map", JRT_IMPORT, false);
 		// Device (gtk) reads its CSS through these; one Go Reader serves all three reader classes (jrt/jdkio.go).
@@ -229,6 +239,8 @@ public class Manual {
 
 	// Dropped: Selector.java's own bookkeeping is elided (see README). Matched by name only.
 	private static final Set<String> SKIP_METHOD_NAMES = Set.of(
+			// jface: BrowserFactory is not translated (swt Browser is not ported).
+			"org.eclipse.jface.widgets.WidgetFactory#browser",
 			COCOA_PKG + "OS#registerSelector", COCOA_PKG + "OS#getSelector",
 			// Takes a Display and Colors: a PI package cannot reference swt (dark-theme tweaks, not ported).
 			"org.eclipse.swt.internal.win32.OS#setTheme",
@@ -265,6 +277,9 @@ public class Manual {
 
 	/** OS.java's own SELECTORS bookkeeping field - see SKIP_METHOD_NAMES, same reasoning. */
 	public static boolean isSkippedField(String declaringClassQualifiedName, String javaFieldName) {
+		// jface: the button labels read JFaceResources' bundle (slice B); util.Util's empty sorted set needs Collections wrappers.
+		if (declaringClassQualifiedName.equals("org.eclipse.jface.dialogs.IDialogConstants") && javaFieldName.endsWith("_LABEL")) return true;
+		if (declaringClassQualifiedName.equals("org.eclipse.jface.util.Util") && javaFieldName.equals("EMPTY_SORTED_SET")) return true;
 		return declaringClassQualifiedName.equals(COCOA_PKG + "OS") && javaFieldName.equals("SELECTORS");
 	}
 

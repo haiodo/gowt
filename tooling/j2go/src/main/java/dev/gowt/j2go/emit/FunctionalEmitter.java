@@ -120,7 +120,28 @@ final class FunctionalEmitter {
 		TypeModel.ClassInfo ifaceCi = emitter.model.lookup(target);
 		IMethodBinding sam = target.getFunctionalInterfaceMethod();
 		if (ifaceCi == null || !ifaceCi.isInterface || sam == null) return null;
-		return "&" + ensureFuncAdapter(ifaceCi, sam) + "{fn: " + fn + "}";
+		// The adapter and its Go interface follow the generic declaration (Property<W extends Widget> takes a Widget);
+		// a lambda typed by the instantiation (Button) is entered through narrowing casts.
+		IMethodBinding declSam = sam.getMethodDeclaration();
+		return "&" + ensureFuncAdapter(ifaceCi, declSam) + "{fn: " + erasedSignature(fn, sam, declSam) + "}";
+	}
+
+	private String erasedSignature(String fn, IMethodBinding sam, IMethodBinding declSam) {
+		ITypeBinding[] seen = sam.getParameterTypes(), decl = declSam.getParameterTypes();
+		List<String> params = new ArrayList<>(), args = new ArrayList<>();
+		boolean differ = false;
+		for (int i = 0; i < decl.length; i++) {
+			String d = GoTypes.map(decl[i], emitter), s = GoTypes.map(seen[i], emitter);
+			params.add("a" + i + " " + d);
+			String narrowed = d.equals(s) ? null : emitter.typeTestEmitter.narrow("a" + i, decl[i], seen[i]);
+			args.add(narrowed != null ? narrowed : "a" + i);
+			differ |= !d.equals(s);
+		}
+		String ret = emitter.retType(declSam), seenRet = emitter.retType(sam);
+		if (!differ && ret.equals(seenRet)) return fn;
+		String call = "(" + fn + ")(" + String.join(", ", args) + ")";
+		if (!ret.isEmpty() && !ret.equals(seenRet)) call = emitter.upcastObject(call, sam.getReturnType(), declSam.getReturnType());
+		return "func(" + String.join(", ", params) + ") " + ret + " { " + (ret.isEmpty() ? "" : "return ") + call + " }";
 	}
 
 	/** Pointer adapter, not a named func type: a Go func in an interface panics on ==, and

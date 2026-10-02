@@ -56,7 +56,18 @@ final class TypeTestEmitter {
 	/** A downcast through the impl cascade: (NSWindow) new SWTWindow().alloc() holds a *SWTWindow,
 	 * so a plain Go assertion to *NSWindow would fail. null casts to null, a mismatch panics. */
 	private String castHelper(Expression subject, TypeModel.ClassInfo target) {
-		ITypeBinding st = subject.resolveTypeBinding();
+		return castHelper(subject.resolveTypeBinding(), target);
+	}
+
+	/** A value held as the erased bound of a type variable (Widget for W extends Widget), read as the instantiated class. */
+	String narrow(String text, ITypeBinding from, ITypeBinding to) {
+		TypeModel.ClassInfo target = emitter.model.lookup(to);
+		if (target == null || target.isStruct) return null;
+		if (target.isInterface) return text + ".(" + emitter.qualifiedTypeName(target) + ")";
+		return castHelper(from, target) + "(" + text + ")";
+	}
+
+	private String castHelper(ITypeBinding st, TypeModel.ClassInfo target) {
 		String fromGo = dev.gowt.j2go.GoTypes.map(st, emitter);
 		TypeModel.ClassInfo subjectCi = emitter.model.lookup(st);
 		String targetName = emitter.qualifiedTypeName(target);

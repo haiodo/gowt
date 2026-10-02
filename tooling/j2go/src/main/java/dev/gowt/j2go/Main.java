@@ -23,6 +23,7 @@ public class Main {
 		String outDir = null;
 		Platform platform = Platform.COCOA;
 		String[] classpath = new String[0];
+		List<String> extraRoots = new ArrayList<>();
 		List<String> files = new ArrayList<>();
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
 		// when translated) but not re-emitted - e.g. Widget.java needs OS.java's ClassInfo, not
@@ -35,12 +36,13 @@ public class Main {
 				case "--out" -> outDir = args[++i];
 				case "--platform" -> platform = Platform.parse(args[++i]);
 				case "--classpath" -> classpath = args[++i].split(":");
+				case "--src" -> extraRoots.add(args[++i]);
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
 		}
 		if (swtRoot == null || outDir == null || files.isEmpty()) {
-			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] <java files...> [-- <reference-only java files...>]");
+			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... <java files...> [-- <reference-only java files...>]");
 			System.exit(2);
 		}
 
@@ -74,6 +76,7 @@ public class Main {
 			sourceRoots.add(p.toString());
 			if (platformRoot) platformRoots.add(p + "/");
 		}
+		for (String r : extraRoots) sourceRoots.add(Path.of(r).toAbsolutePath().toString());
 		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
 		if (platform == Platform.GTK) for (String d : new String[] { "tooling/j2go/gtkstubs", "tooling/j2go/gtkstubs-gen" })
 			if (Files.isDirectory(Path.of(d))) sourceRoots.add(Path.of(d).toAbsolutePath().toString());

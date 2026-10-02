@@ -41,4 +41,14 @@ final class HookEmitter {
 			out.append('\t').append(r).append("this.").append(impl).append('.').append(dispatch).append('(').append(argList).append(")\n}\n\n");
 		}
 	}
+
+	/** A class with a cascade of its own that also overrides a base from another package: the dispatch method keeps its
+	 * unexported name, the base's exported hook name forwards into it. */
+	static void wrapper(Emitter emitter, TypeModel.ClassInfo ci, String hookName, String dispatch, IMethodBinding sig,
+			org.eclipse.jdt.core.dom.MethodDeclaration md, StringBuilder out) {
+		String ret = emitter.retType(sig);
+		out.append("func (this *").append(ci.goTypeName).append(") ").append(hookName).append('(').append(emitter.paramList(sig, md)).append(") ")
+				.append(ret).append(" {\n\t").append(ret.isEmpty() ? "" : "return ").append("this.impl.").append(dispatch)
+				.append('(').append(emitter.argNames(md)).append(")\n}\n\n");
+	}
 }

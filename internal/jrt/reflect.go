@@ -211,3 +211,8 @@ func arrayDescriptor(t reflect.Type) string {
 		return "L" + t.String() + ";"
 	}
 }
+
+// SecurityException is java.lang.SecurityException; nothing here throws it, it exists to be caught.
+type SecurityException struct{ Message string }
+
+func (e *SecurityException) Error() string { return "SecurityException: " + e.Message }

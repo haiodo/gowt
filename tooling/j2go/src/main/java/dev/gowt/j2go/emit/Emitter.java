@@ -62,7 +62,7 @@ public class Emitter {
 	private final ExpressionEmitter expressionEmitter;
 	private final InvocationEmitter invocationEmitter;
 	private final JdkIntrinsics jdkIntrinsics;
-	private final TypeTestEmitter typeTestEmitter;
+	final TypeTestEmitter typeTestEmitter;
 	private final NumericEmitter numericEmitter;
 	private final FunctionalEmitter functionalEmitter;
 	private final PackageQualifier packageQualifier;

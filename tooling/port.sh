@@ -32,7 +32,7 @@ fi
 # Drops the generated files of the shared set (cocoa only: it is the reference platform that owns the shared
 # files, see README "Round 20") and of this platform (a renamed or removed source then leaves nothing stale);
 # another platform's _<goos>.go files stay.
-for f in swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/*/*.go tests/swttests/*.go; do
+for f in swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/*/*.go tests/swttests/*.go jface/*.go tests/jfacetests/*.go; do
 	[ -e "$f" ] || continue
 	case "$f" in
 		"$PI_DIR"/*) ;;
@@ -304,6 +304,24 @@ CE=org/eclipse/swt/examples/controlexample
 	org/eclipse/swt/internal/C.java \
 	"${PI_FILES[@]}"
 
+# Round 22 jface: org.eclipse.jface layout/widgets (+ the util and viewers data classes they use) -> package jface, shared by every OS,
+# so only the reference platform emits it. swt, C.java and the cocoa files are reference-only. Browser/common is on the source path for
+# name resolution only (BrowserFactory, WidgetFactory.browser are not translated).
+if [ "$PLATFORM" = cocoa ]; then
+	UI_REPO="${UI_REPO:-/Users/haiodo/Develop/repos/eclipse.platform.ui}"
+	JF_SRC="$UI_REPO/bundles/org.eclipse.jface/src"
+	JF=org/eclipse/jface
+	JF_FILES=($(cd "$JF_SRC" && ls $JF/layout/*.java $JF/widgets/*.java | grep -v BrowserFactory.java))
+	JF_FILES+=($JF/util/Geometry.java $JF/util/Util.java $JF/viewers/ColumnLayoutData.java $JF/viewers/ColumnPixelData.java
+		$JF/viewers/ColumnWeightData.java $JF/dialogs/IDialogConstants.java)
+	"${J2GO[@]}" --src "$JF_SRC" --src "$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Browser/common" \
+		"${JF_FILES[@]}" \
+		-- \
+		"${SWT_FILES[@]}" \
+		org/eclipse/swt/internal/C.java \
+		"${PI_FILES[@]}"
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res
@@ -418,4 +436,4 @@ mkdir -p tests/swttests/testdata
 cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
 
 
-gofmt -w swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/controlexample/*.go tests/swttests/*.go
+gofmt -w swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/controlexample/*.go tests/swttests/*.go $(ls jface/*.go tests/jfacetests/*.go 2>/dev/null)

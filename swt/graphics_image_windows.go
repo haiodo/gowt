@@ -2137,8 +2137,7 @@ func (this *image_AbstractImageProviderWrapperHooked) enter(name string) func() 
 }
 
 func (this *image_AbstractImageProviderWrapperHooked) getBounds_(a0 int32) *Rectangle {
-	if h, ok := this.hook.(interface{ GetBounds_(a0 int32) *Rectangle }); ok && this.active != "getBounds_" {
-		defer this.enter("getBounds_")()
+	if h, ok := this.hook.(interface{ GetBounds_(a0 int32) *Rectangle }); ok {
 		return h.GetBounds_(a0)
 	}
 	return this.Image_AbstractImageProviderWrapperImpl.getBounds_(a0)
@@ -2181,8 +2180,7 @@ func (this *image_AbstractImageProviderWrapperHooked) isPersistentImageHandleReq
 func (this *image_AbstractImageProviderWrapperHooked) loadImageData_(a0 int32) *DPIUtilElementAtZoom {
 	if h, ok := this.hook.(interface {
 		LoadImageData_(a0 int32) *DPIUtilElementAtZoom
-	}); ok && this.active != "loadImageData_" {
-		defer this.enter("loadImageData_")()
+	}); ok {
 		return h.LoadImageData_(a0)
 	}
 	return this.Image_AbstractImageProviderWrapperImpl.loadImageData_(a0)

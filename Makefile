@@ -108,7 +108,7 @@ clean:
 WINE ?= /Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine
 WINBOTTLE ?= gowt
 WINBIN := $(BIN)/windows
-WINCMDS := hello swttest controlexample winprobe
+WINCMDS := hello swttest controlexample winprobe jfacedemo
 
 # cmd/*/rsrc_windows_amd64.syso carries tooling/win32/swt.manifest (comctl32 v6: SysLink, visual styles) as the exe's
 # manifest resource; rebuild after editing it (needs x86_64-w64-mingw32-windres).

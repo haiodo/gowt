@@ -161,7 +161,6 @@ public class Manual {
 		}
 		for (String n : new String[]{"IStatus", "IProgressMonitor", "ISafeRunnable"}) reg("org.eclipse.core.runtime." + n, "jrt." + n, JRT_IMPORT, true);
 		reg("java.lang.NoSuchMethodException", "jrt.NoSuchMethodException", JRT_IMPORT, false);
-		reg("java.lang.SecurityException", "jrt.SecurityException", JRT_IMPORT, false);
 		// jface/dialogs_manual.go: the statics layout needs of these slice-B classes.
 		reg("org.eclipse.jface.dialogs.Dialog", "Dialog", null, false);
 		reg("org.eclipse.jface.resource.JFaceResources", "JFaceResources", null, false);

@@ -345,15 +345,15 @@ public class TypeModel {
 		return sb.toString();
 	}
 
-	// Every non-struct, non-interface swt-package class gets an upcast accessor + a 1-method
+	// Every non-struct, non-interface swt- or jface-package class gets an upcast accessor + a 1-method
 	// interface every subclass satisfies via embedding (see README "Round 7 api").
 	private void assignLikeNames(Names names) {
 		Set<String> swtTypeNames = new HashSet<>();
 		for (ClassInfo c : byBinaryName.values()) {
-			if (c.goPackage.equals("swt")) swtTypeNames.add(c.goTypeName);
+			if (c.goPackage.equals("swt") || c.goPackage.equals("jface")) swtTypeNames.add(c.goPackage + "." + c.goTypeName);
 		}
 		for (ClassInfo ci : byBinaryName.values()) {
-			if (!ci.goPackage.equals("swt") || ci.isInterface || ci.isStruct) continue;
+			if (!(ci.goPackage.equals("swt") || ci.goPackage.equals("jface")) || ci.isInterface || ci.isStruct) continue;
 			String as = "As" + ci.goTypeName;
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
 				if (names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName())).equals(as)) {
@@ -363,7 +363,7 @@ public class TypeModel {
 			}
 			ci.asMethodName = as;
 			String like = ci.goTypeName + "Like";
-			ci.likeInterfaceName = swtTypeNames.contains(like) ? like + "_" : like;
+			ci.likeInterfaceName = swtTypeNames.contains(ci.goPackage + "." + like) ? like + "_" : like;
 		}
 	}
 

@@ -114,16 +114,14 @@ func (this *deviceHooked) init_() {
 }
 
 func (this *deviceHooked) internal_new_GC_(a0 *GCData) int64 {
-	if h, ok := this.hook.(interface{ Internal_new_GC_(a0 *GCData) int64 }); ok && this.active != "internal_new_GC_" {
-		defer this.enter("internal_new_GC_")()
+	if h, ok := this.hook.(interface{ Internal_new_GC_(a0 *GCData) int64 }); ok {
 		return h.Internal_new_GC_(a0)
 	}
 	return this.DeviceImpl.internal_new_GC_(a0)
 }
 
 func (this *deviceHooked) internal_dispose_GC_(a0 int64, a1 *GCData) {
-	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok && this.active != "internal_dispose_GC_" {
-		defer this.enter("internal_dispose_GC_")()
+	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok {
 		h.Internal_dispose_GC_(a0, a1)
 		return
 	}

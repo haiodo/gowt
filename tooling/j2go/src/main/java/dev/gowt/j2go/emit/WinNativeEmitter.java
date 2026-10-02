@@ -117,6 +117,8 @@ final class WinNativeEmitter {
 			target = pv + ".addr()";
 		}
 		out.append("func ").append(goName).append('(').append(String.join(", ", ps)).append(") ").append(ret).append(" {\n").append(pre);
+		// GOWT_TRACE_DISPATCH=1 keeps the last messages (internal/win32/trace_manual.go).
+		if (javaName.equals("DispatchMessage")) out.append("\ttraceDispatch(").append(paramName(md, 0)).append(")\n");
 		String call = "syscall.SyscallN(" + target + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
 		if (ret.isEmpty()) {
 			out.append('\t').append(call).append('\n').append(post);

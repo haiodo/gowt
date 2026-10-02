@@ -5,8 +5,13 @@ import (
 	"os"
 
 	"github.com/haiodo/gowt/internal/shot"
+	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
 )
+
+func init() {
+	stuckTrace = func() string { return "last dispatched messages (GOWT_TRACE_DISPATCH):\n" + win32.DispatchTrace() }
+}
 
 // snapAll runs the shared -snap driver; the window is copied from its window DC.
 func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string) {

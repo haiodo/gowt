@@ -31,6 +31,9 @@ type snapHooks struct {
 // some tabs and snapshots again, then closes the shell. Steps are chained 500 ms timers.
 // stepTimeout bounds one step (and the wait for the next timer): a stuck native call or a timer that
 // never fires ends the run with the step's name and all goroutine stacks instead of hanging.
+// stuckTrace is extra per-OS state the watchdog prints (the win32 dispatch ring).
+var stuckTrace = func() string { return "" }
+
 const stepTimeout = 20 * time.Second
 
 func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string, h snapHooks) {
@@ -43,7 +46,7 @@ func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir 
 		for range time.Tick(time.Second) {
 			if time.Since(time.Unix(0, progress.Load())) > stepTimeout {
 				buf := make([]byte, 1<<18)
-				fmt.Fprintf(os.Stderr, "snap: step %q stuck for more than %v\n%s\n", current.Load(), stepTimeout, buf[:runtime.Stack(buf, true)])
+				fmt.Fprintf(os.Stderr, "snap: step %q stuck for more than %v\n%s\n%s", current.Load(), stepTimeout, buf[:runtime.Stack(buf, true)], stuckTrace())
 				os.Exit(3)
 			}
 		}

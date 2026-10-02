@@ -6,6 +6,7 @@ package gowt
 import (
 	"fmt"
 	"runtime"
+	"sync/atomic"
 	"time"
 
 	"github.com/haiodo/gowt/internal/jrt"
@@ -18,13 +19,16 @@ func init() { runtime.LockOSThread() }
 // App is the handle to the UI thread, valid inside Run.
 type App struct {
 	display *swt.Display
-	quit    bool
+	quit    atomic.Bool
 }
 
 // Run creates the display, calls setup on the UI thread, then runs the event loop until the
 // last window is closed or App.Quit is called. SWT exceptions raised on the UI thread
 // (panics carrying an error, e.g. *swt.SWTException) are returned; runtime errors and other panics propagate.
 func Run(setup func(*App)) (err error) {
+	// The display belongs to its OS thread (Win32 message queue, GTK); a goroutine must not migrate off it.
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	defer func() {
 		if r := recover(); r != nil {
 			e, ok := r.(error)
@@ -37,7 +41,7 @@ func Run(setup func(*App)) (err error) {
 	a := &App{display: swt.NewDisplay()}
 	defer a.display.Dispose()
 	setup(a)
-	for !a.quit && len(a.display.GetShells()) > 0 {
+	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
 		if !a.display.ReadAndDispatch() {
 			a.display.Sleep()
 		}
@@ -58,7 +62,7 @@ func (a *App) After(d time.Duration, f func()) {
 
 // Quit ends the event loop after the current event; safe from any goroutine.
 func (a *App) Quit() {
-	a.quit = true
+	a.quit.Store(true)
 	a.display.Wake()
 }
 

@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt/internal/junit"
+	_ "github.com/haiodo/gowt/svg"
 	"github.com/haiodo/gowt/swt"
 	_ "github.com/haiodo/gowt/swt/swtreflect"
 )

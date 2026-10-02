@@ -165,6 +165,11 @@ final class JdkIntrinsics {
 		}
 		// Round 10 reflection: Class<?> stays reflect.Type (Manual) - see README "Round 10
 		// reflection" and internal/jrt/reflect.go.
+		// Class<F>.cast(x): erased generics keep x as is; the caller's call-site narrowing reads it back as F.
+		if (qualified.equals("java.lang.Class") && mb.getName().equals("cast")) {
+			Expression a = (Expression) mi.arguments().get(0);
+			return emitter.upcastObject(emitter.expr(a), a.resolveTypeBinding(), mi.resolveTypeBinding());
+		}
 		if (qualified.equals("java.lang.Class") && mb.getName().equals("getName")) {
 			emitter.fileImports.add(JRT);
 			return "jrt.ClassName(" + recv(mi) + ")";

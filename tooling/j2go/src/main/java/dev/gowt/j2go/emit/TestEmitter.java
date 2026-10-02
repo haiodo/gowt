@@ -68,7 +68,7 @@ final class TestEmitter {
 	/** func init() { junit.Register(...) } for a concrete class with tests, else "". */
 	String registration(TypeDeclaration td, TypeModel.ClassInfo ci) {
 		ITypeBinding cls = td.resolveBinding();
-		if (!emitter.currentGoPackage.equals("swttests") || Modifier.isAbstract(cls.getModifiers()) || cls.isMember()) return "";
+		if (!emitter.degradesUnresolvedTypes() || Modifier.isAbstract(cls.getModifiers()) || cls.isMember()) return "";
 		List<IMethodBinding> methods = effectiveMethods(cls);
 		List<String> tests = new ArrayList<>();
 		List<String> beforeEach = new ArrayList<>(), afterEach = new ArrayList<>(), beforeAll = new ArrayList<>(), afterAll = new ArrayList<>();

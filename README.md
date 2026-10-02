@@ -8,7 +8,8 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `internal/cocoa/` | AppKit bindings (darwin only), translated by j2go from SWT's `Eclipse SWT PI/cocoa` Java sources |
 | `internal/gtk/` | GTK 3 / GLib / Pango / cairo bindings for linux (purego), generated from GIR by `tooling/girgen` plus hand-written `glue_*.go`; clean-room, see `tooling/j2go/README.md` "Round 20" |
 | `internal/win32/` | Reserved for the Windows PI binding (not present yet) |
-| `internal/jrt/` | The subset of the Java runtime the translated code uses |
+| `jface/` | JFace slice A (`org.eclipse.jface.layout`, `widgets`, ...) translated by j2go from `eclipse.platform.ui`; one source for every OS, see "JFace" |
+| `internal/jrt/` | The subset of the Java runtime the translated code uses (also the `org.eclipse.core.runtime` shims JFace needs: `core.go`) |
 | `examples/controlexample/` | SWT's ControlExample (`org.eclipse.swt.examples.controlexample`), translated by j2go into its own package on top of `swt`; tabs Button, Canvas, Group, Label, Menu, Text |
 | `tooling/j2go/` | Java -> Go translator on Eclipse JDT |
 | `tooling/girgen/` | GIR -> `internal/gtk` generator (`make gtk-gen`, in the Linux stand) |
@@ -19,6 +20,8 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 | `cmd/tree/` | Tree (NSOutlineView): three root items with children, Selection and Expand listeners |
 | `cmd/images/` | Loads PNG/GIF/BMP via `getResourceAsStream` -> `ImageData(InputStream)` -> `Image`, draws with `gc.DrawImage` |
 | `cmd/controlexample/` | Runs ControlExample (`bin/controlexample`); `-snap <dir>` writes a PNG per tab and exits (Windows: `make win-snap-update` / `win-snap-check` in the CrossOver bottle, references `tests/snapshots_windows`) |
+| `cmd/jfacedemo/` | A form built only from JFace's widget and layout factories; `bin/jfacedemo <png>` writes a snapshot and exits |
+| `tests/jfacetests/` | JFace's JUnit tests for `layout` and `widgets` (`make test-jface`) |
 | `tests/swttests/` | SWT's JUnit tests (`graphics`, `layout`, `events`), translated by j2go; results in `tests/RESULTS.md` |
 | `internal/junit/` | JUnit 5 shim for the translated tests: assertions, assumptions, the test registry |
 | `cmd/swttest/` | Runs the translated tests on the main thread with one Display (`make test-swt`) |
@@ -27,6 +30,15 @@ Native GUI for Go: Eclipse SWT translated from Java to Go. First target - macOS 
 behind them is hand-written over Go's stdlib `image` codecs plus `golang.org/x/image/bmp`, not
 translated from SWT's own `internal.image` package - see `tooling/j2go/README.md` "Round 9 images".
 
+## JFace
+
+`jface/` is JFace's fluent factories: `jface.WidgetFactoryButton(swt.PUSH).Text("OK").LayoutData(...).OnSelect(...).Create(parent)` returns a `*swt.Button`,
+`jface.GridLayoutFactoryFillDefaults().NumColumns(2).Create()` a `*swt.GridLayout`, `jface.NewTableColumnLayout()` a column layout for a table (`cmd/jfacedemo`).
+Java's self-typed generics (`F extends AbstractWidgetFactory<F,...>`) are erased by j2go; typed forwarding methods restore the chaining and the result types
+(`tooling/j2go/README.md` "Round 22"). Regenerate with `make gen` (needs `UI_REPO`, default `~/Develop/repos/eclipse.platform.ui`; the unit runs for cocoa only, the
+output is shared). `make test-jface` runs JFace's translated tests (on a new OS the first run is `make test-jface-update`). Not translated: `BrowserFactory`,
+viewers, dialogs, resources (later slices).
+
 ## Build
 
 ```sh
@@ -34,6 +46,7 @@ make            # vet, test, xcheck (shared code builds for windows/linux), api-
 make gen        # rebuild j2go and regenerate swt/, internal/cocoa/, examples/ (needs SWT_REPO; PLATFORM=cocoa is the only one so far)
 make run-hello  # build and run cmd/hello
 make test-swt   # run the translated SWT JUnit tests (SWTTEST_FLAGS="-run GC -json")
+make test-jface # run the translated JFace layout/widgets tests
 ```
 
 `SWT_REPO` defaults to `~/Develop/repos/eclipse.platform.swt`. Everything builds with `CGO_ENABLED=0`.

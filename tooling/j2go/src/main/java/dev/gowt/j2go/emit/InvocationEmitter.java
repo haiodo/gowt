@@ -28,7 +28,8 @@ final class InvocationEmitter {
 			return "jrt.NullToEmpty(" + call + ")";
 		}
 		if (declared == null || call.startsWith("jrt.Cast[")) return call;
-		return ErasedGenerics.castCall(emitter, call, declared);
+		return ErasedGenerics.castCall(emitter, call, declared, mi.getExpression() != null ? mi.getExpression().resolveTypeBinding()
+				: emitter.currentClassInfo == null ? null : emitter.currentClassInfo.binding);
 	}
 
 	private String emitMethodInvocation0(MethodInvocation mi) {

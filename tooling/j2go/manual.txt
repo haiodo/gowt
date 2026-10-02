@@ -142,3 +142,7 @@ org.eclipse.swt.examples.controlexample.ControlExample#createTabs()
 
 # gtk: GdkRectangle.toRectangle needs swt.Rectangle, which a PI package cannot import; its 6 callers get an intrinsic.
 org.eclipse.swt.internal.gtk.GdkRectangle#toRectangle()
+
+# jface: BrowserFactory is not translated (swt Browser is not ported); EMPTY_SORTED_SET needs java.util.Collections wrappers nothing here uses.
+org.eclipse.jface.widgets.WidgetFactory#browser(I)
+org.eclipse.jface.util.Util#EMPTY_SORTED_SET

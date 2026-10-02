@@ -53,6 +53,7 @@ final class ClassEmitter {
 		}
 		out.append("}\n\n");
 		for (Object o : td.bodyDeclarations()) {
+			if (o instanceof FieldDeclaration fd) emitStaticFields(fd, ci, out); // an interface's fields are constants
 			if (o instanceof MethodDeclaration md && Modifier.isStatic(md.getModifiers())) {
 				emitStaticMethod(md, ci, out);
 			}
@@ -189,7 +190,7 @@ final class ClassEmitter {
 				else emitStaticMethod(md, ci, out);
 			}
 		}
-		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName));
+		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName)).append(CovariantBridges.emit(emitter, ci));
 		out.append(emitter.testRegistration(td, ci));
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
@@ -290,7 +291,7 @@ final class ClassEmitter {
 	}
 
 	private void emitStaticFields(FieldDeclaration fd, TypeModel.ClassInfo ci, StringBuilder out) {
-		boolean isFinal = Modifier.isFinal(fd.getModifiers());
+		boolean isFinal = Modifier.isFinal(fd.getModifiers()) || ci.isInterface;
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
 			ITypeBinding type = f.resolveBinding() != null ? f.resolveBinding().getType() : fd.getType().resolveBinding();
@@ -315,7 +316,7 @@ final class ClassEmitter {
 			// live in a bare `var X = expr` - move it into func init() instead.
 			List<String> saved = emitter.prelude;
 			emitter.prelude = new ArrayList<>();
-			String text = emitter.expr(initExpr);
+			String text = maybeConst ? EmitUtil.constantOrExpr(emitter, initExpr) : emitter.expr(initExpr);
 			List<String> myPrelude = emitter.prelude;
 			emitter.prelude = saved;
 			if (!myPrelude.isEmpty() || emitter.containsCall(initExpr)) {
@@ -366,15 +367,14 @@ final class ClassEmitter {
 		boolean overridden = overridePoint != null;
 		IMethodBinding sigSource = overridden ? overridePoint.declaredBinding(sig) : mb;
 		String goName = overridden ? ci.root.overriddenRootMethodGoNames.get(sig) : emitter.names.goMemberName(mb, base);
-		// Overriding a method of a base in another package: the base's exported hook name (HookEmitter).
 		TypeModel.ClassInfo foreignPoint = ci.foreignSuper == null ? null : ci.foreignSuper.overridePoint(sig);
-		if (foreignPoint != null && foreignPoint.root.overriddenRootHookNames.containsKey(sig)) {
+		String hookName = foreignPoint == null ? null : foreignPoint.root.overriddenRootHookNames.get(sig); // base in another package (HookEmitter)
+		boolean direct = hookName != null && !overridden; // no local cascade: the method itself carries the exported hook name
+		if (direct) {
 			overridden = true;
 			sigSource = foreignPoint.declaredBinding(sig);
-			goName = foreignPoint.root.overriddenRootHookNames.get(sig);
-		}
-
-		// A cascade override, a Java-interface implementation, or a Type::method reference target
+			goName = hookName;
+		}		// A cascade override, a Java-interface implementation, or a Type::method reference target
 		// has a signature fixed elsewhere - only a plain method (or the wrapper) widens its params.
 		boolean widen = !overridden && !implementsInterfaceMethod(mb) && !emitter.model.isMethodReferenceTarget(mb);
 		emitDispatchWrapper(md, ci, out);
@@ -389,6 +389,7 @@ final class ClassEmitter {
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");
+		if (hookName != null && !direct) HookEmitter.wrapper(emitter, ci, hookName, goName, sigSource, md, out);
 		if (!overridden) emitter.registerReflectMethod(ci, mb, javaName, goName, widen);
 	}
 

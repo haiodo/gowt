@@ -32,8 +32,7 @@ func (this *layoutHooked) enter(name string) func() {
 func (this *layoutHooked) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
 	if h, ok := this.hook.(interface {
 		ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
-	}); ok && this.active != "computeSize_" {
-		defer this.enter("computeSize_")()
+	}); ok {
 		return h.ComputeSize_(a0, a1, a2, a3)
 	}
 	return this.LayoutImpl.computeSize_(a0, a1, a2, a3)
@@ -48,8 +47,7 @@ func (this *layoutHooked) flushCache_(a0 *Control) bool {
 }
 
 func (this *layoutHooked) layoutFn_(a0 *Composite, a1 bool) {
-	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok && this.active != "layoutFn_" {
-		defer this.enter("layoutFn_")()
+	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok {
 		h.LayoutFn_(a0, a1)
 		return
 	}

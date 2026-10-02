@@ -89,16 +89,14 @@ func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) enter(name string)
 }
 
 func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) createFont_(a0 int32) *Font {
-	if h, ok := this.hook.(interface{ CreateFont_(a0 int32) *Font }); ok && this.active != "createFont_" {
-		defer this.enter("createFont_")()
+	if h, ok := this.hook.(interface{ CreateFont_(a0 int32) *Font }); ok {
 		return h.CreateFont_(a0)
 	}
 	return this.ScalingSWTFontRegistry_ScaledFontContainerImpl.createFont_(a0)
 }
 
 func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) dispose_() {
-	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
-		defer this.enter("dispose_")()
+	if h, ok := this.hook.(interface{ Dispose_() }); ok {
 		h.Dispose_()
 		return
 	}

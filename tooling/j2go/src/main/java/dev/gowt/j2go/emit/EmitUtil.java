@@ -301,4 +301,9 @@ final class EmitUtil {
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 		return (op == InfixExpression.Operator.NOT_EQUALS ? "!" : "") + "jrt.IsNil(" + (right.equals("nil") ? left : right) + ")";
 	}
+
+	/** A constant String concatenation (Policy.JFACE + ".X") stays a Go constant: a literal, not fmt.Sprintf. */
+	static String constantOrExpr(Emitter emitter, Expression e) {
+		return e instanceof InfixExpression && e.resolveConstantExpressionValue() instanceof String cs ? goStringLiteral(cs) : emitter.expr(e);
+	}
 }

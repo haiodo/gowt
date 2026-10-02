@@ -52,8 +52,7 @@ func (this *resourceHooked) getDevice_() *Device {
 }
 
 func (this *resourceHooked) isDisposed_() bool {
-	if h, ok := this.hook.(interface{ IsDisposed_() bool }); ok && this.active != "isDisposed_" {
-		defer this.enter("isDisposed_")()
+	if h, ok := this.hook.(interface{ IsDisposed_() bool }); ok {
 		return h.IsDisposed_()
 	}
 	return this.ResourceImpl.isDisposed_()

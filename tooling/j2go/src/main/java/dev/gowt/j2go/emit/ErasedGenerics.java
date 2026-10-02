@@ -10,10 +10,10 @@ final class ErasedGenerics {
 
 	private ErasedGenerics() {}
 
-	/** For a call: only a method of a translated class whose own signature has no type parameter (AssertThrows[T] is typed already). */
-	static String castCall(Emitter emitter, String text, IMethodBinding mb) {
+	/** For a call on a `recv`-typed value: only a method of a translated class whose own signature has no type parameter (AssertThrows[T] is typed already). */
+	static String castCall(Emitter emitter, String text, IMethodBinding mb, ITypeBinding recv) {
 		IMethodBinding decl = mb.getMethodDeclaration();
-		if (emitter.model.lookup(decl.getDeclaringClass()) == null) return text;
+		if (emitter.model.lookup(decl.getDeclaringClass()) == null || CovariantBridges.covers(emitter, recv, mb)) return text;
 		return cast(emitter, text, decl.getReturnType(), mb.getReturnType());
 	}
 
@@ -37,9 +37,16 @@ final class ErasedGenerics {
 	}
 
 	static String cast(Emitter emitter, String text, ITypeBinding declared, ITypeBinding seen) {
-		if (declared == null || !declared.isTypeVariable() || seen == null || seen.isTypeVariable() || seen.isCapture() || seen.isNullType()) return text;
+		if (declared == null || !declared.isTypeVariable() || seen == null || seen.isCapture() || seen.isNullType()) return text;
 		String go = GoTypes.map(seen, emitter);
 		if (go.isEmpty() || go.equals("any") || go.startsWith("unsupported_")) return text;
+		// A type variable seen through another one (F of a subclass for F of its base) differs only when the bounds do.
+		if (seen.isTypeVariable() && go.equals(GoTypes.map(declared, emitter))) return text;
+		// A bound that is a translated class: the value is the bound's pointer, read back as the subclass via its impl.
+		if (emitter.model.lookup(declared) != null) {
+			String narrowed = emitter.typeTestEmitter.narrow(text, declared, seen.isTypeVariable() ? seen.getErasure() : seen);
+			if (narrowed != null) return narrowed;
+		}
 		emitter.fileImports.add(Manual.JRT_IMPORT);
 		return "jrt.Cast[" + go + "](" + text + ")";
 	}

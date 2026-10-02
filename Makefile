@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: jfacetest test-jface test-jface-update gtk-gen win-syso win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -48,11 +48,12 @@ test:
 check: vet test xcheck api-check
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
-# platform-specific rest (swt, cmd, ...) builds only where that platform's port exists.
+# platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
 XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res
 xcheck:
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
-	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
+	@for os in darwin windows linux; do GOOS=$$os go build ./jface || exit 1; done
+	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
 
 # Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).
@@ -63,6 +64,17 @@ api-check:
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).
 test-swt: swttest
 	./$(BIN)/swttest -expected $(EXPECTED) $(SWTTEST_FLAGS)
+
+# JFace's translated JUnit tests (tests/jfacetests): the same runner built with -tags jface, gated by tests/expected_jface[_os].txt.
+JEXPECTED ?= tests/expected_jface$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
+jfacetest:
+	go build -tags jface -o $(BIN)/jfacetest ./cmd/swttest
+
+test-jface: jfacetest
+	./$(BIN)/jfacetest -expected $(JEXPECTED) $(SWTTEST_FLAGS)
+
+test-jface-update: jfacetest
+	./$(BIN)/jfacetest -update $(JEXPECTED) $(SWTTEST_FLAGS)
 
 # Rewrites the expected file from a full run; a new failure comes out as UNDESCRIBED until its cause is written.
 test-swt-update: swttest
@@ -96,7 +108,7 @@ clean:
 WINE ?= /Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine
 WINBOTTLE ?= gowt
 WINBIN := $(BIN)/windows
-WINCMDS := hello swttest controlexample winprobe
+WINCMDS := hello swttest controlexample winprobe jfacedemo
 
 # cmd/*/rsrc_windows_amd64.syso carries tooling/win32/swt.manifest (comctl32 v6: SysLink, visual styles) as the exe's
 # manifest resource; rebuild after editing it (needs x86_64-w64-mingw32-windres).

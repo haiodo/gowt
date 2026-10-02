@@ -1,5 +1,5 @@
 gowt is a Go translation of Eclipse SWT (https://github.com/eclipse-platform/eclipse.platform.swt),
-source commit af630a9093.
+source commit af630a9093 (SWT); org.eclipse.jface.* comes from eclipse.platform.ui, commit 618d26a101.
 
 SPDX-License-Identifier: EPL-2.0
 

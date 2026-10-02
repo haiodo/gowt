@@ -18,7 +18,6 @@ import (
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 	_ "github.com/haiodo/gowt/swt/swtreflect"
-	_ "github.com/haiodo/gowt/tests/swttests"
 )
 
 // AppKit must run on the process's main thread.
@@ -35,8 +34,6 @@ var (
 	updateFlag   = flag.String("update", "", "rewrite this expected-results file from a full run")
 	skipFlag     = flag.Int("skip", 0, "with -child: skip the first N matching tests")
 )
-
-const pkg = "github.com/haiodo/gowt/tests/swttests"
 
 type result struct {
 	status  string // PASS, FAIL, SKIP

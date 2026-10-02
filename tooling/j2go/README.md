@@ -3245,3 +3245,72 @@ Linux `make test-swt` 3314/21/6 -> 3320/15/6, snap-check 29/0.
 **Round 20 (win32), second pass.** Snapshots: `internal/shot/shot_windows.go` renders the shell with `BitBlt` from the window DC (PrintWindow hung Wine) into a DIB and crops the client area; `meta.txt` holds `env` (Wine version via `ntdll.wine_get_version`, else `windows`), the Windows build, DPI, `IsThemeActive` and the screen size, so `snapcheck` SKIPs on any other setup. `make win-snap-update` / `win-snap-check` run `controlexample.exe -snap Z:<dir>` in the bottle and compare on the host against `tests/snapshots_windows`.
 Translator: `java.util.Iterator` maps to `jrt.Iterator` (`values().iterator().next()` in Path/Region/Transform, `Device.destroyUnusedHandles`); `Character.isLetterOrDigit`/`isHighSurrogate` and `String.compareTo` (UTF-16 order) are intrinsics (TextLayout word movement, Tree sort); the null-element guard (`jrt.NullString`) now also covers a for-each variable (`Combo/List.setItems`: `item == null` was `== ""`, so `setItems({""})` raised ERROR_INVALID_ARGUMENT) and a String[] local filled with `a[i] = null` and passed on to such a callee (CCombo.setItems; array passed as the varargs parameter counts as the parameter). `jrt` `callFunc` widens an argument along the field-0 embedding chain (`*CTabItem` into `func(*Widget)`).
 Known gaps (not fixed): a class extending a manual `jrt.WeakReference` (`Device.ResourceReference`) loses its super state, so `get()` stays an unresolved call; `x::add` on a JDK receiver (`forEach(list::add)`) is an unsupported method reference; `Display.post` (SendInput) does not deliver under Wine. The `isAlphabetic` reasons in `tests/expected_windows.txt` predate the merged translator: rerun `make win-swttest-update`.
+
+## Round 22 jface: org.eclipse.jface layout and widgets (slice A, TSK-2026-10-02-jface-webview-app-01..04)
+
+`org.eclipse.jface.layout` (all of it), `org.eclipse.jface.widgets` (all but `BrowserFactory`), `util.Geometry`/`Util`,
+`viewers.ColumnLayoutData`/`ColumnPixelData`/`ColumnWeightData` and `dialogs.IDialogConstants` come from
+`eclipse.platform.ui/bundles/org.eclipse.jface` (EPL-2.0, commit `618d26a101`) and become Go package `github.com/haiodo/gowt/jface`
+(`jface/<javapackage>_<class>.go`, 5.2 kLOC). JFace has no platform code, so one source serves every OS: `port.sh` runs the unit
+only for `PLATFORM=cocoa` (the reference platform owns shared files, as for `swt`); `make xcheck` builds `./jface` for darwin, windows and linux.
+
+### Translation unit
+
+- `Main --src <dir>` adds source roots (here the JFace bundle, the JFace tests, and SWT's `Browser/common` for name resolution only).
+  `GoTypes.goPackageDir`: `org.eclipse.jface.tests.*` -> `tests/jfacetests`, the rest of `org.eclipse.jface.*` -> `jface`; swt, `C.java`
+  and the cocoa files are reference-only. Generated headers name the repo they come from (`UI_COMMIT`).
+- Not translated: `BrowserFactory` and `WidgetFactory.browser` (SWT's `Browser` is not ported; `Manual.SKIP_METHOD_NAMES`), the `_LABEL`
+  constants of `IDialogConstants` (they read `JFaceResources`' bundle, slice B) and `Util.EMPTY_SORTED_SET` (`Manual.isSkippedField`).
+- Hand-written: `jface/dialogs_manual.go` (the DLU/char conversions of `Dialog` and `JFaceResources.getDialogFont()` that `layout` calls,
+  mapped through `Manual`), `internal/jrt/core.go` (below). `Policy.JFACE` needs nothing: it is a constant.
+- Parser-only Java stubs in `tooling/j2go/stubs`: `org.eclipse.core.runtime` (no equinox sources locally: `Assert`, `IStatus`/`Status`/`CoreException`,
+  `IProgressMonitor`/`NullProgressMonitor`/`ProgressMonitorWrapper`, `ISafeRunnable`/`SafeRunner`, `ListenerList`) and the PDE annotations
+  `@NoExtend`/`@NoImplement`. `Manual` maps them to `internal/jrt/core.go`; only `Assert` is exercised by slice A (`AbstractColumnLayout`,
+  `ColumnPixelData`, `ColumnWeightData`), the rest is unit-tested in Go (`core_test.go`) and registered for slice B. `EventManager`
+  (`core.commands`) is not needed by slice A and is not translated; no `FrameworkUtil`/`Bundle` code is reachable from these classes.
+- `Util` still has 5 unresolved-call markers (`assertInstance`, the generic `compare`, `Comparable.compareTo`): none is on a path
+  `layout`/`widgets` use. `LayoutGenerator` has one (`catch SecurityException`).
+
+### Self-typed generics under erasure (the point of this slice)
+
+`AbstractWidgetFactory<F extends AbstractWidgetFactory<?,?,?>, W extends Widget, P extends Widget>` with `F cast(...)`,
+`Property<W>`/`WidgetSupplier<W,P>` lambdas and `Class<F>.cast` erase to the bounds (`*AbstractWidgetFactory`, `*swt.Widget`). What broke and the
+rules that fix it (all general, none specific to the factories):
+
+1. **Call-site narrowing** (`ErasedGenerics.cast`, `TypeTestEmitter.narrow`): a call whose declared result is a type variable bounded by a
+   translated class is read back as the instantiated class through the impl cascade (`castAbstractControlFactoryToButtonFactory`), not `jrt.Cast`
+   (a Go type assertion cannot go from `*Widget` to `*Button`). Also for a type variable seen through another one (`F` of a subclass for `F` of its base).
+2. **Functional interfaces of generic declaration** (`FunctionalEmitter.wrap`/`erasedSignature`): the Go adapter follows the declaration
+   (`Property.Apply(*swt.Widget)`, one `PropertyFunc` for all instantiations); the lambda, typed by the instantiation, is entered through narrowing casts and
+   its result upcast. Method references (`gridLayoutFactory::create` as `Supplier<? extends Layout>`) are wrapped when the return type differs
+   (`unboxParams`): a Go func value's type is exact.
+3. **Typed bridges** (`CovariantBridges`): after 1, a chain still broke at the first inherited call (`label.layoutData(d).text("x")`: `LayoutData`
+   returned `*AbstractControlFactory`). A non-generic class whose direct superclass is parameterized now gets a forwarding method for every public
+   inherited method whose Go signature changes after substitution, with the same Go name (it shadows the base's) and the instantiated types
+   (`(*ButtonFactory).Tooltip(string) *ButtonFactory`, `Create(swt.CompositeLike) *swt.Button`); call sites on such a receiver need no cast. ~10 per factory.
+4. `Class.cast(x)` is `x` (the call-site rule does the rest).
+
+### Other rules the unit needed
+
+- A class with a cascade of its own that overrides a base from another package (`AbstractColumnLayout extends swt.Layout`, with `TreeColumnLayout` below):
+  the dispatch method keeps its unexported name; the base's exported hook name is a forwarding wrapper (`HookEmitter.wrapper`), and the base's
+  `SetImpl_` is named through the embedded field (`this.Layout.SetImpl_(this)`) because the class has its own.
+- **Hook re-entrancy** (`HookEmitter`): the hook wrapper sent a nested call of the same method to the default (so `super.m()` works). For an abstract
+  declaration there is no `super.m()`, and a legitimate nested call (`AbstractColumnLayout.layout` calls `composite.layout()`) hit the panicking default.
+  Abstract declarations are no longer guarded. Changes 8 generated hook wrappers in swt (Layout, Device, Resource, `Image.AbstractImageProviderWrapper`,
+  `ScalingSWTFontRegistry.ScaledFontContainer`), same behaviour otherwise.
+- Interface fields (`IDialogConstants.HORIZONTAL_MARGIN`) are emitted as constants (`emitInterface`); a constant `String` concatenation
+  (`Policy.JFACE + ".LAYOUT_DATA"`) is a Go literal, not `fmt.Sprintf` (`EmitUtil.constantOrExpr`).
+- Naming (jface only, `Names`): a subclass overload of an inherited method takes a suffix (`ShellFactory.create(Display)` -> `CreateDisplay`, the inherited
+  `create(P)` keeps `Create`) - the Round 9 "known ceiling" fixed where swt's names are frozen; a static and an instance method of one Java name do not
+  count as overloads (`GridDataFactoryCreate(style)` and `(*GridDataFactory).Create()`). `<Class>Like` upcast interfaces exist for jface classes too
+  (`ColumnLayoutDataLike`: `SetColumnData(column, *ColumnWeightData)` works).
+- `java.lang.NoSuchMethodException` maps to `jrt.NoSuchMethodException` (`LayoutGenerator.hasMethod` catches it).
+
+### Tests and demo
+
+`tests/jfacetests` (package `jfacetests`) is JFace's JUnit 5 `layout` and `widgets` tests (87: `GridDataFactoryTest`, `GridLayoutFactoryTest`,
+`AbstractColumnLayoutTest`, `TreeColumnLayoutTest`, `GeometryTest`, `TestUnit*Factory` but not Browser), translated by a fifth `port.sh` invocation. The runner is
+`cmd/swttest` built with `-tags jface` (`make test-jface`, `test-jface-update`), gated by `tests/expected_jface[_os].txt` (linux: 85 pass, 2 `DateTime` failures
+with causes; darwin and windows files are written by their first `make test-jface-update`). `cmd/jfacedemo` is a form built only from the factories
+(labels, texts, a group, a table under `TableColumnLayout`, buttons); `jfacedemo <png>` writes a snapshot and exits.

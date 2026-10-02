@@ -111,12 +111,13 @@ final class ConstructorEmitter {
 		return "";
 	}
 
-	/** The base's exported constructor and, when the base has a cascade, SetImpl_ (its impl and init are unexported). */
+	/** The base's exported constructor and, when the base has a cascade, SetImpl_ (its impl and init are unexported);
+	 * a class with a cascade of its own has its own SetImpl_, so the base's is named through the embedded field. */
 	private String foreignSuperInit(TypeModel.ClassInfo ci, IMethodBinding ctor, List<String> args) {
 		TypeModel.ClassInfo f = ci.foreignSuper;
 		String name = emitter.ctorGoName(ctor, emitter.qualify("New" + f.goFuncPrefix, f));
 		return "\tthis." + f.goTypeName + " = " + name + "(" + String.join(", ", args) + ")\n"
-				+ (f.root.children.isEmpty() ? "" : "\tthis.SetImpl_(this)\n");
+				+ (f.root.children.isEmpty() ? "" : "\tthis." + (ci.children.isEmpty() ? "" : f.goTypeName + ".") + "SetImpl_(this)\n");
 	}
 
 	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td) {

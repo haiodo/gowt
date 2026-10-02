@@ -32,13 +32,26 @@ final class HookEmitter {
 			String r = ret.isEmpty() ? "" : "return ";
 			out.append("func (this *").append(hooked).append(") ").append(dispatch).append('(').append(params).append(") ")
 					.append(ret).append(ret.isEmpty() ? "" : " ").append("{\n");
+			// An abstract declaration has no super call to route to the default, so a re-entrant call (composite.layout() from
+			// inside Layout.layout) must reach the override again.
+			boolean guard = !java.lang.reflect.Modifier.isAbstract(decl.getModifiers());
 			out.append("\tif h, ok := this.hook.(interface{ ").append(e.getValue()).append('(').append(params).append(") ")
-					.append(ret).append(" }); ok && this.active != \"").append(dispatch).append("\" {\n");
-			out.append("\t\tdefer this.enter(\"").append(dispatch).append("\")()\n");
+					.append(ret).append(" }); ok").append(guard ? " && this.active != \"" + dispatch + "\"" : "").append(" {\n");
+			if (guard) out.append("\t\tdefer this.enter(\"").append(dispatch).append("\")()\n");
 			out.append("\t\t").append(r).append("h.").append(e.getValue()).append('(').append(argList).append(")\n");
 			if (ret.isEmpty()) out.append("\t\treturn\n"); // a void hook replaces the default, it does not precede it
 			out.append("\t}\n");
 			out.append('\t').append(r).append("this.").append(impl).append('.').append(dispatch).append('(').append(argList).append(")\n}\n\n");
 		}
+	}
+
+	/** A class with a cascade of its own that also overrides a base from another package: the dispatch method keeps its
+	 * unexported name, the base's exported hook name forwards into it. */
+	static void wrapper(Emitter emitter, TypeModel.ClassInfo ci, String hookName, String dispatch, IMethodBinding sig,
+			org.eclipse.jdt.core.dom.MethodDeclaration md, StringBuilder out) {
+		String ret = emitter.retType(sig);
+		out.append("func (this *").append(ci.goTypeName).append(") ").append(hookName).append('(').append(emitter.paramList(sig, md)).append(") ")
+				.append(ret).append(" {\n\t").append(ret.isEmpty() ? "" : "return ").append("this.impl.").append(dispatch)
+				.append('(').append(emitter.argNames(md)).append(")\n}\n\n");
 	}
 }

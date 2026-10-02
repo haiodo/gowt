@@ -41,6 +41,8 @@ public class GoTypes {
 	private static final String EXAMPLES_PACKAGE = "org.eclipse.swt.examples.";
 	// Round 12: the JUnit tests and their helper packages (tests.junit, tests.graphics) - one Go package.
 	private static final String TESTS_PACKAGE = "org.eclipse.swt.tests.";
+	// JFace has no platform code: one Go package for all of org.eclipse.jface.* (see README "Round 22").
+	private static final String JFACE_TESTS_PACKAGE = "org.eclipse.jface.tests.";
 
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
@@ -50,6 +52,8 @@ public class GoTypes {
 		// Converter is PI's own (OS.getThemeName calls it) and needs nothing above it.
 		if (piPackage.equals("gtk") && javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("Converter")) return "internal/gtk";
 		if (javaPackage.startsWith(TESTS_PACKAGE)) return "tests/swttests";
+		if (javaPackage.startsWith(JFACE_TESTS_PACKAGE)) return "tests/jfacetests";
+		if (javaPackage.equals("org.eclipse.jface") || javaPackage.startsWith("org.eclipse.jface.")) return "jface";
 		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
 		return "swt";
 	}
@@ -65,6 +69,8 @@ public class GoTypes {
 			case "cocoa", "win32", "gtk" -> "internal/" + goPackage;
 			case "swt" -> "swt";
 			case "swttests" -> "tests/swttests";
+			case "jfacetests" -> "tests/jfacetests";
+			case "jface" -> "jface";
 			default -> "examples/" + goPackage;
 		};
 	}

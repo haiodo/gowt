@@ -9,7 +9,7 @@ Source of truth for numbers: `tests/expected.txt` (darwin), `tests/expected_wind
 | Build | `make gen && make` | `GOOS=windows GOARCH=amd64 go build ./...` | `GOOS=linux CGO_ENABLED=0 go build ./...` |
 | `test-swt` gate | 3309 pass / 21 fail / 1 flaky / 10 skip | 3252 pass / 46 fail / 43 skip | 2950 pass / 385 fail / 6 skip |
 | Stand | the Mac itself (`make test-swt`, `make snap-check`) | CrossOver/Wine bottle `gowt` (`make win-swttest`; `make win-probe` is console-only); not run on real Windows | Docker `gowt-linux`, Xvfb + noVNC (`make linux-run CMD="make test-swt"`) |
-| Snapshots (`tests/snapshots`) | yes, only here (`snap_darwin.go`) | `snap_windows.go`: PrintWindow in `internal/shot` (`make win-snap-check`, `tests/snapshots_windows`) | `snap_linux.go` stub |
+| Snapshots (`tests/snapshots`) | yes, only here (`snap_darwin.go`) | `snap_windows.go`: BitBlt capture in `internal/shot` (`make win-snap-check`, `tests/snapshots_windows`) | `snap_linux.go` stub |
 | DPI / zoom | points semantics (backing scale) | system DPI aware (manifest), device zoom = "integer" autoscale of the system DPI; no per-monitor runtime rescaling | stand-in `DPIUtil` (`swt/*_manual_linux.go`), not verified at other scales |
 
 ## Known gaps

@@ -1,0 +1,6 @@
+os=windows
+env=wine 11.0
+windows=10.0.19045
+dpi=96
+theme=true
+screen=1728x1117

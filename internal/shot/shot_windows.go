@@ -31,8 +31,8 @@ type bmi struct {
 	ClrUsed, ClrImportant  uint32
 }
 
-// WindowPNG writes the client area of the toplevel window hwnd as a PNG. PrintWindow renders the window
-// itself, so overlapping windows and the screen position do not matter.
+// WindowPNG writes the client area of the toplevel window hwnd as a PNG, copied from its window DC
+// (the window must be on top and on screen).
 func WindowPNG(hwnd int64, path string) error {
 	var wr, cr rect
 	pt := [2]int32{}
@@ -44,16 +44,17 @@ func WindowPNG(hwnd int64, path string) error {
 	if cw <= 0 || ch <= 0 {
 		return fmt.Errorf("empty client area")
 	}
-	dc, _, _ := user32.NewProc("GetDC").Call(0)
-	defer user32.NewProc("ReleaseDC").Call(0, dc)
+	user32.NewProc("UpdateWindow").Call(uintptr(hwnd))
+	dc, _, _ := user32.NewProc("GetWindowDC").Call(uintptr(hwnd))
+	defer user32.NewProc("ReleaseDC").Call(uintptr(hwnd), dc)
 	mem, _, _ := gdi32.NewProc("CreateCompatibleDC").Call(dc)
 	defer gdi32.NewProc("DeleteDC").Call(mem)
 	bmp, _, _ := gdi32.NewProc("CreateCompatibleBitmap").Call(dc, uintptr(ww), uintptr(wh))
 	defer gdi32.NewProc("DeleteObject").Call(bmp)
 	gdi32.NewProc("SelectObject").Call(mem, bmp)
-	// PW_RENDERFULLCONTENT = 2
-	if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
-		return fmt.Errorf("PrintWindow failed")
+	// SRCCOPY. PrintWindow(PW_RENDERFULLCONTENT) left Wine blocked in the next DispatchMessage.
+	if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, 0, 0, 0x00CC0020); r == 0 {
+		return fmt.Errorf("BitBlt failed")
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}
 	buf := make([]byte, ww*wh*4)

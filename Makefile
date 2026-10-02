@@ -124,15 +124,17 @@ win-swttest-update: win-build
 # Snapshots of the Windows port: the exe runs in the bottle (Z: is the host file system), snapcheck on the host.
 # References are tests/snapshots_windows; meta.txt (Wine version, DPI, theme, screen) makes snap-check SKIP elsewhere.
 WINSNAPDIR := tests/snapshots_windows
+# The exe stops itself 20 s into a stuck step; the alarm is the backstop (no coreutils timeout on macOS).
+WINSNAPRUN = GOWT_TRACE_DISPATCH=1 perl -e 'alarm 120; exec @ARGV' $(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/controlexample.exe -snap Z:$(abspath $(BIN)/snap/got) > $(BIN)/snap/run.log || { echo "controlexample.exe failed or stalled (see above and $(BIN)/snap/run.log)"; pkill -f controlexample.exe; exit 1; }
 
 win-snap-check: win-build snapcheck
 	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
-	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/controlexample.exe -snap Z:$(abspath $(BIN)/snap/got) > $(BIN)/snap/run.log
+	$(WINSNAPRUN)
 	./$(BIN)/snapcheck -ref $(WINSNAPDIR) -got $(BIN)/snap/got -diff $(BIN)/snap/diff
 
 win-snap-update: win-build snapcheck
 	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
-	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/controlexample.exe -snap Z:$(abspath $(BIN)/snap/got) > $(BIN)/snap/run.log
+	$(WINSNAPRUN)
 	./$(BIN)/snapcheck -update -ref $(WINSNAPDIR) -got $(BIN)/snap/got
 
 # Linux GUI stand (Docker + Xvfb + noVNC), see README "Linux stand".

@@ -7,7 +7,7 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// snapshot renders the only Shell's window through PrintWindow.
+// snapshot copies the only Shell's window from its window DC.
 func snapshot(path string) {
 	if err := shot.WindowPNG(swt.DisplayGetCurrent().GetShells()[0].Handle, path); err != nil {
 		panic(err)

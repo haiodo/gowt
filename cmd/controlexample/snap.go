@@ -28,7 +28,7 @@ type snapHooks struct {
 }
 
 // snapRun selects each tab, waits for layout and paint, snapshots the window, clicks one checkbox on
-// some tabs and snapshots again, then closes the shell. Steps are timers 500 ms apart.
+// some tabs and snapshots again, then closes the shell. Steps are chained 500 ms timers.
 // stepTimeout bounds one step (and the wait for the next timer): a stuck native call or a timer that
 // never fires ends the run with the step's name and all goroutine stacks instead of hanging.
 const stepTimeout = 20 * time.Second
@@ -79,9 +79,18 @@ func snapRun(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir 
 		}
 	}
 	steps = append(steps, named("close", func() { shell.Close() }))
-	for i, step := range steps {
-		display.TimerExec(int32(500*(i+1)), &task{step})
+	// One timer at a time: the next is armed when the current step is done.
+	var run func(i int)
+	run = func(i int) {
+		if i >= len(steps) {
+			return
+		}
+		display.TimerExec(500, &task{func() {
+			steps[i]()
+			run(i + 1)
+		}})
 	}
+	run(0)
 }
 
 func findButton(c *swt.Control, text string) *swt.Button {

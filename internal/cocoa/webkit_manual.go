@@ -133,6 +133,12 @@ func (v *WKView) AddScript(js string) {
 
 func (v *WKView) SetFrame(r NSRect) { msgRectOnly(v.View, sel("setFrame:"), r) }
 
+func (v *WKView) GoBack()    { msg(v.View, "goBack") }
+func (v *WKView) GoForward() { msg(v.View, "goForward") }
+func (v *WKView) Reload()    { msg(v.View, "reload") }
+
+func (v *WKView) URL() string { return goString(msg(msg(v.View, "URL"), "absoluteString")) }
+
 func (v *WKView) LoadURL(url string) {
 	req := msg(class("NSURLRequest"), "requestWithURL:", msg(class("NSURL"), "URLWithString:", nsString(url)))
 	msg(v.View, "loadRequest:", req)

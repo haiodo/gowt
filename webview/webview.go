@@ -44,6 +44,10 @@ type engine interface {
 	setHTML(html, baseURL string)
 	eval(js string, done func(result string, err error))
 	addScript(js string)
+	goBack()
+	goForward()
+	reload()
+	url() string
 	handleScheme(scheme string, h SchemeHandler) error
 	dispose()
 }
@@ -80,6 +84,13 @@ func (w *WebView) Eval(js string, done func(result string, err error)) {
 	q, _ := json.Marshal(js)
 	w.e.eval("JSON.stringify((0,eval)("+string(q)+"))", done)
 }
+
+func (w *WebView) GoBack()    { w.e.goBack() }
+func (w *WebView) GoForward() { w.e.goForward() }
+func (w *WebView) Reload()    { w.e.reload() }
+
+// URL is the current page's URL ("" before the first load).
+func (w *WebView) URL() string { return w.e.url() }
 
 func (w *WebView) Dispose() { w.e.dispose() }
 

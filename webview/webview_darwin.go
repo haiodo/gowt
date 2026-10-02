@@ -140,3 +140,28 @@ func (e *wkEngine) release() {
 }
 
 func (e *wkEngine) dispose() { e.host.Dispose() }
+
+func (e *wkEngine) goBack() {
+	if e.v != nil {
+		e.v.GoBack()
+	}
+}
+
+func (e *wkEngine) goForward() {
+	if e.v != nil {
+		e.v.GoForward()
+	}
+}
+
+func (e *wkEngine) reload() {
+	if e.v != nil {
+		e.v.Reload()
+	}
+}
+
+func (e *wkEngine) url() string {
+	if e.v == nil {
+		return ""
+	}
+	return e.v.URL()
+}

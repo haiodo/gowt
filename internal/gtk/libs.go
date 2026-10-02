@@ -6,6 +6,7 @@ package gtk
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"sync"
 	"unsafe"
@@ -27,13 +28,21 @@ func libs() []uintptr {
 
 func openLibs() []uintptr {
 	var hs []uintptr
+	var firstErr error
 	for _, n := range []string{"libgtk-3.so.0", "libgdk-3.so.0", "libX11.so.6", "libcairo.so.2", "libpangocairo-1.0.so.0", "libfontconfig.so.1"} {
-		if h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL); err == nil {
-			hs = append(hs, h)
+		h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		if err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
 		}
+		hs = append(hs, h)
 	}
 	if len(hs) == 0 {
-		panic("gowt/internal/gtk: libgtk-3.so.0 not found")
+		// A stack trace says nothing to the user of an app built on gowt; the fix is installing a package.
+		fmt.Fprintf(os.Stderr, "gowt: GTK 3 is not installed (%v).\nInstall it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0\n", firstErr)
+		os.Exit(1)
 	}
 	return hs
 }

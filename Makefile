@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -119,6 +119,10 @@ WINCMDS := hello swttest controlexample winprobe jfacedemo
 # winmanifest. tooling/mksyso writes the objects itself, no windres needed. Rebuild after editing the manifest.
 winmanifest:
 	@for a in amd64 arm64; do go run ./tooling/mksyso -arch $$a -manifest winmanifest/app.manifest -o winmanifest/manifest_windows_$$a.syso || exit 1; done
+
+# A module outside the repository (replace -> this checkout) builds for darwin, windows and linux.
+consumer-check:
+	bash tooling/consumer-check.sh
 
 win-build:
 	@mkdir -p $(WINBIN)

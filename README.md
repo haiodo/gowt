@@ -39,6 +39,15 @@ Java's self-typed generics (`F extends AbstractWidgetFactory<F,...>`) are erased
 output is shared). `make test-jface` runs JFace's translated tests (on a new OS the first run is `make test-jface-update`). Not translated: `BrowserFactory`,
 viewers, dialogs, resources (later slices).
 
+## WebView
+
+`webview/` (hand-written, not translated) puts the system web view in a Composite: `wv, err := webview.New(parent, webview.Options{})`, then `wv.Control().SetLayoutData(...)`,
+`Navigate`, `SetHTML`, `Eval(js, func(jsonResult, err))` (async), `AddScript` (before page scripts), `HandleScheme("app", func(Request) *Response)` (serve an `embed.FS`, no
+localhost) and `OnMessage` for the page's `window.gowt.postMessage(...)`; navigation and title events are fields (`OnNavigationFinished`, ...). The native view is created at the
+first load, so `HandleScheme` and `AddScript` come before it. UI thread only. macOS is WKWebView over purego (`internal/cocoa/webkit_manual.go`); `evaluateJavaScript` needs an ObjC
+block, made by `cocoa.NewBlock` (`block_manual.go`: a global block whose invoke is a shared purego callback). Windows and Linux return "not implemented" for now. `cmd/webviewdemo`
+is a Tree beside a web view. Headless check (no window, no activation): `GOWT_WK_HEADLESS=1 go test ./internal/cocoa -run WKViewHeadless`.
+
 ## Build
 
 ```sh

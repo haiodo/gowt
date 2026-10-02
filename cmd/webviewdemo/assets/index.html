@@ -1,0 +1,9 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Index page</title>
+<style>body{font:15px -apple-system,system-ui,sans-serif;margin:24px}</style>
+<h2>Served from Go over app://</h2>
+<p>This page comes from an embed.FS through the custom scheme, no localhost.</p>
+<button onclick="gowt.postMessage('clicked at ' + new Date().toLocaleTimeString())">Send message to Go</button>
+<button onclick="gowt.postMessage({kind: 'object', n: 42})">Send object</button>
+<p id="out">Eval target: nothing yet</p>

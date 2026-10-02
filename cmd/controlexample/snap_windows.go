@@ -8,7 +8,7 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// snapAll runs the shared -snap driver; the window is rendered through PrintWindow.
+// snapAll runs the shared -snap driver; the window is copied from its window DC.
 func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string) {
 	handle := shell.Handle
 	snapRun(display, shell, folder, dir, snapHooks{

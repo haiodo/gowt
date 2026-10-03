@@ -99,13 +99,13 @@ func NativeImageLoaderSave(stream jrt.OutputStream, format int32, loader *ImageL
 }
 
 // FileFormatIsDynamicallySizableFormat replaces FileFormat.isDynamicallySizableFormat: true only
-// for a format loadable at an arbitrary requested size, which none of image/png|gif|jpeg|bmp are
-// (all decode at their own stored resolution) - always false.
-func FileFormatIsDynamicallySizableFormat(stream jrt.InputStream) bool { return false }
+// for a format loadable at an arbitrary requested size: image/png|gif|jpeg|bmp decode at their own
+// stored resolution, only SVG (graphics_svg_manual.go) is sizable.
+func FileFormatIsDynamicallySizableFormat(stream jrt.InputStream) bool { return isSVGSource(stream) }
 
-// FileFormatCanLoadAtZoom is FileFormat.canLoadAtZoom; no format here is dynamically sizable.
+// FileFormatCanLoadAtZoom is FileFormat.canLoadAtZoom.
 func FileFormatCanLoadAtZoom(streamAtZoom *DPIUtilElementAtZoom, targetZoom int32) bool {
-	return streamAtZoom.Zoom() == targetZoom
+	return streamAtZoom.Zoom() == targetZoom || isSVGSource(streamAtZoom.Element())
 }
 
 // NativeImageLoaderLoad replaces NativeImageLoader.load(ElementAtZoom<InputStream>, ImageLoader, int)
@@ -163,6 +163,9 @@ func readAllImageBytes(source any) []byte {
 // decodeImages tries GIF first (its own multi-frame API), then falls back to any single-frame
 // format image.Decode's registered codecs (png/jpeg/bmp) recognize.
 func decodeImages(data []byte) []*ImageData {
+	if isSVGData(data) {
+		return []*ImageData{rasterizeSVGAtPercent(data, 100)}
+	}
 	if g, err := gif.DecodeAll(bytes.NewReader(data)); err == nil {
 		return gifToImageDatas(g)
 	}

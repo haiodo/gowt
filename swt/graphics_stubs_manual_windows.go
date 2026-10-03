@@ -86,18 +86,6 @@ func StrictChecksRunWithStrictChecksDisabled(r jrt.Runnable) { r.Run() }
 
 const FileFormatDEFAULT_ZOOM int32 = 100
 
-// ImageDataLoaderLoadByZoom is ImageDataLoader.loadByZoom (stream or file name): every supported format
-// decodes at its own resolution, so the element is at fileZoom.
-func ImageDataLoaderLoadByZoom(source any, fileZoom int32, targetZoom int32) *DPIUtilElementAtZoom {
-	return NewDPIUtilElementAtZoom(ImageDataLoaderLoad(source), fileZoom)
-}
-
-func ImageDataLoaderLoadBySize(source any, width int32, height int32) *ImageData {
-	panic("stub: ImageLoader not ported")
-}
-func ImageDataLoaderCanLoadAtZoom(source any, fileZoom int32, targetZoom int32) bool { return false }
-func ImageDataLoaderIsDynamicallySizable(source any) bool                            { return false }
-
 // ImageColorTransformer.DEFAULT_DISABLED_IMAGE_TRANSFORMER: the default algorithm
 // (forGrayscaledContrastBrightness(0.2, 2.9)).
 type ImageColorTransformer struct{}

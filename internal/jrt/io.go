@@ -240,3 +240,34 @@ func (s *ByteArrayOutputStream) Size() int32 { return int32(s.buf.Len()) }
 
 // ToString is toString() and toString(Charset): the bytes as UTF-8, the only charset used.
 func (s *ByteArrayOutputStream) ToString(charset ...any) string { return s.buf.String() }
+
+// PeekBytes returns up to n leading bytes of a stream and rewinds it, like FileFormat's
+// mark/reset sniffing; ok is false for a stream that cannot rewind (only files and byte arrays can).
+func PeekBytes(s InputStream, n int) (head []byte, ok bool) {
+	var r *readerInputStream
+	switch v := s.(type) {
+	case *FileInputStream:
+		return PeekBytes(v.InputStream, n)
+	case *ByteArrayInputStream:
+		r = &v.readerInputStream
+	case *readerInputStream:
+		r = v
+	}
+	if r == nil {
+		return nil, false
+	}
+	sk, isSeeker := r.r.(io.Seeker)
+	if !isSeeker {
+		return nil, false
+	}
+	pos, err := sk.Seek(0, io.SeekCurrent)
+	if err != nil {
+		return nil, false
+	}
+	head = make([]byte, n)
+	m, _ := io.ReadFull(r.r, head)
+	if _, err := sk.Seek(pos, io.SeekStart); err != nil {
+		return nil, false
+	}
+	return head[:m], true
+}

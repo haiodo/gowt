@@ -20,6 +20,7 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 | Errors | `Run` returns `error`; no per-call errors | SWT reports failures by `panic(*SWTException)` and other Java exceptions (all `error`s). `Run` recovers any panic that is an `error` and not a `runtime.Error`, wraps with `%w`. Programmer bugs (nil deref etc.) keep panicking. Getters/setters do not return errors. |
 | Escape hatch | `Unwrap()` on every wrapper returns the `*swt.X` | Facade never needs to cover all of SWT; users drop down per widget. Wrappers hold the swt object in a private field (no embedding), so the Java API does not leak into godoc. |
 | Layouts | value types: `Fill{Vertical}`, `Grid{Columns, EqualWidth, Margin, Spacing}`; per-child `Cell(GridCell{...})` | Plain structs with zero-value meaning "none/natural", enum `Align*` instead of int bit masks. Applied with `SetLayout`. `Row`, `Form`, `Stack` follow the same rule (see below). |
+| Theme | `App.Dark()`, `App.OnThemeChange(func(dark bool))`; `Run` calls `Display.FollowSystemTheme()` | Light/dark follows the system while running: macOS KVO on `NSApp.effectiveAppearance`, Windows `WM_SETTINGCHANGE` + dark title bar (content stays light), Linux portal `color-scheme` over GDBus (no portal: GTK theme unchanged). Plain `swt` users call `FollowSystemTheme()` themselves; the callback fires only when dark flips. |
 | Naming | Go names: `Checked`, `SetText`, `OnClick`; no `Get` prefix; ints for sizes (not int32); `time.Duration` for time; no `Like`/`As*`/`Overload` | |
 
 ## Wrapped (TSK-02)

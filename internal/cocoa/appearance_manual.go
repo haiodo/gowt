@@ -22,6 +22,7 @@ func ObserveEffectiveAppearance(fn func()) {
 	}
 	cls := newClass("GowtAppearanceObserver", nil, map[string]objcMethod{
 		"observeValueForKeyPath:ofObject:change:context:": {purego.NewCallback(func(self, _, keyPath, obj, change, ctx uintptr) {
+			SyncCurrentAppearance()
 			appearanceChanged()
 		}), "v@:@@@^v"},
 	})
@@ -38,4 +39,12 @@ func EffectiveAppearanceDark() bool {
 	best := msg(ap, "bestMatchFromAppearancesWithNames:", arr)
 	runtime.KeepAlive(names)
 	return goString(best) == "NSAppearanceNameDarkAqua"
+}
+
+// SyncCurrentAppearance makes dynamic NSColors (windowBackgroundColor, controlTextColor, ...) resolve under
+// NSApp.effectiveAppearance; outside a draw pass they otherwise resolve under a stale +currentAppearance,
+// so the cached SWT system colors kept the old theme.
+func SyncCurrentAppearance() {
+	ap := msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance")
+	msg(class("NSAppearance"), "setCurrentAppearance:", ap)
 }

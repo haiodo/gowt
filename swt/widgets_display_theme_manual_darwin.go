@@ -6,4 +6,6 @@ import "github.com/haiodo/gowt/internal/cocoa"
 // or a Display.SetDarkThemePreferred), refreshing the cached system colors through RunSettings.
 func (this *Display) FollowSystemTheme() {
 	cocoa.ObserveEffectiveAppearance(func() { this.runSettings = true })
+	cocoa.SyncCurrentAppearance()
+	this.InitColors0() // colors cached in Display init were resolved before the appearance was synced
 }

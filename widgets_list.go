@@ -6,7 +6,7 @@ import "github.com/haiodo/gowt/swt"
 type Combo struct{ c *swt.Combo }
 
 // Combo adds a combo box with the given items.
-func (p *Panel) Combo(items []string, opts ...Option) *Combo {
+func (p *panel) Combo(items []string, opts ...Option) *Combo {
 	c := swt.NewCombo(p.c, resolve(swt.NONE, opts))
 	if len(items) > 0 { // SWT rejects a nil items slice
 		c.SetItems(items)
@@ -52,7 +52,7 @@ func (c *Combo) OnChange(f func(text string)) {
 type List struct{ l *swt.List }
 
 // List adds a list with the given items.
-func (p *Panel) List(items []string, opts ...Option) *List {
+func (p *panel) List(items []string, opts ...Option) *List {
 	l := swt.NewList(p.c, resolve(swt.V_SCROLL|swt.BORDER, opts))
 	if len(items) > 0 {
 		l.SetItems(items)
@@ -107,7 +107,7 @@ func (l *List) OnActivate(f func(index int)) {
 type Table struct{ t *swt.Table }
 
 // Table adds a table with a visible header and grid lines.
-func (p *Panel) Table(opts ...Option) *Table {
+func (p *panel) Table(opts ...Option) *Table {
 	t := swt.NewTable(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
 	t.SetHeaderVisible(true)
 	t.SetLinesVisible(true)
@@ -223,7 +223,7 @@ func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 type Tree struct{ t *swt.Tree }
 
 // Tree adds a tree.
-func (p *Panel) Tree(opts ...Option) *Tree {
+func (p *panel) Tree(opts ...Option) *Tree {
 	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER, opts))
 	applyOpts(&t.Control, opts)
 	return &Tree{t}

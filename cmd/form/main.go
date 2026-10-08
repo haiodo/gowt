@@ -1,62 +1,32 @@
-// Command form: a two-column GridLayout form (Name/Email + OK) with a File > Quit menu bar.
+// Command form: a two-column Grid form (Name/Email + OK) with a File > Quit menu bar.
 package main
 
 import (
 	"fmt"
-	"runtime"
+	"log"
 
-	"github.com/haiodo/gowt/swt"
+	g "github.com/haiodo/gowt"
 )
 
-// AppKit must run on the process's main thread.
-func init() { runtime.LockOSThread() }
-
 func main() {
-	display := swt.NewDisplay()
-	shell := swt.NewShellDisplay(display)
-	shell.SetText("Form")
-	shell.SetLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(2, false))
+	err := g.Run(func(app *g.App) {
+		w := app.Window("Form")
+		w.SetLayout(g.Grid{Columns: 2, Margin: 5, Spacing: 5})
+		field := g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true, Width: 150})
 
-	fill := swt.NewGridDataStyle(swt.GridDataFILL_HORIZONTAL)
-	fill.WidthHint = 150
-	swt.NewLabel(shell, swt.NONE).SetText("Name:")
-	nameText := swt.NewText(shell, swt.BORDER)
-	nameText.SetLayoutData(fill)
+		w.Label("Name:")
+		name := w.Text(g.Border(), field)
+		w.Label("Email:")
+		email := w.Text(g.Border(), field)
+		w.Button("OK", func() {
+			fmt.Println("Name:", name.Text())
+			fmt.Println("Email:", email.Text())
+		}, g.Cell(g.GridCell{SpanX: 2}))
 
-	fill2 := swt.NewGridDataStyle(swt.GridDataFILL_HORIZONTAL)
-	fill2.WidthHint = 150
-	swt.NewLabel(shell, swt.NONE).SetText("Email:")
-	emailText := swt.NewText(shell, swt.BORDER)
-	emailText.SetLayoutData(fill2)
-
-	ok := swt.NewButton(shell, swt.PUSH)
-	ok.SetText("OK")
-	okData := swt.NewGridData()
-	okData.HorizontalSpan = 2
-	ok.SetLayoutData(okData)
-	ok.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {
-		fmt.Println("Name:", nameText.GetText())
-		fmt.Println("Email:", emailText.GetText())
-	}))
-
-	menuBar := swt.NewMenuParentStyle(shell, swt.BAR)
-	shell.SetMenuBar(menuBar)
-	fileItem := swt.NewMenuItem(menuBar, swt.CASCADE)
-	fileItem.SetText("File")
-	fileMenu := swt.NewMenuParentStyle(shell, swt.DROP_DOWN)
-	fileItem.SetMenu(fileMenu)
-	quitItem := swt.NewMenuItem(fileMenu, swt.PUSH)
-	quitItem.SetText("Quit")
-	quitItem.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(e *swt.SelectionEvent) {
-		shell.Close()
-	}))
-
-	shell.Pack()
-	shell.Open()
-	for !shell.IsDisposed() {
-		if !display.ReadAndDispatch() {
-			display.Sleep()
-		}
+		w.MenuBar().Submenu("File").Item("Quit", w.Close)
+		w.Show()
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
-	display.Dispose()
 }

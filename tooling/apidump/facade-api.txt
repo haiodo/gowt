@@ -50,7 +50,7 @@ gowt CoolBar.Group(title string, opts ...Option) *Group
 gowt CoolBar.Label(text string, opts ...Option) *Label
 gowt CoolBar.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt CoolBar.List(items []string, opts ...Option) *List
-gowt CoolBar.Panel field Panel
+gowt CoolBar.Panel(opts ...Option) *Panel
 gowt CoolBar.Progress(max int, opts ...Option) *Progress
 gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -125,7 +125,7 @@ gowt Group.Group(title string, opts ...Option) *Group
 gowt Group.Label(text string, opts ...Option) *Label
 gowt Group.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Group.List(items []string, opts ...Option) *List
-gowt Group.Panel field Panel
+gowt Group.Panel(opts ...Option) *Panel
 gowt Group.Progress(max int, opts ...Option) *Progress
 gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -160,6 +160,7 @@ gowt List.OnActivate(f func(index int))
 gowt List.OnSelect(f func(index int))
 gowt List.Remove(i int)
 gowt List.Selected() []int
+gowt List.SetItem(i int, s string)
 gowt List.SetItems(s []string)
 gowt List.SetSelection(i ...int)
 gowt List.Unwrap() *github.com/haiodo/gowt/swt.List
@@ -260,7 +261,7 @@ gowt Split.Group(title string, opts ...Option) *Group
 gowt Split.Label(text string, opts ...Option) *Label
 gowt Split.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Split.List(items []string, opts ...Option) *List
-gowt Split.Panel field Panel
+gowt Split.Panel(opts ...Option) *Panel
 gowt Split.Progress(max int, opts ...Option) *Progress
 gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -305,6 +306,7 @@ gowt Tabs.OnSelect(f func(index int))
 gowt Tabs.Select(i int)
 gowt Tabs.Tab(title string, opts ...Option) *Panel
 gowt Tabs.Unwrap() *github.com/haiodo/gowt/swt.TabFolder
+gowt Text.OnActivate(f func())
 gowt Text.OnChange(f func(text string))
 gowt Text.SetHint(s string)
 gowt Text.SetText(s string)
@@ -355,13 +357,14 @@ gowt Window.List(items []string, opts ...Option) *List
 gowt Window.MenuBar() *Menu
 gowt Window.MessageBox(m Message) Answer
 gowt Window.OnClose(f func() bool)
-gowt Window.Panel field Panel
+gowt Window.Panel(opts ...Option) *Panel
 gowt Window.Progress(max int, opts ...Option) *Progress
 gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetSize(width int, height int)
+gowt Window.SetTitle(s string)
 gowt Window.Show()
 gowt Window.ShowTop(w Widget)
 gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -398,6 +401,7 @@ gowt const IconWarning Icon = 2
 gowt func Anchor(c FormCell) Option
 gowt func AsCalendar() Option
 gowt func AsTime() Option
+gowt func Background(c RGB) Option
 gowt func Beside(w Widget, gap int) Edge
 gowt func Border() Option
 gowt func Bottom() Option
@@ -420,6 +424,7 @@ gowt func ReadOnly() Option
 gowt func Right() Option
 gowt func Run(setup func(*App)) (err error)
 gowt func Same(w Widget, offset int) Edge
+gowt func SetAppName(name string)
 gowt func Simple() Option
 gowt func Smooth() Option
 gowt func Tooltip(s string) Option

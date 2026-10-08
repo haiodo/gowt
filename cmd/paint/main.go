@@ -1,44 +1,31 @@
-// Command paint draws on a Canvas from a PaintListener: the drawRect: -> SWT.Paint -> GC path.
+// Command paint draws on a Canvas from a paint callback: the drawRect: -> paint event -> GC path.
 package main
 
 import (
-	"runtime"
+	"log"
 
-	"github.com/haiodo/gowt/swt"
+	g "github.com/haiodo/gowt"
 )
 
-// AppKit must run on the process's main thread.
-func init() { runtime.LockOSThread() }
-
-type painter func(e *swt.PaintEvent)
-
-func (p painter) PaintControl(e *swt.PaintEvent) { p(e) }
-
 func main() {
-	display := swt.NewDisplay()
-	shell := swt.NewShellDisplay(display)
-	shell.SetText("Paint")
-	shell.SetLayout(swt.NewFillLayout())
-	canvas := swt.NewCanvasParentStyle(shell, swt.NONE)
-	canvas.SetBackgroundWithColor(display.GetSystemColor(swt.COLOR_WHITE))
-	canvas.AddPaintListener(painter(func(e *swt.PaintEvent) {
-		gc := e.Gc
-		gc.SetBackground(display.GetSystemColor(swt.COLOR_DARK_GREEN))
-		gc.FillRectangle(20, 20, 120, 80)
-		gc.SetForeground(display.GetSystemColor(swt.COLOR_RED))
-		gc.SetLineWidth(3)
-		gc.DrawLine(20, 130, 280, 130)
-		gc.SetForeground(display.GetSystemColor(swt.COLOR_BLUE))
-		gc.DrawOval(160, 20, 120, 80)
-		gc.SetForeground(display.GetSystemColor(swt.COLOR_BLACK))
-		gc.DrawString("Hello, GC", 20, 150)
-	}))
-	shell.SetSize(300, 220)
-	shell.Open()
-	for !shell.IsDisposed() {
-		if !display.ReadAndDispatch() {
-			display.Sleep()
-		}
+	err := g.Run(func(app *g.App) {
+		w := app.Window("Paint")
+		w.SetLayout(g.Fill{})
+		w.Canvas(func(gc *g.GC) {
+			gc.SetFill(g.RGB{R: 0, G: 128, B: 0})
+			gc.FillRect(20, 20, 120, 80)
+			gc.SetColor(g.RGB{R: 255, G: 0, B: 0})
+			gc.SetLineWidth(3)
+			gc.Line(20, 130, 280, 130)
+			gc.SetColor(g.RGB{R: 0, G: 0, B: 255})
+			gc.Oval(160, 20, 120, 80)
+			gc.SetColor(g.RGB{R: 0, G: 0, B: 0})
+			gc.Text("Hello, GC", 20, 150)
+		}, g.Background(g.RGB{R: 255, G: 255, B: 255}))
+		w.SetSize(300, 220)
+		w.Show()
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
-	display.Dispose()
 }

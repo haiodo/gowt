@@ -111,7 +111,7 @@ func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 
 // Canvas adds a drawing area. onPaint draws the whole area (clipped to the damaged part) and
 // must not keep g; it may be nil. Call Redraw after the model changes.
-func (p *Panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
+func (p *panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
 	c := swt.NewCanvasParentStyle(p.c, resolve(swt.DOUBLE_BUFFERED, opts))
 	applyOpts(&c.Control, opts)
 	if onPaint != nil {

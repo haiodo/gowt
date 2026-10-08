@@ -63,14 +63,28 @@ func (i *Image) Unwrap() *swt.Image { return i.i }
 // Colors are set per call and need no disposal.
 type GC struct{ g *swt.GC }
 
-func (g *GC) SetColor(c RGB)     { g.g.SetForeground(c.color()) }
-func (g *GC) SetFill(c RGB)      { g.g.SetBackground(c.color()) }
+// SetColor sets the color of lines and text.
+func (g *GC) SetColor(c RGB) { g.g.SetForeground(c.color()) }
+
+// SetFill sets the color of filled shapes and the text background.
+func (g *GC) SetFill(c RGB) { g.g.SetBackground(c.color()) }
+
+// SetLineWidth sets the outline width in pixels.
 func (g *GC) SetLineWidth(w int) { g.g.SetLineWidth(int32(w)) }
 
+// Line draws a line from (x1, y1) to (x2, y2).
 func (g *GC) Line(x1, y1, x2, y2 int) { g.g.DrawLine(int32(x1), int32(y1), int32(x2), int32(y2)) }
-func (g *GC) Rect(x, y, w, h int)     { g.g.DrawRectangle(int32(x), int32(y), int32(w), int32(h)) }
+
+// Rect outlines the rectangle with top left (x, y).
+func (g *GC) Rect(x, y, w, h int) { g.g.DrawRectangle(int32(x), int32(y), int32(w), int32(h)) }
+
+// FillRect fills the rectangle with top left (x, y).
 func (g *GC) FillRect(x, y, w, h int) { g.g.FillRectangle(int32(x), int32(y), int32(w), int32(h)) }
-func (g *GC) Oval(x, y, w, h int)     { g.g.DrawOval(int32(x), int32(y), int32(w), int32(h)) }
+
+// Oval outlines the oval inscribed in the rectangle (x, y, w, h).
+func (g *GC) Oval(x, y, w, h int) { g.g.DrawOval(int32(x), int32(y), int32(w), int32(h)) }
+
+// FillOval fills the oval inscribed in the rectangle (x, y, w, h).
 func (g *GC) FillOval(x, y, w, h int) { g.g.FillOval(int32(x), int32(y), int32(w), int32(h)) }
 
 // Text draws s with its top left at (x, y) over the fill color; tabs and newlines are honored.
@@ -107,8 +121,12 @@ func (p *Panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
 }
 
 func (c *Canvas) control() *swt.Control { return &c.c.Control }
-func (c *Canvas) Redraw()               { c.c.Redraw() }
-func (c *Canvas) Unwrap() *swt.Canvas   { return c.c }
+
+// Redraw schedules a repaint, which calls the paint callback.
+func (c *Canvas) Redraw() { c.c.Redraw() }
+
+// Unwrap returns the underlying swt.Canvas for the full API.
+func (c *Canvas) Unwrap() *swt.Canvas { return c.c }
 
 // Size returns the drawable width and height.
 func (c *Canvas) Size() (w, h int) {

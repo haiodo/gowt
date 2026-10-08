@@ -53,15 +53,25 @@ func (m *Menu) OnShow(f func()) {
 	m.m.AddMenuListener(swt.MenuListenerMenuShownAdapter(func(*swt.MenuEvent) { f() }))
 }
 
+// Unwrap returns the underlying swt.Menu for the full API.
 func (m *Menu) Unwrap() *swt.Menu { return m.m }
 
 // MenuItem is a menu entry.
 type MenuItem struct{ i *swt.MenuItem }
 
-func (i *MenuItem) SetText(s string)      { i.i.SetText(s) }
-func (i *MenuItem) SetEnabled(v bool)     { i.i.SetEnabled(v) }
-func (i *MenuItem) Checked() bool         { return i.i.GetSelection() }
-func (i *MenuItem) SetChecked(v bool)     { i.i.SetSelection(v) }
+// SetText replaces the item text; "&" marks the mnemonic.
+func (i *MenuItem) SetText(s string) { i.i.SetText(s) }
+
+// SetEnabled enables or greys out the item.
+func (i *MenuItem) SetEnabled(v bool) { i.i.SetEnabled(v) }
+
+// Checked reports the state of a check or radio item.
+func (i *MenuItem) Checked() bool { return i.i.GetSelection() }
+
+// SetChecked sets the state of a check or radio item.
+func (i *MenuItem) SetChecked(v bool) { i.i.SetSelection(v) }
+
+// Unwrap returns the underlying swt.MenuItem for the full API.
 func (i *MenuItem) Unwrap() *swt.MenuItem { return i.i }
 
 // OnClick runs f when the item is chosen (or toggled).
@@ -87,9 +97,16 @@ func (a *App) Tray(tooltip string, onClick func()) *TrayIcon {
 	return w
 }
 
-func (t *TrayIcon) SetImage(img *Image)   { t.i.SetImage(img.i) }
-func (t *TrayIcon) SetTooltip(s string)   { t.i.SetToolTipText(s) }
-func (t *TrayIcon) Remove()               { t.i.Dispose() }
+// SetImage sets the icon; the tray does not own img.
+func (t *TrayIcon) SetImage(img *Image) { t.i.SetImage(img.i) }
+
+// SetTooltip sets the text shown on hover.
+func (t *TrayIcon) SetTooltip(s string) { t.i.SetToolTipText(s) }
+
+// Remove deletes the icon from the tray.
+func (t *TrayIcon) Remove() { t.i.Dispose() }
+
+// Unwrap returns the underlying swt.TrayItem for the full API.
 func (t *TrayIcon) Unwrap() *swt.TrayItem { return t.i }
 
 // OnClick runs f when the icon is clicked.

@@ -61,9 +61,11 @@ xcheck:
 	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
 
+# The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).
 # Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).
 api-check:
 	go run ./tooling/apidump -check
+	go run ./tooling/apidump -facade
 
 # Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).

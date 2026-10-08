@@ -94,14 +94,24 @@ func Tooltip(s string) Option {
 	return Option{apply: func(w *swt.Control) { w.SetToolTipText(s) }}
 }
 
-// Check and Radio make a Button a check box or radio button; Multiline, Password, ReadOnly
-// and Border configure a Text.
-func Check() Option     { return Option{style: swt.CHECK} }
-func Radio() Option     { return Option{style: swt.RADIO} }
+// Check makes a Button a check box, and Table and Tree rows and ToolBar items checkable.
+// Radio, Multiline, Password, ReadOnly and Border follow below.
+func Check() Option { return Option{style: swt.CHECK} }
+
+// Radio makes a Button a radio button.
+func Radio() Option { return Option{style: swt.RADIO} }
+
+// Multiline makes a Text multi-line, wrapped, with a vertical scroll bar.
 func Multiline() Option { return Option{style: swt.MULTI | swt.WRAP | swt.V_SCROLL} }
-func Password() Option  { return Option{style: swt.PASSWORD} }
-func ReadOnly() Option  { return Option{style: swt.READ_ONLY} }
-func Border() Option    { return Option{style: swt.BORDER} }
+
+// Password masks the characters typed into a Text.
+func Password() Option { return Option{style: swt.PASSWORD} }
+
+// ReadOnly makes a Text or Combo non-editable.
+func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
+
+// Border draws a frame; Table and Tree have one by default.
+func Border() Option { return Option{style: swt.BORDER} }
 
 func resolve(base int32, opts []Option) int32 {
 	for _, o := range opts {
@@ -215,15 +225,25 @@ func (w *Window) Unwrap() *swt.Shell { return w.shell }
 // Label is a static text.
 type Label struct{ l *swt.Label }
 
-func (l *Label) SetText(s string)   { l.l.SetText(s) }
+// SetText replaces the label text.
+func (l *Label) SetText(s string) { l.l.SetText(s) }
+
+// Unwrap returns the underlying swt.Label for the full API.
 func (l *Label) Unwrap() *swt.Label { return l.l }
 
 // Button is a push, check or radio button.
 type Button struct{ b *swt.Button }
 
-func (b *Button) SetText(s string)    { b.b.SetText(s) }
-func (b *Button) Checked() bool       { return b.b.GetSelection() }
-func (b *Button) SetChecked(v bool)   { b.b.SetSelection(v) }
+// SetText replaces the button text.
+func (b *Button) SetText(s string) { b.b.SetText(s) }
+
+// Checked reports the state of a Check or Radio button.
+func (b *Button) Checked() bool { return b.b.GetSelection() }
+
+// SetChecked sets the state of a Check or Radio button.
+func (b *Button) SetChecked(v bool) { b.b.SetSelection(v) }
+
+// Unwrap returns the underlying swt.Button for the full API.
 func (b *Button) Unwrap() *swt.Button { return b.b }
 
 // OnClick runs f when the button is pressed (or toggled).
@@ -234,9 +254,16 @@ func (b *Button) OnClick(f func()) {
 // Text is an edit field.
 type Text struct{ t *swt.Text }
 
-func (t *Text) Text() string      { return t.t.GetText() }
-func (t *Text) SetText(s string)  { t.t.SetText(s) }
-func (t *Text) SetHint(s string)  { t.t.SetMessage(s) }
+// Text returns the current content.
+func (t *Text) Text() string { return t.t.GetText() }
+
+// SetText replaces the content.
+func (t *Text) SetText(s string) { t.t.SetText(s) }
+
+// SetHint sets the placeholder shown while the field is empty.
+func (t *Text) SetHint(s string) { t.t.SetMessage(s) }
+
+// Unwrap returns the underlying swt.Text for the full API.
 func (t *Text) Unwrap() *swt.Text { return t.t }
 
 // OnChange runs f with the new content after every edit.

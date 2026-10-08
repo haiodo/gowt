@@ -36,9 +36,15 @@ func (p *Panel) Scale(min, max, value int, opts ...Option) *Scale {
 }
 
 func (s *Scale) control() *swt.Control { return &s.s.Control }
-func (s *Scale) Value() int            { return int(s.s.GetSelection()) }
-func (s *Scale) SetValue(v int)        { s.s.SetSelection(int32(v)) }
-func (s *Scale) Unwrap() *swt.Scale    { return s.s }
+
+// Value returns the position within [min, max].
+func (s *Scale) Value() int { return int(s.s.GetSelection()) }
+
+// SetValue moves the scale to v.
+func (s *Scale) SetValue(v int) { s.s.SetSelection(int32(v)) }
+
+// Unwrap returns the underlying swt.Scale for the full API.
+func (s *Scale) Unwrap() *swt.Scale { return s.s }
 
 // OnChange runs f with the new value.
 func (s *Scale) OnChange(f func(value int)) {
@@ -58,9 +64,15 @@ func (p *Panel) Slider(min, max, value int, opts ...Option) *Slider {
 }
 
 func (s *Slider) control() *swt.Control { return &s.s.Control }
-func (s *Slider) Value() int            { return int(s.s.GetSelection()) }
-func (s *Slider) SetValue(v int)        { s.s.SetSelection(int32(v)) }
-func (s *Slider) Unwrap() *swt.Slider   { return s.s }
+
+// Value returns the position within [min, max].
+func (s *Slider) Value() int { return int(s.s.GetSelection()) }
+
+// SetValue moves the slider to v.
+func (s *Slider) SetValue(v int) { s.s.SetSelection(int32(v)) }
+
+// Unwrap returns the underlying swt.Slider for the full API.
+func (s *Slider) Unwrap() *swt.Slider { return s.s }
 
 // OnChange runs f with the new value.
 func (s *Slider) OnChange(f func(value int)) {
@@ -80,9 +92,15 @@ func (p *Panel) Spinner(min, max, value int, opts ...Option) *Spinner {
 }
 
 func (s *Spinner) control() *swt.Control { return &s.s.Control }
-func (s *Spinner) Value() int            { return int(s.s.GetSelection()) }
-func (s *Spinner) SetValue(v int)        { s.s.SetSelection(int32(v)) }
-func (s *Spinner) Unwrap() *swt.Spinner  { return s.s }
+
+// Value returns the number within [min, max].
+func (s *Spinner) Value() int { return int(s.s.GetSelection()) }
+
+// SetValue sets the number to v.
+func (s *Spinner) SetValue(v int) { s.s.SetSelection(int32(v)) }
+
+// Unwrap returns the underlying swt.Spinner for the full API.
+func (s *Spinner) Unwrap() *swt.Spinner { return s.s }
 
 // OnChange runs f with the new value after the arrows or typing changed it.
 func (s *Spinner) OnChange(f func(value int)) {
@@ -100,10 +118,18 @@ func (p *Panel) Progress(max int, opts ...Option) *Progress {
 	return &Progress{b}
 }
 
-func (p *Progress) control() *swt.Control    { return &p.b.Control }
-func (p *Progress) Value() int               { return int(p.b.GetSelection()) }
-func (p *Progress) SetValue(v int)           { p.b.SetSelection(int32(v)) }
-func (p *Progress) SetMax(v int)             { p.b.SetMaximum(int32(v)) }
+func (p *Progress) control() *swt.Control { return &p.b.Control }
+
+// Value returns the progress within [0, max].
+func (p *Progress) Value() int { return int(p.b.GetSelection()) }
+
+// SetValue sets the progress to v, within [0, max].
+func (p *Progress) SetValue(v int) { p.b.SetSelection(int32(v)) }
+
+// SetMax sets the upper bound.
+func (p *Progress) SetMax(v int) { p.b.SetMaximum(int32(v)) }
+
+// Unwrap returns the underlying swt.ProgressBar for the full API.
 func (p *Progress) Unwrap() *swt.ProgressBar { return p.b }
 
 // DateTime is a date field, a time field (AsTime) or a month calendar (AsCalendar).
@@ -136,6 +162,7 @@ func (d *DateTime) SetValue(t time.Time) {
 	d.d.SetDate(int32(t.Year()), int32(t.Month())-1, int32(t.Day()))
 }
 
+// Unwrap returns the underlying swt.DateTime for the full API.
 func (d *DateTime) Unwrap() *swt.DateTime { return d.d }
 
 // OnChange runs f with the new value.
@@ -159,8 +186,12 @@ func (p *Panel) Link(text string, onClick func(href string), opts ...Option) *Li
 }
 
 func (l *Link) control() *swt.Control { return &l.l.Control }
-func (l *Link) SetText(s string)      { l.l.SetText(s) }
-func (l *Link) Unwrap() *swt.Link     { return l.l }
+
+// SetText replaces the text; anchors use <a href="...">.
+func (l *Link) SetText(s string) { l.l.SetText(s) }
+
+// Unwrap returns the underlying swt.Link for the full API.
+func (l *Link) Unwrap() *swt.Link { return l.l }
 
 // OnClick runs f with the clicked anchor's href.
 func (l *Link) OnClick(f func(href string)) {

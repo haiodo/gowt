@@ -4,3 +4,8 @@ source commit af630a9093 (SWT); org.eclipse.jface.* comes from eclipse.platform.
 SPDX-License-Identifier: EPL-2.0
 
 Copyright notices of the original authors are kept in the header of every translated file.
+
+icons/lucide embeds a subset of Lucide icons (https://lucide.dev), ISC License, partly derived from
+Feather (MIT); the full text is in icons/lucide/LICENSE. System icon sets (SF Symbols, Segoe Fluent
+Icons, Segoe MDL2 Assets, freedesktop themes) are read from the operating system at run time and are
+not part of this repository.

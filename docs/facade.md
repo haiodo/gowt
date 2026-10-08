@@ -66,7 +66,7 @@ around factory output, deliberately not exported yet). jface has no viewers in t
 |---|---|
 | (none) | Liquid Glass chrome is on by itself: the Go linker records `sdk 26.2` in `LC_BUILD_VERSION` of every binary. |
 | `ClassicLook()` | Before `Run`: sets `UIDesignRequiresCompatibility` via NSUserDefaults and the main bundle info dictionary. No Info.plist exists for a plain binary, so whether AppKit reads it there is checked only by eye. Reliable alternative: `go build -ldflags=-macsdk=15.0`. |
-| `Window.SetBackdrop` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), both added below the content view; the window turns non-opaque. |
+| `Window.SetBackdrop` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), both added below the content view; the window turns non-opaque. SWT composites fill their background, so the window and panels also get an alpha-0 background plus `SetBackgroundMode(INHERIT_FORCE)`; a Group keeps its backdrop in the NSBox content view. |
 | `Window.SetFullSizeContent(bool)` | Full-size content view mask plus transparent title bar. |
 | `Panel.SetGlass(bool)` | NSGlassEffectView behind a panel (corner radius 12). |
 | `GlassButton()` | Option: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |

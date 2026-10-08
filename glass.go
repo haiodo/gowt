@@ -7,13 +7,15 @@ package gowt
 func ClassicLook() { classicLook() }
 
 // SetFullSizeContent lets the window content extend under the title bar, which becomes
-// transparent. macOS only; elsewhere it does nothing.
+// transparent, so the content starts at the top edge of the window: leave a top margin of about
+// 28 points for the traffic lights. The client area and Pack follow the new mask. macOS only;
+// elsewhere it does nothing.
 func (w *Window) SetFullSizeContent(on bool) { w.setFullSizeContent(on) }
 
-// SetGlass puts a Liquid Glass surface behind the panel's content, with rounded corners. It
-// needs macOS 26; older macOS shows a blurred material, other systems nothing.
+// SetGlass puts a Liquid Glass surface behind the panel's content, with rounded corners; the
+// panel and its children stop painting their own background (works on Group too). It needs macOS 26; older macOS shows a blurred material, other systems nothing.
 func (p *panel) SetGlass(on bool) { p.setGlass(on) }
 
-// GlassButton gives a push button the Liquid Glass bezel on macOS 26 and newer; elsewhere the
+// GlassButton gives a push button (not Check, Radio, Toggle or Arrow) the Liquid Glass bezel on macOS 26 and newer; elsewhere the
 // button is unchanged.
 func GlassButton() Option { return glassButton() }

@@ -7,6 +7,8 @@ gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
+gowt App.SetDarkContent(bool)
+gowt App.SetDarkContent(on bool)
 gowt App.Sync(f func())
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon
 gowt App.Unwrap() *github.com/haiodo/gowt/swt.Display
@@ -365,6 +367,7 @@ gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.SetBackdrop(b Backdrop)
 gowt Window.SetLayout(l Layout) *Panel
+gowt Window.SetRoundedCorners(on bool)
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
 gowt Window.Show()

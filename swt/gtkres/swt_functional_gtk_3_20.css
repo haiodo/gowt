@@ -1,1 +1,19 @@
-/* gowt: no theming override; the stock GTK theme renders the widgets. */
+/* gowt: selection and progress follow the portal accent; @gowt_accent is redefined at runtime, the theme selection color is the fallback. */
+@define-color gowt_accent @theme_selected_bg_color;
+@define-color gowt_accent_fg @theme_selected_fg_color;
+
+selection, *:selected {
+	background-color: @gowt_accent;
+	color: @gowt_accent_fg;
+}
+
+progressbar progress, scale highlight, levelbar block.filled {
+	background-image: none;
+	background-color: @gowt_accent;
+}
+
+button.suggested-action {
+	background-image: none;
+	background-color: @gowt_accent;
+	color: @gowt_accent_fg;
+}

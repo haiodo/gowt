@@ -4,6 +4,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -24,14 +25,7 @@ var (
 	procRtlGetVersion         = syscall.NewLazyDLL("ntdll.dll").NewProc("RtlGetVersion")
 )
 
-func windowsBuild() uint32 {
-	var v [36]uint32 // OSVERSIONINFOW: size, major, minor, build, ...
-	v[0] = 284
-	if r, _, _ := procRtlGetVersion.Call(uintptr(unsafe.Pointer(&v[0]))); r != 0 {
-		return 0
-	}
-	return v[3]
-}
+func windowsBuild() uint32 { return uint32(win32.OsVersionWIN32_BUILD) }
 
 func dwmSet(h int64, attr, value int32) {
 	procDwmSetWindowAttribute.Call(uintptr(h), uintptr(attr), uintptr(unsafe.Pointer(&value)), 4)
@@ -58,10 +52,14 @@ func (w *Window) setBackdrop(b Backdrop) {
 	m := [4]int32{margin, margin, margin, margin}
 	procDwmExtendFrame.Call(uintptr(h), uintptr(unsafe.Pointer(&m)))
 	if margin == 0 {
-		w.shell.SetBackgroundWithColor(nil)
-		w.shell.SetBackgroundMode(swt.INHERIT_NONE)
+		if w.backdropOn {
+			w.backdropOn = false
+			w.shell.SetBackgroundWithColor(nil)
+			w.shell.SetBackgroundMode(swt.INHERIT_NONE)
+		}
 		return
 	}
+	w.backdropOn = true
 	w.shell.SetBackgroundWithColor(RGB{}.color())
 	w.shell.SetBackgroundMode(swt.INHERIT_DEFAULT)
 }

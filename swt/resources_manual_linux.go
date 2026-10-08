@@ -10,7 +10,7 @@ import (
 )
 
 // Device.overrideThemeValues loads /org/eclipse/swt/internal/gtk/*.css by resource name; gtkres/ holds our own
-// stand-ins: swt_functional_gtk_3_20.css carries the accent rules, the others are empty (stock theme).
+// (empty) stand-ins, the stock theme is used.
 //
 //go:embed gtkres/*.css
 var gtkResources embed.FS

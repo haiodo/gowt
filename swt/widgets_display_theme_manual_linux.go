@@ -11,7 +11,7 @@ const portalSettingsTimeoutMsec = 2000
 // FollowSystemTheme is opt-in for plain swt users (gowt.Run calls it). It makes the display track org.freedesktop.appearance color-scheme from
 // xdg-desktop-portal: the value is applied as gtk-application-prefer-dark-theme, DisplayIsSystemDarkTheme
 // reflects it and every change fires SWT.Settings. The portal accent-color goes to the @gowt_accent named color
-// (see gtkres/swt_functional_gtk_3_20.css). Without a portal nothing changes.
+// (selection rules in the runtime CSS, only when the portal gave one). Without a portal nothing changes.
 func (this *Display) FollowSystemTheme() {
 	var gerr []int64 = make([]int64, 1)
 	proxy := gtk.OSG_dbus_proxy_new_for_bus_sync(gtk.OSG_BUS_TYPE_SESSION, gtk.OSG_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES, 0,
@@ -74,8 +74,7 @@ func portalRead(proxy int64, key string) int64 {
 	return 0
 }
 
-// accentProvider holds the one CSS provider that defines @gowt_accent; it outranks the application CSS
-// that only defines the theme fallback.
+// accentProvider holds the one runtime CSS provider with the accent rules; it exists only once a portal accent was read.
 var accentProvider int64
 
 // applyAccent takes the portal accent-color (r, g, b in 0..1; out of range means no accent: the theme's selection color stays).
@@ -89,7 +88,7 @@ func (this *Display) applyAccent(rgb []float64) {
 		if 0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2] > 0.6 {
 			fg = "#000000"
 		}
-		css = fmt.Sprintf("@define-color gowt_accent #%02x%02x%02x;\n@define-color gowt_accent_fg %s;\n",
+		css = fmt.Sprintf("selection, row:selected, treeview.view:selected, iconview:selected { background-color: #%02x%02x%02x; color: %s; }\n",
 			int(rgb[0]*255+0.5), int(rgb[1]*255+0.5), int(rgb[2]*255+0.5), fg)
 	}
 	if accentProvider == 0 {

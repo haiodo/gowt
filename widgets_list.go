@@ -17,7 +17,7 @@ func (p *Panel) Combo(items []string, opts ...Option) *Combo {
 
 func (c *Combo) control() *swt.Control { return &c.c.Control }
 
-// Text returns the edit field content.
+// Text returns the edit field content, also when it matches no item.
 func (c *Combo) Text() string { return c.c.GetText() }
 
 // SetText replaces the edit field content.
@@ -75,10 +75,10 @@ func (l *List) Add(s string) { l.l.Add(s) }
 // Remove deletes entry i.
 func (l *List) Remove(i int) { l.l.Remove(int32(i)) }
 
-// Clear deletes all entries.
+// Clear deletes all entries and with them the selection.
 func (l *List) Clear() { l.l.RemoveAll() }
 
-// Len returns the number of entries.
+// Len counts all entries, selected or not.
 func (l *List) Len() int { return int(l.l.GetItemCount()) }
 
 // Index is the first selected item, -1 if none.
@@ -123,13 +123,13 @@ func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 // ShowLines shows or hides the grid lines.
 func (t *Table) ShowLines(v bool) { t.t.SetLinesVisible(v) }
 
-// Len returns the number of rows.
+// Len counts rows, not columns.
 func (t *Table) Len() int { return int(t.t.GetItemCount()) }
 
 // Remove deletes row i.
 func (t *Table) Remove(i int) { t.t.Remove(int32(i)) }
 
-// Clear deletes all rows.
+// Clear deletes all rows and with them the selection.
 func (t *Table) Clear() { t.t.RemoveAll() }
 
 // Unwrap returns the underlying swt.Table for the full API.
@@ -231,7 +231,7 @@ func (p *Panel) Tree(opts ...Option) *Tree {
 
 func (t *Tree) control() *swt.Control { return &t.t.Control }
 
-// Clear deletes all nodes.
+// Clear deletes all nodes, children included.
 func (t *Tree) Clear() { t.t.RemoveAll() }
 
 // Unwrap returns the underlying swt.Tree for the full API.
@@ -315,7 +315,7 @@ func (n *Node) Node(text string) *Node {
 	return &Node{it}
 }
 
-// Text returns the node text.
+// Text returns the node text (the first column).
 func (n *Node) Text() string { return n.it.GetTextIndex(0) }
 
 // SetText replaces the node text.

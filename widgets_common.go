@@ -34,7 +34,7 @@ func Flat() Option { return Option{style: swt.FLAT} }
 // Wrap lets a ToolBar wrap its items to further rows.
 func Wrap() Option { return Option{style: swt.WRAP} }
 
-// Bottom puts the tabs of Tabs below the pages.
+// Bottom puts the tabs of Tabs or CTabs below the pages.
 func Bottom() Option { return Option{style: swt.BOTTOM} }
 
 // Closable adds a close button to a CTabs tab.

@@ -90,6 +90,7 @@ func dump(dir, goos string) ([]string, error) {
 		return nil, fmt.Errorf("GOOS=%s: %s does not type-check, %d errors, first: %v", goos, dir, len(errs), errs[0])
 	}
 	qual := types.RelativeTo(pkg)
+	detail := dir != "swt"
 	var lines []string
 	for _, name := range pkg.Scope().Names() {
 		obj := pkg.Scope().Lookup(name)
@@ -98,10 +99,27 @@ func dump(dir, goos string) ([]string, error) {
 		}
 		tn, ok := obj.(*types.TypeName)
 		if !ok {
-			lines = append(lines, types.ObjectString(obj, qual))
+			l := types.ObjectString(obj, qual)
+			if c, isConst := obj.(*types.Const); isConst && detail {
+				l += " = " + c.Val().ExactString()
+			}
+			lines = append(lines, l)
 			continue
 		}
 		lines = append(lines, "type "+name)
+		if detail {
+			// Fields and the underlying type are API too; swt keeps the plain "type Name" line its public-api filter knows.
+			if st, isStruct := tn.Type().Underlying().(*types.Struct); isStruct {
+				lines[len(lines)-1] += " struct"
+				for i := 0; i < st.NumFields(); i++ {
+					if f := st.Field(i); f.Exported() {
+						lines = append(lines, name+"."+f.Name()+" field "+types.TypeString(f.Type(), qual))
+					}
+				}
+			} else if !types.IsInterface(tn.Type()) {
+				lines[len(lines)-1] += " " + types.TypeString(tn.Type().Underlying(), qual)
+			}
+		}
 		ms := types.NewMethodSet(types.NewPointer(tn.Type()))
 		if types.IsInterface(tn.Type()) {
 			ms = types.NewMethodSet(tn.Type())

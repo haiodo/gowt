@@ -35,3 +35,14 @@ func TestFacadeDiff(t *testing.T) {
 		t.Errorf("removed = %v, added = %v", removed, added)
 	}
 }
+
+func TestFacadeDiffFieldAndConst(t *testing.T) {
+	removed, _ := facadeDiff([]string{"gowt Grid.Margin field int"}, []string{"gowt Grid.Gap field int"})
+	if len(removed) != 1 {
+		t.Errorf("renamed field not reported: %v", removed)
+	}
+	removed, _ = facadeDiff([]string{"gowt const AlignCenter Align = 1"}, []string{"gowt const AlignCenter Align = 2"})
+	if len(removed) != 1 {
+		t.Errorf("changed const value not reported: %v", removed)
+	}
+}

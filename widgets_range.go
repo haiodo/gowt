@@ -37,7 +37,7 @@ func (p *Panel) Scale(min, max, value int, opts ...Option) *Scale {
 
 func (s *Scale) control() *swt.Control { return &s.s.Control }
 
-// Value returns the current position.
+// Value returns the position within [min, max].
 func (s *Scale) Value() int { return int(s.s.GetSelection()) }
 
 // SetValue moves the scale to v.
@@ -65,7 +65,7 @@ func (p *Panel) Slider(min, max, value int, opts ...Option) *Slider {
 
 func (s *Slider) control() *swt.Control { return &s.s.Control }
 
-// Value returns the current position.
+// Value returns the position within [min, max].
 func (s *Slider) Value() int { return int(s.s.GetSelection()) }
 
 // SetValue moves the slider to v.
@@ -93,7 +93,7 @@ func (p *Panel) Spinner(min, max, value int, opts ...Option) *Spinner {
 
 func (s *Spinner) control() *swt.Control { return &s.s.Control }
 
-// Value returns the current number.
+// Value returns the number within [min, max].
 func (s *Spinner) Value() int { return int(s.s.GetSelection()) }
 
 // SetValue sets the number to v.
@@ -120,7 +120,7 @@ func (p *Panel) Progress(max int, opts ...Option) *Progress {
 
 func (p *Progress) control() *swt.Control { return &p.b.Control }
 
-// Value returns the current progress.
+// Value returns the progress within [0, max].
 func (p *Progress) Value() int { return int(p.b.GetSelection()) }
 
 // SetValue sets the progress to v, within [0, max].

@@ -50,6 +50,7 @@ gowt CoolBar.Group(title string, opts ...Option) *Group
 gowt CoolBar.Label(text string, opts ...Option) *Label
 gowt CoolBar.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt CoolBar.List(items []string, opts ...Option) *List
+gowt CoolBar.Panel field Panel
 gowt CoolBar.Progress(max int, opts ...Option) *Progress
 gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -69,6 +70,27 @@ gowt DateTime.OnChange(f func(t time.Time))
 gowt DateTime.SetValue(t time.Time)
 gowt DateTime.Unwrap() *github.com/haiodo/gowt/swt.DateTime
 gowt DateTime.Value() time.Time
+gowt FileDialog.Dir field string
+gowt FileDialog.Filters field []FileFilter
+gowt FileDialog.Multi field bool
+gowt FileDialog.Name field string
+gowt FileDialog.Save field bool
+gowt FileDialog.Title field string
+gowt FileFilter.Name field string
+gowt FileFilter.Pattern field string
+gowt Fill.Vertical field bool
+gowt Font.Bold field bool
+gowt Font.Italic field bool
+gowt Font.Name field string
+gowt Font.Size field int
+gowt Form.Margin field int
+gowt Form.Spacing field int
+gowt FormCell.Bottom field Edge
+gowt FormCell.Height field int
+gowt FormCell.Left field Edge
+gowt FormCell.Right field Edge
+gowt FormCell.Top field Edge
+gowt FormCell.Width field int
 gowt GC.FillOval(x int, y int, w int, h int)
 gowt GC.FillRect(x int, y int, w int, h int)
 gowt GC.Image(img *Image, x int, y int)
@@ -81,6 +103,18 @@ gowt GC.SetLineWidth(w int)
 gowt GC.Text(s string, x int, y int)
 gowt GC.TextSize(s string) (w int, h int)
 gowt GC.Unwrap() *github.com/haiodo/gowt/swt.GC
+gowt Grid.Columns field int
+gowt Grid.EqualWidth field bool
+gowt Grid.Margin field int
+gowt Grid.Spacing field int
+gowt GridCell.Align field Align
+gowt GridCell.GrowX field bool
+gowt GridCell.GrowY field bool
+gowt GridCell.Height field int
+gowt GridCell.SpanX field int
+gowt GridCell.SpanY field int
+gowt GridCell.VAlign field Align
+gowt GridCell.Width field int
 gowt Group.Button(text string, onClick func(), opts ...Option) *Button
 gowt Group.CTabs(opts ...Option) *CTabs
 gowt Group.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
@@ -91,6 +125,7 @@ gowt Group.Group(title string, opts ...Option) *Group
 gowt Group.Label(text string, opts ...Option) *Label
 gowt Group.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Group.List(items []string, opts ...Option) *List
+gowt Group.Panel field Panel
 gowt Group.Progress(max int, opts ...Option) *Progress
 gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -140,6 +175,10 @@ gowt MenuItem.SetChecked(v bool)
 gowt MenuItem.SetEnabled(v bool)
 gowt MenuItem.SetText(s string)
 gowt MenuItem.Unwrap() *github.com/haiodo/gowt/swt.MenuItem
+gowt Message.Buttons field Buttons
+gowt Message.Icon field Icon
+gowt Message.Text field string
+gowt Message.Title field string
 gowt Node.Checked() bool
 gowt Node.Children() []*Node
 gowt Node.Data() any
@@ -183,6 +222,17 @@ gowt Progress.SetMax(v int)
 gowt Progress.SetValue(v int)
 gowt Progress.Unwrap() *github.com/haiodo/gowt/swt.ProgressBar
 gowt Progress.Value() int
+gowt RGB.B field uint8
+gowt RGB.G field uint8
+gowt RGB.R field uint8
+gowt Row.Center field bool
+gowt Row.Fill field bool
+gowt Row.Margin field int
+gowt Row.Spacing field int
+gowt Row.Vertical field bool
+gowt Row.Wrap field bool
+gowt RowCell.Height field int
+gowt RowCell.Width field int
 gowt Sash.OnMove(f func(x int, y int))
 gowt Sash.Unwrap() *github.com/haiodo/gowt/swt.Sash
 gowt Scale.OnChange(f func(value int))
@@ -210,6 +260,7 @@ gowt Split.Group(title string, opts ...Option) *Group
 gowt Split.Label(text string, opts ...Option) *Label
 gowt Split.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Split.List(items []string, opts ...Option) *List
+gowt Split.Panel field Panel
 gowt Split.Progress(max int, opts ...Option) *Progress
 gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -226,6 +277,7 @@ gowt Split.Text(opts ...Option) *Text
 gowt Split.ToolBar(opts ...Option) *ToolBar
 gowt Split.Tree(opts ...Option) *Tree
 gowt Split.Unwrap() *github.com/haiodo/gowt/swt.SashForm
+gowt Stack.Margin field int
 gowt Table.Clear()
 gowt Table.Column(title string, width int, opts ...Option) *Column
 gowt Table.Index() int
@@ -303,6 +355,7 @@ gowt Window.List(items []string, opts ...Option) *List
 gowt Window.MenuBar() *Menu
 gowt Window.MessageBox(m Message) Answer
 gowt Window.OnClose(f func() bool)
+gowt Window.Panel field Panel
 gowt Window.Progress(max int, opts ...Option) *Progress
 gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
@@ -320,28 +373,28 @@ gowt Window.Text(opts ...Option) *Text
 gowt Window.ToolBar(opts ...Option) *ToolBar
 gowt Window.Tree(opts ...Option) *Tree
 gowt Window.Unwrap() *github.com/haiodo/gowt/swt.Shell
-gowt const AlignCenter Align
-gowt const AlignEnd Align
-gowt const AlignFill Align
-gowt const AlignStart Align
-gowt const AnswerAbort Answer
-gowt const AnswerCancel Answer
-gowt const AnswerIgnore Answer
-gowt const AnswerNo Answer
-gowt const AnswerOK Answer
-gowt const AnswerRetry Answer
-gowt const AnswerYes Answer
-gowt const ButtonsAbortRetryIgnore Buttons
-gowt const ButtonsOK Buttons
-gowt const ButtonsOKCancel Buttons
-gowt const ButtonsRetryCancel Buttons
-gowt const ButtonsYesNo Buttons
-gowt const ButtonsYesNoCancel Buttons
-gowt const IconError Icon
-gowt const IconInfo Icon
-gowt const IconNone Icon
-gowt const IconQuestion Icon
-gowt const IconWarning Icon
+gowt const AlignCenter Align = 1
+gowt const AlignEnd Align = 2
+gowt const AlignFill Align = 3
+gowt const AlignStart Align = 0
+gowt const AnswerAbort Answer = 5
+gowt const AnswerCancel Answer = 1
+gowt const AnswerIgnore Answer = 6
+gowt const AnswerNo Answer = 3
+gowt const AnswerOK Answer = 0
+gowt const AnswerRetry Answer = 4
+gowt const AnswerYes Answer = 2
+gowt const ButtonsAbortRetryIgnore Buttons = 5
+gowt const ButtonsOK Buttons = 0
+gowt const ButtonsOKCancel Buttons = 1
+gowt const ButtonsRetryCancel Buttons = 4
+gowt const ButtonsYesNo Buttons = 2
+gowt const ButtonsYesNoCancel Buttons = 3
+gowt const IconError Icon = 3
+gowt const IconInfo Icon = 1
+gowt const IconNone Icon = 0
+gowt const IconQuestion Icon = 4
+gowt const IconWarning Icon = 2
 gowt func Anchor(c FormCell) Option
 gowt func AsCalendar() Option
 gowt func AsTime() Option
@@ -372,60 +425,60 @@ gowt func Smooth() Option
 gowt func Tooltip(s string) Option
 gowt func Vertical() Option
 gowt func Wrap() Option
-gowt type Align
-gowt type Answer
-gowt type App
-gowt type Button
-gowt type Buttons
-gowt type CTabs
-gowt type Canvas
-gowt type Column
-gowt type Combo
-gowt type CoolBar
-gowt type DateTime
-gowt type Edge
-gowt type FileDialog
-gowt type FileFilter
-gowt type Fill
-gowt type Font
-gowt type Form
-gowt type FormCell
-gowt type GC
-gowt type Grid
-gowt type GridCell
-gowt type Group
-gowt type Icon
-gowt type Image
-gowt type Label
+gowt type Align int32
+gowt type Answer int
+gowt type App struct
+gowt type Button struct
+gowt type Buttons int
+gowt type CTabs struct
+gowt type Canvas struct
+gowt type Column struct
+gowt type Combo struct
+gowt type CoolBar struct
+gowt type DateTime struct
+gowt type Edge struct
+gowt type FileDialog struct
+gowt type FileFilter struct
+gowt type Fill struct
+gowt type Font struct
+gowt type Form struct
+gowt type FormCell struct
+gowt type GC struct
+gowt type Grid struct
+gowt type GridCell struct
+gowt type Group struct
+gowt type Icon int
+gowt type Image struct
+gowt type Label struct
 gowt type Layout
-gowt type Link
-gowt type List
-gowt type Menu
-gowt type MenuItem
-gowt type Message
-gowt type Node
-gowt type Option
-gowt type Panel
-gowt type Progress
-gowt type RGB
-gowt type Row
-gowt type RowCell
-gowt type Sash
-gowt type Scale
-gowt type Scroll
-gowt type Slider
-gowt type Spinner
-gowt type Split
-gowt type Stack
-gowt type Table
-gowt type TableRow
-gowt type Tabs
-gowt type Text
-gowt type ToolBar
-gowt type ToolItem
-gowt type TrayIcon
-gowt type Tree
+gowt type Link struct
+gowt type List struct
+gowt type Menu struct
+gowt type MenuItem struct
+gowt type Message struct
+gowt type Node struct
+gowt type Option struct
+gowt type Panel struct
+gowt type Progress struct
+gowt type RGB struct
+gowt type Row struct
+gowt type RowCell struct
+gowt type Sash struct
+gowt type Scale struct
+gowt type Scroll struct
+gowt type Slider struct
+gowt type Spinner struct
+gowt type Split struct
+gowt type Stack struct
+gowt type Table struct
+gowt type TableRow struct
+gowt type Tabs struct
+gowt type Text struct
+gowt type ToolBar struct
+gowt type ToolItem struct
+gowt type TrayIcon struct
+gowt type Tree struct
 gowt type Widget
-gowt type Window
+gowt type Window struct
 gowt/svg func NewImageDataProvider(svg []byte, width int32, height int32, color string) github.com/haiodo/gowt/swt.ImageDataProvider
 gowt/svg func Recolor(svg []byte, color string) []byte

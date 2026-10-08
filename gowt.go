@@ -94,8 +94,8 @@ func Tooltip(s string) Option {
 	return Option{apply: func(w *swt.Control) { w.SetToolTipText(s) }}
 }
 
-// Check and Radio make a Button a check box or radio button; Multiline, Password, ReadOnly
-// and Border configure a Text.
+// Check makes a Button a check box, and Table and Tree rows and ToolBar items checkable.
+// Radio, Multiline, Password, ReadOnly and Border follow below.
 func Check() Option { return Option{style: swt.CHECK} }
 
 // Radio makes a Button a radio button.
@@ -110,7 +110,7 @@ func Password() Option { return Option{style: swt.PASSWORD} }
 // ReadOnly makes a Text or Combo non-editable.
 func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
 
-// Border draws a frame around the widget.
+// Border draws a frame; Table and Tree have one by default.
 func Border() Option { return Option{style: swt.BORDER} }
 
 func resolve(base int32, opts []Option) int32 {

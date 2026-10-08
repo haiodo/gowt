@@ -34,7 +34,7 @@ func build(app *g.App) {
 		tree.Node(p)
 	}
 
-	right := w.Panel.Panel(both)
+	right := w.Panel(both)
 	right.SetLayout(g.Grid{Columns: 1, Margin: 5, Spacing: 5})
 	button := right.Button("Eval in page", nil)
 	label := right.Label("Messages from the page appear here", g.Wrap(), g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true}))
@@ -44,6 +44,7 @@ func build(app *g.App) {
 	wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 	if err != nil {
 		fmt.Println(err)
+		app.Quit()
 		return
 	}
 	wv.HandleScheme("app", func(r webview.Request) *webview.Response {

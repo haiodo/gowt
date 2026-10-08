@@ -181,7 +181,7 @@ func (p *Panel) Text(opts ...Option) *Text {
 
 // Window is a top-level window.
 type Window struct {
-	Panel
+	panel
 	shell *swt.Shell
 	sized bool
 }
@@ -190,7 +190,7 @@ type Window struct {
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, resolve(swt.SHELL_TRIM, opts))
 	s.SetText(title)
-	return &Window{Panel: Panel{c: &s.Composite}, shell: s}
+	return &Window{panel: Panel{c: &s.Composite}, shell: s}
 }
 
 // Show packs the window to its content size (unless SetSize was called) and opens it.

@@ -37,14 +37,14 @@ func build(app *g.App) {
 	w.SetLayout(g.Fill{})
 	split := w.Split()
 
-	left := split.Panel.Panel()
+	left := split.Panel()
 	left.SetLayout(g.Grid{Columns: 3, Margin: 5, Spacing: 5})
 	addr := left.Text(g.Border(), fillX)
 	plus := left.Button("+", nil)
 	minus := left.Button("-", nil)
 	list := left.List(nil, g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, SpanX: 3}))
 
-	right := split.Panel.Panel()
+	right := split.Panel()
 	right.SetLayout(g.Grid{Columns: 4, Margin: 5, Spacing: 5})
 	back := right.Button("<", nil)
 	forward := right.Button(">", nil)

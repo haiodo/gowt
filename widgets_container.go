@@ -4,7 +4,7 @@ import "github.com/haiodo/gowt/swt"
 
 // Group is a container with a titled frame.
 type Group struct {
-	Panel
+	panel
 	g *swt.Group
 }
 
@@ -105,7 +105,7 @@ func (t *CTabs) OnClose(f func(index int) bool) {
 
 // Split divides its children with draggable sashes; the children are ordinary Panel children.
 type Split struct {
-	Panel
+	panel
 	s *swt.SashForm
 }
 
@@ -234,7 +234,7 @@ func (i *ToolItem) OnClick(f func()) {
 
 // CoolBar is a tool bar area whose bands the user can rearrange.
 type CoolBar struct {
-	Panel
+	panel
 	b *swt.CoolBar
 }
 

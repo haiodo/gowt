@@ -14,9 +14,9 @@ func main() {
 		w.SetLayout(g.Fill{})
 		split := w.Split()
 
-		left := split.Panel.Panel()
+		left := split.Panel()
 		left.SetLayout(g.Fill{})
-		right := split.Panel.Panel()
+		right := split.Panel()
 		right.SetLayout(g.Stack{})
 
 		var groups []*g.Group

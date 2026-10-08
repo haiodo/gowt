@@ -58,6 +58,7 @@ gowt CoolBar.Progress(max int, opts ...Option) *Progress
 gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt CoolBar.Scroll(opts ...Option) *Scroll
+gowt CoolBar.SetGlass(on bool)
 gowt CoolBar.SetLayout(l Layout) *Panel
 gowt CoolBar.ShowTop(w Widget)
 gowt CoolBar.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -133,6 +134,7 @@ gowt Group.Progress(max int, opts ...Option) *Progress
 gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Group.Scroll(opts ...Option) *Scroll
+gowt Group.SetGlass(on bool)
 gowt Group.SetLayout(l Layout) *Panel
 gowt Group.SetTitle(s string)
 gowt Group.ShowTop(w Widget)
@@ -211,6 +213,7 @@ gowt Panel.Progress(max int, opts ...Option) *Progress
 gowt Panel.Sash(opts ...Option) *Sash
 gowt Panel.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Panel.Scroll(opts ...Option) *Scroll
+gowt Panel.SetGlass(on bool)
 gowt Panel.SetLayout(l Layout) *Panel
 gowt Panel.ShowTop(w Widget)
 gowt Panel.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -269,6 +272,7 @@ gowt Split.Progress(max int, opts ...Option) *Progress
 gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Split.Scroll(opts ...Option) *Scroll
+gowt Split.SetGlass(on bool)
 gowt Split.SetLayout(l Layout) *Panel
 gowt Split.SetWeights(w ...int)
 gowt Split.ShowTop(w Widget)
@@ -366,6 +370,8 @@ gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.SetBackdrop(b Backdrop)
+gowt Window.SetFullSizeContent(on bool)
+gowt Window.SetGlass(on bool)
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetRoundedCorners(on bool)
 gowt Window.SetSize(width int, height int)
@@ -416,10 +422,12 @@ gowt func Bottom() Option
 gowt func Cell(c GridCell) Option
 gowt func Center() Option
 gowt func Check() Option
+gowt func ClassicLook()
 gowt func Closable() Option
 gowt func Disabled() Option
 gowt func DropDown() Option
 gowt func Flat() Option
+gowt func GlassButton() Option
 gowt func IconColor(c RGB) IconOption
 gowt func IconNames() []string
 gowt func IconSize(points int) IconOption

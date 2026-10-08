@@ -60,6 +60,22 @@ widget; gowt has no constructor that wraps an existing `*swt.X` (it would let wr
 around factory output, deliberately not exported yet). jface has no viewers in this repo, so there is nothing to plug
 `Table`/`Tree` into.
 
+## Modern look, macOS 26 (TSK-11, 12, 17)
+
+| API | Behavior |
+|---|---|
+| (none) | Liquid Glass chrome is on by itself: the Go linker records `sdk 26.2` in `LC_BUILD_VERSION` of every binary. |
+| `ClassicLook()` | Before `Run`: sets `UIDesignRequiresCompatibility` via NSUserDefaults and the main bundle info dictionary. No Info.plist exists for a plain binary, so whether AppKit reads it there is checked only by eye. Reliable alternative: `go build -ldflags=-macsdk=15.0`. |
+| `Window.SetBackdrop` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), the window one sits in the window frame view below the content view, a panel one in the panel parent right below the panel (frame kept in step by a resize listener); SWT puts every new child at the bottom of its parent, so a child backdrop would end up above the widgets. The window turns non-opaque. SWT composites fill their background, so the window and panels also get an alpha-0 background plus `SetBackgroundMode(INHERIT_FORCE)`; |
+| `Window.SetFullSizeContent(bool)` | Full-size content view mask plus transparent title bar. |
+| `Panel.SetGlass(bool)` | NSGlassEffectView behind a panel (corner radius 12). |
+| `GlassButton()` | Option: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |
+
+Every class and selector newer than macOS 13 is looked up at run time; other systems get no-ops.
+Not wrapped: NSGlassEffectContainerView (glass views of different panels would have to be
+descendants of one container, which SWT's view tree does not allow), NSBackgroundExtensionView
+(it must own the content view) and `toolbarStyle = .unified` (SWT's ToolBar is a plain view, not an NSToolbar).
+
 ## Not wrapped
 
 - The SWT event/listener type hierarchy, `Display` as a public type (`App.Unwrap()` exists), `Runnable`, `Internal_*`.

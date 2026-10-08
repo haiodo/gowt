@@ -4,16 +4,16 @@ import "github.com/haiodo/gowt/swt"
 
 // Group is a container with a titled frame.
 type Group struct {
-	panel
+	*panel
 	g *swt.Group
 }
 
 // Group adds a titled container.
-func (p *Panel) Group(title string, opts ...Option) *Group {
+func (p *panel) Group(title string, opts ...Option) *Group {
 	g := swt.NewGroup(p.c, resolve(swt.NONE, opts))
 	g.SetText(title)
 	applyOpts(&g.Control, opts)
-	return &Group{Panel{c: &g.Composite}, g}
+	return &Group{&panel{c: &g.Composite}, g}
 }
 
 // SetTitle replaces the frame title.
@@ -26,7 +26,7 @@ func (g *Group) Unwrap() *swt.Group { return g.g }
 type Tabs struct{ f *swt.TabFolder }
 
 // Tabs adds a tab folder; Bottom() moves the tabs below the pages.
-func (p *Panel) Tabs(opts ...Option) *Tabs {
+func (p *panel) Tabs(opts ...Option) *Tabs {
 	f := swt.NewTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
 	return &Tabs{f}
@@ -38,7 +38,7 @@ func (t *Tabs) Tab(title string, opts ...Option) *Panel {
 	it.SetText(title)
 	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
 	it.SetControl(page)
-	return &Panel{c: page}
+	return &Panel{&panel{c: page}}
 }
 
 func (t *Tabs) control() *swt.Control { return &t.f.Control }
@@ -61,7 +61,7 @@ func (t *Tabs) OnSelect(f func(index int)) {
 type CTabs struct{ f *swt.CTabFolder }
 
 // CTabs adds a custom tab folder; Border() draws a frame.
-func (p *Panel) CTabs(opts ...Option) *CTabs {
+func (p *panel) CTabs(opts ...Option) *CTabs {
 	f := swt.NewCTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
 	return &CTabs{f}
@@ -73,7 +73,7 @@ func (t *CTabs) Tab(title string, opts ...Option) *Panel {
 	it.SetText(title)
 	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
 	it.SetControl(page)
-	return &Panel{c: page}
+	return &Panel{&panel{c: page}}
 }
 
 func (t *CTabs) control() *swt.Control { return &t.f.Control }
@@ -105,15 +105,15 @@ func (t *CTabs) OnClose(f func(index int) bool) {
 
 // Split divides its children with draggable sashes; the children are ordinary Panel children.
 type Split struct {
-	panel
+	*panel
 	s *swt.SashForm
 }
 
 // Split adds a sash form: children side by side, or stacked with Vertical().
-func (p *Panel) Split(opts ...Option) *Split {
+func (p *panel) Split(opts ...Option) *Split {
 	s := swt.NewSashForm(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
-	return &Split{Panel{c: &s.Composite}, s}
+	return &Split{&panel{c: &s.Composite}, s}
 }
 
 // SetWeights sets the relative size of each child, one weight per child.
@@ -129,14 +129,14 @@ type Scroll struct {
 }
 
 // Scroll adds a scrolled area; Border() draws a frame.
-func (p *Panel) Scroll(opts ...Option) *Scroll {
+func (p *panel) Scroll(opts ...Option) *Scroll {
 	s := swt.NewScrolledComposite(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL, opts))
 	applyOpts(&s.Control, opts)
 	body := swt.NewCompositeParentStyle(s, swt.NONE)
 	s.SetContent(body)
 	s.SetExpandHorizontal(true)
 	s.SetExpandVertical(true)
-	return &Scroll{s, &Panel{c: body}}
+	return &Scroll{s, &Panel{&panel{c: body}}}
 }
 
 // Content is the container that scrolls.
@@ -158,7 +158,7 @@ func (s *Scroll) Unwrap() *swt.ScrolledComposite { return s.s }
 type Sash struct{ s *swt.Sash }
 
 // Sash adds a sash; Vertical() makes a vertical bar that moves left and right.
-func (p *Panel) Sash(opts ...Option) *Sash {
+func (p *panel) Sash(opts ...Option) *Sash {
 	s := swt.NewSash(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
 	return &Sash{s}
@@ -178,7 +178,7 @@ func (s *Sash) Unwrap() *swt.Sash { return s.s }
 type ToolBar struct{ t *swt.ToolBar }
 
 // ToolBar adds a tool bar; Flat() and Wrap() change its look.
-func (p *Panel) ToolBar(opts ...Option) *ToolBar {
+func (p *panel) ToolBar(opts ...Option) *ToolBar {
 	t := swt.NewToolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
 	return &ToolBar{t}
@@ -234,15 +234,15 @@ func (i *ToolItem) OnClick(f func()) {
 
 // CoolBar is a tool bar area whose bands the user can rearrange.
 type CoolBar struct {
-	panel
+	*panel
 	b *swt.CoolBar
 }
 
 // CoolBar adds a cool bar; create the band contents as its children, then Add them.
-func (p *Panel) CoolBar(opts ...Option) *CoolBar {
+func (p *panel) CoolBar(opts ...Option) *CoolBar {
 	b := swt.NewCoolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&b.Control, opts)
-	return &CoolBar{Panel{c: &b.Composite}, b}
+	return &CoolBar{&panel{c: &b.Composite}, b}
 }
 
 // Add makes w (a child of the cool bar) a draggable band of its natural size.

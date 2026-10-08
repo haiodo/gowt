@@ -188,7 +188,7 @@ func (s Stack) layout() swt.LayoutLike {
 }
 
 // ShowTop makes w, a child of p, the visible one. p must have a Stack layout.
-func (p *Panel) ShowTop(w Widget) {
+func (p *panel) ShowTop(w Widget) {
 	if p.stack == nil {
 		panic("gowt: ShowTop on a Panel without a Stack layout")
 	}

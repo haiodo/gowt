@@ -5,7 +5,7 @@ import "github.com/haiodo/gowt/swt"
 // Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a child.
 type Widget interface{ control() *swt.Control }
 
-func (p *Panel) control() *swt.Control  { return &p.c.Control }
+func (p *panel) control() *swt.Control  { return &p.c.Control }
 func (l *Label) control() *swt.Control  { return &l.l.Control }
 func (b *Button) control() *swt.Control { return &b.b.Control }
 func (t *Text) control() *swt.Control   { return &t.t.Control }

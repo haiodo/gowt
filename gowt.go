@@ -128,32 +128,36 @@ func applyOpts(c *swt.Control, opts []Option) {
 	}
 }
 
-// Panel is a plain container; Window embeds it.
-type Panel struct {
+// Panel is a plain container; Window, Group, Split and CoolBar embed its methods.
+type Panel struct{ *panel }
+
+// panel holds the container methods. They are declared on an unexported type so that godoc lists
+// them for every embedding type while no exported field named Panel hides the Panel method.
+type panel struct {
 	c     *swt.Composite
 	stack *swt.StackLayout
 }
 
 // Unwrap returns the underlying composite.
-func (p *Panel) Unwrap() *swt.Composite { return p.c }
+func (p *panel) Unwrap() *swt.Composite { return p.c }
 
 // SetLayout installs l and returns p.
-func (p *Panel) SetLayout(l Layout) *Panel {
+func (p *panel) SetLayout(l Layout) *Panel {
 	sl := l.layout()
 	p.stack, _ = sl.(*swt.StackLayout)
 	p.c.SetLayout(sl)
-	return p
+	return &Panel{p}
 }
 
 // Panel adds a nested container.
-func (p *Panel) Panel(opts ...Option) *Panel {
+func (p *panel) Panel(opts ...Option) *Panel {
 	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
 	applyOpts(&c.Control, opts)
-	return &Panel{c: c}
+	return &Panel{&panel{c: c}}
 }
 
 // Label adds a static text.
-func (p *Panel) Label(text string, opts ...Option) *Label {
+func (p *panel) Label(text string, opts ...Option) *Label {
 	l := swt.NewLabel(p.c, resolve(swt.NONE, opts))
 	l.SetText(text)
 	applyOpts(&l.Control, opts)
@@ -161,7 +165,7 @@ func (p *Panel) Label(text string, opts ...Option) *Label {
 }
 
 // Button adds a push button (Check or Radio for other kinds). onClick may be nil.
-func (p *Panel) Button(text string, onClick func(), opts ...Option) *Button {
+func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
 	b := swt.NewButton(p.c, resolve(swt.NONE, opts))
 	b.SetText(text)
 	applyOpts(&b.Control, opts)
@@ -173,7 +177,7 @@ func (p *Panel) Button(text string, onClick func(), opts ...Option) *Button {
 }
 
 // Text adds an edit field.
-func (p *Panel) Text(opts ...Option) *Text {
+func (p *panel) Text(opts ...Option) *Text {
 	t := swt.NewText(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
 	return &Text{t}
@@ -181,7 +185,7 @@ func (p *Panel) Text(opts ...Option) *Text {
 
 // Window is a top-level window.
 type Window struct {
-	panel
+	*panel
 	shell *swt.Shell
 	sized bool
 }
@@ -190,7 +194,7 @@ type Window struct {
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, resolve(swt.SHELL_TRIM, opts))
 	s.SetText(title)
-	return &Window{panel: Panel{c: &s.Composite}, shell: s}
+	return &Window{panel: &panel{c: &s.Composite}, shell: s}
 }
 
 // Show packs the window to its content size (unless SetSize was called) and opens it.

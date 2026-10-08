@@ -16,7 +16,3 @@ func (w *Window) SetTitle(s string) { w.shell.SetText(s) }
 
 // SetItem replaces the text of item i, keeping the selection.
 func (l *List) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
-
-// panel is the name under which Window, Group, Split and CoolBar embed Panel. An exported
-// embedded field called Panel would hide the Panel constructor method.
-type panel = Panel

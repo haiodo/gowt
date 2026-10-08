@@ -189,6 +189,8 @@ type Window struct {
 	*panel
 	shell *swt.Shell
 	sized bool
+
+	backdropOn bool // Windows: the shell background was set for the material
 }
 
 // Window creates a hidden window; call Show once its content is built.

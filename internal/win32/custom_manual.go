@@ -35,12 +35,45 @@ func custom_GetLibraryHandle() int64 {
 	return int64(h)
 }
 
-// Dark mode needs undocumented uxtheme ordinals: reported unavailable.
-func custom_IsDarkModeAvailable() bool { return false }
+// Dark mode uses undocumented uxtheme ordinals (133 AllowDarkModeForWindow, 135 SetPreferredAppMode, 1903+ only);
+// a missing export reports it unavailable.
+var (
+	uxthemeOrdinals    = syscall.NewLazyDLL("uxtheme.dll")
+	procGetProcAddress = kernel32.NewProc("GetProcAddress")
+	darkModeProcs      struct{ allow, setMode uintptr }
+)
 
-func custom_AllowDarkModeForWindow(hWnd int64, allow bool) bool { return false }
+func uxthemeOrdinal(n uintptr) uintptr {
+	if uxthemeOrdinals.Load() != nil {
+		return 0
+	}
+	r, _, _ := procGetProcAddress.Call(uxthemeOrdinals.Handle(), n)
+	return r
+}
 
-func custom_SetPreferredAppMode(mode int32) int32 { return 0 }
+func custom_IsDarkModeAvailable() bool {
+	if darkModeProcs.setMode == 0 && OsVersionWIN32_BUILD >= 18362 {
+		darkModeProcs.allow = uxthemeOrdinal(133)
+		darkModeProcs.setMode = uxthemeOrdinal(135)
+	}
+	return darkModeProcs.allow != 0 && darkModeProcs.setMode != 0
+}
+
+func custom_AllowDarkModeForWindow(hWnd int64, allow bool) bool {
+	if !custom_IsDarkModeAvailable() {
+		return false
+	}
+	r, _, _ := syscall.SyscallN(darkModeProcs.allow, uintptr(hWnd), boolToUintptr(allow))
+	return r&0xff != 0
+}
+
+func custom_SetPreferredAppMode(mode int32) int32 {
+	if !custom_IsDarkModeAvailable() {
+		return 0
+	}
+	r, _, _ := syscall.SyscallN(darkModeProcs.setMode, uintptr(mode))
+	return int32(r)
+}
 
 func OsVersionCheckCompatibleWindowsVersion() {}
 

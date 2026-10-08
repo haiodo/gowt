@@ -7,6 +7,8 @@ gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
+gowt App.SetDarkContent(bool)
+gowt App.SetDarkContent(on bool)
 gowt App.Sync(f func())
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon
 gowt App.Unwrap() *github.com/haiodo/gowt/swt.Display
@@ -363,7 +365,9 @@ gowt Window.Progress(max int, opts ...Option) *Progress
 gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
+gowt Window.SetBackdrop(b Backdrop)
 gowt Window.SetLayout(l Layout) *Panel
+gowt Window.SetRoundedCorners(on bool)
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
 gowt Window.Show()
@@ -388,6 +392,9 @@ gowt const AnswerNo Answer = 3
 gowt const AnswerOK Answer = 0
 gowt const AnswerRetry Answer = 4
 gowt const AnswerYes Answer = 2
+gowt const BackdropGlass Backdrop = 2
+gowt const BackdropNone Backdrop = 0
+gowt const BackdropTranslucent Backdrop = 1
 gowt const ButtonsAbortRetryIgnore Buttons = 5
 gowt const ButtonsOK Buttons = 0
 gowt const ButtonsOKCancel Buttons = 1
@@ -437,6 +444,7 @@ gowt func Wrap() Option
 gowt type Align int32
 gowt type Answer int
 gowt type App struct
+gowt type Backdrop int
 gowt type Button struct
 gowt type Buttons int
 gowt type CTabs struct

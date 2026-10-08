@@ -41,6 +41,10 @@ func OSG_OBJECT_CLASS_SET_CONSTRUCTOR(klass, fn int64) {
 	poke64(klass+int64(gObjectClassConstructor), fn)
 }
 
+var gVariantGetDouble = lz[func(uintptr) float64]{sym: "g_variant_get_double"}
+
+func OSG_variant_get_double(v int64) float64 { return gVariantGetDouble.get()(uintptr(v)) }
+
 // GVariantType pointers are the type string itself; the strings live for the process.
 func variantType(s string) int64 {
 	p := OSG_malloc(int64(len(s) + 1))

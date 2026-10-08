@@ -1,10 +1,24 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"sync"
+
+	"github.com/haiodo/gowt/swt"
+)
 
 // Segoe Fluent Icons ships with Windows 11, Segoe MDL2 Assets with Windows 10; the code points
 // in the dictionary exist in both. Neither font is embedded.
 func iconFont(a *App) string {
+	iconFontOnce.Do(func() { iconFontName = findIconFont(a) })
+	return iconFontName
+}
+
+var (
+	iconFontOnce sync.Once
+	iconFontName string
+)
+
+func findIconFont(a *App) string {
 	for _, f := range []string{"Segoe Fluent Icons", "Segoe MDL2 Assets"} {
 		if len(a.display.GetFontList(f, true)) > 0 {
 			return f
@@ -26,6 +40,7 @@ func systemIcon(a *App, e iconEntry, px int, c RGB) *swt.ImageData {
 	font := swt.NewFontDeviceNameHeightStyle(a.display, face, int32(max(1, px*3/4)), swt.NORMAL)
 	defer font.Dispose()
 	gc := swt.NewGCDrawable(img)
+	defer gc.Dispose()
 	gc.SetBackground(a.display.GetSystemColor(swt.COLOR_BLACK))
 	gc.SetForeground(a.display.GetSystemColor(swt.COLOR_WHITE))
 	gc.SetFont(font)
@@ -33,7 +48,6 @@ func systemIcon(a *App, e iconEntry, px int, c RGB) *swt.ImageData {
 	s := string(e.fluent)
 	ext := gc.TextExtent(s)
 	gc.DrawText(s, (int32(px)-ext.X)/2, (int32(px)-ext.Y)/2)
-	gc.Dispose()
 
 	data := img.GetImageData()
 	return swt.NewImageDataFromNRGBA(tintAlpha(px, c, func(x, y int) uint8 {

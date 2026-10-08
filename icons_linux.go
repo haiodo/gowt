@@ -13,6 +13,8 @@ import (
 var (
 	iconChain     []string
 	iconChainOnce sync.Once
+	iconPathsMu   sync.Mutex
+	iconPaths     = map[string]string{}
 	hexColor      = regexp.MustCompile(`#[0-9a-fA-F]{6}\b`)
 )
 
@@ -20,7 +22,13 @@ var (
 // rasterizer; no GTK call is needed. Returns nil when the theme has no such icon.
 func systemIcon(a *App, e iconEntry, px int, c RGB) *swt.ImageData {
 	iconChainOnce.Do(func() { iconChain = themeChain(iconDirs(), gsettingsTheme()) })
-	path := findSymbolic(iconDirs(), iconChain, e.fd)
+	iconPathsMu.Lock()
+	path, ok := iconPaths[e.fd]
+	if !ok {
+		path = findSymbolic(iconDirs(), iconChain, e.fd)
+		iconPaths[e.fd] = path
+	}
+	iconPathsMu.Unlock()
 	if path == "" {
 		return nil
 	}

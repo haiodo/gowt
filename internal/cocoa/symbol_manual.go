@@ -14,7 +14,7 @@ var (
 	// objc_msgSend with float and struct arguments needs a typed signature; msg only passes words.
 	msgSymbolConfig func(self, sel uintptr, pointSize, weight float64, scale int64) uintptr
 	msgSize         func(self, sel uintptr) NSSize
-	msgDrawInRect   func(self, sel uintptr, dst, src NSRect, op uint64, fraction float64)
+	msgDrawInRect   func(self, sel uintptr, dst NSRect)
 )
 
 // SymbolAlpha draws the SF Symbol name into a px x px box (aspect kept, centered) and returns its
@@ -28,7 +28,7 @@ func SymbolAlpha(name string, px int) []uint8 {
 		purego.RegisterFunc(&msgDrawInRect, objcMsgSend)
 	})
 	nsImage := class("NSImage")
-	if msg(nsImage, "respondsToSelector:", sel("imageWithSystemSymbolName:accessibilityDescription:")) == 0 {
+	if msg(nsImage, "respondsToSelector:", sel("imageWithSystemSymbolName:accessibilityDescription:"))&0xff == 0 {
 		return nil
 	}
 	pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
@@ -72,8 +72,13 @@ func SymbolAlpha(name string, px int) []uint8 {
 	msg(gc, "setCurrentContext:", ctx)
 	k := min(float64(px)/size.Width, float64(px)/size.Height)
 	w, h := size.Width*k, size.Height*k
-	msgDrawInRect(img, sel("drawInRect:fromRect:operation:fraction:"),
-		NSRect{(float64(px) - w) / 2, (float64(px) - h) / 2, w, h}, NSRect{}, 2, 1)
+	// Plain drawInRect: keeps the single NSRect argument inside registers; the four-argument form
+	// would push its double onto the stack, which purego's struct passing is not verified for.
+	if msg(img, "respondsToSelector:", sel("drawInRect:"))&0xff == 0 {
+		msg(gc, "restoreGraphicsState")
+		return nil
+	}
+	msgDrawInRect(img, sel("drawInRect:"), NSRect{(float64(px) - w) / 2, (float64(px) - h) / 2, w, h})
 	msg(ctx, "flushGraphics")
 	msg(gc, "restoreGraphicsState")
 

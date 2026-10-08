@@ -89,8 +89,9 @@ func IconColor(c RGB) IconOption { return func(ic *iconConfig) { ic.color = &c }
 // Icon returns the named icon from the system set of the current OS (SF Symbols, Segoe Fluent
 // Icons, freedesktop symbolic icons), or from the embedded Lucide set when the system has none.
 // The result is drawn at every zoom and tinted for the theme at call time: after
-// App.OnThemeChange make a new one (the old image keeps its colour). It panics on an unknown
-// name; IconNames lists the valid ones. Ownership as for LoadImage.
+// App.OnThemeChange call Icon again (the old image keeps its colour). Images are cached per
+// name, size and colour: the App owns them, the caller must not Dispose them. It panics on an
+// unknown name; IconNames lists the valid ones.
 func (a *App) Icon(name string, opts ...IconOption) *Image {
 	e, ok := iconDict[name]
 	if !ok {
@@ -100,6 +101,7 @@ func (a *App) Icon(name string, opts ...IconOption) *Image {
 	for _, o := range opts {
 		o(&cfg)
 	}
+	cfg.size = max(cfg.size, 1)
 	c := RGB{30, 30, 30}
 	if a.Dark() {
 		c = RGB{235, 235, 235}
@@ -107,10 +109,25 @@ func (a *App) Icon(name string, opts ...IconOption) *Image {
 	if cfg.color != nil {
 		c = *cfg.color
 	}
+	key := iconKey{name, cfg.size, c}
+	if img, ok := a.icons[key]; ok {
+		return img
+	}
 	src, _ := lucide.SVG(e.lucide)
 	p := &iconProvider{a: a, e: e, size: cfg.size, c: c,
 		fallback: svg.NewImageDataProvider(src, int32(cfg.size), int32(cfg.size), fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B))}
-	return a.track(swt.NewImageDeviceImageDataProvider(a.display, p))
+	img := a.track(swt.NewImageDeviceImageDataProvider(a.display, p))
+	if a.icons == nil {
+		a.icons = map[iconKey]*Image{}
+	}
+	a.icons[key] = img
+	return img
+}
+
+type iconKey struct {
+	name string
+	size int
+	c    RGB
 }
 
 type iconProvider struct {

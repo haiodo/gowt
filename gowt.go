@@ -21,6 +21,7 @@ type App struct {
 	display *swt.Display
 	quit    atomic.Bool
 	images  []*Image
+	icons   map[iconKey]*Image
 }
 
 // Run creates the display, calls setup on the UI thread, then runs the event loop until the

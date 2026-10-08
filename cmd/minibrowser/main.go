@@ -4,15 +4,12 @@ package main
 
 import (
 	"cmp"
-	"runtime"
+	"log"
 	"strings"
 
-	"github.com/haiodo/gowt/swt"
+	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/webview"
 )
-
-// AppKit must run on the process's main thread.
-func init() { runtime.LockOSThread() }
 
 const startPage = `<!doctype html><meta charset="utf-8"><title>Start</title>
 <body style="font:15px -apple-system,system-ui,sans-serif;margin:24px">
@@ -22,52 +19,44 @@ Pages keep their state while hidden.</p></body>`
 
 type page struct {
 	wv    *webview.WebView
+	host  *g.Panel
 	title string
 }
 
 func main() {
 	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
-	swt.DisplaySetAppName("Mini Browser")
-	display := swt.NewDisplay()
-	shell := swt.NewShellDisplay(display)
-	shell.SetText("Mini browser")
-	shell.SetLayout(swt.NewFillLayout())
-	sash := swt.NewSashForm(shell, swt.HORIZONTAL)
+	g.SetAppName("Mini Browser")
+	if err := g.Run(build); err != nil {
+		log.Fatal(err)
+	}
+}
 
-	left := swt.NewCompositeParentStyle(sash, swt.NONE)
-	left.SetLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(3, false))
-	addr := swt.NewText(left, swt.SINGLE|swt.BORDER)
-	addr.SetLayoutData(swt.NewGridDataStyle(swt.GridDataFILL_HORIZONTAL))
-	plus := swt.NewButton(left, swt.PUSH)
-	plus.SetText("+")
-	minus := swt.NewButton(left, swt.PUSH)
-	minus.SetText("-")
-	list := swt.NewList(left, swt.BORDER|swt.V_SCROLL)
-	listData := swt.NewGridDataStyle(swt.GridDataFILL_BOTH)
-	listData.HorizontalSpan = 3
-	list.SetLayoutData(listData)
+func build(app *g.App) {
+	fillX := g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true})
+	w := app.Window("Mini browser")
+	w.SetLayout(g.Fill{})
+	split := w.Split()
 
-	right := swt.NewCompositeParentStyle(sash, swt.NONE)
-	right.SetLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(4, false))
-	back := swt.NewButton(right, swt.PUSH)
-	back.SetText("<")
-	forward := swt.NewButton(right, swt.PUSH)
-	forward.SetText(">")
-	reload := swt.NewButton(right, swt.PUSH)
-	reload.SetText("Reload")
-	urlLabel := swt.NewLabel(right, swt.NONE)
-	urlLabel.SetLayoutData(swt.NewGridDataStyle(swt.GridDataFILL_HORIZONTAL))
-	stackHost := swt.NewCompositeParentStyle(right, swt.NONE)
-	stack := swt.NewStackLayout()
-	stackHost.SetLayout(stack)
-	hostData := swt.NewGridDataStyle(swt.GridDataFILL_BOTH)
-	hostData.HorizontalSpan = 4
-	stackHost.SetLayoutData(hostData)
-	sash.SetWeights([]int32{10, 90})
+	left := split.Panel.Panel()
+	left.SetLayout(g.Grid{Columns: 3, Margin: 5, Spacing: 5})
+	addr := left.Text(g.Border(), fillX)
+	plus := left.Button("+", nil)
+	minus := left.Button("-", nil)
+	list := left.List(nil, g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, SpanX: 3}))
+
+	right := split.Panel.Panel()
+	right.SetLayout(g.Grid{Columns: 4, Margin: 5, Spacing: 5})
+	back := right.Button("<", nil)
+	forward := right.Button(">", nil)
+	reload := right.Button("Reload", nil)
+	urlLabel := right.Label("", fillX)
+	stackHost := right.Panel(g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, SpanX: 4}))
+	stackHost.SetLayout(g.Stack{})
+	split.SetWeights(10, 90)
 
 	var pages []*page
 	selected := func() *page {
-		if i := list.GetSelectionIndex(); i >= 0 {
+		if i := list.Index(); i >= 0 {
 			return pages[i]
 		}
 		return nil
@@ -78,30 +67,33 @@ func main() {
 			urlLabel.SetText("")
 			return
 		}
-		stack.TopControl = p.wv.Control().AsControl()
-		stackHost.Layout()
+		stackHost.ShowTop(p.host)
 		urlLabel.SetText(p.wv.URL())
-		shell.SetText(label(p, "Mini browser"))
+		w.SetTitle(label(p, "Mini browser"))
 	}
 	open := func(url string) {
-		wv, err := webview.New(stackHost, webview.Options{Inspectable: true})
+		// Each page gets its own host: the stack shows hosts, and webview takes a plain composite.
+		host := stackHost.Panel()
+		host.SetLayout(g.Fill{})
+		wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 		if err != nil {
+			host.Unwrap().Dispose()
 			urlLabel.SetText(err.Error())
 			return
 		}
-		p := &page{wv: wv}
+		p := &page{wv: wv, host: host}
 		pages = append(pages, p)
 		list.Add(label(p, cmp.Or(url, "Start")))
-		list.Select(int32(len(pages) - 1))
+		list.SetSelection(len(pages) - 1)
 		wv.OnTitleChanged = func(t string) {
 			p.title = t
 			for i, q := range pages {
 				if q == p {
-					list.SetItem(int32(i), label(p, wv.URL()))
+					list.SetItem(i, label(p, wv.URL()))
 				}
 			}
 			if selected() == p {
-				shell.SetText(label(p, "Mini browser"))
+				w.SetTitle(label(p, "Mini browser"))
 			}
 		}
 		wv.OnNavigationFinished = func(u string) {
@@ -117,53 +109,48 @@ func main() {
 		show()
 	}
 	add := func() {
-		if u := normalize(addr.GetText()); u != "" {
+		if u := normalize(addr.Text()); u != "" {
 			open(u)
 			addr.SetText("")
 		}
 	}
 
-	plus.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) { add() }))
-	addr.AddSelectionListener(swt.SelectionListenerWidgetDefaultSelectedAdapter(func(*swt.SelectionEvent) { add() }))
-	list.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) { show() }))
-	minus.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) {
-		i := list.GetSelectionIndex()
+	plus.OnClick(add)
+	addr.OnActivate(add)
+	list.OnSelect(func(int) { show() })
+	minus.OnClick(func() {
+		i := list.Index()
 		if i < 0 {
 			return
 		}
 		pages[i].wv.Dispose()
+		pages[i].host.Unwrap().Dispose()
 		pages = append(pages[:i], pages[i+1:]...)
 		list.Remove(i)
-		if n := int32(len(pages)); n > 0 {
-			list.Select(min(i, n-1))
+		if n := len(pages); n > 0 {
+			list.SetSelection(min(i, n-1))
 		}
 		show()
-	}))
-	back.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) {
+	})
+	back.OnClick(func() {
 		if p := selected(); p != nil {
 			p.wv.GoBack()
 		}
-	}))
-	forward.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) {
+	})
+	forward.OnClick(func() {
 		if p := selected(); p != nil {
 			p.wv.GoForward()
 		}
-	}))
-	reload.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) {
+	})
+	reload.OnClick(func() {
 		if p := selected(); p != nil {
 			p.wv.Reload()
 		}
-	}))
+	})
 
 	open("")
-	shell.SetSize(1100, 700)
-	shell.Open()
-	for !shell.IsDisposed() {
-		if !display.ReadAndDispatch() {
-			display.Sleep()
-		}
-	}
-	display.Dispose()
+	w.SetSize(1100, 700)
+	w.Show()
 }
 
 // label is the page's title, else its URL, else fallback.

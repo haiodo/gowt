@@ -271,6 +271,11 @@ func (t *Text) OnChange(f func(text string)) {
 	t.t.AddModifyListener(&modifier{func() { f(t.t.GetText()) }})
 }
 
+// OnActivate runs f when the user presses Enter in a single-line field.
+func (t *Text) OnActivate(f func()) {
+	onActivate(t.t, func(*swt.SelectionEvent) { f() })
+}
+
 type modifier struct{ f func() }
 
 func (m *modifier) ModifyText(*swt.ModifyEvent) { m.f() }

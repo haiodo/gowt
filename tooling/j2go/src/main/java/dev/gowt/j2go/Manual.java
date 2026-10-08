@@ -197,6 +197,8 @@ public class Manual {
 			// catch one, so the few selectors SWT relies on that for avoid the throw instead
 			// (internal/cocoa/nsexception_manual.go).
 			Map.entry(COCOA_PKG + "NSColor#colorSpace()", "ColorSpace"),
+			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
+			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
 			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).
 			Map.entry(COCOA_PKG + "OS#NSIntersectionRect(" + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect)",
 					"OSNSIntersectionRect"),

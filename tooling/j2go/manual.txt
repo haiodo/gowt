@@ -3,6 +3,7 @@
 # binaryName#method(erasedParamTypes), or binaryName#fieldName for a skipped field.
 
 org.eclipse.swt.graphics.RoundingMode
+org.eclipse.swt.widgets.TaskItem#updateImage()
 
 # org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
 # stub, swt/swt_manual.go, is kept empty rather than deleted.

@@ -2,6 +2,7 @@
 gowt App.After(d time.Duration, f func())
 gowt App.Async(f func())
 gowt App.Dark() bool
+gowt App.Icon(name string, opts ...IconOption) *Image
 gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnThemeChange(f func(dark bool))
@@ -412,6 +413,9 @@ gowt func Closable() Option
 gowt func Disabled() Option
 gowt func DropDown() Option
 gowt func Flat() Option
+gowt func IconColor(c RGB) IconOption
+gowt func IconNames() []string
+gowt func IconSize(points int) IconOption
 gowt func InRow(c RowCell) Option
 gowt func Indeterminate() Option
 gowt func MultiSelect() Option
@@ -453,6 +457,7 @@ gowt type Grid struct
 gowt type GridCell struct
 gowt type Group struct
 gowt type Icon int
+gowt type IconOption func(*iconConfig)
 gowt type Image struct
 gowt type Label struct
 gowt type Layout

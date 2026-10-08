@@ -28,3 +28,10 @@ func TestDiff(t *testing.T) {
 		t.Errorf("allowed entry not honoured or stale one not reported:\n%s", got)
 	}
 }
+
+func TestFacadeDiff(t *testing.T) {
+	removed, added := facadeDiff([]string{"gowt func A()", "gowt func B(x int)"}, []string{"gowt func A()", "gowt func B(x string)"})
+	if len(removed) != 1 || removed[0] != "gowt func B(x int)" || len(added) != 1 || added[0] != "gowt func B(x string)" {
+		t.Errorf("removed = %v, added = %v", removed, added)
+	}
+}

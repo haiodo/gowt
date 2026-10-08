@@ -9,6 +9,7 @@ import (
 // Icon is the picture of a message box.
 type Icon int
 
+// Message box icons.
 const (
 	IconNone Icon = iota
 	IconInfo
@@ -20,6 +21,7 @@ const (
 // Buttons selects the buttons of a message box.
 type Buttons int
 
+// Button sets of a message box.
 const (
 	ButtonsOK Buttons = iota
 	ButtonsOKCancel
@@ -33,6 +35,7 @@ const (
 // (or AnswerNo, AnswerOK if there is no Cancel).
 type Answer int
 
+// Answers a message box returns.
 const (
 	AnswerOK Answer = iota
 	AnswerCancel

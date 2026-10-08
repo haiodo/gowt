@@ -16,7 +16,10 @@ func (p *Panel) Group(title string, opts ...Option) *Group {
 	return &Group{Panel{c: &g.Composite}, g}
 }
 
-func (g *Group) SetTitle(s string)  { g.g.SetText(s) }
+// SetTitle replaces the frame title.
+func (g *Group) SetTitle(s string) { g.g.SetText(s) }
+
+// Unwrap returns the underlying swt.Group for the full API.
 func (g *Group) Unwrap() *swt.Group { return g.g }
 
 // Tabs is a native tab folder; each Tab returns the page container.
@@ -38,9 +41,15 @@ func (t *Tabs) Tab(title string, opts ...Option) *Panel {
 	return &Panel{c: page}
 }
 
-func (t *Tabs) control() *swt.Control  { return &t.f.Control }
-func (t *Tabs) Index() int             { return int(t.f.GetSelectionIndex()) }
-func (t *Tabs) Select(i int)           { t.f.SetSelectionIndex(int32(i)) }
+func (t *Tabs) control() *swt.Control { return &t.f.Control }
+
+// Index is the selected tab, -1 if none.
+func (t *Tabs) Index() int { return int(t.f.GetSelectionIndex()) }
+
+// Select selects tab i.
+func (t *Tabs) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
+
+// Unwrap returns the underlying swt.TabFolder for the full API.
 func (t *Tabs) Unwrap() *swt.TabFolder { return t.f }
 
 // OnSelect runs f with the selected tab index.
@@ -67,9 +76,15 @@ func (t *CTabs) Tab(title string, opts ...Option) *Panel {
 	return &Panel{c: page}
 }
 
-func (t *CTabs) control() *swt.Control   { return &t.f.Control }
-func (t *CTabs) Index() int              { return int(t.f.GetSelectionIndex()) }
-func (t *CTabs) Select(i int)            { t.f.SetSelectionIndex(int32(i)) }
+func (t *CTabs) control() *swt.Control { return &t.f.Control }
+
+// Index is the selected tab, -1 if none.
+func (t *CTabs) Index() int { return int(t.f.GetSelectionIndex()) }
+
+// Select selects tab i.
+func (t *CTabs) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
+
+// Unwrap returns the underlying swt.CTabFolder for the full API.
 func (t *CTabs) Unwrap() *swt.CTabFolder { return t.f }
 
 // OnSelect runs f with the selected tab index.
@@ -102,7 +117,9 @@ func (p *Panel) Split(opts ...Option) *Split {
 }
 
 // SetWeights sets the relative size of each child, one weight per child.
-func (s *Split) SetWeights(w ...int)   { s.s.SetWeights(toInt32s(w)) }
+func (s *Split) SetWeights(w ...int) { s.s.SetWeights(toInt32s(w)) }
+
+// Unwrap returns the underlying swt.SashForm for the full API.
 func (s *Split) Unwrap() *swt.SashForm { return s.s }
 
 // Scroll shows content larger than itself with scroll bars. Build the content in Content, then call Fit.
@@ -131,7 +148,9 @@ func (s *Scroll) Fit() {
 	s.s.SetMinSizeWidthHeight(size.X, size.Y)
 }
 
-func (s *Scroll) control() *swt.Control          { return &s.s.Control }
+func (s *Scroll) control() *swt.Control { return &s.s.Control }
+
+// Unwrap returns the underlying swt.ScrolledComposite for the full API.
 func (s *Scroll) Unwrap() *swt.ScrolledComposite { return s.s }
 
 // Sash is a bare draggable divider; most code wants Split instead. The sash does not move itself:
@@ -151,7 +170,9 @@ func (s *Sash) OnMove(f func(x, y int)) {
 }
 
 func (s *Sash) control() *swt.Control { return &s.s.Control }
-func (s *Sash) Unwrap() *swt.Sash     { return s.s }
+
+// Unwrap returns the underlying swt.Sash for the full API.
+func (s *Sash) Unwrap() *swt.Sash { return s.s }
 
 // ToolBar is a row of tool buttons.
 type ToolBar struct{ t *swt.ToolBar }
@@ -178,17 +199,32 @@ func (t *ToolBar) Item(text string, onClick func(), opts ...Option) *ToolItem {
 func (t *ToolBar) Separator() { swt.NewToolItem(t.t, swt.SEPARATOR) }
 
 func (t *ToolBar) control() *swt.Control { return &t.t.Control }
-func (t *ToolBar) Unwrap() *swt.ToolBar  { return t.t }
+
+// Unwrap returns the underlying swt.ToolBar for the full API.
+func (t *ToolBar) Unwrap() *swt.ToolBar { return t.t }
 
 // ToolItem is a tool bar button.
 type ToolItem struct{ i *swt.ToolItem }
 
-func (i *ToolItem) SetText(s string)      { i.i.SetText(s) }
-func (i *ToolItem) SetImage(img *Image)   { i.i.SetImage(img.i) }
-func (i *ToolItem) SetTooltip(s string)   { i.i.SetToolTipText(s) }
-func (i *ToolItem) SetEnabled(v bool)     { i.i.SetEnabled(v) }
-func (i *ToolItem) Checked() bool         { return i.i.GetSelection() }
-func (i *ToolItem) SetChecked(v bool)     { i.i.SetSelection(v) }
+// SetText replaces the item text.
+func (i *ToolItem) SetText(s string) { i.i.SetText(s) }
+
+// SetImage sets the icon; the item does not own img.
+func (i *ToolItem) SetImage(img *Image) { i.i.SetImage(img.i) }
+
+// SetTooltip sets the text shown on hover.
+func (i *ToolItem) SetTooltip(s string) { i.i.SetToolTipText(s) }
+
+// SetEnabled enables or greys out the item.
+func (i *ToolItem) SetEnabled(v bool) { i.i.SetEnabled(v) }
+
+// Checked reports the state of a Check or Radio item.
+func (i *ToolItem) Checked() bool { return i.i.GetSelection() }
+
+// SetChecked sets the state of a Check or Radio item.
+func (i *ToolItem) SetChecked(v bool) { i.i.SetSelection(v) }
+
+// Unwrap returns the underlying swt.ToolItem for the full API.
 func (i *ToolItem) Unwrap() *swt.ToolItem { return i.i }
 
 // OnClick runs f when the item is pressed (or toggled).
@@ -218,4 +254,5 @@ func (b *CoolBar) Add(w Widget) {
 	it.SetPreferredSizeSize(it.ComputeSize(size.X, size.Y))
 }
 
+// Unwrap returns the underlying swt.CoolBar for the full API.
 func (b *CoolBar) Unwrap() *swt.CoolBar { return b.b }

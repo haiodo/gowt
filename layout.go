@@ -8,6 +8,7 @@ type Layout interface{ layout() swt.LayoutLike }
 // Align is a cell alignment inside a grid cell.
 type Align int32
 
+// Cell alignments.
 const (
 	AlignStart Align = iota
 	AlignCenter

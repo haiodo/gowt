@@ -16,16 +16,26 @@ func (p *Panel) Combo(items []string, opts ...Option) *Combo {
 }
 
 func (c *Combo) control() *swt.Control { return &c.c.Control }
-func (c *Combo) Text() string          { return c.c.GetText() }
-func (c *Combo) SetText(s string)      { c.c.SetText(s) }
-func (c *Combo) Items() []string       { return c.c.GetItems() }
-func (c *Combo) SetItems(s []string)   { c.c.SetItems(s) }
+
+// Text returns the edit field content.
+func (c *Combo) Text() string { return c.c.GetText() }
+
+// SetText replaces the edit field content.
+func (c *Combo) SetText(s string) { c.c.SetText(s) }
+
+// Items returns the list entries.
+func (c *Combo) Items() []string { return c.c.GetItems() }
+
+// SetItems replaces the list entries.
+func (c *Combo) SetItems(s []string) { c.c.SetItems(s) }
 
 // Index is the selected item, -1 if the text matches none.
 func (c *Combo) Index() int { return int(c.c.GetSelectionIndex()) }
 
 // Select selects item i.
-func (c *Combo) Select(i int)       { c.c.Select(int32(i)) }
+func (c *Combo) Select(i int) { c.c.Select(int32(i)) }
+
+// Unwrap returns the underlying swt.Combo for the full API.
 func (c *Combo) Unwrap() *swt.Combo { return c.c }
 
 // OnSelect runs f with the chosen item index.
@@ -52,12 +62,24 @@ func (p *Panel) List(items []string, opts ...Option) *List {
 }
 
 func (l *List) control() *swt.Control { return &l.l.Control }
-func (l *List) Items() []string       { return l.l.GetItems() }
-func (l *List) SetItems(s []string)   { l.l.SetItems(s) }
-func (l *List) Add(s string)          { l.l.Add(s) }
-func (l *List) Remove(i int)          { l.l.Remove(int32(i)) }
-func (l *List) Clear()                { l.l.RemoveAll() }
-func (l *List) Len() int              { return int(l.l.GetItemCount()) }
+
+// Items returns the list entries.
+func (l *List) Items() []string { return l.l.GetItems() }
+
+// SetItems replaces the list entries.
+func (l *List) SetItems(s []string) { l.l.SetItems(s) }
+
+// Add appends an entry.
+func (l *List) Add(s string) { l.l.Add(s) }
+
+// Remove deletes entry i.
+func (l *List) Remove(i int) { l.l.Remove(int32(i)) }
+
+// Clear deletes all entries.
+func (l *List) Clear() { l.l.RemoveAll() }
+
+// Len returns the number of entries.
+func (l *List) Len() int { return int(l.l.GetItemCount()) }
 
 // Index is the first selected item, -1 if none.
 func (l *List) Index() int { return int(l.l.GetSelectionIndex()) }
@@ -67,7 +89,9 @@ func (l *List) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
 
 // SetSelection replaces the selection.
 func (l *List) SetSelection(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
-func (l *List) Unwrap() *swt.List     { return l.l }
+
+// Unwrap returns the underlying swt.List for the full API.
+func (l *List) Unwrap() *swt.List { return l.l }
 
 // OnSelect runs f with the first selected index.
 func (l *List) OnSelect(f func(index int)) {
@@ -92,12 +116,24 @@ func (p *Panel) Table(opts ...Option) *Table {
 }
 
 func (t *Table) control() *swt.Control { return &t.t.Control }
-func (t *Table) ShowHeader(v bool)     { t.t.SetHeaderVisible(v) }
-func (t *Table) ShowLines(v bool)      { t.t.SetLinesVisible(v) }
-func (t *Table) Len() int              { return int(t.t.GetItemCount()) }
-func (t *Table) Remove(i int)          { t.t.Remove(int32(i)) }
-func (t *Table) Clear()                { t.t.RemoveAll() }
-func (t *Table) Unwrap() *swt.Table    { return t.t }
+
+// ShowHeader shows or hides the column headers.
+func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
+
+// ShowLines shows or hides the grid lines.
+func (t *Table) ShowLines(v bool) { t.t.SetLinesVisible(v) }
+
+// Len returns the number of rows.
+func (t *Table) Len() int { return int(t.t.GetItemCount()) }
+
+// Remove deletes row i.
+func (t *Table) Remove(i int) { t.t.Remove(int32(i)) }
+
+// Clear deletes all rows.
+func (t *Table) Clear() { t.t.RemoveAll() }
+
+// Unwrap returns the underlying swt.Table for the full API.
+func (t *Table) Unwrap() *swt.Table { return t.t }
 
 // Index is the first selected row, -1 if none.
 func (t *Table) Index() int { return int(t.t.GetSelectionIndex()) }
@@ -139,9 +175,16 @@ func (t *Table) OnActivate(f func(index int)) {
 // Column is a table column.
 type Column struct{ c *swt.TableColumn }
 
-func (c *Column) SetTitle(s string)        { c.c.SetText(s) }
-func (c *Column) SetWidth(w int)           { c.c.SetWidth(int32(w)) }
-func (c *Column) Pack()                    { c.c.Pack() }
+// SetTitle replaces the header text.
+func (c *Column) SetTitle(s string) { c.c.SetText(s) }
+
+// SetWidth sets the width in pixels.
+func (c *Column) SetWidth(w int) { c.c.SetWidth(int32(w)) }
+
+// Pack resizes the column to fit its content.
+func (c *Column) Pack() { c.c.Pack() }
+
+// Unwrap returns the underlying swt.TableColumn for the full API.
 func (c *Column) Unwrap() *swt.TableColumn { return c.c }
 
 // OnClick runs f when the header is clicked, e.g. to sort.
@@ -152,14 +195,29 @@ func (c *Column) OnClick(f func()) {
 // TableRow is a table row. Rows are re-wrapped on every lookup: keep per-row state in SetData.
 type TableRow struct{ it *swt.TableItem }
 
-func (r *TableRow) Text(col int) string          { return r.it.GetTextIndex(int32(col)) }
-func (r *TableRow) SetText(col int, s string)    { r.it.SetTextIndexString(int32(col), s) }
-func (r *TableRow) Checked() bool                { return r.it.GetChecked() }
-func (r *TableRow) SetChecked(v bool)            { r.it.SetChecked(v) }
+// Text returns the text of column col.
+func (r *TableRow) Text(col int) string { return r.it.GetTextIndex(int32(col)) }
+
+// SetText sets the text of column col.
+func (r *TableRow) SetText(col int, s string) { r.it.SetTextIndexString(int32(col), s) }
+
+// Checked reports the check box of a Check table.
+func (r *TableRow) Checked() bool { return r.it.GetChecked() }
+
+// SetChecked sets the check box of a Check table.
+func (r *TableRow) SetChecked(v bool) { r.it.SetChecked(v) }
+
+// SetImage sets the icon of column col; the row does not own img.
 func (r *TableRow) SetImage(col int, img *Image) { r.it.SetImageIndexImage(int32(col), img.i) }
-func (r *TableRow) Data() any                    { return r.it.GetData() }
-func (r *TableRow) SetData(v any)                { r.it.SetData(v) }
-func (r *TableRow) Unwrap() *swt.TableItem       { return r.it }
+
+// Data returns the value stored by SetData.
+func (r *TableRow) Data() any { return r.it.GetData() }
+
+// SetData stores an application value with the row.
+func (r *TableRow) SetData(v any) { r.it.SetData(v) }
+
+// Unwrap returns the underlying swt.TableItem for the full API.
+func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 
 // Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
 type Tree struct{ t *swt.Tree }
@@ -172,8 +230,12 @@ func (p *Panel) Tree(opts ...Option) *Tree {
 }
 
 func (t *Tree) control() *swt.Control { return &t.t.Control }
-func (t *Tree) Clear()                { t.t.RemoveAll() }
-func (t *Tree) Unwrap() *swt.Tree     { return t.t }
+
+// Clear deletes all nodes.
+func (t *Tree) Clear() { t.t.RemoveAll() }
+
+// Unwrap returns the underlying swt.Tree for the full API.
+func (t *Tree) Unwrap() *swt.Tree { return t.t }
 
 // Node appends a root node.
 func (t *Tree) Node(text string) *Node {
@@ -207,6 +269,7 @@ func (t *Tree) OnExpand(f func(n *Node)) {
 	t.t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
 }
 
+// OnCollapse runs f with the node that was collapsed; see OnExpand.
 func (t *Tree) OnCollapse(f func(n *Node)) {
 	t.t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
 }
@@ -252,15 +315,38 @@ func (n *Node) Node(text string) *Node {
 	return &Node{it}
 }
 
-func (n *Node) Text() string          { return n.it.GetTextIndex(0) }
-func (n *Node) SetText(s string)      { n.it.SetTextIndexString(0, s) }
-func (n *Node) Expanded() bool        { return n.it.GetExpanded() }
-func (n *Node) SetExpanded(v bool)    { n.it.SetExpanded(v) }
-func (n *Node) Checked() bool         { return n.it.GetChecked() }
-func (n *Node) SetChecked(v bool)     { n.it.SetChecked(v) }
-func (n *Node) SetImage(img *Image)   { n.it.SetImageIndexImage(0, img.i) }
-func (n *Node) Children() []*Node     { return nodes(n.it.GetItems()) }
-func (n *Node) Data() any             { return n.it.GetData() }
-func (n *Node) SetData(v any)         { n.it.SetData(v) }
-func (n *Node) Remove()               { n.it.Dispose() }
+// Text returns the node text.
+func (n *Node) Text() string { return n.it.GetTextIndex(0) }
+
+// SetText replaces the node text.
+func (n *Node) SetText(s string) { n.it.SetTextIndexString(0, s) }
+
+// Expanded reports whether the children are shown.
+func (n *Node) Expanded() bool { return n.it.GetExpanded() }
+
+// SetExpanded shows or hides the children.
+func (n *Node) SetExpanded(v bool) { n.it.SetExpanded(v) }
+
+// Checked reports the check box of a Check tree.
+func (n *Node) Checked() bool { return n.it.GetChecked() }
+
+// SetChecked sets the check box of a Check tree.
+func (n *Node) SetChecked(v bool) { n.it.SetChecked(v) }
+
+// SetImage sets the icon; the node does not own img.
+func (n *Node) SetImage(img *Image) { n.it.SetImageIndexImage(0, img.i) }
+
+// Children returns the direct child nodes.
+func (n *Node) Children() []*Node { return nodes(n.it.GetItems()) }
+
+// Data returns the value stored by SetData.
+func (n *Node) Data() any { return n.it.GetData() }
+
+// SetData stores an application value with the node.
+func (n *Node) SetData(v any) { n.it.SetData(v) }
+
+// Remove deletes the node with its children.
+func (n *Node) Remove() { n.it.Dispose() }
+
+// Unwrap returns the underlying swt.TreeItem for the full API.
 func (n *Node) Unwrap() *swt.TreeItem { return n.it }

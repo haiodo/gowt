@@ -6,6 +6,8 @@
 package cocoa
 
 import (
+	"fmt"
+
 	"github.com/ebitengine/purego"
 )
 
@@ -44,15 +46,6 @@ func initAssociated() {
 	}
 }
 
-// backdropHost is where subviews of view live: an NSBox (SWT Group) keeps them in its contentView.
-func backdropHost(view *NSView) uintptr {
-	v := uintptr(view.Id)
-	if msg(v, "isKindOfClass:", class("NSBox")) != 0 {
-		return msg(v, "contentView")
-	}
-	return v
-}
-
 func respondsTo(obj uintptr, selector string) bool {
 	return obj != 0 && msg(obj, "respondsToSelector:", sel(selector)) != 0
 }
@@ -60,22 +53,29 @@ func respondsTo(obj uintptr, selector string) bool {
 // GlassAvailable reports whether NSGlassEffectView exists (macOS 26 or newer).
 func GlassAvailable() bool { return class("NSGlassEffectView") != 0 }
 
-// InstallBackdrop puts a material view behind the content of view, replacing an earlier one,
-// and reports whether it replaced or removed one. kind is BackdropNone, BackdropTranslucent or
-// BackdropGlass; Glass falls back to Translucent before macOS 26. With window set, the NSWindow
-// is non-opaque while a material is shown and gets the default background back only when one was removed.
+// InstallBackdrop puts a material view directly behind view and returns whether it replaced or
+// removed an earlier one. kind is BackdropNone, BackdropTranslucent or BackdropGlass; Glass falls
+// back to Translucent before macOS 26.
+//
+// The material is a sibling of view, not a child: SWT inserts every new child at the bottom of its
+// parent (Control.setZOrder_ with NSWindowBelow), which would bury a child backdrop under the
+// widgets. With window set, view is the shell's content view: the material goes into the window's
+// frame view, follows the window size by autoresizing, and the NSWindow is non-opaque while it
+// shows and gets the default background back only when a material was removed. Otherwise the
+// caller keeps the frame in step with SyncBackdrop.
 func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	initAssociated()
-	host := backdropHost(view)
-	if old := getAssociated(host, backdropKey()); old != 0 {
+	v := uintptr(view.Id)
+	if old := getAssociated(v, backdropKey()); old != 0 {
 		msg(old, "removeFromSuperview")
-		setAssociated(host, backdropKey(), 0, 1)
+		setAssociated(v, backdropKey(), 0, 1)
 		had = true
 	}
-	if w := msg(host, "window"); window && w != 0 && (kind != BackdropNone || had) {
+	host := msg(v, "superview")
+	if w := msg(v, "window"); window && w != 0 && (kind != BackdropNone || had) {
 		setWindowOpaque(w, kind == BackdropNone)
 	}
-	if kind == BackdropNone {
+	if kind == BackdropNone || host == 0 {
 		return had
 	}
 	var bd uintptr
@@ -87,12 +87,52 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 		msg(bd, "setBlendingMode:", 0)
 		msg(bd, "setState:", 1)
 	}
-	msg(bd, "setAutoresizingMask:", viewWidthHeightSizable)
-	msgRectOnly(bd, sel("setFrame:"), NewNSViewOverload1(int64(host)).Bounds())
-	msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, 0)
-	setAssociated(host, backdropKey(), bd, 1)
+	if window {
+		msg(bd, "setAutoresizingMask:", viewWidthHeightSizable)
+		msgRectOnly(bd, sel("setFrame:"), NewNSViewOverload1(int64(host)).Bounds())
+	} else {
+		msgRectOnly(bd, sel("setFrame:"), view.Frame())
+	}
+	msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
+	setAssociated(v, backdropKey(), bd, 1)
 	msg(bd, "release")
 	return had
+}
+
+// SyncBackdrop moves the material added by InstallBackdrop to the frame of view.
+func SyncBackdrop(view *NSView) {
+	initAssociated()
+	if bd := getAssociated(uintptr(view.Id), backdropKey()); bd != 0 {
+		msgRectOnly(bd, sel("setFrame:"), view.Frame())
+	}
+}
+
+// DumpViews describes the view tree of the window of view, from its frame view down, depth levels
+// (children listed bottom to top, as AppKit paints them).
+func DumpViews(view *NSView, depth int) string {
+	root := uintptr(view.Id)
+	for s := msg(root, "superview"); s != 0; s = msg(root, "superview") {
+		root = s
+	}
+	var out string
+	var walk func(v uintptr, level int)
+	walk = func(v uintptr, level int) {
+		f := NewNSViewOverload1(int64(v)).Frame()
+		mark := ""
+		if v == uintptr(view.Id) {
+			mark = "  <- content view"
+		}
+		out += fmt.Sprintf("%*s%s (%.0f,%.0f %.0fx%.0f)%s\n", level*2, "", goString(msg(v, "className")), f.X, f.Y, f.Width, f.Height, mark)
+		if level == depth {
+			return
+		}
+		subs := msg(v, "subviews")
+		for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+			walk(msg(subs, "objectAtIndex:", i), level+1)
+		}
+	}
+	walk(root, 0)
+	return out
 }
 
 func setWindowOpaque(w uintptr, opaque bool) {
@@ -134,13 +174,13 @@ func SetGlassButton(view *NSView) {
 	msg(v, "setBezelStyle:", bezelStyleGlass)
 }
 
-// SetGlassCornerRadius rounds the glass view InstallBackdrop added to view; no-op without one.
+// SetGlassCornerRadius rounds the glass view InstallBackdrop added for view; no-op without one.
 func SetGlassCornerRadius(view *NSView, r float64) {
 	initAssociated()
 	if msgF64 == nil {
 		purego.RegisterFunc(&msgF64, objcMsgSend)
 	}
-	if bd := getAssociated(backdropHost(view), backdropKey()); respondsTo(bd, "setCornerRadius:") {
+	if bd := getAssociated(uintptr(view.Id), backdropKey()); respondsTo(bd, "setCornerRadius:") {
 		msgF64(bd, sel("setCornerRadius:"), r)
 	}
 }

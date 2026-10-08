@@ -34,6 +34,11 @@ func (p *panel) setGlass(on bool) {
 	had := cocoa.InstallBackdrop(p.c.View, k, false)
 	if on {
 		cocoa.SetGlassCornerRadius(p.c.View, 12)
+		cocoa.SyncBackdrop(p.c.View)
+	}
+	if on && !had {
+		p.c.AddControlListener(swt.ControlListenerControlMovedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(p.c.View) }))
+		p.c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(p.c.View) }))
 	}
 	if on || had {
 		p.clear(on)

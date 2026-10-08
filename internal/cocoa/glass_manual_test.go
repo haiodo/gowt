@@ -19,7 +19,8 @@ func TestInstallBackdropReplaces(t *testing.T) {
 		for _, cls := range []string{"NSView", "NSBox"} {
 			v := msg(msg(class(cls), "alloc"), "init")
 			view := NewNSViewOverload1(int64(v))
-			host := backdropHost(view)
+			host := msg(msg(class("NSView"), "alloc"), "init")
+			msg(host, "addSubview:", v)
 			count := func() uintptr { return msg(msg(host, "subviews"), "count") }
 			base := count()
 			if InstallBackdrop(view, BackdropGlass, false) {

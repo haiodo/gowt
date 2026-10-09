@@ -96,8 +96,6 @@ public class Manual {
 		reg("java.util.SortedSet", "jrt.TreeSet", JRT_IMPORT, false);
 		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);
-		// extends dnd.DropTargetEffect, which is not translated here: swt/dnd_stubs_manual.go.
-		reg("org.eclipse.swt.custom.StyledTextDropTargetEffect", "StyledTextDropTargetEffect", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
 		// only their static members are used, hand-written in swt/internal_helpers_manual.go.
 		for (String n : new String[]{"DPIUtil", "BidiUtil", "Compatibility", "DefaultExceptionHandler"}) {

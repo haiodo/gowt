@@ -77,12 +77,10 @@ final class JdkIntrinsics {
 			// Any other operand: null-safe a.equals(b) (ToolItem.setBackground compares Colors).
 			return jrtCall("ObjectsEquals", emitter.expr(arg0) + ", " + emitter.expr(arg1));
 		}
-		// Every System property key besides "os.arch" reads as unset in this port - matches the
+		// Every System property key besides "os.arch" and "os.name" (jrt.SystemProperties) reads as unset in this port - matches the
 		// real JDK's own behavior for a key that was never set (String.getProperty(...) returns
 		// null; Boolean.valueOf(null)/EqualFold("", "true") both come out false either way).
 		if (qualified.equals("java.lang.System") && mb.getName().equals("getProperty")) {
-			// os.name: this port is the cocoa one.
-			if (mi.arguments().get(0) instanceof StringLiteral sl && sl.getLiteralValue().equals("os.name")) return "\"Mac OS X\"";
 			return jrtCall("GetProperty", arg(mi, 0) + ", " + (mi.arguments().size() == 1 ? "\"\"" : arg(mi, 1)));
 		}
 		if (qualified.equals("java.lang.String") && mb.getName().equals("getChars")) {

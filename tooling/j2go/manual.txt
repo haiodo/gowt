@@ -4,9 +4,6 @@
 
 org.eclipse.swt.graphics.RoundingMode
 
-# StyledText's drop effect extends dnd.DropTargetEffect; package dnd is not translated here (swt/dnd_stubs_manual.go).
-org.eclipse.swt.custom.StyledTextDropTargetEffect
-
 # thenComparingInt over a method ref to getX(Point) does not type in Go (Point params are PointLike); swt/custom_styledtext_manual.go.
 org.eclipse.swt.custom.StyledText#SELECTION_COMPARATOR
 org.eclipse.swt.widgets.TaskItem#updateImage()

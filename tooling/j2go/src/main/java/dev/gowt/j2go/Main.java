@@ -15,8 +15,6 @@ public class Main {
 
 	// Java stubs for test-harness classes outside the SWT repo (org.eclipse.test.Screenshots).
 	private static final String STUB_ROOT = "tooling/j2go/stubs";
-	// Searched before every SWT root (win32 has the real dnd sources on its path): hand-written Go stands in for package dnd.
-	private static final String STUB_FIRST_ROOT = "tooling/j2go/stubs-dnd";
 
 	private static final String SWT_COMMIT = "af630a9093";
 	// eclipse.platform.ui, the source of org.eclipse.jface.* (README "Round 22 jface").
@@ -59,7 +57,6 @@ public class Main {
 		GoTypes.piPackage = platform.swtName;
 		Path swtRootPath = Path.of(swtRoot).toAbsolutePath().normalize();
 		List<String> sourceRoots = new ArrayList<>();
-		if (Files.isDirectory(Path.of(STUB_FIRST_ROOT))) sourceRoots.add(Path.of(STUB_FIRST_ROOT).toAbsolutePath().toString());
 		List<String> platformRoots = new ArrayList<>();
 		List<String> allRoots = new ArrayList<>(platform.roots());
 		allRoots.addAll(Platform.commonRoots(platform != Platform.GTK));
@@ -171,7 +168,7 @@ public class Main {
 			CompilationUnit cu = orderedUnits.get(i);
 			String absPath = absFiles.get(i);
 			// A Java stub only types its Go counterpart (hand-written); it is modeled, never emitted.
-			if (absPath.startsWith(Path.of(STUB_ROOT).toAbsolutePath() + "/") || absPath.startsWith(Path.of(STUB_FIRST_ROOT).toAbsolutePath() + "/")) continue;
+			if (absPath.startsWith(Path.of(STUB_ROOT).toAbsolutePath() + "/")) continue;
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);

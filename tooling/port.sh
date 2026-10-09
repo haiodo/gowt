@@ -247,24 +247,15 @@ SWT_FILES=(
 	org/eclipse/swt/internal/graphics/ImageUtil.java
 )
 # StyledText and its helpers (custom/, platform-independent).
+# The dnd and accessibility classes it uses are in the dnd and Accessible lists below.
 SWT_FILES+=(
-	org/eclipse/swt/dnd/DND.java org/eclipse/swt/dnd/Transfer.java org/eclipse/swt/dnd/TextTransfer.java
-	org/eclipse/swt/dnd/RTFTransfer.java org/eclipse/swt/dnd/HTMLTransfer.java org/eclipse/swt/dnd/Clipboard.java
-	org/eclipse/swt/accessibility/AccessibleAttributeAdapter.java
-	org/eclipse/swt/accessibility/AccessibleAttributeEvent.java
-	org/eclipse/swt/accessibility/AccessibleAttributeListener.java
-	org/eclipse/swt/accessibility/AccessibleEditableTextAdapter.java
-	org/eclipse/swt/accessibility/AccessibleEditableTextEvent.java
-	org/eclipse/swt/accessibility/AccessibleEditableTextListener.java
-	org/eclipse/swt/accessibility/AccessibleTextAttributeEvent.java
-	org/eclipse/swt/accessibility/AccessibleTextExtendedAdapter.java
-	org/eclipse/swt/accessibility/AccessibleTextExtendedListener.java
 	org/eclipse/swt/custom/Bullet.java
 	org/eclipse/swt/custom/DefaultContent.java
 	org/eclipse/swt/custom/ST.java
 	org/eclipse/swt/custom/StyleRange.java
 	org/eclipse/swt/custom/StyledText.java
 	org/eclipse/swt/custom/StyledTextContent.java
+	org/eclipse/swt/custom/StyledTextDropTargetEffect.java
 	org/eclipse/swt/custom/StyledTextEvent.java
 	org/eclipse/swt/custom/StyledTextListener.java
 	org/eclipse/swt/custom/StyledTextLineSpacingProvider.java

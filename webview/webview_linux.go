@@ -19,13 +19,19 @@ type wkEngine struct {
 	schemes map[string]SchemeHandler
 	scripts []string
 	v       *webkit.View
+	policy  func(url string, mainFrame bool) bool
+	call    func(msg string) string
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
 	if err := webkit.Load(); err != nil {
 		return nil, err
 	}
-	e := &wkEngine{w: w, host: swt.NewCompositeParentStyle(parent, swt.NONE), opts: opts, schemes: map[string]SchemeHandler{}}
+	host := opts.host
+	if host == nil {
+		host = swt.NewCompositeParentStyle(parent, swt.NONE)
+	}
+	e := &wkEngine{w: w, host: host, opts: opts, schemes: map[string]SchemeHandler{}}
 	e.host.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { e.resize() }))
 	e.host.AddDisposeListener(disposeFunc(e.release))
 	return e, nil
@@ -76,6 +82,8 @@ func (e *wkEngine) start() *webkit.View {
 		}
 	}
 	v.Scheme = e.serve
+	v.Decide = e.policy
+	v.Call = e.call
 	e.v = v
 	v.Attach(uintptr(e.host.Handle))
 	e.resize()
@@ -168,4 +176,27 @@ func (e *wkEngine) url() string {
 		return ""
 	}
 	return e.v.URL()
+}
+
+func (e *wkEngine) canGoBack() bool    { return e.v != nil && e.v.CanGoBack() }
+func (e *wkEngine) canGoForward() bool { return e.v != nil && e.v.CanGoForward() }
+
+func (e *wkEngine) stop() {
+	if e.v != nil {
+		e.v.Stop()
+	}
+}
+
+func (e *wkEngine) setNavigationPolicy(f func(url string, mainFrame bool) bool) {
+	e.policy = f
+	if e.v != nil {
+		e.v.Decide = f
+	}
+}
+
+func (e *wkEngine) setCallHandler(f func(msg string) string) {
+	e.call = f
+	if e.v != nil {
+		e.v.Call = f
+	}
 }

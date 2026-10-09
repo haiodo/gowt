@@ -154,3 +154,100 @@ func TestWebView(t *testing.T) {
 		t.Errorf("started=%v titles=%v", started, titles)
 	}
 }
+
+const optHTML = `<title>opt</title><body><script>
+gowt.postMessage("call:" + gowt.call("ping") + "|" + gowt.call({a:1}));
+</script><iframe srcdoc="<script>parent.gowt.postMessage('sub:' + typeof gowt.call)</script>"></iframe>`
+
+// The optional features, on a view adopted with NewOn.
+func TestWebViewOptional(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var finished, msgs, asked []string
+	type cg struct{ back, fwd bool }
+	var first, second, afterBack cg
+	var err error
+	onMain(func() {
+		err = g.Run(func(app *g.App) {
+			w := app.Window("webview-opt")
+			w.SetLayout(g.Fill{})
+			host := w.Panel()
+			host.SetLayout(g.Fill{})
+			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
+			if e != nil {
+				t.Error(e)
+				app.Quit()
+				return
+			}
+			if !wv.SetNavigationPolicy(func(u string, main bool) bool {
+				asked = append(asked, u)
+				return !strings.Contains(u, "blocked")
+			}) || !wv.SetCallHandler(func(m string) string { return "re:" + m }) {
+				t.Error("engine lacks policy or call handler")
+			}
+			wv.HandleScheme("app", func(r webview.Request) *webview.Response {
+				body := "<title>x</title>x"
+				if strings.HasSuffix(r.URL, "/opt.html") {
+					body = optHTML
+				}
+				return &webview.Response{MimeType: "text/html", Body: []byte(body)}
+			})
+			wv.OnNavigationFinished = func(u string) { finished = append(finished, u) }
+			wv.OnMessage = func(m string) { msgs = append(msgs, m) }
+			w.SetSize(400, 300)
+			w.Show()
+			state := func() cg {
+				b, _ := wv.CanGoBack()
+				f, _ := wv.CanGoForward()
+				return cg{b, f}
+			}
+			steps := []struct {
+				run  func()
+				done func() bool
+			}{
+				{func() { wv.Navigate("app://host/opt.html") }, func() bool { return len(finished) == 1 && len(msgs) == 2 }},
+				{func() { first = state(); wv.Navigate("app://host/two.html") }, func() bool { return len(finished) == 2 }},
+				{func() { second = state(); wv.Navigate("app://host/blocked.html") }, func() bool { return len(asked) == 4 }},
+				{func() { wv.GoBack() }, func() bool { return len(finished) == 3 }},
+				{func() { afterBack = state(); wv.Stop() }, func() bool { return true }},
+			}
+			i, deadline := 0, time.Now().Add(30*time.Second)
+			var tick func()
+			tick = func() {
+				if i < len(steps) && steps[i].run != nil {
+					steps[i].run()
+					steps[i].run = nil
+				}
+				if i < len(steps) && steps[i].done() {
+					i++
+					if i < len(steps) {
+						steps[i].run()
+						steps[i].run = nil
+					}
+				}
+				if i == len(steps) || time.Now().After(deadline) {
+					if i < len(steps) {
+						t.Errorf("stuck at step %d: finished=%v msgs=%v asked=%v", i, finished, msgs, asked)
+					}
+					w.Close()
+					return
+				}
+				app.After(20*time.Millisecond, tick)
+			}
+			tick()
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(msgs) < 2 || msgs[0] != `call:re:ping|re:{"a":1}` || msgs[1] != "sub:undefined" {
+		t.Errorf("messages %q", msgs)
+	}
+	if first != (cg{false, false}) || second != (cg{true, false}) || afterBack != (cg{false, true}) {
+		t.Errorf("history first=%v second=%v afterBack=%v", first, second, afterBack)
+	}
+	if len(finished) != 3 {
+		t.Errorf("blocked navigation finished: %v", finished)
+	}
+}

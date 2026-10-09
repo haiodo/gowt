@@ -39,6 +39,7 @@ func supervise() {
 			os.Exit(1)
 		}
 		running, message := "", ""
+		before := seen
 		sc := bufio.NewScanner(out)
 		sc.Buffer(make([]byte, 1<<20), 1<<20)
 		for sc.Scan() {
@@ -78,8 +79,9 @@ func supervise() {
 		if werr == nil {
 			break
 		}
-		// The child's own timeout abort (exit 2) has already reported its test.
-		if exitCode(werr) != 2 {
+		// The child's own timeout abort has already reported its test. Without it, a death before any
+		// test started would restart into the same crash forever.
+		if exitCode(werr) != exitTimeout || seen == before {
 			fmt.Fprintln(os.Stderr, "swttest: child failed outside a test:", crashReason(stderr.String(), werr))
 			os.Exit(1)
 		}

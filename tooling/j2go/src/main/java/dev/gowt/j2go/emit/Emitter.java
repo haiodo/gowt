@@ -238,6 +238,7 @@ public class Emitter {
 	String testRegistration(TypeDeclaration td, TypeModel.ClassInfo ci) { return testEmitter.registration(td, ci); }
 
 	String rawFunc(Expression e) { return functionalEmitter.rawFunc(e); }
+	String anonMethodField(IMethodBinding mb, ITypeBinding anonType) { return functionalEmitter.anonMethodField(mb, anonType); }
 
 	/** recv.method(args) as an ordinary call would dispatch it (through impl when overridden). */
 	String instanceCall(String recv, IMethodBinding mb, List<String> args) {

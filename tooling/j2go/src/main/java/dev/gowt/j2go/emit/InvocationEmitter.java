@@ -110,10 +110,11 @@ final class InvocationEmitter {
 			}
 		}
 
-		// A helper the anonymous class declares itself is a func field of the generated struct (FunctionalEmitter).
+		// A method the anonymous class declares itself, a helper or an override (TableAccessibleDelegate's getColumns), is a func
+		// field of the generated struct (FunctionalEmitter).
 		if (emitter.anonType != null && !Modifier.isStatic(mb.getModifiers()) && declaring.getErasure().isEqualTo(emitter.anonType.getErasure())) {
 			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.anonThis;
-			return recv + ".fn" + FunctionalEmitter.anonOwnMethodName(mb) + "(" + String.join(", ", args) + ")";
+			return recv + "." + emitter.anonMethodField(mb, emitter.anonType) + "(" + String.join(", ", args) + ")";
 		}
 
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);

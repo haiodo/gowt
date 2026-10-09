@@ -14,6 +14,7 @@ public class Manual {
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
 	private static final String IME = "org.eclipse.swt.widgets.IME";
+	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
 	private static final String WIDGET_SPY = "org.eclipse.swt.internal.WidgetSpy";
 	private static final String AUTOSCALING_MODE = "org.eclipse.swt.graphics.AutoscalingMode";
 	// checkWidget()'s thread-affinity check: no real Thread, both sides collapse to "any" nil.
@@ -78,6 +79,7 @@ public class Manual {
 		reg("org.eclipse.swt.dnd.ContentProviders.CLIPBOARD_DATA", "ContentProviders_CLIPBOARD_DATA", null, true);
 		reg("org.eclipse.swt.dnd.ClipboardProxyGTK4", "ClipboardProxyGTK4", null, false);
 		reg(IME, "IME", null, false);
+		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
 		reg(AUTOSCALING_MODE, "AutoscalingMode", null, true);
 		reg(JAVA_THREAD, "any", null, true);
@@ -302,9 +304,13 @@ public class Manual {
 	// Hand-written for cocoa only: gtk translates its own IME.
 	private static final Set<String> COCOA_ONLY = Set.of(IME);
 
+	// Hand-written for gtk only (swt/widgets_stubs2_manual_linux.go, no ATK yet): cocoa and win32 translate the platform Accessible.
+	private static final Set<String> GTK_ONLY = Set.of(ACCESSIBLE);
+
 	public static boolean isManual(String qualifiedTypeName) {
 		return ENTRIES.containsKey(qualifiedTypeName) && !(GoTypes.platform == Platform.WIN32 && WIN32_TRANSLATED.contains(qualifiedTypeName))
-				&& !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"));
+				&& !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"))
+				&& !(GTK_ONLY.contains(qualifiedTypeName) && GoTypes.platform != Platform.GTK);
 	}
 
 	/** A value type with no Go method surface mirroring Java's (a bare "any", or java.lang.Class

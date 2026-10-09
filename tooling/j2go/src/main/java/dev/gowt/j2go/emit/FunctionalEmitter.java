@@ -403,7 +403,7 @@ final class FunctionalEmitter {
 		return own;
 	}
 
-	private IMethodBinding findOverridden(IMethodBinding m, ITypeBinding anonType) {
+	private static IMethodBinding findOverridden(IMethodBinding m, ITypeBinding anonType) {
 		List<ITypeBinding> todo = new ArrayList<>();
 		if (anonType.getSuperclass() != null) todo.add(anonType.getSuperclass());
 		todo.addAll(List.of(anonType.getInterfaces()));
@@ -416,6 +416,16 @@ final class FunctionalEmitter {
 			todo.addAll(List.of(t.getInterfaces()));
 		}
 		return null;
+	}
+
+	/** The func field of an anonymous class's own method mb, as emitStructAnon names it. */
+	String anonMethodField(IMethodBinding mb, ITypeBinding anonType) {
+		IMethodBinding overridden = findOverridden(mb, anonType);
+		if (overridden == null) return "fn" + anonOwnMethodName(mb);
+		ITypeBinding base = anonType.getInterfaces().length > 0 ? anonType.getInterfaces()[0] : anonType.getSuperclass();
+		TypeModel.ClassInfo baseCi = emitter.model.lookup(base);
+		boolean foreign = baseCi != null && !baseCi.isInterface && !baseCi.goPackage.equals(emitter.currentGoPackage);
+		return "fn" + memberGoName(overridden, foreign);
 	}
 
 	/** A method the anonymous class adds (overrides nothing): its own overload index keeps same-named ones apart, and from the overriding one. */

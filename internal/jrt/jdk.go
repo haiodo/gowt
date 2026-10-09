@@ -139,6 +139,8 @@ func LocaleDefault() *Locale { return &Locale{LocaleLanguage(nil)} }
 
 func (l *Locale) ToString() string    { return l.tag }
 func (l *Locale) GetLanguage() string { return l.tag }
+func (l *Locale) GetCountry() string  { return "" }
+func (l *Locale) GetVariant() string  { return "" }
 
 // Thread is java.lang.Thread for `new Thread(runnable)` + start/join; the port's `Thread` type
 // itself stays a bare any (Display.thread), see Manual.

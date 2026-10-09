@@ -47,7 +47,7 @@ public class GoTypes {
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
 	public static String goPackageDir(String javaPackage, String topLevelName) {
-		// DnD subclasses it (anonymously too) with the cascade of swt's own classes: same Go package as the subclasses (README "Round 24 dnd").
+		// DnD and Accessible subclass it (anonymously too) with the cascade of swt's own classes: same Go package as the subclasses (README "Round 24 dnd").
 		if (javaPackage.equals("org.eclipse.swt.internal.ole.win32") && topLevelName.equals("COMObject")) return "swt";
 		if (isPiJavaPackage(javaPackage)) return "internal/" + piPackage;
 		if (javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("C")) return "internal/" + piPackage;

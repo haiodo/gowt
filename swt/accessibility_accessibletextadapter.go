@@ -6,7 +6,35 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 )
 
+type AccessibleTextAdapterImpl interface {
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type accessibleTextAdapterHooked struct {
+	AccessibleTextAdapterImpl
+	hook   AccessibleTextAdapterImpl
+	active string
+}
+
+func (this *accessibleTextAdapterHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
 type AccessibleTextAdapter struct {
+	impl AccessibleTextAdapterImpl
+}
+
+func (this *AccessibleTextAdapter) Impl() AccessibleTextAdapterImpl {
+	if h, ok := this.impl.(*accessibleTextAdapterHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *AccessibleTextAdapter) SetImpl_(impl AccessibleTextAdapterImpl) {
+	this.impl = &accessibleTextAdapterHooked{AccessibleTextAdapterImpl: this.impl, hook: impl}
 }
 
 func init() { jrt.RegisterClassPackage("AccessibleTextAdapter", "org.eclipse.swt.accessibility") }
@@ -19,6 +47,7 @@ type AccessibleTextAdapterLike interface {
 
 func NewAccessibleTextAdapter() *AccessibleTextAdapter {
 	this := &AccessibleTextAdapter{}
+	this.impl = this
 	this.initAccessibleTextAdapter()
 	return this
 }

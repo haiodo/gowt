@@ -14,7 +14,6 @@ public class Manual {
 	private static final String EXCEPTION_STASH = "org.eclipse.swt.internal.ExceptionStash";
 	private static final String CALLBACK = "org.eclipse.swt.internal.Callback";
 	private static final String IME = "org.eclipse.swt.widgets.IME";
-	private static final String ACCESSIBLE = "org.eclipse.swt.accessibility.Accessible";
 	private static final String WIDGET_SPY = "org.eclipse.swt.internal.WidgetSpy";
 	private static final String AUTOSCALING_MODE = "org.eclipse.swt.graphics.AutoscalingMode";
 	// checkWidget()'s thread-affinity check: no real Thread, both sides collapse to "any" nil.
@@ -79,7 +78,6 @@ public class Manual {
 		reg("org.eclipse.swt.dnd.ContentProviders.CLIPBOARD_DATA", "ContentProviders_CLIPBOARD_DATA", null, true);
 		reg("org.eclipse.swt.dnd.ClipboardProxyGTK4", "ClipboardProxyGTK4", null, false);
 		reg(IME, "IME", null, false);
-		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
 		reg(AUTOSCALING_MODE, "AutoscalingMode", null, true);
 		reg(JAVA_THREAD, "any", null, true);
@@ -243,6 +241,8 @@ public class Manual {
 			Map.entry("org.eclipse.swt.widgets.Widget#getTypedListeners(I,java.lang.Class)", "GetTypedListeners"),
 			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
 			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
+			Map.entry("org.eclipse.swt.accessibility.Accessible#setNumberVARIANT(J,java.lang.Number)", "SetNumberVARIANT"),
+			Map.entry("org.eclipse.swt.accessibility.Accessible#toString()", "String"),
 			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).
 			Map.entry(COCOA_PKG + "OS#NSIntersectionRect(" + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect)",
 					"OSNSIntersectionRect"),

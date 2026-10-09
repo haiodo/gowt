@@ -40,3 +40,9 @@ func (this *id) AsId() *id {
 func (this *id) Impl() idImpl {
 	return this.impl
 }
+
+// SetImpl_ lets a class translated in another package (swt's SWTAccessibleDelegate extends NSObject) name itself
+// the most-derived type, so alloc() creates its ObjC class, not NSObject.
+func (this *id) SetImpl_(impl idImpl) {
+	this.impl = impl
+}

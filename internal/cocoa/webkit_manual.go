@@ -40,9 +40,17 @@ type WKView struct {
 	// until the reply. Without it the call returns null.
 	Call func(msg string) string
 
+	// The last navigation started: WebKit commits about:blank for a refused connection and reports no
+	// failure, so a commit of about:blank for another URL is the failure (see didCommit).
+	navPtr    uintptr
+	navURL    string
+	navFailed bool
+
 	config, ucc, obj uintptr
 	disposed         bool
 }
+
+var wkTrace = os.Getenv("GOWT_WK_TRACE") != ""
 
 var (
 	wkOnce  sync.Once
@@ -67,7 +75,7 @@ func wkSetup() {
 			panic("gowt/internal/cocoa: dlopen WebKit: " + err.Error())
 		}
 		purego.RegisterFunc(&wkInit, objcMsgSend)
-		trace := os.Getenv("GOWT_WK_TRACE") != ""
+		trace := wkTrace
 		view := func(self uintptr) *WKView { return wkViews[self] }
 		urlOf := func(wv uintptr) string { return goString(msg(msg(wv, "URL"), "absoluteString")) }
 		// A failed provisional load leaves wv.URL at the previous page; the error carries the requested one.
@@ -89,22 +97,33 @@ func wkSetup() {
 				if trace {
 					fmt.Fprintf(os.Stderr, "wk: didStart %s nav=%#x\n", urlOf(wv), nav)
 				}
-				if v := view(self); v != nil && v.NavStarted != nil {
-					v.NavStarted(urlOf(wv))
+				if v := view(self); v != nil {
+					v.navPtr, v.navURL, v.navFailed = nav, urlOf(wv), false
+					if v.NavStarted != nil {
+						v.NavStarted(v.navURL)
+					}
 				}
 			}), "v@:@@"},
-			"webView:didFinishNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+			"webView:didFinishNavigation:": {purego.NewCallback(func(self, _, wv, nav uintptr) {
 				defer enterCallback()()
 				if trace {
 					fmt.Fprintln(os.Stderr, "wk: didFinish", urlOf(wv))
 				}
-				if v := view(self); v != nil && v.NavFinished != nil {
+				if v := view(self); v != nil && v.NavFinished != nil && !(nav == v.navPtr && v.navFailed) {
 					v.NavFinished(urlOf(wv))
 				}
 			}), "v@:@@"},
-			"webView:didCommitNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+			"webView:didCommitNavigation:": {purego.NewCallback(func(self, _, wv, nav uintptr) {
+				defer enterCallback()()
 				if trace {
 					fmt.Fprintln(os.Stderr, "wk: didCommit", urlOf(wv))
+				}
+				v := view(self)
+				if v != nil && nav == v.navPtr && v.navURL != "about:blank" && urlOf(wv) == "about:blank" {
+					v.navFailed = true
+					if v.NavFailed != nil {
+						v.NavFailed(v.navURL, "load failed: the server could not be reached")
+					}
 				}
 			}), "v@:@@"},
 			"webView:didFailNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
@@ -232,7 +251,7 @@ func (v *WKView) URL() string { return goString(msg(msg(v.View, "URL"), "absolut
 func (v *WKView) LoadURL(url string) {
 	req := msg(class("NSURLRequest"), "requestWithURL:", msg(class("NSURL"), "URLWithString:", nsString(url)))
 	nav := msg(v.View, "loadRequest:", req)
-	if os.Getenv("GOWT_WK_TRACE") != "" {
+	if wkTrace {
 		fmt.Fprintf(os.Stderr, "wk: loadRequest %s url=%#x nav=%#x\n", url, msg(req, "URL"), nav)
 	}
 }

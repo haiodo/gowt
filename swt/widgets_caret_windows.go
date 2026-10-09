@@ -51,7 +51,7 @@ func (this *Caret) initCaret(parent *Canvas, style int32) {
 func (this *Caret) CreateWidget() {
 	this.isVisible = true
 	if this.parent.GetCaret() == (nil) {
-		this.parent.SetCaret(this)
+		this.parent.impl.setCaret_(this)
 	}
 }
 
@@ -230,7 +230,7 @@ func (this *Caret) releaseParent_() {
 	this.Widget.releaseParent_()
 	if this.parent != (nil) && this == this.parent.caret {
 		if !this.parent.IsDisposed() {
-			this.parent.SetCaret(nil)
+			this.parent.impl.setCaret_(nil)
 		} else {
 			this.parent.caret = nil
 		}

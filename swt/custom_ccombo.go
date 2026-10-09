@@ -159,7 +159,7 @@ func (this *CCombo) CreateText(comboStyle int32) {
 		focus = this.text.impl.isFocusControl_()
 		font = this.text.GetFont()
 		fg = this.text.impl.getForeground_()
-		bg = this.text.GetBackground()
+		bg = this.text.impl.getBackground_()
 		menu = this.text.impl.getMenu_()
 		this.text.impl.dispose_()
 	}
@@ -790,6 +790,7 @@ func (this *CCombo) InitAccessible() {
 	}
 	this.arrow.GetAccessible().AddAccessibleListener(anon693)
 	anon694 := &CComboAnon3{}
+	anon694.impl = anon694
 	anon694.initAccessibleTextAdapter()
 	anon694.fnGetCaretOffset = func(e *AccessibleTextEvent) {
 		e.Offset = this.text.GetCaretPosition()

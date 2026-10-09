@@ -1231,6 +1231,10 @@ func (this *Control) GetAccessible() *Accessible {
 }
 
 func (this *Control) GetBackground() *Color {
+	return this.impl.getBackground_()
+}
+
+func (this *Control) getBackground_() *Color {
 	this.CheckWidget()
 	if this.backgroundAlpha == 0 {
 		var color *Color = ColorCocoa_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, 0)
@@ -1279,6 +1283,10 @@ func (this *Control) getBounds_() *Rectangle {
 }
 
 func (this *Control) GetDragDetect() bool {
+	return this.impl.getDragDetect_()
+}
+
+func (this *Control) getDragDetect_() bool {
 	this.CheckWidget()
 	return (this.state & WidgetDRAG_DETECT) != 0
 }
@@ -1386,28 +1394,28 @@ func (this *Control) GetMonitor() *Monitor {
 	var centerY int32 = bounds.Y + bounds.Height/2
 	for i := int32(0); i < int32(len(monitors)); i++ {
 		var rect *Rectangle = monitors[i].GetBounds()
-		var cond70 int32
-		if centerX > rect.X+rect.Width {
-			cond70 = centerX - rect.X - rect.Width
-		} else {
-			cond70 = 0
-		}
 		var x int32
 		if centerX < rect.X {
 			x = rect.X - centerX
 		} else {
+			var cond70 int32
+			if centerX > rect.X+rect.Width {
+				cond70 = centerX - rect.X - rect.Width
+			} else {
+				cond70 = 0
+			}
 			x = cond70
-		}
-		var cond71 int32
-		if centerY > rect.Y+rect.Height {
-			cond71 = centerY - rect.Y - rect.Height
-		} else {
-			cond71 = 0
 		}
 		var y int32
 		if centerY < rect.Y {
 			y = rect.Y - centerY
 		} else {
+			var cond71 int32
+			if centerY > rect.Y+rect.Height {
+				cond71 = centerY - rect.Y - rect.Height
+			} else {
+				cond71 = 0
+			}
 			y = cond71
 		}
 		var distance int32 = x*x + y*y
@@ -3044,6 +3052,10 @@ func (this *Control) SetDefaultFont() {
 }
 
 func (this *Control) SetDragDetect(dragDetect bool) {
+	this.impl.setDragDetect_(dragDetect)
+}
+
+func (this *Control) setDragDetect_(dragDetect bool) {
 	this.CheckWidget()
 	if dragDetect {
 		this.state |= WidgetDRAG_DETECT
@@ -3406,6 +3418,10 @@ func (this *Control) setTabItemFocus_() bool {
 }
 
 func (this *Control) SetTextDirection(textDirection int32) {
+	this.impl.setTextDirection_(textDirection)
+}
+
+func (this *Control) setTextDirection_(textDirection int32) {
 	this.CheckWidget()
 }
 

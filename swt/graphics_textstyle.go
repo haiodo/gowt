@@ -6,6 +6,49 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 )
 
+type TextStyleImpl interface {
+	equals_(a0 any) bool
+	hashCode_() int32
+	string_() string
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type textStyleHooked struct {
+	TextStyleImpl
+	hook   TextStyleImpl
+	active string
+}
+
+func (this *textStyleHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *textStyleHooked) equals_(a0 any) bool {
+	if h, ok := this.hook.(interface{ Equals_(a0 any) bool }); ok && this.active != "equals_" {
+		defer this.enter("equals_")()
+		return h.Equals_(a0)
+	}
+	return this.TextStyleImpl.equals_(a0)
+}
+
+func (this *textStyleHooked) hashCode_() int32 {
+	if h, ok := this.hook.(interface{ HashCode_() int32 }); ok && this.active != "hashCode_" {
+		defer this.enter("hashCode_")()
+		return h.HashCode_()
+	}
+	return this.TextStyleImpl.hashCode_()
+}
+
+func (this *textStyleHooked) string_() string {
+	if h, ok := this.hook.(interface{ String_() string }); ok && this.active != "string_" {
+		defer this.enter("string_")()
+		return h.String_()
+	}
+	return this.TextStyleImpl.string_()
+}
+
 type TextStyle struct {
 	Font           *Font
 	Foreground     *Color
@@ -20,6 +63,18 @@ type TextStyle struct {
 	Metrics        *GlyphMetrics
 	Rise           int32
 	Data           any
+	impl           TextStyleImpl
+}
+
+func (this *TextStyle) Impl() TextStyleImpl {
+	if h, ok := this.impl.(*textStyleHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *TextStyle) SetImpl_(impl TextStyleImpl) {
+	this.impl = &textStyleHooked{TextStyleImpl: this.impl, hook: impl}
 }
 
 func init() { jrt.RegisterClassPackage("TextStyle", "org.eclipse.swt.graphics") }
@@ -32,6 +87,7 @@ type TextStyleLike interface {
 
 func NewTextStyle() *TextStyle {
 	this := &TextStyle{}
+	this.impl = this
 	this.initTextStyle()
 	return this
 }
@@ -56,6 +112,7 @@ func NewTextStyleFontForegroundBackground(fontLike FontLike, foregroundLike Colo
 	}
 	_ = background
 	this := &TextStyle{}
+	this.impl = this
 	this.initTextStyleFontForegroundBackground(font, foreground, background)
 	return this
 }
@@ -82,6 +139,7 @@ func NewTextStyleStyle(styleLike TextStyleLike) *TextStyle {
 	}
 	_ = style
 	this := &TextStyle{}
+	this.impl = this
 	this.initTextStyleStyle(style)
 	return this
 }
@@ -106,6 +164,10 @@ func (this *TextStyle) initTextStyleStyle(style *TextStyle) {
 }
 
 func (this *TextStyle) Equals(object any) bool {
+	return this.impl.equals_(object)
+}
+
+func (this *TextStyle) equals_(object any) bool {
 	if object == this {
 		return true
 	}
@@ -210,6 +272,10 @@ func (this *TextStyle) Equals(object any) bool {
 }
 
 func (this *TextStyle) HashCode() int32 {
+	return this.impl.hashCode_()
+}
+
+func (this *TextStyle) hashCode_() int32 {
 	var hash int32 = 0
 	if this.Foreground != (nil) {
 		hash ^= this.Foreground.HashCode()
@@ -355,6 +421,10 @@ func (this *TextStyle) IsAdherentStrikeout(styleLike TextStyleLike) bool {
 }
 
 func (this *TextStyle) String() string {
+	return this.impl.string_()
+}
+
+func (this *TextStyle) string_() string {
 	var buffer *jrt.StringBuilder = jrt.NewStringBuilder("TextStyle {")
 	var startLength int32 = buffer.Length()
 	if this.Font != (nil) {
@@ -456,12 +526,20 @@ func (this *TextStyle) String() string {
 
 // j2go: instanceof helper for TextStyle and its subclasses within the translated set.
 func textStyleImplAsTextStyle(x any) (*TextStyle, bool) {
+	if h, ok := x.(*textStyleHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *TextStyle:
 		if v == nil {
 			return nil, false
 		}
 		return v, true
+	case *StyleRange:
+		if v == nil {
+			return nil, false
+		}
+		return &v.TextStyle, true
 	}
 	if l, ok := x.(interface{ AsTextStyle() *TextStyle }); ok {
 		return l.AsTextStyle(), true

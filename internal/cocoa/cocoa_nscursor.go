@@ -49,15 +49,15 @@ func (this *NSCursor) InitWithImage(newImage *NSImage, aPoint NSPoint) *NSCursor
 	}
 	var result int64 = OSObjc_msgSendOverload45(this.Id, OSSel_initWithImage_hotSpot_, cond208, aPoint)
 	var cond209 *NSCursor
-	var cond210 *NSCursor
-	if result != 0 {
-		cond210 = NewNSCursorOverload1(result)
-	} else {
-		cond210 = nil
-	}
 	if result == this.Id {
 		cond209 = this
 	} else {
+		var cond210 *NSCursor
+		if result != 0 {
+			cond210 = NewNSCursorOverload1(result)
+		} else {
+			cond210 = nil
+		}
 		cond209 = (cond210)
 	}
 	return cond209

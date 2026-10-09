@@ -172,16 +172,16 @@ func (this *PrintDialog) Open() *PrinterData {
 	var keyBuffer []int8 = gtk.ConverterWcsToMbcs("cups-Duplex", true)
 	gtk.GTKGtk_print_settings_set(settings, keyBuffer, nil)
 	if this.printerData.Duplex != DEFAULT {
-		var cond586 int32
-		if this.printerData.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
-			cond586 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
-		} else {
-			cond586 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
-		}
 		var duplex int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_LONG_EDGE {
 			duplex = gtk.GTKGTK_PRINT_DUPLEX_HORIZONTAL
 		} else {
+			var cond586 int32
+			if this.printerData.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
+				cond586 = gtk.GTKGTK_PRINT_DUPLEX_VERTICAL
+			} else {
+				cond586 = gtk.GTKGTK_PRINT_DUPLEX_SIMPLEX
+			}
 			duplex = cond586
 		}
 		gtk.GTKGtk_print_settings_set_duplex(settings, duplex)
@@ -289,15 +289,15 @@ func (this *PrintDialog) Open() *PrinterData {
 			data.CopyCount = gtk.GTKGtk_print_settings_get_n_copies(settings)
 			data.Collate = gtk.GTKGtk_print_settings_get_collate(settings)
 			var duplex int32 = gtk.GTKGtk_print_settings_get_duplex(settings)
-			var cond587 int32
-			if duplex == gtk.GTKGTK_PRINT_DUPLEX_VERTICAL {
-				cond587 = PrinterDataDUPLEX_SHORT_EDGE
-			} else {
-				cond587 = PrinterDataDUPLEX_NONE
-			}
 			if duplex == gtk.GTKGTK_PRINT_DUPLEX_HORIZONTAL {
 				data.Duplex = PrinterDataDUPLEX_LONG_EDGE
 			} else {
+				var cond587 int32
+				if duplex == gtk.GTKGTK_PRINT_DUPLEX_VERTICAL {
+					cond587 = PrinterDataDUPLEX_SHORT_EDGE
+				} else {
+					cond587 = PrinterDataDUPLEX_NONE
+				}
 				data.Duplex = cond587
 			}
 			if gtk.GTKGtk_page_setup_get_orientation(page_setup) == gtk.GTKGTK_PAGE_ORIENTATION_LANDSCAPE {

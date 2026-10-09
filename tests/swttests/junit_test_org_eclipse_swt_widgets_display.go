@@ -1127,7 +1127,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setDataLjava_lang_StringL
 		var i any = any(display.GetData("Integer"))
 		junit.AssertNotNull(i)
 		junit.AssertEquals(10, i)
-		var s string = display.GetData("String").(string)
+		var s string = jrt.Cast[string](display.GetData("String"))
 		junit.AssertNotNull(s)
 		junit.AssertEquals("xyz", s)
 	}

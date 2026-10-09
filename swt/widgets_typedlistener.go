@@ -2,8 +2,46 @@
 
 package swt
 
+type TypedListenerImpl interface {
+	handleEvent_(a0 *Event)
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type typedListenerHooked struct {
+	TypedListenerImpl
+	hook   TypedListenerImpl
+	active string
+}
+
+func (this *typedListenerHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *typedListenerHooked) handleEvent_(a0 *Event) {
+	if h, ok := this.hook.(interface{ HandleEvent_(a0 *Event) }); ok && this.active != "handleEvent_" {
+		defer this.enter("handleEvent_")()
+		h.HandleEvent_(a0)
+		return
+	}
+	this.TypedListenerImpl.handleEvent_(a0)
+}
+
 type TypedListener struct {
 	eventListener any
+	impl          TypedListenerImpl
+}
+
+func (this *TypedListener) Impl() TypedListenerImpl {
+	if h, ok := this.impl.(*typedListenerHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *TypedListener) SetImpl_(impl TypedListenerImpl) {
+	this.impl = &typedListenerHooked{TypedListenerImpl: this.impl, hook: impl}
 }
 
 func (this *TypedListener) AsTypedListener() *TypedListener { return this }
@@ -14,6 +52,7 @@ type TypedListenerLike interface {
 
 func NewTypedListener(listener any) *TypedListener {
 	this := &TypedListener{}
+	this.impl = this
 	this.initTypedListener(listener)
 	return this
 }
@@ -24,6 +63,7 @@ func (this *TypedListener) initTypedListener(listener any) {
 
 func NewTypedListenerListener(listener any) *TypedListener {
 	this := &TypedListener{}
+	this.impl = this
 	this.initTypedListenerListener(listener)
 	return this
 }
@@ -37,6 +77,10 @@ func (this *TypedListener) GetEventListener() any {
 }
 
 func (this *TypedListener) HandleEvent(e *Event) {
+	this.impl.handleEvent_(e)
+}
+
+func (this *TypedListener) handleEvent_(e *Event) {
 	switch e.Type {
 	case Activate:
 		{

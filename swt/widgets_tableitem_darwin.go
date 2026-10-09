@@ -102,31 +102,31 @@ func (this *TableItem) CalculateWidth(index int32, gcLike GCLike, rowSelected bo
 	if font == (nil) {
 		font = this.parent.impl.defaultFont_()
 	}
-	var cond660 string
-	if this.strings == (nil) {
-		cond660 = ""
-	} else {
-		cond660 = this.strings[index]
-	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
+		var cond660 string
+		if this.strings == (nil) {
+			cond660 = ""
+		} else {
+			cond660 = this.strings[index]
+		}
 		text = (cond660)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond661 *Image
-	if this.images == (nil) {
-		cond661 = nil
-	} else {
-		cond661 = this.images[index]
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond661 *Image
+		if this.images == (nil) {
+			cond661 = nil
+		} else {
+			cond661 = this.images[index]
+		}
 		image = (cond661)
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
@@ -210,16 +210,16 @@ func (this *TableItem) Clear() {
 }
 
 func (this *TableItem) CreateString(index int32) *cocoa.NSObject {
-	var cond663 string
-	if this.strings == (nil) {
-		cond663 = ""
-	} else {
-		cond663 = this.strings[index]
-	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
+		var cond663 string
+		if this.strings == (nil) {
+			cond663 = ""
+		} else {
+			cond663 = this.strings[index]
+		}
 		text = (cond663)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
@@ -248,7 +248,7 @@ func (this *TableItem) GetBackground() *Color {
 	if this.background != (nil) {
 		cond665 = this.background
 	} else {
-		cond665 = this.parent.GetBackground()
+		cond665 = this.parent.impl.getBackground_()
 	}
 	return cond665
 }
@@ -458,16 +458,16 @@ func (this *TableItem) GetImageBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond668 *Image
-	if this.images != (nil) {
-		cond668 = this.images[index]
-	} else {
-		cond668 = nil
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond668 *Image
+		if this.images != (nil) {
+			cond668 = this.images[index]
+		} else {
+			cond668 = nil
+		}
 		image = cond668
 	}
 	if this.parent.columnCount == 0 {
@@ -552,16 +552,16 @@ func (this *TableItem) GetTextBounds(index int32) *Rectangle {
 		return NewRectangle(0, 0, 0, 0)
 	}
 	var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.parent.View)
-	var cond670 *Image
-	if this.images != (nil) {
-		cond670 = this.images[index]
-	} else {
-		cond670 = nil
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond670 *Image
+		if this.images != (nil) {
+			cond670 = this.images[index]
+		} else {
+			cond670 = nil
+		}
 		image = cond670
 	}
 	if this.parent.columnCount == 0 {

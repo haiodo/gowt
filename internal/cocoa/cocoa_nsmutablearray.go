@@ -63,15 +63,15 @@ func (this *NSMutableArray) AddObjectsFromArray(otherArray *NSArray) {
 func (this *NSMutableArray) InitWithCapacity(numItems int64) *NSMutableArray {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithCapacity_, numItems)
 	var cond409 *NSMutableArray
-	var cond410 *NSMutableArray
-	if result != 0 {
-		cond410 = NewNSMutableArrayOverload1(result)
-	} else {
-		cond410 = nil
-	}
 	if result == this.Id {
 		cond409 = this
 	} else {
+		var cond410 *NSMutableArray
+		if result != 0 {
+			cond410 = NewNSMutableArrayOverload1(result)
+		} else {
+			cond410 = nil
+		}
 		cond409 = (cond410)
 	}
 	return cond409

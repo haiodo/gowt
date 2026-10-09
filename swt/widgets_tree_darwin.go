@@ -1906,16 +1906,16 @@ func (this *Tree) outlineView_willDisplayCell_forTableColumn_item_(id int64, sel
 	var textCell *cocoa.NSTextFieldCell = cocoa.NewNSTextFieldCellOverload1(cell)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_ROW, itemID)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_COLUMN, tableColumn)
-	var cond536 *Image
-	if item.images == (nil) {
-		cond536 = nil
-	} else {
-		cond536 = item.images[index]
-	}
 	var image *Image
 	if index == 0 {
 		image = item.image
 	} else {
+		var cond536 *Image
+		if item.images == (nil) {
+			cond536 = nil
+		} else {
+			cond536 = item.images[index]
+		}
 		image = (cond536)
 	}
 	var cond537 *cocoa.NSImage

@@ -57,15 +57,15 @@ func (this *NSColor) ColorUsingColorSpaceName(colorSpace *NSString) *NSColor {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_colorUsingColorSpaceName_, cond152)
 	var cond153 *NSColor
-	var cond154 *NSColor
-	if result != 0 {
-		cond154 = NewNSColorOverload1(result)
-	} else {
-		cond154 = nil
-	}
 	if result == this.Id {
 		cond153 = this
 	} else {
+		var cond154 *NSColor
+		if result != 0 {
+			cond154 = NewNSColorOverload1(result)
+		} else {
+			cond154 = nil
+		}
 		cond153 = (cond154)
 	}
 	return cond153

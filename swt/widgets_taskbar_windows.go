@@ -130,7 +130,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		win32.OSMoveMemoryOverload80(pv, []int16{int16(win32.OSVT_LPWSTR)}, 2)
 		win32.OSMoveMemoryOverload79(pv+8, []int64{titlePtr}, win32.CPTR_SIZEOF)
 		key = TaskBarPKEY_Title
-		var exePath string = item.impl.getDataKey_(TaskBarEXE_PATH_KEY).(string)
+		var exePath string = jrt.Cast[string](item.impl.getDataKey_(TaskBarEXE_PATH_KEY))
 		if exePath != "" {
 			length = jrt.StringLength(exePath)
 			buffer = make([]uint16, length+1)
@@ -142,7 +142,7 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		if hr != win32.OSS_OK {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		text = item.impl.getDataKey_(TaskBarEXE_ARGS_KEY).(string)
+		text = jrt.Cast[string](item.impl.getDataKey_(TaskBarEXE_ARGS_KEY))
 		if text == "" {
 			text = fmt.Sprintf("%s%s%d", DisplayLAUNCHER_PREFIX, DisplayTASKBAR_EVENT, item.id)
 		}
@@ -153,10 +153,10 @@ func (this *TaskBar) CreateShellLink(itemLike MenuItemLike) *win32.IShellLink {
 		if hr != win32.OSS_OK {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
-		var icon string = item.impl.getDataKey_(TaskBarICON_KEY).(string)
+		var icon string = jrt.Cast[string](item.impl.getDataKey_(TaskBarICON_KEY))
 		var index int32 = 0
 		if icon != "" {
-			text = item.impl.getDataKey_(TaskBarICON_INDEX_KEY).(string)
+			text = jrt.Cast[string](item.impl.getDataKey_(TaskBarICON_INDEX_KEY))
 			if text != "" {
 				index = jrt.ParseInt(text)
 			}

@@ -49,15 +49,15 @@ func (this *NSToolbar) InitWithIdentifier(identifier *NSString) *NSToolbar {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond795)
 	var cond796 *NSToolbar
-	var cond797 *NSToolbar
-	if result != 0 {
-		cond797 = NewNSToolbarOverload1(result)
-	} else {
-		cond797 = nil
-	}
 	if result == this.Id {
 		cond796 = this
 	} else {
+		var cond797 *NSToolbar
+		if result != 0 {
+			cond797 = NewNSToolbarOverload1(result)
+		} else {
+			cond797 = nil
+		}
 		cond796 = (cond797)
 	}
 	return cond796

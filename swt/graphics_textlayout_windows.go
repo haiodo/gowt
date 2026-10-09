@@ -3243,7 +3243,7 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 					return
 				}
 			} else {
-				if style.Equals(item.style) {
+				if style.impl.equals_(item.style) {
 					return
 				}
 			}

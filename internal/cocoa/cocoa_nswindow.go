@@ -227,15 +227,15 @@ func (this *NSWindow) HasShadow() bool {
 func (this *NSWindow) InitWithContentRect(contentRect NSRect, aStyle int64, bufferingType int64, flag bool) *NSWindow {
 	var result int64 = OSObjc_msgSendOverload24(this.Id, OSSel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag)
 	var cond895 *NSWindow
-	var cond896 *NSWindow
-	if result != 0 {
-		cond896 = NewNSWindowOverload1(result)
-	} else {
-		cond896 = nil
-	}
 	if result == this.Id {
 		cond895 = this
 	} else {
+		var cond896 *NSWindow
+		if result != 0 {
+			cond896 = NewNSWindowOverload1(result)
+		} else {
+			cond896 = nil
+		}
 		cond895 = (cond896)
 	}
 	return cond895
@@ -250,15 +250,15 @@ func (this *NSWindow) InitWithContentRectContentRectAStyleBufferingTypeFlagScree
 	}
 	var result int64 = OSObjc_msgSendOverload25(this.Id, OSSel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, cond897)
 	var cond898 *NSWindow
-	var cond899 *NSWindow
-	if result != 0 {
-		cond899 = NewNSWindowOverload1(result)
-	} else {
-		cond899 = nil
-	}
 	if result == this.Id {
 		cond898 = this
 	} else {
+		var cond899 *NSWindow
+		if result != 0 {
+			cond899 = NewNSWindowOverload1(result)
+		} else {
+			cond899 = nil
+		}
 		cond898 = (cond899)
 	}
 	return cond898
@@ -385,15 +385,15 @@ func (this *NSWindow) OrderWindow(place int64, otherWin int64) {
 func (this *NSWindow) ParentWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_parentWindow)
 	var cond906 *NSWindow
-	var cond907 *NSWindow
-	if result != 0 {
-		cond907 = NewNSWindowOverload1(result)
-	} else {
-		cond907 = nil
-	}
 	if result == this.Id {
 		cond906 = this
 	} else {
+		var cond907 *NSWindow
+		if result != 0 {
+			cond907 = NewNSWindowOverload1(result)
+		} else {
+			cond907 = nil
+		}
 		cond906 = (cond907)
 	}
 	return cond906

@@ -77,15 +77,15 @@ func (this *NSColorList) InitWithName(name *NSString) *NSColorList {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithName_, cond181)
 	var cond182 *NSColorList
-	var cond183 *NSColorList
-	if result != 0 {
-		cond183 = NewNSColorListOverload1(result)
-	} else {
-		cond183 = nil
-	}
 	if result == this.Id {
 		cond182 = this
 	} else {
+		var cond183 *NSColorList
+		if result != 0 {
+			cond183 = NewNSColorListOverload1(result)
+		} else {
+			cond183 = nil
+		}
 		cond182 = (cond183)
 	}
 	return cond182

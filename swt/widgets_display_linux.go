@@ -411,7 +411,7 @@ func (this *Display) initDisplayData(data *DeviceData) {
 							}
 							return false
 						}() {
-							e := r
+							e, _ := r.(error)
 							_ = e
 						} else {
 							panic(r)
@@ -5256,6 +5256,11 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 		}
 		return &v.Widget, true
 	case *CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
+	case *StyledText:
 		if v == nil {
 			return nil, false
 		}

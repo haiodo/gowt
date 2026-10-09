@@ -247,15 +247,15 @@ func (this *NSObject) WriteSelectionToPasteboard(pboard *NSPasteboard, types *NS
 func (this *NSObject) Autorelease() *NSObject {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_autorelease)
 	var cond494 *NSObject
-	var cond495 *NSObject
-	if result != 0 {
-		cond495 = NewNSObjectOverload1(result)
-	} else {
-		cond495 = nil
-	}
 	if result == this.Id {
 		cond494 = this
 	} else {
+		var cond495 *NSObject
+		if result != 0 {
+			cond495 = NewNSObjectOverload1(result)
+		} else {
+			cond495 = nil
+		}
 		cond494 = (cond495)
 	}
 	return cond494
@@ -317,15 +317,15 @@ func (this *NSObject) Description() *NSString {
 func (this *NSObject) Init() *NSObject {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_init)
 	var cond501 *NSObject
-	var cond502 *NSObject
-	if result != 0 {
-		cond502 = NewNSObjectOverload1(result)
-	} else {
-		cond502 = nil
-	}
 	if result == this.Id {
 		cond501 = this
 	} else {
+		var cond502 *NSObject
+		if result != 0 {
+			cond502 = NewNSObjectOverload1(result)
+		} else {
+			cond502 = nil
+		}
 		cond501 = (cond502)
 	}
 	return cond501
@@ -393,15 +393,15 @@ func (this *NSObject) RespondsToSelector(aSelector int64) bool {
 func (this *NSObject) Retain() *NSObject {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_retain)
 	var cond508 *NSObject
-	var cond509 *NSObject
-	if result != 0 {
-		cond509 = NewNSObjectOverload1(result)
-	} else {
-		cond509 = nil
-	}
 	if result == this.Id {
 		cond508 = this
 	} else {
+		var cond509 *NSObject
+		if result != 0 {
+			cond509 = NewNSObjectOverload1(result)
+		} else {
+			cond509 = nil
+		}
 		cond508 = (cond509)
 	}
 	return cond508

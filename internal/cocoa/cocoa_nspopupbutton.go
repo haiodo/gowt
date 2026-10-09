@@ -47,15 +47,15 @@ func (this *NSPopUpButton) IndexOfSelectedItem() int64 {
 func (this *NSPopUpButton) InitWithFrame(buttonFrame NSRect, flag bool) *NSPopUpButton {
 	var result int64 = OSObjc_msgSendOverload17(this.Id, OSSel_initWithFrame_pullsDown_, buttonFrame, flag)
 	var cond567 *NSPopUpButton
-	var cond568 *NSPopUpButton
-	if result != 0 {
-		cond568 = NewNSPopUpButtonOverload1(result)
-	} else {
-		cond568 = nil
-	}
 	if result == this.Id {
 		cond567 = this
 	} else {
+		var cond568 *NSPopUpButton
+		if result != 0 {
+			cond568 = NewNSPopUpButtonOverload1(result)
+		} else {
+			cond568 = nil
+		}
 		cond567 = (cond568)
 	}
 	return cond567

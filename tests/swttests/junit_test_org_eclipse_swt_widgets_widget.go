@@ -50,6 +50,7 @@ type Test_org_eclipse_swt_widgets_WidgetImpl interface {
 	test_setFocus_withInvisibleChild_()
 	test_setFocus_withVisibleAndInvisibleChild_()
 	getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite
+	test_setCaretLorg_eclipse_swt_widgets_Caret_()
 	test_consistency_MenuDetect_()
 	test_consistency_DragDetect_()
 	test_setImageLorg_eclipse_swt_graphics_Image_()
@@ -186,6 +187,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_withVisibleAndInv
 
 func (this *Test_org_eclipse_swt_widgets_Widget) getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite {
 	panic("j2go: getElementExpectedToHaveFocusAfterSetFocusOnParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setCaretLorg_eclipse_swt_widgets_Caret_() {
+	panic("j2go: test_setCaretLorg_eclipse_swt_widgets_Caret_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) test_consistency_MenuDetect_() {
@@ -540,6 +545,15 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) getElementExpectedToHaveF
 		return h.GetElementExpectedToHaveFocusAfterSetFocusOnParent_(a0)
 	}
 	return this.Test_org_eclipse_swt_widgets_WidgetImpl.getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0)
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setCaretLorg_eclipse_swt_widgets_Caret_() {
+	if h, ok := this.hook.(interface{ Test_setCaretLorg_eclipse_swt_widgets_Caret_() }); ok && this.active != "test_setCaretLorg_eclipse_swt_widgets_Caret_" {
+		defer this.enter("test_setCaretLorg_eclipse_swt_widgets_Caret_")()
+		h.Test_setCaretLorg_eclipse_swt_widgets_Caret_()
+		return
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setCaretLorg_eclipse_swt_widgets_Caret_()
 }
 
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_consistency_MenuDetect_() {
@@ -929,6 +943,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.StyledText:
 		if v == nil {
 			return nil, false
 		}

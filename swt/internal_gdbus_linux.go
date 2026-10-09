@@ -64,8 +64,8 @@ func GDBusOnBusAcquired(gDBusConnection int64, const_gchar_name int64, user_data
 	{
 		var dbus_introspection_xml *jrt.StringBuilder = jrt.NewStringBuilder()
 		dbus_introspection_xml.Append(fmt.Sprintf("<node><interface name='%s'>\n", GDBusINTERFACE_NAME))
-		for _, elem728 := range GDBusGdbusMethods.ToArray() {
-			method := jrt.Cast[*GDBus_GDBusMethod](elem728)
+		for _, elem849 := range GDBusGdbusMethods.ToArray() {
+			method := jrt.Cast[*GDBus_GDBusMethod](elem849)
 			dbus_introspection_xml.Append(fmt.Sprintf("  <method name='%s'>\n", method.name))
 			dbus_introspection_xml.Append(fmt.Sprintf("   %s\n", method.GetMethodArgsXmlSignature()))
 			dbus_introspection_xml.Append("  </method>\n")
@@ -117,12 +117,12 @@ func GDBusHandleMethod(connection int64, sender int64, object_path int64, interf
 			}
 		}()
 		var java_method_name string = gtk.ConverterCCharPtrToJavaString(method_name, false)
-		for _, elem729 := range GDBusGdbusMethods.ToArray() {
-			gdbusMethod := jrt.Cast[*GDBus_GDBusMethod](elem729)
+		for _, elem850 := range GDBusGdbusMethods.ToArray() {
+			gdbusMethod := jrt.Cast[*GDBus_GDBusMethod](elem850)
 			if gdbusMethod.GetName() == java_method_name {
 				var args []any = GDBusConvertGVariantToJava(gvar_parameters)
 				var returnVal []any = gdbusMethod.GetUserFunction()(args)
-				if returnVal == (nil) || func() bool { _, ok731 := returnVal, returnVal != nil; return (ok731) }() {
+				if returnVal == (nil) || func() bool { _, ok852 := returnVal, returnVal != nil; return (ok852) }() {
 					resultGVariant = GDBusConvertJavaToGVariant(returnVal)
 				} else {
 					fmt.Fprintln(os.Stderr, fmt.Sprintf("SWT GDBus error processing user return value: %s. Return value must be an Object[] or null.", fmt.Sprint(returnVal)))
@@ -136,8 +136,8 @@ func GDBusHandleMethod(connection int64, sender int64, object_path int64, interf
 
 func GDBusConvertGVariantToJava(gVariant int64) []any {
 	var retVal any = GDBusConvertGVariantToJavaHelper(gVariant)
-	oa, ok732 := retVal.([]any)
-	if ok732 {
+	oa, ok853 := retVal.([]any)
+	if ok853 {
 		return oa
 	} else {
 		fmt.Fprintln(os.Stderr, "SWT GDBus Error converting arguments : Expecting object array, received Object.")
@@ -167,7 +167,7 @@ func GDBusConvertGVariantToJavaHelper(gVariant int64) any {
 		var length int32 = int32(gtk.OSG_variant_n_children(gVariant))
 		var result []string = make([]string, length)
 		for i := int32(0); i < length; i++ {
-			result[i] = GDBusConvertGVariantToJavaHelper(gtk.OSG_variant_get_child_value(gVariant, i)).(string)
+			result[i] = jrt.Cast[string](GDBusConvertGVariantToJavaHelper(gtk.OSG_variant_get_child_value(gVariant, i)))
 		}
 		return result
 	}
@@ -181,20 +181,20 @@ func GDBusConvertJavaToGVariant(javaObject any) int64 {
 	if jrt.IsNil(javaObject) {
 		return int64(0)
 	}
-	s, ok733 := javaObject.(string)
-	if ok733 {
+	s, ok854 := javaObject.(string)
+	if ok854 {
 		return gtk.OSG_variant_new_string(gtk.ConverterJavaStringToCString(s))
 	}
-	b, ok734 := javaObject.(bool)
-	if ok734 {
+	b, ok855 := javaObject.(bool)
+	if ok855 {
 		return gtk.OSG_variant_new_boolean(b)
 	}
-	i, ok735 := any(nil), false
-	if ok735 {
+	i, ok856 := any(nil), false
+	if ok856 {
 		return gtk.OSG_variant_new_int32(jrt.Cast[int32](i))
 	}
-	arrayValue, ok736 := javaObject.([]any)
-	if ok736 {
+	arrayValue, ok857 := javaObject.([]any)
+	if ok857 {
 		var length int32 = int32(len(arrayValue))
 		var variants []int64 = make([]int64, length)
 		for i := int32(0); i < length; i++ {

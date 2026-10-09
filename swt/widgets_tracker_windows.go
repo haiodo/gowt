@@ -643,13 +643,13 @@ func (this *Tracker) SetCursor(newCursorLike CursorLike) {
 	this.clientCursor = newCursor
 	if newCursor != (nil) {
 		if this.inEvent {
-			var cond843 int32
+			var cond964 int32
 			if this.parent != (nil) {
-				cond843 = this.parent.GetShellZoom()
+				cond964 = this.parent.GetShellZoom()
 			} else {
-				cond843 = this.NativeZoom
+				cond964 = this.NativeZoom
 			}
-			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond843)))
+			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond964)))
 		}
 	}
 }
@@ -696,13 +696,13 @@ func (this *Tracker) TransparentProc(hwnd int64, msg int64, wParam int64, lParam
 		break
 	case win32.OSWM_SETCURSOR:
 		if this.clientCursor != (nil) {
-			var cond844 int32
+			var cond965 int32
 			if this.parent != (nil) {
-				cond844 = this.parent.GetShellZoom()
+				cond965 = this.parent.GetShellZoom()
 			} else {
-				cond844 = this.NativeZoom
+				cond965 = this.NativeZoom
 			}
-			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond844)))
+			win32.OSSetCursor(CursorWin32_getHandle(this.clientCursor, DPIUtilGetZoomForAutoscaleProperty(cond965)))
 			return int64(1)
 		}
 		if this.resizeCursor != 0 {
@@ -760,13 +760,13 @@ func (this *Tracker) TransparentProc(hwnd int64, msg int64, wParam int64, lParam
 			return int64(0)
 		}
 	}
-	var cond845 int64
+	var cond966 int64
 	if hwnd == this.hwndTransparent {
-		cond845 = this.oldTransparentProc
+		cond966 = this.oldTransparentProc
 	} else {
-		cond845 = this.oldOpaqueProc
+		cond966 = this.oldOpaqueProc
 	}
-	return win32.OSCallWindowProc(cond845, hwnd, int32(msg), wParam, lParam)
+	return win32.OSCallWindowProc(cond966, hwnd, int32(msg), wParam, lParam)
 }
 
 func (this *Tracker) Update() {

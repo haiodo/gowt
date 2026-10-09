@@ -222,7 +222,9 @@ func init() {
 				t.(*Test_org_eclipse_swt_custom_CLabel).Test_CaretWithDisposedFontDoesNotThrowException_issue2323()
 			}},
 			{Name: "test_scrollIIIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CLabel).Test_scrollIIIIIIZ() }},
-			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CLabel).Test_setCaretLorg_eclipse_swt_widgets_Caret() }},
+			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) {
+				t.(*Test_org_eclipse_swt_custom_CLabel).impl.test_setCaretLorg_eclipse_swt_widgets_Caret_()
+			}},
 			{Name: "test_ConstructorLorg_eclipse_swt_widgets_CompositeI", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_custom_CLabel).impl.test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
 			}},

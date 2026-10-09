@@ -244,15 +244,15 @@ func (this *DialogTab) CreateButtonSelected(event *swt.SelectionEvent) {
 		this.textWidget.Append(fmt.Sprintf("%s%s", ControlExampleGetResourceStringKeyArgs("Result", []any{fmt.Sprintf("%v", result)}), swt.TextDELIMITER))
 		if result != (nil) {
 			var cond39 string
-			var cond40 string
-			if result.Scope == swt.PrinterDataSELECTION {
-				cond40 = "SELECTION"
-			} else {
-				cond40 = "ALL_PAGES"
-			}
 			if result.Scope == swt.PrinterDataPAGE_RANGE {
 				cond39 = "PAGE_RANGE"
 			} else {
+				var cond40 string
+				if result.Scope == swt.PrinterDataSELECTION {
+					cond40 = "SELECTION"
+				} else {
+					cond40 = "ALL_PAGES"
+				}
 				cond39 = cond40
 			}
 			this.textWidget.Append(fmt.Sprintf("printerData.scope = %s%s", (cond39), swt.TextDELIMITER))
@@ -270,15 +270,15 @@ func (this *DialogTab) CreateButtonSelected(event *swt.SelectionEvent) {
 			this.textWidget.Append(fmt.Sprintf("printerData.copyCount = %d%s", result.CopyCount, swt.TextDELIMITER))
 			this.textWidget.Append(fmt.Sprintf("printerData.collate = %t%s", result.Collate, swt.TextDELIMITER))
 			var cond42 string
-			var cond43 string
-			if result.Duplex == swt.PrinterDataDUPLEX_SHORT_EDGE {
-				cond43 = "DUPLEX_SHORT_EDGE"
-			} else {
-				cond43 = "NONE"
-			}
 			if result.Duplex == swt.PrinterDataDUPLEX_LONG_EDGE {
 				cond42 = "DUPLEX_LONG_EDGE"
 			} else {
+				var cond43 string
+				if result.Duplex == swt.PrinterDataDUPLEX_SHORT_EDGE {
+					cond43 = "DUPLEX_SHORT_EDGE"
+				} else {
+					cond43 = "NONE"
+				}
 				cond42 = cond43
 			}
 			this.textWidget.Append(fmt.Sprintf("printerData.duplex = %s%s", (cond42), swt.TextDELIMITER))

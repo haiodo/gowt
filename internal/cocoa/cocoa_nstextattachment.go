@@ -49,15 +49,15 @@ func (this *NSTextAttachment) InitWithFileWrapper(fileWrapper *NSFileWrapper) *N
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithFileWrapper_, cond759)
 	var cond760 *NSTextAttachment
-	var cond761 *NSTextAttachment
-	if result != 0 {
-		cond761 = NewNSTextAttachmentOverload1(result)
-	} else {
-		cond761 = nil
-	}
 	if result == this.Id {
 		cond760 = this
 	} else {
+		var cond761 *NSTextAttachment
+		if result != 0 {
+			cond761 = NewNSTextAttachmentOverload1(result)
+		} else {
+			cond761 = nil
+		}
 		cond760 = (cond761)
 	}
 	return cond760

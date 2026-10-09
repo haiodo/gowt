@@ -66,13 +66,13 @@ func UtilAssertInstanceObjectCAllowNull(object any, c reflect.Type, allowNull bo
 
 func UtilCompare(left bool, right bool) int32 {
 	var cond15 int32
-	var cond16 int32
-	if right {
-		cond16 = -1
-	} else {
-		cond16 = 0
-	}
 	if !left {
+		var cond16 int32
+		if right {
+			cond16 = -1
+		} else {
+			cond16 = 0
+		}
 		cond15 = (cond16)
 	} else {
 		cond15 = 1

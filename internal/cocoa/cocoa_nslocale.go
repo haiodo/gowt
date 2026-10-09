@@ -72,15 +72,15 @@ func (this *NSLocale) InitWithLocaleIdentifier(string_ *NSString) *NSLocale {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithLocaleIdentifier_, cond363)
 	var cond364 *NSLocale
-	var cond365 *NSLocale
-	if result != 0 {
-		cond365 = NewNSLocaleOverload1(result)
-	} else {
-		cond365 = nil
-	}
 	if result == this.Id {
 		cond364 = this
 	} else {
+		var cond365 *NSLocale
+		if result != 0 {
+			cond365 = NewNSLocaleOverload1(result)
+		} else {
+			cond365 = nil
+		}
 		cond364 = (cond365)
 	}
 	return cond364

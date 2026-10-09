@@ -127,7 +127,7 @@ func (this *TableItem) GetBackground() *Color {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.background == -1 {
-		return this.parent.GetBackground()
+		return this.parent.impl.getBackground_()
 	}
 	return ColorWin32_new(upcastDisplayToDevice(this.display), this.background)
 }
@@ -357,16 +357,16 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 				rect.Right = rect.Left
 			}
 			if getText {
-				var cond678 string
-				if this.strings != (nil) {
-					cond678 = this.strings[column]
-				} else {
-					cond678 = ""
-				}
 				var string_ string
 				if column == 0 {
 					string_ = this.text
 				} else {
+					var cond678 string
+					if this.strings != (nil) {
+						cond678 = this.strings[column]
+					} else {
+						cond678 = ""
+					}
 					string_ = cond678
 				}
 				if string_ != "" {

@@ -2882,16 +2882,16 @@ func (this *Table) tableView_willDisplayCell_forTableColumn_row_(id int64, sel i
 	var textCell *cocoa.NSTextFieldCell = cocoa.NewNSTextFieldCellOverload1(cell)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_ROW, rowIndex)
 	cocoa.OSObject_setInstanceVariable(cell, DisplaySWT_COLUMN, tableColumn)
-	var cond586 *Image
-	if item.images == (nil) {
-		cond586 = nil
-	} else {
-		cond586 = item.images[index]
-	}
 	var image *Image
 	if index == 0 {
 		image = item.image
 	} else {
+		var cond586 *Image
+		if item.images == (nil) {
+			cond586 = nil
+		} else {
+			cond586 = item.images[index]
+		}
 		image = (cond586)
 	}
 	var cond587 *cocoa.NSImage

@@ -268,6 +268,10 @@ func (this *Canvas) reskinChildren_(flags int32) {
 }
 
 func (this *Canvas) Scroll(destX int32, destY int32, x int32, y int32, width int32, height int32, all bool) {
+	this.impl.scroll_(destX, destY, x, y, width, height, all)
+}
+
+func (this *Canvas) scroll_(destX int32, destY int32, x int32, y int32, width int32, height int32, all bool) {
 	this.CheckWidget()
 	if width <= 0 || height <= 0 {
 		return
@@ -428,7 +432,10 @@ func (this *Canvas) SetCaret(caretLike CaretLike) {
 	if caretLike != nil {
 		caret = caretLike.AsCaret()
 	}
-	_ = caret
+	this.impl.setCaret_(caret)
+}
+
+func (this *Canvas) setCaret_(caret *Caret) {
 	this.CheckWidget()
 	var newCaret *Caret = caret
 	var oldCaret *Caret = this.caret

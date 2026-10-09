@@ -84,16 +84,16 @@ func (this *PrintDialog) Open() *PrinterData {
 	var printInfo *cocoa.NSPrintInfo = cocoa.NewNSPrintInfoOverload2(cocoa.NSPrintInfoSharedPrintInfo().Copy())
 	if this.printerData.Duplex != DEFAULT {
 		var settings int64 = printInfo.PMPrintSettings()
-		var cond656 int32
-		if this.printerData.Duplex == PrinterDataDUPLEX_LONG_EDGE {
-			cond656 = cocoa.OSKPMDuplexNoTumble
-		} else {
-			cond656 = cocoa.OSKPMDuplexNone
-		}
 		var duplex int32
 		if this.printerData.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
 			duplex = cocoa.OSKPMDuplexTumble
 		} else {
+			var cond656 int32
+			if this.printerData.Duplex == PrinterDataDUPLEX_LONG_EDGE {
+				cond656 = cocoa.OSKPMDuplexNoTumble
+			} else {
+				cond656 = cocoa.OSKPMDuplexNone
+			}
 			duplex = cond656
 		}
 		cocoa.OSPMSetDuplex(settings, duplex)
@@ -197,15 +197,15 @@ func (this *PrintDialog) Open() *PrinterData {
 		var settings int64 = printInfo.PMPrintSettings()
 		var outDuplexSetting []int32 = make([]int32, 1)
 		cocoa.OSPMGetDuplex(settings, outDuplexSetting)
-		var cond658 int32
-		if outDuplexSetting[0] == cocoa.OSKPMDuplexNoTumble {
-			cond658 = PrinterDataDUPLEX_LONG_EDGE
-		} else {
-			cond658 = PrinterDataDUPLEX_NONE
-		}
 		if outDuplexSetting[0] == cocoa.OSKPMDuplexTumble {
 			data.Duplex = PrinterDataDUPLEX_SHORT_EDGE
 		} else {
+			var cond658 int32
+			if outDuplexSetting[0] == cocoa.OSKPMDuplexNoTumble {
+				cond658 = PrinterDataDUPLEX_LONG_EDGE
+			} else {
+				cond658 = PrinterDataDUPLEX_NONE
+			}
 			data.Duplex = cond658
 		}
 		var nsData *cocoa.NSData = cocoa.NSKeyedArchiverArchivedDataWithRootObject(upcastcocoaNSPrintInfoTococoaId(printInfo))

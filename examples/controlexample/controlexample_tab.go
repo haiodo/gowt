@@ -2119,6 +2119,11 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 			return nil, false
 		}
 		return &v.Composite, true
+	case *swt.StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
 	case *swt.Group:
 		if v == nil {
 			return nil, false
@@ -2344,6 +2349,11 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *swt.StyledText:
 		if v == nil {
 			return nil, false
 		}

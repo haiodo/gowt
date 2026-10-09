@@ -1,4 +1,4 @@
-// Package webview embeds the system web view (WKWebView on macOS) in an SWT Composite and bridges
+// Package webview embeds the system web view (WKWebView on macOS, WebKitGTK 4.1 on Linux) in an SWT Composite and bridges
 // it to Go: custom URL schemes served from Go, page-to-Go messages, async script evaluation.
 // Everything must be called on the SWT UI thread; callbacks run there too.
 package webview

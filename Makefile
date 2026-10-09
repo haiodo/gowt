@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -176,6 +176,13 @@ linux-vnc:
 # struct layouts against the C compiler.
 gtk-gen: linux-vnc
 	docker exec $(LINUX_CTR) sh -c 'cd /src && go run ./tooling/girgen && sh tooling/girgen/verify.sh'
+
+# Regenerates internal/webkit/gen_funcs.go from the WebKitGTK 4.1 GIR files in the stand.
+webkit-gen: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && go run ./tooling/webkitgen'
+
+test-webview-linux: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && GOWT_GUI_TEST=1 go test -count=1 ./webview'
 
 linux-shell: linux-vnc
 	docker exec -it $(LINUX_CTR) bash

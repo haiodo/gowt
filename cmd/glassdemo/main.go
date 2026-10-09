@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
-	"github.com/haiodo/gowt/internal/cocoa"
 )
 
 func main() {
@@ -47,7 +46,7 @@ func main() {
 		w.Show()
 		if path := os.Getenv("GOWT_GLASSDEMO_DUMP"); path != "" {
 			app.After(700*time.Millisecond, func() {
-				if err := os.WriteFile(path, []byte(cocoa.DumpViews(w.Unwrap().View, 4)), 0o644); err != nil {
+				if err := os.WriteFile(path, []byte(dumpViews(w)), 0o644); err != nil {
 					log.Print(err)
 				}
 				app.Quit()

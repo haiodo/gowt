@@ -20,9 +20,22 @@ func NewCallback(fn any) uintptr {
 // Generic callbacks by their C address: OS.CALLBACK_x(func) wraps one of these, not a C pointer.
 var callbacks = map[int64]func(args []int64) int64{}
 
+// callbackEntry counts native-to-Go callbacks in progress. Display.ReadAndDispatch drains its idle pool
+// only at depth 0: from inside a callback AppKit has pools of its own above it.
+var callbackEntry int32
+
+// CallbackEntryCount is Callback.getEntryCount.
+func CallbackEntryCount() int32 { return callbackEntry }
+
+func enterCallback() func() {
+	callbackEntry++
+	return func() { callbackEntry-- }
+}
+
 // NewCallbackN is callback.c's all-word-args trampoline: argCount uintptr args, uintptr return.
 func NewCallbackN(argCount int, fn func(args []int64) int64) int64 {
 	w := func(a ...uintptr) uintptr {
+		defer enterCallback()()
 		args := make([]int64, len(a))
 		for i, v := range a {
 			args[i] = int64(v)

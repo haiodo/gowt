@@ -188,7 +188,7 @@ final class ControlFlowEmitter {
 					VariableDeclarationFragment f = (VariableDeclarationFragment) fo;
 					String name = emitter.sanitizeIdent(f.getName().getIdentifier());
 					String goType = dev.gowt.j2go.GoTypes.map(vde.getType().resolveBinding(), emitter);
-					String init = emitter.exprInto(f.getInitializer(), b, indent);
+					String init = emitter.adaptNumeric(emitter.exprInto(f.getInitializer(), b, indent), f.getInitializer().resolveTypeBinding(), vde.getType().resolveBinding());
 					b.append(ind(indent)).append("var ").append(name).append(' ').append(goType)
 							.append(" = ").append(init).append('\n');
 					// An unmapped JDK resource (InputStream) is any: close it only if it can be.

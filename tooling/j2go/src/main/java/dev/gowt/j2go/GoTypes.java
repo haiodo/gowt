@@ -53,6 +53,7 @@ public class GoTypes {
 		if (piPackage.equals("gtk") && javaPackage.equals("org.eclipse.swt.internal") && topLevelName.equals("Converter")) return "internal/gtk";
 		if (javaPackage.startsWith(TESTS_PACKAGE)) return "tests/swttests";
 		if (javaPackage.startsWith(JFACE_TESTS_PACKAGE)) return "tests/jfacetests";
+		if (javaPackage.equals("org.eclipse.swt.browser")) return "browser";
 		if (javaPackage.equals("org.eclipse.jface") || javaPackage.startsWith("org.eclipse.jface.")) return "jface";
 		if (javaPackage.startsWith(EXAMPLES_PACKAGE)) return "examples/" + javaPackage.substring(EXAMPLES_PACKAGE.length()).replace('.', '/');
 		return "swt";
@@ -71,6 +72,7 @@ public class GoTypes {
 			case "swttests" -> "tests/swttests";
 			case "jfacetests" -> "tests/jfacetests";
 			case "jface" -> "jface";
+			case "browser" -> "browser";
 			default -> "examples/" + goPackage;
 		};
 	}
@@ -103,6 +105,8 @@ public class GoTypes {
 				default -> "unsupported_primitive_" + t.getName();
 			};
 		}
+		// `var s = new Base() {...}`: Go has no anonymous types; the variable is typed by what the class extends.
+		if (t.isAnonymous() && t.getSuperclass() != null && !t.getSuperclass().getQualifiedName().equals("java.lang.Object")) t = t.getSuperclass();
 		String qualified = t.getErasure().getQualifiedName();
 		if (qualified.equals("java.lang.String")) return "string";
 		if (qualified.equals("java.lang.Object")) return "any";
@@ -144,7 +148,7 @@ public class GoTypes {
 	/** java.util.function.* and Comparator are bare Go funcs (lambdas need no adapter, a call is a Go call). */
 	public static boolean isJdkFunctional(String qualified) {
 		return qualified.startsWith("java.util.function.") || qualified.equals("java.util.Comparator")
-				|| qualified.equals("java.util.concurrent.Callable") || qualified.equals("org.eclipse.swt.SwtCallable");
+				|| qualified.equals("java.util.concurrent.Callable") || qualified.equals("com.sun.net.httpserver.HttpHandler") || qualified.equals("org.eclipse.swt.SwtCallable");
 	}
 
 	private static String funcType(IMethodBinding sam, Emitter emitter) {

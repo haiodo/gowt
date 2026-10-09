@@ -26,6 +26,7 @@ final class ExpressionEmitter {
 		if (e instanceof CharacterLiteral cl) return runeLiteral(cl.charValue());
 		if (e instanceof BooleanLiteral bl) return Boolean.toString(bl.booleanValue());
 		if (e instanceof StringLiteral sl) return goStringLiteral(sl.getLiteralValue());
+		if (e instanceof TextBlock tb) return goStringLiteral(tb.getLiteralValue());
 		if (e instanceof NullLiteral) return EmitUtil.nullLiteral(emitter, e);
 		if (e instanceof ThisExpression te) {
 			if (te.getQualifier() == null) return emitter.anonThis != null ? emitter.anonThis : "this";

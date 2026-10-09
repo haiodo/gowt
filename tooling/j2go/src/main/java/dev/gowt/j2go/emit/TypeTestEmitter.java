@@ -98,7 +98,7 @@ final class TypeTestEmitter {
 		ITypeBinding target = tp.getPatternVariable().getType().resolveBinding();
 		PATTERN_TYPES.put(varName, dev.gowt.j2go.GoTypes.map(target, emitter));
 		String okVar = "ok" + (++emitter.tempCounter);
-		emitter.prelude.add(instanceofCheck(pie.getLeftOperand(), target, varName, okVar));
+		emitter.prelude.add(instanceofCheck(pie.getLeftOperand(), target, emitter.sanitizeIdent(varName), okVar));
 		return okVar;
 	}
 

@@ -3314,3 +3314,23 @@ rules that fix it (all general, none specific to the factories):
 `cmd/swttest` built with `-tags jface` (`make test-jface`, `test-jface-update`), gated by `tests/expected_jface[_os].txt` (linux: 85 pass, 2 `DateTime` failures
 with causes; darwin and windows files are written by their first `make test-jface-update`). `cmd/jfacedemo` is a form built only from the factories
 (labels, texts, a group, a table under `TableColumnLayout`, buttons); `jfacedemo <png>` writes a snapshot and exits.
+
+## Round 23 browser: org.eclipse.swt.browser (TSK-2026-10-03-product-23)
+
+`org.eclipse.swt.browser` is Go package `browser` (`GoTypes.goPackageDir`, layer 2 like jface), translated from `Eclipse SWT Browser/common` by a `port.sh` invocation
+that runs for cocoa only. The engine is hand-written, so Java files stand in for what it overrides:
+
+- `tooling/j2go/stubs/.../BrowserFactory.java`, `Program.java`: typing only. `Browser.createWebBrowser` is a `MANUAL_METHODS` entry (`Browser.CreateWebBrowser` in
+  `browser/webbrowser_manual.go`); the Edge-unavailable dialog class is a `Manual` entry. `JSON.java` is not translated: nothing in the common layer uses it.
+- `.../WebViewBrowser.java` is a reference file (never emitted) that overrides the abstract `WebBrowser` methods, so `WebBrowser` gets its `impl` dispatch (`back_`, `create_`, ...);
+  `browser.webViewBrowser` embeds `*WebBrowser`, sets `impl = itself` and implements them.
+- A local variable named `browser` is renamed (`Emitter.sanitizeIdent`): it would hide the package.
+
+Translator changes the tests needed, all general: text blocks (`TextBlock.getLiteralValue`); `cell::get` on a hand-written type (`jrt.Atomic*`); a local class whose constructor is only
+`super(...)` becomes an anonymous class at each `new` (`SourcePrep.anonymizeLocalClasses`, the emitter has no capturing local classes); `var x = new Base() {...}` is typed `Base`, also as a
+try-with-resources variable; a pattern variable named like a Go builtin (`instanceof String string`) is renamed at its declaration too; `Fprintln` of a constant ending in a newline
+becomes `Fprint` (vet); `Double.intValue/doubleValue/equals/toString`, `Number.doubleValue`, `Long.toString`, `String.getBytes/toLowerCase(Locale)`, `new String(byte[], charset)`,
+`OutputStream.write(byte[])`, `System.runFinalization`. `internal/jrt` gained `Instant`/`Duration`, `Atomic*Array`, the `Collections` wrappers, `List.RemoveAll`/`new ArrayList<>(coll)`,
+`Path.toUri`, and `http.go` (`HttpServer`/`HttpExchange` over `net/http`) for `EchoHttpServer`, which is translated too.
+
+`Test_org_eclipse_swt_browser_Browser` (and `EchoHttpServer`) join `TEST_FILES`. Hand-written parts: `tests/swttests/browser_manual.go` (JVM diagnostics, `test_setJavascriptEnabled`).

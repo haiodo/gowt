@@ -414,9 +414,11 @@ func init() {
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setFocus_toChild_beforeOpen_()
 			}},
-			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setFocus_withInvisibleChild() }},
+			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setFocus_withInvisibleChild_()
+			}},
 			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
-				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setFocus_withVisibleAndInvisibleChild()
+				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).impl.test_setFocus_withVisibleAndInvisibleChild_()
 			}},
 			{Name: "test_setTabList$Lorg_eclipse_swt_widgets_Control", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_ScrolledComposite).Test_setTabList_Lorg_eclipse_swt_widgets_Control()

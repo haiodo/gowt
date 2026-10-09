@@ -350,10 +350,10 @@ public class TypeModel {
 	private void assignLikeNames(Names names) {
 		Set<String> swtTypeNames = new HashSet<>();
 		for (ClassInfo c : byBinaryName.values()) {
-			if (c.goPackage.equals("swt") || c.goPackage.equals("jface")) swtTypeNames.add(c.goPackage + "." + c.goTypeName);
+			if (c.goPackage.equals("swt") || c.goPackage.equals("jface") || c.goPackage.equals("browser")) swtTypeNames.add(c.goPackage + "." + c.goTypeName);
 		}
 		for (ClassInfo ci : byBinaryName.values()) {
-			if (!(ci.goPackage.equals("swt") || ci.goPackage.equals("jface")) || ci.isInterface || ci.isStruct) continue;
+			if (!(ci.goPackage.equals("swt") || ci.goPackage.equals("jface") || ci.goPackage.equals("browser")) || ci.isInterface || ci.isStruct) continue;
 			String as = "As" + ci.goTypeName;
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
 				if (names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName())).equals(as)) {

@@ -396,6 +396,12 @@ final class InvocationEmitter {
 			}
 			// BufferedInputStream only adds buffering: the wrapped stream is the value.
 			if (qualified.equals("java.io.BufferedInputStream") && n == 1) return emitter.expr((Expression) cic.arguments().get(0));
+			// new String(byte[], Charset): the bytes are UTF-8.
+			if (qualified.equals("java.lang.String") && n == 2 && ctor.getParameterTypes()[0].isArray()
+					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("byte")) {
+				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				return "jrt.StringFromBytes(" + emitter.expr((Expression) cic.arguments().get(0)) + ")";
+			}
 			// new String(String) is a copy; Go strings are values.
 			if (qualified.equals("java.lang.String") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.String")) {
 				return emitter.expr((Expression) cic.arguments().get(0));

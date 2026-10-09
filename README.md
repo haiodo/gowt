@@ -36,7 +36,7 @@ translated from SWT's own `internal.image` package - see `tooling/j2go/README.md
 `jface.GridLayoutFactoryFillDefaults().NumColumns(2).Create()` a `*swt.GridLayout`, `jface.NewTableColumnLayout()` a column layout for a table (`cmd/jfacedemo`).
 Java's self-typed generics (`F extends AbstractWidgetFactory<F,...>`) are erased by j2go; typed forwarding methods restore the chaining and the result types
 (`tooling/j2go/README.md` "Round 22"). Regenerate with `make gen` (needs `UI_REPO`, default `~/Develop/repos/eclipse.platform.ui`; the unit runs for cocoa only, the
-output is shared). `make test-jface` runs JFace's translated tests (on a new OS the first run is `make test-jface-update`). Not translated: `BrowserFactory`,
+output is shared). `make test-jface` runs JFace's translated tests (on a new OS the first run is `make test-jface-update`). Not translated: `BrowserFactory` (hand-written in `browser/`),
 viewers, dialogs, resources (later slices).
 
 ## WebView
@@ -47,6 +47,17 @@ localhost) and `OnMessage` for the page's `window.gowt.postMessage(...)`; naviga
 first load, so `HandleScheme` and `AddScript` come before it. UI thread only. macOS is WKWebView over purego (`internal/cocoa/webkit_manual.go`); `evaluateJavaScript` needs an ObjC
 block, made by `cocoa.NewBlock` (`block_manual.go`: a global block whose invoke is a shared purego callback). Windows and Linux return "not implemented" for now. `cmd/webviewdemo`
 is a Tree beside a web view. Headless check (no window, no activation): `GOWT_WK_HEADLESS=1 go test ./internal/cocoa -run WKViewHeadless`.
+
+## SWT Browser
+
+`browser/` is `org.eclipse.swt.browser` (`Browser`, `BrowserFunction`, the location/progress/title/... listeners): SWT's common layer translated by j2go, with package `webview` as the
+engine in place of SWT's WebKit/Edge/WebKitGTK classes (`browser/webbrowser_manual.go`; its Java-side declaration is `tooling/j2go/stubs/org/eclipse/swt/browser/WebViewBrowser.java`).
+`browser.NewBrowser(shell, swt.NONE)` uses the Browser itself as the host Composite. `evaluate`/`execute`/`getText` are synchronous: they run the UI event loop until the page answers (5 s limit).
+`BrowserFunction`s are defined by a script that runs at the start of every page and calls back through `window.gowt.call`, a synchronous page-to-Go call (`WebView.SetCallHandler`; WKWebView
+carries it on `window.prompt`). Optional engine features (`webview/optional.go`: history queries, `Stop`, the navigation policy that lets `LocationListener.changing` cancel, the call handler)
+are implemented on macOS only for now; without them `back`/`forward` always go, `changing` cannot cancel and BrowserFunctions return `undefined`. Not available: OpenWindow, CloseWindow,
+VisibilityWindow, Authentication and StatusText events, post data and headers in `setUrl`, `setJavascriptEnabled`, the cookie statics.
+`Test_org_eclipse_swt_browser_Browser` is translated with the other tests (`EchoHttpServer` over `internal/jrt/http.go`); `make gen` translates `browser/` for cocoa only, the output is shared.
 
 ## Build
 

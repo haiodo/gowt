@@ -66,6 +66,12 @@ func NewBlock(nargs int, fn func(args []uintptr)) uintptr {
 	return p
 }
 
+// callBlock invokes a block the callee made (a completion or decision handler) with word-sized arguments.
+func callBlock(b uintptr, args ...uintptr) {
+	invoke := *(*uintptr)(unsafe.Add(unsafe.Pointer(nil), b+16))
+	purego.SyscallN(invoke, append([]uintptr{b}, args...)...)
+}
+
 func blockRun(self uintptr, args ...uintptr) {
 	blockMu.Lock()
 	b := blockLive[self]

@@ -13,6 +13,9 @@ import (
 type Options struct {
 	// Inspectable lets Safari's Web Inspector attach (macOS 13.3+).
 	Inspectable bool
+
+	// host is set by NewOn: an engine that can use it as the hosting Composite does, the others put a child in it.
+	host *swt.Composite
 }
 
 type Request struct{ URL, Method string }

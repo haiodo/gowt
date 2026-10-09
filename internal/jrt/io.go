@@ -154,10 +154,15 @@ func (s *writerOutputStream) Close() {
 // interface (see ControlFlowEmitter's concrete-catch type assertion).
 type IOException struct{ Message string }
 
-func NewIOException(message ...string) *IOException {
+func NewIOException(arg ...any) *IOException {
 	e := &IOException{}
-	if len(message) > 0 {
-		e.Message = message[0]
+	if len(arg) > 0 {
+		switch x := arg[0].(type) {
+		case string:
+			e.Message = x
+		case error: // new IOException(cause)
+			e.Message = x.Error()
+		}
 	}
 	return e
 }

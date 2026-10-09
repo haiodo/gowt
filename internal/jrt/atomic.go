@@ -1,6 +1,10 @@
 package jrt
 
-import "sync"
+import (
+	"fmt"
+	"strings"
+	"sync"
+)
 
 // AtomicBoolean, AtomicInteger and AtomicReference are java.util.concurrent.atomic's cells; the
 // constructors take Java's optional initial value.
@@ -98,7 +102,7 @@ func NewAtomicLong(initial ...int64) *AtomicLong {
 
 func (a *AtomicLong) Get() int64       { a.mu.Lock(); defer a.mu.Unlock(); return a.v }
 func (a *AtomicLong) GetPlain() int64  { return a.Get() }
-func (a *AtomicLong) LongValue() int64  { return a.Get() }
+func (a *AtomicLong) LongValue() int64 { return a.Get() }
 func (a *AtomicLong) Set(v int64)      { a.mu.Lock(); a.v = v; a.mu.Unlock() }
 func (a *AtomicLong) SetPlain(v int64) { a.Set(v) }
 func (a *AtomicLong) AddAndGet(d int64) int64 {
@@ -151,4 +155,54 @@ func (a *AtomicReference) GetAndSet(v any) any {
 	old := a.v
 	a.v = v
 	return old
+}
+
+// AtomicIntegerArray and AtomicReferenceArray are the fixed-size arrays of cells.
+type AtomicIntegerArray struct {
+	mu sync.Mutex
+	v  []int32
+}
+
+func NewAtomicIntegerArray(n int32) *AtomicIntegerArray {
+	return &AtomicIntegerArray{v: make([]int32, n)}
+}
+
+func (a *AtomicIntegerArray) Get(i int32) int32 { a.mu.Lock(); defer a.mu.Unlock(); return a.v[i] }
+func (a *AtomicIntegerArray) Set(i, x int32)    { a.mu.Lock(); a.v[i] = x; a.mu.Unlock() }
+func (a *AtomicIntegerArray) Length() int32     { return int32(len(a.v)) }
+func (a *AtomicIntegerArray) ToString() string {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return arrayString(a.v)
+}
+
+type AtomicReferenceArray struct {
+	mu sync.Mutex
+	v  []any
+}
+
+func NewAtomicReferenceArray(n int32) *AtomicReferenceArray {
+	return &AtomicReferenceArray{v: make([]any, n)}
+}
+
+func (a *AtomicReferenceArray) Get(i int32) any { a.mu.Lock(); defer a.mu.Unlock(); return a.v[i] }
+func (a *AtomicReferenceArray) Set(i int32, x any) {
+	a.mu.Lock()
+	a.v[i] = x
+	a.mu.Unlock()
+}
+func (a *AtomicReferenceArray) Length() int32 { return int32(len(a.v)) }
+func (a *AtomicReferenceArray) ToString() string {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return arrayString(a.v)
+}
+
+// arrayString is the "[a, b, c]" of AtomicXArray.toString().
+func arrayString[T any](v []T) string {
+	parts := make([]string, len(v))
+	for i, e := range v {
+		parts[i] = fmt.Sprint(e)
+	}
+	return "[" + strings.Join(parts, ", ") + "]"
 }

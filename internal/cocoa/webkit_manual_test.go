@@ -24,9 +24,27 @@ func TestMain(m *testing.M) {
 	}
 }
 
+// bail ends an onMain body: t.Fatalf there would Goexit the main-thread goroutine and hang the test.
+type bail struct{}
+
+func fatalf(t *testing.T, format string, a ...any) {
+	t.Errorf(format, a...)
+	panic(bail{})
+}
+
 func onMain(f func()) {
 	done := make(chan struct{})
-	mainQ <- func() { f(); close(done) }
+	mainQ <- func() {
+		defer close(done)
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(bail); !ok {
+					panic(r)
+				}
+			}
+		}()
+		f()
+	}
 	<-done
 }
 
@@ -59,7 +77,7 @@ func TestWKViewHeadless(t *testing.T) {
 		wait := func(what string, ok func() bool) {
 			for deadline := time.Now().Add(10 * time.Second); !ok(); {
 				if time.Now().After(deadline) {
-					t.Fatalf("timeout waiting for %s; got %v", what, got)
+					fatalf(t, "timeout waiting for %s; got %v", what, got)
 				}
 				runLoop(mode, 0.05, false)
 			}
@@ -75,13 +93,13 @@ func TestWKViewHeadless(t *testing.T) {
 		v.Eval(`JSON.stringify(1+2)`, func(r, e string) { res, errs, fin = r, e, true })
 		wait("eval", func() bool { return fin })
 		if res != "3" || errs != "" {
-			t.Fatalf("eval = %q, %q", res, errs)
+			fatalf(t, "eval = %q, %q", res, errs)
 		}
 		fin = false
 		v.Eval(`throw new Error("boom")`, func(r, e string) { res, errs, fin = r, e, true })
 		wait("eval error", func() bool { return fin })
 		if errs == "" {
-			t.Fatalf("eval error: no error, result %q", res)
+			fatalf(t, "eval error: no error, result %q", res)
 		}
 
 		v.LoadURL("gowt://app/index.html")
@@ -98,7 +116,7 @@ func TestBlockEnumerate(t *testing.T) {
 		arr := msg(class("NSArray"), "arrayWithObject:", nsString("x"))
 		msg(arr, "enumerateObjectsUsingBlock:", NewBlock(3, func(a []uintptr) { seen = append(seen, a[0], a[1]) }))
 		if len(seen) != 2 || goString(seen[0]) != "x" || seen[1] != 0 {
-			t.Fatalf("block args = %v", seen)
+			fatalf(t, "block args = %v", seen)
 		}
 	})
 }
@@ -133,7 +151,7 @@ func TestWKViewCallPolicyHistory(t *testing.T) {
 		wait := func(what string, ok func() bool) {
 			for deadline := time.Now().Add(10 * time.Second); !ok(); {
 				if time.Now().After(deadline) {
-					t.Fatalf("timeout waiting for %s; titles %v, asked %v", what, titles, asked)
+					fatalf(t, "timeout waiting for %s; titles %v, asked %v", what, titles, asked)
 				}
 				runLoop(mode, 0.05, false)
 			}
@@ -144,19 +162,19 @@ func TestWKViewCallPolicyHistory(t *testing.T) {
 		wait("call reply", func() bool { return titles["re:ping|null"] })
 
 		if v.CanGoBack() {
-			t.Fatalf("CanGoBack on the first page")
+			fatalf(t, "CanGoBack on the first page")
 		}
 		v.LoadURL("gowt://app/a")
 		wait("second page", func() bool { return titles["gowt://app/a"] })
 		if !v.CanGoBack() || v.CanGoForward() {
-			t.Fatalf("after a second page: CanGoBack %v, CanGoForward %v", v.CanGoBack(), v.CanGoForward())
+			fatalf(t, "after a second page: CanGoBack %v, CanGoForward %v", v.CanGoBack(), v.CanGoForward())
 		}
 
 		asked = nil
 		v.LoadURL("gowt://blocked/b")
 		pump(0.5)
 		if len(asked) != 1 || titles["gowt://blocked/b"] || v.URL() != "gowt://app/a" {
-			t.Fatalf("blocked navigation: asked %v, URL %q", asked, v.URL())
+			fatalf(t, "blocked navigation: asked %v, URL %q", asked, v.URL())
 		}
 	})
 }

@@ -36,6 +36,9 @@ var (
 	skipFlag     = flag.Int("skip", 0, "with -child: skip the first N matching tests")
 )
 
+// exitTimeout is distinct from 2, the exit code of an uncaught Go panic.
+const exitTimeout = 3
+
 type result struct {
 	status  string // PASS, FAIL, SKIP
 	message string
@@ -75,8 +78,19 @@ func main() {
 			}
 			continue
 		}
-		for _, fn := range c.BeforeAll {
-			fn()
+		if res := classStep(c.BeforeAll); res.status != "" {
+			// JUnit: a failed @BeforeAll fails every test of the class, a failed assumption skips them.
+			for _, t := range tests {
+				name := c.Name + "." + t.Name
+				event("run", name, 0, "")
+				report(name, res)
+				if res.status == "SKIP" {
+					skipped++
+				} else {
+					failed++
+				}
+			}
+			continue
 		}
 		for _, t := range tests {
 			// The Display tests create their own: a second live Display is ERROR_NOT_IMPLEMENTED.
@@ -101,8 +115,11 @@ func main() {
 				skipped++
 			}
 		}
-		for _, fn := range c.AfterAll {
-			fn()
+		if res := classStep(c.AfterAll); res.status == "FAIL" {
+			name := c.Name + ".@AfterAll"
+			event("run", name, 0, "")
+			report(name, res)
+			failed++
 		}
 	}
 	if *listFlag {
@@ -167,7 +184,7 @@ func runTest(c *junit.Class, t junit.Test, name string) result {
 	watchdog := time.AfterFunc(timeout, func() {
 		report(name, result{"FAIL", fmt.Sprintf("timeout after %s, run aborted", timeout), time.Since(begin)})
 		event("fail", "", 0, "")
-		os.Exit(2)
+		os.Exit(exitTimeout)
 	})
 	defer watchdog.Stop()
 
@@ -195,6 +212,16 @@ func runTest(c *junit.Class, t junit.Test, name string) result {
 	}
 	res.elapsed = time.Since(begin)
 	return res
+}
+
+// classStep runs the class-level fns in order and stops at the first one that panics.
+func classStep(fns []func()) (res result) {
+	for _, fn := range fns {
+		if res = step(fn); res.status != "" {
+			break
+		}
+	}
+	return
 }
 
 // step runs fn; a panic becomes a FAIL (or SKIP for a failed assumption) with a one-line message:

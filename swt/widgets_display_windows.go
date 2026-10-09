@@ -2307,7 +2307,7 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 									panic(r)
 								}
 							}()
-							func() any { _ = []any{filename}; panic("j2go: unresolved new URI") }()
+							jrt.NewURI(filename)
 							this.SendEvent(OpenUrl, event)
 						}()
 					}

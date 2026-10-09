@@ -67,7 +67,7 @@ func (this *Test_org_eclipse_swt_dnd_FileTransfer) GetContents() []string {
 	})
 	var o any = future.Get()
 	junit.AssertInstanceOf[[]string](o)
-	return o.([]string)
+	return jrt.Cast[[]string](o)
 }
 
 func (this *Test_org_eclipse_swt_dnd_FileTransfer) Test_Validate() {

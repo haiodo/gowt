@@ -171,7 +171,9 @@ func (this *Tab) Impl() TabImpl {
 	return this.impl
 }
 
-func (this *Tab) SetImpl_(impl TabImpl) { this.impl = &tabHooked{TabImpl: this.impl, hook: impl} }
+func (this *Tab) SetImpl_(impl TabImpl) {
+	this.impl = &tabHooked{TabImpl: this.impl, hook: impl}
+}
 
 const TabTOO_SMALL_SIZE int32 = 10
 

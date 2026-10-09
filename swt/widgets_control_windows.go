@@ -2815,9 +2815,9 @@ func (this *Control) EmbedsWin32Control() bool {
 	if this.IsDisposed() || !this.impl.isVisible_() {
 		return false
 	}
-	browser, ok86 := any(nil), false
+	browser_, ok86 := any(nil), false
 	if ok86 {
-		return ("edge" == func() string { _ = []any{browser}; panic("j2go: unresolved call getBrowserType") }())
+		return ("edge" == func() string { _ = []any{browser_}; panic("j2go: unresolved call getBrowserType") }())
 	}
 	_, ok87 := any(nil), false
 	if ok87 {

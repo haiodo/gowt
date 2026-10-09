@@ -57,7 +57,7 @@ func (this *ByteArrayTransfer) javaToNative_(object any, transferData *TransferD
 	if !this.CheckByteArray(object) && !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var orig []int8 = object.([]int8)
+	var orig []int8 = jrt.Cast[[]int8](object)
 	var data *cocoa.NSData = cocoa.NSDataDataWithBytes(orig, int64(int32(len(orig))))
 	transferData.Data = upcastcocoaNSDataTococoaNSObject(data)
 }
@@ -79,7 +79,7 @@ func (this *ByteArrayTransfer) nativeToJava_(transferData *TransferData) any {
 }
 
 func (this *ByteArrayTransfer) CheckByteArray(object any) bool {
-	return (!jrt.IsNil(object) && func() bool { _, ok804 := object.([]int8); return ok804 }() && int32(len((object.([]int8)))) > 0)
+	return (!jrt.IsNil(object) && func() bool { _, ok804 := object.([]int8); return ok804 }() && int32(len((jrt.Cast[[]int8](object)))) > 0)
 }
 
 func upcastcocoaNSDataTococoaNSObject(x *cocoa.NSData) *cocoa.NSObject {

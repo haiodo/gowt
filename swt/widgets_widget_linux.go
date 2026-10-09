@@ -1911,7 +1911,7 @@ func (this *Widget) GetData() any {
 	this.CheckWidget()
 	var cond57 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond57 = (this.data.([]any))[0]
+		cond57 = (jrt.Cast[[]any](this.data))[0]
 	} else {
 		cond57 = this.data
 	}
@@ -1930,7 +1930,7 @@ func (this *Widget) GetDataKey(key string) any {
 		return this.impl.isActive_()
 	}
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		var table []any = this.data.([]any)
+		var table []any = jrt.Cast[[]any](this.data)
 		for i := int32(1); i < int32(len(table)); i += 2 {
 			if key == table[i] {
 				return table[i+1]
@@ -3212,7 +3212,7 @@ func (this *Widget) SendSelectionEventEventTypeEventSend(eventType int32, eventL
 func (this *Widget) SetData(data any) {
 	this.CheckWidget()
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		(this.data.([]any))[0] = data
+		(jrt.Cast[[]any](this.data))[0] = data
 	} else {
 		this.data = data
 	}
@@ -3236,7 +3236,7 @@ func (this *Widget) SetDataKeyValue(key string, value any) {
 	var index int32 = 1
 	var table []any = nil
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		table = this.data.([]any)
+		table = jrt.Cast[[]any](this.data)
 		for index < int32(len(table)) {
 			if key == table[index] {
 				break

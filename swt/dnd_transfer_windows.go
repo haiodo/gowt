@@ -44,8 +44,9 @@ func (this *Transfer) getTypeNames_() []string {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type transferHooked struct {
 	TransferImpl
-	hook   TransferImpl
-	active string
+	hook      TransferImpl
+	active    string
+	inherited bool
 }
 
 func (this *transferHooked) enter(name string) func() {
@@ -55,14 +56,20 @@ func (this *transferHooked) enter(name string) func() {
 }
 
 func (this *transferHooked) getSupportedTypes_() []*TransferData {
-	if h, ok := this.hook.(interface{ GetSupportedTypes_() []*TransferData }); ok {
+	if h, ok := this.hook.(interface{ GetSupportedTypes_() []*TransferData }); ok && !(this.inherited && this.active == "getSupportedTypes_") {
+		if this.inherited {
+			defer this.enter("getSupportedTypes_")()
+		}
 		return h.GetSupportedTypes_()
 	}
 	return this.TransferImpl.getSupportedTypes_()
 }
 
 func (this *transferHooked) isSupportedType_(a0 *TransferData) bool {
-	if h, ok := this.hook.(interface{ IsSupportedType_(a0 *TransferData) bool }); ok {
+	if h, ok := this.hook.(interface{ IsSupportedType_(a0 *TransferData) bool }); ok && !(this.inherited && this.active == "isSupportedType_") {
+		if this.inherited {
+			defer this.enter("isSupportedType_")()
+		}
 		return h.IsSupportedType_(a0)
 	}
 	return this.TransferImpl.isSupportedType_(a0)
@@ -71,7 +78,10 @@ func (this *transferHooked) isSupportedType_(a0 *TransferData) bool {
 func (this *transferHooked) javaToNative_(a0 any, a1 *TransferData) {
 	if h, ok := this.hook.(interface {
 		JavaToNative_(a0 any, a1 *TransferData)
-	}); ok {
+	}); ok && !(this.inherited && this.active == "javaToNative_") {
+		if this.inherited {
+			defer this.enter("javaToNative_")()
+		}
 		h.JavaToNative_(a0, a1)
 		return
 	}
@@ -79,21 +89,30 @@ func (this *transferHooked) javaToNative_(a0 any, a1 *TransferData) {
 }
 
 func (this *transferHooked) nativeToJava_(a0 *TransferData) any {
-	if h, ok := this.hook.(interface{ NativeToJava_(a0 *TransferData) any }); ok {
+	if h, ok := this.hook.(interface{ NativeToJava_(a0 *TransferData) any }); ok && !(this.inherited && this.active == "nativeToJava_") {
+		if this.inherited {
+			defer this.enter("nativeToJava_")()
+		}
 		return h.NativeToJava_(a0)
 	}
 	return this.TransferImpl.nativeToJava_(a0)
 }
 
 func (this *transferHooked) getTypeIds_() []int32 {
-	if h, ok := this.hook.(interface{ GetTypeIds_() []int32 }); ok {
+	if h, ok := this.hook.(interface{ GetTypeIds_() []int32 }); ok && !(this.inherited && this.active == "getTypeIds_") {
+		if this.inherited {
+			defer this.enter("getTypeIds_")()
+		}
 		return h.GetTypeIds_()
 	}
 	return this.TransferImpl.getTypeIds_()
 }
 
 func (this *transferHooked) getTypeNames_() []string {
-	if h, ok := this.hook.(interface{ GetTypeNames_() []string }); ok {
+	if h, ok := this.hook.(interface{ GetTypeNames_() []string }); ok && !(this.inherited && this.active == "getTypeNames_") {
+		if this.inherited {
+			defer this.enter("getTypeNames_")()
+		}
 		return h.GetTypeNames_()
 	}
 	return this.TransferImpl.getTypeNames_()
@@ -119,7 +138,8 @@ func (this *Transfer) Impl() TransferImpl {
 }
 
 func (this *Transfer) SetImpl_(impl TransferImpl) {
-	this.impl = &transferHooked{TransferImpl: this.impl, hook: impl}
+	_, base := this.impl.(*Transfer)
+	this.impl = &transferHooked{TransferImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() { jrt.RegisterClassPackage("Transfer", "org.eclipse.swt.dnd") }

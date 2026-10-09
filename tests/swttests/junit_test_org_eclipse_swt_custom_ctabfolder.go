@@ -966,7 +966,7 @@ func Test_org_eclipse_swt_custom_CTabFolderReflection_getChildControls(tabFolder
 		}()
 		var field any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.CTabFolder](), childControlArrayName)
 		func() any { return nil }()
-		tret106 = field.(*jrt.Field).Get(tabFolder.Impl()).([]*swt.Control)
+		tret106 = jrt.Cast[[]*swt.Control](field.(*jrt.Field).Get(tabFolder.Impl()))
 		tretd107 = true
 		return
 	}()

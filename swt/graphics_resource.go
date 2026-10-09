@@ -24,8 +24,9 @@ func (this *Resource) isDisposed_() bool {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type resourceHooked struct {
 	ResourceImpl
-	hook   ResourceImpl
-	active string
+	hook      ResourceImpl
+	active    string
+	inherited bool
 }
 
 func (this *resourceHooked) enter(name string) func() {
@@ -52,7 +53,10 @@ func (this *resourceHooked) getDevice_() *Device {
 }
 
 func (this *resourceHooked) isDisposed_() bool {
-	if h, ok := this.hook.(interface{ IsDisposed_() bool }); ok {
+	if h, ok := this.hook.(interface{ IsDisposed_() bool }); ok && !(this.inherited && this.active == "isDisposed_") {
+		if this.inherited {
+			defer this.enter("isDisposed_")()
+		}
 		return h.IsDisposed_()
 	}
 	return this.ResourceImpl.isDisposed_()
@@ -73,7 +77,8 @@ func (this *Resource) Impl() ResourceImpl {
 }
 
 func (this *Resource) SetImpl_(impl ResourceImpl) {
-	this.impl = &resourceHooked{ResourceImpl: this.impl, hook: impl}
+	_, base := this.impl.(*Resource)
+	this.impl = &resourceHooked{ResourceImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() { jrt.RegisterClassPackage("Resource", "org.eclipse.swt.graphics") }

@@ -55,7 +55,7 @@ func (this *FileTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckFile(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var fileNames []string = object.([]string)
+	var fileNames []string = jrt.Cast[[]string](object)
 	var newPtr int64 = int64(0)
 	if transferData.Type == FileTransferCF_HDROPID {
 		var allFiles *jrt.StringBuilder = jrt.NewStringBuilder()
@@ -187,10 +187,10 @@ func (this *FileTransfer) getTypeNames_() []string {
 }
 
 func (this *FileTransfer) CheckFile(object any) bool {
-	if jrt.IsNil(object) || func() bool { _, ok887 := object.([]string); return !(ok887) }() || int32(len((object.([]string)))) == 0 {
+	if jrt.IsNil(object) || func() bool { _, ok887 := object.([]string); return !(ok887) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
 		return false
 	}
-	for _, string_ := range object.([]string) {
+	for _, string_ := range jrt.Cast[[]string](object) {
 		if string_ == "" || jrt.StringLength(string_) == 0 {
 			return false
 		}

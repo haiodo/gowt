@@ -78,8 +78,9 @@ func (this *ScalingSWTFontRegistry_ScaledFontContainer) dispose_() {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type scalingSWTFontRegistry_ScaledFontContainerHooked struct {
 	ScalingSWTFontRegistry_ScaledFontContainerImpl
-	hook   ScalingSWTFontRegistry_ScaledFontContainerImpl
-	active string
+	hook      ScalingSWTFontRegistry_ScaledFontContainerImpl
+	active    string
+	inherited bool
 }
 
 func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) enter(name string) func() {
@@ -89,14 +90,20 @@ func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) enter(name string)
 }
 
 func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) createFont_(a0 int32) *Font {
-	if h, ok := this.hook.(interface{ CreateFont_(a0 int32) *Font }); ok {
+	if h, ok := this.hook.(interface{ CreateFont_(a0 int32) *Font }); ok && !(this.inherited && this.active == "createFont_") {
+		if this.inherited {
+			defer this.enter("createFont_")()
+		}
 		return h.CreateFont_(a0)
 	}
 	return this.ScalingSWTFontRegistry_ScaledFontContainerImpl.createFont_(a0)
 }
 
 func (this *scalingSWTFontRegistry_ScaledFontContainerHooked) dispose_() {
-	if h, ok := this.hook.(interface{ Dispose_() }); ok {
+	if h, ok := this.hook.(interface{ Dispose_() }); ok && !(this.inherited && this.active == "dispose_") {
+		if this.inherited {
+			defer this.enter("dispose_")()
+		}
 		h.Dispose_()
 		return
 	}
@@ -117,7 +124,8 @@ func (this *ScalingSWTFontRegistry_ScaledFontContainer) Impl() ScalingSWTFontReg
 }
 
 func (this *ScalingSWTFontRegistry_ScaledFontContainer) SetImpl_(impl ScalingSWTFontRegistry_ScaledFontContainerImpl) {
-	this.impl = &scalingSWTFontRegistry_ScaledFontContainerHooked{ScalingSWTFontRegistry_ScaledFontContainerImpl: this.impl, hook: impl}
+	_, base := this.impl.(*ScalingSWTFontRegistry_ScaledFontContainer)
+	this.impl = &scalingSWTFontRegistry_ScaledFontContainerHooked{ScalingSWTFontRegistry_ScaledFontContainerImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() {

@@ -78,7 +78,7 @@ func (this *FileTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckFile(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var files []string = object.([]string)
+	var files []string = jrt.Cast[[]string](object)
 	var length int32 = int32(len(files))
 	var array *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(int64(length))
 	for i := int32(0); i < length; i++ {
@@ -116,7 +116,7 @@ func (this *FileTransfer) getTypeNames_() []string {
 
 func (this *FileTransfer) CheckFile(object any) bool {
 	var strings []string
-	if jrt.IsNil(object) || func() bool { pv, ok832 := object.([]string); strings = pv; return !(ok832) }() || int32(len((object.([]string)))) == 0 {
+	if jrt.IsNil(object) || func() bool { pv, ok832 := object.([]string); strings = pv; return !(ok832) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
 		return false
 	}
 	for i := int32(0); i < int32(len(strings)); i++ {

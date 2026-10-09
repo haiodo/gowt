@@ -62,7 +62,7 @@ func (this *ByteArrayTransfer) javaToNative_(object any, transferData *TransferD
 	if !this.CheckByteArray(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var data []int8 = object.([]int8)
+	var data []int8 = jrt.Cast[[]int8](object)
 	var size int32 = int32(len(data))
 	var newPtr int64 = win32.OSGlobalAlloc(win32.OSGMEM_FIXED|win32.OSGMEM_ZEROINIT, size)
 	win32.OSMoveMemoryOverload11(newPtr, data, size)
@@ -99,5 +99,5 @@ func (this *ByteArrayTransfer) nativeToJava_(transferData *TransferData) any {
 
 func (this *ByteArrayTransfer) CheckByteArray(object any) bool {
 	_, ok852 := object.([]int8)
-	return (ok852 && int32(len((object.([]int8)))) > 0)
+	return (ok852 && int32(len((jrt.Cast[[]int8](object)))) > 0)
 }

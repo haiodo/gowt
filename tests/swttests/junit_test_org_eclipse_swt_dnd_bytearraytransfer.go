@@ -264,7 +264,7 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) NativeToJ
 	if !this.IsSupportedType(transferData) {
 		return nil
 	}
-	var buffer []int8 = this.ByteArrayTransfer.NativeToJava(transferData).([]int8)
+	var buffer []int8 = jrt.Cast[[]int8](this.ByteArrayTransfer.NativeToJava(transferData))
 	if buffer == (nil) {
 		return nil
 	}

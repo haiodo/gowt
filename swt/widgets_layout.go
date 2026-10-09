@@ -19,8 +19,9 @@ func (this *Layout) layoutFn_(a0 *Composite, a1 bool) {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type layoutHooked struct {
 	LayoutImpl
-	hook   LayoutImpl
-	active string
+	hook      LayoutImpl
+	active    string
+	inherited bool
 }
 
 func (this *layoutHooked) enter(name string) func() {
@@ -32,7 +33,10 @@ func (this *layoutHooked) enter(name string) func() {
 func (this *layoutHooked) computeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point {
 	if h, ok := this.hook.(interface {
 		ComputeSize_(a0 *Composite, a1 int32, a2 int32, a3 bool) *Point
-	}); ok {
+	}); ok && !(this.inherited && this.active == "computeSize_") {
+		if this.inherited {
+			defer this.enter("computeSize_")()
+		}
 		return h.ComputeSize_(a0, a1, a2, a3)
 	}
 	return this.LayoutImpl.computeSize_(a0, a1, a2, a3)
@@ -47,7 +51,10 @@ func (this *layoutHooked) flushCache_(a0 *Control) bool {
 }
 
 func (this *layoutHooked) layoutFn_(a0 *Composite, a1 bool) {
-	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok {
+	if h, ok := this.hook.(interface{ LayoutFn_(a0 *Composite, a1 bool) }); ok && !(this.inherited && this.active == "layoutFn_") {
+		if this.inherited {
+			defer this.enter("layoutFn_")()
+		}
 		h.LayoutFn_(a0, a1)
 		return
 	}
@@ -66,7 +73,8 @@ func (this *Layout) Impl() LayoutImpl {
 }
 
 func (this *Layout) SetImpl_(impl LayoutImpl) {
-	this.impl = &layoutHooked{LayoutImpl: this.impl, hook: impl}
+	_, base := this.impl.(*Layout)
+	this.impl = &layoutHooked{LayoutImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func (this *Layout) AsLayout() *Layout { return this }

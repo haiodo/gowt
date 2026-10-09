@@ -534,7 +534,7 @@ func (this *Display) Gdbus_init_methods() {
 		}
 		return a255
 	}(), func(args []any) []any {
-		var fileNames []string = args[0].([]string)
+		var fileNames []string = jrt.Cast[[]string](args[0])
 		for i := int32(0); i < int32(len(fileNames)); i++ {
 			var event *Event = NewEvent()
 			event.Text = fileNames[i]
@@ -552,10 +552,7 @@ func (this *Display) Gdbus_init_methods() {
 						panic(r)
 					}
 				}()
-				if func() string {
-					_ = []any{func() any { _ = []any{fileNames[i]}; panic("j2go: unresolved new URI") }()}
-					panic("j2go: unresolved call getScheme")
-				}() != "" {
+				if jrt.NewURI(fileNames[i]).GetScheme() != "" {
 					this.SendEvent(OpenUrl, event)
 				} else {
 					panic(func() any {
@@ -3932,7 +3929,7 @@ func (this *Display) RunSkin() bool {
 
 func (this *Display) SetCursorLocation(x int32, y int32) {
 	if !gtk.OSIsX11() {
-		fmt.Fprintln(os.Stderr, "SWT Display.java Error: setCursorLocation only supported on X11. \n")
+		fmt.Fprint(os.Stderr, "SWT Display.java Error: setCursorLocation only supported on X11. \n", "\n")
 	}
 	this.SetCursorLocationPoint(NewPoint(x, y))
 }
@@ -3963,7 +3960,7 @@ func (this *Display) SetData(key string, value any) {
 	}
 	if key == DisplayDISPATCH_EVENT_KEY {
 		if jrt.IsNil(value) || func() bool { _, ok294 := value.([]int32); return ok294 }() {
-			this.dispatchEvents = value.([]int32)
+			this.dispatchEvents = jrt.Cast[[]int32](value)
 			if jrt.IsNil(value) {
 				this.PutGdkEvents()
 			}
@@ -3975,7 +3972,7 @@ func (this *Display) SetData(key string, value any) {
 		return
 	}
 	if key == DisplayADD_WIDGET_KEY {
-		var data []any = value.([]any)
+		var data []any = jrt.Cast[[]any](value)
 		var handle int64 = (data[0].(*LONG)).Value
 		var widget *Widget = castanyToWidget(data[1])
 		if widget != (nil) {
@@ -5476,6 +5473,16 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 		}
 		return &v.Widget, true
 	case *IME:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
+	case *DragSource:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
+	case *DropTarget:
 		if v == nil {
 			return nil, false
 		}

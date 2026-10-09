@@ -350,47 +350,11 @@ func upcastCanvasToWidget(x *Canvas) *Widget {
 	return &x.Widget
 }
 
-// j2go: instanceof helper for Tree and its subclasses within the translated set.
-func widgetImplAsTree(x any) (*Tree, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *Tree:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsTree() *Tree }); ok {
-		return l.AsTree(), true
-	}
-	return nil, false
-}
-
 func isCompositeToTree(x *Composite) (*Tree, bool) {
 	if x == nil {
 		return nil, false
 	}
 	return widgetImplAsTree(x.impl)
-}
-
-// j2go: instanceof helper for Table and its subclasses within the translated set.
-func widgetImplAsTable(x any) (*Table, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *Table:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsTable() *Table }); ok {
-		return l.AsTable(), true
-	}
-	return nil, false
 }
 
 func isCompositeToTable(x *Composite) (*Table, bool) {

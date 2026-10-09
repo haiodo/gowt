@@ -3807,7 +3807,7 @@ func (this *Display) SetData(key string, value any) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if key == DisplayADD_WIDGET_KEY {
-		var data []any = value.([]any)
+		var data []any = jrt.Cast[[]any](value)
 		var object *cocoa.NSObject = castanyTococoaNSObject(data[0])
 		var widget *Widget = castanyToWidget(data[1])
 		if widget == (nil) {

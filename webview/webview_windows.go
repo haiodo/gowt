@@ -38,6 +38,10 @@ type wv2Engine struct {
 
 	env, ctl, view uintptr
 	lastURL        string
+
+	policy    func(url string, mainFrame bool) bool
+	call      func(msg string) string
+	cancelled bool
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
@@ -45,7 +49,11 @@ func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) 
 	if err != nil {
 		return nil, err
 	}
-	e := &wv2Engine{w: w, host: swt.NewCompositeParentStyle(parent, swt.NONE), opts: opts, dll: dll,
+	host := opts.host
+	if host == nil {
+		host = swt.NewCompositeParentStyle(parent, swt.NONE)
+	}
+	e := &wv2Engine{w: w, host: host, opts: opts, dll: dll,
 		schemes: map[string]SchemeHandler{}, scripts: []string{wv2Bridge}}
 	e.host.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { e.resize() }))
 	e.host.AddFocusListener(swt.FocusListenerFocusGainedAdapter(func(*swt.FocusEvent) {
@@ -242,16 +250,32 @@ func (e *wv2Engine) hookEvents() {
 		return takeString(*out)
 	}
 	add(7, e.view, func(_, args uintptr) { // NavigationStarting
+		e.cancelled = false
 		e.lastURL = str(args, 3)
+		if e.policy != nil && !e.policy(e.lastURL, true) {
+			e.cancelled = true
+			vcall(args, 8, 1) // put_Cancel
+			return
+		}
 		if w.OnNavigationStarted != nil {
 			w.OnNavigationStarted(e.lastURL)
 		}
 	})
-	add(15, e.view, func(_, args uintptr) { // NavigationCompleted
+	add(17, e.view, func(_, args uintptr) { // FrameNavigationStarting
+		if e.policy != nil && !e.policy(str(args, 3), false) {
+			vcall(args, 8, 1) // put_Cancel
+		}
+	})
+	add(21, e.view, func(_, args uintptr) { e.scriptDialog(args) }) // ScriptDialogOpening
+	add(15, e.view, func(_, args uintptr) {                         // NavigationCompleted
 		ok := heap[int32]()
 		status := heap[int32]()
 		vcall(args, 3, addr(ok))
 		vcall(args, 4, addr(status))
+		if e.cancelled && *ok == 0 && *status == wv2OperationCanceled {
+			e.cancelled = false
+			return
+		}
 		u := e.url()
 		if *ok != 0 {
 			if w.OnNavigationFinished != nil {
@@ -285,6 +309,35 @@ func (e *wv2Engine) hookEvents() {
 		}
 		vcall(args, 5, 1) // put_Handled
 	})
+}
+
+// scriptDialog answers the prompt window.gowt.call raises, the way the darwin engine does: the page blocks
+// in prompt() until the handler is done, and the reply is the prompt's result. Other dialogs and prompts are
+// left to the default UI.
+func (e *wv2Engine) scriptDialog(args uintptr) {
+	kind := heap[int32]()
+	if e.call == nil || vcall(args, 4, addr(kind)) != sOK || *kind != wv2DialogPrompt { // get_Kind
+		return
+	}
+	def := heap[uintptr]()
+	if vcall(args, 7, addr(def)) != sOK || takeString(*def) != wv2CallMark { // get_DefaultText
+		return
+	}
+	from := heap[uintptr]()
+	if vcall(args, 3, addr(from)) != sOK || !sameDocument(takeString(*from), e.url()) { // get_Uri
+		// A subframe asked: answer empty so the marker prompt does not reach the user, and never call f.
+		empty := utf16Z("")
+		vcall(args, 9, addr(&empty[0]))
+		vcall(args, 6)
+		return
+	}
+	msg := heap[uintptr]()
+	if vcall(args, 5, addr(msg)) != sOK { // get_Message
+		return
+	}
+	reply := utf16Z(e.call(takeString(*msg)))
+	vcall(args, 9, addr(&reply[0])) // put_ResultText
+	vcall(args, 6)                  // Accept
 }
 
 func (e *wv2Engine) serve(args uintptr) {
@@ -396,6 +449,30 @@ func (e *wv2Engine) handleScheme(scheme string, h SchemeHandler) error {
 func (e *wv2Engine) goBack()    { e.nav(40) }
 func (e *wv2Engine) goForward() { e.nav(41) }
 func (e *wv2Engine) reload()    { e.nav(31) }
+
+func (e *wv2Engine) canGoBack() bool    { return e.flag(38) }
+func (e *wv2Engine) canGoForward() bool { return e.flag(39) }
+
+func (e *wv2Engine) flag(slot int) bool {
+	if e.view == 0 || e.disposed {
+		return false
+	}
+	out := heap[int32]()
+	return vcall(e.view, slot, addr(out)) == sOK && *out != 0
+}
+
+func (e *wv2Engine) stop() { e.nav(43) }
+
+// Set before the first load, so the events are hooked after it.
+func (e *wv2Engine) setNavigationPolicy(f func(url string, mainFrame bool) bool) { e.policy = f }
+
+// window.gowt.call exists only with a handler, as without one the default prompt UI would show.
+func (e *wv2Engine) setCallHandler(f func(msg string) string) {
+	if e.call == nil {
+		e.addScript(wv2CallBridge)
+	}
+	e.call = f
+}
 
 func (e *wv2Engine) nav(slot int) {
 	if e.view != 0 && !e.disposed {

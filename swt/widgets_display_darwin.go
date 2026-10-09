@@ -6405,6 +6405,16 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 			return nil, false
 		}
 		return &v.Widget, true
+	case *DragSource:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
+	case *DropTarget:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
 	}
 	if l, ok := x.(interface{ AsWidget() *Widget }); ok {
 		return l.AsWidget(), true

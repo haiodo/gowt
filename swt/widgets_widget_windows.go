@@ -2057,12 +2057,6 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 	return this.eventTable.GetListeners(eventType)
 }
 
-func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) *jrt.List {
-	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()).Map(func(l Listener) any {
-		return (castListenerToTypedListener(l)).eventListener
-	}).Filter(func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()).Map(func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }())
-}
-
 func (this *Widget) GetMenu0() *Menu {
 	return this.impl.getMenu_()
 }
@@ -3696,17 +3690,6 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 		remainder.X = delta % win32.OSWHEEL_DELTA
 	}
 	this.count = delta / win32.OSWHEEL_DELTA
-}
-
-func castListenerToTypedListener(x Listener) *TypedListener {
-	if x == nil {
-		return nil
-	}
-	v, ok := typedListenerImplAsTypedListener(x)
-	if !ok {
-		panic("java.lang.ClassCastException: TypedListener")
-	}
-	return v
 }
 
 func init() {

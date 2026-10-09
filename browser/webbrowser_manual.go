@@ -34,6 +34,8 @@ type webViewBrowser struct {
 	policy bool
 	// html is what setText loaded: getText returns the source, as SWT's WebKit does, not the DOM.
 	html string
+	// inCall counts handleCall frames in progress: the page is blocked in window.gowt.call then.
+	inCall int
 }
 
 // BrowserFactory hands Browser its engine (SWT's per-OS class of this name).
@@ -193,15 +195,15 @@ func (w *webViewBrowser) decide(url string, mainFrame bool) bool {
 	if w.browser.IsDisposed() {
 		return true
 	}
-	if mainFrame && url != "about:blank" {
-		w.html = ""
-	}
 	e := w.newLocationEvent(url, mainFrame)
 	for _, l := range w.locationListeners {
 		l.Changing(e)
 		if w.browser.IsDisposed() {
 			return true
 		}
+	}
+	if e.Doit && mainFrame && url != "about:blank" {
+		w.html = ""
 	}
 	return e.Doit
 }
@@ -287,9 +289,16 @@ func (w *webViewBrowser) pump(done func() bool) bool {
 
 // evalSync evaluates js (see webview.WebView.Eval for the result) and waits for it.
 func (w *webViewBrowser) evalSync(js string) (result string, err error, ok bool) {
+	if w.inCall > 0 {
+		// The page waits for this call, so the script would only run after it returned.
+		panic(swt.NewSWTExceptionCodeMessage(swt.ERROR_FAILED_EVALUATE, "evaluate, execute and getText cannot be used inside a BrowserFunction"))
+	}
 	var finished bool
 	w.wv.Eval(js, func(r string, e error) { result, err, finished = r, e, true })
 	if !w.pump(func() bool { return finished }) {
+		if w.browser.IsDisposed() {
+			swt.Error(swt.ERROR_WIDGET_DISPOSED)
+		}
 		return "", errors.New("timeout"), false
 	}
 	return result, err, true
@@ -422,6 +431,8 @@ func (w *webViewBrowser) handleCall(msg string) string {
 	if f == nil || f.token != token {
 		return "null"
 	}
+	w.inCall++
+	defer func() { w.inCall-- }()
 	return callFunction(f, javaValue(args).([]any))
 }
 

@@ -146,6 +146,19 @@ func DoubleHashCode(d float64) int32 {
 	return int32(b ^ b>>32)
 }
 
+// DoubleToInt is Double.intValue(): NaN is 0, out-of-range values saturate.
+func DoubleToInt(d float64) int32 {
+	switch {
+	case d != d:
+		return 0
+	case d >= math.MaxInt32:
+		return math.MaxInt32
+	case d <= math.MinInt32:
+		return math.MinInt32
+	}
+	return int32(d)
+}
+
 // ObjectsEquals is Objects.equals(a, b): a typed nil pointer counts as null.
 func ObjectsEquals(a, b any) bool {
 	an := a == nil || reflect.ValueOf(a).Kind() == reflect.Pointer && reflect.ValueOf(a).IsNil()

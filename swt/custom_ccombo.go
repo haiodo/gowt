@@ -790,6 +790,7 @@ func (this *CCombo) InitAccessible() {
 	}
 	this.arrow.GetAccessible().AddAccessibleListener(anon693)
 	anon694 := &CComboAnon3{}
+	anon694.impl = anon694
 	anon694.initAccessibleTextAdapter()
 	anon694.fnGetCaretOffset = func(e *AccessibleTextEvent) {
 		e.Offset = this.text.GetCaretPosition()

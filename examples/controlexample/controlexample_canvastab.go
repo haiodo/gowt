@@ -274,6 +274,9 @@ func widgetImplAsScrollBar(x any) (*swt.ScrollBar, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsScrollBar() *swt.ScrollBar }); ok {
+		return l.AsScrollBar(), true
+	}
 	return nil, false
 }
 

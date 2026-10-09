@@ -530,6 +530,9 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 		}
 		return &v.Composite, true
 	}
+	if l, ok := x.(interface{ AsComposite() *swt.Composite }); ok {
+		return l.AsComposite(), true
+	}
 	return nil, false
 }
 

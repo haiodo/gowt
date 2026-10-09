@@ -1770,6 +1770,9 @@ func widgetImplAsTableItem(x any) (*swt.TableItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTableItem() *swt.TableItem }); ok {
+		return l.AsTableItem(), true
+	}
 	return nil, false
 }
 

@@ -316,6 +316,9 @@ func rectangleImplAsOfFloat(x any) (*swt.Rectangle_OfFloat, bool) {
 		}
 		return &v.Rectangle_OfFloat, true
 	}
+	if l, ok := x.(interface{ AsRectangle_OfFloat() *swt.Rectangle_OfFloat }); ok {
+		return l.AsRectangle_OfFloat(), true
+	}
 	return nil, false
 }
 

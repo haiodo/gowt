@@ -1051,6 +1051,9 @@ func sWTExceptionImplAsSWTException(x any) (*swt.SWTException, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSWTException() *swt.SWTException }); ok {
+		return l.AsSWTException(), true
+	}
 	return nil, false
 }
 

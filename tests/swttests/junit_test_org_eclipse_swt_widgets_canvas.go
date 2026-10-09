@@ -325,6 +325,9 @@ func widgetImplAsCanvas(x any) (*swt.Canvas, bool) {
 		}
 		return &v.Canvas, true
 	}
+	if l, ok := x.(interface{ AsCanvas() *swt.Canvas }); ok {
+		return l.AsCanvas(), true
+	}
 	return nil, false
 }
 

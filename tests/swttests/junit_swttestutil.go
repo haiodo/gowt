@@ -806,6 +806,9 @@ func sWTErrorImplAsSWTError(x any) (*swt.SWTError, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSWTError() *swt.SWTError }); ok {
+		return l.AsSWTError(), true
+	}
 	return nil, false
 }
 
@@ -828,6 +831,9 @@ func sWTExceptionImplAsSWTException(x any) (*swt.SWTException, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsSWTException() *swt.SWTException }); ok {
+		return l.AsSWTException(), true
 	}
 	return nil, false
 }
@@ -858,6 +864,9 @@ func deviceImplAsDisplay(x any) (*swt.Display, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsDisplay() *swt.Display }); ok {
+		return l.AsDisplay(), true
 	}
 	return nil, false
 }

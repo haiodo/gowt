@@ -219,6 +219,9 @@ func widgetImplAsShell(x any) (*swt.Shell, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsShell() *swt.Shell }); ok {
+		return l.AsShell(), true
+	}
 	return nil, false
 }
 

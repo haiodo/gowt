@@ -117,5 +117,8 @@ func gridDataImplAsGridData(x any) (*swt.GridData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGridData() *swt.GridData }); ok {
+		return l.AsGridData(), true
+	}
 	return nil, false
 }

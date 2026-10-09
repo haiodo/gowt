@@ -1242,6 +1242,9 @@ func widgetImplAsTreeItem(x any) (*swt.TreeItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTreeItem() *swt.TreeItem }); ok {
+		return l.AsTreeItem(), true
+	}
 	return nil, false
 }
 

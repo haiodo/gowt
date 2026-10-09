@@ -433,6 +433,9 @@ func widgetImplAsToolBar(x any) (*swt.ToolBar, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsToolBar() *swt.ToolBar }); ok {
+		return l.AsToolBar(), true
+	}
 	return nil, false
 }
 
@@ -476,6 +479,9 @@ func widgetImplAsCoolItem(x any) (*swt.CoolItem, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsCoolItem() *swt.CoolItem }); ok {
+		return l.AsCoolItem(), true
 	}
 	return nil, false
 }

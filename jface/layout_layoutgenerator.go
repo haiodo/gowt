@@ -204,6 +204,9 @@ func widgetImplAsButton(x any) (*swt.Button, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsButton() *swt.Button }); ok {
+		return l.AsButton(), true
+	}
 	return nil, false
 }
 
@@ -327,6 +330,9 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 		}
 		return &v.Composite, true
 	}
+	if l, ok := x.(interface{ AsComposite() *swt.Composite }); ok {
+		return l.AsComposite(), true
+	}
 	return nil, false
 }
 
@@ -357,6 +363,9 @@ func layoutImplAsGridLayout(x any) (*swt.GridLayout, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGridLayout() *swt.GridLayout }); ok {
+		return l.AsGridLayout(), true
+	}
 	return nil, false
 }
 
@@ -375,6 +384,9 @@ func gridDataImplAsGridData(x any) (*swt.GridData, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsGridData() *swt.GridData }); ok {
+		return l.AsGridData(), true
 	}
 	return nil, false
 }
@@ -398,6 +410,9 @@ func widgetImplAsLink(x any) (*swt.Link, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsLink() *swt.Link }); ok {
+		return l.AsLink(), true
 	}
 	return nil, false
 }

@@ -105,5 +105,8 @@ func pointImplAsOfFloat(x any) (*swt.Point_OfFloat, bool) {
 		}
 		return &v.Point_OfFloat, true
 	}
+	if l, ok := x.(interface{ AsPoint_OfFloat() *swt.Point_OfFloat }); ok {
+		return l.AsPoint_OfFloat(), true
+	}
 	return nil, false
 }

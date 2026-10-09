@@ -408,6 +408,9 @@ func widgetImplAsCoolItem(x any) (*swt.CoolItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsCoolItem() *swt.CoolItem }); ok {
+		return l.AsCoolItem(), true
+	}
 	return nil, false
 }
 

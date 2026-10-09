@@ -134,6 +134,9 @@ func widgetImplAsGroup(x any) (*swt.Group, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsGroup() *swt.Group }); ok {
+		return l.AsGroup(), true
+	}
 	return nil, false
 }
 

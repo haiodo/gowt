@@ -269,6 +269,9 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	}
+	if l, ok := x.(interface{ AsControl() *swt.Control }); ok {
+		return l.AsControl(), true
+	}
 	return nil, false
 }
 

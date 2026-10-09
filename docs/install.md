@@ -14,7 +14,7 @@ The default application name is the executable's base name (without `.exe`); `sw
 | OS | Needed | If missing |
 |---|---|---|
 | macOS | 13 (Ventura) or later: the minimum Go 1.27 writes to the binary (`LC_BUILD_VERSION minos 13.0`). AppKit only | - |
-| Windows | Windows 10 or later (amd64 or arm64; only run under Wine so far, the minimum is not verified); comctl32 v6 comes from the manifest, see below. WebView2 Runtime when the `webview` package lands for Windows (preinstalled on Windows 11) | - |
+| Windows | Windows 10 or later (amd64 or arm64; only run under Wine so far, the minimum is not verified); comctl32 v6 comes from the manifest, see below. WebView2 Runtime (Evergreen; preinstalled on Windows 11) for the `webview` package; no `WebView2Loader.dll` is needed | `webview.New` returns an error naming the runtime and its download page |
 | Linux | GTK 3 (`libgtk-3.so.0` and its dependencies: gdk, cairo, pango, fontconfig, libX11) and an X11 or XWayland display | no GTK: a panic with an error naming the missing library and install commands (`gowt.Run` returns it as an error). No display: `panic: No more handles [gtk_init_check() failed]` from `NewDisplay` |
 
 Linux packages: Debian/Ubuntu `libgtk-3-0`, Fedora `gtk3`, Arch `gtk3`, Alpine `gtk+3.0`. WebKitGTK for `webview` is not used yet.

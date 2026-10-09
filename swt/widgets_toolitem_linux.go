@@ -303,7 +303,7 @@ func (this *ToolItem) GetBackground() *Color {
 	if this.background != (nil) {
 		cond532 = this.background
 	} else {
-		cond532 = this.parent.GetBackground()
+		cond532 = this.parent.impl.getBackground_()
 	}
 	return cond532
 }

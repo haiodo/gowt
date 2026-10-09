@@ -196,7 +196,7 @@ func (this *TreeItem) GetBackground() *Color {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
 	if this.background == -1 {
-		return this.parent.GetBackground()
+		return this.parent.impl.getBackground_()
 	}
 	return ColorWin32_new(upcastDisplayToDevice(this.display), this.background)
 }
@@ -358,16 +358,16 @@ func (this *TreeItem) GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(inde
 					rect.Left = rect.Right + TreeINSET
 					rect.Right = headerRect.Right
 				} else {
-					var cond558 string
-					if this.strings != (nil) {
-						cond558 = this.strings[index]
-					} else {
-						cond558 = ""
-					}
 					var string_ string
 					if index == 0 {
 						string_ = this.text
 					} else {
+						var cond558 string
+						if this.strings != (nil) {
+							cond558 = this.strings[index]
+						} else {
+							cond558 = ""
+						}
 						string_ = cond558
 					}
 					if string_ != "" {

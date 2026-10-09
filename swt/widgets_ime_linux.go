@@ -141,13 +141,13 @@ func (this *IME) gtk_commit_(imcontext int64, textPtr int64) int64 {
 			event.Detail = COMPOSITION_CHANGED
 			event.Start = this.startOffset
 			event.End = this.startOffset + jrt.StringLength(this.text)
-			var cond739 string
+			var cond860 string
 			if chars != (nil) {
-				cond739 = string(utf16.Decode(chars))
+				cond860 = string(utf16.Decode(chars))
 			} else {
-				cond739 = ""
+				cond860 = ""
 			}
-			this.text = cond739
+			this.text = cond860
 			event.Text = this.text
 			this.commitCount = jrt.StringLength(this.text)
 			this.SendEventEventTypeEvent(ImeComposition, event)
@@ -158,13 +158,13 @@ func (this *IME) gtk_commit_(imcontext int64, textPtr int64) int64 {
 		}
 	}
 	this.inComposition = false
-	var cond740 int32
+	var cond861 int32
 	if doit {
-		cond740 = 0
+		cond861 = 0
 	} else {
-		cond740 = 1
+		cond861 = 1
 	}
-	return int64(cond740)
+	return int64(cond861)
 }
 
 func (this *IME) gtk_preedit_changed_(imcontext int64) int64 {
@@ -278,13 +278,13 @@ func (this *IME) gtk_preedit_changed_(imcontext int64) int64 {
 		event.Detail = COMPOSITION_CHANGED
 		event.Start = this.startOffset
 		event.End = end
-		var cond741 string
+		var cond862 string
 		if chars != (nil) {
-			cond741 = string(utf16.Decode(chars))
+			cond862 = string(utf16.Decode(chars))
 		} else {
-			cond741 = ""
+			cond862 = ""
 		}
-		this.text = cond741
+		this.text = cond862
 		event.Text = this.text
 		this.SendEventEventTypeEvent(ImeComposition, event)
 	}

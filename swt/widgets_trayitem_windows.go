@@ -64,9 +64,9 @@ func (this *TrayItem) CreateUpdateWidget(newIcon bool) {
 	var iconData *win32.NOTIFYICONDATA = win32.NewNOTIFYICONDATA()
 	iconData.CbSize = win32.NOTIFYICONDATASizeof
 	var cond664 int32
-	t665 := this.display.nextTrayId
-	this.display.nextTrayId++
 	if newIcon {
+		t665 := this.display.nextTrayId
+		this.display.nextTrayId++
 		cond664 = t665
 	} else {
 		cond664 = this.id

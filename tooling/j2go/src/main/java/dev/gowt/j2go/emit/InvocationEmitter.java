@@ -43,7 +43,7 @@ final class InvocationEmitter {
 		List<String> args = buildArgs(mi.arguments(), mb);
 
 		// list.toArray(new T[0]): jrt.List.ToArray is []any, a typed slice needs the element type.
-		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && args.size() == 1 && mi.getExpression() != null
+		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && (args.size() == 1 || qualified.equals("java.util.stream.IntStream")) && mi.getExpression() != null
 				&& mb.getReturnType().isArray() && dev.gowt.j2go.GoTypes.map(mi.getExpression().resolveTypeBinding(), emitter).equals("*jrt.List")) {
 			emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 			return "jrt.ToSlice[" + dev.gowt.j2go.GoTypes.map(mb.getReturnType().getComponentType(), emitter) + "](" + emitter.expr(mi.getExpression()) + ")";
@@ -108,6 +108,12 @@ final class InvocationEmitter {
 				}
 				return recv + "." + goName + "(" + String.join(", ", args) + ")";
 			}
+		}
+
+		// A helper the anonymous class declares itself is a func field of the generated struct (FunctionalEmitter).
+		if (emitter.anonType != null && !Modifier.isStatic(mb.getModifiers()) && declaring.getErasure().isEqualTo(emitter.anonType.getErasure())) {
+			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.anonThis;
+			return recv + ".fn" + FunctionalEmitter.anonOwnMethodName(mb) + "(" + String.join(", ", args) + ")";
 		}
 
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);

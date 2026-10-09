@@ -12,6 +12,20 @@ type IME struct {
 	startOffset int32
 }
 
+// StyledText builds one and reads the composition back; with no input method there is no composition.
+func (i *IME) AddListener(eventType int32, listener Listener) {}
+
+func NewIME(parent *Canvas, style int32) *IME { return &IME{} }
+
+func (i *IME) GetCaretOffset() int32             { return 0 }
+func (i *IME) GetCommitCount() int32             { return 0 }
+func (i *IME) GetCompositionOffset() int32       { return -1 }
+func (i *IME) GetRanges() []int32                { return nil }
+func (i *IME) GetStyles() []*TextStyle           { return nil }
+func (i *IME) GetText() string                   { return "" }
+func (i *IME) GetWideCaret() bool                { return false }
+func (i *IME) SetCompositionOffset(offset int32) {}
+
 func (i *IME) IsDisposed() bool                                                       { return i == nil }
 func (i *IME) AttributedSubstringFromRange(id int64, sel int64, rangePtr int64) int64 { return 0 }
 func (i *IME) CharacterIndexForPoint(id int64, sel int64, point int64) int64          { return 0 }

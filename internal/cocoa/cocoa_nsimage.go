@@ -91,15 +91,15 @@ func (this *NSImage) InitByReferencingFile(fileName *NSString) *NSImage {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initByReferencingFile_, cond315)
 	var cond316 *NSImage
-	var cond317 *NSImage
-	if result != 0 {
-		cond317 = NewNSImageOverload1(result)
-	} else {
-		cond317 = nil
-	}
 	if result == this.Id {
 		cond316 = this
 	} else {
+		var cond317 *NSImage
+		if result != 0 {
+			cond317 = NewNSImageOverload1(result)
+		} else {
+			cond317 = nil
+		}
 		cond316 = (cond317)
 	}
 	return cond316
@@ -114,15 +114,15 @@ func (this *NSImage) InitWithContentsOfFile(fileName *NSString) *NSImage {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithContentsOfFile_, cond318)
 	var cond319 *NSImage
-	var cond320 *NSImage
-	if result != 0 {
-		cond320 = NewNSImageOverload1(result)
-	} else {
-		cond320 = nil
-	}
 	if result == this.Id {
 		cond319 = this
 	} else {
+		var cond320 *NSImage
+		if result != 0 {
+			cond320 = NewNSImageOverload1(result)
+		} else {
+			cond320 = nil
+		}
 		cond319 = (cond320)
 	}
 	return cond319
@@ -137,15 +137,15 @@ func (this *NSImage) InitWithData(data *NSData) *NSImage {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithData_, cond321)
 	var cond322 *NSImage
-	var cond323 *NSImage
-	if result != 0 {
-		cond323 = NewNSImageOverload1(result)
-	} else {
-		cond323 = nil
-	}
 	if result == this.Id {
 		cond322 = this
 	} else {
+		var cond323 *NSImage
+		if result != 0 {
+			cond323 = NewNSImageOverload1(result)
+		} else {
+			cond323 = nil
+		}
 		cond322 = (cond323)
 	}
 	return cond322
@@ -154,15 +154,15 @@ func (this *NSImage) InitWithData(data *NSData) *NSImage {
 func (this *NSImage) InitWithIconRef(iconRef int64) *NSImage {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIconRef_, iconRef)
 	var cond324 *NSImage
-	var cond325 *NSImage
-	if result != 0 {
-		cond325 = NewNSImageOverload1(result)
-	} else {
-		cond325 = nil
-	}
 	if result == this.Id {
 		cond324 = this
 	} else {
+		var cond325 *NSImage
+		if result != 0 {
+			cond325 = NewNSImageOverload1(result)
+		} else {
+			cond325 = nil
+		}
 		cond324 = (cond325)
 	}
 	return cond324
@@ -171,15 +171,15 @@ func (this *NSImage) InitWithIconRef(iconRef int64) *NSImage {
 func (this *NSImage) InitWithSize(aSize NSSize) *NSImage {
 	var result int64 = OSObjc_msgSendOverload26(this.Id, OSSel_initWithSize_, aSize)
 	var cond326 *NSImage
-	var cond327 *NSImage
-	if result != 0 {
-		cond327 = NewNSImageOverload1(result)
-	} else {
-		cond327 = nil
-	}
 	if result == this.Id {
 		cond326 = this
 	} else {
+		var cond327 *NSImage
+		if result != 0 {
+			cond327 = NewNSImageOverload1(result)
+		} else {
+			cond327 = nil
+		}
 		cond326 = (cond327)
 	}
 	return cond326

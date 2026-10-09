@@ -49,15 +49,15 @@ func (this *NSToolbarItem) InitWithItemIdentifier(itemIdentifier *NSString) *NST
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithItemIdentifier_, cond801)
 	var cond802 *NSToolbarItem
-	var cond803 *NSToolbarItem
-	if result != 0 {
-		cond803 = NewNSToolbarItemOverload1(result)
-	} else {
-		cond803 = nil
-	}
 	if result == this.Id {
 		cond802 = this
 	} else {
+		var cond803 *NSToolbarItem
+		if result != 0 {
+			cond803 = NewNSToolbarItemOverload1(result)
+		} else {
+			cond803 = nil
+		}
 		cond802 = (cond803)
 	}
 	return cond802

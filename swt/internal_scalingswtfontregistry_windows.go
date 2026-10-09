@@ -216,8 +216,8 @@ func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) createFont_(zoom i
 }
 
 func (this *ScalingSWTFontRegistry_ScaledCustomFontContainer) dispose_() {
-	for _, elem826 := range this.scaledFonts.Values().ToArray() {
-		font := jrt.Cast[*Font](elem826)
+	for _, elem947 := range this.scaledFonts.Values().ToArray() {
+		font := jrt.Cast[*Font](elem947)
 		font.impl.dispose_()
 	}
 }

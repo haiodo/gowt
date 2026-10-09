@@ -2543,16 +2543,16 @@ func (this *GC) FillGradientRectangleInPixels(x int32, y int32, width int32, hei
 		}
 	}
 	var depth int32 = win32.OSGetDeviceCaps(this.Handle, win32.OSBITSPIXEL)
-	var cond357 int32
-	if depth >= 15 {
-		cond357 = 5
-	} else {
-		cond357 = 0
-	}
 	var bitResolution int32
 	if depth >= 24 {
 		bitResolution = 8
 	} else {
+		var cond357 int32
+		if depth >= 15 {
+			cond357 = 5
+		} else {
+			cond357 = 0
+		}
 		bitResolution = cond357
 	}
 	ImageDataFillGradientRectangle(this, this.data.Device, x, y, width, height, vertical, fromRGB, toRGB, bitResolution, bitResolution, bitResolution, zoom)

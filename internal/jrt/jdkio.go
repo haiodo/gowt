@@ -100,9 +100,15 @@ func (r *Reader) Close() {
 }
 
 // Collector is Collectors.joining(sep), toList() or toSet() (kind "list"/"set"; sets keep insertion order).
-type Collector struct{ sep, kind string }
+type Collector struct {
+	sep, kind string
+	key       any
+}
 
 func CollectorsJoining(sep string) *Collector { return &Collector{sep: sep} }
+
+// CollectorsSummingInt is Collectors.summingInt(ToIntFunction).
+func CollectorsSummingInt(key any) *Collector { return &Collector{kind: "sumint", key: key} }
 func CollectorsToList() *Collector            { return &Collector{kind: "list"} }
 func CollectorsToSet() *Collector             { return &Collector{kind: "set"} }
 

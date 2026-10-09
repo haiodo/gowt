@@ -53,15 +53,15 @@ func (this *NSTabViewItem) InitWithIdentifier(identifier *id) *NSTabViewItem {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond713)
 	var cond714 *NSTabViewItem
-	var cond715 *NSTabViewItem
-	if result != 0 {
-		cond715 = NewNSTabViewItemOverload1(result)
-	} else {
-		cond715 = nil
-	}
 	if result == this.Id {
 		cond714 = this
 	} else {
+		var cond715 *NSTabViewItem
+		if result != 0 {
+			cond715 = NewNSTabViewItemOverload1(result)
+		} else {
+			cond715 = nil
+		}
 		cond714 = (cond715)
 	}
 	return cond714

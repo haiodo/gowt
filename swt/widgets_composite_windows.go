@@ -1252,7 +1252,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 					var gcData *GCData = gc.GetGCData()
 					gcData.UiState = data.UiState
 					gc.SetForeground(this.impl.getForeground_())
-					gc.SetBackground(this.GetBackground())
+					gc.SetBackground(this.impl.getBackground_())
 					gc.SetFont(this.GetFont())
 					if (this.style & TRANSPARENT) != 0 {
 						win32.OSBitBlt(gc.Handle, 0, 0, width, height, paintGC.Handle, ps.Left, ps.Top, win32.OSSRCCOPY)

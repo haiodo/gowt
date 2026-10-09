@@ -2172,6 +2172,10 @@ func (this *Control) forceFocusFocusHandle_(focusHandle int64) bool {
 }
 
 func (this *Control) GetBackground() *Color {
+	return this.impl.getBackground_()
+}
+
+func (this *Control) getBackground_() *Color {
 	this.CheckWidget()
 	var color *Color
 	if this.backgroundAlpha == 0 {
@@ -2262,6 +2266,10 @@ func (this *Control) GetCursor() *Cursor {
 }
 
 func (this *Control) GetDragDetect() bool {
+	return this.impl.getDragDetect_()
+}
+
+func (this *Control) getDragDetect_() bool {
 	this.CheckWidget()
 	return (this.state & WidgetDRAG_DETECT) != 0
 }
@@ -2868,8 +2876,8 @@ func (this *Control) CairoClipRegion(cairo int64) {
 	var actualRegion int64 = gtk.CairoCairo_region_create_rectangle(&cairoRect)
 	gtk.CairoCairo_region_subtract(actualRegion, regionHandle)
 	var shell *Shell = this.impl.getShell_()
-	var shellBg *Color = shell.GetBackground()
-	if shellBg != this.GetBackground() {
+	var shellBg *Color = shell.impl.getBackground_()
+	if shellBg != this.impl.getBackground_() {
 		var rgba gtk.GdkRGBA = shellBg.Handle
 		gtk.CairoCairo_set_source_rgba(cairo, rgba.Red, rgba.Green, rgba.Blue, rgba.Alpha)
 	} else {
@@ -4296,6 +4304,10 @@ func (this *Control) setCursorCursor_(cursor int64) {
 }
 
 func (this *Control) SetDragDetect(dragDetect bool) {
+	this.impl.setDragDetect_(dragDetect)
+}
+
+func (this *Control) setDragDetect_(dragDetect bool) {
 	this.CheckWidget()
 	if dragDetect {
 		this.state |= WidgetDRAG_DETECT
@@ -4786,6 +4798,10 @@ func (this *Control) setTabItemFocus_(next bool) bool {
 }
 
 func (this *Control) SetTextDirection(textDirection int32) {
+	this.impl.setTextDirection_(textDirection)
+}
+
+func (this *Control) setTextDirection_(textDirection int32) {
 	this.CheckWidget()
 }
 
@@ -5914,6 +5930,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 		}
 		return &v.Control, true
 	case *CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
+	case *StyledText:
 		if v == nil {
 			return nil, false
 		}

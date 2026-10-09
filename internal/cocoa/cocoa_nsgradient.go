@@ -67,15 +67,15 @@ func (this *NSGradient) InitWithColors(colorArray *NSArray) *NSGradient {
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithColors_, cond286)
 	var cond287 *NSGradient
-	var cond288 *NSGradient
-	if result != 0 {
-		cond288 = NewNSGradientOverload1(result)
-	} else {
-		cond288 = nil
-	}
 	if result == this.Id {
 		cond287 = this
 	} else {
+		var cond288 *NSGradient
+		if result != 0 {
+			cond288 = NewNSGradientOverload1(result)
+		} else {
+			cond288 = nil
+		}
 		cond287 = (cond288)
 	}
 	return cond287
@@ -96,15 +96,15 @@ func (this *NSGradient) InitWithStartingColor(startingColor *NSColor, endingColo
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithStartingColor_endingColor_, cond289, cond290)
 	var cond291 *NSGradient
-	var cond292 *NSGradient
-	if result != 0 {
-		cond292 = NewNSGradientOverload1(result)
-	} else {
-		cond292 = nil
-	}
 	if result == this.Id {
 		cond291 = this
 	} else {
+		var cond292 *NSGradient
+		if result != 0 {
+			cond292 = NewNSGradientOverload1(result)
+		} else {
+			cond292 = nil
+		}
 		cond291 = (cond292)
 	}
 	return cond291

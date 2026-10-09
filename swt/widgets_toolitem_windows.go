@@ -720,13 +720,13 @@ func (this *ToolItem) UpdateImages(enabled bool) {
 			}
 		}
 		var cond643 *Image
-		var cond644 *Image
-		if hot != (nil) {
-			cond644 = hot
-		} else {
-			cond644 = image2
-		}
 		if image2 != (nil) {
+			var cond644 *Image
+			if hot != (nil) {
+				cond644 = hot
+			} else {
+				cond644 = image2
+			}
 			cond643 = (cond644)
 		} else {
 			cond643 = nil

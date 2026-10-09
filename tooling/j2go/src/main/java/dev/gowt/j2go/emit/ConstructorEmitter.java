@@ -229,6 +229,10 @@ final class ConstructorEmitter {
 				return "jrt.IdentityHashCode(this)";
 			}
 		}
+		// Object.clone(): a shallow copy; a hierarchy root's impl must point at the copy, not the original.
+		if (mb.getDeclaringClass().getQualifiedName().equals("java.lang.Object") && base.equals("Clone") && emitter.anonThis == null) {
+			return "func() any { c := *this; " + (emitter.currentClassInfo.root.children.isEmpty() ? "" : "c.impl = &c; ") + "return &c }()";
+		}
 		String fieldPath;
 		// Inside an anonymous subclass `this` is the holder variable and its base is the embedded field.
 		if (emitter.anonThis != null) {

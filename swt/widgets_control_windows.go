@@ -809,6 +809,10 @@ func (this *Control) GetAccessible() *Accessible {
 }
 
 func (this *Control) GetBackground() *Color {
+	return this.impl.getBackground_()
+}
+
+func (this *Control) getBackground_() *Color {
 	this.CheckWidget()
 	if this.backgroundAlpha == 0 {
 		var color *Color = ColorWin32_newDeviceHandleAlpha(upcastDisplayToDevice(this.display), this.background, 0)
@@ -961,6 +965,10 @@ func (this *Control) UpdateAutoScalingModeFromData() {
 }
 
 func (this *Control) GetDragDetect() bool {
+	return this.impl.getDragDetect_()
+}
+
+func (this *Control) getDragDetect_() bool {
 	this.CheckWidget()
 	return (this.state & WidgetDRAG_DETECT) != 0
 }
@@ -2562,6 +2570,10 @@ func (this *Control) setDefaultFont_() {
 }
 
 func (this *Control) SetDragDetect(dragDetect bool) {
+	this.impl.setDragDetect_(dragDetect)
+}
+
+func (this *Control) setDragDetect_(dragDetect bool) {
 	this.CheckWidget()
 	if dragDetect {
 		this.state |= WidgetDRAG_DETECT
@@ -2899,6 +2911,10 @@ func (this *Control) setTabItemFocus_() bool {
 }
 
 func (this *Control) SetTextDirection(textDirection int32) {
+	this.impl.setTextDirection_(textDirection)
+}
+
+func (this *Control) setTextDirection_(textDirection int32) {
 	this.CheckWidget()
 	textDirection &= (RIGHT_TO_LEFT | LEFT_TO_RIGHT)
 	this.impl.updateTextDirection_(textDirection)

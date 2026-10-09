@@ -126,7 +126,7 @@ func (this *TreeItem) _getBackground() *Color {
 	var ptr []int64 = make([]int64, 1)
 	gtk.GTKGtk_tree_model_get(this.parent.modelHandle, this.Handle, TreeBACKGROUND_COLUMN, ptr, -1)
 	if ptr[0] == 0 {
-		return this.parent.GetBackground()
+		return this.parent.impl.getBackground_()
 	}
 	var gdkRGBA gtk.GdkRGBA = gtk.GdkRGBA{}
 	gtk.OSMemmoveOverload10(&gdkRGBA, ptr[0], int64(gtk.GdkRGBASizeof))

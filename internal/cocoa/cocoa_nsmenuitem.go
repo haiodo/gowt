@@ -81,15 +81,15 @@ func (this *NSMenuItem) InitWithTitle(aString *NSString, aSelector int64, charCo
 	}
 	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_initWithTitle_action_keyEquivalent_, cond390, aSelector, cond391)
 	var cond392 *NSMenuItem
-	var cond393 *NSMenuItem
-	if result != 0 {
-		cond393 = NewNSMenuItemOverload1(result)
-	} else {
-		cond393 = nil
-	}
 	if result == this.Id {
 		cond392 = this
 	} else {
+		var cond393 *NSMenuItem
+		if result != 0 {
+			cond393 = NewNSMenuItemOverload1(result)
+		} else {
+			cond393 = nil
+		}
 		cond392 = (cond393)
 	}
 	return cond392

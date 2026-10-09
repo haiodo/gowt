@@ -186,6 +186,10 @@ public class Emitter {
 		return functionalEmitter.emitLambda(le);
 	}
 
+	String emitCreationReference(CreationReference cr) {
+		return functionalEmitter.emitCreationReference(cr);
+	}
+
 	String emitMethodReference(ExpressionMethodReference emr) {
 		return functionalEmitter.emitMethodReference(emr);
 	}

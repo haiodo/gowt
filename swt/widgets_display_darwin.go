@@ -6192,6 +6192,11 @@ func widgetImplAsWidget(x any) (*Widget, bool) {
 			return nil, false
 		}
 		return &v.Widget, true
+	case *StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Widget, true
 	case *Group:
 		if v == nil {
 			return nil, false

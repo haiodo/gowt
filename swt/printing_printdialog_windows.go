@@ -335,15 +335,15 @@ func (this *PrintDialog) Open() *PrinterData {
 			}
 			if (devmode.DmFields & win32.OSDM_DUPLEX) != 0 {
 				var dmDuplex int16 = devmode.DmDuplex
-				var cond675 int32
-				if int32(dmDuplex) == int32(win32.OSDMDUP_HORIZONTAL) {
-					cond675 = PrinterDataDUPLEX_SHORT_EDGE
-				} else {
-					cond675 = PrinterDataDUPLEX_LONG_EDGE
-				}
 				if int32(dmDuplex) == int32(win32.OSDMDUP_SIMPLEX) {
 					data.Duplex = PrinterDataDUPLEX_NONE
 				} else {
+					var cond675 int32
+					if int32(dmDuplex) == int32(win32.OSDMDUP_HORIZONTAL) {
+						cond675 = PrinterDataDUPLEX_SHORT_EDGE
+					} else {
+						cond675 = PrinterDataDUPLEX_LONG_EDGE
+					}
 					data.Duplex = cond675
 				}
 			}

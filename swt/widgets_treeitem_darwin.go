@@ -145,31 +145,31 @@ func (this *TreeItem) CalculateWidth(index int32, gcLike GCLike) int32 {
 	if font == (nil) {
 		font = this.parent.impl.defaultFont_()
 	}
-	var cond544 string
-	if this.strings == (nil) {
-		cond544 = ""
-	} else {
-		cond544 = this.strings[index]
-	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
+		var cond544 string
+		if this.strings == (nil) {
+			cond544 = ""
+		} else {
+			cond544 = this.strings[index]
+		}
 		text = (cond544)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
 		text = fmt.Sprintf("%s%s", jrt.Substring(text, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 	}
-	var cond545 *Image
-	if this.images == (nil) {
-		cond545 = nil
-	} else {
-		cond545 = this.images[index]
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond545 *Image
+		if this.images == (nil) {
+			cond545 = nil
+		} else {
+			cond545 = this.images[index]
+		}
 		image = (cond545)
 	}
 	var cell *cocoa.NSCell = upcastcocoaNSTextFieldCellTococoaNSCell(this.parent.dataCell)
@@ -272,16 +272,16 @@ func (this *TreeItem) ClearAll(all bool) {
 }
 
 func (this *TreeItem) CreateString(index int32) *cocoa.NSObject {
-	var cond547 string
-	if this.strings == (nil) {
-		cond547 = ""
-	} else {
-		cond547 = this.strings[index]
-	}
 	var text string
 	if index == 0 {
 		text = this.text
 	} else {
+		var cond547 string
+		if this.strings == (nil) {
+			cond547 = ""
+		} else {
+			cond547 = this.strings[index]
+		}
 		text = (cond547)
 	}
 	if (text != "") && (jrt.StringLength(text) > ItemTEXT_LIMIT) {
@@ -323,7 +323,7 @@ func (this *TreeItem) GetBackground() *Color {
 	if this.background != (nil) {
 		cond549 = this.background
 	} else {
-		cond549 = this.parent.GetBackground()
+		cond549 = this.parent.impl.getBackground_()
 	}
 	return cond549
 }
@@ -544,16 +544,16 @@ func (this *TreeItem) GetImageBounds(index int32) *Rectangle {
 	}
 	this.parent.CheckItems()
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.parent.View)
-	var cond552 *Image
-	if this.images != (nil) {
-		cond552 = this.images[index]
-	} else {
-		cond552 = nil
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond552 *Image
+		if this.images != (nil) {
+			cond552 = this.images[index]
+		} else {
+			cond552 = nil
+		}
 		image = cond552
 	}
 	if this.parent.columnCount == 0 {
@@ -670,16 +670,16 @@ func (this *TreeItem) GetTextBounds(index int32) *Rectangle {
 	}
 	this.parent.CheckItems()
 	var outlineView *cocoa.NSOutlineView = castcocoaNSViewTococoaNSOutlineView(this.parent.View)
-	var cond554 *Image
-	if this.images != (nil) {
-		cond554 = this.images[index]
-	} else {
-		cond554 = nil
-	}
 	var image *Image
 	if index == 0 {
 		image = this.image
 	} else {
+		var cond554 *Image
+		if this.images != (nil) {
+			cond554 = this.images[index]
+		} else {
+			cond554 = nil
+		}
 		image = cond554
 	}
 	if this.parent.columnCount == 0 {

@@ -201,12 +201,13 @@ final class SourcePrep {
 		return r;
 	}
 
-	private static final Pattern LOCAL_CLASS = Pattern.compile("(?m)^([ \\t]+)((?:final|abstract)\\s+)?class\\s+\\w+");
+	private static final Pattern LOCAL_CLASS = Pattern.compile("(?m)^([ \\t]+)((?:final|abstract)\\s+)?class\\s+(\\w+)");
 
 	/** A local class (declared in a method body) moves to the end of the file as a static member: the emitter has
 	 * no local classes. Only for one that captures no local variable and no outer instance. */
 	static String hoistLocalClasses(String src) {
 		StringBuilder hoisted = new StringBuilder();
+		java.util.Set<String> hoistedNames = new java.util.HashSet<>();
 		Matcher m = LOCAL_CLASS.matcher(src);
 		for (int from = 0; m.find(from); ) {
 			if (insideCommentOrString(src, m.start()) || depthAt(src, m.start()) == 0 || isMemberPosition(src, m.start())) {
@@ -214,8 +215,19 @@ final class SourcePrep {
 				continue;
 			}
 			int close = matching(src, src.indexOf('{', m.end()), '{', '}');
-			hoisted.append("\n\tstatic ").append(src, m.start() + m.group(1).length(), close + 1).append("\n");
-			src = src.substring(0, m.start()) + src.substring(close + 1);
+			String decl = src.substring(m.start() + m.group(1).length(), close + 1);
+			int scopeEnd = blockEnd(src, close + 1);
+			String scope = src.substring(close + 1, scopeEnd);
+			// Two methods may each declare a local class of the same name; the file then holds one member of each.
+			String name = m.group(3);
+			if (!hoistedNames.add(name)) {
+				String renamed = name + "_" + hoistedNames.size();
+				decl = decl.replaceAll("\\b" + name + "\\b", renamed);
+				scope = scope.replaceAll("\\b" + name + "\\b", renamed);
+				hoistedNames.add(renamed);
+			}
+			hoisted.append("\n\tstatic ").append(decl).append("\n");
+			src = src.substring(0, m.start()) + scope + src.substring(scopeEnd);
 			m = LOCAL_CLASS.matcher(src);
 			from = 0;
 		}

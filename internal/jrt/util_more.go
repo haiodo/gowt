@@ -1,10 +1,12 @@
 package jrt
 
 import (
+	"cmp"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -149,6 +151,13 @@ func (l *List) Collect(c *Collector) any {
 			parts = append(parts, fmt.Sprint(v))
 		}
 		return strings.Join(parts, c.sep)
+	}
+	if c.kind == "sumint" {
+		var sum int32
+		for _, v := range l.ToArray() {
+			sum += callFunc(c.key, v).(int32)
+		}
+		return sum
 	}
 	out := NewList()
 	for _, v := range l.ToArray() {
@@ -346,3 +355,103 @@ func (s *Stack) Pop() any {
 }
 
 func (s *Stack) IsEmpty() bool { return len(s.items) == 0 }
+
+// Stream stages the translated code uses beyond Map/Filter: the values stay boxed in any, the lambda's own Go types do the work.
+func (l *List) MapToInt(fn any) *List { return l.Map(fn) }
+func (l *List) MapToObj(fn any) *List { return l.Map(fn) }
+
+func (l *List) FlatMapToInt(fn any) *List {
+	out := NewList()
+	for _, v := range l.ToArray() {
+		out.AddAll(callFunc(fn, v).(*List))
+	}
+	return out
+}
+
+func (l *List) AllMatch(pred any) bool {
+	for _, v := range l.ToArray() {
+		if !callFunc(pred, v).(bool) {
+			return false
+		}
+	}
+	return true
+}
+
+func (l *List) NoneMatch(pred any) bool {
+	for _, v := range l.ToArray() {
+		if callFunc(pred, v).(bool) {
+			return false
+		}
+	}
+	return true
+}
+
+func (l *List) Distinct() *List {
+	out := NewList()
+	for _, v := range l.ToArray() {
+		if !out.Contains(v) {
+			out.Add(v)
+		}
+	}
+	return out
+}
+
+// Sorted is IntStream.sorted(): the elements are ints.
+func (l *List) Sorted() *List {
+	items := l.ToArray()
+	slices.SortStableFunc(items, func(a, b any) int { return cmp.Compare(a.(int32), b.(int32)) })
+	return &List{items: items}
+}
+
+// IntStreamOf is IntStream.of(values...).
+func IntStreamOf(values ...int32) *List {
+	out := NewList()
+	for _, v := range values {
+		out.Add(v)
+	}
+	return out
+}
+
+// ArraysSortComparator is Arrays.sort(T[], Comparator): stable, like Java's object sort.
+func ArraysSortComparator[T any](a []T, c func(T, T) int32) {
+	slices.SortStableFunc(a, func(x, y T) int { return int(c(x, y)) })
+}
+
+// ArraysBinarySearch is Arrays.binarySearch(array, key): the index, or -(insertion point)-1.
+func ArraysBinarySearch[T cmp.Ordered](a []T, key T) int32 {
+	i, found := slices.BinarySearch(a, key)
+	if found {
+		return int32(i)
+	}
+	return int32(-i - 1)
+}
+
+// Count is Stream.count().
+func (l *List) Count() int64 { return int64(l.Size()) }
+
+// IntStreamRange is IntStream.range(from, to).
+func IntStreamRange(from, to int32) *List {
+	out := NewList()
+	for i := from; i < to; i++ {
+		out.Add(i)
+	}
+	return out
+}
+
+// CollectInto is the sequential collect(supplier, accumulator, combiner).
+func (l *List) CollectInto(supplier, accumulator any) any {
+	r := callFunc(supplier)
+	for _, v := range l.ToArray() {
+		callFunc(accumulator, r, v)
+	}
+	return r
+}
+
+// StringChars is String.chars(): the UTF-16 code units.
+func StringChars(s string) *List {
+	out := NewList()
+	for _, u := range utf16.Encode([]rune(s)) {
+		out.Add(int32(u))
+	}
+	return out
+}

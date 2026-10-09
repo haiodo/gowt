@@ -134,28 +134,28 @@ func (this *ToolItem) accessibilityAttributeNames_(id int64, sel int64) int64 {
 func (this *ToolItem) accessibilityAttributeValue_(id int64, sel int64, arg0 int64) int64 {
 	var nsAttributeName *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 	if nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleAttribute_) || nsAttributeName.IsEqualToString(cocoa.OSNSAccessibilityRoleDescriptionAttribute_) {
-		var cond609 *cocoa.NSString
-		var cond610 *cocoa.NSString
-		var cond611 *cocoa.NSString
-		if (this.style & DROP_DOWN) != 0 {
-			cond611 = cocoa.OSNSAccessibilityMenuButtonRole_
-		} else {
-			cond611 = nil
-		}
-		if (this.style & CHECK) != 0 {
-			cond610 = cocoa.OSNSAccessibilityCheckBoxRole_
-		} else {
-			cond610 = cond611
-		}
-		if (this.style & RADIO) != 0 {
-			cond609 = cocoa.OSNSAccessibilityRadioButtonRole_
-		} else {
-			cond609 = cond610
-		}
 		var roleText *cocoa.NSString
 		if (this.style & PUSH) != 0 {
 			roleText = cocoa.OSNSAccessibilityButtonRole_
 		} else {
+			var cond609 *cocoa.NSString
+			if (this.style & RADIO) != 0 {
+				cond609 = cocoa.OSNSAccessibilityRadioButtonRole_
+			} else {
+				var cond610 *cocoa.NSString
+				if (this.style & CHECK) != 0 {
+					cond610 = cocoa.OSNSAccessibilityCheckBoxRole_
+				} else {
+					var cond611 *cocoa.NSString
+					if (this.style & DROP_DOWN) != 0 {
+						cond611 = cocoa.OSNSAccessibilityMenuButtonRole_
+					} else {
+						cond611 = nil
+					}
+					cond610 = cond611
+				}
+				cond609 = cond610
+			}
 			roleText = cond609
 		}
 		if roleText != (nil) {
@@ -505,7 +505,7 @@ func (this *ToolItem) GetBackground() *Color {
 	if this.background != (nil) {
 		cond614 = this.background
 	} else {
-		cond614 = this.parent.GetBackground()
+		cond614 = this.parent.impl.getBackground_()
 	}
 	return cond614
 }

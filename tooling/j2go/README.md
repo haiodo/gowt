@@ -3346,7 +3346,8 @@ and effects) like any shared file, and the platform's own `Clipboard`, `Transfer
   (`IDataObject`, `IDropSource`, `IDropTarget`, `OleSetClipboard`) over `internal/win32`; the COM objects are `COMObject` subclasses, so `COMObject.java` (Eclipse SWT
   OLE Win32, `internal.ole.win32`) is translated into package `swt` (`GoTypes.goPackageDir`), where its inner and anonymous subclasses can use the ordinary cascade; the
   vtable callbacks are `emitIndexedCallback` (`new Callback(getClass(), "callback" + i, n + 1, true, E_FAIL)`: one `NewCallbackFn` per `callbackN`), `swt.LONG` got
-  `HashCode`/`Equals` for its map. gtk: GTK 3 only (the GTK 4 classes `ContentProviders`, `ClipboardProxyGTK4`, `GdkContent(De)Serializer` are panicking stubs in
+  `HashCode`/`Equals` for its map. The platform `Accessible` (IAccessible, IAccessible2, ...) subclasses the same `COMObject`; its methods take up to 12 words plus the
+  object pointer, so `win32.NewCallbackN` makes thunks of 0..13 words. gtk: GTK 3 only (the GTK 4 classes `ContentProviders`, `ClipboardProxyGTK4`, `GdkContent(De)Serializer` are panicking stubs in
   `swt/dnd_gtk4_manual_linux.go`, as are the other GTK 4 names), the translation is of `Eclipse SWT Drag and Drop/gtk` (EPL) only.
 - **gtk bindings.** The bindings come from GIR as before. The DnD call sites do not exist before the first translation, so `tooling/girgen/seed.txt` lists the call-site
   names the EPL sources spell (and the Java types of the new `memmove` overloads, `Name javaType...`); `girgen` reads it with `-seed`. `shapes.txt` has the parameter
@@ -3365,7 +3366,24 @@ and effects) like any shared file, and the platform's own `Clipboard`, `Transfer
   for strings.
 - **Tests.** `Test_org_eclipse_swt_dnd_{Clipboard,ByteArrayTransfer,Text,RTF,HTML,URL,File,Image}Transfer` and `ClipboardBase` are in `TEST_FILES`. The Swing peer
   process (`RemoteClipboard`, RMI) is a skip stub (`tests/swttests/clipboard_manual.go`): the tests that need another clipboard owner are SKIP, the others run against
-  the process's own clipboard. `CapturedOutput` (System.out/err capture) is hand-written there too (os.Stdout/os.Stderr over temp files). `openAndFocusShell` is
+  the process's own clipboard. `CapturedOutput` is translated (`jrt.NewPrintStream` and `jrt.SetOut/SetErr` capture os.Stdout/os.Stderr through a temp file). `openAndFocusShell` is
   hand-written without its Wayland branch (a null `Boolean`). `@DisabledOnOs` is still decided at translation time for macOS, so the URLTransfer tests and
   two others are skipped everywhere. `cmd/swttest` disposes the Display a test created itself before it makes a new shared one (`test_AfterNewDisplay_*`).
 - **Linux result** (Xvfb, `-run 'dnd|Clipboard'`): 24 passed, 0 failed, 39 skipped (no remote peer 34, `@DisabledOnOs` 5). Not run: macOS and Windows.
+
+## Round 25 StyledText (TSK-2026-10-03-product-25)
+
+`org.eclipse.swt.custom.StyledText` and its helpers (content, renderer, writers, events, listeners) join `SWT_FILES`; the JUnit tests `Test_org_eclipse_swt_custom_StyledText*` and
+`StyledTextContentSpec` join `TEST_FILES`. StyledText uses the translated dnd (Round 24 dnd: `Clipboard`, the Transfers, `StyledTextDropTargetEffect`) and the platform
+`Accessible` (cocoa, win32; gtk keeps its hand-written stub, which got the members StyledText calls). The stand-ins this round first had (`tooling/j2go/stubs-dnd`,
+`swt/dnd_stubs_manual.go`, `swt/accessible_styledtext_manual.go`) were removed when those landed. `IME`/`BidiUtil` members are on the cocoa and gtk stubs; `StyledText.SELECTION_COMPARATOR`
+is a skipped field, hand-written in `swt/custom_styledtext_manual.go` (a method ref to `getX(Point)` does not type: `Point` params are `PointLike`).
+
+Translator changes, all general: nested ternaries hoist inside their branch (a hoisted `getStyleRangeAtOffset(count - 1)` ran with `count == 0`); methods an anonymous class adds are `fn<Name>Local<N>`
+fields and callable from its own bodies; `super.clone()` of `Object` is a shallow copy; `IntStream`/`Stream` stages (`mapToInt`, `mapToObj`, `allMatch`, `distinct`, `sorted`, `range`, `of`,
+3-argument `collect`, `summingInt`), `Arrays.sort(a, cmp)`/`binarySearch`, `Collectors.joining()`, `String.chars()`, `Character.isDefined` (unassigned code points count as defined),
+`Integer::toString`, `Objects::nonNull`, `StringBuilder::new`; a multi-catch variable is an `error`; `(String) object` of nil is `""`; two local classes of one name in one file are hoisted under
+distinct names; `Throwable.initCause`, `OutOfMemoryError` as an error value.
+
+Linux stand: 278 of 279 `-run StyledText` pass. The failure, `test_caretSizeAndPositionVariableGlyphMetrics`, is a test SWT skips on Linux with `assumeFalse(isLinux)`; `System.getProperty("os.name")`
+is the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption never fires there.

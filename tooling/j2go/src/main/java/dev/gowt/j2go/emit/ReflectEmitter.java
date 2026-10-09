@@ -15,7 +15,8 @@ final class ReflectEmitter {
 	static final String REFLECT_PACKAGE = "swtreflect";
 
 	// Non-public methods tests reach via getDeclaredMethod; only an exported Go name is callable from swtreflect.
-	private static final Set<String> PRIVATE_USED = Set.of("org.eclipse.swt.custom.CTabFolder#shouldHighlight");
+	private static final Set<String> PRIVATE_USED = Set.of("org.eclipse.swt.custom.CTabFolder#shouldHighlight", "org.eclipse.swt.custom.StyledText#getPartialBottomIndex",
+			"org.eclipse.swt.custom.StyledTextRenderer#getLineSize");
 
 	private final Emitter emitter;
 	private final List<String> registrations = new ArrayList<>();

@@ -4711,6 +4711,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *Group:
 		if v == nil {
 			return nil, false
@@ -4869,13 +4874,6 @@ type ImageDataProviderFunc struct {
 
 func (f *ImageDataProviderFunc) GetImageData(a0 int32) *ImageData {
 	return f.fn(a0)
-}
-
-func upcastFontToResource(x *Font) *Resource {
-	if x == nil {
-		return nil
-	}
-	return &x.Resource
 }
 
 func upcastImageToResource(x *Image) *Resource {

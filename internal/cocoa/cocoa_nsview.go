@@ -244,15 +244,15 @@ func (this *NSView) Frame() NSRect {
 func (this *NSView) HitTest(aPoint NSPoint) *NSView {
 	var result int64 = OSObjc_msgSendOverload2(this.Id, OSSel_hitTest_, aPoint)
 	var cond866 *NSView
-	var cond867 *NSView
-	if result != 0 {
-		cond867 = NewNSViewOverload1(result)
-	} else {
-		cond867 = nil
-	}
 	if result == this.Id {
 		cond866 = this
 	} else {
+		var cond867 *NSView
+		if result != 0 {
+			cond867 = NewNSViewOverload1(result)
+		} else {
+			cond867 = nil
+		}
 		cond866 = (cond867)
 	}
 	return cond866
@@ -261,15 +261,15 @@ func (this *NSView) HitTest(aPoint NSPoint) *NSView {
 func (this *NSView) InitWithFrame(frameRect NSRect) *NSView {
 	var result int64 = OSObjc_msgSendOverload13(this.Id, OSSel_initWithFrame_, frameRect)
 	var cond868 *NSView
-	var cond869 *NSView
-	if result != 0 {
-		cond869 = NewNSViewOverload1(result)
-	} else {
-		cond869 = nil
-	}
 	if result == this.Id {
 		cond868 = this
 	} else {
+		var cond869 *NSView
+		if result != 0 {
+			cond869 = NewNSViewOverload1(result)
+		} else {
+			cond869 = nil
+		}
 		cond868 = (cond869)
 	}
 	return cond868
@@ -485,15 +485,15 @@ func (this *NSView) Subviews() *NSArray {
 func (this *NSView) Superview() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_superview)
 	var cond880 *NSView
-	var cond881 *NSView
-	if result != 0 {
-		cond881 = NewNSViewOverload1(result)
-	} else {
-		cond881 = nil
-	}
 	if result == this.Id {
 		cond880 = this
 	} else {
+		var cond881 *NSView
+		if result != 0 {
+			cond881 = NewNSViewOverload1(result)
+		} else {
+			cond881 = nil
+		}
 		cond880 = (cond881)
 	}
 	return cond880

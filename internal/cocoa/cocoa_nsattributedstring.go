@@ -80,15 +80,15 @@ func (this *NSAttributedString) Attribute(attrName *NSString, location int64, ra
 func (this *NSAttributedString) AttributedSubstringFromRange(range_ NSRange) *NSAttributedString {
 	var result int64 = OSObjc_msgSendOverload8(this.Id, OSSel_attributedSubstringFromRange_, range_)
 	var cond62 *NSAttributedString
-	var cond63 *NSAttributedString
-	if result != 0 {
-		cond63 = NewNSAttributedStringOverload1(result)
-	} else {
-		cond63 = nil
-	}
 	if result == this.Id {
 		cond62 = this
 	} else {
+		var cond63 *NSAttributedString
+		if result != 0 {
+			cond63 = NewNSAttributedStringOverload1(result)
+		} else {
+			cond63 = nil
+		}
 		cond62 = (cond63)
 	}
 	return cond62
@@ -114,15 +114,15 @@ func (this *NSAttributedString) InitWithString(str *NSString) *NSAttributedStrin
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithString_, cond65)
 	var cond66 *NSAttributedString
-	var cond67 *NSAttributedString
-	if result != 0 {
-		cond67 = NewNSAttributedStringOverload1(result)
-	} else {
-		cond67 = nil
-	}
 	if result == this.Id {
 		cond66 = this
 	} else {
+		var cond67 *NSAttributedString
+		if result != 0 {
+			cond67 = NewNSAttributedStringOverload1(result)
+		} else {
+			cond67 = nil
+		}
 		cond66 = (cond67)
 	}
 	return cond66
@@ -143,15 +143,15 @@ func (this *NSAttributedString) InitWithStringStrAttrs(str *NSString, attrs *NSD
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithString_attributes_, cond68, cond69)
 	var cond70 *NSAttributedString
-	var cond71 *NSAttributedString
-	if result != 0 {
-		cond71 = NewNSAttributedStringOverload1(result)
-	} else {
-		cond71 = nil
-	}
 	if result == this.Id {
 		cond70 = this
 	} else {
+		var cond71 *NSAttributedString
+		if result != 0 {
+			cond71 = NewNSAttributedStringOverload1(result)
+		} else {
+			cond71 = nil
+		}
 		cond70 = (cond71)
 	}
 	return cond70

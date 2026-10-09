@@ -986,7 +986,9 @@ func init() {
 			{Name: "test_consistency_DragDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_consistency_DragDetect_() }},
 			{Name: "test_consistency_MenuDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_consistency_MenuDetect_() }},
 			{Name: "test_scrollIIIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_scrollIIIIIIZ() }},
-			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Shell).Test_setCaretLorg_eclipse_swt_widgets_Caret() }},
+			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setCaretLorg_eclipse_swt_widgets_Caret_()
+			}},
 			{Name: "test_setFontLorg_eclipse_swt_graphics_Font", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Shell).impl.test_setFontLorg_eclipse_swt_graphics_Font_()
 			}},

@@ -152,7 +152,7 @@ func (this *CoolItem) CreateArrowImage(width int32, height int32) *Image {
 	height = point.Y
 	var foreground *Color = this.parent.impl.getForeground_()
 	var black *Color = this.display.impl.getSystemColor_(COLOR_BLACK)
-	var background *Color = this.parent.GetBackground()
+	var background *Color = this.parent.impl.getBackground_()
 	var palette *PaletteData = NewPaletteData([]*RGB{foreground.GetRGB(), background.GetRGB(), black.GetRGB()})
 	var imageData *ImageData = NewImageData(width, height, 4, palette)
 	imageData.TransparentPixel = 1
@@ -411,7 +411,7 @@ func (this *CoolItem) UpdateChevron() {
 				}
 				this.arrowImage = image
 			}
-			this.chevron.impl.setBackgroundWithColor_(this.parent.GetBackground())
+			this.chevron.impl.setBackgroundWithColor_(this.parent.impl.getBackground_())
 			this.chevron.SetBoundsRect(this.parent.FixRectangle(this.itemBounds.X+width-CoolItemCHEVRON_LEFT_MARGIN-CoolItemCHEVRON_IMAGE_WIDTH-this.CHEVRON_HORIZONTAL_TRIM, this.itemBounds.Y, CoolItemCHEVRON_IMAGE_WIDTH+this.CHEVRON_HORIZONTAL_TRIM, height))
 			this.chevron.impl.setVisible_(true)
 		} else {

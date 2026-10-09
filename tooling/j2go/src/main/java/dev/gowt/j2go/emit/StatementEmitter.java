@@ -151,13 +151,16 @@ final class StatementEmitter {
 	private String emitCondIntoLvalue(String lhsText, ConditionalExpression ce, ITypeBinding targetType, int indent) {
 		StringBuilder b = new StringBuilder();
 		String cond = emitExprInto(ce.getExpression(), b, indent);
-		String thenText = emitter.adaptNumeric(emitter.expr(ce.getThenExpression()), ce.getThenExpression().resolveTypeBinding(), targetType);
-		String elseText = emitter.adaptNumeric(emitter.expr(ce.getElseExpression()), ce.getElseExpression().resolveTypeBinding(), targetType);
-		b.append(ind(indent)).append("if ").append(cond).append(" {\n");
+		// What a branch hoists (a nested ternary, an instanceof) must run only when that branch is taken.
+		StringBuilder thenPrelude = new StringBuilder();
+		StringBuilder elsePrelude = new StringBuilder();
+		String thenText = emitter.adaptNumeric(emitExprInto(ce.getThenExpression(), thenPrelude, indent + 1), ce.getThenExpression().resolveTypeBinding(), targetType);
+		String elseText = emitter.adaptNumeric(emitExprInto(ce.getElseExpression(), elsePrelude, indent + 1), ce.getElseExpression().resolveTypeBinding(), targetType);
+		b.append(ind(indent)).append("if ").append(cond).append(" {\n").append(thenPrelude);
 		// A branch that assigns the target to itself (columnWidth = cond ? columnWidth : ...) is
 		// a real no-op Go's own `go vet` flags as suspicious - just skip the line.
 		if (!thenText.equals(lhsText)) b.append(ind(indent + 1)).append(lhsText).append(" = ").append(thenText).append('\n');
-		b.append(ind(indent)).append("} else {\n");
+		b.append(ind(indent)).append("} else {\n").append(elsePrelude);
 		if (!elseText.equals(lhsText)) b.append(ind(indent + 1)).append(lhsText).append(" = ").append(elseText).append('\n');
 		b.append(ind(indent)).append("}\n");
 		return b.toString();

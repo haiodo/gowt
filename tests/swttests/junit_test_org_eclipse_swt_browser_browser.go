@@ -144,8 +144,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) afterDispose_(display *swt.Dis
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -1589,8 +1595,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						panic(jrt.NewIOException(e))
 					} else {
@@ -2588,8 +2600,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) WaitForPassConditionPassTestMi
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -2606,8 +2624,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) WaitForPassConditionPassTestMi
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -3104,8 +3128,14 @@ func (this *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication) Run() {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						this.shouldClose = true
 					} else {

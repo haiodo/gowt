@@ -304,3 +304,45 @@ func StringCompareTo(a, b string) int32 {
 
 // IsHighSurrogate is Character.isHighSurrogate.
 func IsHighSurrogate(c rune) bool { return c >= 0xD800 && c <= 0xDBFF }
+
+// ClassIsInstance is Class.isInstance: null is an instance of nothing.
+func ClassIsInstance(t reflect.Type, o any) bool {
+	return !IsNil(o) && IsAssignableFrom(t, reflect.TypeOf(o))
+}
+
+// ClassCast is Class.cast: the object itself, or a ClassCastException-shaped RuntimeException.
+func ClassCast(t reflect.Type, o any) any {
+	if !IsNil(o) && !ClassIsInstance(t, o) {
+		panic(&RuntimeException{Message: "Cannot cast " + reflect.TypeOf(o).String() + " to " + t.String()})
+	}
+	return o
+}
+
+// CompareTo is Comparable.compareTo on a receiver held as any: its own CompareTo, else the natural order of numbers and strings.
+func CompareTo(a, b any) int32 {
+	if c, ok := a.(interface{ CompareTo(any) int32 }); ok {
+		return c.CompareTo(b)
+	}
+	return compareOrdered(a, b)
+}
+
+// Stack is java.util.Stack.
+type Stack struct{ items []any }
+
+func NewStack() *Stack { return &Stack{} }
+
+func (s *Stack) Push(v any) any {
+	s.items = append(s.items, v)
+	return v
+}
+
+func (s *Stack) Pop() any {
+	if len(s.items) == 0 {
+		panic(NewRuntimeException("EmptyStackException"))
+	}
+	v := s.items[len(s.items)-1]
+	s.items = s.items[:len(s.items)-1]
+	return v
+}
+
+func (s *Stack) IsEmpty() bool { return len(s.items) == 0 }

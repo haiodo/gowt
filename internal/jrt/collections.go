@@ -2,6 +2,7 @@ package jrt
 
 import (
 	"cmp"
+	"net/url"
 	"slices"
 )
 
@@ -52,6 +53,23 @@ func (l *List) RemoveAll(other *List) bool {
 
 // URI is java.net.URI as its string form (Path.toUri().toString()).
 type URI struct{ s string }
+
+// NewURI parses s like new URI(String): an unparsable string throws URISyntaxException.
+func NewURI(s string) *URI {
+	if _, err := url.Parse(s); err != nil {
+		panic(NewURISyntaxException(s, err.Error()))
+	}
+	return &URI{s}
+}
+
+// GetScheme is URI.getScheme(): null (the empty string here) for a relative reference.
+func (u *URI) GetScheme() string {
+	p, err := url.Parse(u.s)
+	if err != nil {
+		return ""
+	}
+	return p.Scheme
+}
 
 func (u *URI) ToString() string { return u.s }
 func (u *URI) String() string   { return u.s }

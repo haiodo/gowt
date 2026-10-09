@@ -197,7 +197,7 @@ skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_file_url	Assumption f
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_invalid_url	Assumption failed: Handling of invalid URLs is platform dependent
 pass	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote
 fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	setUrl with post data/headers not supported over package webview (Round 23 known gap)
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	j2go: new PrintStream (System.setOut capture) not translated in junit_capturedoutput.go
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	setUrl with post data/headers not supported over package webview (Round 23 known gap)
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibility_and_sizing
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibleZ
 fail	Test_org_eclipse_swt_browser_Browser.test_stop	Round 23, not diagnosed: expected: <false> but was: <true> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1613

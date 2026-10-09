@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -188,6 +189,16 @@ func GetProperty(key, def string) string {
 func SetProperty(key, value string) string {
 	prev, _ := SystemProperties.Put(key, value).(string)
 	return prev
+}
+
+// GetInteger is Integer.getInteger(key, def): the property parsed as a number, def when unset or not one.
+func GetInteger(key string, def int32) int32 {
+	if v, ok := SystemProperties.Get(key).(string); ok {
+		if n, err := strconv.ParseInt(strings.TrimSpace(v), 10, 32); err == nil {
+			return int32(n)
+		}
+	}
+	return def
 }
 
 // Getenv is System.getenv(name): "" for an unset variable.

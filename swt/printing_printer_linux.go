@@ -552,20 +552,17 @@ func PrinterCheckNull(dataLike PrinterDataLike) *DeviceData {
 
 func PrinterRestoreInt(key string) int32 {
 	var value []int8 = PrinterRestoreBytes(key, false)
-	return jrt.ParseInt(func() string { _ = []any{value}; panic("j2go: unresolved new String") }())
+	return jrt.ParseInt(jrt.StringFromBytes(value))
 }
 
 func PrinterRestoreDouble(key string) float64 {
 	var value []int8 = PrinterRestoreBytes(key, false)
-	return func() float64 {
-		_ = []any{func() string { _ = []any{value}; panic("j2go: unresolved new String") }()}
-		panic("j2go: unresolved call parseDouble")
-	}()
+	return jrt.ParseDouble(jrt.StringFromBytes(value))
 }
 
 func PrinterRestoreBoolean(key string) bool {
 	var value []int8 = PrinterRestoreBytes(key, false)
-	return strings.EqualFold(func() string { _ = []any{value}; panic("j2go: unresolved new String") }(), "true")
+	return strings.EqualFold(jrt.StringFromBytes(value), "true")
 }
 
 func PrinterRestoreBytes(key string, nullTerminate bool) []int8 {

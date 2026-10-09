@@ -409,8 +409,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getSyncThread() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1191,8 +1197,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_sleep() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1213,8 +1225,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_sleep() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1503,8 +1521,14 @@ func Test_org_eclipse_swt_widgets_DisplayDrainEventQueue(displayLike swt.Display
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {

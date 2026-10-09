@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 	"unicode/utf16"
 )
@@ -137,8 +138,9 @@ func (l *Locale) GetLanguage() string { return l.tag }
 // Thread is java.lang.Thread for `new Thread(runnable)` + start/join; the port's `Thread` type
 // itself stays a bare any (Display.thread), see Manual.
 type Thread struct {
-	run  Runnable
-	done chan struct{}
+	run     Runnable
+	done    chan struct{}
+	started atomic.Bool
 }
 
 func NewThread(r Runnable) *Thread { return &Thread{run: r, done: make(chan struct{})} }
@@ -148,6 +150,7 @@ func (t *Thread) Run() { t.run.Run() }
 
 func ThreadStart(t any) {
 	th := t.(*Thread)
+	th.started.Store(true)
 	go func() {
 		defer close(th.done)
 		// An uncaught exception ends only its own Java thread.
@@ -161,6 +164,26 @@ func ThreadStart(t any) {
 }
 
 func ThreadJoin(t any) { <-t.(*Thread).done }
+
+// ThreadIsAlive is Thread.isAlive: started and not yet finished.
+func ThreadIsAlive(t any) bool {
+	th := t.(*Thread)
+	select {
+	case <-th.done:
+		return false
+	default:
+		return th.started.Load()
+	}
+}
+
+// ParseDouble is Double.parseDouble.
+func ParseDouble(s string) float64 {
+	f, err := strconv.ParseFloat(strings.TrimSpace(s), 64)
+	if err != nil {
+		panic(&NumberFormatException{Input: s})
+	}
+	return f
+}
 
 // ParseFloat is Float.parseFloat.
 func ParseFloat(s string) float32 {

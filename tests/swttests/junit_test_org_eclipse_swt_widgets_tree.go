@@ -707,8 +707,14 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_disposeItemNotTriggerSelecti
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -763,8 +769,14 @@ func (this *Test_org_eclipse_swt_widgets_Tree) Test_Virtual() {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {

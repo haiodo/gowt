@@ -480,10 +480,7 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 func (this *Display) Execute(runnable jrt.Runnable) {
 	_ = runnable
 	if this.IsDisposed() {
-		panic(func() any {
-			_ = []any{NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")}
-			panic("j2go: unresolved new RejectedExecutionException")
-		}())
+		panic(jrt.NewRejectedExecutionException(NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")))
 	}
 	if this.thread == jrt.CurrentThread() {
 		this.SyncExec(runnable)

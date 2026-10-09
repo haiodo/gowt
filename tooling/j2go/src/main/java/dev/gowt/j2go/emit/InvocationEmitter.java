@@ -123,7 +123,7 @@ final class InvocationEmitter {
 		}
 
 		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.
-		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
+		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && !Modifier.isStatic(mb.getModifiers()) && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 			emitter.unsupported.add("MethodInvocation: generic method " + qualified + "." + mb.getName() + " not translated");
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
@@ -390,14 +390,19 @@ final class InvocationEmitter {
 				return "string(utf16.Decode(" + arg + "))";
 			}
 			// Thread is a bare any (Manual) except for the one shape the tests use: a runnable run by start()/join().
-			if (qualified.equals("java.lang.Thread") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
+			if (qualified.equals("java.lang.Thread") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
+			}
+			// new PrintStream(out, ...): value-typed in Manual, so no constructor call would come out of it.
+			if (qualified.equals("java.io.PrintStream")) {
+				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				return "jrt.NewPrintStream(" + String.join(", ", buildArgs(cic.arguments(), ctor)) + ")";
 			}
 			// BufferedInputStream only adds buffering: the wrapped stream is the value.
 			if (qualified.equals("java.io.BufferedInputStream") && n == 1) return emitter.expr((Expression) cic.arguments().get(0));
 			// new String(byte[], Charset): the bytes are UTF-8.
-			if (qualified.equals("java.lang.String") && n == 2 && ctor.getParameterTypes()[0].isArray()
+			if (qualified.equals("java.lang.String") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("byte")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.StringFromBytes(" + emitter.expr((Expression) cic.arguments().get(0)) + ")";

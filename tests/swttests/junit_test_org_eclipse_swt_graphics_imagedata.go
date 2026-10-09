@@ -297,7 +297,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getAlphasIII_BI() {
 			}
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.GetAlphas(0, 1, GET_WIDTH*GET_WIDTH, alphaData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -451,7 +451,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getPixelsIII_BI() {
 			}
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.GetPixels(0, 1, GET_WIDTH*GET_WIDTH, pixelData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -637,7 +637,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_getPixelsIII_II() {
 			}
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.GetPixelsXYGetWidthPixelsStartIndex(0, 1, GET_WIDTH*GET_WIDTH, pixelData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -769,7 +769,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_setAlphasIII_BI() {
 			junit.AssertEquals(int32(0), int32(int32(alphaData[i])))
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.SetAlphas(0, 1, this.IMAGE_DIMENSION*this.IMAGE_DIMENSION, alphaData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -869,7 +869,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_setPixelsIII_BI() {
 			junit.AssertEquals(int32(0), int32(int32(pixelData[i])))
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.SetPixels(0, 1, this.IMAGE_DIMENSION*this.IMAGE_DIMENSION, pixelData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
@@ -984,7 +984,7 @@ func (this *Test_org_eclipse_swt_graphics_ImageData) Test_setPixelsIII_II() {
 			junit.AssertEquals(int32(0), int32(pixelData[i]))
 		}
 	}
-	junit.AssertThrows[any](func() {
+	junit.AssertThrows[*jrt.IndexOutOfBoundsException](func() {
 		this.imageData.SetPixelsXYPutWidthPixelsStartIndex(0, 1, this.IMAGE_DIMENSION*this.IMAGE_DIMENSION, pixelData, OFFSET)
 	})
 	var ex *jrt.IllegalArgumentException = junit.AssertThrows[*jrt.IllegalArgumentException](func() {

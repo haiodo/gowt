@@ -49,10 +49,7 @@ var MenuItemCUSTOM_SELECTION_IMAGE int32 = func() (r int32) {
 	}()
 	var cond211 int32
 	if win32.OsVersionIS_WIN11_21H2 {
-		cond211 = jrt.Cast[int32](func() int32 {
-			_ = []any{"org.eclipse.swt.internal.win32.menu.customSelectionImage", 2}
-			panic("j2go: unresolved call getInteger")
-		}())
+		cond211 = jrt.Cast[int32](jrt.GetInteger("org.eclipse.swt.internal.win32.menu.customSelectionImage", 2))
 	} else {
 		cond211 = 0
 	}

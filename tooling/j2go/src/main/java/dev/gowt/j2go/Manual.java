@@ -140,6 +140,15 @@ public class Manual {
 			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
 		}
 		reg("java.net.URI", "jrt.URI", JRT_IMPORT, false);
+		reg("java.util.Stack", "jrt.Stack", JRT_IMPORT, false);
+		// The JDK exceptions of internal/jrt/exceptions.go (a catch of one is a Go type match).
+		for (String q : new String[]{"java.lang.InterruptedException", "java.util.concurrent.TimeoutException",
+				"java.util.concurrent.RejectedExecutionException", "java.lang.IndexOutOfBoundsException",
+				"java.lang.NullPointerException", "java.net.URISyntaxException"}) {
+			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
+		}
+		// System.out/err are *os.File, a constructed one jrt.CapturedStream: both io.Writer (internal/jrt/printstream.go).
+		reg("java.io.PrintStream", "jrt.PrintStream", JRT_IMPORT, true);
 		// EchoHttpServer (internal/jrt/http.go).
 		for (String q : new String[]{"com.sun.net.httpserver.HttpExchange", "com.sun.net.httpserver.HttpServer", "com.sun.net.httpserver.Headers",
 				"java.net.InetSocketAddress", "java.net.InetAddress", "java.net.URLEncoder", "java.net.URLDecoder", "java.nio.charset.Charset",
@@ -257,6 +266,8 @@ public class Manual {
 			Map.entry("org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)", "LoadByZoomStub"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#load(org.eclipse.swt.internal.DPIUtil$ElementAtZoom,org.eclipse.swt.graphics.ImageLoader,I)",
 					"NativeImageLoaderLoad"),
+			Map.entry("org.eclipse.swt.internal.NativeImageLoader#load(java.io.InputStream,org.eclipse.swt.graphics.ImageLoader,I,I)",
+					"NativeImageLoaderLoadBySize"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)",
 					"NativeImageLoaderSave"),
 			// Round 10: only the tabs translated so far (examples/controlexample/controlexample_manual.go).
@@ -293,6 +304,8 @@ public class Manual {
 
 	/** Go func name for a manual.txt method-level entry (erasureKey format), or null. */
 	public static String manualMethod(String erasureKey) {
+		// The hand-written updateImage draws through NSGraphicsContext; win32 translates the Java one.
+		if (erasureKey.equals("org.eclipse.swt.widgets.TaskItem#updateImage()") && GoTypes.platform == Platform.WIN32) return null;
 		return MANUAL_METHODS.get(erasureKey);
 	}
 

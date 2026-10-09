@@ -46,6 +46,7 @@ func main() {
 	layoutC := flag.String("layout-c", "", "write a C program that prints sizeof/offsetof of every emitted struct")
 	layoutExp := flag.String("layout-expect", "", "write the computed struct table in the C program's output format")
 	eplRoot := flag.String("epl", os.Getenv("SWT_REPO"), "SWT repository root; its EPL Java sources show how members are spelled (with -jstubs)")
+	seedPath := flag.String("seed", "tooling/girgen/seed.txt", "extra call-site names not yet used by any Go file (one per line)")
 	jstubs := flag.String("jstubs", "", "write Java declarations of the exported internal/gtk API into this directory (type information for j2go) and exit")
 	flag.Parse()
 	if *jstubs != "" {
@@ -73,6 +74,18 @@ func main() {
 	names, called, err := usedNames(strings.Split(*roots, ","))
 	if err != nil {
 		fatal(err)
+	}
+	if b, err := os.ReadFile(*seedPath); err == nil {
+		have := map[string]bool{}
+		for _, n := range names {
+			have[n] = true
+		}
+		for _, l := range strings.Split(string(b), "\n") {
+			if f := strings.Fields(l); len(f) > 0 && !strings.HasPrefix(l, "#") && !have[f[0]] {
+				names = append(names, f[0])
+				have[f[0]] = true
+			}
+		}
 	}
 	if *fitLog != "" {
 		f := loadFit(*fitPath)

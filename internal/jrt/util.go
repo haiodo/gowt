@@ -255,6 +255,9 @@ func (l *List) ForEach(action any) {
 	}
 }
 
+// ForEachOrdered is Stream.forEachOrdered: streams here are lists, already in order.
+func (l *List) ForEachOrdered(action any) { l.ForEach(action) }
+
 // ForEach is Map.forEach(BiConsumer), same erased call as List.ForEach.
 func (m *Map) ForEach(action any) {
 	for _, b := range m.buckets {

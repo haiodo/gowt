@@ -70,6 +70,7 @@ final class ConstructorEmitter {
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName)
 				.append('(').append(emitter.paramList(mb, md)).append(") {\n");
 		emitter.currentReturnType = null;
+		out.append(lazyStaticCall(ci));
 		out.append(emitConstructorBody(md, ci, td));
 		out.append("}\n\n");
 	}
@@ -88,9 +89,15 @@ final class ConstructorEmitter {
 		out.append("\treturn this\n}\n\n");
 
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName).append("() {\n");
+		out.append(lazyStaticCall(ci));
 		out.append(emitZeroArgSuperInitCall(ci));
 		out.append(emitInstanceInitializers(td, 1));
 		out.append("}\n\n");
+	}
+
+	/** The once-guarded static {} of a class that runs it lazily (ClassEmitter.LAZY_STATIC_BLOCKS), at the top of each constructor. */
+	private String lazyStaticCall(TypeModel.ClassInfo ci) {
+		return emitter.lazyStaticBlocks.containsKey(ci.goTypeName) ? "\t" + Names.decapitalize(ci.goTypeName) + "Static()\n" : "";
 	}
 
 	/** "this.Super.initSuper()" (or the manual-superclass equivalent), shared by an implicit

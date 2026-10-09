@@ -74,6 +74,12 @@ public class Manual {
 		reg(CALLBACK, "Callback", null, false);
 		// The Swing peer process of the clipboard tests, over RMI: a skip stub in tests/swttests/clipboard_manual.go.
 		reg("org.eclipse.swt.tests.junit.RemoteClipboard", "RemoteClipboard", null, false);
+		// System.out/err capture of the tests: os.Stdout/os.Stderr over temp files (tests/swttests/clipboard_manual.go).
+		reg("org.eclipse.swt.tests.junit.CapturedOutput", "CapturedOutput", null, false);
+		// DnD on gtk: the GTK 4 classes are panicking stubs in swt/dnd_gtk4_manual_linux.go.
+		reg("org.eclipse.swt.dnd.ContentProviders", "ContentProviders", null, false);
+		reg("org.eclipse.swt.dnd.ContentProviders.CLIPBOARD_DATA", "ContentProviders_CLIPBOARD_DATA", null, true);
+		reg("org.eclipse.swt.dnd.ClipboardProxyGTK4", "ClipboardProxyGTK4", null, false);
 		reg(IME, "IME", null, false);
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);

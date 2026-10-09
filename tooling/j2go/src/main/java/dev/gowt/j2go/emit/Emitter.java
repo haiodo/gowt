@@ -32,6 +32,8 @@ public class Emitter {
 	List<String> deferredStaticInits;
 	// Parallel to deferredStaticInits: a label (field Go name or enclosing class) for the recover() diagnostic.
 	List<String> deferredStaticInitLabels;
+	// Go type name -> static {} bodies that wait for the first constructor call (ClassEmitter.LAZY_STATIC_BLOCKS).
+	java.util.Map<String, List<String>> lazyStaticBlocks = new java.util.LinkedHashMap<>();
 	int tempCounter;
 	ITypeBinding currentReturnType; // declared Go return type of the method body being emitted, or null
 	String currentJavaPackage; // this compilation unit's Java package, e.g. "org.eclipse.swt.widgets"
@@ -100,11 +102,19 @@ public class Emitter {
 		fileHelperSource = new ArrayList<>();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
+		lazyStaticBlocks.clear();
 		anonCounter = 0;
 		StringBuilder out = new StringBuilder();
 		for (Object t : cu.types()) {
 			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);
 		}
+		lazyStaticBlocks.forEach((type, bodies) -> {
+			String once = Names.decapitalize(type) + "StaticOnce";
+			fileImports.add("sync");
+			out.append("var ").append(once).append(" sync.Once\n\nfunc ").append(Names.decapitalize(type)).append("Static() {\n\t").append(once).append(".Do(func() {\n");
+			bodies.forEach(out::append);
+			out.append("\t})\n}\n\n");
+		});
 		StringBuilder helpers = new StringBuilder();
 		for (String h : fileHelperSource) if (!separateHelpers) out.append(h); else if (!h.startsWith("// j2go: anonymous")) helpers.append(h);
 		if (!deferredStaticInits.isEmpty()) {

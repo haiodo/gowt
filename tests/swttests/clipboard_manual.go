@@ -1,6 +1,8 @@
 package swttests
 
 import (
+	"os"
+
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -42,4 +44,45 @@ func (this *ClipboardBase) OpenAndFocusShell(forSetContents bool) {
 	junit.AssertNull(this.shell)
 	this.shell = swt.NewShellDisplay(this.display)
 	SwtTestUtilOpenShell(this.shell)
+}
+
+// CapturedOutput is CapturedOutput.java: what Go code writes to os.Stdout and os.Stderr while it is open
+// (temp files, so the content is complete at once). Like the Java class it does not see C-level output.
+type CapturedOutput struct {
+	origOut, origErr *os.File
+	out, err         *os.File
+}
+
+func NewCapturedOutput() *CapturedOutput {
+	c := &CapturedOutput{origOut: os.Stdout, origErr: os.Stderr}
+	var e error
+	if c.out, e = os.CreateTemp("", "swt-out"); e != nil {
+		panic(e)
+	}
+	if c.err, e = os.CreateTemp("", "swt-err"); e != nil {
+		panic(e)
+	}
+	os.Stdout, os.Stderr = c.out, c.err
+	return c
+}
+
+func read(f *os.File) string {
+	b, _ := os.ReadFile(f.Name())
+	return string(b)
+}
+
+func (c *CapturedOutput) GetOutContent() string { return read(c.out) }
+func (c *CapturedOutput) GetErrContent() string { return read(c.err) }
+
+func (c *CapturedOutput) AssertNoOutput() {
+	junit.AssertEquals("", c.GetOutContent())
+	junit.AssertEquals("", c.GetErrContent())
+}
+
+func (c *CapturedOutput) Close() {
+	os.Stdout, os.Stderr = c.origOut, c.origErr
+	for _, f := range []*os.File{c.out, c.err} {
+		f.Close()
+		os.Remove(f.Name())
+	}
 }

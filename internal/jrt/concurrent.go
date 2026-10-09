@@ -111,6 +111,29 @@ func CompletableFutureSupplyAsync[T any](supplier func() T) *CompletableFuture {
 	return f
 }
 
+// CompletableFutureAllOf is CompletableFuture.allOf: done once every argument is.
+func CompletableFutureAllOf(fs ...*CompletableFuture) *CompletableFuture {
+	all := &CompletableFuture{}
+	var mu sync.Mutex
+	left, failed := len(fs), false
+	if left == 0 {
+		all.finish(false)
+	}
+	for _, f := range fs {
+		f.whenDone(func() {
+			mu.Lock()
+			left--
+			failed = failed || f.failed
+			done := left == 0
+			mu.Unlock()
+			if done {
+				all.finish(failed)
+			}
+		})
+	}
+	return all
+}
+
 func NewCompletableFuture() *CompletableFuture { return &CompletableFuture{} }
 
 func CompletableFutureCompletedFuture(v any) *CompletableFuture {

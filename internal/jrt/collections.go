@@ -3,6 +3,7 @@ package jrt
 import (
 	"cmp"
 	"slices"
+	"strings"
 )
 
 // The Collections wrappers return the list itself: the translated tests are single-threaded and
@@ -52,6 +53,22 @@ func (l *List) RemoveAll(other *List) bool {
 
 // URI is java.net.URI as its string form (Path.toUri().toString()).
 type URI struct{ s string }
+
+func NewURI(s string) *URI { return &URI{s} }
+
+// GetScheme is URI.getScheme(): the text before the first colon when it is a valid scheme, else the port's null String.
+func (u *URI) GetScheme() string {
+	i := strings.IndexByte(u.s, ':')
+	if i <= 0 {
+		return ""
+	}
+	for j, c := range u.s[:i] {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || j > 0 && (c >= '0' && c <= '9' || c == '+' || c == '-' || c == '.')) {
+			return ""
+		}
+	}
+	return u.s[:i]
+}
 
 func (u *URI) ToString() string { return u.s }
 func (u *URI) String() string   { return u.s }

@@ -287,6 +287,14 @@ fi
 # org.eclipse.swt.dnd (README "Round 24 dnd"): the common events/listeners/adapters, and the platform's Clipboard, Transfers, DragSource, DropTarget.
 DND_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Drag and Drop"
 SWT_FILES+=($(cd "$DND_ROOT/common" && ls org/eclipse/swt/dnd/*.java) $(cd "$DND_ROOT/$PLATFORM" && find org -name '*.java' | sort))
+# gtk: the GTK 4 half (content providers, ClipboardProxyGTK4) is hand-written panicking stubs, swt/dnd_gtk4_manual_linux.go; Linux runs GTK 3.
+if [ "$PLATFORM" = gtk ]; then
+	for i in "${!SWT_FILES[@]}"; do
+		case "${SWT_FILES[$i]}" in
+			*/dnd/ContentProviders.java | */dnd/ClipboardProxyGTK4.java | */dnd/GdkContentSerializer.java | */dnd/GdkContentDeserializer.java) unset 'SWT_FILES[i]' ;;
+		esac
+	done
+fi
 # win32: the COM objects DnD subclasses; COMObject is translated into package swt with its subclasses (GoTypes.goPackageDir).
 [ "$PLATFORM" != win32 ] || SWT_FILES+=(org/eclipse/swt/internal/ole/win32/COMObject.java)
 
@@ -335,7 +343,6 @@ TJ=org/eclipse/swt/tests/junit
 TEST_FILES=(
 	$TJ/SwtTestUtil.java
 	$TJ/ImageTestUtil.java
-	$TJ/CapturedOutput.java
 	$TJ/Test_org_eclipse_swt_events_ArmEvent.java
 	$TJ/Test_org_eclipse_swt_events_ControlEvent.java
 	$TJ/Test_org_eclipse_swt_events_DisposeEvent.java

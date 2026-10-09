@@ -21,9 +21,18 @@ var (
 	soup_message_headers_new                                      func(a0 int32) uintptr
 	soup_message_headers_unref                                    func(self uintptr)
 	webkit_javascript_result_get_js_value                         func(self uintptr) uintptr
+	webkit_navigation_action_get_request                          func(self uintptr) uintptr
+	webkit_navigation_policy_decision_get_navigation_action       func(self uintptr) uintptr
+	webkit_policy_decision_ignore                                 func(self uintptr)
+	webkit_policy_decision_use                                    func(self uintptr)
+	webkit_script_dialog_get_dialog_type                          func(self uintptr) int32
+	webkit_script_dialog_get_message                              func(self uintptr) uintptr
+	webkit_script_dialog_prompt_get_default_text                  func(self uintptr) uintptr
+	webkit_script_dialog_prompt_set_text                          func(self uintptr, a0 string)
 	webkit_security_manager_register_uri_scheme_as_cors_enabled   func(self uintptr, a0 string)
 	webkit_security_manager_register_uri_scheme_as_secure         func(self uintptr, a0 string)
 	webkit_settings_set_enable_developer_extras                   func(self uintptr, a0 int32)
+	webkit_uri_request_get_uri                                    func(self uintptr) uintptr
 	webkit_uri_scheme_request_finish_with_response                func(self uintptr, a0 uintptr)
 	webkit_uri_scheme_request_get_http_method                     func(self uintptr) uintptr
 	webkit_uri_scheme_request_get_uri                             func(self uintptr) uintptr
@@ -39,6 +48,8 @@ var (
 	webkit_web_context_get_security_manager                       func(self uintptr) uintptr
 	webkit_web_context_new                                        func() uintptr
 	webkit_web_context_register_uri_scheme                        func(self uintptr, a0 string, a1 uintptr, a2 uintptr, a3 uintptr)
+	webkit_web_view_can_go_back                                   func(self uintptr) int32
+	webkit_web_view_can_go_forward                                func(self uintptr) int32
 	webkit_web_view_evaluate_javascript                           func(self uintptr, a0 string, a1 int, a2 uintptr, a3 uintptr, a4 uintptr, a5 uintptr, a6 uintptr)
 	webkit_web_view_evaluate_javascript_finish                    func(self uintptr, a0 uintptr, gerror uintptr) uintptr
 	webkit_web_view_get_settings                                  func(self uintptr) uintptr
@@ -51,6 +62,7 @@ var (
 	webkit_web_view_load_uri                                      func(self uintptr, a0 string)
 	webkit_web_view_new_with_context                              func(a0 uintptr) uintptr
 	webkit_web_view_reload                                        func(self uintptr)
+	webkit_web_view_stop_loading                                  func(self uintptr)
 )
 
 func bindAll() (missing []string) {
@@ -71,9 +83,18 @@ func bindAll() (missing []string) {
 	bindOne(&soup_message_headers_new, "soup_message_headers_new", &missing)
 	bindOne(&soup_message_headers_unref, "soup_message_headers_unref", &missing)
 	bindOne(&webkit_javascript_result_get_js_value, "webkit_javascript_result_get_js_value", &missing)
+	bindOne(&webkit_navigation_action_get_request, "webkit_navigation_action_get_request", &missing)
+	bindOne(&webkit_navigation_policy_decision_get_navigation_action, "webkit_navigation_policy_decision_get_navigation_action", &missing)
+	bindOne(&webkit_policy_decision_ignore, "webkit_policy_decision_ignore", &missing)
+	bindOne(&webkit_policy_decision_use, "webkit_policy_decision_use", &missing)
+	bindOne(&webkit_script_dialog_get_dialog_type, "webkit_script_dialog_get_dialog_type", &missing)
+	bindOne(&webkit_script_dialog_get_message, "webkit_script_dialog_get_message", &missing)
+	bindOne(&webkit_script_dialog_prompt_get_default_text, "webkit_script_dialog_prompt_get_default_text", &missing)
+	bindOne(&webkit_script_dialog_prompt_set_text, "webkit_script_dialog_prompt_set_text", &missing)
 	bindOne(&webkit_security_manager_register_uri_scheme_as_cors_enabled, "webkit_security_manager_register_uri_scheme_as_cors_enabled", &missing)
 	bindOne(&webkit_security_manager_register_uri_scheme_as_secure, "webkit_security_manager_register_uri_scheme_as_secure", &missing)
 	bindOne(&webkit_settings_set_enable_developer_extras, "webkit_settings_set_enable_developer_extras", &missing)
+	bindOne(&webkit_uri_request_get_uri, "webkit_uri_request_get_uri", &missing)
 	bindOne(&webkit_uri_scheme_request_finish_with_response, "webkit_uri_scheme_request_finish_with_response", &missing)
 	bindOne(&webkit_uri_scheme_request_get_http_method, "webkit_uri_scheme_request_get_http_method", &missing)
 	bindOne(&webkit_uri_scheme_request_get_uri, "webkit_uri_scheme_request_get_uri", &missing)
@@ -89,6 +110,8 @@ func bindAll() (missing []string) {
 	bindOne(&webkit_web_context_get_security_manager, "webkit_web_context_get_security_manager", &missing)
 	bindOne(&webkit_web_context_new, "webkit_web_context_new", &missing)
 	bindOne(&webkit_web_context_register_uri_scheme, "webkit_web_context_register_uri_scheme", &missing)
+	bindOne(&webkit_web_view_can_go_back, "webkit_web_view_can_go_back", &missing)
+	bindOne(&webkit_web_view_can_go_forward, "webkit_web_view_can_go_forward", &missing)
 	bindOne(&webkit_web_view_evaluate_javascript, "webkit_web_view_evaluate_javascript", &missing)
 	bindOne(&webkit_web_view_evaluate_javascript_finish, "webkit_web_view_evaluate_javascript_finish", &missing)
 	bindOne(&webkit_web_view_get_settings, "webkit_web_view_get_settings", &missing)
@@ -101,5 +124,6 @@ func bindAll() (missing []string) {
 	bindOne(&webkit_web_view_load_uri, "webkit_web_view_load_uri", &missing)
 	bindOne(&webkit_web_view_new_with_context, "webkit_web_view_new_with_context", &missing)
 	bindOne(&webkit_web_view_reload, "webkit_web_view_reload", &missing)
+	bindOne(&webkit_web_view_stop_loading, "webkit_web_view_stop_loading", &missing)
 	return
 }

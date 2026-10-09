@@ -3,6 +3,9 @@
 package webkit
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"sync"
 	"unsafe"
 
@@ -11,6 +14,11 @@ import (
 
 // The page-side half of window.gowt.postMessage.
 const bridge = `window.gowt={postMessage:function(m){window.webkit.messageHandlers.gowt.postMessage(typeof m==="string"?m:JSON.stringify(m))}};`
+
+// callShim is the page-side half of window.gowt.call. It is injected in the main frame only, with a
+// per-view mark in the prompt's default text: the script-dialog signal does not say which frame
+// prompted, so a subframe, which never sees the mark, cannot reach Call.
+const callShim = `window.gowt.call=function(m){return window.prompt(typeof m==="string"?m:JSON.stringify(m),"%s")};`
 
 // Config is fixed at New: WebKitGTK registers schemes on the context, so they cannot follow the view.
 type Config struct {
@@ -27,17 +35,24 @@ type View struct {
 	TitleChanged func(string)
 	// Scheme answers a request on one of Config.Schemes; Content-Type goes in headers.
 	Scheme func(url, method string) (status int, headers map[string]string, body []byte)
+	// Decide is asked before each navigation; false cancels it. WebKitGTK does not say which frame
+	// navigates, so mainFrame is always true.
+	Decide func(url string, mainFrame bool) bool
+	// Call answers window.gowt.call(msg) from the page, which blocks in window.prompt meanwhile.
+	Call func(msg string) string
 
 	ctx, widget, ucm uintptr
 	handlers         []uintptr
 	id               uintptr
 	failed           bool
+	callMark         string
 	disposed         bool
 }
 
 var (
 	cbOnce                                                 sync.Once
 	cbScheme, cbMessage, cbLoad, cbFailed, cbTitle, cbEval uintptr
+	cbPolicy, cbDialog                                     uintptr
 	gFree                                                  uintptr
 
 	mu      sync.Mutex
@@ -96,6 +111,30 @@ func initCallbacks() {
 			v.TitleChanged(goString(webkit_web_view_get_title(v.widget)))
 		}
 	})
+	cbPolicy = purego.NewCallback(func(_, decision, typ, id uintptr) uintptr {
+		v := lookupView(id)
+		// WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION = 0, _NEW_WINDOW_ACTION = 1.
+		if v == nil || v.disposed || v.Decide == nil || int32(typ) > 1 {
+			return 0
+		}
+		action := webkit_navigation_policy_decision_get_navigation_action(decision)
+		if v.Decide(goString(webkit_uri_request_get_uri(webkit_navigation_action_get_request(action))), true) {
+			webkit_policy_decision_use(decision)
+		} else {
+			webkit_policy_decision_ignore(decision)
+		}
+		return 1
+	})
+	cbDialog = purego.NewCallback(func(_, dialog, id uintptr) uintptr {
+		v := lookupView(id)
+		// WEBKIT_SCRIPT_DIALOG_PROMPT = 2.
+		if v == nil || v.disposed || v.Call == nil || webkit_script_dialog_get_dialog_type(dialog) != 2 ||
+			goString(webkit_script_dialog_prompt_get_default_text(dialog)) != v.callMark {
+			return 0
+		}
+		webkit_script_dialog_prompt_set_text(dialog, v.Call(goString(webkit_script_dialog_get_message(dialog))))
+		return 1
+	})
 	cbEval = purego.NewCallback(func(src, res, id uintptr) {
 		mu.Lock()
 		f := pending[id]
@@ -136,7 +175,16 @@ func New(cfg Config) (*View, error) {
 	v.connect(v.widget, "load-changed", cbLoad)
 	v.connect(v.widget, "load-failed", cbFailed)
 	v.connect(v.widget, "notify::title", cbTitle)
+	v.connect(v.widget, "decide-policy", cbPolicy)
+	v.connect(v.widget, "script-dialog", cbDialog)
 	v.AddScript(bridge)
+	var nonce [16]byte
+	rand.Read(nonce[:])
+	v.callMark = "\x01gowt" + hex.EncodeToString(nonce[:])
+	// WEBKIT_USER_CONTENT_INJECT_TOP_FRAME_ONLY = 1.
+	us := webkit_user_script_new(fmt.Sprintf(callShim, "\\u0001"+v.callMark[1:]), 1, 0, 0, 0)
+	webkit_user_content_manager_add_script(v.ucm, us)
+	webkit_user_script_unref(us)
 	for _, s := range cfg.Scripts {
 		v.AddScript(s)
 	}
@@ -180,6 +228,10 @@ func (v *View) LoadHTML(html, baseURL string) {
 func (v *View) GoBack()    { webkit_web_view_go_back(v.widget) }
 func (v *View) GoForward() { webkit_web_view_go_forward(v.widget) }
 func (v *View) Reload()    { webkit_web_view_reload(v.widget) }
+func (v *View) Stop()      { webkit_web_view_stop_loading(v.widget) }
+
+func (v *View) CanGoBack() bool    { return webkit_web_view_can_go_back(v.widget) != 0 }
+func (v *View) CanGoForward() bool { return webkit_web_view_can_go_forward(v.widget) != 0 }
 
 func (v *View) URL() string { return goString(webkit_web_view_get_uri(v.widget)) }
 

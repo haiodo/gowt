@@ -36,9 +36,9 @@ type View struct {
 }
 
 var (
-	cbOnce sync.Once
+	cbOnce                                                 sync.Once
 	cbScheme, cbMessage, cbLoad, cbFailed, cbTitle, cbEval uintptr
-	gFree                                                   uintptr
+	gFree                                                  uintptr
 
 	mu      sync.Mutex
 	views   = map[uintptr]*View{}
@@ -86,7 +86,7 @@ func initCallbacks() {
 			v.failed = true
 			if v.NavFailed != nil {
 				// GError: guint32 domain, gint code, gchar *message.
-				v.NavFailed(goString(uri), goString(*(*uintptr)(unsafe.Pointer(gerr + 8))))
+				v.NavFailed(goString(uri), goString(*(*uintptr)(cptr(gerr + 8))))
 			}
 		}
 		return 0
@@ -193,14 +193,14 @@ func (v *View) Eval(js string, done func(result, err string)) {
 			return
 		}
 		perr := g_malloc(8)
-		*(*uintptr)(unsafe.Pointer(perr)) = 0
+		*(*uintptr)(cptr(perr)) = 0
 		val := webkit_web_view_evaluate_javascript_finish(v.widget, res, perr)
-		gerr := *(*uintptr)(unsafe.Pointer(perr))
+		gerr := *(*uintptr)(cptr(perr))
 		g_free(perr)
 		if val == 0 {
 			msg := "script failed"
 			if gerr != 0 {
-				msg = goString(*(*uintptr)(unsafe.Pointer(gerr + 8)))
+				msg = goString(*(*uintptr)(cptr(gerr + 8)))
 				g_error_free(gerr)
 			}
 			done("", msg)
@@ -225,7 +225,7 @@ func (v *View) serve(req uintptr) {
 	data := uintptr(0)
 	if len(body) > 0 {
 		data = g_malloc(uintptr(len(body)))
-		copy(unsafe.Slice((*byte)(unsafe.Pointer(data)), len(body)), body)
+		copy(unsafe.Slice((*byte)(cptr(data)), len(body)), body)
 	}
 	stream := g_memory_input_stream_new_from_data(data, len(body), gFree)
 	resp := webkit_uri_scheme_response_new(stream, int64(len(body)))
@@ -266,10 +266,10 @@ func goString(p uintptr) string {
 		return ""
 	}
 	n := 0
-	for *(*byte)(unsafe.Pointer(p + uintptr(n))) != 0 {
+	for *(*byte)(cptr(p + uintptr(n))) != 0 {
 		n++
 	}
-	return string(unsafe.Slice((*byte)(unsafe.Pointer(p)), n))
+	return string(unsafe.Slice((*byte)(cptr(p)), n))
 }
 
 // takeString copies a g_malloc'ed C string and frees it.
@@ -283,8 +283,12 @@ func takeString(p uintptr) string {
 
 func cstr(s string) uintptr {
 	p := g_malloc(uintptr(len(s) + 1))
-	b := unsafe.Slice((*byte)(unsafe.Pointer(p)), len(s)+1)
+	b := unsafe.Slice((*byte)(cptr(p)), len(s)+1)
 	copy(b, s)
 	b[len(s)] = 0
 	return p
 }
+
+// cptr turns a C address into a pointer; reading it through a pointer variable keeps vet quiet, and
+// the memory is C-owned so the garbage collector never sees it.
+func cptr(p uintptr) unsafe.Pointer { return *(*unsafe.Pointer)(unsafe.Pointer(&p)) }

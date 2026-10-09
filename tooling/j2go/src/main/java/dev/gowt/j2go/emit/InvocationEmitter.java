@@ -278,6 +278,12 @@ final class InvocationEmitter {
 		List<?> a = cic.arguments();
 		Expression recv = (Expression) a.get(0);
 		if (a.size() == 4) return emitTypedCallback(cic, recv);
+		// COMObject: "callback" + i names one of a numbered family of static methods, so the target is picked at run
+		// time by a hand-written <Class>NewCallback(prefix, index, argCount) (internal/win32/comobject_manual.go).
+		if (a.size() == 5 && a.get(1) instanceof InfixExpression name && name.getLeftOperand() instanceof StringLiteral prefix) {
+			return emitter.currentClassInfo.goFuncPrefix + "NewCallback(" + emitter.expr(prefix) + ", " + emitter.expr(name.getRightOperand()) + ", "
+					+ emitter.expr((Expression) a.get(2)) + ")";
+		}
 		if (a.size() != 3 || !(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof NumberLiteral argc)) {
 			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
 			return emitter.panicClosure(cic, "unsupported Callback");

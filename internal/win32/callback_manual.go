@@ -38,6 +38,24 @@ func NewCallbackN(argCount int, fn func(args []int64) int64) int64 {
 		f = func(a0, a1, a2, a3, a4, a5, a6 uintptr) uintptr { return w(a0, a1, a2, a3, a4, a5, a6) }
 	case 8:
 		f = func(a0, a1, a2, a3, a4, a5, a6, a7 uintptr) uintptr { return w(a0, a1, a2, a3, a4, a5, a6, a7) }
+	case 9:
+		f = func(a0, a1, a2, a3, a4, a5, a6, a7, a8 uintptr) uintptr { return w(a0, a1, a2, a3, a4, a5, a6, a7, a8) }
+	case 10:
+		f = func(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 uintptr) uintptr {
+			return w(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+		}
+	case 11:
+		f = func(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 uintptr) uintptr {
+			return w(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		}
+	case 12:
+		f = func(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11 uintptr) uintptr {
+			return w(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)
+		}
+	case 13:
+		f = func(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12 uintptr) uintptr {
+			return w(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)
+		}
 	default:
 		panic("gowt/internal/win32: unsupported callback arg count")
 	}

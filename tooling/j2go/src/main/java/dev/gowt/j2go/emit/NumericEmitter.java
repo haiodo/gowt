@@ -334,7 +334,8 @@ final class NumericEmitter {
 		ITypeBinding foreignBase = from.isAnonymous() ? from.getSuperclass() : fromCi != null && fromCi.foreignSuper != null ? fromCi.foreignSuper.binding : null;
 		if (foreignBase != null) {
 			TypeModel.ClassInfo baseCi = emitter.model.lookup(foreignBase);
-			if (baseCi != null && !baseCi.isInterface && !to.isInterface() && !to.getErasure().isEqualTo(from.getErasure())) {
+			if (baseCi != null && !baseCi.isInterface && !to.isInterface() && !to.getErasure().isEqualTo(from.getErasure())
+					&& !(!baseCi.splitsDispatch() && to.getErasure().getQualifiedName().equals("java.lang.Object"))) {
 				// Same-package anonymous classes embed the base by value, its impl still dispatches to the anonymous type.
 				boolean sameGoPackage = baseCi.goPackage.equals(emitter.currentGoPackage);
 				if (!sameGoPackage || from.isAnonymous()) {

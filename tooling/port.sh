@@ -65,6 +65,7 @@ elif [ "$PLATFORM" = win32 ]; then
 	# win32's PI is four packages (win32, win32/version, gdip, ole/win32), all Go package internal/win32.
 	PI_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/win32"
 	mapfile -t PI_FILES < <(cd "$PI_ROOT" && find org/eclipse/swt/internal -name '*.java' ! -name Platform.java | sort)
+	PI_FILES+=(org/eclipse/swt/internal/ole/win32/COMObject.java) # Eclipse SWT OLE Win32: the vtable base of Accessible
 else
 	mapfile -t PI_FILES < <(find "$PI_SRC" -maxdepth 1 -name '*.java' ! -name 'Selector.java' -exec basename {} \; | sort | sed "s#^#org/eclipse/swt/internal/$PLATFORM/#")
 fi
@@ -284,6 +285,20 @@ if [ "$PLATFORM" = win32 ]; then
 		org/eclipse/swt/widgets/Tracker.java
 	)
 fi
+# Platform Accessible (NSAccessibility on cocoa, IAccessible over COMObject on win32); gtk keeps the hand-written stub (no ATK yet).
+ACC_DIR=org/eclipse/swt/accessibility
+# The rest of accessibility/common, which the platform Accessible refers to (the first ten are in the list above).
+for n in AccessibleAction AccessibleEditableText AccessibleHyperlink AccessibleTable AccessibleTableCell AccessibleValue AccessibleAttribute; do
+	SWT_FILES+=($ACC_DIR/${n}Event.java $ACC_DIR/${n}Listener.java $ACC_DIR/${n}Adapter.java)
+done
+SWT_FILES+=($ACC_DIR/AccessibleTextAttributeEvent.java $ACC_DIR/AccessibleTextExtendedListener.java $ACC_DIR/AccessibleTextExtendedAdapter.java)
+if [ "$PLATFORM" = win32 ]; then
+	SWT_FILES+=($ACC_DIR/Accessible.java $ACC_DIR/Relation.java)
+fi
+if [ "$PLATFORM" = cocoa ]; then
+	SWT_FILES+=($ACC_DIR/Accessible.java $ACC_DIR/Relation.java $ACC_DIR/SWTAccessibleDelegate.java $ACC_DIR/TableAccessibleDelegate.java
+		$ACC_DIR/AccessibleTableColumn.java $ACC_DIR/AccessibleTableHeader.java $ACC_DIR/AccessibleTableRow.java)
+fi
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \
 	-- \
@@ -411,6 +426,10 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_DATE.java
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_TIME.java
 	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
+	$TJ/Test_org_eclipse_swt_accessibility_Accessible.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleControlEvent.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleEvent.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleTextEvent.java
 	$TJ/Test_org_eclipse_swt_browser_Browser.java
 	$TJ/EchoHttpServer.java
 	$TJ/ConsistencyUtility.java

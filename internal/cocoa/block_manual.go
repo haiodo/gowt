@@ -73,6 +73,7 @@ func callBlock(b uintptr, args ...uintptr) {
 }
 
 func blockRun(self uintptr, args ...uintptr) {
+	defer enterCallback()()
 	blockMu.Lock()
 	b := blockLive[self]
 	delete(blockLive, self)

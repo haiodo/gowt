@@ -7,6 +7,8 @@
 package cocoa
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 	"sync"
 
@@ -65,6 +67,7 @@ func wkSetup() {
 			panic("gowt/internal/cocoa: dlopen WebKit: " + err.Error())
 		}
 		purego.RegisterFunc(&wkInit, objcMsgSend)
+		trace := os.Getenv("GOWT_WK_TRACE") != ""
 		view := func(self uintptr) *WKView { return wkViews[self] }
 		urlOf := func(wv uintptr) string { return goString(msg(msg(wv, "URL"), "absoluteString")) }
 		// A failed provisional load leaves wv.URL at the previous page; the error carries the requested one.
@@ -76,31 +79,46 @@ func wkSetup() {
 		}
 		wkClass = newClass("gowtWKHandler", []string{"WKScriptMessageHandler", "WKURLSchemeHandler", "WKNavigationDelegate", "WKUIDelegate"}, map[string]objcMethod{
 			"userContentController:didReceiveScriptMessage:": {purego.NewCallback(func(self, _, _, m uintptr) {
+				defer enterCallback()()
 				if v := view(self); v != nil && v.Message != nil {
 					v.Message(goString(msg(m, "body")))
 				}
 			}), "v@:@@"},
 			"webView:didStartProvisionalNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+				defer enterCallback()()
 				if v := view(self); v != nil && v.NavStarted != nil {
 					v.NavStarted(urlOf(wv))
 				}
 			}), "v@:@@"},
 			"webView:didFinishNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+				defer enterCallback()()
+				if trace {
+					fmt.Fprintln(os.Stderr, "wk: didFinish", urlOf(wv))
+				}
 				if v := view(self); v != nil && v.NavFinished != nil {
 					v.NavFinished(urlOf(wv))
 				}
 			}), "v@:@@"},
 			"webView:didFailNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
+				defer enterCallback()()
+				if trace {
+					fmt.Fprintln(os.Stderr, "wk: didFail", failedURL(wv, e), goString(msg(e, "description")))
+				}
 				if v := view(self); v != nil && v.NavFailed != nil {
 					v.NavFailed(failedURL(wv, e), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
 			"webView:didFailProvisionalNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
+				defer enterCallback()()
+				if trace {
+					fmt.Fprintln(os.Stderr, "wk: didFailProvisional", failedURL(wv, e), goString(msg(e, "description")))
+				}
 				if v := view(self); v != nil && v.NavFailed != nil {
 					v.NavFailed(failedURL(wv, e), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
 			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
+				defer enterCallback()()
 				allow := true
 				// A panic in a listener must not skip the handler: WebKit waits for it exactly once.
 				func() {
@@ -119,6 +137,7 @@ func wkSetup() {
 				callBlock(handler, policy)
 			}), "v@:@@@?"},
 			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, frame, handler uintptr) {
+				defer enterCallback()()
 				reply := uintptr(0)
 				// Only the main frame may call Go: a subframe (possibly cross-origin) has its own window.gowt.
 				if v := view(self); v != nil && v.Call != nil && goString(def) == wkCallMark && msg(frame, "isMainFrame")&0xff != 0 {
@@ -130,6 +149,7 @@ func wkSetup() {
 				callBlock(handler, reply)
 			}), "v@:@@@@@?"},
 			"observeValueForKeyPath:ofObject:change:context:": {purego.NewCallback(func(self, _, _, wv, _, _ uintptr) {
+				defer enterCallback()()
 				if v := view(self); v != nil && v.TitleChanged != nil {
 					v.TitleChanged(goString(msg(wv, "title")))
 				}

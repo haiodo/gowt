@@ -161,9 +161,9 @@ func TestWKViewCallPolicyHistory(t *testing.T) {
 		v.LoadHTML(`<script>document.title = gowt.call("ping") + "|" + prompt("own", "x")</script>`, "")
 		wait("call reply", func() bool { return titles["re:ping|null"] })
 
-		if v.CanGoBack() {
-			fatalf(t, "CanGoBack on the first page")
-		}
+		// The page loaded from a string is still the initial about:blank to WebKit, so the next load replaces it.
+		v.LoadURL("gowt://app/first")
+		wait("first page", func() bool { return titles["gowt://app/first"] })
 		v.LoadURL("gowt://app/a")
 		wait("second page", func() bool { return titles["gowt://app/a"] })
 		if !v.CanGoBack() || v.CanGoForward() {

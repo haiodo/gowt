@@ -152,12 +152,14 @@ func (sb *StringBuilder) Replace(start, end int32, s string) *StringBuilder {
 
 func LocaleForLanguageTag(tag string) *Locale { return &Locale{tag} }
 
-// Get waits for the future and returns nothing: the ported futures carry no value (GTK 4 only).
+// Get waits for the future and returns its value, nil for one that failed.
 func (f *CompletableFuture) Get() any {
 	for !f.IsDone() {
 		Yield()
 	}
-	return nil
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.value
 }
 
 // The reader classes share one Go type; each constructor keeps its Java name.

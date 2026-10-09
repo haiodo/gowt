@@ -557,7 +557,7 @@ func PrinterRestoreInt(key string) int32 {
 
 func PrinterRestoreDouble(key string) float64 {
 	var value []int8 = PrinterRestoreBytes(key, false)
-	return jrt.ParseDouble(jrt.StringFromBytes(value))
+	return func() float64 { _ = []any{jrt.StringFromBytes(value)}; panic("j2go: unresolved call parseDouble") }()
 }
 
 func PrinterRestoreBoolean(key string) bool {

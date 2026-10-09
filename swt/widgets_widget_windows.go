@@ -2012,7 +2012,7 @@ func (this *Widget) GetData() any {
 	this.CheckWidget()
 	var cond62 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond62 = (this.data.([]any))[0]
+		cond62 = (jrt.Cast[[]any](this.data))[0]
 	} else {
 		cond62 = this.data
 	}
@@ -2055,12 +2055,6 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 		return make([]Listener, 0)
 	}
 	return this.eventTable.GetListeners(eventType)
-}
-
-func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) *jrt.List {
-	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func(o Listener) bool { return jrt.ClassIsInstance(reflect.TypeFor[*TypedListener](), o) }).Map(func(l Listener) any {
-		return (castListenerToTypedListener(l)).eventListener
-	}).Filter(func(o any) bool { return jrt.ClassIsInstance(listenerType, o) }).Map(func(o any) any { return jrt.ClassCast(listenerType, o) })
 }
 
 func (this *Widget) GetMenu0() *Menu {
@@ -2499,7 +2493,7 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 func (this *Widget) SetData(data any) {
 	this.CheckWidget()
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		(this.data.([]any))[0] = data
+		(jrt.Cast[[]any](this.data))[0] = data
 	} else {
 		this.data = data
 	}
@@ -2517,7 +2511,7 @@ func (this *Widget) setDataKeyValue_(key string, value any) {
 	var index int32 = 1
 	var table []any = nil
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		table = this.data.([]any)
+		table = jrt.Cast[[]any](this.data)
 		for index < int32(len(table)) {
 			if key == table[index] {
 				break
@@ -3696,17 +3690,6 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 		remainder.X = delta % win32.OSWHEEL_DELTA
 	}
 	this.count = delta / win32.OSWHEEL_DELTA
-}
-
-func castListenerToTypedListener(x Listener) *TypedListener {
-	if x == nil {
-		return nil
-	}
-	v, ok := typedListenerImplAsTypedListener(x)
-	if !ok {
-		panic("java.lang.ClassCastException: TypedListener")
-	}
-	return v
 }
 
 func init() {

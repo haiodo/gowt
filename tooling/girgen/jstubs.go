@@ -76,7 +76,7 @@ type jgen struct {
 }
 
 // extraJava holds members j2go special-cases by their Java key (see manual.txt).
-var extraJava = map[string]string{"OS": "\t// Converter.java (EPL) calls this overload; the Go glue has no use for it.\n\tpublic static native long g_utf8_to_utf16(byte[] p0, long p1, long[] p2, long[] p3, long[] p4);\n", "GdkRectangle": "\tpublic native org.eclipse.swt.graphics.Rectangle toRectangle();\n"}
+var extraJava = map[string]string{"GdkRectangle": "\tpublic native org.eclipse.swt.graphics.Rectangle toRectangle();\n"}
 
 func pkgOf(name string) string {
 	switch {
@@ -123,6 +123,17 @@ func splitClass(name string) (class, member string) {
 
 func writeJStubs(srcDir, outDir string, calls map[string]int, spell map[string]string, csyms map[string]string) error {
 	ct, scope := callTypes("swt")
+	// A seed line `Name javaType...` stands for a call site that does not exist yet (the overloads of memmove).
+	if b, err := os.ReadFile("tooling/girgen/seed.txt"); err == nil {
+		for _, l := range strings.Split(string(b), "\n") {
+			if f := strings.Fields(l); len(f) > 1 && !strings.HasPrefix(l, "#") && ct[f[0]] == nil {
+				ct[f[0]] = f[1:]
+				if _, ok := calls[f[0]]; !ok {
+					calls[f[0]] = len(f) - 1
+				}
+			}
+		}
+	}
 	g := &jgen{ctypes: ct, scope: scope, spell: spell, csyms: csyms, groups: map[string][]jFunc{}, over: map[string]string{}, fset: token.NewFileSet(), types: map[string]*jType{}, consts: map[string][2]string{}, vars: map[string]ast.Expr{}, arity: calls}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.go"))
 	for _, p := range files {

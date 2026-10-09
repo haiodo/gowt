@@ -278,6 +278,7 @@ final class InvocationEmitter {
 		List<?> a = cic.arguments();
 		Expression recv = (Expression) a.get(0);
 		if (a.size() == 4) return emitTypedCallback(cic, recv);
+		if (a.size() == 5) return emitIndexedCallback(cic, recv);
 		if (a.size() != 3 || !(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof NumberLiteral argc)) {
 			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
 			return emitter.panicClosure(cic, "unsupported Callback");
@@ -302,6 +303,30 @@ final class InvocationEmitter {
 		}
 		String body = target.getReturnType().getName().equals("void") ? call + "; return 0" : "return " + call;
 		return "NewCallbackFn(func(args []int64) int64 { " + body + " }, " + n + ")";
+	}
+
+	/** new Callback(getClass(), "callback" + i, argCount, true, errorResult) (COMObject): one array-based static target per
+	 * index, chosen at run time. The closure takes the whole argument list, as the target's long[] parameter does. */
+	private String emitIndexedCallback(ClassInstanceCreation cic, Expression recv) {
+		List<?> a = cic.arguments();
+		if (!(a.get(1) instanceof InfixExpression name) || !(name.getLeftOperand() instanceof StringLiteral prefix)
+				|| !(a.get(3) instanceof BooleanLiteral bl) || !bl.booleanValue()) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		ITypeBinding cls = recv instanceof TypeLiteral tl ? tl.getType().resolveBinding() : emitter.currentClassInfo.binding;
+		StringBuilder cases = new StringBuilder();
+		for (IMethodBinding m : cls.getDeclaredMethods()) {
+			String n = m.getName();
+			if (!n.startsWith(prefix.getLiteralValue()) || !Modifier.isStatic(m.getModifiers()) || m.getParameterTypes().length != 1) continue;
+			String idx = n.substring(prefix.getLiteralValue().length());
+			if (!idx.matches("\\d+")) continue;
+			TypeModel.ClassInfo ci = emitter.model.lookup(m.getDeclaringClass());
+			cases.append("case ").append(idx).append(": return NewCallbackFn(func(args []int64) int64 { return ")
+					.append(emitter.staticMethodGoName(m, ci)).append("(args) }, argc)\n");
+		}
+		return "func() *Callback { idx, argc := " + emitter.expr(name.getRightOperand()) + ", " + emitter.expr((Expression) a.get(2))
+				+ "\nswitch idx {\n" + cases + "}\npanic(\"no callback\")\n}()";
 	}
 
 	/** new Callback(target, "method", ret.class, new Type[]{long.class, double.class, ...}): a closure with those Go
@@ -401,7 +426,7 @@ final class InvocationEmitter {
 			}
 			// BufferedInputStream only adds buffering: the wrapped stream is the value.
 			if (qualified.equals("java.io.BufferedInputStream") && n == 1) return emitter.expr((Expression) cic.arguments().get(0));
-			// new String(byte[], Charset): the bytes are UTF-8.
+			// new String(byte[]) and new String(byte[], Charset): the bytes are UTF-8.
 			if (qualified.equals("java.lang.String") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("byte")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");

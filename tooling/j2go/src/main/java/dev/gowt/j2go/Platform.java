@@ -48,6 +48,8 @@ public enum Platform {
 				// Control.java declares fields of these types - JDT still needs to resolve them.
 				B + "Eclipse SWT Accessibility/common",
 				B + "Eclipse SWT Printing/common",
+				// org.eclipse.swt.dnd (README "Round 24 dnd"): events, listeners, adapters; Clipboard, Transfer, DragSource, DropTarget are per platform.
+				B + "Eclipse SWT Drag and Drop/common",
 				// org.eclipse.swt.custom: StackLayout/SashForm/SashFormLayout/SashFormData (Round 8).
 				B + "Eclipse SWT Custom Widgets/common",
 				// org.eclipse.swt.examples.* (Round 10): each example package is its own Go package.
@@ -63,12 +65,12 @@ public enum Platform {
 	/** Roots of this platform; its emulated dirs count here too, each platform picks its own set. */
 	public List<String> roots() {
 		List<String> r = new ArrayList<>();
-		for (String bundle : new String[] { "Eclipse SWT", "Eclipse SWT PI", "Eclipse SWT Accessibility", "Eclipse SWT Printing" })
+		for (String bundle : new String[] { "Eclipse SWT", "Eclipse SWT PI", "Eclipse SWT Accessibility", "Eclipse SWT Printing", "Eclipse SWT Drag and Drop" })
 			if (this != GTK || !bundle.equals("Eclipse SWT PI")) r.add(B + bundle + "/" + swtName);
 		if (this == WIN32) {
 			// Only for name resolution (Control imports org.eclipse.swt.browser/ole): never translated.
 			for (String ref : new String[] { "Eclipse SWT OLE Win32/win32", "Eclipse SWT Browser/common", "Eclipse SWT Browser/win32",
-					"Eclipse SWT Program/common", "Eclipse SWT Program/win32", "Eclipse SWT Drag and Drop/common", "Eclipse SWT Drag and Drop/win32" })
+					"Eclipse SWT Program/common", "Eclipse SWT Program/win32" })
 				r.add(B + ref);
 		}
 		if (this == COCOA) {

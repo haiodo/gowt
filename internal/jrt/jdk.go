@@ -74,6 +74,11 @@ func (s *StringBuilder) Delete(start, end int32) *StringBuilder {
 	return s
 }
 
+// GetChars is getChars(srcBegin, srcEnd, dst, dstBegin).
+func (s *StringBuilder) GetChars(srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
+	GetChars(string(s.b), srcBegin, srcEnd, dst, dstBegin)
+}
+
 func (s *StringBuilder) IndexOf(sub string) int32 { return int32(strings.Index(string(s.b), sub)) }
 
 // Random is java.util.Random's 48-bit LCG, so a fixed seed gives Java's sequence.

@@ -63,9 +63,6 @@ func init() {
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Widget](), "getListeners", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[[]swt.Listener](), func(target any, args []any) any {
 		return jrt.Narrow[*swt.Widget](target).GetListeners(jrt.ArgAs[int32](args[0]))
 	})
-	jrt.RegisterMethod(reflect.TypeFor[*swt.Widget](), "getTypedListeners", []reflect.Type{reflect.TypeFor[int32](), reflect.TypeFor[reflect.Type]()}, reflect.TypeFor[*jrt.List](), func(target any, args []any) any {
-		return jrt.Narrow[*swt.Widget](target).GetTypedListeners(jrt.ArgAs[int32](args[0]), jrt.ArgAs[reflect.Type](args[1]))
-	})
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Widget](), "getStyle", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.Widget](target).GetStyle() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Widget](), "isAutoDirection", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Widget](target).IsAutoDirection() })
 	jrt.RegisterMethod(reflect.TypeFor[*swt.Widget](), "isDisposed", nil, reflect.TypeFor[bool](), func(target any, args []any) any { return jrt.Narrow[*swt.Widget](target).IsDisposed() })

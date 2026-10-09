@@ -38,8 +38,9 @@ func (this *Device) internal_dispose_GC_(a0 int64, a1 *GCData) {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type deviceHooked struct {
 	DeviceImpl
-	hook   DeviceImpl
-	active string
+	hook      DeviceImpl
+	active    string
+	inherited bool
 }
 
 func (this *deviceHooked) enter(name string) func() {
@@ -125,14 +126,20 @@ func (this *deviceHooked) init_() {
 }
 
 func (this *deviceHooked) internal_new_GC_(a0 *GCData) int64 {
-	if h, ok := this.hook.(interface{ Internal_new_GC_(a0 *GCData) int64 }); ok {
+	if h, ok := this.hook.(interface{ Internal_new_GC_(a0 *GCData) int64 }); ok && !(this.inherited && this.active == "internal_new_GC_") {
+		if this.inherited {
+			defer this.enter("internal_new_GC_")()
+		}
 		return h.Internal_new_GC_(a0)
 	}
 	return this.DeviceImpl.internal_new_GC_(a0)
 }
 
 func (this *deviceHooked) internal_dispose_GC_(a0 int64, a1 *GCData) {
-	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok {
+	if h, ok := this.hook.(interface{ Internal_dispose_GC_(a0 int64, a1 *GCData) }); ok && !(this.inherited && this.active == "internal_dispose_GC_") {
+		if this.inherited {
+			defer this.enter("internal_dispose_GC_")()
+		}
 		h.Internal_dispose_GC_(a0, a1)
 		return
 	}
@@ -180,7 +187,8 @@ func (this *Device) Impl() DeviceImpl {
 }
 
 func (this *Device) SetImpl_(impl DeviceImpl) {
-	this.impl = &deviceHooked{DeviceImpl: this.impl, hook: impl}
+	_, base := this.impl.(*Device)
+	this.impl = &deviceHooked{DeviceImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() { jrt.RegisterClassPackage("Device", "org.eclipse.swt.graphics") }

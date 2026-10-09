@@ -877,7 +877,7 @@ func Test_org_eclipse_swt_widgets_WidgetGetWidgetTable(displayLike swt.DisplayLi
 		}()
 		var field any = jrt.ClassGetDeclaredField(reflect.TypeFor[*swt.Display](), "widgetTable")
 		func() any { return nil }()
-		var widgetTable []*swt.Widget = field.(*jrt.Field).Get(display.Impl()).([]*swt.Widget)
+		var widgetTable []*swt.Widget = jrt.Cast[[]*swt.Widget](field.(*jrt.Field).Get(display.Impl()))
 		tret52 = widgetTable
 		tretd53 = true
 		return

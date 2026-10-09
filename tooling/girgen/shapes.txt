@@ -1,6 +1,6 @@
 # Hand-written signature corrections; see shapes.go for the directives. Types the glue uses
 # that no call site names:
-need GObjectClass GtkContainerClass GInterfaceInfo GtkContainer GtkScrollableInterface
+need GObjectClass GtkContainerClass GInterfaceInfo GtkContainer GtkScrollableInterface GtkTargetEntry
 
 # libc, fontconfig and Xlib: not in GIR
 func CMemset memset(dst int64, c int32, n int64) int64
@@ -89,3 +89,18 @@ ret CairoCairo_in_stroke int32
 ret CairoCairo_in_fill int32
 ret CairoCairo_region_contains_rectangle int64
 arg GTKGtk_text_buffer_paste_clipboard 2 []int64
+
+# DnD (EPL Eclipse SWT Drag and Drop/gtk): the Java passes pointers it malloc'ed, Strings and null where the GIR types say otherwise
+arg GTK3Gtk_clipboard_set_can_store 1 int64
+arg GTK3Gtk_clipboard_set_with_owner 1 int64
+arg GTK3Gtk_target_list_new 0 int64
+arg GTK3Gtk_drag_dest_set 2 int64
+arg GTK4Gdk_content_provider_new_union 0 []int64
+arg GTK4Gdk_content_register_serializer 1 any
+arg GTK4Gdk_content_register_deserializer 0 any
+arg OSG_error_new_literal 2 any
+arg OSG_filename_from_uri 0 int64
+arg GDKGdk_pixbuf_save_to_bufferv 4 []int64
+arg GDKGdk_pixbuf_save_to_bufferv 5 []int64
+arg GDKGdk_x11_display_utf8_to_compound_text 2 []int64
+arg GDKGdk_text_property_to_utf8_list_for_display 5 []int64

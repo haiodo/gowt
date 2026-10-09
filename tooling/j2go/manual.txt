@@ -19,6 +19,11 @@ org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getOpenedDescri
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getPropertiesSafe()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#test_setJavascriptEnabled()
 
+# ClipboardBase (tests/swttests/clipboard_manual.go): openAndFocusShell is hand-written without its Wayland button-press branch, the only user of
+# the null Boolean skipTestsRequiringButtonPress. RemoteClipboard (RMI to a Swing JVM) is a hand-written skip stub.
+org.eclipse.swt.tests.junit.ClipboardBase#skipTestsRequiringButtonPress
+org.eclipse.swt.tests.junit.ClipboardBase#openAndFocusShell(Z)
+
 # org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
 # stub, swt/swt_manual.go, is kept empty rather than deleted.
 

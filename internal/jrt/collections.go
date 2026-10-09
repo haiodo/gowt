@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"net/url"
 	"slices"
+	"strings"
 )
 
 // The Collections wrappers return the list itself: the translated tests are single-threaded and
@@ -62,13 +63,18 @@ func NewURI(s string) *URI {
 	return &URI{s}
 }
 
-// GetScheme is URI.getScheme(): null (the empty string here) for a relative reference.
+// GetScheme is URI.getScheme(): the text before the first colon when it is a valid scheme, else the port's null String.
 func (u *URI) GetScheme() string {
-	p, err := url.Parse(u.s)
-	if err != nil {
+	i := strings.IndexByte(u.s, ':')
+	if i <= 0 {
 		return ""
 	}
-	return p.Scheme
+	for j, c := range u.s[:i] {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || j > 0 && (c >= '0' && c <= '9' || c == '+' || c == '-' || c == '.')) {
+			return ""
+		}
+	}
+	return u.s[:i]
 }
 
 func (u *URI) ToString() string { return u.s }

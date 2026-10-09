@@ -20,6 +20,7 @@ func OSG_TYPE_BOOLEAN() int64 { return 5 << 2 }
 func OSG_TYPE_INT() int64     { return 6 << 2 }
 func OSG_TYPE_LONG() int64    { return 8 << 2 }
 func OSG_TYPE_STRING() int64  { return 16 << 2 }
+func OSG_TYPE_INVALID() int64 { return 0 }
 
 // A GObject starts with a GTypeInstance whose first word is the class; a GTypeClass starts with its GType.
 func OSG_OBJECT_GET_CLASS(obj int64) int64    { return peek64(obj) }
@@ -31,6 +32,9 @@ var gTypeName = lz[func(uintptr) uintptr]{sym: "g_type_name"}
 func OSG_OBJECT_TYPE_NAME(obj int64) int64 {
 	return int64(gTypeName.get()(uintptr(OSG_OBJECT_TYPE(obj))))
 }
+
+// G_VALUE_TYPE_NAME(v) is g_type_name(G_VALUE_TYPE(v)); a GValue starts with its GType.
+func OSG_VALUE_TYPE_NAME(value int64) int64 { return int64(gTypeName.get()(uintptr(peek64(value)))) }
 
 var gObjectClassConstructor = unsafe.Offsetof(GObjectClass{}.Constructor)
 

@@ -222,7 +222,15 @@ func (l *List) RemoveIf(predicate any) bool {
 }
 
 // ListOf is List.of(e1, e2, ...).
-func ListOf(elems ...any) *List { return &List{items: elems} }
+// A lone []any is the varargs array of Stream.of(T...) / Arrays.asList(T...), spread as Java does.
+func ListOf(elems ...any) *List {
+	if len(elems) == 1 {
+		if a, ok := elems[0].([]any); ok {
+			elems = a
+		}
+	}
+	return &List{items: elems}
+}
 
 // Contains is List.contains(Object).
 func (l *List) Contains(v any) bool {

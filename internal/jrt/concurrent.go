@@ -69,11 +69,12 @@ func (u TimeUnit) duration(n int64) time.Duration {
 type Executor interface{ Execute(Runnable) }
 
 // CompletableFuture covers supplyAsync/thenRunAsync and the state queries the tests read.
-// Ceiling: no other stages, no join/get.
+// Ceiling: no stages beyond thenRunAsync/thenAccept, no join.
 type CompletableFuture struct {
 	mu      sync.Mutex
 	done    bool
 	failed  bool
+	value   any
 	waiters []func()
 }
 
@@ -104,10 +105,47 @@ func CompletableFutureSupplyAsync[T any](supplier func() T) *CompletableFuture {
 	go func() {
 		failed := true
 		defer func() { recover(); f.finish(failed) }()
-		supplier()
+		f.value = supplier()
 		failed = false
 	}()
 	return f
+}
+
+func NewCompletableFuture() *CompletableFuture { return &CompletableFuture{} }
+
+func CompletableFutureCompletedFuture(v any) *CompletableFuture {
+	f := &CompletableFuture{value: v}
+	f.finish(false)
+	return f
+}
+
+// Complete is CompletableFuture.complete: false when the future was already done.
+func (f *CompletableFuture) Complete(v any) bool {
+	f.mu.Lock()
+	if f.done {
+		f.mu.Unlock()
+		return false
+	}
+	f.value = v
+	f.mu.Unlock()
+	f.finish(false)
+	return true
+}
+
+// ThenAccept runs fn with the value as soon as the future is done; the returned future is done after fn.
+func (f *CompletableFuture) ThenAccept(fn func(any)) *CompletableFuture {
+	g := &CompletableFuture{}
+	f.whenDone(func() {
+		if f.failed {
+			g.finish(true)
+			return
+		}
+		failed := true
+		defer func() { recover(); g.finish(failed) }()
+		fn(f.value)
+		failed = false
+	})
+	return g
 }
 
 func (f *CompletableFuture) ThenRunAsync(r Runnable, executor any) *CompletableFuture {

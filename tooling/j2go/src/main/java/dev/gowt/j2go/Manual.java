@@ -72,6 +72,8 @@ public class Manual {
 		reg(TOUCH, "Touch", null, false);
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
+		// The Swing peer process of the clipboard tests, over RMI: a skip stub in tests/swttests/clipboard_manual.go.
+		reg("org.eclipse.swt.tests.junit.RemoteClipboard", "RemoteClipboard", null, false);
 		reg(IME, "IME", null, false);
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
@@ -132,6 +134,8 @@ public class Manual {
 		reg(JAVA_IO_FILE_INPUT_STREAM, "jrt.FileInputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_FILE_OUTPUT_STREAM, "jrt.FileOutputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_BUFFERED_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
+		reg("java.io.DataInputStream", "jrt.DataInputStream", JRT_IMPORT, false);
+		reg("java.io.DataOutputStream", "jrt.DataOutputStream", JRT_IMPORT, false);
 		// Round 12: the in-memory streams the ImageLoader tests save to and load from.
 		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
 		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
@@ -221,6 +225,9 @@ public class Manual {
 			Map.entry(BROWSER_TEST + "#getOpenedDescriptors()", BROWSER_TEST_GO + "GetOpenedDescriptors"),
 			Map.entry(BROWSER_TEST + "#getPropertiesSafe()", BROWSER_TEST_GO + "GetPropertiesSafe"),
 			Map.entry(BROWSER_TEST + "#test_setJavascriptEnabled()", "Test_setJavascriptEnabled"),
+			Map.entry("org.eclipse.swt.tests.junit.ClipboardBase#openAndFocusShell(Z)", "OpenAndFocusShell"),
+			// Generic over the listener class, so not translated: swt/widgets_widget_manual.go. DragSource and DropTarget call it.
+			Map.entry("org.eclipse.swt.widgets.Widget#getTypedListeners(I,java.lang.Class)", "GetTypedListeners"),
 			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
 			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
 			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).
@@ -305,6 +312,8 @@ public class Manual {
 		// jface: the button labels read JFaceResources' bundle (slice B); util.Util's empty sorted set needs Collections wrappers.
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.dialogs.IDialogConstants") && javaFieldName.endsWith("_LABEL")) return true;
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.util.Util") && javaFieldName.equals("EMPTY_SORTED_SET")) return true;
+		// Null Boolean, used only by openAndFocusShell's Wayland branch (tests/swttests/clipboard_manual.go).
+		if (declaringClassQualifiedName.equals("org.eclipse.swt.tests.junit.ClipboardBase") && javaFieldName.equals("skipTestsRequiringButtonPress")) return true;
 		return declaringClassQualifiedName.equals(COCOA_PKG + "OS") && javaFieldName.equals("SELECTORS");
 	}
 

@@ -276,3 +276,76 @@ func PeekBytes(s InputStream, n int) (head []byte, ok bool) {
 	}
 	return head[:m], true
 }
+
+// DataOutputStream is java.io.DataOutputStream: big-endian values over an OutputStream.
+type DataOutputStream struct{ OutputStream }
+
+func NewDataOutputStream(out OutputStream) *DataOutputStream { return &DataOutputStream{out} }
+
+func (s *DataOutputStream) bytes(b ...byte) {
+	buf := make([]int8, len(b))
+	for i, v := range b {
+		buf[i] = int8(v)
+	}
+	s.WriteRange(buf, 0, int32(len(buf)))
+}
+
+// Write is write(int) and write(byte[]).
+func (s *DataOutputStream) Write(b any) {
+	switch v := b.(type) {
+	case int32:
+		s.OutputStream.Write(v)
+	case []int8:
+		s.WriteRange(v, 0, int32(len(v)))
+	}
+}
+
+func (s *DataOutputStream) WriteInt(v int32) {
+	s.bytes(byte(v>>24), byte(v>>16), byte(v>>8), byte(v))
+}
+
+func (s *DataOutputStream) WriteLong(v int64) {
+	s.bytes(byte(v>>56), byte(v>>48), byte(v>>40), byte(v>>32), byte(v>>24), byte(v>>16), byte(v>>8), byte(v))
+}
+
+// DataInputStream is java.io.DataInputStream.
+type DataInputStream struct{ InputStream }
+
+func NewDataInputStream(in InputStream) *DataInputStream { return &DataInputStream{in} }
+
+func (s *DataInputStream) readFull(n int) []byte {
+	buf := make([]int8, n)
+	for got := 0; got < n; {
+		r := s.ReadRange(buf, int32(got), int32(n-got))
+		if r < 0 {
+			panic(NewIOException())
+		}
+		got += int(r)
+	}
+	out := make([]byte, n)
+	for i, v := range buf {
+		out[i] = byte(v)
+	}
+	return out
+}
+
+// Read is read() and read(byte[]): the byte or the count read, -1 at the end.
+func (s *DataInputStream) Read(b ...[]int8) int32 {
+	if len(b) == 0 {
+		return s.InputStream.Read()
+	}
+	return s.ReadRange(b[0], 0, int32(len(b[0])))
+}
+
+func (s *DataInputStream) ReadInt() int32 {
+	b := s.readFull(4)
+	return int32(b[0])<<24 | int32(b[1])<<16 | int32(b[2])<<8 | int32(b[3])
+}
+
+func (s *DataInputStream) ReadLong() int64 {
+	var v int64
+	for _, c := range s.readFull(8) {
+		v = v<<8 | int64(c)
+	}
+	return v
+}

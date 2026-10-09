@@ -284,6 +284,12 @@ if [ "$PLATFORM" = win32 ]; then
 		org/eclipse/swt/widgets/Tracker.java
 	)
 fi
+# org.eclipse.swt.dnd (README "Round 24 dnd"): the common events/listeners/adapters, and the platform's Clipboard, Transfers, DragSource, DropTarget.
+DND_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Drag and Drop"
+SWT_FILES+=($(cd "$DND_ROOT/common" && ls org/eclipse/swt/dnd/*.java) $(cd "$DND_ROOT/$PLATFORM" && find org -name '*.java' | sort))
+# win32: the COM objects DnD subclasses; COMObject is translated into package swt with its subclasses (GoTypes.goPackageDir).
+[ "$PLATFORM" != win32 ] || SWT_FILES+=(org/eclipse/swt/internal/ole/win32/COMObject.java)
+
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \
 	-- \
@@ -413,10 +419,19 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
 	$TJ/Test_org_eclipse_swt_browser_Browser.java
 	$TJ/EchoHttpServer.java
+	$TJ/ClipboardBase.java
+	$TJ/Test_org_eclipse_swt_dnd_ByteArrayTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_Clipboard.java
+	$TJ/Test_org_eclipse_swt_dnd_FileTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_HTMLTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_ImageTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_RTFTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_TextTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_URLTransfer.java
 	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
 )
-"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" \
+"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" --src "$SWT_REPO/tests/org.eclipse.swt.tests/data" \
 	"${TEST_FILES[@]}" \
 	-- \
 	"${BR_STUB[@]}" "${BR_FILES[@]}" \

@@ -226,7 +226,7 @@ public class TypeModel {
 				ci.superclass = null;
 			}
 			// Win32 PI structs embed their base (DIBSECTION has a BITMAP first, like C): no impl field may change the layout.
-			boolean pureStruct = GoTypes.platform == Platform.WIN32 && GoTypes.isPiJavaPackage(ci.javaPackage);
+			boolean pureStruct = GoTypes.platform == Platform.WIN32 && ci.goPackage.equals(GoTypes.piPackage);
 			if (ci.superclass != null && !pureStruct) ci.superclass.children.add(ci);
 			if (ci.superclass == null && superBinding != null) {
 				String q = superBinding.getErasure().getQualifiedName();

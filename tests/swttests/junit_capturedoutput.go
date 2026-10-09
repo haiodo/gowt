@@ -25,7 +25,7 @@ func NewCapturedOutput() *CapturedOutput {
 
 func (this *CapturedOutput) initCapturedOutput() {
 	this.originalOut = os.Stdout
-	this.originalErr = func() any { panic("j2go: unresolved static field err") }()
+	this.originalErr = os.Stderr
 	this.outContent = jrt.NewByteArrayOutputStream()
 	this.errContent = jrt.NewByteArrayOutputStream()
 	this.outPrintStream = func() any {

@@ -50,7 +50,10 @@ var (
 )
 
 // The page-side half of window.gowt.postMessage.
-const wkBridge = `window.gowt={postMessage:function(m){window.webkit.messageHandlers.gowt.postMessage(typeof m==="string"?m:JSON.stringify(m))},call:function(m){return window.prompt(typeof m==="string"?m:JSON.stringify(m),"\u0001gowt")}};`
+const wkBridge = `window.gowt={postMessage:function(m){window.webkit.messageHandlers.gowt.postMessage(typeof m==="string"?m:JSON.stringify(m))}};`
+
+// wkCallShim is window.gowt.call, injected in the main frame only; a subframe has no call.
+const wkCallShim = `window.gowt.call=function(m){return window.prompt(typeof m==="string"?m:JSON.stringify(m),"\u0001gowt")};`
 
 // wkCallMark is the prompt's default text that tells window.gowt.call from a page's own prompt().
 const wkCallMark = "\x01gowt"
@@ -64,6 +67,13 @@ func wkSetup() {
 		purego.RegisterFunc(&wkInit, objcMsgSend)
 		view := func(self uintptr) *WKView { return wkViews[self] }
 		urlOf := func(wv uintptr) string { return goString(msg(msg(wv, "URL"), "absoluteString")) }
+		// A failed provisional load leaves wv.URL at the previous page; the error carries the requested one.
+		failedURL := func(wv, e uintptr) string {
+			if u := goString(msg(msg(e, "userInfo"), "objectForKey:", nsString("NSErrorFailingURLStringKey"))); u != "" {
+				return u
+			}
+			return urlOf(wv)
+		}
 		wkClass = newClass("gowtWKHandler", []string{"WKScriptMessageHandler", "WKURLSchemeHandler", "WKNavigationDelegate", "WKUIDelegate"}, map[string]objcMethod{
 			"userContentController:didReceiveScriptMessage:": {purego.NewCallback(func(self, _, _, m uintptr) {
 				if v := view(self); v != nil && v.Message != nil {
@@ -82,12 +92,12 @@ func wkSetup() {
 			}), "v@:@@"},
 			"webView:didFailNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
 				if v := view(self); v != nil && v.NavFailed != nil {
-					v.NavFailed(urlOf(wv), goString(msg(e, "localizedDescription")))
+					v.NavFailed(failedURL(wv, e), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
 			"webView:didFailProvisionalNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
 				if v := view(self); v != nil && v.NavFailed != nil {
-					v.NavFailed(urlOf(wv), goString(msg(e, "localizedDescription")))
+					v.NavFailed(failedURL(wv, e), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
 			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
@@ -145,6 +155,7 @@ func NewWKView(cfg WKConfig) *WKView {
 	v.ucc = msg(v.config, "userContentController")
 	msg(v.ucc, "addScriptMessageHandler:name:", v.obj, nsString("gowt"))
 	v.AddScript(wkBridge)
+	v.addScript(wkCallShim, true)
 	for _, s := range cfg.Scripts {
 		v.AddScript(s)
 	}
@@ -163,8 +174,14 @@ func NewWKView(cfg WKConfig) *WKView {
 }
 
 // AddScript runs js at document start in pages loaded from now on.
-func (v *WKView) AddScript(js string) {
-	us := msg(msg(class("WKUserScript"), "alloc"), "initWithSource:injectionTime:forMainFrameOnly:", nsString(js), 0, 0)
+func (v *WKView) AddScript(js string) { v.addScript(js, false) }
+
+func (v *WKView) addScript(js string, mainFrameOnly bool) {
+	main := uintptr(0)
+	if mainFrameOnly {
+		main = 1
+	}
+	us := msg(msg(class("WKUserScript"), "alloc"), "initWithSource:injectionTime:forMainFrameOnly:", nsString(js), 0, main)
 	msg(v.ucc, "addUserScript:", us)
 	msg(us, "release")
 }

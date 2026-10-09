@@ -153,6 +153,17 @@ func messageText(j string) string {
 	return j
 }
 
+const wv2CallMark = "\x01gowt"
+
+// wv2CallBridge adds window.gowt.call, the prompt the engine's ScriptDialogOpening handler answers.
+const wv2CallBridge = `if(window.top===window)window.gowt.call=function(m){return window.prompt(typeof m==="string"?m:JSON.stringify(m),"\u0001gowt")};`
+
+// COREWEBVIEW2_SCRIPT_DIALOG_KIND_PROMPT and COREWEBVIEW2_WEB_ERROR_STATUS_OPERATION_CANCELED.
+const (
+	wv2DialogPrompt      = 2
+	wv2OperationCanceled = 14
+)
+
 // wv2Bridge is the page-side half of window.gowt.postMessage.
 const wv2Bridge = `window.gowt={postMessage:function(m){window.chrome.webview.postMessage(typeof m==="string"?m:JSON.stringify(m))}};`
 
@@ -223,4 +234,12 @@ func parseGUID(s string) (g [16]byte) {
 	g[6], g[7] = b[7], b[6]
 	copy(g[8:], b[8:])
 	return
+}
+
+// sameDocument tells the main document's URL, as the dialog event reports it, from a subframe's: only the
+// fragment may differ.
+func sameDocument(a, b string) bool {
+	a, _, _ = strings.Cut(a, "#")
+	b, _, _ = strings.Cut(b, "#")
+	return a != "" && a == b
 }

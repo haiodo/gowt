@@ -137,3 +137,15 @@ func TestFindRuntimeDLL(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestCallBridgeMark(t *testing.T) {
+	if !strings.Contains(wv2CallBridge, `"\u0001gowt"`) || wv2CallMark != "\x01gowt" {
+		t.Fatal("call bridge and the mark the dialog handler checks differ")
+	}
+}
+
+func TestSameDocument(t *testing.T) {
+	if !sameDocument("https://a/x#1", "https://a/x") || sameDocument("https://b/x", "https://a/x") || sameDocument("", "") {
+		t.Fatal("sameDocument")
+	}
+}

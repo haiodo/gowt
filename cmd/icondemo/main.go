@@ -19,16 +19,10 @@ func main() {
 		for _, n := range names {
 			buttons = append(buttons, w.Button("", nil, gowt.Tooltip(n)))
 		}
-		var shown []*gowt.Image
+		// icons.Get caches per name, size and colour and the App owns the images, so no Dispose here.
 		fill := func() {
-			for _, img := range shown {
-				img.Dispose()
-			}
-			shown = shown[:0]
 			for i, n := range names {
-				img := icons.Get(app, n, icons.Size(24))
-				shown = append(shown, img)
-				buttons[i].SetImage(img)
+				buttons[i].SetImage(icons.Get(app, n, icons.Size(24)))
 			}
 		}
 		fill()

@@ -1,4 +1,4 @@
-package gowt
+package icons
 
 import (
 	"os"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons/lucide"
 )
 
@@ -28,7 +29,7 @@ func TestIconDictionaryMatchesLucideSet(t *testing.T) {
 }
 
 func TestTintAlpha(t *testing.T) {
-	img := tintAlpha(2, RGB{1, 2, 3}, func(x, y int) uint8 { return uint8(x*10 + y) })
+	img := tintAlpha(2, gowt.RGB{R: 1, G: 2, B: 3}, func(x, y int) uint8 { return uint8(x*10 + y) })
 	if p := img.NRGBAAt(1, 1); p.R != 1 || p.B != 3 || p.A != 11 {
 		t.Fatalf("got %+v", p)
 	}

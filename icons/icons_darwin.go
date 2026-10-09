@@ -1,11 +1,12 @@
-package gowt
+package icons
 
 import (
+	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/swt"
 )
 
-func systemIcon(a *App, e iconEntry, px int, c RGB) *swt.ImageData {
+func systemIcon(a *gowt.App, e iconEntry, px int, c gowt.RGB) *swt.ImageData {
 	alpha := cocoa.SymbolAlpha(e.sf, px)
 	if alpha == nil {
 		return nil

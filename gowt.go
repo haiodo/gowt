@@ -21,8 +21,11 @@ type App struct {
 	display *swt.Display
 	quit    atomic.Bool
 	images  []*Image
-	icons   map[iconKey]*Image
 }
+
+// SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
+// WM class). Call it before Run.
+func SetAppName(name string) { swt.DisplaySetAppName(name) }
 
 // Run creates the display, calls setup on the UI thread, then runs the event loop until the
 // last window is closed or App.Quit is called. SWT exceptions raised on the UI thread
@@ -114,6 +117,14 @@ func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
 // Border draws a frame; Table and Tree have one by default.
 func Border() Option { return Option{style: swt.BORDER} }
 
+// Background sets the background color of a widget.
+func Background(c RGB) Option {
+	return Option{apply: func(w *swt.Control) { w.SetBackgroundWithColor(c.color()) }}
+}
+
+// Custom runs f on the widget right after it is created and sets no style bits. It lets a package outside gowt adjust the swt control.
+func Custom(f func(*swt.Control)) Option { return Option{apply: f} }
+
 func resolve(base int32, opts []Option) int32 {
 	for _, o := range opts {
 		base |= o.style
@@ -141,6 +152,10 @@ type panel struct {
 
 // Unwrap returns the underlying composite.
 func (p *panel) Unwrap() *swt.Composite { return p.c }
+
+// AsComposite returns the underlying composite; unlike Unwrap it has the same type on Panel,
+// Window, Group, Split and CoolBar, so one function can take any of them.
+func (p *panel) AsComposite() *swt.Composite { return p.c }
 
 // SetLayout installs l and returns p.
 func (p *panel) SetLayout(l Layout) *Panel {
@@ -189,8 +204,6 @@ type Window struct {
 	*panel
 	shell *swt.Shell
 	sized bool
-
-	backdropOn bool // Windows: the shell background was set for the material
 }
 
 // Window creates a hidden window; call Show once its content is built.
@@ -207,6 +220,9 @@ func (w *Window) Show() {
 	}
 	w.shell.Open()
 }
+
+// SetTitle changes the window title.
+func (w *Window) SetTitle(s string) { w.shell.SetText(s) }
 
 // SetSize sets the window size in points.
 func (w *Window) SetSize(width, height int) {

@@ -11,24 +11,25 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/swt"
 )
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		if os.Getenv("GOWT_DARK_CONTENT") == "1" {
-			app.SetDarkContent(true)
+			look.SetDarkContent(app, true)
 		}
 		w := app.Window("backdropdemo")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
 		fill := gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 280})
 		// Pure black text over the material turns transparent; near-black stays visible.
 		w.Label("Material behind the window", fill).Unwrap().SetForeground(swt.NewColorRedGreenBlue(24, 24, 24))
-		w.Button("None", func() { w.SetBackdrop(gowt.BackdropNone) }, fill)
-		w.Button("Translucent (Acrylic)", func() { w.SetBackdrop(gowt.BackdropTranslucent) }, fill)
-		w.Button("Glass (Mica)", func() { w.SetBackdrop(gowt.BackdropGlass) }, fill)
-		w.Button("Square corners", func() { w.SetRoundedCorners(false) }, fill)
-		w.Button("Round corners", func() { w.SetRoundedCorners(true) }, fill)
+		w.Button("None", func() { look.SetBackdrop(w, look.BackdropNone) }, fill)
+		w.Button("Translucent (Acrylic)", func() { look.SetBackdrop(w, look.BackdropTranslucent) }, fill)
+		w.Button("Glass (Mica)", func() { look.SetBackdrop(w, look.BackdropGlass) }, fill)
+		w.Button("Square corners", func() { look.SetRoundedCorners(w, false) }, fill)
+		w.Button("Round corners", func() { look.SetRoundedCorners(w, true) }, fill)
 		w.Text(fill)
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_BACKDROP_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)

@@ -11,18 +11,19 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/look"
 )
 
 func main() {
 	if os.Getenv("GOWT_CLASSIC") == "1" {
-		gowt.ClassicLook()
+		look.Classic()
 	}
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("glassdemo")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 24, Spacing: 10})
-		w.SetFullSizeContent(true)
-		w.SetBackdrop(map[string]gowt.Backdrop{
-			"none": gowt.BackdropNone, "translucent": gowt.BackdropTranslucent, "": gowt.BackdropGlass, "glass": gowt.BackdropGlass,
+		look.SetFullSizeContent(w, true)
+		look.SetBackdrop(w, map[string]look.Backdrop{
+			"none": look.BackdropNone, "translucent": look.BackdropTranslucent, "": look.BackdropGlass, "glass": look.BackdropGlass,
 		}[os.Getenv("GOWT_BACKDROP")])
 		w.Label("Window backdrop, full-size content", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 320}))
 		p := w.Panel()
@@ -31,15 +32,15 @@ func main() {
 		p.Text()
 		g := w.Group("Glass group")
 		g.SetLayout(gowt.Grid{Columns: 2, Margin: 12, Spacing: 8})
-		g.SetGlass(true)
-		g.Button("Glass", nil, gowt.GlassButton())
+		look.SetGlass(g, true)
+		g.Button("Glass", nil, look.GlassButton())
 		g.Button("Plain", nil)
-		g.Button("Check, no glass bezel", nil, gowt.Check(), gowt.GlassButton())
+		g.Button("Check, no glass bezel", nil, gowt.Check(), look.GlassButton())
 		gp := w.Panel()
 		gp.SetLayout(gowt.Grid{Columns: 1, Margin: 12})
-		gp.SetGlass(true)
+		look.SetGlass(gp, true)
 		gp.Label("Glass panel")
-		w.Button("Glass button", nil, gowt.GlassButton())
+		w.Button("Glass button", nil, look.GlassButton())
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_GLASSDEMO_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)
 		}

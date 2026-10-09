@@ -3,7 +3,7 @@
 `swt` stays the generated, Java-shaped low level (full SWT, for ported code). `gowt` is a
 hand-written, thin, idiomatic layer on top; it is the API we document. Files: `gowt.go` (App,
 Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widgets_list.go`,
-`widgets_container.go`, `widgets_range.go`, `graphics.go`, `menu.go`, `dialogs.go`. Examples:
+`widgets_container.go`, `widgets_range.go`, `graphics.go`, `menu.go`, `dialogs.go`, `theme.go`; the platform look is in `look` and the named icons in `icons` (see "Package layout"). Examples:
 `cmd/hellogowt` (minimal), `cmd/gowtdemo` (a tab per widget family).
 
 ## Decisions
@@ -21,7 +21,7 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 | Escape hatch | `Unwrap()` on every wrapper returns the `*swt.X` | Facade never needs to cover all of SWT; users drop down per widget. Wrappers hold the swt object in a private field (no embedding), so the Java API does not leak into godoc. |
 | Layouts | value types: `Fill{Vertical}`, `Grid{Columns, EqualWidth, Margin, Spacing}`; per-child `Cell(GridCell{...})` | Plain structs with zero-value meaning "none/natural", enum `Align*` instead of int bit masks. Applied with `SetLayout`. `Row`, `Form`, `Stack` follow the same rule (see below). |
 | Theme | `App.Dark()`, `App.OnThemeChange(func(dark bool))`; `Run` calls `Display.FollowSystemTheme()` | Light/dark follows the system while running: macOS KVO on `NSApp.effectiveAppearance`, Windows `WM_SETTINGCHANGE` + dark title bar (content stays light), Linux portal `color-scheme` over GDBus (no portal: GTK theme unchanged). Plain `swt` users call `FollowSystemTheme()` themselves; the callback fires only when dark flips. |
-| Naming | Go names: `Checked`, `SetText`, `OnClick`; no `Get` prefix; ints for sizes (not int32); `time.Duration` for time; no `Like`/`As*`/`Overload` | |
+| Naming | Go names: `Checked`, `SetText`, `OnClick`; no `Get` prefix; ints for sizes (not int32); `time.Duration` for time; no `Like`/`As*`/`Overload`; the one exception is `AsComposite` on containers | |
 
 ## Wrapped (TSK-02)
 
@@ -65,11 +65,11 @@ around factory output, deliberately not exported yet). jface has no viewers in t
 | API | Behavior |
 |---|---|
 | (none) | Liquid Glass chrome is on by itself: the Go linker records `sdk 26.2` in `LC_BUILD_VERSION` of every binary. |
-| `ClassicLook()` | Before `Run`: sets `UIDesignRequiresCompatibility` via NSUserDefaults and the main bundle info dictionary. No Info.plist exists for a plain binary, so whether AppKit reads it there is checked only by eye. Reliable alternative: `go build -ldflags=-macsdk=15.0`. |
-| `Window.SetBackdrop` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), the window one sits in the window frame view below the content view, a panel one in the panel parent right below the panel (frame kept in step by a resize listener); SWT puts every new child at the bottom of its parent, so a child backdrop would end up above the widgets. The window turns non-opaque. SWT composites fill their background, so the window and panels also get an alpha-0 background plus `SetBackgroundMode(INHERIT_FORCE)`; |
-| `Window.SetFullSizeContent(bool)` | Full-size content view mask plus transparent title bar. |
-| `Panel.SetGlass(bool)` | NSGlassEffectView behind a panel (corner radius 12). |
-| `GlassButton()` | Option: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |
+| `look.Classic()` | Before `Run`: sets `UIDesignRequiresCompatibility` via NSUserDefaults and the main bundle info dictionary. No Info.plist exists for a plain binary, so whether AppKit reads it there is checked only by eye. Reliable alternative: `go build -ldflags=-macsdk=15.0`. |
+| `look.SetBackdrop(w, b)` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), the window one sits in the window frame view below the content view, a panel one in the panel parent right below the panel (frame kept in step by a resize listener); SWT puts every new child at the bottom of its parent, so a child backdrop would end up above the widgets. The window turns non-opaque. SWT composites fill their background, so the window and panels also get an alpha-0 background plus `SetBackgroundMode(INHERIT_FORCE)`; |
+| `look.SetFullSizeContent(w, on)` | Full-size content view mask plus transparent title bar. |
+| `look.SetGlass(c, on)` (c is any container: `Panel`, `Window`, `Group`, `Split`, `CoolBar`) | NSGlassEffectView behind a panel (corner radius 12). |
+| `look.GlassButton()` | `gowt.Option`: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |
 
 Every class and selector newer than macOS 13 is looked up at run time; other systems get no-ops.
 Not wrapped: NSGlassEffectContainerView (glass views of different panels would have to be
@@ -81,10 +81,9 @@ descendants of one container, which SWT's view tree does not allow), NSBackgroun
 - The SWT event/listener type hierarchy, `Display` as a public type (`App.Unwrap()` exists), `Runnable`, `Internal_*`.
 - Widget fonts/colors/backgrounds, cursors, drag and drop, keyboard and mouse listeners (`Unwrap()`), `ExpandBar`, `Browser`, `StyledText`, `CCombo`, `Shell` kinds other than `Window` (dialog shells, tool tips, `Decorations` images), accelerators on menu items, tray menus, `Sash` repositioning helpers (use `Split`), multi-column `Tree`, table sorting helpers, `ImageData`/palettes/transforms/paths/patterns, `GC` clipping, fonts, alpha, polygons.
 
-## Package layout (proposal, not applied)
+## Package layout (applied, TSK-31)
 
-The root keeps what every app needs; the platform look and the icon set move out. The root goes
-from 34 files to 15 (13 without tests).
+The root keeps what every app needs; the platform look and the icon set live in their own packages.
 
 | Package | Contents | Files |
 |---|---|---|
@@ -101,7 +100,7 @@ One `look` package, because:
 
 Go constraints:
 - No methods on `gowt.Window` from outside: window settings become functions that take the window, `w.SetBackdrop(b)` -> `look.SetBackdrop(w, b)`. `look` reaches the shell through `w.Unwrap()`; the Windows-only `Window.backdropOn` field becomes `shell.SetDataKeyValue`.
-- `SetGlass` is promoted to `Panel`, `Window`, `Group`, `Split`, `CoolBar`, whose `Unwrap()` return different swt types. All five are `swt.CompositeLike` (checked with `go vet` on darwin, windows, linux), so `g.SetGlass(true)` -> `look.SetGlass(g.Unwrap(), true)`, the shape `webview.New(host.Unwrap(), ...)` already has. `panel.clear` moves with it; it uses only public swt calls.
+- `SetGlass` was promoted to `Panel`, `Window`, `Group`, `Split`, `CoolBar`, whose `Unwrap()` return different swt types. They share the promoted `AsComposite() *swt.Composite` (declared once on the unexported `panel`), and `look.Container` is the one-method interface over it, so `g.SetGlass(true)` -> `look.SetGlass(g, true)`; jface factories can take the same interface. `panel.clear` moves with it; it uses only public swt calls.
 - `Option` fields are unexported, so `look.GlassButton()` cannot build one. Hook 1: `gowt.Custom(f func(*swt.Control)) Option`, run after creation, no style bits. Exporting `style`/`apply` is rejected: every `Option` would carry raw SWT bits in godoc.
 - `icons` needs the display (`app.Unwrap()`), the theme (`app.Dark()`) and an `Image` the App disposes when `Run` returns; `Image.i` is unexported. Hook 2: `App.ImageFromProvider(p swt.ImageDataProvider) *Image` (`a.track` of `swt.NewImageDeviceImageDataProvider`); it also turns `svg.NewImageDataProvider` output into a `gowt.Image`. The cache moves from `App.icons` to a `map[*gowt.App]...` in `icons`. Ceiling: entries of a finished `Run` are never freed, fine for one `Run` per process; the way out is an App end-of-run hook.
 - No cycle: after the move the root has no `App.icons`/`iconKey`, no `Window.backdropOn`, no `GlassButton`. `look` and `icons` import `gowt`, `swt`, `svg`, `internal/cocoa`, `internal/win32`; `gowt` imports neither.
@@ -116,7 +115,7 @@ Small cleanups in the same change, no API change:
 | `Window.SetBackdrop(b)` | `look.SetBackdrop(w *gowt.Window, b look.Backdrop)` |
 | `Window.SetFullSizeContent(on)` | `look.SetFullSizeContent(w *gowt.Window, on bool)` |
 | `Window.SetRoundedCorners(on)` | `look.SetRoundedCorners(w *gowt.Window, on bool)` |
-| `Panel/Window/Group/Split/CoolBar.SetGlass(on)` | `look.SetGlass(c swt.CompositeLike, on bool)` |
+| `Panel/Window/Group/Split/CoolBar.SetGlass(on)` | `look.SetGlass(c look.Container, on bool)` |
 | `ClassicLook()` | `look.Classic()` |
 | `GlassButton() Option` | `look.GlassButton() gowt.Option` |
 | `App.SetDarkContent(on)` | `look.SetDarkContent(app *gowt.App, on bool)` |
@@ -124,7 +123,7 @@ Small cleanups in the same change, no API change:
 | `type IconOption` | `icons.Option` |
 | `IconSize(points)`, `IconColor(c)` | `icons.Size(points)`, `icons.Color(c gowt.RGB)` |
 | `IconNames()` | `icons.Names()` |
-| (new) | `gowt.Custom(f func(*swt.Control)) Option`, `App.ImageFromProvider(p swt.ImageDataProvider) *Image` |
+| (new) | `gowt.Custom(f func(*swt.Control)) Option`, `App.ImageFromProvider(p swt.ImageDataProvider) *Image`, `AsComposite() *swt.Composite` on `Panel`, `Window`, `Group`, `Split`, `CoolBar`, `look.Container` |
 
 Impact:
 - Callers: `cmd/backdropdemo`, `cmd/glassdemo`, `cmd/icondemo`. `cmd/minibrowser` and `cmd/webviewdemo` use only `SetAppName`, which stays. `examples/` and `README.md` use none of the moved symbols.

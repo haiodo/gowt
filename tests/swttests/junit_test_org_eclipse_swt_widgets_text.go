@@ -1347,8 +1347,14 @@ func (this *Test_org_eclipse_swt_widgets_Text) Test_issue472() {
 				if r == nil {
 					return
 				}
-				if false {
-					var ex error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.NullPointerException:
+						return true
+					}
+					return false
+				}() {
+					ex := r.(*jrt.NullPointerException)
 					_ = ex
 					panic(&jrt.RuntimeException{Message: fmt.Sprintf("NPE with font=%d", iFontHeight)})
 				} else {

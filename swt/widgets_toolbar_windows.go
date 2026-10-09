@@ -1399,7 +1399,7 @@ func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
 	if itemCount == 0 {
 		return
 	}
-	var buttondata any = func() any { panic("j2go: unresolved new Stack<ToolItemData>") }()
+	var buttondata *jrt.Stack = jrt.NewStack()
 	for i := int32(itemCount - 1); i >= 0; i-- {
 		var item *ToolItem = toolItems[i]
 		if (item.style&SEPARATOR) != 0 && item.GetControl() != (nil) {
@@ -1408,15 +1408,12 @@ func (this *ToolBar) handleDPIChange_(event *Event, scalingFactor float32) {
 		item.NotifyListeners(ZoomChanged, event)
 		var lpButton *win32.TBBUTTON = win32.NewTBBUTTON()
 		win32.OSSendMessageOverload16(this.Handle, win32.OSTB_GETBUTTON, int64(i), lpButton)
-		func() *ToolBar_ToolItemData {
-			_ = []any{buttondata, newToolBarToolItemData(item, lpButton)}
-			panic("j2go: unresolved call push")
-		}()
+		jrt.Cast[*ToolBar_ToolItemData](buttondata.Push(newToolBarToolItemData(item, lpButton)))
 		win32.OSSendMessageOverload4(this.Handle, win32.OSTB_DELETEBUTTON, int64(i), int64(0))
 	}
 	win32.OSSendMessageOverload4(this.Handle, win32.OSTB_BUTTONSTRUCTSIZE, int64(win32.TBBUTTONSizeof), int64(0))
-	for !func() bool { _ = []any{buttondata}; panic("j2go: unresolved call isEmpty") }() {
-		var itemData *ToolBar_ToolItemData = func() *ToolBar_ToolItemData { _ = []any{buttondata}; panic("j2go: unresolved call pop") }()
+	for !buttondata.IsEmpty() {
+		var itemData *ToolBar_ToolItemData = jrt.Cast[*ToolBar_ToolItemData](buttondata.Pop())
 		win32.OSSendMessageOverload16(this.Handle, win32.OSTB_ADDBUTTONS, int64(1), itemData.button)
 		var item *ToolItem = itemData.toolItem
 		if item != (nil) {

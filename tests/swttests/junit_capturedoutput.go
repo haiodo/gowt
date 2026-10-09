@@ -9,12 +9,12 @@ import (
 )
 
 type CapturedOutput struct {
-	originalOut    any
-	originalErr    any
+	originalOut    jrt.PrintStream
+	originalErr    jrt.PrintStream
 	outContent     *jrt.ByteArrayOutputStream
 	errContent     *jrt.ByteArrayOutputStream
-	outPrintStream any
-	errPrintStream any
+	outPrintStream jrt.PrintStream
+	errPrintStream jrt.PrintStream
 }
 
 func NewCapturedOutput() *CapturedOutput {
@@ -28,25 +28,19 @@ func (this *CapturedOutput) initCapturedOutput() {
 	this.originalErr = os.Stderr
 	this.outContent = jrt.NewByteArrayOutputStream()
 	this.errContent = jrt.NewByteArrayOutputStream()
-	this.outPrintStream = func() any {
-		_ = []any{this.outContent, true, jrt.StandardCharsetsUTF_8}
-		panic("j2go: unresolved new PrintStream")
-	}()
-	func() any { _ = []any{this.outPrintStream}; panic("j2go: unresolved call setOut") }()
-	this.errPrintStream = func() any {
-		_ = []any{this.errContent, true, jrt.StandardCharsetsUTF_8}
-		panic("j2go: unresolved new PrintStream")
-	}()
-	func() any { _ = []any{this.errPrintStream}; panic("j2go: unresolved call setErr") }()
+	this.outPrintStream = jrt.NewPrintStream(this.outContent, true, jrt.StandardCharsetsUTF_8)
+	jrt.SetOut(this.outPrintStream)
+	this.errPrintStream = jrt.NewPrintStream(this.errContent, true, jrt.StandardCharsetsUTF_8)
+	jrt.SetErr(this.errPrintStream)
 }
 
 func (this *CapturedOutput) GetOutContent() string {
-	func() any { _ = []any{this.outPrintStream}; panic("j2go: unresolved call flush") }()
+	jrt.PrintStreamFlush(this.outPrintStream)
 	return this.outContent.ToString(jrt.StandardCharsetsUTF_8)
 }
 
 func (this *CapturedOutput) GetErrContent() string {
-	func() any { _ = []any{this.errPrintStream}; panic("j2go: unresolved call flush") }()
+	jrt.PrintStreamFlush(this.errPrintStream)
 	return this.errContent.ToString(jrt.StandardCharsetsUTF_8)
 }
 
@@ -56,6 +50,6 @@ func (this *CapturedOutput) AssertNoOutput() {
 }
 
 func (this *CapturedOutput) Close() {
-	func() any { _ = []any{this.originalOut}; panic("j2go: unresolved call setOut") }()
-	func() any { _ = []any{this.originalErr}; panic("j2go: unresolved call setErr") }()
+	jrt.SetOut(this.originalOut)
+	jrt.SetErr(this.originalErr)
 }

@@ -320,7 +320,7 @@ func FileDialogGetItemPath(psi *win32.IShellItem) *jrt.Path {
 		if strings.HasPrefix(path, FileDialogLONG_PATH_PREFIX) {
 			path = jrt.Substring(path, jrt.StringLength(FileDialogLONG_PATH_PREFIX), -1)
 		}
-		return func() *jrt.Path { _ = []any{path, []string{}}; panic("j2go: unresolved call get") }()
+		return jrt.PathOf(path, nil)
 	}
 	return nil
 }

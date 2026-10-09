@@ -2058,9 +2058,9 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 }
 
 func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) *jrt.List {
-	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()).Map(func(l Listener) any {
+	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func(o Listener) bool { return jrt.ClassIsInstance(reflect.TypeFor[*TypedListener](), o) }).Map(func(l Listener) any {
 		return (castListenerToTypedListener(l)).eventListener
-	}).Filter(func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()).Map(func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }())
+	}).Filter(func(o any) bool { return jrt.ClassIsInstance(listenerType, o) }).Map(func(o any) any { return jrt.ClassCast(listenerType, o) })
 }
 
 func (this *Widget) GetMenu0() *Menu {

@@ -544,24 +544,24 @@ func (this *Display) Gdbus_init_methods() {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.URISyntaxException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.URISyntaxException)
 						_ = e
 						this.SendEvent(OpenDocument, event)
 					} else {
 						panic(r)
 					}
 				}()
-				if func() string {
-					_ = []any{func() any { _ = []any{fileNames[i]}; panic("j2go: unresolved new URI") }()}
-					panic("j2go: unresolved call getScheme")
-				}() != "" {
+				if jrt.NewURI(fileNames[i]).GetScheme() != "" {
 					this.SendEvent(OpenUrl, event)
 				} else {
-					panic(func() any {
-						_ = []any{fileNames[i], "Not a valid Url. Probably file."}
-						panic("j2go: unresolved new URISyntaxException")
-					}())
+					panic(jrt.NewURISyntaxException(fileNames[i], "Not a valid Url. Probably file."))
 				}
 			}()
 		}
@@ -705,10 +705,7 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 func (this *Display) Execute(runnable jrt.Runnable) {
 	_ = runnable
 	if this.IsDisposed() {
-		panic(func() any {
-			_ = []any{NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")}
-			panic("j2go: unresolved new RejectedExecutionException")
-		}())
+		panic(jrt.NewRejectedExecutionException(NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")))
 	}
 	if this.thread == jrt.CurrentThread() {
 		this.SyncExec(runnable)
@@ -3932,7 +3929,7 @@ func (this *Display) RunSkin() bool {
 
 func (this *Display) SetCursorLocation(x int32, y int32) {
 	if !gtk.OSIsX11() {
-		fmt.Fprintln(os.Stderr, "SWT Display.java Error: setCursorLocation only supported on X11. \n")
+		fmt.Fprint(os.Stderr, "SWT Display.java Error: setCursorLocation only supported on X11. \n", "\n")
 	}
 	this.SetCursorLocationPoint(NewPoint(x, y))
 }

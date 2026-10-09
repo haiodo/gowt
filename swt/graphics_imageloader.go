@@ -53,7 +53,7 @@ func (this *ImageLoader) LoadBySize(stream jrt.InputStream, width int32, height 
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	this.Reset()
-	var image *ImageData = func() *ImageData { _ = []any{stream, this, width, height}; panic("j2go: unresolved call load") }()
+	var image *ImageData = NativeImageLoaderLoadBySize(stream, this, width, height)
 	this.Data = []*ImageData{image}
 	return image
 }

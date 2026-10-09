@@ -22,7 +22,7 @@ func newGTK4GlibFuture() *GTK4GlibFuture {
 func (this *GTK4GlibFuture) initGTK4GlibFuture() {
 }
 
-func GTK4GlibFutureGet(displayLike DisplayLike, future *jrt.CompletableFuture, timeout any) any {
+func GTK4GlibFutureGet(displayLike DisplayLike, future *jrt.CompletableFuture, timeout *jrt.Duration) any {
 	var display *Display
 	if displayLike != nil {
 		display = displayLike.AsDisplay()
@@ -39,7 +39,7 @@ func GTK4GlibFutureGet(displayLike DisplayLike, future *jrt.CompletableFuture, t
 	if display.GetThread() != jrt.CurrentThread() {
 		Error(ERROR_THREAD_INVALID_ACCESS)
 	}
-	if !jrt.IsNil(timeout) && func() bool { _ = []any{timeout}; panic("j2go: unresolved call isNegative") }() {
+	if timeout != (nil) && timeout.IsNegative() {
 		panic(jrt.NewIllegalArgumentException("timeout must be >= 0"))
 	}
 	if future.IsDone() {
@@ -48,29 +48,29 @@ func GTK4GlibFutureGet(displayLike DisplayLike, future *jrt.CompletableFuture, t
 	var startTime int64 = time.Now().UnixNano()
 	for {
 		if jrt.Interrupted() {
-			panic(func() any { panic("j2go: unresolved new InterruptedException") }())
+			panic(jrt.NewInterruptedException())
 		}
 		if future.IsDone() {
 			return future.Get()
 		}
-		if !jrt.IsNil(timeout) && time.Now().UnixNano()-startTime >= func() int64 { _ = []any{timeout}; panic("j2go: unresolved call toNanos") }() {
-			panic(func() any { _ = []any{"Timeout waiting for future"}; panic("j2go: unresolved new TimeoutException") }())
+		if timeout != (nil) && time.Now().UnixNano()-startTime >= timeout.ToNanos() {
+			panic(jrt.NewTimeoutException("Timeout waiting for future"))
 		}
 		for gtk.OSG_main_context_iteration(int64(0), false) {
 			if jrt.Interrupted() {
-				panic(func() any { panic("j2go: unresolved new InterruptedException") }())
+				panic(jrt.NewInterruptedException())
 			}
 			if future.IsDone() {
 				return future.Get()
 			}
-			if !jrt.IsNil(timeout) && time.Now().UnixNano()-startTime >= func() int64 { _ = []any{timeout}; panic("j2go: unresolved call toNanos") }() {
-				panic(func() any { _ = []any{"Timeout waiting for future"}; panic("j2go: unresolved new TimeoutException") }())
+			if timeout != (nil) && time.Now().UnixNano()-startTime >= timeout.ToNanos() {
+				panic(jrt.NewTimeoutException("Timeout waiting for future"))
 			}
 		}
 		if future.IsDone() {
 			return future.Get()
 		}
-		if !jrt.IsNil(timeout) {
+		if timeout != (nil) {
 			display.TimerExec(50, jrt.NewRunnable(func() {
 			}))
 		}

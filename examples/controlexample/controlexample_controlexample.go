@@ -171,8 +171,14 @@ func ControlExampleGetResourceString(key string) string {
 				tret2 = key
 				tretd3 = true
 				return
-			} else if false {
-				var e error
+			} else if func() bool {
+				switch r.(type) {
+				case *jrt.NullPointerException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.NullPointerException)
 				_ = e
 				tret2 = fmt.Sprintf("!%s!", key)
 				tretd3 = true
@@ -210,8 +216,14 @@ func ControlExampleGetResourceStringKeyArgs(key string, args []any) string {
 				tret4 = key
 				tretd5 = true
 				return
-			} else if false {
-				var e error
+			} else if func() bool {
+				switch r.(type) {
+				case *jrt.NullPointerException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.NullPointerException)
 				_ = e
 				tret4 = fmt.Sprintf("!%s!", key)
 				tretd5 = true

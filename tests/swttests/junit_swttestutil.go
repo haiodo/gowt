@@ -355,7 +355,7 @@ func SwtTestUtilDebugDisplayDifferences(expectedLike swt.ImageLike, actualLike s
 	}
 }
 
-func SwtTestUtilDumpShellState(out any) {
+func SwtTestUtilDumpShellState(out jrt.PrintStream) {
 	var display *swt.Display = swt.DisplayGetCurrent()
 	fmt.Fprintln(out.(io.Writer), "Display.getFocusControl() and its parents: ")
 	var focusControl *swt.Control = display.GetFocusControl()
@@ -727,7 +727,7 @@ func SwtTestUtilCopyFile(sourceFilename string, destinationPath *jrt.Path) *jrt.
 }
 
 func SwtTestUtilRunOperationInThread(supplier SwtTestUtil_ExceptionalSupplier) any {
-	return func() any { _ = []any{10000, supplier}; panic("j2go: unresolved call runOperationInThread") }()
+	return SwtTestUtilRunOperationInThreadTimeoutMsSupplier(10000, supplier)
 }
 
 func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier SwtTestUtil_ExceptionalSupplier) any {
@@ -751,14 +751,11 @@ func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier 
 			supplierValue[0] = supplier.Get()
 		}()
 	})
-	var thread any = func() any {
-		_ = []any{task, fmt.Sprintf("%s.runOperationInThread", jrt.ClassName(reflect.TypeFor[*SwtTestUtil]()))}
-		return nil
-	}()
-	func() any { _ = []any{thread, true}; panic("j2go: unresolved call setDaemon") }()
+	var thread any = jrt.NewThread(task)
+	jrt.Ignore(thread, true)
 	jrt.ThreadStart(thread)
 	var done func() bool = func() bool {
-		return !func() bool { _ = []any{thread}; panic("j2go: unresolved call isAlive") }()
+		return !jrt.ThreadIsAlive(thread)
 	}
 	func() {
 		defer func() {
@@ -766,8 +763,14 @@ func SwtTestUtilRunOperationInThreadTimeoutMsSupplier(timeoutMs int32, supplier 
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *jrt.InterruptedException:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*jrt.InterruptedException)
 				_ = e
 				panic(&jrt.RuntimeException{Message: "Failed while running thread"})
 			} else {

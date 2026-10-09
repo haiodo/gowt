@@ -365,11 +365,11 @@ func (this *PrintDialog) StoreBytes(key string, value int64) {
 	var length int32 = gtk.CStrlen(value)
 	var valueBuffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(valueBuffer, value, int64(length))
-	this.StoreOverload4(func() []int8 { _ = []any{key}; panic("j2go: unresolved call getBytes") }(), valueBuffer)
+	this.StoreOverload4(jrt.GetBytes(key), valueBuffer)
 }
 
 func (this *PrintDialog) StoreOverload3(key string, value string) {
-	this.StoreOverload4(func() []int8 { _ = []any{key}; panic("j2go: unresolved call getBytes") }(), func() []int8 { _ = []any{value}; panic("j2go: unresolved call getBytes") }())
+	this.StoreOverload4(jrt.GetBytes(key), jrt.GetBytes(value))
 }
 
 func (this *PrintDialog) StoreOverload4(key []int8, value []int8) {

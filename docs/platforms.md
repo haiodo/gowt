@@ -23,7 +23,7 @@ Source of truth for numbers: `tests/expected.txt` (darwin), `tests/expected_wind
 - Never run on real Windows; all results are Wine (CrossOver), where DPI is 96 whatever the setting, so zoom above 100 is untested.
 - 38 of 43 skips: SWT's "alpha for foreground colors does not exist on Win32" assumption.
 - Not analysed failures (46): `java.lang.Character.isAlphabetic` / iterator `next` unresolved calls (14), reflection (6), Combo/CCombo `setItems`, ImageLoader on some streams, assertions that differ under Wine.
-- Not translated: Browser/WebView2, drag and drop, OLE; `Accessible` (MSAA) is a stub; `TextLayout` (Uniscribe) untested; the generic multi-zoom image-handle helpers are panic markers (paths/patterns/transforms at non-100 zoom).
+- Not translated: drag and drop, OLE; `Browser` needs the WebView2 engine of package `webview`; `Accessible` (MSAA) is a stub; `TextLayout` (Uniscribe) untested; the generic multi-zoom image-handle helpers are panic markers (paths/patterns/transforms at non-100 zoom).
 - Dark-mode ordinals are unavailable.
 
 **Linux**

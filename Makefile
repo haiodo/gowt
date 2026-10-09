@@ -57,8 +57,8 @@ check: vet test xcheck api-check
 XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res
 xcheck:
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
-	@for os in darwin windows linux; do GOOS=$$os go build ./jface || exit 1; done
-	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
+	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview || exit 1; done
+	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go browser/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
 
 # The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).

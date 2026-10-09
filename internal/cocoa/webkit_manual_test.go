@@ -5,6 +5,7 @@ package cocoa
 import (
 	"os"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -98,6 +99,64 @@ func TestBlockEnumerate(t *testing.T) {
 		msg(arr, "enumerateObjectsUsingBlock:", NewBlock(3, func(a []uintptr) { seen = append(seen, a[0], a[1]) }))
 		if len(seen) != 2 || goString(seen[0]) != "x" || seen[1] != 0 {
 			t.Fatalf("block args = %v", seen)
+		}
+	})
+}
+
+// window.gowt.call is answered synchronously, a page's own prompt() is not routed to it, a refusing
+// Decide cancels the navigation, and CanGoBack follows the history.
+func TestWKViewCallPolicyHistory(t *testing.T) {
+	if os.Getenv("GOWT_WK_HEADLESS") == "" {
+		t.Skip("set GOWT_WK_HEADLESS=1: starts WebContent processes")
+	}
+	onMain(func() {
+		objcInit()
+		msg(msg(class("NSApplication"), "sharedApplication"), "setActivationPolicy:", 2) // Prohibited
+		var runLoop func(mode uintptr, sec float64, ret bool) int32
+		purego.RegisterLibFunc(&runLoop, purego.RTLD_DEFAULT, "CFRunLoopRunInMode")
+		mode := nsString("kCFRunLoopDefaultMode")
+
+		parent := msg(msg(class("NSView"), "alloc"), "init")
+		v := NewWKView(WKConfig{Parent: parent, Frame: NSRect{Width: 300, Height: 200}, Schemes: []string{"gowt"}})
+		defer v.Dispose()
+		titles := map[string]bool{}
+		var asked []string
+		v.TitleChanged = func(s string) { titles[s] = true }
+		v.Decide = func(url string, mainFrame bool) bool {
+			asked = append(asked, url)
+			return !strings.Contains(url, "blocked")
+		}
+		v.Call = func(m string) string { return "re:" + m }
+		v.Scheme = func(url, method string) (int, map[string]string, []byte) {
+			return 200, map[string]string{"Content-Type": "text/html"}, []byte(`<title>` + url + `</title>`)
+		}
+		wait := func(what string, ok func() bool) {
+			for deadline := time.Now().Add(10 * time.Second); !ok(); {
+				if time.Now().After(deadline) {
+					t.Fatalf("timeout waiting for %s; titles %v, asked %v", what, titles, asked)
+				}
+				runLoop(mode, 0.05, false)
+			}
+		}
+		pump := func(sec float64) { runLoop(mode, sec, false) }
+
+		v.LoadHTML(`<script>document.title = gowt.call("ping") + "|" + prompt("own", "x")</script>`, "")
+		wait("call reply", func() bool { return titles["re:ping|null"] })
+
+		if v.CanGoBack() {
+			t.Fatalf("CanGoBack on the first page")
+		}
+		v.LoadURL("gowt://app/a")
+		wait("second page", func() bool { return titles["gowt://app/a"] })
+		if !v.CanGoBack() || v.CanGoForward() {
+			t.Fatalf("after a second page: CanGoBack %v, CanGoForward %v", v.CanGoBack(), v.CanGoForward())
+		}
+
+		asked = nil
+		v.LoadURL("gowt://blocked/b")
+		pump(0.5)
+		if len(asked) != 1 || titles["gowt://blocked/b"] || v.URL() != "gowt://app/a" {
+			t.Fatalf("blocked navigation: asked %v, URL %q", asked, v.URL())
 		}
 	})
 }

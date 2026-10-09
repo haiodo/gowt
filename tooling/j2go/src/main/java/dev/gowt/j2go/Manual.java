@@ -28,6 +28,8 @@ public class Manual {
 	private static final String DISPLAY_APPEARANCE = "org.eclipse.swt.widgets.Display.APPEARANCE";
 	private static final String COCOA_PKG = "org.eclipse.swt.internal.cocoa.";
 	public static final String GDK_RECTANGLE_TO_RECTANGLE = "GdkRectangleToRectangle";
+	private static final String BROWSER_TEST = "org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser";
+	private static final String BROWSER_TEST_GO = "Test_org_eclipse_swt_browser_Browser";
 	private static final String CONTROL_EXAMPLE_PKG = "org.eclipse.swt.examples.controlexample.";
 
 	// java.lang/java.util base types some translated classes extend (SWTException/SWTError,
@@ -82,7 +84,7 @@ public class Manual {
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.LinkedHashSet", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg("java.util.Iterator", "jrt.Iterator", JRT_IMPORT, false);
@@ -98,6 +100,8 @@ public class Manual {
 		// GC's text-layout cache: a record key and an LRU LinkedHashMap subclass, hand-written in
 		// swt/graphics_gc_manual.go (no record rule; removeEldestEntry has no jrt.Map equivalent).
 		reg("org.eclipse.swt.graphics.GC.GCTextData.Key", "GC_GCTextData_Key", null, false);
+		// Browser: the Edge-unavailable dialog belongs to Browser.createWebBrowser, which is hand-written.
+		reg("org.eclipse.swt.browser.Browser.WebViewUnavailableDialog", "BrowserWebViewUnavailableDialog", null, false);
 		reg("org.eclipse.swt.graphics.GC.GCTextData.Cache", "GC_GCTextData_Cache", null, false);
 		// Image loading (ImageLoader + codecs) is not ported: loaders/strict checks/disabled-image
 		// colour transform are stubs in swt/graphics_stubs_manual.go.
@@ -132,9 +136,19 @@ public class Manual {
 		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
 		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
 		// Round 14: java.util.concurrent.atomic cells the widget tests capture from listeners.
-		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicLong", "AtomicReference"}) {
+		for (String n : new String[]{"AtomicBoolean", "AtomicInteger", "AtomicLong", "AtomicReference", "AtomicIntegerArray", "AtomicReferenceArray"}) {
 			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
 		}
+		reg("java.net.URI", "jrt.URI", JRT_IMPORT, false);
+		// EchoHttpServer (internal/jrt/http.go).
+		for (String q : new String[]{"com.sun.net.httpserver.HttpExchange", "com.sun.net.httpserver.HttpServer", "com.sun.net.httpserver.Headers",
+				"java.net.InetSocketAddress", "java.net.InetAddress", "java.net.URLEncoder", "java.net.URLDecoder", "java.nio.charset.Charset",
+				"java.nio.charset.StandardCharsets"}) {
+			String go = q.endsWith("Headers") ? "HttpHeaders" : q.endsWith("StandardCharsets") ? "StandardCharsets" : q.substring(q.lastIndexOf('.') + 1);
+			reg(q, "jrt." + go, JRT_IMPORT, false);
+		}
+		reg("java.time.Instant", "jrt.Instant", JRT_IMPORT, false);
+		reg("java.time.Duration", "jrt.Duration", JRT_IMPORT, false);
 		// A record (no rule): swt/graphics_stubs_manual.go, element erased to any.
 		reg("org.eclipse.swt.internal.DPIUtil.ElementAtZoom", "DPIUtilElementAtZoom", null, false);
 		// TestInfo: internal/junit; Optional: internal/jrt/jdk.go.
@@ -197,6 +211,16 @@ public class Manual {
 			// catch one, so the few selectors SWT relies on that for avoid the throw instead
 			// (internal/cocoa/nsexception_manual.go).
 			Map.entry(COCOA_PKG + "NSColor#colorSpace()", "ColorSpace"),
+			// Creates the webview-backed WebBrowser (browser/browser_manual.go).
+			Map.entry("org.eclipse.swt.browser.Browser#createWebBrowser(org.eclipse.swt.widgets.Composite,I)", "CreateWebBrowser"),
+			// Test_org_eclipse_swt_browser_Browser: JVM diagnostics and the Linux fd listing, and the one test that needs a null Boolean
+			// plus a page-level JavaScript switch (tests/swttests/browser_manual.go).
+			Map.entry(BROWSER_TEST + "#printSystemEnv()", BROWSER_TEST_GO + "PrintSystemEnv"),
+			Map.entry(BROWSER_TEST + "#printMemoryUse()", BROWSER_TEST_GO + "PrintMemoryUse"),
+			Map.entry(BROWSER_TEST + "#printThreadsInfo()", BROWSER_TEST_GO + "PrintThreadsInfo"),
+			Map.entry(BROWSER_TEST + "#getOpenedDescriptors()", BROWSER_TEST_GO + "GetOpenedDescriptors"),
+			Map.entry(BROWSER_TEST + "#getPropertiesSafe()", BROWSER_TEST_GO + "GetPropertiesSafe"),
+			Map.entry(BROWSER_TEST + "#test_setJavascriptEnabled()", "Test_setJavascriptEnabled"),
 			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
 			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
 			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).

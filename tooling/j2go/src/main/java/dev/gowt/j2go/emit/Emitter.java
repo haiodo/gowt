@@ -360,8 +360,9 @@ public class Emitter {
 
 	// A Java local named "string" (common in toString() methods) legally shadows Go's builtin
 	// string type for the rest of the function, breaking a later `func() string {...}` closure.
+	// "browser" is the Go package of org.eclipse.swt.browser: a local named like it hides the package for the rest of the function.
 	private static final Set<String> GO_BUILTIN_TYPE_NAMES = Set.of(
-			"string", "error", "any", "byte", "rune", "bool", "copy");
+			"string", "error", "any", "byte", "rune", "bool", "copy", "browser");
 
 	// A Go keyword/builtin type name, or a name that shadows the enclosing class's own Go type
 	// (id.java's `id(id id)` ctor: param "id" would hide the type "id" for &id{} in its body).

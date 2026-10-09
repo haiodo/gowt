@@ -32,6 +32,11 @@ type WKView struct {
 	TitleChanged func(title string)
 	// Scheme answers a request on one of WKConfig.Schemes; Content-Type goes in headers.
 	Scheme func(url, method string) (status int, headers map[string]string, body []byte)
+	// Decide is asked before every navigation; false cancels it. Nil allows all.
+	Decide func(url string, mainFrame bool) bool
+	// Call answers window.gowt.call(msg) from the page synchronously: the page blocks in window.prompt
+	// until the reply. Without it the call returns null.
+	Call func(msg string) string
 
 	config, ucc, obj uintptr
 	disposed         bool
@@ -45,7 +50,10 @@ var (
 )
 
 // The page-side half of window.gowt.postMessage.
-const wkBridge = `window.gowt={postMessage:function(m){window.webkit.messageHandlers.gowt.postMessage(typeof m==="string"?m:JSON.stringify(m))}};`
+const wkBridge = `window.gowt={postMessage:function(m){window.webkit.messageHandlers.gowt.postMessage(typeof m==="string"?m:JSON.stringify(m))},call:function(m){return window.prompt(typeof m==="string"?m:JSON.stringify(m),"\u0001gowt")}};`
+
+// wkCallMark is the prompt's default text that tells window.gowt.call from a page's own prompt().
+const wkCallMark = "\x01gowt"
 
 func wkSetup() {
 	wkOnce.Do(func() {
@@ -56,7 +64,7 @@ func wkSetup() {
 		purego.RegisterFunc(&wkInit, objcMsgSend)
 		view := func(self uintptr) *WKView { return wkViews[self] }
 		urlOf := func(wv uintptr) string { return goString(msg(msg(wv, "URL"), "absoluteString")) }
-		wkClass = newClass("gowtWKHandler", []string{"WKScriptMessageHandler", "WKURLSchemeHandler", "WKNavigationDelegate"}, map[string]objcMethod{
+		wkClass = newClass("gowtWKHandler", []string{"WKScriptMessageHandler", "WKURLSchemeHandler", "WKNavigationDelegate", "WKUIDelegate"}, map[string]objcMethod{
 			"userContentController:didReceiveScriptMessage:": {purego.NewCallback(func(self, _, _, m uintptr) {
 				if v := view(self); v != nil && v.Message != nil {
 					v.Message(goString(msg(m, "body")))
@@ -82,6 +90,27 @@ func wkSetup() {
 					v.NavFailed(urlOf(wv), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
+			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
+				allow := true
+				if v := view(self); v != nil && v.Decide != nil {
+					url := goString(msg(msg(msg(action, "request"), "URL"), "absoluteString"))
+					// targetFrame is nil for a link that opens a new window.
+					frame := msg(action, "targetFrame")
+					allow = v.Decide(url, frame == 0 || msg(frame, "isMainFrame")&0xff != 0)
+				}
+				policy := uintptr(0) // WKNavigationActionPolicyCancel
+				if allow {
+					policy = 1 // WKNavigationActionPolicyAllow
+				}
+				callBlock(handler, policy)
+			}), "v@:@@@?"},
+			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, _, handler uintptr) {
+				reply := uintptr(0)
+				if v := view(self); v != nil && v.Call != nil && goString(def) == wkCallMark {
+					reply = nsString(v.Call(goString(prompt)))
+				}
+				callBlock(handler, reply)
+			}), "v@:@@@@?"},
 			"observeValueForKeyPath:ofObject:change:context:": {purego.NewCallback(func(self, _, _, wv, _, _ uintptr) {
 				if v := view(self); v != nil && v.TitleChanged != nil {
 					v.TitleChanged(goString(msg(wv, "title")))
@@ -116,6 +145,7 @@ func NewWKView(cfg WKConfig) *WKView {
 	}
 	v.View = wkInit(msg(class("WKWebView"), "alloc"), sel("initWithFrame:configuration:"), cfg.Frame, v.config)
 	msg(v.View, "setNavigationDelegate:", v.obj)
+	msg(v.View, "setUIDelegate:", v.obj)
 	msg(v.View, "addObserver:forKeyPath:options:context:", v.obj, nsString("title"), 0, 0)
 	if cfg.Inspectable && msg(v.View, "respondsToSelector:", sel("setInspectable:"))&0xff != 0 {
 		msg(v.View, "setInspectable:", 1)
@@ -136,6 +166,10 @@ func (v *WKView) SetFrame(r NSRect) { msgRectOnly(v.View, sel("setFrame:"), r) }
 func (v *WKView) GoBack()    { msg(v.View, "goBack") }
 func (v *WKView) GoForward() { msg(v.View, "goForward") }
 func (v *WKView) Reload()    { msg(v.View, "reload") }
+func (v *WKView) Stop()      { msg(v.View, "stopLoading") }
+
+func (v *WKView) CanGoBack() bool    { return msg(v.View, "canGoBack")&0xff != 0 }
+func (v *WKView) CanGoForward() bool { return msg(v.View, "canGoForward")&0xff != 0 }
 
 func (v *WKView) URL() string { return goString(msg(msg(v.View, "URL"), "absoluteString")) }
 
@@ -197,6 +231,7 @@ func (v *WKView) Dispose() {
 	msg(v.View, "removeObserver:forKeyPath:", v.obj, nsString("title"))
 	msg(v.ucc, "removeScriptMessageHandlerForName:", nsString("gowt"))
 	msg(v.View, "setNavigationDelegate:", 0)
+	msg(v.View, "setUIDelegate:", 0)
 	msg(v.View, "removeFromSuperview")
 	delete(wkViews, v.obj)
 	msg(v.View, "release")

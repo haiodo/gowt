@@ -1206,8 +1206,10 @@ func init() {
 			{Name: "test_bug2162_transparentStyle", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).Test_bug2162_transparentStyle() }},
 			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).impl.test_setFocus_toChild_afterOpen_() }},
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).impl.test_setFocus_toChild_beforeOpen_() }},
-			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).Test_setFocus_withInvisibleChild() }},
-			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).Test_setFocus_withVisibleAndInvisibleChild() }},
+			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Combo).impl.test_setFocus_withInvisibleChild_() }},
+			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_Combo).impl.test_setFocus_withVisibleAndInvisibleChild_()
+			}},
 			{Name: "test_setTabList$Lorg_eclipse_swt_widgets_Control", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Combo).Test_setTabList_Lorg_eclipse_swt_widgets_Control()
 			}},

@@ -395,6 +395,7 @@ TJ=org/eclipse/swt/tests/junit
 TEST_FILES=(
 	$TJ/SwtTestUtil.java
 	$TJ/ImageTestUtil.java
+	$TJ/CapturedOutput.java
 	$TJ/Test_org_eclipse_swt_events_ArmEvent.java
 	$TJ/Test_org_eclipse_swt_events_ControlEvent.java
 	$TJ/Test_org_eclipse_swt_events_DisposeEvent.java

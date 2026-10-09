@@ -22,6 +22,7 @@ var (
 // Load opens WebKitGTK and binds every generated function; the error names the missing package.
 func Load() error {
 	loadOnce.Do(func() {
+		prepareSignals()
 		for _, n := range []string{"libwebkit2gtk-4.1.so.0", "libjavascriptcoregtk-4.1.so.0", "libsoup-3.0.so.0", "libgtk-3.so.0", "libgobject-2.0.so.0", "libgio-2.0.so.0", "libglib-2.0.so.0"} {
 			h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL)
 			if err != nil {
@@ -33,6 +34,7 @@ func Load() error {
 		if missing := bindAll(); len(missing) > 0 {
 			loadErr = fmt.Errorf("webview: WebKitGTK 4.1 lacks %s", strings.Join(missing, ", "))
 		}
+		fixSignalFlags()
 	})
 	return loadErr
 }

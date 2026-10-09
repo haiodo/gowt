@@ -75,11 +75,13 @@ func initCallbacks() {
 		}
 	})
 	cbMessage = purego.NewCallback(func(_, val, id uintptr) {
+		defer fixSignalFlags()
 		if v := lookupView(id); v != nil && !v.disposed && v.Message != nil {
 			v.Message(takeString(jsc_value_to_string(webkit_javascript_result_get_js_value(val))))
 		}
 	})
 	cbLoad = purego.NewCallback(func(_, event, id uintptr) {
+		defer fixSignalFlags()
 		v := lookupView(id)
 		if v == nil || v.disposed {
 			return
@@ -136,6 +138,7 @@ func initCallbacks() {
 		return 1
 	})
 	cbEval = purego.NewCallback(func(src, res, id uintptr) {
+		defer fixSignalFlags()
 		mu.Lock()
 		f := pending[id]
 		delete(pending, id)
@@ -166,6 +169,7 @@ func New(cfg Config) (*View, error) {
 		webkit_security_manager_register_uri_scheme_as_cors_enabled(sm, s)
 	}
 	v.widget = webkit_web_view_new_with_context(v.ctx)
+	fixSignalFlags()
 	v.ucm = webkit_web_view_get_user_content_manager(v.widget)
 	if cfg.Inspectable {
 		webkit_settings_set_enable_developer_extras(webkit_web_view_get_settings(v.widget), 1)

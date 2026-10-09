@@ -2,6 +2,8 @@ package jrt
 
 import (
 	"math"
+	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -48,5 +50,16 @@ func TestDoubleToInt(t *testing.T) {
 		if got := DoubleToInt(in); got != want {
 			t.Errorf("DoubleToInt(%v) = %d, want %d", in, got, want)
 		}
+	}
+}
+
+// SwtTestUtil.isLinux/isWindowsOS read os.name; a constant "Mac OS X" kept every Linux skip off.
+func TestOSNameFollowsGOOS(t *testing.T) {
+	want := map[string]string{"darwin": "Mac OS X", "linux": "Linux", "windows": "Windows 10"}[runtime.GOOS]
+	if got := GetProperty("os.name", ""); want != "" && got != want {
+		t.Fatalf("os.name = %q, want %q", got, want)
+	}
+	if javaOSName("linux") != "Linux" || !strings.HasPrefix(javaOSName("windows"), "Windows") {
+		t.Fatal("javaOSName")
 	}
 }

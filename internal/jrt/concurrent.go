@@ -235,8 +235,26 @@ func GC() {
 	runtime.GC()
 }
 
-// SystemProperties backs System.getProperty/setProperty/getProperties; values are strings.
-var SystemProperties = NewMap()
+// SystemProperties backs System.getProperty/setProperty/getProperties; values are strings. os.name is
+// the running OS as a JDK names it (the shared generated files are translated once, for every OS).
+var SystemProperties = func() *Map {
+	m := NewMap()
+	m.Put("os.name", javaOSName(runtime.GOOS))
+	return m
+}()
+
+// javaOSName is the JDK's os.name for a GOOS. Windows is always "Windows 10": the tests check only the "Windows" prefix.
+func javaOSName(goos string) string {
+	switch goos {
+	case "darwin":
+		return "Mac OS X"
+	case "linux":
+		return "Linux"
+	case "windows":
+		return "Windows 10"
+	}
+	return goos
+}
 
 // GetProperty is System.getProperty(key, def); an unset key with no default is the port's null String, "".
 func GetProperty(key, def string) string {

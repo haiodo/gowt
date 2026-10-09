@@ -66,14 +66,11 @@ func (this *Test_org_eclipse_swt_dnd_Clipboard) Test_setContents(clipboardId int
 	var helloWorld string = ClipboardBaseGetUniqueTestString()
 	this.clipboard.SetContentsDataDataTypesClipboards([]any{helloWorld}, []*swt.Transfer{upcastswtTextTransferToswtTransfer(this.textTransfer)}, clipboardId)
 	this.OpenAndFocusRemote()
-	var result string = jrt.Cast[string](func() string {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() string {
-				return this.remote.GetStringContents(clipboardId)
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var result string = jrt.Cast[string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() string {
+			return this.remote.GetStringContents(clipboardId)
+		})()
+	}}))
 	junit.AssertEquals(helloWorld, result)
 }
 
@@ -105,22 +102,16 @@ func (this *Test_org_eclipse_swt_dnd_Clipboard) Test_setContentsBothClipboards()
 	var helloWorldSelection string = ClipboardBaseGetUniqueTestString()
 	this.clipboard.SetContentsDataDataTypesClipboards([]any{helloWorldSelection}, []*swt.Transfer{upcastswtTextTransferToswtTransfer(this.textTransfer)}, swt.DNDSELECTION_CLIPBOARD)
 	this.OpenAndFocusRemote()
-	junit.AssertEquals(helloWorldClipboard, jrt.Cast[string](func() string {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() string {
-				return this.remote.GetStringContents(swt.DNDCLIPBOARD)
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}()))
-	junit.AssertEquals(helloWorldSelection, jrt.Cast[string](func() string {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() string {
-				return this.remote.GetStringContents(swt.DNDSELECTION_CLIPBOARD)
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}()))
+	junit.AssertEquals(helloWorldClipboard, jrt.Cast[string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() string {
+			return this.remote.GetStringContents(swt.DNDCLIPBOARD)
+		})()
+	}})))
+	junit.AssertEquals(helloWorldSelection, jrt.Cast[string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() string {
+			return this.remote.GetStringContents(swt.DNDSELECTION_CLIPBOARD)
+		})()
+	}})))
 }
 
 func (this *Test_org_eclipse_swt_dnd_Clipboard) Test_getContentsAsync(clipboardId int32) {
@@ -238,14 +229,11 @@ func (this *Test_org_eclipse_swt_dnd_Clipboard) Test_AfterNewDisplay_RemoteGetCo
 	this.SetContentsOnClipboardAndDisposeDisplay()
 	this.OpenAndFocusRemote()
 	var stderr string = SwtTestUtilRunWithCapturedStderr(jrt.NewRunnable(func() {
-		jrt.Cast[string](func() string {
-			_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-				return (func() string {
-					return this.remote.GetStringContents()
-				})()
-			}}}
-			panic("j2go: unresolved call runOperationInThread")
-		}())
+		jrt.Cast[string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+			return (func() string {
+				return this.remote.GetStringContents()
+			})()
+		}}))
 	}))
 	this.CheckStderrForGTK3Warning(stderr)
 	SwtTestUtilOpenShell(this.shell)
@@ -303,18 +291,4 @@ func init() {
 		},
 		Tests: tests,
 	})
-}
-
-func upcastswtTextTransferToswtTransfer(x *swt.TextTransfer) *swt.Transfer {
-	if x == nil {
-		return nil
-	}
-	return &x.Transfer
-}
-
-func upcastswtRTFTransferToswtTransfer(x *swt.RTFTransfer) *swt.Transfer {
-	if x == nil {
-		return nil
-	}
-	return &x.Transfer
 }

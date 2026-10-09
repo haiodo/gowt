@@ -16,16 +16,16 @@ type Accessible struct {
 	refCount                        int32
 	enumIndex                       int32
 	timer                           jrt.Runnable
-	objIAccessible                  *win32.COMObject
-	objIEnumVARIANT                 *win32.COMObject
-	objIServiceProvider             *win32.COMObject
-	objIAccessibleApplication       *win32.COMObject
-	objIAccessibleEditableText      *win32.COMObject
-	objIAccessibleHyperlink         *win32.COMObject
-	objIAccessibleHypertext         *win32.COMObject
-	objIAccessibleTable2            *win32.COMObject
-	objIAccessibleTableCell         *win32.COMObject
-	objIAccessibleValue             *win32.COMObject
+	objIAccessible                  *COMObject
+	objIEnumVARIANT                 *COMObject
+	objIServiceProvider             *COMObject
+	objIAccessibleApplication       *COMObject
+	objIAccessibleEditableText      *COMObject
+	objIAccessibleHyperlink         *COMObject
+	objIAccessibleHypertext         *COMObject
+	objIAccessibleTable2            *COMObject
+	objIAccessibleTableCell         *COMObject
+	objIAccessibleValue             *COMObject
 	iaccessible                     *win32.IAccessible
 	accessibleListeners             *jrt.List
 	accessibleControlListeners      *jrt.List
@@ -149,516 +149,526 @@ func (this *Accessible) initAccessibleParentIaccessible_address(parent *Accessib
 }
 
 func (this *Accessible) CreateIAccessible() {
-	anon847 := &AccessibleAnon1{}
-	anon847.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 3, 5, 8, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 2, 1, 1, 2, 2, 5, 3, 3, 1, 2, 2, 1, 2, 3, 1, 1, 3, 3, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1})
-	anon847.fnMethod0 = func(args []int64) int64 {
+	anon967 := &AccessibleAnon1{}
+	anon967.impl = anon967
+	anon967.initCOMObject([]int32{2, 0, 0, 1, 3, 5, 8, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 2, 1, 1, 2, 2, 5, 3, 3, 1, 2, 2, 1, 2, 3, 1, 1, 3, 3, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1})
+	anon967.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon847.fnMethod1 = func(args []int64) int64 {
+	anon967.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon847.fnMethod2 = func(args []int64) int64 {
+	anon967.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon847.fnMethod7 = func(args []int64) int64 {
+	anon967.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_accParent(args[0]))
 	}
-	anon847.fnMethod8 = func(args []int64) int64 {
+	anon967.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_accChildCount(args[0]))
 	}
-	anon847.fnMethod9 = func(args []int64) int64 {
+	anon967.fnMethod9 = func(args []int64) int64 {
 		return int64(this.Get_accChild(args[0], args[1]))
 	}
-	anon847.fnMethod10 = func(args []int64) int64 {
+	anon967.fnMethod10 = func(args []int64) int64 {
 		return int64(this.Get_accName(args[0], args[1]))
 	}
-	anon847.fnMethod11 = func(args []int64) int64 {
+	anon967.fnMethod11 = func(args []int64) int64 {
 		return int64(this.Get_accValue(args[0], args[1]))
 	}
-	anon847.fnMethod12 = func(args []int64) int64 {
+	anon967.fnMethod12 = func(args []int64) int64 {
 		return int64(this.Get_accDescription(args[0], args[1]))
 	}
-	anon847.fnMethod13 = func(args []int64) int64 {
+	anon967.fnMethod13 = func(args []int64) int64 {
 		return int64(this.Get_accRole(args[0], args[1]))
 	}
-	anon847.fnMethod14 = func(args []int64) int64 {
+	anon967.fnMethod14 = func(args []int64) int64 {
 		return int64(this.Get_accState(args[0], args[1]))
 	}
-	anon847.fnMethod15 = func(args []int64) int64 {
+	anon967.fnMethod15 = func(args []int64) int64 {
 		return int64(this.Get_accHelp(args[0], args[1]))
 	}
-	anon847.fnMethod16 = func(args []int64) int64 {
+	anon967.fnMethod16 = func(args []int64) int64 {
 		return int64(this.Get_accHelpTopic(args[0], args[1], args[2]))
 	}
-	anon847.fnMethod17 = func(args []int64) int64 {
+	anon967.fnMethod17 = func(args []int64) int64 {
 		return int64(this.Get_accKeyboardShortcut(args[0], args[1]))
 	}
-	anon847.fnMethod18 = func(args []int64) int64 {
+	anon967.fnMethod18 = func(args []int64) int64 {
 		return int64(this.Get_accFocus(args[0]))
 	}
-	anon847.fnMethod19 = func(args []int64) int64 {
+	anon967.fnMethod19 = func(args []int64) int64 {
 		return int64(this.Get_accSelection(args[0]))
 	}
-	anon847.fnMethod20 = func(args []int64) int64 {
+	anon967.fnMethod20 = func(args []int64) int64 {
 		return int64(this.Get_accDefaultAction(args[0], args[1]))
 	}
-	anon847.fnMethod21 = func(args []int64) int64 {
+	anon967.fnMethod21 = func(args []int64) int64 {
 		return int64(this.AccSelect(int32(args[0]), args[1]))
 	}
-	anon847.fnMethod22 = func(args []int64) int64 {
+	anon967.fnMethod22 = func(args []int64) int64 {
 		return int64(this.AccLocation(args[0], args[1], args[2], args[3], args[4]))
 	}
-	anon847.fnMethod23 = func(args []int64) int64 {
+	anon967.fnMethod23 = func(args []int64) int64 {
 		return int64(this.AccNavigate(int32(args[0]), args[1], args[2]))
 	}
-	anon847.fnMethod24 = func(args []int64) int64 {
+	anon967.fnMethod24 = func(args []int64) int64 {
 		return int64(this.AccHitTest(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon847.fnMethod25 = func(args []int64) int64 {
+	anon967.fnMethod25 = func(args []int64) int64 {
 		return int64(this.AccDoDefaultAction(args[0]))
 	}
-	anon847.fnMethod26 = func(args []int64) int64 {
+	anon967.fnMethod26 = func(args []int64) int64 {
 		return int64(this.Put_accName(args[0], args[1]))
 	}
-	anon847.fnMethod27 = func(args []int64) int64 {
+	anon967.fnMethod27 = func(args []int64) int64 {
 		return int64(this.Put_accValue(args[0], args[1]))
 	}
-	anon847.fnMethod28 = func(args []int64) int64 {
+	anon967.fnMethod28 = func(args []int64) int64 {
 		return int64(this.Get_nRelations(args[0]))
 	}
-	anon847.fnMethod29 = func(args []int64) int64 {
+	anon967.fnMethod29 = func(args []int64) int64 {
 		return int64(this.Get_relation(int32(args[0]), args[1]))
 	}
-	anon847.fnMethod30 = func(args []int64) int64 {
+	anon967.fnMethod30 = func(args []int64) int64 {
 		return int64(this.Get_relations(int32(args[0]), args[1], args[2]))
 	}
-	anon847.fnMethod31 = func(args []int64) int64 {
+	anon967.fnMethod31 = func(args []int64) int64 {
 		return int64(this.Get_role(args[0]))
 	}
-	anon847.fnMethod32 = func(args []int64) int64 {
+	anon967.fnMethod32 = func(args []int64) int64 {
 		return int64(this.ScrollTo(int32(args[0])))
 	}
-	anon847.fnMethod33 = func(args []int64) int64 {
+	anon967.fnMethod33 = func(args []int64) int64 {
 		return int64(this.ScrollToPoint(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon847.fnMethod34 = func(args []int64) int64 {
+	anon967.fnMethod34 = func(args []int64) int64 {
 		return int64(this.Get_groupPosition(args[0], args[1], args[2]))
 	}
-	anon847.fnMethod35 = func(args []int64) int64 {
+	anon967.fnMethod35 = func(args []int64) int64 {
 		return int64(this.Get_states(args[0]))
 	}
-	anon847.fnMethod36 = func(args []int64) int64 {
+	anon967.fnMethod36 = func(args []int64) int64 {
 		return int64(this.Get_extendedRole(args[0]))
 	}
-	anon847.fnMethod37 = func(args []int64) int64 {
+	anon967.fnMethod37 = func(args []int64) int64 {
 		return int64(this.Get_localizedExtendedRole(args[0]))
 	}
-	anon847.fnMethod38 = func(args []int64) int64 {
+	anon967.fnMethod38 = func(args []int64) int64 {
 		return int64(this.Get_nExtendedStates(args[0]))
 	}
-	anon847.fnMethod39 = func(args []int64) int64 {
+	anon967.fnMethod39 = func(args []int64) int64 {
 		return int64(this.Get_extendedStates(int32(args[0]), args[1], args[2]))
 	}
-	anon847.fnMethod40 = func(args []int64) int64 {
+	anon967.fnMethod40 = func(args []int64) int64 {
 		return int64(this.Get_localizedExtendedStates(int32(args[0]), args[1], args[2]))
 	}
-	anon847.fnMethod41 = func(args []int64) int64 {
+	anon967.fnMethod41 = func(args []int64) int64 {
 		return int64(this.Get_uniqueID(args[0]))
 	}
-	anon847.fnMethod42 = func(args []int64) int64 {
+	anon967.fnMethod42 = func(args []int64) int64 {
 		return int64(this.Get_windowHandle(args[0]))
 	}
-	anon847.fnMethod43 = func(args []int64) int64 {
+	anon967.fnMethod43 = func(args []int64) int64 {
 		return int64(this.Get_indexInParent(args[0]))
 	}
-	anon847.fnMethod44 = func(args []int64) int64 {
+	anon967.fnMethod44 = func(args []int64) int64 {
 		return int64(this.Get_locale(args[0]))
 	}
-	anon847.fnMethod45 = func(args []int64) int64 {
+	anon967.fnMethod45 = func(args []int64) int64 {
 		return int64(this.Get_attributes(args[0]))
 	}
-	this.objIAccessible = anon847.COMObject
+	this.objIAccessible = &anon967.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleApplication() {
-	anon848 := &AccessibleAnon2{}
-	anon848.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 1, 1, 1})
-	anon848.fnMethod0 = func(args []int64) int64 {
+	anon968 := &AccessibleAnon2{}
+	anon968.impl = anon968
+	anon968.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 1})
+	anon968.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon848.fnMethod1 = func(args []int64) int64 {
+	anon968.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon848.fnMethod2 = func(args []int64) int64 {
+	anon968.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon848.fnMethod3 = func(args []int64) int64 {
+	anon968.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_appName(args[0]))
 	}
-	anon848.fnMethod4 = func(args []int64) int64 {
+	anon968.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_appVersion(args[0]))
 	}
-	anon848.fnMethod5 = func(args []int64) int64 {
+	anon968.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_toolkitName(args[0]))
 	}
-	anon848.fnMethod6 = func(args []int64) int64 {
+	anon968.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_toolkitVersion(args[0]))
 	}
-	this.objIAccessibleApplication = anon848.COMObject
+	this.objIAccessibleApplication = &anon968.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleEditableText() {
-	anon849 := &AccessibleAnon3{}
-	anon849.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 2, 2, 2, 2, 1, 3, 3})
-	anon849.fnMethod0 = func(args []int64) int64 {
+	anon969 := &AccessibleAnon3{}
+	anon969.impl = anon969
+	anon969.initCOMObject([]int32{2, 0, 0, 2, 2, 2, 2, 1, 3, 3})
+	anon969.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon849.fnMethod1 = func(args []int64) int64 {
+	anon969.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon849.fnMethod2 = func(args []int64) int64 {
+	anon969.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon849.fnMethod3 = func(args []int64) int64 {
+	anon969.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.CopyText(int32(args[0]), int32(args[1])))
 	}
-	anon849.fnMethod4 = func(args []int64) int64 {
+	anon969.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.DeleteText(int32(args[0]), int32(args[1])))
 	}
-	anon849.fnMethod5 = func(args []int64) int64 {
+	anon969.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.InsertText(int32(args[0]), args[1]))
 	}
-	anon849.fnMethod6 = func(args []int64) int64 {
+	anon969.fnMethod6 = func(args []int64) int64 {
 		return int64(this.CutText(int32(args[0]), int32(args[1])))
 	}
-	anon849.fnMethod7 = func(args []int64) int64 {
+	anon969.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.PasteText(int32(args[0])))
 	}
-	anon849.fnMethod8 = func(args []int64) int64 {
+	anon969.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.ReplaceText(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon849.fnMethod9 = func(args []int64) int64 {
+	anon969.fnMethod9 = func(args []int64) int64 {
 		return int64(this.SetAttributes(int32(args[0]), int32(args[1]), args[2]))
 	}
-	this.objIAccessibleEditableText = anon849.COMObject
+	this.objIAccessibleEditableText = &anon969.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleHyperlink() {
-	anon850 := &AccessibleAnon4{}
-	anon850.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 1, 2, 4, 2, 2, 2, 2, 1, 1, 1})
-	anon850.fnMethod0 = func(args []int64) int64 {
+	anon970 := &AccessibleAnon4{}
+	anon970.impl = anon970
+	anon970.initCOMObject([]int32{2, 0, 0, 1, 1, 2, 4, 2, 2, 2, 2, 1, 1, 1})
+	anon970.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon850.fnMethod1 = func(args []int64) int64 {
+	anon970.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon850.fnMethod2 = func(args []int64) int64 {
+	anon970.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon850.fnMethod3 = func(args []int64) int64 {
+	anon970.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_nActions(args[0]))
 	}
-	anon850.fnMethod4 = func(args []int64) int64 {
+	anon970.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.DoAction(int32(args[0])))
 	}
-	anon850.fnMethod5 = func(args []int64) int64 {
+	anon970.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_description(int32(args[0]), args[1]))
 	}
-	anon850.fnMethod6 = func(args []int64) int64 {
+	anon970.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_keyBinding(int32(args[0]), int32(args[1]), args[2], args[3]))
 	}
-	anon850.fnMethod7 = func(args []int64) int64 {
+	anon970.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_name(int32(args[0]), args[1]))
 	}
-	anon850.fnMethod8 = func(args []int64) int64 {
+	anon970.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_localizedName(int32(args[0]), args[1]))
 	}
-	anon850.fnMethod9 = func(args []int64) int64 {
+	anon970.fnMethod9 = func(args []int64) int64 {
 		return int64(this.Get_anchor(int32(args[0]), args[1]))
 	}
-	anon850.fnMethod10 = func(args []int64) int64 {
+	anon970.fnMethod10 = func(args []int64) int64 {
 		return int64(this.Get_anchorTarget(int32(args[0]), args[1]))
 	}
-	anon850.fnMethod11 = func(args []int64) int64 {
+	anon970.fnMethod11 = func(args []int64) int64 {
 		return int64(this.Get_startIndex(args[0]))
 	}
-	anon850.fnMethod12 = func(args []int64) int64 {
+	anon970.fnMethod12 = func(args []int64) int64 {
 		return int64(this.Get_endIndex(args[0]))
 	}
-	anon850.fnMethod13 = func(args []int64) int64 {
+	anon970.fnMethod13 = func(args []int64) int64 {
 		return int64(this.Get_valid(args[0]))
 	}
-	this.objIAccessibleHyperlink = anon850.COMObject
+	this.objIAccessibleHyperlink = &anon970.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleHypertext() {
-	anon851 := &AccessibleAnon5{}
-	anon851.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 2, 4, 1, 6, 1, 4, 3, 3, 5, 5, 5, 1, 1, 3, 1, 3, 5, 1, 1, 1, 2, 2})
-	anon851.fnMethod0 = func(args []int64) int64 {
+	anon971 := &AccessibleAnon5{}
+	anon971.impl = anon971
+	anon971.initCOMObject([]int32{2, 0, 0, 2, 4, 1, 6, 1, 4, 3, 3, 5, 5, 5, 1, 1, 3, 1, 3, 5, 1, 1, 1, 2, 2})
+	anon971.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon851.fnMethod1 = func(args []int64) int64 {
+	anon971.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon851.fnMethod2 = func(args []int64) int64 {
+	anon971.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon851.fnMethod3 = func(args []int64) int64 {
+	anon971.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.AddSelection(int32(args[0]), int32(args[1])))
 	}
-	anon851.fnMethod4 = func(args []int64) int64 {
+	anon971.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_attributesOffsetPStartOffsetPEndOffsetPbstrTextAttributes(int32(args[0]), args[1], args[2], args[3]))
 	}
-	anon851.fnMethod5 = func(args []int64) int64 {
+	anon971.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_caretOffset(args[0]))
 	}
-	anon851.fnMethod6 = func(args []int64) int64 {
+	anon971.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_characterExtents(int32(args[0]), int32(args[1]), args[2], args[3], args[4], args[5]))
 	}
-	anon851.fnMethod7 = func(args []int64) int64 {
+	anon971.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_nSelections(args[0]))
 	}
-	anon851.fnMethod8 = func(args []int64) int64 {
+	anon971.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_offsetAtPoint(int32(args[0]), int32(args[1]), int32(args[2]), args[3]))
 	}
-	anon851.fnMethod9 = func(args []int64) int64 {
+	anon971.fnMethod9 = func(args []int64) int64 {
 		return int64(this.Get_selection(int32(args[0]), args[1], args[2]))
 	}
-	anon851.fnMethod10 = func(args []int64) int64 {
+	anon971.fnMethod10 = func(args []int64) int64 {
 		return int64(this.Get_text(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon851.fnMethod11 = func(args []int64) int64 {
+	anon971.fnMethod11 = func(args []int64) int64 {
 		return int64(this.Get_textBeforeOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon851.fnMethod12 = func(args []int64) int64 {
+	anon971.fnMethod12 = func(args []int64) int64 {
 		return int64(this.Get_textAfterOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon851.fnMethod13 = func(args []int64) int64 {
+	anon971.fnMethod13 = func(args []int64) int64 {
 		return int64(this.Get_textAtOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon851.fnMethod14 = func(args []int64) int64 {
+	anon971.fnMethod14 = func(args []int64) int64 {
 		return int64(this.RemoveSelection(int32(args[0])))
 	}
-	anon851.fnMethod15 = func(args []int64) int64 {
+	anon971.fnMethod15 = func(args []int64) int64 {
 		return int64(this.SetCaretOffset(int32(args[0])))
 	}
-	anon851.fnMethod16 = func(args []int64) int64 {
+	anon971.fnMethod16 = func(args []int64) int64 {
 		return int64(this.SetSelection(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon851.fnMethod17 = func(args []int64) int64 {
+	anon971.fnMethod17 = func(args []int64) int64 {
 		return int64(this.Get_nCharacters(args[0]))
 	}
-	anon851.fnMethod18 = func(args []int64) int64 {
+	anon971.fnMethod18 = func(args []int64) int64 {
 		return int64(this.ScrollSubstringTo(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon851.fnMethod19 = func(args []int64) int64 {
+	anon971.fnMethod19 = func(args []int64) int64 {
 		return int64(this.ScrollSubstringToPoint(int32(args[0]), int32(args[1]), int32(args[2]), int32(args[3]), int32(args[4])))
 	}
-	anon851.fnMethod20 = func(args []int64) int64 {
+	anon971.fnMethod20 = func(args []int64) int64 {
 		return int64(this.Get_newText(args[0]))
 	}
-	anon851.fnMethod21 = func(args []int64) int64 {
+	anon971.fnMethod21 = func(args []int64) int64 {
 		return int64(this.Get_oldText(args[0]))
 	}
-	anon851.fnMethod22 = func(args []int64) int64 {
+	anon971.fnMethod22 = func(args []int64) int64 {
 		return int64(this.Get_nHyperlinks(args[0]))
 	}
-	anon851.fnMethod23 = func(args []int64) int64 {
+	anon971.fnMethod23 = func(args []int64) int64 {
 		return int64(this.Get_hyperlink(int32(args[0]), args[1]))
 	}
-	anon851.fnMethod24 = func(args []int64) int64 {
+	anon971.fnMethod24 = func(args []int64) int64 {
 		return int64(this.Get_hyperlinkIndex(int32(args[0]), args[1]))
 	}
-	this.objIAccessibleHypertext = anon851.COMObject
+	this.objIAccessibleHypertext = &anon971.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleTable2() {
-	anon852 := &AccessibleAnon6{}
-	anon852.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1})
-	anon852.fnMethod0 = func(args []int64) int64 {
+	anon972 := &AccessibleAnon6{}
+	anon972.impl = anon972
+	anon972.initCOMObject([]int32{2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1})
+	anon972.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon852.fnMethod1 = func(args []int64) int64 {
+	anon972.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon852.fnMethod2 = func(args []int64) int64 {
+	anon972.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon852.fnMethod3 = func(args []int64) int64 {
+	anon972.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_cellAt(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon852.fnMethod4 = func(args []int64) int64 {
+	anon972.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_caption(args[0]))
 	}
-	anon852.fnMethod5 = func(args []int64) int64 {
+	anon972.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_columnDescription(int32(args[0]), args[1]))
 	}
-	anon852.fnMethod6 = func(args []int64) int64 {
+	anon972.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_nColumns(args[0]))
 	}
-	anon852.fnMethod7 = func(args []int64) int64 {
+	anon972.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_nRows(args[0]))
 	}
-	anon852.fnMethod8 = func(args []int64) int64 {
+	anon972.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_nSelectedCells(args[0]))
 	}
-	anon852.fnMethod9 = func(args []int64) int64 {
+	anon972.fnMethod9 = func(args []int64) int64 {
 		return int64(this.Get_nSelectedColumns(args[0]))
 	}
-	anon852.fnMethod10 = func(args []int64) int64 {
+	anon972.fnMethod10 = func(args []int64) int64 {
 		return int64(this.Get_nSelectedRows(args[0]))
 	}
-	anon852.fnMethod11 = func(args []int64) int64 {
+	anon972.fnMethod11 = func(args []int64) int64 {
 		return int64(this.Get_rowDescription(int32(args[0]), args[1]))
 	}
-	anon852.fnMethod12 = func(args []int64) int64 {
+	anon972.fnMethod12 = func(args []int64) int64 {
 		return int64(this.Get_selectedCells(args[0], args[1]))
 	}
-	anon852.fnMethod13 = func(args []int64) int64 {
+	anon972.fnMethod13 = func(args []int64) int64 {
 		return int64(this.Get_selectedColumns(args[0], args[1]))
 	}
-	anon852.fnMethod14 = func(args []int64) int64 {
+	anon972.fnMethod14 = func(args []int64) int64 {
 		return int64(this.Get_selectedRows(args[0], args[1]))
 	}
-	anon852.fnMethod15 = func(args []int64) int64 {
+	anon972.fnMethod15 = func(args []int64) int64 {
 		return int64(this.Get_summary(args[0]))
 	}
-	anon852.fnMethod16 = func(args []int64) int64 {
+	anon972.fnMethod16 = func(args []int64) int64 {
 		return int64(this.Get_isColumnSelected(int32(args[0]), args[1]))
 	}
-	anon852.fnMethod17 = func(args []int64) int64 {
+	anon972.fnMethod17 = func(args []int64) int64 {
 		return int64(this.Get_isRowSelected(int32(args[0]), args[1]))
 	}
-	anon852.fnMethod18 = func(args []int64) int64 {
+	anon972.fnMethod18 = func(args []int64) int64 {
 		return int64(this.SelectRow(int32(args[0])))
 	}
-	anon852.fnMethod19 = func(args []int64) int64 {
+	anon972.fnMethod19 = func(args []int64) int64 {
 		return int64(this.SelectColumn(int32(args[0])))
 	}
-	anon852.fnMethod20 = func(args []int64) int64 {
+	anon972.fnMethod20 = func(args []int64) int64 {
 		return int64(this.UnselectRow(int32(args[0])))
 	}
-	anon852.fnMethod21 = func(args []int64) int64 {
+	anon972.fnMethod21 = func(args []int64) int64 {
 		return int64(this.UnselectColumn(int32(args[0])))
 	}
-	anon852.fnMethod22 = func(args []int64) int64 {
+	anon972.fnMethod22 = func(args []int64) int64 {
 		return int64(this.Get_modelChange(args[0]))
 	}
-	this.objIAccessibleTable2 = anon852.COMObject
+	this.objIAccessibleTable2 = &anon972.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleTableCell() {
-	anon853 := &AccessibleAnon7{}
-	anon853.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 2, 1, 1, 2, 1, 1, 5, 1})
-	anon853.fnMethod0 = func(args []int64) int64 {
+	anon973 := &AccessibleAnon7{}
+	anon973.impl = anon973
+	anon973.initCOMObject([]int32{2, 0, 0, 1, 2, 1, 1, 2, 1, 1, 5, 1})
+	anon973.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon853.fnMethod1 = func(args []int64) int64 {
+	anon973.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon853.fnMethod2 = func(args []int64) int64 {
+	anon973.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon853.fnMethod3 = func(args []int64) int64 {
+	anon973.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_columnExtent(args[0]))
 	}
-	anon853.fnMethod4 = func(args []int64) int64 {
+	anon973.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_columnHeaderCells(args[0], args[1]))
 	}
-	anon853.fnMethod5 = func(args []int64) int64 {
+	anon973.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_columnIndex(args[0]))
 	}
-	anon853.fnMethod6 = func(args []int64) int64 {
+	anon973.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_rowExtent(args[0]))
 	}
-	anon853.fnMethod7 = func(args []int64) int64 {
+	anon973.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_rowHeaderCells(args[0], args[1]))
 	}
-	anon853.fnMethod8 = func(args []int64) int64 {
+	anon973.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_rowIndex(args[0]))
 	}
-	anon853.fnMethod9 = func(args []int64) int64 {
+	anon973.fnMethod9 = func(args []int64) int64 {
 		return int64(this.Get_isSelected(args[0]))
 	}
-	anon853.fnMethod10 = func(args []int64) int64 {
+	anon973.fnMethod10 = func(args []int64) int64 {
 		return int64(this.Get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]))
 	}
-	anon853.fnMethod11 = func(args []int64) int64 {
+	anon973.fnMethod11 = func(args []int64) int64 {
 		return int64(this.Get_table(args[0]))
 	}
-	this.objIAccessibleTableCell = anon853.COMObject
+	this.objIAccessibleTableCell = &anon973.COMObject
 }
 
 func (this *Accessible) CreateIAccessibleValue() {
-	anon854 := &AccessibleAnon8{}
-	anon854.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 1, 1, 1})
-	anon854.fnMethod0 = func(args []int64) int64 {
+	anon974 := &AccessibleAnon8{}
+	anon974.impl = anon974
+	anon974.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 1})
+	anon974.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon854.fnMethod1 = func(args []int64) int64 {
+	anon974.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon854.fnMethod2 = func(args []int64) int64 {
+	anon974.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon854.fnMethod3 = func(args []int64) int64 {
+	anon974.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_currentValue(args[0]))
 	}
-	anon854.fnMethod4 = func(args []int64) int64 {
+	anon974.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.SetCurrentValue(args[0]))
 	}
-	anon854.fnMethod5 = func(args []int64) int64 {
+	anon974.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_maximumValue(args[0]))
 	}
-	anon854.fnMethod6 = func(args []int64) int64 {
+	anon974.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_minimumValue(args[0]))
 	}
-	this.objIAccessibleValue = anon854.COMObject
+	this.objIAccessibleValue = &anon974.COMObject
 }
 
 func (this *Accessible) CreateIEnumVARIANT() {
-	anon855 := &AccessibleAnon9{}
-	anon855.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 3, 1, 0, 1})
-	anon855.fnMethod0 = func(args []int64) int64 {
+	anon975 := &AccessibleAnon9{}
+	anon975.impl = anon975
+	anon975.initCOMObject([]int32{2, 0, 0, 3, 1, 0, 1})
+	anon975.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon855.fnMethod1 = func(args []int64) int64 {
+	anon975.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon855.fnMethod2 = func(args []int64) int64 {
+	anon975.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon855.fnMethod3 = func(args []int64) int64 {
+	anon975.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Next(int32(args[0]), args[1], args[2]))
 	}
-	anon855.fnMethod4 = func(args []int64) int64 {
+	anon975.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Skip(int32(args[0])))
 	}
-	anon855.fnMethod5 = func(args []int64) int64 {
+	anon975.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Reset())
 	}
-	anon855.fnMethod6 = func(args []int64) int64 {
+	anon975.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Clone(args[0]))
 	}
-	this.objIEnumVARIANT = anon855.COMObject
+	this.objIEnumVARIANT = &anon975.COMObject
 }
 
 func (this *Accessible) CreateIServiceProvider() {
-	anon856 := &AccessibleAnon10{}
-	anon856.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 3})
-	anon856.fnMethod0 = func(args []int64) int64 {
+	anon976 := &AccessibleAnon10{}
+	anon976.impl = anon976
+	anon976.initCOMObject([]int32{2, 0, 0, 3})
+	anon976.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon856.fnMethod1 = func(args []int64) int64 {
+	anon976.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon856.fnMethod2 = func(args []int64) int64 {
+	anon976.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon856.fnMethod3 = func(args []int64) int64 {
+	anon976.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.QueryService(args[0], args[1], args[2]))
 	}
-	this.objIServiceProvider = anon856.COMObject
+	this.objIServiceProvider = &anon976.COMObject
 }
 
 func (this *Accessible) AddAccessibleListener(listener AccessibleListener) {
@@ -688,8 +698,8 @@ func (this *Accessible) AddAccessibleTextListener(listener AccessibleTextListene
 	if listener == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	_, ok857 := listener.(AccessibleTextExtendedListener)
-	if ok857 {
+	_, ok977 := listener.(AccessibleTextExtendedListener)
+	if ok977 {
 		if this.accessibleTextExtendedListeners == (nil) {
 			this.accessibleTextExtendedListeners = jrt.NewList()
 		}
@@ -822,8 +832,8 @@ func (this *Accessible) Internal_dispose_Accessible() {
 	this.iaccessible = nil
 	this.Release()
 	var list *jrt.List = jrt.NewList(this.children)
-	for _, elem858 := range list.ToArray() {
-		accChild := jrt.Cast[*Accessible](elem858)
+	for _, elem978 := range list.ToArray() {
+		accChild := jrt.Cast[*Accessible](elem978)
 		accChild.Dispose()
 	}
 }
@@ -869,8 +879,8 @@ func (this *Accessible) RemoveAccessibleTextListener(listener AccessibleTextList
 	if listener == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	_, ok859 := listener.(AccessibleTextExtendedListener)
-	if ok859 {
+	_, ok979 := listener.(AccessibleTextExtendedListener)
+	if ok979 {
 		if this.accessibleTextExtendedListeners != (nil) {
 			this.accessibleTextExtendedListeners.Remove(listener)
 			if this.accessibleTextExtendedListeners.IsEmpty() {
@@ -1012,29 +1022,29 @@ func (this *Accessible) SendEvent(event int32, eventData any) {
 	switch event {
 	case ACCEVENT_TABLE_CHANGED:
 		{
-			_, ok861 := eventData.([]int32)
-			if !(ok861 && int32(len((eventData.([]int32)))) == AccessibleTABLE_MODEL_CHANGE_SIZE) {
+			_, ok981 := eventData.([]int32)
+			if !(ok981 && int32(len((jrt.Cast[[]int32](eventData)))) == AccessibleTABLE_MODEL_CHANGE_SIZE) {
 				break
 			}
-			this.tableChange = eventData.([]int32)
+			this.tableChange = jrt.Cast[[]int32](eventData)
 			win32.OSNotifyWinEvent(win32.COMIA2_EVENT_TABLE_CHANGED, this.control.Handle, win32.OSOBJID_CLIENT, this.EventChildID())
 			break
 		}
 	case ACCEVENT_TEXT_CHANGED:
 		{
-			_, ok863 := eventData.([]any)
-			if !(ok863 && int32(len((eventData.([]any)))) == AccessibleTEXT_CHANGE_SIZE) {
+			_, ok983 := eventData.([]any)
+			if !(ok983 && int32(len((jrt.Cast[[]any](eventData)))) == AccessibleTEXT_CHANGE_SIZE) {
 				break
 			}
-			var data []any = eventData.([]any)
+			var data []any = jrt.Cast[[]any](eventData)
 			var type_ int32 = jrt.Cast[int32]((any(data[0])))
 			switch type_ {
 			case ACCDELETE:
-				this.textDeleted = eventData.([]any)
+				this.textDeleted = jrt.Cast[[]any](eventData)
 				win32.OSNotifyWinEvent(win32.COMIA2_EVENT_TEXT_REMOVED, this.control.Handle, win32.OSOBJID_CLIENT, this.EventChildID())
 				break
 			case ACCINSERT:
-				this.textInserted = eventData.([]any)
+				this.textInserted = jrt.Cast[[]any](eventData)
 				win32.OSNotifyWinEvent(win32.COMIA2_EVENT_TEXT_INSERTED, this.control.Handle, win32.OSOBJID_CLIENT, this.EventChildID())
 				break
 			}
@@ -1042,8 +1052,8 @@ func (this *Accessible) SendEvent(event int32, eventData any) {
 		}
 	case ACCEVENT_HYPERTEXT_LINK_SELECTED:
 		{
-			_, ok864 := any(nil), false
-			if !(ok864) {
+			_, ok984 := any(nil), false
+			if !(ok984) {
 				break
 			}
 			win32.OSNotifyWinEvent(win32.COMIA2_EVENT_HYPERTEXT_LINK_SELECTED, this.control.Handle, win32.OSOBJID_CLIENT, this.EventChildID())
@@ -1212,24 +1222,24 @@ func (this *Accessible) SetFocus(childID int32) {
 func (this *Accessible) TextCaretMoved(index int32) {
 	this.CheckWidget()
 	if this.timer == (nil) {
-		anon865 := jrt.NewRunnable(nil)
-		anon865.Fn = func() {
+		anon985 := jrt.NewRunnable(nil)
+		anon985.Fn = func() {
 			if !this.IsATRunning() {
 				return
 			}
 			if AccessibleDEBUG {
-				AccessiblePrint(fmt.Sprintf("%v.NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=%d childID=%d", anon865, this.control.Handle, this.EventChildID()))
+				AccessiblePrint(fmt.Sprintf("%v.NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=%d childID=%d", anon985, this.control.Handle, this.EventChildID()))
 			}
 			win32.OSNotifyWinEvent(win32.COMEVENT_OBJECT_LOCATIONCHANGE, this.control.Handle, win32.OSOBJID_CARET, this.EventChildID())
 			if !AccessibleUseIA2 {
 				return
 			}
 			if AccessibleDEBUG {
-				AccessiblePrint(fmt.Sprintf("%v.NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=%d childID=%d", anon865, this.control.Handle, this.EventChildID()))
+				AccessiblePrint(fmt.Sprintf("%v.NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=%d childID=%d", anon985, this.control.Handle, this.EventChildID()))
 			}
 			win32.OSNotifyWinEvent(win32.COMIA2_EVENT_TEXT_CARET_MOVED, this.control.Handle, win32.OSOBJID_CLIENT, this.EventChildID())
 		}
-		this.timer = anon865
+		this.timer = anon985
 	}
 	this.control.GetDisplay().TimerExec(AccessibleSCROLL_RATE, this.timer)
 }
@@ -1305,9 +1315,9 @@ func (this *Accessible) QueryInterface(iid int64, ppvObject int64) int32 {
 			return win32.COME_NOINTERFACE
 		}
 		if this.AccessibleActionListenersSize() > 0 || this.AccessibleAttributeListenersSize() > 0 || this.AccessibleHyperlinkListenersSize() > 0 || this.AccessibleTableListenersSize() > 0 || this.AccessibleTableCellListenersSize() > 0 || this.AccessibleTextExtendedListenersSize() > 0 || this.AccessibleValueListenersSize() > 0 || this.AccessibleControlListenersSize() > 0 || this.GetRelationCount() > 0 || func() bool {
-			_, ok872 := isControlToButton(this.control)
-			return (ok872 && ((this.control.impl.getStyle_() & RADIO) != 0))
-		}() || func() bool { _, ok873 := isControlToComposite(this.control); return (ok873) }() {
+			_, ok992 := isControlToButton(this.control)
+			return (ok992 && ((this.control.impl.getStyle_() & RADIO) != 0))
+		}() || func() bool { _, ok993 := isControlToComposite(this.control); return (ok993) }() {
 			if this.objIServiceProvider == (nil) {
 				this.CreateIServiceProvider()
 			}
@@ -1352,113 +1362,113 @@ func (this *Accessible) QueryInterface(iid int64, ppvObject int64) int32 {
 }
 
 func (this *Accessible) AccessibleListenersSize() int32 {
-	var cond874 int32
+	var cond994 int32
 	if this.accessibleListeners == (nil) {
-		cond874 = 0
+		cond994 = 0
 	} else {
-		cond874 = this.accessibleListeners.Size()
+		cond994 = this.accessibleListeners.Size()
 	}
-	return cond874
+	return cond994
 }
 
 func (this *Accessible) AccessibleControlListenersSize() int32 {
-	var cond875 int32
+	var cond995 int32
 	if this.accessibleControlListeners == (nil) {
-		cond875 = 0
+		cond995 = 0
 	} else {
-		cond875 = this.accessibleControlListeners.Size()
+		cond995 = this.accessibleControlListeners.Size()
 	}
-	return cond875
+	return cond995
 }
 
 func (this *Accessible) AccessibleValueListenersSize() int32 {
-	var cond876 int32
+	var cond996 int32
 	if this.accessibleValueListeners == (nil) {
-		cond876 = 0
+		cond996 = 0
 	} else {
-		cond876 = this.accessibleValueListeners.Size()
+		cond996 = this.accessibleValueListeners.Size()
 	}
-	return cond876
+	return cond996
 }
 
 func (this *Accessible) AccessibleTextExtendedListenersSize() int32 {
-	var cond877 int32
+	var cond997 int32
 	if this.accessibleTextExtendedListeners == (nil) {
-		cond877 = 0
+		cond997 = 0
 	} else {
-		cond877 = this.accessibleTextExtendedListeners.Size()
+		cond997 = this.accessibleTextExtendedListeners.Size()
 	}
-	return cond877
+	return cond997
 }
 
 func (this *Accessible) AccessibleTextListenersSize() int32 {
-	var cond878 int32
+	var cond998 int32
 	if this.accessibleTextListeners == (nil) {
-		cond878 = 0
+		cond998 = 0
 	} else {
-		cond878 = this.accessibleTextListeners.Size()
+		cond998 = this.accessibleTextListeners.Size()
 	}
-	return cond878
+	return cond998
 }
 
 func (this *Accessible) AccessibleTableCellListenersSize() int32 {
-	var cond879 int32
+	var cond999 int32
 	if this.accessibleTableCellListeners == (nil) {
-		cond879 = 0
+		cond999 = 0
 	} else {
-		cond879 = this.accessibleTableCellListeners.Size()
+		cond999 = this.accessibleTableCellListeners.Size()
 	}
-	return cond879
+	return cond999
 }
 
 func (this *Accessible) AccessibleTableListenersSize() int32 {
-	var cond880 int32
+	var cond1000 int32
 	if this.accessibleTableListeners == (nil) {
-		cond880 = 0
+		cond1000 = 0
 	} else {
-		cond880 = this.accessibleTableListeners.Size()
+		cond1000 = this.accessibleTableListeners.Size()
 	}
-	return cond880
+	return cond1000
 }
 
 func (this *Accessible) AccessibleHyperlinkListenersSize() int32 {
-	var cond881 int32
+	var cond1001 int32
 	if this.accessibleHyperlinkListeners == (nil) {
-		cond881 = 0
+		cond1001 = 0
 	} else {
-		cond881 = this.accessibleHyperlinkListeners.Size()
+		cond1001 = this.accessibleHyperlinkListeners.Size()
 	}
-	return cond881
+	return cond1001
 }
 
 func (this *Accessible) AccessibleEditableTextListenersSize() int32 {
-	var cond882 int32
+	var cond1002 int32
 	if this.accessibleEditableTextListeners == (nil) {
-		cond882 = 0
+		cond1002 = 0
 	} else {
-		cond882 = this.accessibleEditableTextListeners.Size()
+		cond1002 = this.accessibleEditableTextListeners.Size()
 	}
-	return cond882
+	return cond1002
 }
 
 func (this *Accessible) AccessibleAttributeListenersSize() int32 {
-	var cond883 int32
+	var cond1003 int32
 	if this.accessibleAttributeListeners == (nil) {
-		cond883 = 0
+		cond1003 = 0
 	} else {
-		cond883 = this.accessibleAttributeListeners.Size()
+		cond1003 = this.accessibleAttributeListeners.Size()
 	}
-	return cond883
+	return cond1003
 }
 
 func (this *Accessible) AccessibleActionListenersSize() int32 {
-	var cond884 int32
+	var cond1004 int32
 	if this.accessibleActionListeners == (nil) {
-		cond884 = 0
+		cond1004 = 0
 	} else {
-		cond884 = this.accessibleActionListeners.Size()
+		cond1004 = this.accessibleActionListeners.Size()
 	}
-	return cond884
+	return cond1004
 }
 
 func (this *Accessible) AddRef() int32 {
@@ -1583,9 +1593,9 @@ func (this *Accessible) QueryAccessible2Interfaces(guid *win32.GUID, ppvObject i
 	}
 	if win32.COMIsEqualGUID(guid, win32.COMIIDIAccessible2) {
 		if this.AccessibleActionListenersSize() > 0 || this.AccessibleAttributeListenersSize() > 0 || this.AccessibleHyperlinkListenersSize() > 0 || this.AccessibleTableListenersSize() > 0 || this.AccessibleTableCellListenersSize() > 0 || this.AccessibleTextExtendedListenersSize() > 0 || this.AccessibleValueListenersSize() > 0 || this.AccessibleControlListenersSize() > 0 || this.GetRelationCount() > 0 || func() bool {
-			_, ok891 := isControlToButton(this.control)
-			return (ok891 && ((this.control.impl.getStyle_() & RADIO) != 0))
-		}() || func() bool { _, ok892 := isControlToComposite(this.control); return (ok892) }() {
+			_, ok1011 := isControlToButton(this.control)
+			return (ok1011 && ((this.control.impl.getStyle_() & RADIO) != 0))
+		}() || func() bool { _, ok1012 := isControlToComposite(this.control); return (ok1012) }() {
 			if this.objIAccessible == (nil) {
 				this.CreateIAccessible()
 			}
@@ -1915,15 +1925,15 @@ func (this *Accessible) Get_accChild(varChild int64, ppdispChild int64) int32 {
 		if code == win32.COME_INVALIDARG {
 			code = win32.COMS_FALSE
 		}
-		if code == win32.COMS_OK && func() bool { _, ok894 := isControlToToolBar(this.control); return ok894 }() {
+		if code == win32.COMS_OK && func() bool { _, ok1014 := isControlToToolBar(this.control); return ok1014 }() {
 			var toolBar *ToolBar = castControlToToolBar(this.control)
 			var item *ToolItem = toolBar.GetItem(childID)
 			if item != (nil) && (item.impl.getStyle_()&DROP_DOWN) != 0 {
 				var addr []int64 = make([]int64, 1)
 				win32.OSMoveMemoryOverload7(addr, ppdispChild, win32.CPTR_SIZEOF)
 				var found bool = false
-				for _, elem895 := range this.children.ToArray() {
-					accChild := jrt.Cast[*Accessible](elem895)
+				for _, elem1015 := range this.children.ToArray() {
+					accChild := jrt.Cast[*Accessible](elem1015)
 					if accChild.item == item {
 						accChild.Dispose()
 						accChild.item = nil
@@ -1936,17 +1946,17 @@ func (this *Accessible) Get_accChild(varChild int64, ppdispChild int64) int32 {
 				if !found {
 					item.AddListener(Dispose, &ListenerFunc{fn: func(e *Event) {
 						var list *jrt.List = jrt.NewList(this.children)
-						for _, elem896 := range list.ToArray() {
-							accChild := jrt.Cast[*Accessible](elem896)
+						for _, elem1016 := range list.ToArray() {
+							accChild := jrt.Cast[*Accessible](elem1016)
 							if accChild.item == item {
 								accChild.Dispose()
 							}
 						}
 					}})
 				}
-				anon897 := &AccessibleAnon11{}
-				anon897.initAccessibleAdapter()
-				anon897.fnGetName = func(e *AccessibleEvent) {
+				anon1017 := &AccessibleAnon11{}
+				anon1017.initAccessibleAdapter()
+				anon1017.fnGetName = func(e *AccessibleEvent) {
 					if e.ChildID == ACCCHILDID_SELF {
 						var event *AccessibleEvent = NewAccessibleEvent(this)
 						event.ChildID = childID
@@ -1957,7 +1967,7 @@ func (this *Accessible) Get_accChild(varChild int64, ppdispChild int64) int32 {
 						e.Result = event.Result
 					}
 				}
-				osAccessible.AddAccessibleListener(anon897)
+				osAccessible.AddAccessibleListener(anon1017)
 			}
 		}
 	}
@@ -2085,7 +2095,7 @@ func (this *Accessible) Get_accDescription(varChild int64, pszDescription int64)
 		if code == win32.COME_INVALIDARG {
 			code = win32.COMS_FALSE
 		}
-		if this.AccessibleListenersSize() == 0 && func() bool { _, ok899 := isControlToTree(this.control); return !(ok899) }() {
+		if this.AccessibleListenersSize() == 0 && func() bool { _, ok1019 := isControlToTree(this.control); return !(ok1019) }() {
 			if AccessibleDEBUG {
 				AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accDescription(%d) returning super%s", this, v.LVal, this.Hresult(code)))
 			}
@@ -2106,8 +2116,8 @@ func (this *Accessible) Get_accDescription(varChild int64, pszDescription int64)
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Result = osDescription
 	if v.LVal != win32.COMCHILDID_SELF {
-		_, ok900 := isControlToTree(this.control)
-		if ok900 {
+		_, ok1020 := isControlToTree(this.control)
+		if ok1020 {
 			var tree *Tree = castControlToTree(this.control)
 			var columnCount int32 = tree.GetColumnCount()
 			if columnCount > 1 {
@@ -2116,8 +2126,8 @@ func (this *Accessible) Get_accDescription(varChild int64, pszDescription int64)
 				hItem = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_MAPACCIDTOHTREEITEM, int64(v.LVal), int64(0))
 				var widget *Widget = tree.GetDisplay().FindWidgetHandleId(hwnd, hItem)
 				event.Result = ""
-				_, ok901 := isWidgetToTreeItem(widget)
-				if ok901 {
+				_, ok1021 := isWidgetToTreeItem(widget)
+				if ok1021 {
 					var item *TreeItem = castWidgetToTreeItem(widget)
 					for i := int32(1); i < columnCount; i++ {
 						if tree.IsDisposed() || item.IsDisposed() {
@@ -2138,19 +2148,19 @@ func (this *Accessible) Get_accDescription(varChild int64, pszDescription int64)
 		listener.GetDescription(event)
 	}
 	if AccessibleDEBUG {
-		var cond902 int32
-		var cond903 int32
-		if jrt.StringLength(event.Result) == 0 {
-			cond903 = win32.COMS_FALSE
-		} else {
-			cond903 = win32.COMS_OK
-		}
+		var cond1022 int32
 		if event.Result == "" {
-			cond902 = code
+			cond1022 = code
 		} else {
-			cond902 = cond903
+			var cond1023 int32
+			if jrt.StringLength(event.Result) == 0 {
+				cond1023 = win32.COMS_FALSE
+			} else {
+				cond1023 = win32.COMS_OK
+			}
+			cond1022 = cond1023
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accDescription(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond902)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accDescription(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond1022)))
 	}
 	if event.Result == "" {
 		return code
@@ -2313,7 +2323,7 @@ func (this *Accessible) Get_accKeyboardShortcut(varChild int64, pszKeyboardShort
 		if code == win32.COME_INVALIDARG {
 			code = win32.COMS_FALSE
 		}
-		if this.AccessibleListenersSize() == 0 && func() bool { _, ok905 := isControlToTabFolder(this.control); return !(ok905) }() {
+		if this.AccessibleListenersSize() == 0 && func() bool { _, ok1025 := isControlToTabFolder(this.control); return !(ok1025) }() {
 			return code
 		}
 		if code == win32.COMS_OK {
@@ -2330,7 +2340,7 @@ func (this *Accessible) Get_accKeyboardShortcut(varChild int64, pszKeyboardShort
 	var event *AccessibleEvent = NewAccessibleEvent(this)
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Result = osKeyboardShortcut
-	if v.LVal == win32.COMCHILDID_SELF && func() bool { _, ok907 := isControlToTabFolder(this.control); return ok907 }() {
+	if v.LVal == win32.COMCHILDID_SELF && func() bool { _, ok1027 := isControlToTabFolder(this.control); return ok1027 }() {
 		event.Result = GetMessage("SWT_SwitchPage_Shortcut")
 	}
 	for i := int32(0); i < this.AccessibleListenersSize(); i++ {
@@ -2372,7 +2382,7 @@ func (this *Accessible) Get_accName(varChild int64, pszName int64) int32 {
 		if code == win32.COME_INVALIDARG {
 			code = win32.COMS_FALSE
 		}
-		if this.AccessibleListenersSize() == 0 && func() bool { _, ok909 := isControlToText(this.control); return !(ok909) }() {
+		if this.AccessibleListenersSize() == 0 && func() bool { _, ok1029 := isControlToText(this.control); return !(ok1029) }() {
 			if AccessibleDEBUG {
 				AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accName(%d) returning name=%s from super%s", this, v.LVal, osName, this.Hresult(code)))
 			}
@@ -2382,8 +2392,8 @@ func (this *Accessible) Get_accName(varChild int64, pszName int64) int32 {
 	var event *AccessibleEvent = NewAccessibleEvent(this)
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Result = osName
-	_, ok912 := isControlToText(this.control)
-	if ok912 && (this.control.impl.getStyle_()&SEARCH) != 0 && osName == "" {
+	_, ok1032 := isControlToText(this.control)
+	if ok1032 && (this.control.impl.getStyle_()&SEARCH) != 0 && osName == "" {
 		event.Result = (castControlToText(this.control)).GetMessage()
 	}
 	for i := int32(0); i < this.AccessibleListenersSize(); i++ {
@@ -2391,19 +2401,19 @@ func (this *Accessible) Get_accName(varChild int64, pszName int64) int32 {
 		listener.GetName(event)
 	}
 	if AccessibleDEBUG {
-		var cond913 int32
-		var cond914 int32
-		if jrt.StringLength(event.Result) == 0 {
-			cond914 = win32.COMS_FALSE
-		} else {
-			cond914 = win32.COMS_OK
-		}
+		var cond1033 int32
 		if event.Result == "" {
-			cond913 = code
+			cond1033 = code
 		} else {
-			cond913 = cond914
+			var cond1034 int32
+			if jrt.StringLength(event.Result) == 0 {
+				cond1034 = win32.COMS_FALSE
+			} else {
+				cond1034 = win32.COMS_OK
+			}
+			cond1033 = cond1034
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accName(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond913)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accName(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond1033)))
 	}
 	if event.Result == "" {
 		return code
@@ -2429,13 +2439,13 @@ func (this *Accessible) Get_accParent(ppdispParent int64) int32 {
 		code = win32.COMS_OK
 	}
 	if AccessibleDEBUG {
-		var cond915 string
+		var cond1035 string
 		if this.parent != (nil) {
-			cond915 = fmt.Sprintf(" %d", this.parent.GetAddress())
+			cond1035 = fmt.Sprintf(" %d", this.parent.GetAddress())
 		} else {
-			cond915 = " from super"
+			cond1035 = " from super"
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accParent() returning%s%s", this, (cond915), this.Hresult(code)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accParent() returning%s%s", this, (cond1035), this.Hresult(code)))
 	}
 	return code
 }
@@ -2461,8 +2471,8 @@ func (this *Accessible) Get_accRole(varChild int64, pvarRole int64) int32 {
 	var event *AccessibleControlEvent = NewAccessibleControlEvent(this)
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Detail = this.OsToRole(osRole)
-	_, ok917 := isControlToTree(this.control)
-	if ok917 || func() bool { _, ok918 := isControlToTable(this.control); return ok918 }() {
+	_, ok1037 := isControlToTree(this.control)
+	if ok1037 || func() bool { _, ok1038 := isControlToTable(this.control); return ok1038 }() {
 		if v.LVal != win32.COMCHILDID_SELF && (this.control.impl.getStyle_()&CHECK) != 0 {
 			event.Detail = ACCROLE_CHECKBUTTON
 		}
@@ -2562,8 +2572,8 @@ func (this *Accessible) Get_accState(varChild int64, pvarState int64) int32 {
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Detail = this.OsToState(osState)
 	if v.LVal != win32.COMCHILDID_SELF {
-		_, ok920 := isControlToTree(this.control)
-		if ok920 && (this.control.impl.getStyle_()&CHECK) != 0 {
+		_, ok1040 := isControlToTree(this.control)
+		if ok1040 && (this.control.impl.getStyle_()&CHECK) != 0 {
 			var hwnd int64 = this.control.Handle
 			var tvItem *win32.TVITEM = win32.NewTVITEM()
 			tvItem.Mask = win32.OSTVIF_HANDLE | win32.OSTVIF_STATE
@@ -2576,8 +2586,8 @@ func (this *Accessible) Get_accState(varChild int64, pvarState int64) int32 {
 			}
 			grayed = tvItem.State>>12 > 2
 		} else {
-			_, ok922 := isControlToTable(this.control)
-			if ok922 && (this.control.impl.getStyle_()&CHECK) != 0 {
+			_, ok1042 := isControlToTable(this.control)
+			if ok1042 && (this.control.impl.getStyle_()&CHECK) != 0 {
 				var table *Table = castControlToTable(this.control)
 				var index int32 = event.ChildID
 				if 0 <= index && index < table.GetItemCount() {
@@ -2633,7 +2643,7 @@ func (this *Accessible) Get_accValue(varChild int64, pszValue int64) int32 {
 		if code == win32.COME_INVALIDARG {
 			code = win32.COMDISP_E_MEMBERNOTFOUND
 		}
-		if this.AccessibleControlListenersSize() == 0 && func() bool { _, ok924 := isControlToText(this.control); return !(ok924) }() {
+		if this.AccessibleControlListenersSize() == 0 && func() bool { _, ok1044 := isControlToText(this.control); return !(ok1044) }() {
 			if AccessibleDEBUG {
 				AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accValue(%d) returning value=%s from super%s", this, v.LVal, osValue, this.Hresult(code)))
 			}
@@ -2643,8 +2653,8 @@ func (this *Accessible) Get_accValue(varChild int64, pszValue int64) int32 {
 	var event *AccessibleControlEvent = NewAccessibleControlEvent(this)
 	event.ChildID = this.OsToChildID(v.LVal)
 	event.Result = osValue
-	_, ok927 := isControlToText(this.control)
-	if ok927 && (this.control.impl.getStyle_()&SEARCH) != 0 && !this.control.impl.isFocusControl_() {
+	_, ok1047 := isControlToText(this.control)
+	if ok1047 && (this.control.impl.getStyle_()&SEARCH) != 0 && !this.control.impl.isFocusControl_() {
 		event.Result = (castControlToText(this.control)).GetMessage()
 	}
 	for i := int32(0); i < this.AccessibleControlListenersSize(); i++ {
@@ -2652,13 +2662,13 @@ func (this *Accessible) Get_accValue(varChild int64, pszValue int64) int32 {
 		listener.GetValue(event)
 	}
 	if AccessibleDEBUG {
-		var cond928 int32
+		var cond1048 int32
 		if event.Result == "" {
-			cond928 = code
+			cond1048 = code
 		} else {
-			cond928 = win32.COMS_OK
+			cond1048 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accValue(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond928)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible::get_accValue(%d) returning %s%s", this, v.LVal, event.Result, this.Hresult(cond1048)))
 	}
 	if event.Result == "" {
 		return code
@@ -2758,8 +2768,8 @@ func (this *Accessible) Next(celt int32, rgvar int64, pceltFetched int64) int32 
 			nextItems = make([]any, endIndex-this.enumIndex+1)
 			for i := int32(0); i < int32(len(nextItems)); i++ {
 				var child any = this.variants[this.enumIndex]
-				_, ok929 := any(nil), false
-				if ok929 {
+				_, ok1049 := any(nil), false
+				if ok1049 {
 					nextItems[i] = this.ChildIDToOs(jrt.Cast[int32]((any(child))))
 				} else {
 					nextItems[i] = child
@@ -2771,8 +2781,8 @@ func (this *Accessible) Next(celt int32, rgvar int64, pceltFetched int64) int32 
 	if nextItems != (nil) {
 		for i := int32(0); i < int32(len(nextItems)); i++ {
 			var nextItem any = nextItems[i]
-			_, ok930 := any(nil), false
-			if ok930 {
+			_, ok1050 := any(nil), false
+			if ok1050 {
 				var item int32 = jrt.Cast[int32]((any(nextItem)))
 				this.SetIntVARIANT(rgvar+int64(i*win32.VARIANTSizeof), win32.COMVT_I4, item)
 			} else {
@@ -3006,13 +3016,13 @@ func (this *Accessible) Get_groupPosition(pGroupLevel int64, pSimilarItemsInGrou
 		positionInGroup = 0
 	}
 	if similarItemsInGroup == 0 && positionInGroup == 0 {
-		_, ok932 := isControlToButton(this.control)
-		if ok932 && ((this.control.impl.getStyle_() & RADIO) != 0) {
+		_, ok1052 := isControlToButton(this.control)
+		if ok1052 && ((this.control.impl.getStyle_() & RADIO) != 0) {
 			positionInGroup = 1
 			similarItemsInGroup = 1
 			for _, child := range this.control.GetParent().impl.getChildren_() {
-				_, ok934 := isControlToButton(child)
-				if ok934 && ((child.impl.getStyle_() & RADIO) != 0) {
+				_, ok1054 := isControlToButton(child)
+				if ok1054 && ((child.impl.getStyle_() & RADIO) != 0) {
 					if child == this.control {
 						positionInGroup = similarItemsInGroup
 					} else {
@@ -3026,13 +3036,13 @@ func (this *Accessible) Get_groupPosition(pGroupLevel int64, pSimilarItemsInGrou
 	win32.OSMoveMemoryOverload13(pSimilarItemsInGroup, []int32{similarItemsInGroup}, 4)
 	win32.OSMoveMemoryOverload13(pPositionInGroup, []int32{positionInGroup}, 4)
 	if AccessibleDEBUG {
-		var cond935 int32
+		var cond1055 int32
 		if groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 {
-			cond935 = win32.COMS_FALSE
+			cond1055 = win32.COMS_FALSE
 		} else {
-			cond935 = win32.COMS_OK
+			cond1055 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_groupPosition() returning level=%d, count=%d, index=%d%s", this, groupLevel, similarItemsInGroup, positionInGroup, this.Hresult(cond935)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_groupPosition() returning level=%d, count=%d, index=%d%s", this, groupLevel, similarItemsInGroup, positionInGroup, this.Hresult(cond1055)))
 	}
 	if groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 {
 		return win32.COMS_FALSE
@@ -3127,9 +3137,9 @@ func (this *Accessible) Get_uniqueID(pUniqueID int64) int32 {
 		return win32.COMCO_E_OBJNOTCONNECTED
 	}
 	if this.uniqueID == -1 {
-		t936 := AccessibleUniqueID
+		t1056 := AccessibleUniqueID
 		AccessibleUniqueID--
-		this.uniqueID = t936
+		this.uniqueID = t1056
 	}
 	if AccessibleDEBUG {
 		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_uniqueID returning %d%s", this, this.uniqueID, this.Hresult(win32.COMS_OK)))
@@ -3164,22 +3174,22 @@ func (this *Accessible) Get_indexInParent(pIndexInParent int64) int32 {
 	if indexInParent == -1 {
 	}
 	if AccessibleDEBUG {
-		var cond937 int32
+		var cond1057 int32
 		if indexInParent == -1 {
-			cond937 = win32.COMS_FALSE
+			cond1057 = win32.COMS_FALSE
 		} else {
-			cond937 = win32.COMS_OK
+			cond1057 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_indexInParent returning %d%s", this, indexInParent, this.Hresult(cond937)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_indexInParent returning %d%s", this, indexInParent, this.Hresult(cond1057)))
 	}
 	win32.OSMoveMemoryOverload13(pIndexInParent, []int32{indexInParent}, 4)
-	var cond938 int32
+	var cond1058 int32
 	if indexInParent == -1 {
-		cond938 = win32.COMS_FALSE
+		cond1058 = win32.COMS_FALSE
 	} else {
-		cond938 = win32.COMS_OK
+		cond1058 = win32.COMS_OK
 	}
-	return cond938
+	return cond1058
 }
 
 func (this *Accessible) Get_locale(pLocale int64) int32 {
@@ -3224,19 +3234,19 @@ func (this *Accessible) Get_attributes(pbstrAttributes int64) int32 {
 	if event.Justify {
 		attributes += "text-align:justify;"
 	}
-	var cond939 string
-	var cond940 string
-	if event.Alignment == RIGHT {
-		cond940 = "right"
-	} else {
-		cond940 = "center"
-	}
+	var cond1059 string
 	if event.Alignment == LEFT {
-		cond939 = "left"
+		cond1059 = "left"
 	} else {
-		cond939 = cond940
+		var cond1060 string
+		if event.Alignment == RIGHT {
+			cond1060 = "right"
+		} else {
+			cond1060 = "center"
+		}
+		cond1059 = cond1060
 	}
-	attributes += fmt.Sprintf("text-align:%s;", (cond939))
+	attributes += fmt.Sprintf("text-align:%s;", (cond1059))
 	attributes += fmt.Sprintf("text-indent:%d;", event.Indent)
 	if event.Attributes != (nil) {
 		for i := int32(0); i+1 < int32(len(event.Attributes)); i += 2 {
@@ -3247,13 +3257,13 @@ func (this *Accessible) Get_attributes(pbstrAttributes int64) int32 {
 		attributes += "text-model:a1;"
 	}
 	if AccessibleDEBUG {
-		var cond941 int32
+		var cond1061 int32
 		if jrt.StringLength(attributes) == 0 {
-			cond941 = win32.COMS_FALSE
+			cond1061 = win32.COMS_FALSE
 		} else {
-			cond941 = win32.COMS_OK
+			cond1061 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_attributes() returning %s%s", this, attributes, this.Hresult(cond941)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessible2::get_attributes() returning %s%s", this, attributes, this.Hresult(cond1061)))
 	}
 	this.SetString(pbstrAttributes, attributes)
 	if jrt.StringLength(attributes) == 0 {
@@ -3289,13 +3299,13 @@ func (this *Accessible) DoAction(actionIndex int32) int32 {
 		listener.DoAction(event)
 	}
 	if AccessibleDEBUG {
-		var cond942 int32
+		var cond1062 int32
 		if event.Result == "" || !(event.Result == ACCOK) {
-			cond942 = win32.COME_INVALIDARG
+			cond1062 = win32.COME_INVALIDARG
 		} else {
-			cond942 = win32.COMS_OK
+			cond1062 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::doAction(%d) returning%s", this, actionIndex, this.Hresult(cond942)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::doAction(%d) returning%s", this, actionIndex, this.Hresult(cond1062)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -3314,13 +3324,13 @@ func (this *Accessible) Get_description(actionIndex int32, pbstrDescription int6
 		listener.GetDescription(event)
 	}
 	if AccessibleDEBUG {
-		var cond943 int32
+		var cond1063 int32
 		if event.Result == "" || jrt.StringLength(event.Result) == 0 {
-			cond943 = win32.COMS_FALSE
+			cond1063 = win32.COMS_FALSE
 		} else {
-			cond943 = win32.COMS_OK
+			cond1063 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_description(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond943)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_description(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond1063)))
 	}
 	this.SetString(pbstrDescription, event.Result)
 	if event.Result == "" || jrt.StringLength(event.Result) == 0 {
@@ -3362,13 +3372,13 @@ func (this *Accessible) Get_keyBinding(actionIndex int32, nMaxBindings int32, pp
 		i = j + 1
 	}
 	if AccessibleDEBUG {
-		var cond944 int32
+		var cond1064 int32
 		if count == 0 {
-			cond944 = win32.COMS_FALSE
+			cond1064 = win32.COMS_FALSE
 		} else {
-			cond944 = win32.COMS_OK
+			cond1064 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_keyBinding(index=%d max=%d) returning count=%d%s", this, actionIndex, nMaxBindings, count, this.Hresult(cond944)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_keyBinding(index=%d max=%d) returning count=%d%s", this, actionIndex, nMaxBindings, count, this.Hresult(cond1064)))
 	}
 	win32.OSMoveMemoryOverload13(pNBindings, []int32{count}, 4)
 	if count == 0 {
@@ -3390,13 +3400,13 @@ func (this *Accessible) Get_name(actionIndex int32, pbstrName int64) int32 {
 		listener.GetName(event)
 	}
 	if AccessibleDEBUG {
-		var cond945 int32
+		var cond1065 int32
 		if event.Result == "" || jrt.StringLength(event.Result) == 0 {
-			cond945 = win32.COMS_FALSE
+			cond1065 = win32.COMS_FALSE
 		} else {
-			cond945 = win32.COMS_OK
+			cond1065 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_name(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond945)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_name(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond1065)))
 	}
 	if event.Result == "" || jrt.StringLength(event.Result) == 0 {
 		this.SetString(pbstrName, "")
@@ -3418,13 +3428,13 @@ func (this *Accessible) Get_localizedName(actionIndex int32, pbstrLocalizedName 
 		listener.GetName(event)
 	}
 	if AccessibleDEBUG {
-		var cond946 int32
+		var cond1066 int32
 		if event.Result == "" || jrt.StringLength(event.Result) == 0 {
-			cond946 = win32.COMS_FALSE
+			cond1066 = win32.COMS_FALSE
 		} else {
-			cond946 = win32.COMS_OK
+			cond1066 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_localizedName(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond946)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleAction::get_localizedName(%d) returning %s%s", this, actionIndex, event.Result, this.Hresult(cond1066)))
 	}
 	if event.Result == "" || jrt.StringLength(event.Result) == 0 {
 		this.SetString(pbstrLocalizedName, "")
@@ -3440,13 +3450,13 @@ func (this *Accessible) Get_appName(pbstrName int64) int32 {
 	}
 	var appName string = DisplayGetAppName()
 	if AccessibleDEBUG {
-		var cond947 int32
+		var cond1067 int32
 		if appName == "" || jrt.StringLength(appName) == 0 {
-			cond947 = win32.COMS_FALSE
+			cond1067 = win32.COMS_FALSE
 		} else {
-			cond947 = win32.COMS_OK
+			cond1067 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleApplication::get_appName() returning %s%s", this, appName, this.Hresult(cond947)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleApplication::get_appName() returning %s%s", this, appName, this.Hresult(cond1067)))
 	}
 	if appName == "" || jrt.StringLength(appName) == 0 {
 		this.SetString(pbstrName, "")
@@ -3462,13 +3472,13 @@ func (this *Accessible) Get_appVersion(pbstrVersion int64) int32 {
 	}
 	var appVersion string = DisplayGetAppVersion()
 	if AccessibleDEBUG {
-		var cond948 int32
+		var cond1068 int32
 		if appVersion == "" || jrt.StringLength(appVersion) == 0 {
-			cond948 = win32.COMS_FALSE
+			cond1068 = win32.COMS_FALSE
 		} else {
-			cond948 = win32.COMS_OK
+			cond1068 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleApplication::get_appVersion() returning%s%s", this, appVersion, this.Hresult(cond948)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleApplication::get_appVersion() returning%s%s", this, appVersion, this.Hresult(cond1068)))
 	}
 	if appVersion == "" || jrt.StringLength(appVersion) == 0 {
 		this.SetString(pbstrVersion, "")
@@ -3853,7 +3863,7 @@ func (this *Accessible) SetAttributes(startOffset int32, endOffset int32, pbstrA
 			if fontData != (nil) {
 				style.Font = NewFontDeviceFd(upcastDisplayToDevice(this.control.GetDisplay()), fontData)
 			}
-			if !style.Equals(NewTextStyle()) {
+			if !style.impl.equals_(NewTextStyle()) {
 				event.TextStyle = style
 			}
 		}
@@ -4200,13 +4210,13 @@ func (this *Accessible) Get_selectedCells(ppCells int64, pNSelectedCells int64) 
 		listener.GetSelectedCells(event)
 	}
 	if AccessibleDEBUG {
-		var cond949 string
+		var cond1069 string
 		if event.Accessibles == (nil) {
-			cond949 = "null"
+			cond1069 = "null"
 		} else {
-			cond949 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
+			cond1069 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedCells() returning %s", this, (cond949)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedCells() returning %s", this, (cond1069)))
 	}
 	if event.Accessibles == (nil) || int32(len(event.Accessibles)) == 0 {
 		win32.OSMoveMemoryOverload79(ppCells, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4245,13 +4255,13 @@ func (this *Accessible) Get_selectedColumns(ppSelectedColumns int64, pNColumns i
 		count = int32(len(event.Selected))
 	}
 	if AccessibleDEBUG {
-		var cond950 string
+		var cond1070 string
 		if count == 0 {
-			cond950 = "null"
+			cond1070 = "null"
 		} else {
-			cond950 = fmt.Sprintf("selected[%d]", count)
+			cond1070 = fmt.Sprintf("selected[%d]", count)
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedColumns() returning %s", this, (cond950)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedColumns() returning %s", this, (cond1070)))
 	}
 	if count == 0 {
 		win32.OSMoveMemoryOverload79(ppSelectedColumns, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4281,13 +4291,13 @@ func (this *Accessible) Get_selectedRows(ppSelectedRows int64, pNRows int64) int
 		count = int32(len(event.Selected))
 	}
 	if AccessibleDEBUG {
-		var cond951 string
+		var cond1071 string
 		if count == 0 {
-			cond951 = "null"
+			cond1071 = "null"
 		} else {
-			cond951 = fmt.Sprintf("selected[%d]", count)
+			cond1071 = fmt.Sprintf("selected[%d]", count)
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedRows() returning %s", this, (cond951)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_selectedRows() returning %s", this, (cond1071)))
 	}
 	if count == 0 {
 		win32.OSMoveMemoryOverload79(ppSelectedRows, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4336,13 +4346,13 @@ func (this *Accessible) Get_isColumnSelected(column int32, pIsSelected int64) in
 	if AccessibleDEBUG {
 		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_isColumnSelected() returning %t", this, event.IsSelected))
 	}
-	var cond952 int32
+	var cond1072 int32
 	if event.IsSelected {
-		cond952 = 1
+		cond1072 = 1
 	} else {
-		cond952 = 0
+		cond1072 = 0
 	}
-	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond952}, 4)
+	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond1072}, 4)
 	return win32.COMS_OK
 }
 
@@ -4359,13 +4369,13 @@ func (this *Accessible) Get_isRowSelected(row int32, pIsSelected int64) int32 {
 	if AccessibleDEBUG {
 		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_isRowSelected() returning %t", this, event.IsSelected))
 	}
-	var cond953 int32
+	var cond1073 int32
 	if event.IsSelected {
-		cond953 = 1
+		cond1073 = 1
 	} else {
-		cond953 = 0
+		cond1073 = 0
 	}
-	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond953}, 4)
+	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond1073}, 4)
 	return win32.COMS_OK
 }
 
@@ -4380,13 +4390,13 @@ func (this *Accessible) SelectRow(row int32) int32 {
 		listener.SetSelectedRow(event)
 	}
 	if AccessibleDEBUG {
-		var cond954 string
+		var cond1074 string
 		if event.Result == "" {
-			cond954 = "E_INVALIDARG"
+			cond1074 = "E_INVALIDARG"
 		} else {
-			cond954 = event.Result
+			cond1074 = event.Result
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::selectRow() returning %s", this, (cond954)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::selectRow() returning %s", this, (cond1074)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -4405,13 +4415,13 @@ func (this *Accessible) SelectColumn(column int32) int32 {
 		listener.SetSelectedColumn(event)
 	}
 	if AccessibleDEBUG {
-		var cond955 string
+		var cond1075 string
 		if event.Result == "" {
-			cond955 = "E_INVALIDARG"
+			cond1075 = "E_INVALIDARG"
 		} else {
-			cond955 = event.Result
+			cond1075 = event.Result
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::selectColumn() returning %s", this, (cond955)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::selectColumn() returning %s", this, (cond1075)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -4430,13 +4440,13 @@ func (this *Accessible) UnselectRow(row int32) int32 {
 		listener.DeselectRow(event)
 	}
 	if AccessibleDEBUG {
-		var cond956 string
+		var cond1076 string
 		if event.Result == "" {
-			cond956 = "E_INVALIDARG"
+			cond1076 = "E_INVALIDARG"
 		} else {
-			cond956 = event.Result
+			cond1076 = event.Result
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::unselectRow() returning %s", this, (cond956)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::unselectRow() returning %s", this, (cond1076)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -4455,13 +4465,13 @@ func (this *Accessible) UnselectColumn(column int32) int32 {
 		listener.DeselectColumn(event)
 	}
 	if AccessibleDEBUG {
-		var cond957 string
+		var cond1077 string
 		if event.Result == "" {
-			cond957 = "E_INVALIDARG"
+			cond1077 = "E_INVALIDARG"
 		} else {
-			cond957 = event.Result
+			cond1077 = event.Result
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::unselectColumn() returning %s", this, (cond957)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::unselectColumn() returning %s", this, (cond1077)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -4474,13 +4484,13 @@ func (this *Accessible) Get_modelChange(pModelChange int64) int32 {
 		return win32.COMCO_E_OBJNOTCONNECTED
 	}
 	if AccessibleDEBUG {
-		var cond958 string
+		var cond1078 string
 		if this.tableChange == (nil) {
-			cond958 = "null"
+			cond1078 = "null"
 		} else {
-			cond958 = fmt.Sprintf("tableChange=%d, %d, %d, %d", this.tableChange[0], this.tableChange[1], this.tableChange[2], this.tableChange[3])
+			cond1078 = fmt.Sprintf("tableChange=%d, %d, %d, %d", this.tableChange[0], this.tableChange[1], this.tableChange[2], this.tableChange[3])
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_modelChange() returning %s", this, (cond958)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTable2::get_modelChange() returning %s", this, (cond1078)))
 	}
 	if this.tableChange == (nil) {
 		win32.OSMoveMemoryOverload79(pModelChange, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4516,13 +4526,13 @@ func (this *Accessible) Get_columnHeaderCells(ppCellAccessibles int64, pNColumnH
 		listener.GetColumnHeaders(event)
 	}
 	if AccessibleDEBUG {
-		var cond959 string
+		var cond1079 string
 		if event.Accessibles == (nil) {
-			cond959 = "null"
+			cond1079 = "null"
 		} else {
-			cond959 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
+			cond1079 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTableCell::get_columnHeaderCells() returning %s", this, (cond959)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTableCell::get_columnHeaderCells() returning %s", this, (cond1079)))
 	}
 	if event.Accessibles == (nil) || int32(len(event.Accessibles)) == 0 {
 		win32.OSMoveMemoryOverload79(ppCellAccessibles, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4587,13 +4597,13 @@ func (this *Accessible) Get_rowHeaderCells(ppCellAccessibles int64, pNRowHeaderC
 		listener.GetRowHeaders(event)
 	}
 	if AccessibleDEBUG {
-		var cond960 string
+		var cond1080 string
 		if event.Accessibles == (nil) {
-			cond960 = "null"
+			cond1080 = "null"
 		} else {
-			cond960 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
+			cond1080 = fmt.Sprintf("accessibles[%d]", int32(len(event.Accessibles)))
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTableCell::get_rowHeaderCells() returning %s", this, (cond960)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTableCell::get_rowHeaderCells() returning %s", this, (cond1080)))
 	}
 	if event.Accessibles == (nil) || int32(len(event.Accessibles)) == 0 {
 		win32.OSMoveMemoryOverload79(ppCellAccessibles, []int64{int64(0)}, win32.CPTR_SIZEOF)
@@ -4644,13 +4654,13 @@ func (this *Accessible) Get_isSelected(pIsSelected int64) int32 {
 	if AccessibleDEBUG {
 		AccessiblePrint(fmt.Sprintf("%v.IAccessibleTableCell::get_isSelected() returning %t", this, event.IsSelected))
 	}
-	var cond961 int32
+	var cond1081 int32
 	if event.IsSelected {
-		cond961 = 1
+		cond1081 = 1
 	} else {
-		cond961 = 0
+		cond1081 = 0
 	}
-	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond961}, 4)
+	win32.OSMoveMemoryOverload13(pIsSelected, []int32{cond1081}, 4)
 	return win32.COMS_OK
 }
 
@@ -4767,13 +4777,13 @@ func (this *Accessible) Get_attributesOffsetPStartOffsetPEndOffsetPbstrTextAttri
 			var fontData *FontData = font.GetFontData()[0]
 			textAttributes += fmt.Sprintf("font-family:%s;", fontData.GetName())
 			textAttributes += fmt.Sprintf("font-size:%dpt;", fontData.GetHeight())
-			var cond962 string
+			var cond1082 string
 			if int32(fontData.Data.LfItalic) != 0 {
-				cond962 = "italic"
+				cond1082 = "italic"
 			} else {
-				cond962 = "normal"
+				cond1082 = "normal"
 			}
-			textAttributes += fmt.Sprintf("font-style:%s;", (cond962))
+			textAttributes += fmt.Sprintf("font-style:%s;", (cond1082))
 			textAttributes += fmt.Sprintf("font-weight:%d;", fontData.Data.LfWeight)
 		}
 		var color *Color = style.Foreground
@@ -4808,13 +4818,13 @@ func (this *Accessible) Get_caretOffset(pOffset int64) int32 {
 	}
 	var offset int32 = this.GetCaretOffset()
 	if AccessibleDEBUG {
-		var cond963 int32
+		var cond1083 int32
 		if offset == -1 {
-			cond963 = win32.COMS_FALSE
+			cond1083 = win32.COMS_FALSE
 		} else {
-			cond963 = win32.COMS_OK
+			cond1083 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_caretOffset returning %d%s", this, offset, this.Hresult(cond963)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_caretOffset returning %d%s", this, offset, this.Hresult(cond1083)))
 	}
 	win32.OSMoveMemoryOverload13(pOffset, []int32{offset}, 4)
 	if offset == -1 {
@@ -4829,16 +4839,16 @@ func (this *Accessible) Get_characterExtents(offset int32, coordType int32, pX i
 	}
 	var length int32 = this.GetCharacterCount()
 	var event *AccessibleTextEvent = NewAccessibleTextEvent(this)
-	var cond964 int32
-	if offset < 0 {
-		cond964 = 0
-	} else {
-		cond964 = offset
-	}
 	if offset == win32.COMIA2_TEXT_OFFSET_LENGTH {
 		event.Start = length
 	} else {
-		event.Start = cond964
+		var cond1084 int32
+		if offset < 0 {
+			cond1084 = 0
+		} else {
+			cond1084 = offset
+		}
+		event.Start = cond1084
 	}
 	if offset == win32.COMIA2_TEXT_OFFSET_LENGTH || offset >= length {
 		event.End = length
@@ -4906,13 +4916,13 @@ func (this *Accessible) Get_offsetAtPoint(x int32, y int32, coordType int32, pOf
 		listener.GetOffsetAtPoint(event)
 	}
 	if AccessibleDEBUG {
-		var cond965 int32
+		var cond1085 int32
 		if event.Offset == -1 {
-			cond965 = win32.COMS_FALSE
+			cond1085 = win32.COMS_FALSE
 		} else {
-			cond965 = win32.COMS_OK
+			cond1085 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_offsetAtPoint(%d, %d) returning %d%s", this, x, y, event.Offset, this.Hresult(cond965)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_offsetAtPoint(%d, %d) returning %d%s", this, x, y, event.Offset, this.Hresult(cond1085)))
 	}
 	win32.OSMoveMemoryOverload13(pOffset, []int32{event.Offset}, 4)
 	if event.Offset == -1 {
@@ -4994,13 +5004,13 @@ func (this *Accessible) Get_text(startOffset int32, endOffset int32, pbstrText i
 		}
 	}
 	if AccessibleDEBUG {
-		var cond966 int32
+		var cond1086 int32
 		if event.Result == "" {
-			cond966 = win32.COME_INVALIDARG
+			cond1086 = win32.COME_INVALIDARG
 		} else {
-			cond966 = win32.COMS_OK
+			cond1086 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_text(%d, %d) returning %s%s", this, startOffset, endOffset, event.Result, this.Hresult(cond966)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_text(%d, %d) returning %s%s", this, startOffset, endOffset, event.Result, this.Hresult(cond1086)))
 	}
 	this.SetString(pbstrText, event.Result)
 	if event.Result == "" {
@@ -5015,16 +5025,16 @@ func (this *Accessible) Get_textBeforeOffset(offset int32, boundaryType int32, p
 	}
 	var event *AccessibleTextEvent = NewAccessibleTextEvent(this)
 	var charCount int32 = this.GetCharacterCount()
-	var cond967 int32
-	if offset == win32.COMIA2_TEXT_OFFSET_CARET {
-		cond967 = this.GetCaretOffset()
-	} else {
-		cond967 = offset
-	}
 	if offset == win32.COMIA2_TEXT_OFFSET_LENGTH {
 		event.Start = charCount
 	} else {
-		event.Start = cond967
+		var cond1087 int32
+		if offset == win32.COMIA2_TEXT_OFFSET_CARET {
+			cond1087 = this.GetCaretOffset()
+		} else {
+			cond1087 = offset
+		}
+		event.Start = cond1087
 	}
 	event.End = event.Start
 	event.Count = -1
@@ -5075,13 +5085,13 @@ func (this *Accessible) Get_textBeforeOffset(offset int32, boundaryType int32, p
 		}
 	}
 	if AccessibleDEBUG {
-		var cond968 int32
+		var cond1088 int32
 		if event.Result == "" {
-			cond968 = win32.COMS_FALSE
+			cond1088 = win32.COMS_FALSE
 		} else {
-			cond968 = win32.COMS_OK
+			cond1088 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textBeforeOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond968)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textBeforeOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond1088)))
 	}
 	win32.OSMoveMemoryOverload13(pStartOffset, []int32{event.Start}, 4)
 	win32.OSMoveMemoryOverload13(pEndOffset, []int32{event.End}, 4)
@@ -5098,16 +5108,16 @@ func (this *Accessible) Get_textAfterOffset(offset int32, boundaryType int32, pS
 	}
 	var event *AccessibleTextEvent = NewAccessibleTextEvent(this)
 	var charCount int32 = this.GetCharacterCount()
-	var cond969 int32
-	if offset == win32.COMIA2_TEXT_OFFSET_CARET {
-		cond969 = this.GetCaretOffset()
-	} else {
-		cond969 = offset
-	}
 	if offset == win32.COMIA2_TEXT_OFFSET_LENGTH {
 		event.Start = charCount
 	} else {
-		event.Start = cond969
+		var cond1089 int32
+		if offset == win32.COMIA2_TEXT_OFFSET_CARET {
+			cond1089 = this.GetCaretOffset()
+		} else {
+			cond1089 = offset
+		}
+		event.Start = cond1089
 	}
 	event.End = event.Start
 	event.Count = 1
@@ -5158,13 +5168,13 @@ func (this *Accessible) Get_textAfterOffset(offset int32, boundaryType int32, pS
 		}
 	}
 	if AccessibleDEBUG {
-		var cond970 int32
+		var cond1090 int32
 		if event.Result == "" {
-			cond970 = win32.COMS_FALSE
+			cond1090 = win32.COMS_FALSE
 		} else {
-			cond970 = win32.COMS_OK
+			cond1090 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textAfterOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond970)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textAfterOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond1090)))
 	}
 	win32.OSMoveMemoryOverload13(pStartOffset, []int32{event.Start}, 4)
 	win32.OSMoveMemoryOverload13(pEndOffset, []int32{event.End}, 4)
@@ -5181,16 +5191,16 @@ func (this *Accessible) Get_textAtOffset(offset int32, boundaryType int32, pStar
 	}
 	var event *AccessibleTextEvent = NewAccessibleTextEvent(this)
 	var charCount int32 = this.GetCharacterCount()
-	var cond971 int32
-	if offset == win32.COMIA2_TEXT_OFFSET_CARET {
-		cond971 = this.GetCaretOffset()
-	} else {
-		cond971 = offset
-	}
 	if offset == win32.COMIA2_TEXT_OFFSET_LENGTH {
 		event.Start = charCount
 	} else {
-		event.Start = cond971
+		var cond1091 int32
+		if offset == win32.COMIA2_TEXT_OFFSET_CARET {
+			cond1091 = this.GetCaretOffset()
+		} else {
+			cond1091 = offset
+		}
+		event.Start = cond1091
 	}
 	event.End = event.Start
 	event.Count = 0
@@ -5249,13 +5259,13 @@ func (this *Accessible) Get_textAtOffset(offset int32, boundaryType int32, pStar
 		}
 	}
 	if AccessibleDEBUG {
-		var cond972 int32
+		var cond1092 int32
 		if event.Result == "" {
-			cond972 = win32.COMS_FALSE
+			cond1092 = win32.COMS_FALSE
 		} else {
-			cond972 = win32.COMS_OK
+			cond1092 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textAtOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond972)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::get_textAtOffset(%d) returning start=%d, end=%d %s%s", this, offset, event.Start, event.End, event.Result, this.Hresult(cond1092)))
 	}
 	win32.OSMoveMemoryOverload13(pStartOffset, []int32{event.Start}, 4)
 	win32.OSMoveMemoryOverload13(pEndOffset, []int32{event.End}, 4)
@@ -5277,13 +5287,13 @@ func (this *Accessible) RemoveSelection(selectionIndex int32) int32 {
 		listener.RemoveSelection(event)
 	}
 	if AccessibleDEBUG {
-		var cond973 int32
+		var cond1093 int32
 		if event.Result == "" || !(event.Result == ACCOK) {
-			cond973 = win32.COME_INVALIDARG
+			cond1093 = win32.COME_INVALIDARG
 		} else {
-			cond973 = win32.COMS_OK
+			cond1093 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::removeSelection(%d) returning%s", this, selectionIndex, this.Hresult(cond973)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::removeSelection(%d) returning%s", this, selectionIndex, this.Hresult(cond1093)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -5306,13 +5316,13 @@ func (this *Accessible) SetCaretOffset(offset int32) int32 {
 		listener.SetCaretOffset(event)
 	}
 	if AccessibleDEBUG {
-		var cond974 int32
+		var cond1094 int32
 		if event.Result == "" || !(event.Result == ACCOK) {
-			cond974 = win32.COME_INVALIDARG
+			cond1094 = win32.COME_INVALIDARG
 		} else {
-			cond974 = win32.COMS_OK
+			cond1094 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::setCaretOffset(%d) returning%s", this, offset, this.Hresult(cond974)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::setCaretOffset(%d) returning%s", this, offset, this.Hresult(cond1094)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -5341,13 +5351,13 @@ func (this *Accessible) SetSelection(selectionIndex int32, startOffset int32, en
 		listener.SetSelection(event)
 	}
 	if AccessibleDEBUG {
-		var cond975 string
+		var cond1095 string
 		if event.Result == ACCOK {
-			cond975 = "OK"
+			cond1095 = "OK"
 		} else {
-			cond975 = "INVALIDARG"
+			cond1095 = "INVALIDARG"
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::setSelection(index=%d, start=%d, end=%d) returning %s", this, selectionIndex, event.Start, event.End, (cond975)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleText::setSelection(index=%d, start=%d, end=%d) returning %s", this, selectionIndex, event.Start, event.End, (cond1095)))
 	}
 	if event.Result == "" || !(event.Result == ACCOK) {
 		return win32.COME_INVALIDARG
@@ -5444,7 +5454,7 @@ func (this *Accessible) Get_newText(pNewText int64) int32 {
 	var start int32 = 0
 	var end int32 = 0
 	if this.textInserted != (nil) {
-		text = this.textInserted[3].(string)
+		text = jrt.Cast[string](this.textInserted[3])
 		start = jrt.Cast[int32]((any(this.textInserted[1])))
 		end = jrt.Cast[int32]((any(this.textInserted[2])))
 	}
@@ -5468,7 +5478,7 @@ func (this *Accessible) Get_oldText(pOldText int64) int32 {
 	var start int32 = 0
 	var end int32 = 0
 	if this.textDeleted != (nil) {
-		text = this.textDeleted[3].(string)
+		text = jrt.Cast[string](this.textDeleted[3])
 		start = jrt.Cast[int32]((any(this.textDeleted[1])))
 		end = jrt.Cast[int32]((any(this.textDeleted[2])))
 	}
@@ -5491,13 +5501,13 @@ func (this *Accessible) Get_currentValue(pCurrentValue int64) int32 {
 		listener.GetCurrentValue(event)
 	}
 	if AccessibleDEBUG {
-		var cond976 int32
+		var cond1096 int32
 		if jrt.IsNil(event.Value) {
-			cond976 = win32.COMS_FALSE
+			cond1096 = win32.COMS_FALSE
 		} else {
-			cond976 = win32.COMS_OK
+			cond1096 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_currentValue returning %v%s", this, event.Value, this.Hresult(cond976)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_currentValue returning %v%s", this, event.Value, this.Hresult(cond1096)))
 	}
 	this.SetNumberVARIANT(pCurrentValue, event.Value)
 	return win32.COMS_OK
@@ -5529,13 +5539,13 @@ func (this *Accessible) Get_maximumValue(pMaximumValue int64) int32 {
 		listener.GetMaximumValue(event)
 	}
 	if AccessibleDEBUG {
-		var cond977 int32
+		var cond1097 int32
 		if jrt.IsNil(event.Value) {
-			cond977 = win32.COMS_FALSE
+			cond1097 = win32.COMS_FALSE
 		} else {
-			cond977 = win32.COMS_OK
+			cond1097 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_maximumValue returning %v%s", this, event.Value, this.Hresult(cond977)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_maximumValue returning %v%s", this, event.Value, this.Hresult(cond1097)))
 	}
 	this.SetNumberVARIANT(pMaximumValue, event.Value)
 	return win32.COMS_OK
@@ -5551,13 +5561,13 @@ func (this *Accessible) Get_minimumValue(pMinimumValue int64) int32 {
 		listener.GetMinimumValue(event)
 	}
 	if AccessibleDEBUG {
-		var cond978 int32
+		var cond1098 int32
 		if jrt.IsNil(event.Value) {
-			cond978 = win32.COMS_FALSE
+			cond1098 = win32.COMS_FALSE
 		} else {
-			cond978 = win32.COMS_OK
+			cond1098 = win32.COMS_OK
 		}
-		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_minimumValue returning %v%s", this, event.Value, this.Hresult(cond978)))
+		AccessiblePrint(fmt.Sprintf("%v.IAccessibleValue::get_minimumValue returning %v%s", this, event.Value, this.Hresult(cond1098)))
 	}
 	this.SetNumberVARIANT(pMinimumValue, event.Value)
 	return win32.COMS_OK
@@ -5568,9 +5578,9 @@ func (this *Accessible) EventChildID() int32 {
 		return win32.COMCHILDID_SELF
 	}
 	if this.uniqueID == -1 {
-		t979 := AccessibleUniqueID
+		t1099 := AccessibleUniqueID
 		AccessibleUniqueID--
-		this.uniqueID = t979
+		this.uniqueID = t1099
 	}
 	return this.uniqueID
 }
@@ -5593,8 +5603,8 @@ func (this *Accessible) ChildIDToOs(childID int32) int32 {
 		return win32.COMCHILDID_SELF
 	}
 	var osChildID int32 = childID + 1
-	_, ok980 := isControlToTree(this.control)
-	if ok980 {
+	_, ok1100 := isControlToTree(this.control)
+	if ok1100 {
 		osChildID = int32(win32.OSSendMessageOverload4(this.control.Handle, win32.OSTVM_MAPHTREEITEMTOACCID, int64(childID), int64(0)))
 	}
 	this.CheckUniqueID(osChildID)
@@ -5605,8 +5615,8 @@ func (this *Accessible) OsToChildID(osChildID int32) int32 {
 	if osChildID == win32.COMCHILDID_SELF {
 		return ACCCHILDID_SELF
 	}
-	_, ok981 := isControlToTree(this.control)
-	if !(ok981) {
+	_, ok1101 := isControlToTree(this.control)
+	if !(ok1101) {
 		return osChildID - 1
 	}
 	return int32(win32.OSSendMessageOverload4(this.control.Handle, win32.OSTVM_MAPACCIDTOHTREEITEM, int64(osChildID), int64(0)))
@@ -5923,8 +5933,8 @@ func (this *Accessible) OsToRole(osRole int32) int32 {
 }
 
 func (this *Accessible) ColorFromString(rgbString string) *Color {
-	var tret982 *Color
-	tretd983 := false
+	var tret1102 *Color
+	tretd1103 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -5951,12 +5961,12 @@ func (this *Accessible) ColorFromString(rgbString string) *Color {
 		var r int32 = jrt.ParseInt(jrt.Substring(rgbString, open+1, comma1))
 		var g int32 = jrt.ParseInt(jrt.Substring(rgbString, comma1+1, comma2))
 		var b int32 = jrt.ParseInt(jrt.Substring(rgbString, comma2+1, close))
-		tret982 = NewColorRedGreenBlue(r, g, b)
-		tretd983 = true
+		tret1102 = NewColorRedGreenBlue(r, g, b)
+		tretd1103 = true
 		return
 	}()
-	if tretd983 {
-		return tret982
+	if tretd1103 {
+		return tret1102
 	}
 	return nil
 }
@@ -6098,13 +6108,13 @@ func (this *Accessible) SetStringVARIANT(variant int64, string_ string) {
 		var data []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", string_))))
 		ptr = win32.COMSysAllocString(data)
 	}
-	var cond984 int16
+	var cond1104 int16
 	if ptr == 0 {
-		cond984 = win32.COMVT_EMPTY
+		cond1104 = win32.COMVT_EMPTY
 	} else {
-		cond984 = win32.COMVT_BSTR
+		cond1104 = win32.COMVT_BSTR
 	}
-	win32.OSMoveMemoryOverload80(variant, []int16{cond984}, 2)
+	win32.OSMoveMemoryOverload80(variant, []int16{cond1104}, 2)
 	win32.OSMoveMemoryOverload79(variant+8, []int64{ptr}, win32.CPTR_SIZEOF)
 }
 
@@ -6971,12 +6981,12 @@ func AccessibleIIDFromString(lpsz string) *win32.GUID {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon1 struct {
-	*win32.COMObject
-	fnMethod0  func(a0 []int64) int64
-	fnMethod1  func(a0 []int64) int64
-	fnMethod2  func(a0 []int64) int64
-	fnMethod7  func(a0 []int64) int64
-	fnMethod8  func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
 	fnMethod9  func(a0 []int64) int64
 	fnMethod10 func(a0 []int64) int64
 	fnMethod11 func(a0 []int64) int64
@@ -7016,24 +7026,24 @@ type AccessibleAnon1 struct {
 	fnMethod45 func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon1) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon1) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon1) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon1) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon1) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon1) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon1) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon1) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon1) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon1) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon1) Method9(a0 []int64) int64 {
@@ -7186,38 +7196,38 @@ func (this *AccessibleAnon1) Method45(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon2 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
-	fnMethod4 func(a0 []int64) int64
-	fnMethod5 func(a0 []int64) int64
-	fnMethod6 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
+	fnMethod6  func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon2) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon2) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon2) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon2) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon2) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon2) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon2) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon2) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon2) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon2) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon2) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon2) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon2) Method6(a0 []int64) int64 {
@@ -7226,53 +7236,53 @@ func (this *AccessibleAnon2) Method6(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon3 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
-	fnMethod4 func(a0 []int64) int64
-	fnMethod5 func(a0 []int64) int64
-	fnMethod6 func(a0 []int64) int64
-	fnMethod7 func(a0 []int64) int64
-	fnMethod8 func(a0 []int64) int64
-	fnMethod9 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
+	fnMethod6  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
+	fnMethod9  func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon3) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon3) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon3) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon3) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon3) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon3) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon3) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon3) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon3) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon3) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon3) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon3) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon3) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *AccessibleAnon3) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon3) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon3) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon3) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon3) Method9(a0 []int64) int64 {
@@ -7281,16 +7291,16 @@ func (this *AccessibleAnon3) Method9(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon4 struct {
-	*win32.COMObject
-	fnMethod0  func(a0 []int64) int64
-	fnMethod1  func(a0 []int64) int64
-	fnMethod2  func(a0 []int64) int64
-	fnMethod3  func(a0 []int64) int64
-	fnMethod4  func(a0 []int64) int64
-	fnMethod5  func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
 	fnMethod6  func(a0 []int64) int64
-	fnMethod7  func(a0 []int64) int64
-	fnMethod8  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
 	fnMethod9  func(a0 []int64) int64
 	fnMethod10 func(a0 []int64) int64
 	fnMethod11 func(a0 []int64) int64
@@ -7298,40 +7308,40 @@ type AccessibleAnon4 struct {
 	fnMethod13 func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon4) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon4) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon4) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon4) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon4) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon4) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon4) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon4) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon4) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon4) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon4) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon4) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon4) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *AccessibleAnon4) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon4) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon4) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon4) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon4) Method9(a0 []int64) int64 {
@@ -7356,16 +7366,16 @@ func (this *AccessibleAnon4) Method13(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon5 struct {
-	*win32.COMObject
-	fnMethod0  func(a0 []int64) int64
-	fnMethod1  func(a0 []int64) int64
-	fnMethod2  func(a0 []int64) int64
-	fnMethod3  func(a0 []int64) int64
-	fnMethod4  func(a0 []int64) int64
-	fnMethod5  func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
 	fnMethod6  func(a0 []int64) int64
-	fnMethod7  func(a0 []int64) int64
-	fnMethod8  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
 	fnMethod9  func(a0 []int64) int64
 	fnMethod10 func(a0 []int64) int64
 	fnMethod11 func(a0 []int64) int64
@@ -7384,40 +7394,40 @@ type AccessibleAnon5 struct {
 	fnMethod24 func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon5) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon5) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon5) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon5) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon5) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon5) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon5) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon5) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon5) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon5) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon5) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon5) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon5) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *AccessibleAnon5) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon5) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon5) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon5) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon5) Method9(a0 []int64) int64 {
@@ -7486,16 +7496,16 @@ func (this *AccessibleAnon5) Method24(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon6 struct {
-	*win32.COMObject
-	fnMethod0  func(a0 []int64) int64
-	fnMethod1  func(a0 []int64) int64
-	fnMethod2  func(a0 []int64) int64
-	fnMethod3  func(a0 []int64) int64
-	fnMethod4  func(a0 []int64) int64
-	fnMethod5  func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
 	fnMethod6  func(a0 []int64) int64
-	fnMethod7  func(a0 []int64) int64
-	fnMethod8  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
 	fnMethod9  func(a0 []int64) int64
 	fnMethod10 func(a0 []int64) int64
 	fnMethod11 func(a0 []int64) int64
@@ -7512,40 +7522,40 @@ type AccessibleAnon6 struct {
 	fnMethod22 func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon6) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon6) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon6) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon6) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon6) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon6) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon6) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon6) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon6) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon6) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon6) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon6) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon6) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *AccessibleAnon6) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon6) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon6) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon6) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon6) Method9(a0 []int64) int64 {
@@ -7606,55 +7616,55 @@ func (this *AccessibleAnon6) Method22(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon7 struct {
-	*win32.COMObject
-	fnMethod0  func(a0 []int64) int64
-	fnMethod1  func(a0 []int64) int64
-	fnMethod2  func(a0 []int64) int64
-	fnMethod3  func(a0 []int64) int64
-	fnMethod4  func(a0 []int64) int64
-	fnMethod5  func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
 	fnMethod6  func(a0 []int64) int64
-	fnMethod7  func(a0 []int64) int64
-	fnMethod8  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
+	fnmethod8_ func(a0 []int64) int64
 	fnMethod9  func(a0 []int64) int64
 	fnMethod10 func(a0 []int64) int64
 	fnMethod11 func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon7) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon7) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon7) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon7) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon7) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon7) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon7) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon7) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon7) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon7) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon7) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon7) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon7) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *AccessibleAnon7) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *AccessibleAnon7) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }
 
-func (this *AccessibleAnon7) Method8(a0 []int64) int64 {
-	return this.fnMethod8(a0)
+func (this *AccessibleAnon7) method8_(a0 []int64) int64 {
+	return this.fnmethod8_(a0)
 }
 
 func (this *AccessibleAnon7) Method9(a0 []int64) int64 {
@@ -7671,38 +7681,38 @@ func (this *AccessibleAnon7) Method11(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon8 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
-	fnMethod4 func(a0 []int64) int64
-	fnMethod5 func(a0 []int64) int64
-	fnMethod6 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
+	fnMethod6  func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon8) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon8) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon8) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon8) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon8) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon8) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon8) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon8) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon8) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon8) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon8) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon8) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon8) Method6(a0 []int64) int64 {
@@ -7711,38 +7721,38 @@ func (this *AccessibleAnon8) Method6(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon9 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
-	fnMethod4 func(a0 []int64) int64
-	fnMethod5 func(a0 []int64) int64
-	fnMethod6 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
+	fnMethod6  func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon9) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon9) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon9) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon9) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon9) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon9) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon9) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon9) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *AccessibleAnon9) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *AccessibleAnon9) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *AccessibleAnon9) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *AccessibleAnon9) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *AccessibleAnon9) Method6(a0 []int64) int64 {
@@ -7751,27 +7761,27 @@ func (this *AccessibleAnon9) Method6(a0 []int64) int64 {
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon10 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
 }
 
-func (this *AccessibleAnon10) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *AccessibleAnon10) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *AccessibleAnon10) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *AccessibleAnon10) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *AccessibleAnon10) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *AccessibleAnon10) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *AccessibleAnon10) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *AccessibleAnon10) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
 // j2go: instanceof helper for ToolBar and its subclasses within the translated set.
@@ -7818,42 +7828,6 @@ type AccessibleAnon11 struct {
 
 func (this *AccessibleAnon11) GetName(a0 *AccessibleEvent) {
 	this.fnGetName(a0)
-}
-
-// j2go: instanceof helper for Tree and its subclasses within the translated set.
-func widgetImplAsTree(x any) (*Tree, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *Tree:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsTree() *Tree }); ok {
-		return l.AsTree(), true
-	}
-	return nil, false
-}
-
-func isControlToTree(x *Control) (*Tree, bool) {
-	if x == nil {
-		return nil, false
-	}
-	return widgetImplAsTree(x.impl)
-}
-
-func castControlToTree(x *Control) *Tree {
-	if x == nil {
-		return nil
-	}
-	v, ok := widgetImplAsTree(x.impl)
-	if !ok {
-		panic("java.lang.ClassCastException: Tree")
-	}
-	return v
 }
 
 // j2go: instanceof helper for TreeItem and its subclasses within the translated set.
@@ -7949,42 +7923,6 @@ func castControlToText(x *Control) *Text {
 	v, ok := widgetImplAsText(x.impl)
 	if !ok {
 		panic("java.lang.ClassCastException: Text")
-	}
-	return v
-}
-
-// j2go: instanceof helper for Table and its subclasses within the translated set.
-func widgetImplAsTable(x any) (*Table, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *Table:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsTable() *Table }); ok {
-		return l.AsTable(), true
-	}
-	return nil, false
-}
-
-func isControlToTable(x *Control) (*Table, bool) {
-	if x == nil {
-		return nil, false
-	}
-	return widgetImplAsTable(x.impl)
-}
-
-func castControlToTable(x *Control) *Table {
-	if x == nil {
-		return nil
-	}
-	v, ok := widgetImplAsTable(x.impl)
-	if !ok {
-		panic("java.lang.ClassCastException: Table")
 	}
 	return v
 }

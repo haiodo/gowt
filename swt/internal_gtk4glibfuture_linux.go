@@ -48,23 +48,23 @@ func GTK4GlibFutureGet(displayLike DisplayLike, future *jrt.CompletableFuture, t
 	var startTime int64 = time.Now().UnixNano()
 	for {
 		if jrt.Interrupted() {
-			panic(func() any { panic("j2go: unresolved new InterruptedException") }())
+			panic(jrt.NewInterruptedException())
 		}
 		if future.IsDone() {
 			return future.Get()
 		}
 		if timeout != (nil) && time.Now().UnixNano()-startTime >= timeout.ToNanos() {
-			panic(func() any { _ = []any{"Timeout waiting for future"}; panic("j2go: unresolved new TimeoutException") }())
+			panic(jrt.NewTimeoutException("Timeout waiting for future"))
 		}
 		for gtk.OSG_main_context_iteration(int64(0), false) {
 			if jrt.Interrupted() {
-				panic(func() any { panic("j2go: unresolved new InterruptedException") }())
+				panic(jrt.NewInterruptedException())
 			}
 			if future.IsDone() {
 				return future.Get()
 			}
 			if timeout != (nil) && time.Now().UnixNano()-startTime >= timeout.ToNanos() {
-				panic(func() any { _ = []any{"Timeout waiting for future"}; panic("j2go: unresolved new TimeoutException") }())
+				panic(jrt.NewTimeoutException("Timeout waiting for future"))
 			}
 		}
 		if future.IsDone() {

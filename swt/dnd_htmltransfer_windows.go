@@ -63,7 +63,7 @@ func (this *HTMLTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckHTML(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	var count int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, count+1)
 	jrt.GetChars(string_, 0, count, chars, 0)
@@ -131,16 +131,16 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 		if lpMultiByteStr == 0 {
 			return nil
 		}
-		var tret888 any
-		tretd889 := false
+		var tret1149 any
+		tretd1150 := false
 		func() {
 			defer func() {
 				win32.OSGlobalUnlock(hMem)
 			}()
 			var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(win32.OSCP_UTF8, 0, lpMultiByteStr, -1, nil, 0)
 			if cchWideChar == 0 {
-				tret888 = nil
-				tretd889 = true
+				tret1149 = nil
+				tretd1150 = true
 				return
 			}
 			var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
@@ -152,7 +152,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 			var end int32 = start + 1
 			for end < jrt.StringLength(string_) {
 				var s string = jrt.Substring(string_, start, end)
-				tbrk890 := false
+				tbrk1151 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -168,7 +168,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 						}() {
 							e := r.(*jrt.NumberFormatException)
 							_ = e
-							tbrk890 = true
+							tbrk1151 = true
 							return
 						} else {
 							panic(r)
@@ -177,7 +177,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 					fragmentStart = jrt.ParseInt(s)
 					end++
 				}()
-				if tbrk890 {
+				if tbrk1151 {
 					break
 				}
 			}
@@ -185,7 +185,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 			end = start + 1
 			for end < jrt.StringLength(string_) {
 				var s string = jrt.Substring(string_, start, end)
-				tbrk891 := false
+				tbrk1152 := false
 				func() {
 					defer func() {
 						r := recover()
@@ -201,7 +201,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 						}() {
 							e := r.(*jrt.NumberFormatException)
 							_ = e
-							tbrk891 = true
+							tbrk1152 = true
 							return
 						} else {
 							panic(r)
@@ -210,19 +210,19 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 					fragmentEnd = jrt.ParseInt(s)
 					end++
 				}()
-				if tbrk891 {
+				if tbrk1152 {
 					break
 				}
 			}
 			if fragmentEnd <= fragmentStart || fragmentEnd > win32.CStrlen(lpMultiByteStr) {
-				tret888 = nil
-				tretd889 = true
+				tret1149 = nil
+				tretd1150 = true
 				return
 			}
 			cchWideChar = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(win32.OSCP_UTF8, 0, lpMultiByteStr+int64(fragmentStart), fragmentEnd-fragmentStart, lpWideCharStr, int32(len(lpWideCharStr)))
 			if cchWideChar == 0 {
-				tret888 = nil
-				tretd889 = true
+				tret1149 = nil
+				tretd1150 = true
 				return
 			}
 			var s string = string(utf16.Decode(lpWideCharStr[0 : 0+cchWideChar]))
@@ -232,12 +232,12 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 				prefix += jrt.StringLength(foxStart)
 				s = jrt.Substring(s, prefix, -1)
 			}
-			tret888 = s
-			tretd889 = true
+			tret1149 = s
+			tretd1150 = true
 			return
 		}()
-		_ = tretd889
-		return tret888
+		_ = tretd1150
+		return tret1149
 	}
 }
 
@@ -250,8 +250,8 @@ func (this *HTMLTransfer) getTypeNames_() []string {
 }
 
 func (this *HTMLTransfer) CheckHTML(object any) bool {
-	_, ok893 := object.(string)
-	return (ok893 && jrt.StringLength((object.(string))) > 0)
+	_, ok1154 := object.(string)
+	return (ok1154 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *HTMLTransfer) validate_(object any) bool {

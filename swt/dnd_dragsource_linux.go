@@ -60,7 +60,7 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		if DragSourceDragPrepareProc_ == (nil) || DragSourceDragEndProc_ == (nil) {
 			DNDError(DNDERROR_CANNOT_INIT_DRAG)
 		}
-		if !jrt.IsNil(control.GetDataKey(DNDDRAG_SOURCE_KEY)) {
+		if !jrt.IsNil(control.impl.getDataKey_(DNDDRAG_SOURCE_KEY)) {
 			DNDError(DNDERROR_CANNOT_INIT_DRAG)
 		}
 		control.SetDataKeyValue(DNDDRAG_SOURCE_KEY, this)
@@ -74,7 +74,7 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		if DragSourceDragGetData_ == (nil) || DragSourceDragEnd_ == (nil) || DragSourceDragDataDelete_ == (nil) {
 			DNDError(DNDERROR_CANNOT_INIT_DRAG)
 		}
-		if !jrt.IsNil(control.GetDataKey(DNDDRAG_SOURCE_KEY)) {
+		if !jrt.IsNil(control.impl.getDataKey_(DNDDRAG_SOURCE_KEY)) {
 			DNDError(DNDERROR_CANNOT_INIT_DRAG)
 		}
 		control.SetDataKeyValue(DNDDRAG_SOURCE_KEY, this)
@@ -82,21 +82,21 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		gtk.OSG_signal_connect(control.Handle, gtk.OSDrag_data_get, DragSourceDragGetData_.GetAddress(), int64(0))
 		gtk.OSG_signal_connect(control.Handle, gtk.OSDrag_end, DragSourceDragEnd_.GetAddress(), int64(0))
 		gtk.OSG_signal_connect(control.Handle, gtk.OSDrag_data_delete, DragSourceDragDataDelete_.GetAddress(), int64(0))
-		var effect any = control.GetDataKey(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
-		_, ok755 := dragSourceAdapterImplAsDragSourceEffect(effect)
-		if ok755 {
+		var effect any = control.impl.getDataKey_(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
+		_, ok876 := dragSourceAdapterImplAsDragSourceEffect(effect)
+		if ok876 {
 			this.dragEffect = castanyToDragSourceEffect(effect)
 		} else {
-			_, ok756 := isControlToTree(control)
-			if ok756 {
+			_, ok877 := isControlToTree(control)
+			if ok877 {
 				this.dragEffect = upcastTreeDragSourceEffectToDragSourceEffect(NewTreeDragSourceEffect(castControlToTree(control)))
 			} else {
-				_, ok757 := isControlToTable(control)
-				if ok757 {
+				_, ok878 := isControlToTable(control)
+				if ok878 {
 					this.dragEffect = upcastTableDragSourceEffectToDragSourceEffect(NewTableDragSourceEffect(castControlToTable(control)))
 				} else {
-					_, ok758 := isControlToList(control)
-					if ok758 {
+					_, ok879 := isControlToList(control)
+					if ok879 {
 						this.dragEffect = upcastListDragSourceEffectToDragSourceEffect(NewListDragSourceEffect(castControlToList(control)))
 					}
 				}
@@ -240,8 +240,8 @@ func (this *DragSource) Drag(dragEventLike EventLike) {
 }
 
 func (this *DragSource) DragBegin(widget int64, context int64) {
-	_, ok759 := isControlToText(this.control)
-	if ok759 {
+	_, ok880 := isControlToText(this.control)
+	if ok880 {
 		var event *DNDEvent = newDNDEvent()
 		var display *Display = DisplayGetCurrent()
 		var loc *Point = display.GetCursorLocation()
@@ -305,8 +305,8 @@ func (this *DragSource) DragEnd(widget int64, context int64) {
 	event.Detail = operation
 	this.NotifyListeners(DNDDragEnd, upcastDNDEventToEvent(event))
 	if gtk.OSIsWayland() {
-		_, ok761 := isControlToTable(this.control)
-		if ok761 || func() bool { _, ok762 := isControlToTree(this.control); return ok762 }() || func() bool { _, ok763 := isControlToList(this.control); return ok763 }() {
+		_, ok882 := isControlToTable(this.control)
+		if ok882 || func() bool { _, ok883 := isControlToTree(this.control); return ok883 }() || func() bool { _, ok884 := isControlToList(this.control); return ok884 }() {
 			var selection int64 = gtk.GTKGtk_tree_view_get_selection(widget)
 			gtk.GTKGtk_tree_selection_set_select_function(selection, int64(0), int64(0), int64(0))
 		}
@@ -591,7 +591,7 @@ func DragSourceFindDragSource(handle int64) *DragSource {
 	if widget == (nil) {
 		return nil
 	}
-	return castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+	return castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 }
 
 // j2go: instanceof helper for DragSourceEffect and its subclasses within the translated set.

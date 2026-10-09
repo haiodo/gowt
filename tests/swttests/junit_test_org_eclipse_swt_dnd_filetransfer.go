@@ -37,8 +37,8 @@ func (this *Test_org_eclipse_swt_dnd_FileTransfer) TempFile() string {
 }
 
 func (this *Test_org_eclipse_swt_dnd_FileTransfer) DeleteTempFiles() {
-	for _, elem174 := range this.tmpFilesToDelete.ToArray() {
-		path := jrt.Cast[*jrt.Path](elem174)
+	for _, elem197 := range this.tmpFilesToDelete.ToArray() {
+		path := jrt.Cast[*jrt.Path](elem197)
 		jrt.FilesDelete(path)
 	}
 }
@@ -133,14 +133,11 @@ func (this *Test_org_eclipse_swt_dnd_FileTransfer) Test_javaToNative() {
 	this.OpenAndFocusShell(true)
 	this.SetContents(fileList)
 	this.OpenAndFocusRemote()
-	var contents []string = jrt.Cast[[]string](func() []string {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() []string {
-				return this.remote.GetFileListContents()
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var contents []string = jrt.Cast[[]string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() []string {
+			return this.remote.GetFileListContents()
+		})()
+	}}))
 	junit.AssertArrayEquals(upcastArrstringToany(fileList), upcastArrstringToany(contents))
 }
 

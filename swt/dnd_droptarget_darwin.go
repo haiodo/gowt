@@ -66,7 +66,7 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 	this.labelDragHandlersAdded = false
 	this.keyOperation = -1
 	this.control = control
-	if !jrt.IsNil(control.GetDataKey(DNDDROP_TARGET_KEY)) {
+	if !jrt.IsNil(control.impl.getDataKey_(DNDDROP_TARGET_KEY)) {
 		DNDError(DNDERROR_CANNOT_INIT_DROP)
 	}
 	control.SetDataKeyValue(DNDDROP_TARGET_KEY, this)
@@ -79,17 +79,17 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 	this.AddListener(Dispose, &ListenerFunc{fn: func(event *Event) {
 		this.OnDispose()
 	}})
-	var effect any = control.GetDataKey(DropTargetDEFAULT_DROP_TARGET_EFFECT)
-	_, ok819 := dropTargetAdapterImplAsDropTargetEffect(effect)
-	if ok819 {
+	var effect any = control.impl.getDataKey_(DropTargetDEFAULT_DROP_TARGET_EFFECT)
+	_, ok994 := dropTargetAdapterImplAsDropTargetEffect(effect)
+	if ok994 {
 		this.dropEffect = castanyToDropTargetEffect(effect)
 	} else {
-		_, ok820 := isControlToTable(control)
-		if ok820 {
+		_, ok995 := isControlToTable(control)
+		if ok995 {
 			this.dropEffect = upcastTableDropTargetEffectToDropTargetEffect(NewTableDropTargetEffect(castControlToTable(control)))
 		} else {
-			_, ok821 := isControlToTree(control)
-			if ok821 {
+			_, ok996 := isControlToTree(control)
+			if ok996 {
 				this.dropEffect = upcastTreeDropTargetEffectToDropTargetEffect(NewTreeDropTargetEffect(castControlToTree(control)))
 			}
 		}
@@ -106,21 +106,21 @@ func (this *DropTarget) HandleLabels(cLike ControlLike) {
 	if this.labelDragHandlersAdded {
 		return
 	}
-	_, ok822 := isControlToLabel(c)
-	if ok822 {
+	_, ok997 := isControlToLabel(c)
+	if ok997 {
 		var labelViewClass int64 = cocoa.OSObject_getClass(c.View.Id)
 		this.AddDragHandlersCls(labelViewClass)
 		var imageView int64 = int64(0)
-		cond823 := cocoa.OSObjc_msgSend(c.View.Id, cocoa.OSSel_getImageView)
-		imageView = cond823
-		if (cond823) != 0 {
+		cond998 := cocoa.OSObjc_msgSend(c.View.Id, cocoa.OSSel_getImageView)
+		imageView = cond998
+		if (cond998) != 0 {
 			var cls int64 = cocoa.OSObject_getClass(imageView)
 			this.AddDragHandlersCls(cls)
 			this.labelDragHandlersAdded = true
 		}
 	} else {
-		_, ok824 := isControlToComposite(c)
-		if ok824 {
+		_, ok999 := isControlToComposite(c)
+		if ok999 {
 			var cal []*Control = (castControlToComposite(c)).impl.getChildren_()
 			for _, child := range cal {
 				this.HandleLabels(child)
@@ -225,7 +225,7 @@ func (this *DropTarget) DraggingEntered(id int64, sel int64, sender *cocoa.NSObj
 	if this.selectedOperation == DNDDROP_NONE {
 		this.SetDropNotAllowed()
 	} else {
-		if (this.control.GetDataKey(DropTargetIS_ACTIVE).(bool)) == false {
+		if (this.control.impl.getDataKey_(DropTargetIS_ACTIVE).(bool)) == false {
 			this.SetDropNotAllowed()
 		} else {
 			this.ClearDropNotAllowed()
@@ -299,7 +299,7 @@ func (this *DropTarget) DraggingUpdated(id int64, sel int64, sender *cocoa.NSObj
 	if this.selectedOperation == DNDDROP_NONE {
 		this.SetDropNotAllowed()
 	} else {
-		if (this.control.GetDataKey(DropTargetIS_ACTIVE).(bool)) == false {
+		if (this.control.impl.getDataKey_(DropTargetIS_ACTIVE).(bool)) == false {
 			this.SetDropNotAllowed()
 		} else {
 			this.ClearDropNotAllowed()
@@ -410,7 +410,7 @@ func (this *DropTarget) Drop(sender *cocoa.NSObject) bool {
 	event.Detail = DNDDROP_NONE
 	this.NotifyListeners(DNDDragLeave, upcastDNDEventToEvent(event))
 	event = newDNDEvent()
-	if !this.SetEventData(sender, event) || ((this.control.GetDataKey(DropTargetIS_ACTIVE).(bool)) == false) {
+	if !this.SetEventData(sender, event) || ((this.control.impl.getDataKey_(DropTargetIS_ACTIVE).(bool)) == false) {
 		return false
 	}
 	this.keyOperation = -1
@@ -733,18 +733,18 @@ func DropTargetDropTargetProc(id int64, sel int64) int64 {
 	if widget == (nil) {
 		return int64(0)
 	}
-	var dt *DropTarget = castanyToDropTarget(widget.GetDataKey(DNDDROP_TARGET_KEY))
+	var dt *DropTarget = castanyToDropTarget(widget.impl.getDataKey_(DNDDROP_TARGET_KEY))
 	if dt == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_wantsPeriodicDraggingUpdates {
-		var cond825 int32
+		var cond1000 int32
 		if dt.WantsPeriodicDraggingUpdates(id, sel) {
-			cond825 = 1
+			cond1000 = 1
 		} else {
-			cond825 = 0
+			cond1000 = 0
 		}
-		return int64(cond825)
+		return int64(cond1000)
 	}
 	return int64(0)
 }
@@ -759,15 +759,15 @@ func DropTargetDropTargetProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		return int64(0)
 	}
 	var tempWidget *Widget = widget
-	var dt *DropTarget = castanyToDropTarget(tempWidget.GetDataKey(DNDDROP_TARGET_KEY))
-	if dt == (nil) && func() bool { _, ok826 := isWidgetToLabel(tempWidget); return ok826 }() {
-		for tempWidget != (nil) && func() bool { _, ok827 := isWidgetToShell(tempWidget); return !(ok827) }() {
-			dt = castanyToDropTarget(tempWidget.GetDataKey(DNDDROP_TARGET_KEY))
+	var dt *DropTarget = castanyToDropTarget(tempWidget.impl.getDataKey_(DNDDROP_TARGET_KEY))
+	if dt == (nil) && func() bool { _, ok1001 := isWidgetToLabel(tempWidget); return ok1001 }() {
+		for tempWidget != (nil) && func() bool { _, ok1002 := isWidgetToShell(tempWidget); return !(ok1002) }() {
+			dt = castanyToDropTarget(tempWidget.impl.getDataKey_(DNDDROP_TARGET_KEY))
 			if dt != (nil) {
 				break
 			}
-			_, ok828 := isWidgetToControl(tempWidget)
-			if ok828 {
+			_, ok1003 := isWidgetToControl(tempWidget)
+			if ok1003 {
 				var widgetParent *Composite = (castWidgetToControl(tempWidget)).GetParent()
 				tempWidget = upcastCompositeToWidget(widgetParent)
 			} else {
@@ -789,13 +789,13 @@ func DropTargetDropTargetProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 				dt.DraggingExited(id, sel, sender)
 			} else {
 				if sel == cocoa.OSSel_performDragOperation_ {
-					var cond829 int32
+					var cond1004 int32
 					if dt.PerformDragOperation(id, sel, sender) {
-						cond829 = 1
+						cond1004 = 1
 					} else {
-						cond829 = 0
+						cond1004 = 0
 					}
-					return int64(cond829)
+					return int64(cond1004)
 				}
 			}
 		}
@@ -812,30 +812,30 @@ func DropTargetDropTargetProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int
 	if widget == (nil) {
 		return int64(0)
 	}
-	var dt *DropTarget = castanyToDropTarget(widget.GetDataKey(DNDDROP_TARGET_KEY))
+	var dt *DropTarget = castanyToDropTarget(widget.impl.getDataKey_(DNDDROP_TARGET_KEY))
 	if dt == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_outlineView_acceptDrop_item_childIndex_ {
-		var cond830 int32
+		var cond1005 int32
 		if dt.OutlineView_acceptDrop_item_childIndex(id, sel, arg0, arg1, arg2, arg3) {
-			cond830 = 1
+			cond1005 = 1
 		} else {
-			cond830 = 0
+			cond1005 = 0
 		}
-		return int64(cond830)
+		return int64(cond1005)
 	} else {
 		if sel == cocoa.OSSel_outlineView_validateDrop_proposedItem_proposedChildIndex_ {
 			return dt.OutlineView_validateDrop_proposedItem_proposedChildIndex(id, sel, arg0, arg1, arg2, arg3)
 		} else {
 			if sel == cocoa.OSSel_tableView_acceptDrop_row_dropOperation_ {
-				var cond831 int32
+				var cond1006 int32
 				if dt.TableView_acceptDrop_row_dropOperation(id, sel, arg0, arg1, arg2, arg3) {
-					cond831 = 1
+					cond1006 = 1
 				} else {
-					cond831 = 0
+					cond1006 = 0
 				}
-				return int64(cond831)
+				return int64(cond1006)
 			} else {
 				if sel == cocoa.OSSel_tableView_validateDrop_proposedRow_proposedDropOperation_ {
 					return int64(dt.TableView_validateDrop_proposedRow_proposedDropOperation(id, sel, arg0, arg1, arg2, arg3))
@@ -857,6 +857,11 @@ func dropTargetAdapterImplAsDropTargetEffect(x any) (*DropTargetEffect, bool) {
 			return nil, false
 		}
 		return v, true
+	case *StyledTextDropTargetEffect:
+		if v == nil {
+			return nil, false
+		}
+		return &v.DropTargetEffect, true
 	case *TableDropTargetEffect:
 		if v == nil {
 			return nil, false

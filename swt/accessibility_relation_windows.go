@@ -13,7 +13,7 @@ import (
 
 type Relation struct {
 	accessible             *Accessible
-	objIAccessibleRelation *win32.COMObject
+	objIAccessibleRelation *COMObject
 	refCount               int32
 	type_                  int32
 	targets                []*Accessible
@@ -60,33 +60,34 @@ func (this *Relation) GetAddress() int64 {
 }
 
 func (this *Relation) CreateIAccessibleRelation() {
-	anon985 := &RelationAnon1{}
-	anon985.COMObject = win32.NewCOMObject([]int32{2, 0, 0, 1, 1, 1, 2, 3})
-	anon985.fnMethod0 = func(args []int64) int64 {
+	anon1105 := &RelationAnon1{}
+	anon1105.impl = anon1105
+	anon1105.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 2, 3})
+	anon1105.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon985.fnMethod1 = func(args []int64) int64 {
+	anon1105.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon985.fnMethod2 = func(args []int64) int64 {
+	anon1105.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon985.fnMethod3 = func(args []int64) int64 {
+	anon1105.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_relationType(args[0]))
 	}
-	anon985.fnMethod4 = func(args []int64) int64 {
+	anon1105.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_localizedRelationType(args[0]))
 	}
-	anon985.fnMethod5 = func(args []int64) int64 {
+	anon1105.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_nTargets(args[0]))
 	}
-	anon985.fnMethod6 = func(args []int64) int64 {
+	anon1105.fnMethod6 = func(args []int64) int64 {
 		return int64(this.Get_target(int32(args[0]), args[1]))
 	}
-	anon985.fnMethod7 = func(args []int64) int64 {
+	anon1105.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_targets(int32(args[0]), args[1], args[2]))
 	}
-	this.objIAccessibleRelation = anon985.COMObject
+	this.objIAccessibleRelation = &anon1105.COMObject
 }
 
 func (this *Relation) QueryInterface(iid int64, ppvObject int64) int32 {
@@ -194,9 +195,9 @@ func (this *Relation) RemoveTarget(searchedLike AccessibleLike) {
 	var j int32 = 0
 	for _, target := range this.targets {
 		if target != searched {
-			t986 := j
+			t1106 := j
 			j++
-			newTargets[t986] = target
+			newTargets[t1106] = target
 		}
 	}
 	this.targets = newTargets
@@ -214,45 +215,45 @@ func (this *Relation) SetString(psz int64, string_ string) {
 
 // j2go: anonymous COMObject subclass.
 type RelationAnon1 struct {
-	*win32.COMObject
-	fnMethod0 func(a0 []int64) int64
-	fnMethod1 func(a0 []int64) int64
-	fnMethod2 func(a0 []int64) int64
-	fnMethod3 func(a0 []int64) int64
-	fnMethod4 func(a0 []int64) int64
-	fnMethod5 func(a0 []int64) int64
-	fnMethod6 func(a0 []int64) int64
-	fnMethod7 func(a0 []int64) int64
+	COMObject
+	fnmethod0_ func(a0 []int64) int64
+	fnmethod1_ func(a0 []int64) int64
+	fnmethod2_ func(a0 []int64) int64
+	fnmethod3_ func(a0 []int64) int64
+	fnmethod4_ func(a0 []int64) int64
+	fnmethod5_ func(a0 []int64) int64
+	fnMethod6  func(a0 []int64) int64
+	fnmethod7_ func(a0 []int64) int64
 }
 
-func (this *RelationAnon1) Method0(a0 []int64) int64 {
-	return this.fnMethod0(a0)
+func (this *RelationAnon1) method0_(a0 []int64) int64 {
+	return this.fnmethod0_(a0)
 }
 
-func (this *RelationAnon1) Method1(a0 []int64) int64 {
-	return this.fnMethod1(a0)
+func (this *RelationAnon1) method1_(a0 []int64) int64 {
+	return this.fnmethod1_(a0)
 }
 
-func (this *RelationAnon1) Method2(a0 []int64) int64 {
-	return this.fnMethod2(a0)
+func (this *RelationAnon1) method2_(a0 []int64) int64 {
+	return this.fnmethod2_(a0)
 }
 
-func (this *RelationAnon1) Method3(a0 []int64) int64 {
-	return this.fnMethod3(a0)
+func (this *RelationAnon1) method3_(a0 []int64) int64 {
+	return this.fnmethod3_(a0)
 }
 
-func (this *RelationAnon1) Method4(a0 []int64) int64 {
-	return this.fnMethod4(a0)
+func (this *RelationAnon1) method4_(a0 []int64) int64 {
+	return this.fnmethod4_(a0)
 }
 
-func (this *RelationAnon1) Method5(a0 []int64) int64 {
-	return this.fnMethod5(a0)
+func (this *RelationAnon1) method5_(a0 []int64) int64 {
+	return this.fnmethod5_(a0)
 }
 
 func (this *RelationAnon1) Method6(a0 []int64) int64 {
 	return this.fnMethod6(a0)
 }
 
-func (this *RelationAnon1) Method7(a0 []int64) int64 {
-	return this.fnMethod7(a0)
+func (this *RelationAnon1) method7_(a0 []int64) int64 {
+	return this.fnmethod7_(a0)
 }

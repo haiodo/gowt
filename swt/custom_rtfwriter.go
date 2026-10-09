@@ -77,8 +77,8 @@ func (this *RTFWriter) writeHeader_() {
 		header.Append(";")
 	}
 	header.Append("}}\n{\\colortbl")
-	for _, elem915 := range this.colorTable.ToArray() {
-		color := jrt.Cast[*Color](elem915)
+	for _, elem914 := range this.colorTable.ToArray() {
+		color := jrt.Cast[*Color](elem914)
 		header.Append("\\red")
 		header.Append(color.GetRed())
 		header.Append("\\green")
@@ -124,13 +124,13 @@ func (this *RTFWriter) writeLineStart_(lineBackground *Color, indent int32, vert
 		this.WriteOverload2(this.GetColorIndex(lineBackground, RTFWriterDEFAULT_BACKGROUND))
 		this.Write(" ")
 	}
-	var cond916 string
+	var cond915 string
 	if lineBackground == (nil) {
-		cond916 = ""
+		cond915 = ""
 	} else {
-		cond916 = "}"
+		cond915 = "}"
 	}
-	return cond916
+	return cond915
 }
 
 func (this *RTFWriter) writeEmptyLine_() {

@@ -75,9 +75,9 @@ func (this *Relation) RemoveTarget(targetLike AccessibleLike) {
 	var j int32 = 0
 	for i := int32(0); i < int32(len(this.targets)); i++ {
 		if this.targets[i] != target {
-			t831 := j
+			t948 := j
 			j++
-			newTargets[t831] = this.targets[i]
+			newTargets[t948] = this.targets[i]
 		}
 	}
 	this.targets = newTargets

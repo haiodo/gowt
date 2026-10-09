@@ -146,8 +146,8 @@ func (this *SessionManagerDBus) HandleEndSession() {
 }
 
 func (this *SessionManagerDBus) HandleStop() {
-	for _, elem858 := range this.listeners.ToArray() {
-		listener := jrt.Cast[SessionManagerDBus_IListener](elem858)
+	for _, elem857 := range this.listeners.ToArray() {
+		listener := jrt.Cast[SessionManagerDBus_IListener](elem857)
 		listener.Stop()
 	}
 }

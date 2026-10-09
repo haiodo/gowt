@@ -104,7 +104,7 @@ func (this *TextTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckText(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	var utf8 []int8 = gtk.ConverterWcsToMbcs(string_, true)
 	if gtk.OSIsX11() && transferData.Type == int64(TextTransferCOMPOUND_TEXT_ID) {
 		var encoding []int64 = make([]int64, 1)
@@ -154,7 +154,7 @@ func (this *TextTransfer) JavaToNativeGTK4(object any, transferDataLike Transfer
 	if !this.CheckText(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	this.ByteArrayTransfer.javaToNative_(gtk.ConverterWcsToMbcs(object.(string), false), transferData)
+	this.ByteArrayTransfer.javaToNative_(gtk.ConverterWcsToMbcs(jrt.Cast[string](object), false), transferData)
 }
 
 func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
@@ -178,13 +178,13 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 	var unicode []uint16 = gtk.ConverterMbcsToWcs(utf8)
 	var string_ string = string(utf16.Decode(unicode))
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond784 any
+	var cond905 any
 	if end == -1 {
-		cond784 = string_
+		cond905 = string_
 	} else {
-		cond784 = jrt.Substring(string_, 0, end)
+		cond905 = jrt.Substring(string_, 0, end)
 	}
-	return cond784
+	return cond905
 }
 
 func (this *TextTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) any {
@@ -194,8 +194,8 @@ func (this *TextTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) an
 	}
 	_ = transferData
 	var buffer any = this.ByteArrayTransfer.nativeToJava_(transferData)
-	bytes, ok785 := buffer.([]int8)
-	if ok785 {
+	bytes, ok906 := buffer.([]int8)
+	if ok906 {
 		return string(utf16.Decode(gtk.ConverterMbcsToWcs(bytes)))
 	}
 	return nil
@@ -222,8 +222,8 @@ func (this *TextTransfer) getTypeNames_() []string {
 }
 
 func (this *TextTransfer) CheckText(object any) bool {
-	_, ok787 := object.(string)
-	return (ok787 && !(len((object.(string))) == 0))
+	_, ok908 := object.(string)
+	return (ok908 && !(len((jrt.Cast[string](object))) == 0))
 }
 
 func (this *TextTransfer) validate_(object any) bool {

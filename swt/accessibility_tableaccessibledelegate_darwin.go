@@ -39,45 +39,45 @@ func (this *TableAccessibleDelegate) initTableAccessibleDelegate(accessible *Acc
 	this.childColumnToIdMap = jrt.NewMap()
 	this.childRowToIdMap = jrt.NewMap()
 	this.tableAccessible = accessible
-	anon842 := &TableAccessibleDelegateAnon1{}
-	anon842.initAccessibleControlAdapter()
-	anon842.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon959 := &TableAccessibleDelegateAnon1{}
+	anon959.initAccessibleControlAdapter()
+	anon959.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = this.childColumnToIdMap.Size() + this.childRowToIdMap.Size()
 		if this.childColumnToIdMap.Size() > 1 {
 			e.Detail++
 		}
 	}
-	anon842.fnGetChildren = func(e *AccessibleControlEvent) {
+	anon959.fnGetChildren = func(e *AccessibleControlEvent) {
 		var childCount int32 = this.childColumnToIdMap.Size() + this.childRowToIdMap.Size()
 		if this.childColumnToIdMap.Size() > 1 {
 			childCount++
 		}
 		var children []*Accessible = make([]*Accessible, childCount)
 		var childIndex int32 = 0
-		for _, elem843 := range this.childRowToIdMap.Values().ToArray() {
-			row := jrt.Cast[*AccessibleTableRow](elem843)
-			t844 := childIndex
+		for _, elem960 := range this.childRowToIdMap.Values().ToArray() {
+			row := jrt.Cast[*AccessibleTableRow](elem960)
+			t961 := childIndex
 			childIndex++
-			children[t844] = upcastAccessibleTableRowToAccessible(row)
+			children[t961] = upcastAccessibleTableRowToAccessible(row)
 		}
-		for _, elem845 := range this.childColumnToIdMap.Values().ToArray() {
-			col := jrt.Cast[*AccessibleTableColumn](elem845)
-			t846 := childIndex
+		for _, elem962 := range this.childColumnToIdMap.Values().ToArray() {
+			col := jrt.Cast[*AccessibleTableColumn](elem962)
+			t963 := childIndex
 			childIndex++
-			children[t846] = upcastAccessibleTableColumnToAccessible(col)
+			children[t963] = upcastAccessibleTableColumnToAccessible(col)
 		}
 		if this.childColumnToIdMap.Size() > 1 {
 			children[childIndex] = upcastAccessibleTableHeaderToAccessible(this.HeaderAccessible())
 		}
 		e.Children = upcastArrAccessibleToany(children)
 	}
-	anon842.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
+	anon959.fnGetChildAtPoint = func(e *AccessibleControlEvent) {
 		var testPoint cocoa.NSPoint = cocoa.NSPoint{}
 		testPoint.X = float64(e.X)
 		var primaryMonitor *Monitor = DisplayGetCurrent().GetPrimaryMonitor()
 		testPoint.Y = float64(primaryMonitor.GetBounds().Height - e.Y)
-		for _, elem847 := range this.childRowToIdMap.Values().ToArray() {
-			row := jrt.Cast[*AccessibleTableRow](elem847)
+		for _, elem964 := range this.childRowToIdMap.Values().ToArray() {
+			row := jrt.Cast[*AccessibleTableRow](elem964)
 			var locationValue *cocoa.NSValue = cocoa.NewNSValueOverload1(row.GetPositionAttribute(ACCCHILDID_SELF).Id)
 			var location cocoa.NSPoint = locationValue.PointValue()
 			var sizeValue *cocoa.NSValue = cocoa.NewNSValueOverload2(row.GetSizeAttribute(ACCCHILDID_SELF))
@@ -91,9 +91,9 @@ func (this *TableAccessibleDelegate) initTableAccessibleDelegate(accessible *Acc
 			}
 		}
 	}
-	anon842.fnGetState = func(e *AccessibleControlEvent) {
+	anon959.fnGetState = func(e *AccessibleControlEvent) {
 		var state int32 = ACCSTATE_NORMAL | ACCSTATE_FOCUSABLE | ACCSTATE_SELECTABLE
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon842.AccessibleControlAdapter)
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon959.AccessibleControlAdapter)
 		for i := int32(0); i < this.tableAccessible.accessibleTableListeners.Size(); i++ {
 			var listener AccessibleTableListener = jrt.Cast[AccessibleTableListener](this.tableAccessible.accessibleTableListeners.Get(i))
 			listener.GetSelectedRows(event)
@@ -113,27 +113,27 @@ func (this *TableAccessibleDelegate) initTableAccessibleDelegate(accessible *Acc
 		}
 		e.Detail = state
 	}
-	this.tableAccessible.AddAccessibleControlListener(anon842)
-	anon848 := &TableAccessibleDelegateAnon2{}
-	anon848.initAccessibleTableAdapter()
-	anon848.fnGetColumnCount = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
+	this.tableAccessible.AddAccessibleControlListener(anon959)
+	anon965 := &TableAccessibleDelegateAnon2{}
+	anon965.initAccessibleTableAdapter()
+	anon965.fnGetColumnCount = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
 		for i := int32(0); i < this.tableAccessible.accessibleTableListeners.Size(); i++ {
 			var listener AccessibleTableListener = jrt.Cast[AccessibleTableListener](this.tableAccessible.accessibleTableListeners.Get(i))
-			if listener != anon848 {
+			if listener != anon965 {
 				listener.GetColumnCount(event)
 			}
 		}
 		e.Count = event.Count
 	}
-	anon848.fnGetColumn = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
-		func() any { _ = []any{event}; panic("j2go: unresolved call getColumns") }()
+	anon965.fnGetColumn = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
+		anon965.fnGetColumns(event)
 		e.Accessible = event.Accessibles[e.Column]
 	}
-	anon848.fnGetColumns = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
-		func() any { _ = []any{event}; panic("j2go: unresolved call getColumnCount") }()
+	anon965.fnGetColumns = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
+		anon965.fnGetColumnCount(event)
 		if event.Count != this.childColumnToIdMap.Size() {
 			this.childColumnToIdMap.Clear()
 		}
@@ -153,33 +153,33 @@ func (this *TableAccessibleDelegate) initTableAccessibleDelegate(accessible *Acc
 		}
 		e.Accessibles = accessibles
 	}
-	anon848.fnGetColumnHeader = func(e *AccessibleTableEvent) {
-		var cond849 *Accessible
+	anon965.fnGetColumnHeader = func(e *AccessibleTableEvent) {
+		var cond966 *Accessible
 		if this.childColumnToIdMap.Size() > 1 {
-			cond849 = upcastAccessibleTableHeaderToAccessible(this.HeaderAccessible())
+			cond966 = upcastAccessibleTableHeaderToAccessible(this.HeaderAccessible())
 		} else {
-			cond849 = nil
+			cond966 = nil
 		}
-		e.Accessible = (cond849)
+		e.Accessible = (cond966)
 	}
-	anon848.fnGetRowCount = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
+	anon965.fnGetRowCount = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
 		for i := int32(0); i < this.tableAccessible.accessibleTableListeners.Size(); i++ {
 			var listener AccessibleTableListener = jrt.Cast[AccessibleTableListener](this.tableAccessible.accessibleTableListeners.Get(i))
-			if listener != anon848 {
+			if listener != anon965 {
 				listener.GetRowCount(event)
 			}
 		}
 		e.Count = event.Count
 	}
-	anon848.fnGetRow = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
-		func() any { _ = []any{event}; panic("j2go: unresolved call getRows") }()
+	anon965.fnGetRow = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
+		anon965.fnGetRows(event)
 		e.Accessible = event.Accessibles[e.Row]
 	}
-	anon848.fnGetRows = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon848.AccessibleTableAdapter)
-		func() any { _ = []any{event}; panic("j2go: unresolved call getRowCount") }()
+	anon965.fnGetRows = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon965.AccessibleTableAdapter)
+		anon965.fnGetRowCount(event)
 		if event.Count != this.childRowToIdMap.Size() {
 			this.childRowToIdMap.Clear()
 		}
@@ -199,7 +199,7 @@ func (this *TableAccessibleDelegate) initTableAccessibleDelegate(accessible *Acc
 		}
 		e.Accessibles = accessibles
 	}
-	this.tableAccessible.AddAccessibleTableListener(anon848)
+	this.tableAccessible.AddAccessibleTableListener(anon965)
 }
 
 func (this *TableAccessibleDelegate) ChildColumnToOs(childID int32) *Accessible {
@@ -235,8 +235,8 @@ func (this *TableAccessibleDelegate) HeaderAccessible() *AccessibleTableHeader {
 
 func (this *TableAccessibleDelegate) Release() {
 	if this.childRowToIdMap != (nil) {
-		for _, elem850 := range this.childRowToIdMap.Values().ToArray() {
-			delegate := jrt.Cast[*AccessibleTableRow](elem850)
+		for _, elem967 := range this.childRowToIdMap.Values().ToArray() {
+			delegate := jrt.Cast[*AccessibleTableRow](elem967)
 			var childDelegate *SWTAccessibleDelegate = delegate.delegate
 			if childDelegate.NSObject != (nil) {
 				childDelegate.Internal_dispose_SWTAccessibleDelegate()
@@ -247,8 +247,8 @@ func (this *TableAccessibleDelegate) Release() {
 		this.childRowToIdMap = nil
 	}
 	if this.childColumnToIdMap != (nil) {
-		for _, elem851 := range this.childColumnToIdMap.Values().ToArray() {
-			delegate := jrt.Cast[*AccessibleTableColumn](elem851)
+		for _, elem968 := range this.childColumnToIdMap.Values().ToArray() {
+			delegate := jrt.Cast[*AccessibleTableColumn](elem968)
 			var childDelegate *SWTAccessibleDelegate = delegate.delegate
 			if childDelegate.NSObject != (nil) {
 				childDelegate.Internal_dispose_SWTAccessibleDelegate()

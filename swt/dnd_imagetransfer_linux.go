@@ -267,8 +267,8 @@ func (this *ImageTransfer) getTypeNames_() []string {
 }
 
 func (this *ImageTransfer) CheckImage(object any) bool {
-	_, ok779 := imageDataImplAsImageData(object)
-	if !(ok779) {
+	_, ok900 := imageDataImplAsImageData(object)
+	if !(ok900) {
 		return false
 	}
 	return true

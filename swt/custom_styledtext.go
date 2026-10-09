@@ -202,13 +202,13 @@ func (this *StyledText) initStyledText(parent *Composite, style int32) {
 	if (style & READ_ONLY) != 0 {
 		this.SetEditable(false)
 	}
-	var cond810 int32
+	var cond809 int32
 	if this.IsBidiCaret() {
-		cond810 = StyledTextBIDI_CARET_WIDTH - 1
+		cond809 = StyledTextBIDI_CARET_WIDTH - 1
 	} else {
-		cond810 = 0
+		cond809 = 0
 	}
-	this.rightMargin = cond810
+	this.rightMargin = cond809
 	this.leftMargin = this.rightMargin
 	if (style&SINGLE) != 0 && (style&BORDER) != 0 {
 		this.bottomMargin = 2
@@ -543,19 +543,19 @@ func (this *StyledText) computeSizeWHintHHintChanged_(wHint int32, hHint int32, 
 			var layout *TextLayout = this.renderer.GetTextLayout(lineIndex)
 			var wrapWidth int32 = layout.GetWidth()
 			if this.wordWrap {
-				var cond811 int32
+				var cond810 int32
 				if wHint == 0 {
-					cond811 = 1
+					cond810 = 1
 				} else {
-					var cond812 int32
+					var cond811 int32
 					if wHint == DEFAULT {
-						cond812 = DEFAULT
+						cond811 = DEFAULT
 					} else {
-						cond812 = int32(math.Max(float64(1), float64(wHint-this.leftMargin-this.rightMargin)))
+						cond811 = int32(math.Max(float64(1), float64(wHint-this.leftMargin-this.rightMargin)))
 					}
-					cond811 = cond812
+					cond810 = cond811
 				}
-				layout.SetWidth(cond811)
+				layout.SetWidth(cond810)
 			}
 			var rect *Rectangle = layout.GetBounds()
 			height += rect.Height
@@ -602,8 +602,8 @@ func (this *StyledText) CopySelection(type_ int32) bool {
 	if type_ != DNDCLIPBOARD && type_ != DNDSELECTION_CLIPBOARD {
 		return false
 	}
-	var tret813 bool
-	tretd814 := false
+	var tret812 bool
+	tretd813 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -632,9 +632,9 @@ func (this *StyledText) CopySelection(type_ int32) bool {
 				var plainTextTransfer *TextTransfer = TextTransferGetInstance()
 				var data []any = []any{text}
 				var types []*Transfer = []*Transfer{upcastTextTransferToTransfer(plainTextTransfer)}
-				this.clipboard.SetContents(data, types, type_)
-				tret813 = true
-				tretd814 = true
+				this.clipboard.SetContentsDataDataTypesClipboards(data, types, type_)
+				tret812 = true
+				tretd813 = true
 				return
 			}
 		} else {
@@ -644,35 +644,35 @@ func (this *StyledText) CopySelection(type_ int32) bool {
 				for i := int32(0); i < int32(len(ranges)); i += 2 {
 					var offset int32 = ranges[i]
 					var length int32 = ranges[i+1]
-					var cond815 string
+					var cond814 string
 					if length == 0 {
-						cond815 = ""
+						cond814 = ""
 					} else {
-						cond815 = this.GetTextStartEnd(offset, offset+length-1)
+						cond814 = this.GetTextStartEnd(offset, offset+length-1)
 					}
-					text.Append(cond815)
+					text.Append(cond814)
 					text.Append(StyledTextPlatformLineDelimiter)
 				}
 				text.Delete(text.Length()-jrt.StringLength(StyledTextPlatformLineDelimiter), text.Length())
 				if text.Length() > 0 {
-					this.clipboard.SetContents([]any{text.ToString()}, []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, type_)
-					tret813 = true
-					tretd814 = true
+					this.clipboard.SetContentsDataDataTypesClipboards([]any{text.ToString()}, []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, type_)
+					tret812 = true
+					tretd813 = true
 					return
 				}
 			} else {
 				var length int32 = this.selection[0].Y - this.selection[0].X
 				if length > 0 {
 					this.SetClipboardContent(this.selection[0].X, length, type_)
-					tret813 = true
-					tretd814 = true
+					tret812 = true
+					tretd813 = true
 					return
 				}
 			}
 		}
 	}()
-	if tretd814 {
-		return tret813
+	if tretd813 {
+		return tret812
 	}
 	return false
 }
@@ -725,22 +725,22 @@ func (this *StyledText) GetAvailableHeightBellow(height int32) int32 {
 	var lineIndex int32 = partialBottomIndex + 1
 	var lineCount int32 = this.content.GetLineCount()
 	for height > availableHeight && lineIndex < lineCount {
-		t816 := lineIndex
+		t815 := lineIndex
 		lineIndex++
-		availableHeight += this.renderer.GetLineHeightLineIndex(t816)
+		availableHeight += this.renderer.GetLineHeightLineIndex(t815)
 	}
 	return int32(math.Min(float64(height), float64(availableHeight)))
 }
 
 func (this *StyledText) GetMarginColor() *Color {
 	this.CheckWidget()
-	var cond817 *Color
+	var cond816 *Color
 	if this.marginColor != (nil) {
-		cond817 = this.marginColor
+		cond816 = this.marginColor
 	} else {
-		cond817 = this.impl.getBackground_()
+		cond816 = this.impl.getBackground_()
 	}
-	return cond817
+	return cond816
 }
 
 func (this *StyledText) GetModelDelimitedText(text string) string {
@@ -979,8 +979,8 @@ func (this *StyledText) DoAutoScrollDirectionDistance(direction int32, distance 
 	var timer jrt.Runnable = nil
 	var display *Display = this.GetDisplay()
 	if direction == UP {
-		anon818 := jrt.NewRunnable(nil)
-		anon818.Fn = func() {
+		anon817 := jrt.NewRunnable(nil)
+		anon817.Fn = func() {
 			if this.IsDisposed() {
 				return
 			}
@@ -996,16 +996,16 @@ func (this *StyledText) DoAutoScrollDirectionDistance(direction int32, distance 
 				} else {
 					this.DoSelectionPageUp(this.autoScrollDistance)
 				}
-				display.TimerExec(StyledTextV_SCROLL_RATE, anon818)
+				display.TimerExec(StyledTextV_SCROLL_RATE, anon817)
 			}
 		}
-		timer = anon818
+		timer = anon817
 		this.autoScrollDirection = direction
 		display.TimerExec(StyledTextV_SCROLL_RATE, timer)
 	} else {
 		if direction == DOWN {
-			anon819 := jrt.NewRunnable(nil)
-			anon819.Fn = func() {
+			anon818 := jrt.NewRunnable(nil)
+			anon818.Fn = func() {
 				if this.IsDisposed() {
 					return
 				}
@@ -1022,16 +1022,16 @@ func (this *StyledText) DoAutoScrollDirectionDistance(direction int32, distance 
 					} else {
 						this.DoSelectionPageDown(this.autoScrollDistance)
 					}
-					display.TimerExec(StyledTextV_SCROLL_RATE, anon819)
+					display.TimerExec(StyledTextV_SCROLL_RATE, anon818)
 				}
 			}
-			timer = anon819
+			timer = anon818
 			this.autoScrollDirection = direction
 			display.TimerExec(StyledTextV_SCROLL_RATE, timer)
 		} else {
 			if direction == STCOLUMN_NEXT {
-				anon820 := jrt.NewRunnable(nil)
-				anon820.Fn = func() {
+				anon819 := jrt.NewRunnable(nil)
+				anon819.Fn = func() {
 					if this.IsDisposed() {
 						return
 					}
@@ -1049,16 +1049,16 @@ func (this *StyledText) DoAutoScrollDirectionDistance(direction int32, distance 
 							this.SetMouseWordSelectionAnchor()
 							this.DoMouseSelection()
 						}
-						display.TimerExec(StyledTextH_SCROLL_RATE, anon820)
+						display.TimerExec(StyledTextH_SCROLL_RATE, anon819)
 					}
 				}
-				timer = anon820
+				timer = anon819
 				this.autoScrollDirection = direction
 				display.TimerExec(StyledTextH_SCROLL_RATE, timer)
 			} else {
 				if direction == STCOLUMN_PREVIOUS {
-					anon821 := jrt.NewRunnable(nil)
-					anon821.Fn = func() {
+					anon820 := jrt.NewRunnable(nil)
+					anon820.Fn = func() {
 						if this.IsDisposed() {
 							return
 						}
@@ -1075,10 +1075,10 @@ func (this *StyledText) DoAutoScrollDirectionDistance(direction int32, distance 
 								this.SetMouseWordSelectionAnchor()
 								this.DoMouseSelection()
 							}
-							display.TimerExec(StyledTextH_SCROLL_RATE, anon821)
+							display.TimerExec(StyledTextH_SCROLL_RATE, anon820)
 						}
 					}
-					timer = anon821
+					timer = anon820
 					this.autoScrollDirection = direction
 					display.TimerExec(StyledTextH_SCROLL_RATE, timer)
 				}
@@ -1120,13 +1120,13 @@ func (this *StyledText) DoBackspace() {
 						}
 					}
 					var layout *TextLayout = this.renderer.GetTextLayout(lineIndex)
-					var cond822 int32
+					var cond821 int32
 					if isSurrogate {
-						cond822 = MOVEMENT_CLUSTER
+						cond821 = MOVEMENT_CLUSTER
 					} else {
-						cond822 = MOVEMENT_CHAR
+						cond821 = MOVEMENT_CHAR
 					}
-					var start int32 = layout.GetPreviousOffset(caretOffset-lineOffset, cond822)
+					var start int32 = layout.GetPreviousOffset(caretOffset-lineOffset, cond821)
 					this.renderer.DisposeTextLayout(layout)
 					event.Start = start + lineOffset
 					event.End = caretOffset
@@ -1226,13 +1226,13 @@ func (this *StyledText) DoBlockWord(next bool) {
 		this.SetBlockSelectionOffset(offset, true)
 		this.ShowCaret()
 	} else {
-		var cond823 int32
+		var cond822 int32
 		if next {
-			cond823 = this.renderer.averageCharWidth
+			cond822 = this.renderer.averageCharWidth
 		} else {
-			cond823 = -this.renderer.averageCharWidth
+			cond822 = -this.renderer.averageCharWidth
 		}
-		var width int32 = (cond823) * 6
+		var width int32 = (cond822) * 6
 		var maxWidth int32 = int32(math.Max(float64(this.clientAreaWidth-this.rightMargin-this.leftMargin), float64(this.renderer.GetWidth())))
 		x = int32(math.Max(float64(0), float64(int32(math.Min(float64(this.blockXLocation+width), float64(maxWidth)))))) - this.horizontalScrollOffset
 		this.SetBlockSelectionLocation(x, y, true)
@@ -1307,13 +1307,13 @@ func (this *StyledText) DoBlockLineHorizontal(end bool) {
 		this.ShowCaret()
 	} else {
 		var maxWidth int32 = int32(math.Max(float64(this.clientAreaWidth-this.rightMargin-this.leftMargin), float64(this.renderer.GetWidth())))
-		var cond824 int32
+		var cond823 int32
 		if end {
-			cond824 = maxWidth
+			cond823 = maxWidth
 		} else {
-			cond824 = 0
+			cond823 = 0
 		}
-		x = (cond824) - this.horizontalScrollOffset
+		x = (cond823) - this.horizontalScrollOffset
 		this.SetBlockSelectionLocation(x, y, true)
 		var rect *Rectangle = NewRectangle(x, y, 0, 0)
 		this.ShowLocation(rect, true)
@@ -1519,13 +1519,13 @@ func (this *StyledText) DoLineDown(select_ bool) {
 		}
 	}
 	var hitLastLine bool = this.content.GetLineAtOffset(newCaretOffsets[int32(len(newCaretOffsets))-1]) == lineCount-1
-	var cond825 int32
+	var cond824 int32
 	if hitLastLine {
-		cond825 = DEFAULT
+		cond824 = DEFAULT
 	} else {
-		cond825 = alignment[0]
+		cond824 = alignment[0]
 	}
-	this.SetCaretOffsets(newCaretOffsets, cond825)
+	this.SetCaretOffsets(newCaretOffsets, cond824)
 	var oldColumnX int32 = this.columnX
 	var oldHScrollOffset int32 = this.horizontalScrollOffset
 	if select_ {
@@ -1622,13 +1622,13 @@ func (this *StyledText) DoLineUp(select_ bool) {
 			newCaretOffsets[i] = this.GetOffsetAtPointXYLineIndexAlignment(x, y, caretLine, alignment)
 		}
 	}
-	var cond826 int32
+	var cond825 int32
 	if newCaretOffsets[0] == 0 {
-		cond826 = DEFAULT
+		cond825 = DEFAULT
 	} else {
-		cond826 = alignment[0]
+		cond825 = alignment[0]
 	}
-	this.SetCaretOffsets(newCaretOffsets, cond826)
+	this.SetCaretOffsets(newCaretOffsets, cond825)
 	var oldColumnX int32 = this.columnX
 	var oldHScrollOffset int32 = this.horizontalScrollOffset
 	if select_ {
@@ -1803,13 +1803,13 @@ func (this *StyledText) DoPageDown(select_ bool, height int32) {
 		var caretLine int32 = this.GetFirstCaretLine()
 		if caretLine < lineCount-1 {
 			var lineHeight int32 = this.renderer.GetLineHeight()
-			var cond827 int32
+			var cond826 int32
 			if height == -1 {
-				cond827 = this.clientAreaHeight
+				cond826 = this.clientAreaHeight
 			} else {
-				cond827 = height
+				cond826 = height
 			}
-			var lines int32 = (cond827) / lineHeight
+			var lines int32 = (cond826) / lineHeight
 			var scrollLines int32 = int32(math.Min(float64(lineCount-caretLine-1), float64(lines)))
 			scrollLines = int32(math.Max(float64(1), float64(scrollLines)))
 			var alignment []int32 = make([]int32, 1)
@@ -1990,13 +1990,13 @@ func (this *StyledText) DoPageUp(select_ bool, height int32) {
 		var caretLine int32 = this.GetFirstCaretLine()
 		if caretLine > 0 {
 			var lineHeight int32 = this.renderer.GetLineHeight()
-			var cond828 int32
+			var cond827 int32
 			if height == -1 {
-				cond828 = this.clientAreaHeight
+				cond827 = this.clientAreaHeight
 			} else {
-				cond828 = height
+				cond827 = height
 			}
-			var lines int32 = (cond828) / lineHeight
+			var lines int32 = (cond827) / lineHeight
 			var scrollLines int32 = int32(math.Max(float64(1), float64(int32(math.Min(float64(caretLine), float64(lines))))))
 			caretLine -= scrollLines
 			var alignment []int32 = make([]int32, 1)
@@ -2237,25 +2237,25 @@ func (this *StyledText) DoSelectionCursorPrevious() {
 }
 
 func (this *StyledText) DoSelectionLineDown() {
-	cond829 := this.GetPointAtOffset(this.caretOffsets[0]).X
-	this.columnX = cond829
-	var oldColumnX int32 = cond829
+	cond828 := this.GetPointAtOffset(this.caretOffsets[0]).X
+	this.columnX = cond828
+	var oldColumnX int32 = cond828
 	this.DoLineDown(true)
 	this.columnX = oldColumnX
 }
 
 func (this *StyledText) DoSelectionLineUp() {
-	cond830 := this.GetPointAtOffset(this.caretOffsets[0]).X
-	this.columnX = cond830
-	var oldColumnX int32 = cond830
+	cond829 := this.GetPointAtOffset(this.caretOffsets[0]).X
+	this.columnX = cond829
+	var oldColumnX int32 = cond829
 	this.DoLineUp(true)
 	this.columnX = oldColumnX
 }
 
 func (this *StyledText) DoSelectionPageDown(pixels int32) {
-	cond831 := this.GetPointAtOffset(this.caretOffsets[0]).X
-	this.columnX = cond831
-	var oldColumnX int32 = cond831
+	cond830 := this.GetPointAtOffset(this.caretOffsets[0]).X
+	this.columnX = cond830
+	var oldColumnX int32 = cond830
 	this.DoPageDown(true, pixels)
 	this.columnX = oldColumnX
 }
@@ -2264,9 +2264,9 @@ func (this *StyledText) DoSelectionPageUp(pixels int32) {
 	if int32(len(this.caretOffsets)) > 1 {
 		return
 	}
-	cond832 := this.GetPointAtOffset(this.caretOffsets[0]).X
-	this.columnX = cond832
-	var oldColumnX int32 = cond832
+	cond831 := this.GetPointAtOffset(this.caretOffsets[0]).X
+	this.columnX = cond831
+	var oldColumnX int32 = cond831
 	this.DoPageUp(true, pixels)
 	this.columnX = oldColumnX
 }
@@ -2525,7 +2525,7 @@ func (this *StyledText) GetCaretWidth() int32 {
 
 func (this *StyledText) GetClipboardContent(clipboardType int32) any {
 	var plainTextTransfer *TextTransfer = TextTransferGetInstance()
-	return this.clipboard.GetContents(upcastTextTransferToTransfer(plainTextTransfer), clipboardType)
+	return this.clipboard.GetContentsTransferClipboards(upcastTextTransferToTransfer(plainTextTransfer), clipboardType)
 }
 
 func (this *StyledText) GetClusterNext(offset int32, lineIndex int32) int32 {
@@ -2603,13 +2603,13 @@ func (this *StyledText) GetJustify() bool {
 func (this *StyledText) GetKeyBinding(key int32) int32 {
 	this.CheckWidget()
 	var action any = this.keyActionMap.Get(int32(key))
-	var cond833 int32
+	var cond832 int32
 	if jrt.IsNil(action) {
-		cond833 = NULL
+		cond832 = NULL
 	} else {
-		cond833 = jrt.Cast[int32](action)
+		cond832 = jrt.Cast[int32](action)
 	}
-	return cond833
+	return cond832
 }
 
 func (this *StyledText) GetCharCount() int32 {
@@ -2646,13 +2646,13 @@ func (this *StyledText) GetLineBackground(index int32) *Color {
 	if index < 0 || index > this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond834 *Color
+	var cond833 *Color
 	if this.IsListening(STLineGetBackground) {
-		cond834 = nil
+		cond833 = nil
 	} else {
-		cond834 = this.renderer.GetLineBackground(index, nil)
+		cond833 = this.renderer.GetLineBackground(index, nil)
 	}
-	return cond834
+	return cond833
 }
 
 func (this *StyledText) GetLineBullet(index int32) *Bullet {
@@ -2660,13 +2660,13 @@ func (this *StyledText) GetLineBullet(index int32) *Bullet {
 	if index < 0 || index > this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond835 *Bullet
+	var cond834 *Bullet
 	if this.IsListening(STLineGetStyle) {
-		cond835 = nil
+		cond834 = nil
 	} else {
-		cond835 = this.renderer.GetLineBullet(index, nil)
+		cond834 = this.renderer.GetLineBullet(index, nil)
 	}
-	return cond835
+	return cond834
 }
 
 func (this *StyledText) GetLineBackgroundData(lineOffset int32, line string) *StyledTextEvent {
@@ -2681,13 +2681,13 @@ func (this *StyledText) GetLineCount() int32 {
 func (this *StyledText) GetLineCountWhole() int32 {
 	if this.IsFixedLineHeight() {
 		var lineHeight int32 = this.renderer.GetLineHeight()
-		var cond836 int32
+		var cond835 int32
 		if lineHeight != 0 {
-			cond836 = this.clientAreaHeight / lineHeight
+			cond835 = this.clientAreaHeight / lineHeight
 		} else {
-			cond836 = 1
+			cond835 = 1
 		}
-		return cond836
+		return cond835
 	}
 	return this.GetBottomIndex() - this.topIndex + 1
 }
@@ -2724,13 +2724,13 @@ func (this *StyledText) GetLineIndent(index int32) int32 {
 	if index < 0 || index > this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond837 int32
+	var cond836 int32
 	if this.IsListening(STLineGetStyle) {
-		cond837 = 0
+		cond836 = 0
 	} else {
-		cond837 = this.renderer.GetLineIndent(index, this.indent)
+		cond836 = this.renderer.GetLineIndent(index, this.indent)
 	}
-	return cond837
+	return cond836
 }
 
 func (this *StyledText) GetLineVerticalIndent(index int32) int32 {
@@ -2738,13 +2738,13 @@ func (this *StyledText) GetLineVerticalIndent(index int32) int32 {
 	if index < 0 || index >= this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond838 int32
+	var cond837 int32
 	if this.IsListening(STLineGetStyle) {
-		cond838 = 0
+		cond837 = 0
 	} else {
-		cond838 = this.renderer.GetLineVerticalIndent(index)
+		cond837 = this.renderer.GetLineVerticalIndent(index)
 	}
-	return cond838
+	return cond837
 }
 
 func (this *StyledText) GetLineJustify(index int32) bool {
@@ -2752,13 +2752,13 @@ func (this *StyledText) GetLineJustify(index int32) bool {
 	if index < 0 || index > this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond839 bool
+	var cond838 bool
 	if this.IsListening(STLineGetStyle) {
-		cond839 = false
+		cond838 = false
 	} else {
-		cond839 = this.renderer.GetLineJustify(index, this.justify)
+		cond838 = this.renderer.GetLineJustify(index, this.justify)
 	}
-	return cond839
+	return cond838
 }
 
 func (this *StyledText) GetLineSpacing() int32 {
@@ -2859,13 +2859,13 @@ func (this *StyledText) GetLineWrapIndent(index int32) int32 {
 	if index < 0 || index > this.content.GetLineCount() {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
-	var cond840 int32
+	var cond839 int32
 	if this.IsListening(STLineGetStyle) {
-		cond840 = 0
+		cond839 = 0
 	} else {
-		cond840 = this.renderer.GetLineWrapIndent(index, this.wrapIndent)
+		cond839 = this.renderer.GetLineWrapIndent(index, this.wrapIndent)
 	}
-	return cond840
+	return cond839
 }
 
 func (this *StyledText) GetLeftMargin() int32 {
@@ -2924,13 +2924,13 @@ func (this *StyledText) GetOffsetAtPoint(pointLike PointLike) int32 {
 	}
 	var trailing []int32 = make([]int32, 1)
 	var offset int32 = this.GetOffsetAtPointXYTrailingInTextOnly(point.X, point.Y, trailing, true)
-	var cond841 int32
+	var cond840 int32
 	if offset != -1 {
-		cond841 = offset + trailing[0]
+		cond840 = offset + trailing[0]
 	} else {
-		cond841 = -1
+		cond840 = -1
 	}
-	return cond841
+	return cond840
 }
 
 func (this *StyledText) GetOffsetAtPointXYAlignment(x int32, y int32, alignment []int32) int32 {
@@ -3033,13 +3033,13 @@ func (this *StyledText) GetPartialTopIndex() int32 {
 		var lineHeight int32 = this.renderer.GetLineHeight()
 		return this.GetVerticalScrollOffset() / lineHeight
 	}
-	var cond842 int32
+	var cond841 int32
 	if this.topIndexY <= 0 {
-		cond842 = this.topIndex
+		cond841 = this.topIndex
 	} else {
-		cond842 = this.topIndex - 1
+		cond841 = this.topIndex - 1
 	}
-	return cond842
+	return cond841
 }
 
 func (this *StyledText) GetPlatformDelimitedText(writerLike TextWriterLike) string {
@@ -3126,24 +3126,24 @@ func (this *StyledText) GetSelectionRanges() []int32 {
 				start = end
 				end = temp
 			}
+			t842 := index
+			index++
+			ranges[t842] = start
 			t843 := index
 			index++
-			ranges[t843] = start
-			t844 := index
-			index++
-			ranges[t844] = end - start
+			ranges[t843] = end - start
 		}
 		return ranges
 	}
 	var res []int32 = make([]int32, 2*int32(len(this.selection)))
 	var index int32 = 0
 	for _, p := range this.selection {
+		t844 := index
+		index++
+		res[t844] = p.X
 		t845 := index
 		index++
-		res[t845] = p.X
-		t846 := index
-		index++
-		res[t846] = p.Y - p.X
+		res[t845] = p.Y - p.X
 	}
 	return res
 }
@@ -3205,13 +3205,13 @@ func (this *StyledText) GetBidiSegments(lineOffset int32, line string) *StyledTe
 	var segmentsChars []uint16 = event.SegmentsChars
 	var hasSegmentsChars bool = segmentsChars != (nil)
 	for i := int32(1); i < int32(len(segments)); i++ {
-		var cond847 bool
+		var cond846 bool
 		if hasSegmentsChars {
-			cond847 = segments[i] < segments[i-1]
+			cond846 = segments[i] < segments[i-1]
 		} else {
-			cond847 = segments[i] <= segments[i-1]
+			cond846 = segments[i] <= segments[i-1]
 		}
-		if (cond847) || segments[i] > lineLength {
+		if (cond846) || segments[i] > lineLength {
 			Error(ERROR_INVALID_ARGUMENT)
 		}
 	}
@@ -3479,13 +3479,13 @@ func (this *StyledText) GetCaretDirection() int32 {
 	var offset int32 = this.caretOffsets[0] - lineOffset
 	var lineLength int32 = jrt.StringLength(line)
 	if lineLength == 0 {
-		var cond848 int32
+		var cond847 int32
 		if this.IsMirrored() {
-			cond848 = RIGHT
+			cond847 = RIGHT
 		} else {
-			cond848 = LEFT
+			cond847 = LEFT
 		}
-		return cond848
+		return cond847
 	}
 	if this.caretAlignment == StyledTextPREVIOUS_OFFSET_TRAILING && offset > 0 {
 		offset--
@@ -3497,24 +3497,24 @@ func (this *StyledText) GetCaretDirection() int32 {
 		offset--
 	}
 	if offset == 0 && unicode.IsDigit(rune(utf16.Encode([]rune(line))[offset])) {
-		var cond849 int32
+		var cond848 int32
 		if this.IsMirrored() {
-			cond849 = RIGHT
+			cond848 = RIGHT
 		} else {
-			cond849 = LEFT
+			cond848 = LEFT
 		}
-		return cond849
+		return cond848
 	}
 	var layout *TextLayout = this.renderer.GetTextLayout(caretLine)
 	var level int32 = layout.GetLevel(offset)
 	this.renderer.DisposeTextLayout(layout)
-	var cond850 int32
+	var cond849 int32
 	if (level & 1) != 0 {
-		cond850 = RIGHT
+		cond849 = RIGHT
 	} else {
-		cond850 = LEFT
+		cond849 = LEFT
 	}
-	return cond850
+	return cond849
 }
 
 func (this *StyledText) GetFirstCaretLine() int32 {
@@ -3524,13 +3524,13 @@ func (this *StyledText) GetFirstCaretLine() int32 {
 func (this *StyledText) GetWrapWidth() int32 {
 	if this.wordWrap && !this.IsSingleLine() {
 		var width int32 = this.clientAreaWidth - this.leftMargin - this.rightMargin
-		var cond851 int32
+		var cond850 int32
 		if width > 0 {
-			cond851 = width
+			cond850 = width
 		} else {
-			cond851 = 1
+			cond850 = 1
 		}
-		return cond851
+		return cond850
 	}
 	return -1
 }
@@ -3695,18 +3695,18 @@ func (this *StyledText) InsertBlockSelectionText(text string, fillWithSpaces boo
 	for i := int32(0); i < jrt.StringLength(text); i++ {
 		var ch uint16 = utf16.Encode([]rune(text))[i]
 		if int32(ch) == int32('\u000a') || int32(ch) == int32('\u000d') {
-			t852 := lineCount
+			t851 := lineCount
 			lineCount++
-			lines[t852] = jrt.Substring(text, start, i)
+			lines[t851] = jrt.Substring(text, start, i)
 			if int32(ch) == int32('\u000d') && i+1 < jrt.StringLength(text) && int32(utf16.Encode([]rune(text))[i+1]) == int32('\u000a') {
 				i++
 			}
 			start = i + 1
 		}
 	}
-	t853 := lineCount
+	t852 := lineCount
 	lineCount++
-	lines[t853] = jrt.Substring(text, start, -1)
+	lines[t852] = jrt.Substring(text, start, -1)
 	if fillWithSpaces {
 		var maxLength int32 = 0
 		for _, line := range lines {
@@ -3750,9 +3750,9 @@ func (this *StyledText) InsertBlockSelectionText(text string, fillWithSpaces boo
 	for lineIndex <= lastLine {
 		var string_ string
 		if index < lineCount {
-			t854 := index
+			t853 := index
 			index++
-			string_ = lines[t854]
+			string_ = lines[t853]
 		} else {
 			string_ = ""
 		}
@@ -3763,9 +3763,9 @@ func (this *StyledText) InsertBlockSelectionText(text string, fillWithSpaces boo
 		lineIndex++
 	}
 	for index < lineCount {
-		t855 := index
+		t854 := index
 		index++
-		var lineStart int32 = this.SendTextEvent(left, left, lineIndex, lines[t855], fillWithSpaces)
+		var lineStart int32 = this.SendTextEvent(left, left, lineIndex, lines[t854], fillWithSpaces)
 		if lineIndex == caretLine {
 			start = lineStart
 		}
@@ -3859,17 +3859,17 @@ func (this *StyledText) InsertBlockSelectionTextKeyAction(key uint16, action int
 }
 
 func (this *StyledText) InstallDefaultContent() {
-	anon856 := &StyledTextAnon1{}
-	anon856.fnTextChanging = func(event *TextChangingEvent) {
+	anon855 := &StyledTextAnon1{}
+	anon855.fnTextChanging = func(event *TextChangingEvent) {
 		this.HandleTextChanging(event)
 	}
-	anon856.fnTextChanged = func(event *TextChangedEvent) {
+	anon855.fnTextChanged = func(event *TextChangedEvent) {
 		this.HandleTextChanged(event)
 	}
-	anon856.fnTextSet = func(event *TextChangedEvent) {
+	anon855.fnTextSet = func(event *TextChangedEvent) {
 		this.HandleTextSet(event)
 	}
-	this.textChangeListener = anon856
+	this.textChangeListener = anon855
 	this.content = newDefaultContent()
 	this.content.AddTextChangeListener(this.textChangeListener)
 }
@@ -4458,13 +4458,13 @@ func (this *StyledText) HandlePaint(eventLike EventLike) {
 			}
 		}
 	}
-	var cond857 *Color
+	var cond856 *Color
 	if this.marginColor != (nil) {
-		cond857 = this.marginColor
+		cond856 = this.marginColor
 	} else {
-		cond857 = background
+		cond856 = background
 	}
-	gc.SetBackground(cond857)
+	gc.SetBackground(cond856)
 	if this.topMargin > 0 {
 		this.DrawBackgroundGC(gc, 0, 0, this.clientAreaWidth, this.topMargin)
 	}
@@ -4659,9 +4659,9 @@ func (this *StyledText) HandleVerticalScroll(event *Event) {
 
 func (this *StyledText) InitializeAccessible() {
 	this.acc = this.GetAccessible()
-	anon858 := &StyledTextAnon2{}
-	anon858.initAccessibleAdapter()
-	anon858.fnGetName = func(e *AccessibleEvent) {
+	anon857 := &StyledTextAnon2{}
+	anon857.initAccessibleAdapter()
+	anon857.fnGetName = func(e *AccessibleEvent) {
 		var name string = ""
 		var text string = this.GetAssociatedLabel()
 		if text != jrt.NullString {
@@ -4669,10 +4669,10 @@ func (this *StyledText) InitializeAccessible() {
 		}
 		e.Result = name
 	}
-	anon858.fnGetHelp = func(e *AccessibleEvent) {
+	anon857.fnGetHelp = func(e *AccessibleEvent) {
 		e.Result = this.impl.getToolTipText_()
 	}
-	anon858.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
+	anon857.fnGetKeyboardShortcut = func(e *AccessibleEvent) {
 		var shortcut string = ""
 		var text string = this.GetAssociatedLabel()
 		if text != jrt.NullString {
@@ -4683,24 +4683,24 @@ func (this *StyledText) InitializeAccessible() {
 		}
 		e.Result = shortcut
 	}
-	this.accAdapter = &anon858.AccessibleAdapter
+	this.accAdapter = &anon857.AccessibleAdapter
 	this.acc.AddAccessibleListener(this.accAdapter)
-	anon859 := &StyledTextAnon3{}
-	anon859.impl = anon859
-	anon859.initAccessibleTextExtendedAdapter()
-	anon859.fnGetCaretOffset = func(e *AccessibleTextEvent) {
+	anon858 := &StyledTextAnon3{}
+	anon858.impl = anon858
+	anon858.initAccessibleTextExtendedAdapter()
+	anon858.fnGetCaretOffset = func(e *AccessibleTextEvent) {
 		e.Offset = this.GetCaretOffset()
 	}
-	anon859.fnSetCaretOffset = func(e *AccessibleTextEvent) {
+	anon858.fnSetCaretOffset = func(e *AccessibleTextEvent) {
 		this.SetCaretOffset(e.Offset)
 		e.Result = ACCOK
 	}
-	anon859.fnGetSelectionRange = func(e *AccessibleTextEvent) {
+	anon858.fnGetSelectionRange = func(e *AccessibleTextEvent) {
 		var selection *Point = this.GetSelectionRange()
 		e.Offset = selection.X
 		e.Length = selection.Y
 	}
-	anon859.fnAddSelection = func(e *AccessibleTextEvent) {
+	anon858.fnAddSelection = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = st.GetSelection()
 		if point.X == point.Y {
@@ -4712,13 +4712,13 @@ func (this *StyledText) InitializeAccessible() {
 			e.Result = ACCOK
 		}
 	}
-	anon859.fnGetSelection = func(e *AccessibleTextEvent) {
+	anon858.fnGetSelection = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if st.blockSelection && st.blockXLocation != -1 {
 			var rect *Rectangle = st.GetBlockSelectionPosition()
 			var lineIndex int32 = rect.Y + e.Index
 			var linePixel int32 = st.GetLinePixel(lineIndex)
-			e.Ranges = anon859.fnGetRangesLocal1(rect.X, linePixel, rect.Width, linePixel)
+			e.Ranges = anon858.fnGetRangesLocal1(rect.X, linePixel, rect.Width, linePixel)
 			if int32(len(e.Ranges)) > 0 {
 				e.Start = e.Ranges[0]
 				e.End = e.Ranges[int32(len(e.Ranges))-1]
@@ -4736,7 +4736,7 @@ func (this *StyledText) InitializeAccessible() {
 			}
 		}
 	}
-	anon859.fnGetSelectionCount = func(e *AccessibleTextEvent) {
+	anon858.fnGetSelectionCount = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if st.blockSelection && st.blockXLocation != -1 {
 			var rect *Rectangle = st.GetBlockSelectionPosition()
@@ -4750,7 +4750,7 @@ func (this *StyledText) InitializeAccessible() {
 			}
 		}
 	}
-	anon859.fnRemoveSelection = func(e *AccessibleTextEvent) {
+	anon858.fnRemoveSelection = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if e.Index == 0 {
 			if st.blockSelection {
@@ -4761,7 +4761,7 @@ func (this *StyledText) InitializeAccessible() {
 			e.Result = ACCOK
 		}
 	}
-	anon859.fnSetSelection = func(e *AccessibleTextEvent) {
+	anon858.fnSetSelection = func(e *AccessibleTextEvent) {
 		if e.Index != 0 {
 			return
 		}
@@ -4777,17 +4777,17 @@ func (this *StyledText) InitializeAccessible() {
 		st.SetSelectionStartEnd(e.Start, end)
 		e.Result = ACCOK
 	}
-	anon859.fnGetCharacterCount = func(e *AccessibleTextEvent) {
+	anon858.fnGetCharacterCount = func(e *AccessibleTextEvent) {
 		e.Count = this.GetCharCount()
 	}
-	anon859.fnGetOffsetAtPoint = func(e *AccessibleTextEvent) {
+	anon858.fnGetOffsetAtPoint = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = NewPoint(e.X, e.Y)
 		var display *Display = st.GetDisplay()
 		point = display.Map(nil, upcastStyledTextToControl(st), point)
 		e.Offset = st.GetOffsetAtPointXYTrailingInTextOnly(point.X, point.Y, nil, true)
 	}
-	anon859.fnGetTextBounds = func(e *AccessibleTextEvent) {
+	anon858.fnGetTextBounds = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var start int32 = e.Start
 		var end int32 = e.End
@@ -4821,10 +4821,10 @@ func (this *StyledText) InitializeAccessible() {
 				rect.Width = layout.GetBounds().Width - rect.X
 				st.renderer.DisposeTextLayout(layout)
 			}
-			t860 := index
+			t859 := index
 			index++
 			rect = display.MapFromToRectangle(upcastStyledTextToControl(st), nil, rect)
-			rects[t860] = rect
+			rects[t859] = rect
 			if bounds == (nil) {
 				bounds = NewRectangle(rect.X, rect.Y, rect.Width, rect.Height)
 			} else {
@@ -4839,7 +4839,7 @@ func (this *StyledText) InitializeAccessible() {
 			e.Height = bounds.Height
 		}
 	}
-	anon859.fnGetRangesLocal1 = func(left int32, top int32, right int32, bottom int32) []int32 {
+	anon858.fnGetRangesLocal1 = func(left int32, top int32, right int32, bottom int32) []int32 {
 		var st *StyledText = this
 		var lineStart int32 = st.GetLineIndex(top)
 		var lineEnd int32 = st.GetLineIndex(bottom)
@@ -4875,27 +4875,27 @@ func (this *StyledText) InitializeAccessible() {
 				start = end
 				end = temp
 			}
+			t860 := index
+			index++
+			ranges[t860] = start
 			t861 := index
 			index++
-			ranges[t861] = start
-			t862 := index
-			index++
-			ranges[t862] = end
+			ranges[t861] = end
 		}
 		return ranges
 	}
-	anon859.fnGetRanges = func(e *AccessibleTextEvent) {
+	anon858.fnGetRanges = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = NewPoint(e.X, e.Y)
 		var display *Display = st.GetDisplay()
 		point = display.Map(nil, upcastStyledTextToControl(st), point)
-		e.Ranges = anon859.fnGetRangesLocal1(point.X, point.Y, point.X+e.Width, point.Y+e.Height)
+		e.Ranges = anon858.fnGetRangesLocal1(point.X, point.Y, point.X+e.Width, point.Y+e.Height)
 		if int32(len(e.Ranges)) > 0 {
 			e.Start = e.Ranges[0]
 			e.End = e.Ranges[int32(len(e.Ranges))-1]
 		}
 	}
-	anon859.fnGetText = func(e *AccessibleTextEvent) {
+	anon858.fnGetText = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var start int32 = e.Start
 		var end int32 = e.End
@@ -4919,9 +4919,9 @@ func (this *StyledText) InitializeAccessible() {
 				var newCount int32 = 0
 				if count > 0 {
 					for {
-						t863 := count
+						t862 := count
 						count--
-						if !(t863 > 0) {
+						if !(t862 > 0) {
 							break
 						}
 						var newEnd int32 = st.GetWordNext(end, MOVEMENT_CLUSTER)
@@ -4938,9 +4938,9 @@ func (this *StyledText) InitializeAccessible() {
 					end = st.GetWordNext(end, MOVEMENT_CLUSTER)
 				} else {
 					for {
-						t864 := count
+						t863 := count
 						count++
-						if !(t864 < 0) {
+						if !(t863 < 0) {
 							break
 						}
 						var newStart int32 = st.GetWordPrevious(start, MOVEMENT_CLUSTER)
@@ -4960,9 +4960,9 @@ func (this *StyledText) InitializeAccessible() {
 				var newCount int32 = 0
 				if count > 0 {
 					for {
-						t865 := count
+						t864 := count
 						count--
-						if !(t865 > 0) {
+						if !(t864 > 0) {
 							break
 						}
 						var newEnd int32 = st.GetWordNextOffsetMovementIgnoreListener(end, MOVEMENT_WORD_START, true)
@@ -5020,14 +5020,14 @@ func (this *StyledText) InitializeAccessible() {
 		e.Count = count
 		e.Result = st.content.GetTextRange(start, end-start)
 	}
-	anon859.fnGetVisibleRanges = func(e *AccessibleTextEvent) {
-		e.Ranges = anon859.fnGetRangesLocal1(this.leftMargin, this.topMargin, this.clientAreaWidth-this.rightMargin, this.clientAreaHeight-this.bottomMargin)
+	anon858.fnGetVisibleRanges = func(e *AccessibleTextEvent) {
+		e.Ranges = anon858.fnGetRangesLocal1(this.leftMargin, this.topMargin, this.clientAreaWidth-this.rightMargin, this.clientAreaHeight-this.bottomMargin)
 		if int32(len(e.Ranges)) > 0 {
 			e.Start = e.Ranges[0]
 			e.End = e.Ranges[int32(len(e.Ranges))-1]
 		}
 	}
-	anon859.fnScrollText = func(e *AccessibleTextEvent) {
+	anon858.fnScrollText = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var topPixel int32 = this.GetTopPixel()
 		var horizontalPixel int32 = st.GetHorizontalPixel()
@@ -5069,40 +5069,40 @@ func (this *StyledText) InitializeAccessible() {
 		st.SetHorizontalPixel(horizontalPixel)
 		e.Result = ACCOK
 	}
-	this.accTextExtendedAdapter = &anon859.AccessibleTextExtendedAdapter
+	this.accTextExtendedAdapter = &anon858.AccessibleTextExtendedAdapter
 	this.acc.AddAccessibleTextListener(this.accTextExtendedAdapter)
-	anon866 := &StyledTextAnon4{}
-	anon866.fnSetTextAttributes = func(e *AccessibleTextAttributeEvent) {
+	anon865 := &StyledTextAnon4{}
+	anon865.fnSetTextAttributes = func(e *AccessibleTextAttributeEvent) {
 		e.Result = ACCOK
 	}
-	anon866.fnReplaceText = func(e *AccessibleEditableTextEvent) {
+	anon865.fnReplaceText = func(e *AccessibleEditableTextEvent) {
 		var st *StyledText = this
 		st.ReplaceTextRange(e.Start, e.End-e.Start, e.String_)
 		e.Result = ACCOK
 	}
-	anon866.fnPasteText = func(e *AccessibleEditableTextEvent) {
+	anon865.fnPasteText = func(e *AccessibleEditableTextEvent) {
 		var st *StyledText = this
 		st.SetSelection(e.Start)
 		st.Paste()
 		e.Result = ACCOK
 	}
-	anon866.fnCutText = func(e *AccessibleEditableTextEvent) {
+	anon865.fnCutText = func(e *AccessibleEditableTextEvent) {
 		var st *StyledText = this
 		st.SetSelectionStartEnd(e.Start, e.End)
 		st.Cut()
 		e.Result = ACCOK
 	}
-	anon866.fnCopyText = func(e *AccessibleEditableTextEvent) {
+	anon865.fnCopyText = func(e *AccessibleEditableTextEvent) {
 		var st *StyledText = this
 		st.SetSelectionStartEnd(e.Start, e.End)
 		st.Copy()
 		e.Result = ACCOK
 	}
-	this.accEditableTextListener = anon866
+	this.accEditableTextListener = anon865
 	this.acc.AddAccessibleEditableTextListener(this.accEditableTextListener)
-	anon867 := &StyledTextAnon5{}
-	anon867.initAccessibleAttributeAdapter()
-	anon867.fnGetAttributes = func(e *AccessibleAttributeEvent) {
+	anon866 := &StyledTextAnon5{}
+	anon866.initAccessibleAttributeAdapter()
+	anon866.fnGetAttributes = func(e *AccessibleAttributeEvent) {
 		var st *StyledText = this
 		e.LeftMargin = st.GetLeftMargin()
 		e.TopMargin = st.GetTopMargin()
@@ -5113,7 +5113,7 @@ func (this *StyledText) InitializeAccessible() {
 		e.Alignment = st.GetAlignment()
 		e.Indent = st.GetIndent()
 	}
-	anon867.fnGetTextAttributes = func(e *AccessibleTextAttributeEvent) {
+	anon866.fnGetTextAttributes = func(e *AccessibleTextAttributeEvent) {
 		var st *StyledText = this
 		var contentLength int32 = st.GetCharCount()
 		if !this.IsListening(STLineGetStyle) && st.renderer.styleCount == 0 {
@@ -5163,12 +5163,12 @@ func (this *StyledText) InitializeAccessible() {
 		var index int32 = 0
 		var end int32 = 0
 		for index < int32(len(ranges)) {
+			t867 := index
+			index++
+			var styleStart int32 = ranges[t867]
 			t868 := index
 			index++
-			var styleStart int32 = ranges[t868]
-			t869 := index
-			index++
-			var styleEnd int32 = ranges[t869]
+			var styleEnd int32 = ranges[t868]
 			if styleStart <= offset && offset <= styleEnd {
 				e.Start = lineOffset + styleStart
 				e.End = lineOffset + styleEnd + 1
@@ -5190,14 +5190,14 @@ func (this *StyledText) InitializeAccessible() {
 			}
 		}
 	}
-	this.accAttributeAdapter = &anon867.AccessibleAttributeAdapter
+	this.accAttributeAdapter = &anon866.AccessibleAttributeAdapter
 	this.acc.AddAccessibleAttributeListener(this.accAttributeAdapter)
-	anon870 := &StyledTextAnon6{}
-	anon870.initAccessibleControlAdapter()
-	anon870.fnGetRole = func(e *AccessibleControlEvent) {
+	anon869 := &StyledTextAnon6{}
+	anon869.initAccessibleControlAdapter()
+	anon869.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_TEXT
 	}
-	anon870.fnGetState = func(e *AccessibleControlEvent) {
+	anon869.fnGetState = func(e *AccessibleControlEvent) {
 		var state int32 = 0
 		if this.impl.isEnabled_() {
 			state |= ACCSTATE_FOCUSABLE
@@ -5218,10 +5218,10 @@ func (this *StyledText) InitializeAccessible() {
 		}
 		e.Detail = state
 	}
-	anon870.fnGetValue = func(e *AccessibleControlEvent) {
+	anon869.fnGetValue = func(e *AccessibleControlEvent) {
 		e.Result = this.GetText()
 	}
-	this.accControlAdapter = &anon870.AccessibleControlAdapter
+	this.accControlAdapter = &anon869.AccessibleControlAdapter
 	this.acc.AddAccessibleControlListener(this.accControlAdapter)
 	this.AddListener(FocusIn, &ListenerFunc{fn: func(event *Event) {
 		this.acc.SetFocus(ACCCHILDID_SELF)
@@ -5241,12 +5241,12 @@ func (this *StyledText) GetAssociatedLabel() string {
 		if siblings[i] == upcastStyledTextToControl(this) {
 			if i > 0 {
 				var sibling *Control = siblings[i-1]
-				_, ok871 := isControlToLabel(sibling)
-				if ok871 {
+				_, ok870 := isControlToLabel(sibling)
+				if ok870 {
 					return (castControlToLabel(sibling)).GetText()
 				}
-				_, ok872 := isControlToCLabel(sibling)
-				if ok872 {
+				_, ok871 := isControlToCLabel(sibling)
+				if ok871 {
 					return (castControlToCLabel(sibling)).GetText()
 				}
 			}
@@ -5816,25 +5816,25 @@ func (this *StyledText) RedrawLinesBullet(redrawLines []int32) {
 func (this *StyledText) RedrawMargins(oldHeight int32, oldWidth int32) {
 	if oldWidth != this.clientAreaWidth {
 		if this.rightMargin > 0 {
-			var cond873 int32
+			var cond872 int32
 			if oldWidth < this.clientAreaWidth {
-				cond873 = oldWidth
+				cond872 = oldWidth
 			} else {
-				cond873 = this.clientAreaWidth
+				cond872 = this.clientAreaWidth
 			}
-			var x int32 = (cond873) - this.rightMargin
+			var x int32 = (cond872) - this.rightMargin
 			this.Canvas.redrawXYWidthHeightAll_(x, 0, this.rightMargin, oldHeight, false)
 		}
 	}
 	if oldHeight != this.clientAreaHeight {
 		if this.bottomMargin > 0 {
-			var cond874 int32
+			var cond873 int32
 			if oldHeight < this.clientAreaHeight {
-				cond874 = oldHeight
+				cond873 = oldHeight
 			} else {
-				cond874 = this.clientAreaHeight
+				cond873 = this.clientAreaHeight
 			}
-			var y int32 = (cond874) - this.bottomMargin
+			var y int32 = (cond873) - this.bottomMargin
 			this.Canvas.redrawXYWidthHeightAll_(0, y, oldWidth, this.bottomMargin, false)
 		}
 	}
@@ -6567,13 +6567,13 @@ func (this *StyledText) SetCaretLocationsLocationsDirection(locations []*Point, 
 			var location *Point = locations[i]
 			var styleAtOffset *StyleRange
 			if this.content.GetCharCount() > 0 {
-				var cond875 *StyleRange
+				var cond874 *StyleRange
 				if caretOffset < this.content.GetCharCount() {
-					cond875 = this.GetStyleRangeAtOffset(caretOffset)
+					cond874 = this.GetStyleRangeAtOffset(caretOffset)
 				} else {
-					cond875 = this.GetStyleRangeAtOffset(this.content.GetCharCount() - 1)
+					cond874 = this.GetStyleRangeAtOffset(this.content.GetCharCount() - 1)
 				}
-				styleAtOffset = (cond875)
+				styleAtOffset = (cond874)
 			} else {
 				styleAtOffset = nil
 			}
@@ -6596,8 +6596,8 @@ func (this *StyledText) SetCaretLocationsLocationsDirection(locations []*Point, 
 			var isTextAlignedAtBottom bool = true
 			if graphicalLineFirstOffset >= 0 {
 				for _, style := range this.GetStyleRangesStartLength(graphicalLineFirstOffset, graphicalLineLastOffset-graphicalLineFirstOffset) {
-					b876 := ((style.Font == (nil) || jrt.ObjectsEquals(style.Font, this.GetFont())) && style.Rise >= 0 && (style.Metrics == (nil) || style.Metrics.Descent <= 0))
-					isTextAlignedAtBottom = isTextAlignedAtBottom && b876
+					b875 := ((style.Font == (nil) || jrt.ObjectsEquals(style.Font, this.GetFont())) && style.Rise >= 0 && (style.Metrics == (nil) || style.Metrics.Descent <= 0))
+					isTextAlignedAtBottom = isTextAlignedAtBottom && b875
 				}
 			}
 			if !isTextAlignedAtBottom || (styleAtOffset != (nil) && styleAtOffset.IsVariableHeight()) {
@@ -6724,7 +6724,7 @@ func (this *StyledText) SetClipboardContent(start int32, length int32, clipboard
 					_ = oome
 					data = []any{plainText}
 					types = []*Transfer{upcastTextTransferToTransfer(plainTextTransfer)}
-					this.clipboard.SetContents(data, types, clipboardType)
+					this.clipboard.SetContentsDataDataTypesClipboards(data, types, clipboardType)
 					var customOome error = func() error {
 						_ = []any{fmt.Sprintf("Out of Memory: Copied only plain text (%d lines).", func() *jrt.List { _ = []any{plainText}; panic("j2go: unresolved call lines") }().Count())}
 						return nil
@@ -6746,7 +6746,7 @@ func (this *StyledText) SetClipboardContent(start int32, length int32, clipboard
 			types = []*Transfer{upcastRTFTransferToTransfer(rtfTransfer), upcastHTMLTransferToTransfer(htmlTransfer), upcastTextTransferToTransfer(plainTextTransfer)}
 		}()
 	}
-	this.clipboard.SetContents(data, types, clipboardType)
+	this.clipboard.SetContentsDataDataTypesClipboards(data, types, clipboardType)
 }
 
 func (this *StyledText) SetContent(newContent StyledTextContent) {
@@ -7686,8 +7686,8 @@ func (this *StyledText) SetStyleRangesStartLengthRangesStylesReset(start int32, 
 			if lastOffset > rangeStart {
 				Error(ERROR_INVALID_ARGUMENT)
 			}
-			b877 := styles[i].IsVariableHeight()
-			this.hasStyleWithVariableHeight = this.hasStyleWithVariableHeight || b877
+			b876 := styles[i].IsVariableHeight()
+			this.hasStyleWithVariableHeight = this.hasStyleWithVariableHeight || b876
 			lastOffset = rangeStart + rangeLength
 		}
 	}
@@ -8182,19 +8182,19 @@ func (this *StyledText) UpdateSelection(startOffset int32, replacedLength int32,
 				} else {
 					var x int32 = sel.X + newLength - replacedLength
 					var y int32 = sel.X + newLength - replacedLength + (sel.Y - sel.X)
-					var cond878 int32
+					var cond877 int32
 					if x < 0 {
+						cond877 = 0
+					} else {
+						cond877 = x
+					}
+					var cond878 int32
+					if y < 0 {
 						cond878 = 0
 					} else {
-						cond878 = x
+						cond878 = y
 					}
-					var cond879 int32
-					if y < 0 {
-						cond879 = 0
-					} else {
-						cond879 = y
-					}
-					return NewPoint(cond878, cond879)
+					return NewPoint(cond877, cond878)
 				}
 			}
 		}
@@ -8215,8 +8215,8 @@ func (this *StyledText) HandleDPIChange(event *Event) {
 			caretSet.Add(caret)
 		}
 	}
-	for _, elem880 := range caretSet.ToArray() {
-		caretToRefresh := jrt.Cast[*Caret](elem880)
+	for _, elem879 := range caretSet.ToArray() {
+		caretToRefresh := jrt.Cast[*Caret](elem879)
 		if caretToRefresh != (nil) && !caretToRefresh.IsDisposed() {
 			caretToRefresh.NotifyListeners(ZoomChanged, event)
 		}
@@ -8462,8 +8462,8 @@ func (this *StyledText_Printing) Dispose() {
 		this.gc = nil
 	}
 	if this.resources != (nil) {
-		for _, elem881 := range this.resources.Values().ToArray() {
-			resource := jrt.Cast[*Resource](elem881)
+		for _, elem880 := range this.resources.Values().ToArray() {
+			resource := jrt.Cast[*Resource](elem880)
 			resource.impl.dispose_()
 		}
 		this.resources = nil

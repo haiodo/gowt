@@ -127,14 +127,11 @@ func (this *Test_org_eclipse_swt_dnd_ImageTransfer) Test_javaToNative() {
 	this.OpenAndFocusShell(true)
 	this.SetContents(expected)
 	this.OpenAndFocusRemote()
-	var fileContents []int8 = jrt.Cast[[]int8](func() []int8 {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() []int8 {
-				return this.remote.GetImageContents()
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var fileContents []int8 = jrt.Cast[[]int8](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() []int8 {
+			return this.remote.GetImageContents()
+		})()
+	}}))
 	var result *swt.ImageData = swt.NewImageDataStream(jrt.NewByteArrayInputStream(fileContents))
 	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(expected, result)))
 }

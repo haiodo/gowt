@@ -58,7 +58,7 @@ func (this *RTFTransfer) javaToNative_(object any, transferData *TransferData) {
 	if !this.CheckRTF(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(object.(string)))
+	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(jrt.Cast[string](object)))
 }
 
 func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
@@ -78,7 +78,7 @@ func (this *RTFTransfer) getTypeNames_() []string {
 }
 
 func (this *RTFTransfer) CheckRTF(object any) bool {
-	return (!jrt.IsNil(object) && func() bool { _, ok835 := object.(string); return ok835 }() && jrt.StringLength((object.(string))) > 0)
+	return (!jrt.IsNil(object) && func() bool { _, ok1010 := object.(string); return ok1010 }() && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *RTFTransfer) validate_(object any) bool {

@@ -105,13 +105,13 @@ func (this *TreeDropTargetEffect) dragOver_(event *DropTargetEvent) {
 		if hItem != -1 && this.scrollIndex == hItem && this.scrollBeginTime != 0 {
 			if jrt.CurrentTimeMillis() >= this.scrollBeginTime {
 				var topItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_FIRSTVISIBLE), int64(0))
-				var cond917 int32
+				var cond1178 int32
 				if hItem == topItem {
-					cond917 = win32.OSTVGN_PREVIOUSVISIBLE
+					cond1178 = win32.OSTVGN_PREVIOUSVISIBLE
 				} else {
-					cond917 = win32.OSTVGN_NEXTVISIBLE
+					cond1178 = win32.OSTVGN_NEXTVISIBLE
 				}
-				var nextItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(cond917), hItem)
+				var nextItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(cond1178), hItem)
 				var scroll bool = true
 				if hItem == topItem {
 					scroll = nextItem != 0
@@ -206,33 +206,4 @@ func (this *TreeDropTargetEffect) dragOver_(event *DropTargetEvent) {
 		}
 		this.insertItem = nil
 	}
-}
-
-// j2go: instanceof helper for TreeItem and its subclasses within the translated set.
-func widgetImplAsTreeItem(x any) (*TreeItem, bool) {
-	if h, ok := x.(*widgetHooked); ok {
-		x = h.hook
-	}
-	switch v := x.(type) {
-	case *TreeItem:
-		if v == nil {
-			return nil, false
-		}
-		return v, true
-	}
-	if l, ok := x.(interface{ AsTreeItem() *TreeItem }); ok {
-		return l.AsTreeItem(), true
-	}
-	return nil, false
-}
-
-func castWidgetToTreeItem(x *Widget) *TreeItem {
-	if x == nil {
-		return nil
-	}
-	v, ok := widgetImplAsTreeItem(x.impl)
-	if !ok {
-		panic("java.lang.ClassCastException: TreeItem")
-	}
-	return v
 }

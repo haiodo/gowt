@@ -339,13 +339,13 @@ func (this *Tracker) Grab() bool {
 	} else {
 		cursor = int64(0)
 	}
-	var cond859 int64
+	var cond858 int64
 	if gtk.GTKGTK4 {
-		cond859 = this.surface
+		cond858 = this.surface
 	} else {
-		cond859 = this.window
+		cond858 = this.window
 	}
-	var result int32 = this.Gdk_pointer_grab(cond859, gtk.GDKGDK_OWNERSHIP_NONE, false, gtk.GDKGDK_POINTER_MOTION_MASK|gtk.GDKGDK_BUTTON_RELEASE_MASK, int64(0), cursor, gtk.GDKGDK_CURRENT_TIME)
+	var result int32 = this.Gdk_pointer_grab(cond858, gtk.GDKGDK_OWNERSHIP_NONE, false, gtk.GDKGDK_POINTER_MOTION_MASK|gtk.GDKGDK_BUTTON_RELEASE_MASK, int64(0), cursor, gtk.GDKGDK_CURRENT_TIME)
 	return result == gtk.GDKGDK_GRAB_SUCCESS
 }
 

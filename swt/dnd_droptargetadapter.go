@@ -10,6 +10,7 @@ type DropTargetAdapterImpl interface {
 	dragEnter_(a0 *DropTargetEvent)
 	dragLeave_(a0 *DropTargetEvent)
 	dragOver_(a0 *DropTargetEvent)
+	dropAccept_(a0 *DropTargetEvent)
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -50,6 +51,15 @@ func (this *dropTargetAdapterHooked) dragOver_(a0 *DropTargetEvent) {
 		return
 	}
 	this.DropTargetAdapterImpl.dragOver_(a0)
+}
+
+func (this *dropTargetAdapterHooked) dropAccept_(a0 *DropTargetEvent) {
+	if h, ok := this.hook.(interface{ DropAccept_(a0 *DropTargetEvent) }); ok && this.active != "dropAccept_" {
+		defer this.enter("dropAccept_")()
+		h.DropAccept_(a0)
+		return
+	}
+	this.DropTargetAdapterImpl.dropAccept_(a0)
 }
 
 type DropTargetAdapter struct {
@@ -113,4 +123,8 @@ func (this *DropTargetAdapter) Drop(event *DropTargetEvent) {
 }
 
 func (this *DropTargetAdapter) DropAccept(event *DropTargetEvent) {
+	this.impl.dropAccept_(event)
+}
+
+func (this *DropTargetAdapter) dropAccept_(event *DropTargetEvent) {
 }

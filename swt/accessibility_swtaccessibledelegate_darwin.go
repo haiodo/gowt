@@ -166,53 +166,53 @@ func SWTAccessibleDelegateAccessibleProc(id int64, sel int64) int64 {
 	}
 	if sel == cocoa.OSSel_accessibilityAttributeNames {
 		var retObject *cocoa.NSArray = swtAcc.AccessibilityAttributeNames()
-		var cond832 int64
+		var cond949 int64
 		if retObject == (nil) {
-			cond832 = int64(0)
+			cond949 = int64(0)
 		} else {
-			cond832 = retObject.Id
+			cond949 = retObject.Id
 		}
-		return (cond832)
+		return (cond949)
 	} else {
 		if sel == cocoa.OSSel_accessibilityActionNames {
 			var retObject *cocoa.NSArray = swtAcc.AccessibilityActionNames()
-			var cond833 int64
+			var cond950 int64
 			if retObject == (nil) {
-				cond833 = int64(0)
+				cond950 = int64(0)
 			} else {
-				cond833 = retObject.Id
+				cond950 = retObject.Id
 			}
-			return (cond833)
+			return (cond950)
 		} else {
 			if sel == cocoa.OSSel_accessibilityParameterizedAttributeNames {
 				var retObject *cocoa.NSArray = swtAcc.AccessibilityParameterizedAttributeNames()
-				var cond834 int64
+				var cond951 int64
 				if retObject == (nil) {
-					cond834 = int64(0)
+					cond951 = int64(0)
 				} else {
-					cond834 = retObject.Id
+					cond951 = retObject.Id
 				}
-				return (cond834)
+				return (cond951)
 			} else {
 				if sel == cocoa.OSSel_accessibilityIsIgnored {
 					var retVal bool = swtAcc.AccessibilityIsIgnored()
-					var cond835 int32
+					var cond952 int32
 					if retVal {
-						cond835 = 1
+						cond952 = 1
 					} else {
-						cond835 = 0
+						cond952 = 0
 					}
-					return int64((cond835))
+					return int64((cond952))
 				} else {
 					if sel == cocoa.OSSel_accessibilityFocusedUIElement {
 						var retObject *cocoa.Id = swtAcc.AccessibilityFocusedUIElement()
-						var cond836 int64
+						var cond953 int64
 						if retObject == (nil) {
-							cond836 = int64(0)
+							cond953 = int64(0)
 						} else {
-							cond836 = retObject.Id
+							cond953 = retObject.Id
 						}
-						return (cond836)
+						return (cond953)
 					}
 				}
 			}
@@ -229,46 +229,46 @@ func SWTAccessibleDelegateAccessibleProcIdSelArg0(id int64, sel int64, arg0 int6
 	if sel == cocoa.OSSel_accessibilityAttributeValue_ {
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		var retObject *cocoa.Id = swtAcc.AccessibilityAttributeValue(attribute)
-		var cond837 int64
+		var cond954 int64
 		if retObject == (nil) {
-			cond837 = int64(0)
+			cond954 = int64(0)
 		} else {
-			cond837 = retObject.Id
+			cond954 = retObject.Id
 		}
-		return (cond837)
+		return (cond954)
 	} else {
 		if sel == cocoa.OSSel_accessibilityHitTest_ {
 			var point cocoa.NSPoint = cocoa.NSPoint{}
 			cocoa.OSMemmoveOverload3(&point, arg0, int64(cocoa.NSPointSizeof))
 			var retObject *cocoa.Id = swtAcc.AccessibilityHitTest(point)
-			var cond838 int64
+			var cond955 int64
 			if retObject == (nil) {
-				cond838 = int64(0)
+				cond955 = int64(0)
 			} else {
-				cond838 = retObject.Id
+				cond955 = retObject.Id
 			}
-			return (cond838)
+			return (cond955)
 		} else {
 			if sel == cocoa.OSSel_accessibilityIsAttributeSettable_ {
 				var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
-				var cond839 int32
+				var cond956 int32
 				if swtAcc.AccessibilityIsAttributeSettable(attribute) {
-					cond839 = 1
+					cond956 = 1
 				} else {
-					cond839 = 0
+					cond956 = 0
 				}
-				return int64((cond839))
+				return int64((cond956))
 			} else {
 				if sel == cocoa.OSSel_accessibilityActionDescription_ {
 					var action *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 					var retObject *cocoa.Id = swtAcc.AccessibilityActionDescription(action)
-					var cond840 int64
+					var cond957 int64
 					if retObject == (nil) {
-						cond840 = int64(0)
+						cond957 = int64(0)
 					} else {
-						cond840 = retObject.Id
+						cond957 = retObject.Id
 					}
-					return (cond840)
+					return (cond957)
 				} else {
 					if sel == cocoa.OSSel_accessibilityPerformAction_ {
 						var action *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
@@ -290,13 +290,13 @@ func SWTAccessibleDelegateAccessibleProcIdSelArg0Arg1(id int64, sel int64, arg0 
 		var attribute *cocoa.NSString = cocoa.NewNSStringOverload1(arg0)
 		var parameter *cocoa.Id = cocoa.NewidOverload1(arg1)
 		var retObject *cocoa.Id = swtAcc.AccessibilityAttributeValue_forParameter(attribute, parameter)
-		var cond841 int64
+		var cond958 int64
 		if retObject == (nil) {
-			cond841 = int64(0)
+			cond958 = int64(0)
 		} else {
-			cond841 = retObject.Id
+			cond958 = retObject.Id
 		}
-		return (cond841)
+		return (cond958)
 	} else {
 		if sel == cocoa.OSSel_accessibilitySetValue_forAttribute_ {
 			var value *cocoa.Id = cocoa.NewidOverload1(arg0)

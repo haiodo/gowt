@@ -61,13 +61,13 @@ func (this *TreeDropTargetEffect) dragLeave_(event *DropTargetEvent) {
 func (this *TreeDropTargetEffect) dragOver_(event *DropTargetEvent) {
 	var effect int32 = this.CheckEffect(event.Feedback)
 	(castWidgetToDropTarget(event.Widget)).feedback = effect
-	var cond837 int32
+	var cond1012 int32
 	if (effect & DNDFEEDBACK_EXPAND) == 0 {
-		cond837 = 0
+		cond1012 = 0
 	} else {
-		cond837 = 1
+		cond1012 = 1
 	}
-	cocoa.OSObjc_msgSendOverload41(this.control.View.Id, cocoa.OSSel_setShouldExpandItem_, cond837)
+	cocoa.OSObjc_msgSendOverload41(this.control.View.Id, cocoa.OSSel_setShouldExpandItem_, cond1012)
 	if (effect & DNDFEEDBACK_SCROLL) == 0 {
 		this.shouldEnableScrolling = true
 		cocoa.OSObjc_msgSendOverload41(this.control.View.Id, cocoa.OSSel_setShouldScrollClipView_, 0)

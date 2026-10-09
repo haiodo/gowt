@@ -116,7 +116,7 @@ func (this *DNDListener) handleEvent_(e *Event) {
 			(this.eventListener.(DropTargetListener)).DropAccept(event)
 			var dropEffect *DropTargetEffect = (castWidgetToDropTarget(this.dndWidget)).GetDropTargetEffect()
 			if dropEffect != (nil) {
-				dropEffect.DropAccept(event)
+				dropEffect.impl.dropAccept_(event)
 			}
 			event.UpdateEvent(castEventToDNDEvent(e))
 			break

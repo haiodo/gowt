@@ -145,14 +145,11 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) Test_javaToNative() {
 	this.OpenAndFocusShell(true)
 	this.SetContents(test)
 	this.OpenAndFocusRemote()
-	var resultBytes []int8 = jrt.Cast[[]int8](func() []int8 {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() []int8 {
-				return this.remote.GetMyTypeContents()
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var resultBytes []int8 = jrt.Cast[[]int8](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() []int8 {
+			return this.remote.GetMyTypeContents()
+		})()
+	}}))
 	var result *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyType = this.DeserializeMyType(resultBytes)
 	this.AssertMyTypeEquals(test, result)
 }
@@ -271,8 +268,8 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) NativeToJ
 	var in *jrt.ByteArrayInputStream = jrt.NewByteArrayInputStream(buffer)
 	{
 		var readIn *jrt.DataInputStream = jrt.NewDataInputStream(in)
-		var tret171 any
-		tretd172 := false
+		var tret194 any
+		tretd195 := false
 		func() {
 			defer readIn.Close()
 			defer func() {
@@ -300,12 +297,12 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) NativeToJ
 			myType.FileName = jrt.StringFromBytes(name)
 			myType.FileLength = readIn.ReadLong()
 			myType.LastModified = readIn.ReadLong()
-			tret171 = myType
-			tretd172 = true
+			tret194 = myType
+			tretd195 = true
 			return
 		}()
-		if tretd172 {
-			return tret171
+		if tretd195 {
+			return tret194
 		}
 	}
 	return nil
@@ -320,8 +317,8 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) GetTypeId
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) CheckMyType(object any) bool {
-	_, ok173 := test_org_eclipse_swt_dnd_ByteArrayTransferMyTypeImplAsTest_org_eclipse_swt_dnd_ByteArrayTransferMyType(object)
-	return (ok173)
+	_, ok196 := test_org_eclipse_swt_dnd_ByteArrayTransferMyTypeImplAsTest_org_eclipse_swt_dnd_ByteArrayTransferMyType(object)
+	return (ok196)
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) Validate_(object any) bool {

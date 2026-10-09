@@ -58,7 +58,7 @@ func (this *HTMLTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckHTML(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(object.(string)))
+	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(jrt.Cast[string](object)))
 }
 
 func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
@@ -78,7 +78,7 @@ func (this *HTMLTransfer) getTypeNames_() []string {
 }
 
 func (this *HTMLTransfer) CheckHTML(object any) bool {
-	return (!jrt.IsNil(object) && func() bool { _, ok833 := object.(string); return ok833 }() && jrt.StringLength((object.(string))) > 0)
+	return (!jrt.IsNil(object) && func() bool { _, ok1008 := object.(string); return ok1008 }() && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *HTMLTransfer) validate_(object any) bool {

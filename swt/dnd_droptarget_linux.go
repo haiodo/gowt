@@ -82,7 +82,7 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 		if DropTargetDropAccept_ == (nil) || DropTargetDropEnter_ == (nil) || DropTargetDropMotion_ == (nil) || DropTargetDropLeave_ == (nil) || DropTargetDrop_ == (nil) {
 			DNDError(DNDERROR_CANNOT_INIT_DROP)
 		}
-		if !jrt.IsNil(control.GetDataKey(DNDDROP_TARGET_KEY)) {
+		if !jrt.IsNil(control.impl.getDataKey_(DNDDROP_TARGET_KEY)) {
 			DNDError(DNDERROR_CANNOT_INIT_DROP)
 		}
 		control.SetDataKeyValue(DNDDROP_TARGET_KEY, this)
@@ -98,7 +98,7 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 		if DropTargetDrag_Motion_ == (nil) || DropTargetDrag_Leave_ == (nil) || DropTargetDrag_Data_Received_ == (nil) || DropTargetDrag_Drop_ == (nil) {
 			DNDError(DNDERROR_CANNOT_INIT_DROP)
 		}
-		if !jrt.IsNil(control.GetDataKey(DNDDROP_TARGET_KEY)) {
+		if !jrt.IsNil(control.impl.getDataKey_(DNDDROP_TARGET_KEY)) {
 			DNDError(DNDERROR_CANNOT_INIT_DROP)
 		}
 		control.SetDataKeyValue(DNDDROP_TARGET_KEY, this)
@@ -116,17 +116,17 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 	this.AddListener(Dispose, &ListenerFunc{fn: func(event *Event) {
 		this.OnDispose()
 	}})
-	var effect any = control.GetDataKey(DropTargetDEFAULT_DROP_TARGET_EFFECT)
-	_, ok764 := dropTargetAdapterImplAsDropTargetEffect(effect)
-	if ok764 {
+	var effect any = control.impl.getDataKey_(DropTargetDEFAULT_DROP_TARGET_EFFECT)
+	_, ok885 := dropTargetAdapterImplAsDropTargetEffect(effect)
+	if ok885 {
 		this.dropEffect = castanyToDropTargetEffect(effect)
 	} else {
-		_, ok765 := isControlToTable(control)
-		if ok765 {
+		_, ok886 := isControlToTable(control)
+		if ok886 {
 			this.dropEffect = upcastTableDropTargetEffectToDropTargetEffect(NewTableDropTargetEffect(castControlToTable(control)))
 		} else {
-			_, ok766 := isControlToTree(control)
-			if ok766 {
+			_, ok887 := isControlToTree(control)
+			if ok887 {
 				this.dropEffect = upcastTreeDropTargetEffectToDropTargetEffect(NewTreeDropTargetEffect(castControlToTree(control)))
 			}
 		}
@@ -295,7 +295,7 @@ func (this *DropTarget) Drag_leave(widget int64, context int64, time int32) {
 
 func (this *DropTarget) Drag_motion(widget int64, context int64, x int32, y int32, time int32) bool {
 	var oldKeyOperation int32 = this.keyOperation
-	if (oldKeyOperation == -1) || !(this.control.GetDataKey(DropTargetIS_ACTIVE).(bool)) {
+	if (oldKeyOperation == -1) || !(this.control.impl.getDataKey_(DropTargetIS_ACTIVE).(bool)) {
 		this.selectedDataType = nil
 		this.selectedOperation = DNDDROP_NONE
 	}
@@ -550,8 +550,8 @@ func (this *DropTarget) SetTransfer(transferAgents []*Transfer) {
 			gtk.GTK3MemmoveOverload30(pTargets+int64(i*gtk.GtkTargetEntrySizeof), &targets[i], int64(gtk.GtkTargetEntrySizeof))
 		}
 		var actions int32 = this.OpToOsOp(this.impl.getStyle_())
-		_, ok767 := isControlToCombo(this.control)
-		if ok767 {
+		_, ok888 := isControlToCombo(this.control)
+		if ok888 {
 			if (this.control.impl.getStyle_() & READ_ONLY) == 0 {
 				var entryHandle int64 = gtk.GTK3Gtk_bin_get_child(this.control.Handle)
 				if entryHandle != 0 {
@@ -808,11 +808,11 @@ func (this *DropTarget) DropGtk4(drop int64, x float64, y float64) bool {
 	var gtype int64 = ContentProvidersGetInstance().GetGType(selectedTransfer)
 	var dropDataType *TransferData = this.selectedDataType
 	var dropAllowedOperations int32 = allowedOperations
-	anon768 := &DropTargetAnon1{}
-	anon768.fnAsync = func(callback int64) {
+	anon889 := &DropTargetAnon1{}
+	anon889.fnAsync = func(callback int64) {
 		gtk.GTK4Gdk_drop_read_value_async(drop, gtype, gtk.OSG_PRIORITY_DEFAULT, int64(0), callback, int64(0))
 	}
-	anon768.fnCallback = func(result int64) {
+	anon889.fnCallback = func(result int64) {
 		var object any = nil
 		var gvalue int64 = gtk.GTK4Gdk_drop_read_value_finish(drop, result, nil)
 		if gvalue != 0 {
@@ -835,7 +835,7 @@ func (this *DropTarget) DropGtk4(drop int64, x float64, y float64) bool {
 		}
 		gtk.GTK4Gdk_drop_finish(drop, this.OpToOsOp(operation))
 	}
-	GAsyncReadyCallbackHelperRun(anon768)
+	GAsyncReadyCallbackHelperRun(anon889)
 	return true
 }
 
@@ -928,13 +928,13 @@ func DropTargetDrag_Drop(widget int64, context int64, x int64, y int64, time int
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond769 int32
+	var cond890 int32
 	if target.Drag_drop(widget, context, int32(x), int32(y), int32(time)) {
-		cond769 = 1
+		cond890 = 1
 	} else {
-		cond769 = 0
+		cond890 = 0
 	}
-	return int64(cond769)
+	return int64(cond890)
 }
 
 func DropTargetDrag_Leave(widget int64, context int64, time int64) int64 {
@@ -951,13 +951,13 @@ func DropTargetDrag_Motion(widget int64, context int64, x int64, y int64, time i
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond770 int32
+	var cond891 int32
 	if target.Drag_motion(widget, context, int32(x), int32(y), int32(time)) {
-		cond770 = 1
+		cond891 = 1
 	} else {
-		cond770 = 0
+		cond891 = 0
 	}
-	return int64(cond770)
+	return int64(cond891)
 }
 
 func DropTargetFindDropTarget(handle int64) *DropTarget {
@@ -969,7 +969,7 @@ func DropTargetFindDropTarget(handle int64) *DropTarget {
 	if widget == (nil) {
 		return nil
 	}
-	return castanyToDropTarget(widget.GetDataKey(DNDDROP_TARGET_KEY))
+	return castanyToDropTarget(widget.impl.getDataKey_(DNDDROP_TARGET_KEY))
 }
 
 func DropTargetFindDropTargetGtk4(controller int64) *DropTarget {
@@ -985,13 +985,13 @@ func DropTargetDropAccept(controller int64, drop int64) int64 {
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond771 int32
+	var cond892 int32
 	if target.DropAcceptGtk4(drop) {
-		cond771 = 1
+		cond892 = 1
 	} else {
-		cond771 = 0
+		cond892 = 0
 	}
-	return int64(cond771)
+	return int64(cond892)
 }
 
 func DropTargetDropEnter(controller int64, drop int64, x float64, y float64) int64 {
@@ -1023,13 +1023,13 @@ func DropTargetDrop(controller int64, drop int64, x float64, y float64) int64 {
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond772 int32
+	var cond893 int32
 	if target.DropGtk4(drop, x, y) {
-		cond772 = 1
+		cond893 = 1
 	} else {
-		cond772 = 0
+		cond893 = 0
 	}
-	return int64(cond772)
+	return int64(cond893)
 }
 
 // j2go: instanceof helper for DropTargetEffect and its subclasses within the translated set.
@@ -1043,6 +1043,11 @@ func dropTargetAdapterImplAsDropTargetEffect(x any) (*DropTargetEffect, bool) {
 			return nil, false
 		}
 		return v, true
+	case *StyledTextDropTargetEffect:
+		if v == nil {
+			return nil, false
+		}
+		return &v.DropTargetEffect, true
 	case *TableDropTargetEffect:
 		if v == nil {
 			return nil, false

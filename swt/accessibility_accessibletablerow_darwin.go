@@ -35,15 +35,15 @@ func NewAccessibleTableRow(accessibleLike AccessibleLike, childID int32) *Access
 func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, childID int32) {
 	this.Accessible.initAccessible(accessible)
 	this.index = childID
-	anon855 := &AccessibleTableRowAnon1{}
-	anon855.initAccessibleControlAdapter()
-	anon855.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon972 := &AccessibleTableRowAnon1{}
+	anon972.initAccessibleControlAdapter()
+	anon972.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 	}
-	anon855.fnGetChildren = func(e *AccessibleControlEvent) {
+	anon972.fnGetChildren = func(e *AccessibleControlEvent) {
 		var validColumnCount int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 		var children []any = make([]any, validColumnCount)
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon855.AccessibleControlAdapter)
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon972.AccessibleControlAdapter)
 		for i := int32(0); i < validColumnCount; i++ {
 			event.Column = i
 			event.Row = this.index
@@ -58,10 +58,10 @@ func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, c
 		}
 		e.Children = children
 	}
-	anon855.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon972.fnGetLocation = func(e *AccessibleControlEvent) {
 		var validColumnCount int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 		var children []*Accessible = make([]*Accessible, validColumnCount)
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon855.AccessibleControlAdapter)
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon972.AccessibleControlAdapter)
 		for i := int32(0); i < validColumnCount; i++ {
 			event.Column = i
 			event.Row = this.index
@@ -94,7 +94,7 @@ func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, c
 		e.Width = width
 		e.Height = height
 	}
-	anon855.fnGetRole = func(e *AccessibleControlEvent) {
+	anon972.fnGetRole = func(e *AccessibleControlEvent) {
 		var childID int32 = e.ChildID
 		if childID == ACCCHILDID_SELF {
 			e.Detail = ACCROLE_ROW
@@ -102,8 +102,8 @@ func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, c
 			e.Detail = ACCROLE_TABLECELL
 		}
 	}
-	anon855.fnGetFocus = func(e *AccessibleControlEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon855.AccessibleControlAdapter)
+	anon972.fnGetFocus = func(e *AccessibleControlEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon972.AccessibleControlAdapter)
 		event.Column = 0
 		event.Row = this.index
 		for j := int32(0); j < this.parent.accessibleTableListeners.Size(); j++ {
@@ -121,14 +121,14 @@ func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, c
 			e.ChildID = ACCCHILDID_NONE
 		}
 	}
-	this.AddAccessibleControlListener(anon855)
-	anon856 := &AccessibleTableRowAnon2{}
-	anon856.initAccessibleTableAdapter()
-	anon856.fnIsColumnSelected = func(e *AccessibleTableEvent) {
+	this.AddAccessibleControlListener(anon972)
+	anon973 := &AccessibleTableRowAnon2{}
+	anon973.initAccessibleTableAdapter()
+	anon973.fnIsColumnSelected = func(e *AccessibleTableEvent) {
 		e.IsSelected = false
 	}
-	anon856.fnIsRowSelected = func(e *AccessibleTableEvent) {
-		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon856.AccessibleTableAdapter)
+	anon973.fnIsRowSelected = func(e *AccessibleTableEvent) {
+		var event *AccessibleTableEvent = NewAccessibleTableEvent(&anon973.AccessibleTableAdapter)
 		event.Row = e.Row
 		for i := int32(0); i < this.parent.accessibleTableListeners.Size(); i++ {
 			var listener AccessibleTableListener = jrt.Cast[AccessibleTableListener](this.parent.accessibleTableListeners.Get(i))
@@ -136,7 +136,7 @@ func (this *AccessibleTableRow) initAccessibleTableRow(accessible *Accessible, c
 		}
 		e.IsSelected = event.IsSelected
 	}
-	this.AddAccessibleTableListener(anon856)
+	this.AddAccessibleTableListener(anon973)
 }
 
 func (this *AccessibleTableRow) GetChildAtPoint(eLike AccessibleControlEventLike) {

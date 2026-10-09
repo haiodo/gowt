@@ -95,13 +95,13 @@ func (this *DropTargetEvent) string_() string {
 	}
 	sb.Append(uint16('}'))
 	sb.Append(" currentDataType=")
-	var cond850 int32
+	var cond1111 int32
 	if this.CurrentDataType != (nil) {
-		cond850 = this.CurrentDataType.Type
+		cond1111 = this.CurrentDataType.Type
 	} else {
-		cond850 = int32('0')
+		cond1111 = int32('0')
 	}
-	sb.Append(cond850)
+	sb.Append(cond1111)
 	sb.Append(uint16('}'))
 	return sb.ToString()
 }

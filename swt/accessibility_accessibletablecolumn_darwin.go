@@ -35,11 +35,11 @@ func NewAccessibleTableColumn(accessibleLike AccessibleLike, childID int32) *Acc
 func (this *AccessibleTableColumn) initAccessibleTableColumn(accessible *Accessible, childID int32) {
 	this.Accessible.initAccessible(accessible)
 	this.index = childID
-	anon852 := &AccessibleTableColumnAnon1{}
-	anon852.initAccessibleControlAdapter()
-	anon852.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon969 := &AccessibleTableColumnAnon1{}
+	anon969.initAccessibleControlAdapter()
+	anon969.fnGetLocation = func(e *AccessibleControlEvent) {
 		var cells []*Accessible = this.GetColumnCells()
-		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon852.AccessibleControlAdapter)
+		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon969.AccessibleControlAdapter)
 		event.ChildID = ACCCHILDID_SELF
 		event.Width = -1
 		var child *Accessible = cells[0]
@@ -62,16 +62,16 @@ func (this *AccessibleTableColumn) initAccessibleTableColumn(accessible *Accessi
 		e.Width = width
 		e.Height = height
 	}
-	anon852.fnGetRole = func(e *AccessibleControlEvent) {
+	anon969.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_COLUMN
 	}
-	this.AddAccessibleControlListener(anon852)
-	anon853 := &AccessibleTableColumnAnon2{}
-	anon853.initAccessibleTableAdapter()
-	anon853.fnGetRowCount = func(e *AccessibleTableEvent) {
+	this.AddAccessibleControlListener(anon969)
+	anon970 := &AccessibleTableColumnAnon2{}
+	anon970.initAccessibleTableAdapter()
+	anon970.fnGetRowCount = func(e *AccessibleTableEvent) {
 		e.Count = int32(len(this.GetColumnCells()))
 	}
-	anon853.fnGetRow = func(e *AccessibleTableEvent) {
+	anon970.fnGetRow = func(e *AccessibleTableEvent) {
 		var index int32 = e.Row
 		var children []*Accessible = this.GetColumnCells()
 		var count int32 = int32(len(children))
@@ -79,10 +79,10 @@ func (this *AccessibleTableColumn) initAccessibleTableColumn(accessible *Accessi
 			e.Accessible = children[index]
 		}
 	}
-	anon853.fnGetRows = func(e *AccessibleTableEvent) {
+	anon970.fnGetRows = func(e *AccessibleTableEvent) {
 		e.Accessibles = this.GetColumnCells()
 	}
-	this.AddAccessibleTableListener(anon853)
+	this.AddAccessibleTableListener(anon970)
 }
 
 func (this *AccessibleTableColumn) GetColumnCells() []*Accessible {

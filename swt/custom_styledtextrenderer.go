@@ -133,12 +133,12 @@ func (this *StyledTextRenderer) AddMerge(mergeRanges []int32, mergeStyles []*Sty
 				this.ranges[j-1] += mergeRanges[i+1]
 			} else {
 				this.styles[j>>1] = mergeStyles[i>>1]
+				t882 := j
+				j++
+				this.ranges[t882] = mergeRanges[i]
 				t883 := j
 				j++
-				this.ranges[t883] = mergeRanges[i]
-				t884 := j
-				j++
-				this.ranges[t884] = mergeRanges[i+1]
+				this.ranges[t883] = mergeRanges[i+1]
 			}
 		}
 		if endStyle != (nil) && this.ranges[j-2]+this.ranges[j-1] == endStart && endStyle.SimilarTo(this.styles[(j-2)>>1]) {
@@ -183,15 +183,15 @@ func (this *StyledTextRenderer) AddMergeMergeStylesMergeCountModifyStartModifyEn
 			var newStyle *StyleRange = mergeStyles[i]
 			var style *StyleRange
 			if j > 0 && func() bool {
-				cond885 := this.styles[j-1]
-				style = cond885
-				return (cond885).Start+style.Length == newStyle.Start
+				cond884 := this.styles[j-1]
+				style = cond884
+				return (cond884).Start+style.Length == newStyle.Start
 			}() && newStyle.SimilarTo(style) {
 				style.Length += newStyle.Length
 			} else {
-				t886 := j
+				t885 := j
 				j++
-				this.styles[t886] = newStyle
+				this.styles[t885] = newStyle
 			}
 		}
 		var style *StyleRange = this.styles[j-1]
@@ -249,9 +249,9 @@ func (this *StyledTextRenderer) CalculateClientArea() {
 	var y int32 = 0
 	for height > y && lineCount > index && int32(len(this.lineSizes)) > index {
 		this.Calculate(index, 1)
-		t887 := index
+		t886 := index
 		index++
-		y += this.lineSizes[t887].height
+		y += this.lineSizes[t886].height
 	}
 }
 
@@ -259,8 +259,8 @@ func (this *StyledTextRenderer) CalculateIdle() {
 	if this.idleRunning {
 		return
 	}
-	anon888 := jrt.NewRunnable(nil)
-	anon888.Fn = func() {
+	anon887 := jrt.NewRunnable(nil)
+	anon887.Fn = func() {
 		if this.styledText == (nil) {
 			return
 		}
@@ -277,7 +277,7 @@ func (this *StyledTextRenderer) CalculateIdle() {
 		}
 		if i < this.lineCount {
 			var display *Display = this.styledText.GetDisplay()
-			display.AsyncExec(anon888)
+			display.AsyncExec(anon887)
 		} else {
 			this.idleRunning = false
 			this.styledText.SetScrollBars(true)
@@ -287,7 +287,7 @@ func (this *StyledTextRenderer) CalculateIdle() {
 			}
 		}
 	}
-	var runnable jrt.Runnable = anon888
+	var runnable jrt.Runnable = anon887
 	var display *Display = this.styledText.GetDisplay()
 	display.AsyncExec(runnable)
 	this.idleRunning = true
@@ -331,24 +331,24 @@ func (this *StyledTextRenderer) CopyInto(rendererLike StyledTextRendererLike) {
 	}
 	_ = renderer
 	if this.ranges != (nil) {
-		cond889 := make([]int32, this.styleCount<<1)
-		renderer.ranges = cond889
-		var newRanges []int32 = cond889
+		cond888 := make([]int32, this.styleCount<<1)
+		renderer.ranges = cond888
+		var newRanges []int32 = cond888
 		copy(newRanges[0:], this.ranges[0:0+int32(len(newRanges))])
 	}
 	if this.styles != (nil) {
-		cond890 := make([]*StyleRange, this.styleCount)
-		renderer.styles = cond890
-		var newStyles []*StyleRange = cond890
+		cond889 := make([]*StyleRange, this.styleCount)
+		renderer.styles = cond889
+		var newStyles []*StyleRange = cond889
 		for i := int32(0); i < int32(len(newStyles)); i++ {
 			newStyles[i] = castanyToStyleRange(this.styles[i].Clone())
 		}
 		renderer.styleCount = this.styleCount
 	}
 	if this.lines != (nil) {
-		cond891 := make([]*StyledTextRenderer_LineInfo, this.lineCount)
-		renderer.lines = cond891
-		var newLines []*StyledTextRenderer_LineInfo = cond891
+		cond890 := make([]*StyledTextRenderer_LineInfo, this.lineCount)
+		renderer.lines = cond890
+		var newLines []*StyledTextRenderer_LineInfo = cond890
 		for i := int32(0); i < int32(len(newLines)); i++ {
 			newLines[i] = NewStyledTextRendererLineInfoInfo(this.lines[i])
 		}
@@ -481,19 +481,19 @@ func (this *StyledTextRenderer) DrawLines(startLine int32, endLine int32, begX i
 			y += lineInfo.height
 		}
 		y = begY
-		for _, elem892 := range drawInfos.ToArray() {
-			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem892)
+		for _, elem891 := range drawInfos.ToArray() {
+			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem891)
 			this.DrawLineBackground(lineInfo, y, gc, widgetBackground)
 			y += lineInfo.height
 		}
 		y = begY
-		for _, elem893 := range drawInfos.ToArray() {
-			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem893)
+		for _, elem892 := range drawInfos.ToArray() {
+			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem892)
 			this.DrawLineForeground(lineInfo, begX, y, gc, widgetForeground)
 			y += lineInfo.height
 		}
-		for _, elem894 := range drawInfos.ToArray() {
-			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem894)
+		for _, elem893 := range drawInfos.ToArray() {
+			lineInfo := jrt.Cast[*StyledTextRenderer_LineDrawInfo](elem893)
 			this.DisposeTextLayout(lineInfo.layout)
 		}
 		return y - begY
@@ -661,23 +661,23 @@ func (this *StyledTextRenderer) GetFont(style int32) *Font {
 		if this.boldFont != (nil) {
 			return this.boldFont
 		}
-		cond895 := NewFontDeviceFds(this.device, this.GetFontData(style))
-		this.boldFont = cond895
-		return cond895
+		cond894 := NewFontDeviceFds(this.device, this.GetFontData(style))
+		this.boldFont = cond894
+		return cond894
 	case ITALIC:
 		if this.italicFont != (nil) {
 			return this.italicFont
 		}
-		cond896 := NewFontDeviceFds(this.device, this.GetFontData(style))
-		this.italicFont = cond896
-		return cond896
+		cond895 := NewFontDeviceFds(this.device, this.GetFontData(style))
+		this.italicFont = cond895
+		return cond895
 	case BOLD | ITALIC:
 		if this.boldItalicFont != (nil) {
 			return this.boldItalicFont
 		}
-		cond897 := NewFontDeviceFds(this.device, this.GetFontData(style))
-		this.boldItalicFont = cond897
-		return cond897
+		cond896 := NewFontDeviceFds(this.device, this.GetFontData(style))
+		this.boldItalicFont = cond896
+		return cond896
 	default:
 		return this.regularFont
 	}
@@ -1366,13 +1366,13 @@ func (this *StyledTextRenderer) GetTextLayoutLineIndexOrientationWidthLineSpacin
 				var style *TextStyle = upcastStyleRangeToTextStyle(this.GetStyleRange(styles[i>>1]))
 				var endIndex int32 = int32(math.Max(float64(start), float64(int32(math.Min(float64(length), float64(end+1))))))
 				if style.Metrics != (nil) && strings.Contains(jrt.Substring(line, start, endIndex), "\t") {
-					var cond898 string
+					var cond897 string
 					if end < jrt.StringLength(line) {
-						cond898 = jrt.Substring(line, end+1, jrt.StringLength(line))
+						cond897 = jrt.Substring(line, end+1, jrt.StringLength(line))
 					} else {
-						cond898 = ""
+						cond897 = ""
 					}
-					line = fmt.Sprintf("%s%s%s", jrt.Substring(line, 0, start), strings.ReplaceAll(jrt.Substring(line, start, endIndex), string(rune('\u0009')), string(rune(' '))), (cond898))
+					line = fmt.Sprintf("%s%s%s", jrt.Substring(line, 0, start), strings.ReplaceAll(jrt.Substring(line, start, endIndex), string(rune('\u0009')), string(rune(' '))), (cond897))
 				}
 				styleEntries.Add(NewStyledTextRendererStyleEntry(style, start, end))
 				lastOffset = int32(math.Max(float64(lastOffset), float64(end)))
@@ -1397,13 +1397,13 @@ func (this *StyledTextRenderer) GetTextLayoutLineIndexOrientationWidthLineSpacin
 				var style *TextStyle = upcastStyleRangeToTextStyle(this.GetStyleRange(styles[i]))
 				var endIndex int32 = int32(math.Max(float64(start), float64(int32(math.Min(float64(length), float64(end+1))))))
 				if style.Metrics != (nil) && strings.Contains(jrt.Substring(line, start, endIndex), "\t") {
-					var cond899 string
+					var cond898 string
 					if end < jrt.StringLength(line) {
-						cond899 = jrt.Substring(line, end+1, jrt.StringLength(line))
+						cond898 = jrt.Substring(line, end+1, jrt.StringLength(line))
 					} else {
-						cond899 = ""
+						cond898 = ""
 					}
-					line = fmt.Sprintf("%s%s%s", jrt.Substring(line, 0, start), strings.ReplaceAll(jrt.Substring(line, start, endIndex), string(rune('\u0009')), string(rune(' '))), (cond899))
+					line = fmt.Sprintf("%s%s%s", jrt.Substring(line, 0, start), strings.ReplaceAll(jrt.Substring(line, start, endIndex), string(rune('\u0009')), string(rune(' '))), (cond898))
 				}
 				styleEntries.Add(NewStyledTextRendererStyleEntry(style, start, end))
 				lastOffset = int32(math.Max(float64(lastOffset), float64(end)))
@@ -1431,8 +1431,8 @@ func (this *StyledTextRenderer) GetTextLayoutLineIndexOrientationWidthLineSpacin
 	layout.SetAlignment(alignment)
 	layout.SetJustify(justify)
 	layout.SetTextDirection(textDirection)
-	for _, elem900 := range styleEntries.ToArray() {
-		styleEntry := jrt.Cast[*StyledTextRenderer_StyleEntry](elem900)
+	for _, elem899 := range styleEntries.ToArray() {
+		styleEntry := jrt.Cast[*StyledTextRenderer_StyleEntry](elem899)
 		layout.SetStyle(styleEntry.Style, styleEntry.Start, styleEntry.End)
 	}
 	if this.styledText != (nil) && this.styledText.ime != (nil) {
@@ -1596,8 +1596,8 @@ func (this *StyledTextRenderer) ResetLines(lines *jrt.List) {
 		return
 	}
 	var resetLineCount int32 = 0
-	for _, elem901 := range lines.ToArray() {
-		line := jrt.Cast[any](elem901)
+	for _, elem900 := range lines.ToArray() {
+		line := jrt.Cast[any](elem900)
 		if jrt.Cast[int32](line) >= 0 || jrt.Cast[int32](line) < this.lineCount {
 			resetLineCount++
 			this.GetLineSize(jrt.Cast[int32](line)).ResetSize()
@@ -1891,12 +1891,12 @@ func (this *StyledTextRenderer) SetStyleRanges(newRanges []int32, newStyles []*S
 				i++
 			}() {
 				var newStyle *StyleRange = newStyles[i]
+				t901 := j
+				j++
+				newRanges[t901] = newStyle.Start
 				t902 := j
 				j++
-				newRanges[t902] = newStyle.Start
-				t903 := j
-				j++
-				newRanges[t903] = newStyle.Length
+				newRanges[t902] = newStyle.Length
 				var index int32 = 0
 				for index < this.stylesSetCount {
 					if this.stylesSet[index].SimilarTo(newStyle) {
@@ -1910,9 +1910,9 @@ func (this *StyledTextRenderer) SetStyleRanges(newRanges []int32, newStyles []*S
 						copy(tmpStylesSet[0:], this.stylesSet[0:0+this.stylesSetCount])
 						this.stylesSet = tmpStylesSet
 					}
-					t904 := this.stylesSetCount
+					t903 := this.stylesSetCount
 					this.stylesSetCount++
-					this.stylesSet[t904] = newStyle
+					this.stylesSet[t903] = newStyle
 				}
 				tmpStyles[i] = this.stylesSet[index]
 			}
@@ -1937,12 +1937,12 @@ func (this *StyledTextRenderer) SetStyleRanges(newRanges []int32, newStyles []*S
 			for ; i < this.styleCount; func() {
 				i++
 			}() {
+				t904 := j
+				j++
+				this.ranges[t904] = this.styles[i].Start
 				t905 := j
 				j++
-				this.ranges[t905] = this.styles[i].Start
-				t906 := j
-				j++
-				this.ranges[t906] = this.styles[i].Length
+				this.ranges[t905] = this.styles[i].Length
 			}
 		}
 	}
@@ -1954,12 +1954,12 @@ func (this *StyledTextRenderer) SetStyleRanges(newRanges []int32, newStyles []*S
 			for ; i < int32(len(newStyles)); func() {
 				i++
 			}() {
+				t906 := j
+				j++
+				newRanges[t906] = newStyles[i].Start
 				t907 := j
 				j++
-				newRanges[t907] = newStyles[i].Start
-				t908 := j
-				j++
-				newRanges[t908] = newStyles[i].Length
+				newRanges[t907] = newStyles[i].Length
 			}
 		}
 	}
@@ -2056,22 +2056,22 @@ func (this *StyledTextRenderer) SetStyleRanges(newRanges []int32, newStyles []*S
 			}
 			style = this.styles[modifyStart]
 			if style.Start < newStart && newStart < style.Start+style.Length {
-				t910 := mergeCount
+				t909 := mergeCount
 				mergeCount++
-				mergeStyles[t910] = castanyToStyleRange(style.Clone())
-				style = mergeStyles[t910]
+				mergeStyles[t909] = castanyToStyleRange(style.Clone())
+				style = mergeStyles[t909]
 				style.Length = newStart - style.Start
 			}
-			t911 := mergeCount
+			t910 := mergeCount
 			mergeCount++
-			mergeStyles[t911] = newStyle
+			mergeStyles[t910] = newStyle
 			if modifyEnd < this.styleCount {
 				style = this.styles[modifyEnd]
 				if style.Start < newEnd && newEnd < style.Start+style.Length {
-					t912 := mergeCount
+					t911 := mergeCount
 					mergeCount++
-					mergeStyles[t912] = castanyToStyleRange(style.Clone())
-					style = mergeStyles[t912]
+					mergeStyles[t911] = castanyToStyleRange(style.Clone())
+					style = mergeStyles[t911]
 					style.Length += style.Start - newEnd
 					style.Start = newEnd
 					modifyLast = 1
@@ -2269,9 +2269,9 @@ func (this *StyledTextRenderer) UpdateBullets(startLine int32, replaceLineCount 
 				}() {
 					var bullet *Bullet = this.bullets[i]
 					if bullet.Size() > 0 {
-						t914 := j
+						t913 := j
 						j++
-						newBulletsList[t914] = bullet
+						newBulletsList[t913] = bullet
 					}
 				}
 			}

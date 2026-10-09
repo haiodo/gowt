@@ -44,12 +44,12 @@ func (this *DropTargetEffect) GetControl() *Control {
 }
 
 func (this *DropTargetEffect) GetItem(x int32, y int32) *Widget {
-	_, ok800 := isControlToTable(this.control)
-	if ok800 {
+	_, ok975 := isControlToTable(this.control)
+	if ok975 {
 		return this.GetItemTableXY(castControlToTable(this.control), x, y)
 	}
-	_, ok801 := isControlToTree(this.control)
-	if ok801 {
+	_, ok976 := isControlToTree(this.control)
+	if ok976 {
 		return this.GetItemTreeXY(castControlToTree(this.control), x, y)
 	}
 	return nil
@@ -147,13 +147,13 @@ func (this *DropTargetEffect) NextItem(treeLike TreeLike, itemLike TreeItemLike)
 	}
 	for {
 		if index+1 < count {
-			var cond802 *TreeItem
+			var cond977 *TreeItem
 			if parentItem == (nil) {
-				cond802 = tree.GetItem(index + 1)
+				cond977 = tree.GetItem(index + 1)
 			} else {
-				cond802 = parentItem.GetItem(index + 1)
+				cond977 = parentItem.GetItem(index + 1)
 			}
-			return cond802
+			return cond977
 		}
 		if parentItem == (nil) {
 			return nil

@@ -302,13 +302,6 @@ func castcocoaNSObjectTococoaNSURL(x *cocoa.NSObject) *cocoa.NSURL {
 	return v
 }
 
-func upcastcocoaNSURLTococoaId(x *cocoa.NSURL) *cocoa.Id {
-	if x == nil {
-		return nil
-	}
-	return x.AsId()
-}
-
 // j2go: instanceof helper for cocoa.NSArray and its subclasses within the translated set.
 func idImplAsNSArray(x any) (*cocoa.NSArray, bool) {
 	switch v := x.(type) {

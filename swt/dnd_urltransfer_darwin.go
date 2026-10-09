@@ -78,7 +78,7 @@ func (this *URLTransfer) javaToNative_(object any, transferData *TransferData) {
 	if !this.CheckURL(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var url string = object.(string)
+	var url string = jrt.Cast[string](object)
 	var nsString *cocoa.NSString = cocoa.NSStringStringWith(url)
 	var escapedString *cocoa.NSString = nsString.StringByAddingPercentEscapesUsingEncoding(int64(cocoa.OSNSUTF8StringEncoding))
 	transferData.Data = upcastcocoaNSURLTococoaNSObject(cocoa.NSURLURLWithString(escapedString))
@@ -103,7 +103,7 @@ func (this *URLTransfer) getTypeNames_() []string {
 }
 
 func (this *URLTransfer) CheckURL(object any) bool {
-	return !jrt.IsNil(object) && func() bool { _, ok838 := object.(string); return (ok838) }() && jrt.StringLength((object.(string))) > 0
+	return !jrt.IsNil(object) && func() bool { _, ok1013 := object.(string); return (ok1013) }() && jrt.StringLength((jrt.Cast[string](object))) > 0
 }
 
 func (this *URLTransfer) validate_(object any) bool {

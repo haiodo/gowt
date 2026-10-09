@@ -53,7 +53,7 @@ func (this *Test_org_eclipse_swt_dnd_HTMLTransfer) GetContents() string {
 	})
 	var o any = future.Get()
 	junit.AssertInstanceOf[string](o)
-	return o.(string)
+	return jrt.Cast[string](o)
 }
 
 func (this *Test_org_eclipse_swt_dnd_HTMLTransfer) Test_Validate() {
@@ -102,14 +102,11 @@ func (this *Test_org_eclipse_swt_dnd_HTMLTransfer) Test_javaToNative() {
 	this.OpenAndFocusShell(true)
 	this.SetContents(test)
 	this.OpenAndFocusRemote()
-	var result string = jrt.Cast[string](func() string {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() string {
-				return this.remote.GetHtmlContents()
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var result string = jrt.Cast[string](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() string {
+			return this.remote.GetHtmlContents()
+		})()
+	}}))
 	result = this.TrimTrailingNulCharacter(result)
 	junit.AssertEquals(test, result)
 }
@@ -142,11 +139,4 @@ func init() {
 		},
 		Tests: tests,
 	})
-}
-
-func upcastswtHTMLTransferToswtTransfer(x *swt.HTMLTransfer) *swt.Transfer {
-	if x == nil {
-		return nil
-	}
-	return &x.Transfer
 }

@@ -229,6 +229,11 @@ func typedListenerImplAsTypedListener(x any) (*TypedListener, bool) {
 			return nil, false
 		}
 		return v, true
+	case *StyledTextListener:
+		if v == nil {
+			return nil, false
+		}
+		return &v.TypedListener, true
 	case *DNDListener:
 		if v == nil {
 			return nil, false

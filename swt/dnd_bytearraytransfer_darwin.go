@@ -79,7 +79,7 @@ func (this *ByteArrayTransfer) nativeToJava_(transferData *TransferData) any {
 }
 
 func (this *ByteArrayTransfer) CheckByteArray(object any) bool {
-	return (!jrt.IsNil(object) && func() bool { _, ok804 := object.([]int8); return ok804 }() && int32(len((jrt.Cast[[]int8](object)))) > 0)
+	return (!jrt.IsNil(object) && func() bool { _, ok979 := object.([]int8); return ok979 }() && int32(len((jrt.Cast[[]int8](object)))) > 0)
 }
 
 func upcastcocoaNSDataTococoaNSObject(x *cocoa.NSData) *cocoa.NSObject {

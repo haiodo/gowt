@@ -98,6 +98,6 @@ func (this *ByteArrayTransfer) nativeToJava_(transferData *TransferData) any {
 }
 
 func (this *ByteArrayTransfer) CheckByteArray(object any) bool {
-	_, ok852 := object.([]int8)
-	return (ok852 && int32(len((jrt.Cast[[]int8](object)))) > 0)
+	_, ok1113 := object.([]int8)
+	return (ok1113 && int32(len((jrt.Cast[[]int8](object)))) > 0)
 }

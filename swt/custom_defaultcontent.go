@@ -57,11 +57,11 @@ func (this *DefaultContent) initDefaultContent() {
 	this.highWatermark = 300
 	this.lowWatermark = 50
 	this.lines = func() [][]int32 {
-		a800 := make([][]int32, 50)
-		for i := range a800 {
-			a800[i] = make([]int32, 2)
+		a799 := make([][]int32, 50)
+		for i := range a799 {
+			a799[i] = make([]int32, 2)
 		}
-		return a800
+		return a799
 	}()
 	this.lineCount = 0
 	this.expandExp = 1
@@ -73,11 +73,11 @@ func (this *DefaultContent) AddLineIndex(start int32, length int32) {
 	var size int32 = int32(len(this.lines))
 	if this.lineCount == size {
 		var newLines [][]int32 = func() [][]int32 {
-			a801 := make([][]int32, size+CompatibilityPow2(this.expandExp))
-			for i := range a801 {
-				a801[i] = make([]int32, 2)
+			a800 := make([][]int32, size+CompatibilityPow2(this.expandExp))
+			for i := range a800 {
+				a800[i] = make([]int32, 2)
 			}
-			return a801
+			return a800
 		}()
 		copy(newLines[0:], this.lines[0:0+size])
 		this.lines = newLines
@@ -93,11 +93,11 @@ func (this *DefaultContent) AddLineIndexStartLengthLinesArrayCount(start int32, 
 	var newLines [][]int32 = linesArray
 	if count == size {
 		newLines = func() [][]int32 {
-			a802 := make([][]int32, size+CompatibilityPow2(this.replaceExpandExp))
-			for i := range a802 {
-				a802[i] = make([]int32, 2)
+			a801 := make([][]int32, size+CompatibilityPow2(this.replaceExpandExp))
+			for i := range a801 {
+				a801[i] = make([]int32, 2)
 			}
-			return a802
+			return a801
 		}()
 		this.replaceExpandExp++
 		copy(newLines[0:], linesArray[0:0+size])
@@ -209,11 +209,11 @@ func (this *DefaultContent) ValidateReplace(start int32, replaceLength int32) {
 
 func (this *DefaultContent) IndexLinesOffsetLengthNumLines(offset int32, length int32, numLines int32) [][]int32 {
 	var indexedLines [][]int32 = func() [][]int32 {
-		a803 := make([][]int32, numLines)
-		for i := range a803 {
-			a803[i] = make([]int32, 2)
+		a802 := make([][]int32, numLines)
+		for i := range a802 {
+			a802[i] = make([]int32, 2)
 		}
-		return a803
+		return a802
 	}()
 	var start int32 = 0
 	var lineCount int32 = 0
@@ -244,11 +244,11 @@ func (this *DefaultContent) IndexLinesOffsetLengthNumLines(offset int32, length 
 		}
 	}
 	var newLines [][]int32 = func() [][]int32 {
-		a804 := make([][]int32, lineCount+1)
-		for i := range a804 {
-			a804[i] = make([]int32, 2)
+		a803 := make([][]int32, lineCount+1)
+		for i := range a803 {
+			a803[i] = make([]int32, 2)
 		}
-		return a804
+		return a803
 	}()
 	copy(newLines[0:], indexedLines[0:0+lineCount])
 	var range_ []int32 = []int32{start, i - start}
@@ -549,11 +549,11 @@ func (this *DefaultContent) ExpandLinesBy(numLines int32) {
 		return
 	}
 	var newLines [][]int32 = func() [][]int32 {
-		a805 := make([][]int32, size+int32(math.Max(float64(10), float64(numLines))))
-		for i := range a805 {
-			a805[i] = make([]int32, 2)
+		a804 := make([][]int32, size+int32(math.Max(float64(10), float64(numLines))))
+		for i := range a804 {
+			a804[i] = make([]int32, 2)
 		}
-		return a805
+		return a804
 	}()
 	copy(newLines[0:], this.lines[0:0+size])
 	this.lines = newLines
@@ -629,8 +629,8 @@ func (this *DefaultContent) SendTextEvent(eventLike StyledTextEventLike) {
 		event = eventLike.AsStyledTextEvent()
 	}
 	_ = event
-	for _, elem806 := range this.textListeners.ToArray() {
-		textListener := jrt.Cast[*StyledTextListener](elem806)
+	for _, elem805 := range this.textListeners.ToArray() {
+		textListener := jrt.Cast[*StyledTextListener](elem805)
 		textListener.impl.handleEvent_(upcastStyledTextEventToEvent(event))
 	}
 }

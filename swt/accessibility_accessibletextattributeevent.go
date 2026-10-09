@@ -50,13 +50,13 @@ func (this *AccessibleTextAttributeEvent) ToAttributeString(attributes []string)
 	var attributeString *jrt.StringBuilder = jrt.NewStringBuilder()
 	for i := int32(0); i < int32(len(attributes)); i++ {
 		attributeString.Append(attributes[i])
-		var cond799 string
+		var cond916 string
 		if i%2 == 0 {
-			cond799 = ":"
+			cond916 = ":"
 		} else {
-			cond799 = ";"
+			cond916 = ";"
 		}
-		attributeString.Append(cond799)
+		attributeString.Append(cond916)
 	}
 	return attributeString.ToString()
 }

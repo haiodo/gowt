@@ -53,7 +53,7 @@ func (this *Test_org_eclipse_swt_dnd_URLTransfer) GetContents() string {
 	})
 	var o any = future.Get()
 	junit.AssertInstanceOf[string](o)
-	return o.(string)
+	return jrt.Cast[string](o)
 }
 
 func (this *Test_org_eclipse_swt_dnd_URLTransfer) Test_Validate() {
@@ -102,14 +102,11 @@ func (this *Test_org_eclipse_swt_dnd_URLTransfer) Test_javaToNative() {
 	this.OpenAndFocusShell(true)
 	this.SetContents(test)
 	this.OpenAndFocusRemote()
-	var bytes []int8 = jrt.Cast[[]int8](func() []int8 {
-		_ = []any{&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
-			return (func() []int8 {
-				return this.remote.GetUrlContents()
-			})()
-		}}}
-		panic("j2go: unresolved call runOperationInThread")
-	}())
+	var bytes []int8 = jrt.Cast[[]int8](SwtTestUtilRunOperationInThread(&SwtTestUtil_ExceptionalSupplierFunc{fn: func() any {
+		return (func() []int8 {
+			return this.remote.GetUrlContents()
+		})()
+	}}))
 	var result string = jrt.StringFromBytes(bytes)
 	result = this.TrimTrailingNulCharacter(result)
 	junit.AssertEquals(test, result)

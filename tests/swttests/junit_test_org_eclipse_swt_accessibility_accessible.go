@@ -33,56 +33,56 @@ func (this *Test_org_eclipse_swt_accessibility_Accessible) TearDown() {
 }
 
 func (this *Test_org_eclipse_swt_accessibility_Accessible) Test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
-	anon115 := &Test_org_eclipse_swt_accessibility_AccessibleAnon1{}
-	anon115.fnGetValue = func(e *swt.AccessibleControlEvent) {
+	anon135 := &Test_org_eclipse_swt_accessibility_AccessibleAnon1{}
+	anon135.fnGetValue = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetChild = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetChild = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetChildAtPoint = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetChildAtPoint = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetChildCount = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetChildCount = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetChildren = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetChildren = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetDefaultAction = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetDefaultAction = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetFocus = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetFocus = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetLocation = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetLocation = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetRole = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetRole = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetSelection = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetSelection = func(e *swt.AccessibleControlEvent) {
 	}
-	anon115.fnGetState = func(e *swt.AccessibleControlEvent) {
+	anon135.fnGetState = func(e *swt.AccessibleControlEvent) {
 	}
-	var listener swt.AccessibleControlListener = anon115
+	var listener swt.AccessibleControlListener = anon135
 	this.accessible.AddAccessibleControlListener(listener)
 	this.accessible.RemoveAccessibleControlListener(listener)
 }
 
 func (this *Test_org_eclipse_swt_accessibility_Accessible) Test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
-	anon116 := &Test_org_eclipse_swt_accessibility_AccessibleAnon2{}
-	anon116.fnGetName = func(e *swt.AccessibleEvent) {
+	anon136 := &Test_org_eclipse_swt_accessibility_AccessibleAnon2{}
+	anon136.fnGetName = func(e *swt.AccessibleEvent) {
 	}
-	anon116.fnGetDescription = func(e *swt.AccessibleEvent) {
+	anon136.fnGetDescription = func(e *swt.AccessibleEvent) {
 	}
-	anon116.fnGetHelp = func(e *swt.AccessibleEvent) {
+	anon136.fnGetHelp = func(e *swt.AccessibleEvent) {
 	}
-	anon116.fnGetKeyboardShortcut = func(e *swt.AccessibleEvent) {
+	anon136.fnGetKeyboardShortcut = func(e *swt.AccessibleEvent) {
 	}
-	var listener swt.AccessibleListener = anon116
+	var listener swt.AccessibleListener = anon136
 	this.accessible.AddAccessibleListener(listener)
 	this.accessible.RemoveAccessibleListener(listener)
 }
 
 func (this *Test_org_eclipse_swt_accessibility_Accessible) Test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
-	anon117 := &Test_org_eclipse_swt_accessibility_AccessibleAnon3{}
-	anon117.fnGetSelectionRange = func(e *swt.AccessibleTextEvent) {
+	anon137 := &Test_org_eclipse_swt_accessibility_AccessibleAnon3{}
+	anon137.fnGetSelectionRange = func(e *swt.AccessibleTextEvent) {
 	}
-	anon117.fnGetCaretOffset = func(e *swt.AccessibleTextEvent) {
+	anon137.fnGetCaretOffset = func(e *swt.AccessibleTextEvent) {
 	}
-	var listener swt.AccessibleTextListener = anon117
+	var listener swt.AccessibleTextListener = anon137
 	this.accessible.AddAccessibleTextListener(listener)
 	this.accessible.RemoveAccessibleTextListener(listener)
 }

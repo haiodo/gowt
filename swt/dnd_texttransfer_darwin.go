@@ -58,7 +58,7 @@ func (this *TextTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckText(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(object.(string)))
+	transferData.Data = upcastcocoaNSStringTococoaNSObject(cocoa.NSStringStringWith(jrt.Cast[string](object)))
 }
 
 func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
@@ -78,7 +78,7 @@ func (this *TextTransfer) getTypeNames_() []string {
 }
 
 func (this *TextTransfer) CheckText(object any) bool {
-	return (!jrt.IsNil(object) && func() bool { _, ok836 := object.(string); return ok836 }() && jrt.StringLength((object.(string))) > 0)
+	return (!jrt.IsNil(object) && func() bool { _, ok1011 := object.(string); return ok1011 }() && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *TextTransfer) validate_(object any) bool {

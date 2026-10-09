@@ -105,19 +105,25 @@ func (this *Clipboard) Dispose() {
 		result = win32.COMOleFlushClipboard()
 	}
 	var retryCount int32 = 0
-	for result != win32.COMS_OK && func() bool { t854 := retryCount; retryCount++; return t854 < ClipboardRETRY_LIMIT }() {
-		tbrk855 := false
+	for result != win32.COMS_OK && func() bool { t1115 := retryCount; retryCount++; return t1115 < ClipboardRETRY_LIMIT }() {
+		tbrk1116 := false
 		func() {
 			defer func() {
 				r := recover()
 				if r == nil {
 					return
 				}
-				if false {
-					var e error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.InterruptedException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.InterruptedException)
 					_ = e
-					func() any { _ = []any{jrt.CurrentThread()}; panic("j2go: unresolved call interrupt") }()
-					tbrk855 = true
+					jrt.Ignore(jrt.CurrentThread())
+					tbrk1116 = true
 					return
 				} else {
 					panic(r)
@@ -125,7 +131,7 @@ func (this *Clipboard) Dispose() {
 			}()
 			jrt.Sleep(int64(25))
 		}()
-		if tbrk855 {
+		if tbrk1116 {
 			break
 		}
 		if win32.COMOleIsCurrentClipboard(this.iDataObject.GetAddress()) != win32.COMS_OK {
@@ -164,7 +170,7 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 	var ppv []int64 = make([]int64, 1)
 	var retryCount int32 = 0
 	var result int32 = win32.COMOleGetClipboard(ppv)
-	for result != win32.COMS_OK && func() bool { t857 := retryCount; retryCount++; return t857 < ClipboardRETRY_LIMIT }() {
+	for result != win32.COMS_OK && func() bool { t1118 := retryCount; retryCount++; return t1118 < ClipboardRETRY_LIMIT }() {
 		func() {
 			defer func() {
 				r := recover()
@@ -187,8 +193,8 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 		return nil
 	}
 	var dataObject *win32.IDataObject = win32.NewIDataObject(ppv[0])
-	var tret858 any
-	tretd859 := false
+	var tret1119 any
+	tretd1120 := false
 	func() {
 		defer func() {
 			dataObject.Release()
@@ -196,14 +202,14 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 		for _, data := range transfer.impl.getSupportedTypes_() {
 			if dataObject.QueryGetData(data.Formatetc) == win32.COMS_OK {
 				data.PIDataObject = ppv[0]
-				tret858 = transfer.impl.nativeToJava_(data)
-				tretd859 = true
+				tret1119 = transfer.impl.nativeToJava_(data)
+				tretd1120 = true
 				return
 			}
 		}
 	}()
-	if tretd859 {
-		return tret858
+	if tretd1120 {
+		return tret1119
 	}
 	return nil
 }
@@ -251,7 +257,7 @@ func (this *Clipboard) SetContentsDataDataTypesClipboards(data []any, dataTypes 
 	this.transferAgents = dataTypes
 	var result int32 = win32.COMOleSetClipboard(this.iDataObject.GetAddress())
 	var retryCount int32 = 0
-	for result != win32.COMS_OK && func() bool { t861 := retryCount; retryCount++; return t861 < ClipboardRETRY_LIMIT }() {
+	for result != win32.COMS_OK && func() bool { t1122 := retryCount; retryCount++; return t1122 < ClipboardRETRY_LIMIT }() {
 		func() {
 			defer func() {
 				r := recover()
@@ -281,28 +287,28 @@ func (this *Clipboard) AddRef() int32 {
 }
 
 func (this *Clipboard) CreateCOMInterfaces() {
-	anon862 := &ClipboardAnon1{}
-	anon862.impl = anon862
-	anon862.initCOMObject([]int32{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1})
-	anon862.fnmethod0_ = func(args []int64) int64 {
+	anon1123 := &ClipboardAnon1{}
+	anon1123.impl = anon1123
+	anon1123.initCOMObject([]int32{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1})
+	anon1123.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon862.fnmethod1_ = func(args []int64) int64 {
+	anon1123.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon862.fnmethod2_ = func(args []int64) int64 {
+	anon1123.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon862.fnmethod3_ = func(args []int64) int64 {
+	anon1123.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.GetData(args[0], args[1]))
 	}
-	anon862.fnmethod5_ = func(args []int64) int64 {
+	anon1123.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.QueryGetData(args[0]))
 	}
-	anon862.fnmethod8_ = func(args []int64) int64 {
+	anon1123.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.EnumFormatEtc(int32(args[0]), args[1]))
 	}
-	this.iDataObject = &anon862.COMObject
+	this.iDataObject = &anon1123.COMObject
 }
 
 func (this *Clipboard) DisposeCOMInterfaces() {

@@ -46,7 +46,7 @@ func (this *TextTransfer) javaToNative_(object any, transferData *TransferData) 
 		DNDError(DNDERROR_INVALID_DATA)
 	}
 	transferData.Result = win32.COME_FAIL
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	switch transferData.Type {
 	case win32.COMCF_UNICODETEXT:
 		{
@@ -103,8 +103,8 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 		return nil
 	}
 	var hMem int64 = stgmedium.UnionField
-	var tret905 any
-	tretd906 := false
+	var tret1166 any
+	tretd1167 := false
 	func() {
 		defer func() {
 			win32.OSGlobalFree(hMem)
@@ -114,19 +114,19 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 			{
 				var size int32 = win32.OSGlobalSize(hMem) / 2 * 2
 				if size == 0 {
-					tret905 = nil
-					tretd906 = true
+					tret1166 = nil
+					tretd1167 = true
 					return
 				}
 				var chars []uint16 = make([]uint16, size/2)
 				var ptr int64 = win32.OSGlobalLock(hMem)
 				if ptr == 0 {
-					tret905 = nil
-					tretd906 = true
+					tret1166 = nil
+					tretd1167 = true
 					return
 				}
-				var tret907 any
-				tretd908 := false
+				var tret1168 any
+				tretd1169 := false
 				func() {
 					defer func() {
 						win32.OSGlobalUnlock(hMem)
@@ -139,13 +139,13 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 							break
 						}
 					}
-					tret907 = string(utf16.Decode(chars[0 : 0+length]))
-					tretd908 = true
+					tret1168 = string(utf16.Decode(chars[0 : 0+length]))
+					tretd1169 = true
 					return
 				}()
-				if tretd908 {
-					tret905 = tret907
-					tretd906 = true
+				if tretd1169 {
+					tret1166 = tret1168
+					tretd1167 = true
 					return
 				}
 			}
@@ -154,12 +154,12 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 			{
 				var lpMultiByteStr int64 = win32.OSGlobalLock(hMem)
 				if lpMultiByteStr == 0 {
-					tret905 = nil
-					tretd906 = true
+					tret1166 = nil
+					tretd1167 = true
 					return
 				}
-				var tret909 any
-				tretd910 := false
+				var tret1170 any
+				tretd1171 := false
 				func() {
 					defer func() {
 						win32.OSGlobalUnlock(hMem)
@@ -167,26 +167,26 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 					var codePage int32 = win32.OSGetACP()
 					var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, nil, 0)
 					if cchWideChar == 0 {
-						tret909 = nil
-						tretd910 = true
+						tret1170 = nil
+						tretd1171 = true
 						return
 					}
 					var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 					win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-					tret909 = string(utf16.Decode(lpWideCharStr))
-					tretd910 = true
+					tret1170 = string(utf16.Decode(lpWideCharStr))
+					tretd1171 = true
 					return
 				}()
-				if tretd910 {
-					tret905 = tret909
-					tretd906 = true
+				if tretd1171 {
+					tret1166 = tret1170
+					tretd1167 = true
 					return
 				}
 			}
 		}
 	}()
-	if tretd906 {
-		return tret905
+	if tretd1167 {
+		return tret1166
 	}
 	return nil
 }
@@ -200,8 +200,8 @@ func (this *TextTransfer) getTypeNames_() []string {
 }
 
 func (this *TextTransfer) CheckText(object any) bool {
-	_, ok912 := object.(string)
-	return (ok912 && jrt.StringLength((object.(string))) > 0)
+	_, ok1173 := object.(string)
+	return (ok1173 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *TextTransfer) validate_(object any) bool {

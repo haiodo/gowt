@@ -64,7 +64,7 @@ func (this *HTMLTransfer) javaToNative_(object any, transferData *TransferData) 
 	if !this.CheckHTML(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	var utf8 []int8 = gtk.ConverterWcsToMbcs(string_, true)
 	var byteCount int32 = int32(len(utf8))
 	var pValue int64 = gtk.OSG_malloc(int64(byteCount))
@@ -103,13 +103,13 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 		string_ = string(utf16.Decode(unicode))
 	}
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond776 any
+	var cond897 any
 	if end == -1 {
-		cond776 = string_
+		cond897 = string_
 	} else {
-		cond776 = jrt.Substring(string_, 0, end)
+		cond897 = jrt.Substring(string_, 0, end)
 	}
-	return cond776
+	return cond897
 }
 
 func (this *HTMLTransfer) getTypeIds_() []int32 {
@@ -121,8 +121,8 @@ func (this *HTMLTransfer) getTypeNames_() []string {
 }
 
 func (this *HTMLTransfer) CheckHTML(object any) bool {
-	_, ok778 := object.(string)
-	return (ok778 && !(len((object.(string))) == 0))
+	_, ok899 := object.(string)
+	return (ok899 && !(len((jrt.Cast[string](object))) == 0))
 }
 
 func (this *HTMLTransfer) validate_(object any) bool {

@@ -35,12 +35,12 @@ func NewAccessibleTableHeader(accessibleLike AccessibleLike, childID int32) *Acc
 func (this *AccessibleTableHeader) initAccessibleTableHeader(accessible *Accessible, childID int32) {
 	this.Accessible.initAccessible(accessible)
 	this.index = childID
-	anon854 := &AccessibleTableHeaderAnon1{}
-	anon854.initAccessibleControlAdapter()
-	anon854.fnGetChildren = func(e *AccessibleControlEvent) {
+	anon971 := &AccessibleTableHeaderAnon1{}
+	anon971.initAccessibleControlAdapter()
+	anon971.fnGetChildren = func(e *AccessibleControlEvent) {
 		var validColumnCount int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 		var children []*Accessible = make([]*Accessible, validColumnCount)
-		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon854.AccessibleControlAdapter)
+		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon971.AccessibleControlAdapter)
 		for i := int32(0); i < validColumnCount; i++ {
 			event.ChildID = i
 			event.Detail = ACCCHILDID_CHILD_AT_INDEX
@@ -53,13 +53,13 @@ func (this *AccessibleTableHeader) initAccessibleTableHeader(accessible *Accessi
 		}
 		e.Children = upcastArrAccessibleToany(children)
 	}
-	anon854.fnGetChildCount = func(e *AccessibleControlEvent) {
+	anon971.fnGetChildCount = func(e *AccessibleControlEvent) {
 		e.Detail = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 	}
-	anon854.fnGetLocation = func(e *AccessibleControlEvent) {
+	anon971.fnGetLocation = func(e *AccessibleControlEvent) {
 		var validColumnCount int32 = int32(math.Max(float64(1), float64(this.parent.GetColumnCount())))
 		var children []*Accessible = make([]*Accessible, validColumnCount)
-		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon854.AccessibleControlAdapter)
+		var event *AccessibleControlEvent = NewAccessibleControlEvent(&anon971.AccessibleControlAdapter)
 		for i := int32(0); i < validColumnCount; i++ {
 			event.ChildID = i
 			event.Detail = ACCCHILDID_CHILD_AT_INDEX
@@ -93,10 +93,10 @@ func (this *AccessibleTableHeader) initAccessibleTableHeader(accessible *Accessi
 		e.Width = width
 		e.Height = height
 	}
-	anon854.fnGetRole = func(e *AccessibleControlEvent) {
+	anon971.fnGetRole = func(e *AccessibleControlEvent) {
 		e.Detail = ACCROLE_TABLECOLUMNHEADER
 	}
-	this.AddAccessibleControlListener(anon854)
+	this.AddAccessibleControlListener(anon971)
 }
 
 // j2go: anonymous AccessibleControlAdapter subclass.

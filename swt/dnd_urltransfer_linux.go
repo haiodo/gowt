@@ -64,7 +64,7 @@ func (this *URLTransfer) javaToNative_(object any, transferData *TransferData) {
 	if !this.CheckURL(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	var charCount int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, charCount+1)
 	jrt.GetChars(string_, 0, charCount, chars, 0)
@@ -92,13 +92,13 @@ func (this *URLTransfer) nativeToJava_(transferData *TransferData) any {
 	gtk.CMemmoveOverload10(chars, transferData.PValue, int64(size))
 	var string_ string = string(utf16.Decode(chars))
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond789 any
+	var cond910 any
 	if end == -1 {
-		cond789 = string_
+		cond910 = string_
 	} else {
-		cond789 = jrt.Substring(string_, 0, end)
+		cond910 = jrt.Substring(string_, 0, end)
 	}
-	return cond789
+	return cond910
 }
 
 func (this *URLTransfer) getTypeIds_() []int32 {
@@ -110,7 +110,7 @@ func (this *URLTransfer) getTypeNames_() []string {
 }
 
 func (this *URLTransfer) CheckURL(object any) bool {
-	return !jrt.IsNil(object) && func() bool { _, ok792 := object.(string); return (ok792) }() && jrt.StringLength((object.(string))) > 0
+	return !jrt.IsNil(object) && func() bool { _, ok913 := object.(string); return (ok913) }() && jrt.StringLength((jrt.Cast[string](object))) > 0
 }
 
 func (this *URLTransfer) validate_(object any) bool {

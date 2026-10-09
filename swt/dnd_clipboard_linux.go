@@ -119,42 +119,51 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 	_ = transfer
 	if gtk.GTKGTK4 {
 		var contentsAsync *jrt.CompletableFuture = this.Gtk4_getContentsAsync(transfer, clipboards)
-		var tret749 any
-		tretd750 := false
+		var tret870 any
+		tretd871 := false
 		func() {
 			defer func() {
 				r := recover()
 				if r == nil {
 					return
 				}
-				if false {
-					var e error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.InterruptedException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.InterruptedException)
 					_ = e
-					func() any { _ = []any{jrt.CurrentThread()}; panic("j2go: unresolved call interrupt") }()
-					tret749 = nil
-					tretd750 = true
+					jrt.Ignore(jrt.CurrentThread())
+					tret870 = nil
+					tretd871 = true
 					return
-				} else if false {
-					var e error
+				} else if func() bool {
+					switch r.(type) {
+					case *jrt.TimeoutException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.TimeoutException)
 					_ = e
 					var proxy *ClipboardProxyGTK4 = ClipboardProxyGTK4_getInstance(this.display)
 					proxy.Clear(this, clipboards, true)
-					tret749 = nil
-					tretd750 = true
+					tret870 = nil
+					tretd871 = true
 					return
 				} else {
 					panic(r)
 				}
 			}()
-			tret749 = func() any {
-				_ = []any{this.display, contentsAsync, jrt.DurationOfSeconds(int64(5))}
-				panic("j2go: unresolved call get")
-			}()
-			tretd750 = true
+			tret870 = GTK4GlibFutureGet(this.display, contentsAsync, jrt.DurationOfSeconds(int64(5)))
+			tretd871 = true
 			return
 		}()
-		if tretd750 {
-			return tret749
+		if tretd871 {
+			return tret870
 		}
 	}
 	return this.Gtk3_getContents(transfer, clipboards)
@@ -298,13 +307,13 @@ func (this *Clipboard) GetAvailableTypesClipboards(clipboards int32) []*Transfer
 			result[offset+i].Type = int64(types[i])
 		}
 	}
-	var cond751 []*TransferData
+	var cond872 []*TransferData
 	if result == (nil) {
-		cond751 = make([]*TransferData, 0)
+		cond872 = make([]*TransferData, 0)
 	} else {
-		cond751 = result
+		cond872 = result
 	}
-	return cond751
+	return cond872
 }
 
 func (this *Clipboard) GetAvailableTypeNames() []string {
@@ -324,9 +333,9 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		var buffer []int8 = make([]int8, gtk.CStrlen(pName))
 		gtk.CMemmoveOverload8(buffer, pName, int64(int32(len(buffer))))
 		gtk.OSG_free(pName)
-		t752 := count
+		t873 := count
 		count++
-		result[t752] = fmt.Sprintf("GTKCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
+		result[t873] = fmt.Sprintf("GTKCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
 	}
 	for i := int32(0); i < int32(len(types2)); i++ {
 		var pName int64 = gtk.GDKGdk_atom_name(int64(types2[i]))
@@ -336,9 +345,9 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		var buffer []int8 = make([]int8, gtk.CStrlen(pName))
 		gtk.CMemmoveOverload8(buffer, pName, int64(int32(len(buffer))))
 		gtk.OSG_free(pName)
-		t753 := count
+		t874 := count
 		count++
-		result[t753] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
+		result[t874] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
 	}
 	if count < int32(len(result)) {
 		var temp []string = make([]string, count)
@@ -450,13 +459,13 @@ func (this *Clipboard) Gtk3_clipboard_wait_for_contents(clipboard int64, target 
 	display.SetData(key, nil)
 	var duration int64 = jrt.CurrentTimeMillis() - startTime
 	if selection_data == 0 && duration > 5000 {
-		var cond754 int32
+		var cond875 int32
 		if clipboard == ClipboardGTKCLIPBOARD {
-			cond754 = DNDCLIPBOARD
+			cond875 = DNDCLIPBOARD
 		} else {
-			cond754 = DNDSELECTION_CLIPBOARD
+			cond875 = DNDSELECTION_CLIPBOARD
 		}
-		ClipboardProxy_getInstance(display).SetData(this, upcastArrstringToany([]string{" "}), []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, cond754)
+		ClipboardProxy_getInstance(display).SetData(this, upcastArrstringToany([]string{" "}), []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, cond875)
 	}
 	return selection_data
 }
@@ -478,11 +487,4 @@ func clipboardStatic() {
 			ClipboardTARGET = gtk.GDKGdk_atom_intern(buffer, false)
 		}
 	})
-}
-
-func upcastTextTransferToTransfer(x *TextTransfer) *Transfer {
-	if x == nil {
-		return nil
-	}
-	return &x.Transfer
 }

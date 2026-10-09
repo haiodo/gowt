@@ -182,7 +182,7 @@ func (this *Transfer) GetData(dataObject *win32.IDataObject, pFormatetc *win32.F
 	}()
 	var result int32 = dataObject.GetData(pFormatetc, pmedium)
 	var retryCount int32 = 0
-	for result != win32.COMS_OK && func() bool { t914 := retryCount; retryCount++; return t914 < TransferRETRY_LIMIT }() {
+	for result != win32.COMS_OK && func() bool { t1175 := retryCount; retryCount++; return t1175 < TransferRETRY_LIMIT }() {
 		var msg *win32.MSG = win32.NewMSG()
 		win32.OSPeekMessage(msg, int64(0), 0, 0, win32.OSPM_NOREMOVE|win32.OSPM_NOYIELD)
 		func() {

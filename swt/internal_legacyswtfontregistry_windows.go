@@ -90,8 +90,8 @@ func (this *LegacySWTFontRegistry) RegisterFont(fontDataLike FontDataLike, fontL
 }
 
 func (this *LegacySWTFontRegistry) Dispose() {
-	for _, elem946 := range this.fontsMap.Values().ToArray() {
-		font := jrt.Cast[*Font](elem946)
+	for _, elem945 := range this.fontsMap.Values().ToArray() {
+		font := jrt.Cast[*Font](elem945)
 		if font != (nil) {
 			font.impl.dispose_()
 		}

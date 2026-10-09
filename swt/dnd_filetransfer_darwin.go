@@ -116,7 +116,7 @@ func (this *FileTransfer) getTypeNames_() []string {
 
 func (this *FileTransfer) CheckFile(object any) bool {
 	var strings []string
-	if jrt.IsNil(object) || func() bool { pv, ok832 := object.([]string); strings = pv; return !(ok832) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
+	if jrt.IsNil(object) || func() bool { pv, ok1007 := object.([]string); strings = pv; return !(ok1007) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
 		return false
 	}
 	for i := int32(0); i < int32(len(strings)); i++ {

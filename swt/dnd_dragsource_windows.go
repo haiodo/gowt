@@ -90,16 +90,16 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		this.OnDispose()
 	}})
 	var effect any = control.impl.getDataKey_(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
-	_, ok863 := dragSourceAdapterImplAsDragSourceEffect(effect)
-	if ok863 {
+	_, ok1124 := dragSourceAdapterImplAsDragSourceEffect(effect)
+	if ok1124 {
 		this.dragEffect = castanyToDragSourceEffect(effect)
 	} else {
-		_, ok864 := isControlToTree(control)
-		if ok864 {
+		_, ok1125 := isControlToTree(control)
+		if ok1125 {
 			this.dragEffect = upcastTreeDragSourceEffectToDragSourceEffect(NewTreeDragSourceEffect(castControlToTree(control)))
 		} else {
-			_, ok865 := isControlToTable(control)
-			if ok865 {
+			_, ok1126 := isControlToTable(control)
+			if ok1126 {
 				this.dragEffect = upcastTableDragSourceEffectToDragSourceEffect(NewTableDragSourceEffect(castControlToTable(control)))
 			}
 		}
@@ -414,7 +414,7 @@ func DragSourceQueryInterface(comObjectLike COMObjectLike, riid int64, ppvObject
 	}
 	var guid *win32.GUID = win32.NewGUID()
 	win32.COMMoveMemoryOverload6(guid, riid, win32.GUIDSizeof)
-	if comObject != (nil) && win32.COMIsEqualGUID(guid, win32.COMIIDIUnknown) || (win32.COMIsEqualGUID(guid, win32.COMIIDIDropSource) && func() bool { _, ok873 := isCOMObjectToDragSource_COMIDropSource(comObject); return (ok873) }()) || (win32.COMIsEqualGUID(guid, win32.COMIIDIDataObject) && func() bool { _, ok875 := isCOMObjectToDragSource_COMIDataObject(comObject); return (ok875) }()) {
+	if comObject != (nil) && win32.COMIsEqualGUID(guid, win32.COMIIDIUnknown) || (win32.COMIsEqualGUID(guid, win32.COMIIDIDropSource) && func() bool { _, ok1134 := isCOMObjectToDragSource_COMIDropSource(comObject); return (ok1134) }()) || (win32.COMIsEqualGUID(guid, win32.COMIIDIDataObject) && func() bool { _, ok1136 := isCOMObjectToDragSource_COMIDataObject(comObject); return (ok1136) }()) {
 		win32.OSMoveMemoryOverload79(ppvObject, []int64{comObject.GetAddress()}, win32.CPTR_SIZEOF)
 		comObject.impl.method1_(nil)
 		return win32.COMS_OK

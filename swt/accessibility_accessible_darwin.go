@@ -187,8 +187,8 @@ func (this *Accessible) AddAccessibleTextListener(listener AccessibleTextListene
 	if listener == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	_, ok800 := listener.(AccessibleTextExtendedListener)
-	if ok800 {
+	_, ok917 := listener.(AccessibleTextExtendedListener)
+	if ok917 {
 		if this.accessibleTextExtendedListeners == (nil) {
 			this.accessibleTextExtendedListeners = jrt.NewList()
 		}
@@ -303,113 +303,113 @@ func (this *Accessible) AddRelation(type_ int32, targetLike AccessibleLike) {
 }
 
 func (this *Accessible) AccessibleListenersSize() int32 {
-	var cond801 int32
+	var cond918 int32
 	if this.accessibleListeners == (nil) {
-		cond801 = 0
+		cond918 = 0
 	} else {
-		cond801 = this.accessibleListeners.Size()
+		cond918 = this.accessibleListeners.Size()
 	}
-	return cond801
+	return cond918
 }
 
 func (this *Accessible) AccessibleControlListenersSize() int32 {
-	var cond802 int32
+	var cond919 int32
 	if this.accessibleControlListeners == (nil) {
-		cond802 = 0
+		cond919 = 0
 	} else {
-		cond802 = this.accessibleControlListeners.Size()
+		cond919 = this.accessibleControlListeners.Size()
 	}
-	return cond802
+	return cond919
 }
 
 func (this *Accessible) AccessibleValueListenersSize() int32 {
-	var cond803 int32
+	var cond920 int32
 	if this.accessibleValueListeners == (nil) {
-		cond803 = 0
+		cond920 = 0
 	} else {
-		cond803 = this.accessibleValueListeners.Size()
+		cond920 = this.accessibleValueListeners.Size()
 	}
-	return cond803
+	return cond920
 }
 
 func (this *Accessible) AccessibleTextExtendedListenersSize() int32 {
-	var cond804 int32
+	var cond921 int32
 	if this.accessibleTextExtendedListeners == (nil) {
-		cond804 = 0
+		cond921 = 0
 	} else {
-		cond804 = this.accessibleTextExtendedListeners.Size()
+		cond921 = this.accessibleTextExtendedListeners.Size()
 	}
-	return cond804
+	return cond921
 }
 
 func (this *Accessible) AccessibleTextListenersSize() int32 {
-	var cond805 int32
+	var cond922 int32
 	if this.accessibleTextListeners == (nil) {
-		cond805 = 0
+		cond922 = 0
 	} else {
-		cond805 = this.accessibleTextListeners.Size()
+		cond922 = this.accessibleTextListeners.Size()
 	}
-	return cond805
+	return cond922
 }
 
 func (this *Accessible) AccessibleTableCellListenersSize() int32 {
-	var cond806 int32
+	var cond923 int32
 	if this.accessibleTableCellListeners == (nil) {
-		cond806 = 0
+		cond923 = 0
 	} else {
-		cond806 = this.accessibleTableCellListeners.Size()
+		cond923 = this.accessibleTableCellListeners.Size()
 	}
-	return cond806
+	return cond923
 }
 
 func (this *Accessible) AccessibleTableListenersSize() int32 {
-	var cond807 int32
+	var cond924 int32
 	if this.accessibleTableListeners == (nil) {
-		cond807 = 0
+		cond924 = 0
 	} else {
-		cond807 = this.accessibleTableListeners.Size()
+		cond924 = this.accessibleTableListeners.Size()
 	}
-	return cond807
+	return cond924
 }
 
 func (this *Accessible) AccessibleHyperlinkListenersSize() int32 {
-	var cond808 int32
+	var cond925 int32
 	if this.accessibleHyperlinkListeners == (nil) {
-		cond808 = 0
+		cond925 = 0
 	} else {
-		cond808 = this.accessibleHyperlinkListeners.Size()
+		cond925 = this.accessibleHyperlinkListeners.Size()
 	}
-	return cond808
+	return cond925
 }
 
 func (this *Accessible) AccessibleEditableTextListenersSize() int32 {
-	var cond809 int32
+	var cond926 int32
 	if this.accessibleEditableTextListeners == (nil) {
-		cond809 = 0
+		cond926 = 0
 	} else {
-		cond809 = this.accessibleEditableTextListeners.Size()
+		cond926 = this.accessibleEditableTextListeners.Size()
 	}
-	return cond809
+	return cond926
 }
 
 func (this *Accessible) AccessibleAttributeListenersSize() int32 {
-	var cond810 int32
+	var cond927 int32
 	if this.accessibleAttributeListeners == (nil) {
-		cond810 = 0
+		cond927 = 0
 	} else {
-		cond810 = this.accessibleAttributeListeners.Size()
+		cond927 = this.accessibleAttributeListeners.Size()
 	}
-	return cond810
+	return cond927
 }
 
 func (this *Accessible) AccessibleActionListenersSize() int32 {
-	var cond811 int32
+	var cond928 int32
 	if this.accessibleActionListeners == (nil) {
-		cond811 = 0
+		cond928 = 0
 	} else {
-		cond811 = this.accessibleActionListeners.Size()
+		cond928 = this.accessibleActionListeners.Size()
 	}
-	return cond811
+	return cond928
 }
 
 func (this *Accessible) CheckRole(role int32) {
@@ -515,13 +515,13 @@ func (this *Accessible) GetVisibleColumnsAttribute(childID int32) *cocoa.Id {
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
-	var cond812 *cocoa.Id
+	var cond929 *cocoa.Id
 	if returnValue == (nil) {
-		cond812 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
+		cond929 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
 	} else {
-		cond812 = returnValue
+		cond929 = returnValue
 	}
-	return cond812
+	return cond929
 }
 
 func (this *Accessible) GetVisibleRowsAttribute(childID int32) *cocoa.Id {
@@ -543,13 +543,13 @@ func (this *Accessible) GetVisibleRowsAttribute(childID int32) *cocoa.Id {
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
-	var cond813 *cocoa.Id
+	var cond930 *cocoa.Id
 	if returnValue == (nil) {
-		cond813 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
+		cond930 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
 	} else {
-		cond813 = returnValue
+		cond930 = returnValue
 	}
-	return cond813
+	return cond930
 }
 
 func (this *Accessible) GetSelectedRowsAttribute(childID int32) *cocoa.Id {
@@ -577,13 +577,13 @@ func (this *Accessible) GetSelectedRowsAttribute(childID int32) *cocoa.Id {
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
-	var cond814 *cocoa.Id
+	var cond931 *cocoa.Id
 	if returnValue == (nil) {
-		cond814 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
+		cond931 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
 	} else {
-		cond814 = returnValue
+		cond931 = returnValue
 	}
-	return cond814
+	return cond931
 }
 
 func (this *Accessible) GetRowCount() int32 {
@@ -651,13 +651,13 @@ func (this *Accessible) GetSelectedColumnsAttribute(childID int32) *cocoa.Id {
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
-	var cond815 *cocoa.Id
+	var cond932 *cocoa.Id
 	if returnValue == (nil) {
-		cond815 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
+		cond932 = upcastcocoaNSArrayTococoaId(cocoa.NSArrayArray())
 	} else {
-		cond815 = returnValue
+		cond932 = returnValue
 	}
-	return cond815
+	return cond932
 }
 
 func (this *Accessible) GetColumnCount() int32 {
@@ -1420,19 +1420,19 @@ func (this *Accessible) GetAttributedStringForRangeParameterizedAttribute(parame
 			if ts.Underline {
 				var style int32 = ts.UnderlineStyle
 				var attribute *cocoa.NSString = cocoa.OSNSAccessibilityUnderlineTextAttribute_
-				var sw816 *cocoa.NSNumber
+				var sw933 *cocoa.NSNumber
 				switch style {
 				case UNDERLINE_SINGLE:
-					sw816 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleSingle)
+					sw933 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleSingle)
 				case UNDERLINE_DOUBLE:
-					sw816 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleDouble)
+					sw933 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleDouble)
 				case UNDERLINE_SQUIGGLE:
 					attribute = cocoa.OSNSAccessibilityMisspelledTextAttribute_
-					sw816 = cocoa.NSNumberNumberWithBool(true)
+					sw933 = cocoa.NSNumberNumberWithBool(true)
 				default:
-					sw816 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleNone)
+					sw933 = cocoa.NSNumberNumberWithInt(cocoa.OSKAXUnderlineStyleNone)
 				}
-				var styleObj *cocoa.NSNumber = sw816
+				var styleObj *cocoa.NSNumber = sw933
 				attribString.AddAttribute(attribute, upcastcocoaNSNumberTococoaId(styleObj), attributeRange)
 			}
 			if ts.UnderlineColor != (nil) {
@@ -1445,8 +1445,8 @@ func (this *Accessible) GetAttributedStringForRangeParameterizedAttribute(parame
 				}
 			}
 			if !jrt.IsNil(ts.Data) {
-				dataAsURL, ok817 := any(nil), false
-				if ok817 {
+				dataAsURL, ok934 := any(nil), false
+				if ok934 {
 					var linkURL *cocoa.NSURL = cocoa.NSURLURLWithString(cocoa.NSStringStringWith(func() string { _ = []any{dataAsURL}; panic("j2go: unresolved call toExternalForm") }()))
 					attribString.AddAttribute(cocoa.OSNSAccessibilityLinkTextAttribute_, upcastcocoaNSURLTococoaId(linkURL), attributeRange)
 				}
@@ -1461,18 +1461,18 @@ func (this *Accessible) GetAttributedStringForRangeParameterizedAttribute(parame
 	}
 	if docAttributes.Indent != math.MaxInt32 {
 		var paragraphDict *cocoa.NSMutableDictionary = cocoa.NSMutableDictionaryDictionaryWithCapacity(int64(3))
-		var sw818 int32
+		var sw935 int32
 		switch docAttributes.Alignment {
 		case CENTER:
-			sw818 = cocoa.OSNSTextAlignmentCenter
+			sw935 = cocoa.OSNSTextAlignmentCenter
 		case RIGHT:
-			sw818 = cocoa.OSNSTextAlignmentRight
+			sw935 = cocoa.OSNSTextAlignmentRight
 		case LEFT:
-			sw818 = cocoa.OSNSTextAlignmentLeft
+			sw935 = cocoa.OSNSTextAlignmentLeft
 		default:
-			sw818 = cocoa.OSNSTextAlignmentLeft
+			sw935 = cocoa.OSNSTextAlignmentLeft
 		}
-		var osAlignment int32 = sw818
+		var osAlignment int32 = sw935
 		paragraphDict.Impl().SetValueOnNSObject(upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithInt(osAlignment)), cocoa.NSStringStringWith("AXTextAlignment"))
 		range_.Location = int64(0)
 		attribString.AddAttribute(cocoa.NSStringStringWith("AXParagraphStyle"), upcastcocoaNSMutableDictionaryTococoaId(paragraphDict), range_)
@@ -1625,19 +1625,19 @@ func (this *Accessible) GetRoleDescriptionAttribute(childID int32) *cocoa.Id {
 			if appSubrole != "" {
 				nsAppSubrole = cocoa.NSStringStringWith(appSubrole)
 			}
-			var cond819 int64
+			var cond936 int64
 			if nsAppRole != (nil) {
-				cond819 = nsAppRole.Id
+				cond936 = nsAppRole.Id
 			} else {
-				cond819 = int64(0)
+				cond936 = int64(0)
 			}
-			var cond820 int64
+			var cond937 int64
 			if nsAppSubrole != (nil) {
-				cond820 = nsAppSubrole.Id
+				cond937 = nsAppSubrole.Id
 			} else {
-				cond820 = int64(0)
+				cond937 = int64(0)
 			}
-			returnValue = upcastcocoaNSStringTococoaId(cocoa.NewNSStringOverload1(cocoa.OSNSAccessibilityRoleDescription((cond819), cond820)))
+			returnValue = upcastcocoaNSStringTococoaId(cocoa.NewNSStringOverload1(cocoa.OSNSAccessibilityRoleDescription((cond936), cond937)))
 		}
 	}
 	return returnValue
@@ -1727,13 +1727,13 @@ func (this *Accessible) GetValueAttribute(childID int32) *cocoa.Id {
 						}
 					}()
 					var number int32 = jrt.ParseInt(value)
-					var cond821 bool
+					var cond938 bool
 					if number == 0 {
-						cond821 = false
+						cond938 = false
 					} else {
-						cond821 = true
+						cond938 = true
 					}
-					returnValue = upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithBool(cond821))
+					returnValue = upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithBool(cond938))
 				}()
 			} else {
 				returnValue = upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithBool(false))
@@ -1857,13 +1857,13 @@ func (this *Accessible) GetChildrenAttribute(childID int32, visibleOnly bool) *c
 			listener.GetChildCount(event)
 		}
 		var childCount int32 = event.Detail
-		var cond822 int32
+		var cond939 int32
 		if visibleOnly {
-			cond822 = ACCVISIBLE
+			cond939 = ACCVISIBLE
 		} else {
-			cond822 = 0
+			cond939 = 0
 		}
-		event.Detail = (cond822)
+		event.Detail = (cond939)
 		if childCount >= 0 {
 			for i := int32(0); i < this.AccessibleControlListenersSize(); i++ {
 				var listener AccessibleControlListener = jrt.Cast[AccessibleControlListener](this.accessibleControlListeners.Get(i))
@@ -1878,16 +1878,16 @@ func (this *Accessible) GetChildrenAttribute(childID int32, visibleOnly bool) *c
 			var childArray *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(int64(childCount))
 			for i := int32(0); i < childCount; i++ {
 				var child any = children[i]
-				accessible, ok823 := accessibleImplAsAccessible(child)
-				if ok823 {
+				accessible, ok940 := accessibleImplAsAccessible(child)
+				if ok940 {
 					if accessible.delegate.NSObject != (nil) {
 						childArray.AddObject(upcastcocoaNSObjectTococoaId(accessible.delegate.NSObject))
 					} else {
 						childArray.AddObject(this.AccessibleHandle(accessible))
 					}
 				} else {
-					_, ok824 := any(nil), false
-					if ok824 {
+					_, ok941 := any(nil), false
+					if ok941 {
 						var accChild *cocoa.Id = this.ChildIDToOs(jrt.Cast[int32]((any(child))))
 						childArray.AddObject(accChild)
 					}
@@ -1921,8 +1921,8 @@ func (this *Accessible) GetTabsAttribute(childID int32) *cocoa.Id {
 				var childArray *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(int64(int32(len(appChildren))))
 				for i := int32(0); i < int32(len(appChildren)); i++ {
 					var child any = appChildren[i]
-					_, ok825 := any(nil), false
-					if ok825 {
+					_, ok942 := any(nil), false
+					if ok942 {
 						var subChildID int32 = jrt.Cast[int32]((any(child)))
 						event.ChildID = subChildID
 						event.Detail = -1
@@ -2036,16 +2036,16 @@ func (this *Accessible) GetDescriptionAttribute(childID int32) *cocoa.Id {
 		var listener AccessibleListener = jrt.Cast[AccessibleListener](this.accessibleListeners.Get(i))
 		listener.GetDescription(event)
 	}
-	var cond826 *cocoa.Id
+	var cond943 *cocoa.Id
 	if event.Result != "" {
-		cond826 = upcastcocoaNSStringTococoaId(cocoa.NSStringStringWith(event.Result))
+		cond943 = upcastcocoaNSStringTococoaId(cocoa.NSStringStringWith(event.Result))
 	} else {
-		cond826 = nil
+		cond943 = nil
 	}
-	returnValue = (cond826)
+	returnValue = (cond943)
 	if returnValue == (nil) {
-		_, ok827 := isControlToComposite(this.control)
-		if ok827 {
+		_, ok944 := isControlToComposite(this.control)
+		if ok944 {
 			returnValue = upcastcocoaNSStringTococoaId(cocoa.NSStringString())
 		}
 	}
@@ -2474,13 +2474,13 @@ func (this *Accessible) GetVisibleCharacterRangeAttribute(childID int32) *cocoa.
 			}
 		}
 	}
-	var cond828 *cocoa.Id
+	var cond945 *cocoa.Id
 	if range_ != (cocoa.NSRange{}) {
-		cond828 = upcastcocoaNSValueTococoaId(cocoa.NSValueValueWithRange(range_))
+		cond945 = upcastcocoaNSValueTococoaId(cocoa.NSValueValueWithRange(range_))
 	} else {
-		cond828 = nil
+		cond945 = nil
 	}
-	return cond828
+	return cond945
 }
 
 func (this *Accessible) LineNumberForOffset(text string, offset int32) int32 {
@@ -2563,8 +2563,8 @@ func (this *Accessible) RemoveAccessibleTextListener(listener AccessibleTextList
 	if listener == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	_, ok829 := listener.(AccessibleTextExtendedListener)
-	if ok829 {
+	_, ok946 := listener.(AccessibleTextExtendedListener)
+	if ok946 {
 		if this.accessibleTextExtendedListeners != (nil) {
 			this.accessibleTextExtendedListeners.Remove(listener)
 			if this.accessibleTextExtendedListeners.IsEmpty() {
@@ -2707,8 +2707,8 @@ func (this *Accessible) Release(destroy bool) {
 	this.delegate = nil
 	this.relations = nil
 	if this.childToIdMap != (nil) {
-		for _, elem830 := range this.childToIdMap.Values().ToArray() {
-			childDelegate := jrt.Cast[*SWTAccessibleDelegate](elem830)
+		for _, elem947 := range this.childToIdMap.Values().ToArray() {
+			childDelegate := jrt.Cast[*SWTAccessibleDelegate](elem947)
 			childDelegate.Internal_dispose_SWTAccessibleDelegate()
 			childDelegate.Release()
 		}
@@ -2752,7 +2752,7 @@ func (this *Accessible) SendEvent(event int32, eventData any) {
 			this.GetColumnsAttribute(ACCCHILDID_SELF)
 		}
 		if !jrt.IsNil(eventData) {
-			var eventParams []int32 = eventData.([]int32)
+			var eventParams []int32 = jrt.Cast[[]int32](eventData)
 			if eventParams[2] != 0 {
 				cocoa.OSNSAccessibilityPostNotification(eventSource.Id, cocoa.OSNSAccessibilityRowCountChangedNotification_.Id)
 			}

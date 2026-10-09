@@ -107,9 +107,9 @@ func (this *TableDragSourceEffect) GetDragSourceImage(eventLike DragSourceEventL
 				var sp int32 = 3
 				for y := int32(0); y < srcHeight; y++ {
 					for x := int32(0); x < srcWidth; x++ {
-						t904 := ap
+						t1165 := ap
 						ap++
-						alphaData[t904] = srcData[sp]
+						alphaData[t1165] = srcData[sp]
 						sp += 4
 					}
 					sp += spinc

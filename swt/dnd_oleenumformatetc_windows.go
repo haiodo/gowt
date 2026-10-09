@@ -38,28 +38,28 @@ func (this *OleEnumFORMATETC) AddRef() int32 {
 }
 
 func (this *OleEnumFORMATETC) CreateCOMInterfaces() {
-	anon899 := &OleEnumFORMATETCAnon1{}
-	anon899.impl = anon899
-	anon899.initCOMObject([]int32{2, 0, 0, 3, 1, 0, 1})
-	anon899.fnmethod0_ = func(args []int64) int64 {
+	anon1160 := &OleEnumFORMATETCAnon1{}
+	anon1160.impl = anon1160
+	anon1160.initCOMObject([]int32{2, 0, 0, 3, 1, 0, 1})
+	anon1160.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon899.fnmethod1_ = func(args []int64) int64 {
+	anon1160.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon899.fnmethod2_ = func(args []int64) int64 {
+	anon1160.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon899.fnmethod3_ = func(args []int64) int64 {
+	anon1160.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Next(int32(args[0]), args[1], args[2]))
 	}
-	anon899.fnmethod4_ = func(args []int64) int64 {
+	anon1160.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Skip(int32(args[0])))
 	}
-	anon899.fnmethod5_ = func(args []int64) int64 {
+	anon1160.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Reset())
 	}
-	this.iEnumFORMATETC = &anon899.COMObject
+	this.iEnumFORMATETC = &anon1160.COMObject
 }
 
 func (this *OleEnumFORMATETC) DisposeCOMInterfaces() {

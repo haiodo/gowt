@@ -77,7 +77,7 @@ var SwtTestUtilIsWindowsOS bool = func() (r bool) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsWindowsOS:", e)
 		}
 	}()
-	r = strings.HasPrefix("Mac OS X", "Windows")
+	r = strings.HasPrefix(jrt.GetProperty("os.name", ""), "Windows")
 	return
 }()
 
@@ -87,7 +87,7 @@ var SwtTestUtilIsLinux bool = func() (r bool) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init SwtTestUtilIsLinux:", e)
 		}
 	}()
-	r = ("Mac OS X" == "Linux")
+	r = (jrt.GetProperty("os.name", "") == "Linux")
 	return
 }()
 

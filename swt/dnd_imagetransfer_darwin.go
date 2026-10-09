@@ -105,7 +105,7 @@ func (this *ImageTransfer) getTypeNames_() []string {
 }
 
 func (this *ImageTransfer) CheckImage(object any) bool {
-	if jrt.IsNil(object) || func() bool { _, ok834 := imageDataImplAsImageData(object); return !(ok834) }() {
+	if jrt.IsNil(object) || func() bool { _, ok1009 := imageDataImplAsImageData(object); return !(ok1009) }() {
 		return false
 	}
 	return true

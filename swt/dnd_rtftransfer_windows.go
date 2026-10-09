@@ -51,7 +51,7 @@ func (this *RTFTransfer) javaToNative_(object any, transferData *TransferData) {
 	if !this.CheckRTF(object) || !this.impl.isSupportedType_(transferData) {
 		DNDError(DNDERROR_INVALID_DATA)
 	}
-	var string_ string = object.(string)
+	var string_ string = jrt.Cast[string](object)
 	var count int32 = jrt.StringLength(string_)
 	var chars []uint16 = make([]uint16, count+1)
 	jrt.GetChars(string_, 0, count, chars, 0)
@@ -95,8 +95,8 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 		if lpMultiByteStr == 0 {
 			return nil
 		}
-		var tret900 any
-		tretd901 := false
+		var tret1161 any
+		tretd1162 := false
 		func() {
 			defer func() {
 				win32.OSGlobalUnlock(hMem)
@@ -104,18 +104,18 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 			var codePage int32 = win32.OSGetACP()
 			var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, nil, 0)
 			if cchWideChar == 0 {
-				tret900 = nil
-				tretd901 = true
+				tret1161 = nil
+				tretd1162 = true
 				return
 			}
 			var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 			win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-			tret900 = string(utf16.Decode(lpWideCharStr))
-			tretd901 = true
+			tret1161 = string(utf16.Decode(lpWideCharStr))
+			tretd1162 = true
 			return
 		}()
-		_ = tretd901
-		return tret900
+		_ = tretd1162
+		return tret1161
 	}
 }
 
@@ -128,8 +128,8 @@ func (this *RTFTransfer) getTypeNames_() []string {
 }
 
 func (this *RTFTransfer) CheckRTF(object any) bool {
-	_, ok903 := object.(string)
-	return (ok903 && jrt.StringLength((object.(string))) > 0)
+	_, ok1164 := object.(string)
+	return (ok1164 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *RTFTransfer) validate_(object any) bool {

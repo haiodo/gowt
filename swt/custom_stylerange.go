@@ -100,8 +100,8 @@ func (this *StyleRange) equals_(object any) bool {
 	if object == this {
 		return true
 	}
-	style, ok807 := textStyleImplAsStyleRange(object)
-	if ok807 {
+	style, ok806 := textStyleImplAsStyleRange(object)
+	if ok806 {
 		if this.Start != style.Start {
 			return false
 		}
@@ -168,8 +168,8 @@ func (this *StyleRange) SimilarTo(styleLike StyleRangeLike) bool {
 }
 
 func (this *StyleRange) Clone() any {
-	var tret808 any
-	tretd809 := false
+	var tret807 any
+	tretd808 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -179,19 +179,19 @@ func (this *StyleRange) Clone() any {
 			if false {
 				var e error
 				_ = e
-				tret808 = nil
-				tretd809 = true
+				tret807 = nil
+				tretd808 = true
 				return
 			} else {
 				panic(r)
 			}
 		}()
-		tret808 = func() any { c := *this; c.impl = &c; return &c }()
-		tretd809 = true
+		tret807 = func() any { c := *this; c.impl = &c; return &c }()
+		tretd808 = true
 		return
 	}()
-	_ = tretd809
-	return tret808
+	_ = tretd808
+	return tret807
 }
 
 func (this *StyleRange) string_() string {

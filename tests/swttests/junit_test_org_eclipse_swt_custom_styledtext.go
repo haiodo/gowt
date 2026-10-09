@@ -594,10 +594,10 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_copy() {
 	var transfer *swt.TextTransfer = swt.TextTransferGetInstance()
 	var clipboardText string
 	var convertedText string
-	var before string = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	var before string = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	this.text.SetSelectionRange(0, 0)
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	var cond118 bool
 	if before == "" {
 		cond118 = clipboardText == ""
@@ -605,11 +605,11 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_copy() {
 		cond118 = (before == clipboardText)
 	}
 	junit.AssertTrue(cond118)
-	before = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	before = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	this.text.SetText("0123456789")
 	this.text.SetSelectionRange(0, 0)
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	var cond119 bool
 	if before == "" {
 		cond119 = clipboardText == ""
@@ -619,16 +619,16 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_copy() {
 	junit.AssertTrue(cond119)
 	this.text.SetSelectionRange(0, 1)
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	junit.AssertTrue(clipboardText != "" && (clipboardText == "0"))
 	this.text.SetSelectionRange(1, 2)
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	junit.AssertTrue(clipboardText != "" && (clipboardText == "12"))
 	this.text.SetText("\rLine1\nLine2\r\nLine3\n\rLine4\n")
 	this.text.SetSelectionRange(0, this.text.GetCharCount())
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n"
 	} else {
@@ -638,7 +638,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_copy() {
 	this.text.SetText("Line1\r\nLine2")
 	this.text.SetSelectionRange(0, this.text.GetCharCount())
 	this.text.Copy()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "Line1\r\nLine2"
 	} else {
@@ -700,10 +700,10 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cut() {
 	var transfer *swt.TextTransfer = swt.TextTransferGetInstance()
 	var clipboardText string
 	var convertedText string
-	var before string = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	var before string = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	this.text.SetSelectionRange(0, 0)
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	var cond120 bool
 	if before == "" {
 		cond120 = clipboardText == ""
@@ -711,11 +711,11 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cut() {
 		cond120 = (before == clipboardText)
 	}
 	junit.AssertTrue(cond120)
-	before = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	before = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	this.text.SetText("0123456789")
 	this.text.SetSelectionRange(0, 0)
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	var cond121 bool
 	if before == "" {
 		cond121 = clipboardText == ""
@@ -725,16 +725,16 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cut() {
 	junit.AssertTrue(cond121)
 	this.text.SetSelectionRange(0, 1)
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	junit.AssertTrue(clipboardText != "" && (clipboardText == "0"))
 	this.text.SetSelectionRange(1, 2)
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	junit.AssertTrue(clipboardText != "" && (clipboardText == "23"))
 	this.text.SetText("\rLine1\nLine2\r\nLine3\n\rLine4\n")
 	this.text.SetSelectionRange(0, this.text.GetCharCount())
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n"
 	} else {
@@ -744,7 +744,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cut() {
 	this.text.SetText("Line1\r\nLine2")
 	this.text.SetSelectionRange(0, this.text.GetCharCount())
 	this.text.Cut()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtTextTransferToswtTransfer(transfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtTextTransferToswtTransfer(transfer)))
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "Line1\r\nLine2"
 	} else {
@@ -2015,7 +2015,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	var clipboard *swt.Clipboard = swt.NewClipboard(this.text.GetDisplay())
 	var transfer *swt.TextTransfer = swt.TextTransferGetInstance()
 	var convertedText string
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"x"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"x"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.Copy()
 	this.text.Paste()
 	junit.AssertEquals(int32(1), int32(this.text.GetCharCount()))
@@ -2035,7 +2035,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	this.text.Paste()
 	junit.AssertEquals("01", this.text.GetText())
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"\rLine1\nLine2\r\nLine3\n\rLine4\n"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"\rLine1\nLine2\r\nLine3\n\rLine4\n"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.Paste()
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n"
@@ -2044,7 +2044,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	}
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == convertedText))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"Line1\r\nLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"Line1\r\nLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.Paste()
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "Line1\r\nLine2"
@@ -2053,7 +2053,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	}
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == convertedText))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"Line1\rLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"Line1\rLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.Paste()
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "Line1\r\nLine2"
@@ -2062,7 +2062,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	}
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == convertedText))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"Line1\nLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"Line1\nLine2"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.Paste()
 	if SwtTestUtilIsWindowsOS {
 		convertedText = "Line1\r\nLine2"
@@ -2071,20 +2071,20 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_paste() {
 	}
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == convertedText))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.SetTextLimit(3)
 	this.text.Copy()
 	this.text.Paste()
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == "abc"))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.SetTextLimit(3)
 	this.text.SetText("123")
 	this.text.SetSelectionStartEnd(0, 3)
 	this.text.Paste()
 	junit.AssertTrue(this.text.GetText() != "" && (this.text.GetText() == "abc"))
 	this.text.SetText("")
-	clipboard.SetContentsDataDataTypes(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
+	clipboard.SetContents(upcastArrstringToany([]string{"abcde"}), []*swt.Transfer{upcastswtTextTransferToswtTransfer(transfer)})
 	this.text.SetTextLimit(3)
 	this.text.SetText("123")
 	this.text.SetSelectionStartEnd(0, 1)
@@ -4845,10 +4845,10 @@ func (this *Test_org_eclipse_swt_custom_StyledText) RtfCopy() {
 	junit.AssertEquals(int32(2*this.text.GetLineCount()), int32(linesCalled[0]))
 	var clipboard *swt.Clipboard = swt.NewClipboard(this.text.GetDisplay())
 	var rtfTranfer *swt.RTFTransfer = swt.RTFTransferGetInstance()
-	var clipboardText string = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtRTFTransferToswtTransfer(rtfTranfer)))
+	var clipboardText string = jrt.Cast[string](clipboard.GetContents(upcastswtRTFTransferToswtTransfer(rtfTranfer)))
 	junit.AssertTrue(jrt.StringLength(clipboardText) > 0)
 	var htmlTranfer *swt.HTMLTransfer = swt.HTMLTransferGetInstance()
-	clipboardText = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtHTMLTransferToswtTransfer(htmlTranfer)))
+	clipboardText = jrt.Cast[string](clipboard.GetContents(upcastswtHTMLTransferToswtTransfer(htmlTranfer)))
 	junit.AssertTrue(jrt.StringLength(clipboardText) > 0)
 	clipboard.Dispose()
 	this.text.RemoveLineStyleListener(listener)
@@ -5011,7 +5011,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_clipboardCarryover() {
 	junit.AssertEquals(int32(0), int32(int32(len(this.text.GetStyleRanges()))))
 	var clipboard *swt.Clipboard = swt.NewClipboard(this.text.GetDisplay())
 	var rtfTranfer *swt.RTFTransfer = swt.RTFTransferGetInstance()
-	var clipboardText string = jrt.Cast[string](clipboard.GetContentsTransfer(upcastswtRTFTransferToswtTransfer(rtfTranfer)))
+	var clipboardText string = jrt.Cast[string](clipboard.GetContents(upcastswtRTFTransferToswtTransfer(rtfTranfer)))
 	junit.AssertTrue(jrt.StringLength(clipboardText) > 0)
 }
 

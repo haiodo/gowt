@@ -232,7 +232,7 @@ func (this *FileTransfer) getTypeNames_() []string {
 }
 
 func (this *FileTransfer) CheckFile(object any) bool {
-	if jrt.IsNil(object) || func() bool { _, ok775 := object.([]string); return !(ok775) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
+	if jrt.IsNil(object) || func() bool { _, ok896 := object.([]string); return !(ok896) }() || int32(len((jrt.Cast[[]string](object)))) == 0 {
 		return false
 	}
 	var strings []string = jrt.Cast[[]string](object)

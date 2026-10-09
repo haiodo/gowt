@@ -42,13 +42,13 @@ var DragSourceAlign int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init DragSourceAlign:", e)
 		}
 	}()
-	var cond805 int32
+	var cond980 int32
 	if cocoa.CPTR_SIZEOF == 4 {
-		cond805 = 2
+		cond980 = 2
 	} else {
-		cond805 = 3
+		cond980 = 3
 	}
-	r = cond805
+	r = cond980
 	return
 }()
 
@@ -84,7 +84,7 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 	this.Widget.initWidgetParentStyle(upcastControlToWidget(control), DragSourceCheckStyle(style))
 	this.transferAgents = make([]*Transfer, 0)
 	this.control = control
-	if !jrt.IsNil(control.GetDataKey(DNDDRAG_SOURCE_KEY)) {
+	if !jrt.IsNil(control.impl.getDataKey_(DNDDRAG_SOURCE_KEY)) {
 		DNDError(DNDERROR_CANNOT_INIT_DRAG)
 	}
 	control.SetDataKeyValue(DNDDRAG_SOURCE_KEY, this)
@@ -96,8 +96,8 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		}
 		if event.Type == DragDetect {
 			if !this.IsDisposed() {
-				_, ok806 := isWidgetToTable(event.Widget)
-				if ok806 || func() bool { _, ok807 := isWidgetToTree(event.Widget); return ok807 }() {
+				_, ok981 := isWidgetToTable(event.Widget)
+				if ok981 || func() bool { _, ok982 := isWidgetToTree(event.Widget); return ok982 }() {
 					this.DragOutlineViewStart(event)
 				} else {
 					this.Drag(event)
@@ -110,17 +110,17 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 	this.AddListener(Dispose, &ListenerFunc{fn: func(e *Event) {
 		this.OnDispose()
 	}})
-	var effect any = control.GetDataKey(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
-	_, ok808 := dragSourceAdapterImplAsDragSourceEffect(effect)
-	if ok808 {
+	var effect any = control.impl.getDataKey_(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
+	_, ok983 := dragSourceAdapterImplAsDragSourceEffect(effect)
+	if ok983 {
 		this.dragEffect = castanyToDragSourceEffect(effect)
 	} else {
-		_, ok809 := isControlToTree(control)
-		if ok809 {
+		_, ok984 := isControlToTree(control)
+		if ok984 {
 			this.dragEffect = upcastTreeDragSourceEffectToDragSourceEffect(NewTreeDragSourceEffect(castControlToTree(control)))
 		} else {
-			_, ok810 := isControlToTable(control)
-			if ok810 {
+			_, ok985 := isControlToTable(control)
+			if ok985 {
 				this.dragEffect = upcastTableDragSourceEffectToDragSourceEffect(NewTableDragSourceEffect(castControlToTable(control)))
 			}
 		}
@@ -131,8 +131,8 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 	}
 	this.dragSourceDelegate = castcocoaNSObjectTococoaSWTDragSourceDelegate(cocoa.NewSWTDragSourceDelegate().Alloc().Init())
 	cocoa.OSObject_setInstanceVariable(this.dragSourceDelegate.Id, DragSourceSWT_OBJECT, this.delegateJniRef)
-	_, ok811 := isControlToTree(control)
-	if ok811 || func() bool { _, ok812 := isControlToTable(control); return ok812 }() {
+	_, ok986 := isControlToTree(control)
+	if ok986 || func() bool { _, ok987 := isControlToTable(control); return ok987 }() {
 		var cls int64 = cocoa.OSObject_getClass(control.View.Id)
 		if cls == 0 {
 			DNDError(DNDERROR_CANNOT_INIT_DRAG)
@@ -528,23 +528,23 @@ func DragSourceDragSourceProc(id int64, sel int64) int64 {
 		return int64(0)
 	}
 	var ds *DragSource = nil
-	_, ok813 := isWidgetToDragSource(widget)
-	if ok813 {
+	_, ok988 := isWidgetToDragSource(widget)
+	if ok988 {
 		ds = castWidgetToDragSource(widget)
 	} else {
-		ds = castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+		ds = castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 	}
 	if ds == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_ignoreModifierKeysWhileDragging {
-		var cond814 int32
+		var cond989 int32
 		if ds.IgnoreModifierKeysWhileDragging(id, sel) {
-			cond814 = 1
+			cond989 = 1
 		} else {
-			cond814 = 0
+			cond989 = 0
 		}
-		return int64((cond814))
+		return int64((cond989))
 	}
 	return int64(0)
 }
@@ -559,11 +559,11 @@ func DragSourceDragSourceProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 		return int64(0)
 	}
 	var ds *DragSource = nil
-	_, ok815 := isWidgetToDragSource(widget)
-	if ok815 {
+	_, ok990 := isWidgetToDragSource(widget)
+	if ok990 {
 		ds = castWidgetToDragSource(widget)
 	} else {
-		ds = castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+		ds = castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 	}
 	if ds == (nil) {
 		return int64(0)
@@ -584,11 +584,11 @@ func DragSourceDragSourceProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1
 		return int64(0)
 	}
 	var ds *DragSource = nil
-	_, ok816 := isWidgetToDragSource(widget)
-	if ok816 {
+	_, ok991 := isWidgetToDragSource(widget)
+	if ok991 {
 		ds = castWidgetToDragSource(widget)
 	} else {
-		ds = castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+		ds = castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 	}
 	if ds == (nil) {
 		return int64(0)
@@ -613,11 +613,11 @@ func DragSourceDragSourceProcIdSelArg0Arg1Arg2(id int64, sel int64, arg0 int64, 
 		return int64(0)
 	}
 	var ds *DragSource = nil
-	_, ok817 := isWidgetToDragSource(widget)
-	if ok817 {
+	_, ok992 := isWidgetToDragSource(widget)
+	if ok992 {
 		ds = castWidgetToDragSource(widget)
 	} else {
-		ds = castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+		ds = castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 	}
 	if ds == (nil) {
 		return int64(0)
@@ -640,11 +640,11 @@ func DragSourceDragSourceProcIdSelArg0Arg1Arg2Arg3(id int64, sel int64, arg0 int
 		return int64(0)
 	}
 	var ds *DragSource = nil
-	_, ok818 := isWidgetToDragSource(widget)
-	if ok818 {
+	_, ok993 := isWidgetToDragSource(widget)
+	if ok993 {
 		ds = castWidgetToDragSource(widget)
 	} else {
-		ds = castanyToDragSource(widget.GetDataKey(DNDDRAG_SOURCE_KEY))
+		ds = castanyToDragSource(widget.impl.getDataKey_(DNDDRAG_SOURCE_KEY))
 	}
 	if ds == (nil) {
 		return int64(0)

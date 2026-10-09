@@ -39,7 +39,11 @@ func sbText(v any) string {
 	return fmt.Sprint(v)
 }
 
-func (s *StringBuilder) Append(v any) *StringBuilder {
+// Append covers append(x) and append(char[], offset, len).
+func (s *StringBuilder) Append(v any, offsetLen ...int32) *StringBuilder {
+	if chars, ok := v.([]uint16); ok && len(offsetLen) == 2 {
+		v = chars[offsetLen[0] : offsetLen[0]+offsetLen[1]]
+	}
 	s.b = append(s.b, sbText(v)...)
 	return s
 }

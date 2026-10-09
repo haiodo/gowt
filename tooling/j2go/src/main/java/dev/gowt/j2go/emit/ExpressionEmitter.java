@@ -55,6 +55,7 @@ final class ExpressionEmitter {
 		if (e instanceof ArrayInitializer ai) return emitArrayInitializer(ai, ai.resolveTypeBinding());
 		if (e instanceof ArrayAccess aa) return emitExpr(aa.getArray()) + "[" + emitExpr(aa.getIndex()) + "]";
 		if (e instanceof ExpressionMethodReference emr) return emitter.emitMethodReference(emr);
+		if (e instanceof CreationReference cr) return emitter.emitCreationReference(cr);
 		if (e instanceof LambdaExpression le) return emitter.emitLambda(le);
 		if (e instanceof SwitchExpression se) return emitSwitchExpressionHoisted(se);
 		// X.class: java.lang.Class is reflect.Type (Manual).
@@ -351,11 +352,19 @@ final class ExpressionEmitter {
 		String goType = dev.gowt.j2go.GoTypes.map(target, emitter);
 		emitter.prelude.add("var " + tmp + " " + goType);
 		String cond = emitExpr(ce.getExpression());
+		// What a branch hoists (a nested ternary, an instanceof) must run only when that branch is taken.
+		int mark = emitter.prelude.size();
 		String thenText = emitter.adaptNumeric(emitExpr(ce.getThenExpression()), ce.getThenExpression().resolveTypeBinding(), target);
+		List<String> thenPrelude = new ArrayList<>(emitter.prelude.subList(mark, emitter.prelude.size()));
+		emitter.prelude.subList(mark, emitter.prelude.size()).clear();
 		String elseText = emitter.adaptNumeric(emitExpr(ce.getElseExpression()), ce.getElseExpression().resolveTypeBinding(), target);
+		List<String> elsePrelude = new ArrayList<>(emitter.prelude.subList(mark, emitter.prelude.size()));
+		emitter.prelude.subList(mark, emitter.prelude.size()).clear();
 		emitter.prelude.add("if " + cond + " {");
+		emitter.prelude.addAll(thenPrelude);
 		emitter.prelude.add("\t" + tmp + " = " + thenText);
 		emitter.prelude.add("} else {");
+		emitter.prelude.addAll(elsePrelude);
 		emitter.prelude.add("\t" + tmp + " = " + elseText);
 		emitter.prelude.add("}");
 		return tmp;

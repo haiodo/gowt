@@ -84,13 +84,16 @@ public class Manual {
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.LinkedHashSet", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.LinkedHashSet", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream", "java.util.stream.IntStream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg("java.util.Iterator", "jrt.Iterator", JRT_IMPORT, false);
 		reg("java.util.TreeSet", "jrt.TreeSet", JRT_IMPORT, false);
+		reg("java.util.SortedSet", "jrt.TreeSet", JRT_IMPORT, false);
 		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);
+		// extends dnd.DropTargetEffect, which is not translated here: swt/dnd_stubs_manual.go.
+		reg("org.eclipse.swt.custom.StyledTextDropTargetEffect", "StyledTextDropTargetEffect", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
 		// only their static members are used, hand-written in swt/internal_helpers_manual.go.
 		for (String n : new String[]{"DPIUtil", "BidiUtil", "Compatibility", "DefaultExceptionHandler"}) {
@@ -115,6 +118,7 @@ public class Manual {
 		// java.lang.Throwable itself is only ever used as a field/param/return TYPE (never a
 		// manual superclass to embed) - Go's builtin error interface is exactly that role.
 		reg(JAVA_THROWABLE, "error", null, true);
+		reg("java.lang.OutOfMemoryError", "error", null, true);
 		reg(JAVA_RUNTIME_EXCEPTION, "jrt.RuntimeException", JRT_IMPORT, false);
 		reg(JAVA_ERROR, "jrt.JavaError", JRT_IMPORT, false);
 		reg(JAVA_ILLEGAL_ARGUMENT, "jrt.IllegalArgumentException", JRT_IMPORT, false);
@@ -305,6 +309,7 @@ public class Manual {
 		// jface: the button labels read JFaceResources' bundle (slice B); util.Util's empty sorted set needs Collections wrappers.
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.dialogs.IDialogConstants") && javaFieldName.endsWith("_LABEL")) return true;
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.util.Util") && javaFieldName.equals("EMPTY_SORTED_SET")) return true;
+		if (declaringClassQualifiedName.equals("org.eclipse.swt.custom.StyledText") && javaFieldName.equals("SELECTION_COMPARATOR")) return true;
 		return declaringClassQualifiedName.equals(COCOA_PKG + "OS") && javaFieldName.equals("SELECTORS");
 	}
 

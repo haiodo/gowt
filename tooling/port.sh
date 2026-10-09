@@ -246,6 +246,54 @@ SWT_FILES=(
 	org/eclipse/swt/widgets/Caret.java
 	org/eclipse/swt/internal/graphics/ImageUtil.java
 )
+# StyledText and its helpers (custom/, platform-independent).
+SWT_FILES+=(
+	org/eclipse/swt/dnd/DND.java org/eclipse/swt/dnd/Transfer.java org/eclipse/swt/dnd/TextTransfer.java
+	org/eclipse/swt/dnd/RTFTransfer.java org/eclipse/swt/dnd/HTMLTransfer.java org/eclipse/swt/dnd/Clipboard.java
+	org/eclipse/swt/accessibility/AccessibleAttributeAdapter.java
+	org/eclipse/swt/accessibility/AccessibleAttributeEvent.java
+	org/eclipse/swt/accessibility/AccessibleAttributeListener.java
+	org/eclipse/swt/accessibility/AccessibleEditableTextAdapter.java
+	org/eclipse/swt/accessibility/AccessibleEditableTextEvent.java
+	org/eclipse/swt/accessibility/AccessibleEditableTextListener.java
+	org/eclipse/swt/accessibility/AccessibleTextAttributeEvent.java
+	org/eclipse/swt/accessibility/AccessibleTextExtendedAdapter.java
+	org/eclipse/swt/accessibility/AccessibleTextExtendedListener.java
+	org/eclipse/swt/custom/Bullet.java
+	org/eclipse/swt/custom/DefaultContent.java
+	org/eclipse/swt/custom/ST.java
+	org/eclipse/swt/custom/StyleRange.java
+	org/eclipse/swt/custom/StyledText.java
+	org/eclipse/swt/custom/StyledTextContent.java
+	org/eclipse/swt/custom/StyledTextEvent.java
+	org/eclipse/swt/custom/StyledTextListener.java
+	org/eclipse/swt/custom/StyledTextLineSpacingProvider.java
+	org/eclipse/swt/custom/StyledTextRenderer.java
+	org/eclipse/swt/custom/StyledTextPrintOptions.java
+	org/eclipse/swt/custom/StyledTextWriterBase.java
+	org/eclipse/swt/custom/TextWriter.java
+	org/eclipse/swt/custom/HTMLWriter.java
+	org/eclipse/swt/custom/RTFWriter.java
+	org/eclipse/swt/custom/TextChangeListener.java
+	org/eclipse/swt/custom/TextChangedEvent.java
+	org/eclipse/swt/custom/TextChangingEvent.java
+	org/eclipse/swt/custom/LineBackgroundEvent.java
+	org/eclipse/swt/custom/LineBackgroundListener.java
+	org/eclipse/swt/custom/LineStyleEvent.java
+	org/eclipse/swt/custom/LineStyleListener.java
+	org/eclipse/swt/custom/CaretEvent.java
+	org/eclipse/swt/custom/CaretListener.java
+	org/eclipse/swt/custom/ExtendedModifyEvent.java
+	org/eclipse/swt/custom/ExtendedModifyListener.java
+	org/eclipse/swt/custom/BidiSegmentEvent.java
+	org/eclipse/swt/custom/BidiSegmentListener.java
+	org/eclipse/swt/custom/MovementEvent.java
+	org/eclipse/swt/custom/MovementListener.java
+	org/eclipse/swt/custom/PaintObjectEvent.java
+	org/eclipse/swt/custom/PaintObjectListener.java
+	org/eclipse/swt/custom/VerifyKeyListener.java
+	org/eclipse/swt/custom/MouseNavigator.java
+)
 # org.eclipse.swt.browser sources. JSON is not translated: the common layer does not use it, the engine parses the page's values with
 # encoding/json. BrowserFactory, Program and WebViewBrowser exist only as Java stubs in tooling/j2go/stubs for typing; the engine is
 # browser/webbrowser_manual.go over package webview.
@@ -396,6 +444,12 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_custom_CCombo.java
 	$TJ/Test_org_eclipse_swt_custom_CTabFolder.java
 	$TJ/Test_org_eclipse_swt_custom_CTabItem.java
+	$TJ/StyledTextContentSpec.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText.java
+	$TJ/Test_org_eclipse_swt_custom_StyledTextContent.java
+	$TJ/Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.java
 	$TJ/Test_org_eclipse_swt_widgets_Dialog.java
 	$TJ/Test_org_eclipse_swt_widgets_FileDialog.java
 	$TJ/Test_org_eclipse_swt_widgets_DirectoryDialog.java

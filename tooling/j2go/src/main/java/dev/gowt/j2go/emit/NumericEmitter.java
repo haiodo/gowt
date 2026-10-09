@@ -345,6 +345,8 @@ final class NumericEmitter {
 		String fromGo = dev.gowt.j2go.GoTypes.map(from, emitter);
 		String toGo = dev.gowt.j2go.GoTypes.map(to, emitter);
 		if (fromGo.equals(toGo)) return text;
+		// jrt.TreeSet embeds the List of a Set/Collection parameter.
+		if (fromGo.equals("*jrt.TreeSet") && toGo.equals("*jrt.List")) return text + ".List";
 		// A degraded (untranslated) SWT type is `any`; it only reaches here as a subtype of the target.
 		if (fromGo.equals("any") && emitter.degradesUnresolvedTypes() && !text.equals("nil")
 				&& (from.getErasure().getQualifiedName().startsWith("org.eclipse.swt.") || from.isLocal() && !from.isAnonymous()

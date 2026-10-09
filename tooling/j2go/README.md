@@ -3334,3 +3334,22 @@ becomes `Fprint` (vet); `Double.intValue/doubleValue/equals/toString`, `Number.d
 `Path.toUri`, and `http.go` (`HttpServer`/`HttpExchange` over `net/http`) for `EchoHttpServer`, which is translated too.
 
 `Test_org_eclipse_swt_browser_Browser` (and `EchoHttpServer`) join `TEST_FILES`. Hand-written parts: `tests/swttests/browser_manual.go` (JVM diagnostics, `test_setJavascriptEnabled`).
+
+## Round 24 StyledText (TSK-2026-10-03-product-25)
+
+`org.eclipse.swt.custom.StyledText` and its helpers (content, renderer, writers, events, listeners) join `SWT_FILES`; the JUnit tests `Test_org_eclipse_swt_custom_StyledText*` and
+`StyledTextContentSpec` join `TEST_FILES`. Package `dnd` is not translated here, so what StyledText needs of it is stubbed, to be deleted when the real classes land:
+
+- `tooling/j2go/stubs-dnd` (searched before every SWT root, win32 has the real dnd sources on its path; modeled, never emitted): `DND`, `Transfer`, `TextTransfer`, `RTFTransfer`,
+  `HTMLTransfer`, `Clipboard`. Go side: `swt/dnd_stubs_manual.go` (an in-process clipboard keyed by `*Transfer`), with `StyledTextDropTargetEffect` (a `Manual` entry, no behavior).
+- Accessible: `swt/accessible_styledtext_manual.go` (listener add/remove, `TextChanged`, ... as no-ops), `IME`/`BidiUtil` members on cocoa and gtk stubs; `StyledText.SELECTION_COMPARATOR`
+  is a skipped field, hand-written in `swt/custom_styledtext_manual.go` (a method ref to `getX(Point)` does not type: `Point` params are `PointLike`).
+
+Translator changes, all general: nested ternaries hoist inside their branch (a hoisted `getStyleRangeAtOffset(count - 1)` ran with `count == 0`); methods an anonymous class adds are `fn<Name>Local<N>`
+fields and callable from its own bodies; `super.clone()` of `Object` is a shallow copy; `IntStream`/`Stream` stages (`mapToInt`, `mapToObj`, `allMatch`, `distinct`, `sorted`, `range`, `of`,
+3-argument `collect`, `summingInt`), `Arrays.sort(a, cmp)`/`binarySearch`, `Collectors.joining()`, `String.chars()`, `Character.isDefined` (unassigned code points count as defined),
+`Integer::toString`, `Objects::nonNull`, `StringBuilder::new`; a multi-catch variable is an `error`; `(String) object` of nil is `""`; two local classes of one name in one file are hoisted under
+distinct names; `Throwable.initCause`, `OutOfMemoryError` as an error value.
+
+Linux stand: 278 of 279 `-run StyledText` pass. The failure, `test_caretSizeAndPositionVariableGlyphMetrics`, is a test SWT skips on Linux with `assumeFalse(isLinux)`; `System.getProperty("os.name")`
+is the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption never fires there.

@@ -48,6 +48,11 @@ final class TypeTestEmitter {
 		// interface to a concrete array/string/struct type, only assertion does.
 		ITypeBinding exprType = ce.getExpression().resolveTypeBinding();
 		if (exprType != null && exprType.getErasure().getQualifiedName().equals("java.lang.Object") && !goType.equals("any")) {
+			// A null String is "" in Go, so (String) null must not panic.
+			if (goType.equals("string")) {
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+				return "jrt.Cast[string](" + expr + ")";
+			}
 			return expr + ".(" + goType + ")";
 		}
 		return goType + "(" + expr + ")";

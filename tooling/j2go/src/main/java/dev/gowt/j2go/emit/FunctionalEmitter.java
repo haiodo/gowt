@@ -40,6 +40,20 @@ final class FunctionalEmitter {
 		ITypeBinding fType = emr.resolveTypeBinding();
 		IMethodBinding sam = fType == null ? null : fType.getFunctionalInterfaceMethod();
 		TypeModel.ClassInfo declCi = target == null ? null : emitter.model.lookup(target.getDeclaringClass());
+		// Integer::toString as a Function<Integer,String>: the int is formatted in decimal.
+		if (sam != null && target != null && Modifier.isStatic(target.getModifiers()) && target.getParameterTypes().length == 1
+				&& target.getDeclaringClass().getErasure().getQualifiedName().equals("java.lang.Integer") && target.getName().equals("toString")) {
+			emitter.fileImports.add("strconv");
+			String wrapped = wrap(fType, "func(a0 " + GoTypes.map(sam.getParameterTypes()[0], emitter) + ") string { return strconv.Itoa(int(a0)) }");
+			if (wrapped != null) return wrapped;
+		}
+		// Objects::nonNull / Objects::isNull as a Predicate.
+		if (sam != null && target != null && Modifier.isStatic(target.getModifiers()) && target.getDeclaringClass().getErasure().getQualifiedName().equals("java.util.Objects")
+				&& (target.getName().equals("nonNull") || target.getName().equals("isNull"))) {
+			emitter.fileImports.add(Manual.JRT_IMPORT);
+			String wrapped = wrap(fType, "func(a0 " + GoTypes.map(sam.getParameterTypes()[0], emitter) + ") bool { return " + (target.getName().equals("nonNull") ? "!" : "") + "jrt.IsNil(a0) }");
+			if (wrapped != null) return wrapped;
+		}
 		// `callable::call`: the receiver already is the bare Go func.
 		if (sam != null && target != null && !Modifier.isStatic(target.getModifiers()) && Modifier.isAbstract(target.getModifiers())
 				&& GoTypes.isJdkFunctional(target.getDeclaringClass().getErasure().getQualifiedName())) {
@@ -111,6 +125,16 @@ final class FunctionalEmitter {
 			return methodRefFunc(emr, target, emitter.model.lookup(target.getDeclaringClass()));
 		}
 		return null;
+	}
+
+	/** `StringBuilder::new` as a Supplier: the only constructor reference the sources use. */
+	String emitCreationReference(CreationReference cr) {
+		ITypeBinding t = cr.getType().resolveBinding();
+		if (t != null && t.getErasure().getQualifiedName().equals("java.lang.StringBuilder")) {
+			emitter.fileImports.add(Manual.JRT_IMPORT);
+			return "func() *jrt.StringBuilder { return jrt.NewStringBuilder() }";
+		}
+		return marker(cr, "CreationReference");
 	}
 
 	private String marker(Expression e, String kind) {
@@ -306,7 +330,7 @@ final class FunctionalEmitter {
 			IMethodBinding mb = md.resolveBinding();
 			IMethodBinding overridden = findOverridden(mb, anonType);
 			IMethodBinding sigSource = overridden != null ? overridden : mb;
-			String goName = overridden != null ? memberGoName(overridden, foreign) : Names.javaMethodBaseGoName(mb.getName());
+			String goName = overridden != null ? memberGoName(overridden, foreign) : anonOwnMethodName(mb);
 			String params = emitter.paramList(sigSource, null);
 			String ret = emitter.retType(sigSource);
 			String field = "fn" + goName;
@@ -382,6 +406,16 @@ final class FunctionalEmitter {
 			todo.addAll(List.of(t.getInterfaces()));
 		}
 		return null;
+	}
+
+	/** A method the anonymous class adds (overrides nothing): its own overload index keeps same-named ones apart, and from the overriding one. */
+	static String anonOwnMethodName(IMethodBinding mb) {
+		int idx = 0;
+		for (IMethodBinding o : mb.getDeclaringClass().getDeclaredMethods()) {
+			if (o.isEqualTo(mb)) break;
+			if (o.getName().equals(mb.getName())) idx++;
+		}
+		return Names.javaMethodBaseGoName(mb.getName()) + "Local" + idx;
 	}
 
 	/** The Go name a call to m resolves to - the cascade name when m is an override point. */

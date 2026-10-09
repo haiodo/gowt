@@ -54,6 +54,16 @@ final class FunctionalEmitter {
 			String wrapped = wrap(fType, fn);
 			if (wrapped != null) return wrapped;
 		}
+		// `Foo.class::isInstance` / `cls::cast`: reflect.Type has no such methods.
+		if (sam != null && target != null && sam.getParameterTypes().length == 1 && target.getDeclaringClass().getErasure().getQualifiedName().equals("java.lang.Class")
+				&& (target.getName().equals("isInstance") || target.getName().equals("cast"))) {
+			emitter.fileImports.add(JRT_IMPORT);
+			String ret = emitter.retType(sam);
+			String fn = "func(o " + GoTypes.map(sam.getParameterTypes()[0], emitter) + ") " + ret + " { return jrt.Class"
+					+ (target.getName().equals("cast") ? "Cast(" : "IsInstance(") + emitter.expr(emr.getExpression()) + ", o) }";
+			String wrapped = wrap(fType, fn);
+			if (wrapped != null) return wrapped;
+		}
 		// `cell::get` on a hand-written type (jrt.AtomicBoolean): its Go method has the Java name.
 		if (sam != null && target != null && declCi == null && !Modifier.isStatic(target.getModifiers())
 				&& Manual.isManual(target.getDeclaringClass().getErasure().getQualifiedName())) {

@@ -194,6 +194,15 @@ final class JdkCalls {
 			case "java.lang.Byte#parseByte":
 				emitter.fileImports.add(JRT);
 				return "int8(jrt.ParseInt(" + arg(mi, 0) + "))";
+			case "java.lang.Comparable#compareTo":
+				emitter.fileImports.add(JRT);
+				return "jrt.CompareTo(" + recv(mi) + ", " + arg(mi, 0) + ")";
+			case "java.nio.file.Paths#get":
+				emitter.fileImports.add(JRT);
+				return "jrt.PathOf(" + arg(mi, 0) + ", " + (mi.arguments().size() > 1 ? arg(mi, 1) : "nil") + ")";
+			case "java.lang.Class#isInstance", "java.lang.Class#cast":
+				emitter.fileImports.add(JRT);
+				return "jrt.Class" + (name.equals("cast") ? "Cast(" : "IsInstance(") + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.Class#isAssignableFrom":
 				emitter.fileImports.add(JRT);
 				return "jrt.IsAssignableFrom(" + recv(mi) + ", " + arg(mi, 0) + ")";
@@ -271,6 +280,25 @@ final class JdkCalls {
 			case "java.lang.Thread#join":
 				emitter.fileImports.add(JRT);
 				return "jrt.ThreadJoin(" + recv(mi) + ")";
+			case "java.lang.Thread#isAlive":
+				emitter.fileImports.add(JRT);
+				return "jrt.ThreadIsAlive(" + recv(mi) + ")";
+			// A goroutine has no interrupt flag or daemon mode; the arguments are still evaluated.
+			case "java.lang.Thread#interrupt", "java.lang.Thread#setDaemon":
+				emitter.fileImports.add(JRT);
+				return "jrt.Ignore(" + recv(mi) + (mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0)) + ")";
+			case "java.io.PrintStream#flush":
+				emitter.fileImports.add(JRT);
+				return "jrt.PrintStreamFlush(" + recv(mi) + ")";
+			case "java.lang.System#setOut", "java.lang.System#setErr":
+				emitter.fileImports.add(JRT);
+				return "jrt." + (name.equals("setOut") ? "SetOut(" : "SetErr(") + arg(mi, 0) + ")";
+			case "java.lang.Double#parseDouble":
+				emitter.fileImports.add(JRT);
+				return "jrt.ParseDouble(" + arg(mi, 0) + ")";
+			case "java.lang.Integer#getInteger":
+				emitter.fileImports.add(JRT);
+				return "jrt.GetInteger(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
 			// Object monitors: the one global jrt monitor (see ControlFlowEmitter.emitSynchronized).
 			case "java.lang.Object#wait":
 				emitter.fileImports.add(JRT);

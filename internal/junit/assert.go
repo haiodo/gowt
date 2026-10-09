@@ -6,7 +6,10 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strings"
+
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 // JUnit's optional trailing message: a string or a Supplier<String> (func() string).
@@ -182,6 +185,12 @@ func AssertThrows[T any](fn func(), msg ...any) (res T) {
 		r := recover()
 		if r == nil {
 			failf(msg, "Expected %s to be thrown, but nothing was thrown.", reflect.TypeFor[T]())
+		}
+		// A Go bounds-check panic is the Java IndexOutOfBoundsException the test asks for.
+		if _, want := any(res).(*jrt.IndexOutOfBoundsException); want {
+			if re, isRuntime := r.(runtime.Error); isRuntime && strings.Contains(re.Error(), "out of range") {
+				r = jrt.NewIndexOutOfBoundsException(re.Error())
+			}
 		}
 		v, ok := r.(T)
 		if !ok {

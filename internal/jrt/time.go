@@ -23,3 +23,4 @@ func DurationBetween(a, b *Instant) *Duration   { return &Duration{b.t.Sub(a.t)}
 func (d *Duration) Minus(o *Duration) *Duration { return &Duration{d.d - o.d} }
 func (d *Duration) IsNegative() bool            { return d.d < 0 }
 func (d *Duration) ToMillis() int64             { return d.d.Milliseconds() }
+func (d *Duration) ToNanos() int64              { return d.d.Nanoseconds() }

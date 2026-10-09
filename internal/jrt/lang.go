@@ -231,3 +231,6 @@ func AddSuppressed(e, s error) {}
 func GetChars(s string, srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
 	copy(dst[dstBegin:], utf16.Encode([]rune(s))[srcBegin:srcEnd])
 }
+
+// Ignore evaluates its arguments for their side effects only: Thread.interrupt and setDaemon, which a goroutine does not have.
+func Ignore(...any) {}

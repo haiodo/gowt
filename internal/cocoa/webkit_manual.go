@@ -110,7 +110,7 @@ func wkSetup() {
 					reply = nsString(v.Call(goString(prompt)))
 				}
 				callBlock(handler, reply)
-			}), "v@:@@@@?"},
+			}), "v@:@@@@@?"},
 			"observeValueForKeyPath:ofObject:change:context:": {purego.NewCallback(func(self, _, _, wv, _, _ uintptr) {
 				if v := view(self); v != nil && v.TitleChanged != nil {
 					v.TitleChanged(goString(msg(wv, "title")))

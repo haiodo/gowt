@@ -186,6 +186,9 @@ func widgetImplAsTabFolder(x any) (*swt.TabFolder, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTabFolder() *swt.TabFolder }); ok {
+		return l.AsTabFolder(), true
+	}
 	return nil, false
 }
 

@@ -2067,6 +2067,9 @@ func widgetImplAsButton(x any) (*swt.Button, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsButton() *swt.Button }); ok {
+		return l.AsButton(), true
+	}
 	return nil, false
 }
 
@@ -2186,6 +2189,9 @@ func widgetImplAsComposite(x any) (*swt.Composite, bool) {
 			return nil, false
 		}
 		return &v.Composite, true
+	}
+	if l, ok := x.(interface{ AsComposite() *swt.Composite }); ok {
+		return l.AsComposite(), true
 	}
 	return nil, false
 }
@@ -2458,6 +2464,9 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 		}
 		return &v.Control, true
 	}
+	if l, ok := x.(interface{ AsControl() *swt.Control }); ok {
+		return l.AsControl(), true
+	}
 	return nil, false
 }
 
@@ -2483,6 +2492,9 @@ func widgetImplAsMenu(x any) (*swt.Menu, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsMenu() *swt.Menu }); ok {
+		return l.AsMenu(), true
 	}
 	return nil, false
 }

@@ -134,6 +134,9 @@ func widgetImplAsDateTime(x any) (*swt.DateTime, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsDateTime() *swt.DateTime }); ok {
+		return l.AsDateTime(), true
+	}
 	return nil, false
 }
 

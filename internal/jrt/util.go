@@ -114,8 +114,15 @@ type List struct {
 	owner *Map // set on Map.EntrySet(): removals reach the map
 }
 
-// NewList is new ArrayList<>() or new ArrayList<>(initialCapacity).
-func NewList(capacity ...int32) *List { return &List{} }
+// NewList is new ArrayList<>(), new ArrayList<>(initialCapacity) or new ArrayList<>(collection).
+func NewList(arg ...any) *List {
+	if len(arg) == 1 {
+		if src, ok := arg[0].(*List); ok {
+			return &List{items: src.ToArray()}
+		}
+	}
+	return &List{}
+}
 
 // Add covers add(E) and add(int index, E).
 func (l *List) Add(a ...any) bool {

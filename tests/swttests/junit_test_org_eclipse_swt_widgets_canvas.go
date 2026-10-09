@@ -269,8 +269,10 @@ func init() {
 			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_getChildren_() }},
 			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setFocus_toChild_afterOpen_() }},
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setFocus_toChild_beforeOpen_() }},
-			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).Test_setFocus_withInvisibleChild() }},
-			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).Test_setFocus_withVisibleAndInvisibleChild() }},
+			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setFocus_withInvisibleChild_() }},
+			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setFocus_withVisibleAndInvisibleChild_()
+			}},
 			{Name: "test_setTabList$Lorg_eclipse_swt_widgets_Control", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Canvas).Test_setTabList_Lorg_eclipse_swt_widgets_Control()
 			}},
@@ -322,6 +324,9 @@ func widgetImplAsCanvas(x any) (*swt.Canvas, bool) {
 			return nil, false
 		}
 		return &v.Canvas, true
+	}
+	if l, ok := x.(interface{ AsCanvas() *swt.Canvas }); ok {
+		return l.AsCanvas(), true
 	}
 	return nil, false
 }

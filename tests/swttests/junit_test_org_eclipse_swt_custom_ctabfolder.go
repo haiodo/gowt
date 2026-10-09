@@ -1178,8 +1178,10 @@ func init() {
 			{Name: "test_getChildren", Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).impl.test_getChildren_() }},
 			{Name: "test_setFocus_toChild_afterOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).impl.test_setFocus_toChild_afterOpen_() }},
 			{Name: "test_setFocus_toChild_beforeOpen", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).impl.test_setFocus_toChild_beforeOpen_() }},
-			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).Test_setFocus_withInvisibleChild() }},
-			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).Test_setFocus_withVisibleAndInvisibleChild() }},
+			{Name: "test_setFocus_withInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_custom_CTabFolder).impl.test_setFocus_withInvisibleChild_() }},
+			{Name: "test_setFocus_withVisibleAndInvisibleChild", Tags: []string{"gtk4-wayland-todo"}, Run: func(t any) {
+				t.(*Test_org_eclipse_swt_custom_CTabFolder).impl.test_setFocus_withVisibleAndInvisibleChild_()
+			}},
 			{Name: "test_setTabList$Lorg_eclipse_swt_widgets_Control", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_custom_CTabFolder).Test_setTabList_Lorg_eclipse_swt_widgets_Control()
 			}},
@@ -1327,6 +1329,9 @@ func widgetImplAsToolBar(x any) (*swt.ToolBar, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsToolBar() *swt.ToolBar }); ok {
+		return l.AsToolBar(), true
+	}
 	return nil, false
 }
 
@@ -1345,6 +1350,9 @@ func widgetImplAsCTabItem(x any) (*swt.CTabItem, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsCTabItem() *swt.CTabItem }); ok {
+		return l.AsCTabItem(), true
 	}
 	return nil, false
 }
@@ -1378,6 +1386,9 @@ func widgetImplAsToolItem(x any) (*swt.ToolItem, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsToolItem() *swt.ToolItem }); ok {
+		return l.AsToolItem(), true
 	}
 	return nil, false
 }
@@ -1424,6 +1435,9 @@ func rectangleImplAsRectangle(x any) (*swt.Rectangle, bool) {
 			return nil, false
 		}
 		return &v.Rectangle, true
+	}
+	if l, ok := x.(interface{ AsRectangle() *swt.Rectangle }); ok {
+		return l.AsRectangle(), true
 	}
 	return nil, false
 }

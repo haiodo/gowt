@@ -81,6 +81,9 @@ func widgetImplAsTable(x any) (*swt.Table, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTable() *swt.Table }); ok {
+		return l.AsTable(), true
+	}
 	return nil, false
 }
 
@@ -142,6 +145,9 @@ func widgetImplAsTableColumn(x any) (*swt.TableColumn, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsTableColumn() *swt.TableColumn }); ok {
+		return l.AsTableColumn(), true
 	}
 	return nil, false
 }

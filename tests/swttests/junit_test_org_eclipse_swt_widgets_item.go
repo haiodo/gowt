@@ -185,6 +185,9 @@ func widgetImplAsItem(x any) (*swt.Item, bool) {
 		}
 		return &v.Item, true
 	}
+	if l, ok := x.(interface{ AsItem() *swt.Item }); ok {
+		return l.AsItem(), true
+	}
 	return nil, false
 }
 

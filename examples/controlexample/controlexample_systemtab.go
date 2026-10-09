@@ -307,6 +307,9 @@ func resourceImplAsCursor(x any) (*swt.Cursor, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsCursor() *swt.Cursor }); ok {
+		return l.AsCursor(), true
+	}
 	return nil, false
 }
 

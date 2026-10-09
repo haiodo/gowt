@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-gi python3-gi-cairo \
     xvfb openbox x11vnc novnc websockify x11-apps scrot \
     weston \
+    libwebkit2gtk-4.1-dev gir1.2-webkit2-4.1 gir1.2-javascriptcoregtk-4.1 \
     && rm -rf /var/lib/apt/lists/*
 
 # GLib/GObject/Gio/cairo GIRs live in libglib2.0-dev / libcairo2-dev; gir1.2-* covers the rest.

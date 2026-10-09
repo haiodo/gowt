@@ -26,6 +26,7 @@ final class ExpressionEmitter {
 		if (e instanceof CharacterLiteral cl) return runeLiteral(cl.charValue());
 		if (e instanceof BooleanLiteral bl) return Boolean.toString(bl.booleanValue());
 		if (e instanceof StringLiteral sl) return goStringLiteral(sl.getLiteralValue());
+		if (e instanceof TextBlock tb) return goStringLiteral(tb.getLiteralValue());
 		if (e instanceof NullLiteral) return EmitUtil.nullLiteral(emitter, e);
 		if (e instanceof ThisExpression te) {
 			if (te.getQualifier() == null) return emitter.anonThis != null ? emitter.anonThis : "this";
@@ -315,6 +316,7 @@ final class ExpressionEmitter {
 			java.util.Map.entry("java.lang.Float.MIN_VALUE", "math.SmallestNonzeroFloat32"),
 			java.util.Map.entry("java.lang.Thread.MAX_PRIORITY", "10"),
 			java.util.Map.entry("java.lang.System.out", "os.Stdout"),
+			java.util.Map.entry("java.lang.System.err", "os.Stderr"),
 			java.util.Map.entry("java.lang.Float.POSITIVE_INFINITY", "float32(math.Inf(1))"),
 			java.util.Map.entry("java.lang.Float.NEGATIVE_INFINITY", "float32(math.Inf(-1))"),
 			java.util.Map.entry("java.lang.Double.POSITIVE_INFINITY", "math.Inf(1)"),

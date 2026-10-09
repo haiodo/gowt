@@ -352,6 +352,9 @@ func widgetImplAsToolItem(x any) (*swt.ToolItem, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsToolItem() *swt.ToolItem }); ok {
+		return l.AsToolItem(), true
+	}
 	return nil, false
 }
 

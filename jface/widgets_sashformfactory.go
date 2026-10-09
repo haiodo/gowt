@@ -125,6 +125,9 @@ func widgetImplAsSashForm(x any) (*swt.SashForm, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSashForm() *swt.SashForm }); ok {
+		return l.AsSashForm(), true
+	}
 	return nil, false
 }
 

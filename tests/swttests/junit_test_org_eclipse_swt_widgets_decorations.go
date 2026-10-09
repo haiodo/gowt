@@ -222,6 +222,9 @@ func widgetImplAsDecorations(x any) (*swt.Decorations, bool) {
 		}
 		return &v.Decorations, true
 	}
+	if l, ok := x.(interface{ AsDecorations() *swt.Decorations }); ok {
+		return l.AsDecorations(), true
+	}
 	return nil, false
 }
 

@@ -180,6 +180,9 @@ func widgetImplAsSpinner(x any) (*swt.Spinner, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsSpinner() *swt.Spinner }); ok {
+		return l.AsSpinner(), true
+	}
 	return nil, false
 }
 

@@ -170,6 +170,9 @@ func widgetImplAsText(x any) (*swt.Text, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsText() *swt.Text }); ok {
+		return l.AsText(), true
+	}
 	return nil, false
 }
 

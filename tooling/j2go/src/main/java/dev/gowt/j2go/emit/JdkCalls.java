@@ -99,6 +99,37 @@ final class JdkCalls {
 			case "java.lang.Integer#intValue":
 				emitter.fileImports.add(JRT);
 				return "jrt.Cast[int32](" + recv(mi) + ")";
+			// A boxed Double is a float64 behind an any.
+			case "java.lang.Double#intValue":
+				emitter.fileImports.add(JRT);
+				return "jrt.DoubleToInt(jrt.Cast[float64](" + recv(mi) + "))";
+			case "java.lang.Double#doubleValue":
+				emitter.fileImports.add(JRT);
+				return "jrt.Cast[float64](" + recv(mi) + ")";
+			case "java.lang.Number#doubleValue":
+				emitter.fileImports.add(JRT);
+				return "jrt.NumberDouble(" + recv(mi) + ")";
+			case "java.lang.Long#toString":
+				if (mi.arguments().size() != 1) return null;
+				emitter.fileImports.add("strconv");
+				return "strconv.FormatInt(int64(" + arg(mi, 0) + "), 10)";
+			case "java.lang.Double#equals":
+				emitter.fileImports.add(JRT);
+				return "jrt.DoubleEquals(jrt.Cast[float64](" + recv(mi) + "), " + arg(mi, 0) + ")";
+			case "java.lang.String#getBytes":
+				emitter.fileImports.add(JRT);
+				return "jrt.GetBytes(" + recv(mi) + ")";
+			case "java.io.OutputStream#write":
+				if (mi.arguments().size() != 1 || !mb.getParameterTypes()[0].isArray()) return null;
+				emitter.fileImports.add(JRT);
+				return "jrt.WriteBytes(" + recv(mi) + ", " + arg(mi, 0) + ")";
+			case "java.lang.String#toLowerCase":
+				if (mi.arguments().size() != 1) return null;
+				emitter.fileImports.add("strings");
+				return "strings.ToLower(" + recv(mi) + ")";
+			case "java.lang.System#runFinalization":
+				emitter.fileImports.add(JRT);
+				return "jrt.GC()";
 			case "java.lang.reflect.Array#getLength":
 				emitter.fileImports.add("reflect");
 				return "int32(reflect.ValueOf(" + arg(mi, 0) + ").Len())";
@@ -146,9 +177,8 @@ final class JdkCalls {
 				emitter.fileImports.add(JRT);
 				return "jrt.DoubleCompare(float64(" + arg(mi, 0) + "), float64(" + arg(mi, 1) + "))";
 			case "java.lang.Double#toString":
-				if (mi.arguments().size() != 1) return null;
 				emitter.fileImports.add(JRT);
-				return "jrt.DoubleToString(float64(" + arg(mi, 0) + "))";
+				return mi.arguments().size() == 1 ? "jrt.DoubleToString(float64(" + arg(mi, 0) + "))" : "jrt.DoubleToString(jrt.Cast[float64](" + recv(mi) + "))";
 			case "java.lang.String#format":
 				if (!mb.getParameterTypes()[0].getQualifiedName().equals("java.lang.String")) return null;
 				emitter.fileImports.add(JRT);
@@ -295,6 +325,8 @@ final class JdkCalls {
 			stream = recv(mi) + ".(io.Writer)";
 		}
 		String a = mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0);
+		// vet rejects Fprintln of a constant that ends in a newline.
+		if (a.startsWith(", \"") && a.endsWith("\\n\"")) return "fmt.Fprint(" + stream + a + ", \"\\n\")";
 		return "fmt.Fprintln(" + stream + a + ")";
 	}
 }

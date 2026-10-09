@@ -327,6 +327,8 @@ final class NumericEmitter {
 	String upcastObject(String text, ITypeBinding from, ITypeBinding to) {
 		if (from.isPrimitive() || to.isPrimitive()) return text;
 		if (from.isArray() && to.isArray()) return upcastArray(text, from, to);
+		// `var s = new Base() {...}` is typed by Base (GoTypes.map).
+		if (to.isAnonymous() && to.getSuperclass() != null && !to.getSuperclass().getQualifiedName().equals("java.lang.Object")) to = to.getSuperclass();
 		// A foreign anonymous subclass embeds its base by pointer (FunctionalEmitter.emitStructAnon).
 		TypeModel.ClassInfo fromCi = emitter.model.lookup(from);
 		ITypeBinding foreignBase = from.isAnonymous() ? from.getSuperclass() : fromCi != null && fromCi.foreignSuper != null ? fromCi.foreignSuper.binding : null;

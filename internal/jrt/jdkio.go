@@ -80,6 +80,19 @@ func (r *Reader) Lines() *List {
 	return l
 }
 
+// ReadLine is BufferedReader.readLine(): the next line, "" at the end (Java's null).
+func (r *Reader) ReadLine() string {
+	var sb []byte
+	one := make([]byte, 1)
+	for {
+		n, err := r.r.Read(one)
+		if n == 0 || err != nil || one[0] == '\n' {
+			return string(sb)
+		}
+		sb = append(sb, one[0])
+	}
+}
+
 func (r *Reader) Close() {
 	if c, ok := r.r.(io.Closer); ok {
 		c.Close()

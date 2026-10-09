@@ -1059,6 +1059,9 @@ func imageDataImplAsImageData(x any) (*swt.ImageData, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsImageData() *swt.ImageData }); ok {
+		return l.AsImageData(), true
+	}
 	return nil, false
 }
 

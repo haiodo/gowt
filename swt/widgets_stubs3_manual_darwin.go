@@ -26,8 +26,8 @@ func (c *Callback) GetAddress() int64 { return c.address }
 // purego callbacks can't be freed; the slot stays allocated (pool of 2000, SWT creates ~20).
 func (c *Callback) Dispose() {}
 
-// Callback.getEntryCount: JNI re-entry depth, only compared to 0 to decide on autorelease pools.
-func CallbackGetEntryCount() int32 { return 0 }
+// Callback.getEntryCount: native-to-Go re-entry depth, only compared to 0 to decide on autorelease pools.
+func CallbackGetEntryCount() int32 { return cocoa.CallbackEntryCount() }
 
 // Display.isValidClass: SWT rejects subclasses outside its own package; the Go analogue is the
 // swt package itself (getClass() on an SWT receiver is always one of its own types anyway).

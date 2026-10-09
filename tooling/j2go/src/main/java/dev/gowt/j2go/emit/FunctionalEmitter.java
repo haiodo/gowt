@@ -1,6 +1,7 @@
 package dev.gowt.j2go.emit;
 
 import dev.gowt.j2go.GoTypes;
+import dev.gowt.j2go.Manual;
 import dev.gowt.j2go.Names;
 import dev.gowt.j2go.TypeModel;
 import org.eclipse.jdt.core.dom.*;
@@ -51,6 +52,12 @@ final class FunctionalEmitter {
 			String ret = emitter.retType(sam);
 			String fn = "func(a0 " + GoTypes.map(sam.getParameterTypes()[0], emitter) + ")" + (ret.isEmpty() ? "" : " " + ret) + " { " + (ret.isEmpty() ? "" : "return ") + emitter.expr(emr.getExpression()) + ".Add(a0) }";
 			String wrapped = wrap(fType, fn);
+			if (wrapped != null) return wrapped;
+		}
+		// `cell::get` on a hand-written type (jrt.AtomicBoolean): its Go method has the Java name.
+		if (sam != null && target != null && declCi == null && !Modifier.isStatic(target.getModifiers())
+				&& Manual.isManual(target.getDeclaringClass().getErasure().getQualifiedName())) {
+			String wrapped = wrap(fType, emitter.expr(emr.getExpression()) + "." + Manual.instanceMember(target.getName()));
 			if (wrapped != null) return wrapped;
 		}
 		if (sam == null || declCi == null) return marker(emr, "ExpressionMethodReference");

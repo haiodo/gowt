@@ -148,6 +148,9 @@ func widgetImplAsLabel(x any) (*swt.Label, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsLabel() *swt.Label }); ok {
+		return l.AsLabel(), true
+	}
 	return nil, false
 }
 

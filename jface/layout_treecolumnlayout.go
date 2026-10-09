@@ -128,6 +128,9 @@ func widgetImplAsTree(x any) (*swt.Tree, bool) {
 		}
 		return v, true
 	}
+	if l, ok := x.(interface{ AsTree() *swt.Tree }); ok {
+		return l.AsTree(), true
+	}
 	return nil, false
 }
 
@@ -150,6 +153,9 @@ func widgetImplAsTreeColumn(x any) (*swt.TreeColumn, bool) {
 			return nil, false
 		}
 		return v, true
+	}
+	if l, ok := x.(interface{ AsTreeColumn() *swt.TreeColumn }); ok {
+		return l.AsTreeColumn(), true
 	}
 	return nil, false
 }

@@ -32,7 +32,7 @@ fi
 # Drops the generated files of the shared set (cocoa only: it is the reference platform that owns the shared
 # files, see README "Round 20") and of this platform (a renamed or removed source then leaves nothing stale);
 # another platform's _<goos>.go files stay.
-for f in swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/*/*.go tests/swttests/*.go jface/*.go tests/jfacetests/*.go; do
+for f in swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/*/*.go tests/swttests/*.go jface/*.go tests/jfacetests/*.go browser/*.go; do
 	[ -e "$f" ] || continue
 	case "$f" in
 		"$PI_DIR"/*) ;;
@@ -246,6 +246,14 @@ SWT_FILES=(
 	org/eclipse/swt/widgets/Caret.java
 	org/eclipse/swt/internal/graphics/ImageUtil.java
 )
+# org.eclipse.swt.browser sources. JSON is not translated: the common layer does not use it, the engine parses the page's values with
+# encoding/json. BrowserFactory, Program and WebViewBrowser exist only as Java stubs in tooling/j2go/stubs for typing; the engine is
+# browser/webbrowser_manual.go over package webview.
+BR_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Browser/common"
+BR_FILES=($(cd "$BR_ROOT" && ls org/eclipse/swt/browser/*.java | grep -v /JSON.java))
+BR_SRC=(--src "$BR_ROOT")
+BR_STUB=(org/eclipse/swt/browser/WebViewBrowser.java)
+
 # ImageUtil is cocoa's own (gtk's Image/GC do not use it).
 if [ "$PLATFORM" = gtk ]; then
 	SWT_FILES=("${SWT_FILES[@]/org\/eclipse\/swt\/internal\/graphics\/ImageUtil.java/}")
@@ -403,12 +411,15 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_DATE.java
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_TIME.java
 	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
+	$TJ/Test_org_eclipse_swt_browser_Browser.java
+	$TJ/EchoHttpServer.java
 	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
 )
-"${J2GO[@]}" --classpath "$JUNIT_CP" \
+"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" \
 	"${TEST_FILES[@]}" \
 	-- \
+	"${BR_STUB[@]}" "${BR_FILES[@]}" \
 	org/eclipse/swt/graphics/ImageDataLoader.java \
 	"${SWT_FILES[@]}" \
 	org/eclipse/swt/internal/C.java \
@@ -446,6 +457,16 @@ if [ "$PLATFORM" = cocoa ]; then
 		"${SWT_FILES[@]}" \
 		org/eclipse/swt/internal/C.java \
 		"${PI_FILES[@]}"
+
+
+	# org.eclipse.swt.browser: the common layer (Browser, WebBrowser, BrowserFunction, events) -> package browser, shared by every OS.
+	"${J2GO[@]}" "${BR_SRC[@]}" \
+		"${BR_FILES[@]}" \
+		-- \
+		"${BR_STUB[@]}" \
+		"${SWT_FILES[@]}" \
+		org/eclipse/swt/internal/C.java \
+		"${PI_FILES[@]}"
 fi
 
-gofmt -w swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/controlexample/*.go tests/swttests/*.go $(ls jface/*.go tests/jfacetests/*.go 2>/dev/null)
+gofmt -w swt/*.go swt/swtreflect/*.go "$PI_DIR"/*.go examples/controlexample/*.go tests/swttests/*.go $(ls jface/*.go tests/jfacetests/*.go browser/*.go 2>/dev/null)

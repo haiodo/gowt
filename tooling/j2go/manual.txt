@@ -5,6 +5,20 @@
 org.eclipse.swt.graphics.RoundingMode
 org.eclipse.swt.widgets.TaskItem#updateImage()
 
+# Browser: the engine is package webview (browser/webbrowser_manual.go); createWebBrowser is hand-written, and with it
+# goes the Edge-unavailable dialog, which only that method's catch block used.
+org.eclipse.swt.browser.Browser#createWebBrowser(org.eclipse.swt.widgets.Composite,I)
+org.eclipse.swt.browser.Browser.WebViewUnavailableDialog
+
+# Test_org_eclipse_swt_browser_Browser (tests/swttests/browser_manual.go): JVM diagnostics (verbose runs only, and the Linux
+# /proc/self/fd listing), and the test of setJavascriptEnabled, which package webview cannot switch.
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printSystemEnv()
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printMemoryUse()
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printThreadsInfo()
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getOpenedDescriptors()
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getPropertiesSafe()
+org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#test_setJavascriptEnabled()
+
 # org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
 # stub, swt/swt_manual.go, is kept empty rather than deleted.
 

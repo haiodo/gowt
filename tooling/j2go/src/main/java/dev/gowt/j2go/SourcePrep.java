@@ -24,7 +24,7 @@ final class SourcePrep {
 			for (Path f : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".java"))::iterator) {
 				String text = Files.readString(f, StandardCharsets.UTF_8);
 				if (!text.contains("record ") && !text.contains("class ")) continue;
-				String out = hoistLocalClasses(desugar(text));
+				String out = hoistLocalClasses(desugar(anonymizeLocalClasses(text)));
 				if (out.equals(text)) continue;
 				Path dst = mirror.resolve(root.relativize(f));
 				Files.createDirectories(dst.getParent());
@@ -37,7 +37,7 @@ final class SourcePrep {
 
 	/** Rewrites a mirror file without hoisting; true if that changed it. */
 	static boolean unhoist(Path mirrorFile, Path realFile) throws IOException {
-		String plain = desugar(Files.readString(realFile, StandardCharsets.UTF_8));
+		String plain = desugar(anonymizeLocalClasses(Files.readString(realFile, StandardCharsets.UTF_8)));
 		if (plain.equals(Files.readString(mirrorFile, StandardCharsets.UTF_8))) return false;
 		Files.writeString(mirrorFile, plain, StandardCharsets.UTF_8);
 		return true;
@@ -97,6 +97,108 @@ final class SourcePrep {
 		out.append(src.substring(pos));
 		if (hoisted.length() > 0) out.insert(out.lastIndexOf("}"), hoisted);
 		return out.toString();
+	}
+
+	private static final Pattern LOCAL_EXTENDING = Pattern.compile("(?m)^([ \\t]+)(?:final\\s+)?class\\s+(\\w+)\\s+extends\\s+([\\w.]+)\\s*\\{");
+
+	/**
+	 * A local class whose constructor does nothing but super(...) becomes an anonymous class at each
+	 * `new Name(args)`: the emitter has anonymous classes with captured variables, but no local classes
+	 * that capture. The constructor's parameters are replaced by the call's arguments in the super call.
+	 * A class that is used any other way stays as it is.
+	 */
+	static String anonymizeLocalClasses(String src) {
+		Matcher m = LOCAL_EXTENDING.matcher(src);
+		for (int from = 0; m.find(from); ) {
+			int start = m.start();
+			if (insideCommentOrString(src, start) || depthAt(src, start) == 0 || isMemberPosition(src, start)) {
+				from = m.end();
+				continue;
+			}
+			String out = anonymizeOne(src, m);
+			if (out == null) {
+				from = m.end();
+				continue;
+			}
+			src = out;
+			m = LOCAL_EXTENDING.matcher(src);
+			from = 0;
+		}
+		return src;
+	}
+
+	private static String anonymizeOne(String src, Matcher m) {
+		String name = m.group(2), sup = m.group(3);
+		int open = m.end() - 1, close = matching(src, open, '{', '}');
+		String body = src.substring(open + 1, close);
+		List<String> params = new ArrayList<>();
+		String superArgs = "";
+		Matcher cm = Pattern.compile("(?m)^\\s*" + name + "\\s*\\(([^)]*)\\)\\s*\\{").matcher(body);
+		if (cm.find()) {
+			int cOpen = cm.end() - 1, cClose = matching(body, cOpen, '{', '}');
+			Matcher sm = Pattern.compile("(?s)^super\\s*\\((.*)\\)\\s*;$").matcher(body.substring(cOpen + 1, cClose).trim());
+			if (!sm.matches()) return null;
+			superArgs = sm.group(1);
+			for (String p : splitArgs(cm.group(1))) {
+				String[] words = p.trim().split("\\s+");
+				params.add(words[words.length - 1]);
+			}
+			body = body.substring(0, cm.start()) + body.substring(cClose + 1);
+		}
+		int scopeEnd = blockEnd(src, close + 1);
+		String scope = src.substring(close + 1, scopeEnd);
+		Matcher um = Pattern.compile("\\bnew\\s+" + name + "\\s*\\(").matcher(scope);
+		List<int[]> uses = new ArrayList<>();
+		List<String> repl = new ArrayList<>();
+		while (um.find()) {
+			int argsOpen = um.end() - 1, argsClose = matching(scope, argsOpen, '(', ')');
+			List<String> args = splitArgs(scope.substring(argsOpen + 1, argsClose));
+			if (args.size() != params.size()) return null;
+			String sa = superArgs;
+			for (int i = 0; i < params.size(); i++) sa = sa.replaceAll("\\b" + params.get(i) + "\\b", Matcher.quoteReplacement("(" + args.get(i).trim() + ")"));
+			uses.add(new int[] { um.start(), argsClose + 1 });
+			repl.add("new " + sup + "(" + sa + ") {" + body + "}");
+		}
+		// Any other mention of the class (a variable of its type, instanceof) needs the class.
+		int mentions = 0;
+		for (Matcher w = Pattern.compile("\\b" + name + "\\b").matcher(scope); w.find(); ) mentions++;
+		if (uses.isEmpty() || mentions != uses.size()) return null;
+		StringBuilder out = new StringBuilder(scope);
+		for (int i = uses.size() - 1; i >= 0; i--) out.replace(uses.get(i)[0], uses.get(i)[1], repl.get(i));
+		return src.substring(0, m.start()) + out + src.substring(scopeEnd);
+	}
+
+	/** Index of the brace that closes the block a position is inside of. */
+	private static int blockEnd(String s, int from) {
+		int depth = 0;
+		for (int i = from; i < s.length(); i++) {
+			char ch = s.charAt(i);
+			if (ch == '"' || ch == '\'') i = skipLiteral(s, i);
+			else if (ch == '/' && s.charAt(i + 1) == '/') i = s.indexOf('\n', i);
+			else if (ch == '/' && s.charAt(i + 1) == '*') i = s.indexOf("*/", i + 2) + 1;
+			else if (ch == '{') depth++;
+			else if (ch == '}' && depth-- == 0) return i;
+		}
+		throw new IllegalStateException("unbalanced {");
+	}
+
+	/** Splits a call's or declaration's argument list at its top-level commas. */
+	private static List<String> splitArgs(String list) {
+		List<String> r = new ArrayList<>();
+		if (list.isBlank()) return r;
+		int depth = 0, start = 0;
+		for (int i = 0; i < list.length(); i++) {
+			char c = list.charAt(i);
+			if (c == '"' || c == '\'') i = skipLiteral(list, i);
+			else if (c == '(' || c == '<' || c == '[' || c == '{') depth++;
+			else if (c == ')' || c == '>' || c == ']' || c == '}') depth--;
+			else if (c == ',' && depth == 0) {
+				r.add(list.substring(start, i));
+				start = i + 1;
+			}
+		}
+		r.add(list.substring(start));
+		return r;
 	}
 
 	private static final Pattern LOCAL_CLASS = Pattern.compile("(?m)^([ \\t]+)((?:final|abstract)\\s+)?class\\s+\\w+");

@@ -92,6 +92,17 @@ func (r *Random) next(bits uint) int32 {
 	return int32(r.seed >> (48 - bits))
 }
 
+// NextBytes fills bytes like java.util.Random.nextBytes.
+func (r *Random) NextBytes(bytes []int8) {
+	for i := 0; i < len(bytes); {
+		for rnd, n := r.NextInt(), min(len(bytes)-i, 4); n > 0; n-- {
+			bytes[i] = int8(rnd)
+			i++
+			rnd >>= 8
+		}
+	}
+}
+
 // NextInt covers nextInt() and nextInt(bound).
 func (r *Random) NextInt(bound ...int32) int32 {
 	if len(bound) == 0 {
@@ -116,6 +127,7 @@ func (r *Random) NextInt(bound ...int32) int32 {
 type Locale struct{ tag string }
 
 var LocaleENGLISH = &Locale{"en"}
+var LocaleGERMAN = &Locale{"de"}
 
 func LocaleDefault() *Locale { return &Locale{LocaleLanguage(nil)} }
 

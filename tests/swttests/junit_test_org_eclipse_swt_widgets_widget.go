@@ -15,6 +15,7 @@ import (
 type Test_org_eclipse_swt_widgets_WidgetImpl interface {
 	setUp_()
 	tearDown_()
+	afterDispose_(a0 *swt.Display)
 	setWidget_(a0 *swt.Widget)
 	test_ConstructorLorg_eclipse_swt_widgets_CompositeI_()
 	test_computeSizeIIZ_()
@@ -46,6 +47,8 @@ type Test_org_eclipse_swt_widgets_WidgetImpl interface {
 	test_getChildren_()
 	test_setFocus_toChild_afterOpen_()
 	test_setFocus_toChild_beforeOpen_()
+	test_setFocus_withInvisibleChild_()
+	test_setFocus_withVisibleAndInvisibleChild_()
 	getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite
 	test_consistency_MenuDetect_()
 	test_consistency_DragDetect_()
@@ -173,6 +176,14 @@ func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_toChild_beforeOpe
 	panic("j2go: test_setFocus_toChild_beforeOpen_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
 
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_withInvisibleChild_() {
+	panic("j2go: test_setFocus_withInvisibleChild_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) test_setFocus_withVisibleAndInvisibleChild_() {
+	panic("j2go: test_setFocus_withVisibleAndInvisibleChild_ has no default on Test_org_eclipse_swt_widgets_Widget")
+}
+
 func (this *Test_org_eclipse_swt_widgets_Widget) getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite {
 	panic("j2go: getElementExpectedToHaveFocusAfterSetFocusOnParent_ has no default on Test_org_eclipse_swt_widgets_Widget")
 }
@@ -222,6 +233,15 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) tearDown_() {
 		return
 	}
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.tearDown_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) afterDispose_(a0 *swt.Display) {
+	if h, ok := this.hook.(interface{ AfterDispose_(a0 *swt.Display) }); ok && this.active != "afterDispose_" {
+		defer this.enter("afterDispose_")()
+		h.AfterDispose_(a0)
+		return
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.afterDispose_(a0)
 }
 
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) setWidget_(a0 *swt.Widget) {
@@ -494,6 +514,24 @@ func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_toChild_bef
 	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_toChild_beforeOpen_()
 }
 
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_withInvisibleChild_() {
+	if h, ok := this.hook.(interface{ Test_setFocus_withInvisibleChild_() }); ok && this.active != "test_setFocus_withInvisibleChild_" {
+		defer this.enter("test_setFocus_withInvisibleChild_")()
+		h.Test_setFocus_withInvisibleChild_()
+		return
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_withInvisibleChild_()
+}
+
+func (this *test_org_eclipse_swt_widgets_WidgetHooked) test_setFocus_withVisibleAndInvisibleChild_() {
+	if h, ok := this.hook.(interface{ Test_setFocus_withVisibleAndInvisibleChild_() }); ok && this.active != "test_setFocus_withVisibleAndInvisibleChild_" {
+		defer this.enter("test_setFocus_withVisibleAndInvisibleChild_")()
+		h.Test_setFocus_withVisibleAndInvisibleChild_()
+		return
+	}
+	this.Test_org_eclipse_swt_widgets_WidgetImpl.test_setFocus_withVisibleAndInvisibleChild_()
+}
+
 func (this *test_org_eclipse_swt_widgets_WidgetHooked) getElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite {
 	if h, ok := this.hook.(interface {
 		GetElementExpectedToHaveFocusAfterSetFocusOnParent_(a0 *swt.Composite) *swt.Composite
@@ -599,7 +637,7 @@ func (this *Test_org_eclipse_swt_widgets_Widget) tearDown_() {
 	if this.shell != (nil) && !this.shell.IsDisposed() {
 		this.shell.Dispose()
 	}
-	this.AfterDispose(display)
+	this.impl.afterDispose_(display)
 }
 
 func (this *Test_org_eclipse_swt_widgets_Widget) AfterDispose(displayLike swt.DisplayLike) {
@@ -607,7 +645,10 @@ func (this *Test_org_eclipse_swt_widgets_Widget) AfterDispose(displayLike swt.Di
 	if displayLike != nil {
 		display = displayLike.AsDisplay()
 	}
-	_ = display
+	this.impl.afterDispose_(display)
+}
+
+func (this *Test_org_eclipse_swt_widgets_Widget) afterDispose_(display *swt.Display) {
 	if this.widget != (nil) {
 		junit.AssertTrue(this.widget.IsDisposed())
 		if SwtTestUtilIsLinux && display != (nil) {
@@ -1007,6 +1048,9 @@ func widgetImplAsControl(x any) (*swt.Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	}
+	if l, ok := x.(interface{ AsControl() *swt.Control }); ok {
+		return l.AsControl(), true
 	}
 	return nil, false
 }

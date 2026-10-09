@@ -25,16 +25,16 @@ func NewCapturedOutput() *CapturedOutput {
 
 func (this *CapturedOutput) initCapturedOutput() {
 	this.originalOut = os.Stdout
-	this.originalErr = func() any { panic("j2go: unresolved static field err") }()
+	this.originalErr = os.Stderr
 	this.outContent = jrt.NewByteArrayOutputStream()
 	this.errContent = jrt.NewByteArrayOutputStream()
 	this.outPrintStream = func() any {
-		_ = []any{this.outContent, true, func() any { panic("j2go: unresolved static field UTF_8") }()}
+		_ = []any{this.outContent, true, jrt.StandardCharsetsUTF_8}
 		panic("j2go: unresolved new PrintStream")
 	}()
 	func() any { _ = []any{this.outPrintStream}; panic("j2go: unresolved call setOut") }()
 	this.errPrintStream = func() any {
-		_ = []any{this.errContent, true, func() any { panic("j2go: unresolved static field UTF_8") }()}
+		_ = []any{this.errContent, true, jrt.StandardCharsetsUTF_8}
 		panic("j2go: unresolved new PrintStream")
 	}()
 	func() any { _ = []any{this.errPrintStream}; panic("j2go: unresolved call setErr") }()
@@ -42,12 +42,12 @@ func (this *CapturedOutput) initCapturedOutput() {
 
 func (this *CapturedOutput) GetOutContent() string {
 	func() any { _ = []any{this.outPrintStream}; panic("j2go: unresolved call flush") }()
-	return this.outContent.ToString(func() any { panic("j2go: unresolved static field UTF_8") }())
+	return this.outContent.ToString(jrt.StandardCharsetsUTF_8)
 }
 
 func (this *CapturedOutput) GetErrContent() string {
 	func() any { _ = []any{this.errPrintStream}; panic("j2go: unresolved call flush") }()
-	return this.errContent.ToString(func() any { panic("j2go: unresolved static field UTF_8") }())
+	return this.errContent.ToString(jrt.StandardCharsetsUTF_8)
 }
 
 func (this *CapturedOutput) AssertNoOutput() {

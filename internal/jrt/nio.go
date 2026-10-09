@@ -3,6 +3,7 @@ package jrt
 import (
 	"bytes"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 )
@@ -29,6 +30,15 @@ func (p *Path) GetParent() *Path   { return &Path{filepath.Dir(p.s)} }
 func (p *Path) ToString() string   { return p.s }
 func (p *Path) String() string     { return p.s }
 func (p *Path) GetFileName() *Path { return &Path{filepath.Base(p.s)} }
+
+// ToUri is Path.toUri(): an absolute file:// URI.
+func (p *Path) ToUri() *URI {
+	abs, err := filepath.Abs(p.s)
+	if err != nil {
+		abs = p.s
+	}
+	return &URI{(&url.URL{Scheme: "file", Path: filepath.ToSlash(abs)}).String()}
+}
 
 func ioFail(err error) {
 	if err != nil {
@@ -102,3 +112,14 @@ func CreateTempDir() *Path {
 func RemoveTempDir(p *Path) { os.RemoveAll(p.s) }
 
 func FilesDelete(p *Path) { ioFail(os.Remove(p.s)) }
+
+func FilesIsSymbolicLink(p *Path) bool {
+	fi, err := os.Lstat(p.s)
+	return err == nil && fi.Mode()&os.ModeSymlink != 0
+}
+
+func FilesReadSymbolicLink(p *Path) *Path {
+	target, err := os.Readlink(p.s)
+	ioFail(err)
+	return &Path{target}
+}

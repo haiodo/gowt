@@ -584,6 +584,9 @@ func widgetImplAsScrollable(x any) (*swt.Scrollable, bool) {
 		}
 		return &v.Scrollable, true
 	}
+	if l, ok := x.(interface{ AsScrollable() *swt.Scrollable }); ok {
+		return l.AsScrollable(), true
+	}
 	return nil, false
 }
 

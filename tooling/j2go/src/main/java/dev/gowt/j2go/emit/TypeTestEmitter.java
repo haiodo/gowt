@@ -98,7 +98,7 @@ final class TypeTestEmitter {
 		ITypeBinding target = tp.getPatternVariable().getType().resolveBinding();
 		PATTERN_TYPES.put(varName, dev.gowt.j2go.GoTypes.map(target, emitter));
 		String okVar = "ok" + (++emitter.tempCounter);
-		emitter.prelude.add(instanceofCheck(pie.getLeftOperand(), target, varName, okVar));
+		emitter.prelude.add(instanceofCheck(pie.getLeftOperand(), target, emitter.sanitizeIdent(varName), okVar));
 		return okVar;
 	}
 
@@ -215,7 +215,7 @@ final class TypeTestEmitter {
 		}
 		b.append("\t}\n");
 		// A subclass declared in another package (anonymous widget) is not in the switch but embeds the target.
-		if (target.asMethodName != null && target.goPackage.equals(emitter.currentGoPackage)) {
+		if (target.asMethodName != null) {
 			b.append("\tif l, ok := x.(interface{ ").append(target.asMethodName).append("() *").append(targetName)
 					.append(" }); ok {\n\t\treturn l.").append(target.asMethodName).append("(), true\n\t}\n");
 		}

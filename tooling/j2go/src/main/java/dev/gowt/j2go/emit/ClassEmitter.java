@@ -134,7 +134,7 @@ final class ClassEmitter {
 					.append("Impl) { this.impl = &").append(hooked).append("{").append(ci.goTypeName).append("Impl: this.impl, hook: impl} }\n\n");
 		}
 		// jrt.ClassName only guesses the widgets package: tell it the real one.
-		if (ci.goPackage.equals("swt") && !ci.isInterface && !ci.javaPackage.equals("org.eclipse.swt.widgets")) {
+		if ((ci.goPackage.equals("swt") || ci.goPackage.equals("browser")) && !ci.isInterface && !ci.javaPackage.equals("org.eclipse.swt.widgets")) {
 			emitter.fileImports.add(Manual.JRT_IMPORT);
 			out.append("func init() { jrt.RegisterClassPackage(\"").append(ci.goTypeName).append("\", \"").append(ci.javaPackage).append("\") }\n\n");
 		}

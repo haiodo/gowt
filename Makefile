@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -57,8 +57,8 @@ check: vet test xcheck api-check
 XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res
 xcheck:
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
-	@for os in darwin windows linux; do GOOS=$$os go build ./jface || exit 1; done
-	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
+	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview || exit 1; done
+	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go jface/*.go browser/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
 
 # The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).
@@ -176,6 +176,13 @@ linux-vnc:
 # struct layouts against the C compiler.
 gtk-gen: linux-vnc
 	docker exec $(LINUX_CTR) sh -c 'cd /src && go run ./tooling/girgen && sh tooling/girgen/verify.sh'
+
+# Regenerates internal/webkit/gen_funcs.go from the WebKitGTK 4.1 GIR files in the stand.
+webkit-gen: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && go run ./tooling/webkitgen'
+
+test-webview-linux: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && GOWT_GUI_TEST=1 go test -count=1 ./webview'
 
 linux-shell: linux-vnc
 	docker exec -it $(LINUX_CTR) bash

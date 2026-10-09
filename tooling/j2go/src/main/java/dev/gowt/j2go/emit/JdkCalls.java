@@ -102,7 +102,7 @@ final class JdkCalls {
 			// A boxed Double is a float64 behind an any.
 			case "java.lang.Double#intValue":
 				emitter.fileImports.add(JRT);
-				return "int32(jrt.Cast[float64](" + recv(mi) + "))";
+				return "jrt.DoubleToInt(jrt.Cast[float64](" + recv(mi) + "))";
 			case "java.lang.Double#doubleValue":
 				emitter.fileImports.add(JRT);
 				return "jrt.Cast[float64](" + recv(mi) + ")";

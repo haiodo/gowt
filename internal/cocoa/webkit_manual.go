@@ -92,22 +92,30 @@ func wkSetup() {
 			}), "v@:@@@"},
 			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
 				allow := true
-				if v := view(self); v != nil && v.Decide != nil {
-					url := goString(msg(msg(msg(action, "request"), "URL"), "absoluteString"))
-					// targetFrame is nil for a link that opens a new window.
-					frame := msg(action, "targetFrame")
-					allow = v.Decide(url, frame == 0 || msg(frame, "isMainFrame")&0xff != 0)
-				}
+				// A panic in a listener must not skip the handler: WebKit waits for it exactly once.
+				func() {
+					defer func() { _ = recover() }()
+					if v := view(self); v != nil && v.Decide != nil {
+						url := goString(msg(msg(msg(action, "request"), "URL"), "absoluteString"))
+						// targetFrame is nil for a link that opens a new window.
+						frame := msg(action, "targetFrame")
+						allow = v.Decide(url, frame == 0 || msg(frame, "isMainFrame")&0xff != 0)
+					}
+				}()
 				policy := uintptr(0) // WKNavigationActionPolicyCancel
 				if allow {
 					policy = 1 // WKNavigationActionPolicyAllow
 				}
 				callBlock(handler, policy)
 			}), "v@:@@@?"},
-			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, _, handler uintptr) {
+			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, frame, handler uintptr) {
 				reply := uintptr(0)
-				if v := view(self); v != nil && v.Call != nil && goString(def) == wkCallMark {
-					reply = nsString(v.Call(goString(prompt)))
+				// Only the main frame may call Go: a subframe (possibly cross-origin) has its own window.gowt.
+				if v := view(self); v != nil && v.Call != nil && goString(def) == wkCallMark && msg(frame, "isMainFrame")&0xff != 0 {
+					func() {
+						defer func() { _ = recover() }()
+						reply = nsString(v.Call(goString(prompt)))
+					}()
 				}
 				callBlock(handler, reply)
 			}), "v@:@@@@@?"},

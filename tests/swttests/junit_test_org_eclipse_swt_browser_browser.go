@@ -1859,9 +1859,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_numbers() 
 	atomicIntArray.Set(0, -1)
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
 		var evalResult []any = this.browser.Evaluate("return new Array(1,2,3)").([]any)
-		atomicIntArray.Set(0, int32(jrt.Cast[float64]((any(evalResult[0])))))
-		atomicIntArray.Set(1, int32(jrt.Cast[float64]((any(evalResult[1])))))
-		atomicIntArray.Set(2, int32(jrt.Cast[float64]((any(evalResult[2])))))
+		atomicIntArray.Set(0, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[0])))))
+		atomicIntArray.Set(1, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[1])))))
+		atomicIntArray.Set(2, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[2])))))
 		if this.debug_verbose_output {
 			fmt.Fprintln(os.Stdout, fmt.Sprintf("Node value: %v", evalResult))
 		}
@@ -2031,7 +2031,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	anon144.SetImpl_(anon144)
 	anon144.fnFunction_ = func(arguments []any) any {
 		var returnedDouble any = any(arguments[0])
-		returnInt.Set(int32(jrt.Cast[float64](returnedDouble)))
+		returnInt.Set(jrt.DoubleToInt(jrt.Cast[float64](returnedDouble)))
 		return nil
 	}
 	_ = anon144
@@ -2130,7 +2130,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	anon149.SetImpl_(anon149)
 	anon149.fnFunction_ = func(arguments []any) any {
 		var returnVal any = any(arguments[0])
-		returnInt.Set(int32(jrt.Cast[float64](returnVal)))
+		returnInt.Set(jrt.DoubleToInt(jrt.Cast[float64](returnVal)))
 		return nil
 	}
 	_ = anon149

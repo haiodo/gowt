@@ -56,6 +56,9 @@ func (w *WebView) SetNavigationPolicy(f func(url string, mainFrame bool) bool) b
 // SetCallHandler answers window.gowt.call(msg) in the page: the page blocks until f returns its
 // reply as a string (msg is a string or the JSON of any other value). It reports whether the engine
 // can; without it window.gowt.call is missing or returns null. Set it before the first load.
+// Only calls made by the main frame reach f: a subframe (maybe cross-origin) must get null and f is
+// not called, or any iframe could use what f hands out. f may panic; the engine then answers null.
+// While f runs the page is blocked, so f cannot wait for a script evaluated in that page.
 func (w *WebView) SetCallHandler(f func(msg string) string) bool {
 	n, ok := w.e.(callHandler)
 	if ok {

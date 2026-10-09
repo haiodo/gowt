@@ -1,6 +1,9 @@
 package jrt
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestAssert(t *testing.T) {
 	AssertIsTrue(true)
@@ -39,3 +42,11 @@ type safe struct {
 
 func (s *safe) Run()                    { s.run() }
 func (s *safe) HandleException(e error) { *s.got = e }
+
+func TestDoubleToInt(t *testing.T) {
+	for in, want := range map[float64]int32{math.NaN(): 0, 3.9: 3, -3.9: -3, 1e20: math.MaxInt32, -1e20: math.MinInt32} {
+		if got := DoubleToInt(in); got != want {
+			t.Errorf("DoubleToInt(%v) = %d, want %d", in, got, want)
+		}
+	}
+}

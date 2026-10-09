@@ -55,7 +55,7 @@ engine in place of SWT's WebKit/Edge/WebKitGTK classes (`browser/webbrowser_manu
 `browser.NewBrowser(shell, swt.NONE)` uses the Browser itself as the host Composite. `evaluate`/`execute`/`getText` are synchronous: they run the UI event loop until the page answers (5 s limit).
 `BrowserFunction`s are defined by a script that runs at the start of every page and calls back through `window.gowt.call`, a synchronous page-to-Go call (`WebView.SetCallHandler`; WKWebView
 carries it on `window.prompt`). Optional engine features (`webview/optional.go`: history queries, `Stop`, the navigation policy that lets `LocationListener.changing` cancel, the call handler)
-are implemented on macOS only for now; without them `back`/`forward` always go, `changing` cannot cancel and BrowserFunctions return `undefined`. Not available: OpenWindow, CloseWindow,
+are implemented on macOS only for now; `evaluate`, `execute` and `getText` called from inside a `BrowserFunction` throw at once (the page is blocked in the call, so the script could not run; known gap); without them `back`/`forward` always go, `changing` cannot cancel and BrowserFunctions return `undefined`. Not available: OpenWindow, CloseWindow,
 VisibilityWindow, Authentication and StatusText events, post data and headers in `setUrl`, `setJavascriptEnabled`, the cookie statics.
 `Test_org_eclipse_swt_browser_Browser` is translated with the other tests (`EchoHttpServer` over `internal/jrt/http.go`); `make gen` translates `browser/` for cocoa only, the output is shared.
 

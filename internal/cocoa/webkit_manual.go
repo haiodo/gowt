@@ -84,8 +84,11 @@ func wkSetup() {
 					v.Message(goString(msg(m, "body")))
 				}
 			}), "v@:@@"},
-			"webView:didStartProvisionalNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+			"webView:didStartProvisionalNavigation:": {purego.NewCallback(func(self, _, wv, nav uintptr) {
 				defer enterCallback()()
+				if trace {
+					fmt.Fprintf(os.Stderr, "wk: didStart %s nav=%#x\n", urlOf(wv), nav)
+				}
 				if v := view(self); v != nil && v.NavStarted != nil {
 					v.NavStarted(urlOf(wv))
 				}
@@ -97,6 +100,11 @@ func wkSetup() {
 				}
 				if v := view(self); v != nil && v.NavFinished != nil {
 					v.NavFinished(urlOf(wv))
+				}
+			}), "v@:@@"},
+			"webView:didCommitNavigation:": {purego.NewCallback(func(self, _, wv, _ uintptr) {
+				if trace {
+					fmt.Fprintln(os.Stderr, "wk: didCommit", urlOf(wv))
 				}
 			}), "v@:@@"},
 			"webView:didFailNavigation:withError:": {purego.NewCallback(func(self, _, wv, _, e uintptr) {
@@ -120,6 +128,9 @@ func wkSetup() {
 			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
 				defer enterCallback()()
 				allow := true
+				if trace {
+					fmt.Fprintln(os.Stderr, "wk: decidePolicy", goString(msg(msg(msg(action, "request"), "URL"), "absoluteString")))
+				}
 				// A panic in a listener must not skip the handler: WebKit waits for it exactly once.
 				func() {
 					defer func() { _ = recover() }()
@@ -220,7 +231,10 @@ func (v *WKView) URL() string { return goString(msg(msg(v.View, "URL"), "absolut
 
 func (v *WKView) LoadURL(url string) {
 	req := msg(class("NSURLRequest"), "requestWithURL:", msg(class("NSURL"), "URLWithString:", nsString(url)))
-	msg(v.View, "loadRequest:", req)
+	nav := msg(v.View, "loadRequest:", req)
+	if os.Getenv("GOWT_WK_TRACE") != "" {
+		fmt.Fprintf(os.Stderr, "wk: loadRequest %s url=%#x nav=%#x\n", url, msg(req, "URL"), nav)
+	}
 }
 
 func (v *WKView) LoadHTML(html, baseURL string) {

@@ -14,13 +14,17 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
 # Rebuilds the translator and regenerates swt/, internal/<PLATFORM>/, examples/ and tests/swttests/ from the SWT sources.
 gen:
 	bash tooling/port.sh
+
+# The committed generated code must equal what make gen produces for cocoa, gtk and win32 (needs SWT_REPO and UI_REPO at tooling/source-pins.env).
+gen-check:
+	bash tooling/gen-check.sh
 
 build: $(CMDS)
 

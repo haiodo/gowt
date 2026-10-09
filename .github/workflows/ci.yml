@@ -1,0 +1,138 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: "0"
+
+# The macOS GUI gates (make test-swt, snap-check, cmd/* windows) are not run here: a hosted macOS runner has
+# no usable window server session for AppKit, so they stay local. Windows GUI runs need a WebView2 runtime and
+# a desktop session, which hosted runners do not provide either; Windows is built and vetted only.
+jobs:
+  build-vet:
+    name: build and vet ${{ matrix.goos }}/${{ matrix.goarch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        goos: [darwin, linux, windows]
+        goarch: [amd64, arm64]
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      # Pure Go (CGO_ENABLED=0), so every target cross-builds on one runner.
+      - run: go build ./...
+      # vet type-checks the test files too.
+      - run: go vet ./...
+
+  checks:
+    name: xcheck and api-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: make xcheck api-check
+
+  # Committed swt/, jface/, browser/, tests/ and examples/ equal what make gen produces on all three platforms.
+  gen-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: tooling/j2go/pom.xml
+      - name: Read upstream pins
+        run: cat tooling/source-pins.env >> "$GITHUB_ENV"
+      - name: Cache upstream sources
+        id: upstream
+        uses: actions/cache@v4
+        with:
+          path: ~/upstream
+          key: upstream-${{ env.SWT_SHA }}-${{ env.UI_SHA }}
+      - name: Fetch upstream sources
+        if: steps.upstream.outputs.cache-hit != 'true'
+        run: |
+          fetch() { # name url sha
+            git init -q "$HOME/upstream/$1"
+            git -C "$HOME/upstream/$1" fetch -q --depth 1 "$2" "$3"
+            git -C "$HOME/upstream/$1" checkout -q FETCH_HEAD
+          }
+          fetch eclipse.platform.swt https://github.com/eclipse-platform/eclipse.platform.swt.git "$SWT_SHA"
+          fetch eclipse.platform.ui https://github.com/eclipse-platform/eclipse.platform.ui.git "$UI_SHA"
+      - run: SWT_REPO="$HOME/upstream/eclipse.platform.swt" UI_REPO="$HOME/upstream/eclipse.platform.ui" make gen-check
+
+  # The Linux GUI stand (tooling/linux/Dockerfile): the gtk port under Xvfb. Each gate builds the image from the shared layer cache.
+  linux-gates:
+    name: linux ${{ matrix.gate }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # tests/expected_linux.txt: the translated SWT JUnit tests on the gtk port.
+          - gate: swt tests
+            cmd: >-
+              go build -o /tmp/swttest ./cmd/swttest &&
+              /tmp/swttest -expected tests/expected_linux.txt
+          - gate: jface tests
+            cmd: >-
+              go build -tags jface -o /tmp/jfacetest ./cmd/swttest &&
+              /tmp/jfacetest -expected tests/expected_jface_linux.txt
+          # Unit tests (the one that needs a display, swt TestApplyAccent, runs against Xvfb) and the webview test.
+          - gate: unit and webview tests
+            cmd: >-
+              go test -count=1 ./... &&
+              GOWT_GUI_TEST=1 go test -count=1 ./webview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: tooling/linux
+          tags: gowt-linux:ci
+          load: true
+          cache-from: type=gha,scope=gowt-linux
+          cache-to: type=gha,scope=gowt-linux,mode=max
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/gowt-gocache
+            ~/.cache/gowt-gomod
+          key: linux-go-${{ hashFiles('go.sum') }}-${{ github.sha }}
+          restore-keys: |
+            linux-go-${{ hashFiles('go.sum') }}-
+      - name: Run the gate in the image
+        # stand.sh starts Xvfb :99 first; the container runs as root, so the cache dirs are handed back afterwards.
+        run: |
+          mkdir -p ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && ${{ matrix.cmd }}'
+      - name: Return cache ownership
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/gowt-gocache ~/.cache/gowt-gomod

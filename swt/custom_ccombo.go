@@ -792,10 +792,10 @@ func (this *CCombo) InitAccessible() {
 	anon694 := &CComboAnon3{}
 	anon694.impl = anon694
 	anon694.initAccessibleTextAdapter()
-	anon694.fnGetCaretOffset = func(e *AccessibleTextEvent) {
+	anon694.fngetCaretOffset_ = func(e *AccessibleTextEvent) {
 		e.Offset = this.text.GetCaretPosition()
 	}
-	anon694.fnGetSelectionRange = func(e *AccessibleTextEvent) {
+	anon694.fngetSelectionRange_ = func(e *AccessibleTextEvent) {
 		var sel *Point = this.text.GetSelection()
 		e.Offset = sel.X
 		e.Length = sel.Y - sel.X
@@ -1795,16 +1795,16 @@ func (this *CComboAnon2) GetHelp(a0 *AccessibleEvent) {
 // j2go: anonymous AccessibleTextAdapter subclass.
 type CComboAnon3 struct {
 	AccessibleTextAdapter
-	fnGetCaretOffset    func(a0 *AccessibleTextEvent)
-	fnGetSelectionRange func(a0 *AccessibleTextEvent)
+	fngetCaretOffset_    func(a0 *AccessibleTextEvent)
+	fngetSelectionRange_ func(a0 *AccessibleTextEvent)
 }
 
-func (this *CComboAnon3) GetCaretOffset(a0 *AccessibleTextEvent) {
-	this.fnGetCaretOffset(a0)
+func (this *CComboAnon3) getCaretOffset_(a0 *AccessibleTextEvent) {
+	this.fngetCaretOffset_(a0)
 }
 
-func (this *CComboAnon3) GetSelectionRange(a0 *AccessibleTextEvent) {
-	this.fnGetSelectionRange(a0)
+func (this *CComboAnon3) getSelectionRange_(a0 *AccessibleTextEvent) {
+	this.fngetSelectionRange_(a0)
 }
 
 // j2go: anonymous AccessibleControlAdapter subclass.

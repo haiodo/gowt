@@ -18,6 +18,44 @@ type COMObjectImpl interface {
 	method5_(a0 []int64) int64
 	method7_(a0 []int64) int64
 	method8_(a0 []int64) int64
+	method6_(a0 []int64) int64
+	method9_(a0 []int64) int64
+	method10_(a0 []int64) int64
+	method11_(a0 []int64) int64
+	method12_(a0 []int64) int64
+	method13_(a0 []int64) int64
+	method14_(a0 []int64) int64
+	method15_(a0 []int64) int64
+	method16_(a0 []int64) int64
+	method17_(a0 []int64) int64
+	method18_(a0 []int64) int64
+	method19_(a0 []int64) int64
+	method20_(a0 []int64) int64
+	method21_(a0 []int64) int64
+	method22_(a0 []int64) int64
+	method23_(a0 []int64) int64
+	method24_(a0 []int64) int64
+	method25_(a0 []int64) int64
+	method26_(a0 []int64) int64
+	method27_(a0 []int64) int64
+	method28_(a0 []int64) int64
+	method29_(a0 []int64) int64
+	method30_(a0 []int64) int64
+	method31_(a0 []int64) int64
+	method32_(a0 []int64) int64
+	method33_(a0 []int64) int64
+	method34_(a0 []int64) int64
+	method35_(a0 []int64) int64
+	method36_(a0 []int64) int64
+	method37_(a0 []int64) int64
+	method38_(a0 []int64) int64
+	method39_(a0 []int64) int64
+	method40_(a0 []int64) int64
+	method41_(a0 []int64) int64
+	method42_(a0 []int64) int64
+	method43_(a0 []int64) int64
+	method44_(a0 []int64) int64
+	method45_(a0 []int64) int64
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -95,6 +133,310 @@ func (this *cOMObjectHooked) method8_(a0 []int64) int64 {
 		return h.Method8_(a0)
 	}
 	return this.COMObjectImpl.method8_(a0)
+}
+
+func (this *cOMObjectHooked) method6_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method6_(a0 []int64) int64 }); ok && this.active != "method6_" {
+		defer this.enter("method6_")()
+		return h.Method6_(a0)
+	}
+	return this.COMObjectImpl.method6_(a0)
+}
+
+func (this *cOMObjectHooked) method9_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method9_(a0 []int64) int64 }); ok && this.active != "method9_" {
+		defer this.enter("method9_")()
+		return h.Method9_(a0)
+	}
+	return this.COMObjectImpl.method9_(a0)
+}
+
+func (this *cOMObjectHooked) method10_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method10_(a0 []int64) int64 }); ok && this.active != "method10_" {
+		defer this.enter("method10_")()
+		return h.Method10_(a0)
+	}
+	return this.COMObjectImpl.method10_(a0)
+}
+
+func (this *cOMObjectHooked) method11_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method11_(a0 []int64) int64 }); ok && this.active != "method11_" {
+		defer this.enter("method11_")()
+		return h.Method11_(a0)
+	}
+	return this.COMObjectImpl.method11_(a0)
+}
+
+func (this *cOMObjectHooked) method12_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method12_(a0 []int64) int64 }); ok && this.active != "method12_" {
+		defer this.enter("method12_")()
+		return h.Method12_(a0)
+	}
+	return this.COMObjectImpl.method12_(a0)
+}
+
+func (this *cOMObjectHooked) method13_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method13_(a0 []int64) int64 }); ok && this.active != "method13_" {
+		defer this.enter("method13_")()
+		return h.Method13_(a0)
+	}
+	return this.COMObjectImpl.method13_(a0)
+}
+
+func (this *cOMObjectHooked) method14_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method14_(a0 []int64) int64 }); ok && this.active != "method14_" {
+		defer this.enter("method14_")()
+		return h.Method14_(a0)
+	}
+	return this.COMObjectImpl.method14_(a0)
+}
+
+func (this *cOMObjectHooked) method15_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method15_(a0 []int64) int64 }); ok && this.active != "method15_" {
+		defer this.enter("method15_")()
+		return h.Method15_(a0)
+	}
+	return this.COMObjectImpl.method15_(a0)
+}
+
+func (this *cOMObjectHooked) method16_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method16_(a0 []int64) int64 }); ok && this.active != "method16_" {
+		defer this.enter("method16_")()
+		return h.Method16_(a0)
+	}
+	return this.COMObjectImpl.method16_(a0)
+}
+
+func (this *cOMObjectHooked) method17_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method17_(a0 []int64) int64 }); ok && this.active != "method17_" {
+		defer this.enter("method17_")()
+		return h.Method17_(a0)
+	}
+	return this.COMObjectImpl.method17_(a0)
+}
+
+func (this *cOMObjectHooked) method18_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method18_(a0 []int64) int64 }); ok && this.active != "method18_" {
+		defer this.enter("method18_")()
+		return h.Method18_(a0)
+	}
+	return this.COMObjectImpl.method18_(a0)
+}
+
+func (this *cOMObjectHooked) method19_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method19_(a0 []int64) int64 }); ok && this.active != "method19_" {
+		defer this.enter("method19_")()
+		return h.Method19_(a0)
+	}
+	return this.COMObjectImpl.method19_(a0)
+}
+
+func (this *cOMObjectHooked) method20_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method20_(a0 []int64) int64 }); ok && this.active != "method20_" {
+		defer this.enter("method20_")()
+		return h.Method20_(a0)
+	}
+	return this.COMObjectImpl.method20_(a0)
+}
+
+func (this *cOMObjectHooked) method21_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method21_(a0 []int64) int64 }); ok && this.active != "method21_" {
+		defer this.enter("method21_")()
+		return h.Method21_(a0)
+	}
+	return this.COMObjectImpl.method21_(a0)
+}
+
+func (this *cOMObjectHooked) method22_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method22_(a0 []int64) int64 }); ok && this.active != "method22_" {
+		defer this.enter("method22_")()
+		return h.Method22_(a0)
+	}
+	return this.COMObjectImpl.method22_(a0)
+}
+
+func (this *cOMObjectHooked) method23_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method23_(a0 []int64) int64 }); ok && this.active != "method23_" {
+		defer this.enter("method23_")()
+		return h.Method23_(a0)
+	}
+	return this.COMObjectImpl.method23_(a0)
+}
+
+func (this *cOMObjectHooked) method24_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method24_(a0 []int64) int64 }); ok && this.active != "method24_" {
+		defer this.enter("method24_")()
+		return h.Method24_(a0)
+	}
+	return this.COMObjectImpl.method24_(a0)
+}
+
+func (this *cOMObjectHooked) method25_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method25_(a0 []int64) int64 }); ok && this.active != "method25_" {
+		defer this.enter("method25_")()
+		return h.Method25_(a0)
+	}
+	return this.COMObjectImpl.method25_(a0)
+}
+
+func (this *cOMObjectHooked) method26_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method26_(a0 []int64) int64 }); ok && this.active != "method26_" {
+		defer this.enter("method26_")()
+		return h.Method26_(a0)
+	}
+	return this.COMObjectImpl.method26_(a0)
+}
+
+func (this *cOMObjectHooked) method27_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method27_(a0 []int64) int64 }); ok && this.active != "method27_" {
+		defer this.enter("method27_")()
+		return h.Method27_(a0)
+	}
+	return this.COMObjectImpl.method27_(a0)
+}
+
+func (this *cOMObjectHooked) method28_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method28_(a0 []int64) int64 }); ok && this.active != "method28_" {
+		defer this.enter("method28_")()
+		return h.Method28_(a0)
+	}
+	return this.COMObjectImpl.method28_(a0)
+}
+
+func (this *cOMObjectHooked) method29_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method29_(a0 []int64) int64 }); ok && this.active != "method29_" {
+		defer this.enter("method29_")()
+		return h.Method29_(a0)
+	}
+	return this.COMObjectImpl.method29_(a0)
+}
+
+func (this *cOMObjectHooked) method30_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method30_(a0 []int64) int64 }); ok && this.active != "method30_" {
+		defer this.enter("method30_")()
+		return h.Method30_(a0)
+	}
+	return this.COMObjectImpl.method30_(a0)
+}
+
+func (this *cOMObjectHooked) method31_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method31_(a0 []int64) int64 }); ok && this.active != "method31_" {
+		defer this.enter("method31_")()
+		return h.Method31_(a0)
+	}
+	return this.COMObjectImpl.method31_(a0)
+}
+
+func (this *cOMObjectHooked) method32_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method32_(a0 []int64) int64 }); ok && this.active != "method32_" {
+		defer this.enter("method32_")()
+		return h.Method32_(a0)
+	}
+	return this.COMObjectImpl.method32_(a0)
+}
+
+func (this *cOMObjectHooked) method33_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method33_(a0 []int64) int64 }); ok && this.active != "method33_" {
+		defer this.enter("method33_")()
+		return h.Method33_(a0)
+	}
+	return this.COMObjectImpl.method33_(a0)
+}
+
+func (this *cOMObjectHooked) method34_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method34_(a0 []int64) int64 }); ok && this.active != "method34_" {
+		defer this.enter("method34_")()
+		return h.Method34_(a0)
+	}
+	return this.COMObjectImpl.method34_(a0)
+}
+
+func (this *cOMObjectHooked) method35_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method35_(a0 []int64) int64 }); ok && this.active != "method35_" {
+		defer this.enter("method35_")()
+		return h.Method35_(a0)
+	}
+	return this.COMObjectImpl.method35_(a0)
+}
+
+func (this *cOMObjectHooked) method36_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method36_(a0 []int64) int64 }); ok && this.active != "method36_" {
+		defer this.enter("method36_")()
+		return h.Method36_(a0)
+	}
+	return this.COMObjectImpl.method36_(a0)
+}
+
+func (this *cOMObjectHooked) method37_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method37_(a0 []int64) int64 }); ok && this.active != "method37_" {
+		defer this.enter("method37_")()
+		return h.Method37_(a0)
+	}
+	return this.COMObjectImpl.method37_(a0)
+}
+
+func (this *cOMObjectHooked) method38_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method38_(a0 []int64) int64 }); ok && this.active != "method38_" {
+		defer this.enter("method38_")()
+		return h.Method38_(a0)
+	}
+	return this.COMObjectImpl.method38_(a0)
+}
+
+func (this *cOMObjectHooked) method39_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method39_(a0 []int64) int64 }); ok && this.active != "method39_" {
+		defer this.enter("method39_")()
+		return h.Method39_(a0)
+	}
+	return this.COMObjectImpl.method39_(a0)
+}
+
+func (this *cOMObjectHooked) method40_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method40_(a0 []int64) int64 }); ok && this.active != "method40_" {
+		defer this.enter("method40_")()
+		return h.Method40_(a0)
+	}
+	return this.COMObjectImpl.method40_(a0)
+}
+
+func (this *cOMObjectHooked) method41_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method41_(a0 []int64) int64 }); ok && this.active != "method41_" {
+		defer this.enter("method41_")()
+		return h.Method41_(a0)
+	}
+	return this.COMObjectImpl.method41_(a0)
+}
+
+func (this *cOMObjectHooked) method42_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method42_(a0 []int64) int64 }); ok && this.active != "method42_" {
+		defer this.enter("method42_")()
+		return h.Method42_(a0)
+	}
+	return this.COMObjectImpl.method42_(a0)
+}
+
+func (this *cOMObjectHooked) method43_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method43_(a0 []int64) int64 }); ok && this.active != "method43_" {
+		defer this.enter("method43_")()
+		return h.Method43_(a0)
+	}
+	return this.COMObjectImpl.method43_(a0)
+}
+
+func (this *cOMObjectHooked) method44_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method44_(a0 []int64) int64 }); ok && this.active != "method44_" {
+		defer this.enter("method44_")()
+		return h.Method44_(a0)
+	}
+	return this.COMObjectImpl.method44_(a0)
+}
+
+func (this *cOMObjectHooked) method45_(a0 []int64) int64 {
+	if h, ok := this.hook.(interface{ Method45_(a0 []int64) int64 }); ok && this.active != "method45_" {
+		defer this.enter("method45_")()
+		return h.Method45_(a0)
+	}
+	return this.COMObjectImpl.method45_(a0)
 }
 
 type COMObject struct {
@@ -394,6 +736,10 @@ func (this *COMObject) method5_(args []int64) int64 {
 }
 
 func (this *COMObject) Method6(args []int64) int64 {
+	return this.impl.method6_(args)
+}
+
+func (this *COMObject) method6_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
@@ -414,150 +760,298 @@ func (this *COMObject) method8_(args []int64) int64 {
 }
 
 func (this *COMObject) Method9(args []int64) int64 {
+	return this.impl.method9_(args)
+}
+
+func (this *COMObject) method9_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method10(args []int64) int64 {
+	return this.impl.method10_(args)
+}
+
+func (this *COMObject) method10_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method11(args []int64) int64 {
+	return this.impl.method11_(args)
+}
+
+func (this *COMObject) method11_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method12(args []int64) int64 {
+	return this.impl.method12_(args)
+}
+
+func (this *COMObject) method12_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method13(args []int64) int64 {
+	return this.impl.method13_(args)
+}
+
+func (this *COMObject) method13_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method14(args []int64) int64 {
+	return this.impl.method14_(args)
+}
+
+func (this *COMObject) method14_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method15(args []int64) int64 {
+	return this.impl.method15_(args)
+}
+
+func (this *COMObject) method15_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method16(args []int64) int64 {
+	return this.impl.method16_(args)
+}
+
+func (this *COMObject) method16_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method17(args []int64) int64 {
+	return this.impl.method17_(args)
+}
+
+func (this *COMObject) method17_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method18(args []int64) int64 {
+	return this.impl.method18_(args)
+}
+
+func (this *COMObject) method18_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method19(args []int64) int64 {
+	return this.impl.method19_(args)
+}
+
+func (this *COMObject) method19_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method20(args []int64) int64 {
+	return this.impl.method20_(args)
+}
+
+func (this *COMObject) method20_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method21(args []int64) int64 {
+	return this.impl.method21_(args)
+}
+
+func (this *COMObject) method21_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method22(args []int64) int64 {
+	return this.impl.method22_(args)
+}
+
+func (this *COMObject) method22_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method23(args []int64) int64 {
+	return this.impl.method23_(args)
+}
+
+func (this *COMObject) method23_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method24(args []int64) int64 {
+	return this.impl.method24_(args)
+}
+
+func (this *COMObject) method24_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method25(args []int64) int64 {
+	return this.impl.method25_(args)
+}
+
+func (this *COMObject) method25_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method26(args []int64) int64 {
+	return this.impl.method26_(args)
+}
+
+func (this *COMObject) method26_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method27(args []int64) int64 {
+	return this.impl.method27_(args)
+}
+
+func (this *COMObject) method27_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method28(args []int64) int64 {
+	return this.impl.method28_(args)
+}
+
+func (this *COMObject) method28_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method29(args []int64) int64 {
+	return this.impl.method29_(args)
+}
+
+func (this *COMObject) method29_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method30(args []int64) int64 {
+	return this.impl.method30_(args)
+}
+
+func (this *COMObject) method30_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method31(args []int64) int64 {
+	return this.impl.method31_(args)
+}
+
+func (this *COMObject) method31_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method32(args []int64) int64 {
+	return this.impl.method32_(args)
+}
+
+func (this *COMObject) method32_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method33(args []int64) int64 {
+	return this.impl.method33_(args)
+}
+
+func (this *COMObject) method33_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method34(args []int64) int64 {
+	return this.impl.method34_(args)
+}
+
+func (this *COMObject) method34_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method35(args []int64) int64 {
+	return this.impl.method35_(args)
+}
+
+func (this *COMObject) method35_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method36(args []int64) int64 {
+	return this.impl.method36_(args)
+}
+
+func (this *COMObject) method36_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method37(args []int64) int64 {
+	return this.impl.method37_(args)
+}
+
+func (this *COMObject) method37_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method38(args []int64) int64 {
+	return this.impl.method38_(args)
+}
+
+func (this *COMObject) method38_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method39(args []int64) int64 {
+	return this.impl.method39_(args)
+}
+
+func (this *COMObject) method39_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method40(args []int64) int64 {
+	return this.impl.method40_(args)
+}
+
+func (this *COMObject) method40_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method41(args []int64) int64 {
+	return this.impl.method41_(args)
+}
+
+func (this *COMObject) method41_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method42(args []int64) int64 {
+	return this.impl.method42_(args)
+}
+
+func (this *COMObject) method42_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method43(args []int64) int64 {
+	return this.impl.method43_(args)
+}
+
+func (this *COMObject) method43_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method44(args []int64) int64 {
+	return this.impl.method44_(args)
+}
+
+func (this *COMObject) method44_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
 func (this *COMObject) Method45(args []int64) int64 {
+	return this.impl.method45_(args)
+}
+
+func (this *COMObject) method45_(args []int64) int64 {
 	return int64(win32.COME_NOTIMPL)
 }
 
@@ -780,7 +1274,7 @@ func COMObjectCallback6(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method6(args)
+	return object.impl.method6_(args)
 }
 
 func COMObjectCallback7(callbackArgs []int64) int64 {
@@ -813,7 +1307,7 @@ func COMObjectCallback9(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method9(args)
+	return object.impl.method9_(args)
 }
 
 func COMObjectCallback10(callbackArgs []int64) int64 {
@@ -824,7 +1318,7 @@ func COMObjectCallback10(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method10(args)
+	return object.impl.method10_(args)
 }
 
 func COMObjectCallback11(callbackArgs []int64) int64 {
@@ -835,7 +1329,7 @@ func COMObjectCallback11(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method11(args)
+	return object.impl.method11_(args)
 }
 
 func COMObjectCallback12(callbackArgs []int64) int64 {
@@ -846,7 +1340,7 @@ func COMObjectCallback12(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method12(args)
+	return object.impl.method12_(args)
 }
 
 func COMObjectCallback13(callbackArgs []int64) int64 {
@@ -857,7 +1351,7 @@ func COMObjectCallback13(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method13(args)
+	return object.impl.method13_(args)
 }
 
 func COMObjectCallback14(callbackArgs []int64) int64 {
@@ -868,7 +1362,7 @@ func COMObjectCallback14(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method14(args)
+	return object.impl.method14_(args)
 }
 
 func COMObjectCallback15(callbackArgs []int64) int64 {
@@ -879,7 +1373,7 @@ func COMObjectCallback15(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method15(args)
+	return object.impl.method15_(args)
 }
 
 func COMObjectCallback16(callbackArgs []int64) int64 {
@@ -890,7 +1384,7 @@ func COMObjectCallback16(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method16(args)
+	return object.impl.method16_(args)
 }
 
 func COMObjectCallback17(callbackArgs []int64) int64 {
@@ -901,7 +1395,7 @@ func COMObjectCallback17(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method17(args)
+	return object.impl.method17_(args)
 }
 
 func COMObjectCallback18(callbackArgs []int64) int64 {
@@ -912,7 +1406,7 @@ func COMObjectCallback18(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method18(args)
+	return object.impl.method18_(args)
 }
 
 func COMObjectCallback19(callbackArgs []int64) int64 {
@@ -923,7 +1417,7 @@ func COMObjectCallback19(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method19(args)
+	return object.impl.method19_(args)
 }
 
 func COMObjectCallback20(callbackArgs []int64) int64 {
@@ -934,7 +1428,7 @@ func COMObjectCallback20(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method20(args)
+	return object.impl.method20_(args)
 }
 
 func COMObjectCallback21(callbackArgs []int64) int64 {
@@ -945,7 +1439,7 @@ func COMObjectCallback21(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method21(args)
+	return object.impl.method21_(args)
 }
 
 func COMObjectCallback22(callbackArgs []int64) int64 {
@@ -956,7 +1450,7 @@ func COMObjectCallback22(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method22(args)
+	return object.impl.method22_(args)
 }
 
 func COMObjectCallback23(callbackArgs []int64) int64 {
@@ -967,7 +1461,7 @@ func COMObjectCallback23(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method23(args)
+	return object.impl.method23_(args)
 }
 
 func COMObjectCallback24(callbackArgs []int64) int64 {
@@ -978,7 +1472,7 @@ func COMObjectCallback24(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method24(args)
+	return object.impl.method24_(args)
 }
 
 func COMObjectCallback25(callbackArgs []int64) int64 {
@@ -989,7 +1483,7 @@ func COMObjectCallback25(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method25(args)
+	return object.impl.method25_(args)
 }
 
 func COMObjectCallback26(callbackArgs []int64) int64 {
@@ -1000,7 +1494,7 @@ func COMObjectCallback26(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method26(args)
+	return object.impl.method26_(args)
 }
 
 func COMObjectCallback27(callbackArgs []int64) int64 {
@@ -1011,7 +1505,7 @@ func COMObjectCallback27(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method27(args)
+	return object.impl.method27_(args)
 }
 
 func COMObjectCallback28(callbackArgs []int64) int64 {
@@ -1022,7 +1516,7 @@ func COMObjectCallback28(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method28(args)
+	return object.impl.method28_(args)
 }
 
 func COMObjectCallback29(callbackArgs []int64) int64 {
@@ -1033,7 +1527,7 @@ func COMObjectCallback29(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method29(args)
+	return object.impl.method29_(args)
 }
 
 func COMObjectCallback30(callbackArgs []int64) int64 {
@@ -1044,7 +1538,7 @@ func COMObjectCallback30(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method30(args)
+	return object.impl.method30_(args)
 }
 
 func COMObjectCallback31(callbackArgs []int64) int64 {
@@ -1055,7 +1549,7 @@ func COMObjectCallback31(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method31(args)
+	return object.impl.method31_(args)
 }
 
 func COMObjectCallback32(callbackArgs []int64) int64 {
@@ -1066,7 +1560,7 @@ func COMObjectCallback32(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method32(args)
+	return object.impl.method32_(args)
 }
 
 func COMObjectCallback33(callbackArgs []int64) int64 {
@@ -1077,7 +1571,7 @@ func COMObjectCallback33(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method33(args)
+	return object.impl.method33_(args)
 }
 
 func COMObjectCallback34(callbackArgs []int64) int64 {
@@ -1088,7 +1582,7 @@ func COMObjectCallback34(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method34(args)
+	return object.impl.method34_(args)
 }
 
 func COMObjectCallback35(callbackArgs []int64) int64 {
@@ -1099,7 +1593,7 @@ func COMObjectCallback35(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method35(args)
+	return object.impl.method35_(args)
 }
 
 func COMObjectCallback36(callbackArgs []int64) int64 {
@@ -1110,7 +1604,7 @@ func COMObjectCallback36(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method36(args)
+	return object.impl.method36_(args)
 }
 
 func COMObjectCallback37(callbackArgs []int64) int64 {
@@ -1121,7 +1615,7 @@ func COMObjectCallback37(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method37(args)
+	return object.impl.method37_(args)
 }
 
 func COMObjectCallback38(callbackArgs []int64) int64 {
@@ -1132,7 +1626,7 @@ func COMObjectCallback38(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method38(args)
+	return object.impl.method38_(args)
 }
 
 func COMObjectCallback39(callbackArgs []int64) int64 {
@@ -1143,7 +1637,7 @@ func COMObjectCallback39(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method39(args)
+	return object.impl.method39_(args)
 }
 
 func COMObjectCallback40(callbackArgs []int64) int64 {
@@ -1154,7 +1648,7 @@ func COMObjectCallback40(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method40(args)
+	return object.impl.method40_(args)
 }
 
 func COMObjectCallback41(callbackArgs []int64) int64 {
@@ -1165,7 +1659,7 @@ func COMObjectCallback41(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method41(args)
+	return object.impl.method41_(args)
 }
 
 func COMObjectCallback42(callbackArgs []int64) int64 {
@@ -1176,7 +1670,7 @@ func COMObjectCallback42(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method42(args)
+	return object.impl.method42_(args)
 }
 
 func COMObjectCallback43(callbackArgs []int64) int64 {
@@ -1187,7 +1681,7 @@ func COMObjectCallback43(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method43(args)
+	return object.impl.method43_(args)
 }
 
 func COMObjectCallback44(callbackArgs []int64) int64 {
@@ -1198,7 +1692,7 @@ func COMObjectCallback44(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method44(args)
+	return object.impl.method44_(args)
 }
 
 func COMObjectCallback45(callbackArgs []int64) int64 {
@@ -1209,7 +1703,7 @@ func COMObjectCallback45(callbackArgs []int64) int64 {
 	}
 	var args []int64 = make([]int64, int32(len(callbackArgs))-1)
 	copy(args[0:], callbackArgs[1:1+int32(len(args))])
-	return object.Method45(args)
+	return object.impl.method45_(args)
 }
 
 func COMObjectCallback46(callbackArgs []int64) int64 {

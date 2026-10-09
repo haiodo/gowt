@@ -81,7 +81,7 @@ func (this *Relation) CreateIAccessibleRelation() {
 	anon1105.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_nTargets(args[0]))
 	}
-	anon1105.fnMethod6 = func(args []int64) int64 {
+	anon1105.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_target(int32(args[0]), args[1]))
 	}
 	anon1105.fnmethod7_ = func(args []int64) int64 {
@@ -222,7 +222,7 @@ type RelationAnon1 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 	fnmethod7_ func(a0 []int64) int64
 }
 
@@ -250,8 +250,8 @@ func (this *RelationAnon1) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *RelationAnon1) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *RelationAnon1) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *RelationAnon1) method7_(a0 []int64) int64 {

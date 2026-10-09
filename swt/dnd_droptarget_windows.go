@@ -167,7 +167,7 @@ func (this *DropTarget) CreateCOMInterfaces() {
 	anon1140.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.DragLeave())
 	}
-	anon1140.fnMethod6 = func(args []int64) int64 {
+	anon1140.fnmethod6_ = func(args []int64) int64 {
 		return jrt.Cast[int64](Win32DPIUtilsRunWithProperDPIAwareness(this.GetDisplay(), func() any {
 			if int32(len(args)) == 5 {
 				return int32(this.Drop(args[0], int32(args[1]), int32(args[2]), int32(args[3]), args[4]))
@@ -735,7 +735,7 @@ type DropTargetAnon1 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 }
 
 func (this *DropTargetAnon1) method0_(a0 []int64) int64 {
@@ -762,6 +762,6 @@ func (this *DropTargetAnon1) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *DropTargetAnon1) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *DropTargetAnon1) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }

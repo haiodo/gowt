@@ -167,115 +167,115 @@ func (this *Accessible) CreateIAccessible() {
 	anon967.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_accChildCount(args[0]))
 	}
-	anon967.fnMethod9 = func(args []int64) int64 {
+	anon967.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.Get_accChild(args[0], args[1]))
 	}
-	anon967.fnMethod10 = func(args []int64) int64 {
+	anon967.fnmethod10_ = func(args []int64) int64 {
 		return int64(this.Get_accName(args[0], args[1]))
 	}
-	anon967.fnMethod11 = func(args []int64) int64 {
+	anon967.fnmethod11_ = func(args []int64) int64 {
 		return int64(this.Get_accValue(args[0], args[1]))
 	}
-	anon967.fnMethod12 = func(args []int64) int64 {
+	anon967.fnmethod12_ = func(args []int64) int64 {
 		return int64(this.Get_accDescription(args[0], args[1]))
 	}
-	anon967.fnMethod13 = func(args []int64) int64 {
+	anon967.fnmethod13_ = func(args []int64) int64 {
 		return int64(this.Get_accRole(args[0], args[1]))
 	}
-	anon967.fnMethod14 = func(args []int64) int64 {
+	anon967.fnmethod14_ = func(args []int64) int64 {
 		return int64(this.Get_accState(args[0], args[1]))
 	}
-	anon967.fnMethod15 = func(args []int64) int64 {
+	anon967.fnmethod15_ = func(args []int64) int64 {
 		return int64(this.Get_accHelp(args[0], args[1]))
 	}
-	anon967.fnMethod16 = func(args []int64) int64 {
+	anon967.fnmethod16_ = func(args []int64) int64 {
 		return int64(this.Get_accHelpTopic(args[0], args[1], args[2]))
 	}
-	anon967.fnMethod17 = func(args []int64) int64 {
+	anon967.fnmethod17_ = func(args []int64) int64 {
 		return int64(this.Get_accKeyboardShortcut(args[0], args[1]))
 	}
-	anon967.fnMethod18 = func(args []int64) int64 {
+	anon967.fnmethod18_ = func(args []int64) int64 {
 		return int64(this.Get_accFocus(args[0]))
 	}
-	anon967.fnMethod19 = func(args []int64) int64 {
+	anon967.fnmethod19_ = func(args []int64) int64 {
 		return int64(this.Get_accSelection(args[0]))
 	}
-	anon967.fnMethod20 = func(args []int64) int64 {
+	anon967.fnmethod20_ = func(args []int64) int64 {
 		return int64(this.Get_accDefaultAction(args[0], args[1]))
 	}
-	anon967.fnMethod21 = func(args []int64) int64 {
+	anon967.fnmethod21_ = func(args []int64) int64 {
 		return int64(this.AccSelect(int32(args[0]), args[1]))
 	}
-	anon967.fnMethod22 = func(args []int64) int64 {
+	anon967.fnmethod22_ = func(args []int64) int64 {
 		return int64(this.AccLocation(args[0], args[1], args[2], args[3], args[4]))
 	}
-	anon967.fnMethod23 = func(args []int64) int64 {
+	anon967.fnmethod23_ = func(args []int64) int64 {
 		return int64(this.AccNavigate(int32(args[0]), args[1], args[2]))
 	}
-	anon967.fnMethod24 = func(args []int64) int64 {
+	anon967.fnmethod24_ = func(args []int64) int64 {
 		return int64(this.AccHitTest(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon967.fnMethod25 = func(args []int64) int64 {
+	anon967.fnmethod25_ = func(args []int64) int64 {
 		return int64(this.AccDoDefaultAction(args[0]))
 	}
-	anon967.fnMethod26 = func(args []int64) int64 {
+	anon967.fnmethod26_ = func(args []int64) int64 {
 		return int64(this.Put_accName(args[0], args[1]))
 	}
-	anon967.fnMethod27 = func(args []int64) int64 {
+	anon967.fnmethod27_ = func(args []int64) int64 {
 		return int64(this.Put_accValue(args[0], args[1]))
 	}
-	anon967.fnMethod28 = func(args []int64) int64 {
+	anon967.fnmethod28_ = func(args []int64) int64 {
 		return int64(this.Get_nRelations(args[0]))
 	}
-	anon967.fnMethod29 = func(args []int64) int64 {
+	anon967.fnmethod29_ = func(args []int64) int64 {
 		return int64(this.Get_relation(int32(args[0]), args[1]))
 	}
-	anon967.fnMethod30 = func(args []int64) int64 {
+	anon967.fnmethod30_ = func(args []int64) int64 {
 		return int64(this.Get_relations(int32(args[0]), args[1], args[2]))
 	}
-	anon967.fnMethod31 = func(args []int64) int64 {
+	anon967.fnmethod31_ = func(args []int64) int64 {
 		return int64(this.Get_role(args[0]))
 	}
-	anon967.fnMethod32 = func(args []int64) int64 {
+	anon967.fnmethod32_ = func(args []int64) int64 {
 		return int64(this.ScrollTo(int32(args[0])))
 	}
-	anon967.fnMethod33 = func(args []int64) int64 {
+	anon967.fnmethod33_ = func(args []int64) int64 {
 		return int64(this.ScrollToPoint(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon967.fnMethod34 = func(args []int64) int64 {
+	anon967.fnmethod34_ = func(args []int64) int64 {
 		return int64(this.Get_groupPosition(args[0], args[1], args[2]))
 	}
-	anon967.fnMethod35 = func(args []int64) int64 {
+	anon967.fnmethod35_ = func(args []int64) int64 {
 		return int64(this.Get_states(args[0]))
 	}
-	anon967.fnMethod36 = func(args []int64) int64 {
+	anon967.fnmethod36_ = func(args []int64) int64 {
 		return int64(this.Get_extendedRole(args[0]))
 	}
-	anon967.fnMethod37 = func(args []int64) int64 {
+	anon967.fnmethod37_ = func(args []int64) int64 {
 		return int64(this.Get_localizedExtendedRole(args[0]))
 	}
-	anon967.fnMethod38 = func(args []int64) int64 {
+	anon967.fnmethod38_ = func(args []int64) int64 {
 		return int64(this.Get_nExtendedStates(args[0]))
 	}
-	anon967.fnMethod39 = func(args []int64) int64 {
+	anon967.fnmethod39_ = func(args []int64) int64 {
 		return int64(this.Get_extendedStates(int32(args[0]), args[1], args[2]))
 	}
-	anon967.fnMethod40 = func(args []int64) int64 {
+	anon967.fnmethod40_ = func(args []int64) int64 {
 		return int64(this.Get_localizedExtendedStates(int32(args[0]), args[1], args[2]))
 	}
-	anon967.fnMethod41 = func(args []int64) int64 {
+	anon967.fnmethod41_ = func(args []int64) int64 {
 		return int64(this.Get_uniqueID(args[0]))
 	}
-	anon967.fnMethod42 = func(args []int64) int64 {
+	anon967.fnmethod42_ = func(args []int64) int64 {
 		return int64(this.Get_windowHandle(args[0]))
 	}
-	anon967.fnMethod43 = func(args []int64) int64 {
+	anon967.fnmethod43_ = func(args []int64) int64 {
 		return int64(this.Get_indexInParent(args[0]))
 	}
-	anon967.fnMethod44 = func(args []int64) int64 {
+	anon967.fnmethod44_ = func(args []int64) int64 {
 		return int64(this.Get_locale(args[0]))
 	}
-	anon967.fnMethod45 = func(args []int64) int64 {
+	anon967.fnmethod45_ = func(args []int64) int64 {
 		return int64(this.Get_attributes(args[0]))
 	}
 	this.objIAccessible = &anon967.COMObject
@@ -303,7 +303,7 @@ func (this *Accessible) CreateIAccessibleApplication() {
 	anon968.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_toolkitName(args[0]))
 	}
-	anon968.fnMethod6 = func(args []int64) int64 {
+	anon968.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_toolkitVersion(args[0]))
 	}
 	this.objIAccessibleApplication = &anon968.COMObject
@@ -331,7 +331,7 @@ func (this *Accessible) CreateIAccessibleEditableText() {
 	anon969.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.InsertText(int32(args[0]), args[1]))
 	}
-	anon969.fnMethod6 = func(args []int64) int64 {
+	anon969.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.CutText(int32(args[0]), int32(args[1])))
 	}
 	anon969.fnmethod7_ = func(args []int64) int64 {
@@ -340,7 +340,7 @@ func (this *Accessible) CreateIAccessibleEditableText() {
 	anon969.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.ReplaceText(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon969.fnMethod9 = func(args []int64) int64 {
+	anon969.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.SetAttributes(int32(args[0]), int32(args[1]), args[2]))
 	}
 	this.objIAccessibleEditableText = &anon969.COMObject
@@ -368,7 +368,7 @@ func (this *Accessible) CreateIAccessibleHyperlink() {
 	anon970.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_description(int32(args[0]), args[1]))
 	}
-	anon970.fnMethod6 = func(args []int64) int64 {
+	anon970.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_keyBinding(int32(args[0]), int32(args[1]), args[2], args[3]))
 	}
 	anon970.fnmethod7_ = func(args []int64) int64 {
@@ -377,19 +377,19 @@ func (this *Accessible) CreateIAccessibleHyperlink() {
 	anon970.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_localizedName(int32(args[0]), args[1]))
 	}
-	anon970.fnMethod9 = func(args []int64) int64 {
+	anon970.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.Get_anchor(int32(args[0]), args[1]))
 	}
-	anon970.fnMethod10 = func(args []int64) int64 {
+	anon970.fnmethod10_ = func(args []int64) int64 {
 		return int64(this.Get_anchorTarget(int32(args[0]), args[1]))
 	}
-	anon970.fnMethod11 = func(args []int64) int64 {
+	anon970.fnmethod11_ = func(args []int64) int64 {
 		return int64(this.Get_startIndex(args[0]))
 	}
-	anon970.fnMethod12 = func(args []int64) int64 {
+	anon970.fnmethod12_ = func(args []int64) int64 {
 		return int64(this.Get_endIndex(args[0]))
 	}
-	anon970.fnMethod13 = func(args []int64) int64 {
+	anon970.fnmethod13_ = func(args []int64) int64 {
 		return int64(this.Get_valid(args[0]))
 	}
 	this.objIAccessibleHyperlink = &anon970.COMObject
@@ -417,7 +417,7 @@ func (this *Accessible) CreateIAccessibleHypertext() {
 	anon971.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_caretOffset(args[0]))
 	}
-	anon971.fnMethod6 = func(args []int64) int64 {
+	anon971.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_characterExtents(int32(args[0]), int32(args[1]), args[2], args[3], args[4], args[5]))
 	}
 	anon971.fnmethod7_ = func(args []int64) int64 {
@@ -426,52 +426,52 @@ func (this *Accessible) CreateIAccessibleHypertext() {
 	anon971.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_offsetAtPoint(int32(args[0]), int32(args[1]), int32(args[2]), args[3]))
 	}
-	anon971.fnMethod9 = func(args []int64) int64 {
+	anon971.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.Get_selection(int32(args[0]), args[1], args[2]))
 	}
-	anon971.fnMethod10 = func(args []int64) int64 {
+	anon971.fnmethod10_ = func(args []int64) int64 {
 		return int64(this.Get_text(int32(args[0]), int32(args[1]), args[2]))
 	}
-	anon971.fnMethod11 = func(args []int64) int64 {
+	anon971.fnmethod11_ = func(args []int64) int64 {
 		return int64(this.Get_textBeforeOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon971.fnMethod12 = func(args []int64) int64 {
+	anon971.fnmethod12_ = func(args []int64) int64 {
 		return int64(this.Get_textAfterOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon971.fnMethod13 = func(args []int64) int64 {
+	anon971.fnmethod13_ = func(args []int64) int64 {
 		return int64(this.Get_textAtOffset(int32(args[0]), int32(args[1]), args[2], args[3], args[4]))
 	}
-	anon971.fnMethod14 = func(args []int64) int64 {
+	anon971.fnmethod14_ = func(args []int64) int64 {
 		return int64(this.RemoveSelection(int32(args[0])))
 	}
-	anon971.fnMethod15 = func(args []int64) int64 {
+	anon971.fnmethod15_ = func(args []int64) int64 {
 		return int64(this.SetCaretOffset(int32(args[0])))
 	}
-	anon971.fnMethod16 = func(args []int64) int64 {
+	anon971.fnmethod16_ = func(args []int64) int64 {
 		return int64(this.SetSelection(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon971.fnMethod17 = func(args []int64) int64 {
+	anon971.fnmethod17_ = func(args []int64) int64 {
 		return int64(this.Get_nCharacters(args[0]))
 	}
-	anon971.fnMethod18 = func(args []int64) int64 {
+	anon971.fnmethod18_ = func(args []int64) int64 {
 		return int64(this.ScrollSubstringTo(int32(args[0]), int32(args[1]), int32(args[2])))
 	}
-	anon971.fnMethod19 = func(args []int64) int64 {
+	anon971.fnmethod19_ = func(args []int64) int64 {
 		return int64(this.ScrollSubstringToPoint(int32(args[0]), int32(args[1]), int32(args[2]), int32(args[3]), int32(args[4])))
 	}
-	anon971.fnMethod20 = func(args []int64) int64 {
+	anon971.fnmethod20_ = func(args []int64) int64 {
 		return int64(this.Get_newText(args[0]))
 	}
-	anon971.fnMethod21 = func(args []int64) int64 {
+	anon971.fnmethod21_ = func(args []int64) int64 {
 		return int64(this.Get_oldText(args[0]))
 	}
-	anon971.fnMethod22 = func(args []int64) int64 {
+	anon971.fnmethod22_ = func(args []int64) int64 {
 		return int64(this.Get_nHyperlinks(args[0]))
 	}
-	anon971.fnMethod23 = func(args []int64) int64 {
+	anon971.fnmethod23_ = func(args []int64) int64 {
 		return int64(this.Get_hyperlink(int32(args[0]), args[1]))
 	}
-	anon971.fnMethod24 = func(args []int64) int64 {
+	anon971.fnmethod24_ = func(args []int64) int64 {
 		return int64(this.Get_hyperlinkIndex(int32(args[0]), args[1]))
 	}
 	this.objIAccessibleHypertext = &anon971.COMObject
@@ -499,7 +499,7 @@ func (this *Accessible) CreateIAccessibleTable2() {
 	anon972.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_columnDescription(int32(args[0]), args[1]))
 	}
-	anon972.fnMethod6 = func(args []int64) int64 {
+	anon972.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_nColumns(args[0]))
 	}
 	anon972.fnmethod7_ = func(args []int64) int64 {
@@ -508,46 +508,46 @@ func (this *Accessible) CreateIAccessibleTable2() {
 	anon972.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_nSelectedCells(args[0]))
 	}
-	anon972.fnMethod9 = func(args []int64) int64 {
+	anon972.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.Get_nSelectedColumns(args[0]))
 	}
-	anon972.fnMethod10 = func(args []int64) int64 {
+	anon972.fnmethod10_ = func(args []int64) int64 {
 		return int64(this.Get_nSelectedRows(args[0]))
 	}
-	anon972.fnMethod11 = func(args []int64) int64 {
+	anon972.fnmethod11_ = func(args []int64) int64 {
 		return int64(this.Get_rowDescription(int32(args[0]), args[1]))
 	}
-	anon972.fnMethod12 = func(args []int64) int64 {
+	anon972.fnmethod12_ = func(args []int64) int64 {
 		return int64(this.Get_selectedCells(args[0], args[1]))
 	}
-	anon972.fnMethod13 = func(args []int64) int64 {
+	anon972.fnmethod13_ = func(args []int64) int64 {
 		return int64(this.Get_selectedColumns(args[0], args[1]))
 	}
-	anon972.fnMethod14 = func(args []int64) int64 {
+	anon972.fnmethod14_ = func(args []int64) int64 {
 		return int64(this.Get_selectedRows(args[0], args[1]))
 	}
-	anon972.fnMethod15 = func(args []int64) int64 {
+	anon972.fnmethod15_ = func(args []int64) int64 {
 		return int64(this.Get_summary(args[0]))
 	}
-	anon972.fnMethod16 = func(args []int64) int64 {
+	anon972.fnmethod16_ = func(args []int64) int64 {
 		return int64(this.Get_isColumnSelected(int32(args[0]), args[1]))
 	}
-	anon972.fnMethod17 = func(args []int64) int64 {
+	anon972.fnmethod17_ = func(args []int64) int64 {
 		return int64(this.Get_isRowSelected(int32(args[0]), args[1]))
 	}
-	anon972.fnMethod18 = func(args []int64) int64 {
+	anon972.fnmethod18_ = func(args []int64) int64 {
 		return int64(this.SelectRow(int32(args[0])))
 	}
-	anon972.fnMethod19 = func(args []int64) int64 {
+	anon972.fnmethod19_ = func(args []int64) int64 {
 		return int64(this.SelectColumn(int32(args[0])))
 	}
-	anon972.fnMethod20 = func(args []int64) int64 {
+	anon972.fnmethod20_ = func(args []int64) int64 {
 		return int64(this.UnselectRow(int32(args[0])))
 	}
-	anon972.fnMethod21 = func(args []int64) int64 {
+	anon972.fnmethod21_ = func(args []int64) int64 {
 		return int64(this.UnselectColumn(int32(args[0])))
 	}
-	anon972.fnMethod22 = func(args []int64) int64 {
+	anon972.fnmethod22_ = func(args []int64) int64 {
 		return int64(this.Get_modelChange(args[0]))
 	}
 	this.objIAccessibleTable2 = &anon972.COMObject
@@ -575,7 +575,7 @@ func (this *Accessible) CreateIAccessibleTableCell() {
 	anon973.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_columnIndex(args[0]))
 	}
-	anon973.fnMethod6 = func(args []int64) int64 {
+	anon973.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_rowExtent(args[0]))
 	}
 	anon973.fnmethod7_ = func(args []int64) int64 {
@@ -584,13 +584,13 @@ func (this *Accessible) CreateIAccessibleTableCell() {
 	anon973.fnmethod8_ = func(args []int64) int64 {
 		return int64(this.Get_rowIndex(args[0]))
 	}
-	anon973.fnMethod9 = func(args []int64) int64 {
+	anon973.fnmethod9_ = func(args []int64) int64 {
 		return int64(this.Get_isSelected(args[0]))
 	}
-	anon973.fnMethod10 = func(args []int64) int64 {
+	anon973.fnmethod10_ = func(args []int64) int64 {
 		return int64(this.Get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]))
 	}
-	anon973.fnMethod11 = func(args []int64) int64 {
+	anon973.fnmethod11_ = func(args []int64) int64 {
 		return int64(this.Get_table(args[0]))
 	}
 	this.objIAccessibleTableCell = &anon973.COMObject
@@ -618,7 +618,7 @@ func (this *Accessible) CreateIAccessibleValue() {
 	anon974.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_maximumValue(args[0]))
 	}
-	anon974.fnMethod6 = func(args []int64) int64 {
+	anon974.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_minimumValue(args[0]))
 	}
 	this.objIAccessibleValue = &anon974.COMObject
@@ -646,7 +646,7 @@ func (this *Accessible) CreateIEnumVARIANT() {
 	anon975.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Reset())
 	}
-	anon975.fnMethod6 = func(args []int64) int64 {
+	anon975.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Clone(args[0]))
 	}
 	this.objIEnumVARIANT = &anon975.COMObject
@@ -6982,48 +6982,48 @@ func AccessibleIIDFromString(lpsz string) *win32.GUID {
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon1 struct {
 	COMObject
-	fnmethod0_ func(a0 []int64) int64
-	fnmethod1_ func(a0 []int64) int64
-	fnmethod2_ func(a0 []int64) int64
-	fnmethod7_ func(a0 []int64) int64
-	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
-	fnMethod10 func(a0 []int64) int64
-	fnMethod11 func(a0 []int64) int64
-	fnMethod12 func(a0 []int64) int64
-	fnMethod13 func(a0 []int64) int64
-	fnMethod14 func(a0 []int64) int64
-	fnMethod15 func(a0 []int64) int64
-	fnMethod16 func(a0 []int64) int64
-	fnMethod17 func(a0 []int64) int64
-	fnMethod18 func(a0 []int64) int64
-	fnMethod19 func(a0 []int64) int64
-	fnMethod20 func(a0 []int64) int64
-	fnMethod21 func(a0 []int64) int64
-	fnMethod22 func(a0 []int64) int64
-	fnMethod23 func(a0 []int64) int64
-	fnMethod24 func(a0 []int64) int64
-	fnMethod25 func(a0 []int64) int64
-	fnMethod26 func(a0 []int64) int64
-	fnMethod27 func(a0 []int64) int64
-	fnMethod28 func(a0 []int64) int64
-	fnMethod29 func(a0 []int64) int64
-	fnMethod30 func(a0 []int64) int64
-	fnMethod31 func(a0 []int64) int64
-	fnMethod32 func(a0 []int64) int64
-	fnMethod33 func(a0 []int64) int64
-	fnMethod34 func(a0 []int64) int64
-	fnMethod35 func(a0 []int64) int64
-	fnMethod36 func(a0 []int64) int64
-	fnMethod37 func(a0 []int64) int64
-	fnMethod38 func(a0 []int64) int64
-	fnMethod39 func(a0 []int64) int64
-	fnMethod40 func(a0 []int64) int64
-	fnMethod41 func(a0 []int64) int64
-	fnMethod42 func(a0 []int64) int64
-	fnMethod43 func(a0 []int64) int64
-	fnMethod44 func(a0 []int64) int64
-	fnMethod45 func(a0 []int64) int64
+	fnmethod0_  func(a0 []int64) int64
+	fnmethod1_  func(a0 []int64) int64
+	fnmethod2_  func(a0 []int64) int64
+	fnmethod7_  func(a0 []int64) int64
+	fnmethod8_  func(a0 []int64) int64
+	fnmethod9_  func(a0 []int64) int64
+	fnmethod10_ func(a0 []int64) int64
+	fnmethod11_ func(a0 []int64) int64
+	fnmethod12_ func(a0 []int64) int64
+	fnmethod13_ func(a0 []int64) int64
+	fnmethod14_ func(a0 []int64) int64
+	fnmethod15_ func(a0 []int64) int64
+	fnmethod16_ func(a0 []int64) int64
+	fnmethod17_ func(a0 []int64) int64
+	fnmethod18_ func(a0 []int64) int64
+	fnmethod19_ func(a0 []int64) int64
+	fnmethod20_ func(a0 []int64) int64
+	fnmethod21_ func(a0 []int64) int64
+	fnmethod22_ func(a0 []int64) int64
+	fnmethod23_ func(a0 []int64) int64
+	fnmethod24_ func(a0 []int64) int64
+	fnmethod25_ func(a0 []int64) int64
+	fnmethod26_ func(a0 []int64) int64
+	fnmethod27_ func(a0 []int64) int64
+	fnmethod28_ func(a0 []int64) int64
+	fnmethod29_ func(a0 []int64) int64
+	fnmethod30_ func(a0 []int64) int64
+	fnmethod31_ func(a0 []int64) int64
+	fnmethod32_ func(a0 []int64) int64
+	fnmethod33_ func(a0 []int64) int64
+	fnmethod34_ func(a0 []int64) int64
+	fnmethod35_ func(a0 []int64) int64
+	fnmethod36_ func(a0 []int64) int64
+	fnmethod37_ func(a0 []int64) int64
+	fnmethod38_ func(a0 []int64) int64
+	fnmethod39_ func(a0 []int64) int64
+	fnmethod40_ func(a0 []int64) int64
+	fnmethod41_ func(a0 []int64) int64
+	fnmethod42_ func(a0 []int64) int64
+	fnmethod43_ func(a0 []int64) int64
+	fnmethod44_ func(a0 []int64) int64
+	fnmethod45_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon1) method0_(a0 []int64) int64 {
@@ -7046,152 +7046,152 @@ func (this *AccessibleAnon1) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon1) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon1) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
-func (this *AccessibleAnon1) Method10(a0 []int64) int64 {
-	return this.fnMethod10(a0)
+func (this *AccessibleAnon1) method10_(a0 []int64) int64 {
+	return this.fnmethod10_(a0)
 }
 
-func (this *AccessibleAnon1) Method11(a0 []int64) int64 {
-	return this.fnMethod11(a0)
+func (this *AccessibleAnon1) method11_(a0 []int64) int64 {
+	return this.fnmethod11_(a0)
 }
 
-func (this *AccessibleAnon1) Method12(a0 []int64) int64 {
-	return this.fnMethod12(a0)
+func (this *AccessibleAnon1) method12_(a0 []int64) int64 {
+	return this.fnmethod12_(a0)
 }
 
-func (this *AccessibleAnon1) Method13(a0 []int64) int64 {
-	return this.fnMethod13(a0)
+func (this *AccessibleAnon1) method13_(a0 []int64) int64 {
+	return this.fnmethod13_(a0)
 }
 
-func (this *AccessibleAnon1) Method14(a0 []int64) int64 {
-	return this.fnMethod14(a0)
+func (this *AccessibleAnon1) method14_(a0 []int64) int64 {
+	return this.fnmethod14_(a0)
 }
 
-func (this *AccessibleAnon1) Method15(a0 []int64) int64 {
-	return this.fnMethod15(a0)
+func (this *AccessibleAnon1) method15_(a0 []int64) int64 {
+	return this.fnmethod15_(a0)
 }
 
-func (this *AccessibleAnon1) Method16(a0 []int64) int64 {
-	return this.fnMethod16(a0)
+func (this *AccessibleAnon1) method16_(a0 []int64) int64 {
+	return this.fnmethod16_(a0)
 }
 
-func (this *AccessibleAnon1) Method17(a0 []int64) int64 {
-	return this.fnMethod17(a0)
+func (this *AccessibleAnon1) method17_(a0 []int64) int64 {
+	return this.fnmethod17_(a0)
 }
 
-func (this *AccessibleAnon1) Method18(a0 []int64) int64 {
-	return this.fnMethod18(a0)
+func (this *AccessibleAnon1) method18_(a0 []int64) int64 {
+	return this.fnmethod18_(a0)
 }
 
-func (this *AccessibleAnon1) Method19(a0 []int64) int64 {
-	return this.fnMethod19(a0)
+func (this *AccessibleAnon1) method19_(a0 []int64) int64 {
+	return this.fnmethod19_(a0)
 }
 
-func (this *AccessibleAnon1) Method20(a0 []int64) int64 {
-	return this.fnMethod20(a0)
+func (this *AccessibleAnon1) method20_(a0 []int64) int64 {
+	return this.fnmethod20_(a0)
 }
 
-func (this *AccessibleAnon1) Method21(a0 []int64) int64 {
-	return this.fnMethod21(a0)
+func (this *AccessibleAnon1) method21_(a0 []int64) int64 {
+	return this.fnmethod21_(a0)
 }
 
-func (this *AccessibleAnon1) Method22(a0 []int64) int64 {
-	return this.fnMethod22(a0)
+func (this *AccessibleAnon1) method22_(a0 []int64) int64 {
+	return this.fnmethod22_(a0)
 }
 
-func (this *AccessibleAnon1) Method23(a0 []int64) int64 {
-	return this.fnMethod23(a0)
+func (this *AccessibleAnon1) method23_(a0 []int64) int64 {
+	return this.fnmethod23_(a0)
 }
 
-func (this *AccessibleAnon1) Method24(a0 []int64) int64 {
-	return this.fnMethod24(a0)
+func (this *AccessibleAnon1) method24_(a0 []int64) int64 {
+	return this.fnmethod24_(a0)
 }
 
-func (this *AccessibleAnon1) Method25(a0 []int64) int64 {
-	return this.fnMethod25(a0)
+func (this *AccessibleAnon1) method25_(a0 []int64) int64 {
+	return this.fnmethod25_(a0)
 }
 
-func (this *AccessibleAnon1) Method26(a0 []int64) int64 {
-	return this.fnMethod26(a0)
+func (this *AccessibleAnon1) method26_(a0 []int64) int64 {
+	return this.fnmethod26_(a0)
 }
 
-func (this *AccessibleAnon1) Method27(a0 []int64) int64 {
-	return this.fnMethod27(a0)
+func (this *AccessibleAnon1) method27_(a0 []int64) int64 {
+	return this.fnmethod27_(a0)
 }
 
-func (this *AccessibleAnon1) Method28(a0 []int64) int64 {
-	return this.fnMethod28(a0)
+func (this *AccessibleAnon1) method28_(a0 []int64) int64 {
+	return this.fnmethod28_(a0)
 }
 
-func (this *AccessibleAnon1) Method29(a0 []int64) int64 {
-	return this.fnMethod29(a0)
+func (this *AccessibleAnon1) method29_(a0 []int64) int64 {
+	return this.fnmethod29_(a0)
 }
 
-func (this *AccessibleAnon1) Method30(a0 []int64) int64 {
-	return this.fnMethod30(a0)
+func (this *AccessibleAnon1) method30_(a0 []int64) int64 {
+	return this.fnmethod30_(a0)
 }
 
-func (this *AccessibleAnon1) Method31(a0 []int64) int64 {
-	return this.fnMethod31(a0)
+func (this *AccessibleAnon1) method31_(a0 []int64) int64 {
+	return this.fnmethod31_(a0)
 }
 
-func (this *AccessibleAnon1) Method32(a0 []int64) int64 {
-	return this.fnMethod32(a0)
+func (this *AccessibleAnon1) method32_(a0 []int64) int64 {
+	return this.fnmethod32_(a0)
 }
 
-func (this *AccessibleAnon1) Method33(a0 []int64) int64 {
-	return this.fnMethod33(a0)
+func (this *AccessibleAnon1) method33_(a0 []int64) int64 {
+	return this.fnmethod33_(a0)
 }
 
-func (this *AccessibleAnon1) Method34(a0 []int64) int64 {
-	return this.fnMethod34(a0)
+func (this *AccessibleAnon1) method34_(a0 []int64) int64 {
+	return this.fnmethod34_(a0)
 }
 
-func (this *AccessibleAnon1) Method35(a0 []int64) int64 {
-	return this.fnMethod35(a0)
+func (this *AccessibleAnon1) method35_(a0 []int64) int64 {
+	return this.fnmethod35_(a0)
 }
 
-func (this *AccessibleAnon1) Method36(a0 []int64) int64 {
-	return this.fnMethod36(a0)
+func (this *AccessibleAnon1) method36_(a0 []int64) int64 {
+	return this.fnmethod36_(a0)
 }
 
-func (this *AccessibleAnon1) Method37(a0 []int64) int64 {
-	return this.fnMethod37(a0)
+func (this *AccessibleAnon1) method37_(a0 []int64) int64 {
+	return this.fnmethod37_(a0)
 }
 
-func (this *AccessibleAnon1) Method38(a0 []int64) int64 {
-	return this.fnMethod38(a0)
+func (this *AccessibleAnon1) method38_(a0 []int64) int64 {
+	return this.fnmethod38_(a0)
 }
 
-func (this *AccessibleAnon1) Method39(a0 []int64) int64 {
-	return this.fnMethod39(a0)
+func (this *AccessibleAnon1) method39_(a0 []int64) int64 {
+	return this.fnmethod39_(a0)
 }
 
-func (this *AccessibleAnon1) Method40(a0 []int64) int64 {
-	return this.fnMethod40(a0)
+func (this *AccessibleAnon1) method40_(a0 []int64) int64 {
+	return this.fnmethod40_(a0)
 }
 
-func (this *AccessibleAnon1) Method41(a0 []int64) int64 {
-	return this.fnMethod41(a0)
+func (this *AccessibleAnon1) method41_(a0 []int64) int64 {
+	return this.fnmethod41_(a0)
 }
 
-func (this *AccessibleAnon1) Method42(a0 []int64) int64 {
-	return this.fnMethod42(a0)
+func (this *AccessibleAnon1) method42_(a0 []int64) int64 {
+	return this.fnmethod42_(a0)
 }
 
-func (this *AccessibleAnon1) Method43(a0 []int64) int64 {
-	return this.fnMethod43(a0)
+func (this *AccessibleAnon1) method43_(a0 []int64) int64 {
+	return this.fnmethod43_(a0)
 }
 
-func (this *AccessibleAnon1) Method44(a0 []int64) int64 {
-	return this.fnMethod44(a0)
+func (this *AccessibleAnon1) method44_(a0 []int64) int64 {
+	return this.fnmethod44_(a0)
 }
 
-func (this *AccessibleAnon1) Method45(a0 []int64) int64 {
-	return this.fnMethod45(a0)
+func (this *AccessibleAnon1) method45_(a0 []int64) int64 {
+	return this.fnmethod45_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
@@ -7203,7 +7203,7 @@ type AccessibleAnon2 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon2) method0_(a0 []int64) int64 {
@@ -7230,8 +7230,8 @@ func (this *AccessibleAnon2) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon2) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon2) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
@@ -7243,10 +7243,10 @@ type AccessibleAnon3 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 	fnmethod7_ func(a0 []int64) int64
 	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
+	fnmethod9_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon3) method0_(a0 []int64) int64 {
@@ -7273,8 +7273,8 @@ func (this *AccessibleAnon3) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon3) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon3) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *AccessibleAnon3) method7_(a0 []int64) int64 {
@@ -7285,27 +7285,27 @@ func (this *AccessibleAnon3) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon3) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon3) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon4 struct {
 	COMObject
-	fnmethod0_ func(a0 []int64) int64
-	fnmethod1_ func(a0 []int64) int64
-	fnmethod2_ func(a0 []int64) int64
-	fnmethod3_ func(a0 []int64) int64
-	fnmethod4_ func(a0 []int64) int64
-	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
-	fnmethod7_ func(a0 []int64) int64
-	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
-	fnMethod10 func(a0 []int64) int64
-	fnMethod11 func(a0 []int64) int64
-	fnMethod12 func(a0 []int64) int64
-	fnMethod13 func(a0 []int64) int64
+	fnmethod0_  func(a0 []int64) int64
+	fnmethod1_  func(a0 []int64) int64
+	fnmethod2_  func(a0 []int64) int64
+	fnmethod3_  func(a0 []int64) int64
+	fnmethod4_  func(a0 []int64) int64
+	fnmethod5_  func(a0 []int64) int64
+	fnmethod6_  func(a0 []int64) int64
+	fnmethod7_  func(a0 []int64) int64
+	fnmethod8_  func(a0 []int64) int64
+	fnmethod9_  func(a0 []int64) int64
+	fnmethod10_ func(a0 []int64) int64
+	fnmethod11_ func(a0 []int64) int64
+	fnmethod12_ func(a0 []int64) int64
+	fnmethod13_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon4) method0_(a0 []int64) int64 {
@@ -7332,8 +7332,8 @@ func (this *AccessibleAnon4) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon4) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon4) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *AccessibleAnon4) method7_(a0 []int64) int64 {
@@ -7344,54 +7344,54 @@ func (this *AccessibleAnon4) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon4) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon4) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
-func (this *AccessibleAnon4) Method10(a0 []int64) int64 {
-	return this.fnMethod10(a0)
+func (this *AccessibleAnon4) method10_(a0 []int64) int64 {
+	return this.fnmethod10_(a0)
 }
 
-func (this *AccessibleAnon4) Method11(a0 []int64) int64 {
-	return this.fnMethod11(a0)
+func (this *AccessibleAnon4) method11_(a0 []int64) int64 {
+	return this.fnmethod11_(a0)
 }
 
-func (this *AccessibleAnon4) Method12(a0 []int64) int64 {
-	return this.fnMethod12(a0)
+func (this *AccessibleAnon4) method12_(a0 []int64) int64 {
+	return this.fnmethod12_(a0)
 }
 
-func (this *AccessibleAnon4) Method13(a0 []int64) int64 {
-	return this.fnMethod13(a0)
+func (this *AccessibleAnon4) method13_(a0 []int64) int64 {
+	return this.fnmethod13_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon5 struct {
 	COMObject
-	fnmethod0_ func(a0 []int64) int64
-	fnmethod1_ func(a0 []int64) int64
-	fnmethod2_ func(a0 []int64) int64
-	fnmethod3_ func(a0 []int64) int64
-	fnmethod4_ func(a0 []int64) int64
-	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
-	fnmethod7_ func(a0 []int64) int64
-	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
-	fnMethod10 func(a0 []int64) int64
-	fnMethod11 func(a0 []int64) int64
-	fnMethod12 func(a0 []int64) int64
-	fnMethod13 func(a0 []int64) int64
-	fnMethod14 func(a0 []int64) int64
-	fnMethod15 func(a0 []int64) int64
-	fnMethod16 func(a0 []int64) int64
-	fnMethod17 func(a0 []int64) int64
-	fnMethod18 func(a0 []int64) int64
-	fnMethod19 func(a0 []int64) int64
-	fnMethod20 func(a0 []int64) int64
-	fnMethod21 func(a0 []int64) int64
-	fnMethod22 func(a0 []int64) int64
-	fnMethod23 func(a0 []int64) int64
-	fnMethod24 func(a0 []int64) int64
+	fnmethod0_  func(a0 []int64) int64
+	fnmethod1_  func(a0 []int64) int64
+	fnmethod2_  func(a0 []int64) int64
+	fnmethod3_  func(a0 []int64) int64
+	fnmethod4_  func(a0 []int64) int64
+	fnmethod5_  func(a0 []int64) int64
+	fnmethod6_  func(a0 []int64) int64
+	fnmethod7_  func(a0 []int64) int64
+	fnmethod8_  func(a0 []int64) int64
+	fnmethod9_  func(a0 []int64) int64
+	fnmethod10_ func(a0 []int64) int64
+	fnmethod11_ func(a0 []int64) int64
+	fnmethod12_ func(a0 []int64) int64
+	fnmethod13_ func(a0 []int64) int64
+	fnmethod14_ func(a0 []int64) int64
+	fnmethod15_ func(a0 []int64) int64
+	fnmethod16_ func(a0 []int64) int64
+	fnmethod17_ func(a0 []int64) int64
+	fnmethod18_ func(a0 []int64) int64
+	fnmethod19_ func(a0 []int64) int64
+	fnmethod20_ func(a0 []int64) int64
+	fnmethod21_ func(a0 []int64) int64
+	fnmethod22_ func(a0 []int64) int64
+	fnmethod23_ func(a0 []int64) int64
+	fnmethod24_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon5) method0_(a0 []int64) int64 {
@@ -7418,8 +7418,8 @@ func (this *AccessibleAnon5) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon5) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon5) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *AccessibleAnon5) method7_(a0 []int64) int64 {
@@ -7430,96 +7430,96 @@ func (this *AccessibleAnon5) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon5) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon5) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
-func (this *AccessibleAnon5) Method10(a0 []int64) int64 {
-	return this.fnMethod10(a0)
+func (this *AccessibleAnon5) method10_(a0 []int64) int64 {
+	return this.fnmethod10_(a0)
 }
 
-func (this *AccessibleAnon5) Method11(a0 []int64) int64 {
-	return this.fnMethod11(a0)
+func (this *AccessibleAnon5) method11_(a0 []int64) int64 {
+	return this.fnmethod11_(a0)
 }
 
-func (this *AccessibleAnon5) Method12(a0 []int64) int64 {
-	return this.fnMethod12(a0)
+func (this *AccessibleAnon5) method12_(a0 []int64) int64 {
+	return this.fnmethod12_(a0)
 }
 
-func (this *AccessibleAnon5) Method13(a0 []int64) int64 {
-	return this.fnMethod13(a0)
+func (this *AccessibleAnon5) method13_(a0 []int64) int64 {
+	return this.fnmethod13_(a0)
 }
 
-func (this *AccessibleAnon5) Method14(a0 []int64) int64 {
-	return this.fnMethod14(a0)
+func (this *AccessibleAnon5) method14_(a0 []int64) int64 {
+	return this.fnmethod14_(a0)
 }
 
-func (this *AccessibleAnon5) Method15(a0 []int64) int64 {
-	return this.fnMethod15(a0)
+func (this *AccessibleAnon5) method15_(a0 []int64) int64 {
+	return this.fnmethod15_(a0)
 }
 
-func (this *AccessibleAnon5) Method16(a0 []int64) int64 {
-	return this.fnMethod16(a0)
+func (this *AccessibleAnon5) method16_(a0 []int64) int64 {
+	return this.fnmethod16_(a0)
 }
 
-func (this *AccessibleAnon5) Method17(a0 []int64) int64 {
-	return this.fnMethod17(a0)
+func (this *AccessibleAnon5) method17_(a0 []int64) int64 {
+	return this.fnmethod17_(a0)
 }
 
-func (this *AccessibleAnon5) Method18(a0 []int64) int64 {
-	return this.fnMethod18(a0)
+func (this *AccessibleAnon5) method18_(a0 []int64) int64 {
+	return this.fnmethod18_(a0)
 }
 
-func (this *AccessibleAnon5) Method19(a0 []int64) int64 {
-	return this.fnMethod19(a0)
+func (this *AccessibleAnon5) method19_(a0 []int64) int64 {
+	return this.fnmethod19_(a0)
 }
 
-func (this *AccessibleAnon5) Method20(a0 []int64) int64 {
-	return this.fnMethod20(a0)
+func (this *AccessibleAnon5) method20_(a0 []int64) int64 {
+	return this.fnmethod20_(a0)
 }
 
-func (this *AccessibleAnon5) Method21(a0 []int64) int64 {
-	return this.fnMethod21(a0)
+func (this *AccessibleAnon5) method21_(a0 []int64) int64 {
+	return this.fnmethod21_(a0)
 }
 
-func (this *AccessibleAnon5) Method22(a0 []int64) int64 {
-	return this.fnMethod22(a0)
+func (this *AccessibleAnon5) method22_(a0 []int64) int64 {
+	return this.fnmethod22_(a0)
 }
 
-func (this *AccessibleAnon5) Method23(a0 []int64) int64 {
-	return this.fnMethod23(a0)
+func (this *AccessibleAnon5) method23_(a0 []int64) int64 {
+	return this.fnmethod23_(a0)
 }
 
-func (this *AccessibleAnon5) Method24(a0 []int64) int64 {
-	return this.fnMethod24(a0)
+func (this *AccessibleAnon5) method24_(a0 []int64) int64 {
+	return this.fnmethod24_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon6 struct {
 	COMObject
-	fnmethod0_ func(a0 []int64) int64
-	fnmethod1_ func(a0 []int64) int64
-	fnmethod2_ func(a0 []int64) int64
-	fnmethod3_ func(a0 []int64) int64
-	fnmethod4_ func(a0 []int64) int64
-	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
-	fnmethod7_ func(a0 []int64) int64
-	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
-	fnMethod10 func(a0 []int64) int64
-	fnMethod11 func(a0 []int64) int64
-	fnMethod12 func(a0 []int64) int64
-	fnMethod13 func(a0 []int64) int64
-	fnMethod14 func(a0 []int64) int64
-	fnMethod15 func(a0 []int64) int64
-	fnMethod16 func(a0 []int64) int64
-	fnMethod17 func(a0 []int64) int64
-	fnMethod18 func(a0 []int64) int64
-	fnMethod19 func(a0 []int64) int64
-	fnMethod20 func(a0 []int64) int64
-	fnMethod21 func(a0 []int64) int64
-	fnMethod22 func(a0 []int64) int64
+	fnmethod0_  func(a0 []int64) int64
+	fnmethod1_  func(a0 []int64) int64
+	fnmethod2_  func(a0 []int64) int64
+	fnmethod3_  func(a0 []int64) int64
+	fnmethod4_  func(a0 []int64) int64
+	fnmethod5_  func(a0 []int64) int64
+	fnmethod6_  func(a0 []int64) int64
+	fnmethod7_  func(a0 []int64) int64
+	fnmethod8_  func(a0 []int64) int64
+	fnmethod9_  func(a0 []int64) int64
+	fnmethod10_ func(a0 []int64) int64
+	fnmethod11_ func(a0 []int64) int64
+	fnmethod12_ func(a0 []int64) int64
+	fnmethod13_ func(a0 []int64) int64
+	fnmethod14_ func(a0 []int64) int64
+	fnmethod15_ func(a0 []int64) int64
+	fnmethod16_ func(a0 []int64) int64
+	fnmethod17_ func(a0 []int64) int64
+	fnmethod18_ func(a0 []int64) int64
+	fnmethod19_ func(a0 []int64) int64
+	fnmethod20_ func(a0 []int64) int64
+	fnmethod21_ func(a0 []int64) int64
+	fnmethod22_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon6) method0_(a0 []int64) int64 {
@@ -7546,8 +7546,8 @@ func (this *AccessibleAnon6) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon6) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon6) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *AccessibleAnon6) method7_(a0 []int64) int64 {
@@ -7558,77 +7558,77 @@ func (this *AccessibleAnon6) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon6) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon6) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
-func (this *AccessibleAnon6) Method10(a0 []int64) int64 {
-	return this.fnMethod10(a0)
+func (this *AccessibleAnon6) method10_(a0 []int64) int64 {
+	return this.fnmethod10_(a0)
 }
 
-func (this *AccessibleAnon6) Method11(a0 []int64) int64 {
-	return this.fnMethod11(a0)
+func (this *AccessibleAnon6) method11_(a0 []int64) int64 {
+	return this.fnmethod11_(a0)
 }
 
-func (this *AccessibleAnon6) Method12(a0 []int64) int64 {
-	return this.fnMethod12(a0)
+func (this *AccessibleAnon6) method12_(a0 []int64) int64 {
+	return this.fnmethod12_(a0)
 }
 
-func (this *AccessibleAnon6) Method13(a0 []int64) int64 {
-	return this.fnMethod13(a0)
+func (this *AccessibleAnon6) method13_(a0 []int64) int64 {
+	return this.fnmethod13_(a0)
 }
 
-func (this *AccessibleAnon6) Method14(a0 []int64) int64 {
-	return this.fnMethod14(a0)
+func (this *AccessibleAnon6) method14_(a0 []int64) int64 {
+	return this.fnmethod14_(a0)
 }
 
-func (this *AccessibleAnon6) Method15(a0 []int64) int64 {
-	return this.fnMethod15(a0)
+func (this *AccessibleAnon6) method15_(a0 []int64) int64 {
+	return this.fnmethod15_(a0)
 }
 
-func (this *AccessibleAnon6) Method16(a0 []int64) int64 {
-	return this.fnMethod16(a0)
+func (this *AccessibleAnon6) method16_(a0 []int64) int64 {
+	return this.fnmethod16_(a0)
 }
 
-func (this *AccessibleAnon6) Method17(a0 []int64) int64 {
-	return this.fnMethod17(a0)
+func (this *AccessibleAnon6) method17_(a0 []int64) int64 {
+	return this.fnmethod17_(a0)
 }
 
-func (this *AccessibleAnon6) Method18(a0 []int64) int64 {
-	return this.fnMethod18(a0)
+func (this *AccessibleAnon6) method18_(a0 []int64) int64 {
+	return this.fnmethod18_(a0)
 }
 
-func (this *AccessibleAnon6) Method19(a0 []int64) int64 {
-	return this.fnMethod19(a0)
+func (this *AccessibleAnon6) method19_(a0 []int64) int64 {
+	return this.fnmethod19_(a0)
 }
 
-func (this *AccessibleAnon6) Method20(a0 []int64) int64 {
-	return this.fnMethod20(a0)
+func (this *AccessibleAnon6) method20_(a0 []int64) int64 {
+	return this.fnmethod20_(a0)
 }
 
-func (this *AccessibleAnon6) Method21(a0 []int64) int64 {
-	return this.fnMethod21(a0)
+func (this *AccessibleAnon6) method21_(a0 []int64) int64 {
+	return this.fnmethod21_(a0)
 }
 
-func (this *AccessibleAnon6) Method22(a0 []int64) int64 {
-	return this.fnMethod22(a0)
+func (this *AccessibleAnon6) method22_(a0 []int64) int64 {
+	return this.fnmethod22_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
 type AccessibleAnon7 struct {
 	COMObject
-	fnmethod0_ func(a0 []int64) int64
-	fnmethod1_ func(a0 []int64) int64
-	fnmethod2_ func(a0 []int64) int64
-	fnmethod3_ func(a0 []int64) int64
-	fnmethod4_ func(a0 []int64) int64
-	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
-	fnmethod7_ func(a0 []int64) int64
-	fnmethod8_ func(a0 []int64) int64
-	fnMethod9  func(a0 []int64) int64
-	fnMethod10 func(a0 []int64) int64
-	fnMethod11 func(a0 []int64) int64
+	fnmethod0_  func(a0 []int64) int64
+	fnmethod1_  func(a0 []int64) int64
+	fnmethod2_  func(a0 []int64) int64
+	fnmethod3_  func(a0 []int64) int64
+	fnmethod4_  func(a0 []int64) int64
+	fnmethod5_  func(a0 []int64) int64
+	fnmethod6_  func(a0 []int64) int64
+	fnmethod7_  func(a0 []int64) int64
+	fnmethod8_  func(a0 []int64) int64
+	fnmethod9_  func(a0 []int64) int64
+	fnmethod10_ func(a0 []int64) int64
+	fnmethod11_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon7) method0_(a0 []int64) int64 {
@@ -7655,8 +7655,8 @@ func (this *AccessibleAnon7) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon7) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon7) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 func (this *AccessibleAnon7) method7_(a0 []int64) int64 {
@@ -7667,16 +7667,16 @@ func (this *AccessibleAnon7) method8_(a0 []int64) int64 {
 	return this.fnmethod8_(a0)
 }
 
-func (this *AccessibleAnon7) Method9(a0 []int64) int64 {
-	return this.fnMethod9(a0)
+func (this *AccessibleAnon7) method9_(a0 []int64) int64 {
+	return this.fnmethod9_(a0)
 }
 
-func (this *AccessibleAnon7) Method10(a0 []int64) int64 {
-	return this.fnMethod10(a0)
+func (this *AccessibleAnon7) method10_(a0 []int64) int64 {
+	return this.fnmethod10_(a0)
 }
 
-func (this *AccessibleAnon7) Method11(a0 []int64) int64 {
-	return this.fnMethod11(a0)
+func (this *AccessibleAnon7) method11_(a0 []int64) int64 {
+	return this.fnmethod11_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
@@ -7688,7 +7688,7 @@ type AccessibleAnon8 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon8) method0_(a0 []int64) int64 {
@@ -7715,8 +7715,8 @@ func (this *AccessibleAnon8) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon8) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon8) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 // j2go: anonymous COMObject subclass.
@@ -7728,7 +7728,7 @@ type AccessibleAnon9 struct {
 	fnmethod3_ func(a0 []int64) int64
 	fnmethod4_ func(a0 []int64) int64
 	fnmethod5_ func(a0 []int64) int64
-	fnMethod6  func(a0 []int64) int64
+	fnmethod6_ func(a0 []int64) int64
 }
 
 func (this *AccessibleAnon9) method0_(a0 []int64) int64 {
@@ -7755,8 +7755,8 @@ func (this *AccessibleAnon9) method5_(a0 []int64) int64 {
 	return this.fnmethod5_(a0)
 }
 
-func (this *AccessibleAnon9) Method6(a0 []int64) int64 {
-	return this.fnMethod6(a0)
+func (this *AccessibleAnon9) method6_(a0 []int64) int64 {
+	return this.fnmethod6_(a0)
 }
 
 // j2go: anonymous COMObject subclass.

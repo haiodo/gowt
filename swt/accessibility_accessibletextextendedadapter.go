@@ -34,9 +34,17 @@ func (this *AccessibleTextExtendedAdapter) initAccessibleTextExtendedAdapter() {
 }
 
 func (this *AccessibleTextExtendedAdapter) AddSelection(e *AccessibleTextEvent) {
+	this.impl.addSelection_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) addSelection_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetCharacterCount(e *AccessibleTextEvent) {
+	this.impl.getCharacterCount_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getCharacterCount_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetHyperlinkCount(e *AccessibleTextEvent) {
@@ -49,34 +57,78 @@ func (this *AccessibleTextExtendedAdapter) GetHyperlinkIndex(e *AccessibleTextEv
 }
 
 func (this *AccessibleTextExtendedAdapter) GetOffsetAtPoint(e *AccessibleTextEvent) {
+	this.impl.getOffsetAtPoint_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getOffsetAtPoint_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetRanges(e *AccessibleTextEvent) {
+	this.impl.getRanges_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getRanges_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetSelection(e *AccessibleTextEvent) {
+	this.impl.getSelection_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getSelection_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetSelectionCount(e *AccessibleTextEvent) {
+	this.impl.getSelectionCount_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getSelectionCount_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetText(e *AccessibleTextEvent) {
+	this.impl.getText_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getText_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetTextBounds(e *AccessibleTextEvent) {
+	this.impl.getTextBounds_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getTextBounds_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) GetVisibleRanges(e *AccessibleTextEvent) {
+	this.impl.getVisibleRanges_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) getVisibleRanges_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) RemoveSelection(e *AccessibleTextEvent) {
+	this.impl.removeSelection_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) removeSelection_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) ScrollText(e *AccessibleTextEvent) {
+	this.impl.scrollText_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) scrollText_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) SetCaretOffset(e *AccessibleTextEvent) {
+	this.impl.setCaretOffset_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) setCaretOffset_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextExtendedAdapter) SetSelection(e *AccessibleTextEvent) {
+	this.impl.setSelection_(e)
+}
+
+func (this *AccessibleTextExtendedAdapter) setSelection_(e *AccessibleTextEvent) {
 }

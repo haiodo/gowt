@@ -4688,19 +4688,19 @@ func (this *StyledText) InitializeAccessible() {
 	anon858 := &StyledTextAnon3{}
 	anon858.impl = anon858
 	anon858.initAccessibleTextExtendedAdapter()
-	anon858.fnGetCaretOffset = func(e *AccessibleTextEvent) {
+	anon858.fngetCaretOffset_ = func(e *AccessibleTextEvent) {
 		e.Offset = this.GetCaretOffset()
 	}
-	anon858.fnSetCaretOffset = func(e *AccessibleTextEvent) {
+	anon858.fnsetCaretOffset_ = func(e *AccessibleTextEvent) {
 		this.SetCaretOffset(e.Offset)
 		e.Result = ACCOK
 	}
-	anon858.fnGetSelectionRange = func(e *AccessibleTextEvent) {
+	anon858.fngetSelectionRange_ = func(e *AccessibleTextEvent) {
 		var selection *Point = this.GetSelectionRange()
 		e.Offset = selection.X
 		e.Length = selection.Y
 	}
-	anon858.fnAddSelection = func(e *AccessibleTextEvent) {
+	anon858.fnaddSelection_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = st.GetSelection()
 		if point.X == point.Y {
@@ -4712,7 +4712,7 @@ func (this *StyledText) InitializeAccessible() {
 			e.Result = ACCOK
 		}
 	}
-	anon858.fnGetSelection = func(e *AccessibleTextEvent) {
+	anon858.fngetSelection_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if st.blockSelection && st.blockXLocation != -1 {
 			var rect *Rectangle = st.GetBlockSelectionPosition()
@@ -4736,7 +4736,7 @@ func (this *StyledText) InitializeAccessible() {
 			}
 		}
 	}
-	anon858.fnGetSelectionCount = func(e *AccessibleTextEvent) {
+	anon858.fngetSelectionCount_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if st.blockSelection && st.blockXLocation != -1 {
 			var rect *Rectangle = st.GetBlockSelectionPosition()
@@ -4750,7 +4750,7 @@ func (this *StyledText) InitializeAccessible() {
 			}
 		}
 	}
-	anon858.fnRemoveSelection = func(e *AccessibleTextEvent) {
+	anon858.fnremoveSelection_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		if e.Index == 0 {
 			if st.blockSelection {
@@ -4761,7 +4761,7 @@ func (this *StyledText) InitializeAccessible() {
 			e.Result = ACCOK
 		}
 	}
-	anon858.fnSetSelection = func(e *AccessibleTextEvent) {
+	anon858.fnsetSelection_ = func(e *AccessibleTextEvent) {
 		if e.Index != 0 {
 			return
 		}
@@ -4777,17 +4777,17 @@ func (this *StyledText) InitializeAccessible() {
 		st.SetSelectionStartEnd(e.Start, end)
 		e.Result = ACCOK
 	}
-	anon858.fnGetCharacterCount = func(e *AccessibleTextEvent) {
+	anon858.fngetCharacterCount_ = func(e *AccessibleTextEvent) {
 		e.Count = this.GetCharCount()
 	}
-	anon858.fnGetOffsetAtPoint = func(e *AccessibleTextEvent) {
+	anon858.fngetOffsetAtPoint_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = NewPoint(e.X, e.Y)
 		var display *Display = st.GetDisplay()
 		point = display.Map(nil, upcastStyledTextToControl(st), point)
 		e.Offset = st.GetOffsetAtPointXYTrailingInTextOnly(point.X, point.Y, nil, true)
 	}
-	anon858.fnGetTextBounds = func(e *AccessibleTextEvent) {
+	anon858.fngetTextBounds_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var start int32 = e.Start
 		var end int32 = e.End
@@ -4884,7 +4884,7 @@ func (this *StyledText) InitializeAccessible() {
 		}
 		return ranges
 	}
-	anon858.fnGetRanges = func(e *AccessibleTextEvent) {
+	anon858.fngetRanges_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var point *Point = NewPoint(e.X, e.Y)
 		var display *Display = st.GetDisplay()
@@ -4895,7 +4895,7 @@ func (this *StyledText) InitializeAccessible() {
 			e.End = e.Ranges[int32(len(e.Ranges))-1]
 		}
 	}
-	anon858.fnGetText = func(e *AccessibleTextEvent) {
+	anon858.fngetText_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var start int32 = e.Start
 		var end int32 = e.End
@@ -5020,14 +5020,14 @@ func (this *StyledText) InitializeAccessible() {
 		e.Count = count
 		e.Result = st.content.GetTextRange(start, end-start)
 	}
-	anon858.fnGetVisibleRanges = func(e *AccessibleTextEvent) {
+	anon858.fngetVisibleRanges_ = func(e *AccessibleTextEvent) {
 		e.Ranges = anon858.fnGetRangesLocal1(this.leftMargin, this.topMargin, this.clientAreaWidth-this.rightMargin, this.clientAreaHeight-this.bottomMargin)
 		if int32(len(e.Ranges)) > 0 {
 			e.Start = e.Ranges[0]
 			e.End = e.Ranges[int32(len(e.Ranges))-1]
 		}
 	}
-	anon858.fnScrollText = func(e *AccessibleTextEvent) {
+	anon858.fnscrollText_ = func(e *AccessibleTextEvent) {
 		var st *StyledText = this
 		var topPixel int32 = this.GetTopPixel()
 		var horizontalPixel int32 = st.GetHorizontalPixel()
@@ -8832,86 +8832,86 @@ func (this *StyledTextAnon2) GetKeyboardShortcut(a0 *AccessibleEvent) {
 // j2go: anonymous AccessibleTextExtendedAdapter subclass.
 type StyledTextAnon3 struct {
 	AccessibleTextExtendedAdapter
-	fnGetCaretOffset    func(a0 *AccessibleTextEvent)
-	fnSetCaretOffset    func(a0 *AccessibleTextEvent)
-	fnGetSelectionRange func(a0 *AccessibleTextEvent)
-	fnAddSelection      func(a0 *AccessibleTextEvent)
-	fnGetSelection      func(a0 *AccessibleTextEvent)
-	fnGetSelectionCount func(a0 *AccessibleTextEvent)
-	fnRemoveSelection   func(a0 *AccessibleTextEvent)
-	fnSetSelection      func(a0 *AccessibleTextEvent)
-	fnGetCharacterCount func(a0 *AccessibleTextEvent)
-	fnGetOffsetAtPoint  func(a0 *AccessibleTextEvent)
-	fnGetTextBounds     func(a0 *AccessibleTextEvent)
-	fnGetRangesLocal1   func(a0 int32, a1 int32, a2 int32, a3 int32) []int32
-	fnGetRanges         func(a0 *AccessibleTextEvent)
-	fnGetText           func(a0 *AccessibleTextEvent)
-	fnGetVisibleRanges  func(a0 *AccessibleTextEvent)
-	fnScrollText        func(a0 *AccessibleTextEvent)
+	fngetCaretOffset_    func(a0 *AccessibleTextEvent)
+	fnsetCaretOffset_    func(a0 *AccessibleTextEvent)
+	fngetSelectionRange_ func(a0 *AccessibleTextEvent)
+	fnaddSelection_      func(a0 *AccessibleTextEvent)
+	fngetSelection_      func(a0 *AccessibleTextEvent)
+	fngetSelectionCount_ func(a0 *AccessibleTextEvent)
+	fnremoveSelection_   func(a0 *AccessibleTextEvent)
+	fnsetSelection_      func(a0 *AccessibleTextEvent)
+	fngetCharacterCount_ func(a0 *AccessibleTextEvent)
+	fngetOffsetAtPoint_  func(a0 *AccessibleTextEvent)
+	fngetTextBounds_     func(a0 *AccessibleTextEvent)
+	fnGetRangesLocal1    func(a0 int32, a1 int32, a2 int32, a3 int32) []int32
+	fngetRanges_         func(a0 *AccessibleTextEvent)
+	fngetText_           func(a0 *AccessibleTextEvent)
+	fngetVisibleRanges_  func(a0 *AccessibleTextEvent)
+	fnscrollText_        func(a0 *AccessibleTextEvent)
 }
 
-func (this *StyledTextAnon3) GetCaretOffset(a0 *AccessibleTextEvent) {
-	this.fnGetCaretOffset(a0)
+func (this *StyledTextAnon3) getCaretOffset_(a0 *AccessibleTextEvent) {
+	this.fngetCaretOffset_(a0)
 }
 
-func (this *StyledTextAnon3) SetCaretOffset(a0 *AccessibleTextEvent) {
-	this.fnSetCaretOffset(a0)
+func (this *StyledTextAnon3) setCaretOffset_(a0 *AccessibleTextEvent) {
+	this.fnsetCaretOffset_(a0)
 }
 
-func (this *StyledTextAnon3) GetSelectionRange(a0 *AccessibleTextEvent) {
-	this.fnGetSelectionRange(a0)
+func (this *StyledTextAnon3) getSelectionRange_(a0 *AccessibleTextEvent) {
+	this.fngetSelectionRange_(a0)
 }
 
-func (this *StyledTextAnon3) AddSelection(a0 *AccessibleTextEvent) {
-	this.fnAddSelection(a0)
+func (this *StyledTextAnon3) addSelection_(a0 *AccessibleTextEvent) {
+	this.fnaddSelection_(a0)
 }
 
-func (this *StyledTextAnon3) GetSelection(a0 *AccessibleTextEvent) {
-	this.fnGetSelection(a0)
+func (this *StyledTextAnon3) getSelection_(a0 *AccessibleTextEvent) {
+	this.fngetSelection_(a0)
 }
 
-func (this *StyledTextAnon3) GetSelectionCount(a0 *AccessibleTextEvent) {
-	this.fnGetSelectionCount(a0)
+func (this *StyledTextAnon3) getSelectionCount_(a0 *AccessibleTextEvent) {
+	this.fngetSelectionCount_(a0)
 }
 
-func (this *StyledTextAnon3) RemoveSelection(a0 *AccessibleTextEvent) {
-	this.fnRemoveSelection(a0)
+func (this *StyledTextAnon3) removeSelection_(a0 *AccessibleTextEvent) {
+	this.fnremoveSelection_(a0)
 }
 
-func (this *StyledTextAnon3) SetSelection(a0 *AccessibleTextEvent) {
-	this.fnSetSelection(a0)
+func (this *StyledTextAnon3) setSelection_(a0 *AccessibleTextEvent) {
+	this.fnsetSelection_(a0)
 }
 
-func (this *StyledTextAnon3) GetCharacterCount(a0 *AccessibleTextEvent) {
-	this.fnGetCharacterCount(a0)
+func (this *StyledTextAnon3) getCharacterCount_(a0 *AccessibleTextEvent) {
+	this.fngetCharacterCount_(a0)
 }
 
-func (this *StyledTextAnon3) GetOffsetAtPoint(a0 *AccessibleTextEvent) {
-	this.fnGetOffsetAtPoint(a0)
+func (this *StyledTextAnon3) getOffsetAtPoint_(a0 *AccessibleTextEvent) {
+	this.fngetOffsetAtPoint_(a0)
 }
 
-func (this *StyledTextAnon3) GetTextBounds(a0 *AccessibleTextEvent) {
-	this.fnGetTextBounds(a0)
+func (this *StyledTextAnon3) getTextBounds_(a0 *AccessibleTextEvent) {
+	this.fngetTextBounds_(a0)
 }
 
 func (this *StyledTextAnon3) GetRangesLocal1(a0 int32, a1 int32, a2 int32, a3 int32) []int32 {
 	return this.fnGetRangesLocal1(a0, a1, a2, a3)
 }
 
-func (this *StyledTextAnon3) GetRanges(a0 *AccessibleTextEvent) {
-	this.fnGetRanges(a0)
+func (this *StyledTextAnon3) getRanges_(a0 *AccessibleTextEvent) {
+	this.fngetRanges_(a0)
 }
 
-func (this *StyledTextAnon3) GetText(a0 *AccessibleTextEvent) {
-	this.fnGetText(a0)
+func (this *StyledTextAnon3) getText_(a0 *AccessibleTextEvent) {
+	this.fngetText_(a0)
 }
 
-func (this *StyledTextAnon3) GetVisibleRanges(a0 *AccessibleTextEvent) {
-	this.fnGetVisibleRanges(a0)
+func (this *StyledTextAnon3) getVisibleRanges_(a0 *AccessibleTextEvent) {
+	this.fngetVisibleRanges_(a0)
 }
 
-func (this *StyledTextAnon3) ScrollText(a0 *AccessibleTextEvent) {
-	this.fnScrollText(a0)
+func (this *StyledTextAnon3) scrollText_(a0 *AccessibleTextEvent) {
+	this.fnscrollText_(a0)
 }
 
 // j2go: anonymous AccessibleEditableTextListener subclass.

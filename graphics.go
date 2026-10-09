@@ -31,6 +31,13 @@ func (a *App) ImageFrom(r io.Reader) (img *Image, err error) {
 	return a.track(swt.NewImageDeviceStream(a.display, jrt.NewInputStream(r))), nil
 }
 
+// ImageFromProvider creates an image from p, drawn at every zoom the provider answers for (for
+// example svg.NewImageDataProvider). The App owns it and disposes it when Run returns, like the
+// other images it created.
+func (a *App) ImageFromProvider(p swt.ImageDataProvider) *Image {
+	return a.track(swt.NewImageDeviceImageDataProvider(a.display, p))
+}
+
 func (a *App) track(i *swt.Image) *Image {
 	img := &Image{i}
 	a.images = append(a.images, img)

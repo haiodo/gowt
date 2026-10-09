@@ -1,4 +1,4 @@
-package gowt
+package look
 
 import (
 	"syscall"
@@ -31,16 +31,19 @@ func dwmSet(h int64, attr, value int32) {
 	procDwmSetWindowAttribute.Call(uintptr(h), uintptr(attr), uintptr(unsafe.Pointer(&value)), 4)
 }
 
+// backdropOnKey marks a shell whose background was set for the material.
+const backdropOnKey = "gowt.look.backdropOn"
+
 // setBackdrop needs Windows 11 22H2 (build 22621); older builds keep the opaque window.
 // Translucent is Acrylic, Glass is Mica. The material shows only where the client area is painted black
 // (DWM treats RGB 0,0,0 over an extended frame as transparent), so the shell background becomes black:
 // widgets with their own opaque background are unaffected, but text drawn in pure black turns transparent -
 // use a near-black foreground on the material.
-func (w *Window) setBackdrop(b Backdrop) {
+func setBackdrop(s *swt.Shell, b Backdrop) {
 	if windowsBuild() < buildWin11_22H2 {
 		return
 	}
-	h := w.shell.Handle
+	h := s.Handle
 	kind, margin := int32(dwmbbNone), int32(0)
 	switch b {
 	case BackdropTranslucent:
@@ -52,19 +55,19 @@ func (w *Window) setBackdrop(b Backdrop) {
 	m := [4]int32{margin, margin, margin, margin}
 	procDwmExtendFrame.Call(uintptr(h), uintptr(unsafe.Pointer(&m)))
 	if margin == 0 {
-		if w.backdropOn {
-			w.backdropOn = false
-			w.shell.SetBackgroundWithColor(nil)
-			w.shell.SetBackgroundMode(swt.INHERIT_NONE)
+		if on, _ := s.GetDataKey(backdropOnKey).(bool); on {
+			s.SetDataKeyValue(backdropOnKey, false)
+			s.SetBackgroundWithColor(nil)
+			s.SetBackgroundMode(swt.INHERIT_NONE)
 		}
 		return
 	}
-	w.backdropOn = true
-	w.shell.SetBackgroundWithColor(RGB{}.color())
-	w.shell.SetBackgroundMode(swt.INHERIT_DEFAULT)
+	s.SetDataKeyValue(backdropOnKey, true)
+	s.SetBackgroundWithColor(swt.NewColorRedGreenBlue(0, 0, 0))
+	s.SetBackgroundMode(swt.INHERIT_DEFAULT)
 }
 
-func (w *Window) setRoundedCorners(on bool) {
+func setRoundedCorners(s *swt.Shell, on bool) {
 	if windowsBuild() < buildWin11 {
 		return
 	}
@@ -72,5 +75,17 @@ func (w *Window) setRoundedCorners(on bool) {
 	if on {
 		pref = dwmcpRound
 	}
-	dwmSet(w.shell.Handle, dwmaWindowCornerPreference, pref)
+	dwmSet(s.Handle, dwmaWindowCornerPreference, pref)
 }
+
+func setDarkContent(d *swt.Display, on bool) {
+	d.SetData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", on)
+}
+
+func classic() {}
+
+func setFullSizeContent(*swt.Shell, bool) {}
+
+func setGlass(*swt.Composite, bool) {}
+
+func glassButton(*swt.Control) {}

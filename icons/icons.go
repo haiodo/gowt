@@ -1,10 +1,12 @@
-package gowt
+package icons
 
 import (
 	"fmt"
 	"image"
 	"sort"
+	"sync"
 
+	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons/lucide"
 	"github.com/haiodo/gowt/svg"
 	"github.com/haiodo/gowt/swt"
@@ -62,8 +64,8 @@ var iconDict = map[string]iconEntry{
 	"stop":     {"media-playback-stop", "stop.fill", 0xE71A, "square"},
 }
 
-// IconNames lists the names Icon accepts, sorted.
-func IconNames() []string {
+// Names lists the names Get accepts, sorted.
+func Names() []string {
 	names := make([]string, 0, len(iconDict))
 	for n := range iconDict {
 		names = append(names, n)
@@ -72,69 +74,78 @@ func IconNames() []string {
 	return names
 }
 
-// IconOption adjusts Icon.
-type IconOption func(*iconConfig)
+// Option adjusts Get.
+type Option func(*iconConfig)
 
 type iconConfig struct {
 	size  int
-	color *RGB
+	color *gowt.RGB
 }
 
-// IconSize sets the icon's side in points (default 16).
-func IconSize(points int) IconOption { return func(c *iconConfig) { c.size = points } }
+// Size sets the icon's side in points (default 16).
+func Size(points int) Option { return func(c *iconConfig) { c.size = points } }
 
-// IconColor sets the tint; by default light gray in dark mode and near-black in light mode.
-func IconColor(c RGB) IconOption { return func(ic *iconConfig) { ic.color = &c } }
+// Color sets the tint; by default light gray in dark mode and near-black in light mode.
+func Color(c gowt.RGB) Option { return func(ic *iconConfig) { ic.color = &c } }
 
-// Icon returns the named icon from the system set of the current OS (SF Symbols, Segoe Fluent
+// Get returns the named icon from the system set of the current OS (SF Symbols, Segoe Fluent
 // Icons, freedesktop symbolic icons), or from the embedded Lucide set when the system has none.
 // The result is drawn at every zoom and tinted for the theme at call time: after
-// App.OnThemeChange call Icon again (the old image keeps its colour). Images are cached per
+// App.OnThemeChange call Get again (the old image keeps its colour). Images are cached per
 // name, size and colour: the App owns them, the caller must not Dispose them. It panics on an
-// unknown name; IconNames lists the valid ones.
-func (a *App) Icon(name string, opts ...IconOption) *Image {
+// unknown name; Names lists the valid ones.
+func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	e, ok := iconDict[name]
 	if !ok {
-		panic(fmt.Errorf("gowt: unknown icon %q", name))
+		panic(fmt.Errorf("icons: unknown icon %q", name))
 	}
 	cfg := iconConfig{size: 16}
 	for _, o := range opts {
 		o(&cfg)
 	}
 	cfg.size = max(cfg.size, 1)
-	c := RGB{30, 30, 30}
+	c := gowt.RGB{R: 30, G: 30, B: 30}
 	if a.Dark() {
-		c = RGB{235, 235, 235}
+		c = gowt.RGB{R: 235, G: 235, B: 235}
 	}
 	if cfg.color != nil {
 		c = *cfg.color
 	}
 	key := iconKey{name, cfg.size, c}
-	if img, ok := a.icons[key]; ok {
+	cacheMu.Lock()
+	defer cacheMu.Unlock()
+	if img, ok := cache[a][key]; ok {
 		return img
 	}
 	src, _ := lucide.SVG(e.lucide)
 	p := &iconProvider{a: a, e: e, size: cfg.size, c: c,
 		fallback: svg.NewImageDataProvider(src, int32(cfg.size), int32(cfg.size), fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B))}
-	img := a.track(swt.NewImageDeviceImageDataProvider(a.display, p))
-	if a.icons == nil {
-		a.icons = map[iconKey]*Image{}
+	img := a.ImageFromProvider(p)
+	if cache[a] == nil {
+		cache[a] = map[iconKey]*gowt.Image{}
 	}
-	a.icons[key] = img
+	cache[a][key] = img
 	return img
 }
 
 type iconKey struct {
 	name string
 	size int
-	c    RGB
+	c    gowt.RGB
 }
 
+// The images belong to their App and are disposed when its Run returns, but the entries stay: one
+// Run per process is the ceiling; the way out is an end-of-run hook on App.
+var (
+	cacheMu sync.Mutex
+	cache   = map[*gowt.App]map[iconKey]*gowt.Image{}
+)
+
 type iconProvider struct {
-	a        *App
+	a        *gowt.App
 	e        iconEntry
 	size     int
-	c        RGB
+	c        gowt.RGB
 	fallback swt.ImageDataProvider
 }
 
@@ -147,7 +158,7 @@ func (p *iconProvider) GetImageData(zoom int32) *swt.ImageData {
 }
 
 // tintAlpha makes a px x px NRGBA image of colour c from an alpha mask given row by row.
-func tintAlpha(px int, c RGB, alpha func(x, y int) uint8) *image.NRGBA {
+func tintAlpha(px int, c gowt.RGB, alpha func(x, y int) uint8) *image.NRGBA {
 	img := image.NewNRGBA(image.Rect(0, 0, px, px))
 	for y := 0; y < px; y++ {
 		for x := 0; x < px; x++ {

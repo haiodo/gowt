@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/icons"
 )
 
 func main() {
@@ -14,20 +15,14 @@ func main() {
 		w := app.Window("gowt icons")
 		w.SetLayout(gowt.Grid{Columns: 8, Margin: 10, Spacing: 8})
 		var buttons []*gowt.Button
-		var names = gowt.IconNames()
+		var names = icons.Names()
 		for _, n := range names {
 			buttons = append(buttons, w.Button("", nil, gowt.Tooltip(n)))
 		}
-		var shown []*gowt.Image
+		// icons.Get caches per name, size and colour and the App owns the images, so no Dispose here.
 		fill := func() {
-			for _, img := range shown {
-				img.Dispose()
-			}
-			shown = shown[:0]
 			for i, n := range names {
-				img := app.Icon(n, gowt.IconSize(24))
-				shown = append(shown, img)
-				buttons[i].SetImage(img)
+				buttons[i].SetImage(icons.Get(app, n, icons.Size(24)))
 			}
 		}
 		fill()

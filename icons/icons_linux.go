@@ -1,4 +1,4 @@
-package gowt
+package icons
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/svg"
 	"github.com/haiodo/gowt/swt"
 )
@@ -20,7 +21,7 @@ var (
 
 // systemIcon draws the freedesktop symbolic icon straight from the theme's SVG with the pure Go
 // rasterizer; no GTK call is needed. Returns nil when the theme has no such icon.
-func systemIcon(a *App, e iconEntry, px int, c RGB) *swt.ImageData {
+func systemIcon(a *gowt.App, e iconEntry, px int, c gowt.RGB) *swt.ImageData {
 	iconChainOnce.Do(func() { iconChain = themeChain(iconDirs(), gsettingsTheme()) })
 	iconPathsMu.Lock()
 	path, ok := iconPaths[e.fd]

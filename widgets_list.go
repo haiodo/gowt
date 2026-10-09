@@ -90,6 +90,9 @@ func (l *List) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
 // SetSelection replaces the selection.
 func (l *List) SetSelection(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
 
+// SetItem replaces the text of item i, keeping the selection.
+func (l *List) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
+
 // Unwrap returns the underlying swt.List for the full API.
 func (l *List) Unwrap() *swt.List { return l.l }
 

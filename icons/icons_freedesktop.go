@@ -1,4 +1,4 @@
-package gowt
+package icons
 
 import (
 	"bufio"

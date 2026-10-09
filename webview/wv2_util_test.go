@@ -115,13 +115,12 @@ func fakeEnv(reg map[string]string, files ...string) wv2Env {
 
 func TestFindRuntimeDLL(t *testing.T) {
 	const dll = `\x64\EmbeddedBrowserWebView.dll`
-	key := `WOW6432Node\` + wv2ClientsKey
-	// EBWebView value names the directory with the arch subdirectory.
-	e := fakeEnv(map[string]string{`HKLM|` + key + `|EBWebView`: `C:\W\1.2\EBWebView`}, `C:\W\1.2\EBWebView`+dll)
-	if p, err := findRuntimeDLL(e, "x64"); err != nil || p != `C:\W\1.2\EBWebView`+dll {
+	cs := `HKLM|` + wv2ClientStateKey
+	e := fakeEnv(map[string]string{cs + `|EBWebView`: `C:\W\Application\1.2`}, `C:\W\Application\1.2\EBWebView`+dll)
+	if p, err := findRuntimeDLL(e, "x64"); err != nil || p != `C:\W\Application\1.2\EBWebView`+dll {
 		t.Fatal(p, err)
 	}
-	// location + pv, per-user install.
+	// fallback: Clients location + pv, per-user install.
 	hkcu := `HKCU|` + wv2ClientsKey
 	e = fakeEnv(map[string]string{hkcu + `|location`: `C:\U`, hkcu + `|pv`: `9.9`}, `C:\U\9.9\EBWebView`+dll)
 	if p, err := findRuntimeDLL(e, "x64"); err != nil || p != `C:\U\9.9\EBWebView`+dll {

@@ -19,11 +19,12 @@ const errNoRuntime = "webview: the WebView2 Runtime is not installed (Windows 10
 	"https://developer.microsoft.com/microsoft-edge/webview2/, Windows 11 has it)"
 
 const wv2ClientsKey = `Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}`
+const wv2ClientStateKey = `Microsoft\EdgeUpdate\ClientState\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}`
 const wv2DLL = "EmbeddedBrowserWebView.dll"
 
 // wv2Env is what the runtime discovery needs from the machine; tests fake it.
 type wv2Env struct {
-	// reg reads a REG_SZ: root is "HKLM" or "HKCU", key is relative to SOFTWARE.
+	// reg reads a REG_SZ: root is "HKLM" or "HKCU", key is relative to SOFTWARE, read in the 32-bit view.
 	reg    func(root, key, name string) (string, bool)
 	exists func(path string) bool
 	glob   func(pattern string) []string
@@ -45,19 +46,19 @@ func findRuntimeDLL(env wv2Env, arch string) (string, error) {
 		}
 		return "", false
 	}
-	// The Clients key is written by the runtime installer: per machine (32-bit view on 64-bit Windows) or per user.
-	for _, k := range []struct{ root, key string }{
-		{"HKLM", `WOW6432Node\` + wv2ClientsKey}, {"HKLM", wv2ClientsKey}, {"HKCU", wv2ClientsKey},
-	} {
-		if dir, ok := env.reg(k.root, k.key, "EBWebView"); ok {
-			for _, d := range []string{dir, dir + `\` + arch} {
-				if p, ok := try(d + `\` + wv2DLL); ok {
-					return p, nil
-				}
+	// The loader reads EBWebView (the version directory) from ClientState, per user first. The registry view is the
+	// 32-bit one, so keys are given without WOW6432Node.
+	for _, root := range []string{"HKCU", "HKLM"} {
+		if dir, ok := env.reg(root, wv2ClientStateKey, "EBWebView"); ok {
+			if p, ok := try(dir + `\EBWebView\` + arch + `\` + wv2DLL); ok {
+				return p, nil
 			}
 		}
-		loc, ok1 := env.reg(k.root, k.key, "location")
-		pv, ok2 := env.reg(k.root, k.key, "pv")
+	}
+	// Fallbacks: the installer's Clients key.
+	for _, root := range []string{"HKCU", "HKLM"} {
+		loc, ok1 := env.reg(root, wv2ClientsKey, "location")
+		pv, ok2 := env.reg(root, wv2ClientsKey, "pv")
 		if ok1 && ok2 {
 			if p, ok := try(loc + `\` + pv + `\EBWebView\` + arch + `\` + wv2DLL); ok {
 				return p, nil

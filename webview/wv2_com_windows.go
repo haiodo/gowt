@@ -56,7 +56,7 @@ func vcall(obj uintptr, slot int, args ...uintptr) uintptr {
 	vt := *(*uintptr)(ptr(obj))
 	fn := *(*uintptr)(unsafe.Add(ptr(vt), uintptr(slot)*ptrSize))
 	r, _, _ := syscall.SyscallN(fn, append([]uintptr{obj}, args...)...)
-	return r
+	return uintptr(uint32(r))
 }
 
 func release(obj uintptr) {
@@ -274,7 +274,7 @@ func realRuntimeEnv() wv2Env {
 			}
 			k16, _ := syscall.UTF16PtrFromString(`SOFTWARE\` + key)
 			var hk syscall.Handle
-			if syscall.RegOpenKeyEx(h, k16, 0, syscall.KEY_READ, &hk) != nil {
+			if syscall.RegOpenKeyEx(h, k16, 0, syscall.KEY_READ|0x200, &hk) != nil {
 				return "", false
 			}
 			defer syscall.RegCloseKey(hk)

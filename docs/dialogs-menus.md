@@ -28,7 +28,7 @@ if a == gowt.AnswerYes { ... }
 | `w.ColorDialog(initial RGB)` | `(RGB, ok)` |
 | `w.FontDialog(initial Font)` | `(Font, ok)` |
 
-`FileFilter{Name, Pattern}`: a pattern list is separated by `;`, e.g. `"*.png;*.jpg"`; `"*"` matches all. `Font` is `{Name, Size, Bold, Italic}`.
+`Multi` applies to open dialogs only; with `Save` it has no effect and one path is returned. `FileFilter{Name, Pattern}`: a pattern list is separated by `;`, e.g. `"*.png;*.jpg"`; `"*"` matches all. `Font` is `{Name, Size, Bold, Italic}`.
 
 ## Menus
 

@@ -64,19 +64,19 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 - Widgets: labels, buttons, text, combo, list, table, tree, tabs, split, scroll, tool bar, menus, date picker, sliders, canvas, dialogs, tray icon.
 - Layouts: `Grid`, `Row`, `Fill`, `Form`, `Stack`.
 - The system web view next to native widgets: package `webview`, and SWT's `Browser` on top of it.
-- Platform look: Liquid Glass on macOS 26, Mica and Acrylic on Windows 11 (package `look`), light/dark following the system, system icons by name (package `icons`).
+- Platform look: Liquid Glass on macOS 26, Mica and Acrylic on Windows 11 22H2 and later (package `look`), light/dark following the system, system icons by name (package `icons`).
 - The full SWT API in package `swt` for what the facade does not wrap, and JFace layout and widget factories in `jface`.
 
 ## Compared with Wails and Fyne
 
-Only what the projects' own documentation says (fetched 2026-10-10).
+Only what the pages linked in the table say, as fetched on 2026-10-10 (the wails.io and docs.fyne.io architecture pages returned 403/404 and are not used).
 
 | | gowt | Wails | Fyne |
 |---|---|---|---|
-| UI is | native OS widgets (SWT translated to Go) | web frontend; README: "Uses native rendering engines - no embedded browser!" ([README](https://github.com/wailsapp/wails)) | Go GUI toolkit; how it draws widgets was not checked |
-| Build needs a C compiler | no | Linux: "standard gcc build tools plus libgtk3 and libwebkit"; macOS: Xcode command line tools ([installation](https://wails.io/docs/gettingstarted/installation)) | yes: "a C compiler" ([README](https://github.com/fyne-io/fyne), [Quick Start](https://docs.fyne.io/started/quick)) |
-| Web view next to native widgets | yes: `webview` package | the UI itself is the web view | not stated in the pages checked |
-| Cross-compile | `GOOS=windows go build` from any host (checked from a Mac for darwin, windows, linux builds of the examples) | the build guide shows one CI job per OS ([guide](https://wails.io/docs/guides/crossplatform-build)) | `fyne-cross`, which needs Docker ([fyne-cross](https://github.com/fyne-io/fyne-cross)) |
+| UI is | native OS widgets (SWT translated to Go) | web frontend: "Use any frontend technology you are already familiar with to build your UI"; "Uses native rendering engines - no embedded browser!" ([README](https://raw.githubusercontent.com/wailsapp/wails/master/README.md)) | Go GUI toolkit; how it draws widgets was not checked |
+| Build needs a C compiler | no | Linux: "standard gcc build tools plus libgtk3 and libwebkit"; macOS: Xcode command line tools ([installation source](https://raw.githubusercontent.com/wailsapp/wails/master/website/docs/gettingstarted/installation.mdx)) | yes: "a C compiler" ([README](https://raw.githubusercontent.com/fyne-io/fyne/master/README.md), [Quick Start](https://docs.fyne.io/started/quick)) |
+| Web view next to native widgets | yes: `webview` package | not compared (not stated in the pages checked) | not stated in the pages checked |
+| Cross-compile | `GOOS=windows go build` from any host (checked from a Mac for darwin, windows, linux builds of the examples) | the build guide shows one CI job per OS ([guide source](https://raw.githubusercontent.com/wailsapp/wails/master/website/docs/guides/crossplatform-build.mdx)); it does not say anything about cross-compiling | `fyne-cross`, which needs Docker ([fyne-cross README](https://raw.githubusercontent.com/fyne-io/fyne-cross/develop/README.md): "cross compile ... using docker images") |
 
 Not compared because it could not be confirmed from the documentation: how Fyne draws its widgets, Wails' cross-compile limits, binary sizes, performance. gowt is younger and covers fewer widgets than a mature toolkit; see the known gaps below.
 
@@ -87,10 +87,10 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 | OS | pass | fail | skip |
 |---|---|---|---|
 | macOS | 3492 | 30 (+2 flaky) | 26 |
-| Windows (Wine, not real Windows) | 3275 | 232 | 43 |
+| Windows (Wine, not real Windows) | 3275 | 232 (209 Browser tests: no WebView2 Runtime in the CrossOver bottle; 23 others) | 43 |
 | Linux (Docker, Xvfb) | 3497 | 33 | 20 |
 
-JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason or is marked UNDESCRIBED. The facade itself has `go test` examples and an API stability gate (`make api-check`).
+JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
 
 ## Platform requirements
 
@@ -102,7 +102,7 @@ JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `
 
 ## Known gaps
 
-- Windows was never run on real Windows, only under Wine (CrossOver). Mica, Acrylic, WebView2 and per-monitor DPI changes are unverified or missing.
+- Windows was never run on real Windows, only under Wine (CrossOver). Mica, Acrylic and WebView2 are unverified; per-monitor DPI changes while running are not handled.
 - Linux: GTK 3 only.
 - `Browser` does not support several events (OpenWindow, CloseWindow, VisibilityWindow, StatusText) and the cookie statics; see [docs/webview-browser.md](docs/webview-browser.md).
 - Clipboard, drag and drop and `StyledText` are not in the tree yet (being integrated separately); `Accessible` is a stub on all three OSes.

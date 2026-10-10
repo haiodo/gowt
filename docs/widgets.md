@@ -18,6 +18,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
 | `Right()`, `Center()` | Table column alignment |
+| `Bottom()` | Tabs and CTabs: tabs below the pages |
 | `Closable()` | CTabs tab with a close button |
 | `AsTime()`, `AsCalendar()`, `DropDown()` | DateTime variants |
 | `Simple()`, `Smooth()`, `Indeterminate()` | Combo list always shown; unsegmented progress; progress without a value |
@@ -33,13 +34,13 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
 | List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `SetSelection`, `OnSelect`, `OnActivate` (double click) |
 | Table | `Table()` | `Column(title, width)`, `Row(cells...)` returns `*TableRow` (`SetText(col, s)`, `SetData`, `Data`, `SetChecked`, `SetImage(col, img)`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines` |
-| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse` |
+| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse` |
 | Scale, Slider, Spinner | `Scale(min, max, value)` | `Value`, `SetValue`, `OnChange(func(int))` |
 | Progress | `Progress(max)` | `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
 | Group | `Group(title)` | titled container |
 | Tabs, CTabs | `Tabs()`, `CTabs()` | `Tab(title)` returns the page `*Panel`; `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
-| Split | `Split()` | children are panels in order; `SetWeights(...)` sets the sizes |
+| Split | `Split()` | children are any widgets, created in order (`split.Panel()`, `split.Table()`, ...); `SetWeights(...)` sets the relative sizes |
 | Scroll | `Scroll()` | build into `Content()`, then call `Fit()` |
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem`; `Separator()` |
 | CoolBar, Sash | `CoolBar()`, `Sash()` | `CoolBar.Add(widget)`; `Sash.OnMove` |
@@ -51,7 +52,7 @@ Wrappers returned by `Row`, `Node` and the `Tree.On*` callbacks are fresh each c
 
 ## Selection
 
-For Combo, List and Table: `Index()` is the first selected item (-1 for none), `Selected()` all selected, `SetSelection(...)` sets them. Callbacks receive indexes. Tree callbacks receive `*Node`.
+`Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected) and `SetSelection(...)`; Combo has neither. Callbacks receive indexes. Tree callbacks receive `*Node`.
 
 ## Known limits
 

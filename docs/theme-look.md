@@ -27,7 +27,7 @@ Colours you set yourself (`Background`, `GC` colours) do not change by themselve
 
 | Call | Effect |
 |---|---|
-| `look.SetBackdrop(w, look.BackdropNone / BackdropTranslucent / BackdropGlass)` | window material. macOS: blurred material or Liquid Glass (26+). Windows 11: Acrylic or Mica. Linux ignores it |
+| `look.SetBackdrop(w, look.BackdropNone / BackdropTranslucent / BackdropGlass)` | window material. macOS: blurred material or Liquid Glass (26+). Windows 11 22H2 (build 22621) and later: Acrylic (`BackdropTranslucent`) or Mica (`BackdropGlass`); older builds keep the opaque window. Linux ignores it |
 | `look.SetGlass(container, true)` | Liquid Glass surface behind a `Panel`, `Window`, `Group`, `Split` or `CoolBar`. macOS 26; older macOS shows a blurred material, other systems nothing |
 | `look.GlassButton()` | option for a push button: glass bezel on macOS 26 |
 | `look.SetFullSizeContent(w, true)` | content extends under a transparent title bar (macOS); leave about 28 points at the top for the traffic lights |
@@ -41,6 +41,7 @@ On macOS 26 the system chrome is Liquid Glass without any call, because Go 1.27 
 
 ## Known gaps
 
+- On Windows the material shows only where the client area is black, so `SetBackdrop` turns the shell background black. Text drawn in pure black becomes transparent: use a near-black foreground. Widgets with their own opaque background are unaffected.
 - Mica, Acrylic and rounded corners were never checked on a real Windows 11 (CrossOver has no DWM).
 - Windows per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled.
 - Not available on macOS: `NSGlassEffectContainerView`, `NSBackgroundExtensionView`, a unified tool bar.

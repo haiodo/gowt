@@ -7,7 +7,7 @@ Two packages put a web page next to native widgets. Both use the system engine, 
 | | `webview` | `browser` |
 |---|---|---|
 | What | small hand-written Go API | SWT's `Browser` widget, translated, with `webview` as its engine |
-| Engine | WKWebView (macOS), WebKitGTK 4.1 (Linux), WebView2 (Windows) | the same |
+| Engine | WKWebView (macOS), WebKitGTK 4.1 (Linux), WebView2 (Windows, never run on real Windows) | the same |
 | Use it for | new code | porting SWT code, or SWT's listener model |
 
 ## webview
@@ -26,6 +26,7 @@ wv.Navigate("app://localhost/")
 ```
 
 - The parent is a plain composite: pass `panel.Unwrap()`. Give the panel a `Fill{}` layout so the view fills it.
+- `SetCallHandler(f func(msg string) string) bool` sets a synchronous page-to-Go call (the page calls `window.gowt.call`); it is what `BrowserFunction` uses. `SetNavigationPolicy(f func(url string, mainFrame bool) bool) bool` lets Go cancel a navigation. Both return false if the engine lacks the feature.
 - `HandleScheme(scheme, handler)` serves pages from Go (an `embed.FS` or a map), with no local server. `AddScript(js)` runs before the page's own scripts. The native view is created at the first load, so call both before `Navigate`/`SetHTML`.
 - `Navigate(url)`, `SetHTML(html, baseURL)`, `Reload`, `Stop`, `GoBack`, `GoForward`, `URL()`.
 - `Eval(js, func(resultJSON string, err error))` is asynchronous; the result is JSON text.
@@ -50,10 +51,10 @@ b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.Loc
 
 ## Known gaps
 
-- Browser does not support `OpenWindow`, `VisibilityWindow`, `CloseWindow`, `Authentication` and `StatusText` events, post data and headers in `SetUrl`, `SetJavascriptEnabled`, and the cookie statics.
+- Browser does not support the `OpenWindow`, `VisibilityWindow`, `CloseWindow`, `Authentication` and `StatusText` events, post data and headers in `SetUrl`, `SetJavascriptEnabled`, and the cookie statics.
 - `Evaluate`, `Execute` and `GetText` called from inside a `BrowserFunction` throw at once.
-- History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and BrowserFunction calls are implemented on macOS only. Elsewhere `Back`/`Forward` always go, `Changing` cannot cancel and BrowserFunctions return `undefined`.
-- Browser tests: 173 of 209 pass on macOS, with 6 failures not diagnosed.
+- History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and the call handler behind `BrowserFunction` (`WebView.SetCallHandler`) are implemented for all three engines (`webview_darwin.go`, `webview_linux.go`, `webview_windows.go`).
+- Browser tests (`tests/expected*.txt`): macOS 173 pass and 20 fail of 209, Linux 175 pass and 20 fail. On Windows all 209 Browser tests fail in the CrossOver bottle because it has no WebView2 Runtime, so Browser results exist only for macOS and Linux.
 - Linux: WebKitGTK does not report which frame navigates, so the navigation policy always gets `mainFrame=true`.
-- Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) was never run on a real Windows; CrossOver had no WebView2 Runtime.
-- The examples in this repository were type-checked, not run, for all three OSes.
+- Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) has never run on a real Windows.
+- The examples in this repository were type-checked for the three OSes but not run.

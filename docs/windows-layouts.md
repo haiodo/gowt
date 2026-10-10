@@ -29,7 +29,7 @@ A layout is a value you pass to `SetLayout`. The zero value of every field means
 | Layout | Fields | Per-child option | Use |
 |---|---|---|---|
 | `Fill` | `Vertical` | - | children share the space equally in a row or column |
-| `Grid` | `Columns`, `EqualWidth`, `Margin`, `Spacing` | `Cell(GridCell{...})` | forms and most dialogs |
+| `Grid` | `Columns` (0 means 1), `EqualWidth`, `Margin`, `Spacing` | `Cell(GridCell{...})` | forms and most dialogs |
 | `Row` | `Vertical`, `Wrap`, `Fill`, `Center`, `Margin`, `Spacing` | `InRow(RowCell{Width, Height})` | toolbars, button rows, wrapping flows |
 | `Form` | `Margin`, `Spacing` | `Anchor(FormCell{Left, Right, Top, Bottom, Width, Height})` | edges attached to the container or to siblings |
 | `Stack` | `Margin` | - | one child visible at a time; choose with `panel.ShowTop(child)` |

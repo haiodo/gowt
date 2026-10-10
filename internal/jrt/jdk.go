@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -160,9 +161,15 @@ func NewThread(r Runnable) *Thread { return &Thread{run: r, done: make(chan stru
 func (t *Thread) Run() { t.run.Run() }
 
 func ThreadStart(t any) {
-	th := t.(*Thread)
+	th, ok := t.(*Thread)
+	if !ok {
+		// A class extending Thread is translated to a struct with Run, not embedding Thread.
+		th = NewThread(t.(Runnable))
+	}
 	th.started.Store(true)
 	go func() {
+		// A thread may own a Display, and the toolkit checks the OS thread.
+		runtime.LockOSThread()
 		defer close(th.done)
 		// An uncaught exception ends only its own Java thread.
 		defer func() {

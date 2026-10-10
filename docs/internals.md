@@ -1,0 +1,105 @@
+# gowt internals: repository map, translator, ports
+
+How the repository is laid out and how the SWT port is built. For using gowt see [index.md](index.md). Native GUI for Go: Eclipse SWT translated from Java to Go; macOS (cocoa), Windows (win32) and Linux (GTK 3) ports exist, see [platforms.md](platforms.md).
+
+| Path | What |
+|---|---|
+| `swt/` | Public API, one Go package: Java packages `org.eclipse.swt`, `graphics`, `widgets`, `layout`, `events` import each other in a cycle, Go does not allow that. `*_darwin.go` files are the cocoa port, the rest is shared |
+| `internal/cocoa/` | AppKit bindings (darwin only), translated by j2go from SWT's `Eclipse SWT PI/cocoa` Java sources |
+| `internal/gtk/` | GTK 3 / GLib / Pango / cairo bindings for linux (purego), generated from GIR by `tooling/girgen` plus hand-written `glue_*.go`; clean-room, see `tooling/j2go/README.md` "Round 20" |
+| `internal/win32/` | Reserved for the Windows PI binding (not present yet) |
+| `jface/` | JFace slice A (`org.eclipse.jface.layout`, `widgets`, ...) translated by j2go from `eclipse.platform.ui`; one source for every OS, see "JFace" |
+| `internal/jrt/` | The subset of the Java runtime the translated code uses (also the `org.eclipse.core.runtime` shims JFace needs: `core.go`) |
+| `examples/controlexample/` | SWT's ControlExample (`org.eclipse.swt.examples.controlexample`), translated by j2go into its own package on top of `swt`; tabs Button, Canvas, Group, Label, Menu, Text |
+| `tooling/j2go/` | Java -> Go translator on Eclipse JDT |
+| `tooling/girgen/` | GIR -> `internal/gtk` generator (`make gtk-gen`, in the Linux stand) |
+| `tooling/apidump/` | Prints package `swt`'s exported API per GOOS; `-check` compares the platforms (`make api-check`) |
+| `cmd/hello/` | Smallest program: a Shell with one "Hello" button (`CGO_ENABLED=0 go run ./cmd/hello`) |
+| `cmd/paint/` | A Canvas with a PaintListener drawing through `GC` (`CGO_ENABLED=0 go run ./cmd/paint`) |
+| `cmd/form/` | GridLayout form: Label + Text, OK button, File > Quit menu |
+| `cmd/tree/` | Tree (NSOutlineView): three root items with children, Selection and Expand listeners |
+| `cmd/images/` | Loads PNG/GIF/BMP via `getResourceAsStream` -> `ImageData(InputStream)` -> `Image`, draws with `gc.DrawImage` |
+| `cmd/controlexample/` | Runs ControlExample (`bin/controlexample`); `-snap <dir>` writes a PNG per tab and exits (Windows: `make win-snap-update` / `win-snap-check` in the CrossOver bottle, references `tests/snapshots_windows`) |
+| `cmd/jfacedemo/` | A form built only from JFace's widget and layout factories; `bin/jfacedemo <png>` writes a snapshot and exits |
+| `tests/jfacetests/` | JFace's JUnit tests for `layout` and `widgets` (`make test-jface`) |
+| `tests/swttests/` | SWT's JUnit tests (`graphics`, `layout`, `events`), translated by j2go; results in `tests/RESULTS.md` |
+| `internal/junit/` | JUnit 5 shim for the translated tests: assertions, assumptions, the test registry |
+| `cmd/swttest/` | Runs the translated tests on the main thread with one Display (`make test-swt`) |
+
+`ImageLoader`/`ImageData` translate from SWT as usual, but the PNG/GIF/BMP/JPEG codec backend
+behind them is hand-written over Go's stdlib `image` codecs plus `golang.org/x/image/bmp`, not
+translated from SWT's own `internal.image` package - see `tooling/j2go/README.md` "Round 9 images".
+
+## JFace
+
+`jface/` is JFace's fluent factories: `jface.WidgetFactoryButton(swt.PUSH).Text("OK").LayoutData(...).OnSelect(...).Create(parent)` returns a `*swt.Button`,
+`jface.GridLayoutFactoryFillDefaults().NumColumns(2).Create()` a `*swt.GridLayout`, `jface.NewTableColumnLayout()` a column layout for a table (`cmd/jfacedemo`).
+Java's self-typed generics (`F extends AbstractWidgetFactory<F,...>`) are erased by j2go; typed forwarding methods restore the chaining and the result types
+(`tooling/j2go/README.md` "Round 22"). Regenerate with `make gen` (needs `UI_REPO`, default `~/Develop/repos/eclipse.platform.ui`; the unit runs for cocoa only, the
+output is shared). `make test-jface` runs JFace's translated tests (on a new OS the first run is `make test-jface-update`). Not translated: `BrowserFactory` (hand-written in `browser/`),
+viewers, dialogs, resources (later slices).
+
+## WebView
+
+`webview/` (hand-written, not translated) puts the system web view in a Composite: `wv, err := webview.New(parent, webview.Options{})`, then `wv.Control().SetLayoutData(...)`,
+`Navigate`, `SetHTML`, `Eval(js, func(jsonResult, err))` (async), `AddScript` (before page scripts), `HandleScheme("app", func(Request) *Response)` (serve an `embed.FS`, no
+localhost) and `OnMessage` for the page's `window.gowt.postMessage(...)`; navigation and title events are fields (`OnNavigationFinished`, ...). The native view is created at the
+first load, so `HandleScheme` and `AddScript` come before it. UI thread only. macOS is WKWebView over purego (`internal/cocoa/webkit_manual.go`); `evaluateJavaScript` needs an ObjC
+block, made by `cocoa.NewBlock` (`block_manual.go`: a global block whose invoke is a shared purego callback). Windows and Linux return "not implemented" for now. `cmd/webviewdemo`
+is a Tree beside a web view. Headless check (no window, no activation): `GOWT_WK_HEADLESS=1 go test ./internal/cocoa -run WKViewHeadless`.
+
+## SWT Browser
+
+`browser/` is `org.eclipse.swt.browser` (`Browser`, `BrowserFunction`, the location/progress/title/... listeners): SWT's common layer translated by j2go, with package `webview` as the
+engine in place of SWT's WebKit/Edge/WebKitGTK classes (`browser/webbrowser_manual.go`; its Java-side declaration is `tooling/j2go/stubs/org/eclipse/swt/browser/WebViewBrowser.java`).
+`browser.NewBrowser(shell, swt.NONE)` uses the Browser itself as the host Composite. `evaluate`/`execute`/`getText` are synchronous: they run the UI event loop until the page answers (5 s limit).
+`BrowserFunction`s are defined by a script that runs at the start of every page and calls back through `window.gowt.call`, a synchronous page-to-Go call (`WebView.SetCallHandler`; WKWebView
+carries it on `window.prompt`). Optional engine features (`webview/optional.go`: history queries, `Stop`, the navigation policy that lets `LocationListener.changing` cancel, the call handler)
+are implemented on macOS only for now; `evaluate`, `execute` and `getText` called from inside a `BrowserFunction` throw at once (the page is blocked in the call, so the script could not run; known gap); without them `back`/`forward` always go, `changing` cannot cancel and BrowserFunctions return `undefined`. Not available: OpenWindow, CloseWindow,
+VisibilityWindow, Authentication and StatusText events, post data and headers in `setUrl`, `setJavascriptEnabled`, the cookie statics.
+`Test_org_eclipse_swt_browser_Browser` is translated with the other tests (`EchoHttpServer` over `internal/jrt/http.go`); `make gen` translates `browser/` for cocoa only, the output is shared.
+
+## Build
+
+```sh
+make            # vet, test, xcheck (shared code builds for windows/linux), api-check, build every cmd/* into bin/
+make gen        # rebuild j2go and regenerate swt/, internal/cocoa/, examples/ (needs SWT_REPO; PLATFORM=cocoa is the only one so far)
+make run-hello  # build and run cmd/hello
+make test-swt   # run the translated SWT JUnit tests (SWTTEST_FLAGS="-run GC -json")
+make test-jface # run the translated JFace layout/widgets tests
+```
+
+`SWT_REPO` defaults to `~/Develop/repos/eclipse.platform.swt`. Everything builds with `CGO_ENABLED=0`.
+
+Files `swt/*.go`, `examples/*/*.go` and `tests/swttests/*.go` with the header `Code generated by j2go` are regenerated by the translator and
+are not edited by hand; `make gen` also copies the example's images and `.properties` next to them.
+Hand-written code lives in `*_manual.go`.
+
+## Platforms
+
+In `swt/` files built for one OS carry its suffix (`_darwin.go`, `_windows.go`, `_linux.go`), unsuffixed files are shared; `internal/cocoa` is tagged `//go:build darwin`. Only darwin exists:
+`GOOS=windows|linux go build ./...` fails on `swt` for lack of platform code, while `internal/jrt`, `internal/junit`, `internal/snapcmp`,
+`cmd/snapcheck` and `tooling/apidump` build (`make xcheck`). Layout, the public-API rule and what a new port provides first:
+`tooling/j2go/README.md` "Round 19".
+
+## Linux stand
+
+Docker image (Debian 13, Go from `go.mod`, GTK 3.24, GIR files, Xvfb + openbox + x11vnc + noVNC, weston) for the gtk port; no window ever opens on the host.
+
+```sh
+make linux-image                       # build (arm64 native; amd64 host: same Dockerfile)
+make linux-vnc                         # start the container, prints http://localhost:6080/vnc.html
+make linux-run CMD="python3 tooling/linux/hello.py"   # runs with DISPLAY=:99, repo at /src
+make gtk-gen                           # regenerate internal/gtk from the GIR files and diff the struct layouts against the C compiler
+make linux-shell
+```
+
+Linux `make test-swt` runs inside as `make linux-run CMD="make test-swt"` (DISPLAY=:99 is preset; Go cache in volumes `gowt-gocache`, `gowt-gomod`).
+GIR files are in `/usr/share/gir-1.0` (Gtk-3.0, Gdk-3.0, GObject-2.0, GLib-2.0, Gio-2.0, Pango-1.0, cairo-1.0, Atk-1.0, plus Gtk-4.0 and Graphene for the GTK 4 names).
+Snapshots: `make linux-run CMD="make snap-update"` / `snap-check` capture the ControlExample tabs (`cmd/controlexample -snap`, window read back through GDK in `internal/shot`)
+against `tests/snapshots_linux` (`SNAPDIR`; `tests/snapshots` is darwin's). `meta.txt` holds the GTK version, scale and screen size; a different environment skips the comparison.
+`cmd/swttest` keeps every shell on the primary monitor (a Display filter moves shells that lie entirely outside it) and `controlexample -snap` places its window there, so multi-monitor setups with mixed scales stay deterministic; `meta.txt` records the scale of the screen the window is on.
+Wayland: `weston --backend=headless --socket=wayland-1` with `WAYLAND_DISPLAY=wayland-1 GDK_BACKEND=wayland` starts GTK apps, but it is not wired into the stand and has no seat/cursor theme (input and snapshots only via X11).
+Limits: one shared X screen 1280x1024, no GPU, VNC without password on localhost:6080, image ~1.9 GB.
+
+License: EPL-2.0, see `LICENSE` and `NOTICE`.

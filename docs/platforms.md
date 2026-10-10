@@ -1,6 +1,35 @@
 # Platforms
 
-Source of truth for numbers: `tests/expected.txt` (darwin), `tests/expected_windows.txt`, `tests/expected_linux.txt` (3342 lines each, reasons per non-pass line) and
+## For app authors
+
+Same Go program, three native back ends. What differs:
+
+| | macOS | Windows | Linux |
+|---|---|---|---|
+| Toolkit | AppKit | Win32 | GTK 3 (X11 or XWayland) |
+| Cross-compile | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all with `CGO_ENABLED=0`, from any host) |
+| Verified on | real Mac | CrossOver/Wine only, never real Windows | Docker with Xvfb, not a real desktop |
+| Web view | WKWebView | WebView2 Runtime (preinstalled on Windows 11) | WebKitGTK 4.1 |
+| Glass, backdrop | Liquid Glass (macOS 26), translucent material | Mica/Acrylic (Windows 11), untested on real hardware | none |
+| System tray | `App.Tray` returns nil where the system has none; not checked per OS | same | same |
+| Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
+| Menu bar | application menu bar | window menu bar | window menu bar |
+
+Missing on every platform in the facade: Clipboard, drag and drop, `StyledText`, `Accessible` (swt level only, being integrated). On Linux `Accessible` (ATK) is a stub; on Windows it is a stub too. On Windows the program should import `_ "github.com/haiodo/gowt/winmanifest"`, see [install.md](install.md).
+
+Test counts per OS (lines in `tests/expected*.txt`, SWT's translated JUnit tests, `make test-swt`):
+
+| | pass | fail | skip |
+|---|---|---|---|
+| macOS (`expected.txt`) | 3492 | 30 (+2 flaky) | 26 |
+| Windows (`expected_windows.txt`, Wine) | 3275 | 232 | 43 |
+| Linux (`expected_linux.txt`) | 3497 | 33 | 20 |
+
+JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pass, 2 fail on Linux.
+
+The sections below are the port status written earlier; the counts inside them predate the table above and are kept as history.
+
+Source of truth for numbers: `tests/expected.txt` (darwin), `tests/expected_windows.txt`, `tests/expected_linux.txt` (reasons per non-pass line) and
 `tooling/j2go/README.md` rounds 19-20. The same translator output (`swt/*.go` shared + `_darwin`/`_windows`/`_linux` files) builds on all three; one `swt` API.
 
 | | macOS (cocoa) | Windows (win32) | Linux (gtk 3) |

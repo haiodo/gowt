@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -50,7 +50,7 @@ vet:
 test:
 	go test ./...
 
-check: vet test xcheck api-check
+check: vet test xcheck examples-check api-check
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
@@ -60,6 +60,11 @@ xcheck:
 	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview ./look ./icons || exit 1; done
 	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go look/*.go icons/*.go jface/*.go browser/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
+
+# The documented examples (docs/*.md) build and vet for every OS; controlexample is the translated SWT one and is not a doc example.
+EXAMPLES := $(filter-out controlexample,$(notdir $(wildcard examples/*)))
+examples-check:
+	@for os in darwin windows linux; do for e in $(EXAMPLES); do GOOS=$$os go vet ./examples/$$e || exit 1; done; done
 
 # The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).
 # Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).
@@ -159,7 +164,7 @@ win-snap-update: win-build snapcheck
 	$(WINSNAPRUN)
 	./$(BIN)/snapcheck -update -ref $(WINSNAPDIR) -got $(BIN)/snap/got
 
-# Linux GUI stand (Docker + Xvfb + noVNC), see README "Linux stand".
+# Linux GUI stand (Docker + Xvfb + noVNC), see docs/internals.md "Linux stand".
 LINUX_IMG = gowt-linux
 LINUX_CTR = gowt-linux
 

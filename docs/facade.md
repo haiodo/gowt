@@ -53,6 +53,8 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 
 ## jface integration (note only, nothing implemented)
 
+User-level page: [jface.md](jface.md).
+
 jface factories take the parent as `swt.CompositeLike` and return the swt widget
 (`ButtonFactory.Create(parent) *swt.Button`). From gowt they plug in through `Unwrap()`:
 `jface.ButtonFactoryNewButton(swt.PUSH).Text("x").Create(panel.Unwrap())`. The result is a plain swt

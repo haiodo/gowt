@@ -57,11 +57,15 @@ Four ideas carry the whole API:
 | Theme and platform look | [theme-look.md](theme-look.md) | [`examples/theme`](../examples/theme) |
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
 | Web view and Browser | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview), [`examples/browser`](../examples/browser) |
+| Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |
+| JFace factories | [jface.md](jface.md) | [`examples/jface`](../examples/jface) |
+| Packaging and distribution | [packaging.md](packaging.md) | - |
 | Using swt directly | [swt-direct.md](swt-direct.md) | [`examples/swtdirect`](../examples/swtdirect) |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |
 
 Reference material:
 
+- [screenshots.md](screenshots.md): how `docs/img` is produced (`GOWT_SNAP`, `make docs-shots`).
 - Package docs: `go doc github.com/haiodo/gowt` (every exported name has a doc comment).
 - [facade.md](facade.md): why the API looks the way it does.
 - [internals.md](internals.md): repository map, the Java-to-Go translator, how the ports are built. Only needed to work on gowt itself.

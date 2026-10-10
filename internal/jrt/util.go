@@ -2,6 +2,7 @@ package jrt
 
 import (
 	"reflect"
+	"slices"
 	"sort"
 	"sync"
 	"time"
@@ -159,6 +160,7 @@ func (l *List) Poll() any {
 		return nil
 	}
 	v := l.items[0]
+	l.items[0] = nil
 	l.items = l.items[1:]
 	return v
 }
@@ -190,7 +192,8 @@ func (l *List) Remove(v any) bool {
 	defer l.mu.Unlock()
 	for i, e := range l.items {
 		if keysEqual(e, v) {
-			l.items = append(l.items[:i], l.items[i+1:]...)
+			// slices.Delete zeroes the vacated slot: append would leave the removed element reachable from the backing array.
+			l.items = slices.Delete(l.items, i, i+1)
 			return true
 		}
 	}

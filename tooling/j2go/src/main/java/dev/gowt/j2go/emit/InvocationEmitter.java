@@ -294,6 +294,10 @@ final class InvocationEmitter {
 		// `Class<?> clazz = getClass(); new Callback(clazz, ...)`: the local is otherwise unused.
 		if (recv instanceof SimpleName) emitter.prelude.add("_ = " + emitter.expr(recv));
 		ITypeBinding cls = recv instanceof TypeLiteral tl ? tl.getType().resolveBinding() : emitter.currentClassInfo.binding;
+		if (recv instanceof SimpleName) {
+			String inlined = emitter.localClassCallback(recv.resolveTypeBinding(), name.getLiteralValue(), n, cic);
+			if (inlined != null) return inlined;
+		}
 		IMethodBinding target = findCallbackTarget(cls, name.getLiteralValue(), n);
 		if (target == null) {
 			emitter.unsupported.add("ClassInstanceCreation: Callback target not found " + cic);
@@ -404,6 +408,10 @@ final class InvocationEmitter {
 			if (qualified.equals("org.eclipse.swt.internal.Callback")) return emitCallback(cic);
 			// A bare lock object (`trackingLock = new Object()`): only its identity matters.
 			if (qualified.equals("java.lang.Object")) return "any(&struct{}{})";
+			// A method-only local class has no Go type: its one use is a Callback target (FunctionalEmitter.localClassCallback).
+			if (declaring.isLocal() && !declaring.isAnonymous() && cic.arguments().isEmpty()
+					&& ((CompilationUnit) cic.getRoot()).findDeclaringNode(declaring) instanceof TypeDeclaration td
+					&& FunctionalEmitter.isMethodOnlyLocalClass(td)) return "any(&struct{}{})";
 			String exception = newJavaException(qualified, cic);
 			if (exception != null) return exception;
 			// new String(char[]): the only java.lang.String constructor used in the translated

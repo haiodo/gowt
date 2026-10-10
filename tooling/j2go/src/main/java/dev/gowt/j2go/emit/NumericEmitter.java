@@ -358,6 +358,12 @@ final class NumericEmitter {
 		if (fromGo.equals("any") && emitter.degradesUnresolvedTypes() && !text.equals("nil")
 				&& (from.getErasure().getQualifiedName().startsWith("org.eclipse.swt.") || from.isLocal() && !from.isAnonymous()
 				|| from.isAnonymous() && from.getSuperclass().getQualifiedName().equals("java.lang.Thread"))) return text + ".(" + toGo + ")";
+		// A nil *Class converted to a Go interface is a non-nil interface: `x == null` on the interface would then be false.
+		if (to.isInterface() && fromCi != null && !fromCi.isInterface && !from.isAnonymous() && fromGo.startsWith("*")
+				&& !toGo.equals("any") && !text.equals("nil") && !text.startsWith("&") && !text.equals("this")
+				&& !text.matches("(?:New|new)\\w*\\(.*")) {
+			return ensureUpcastHelper(fromGo, toGo, "x") + "(" + text + ")";
+		}
 		String toQualified = to.getErasure().getQualifiedName();
 		if (!isProperDescendant(from.getErasure().getQualifiedName(), toQualified)) return text;
 		// cocoa's id: its embedded-field selector name (x.id) is unexported and cross-package-

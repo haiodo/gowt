@@ -1,5 +1,6 @@
 package dev.gowt.j2go.emit;
 
+import dev.gowt.j2go.TypeModel;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -231,7 +232,11 @@ final class JdkCalls {
 			// Object.hashCode() through an interface- or Object-typed receiver: the receiver's own HashCode() if it has one.
 			case "java.lang.Object#hashCode":
 				emitter.fileImports.add(JRT);
-				return "jrt.HashCodeOf(" + recv(mi) + ")";
+				// A class tree dispatching through impl: the leaf may define HashCode, the base pointer does not carry it.
+				ITypeBinding hashRecvType = mi.getExpression() != null ? mi.getExpression().resolveTypeBinding() : null;
+				TypeModel.ClassInfo hashRci = hashRecvType != null ? emitter.model.lookup(hashRecvType) : null;
+				boolean hashViaImpl = hashRci != null && !hashRci.isInterface && hashRci.root.splitsDispatch() && hashRci.root.hasImpl();
+				return "jrt.HashCodeOf(" + recv(mi) + (hashViaImpl ? ".Impl()" : "") + ")";
 			case "java.util.Comparator#comparingInt":
 				emitter.fileImports.add(JRT);
 				return "jrt.ComparingInt(" + arg(mi, 0) + ")";

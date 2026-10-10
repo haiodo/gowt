@@ -40,6 +40,8 @@ type webViewBrowser struct {
 	inCall int
 	// inOpen counts OpenWindow listener runs: the page that called window.open is blocked then.
 	inOpen int
+	// starting: Prestart began the engine; started: it is up (or failed).
+	starting, started bool
 	// popup: this Browser takes a window opened by a page; shown: its VisibilityWindow Show has fired.
 	popup, shown bool
 	// navigated: a load was asked for; blank: 1 while ensurePage loads the page evaluate needs, 2 when it is done.
@@ -94,7 +96,16 @@ func (w *webViewBrowser) open() error {
 	w.policy = wv.SetNavigationPolicy(w.decide)
 	wv.SetCallHandler(w.handleCall)
 	wv.AddScript(preamble)
+	w.starting = wv.Prestart(func() { w.started = true })
 	return nil
+}
+
+// waitStarted lets the engine that starts in the background (see Prestart) finish before a load: the load's
+// events then follow it at once, as with SWT's Edge, which waits for its WebView2 in the same place.
+func (w *webViewBrowser) waitStarted() {
+	if w.starting && !w.started && !w.popup {
+		w.pump(func() bool { return w.started })
+	}
 }
 
 func (w *webViewBrowser) create_(parent *swt.Composite, style int32) {
@@ -115,6 +126,7 @@ func (w *webViewBrowser) getBrowserType_() string {
 func (w *webViewBrowser) setUrl_(url string, postData string, headers []string) bool {
 	w.html = ""
 	w.navigated = true
+	w.waitStarted()
 	w.applyScripts()
 	u := escapeURL(normalizeURL(url))
 	hd := parseHeaders(headers)
@@ -162,6 +174,7 @@ func (w *webViewBrowser) applyScripts() {
 func (w *webViewBrowser) setText_(html string, trusted bool) bool {
 	w.html = html
 	w.navigated = true
+	w.waitStarted()
 	w.applyScripts()
 	w.wv.SetHTML(html, "")
 	return true
@@ -546,6 +559,7 @@ func (w *webViewBrowser) ensurePage() {
 		return
 	}
 	w.navigated = true
+	w.waitStarted()
 	w.blank = 1
 	w.wv.SetHTML("", "")
 	w.pump(func() bool { return w.blank == 2 })

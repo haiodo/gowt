@@ -3400,7 +3400,11 @@ was the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption ne
   methods, helper or override, goes through its func field (`FunctionalEmitter.anonMethodField`).
 - **`os.name`.** `System.getProperty("os.name")` reads `jrt.SystemProperties`, which starts with the JDK name of `runtime.GOOS` ("Mac OS X", "Linux",
   "Windows 10"). The shared generated files are translated once, so the constant "Mac OS X" had turned off every upstream `isLinux`/`isWindowsOS` skip.
-  `@DisabledOnOs` is still decided at translation time (Round 24 dnd).
+  `@DisabledOnOs` is still decided at translation time (Round 24 dnd). `System.lineSeparator()` is `jrt.LineSeparator()` ("\r\n" on Windows) for the same
+  reason: StyledText's platform delimiter was "\n" everywhere.
+- **Null tests on foreign subclasses.** `delegate != null` on a subclass of a PI class (SWTAccessibleDelegate extends NSObject) was upcast to the base first,
+  `delegate.NSObject != nil`, which dereferences a nil delegate (Accessible.release on macOS). A comparison with null tests the pointer; an upcast of a named
+  subclass to its foreign base goes through a nil-checked `upcast<From>To<Base>` helper.
 - Accessible on gtk stays a manual type (`Manual.GTK_ONLY`); the StyledText stand-ins for dnd and Accessible are removed. `port.sh` copies the `.html`
   test resource (`testWebsiteWithTitle.html`; the Browser tests that load a local page panicked on the nil stream).
 - **Linux result** (Xvfb, full gate, passed / failed / skipped of 3901): 3808 / 34 / 59 with the old `os.name`, 3808 / 38 / 55 with the new one (the

@@ -14,13 +14,12 @@ org.eclipse.swt.browser.Browser#createWebBrowser(org.eclipse.swt.widgets.Composi
 org.eclipse.swt.browser.Browser.WebViewUnavailableDialog
 
 # Test_org_eclipse_swt_browser_Browser (tests/swttests/browser_manual.go): JVM diagnostics (verbose runs only, and the Linux
-# /proc/self/fd listing), and the test of setJavascriptEnabled, whose null Boolean a Go bool cannot hold.
+# /proc/self/fd listing).
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printSystemEnv()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printMemoryUse()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printThreadsInfo()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getOpenedDescriptors()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getPropertiesSafe()
-org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#test_setJavascriptEnabled()
 
 # ClipboardBase (tests/swttests/clipboard_manual.go): openAndFocusShell is hand-written without its Wayland button-press branch, the only user of
 # the null Boolean skipTestsRequiringButtonPress. RemoteClipboard (RMI to a Swing JVM) is a hand-written skip stub.

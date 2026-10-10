@@ -24,6 +24,9 @@ final class TypeTestEmitter {
 		if (t.isPrimitive() && (cv instanceof Byte || cv instanceof Short || cv instanceof Integer || cv instanceof Long)) {
 			return dev.gowt.j2go.GoTypes.map(t, emitter) + "(" + cv + ")";
 		}
+		// A nullable Boolean/Integer local keeps the Object as it is (EmitUtil.isNullableBox).
+		if (ce.getParent() instanceof Assignment as && as.getRightHandSide() == ce && as.getLeftHandSide() instanceof SimpleName ln
+				&& ln.resolveBinding() instanceof IVariableBinding lv && EmitUtil.isNullableBox(lv, as)) return emitter.expr(ce.getExpression());
 		String expr = emitter.expr(ce.getExpression());
 		// (Display) null: a disambiguating cast Java needs to pick an overload, not a runtime
 		// check - Go's nil has no interface to assert against, so this stays bare "nil".

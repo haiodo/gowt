@@ -54,6 +54,7 @@ type View struct {
 	handlers         []uintptr
 	id               uintptr
 	failed           bool
+	stopped          bool
 	callMark         string
 	disposed         bool
 	related          bool
@@ -107,7 +108,7 @@ func initCallbacks() {
 		}
 		switch int32(event) {
 		case 0: // WEBKIT_LOAD_STARTED
-			v.failed = false
+			v.failed, v.stopped = false, false
 			if v.NavStarted != nil {
 				v.NavStarted(v.URL())
 			}
@@ -119,8 +120,9 @@ func initCallbacks() {
 	})
 	cbFailed = purego.NewCallback(func(_, _, uri, gerr, id uintptr) uintptr {
 		if v := lookupView(id); v != nil && !v.disposed {
-			v.failed = true
-			if v.NavFailed != nil {
+			// A load that Stop cancelled (WEBKIT_NETWORK_ERROR_CANCELLED) still ends: SWT reports it completed.
+			v.failed = !(v.stopped && *(*int32)(cptr(gerr + 4)) == 302)
+			if v.NavFailed != nil && v.failed {
 				// GError: guint32 domain, gint code, gchar *message.
 				v.NavFailed(goString(uri), goString(*(*uintptr)(cptr(gerr + 8))))
 			}
@@ -314,7 +316,10 @@ func (v *View) LoadHTML(html, baseURL string) {
 func (v *View) GoBack()    { webkit_web_view_go_back(v.widget) }
 func (v *View) GoForward() { webkit_web_view_go_forward(v.widget) }
 func (v *View) Reload()    { webkit_web_view_reload(v.widget) }
-func (v *View) Stop()      { webkit_web_view_stop_loading(v.widget) }
+func (v *View) Stop() {
+	v.stopped = true
+	webkit_web_view_stop_loading(v.widget)
+}
 
 func (v *View) CanGoBack() bool    { return webkit_web_view_can_go_back(v.widget) != 0 }
 func (v *View) CanGoForward() bool { return webkit_web_view_can_go_forward(v.widget) != 0 }

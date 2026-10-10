@@ -1317,6 +1317,45 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrlWithNullArg() {
 	})
 }
 
+func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled() {
+	var pageLoadCount *jrt.AtomicInteger = jrt.NewAtomicInteger(0)
+	var testFinished *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
+	var testPassed *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
+	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
+		pageLoadCount.IncrementAndGet()
+		if pageLoadCount.Get() == 1 {
+			this.browser.SetJavascriptEnabled(false)
+			this.browser.SetText("Second page with javascript disabled")
+		} else {
+			if pageLoadCount.Get() == 2 {
+				var expectedNull any
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if e, ok := r.(error); ok {
+							_ = e
+							junit.Fail("1) if javascript is disabled, browser.evaluate() should return null. But an Exception was thrown")
+						} else {
+							panic(r)
+						}
+					}()
+					expectedNull = this.browser.Evaluate("return true")
+				}()
+				junit.AssertNull(expectedNull)
+				testPassed.Set(true)
+				testFinished.Set(true)
+			}
+		}
+	}))
+	this.shell.Open()
+	this.browser.SetText("First page with javascript enabled. This should not be visible as a second page should load")
+	this.WaitForPassCondition(testFinished.Get)
+	junit.AssertTrue(testPassed.Get())
+}
+
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_multipleInstances() {
 	var pageLoadCount *jrt.AtomicInteger = jrt.NewAtomicInteger(1)
 	var pageLoadCountSecondInstance *jrt.AtomicInteger = jrt.NewAtomicInteger(1)
@@ -1333,7 +1372,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_mult
 		} else {
 			if pageLoadCount.Get() == 2 {
 				pageLoadCount.Set(3)
-				var shouldBeNull bool = this.browser.Evaluate("return true").(bool)
+				var shouldBeNull any = this.browser.Evaluate("return true")
 				junit.AssertNull(shouldBeNull)
 				instanceOneFinishedCorrectly.Set(true)
 			}

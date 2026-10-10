@@ -188,6 +188,14 @@ final class StatementEmitter {
 			ITypeBinding fragType = f.resolveBinding() != null ? f.resolveBinding().getType() : declType;
 			String goType = dev.gowt.j2go.GoTypes.map(fragType, emitter);
 			String name = emitter.sanitizeIdent(f.getName().getIdentifier());
+			if (EmitUtil.isNullableBox(f.resolveBinding(), f)) {
+				// A Go bool could not be null, so the value stays as it came.
+				Expression init = f.getInitializer() == null ? null : EmitUtil.unparen(f.getInitializer());
+				b.append(ind(indent)).append("var ").append(name).append(" any");
+				if (init instanceof CastExpression ce) b.append(" = ").append(emitExprInto(ce.getExpression(), b, indent));
+				b.append('\n');
+				continue;
+			}
 			if (EmitUtil.HOISTED.contains(f.resolveBinding())) {
 				if (f.getInitializer() != null) b.append(ind(indent)).append(name).append(" = ")
 						.append(emitter.adaptNumeric(emitExprInto(f.getInitializer(), b, indent), f.getInitializer().resolveTypeBinding(), fragType)).append('\n');

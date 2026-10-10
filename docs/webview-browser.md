@@ -60,7 +60,7 @@ b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.Loc
 - Windows `SetCookie` passes `Expires` as a double argument of a COM call through Go's syscall stub; that path has never run.
 - `Evaluate`, `Execute` and `GetText` called from inside a `BrowserFunction` throw at once.
 - History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and the call handler behind `BrowserFunction` (`WebView.SetCallHandler`) are implemented for all three engines (`webview_darwin.go`, `webview_linux.go`, `webview_windows.go`).
-- Browser tests (`tests/expected*.txt`): Linux 198 pass, 3 fail and 8 skipped of 209 (the three: two use an anonymous subclass of the test helper `EchoHttpServer`, which the translator does not dispatch to, and one assigns a null `Boolean` to a Go `bool`). macOS: the listed gaps are implemented but not yet run there. On Windows all 209 Browser tests fail in the CrossOver bottle because it has no WebView2 Runtime, so Browser results exist only for macOS and Linux.
+- Browser tests (`tests/expected*.txt`): Linux 201 pass and 0 fail of 209 (8 skipped). macOS: the listed gaps are implemented but not yet run there.
 - Linux: WebKitGTK does not report which frame navigates, so the navigation policy always gets `mainFrame=true`.
 - Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) has never run on a real Windows.
 - The examples in this repository were type-checked for the three OSes but not run.

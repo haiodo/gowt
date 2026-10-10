@@ -325,7 +325,8 @@ final class NumericEmitter {
 	/** Go has no covariant object assignment: a value whose static type is a proper descendant of
 	 * the target (real or manual chain, e.g. `control = control.parent`) needs an explicit upcast. */
 	String upcastObject(String text, ITypeBinding from, ITypeBinding to) {
-		if (from.isPrimitive() || to.isPrimitive()) return text;
+		// x == null tests the Go pointer itself: an upcast to a foreign base (x.NSObject) would dereference a nil x.
+		if (from.isPrimitive() || to.isPrimitive() || to.isNullType()) return text;
 		if (from.isArray() && to.isArray()) return upcastArray(text, from, to);
 		// `var s = new Base() {...}` is typed by Base (GoTypes.map).
 		if (to.isAnonymous() && to.getSuperclass() != null && !to.getSuperclass().getQualifiedName().equals("java.lang.Object")) to = to.getSuperclass();
@@ -338,6 +339,11 @@ final class NumericEmitter {
 					&& !(!baseCi.splitsDispatch() && to.getErasure().getQualifiedName().equals("java.lang.Object"))) {
 				// Same-package anonymous classes embed the base by value, its impl still dispatches to the anonymous type.
 				boolean sameGoPackage = baseCi.goPackage.equals(emitter.currentGoPackage);
+				if (!sameGoPackage && !from.isAnonymous()) {
+					// A named subclass embeds the foreign base by pointer; a nil one upcasts to nil, as Java's null does.
+					String helper = ensureUpcastHelper(dev.gowt.j2go.GoTypes.map(from, emitter), dev.gowt.j2go.GoTypes.map(foreignBase, emitter), "x." + baseCi.goTypeName);
+					return upcastObject(helper + "(" + text + ")", foreignBase, to);
+				}
 				if (!sameGoPackage || from.isAnonymous()) {
 					return upcastObject((sameGoPackage ? "&" : "") + text + "." + baseCi.goTypeName, foreignBase, to);
 				}

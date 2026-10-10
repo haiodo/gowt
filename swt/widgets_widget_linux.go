@@ -1807,7 +1807,7 @@ func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
 	for _, eventType := range eventTypes {
-		this.impl._addListener_(eventType, typedListener)
+		this.impl._addListener_(eventType, upcastTypedListenerToListener(typedListener))
 	}
 }
 
@@ -4274,4 +4274,11 @@ func WidgetGdkSeatGrabPrepareFunc(gdkSeat int64, gdkResource int64, userData_gdk
 		}
 	}
 	return int64(0)
+}
+
+func upcastTypedListenerToListener(x *TypedListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
 }

@@ -20,8 +20,23 @@ type navigationPolicy interface {
 	setNavigationPolicy(f func(url string, mainFrame bool) bool)
 }
 
+type prestarter interface {
+	prestart(done func())
+}
+
 type callHandler interface {
 	setCallHandler(f func(msg string) string)
+}
+
+// Prestart creates the native view now instead of at the first load and calls done once it is ready or has
+// failed; it reports false, without calling done, on an engine that has nothing to prepare. Like the first
+// load, it ends HandleScheme and AddScript.
+func (w *WebView) Prestart(done func()) bool {
+	p, ok := w.e.(prestarter)
+	if ok {
+		p.prestart(done)
+	}
+	return ok
 }
 
 // CanGoBack and CanGoForward report whether the history has an entry to go to; known is false when

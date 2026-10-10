@@ -112,7 +112,7 @@ func (this *ScrolledCompositeLayout) layoutFn_(composite *Composite, flushCache 
 	if sc.expandVertical {
 		contentRect.Height = int32(math.Max(float64(sc.minHeight), float64(hostRect.Height)))
 	}
-	var gc *GC = NewGCDrawable(sc)
+	var gc *GC = NewGCDrawable(upcastScrolledCompositeToDrawable(sc))
 	if hBar != (nil) {
 		hBar.SetMaximum(contentRect.Width)
 		hBar.SetThumb(int32(math.Min(float64(contentRect.Width), float64(hostRect.Width))))
@@ -175,4 +175,11 @@ func castCompositeToScrolledComposite(x *Composite) *ScrolledComposite {
 		panic("java.lang.ClassCastException: ScrolledComposite")
 	}
 	return v
+}
+
+func upcastScrolledCompositeToDrawable(x *ScrolledComposite) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

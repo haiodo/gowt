@@ -250,6 +250,35 @@ final class FunctionalEmitter {
 		return sb.toString();
 	}
 
+	// ---------------------------------------------------------------- local classes
+
+	/** A local class that only declares methods, no supertype: it has no Go type, its methods are reached through a Callback. */
+	static boolean isMethodOnlyLocalClass(TypeDeclaration td) {
+		if (td.getSuperclassType() != null || !td.superInterfaceTypes().isEmpty()) return false;
+		for (Object o : td.bodyDeclarations()) if (!(o instanceof MethodDeclaration md) || md.isConstructor()) return false;
+		return true;
+	}
+
+	/** `new Callback(local, "name", n)` where local's class is a method-only local class: the method body inlined as the callback closure
+	 * (captured locals stay Go closure captures). Null when the shape is not that. */
+	String localClassCallback(ITypeBinding cls, String name, int n, ASTNode at) {
+		if (cls == null || !cls.isLocal() || cls.isAnonymous()) return null;
+		ASTNode decl = ((CompilationUnit) at.getRoot()).findDeclaringNode(cls);
+		if (!(decl instanceof TypeDeclaration td) || !isMethodOnlyLocalClass(td)) return null;
+		for (Object o : td.bodyDeclarations()) {
+			MethodDeclaration md = (MethodDeclaration) o;
+			IMethodBinding mb = md.resolveBinding();
+			if (!md.getName().getIdentifier().equals(name) || md.parameters().size() != n || mb == null
+					|| !mb.getReturnType().getName().equals("long")) continue;
+			String fn = funcLiteral(mb, paramNames(md), md.getBody());
+			if (fn == null) return null;
+			List<String> args = new ArrayList<>();
+			for (int i = 0; i < n; i++) args.add("args[" + i + "]");
+			return "NewCallbackFn(func(args []int64) int64 { return (" + fn + ")(" + String.join(", ", args) + ") }, " + n + ")";
+		}
+		return null;
+	}
+
 	// ---------------------------------------------------------------- anonymous classes
 
 	/** Ceiling: an anonymous struct type isn't in the impl cascade - it is only dispatched to

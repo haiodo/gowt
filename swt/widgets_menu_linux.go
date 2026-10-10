@@ -328,7 +328,7 @@ func (this *Menu) createHandle_(index int32) {
 			this.Error(ERROR_NO_HANDLES)
 		}
 		var shellHandle int64 = this.parent.impl.getShell_().impl.topHandle_()
-		gtk.GTKGtk_widget_insert_action_group(shellHandle, gtk.ConverterJavaStringToCString(fmt.Sprint(jrt.HashCodeOf(this))), this.actionGroup)
+		gtk.GTKGtk_widget_insert_action_group(shellHandle, gtk.ConverterJavaStringToCString(fmt.Sprint(jrt.HashCodeOf(this.Impl()))), this.actionGroup)
 	} else {
 		if (this.style & BAR) != 0 {
 			this.Handle = gtk.GTK3Gtk_menu_bar_new()

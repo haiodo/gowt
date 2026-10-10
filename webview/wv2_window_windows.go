@@ -39,6 +39,10 @@ func (e *wv2Engine) setShowHandler(f func(WindowFeatures))             { e.show 
 func (e *wv2Engine) setCloseHandler(f func())                          { e.closeH = f }
 func (e *wv2Engine) setStatusHandler(f func(string))                   { e.status = f }
 
+func (e *wv2Engine) prestart(done func()) {
+	e.do(done, func(error) { done() })
+}
+
 func (e *wv2Engine) setScriptEnabled(on bool) {
 	e.script = &on
 	e.applyScript()
@@ -171,6 +175,7 @@ func (e *wv2Engine) refusePopup() {
 
 // loadRequest navigates with method, headers and body through ICoreWebView2_2.
 func (e *wv2Engine) loadRequest(r LoadRequest) {
+	e.flush()
 	e.do(func() {
 		v2 := queryInterface(e.view, iidWebView2_2)
 		env2 := queryInterface(e.env, iidEnvironment2)
@@ -244,12 +249,12 @@ func cookies(rawURL string, done func([]Cookie, bool)) {
 			out = append(out, Cookie{cookieString(c, 3), cookieString(c, 4)}) // get_Name, get_Value
 			release(c)
 		}
-		release(list)
 		done(out, true)
 	}, func() { done(nil, false) })
 }
 
-// getCookies asks for the cookies of uri ("" for all of the profile); f gets the list and owns the cookies in it.
+// getCookies asks for the cookies of uri ("" for all of the profile); f gets the list, which the runtime
+// still owns after the handler returns, and owns the cookies in it.
 func getCookies(cm uintptr, uri string, f func(list uintptr), failedFn func()) {
 	u := utf16Z(uri)
 	h := newHandler(func(hr, list uintptr) uintptr {
@@ -344,9 +349,14 @@ func clearSessionCookies(done func()) {
 			}
 			release(c)
 		}
-		release(list)
-		release(cm)
-		done()
+		// DeleteCookie has no completion: a GetCookies behind it is answered once the deletions are in.
+		getCookies(cm, "", func(uintptr) {
+			release(cm)
+			done()
+		}, func() {
+			release(cm)
+			done()
+		})
 	}, func() {
 		release(cm)
 		done()

@@ -361,7 +361,7 @@ func (this *CCombo) computeSizeWHintHHintChanged_(wHint int32, hHint int32, chan
 	this.CheckWidget()
 	var width int32 = 0
 	var height int32 = 0
-	var gc *GC = NewGCDrawable(this.text)
+	var gc *GC = NewGCDrawable(upcastTextToDrawable(this.text))
 	var spacer int32 = gc.StringExtent(" ").X
 	var textWidth int32 = gc.StringExtent(this.text.GetText()).X
 	for _, item := range this.list.GetItems() {
@@ -770,9 +770,9 @@ func (this *CCombo) InitAccessible() {
 		e.Result = this.impl.getToolTipText_()
 	}
 	var accessibleAdapter *AccessibleAdapter = &anon692.AccessibleAdapter
-	this.GetAccessible().AddAccessibleListener(accessibleAdapter)
-	this.text.GetAccessible().AddAccessibleListener(accessibleAdapter)
-	this.list.GetAccessible().AddAccessibleListener(accessibleAdapter)
+	this.GetAccessible().AddAccessibleListener(upcastAccessibleAdapterToAccessibleListener(accessibleAdapter))
+	this.text.GetAccessible().AddAccessibleListener(upcastAccessibleAdapterToAccessibleListener(accessibleAdapter))
+	this.list.GetAccessible().AddAccessibleListener(upcastAccessibleAdapterToAccessibleListener(accessibleAdapter))
 	anon693 := &CComboAnon2{}
 	anon693.initAccessibleAdapter()
 	anon693.fnGetName = func(e *AccessibleEvent) {
@@ -1662,6 +1662,13 @@ func upcastListToControl(x *List) *Control {
 	return &x.Control
 }
 
+func upcastTextToDrawable(x *Text) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 // j2go: instanceof helper for Label and its subclasses within the translated set.
 func widgetImplAsLabel(x any) (*Label, bool) {
 	if h, ok := x.(*widgetHooked); ok {
@@ -1770,6 +1777,13 @@ func (this *CComboAnon1) GetKeyboardShortcut(a0 *AccessibleEvent) {
 
 func (this *CComboAnon1) GetHelp(a0 *AccessibleEvent) {
 	this.fnGetHelp(a0)
+}
+
+func upcastAccessibleAdapterToAccessibleListener(x *AccessibleAdapter) AccessibleListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: anonymous AccessibleAdapter subclass.

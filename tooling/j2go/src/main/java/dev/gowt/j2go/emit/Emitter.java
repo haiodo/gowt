@@ -194,6 +194,10 @@ public class Emitter {
 		return functionalEmitter.emitMethodReference(emr);
 	}
 
+	String localClassCallback(ITypeBinding cls, String name, int n, ASTNode at) {
+		return functionalEmitter.localClassCallback(cls, name, n, at);
+	}
+
 	String emitAnonymous(ClassInstanceCreation cic) {
 		return functionalEmitter.emitAnonymous(cic);
 	}

@@ -365,7 +365,7 @@ func SwtTestUtilDumpShellState(out jrt.PrintStream) {
 		var indent *jrt.StringBuilder = jrt.NewStringBuilder()
 		for {
 			var bounds *swt.Rectangle = focusControl.GetBounds()
-			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{jrt.HashCodeOf(focusControl), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}))
+			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n", []any{jrt.HashCodeOf(focusControl.Impl()), bounds.X, bounds.Y, bounds.Width, bounds.Height, indent, focusControl}))
 			focusControl = upcastswtCompositeToswtControl(focusControl.GetParent())
 			indent.Append("  ")
 			if !(focusControl != (nil)) {
@@ -392,7 +392,7 @@ func SwtTestUtilDumpShellState(out jrt.PrintStream) {
 			} else {
 				cond7 = 'N'
 			}
-			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{jrt.HashCodeOf(shell), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}))
+			fmt.Fprint(out.(io.Writer), jrt.Format("  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n", []any{jrt.HashCodeOf(shell.Impl()), cond6, cond7, bounds.X, bounds.Y, bounds.Width, bounds.Height, shell.GetText()}))
 		}
 	}
 }
@@ -610,7 +610,7 @@ func SwtTestUtilHasPixelControlExpectedColorRect(controlLike swt.ControlLike, ex
 	_ = rect
 	var noOpGcDrawer swt.ImageGcDrawer = &ImageGcDrawerFunc{fn: func(gc *swt.GC, height int32, width int32) {
 	}}
-	var gc *swt.GC = swt.NewGCDrawable(control)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtControlToswtDrawable(control))
 	var image *swt.Image = swt.NewImageDeviceImageGcDrawerWidthHeight(upcastswtDisplayToswtDevice(control.GetDisplay()), noOpGcDrawer, control.GetSize().X, control.GetSize().Y)
 	gc.CopyArea(image, 0, 0)
 	gc.Dispose()
@@ -951,6 +951,13 @@ func (this *ImageGcDrawerFunc) GetGcStyle() int32 {
 
 func (this *ImageGcDrawerFunc) PostProcess(a0 *swt.ImageData) {
 	swt.ImageGcDrawerDefaultPostProcess(this, a0)
+}
+
+func upcastswtControlToswtDrawable(x *swt.Control) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func init() {

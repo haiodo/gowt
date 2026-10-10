@@ -32,7 +32,7 @@ func (this *Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider) Test_setL
 	this.AssertLineSpacingEquals([]int32{0, 0, 0, 0, 0})
 	inner126 := newTest_org_eclipse_swt_custom_StyledTextLineSpacingProviderIntegerLineSpacingProvider()
 	inner126.this_0 = this
-	this.styledText.SetLineSpacingProvider(inner126)
+	this.styledText.SetLineSpacingProvider(upcastTest_org_eclipse_swt_custom_StyledTextLineSpacingProvider_IntegerLineSpacingProviderToswtStyledTextLineSpacingProvider(inner126))
 	this.AssertLineSpacingEquals([]int32{0, 0, 45, 0, 57})
 	this.styledText.SetLineSpacingProvider(nil)
 	this.AssertLineSpacingEquals([]int32{0, 0, 0, 0, 0})
@@ -42,7 +42,7 @@ func (this *Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider) Test_repl
 	this.styledText.SetText("a\n45\nc\n57")
 	inner127 := newTest_org_eclipse_swt_custom_StyledTextLineSpacingProviderIntegerLineSpacingProvider()
 	inner127.this_0 = this
-	this.styledText.SetLineSpacingProvider(inner127)
+	this.styledText.SetLineSpacingProvider(upcastTest_org_eclipse_swt_custom_StyledTextLineSpacingProvider_IntegerLineSpacingProviderToswtStyledTextLineSpacingProvider(inner127))
 	this.AssertLineSpacingEquals([]int32{0, 0, 45, 0, 57})
 	this.styledText.ReplaceTextRange(2, 2, "b")
 	this.AssertLineSpacingEquals([]int32{0, 0, 0, 0, 57})
@@ -120,4 +120,11 @@ func (this *Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider_IntegerLin
 	}()
 	_ = tretd131
 	return tret130
+}
+
+func upcastTest_org_eclipse_swt_custom_StyledTextLineSpacingProvider_IntegerLineSpacingProviderToswtStyledTextLineSpacingProvider(x *Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider_IntegerLineSpacingProvider) swt.StyledTextLineSpacingProvider {
+	if x == nil {
+		return nil
+	}
+	return x
 }

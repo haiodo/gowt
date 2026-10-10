@@ -1072,7 +1072,7 @@ func (this *MenuItem) WmMeasureChild(wParam int64, lParam int64) *win32.LRESULT 
 }
 
 func (this *MenuItem) CalculateRenderedTextSize() *Point {
-	var gc *GC = NewGCDrawable(this.GetParent().GetShell())
+	var gc *GC = NewGCDrawable(upcastShellToDrawable(this.GetParent().GetShell()))
 	var textWithoutMnemonicCharacter string = strings.ReplaceAll(this.impl.getText_(), "&", "")
 	var points *Point = gc.TextExtent(textWithoutMnemonicCharacter)
 	gc.impl.dispose_()
@@ -1165,4 +1165,11 @@ func upcastMenuItem_MenuItemToolTipToToolTip(x *MenuItem_MenuItemToolTip) *ToolT
 		return nil
 	}
 	return &x.ToolTip
+}
+
+func upcastShellToDrawable(x *Shell) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

@@ -190,9 +190,9 @@ func (this *DragSource) AddDragListener(listener DragSourceListener) {
 	}
 	var typedListener *DNDListener = newDNDListener(listener)
 	typedListener.dndWidget = upcastDragSourceToWidget(this)
-	this.AddListener(DNDDragStart, typedListener)
-	this.AddListener(DNDDragSetData, typedListener)
-	this.AddListener(DNDDragEnd, typedListener)
+	this.AddListener(DNDDragStart, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragSetData, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragEnd, upcastDNDListenerToListener(typedListener))
 }
 
 func (this *DragSource) checkSubclass_() {
@@ -700,6 +700,13 @@ func upcastDragSourceToWidget(x *DragSource) *Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastDNDListenerToListener(x *DNDListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for Text and its subclasses within the translated set.

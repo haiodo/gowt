@@ -71,7 +71,7 @@ func (this *Test_org_eclipse_swt_widgets_CoolBar) CreateCoolBar(events *jrt.List
 		coolItem.SetSize(coolSize.X/3, coolSize.Y)
 		inner133 := newTest_org_eclipse_swt_widgets_CoolBarCoolItemSelectionListener()
 		inner133.this_0 = this
-		coolItem.AddSelectionListener(inner133)
+		coolItem.AddSelectionListener(upcastTest_org_eclipse_swt_widgets_CoolBar_CoolItemSelectionListenerToswtSelectionListener(inner133))
 	}
 	this.impl.setWidget_(upcastswtCoolBarToswtWidget(this.coolBar))
 }
@@ -397,6 +397,13 @@ func upcastswtCoolItemToswtWidget(x *swt.CoolItem) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastTest_org_eclipse_swt_widgets_CoolBar_CoolItemSelectionListenerToswtSelectionListener(x *Test_org_eclipse_swt_widgets_CoolBar_CoolItemSelectionListener) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for swt.CoolItem and its subclasses within the translated set.

@@ -157,7 +157,7 @@ func (this *CoolItem) CreateArrowImage(width int32, height int32) *Image {
 	var imageData *ImageData = NewImageData(width, height, 4, palette)
 	imageData.TransparentPixel = 1
 	var image *Image = NewImageDeviceData(upcastDisplayToDevice(this.display), imageData)
-	var gc *GC = NewGCDrawableStyle(image, this.parent.impl.getStyle_()&RIGHT_TO_LEFT)
+	var gc *GC = NewGCDrawableStyle(upcastImageToDrawable(image), this.parent.impl.getStyle_()&RIGHT_TO_LEFT)
 	gc.SetBackground(background)
 	gc.FillRectangle(0, 0, width, height)
 	gc.SetForeground(black)

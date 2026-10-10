@@ -2738,7 +2738,7 @@ func (this *Display) InitializeSessionManager() {
 	inner281 := NewDisplaySessionManagerListener(this)
 	inner281.this_0 = this
 	this.sessionManagerListener = inner281
-	this.sessionManagerDBus.AddListener(this.sessionManagerListener)
+	this.sessionManagerDBus.AddListener(upcastDisplay_SessionManagerListenerToSessionManagerDBus_IListener(this.sessionManagerListener))
 }
 
 func (this *Display) ReleaseSessionManager() {
@@ -5124,6 +5124,13 @@ func castWidgetToShell(x *Widget) *Shell {
 		panic("java.lang.ClassCastException: Shell")
 	}
 	return v
+}
+
+func upcastDisplay_SessionManagerListenerToSessionManagerDBus_IListener(x *Display_SessionManagerListener) SessionManagerDBus_IListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastArrShellToWidget(x []*Shell) []*Widget {

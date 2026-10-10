@@ -11,6 +11,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -51,6 +52,8 @@ type wv2Engine struct {
 	closeH func()
 	status func(text string)
 	script *bool
+
+	deferred func()
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
@@ -431,7 +434,23 @@ func (e *wv2Engine) navigationFailed(url string) func(error) {
 	}
 }
 
+// load defers the navigation to the end of the UI turn, where a newer load replaces it: a page that sets its
+// content in a loop gets one navigation. Whatever else talks to the view flushes it first.
 func (e *wv2Engine) load(slot int, content, url string) {
+	if e.deferred == nil {
+		e.host.GetDisplay().AsyncExec(jrt.NewRunnable(e.flush))
+	}
+	e.deferred = func() { e.loadNow(slot, content, url) }
+}
+
+func (e *wv2Engine) flush() {
+	if f := e.deferred; f != nil {
+		e.deferred = nil
+		f()
+	}
+}
+
+func (e *wv2Engine) loadNow(slot int, content, url string) {
 	e.do(func() {
 		e.loads++
 		u := utf16Z(content)
@@ -448,6 +467,7 @@ func (e *wv2Engine) navigate(url string) { e.load(5, url, url) }
 func (e *wv2Engine) setHTML(html, baseURL string) { e.load(6, html, "") }
 
 func (e *wv2Engine) eval(js string, done func(string, error)) {
+	e.flush()
 	e.do(func() {
 		u := utf16Z(evalWrapper(js))
 		h := newHandler(func(hr, res uintptr) uintptr {
@@ -515,6 +535,7 @@ func (e *wv2Engine) setCallHandler(f func(msg string) string) {
 }
 
 func (e *wv2Engine) nav(slot int) {
+	e.flush()
 	if e.view != 0 && !e.disposed {
 		vcall(e.view, slot)
 	}

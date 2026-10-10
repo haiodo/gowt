@@ -68,7 +68,7 @@ jobs:
           cache: maven
           cache-dependency-path: tooling/j2go/pom.xml
       - name: Read upstream pins
-        run: cat tooling/source-pins.env >> "$GITHUB_ENV"
+        run: grep -E '^[A-Z_]+=' tooling/source-pins.env >> "$GITHUB_ENV"
       - name: Cache upstream sources
         id: upstream
         uses: actions/cache@v4

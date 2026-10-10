@@ -36,8 +36,8 @@ func TestGolden(t *testing.T) {
 			}
 			want, _ := png.Decode(gf)
 			gf.Close()
-			if d := diff(img, want); d != 0 {
-				t.Errorf("%s: %d pixels differ", golden, d)
+			if d, maxd := diff(img, want); d != 0 {
+				t.Errorf("%s: %d pixels differ by more than %d (max %d)", golden, d, tolerance, maxd)
 			}
 		}
 	}
@@ -45,18 +45,30 @@ func TestGolden(t *testing.T) {
 
 func itoa(n int32) string { return string(rune('0'+n/10)) + string(rune('0'+n%10)) }
 
-func diff(a *image.NRGBA, b image.Image) int {
-	n := 0
+// tolerance is per 8-bit channel: amd64 and arm64 round the anti-aliased edge coverage differently
+// (arm64 fuses multiply-add), so goldens rendered on one do not match the other bit for bit.
+const tolerance = 4
+
+func diff(a *image.NRGBA, b image.Image) (n, maxd int) {
 	for y := 0; y < a.Rect.Dy(); y++ {
 		for x := 0; x < a.Rect.Dx(); x++ {
 			r1, g1, b1, a1 := a.At(x, y).RGBA()
 			r2, g2, b2, a2 := b.At(x, y).RGBA()
-			if r1 != r2 || g1 != g2 || b1 != b2 || a1 != a2 {
+			d := max(absDiff(r1, r2), absDiff(g1, g2), absDiff(b1, b2), absDiff(a1, a2)) >> 8
+			maxd = max(maxd, d)
+			if d > tolerance {
 				n++
 			}
 		}
 	}
-	return n
+	return n, maxd
+}
+
+func absDiff(a, b uint32) int {
+	if a > b {
+		return int(a - b)
+	}
+	return int(b - a)
 }
 
 func TestStrokeScalesWithTarget(t *testing.T) {

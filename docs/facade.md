@@ -3,7 +3,7 @@
 `swt` stays the generated, Java-shaped low level (full SWT, for ported code). `gowt` is a
 hand-written, thin, idiomatic layer on top; it is the API we document. Files: `gowt.go` (App,
 Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widgets_list.go`,
-`widgets_container.go`, `widgets_range.go`, `graphics.go`, `menu.go`, `dialogs.go`, `theme.go`; the platform look is in `look` and the named icons in `icons` (see "Package layout"). Examples:
+`widgets_container.go`, `widgets_range.go`, `widgets_text.go`, `clipboard.go`, `dnd.go`, `graphics.go`, `menu.go`, `dialogs.go`, `theme.go`; the platform look is in `look` and the named icons in `icons` (see "Package layout"). Examples:
 `cmd/hellogowt` (minimal), `cmd/gowtdemo` (a tab per widget family).
 
 ## Decisions
@@ -80,8 +80,9 @@ descendants of one container, which SWT's view tree does not allow), NSBackgroun
 
 ## Not wrapped
 
+- Custom drag and drop transfers, RTF/URL clipboard formats, the X11 selection clipboard, StyledText bullets/indents/undo listeners (`Unwrap()`).
 - The SWT event/listener type hierarchy, `Display` as a public type (`App.Unwrap()` exists), `Runnable`, `Internal_*`.
-- Widget fonts/colors/backgrounds, cursors, drag and drop, keyboard and mouse listeners (`Unwrap()`), `ExpandBar`, `Browser`, `StyledText`, `CCombo`, `Shell` kinds other than `Window` (dialog shells, tool tips, `Decorations` images), accelerators on menu items, tray menus, `Sash` repositioning helpers (use `Split`), multi-column `Tree`, table sorting helpers, `ImageData`/palettes/transforms/paths/patterns, `GC` clipping, fonts, alpha, polygons.
+- Widget fonts/colors/backgrounds, cursors, keyboard and mouse listeners (`Unwrap()`), `ExpandBar`, `Browser`, `CCombo`, `Shell` kinds other than `Window` (dialog shells, tool tips, `Decorations` images), accelerators on menu items, tray menus, `Sash` repositioning helpers (use `Split`), multi-column `Tree`, table sorting helpers, `ImageData`/palettes/transforms/paths/patterns, `GC` clipping, fonts, alpha, polygons.
 
 ## Package layout (applied, TSK-31)
 
@@ -89,7 +90,7 @@ The root keeps what every app needs; the platform look and the icon set live in 
 
 | Package | Contents | Files |
 |---|---|---|
-| `gowt` | `Run`, `SetAppName`, `App` (threads, `Tray`, images, `Dark`/`OnThemeChange`), `Window`, `Panel` and every widget, options, layouts, dialogs, menus, `GC`/`Image`/`RGB`/`Font` | `gowt.go dialogs.go graphics.go layout.go menu.go theme.go theme_darwin.go theme_other.go widgets_*.go manifest_windows.go` + 2 tests |
+| `gowt` | `Run`, `SetAppName`, `App` (threads, `Tray`, images, `Dark`/`OnThemeChange`), `Window`, `Panel` and every widget, options, layouts, dialogs, menus, `GC`/`Image`/`RGB`/`Font` | `gowt.go clipboard.go dialogs.go dnd.go graphics.go layout.go menu.go theme.go theme_darwin.go theme_other.go widgets_*.go manifest_windows.go` + 2 tests |
 | `gowt/look` | window material, macOS 26 glass, Windows corners and dark content | `look.go look_darwin.go look_windows.go look_other.go` |
 | `gowt/icons` | named icons (`icons/lucide` stays below it) | the seven `icons*.go` files, names unchanged |
 
@@ -134,6 +135,106 @@ Impact:
 - `Makefile` `xcheck`: `./look ./icons` join the three-OS build line, and `look/*.go icons/*.go` the platform-import grep.
 - `docs/facade.md`: the file list at the top and the "Modern look" table get the new call shapes.
 - Unchanged: every other `gowt` symbol, `swt`, `svg`, `webview`, `browser`, `jface`, and what the moved functions do.
+
+## Clipboard, drag and drop, StyledText (applied)
+
+Refs TSK-2026-10-03-product-24 (clipboard, dnd), TSK-2026-10-03-product-25 (StyledText). Every call maps to existing `swt` symbols; `swt` is unchanged. Examples: `examples/clipboard`, `examples/dnd`, `examples/styledtext`; user pages in `docs/widgets.md` and `docs/events.md`.
+
+### New symbols and files
+
+| File (new) | Symbols | Maps to |
+|---|---|---|
+| `clipboard.go` | `App.Clipboard() *Clipboard`; `Clipboard.Text() (string, bool)`, `SetText(s) error`, `HTML() (string, bool)`, `SetHTML(html, plain string) error`, `Files() []string`, `SetFiles([]string) error`, `Image() (*Image, bool)`, `SetImage(*Image) error`, `Clear()`, `Unwrap() *swt.Clipboard` | `swt.NewClipboard(display)`, `GetContents(TextTransfer/HTMLTransfer/FileTransfer/ImageTransfer instance)`, `SetContents(data, transfers)`, `ClearContents` |
+| `dnd.go` | `DragFrom(w Widget, d Drag) *DragHandle`, `DropOn(w Widget, d Drop) *DropHandle`, `Drag`, `Drop`, `Op` (`OpNone`, `OpCopy`, `OpMove`, `OpLink`), `Unwrap()` on both handles | `swt.NewDragSource/NewDropTarget`, `SetTransfer`, `AddDragListener/AddDropListener`, `DNDDROP_*` |
+| `widgets_text.go` | `panel.StyledText(opts ...Option) *StyledText`, `StyledText` methods below, `TextStyle`, `StyleSpan`, option `Scrollbars()` | `swt.NewStyledText`, `StyleRange`, `SetStyleRange(s)`, listeners |
+| `gowt.go` | `App.clip`, `Run` disposes the clipboard before the display; `apps` map (display -> App) so a drop callback can create App-owned images | `Clipboard.Dispose` |
+
+Nothing goes into `gowt.go`/`widgets_common.go` beyond that line; each topic gets its own file. The golden `tooling/apidump/facade-api.txt` was regenerated; the diff is additions only.
+
+### Clipboard
+
+- `App.Clipboard()` creates the `swt.Clipboard` on first call and caches it in `App`; `Run` disposes it (deferred after `display.Dispose`'s defer is registered, so it runs first). The user never disposes it. A `*Clipboard` is invalid after `Run` returns.
+- UI thread only, like every call except Async/Sync/Quit. From another goroutine: `app.Sync(func(){ ... })`.
+- Getters return `(value, ok)`; `ok` is false when the clipboard has no such format (`GetContents` returns nil). `Files()` returns nil when empty.
+- Setters return `error`: `SetContents` panics with `DNDError(DNDERROR_CANNOT_SET_CLIPBOARD)` on all three OSes when the system clipboard is busy (routine on Windows), so, like `LoadImage`, the facade recovers it with `catch`. This is the one place besides images where a failure is routine.
+- `SetHTML(html, plain)` writes both formats in one `SetContents` call (`HTMLTransfer` + `TextTransfer`); setting one format clears the others (SWT behaviour), so combined content must go through one call.
+- `Image()` builds an `Image` from the `ImageData` via `a.track`, so the App owns it and disposes it when `Run` returns (`Dispose` earlier is allowed). `SetImage` reads `img.Unwrap().GetImageData()`.
+- Not covered: custom `ByteArrayTransfer` types, RTF, URL, several formats beyond HTML+text, async `GetContentsAsync`, the X11 selection clipboard (`clipboards` argument) -> `Unwrap()`.
+
+### Drag and drop
+
+Functions that take the widget, like `PopupMenu(w)` (no extension methods in Go); settings as one value-type struct, like `Message`/`FileDialog`.
+
+```go
+type Op int // OpCopy, OpMove, OpLink; zero value = OpCopy
+type Drag struct {
+	Ops     Op                 // allowed operations, zero = OpCopy
+	Text    func() string      // any non-nil getter adds its format; called once per drop (DragSetData)
+	Files   func() []string
+	Image   func() *Image      // not disposed by the facade
+	OnStart func() bool        // false cancels this drag (DragStart.Doit)
+	OnDone  func(Op)           // operation performed, OpNone if nobody took it
+}
+type Drop struct {
+	Ops   Op
+	Text  func(text string, op Op)
+	Files func(paths []string, op Op)
+	Image func(img *Image, op Op) // the App owns img (tracked); Dispose may be called earlier
+	Over  func(x, y int) bool     // x, y in widget coordinates; false rejects at that point
+}
+```
+
+- Mapping: `Drag` -> `DragSource` + `SetTransfer` built from the non-nil getters (`TextTransfer`, `FileTransfer`, `ImageTransfer` instances) + a listener whose `DragSetData` sets `event.Data` (field of `TypedEvent`) by `event.DataType`. `Drop` -> `DropTarget` + `SetTransfer` from the non-nil callbacks + a listener: `DragEnter/DragOver` filter `event.CurrentDataType` and the `Over` answer (`event.Detail = DNDDROP_NONE` rejects), `Drop` dispatches by data type. The listener is an unexported struct embedding `swt.DropTargetAdapter`/`DragSourceAdapter`, like `modifier`.
+- `DropTargetEvent.X/Y` are display coordinates; the facade converts with `Control.ToControl` before calling `Over`.
+- Lifetime: swt `DragSource`/`DropTarget` are widgets registered on the control and disposed with it; the handle only exposes `Unwrap()`. At most one `DropTarget` and one `DragSource` per control: a second call panics with `DNDERROR_CANNOT_INIT_DROP` (an error), returned by `Run`.
+- Works on any `Widget` the facade has; whether the native widget accepts drops (Table rows, Tree items, text caret) is the platform's business. Item-level targets (`event.Item`) are not exposed.
+- Not covered -> `Unwrap()` and plain `swt`: custom `Transfer` types, RTF/HTML/URL transfers, effects (`DropTargetEffect`, `DragSourceEffect`), drag images (`DragSourceEvent.Image`), `Feedback` flags, `DragOperationChanged`/`DropAccept`, moving data between processes with custom formats.
+- Platform caveats (`tests/expected*.txt`): drag was never run with a real mouse by any test, so end-to-end drag between widgets and from other apps is unverified on all three OSes. Cross-process transfer tests are skipped ("no remote clipboard peer: the Swing/RMI process is not ported"), including `FileTransfer`, `HTMLTransfer`, `ImageTransfer`, `RTFTransfer`, `TextTransfer`. `URLTransfer` tests are disabled on macOS, so URLs are left out. `FileTransfer.nativeToJava` is disabled on Windows and macOS in the upstream suite.
+
+### StyledText
+
+`p.StyledText(opts ...Option) *StyledText`, constructor `swt.NewStyledText(p.c, resolve(swt.NONE, opts))`. Existing options apply: `Multiline()`, `ReadOnly()`, `Border()`, `Wrap()`, `Disabled()`, `Tooltip`, `Cell`. New `Scrollbars()` (V_SCROLL|H_SCROLL), since SWT has no default and the base-style rule forbids one.
+
+```go
+type TextStyle struct {
+	Foreground, Background *RGB // nil = inherit
+	Bold, Italic, Underline, Strikeout bool
+	Font *Font                  // optional; name/size override, Bold/Italic still apply
+}
+type StyleSpan struct { Start, Length int; Style TextStyle }
+```
+
+| Method | swt call |
+|---|---|
+| `Text()`, `SetText(s)`, `Append(s)`, `Insert(s)` (at caret), `Replace(start, length int, s string)` | `GetText`, `SetText`, `Append`, `Insert`, `ReplaceTextRange` |
+| `Selection() (start, length int)`, `SetSelection(start, length int)`, `SelectedText()`, `Caret() int`, `SetCaret(offset int)`, `Reveal()` | `GetSelectionRange`, `SetSelectionRange`, `GetSelectionText`, `GetCaretOffset`, `SetCaretOffset`, `ShowSelection` |
+| `Lines() int`, `LineAt(offset int) int`, `LineStart(line int) int`, `SetTopLine(i int)` | `GetLineCount`, `GetLineAtOffset`, `GetOffsetAtLine`, `SetTopIndex` |
+| `SetStyle(start, length int, s TextStyle)`, `Styles() []StyleSpan`, `ClearStyles()` | `SetStyleRange(StyleRange)`, `GetStyleRanges`, `ReplaceStyleRanges(0, GetCharCount, nil)` |
+| `SetLineBackground(line, count int, c RGB)` | `SetLineBackground` |
+| `SetEditable(bool)`, `SetWrap(bool)`, `SetTabs(n int)` | `SetEditable`, `SetWordWrap`, `SetTabs` |
+| `Cut()`, `Copy()`, `Paste()` | same names |
+| `OnChange(func(text string))` | `AddModifyListener` (as `Text.OnChange`) |
+| `OnSelect(func(start, length int))` | `AddSelectionListener` |
+| `OnCaret(func(offset int))` | `AddCaretListener` |
+| `OnStyle(func(line string) []StyleSpan)` | `AddLineStyleListener`; spans are relative to the line start, converted to the event's `Styles` |
+| `Unwrap() *swt.StyledText` | |
+
+- Offsets and lengths are runes (indexes into `[]rune(Text())`); the facade converts to and from the UTF-16 units SWT uses (`DefaultContent` stores `[]uint16`). Known ceiling: each conversion scans the text, O(n) per call; a line index is the way out for very large documents. `Unwrap()` offsets stay UTF-16. `OnStyle` avoids the scan: its callback gets one line and `Start` counts runes from the line start.
+- `TextStyle` -> `swt.StyleRange`: colors via `RGB.color()`; `Bold`/`Italic` go to `StyleRange.FontStyle` (no font object, widget font is reused); `Font` with a name or size creates an `swt.Font` that the `StyledText` wrapper keeps in a cache keyed by the `Font` value and disposes on the widget's dispose event. The user never sees a disposable.
+- Not covered -> `Unwrap()`: bullets, line alignment/indent/spacing providers, `GlyphMetrics`, `TextStyle.Rise`/`Data`/borders/underline styles and colors, block and multi-selection, `VerifyListener`/`VerifyKeyListener`/`ExtendedModifyListener` (undo tracking), bidi segments, content replacement (`StyledTextContent`), printing, widget fonts (no widget-font API in the facade yet).
+- Platform caveats (`tests/expected*.txt`): style rendering tests (`setStyleRanges_render`, `lineStyleListener_*_render`, `lostStyles`) are skipped on macOS (upstream bugs 553090, 536588), so rendering of styled text is verified only on Linux/Windows; foreground alpha does not exist on Windows; `test_backspaceAndDelete` fails on macOS (`Display.post` does not deliver the key event, test infrastructure, not diagnosed); `caretSizeAndPositionVariableGlyphMetrics` is skipped on Linux; clipboard-carryover test is skipped on macOS.
+
+### Decisions taken
+
+- Drag and drop are functions (`DragFrom`, `DropOn`) with value-type descriptions; `Option`s were rejected because they cannot be added after construction.
+- `StyledText` offsets are runes; setters of the clipboard return `error` (a busy clipboard is routine on Windows); images from the clipboard and from a drop are App-owned. Widgets keep no App pointer: the `apps` map is the only link.
+- `Scrollbars()` stays in `widgets_text.go`; no X11 selection clipboard.
+
+### Open points
+
+- No test drags with a real mouse; `DragFrom` and `DropOn` have not run end to end on any OS, only compiled and vetted. Needs a stand with synthetic pointer input.
+- Editing text that contains surrogate pairs (emoji) panics in `swt` (`DefaultContent.GetLine` -> `jrt.Substring` slice bounds, found on Linux after `ReplaceTextRange`); selection, caret and styles on such text work. A generator-level bug, not fixed here.
+- `Styles()` does not report `TextStyle.Font`; `SetStyle` fonts are cached per widget by `Font` value until the widget is disposed.
 
 ## Open points
 

@@ -72,7 +72,7 @@ Reference material:
 
 ## Not in the facade yet
 
-Clipboard, drag and drop and `StyledText` are not in this tree yet; they are being integrated separately. `Accessible` is a stub on all three OSes. Neither has a facade wrapper.
+Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes and has no facade wrapper.
 
 ## Building the examples
 

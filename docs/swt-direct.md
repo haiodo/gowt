@@ -26,4 +26,4 @@ Rules:
 - The same UI-thread rule applies.
 - Other SWT-level packages: `jface` (layout and widget factories), `browser`, `svg`.
 
-Clipboard, drag and drop and `StyledText` are not in `swt` in this tree yet (being integrated separately); `Accessible` is a stub. None has a facade wrapper.
+`Clipboard`, `DragSource`/`DropTarget` and `StyledText` are in `swt` and wrapped by the facade for the common cases; custom `Transfer` types, RTF/URL formats, the X11 selection clipboard and the rest of `StyledText` (bullets, line indents, undo listeners) need `Unwrap()`. `Accessible` is a stub with no facade wrapper.

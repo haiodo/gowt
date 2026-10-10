@@ -103,9 +103,9 @@ JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `
 ## Known gaps
 
 - Windows was never run on real Windows, only under Wine (CrossOver). Mica, Acrylic, WebView2 and per-monitor DPI changes are unverified or missing.
-- Linux: GTK 3 only; `Accessible` (ATK) is missing.
+- Linux: GTK 3 only.
 - `Browser` does not support several events (OpenWindow, CloseWindow, VisibilityWindow, StatusText) and the cookie statics; see [docs/webview-browser.md](docs/webview-browser.md).
-- Clipboard, drag and drop, `StyledText` and `Accessible` are available only at the `swt` level and are not part of the facade yet.
+- Clipboard, drag and drop and `StyledText` are not in the tree yet (being integrated separately); `Accessible` is a stub on all three OSes.
 - macOS Table and Tree use the cell-based AppKit views.
 
 More: [docs/platforms.md](docs/platforms.md). How the repository and the translator work: [docs/internals.md](docs/internals.md).

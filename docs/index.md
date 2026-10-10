@@ -68,7 +68,7 @@ Reference material:
 
 ## Not in the facade yet
 
-Clipboard, drag and drop, `StyledText` and `Accessible` are being integrated and are reachable only through package `swt` for now. Do not rely on them from `gowt` yet.
+Clipboard, drag and drop and `StyledText` are not in this tree yet; they are being integrated separately. `Accessible` is a stub on all three OSes. Neither has a facade wrapper.
 
 ## Building the examples
 

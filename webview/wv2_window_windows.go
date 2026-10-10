@@ -201,7 +201,9 @@ func (e *wv2Engine) loadRequest(r LoadRequest) {
 			return
 		}
 		defer release(*req)
+		e.loads++
 		if hr := vcall(v2, 63, *req); failed(hr) { // NavigateWithWebResourceRequest
+			e.loads--
 			e.navigationFailed(r.URL)(hrErr("NavigateWithWebResourceRequest", hr))
 		}
 	}, e.navigationFailed(r.URL))

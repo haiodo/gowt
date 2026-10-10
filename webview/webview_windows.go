@@ -42,6 +42,7 @@ type wv2Engine struct {
 	policy    func(url string, mainFrame bool) bool
 	call      func(msg string) string
 	cancelled bool
+	loads     int // Navigate/NavigateToString/NavigateWithWebResourceRequest calls not yet completed
 
 	// popup is the request a view made by NewWindow.NewOn answers; it is completed once the view is ready.
 	popup  *NewWindow
@@ -161,6 +162,7 @@ func (e *wv2Engine) controllerReady(hr, ctl uintptr) {
 		vcall(*out, 12, b2u(e.opts.Inspectable)) // put_AreDevToolsEnabled
 		release(*out)
 	}
+	vcall(ctl, 4, 1) // put_IsVisible
 	e.applyScript()
 	liveEngines = append(liveEngines, e)
 	e.resize()
@@ -298,6 +300,15 @@ func (e *wv2Engine) hookEvents() {
 		status := heap[int32]()
 		vcall(args, 3, addr(ok))
 		vcall(args, 4, addr(status))
+		// A load replaced by a newer one completes as CONNECTION_ABORTED, reported with the old document's
+		// URL; only the last load's result counts.
+		superseded := e.loads > 1 && *ok == 0 && *status == wv2ConnectionAborted
+		if e.loads > 0 {
+			e.loads--
+		}
+		if superseded {
+			return
+		}
 		if e.cancelled && *ok == 0 && *status == wv2OperationCanceled {
 			e.cancelled = false
 			return
@@ -422,8 +433,10 @@ func (e *wv2Engine) navigationFailed(url string) func(error) {
 
 func (e *wv2Engine) load(slot int, content, url string) {
 	e.do(func() {
+		e.loads++
 		u := utf16Z(content)
 		if hr := vcall(e.view, slot, addr(&u[0])); failed(hr) {
+			e.loads--
 			e.navigationFailed(url)(hrErr("Navigate", hr))
 		}
 	}, e.navigationFailed(url))

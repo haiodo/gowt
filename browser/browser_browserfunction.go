@@ -104,7 +104,7 @@ func newBrowserFunctionBrowserNameTopFrameNamesCreate(browser_ *Browser, name st
 }
 
 func (this *BrowserFunction) initBrowserFunctionBrowserNameTopFrameNamesCreate(browser_ *Browser, name string, top bool, frameNames []string, create bool) {
-	if browser_.Composite == (nil) {
+	if browser_ == (nil) {
 		swt.Error(swt.ERROR_NULL_ARGUMENT)
 	}
 	if name == jrt.NullString {

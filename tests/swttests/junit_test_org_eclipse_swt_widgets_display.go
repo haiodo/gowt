@@ -1163,7 +1163,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setSynchronizerLorg_eclip
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec2Ran[0] = asyncExec0Ran[0]
 		}))
-		display.SetSynchronizer(mySynchronizer.Synchronizer)
+		display.SetSynchronizer(upcastTest_org_eclipse_swt_widgets_Display_MySynchronizerToswtSynchronizer(mySynchronizer))
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec1Ran[0] = true
 		}))
@@ -1657,4 +1657,11 @@ func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) initTest_org_ec
 func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) AsyncExec(runnable jrt.Runnable) {
 	this.invoked = true
 	this.Synchronizer.AsyncExec(runnable)
+}
+
+func upcastTest_org_eclipse_swt_widgets_Display_MySynchronizerToswtSynchronizer(x *Test_org_eclipse_swt_widgets_Display_MySynchronizer) *swt.Synchronizer {
+	if x == nil {
+		return nil
+	}
+	return x.Synchronizer
 }

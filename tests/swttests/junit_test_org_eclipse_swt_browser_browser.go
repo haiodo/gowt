@@ -87,7 +87,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) SetUp(testInfo *junit.TestInfo
 		shellTitle = fmt.Sprintf("%s Webkit version: %s", shellTitle, webkitGtkVersionStr)
 	}
 	this.shell.SetText(shellTitle)
-	this.impl.setWidget_(upcastswtCompositeToswtWidget(this.browser.Composite))
+	this.impl.setWidget_(upcastswtCompositeToswtWidget(upcastbrowserBrowserToswtComposite(this.browser)))
 	this.testLog = jrt.NewStringBuilder("\nTest log:\n")
 	if SwtTestUtilIsGTK {
 		Test_org_eclipse_swt_browser_BrowserProcessUiEvents()
@@ -653,8 +653,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_OpenWindowListener_openHa
 	var openFiredCorrectly *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	this.browser.AddOpenWindowListener(&OpenWindowListenerFunc{fn: func(event *browser.WindowEvent) {
 		var browserChild *browser.Browser = this.CreateBrowser(this.shell, this.swtBrowserSettings)
-		junit.AssertSame(this.browser.Composite, event.Widget)
-		junit.AssertNull(event.Browser.Composite)
+		junit.AssertSame(upcastbrowserBrowserToswtComposite(this.browser), event.Widget)
+		junit.AssertNull(upcastbrowserBrowserToswtComposite(event.Browser))
 		openFiredCorrectly.Set(true)
 		event.Browser = browserChild
 	}})
@@ -3163,6 +3163,13 @@ func (this *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication) Close()
 	this.this_0.WaitForPassCondition(func() bool {
 		return !this.isRunning
 	})
+}
+
+func upcastbrowserBrowserToswtComposite(x *browser.Browser) *swt.Composite {
+	if x == nil {
+		return nil
+	}
+	return x.Composite
 }
 
 // j2go: func adapter for CloseWindowListener.

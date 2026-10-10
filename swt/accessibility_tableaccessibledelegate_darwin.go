@@ -238,7 +238,7 @@ func (this *TableAccessibleDelegate) Release() {
 		for _, elem967 := range this.childRowToIdMap.Values().ToArray() {
 			delegate := jrt.Cast[*AccessibleTableRow](elem967)
 			var childDelegate *SWTAccessibleDelegate = delegate.delegate
-			if childDelegate.NSObject != (nil) {
+			if childDelegate != (nil) {
 				childDelegate.Internal_dispose_SWTAccessibleDelegate()
 				childDelegate.Release()
 			}
@@ -250,7 +250,7 @@ func (this *TableAccessibleDelegate) Release() {
 		for _, elem968 := range this.childColumnToIdMap.Values().ToArray() {
 			delegate := jrt.Cast[*AccessibleTableColumn](elem968)
 			var childDelegate *SWTAccessibleDelegate = delegate.delegate
-			if childDelegate.NSObject != (nil) {
+			if childDelegate != (nil) {
 				childDelegate.Internal_dispose_SWTAccessibleDelegate()
 				childDelegate.Release()
 			}

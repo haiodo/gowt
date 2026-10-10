@@ -161,7 +161,7 @@ func SWTAccessibleDelegateRetainedAutoreleased(inObject *cocoa.NSArray) *cocoa.N
 
 func SWTAccessibleDelegateAccessibleProc(id int64, sel int64) int64 {
 	var swtAcc *SWTAccessibleDelegate = SWTAccessibleDelegateGetAccessibleDelegate(id)
-	if swtAcc.NSObject == (nil) {
+	if swtAcc == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_accessibilityAttributeNames {
@@ -223,7 +223,7 @@ func SWTAccessibleDelegateAccessibleProc(id int64, sel int64) int64 {
 
 func SWTAccessibleDelegateAccessibleProcIdSelArg0(id int64, sel int64, arg0 int64) int64 {
 	var swtAcc *SWTAccessibleDelegate = SWTAccessibleDelegateGetAccessibleDelegate(id)
-	if swtAcc.NSObject == (nil) {
+	if swtAcc == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_accessibilityAttributeValue_ {
@@ -283,7 +283,7 @@ func SWTAccessibleDelegateAccessibleProcIdSelArg0(id int64, sel int64, arg0 int6
 
 func SWTAccessibleDelegateAccessibleProcIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64) int64 {
 	var swtAcc *SWTAccessibleDelegate = SWTAccessibleDelegateGetAccessibleDelegate(id)
-	if swtAcc.NSObject == (nil) {
+	if swtAcc == (nil) {
 		return int64(0)
 	}
 	if sel == cocoa.OSSel_accessibilityAttributeValue_forParameter_ {

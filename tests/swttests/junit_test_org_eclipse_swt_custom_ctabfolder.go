@@ -369,7 +369,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_tabHeightRecomputedOnTa
 	var topRightHeight int32 = 20
 	var topRight *swt.Composite = swt.NewCompositeParentStyle(upcastswtCTabFolderToswtComposite(this.ctabFolder), swt.NONE)
 	var topRightLayout *Test_org_eclipse_swt_custom_CTabFolder_FixedSizeLayout = newTest_org_eclipse_swt_custom_CTabFolderFixedSizeLayout(60, topRightHeight)
-	topRight.SetLayout(topRightLayout.Layout)
+	topRight.SetLayout(upcastTest_org_eclipse_swt_custom_CTabFolder_FixedSizeLayoutToswtLayout(topRightLayout))
 	this.ctabFolder.SetTopRightControlAlignment(upcastswtCompositeToswtControl(topRight), swt.RIGHT|swt.WRAP)
 	SwtTestUtilOpenShell(this.shell)
 	this.ProcessEvents()
@@ -1318,6 +1318,13 @@ func upcastswtSashFormToswtComposite(x *swt.SashForm) *swt.Composite {
 		return nil
 	}
 	return &x.Composite
+}
+
+func upcastTest_org_eclipse_swt_custom_CTabFolder_FixedSizeLayoutToswtLayout(x *Test_org_eclipse_swt_custom_CTabFolder_FixedSizeLayout) *swt.Layout {
+	if x == nil {
+		return nil
+	}
+	return x.Layout
 }
 
 // j2go: instanceof helper for swt.ToolBar and its subclasses within the translated set.

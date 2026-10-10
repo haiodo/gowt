@@ -39,7 +39,7 @@ var Test_org_eclipse_swt_custom_StyledTextPLATFORM_LINE_DELIMITER string = func(
 			fmt.Fprintln(os.Stderr, "gowt: deferred init Test_org_eclipse_swt_custom_StyledTextPLATFORM_LINE_DELIMITER:", e)
 		}
 	}()
-	r = "\n"
+	r = jrt.LineSeparator()
 	return
 }()
 
@@ -4243,14 +4243,14 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_isTextSelected() {
 	junit.AssertTrue(this.text.IsTextSelected())
 	var buffer *jrt.StringBuilder = jrt.NewStringBuilder()
 	for i := int32(0); i < 500; i++ {
-		buffer.Append(fmt.Sprintf("Sample Test Selection%s", "\n"))
+		buffer.Append(fmt.Sprintf("Sample Test Selection%s", jrt.LineSeparator()))
 	}
 	this.text.SetText(buffer.ToString())
 	this.text.SetSize(100, 10000)
 	this.text.SetBlockSelection(true)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, 100, 10000)
 	junit.AssertTrue(this.text.IsTextSelected())
-	this.text.SetText("\n")
+	this.text.SetText(jrt.LineSeparator())
 	this.text.SetSize(100, 100)
 	this.text.SetBlockSelection(true)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, 100, 100)
@@ -4328,7 +4328,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickWithRightMou
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtStartOfWordSelectsNextWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	var onW *swt.Point = this.text.GetLocationAtOffset(6)
 	var event *swt.Event = swt.NewEvent()
 	event.Button = 1
@@ -4340,7 +4340,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtStartOfWor
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtEndOfWordSelectsCurrentWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	var onWs *swt.Point = this.text.GetLocationAtOffset(5)
 	var event *swt.Event = swt.NewEvent()
 	event.Button = 1
@@ -4352,7 +4352,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtEndOfWordS
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtEndOfWordSelectsCurrentWord2() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	var onD *swt.Point = this.text.GetLocationAtOffset(10)
 	var event *swt.Event = swt.NewEvent()
 	event.Button = 1
@@ -4364,7 +4364,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtEndOfWordS
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBetweenWordsSelectsPrevWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	var onW *swt.Point = this.text.GetLocationAtOffset(6)
 	var onWs *swt.Point = this.text.GetLocationAtOffset(5)
 	var event *swt.Event = swt.NewEvent()
@@ -4377,7 +4377,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBetweenWords
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickJustBeforeNextWordSelectsPrevWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	var onW *swt.Point = this.text.GetLocationAtOffset(6)
 	var event *swt.Event = swt.NewEvent()
 	event.Button = 1
@@ -4389,7 +4389,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickJustBeforeNe
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBeyondEolSelectsLastWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	this.text.SetSize(1000, 1000)
 	var onD *swt.Point = this.text.GetLocationAtOffset(10)
 	var event *swt.Event = swt.NewEvent()
@@ -4402,7 +4402,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBeyondEolSel
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBeyondEndOfTextSelectsLastWord() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	this.text.SetSize(1000, 1000)
 	var onE *swt.Point = this.text.GetLocationAtOffset(this.text.GetOffsetAtLine(1) + 6)
 	var event *swt.Event = swt.NewEvent()
@@ -4415,7 +4415,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickBeyondEndOfT
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtStartOfWordLastLineNoEol() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	this.text.SetSize(1000, 1000)
 	var onB *swt.Point = this.text.GetLocationAtOffset(this.text.GetOffsetAtLine(1) + 4)
 	var event *swt.Event = swt.NewEvent()
@@ -4428,7 +4428,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtStartOfWor
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_doubleClickAtEndOfWordLastLineNoEol() {
-	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", "\n"))
+	this.text.SetText(fmt.Sprintf("Hello world%sBye bye", jrt.LineSeparator()))
 	this.text.SetSize(1000, 1000)
 	var onB *swt.Point = this.text.GetLocationAtOffset(this.text.GetOffsetAtLine(1) + 6)
 	var event *swt.Event = swt.NewEvent()
@@ -4493,11 +4493,11 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_isTextSelectedInBlockSe
 	var lowerRight *swt.Point = this.text.GetLocationAtOffset(jrt.StringLength(this.BlockSelectionTestTextOneLine())*2 + 6)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, lowerRight.X, lowerRight.Y+1)
 	junit.AssertTrue(this.text.IsTextSelected())
-	junit.AssertEquals(fmt.Sprintf("Sample%sSample%sSample", "\n", "\n"), this.text.GetSelectionText())
+	junit.AssertEquals(fmt.Sprintf("Sample%sSample%sSample", jrt.LineSeparator(), jrt.LineSeparator()), this.text.GetSelectionText())
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_isTextSelectedInBlockSelectionForLingleEmptyLine() {
-	this.text.SetText("\n")
+	this.text.SetText(jrt.LineSeparator())
 	this.text.SetSize(100, 100)
 	this.text.SetBlockSelection(true)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, 100, 100)
@@ -4505,7 +4505,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_isTextSelectedInBlockSe
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_selectionIsClearedOnCaretMoveWhenInBlockSelection() {
-	this.text.SetText(fmt.Sprintf("Test%s", "\n"))
+	this.text.SetText(fmt.Sprintf("Test%s", jrt.LineSeparator()))
 	this.text.SetSize(100, 100)
 	this.text.SetBlockSelection(true)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, 100, 100)
@@ -4525,7 +4525,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_setBlockSelectionBounds
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_selectionIsMaintainedOnDisableOfBlockSelection() {
-	this.text.SetText(fmt.Sprintf("Test%s", "\n"))
+	this.text.SetText(fmt.Sprintf("Test%s", jrt.LineSeparator()))
 	this.text.SetSize(100, 100)
 	this.text.SetBlockSelection(true)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, 100, 100)
@@ -4535,12 +4535,12 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_selectionIsMaintainedOn
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_selectAllInBlockSelectionMode() {
-	this.text.SetText(fmt.Sprintf("Test%s", "\n"))
+	this.text.SetText(fmt.Sprintf("Test%s", jrt.LineSeparator()))
 	this.text.SetSize(100, 100)
 	this.text.SetBlockSelection(true)
 	this.text.SelectAll()
 	junit.AssertTrue(this.text.IsTextSelected())
-	junit.AssertEquals(fmt.Sprintf("Test%s", "\n"), this.text.GetSelectionText())
+	junit.AssertEquals(fmt.Sprintf("Test%s", jrt.LineSeparator()), this.text.GetSelectionText())
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_cutTextInBlockSelection() {
@@ -4550,7 +4550,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cutTextInBlockSelection
 	var lowerRight *swt.Point = this.text.GetLocationAtOffset(jrt.StringLength(this.BlockSelectionTestTextOneLine())*2 + 6)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, lowerRight.X, lowerRight.Y+1)
 	this.text.Cut()
-	junit.AssertTrue(strings.HasPrefix(this.text.GetText(), fmt.Sprintf(" Test Selection%s Test Selection%s Test Selection%sSample Test Selection%s", "\n", "\n", "\n", "\n")))
+	junit.AssertTrue(strings.HasPrefix(this.text.GetText(), fmt.Sprintf(" Test Selection%s Test Selection%s Test Selection%sSample Test Selection%s", jrt.LineSeparator(), jrt.LineSeparator(), jrt.LineSeparator(), jrt.LineSeparator())))
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_pasteInsertsTextInBlockSelectionAsBlock() {
@@ -4577,7 +4577,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_cutAndPasteInBlockSelec
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_tripleClickInBlockSelectionSelectsLine() {
-	this.text.SetText(fmt.Sprintf("  Sample Test Selection  %s  Sample Test Selection  %s", "\n", "\n"))
+	this.text.SetText(fmt.Sprintf("  Sample Test Selection  %s  Sample Test Selection  %s", jrt.LineSeparator(), jrt.LineSeparator()))
 	this.text.SetSize(1000, 1000)
 	this.text.SetBlockSelection(true)
 	var lowerRight *swt.Point = this.text.GetLocationAtOffset(3)
@@ -4596,7 +4596,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_getSelectionRangesInBlo
 	this.text.SetBlockSelection(true)
 	var lowerRight *swt.Point = this.text.GetLocationAtOffset(jrt.StringLength(this.BlockSelectionTestTextOneLine())*2 + 6)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, lowerRight.X, lowerRight.Y+1)
-	junit.AssertArrayEquals([]int32{0, 6, 21 + jrt.StringLength("\n"), 6, 42 + jrt.StringLength("\n")*2, 6}, this.text.GetSelectionRanges())
+	junit.AssertArrayEquals([]int32{0, 6, 21 + jrt.StringLength(jrt.LineSeparator()), 6, 42 + jrt.StringLength(jrt.LineSeparator())*2, 6}, this.text.GetSelectionRanges())
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_getSelectionCountInBlockSelection() {
@@ -4605,7 +4605,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_getSelectionCountInBloc
 	this.text.SetBlockSelection(true)
 	var lowerRight *swt.Point = this.text.GetLocationAtOffset(jrt.StringLength(this.BlockSelectionTestTextOneLine())*2 + 6)
 	this.text.SetBlockSelectionBoundsXYWidthHeight(0, 0, lowerRight.X, lowerRight.Y+1)
-	junit.AssertEquals(int32(18+jrt.StringLength("\n")*2), int32(this.text.GetSelectionCount()))
+	junit.AssertEquals(int32(18+jrt.StringLength(jrt.LineSeparator())*2), int32(this.text.GetSelectionCount()))
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_getBlockSelectionlundsInBlockSelection() {
@@ -4622,8 +4622,8 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_insertInBlockSelection(
 	this.text.SetSize(1000, 1000)
 	this.text.SetBlockSelection(true)
 	this.text.SetSelectionStartEnd(6, 6+jrt.StringLength(this.BlockSelectionTestTextOneLine()))
-	this.text.Insert(fmt.Sprintf("Foo%sFoo%s", "\n", "\n"))
-	junit.AssertTrue(strings.HasPrefix(this.text.GetText(), fmt.Sprintf("SampleFoo Test Selection%sSampleFoo Test Selection%sSample Test Selection%s", "\n", "\n", "\n")))
+	this.text.Insert(fmt.Sprintf("Foo%sFoo%s", jrt.LineSeparator(), jrt.LineSeparator()))
+	junit.AssertTrue(strings.HasPrefix(this.text.GetText(), fmt.Sprintf("SampleFoo Test Selection%sSampleFoo Test Selection%sSample Test Selection%s", jrt.LineSeparator(), jrt.LineSeparator(), jrt.LineSeparator())))
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_setStyleRanges_render() {
@@ -4789,7 +4789,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) BlockSelectionTestText() str
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) BlockSelectionTestTextOneLine() string {
-	return fmt.Sprintf("Sample Test Selection%s", "\n")
+	return fmt.Sprintf("Sample Test Selection%s", jrt.LineSeparator())
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) RtfCopy() {

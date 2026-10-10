@@ -120,7 +120,7 @@ var StyledTextPlatformLineDelimiter string = func() (r string) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init StyledTextPlatformLineDelimiter:", e)
 		}
 	}()
-	r = "\n"
+	r = jrt.LineSeparator()
 	return
 }()
 

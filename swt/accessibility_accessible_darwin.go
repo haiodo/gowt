@@ -149,8 +149,8 @@ func (this *Accessible) AccessibleHandle(accessibleLike AccessibleLike) *cocoa.I
 		accessible = accessibleLike.AsAccessible()
 	}
 	_ = accessible
-	if accessible.delegate.NSObject != (nil) {
-		return upcastcocoaNSObjectTococoaId(accessible.delegate.NSObject)
+	if accessible.delegate != (nil) {
+		return upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(accessible.delegate))
 	}
 	if accessible.control != (nil) {
 		var view *cocoa.NSView = accessible.control.View
@@ -491,7 +491,7 @@ func (this *Accessible) GetHeaderAttribute(childID int32) *cocoa.Id {
 		listener.GetColumnHeader(tableEvent)
 	}
 	if tableEvent.Accessible != (nil) {
-		returnValue = upcastcocoaNSObjectTococoaId(tableEvent.Accessible.delegate.NSObject)
+		returnValue = upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(tableEvent.Accessible.delegate))
 	}
 	return returnValue
 }
@@ -511,7 +511,7 @@ func (this *Accessible) GetVisibleColumnsAttribute(childID int32) *cocoa.Id {
 		var accessibles []*Accessible = event.Accessibles
 		for i := int32(0); i < int32(len(accessibles)); i++ {
 			var acc *Accessible = accessibles[i]
-			array.AddObject(upcastcocoaNSObjectTococoaId(acc.delegate.NSObject))
+			array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(acc.delegate)))
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
@@ -539,7 +539,7 @@ func (this *Accessible) GetVisibleRowsAttribute(childID int32) *cocoa.Id {
 		var accessibles []*Accessible = event.Accessibles
 		for i := int32(0); i < int32(len(accessibles)); i++ {
 			var acc *Accessible = accessibles[i]
-			array.AddObject(upcastcocoaNSObjectTococoaId(acc.delegate.NSObject))
+			array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(acc.delegate)))
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
 	}
@@ -572,7 +572,7 @@ func (this *Accessible) GetSelectedRowsAttribute(childID int32) *cocoa.Id {
 				listener.GetRow(event)
 			}
 			if event.Accessible != (nil) {
-				array.AddObject(upcastcocoaNSObjectTococoaId(event.Accessible.delegate.NSObject))
+				array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(event.Accessible.delegate)))
 			}
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
@@ -621,7 +621,7 @@ func (this *Accessible) GetRowsAttribute(childID int32) *cocoa.Id {
 	for i := int32(0); i < int32(len(rows)); i++ {
 		var acc *Accessible = castanyToAccessible(rows[i])
 		acc.index = i
-		array.AddObject(upcastcocoaNSObjectTococoaId(acc.delegate.NSObject))
+		array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(acc.delegate)))
 	}
 	return upcastcocoaNSMutableArrayTococoaId(array)
 }
@@ -646,7 +646,7 @@ func (this *Accessible) GetSelectedColumnsAttribute(childID int32) *cocoa.Id {
 				listener.GetColumn(event)
 			}
 			if event.Accessible != (nil) {
-				array.AddObject(upcastcocoaNSObjectTococoaId(event.Accessible.delegate.NSObject))
+				array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(event.Accessible.delegate)))
 			}
 		}
 		returnValue = upcastcocoaNSMutableArrayTococoaId(array)
@@ -695,7 +695,7 @@ func (this *Accessible) GetColumnsAttribute(childID int32) *cocoa.Id {
 	for i := int32(0); i < int32(len(accessibles)); i++ {
 		var acc *Accessible = accessibles[i]
 		acc.index = i
-		array.AddObject(upcastcocoaNSObjectTococoaId(acc.delegate.NSObject))
+		array.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(acc.delegate)))
 	}
 	return upcastcocoaNSMutableArrayTococoaId(array)
 }
@@ -1795,7 +1795,7 @@ func (this *Accessible) GetEnabledAttribute(childID int32) *cocoa.Id {
 		listener.GetState(event)
 	}
 	var enabled bool = (event.Detail & ACCSTATE_DISABLED) == 0
-	if !enabled && this.delegate.NSObject == (nil) {
+	if !enabled && this.delegate == (nil) {
 		enabled = this.control.impl.isEnabled_()
 	}
 	return upcastcocoaNSNumberTococoaId(cocoa.NSNumberNumberWithBool(enabled))
@@ -1828,8 +1828,8 @@ func (this *Accessible) GetParentAttribute(childID int32) *cocoa.Id {
 	var returnValue *cocoa.Id = nil
 	if childID == ACCCHILDID_SELF {
 		if this.parent != (nil) {
-			if this.parent.delegate.NSObject != (nil) {
-				returnValue = upcastcocoaNSObjectTococoaId(this.parent.delegate.NSObject)
+			if this.parent.delegate != (nil) {
+				returnValue = upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(this.parent.delegate))
 			} else {
 				returnValue = cocoa.NewidOverload1(cocoa.OSNSAccessibilityUnignoredAncestor(this.AccessibleHandle(this.parent).Id))
 			}
@@ -1880,8 +1880,8 @@ func (this *Accessible) GetChildrenAttribute(childID int32, visibleOnly bool) *c
 				var child any = children[i]
 				accessible, ok940 := accessibleImplAsAccessible(child)
 				if ok940 {
-					if accessible.delegate.NSObject != (nil) {
-						childArray.AddObject(upcastcocoaNSObjectTococoaId(accessible.delegate.NSObject))
+					if accessible.delegate != (nil) {
+						childArray.AddObject(upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(accessible.delegate)))
 					} else {
 						childArray.AddObject(this.AccessibleHandle(accessible))
 					}
@@ -2021,7 +2021,7 @@ func (this *Accessible) GetCellForColumnAndRowParameter(parameter *cocoa.Id, chi
 		for i := int32(0); i < this.AccessibleTableListenersSize(); i++ {
 			var listener AccessibleTableListener = jrt.Cast[AccessibleTableListener](this.accessibleTableListeners.Get(i))
 			listener.GetCell(event)
-			returnValue = upcastcocoaNSObjectTococoaId(event.Accessible.delegate.NSObject)
+			returnValue = upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(event.Accessible.delegate))
 		}
 	}
 	return returnValue
@@ -2700,7 +2700,7 @@ func (this *Accessible) Release(destroy bool) {
 		this.parameterizedAttributeNames.Release()
 	}
 	this.parameterizedAttributeNames = nil
-	if this.delegate.NSObject != (nil) {
+	if this.delegate != (nil) {
 		this.delegate.Internal_dispose_SWTAccessibleDelegate()
 		this.delegate.Release()
 	}
@@ -2879,11 +2879,11 @@ func (this *Accessible) ChildIDToOs(childID int32) *cocoa.Id {
 		return upcastcocoaNSViewTococoaId(this.control.View)
 	}
 	var childRef *SWTAccessibleDelegate = castSWTAccessibleDelegateToSWTAccessibleDelegate(jrt.Cast[*SWTAccessibleDelegate](this.childToIdMap.Get(childID)))
-	if childRef.NSObject == (nil) {
+	if childRef == (nil) {
 		childRef = NewSWTAccessibleDelegate(this, childID)
 		jrt.Cast[*SWTAccessibleDelegate](this.childToIdMap.Put(childID, childRef))
 	}
-	return upcastcocoaNSObjectTococoaId(childRef.NSObject)
+	return upcastcocoaNSObjectTococoaId(upcastSWTAccessibleDelegateTococoaNSObject(childRef))
 }
 
 func (this *Accessible) ConcatStringsAsRole(str1 *cocoa.NSString, str2 *cocoa.NSString) *cocoa.NSString {
@@ -3086,6 +3086,13 @@ func AccessibleRetainedAutoreleased(inObject *cocoa.NSArray) *cocoa.NSArray {
 	var temp *cocoa.Id = upcastcocoaNSObjectTococoaId(inObject.Retain())
 	var temp2 *cocoa.Id = upcastcocoaNSObjectTococoaId(cocoa.NewNSObjectOverload1(temp.Id).Autorelease())
 	return cocoa.NewNSArrayOverload1(temp2.Id)
+}
+
+func upcastSWTAccessibleDelegateTococoaNSObject(x *SWTAccessibleDelegate) *cocoa.NSObject {
+	if x == nil {
+		return nil
+	}
+	return x.NSObject
 }
 
 func upcastcocoaNSMutableArrayTococoaId(x *cocoa.NSMutableArray) *cocoa.Id {

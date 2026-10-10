@@ -38,7 +38,7 @@ var DefaultContentLineDelimiter string = func() (r string) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init DefaultContentLineDelimiter:", e)
 		}
 	}()
-	r = "\n"
+	r = jrt.LineSeparator()
 	return
 }()
 

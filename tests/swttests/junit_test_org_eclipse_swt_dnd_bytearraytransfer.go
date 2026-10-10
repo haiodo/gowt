@@ -75,7 +75,7 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) AssertMyTypeEquals(expec
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) SetContents(o any) {
-	this.SetContentsOTransfer(o, upcastswtByteArrayTransferToswtTransfer(this.myTypeTransfer.ByteArrayTransfer))
+	this.SetContentsOTransfer(o, upcastswtByteArrayTransferToswtTransfer(upcastTest_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransferToswtByteArrayTransfer(this.myTypeTransfer)))
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) SetContentsOTransfer(o any, transferLike swt.TransferLike) {
@@ -88,7 +88,7 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) SetContentsOTransfer(o a
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer) GetContents() *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyType {
-	var future *jrt.CompletableFuture = this.clipboard.GetContentsAsync(upcastswtByteArrayTransferToswtTransfer(this.myTypeTransfer.ByteArrayTransfer))
+	var future *jrt.CompletableFuture = this.clipboard.GetContentsAsync(upcastswtByteArrayTransferToswtTransfer(upcastTest_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransferToswtByteArrayTransfer(this.myTypeTransfer)))
 	SwtTestUtilProcessEventsTimeoutMsBreakCondition(1000, func() bool {
 		return future.IsDone()
 	})
@@ -327,6 +327,13 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) Validate_
 
 func Test_org_eclipse_swt_dnd_ByteArrayTransferMyTypeTransferGetInstance() *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer {
 	return Test_org_eclipse_swt_dnd_ByteArrayTransferMyTypeTransfer_instance
+}
+
+func upcastTest_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransferToswtByteArrayTransfer(x *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) *swt.ByteArrayTransfer {
+	if x == nil {
+		return nil
+	}
+	return x.ByteArrayTransfer
 }
 
 func upcastswtByteArrayTransferToswtTransfer(x *swt.ByteArrayTransfer) *swt.Transfer {

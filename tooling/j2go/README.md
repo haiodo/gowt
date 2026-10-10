@@ -3386,4 +3386,22 @@ fields and callable from its own bodies; `super.clone()` of `Object` is a shallo
 distinct names; `Throwable.initCause`, `OutOfMemoryError` as an error value.
 
 Linux stand: 278 of 279 `-run StyledText` pass. The failure, `test_caretSizeAndPositionVariableGlyphMetrics`, is a test SWT skips on Linux with `assumeFalse(isLinux)`; `System.getProperty("os.name")`
-is the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption never fires there.
+was the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption never fired there (fixed in Round 26).
+
+## Round 26 batch4: dnd, Accessible, StyledText and CI together (TSK-2026-10-03-product-24..27)
+
+- **One COM vtable base.** `COMObject` is translated into package `swt` (Round 24 dnd), and both DnD and the win32 `Accessible` subclass it. Its
+  `callbackN` statics reach the most-derived `methodN` through `impl`. `win32.NewCallbackN` takes 0..13 words (`COMObject.MAX_ARG_COUNT` 12 plus the object
+  pointer). The other design, `COMObject` in `internal/win32` with a hand-written callback table, called `methodN` on `*COMObject`: every IAccessible call
+  answered E_NOTIMPL. It is gone.
+- **Anonymous overrides dispatch.** Override points came from named subclasses only, so an anonymous subclass's override of anything else was never called
+  by the base (Accessible's anonymous COMObjects for `method9` and on; the anonymous `AccessibleTextAdapter` of CCombo and StyledText). `TypeModel` now counts
+  them too, where the tree already has `impl` (named subclasses); a childless base still has no `impl`. A call from an anonymous class to one of its own
+  methods, helper or override, goes through its func field (`FunctionalEmitter.anonMethodField`).
+- **`os.name`.** `System.getProperty("os.name")` reads `jrt.SystemProperties`, which starts with the JDK name of `runtime.GOOS` ("Mac OS X", "Linux",
+  "Windows 10"). The shared generated files are translated once, so the constant "Mac OS X" had turned off every upstream `isLinux`/`isWindowsOS` skip.
+  `@DisabledOnOs` is still decided at translation time (Round 24 dnd).
+- Accessible on gtk stays a manual type (`Manual.GTK_ONLY`); the StyledText stand-ins for dnd and Accessible are removed. `port.sh` copies the `.html`
+  test resource (`testWebsiteWithTitle.html`; the Browser tests that load a local page panicked on the nil stream).
+- **Linux result** (Xvfb, full gate, passed / failed / skipped of 3901): 3808 / 34 / 59 with the old `os.name`, 3808 / 38 / 55 with the new one (the
+  Linux-only Browser URL and POST tests now run; StyledText's caret test is skipped as upstream), 3811 / 35 / 55 with the HTML resource.

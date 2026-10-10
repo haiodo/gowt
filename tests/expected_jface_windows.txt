@@ -33,7 +33,7 @@ pass	TestUnitControlFactory.setsLayoutData
 pass	TestUnitControlFactory.setsOrientation
 pass	TestUnitControlFactory.setsTooltip
 pass	TestUnitControlFactory.testUniqueLayoutData
-fail	TestUnitDateTimeFactory.createDateTimeWithAllProperties	DateTimeFactory: style bits differ from what the test expects (1 vs 2); not analysed, Linux fails the same test
+skip	TestUnitDateTimeFactory.createDateTimeWithAllProperties	not in the jface AllWidgetTests suite: onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks Selection and DefaultSelection, so each has 2 listeners where the test expects 1 (same in gtk, cocoa and win32 DateTime.java)
 pass	TestUnitDateTimeFactory.createsDateTime
 pass	TestUnitGroupFactory.createsGroup
 pass	TestUnitGroupFactory.createsGroupWithText

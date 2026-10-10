@@ -158,31 +158,29 @@ func (this *Test_org_eclipse_swt_widgets_Decorations) setWidget_(w *swt.Widget) 
 func (this *Test_org_eclipse_swt_widgets_Decorations) LoadImages() {
 	for _, format := range SwtTestUtilImageFormats {
 		for _, fileName := range SwtTestUtilImageFilenames {
-			{
-				var resource jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeOf(this.Impl()), fmt.Sprintf("%s.%s", fileName, format))
-				func() {
-					defer resource.Close()
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if func() bool {
+						switch r.(type) {
+						case *jrt.IOException:
+							return true
 						}
-						if func() bool {
-							switch r.(type) {
-							case *jrt.IOException:
-								return true
-							}
-							return false
-						}() {
-							e := r.(*jrt.IOException)
-							_ = e
-						} else {
-							panic(r)
-						}
-					}()
-					this.images.Add(swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(this.shell.GetDisplay()), resource))
+						return false
+					}() {
+						e := r.(*jrt.IOException)
+						_ = e
+					} else {
+						panic(r)
+					}
 				}()
-			}
+				var resource jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeOf(this.Impl()), fmt.Sprintf("%s.%s", fileName, format))
+				defer resource.Close()
+				this.images.Add(swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(this.shell.GetDisplay()), resource))
+			}()
 		}
 	}
 }

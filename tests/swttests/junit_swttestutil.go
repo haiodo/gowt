@@ -694,34 +694,32 @@ func SwtTestUtilGetPath(fileName string, tempFolder *jrt.Path) *jrt.Path {
 
 func SwtTestUtilCopyFile(sourceFilename string, destinationPath *jrt.Path) *jrt.Path {
 	if !jrt.FilesIsRegularFile(destinationPath, []any{}) {
-		{
-			var inStream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), sourceFilename)
-			func() {
-				defer inStream.Close()
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					return
+				}
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
 					}
-					if func() bool {
-						switch r.(type) {
-						case *jrt.IOException:
-							return true
-						}
-						return false
-					}() {
-						e := r.(*jrt.IOException)
-						_ = e
-						panic(jrt.NewIllegalArgumentException(e))
-					} else {
-						panic(r)
-					}
-				}()
-				junit.AssertNotNull(inStream, fmt.Sprintf("InputStream == null for file %s", sourceFilename))
-				jrt.FilesCreateDirectories(destinationPath.GetParent(), []any{})
-				jrt.FilesCopy(inStream, destinationPath, []any{})
+					return false
+				}() {
+					e := r.(*jrt.IOException)
+					_ = e
+					panic(jrt.NewIllegalArgumentException(e))
+				} else {
+					panic(r)
+				}
 			}()
-		}
+			var inStream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), sourceFilename)
+			defer inStream.Close()
+			junit.AssertNotNull(inStream, fmt.Sprintf("InputStream == null for file %s", sourceFilename))
+			jrt.FilesCreateDirectories(destinationPath.GetParent(), []any{})
+			jrt.FilesCopy(inStream, destinationPath, []any{})
+		}()
 	}
 	return destinationPath
 }

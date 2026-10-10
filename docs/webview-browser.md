@@ -27,6 +27,10 @@ wv.Navigate("app://localhost/")
 
 - The parent is a plain composite: pass `panel.Unwrap()`. Give the panel a `Fill{}` layout so the view fills it.
 - `SetCallHandler(f func(msg string) string) bool` sets a synchronous page-to-Go call (the page calls `window.gowt.call`); it is what `BrowserFunction` uses. `SetNavigationPolicy(f func(url string, mainFrame bool) bool) bool` lets Go cancel a navigation. Both return false if the engine lacks the feature.
+- `SetNewWindowHandler(f func(n *NewWindow) *WebView) bool` decides what `window.open` and `target=_blank` get: `f` makes the view with `n.NewOn(host, opts)` and returns it, or returns nil to refuse. `SetShowHandler` fires when the new page wants its window shown (with the `window.open` features), `SetCloseHandler` on `window.close`, `SetStatusHandler` with the link under the pointer. The new view shares the session and the user scripts of its opener.
+- `Load(LoadRequest)` navigates with a method (GET or POST), headers and a body. On Linux the POST goes through `net/http`, because WebKitGTK has no API for it: WebKit's cookie jar and proxy settings do not apply to that request.
+- `SetScriptEnabled(on bool) bool` switches page scripts for the pages loaded afterwards.
+- Package functions `Cookies(url, done)`, `SetCookie(url, header, done)` and `ClearSessionCookies(done)` reach the cookie store the views share (`WKHTTPCookieStore`, `WebKitCookieManager`, `ICoreWebView2CookieManager`). On Windows they need at least one live view.
 - `HandleScheme(scheme, handler)` serves pages from Go (an `embed.FS` or a map), with no local server. `AddScript(js)` runs before the page's own scripts. The native view is created at the first load, so call both before `Navigate`/`SetHTML`.
 - `Navigate(url)`, `SetHTML(html, baseURL)`, `Reload`, `Stop`, `GoBack`, `GoForward`, `URL()`.
 - `Eval(js, func(resultJSON string, err error))` is asynchronous; the result is JSON text.
@@ -51,10 +55,12 @@ b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.Loc
 
 ## Known gaps
 
-- Browser does not support the `OpenWindow`, `VisibilityWindow`, `CloseWindow`, `Authentication` and `StatusText` events, post data and headers in `SetUrl`, `SetJavascriptEnabled`, and the cookie statics.
+- Browser does not support the `Authentication` event. An `OpenWindowListener` that leaves `event.browser` unset refuses the window; while it runs, `Evaluate` and `Execute` on the opener only queue the script (the opener's page is blocked in `window.open`).
+- macOS reports `StatusText` through a script injected in every frame, so a page that swallows mouse events is silent. Windows needs a WebView2 Runtime with `ICoreWebView2_12` for it.
+- Windows `SetCookie` passes `Expires` as a double argument of a COM call through Go's syscall stub; that path has never run.
 - `Evaluate`, `Execute` and `GetText` called from inside a `BrowserFunction` throw at once.
 - History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and the call handler behind `BrowserFunction` (`WebView.SetCallHandler`) are implemented for all three engines (`webview_darwin.go`, `webview_linux.go`, `webview_windows.go`).
-- Browser tests (`tests/expected*.txt`): macOS 173 pass and 20 fail of 209, Linux 175 pass and 20 fail. On Windows all 209 Browser tests fail in the CrossOver bottle because it has no WebView2 Runtime, so Browser results exist only for macOS and Linux.
+- Browser tests (`tests/expected*.txt`): Linux 198 pass, 3 fail and 8 skipped of 209 (the three: two use an anonymous subclass of the test helper `EchoHttpServer`, which the translator does not dispatch to, and one assigns a null `Boolean` to a Go `bool`). macOS: the listed gaps are implemented but not yet run there. On Windows all 209 Browser tests fail in the CrossOver bottle because it has no WebView2 Runtime, so Browser results exist only for macOS and Linux.
 - Linux: WebKitGTK does not report which frame navigates, so the navigation policy always gets `mainFrame=true`.
 - Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) has never run on a real Windows.
 - The examples in this repository were type-checked for the three OSes but not run.

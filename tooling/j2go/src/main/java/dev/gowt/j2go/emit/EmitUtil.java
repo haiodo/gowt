@@ -268,15 +268,21 @@ final class EmitUtil {
 		return own.isEmpty() ? text : "func() bool { " + String.join("; ", own) + "; return " + text + " }()";
 	}
 
-	/** A boxed Integer (Go any) used as a number: unboxed by assertion (ceiling: null would panic). */
+	/** A boxed Integer or Double (Go any) used as a number: unboxed by assertion (ceiling: null would read as 0). */
 	static String unboxInteger(Emitter emitter, Expression e, Expression other, InfixExpression.Operator op, String text) {
 		ITypeBinding t = e.resolveTypeBinding();
-		if (t == null || !t.getErasure().getQualifiedName().equals("java.lang.Integer")) return text;
+		if (t == null) return text;
+		String goType = switch (t.getErasure().getQualifiedName()) {
+			case "java.lang.Integer" -> "int32";
+			case "java.lang.Double" -> "float64";
+			default -> null;
+		};
+		if (goType == null) return text;
 		boolean eq = op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS;
 		ITypeBinding o = other.resolveTypeBinding();
 		if (eq && (o == null || !o.isPrimitive())) return text;
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
-		return "jrt.Cast[int32](" + text + ")";
+		return "jrt.Cast[" + goType + "](" + text + ")";
 	}
 
 	/** `x++` on a boxed Integer: Go's x++ needs a number. */

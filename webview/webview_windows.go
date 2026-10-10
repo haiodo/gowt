@@ -42,6 +42,14 @@ type wv2Engine struct {
 	policy    func(url string, mainFrame bool) bool
 	call      func(msg string) string
 	cancelled bool
+
+	// popup is the request a view made by NewWindow.NewOn answers; it is completed once the view is ready.
+	popup  *NewWindow
+	newWin func(n *NewWindow) *WebView
+	show   func(WindowFeatures)
+	closeH func()
+	status func(text string)
+	script *bool
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
@@ -54,7 +62,7 @@ func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) 
 		host = swt.NewCompositeParentStyle(parent, swt.NONE)
 	}
 	e := &wv2Engine{w: w, host: host, opts: opts, dll: dll,
-		schemes: map[string]SchemeHandler{}, scripts: []string{wv2Bridge}}
+		schemes: map[string]SchemeHandler{}, scripts: []string{wv2Bridge}, popup: opts.popup}
 	e.host.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { e.resize() }))
 	e.host.AddFocusListener(swt.FocusListenerFocusGainedAdapter(func(*swt.FocusEvent) {
 		if e.ctl != 0 {
@@ -69,6 +77,10 @@ func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) 
 		}))
 	}
 	e.host.AddDisposeListener(disposeFunc(e.release))
+	if e.popup != nil {
+		// The event waits for this view: its creation starts now, not at the first load.
+		e.start()
+	}
 	return e, nil
 }
 
@@ -79,6 +91,16 @@ func (e *wv2Engine) start() {
 		return
 	}
 	e.started = true
+	if e.popup != nil {
+		// A window of the page lives in the environment of its opener.
+		op, ok := e.popup.opener.(*wv2Engine)
+		if !ok || op.env == 0 {
+			e.fail(errors.New("webview: the opener of the new window is gone"))
+			return
+		}
+		e.envReady(sOK, op.env)
+		return
+	}
 	var names []string
 	for s := range e.schemes {
 		names = append(names, s)
@@ -139,6 +161,8 @@ func (e *wv2Engine) controllerReady(hr, ctl uintptr) {
 		vcall(*out, 12, b2u(e.opts.Inspectable)) // put_AreDevToolsEnabled
 		release(*out)
 	}
+	e.applyScript()
+	liveEngines = append(liveEngines, e)
 	e.resize()
 	e.hookEvents()
 	for s := range e.schemes {
@@ -179,6 +203,7 @@ func (e *wv2Engine) ready() {
 		return
 	}
 	e.isReady = true
+	e.completePopup()
 	p := e.pending
 	e.pending = nil
 	for _, o := range p {
@@ -191,6 +216,7 @@ func (e *wv2Engine) fail(err error) {
 		return
 	}
 	e.err = err
+	e.refusePopup()
 	p := e.pending
 	e.pending = nil
 	for _, o := range p {
@@ -296,7 +322,8 @@ func (e *wv2Engine) hookEvents() {
 		}
 	})
 	add(55, e.view, func(_, args uintptr) { e.serve(args) }) // WebResourceRequested
-	add(13, e.ctl, func(_, args uintptr) {                   // MoveFocusRequested
+	e.hookWindowEvents(add)
+	add(13, e.ctl, func(_, args uintptr) { // MoveFocusRequested
 		reason := heap[int32]()
 		vcall(args, 3, addr(reason))
 		switch *reason {
@@ -502,6 +529,13 @@ func (e *wv2Engine) release() {
 		return
 	}
 	e.disposed = true
+	e.refusePopup()
+	for i, l := range liveEngines {
+		if l == e {
+			liveEngines = append(liveEngines[:i], liveEngines[i+1:]...)
+			break
+		}
+	}
 	e.closeController()
 	release(e.view)
 	release(e.ctl)

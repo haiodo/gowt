@@ -44,7 +44,7 @@ JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pa
 Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not verified" means no real run on that platform.
 
 **All platforms**
-- `Browser` (over package `webview`) does not support the OpenWindow, VisibilityWindow, CloseWindow and StatusText events, `setUrl` with post data or headers, `setJavascriptEnabled` or the cookie statics. On macOS and on Linux 20 Browser tests fail each: 13 for these reasons, 1 because a `System.setOut` capture is not translated, 6 "Round 23, not diagnosed" (BrowserFunction callbacks, a nil pointer). 16 Browser tests are skipped on macOS and 14 on Linux (mostly SWT assumptions for other engines).
+- `Browser` (over package `webview`) does not support the Authentication event; the other events, `setUrl` with post data or headers, `setJavascriptEnabled` and the cookie statics are implemented (Linux: 3 Browser tests fail of 209, see [docs/webview-browser.md](webview-browser.md); macOS and Windows: not yet run). 16 Browser tests are skipped on macOS and 8 on Linux (mostly SWT assumptions for other engines).
 - `ImageData.test_blit` and `test_blit_MsbLsb` fail everywhere: the test helper reflects on private methods and the translator has no rule for them.
 - `Accessible` is a stub; Clipboard, drag and drop and `StyledText` are not in the tree yet.
 

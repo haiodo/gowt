@@ -14,7 +14,7 @@ org.eclipse.swt.browser.Browser#createWebBrowser(org.eclipse.swt.widgets.Composi
 org.eclipse.swt.browser.Browser.WebViewUnavailableDialog
 
 # Test_org_eclipse_swt_browser_Browser (tests/swttests/browser_manual.go): JVM diagnostics (verbose runs only, and the Linux
-# /proc/self/fd listing), and the test of setJavascriptEnabled, which package webview cannot switch.
+# /proc/self/fd listing), and the test of setJavascriptEnabled, whose null Boolean a Go bool cannot hold.
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printSystemEnv()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printMemoryUse()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printThreadsInfo()

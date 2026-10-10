@@ -1951,7 +1951,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_mixedTypes
 	var additionalErrorInfo *jrt.AtomicReference = jrt.NewAtomicReference("")
 	var passed bool = this.WaitForPassCondition(func() bool {
 		if !("executing" == atomicArray.Get(0)) {
-			if (atomicArray.Get(0) == "str1") && (any(atomicArray.Get(1))) == 2 && (atomicArray.Get(2).(bool)) {
+			if (atomicArray.Get(0) == "str1") && jrt.Cast[float64]((any(atomicArray.Get(1)))) == 2 && (atomicArray.Get(2).(bool)) {
 				return true
 			} else {
 				additionalErrorInfo.Set("Resulting String are not as exected")
@@ -2116,7 +2116,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
-		if (atomicArray.Get(0) == "hellojava") && (any(atomicArray.Get(1))) == 5 && (atomicArray.Get(2).(bool)) {
+		if (atomicArray.Get(0) == "hellojava") && jrt.Cast[float64]((any(atomicArray.Get(1)))) == 5 && (atomicArray.Get(2).(bool)) {
 			return true
 		} else {
 			return false

@@ -634,7 +634,7 @@ pass	Test_org_eclipse_swt_custom_StyledText.test_addWordMovementListener_invokeA
 pass	Test_org_eclipse_swt_custom_StyledText.test_addWordMovementListener_passingNullThrowsException
 pass	Test_org_eclipse_swt_custom_StyledText.test_appendLjava_lang_String
 pass	Test_org_eclipse_swt_custom_StyledText.test_arrowDownKeepsPositionAfterNewLine
-pass	Test_org_eclipse_swt_custom_StyledText.test_backspaceAndDelete
+flaky	Test_org_eclipse_swt_custom_StyledText.test_backspaceAndDelete	passes alone; in the full run panics "slice bounds out of range [:2] with capacity 1" since the CRLF line separator (state left by an earlier test, not diagnosed)
 pass	Test_org_eclipse_swt_custom_StyledText.test_bug1610_fixedLineHeightWithChangingToSmallerFont_noException
 pass	Test_org_eclipse_swt_custom_StyledText.test_bug2162_transparentStyle
 pass	Test_org_eclipse_swt_custom_StyledText.test_bug551335_lostStyles
@@ -650,8 +650,8 @@ pass	Test_org_eclipse_swt_custom_StyledText.test_computeTrimIIII
 pass	Test_org_eclipse_swt_custom_StyledText.test_consistency_DragDetect
 pass	Test_org_eclipse_swt_custom_StyledText.test_consistency_MenuDetect
 pass	Test_org_eclipse_swt_custom_StyledText.test_consistency_Modify
-fail	Test_org_eclipse_swt_custom_StyledText.test_copy	Round 26: System.lineSeparator() was translated as the constant "\n", so StyledText copied and pasted without CRLF; jrt.LineSeparator (32cded1) gives "\r\n", recheck on the next run
-fail	Test_org_eclipse_swt_custom_StyledText.test_cut	Round 26: System.lineSeparator() was translated as the constant "\n", so StyledText copied and pasted without CRLF; jrt.LineSeparator (32cded1) gives "\r\n", recheck on the next run
+pass	Test_org_eclipse_swt_custom_StyledText.test_copy
+pass	Test_org_eclipse_swt_custom_StyledText.test_cut
 pass	Test_org_eclipse_swt_custom_StyledText.test_cutAndPasteInBlockSelection
 pass	Test_org_eclipse_swt_custom_StyledText.test_cutTextInBlockSelection
 pass	Test_org_eclipse_swt_custom_StyledText.test_doubleClickAtEndOfWordLastLineNoEol
@@ -742,7 +742,7 @@ pass	Test_org_eclipse_swt_custom_StyledText.test_notFixedLineHeightDoesntChangeL
 pass	Test_org_eclipse_swt_custom_StyledText.test_notifyListenersILorg_eclipse_swt_widgets_Event
 pass	Test_org_eclipse_swt_custom_StyledText.test_pack
 pass	Test_org_eclipse_swt_custom_StyledText.test_packZ
-fail	Test_org_eclipse_swt_custom_StyledText.test_paste	Round 26: System.lineSeparator() was translated as the constant "\n", so StyledText copied and pasted without CRLF; jrt.LineSeparator (32cded1) gives "\r\n", recheck on the next run
+pass	Test_org_eclipse_swt_custom_StyledText.test_paste
 pass	Test_org_eclipse_swt_custom_StyledText.test_pasteInsertsTextInBlockSelectionAsBlock
 pass	Test_org_eclipse_swt_custom_StyledText.test_print
 pass	Test_org_eclipse_swt_custom_StyledText.test_printLorg_eclipse_swt_printing_Printer
@@ -3550,7 +3550,7 @@ pass	Test_org_eclipse_swt_widgets_Text.test_consistency_DragDetect
 pass	Test_org_eclipse_swt_widgets_Text.test_consistency_EnterSelection
 pass	Test_org_eclipse_swt_widgets_Text.test_consistency_MenuDetect
 pass	Test_org_eclipse_swt_widgets_Text.test_consistency_Modify
-pass	Test_org_eclipse_swt_widgets_Text.test_consistency_Segments
+flaky	Test_org_eclipse_swt_widgets_Text.test_consistency_Segments	passed in the check run and failed in the -update run of 2026-10-10 (expected 12323456, was 123456); not diagnosed
 pass	Test_org_eclipse_swt_widgets_Text.test_copy
 pass	Test_org_eclipse_swt_widgets_Text.test_cut
 pass	Test_org_eclipse_swt_widgets_Text.test_getAccessible

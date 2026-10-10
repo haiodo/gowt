@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -168,9 +168,22 @@ win-snap-update: win-build snapcheck
 	$(WINSNAPRUN)
 	./$(BIN)/snapcheck -update -ref $(WINSNAPDIR) -got $(BIN)/snap/got
 
+# Screenshots for docs/ (GOWT_SNAP, docs/screenshots.md): docs/img/<widget>-<os>.png from examples/catalog and
+# docs/img/example-<name>-<os>.png from the other examples. macOS opens real windows; the Windows run needs the
+# CrossOver bottle; the Linux run needs the stand (LINUX_CTR and LINUX_PORT can be overridden).
+docs-shots:
+	tooling/docs-shots.sh macos
+
+win-docs-shots:
+	GOOS=windows GOARCH=amd64 EXT=.exe RUN="$(WINE) --bottle $(WINBOTTLE)" PATHPFX=Z: tooling/docs-shots.sh windows
+
+linux-docs-shots: linux-vnc
+	docker exec $(LINUX_CTR) sh -c 'cd /src && tooling/docs-shots.sh linux'
+
 # Linux GUI stand (Docker + Xvfb + noVNC), see docs/internals.md "Linux stand".
 LINUX_IMG = gowt-linux
 LINUX_CTR = gowt-linux
+LINUX_PORT = 6080
 
 linux-image:
 	docker build -t $(LINUX_IMG) tooling/linux
@@ -178,8 +191,8 @@ linux-image:
 # Idempotent: starts the stand container and prints the noVNC URL.
 linux-vnc:
 	@docker ps -q -f name=^$(LINUX_CTR)$$ | grep -q . || { docker rm -f $(LINUX_CTR) >/dev/null 2>&1; \
-	  docker run -d --name $(LINUX_CTR) -p 6080:6080 -v $(CURDIR):/src -v gowt-gocache:/gocache -v gowt-gomod:/gomod $(LINUX_IMG) >/dev/null; sleep 2; }
-	@echo http://localhost:6080/vnc.html
+	  docker run -d --name $(LINUX_CTR) -p $(LINUX_PORT):6080 -v $(CURDIR):/src -v gowt-gocache:/gocache -v gowt-gomod:/gomod $(LINUX_IMG) >/dev/null; sleep 2; }
+	@echo http://localhost:$(LINUX_PORT)/vnc.html
 
 # Regenerates internal/gtk from the GIR files in the stand (tooling/girgen) and checks the generated
 # struct layouts against the C compiler.

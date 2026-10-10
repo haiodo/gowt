@@ -4,22 +4,44 @@
 package webkit
 
 var (
+	g_bytes_new                                                   func(a0 uintptr, a1 uintptr) uintptr
+	g_bytes_unref                                                 func(self uintptr)
 	g_error_free                                                  func(self uintptr)
 	g_free                                                        func(a0 uintptr)
+	g_list_free                                                   func(a0 uintptr)
 	g_malloc                                                      func(a0 uintptr) uintptr
 	g_memory_input_stream_new_from_data                           func(a0 uintptr, a1 int, a2 uintptr) uintptr
+	g_object_ref                                                  func(self uintptr) uintptr
+	g_object_ref_sink                                             func(self uintptr) uintptr
 	g_object_unref                                                func(self uintptr)
 	g_signal_connect_data                                         func(a0 uintptr, a1 string, a2 uintptr, a3 uintptr, a4 uintptr, a5 int32) uintptr
 	g_signal_handler_disconnect                                   func(a0 uintptr, a1 uintptr)
+	g_uri_parse                                                   func(a0 string, a1 int32, gerror uintptr) uintptr
+	g_uri_unref                                                   func(self uintptr)
 	gtk_container_add                                             func(self uintptr, a0 uintptr)
 	gtk_widget_destroy                                            func(self uintptr)
 	gtk_widget_set_size_request                                   func(self uintptr, a0 int32, a1 int32)
 	gtk_widget_show                                               func(self uintptr)
 	jsc_value_is_undefined                                        func(self uintptr) int32
 	jsc_value_to_string                                           func(self uintptr) uintptr
+	soup_cookie_free                                              func(self uintptr)
+	soup_cookie_get_expires                                       func(self uintptr) uintptr
+	soup_cookie_get_name                                          func(self uintptr) uintptr
+	soup_cookie_get_value                                         func(self uintptr) uintptr
+	soup_cookie_parse                                             func(a0 string, a1 uintptr) uintptr
 	soup_message_headers_append                                   func(self uintptr, a0 string, a1 string)
 	soup_message_headers_new                                      func(a0 int32) uintptr
 	soup_message_headers_unref                                    func(self uintptr)
+	webkit_cookie_manager_add_cookie                              func(self uintptr, a0 uintptr, a1 uintptr, a2 uintptr, a3 uintptr)
+	webkit_cookie_manager_add_cookie_finish                       func(self uintptr, a0 uintptr, gerror uintptr) int32
+	webkit_cookie_manager_delete_cookie                           func(self uintptr, a0 uintptr, a1 uintptr, a2 uintptr, a3 uintptr)
+	webkit_cookie_manager_delete_cookie_finish                    func(self uintptr, a0 uintptr, gerror uintptr) int32
+	webkit_cookie_manager_get_all_cookies                         func(self uintptr, a0 uintptr, a1 uintptr, a2 uintptr)
+	webkit_cookie_manager_get_all_cookies_finish                  func(self uintptr, a0 uintptr, gerror uintptr) uintptr
+	webkit_cookie_manager_get_cookies                             func(self uintptr, a0 string, a1 uintptr, a2 uintptr, a3 uintptr)
+	webkit_cookie_manager_get_cookies_finish                      func(self uintptr, a0 uintptr, gerror uintptr) uintptr
+	webkit_hit_test_result_context_is_link                        func(self uintptr) int32
+	webkit_hit_test_result_get_link_uri                           func(self uintptr) uintptr
 	webkit_javascript_result_get_js_value                         func(self uintptr) uintptr
 	webkit_navigation_action_get_request                          func(self uintptr) uintptr
 	webkit_navigation_policy_decision_get_navigation_action       func(self uintptr) uintptr
@@ -31,8 +53,13 @@ var (
 	webkit_script_dialog_prompt_set_text                          func(self uintptr, a0 string)
 	webkit_security_manager_register_uri_scheme_as_cors_enabled   func(self uintptr, a0 string)
 	webkit_security_manager_register_uri_scheme_as_secure         func(self uintptr, a0 string)
+	webkit_settings_new                                           func() uintptr
 	webkit_settings_set_enable_developer_extras                   func(self uintptr, a0 int32)
+	webkit_settings_set_enable_javascript                         func(self uintptr, a0 int32)
+	webkit_settings_set_javascript_can_open_windows_automatically func(self uintptr, a0 int32)
+	webkit_uri_request_get_http_headers                           func(self uintptr) uintptr
 	webkit_uri_request_get_uri                                    func(self uintptr) uintptr
+	webkit_uri_request_new                                        func(a0 string) uintptr
 	webkit_uri_scheme_request_finish_with_response                func(self uintptr, a0 uintptr)
 	webkit_uri_scheme_request_get_http_method                     func(self uintptr) uintptr
 	webkit_uri_scheme_request_get_uri                             func(self uintptr) uintptr
@@ -45,8 +72,11 @@ var (
 	webkit_user_content_manager_unregister_script_message_handler func(self uintptr, a0 string)
 	webkit_user_script_new                                        func(a0 string, a1 int32, a2 int32, a3 uintptr, a4 uintptr) uintptr
 	webkit_user_script_unref                                      func(self uintptr)
+	webkit_web_context_get_default                                func() uintptr
 	webkit_web_context_get_security_manager                       func(self uintptr) uintptr
+	webkit_web_context_get_website_data_manager                   func(self uintptr) uintptr
 	webkit_web_context_new                                        func() uintptr
+	webkit_web_context_new_with_website_data_manager              func(a0 uintptr) uintptr
 	webkit_web_context_register_uri_scheme                        func(self uintptr, a0 string, a1 uintptr, a2 uintptr, a3 uintptr)
 	webkit_web_view_can_go_back                                   func(self uintptr) int32
 	webkit_web_view_can_go_forward                                func(self uintptr) int32
@@ -56,32 +86,65 @@ var (
 	webkit_web_view_get_title                                     func(self uintptr) uintptr
 	webkit_web_view_get_uri                                       func(self uintptr) uintptr
 	webkit_web_view_get_user_content_manager                      func(self uintptr) uintptr
+	webkit_web_view_get_window_properties                         func(self uintptr) uintptr
 	webkit_web_view_go_back                                       func(self uintptr)
 	webkit_web_view_go_forward                                    func(self uintptr)
+	webkit_web_view_load_bytes                                    func(self uintptr, a0 uintptr, a1 uintptr, a2 uintptr, a3 uintptr)
 	webkit_web_view_load_html                                     func(self uintptr, a0 string, a1 uintptr)
+	webkit_web_view_load_request                                  func(self uintptr, a0 uintptr)
 	webkit_web_view_load_uri                                      func(self uintptr, a0 string)
 	webkit_web_view_new_with_context                              func(a0 uintptr) uintptr
+	webkit_web_view_new_with_related_view                         func(a0 uintptr) uintptr
 	webkit_web_view_reload                                        func(self uintptr)
+	webkit_web_view_set_settings                                  func(self uintptr, a0 uintptr)
 	webkit_web_view_stop_loading                                  func(self uintptr)
+	webkit_website_data_manager_get_cookie_manager                func(self uintptr) uintptr
+	webkit_window_properties_get_geometry                         func(self uintptr, a0 uintptr)
+	webkit_window_properties_get_locationbar_visible              func(self uintptr) int32
+	webkit_window_properties_get_menubar_visible                  func(self uintptr) int32
+	webkit_window_properties_get_statusbar_visible                func(self uintptr) int32
+	webkit_window_properties_get_toolbar_visible                  func(self uintptr) int32
 )
 
 func bindAll() (missing []string) {
+	bindOne(&g_bytes_new, "g_bytes_new", &missing)
+	bindOne(&g_bytes_unref, "g_bytes_unref", &missing)
 	bindOne(&g_error_free, "g_error_free", &missing)
 	bindOne(&g_free, "g_free", &missing)
+	bindOne(&g_list_free, "g_list_free", &missing)
 	bindOne(&g_malloc, "g_malloc", &missing)
 	bindOne(&g_memory_input_stream_new_from_data, "g_memory_input_stream_new_from_data", &missing)
+	bindOne(&g_object_ref, "g_object_ref", &missing)
+	bindOne(&g_object_ref_sink, "g_object_ref_sink", &missing)
 	bindOne(&g_object_unref, "g_object_unref", &missing)
 	bindOne(&g_signal_connect_data, "g_signal_connect_data", &missing)
 	bindOne(&g_signal_handler_disconnect, "g_signal_handler_disconnect", &missing)
+	bindOne(&g_uri_parse, "g_uri_parse", &missing)
+	bindOne(&g_uri_unref, "g_uri_unref", &missing)
 	bindOne(&gtk_container_add, "gtk_container_add", &missing)
 	bindOne(&gtk_widget_destroy, "gtk_widget_destroy", &missing)
 	bindOne(&gtk_widget_set_size_request, "gtk_widget_set_size_request", &missing)
 	bindOne(&gtk_widget_show, "gtk_widget_show", &missing)
 	bindOne(&jsc_value_is_undefined, "jsc_value_is_undefined", &missing)
 	bindOne(&jsc_value_to_string, "jsc_value_to_string", &missing)
+	bindOne(&soup_cookie_free, "soup_cookie_free", &missing)
+	bindOne(&soup_cookie_get_expires, "soup_cookie_get_expires", &missing)
+	bindOne(&soup_cookie_get_name, "soup_cookie_get_name", &missing)
+	bindOne(&soup_cookie_get_value, "soup_cookie_get_value", &missing)
+	bindOne(&soup_cookie_parse, "soup_cookie_parse", &missing)
 	bindOne(&soup_message_headers_append, "soup_message_headers_append", &missing)
 	bindOne(&soup_message_headers_new, "soup_message_headers_new", &missing)
 	bindOne(&soup_message_headers_unref, "soup_message_headers_unref", &missing)
+	bindOne(&webkit_cookie_manager_add_cookie, "webkit_cookie_manager_add_cookie", &missing)
+	bindOne(&webkit_cookie_manager_add_cookie_finish, "webkit_cookie_manager_add_cookie_finish", &missing)
+	bindOne(&webkit_cookie_manager_delete_cookie, "webkit_cookie_manager_delete_cookie", &missing)
+	bindOne(&webkit_cookie_manager_delete_cookie_finish, "webkit_cookie_manager_delete_cookie_finish", &missing)
+	bindOne(&webkit_cookie_manager_get_all_cookies, "webkit_cookie_manager_get_all_cookies", &missing)
+	bindOne(&webkit_cookie_manager_get_all_cookies_finish, "webkit_cookie_manager_get_all_cookies_finish", &missing)
+	bindOne(&webkit_cookie_manager_get_cookies, "webkit_cookie_manager_get_cookies", &missing)
+	bindOne(&webkit_cookie_manager_get_cookies_finish, "webkit_cookie_manager_get_cookies_finish", &missing)
+	bindOne(&webkit_hit_test_result_context_is_link, "webkit_hit_test_result_context_is_link", &missing)
+	bindOne(&webkit_hit_test_result_get_link_uri, "webkit_hit_test_result_get_link_uri", &missing)
 	bindOne(&webkit_javascript_result_get_js_value, "webkit_javascript_result_get_js_value", &missing)
 	bindOne(&webkit_navigation_action_get_request, "webkit_navigation_action_get_request", &missing)
 	bindOne(&webkit_navigation_policy_decision_get_navigation_action, "webkit_navigation_policy_decision_get_navigation_action", &missing)
@@ -93,8 +156,13 @@ func bindAll() (missing []string) {
 	bindOne(&webkit_script_dialog_prompt_set_text, "webkit_script_dialog_prompt_set_text", &missing)
 	bindOne(&webkit_security_manager_register_uri_scheme_as_cors_enabled, "webkit_security_manager_register_uri_scheme_as_cors_enabled", &missing)
 	bindOne(&webkit_security_manager_register_uri_scheme_as_secure, "webkit_security_manager_register_uri_scheme_as_secure", &missing)
+	bindOne(&webkit_settings_new, "webkit_settings_new", &missing)
 	bindOne(&webkit_settings_set_enable_developer_extras, "webkit_settings_set_enable_developer_extras", &missing)
+	bindOne(&webkit_settings_set_enable_javascript, "webkit_settings_set_enable_javascript", &missing)
+	bindOne(&webkit_settings_set_javascript_can_open_windows_automatically, "webkit_settings_set_javascript_can_open_windows_automatically", &missing)
+	bindOne(&webkit_uri_request_get_http_headers, "webkit_uri_request_get_http_headers", &missing)
 	bindOne(&webkit_uri_request_get_uri, "webkit_uri_request_get_uri", &missing)
+	bindOne(&webkit_uri_request_new, "webkit_uri_request_new", &missing)
 	bindOne(&webkit_uri_scheme_request_finish_with_response, "webkit_uri_scheme_request_finish_with_response", &missing)
 	bindOne(&webkit_uri_scheme_request_get_http_method, "webkit_uri_scheme_request_get_http_method", &missing)
 	bindOne(&webkit_uri_scheme_request_get_uri, "webkit_uri_scheme_request_get_uri", &missing)
@@ -107,8 +175,11 @@ func bindAll() (missing []string) {
 	bindOne(&webkit_user_content_manager_unregister_script_message_handler, "webkit_user_content_manager_unregister_script_message_handler", &missing)
 	bindOne(&webkit_user_script_new, "webkit_user_script_new", &missing)
 	bindOne(&webkit_user_script_unref, "webkit_user_script_unref", &missing)
+	bindOne(&webkit_web_context_get_default, "webkit_web_context_get_default", &missing)
 	bindOne(&webkit_web_context_get_security_manager, "webkit_web_context_get_security_manager", &missing)
+	bindOne(&webkit_web_context_get_website_data_manager, "webkit_web_context_get_website_data_manager", &missing)
 	bindOne(&webkit_web_context_new, "webkit_web_context_new", &missing)
+	bindOne(&webkit_web_context_new_with_website_data_manager, "webkit_web_context_new_with_website_data_manager", &missing)
 	bindOne(&webkit_web_context_register_uri_scheme, "webkit_web_context_register_uri_scheme", &missing)
 	bindOne(&webkit_web_view_can_go_back, "webkit_web_view_can_go_back", &missing)
 	bindOne(&webkit_web_view_can_go_forward, "webkit_web_view_can_go_forward", &missing)
@@ -118,12 +189,23 @@ func bindAll() (missing []string) {
 	bindOne(&webkit_web_view_get_title, "webkit_web_view_get_title", &missing)
 	bindOne(&webkit_web_view_get_uri, "webkit_web_view_get_uri", &missing)
 	bindOne(&webkit_web_view_get_user_content_manager, "webkit_web_view_get_user_content_manager", &missing)
+	bindOne(&webkit_web_view_get_window_properties, "webkit_web_view_get_window_properties", &missing)
 	bindOne(&webkit_web_view_go_back, "webkit_web_view_go_back", &missing)
 	bindOne(&webkit_web_view_go_forward, "webkit_web_view_go_forward", &missing)
+	bindOne(&webkit_web_view_load_bytes, "webkit_web_view_load_bytes", &missing)
 	bindOne(&webkit_web_view_load_html, "webkit_web_view_load_html", &missing)
+	bindOne(&webkit_web_view_load_request, "webkit_web_view_load_request", &missing)
 	bindOne(&webkit_web_view_load_uri, "webkit_web_view_load_uri", &missing)
 	bindOne(&webkit_web_view_new_with_context, "webkit_web_view_new_with_context", &missing)
+	bindOne(&webkit_web_view_new_with_related_view, "webkit_web_view_new_with_related_view", &missing)
 	bindOne(&webkit_web_view_reload, "webkit_web_view_reload", &missing)
+	bindOne(&webkit_web_view_set_settings, "webkit_web_view_set_settings", &missing)
 	bindOne(&webkit_web_view_stop_loading, "webkit_web_view_stop_loading", &missing)
+	bindOne(&webkit_website_data_manager_get_cookie_manager, "webkit_website_data_manager_get_cookie_manager", &missing)
+	bindOne(&webkit_window_properties_get_geometry, "webkit_window_properties_get_geometry", &missing)
+	bindOne(&webkit_window_properties_get_locationbar_visible, "webkit_window_properties_get_locationbar_visible", &missing)
+	bindOne(&webkit_window_properties_get_menubar_visible, "webkit_window_properties_get_menubar_visible", &missing)
+	bindOne(&webkit_window_properties_get_statusbar_visible, "webkit_window_properties_get_statusbar_visible", &missing)
+	bindOne(&webkit_window_properties_get_toolbar_visible, "webkit_window_properties_get_toolbar_visible", &missing)
 	return
 }

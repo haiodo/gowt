@@ -54,7 +54,7 @@ final class ConstructorEmitter {
 		String goName = emitter.ctorGoName(mb, prefix);
 		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape
 
-		boolean needsImpl = !ci.root.children.isEmpty();
+		boolean needsImpl = ci.root.hasImpl();
 		// Only the public New<X> entry point widens its params (README "Round 7 api") - init<X>
 		// (below) is always unexported and keeps concrete *C, cheap for generated-code callers.
 		List<String> pubPrelude = new ArrayList<>();
@@ -78,7 +78,7 @@ final class ConstructorEmitter {
 	/** Java's implicit no-arg constructor (JLS 8.8.9): same New<X>()/init<X>() split as
 	 * emitConstructor, so a subclass's explicit ctor can still call this init<X>(). */
 	void emitImplicitConstructor(TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
-		boolean needsImpl = !ci.root.children.isEmpty();
+		boolean needsImpl = ci.root.hasImpl();
 		// JLS 8.8.9: the implicit constructor's own accessibility matches the class's.
 		boolean pub = Modifier.isPublic(td.getModifiers());
 		String initName = "init" + ci.goFuncPrefix; // init methods are always unexported by shape
@@ -124,7 +124,7 @@ final class ConstructorEmitter {
 		TypeModel.ClassInfo f = ci.foreignSuper;
 		String name = emitter.ctorGoName(ctor, emitter.qualify("New" + f.goFuncPrefix, f));
 		return "\tthis." + f.goTypeName + " = " + name + "(" + String.join(", ", args) + ")\n"
-				+ (f.root.children.isEmpty() ? "" : "\tthis." + (ci.children.isEmpty() ? "" : f.goTypeName + ".") + "SetImpl_(this)\n");
+				+ (!f.root.hasImpl() ? "" : "\tthis." + (ci.children.isEmpty() ? "" : f.goTypeName + ".") + "SetImpl_(this)\n");
 	}
 
 	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td) {
@@ -231,7 +231,7 @@ final class ConstructorEmitter {
 		}
 		// Object.clone(): a shallow copy; a hierarchy root's impl must point at the copy, not the original.
 		if (mb.getDeclaringClass().getQualifiedName().equals("java.lang.Object") && base.equals("Clone") && emitter.anonThis == null) {
-			return "func() any { c := *this; " + (emitter.currentClassInfo.root.children.isEmpty() ? "" : "c.impl = &c; ") + "return &c }()";
+			return "func() any { c := *this; " + (!emitter.currentClassInfo.root.hasImpl() ? "" : "c.impl = &c; ") + "return &c }()";
 		}
 		String fieldPath;
 		// Inside an anonymous subclass `this` is the holder variable and its base is the embedded field.

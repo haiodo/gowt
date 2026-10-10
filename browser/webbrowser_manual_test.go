@@ -16,6 +16,10 @@ func TestNormalizeAndEscapeURL(t *testing.T) {
 		"https://h/p?q=a b#frag": "https://h/p?q=a%20b#frag",
 		"about:blank":            "about:blank",
 		"http://h/%41é":          "http://h/%41%C3%A9",
+		"localhost:8080/x?a=b":   "http://localhost:8080/x?a=b",
+		"localhost:8080":         "http://localhost:8080",
+		"mailto:a@b":             "mailto:a@b",
+		"javascript:1":           "javascript:1",
 	} {
 		if got := escapeURL(normalizeURL(in)); got != want {
 			t.Errorf("%q -> %q, want %q", in, got, want)
@@ -172,5 +176,16 @@ func TestExecuteWrapperInNode(t *testing.T) {
 		if got := strings.TrimSpace(string(out)); got != want {
 			t.Errorf("%q: %s, want %s", script, got, want)
 		}
+	}
+}
+
+func TestParseHeaders(t *testing.T) {
+	got := parseHeaders([]string{"Content-Type: text/plain", "X-A:b", "no colon", ": empty", " X-C : d "})
+	want := map[string]string{"Content-Type": "text/plain", "X-A": "b", "X-C": "d"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+	if parseHeaders(nil) != nil {
+		t.Error("no headers must give nil")
 	}
 }

@@ -3,6 +3,10 @@
 package webview_test
 
 import (
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"runtime"
 	"strings"
@@ -249,5 +253,144 @@ func TestWebViewOptional(t *testing.T) {
 	}
 	if len(finished) != 3 {
 		t.Errorf("blocked navigation finished: %v", finished)
+	}
+}
+
+// The request, cookie, script switch and window features, against a local HTTP server.
+func TestWebViewWindows(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		fmt.Fprintf(w, "<title>echo</title><body>%s|%s|%s", r.Method, r.Header.Get("X-Test"), b)
+	})
+	mux.HandleFunc("/ran", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "<title>off</title><script>document.title='on'</script>")
+	})
+	mux.HandleFunc("/open", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "<title>open</title><script>window.open('/child','','width=300,height=200')</script>")
+	})
+	mux.HandleFunc("/child", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "<title>child</title><script>setTimeout(function(){window.close()},300)</script>")
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	var finished int
+	var title, titleOff, titleOn, text, cookieSet, cookieGot, cookieCleared, childURL, childTitle string
+	var cookiesOK, closed, shown bool
+	var features webview.WindowFeatures
+	var err error
+	onMain(func() {
+		err = g.Run(func(app *g.App) {
+			w := app.Window("webview-windows")
+			w.SetLayout(g.Fill{})
+			host := w.Panel()
+			host.SetLayout(g.Fill{})
+			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
+			if e != nil {
+				t.Error(e)
+				app.Quit()
+				return
+			}
+			if !wv.SetNewWindowHandler(func(n *webview.NewWindow) *webview.WebView {
+				childURL = n.URL
+				ph := host.Panel()
+				pv, e := n.NewOn(ph.Unwrap(), webview.Options{})
+				if e != nil {
+					t.Error(e)
+					return nil
+				}
+				pv.OnTitleChanged = func(s string) { childTitle = s }
+				pv.SetShowHandler(func(f webview.WindowFeatures) { shown, features = true, f })
+				pv.SetCloseHandler(func() { closed = true })
+				return pv
+			}) {
+				t.Error("engine lacks the new window handler")
+			}
+			wv.OnNavigationFinished = func(string) { finished++ }
+			wv.OnTitleChanged = func(s string) { title = s }
+			w.SetSize(500, 400)
+			w.Show()
+			evalText := func(js string, dst *string) {
+				wv.Eval(js, func(r string, e error) { *dst = r })
+			}
+			wait := func(n int) func() bool { return func() bool { return finished >= n } }
+			steps := []struct {
+				run  func()
+				done func() bool
+			}{
+				{func() {
+					wv.Load(webview.LoadRequest{URL: srv.URL + "/echo", Headers: map[string]string{"X-Test": "a"}})
+				}, wait(1)},
+				{func() { evalText("document.body.innerText", &text) }, func() bool { return text != "" }},
+				{func() {
+					wv.Load(webview.LoadRequest{URL: srv.URL + "/echo", Method: "POST", Headers: map[string]string{"X-Test": "b", "Content-Type": "text/plain"}, Body: []byte("k=v")})
+				}, wait(2)},
+				{func() { text = ""; evalText("document.body.innerText", &text) }, func() bool { return text != "" && finished >= 2 }},
+				{func() {
+					webview.SetCookie(srv.URL+"/", "c1=v1", func(ok bool) { cookieSet = fmt.Sprint(ok) })
+				}, func() bool { return cookieSet != "" }},
+				{func() {
+					webview.Cookies(srv.URL+"/", func(cs []webview.Cookie, ok bool) {
+						cookiesOK = ok
+						for _, c := range cs {
+							cookieGot += c.Name + "=" + c.Value + ";"
+						}
+						cookieGot += "."
+					})
+				}, func() bool { return cookieGot != "" }},
+				{func() {
+					webview.ClearSessionCookies(func() {
+						webview.Cookies(srv.URL+"/", func(cs []webview.Cookie, ok bool) { cookieCleared = fmt.Sprint(len(cs)) })
+					})
+				}, func() bool { return cookieCleared != "" }},
+				{func() { wv.SetScriptEnabled(false); wv.Navigate(srv.URL + "/ran") }, wait(3)},
+				{func() { titleOff = title; wv.SetScriptEnabled(true); wv.Navigate(srv.URL + "/ran") }, wait(4)},
+				{func() { titleOn = title }, func() bool { return titleOn == "on" }},
+				{func() { wv.Navigate(srv.URL + "/open") }, func() bool { return closed }},
+			}
+			i, deadline := 0, time.Now().Add(40*time.Second)
+			var tick func()
+			tick = func() {
+				if i < len(steps) && steps[i].run != nil {
+					steps[i].run()
+					steps[i].run = nil
+				}
+				if i < len(steps) && steps[i].done() {
+					i++
+					if i < len(steps) {
+						steps[i].run()
+						steps[i].run = nil
+					}
+				}
+				if i == len(steps) || time.Now().After(deadline) {
+					if i < len(steps) {
+						t.Errorf("stuck at step %d: finished=%d text=%q", i, finished, text)
+					}
+					w.Close()
+					return
+				}
+				app.After(20*time.Millisecond, tick)
+			}
+			tick()
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(text, "POST|b|k=v") {
+		t.Errorf("POST answer %q", text)
+	}
+	if cookieSet != "true" || !cookiesOK || cookieGot != "c1=v1;." || cookieCleared != "0" {
+		t.Errorf("cookies set=%s ok=%v got=%q cleared=%s", cookieSet, cookiesOK, cookieGot, cookieCleared)
+	}
+	if titleOff != "off" || titleOn != "on" {
+		t.Errorf("script switch off=%q on=%q", titleOff, titleOn)
+	}
+	if !strings.HasSuffix(childURL, "/child") || !shown || childTitle != "child" || !closed {
+		t.Errorf("window url=%q shown=%v title=%q closed=%v features=%+v", childURL, shown, childTitle, closed, features)
 	}
 }

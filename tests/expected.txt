@@ -14,22 +14,22 @@ skip	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePa
 skip	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableOnLoad_concurrentInstances_issue20	Assumption failed: Race condition is specific to async Edge/WebView2 implementation
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_afterPageReload
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls	Round 23, not diagnosed: Java failed to get a callback from javascript. Test timed out ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2022
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls	evaluate inside a BrowserFunction: the page is blocked in window.prompt and WKWebView evaluates out of process, so webbrowser_manual.go throws ERROR_FAILED_EVALUATE (inCall); SWT's nested evaluate has no equivalent
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_String
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_boolean
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_integer
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningInt
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningString
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_multipleValues	Round 23, not diagnosed: Values not set. Test timed out. Array should be ["hellojava", 5, true], but is: [hellojava, 5, true] ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2114
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_multipleValues	the translated `(Double) x == 5` compared an int with a float64; j2go now unboxes the Double (TSK-2026-10-03-product-35), expected to pass: confirm on macOS
 skip	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_createFunctionInsideCallback	Assumption failed: BrowserFunction availability before the page's inline scripts is specific to the Edge/WebView2 implementation
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_disposedFunctionRemovedAfterNavigation
 skip	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20	Assumption failed: BrowserFunction availability during concurrent initialization is not reliable on Cocoa
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multiprocess	Round 23, not diagnosed: panic: Can't find variable: javaFunc at browser/webbrowser_manual.go:341
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multiprocess	Evaluate before any page was loaded: BrowserFunctions are defined by the init script of a page; Browser now loads an empty page first (TSK-2026-10-03-product-35), expected to pass: confirm on macOS
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_redefineSameNameSurvivesNavigation
-fail	Test_org_eclipse_swt_browser_Browser.test_ClearAllSessionCookies	cookie statics (getCookie/setCookie/clearSessions) not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_ClearAllSessionCookies	cookie statics (getCookie/setCookie/clearSessions) not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addWithNullArg
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_close	CloseWindow event (window.close) not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_close	CloseWindow event (window.close) not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_removeWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_ConstructorLorg_eclipse_swt_widgets_CompositeI
@@ -55,11 +55,11 @@ pass	Test_org_eclipse_swt_browser_Browser.test_NoExceptionsThrownInFillLayout
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addWithNulArg
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_closeShell
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_removeWithNullArg
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_completed_Called
@@ -69,7 +69,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapt
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_removeWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull
-fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	StatusText event not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	StatusText event not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg
 skip	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	@Disabled: Too fragile on CI, Display.getDefault().post(event) does not work reliably
 pass	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806
@@ -80,8 +80,8 @@ pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_event
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_removeWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addWithNull
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_eventSize	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells	OpenWindow/VisibilityWindow events not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_eventSize	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
+fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells	OpenWindow/VisibilityWindow events not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newListener_closeShell
@@ -112,7 +112,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeII
 pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeIIZ
 pass	Test_org_eclipse_swt_browser_Browser.test_computeTrimIIII
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_OpeningNewWindow
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes	Round 23, not diagnosed: Javascript called java but passed wrong values: [str1, 2, true] ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1956
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes	the translated `(Double) x == 2` compared an int with a float64; j2go now unboxes the Double (TSK-2026-10-03-product-35), expected to pass: confirm on macOS
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_numbers
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_strings
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_boolean
@@ -125,7 +125,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_normal
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_returnMoved
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_string
 pass	Test_org_eclipse_swt_browser_Browser.test_evalute_Cookies
-fail	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener	CloseWindow event (window.close) not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener	CloseWindow event (window.close) not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_execute_withNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_forward
 pass	Test_org_eclipse_swt_browser_Browser.test_getAccessible
@@ -145,7 +145,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_getText_javascriptDisabled
 pass	Test_org_eclipse_swt_browser_Browser.test_getText_script
 pass	Test_org_eclipse_swt_browser_Browser.test_getUrl
 pass	Test_org_eclipse_swt_browser_Browser.test_getVerticalBar
-fail	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies	cookie statics (getCookie/setCookie/clearSessions) not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies	cookie statics (getCookie/setCookie/clearSessions) not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 pass	Test_org_eclipse_swt_browser_Browser.test_isBackEnabled
 pass	Test_org_eclipse_swt_browser_Browser.test_isDisposed
 pass	Test_org_eclipse_swt_browser_Browser.test_isEnabled
@@ -183,7 +183,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundAlphaLorg_eclipse_sw
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundLorg_eclipse_swt_graphics_Color
 skip	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled	Assumption failed: setJavascriptEnabled is not supported over package webview
-fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	setJavascriptEnabled not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	the translated test keeps a Java Boolean in a Go bool: evaluate returns nil with JavaScript off, `.(bool)` panics in the ProgressListener and AssertNull gets a bool (j2go maps Boolean to bool, no null)
 pass	Test_org_eclipse_swt_browser_Browser.test_setLayoutDataLjava_lang_Object
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationII
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationLorg_eclipse_swt_graphics_Point
@@ -206,11 +206,11 @@ skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_connection_closes_pre
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_file_url	Assumption failed: Handling of invalid URLs is platform dependent
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_invalid_url	Assumption failed: Handling of invalid URLs is platform dependent
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote	Assumption failed: Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	setUrl with post data/headers not supported over package webview (Round 23 known gap)
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	setUrl with post data/headers not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
 fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	j2go: new PrintStream (System.setOut capture) not translated in junit_capturedoutput.go
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibility_and_sizing
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibleZ
-fail	Test_org_eclipse_swt_browser_Browser.test_stop	Round 23, not diagnosed: expected: <false> but was: <true> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1613
+fail	Test_org_eclipse_swt_browser_Browser.test_stop	the handleGetEcho override that blocks on a latch is never called (EchoHttpServer is translated without virtual dispatch: its constructor binds this.HandleGetEcho, so the anonymous subclass override of the test is never called): the page loads at once and Completed fires within 1 s
 pass	Test_org_eclipse_swt_browser_Browser.test_toControlII
 pass	Test_org_eclipse_swt_browser_Browser.test_toControlLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_browser_Browser.test_toDisplayII

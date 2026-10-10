@@ -66,3 +66,10 @@ func TestOSNameFollowsGOOS(t *testing.T) {
 		t.Fatal("javaOSName")
 	}
 }
+
+func TestListEquals(t *testing.T) {
+	a, b := ListOf("x", "y"), ListCopyOf(ListOf("x", "y"))
+	if !a.Equals(b) || a.Equals(ListOf("y", "x")) || a.Equals(ListOf("x")) || a.Equals("x") {
+		t.Error("List.Equals compares elements in order")
+	}
+}

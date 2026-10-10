@@ -44,7 +44,7 @@ JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pa
 Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not verified" means no real run on that platform.
 
 **All platforms**
-- `Browser` (over package `webview`) does not support the OpenWindow, VisibilityWindow, CloseWindow and StatusText events, `setUrl` with post data or headers, `setJavascriptEnabled` or the cookie statics. On macOS and on Linux 20 Browser tests fail each: 13 for these reasons, 1 because a `System.setOut` capture is not translated, 6 "Round 23, not diagnosed" (BrowserFunction callbacks, a nil pointer). 16 Browser tests are skipped on macOS and 14 on Linux (mostly SWT assumptions for other engines).
+- `Browser` (over package `webview`) does not support the Authentication event; the other events, `setUrl` with post data or headers, `setJavascriptEnabled` and the cookie statics are implemented (Linux: no Browser test fails; macOS and Windows: not yet run). 16 Browser tests are skipped on macOS and 8 on Linux (mostly SWT assumptions for other engines).
 - `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`) are skipped everywhere: upstream comments the class out of `AllWidgetTests` ("Failing test"), and the emulated CoolBar gives a lone item the whole bar width.
 - `Accessible` is a stub.
 - Drag and drop was never driven with a real mouse (no test does); `FileTransfer` and `URLTransfer` native-to-Java tests are disabled on macOS, `URLTransfer` is not wrapped. Cross-process clipboard tests are skipped (no peer process), so only same-process round trips are tested.

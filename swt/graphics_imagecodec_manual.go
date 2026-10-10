@@ -82,7 +82,7 @@ func NativeImageLoaderSave(stream jrt.OutputStream, format int32, loader *ImageL
 	var err error
 	switch format {
 	case IMAGE_PNG:
-		err = png.Encode(w, imageDataToImage(loader.Data[0]))
+		err = png.Encode(w, pngSource(imageDataToImage(loader.Data[0])))
 	case IMAGE_JPEG:
 		err = jpeg.Encode(w, imageDataToImage(loader.Data[0]), nil)
 	case IMAGE_BMP, IMAGE_BMP_RLE:
@@ -249,7 +249,18 @@ func palettedToImageData(p *image.Paletted, type_, x, y, disposalMethod, delayTi
 func directToImageData(img image.Image, type_, x, y, disposalMethod, delayTime int32) *ImageData {
 	bounds := img.Bounds()
 	w, h := int32(bounds.Dx()), int32(bounds.Dy())
-	result := ImageDataInternal_new(w, h, 24, NewPaletteDataRedMaskGreenMaskBlueMask(0xFF0000, 0xFF00, 0xFF),
+	keepAlpha := false
+	if pixbufLikeAlpha && type_ == IMAGE_PNG {
+		switch img.(type) {
+		case *image.NRGBA, *image.NRGBA64:
+			keepAlpha = true
+		}
+	}
+	depth := int32(24)
+	if keepAlpha {
+		depth = 32
+	}
+	result := ImageDataInternal_new(w, h, depth, NewPaletteDataRedMaskGreenMaskBlueMask(0xFF0000, 0xFF00, 0xFF),
 		4, nil, 0, nil, nil, -1, -1, type_, x, y, disposalMethod, delayTime)
 	pixels := make([][]int32, h)
 	alphas := make([][]int8, h)
@@ -258,14 +269,15 @@ func directToImageData(img image.Image, type_, x, y, disposalMethod, delayTime i
 		pixels[yy] = make([]int32, w)
 		alphas[yy] = make([]int8, w)
 		for xx := int32(0); xx < w; xx++ {
-			r, g, b, a := img.At(bounds.Min.X+int(xx), bounds.Min.Y+int(yy)).RGBA()
-			pixels[yy][xx] = (int32(r>>8) << 16) | (int32(g>>8) << 8) | int32(b>>8)
-			alphas[yy][xx] = int8(a >> 8)
-			hasAlpha = hasAlpha || (a>>8) != 255
+			// Color.RGBA() is alpha-premultiplied; ImageData holds straight color, and a premultiplied round trip loses a bit.
+			c := color.NRGBAModel.Convert(img.At(bounds.Min.X+int(xx), bounds.Min.Y+int(yy))).(color.NRGBA)
+			pixels[yy][xx] = (int32(c.R) << 16) | (int32(c.G) << 8) | int32(c.B)
+			alphas[yy][xx] = int8(c.A)
+			hasAlpha = hasAlpha || c.A != 255
 		}
 		result.SetPixelsXYPutWidthPixelsStartIndex(0, yy, w, pixels[yy], 0)
 	}
-	if hasAlpha {
+	if hasAlpha || keepAlpha {
 		for yy := int32(0); yy < h; yy++ {
 			result.SetAlphas(0, yy, w, alphas[yy], 0)
 		}

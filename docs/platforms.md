@@ -15,7 +15,7 @@ Same Go program, three native back ends. What differs:
 | Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
 | Menu bar | application menu bar | window menu bar | window menu bar |
 
-Not in the facade on any OS: Clipboard, drag and drop and `StyledText` (not in this tree yet, being integrated separately), `Accessible` (a stub on all three OSes). On Windows import `_ "github.com/haiodo/gowt/winmanifest"`, see [install.md](install.md).
+Not in the facade on any OS: `Accessible` (a stub on all three OSes). Clipboard, drag and drop and `StyledText` are wrapped; see the caveats under Known gaps. On Windows import `_ "github.com/haiodo/gowt/winmanifest"`, see [install.md](install.md).
 
 ## Test numbers
 
@@ -46,7 +46,9 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 **All platforms**
 - `Browser` (over package `webview`) does not support the OpenWindow, VisibilityWindow, CloseWindow and StatusText events, `setUrl` with post data or headers, `setJavascriptEnabled` or the cookie statics. On macOS and on Linux 20 Browser tests fail each: 13 for these reasons, 1 because a `System.setOut` capture is not translated, 6 "Round 23, not diagnosed" (BrowserFunction callbacks, a nil pointer). 16 Browser tests are skipped on macOS and 14 on Linux (mostly SWT assumptions for other engines).
 - `ImageData.test_blit` and `test_blit_MsbLsb` fail everywhere: the test helper reflects on private methods and the translator has no rule for them.
-- `Accessible` is a stub; Clipboard, drag and drop and `StyledText` are not in the tree yet.
+- `Accessible` is a stub.
+- Drag and drop was never driven with a real mouse (no test does); `FileTransfer` and `URLTransfer` native-to-Java tests are disabled on macOS, `URLTransfer` is not wrapped. Cross-process clipboard tests are skipped (no peer process), so only same-process round trips are tested.
+- `StyledText`: style rendering tests are skipped on macOS (upstream bugs 553090, 536588); editing text with surrogate pairs (emoji) panics in `swt`.
 
 **macOS** (10 failures outside Browser)
 - `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`), not diagnosed.

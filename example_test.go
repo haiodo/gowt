@@ -95,3 +95,36 @@ func ExamplePanel_Canvas() {
 		w.Show()
 	})
 }
+
+// The clipboard belongs to the App; a setter fails with an error when the system clipboard is busy.
+func ExampleApp_Clipboard() {
+	_ = gowt.Run(func(app *gowt.App) {
+		if err := app.Clipboard().SetText("hello"); err != nil {
+			log.Print(err)
+			return
+		}
+		text, ok := app.Clipboard().Text()
+		fmt.Println(text, ok)
+	})
+}
+
+// Any widget can be a drag source and a drop target; callbacks run on the UI thread.
+func ExampleDropOn() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Drop")
+		zone := w.Label("drop files here")
+		gowt.DropOn(zone, gowt.Drop{Files: func(paths []string, _ gowt.Op) { zone.SetText(paths[0]) }})
+		w.Show()
+	})
+}
+
+// StyledText offsets are runes; spans style ranges of the text.
+func ExampleStyledText() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Editor")
+		ed := w.StyledText(gowt.Scrollbars())
+		ed.SetText("bold word")
+		ed.SetStyle(0, 4, gowt.TextStyle{Bold: true})
+		w.Show()
+	})
+}

@@ -6,6 +6,7 @@ package gowt
 import (
 	"fmt"
 	"runtime"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -21,6 +22,7 @@ type App struct {
 	display *swt.Display
 	quit    atomic.Bool
 	images  []*Image
+	clip    *Clipboard
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -38,6 +40,9 @@ func Run(setup func(*App)) (err error) {
 	a := &App{display: swt.NewDisplay()}
 	defer a.display.Dispose()
 	defer a.disposeImages()
+	defer a.disposeClipboard()
+	apps.Store(a.display, a)
+	defer apps.Delete(a.display)
 	a.display.FollowSystemTheme()
 	setup(a)
 	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
@@ -47,6 +52,9 @@ func Run(setup func(*App)) (err error) {
 	}
 	return nil
 }
+
+// apps lets a widget find its App from its display (drop callbacks create App-owned images).
+var apps sync.Map // *swt.Display -> *App
 
 // catch is deferred directly: it turns a panic carrying an SWT error into *err.
 func catch(err *error) {

@@ -58,6 +58,10 @@ func (this *Test_org_eclipse_swt_widgets_Canvas) Test_scrollIIIIIIZ() {
 }
 
 func (this *Test_org_eclipse_swt_widgets_Canvas) Test_setCaretLorg_eclipse_swt_widgets_Caret() {
+	this.impl.test_setCaretLorg_eclipse_swt_widgets_Caret_()
+}
+
+func (this *Test_org_eclipse_swt_widgets_Canvas) test_setCaretLorg_eclipse_swt_widgets_Caret_() {
 	var number int32 = 5
 	var carets []*swt.Caret = make([]*swt.Caret, number)
 	for i := int32(0); i < number; i++ {
@@ -286,7 +290,9 @@ func init() {
 			{Name: "test_consistency_DragDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_consistency_DragDetect_() }},
 			{Name: "test_consistency_MenuDetect", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_consistency_MenuDetect_() }},
 			{Name: "test_scrollIIIIIIZ", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).Test_scrollIIIIIIZ() }},
-			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Canvas).Test_setCaretLorg_eclipse_swt_widgets_Caret() }},
+			{Name: "test_setCaretLorg_eclipse_swt_widgets_Caret", Run: func(t any) {
+				t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setCaretLorg_eclipse_swt_widgets_Caret_()
+			}},
 			{Name: "test_setFontLorg_eclipse_swt_graphics_Font", Run: func(t any) {
 				t.(*Test_org_eclipse_swt_widgets_Canvas).impl.test_setFontLorg_eclipse_swt_graphics_Font_()
 			}},
@@ -320,6 +326,11 @@ func widgetImplAsCanvas(x any) (*swt.Canvas, bool) {
 		}
 		return &v.Canvas, true
 	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Canvas, true
+	case *swt.StyledText:
 		if v == nil {
 			return nil, false
 		}

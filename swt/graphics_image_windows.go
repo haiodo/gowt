@@ -2126,8 +2126,9 @@ func (this *Image_AbstractImageProviderWrapper) equals_(a0 any) bool {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type image_AbstractImageProviderWrapperHooked struct {
 	Image_AbstractImageProviderWrapperImpl
-	hook   Image_AbstractImageProviderWrapperImpl
-	active string
+	hook      Image_AbstractImageProviderWrapperImpl
+	active    string
+	inherited bool
 }
 
 func (this *image_AbstractImageProviderWrapperHooked) enter(name string) func() {
@@ -2137,7 +2138,10 @@ func (this *image_AbstractImageProviderWrapperHooked) enter(name string) func() 
 }
 
 func (this *image_AbstractImageProviderWrapperHooked) getBounds_(a0 int32) *Rectangle {
-	if h, ok := this.hook.(interface{ GetBounds_(a0 int32) *Rectangle }); ok {
+	if h, ok := this.hook.(interface{ GetBounds_(a0 int32) *Rectangle }); ok && !(this.inherited && this.active == "getBounds_") {
+		if this.inherited {
+			defer this.enter("getBounds_")()
+		}
 		return h.GetBounds_(a0)
 	}
 	return this.Image_AbstractImageProviderWrapperImpl.getBounds_(a0)
@@ -2180,7 +2184,10 @@ func (this *image_AbstractImageProviderWrapperHooked) isPersistentImageHandleReq
 func (this *image_AbstractImageProviderWrapperHooked) loadImageData_(a0 int32) *DPIUtilElementAtZoom {
 	if h, ok := this.hook.(interface {
 		LoadImageData_(a0 int32) *DPIUtilElementAtZoom
-	}); ok {
+	}); ok && !(this.inherited && this.active == "loadImageData_") {
+		if this.inherited {
+			defer this.enter("loadImageData_")()
+		}
 		return h.LoadImageData_(a0)
 	}
 	return this.Image_AbstractImageProviderWrapperImpl.loadImageData_(a0)
@@ -2225,7 +2232,8 @@ func (this *Image_AbstractImageProviderWrapper) Impl() Image_AbstractImageProvid
 }
 
 func (this *Image_AbstractImageProviderWrapper) SetImpl_(impl Image_AbstractImageProviderWrapperImpl) {
-	this.impl = &image_AbstractImageProviderWrapperHooked{Image_AbstractImageProviderWrapperImpl: this.impl, hook: impl}
+	_, base := this.impl.(*Image_AbstractImageProviderWrapper)
+	this.impl = &image_AbstractImageProviderWrapperHooked{Image_AbstractImageProviderWrapperImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() {

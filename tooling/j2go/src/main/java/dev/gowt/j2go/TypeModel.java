@@ -37,6 +37,8 @@ public class TypeModel {
 		// base was emitted without knowing it, so it is not a cascade parent (like an anonymous subclass).
 		public ClassInfo foreignSuper;
 		public final List<ClassInfo> children = new ArrayList<>();
+		// Signatures an anonymous subclass overrides: not a child, but the base must still dispatch to it.
+		final Set<String> anonOverridden = new HashSet<>();
 		final Set<String> declaredMethodNames = new LinkedHashSet<>();
 		// signature ("name(erasedParamType,...)") -> binding, this class's own declarations only.
 		public final Map<String, IMethodBinding> declaredMethods = new LinkedHashMap<>();
@@ -61,7 +63,7 @@ public class TypeModel {
 		}
 
 		static boolean hasOverrideBelow(ClassInfo ci, String sig) {
-			if (PINNED_CASCADE.contains(ci.binaryName + "#" + sig)) return true;
+			if (PINNED_CASCADE.contains(ci.binaryName + "#" + sig) || ci.anonOverridden.contains(sig)) return true;
 			for (ClassInfo child : ci.children) {
 				if (child.declaredMethods.containsKey(sig) || hasOverrideBelow(child, sig)) return true;
 			}
@@ -106,6 +108,7 @@ public class TypeModel {
 	}
 
 	private final Map<String, ClassInfo> byBinaryName = new LinkedHashMap<>();
+	private final List<ITypeBinding> anonymous = new ArrayList<>();
 
 	// Native method (Names.erasureKey) -> indexes of its struct params JNI passes by pointer: every
 	// struct param whose Javadoc lacks `flags=struct` (memmove's dest, objc_msgSendSuper's super).
@@ -211,6 +214,13 @@ public class TypeModel {
 				}
 
 				@Override
+				public boolean visit(AnonymousClassDeclaration node) {
+					ITypeBinding anon = node.resolveBinding();
+					if (anon != null) anonymous.add(anon);
+					return true;
+				}
+
+				@Override
 				public boolean visit(ExpressionMethodReference node) {
 					IMethodBinding mb = node.resolveMethodBinding();
 					if (mb != null) methodReferenceTargets.add(Names.erasureKey(mb));
@@ -226,7 +236,7 @@ public class TypeModel {
 				ci.superclass = null;
 			}
 			// Win32 PI structs embed their base (DIBSECTION has a BITMAP first, like C): no impl field may change the layout.
-			boolean pureStruct = GoTypes.platform == Platform.WIN32 && GoTypes.isPiJavaPackage(ci.javaPackage);
+			boolean pureStruct = GoTypes.platform == Platform.WIN32 && ci.goPackage.equals(GoTypes.piPackage);
 			if (ci.superclass != null && !pureStruct) ci.superclass.children.add(ci);
 			if (ci.superclass == null && superBinding != null) {
 				String q = superBinding.getErasure().getQualifiedName();
@@ -246,6 +256,18 @@ public class TypeModel {
 			ClassInfo r = ci;
 			while (r.superclass != null) r = r.superclass;
 			ci.root = r;
+		}
+		// Only where the tree already dispatches through impl (it has named subclasses): a childless base has no impl to route through.
+		for (ITypeBinding anon : anonymous) {
+			ITypeBinding base = anon.getSuperclass();
+			ClassInfo baseCi = base == null ? null : byBinaryName.get(base.getErasure().getBinaryName());
+			if (baseCi == null || baseCi.root.children.isEmpty()) continue;
+			for (ClassInfo ci = baseCi; ci != null; ci = ci.superclass) {
+				for (IMethodBinding m : anon.getDeclaredMethods()) {
+					String sig = signature(m);
+					if (ci.declaredMethods.containsKey(sig) && !Modifier.isStatic(m.getModifiers())) ci.anonOverridden.add(sig);
+				}
+			}
 		}
 		// Root-level maps: interface/default-stub generation only (Emitter). Dispatch itself
 		// goes through ClassInfo.overridePoint below.

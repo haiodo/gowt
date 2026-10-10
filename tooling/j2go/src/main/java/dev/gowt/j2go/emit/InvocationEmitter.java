@@ -43,7 +43,7 @@ final class InvocationEmitter {
 		List<String> args = buildArgs(mi.arguments(), mb);
 
 		// list.toArray(new T[0]): jrt.List.ToArray is []any, a typed slice needs the element type.
-		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && args.size() == 1 && mi.getExpression() != null
+		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && (args.size() == 1 || qualified.equals("java.util.stream.IntStream")) && mi.getExpression() != null
 				&& mb.getReturnType().isArray() && dev.gowt.j2go.GoTypes.map(mi.getExpression().resolveTypeBinding(), emitter).equals("*jrt.List")) {
 			emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 			return "jrt.ToSlice[" + dev.gowt.j2go.GoTypes.map(mb.getReturnType().getComponentType(), emitter) + "](" + emitter.expr(mi.getExpression()) + ")";
@@ -110,6 +110,13 @@ final class InvocationEmitter {
 			}
 		}
 
+		// A method the anonymous class declares itself, a helper or an override (TableAccessibleDelegate's getColumns), is a func
+		// field of the generated struct (FunctionalEmitter).
+		if (emitter.anonType != null && !Modifier.isStatic(mb.getModifiers()) && declaring.getErasure().isEqualTo(emitter.anonType.getErasure())) {
+			String recv = mi.getExpression() != null ? emitter.expr(mi.getExpression()) : emitter.anonThis;
+			return recv + "." + emitter.anonMethodField(mb, emitter.anonType) + "(" + String.join(", ", args) + ")";
+		}
+
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
 		if (ci == null) {
 			emitter.unsupported.add("MethodInvocation: unresolved declaring type " + qualified + "." + mb.getName());
@@ -123,7 +130,7 @@ final class InvocationEmitter {
 		}
 
 		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.
-		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
+		if (mb.getMethodDeclaration().getTypeParameters().length > 0 && !Modifier.isStatic(mb.getModifiers()) && dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.WIN32) {
 			emitter.unsupported.add("MethodInvocation: generic method " + qualified + "." + mb.getName() + " not translated");
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
@@ -278,6 +285,7 @@ final class InvocationEmitter {
 		List<?> a = cic.arguments();
 		Expression recv = (Expression) a.get(0);
 		if (a.size() == 4) return emitTypedCallback(cic, recv);
+		if (a.size() == 5) return emitIndexedCallback(cic, recv);
 		if (a.size() != 3 || !(a.get(1) instanceof StringLiteral name) || !(a.get(2) instanceof NumberLiteral argc)) {
 			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
 			return emitter.panicClosure(cic, "unsupported Callback");
@@ -302,6 +310,30 @@ final class InvocationEmitter {
 		}
 		String body = target.getReturnType().getName().equals("void") ? call + "; return 0" : "return " + call;
 		return "NewCallbackFn(func(args []int64) int64 { " + body + " }, " + n + ")";
+	}
+
+	/** new Callback(getClass(), "callback" + i, argCount, true, errorResult) (COMObject): one array-based static target per
+	 * index, chosen at run time. The closure takes the whole argument list, as the target's long[] parameter does. */
+	private String emitIndexedCallback(ClassInstanceCreation cic, Expression recv) {
+		List<?> a = cic.arguments();
+		if (!(a.get(1) instanceof InfixExpression name) || !(name.getLeftOperand() instanceof StringLiteral prefix)
+				|| !(a.get(3) instanceof BooleanLiteral bl) || !bl.booleanValue()) {
+			emitter.unsupported.add("ClassInstanceCreation: Callback shape " + cic);
+			return emitter.panicClosure(cic, "unsupported Callback");
+		}
+		ITypeBinding cls = recv instanceof TypeLiteral tl ? tl.getType().resolveBinding() : emitter.currentClassInfo.binding;
+		StringBuilder cases = new StringBuilder();
+		for (IMethodBinding m : cls.getDeclaredMethods()) {
+			String n = m.getName();
+			if (!n.startsWith(prefix.getLiteralValue()) || !Modifier.isStatic(m.getModifiers()) || m.getParameterTypes().length != 1) continue;
+			String idx = n.substring(prefix.getLiteralValue().length());
+			if (!idx.matches("\\d+")) continue;
+			TypeModel.ClassInfo ci = emitter.model.lookup(m.getDeclaringClass());
+			cases.append("case ").append(idx).append(": return NewCallbackFn(func(args []int64) int64 { return ")
+					.append(emitter.staticMethodGoName(m, ci)).append("(args) }, argc)\n");
+		}
+		return "func() *Callback { idx, argc := " + emitter.expr(name.getRightOperand()) + ", " + emitter.expr((Expression) a.get(2))
+				+ "\nswitch idx {\n" + cases + "}\npanic(\"no callback\")\n}()";
 	}
 
 	/** new Callback(target, "method", ret.class, new Type[]{long.class, double.class, ...}): a closure with those Go
@@ -390,14 +422,19 @@ final class InvocationEmitter {
 				return "string(utf16.Decode(" + arg + "))";
 			}
 			// Thread is a bare any (Manual) except for the one shape the tests use: a runnable run by start()/join().
-			if (qualified.equals("java.lang.Thread") && n == 1 && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
+			if (qualified.equals("java.lang.Thread") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
 			}
+			// new PrintStream(out, ...): value-typed in Manual, so no constructor call would come out of it.
+			if (qualified.equals("java.io.PrintStream")) {
+				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				return "jrt.NewPrintStream(" + String.join(", ", buildArgs(cic.arguments(), ctor)) + ")";
+			}
 			// BufferedInputStream only adds buffering: the wrapped stream is the value.
 			if (qualified.equals("java.io.BufferedInputStream") && n == 1) return emitter.expr((Expression) cic.arguments().get(0));
-			// new String(byte[], Charset): the bytes are UTF-8.
-			if (qualified.equals("java.lang.String") && n == 2 && ctor.getParameterTypes()[0].isArray()
+			// new String(byte[]) and new String(byte[], Charset): the bytes are UTF-8.
+			if (qualified.equals("java.lang.String") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("byte")) {
 				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
 				return "jrt.StringFromBytes(" + emitter.expr((Expression) cic.arguments().get(0)) + ")";

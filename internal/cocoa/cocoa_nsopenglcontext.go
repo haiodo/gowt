@@ -63,15 +63,15 @@ func (this *NSOpenGLContext) InitWithFormat(format *NSOpenGLPixelFormat, share *
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithFormat_shareContext_, cond519, cond520)
 	var cond521 *NSOpenGLContext
-	var cond522 *NSOpenGLContext
-	if result != 0 {
-		cond522 = NewNSOpenGLContextOverload1(result)
-	} else {
-		cond522 = nil
-	}
 	if result == this.Id {
 		cond521 = this
 	} else {
+		var cond522 *NSOpenGLContext
+		if result != 0 {
+			cond522 = NewNSOpenGLContextOverload1(result)
+		} else {
+			cond522 = nil
+		}
 		cond521 = (cond522)
 	}
 	return cond521

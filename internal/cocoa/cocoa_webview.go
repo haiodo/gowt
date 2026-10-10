@@ -91,15 +91,15 @@ func (this *WebView) InitWithFrame(frame NSRect, frameName *NSString, groupName 
 	}
 	var result int64 = OSObjc_msgSendOverload23(this.Id, OSSel_initWithFrame_frameName_groupName_, frame, cond972, cond973)
 	var cond974 *WebView
-	var cond975 *WebView
-	if result != 0 {
-		cond975 = NewWebViewOverload1(result)
-	} else {
-		cond975 = nil
-	}
 	if result == this.Id {
 		cond974 = this
 	} else {
+		var cond975 *WebView
+		if result != 0 {
+			cond975 = NewWebViewOverload1(result)
+		} else {
+			cond975 = nil
+		}
 		cond974 = (cond975)
 	}
 	return cond974

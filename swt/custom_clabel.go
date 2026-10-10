@@ -381,7 +381,7 @@ func (this *CLabel) OnPaint(event *PaintEvent) {
 				e := r.(*SWTException)
 				_ = e
 				if (this.impl.getStyle_() & DOUBLE_BUFFERED) == 0 {
-					gc.SetBackground(this.GetBackground())
+					gc.SetBackground(this.impl.getBackground_())
 					gc.FillRectangleRect(rect)
 				}
 			} else {
@@ -390,7 +390,7 @@ func (this *CLabel) OnPaint(event *PaintEvent) {
 		}()
 		if this.backgroundImage != (nil) {
 			var imageRect *Rectangle = this.backgroundImage.GetBounds()
-			gc.SetBackground(this.GetBackground())
+			gc.SetBackground(this.impl.getBackground_())
 			gc.FillRectangleRect(rect)
 			var xPos int32 = 0
 			for xPos < rect.Width {
@@ -434,11 +434,11 @@ func (this *CLabel) OnPaint(event *PaintEvent) {
 						}
 					}
 					if this.gradientVertical && pos < rect.Height {
-						gc.SetBackground(this.GetBackground())
+						gc.SetBackground(this.impl.getBackground_())
 						gc.FillRectangle(0, pos, rect.Width, rect.Height-pos)
 					}
 					if !this.gradientVertical && pos < rect.Width {
-						gc.SetBackground(this.GetBackground())
+						gc.SetBackground(this.impl.getBackground_())
 						gc.FillRectangle(pos, 0, rect.Width-pos, rect.Height)
 					}
 					gc.SetForeground(oldForeground)
@@ -446,7 +446,7 @@ func (this *CLabel) OnPaint(event *PaintEvent) {
 				gc.SetBackground(oldBackground)
 			} else {
 				if (this.background != (nil) || (this.impl.getStyle_()&DOUBLE_BUFFERED) == 0) && this.background.GetAlpha() > 0 {
-					gc.SetBackground(this.GetBackground())
+					gc.SetBackground(this.impl.getBackground_())
 					gc.FillRectangleRect(rect)
 				}
 			}
@@ -596,7 +596,7 @@ func (this *CLabel) SetBackgroundColorsPercentsVertical(colors []*Color, percent
 			}
 		}
 	}
-	var background *Color = this.GetBackground()
+	var background *Color = this.impl.getBackground_()
 	if this.backgroundImage == (nil) {
 		if (this.gradientColors != (nil)) && (colors != (nil)) && (int32(len(this.gradientColors)) == int32(len(colors))) {
 			var same bool = false

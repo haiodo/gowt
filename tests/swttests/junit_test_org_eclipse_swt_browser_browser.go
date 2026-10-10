@@ -87,7 +87,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) SetUp(testInfo *junit.TestInfo
 		shellTitle = fmt.Sprintf("%s Webkit version: %s", shellTitle, webkitGtkVersionStr)
 	}
 	this.shell.SetText(shellTitle)
-	this.impl.setWidget_(upcastswtCompositeToswtWidget(this.browser.Composite))
+	this.impl.setWidget_(upcastswtCompositeToswtWidget(upcastbrowserBrowserToswtComposite(this.browser)))
 	this.testLog = jrt.NewStringBuilder("\nTest log:\n")
 	if SwtTestUtilIsGTK {
 		Test_org_eclipse_swt_browser_BrowserProcessUiEvents()
@@ -114,8 +114,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) afterDispose_(display *swt.Dis
 		panic(&jrt.RuntimeException{Message: fmt.Sprintf("Found %d not disposed shells!", disposedShells)})
 	}
 	var disposedBrowsers int32 = 0
-	for _, elem115 := range this.createdBroswers.ToArray() {
-		browser_ := jrt.Cast[*browser.Browser](elem115)
+	for _, elem138 := range this.createdBroswers.ToArray() {
+		browser_ := jrt.Cast[*browser.Browser](elem138)
 		if !browser_.IsDisposed() {
 			fmt.Fprintln(os.Stdout, fmt.Sprintf("Not disposed browsers: %v", browser_))
 			browser_.Dispose()
@@ -144,8 +144,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) afterDispose_(display *swt.Dis
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -241,21 +247,21 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_Constructor_multipleInsta
 	var numberOfApplication int32 = 5
 	var browserApplications *jrt.List = jrt.NewList()
 	for i := int32(0); i < numberOfApplication; i++ {
-		inner116 := newTest_org_eclipse_swt_browser_BrowserEdgeBrowserApplication()
-		inner116.this_0 = this
-		var application *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication = inner116
+		inner139 := newTest_org_eclipse_swt_browser_BrowserEdgeBrowserApplication()
+		inner139.this_0 = this
+		var application *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication = inner139
 		browserApplications.Add(application)
 		jrt.ThreadStart(application)
 	}
-	for _, elem117 := range browserApplications.ToArray() {
-		application := jrt.Cast[*Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication](elem117)
+	for _, elem140 := range browserApplications.ToArray() {
+		application := jrt.Cast[*Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication](elem140)
 		this.WaitForPassCondition(func() bool {
 			return application.isRunning
 		})
 		junit.AssertFalse(application.isDisposed)
 	}
-	for _, elem118 := range browserApplications.ToArray() {
-		application := jrt.Cast[*Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication](elem118)
+	for _, elem141 := range browserApplications.ToArray() {
+		application := jrt.Cast[*Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication](elem141)
 		application.Close()
 		junit.AssertTrue(application.isDisposed)
 	}
@@ -274,7 +280,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evalute_Cookies() {
 		this.WaitForPassCondition(loaded.Get)
 		this.browser.Evaluate("document.cookie = \"cookie1=value1\";")
 		this.browser.Evaluate("document.cookie = \"cookie2=value2\";")
-		var res string = this.browser.Evaluate("return document.cookie;").(string)
+		var res string = jrt.Cast[string](this.browser.Evaluate("return document.cookie;"))
 		junit.AssertFalse((len(res) == 0))
 	}
 }
@@ -384,9 +390,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_adapter_
 	var display *swt.Display = swt.DisplayGetCurrent()
 	var shell *swt.Shell = swt.NewShellDisplay(display)
 	var browser_ *browser.Browser = this.CreateBrowser(shell, this.swtBrowserSettings)
-	anon119 := &Test_org_eclipse_swt_browser_BrowserAnon1{}
-	anon119.LocationAdapter = browser.NewLocationAdapter()
-	var adapter *browser.LocationAdapter = anon119.LocationAdapter
+	anon142 := &Test_org_eclipse_swt_browser_BrowserAnon1{}
+	anon142.LocationAdapter = browser.NewLocationAdapter()
+	var adapter *browser.LocationAdapter = anon142.LocationAdapter
 	browser_.AddLocationListener(adapter)
 	shell.Close()
 }
@@ -404,12 +410,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_removeWi
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_addAndRemove() {
-	anon120 := &Test_org_eclipse_swt_browser_BrowserAnon2{}
-	anon120.fnChanged = func(event *browser.LocationEvent) {
+	anon143 := &Test_org_eclipse_swt_browser_BrowserAnon2{}
+	anon143.fnChanged = func(event *browser.LocationEvent) {
 	}
-	anon120.fnChanging = func(event *browser.LocationEvent) {
+	anon143.fnChanging = func(event *browser.LocationEvent) {
 	}
-	var listener browser.LocationListener = anon120
+	var listener browser.LocationListener = anon143
 	for i := int32(0); i < 100; i++ {
 		this.browser.AddLocationListener(listener)
 	}
@@ -464,18 +470,18 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_changing
 	var changedFired *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var changedFiredTooEarly *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var finished *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
-	anon121 := &Test_org_eclipse_swt_browser_BrowserAnon3{}
-	anon121.fnChanging = func(event *browser.LocationEvent) {
+	anon144 := &Test_org_eclipse_swt_browser_BrowserAnon3{}
+	anon144.fnChanging = func(event *browser.LocationEvent) {
 		changingFired.Set(true)
 	}
-	anon121.fnChanged = func(event *browser.LocationEvent) {
+	anon144.fnChanged = func(event *browser.LocationEvent) {
 		if !changingFired.Get() {
 			changedFiredTooEarly.Set(true)
 		}
 		changedFired.Set(true)
 		finished.Set(true)
 	}
-	this.browser.AddLocationListener(anon121)
+	this.browser.AddLocationListener(anon144)
 	this.shell.Open()
 	this.browser.SetText("Hello world")
 	this.WaitForPassCondition(finished.Get)
@@ -526,18 +532,18 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_Progress
 	var unexpectedProgressCompleted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var unexpectedLocationChangedDetails *jrt.AtomicReference = jrt.NewAtomicReference("(empty)")
 	var unexpectedProgressCompletedDetails *jrt.AtomicReference = jrt.NewAtomicReference("(empty)")
-	anon122 := &Test_org_eclipse_swt_browser_BrowserAnon4{}
-	anon122.fnChanging = func(event *browser.LocationEvent) {
+	anon145 := &Test_org_eclipse_swt_browser_BrowserAnon4{}
+	anon145.fnChanging = func(event *browser.LocationEvent) {
 		event.Doit = false
 		locationChanging.Set(true)
 	}
-	anon122.fnChanged = func(event *browser.LocationEvent) {
+	anon145.fnChanged = func(event *browser.LocationEvent) {
 		if !(len(event.Location) == 0) {
 			unexpectedLocationChanged.Set(true)
 			unexpectedLocationChangedDetails.Set(event.Location)
 		}
 	}
-	this.browser.AddLocationListener(anon122)
+	this.browser.AddLocationListener(anon145)
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
 		var location string = this.browser.GetUrl()
 		if !(len(location) == 0) {
@@ -554,19 +560,19 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_Progress
 	} else {
 		passed = locationChanging.Get() && !unexpectedLocationChanged.Get() && !unexpectedProgressCompleted.Get()
 	}
-	var cond123 string
+	var cond146 string
 	if unexpectedLocationChanged.Get() {
-		cond123 = fmt.Sprintf(" (%s)", jrt.Cast[string](unexpectedLocationChangedDetails.Get()))
+		cond146 = fmt.Sprintf(" (%s)", jrt.Cast[string](unexpectedLocationChangedDetails.Get()))
 	} else {
-		cond123 = ""
+		cond146 = ""
 	}
-	var cond124 string
+	var cond147 string
 	if unexpectedProgressCompleted.Get() {
-		cond124 = fmt.Sprintf(" (%s)", jrt.Cast[string](unexpectedProgressCompletedDetails.Get()))
+		cond147 = fmt.Sprintf(" (%s)", jrt.Cast[string](unexpectedProgressCompletedDetails.Get()))
 	} else {
-		cond124 = ""
+		cond147 = ""
 	}
-	var errMsg string = fmt.Sprintf("%s%t\nLocationChanged unexpectedly (should be false): %t%s\nProgressChanged unexpectedly (should be false): %t%s\n", fmt.Sprintf("\nUnexpected event fired. \nLocationChanging (should be true): "), locationChanging.Get(), unexpectedLocationChanged.Get(), (cond123), unexpectedProgressCompleted.Get(), (cond124))
+	var errMsg string = fmt.Sprintf("%s%t\nLocationChanged unexpectedly (should be false): %t%s\nProgressChanged unexpectedly (should be false): %t%s\n", fmt.Sprintf("\nUnexpected event fired. \nLocationChanging (should be true): "), locationChanging.Get(), unexpectedLocationChanged.Get(), (cond146), unexpectedProgressCompleted.Get(), (cond147))
 	junit.AssertTrue(passed, errMsg)
 }
 
@@ -647,8 +653,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_OpenWindowListener_openHa
 	var openFiredCorrectly *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	this.browser.AddOpenWindowListener(&OpenWindowListenerFunc{fn: func(event *browser.WindowEvent) {
 		var browserChild *browser.Browser = this.CreateBrowser(this.shell, this.swtBrowserSettings)
-		junit.AssertSame(this.browser.Composite, event.Widget)
-		junit.AssertNull(event.Browser.Composite)
+		junit.AssertSame(upcastbrowserBrowserToswtComposite(this.browser), event.Widget)
+		junit.AssertNull(upcastbrowserBrowserToswtComposite(event.Browser))
 		openFiredCorrectly.Set(true)
 		event.Browser = browserChild
 	}})
@@ -713,18 +719,18 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_OpenWindow_Progress_Liste
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_newProgressAdapter() {
-	anon125 := &Test_org_eclipse_swt_browser_BrowserAnon5{}
-	anon125.ProgressAdapter = browser.NewProgressAdapter()
-	_ = anon125
+	anon148 := &Test_org_eclipse_swt_browser_BrowserAnon5{}
+	anon148.ProgressAdapter = browser.NewProgressAdapter()
+	_ = anon148
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_newProgressAdapter_closeShell() {
 	var display *swt.Display = swt.DisplayGetCurrent()
 	var shell *swt.Shell = swt.NewShellDisplay(display)
 	var browser_ *browser.Browser = this.CreateBrowser(shell, this.swtBrowserSettings)
-	anon126 := &Test_org_eclipse_swt_browser_BrowserAnon6{}
-	anon126.ProgressAdapter = browser.NewProgressAdapter()
-	browser_.AddProgressListener(anon126)
+	anon149 := &Test_org_eclipse_swt_browser_BrowserAnon6{}
+	anon149.ProgressAdapter = browser.NewProgressAdapter()
+	browser_.AddProgressListener(anon149)
 	shell.Close()
 }
 
@@ -732,12 +738,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_newListe
 	var display *swt.Display = swt.DisplayGetCurrent()
 	var shell *swt.Shell = swt.NewShellDisplay(display)
 	var browser_ *browser.Browser = this.CreateBrowser(shell, this.swtBrowserSettings)
-	anon127 := &Test_org_eclipse_swt_browser_BrowserAnon7{}
-	anon127.fnChanged = func(event *browser.ProgressEvent) {
+	anon150 := &Test_org_eclipse_swt_browser_BrowserAnon7{}
+	anon150.fnChanged = func(event *browser.ProgressEvent) {
 	}
-	anon127.fnCompleted = func(event *browser.ProgressEvent) {
+	anon150.fnCompleted = func(event *browser.ProgressEvent) {
 	}
-	browser_.AddProgressListener(anon127)
+	browser_.AddProgressListener(anon150)
 	shell.Close()
 }
 
@@ -754,12 +760,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_removeWi
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_addAndRemove() {
-	anon128 := &Test_org_eclipse_swt_browser_BrowserAnon8{}
-	anon128.fnChanged = func(event *browser.ProgressEvent) {
+	anon151 := &Test_org_eclipse_swt_browser_BrowserAnon8{}
+	anon151.fnChanged = func(event *browser.ProgressEvent) {
 	}
-	anon128.fnCompleted = func(event *browser.ProgressEvent) {
+	anon151.fnCompleted = func(event *browser.ProgressEvent) {
 	}
-	var listener browser.ProgressListener = anon128
+	var listener browser.ProgressListener = anon151
 	for i := int32(0); i < 100; i++ {
 		this.browser.AddProgressListener(listener)
 	}
@@ -771,14 +777,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_addAndRe
 func (this *Test_org_eclipse_swt_browser_Browser) Test_ProgressListener_completed_Called() {
 	var childCompleted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var browserTextOnChangedEvent *jrt.AtomicReference = jrt.NewAtomicReference()
-	anon129 := &Test_org_eclipse_swt_browser_BrowserAnon9{}
-	anon129.fnCompleted = func(event *browser.ProgressEvent) {
+	anon152 := &Test_org_eclipse_swt_browser_BrowserAnon9{}
+	anon152.fnCompleted = func(event *browser.ProgressEvent) {
 		childCompleted.Set(true)
 	}
-	anon129.fnChanged = func(event *browser.ProgressEvent) {
+	anon152.fnChanged = func(event *browser.ProgressEvent) {
 		browserTextOnChangedEvent.Set(this.browser.GetText())
 	}
-	var l browser.ProgressListener = anon129
+	var l browser.ProgressListener = anon152
 	this.browser.AddProgressListener(l)
 	this.browser.SetText("<html><body>This test ensures that the completed listener is called.</body></html>")
 	this.shell.Open()
@@ -829,13 +835,13 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_StatusTextListener_hoverM
 		browser_.GetBounds()
 		for i := int32(0); i < size; i = i + 5 {
 			display.SetCursorLocation(i, i)
-			var cond130 int32
+			var cond153 int32
 			if this.debug_show_browser {
-				cond130 = 3
+				cond153 = 3
 			} else {
-				cond130 = 1
+				cond153 = 1
 			}
-			this.WaitForMilliseconds(cond130)
+			this.WaitForMilliseconds(cond153)
 		}
 		display.SetCursorLocationPoint(cachedLocation)
 	}))
@@ -1016,11 +1022,11 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post()
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_no_content_type() {
 	{
-		anon131 := &Test_org_eclipse_swt_browser_BrowserAnon10{}
-		anon131.initEchoHttpServer()
-		anon131.fnSetResponseHeaders = func(exchange *jrt.HttpExchange) {
+		anon154 := &Test_org_eclipse_swt_browser_BrowserAnon10{}
+		anon154.initEchoHttpServer()
+		anon154.fnSetResponseHeaders = func(exchange *jrt.HttpExchange) {
 		}
-		var server *EchoHttpServer = &anon131.EchoHttpServer
+		var server *EchoHttpServer = &anon154.EchoHttpServer
 		defer server.Close()
 		{
 			var capture *CapturedOutput = NewCapturedOutput()
@@ -1080,12 +1086,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_invalid_url()
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_closes_prematurely() {
 	junit.AssumeTrue(SwtTestUtilIsLinux, "Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code.\nThis test can be adapted to win32/cocoa, but that would be testing the third-party\nbrowser component. Therefore (for now) this test only runs on Linux.\n")
 	{
-		anon132 := &Test_org_eclipse_swt_browser_BrowserAnon11{}
-		anon132.initEchoHttpServer()
-		anon132.fnHandlePostEcho = func(exchange *jrt.HttpExchange) {
+		anon155 := &Test_org_eclipse_swt_browser_BrowserAnon11{}
+		anon155.initEchoHttpServer()
+		anon155.fnHandlePostEcho = func(exchange *jrt.HttpExchange) {
 			exchange.Close()
 		}
-		var server *EchoHttpServer = &anon132.EchoHttpServer
+		var server *EchoHttpServer = &anon155.EchoHttpServer
 		defer server.Close()
 		var url string = server.PostEchoUrl()
 		var postData string = "test_setUrl_remote_with_post"
@@ -1151,18 +1157,18 @@ func (this *Test_org_eclipse_swt_browser_Browser) ValidateTitleChanged(expectedT
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_newAdapter() {
-	anon133 := &Test_org_eclipse_swt_browser_BrowserAnon12{}
-	anon133.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
-	_ = anon133
+	anon156 := &Test_org_eclipse_swt_browser_BrowserAnon12{}
+	anon156.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
+	_ = anon156
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_newAdapter_closeShell() {
 	var display *swt.Display = swt.DisplayGetCurrent()
 	var shell *swt.Shell = swt.NewShellDisplay(display)
 	var browser_ *browser.Browser = this.CreateBrowser(shell, this.swtBrowserSettings)
-	anon134 := &Test_org_eclipse_swt_browser_BrowserAnon13{}
-	anon134.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
-	browser_.AddVisibilityWindowListener(anon134)
+	anon157 := &Test_org_eclipse_swt_browser_BrowserAnon13{}
+	anon157.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
+	browser_.AddVisibilityWindowListener(anon157)
 	shell.Close()
 }
 
@@ -1170,12 +1176,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_
 	var display *swt.Display = swt.DisplayGetCurrent()
 	var shell *swt.Shell = swt.NewShellDisplay(display)
 	var browser_ *browser.Browser = this.CreateBrowser(shell, this.swtBrowserSettings)
-	anon135 := &Test_org_eclipse_swt_browser_BrowserAnon14{}
-	anon135.fnHide = func(event *browser.WindowEvent) {
+	anon158 := &Test_org_eclipse_swt_browser_BrowserAnon14{}
+	anon158.fnHide = func(event *browser.WindowEvent) {
 	}
-	anon135.fnShow = func(event *browser.WindowEvent) {
+	anon158.fnShow = func(event *browser.WindowEvent) {
 	}
-	browser_.AddVisibilityWindowListener(anon135)
+	browser_.AddVisibilityWindowListener(anon158)
 	shell.Close()
 }
 
@@ -1192,12 +1198,12 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_addAndRemove() {
-	anon136 := &Test_org_eclipse_swt_browser_BrowserAnon15{}
-	anon136.fnHide = func(event *browser.WindowEvent) {
+	anon159 := &Test_org_eclipse_swt_browser_BrowserAnon15{}
+	anon159.fnHide = func(event *browser.WindowEvent) {
 	}
-	anon136.fnShow = func(event *browser.WindowEvent) {
+	anon159.fnShow = func(event *browser.WindowEvent) {
 	}
-	var listener browser.VisibilityWindowListener = anon136
+	var listener browser.VisibilityWindowListener = anon159
 	for i := int32(0); i < 100; i++ {
 		this.browser.AddVisibilityWindowListener(listener)
 	}
@@ -1216,26 +1222,26 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_VisibilityWindowListener_
 		var browserChild *browser.Browser = this.CreateBrowser(childShell, this.swtBrowserSettings)
 		event.Browser = browserChild
 		browserChild.SetText("Child window")
-		anon137 := &Test_org_eclipse_swt_browser_BrowserAnon16{}
-		anon137.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
-		anon137.invocationCount = jrt.NewAtomicInteger(1)
-		anon137.childID = jrt.NewAtomicInteger(childCount.Get())
-		anon137.fnShow = func(event *browser.WindowEvent) {
-			if anon137.childID.Get() == 0 && anon137.invocationCount.Get() >= 2 {
+		anon160 := &Test_org_eclipse_swt_browser_BrowserAnon16{}
+		anon160.VisibilityWindowAdapter = browser.NewVisibilityWindowAdapter()
+		anon160.invocationCount = jrt.NewAtomicInteger(1)
+		anon160.childID = jrt.NewAtomicInteger(childCount.Get())
+		anon160.fnShow = func(event *browser.WindowEvent) {
+			if anon160.childID.Get() == 0 && anon160.invocationCount.Get() >= 2 {
 				if event.Location != (nil) || event.Size != (nil) {
 					junit.Fail("Child browser's visibility show listener should only be fired once")
 				}
 			}
-			anon137.invocationCount.IncrementAndGet()
+			anon160.invocationCount.IncrementAndGet()
 		}
-		browserChild.AddVisibilityWindowListener(anon137)
+		browserChild.AddVisibilityWindowListener(anon160)
 		if childCount.Get() == 1 {
-			anon138 := &Test_org_eclipse_swt_browser_BrowserAnon17{}
-			anon138.ProgressAdapter = browser.NewProgressAdapter()
-			anon138.fnCompleted = func(event *browser.ProgressEvent) {
+			anon161 := &Test_org_eclipse_swt_browser_BrowserAnon17{}
+			anon161.ProgressAdapter = browser.NewProgressAdapter()
+			anon161.fnCompleted = func(event *browser.ProgressEvent) {
 				secondChildCompleted.Set(true)
 			}
-			browserChild.AddProgressListener(anon138)
+			browserChild.AddProgressListener(anon161)
 		}
 		childShell.Open()
 		childCount.IncrementAndGet()
@@ -1331,9 +1337,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_mult
 			}
 		}
 	}))
-	anon139 := &Test_org_eclipse_swt_browser_BrowserAnon18{}
-	anon139.ProgressAdapter = browser.NewProgressAdapter()
-	anon139.fnCompleted = func(event *browser.ProgressEvent) {
+	anon162 := &Test_org_eclipse_swt_browser_BrowserAnon18{}
+	anon162.ProgressAdapter = browser.NewProgressAdapter()
+	anon162.fnCompleted = func(event *browser.ProgressEvent) {
 		if pageLoadCountSecondInstance.Get() == 2 {
 			pageLoadCountSecondInstance.Set(3)
 			var shouldBeTrue bool = browserSecondInsance.Evaluate("return true").(bool)
@@ -1341,7 +1347,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_mult
 			instanceTwoFinishedCorrectly.Set(true)
 		}
 	}
-	browserSecondInsance.AddProgressListener(anon139)
+	browserSecondInsance.AddProgressListener(anon162)
 	this.browser.SetText("First Instance, first page")
 	browserSecondInsance.SetText("Second instance, first page")
 	this.shell.Open()
@@ -1355,16 +1361,16 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_mult
 func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_evaluateInCallback() {
 	var changingFinished *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var changedFinished *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
-	anon140 := &Test_org_eclipse_swt_browser_BrowserAnon19{}
-	anon140.fnChanging = func(event *browser.LocationEvent) {
+	anon163 := &Test_org_eclipse_swt_browser_BrowserAnon19{}
+	anon163.fnChanging = func(event *browser.LocationEvent) {
 		this.browser.Evaluate("SWTchanging = true")
 		changingFinished.Set(true)
 	}
-	anon140.fnChanged = func(event *browser.LocationEvent) {
+	anon163.fnChanged = func(event *browser.LocationEvent) {
 		this.browser.Evaluate("SWTchanged = true")
 		changedFinished.Set(true)
 	}
-	this.browser.AddLocationListener(anon140)
+	this.browser.AddLocationListener(anon163)
 	this.shell.Open()
 	this.browser.SetText("<body>Hello <b>World</b></body>")
 	if SwtTestUtilIsWindows {
@@ -1580,17 +1586,23 @@ func (this *Test_org_eclipse_swt_browser_Browser) NormalizeHtmlString(htmlString
 func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 	var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 	{
-		anon141 := &Test_org_eclipse_swt_browser_BrowserAnon20{}
-		anon141.initEchoHttpServer()
-		anon141.fnHandleGetEcho = func(exchange *jrt.HttpExchange) {
+		anon164 := &Test_org_eclipse_swt_browser_BrowserAnon20{}
+		anon164.initEchoHttpServer()
+		anon164.fnHandleGetEcho = func(exchange *jrt.HttpExchange) {
 			func() {
 				defer func() {
 					r := recover()
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						panic(jrt.NewIOException(e))
 					} else {
@@ -1599,9 +1611,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 				}()
 				latch.Await(int64(5), jrt.TimeUnitSECONDS)
 			}()
-			anon141.EchoHttpServer.HandleGetEcho(exchange)
+			anon164.EchoHttpServer.HandleGetEcho(exchange)
 		}
-		var server *EchoHttpServer = &anon141.EchoHttpServer
+		var server *EchoHttpServer = &anon164.EchoHttpServer
 		defer server.Close()
 		this.shell.Open()
 		var completed *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
@@ -1656,7 +1668,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_execute_and_closeListener
 func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_string() {
 	var returnValue *jrt.AtomicReference = jrt.NewAtomicReference()
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
-		var evalResult string = this.browser.Evaluate("return document.getElementById('myid').childNodes[0].nodeValue;").(string)
+		var evalResult string = jrt.Cast[string](this.browser.Evaluate("return document.getElementById('myid').childNodes[0].nodeValue;"))
 		returnValue.Set(evalResult)
 		if this.debug_verbose_output {
 			fmt.Fprintln(os.Stdout, fmt.Sprintf("Node value: %s", evalResult))
@@ -1673,7 +1685,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_string() {
 func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_returnMoved() {
 	var returnValue *jrt.AtomicReference = jrt.NewAtomicReference()
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
-		var evalResult string = this.browser.Evaluate("var x = 1; return 'hello'").(string)
+		var evalResult string = jrt.Cast[string](this.browser.Evaluate("var x = 1; return 'hello'"))
 		returnValue.Set(evalResult)
 	}))
 	this.browser.SetText("test text")
@@ -1858,7 +1870,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_numbers() 
 	var atomicIntArray *jrt.AtomicIntegerArray = jrt.NewAtomicIntegerArray(3)
 	atomicIntArray.Set(0, -1)
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
-		var evalResult []any = this.browser.Evaluate("return new Array(1,2,3)").([]any)
+		var evalResult []any = jrt.Cast[[]any](this.browser.Evaluate("return new Array(1,2,3)"))
 		atomicIntArray.Set(0, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[0])))))
 		atomicIntArray.Set(1, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[1])))))
 		atomicIntArray.Set(2, jrt.DoubleToInt(jrt.Cast[float64]((any(evalResult[2])))))
@@ -1892,10 +1904,10 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_strings() 
 	var atomicStringArray *jrt.AtomicReferenceArray = jrt.NewAtomicReferenceArray(3)
 	atomicStringArray.Set(0, "executing")
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
-		var evalResult []any = this.browser.Evaluate("return new Array(\"str1\", \"str2\", \"str3\")").([]any)
-		atomicStringArray.Set(0, evalResult[0].(string))
-		atomicStringArray.Set(1, evalResult[1].(string))
-		atomicStringArray.Set(2, evalResult[2].(string))
+		var evalResult []any = jrt.Cast[[]any](this.browser.Evaluate("return new Array(\"str1\", \"str2\", \"str3\")"))
+		atomicStringArray.Set(0, jrt.Cast[string](evalResult[0]))
+		atomicStringArray.Set(1, jrt.Cast[string](evalResult[1]))
+		atomicStringArray.Set(2, jrt.Cast[string](evalResult[2]))
 		if this.debug_verbose_output {
 			fmt.Fprintln(os.Stdout, fmt.Sprintf("Node value: %v", evalResult))
 		}
@@ -1926,7 +1938,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_mixedTypes
 	var atomicArray *jrt.AtomicReferenceArray = jrt.NewAtomicReferenceArray(3)
 	atomicArray.Set(0, "executing")
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
-		var evalResult []any = this.browser.Evaluate("return new Array(\"str1\", 2, true)").([]any)
+		var evalResult []any = jrt.Cast[[]any](this.browser.Evaluate("return new Array(\"str1\", 2, true)"))
 		atomicArray.Set(2, evalResult[2])
 		atomicArray.Set(1, evalResult[1])
 		atomicArray.Set(0, evalResult[0])
@@ -1981,14 +1993,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback(
 	var javaCallbackExecuted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n\t\tjsCallbackToJava()\n}\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon142 := &Test_org_eclipse_swt_browser_BrowserAnon21{}
-	anon142.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon142.SetImpl_(anon142)
-	anon142.fnFunction_ = func(arguments []any) any {
+	anon165 := &Test_org_eclipse_swt_browser_BrowserAnon21{}
+	anon165.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon165.SetImpl_(anon165)
+	anon165.fnFunction_ = func(arguments []any) any {
 		javaCallbackExecuted.Set(true)
 		return nil
 	}
-	_ = anon142
+	_ = anon165
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(javaCallbackExecuted.Get)
@@ -2002,17 +2014,17 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var DEPTH int32 = 5
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n\t\tjsCallbackToJava()\n}\n\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon143 := &Test_org_eclipse_swt_browser_BrowserAnon22{}
-	anon143.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon143.SetImpl_(anon143)
-	anon143.fnFunction_ = func(arguments []any) any {
+	anon166 := &Test_org_eclipse_swt_browser_BrowserAnon22{}
+	anon166.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon166.SetImpl_(anon166)
+	anon166.fnFunction_ = func(arguments []any) any {
 		if javaCallbackExecuted.Get() < DEPTH {
 			javaCallbackExecuted.IncrementAndGet()
 			this.browser.Evaluate("jsCallbackToJava();")
 		}
 		return nil
 	}
-	_ = anon143
+	_ = anon166
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2026,15 +2038,15 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var returnInt *jrt.AtomicInteger = jrt.NewAtomicInteger(0)
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n\t\tjsCallbackToJava(5)\n}\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon144 := &Test_org_eclipse_swt_browser_BrowserAnon23{}
-	anon144.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon144.SetImpl_(anon144)
-	anon144.fnFunction_ = func(arguments []any) any {
+	anon167 := &Test_org_eclipse_swt_browser_BrowserAnon23{}
+	anon167.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon167.SetImpl_(anon167)
+	anon167.fnFunction_ = func(arguments []any) any {
 		var returnedDouble any = any(arguments[0])
 		returnInt.Set(jrt.DoubleToInt(jrt.Cast[float64](returnedDouble)))
 		return nil
 	}
-	_ = anon144
+	_ = anon167
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2048,15 +2060,15 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var javaCallbackExecuted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n\t\tjsCallbackToJava(true)\n}\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon145 := &Test_org_eclipse_swt_browser_BrowserAnon24{}
-	anon145.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon145.SetImpl_(anon145)
-	anon145.fnFunction_ = func(arguments []any) any {
+	anon168 := &Test_org_eclipse_swt_browser_BrowserAnon24{}
+	anon168.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon168.SetImpl_(anon168)
+	anon168.fnFunction_ = func(arguments []any) any {
 		var returnBool bool = arguments[0].(bool)
 		javaCallbackExecuted.Set(returnBool)
 		return nil
 	}
-	_ = anon145
+	_ = anon168
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(javaCallbackExecuted.Get)
@@ -2068,15 +2080,15 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var returnValue *jrt.AtomicReference = jrt.NewAtomicReference()
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n    document.body.style.backgroundColor = 'red'\n\tjsCallbackToJava('hellojava')\n}\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon146 := &Test_org_eclipse_swt_browser_BrowserAnon25{}
-	anon146.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon146.SetImpl_(anon146)
-	anon146.fnFunction_ = func(arguments []any) any {
-		var returnString string = arguments[0].(string)
+	anon169 := &Test_org_eclipse_swt_browser_BrowserAnon25{}
+	anon169.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon169.SetImpl_(anon169)
+	anon169.fnFunction_ = func(arguments []any) any {
+		var returnString string = jrt.Cast[string](arguments[0])
 		returnValue.Set(returnString)
 		return nil
 	}
-	_ = anon146
+	_ = anon169
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2091,16 +2103,16 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	atomicArray.Set(0, "executing")
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n\t\tjsCallbackToJava('hellojava', 5, true)\n}\n</script>\n</head>\n<body> Going to make a callback to Java </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon147 := &Test_org_eclipse_swt_browser_BrowserAnon26{}
-	anon147.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon147.SetImpl_(anon147)
-	anon147.fnFunction_ = func(arguments []any) any {
+	anon170 := &Test_org_eclipse_swt_browser_BrowserAnon26{}
+	anon170.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon170.SetImpl_(anon170)
+	anon170.fnFunction_ = func(arguments []any) any {
 		atomicArray.Set(1, arguments[1])
 		atomicArray.Set(2, arguments[2])
 		atomicArray.Set(0, arguments[0])
 		return nil
 	}
-	_ = anon147
+	_ = anon170
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2118,22 +2130,22 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var returnInt *jrt.AtomicInteger = jrt.NewAtomicInteger(0)
 	var htmlWithScript string = "<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n     var retVal = jsCallbackToJava()\n     document.write(retVal)\n     jsSuccess(retVal)\n}\n</script>\n</head>\n<body> If you see this, Javascript did not receive anything from Java. This page should just be '42' </body>\n</html>\n"
 	this.browser.SetText(htmlWithScript)
-	anon148 := &Test_org_eclipse_swt_browser_BrowserAnon27{}
-	anon148.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon148.SetImpl_(anon148)
-	anon148.fnFunction_ = func(arguments []any) any {
+	anon171 := &Test_org_eclipse_swt_browser_BrowserAnon27{}
+	anon171.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon171.SetImpl_(anon171)
+	anon171.fnFunction_ = func(arguments []any) any {
 		return int32(42)
 	}
-	_ = anon148
-	anon149 := &Test_org_eclipse_swt_browser_BrowserAnon28{}
-	anon149.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsSuccess"))
-	anon149.SetImpl_(anon149)
-	anon149.fnFunction_ = func(arguments []any) any {
+	_ = anon171
+	anon172 := &Test_org_eclipse_swt_browser_BrowserAnon28{}
+	anon172.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsSuccess"))
+	anon172.SetImpl_(anon172)
+	anon172.fnFunction_ = func(arguments []any) any {
 		var returnVal any = any(arguments[0])
 		returnInt.Set(jrt.DoubleToInt(jrt.Cast[float64](returnVal)))
 		return nil
 	}
-	_ = anon149
+	_ = anon172
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2148,21 +2160,21 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var testString string = "a\tcomplicated\"string\\ß"
 	var htmlWithScript string = fmt.Sprintf("%s%s' </body>\n</html>\n", fmt.Sprintf("<html><head>\n<script language=\"JavaScript\">\nfunction callCustomFunction() {\n     document.body.style.backgroundColor = 'red'\n     var retVal = jsCallbackToJava()\n\t\tdocument.write(retVal)\n     jsSuccess(retVal)\n}</script>\n</head>\n<body> If you see this, Javascript did not receive anything from Java. This page should just be '"), testString)
 	this.browser.SetText(htmlWithScript)
-	anon150 := &Test_org_eclipse_swt_browser_BrowserAnon29{}
-	anon150.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon150.SetImpl_(anon150)
-	anon150.fnFunction_ = func(arguments []any) any {
+	anon173 := &Test_org_eclipse_swt_browser_BrowserAnon29{}
+	anon173.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon173.SetImpl_(anon173)
+	anon173.fnFunction_ = func(arguments []any) any {
 		return testString
 	}
-	_ = anon150
-	anon151 := &Test_org_eclipse_swt_browser_BrowserAnon30{}
-	anon151.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsSuccess"))
-	anon151.SetImpl_(anon151)
-	anon151.fnFunction_ = func(arguments []any) any {
-		returnString.Set(arguments[0].(string))
+	_ = anon173
+	anon174 := &Test_org_eclipse_swt_browser_BrowserAnon30{}
+	anon174.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsSuccess"))
+	anon174.SetImpl_(anon174)
+	anon174.fnFunction_ = func(arguments []any) any {
+		returnString.Set(jrt.Cast[string](arguments[0]))
 		return nil
 	}
-	_ = anon151
+	_ = anon174
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
@@ -2176,10 +2188,10 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	var javaCallbackExecuted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var callCount *jrt.AtomicInteger = jrt.NewAtomicInteger(0)
 	this.browser.SetText("1st (initial) page load")
-	anon152 := &Test_org_eclipse_swt_browser_BrowserAnon31{}
-	anon152.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
-	anon152.SetImpl_(anon152)
-	anon152.fnFunction_ = func(arguments []any) any {
+	anon175 := &Test_org_eclipse_swt_browser_BrowserAnon31{}
+	anon175.BrowserFunction = browser.NewBrowserFunction((this.browser), ("jsCallbackToJava"))
+	anon175.SetImpl_(anon175)
+	anon175.fnFunction_ = func(arguments []any) any {
 		if callCount.Get() == 0 {
 			callCount.Set(1)
 			this.browser.SetText("2nd page load")
@@ -2188,7 +2200,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 		}
 		return nil
 	}
-	_ = anon152
+	_ = anon175
 	this.browser.Execute("jsCallbackToJava()")
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		this.browser.Execute("jsCallbackToJava()")
@@ -2202,29 +2214,29 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_multiprocess() {
 	var browser1 *browser.Browser = this.CreateBrowser(this.shell, this.swtBrowserSettings)
 	var browser2 *browser.Browser = this.CreateBrowser(this.shell, this.swtBrowserSettings)
-	anon153 := &Test_org_eclipse_swt_browser_BrowserAnon32{}
-	anon153.BrowserFunction = browser.NewBrowserFunction((browser1), "javaFunc")
-	anon153.SetImpl_(anon153)
-	anon153.fnFunction_ = func(arguments []any) any {
+	anon176 := &Test_org_eclipse_swt_browser_BrowserAnon32{}
+	anon176.BrowserFunction = browser.NewBrowserFunction((browser1), "javaFunc")
+	anon176.SetImpl_(anon176)
+	anon176.fnFunction_ = func(arguments []any) any {
 		return arguments[0]
 	}
-	_ = anon153
-	anon154 := &Test_org_eclipse_swt_browser_BrowserAnon33{}
-	anon154.BrowserFunction = browser.NewBrowserFunction((browser2), "javaFunc")
-	anon154.SetImpl_(anon154)
-	anon154.fnFunction_ = func(arguments []any) any {
+	_ = anon176
+	anon177 := &Test_org_eclipse_swt_browser_BrowserAnon33{}
+	anon177.BrowserFunction = browser.NewBrowserFunction((browser2), "javaFunc")
+	anon177.SetImpl_(anon177)
+	anon177.fnFunction_ = func(arguments []any) any {
 		return arguments[0]
 	}
-	_ = anon154
+	_ = anon177
 	junit.AssertEquals("value1", browser1.Evaluate("return javaFunc('value1')"))
 	junit.AssertEquals("value2", browser2.Evaluate("return javaFunc('value2')"))
 	var completed []int32 = make([]int32, 1)
-	anon155 := &Test_org_eclipse_swt_browser_BrowserAnon34{}
-	anon155.ProgressAdapter = browser.NewProgressAdapter()
-	anon155.fnCompleted = func(event *browser.ProgressEvent) {
+	anon178 := &Test_org_eclipse_swt_browser_BrowserAnon34{}
+	anon178.ProgressAdapter = browser.NewProgressAdapter()
+	anon178.fnCompleted = func(event *browser.ProgressEvent) {
 		completed[0]++
 	}
-	var listener browser.ProgressListener = anon155
+	var listener browser.ProgressListener = anon178
 	browser1.AddProgressListener(listener)
 	browser2.AddProgressListener(listener)
 	browser1.SetText("<body>new_page1")
@@ -2242,14 +2254,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_available
 	junit.AssumeTrue(this.isEdge, "Race condition is specific to async Edge/WebView2 implementation")
 	var functionCalled *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var pageLoadCompleted *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
-	anon156 := &Test_org_eclipse_swt_browser_BrowserAnon35{}
-	anon156.BrowserFunction = browser.NewBrowserFunction(this.browser, "options")
-	anon156.SetImpl_(anon156)
-	anon156.fnFunction_ = func(arguments []any) any {
+	anon179 := &Test_org_eclipse_swt_browser_BrowserAnon35{}
+	anon179.BrowserFunction = browser.NewBrowserFunction(this.browser, "options")
+	anon179.SetImpl_(anon179)
+	anon179.fnFunction_ = func(arguments []any) any {
 		functionCalled.Set(true)
 		return nil
 	}
-	_ = anon156
+	_ = anon179
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		pageLoadCompleted.Set(true)
 	}))
@@ -2265,13 +2277,13 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_available
 	var browser2FuncAvailable *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var b1 *browser.Browser = browser.NewBrowser(upcastswtShellToswtComposite(this.shell), swt.NONE)
 	b1.SetUrl("about:blank")
-	anon157 := &Test_org_eclipse_swt_browser_BrowserAnon36{}
-	anon157.BrowserFunction = browser.NewBrowserFunction(b1, "options")
-	anon157.SetImpl_(anon157)
-	anon157.fnFunction_ = func(arguments []any) any {
+	anon180 := &Test_org_eclipse_swt_browser_BrowserAnon36{}
+	anon180.BrowserFunction = browser.NewBrowserFunction(b1, "options")
+	anon180.SetImpl_(anon180)
+	anon180.fnFunction_ = func(arguments []any) any {
 		return nil
 	}
-	_ = anon157
+	_ = anon180
 	var exceptionInBrowser1 *jrt.AtomicReference = jrt.NewAtomicReference()
 	b1.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		func() {
@@ -2301,13 +2313,13 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_available
 	this.createdBroswers.Add(b1)
 	var b2 *browser.Browser = browser.NewBrowser(upcastswtShellToswtComposite(this.shell), swt.NONE)
 	b2.SetUrl("about:blank")
-	anon158 := &Test_org_eclipse_swt_browser_BrowserAnon37{}
-	anon158.BrowserFunction = browser.NewBrowserFunction(b2, "options")
-	anon158.SetImpl_(anon158)
-	anon158.fnFunction_ = func(arguments []any) any {
+	anon181 := &Test_org_eclipse_swt_browser_BrowserAnon37{}
+	anon181.BrowserFunction = browser.NewBrowserFunction(b2, "options")
+	anon181.SetImpl_(anon181)
+	anon181.fnFunction_ = func(arguments []any) any {
 		return nil
 	}
-	_ = anon158
+	_ = anon181
 	var exceptionInBrowser2 *jrt.AtomicReference = jrt.NewAtomicReference()
 	b2.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		func() {
@@ -2352,22 +2364,22 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_available
 func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_createFunctionInsideCallback() {
 	junit.AssumeTrue(this.isEdge, "BrowserFunction availability before the page's inline scripts is specific to the Edge/WebView2 implementation")
 	var innerCalled *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
-	anon159 := &Test_org_eclipse_swt_browser_BrowserAnon38{}
-	anon159.BrowserFunction = browser.NewBrowserFunction(this.browser, "outer")
-	anon159.SetImpl_(anon159)
-	anon159.fnFunction_ = func(arguments []any) any {
-		anon160 := &Test_org_eclipse_swt_browser_BrowserAnon39{}
-		anon160.BrowserFunction = browser.NewBrowserFunction(this.browser, "inner")
-		anon160.SetImpl_(anon160)
-		anon160.fnFunction_ = func(arguments []any) any {
+	anon182 := &Test_org_eclipse_swt_browser_BrowserAnon38{}
+	anon182.BrowserFunction = browser.NewBrowserFunction(this.browser, "outer")
+	anon182.SetImpl_(anon182)
+	anon182.fnFunction_ = func(arguments []any) any {
+		anon183 := &Test_org_eclipse_swt_browser_BrowserAnon39{}
+		anon183.BrowserFunction = browser.NewBrowserFunction(this.browser, "inner")
+		anon183.SetImpl_(anon183)
+		anon183.fnFunction_ = func(arguments []any) any {
 			innerCalled.Set(true)
 			return nil
 		}
-		_ = anon160
+		_ = anon183
 		this.browser.SetText("<html><body><script>inner();</script></body></html>")
 		return nil
 	}
-	_ = anon159
+	_ = anon182
 	var outerTriggered *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		if outerTriggered.CompareAndSet(false, true) {
@@ -2385,14 +2397,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_available
 	var b *browser.Browser = browser.NewBrowser(upcastswtShellToswtComposite(this.shell), swt.NONE)
 	this.createdBroswers.Add(b)
 	b.SetText("<html><body><script>options();</script></body></html>")
-	anon161 := &Test_org_eclipse_swt_browser_BrowserAnon40{}
-	anon161.BrowserFunction = browser.NewBrowserFunction(b, "options")
-	anon161.SetImpl_(anon161)
-	anon161.fnFunction_ = func(arguments []any) any {
+	anon184 := &Test_org_eclipse_swt_browser_BrowserAnon40{}
+	anon184.BrowserFunction = browser.NewBrowserFunction(b, "options")
+	anon184.SetImpl_(anon184)
+	anon184.fnFunction_ = func(arguments []any) any {
 		functionCalled.Set(true)
 		return nil
 	}
-	_ = anon161
+	_ = anon184
 	this.shell.Open()
 	junit.AssertTrue(this.WaitForPassCondition(functionCalled.Get), "BrowserFunction 'options' was not available before the first page's inline script ran during concurrent initialization")
 }
@@ -2404,20 +2416,20 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_multipleF
 	var b *browser.Browser = browser.NewBrowser(upcastswtShellToswtComposite(this.shell), swt.NONE)
 	this.createdBroswers.Add(b)
 	b.SetUrl("about:blank")
-	anon162 := &Test_org_eclipse_swt_browser_BrowserAnon41{}
-	anon162.BrowserFunction = browser.NewBrowserFunction(b, "f1")
-	anon162.SetImpl_(anon162)
-	anon162.fnFunction_ = func(arguments []any) any {
+	anon185 := &Test_org_eclipse_swt_browser_BrowserAnon41{}
+	anon185.BrowserFunction = browser.NewBrowserFunction(b, "f1")
+	anon185.SetImpl_(anon185)
+	anon185.fnFunction_ = func(arguments []any) any {
 		return int32(1)
 	}
-	_ = anon162
-	anon163 := &Test_org_eclipse_swt_browser_BrowserAnon42{}
-	anon163.BrowserFunction = browser.NewBrowserFunction(b, "f2")
-	anon163.SetImpl_(anon163)
-	anon163.fnFunction_ = func(arguments []any) any {
+	_ = anon185
+	anon186 := &Test_org_eclipse_swt_browser_BrowserAnon42{}
+	anon186.BrowserFunction = browser.NewBrowserFunction(b, "f2")
+	anon186.SetImpl_(anon186)
+	anon186.fnFunction_ = func(arguments []any) any {
 		return int32(2)
 	}
-	_ = anon163
+	_ = anon186
 	b.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		func() {
 			defer func() {
@@ -2454,13 +2466,13 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_multipleF
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_disposedFunctionRemovedAfterNavigation() {
-	anon164 := &Test_org_eclipse_swt_browser_BrowserAnon43{}
-	anon164.BrowserFunction = browser.NewBrowserFunction(this.browser, "disposableFunc")
-	anon164.SetImpl_(anon164)
-	anon164.fnFunction_ = func(arguments []any) any {
+	anon187 := &Test_org_eclipse_swt_browser_BrowserAnon43{}
+	anon187.BrowserFunction = browser.NewBrowserFunction(this.browser, "disposableFunc")
+	anon187.SetImpl_(anon187)
+	anon187.fnFunction_ = func(arguments []any) any {
 		return "alive"
 	}
-	var function *browser.BrowserFunction = anon164.BrowserFunction
+	var function *browser.BrowserFunction = anon187.BrowserFunction
 	var firstPageLoaded *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var firstPageListener browser.ProgressListener = browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		firstPageLoaded.Set(true)
@@ -2483,20 +2495,20 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_disposedF
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_redefineSameNameSurvivesNavigation() {
-	anon165 := &Test_org_eclipse_swt_browser_BrowserAnon44{}
-	anon165.BrowserFunction = browser.NewBrowserFunction(this.browser, "f")
-	anon165.SetImpl_(anon165)
-	anon165.fnFunction_ = func(arguments []any) any {
+	anon188 := &Test_org_eclipse_swt_browser_BrowserAnon44{}
+	anon188.BrowserFunction = browser.NewBrowserFunction(this.browser, "f")
+	anon188.SetImpl_(anon188)
+	anon188.fnFunction_ = func(arguments []any) any {
 		return "v1"
 	}
-	_ = anon165
-	anon166 := &Test_org_eclipse_swt_browser_BrowserAnon45{}
-	anon166.BrowserFunction = browser.NewBrowserFunction(this.browser, "f")
-	anon166.SetImpl_(anon166)
-	anon166.fnFunction_ = func(arguments []any) any {
+	_ = anon188
+	anon189 := &Test_org_eclipse_swt_browser_BrowserAnon45{}
+	anon189.BrowserFunction = browser.NewBrowserFunction(this.browser, "f")
+	anon189.SetImpl_(anon189)
+	anon189.fnFunction_ = func(arguments []any) any {
 		return "v2"
 	}
-	_ = anon166
+	_ = anon189
 	var firstPageLoaded *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 	var firstPageListener browser.ProgressListener = browser.ProgressListenerCompletedAdapter(func(e *browser.ProgressEvent) {
 		firstPageLoaded.Set(true)
@@ -2588,8 +2600,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) WaitForPassConditionPassTestMi
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -2606,8 +2624,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) WaitForPassConditionPassTestMi
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -2662,8 +2686,8 @@ func Test_org_eclipse_swt_browser_BrowserIsTestRelatedFileDescriptor(fileDescrip
 }
 
 func Test_org_eclipse_swt_browser_BrowserResolveSymLink(path *jrt.Path) string {
-	var tret167 string
-	tretd168 := false
+	var tret190 string
+	tretd191 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -2684,18 +2708,18 @@ func Test_org_eclipse_swt_browser_BrowserResolveSymLink(path *jrt.Path) string {
 				panic(r)
 			}
 		}()
-		var cond169 string
+		var cond192 string
 		if jrt.FilesIsSymbolicLink(path) {
-			cond169 = jrt.FilesReadSymbolicLink(path).ToString()
+			cond192 = jrt.FilesReadSymbolicLink(path).ToString()
 		} else {
-			cond169 = path.ToString()
+			cond192 = path.ToString()
 		}
-		tret167 = cond169
-		tretd168 = true
+		tret190 = cond192
+		tretd191 = true
 		return
 	}()
-	if tretd168 {
-		return tret167
+	if tretd191 {
+		return tret190
 	}
 	return ""
 }
@@ -3104,8 +3128,14 @@ func (this *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication) Run() {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						this.shouldClose = true
 					} else {
@@ -3133,6 +3163,13 @@ func (this *Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication) Close()
 	this.this_0.WaitForPassCondition(func() bool {
 		return !this.isRunning
 	})
+}
+
+func upcastbrowserBrowserToswtComposite(x *browser.Browser) *swt.Composite {
+	if x == nil {
+		return nil
+	}
+	return x.Composite
 }
 
 // j2go: func adapter for CloseWindowListener.

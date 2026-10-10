@@ -48,6 +48,11 @@ final class TypeTestEmitter {
 		// interface to a concrete array/string/struct type, only assertion does.
 		ITypeBinding exprType = ce.getExpression().resolveTypeBinding();
 		if (exprType != null && exprType.getErasure().getQualifiedName().equals("java.lang.Object") && !goType.equals("any")) {
+			// (int[]) null is null and a null String is "" in Go: a bare assertion on a nil interface panics.
+			if (goType.startsWith("[]") || goType.equals("string")) {
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+				return "jrt.Cast[" + goType + "](" + expr + ")";
+			}
 			return expr + ".(" + goType + ")";
 		}
 		return goType + "(" + expr + ")";
@@ -74,7 +79,7 @@ final class TypeTestEmitter {
 		String name = "cast" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
-			String impl = subjectCi == null || subjectCi.isInterface ? "x" : "x" + emitter.implAccess(subjectCi.root);
+			String impl = subjectCi == null || subjectCi.isInterface || subjectCi.root.children.isEmpty() ? "x" : "x" + emitter.implAccess(subjectCi.root);
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
 					+ "\tv, ok := " + as + "(" + impl + ")\n\tif !ok {\n\t\tpanic(\"java.lang.ClassCastException: " + targetName + "\")\n\t}\n\treturn v\n}\n\n");
 		}
@@ -167,7 +172,7 @@ final class TypeTestEmitter {
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
-					+ "\treturn " + as + "(x" + emitter.implAccess(subjectCi.root) + ")\n}\n\n");
+					+ "\treturn " + as + "(x" + (subjectCi.root.children.isEmpty() ? "" : emitter.implAccess(subjectCi.root)) + ")\n}\n\n");
 		}
 		return name;
 	}

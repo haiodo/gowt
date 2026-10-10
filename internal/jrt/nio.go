@@ -113,6 +113,14 @@ func RemoveTempDir(p *Path) { os.RemoveAll(p.s) }
 
 func FilesDelete(p *Path) { ioFail(os.Remove(p.s)) }
 
+// FilesCreateTempFile is Files.createTempFile(prefix, suffix, attrs...).
+func FilesCreateTempFile(prefix, suffix string, _ []any) *Path {
+	f, err := os.CreateTemp("", prefix+"*"+suffix)
+	ioFail(err)
+	f.Close()
+	return &Path{f.Name()}
+}
+
 func FilesIsSymbolicLink(p *Path) bool {
 	fi, err := os.Lstat(p.s)
 	return err == nil && fi.Mode()&os.ModeSymlink != 0

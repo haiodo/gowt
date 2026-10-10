@@ -130,8 +130,11 @@ final class ClassEmitter {
 			out.append("func (this *").append(ci.goTypeName).append(") Impl() ").append(ci.goTypeName).append("Impl {\n")
 					.append("\tif h, ok := this.impl.(*").append(hooked).append("); ok {\n\t\treturn h.hook\n\t}\n")
 					.append("\treturn this.impl\n}\n\n");
-			out.append("func (this *").append(ci.goTypeName).append(") SetImpl_(impl ").append(ci.goTypeName)
-					.append("Impl) { this.impl = &").append(hooked).append("{").append(ci.goTypeName).append("Impl: this.impl, hook: impl} }\n\n");
+			// inherited: the wrapped object is a subclass that may implement an abstract hook (see HookEmitter).
+			out.append("func (this *").append(ci.goTypeName).append(") SetImpl_(impl ").append(ci.goTypeName).append("Impl) {\n");
+			if (HookEmitter.hasAbstractHook(ci)) out.append("\t_, base := this.impl.(*").append(ci.goTypeName).append(")\n");
+			out.append("\tthis.impl = &").append(hooked).append("{").append(ci.goTypeName).append("Impl: this.impl, hook: impl")
+					.append(HookEmitter.hasAbstractHook(ci) ? ", inherited: !base" : "").append("}\n}\n\n");
 		}
 		// jrt.ClassName only guesses the widgets package: tell it the real one.
 		if ((ci.goPackage.equals("swt") || ci.goPackage.equals("browser")) && !ci.isInterface && !ci.javaPackage.equals("org.eclipse.swt.widgets")) {
@@ -350,8 +353,17 @@ final class ClassEmitter {
 
 	// static {} block: folded into the same deferred func init() as static field assignments
 	// (see README) so it runs after the class_x/sel_x fields it reads, not its own func init().
+	// Classes whose static {} block needs the live toolkit (gtk's Clipboard reads GtkClipboards): Java runs it at the first use of
+	// the class, after the Display exists; Go's init() runs before main. It runs at the first constructor call instead.
+	static final Set<String> LAZY_STATIC_BLOCKS = Set.of("org.eclipse.swt.dnd.Clipboard");
+
 	private void emitStaticInitBlock(Initializer init) {
 		emitter.currentReturnType = null;
+		if (LAZY_STATIC_BLOCKS.contains(emitter.currentClassInfo.binding.getErasure().getQualifiedName())
+				&& dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.GTK) {
+			emitter.lazyStaticBlocks.computeIfAbsent(emitter.currentClassGoTypeName, k -> new ArrayList<>()).add(emitter.block(init.getBody(), 2));
+			return;
+		}
 		emitter.deferredStaticInits.add(emitter.block(init.getBody(), 1));
 		emitter.deferredStaticInitLabels.add(emitter.currentClassGoTypeName + " static{}");
 	}

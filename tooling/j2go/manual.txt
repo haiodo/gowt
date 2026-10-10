@@ -3,6 +3,9 @@
 # binaryName#method(erasedParamTypes), or binaryName#fieldName for a skipped field.
 
 org.eclipse.swt.graphics.RoundingMode
+
+# thenComparingInt over a method ref to getX(Point) does not type in Go (Point params are PointLike); swt/custom_styledtext_manual.go.
+org.eclipse.swt.custom.StyledText#SELECTION_COMPARATOR
 org.eclipse.swt.widgets.TaskItem#updateImage()
 
 # Browser: the engine is package webview (browser/webbrowser_manual.go); createWebBrowser is hand-written, and with it
@@ -18,6 +21,11 @@ org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#printThreadsInf
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getOpenedDescriptors()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#getPropertiesSafe()
 org.eclipse.swt.tests.junit.Test_org_eclipse_swt_browser_Browser#test_setJavascriptEnabled()
+
+# ClipboardBase (tests/swttests/clipboard_manual.go): openAndFocusShell is hand-written without its Wayland button-press branch, the only user of
+# the null Boolean skipTestsRequiringButtonPress. RemoteClipboard (RMI to a Swing JVM) is a hand-written skip stub.
+org.eclipse.swt.tests.junit.ClipboardBase#skipTestsRequiringButtonPress
+org.eclipse.swt.tests.junit.ClipboardBase#openAndFocusShell(Z)
 
 # org.eclipse.swt.SWT is translated for real now (Round 3) - retired from this list; its old
 # stub, swt/swt_manual.go, is kept empty rather than deleted.
@@ -41,7 +49,6 @@ org.eclipse.swt.widgets.Touch
 # Round 10 - removed from this list.
 org.eclipse.swt.internal.Callback
 org.eclipse.swt.widgets.IME
-org.eclipse.swt.accessibility.Accessible
 org.eclipse.swt.internal.WidgetSpy
 
 # Round 6: Display/Device/Resource/Font/FontData/Color/Monitor/TouchSource are translated for
@@ -161,3 +168,7 @@ org.eclipse.swt.internal.gtk.GdkRectangle#toRectangle()
 # jface: BrowserFactory is not translated (swt Browser is not ported); EMPTY_SORTED_SET needs java.util.Collections wrappers nothing here uses.
 org.eclipse.jface.widgets.WidgetFactory#browser(I)
 org.eclipse.jface.util.Util#EMPTY_SORTED_SET
+
+# win32 Accessible: instanceof Double/Float/Long on a Number and super.toString() have no Go form (swt/accessibility_manual_windows.go).
+org.eclipse.swt.accessibility.Accessible#setNumberVARIANT(J,java.lang.Number)
+org.eclipse.swt.accessibility.Accessible#toString()

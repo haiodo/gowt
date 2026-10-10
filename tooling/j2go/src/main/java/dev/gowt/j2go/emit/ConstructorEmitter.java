@@ -70,6 +70,7 @@ final class ConstructorEmitter {
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName)
 				.append('(').append(emitter.paramList(mb, md)).append(") {\n");
 		emitter.currentReturnType = null;
+		out.append(lazyStaticCall(ci));
 		out.append(emitConstructorBody(md, ci, td));
 		out.append("}\n\n");
 	}
@@ -88,9 +89,15 @@ final class ConstructorEmitter {
 		out.append("\treturn this\n}\n\n");
 
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(initName).append("() {\n");
+		out.append(lazyStaticCall(ci));
 		out.append(emitZeroArgSuperInitCall(ci));
 		out.append(emitInstanceInitializers(td, 1));
 		out.append("}\n\n");
+	}
+
+	/** The once-guarded static {} of a class that runs it lazily (ClassEmitter.LAZY_STATIC_BLOCKS), at the top of each constructor. */
+	private String lazyStaticCall(TypeModel.ClassInfo ci) {
+		return emitter.lazyStaticBlocks.containsKey(ci.goTypeName) ? "\t" + Names.decapitalize(ci.goTypeName) + "Static()\n" : "";
 	}
 
 	/** "this.Super.initSuper()" (or the manual-superclass equivalent), shared by an implicit
@@ -221,6 +228,10 @@ final class ConstructorEmitter {
 				emitter.fileImports.add(Manual.JRT_IMPORT);
 				return "jrt.IdentityHashCode(this)";
 			}
+		}
+		// Object.clone(): a shallow copy; a hierarchy root's impl must point at the copy, not the original.
+		if (mb.getDeclaringClass().getQualifiedName().equals("java.lang.Object") && base.equals("Clone") && emitter.anonThis == null) {
+			return "func() any { c := *this; " + (emitter.currentClassInfo.root.children.isEmpty() ? "" : "c.impl = &c; ") + "return &c }()";
 		}
 		String fieldPath;
 		// Inside an anonymous subclass `this` is the holder variable and its base is the embedded field.

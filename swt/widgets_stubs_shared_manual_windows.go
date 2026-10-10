@@ -21,6 +21,14 @@ type LONG struct {
 
 func NewLONG(value int64) *LONG { return &LONG{Value: value} }
 
+// COMObject keys a jrt.Map by it.
+func (l *LONG) HashCode() int32 { return int32(l.Value ^ l.Value>>32) }
+
+func (l *LONG) Equals(other any) bool {
+	o, ok := other.(*LONG)
+	return ok && o.Value == l.Value
+}
+
 // Display.APPEARANCE, a nested Java enum.
 type Display_APPEARANCE int32
 

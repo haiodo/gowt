@@ -71,15 +71,15 @@ func (this *NSTableColumn) InitWithIdentifier(identifier *NSString) *NSTableColu
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond720)
 	var cond721 *NSTableColumn
-	var cond722 *NSTableColumn
-	if result != 0 {
-		cond722 = NewNSTableColumnOverload1(result)
-	} else {
-		cond722 = nil
-	}
 	if result == this.Id {
 		cond721 = this
 	} else {
+		var cond722 *NSTableColumn
+		if result != 0 {
+			cond722 = NewNSTableColumnOverload1(result)
+		} else {
+			cond722 = nil
+		}
 		cond721 = (cond722)
 	}
 	return cond721

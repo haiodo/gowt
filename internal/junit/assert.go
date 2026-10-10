@@ -6,7 +6,11 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strings"
+	"unsafe"
+
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 // JUnit's optional trailing message: a string or a Supplier<String> (func() string).
@@ -83,14 +87,25 @@ func same(a, b any) bool {
 	return ra.Type() == rb.Type() && ra.Comparable() && a == b
 }
 
+// sameRef is assertSame's identity: for strings, the same backing bytes (a String converted from native memory is a
+// new object in Java too); the value equality of the Equal fallback in same would make every equal pair "same".
+func sameRef(a, b any) bool {
+	if sa, ok := a.(string); ok {
+		if sb, ok := b.(string); ok {
+			return len(sa) == len(sb) && unsafe.StringData(sa) == unsafe.StringData(sb)
+		}
+	}
+	return same(a, b)
+}
+
 func AssertSame(expected, actual any, msg ...any) {
-	if !same(expected, actual) {
+	if !sameRef(expected, actual) {
 		failf(msg, "expected: <%s> but was: <%s>", show(expected), show(actual))
 	}
 }
 
 func AssertNotSame(expected, actual any, msg ...any) {
-	if same(expected, actual) {
+	if sameRef(expected, actual) {
 		failf(msg, "expected: not same but was: <%s>", show(actual))
 	}
 }
@@ -182,6 +197,12 @@ func AssertThrows[T any](fn func(), msg ...any) (res T) {
 		r := recover()
 		if r == nil {
 			failf(msg, "Expected %s to be thrown, but nothing was thrown.", reflect.TypeFor[T]())
+		}
+		// A Go bounds-check panic is the Java IndexOutOfBoundsException the test asks for.
+		if _, want := any(res).(*jrt.IndexOutOfBoundsException); want {
+			if re, isRuntime := r.(runtime.Error); isRuntime && strings.Contains(re.Error(), "out of range") {
+				r = jrt.NewIndexOutOfBoundsException(re.Error())
+			}
 		}
 		v, ok := r.(T)
 		if !ok {

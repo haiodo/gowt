@@ -409,8 +409,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_getSyncThread() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1127,7 +1133,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setDataLjava_lang_StringL
 		var i any = any(display.GetData("Integer"))
 		junit.AssertNotNull(i)
 		junit.AssertEquals(10, i)
-		var s string = display.GetData("String").(string)
+		var s string = jrt.Cast[string](display.GetData("String"))
 		junit.AssertNotNull(s)
 		junit.AssertEquals("xyz", s)
 	}
@@ -1157,7 +1163,7 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_setSynchronizerLorg_eclip
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec2Ran[0] = asyncExec0Ran[0]
 		}))
-		display.SetSynchronizer(mySynchronizer.Synchronizer)
+		display.SetSynchronizer(upcastTest_org_eclipse_swt_widgets_Display_MySynchronizerToswtSynchronizer(mySynchronizer))
 		display.AsyncExec(jrt.NewRunnable(func() {
 			asyncExec1Ran[0] = true
 		}))
@@ -1191,8 +1197,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_sleep() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1213,8 +1225,14 @@ func (this *Test_org_eclipse_swt_widgets_Display) Test_sleep() {
 					if r == nil {
 						return
 					}
-					if false {
-						var ex error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						ex := r.(*jrt.InterruptedException)
 						_ = ex
 					} else {
 						panic(r)
@@ -1503,8 +1521,14 @@ func Test_org_eclipse_swt_widgets_DisplayDrainEventQueue(displayLike swt.Display
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						fmt.Fprintln(os.Stderr, e)
 					} else {
@@ -1633,4 +1657,11 @@ func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) initTest_org_ec
 func (this *Test_org_eclipse_swt_widgets_Display_MySynchronizer) AsyncExec(runnable jrt.Runnable) {
 	this.invoked = true
 	this.Synchronizer.AsyncExec(runnable)
+}
+
+func upcastTest_org_eclipse_swt_widgets_Display_MySynchronizerToswtSynchronizer(x *Test_org_eclipse_swt_widgets_Display_MySynchronizer) *swt.Synchronizer {
+	if x == nil {
+		return nil
+	}
+	return x.Synchronizer
 }

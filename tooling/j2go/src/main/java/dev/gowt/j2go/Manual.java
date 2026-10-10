@@ -72,6 +72,12 @@ public class Manual {
 		reg(TOUCH, "Touch", null, false);
 		reg(EXCEPTION_STASH, "ExceptionStash", null, false);
 		reg(CALLBACK, "Callback", null, false);
+		// The Swing peer process of the clipboard tests, over RMI: a skip stub in tests/swttests/clipboard_manual.go.
+		reg("org.eclipse.swt.tests.junit.RemoteClipboard", "RemoteClipboard", null, false);
+		// DnD on gtk: the GTK 4 classes are panicking stubs in swt/dnd_gtk4_manual_linux.go.
+		reg("org.eclipse.swt.dnd.ContentProviders", "ContentProviders", null, false);
+		reg("org.eclipse.swt.dnd.ContentProviders.CLIPBOARD_DATA", "ContentProviders_CLIPBOARD_DATA", null, true);
+		reg("org.eclipse.swt.dnd.ClipboardProxyGTK4", "ClipboardProxyGTK4", null, false);
 		reg(IME, "IME", null, false);
 		reg(ACCESSIBLE, "Accessible", null, false);
 		reg(WIDGET_SPY, "WidgetSpy", null, false);
@@ -84,11 +90,12 @@ public class Manual {
 		// java.util containers: hand-written in internal/jrt (util.go), erased to any elements.
 		for (String q : new String[]{"java.util.Map", "java.util.HashMap", "java.util.concurrent.ConcurrentHashMap"}) reg(q, "jrt.Map", JRT_IMPORT, false);
 		reg("java.util.Map.Entry", "jrt.MapEntry", JRT_IMPORT, false);
-		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.LinkedHashSet", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream"}) {
+		for (String q : new String[]{"java.util.List", "java.util.ArrayList", "java.util.Set", "java.util.HashSet", "java.util.concurrent.ConcurrentLinkedQueue", "java.util.LinkedList", "java.util.LinkedHashSet", "java.util.AbstractCollection", "java.util.Collection", "java.util.stream.Stream", "java.util.stream.IntStream"}) {
 			reg(q, "jrt.List", JRT_IMPORT, false);
 		}
 		reg("java.util.Iterator", "jrt.Iterator", JRT_IMPORT, false);
 		reg("java.util.TreeSet", "jrt.TreeSet", JRT_IMPORT, false);
+		reg("java.util.SortedSet", "jrt.TreeSet", JRT_IMPORT, false);
 		reg("java.util.stream.Collector", "jrt.Collector", JRT_IMPORT, false);
 		reg(SWT_LONG, "LONG", null, false);
 		// org.eclipse.swt.internal helpers referencing swt types (so not translatable into cocoa):
@@ -115,6 +122,7 @@ public class Manual {
 		// java.lang.Throwable itself is only ever used as a field/param/return TYPE (never a
 		// manual superclass to embed) - Go's builtin error interface is exactly that role.
 		reg(JAVA_THROWABLE, "error", null, true);
+		reg("java.lang.OutOfMemoryError", "error", null, true);
 		reg(JAVA_RUNTIME_EXCEPTION, "jrt.RuntimeException", JRT_IMPORT, false);
 		reg(JAVA_ERROR, "jrt.JavaError", JRT_IMPORT, false);
 		reg(JAVA_ILLEGAL_ARGUMENT, "jrt.IllegalArgumentException", JRT_IMPORT, false);
@@ -132,6 +140,8 @@ public class Manual {
 		reg(JAVA_IO_FILE_INPUT_STREAM, "jrt.FileInputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_FILE_OUTPUT_STREAM, "jrt.FileOutputStream", JRT_IMPORT, false);
 		reg(JAVA_IO_BUFFERED_INPUT_STREAM, "jrt.InputStream", JRT_IMPORT, true);
+		reg("java.io.DataInputStream", "jrt.DataInputStream", JRT_IMPORT, false);
+		reg("java.io.DataOutputStream", "jrt.DataOutputStream", JRT_IMPORT, false);
 		// Round 12: the in-memory streams the ImageLoader tests save to and load from.
 		reg("java.io.ByteArrayInputStream", "jrt.ByteArrayInputStream", JRT_IMPORT, false);
 		reg("java.io.ByteArrayOutputStream", "jrt.ByteArrayOutputStream", JRT_IMPORT, false);
@@ -140,6 +150,15 @@ public class Manual {
 			reg("java.util.concurrent.atomic." + n, "jrt." + n, JRT_IMPORT, false);
 		}
 		reg("java.net.URI", "jrt.URI", JRT_IMPORT, false);
+		reg("java.util.Stack", "jrt.Stack", JRT_IMPORT, false);
+		// The JDK exceptions of internal/jrt/exceptions.go (a catch of one is a Go type match).
+		for (String q : new String[]{"java.lang.InterruptedException", "java.util.concurrent.TimeoutException",
+				"java.util.concurrent.RejectedExecutionException", "java.lang.IndexOutOfBoundsException",
+				"java.lang.NullPointerException", "java.net.URISyntaxException"}) {
+			reg(q, "jrt." + q.substring(q.lastIndexOf('.') + 1), JRT_IMPORT, false);
+		}
+		// System.out/err are *os.File, a constructed one jrt.CapturedStream: both io.Writer (internal/jrt/printstream.go).
+		reg("java.io.PrintStream", "jrt.PrintStream", JRT_IMPORT, true);
 		// EchoHttpServer (internal/jrt/http.go).
 		for (String q : new String[]{"com.sun.net.httpserver.HttpExchange", "com.sun.net.httpserver.HttpServer", "com.sun.net.httpserver.Headers",
 				"java.net.InetSocketAddress", "java.net.InetAddress", "java.net.URLEncoder", "java.net.URLDecoder", "java.nio.charset.Charset",
@@ -221,8 +240,13 @@ public class Manual {
 			Map.entry(BROWSER_TEST + "#getOpenedDescriptors()", BROWSER_TEST_GO + "GetOpenedDescriptors"),
 			Map.entry(BROWSER_TEST + "#getPropertiesSafe()", BROWSER_TEST_GO + "GetPropertiesSafe"),
 			Map.entry(BROWSER_TEST + "#test_setJavascriptEnabled()", "Test_setJavascriptEnabled"),
+			Map.entry("org.eclipse.swt.tests.junit.ClipboardBase#openAndFocusShell(Z)", "OpenAndFocusShell"),
+			// Generic over the listener class, so not translated: swt/widgets_widget_manual.go. DragSource and DropTarget call it.
+			Map.entry("org.eclipse.swt.widgets.Widget#getTypedListeners(I,java.lang.Class)", "GetTypedListeners"),
 			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
 			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
+			Map.entry("org.eclipse.swt.accessibility.Accessible#setNumberVARIANT(J,java.lang.Number)", "SetNumberVARIANT"),
+			Map.entry("org.eclipse.swt.accessibility.Accessible#toString()", "String"),
 			// os.c's by-pointer wrappers over functions that take and return an NSRect by value (internal/cocoa/rect_manual.go).
 			Map.entry(COCOA_PKG + "OS#NSIntersectionRect(" + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect," + COCOA_PKG + "NSRect)",
 					"OSNSIntersectionRect"),
@@ -257,6 +281,8 @@ public class Manual {
 			Map.entry("org.eclipse.swt.graphics.ImageLoader#loadByZoom(java.io.InputStream,I,I)", "LoadByZoomStub"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#load(org.eclipse.swt.internal.DPIUtil$ElementAtZoom,org.eclipse.swt.graphics.ImageLoader,I)",
 					"NativeImageLoaderLoad"),
+			Map.entry("org.eclipse.swt.internal.NativeImageLoader#load(java.io.InputStream,org.eclipse.swt.graphics.ImageLoader,I,I)",
+					"NativeImageLoaderLoadBySize"),
 			Map.entry("org.eclipse.swt.internal.NativeImageLoader#save(java.io.OutputStream,I,org.eclipse.swt.graphics.ImageLoader)",
 					"NativeImageLoaderSave"),
 			// Round 10: only the tabs translated so far (examples/controlexample/controlexample_manual.go).
@@ -278,9 +304,13 @@ public class Manual {
 	// Hand-written for cocoa only: gtk translates its own IME.
 	private static final Set<String> COCOA_ONLY = Set.of(IME);
 
+	// Hand-written for gtk only (swt/widgets_stubs2_manual_linux.go, no ATK yet): cocoa and win32 translate the platform Accessible.
+	private static final Set<String> GTK_ONLY = Set.of(ACCESSIBLE);
+
 	public static boolean isManual(String qualifiedTypeName) {
 		return ENTRIES.containsKey(qualifiedTypeName) && !(GoTypes.platform == Platform.WIN32 && WIN32_TRANSLATED.contains(qualifiedTypeName))
-				&& !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"));
+				&& !(COCOA_ONLY.contains(qualifiedTypeName) && !GoTypes.piPackage.equals("cocoa"))
+				&& !(GTK_ONLY.contains(qualifiedTypeName) && GoTypes.platform != Platform.GTK);
 	}
 
 	/** A value type with no Go method surface mirroring Java's (a bare "any", or java.lang.Class
@@ -293,6 +323,8 @@ public class Manual {
 
 	/** Go func name for a manual.txt method-level entry (erasureKey format), or null. */
 	public static String manualMethod(String erasureKey) {
+		// The hand-written updateImage draws through NSGraphicsContext; win32 translates the Java one.
+		if (erasureKey.equals("org.eclipse.swt.widgets.TaskItem#updateImage()") && GoTypes.platform == Platform.WIN32) return null;
 		return MANUAL_METHODS.get(erasureKey);
 	}
 
@@ -305,6 +337,9 @@ public class Manual {
 		// jface: the button labels read JFaceResources' bundle (slice B); util.Util's empty sorted set needs Collections wrappers.
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.dialogs.IDialogConstants") && javaFieldName.endsWith("_LABEL")) return true;
 		if (declaringClassQualifiedName.equals("org.eclipse.jface.util.Util") && javaFieldName.equals("EMPTY_SORTED_SET")) return true;
+		// Null Boolean, used only by openAndFocusShell's Wayland branch (tests/swttests/clipboard_manual.go).
+		if (declaringClassQualifiedName.equals("org.eclipse.swt.tests.junit.ClipboardBase") && javaFieldName.equals("skipTestsRequiringButtonPress")) return true;
+		if (declaringClassQualifiedName.equals("org.eclipse.swt.custom.StyledText") && javaFieldName.equals("SELECTION_COMPARATOR")) return true;
 		return declaringClassQualifiedName.equals(COCOA_PKG + "OS") && javaFieldName.equals("SELECTORS");
 	}
 

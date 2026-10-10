@@ -37,8 +37,9 @@ func (this *AbstractColumnLayout) updateColumnData_(a0 *swt.Widget) {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type abstractColumnLayoutHooked struct {
 	AbstractColumnLayoutImpl
-	hook   AbstractColumnLayoutImpl
-	active string
+	hook      AbstractColumnLayoutImpl
+	active    string
+	inherited bool
 }
 
 func (this *abstractColumnLayoutHooked) enter(name string) func() {
@@ -61,7 +62,10 @@ func (this *abstractColumnLayoutHooked) layoutFn_(a0 *swt.Composite, a1 bool) {
 func (this *abstractColumnLayoutHooked) getColumnCount_(a0 *swt.Scrollable) int32 {
 	if h, ok := this.hook.(interface {
 		GetColumnCount_(a0 *swt.Scrollable) int32
-	}); ok {
+	}); ok && !(this.inherited && this.active == "getColumnCount_") {
+		if this.inherited {
+			defer this.enter("getColumnCount_")()
+		}
 		return h.GetColumnCount_(a0)
 	}
 	return this.AbstractColumnLayoutImpl.getColumnCount_(a0)
@@ -70,7 +74,10 @@ func (this *abstractColumnLayoutHooked) getColumnCount_(a0 *swt.Scrollable) int3
 func (this *abstractColumnLayoutHooked) setColumnWidths_(a0 *swt.Scrollable, a1 []int32) {
 	if h, ok := this.hook.(interface {
 		SetColumnWidths_(a0 *swt.Scrollable, a1 []int32)
-	}); ok {
+	}); ok && !(this.inherited && this.active == "setColumnWidths_") {
+		if this.inherited {
+			defer this.enter("setColumnWidths_")()
+		}
 		h.SetColumnWidths_(a0, a1)
 		return
 	}
@@ -80,14 +87,20 @@ func (this *abstractColumnLayoutHooked) setColumnWidths_(a0 *swt.Scrollable, a1 
 func (this *abstractColumnLayoutHooked) getLayoutData_(a0 *swt.Scrollable, a1 int32) *ColumnLayoutData {
 	if h, ok := this.hook.(interface {
 		GetLayoutData_(a0 *swt.Scrollable, a1 int32) *ColumnLayoutData
-	}); ok {
+	}); ok && !(this.inherited && this.active == "getLayoutData_") {
+		if this.inherited {
+			defer this.enter("getLayoutData_")()
+		}
 		return h.GetLayoutData_(a0, a1)
 	}
 	return this.AbstractColumnLayoutImpl.getLayoutData_(a0, a1)
 }
 
 func (this *abstractColumnLayoutHooked) updateColumnData_(a0 *swt.Widget) {
-	if h, ok := this.hook.(interface{ UpdateColumnData_(a0 *swt.Widget) }); ok {
+	if h, ok := this.hook.(interface{ UpdateColumnData_(a0 *swt.Widget) }); ok && !(this.inherited && this.active == "updateColumnData_") {
+		if this.inherited {
+			defer this.enter("updateColumnData_")()
+		}
 		h.UpdateColumnData_(a0)
 		return
 	}
@@ -111,7 +124,8 @@ func (this *AbstractColumnLayout) Impl() AbstractColumnLayoutImpl {
 }
 
 func (this *AbstractColumnLayout) SetImpl_(impl AbstractColumnLayoutImpl) {
-	this.impl = &abstractColumnLayoutHooked{AbstractColumnLayoutImpl: this.impl, hook: impl}
+	_, base := this.impl.(*AbstractColumnLayout)
+	this.impl = &abstractColumnLayoutHooked{AbstractColumnLayoutImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func (this *AbstractColumnLayout) AsAbstractColumnLayout() *AbstractColumnLayout { return this }
@@ -499,6 +513,11 @@ func widgetImplAsScrollable(x any) (*swt.Scrollable, bool) {
 		}
 		return &v.Scrollable, true
 	case *swt.CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
+	case *swt.StyledText:
 		if v == nil {
 			return nil, false
 		}

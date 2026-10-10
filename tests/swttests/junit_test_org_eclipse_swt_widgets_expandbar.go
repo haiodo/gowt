@@ -33,14 +33,14 @@ func (this *Test_org_eclipse_swt_widgets_ExpandBar) setUp_() {
 
 func (this *Test_org_eclipse_swt_widgets_ExpandBar) Test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 	var listenerCalled []bool = []bool{false}
-	anon112 := &Test_org_eclipse_swt_widgets_ExpandBarAnon1{}
-	anon112.fnItemCollapsed = func(e *swt.ExpandEvent) {
+	anon132 := &Test_org_eclipse_swt_widgets_ExpandBarAnon1{}
+	anon132.fnItemCollapsed = func(e *swt.ExpandEvent) {
 		listenerCalled[0] = true
 	}
-	anon112.fnItemExpanded = func(e *swt.ExpandEvent) {
+	anon132.fnItemExpanded = func(e *swt.ExpandEvent) {
 		listenerCalled[0] = true
 	}
-	var expandListener swt.ExpandListener = anon112
+	var expandListener swt.ExpandListener = anon132
 	junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 		this.expandBar.AddExpandListener(nil)
 	}, "No exception thrown for addExpandListener with null argument")

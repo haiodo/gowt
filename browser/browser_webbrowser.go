@@ -88,8 +88,9 @@ func (this *WebBrowser) stop_() {
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
 type webBrowserHooked struct {
 	WebBrowserImpl
-	hook   WebBrowserImpl
-	active string
+	hook      WebBrowserImpl
+	active    string
+	inherited bool
 }
 
 func (this *webBrowserHooked) enter(name string) func() {
@@ -99,7 +100,10 @@ func (this *webBrowserHooked) enter(name string) func() {
 }
 
 func (this *webBrowserHooked) back_() bool {
-	if h, ok := this.hook.(interface{ Back_() bool }); ok {
+	if h, ok := this.hook.(interface{ Back_() bool }); ok && !(this.inherited && this.active == "back_") {
+		if this.inherited {
+			defer this.enter("back_")()
+		}
 		return h.Back_()
 	}
 	return this.WebBrowserImpl.back_()
@@ -108,7 +112,10 @@ func (this *webBrowserHooked) back_() bool {
 func (this *webBrowserHooked) create_(a0 *swt.Composite, a1 int32) {
 	if h, ok := this.hook.(interface {
 		Create_(a0 *swt.Composite, a1 int32)
-	}); ok {
+	}); ok && !(this.inherited && this.active == "create_") {
+		if this.inherited {
+			defer this.enter("create_")()
+		}
 		h.Create_(a0, a1)
 		return
 	}
@@ -142,7 +149,10 @@ func (this *webBrowserHooked) destroyFunction_(a0 *BrowserFunction) {
 }
 
 func (this *webBrowserHooked) execute_(a0 string) bool {
-	if h, ok := this.hook.(interface{ Execute_(a0 string) bool }); ok {
+	if h, ok := this.hook.(interface{ Execute_(a0 string) bool }); ok && !(this.inherited && this.active == "execute_") {
+		if this.inherited {
+			defer this.enter("execute_")()
+		}
 		return h.Execute_(a0)
 	}
 	return this.WebBrowserImpl.execute_(a0)
@@ -165,35 +175,50 @@ func (this *webBrowserHooked) evaluateScript_(a0 string) any {
 }
 
 func (this *webBrowserHooked) forward_() bool {
-	if h, ok := this.hook.(interface{ Forward_() bool }); ok {
+	if h, ok := this.hook.(interface{ Forward_() bool }); ok && !(this.inherited && this.active == "forward_") {
+		if this.inherited {
+			defer this.enter("forward_")()
+		}
 		return h.Forward_()
 	}
 	return this.WebBrowserImpl.forward_()
 }
 
 func (this *webBrowserHooked) getBrowserType_() string {
-	if h, ok := this.hook.(interface{ GetBrowserType_() string }); ok {
+	if h, ok := this.hook.(interface{ GetBrowserType_() string }); ok && !(this.inherited && this.active == "getBrowserType_") {
+		if this.inherited {
+			defer this.enter("getBrowserType_")()
+		}
 		return h.GetBrowserType_()
 	}
 	return this.WebBrowserImpl.getBrowserType_()
 }
 
 func (this *webBrowserHooked) getText_() string {
-	if h, ok := this.hook.(interface{ GetText_() string }); ok {
+	if h, ok := this.hook.(interface{ GetText_() string }); ok && !(this.inherited && this.active == "getText_") {
+		if this.inherited {
+			defer this.enter("getText_")()
+		}
 		return h.GetText_()
 	}
 	return this.WebBrowserImpl.getText_()
 }
 
 func (this *webBrowserHooked) getUrl_() string {
-	if h, ok := this.hook.(interface{ GetUrl_() string }); ok {
+	if h, ok := this.hook.(interface{ GetUrl_() string }); ok && !(this.inherited && this.active == "getUrl_") {
+		if this.inherited {
+			defer this.enter("getUrl_")()
+		}
 		return h.GetUrl_()
 	}
 	return this.WebBrowserImpl.getUrl_()
 }
 
 func (this *webBrowserHooked) isBackEnabled_() bool {
-	if h, ok := this.hook.(interface{ IsBackEnabled_() bool }); ok {
+	if h, ok := this.hook.(interface{ IsBackEnabled_() bool }); ok && !(this.inherited && this.active == "isBackEnabled_") {
+		if this.inherited {
+			defer this.enter("isBackEnabled_")()
+		}
 		return h.IsBackEnabled_()
 	}
 	return this.WebBrowserImpl.isBackEnabled_()
@@ -208,14 +233,20 @@ func (this *webBrowserHooked) isFocusControl_() bool {
 }
 
 func (this *webBrowserHooked) isForwardEnabled_() bool {
-	if h, ok := this.hook.(interface{ IsForwardEnabled_() bool }); ok {
+	if h, ok := this.hook.(interface{ IsForwardEnabled_() bool }); ok && !(this.inherited && this.active == "isForwardEnabled_") {
+		if this.inherited {
+			defer this.enter("isForwardEnabled_")()
+		}
 		return h.IsForwardEnabled_()
 	}
 	return this.WebBrowserImpl.isForwardEnabled_()
 }
 
 func (this *webBrowserHooked) refresh_() {
-	if h, ok := this.hook.(interface{ Refresh_() }); ok {
+	if h, ok := this.hook.(interface{ Refresh_() }); ok && !(this.inherited && this.active == "refresh_") {
+		if this.inherited {
+			defer this.enter("refresh_")()
+		}
 		h.Refresh_()
 		return
 	}
@@ -223,7 +254,10 @@ func (this *webBrowserHooked) refresh_() {
 }
 
 func (this *webBrowserHooked) setText_(a0 string, a1 bool) bool {
-	if h, ok := this.hook.(interface{ SetText_(a0 string, a1 bool) bool }); ok {
+	if h, ok := this.hook.(interface{ SetText_(a0 string, a1 bool) bool }); ok && !(this.inherited && this.active == "setText_") {
+		if this.inherited {
+			defer this.enter("setText_")()
+		}
 		return h.SetText_(a0, a1)
 	}
 	return this.WebBrowserImpl.setText_(a0, a1)
@@ -232,14 +266,20 @@ func (this *webBrowserHooked) setText_(a0 string, a1 bool) bool {
 func (this *webBrowserHooked) setUrl_(a0 string, a1 string, a2 []string) bool {
 	if h, ok := this.hook.(interface {
 		SetUrl_(a0 string, a1 string, a2 []string) bool
-	}); ok {
+	}); ok && !(this.inherited && this.active == "setUrl_") {
+		if this.inherited {
+			defer this.enter("setUrl_")()
+		}
 		return h.SetUrl_(a0, a1, a2)
 	}
 	return this.WebBrowserImpl.setUrl_(a0, a1, a2)
 }
 
 func (this *webBrowserHooked) stop_() {
-	if h, ok := this.hook.(interface{ Stop_() }); ok {
+	if h, ok := this.hook.(interface{ Stop_() }); ok && !(this.inherited && this.active == "stop_") {
+		if this.inherited {
+			defer this.enter("stop_")()
+		}
 		h.Stop_()
 		return
 	}
@@ -272,7 +312,8 @@ func (this *WebBrowser) Impl() WebBrowserImpl {
 }
 
 func (this *WebBrowser) SetImpl_(impl WebBrowserImpl) {
-	this.impl = &webBrowserHooked{WebBrowserImpl: this.impl, hook: impl}
+	_, base := this.impl.(*WebBrowser)
+	this.impl = &webBrowserHooked{WebBrowserImpl: this.impl, hook: impl, inherited: !base}
 }
 
 func init() { jrt.RegisterClassPackage("WebBrowser", "org.eclipse.swt.browser") }

@@ -2969,7 +2969,7 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 	for i := int32(TextLayoutMAX_RUN_LENGTH - 1); i >= TextLayoutMAX_RUN_LENGTH-TextLayoutMAX_SEARCH_RUN_BREAK; i-- {
 		var memoryIndex int32 = i * win32.SCRIPT_LOGATTRSizeof
 		if memoryIndex+win32.SCRIPT_LOGATTRSizeof > run.pslaAllocSize {
-			panic(func() any { panic("j2go: unresolved new IndexOutOfBoundsException") }())
+			panic(jrt.NewIndexOutOfBoundsException())
 		}
 		win32.OSMoveMemoryOverload82(logAttr, run.psla+int64(memoryIndex), win32.SCRIPT_LOGATTRSizeof)
 		if logAttr.FSoftBreak || logAttr.FWhiteSpace || logAttr.FWordStop {
@@ -3243,7 +3243,7 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 					return
 				}
 			} else {
-				if style.Equals(item.style) {
+				if style.impl.equals_(item.style) {
 					return
 				}
 			}

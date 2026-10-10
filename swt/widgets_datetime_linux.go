@@ -651,29 +651,29 @@ func (this *DateTime) HideDropDownCalendar() {
 func (this *DateTime) GetComputeSizeString(style int32) string {
 	if (style & DATE) != 0 {
 		var cond555 string
-		var cond556 string
-		if (style & SWTLONG) != 0 {
-			cond556 = DateTimeDEFAULT_LONG_DATE_FORMAT
-		} else {
-			cond556 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
-		}
 		if (style & SHORT) != 0 {
 			cond555 = DateTimeDEFAULT_SHORT_DATE_FORMAT
 		} else {
+			var cond556 string
+			if (style & SWTLONG) != 0 {
+				cond556 = DateTimeDEFAULT_LONG_DATE_FORMAT
+			} else {
+				cond556 = DateTimeDEFAULT_MEDIUM_DATE_FORMAT
+			}
 			cond555 = cond556
 		}
 		return cond555
 	}
 	var cond557 string
-	var cond558 string
-	if (style & SWTLONG) != 0 {
-		cond558 = DateTimeDEFAULT_LONG_TIME_FORMAT
-	} else {
-		cond558 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
-	}
 	if (style & SHORT) != 0 {
 		cond557 = DateTimeDEFAULT_SHORT_TIME_FORMAT
 	} else {
+		var cond558 string
+		if (style & SWTLONG) != 0 {
+			cond558 = DateTimeDEFAULT_LONG_TIME_FORMAT
+		} else {
+			cond558 = DateTimeDEFAULT_MEDIUM_TIME_FORMAT
+		}
 		cond557 = cond558
 	}
 	return cond557

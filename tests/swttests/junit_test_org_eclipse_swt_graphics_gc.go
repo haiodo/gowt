@@ -920,9 +920,9 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_textExtentLjava_lang_StringI(
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_textExtentLjava_lang_StringI_disabledLineDelimiter() {
 	this.gc.SetAdvanced(false)
-	var ptWithoutAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", "\n"), 0)
+	var ptWithoutAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", jrt.LineSeparator()), 0)
 	this.gc.SetAdvanced(true)
-	var ptWithAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", "\n"), 0)
+	var ptWithAdvanced *swt.Point = this.gc.TextExtentStringFlags(fmt.Sprintf("abc中%sdef", jrt.LineSeparator()), 0)
 	abs17 := ptWithAdvanced.X - ptWithoutAdvanced.X
 	if abs17 < 0 {
 		abs17 = -abs17

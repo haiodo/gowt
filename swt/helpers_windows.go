@@ -49,3 +49,10 @@ func widgetImplAsMenuItem(x any) (*MenuItem, bool) {
 	}
 	return nil, false
 }
+
+func upcastScrollBarToWidget(x *ScrollBar) *Widget {
+	if x == nil {
+		return nil
+	}
+	return &x.Widget
+}

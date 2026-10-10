@@ -2528,4 +2528,8 @@ func init() {
 		jrt.Narrow[*swt.Caret](target).SetVisible(jrt.ArgAs[bool](args[0]))
 		return nil
 	})
+	jrt.RegisterMethod(reflect.TypeFor[*swt.StyledText](), "getPartialBottomIndex", nil, reflect.TypeFor[int32](), func(target any, args []any) any { return jrt.Narrow[*swt.StyledText](target).GetPartialBottomIndex() })
+	jrt.RegisterMethod(reflect.TypeFor[*swt.StyledTextRenderer](), "getLineSize", []reflect.Type{reflect.TypeFor[int32]()}, reflect.TypeFor[*swt.StyledTextRenderer_LineSizeInfo](), func(target any, args []any) any {
+		return jrt.Narrow[*swt.StyledTextRenderer](target).GetLineSize(jrt.ArgAs[int32](args[0]))
+	})
 }

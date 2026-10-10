@@ -17,7 +17,7 @@ final class TestEmitter {
 	private static final String PARAMS = "org.junit.jupiter.params.";
 	// Annotations a test method may carry without being skipped as an unsupported shape.
 	private static final Set<String> KNOWN = Set.of(API + "Test", PARAMS + "ParameterizedTest", PARAMS + "provider.ValueSource",
-			API + "Tag", API + "Tags", API + "Disabled", COND + "DisabledOnOs", COND + "EnabledOnOs",
+			PARAMS + "provider.MethodSource", API + "Tag", API + "Tags", API + "Disabled", COND + "DisabledOnOs", COND + "EnabledOnOs",
 			COND + "DisabledIfEnvironmentVariable", COND + "DisabledIfSystemProperty", API + "Timeout", API + "Order",
 			API + "DisplayName");
 
@@ -32,6 +32,13 @@ final class TestEmitter {
 	/** junit.AssertX(...) for an Assertions/Assumptions call, or null for any other method. */
 	String junitCall(MethodInvocation mi, IMethodBinding mb) {
 		String q = mb.getDeclaringClass().getErasure().getQualifiedName();
+		// Arguments.of(a, b): one element of a @MethodSource stream is a list of the test's arguments.
+		if (q.equals(PARAMS + "provider.Arguments") && mb.getName().equals("of")) {
+			emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+			List<String> elems = new ArrayList<>();
+			for (Object a : mi.arguments()) elems.add(emitter.expr((Expression) a));
+			return "jrt.ListOf(" + String.join(", ", elems) + ")";
+		}
 		if (!q.equals(API + "Assertions") && !q.equals(API + "Assumptions")) return null;
 		emitter.fileImports.add(JUNIT_IMPORT);
 		String name = Names.capitalize(mb.getName());
@@ -87,16 +94,30 @@ final class TestEmitter {
 		if (tests.isEmpty()) return "";
 		emitter.fileImports.add(JUNIT_IMPORT);
 		tempDirFields(cls, recv, beforeAll, afterAll, beforeEach, afterEach);
-		StringBuilder b = new StringBuilder("func init() {\n\tjunit.Register(&junit.Class{\n");
+		boolean dynamic = tests.stream().anyMatch(t -> t.startsWith(LOOP));
+		StringBuilder b = new StringBuilder("func init() {\n");
+		if (dynamic) {
+			// A @MethodSource list is known only at run time: the entries are appended in declaration order.
+			b.append("\tvar tests []junit.Test\n");
+			for (String t : tests) {
+				if (t.startsWith(LOOP)) b.append("\t").append(t.substring(LOOP.length())).append("\n");
+				else b.append("\ttests = append(tests, junit.Test").append(t).append(")\n");
+			}
+		}
+		b.append("\tjunit.Register(&junit.Class{\n");
 		b.append("\t\tName: \"").append(cls.getName()).append("\",\n");
 		b.append("\t\tNew: func() any { return ").append(constructor(cls, ci)).append("() },\n");
 		appendList(b, "BeforeAll", "func()", beforeAll);
 		appendList(b, "AfterAll", "func()", afterAll);
 		appendList(b, "BeforeEach", "func(any)", beforeEach);
 		appendList(b, "AfterEach", "func(any)", afterEach);
-		b.append("\t\tTests: []junit.Test{\n");
-		for (String t : tests) b.append("\t\t\t").append(t).append(",\n");
-		b.append("\t\t},\n\t})\n}\n\n");
+		if (dynamic) {
+			b.append("\t\tTests: tests,\n\t})\n}\n\n");
+		} else {
+			b.append("\t\tTests: []junit.Test{\n");
+			for (String t : tests) b.append("\t\t\t").append(t).append(",\n");
+			b.append("\t\t},\n\t})\n}\n\n");
+		}
 		return b.toString();
 	}
 
@@ -158,6 +179,11 @@ final class TestEmitter {
 			if (params > 0) return List.of(skipped(name, common, "parameter injection not supported"));
 			return List.of(entry(name, common, emitter.instanceCall(recv, mb, List.of())));
 		}
+		IAnnotationBinding methodSource = find(mb.getAnnotations(), PARAMS + "provider.MethodSource");
+		if (methodSource != null && params >= 1) {
+			String loop = methodSourceLoop(cls, mb, methodSource, name, common, recv);
+			if (loop != null) return List.of(LOOP + loop);
+		}
 		IAnnotationBinding values = find(mb.getAnnotations(), PARAMS + "provider.ValueSource");
 		if (values == null || params != 1) return List.of(skipped(name, common, "parameter source not supported: " + sources(mb)));
 		List<String> out = new ArrayList<>();
@@ -170,6 +196,31 @@ final class TestEmitter {
 			out.add(entry(name + "[" + (i + 1) + "]", common, emitter.instanceCall(recv, mb, List.of(lit))));
 		}
 		return out;
+	}
+
+	// Marks a registry entry that is a loop over a @MethodSource list rather than a junit.Test literal.
+	private static final String LOOP = "\u0000loop:";
+
+	/** A for loop appending one test per element of the static no-argument source method, or null when it is not found. */
+	private String methodSourceLoop(ITypeBinding cls, IMethodBinding mb, IAnnotationBinding ann, String name, CharSequence common, String recv) {
+		Object[] names = asArray(member(ann, "value"));
+		if (names.length != 1) return null;
+		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) {
+			for (IMethodBinding src : t.getDeclaredMethods()) {
+				if (!src.getName().equals(names[0]) || src.getParameterTypes().length != 0 || !Modifier.isStatic(src.getModifiers())) continue;
+				emitter.fileImports.add("fmt");
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
+				String source = emitter.staticMethodGoName(src, emitter.model.lookup(t)) + "()";
+				ITypeBinding[] pts = mb.getParameterTypes();
+				List<String> args = new ArrayList<>();
+				// One parameter takes the element itself, several take the elements of its Arguments list.
+				String row = pts.length == 1 ? "[]any{v}" : "v.(*jrt.List).ToArray()";
+				for (int k = 0; k < pts.length; k++) args.add("jrt.Cast[" + GoTypes.map(pts[k], emitter) + "](row[" + k + "])");
+				return "for i, v := range " + source + ".ToArray() {\n\t\trow := " + row + "\n\t\ttests = append(tests, junit.Test{Name: fmt.Sprintf(\""
+						+ name + "[%d]\", i+1)" + common + ", Run: func(t any) { " + emitter.instanceCall(recv, mb, args) + " }})\n\t}";
+			}
+		}
+		return null;
 	}
 
 	private static String entry(String name, CharSequence common, String call) {

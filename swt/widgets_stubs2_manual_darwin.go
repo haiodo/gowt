@@ -12,6 +12,20 @@ type IME struct {
 	startOffset int32
 }
 
+// StyledText builds one and reads the composition back; with no input method there is no composition.
+func (i *IME) AddListener(eventType int32, listener Listener) {}
+
+func NewIME(parent *Canvas, style int32) *IME { return &IME{} }
+
+func (i *IME) GetCaretOffset() int32             { return 0 }
+func (i *IME) GetCommitCount() int32             { return 0 }
+func (i *IME) GetCompositionOffset() int32       { return -1 }
+func (i *IME) GetRanges() []int32                { return nil }
+func (i *IME) GetStyles() []*TextStyle           { return nil }
+func (i *IME) GetText() string                   { return "" }
+func (i *IME) GetWideCaret() bool                { return false }
+func (i *IME) SetCompositionOffset(offset int32) {}
+
 func (i *IME) IsDisposed() bool                                                       { return i == nil }
 func (i *IME) AttributedSubstringFromRange(id int64, sel int64, rangePtr int64) int64 { return 0 }
 func (i *IME) CharacterIndexForPoint(id int64, sel int64, point int64) int64          { return 0 }
@@ -29,48 +43,6 @@ func (i *IME) SetMarkedText_selectedRange(id int64, sel int64, str int64, selRan
 	return true
 }
 func (i *IME) ValidAttributesForMarkedText(id int64, sel int64) int64 { return 0 }
-
-// Accessible bridge methods Control.java calls - no-op/false/nil, matching real SWT's own
-// behavior for a Control with no screen-reader Accessible attached (the common case).
-type Accessible struct{}
-
-func AccessibleInternal_new_Accessible(control *Control) *Accessible { return &Accessible{} }
-
-func (a *Accessible) Internal_accessibilityActionDescription(name *cocoa.NSString, childID int32) *cocoa.Id {
-	return nil
-}
-func (a *Accessible) Internal_accessibilityActionNames(childID int32) *cocoa.NSArray    { return nil }
-func (a *Accessible) Internal_accessibilityAttributeNames(childID int32) *cocoa.NSArray { return nil }
-func (a *Accessible) Internal_accessibilityParameterizedAttributeNames(childID int32) *cocoa.NSArray {
-	return nil
-}
-func (a *Accessible) Internal_accessibilityIsIgnored(childID int32) bool { return false }
-func (a *Accessible) Internal_accessibilityPerformAction(action *cocoa.NSString, childID int32) bool {
-	return false
-}
-func (a *Accessible) Internal_accessibilityFocusedUIElement(childID int32) *cocoa.Id { return nil }
-func (a *Accessible) Internal_accessibilityHitTest(point cocoa.NSPoint, childID int32) *cocoa.Id {
-	return nil
-}
-func (a *Accessible) Internal_accessibilityAttributeValue(attribute *cocoa.NSString, childID int32) *cocoa.Id {
-	return nil
-}
-func (a *Accessible) Internal_accessibilityAttributeValue_forParameter(attribute *cocoa.NSString, parameter *cocoa.Id, childID int32) *cocoa.Id {
-	return nil
-}
-func (a *Accessible) Internal_accessibilityIsAttributeSettable(attribute *cocoa.NSString, childID int32) bool {
-	return false
-}
-func (a *Accessible) Internal_accessibilitySetValue_forAttribute(value *cocoa.Id, attribute *cocoa.NSString, childID int32) {
-}
-func (a *Accessible) Internal_addRelationAttributes(attributes int64) int64 { return attributes }
-func (a *Accessible) Internal_dispose_Accessible()                          {}
-
-// The listeners are not stored: no accessibility tree is built (custom widgets register them at creation).
-func (a *Accessible) AddAccessibleListener(l AccessibleListener)               {}
-func (a *Accessible) AddAccessibleControlListener(l AccessibleControlListener) {}
-func (a *Accessible) AddAccessibleTextListener(l AccessibleTextListener)       {}
-func (a *Accessible) SetFocus(childID int32)                                   {}
 
 // org.eclipse.swt.internal.WidgetSpy: creation/disposal tracking, off by default (matches the
 // real class's own isEnabled starting false).

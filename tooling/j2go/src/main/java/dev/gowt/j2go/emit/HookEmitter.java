@@ -18,7 +18,9 @@ final class HookEmitter {
 		String hooked = Names.decapitalize(root.goTypeName) + "Hooked";
 		out.append("// j2go: wraps a subclass from another package; its exported hook names override the defaults.\n");
 		out.append("type ").append(hooked).append(" struct {\n\t").append(impl).append("\n\thook   ").append(impl)
-				.append("\n\tactive string\n}\n\n");
+				.append("\n\tactive string\n");
+		if (hasAbstractHook(root)) out.append("\tinherited bool\n");
+		out.append("}\n\n");
 		out.append("func (this *").append(hooked).append(") enter(name string) func() {\n")
 				.append("\tprev := this.active\n\tthis.active = name\n\treturn func() { this.active = prev }\n}\n\n");
 		for (var e : root.overriddenRootHookNames.entrySet()) {
@@ -33,16 +35,27 @@ final class HookEmitter {
 			out.append("func (this *").append(hooked).append(") ").append(dispatch).append('(').append(params).append(") ")
 					.append(ret).append(ret.isEmpty() ? "" : " ").append("{\n");
 			// An abstract declaration has no super call to route to the default, so a re-entrant call (composite.layout() from
-			// inside Layout.layout) must reach the override again.
-			boolean guard = !java.lang.reflect.Modifier.isAbstract(decl.getModifiers());
+			// inside Layout.layout) must reach the override again. Unless the hook extends a class that implements it
+			// (ByteArrayTransfer.javaToNative): there super.m() would reach the override itself, so it is guarded too.
+			boolean abstractDecl = java.lang.reflect.Modifier.isAbstract(decl.getModifiers());
+			boolean guard = !abstractDecl;
+			String cond = guard ? " && this.active != \"" + dispatch + "\"" : abstractDecl ? " && !(this.inherited && this.active == \"" + dispatch + "\")" : "";
 			out.append("\tif h, ok := this.hook.(interface{ ").append(e.getValue()).append('(').append(params).append(") ")
-					.append(ret).append(" }); ok").append(guard ? " && this.active != \"" + dispatch + "\"" : "").append(" {\n");
+					.append(ret).append(" }); ok").append(cond).append(" {\n");
 			if (guard) out.append("\t\tdefer this.enter(\"").append(dispatch).append("\")()\n");
+			else if (abstractDecl) out.append("\t\tif this.inherited {\n\t\t\tdefer this.enter(\"").append(dispatch).append("\")()\n\t\t}\n");
 			out.append("\t\t").append(r).append("h.").append(e.getValue()).append('(').append(argList).append(")\n");
 			if (ret.isEmpty()) out.append("\t\treturn\n"); // a void hook replaces the default, it does not precede it
 			out.append("\t}\n");
 			out.append('\t').append(r).append("this.").append(impl).append('.').append(dispatch).append('(').append(argList).append(")\n}\n\n");
 		}
+	}
+
+	static boolean hasAbstractHook(TypeModel.ClassInfo root) {
+		for (var e : root.overriddenRootHookNames.entrySet()) {
+			if (java.lang.reflect.Modifier.isAbstract(root.overriddenRootMethods.get(e.getKey()).getModifiers())) return true;
+		}
+		return false;
 	}
 
 	/** A class with a cascade of its own that also overrides a base from another package: the dispatch method keeps its

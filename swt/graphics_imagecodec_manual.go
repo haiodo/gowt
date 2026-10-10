@@ -351,3 +351,8 @@ func quantizeToPaletted(img image.Image) *image.Paletted {
 	out.Palette = pal
 	return out
 }
+
+// NativeImageLoaderLoadBySize replaces NativeImageLoader.load(InputStream, ImageLoader, int, int).
+func NativeImageLoaderLoadBySize(stream jrt.InputStream, loader *ImageLoader, width int32, height int32) *ImageData {
+	return ImageDataLoaderLoadBySize(stream, width, height)
+}

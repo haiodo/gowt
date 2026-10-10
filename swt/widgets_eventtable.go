@@ -220,12 +220,25 @@ func (this *EventTable) UnhookEventTypeListener(eventType int32, listener any) {
 
 // j2go: instanceof helper for TypedListener and its subclasses within the translated set.
 func typedListenerImplAsTypedListener(x any) (*TypedListener, bool) {
+	if h, ok := x.(*typedListenerHooked); ok {
+		x = h.hook
+	}
 	switch v := x.(type) {
 	case *TypedListener:
 		if v == nil {
 			return nil, false
 		}
 		return v, true
+	case *StyledTextListener:
+		if v == nil {
+			return nil, false
+		}
+		return &v.TypedListener, true
+	case *DNDListener:
+		if v == nil {
+			return nil, false
+		}
+		return &v.TypedListener, true
 	}
 	if l, ok := x.(interface{ AsTypedListener() *TypedListener }); ok {
 		return l.AsTypedListener(), true

@@ -219,8 +219,14 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 					if r == nil {
 						return
 					}
-					if false {
-						var e error
+					if func() bool {
+						switch r.(type) {
+						case *jrt.InterruptedException:
+							return true
+						}
+						return false
+					}() {
+						e := r.(*jrt.InterruptedException)
 						_ = e
 						interrupted = true
 					} else {
@@ -231,7 +237,7 @@ func (this *Synchronizer) SyncExec(runnable jrt.Runnable) {
 			}()
 		}
 		if interrupted {
-			func() any { _ = []any{jrt.CurrentThread()}; panic("j2go: unresolved call interrupt") }()
+			jrt.Ignore(jrt.CurrentThread())
 		}
 		if lock.throwable != (nil) {
 			ErrorCodeThrowable(ERROR_FAILED_EXEC, lock.throwable)

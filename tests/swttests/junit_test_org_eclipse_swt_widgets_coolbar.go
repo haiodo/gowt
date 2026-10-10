@@ -69,9 +69,9 @@ func (this *Test_org_eclipse_swt_widgets_CoolBar) CreateCoolBar(events *jrt.List
 		coolItem.SetMinimumSize(toolItemWidth/3, coolSize.Y)
 		coolItem.SetPreferredSizeSize(coolSize)
 		coolItem.SetSize(coolSize.X/3, coolSize.Y)
-		inner113 := newTest_org_eclipse_swt_widgets_CoolBarCoolItemSelectionListener()
-		inner113.this_0 = this
-		coolItem.AddSelectionListener(inner113)
+		inner133 := newTest_org_eclipse_swt_widgets_CoolBarCoolItemSelectionListener()
+		inner133.this_0 = this
+		coolItem.AddSelectionListener(inner133)
 	}
 	this.impl.setWidget_(upcastswtCoolBarToswtWidget(this.coolBar))
 }

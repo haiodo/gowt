@@ -56,9 +56,9 @@ func UtilAssertInstanceObjectCAllowNull(object any, c reflect.Type, allowNull bo
 		return
 	}
 	if jrt.IsNil(object) || c == (nil) {
-		panic(func() any { panic("j2go: unresolved new NullPointerException") }())
+		panic(jrt.NewNullPointerException())
 	} else {
-		if !func() bool { _ = []any{c, object}; panic("j2go: unresolved call isInstance") }() {
+		if !jrt.ClassIsInstance(c, object) {
 			panic(jrt.NewIllegalArgumentException())
 		}
 	}
@@ -66,13 +66,13 @@ func UtilAssertInstanceObjectCAllowNull(object any, c reflect.Type, allowNull bo
 
 func UtilCompare(left bool, right bool) int32 {
 	var cond15 int32
-	var cond16 int32
-	if right {
-		cond16 = -1
-	} else {
-		cond16 = 0
-	}
 	if !left {
+		var cond16 int32
+		if right {
+			cond16 = -1
+		} else {
+			cond16 = 0
+		}
 		cond15 = (cond16)
 	} else {
 		cond15 = 1
@@ -94,7 +94,7 @@ func UtilCompareOverload2(left any, right any) int32 {
 			if jrt.IsNil(right) {
 				return 1
 			} else {
-				return func() int32 { _ = []any{left, right}; panic("j2go: unresolved call compareTo") }()
+				return jrt.CompareTo(left, right)
 			}
 		}
 	}
@@ -116,7 +116,7 @@ func UtilCompareOverload3(left []any, right []any) int32 {
 					return l - r
 				}
 				for i := int32(0); i < l; i++ {
-					var compareTo int32 = func() int32 { _ = []any{left[i], right[i]}; panic("j2go: unresolved call compare") }()
+					var compareTo int32 = UtilCompareOverload2(left[i], right[i])
 					if compareTo != 0 {
 						return compareTo
 					}
@@ -143,7 +143,7 @@ func UtilCompareOverload4(left *jrt.List, right *jrt.List) int32 {
 					return l - r
 				}
 				for i := int32(0); i < l; i++ {
-					var compareTo int32 = func() int32 { _ = []any{left.Get(i), right.Get(i)}; panic("j2go: unresolved call compare") }()
+					var compareTo int32 = UtilCompareOverload2(left.Get(i), right.Get(i))
 					if compareTo != 0 {
 						return compareTo
 					}

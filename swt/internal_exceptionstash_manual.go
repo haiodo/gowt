@@ -6,6 +6,8 @@ package swt
 
 import (
 	"fmt"
+	"os"
+	"runtime/debug"
 
 	"github.com/haiodo/gowt/internal/jrt"
 )
@@ -19,6 +21,10 @@ func NewExceptionStash() *ExceptionStash {
 }
 
 func (s *ExceptionStash) Stash(err error) {
+	// Stash runs in the listener's recover, so the stack still shows where the panic started; Close only rethrows.
+	if os.Getenv("SWTTEST_STACK") != "" {
+		fmt.Fprintf(os.Stderr, "ExceptionStash: %v\n%s", err, debug.Stack())
+	}
 	if d := DisplayGetCurrent(); d != nil {
 		handler := d.GetRuntimeExceptionHandler()
 		switch err.(type) {

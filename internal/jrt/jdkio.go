@@ -100,9 +100,15 @@ func (r *Reader) Close() {
 }
 
 // Collector is Collectors.joining(sep), toList() or toSet() (kind "list"/"set"; sets keep insertion order).
-type Collector struct{ sep, kind string }
+type Collector struct {
+	sep, kind string
+	key       any
+}
 
 func CollectorsJoining(sep string) *Collector { return &Collector{sep: sep} }
+
+// CollectorsSummingInt is Collectors.summingInt(ToIntFunction).
+func CollectorsSummingInt(key any) *Collector { return &Collector{kind: "sumint", key: key} }
 func CollectorsToList() *Collector            { return &Collector{kind: "list"} }
 func CollectorsToSet() *Collector             { return &Collector{kind: "set"} }
 
@@ -152,12 +158,14 @@ func (sb *StringBuilder) Replace(start, end int32, s string) *StringBuilder {
 
 func LocaleForLanguageTag(tag string) *Locale { return &Locale{tag} }
 
-// Get waits for the future and returns nothing: the ported futures carry no value (GTK 4 only).
+// Get waits for the future and returns its value, nil for one that failed.
 func (f *CompletableFuture) Get() any {
 	for !f.IsDone() {
 		Yield()
 	}
-	return nil
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.value
 }
 
 // The reader classes share one Go type; each constructor keeps its Java name.

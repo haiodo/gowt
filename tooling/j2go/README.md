@@ -3334,3 +3334,78 @@ becomes `Fprint` (vet); `Double.intValue/doubleValue/equals/toString`, `Number.d
 `Path.toUri`, and `http.go` (`HttpServer`/`HttpExchange` over `net/http`) for `EchoHttpServer`, which is translated too.
 
 `Test_org_eclipse_swt_browser_Browser` (and `EchoHttpServer`) join `TEST_FILES`. Hand-written parts: `tests/swttests/browser_manual.go` (JVM diagnostics, `test_setJavascriptEnabled`).
+
+## Round 24 dnd: org.eclipse.swt.dnd (TSK-2026-10-03-product-24)
+
+`Eclipse SWT Drag and Drop` is translated into package `swt` on all three platforms: `common/` (DND, DNDEvent, DNDListener, the Drag/Drop events, listeners, adapters
+and effects) like any shared file, and the platform's own `Clipboard`, `Transfer`, `TransferData`, `ByteArrayTransfer`, `Text/RTF/HTML/URL/File/ImageTransfer`,
+`DragSource`, `DropTarget` and the Table/Tree effects as `swt/dnd_*_<goos>.go` (`Platform.roots()` / `commonRoots()`, `DND_FILES` in port.sh). Package `gowt`
+(the facade) has no wrappers yet.
+
+- **Per platform.** cocoa: NSPasteboard and NSDraggingSource/Destination through the existing `internal/cocoa` (SWTDragSourceDelegate was already there). win32: OLE
+  (`IDataObject`, `IDropSource`, `IDropTarget`, `OleSetClipboard`) over `internal/win32`; the COM objects are `COMObject` subclasses, so `COMObject.java` (Eclipse SWT
+  OLE Win32, `internal.ole.win32`) is translated into package `swt` (`GoTypes.goPackageDir`), where its inner and anonymous subclasses can use the ordinary cascade; the
+  vtable callbacks are `emitIndexedCallback` (`new Callback(getClass(), "callback" + i, n + 1, true, E_FAIL)`: one `NewCallbackFn` per `callbackN`), `swt.LONG` got
+  `HashCode`/`Equals` for its map. The platform `Accessible` (IAccessible, IAccessible2, ...) subclasses the same `COMObject`; its methods take up to 12 words plus the
+  object pointer, so `win32.NewCallbackN` makes thunks of 0..13 words. gtk: GTK 3 only (the GTK 4 classes `ContentProviders`, `ClipboardProxyGTK4`, `GdkContent(De)Serializer` are panicking stubs in
+  `swt/dnd_gtk4_manual_linux.go`, as are the other GTK 4 names), the translation is of `Eclipse SWT Drag and Drop/gtk` (EPL) only.
+- **gtk bindings.** The bindings come from GIR as before. The DnD call sites do not exist before the first translation, so `tooling/girgen/seed.txt` lists the call-site
+  names the EPL sources spell (and the Java types of the new `memmove` overloads, `Name javaType...`); `girgen` reads it with `-seed`. `shapes.txt` has the parameter
+  types the Java passes (malloc'ed `GtkTargetEntry` arrays as `long`, a `String` for a `const char *`, `long[]` out parameters); `internal/gtk/glue_dnd.go` and
+  `glue_glib.go` the macros and the two JNI helpers of ContentProviders. Order: `make gtk-gen` (stand), `make gen PLATFORM=gtk`, `go build ./swt`.
+- **Static init of gtk `Clipboard`.** Its `static {}` reads `gtk_clipboard_get`, which needs the Display Java already has; Go's `init()` runs before main. Classes in
+  `ClassEmitter.LAZY_STATIC_BLOCKS` (gtk only) run the block in a `sync.Once` called at the top of each constructor.
+- **Types that differ per platform.** `DragSourceEvent` and `DropTargetEvent` print `TransferData.type` (int on cocoa and win32, long on gtk): `Main` writes them per
+  platform (`dnd_dragsourceevent_darwin.go`, ...) although they are common sources.
+- **Translator changes (general).** `@MethodSource` in `TestEmitter` (a loop at init time appending one test per element; a `Stream<Arguments>` row is a `jrt.List`,
+  `Arguments.of` is `jrt.ListOf`, a lone `[]any` passed to `ListOf` is spread); `Widget.getTypedListeners` (generic, `swt/widgets_widget_manual.go`, a `MANUAL_METHODS`
+  entry); a nested `try` at the tail of another `try` returns (`ControlFlowEmitter.isTail`); `(int[]) obj` is `jrt.Cast` (a nil `any` panicked); `new String(byte[])`;
+  `HookEmitter`: a hook of an abstract method on a subclass of a class that implements it (`ByteArrayTransfer`) is guarded against re-entry, so `super.javaToNative()`
+  reaches the base (`inherited`). jrt: `CompletableFuture` carries a value (`completedFuture`, `get`, `thenAccept`, `allOf`), `DataInput/OutputStream`,
+  `Files.createTempFile`, `StringBuilder.getChars`, `URI.getScheme`, `Duration.toNanos`, `List.forEachOrdered`. `junit.AssertSame/NotSame` compare the bytes' address
+  for strings.
+- **Tests.** `Test_org_eclipse_swt_dnd_{Clipboard,ByteArrayTransfer,Text,RTF,HTML,URL,File,Image}Transfer` and `ClipboardBase` are in `TEST_FILES`. The Swing peer
+  process (`RemoteClipboard`, RMI) is a skip stub (`tests/swttests/clipboard_manual.go`): the tests that need another clipboard owner are SKIP, the others run against
+  the process's own clipboard. `CapturedOutput` is translated (`jrt.NewPrintStream` and `jrt.SetOut/SetErr` capture os.Stdout/os.Stderr through a temp file). `openAndFocusShell` is
+  hand-written without its Wayland branch (a null `Boolean`). `@DisabledOnOs` is still decided at translation time for macOS, so the URLTransfer tests and
+  two others are skipped everywhere. `cmd/swttest` disposes the Display a test created itself before it makes a new shared one (`test_AfterNewDisplay_*`).
+- **Linux result** (Xvfb, `-run 'dnd|Clipboard'`): 24 passed, 0 failed, 39 skipped (no remote peer 34, `@DisabledOnOs` 5). Not run: macOS and Windows.
+
+## Round 25 StyledText (TSK-2026-10-03-product-25)
+
+`org.eclipse.swt.custom.StyledText` and its helpers (content, renderer, writers, events, listeners) join `SWT_FILES`; the JUnit tests `Test_org_eclipse_swt_custom_StyledText*` and
+`StyledTextContentSpec` join `TEST_FILES`. StyledText uses the translated dnd (Round 24 dnd: `Clipboard`, the Transfers, `StyledTextDropTargetEffect`) and the platform
+`Accessible` (cocoa, win32; gtk keeps its hand-written stub, which got the members StyledText calls). The stand-ins this round first had (`tooling/j2go/stubs-dnd`,
+`swt/dnd_stubs_manual.go`, `swt/accessible_styledtext_manual.go`) were removed when those landed. `IME`/`BidiUtil` members are on the cocoa and gtk stubs; `StyledText.SELECTION_COMPARATOR`
+is a skipped field, hand-written in `swt/custom_styledtext_manual.go` (a method ref to `getX(Point)` does not type: `Point` params are `PointLike`).
+
+Translator changes, all general: nested ternaries hoist inside their branch (a hoisted `getStyleRangeAtOffset(count - 1)` ran with `count == 0`); methods an anonymous class adds are `fn<Name>Local<N>`
+fields and callable from its own bodies; `super.clone()` of `Object` is a shallow copy; `IntStream`/`Stream` stages (`mapToInt`, `mapToObj`, `allMatch`, `distinct`, `sorted`, `range`, `of`,
+3-argument `collect`, `summingInt`), `Arrays.sort(a, cmp)`/`binarySearch`, `Collectors.joining()`, `String.chars()`, `Character.isDefined` (unassigned code points count as defined),
+`Integer::toString`, `Objects::nonNull`, `StringBuilder::new`; a multi-catch variable is an `error`; `(String) object` of nil is `""`; two local classes of one name in one file are hoisted under
+distinct names; `Throwable.initCause`, `OutOfMemoryError` as an error value.
+
+Linux stand: 278 of 279 `-run StyledText` pass. The failure, `test_caretSizeAndPositionVariableGlyphMetrics`, is a test SWT skips on Linux with `assumeFalse(isLinux)`; `System.getProperty("os.name")`
+was the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption never fired there (fixed in Round 26).
+
+## Round 26 batch4: dnd, Accessible, StyledText and CI together (TSK-2026-10-03-product-24..27)
+
+- **One COM vtable base.** `COMObject` is translated into package `swt` (Round 24 dnd), and both DnD and the win32 `Accessible` subclass it. Its
+  `callbackN` statics reach the most-derived `methodN` through `impl`. `win32.NewCallbackN` takes 0..13 words (`COMObject.MAX_ARG_COUNT` 12 plus the object
+  pointer). The other design, `COMObject` in `internal/win32` with a hand-written callback table, called `methodN` on `*COMObject`: every IAccessible call
+  answered E_NOTIMPL. It is gone.
+- **Anonymous overrides dispatch.** Override points came from named subclasses only, so an anonymous subclass's override of anything else was never called
+  by the base (Accessible's anonymous COMObjects for `method9` and on; the anonymous `AccessibleTextAdapter` of CCombo and StyledText). `TypeModel` now counts
+  them too, where the tree already has `impl` (named subclasses); a childless base still has no `impl`. A call from an anonymous class to one of its own
+  methods, helper or override, goes through its func field (`FunctionalEmitter.anonMethodField`).
+- **`os.name`.** `System.getProperty("os.name")` reads `jrt.SystemProperties`, which starts with the JDK name of `runtime.GOOS` ("Mac OS X", "Linux",
+  "Windows 10"). The shared generated files are translated once, so the constant "Mac OS X" had turned off every upstream `isLinux`/`isWindowsOS` skip.
+  `@DisabledOnOs` is still decided at translation time (Round 24 dnd). `System.lineSeparator()` is `jrt.LineSeparator()` ("\r\n" on Windows) for the same
+  reason: StyledText's platform delimiter was "\n" everywhere.
+- **Null tests on foreign subclasses.** `delegate != null` on a subclass of a PI class (SWTAccessibleDelegate extends NSObject) was upcast to the base first,
+  `delegate.NSObject != nil`, which dereferences a nil delegate (Accessible.release on macOS). A comparison with null tests the pointer; an upcast of a named
+  subclass to its foreign base goes through a nil-checked `upcast<From>To<Base>` helper.
+- Accessible on gtk stays a manual type (`Manual.GTK_ONLY`); the StyledText stand-ins for dnd and Accessible are removed. `port.sh` copies the `.html`
+  test resource (`testWebsiteWithTitle.html`; the Browser tests that load a local page panicked on the nil stream).
+- **Linux result** (Xvfb, full gate, passed / failed / skipped of 3901): 3808 / 34 / 59 with the old `os.name`, 3808 / 38 / 55 with the new one (the
+  Linux-only Browser URL and POST tests now run; StyledText's caret test is skipped as upstream), 3811 / 35 / 55 with the HTML resource.

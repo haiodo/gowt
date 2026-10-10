@@ -538,10 +538,7 @@ func (this *Display) AsyncExec(runnable jrt.Runnable) {
 func (this *Display) Execute(runnable jrt.Runnable) {
 	_ = runnable
 	if this.IsDisposed() {
-		panic(func() any {
-			_ = []any{NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")}
-			panic("j2go: unresolved new RejectedExecutionException")
-		}())
+		panic(jrt.NewRejectedExecutionException(NewSWTExceptionCodeMessage(ERROR_WIDGET_DISPOSED, "")))
 	}
 	if this.thread == jrt.CurrentThread() {
 		this.SyncExec(runnable)
@@ -2299,15 +2296,21 @@ func (this *Display) MessageProc(hwnd int64, msg int64, wParam int64, lParam int
 								if r == nil {
 									return
 								}
-								if false {
-									var e error
+								if func() bool {
+									switch r.(type) {
+									case *jrt.URISyntaxException:
+										return true
+									}
+									return false
+								}() {
+									e := r.(*jrt.URISyntaxException)
 									_ = e
 									this.SendEvent(OpenDocument, event)
 								} else {
 									panic(r)
 								}
 							}()
-							func() any { _ = []any{filename}; panic("j2go: unresolved new URI") }()
+							jrt.NewURI(filename)
 							this.SendEvent(OpenUrl, event)
 						}()
 					}
@@ -4708,6 +4711,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *Group:
 		if v == nil {
 			return nil, false
@@ -4866,13 +4874,6 @@ type ImageDataProviderFunc struct {
 
 func (f *ImageDataProviderFunc) GetImageData(a0 int32) *ImageData {
 	return f.fn(a0)
-}
-
-func upcastFontToResource(x *Font) *Resource {
-	if x == nil {
-		return nil
-	}
-	return &x.Resource
 }
 
 func upcastImageToResource(x *Image) *Resource {

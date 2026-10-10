@@ -511,6 +511,12 @@ type GtkScrollableInterface struct {
 	Get_border                 int64
 }
 
+type GtkTargetEntry struct {
+	Target int64
+	Flags  int32
+	Info   int32
+}
+
 type GtkTextIter struct {
 	Dummy1  int64
 	Dummy2  int64

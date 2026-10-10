@@ -246,6 +246,45 @@ SWT_FILES=(
 	org/eclipse/swt/widgets/Caret.java
 	org/eclipse/swt/internal/graphics/ImageUtil.java
 )
+# StyledText and its helpers (custom/, platform-independent).
+# The dnd and accessibility classes it uses are in the dnd and Accessible lists below.
+SWT_FILES+=(
+	org/eclipse/swt/custom/Bullet.java
+	org/eclipse/swt/custom/DefaultContent.java
+	org/eclipse/swt/custom/ST.java
+	org/eclipse/swt/custom/StyleRange.java
+	org/eclipse/swt/custom/StyledText.java
+	org/eclipse/swt/custom/StyledTextContent.java
+	org/eclipse/swt/custom/StyledTextDropTargetEffect.java
+	org/eclipse/swt/custom/StyledTextEvent.java
+	org/eclipse/swt/custom/StyledTextListener.java
+	org/eclipse/swt/custom/StyledTextLineSpacingProvider.java
+	org/eclipse/swt/custom/StyledTextRenderer.java
+	org/eclipse/swt/custom/StyledTextPrintOptions.java
+	org/eclipse/swt/custom/StyledTextWriterBase.java
+	org/eclipse/swt/custom/TextWriter.java
+	org/eclipse/swt/custom/HTMLWriter.java
+	org/eclipse/swt/custom/RTFWriter.java
+	org/eclipse/swt/custom/TextChangeListener.java
+	org/eclipse/swt/custom/TextChangedEvent.java
+	org/eclipse/swt/custom/TextChangingEvent.java
+	org/eclipse/swt/custom/LineBackgroundEvent.java
+	org/eclipse/swt/custom/LineBackgroundListener.java
+	org/eclipse/swt/custom/LineStyleEvent.java
+	org/eclipse/swt/custom/LineStyleListener.java
+	org/eclipse/swt/custom/CaretEvent.java
+	org/eclipse/swt/custom/CaretListener.java
+	org/eclipse/swt/custom/ExtendedModifyEvent.java
+	org/eclipse/swt/custom/ExtendedModifyListener.java
+	org/eclipse/swt/custom/BidiSegmentEvent.java
+	org/eclipse/swt/custom/BidiSegmentListener.java
+	org/eclipse/swt/custom/MovementEvent.java
+	org/eclipse/swt/custom/MovementListener.java
+	org/eclipse/swt/custom/PaintObjectEvent.java
+	org/eclipse/swt/custom/PaintObjectListener.java
+	org/eclipse/swt/custom/VerifyKeyListener.java
+	org/eclipse/swt/custom/MouseNavigator.java
+)
 # org.eclipse.swt.browser sources. JSON is not translated: the common layer does not use it, the engine parses the page's values with
 # encoding/json. BrowserFactory, Program and WebViewBrowser exist only as Java stubs in tooling/j2go/stubs for typing; the engine is
 # browser/webbrowser_manual.go over package webview.
@@ -284,6 +323,33 @@ if [ "$PLATFORM" = win32 ]; then
 		org/eclipse/swt/widgets/Tracker.java
 	)
 fi
+# Platform Accessible (NSAccessibility on cocoa, IAccessible over COMObject on win32); gtk keeps the hand-written stub (no ATK yet).
+ACC_DIR=org/eclipse/swt/accessibility
+# The rest of accessibility/common, which the platform Accessible refers to (the first ten are in the list above).
+for n in AccessibleAction AccessibleEditableText AccessibleHyperlink AccessibleTable AccessibleTableCell AccessibleValue AccessibleAttribute; do
+	SWT_FILES+=($ACC_DIR/${n}Event.java $ACC_DIR/${n}Listener.java $ACC_DIR/${n}Adapter.java)
+done
+SWT_FILES+=($ACC_DIR/AccessibleTextAttributeEvent.java $ACC_DIR/AccessibleTextExtendedListener.java $ACC_DIR/AccessibleTextExtendedAdapter.java)
+if [ "$PLATFORM" = win32 ]; then
+	SWT_FILES+=($ACC_DIR/Accessible.java $ACC_DIR/Relation.java)
+fi
+if [ "$PLATFORM" = cocoa ]; then
+	SWT_FILES+=($ACC_DIR/Accessible.java $ACC_DIR/Relation.java $ACC_DIR/SWTAccessibleDelegate.java $ACC_DIR/TableAccessibleDelegate.java
+		$ACC_DIR/AccessibleTableColumn.java $ACC_DIR/AccessibleTableHeader.java $ACC_DIR/AccessibleTableRow.java)
+fi
+# org.eclipse.swt.dnd (README "Round 24 dnd"): the common events/listeners/adapters, and the platform's Clipboard, Transfers, DragSource, DropTarget.
+DND_ROOT="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT Drag and Drop"
+SWT_FILES+=($(cd "$DND_ROOT/common" && ls org/eclipse/swt/dnd/*.java) $(cd "$DND_ROOT/$PLATFORM" && find org -name '*.java' | sort))
+# gtk: the GTK 4 half (content providers, ClipboardProxyGTK4) is hand-written panicking stubs, swt/dnd_gtk4_manual_linux.go; Linux runs GTK 3.
+if [ "$PLATFORM" = gtk ]; then
+	for i in "${!SWT_FILES[@]}"; do
+		case "${SWT_FILES[$i]}" in
+			*/dnd/ContentProviders.java | */dnd/ClipboardProxyGTK4.java | */dnd/GdkContentSerializer.java | */dnd/GdkContentDeserializer.java) unset 'SWT_FILES[i]' ;;
+		esac
+	done
+fi
+# win32: the vtable base of the COM objects DnD and Accessible subclass; COMObject is translated into package swt with its subclasses (GoTypes.goPackageDir).
+[ "$PLATFORM" != win32 ] || SWT_FILES+=(org/eclipse/swt/internal/ole/win32/COMObject.java)
 "${J2GO[@]}" \
 	"${SWT_FILES[@]}" \
 	-- \
@@ -396,6 +462,12 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_custom_CCombo.java
 	$TJ/Test_org_eclipse_swt_custom_CTabFolder.java
 	$TJ/Test_org_eclipse_swt_custom_CTabItem.java
+	$TJ/StyledTextContentSpec.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText.java
+	$TJ/Test_org_eclipse_swt_custom_StyledTextContent.java
+	$TJ/Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.java
+	$TJ/Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.java
 	$TJ/Test_org_eclipse_swt_widgets_Dialog.java
 	$TJ/Test_org_eclipse_swt_widgets_FileDialog.java
 	$TJ/Test_org_eclipse_swt_widgets_DirectoryDialog.java
@@ -411,12 +483,25 @@ TEST_FILES=(
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_DATE.java
 	$TJ/Test_org_eclipse_swt_widgets_DateTime_Style_TIME.java
 	$TJ/Test_org_eclipse_swt_widgets_ScrolledComposite.java
+	$TJ/Test_org_eclipse_swt_accessibility_Accessible.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleControlEvent.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleEvent.java
+	$TJ/Test_org_eclipse_swt_accessibility_AccessibleTextEvent.java
 	$TJ/Test_org_eclipse_swt_browser_Browser.java
 	$TJ/EchoHttpServer.java
+	$TJ/ClipboardBase.java
+	$TJ/Test_org_eclipse_swt_dnd_ByteArrayTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_Clipboard.java
+	$TJ/Test_org_eclipse_swt_dnd_FileTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_HTMLTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_ImageTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_RTFTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_TextTransfer.java
+	$TJ/Test_org_eclipse_swt_dnd_URLTransfer.java
 	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
 )
-"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" \
+"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" --src "$SWT_REPO/tests/org.eclipse.swt.tests/data" \
 	"${TEST_FILES[@]}" \
 	-- \
 	"${BR_STUB[@]}" "${BR_FILES[@]}" \
@@ -426,7 +511,7 @@ TEST_FILES=(
 	"${PI_FILES[@]}"
 TESTS_SRC="$SWT_REPO/tests/org.eclipse.swt.tests/JUnit Tests/$TJ"
 mkdir -p tests/swttests/testdata
-cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
+cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt "$TESTS_SRC"/*.html tests/swttests/testdata/
 
 
 # Round 22 jface: org.eclipse.jface layout/widgets (+ the util and viewers data classes they use) -> package jface, shared by every OS,

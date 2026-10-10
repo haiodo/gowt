@@ -1075,6 +1075,11 @@ func widgetImplAsControl(x any) (*Control, bool) {
 			return nil, false
 		}
 		return &v.Control, true
+	case *StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Control, true
 	case *Group:
 		if v == nil {
 			return nil, false

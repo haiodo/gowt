@@ -588,7 +588,7 @@ func (this *CTabFolder) CreateButtonImage(displayLike DisplayLike, button int32)
 	tempGC.impl.dispose_()
 	var trim *Rectangle = this.renderer.ComputeTrim(button, NONE, 0, 0, 0, 0)
 	var imageSize *Point = NewPoint(size.X-trim.Width, size.Y-trim.Height)
-	var transColor *Color = this.renderer.parent.GetBackground()
+	var transColor *Color = this.renderer.parent.impl.getBackground_()
 	anon702 := &CTabFolderAnon1{}
 	anon702.initTransparencyColorImageGcDrawer(transColor)
 	anon702.fnDrawOn = func(gc *GC, imageWidth int32, imageHeight int32) {
@@ -3260,7 +3260,7 @@ func (this *CTabFolder) ShowList(rectLike RectangleLike) {
 		anon727.initSelectionAdapter()
 		anon727.fnWidgetSelected = func(e *SelectionEvent) {
 			var menuItem *MenuItem = castWidgetToMenuItem(e.Widget)
-			var index int32 = this.IndexOf(castanyToCTabItem(menuItem.GetDataKey(id)))
+			var index int32 = this.IndexOf(castanyToCTabItem(menuItem.impl.getDataKey_(id)))
 			this.SetSelectionIndexNotify(index, true)
 		}
 		item.AddSelectionListener(anon727)
@@ -3473,7 +3473,7 @@ func (this *CTabFolder) UpdateBkImages(colorChanged bool) {
 						(castControlToComposite(control)).SetBackgroundMode(INHERIT_NONE)
 					}
 					control.impl.setBackgroundImage_(nil)
-					control.impl.setBackgroundWithColor_(this.GetBackground())
+					control.impl.setBackgroundWithColor_(this.impl.getBackground_())
 				} else {
 					_, ok733 := isControlToComposite(control)
 					if ok733 {
@@ -3491,7 +3491,7 @@ func (this *CTabFolder) UpdateBkImages(colorChanged bool) {
 					if wrapped || this.gradientColors == (nil) {
 						this.bkImageBounds[i] = nil
 						control.impl.setBackgroundImage_(nil)
-						control.impl.setBackgroundWithColor_(this.GetBackground())
+						control.impl.setBackgroundWithColor_(this.impl.getBackground_())
 					} else {
 						bounds.Width = 10
 						if !this.onBottom {
@@ -3983,6 +3983,11 @@ func widgetImplAsComposite(x any) (*Composite, bool) {
 		}
 		return &v.Composite, true
 	case *CLabel:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Composite, true
+	case *StyledText:
 		if v == nil {
 			return nil, false
 		}

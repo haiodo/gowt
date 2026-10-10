@@ -307,6 +307,11 @@ func widgetImplAsScrollable(x any) (*Scrollable, bool) {
 			return nil, false
 		}
 		return &v.Scrollable, true
+	case *StyledText:
+		if v == nil {
+			return nil, false
+		}
+		return &v.Scrollable, true
 	case *Group:
 		if v == nil {
 			return nil, false

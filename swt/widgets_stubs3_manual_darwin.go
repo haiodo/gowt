@@ -8,6 +8,8 @@ import (
 	"os"
 	"reflect"
 
+	"github.com/haiodo/gowt/internal/jrt"
+
 	"github.com/haiodo/gowt/internal/cocoa"
 )
 
@@ -59,6 +61,18 @@ func DPIUtilGetNativeDeviceZoom() int32           { return dpiNativeDeviceZoom }
 
 // BidiUtil (emulated/bidi): no bidi support, text direction is left as is.
 func BidiUtilResolveTextDirection(text string) int32 { return NONE }
+
+// StyledText asks for the keyboard language and registers a listener for its change; with no bidi keyboards there is nothing to report.
+const (
+	BidiUtilKEYBOARD_NON_BIDI int32 = 0
+	BidiUtilKEYBOARD_BIDI     int32 = 1
+)
+
+func BidiUtilGetKeyboardLanguage() int32                                         { return BidiUtilKEYBOARD_NON_BIDI }
+func BidiUtilSetKeyboardLanguage(language int32)                                 {}
+func BidiUtilIsBidiPlatform() bool                                               { return false }
+func BidiUtilAddLanguageListener(controlLike ControlLike, runnable jrt.Runnable) {}
+func BidiUtilRemoveLanguageListener(controlLike ControlLike)                     {}
 
 // Compatibility.getMessage: no SWTMessages resource bundle, the key itself is the message.
 func CompatibilityGetMessage(key string, args ...[]any) string {

@@ -167,6 +167,8 @@ public class Main {
 		for (int i = 0; i < absFiles.size(); i++) {
 			CompilationUnit cu = orderedUnits.get(i);
 			String absPath = absFiles.get(i);
+			// A Java stub only types its Go counterpart (hand-written); it is modeled, never emitted.
+			if (absPath.startsWith(Path.of(STUB_ROOT).toAbsolutePath() + "/")) continue;
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
@@ -197,7 +199,9 @@ public class Main {
 			// swt file built only for this GOOS: read from a platform root (a same-named sibling per platform).
 			final String srcPath = absPath;
 			boolean piFile = outDirName.equals(platform.piDir);
-			boolean platformFile = !piFile && (commonSource || platformRoots.stream().anyMatch(srcPath::startsWith));
+			// DragSourceEvent/DropTargetEvent print TransferData.type, an int on cocoa and win32 and a long on gtk: one file per platform.
+			boolean typeDependent = javaPackage.equals("org.eclipse.swt.dnd") && (typeName.equals("DragSourceEvent") || typeName.equals("DropTargetEvent"));
+			boolean platformFile = !piFile && (commonSource || typeDependent || platformRoots.stream().anyMatch(srcPath::startsWith));
 			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
 			emittedSwtPlatformFile |= platformFile && outDirName.equals("swt");
 			String header = buildHeader(relPath, source, cu);

@@ -324,7 +324,8 @@ final class ControlFlowEmitter {
 		List<?> stmts = b.statements();
 		if (stmts.get(stmts.size() - 1) != stmt) return false;
 		ASTNode holder = b.getParent();
-		return holder instanceof MethodDeclaration || holder instanceof LambdaExpression || holder instanceof IfStatement is2 && isTail(is2) || holder instanceof Block && isTail(b);
+		return holder instanceof MethodDeclaration || holder instanceof LambdaExpression || holder instanceof IfStatement is2 && isTail(is2) || holder instanceof Block && isTail(b)
+				|| holder instanceof TryStatement ts && ts.getBody() == b && isTail(ts);
 	}
 
 	private String emitCatchDispatch(List<CatchClause> catches, int indent) {
@@ -352,8 +353,8 @@ final class ControlFlowEmitter {
 					b.append(ind(indent + 1)).append(varName).append(" := r.(").append(altTypes.get(0)).append(")\n");
 				} else {
 					// A multi-catch of unrelated concrete types has no single Go assertion - matched
-					// via the type-switch probe above; the catch var keeps r's static (any) type.
-					b.append(ind(indent + 1)).append(varName).append(" := r\n");
+					// via the type-switch probe above; the catch var is an error (getMessage()) when the alternatives are.
+					b.append(ind(indent + 1)).append(varName).append(", _ := r.(error)\n");
 				}
 				b.append(ind(indent + 1)).append("_ = ").append(varName).append('\n');
 			}

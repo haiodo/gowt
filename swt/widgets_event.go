@@ -6,6 +6,22 @@ import (
 	"fmt"
 )
 
+type EventImpl interface {
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type eventHooked struct {
+	EventImpl
+	hook   EventImpl
+	active string
+}
+
+func (this *eventHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
 type Event struct {
 	Display       *Display
 	Widget        *Widget
@@ -37,6 +53,18 @@ type Event struct {
 	YDirection    int32
 	Magnification float64
 	Rotation      float64
+	impl          EventImpl
+}
+
+func (this *Event) Impl() EventImpl {
+	if h, ok := this.impl.(*eventHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *Event) SetImpl_(impl EventImpl) {
+	this.impl = &eventHooked{EventImpl: this.impl, hook: impl}
 }
 
 func (this *Event) AsEvent() *Event { return this }
@@ -47,6 +75,7 @@ type EventLike interface {
 
 func NewEvent() *Event {
 	this := &Event{}
+	this.impl = this
 	this.initEvent()
 	return this
 }

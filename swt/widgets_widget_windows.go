@@ -78,9 +78,11 @@ type WidgetImpl interface {
 	findMenus_(a0 *Control) []*Menu
 	fixChildren_(a0 *Shell, a1 *Shell, a2 *Decorations, a3 *Decorations, a4 []*Menu)
 	forceResize_()
+	getBackground_() *Color
 	getBorderWidthInPixels_() int32
 	getBounds_() *Rectangle
 	getBoundsInPixels_() *Rectangle
+	getDragDetect_() bool
 	getEnabled_() bool
 	getForeground_() *Color
 	getLocation_() *Point
@@ -123,6 +125,7 @@ type WidgetImpl interface {
 	setCursorNoArgs_()
 	setCursor_(a0 *Cursor)
 	setDefaultFont_()
+	setDragDetect_(a0 bool)
 	setEnabled_(a0 bool)
 	setFocus_() bool
 	setFont_(a0 *Font)
@@ -136,6 +139,7 @@ type WidgetImpl interface {
 	setRadioSelection_(a0 bool) bool
 	setRedraw_(a0 bool)
 	setRegion_(a0 *Region)
+	setTextDirection_(a0 int32)
 	setToolTipText_(a0 string)
 	setToolTipTextShellString_(a0 *Shell, a1 string)
 	setVisible_(a0 bool)
@@ -257,6 +261,8 @@ type WidgetImpl interface {
 	removeControl_(a0 *Control)
 	setLayout_(a0 *Layout)
 	toolTipText_(a0 *win32.NMTTDISPINFO) string
+	scroll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32, a6 bool)
+	setCaret_(a0 *Caret)
 	getMaximized_() bool
 	getMinimized_() bool
 	removeMenu_(a0 *Menu)
@@ -375,6 +381,10 @@ func (this *Widget) forceResize_() {
 	panic("j2go: forceResize_ has no default on Widget")
 }
 
+func (this *Widget) getBackground_() *Color {
+	panic("j2go: getBackground_ has no default on Widget")
+}
+
 func (this *Widget) getBorderWidthInPixels_() int32 {
 	panic("j2go: getBorderWidthInPixels_ has no default on Widget")
 }
@@ -385,6 +395,10 @@ func (this *Widget) getBounds_() *Rectangle {
 
 func (this *Widget) getBoundsInPixels_() *Rectangle {
 	panic("j2go: getBoundsInPixels_ has no default on Widget")
+}
+
+func (this *Widget) getDragDetect_() bool {
+	panic("j2go: getDragDetect_ has no default on Widget")
 }
 
 func (this *Widget) getEnabled_() bool {
@@ -555,6 +569,10 @@ func (this *Widget) setDefaultFont_() {
 	panic("j2go: setDefaultFont_ has no default on Widget")
 }
 
+func (this *Widget) setDragDetect_(a0 bool) {
+	panic("j2go: setDragDetect_ has no default on Widget")
+}
+
 func (this *Widget) setEnabled_(a0 bool) {
 	panic("j2go: setEnabled_ has no default on Widget")
 }
@@ -605,6 +623,10 @@ func (this *Widget) setRedraw_(a0 bool) {
 
 func (this *Widget) setRegion_(a0 *Region) {
 	panic("j2go: setRegion_ has no default on Widget")
+}
+
+func (this *Widget) setTextDirection_(a0 int32) {
+	panic("j2go: setTextDirection_ has no default on Widget")
 }
 
 func (this *Widget) setToolTipText_(a0 string) {
@@ -1091,6 +1113,14 @@ func (this *Widget) toolTipText_(a0 *win32.NMTTDISPINFO) string {
 	panic("j2go: toolTipText_ has no default on Widget")
 }
 
+func (this *Widget) scroll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32, a6 bool) {
+	panic("j2go: scroll_ has no default on Widget")
+}
+
+func (this *Widget) setCaret_(a0 *Caret) {
+	panic("j2go: setCaret_ has no default on Widget")
+}
+
 func (this *Widget) getMaximized_() bool {
 	panic("j2go: getMaximized_ has no default on Widget")
 }
@@ -1206,12 +1236,28 @@ func (this *widgetHooked) computeSizeWHintHHintChanged_(a0 int32, a1 int32, a2 b
 	return this.WidgetImpl.computeSizeWHintHHintChanged_(a0, a1, a2)
 }
 
+func (this *widgetHooked) getBackground_() *Color {
+	if h, ok := this.hook.(interface{ GetBackground_() *Color }); ok && this.active != "getBackground_" {
+		defer this.enter("getBackground_")()
+		return h.GetBackground_()
+	}
+	return this.WidgetImpl.getBackground_()
+}
+
 func (this *widgetHooked) getBounds_() *Rectangle {
 	if h, ok := this.hook.(interface{ GetBounds_() *Rectangle }); ok && this.active != "getBounds_" {
 		defer this.enter("getBounds_")()
 		return h.GetBounds_()
 	}
 	return this.WidgetImpl.getBounds_()
+}
+
+func (this *widgetHooked) getDragDetect_() bool {
+	if h, ok := this.hook.(interface{ GetDragDetect_() bool }); ok && this.active != "getDragDetect_" {
+		defer this.enter("getDragDetect_")()
+		return h.GetDragDetect_()
+	}
+	return this.WidgetImpl.getDragDetect_()
 }
 
 func (this *widgetHooked) getEnabled_() bool {
@@ -1394,6 +1440,15 @@ func (this *widgetHooked) setCursor_(a0 *Cursor) {
 	this.WidgetImpl.setCursor_(a0)
 }
 
+func (this *widgetHooked) setDragDetect_(a0 bool) {
+	if h, ok := this.hook.(interface{ SetDragDetect_(a0 bool) }); ok && this.active != "setDragDetect_" {
+		defer this.enter("setDragDetect_")()
+		h.SetDragDetect_(a0)
+		return
+	}
+	this.WidgetImpl.setDragDetect_(a0)
+}
+
 func (this *widgetHooked) setEnabled_(a0 bool) {
 	if h, ok := this.hook.(interface{ SetEnabled_(a0 bool) }); ok && this.active != "setEnabled_" {
 		defer this.enter("setEnabled_")()
@@ -1481,6 +1536,15 @@ func (this *widgetHooked) setRegion_(a0 *Region) {
 		return
 	}
 	this.WidgetImpl.setRegion_(a0)
+}
+
+func (this *widgetHooked) setTextDirection_(a0 int32) {
+	if h, ok := this.hook.(interface{ SetTextDirection_(a0 int32) }); ok && this.active != "setTextDirection_" {
+		defer this.enter("setTextDirection_")()
+		h.SetTextDirection_(a0)
+		return
+	}
+	this.WidgetImpl.setTextDirection_(a0)
 }
 
 func (this *widgetHooked) setToolTipText_(a0 string) {
@@ -1593,6 +1657,26 @@ func (this *widgetHooked) setLayout_(a0 *Layout) {
 		return
 	}
 	this.WidgetImpl.setLayout_(a0)
+}
+
+func (this *widgetHooked) scroll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32, a6 bool) {
+	if h, ok := this.hook.(interface {
+		Scroll_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32, a6 bool)
+	}); ok && this.active != "scroll_" {
+		defer this.enter("scroll_")()
+		h.Scroll_(a0, a1, a2, a3, a4, a5, a6)
+		return
+	}
+	this.WidgetImpl.scroll_(a0, a1, a2, a3, a4, a5, a6)
+}
+
+func (this *widgetHooked) setCaret_(a0 *Caret) {
+	if h, ok := this.hook.(interface{ SetCaret_(a0 *Caret) }); ok && this.active != "setCaret_" {
+		defer this.enter("setCaret_")()
+		h.SetCaret_(a0)
+		return
+	}
+	this.WidgetImpl.setCaret_(a0)
 }
 
 func (this *widgetHooked) getMaximized_() bool {
@@ -2012,7 +2096,7 @@ func (this *Widget) GetData() any {
 	this.CheckWidget()
 	var cond62 any
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		cond62 = (this.data.([]any))[0]
+		cond62 = (jrt.Cast[[]any](this.data))[0]
 	} else {
 		cond62 = this.data
 	}
@@ -2055,12 +2139,6 @@ func (this *Widget) GetListeners(eventType int32) []Listener {
 		return make([]Listener, 0)
 	}
 	return this.eventTable.GetListeners(eventType)
-}
-
-func (this *Widget) GetTypedListeners(eventType int32, listenerType reflect.Type) *jrt.List {
-	return jrt.ArraysAsList(this.GetListeners(eventType)).Filter(func() func(Listener) bool { panic("j2go: unsupported ExpressionMethodReference") }()).Map(func(l Listener) any {
-		return (castListenerToTypedListener(l)).eventListener
-	}).Filter(func() func(any) bool { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }()).Map(func() func(any) any { _ = []any{listenerType}; panic("j2go: unsupported ExpressionMethodReference") }())
 }
 
 func (this *Widget) GetMenu0() *Menu {
@@ -2499,7 +2577,7 @@ func (this *Widget) SendMouseWheelEvent(type_ int32, hwnd int64, wParam int64, l
 func (this *Widget) SetData(data any) {
 	this.CheckWidget()
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		(this.data.([]any))[0] = data
+		(jrt.Cast[[]any](this.data))[0] = data
 	} else {
 		this.data = data
 	}
@@ -2517,7 +2595,7 @@ func (this *Widget) setDataKeyValue_(key string, value any) {
 	var index int32 = 1
 	var table []any = nil
 	if (this.state & WidgetKEYED_DATA) != 0 {
-		table = this.data.([]any)
+		table = jrt.Cast[[]any](this.data)
 		for index < int32(len(table)) {
 			if key == table[index] {
 				break
@@ -3696,17 +3774,6 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 		remainder.X = delta % win32.OSWHEEL_DELTA
 	}
 	this.count = delta / win32.OSWHEEL_DELTA
-}
-
-func castListenerToTypedListener(x Listener) *TypedListener {
-	if x == nil {
-		return nil
-	}
-	v, ok := typedListenerImplAsTypedListener(x)
-	if !ok {
-		panic("java.lang.ClassCastException: TypedListener")
-	}
-	return v
 }
 
 func init() {

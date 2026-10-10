@@ -83,15 +83,15 @@ func (this *NSBezierPath) AppendBezierPathWithRoundedRect(rect NSRect, xRadius f
 func (this *NSBezierPath) BezierPathByFlatteningPath() *NSBezierPath {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_bezierPathByFlatteningPath)
 	var cond75 *NSBezierPath
-	var cond76 *NSBezierPath
-	if result != 0 {
-		cond76 = NewNSBezierPathOverload1(result)
-	} else {
-		cond76 = nil
-	}
 	if result == this.Id {
 		cond75 = this
 	} else {
+		var cond76 *NSBezierPath
+		if result != 0 {
+			cond76 = NewNSBezierPathOverload1(result)
+		} else {
+			cond76 = nil
+		}
 		cond75 = (cond76)
 	}
 	return cond75

@@ -57,15 +57,15 @@ func (this *NSAffineTransform) InitWithTransform(transform *NSAffineTransform) *
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithTransform_, cond4)
 	var cond5 *NSAffineTransform
-	var cond6 *NSAffineTransform
-	if result != 0 {
-		cond6 = NewNSAffineTransformOverload1(result)
-	} else {
-		cond6 = nil
-	}
 	if result == this.Id {
 		cond5 = this
 	} else {
+		var cond6 *NSAffineTransform
+		if result != 0 {
+			cond6 = NewNSAffineTransformOverload1(result)
+		} else {
+			cond6 = nil
+		}
 		cond5 = (cond6)
 	}
 	return cond5

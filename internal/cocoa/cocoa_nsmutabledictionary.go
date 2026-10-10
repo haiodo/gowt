@@ -43,15 +43,15 @@ func (this *NSMutableDictionary) initNSMutableDictionaryOverload2(id *id) {
 func (this *NSMutableDictionary) InitWithCapacity(numItems int64) *NSMutableDictionary {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithCapacity_, numItems)
 	var cond424 *NSMutableDictionary
-	var cond425 *NSMutableDictionary
-	if result != 0 {
-		cond425 = NewNSMutableDictionaryOverload1(result)
-	} else {
-		cond425 = nil
-	}
 	if result == this.Id {
 		cond424 = this
 	} else {
+		var cond425 *NSMutableDictionary
+		if result != 0 {
+			cond425 = NewNSMutableDictionaryOverload1(result)
+		} else {
+			cond425 = nil
+		}
 		cond424 = (cond425)
 	}
 	return cond424

@@ -6,7 +6,237 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 )
 
+type AccessibleTextAdapterImpl interface {
+	getCaretOffset_(a0 *AccessibleTextEvent)
+	getSelectionRange_(a0 *AccessibleTextEvent)
+	addSelection_(a0 *AccessibleTextEvent)
+	getCharacterCount_(a0 *AccessibleTextEvent)
+	getOffsetAtPoint_(a0 *AccessibleTextEvent)
+	getRanges_(a0 *AccessibleTextEvent)
+	getSelection_(a0 *AccessibleTextEvent)
+	getSelectionCount_(a0 *AccessibleTextEvent)
+	getText_(a0 *AccessibleTextEvent)
+	getTextBounds_(a0 *AccessibleTextEvent)
+	getVisibleRanges_(a0 *AccessibleTextEvent)
+	removeSelection_(a0 *AccessibleTextEvent)
+	scrollText_(a0 *AccessibleTextEvent)
+	setCaretOffset_(a0 *AccessibleTextEvent)
+	setSelection_(a0 *AccessibleTextEvent)
+}
+
+func (this *AccessibleTextAdapter) addSelection_(a0 *AccessibleTextEvent) {
+	panic("j2go: addSelection_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getCharacterCount_(a0 *AccessibleTextEvent) {
+	panic("j2go: getCharacterCount_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getOffsetAtPoint_(a0 *AccessibleTextEvent) {
+	panic("j2go: getOffsetAtPoint_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getRanges_(a0 *AccessibleTextEvent) {
+	panic("j2go: getRanges_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getSelection_(a0 *AccessibleTextEvent) {
+	panic("j2go: getSelection_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getSelectionCount_(a0 *AccessibleTextEvent) {
+	panic("j2go: getSelectionCount_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getText_(a0 *AccessibleTextEvent) {
+	panic("j2go: getText_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getTextBounds_(a0 *AccessibleTextEvent) {
+	panic("j2go: getTextBounds_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) getVisibleRanges_(a0 *AccessibleTextEvent) {
+	panic("j2go: getVisibleRanges_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) removeSelection_(a0 *AccessibleTextEvent) {
+	panic("j2go: removeSelection_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) scrollText_(a0 *AccessibleTextEvent) {
+	panic("j2go: scrollText_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) setCaretOffset_(a0 *AccessibleTextEvent) {
+	panic("j2go: setCaretOffset_ has no default on AccessibleTextAdapter")
+}
+
+func (this *AccessibleTextAdapter) setSelection_(a0 *AccessibleTextEvent) {
+	panic("j2go: setSelection_ has no default on AccessibleTextAdapter")
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type accessibleTextAdapterHooked struct {
+	AccessibleTextAdapterImpl
+	hook   AccessibleTextAdapterImpl
+	active string
+}
+
+func (this *accessibleTextAdapterHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *accessibleTextAdapterHooked) getCaretOffset_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetCaretOffset_(a0 *AccessibleTextEvent) }); ok && this.active != "getCaretOffset_" {
+		defer this.enter("getCaretOffset_")()
+		h.GetCaretOffset_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getCaretOffset_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getSelectionRange_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetSelectionRange_(a0 *AccessibleTextEvent) }); ok && this.active != "getSelectionRange_" {
+		defer this.enter("getSelectionRange_")()
+		h.GetSelectionRange_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getSelectionRange_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) addSelection_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ AddSelection_(a0 *AccessibleTextEvent) }); ok && this.active != "addSelection_" {
+		defer this.enter("addSelection_")()
+		h.AddSelection_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.addSelection_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getCharacterCount_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetCharacterCount_(a0 *AccessibleTextEvent) }); ok && this.active != "getCharacterCount_" {
+		defer this.enter("getCharacterCount_")()
+		h.GetCharacterCount_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getCharacterCount_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getOffsetAtPoint_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetOffsetAtPoint_(a0 *AccessibleTextEvent) }); ok && this.active != "getOffsetAtPoint_" {
+		defer this.enter("getOffsetAtPoint_")()
+		h.GetOffsetAtPoint_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getOffsetAtPoint_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getRanges_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetRanges_(a0 *AccessibleTextEvent) }); ok && this.active != "getRanges_" {
+		defer this.enter("getRanges_")()
+		h.GetRanges_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getRanges_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getSelection_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetSelection_(a0 *AccessibleTextEvent) }); ok && this.active != "getSelection_" {
+		defer this.enter("getSelection_")()
+		h.GetSelection_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getSelection_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getSelectionCount_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetSelectionCount_(a0 *AccessibleTextEvent) }); ok && this.active != "getSelectionCount_" {
+		defer this.enter("getSelectionCount_")()
+		h.GetSelectionCount_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getSelectionCount_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getText_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetText_(a0 *AccessibleTextEvent) }); ok && this.active != "getText_" {
+		defer this.enter("getText_")()
+		h.GetText_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getText_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getTextBounds_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetTextBounds_(a0 *AccessibleTextEvent) }); ok && this.active != "getTextBounds_" {
+		defer this.enter("getTextBounds_")()
+		h.GetTextBounds_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getTextBounds_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) getVisibleRanges_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ GetVisibleRanges_(a0 *AccessibleTextEvent) }); ok && this.active != "getVisibleRanges_" {
+		defer this.enter("getVisibleRanges_")()
+		h.GetVisibleRanges_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.getVisibleRanges_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) removeSelection_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ RemoveSelection_(a0 *AccessibleTextEvent) }); ok && this.active != "removeSelection_" {
+		defer this.enter("removeSelection_")()
+		h.RemoveSelection_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.removeSelection_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) scrollText_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ ScrollText_(a0 *AccessibleTextEvent) }); ok && this.active != "scrollText_" {
+		defer this.enter("scrollText_")()
+		h.ScrollText_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.scrollText_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) setCaretOffset_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ SetCaretOffset_(a0 *AccessibleTextEvent) }); ok && this.active != "setCaretOffset_" {
+		defer this.enter("setCaretOffset_")()
+		h.SetCaretOffset_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.setCaretOffset_(a0)
+}
+
+func (this *accessibleTextAdapterHooked) setSelection_(a0 *AccessibleTextEvent) {
+	if h, ok := this.hook.(interface{ SetSelection_(a0 *AccessibleTextEvent) }); ok && this.active != "setSelection_" {
+		defer this.enter("setSelection_")()
+		h.SetSelection_(a0)
+		return
+	}
+	this.AccessibleTextAdapterImpl.setSelection_(a0)
+}
+
 type AccessibleTextAdapter struct {
+	impl AccessibleTextAdapterImpl
+}
+
+func (this *AccessibleTextAdapter) Impl() AccessibleTextAdapterImpl {
+	if h, ok := this.impl.(*accessibleTextAdapterHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *AccessibleTextAdapter) SetImpl_(impl AccessibleTextAdapterImpl) {
+	this.impl = &accessibleTextAdapterHooked{AccessibleTextAdapterImpl: this.impl, hook: impl}
 }
 
 func init() { jrt.RegisterClassPackage("AccessibleTextAdapter", "org.eclipse.swt.accessibility") }
@@ -19,6 +249,7 @@ type AccessibleTextAdapterLike interface {
 
 func NewAccessibleTextAdapter() *AccessibleTextAdapter {
 	this := &AccessibleTextAdapter{}
+	this.impl = this
 	this.initAccessibleTextAdapter()
 	return this
 }
@@ -27,7 +258,15 @@ func (this *AccessibleTextAdapter) initAccessibleTextAdapter() {
 }
 
 func (this *AccessibleTextAdapter) GetCaretOffset(e *AccessibleTextEvent) {
+	this.impl.getCaretOffset_(e)
+}
+
+func (this *AccessibleTextAdapter) getCaretOffset_(e *AccessibleTextEvent) {
 }
 
 func (this *AccessibleTextAdapter) GetSelectionRange(e *AccessibleTextEvent) {
+	this.impl.getSelectionRange_(e)
+}
+
+func (this *AccessibleTextAdapter) getSelectionRange_(e *AccessibleTextEvent) {
 }

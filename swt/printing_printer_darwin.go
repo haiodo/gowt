@@ -107,16 +107,16 @@ func (this *Printer) create_(deviceData *DeviceData) {
 		}
 		if this.data.Duplex != DEFAULT {
 			var settings int64 = this.printInfo.PMPrintSettings()
-			var cond654 int32
-			if this.data.Duplex == PrinterDataDUPLEX_LONG_EDGE {
-				cond654 = cocoa.OSKPMDuplexNoTumble
-			} else {
-				cond654 = cocoa.OSKPMDuplexNone
-			}
 			var duplex int32
 			if this.data.Duplex == PrinterDataDUPLEX_SHORT_EDGE {
 				duplex = cocoa.OSKPMDuplexTumble
 			} else {
+				var cond654 int32
+				if this.data.Duplex == PrinterDataDUPLEX_LONG_EDGE {
+					cond654 = cocoa.OSKPMDuplexNoTumble
+				} else {
+					cond654 = cocoa.OSKPMDuplexNone
+				}
 				duplex = cond654
 			}
 			cocoa.OSPMSetDuplex(settings, duplex)

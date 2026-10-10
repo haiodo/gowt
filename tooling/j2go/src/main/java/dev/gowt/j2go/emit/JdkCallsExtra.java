@@ -30,15 +30,43 @@ final class JdkCallsExtra {
 			// Streams are eager *jrt.List values; Collect returns any, so the Java result type is asserted back.
 			case "java.util.stream.Collectors#joining":
 				e.fileImports.add(JRT);
-				return "jrt.CollectorsJoining(" + arg(e, mi, 0) + ")";
+				return "jrt.CollectorsJoining(" + (mi.arguments().isEmpty() ? "\"\"" : arg(e, mi, 0)) + ")";
 			case "java.util.stream.Collectors#toList", "java.util.stream.Collectors#toSet":
 				e.fileImports.add(JRT);
 				return "jrt.CollectorsTo" + (name.equals("toList") ? "List" : "Set") + "()";
+			case "java.util.stream.IntStream#range", "java.util.stream.IntStream#rangeClosed":
+				e.fileImports.add(JRT);
+				return "jrt.IntStreamRange(" + arg(e, mi, 0) + ", " + arg(e, mi, 1) + (name.equals("range") ? "" : " + 1") + ")";
+			// The combiner only matters for parallel streams.
+			case "java.util.stream.IntStream#collect":
+				if (mi.arguments().size() != 3) return null;
+				e.fileImports.add(JRT);
+				return recv(e, mi) + ".CollectInto(" + arg(e, mi, 0) + ", " + arg(e, mi, 1) + ").(" + dev.gowt.j2go.GoTypes.map(mi.resolveTypeBinding(), e) + ")";
 			case "java.util.stream.Stream#collect": {
 				e.fileImports.add(JRT);
 				String t = dev.gowt.j2go.GoTypes.map(mi.resolveTypeBinding(), e);
 				return recv(e, mi) + ".Collect(" + arg(e, mi, 0) + ")" + (t.equals("any") ? "" : ".(" + t + ")");
 			}
+			case "java.util.stream.Collectors#summingInt":
+				e.fileImports.add(JRT);
+				return "jrt.CollectorsSummingInt(" + arg(e, mi, 0) + ")";
+			case "java.util.stream.IntStream#of": {
+				e.fileImports.add(JRT);
+				java.util.List<String> vals = new java.util.ArrayList<>();
+				for (int i = 0; i < mi.arguments().size(); i++) vals.add(arg(e, mi, i));
+				return "jrt.IntStreamOf(" + String.join(", ", vals) + ")";
+			}
+			// The cause is not kept: errors are plain Go values.
+			case "java.lang.Throwable#initCause":
+				return "func() error { _ = " + arg(e, mi, 0) + "; return " + recv(e, mi) + " }()";
+			case "java.util.Arrays#sort":
+				if (mi.arguments().size() != 2) return null;
+				e.fileImports.add(JRT);
+				return "jrt.ArraysSortComparator(" + arg(e, mi, 0) + ", " + arg(e, mi, 1) + ")";
+			case "java.util.Arrays#binarySearch":
+				if (mi.arguments().size() != 2) return null;
+				e.fileImports.add(JRT);
+				return "jrt.ArraysBinarySearch(" + arg(e, mi, 0) + ", " + arg(e, mi, 1) + ")";
 			case "java.util.Arrays#stream":
 				if (mi.arguments().size() != 1) return null;
 				e.fileImports.add(JRT);
@@ -49,6 +77,13 @@ final class JdkCallsExtra {
 			case "java.lang.Character#getDirectionality":
 				e.fileImports.add(JRT);
 				return "jrt.Directionality(rune(" + arg(e, mi, 0) + "))";
+			// Ceiling: an unassigned code point counts as defined (Go has no category table for it).
+			case "java.lang.Character#isDefined":
+				e.fileImports.add("unicode/utf8");
+				return "utf8.ValidRune(rune(" + arg(e, mi, 0) + "))";
+			case "java.lang.String#chars":
+				e.fileImports.add(JRT);
+				return "jrt.StringChars(" + recv(e, mi) + ")";
 			case "java.lang.Character#isLetterOrDigit":
 				e.fileImports.add("unicode");
 				return "(unicode.IsLetter(rune(" + arg(e, mi, 0) + ")) || unicode.IsDigit(rune(" + arg(e, mi, 0) + ")))";

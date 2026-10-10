@@ -97,6 +97,7 @@ func main() {
 			if strings.HasSuffix(c.Name, "_widgets_Display") {
 				disposeCurrent()
 			} else if display.IsDisposed() {
+				disposeCurrent() // a test that disposed the shared Display may have made its own
 				display = newDisplay()
 			}
 			name := c.Name + "." + t.Name

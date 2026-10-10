@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -69,11 +70,12 @@ func (u TimeUnit) duration(n int64) time.Duration {
 type Executor interface{ Execute(Runnable) }
 
 // CompletableFuture covers supplyAsync/thenRunAsync and the state queries the tests read.
-// Ceiling: no other stages, no join/get.
+// Ceiling: no stages beyond thenRunAsync/thenAccept, no join.
 type CompletableFuture struct {
 	mu      sync.Mutex
 	done    bool
 	failed  bool
+	value   any
 	waiters []func()
 }
 
@@ -104,10 +106,70 @@ func CompletableFutureSupplyAsync[T any](supplier func() T) *CompletableFuture {
 	go func() {
 		failed := true
 		defer func() { recover(); f.finish(failed) }()
-		supplier()
+		f.value = supplier()
 		failed = false
 	}()
 	return f
+}
+
+// CompletableFutureAllOf is CompletableFuture.allOf: done once every argument is.
+func CompletableFutureAllOf(fs ...*CompletableFuture) *CompletableFuture {
+	all := &CompletableFuture{}
+	var mu sync.Mutex
+	left, failed := len(fs), false
+	if left == 0 {
+		all.finish(false)
+	}
+	for _, f := range fs {
+		f.whenDone(func() {
+			mu.Lock()
+			left--
+			failed = failed || f.failed
+			done := left == 0
+			mu.Unlock()
+			if done {
+				all.finish(failed)
+			}
+		})
+	}
+	return all
+}
+
+func NewCompletableFuture() *CompletableFuture { return &CompletableFuture{} }
+
+func CompletableFutureCompletedFuture(v any) *CompletableFuture {
+	f := &CompletableFuture{value: v}
+	f.finish(false)
+	return f
+}
+
+// Complete is CompletableFuture.complete: false when the future was already done.
+func (f *CompletableFuture) Complete(v any) bool {
+	f.mu.Lock()
+	if f.done {
+		f.mu.Unlock()
+		return false
+	}
+	f.value = v
+	f.mu.Unlock()
+	f.finish(false)
+	return true
+}
+
+// ThenAccept runs fn with the value as soon as the future is done; the returned future is done after fn.
+func (f *CompletableFuture) ThenAccept(fn func(any)) *CompletableFuture {
+	g := &CompletableFuture{}
+	f.whenDone(func() {
+		if f.failed {
+			g.finish(true)
+			return
+		}
+		failed := true
+		defer func() { recover(); g.finish(failed) }()
+		fn(f.value)
+		failed = false
+	})
+	return g
 }
 
 func (f *CompletableFuture) ThenRunAsync(r Runnable, executor any) *CompletableFuture {
@@ -173,8 +235,35 @@ func GC() {
 	runtime.GC()
 }
 
-// SystemProperties backs System.getProperty/setProperty/getProperties; values are strings.
-var SystemProperties = NewMap()
+// SystemProperties backs System.getProperty/setProperty/getProperties; values are strings. os.name is
+// the running OS as a JDK names it (the shared generated files are translated once, for every OS).
+var SystemProperties = func() *Map {
+	m := NewMap()
+	m.Put("os.name", javaOSName(runtime.GOOS))
+	m.Put("line.separator", LineSeparator())
+	return m
+}()
+
+// LineSeparator is System.lineSeparator(): "\r\n" on Windows (StyledText copies text with it).
+func LineSeparator() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	}
+	return "\n"
+}
+
+// javaOSName is the JDK's os.name for a GOOS. Windows is always "Windows 10": the tests check only the "Windows" prefix.
+func javaOSName(goos string) string {
+	switch goos {
+	case "darwin":
+		return "Mac OS X"
+	case "linux":
+		return "Linux"
+	case "windows":
+		return "Windows 10"
+	}
+	return goos
+}
 
 // GetProperty is System.getProperty(key, def); an unset key with no default is the port's null String, "".
 func GetProperty(key, def string) string {
@@ -188,6 +277,16 @@ func GetProperty(key, def string) string {
 func SetProperty(key, value string) string {
 	prev, _ := SystemProperties.Put(key, value).(string)
 	return prev
+}
+
+// GetInteger is Integer.getInteger(key, def): the property parsed as a number, def when unset or not one.
+func GetInteger(key string, def int32) int32 {
+	if v, ok := SystemProperties.Get(key).(string); ok {
+		if n, err := strconv.ParseInt(strings.TrimSpace(v), 10, 32); err == nil {
+			return int32(n)
+		}
+	}
+	return def
 }
 
 // Getenv is System.getenv(name): "" for an unset variable.

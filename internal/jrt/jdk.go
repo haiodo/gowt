@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 	"unicode/utf16"
 )
@@ -39,7 +40,11 @@ func sbText(v any) string {
 	return fmt.Sprint(v)
 }
 
-func (s *StringBuilder) Append(v any) *StringBuilder {
+// Append covers append(x) and append(char[], offset, len).
+func (s *StringBuilder) Append(v any, offsetLen ...int32) *StringBuilder {
+	if chars, ok := v.([]uint16); ok && len(offsetLen) == 2 {
+		v = chars[offsetLen[0] : offsetLen[0]+offsetLen[1]]
+	}
 	s.b = append(s.b, sbText(v)...)
 	return s
 }
@@ -71,6 +76,11 @@ func (s *StringBuilder) Delete(start, end int32) *StringBuilder {
 	end = min(end, int32(len(s.b)))
 	s.b = append(s.b[:start], s.b[end:]...)
 	return s
+}
+
+// GetChars is getChars(srcBegin, srcEnd, dst, dstBegin).
+func (s *StringBuilder) GetChars(srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
+	GetChars(string(s.b), srcBegin, srcEnd, dst, dstBegin)
 }
 
 func (s *StringBuilder) IndexOf(sub string) int32 { return int32(strings.Index(string(s.b), sub)) }
@@ -133,12 +143,15 @@ func LocaleDefault() *Locale { return &Locale{LocaleLanguage(nil)} }
 
 func (l *Locale) ToString() string    { return l.tag }
 func (l *Locale) GetLanguage() string { return l.tag }
+func (l *Locale) GetCountry() string  { return "" }
+func (l *Locale) GetVariant() string  { return "" }
 
 // Thread is java.lang.Thread for `new Thread(runnable)` + start/join; the port's `Thread` type
 // itself stays a bare any (Display.thread), see Manual.
 type Thread struct {
-	run  Runnable
-	done chan struct{}
+	run     Runnable
+	done    chan struct{}
+	started atomic.Bool
 }
 
 func NewThread(r Runnable) *Thread { return &Thread{run: r, done: make(chan struct{})} }
@@ -148,6 +161,7 @@ func (t *Thread) Run() { t.run.Run() }
 
 func ThreadStart(t any) {
 	th := t.(*Thread)
+	th.started.Store(true)
 	go func() {
 		defer close(th.done)
 		// An uncaught exception ends only its own Java thread.
@@ -161,6 +175,26 @@ func ThreadStart(t any) {
 }
 
 func ThreadJoin(t any) { <-t.(*Thread).done }
+
+// ThreadIsAlive is Thread.isAlive: started and not yet finished.
+func ThreadIsAlive(t any) bool {
+	th := t.(*Thread)
+	select {
+	case <-th.done:
+		return false
+	default:
+		return th.started.Load()
+	}
+}
+
+// ParseDouble is Double.parseDouble.
+func ParseDouble(s string) float64 {
+	f, err := strconv.ParseFloat(strings.TrimSpace(s), 64)
+	if err != nil {
+		panic(&NumberFormatException{Input: s})
+	}
+	return f
+}
 
 // ParseFloat is Float.parseFloat.
 func ParseFloat(s string) float32 {

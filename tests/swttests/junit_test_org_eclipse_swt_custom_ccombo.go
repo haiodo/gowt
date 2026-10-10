@@ -170,8 +170,14 @@ func (this *Test_org_eclipse_swt_custom_CCombo) test_setFocus_() {
 				if r == nil {
 					return
 				}
-				if false {
-					var e error
+				if func() bool {
+					switch r.(type) {
+					case *jrt.InterruptedException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.InterruptedException)
 					_ = e
 					junit.Fail(e.Error())
 				} else {

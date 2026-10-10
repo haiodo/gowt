@@ -412,7 +412,7 @@ func (this *CTabFolderRenderer) DrawBackground(gcLike GCLike, boundsLike Rectang
 	if selected && this.parent.ShouldHighlight() {
 		defaultBackground = this.parent.selectionBackground
 	} else {
-		defaultBackground = this.parent.GetBackground()
+		defaultBackground = this.parent.impl.getBackground_()
 	}
 	var image *Image
 	if selected {
@@ -453,7 +453,7 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeSelected(gcLike GCLike, sha
 	if selected && this.parent.ShouldHighlight() {
 		defaultBackground = this.parent.selectionBackground
 	} else {
-		defaultBackground = this.parent.GetBackground()
+		defaultBackground = this.parent.impl.getBackground_()
 	}
 	var image *Image
 	if selected {
@@ -645,7 +645,7 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeXYWidthHeightDefaultBackgro
 				}
 			}
 		} else {
-			if (this.parent.impl.getStyle_()&NO_BACKGROUND) != 0 || !defaultBackground.Equals(this.parent.GetBackground()) {
+			if (this.parent.impl.getStyle_()&NO_BACKGROUND) != 0 || !defaultBackground.Equals(this.parent.impl.getBackground_()) {
 				gc.SetBackground(defaultBackground)
 				gc.FillRectangle(x, y, width, height)
 			}
@@ -732,7 +732,7 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 					if selectedIndex != -1 && this.parent.ShouldHighlight() {
 						cond738 = this.parent.selectionBackground
 					} else {
-						cond738 = this.parent.GetBackground()
+						cond738 = this.parent.impl.getBackground_()
 					}
 					gc.SetBackground(cond738)
 					gc.FillPolygon(shape)
@@ -740,7 +740,7 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 			}
 		}
 		if (this.parent.impl.getStyle_() & NO_BACKGROUND) != 0 {
-			gc.SetBackground(this.parent.GetBackground())
+			gc.SetBackground(this.parent.impl.getBackground_())
 			var marginWidth int32 = this.parent.MarginWidth
 			var marginHeight int32 = this.parent.MarginHeight
 			var xClient int32 = borderLeft + marginWidth + highlight_margin
@@ -756,7 +756,7 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 		if (this.parent.impl.getStyle_() & NO_BACKGROUND) != 0 {
 			var height int32 = borderTop + tabHeight + highlight_header + borderBottom
 			if size.Y > height {
-				gc.SetBackground(this.parent.GetParent().GetBackground())
+				gc.SetBackground(this.parent.GetParent().impl.getBackground_())
 				gc.FillRectangle(0, height, size.X, size.Y-height)
 			}
 		}
@@ -1251,7 +1251,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			if this.parent.ShouldHighlight() {
 				cond741 = this.parent.selectionBackground
 			} else {
-				cond741 = this.parent.GetBackground()
+				cond741 = this.parent.impl.getBackground_()
 			}
 			gc.SetBackground(cond741)
 			gc.FillRectangle(xx, yy, ww, hh)
@@ -1375,7 +1375,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 					if this.parent.ShouldHighlight() {
 						defaultBackground = this.parent.selectionBackground
 					} else {
-						defaultBackground = this.parent.GetBackground()
+						defaultBackground = this.parent.impl.getBackground_()
 					}
 					var image *Image = this.parent.selectionBgImage
 					var colors []*Color = this.parent.selectionGradientColors
@@ -1612,7 +1612,7 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 				if selectedIndex != -1 && this.parent.ShouldHighlight() {
 					cond771 = this.parent.selectionBackground
 				} else {
-					cond771 = this.parent.GetBackground()
+					cond771 = this.parent.impl.getBackground_()
 				}
 				gc.SetBackground(cond771)
 				gc.FillPolygon(shape)

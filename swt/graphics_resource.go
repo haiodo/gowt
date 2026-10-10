@@ -189,7 +189,7 @@ func (this *Resource) init_() {
 	}
 	if this.tracker != (nil) && this.tracker.reporting.CompareAndSet(false, true) {
 		this.cleanable = func() any {
-			_ = []any{ResourceResourceTrackerCleaner, this, this.tracker}
+			_ = []any{ResourceResourceTrackerCleaner, this, upcastResource_ResourceTrackerTojrtRunnable(this.tracker)}
 			panic("j2go: unresolved call register")
 		}()
 	}
@@ -302,6 +302,13 @@ func (this *Resource_ResourceTrackerThreadFactory) NewThread(r jrt.Runnable) any
 		panic("j2go: unresolved call setContextClassLoader")
 	}()
 	return thread
+}
+
+func upcastResource_ResourceTrackerTojrtRunnable(x *Resource_ResourceTracker) jrt.Runnable {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for Color and its subclasses within the translated set.

@@ -1031,7 +1031,7 @@ func (this *Image) DrawWithImageGcDrawer(width int32, height int32, zoom int32) 
 	} else {
 		image = NewImageDeviceWidthHeight(this.device, width, height)
 	}
-	var gc *GC = NewGCDrawableStyle(image, gcStyle)
+	var gc *GC = NewGCDrawableStyle(upcastImageToDrawable(image), gcStyle)
 	{
 		defer func() {
 			gc.impl.dispose_()
@@ -1588,6 +1588,13 @@ func castanyToImage(x any) *Image {
 		panic("java.lang.ClassCastException: Image")
 	}
 	return v
+}
+
+func upcastImageToDrawable(x *Image) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: anonymous ImageDataAtSizeProvider subclass.

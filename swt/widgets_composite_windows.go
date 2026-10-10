@@ -1248,7 +1248,7 @@ func (this *Composite) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 				if (this.style & (DOUBLE_BUFFERED | TRANSPARENT)) != 0 {
 					image = NewImageDeviceWidthHeight(upcastDisplayToDevice(this.display), width, height)
 					paintGC = gc
-					gc = NewGCDrawableStyle(image, paintGC.GetStyle()&RIGHT_TO_LEFT)
+					gc = NewGCDrawableStyle(upcastImageToDrawable(image), paintGC.GetStyle()&RIGHT_TO_LEFT)
 					var gcData *GCData = gc.GetGCData()
 					gcData.UiState = data.UiState
 					gc.SetForeground(this.impl.getForeground_())
@@ -1590,6 +1590,13 @@ func (this *Composite) handleDPIChange_(event *Event, scalingFactor float32) {
 	for _, child := range this.impl.getChildren_() {
 		child.SendZoomChangedEvent(event, this.impl.getShell_())
 	}
+}
+
+func upcastImageToDrawable(x *Image) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastToolTipToWidget(x *ToolTip) *Widget {

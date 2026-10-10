@@ -73,3 +73,12 @@ func TestListEquals(t *testing.T) {
 		t.Error("List.Equals compares elements in order")
 	}
 }
+
+func TestListRemoveReleasesElement(t *testing.T) {
+	l := ListOf("a", "b")
+	items := l.items
+	l.Remove("b")
+	if items[1] != nil {
+		t.Error("List.Remove keeps the removed element reachable from the backing array")
+	}
+}

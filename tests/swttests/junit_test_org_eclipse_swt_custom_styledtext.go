@@ -498,7 +498,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_addWordMovementListener
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_addWordMovementListener_invokeActionSelectWordNextCallsGetNextOffset() {
 	inner115 := newTest_org_eclipse_swt_custom_StyledTextRecordingMovementListener()
 	inner115.this_0 = this
-	var listener swt.MovementListener = inner115
+	var listener swt.MovementListener = upcastTest_org_eclipse_swt_custom_StyledText_RecordingMovementListenerToswtMovementListener(inner115)
 	this.listenerCalled = false
 	this.listener2Called = false
 	this.text.SetText("Word0 Word1 Word2")
@@ -511,7 +511,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_addWordMovementListener
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_addWordMovementListener_invokeActionSelectWordPreviousCallsGetPreviousOffset() {
 	inner116 := newTest_org_eclipse_swt_custom_StyledTextRecordingMovementListener()
 	inner116.this_0 = this
-	var listener swt.MovementListener = inner116
+	var listener swt.MovementListener = upcastTest_org_eclipse_swt_custom_StyledText_RecordingMovementListenerToswtMovementListener(inner116)
 	this.listenerCalled = false
 	this.listener2Called = false
 	this.text.SetText("Word0 Word1 Word2")
@@ -524,7 +524,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_addWordMovementListener
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_removeWordMovementListener_invokeActionSelectWordCallsNoMethods() {
 	inner117 := newTest_org_eclipse_swt_custom_StyledTextRecordingMovementListener()
 	inner117.this_0 = this
-	var listener swt.MovementListener = inner117
+	var listener swt.MovementListener = upcastTest_org_eclipse_swt_custom_StyledText_RecordingMovementListenerToswtMovementListener(inner117)
 	this.listenerCalled = false
 	this.listener2Called = false
 	this.text.SetText("Word0 Word1 Word2")
@@ -2606,7 +2606,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_replaceTextRangeIILjava
 	var newText string = "newline0\n\rnewline1"
 	var newTextLength int32 = jrt.StringLength(newText)
 	var selectionListener *Test_org_eclipse_swt_custom_StyledText_TestSelectionListener = newTest_org_eclipse_swt_custom_StyledTextTestSelectionListener()
-	this.text.AddSelectionListener(selectionListener)
+	this.text.AddSelectionListener(upcastTest_org_eclipse_swt_custom_StyledText_TestSelectionListenerToswtSelectionListener(selectionListener))
 	this.text.SetText(defaultText)
 	this.text.SetSelectionRange(selectionStart, selectionLength)
 	this.text.ReplaceTextRange(replaceStart, 0, newText)
@@ -2676,7 +2676,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_replaceTextRangeIILjava
 		this.text.ReplaceTextRange(this.text.GetCharCount()+1, replaceLength, newText)
 	})
 	junit.AssertTrue(this.text.GetSelectionRange().X == selectionStart && this.text.GetSelectionRange().Y == selectionLength)
-	this.text.RemoveSelectionListener(selectionListener)
+	this.text.RemoveSelectionListener(upcastTest_org_eclipse_swt_custom_StyledText_TestSelectionListenerToswtSelectionListener(selectionListener))
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_selectAll() {
@@ -3244,7 +3244,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_setSelectionII() {
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_addSelectionListener() {
 	this.text.SetText("0123456789")
 	var selectionListener *Test_org_eclipse_swt_custom_StyledText_TestSelectionListener_1 = newTest_org_eclipse_swt_custom_StyledTextTestSelectionListener_1()
-	this.text.AddSelectionListener(selectionListener)
+	this.text.AddSelectionListener(upcastTest_org_eclipse_swt_custom_StyledText_TestSelectionListener_1ToswtSelectionListener(selectionListener))
 	junit.AssertEquals(int32(0), int32(selectionListener.Counter))
 	junit.AssertEquals(swt.NewPoint(0, 0), selectionListener.EventSelection)
 	this.text.InvokeAction(swt.STCOLUMN_NEXT)
@@ -5118,7 +5118,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText) Test_rangeSelectionKeepsCare
 func (this *Test_org_eclipse_swt_custom_StyledText) Test_bug1610_fixedLineHeightWithChangingToSmallerFont_noException() {
 	this.shell.SetVisible(true)
 	this.shell.SetLayout(upcastswtGridLayoutToswtLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(1, false)))
-	var gc *swt.GC = swt.NewGCDrawable(this.shell.GetDisplay())
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtDisplayToswtDrawable(this.shell.GetDisplay()))
 	var metrics *swt.FontMetrics = gc.GetFontMetrics()
 	this.text.SetFixedLineMetrics(metrics)
 	var fontData *swt.FontData = this.text.GetFont().GetFontData()[0]
@@ -5749,6 +5749,13 @@ func (f *VerifyKeyListenerFunc) VerifyKey(a0 *swt.VerifyEvent) {
 	f.fn(a0)
 }
 
+func upcastTest_org_eclipse_swt_custom_StyledText_RecordingMovementListenerToswtMovementListener(x *Test_org_eclipse_swt_custom_StyledText_RecordingMovementListener) swt.MovementListener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 func upcastswtTextTransferToswtTransfer(x *swt.TextTransfer) *swt.Transfer {
 	if x == nil {
 		return nil
@@ -5885,6 +5892,13 @@ func upcastArrswtStyleRangeToany(x []*swt.StyleRange) []any {
 	return r
 }
 
+func upcastTest_org_eclipse_swt_custom_StyledText_TestSelectionListenerToswtSelectionListener(x *Test_org_eclipse_swt_custom_StyledText_TestSelectionListener) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 func upcastswtStyledTextToswtCanvas(x *swt.StyledText) *swt.Canvas {
 	if x == nil {
 		return nil
@@ -5949,6 +5963,13 @@ func (this *Test_org_eclipse_swt_custom_StyledTextAnon4) ReplaceTextRange(a0 int
 
 func (this *Test_org_eclipse_swt_custom_StyledTextAnon4) SetText(a0 string) {
 	this.fnSetText(a0)
+}
+
+func upcastTest_org_eclipse_swt_custom_StyledText_TestSelectionListener_1ToswtSelectionListener(x *Test_org_eclipse_swt_custom_StyledText_TestSelectionListener_1) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastswtStyledTextToswtControl(x *swt.StyledText) *swt.Control {

@@ -34,7 +34,7 @@ func LayoutConstantsInitializeConstants() {
 	if LayoutConstantsDialogMargins != (nil) {
 		return
 	}
-	var gc *swt.GC = swt.NewGCDrawable(swt.DisplayGetCurrent())
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtDisplayToswtDrawable(swt.DisplayGetCurrent()))
 	gc.SetFont(JFaceResourcesGetDialogFont())
 	var fontMetrics *swt.FontMetrics = gc.GetFontMetrics()
 	LayoutConstantsDialogMargins = swt.NewPoint(DialogConvertHorizontalDLUsToPixels(fontMetrics, IDialogConstantsHORIZONTAL_MARGIN), DialogConvertVerticalDLUsToPixels(fontMetrics, IDialogConstantsVERTICAL_MARGIN))
@@ -60,4 +60,11 @@ func LayoutConstantsGetMinButtonSize() *swt.Point {
 
 func LayoutConstantsGetIndent() int32 {
 	return 20
+}
+
+func upcastswtDisplayToswtDrawable(x *swt.Display) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

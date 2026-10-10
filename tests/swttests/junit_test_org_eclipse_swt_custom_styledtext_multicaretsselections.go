@@ -26,7 +26,7 @@ func (this *Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections) initTe
 func (this *Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections) SetUp() {
 	this.shell = swt.NewShell()
 	this.text = swt.NewStyledText(upcastswtShellToswtComposite(this.shell), swt.NULL)
-	this.gc = swt.NewGCDrawable(this.text)
+	this.gc = swt.NewGCDrawable(upcastswtStyledTextToswtDrawable(this.text))
 }
 
 func (this *Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections) TearDown() {
@@ -211,4 +211,11 @@ func init() {
 			}},
 		},
 	})
+}
+
+func upcastswtStyledTextToswtDrawable(x *swt.StyledText) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

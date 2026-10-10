@@ -1893,7 +1893,7 @@ func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
 	for _, eventType := range eventTypes {
-		this.impl._addListener_(eventType, typedListener)
+		this.impl._addListener_(eventType, upcastTypedListenerToListener(typedListener))
 	}
 }
 
@@ -3774,6 +3774,13 @@ func (this *Widget_MouseWheelData) initWidgetMouseWheelData(isVertical bool, scr
 		remainder.X = delta % win32.OSWHEEL_DELTA
 	}
 	this.count = delta / win32.OSWHEEL_DELTA
+}
+
+func upcastTypedListenerToListener(x *TypedListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func init() {

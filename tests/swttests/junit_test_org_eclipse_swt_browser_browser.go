@@ -393,7 +393,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_LocationListener_adapter_
 	anon142 := &Test_org_eclipse_swt_browser_BrowserAnon1{}
 	anon142.LocationAdapter = browser.NewLocationAdapter()
 	var adapter *browser.LocationAdapter = anon142.LocationAdapter
-	browser_.AddLocationListener(adapter)
+	browser_.AddLocationListener(upcastbrowserLocationAdapterTobrowserLocationListener(adapter))
 	shell.Close()
 }
 
@@ -3226,6 +3226,13 @@ func (f *CloseWindowListenerFunc) Close(a0 *browser.WindowEvent) {
 // j2go: anonymous LocationAdapter subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon1 struct {
 	*browser.LocationAdapter
+}
+
+func upcastbrowserLocationAdapterTobrowserLocationListener(x *browser.LocationAdapter) browser.LocationListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: anonymous LocationListener subclass.

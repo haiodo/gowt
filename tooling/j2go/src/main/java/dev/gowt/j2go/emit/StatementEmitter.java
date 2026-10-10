@@ -75,6 +75,8 @@ final class StatementEmitter {
 			if (cs.getLabel() == null) return continueOrEscape(indent);
 			return ind(indent) + "continue " + emitter.sanitizeIdent(cs.getLabel().getIdentifier()) + "\n";
 		}
+		if (s instanceof TypeDeclarationStatement tds && tds.getDeclaration() instanceof TypeDeclaration td
+				&& FunctionalEmitter.isMethodOnlyLocalClass(td)) return "";
 		return unsupportedStmt(s, indent);
 	}
 

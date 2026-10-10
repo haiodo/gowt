@@ -1042,7 +1042,7 @@ pass	Test_org_eclipse_swt_graphics_GC.test_drawImageLorg_eclipse_swt_graphics_Im
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImage_emptyImage
 pass	Test_org_eclipse_swt_graphics_GC.test_drawImage_nonAutoScalableGC_bug_2504
 pass	Test_org_eclipse_swt_graphics_GC.test_drawLineIIII
-fail	Test_org_eclipse_swt_graphics_GC.test_drawLine_noSingularitiesIn45DregreeRotation	not analysed (win32 run 3): line is not drawn with 45 degree rotation ==> expected: not equal but was: <-1>
+fail	Test_org_eclipse_swt_graphics_GC.test_drawLine_noSingularitiesIn45DregreeRotation	Wine gdiplus: with a width-1 pen a 45 degree rotated DrawLine lights no pixel; even untransformed in advanced mode DrawLine(1,0,2,0) on a 3x3 image lights only (2,1) instead of (1,0) and (2,0)
 pass	Test_org_eclipse_swt_graphics_GC.test_drawOvalIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawPointII
 pass	Test_org_eclipse_swt_graphics_GC.test_drawPolygon$I
@@ -1072,7 +1072,7 @@ pass	Test_org_eclipse_swt_graphics_GC.test_getStyle
 pass	Test_org_eclipse_swt_graphics_GC.test_hashCode
 pass	Test_org_eclipse_swt_graphics_GC.test_isClipped
 pass	Test_org_eclipse_swt_graphics_GC.test_isDisposed
-fail	Test_org_eclipse_swt_graphics_GC.test_noMemoryLeakAfterDispose	not analysed (win32 run 3): expected: <null> but was: <GC {*DISPOSED*}>
+pass	Test_org_eclipse_swt_graphics_GC.test_noMemoryLeakAfterDispose
 pass	Test_org_eclipse_swt_graphics_GC.test_setBackgroundLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_graphics_GC.test_setClippingIIII
 pass	Test_org_eclipse_swt_graphics_GC.test_setClippingLorg_eclipse_swt_graphics_Rectangle
@@ -1089,26 +1089,26 @@ pass	Test_org_eclipse_swt_graphics_GC.test_setXORModeZ
 pass	Test_org_eclipse_swt_graphics_GC.test_stringExtentLjava_lang_String
 pass	Test_org_eclipse_swt_graphics_GC.test_textExtentLjava_lang_String
 pass	Test_org_eclipse_swt_graphics_GC.test_textExtentLjava_lang_StringI
-fail	Test_org_eclipse_swt_graphics_GC.test_textExtentLjava_lang_StringI_disabledLineDelimiter	assertion differs under Wine/Win32, not analysed: expected: <true> but was: <false>
+fail	Test_org_eclipse_swt_graphics_GC.test_textExtentLjava_lang_StringI_disabledLineDelimiter	Wine DrawText with DT_SINGLELINE|DT_CALCRECT counts CR and LF as glyphs: "abc<CJK>\r\ndef" is 66 wide without advanced and 44 with it (GDI+ path); Windows ignores them
 pass	Test_org_eclipse_swt_graphics_GC.test_textExtentLjava_lang_StringI_lineDelimiterVariants
 pass	Test_org_eclipse_swt_graphics_GC.test_toString
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceII
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_fileNameProvider
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceImageI_inputStream
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
-fail	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String	nil pointer dereference; not analysed
+pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_int_int
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataAtSizeProvider
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider
-fail	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider	not analysed (win32 run 3): Unexpected exception type thrown, expected: <*swt.SWTException> but was: <runtime.errorString>: runtime error: invalid memory address or nil pointer dereference
+pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer
 pass	Test_org_eclipse_swt_graphics_Image.test_bug566545_efficientGrayscaleImage
 pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat
 pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges
-fail	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object	not analysed (win32 run 3): expected: <true> but was: <false>
+pass	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object
 pass	Test_org_eclipse_swt_graphics_Image.test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom
 pass	Test_org_eclipse_swt_graphics_Image.test_getBackground
 pass	Test_org_eclipse_swt_graphics_Image.test_getBounds
@@ -1122,7 +1122,7 @@ pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_changingImageDataDoes
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromFiles
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImage
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImageForCustomImageData
-fail	Test_org_eclipse_swt_graphics_Image.test_hashCode	not analysed (win32 run 3): expected: <-531534272> but was: <-531534656>
+pass	Test_org_eclipse_swt_graphics_Image.test_hashCode
 pass	Test_org_eclipse_swt_graphics_Image.test_imageDataIsCached
 pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders
 pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData
@@ -1242,7 +1242,7 @@ pass	Test_org_eclipse_swt_graphics_Region.test_subtractLorg_eclipse_swt_graphics
 pass	Test_org_eclipse_swt_graphics_Region.test_subtractLorg_eclipse_swt_graphics_Region
 pass	Test_org_eclipse_swt_graphics_Region.test_toString
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_Bug579335_win32_StyledText_LongLine
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug23406_longLines	stale reason: isAlphabetic is translated now, rerun win-swttest-update
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_bug23406_longLines	Consolas (SwtTestUtil fixed-width font) is not in the bottle, only Bitstream Vera; the proportional substitute is kerned, and "AV" x100 (second input) differs from the repeated "AV" columns by more than 32 brightness; not re-run with a fixed-width font
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_bug568740_multilineTextStyle
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getAlignment
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLevel
@@ -1251,9 +1251,9 @@ pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLineIndex
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLineOffsets
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLineSpacing
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getLocation
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset	stale reason: isAlphabetic is translated now, rerun win-swttest-update
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset2	stale reason: isAlphabetic is translated now, rerun win-swttest-update
-fail	Test_org_eclipse_swt_graphics_TextLayout.test_getOffset	not analysed (win32 run 3): panic: j2go: unsupported TypeDeclarationStatement
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset	Wine ScriptItemize does not isolate LF in mixed-direction text: "AB <hebrew> CD\nHello" gives one run for " CD\nHello", SWT needs a run starting at LF (lineBreak), so the next word start after CD is 9, not 8
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getNextOffset2	Wine ScriptBreak sets fCharStop inside a Thai cluster (offset 2 of "A<thai>B" has fCharStop=true, fInvalid=false); Windows clears it, so the cluster step is 2, not 4
+fail	Test_org_eclipse_swt_graphics_TextLayout.test_getOffset	Wine ScriptPlace: ABC widths sum to 21 but the advances to 20 for "Text", so the run width exceeds the advances; ScriptXtoCP at x = width-1 returns 4 (past the last character), expected 3
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getOrientation
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getSegments
 pass	Test_org_eclipse_swt_graphics_TextLayout.test_getSegmentsChars
@@ -2208,7 +2208,7 @@ pass	Test_org_eclipse_swt_widgets_Display.test_mapLorg_eclipse_swt_widgets_Contr
 pass	Test_org_eclipse_swt_widgets_Display.test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlIIII
 pass	Test_org_eclipse_swt_widgets_Display.test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_widgets_Display.test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle
-fail	Test_org_eclipse_swt_widgets_Display.test_postLorg_eclipse_swt_widgets_Event	Wine-specific: Display.post (SendInput) does not deliver
+fail	Test_org_eclipse_swt_widgets_Display.test_postLorg_eclipse_swt_widgets_Event	Wine VkKeyScan(0) returns -1 (Windows maps NUL to a key), so Display.post of the bogus KeyDown (keyCode -1, character 0) returns false before SendInput is called
 pass	Test_org_eclipse_swt_widgets_Display.test_readAndDispatch
 pass	Test_org_eclipse_swt_widgets_Display.test_removeFilterILorg_eclipse_swt_widgets_Listener
 pass	Test_org_eclipse_swt_widgets_Display.test_removeListenerILorg_eclipse_swt_widgets_Listener
@@ -3380,7 +3380,7 @@ pass	Test_org_eclipse_swt_widgets_TabFolder.test_update
 pass	Test_org_eclipse_swt_widgets_Table.test_ConstructorLorg_eclipse_swt_widgets_CompositeI
 pass	Test_org_eclipse_swt_widgets_Table.test_ExceptionsThrownInDisposeListenerDontPreventDisposal
 pass	Test_org_eclipse_swt_widgets_Table.test_NoExceptionsThrownInFillLayout
-fail	Test_org_eclipse_swt_widgets_Table.test_Virtual	assertion differs under Wine/Win32, not analysed: expected: <true> but was: <false>
+fail	Test_org_eclipse_swt_widgets_Table.test_Virtual	Wine LVM_APPROXIMATEVIEWRECT returns 0 for 0 and for 1 item, so Table.getItemHeight() is 0 and the shell is 0 high; follows from the getItemHeight limit, not checked separately
 pass	Test_org_eclipse_swt_widgets_Table.test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener
 pass	Test_org_eclipse_swt_widgets_Table.test_addControlListenerControlResizedAdapterLorg_eclipse_swt_events_ControlListener
 pass	Test_org_eclipse_swt_widgets_Table.test_addControlListenerLorg_eclipse_swt_events_ControlListener
@@ -3427,7 +3427,7 @@ pass	Test_org_eclipse_swt_widgets_Table.test_getGridLineWidth
 pass	Test_org_eclipse_swt_widgets_Table.test_getHeaderHeight
 pass	Test_org_eclipse_swt_widgets_Table.test_getHorizontalBar
 pass	Test_org_eclipse_swt_widgets_Table.test_getItemCount
-fail	Test_org_eclipse_swt_widgets_Table.test_getItemHeight	assertion differs under Wine/Win32, not analysed: expected: <true> but was: <false>
+fail	Test_org_eclipse_swt_widgets_Table.test_getItemHeight	Wine LVM_APPROXIMATEVIEWRECT returns 0 for 0 and for 1 item (report mode, lParam 0), so HIWORD(oneItem) - HIWORD(empty) is 0; Windows returns the header plus item heights
 pass	Test_org_eclipse_swt_widgets_Table.test_getItemI
 pass	Test_org_eclipse_swt_widgets_Table.test_getItems
 pass	Test_org_eclipse_swt_widgets_Table.test_getLocation

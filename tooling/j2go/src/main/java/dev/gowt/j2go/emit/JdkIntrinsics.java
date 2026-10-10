@@ -301,9 +301,24 @@ final class JdkIntrinsics {
 		TypeModel.ClassInfo aci = argExpr.resolveTypeBinding() != null ? emitter.model.lookup(argExpr.resolveTypeBinding()) : null;
 		boolean rHas = hasImpl(rci);
 		boolean aHas = hasImpl(aci);
+		// The static type declares no equals but a subclass does: the leaf's own Equals decides, identity would ignore it.
+		if (rci != null && !rci.isInterface && subclassDeclaresEquals(rci)) {
+			emitter.fileImports.add(JRT);
+			return "jrt.ObjectsEquals(" + (rHas ? recv + ".Impl()" : recv) + ", " + (aHas ? arg + ".Impl()" : arg) + ")";
+		}
 		if (!rHas && !aHas) return "(" + recv + " == " + arg + ")";
 		String l = rHas ? recv + ".Impl()" : recv;
 		String r = aHas ? arg + ".Impl()" : arg;
 		return "(any(" + l + ") == any(" + r + "))";
+	}
+
+	private static boolean subclassDeclaresEquals(TypeModel.ClassInfo ci) {
+		for (TypeModel.ClassInfo c : ci.children) {
+			for (IMethodBinding m : c.declaredMethods.values()) {
+				if (m.getName().equals("equals") && m.getParameterTypes().length == 1) return true;
+			}
+			if (subclassDeclaresEquals(c)) return true;
+		}
+		return false;
 	}
 }

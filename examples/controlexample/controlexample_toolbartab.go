@@ -111,7 +111,7 @@ func (this *ToolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.DROP_DOWN")
 	inner28 := newToolBarTabDropDownSelectionListener()
 	inner28.this_0 = this
-	item.AddSelectionListener(inner28)
+	item.AddSelectionListener(upcastToolBarTab_DropDownSelectionListenerToswtSelectionListener(inner28))
 	this.textToolBar = swt.NewToolBar(upcastswtGroupToswtComposite(this.textToolBarGroup), style)
 	item = swt.NewToolItem(this.textToolBar, swt.PUSH)
 	item.SetText(ControlExampleGetResourceString("Push"))
@@ -149,7 +149,7 @@ func (this *ToolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.DROP_DOWN")
 	inner29 := newToolBarTabDropDownSelectionListener()
 	inner29.this_0 = this
-	item.AddSelectionListener(inner29)
+	item.AddSelectionListener(upcastToolBarTab_DropDownSelectionListenerToswtSelectionListener(inner29))
 	this.imageTextToolBar = swt.NewToolBar(upcastswtGroupToswtComposite(this.imageTextToolBarGroup), style)
 	item = swt.NewToolItem(this.imageTextToolBar, swt.PUSH)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
@@ -195,7 +195,7 @@ func (this *ToolBarTab) createExampleWidgets_() {
 	item.SetToolTipText("SWT.DROP_DOWN")
 	inner30 := newToolBarTabDropDownSelectionListener()
 	inner30.this_0 = this
-	item.AddSelectionListener(inner30)
+	item.AddSelectionListener(upcastToolBarTab_DropDownSelectionListenerToswtSelectionListener(inner30))
 }
 
 func (this *ToolBarTab) createOtherGroup_() {
@@ -316,6 +316,13 @@ func upcastswtComboToswtControl(x *swt.Combo) *swt.Control {
 		return nil
 	}
 	return &x.Control
+}
+
+func upcastToolBarTab_DropDownSelectionListenerToswtSelectionListener(x *ToolBarTab_DropDownSelectionListener) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastswtToolItemToswtItem(x *swt.ToolItem) *swt.Item {

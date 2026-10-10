@@ -932,7 +932,7 @@ func (this *Image) Equals(object any) bool {
 	if this.device != image.device {
 		return false
 	}
-	return (this.styleFlag == image.styleFlag) && (any(this.imageProvider.Impl()) == any(image.imageProvider.Impl()))
+	return (this.styleFlag == image.styleFlag) && jrt.ObjectsEquals(this.imageProvider.Impl(), image.imageProvider.Impl())
 }
 
 func (this *Image) GetBackground() *Color {
@@ -1048,7 +1048,7 @@ func (this *Image) GetImageDataAtCurrentZoom() *ImageData {
 }
 
 func (this *Image) HashCode() int32 {
-	return jrt.HashCodeOf(this.imageProvider)
+	return jrt.HashCodeOf(this.imageProvider.Impl())
 }
 
 func (this *Image) InitIconHandle(deviceLike DeviceLike, sourceLike ImageDataLike, maskLike ImageDataLike, zoom any) *Image_DestroyableImageHandle {
@@ -1234,7 +1234,7 @@ func (this *Image) ApplyUsingAnyHandle(function func(Image_InternalImageHandle) 
 			defer func() {
 				temporaryHandle.Destroy()
 			}()
-			tret404 = function(temporaryHandle)
+			tret404 = function(upcastImage_DestroyableImageHandleToImage_InternalImageHandle(temporaryHandle))
 			tretd405 = true
 			return
 		}()
@@ -1686,16 +1686,16 @@ func (this *Image_ImageHandleManager) Get(zoom int32) Image_InternalImageHandle 
 	if imageHandle == (nil) {
 		return nil
 	}
-	return imageHandle
+	return upcastImage_DestroyableImageHandleToImage_InternalImageHandle(imageHandle)
 }
 
 func (this *Image_ImageHandleManager) GetOrCreate(zoom int32, creator func() *Image_DestroyableImageHandle) Image_InternalImageHandle {
 	if zoom == -1 {
 		return nil
 	}
-	return jrt.Cast[*Image_DestroyableImageHandle](this.zoomLevelToImageHandle.ComputeIfAbsent(int32(zoom), func(__ any) *Image_DestroyableImageHandle {
+	return upcastImage_DestroyableImageHandleToImage_InternalImageHandle(jrt.Cast[*Image_DestroyableImageHandle](this.zoomLevelToImageHandle.ComputeIfAbsent(int32(zoom), func(__ any) *Image_DestroyableImageHandle {
 		return creator()
-	}))
+	})))
 }
 
 func (this *Image_ImageHandleManager) Contains(zoom int32) bool {
@@ -1807,7 +1807,7 @@ func (this *Image_HandleAtSize) Refresh(width int32, height int32) Image_ImageHa
 		this.handleContainer = jrt.Cast[Image_InternalImageHandle](this.CreateHandleAtExactSize(width, height).OrElseGet(func() Image_InternalImageHandle {
 			return this.GetOrCreateImageHandleAtClosestSize(width, height, previousHandle)
 		}))
-		if previousHandle != (nil) && previousHandle.Handle() != this.handleContainer {
+		if previousHandle != (nil) && upcastImage_DestroyableImageHandleToImage_InternalImageHandle(previousHandle.Handle()) != this.handleContainer {
 			previousHandle.Handle().Destroy()
 		}
 	}
@@ -1825,7 +1825,7 @@ func (this *Image_HandleAtSize) CreateHandleAtExactSize(width int32, height int3
 	var imageData *jrt.Optional = this.this_0.imageProvider.impl.loadImageDataAtExactSize_(width, height)
 	if imageData.IsPresent() {
 		this.temporaryHandleContainer = newImageHandleAtSizeTemporaryHandleForZoom(this.this_0.InitImageImageZoom(jrt.Cast[*ImageData](imageData.Get()), -1), 0)
-		return jrt.OptionalOf(this.temporaryHandleContainer.Handle())
+		return jrt.OptionalOf(upcastImage_DestroyableImageHandleToImage_InternalImageHandle(this.temporaryHandleContainer.Handle()))
 	}
 	return jrt.OptionalEmpty()
 }
@@ -1847,11 +1847,11 @@ func (this *Image_HandleAtSize) GetOrCreateImageHandleAtClosestSize(widthHint in
 	}
 	if previousHandle != (nil) && previousHandle.Zoom() == nearestAvailableZoom {
 		this.temporaryHandleContainer = previousHandle
-		return previousHandle.Handle()
+		return upcastImage_DestroyableImageHandleToImage_InternalImageHandle(previousHandle.Handle())
 	}
 	var imageData *DPIUtilElementAtZoom = this.this_0.imageProvider.impl.loadImageData_(imageZoom)
 	this.temporaryHandleContainer = newImageHandleAtSizeTemporaryHandleForZoom(this.this_0.InitImageImageZoom(jrt.Cast[*ImageData](imageData.Element()), -1), imageData.Zoom())
-	return this.temporaryHandleContainer.Handle()
+	return upcastImage_DestroyableImageHandleToImage_InternalImageHandle(this.temporaryHandleContainer.Handle())
 }
 
 func (this *Image_HandleAtSize) GetPersistentHandle(imageZoom int32, nearestAvailableZoom int32) Image_InternalImageHandle {
@@ -2826,7 +2826,7 @@ func (this *Image_PlainImageProviderWrapper) newImageHandleZoomContext_(zoomCont
 		var currentGC *GC = this.this_0.memGC
 		this.this_0.memGC = nil
 		var imageHandle *Image_DestroyableImageHandle = this.CreateHandle(targetZoom)
-		currentGC.ReapplyTo(NewImageDrawableWrapper(this.this_0, zoomContext), imageHandle)
+		currentGC.ReapplyTo(NewImageDrawableWrapper(this.this_0, zoomContext), upcastImage_DestroyableImageHandleToImage_ImageHandle(imageHandle))
 		return imageHandle
 	}
 	var resizedData *ImageData = this.impl.newImageData_(targetZoom)
@@ -3056,7 +3056,7 @@ func (this *Image_ImageFileNameProviderWrapper) loadImageData_(zoom int32) *DPIU
 		nativeInitializedImage = this.this_0.imageHandleManager.Get(fileForZoom.Zoom())
 	} else {
 		temporaryImageHandle = this.InitNative(jrt.Cast[string](fileForZoom.Element()), fileForZoom.Zoom())
-		nativeInitializedImage = temporaryImageHandle
+		nativeInitializedImage = upcastImage_DestroyableImageHandleToImage_InternalImageHandle(temporaryImageHandle)
 	}
 	var imageDataAtZoom *DPIUtilElementAtZoom
 	if nativeInitializedImage == (nil) {
@@ -4154,6 +4154,13 @@ func isImage_AbstractImageProviderWrapperToImage_ImageFileNameProviderWrapper(x 
 	return imageAbstractImageProviderWrapperImplAsImageImageFileNameProviderWrapper(x.impl)
 }
 
+func upcastImage_DestroyableImageHandleToImage_InternalImageHandle(x *Image_DestroyableImageHandle) Image_InternalImageHandle {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 // j2go: instanceof helper for Display and its subclasses within the translated set.
 func deviceImplAsDisplay(x any) (*Display, bool) {
 	if h, ok := x.(*deviceHooked); ok {
@@ -4203,6 +4210,13 @@ func castanyToImageData(x any) *ImageData {
 		panic("java.lang.ClassCastException: ImageData")
 	}
 	return v
+}
+
+func upcastImage_DestroyableImageHandleToImage_ImageHandle(x *Image_DestroyableImageHandle) Image_ImageHandle {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for Image_DynamicImageProviderWrapper and its subclasses within the translated set.

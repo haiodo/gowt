@@ -188,12 +188,12 @@ func (this *DropTarget) AddDropListener(listener DropTargetListener) {
 	}
 	var typedListener *DNDListener = newDNDListener(listener)
 	typedListener.dndWidget = upcastDropTargetToWidget(this)
-	this.AddListener(DNDDragEnter, typedListener)
-	this.AddListener(DNDDragLeave, typedListener)
-	this.AddListener(DNDDragOver, typedListener)
-	this.AddListener(DNDDragOperationChanged, typedListener)
-	this.AddListener(DNDDrop, typedListener)
-	this.AddListener(DNDDropAccept, typedListener)
+	this.AddListener(DNDDragEnter, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragLeave, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragOver, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragOperationChanged, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDrop, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDropAccept, upcastDNDListenerToListener(typedListener))
 }
 
 func (this *DropTarget) checkSubclass_() {

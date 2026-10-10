@@ -220,7 +220,7 @@ func (this *CanvasTab) SetCaret() {
 		var newCaret *swt.Caret = swt.NewCaret(this.canvas, swt.NONE)
 		var font *swt.Font = this.canvas.GetFont()
 		newCaret.SetFont(font)
-		var gc *swt.GC = swt.NewGCDrawable(this.canvas)
+		var gc *swt.GC = swt.NewGCDrawable(upcastswtCanvasToswtDrawable(this.canvas))
 		gc.SetFont(font)
 		newCaret.SetBounds(1, 1, 1, gc.GetFontMetrics().GetHeight())
 		gc.Dispose()
@@ -296,4 +296,11 @@ func upcastswtCanvasToswtWidget(x *swt.Canvas) *swt.Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastswtCanvasToswtDrawable(x *swt.Canvas) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

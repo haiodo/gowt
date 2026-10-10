@@ -25,7 +25,7 @@ func (this *Test_org_eclipse_swt_graphics_FontMetrics) initTest_org_eclipse_swt_
 func (this *Test_org_eclipse_swt_graphics_FontMetrics) SetUp() {
 	this.display = swt.DisplayGetDefault()
 	this.shell = swt.NewShellDisplay(this.display)
-	this.gc = swt.NewGCDrawable(this.shell)
+	this.gc = swt.NewGCDrawable(upcastswtShellToswtDrawable(this.shell))
 }
 
 func (this *Test_org_eclipse_swt_graphics_FontMetrics) TearDown() {
@@ -98,4 +98,11 @@ func init() {
 			{Name: "test_hashCode", Run: func(t any) { t.(*Test_org_eclipse_swt_graphics_FontMetrics).Test_hashCode() }},
 		},
 	})
+}
+
+func upcastswtShellToswtDrawable(x *swt.Shell) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

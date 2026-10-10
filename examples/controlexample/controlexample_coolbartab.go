@@ -99,25 +99,25 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	this.pushItem.SetControl(upcastswtToolBarToswtControl(toolBar))
 	inner31 := newCoolBarTabCoolItemSelectionListener()
 	inner31.this_0 = this
-	this.pushItem.AddSelectionListener(inner31)
+	this.pushItem.AddSelectionListener(upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(inner31))
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.DROP_DOWN)
 	item.SetImage(this.instance.images[ControlExampleCiOpenFolder])
 	item.SetToolTipText("SWT.DROP_DOWN")
 	inner32 := newCoolBarTabDropDownSelectionListener()
 	inner32.this_0 = this
-	item.AddSelectionListener(inner32)
+	item.AddSelectionListener(upcastCoolBarTab_DropDownSelectionListenerToswtSelectionListener(inner32))
 	item = swt.NewToolItem(toolBar, swt.DROP_DOWN)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
 	item.SetToolTipText("SWT.DROP_DOWN")
 	inner33 := newCoolBarTabDropDownSelectionListener()
 	inner33.this_0 = this
-	item.AddSelectionListener(inner33)
+	item.AddSelectionListener(upcastCoolBarTab_DropDownSelectionListenerToswtSelectionListener(inner33))
 	this.dropDownItem = swt.NewCoolItem(this.coolBar, itemStyle)
 	this.dropDownItem.SetControl(upcastswtToolBarToswtControl(toolBar))
 	inner34 := newCoolBarTabCoolItemSelectionListener()
 	inner34.this_0 = this
-	this.dropDownItem.AddSelectionListener(inner34)
+	this.dropDownItem.AddSelectionListener(upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(inner34))
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.RADIO)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
@@ -132,7 +132,7 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	this.radioItem.SetControl(upcastswtToolBarToswtControl(toolBar))
 	inner35 := newCoolBarTabCoolItemSelectionListener()
 	inner35.this_0 = this
-	this.radioItem.AddSelectionListener(inner35)
+	this.radioItem.AddSelectionListener(upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(inner35))
 	toolBar = swt.NewToolBar(upcastswtCoolBarToswtComposite(this.coolBar), toolBarStyle)
 	item = swt.NewToolItem(toolBar, swt.CHECK)
 	item.SetImage(this.instance.images[ControlExampleCiClosedFolder])
@@ -150,14 +150,14 @@ func (this *CoolBarTab) createExampleWidgets_() {
 	this.checkItem.SetControl(upcastswtToolBarToswtControl(toolBar))
 	inner36 := newCoolBarTabCoolItemSelectionListener()
 	inner36.this_0 = this
-	this.checkItem.AddSelectionListener(inner36)
+	this.checkItem.AddSelectionListener(upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(inner36))
 	if !vertical {
 		var text *swt.Text = swt.NewText(upcastswtCoolBarToswtComposite(this.coolBar), swt.BORDER|swt.SINGLE)
 		this.textItem = swt.NewCoolItem(this.coolBar, itemStyle)
 		this.textItem.SetControl(upcastswtTextToswtControl(text))
 		inner37 := newCoolBarTabCoolItemSelectionListener()
 		inner37.this_0 = this
-		this.textItem.AddSelectionListener(inner37)
+		this.textItem.AddSelectionListener(upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(inner37))
 		var textSize *swt.Point = text.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 		textSize = this.textItem.ComputeSize(textSize.X, textSize.Y)
 		this.textItem.SetMinimumSizeSize(textSize)
@@ -422,6 +422,20 @@ func upcastswtToolBarToswtControl(x *swt.ToolBar) *swt.Control {
 		return nil
 	}
 	return &x.Control
+}
+
+func upcastCoolBarTab_CoolItemSelectionListenerToswtSelectionListener(x *CoolBarTab_CoolItemSelectionListener) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
+func upcastCoolBarTab_DropDownSelectionListenerToswtSelectionListener(x *CoolBarTab_DropDownSelectionListener) swt.SelectionListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for swt.ToolBar and its subclasses within the translated set.

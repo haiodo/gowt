@@ -156,9 +156,9 @@ func (this *DragSource) AddDragListener(listener DragSourceListener) {
 	}
 	var typedListener *DNDListener = newDNDListener(listener)
 	typedListener.dndWidget = upcastDragSourceToWidget(this)
-	this.AddListener(DNDDragStart, typedListener)
-	this.AddListener(DNDDragSetData, typedListener)
-	this.AddListener(DNDDragEnd, typedListener)
+	this.AddListener(DNDDragStart, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragSetData, upcastDNDListenerToListener(typedListener))
+	this.AddListener(DNDDragEnd, upcastDNDListenerToListener(typedListener))
 }
 
 func (this *DragSource) DndCallSuper(id int64, sel int64, arg0 int64, arg1 cocoa.NSPoint, arg2 int64) {
@@ -216,7 +216,7 @@ func (this *DragSource) Drag(dragDetectEventLike EventLike) {
 			var width int32 = 20
 			var height int32 = 20
 			var newDragImage *Image = NewImageDeviceWidthHeight(upcastDisplayToDevice(DisplayGetCurrent()), width, height)
-			var imageGC *GC = NewGCDrawable(newDragImage)
+			var imageGC *GC = NewGCDrawable(upcastImageToDrawable(newDragImage))
 			var grayColor *Color = NewColorRedGreenBlue(50, 50, 50)
 			imageGC.SetForeground(grayColor)
 			imageGC.DrawRectangle(0, 0, 19, 19)
@@ -750,6 +750,13 @@ func upcastDragSourceToWidget(x *DragSource) *Widget {
 		return nil
 	}
 	return &x.Widget
+}
+
+func upcastDNDListenerToListener(x *DNDListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastcocoaSWTDragSourceDelegateTococoaId(x *cocoa.SWTDragSourceDelegate) *cocoa.Id {

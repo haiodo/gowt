@@ -5,6 +5,7 @@ package gowt
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"sync/atomic"
 	"time"
@@ -30,6 +31,9 @@ func SetAppName(name string) { swt.DisplaySetAppName(name) }
 // Run creates the display, calls setup on the UI thread, then runs the event loop until the
 // last window is closed or App.Quit is called. SWT exceptions raised on the UI thread
 // (panics carrying an error, e.g. *swt.SWTException) are returned; runtime errors and other panics propagate.
+//
+// With GOWT_SNAP=<file.png> in the environment Run writes the first window as a PNG after the
+// loop has run for GOWT_SNAP_DELAY milliseconds (default 800), then returns; see docs/screenshots.md.
 func Run(setup func(*App)) (err error) {
 	// The display belongs to its OS thread (Win32 message queue, GTK); a goroutine must not migrate off it.
 	runtime.LockOSThread()
@@ -40,12 +44,17 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeImages()
 	a.display.FollowSystemTheme()
 	setup(a)
+	snapTick := func() {}
+	if p := os.Getenv("GOWT_SNAP"); p != "" {
+		snapTick = a.armSnap(p, &err)
+	}
 	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
+		snapTick()
 		if !a.display.ReadAndDispatch() {
 			a.display.Sleep()
 		}
 	}
-	return nil
+	return err
 }
 
 // catch is deferred directly: it turns a panic carrying an SWT error into *err.

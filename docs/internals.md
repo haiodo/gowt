@@ -17,7 +17,7 @@ gowt is Eclipse SWT translated from Java to Go by a translator in this repositor
 | `internal/webkit/` | WebKitGTK 4.1 bindings for linux, generated from the GIR files by `tooling/webkitgen` |
 | `internal/jrt/` | The subset of the Java runtime the translated code uses |
 | `internal/junit/` | JUnit 5 shim for the translated tests |
-| `internal/shot/`, `internal/snapcmp/` | Window capture on Linux and Windows; PNG comparison for snapshots |
+| `internal/shot/`, `internal/snapcmp/` | Window capture (macOS, Windows, Linux; also behind `GOWT_SNAP`); PNG comparison for snapshots |
 | `webview/` | Hand-written system web view (WKWebView, WebKitGTK 4.1, WebView2) |
 | `browser/` | SWT's `Browser`, translated, with `webview` as the engine (`webbrowser_manual.go`) |
 | `jface/` | A slice of JFace (layout and widget factories), translated from `eclipse.platform.ui`; one source for every OS |

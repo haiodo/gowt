@@ -357,14 +357,14 @@ final class FunctionalEmitter {
 		decl.append("}\n\n").append(forwarders).append(emitter.defaultForwarders(anonType, "*" + typeName));
 		// Another package's impl and init<Base> are unexported: build with the public constructor, then
 		// SetImpl_ (installs the hook wrapper). Ceiling: virtual calls the constructor makes still reach the base implementation.
-		if (foreign && !baseCi.root.children.isEmpty() && !baseCi.root.splitsDispatch()) return marker(cic, "AnonymousClass");
+		if (foreign && baseCi.root.hasImpl() && !baseCi.root.splitsDispatch()) return marker(cic, "AnonymousClass");
 		emitter.fileHelperSource.add(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
 		if (foreign) {
 			emitter.prelude.add(v + "." + baseCi.goTypeName + " = " + foreignCtorCall(cic, baseCi));
-			if (!baseCi.root.children.isEmpty()) emitter.prelude.add(v + ".SetImpl_(" + v + ")");
+			if (baseCi.root.hasImpl()) emitter.prelude.add(v + ".SetImpl_(" + v + ")");
 		} else if (!baseCi.isInterface) {
-			if (!baseCi.root.children.isEmpty()) emitter.prelude.add(v + ".impl = " + v);
+			if (baseCi.root.hasImpl()) emitter.prelude.add(v + ".impl = " + v);
 			emitter.prelude.add(v + "." + superInitCall(cic, baseCi));
 		}
 		for (String a : assigns) addPreludeLines(a);

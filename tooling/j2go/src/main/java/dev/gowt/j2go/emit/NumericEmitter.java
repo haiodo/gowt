@@ -398,7 +398,7 @@ final class NumericEmitter {
 
 	private boolean hasImpl(ITypeBinding t) {
 		TypeModel.ClassInfo ci = t == null ? null : emitter.model.lookup(t);
-		return ci != null && ci.root.splitsDispatch() && !ci.root.children.isEmpty();
+		return ci != null && ci.root.splitsDispatch() && ci.root.hasImpl();
 	}
 
 	/** Java upcasts null to null; `&x.Base` on a nil x panics - so each upcast is a nil-checking

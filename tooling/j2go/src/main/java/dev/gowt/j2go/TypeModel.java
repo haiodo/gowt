@@ -39,6 +39,8 @@ public class TypeModel {
 		public final List<ClassInfo> children = new ArrayList<>();
 		// Signatures an anonymous subclass overrides: not a child, but the base must still dispatch to it.
 		final Set<String> anonOverridden = new HashSet<>();
+		// Root only: a childless tree whose anonymous subclasses override, so it dispatches through impl too.
+		boolean anonDispatch;
 		final Set<String> declaredMethodNames = new LinkedHashSet<>();
 		// signature ("name(erasedParamType,...)") -> binding, this class's own declarations only.
 		public final Map<String, IMethodBinding> declaredMethods = new LinkedHashMap<>();
@@ -69,6 +71,9 @@ public class TypeModel {
 			}
 			return false;
 		}
+
+		/** The tree dispatches through an impl field: it has named subclasses, or anonymous ones that override. */
+		public boolean hasImpl() { return !children.isEmpty() || anonDispatch; }
 
 		public IMethodBinding declaredBinding(String sig) {
 			return declaredMethods.get(sig);
@@ -188,6 +193,31 @@ public class TypeModel {
 		if (md != null && !out.contains(md)) out.add(md);
 	}
 
+	/** Whether a method or constructor of ci calls sig on this (implicitly, or this.m, or this::m). */
+	private boolean callsOnThis(ClassInfo ci, String sig) {
+		boolean[] found = {false};
+		for (MethodDeclaration md : declarations.values()) {
+			IMethodBinding mb = md.resolveBinding();
+			if (found[0] || mb == null || !mb.getDeclaringClass().getErasure().getBinaryName().equals(ci.binaryName)) continue;
+			md.accept(new ASTVisitor() {
+				@Override
+				public boolean visit(MethodInvocation n) {
+					IMethodBinding t = n.resolveMethodBinding();
+					if ((n.getExpression() == null || n.getExpression() instanceof ThisExpression) && t != null && signature(t.getMethodDeclaration()).equals(sig)) found[0] = true;
+					return true;
+				}
+
+				@Override
+				public boolean visit(ExpressionMethodReference n) {
+					IMethodBinding t = n.resolveMethodBinding();
+					if (n.getExpression() instanceof ThisExpression && t != null && signature(t.getMethodDeclaration()).equals(sig)) found[0] = true;
+					return true;
+				}
+			});
+		}
+		return found[0];
+	}
+
 	public ClassInfo lookup(ITypeBinding t) {
 		return byBinaryName.get(t.getErasure().getBinaryName());
 	}
@@ -257,15 +287,20 @@ public class TypeModel {
 			while (r.superclass != null) r = r.superclass;
 			ci.root = r;
 		}
-		// Only where the tree already dispatches through impl (it has named subclasses): a childless base has no impl to route through.
+		// A childless tree joins impl dispatch when an anonymous subclass overrides (not in the PI package, whose roots never split).
 		for (ITypeBinding anon : anonymous) {
 			ITypeBinding base = anon.getSuperclass();
 			ClassInfo baseCi = base == null ? null : byBinaryName.get(base.getErasure().getBinaryName());
-			if (baseCi == null || baseCi.root.children.isEmpty()) continue;
+			if (baseCi == null || !baseCi.root.hasImpl() && !baseCi.root.splitsDispatch()) continue;
 			for (ClassInfo ci = baseCi; ci != null; ci = ci.superclass) {
 				for (IMethodBinding m : anon.getDeclaredMethods()) {
 					String sig = signature(m);
-					if (ci.declaredMethods.containsKey(sig) && !Modifier.isStatic(m.getModifiers())) ci.anonOverridden.add(sig);
+					if (ci.declaredMethods.containsKey(sig) && !Modifier.isStatic(m.getModifiers())) {
+						// A childless tree needs impl only if its own code calls the method on this; interfaces' adapters never do.
+						if (!baseCi.root.hasImpl() && !callsOnThis(ci, sig)) continue;
+						ci.anonOverridden.add(sig);
+						ci.root.anonDispatch = true;
+					}
 				}
 			}
 		}

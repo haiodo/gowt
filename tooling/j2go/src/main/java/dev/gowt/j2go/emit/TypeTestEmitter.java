@@ -79,7 +79,7 @@ final class TypeTestEmitter {
 		String name = "cast" + fromGo.replaceAll("[*.]", "") + "To" + targetName.replaceAll("[*.]", "");
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
-			String impl = subjectCi == null || subjectCi.isInterface || subjectCi.root.children.isEmpty() ? "x" : "x" + emitter.implAccess(subjectCi.root);
+			String impl = subjectCi == null || subjectCi.isInterface || !subjectCi.root.hasImpl() ? "x" : "x" + emitter.implAccess(subjectCi.root);
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
 					+ "\tv, ok := " + as + "(" + impl + ")\n\tif !ok {\n\t\tpanic(\"java.lang.ClassCastException: " + targetName + "\")\n\t}\n\treturn v\n}\n\n");
 		}
@@ -172,7 +172,7 @@ final class TypeTestEmitter {
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
 			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
-					+ "\treturn " + as + "(x" + (subjectCi.root.children.isEmpty() ? "" : emitter.implAccess(subjectCi.root)) + ")\n}\n\n");
+					+ "\treturn " + as + "(x" + (!subjectCi.root.hasImpl() ? "" : emitter.implAccess(subjectCi.root)) + ")\n}\n\n");
 		}
 		return name;
 	}
@@ -205,7 +205,7 @@ final class TypeTestEmitter {
 		b.append("func ").append(name).append("(x any) (*").append(targetName).append(", bool) {\n");
 		// SetImpl_ wraps a subclass from another package (HookEmitter): test the subclass itself.
 		TypeModel.ClassInfo root = target.root;
-		if (root.splitsDispatch() && !root.children.isEmpty() && root.goPackage.equals(emitter.currentGoPackage)) {
+		if (root.splitsDispatch() && root.hasImpl() && root.goPackage.equals(emitter.currentGoPackage)) {
 			b.append("\tif h, ok := x.(*").append(Names.decapitalize(root.goTypeName)).append("Hooked); ok {\n\t\tx = h.hook\n\t}\n");
 		}
 		b.append("\tswitch v := x.(type) {\n");

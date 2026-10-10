@@ -71,7 +71,7 @@ final class ClassEmitter {
 		TypeModel.ClassInfo savedClassInfo = emitter.currentClassInfo;
 		emitter.currentClassGoTypeName = ci.goTypeName;
 		emitter.currentClassInfo = ci;
-		boolean needsImpl = !ci.root.children.isEmpty();
+		boolean needsImpl = ci.root.hasImpl();
 
 		if (ci == ci.root && needsImpl) {
 			out.append("type ").append(ci.goTypeName).append("Impl interface {\n");

@@ -1023,8 +1023,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post()
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_no_content_type() {
 	{
 		anon154 := &Test_org_eclipse_swt_browser_BrowserAnon10{}
+		anon154.impl = anon154
 		anon154.initEchoHttpServer()
-		anon154.fnSetResponseHeaders = func(exchange *jrt.HttpExchange) {
+		anon154.fnsetResponseHeaders_ = func(exchange *jrt.HttpExchange) {
 		}
 		var server *EchoHttpServer = &anon154.EchoHttpServer
 		defer server.Close()
@@ -1087,8 +1088,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_cl
 	junit.AssumeTrue(SwtTestUtilIsLinux, "Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code.\nThis test can be adapted to win32/cocoa, but that would be testing the third-party\nbrowser component. Therefore (for now) this test only runs on Linux.\n")
 	{
 		anon155 := &Test_org_eclipse_swt_browser_BrowserAnon11{}
+		anon155.impl = anon155
 		anon155.initEchoHttpServer()
-		anon155.fnHandlePostEcho = func(exchange *jrt.HttpExchange) {
+		anon155.fnhandlePostEcho_ = func(exchange *jrt.HttpExchange) {
 			exchange.Close()
 		}
 		var server *EchoHttpServer = &anon155.EchoHttpServer
@@ -1587,8 +1589,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 	var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 	{
 		anon164 := &Test_org_eclipse_swt_browser_BrowserAnon20{}
+		anon164.impl = anon164
 		anon164.initEchoHttpServer()
-		anon164.fnHandleGetEcho = func(exchange *jrt.HttpExchange) {
+		anon164.fnhandleGetEcho_ = func(exchange *jrt.HttpExchange) {
 			func() {
 				defer func() {
 					r := recover()
@@ -1611,7 +1614,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 				}()
 				latch.Await(int64(5), jrt.TimeUnitSECONDS)
 			}()
-			anon164.EchoHttpServer.HandleGetEcho(exchange)
+			anon164.EchoHttpServer.handleGetEcho_(exchange)
 		}
 		var server *EchoHttpServer = &anon164.EchoHttpServer
 		defer server.Close()
@@ -3310,21 +3313,21 @@ func (f *TitleListenerFunc) Changed(a0 *browser.TitleEvent) {
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon10 struct {
 	EchoHttpServer
-	fnSetResponseHeaders func(a0 *jrt.HttpExchange)
+	fnsetResponseHeaders_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon10) SetResponseHeaders(a0 *jrt.HttpExchange) {
-	this.fnSetResponseHeaders(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon10) setResponseHeaders_(a0 *jrt.HttpExchange) {
+	this.fnsetResponseHeaders_(a0)
 }
 
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon11 struct {
 	EchoHttpServer
-	fnHandlePostEcho func(a0 *jrt.HttpExchange)
+	fnhandlePostEcho_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon11) HandlePostEcho(a0 *jrt.HttpExchange) {
-	this.fnHandlePostEcho(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon11) handlePostEcho_(a0 *jrt.HttpExchange) {
+	this.fnhandlePostEcho_(a0)
 }
 
 // j2go: anonymous VisibilityWindowAdapter subclass.
@@ -3414,11 +3417,11 @@ func (this *Test_org_eclipse_swt_browser_BrowserAnon19) Changed(a0 *browser.Loca
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon20 struct {
 	EchoHttpServer
-	fnHandleGetEcho func(a0 *jrt.HttpExchange)
+	fnhandleGetEcho_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon20) HandleGetEcho(a0 *jrt.HttpExchange) {
-	this.fnHandleGetEcho(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon20) handleGetEcho_(a0 *jrt.HttpExchange) {
+	this.fnhandleGetEcho_(a0)
 }
 
 // j2go: anonymous BrowserFunction subclass.

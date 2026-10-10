@@ -511,7 +511,7 @@ TEST_FILES=(
 	"${PI_FILES[@]}"
 TESTS_SRC="$SWT_REPO/tests/org.eclipse.swt.tests/JUnit Tests/$TJ"
 mkdir -p tests/swttests/testdata
-cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt tests/swttests/testdata/
+cp "$TESTS_SRC"/*.png "$TESTS_SRC"/*.gif "$TESTS_SRC"/*.bmp "$TESTS_SRC"/*.jpg "$TESTS_SRC"/*.svg "$TESTS_SRC"/*.txt "$TESTS_SRC"/*.html tests/swttests/testdata/
 
 
 # Round 22 jface: org.eclipse.jface layout/widgets (+ the util and viewers data classes they use) -> package jface, shared by every OS,

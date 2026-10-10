@@ -77,7 +77,7 @@ final class JdkIntrinsics {
 			// Any other operand: null-safe a.equals(b) (ToolItem.setBackground compares Colors).
 			return jrtCall("ObjectsEquals", emitter.expr(arg0) + ", " + emitter.expr(arg1));
 		}
-		// Every System property key besides "os.arch" and "os.name" (jrt.SystemProperties) reads as unset in this port - matches the
+		// Every System property key besides "os.arch", "os.name" and "line.separator" (jrt.SystemProperties) reads as unset in this port - matches the
 		// real JDK's own behavior for a key that was never set (String.getProperty(...) returns
 		// null; Boolean.valueOf(null)/EqualFold("", "true") both come out false either way).
 		if (qualified.equals("java.lang.System") && mb.getName().equals("getProperty")) {
@@ -101,7 +101,7 @@ final class JdkIntrinsics {
 			for (int i = 0; i < mi.arguments().size(); i++) args.add(arg(mi, i));
 			return jrtCall("ObjectsHash", String.join(", ", args));
 		}
-		if (qualified.equals("java.lang.System") && mb.getName().equals("lineSeparator")) return "\"\\n\"";
+		if (qualified.equals("java.lang.System") && mb.getName().equals("lineSeparator")) return jrtCall("LineSeparator", "");
 		if (qualified.equals("java.lang.String") && mb.getName().equals("length")) {
 			return jrtCall("StringLength", emitter.expr(mi.getExpression()));
 		}

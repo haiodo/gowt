@@ -59,6 +59,9 @@ func TestOSNameFollowsGOOS(t *testing.T) {
 	if got := GetProperty("os.name", ""); want != "" && got != want {
 		t.Fatalf("os.name = %q, want %q", got, want)
 	}
+	if sep := GetProperty("line.separator", ""); sep != LineSeparator() || (runtime.GOOS == "windows") != (sep == "\r\n") {
+		t.Fatalf("line.separator = %q", sep)
+	}
 	if javaOSName("linux") != "Linux" || !strings.HasPrefix(javaOSName("windows"), "Windows") {
 		t.Fatal("javaOSName")
 	}

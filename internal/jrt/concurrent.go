@@ -240,8 +240,17 @@ func GC() {
 var SystemProperties = func() *Map {
 	m := NewMap()
 	m.Put("os.name", javaOSName(runtime.GOOS))
+	m.Put("line.separator", LineSeparator())
 	return m
 }()
+
+// LineSeparator is System.lineSeparator(): "\r\n" on Windows (StyledText copies text with it).
+func LineSeparator() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	}
+	return "\n"
+}
 
 // javaOSName is the JDK's os.name for a GOOS. Windows is always "Windows 10": the tests check only the "Windows" prefix.
 func javaOSName(goos string) string {

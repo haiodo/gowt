@@ -69,7 +69,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapt
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_removeWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull
-pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink
+flaky	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	failed in the -update run of 2026-10-10 (no StatusText event while the cursor is warped in 1 ms steps), passed in the check run after it and 3 of 3 runs alone; not diagnosed
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg
 skip	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	@Disabled: Too fragile on CI, Display.getDefault().post(event) does not work reliably
 pass	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806

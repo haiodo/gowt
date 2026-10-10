@@ -104,7 +104,7 @@ JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `
 
 - Windows was never run on real Windows, only under Wine (CrossOver). Mica, Acrylic and WebView2 are unverified; per-monitor DPI changes while running are not handled.
 - Linux: GTK 3 only.
-- `Browser` does not support several events (OpenWindow, CloseWindow, VisibilityWindow, StatusText) and the cookie statics; see [docs/webview-browser.md](docs/webview-browser.md).
+- `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
 - Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.
 - macOS Table and Tree use the cell-based AppKit views.
 

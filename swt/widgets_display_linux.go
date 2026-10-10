@@ -395,43 +395,41 @@ func (this *Display) initDisplayData(data *DeviceData) {
 		var file *jrt.File = jrt.NewFile(path, ".swt/trims.prefs")
 		if file.Exists() && file.IsFile() {
 			var props *jrt.Map = jrt.NewMap()
-			{
-				var fis *jrt.FileInputStream = jrt.NewFileInputStream(file)
-				func() {
-					defer fis.Close()
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if func() bool {
+						switch r.(type) {
+						case *jrt.IOException, *jrt.NumberFormatException:
+							return true
 						}
-						if func() bool {
-							switch r.(type) {
-							case *jrt.IOException, *jrt.NumberFormatException:
-								return true
-							}
-							return false
-						}() {
-							e, _ := r.(error)
-							_ = e
-						} else {
-							panic(r)
-						}
-					}()
-					props.Load(fis)
-					var trimWidthsString string = props.GetProperty("trimWidths")
-					var trimHeightsString string = props.GetProperty("trimHeights")
-					if trimWidthsString != "" && trimHeightsString != "" {
-						var tok *jrt.StringTokenizer = jrt.NewStringTokenizer(trimWidthsString)
-						for i := int32(0); i < int32(len(this.trimWidths)) && tok.HasMoreTokens(); i++ {
-							this.trimWidths[i] = jrt.ParseInt(tok.NextToken())
-						}
-						tok = jrt.NewStringTokenizer(trimHeightsString)
-						for i := int32(0); i < int32(len(this.trimHeights)) && tok.HasMoreTokens(); i++ {
-							this.trimHeights[i] = jrt.ParseInt(tok.NextToken())
-						}
+						return false
+					}() {
+						e, _ := r.(error)
+						_ = e
+					} else {
+						panic(r)
 					}
 				}()
-			}
+				var fis *jrt.FileInputStream = jrt.NewFileInputStream(file)
+				defer fis.Close()
+				props.Load(fis)
+				var trimWidthsString string = props.GetProperty("trimWidths")
+				var trimHeightsString string = props.GetProperty("trimHeights")
+				if trimWidthsString != "" && trimHeightsString != "" {
+					var tok *jrt.StringTokenizer = jrt.NewStringTokenizer(trimWidthsString)
+					for i := int32(0); i < int32(len(this.trimWidths)) && tok.HasMoreTokens(); i++ {
+						this.trimWidths[i] = jrt.ParseInt(tok.NextToken())
+					}
+					tok = jrt.NewStringTokenizer(trimHeightsString)
+					for i := int32(0); i < int32(len(this.trimHeights)) && tok.HasMoreTokens(); i++ {
+						this.trimHeights[i] = jrt.ParseInt(tok.NextToken())
+					}
+				}
+			}()
 		}
 	}
 }
@@ -3658,31 +3656,29 @@ func (this *Display) ReleaseDisplay() {
 				buf.Append(h).Append(uint16(' '))
 			}
 			props.Put("trimHeights", buf.ToString())
-			{
-				var fos *jrt.FileOutputStream = jrt.NewFileOutputStream(file)
-				func() {
-					defer fos.Close()
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if func() bool {
+						switch r.(type) {
+						case *jrt.IOException:
+							return true
 						}
-						if func() bool {
-							switch r.(type) {
-							case *jrt.IOException:
-								return true
-							}
-							return false
-						}() {
-							e := r.(*jrt.IOException)
-							_ = e
-						} else {
-							panic(r)
-						}
-					}()
-					props.Store(fos, "")
+						return false
+					}() {
+						e := r.(*jrt.IOException)
+						_ = e
+					} else {
+						panic(r)
+					}
 				}()
-			}
+				var fos *jrt.FileOutputStream = jrt.NewFileOutputStream(file)
+				defer fos.Close()
+				props.Store(fos, "")
+			}()
 		}
 	}
 }

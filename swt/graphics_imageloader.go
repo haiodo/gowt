@@ -67,38 +67,36 @@ func (this *ImageLoader) LoadByZoomFilenameFileZoomTargetZoom(filename string, f
 	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	{
-		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret503 *jrt.List
-		tretd504 := false
-		func() {
-			defer stream.Close()
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
+	var tret503 *jrt.List
+	tretd504 := false
+	func() {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
 				}
-				if func() bool {
-					switch r.(type) {
-					case *jrt.IOException:
-						return true
-					}
-					return false
-				}() {
-					e := r.(*jrt.IOException)
-					_ = e
-					ErrorCodeThrowable(ERROR_IO, e)
-				} else {
-					panic(r)
-				}
-			}()
-			tret503 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
-			tretd504 = true
-			return
+				return false
+			}() {
+				e := r.(*jrt.IOException)
+				_ = e
+				ErrorCodeThrowable(ERROR_IO, e)
+			} else {
+				panic(r)
+			}
 		}()
-		if tretd504 {
-			return tret503
-		}
+		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
+		defer stream.Close()
+		tret503 = this.LoadByZoomStub(stream, fileZoom, targetZoom)
+		tretd504 = true
+		return
+	}()
+	if tretd504 {
+		return tret503
 	}
 	return nil
 }
@@ -114,32 +112,30 @@ func (this *ImageLoader) SaveFilenameFormat(filename string, format int32) {
 	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	{
-		var stream jrt.OutputStream = jrt.NewFileOutputStream(filename)
-		func() {
-			defer stream.Close()
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
+	func() {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
 				}
-				if func() bool {
-					switch r.(type) {
-					case *jrt.IOException:
-						return true
-					}
-					return false
-				}() {
-					e := r.(*jrt.IOException)
-					_ = e
-					ErrorCodeThrowable(ERROR_IO, e)
-				} else {
-					panic(r)
-				}
-			}()
-			this.Save(stream, format)
+				return false
+			}() {
+				e := r.(*jrt.IOException)
+				_ = e
+				ErrorCodeThrowable(ERROR_IO, e)
+			} else {
+				panic(r)
+			}
 		}()
-	}
+		var stream jrt.OutputStream = jrt.NewFileOutputStream(filename)
+		defer stream.Close()
+		this.Save(stream, format)
+	}()
 }
 
 func (this *ImageLoader) AddImageLoaderListener(listener ImageLoaderListener) {
@@ -193,38 +189,36 @@ func ImageLoaderCanLoadAtZoomFilenameFileZoomTargetZoom(filename string, fileZoo
 	if filename == jrt.NullString {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	{
-		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
-		var tret505 bool
-		tretd506 := false
-		func() {
-			defer stream.Close()
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
+	var tret505 bool
+	tretd506 := false
+	func() {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
 				}
-				if func() bool {
-					switch r.(type) {
-					case *jrt.IOException:
-						return true
-					}
-					return false
-				}() {
-					e := r.(*jrt.IOException)
-					_ = e
-					ErrorCodeThrowable(ERROR_IO, e)
-				} else {
-					panic(r)
-				}
-			}()
-			tret505 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
-			tretd506 = true
-			return
+				return false
+			}() {
+				e := r.(*jrt.IOException)
+				_ = e
+				ErrorCodeThrowable(ERROR_IO, e)
+			} else {
+				panic(r)
+			}
 		}()
-		if tretd506 {
-			return tret505
-		}
+		var stream jrt.InputStream = jrt.NewFileInputStream(filename)
+		defer stream.Close()
+		tret505 = ImageLoaderCanLoadAtZoom(stream, fileZoom, targetZoom)
+		tretd506 = true
+		return
+	}()
+	if tretd506 {
+		return tret505
 	}
 	return false
 }

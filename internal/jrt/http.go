@@ -88,12 +88,18 @@ func (b responseBody) Flush()                            {}
 func (b responseBody) Close()                            { b.e.Close() }
 func (e *HttpExchange) GetResponseBody() OutputStream    { return responseBody{e} }
 
-// Close ends the exchange: the handler's return does that anyway, but an early close sends the headers.
+// Close ends the exchange: the handler's return does that anyway. Closing before any header was sent
+// drops the connection, as the JDK server does; a writer that cannot hijack gets an empty 200 instead.
 func (e *HttpExchange) Close() {
-	if !e.sent {
-		e.w.WriteHeader(http.StatusOK)
-		e.sent = true
+	if e.sent {
+		return
 	}
+	e.sent = true
+	if conn, _, err := http.NewResponseController(e.w).Hijack(); err == nil {
+		_ = conn.Close()
+		return
+	}
+	e.w.WriteHeader(http.StatusOK)
 }
 
 // HttpServer is com.sun.net.httpserver.HttpServer on a loopback listener.

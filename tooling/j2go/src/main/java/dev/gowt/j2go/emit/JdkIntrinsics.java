@@ -287,7 +287,7 @@ final class JdkIntrinsics {
 	}
 
 	private static boolean hasImpl(TypeModel.ClassInfo ci) {
-		return ci != null && ci.root.splitsDispatch() && !ci.root.children.isEmpty();
+		return ci != null && ci.root.splitsDispatch() && ci.root.hasImpl();
 	}
 
 	// A translated object can be referenced through different embedded-pointer levels

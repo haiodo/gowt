@@ -311,6 +311,18 @@ func (l *List) ToArray() []any {
 	return append([]any(nil), l.items...)
 }
 
+// Equals is List.equals: the same elements in the same order.
+func (l *List) Equals(o any) bool {
+	other, ok := o.(*List)
+	if !ok || other == nil {
+		return false
+	}
+	if other == l {
+		return true
+	}
+	return reflect.DeepEqual(l.ToArray(), other.ToArray())
+}
+
 // ArraysAsList is Arrays.asList(array) for any slice type.
 func ArraysAsList(array any) *List {
 	v := reflect.ValueOf(array)

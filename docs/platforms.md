@@ -44,15 +44,14 @@ JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pa
 Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not verified" means no real run on that platform.
 
 **All platforms**
-- `Browser` (over package `webview`) does not support the OpenWindow, VisibilityWindow, CloseWindow and StatusText events, `setUrl` with post data or headers, `setJavascriptEnabled` or the cookie statics. On macOS and on Linux 20 Browser tests fail each: 13 for these reasons, 1 because a `System.setOut` capture is not translated, 6 "Round 23, not diagnosed" (BrowserFunction callbacks, a nil pointer). 16 Browser tests are skipped on macOS and 14 on Linux (mostly SWT assumptions for other engines).
-- `ImageData.test_blit` and `test_blit_MsbLsb` fail everywhere: the test helper reflects on private methods and the translator has no rule for them.
+- `Browser` (over package `webview`) does not support the Authentication event; the other events, `setUrl` with post data or headers, `setJavascriptEnabled` and the cookie statics are implemented (Linux: no Browser test fails; macOS and Windows: not yet run). 16 Browser tests are skipped on macOS and 8 on Linux (mostly SWT assumptions for other engines).
+- `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`) are skipped everywhere: upstream comments the class out of `AllWidgetTests` ("Failing test"), and the emulated CoolBar gives a lone item the whole bar width.
 - `Accessible` is a stub.
 - Drag and drop was never driven with a real mouse (no test does); `FileTransfer` and `URLTransfer` native-to-Java tests are disabled on macOS, `URLTransfer` is not wrapped. Cross-process clipboard tests are skipped (no peer process), so only same-process round trips are tested.
 - `StyledText`: style rendering tests are skipped on macOS (upstream bugs 553090, 536588); editing text with surrogate pairs (emoji) panics in `swt`.
 
-**macOS** (10 failures outside Browser)
-- `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`), not diagnosed.
-- `CTabFolder.test_chevronAppearanceChanged` (one pixel colour), `TextLayout.test_bug568740_multilineTextStyle` (pixel search finds nothing), `Text.test_backspaceAndDelete` (`Display.post` returns false for the key event): not diagnosed.
+**macOS**
+- `TextLayout.test_bug568740_multilineTextStyle` (pixel search finds nothing), `Text.test_backspaceAndDelete` (`Display.post` returns false for the key event): not diagnosed.
 - `Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges`: SVG files are not loaded by `swt`.
 - Flaky: one `Tree` test (`SetData` count timing) and one multi-monitor DPI test.
 - Table and Tree use the cell-based AppKit views; the view-based ones are not started ([view-based-table.md](view-based-table.md)).
@@ -63,16 +62,14 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 **Windows** (Wine only; nothing was run on real Windows)
 - 209 of the 232 failures are Browser tests: the CrossOver bottle has no WebView2 Runtime. The WebView2 code (COM callbacks in Go, no `WebView2Loader.dll`) has never run.
 - 38 of the 43 skips are SWT's own "alpha for foreground colors does not exist on Win32" assumption.
-- 23 failures outside Browser, mostly "not analysed": `Image` 7, `TextLayout` 4 (three of them carry a stale reason about `isAlphabetic` and need a rerun of `make win-swttest-update`; one hits an untranslated local class), `GC` 3, `CoolItem` 3, `Table` 2 (`test_Virtual`, `test_getItemHeight`), `ImageData` 2 (reflection), and one each of `CTabFolder` and `Display` (Wine's `SendInput` does not deliver `Display.post`).
+- 23 failures outside Browser, mostly "not analysed": `Image` 7, `TextLayout` 4 (three of them carry a stale reason about `isAlphabetic` and need a rerun of `make win-swttest-update`; one hits an untranslated local class), `GC` 3, `Table` 2 (`test_Virtual`, `test_getItemHeight`), and one each of `CTabFolder` and `Display` (Wine's `SendInput` does not deliver `Display.post`).
 - Mica, Acrylic and rounded corners were not seen on Windows 11. Per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled: `Display` puts the thread in system-aware mode and `DPIUtil` holds one scale. Wine reports 96 DPI, so zoom above 100% is untested.
 - Dark content is opt-in (`look.SetDarkContent`) and uses undocumented uxtheme exports.
 
-**Linux** (13 failures outside Browser)
-- `CoolItem`: 4 tests, the emulated CoolBar is 0 wide without a layout (same values on macOS).
-- `Image`: 3 tests. Two differ by one byte between the gdk-pixbuf path and the Go decoder; one panics with a raw `IOException` because of the generated try-with-resources order.
-- `ImageLoader.test_bug547529` expects GdkPixbuf's 32-bit data and gets the Go codec's 24-bit.
-- `CTabFolder`: `test_chevronAppearanceChanged` (pixel colours under the Adwaita theme) and `test_childControlOverlap` (layout geometry), not analysed.
-- `Shell.test_Issue450_NoShellActivateOnSetFocus`: `setActive` is not honoured by openbox within 3 s.
+**Linux** (2 failures outside Browser)
+- `CTabFolder.test_childControlOverlap`: at the step topRight `RIGHT | WRAP` after `showChevron` with minimize and maximize visible, items and controls fill the 255 px folder exactly and the chevron, moved to `lastItem.x + width + SPACING`, overlaps the topRight label by 6 px. The widths come from this stand's fonts.
+- `Shell.test_Issue450_NoShellActivateOnSetFocus`: openbox gives no focus to the second shell when the active one is disposed, and `Shell.setActive` does nothing while no shell is active.
+- `DateTime` with `SWT.BORDER` loses the bit (`checkBorder`, no scrolled handle), which fails `TestUnitDateTimeFactory.createsDateTime` in JFace.
 - GTK 3 only. The theme and accent colour come from xdg-desktop-portal; this was not checked against a live portal.
 - WebKitGTK does not report the navigation frame, so the navigation policy always gets `mainFrame=true`.
 - The stand is X11 only (Xvfb); there is no Wayland run.

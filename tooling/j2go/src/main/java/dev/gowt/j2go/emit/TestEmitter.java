@@ -21,6 +21,18 @@ final class TestEmitter {
 			COND + "DisabledIfEnvironmentVariable", COND + "DisabledIfSystemProperty", API + "Timeout", API + "Order",
 			API + "DisplayName");
 
+	// Tests upstream does not run: AllWidgetTests (swt) comments out Test_org_eclipse_swt_widgets_CoolItem ("Failing test"), the jface
+	// AllWidgetTests does not select TestUnitDateTimeFactory. Only the methods that fail here are skipped, the rest of the class runs.
+	private static final String COOLITEM_CLASS = "org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_CoolItem";
+	private static final String COOLITEM_REASON = "upstream disables the class in AllWidgetTests.java (\"Failing test\")";
+	private static final Map<String, String> NOT_RUN_UPSTREAM = Map.of(
+			COOLITEM_CLASS + "#test_getBounds", COOLITEM_REASON,
+			COOLITEM_CLASS + "#test_getPreferredSize", COOLITEM_REASON,
+			COOLITEM_CLASS + "#test_setControlLorg_eclipse_swt_widgets_Control", COOLITEM_REASON,
+			COOLITEM_CLASS + "#test_setSizeII", COOLITEM_REASON,
+			"org.eclipse.jface.tests.widgets.TestUnitDateTimeFactory#createDateTimeWithAllProperties",
+			"not in the jface AllWidgetTests suite: onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks Selection and DefaultSelection, so each has 2 listeners where the test expects 1 (same in gtk, cocoa and win32 DateTime.java)");
+
 	private final Emitter emitter;
 
 	TestEmitter(Emitter emitter) {
@@ -244,6 +256,8 @@ final class TestEmitter {
 		for (String a : anns) {
 			if (a.startsWith("org.junit.") && !KNOWN.contains(a)) return EmitUtil.goStringLiteral("unsupported annotation @" + a);
 		}
+		String notRun = NOT_RUN_UPSTREAM.get(cls.getErasure().getQualifiedName() + "#" + mb.getName());
+		if (notRun != null) return EmitUtil.goStringLiteral(notRun);
 		List<IAnnotationBinding> all = new ArrayList<>(List.of(mb.getAnnotations()));
 		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) all.addAll(List.of(t.getAnnotations()));
 		for (IAnnotationBinding a : all) {

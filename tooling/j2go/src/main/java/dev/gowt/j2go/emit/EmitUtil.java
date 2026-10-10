@@ -268,15 +268,85 @@ final class EmitUtil {
 		return own.isEmpty() ? text : "func() bool { " + String.join("; ", own) + "; return " + text + " }()";
 	}
 
-	/** A boxed Integer (Go any) used as a number: unboxed by assertion (ceiling: null would panic). */
+	private static final java.util.Map<String, Boolean> NULLABLE_BOX = new java.util.HashMap<>();
+
+	/** Whether a Boolean/Integer/Long/Double local may hold null: it is set from null or from a cast of an Object, and read only
+	 * as an Object argument (assertNull(x)). Such a local stays a Go any, as a bool or int could not be null. */
+	static boolean isNullableBox(IVariableBinding vb, ASTNode from) {
+		if (vb == null || vb.isField() || vb.isParameter() || vb.getKey() == null) return false;
+		Boolean cached = NULLABLE_BOX.get(vb.getKey());
+		if (cached != null) return cached;
+		boolean r = computeNullableBox(vb, from);
+		NULLABLE_BOX.put(vb.getKey(), r);
+		return r;
+	}
+
+	private static boolean computeNullableBox(IVariableBinding vb, ASTNode from) {
+		switch (vb.getType().getErasure().getQualifiedName()) {
+			case "java.lang.Boolean", "java.lang.Integer", "java.lang.Long", "java.lang.Double" -> { }
+			default -> { return false; }
+		}
+		ASTNode scope = from;
+		while (scope != null && !(scope instanceof MethodDeclaration) && !(scope instanceof Initializer)) scope = scope.getParent();
+		if (scope == null) return false;
+		boolean[] ok = {true, false};
+		scope.accept(new ASTVisitor() {
+			private boolean source(Expression e) {
+				e = unparen(e);
+				if (e instanceof NullLiteral) return true;
+				if (!(e instanceof CastExpression ce)) return false;
+				ITypeBinding from = ce.getExpression().resolveTypeBinding();
+				return from != null && from.getQualifiedName().equals("java.lang.Object");
+			}
+
+			@Override
+			public boolean visit(VariableDeclarationFragment f) {
+				if (f.resolveBinding() != null && f.resolveBinding().isEqualTo(vb) && f.getInitializer() != null && !source(f.getInitializer())) ok[0] = false;
+				return true;
+			}
+
+			@Override
+			public boolean visit(SimpleName n) {
+				if (!(n.resolveBinding() instanceof IVariableBinding b) || !b.isEqualTo(vb) || n.getLocationInParent() == VariableDeclarationFragment.NAME_PROPERTY) return true;
+				ASTNode p = n.getParent();
+				if (p instanceof Assignment a && a.getLeftHandSide() == n) {
+					if (a.getOperator() != Assignment.Operator.ASSIGN || !source(a.getRightHandSide())) ok[0] = false;
+					return true;
+				}
+				ok[1] = true;
+				boolean arg = false;
+				if (p instanceof MethodInvocation mi && mi.arguments().contains(n) && mi.resolveMethodBinding() != null) {
+					IMethodBinding mb = mi.resolveMethodBinding();
+					int i = mi.arguments().indexOf(n);
+					arg = !mb.isVarargs() && i < mb.getParameterTypes().length && mb.getParameterTypes()[i].getQualifiedName().equals("java.lang.Object");
+				}
+				if (!arg) ok[0] = false;
+				return true;
+			}
+		});
+		return ok[0] && ok[1];
+	}
+
+	static Expression unparen(Expression e) {
+		while (e instanceof ParenthesizedExpression pe) e = pe.getExpression();
+		return e;
+	}
+
+	/** A boxed Integer or Double (Go any) used as a number: unboxed by assertion (ceiling: null would read as 0). */
 	static String unboxInteger(Emitter emitter, Expression e, Expression other, InfixExpression.Operator op, String text) {
 		ITypeBinding t = e.resolveTypeBinding();
-		if (t == null || !t.getErasure().getQualifiedName().equals("java.lang.Integer")) return text;
+		if (t == null) return text;
+		String goType = switch (t.getErasure().getQualifiedName()) {
+			case "java.lang.Integer" -> "int32";
+			case "java.lang.Double" -> "float64";
+			default -> null;
+		};
+		if (goType == null) return text;
 		boolean eq = op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS;
 		ITypeBinding o = other.resolveTypeBinding();
 		if (eq && (o == null || !o.isPrimitive())) return text;
 		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
-		return "jrt.Cast[int32](" + text + ")";
+		return "jrt.Cast[" + goType + "](" + text + ")";
 	}
 
 	/** `x++` on a boxed Integer: Go's x++ needs a number. */

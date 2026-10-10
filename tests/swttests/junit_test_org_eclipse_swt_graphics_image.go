@@ -910,36 +910,34 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_getImageData_fromFiles() {
 	var fileName string = SwtTestUtilImageFilenames[0]
 	for i := int32(0); i < numFormats; i++ {
 		var format string = SwtTestUtilImageFormats[i]
-		{
-			var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("%s.%s", fileName, format))
-			func() {
-				defer stream.Close()
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					return
+				}
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
 					}
-					if func() bool {
-						switch r.(type) {
-						case *jrt.IOException:
-							return true
-						}
-						return false
-					}() {
-						e := r.(*jrt.IOException)
-						_ = e
-					} else {
-						panic(r)
-					}
-				}()
-				var data1 *swt.ImageData = swt.NewImageDataStream(stream)
-				var image *swt.Image = swt.NewImageDeviceData(upcastswtDisplayToswtDevice(this.display), data1)
-				var data2 *swt.ImageData = image.GetImageData()
-				image.Dispose()
-				junit.AssertEquals(int32(data1.Width), int32(data2.Width))
-				junit.AssertEquals(int32(data1.Height), int32(data2.Height))
+					return false
+				}() {
+					e := r.(*jrt.IOException)
+					_ = e
+				} else {
+					panic(r)
+				}
 			}()
-		}
+			var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("%s.%s", fileName, format))
+			defer stream.Close()
+			var data1 *swt.ImageData = swt.NewImageDataStream(stream)
+			var image *swt.Image = swt.NewImageDeviceData(upcastswtDisplayToswtDevice(this.display), data1)
+			var data2 *swt.ImageData = image.GetImageData()
+			image.Dispose()
+			junit.AssertEquals(int32(data1.Width), int32(data2.Width))
+			junit.AssertEquals(int32(data1.Height), int32(data2.Height))
+		}()
 	}
 }
 
@@ -1082,37 +1080,35 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaDifferentP
 	}}
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(zoom int32) *swt.ImageData {
 		if zoom == 100 {
-			{
-				var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
-				var tret33 *swt.ImageData
-				tretd34 := false
-				func() {
-					defer imageStream.Close()
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
+			var tret33 *swt.ImageData
+			tretd34 := false
+			func() {
+				defer func() {
+					r := recover()
+					if r == nil {
+						return
+					}
+					if func() bool {
+						switch r.(type) {
+						case *jrt.IOException:
+							return true
 						}
-						if func() bool {
-							switch r.(type) {
-							case *jrt.IOException:
-								return true
-							}
-							return false
-						}() {
-							e := r.(*jrt.IOException)
-							_ = e
-						} else {
-							panic(r)
-						}
-					}()
-					tret33 = swt.NewImageDataStream(imageStream)
-					tretd34 = true
-					return
+						return false
+					}() {
+						e := r.(*jrt.IOException)
+						_ = e
+					} else {
+						panic(r)
+					}
 				}()
-				if tretd34 {
-					return tret33
-				}
+				var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
+				defer imageStream.Close()
+				tret33 = swt.NewImageDataStream(imageStream)
+				tretd34 = true
+				return
+			}()
+			if tretd34 {
+				return tret33
 			}
 		}
 		return nil
@@ -1133,37 +1129,35 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_imageDataSameViaProviderAn
 		return imagePath
 	}}
 	var dataProvider swt.ImageDataProvider = &ImageDataProviderFunc{fn: func(__ int32) *swt.ImageData {
-		{
-			var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
-			var tret35 *swt.ImageData
-			tretd36 := false
-			func() {
-				defer imageStream.Close()
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
+		var tret35 *swt.ImageData
+		tretd36 := false
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					return
+				}
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
 					}
-					if func() bool {
-						switch r.(type) {
-						case *jrt.IOException:
-							return true
-						}
-						return false
-					}() {
-						e := r.(*jrt.IOException)
-						_ = e
-					} else {
-						panic(r)
-					}
-				}()
-				tret35 = swt.NewImageDataStream(imageStream)
-				tretd36 = true
-				return
+					return false
+				}() {
+					e := r.(*jrt.IOException)
+					_ = e
+				} else {
+					panic(r)
+				}
 			}()
-			if tretd36 {
-				return tret35
-			}
+			var imageStream jrt.InputStream = jrt.FilesNewInputStream(jrt.PathOf(imagePath, []string{}), []any{})
+			defer imageStream.Close()
+			tret35 = swt.NewImageDataStream(imageStream)
+			tretd36 = true
+			return
+		}()
+		if tretd36 {
+			return tret35
 		}
 		return nil
 	}}

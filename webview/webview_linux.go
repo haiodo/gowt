@@ -1,9 +1,18 @@
 package webview
 
 import (
+	"bytes"
+	"context"
 	"errors"
+	"html"
+	"io"
+	"mime"
+	"net/http"
+	"net/url"
 	"strings"
+	"time"
 
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/webkit"
 	"github.com/haiodo/gowt/swt"
 )
@@ -21,6 +30,18 @@ type wkEngine struct {
 	v       *webkit.View
 	policy  func(url string, mainFrame bool) bool
 	call    func(msg string) string
+
+	// related is the opener of a view made by NewWindow.NewOn.
+	related    *wkEngine
+	newWin     func(n *NewWindow) *WebView
+	show       func(WindowFeatures)
+	closeH     func()
+	status     func(text string)
+	lastStatus string
+	script     *bool
+	// cancelPost stops the request of a POST in flight; postGen tells its answer it is too late.
+	cancelPost context.CancelFunc
+	postGen    int
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
@@ -32,8 +53,19 @@ func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) 
 		host = swt.NewCompositeParentStyle(parent, swt.NONE)
 	}
 	e := &wkEngine{w: w, host: host, opts: opts, schemes: map[string]SchemeHandler{}}
+	if opts.popup != nil {
+		opener, ok := opts.popup.opener.(*wkEngine)
+		if !ok || opener.v == nil {
+			return nil, errors.New("webview: the opener of the new window is gone")
+		}
+		e.related = opener
+	}
 	e.host.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { e.resize() }))
 	e.host.AddDisposeListener(disposeFunc(e.release))
+	if e.related != nil {
+		// The native view must exist before WebKit's create signal returns.
+		e.start()
+	}
 	return e, nil
 }
 
@@ -54,7 +86,12 @@ func (e *wkEngine) start() *webkit.View {
 		cfg.Schemes = append(cfg.Schemes, s)
 	}
 	// Load succeeded in newEngine, so New cannot fail here.
-	v, _ := webkit.New(cfg)
+	var v *webkit.View
+	if e.related != nil {
+		v, _ = webkit.NewRelated(e.related.v, cfg)
+	} else {
+		v, _ = webkit.New(cfg)
+	}
 	w := e.w
 	v.Message = func(m string) {
 		if w.OnMessage != nil {
@@ -84,6 +121,29 @@ func (e *wkEngine) start() *webkit.View {
 	v.Scheme = e.serve
 	v.Decide = e.policy
 	v.Call = e.call
+	if e.newWin != nil {
+		v.NewWindow = e.createWindow
+	}
+	v.Show = func(f webkit.WindowFeatures) {
+		if e.show != nil {
+			e.show(WindowFeatures(f))
+		}
+	}
+	v.Close = func() {
+		if e.closeH != nil {
+			e.closeH()
+		}
+	}
+	v.Status = func(t string) {
+		// WebKit reports every change of target; only the link under the pointer matters.
+		if e.status != nil && t != e.lastStatus {
+			e.lastStatus = t
+			e.status(t)
+		}
+	}
+	if e.script != nil {
+		v.SetScriptEnabled(*e.script)
+	}
 	e.v = v
 	v.Attach(uintptr(e.host.Handle))
 	e.resize()
@@ -114,8 +174,13 @@ func (e *wkEngine) serve(url, method string) (int, map[string]string, []byte) {
 }
 
 func (e *wkEngine) control() *swt.Composite { return e.host }
-func (e *wkEngine) navigate(url string)     { e.start().LoadURL(url) }
+func (e *wkEngine) navigate(url string) {
+	e.abortPost()
+	e.start().LoadURL(url)
+}
+
 func (e *wkEngine) setHTML(html, base string) {
+	e.abortPost()
 	e.start().LoadHTML(html, base)
 }
 
@@ -182,6 +247,7 @@ func (e *wkEngine) canGoBack() bool    { return e.v != nil && e.v.CanGoBack() }
 func (e *wkEngine) canGoForward() bool { return e.v != nil && e.v.CanGoForward() }
 
 func (e *wkEngine) stop() {
+	e.abortPost()
 	if e.v != nil {
 		e.v.Stop()
 	}
@@ -199,4 +265,122 @@ func (e *wkEngine) setCallHandler(f func(msg string) string) {
 	if e.v != nil {
 		e.v.Call = f
 	}
+}
+
+func (e *wkEngine) setNewWindowHandler(f func(n *NewWindow) *WebView) {
+	e.newWin = f
+	if e.v != nil {
+		e.v.NewWindow = e.createWindow
+	}
+}
+
+func (e *wkEngine) createWindow(url string) *webkit.View {
+	n := &NewWindow{URL: url, opener: e}
+	wv := e.newWin(n)
+	if wv == nil {
+		return nil
+	}
+	if pe, ok := wv.e.(*wkEngine); ok {
+		return pe.v
+	}
+	return nil
+}
+
+func (e *wkEngine) setShowHandler(f func(WindowFeatures)) { e.show = f }
+func (e *wkEngine) setCloseHandler(f func())              { e.closeH = f }
+func (e *wkEngine) setStatusHandler(f func(string))       { e.status = f }
+
+func (e *wkEngine) setScriptEnabled(on bool) {
+	e.script = &on
+	if e.v != nil {
+		e.v.SetScriptEnabled(on)
+	}
+}
+
+func (e *wkEngine) abortPost() {
+	e.postGen++
+	if e.cancelPost != nil {
+		e.cancelPost()
+		e.cancelPost = nil
+	}
+}
+
+func (e *wkEngine) loadRequest(r LoadRequest) {
+	e.abortPost()
+	v := e.start()
+	if r.Method == "" || strings.EqualFold(r.Method, "GET") {
+		v.LoadRequest(r.URL, r.Headers)
+		return
+	}
+	e.post(v, r)
+}
+
+// post sends the request with net/http, as WebKitGTK cannot, and shows the answer with the address of
+// the final URL as its base. The answer comes back on the UI thread.
+func (e *wkEngine) post(v *webkit.View, r LoadRequest) {
+	u, err := url.Parse(r.URL)
+	switch {
+	case err != nil || u.Scheme == "":
+		e.postFailed(v, r.URL, "URL is invalid")
+		return
+	case u.Scheme != "http" && u.Scheme != "https":
+		e.postFailed(v, r.URL, "Unsupported connection type")
+		return
+	case u.Host == "":
+		e.postFailed(v, r.URL, "URL is invalid")
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	e.cancelPost = cancel
+	display, gen := e.host.GetDisplay(), e.postGen
+	back := func(f func()) {
+		display.AsyncExec(jrt.NewRunnable(func() {
+			if gen != e.postGen || e.host.IsDisposed() {
+				return
+			}
+			f()
+		}))
+	}
+	go func() {
+		defer cancel()
+		req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, bytes.NewReader(r.Body))
+		if err != nil {
+			back(func() { e.postFailed(v, r.URL, "URL is invalid") })
+			return
+		}
+		for k, val := range r.Headers {
+			req.Header.Set(k, val)
+		}
+		if req.Header.Get("Content-Type") == "" && len(r.Body) > 0 {
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			msg := err.Error()
+			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
+				msg = "Unexpected end of file from server"
+			}
+			back(func() { e.postFailed(v, r.URL, msg) })
+			return
+		}
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			back(func() { e.postFailed(v, r.URL, err.Error()) })
+			return
+		}
+		mt, params, _ := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if mt == "" {
+			mt, params, _ = mime.ParseMediaType(http.DetectContentType(body))
+		}
+		final := resp.Request.URL.String()
+		back(func() { v.LoadBytes(body, mt, params["charset"], final) })
+	}()
+}
+
+func (e *wkEngine) postFailed(v *webkit.View, url, msg string) {
+	if e.w.OnNavigationFailed != nil {
+		e.w.OnNavigationFailed(url, errors.New(msg))
+	}
+	v.LoadHTML("<html><body>"+html.EscapeString(msg)+"</body></html>", "")
 }

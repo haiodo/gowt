@@ -239,7 +239,6 @@ public class Manual {
 			Map.entry(BROWSER_TEST + "#printThreadsInfo()", BROWSER_TEST_GO + "PrintThreadsInfo"),
 			Map.entry(BROWSER_TEST + "#getOpenedDescriptors()", BROWSER_TEST_GO + "GetOpenedDescriptors"),
 			Map.entry(BROWSER_TEST + "#getPropertiesSafe()", BROWSER_TEST_GO + "GetPropertiesSafe"),
-			Map.entry(BROWSER_TEST + "#test_setJavascriptEnabled()", "Test_setJavascriptEnabled"),
 			Map.entry("org.eclipse.swt.tests.junit.ClipboardBase#openAndFocusShell(Z)", "OpenAndFocusShell"),
 			// Generic over the listener class, so not translated: swt/widgets_widget_manual.go. DragSource and DropTarget call it.
 			Map.entry("org.eclipse.swt.widgets.Widget#getTypedListeners(I,java.lang.Class)", "GetTypedListeners"),

@@ -16,6 +16,8 @@ type Options struct {
 
 	// host is set by NewOn: an engine that can use it as the hosting Composite does, the others put a child in it.
 	host *swt.Composite
+	// popup is set by NewWindow.NewOn: the engine makes the view for that request.
+	popup *NewWindow
 }
 
 type Request struct{ URL, Method string }

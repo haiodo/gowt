@@ -40,19 +40,39 @@ type View struct {
 	Decide func(url string, mainFrame bool) bool
 	// Call answers window.gowt.call(msg) from the page, which blocks in window.prompt meanwhile.
 	Call func(msg string) string
+	// NewWindow is asked when the page opens a window (window.open, target=_blank) and returns the view
+	// that takes the page, made by NewRelated inside the call; nil refuses the window.
+	NewWindow func(url string) *View
+	// Show fires once a window opened by the page is ready to be shown.
+	Show func(WindowFeatures)
+	// Close fires when the page asks to close its window (window.close).
+	Close func()
+	// Status gets the link under the pointer, "" when the pointer leaves it.
+	Status func(text string)
 
 	ctx, widget, ucm uintptr
 	handlers         []uintptr
 	id               uintptr
 	failed           bool
+	stopped          bool
 	callMark         string
 	disposed         bool
+	related          bool
+	ownSettings      bool
+}
+
+// WindowFeatures are the window.open features of a window opened by the page; a zero Width and Height
+// mean none were asked for.
+type WindowFeatures struct {
+	X, Y, Width, Height                      int
+	MenuBar, StatusBar, ToolBar, LocationBar bool
 }
 
 var (
 	cbOnce                                                 sync.Once
 	cbScheme, cbMessage, cbLoad, cbFailed, cbTitle, cbEval uintptr
 	cbPolicy, cbDialog                                     uintptr
+	cbCreate, cbReady, cbClose, cbTarget                   uintptr
 	gFree                                                  uintptr
 
 	mu      sync.Mutex
@@ -88,7 +108,7 @@ func initCallbacks() {
 		}
 		switch int32(event) {
 		case 0: // WEBKIT_LOAD_STARTED
-			v.failed = false
+			v.failed, v.stopped = false, false
 			if v.NavStarted != nil {
 				v.NavStarted(v.URL())
 			}
@@ -100,8 +120,9 @@ func initCallbacks() {
 	})
 	cbFailed = purego.NewCallback(func(_, _, uri, gerr, id uintptr) uintptr {
 		if v := lookupView(id); v != nil && !v.disposed {
-			v.failed = true
-			if v.NavFailed != nil {
+			// A load that Stop cancelled (WEBKIT_NETWORK_ERROR_CANCELLED) still ends: SWT reports it completed.
+			v.failed = !(v.stopped && *(*int32)(cptr(gerr + 4)) == 302)
+			if v.NavFailed != nil && v.failed {
 				// GError: guint32 domain, gint code, gchar *message.
 				v.NavFailed(goString(uri), goString(*(*uintptr)(cptr(gerr + 8))))
 			}
@@ -137,6 +158,40 @@ func initCallbacks() {
 		webkit_script_dialog_prompt_set_text(dialog, v.Call(goString(webkit_script_dialog_get_message(dialog))))
 		return 1
 	})
+	cbCreate = purego.NewCallback(func(_, action, id uintptr) uintptr {
+		defer fixSignalFlags()
+		v := lookupView(id)
+		if v == nil || v.disposed || v.NewWindow == nil {
+			return 0
+		}
+		nv := v.NewWindow(goString(webkit_uri_request_get_uri(webkit_navigation_action_get_request(action))))
+		if nv == nil {
+			return 0
+		}
+		return nv.widget
+	})
+	cbReady = purego.NewCallback(func(_, id uintptr) {
+		defer fixSignalFlags()
+		if v := lookupView(id); v != nil && !v.disposed && v.Show != nil {
+			v.Show(v.features())
+		}
+	})
+	cbClose = purego.NewCallback(func(_, id uintptr) {
+		defer fixSignalFlags()
+		if v := lookupView(id); v != nil && !v.disposed && v.Close != nil {
+			v.Close()
+		}
+	})
+	cbTarget = purego.NewCallback(func(_, hit, _, id uintptr) {
+		defer fixSignalFlags()
+		if v := lookupView(id); v != nil && !v.disposed && v.Status != nil {
+			link := ""
+			if webkit_hit_test_result_context_is_link(hit) != 0 {
+				link = goString(webkit_hit_test_result_get_link_uri(hit))
+			}
+			v.Status(link)
+		}
+	})
 	cbEval = purego.NewCallback(func(src, res, id uintptr) {
 		defer fixSignalFlags()
 		mu.Lock()
@@ -149,7 +204,14 @@ func initCallbacks() {
 	})
 }
 
-func New(cfg Config) (*View, error) {
+func New(cfg Config) (*View, error) { return newView(cfg, nil) }
+
+// NewRelated makes the view for a window the page of opener opens; call it inside opener.NewWindow. It
+// shares the process, the context and the user content manager (scripts and message handler) of
+// opener, so cfg.Scripts and cfg.Schemes are ignored.
+func NewRelated(opener *View, cfg Config) (*View, error) { return newView(cfg, opener) }
+
+func newView(cfg Config, opener *View) (*View, error) {
 	if err := Load(); err != nil {
 		return nil, err
 	}
@@ -161,7 +223,16 @@ func New(cfg Config) (*View, error) {
 	views[v.id] = v
 	mu.Unlock()
 
-	v.ctx = webkit_web_context_new()
+	if opener != nil {
+		v.related = true
+		v.ctx = g_object_ref(opener.ctx)
+		v.widget = webkit_web_view_new_with_related_view(opener.widget)
+		v.ucm = webkit_web_view_get_user_content_manager(v.widget)
+		v.callMark = opener.callMark
+		v.connectSignals()
+		return v, nil
+	}
+	v.ctx = newContext()
 	sm := webkit_web_context_get_security_manager(v.ctx)
 	for _, s := range cfg.Schemes {
 		webkit_web_context_register_uri_scheme(v.ctx, s, cbScheme, v.id, 0)
@@ -174,13 +245,11 @@ func New(cfg Config) (*View, error) {
 	if cfg.Inspectable {
 		webkit_settings_set_enable_developer_extras(webkit_web_view_get_settings(v.widget), 1)
 	}
+	// Without it window.open outside a user gesture never reaches the create signal.
+	webkit_settings_set_javascript_can_open_windows_automatically(webkit_web_view_get_settings(v.widget), 1)
 	v.connect(v.ucm, "script-message-received::gowt", cbMessage)
 	webkit_user_content_manager_register_script_message_handler(v.ucm, "gowt")
-	v.connect(v.widget, "load-changed", cbLoad)
-	v.connect(v.widget, "load-failed", cbFailed)
-	v.connect(v.widget, "notify::title", cbTitle)
-	v.connect(v.widget, "decide-policy", cbPolicy)
-	v.connect(v.widget, "script-dialog", cbDialog)
+	v.connectSignals()
 	v.AddScript(bridge)
 	var nonce [16]byte
 	rand.Read(nonce[:])
@@ -193,6 +262,18 @@ func New(cfg Config) (*View, error) {
 		v.AddScript(s)
 	}
 	return v, nil
+}
+
+func (v *View) connectSignals() {
+	v.connect(v.widget, "load-changed", cbLoad)
+	v.connect(v.widget, "load-failed", cbFailed)
+	v.connect(v.widget, "notify::title", cbTitle)
+	v.connect(v.widget, "decide-policy", cbPolicy)
+	v.connect(v.widget, "script-dialog", cbDialog)
+	v.connect(v.widget, "create", cbCreate)
+	v.connect(v.widget, "ready-to-show", cbReady)
+	v.connect(v.widget, "close", cbClose)
+	v.connect(v.widget, "mouse-target-changed", cbTarget)
 }
 
 func (v *View) connect(obj uintptr, signal string, cb uintptr) {
@@ -212,6 +293,9 @@ func (v *View) SetSize(w, h int) { gtk_widget_set_size_request(v.widget, int32(w
 
 // AddScript runs js at document start in every frame of pages loaded from now on.
 func (v *View) AddScript(js string) {
+	if v.related {
+		return // the user content manager is the opener's, which has these scripts
+	}
 	// WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES = 0, WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0.
 	us := webkit_user_script_new(js, 0, 0, 0, 0)
 	webkit_user_content_manager_add_script(v.ucm, us)
@@ -232,7 +316,10 @@ func (v *View) LoadHTML(html, baseURL string) {
 func (v *View) GoBack()    { webkit_web_view_go_back(v.widget) }
 func (v *View) GoForward() { webkit_web_view_go_forward(v.widget) }
 func (v *View) Reload()    { webkit_web_view_reload(v.widget) }
-func (v *View) Stop()      { webkit_web_view_stop_loading(v.widget) }
+func (v *View) Stop() {
+	v.stopped = true
+	webkit_web_view_stop_loading(v.widget)
+}
 
 func (v *View) CanGoBack() bool    { return webkit_web_view_can_go_back(v.widget) != 0 }
 func (v *View) CanGoForward() bool { return webkit_web_view_can_go_forward(v.widget) != 0 }
@@ -308,7 +395,9 @@ func (v *View) Dispose() {
 	for i := 0; i < len(v.handlers); i += 2 {
 		g_signal_handler_disconnect(v.handlers[i], v.handlers[i+1])
 	}
-	webkit_user_content_manager_unregister_script_message_handler(v.ucm, "gowt")
+	if !v.related {
+		webkit_user_content_manager_unregister_script_message_handler(v.ucm, "gowt")
+	}
 	gtk_widget_destroy(v.widget)
 	g_object_unref(v.ctx)
 	mu.Lock()

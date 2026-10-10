@@ -9,215 +9,215 @@ pass	Test_org_eclipse_swt_accessibility_AccessibleEvent.test_ConstructorLjava_la
 pass	Test_org_eclipse_swt_accessibility_AccessibleEvent.test_toString
 pass	Test_org_eclipse_swt_accessibility_AccessibleTextEvent.test_ConstructorLjava_lang_Object
 pass	Test_org_eclipse_swt_accessibility_AccessibleTextEvent.test_toString
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_concurrentInit_issue20	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_issue20	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableOnLoad_concurrentInstances_issue20	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_afterPageReload	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_String	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_boolean	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_integer	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningInt	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningString	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_multipleValues	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_createFunctionInsideCallback	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_disposedFunctionRemovedAfterNavigation	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multiprocess	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_redefineSameNameSurvivesNavigation	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ClearAllSessionCookies	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_close	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ConstructorLorg_eclipse_swt_widgets_CompositeI	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_Constructor_asyncParentDisposal	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiationsInDifferentShells	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiationsInDifferentThreads	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_EdgeAsyncFocusHandling	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ExceptionsThrownInDisposeListenerDontPreventDisposal	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_LocationListener_ordered_changing	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_canceledLoad	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_noExtraEvents	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_adapter_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_addWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed_twoSetTextCycles	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changing	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changingAndOnlyThenChanged	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_evaluateInCallback	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_then_ProgressListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_NoExceptionsThrownInFillLayout	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addWithNulArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_completed_Called	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newListener_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addListener_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addwithNull	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_event	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addAndRemove	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addWithNull	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_eventSize	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newListener_closeShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_removeWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addControlListenerControlResizedAdapterLorg_eclipse_swt_events_ControlListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addControlListenerLorg_eclipse_swt_events_ControlListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerFocusGainedAdapterLorg_eclipse_swt_events_FocusListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerFocusLostAdapterLorg_eclipse_swt_events_FocusListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerLorg_eclipse_swt_events_FocusListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addHelpListenerLorg_eclipse_swt_events_HelpListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerKeyPressedAdapterLorg_eclipse_swt_events_KeyListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerKeyReleasedAdapterLorg_eclipse_swt_events_KeyListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerLorg_eclipse_swt_events_KeyListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addListenerILorg_eclipse_swt_widgets_Listener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseListenerLorg_eclipse_swt_events_MouseListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseEnterAdapterLorg_eclipse_swt_events_MouseTrackListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseExitAdapterLorg_eclipse_swt_events_MouseTrackListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseHoverAdapterLorg_eclipse_swt_events_MouseTrackListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addPaintListenerLorg_eclipse_swt_events_PaintListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_back	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_bug2162_transparentStyle	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_computeSizeII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_computeSizeIIZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_computeTrimIIII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_OpeningNewWindow	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_numbers	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_strings	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_boolean	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_evaluation_failed_exception	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_invalid_return_value	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_null	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_big	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_negative	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_normal	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_returnMoved	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_string	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_evalute_Cookies	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_execute_withNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_forward	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getAccessible	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getBorderWidth	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getChildren	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getClientArea	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getDisplay	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getHorizontalBar	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getLocation	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getMonitor	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getParent	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getShell	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getText	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_doctype	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_html	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_javascriptDisabled	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_script	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getUrl	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_getVerticalBar	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isBackEnabled	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isDisposed	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isEnabled	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isFocusControl	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isForwardEnabled	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isReparentable	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_isVisible	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_moveAboveLorg_eclipse_swt_widgets_Control	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_moveBelowLorg_eclipse_swt_widgets_Control	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_notifyListenersILorg_eclipse_swt_widgets_Event	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_pack	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_packZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_redraw	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_redrawIIIIZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_refresh	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_removeListenerILorg_eclipse_swt_widgets_Listener	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_requestLayoutL	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setBackgroundLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setBoundsIIII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setBoundsLorg_eclipse_swt_graphics_Rectangle	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setCaptureZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setCursorLorg_eclipse_swt_graphics_Cursor	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setDataLjava_lang_Object	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setDataLjava_lang_StringLjava_lang_Object	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setEnabledZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFocus	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFocus_toChild_afterOpen	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFocus_toChild_beforeOpen	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFocus_withInvisibleChild	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFocus_withVisibleAndInvisibleChild	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setFontLorg_eclipse_swt_graphics_Font	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setForegroundAlphaLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setForegroundLorg_eclipse_swt_graphics_Color	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setLayoutDataLjava_lang_Object	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setLocationII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setLocationLorg_eclipse_swt_graphics_Point	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setMenuLorg_eclipse_swt_widgets_Menu	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setParentLorg_eclipse_swt_widgets_Composite	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setRedrawZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setSizeII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setSizeLorg_eclipse_swt_graphics_Point	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setTabList$Lorg_eclipse_swt_widgets_Control	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setText	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setTextDirection	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setTextNull	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setToolTipTextLjava_lang_String	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrlWithNullArg	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_local	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_remote	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_local	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_connection_closes_prematurely	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_file_url	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_invalid_url	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setVisibility_and_sizing	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_setVisibleZ	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_stop	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_toControlII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_toControlLorg_eclipse_swt_graphics_Point	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_toDisplayII	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_toDisplayLorg_eclipse_swt_graphics_Point	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_toString	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_traverseI	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
-fail	Test_org_eclipse_swt_browser_Browser.test_update	no WebView2 Runtime in the CrossOver bottle: @BeforeAll setupEdgeEnvironment cannot create a Browser
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_concurrentInit_issue20	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: BrowserFunction 'options' was not available before the first page's inline script ran during concurrent initialization ==> expected: <true> but was: <false> at 
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_issue20	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Page did not finish loading ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2312
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableOnLoad_concurrentInstances_issue20	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: BrowserFunction for first browser missing when page load completed ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_br
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Java failed to get a callback from javascript. Test timed out ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_afterPageReload	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: A Javascript callback should work after a page has been reloaded, but something went wrong. ==> expected: <true> but was: <false> at tests/swttests/junit_test_o
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Java failed to get a callback from javascript. Test timed out ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_String	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript was suppose to call java with a String, but it seems Java did not receive the call or an incorrect value was passed. ==> expected: <true> but was: <f
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_boolean	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript did not pass a boolean back to Java. ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2118
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_integer	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript should have passed an integer to Java, but this did not happen. ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_br
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningInt	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Java should have returned something back to Javascript. But something went wrong ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_javaReturningString	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Java should have returned something back to Javascript. But something went wrong ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_multipleValues	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Values not set. Test timed out. Array should be ["hellojava", 5, true], but is: [executing, <nil>, <nil>] ==> expected: <true> but was: <false> at tests/swttest
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_createFunctionInsideCallback	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: BrowserFunction created inside a callback was not available on the page navigated to from that callback ==> expected: <true> but was: <false> at tests/swttests/
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_disposedFunctionRemovedAfterNavigation	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: First page did not load ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2525
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Neither BrowserFunction was available on the first loaded page ==> expected: not <null> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2506
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multiprocess	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: the page did not answer at browser/webbrowser_manual.go:597
+fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_redefineSameNameSurvivesNavigation	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: First page did not load ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2561
+fail	Test_org_eclipse_swt_browser_Browser.test_ClearAllSessionCookies	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: process died: exit status 0xc0000005
+pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_addWithNullArg
+fail	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_close	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:386
+pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_CloseWindowListener_removeWithNullArg
+pass	Test_org_eclipse_swt_browser_Browser.test_ConstructorLorg_eclipse_swt_widgets_CompositeI
+pass	Test_org_eclipse_swt_browser_Browser.test_Constructor_asyncParentDisposal
+pass	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiationsInDifferentShells
+fail	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiationsInDifferentThreads	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: interface conversion: interface {} is *swttests.Test_org_eclipse_swt_browser_Browser_EdgeBrowserApplication, not *jrt.Thread at internal/jrt/jdk.go:163
+pass	Test_org_eclipse_swt_browser_Browser.test_EdgeAsyncFocusHandling
+pass	Test_org_eclipse_swt_browser_Browser.test_ExceptionsThrownInDisposeListenerDontPreventDisposal
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_LocationListener_ordered_changing	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:591
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_canceledLoad	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: no message
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_noExtraEvents	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: no message
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_adapter_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_addWithNullArg
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: LocationListener.changed() event was never fired. Browser URL after waitForPassCondition: about:blank ==> expected: <true> but was: <false> at tests/swttests/ju
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed_twoSetTextCycles	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:460
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changing
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changingAndOnlyThenChanged	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out. 'changed()' never fired at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:492
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_evaluateInCallback	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: the page did not answer at browser/webbrowser_manual.go:597
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_removeWithNullArg
+fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_then_ProgressListener	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: no message
+pass	Test_org_eclipse_swt_browser_Browser.test_NoExceptionsThrownInFillLayout
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addWithNulArg
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_closeShell
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: the page did not answer at browser/webbrowser_manual.go:597
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:664
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out. ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:687
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_removeWithNullArg
+fail	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: no message
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addWithNullArg
+fail	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_completed_Called	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Browser text before completed: 
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newListener_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_removeWithNullArg
+pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull
+skip	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	Assumption failed: no API in Edge for this
+pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg
+skip	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	@Disabled: Too fragile on CI, Display.getDefault().post(event) does not work reliably
+pass	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806
+pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addListener_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addwithNull
+fail	Test_org_eclipse_swt_browser_Browser.test_TitleListener_event	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Title listener never fired. Test timed out. ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:898
+pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_removeWithNullArg
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addAndRemove
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addWithNull
+fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_eventSize	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: test timed out. Child's visibility Window listener didn't trigger ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_bro
+fail	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: no message
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newListener_closeShell
+pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_removeWithNullArg
+pass	Test_org_eclipse_swt_browser_Browser.test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addControlListenerControlResizedAdapterLorg_eclipse_swt_events_ControlListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addControlListenerLorg_eclipse_swt_events_ControlListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerFocusGainedAdapterLorg_eclipse_swt_events_FocusListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerFocusLostAdapterLorg_eclipse_swt_events_FocusListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addFocusListenerLorg_eclipse_swt_events_FocusListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addHelpListenerLorg_eclipse_swt_events_HelpListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerKeyPressedAdapterLorg_eclipse_swt_events_KeyListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerKeyReleasedAdapterLorg_eclipse_swt_events_KeyListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addKeyListenerLorg_eclipse_swt_events_KeyListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addListenerILorg_eclipse_swt_widgets_Listener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseListenerLorg_eclipse_swt_events_MouseListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseEnterAdapterLorg_eclipse_swt_events_MouseTrackListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseExitAdapterLorg_eclipse_swt_events_MouseTrackListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addMouseTrackListenerMouseHoverAdapterLorg_eclipse_swt_events_MouseTrackListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addPaintListenerLorg_eclipse_swt_events_PaintListener
+pass	Test_org_eclipse_swt_browser_Browser.test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
+pass	Test_org_eclipse_swt_browser_Browser.test_back
+pass	Test_org_eclipse_swt_browser_Browser.test_bug2162_transparentStyle
+pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeII
+pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeIIZ
+pass	Test_org_eclipse_swt_browser_Browser.test_computeTrimIIII
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_OpeningNewWindow	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: the page did not answer at browser/webbrowser_manual.go:597
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript did not call java ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:2010
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_numbers	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript did not call java ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1942
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_strings	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Expected an array of strings, but did not receive array or got the wrong result. ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_boolean	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1785
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_evaluation_failed_exception	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Javascript did not throw an error. Test timed out ==> expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1908
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_invalid_return_value
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_null	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1803
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_big	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1753
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_negative	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1748
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_normal	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1743
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_returnMoved	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1738
+fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_string	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1724
+fail	Test_org_eclipse_swt_browser_Browser.test_evalute_Cookies	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: panic: the page did not answer at browser/webbrowser_manual.go:597
+fail	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if browser looks disposed, but test still fails. ==> e
+pass	Test_org_eclipse_swt_browser_Browser.test_execute_withNullArg
+pass	Test_org_eclipse_swt_browser_Browser.test_forward
+pass	Test_org_eclipse_swt_browser_Browser.test_getAccessible
+pass	Test_org_eclipse_swt_browser_Browser.test_getBorderWidth
+pass	Test_org_eclipse_swt_browser_Browser.test_getChildren
+pass	Test_org_eclipse_swt_browser_Browser.test_getClientArea
+pass	Test_org_eclipse_swt_browser_Browser.test_getDisplay
+pass	Test_org_eclipse_swt_browser_Browser.test_getHorizontalBar
+pass	Test_org_eclipse_swt_browser_Browser.test_getLocation
+pass	Test_org_eclipse_swt_browser_Browser.test_getMonitor
+pass	Test_org_eclipse_swt_browser_Browser.test_getParent
+pass	Test_org_eclipse_swt_browser_Browser.test_getShell
+fail	Test_org_eclipse_swt_browser_Browser.test_getText	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out ==> expected: <<html><head></head><body>helloworld</body></html>> but was: <null> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go
+fail	Test_org_eclipse_swt_browser_Browser.test_getText_doctype	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out ==> expected: <<html><head></head><body>hello world</body></html>> but was: <null> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.g
+fail	Test_org_eclipse_swt_browser_Browser.test_getText_html	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out ==> expected: <<html><head></head><body>hello<b>world</b></body></html>> but was: <null> at tests/swttests/junit_test_org_eclipse_swt_browser_bro
+fail	Test_org_eclipse_swt_browser_Browser.test_getText_javascriptDisabled	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out ==> expected: <<html><head></head><body>hello<b>world</b></body></html>> but was: <null> at tests/swttests/junit_test_org_eclipse_swt_browser_bro
+fail	Test_org_eclipse_swt_browser_Browser.test_getText_script	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: Test timed out ==> expected: <<html><head></head><body style="background-color: red">hello world<script>document.body.style.backgroundcolor = "red"</script></bo
+pass	Test_org_eclipse_swt_browser_Browser.test_getUrl
+pass	Test_org_eclipse_swt_browser_Browser.test_getVerticalBar
+fail	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <value1> but was: <null> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:329
+pass	Test_org_eclipse_swt_browser_Browser.test_isBackEnabled
+pass	Test_org_eclipse_swt_browser_Browser.test_isDisposed
+pass	Test_org_eclipse_swt_browser_Browser.test_isEnabled
+pass	Test_org_eclipse_swt_browser_Browser.test_isFocusControl
+pass	Test_org_eclipse_swt_browser_Browser.test_isForwardEnabled
+pass	Test_org_eclipse_swt_browser_Browser.test_isReparentable
+pass	Test_org_eclipse_swt_browser_Browser.test_isVisible
+pass	Test_org_eclipse_swt_browser_Browser.test_moveAboveLorg_eclipse_swt_widgets_Control
+pass	Test_org_eclipse_swt_browser_Browser.test_moveBelowLorg_eclipse_swt_widgets_Control
+pass	Test_org_eclipse_swt_browser_Browser.test_notifyListenersILorg_eclipse_swt_widgets_Event
+pass	Test_org_eclipse_swt_browser_Browser.test_pack
+pass	Test_org_eclipse_swt_browser_Browser.test_packZ
+pass	Test_org_eclipse_swt_browser_Browser.test_redraw
+pass	Test_org_eclipse_swt_browser_Browser.test_redrawIIIIZ
+pass	Test_org_eclipse_swt_browser_Browser.test_refresh
+pass	Test_org_eclipse_swt_browser_Browser.test_removeListenerILorg_eclipse_swt_widgets_Listener
+pass	Test_org_eclipse_swt_browser_Browser.test_requestLayoutL
+pass	Test_org_eclipse_swt_browser_Browser.test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color
+pass	Test_org_eclipse_swt_browser_Browser.test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color
+pass	Test_org_eclipse_swt_browser_Browser.test_setBackgroundLorg_eclipse_swt_graphics_Color
+pass	Test_org_eclipse_swt_browser_Browser.test_setBoundsIIII
+pass	Test_org_eclipse_swt_browser_Browser.test_setBoundsLorg_eclipse_swt_graphics_Rectangle
+pass	Test_org_eclipse_swt_browser_Browser.test_setCaptureZ
+pass	Test_org_eclipse_swt_browser_Browser.test_setCursorLorg_eclipse_swt_graphics_Cursor
+pass	Test_org_eclipse_swt_browser_Browser.test_setDataLjava_lang_Object
+pass	Test_org_eclipse_swt_browser_Browser.test_setDataLjava_lang_StringLjava_lang_Object
+pass	Test_org_eclipse_swt_browser_Browser.test_setEnabledZ
+pass	Test_org_eclipse_swt_browser_Browser.test_setFocus
+pass	Test_org_eclipse_swt_browser_Browser.test_setFocus_toChild_afterOpen
+pass	Test_org_eclipse_swt_browser_Browser.test_setFocus_toChild_beforeOpen
+pass	Test_org_eclipse_swt_browser_Browser.test_setFocus_withInvisibleChild
+pass	Test_org_eclipse_swt_browser_Browser.test_setFocus_withVisibleAndInvisibleChild
+pass	Test_org_eclipse_swt_browser_Browser.test_setFontLorg_eclipse_swt_graphics_Font
+skip	Test_org_eclipse_swt_browser_Browser.test_setForegroundAlphaLorg_eclipse_swt_graphics_Color	Assumption failed: Alpha support for foreground colors does not exist on Win32
+pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color
+pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundLorg_eclipse_swt_graphics_Color
+fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1356
+fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: 3) Test timed out. Debug Info:
+pass	Test_org_eclipse_swt_browser_Browser.test_setLayoutDataLjava_lang_Object
+pass	Test_org_eclipse_swt_browser_Browser.test_setLocationII
+pass	Test_org_eclipse_swt_browser_Browser.test_setLocationLorg_eclipse_swt_graphics_Point
+pass	Test_org_eclipse_swt_browser_Browser.test_setMenuLorg_eclipse_swt_widgets_Menu
+pass	Test_org_eclipse_swt_browser_Browser.test_setParentLorg_eclipse_swt_widgets_Composite
+pass	Test_org_eclipse_swt_browser_Browser.test_setRedrawZ
+pass	Test_org_eclipse_swt_browser_Browser.test_setSizeII
+pass	Test_org_eclipse_swt_browser_Browser.test_setSizeLorg_eclipse_swt_graphics_Point
+pass	Test_org_eclipse_swt_browser_Browser.test_setTabList$Lorg_eclipse_swt_widgets_Control
+fail	Test_org_eclipse_swt_browser_Browser.test_setText	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1157
+fail	Test_org_eclipse_swt_browser_Browser.test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:925
+pass	Test_org_eclipse_swt_browser_Browser.test_setTextDirection
+pass	Test_org_eclipse_swt_browser_Browser.test_setTextNull
+pass	Test_org_eclipse_swt_browser_Browser.test_setToolTipTextLjava_lang_String
+pass	Test_org_eclipse_swt_browser_Browser.test_setUrlWithNullArg
+skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_local	Assumption failed: Handling of invalid URLs is platform dependent
+skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_remote	Assumption failed: Handling of invalid URLs is platform dependent
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_local	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1157
+skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_connection_closes_prematurely	Assumption failed: Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code. This test can be adapted to win32/cocoa, but that would be testing the third-party browser component. Therefore (for now) this test only runs on Linux. 
+skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_file_url	Assumption failed: Handling of invalid URLs is platform dependent
+skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_invalid_url	Assumption failed: Handling of invalid URLs is platform dependent
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1157
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1016
+fail	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1053
+pass	Test_org_eclipse_swt_browser_Browser.test_setVisibility_and_sizing
+pass	Test_org_eclipse_swt_browser_Browser.test_setVisibleZ
+fail	Test_org_eclipse_swt_browser_Browser.test_stop	WebView2 155 under CrossOver (pages load, frames are not drawn: no GL), not diagnosed: expected: <true> but was: <false> at tests/swttests/junit_test_org_eclipse_swt_browser_browser.go:1681
+pass	Test_org_eclipse_swt_browser_Browser.test_toControlII
+pass	Test_org_eclipse_swt_browser_Browser.test_toControlLorg_eclipse_swt_graphics_Point
+pass	Test_org_eclipse_swt_browser_Browser.test_toDisplayII
+pass	Test_org_eclipse_swt_browser_Browser.test_toDisplayLorg_eclipse_swt_graphics_Point
+pass	Test_org_eclipse_swt_browser_Browser.test_toString
+pass	Test_org_eclipse_swt_browser_Browser.test_traverseI
+pass	Test_org_eclipse_swt_browser_Browser.test_update
 pass	Test_org_eclipse_swt_custom_CCombo.test_ConstructorLorg_eclipse_swt_widgets_CompositeI
 pass	Test_org_eclipse_swt_custom_CCombo.test_ExceptionsThrownInDisposeListenerDontPreventDisposal
 pass	Test_org_eclipse_swt_custom_CCombo.test_NoExceptionsThrownInFillLayout
@@ -473,7 +473,7 @@ pass	Test_org_eclipse_swt_custom_CTabFolder.test_addPaintListenerLorg_eclipse_sw
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_bug2162_transparentStyle
 skip	Test_org_eclipse_swt_custom_CTabFolder.test_checkSize	@Disabled: Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59
-fail	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged	not analysed (win32 run 3): Different color
+pass	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_childControlOverlap
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeII
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeIIZ
@@ -1107,7 +1107,7 @@ fail	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphi
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer
 pass	Test_org_eclipse_swt_graphics_Image.test_bug566545_efficientGrayscaleImage
 pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat
-fail	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges	not analysed (win32 run 3): the file of a sizable image must be read again for a new size ==> Unexpected exception type thrown, expected: <*swt.SWTException> but was: <*jrt.IOException>: I
+pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges
 fail	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object	not analysed (win32 run 3): expected: <true> but was: <false>
 pass	Test_org_eclipse_swt_graphics_Image.test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom
 pass	Test_org_eclipse_swt_graphics_Image.test_getBackground
@@ -1124,8 +1124,8 @@ pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImage
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImageForCustomImageData
 fail	Test_org_eclipse_swt_graphics_Image.test_hashCode	not analysed (win32 run 3): expected: <-531534272> but was: <-531534656>
 pass	Test_org_eclipse_swt_graphics_Image.test_imageDataIsCached
-fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders	assertion differs under Wine/Win32, not analysed: expected: <0> but was: <-1>
-fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData	assertion differs under Wine/Win32, not analysed: expected: <0> but was: <-1>
+pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders
+pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData
 pass	Test_org_eclipse_swt_graphics_Image.test_isDisposed
 pass	Test_org_eclipse_swt_graphics_Image.test_setBackgroundLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_graphics_Image.test_toString
@@ -1134,8 +1134,8 @@ pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorIIILorg_eclipse_swt
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorLjava_io_InputStream
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorLjava_lang_String
-fail	Test_org_eclipse_swt_graphics_ImageData.test_blit	Java reflection (getDeclaredMethod/setAccessible) is not translated
-fail	Test_org_eclipse_swt_graphics_ImageData.test_blit_MsbLsb	Java reflection (getDeclaredMethod/setAccessible) is not translated
+pass	Test_org_eclipse_swt_graphics_ImageData.test_blit
+pass	Test_org_eclipse_swt_graphics_ImageData.test_blit_MsbLsb
 pass	Test_org_eclipse_swt_graphics_ImageData.test_clone
 pass	Test_org_eclipse_swt_graphics_ImageData.test_getAlphaII
 pass	Test_org_eclipse_swt_graphics_ImageData.test_getAlphasIII$BI
@@ -1824,22 +1824,22 @@ pass	Test_org_eclipse_swt_widgets_CoolItem.test_ConstructorLorg_eclipse_swt_widg
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_addListenerILorg_eclipse_swt_widgets_Listener
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_computeSizeII
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_getBounds	assertion differs under Wine/Win32, not analysed: expected: <92> but was: <17>
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_getBounds	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getControl
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getDisplay
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getParent
-pass	Test_org_eclipse_swt_widgets_CoolItem.test_getPreferredSize
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_getPreferredSize	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getSize
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_isDisposed
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_notifyListenersILorg_eclipse_swt_widgets_Event
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_removeListenerILorg_eclipse_swt_widgets_Listener
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_setControlLorg_eclipse_swt_widgets_Control	assertion differs under Wine/Win32, not analysed: expected: <true> but was: <false>
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_setControlLorg_eclipse_swt_widgets_Control	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setDataLjava_lang_Object
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setDataLjava_lang_StringLjava_lang_Object
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setImageLorg_eclipse_swt_graphics_Image
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setPreferredSizeII
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setPreferredSizeLorg_eclipse_swt_graphics_Point
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeII	assertion differs under Wine/Win32, not analysed: expected: <Point {50, 50}> but was: <Point {17, 50}>
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeII	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setTextLjava_lang_String
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_toString

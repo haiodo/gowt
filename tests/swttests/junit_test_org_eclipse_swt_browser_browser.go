@@ -1023,8 +1023,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post()
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_no_content_type() {
 	{
 		anon154 := &Test_org_eclipse_swt_browser_BrowserAnon10{}
+		anon154.impl = anon154
 		anon154.initEchoHttpServer()
-		anon154.fnSetResponseHeaders = func(exchange *jrt.HttpExchange) {
+		anon154.fnsetResponseHeaders_ = func(exchange *jrt.HttpExchange) {
 		}
 		var server *EchoHttpServer = &anon154.EchoHttpServer
 		defer server.Close()
@@ -1087,8 +1088,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_cl
 	junit.AssumeTrue(SwtTestUtilIsLinux, "Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code.\nThis test can be adapted to win32/cocoa, but that would be testing the third-party\nbrowser component. Therefore (for now) this test only runs on Linux.\n")
 	{
 		anon155 := &Test_org_eclipse_swt_browser_BrowserAnon11{}
+		anon155.impl = anon155
 		anon155.initEchoHttpServer()
-		anon155.fnHandlePostEcho = func(exchange *jrt.HttpExchange) {
+		anon155.fnhandlePostEcho_ = func(exchange *jrt.HttpExchange) {
 			exchange.Close()
 		}
 		var server *EchoHttpServer = &anon155.EchoHttpServer
@@ -1315,6 +1317,45 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrlWithNullArg() {
 	})
 }
 
+func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled() {
+	var pageLoadCount *jrt.AtomicInteger = jrt.NewAtomicInteger(0)
+	var testFinished *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
+	var testPassed *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
+	this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
+		pageLoadCount.IncrementAndGet()
+		if pageLoadCount.Get() == 1 {
+			this.browser.SetJavascriptEnabled(false)
+			this.browser.SetText("Second page with javascript disabled")
+		} else {
+			if pageLoadCount.Get() == 2 {
+				var expectedNull any
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if e, ok := r.(error); ok {
+							_ = e
+							junit.Fail("1) if javascript is disabled, browser.evaluate() should return null. But an Exception was thrown")
+						} else {
+							panic(r)
+						}
+					}()
+					expectedNull = this.browser.Evaluate("return true")
+				}()
+				junit.AssertNull(expectedNull)
+				testPassed.Set(true)
+				testFinished.Set(true)
+			}
+		}
+	}))
+	this.shell.Open()
+	this.browser.SetText("First page with javascript enabled. This should not be visible as a second page should load")
+	this.WaitForPassCondition(testFinished.Get)
+	junit.AssertTrue(testPassed.Get())
+}
+
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_multipleInstances() {
 	var pageLoadCount *jrt.AtomicInteger = jrt.NewAtomicInteger(1)
 	var pageLoadCountSecondInstance *jrt.AtomicInteger = jrt.NewAtomicInteger(1)
@@ -1331,7 +1372,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setJavascriptEnabled_mult
 		} else {
 			if pageLoadCount.Get() == 2 {
 				pageLoadCount.Set(3)
-				var shouldBeNull bool = this.browser.Evaluate("return true").(bool)
+				var shouldBeNull any = this.browser.Evaluate("return true")
 				junit.AssertNull(shouldBeNull)
 				instanceOneFinishedCorrectly.Set(true)
 			}
@@ -1587,8 +1628,9 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 	var latch *jrt.CountDownLatch = jrt.NewCountDownLatch(1)
 	{
 		anon164 := &Test_org_eclipse_swt_browser_BrowserAnon20{}
+		anon164.impl = anon164
 		anon164.initEchoHttpServer()
-		anon164.fnHandleGetEcho = func(exchange *jrt.HttpExchange) {
+		anon164.fnhandleGetEcho_ = func(exchange *jrt.HttpExchange) {
 			func() {
 				defer func() {
 					r := recover()
@@ -1611,7 +1653,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 				}()
 				latch.Await(int64(5), jrt.TimeUnitSECONDS)
 			}()
-			anon164.EchoHttpServer.HandleGetEcho(exchange)
+			anon164.EchoHttpServer.handleGetEcho_(exchange)
 		}
 		var server *EchoHttpServer = &anon164.EchoHttpServer
 		defer server.Close()
@@ -1951,7 +1993,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_evaluate_array_mixedTypes
 	var additionalErrorInfo *jrt.AtomicReference = jrt.NewAtomicReference("")
 	var passed bool = this.WaitForPassCondition(func() bool {
 		if !("executing" == atomicArray.Get(0)) {
-			if (atomicArray.Get(0) == "str1") && (any(atomicArray.Get(1))) == 2 && (atomicArray.Get(2).(bool)) {
+			if (atomicArray.Get(0) == "str1") && jrt.Cast[float64]((any(atomicArray.Get(1)))) == 2 && (atomicArray.Get(2).(bool)) {
 				return true
 			} else {
 				additionalErrorInfo.Set("Resulting String are not as exected")
@@ -2116,7 +2158,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_BrowserFunction_callback_
 	this.browser.AddProgressListener(this.callCustomFunctionUponLoad)
 	this.shell.Open()
 	var passed bool = this.WaitForPassCondition(func() bool {
-		if (atomicArray.Get(0) == "hellojava") && (any(atomicArray.Get(1))) == 5 && (atomicArray.Get(2).(bool)) {
+		if (atomicArray.Get(0) == "hellojava") && jrt.Cast[float64]((any(atomicArray.Get(1)))) == 5 && (atomicArray.Get(2).(bool)) {
 			return true
 		} else {
 			return false
@@ -3310,21 +3352,21 @@ func (f *TitleListenerFunc) Changed(a0 *browser.TitleEvent) {
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon10 struct {
 	EchoHttpServer
-	fnSetResponseHeaders func(a0 *jrt.HttpExchange)
+	fnsetResponseHeaders_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon10) SetResponseHeaders(a0 *jrt.HttpExchange) {
-	this.fnSetResponseHeaders(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon10) setResponseHeaders_(a0 *jrt.HttpExchange) {
+	this.fnsetResponseHeaders_(a0)
 }
 
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon11 struct {
 	EchoHttpServer
-	fnHandlePostEcho func(a0 *jrt.HttpExchange)
+	fnhandlePostEcho_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon11) HandlePostEcho(a0 *jrt.HttpExchange) {
-	this.fnHandlePostEcho(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon11) handlePostEcho_(a0 *jrt.HttpExchange) {
+	this.fnhandlePostEcho_(a0)
 }
 
 // j2go: anonymous VisibilityWindowAdapter subclass.
@@ -3414,11 +3456,11 @@ func (this *Test_org_eclipse_swt_browser_BrowserAnon19) Changed(a0 *browser.Loca
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon20 struct {
 	EchoHttpServer
-	fnHandleGetEcho func(a0 *jrt.HttpExchange)
+	fnhandleGetEcho_ func(a0 *jrt.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon20) HandleGetEcho(a0 *jrt.HttpExchange) {
-	this.fnHandleGetEcho(a0)
+func (this *Test_org_eclipse_swt_browser_BrowserAnon20) handleGetEcho_(a0 *jrt.HttpExchange) {
+	this.fnhandleGetEcho_(a0)
 }
 
 // j2go: anonymous BrowserFunction subclass.

@@ -161,6 +161,7 @@ const wv2CallBridge = `if(window.top===window)window.gowt.call=function(m){retur
 // COREWEBVIEW2_SCRIPT_DIALOG_KIND_PROMPT and COREWEBVIEW2_WEB_ERROR_STATUS_OPERATION_CANCELED.
 const (
 	wv2DialogPrompt      = 2
+	wv2ConnectionAborted = 9
 	wv2OperationCanceled = 14
 )
 

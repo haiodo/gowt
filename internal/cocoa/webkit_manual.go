@@ -22,6 +22,16 @@ type WKConfig struct {
 	Inspectable bool
 	Scripts     []string // run at document start, before page scripts
 	Schemes     []string // custom URL schemes served through WKView.Scheme
+	// Config is the WKWebViewConfiguration WebKit passed to the create delegate for a window the page
+	// opens; the view must be made with it. It gets a user content controller of its own, so Scripts
+	// apply, and keeps the URL scheme handlers of the opener (Schemes is ignored).
+	Config uintptr
+}
+
+// WKFeatures are the window.open features; X, Y, Width and Height are 0 when the page gave none.
+type WKFeatures struct {
+	X, Y, Width, Height         int
+	MenuBar, StatusBar, ToolBar bool
 }
 
 type WKView struct {
@@ -39,6 +49,15 @@ type WKView struct {
 	// Call answers window.gowt.call(msg) from the page synchronously: the page blocks in window.prompt
 	// until the reply. Without it the call returns null.
 	Call func(msg string) string
+	// NewWindow is asked when the page opens a window (window.open, target=_blank): it makes the view
+	// with WKConfig.Config = config and returns it; nil refuses the window.
+	NewWindow func(url string, config uintptr, f WKFeatures) *WKView
+	// Close fires when the page asks to close its window (window.close).
+	Close func()
+	// Status gets the link under the pointer, "" when it leaves it (EnableStatus).
+	Status func(text string)
+	// Features of the window.open that made this view; zero for any other.
+	Features WKFeatures
 
 	// The last navigation started: WebKit commits about:blank for a refused connection and reports no
 	// failure, so a commit of about:blank for another URL is the failure (see didCommit).
@@ -48,6 +67,8 @@ type WKView struct {
 
 	config, ucc, obj uintptr
 	disposed         bool
+	scriptOff        bool
+	statusOn         bool
 }
 
 var wkTrace = os.Getenv("GOWT_WK_TRACE") != ""
@@ -88,7 +109,15 @@ func wkSetup() {
 		wkClass = newClass("gowtWKHandler", []string{"WKScriptMessageHandler", "WKURLSchemeHandler", "WKNavigationDelegate", "WKUIDelegate"}, map[string]objcMethod{
 			"userContentController:didReceiveScriptMessage:": {purego.NewCallback(func(self, _, _, m uintptr) {
 				defer enterCallback()()
-				if v := view(self); v != nil && v.Message != nil {
+				v := view(self)
+				if v == nil {
+					return
+				}
+				if goString(msg(m, "name")) == "gowtstatus" {
+					if v.Status != nil {
+						v.Status(goString(msg(m, "body")))
+					}
+				} else if v.Message != nil {
 					v.Message(goString(msg(m, "body")))
 				}
 			}), "v@:@@"},
@@ -144,7 +173,9 @@ func wkSetup() {
 					v.NavFailed(failedURL(wv, e), goString(msg(e, "localizedDescription")))
 				}
 			}), "v@:@@@"},
-			"webView:decidePolicyForNavigationAction:decisionHandler:": {purego.NewCallback(func(self, _, _, action, handler uintptr) {
+			// The variant with preferences: allowsContentJavaScript is set per navigation, which is how
+			// setScriptEnabled reaches the pages loaded after it.
+			"webView:decidePolicyForNavigationAction:preferences:decisionHandler:": {purego.NewCallback(func(self, _, _, action, prefs, handler uintptr) {
 				defer enterCallback()()
 				allow := true
 				if trace {
@@ -160,12 +191,46 @@ func wkSetup() {
 						allow = v.Decide(url, frame == 0 || msg(frame, "isMainFrame")&0xff != 0)
 					}
 				}()
+				if v := view(self); v != nil && msg(prefs, "respondsToSelector:", sel("setAllowsContentJavaScript:"))&0xff != 0 {
+					on := uintptr(1)
+					if v.scriptOff {
+						on = 0
+					}
+					msg(prefs, "setAllowsContentJavaScript:", on)
+				}
 				policy := uintptr(0) // WKNavigationActionPolicyCancel
 				if allow {
 					policy = 1 // WKNavigationActionPolicyAllow
 				}
-				callBlock(handler, policy)
-			}), "v@:@@@?"},
+				callBlock(handler, policy, prefs)
+			}), "v@:@@@@?"},
+			"webView:createWebViewWithConfiguration:forNavigationAction:windowFeatures:": {purego.NewCallback(func(self, _, _, config, action, features uintptr) uintptr {
+				defer enterCallback()()
+				v := view(self)
+				if v == nil || v.NewWindow == nil {
+					return 0
+				}
+				var nv *WKView
+				// A panic in a listener must not unwind through WebKit: the window is refused.
+				func() {
+					defer func() { _ = recover() }()
+					f := wkFeatures(features)
+					nv = v.NewWindow(goString(msg(msg(msg(action, "request"), "URL"), "absoluteString")), config, f)
+					if nv != nil {
+						nv.Features = f
+					}
+				}()
+				if nv == nil {
+					return 0
+				}
+				return nv.View
+			}), "@@:@@@@"},
+			"webViewDidClose:": {purego.NewCallback(func(self, _, _ uintptr) {
+				defer enterCallback()()
+				if v := view(self); v != nil && v.Close != nil {
+					v.Close()
+				}
+			}), "v@:@"},
 			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, frame, handler uintptr) {
 				defer enterCallback()()
 				reply := uintptr(0)
@@ -201,8 +266,18 @@ func NewWKView(cfg WKConfig) *WKView {
 	v := &WKView{}
 	v.obj = msg(msg(wkClass, "alloc"), "init")
 	wkViews[v.obj] = v
-	v.config = msg(msg(class("WKWebViewConfiguration"), "alloc"), "init")
-	v.ucc = msg(v.config, "userContentController")
+	if cfg.Config != 0 {
+		v.config = msg(cfg.Config, "retain")
+		v.ucc = msg(msg(class("WKUserContentController"), "alloc"), "init")
+		msg(v.config, "setUserContentController:", v.ucc)
+		msg(v.ucc, "release") // the configuration holds it
+		cfg.Schemes = nil
+	} else {
+		v.config = msg(msg(class("WKWebViewConfiguration"), "alloc"), "init")
+		v.ucc = msg(v.config, "userContentController")
+	}
+	// Without it window.open outside a user gesture is dropped.
+	msg(msg(v.config, "preferences"), "setJavaScriptCanOpenWindowsAutomatically:", 1)
 	msg(v.ucc, "addScriptMessageHandler:name:", v.obj, nsString("gowt"))
 	v.AddScript(wkBridge)
 	v.addScript(wkCallShim, true)
@@ -254,6 +329,55 @@ func (v *WKView) LoadURL(url string) {
 	if wkTrace {
 		fmt.Fprintf(os.Stderr, "wk: loadRequest %s url=%#x nav=%#x\n", url, msg(req, "URL"), nav)
 	}
+}
+
+// LoadRequest loads url with method ("" is GET), extra request headers and a body.
+func (v *WKView) LoadRequest(url, method string, headers map[string]string, body []byte) {
+	req := msg(msg(class("NSMutableURLRequest"), "alloc"), "initWithURL:", msg(class("NSURL"), "URLWithString:", nsString(url)))
+	if method != "" {
+		msg(req, "setHTTPMethod:", nsString(method))
+	}
+	if body != nil {
+		msg(req, "setHTTPBody:", nsData(body))
+	}
+	for k, val := range headers {
+		msg(req, "setValue:forHTTPHeaderField:", nsString(val), nsString(k))
+	}
+	msg(v.View, "loadRequest:", req)
+	msg(req, "release")
+}
+
+// SetScriptEnabled switches the page scripts of the pages loaded from now on (allowsContentJavaScript).
+func (v *WKView) SetScriptEnabled(on bool) { v.scriptOff = !on }
+
+// wkStatusScript tells the native side the link under the pointer; WKWebView has no API for it.
+const wkStatusScript = `(function(){var last="";function s(t){if(t!==last){last=t;try{window.webkit.messageHandlers.gowtstatus.postMessage(t)}catch(e){}}}` +
+	`document.addEventListener("mouseover",function(e){var a=e.target&&e.target.closest&&e.target.closest("a[href]");s(a?a.href:"")},true);` +
+	`document.addEventListener("mouseout",function(e){if(!e.relatedTarget)s("")},true)})();`
+
+// EnableStatus starts Status for the pages loaded from now on, with a script run in every frame.
+func (v *WKView) EnableStatus() {
+	if v.statusOn {
+		return
+	}
+	v.statusOn = true
+	msg(v.ucc, "addScriptMessageHandler:name:", v.obj, nsString("gowtstatus"))
+	v.AddScript(wkStatusScript)
+}
+
+func wkFeatures(f uintptr) WKFeatures {
+	num := func(name string) int {
+		if n := msg(f, name); n != 0 {
+			return int(int64(msg(n, "integerValue")))
+		}
+		return 0
+	}
+	flag := func(name string) bool {
+		n := msg(f, name)
+		return n != 0 && msg(n, "boolValue")&0xff != 0
+	}
+	return WKFeatures{X: num("x"), Y: num("y"), Width: num("width"), Height: num("height"),
+		MenuBar: flag("menuBarVisibility"), StatusBar: flag("statusBarVisibility"), ToolBar: flag("toolbarsVisibility")}
 }
 
 func (v *WKView) LoadHTML(html, baseURL string) {
@@ -308,6 +432,9 @@ func (v *WKView) Dispose() {
 	v.disposed = true
 	msg(v.View, "removeObserver:forKeyPath:", v.obj, nsString("title"))
 	msg(v.ucc, "removeScriptMessageHandlerForName:", nsString("gowt"))
+	if v.statusOn {
+		msg(v.ucc, "removeScriptMessageHandlerForName:", nsString("gowtstatus"))
+	}
 	msg(v.View, "setNavigationDelegate:", 0)
 	msg(v.View, "setUIDelegate:", 0)
 	msg(v.View, "removeFromSuperview")

@@ -183,7 +183,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundAlphaLorg_eclipse_sw
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundLorg_eclipse_swt_graphics_Color
 skip	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled	Assumption failed: setJavascriptEnabled is not supported over package webview
-fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	setJavascriptEnabled not supported over package webview (implemented in TSK-2026-10-03-product-35, not yet run on macOS)
+fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	the translated test keeps a Java Boolean in a Go bool: evaluate returns nil with JavaScript off, `.(bool)` panics in the ProgressListener and AssertNull gets a bool (j2go maps Boolean to bool, no null)
 pass	Test_org_eclipse_swt_browser_Browser.test_setLayoutDataLjava_lang_Object
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationII
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationLorg_eclipse_swt_graphics_Point

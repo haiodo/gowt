@@ -1,39 +1,83 @@
 # Platforms
 
-Source of truth for numbers: `tests/expected.txt` (darwin), `tests/expected_windows.txt`, `tests/expected_linux.txt` (3342 lines each, reasons per non-pass line) and
-`tooling/j2go/README.md` rounds 19-20. The same translator output (`swt/*.go` shared + `_darwin`/`_windows`/`_linux` files) builds on all three; one `swt` API.
+## For app authors
+
+Same Go program, three native back ends. What differs:
+
+| | macOS | Windows | Linux |
+|---|---|---|---|
+| Toolkit | AppKit | Win32 | GTK 3 (X11 or XWayland) |
+| Cross-compile | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all with `CGO_ENABLED=0`, from any host) |
+| Verified on | real Mac | CrossOver/Wine only, never real Windows | Docker with Xvfb, not a real desktop |
+| Web view | WKWebView | WebView2 Runtime (preinstalled on Windows 11) | WebKitGTK 4.1 |
+| Glass, backdrop | Liquid Glass (macOS 26), translucent material | Mica/Acrylic (Windows 11), untested on real hardware | none |
+| System tray | `App.Tray` returns nil where the system has none; not checked per OS | same | same |
+| Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
+| Menu bar | application menu bar | window menu bar | window menu bar |
+
+Not in the facade on any OS: Clipboard, drag and drop and `StyledText` (not in this tree yet, being integrated separately), `Accessible` (a stub on all three OSes). On Windows import `_ "github.com/haiodo/gowt/winmanifest"`, see [install.md](install.md).
+
+## Test numbers
+
+SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt`:
+
+| | pass | fail | skip |
+|---|---|---|---|
+| macOS (`expected.txt`) | 3492 | 30 (+2 flaky) | 26 |
+| Windows (`expected_windows.txt`, Wine) | 3275 | 232 | 43 |
+| Linux (`expected_linux.txt`) | 3497 | 33 | 20 |
+
+JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pass, 2 fail on Linux. Every non-pass line in the expected files has a reason; none is `UNDESCRIBED` now.
+
+## How the ports differ
 
 | | macOS (cocoa) | Windows (win32) | Linux (gtk 3) |
 |---|---|---|---|
-| Binding layer | `internal/cocoa`, translated from SWT PI/cocoa, objc runtime without cgo | `internal/win32`, translated from SWT PI/win32, `syscall.SyscallN` (no cgo) | `internal/gtk`, generated from GIR by `tooling/girgen` + hand glue, purego (no cgo) |
-| Build | `make gen && make` | `GOOS=windows GOARCH=amd64 go build ./...` | `GOOS=linux CGO_ENABLED=0 go build ./...` |
-| `test-swt` gate | 3309 pass / 21 fail / 1 flaky / 10 skip | 3252 pass / 46 fail / 43 skip | 2950 pass / 385 fail / 6 skip |
-| Stand | the Mac itself (`make test-swt`, `make snap-check`) | CrossOver/Wine bottle `gowt` (`make win-swttest`; `make win-probe` is console-only); not run on real Windows | Docker `gowt-linux`, Xvfb + noVNC (`make linux-run CMD="make test-swt"`) |
-| Snapshots (`tests/snapshots`) | yes, only here (`snap_darwin.go`) | `snap_windows.go`: BitBlt capture in `internal/shot` (`make win-snap-check`, `tests/snapshots_windows`) | `snap_linux.go` stub |
-| DPI / zoom | points semantics (backing scale) | per-monitor DPI awareness in the manifest (`winmanifest`), but the port still uses the system DPI at start: device zoom = "integer" autoscale of the system DPI; no per-monitor runtime rescaling | stand-in `DPIUtil` (`swt/*_manual_linux.go`), not verified at other scales |
+| Binding layer | `internal/cocoa`, translated from SWT PI/cocoa, purego | `internal/win32`, translated from SWT PI/win32, `syscall.SyscallN` | `internal/gtk`, generated from GIR by `tooling/girgen` plus hand glue, purego |
+| Build | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all `CGO_ENABLED=0`) |
+| Stand | the Mac itself | CrossOver (Wine) bottle `gowt`: `make win-swttest`, `make win-snap-check` | Docker `gowt-linux`, Xvfb + noVNC: `make linux-run CMD="make test-swt"` |
+| Snapshot references | `tests/snapshots` | `tests/snapshots_windows` (BitBlt capture in `internal/shot`) | `tests/snapshots_linux` |
+| DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | the manifest requests per-monitor DPI v2, but the port keeps one scale from the system DPI at start; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |
 
 ## Known gaps
 
-**macOS** (22 non-pass in `expected.txt`)
-- Java reflection on private members (`getDeclaredField/Method`) has no translator rule: 4 + 2 tests.
-- SVG images are not loaded (Go stdlib codecs only): 3 tests.
-- 10 skips are SWT's own assumptions/`@Disabled`; `Tree.test_Virtual` is flaky (SetData count timing).
+Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not verified" means no real run on that platform.
 
-**Windows**
-- Never run on real Windows; all results are Wine (CrossOver), where DPI is 96 whatever the setting, so zoom above 100 is untested.
-- 38 of 43 skips: SWT's "alpha for foreground colors does not exist on Win32" assumption.
-- Not analysed failures (46): `java.lang.Character.isAlphabetic` / iterator `next` unresolved calls (14), reflection (6), Combo/CCombo `setItems`, ImageLoader on some streams, assertions that differ under Wine.
-- Not translated: drag and drop, OLE; `Browser` needs the WebView2 engine of package `webview`; `Accessible` (MSAA) is a stub; `TextLayout` (Uniscribe) untested; the generic multi-zoom image-handle helpers are panic markers (paths/patterns/transforms at non-100 zoom).
-- Dark-mode ordinals are unavailable.
+**All platforms**
+- `Browser` (over package `webview`) does not support the OpenWindow, VisibilityWindow, CloseWindow and StatusText events, `setUrl` with post data or headers, `setJavascriptEnabled` or the cookie statics. On macOS and on Linux 20 Browser tests fail each: 13 for these reasons, 1 because a `System.setOut` capture is not translated, 6 "Round 23, not diagnosed" (BrowserFunction callbacks, a nil pointer). 16 Browser tests are skipped on macOS and 14 on Linux (mostly SWT assumptions for other engines).
+- `ImageData.test_blit` and `test_blit_MsbLsb` fail everywhere: the test helper reflects on private methods and the translator has no rule for them.
+- `Accessible` is a stub; Clipboard, drag and drop and `StyledText` are not in the tree yet.
 
-**Linux**
-- DateTime: `java.text` date formats are unresolved calls (panic), 318 of the 385 failures (`widgets_datetime_linux.go`). Other: `assert` statements unsupported in the translated gtk code, 6 SIGSEGV, reflection, image format.
-- GTK 3 only: GTK 4 names compile but panic when called; GDBus paths not done; X11 backend (Wayland only partly, no input/snapshots on the stand).
-- `Accessible`, `WidgetSpy`, CSS theming are stubs/stand-ins (`swt/*_manual_linux.go`; `swt/gtkres/*.css` are empty).
-- Most failure reasons in `expected_linux.txt` are still `UNDESCRIBED`.
+**macOS** (10 failures outside Browser)
+- `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`), not diagnosed.
+- `CTabFolder.test_chevronAppearanceChanged` (one pixel colour), `TextLayout.test_bug568740_multilineTextStyle` (pixel search finds nothing), `Text.test_backspaceAndDelete` (`Display.post` returns false for the key event): not diagnosed.
+- `Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges`: SVG files are not loaded by `swt`.
+- Flaky: one `Tree` test (`SetData` count timing) and one multi-monitor DPI test.
+- Table and Tree use the cell-based AppKit views; the view-based ones are not started ([view-based-table.md](view-based-table.md)).
+- Deprecated AppKit that stays: `lockFocus` around `scrollRect:by:` (3 places); Carbon and `CPSSetProcessName` have no public replacement.
+- `look.Classic()` was not confirmed for a binary without an app bundle; `-ldflags=-macsdk=15.0` is the reliable way.
+- NSGlassEffectContainerView, NSBackgroundExtensionView and a unified tool bar do not fit SWT's view tree and are not offered.
+
+**Windows** (Wine only; nothing was run on real Windows)
+- 209 of the 232 failures are Browser tests: the CrossOver bottle has no WebView2 Runtime. The WebView2 code (COM callbacks in Go, no `WebView2Loader.dll`) has never run.
+- 38 of the 43 skips are SWT's own "alpha for foreground colors does not exist on Win32" assumption.
+- 23 failures outside Browser, mostly "not analysed": `Image` 7, `TextLayout` 4 (three of them carry a stale reason about `isAlphabetic` and need a rerun of `make win-swttest-update`; one hits an untranslated local class), `GC` 3, `CoolItem` 3, `Table` 2 (`test_Virtual`, `test_getItemHeight`), `ImageData` 2 (reflection), and one each of `CTabFolder` and `Display` (Wine's `SendInput` does not deliver `Display.post`).
+- Mica, Acrylic and rounded corners were not seen on Windows 11. Per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled: `Display` puts the thread in system-aware mode and `DPIUtil` holds one scale. Wine reports 96 DPI, so zoom above 100% is untested.
+- Dark content is opt-in (`look.SetDarkContent`) and uses undocumented uxtheme exports.
+
+**Linux** (13 failures outside Browser)
+- `CoolItem`: 4 tests, the emulated CoolBar is 0 wide without a layout (same values on macOS).
+- `Image`: 3 tests. Two differ by one byte between the gdk-pixbuf path and the Go decoder; one panics with a raw `IOException` because of the generated try-with-resources order.
+- `ImageLoader.test_bug547529` expects GdkPixbuf's 32-bit data and gets the Go codec's 24-bit.
+- `CTabFolder`: `test_chevronAppearanceChanged` (pixel colours under the Adwaita theme) and `test_childControlOverlap` (layout geometry), not analysed.
+- `Shell.test_Issue450_NoShellActivateOnSetFocus`: `setActive` is not honoured by openbox within 3 s.
+- GTK 3 only. The theme and accent colour come from xdg-desktop-portal; this was not checked against a live portal.
+- WebKitGTK does not report the navigation frame, so the navigation policy always gets `mainFrame=true`.
+- The stand is X11 only (Xvfb); there is no Wayland run.
+- `swt/gtkres/*.css` are 74 bytes or less, so SWT's CSS theming fixes are not applied.
 
 ## Cross-platform notes
-- Public API is compared by `make api-check` (`apidump -check` over darwin/windows/linux, `tooling/apidump/platform-only.txt` lists SWT's own per-OS API and the hand-stubbed IME/Tracker).
-- Platform-only SWT API: `IME`/`Tracker` (win32), `GetPrimaryMonitorDisplay`, `DisplayExtractFreeGError`, `Image.Internal_gtk_refreshImageForZoom` (gtk).
-- The shared (unsuffixed) files are generated only by the cocoa run; win32/gtk runs write their `_<goos>` files (README Round 20).
-- The gtk binding must stay clean-room: nothing from SWT's `Eclipse SWT PI/gtk` (LGPL) is read or reused.
+
+- `make api-check` compares the exported `swt` API of darwin, windows and linux (`tooling/apidump/platforms.txt`); `tooling/apidump/platform-only.txt` lists what SWT itself declares for some platforms only (for example `IME` and `Tracker`, and `GetPrimaryMonitorDisplay` for gtk).
+- The shared (unsuffixed) files in `swt/` are generated by the cocoa run; the win32 and gtk runs write their `_<goos>` files only.
+- The gtk binding is clean room: nothing from SWT's `Eclipse SWT PI/gtk` (LGPL) is read or reused.

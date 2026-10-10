@@ -387,6 +387,11 @@ final class ControlFlowEmitter {
 				|| qualified.equals(Manual.JAVA_EXCEPTION) || qualified.equals(Manual.JAVA_THROWABLE)) {
 			return "error";
 		}
+		if (qualified.equals("java.lang.AssertionError")) {
+			// What internal/junit panics on a failed assertion.
+			emitter.fileImports.add("github.com/haiodo/gowt/internal/junit");
+			return "*junit.AssertionFailed";
+		}
 		TypeModel.ClassInfo ci = emitter.model.lookup(t);
 		if (ci != null) return (ci.isStruct || ci.isInterface) ? emitter.qualifiedTypeName(ci) : "*" + emitter.qualifiedTypeName(ci);
 		if (Manual.isManual(qualified)) {

@@ -452,6 +452,7 @@ final class ClassEmitter {
 		out.append(emitter.block(md.getBody(), 1));
 		emitter.currentReturnType = null;
 		out.append("}\n\n");
+		emitter.registerReflectStatic(ci, mb, md.getName().getIdentifier(), goName);
 	}
 
 	String staticMethodGoName(IMethodBinding mb, TypeModel.ClassInfo ci) {

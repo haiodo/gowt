@@ -21,6 +21,11 @@ final class TestEmitter {
 			COND + "DisabledIfEnvironmentVariable", COND + "DisabledIfSystemProperty", API + "Timeout", API + "Order",
 			API + "DisplayName");
 
+	// AllWidgetTests comments out Test_org_eclipse_swt_widgets_CoolItem ("Failing test"); only the methods that fail here are skipped, the rest of the class runs.
+	private static final Set<String> COOLITEM_DISABLED = Set.of("test_getBounds", "test_getPreferredSize", "test_setControlLorg_eclipse_swt_widgets_Control",
+			"test_setSizeII");
+	private static final String COOLITEM_CLASS = "org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_CoolItem";
+
 	private final Emitter emitter;
 
 	TestEmitter(Emitter emitter) {
@@ -243,6 +248,9 @@ final class TestEmitter {
 	private String skipReason(ITypeBinding cls, IMethodBinding mb, Set<String> anns) {
 		for (String a : anns) {
 			if (a.startsWith("org.junit.") && !KNOWN.contains(a)) return EmitUtil.goStringLiteral("unsupported annotation @" + a);
+		}
+		if (cls.getErasure().getQualifiedName().equals(COOLITEM_CLASS) && COOLITEM_DISABLED.contains(mb.getName())) {
+			return EmitUtil.goStringLiteral("upstream disables the class in AllWidgetTests.java (\"Failing test\")");
 		}
 		List<IAnnotationBinding> all = new ArrayList<>(List.of(mb.getAnnotations()));
 		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) all.addAll(List.of(t.getAnnotations()));

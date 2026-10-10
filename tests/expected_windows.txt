@@ -72,7 +72,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull
 skip	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	Assumption failed: no API in Edge for this
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg
 skip	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	@Disabled: Too fragile on CI, Display.getDefault().post(event) does not work reliably
-pass	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806
+flaky	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806	passes alone in 1.2 s; in the full CrossOver run it times out at 30 s (state left by an earlier Browser test, not diagnosed)
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addListener_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addwithNull

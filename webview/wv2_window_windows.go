@@ -175,6 +175,7 @@ func (e *wv2Engine) refusePopup() {
 
 // loadRequest navigates with method, headers and body through ICoreWebView2_2.
 func (e *wv2Engine) loadRequest(r LoadRequest) {
+	e.flush()
 	e.do(func() {
 		v2 := queryInterface(e.view, iidWebView2_2)
 		env2 := queryInterface(e.env, iidEnvironment2)

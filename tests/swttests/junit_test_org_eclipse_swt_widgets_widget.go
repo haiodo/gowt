@@ -710,7 +710,7 @@ func (this *Test_org_eclipse_swt_widgets_Widget) Test_notifyListenersILorg_eclip
 	var gc *swt.GC = nil
 	_, ok51 := isswtWidgetToswtControl(this.widget)
 	if ok51 {
-		event.Gc = swt.NewGCDrawable(castswtWidgetToswtControl(this.widget))
+		event.Gc = swt.NewGCDrawable(upcastswtControlToswtDrawable(castswtWidgetToswtControl(this.widget)))
 		gc = event.Gc
 	}
 	this.widget.NotifyListeners(swt.Paint, event)

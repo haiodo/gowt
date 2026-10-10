@@ -48,7 +48,7 @@ func (this *TreeColumnLayout) layoutFn_(composite *swt.Composite, flushCache boo
 	this.AbstractColumnLayout.layoutFn_(composite, flushCache)
 	if this.addListener {
 		this.addListener = false
-		(castswtScrollableToswtTree(this.GetControl(composite))).AddTreeListener(TreeColumnLayoutListener)
+		(castswtScrollableToswtTree(this.GetControl(composite))).AddTreeListener(upcastTreeColumnLayout_TreeLayoutListenerToswtTreeListener(TreeColumnLayoutListener))
 	}
 }
 
@@ -117,6 +117,13 @@ func (this *TreeColumnLayout_TreeLayoutListener) Update(treeLike swt.TreeLike) {
 			tree.GetParent().Layout()
 		}
 	}))
+}
+
+func upcastTreeColumnLayout_TreeLayoutListenerToswtTreeListener(x *TreeColumnLayout_TreeLayoutListener) swt.TreeListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 // j2go: instanceof helper for swt.Tree and its subclasses within the translated set.

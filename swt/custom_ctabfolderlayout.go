@@ -39,7 +39,7 @@ func (this *CTabFolderLayout) computeSize_(composite *Composite, wHint int32, hH
 	if selectedIndex == -1 {
 		selectedIndex = 0
 	}
-	var gc *GC = NewGCDrawable(folder)
+	var gc *GC = NewGCDrawable(upcastCTabFolderToDrawable(folder))
 	for i := int32(0); i < int32(len(items)); i++ {
 		if folder.single {
 			tabW = int32(math.Max(float64(tabW), float64(renderer.ComputeSize(i, SELECTED, gc, DEFAULT, DEFAULT).X)))
@@ -169,4 +169,11 @@ func castCompositeToCTabFolder(x *Composite) *CTabFolder {
 		panic("java.lang.ClassCastException: CTabFolder")
 	}
 	return v
+}
+
+func upcastCTabFolderToDrawable(x *CTabFolder) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

@@ -344,7 +344,7 @@ func (this *Test_org_eclipse_swt_widgets_Control) Test_addPaintListenerLorg_ecli
 	this.control.AddPaintListener(listener)
 	this.eventOccurred = false
 	var event *swt.Event = swt.NewEvent()
-	cond59 := swt.NewGCDrawable(this.control)
+	cond59 := swt.NewGCDrawable(upcastswtControlToswtDrawable(this.control))
 	event.Gc = cond59
 	var gc *swt.GC = cond59
 	this.control.NotifyListeners(swt.Paint, event)

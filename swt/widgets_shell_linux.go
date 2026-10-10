@@ -141,7 +141,7 @@ func (this *Shell) initShellDisplayParentStyleHandleEmbedded(display *Display, p
 		}
 	}
 	if !gtk.GTKGTK4 {
-		this.geometry = gtk.NewGdkGeometry()
+		this.geometry = upcastgtkGdkGeometryTogtkGeometryInterface(gtk.NewGdkGeometry())
 	} else {
 		this.geometry = NewSWTGeometry()
 	}
@@ -2915,6 +2915,13 @@ func ShellMirrorRegion(regionLike RegionLike) *Region {
 		gtk.OSG_free(rects[0])
 	}
 	return mirrored
+}
+
+func upcastgtkGdkGeometryTogtkGeometryInterface(x *gtk.GdkGeometry) gtk.GeometryInterface {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastShellToWidget(x *Shell) *Widget {

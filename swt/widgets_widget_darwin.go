@@ -1879,7 +1879,7 @@ func (this *Widget) AddTypedListener(listener any, eventTypes []int32) {
 	}
 	var typedListener *TypedListener = NewTypedListenerListener(listener)
 	for _, eventType := range eventTypes {
-		this.impl._addListener_(eventType, typedListener)
+		this.impl._addListener_(eventType, upcastTypedListenerToListener(typedListener))
 	}
 }
 
@@ -4228,6 +4228,13 @@ func WidgetCheckBits(style int32, int0 int32, int1 int32, int2 int32, int3 int32
 		style = (style & ^mask) | int5
 	}
 	return style
+}
+
+func upcastTypedListenerToListener(x *TypedListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastcocoaNSStringTococoaId(x *cocoa.NSString) *cocoa.Id {

@@ -272,7 +272,7 @@ func (this *StyledText) AddExtendedModifyListener(extendedModifyListener Extende
 		Error(ERROR_NULL_ARGUMENT)
 	}
 	var typedListener *StyledTextListener = newStyledTextListener(extendedModifyListener)
-	this.AddListener(STExtendedModify, typedListener)
+	this.AddListener(STExtendedModify, upcastStyledTextListenerToListener(typedListener))
 }
 
 func (this *StyledText) AddBidiSegmentListener(listener BidiSegmentListener) {
@@ -4684,7 +4684,7 @@ func (this *StyledText) InitializeAccessible() {
 		e.Result = shortcut
 	}
 	this.accAdapter = &anon857.AccessibleAdapter
-	this.acc.AddAccessibleListener(this.accAdapter)
+	this.acc.AddAccessibleListener(upcastAccessibleAdapterToAccessibleListener(this.accAdapter))
 	anon858 := &StyledTextAnon3{}
 	anon858.impl = anon858
 	anon858.initAccessibleTextExtendedAdapter()
@@ -5070,7 +5070,7 @@ func (this *StyledText) InitializeAccessible() {
 		e.Result = ACCOK
 	}
 	this.accTextExtendedAdapter = &anon858.AccessibleTextExtendedAdapter
-	this.acc.AddAccessibleTextListener(this.accTextExtendedAdapter)
+	this.acc.AddAccessibleTextListener(upcastAccessibleTextExtendedAdapterToAccessibleTextListener(this.accTextExtendedAdapter))
 	anon865 := &StyledTextAnon4{}
 	anon865.fnSetTextAttributes = func(e *AccessibleTextAttributeEvent) {
 		e.Result = ACCOK
@@ -5191,7 +5191,7 @@ func (this *StyledText) InitializeAccessible() {
 		}
 	}
 	this.accAttributeAdapter = &anon866.AccessibleAttributeAdapter
-	this.acc.AddAccessibleAttributeListener(this.accAttributeAdapter)
+	this.acc.AddAccessibleAttributeListener(upcastAccessibleAttributeAdapterToAccessibleAttributeListener(this.accAttributeAdapter))
 	anon869 := &StyledTextAnon6{}
 	anon869.initAccessibleControlAdapter()
 	anon869.fnGetRole = func(e *AccessibleControlEvent) {
@@ -5222,16 +5222,16 @@ func (this *StyledText) InitializeAccessible() {
 		e.Result = this.GetText()
 	}
 	this.accControlAdapter = &anon869.AccessibleControlAdapter
-	this.acc.AddAccessibleControlListener(this.accControlAdapter)
+	this.acc.AddAccessibleControlListener(upcastAccessibleControlAdapterToAccessibleControlListener(this.accControlAdapter))
 	this.AddListener(FocusIn, &ListenerFunc{fn: func(event *Event) {
 		this.acc.SetFocus(ACCCHILDID_SELF)
 	}})
 	this.AddListener(Dispose, &ListenerFunc{fn: func(event *Event) {
-		this.acc.RemoveAccessibleControlListener(this.accControlAdapter)
-		this.acc.RemoveAccessibleAttributeListener(this.accAttributeAdapter)
+		this.acc.RemoveAccessibleControlListener(upcastAccessibleControlAdapterToAccessibleControlListener(this.accControlAdapter))
+		this.acc.RemoveAccessibleAttributeListener(upcastAccessibleAttributeAdapterToAccessibleAttributeListener(this.accAttributeAdapter))
 		this.acc.RemoveAccessibleEditableTextListener(this.accEditableTextListener)
-		this.acc.RemoveAccessibleTextListener(this.accTextExtendedAdapter)
-		this.acc.RemoveAccessibleListener(this.accAdapter)
+		this.acc.RemoveAccessibleTextListener(upcastAccessibleTextExtendedAdapterToAccessibleTextListener(this.accTextExtendedAdapter))
+		this.acc.RemoveAccessibleListener(upcastAccessibleAdapterToAccessibleListener(this.accAdapter))
 	}})
 }
 
@@ -8494,7 +8494,7 @@ func (this *StyledText_Printing) Init() {
 	} else {
 		style = LEFT_TO_RIGHT
 	}
-	this.gc = NewGCDrawableStyle(this.printer, style)
+	this.gc = NewGCDrawableStyle(upcastPrinterToDrawable(this.printer), style)
 	this.gc.SetFont(this.printerFont)
 	this.printerRenderer.SetFont(this.printerFont, this.tabLength)
 	var lineHeight int32 = this.printerRenderer.GetLineHeight()
@@ -8783,6 +8783,13 @@ func upcastStyledTextToControl(x *StyledText) *Control {
 	return &x.Control
 }
 
+func upcastStyledTextListenerToListener(x *StyledTextListener) Listener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 func upcastTextTransferToTransfer(x *TextTransfer) *Transfer {
 	if x == nil {
 		return nil
@@ -8914,6 +8921,13 @@ func (this *StyledTextAnon3) scrollText_(a0 *AccessibleTextEvent) {
 	this.fnscrollText_(a0)
 }
 
+func upcastAccessibleTextExtendedAdapterToAccessibleTextListener(x *AccessibleTextExtendedAdapter) AccessibleTextListener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 // j2go: anonymous AccessibleEditableTextListener subclass.
 type StyledTextAnon4 struct {
 	fnSetTextAttributes func(a0 *AccessibleTextAttributeEvent)
@@ -8958,6 +8972,13 @@ func (this *StyledTextAnon5) GetTextAttributes(a0 *AccessibleTextAttributeEvent)
 	this.fnGetTextAttributes(a0)
 }
 
+func upcastAccessibleAttributeAdapterToAccessibleAttributeListener(x *AccessibleAttributeAdapter) AccessibleAttributeListener {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 // j2go: anonymous AccessibleControlAdapter subclass.
 type StyledTextAnon6 struct {
 	AccessibleControlAdapter
@@ -8976,6 +8997,13 @@ func (this *StyledTextAnon6) GetState(a0 *AccessibleControlEvent) {
 
 func (this *StyledTextAnon6) GetValue(a0 *AccessibleControlEvent) {
 	this.fnGetValue(a0)
+}
+
+func upcastAccessibleControlAdapterToAccessibleControlListener(x *AccessibleControlAdapter) AccessibleControlListener {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func upcastRTFWriterToTextWriter(x *RTFWriter) *TextWriter {
@@ -9040,6 +9068,13 @@ func upcastFontToResource(x *Font) *Resource {
 		return nil
 	}
 	return &x.Resource
+}
+
+func upcastPrinterToDrawable(x *Printer) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }
 
 func init() {

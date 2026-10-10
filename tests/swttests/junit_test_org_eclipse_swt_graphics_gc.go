@@ -34,7 +34,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) SetUp() {
 	this.shell = swt.NewShellDisplay(this.display)
 	this.shell.SetBounds(0, 30, 240, 290)
 	this.image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), Test_org_eclipse_swt_graphics_GCIMAGE_SIZE, Test_org_eclipse_swt_graphics_GCIMAGE_SIZE)
-	this.gc = swt.NewGCDrawable(this.image)
+	this.gc = swt.NewGCDrawable(upcastswtImageToswtDrawable(this.image))
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) TearDown() {
@@ -65,8 +65,8 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 				}
 			}()
 			image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 10, 10)
-			gc1 = swt.NewGCDrawable(image)
-			gc2 = swt.NewGCDrawable(image)
+			gc1 = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
+			gc2 = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 		}
 	}, "No exception thrown for more than one GC on one image")
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for more than one GC on one image", swt.ERROR_INVALID_ARGUMENT, e1)
@@ -94,15 +94,15 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_ConstructorLorg_eclipse_swt_g
 				}
 			}()
 			image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 10, 10)
-			swt.NewGCDrawableStyle(image, swt.RIGHT_TO_LEFT)
-			swt.NewGCDrawableStyle(image, swt.LEFT_TO_RIGHT)
+			swt.NewGCDrawableStyle(upcastswtImageToswtDrawable(image), swt.RIGHT_TO_LEFT)
+			swt.NewGCDrawableStyle(upcastswtImageToswtDrawable(image), swt.LEFT_TO_RIGHT)
 		}
 	}, "No exception thrown for more than one GC on one image")
 	SwtTestUtilAssertSWTProblem("Incorrect exception thrown for more than one GC on one image", swt.ERROR_INVALID_ARGUMENT, e1)
 	var canvas *swt.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(this.shell), swt.NULL)
-	var testGC *swt.GC = swt.NewGCDrawableStyle(canvas, swt.RIGHT_TO_LEFT)
+	var testGC *swt.GC = swt.NewGCDrawableStyle(upcastswtCanvasToswtDrawable(canvas), swt.RIGHT_TO_LEFT)
 	testGC.Dispose()
-	testGC = swt.NewGCDrawableStyle(canvas, swt.LEFT_TO_RIGHT)
+	testGC = swt.NewGCDrawableStyle(upcastswtCanvasToswtDrawable(canvas), swt.LEFT_TO_RIGHT)
 	testGC.Dispose()
 	canvas.Dispose()
 }
@@ -200,7 +200,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	var targetScale float32 = 2
 	var srcSize int32 = 50
 	var image *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), srcSize, srcSize)
-	var gcSrc *swt.GC = swt.NewGCDrawable(image)
+	var gcSrc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 	gcSrc.SetBackground(this.display.GetSystemColor(swt.COLOR_BLACK))
 	gcSrc.FillRectangle(0, 0, srcSize, srcSize)
 	gcSrc.SetBackground(this.display.GetSystemColor(swt.COLOR_WHITE))
@@ -229,7 +229,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_b
 	})
 	junit.AssertTrue(paintListenerCalled.Get(), "paint listener was never called")
 	var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), canvasWidth, canvasHeight)
-	var gcCopy *swt.GC = swt.NewGCDrawable(canvas)
+	var gcCopy *swt.GC = swt.NewGCDrawable(upcastswtCanvasToswtDrawable(canvas))
 	gcCopy.CopyArea(target, 0, 0)
 	gcCopy.Dispose()
 	var data *swt.ImageData = target.GetImageData()
@@ -346,7 +346,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImageLorg_eclipse_swt_gra
 		}()
 	}
 	var referenceImage *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), Test_org_eclipse_swt_graphics_GCIMAGE_SIZE, Test_org_eclipse_swt_graphics_GCIMAGE_SIZE)
-	var referenceImageGC *swt.GC = swt.NewGCDrawable(referenceImage)
+	var referenceImageGC *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(referenceImage))
 	referenceImageGC.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 4, 4)
 	referenceImageGC.DrawImageImageDestXDestYDestWidthDestHeight(image, 10, 10, 4, 4)
 	var referenceImageData *swt.ImageData = referenceImage.GetImageDataZoom(swt.DPIUtilGetDeviceZoom())
@@ -382,7 +382,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImageLorg_eclipse_swt_gra
 	var width int32 = 32
 	var height int32 = 48
 	var drawToImage *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), width, height)
-	var gc *swt.GC = swt.NewGCDrawable(drawToImage)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(drawToImage))
 	gc.SetAntialias(swt.OFF)
 	var drawnRgb *swt.RGB = swt.NewRGB(255, 255, 255)
 	var undrawnRgb *swt.RGB = swt.NewRGB(0, 0, 0)
@@ -432,7 +432,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImageLorg_eclipse_swt_gra
 			drawToImage.Dispose()
 			image.Dispose()
 		}()
-		var gc *swt.GC = swt.NewGCDrawable(drawToImage)
+		var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(drawToImage))
 		var e error = junit.AssertThrows[*jrt.IllegalArgumentException](func() {
 			gc.DrawImageImageDestXDestYDestWidthDestHeight(image, 0, 0, 1, 1)
 		})
@@ -444,7 +444,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImageLorg_eclipse_swt_gra
 	var width int32 = 50
 	var height int32 = 70
 	var drawToImage *swt.Image = swt.NewImageDeviceData(upcastswtDisplayToswtDevice(this.display), swt.NewImageData(width, height, 32, swt.NewPaletteDataRedMaskGreenMaskBlueMask(0xFF0000, 0xFF00, 0xFF)))
-	var gc *swt.GC = swt.NewGCDrawable(drawToImage)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(drawToImage))
 	gc.SetAntialias(swt.OFF)
 	var drawnRgb *swt.RGB = swt.NewRGB(255, 255, 255)
 	var undrawnRgb *swt.RGB = swt.NewRGB(0, 0, 0)
@@ -603,7 +603,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawTextLjava_lang_StringIIZ(
 func (this *Test_org_eclipse_swt_graphics_GC) Test_equalsLjava_lang_Object() {
 	junit.AssertTrue(this.gc.Equals(this.gc))
 	var canvas *swt.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(this.shell), swt.NULL)
-	var testGC *swt.GC = swt.NewGCDrawable(canvas)
+	var testGC *swt.GC = swt.NewGCDrawable(upcastswtCanvasToswtDrawable(canvas))
 	junit.AssertFalse(testGC.Equals(this.gc))
 	testGC.Dispose()
 }
@@ -692,15 +692,15 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_getFontMetrics_notAffectedByT
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_getStyle() {
 	var canvas *swt.Canvas = swt.NewCanvasParentStyle(upcastswtShellToswtComposite(this.shell), swt.NULL)
-	var testGC *swt.GC = swt.NewGCDrawableStyle(canvas, swt.LEFT_TO_RIGHT)
+	var testGC *swt.GC = swt.NewGCDrawableStyle(upcastswtCanvasToswtDrawable(canvas), swt.LEFT_TO_RIGHT)
 	var style int32 = testGC.GetStyle()
 	junit.AssertNotEquals(int32(0), int32((style & swt.LEFT_TO_RIGHT)))
 	testGC.Dispose()
-	testGC = swt.NewGCDrawable(canvas)
+	testGC = swt.NewGCDrawable(upcastswtCanvasToswtDrawable(canvas))
 	style = testGC.GetStyle()
 	junit.AssertNotEquals(int32(0), int32((style & swt.LEFT_TO_RIGHT)))
 	testGC.Dispose()
-	testGC = swt.NewGCDrawableStyle(canvas, swt.RIGHT_TO_LEFT)
+	testGC = swt.NewGCDrawableStyle(upcastswtCanvasToswtDrawable(canvas), swt.RIGHT_TO_LEFT)
 	style = testGC.GetStyle()
 	junit.AssertNotEquals(int32(0), int32((style & swt.RIGHT_TO_LEFT)))
 	testGC.Dispose()
@@ -708,7 +708,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_getStyle() {
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_hashCode() {
 	junit.AssertEquals(int32(this.gc.HashCode()), int32(this.gc.HashCode()))
-	var gc2 *swt.GC = swt.NewGCDrawable(this.shell)
+	var gc2 *swt.GC = swt.NewGCDrawable(upcastswtShellToswtDrawable(this.shell))
 	junit.AssertNotEquals(int32(gc2.HashCode()), int32(this.gc.HashCode()))
 	gc2.Dispose()
 }
@@ -981,7 +981,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_bug493455_drawImageAlpha_srcP
 	var initImageData *swt.ImageData = swt.NewImageData(200, 200, 32, swt.NewPaletteDataRedMaskGreenMaskBlueMask(0xff, 0xff00, 0xff0000))
 	initImageData.AlphaData = make([]int8, 200*200)
 	var srcImage *swt.Image = swt.NewImageDeviceData(upcastswtDisplayToswtDevice(this.display), initImageData)
-	var srcImageGc *swt.GC = swt.NewGCDrawable(srcImage)
+	var srcImageGc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(srcImage))
 	srcImageGc.SetAdvanced(true)
 	srcImageGc.SetBackground(swt.NewColorRgb(red))
 	srcImageGc.FillRectangle(0, 0, 200, 200)
@@ -1017,7 +1017,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_drawLine_noSingularitiesIn45D
 	var imageSize int32 = 3
 	var centerPixel int32 = imageSize / 2
 	var image *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(swt.DisplayGetDefault()), imageSize, imageSize)
-	var gc *swt.GC = swt.NewGCDrawable(image)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 	var rotation *swt.Transform = swt.NewTransform(gc.GetDevice())
 	gc.GetTransform(rotation)
 	{
@@ -1052,7 +1052,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFrom
 				}
 			}()
 			var image *swt.Image = swt.NewImageDeviceWidthHeight(nil, 100, 100)
-			var gc *swt.GC = swt.NewGCDrawable(image)
+			var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 			gc.Dispose()
 			image.Dispose()
 		}()
@@ -1063,7 +1063,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_bug1288_createGCFromImageFrom
 }
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_noMemoryLeakAfterDispose() {
-	var testGC *swt.GC = swt.NewGCDrawable(this.display)
+	var testGC *swt.GC = swt.NewGCDrawable(upcastswtDisplayToswtDrawable(this.display))
 	var image *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 1, 1)
 	{
 		defer func() {
@@ -1105,7 +1105,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) ExecuteWithNonDefaultDeviceZoom(ex
 	var previousDeviceZoom int32 = swt.DPIUtilGetDeviceZoom()
 	swt.DPIUtilSetDeviceZoom(200)
 	this.gc.Dispose()
-	this.gc = swt.NewGCDrawable(this.image)
+	this.gc = swt.NewGCDrawable(upcastswtImageToswtDrawable(this.image))
 	{
 		defer func() {
 			swt.DPIUtilSetDeviceZoom(previousDeviceZoom)
@@ -1261,6 +1261,20 @@ func (this *Test_org_eclipse_swt_graphics_GC_TestImages) Dispose() {
 	this.alpha.Dispose()
 }
 
+func upcastswtImageToswtDrawable(x *swt.Image) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
+func upcastswtCanvasToswtDrawable(x *swt.Canvas) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
+}
+
 // j2go: anonymous Canvas subclass.
 type Test_org_eclipse_swt_graphics_GCAnon1 struct {
 	*swt.Canvas
@@ -1286,4 +1300,11 @@ func (this *ImageDataAtSizeProviderFunc) GetDefaultSize() *swt.Point {
 
 func (this *ImageDataAtSizeProviderFunc) GetImageData(a0 int32) *swt.ImageData {
 	return swt.ImageDataAtSizeProviderDefaultGetImageData(this, a0)
+}
+
+func upcastswtDisplayToswtDrawable(x *swt.Display) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

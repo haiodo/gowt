@@ -1088,7 +1088,7 @@ func (this *Device_ResourceReference) HashCode() int32 {
 	var resource *Resource = func() *Resource { _ = []any{this}; panic("j2go: unresolved call get") }()
 	var cond280 int32
 	if resource != (nil) {
-		cond280 = jrt.HashCodeOf(resource)
+		cond280 = jrt.HashCodeOf(resource.Impl())
 	} else {
 		cond280 = 0
 	}

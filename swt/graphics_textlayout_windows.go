@@ -384,8 +384,8 @@ func (this *TextLayout) ComputeRuns(gcLike GCLike) {
 				var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 				win32.OSSelectObject(srcHdc, this.GetItemFont(run, gc))
 				this.metricsAdapter.GetTextMetrics(srcHdc, lptm)
-				run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
-				run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
+				run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmAscent, this.GetZoom(gc))
+				run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmDescent, this.GetZoom(gc))
 				ascentInPoints = int32(math.Max(float64(ascentInPoints), float64(run.ascentInPoints)))
 				descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
 			}
@@ -723,16 +723,16 @@ func (this *TextLayout) DrawInPixelsGcXInPointsYInPointsSelectionStartSelectionE
 			selectionEnd = this.TranslateOffset(int32(math.Min(float64(int32(math.Max(float64(0), float64(selectionEnd)))), float64(length-1))))
 		}
 	}
-	var x int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), xInPoints, this.GetZoom(gc))
+	var x int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), xInPoints, this.GetZoom(gc))
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSSetBkMode(hdc, win32.OSTRANSPARENT)
 	for line := int32(0); line < int32(len(this.runs)); line++ {
 		var drawX int32 = x + this.GetLineIndentInPixel(line)
-		var drawY int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line], this.GetZoom(gc))
+		var drawY int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), yInPoints+this.lineY[line], this.GetZoom(gc))
 		var lineRuns []*TextLayout_StyleItem = this.runs[line]
-		var drawYWithLineHeight int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line+1]-this.lineSpacingInPoints, this.GetZoom(gc))
-		var drawYWithLineHeightWithSpacing int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), yInPoints+this.lineY[line+1], this.GetZoom(gc))
-		var lineHeight int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line+1]-this.lineY[line]-this.lineSpacingInPoints, this.GetZoom(gc))
+		var drawYWithLineHeight int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), yInPoints+this.lineY[line+1]-this.lineSpacingInPoints, this.GetZoom(gc))
+		var drawYWithLineHeightWithSpacing int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), yInPoints+this.lineY[line+1], this.GetZoom(gc))
+		var lineHeight int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[line+1]-this.lineY[line]-this.lineSpacingInPoints, this.GetZoom(gc))
 		var lineHeightWithSpacing int32 = drawYWithLineHeightWithSpacing - drawY
 		var extents bool = false
 		if (flags&(FULL_SELECTION|DELIMITER_SELECTION)) != 0 && (hasSelection || (flags&LAST_LINE_SELECTION) != 0) {
@@ -796,10 +796,10 @@ func (this *TextLayout) DrawInPixelsGcXInPointsYInPointsSelectionStartSelectionE
 			}
 			drawX += run.width
 		}
-		var baselineInPixels int32 = int32(math.Max(float64(0), float64(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.ascent, this.GetZoom(gc)))))
+		var baselineInPixels int32 = int32(math.Max(float64(0), float64(Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.ascent, this.GetZoom(gc)))))
 		var lineUnderlinePos int32 = 0
 		for _, run := range lineRuns {
-			baselineInPixels = int32(math.Max(float64(baselineInPixels), float64(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)))))
+			baselineInPixels = int32(math.Max(float64(baselineInPixels), float64(Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.ascentInPoints, this.GetZoom(gc)))))
 			lineUnderlinePos = int32(math.Min(float64(lineUnderlinePos), float64(run.underlinePos)))
 		}
 		var borderClip *win32.RECT = nil
@@ -1175,7 +1175,7 @@ func (this *TextLayout) DrawRunText(gcLike GCLike, hdc int64, runLike TextLayout
 		offset = 0
 	}
 	var x int32 = rect.Left + offset
-	var y int32 = rect.Top + (baselineInPixels - Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)))
+	var y int32 = rect.Top + (baselineInPixels - Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.ascentInPoints, this.GetZoom(gc)))
 	var hFont int64 = this.GetItemFont(run, gc)
 	win32.OSSelectObject(hdc, hFont)
 	if fullSelection {
@@ -1218,7 +1218,7 @@ func (this *TextLayout) DrawRunTextGDIP(gcLike GCLike, graphics int64, runLike T
 	var partialSelection bool = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd)
 	var drawY int32 = rect.Top + baselineInPixels
 	if run.style != (nil) && run.style.Rise != 0 {
-		drawY -= Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.style.Rise, this.GetZoom(gc))
+		drawY -= Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.style.Rise, this.GetZoom(gc))
 	}
 	var drawX int32 = rect.Left
 	var brush int64 = color
@@ -1422,7 +1422,7 @@ func (this *TextLayout) DrawStrikeout(gcLike GCLike, hdc int64, x int32, baselin
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-run.strikeoutPos-riseInPixels, x+run.x+run.width, baselineInPixels-run.strikeoutPos+run.strikeoutThickness-riseInPixels)
 		var brush int64 = win32.OSCreateSolidBrush(color)
 		win32.OSFillRect(hdc, rect, brush)
@@ -1490,7 +1490,7 @@ func (this *TextLayout) DrawStrikeoutGDIP(gcLike GCLike, graphics int64, x int32
 				}
 			}
 		}
-		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), style.Rise, this.GetZoom(gc))
 		if clipRect != (nil) {
 			var gstate int32 = win32.GdipGraphics_Save(graphics)
 			if clipRect.Left == -1 {
@@ -1568,7 +1568,7 @@ func (this *TextLayout) DrawUnderline(gcLike GCLike, hdc int64, x int32, baselin
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-lineUnderlinePos-riseInPixels, x+run.x+run.width, baselineInPixels-lineUnderlinePos+run.underlineThickness-riseInPixels)
 		if clipRect != (nil) {
 			if clipRect.Left == -1 {
@@ -1659,7 +1659,7 @@ func (this *TextLayout) DrawUnderline(gcLike GCLike, hdc int64, x int32, baselin
 				}
 				var pen int64 = win32.OSCreatePen(penStyle, 1, color)
 				var oldPen int64 = win32.OSSelectObject(hdc, pen)
-				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc))
+				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.descentInPoints, this.GetZoom(gc))
 				win32.OSSetRect(rect, rect.Left, baselineInPixels+descentInPixels, rect.Right, baselineInPixels+descentInPixels+run.underlineThickness)
 				win32.OSMoveToEx(hdc, rect.Left, rect.Top, int64(0))
 				win32.OSLineTo(hdc, rect.Right, rect.Top)
@@ -1729,7 +1729,7 @@ func (this *TextLayout) DrawUnderlineGDIP(gcLike GCLike, graphics int64, x int32
 			}
 		}
 		var rect *win32.RECT = win32.NewRECT()
-		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), style.Rise, this.GetZoom(gc))
+		var riseInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), style.Rise, this.GetZoom(gc))
 		win32.OSSetRect(rect, x+left, baselineInPixels-lineUnderlinePos-riseInPixels, x+run.x+run.width, baselineInPixels-lineUnderlinePos+run.underlineThickness-riseInPixels)
 		var gdipRect *win32.Rect = nil
 		if clipRect != (nil) {
@@ -1838,7 +1838,7 @@ func (this *TextLayout) DrawUnderlineGDIP(gcLike GCLike, graphics int64, x int32
 					gstate = win32.GdipGraphics_Save(graphics)
 					win32.GdipGraphics_SetClipGraphicsRectCombineMode(graphics, gdipRect, win32.GdipCombineModeExclude)
 				}
-				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.descentInPoints, this.GetZoom(gc))
+				var descentInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.descentInPoints, this.GetZoom(gc))
 				win32.GdipGraphics_DrawLine(graphics, pen, rect.Left, baselineInPixels+descentInPixels, run.width-run.length, baselineInPixels+descentInPixels)
 				if gdipRect != (nil) {
 					win32.GdipGraphics_Restore(graphics, gstate)
@@ -1902,7 +1902,7 @@ func (this *TextLayout) GetBounds() *Rectangle {
 
 func (this *TextLayout) GetBoundsStartEnd(start int32, end int32) *Rectangle {
 	this.CheckLayout()
-	return Win32DPIUtilsPixelToPointOverload5(this.impl.getDevice_(), this.GetBoundsInPixels(start, end), this.GetZoom(nil))
+	return Win32DPIUtilsPixelToPointOverload5(upcastDeviceToDrawable(this.impl.getDevice_()), this.GetBoundsInPixels(start, end), this.GetZoom(nil))
 }
 
 func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
@@ -1957,7 +1957,7 @@ func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
 			var cx int32 = 0
 			if run.style != (nil) && run.style.Metrics != (nil) {
 				var metrics *GlyphMetrics = run.style.Metrics
-				cx = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (start - run.start)
+				cx = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), metrics.Width, this.GetZoom0()) * (start - run.start)
 			} else {
 				if !run.tab {
 					var iX int32 = this.ScriptCPtoX(start-run.start, false, run)
@@ -1978,7 +1978,7 @@ func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
 			var cx int32 = run.width
 			if run.style != (nil) && run.style.Metrics != (nil) {
 				var metrics *GlyphMetrics = run.style.Metrics
-				cx = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (end - run.start + 1)
+				cx = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), metrics.Width, this.GetZoom0()) * (end - run.start + 1)
 			} else {
 				if !run.tab {
 					var iX int32 = this.ScriptCPtoX(end-run.start, true, run)
@@ -2075,7 +2075,7 @@ func (this *TextLayout) GetLevel(offset int32) int32 {
 
 func (this *TextLayout) GetLineBounds(lineIndex int32) *Rectangle {
 	this.CheckLayout()
-	return Win32DPIUtilsPixelToPointOverload5(this.impl.getDevice_(), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0())
+	return Win32DPIUtilsPixelToPointOverload5(upcastDeviceToDrawable(this.impl.getDevice_()), this.GetLineBoundsInPixels(lineIndex), this.GetZoom0())
 }
 
 func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32) *Rectangle {
@@ -2084,9 +2084,9 @@ func (this *TextLayout) GetLineBoundsInPixels(lineIndex int32) *Rectangle {
 		Error(ERROR_INVALID_RANGE)
 	}
 	var x int32 = this.GetLineIndentInPixel(lineIndex)
-	var y int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[lineIndex], this.GetZoom0())
+	var y int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[lineIndex], this.GetZoom0())
 	var width int32 = this.lineWidthInPixels[lineIndex]
-	var height int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[lineIndex+1]-this.lineY[lineIndex]-this.lineSpacingInPoints, this.GetZoom0())
+	var height int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[lineIndex+1]-this.lineY[lineIndex]-this.lineSpacingInPoints, this.GetZoom0())
 	return NewRectangle(x, y, width, height)
 }
 
@@ -2170,9 +2170,9 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 	this.metricsAdapter.GetTextMetrics(srcHdc, lptm)
 	win32.OSDeleteDC(srcHdc)
 	this.device.impl.internal_dispose_GC_(hDC, nil)
-	var ascentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmAscent, zoom)), float64(this.ascent)))
-	var descentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmDescent, zoom)), float64(this.descent)))
-	var leadingInPoints int32 = Win32DPIUtilsPixelToPointOverload2(this.device, lptm.TmInternalLeading, zoom)
+	var ascentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.device), lptm.TmAscent, zoom)), float64(this.ascent)))
+	var descentInPoints int32 = int32(math.Max(float64(Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.device), lptm.TmDescent, zoom)), float64(this.descent)))
+	var leadingInPoints int32 = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.device), lptm.TmInternalLeading, zoom)
 	if jrt.StringLength(this.text) != 0 {
 		for _, run := range this.runs[lineIndex] {
 			if run.ascentInPoints > ascentInPoints {
@@ -2182,10 +2182,10 @@ func (this *TextLayout) GetLineMetrics(lineIndex int32) *FontMetrics {
 			descentInPoints = int32(math.Max(float64(descentInPoints), float64(run.descentInPoints)))
 		}
 	}
-	lptm.TmAscent = Win32DPIUtilsPointToPixelOverload3(this.device, ascentInPoints, zoom)
-	lptm.TmDescent = Win32DPIUtilsPointToPixelOverload3(this.device, descentInPoints, zoom)
-	lptm.TmHeight = Win32DPIUtilsPointToPixelOverload3(this.device, ascentInPoints+descentInPoints, zoom)
-	lptm.TmInternalLeading = Win32DPIUtilsPointToPixelOverload3(this.device, leadingInPoints, zoom)
+	lptm.TmAscent = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.device), ascentInPoints, zoom)
+	lptm.TmDescent = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.device), descentInPoints, zoom)
+	lptm.TmHeight = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.device), ascentInPoints+descentInPoints, zoom)
+	lptm.TmInternalLeading = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.device), leadingInPoints, zoom)
 	lptm.TmAveCharWidth = 0
 	return FontMetricsWin32_new(lptm, this.nativeZoom)
 }
@@ -2202,7 +2202,7 @@ func (this *TextLayout) GetLineOffsets() []int32 {
 
 func (this *TextLayout) GetLocation(offset int32, trailing bool) *Point {
 	this.CheckLayout()
-	return Win32DPIUtilsPixelToPointAsLocation(this.impl.getDevice_(), this.GetLocationInPixels(offset, trailing), this.GetZoom0())
+	return Win32DPIUtilsPixelToPointAsLocation(upcastDeviceToDrawable(this.impl.getDevice_()), this.GetLocationInPixels(offset, trailing), this.GetZoom0())
 }
 
 func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point {
@@ -2221,7 +2221,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 	}
 	line = int32(math.Min(float64(line), float64(int32(len(this.runs))-1)))
 	if offset == length {
-		return NewPoint(this.GetLineIndentInPixel(line)+this.lineWidthInPixels[line], Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line], this.GetZoom0()))
+		return NewPoint(this.GetLineIndentInPixel(line)+this.lineWidthInPixels[line], Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[line], this.GetZoom0()))
 	}
 	var ch uint16 = utf16.Encode([]rune(this.segmentsText))[offset]
 	if trailing {
@@ -2263,7 +2263,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 					} else {
 						cond488 = 0
 					}
-					width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * (offset - run.start + (cond488))
+					width = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), metrics.Width, this.GetZoom0()) * (offset - run.start + (cond488))
 				} else {
 					if run.tab {
 						if trailing || (offset == length) {
@@ -2281,7 +2281,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 						}
 					}
 				}
-				return NewPoint(run.x+width, Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line], this.GetZoom0())+this.GetScaledVerticalIndent())
+				return NewPoint(run.x+width, Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[line], this.GetZoom0())+this.GetScaledVerticalIndent())
 			}
 		}
 	}
@@ -2435,7 +2435,7 @@ func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
 	if point == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	return this.GetOffsetInPixels(Win32DPIUtilsPointToPixelAsLocation(this.impl.getDevice_(), point, this.GetZoom0()), trailing)
+	return this.GetOffsetInPixels(Win32DPIUtilsPointToPixelAsLocation(upcastDeviceToDrawable(this.impl.getDevice_()), point, this.GetZoom0()), trailing)
 }
 
 func (this *TextLayout) GetOffsetInPixels(pointLike PointLike, trailing []int32) int32 {
@@ -2449,7 +2449,7 @@ func (this *TextLayout) GetOffsetInPixels(pointLike PointLike, trailing []int32)
 
 func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) int32 {
 	this.CheckLayout()
-	return this.GetOffsetInPixelsXYTrailing(Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), x, this.GetZoom0()), Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), y, this.GetZoom0()), trailing)
+	return this.GetOffsetInPixelsXYTrailing(Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), x, this.GetZoom0()), Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), y, this.GetZoom0()), trailing)
 }
 
 func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing []int32) int32 {
@@ -2460,7 +2460,7 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 	var line int32
 	var lineCount int32 = int32(len(this.runs))
 	for line = 0; line < lineCount; line++ {
-		if Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.lineY[line+1], this.GetZoom0()) > y {
+		if Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[line+1], this.GetZoom0()) > y {
 			break
 		}
 	}
@@ -2491,7 +2491,7 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 				if run.style != (nil) && run.style.Metrics != (nil) {
 					var metrics *GlyphMetrics = run.style.Metrics
 					if metrics.Width > 0 {
-						var metricsWidthInPixels int32 = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0())
+						var metricsWidthInPixels int32 = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), metrics.Width, this.GetZoom0())
 						if trailing != (nil) {
 							if xRun%metricsWidthInPixels < metricsWidthInPixels/2 {
 								trailing[0] = 0
@@ -2725,7 +2725,7 @@ func (this *TextLayout) GetScaledVerticalIndent() int32 {
 	if this.verticalIndentInPoints == 0 {
 		return this.verticalIndentInPoints
 	}
-	return Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), this.verticalIndentInPoints, this.GetZoom0())
+	return Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.verticalIndentInPoints, this.GetZoom0())
 }
 
 func (this *TextLayout) GetStyle(offset int32) *TextStyle {
@@ -3519,8 +3519,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		if count > 0 {
 			var metaFile int64 = this.CreateMetafileWithChars(hdc, hFont, sampleChars, count)
 			var emr *win32.EMREXTCREATEFONTINDIRECTW = win32.NewEMREXTCREATEFONTINDIRECTW()
-			func() { panic("j2go: unsupported TypeDeclarationStatement") }() // TODO(gowt-port): class MetaFileEnumProc {   long metaFileEnumProc(  long hDC,  long table,  long record,  long nObj,  long lpData){     OS.MoveMemory(emr.emr,record,EMR.sizeof); switch (emr.emr.iType) { case OS.EMR_EXTCREATEFONTINDIRECTW:      OS.MoveMemory(emr,record,EMREXTCREATEFONTINDIRECTW.sizeof);     break; case OS.EMR_EXTTEXTOUTW:  return 0; } return 1; } }
-			var object any = func() any { panic("j2go: unresolved new MetaFileEnumProc") }()
+			var object any = any(&struct{}{})
 			var compilerWarningWorkaround bool = false
 			if compilerWarningWorkaround {
 				func() int64 {
@@ -3529,7 +3528,19 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 				}()
 			}
 			_ = object
-			var callback *Callback = func() *Callback { _ = []any{object}; panic("j2go: unsupported Callback") }()
+			var callback *Callback = NewCallbackFn(func(args []int64) int64 {
+				return (func(hDC int64, table int64, record int64, nObj int64, lpData int64) int64 {
+					win32.OSMoveMemoryOverload68(emr.Emr, record, win32.EMRSizeof)
+					switch emr.Emr.IType {
+					case win32.OSEMR_EXTCREATEFONTINDIRECTW:
+						win32.OSMoveMemoryOverload69(emr, record, win32.EMREXTCREATEFONTINDIRECTWSizeof)
+						break
+					case win32.OSEMR_EXTTEXTOUTW:
+						return int64(0)
+					}
+					return int64(1)
+				})(args[0], args[1], args[2], args[3], args[4])
+			}, 5)
 			win32.OSEnumEnhMetaFile(int64(0), metaFile, callback.GetAddress(), int64(0), nil)
 			win32.OSDeleteEnhMetaFile(metaFile)
 			callback.Dispose()
@@ -3641,7 +3652,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		}
 		if style.Metrics != (nil) {
 			var metrics *GlyphMetrics = style.Metrics
-			run.width = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), metrics.Width, this.GetZoom0()) * int32(math.Max(float64(1), float64(run.glyphCount)))
+			run.width = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), metrics.Width, this.GetZoom0()) * int32(math.Max(float64(1), float64(run.glyphCount)))
 			run.ascentInPoints = metrics.Ascent
 			run.descentInPoints = metrics.Descent
 			run.leadingInPoints = 0
@@ -3653,9 +3664,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 				lptm = win32.NewTEXTMETRIC()
 				this.metricsAdapter.GetTextMetrics(hdc, lptm)
 			}
-			run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
-			run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
-			run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc))
+			run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmAscent, this.GetZoom(gc))
+			run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmDescent, this.GetZoom(gc))
+			run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmInternalLeading, this.GetZoom(gc))
 		}
 		if lotm != (nil) {
 			run.underlinePos = lotm.OtmsUnderscorePosition
@@ -3665,7 +3676,7 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		} else {
 			run.underlinePos = 1
 			run.underlineThickness = 1
-			run.strikeoutPos = Win32DPIUtilsPointToPixelOverload3(this.impl.getDevice_(), run.ascentInPoints, this.GetZoom(gc)) / 2
+			run.strikeoutPos = Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), run.ascentInPoints, this.GetZoom(gc)) / 2
 			run.strikeoutThickness = 1
 		}
 		run.ascentInPoints += style.Rise
@@ -3673,9 +3684,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 	} else {
 		var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 		this.metricsAdapter.GetTextMetrics(hdc, lptm)
-		run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmAscent, this.GetZoom(gc))
-		run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmDescent, this.GetZoom(gc))
-		run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(this.impl.getDevice_(), lptm.TmInternalLeading, this.GetZoom(gc))
+		run.ascentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmAscent, this.GetZoom(gc))
+		run.descentInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmDescent, this.GetZoom(gc))
+		run.leadingInPoints = Win32DPIUtilsPixelToPointOverload2(upcastDeviceToDrawable(this.impl.getDevice_()), lptm.TmInternalLeading, this.GetZoom(gc))
 	}
 }
 

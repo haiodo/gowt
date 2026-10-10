@@ -316,7 +316,7 @@ func (this *TreeColumn) Pack() {
 		var sortRect cocoa.NSRect = headerCell.SortIndicatorRectForBounds(cocoa.NSRect{})
 		width += int32(math.Ceil(float64(sortRect.Width + float64(2*TreeColumnMARGIN))))
 	}
-	var gc *GC = NewGCDrawable(this.parent)
+	var gc *GC = NewGCDrawable(upcastTreeToDrawable(this.parent))
 	width = int32(math.Max(float64(width), float64(this.parent.CalculateWidth(this.parent.items, this.parent.IndexOfColumn(this), gc, true))))
 	gc.impl.dispose_()
 	this.SetWidth(width)
@@ -459,4 +459,11 @@ func (this *TreeColumn) tooltipText_() string {
 
 func TreeColumnCheckStyle(style int32) int32 {
 	return WidgetCheckBits(style, LEFT, CENTER, RIGHT, 0, 0, 0)
+}
+
+func upcastTreeToDrawable(x *Tree) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

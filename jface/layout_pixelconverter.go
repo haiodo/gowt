@@ -43,7 +43,7 @@ func NewPixelConverterFont(fontLike swt.FontLike) *PixelConverter {
 }
 
 func (this *PixelConverter) initPixelConverterFont(font *swt.Font) {
-	var gc *swt.GC = swt.NewGCDrawable(font.GetDevice())
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtDeviceToswtDrawable(font.GetDevice()))
 	gc.SetFont(font)
 	this.fontMetrics = gc.GetFontMetrics()
 	gc.Dispose()
@@ -63,4 +63,11 @@ func (this *PixelConverter) ConvertVerticalDLUsToPixels(dlus int32) int32 {
 
 func (this *PixelConverter) ConvertWidthInCharsToPixels(chars int32) int32 {
 	return DialogConvertWidthInCharsToPixels(this.fontMetrics, chars)
+}
+
+func upcastswtDeviceToswtDrawable(x *swt.Device) swt.Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

@@ -72,7 +72,7 @@ func (this *Transform) initTransformDeviceM11M12M21M22DxDy(device *Device, m11 f
 	this.zoomToHandle = jrt.NewMap()
 	this.operations = jrt.NewList()
 	this.device.CheckGDIP()
-	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), m11, m12, m21, m22, dx, dy))
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(upcastDeviceToDrawable(this.impl.getDevice_()), m11, m12, m21, m22, dx, dy))
 	this.impl.init_()
 	this.device.RegisterResourceWithZoomSupport(upcastTransformToResource(this))
 }
@@ -105,7 +105,7 @@ func (this *Transform) GetElements(elements []float32) {
 	jrt.Cast[bool](this.ApplyUsingAnyHandle(func(a0 *Transform_TransformHandle) any {
 		return func(transformHandle *Transform_TransformHandle) bool {
 			win32.GdipMatrix_GetElements(transformHandle.handle, elements)
-			var drawable Drawable = this.impl.getDevice_()
+			var drawable Drawable = upcastDeviceToDrawable(this.impl.getDevice_())
 			var zoom int32 = transformHandle.zoom
 			elements[4] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[4], zoom)
 			elements[5] = Win32DPIUtilsPixelToPointOverload3(drawable, elements[5], zoom)
@@ -119,7 +119,7 @@ func (this *Transform) Identity() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	this.operations.Clear()
-	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), float32(1), float32(0), float32(0), float32(1), float32(0), float32(0)))
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(upcastDeviceToDrawable(this.impl.getDevice_()), float32(1), float32(0), float32(0), float32(1), float32(0), float32(0)))
 }
 
 func (this *Transform) Invert() {
@@ -181,7 +181,7 @@ func (this *Transform) SetElements(m11 float32, m12 float32, m21 float32, m22 fl
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
 	this.operations.Clear()
-	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(this.impl.getDevice_(), m11, m12, m21, m22, dx, dy))
+	this.StoreAndApplyOperationForAllHandles(newTransformSetElementsOperation(upcastDeviceToDrawable(this.impl.getDevice_()), m11, m12, m21, m22, dx, dy))
 }
 
 func (this *Transform) Shear(shearX float32, shearY float32) {
@@ -198,7 +198,7 @@ func (this *Transform) TransformFn(pointArray []float32) {
 	if pointArray == (nil) {
 		Error(ERROR_NULL_ARGUMENT)
 	}
-	var drawable Drawable = this.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.impl.getDevice_())
 	jrt.Cast[[]float32](this.ApplyUsingAnyHandle(func(a0 *Transform_TransformHandle) any {
 		return func(transformHandle *Transform_TransformHandle) []float32 {
 			var length int32 = int32(len(pointArray))
@@ -218,7 +218,7 @@ func (this *Transform) Translate(offsetX float32, offsetY float32) {
 	if this.impl.isDisposed_() {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	this.StoreAndApplyOperationForAllHandles(newTransformTranslateOperation(this.impl.getDevice_(), offsetX, offsetY))
+	this.StoreAndApplyOperationForAllHandles(newTransformTranslateOperation(upcastDeviceToDrawable(this.impl.getDevice_()), offsetX, offsetY))
 }
 
 func (this *Transform) StoreAndApplyOperationForAllHandles(operation Transform_Operation) {
@@ -621,4 +621,11 @@ func (this *Transform_TranslateOperation) Apply(transformHandle *Transform_Trans
 
 type Transform_Operation interface {
 	Apply(transformHandle *Transform_TransformHandle)
+}
+
+func upcastDeviceToDrawable(x *Device) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

@@ -495,7 +495,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var sourceImage *swt.Image = swt.NewImageDeviceStream(upcastswtDisplayToswtDevice(this.display), jrt.NewByteArrayInputStream(bytes))
 	var copiedImage *swt.Image = swt.NewImageDeviceSrcImageFlag(upcastswtDisplayToswtDevice(this.display), sourceImage, swt.IMAGE_COPY)
 	var targetImage *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 1, 1)
-	var gc *swt.GC = swt.NewGCDrawable(targetImage)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(targetImage))
 	gc.DrawImage(sourceImage, 0, 0)
 	gc.DrawImage(targetImage, 0, 0)
 	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(sourceImage.GetImageData(), copiedImage.GetImageData())))
@@ -517,7 +517,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_ConstructorLorg_eclipse_sw
 	var sourceImage *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), fileNameProvider)
 	var copiedImage *swt.Image = swt.NewImageDeviceSrcImageFlag(upcastswtDisplayToswtDevice(this.display), sourceImage, swt.IMAGE_COPY)
 	var targetImage *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 1, 1)
-	var gc *swt.GC = swt.NewGCDrawable(targetImage)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(targetImage))
 	gc.DrawImage(sourceImage, 0, 0)
 	gc.DrawImage(targetImage, 0, 0)
 	junit.AssertEquals(int32(0), int32(ImageDataTestHelperImageDataComparator()(sourceImage.GetImageData(), copiedImage.GetImageData())))
@@ -1034,7 +1034,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_updateWidthHeightAfterDPIC
 		}()
 		var imageSize *swt.Rectangle = swt.NewRectangle(0, 0, 16, 16)
 		var baseImage *swt.Image = swt.NewImageDeviceImageGcDrawerWidthHeight(upcastswtDisplayToswtDevice(this.display), noOpGcDrawer, imageSize.Width, imageSize.Height)
-		var gc *swt.GC = swt.NewGCDrawable(this.display)
+		var gc *swt.GC = swt.NewGCDrawable(upcastswtDisplayToswtDrawable(this.display))
 		gc.DrawImage(baseImage, 10, 10)
 		junit.AssertEquals(imageSize, baseImage.GetBounds())
 		swt.DPIUtilSetDeviceZoom(deviceZoom * 2)
@@ -1181,7 +1181,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_gcOnImageGcDrawer_imageDat
 	}}
 	var image *swt.Image = swt.NewImageDeviceImageGcDrawerWidthHeight(upcastswtDisplayToswtDevice(this.display), blueDrawer, 1, 1)
 	var bluePixelValue int32 = image.GetImageDataZoom(nonDeviceZoom).GetPixel(0, 0)
-	var redOverwritingGc *swt.GC = swt.NewGCDrawable(image)
+	var redOverwritingGc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 	{
 		defer func() {
 			redOverwritingGc.Dispose()
@@ -1206,7 +1206,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_doesNotReR
 		}()
 		var image *swt.Image = swt.NewImageDeviceFilename(upcastswtDisplayToswtDevice(this.display), file.ToString())
 		var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 64, 64)
-		var gc *swt.GC = swt.NewGCDrawable(target)
+		var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(target))
 		func() {
 			defer func() {
 				gc.Dispose()
@@ -1244,7 +1244,7 @@ func (this *Test_org_eclipse_swt_graphics_Image) Test_drawImageAtSize_reevaluate
 		}()
 		var image *swt.Image = swt.NewImageDeviceImageFileNameProvider(upcastswtDisplayToswtDevice(this.display), switchingProvider)
 		var target *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), 64, 64)
-		var gc *swt.GC = swt.NewGCDrawable(target)
+		var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(target))
 		func() {
 			defer func() {
 				gc.Dispose()
@@ -1292,7 +1292,7 @@ func Test_org_eclipse_swt_graphics_ImageFillImage(imageLike swt.ImageLike, fillC
 		fillColor = fillColorLike.AsColor()
 	}
 	_ = fillColor
-	var gc *swt.GC = swt.NewGCDrawable(image)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 	gc.SetBackground(fillColor)
 	gc.SetForeground(fillColor)
 	gc.FillRectangleRect(image.GetBounds())

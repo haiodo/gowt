@@ -465,8 +465,8 @@ func (this *Path_PathHandle) Contains(x float32, y float32, gcLike GCLike, outli
 		gc = gcLike.AsGC()
 	}
 	_ = gc
-	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(this.device, x, this.zoom)
-	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(this.device, y, this.zoom)
+	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(upcastDeviceToDrawable(this.device), x, this.zoom)
+	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(upcastDeviceToDrawable(this.device), y, this.zoom)
 	return this.ContainsInPixels(xInPixels, yInPixels, gc, outline)
 }
 
@@ -498,7 +498,7 @@ func (this *Path_PathHandle) Destroy() {
 
 func (this *Path_PathHandle) FillBounds(bounds []float32) {
 	this.GetBoundsInPixels(bounds)
-	var scaledbounds []float32 = Win32DPIUtilsPixelToPointOverload1(this.device, bounds, this.zoom)
+	var scaledbounds []float32 = Win32DPIUtilsPixelToPointOverload1(upcastDeviceToDrawable(this.device), bounds, this.zoom)
 	copy(bounds[0:], scaledbounds[0:0+4])
 }
 
@@ -513,7 +513,7 @@ func (this *Path_PathHandle) GetBoundsInPixels(bounds []float32) {
 
 func (this *Path_PathHandle) FillCurrentPoint(point []float32) {
 	this.GetCurrentPointInPixels(point)
-	var scaledpoint []float32 = Win32DPIUtilsPixelToPointOverload1(this.device, point, this.zoom)
+	var scaledpoint []float32 = Win32DPIUtilsPixelToPointOverload1(upcastDeviceToDrawable(this.device), point, this.zoom)
 	copy(point[0:], scaledpoint[0:0+2])
 }
 
@@ -524,7 +524,7 @@ func (this *Path_PathHandle) GetCurrentPointInPixels(point []float32) {
 
 func (this *Path_PathHandle) GetPathData() *PathData {
 	var result *PathData = this.GetPathDataInPixels()
-	result.Points = Win32DPIUtilsPixelToPointOverload1(this.device, result.Points, this.zoom)
+	result.Points = Win32DPIUtilsPixelToPointOverload1(upcastDeviceToDrawable(this.device), result.Points, this.zoom)
 	return result
 }
 
@@ -625,7 +625,7 @@ func (this *Path_AddArcOperation) Apply(pathHandle *Path_PathHandle) {
 		return
 	}
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
 	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	var widthInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.width, zoom)
@@ -703,7 +703,7 @@ func (this *Path_AddRectangleOperation) initPathAddRectangleOperation(x float32,
 
 func (this *Path_AddRectangleOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
 	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	var widthInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.width, zoom)
@@ -808,7 +808,7 @@ func (this *Path_AddStringOperation) initPathAddStringOperation(string_ string, 
 
 func (this *Path_AddStringOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	var xInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom)
 	var yInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom)
 	this.AddStringInPixels(pathHandle, xInPixels, yInPixels)
@@ -935,7 +935,7 @@ func (this *Path_CubicToOperation) initPathCubicToOperation(cx1 float32, cy1 flo
 
 func (this *Path_CubicToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	var cx1InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx1, zoom)
 	var cy1InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cy1, zoom)
 	var cx2InPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx2, zoom)
@@ -985,7 +985,7 @@ func (this *Path_LineToOperation) initPathLineToOperation(x float32, y float32) 
 
 func (this *Path_LineToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	this.LineToInPixels(pathHandle, Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom), Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom))
 }
 
@@ -1029,7 +1029,7 @@ func (this *Path_MoveToOperation) initPathMoveToOperation(x float32, y float32) 
 
 func (this *Path_MoveToOperation) Apply(pathHandle *Path_PathHandle) {
 	var zoom int32 = pathHandle.zoom
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	this.MoveToInPixels(pathHandle, Win32DPIUtilsPointToPixelOverload5(drawable, this.x, zoom), Win32DPIUtilsPointToPixelOverload5(drawable, this.y, zoom))
 }
 
@@ -1080,7 +1080,7 @@ func (this *Path_QuadToOperation) initPathQuadToOperation(cx float32, cy float32
 }
 
 func (this *Path_QuadToOperation) Apply(pathHandle *Path_PathHandle) {
-	var drawable Drawable = this.this_0.impl.getDevice_()
+	var drawable Drawable = upcastDeviceToDrawable(this.this_0.impl.getDevice_())
 	var zoom int32 = pathHandle.zoom
 	var cxInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cx, zoom)
 	var cyInPixels float32 = Win32DPIUtilsPointToPixelOverload5(drawable, this.cy, zoom)

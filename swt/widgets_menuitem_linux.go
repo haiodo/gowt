@@ -120,36 +120,36 @@ func (this *MenuItem) createHandle_(index int32) {
 			break
 		case RADIO:
 			var stringVariantType int64 = gtk.OSG_variant_type_new(gtk.OSG_VARIANT_TYPE_STRING)
-			this.actionId = fmt.Sprint(jrt.HashCodeOf(this))
+			this.actionId = fmt.Sprint(jrt.HashCodeOf(this.Impl()))
 			this.actionHandle = gtk.OSG_simple_action_new_stateful(gtk.ConverterJavaStringToCString(this.actionId), stringVariantType, gtk.OSG_variant_new_string(gtk.ConverterJavaStringToCString("untoggled")))
 			gtk.OSG_action_map_add_action(this.parent.actionGroup, this.actionHandle)
-			this.actionName = fmt.Sprintf("%s.%s::toggled", fmt.Sprint(jrt.HashCodeOf(this.parent)), this.actionId)
+			this.actionName = fmt.Sprintf("%s.%s::toggled", fmt.Sprint(jrt.HashCodeOf(this.parent.Impl())), this.actionId)
 			this.Handle = gtk.OSG_menu_item_new(nil, gtk.ConverterJavaStringToCString(this.actionName))
 			gtk.OSG_variant_type_free(stringVariantType)
 			break
 		case CHECK:
 			var boolVariantType int64 = gtk.OSG_variant_type_new(gtk.OSG_VARIANT_TYPE_BOOLEAN)
-			this.actionId = fmt.Sprint(jrt.HashCodeOf(this))
+			this.actionId = fmt.Sprint(jrt.HashCodeOf(this.Impl()))
 			this.actionHandle = gtk.OSG_simple_action_new_stateful(gtk.ConverterJavaStringToCString(this.actionId), int64(0), gtk.OSG_variant_new_boolean(false))
 			gtk.OSG_action_map_add_action(this.parent.actionGroup, this.actionHandle)
-			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent)), this.actionId)
+			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent.Impl())), this.actionId)
 			this.Handle = gtk.OSG_menu_item_new(nil, gtk.ConverterJavaStringToCString(this.actionName))
 			gtk.OSG_variant_type_free(boolVariantType)
 			break
 		case CASCADE:
 			this.modelHandle = gtk.OSG_menu_new()
-			this.actionId = fmt.Sprint(jrt.HashCodeOf(this))
+			this.actionId = fmt.Sprint(jrt.HashCodeOf(this.Impl()))
 			this.actionHandle = gtk.OSG_simple_action_new(gtk.ConverterJavaStringToCString(this.actionId), int64(0))
 			gtk.OSG_action_map_add_action(this.parent.actionGroup, this.actionHandle)
-			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent)), this.actionId)
+			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent.Impl())), this.actionId)
 			this.Handle = gtk.OSG_menu_item_new(gtk.ConverterJavaStringToCString(""), gtk.ConverterJavaStringToCString(this.actionName))
 			gtk.OSG_menu_item_set_submenu(this.Handle, this.modelHandle)
 			break
 		default:
-			this.actionId = fmt.Sprint(jrt.HashCodeOf(this))
+			this.actionId = fmt.Sprint(jrt.HashCodeOf(this.Impl()))
 			this.actionHandle = gtk.OSG_simple_action_new(gtk.ConverterJavaStringToCString(this.actionId), int64(0))
 			gtk.OSG_action_map_add_action(this.parent.actionGroup, this.actionHandle)
-			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent)), this.actionId)
+			this.actionName = fmt.Sprintf("%s.%s", fmt.Sprint(jrt.HashCodeOf(this.parent.Impl())), this.actionId)
 			this.Handle = gtk.OSG_menu_item_new(nil, gtk.ConverterJavaStringToCString(this.actionName))
 			break
 		}

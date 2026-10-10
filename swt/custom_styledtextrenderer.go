@@ -1693,7 +1693,7 @@ func (this *StyledTextRenderer) SetFont(fontLike FontLike, tabs int32) {
 	this.tabWidth = layout.GetBounds().Width
 	layout.impl.dispose_()
 	if this.styledText != (nil) {
-		var gc *GC = NewGCDrawable(this.styledText)
+		var gc *GC = NewGCDrawable(upcastStyledTextToDrawable(this.styledText))
 		this.averageCharWidth = int32(gc.GetFontMetrics().GetAverageCharacterWidth())
 		this.fixedPitch = gc.StringExtent("l").X == gc.StringExtent("W").X
 		gc.impl.dispose_()

@@ -96,7 +96,7 @@ func (this *StyledTextDropTargetEffect) dragOver_(event *DropTargetEvent) {
 			if this.scrollX != -1 && this.scrollY != -1 && this.scrollBeginTime != 0 && (pt.X >= this.scrollX && pt.X <= (this.scrollX+StyledTextDropTargetEffectSCROLL_TOLERANCE) || pt.Y >= this.scrollY && pt.Y <= (this.scrollY+StyledTextDropTargetEffectSCROLL_TOLERANCE)) {
 				if jrt.CurrentTimeMillis() >= this.scrollBeginTime {
 					var area *Rectangle = text.impl.getClientArea_()
-					var gc *GC = NewGCDrawable(text)
+					var gc *GC = NewGCDrawable(upcastStyledTextToDrawable(text))
 					var fm *FontMetrics = gc.GetFontMetrics()
 					gc.impl.dispose_()
 					var charWidth float64 = fm.GetAverageCharacterWidth()
@@ -195,4 +195,11 @@ func castControlToStyledText(x *Control) *StyledText {
 		panic("java.lang.ClassCastException: StyledText")
 	}
 	return v
+}
+
+func upcastStyledTextToDrawable(x *StyledText) Drawable {
+	if x == nil {
+		return nil
+	}
+	return x
 }

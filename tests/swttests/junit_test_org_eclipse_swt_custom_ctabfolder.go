@@ -840,7 +840,7 @@ func (this *Test_org_eclipse_swt_custom_CTabFolder) Test_dirtyIndicator_doesNotC
 	junit.AssertTrue(Test_org_eclipse_swt_custom_CTabFolderGetCloseRect(this.ctabFolder.GetItem(0)).Width > 0, "dirty indicator is not laid out")
 	var bounds *swt.Rectangle = this.ctabFolder.GetBounds()
 	var image *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.shell.GetDisplay()), bounds.Width, bounds.Height)
-	var gc *swt.GC = swt.NewGCDrawable(image)
+	var gc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))
 	{
 		defer func() {
 			gc.Dispose()

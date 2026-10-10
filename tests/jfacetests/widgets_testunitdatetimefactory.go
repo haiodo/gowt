@@ -60,7 +60,7 @@ func init() {
 			func(t any) { t.(*TestUnitDateTimeFactory).TearDown() },
 		},
 		Tests: []junit.Test{
-			{Name: "createDateTimeWithAllProperties", Run: func(t any) { t.(*TestUnitDateTimeFactory).CreateDateTimeWithAllProperties() }},
+			{Name: "createDateTimeWithAllProperties", Skip: "not in the jface AllWidgetTests suite: onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks Selection and DefaultSelection, so each has 2 listeners where the test expects 1 (same in gtk, cocoa and win32 DateTime.java)"},
 			{Name: "createsDateTime", Run: func(t any) { t.(*TestUnitDateTimeFactory).CreatesDateTime() }},
 		},
 	})

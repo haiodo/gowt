@@ -441,6 +441,10 @@ public class Emitter {
 		return packageQualifier.qualify(bareIdent, ci);
 	}
 
+	void registerReflectStatic(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName) {
+		reflectEmitter.registerReflectStatic(ci, mb, javaName, goName);
+	}
+
 	void registerReflectMethod(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, boolean widen) {
 		reflectEmitter.registerReflectMethod(ci, mb, javaName, goName, widen);
 	}

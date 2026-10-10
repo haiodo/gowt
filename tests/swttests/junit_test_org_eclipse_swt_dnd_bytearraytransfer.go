@@ -225,36 +225,34 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) JavaToNat
 	}
 	var myType *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyType = castanyToTest_org_eclipse_swt_dnd_ByteArrayTransfer_MyType(object)
 	var out *jrt.ByteArrayOutputStream = jrt.NewByteArrayOutputStream()
-	{
-		var writeOut *jrt.DataOutputStream = jrt.NewDataOutputStream(out)
-		func() {
-			defer writeOut.Close()
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
+	func() {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
 				}
-				if func() bool {
-					switch r.(type) {
-					case *jrt.IOException:
-						return true
-					}
-					return false
-				}() {
-					e := r.(*jrt.IOException)
-					_ = e
-				} else {
-					panic(r)
-				}
-			}()
-			var fileNameBytes []int8 = jrt.GetBytes(myType.FileName)
-			writeOut.WriteInt(int32(len(fileNameBytes)))
-			writeOut.Write(fileNameBytes)
-			writeOut.WriteLong(myType.FileLength)
-			writeOut.WriteLong(myType.LastModified)
-			this.ByteArrayTransfer.JavaToNative(out.ToByteArray(), transferData)
+				return false
+			}() {
+				e := r.(*jrt.IOException)
+				_ = e
+			} else {
+				panic(r)
+			}
 		}()
-	}
+		var writeOut *jrt.DataOutputStream = jrt.NewDataOutputStream(out)
+		defer writeOut.Close()
+		var fileNameBytes []int8 = jrt.GetBytes(myType.FileName)
+		writeOut.WriteInt(int32(len(fileNameBytes)))
+		writeOut.Write(fileNameBytes)
+		writeOut.WriteLong(myType.FileLength)
+		writeOut.WriteLong(myType.LastModified)
+		this.ByteArrayTransfer.JavaToNative(out.ToByteArray(), transferData)
+	}()
 }
 
 func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) NativeToJava_(transferData *swt.TransferData) any {
@@ -266,44 +264,42 @@ func (this *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyTypeTransfer) NativeToJ
 		return nil
 	}
 	var in *jrt.ByteArrayInputStream = jrt.NewByteArrayInputStream(buffer)
-	{
-		var readIn *jrt.DataInputStream = jrt.NewDataInputStream(in)
-		var tret194 any
-		tretd195 := false
-		func() {
-			defer readIn.Close()
-			defer func() {
-				r := recover()
-				if r == nil {
-					return
+	var tret194 any
+	tretd195 := false
+	func() {
+		defer func() {
+			r := recover()
+			if r == nil {
+				return
+			}
+			if func() bool {
+				switch r.(type) {
+				case *jrt.IOException:
+					return true
 				}
-				if func() bool {
-					switch r.(type) {
-					case *jrt.IOException:
-						return true
-					}
-					return false
-				}() {
-					ex := r.(*jrt.IOException)
-					_ = ex
-				} else {
-					panic(r)
-				}
-			}()
-			var myType *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyType = NewTest_org_eclipse_swt_dnd_ByteArrayTransferMyType()
-			var size int32 = readIn.ReadInt()
-			var name []int8 = make([]int8, size)
-			readIn.Read(name)
-			myType.FileName = jrt.StringFromBytes(name)
-			myType.FileLength = readIn.ReadLong()
-			myType.LastModified = readIn.ReadLong()
-			tret194 = myType
-			tretd195 = true
-			return
+				return false
+			}() {
+				ex := r.(*jrt.IOException)
+				_ = ex
+			} else {
+				panic(r)
+			}
 		}()
-		if tretd195 {
-			return tret194
-		}
+		var readIn *jrt.DataInputStream = jrt.NewDataInputStream(in)
+		defer readIn.Close()
+		var myType *Test_org_eclipse_swt_dnd_ByteArrayTransfer_MyType = NewTest_org_eclipse_swt_dnd_ByteArrayTransferMyType()
+		var size int32 = readIn.ReadInt()
+		var name []int8 = make([]int8, size)
+		readIn.Read(name)
+		myType.FileName = jrt.StringFromBytes(name)
+		myType.FileLength = readIn.ReadLong()
+		myType.LastModified = readIn.ReadLong()
+		tret194 = myType
+		tretd195 = true
+		return
+	}()
+	if tretd195 {
+		return tret194
 	}
 	return nil
 }

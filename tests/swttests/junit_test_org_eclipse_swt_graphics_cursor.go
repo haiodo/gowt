@@ -86,36 +86,34 @@ func (this *Test_org_eclipse_swt_graphics_Cursor) Test_ConstructorLorg_eclipse_s
 	var fileName string = SwtTestUtilImageFilenames[0]
 	for _, format := range SwtTestUtilImageFormats {
 		var loader *swt.ImageLoader = swt.NewImageLoader()
-		{
-			var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("%s.%s", fileName, format))
-			func() {
-				defer stream.Close()
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					return
+				}
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
 					}
-					if func() bool {
-						switch r.(type) {
-						case *jrt.IOException:
-							return true
-						}
-						return false
-					}() {
-						e := r.(*jrt.IOException)
-						_ = e
-					} else {
-						panic(r)
-					}
-				}()
-				var source *swt.ImageData = loader.Load(stream)[0]
-				var mask *swt.ImageData = source.GetTransparencyMask()
-				if mask != (nil) && (source.Depth == 1) {
-					var cursor *swt.Cursor = swt.NewCursorDeviceSourceMaskHotspotXHotspotY(upcastswtDisplayToswtDevice(this.display), source, mask, 0, 0)
-					cursor.Dispose()
+					return false
+				}() {
+					e := r.(*jrt.IOException)
+					_ = e
+				} else {
+					panic(r)
 				}
 			}()
-		}
+			var stream jrt.InputStream = jrt.ClassGetResourceAsStream(reflect.TypeFor[*SwtTestUtil](), fmt.Sprintf("%s.%s", fileName, format))
+			defer stream.Close()
+			var source *swt.ImageData = loader.Load(stream)[0]
+			var mask *swt.ImageData = source.GetTransparencyMask()
+			if mask != (nil) && (source.Depth == 1) {
+				var cursor *swt.Cursor = swt.NewCursorDeviceSourceMaskHotspotXHotspotY(upcastswtDisplayToswtDevice(this.display), source, mask, 0, 0)
+				cursor.Dispose()
+			}
+		}()
 	}
 }
 

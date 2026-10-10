@@ -182,6 +182,37 @@ final class ControlFlowEmitter {
 	String emitTry(TryStatement ts, int indent) {
 		StringBuilder b = new StringBuilder();
 		List<String> resourceCloses = new ArrayList<>();
+		// With catch clauses a failing resource initializer is caught by them, so the resources are declared inside the closure.
+		boolean resourcesInClosure = !ts.catchClauses().isEmpty() && !ts.resources().isEmpty();
+		StringBuilder closureResources = new StringBuilder();
+		if (resourcesInClosure) {
+			List<String> closes = new ArrayList<>();
+			emitResources(ts, closureResources, indent + 1, closes);
+			for (String c : closes) closureResources.append(ind(indent + 1)).append("defer ").append(c).append('\n');
+		} else {
+			emitResources(ts, b, indent, resourceCloses);
+		}
+		@SuppressWarnings("unchecked")
+		List<CatchClause> catches = (List<CatchClause>) ts.catchClauses();
+		// A return inside finally is emitted with the escape flags in place (emitClosure), so its defer is built there.
+		EscapeScanner inFinally = new EscapeScanner();
+		if (ts.getFinally() != null) ts.getFinally().accept(inFinally);
+		Block lazyFinally = inFinally.hasReturn && !(catches.isEmpty() && isLastInMethodBody(ts)) ? ts.getFinally() : null;
+		List<String> cleanup = cleanupDefers(resourceCloses, lazyFinally != null ? null : ts.getFinally(), indent);
+		// The method's last statement without a catch: a function-level defer already runs right
+		// after the body, so no closure; the block keeps the body's locals scoped.
+		if (catches.isEmpty() && isLastInMethodBody(ts)) {
+			for (String d : cleanup) b.append(ind(indent)).append("defer ").append(d).append('\n');
+			b.append(emitter.block(ts.getBody(), indent));
+			return ind(indent) + "{\n" + b + ind(indent) + "}\n";
+		}
+		// Anywhere else finally must run when the try ends, not at function exit: a closure's defer.
+		b.append(emitClosure(ts.getBody(), catches, cleanup, lazyFinally, indent, closureResources.toString()));
+		// Resource variables are scoped to the try statement.
+		return resourceCloses.isEmpty() ? b.toString() : ind(indent) + "{\n" + b + ind(indent) + "}\n";
+	}
+
+	private void emitResources(TryStatement ts, StringBuilder b, int indent, List<String> resourceCloses) {
 		for (Object o : ts.resources()) {
 			if (o instanceof VariableDeclarationExpression vde) {
 				for (Object fo : vde.fragments()) {
@@ -199,24 +230,6 @@ final class ControlFlowEmitter {
 				emitter.unsupported.add("TryStatement: non-declaration resource " + o);
 			}
 		}
-		@SuppressWarnings("unchecked")
-		List<CatchClause> catches = (List<CatchClause>) ts.catchClauses();
-		// A return inside finally is emitted with the escape flags in place (emitClosure), so its defer is built there.
-		EscapeScanner inFinally = new EscapeScanner();
-		if (ts.getFinally() != null) ts.getFinally().accept(inFinally);
-		Block lazyFinally = inFinally.hasReturn && !(catches.isEmpty() && isLastInMethodBody(ts)) ? ts.getFinally() : null;
-		List<String> cleanup = cleanupDefers(resourceCloses, lazyFinally != null ? null : ts.getFinally(), indent);
-		// The method's last statement without a catch: a function-level defer already runs right
-		// after the body, so no closure; the block keeps the body's locals scoped.
-		if (catches.isEmpty() && isLastInMethodBody(ts)) {
-			for (String d : cleanup) b.append(ind(indent)).append("defer ").append(d).append('\n');
-			b.append(emitter.block(ts.getBody(), indent));
-			return ind(indent) + "{\n" + b + ind(indent) + "}\n";
-		}
-		// Anywhere else finally must run when the try ends, not at function exit: a closure's defer.
-		b.append(emitClosure(ts.getBody(), catches, cleanup, lazyFinally, indent));
-		// Resource variables are scoped to the try statement.
-		return resourceCloses.isEmpty() ? b.toString() : ind(indent) + "{\n" + b + ind(indent) + "}\n";
 	}
 
 	/** Defers in registration order: finally first so it runs last, then one per resource so the
@@ -238,6 +251,11 @@ final class ControlFlowEmitter {
 	/** body inside `func() { defer ...; body }()`: catches become a recover() dispatch, defers
 	 * plain defers; return/break/continue escape via flags re-played after the call. */
 	private String emitClosure(Block body, List<CatchClause> catches, List<String> defers, Block finallyBlock, int indent) {
+		return emitClosure(body, catches, defers, finallyBlock, indent, "");
+	}
+
+	/** bodyPrefix: statements emitted at the start of the closure body, after the catch dispatch is deferred. */
+	private String emitClosure(Block body, List<CatchClause> catches, List<String> defers, Block finallyBlock, int indent, String bodyPrefix) {
 		EscapeScanner scan = new EscapeScanner();
 		body.accept(scan);
 		for (CatchClause cc : catches) cc.getBody().accept(scan);
@@ -278,6 +296,7 @@ final class ControlFlowEmitter {
 			b.append(emitCatchDispatch(catches, indent + 2));
 			b.append(ind(indent + 1)).append("}()\n");
 		}
+		b.append(bodyPrefix);
 		b.append(emitter.block(body, indent + 1));
 		b.append(ind(indent)).append("}()\n");
 
@@ -386,6 +405,11 @@ final class ControlFlowEmitter {
 		if (qualified.equals(Manual.JAVA_RUNTIME_EXCEPTION) || qualified.equals(Manual.JAVA_ERROR)
 				|| qualified.equals(Manual.JAVA_EXCEPTION) || qualified.equals(Manual.JAVA_THROWABLE)) {
 			return "error";
+		}
+		if (qualified.equals("java.lang.AssertionError")) {
+			// What internal/junit panics on a failed assertion.
+			emitter.fileImports.add("github.com/haiodo/gowt/internal/junit");
+			return "*junit.AssertionFailed";
 		}
 		TypeModel.ClassInfo ci = emitter.model.lookup(t);
 		if (ci != null) return (ci.isStruct || ci.isInterface) ? emitter.qualifiedTypeName(ci) : "*" + emitter.qualifiedTypeName(ci);

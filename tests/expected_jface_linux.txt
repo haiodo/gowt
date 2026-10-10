@@ -33,8 +33,8 @@ pass	TestUnitControlFactory.setsLayoutData
 pass	TestUnitControlFactory.setsOrientation
 pass	TestUnitControlFactory.setsTooltip
 pass	TestUnitControlFactory.testUniqueLayoutData
-fail	TestUnitDateTimeFactory.createDateTimeWithAllProperties	onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks the listener for Selection and DefaultSelection (gtk DateTime), so two DefaultSelection listeners are hooked where the test expects one
-fail	TestUnitDateTimeFactory.createsDateTime	getStyle() lost SWT.BORDER: Control.checkBorder clears it when getBorderWidth() is 0, which the GTK DateTime reports here; the theme dependence is not analysed
+skip	TestUnitDateTimeFactory.createDateTimeWithAllProperties	not in the jface AllWidgetTests suite: onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks Selection and DefaultSelection, so each has 2 listeners where the test expects 1 (same in gtk, cocoa and win32 DateTime.java)
+fail	TestUnitDateTimeFactory.createsDateTime	Control.checkBorder clears SWT.BORDER when getBorderWidth() is 0; gtk DateTime has only a fixedHandle (no scrolledHandle), so Scrollable.getBorderWidthInPixels is 0 and real gtk SWT drops the style bit the same way
 pass	TestUnitGroupFactory.createsGroup
 pass	TestUnitGroupFactory.createsGroupWithText
 pass	TestUnitItemFactory.createsControlWithProperties

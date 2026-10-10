@@ -56,8 +56,14 @@ func ImageTestUtilAssertImagesNotEqualExpectedActual(expected []*swt.ImageData, 
 			if r == nil {
 				return
 			}
-			if false {
-				var e error
+			if func() bool {
+				switch r.(type) {
+				case *junit.AssertionFailed:
+					return true
+				}
+				return false
+			}() {
+				e := r.(*junit.AssertionFailed)
 				_ = e
 				tretd13 = true
 				return

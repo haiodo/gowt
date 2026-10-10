@@ -16,7 +16,10 @@ final class ReflectEmitter {
 
 	// Non-public methods tests reach via getDeclaredMethod; only an exported Go name is callable from swtreflect.
 	private static final Set<String> PRIVATE_USED = Set.of("org.eclipse.swt.custom.CTabFolder#shouldHighlight", "org.eclipse.swt.custom.StyledText#getPartialBottomIndex",
-			"org.eclipse.swt.custom.StyledTextRenderer#getLineSize");
+			"org.eclipse.swt.custom.StyledTextRenderer#getLineSize", "org.eclipse.swt.graphics.ImageData#getByteOrder");
+
+	// Non-public static methods tests reach via getDeclaredMethod/invoke(null, ...); every overload of the name is registered.
+	private static final Set<String> PRIVATE_USED_STATIC = Set.of("org.eclipse.swt.graphics.ImageData#blit");
 
 	private final Emitter emitter;
 	private final List<String> registrations = new ArrayList<>();
@@ -47,7 +50,27 @@ final class ReflectEmitter {
 		}
 	}
 
+	/** Registers a listed static method; the closure ignores its target. */
+	void registerReflectStatic(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName) {
+		if (!PRIVATE_USED_STATIC.contains(ci.javaPackage + "." + ci.binding.getName() + "#" + javaName) || mb.isVarargs()) return;
+		String savedPackage = emitter.currentGoPackage;
+		Set<String> savedImports = emitter.fileImports;
+		emitter.currentGoPackage = REFLECT_PACKAGE;
+		emitter.fileImports = imports;
+		try {
+			String line = reflectRegistration(ci, mb, javaName, goName, true, true);
+			if (line != null) registrations.add(line);
+		} finally {
+			emitter.currentGoPackage = savedPackage;
+			emitter.fileImports = savedImports;
+		}
+	}
+
 	private String reflectRegistration(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, boolean widen) {
+		return reflectRegistration(ci, mb, javaName, goName, widen, false);
+	}
+
+	private String reflectRegistration(TypeModel.ClassInfo ci, IMethodBinding mb, String javaName, String goName, boolean widen, boolean isStatic) {
 		String ret = emitter.retType(mb);
 		if (ret.contains("unsupported_") || ret.contains("func(")) return null;
 		ITypeBinding[] paramTypes = mb.getParameterTypes();
@@ -62,7 +85,9 @@ final class ReflectEmitter {
 		String self = "*" + emitter.qualifiedTypeName(ci);
 		String paramTypesLit = paramTypeExprs.isEmpty() ? "nil" : "[]reflect.Type{" + String.join(", ", paramTypeExprs) + "}";
 		String returnTypeExpr = ret.isEmpty() ? "nil" : "reflect.TypeFor[" + ret + "]()";
-		String call = "jrt.Narrow[" + self + "](target)." + goName + "(" + String.join(", ", callArgs) + ")";
+		String qualified = emitter.qualifiedTypeName(ci);
+		String call = isStatic ? qualified.substring(0, qualified.indexOf('.') + 1) + goName + "(" + String.join(", ", callArgs) + ")"
+				: "jrt.Narrow[" + self + "](target)." + goName + "(" + String.join(", ", callArgs) + ")";
 		String body = ret.isEmpty() ? call + "; return nil" : "return " + call;
 		return "jrt.RegisterMethod(reflect.TypeFor[" + self + "](), \"" + javaName + "\", "
 				+ paramTypesLit + ", " + returnTypeExpr + ", func(target any, args []any) any { " + body + " })";

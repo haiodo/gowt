@@ -1513,42 +1513,40 @@ func (this *Image_CachedImageAtSize) LoadImageDataAtExactSize(targetWidth int32,
 		if fileName == this.nonSizableFileName {
 			return jrt.OptionalEmpty()
 		}
-		{
-			var stream jrt.InputStream = jrt.NewFileInputStream(fileName)
-			var tret374 *jrt.Optional
-			tretd375 := false
-			func() {
-				defer stream.Close()
-				defer func() {
-					r := recover()
-					if r == nil {
-						return
-					}
-					if func() bool {
-						switch r.(type) {
-						case *jrt.IOException:
-							return true
-						}
-						return false
-					}() {
-						e := r.(*jrt.IOException)
-						_ = e
-						ErrorCodeThrowable(ERROR_IO, e)
-					} else {
-						panic(r)
-					}
-				}()
-				if ImageDataLoaderIsDynamicallySizable(stream) {
-					this.nonSizableFileName = ""
-					tret374 = jrt.OptionalOf(ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight))
-					tretd375 = true
+		var tret374 *jrt.Optional
+		tretd375 := false
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
 					return
 				}
-				this.nonSizableFileName = fileName
+				if func() bool {
+					switch r.(type) {
+					case *jrt.IOException:
+						return true
+					}
+					return false
+				}() {
+					e := r.(*jrt.IOException)
+					_ = e
+					ErrorCodeThrowable(ERROR_IO, e)
+				} else {
+					panic(r)
+				}
 			}()
-			if tretd375 {
-				return tret374
+			var stream jrt.InputStream = jrt.NewFileInputStream(fileName)
+			defer stream.Close()
+			if ImageDataLoaderIsDynamicallySizable(stream) {
+				this.nonSizableFileName = ""
+				tret374 = jrt.OptionalOf(ImageDataLoaderLoadBySize(stream, targetWidth, targetHeight))
+				tretd375 = true
+				return
 			}
+			this.nonSizableFileName = fileName
+		}()
+		if tretd375 {
+			return tret374
 		}
 	}
 	return jrt.OptionalEmpty()

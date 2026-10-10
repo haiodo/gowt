@@ -473,8 +473,8 @@ pass	Test_org_eclipse_swt_custom_CTabFolder.test_addPaintListenerLorg_eclipse_sw
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_bug2162_transparentStyle
 skip	Test_org_eclipse_swt_custom_CTabFolder.test_checkSize	@Disabled: Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59
-fail	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged	pixel comparison of the chevron image against fixed colours differs under the Adwaita theme (darwin fails at another pixel); not analysed
-fail	Test_org_eclipse_swt_custom_CTabFolder.test_childControlOverlap	CheckElementOverlap finds two overlapping children (assertFalse(boundsA.intersects(boundsB)) at the first check after a layout); reflection now works, the GTK CTabFolder/top-right layout geometry is not analysed
+pass	Test_org_eclipse_swt_custom_CTabFolder.test_chevronAppearanceChanged
+fail	Test_org_eclipse_swt_custom_CTabFolder.test_childControlOverlap	CTabFolder.computeControlBounds is translated as is; at the step topRight=RIGHT|WRAP after showChevron with minimize and maximize visible, items (68) + controls (81+58+48) fill the 255 px folder exactly, then the chevron is moved to lastItem.x+width+SPACING (71) and overlaps the topRight label at 113 by 6 px; the folder width and control widths come from this stand font metrics, not compared with real SWT
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeII
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeSizeIIZ
 pass	Test_org_eclipse_swt_custom_CTabFolder.test_computeTrimIIII
@@ -1114,7 +1114,7 @@ pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphi
 pass	Test_org_eclipse_swt_graphics_Image.test_ConstructorLorg_eclipse_swt_graphics_Device_ImageGcDrawer
 pass	Test_org_eclipse_swt_graphics_Image.test_bug566545_efficientGrayscaleImage
 pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_doesNotReReadFileOfNonSizableFormat
-fail	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges	the generated CachedImageAtSize opens the file outside its IOException recover (try-with-resource init emitted before the defer): FileInputStream panics a raw jrt.IOException instead of SWTException
+pass	Test_org_eclipse_swt_graphics_Image.test_drawImageAtSize_reevaluatesSizabilityWhenFileNameChanges
 pass	Test_org_eclipse_swt_graphics_Image.test_equalsLjava_lang_Object
 pass	Test_org_eclipse_swt_graphics_Image.test_gcOnImageGcDrawer_imageDataAtNonDeviceZoom
 pass	Test_org_eclipse_swt_graphics_Image.test_getBackground
@@ -1131,8 +1131,8 @@ pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImage
 pass	Test_org_eclipse_swt_graphics_Image.test_getImageData_fromImageForCustomImageData
 pass	Test_org_eclipse_swt_graphics_Image.test_hashCode
 skip	Test_org_eclipse_swt_graphics_Image.test_imageDataIsCached	Assumption failed: On-demand image creation only implemented for Windows
-fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders	the file-name provider image goes through gdk-pixbuf (Image.createFromPixbuf, premultiply (c*a+128)>>8), the data provider image through the Go decoder and ImageData; getImageData differs by 1 in one byte (index 237); darwin skips it (assumeFalse isCocoa)
-fail	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData	same as test_imageDataSameViaDifferentProviders: pixbuf path vs Go decoder path differ by 1 in one byte
+pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaDifferentProviders
+pass	Test_org_eclipse_swt_graphics_Image.test_imageDataSameViaProviderAndSimpleData
 pass	Test_org_eclipse_swt_graphics_Image.test_isDisposed
 skip	Test_org_eclipse_swt_graphics_Image.test_setBackgroundLorg_eclipse_swt_graphics_Color	Assumption failed: Excluded test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)
 pass	Test_org_eclipse_swt_graphics_Image.test_toString
@@ -1141,8 +1141,8 @@ pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorIIILorg_eclipse_swt
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorLjava_io_InputStream
 pass	Test_org_eclipse_swt_graphics_ImageData.test_ConstructorLjava_lang_String
-fail	Test_org_eclipse_swt_graphics_ImageData.test_blit	ImageDataTestHelper reflects on ImageData.getByteOrder (instance) and the static overloaded blit(...) via getDeclaredMethod; only the listed instance methods (ReflectEmitter.PRIVATE_USED) are registered, static/overloaded private methods are not
-fail	Test_org_eclipse_swt_graphics_ImageData.test_blit_MsbLsb	ImageDataTestHelper reflects on ImageData.getByteOrder (instance) and the static overloaded blit(...) via getDeclaredMethod; only the listed instance methods (ReflectEmitter.PRIVATE_USED) are registered, static/overloaded private methods are not
+pass	Test_org_eclipse_swt_graphics_ImageData.test_blit
+pass	Test_org_eclipse_swt_graphics_ImageData.test_blit_MsbLsb
 pass	Test_org_eclipse_swt_graphics_ImageData.test_clone
 pass	Test_org_eclipse_swt_graphics_ImageData.test_getAlphaII
 pass	Test_org_eclipse_swt_graphics_ImageData.test_getAlphasIII$BI
@@ -1160,7 +1160,7 @@ pass	Test_org_eclipse_swt_graphics_ImageData.test_setPixelsIII$BI
 pass	Test_org_eclipse_swt_graphics_ImageData.test_setPixelsIII$II
 pass	Test_org_eclipse_swt_graphics_ImageLoader.test_Constructor
 pass	Test_org_eclipse_swt_graphics_ImageLoader.test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener
-fail	Test_org_eclipse_swt_graphics_ImageLoader.test_bug547529	on GTK the test expects GdkPixbuf semantics (32-bit direct data, 256 bytes); ImageLoader here is the Go codec wrapper and returns 24-bit (192 bytes); passes on darwin where 24 is expected
+pass	Test_org_eclipse_swt_graphics_ImageLoader.test_bug547529
 pass	Test_org_eclipse_swt_graphics_ImageLoader.test_loadLjava_io_InputStream
 pass	Test_org_eclipse_swt_graphics_ImageLoader.test_loadLjava_lang_String
 pass	Test_org_eclipse_swt_graphics_ImageLoader.test_loadSingleFrameGifReportedAsAnimation_bug3404
@@ -1831,22 +1831,22 @@ pass	Test_org_eclipse_swt_widgets_CoolItem.test_ConstructorLorg_eclipse_swt_widg
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_addListenerILorg_eclipse_swt_widgets_Listener
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_computeSizeII
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_getBounds	emulated CoolBar lays items out to the bar width and a CoolBar without a layout is 0 wide (ZERO_WIDTH), so setSize reads back 0; same values on darwin; not compared with real SWT
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_getBounds	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getControl
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getDisplay
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getParent
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_getPreferredSize	emulated CoolBar, 0-wide bar (see test_getBounds); same values on darwin
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_getPreferredSize	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_getSize
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_isDisposed
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_notifyListenersILorg_eclipse_swt_widgets_Event
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_removeListenerILorg_eclipse_swt_widgets_Listener
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_setControlLorg_eclipse_swt_widgets_Control	emulated CoolBar, 0-wide bar (see test_getBounds); same values on darwin
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_setControlLorg_eclipse_swt_widgets_Control	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setDataLjava_lang_Object
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setDataLjava_lang_StringLjava_lang_Object
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setImageLorg_eclipse_swt_graphics_Image
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setPreferredSizeII
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setPreferredSizeLorg_eclipse_swt_graphics_Point
-fail	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeII	emulated CoolBar, 0-wide bar (see test_getBounds); same values on darwin
+skip	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeII	upstream disables the class in AllWidgetTests.java ("Failing test")
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setSizeLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_setTextLjava_lang_String
 pass	Test_org_eclipse_swt_widgets_CoolItem.test_toString
@@ -2949,7 +2949,7 @@ pass	Test_org_eclipse_swt_widgets_Shell.test_ConstructorLorg_eclipse_swt_widgets
 pass	Test_org_eclipse_swt_widgets_Shell.test_ConstructorLorg_eclipse_swt_widgets_Shell
 pass	Test_org_eclipse_swt_widgets_Shell.test_ConstructorLorg_eclipse_swt_widgets_ShellI
 pass	Test_org_eclipse_swt_widgets_Shell.test_ExceptionsThrownInDisposeListenerDontPreventDisposal
-fail	Test_org_eclipse_swt_widgets_Shell.test_Issue450_NoShellActivateOnSetFocus	shell1.setActive is not honoured by openbox within 3 s (the test itself cites Bug 575712, window-manager dependent); not diagnosed
+fail	Test_org_eclipse_swt_widgets_Shell.test_Issue450_NoShellActivateOnSetFocus	openbox gives no focus to shell2 when the active shell1 is disposed: no SWT.Activate for 3 s, getActiveShell stays null (checked with a standalone program) and Shell.setActive does nothing when no shell is active; the test itself calls this WM dependent (Bug 575712)
 pass	Test_org_eclipse_swt_widgets_Shell.test_NoExceptionsThrownInFillLayout
 pass	Test_org_eclipse_swt_widgets_Shell.test_activateEventSend
 pass	Test_org_eclipse_swt_widgets_Shell.test_addControlListenerControlMovedAdapterLorg_eclipse_swt_events_ControlListener

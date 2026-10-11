@@ -19,9 +19,9 @@ type Callback struct {
 // callbackSlot is one native callback (syscall slots are never freed, pool of 2000) whose Go target can be swapped,
 // so Dispose can hand the slot to the next NewCallbackFn from the same call site.
 type callbackSlot struct {
-	site     string
-	address  int64
-	fn       func(args []int64) int64
+	site    string
+	address int64
+	fn      func(args []int64) int64
 }
 
 var (

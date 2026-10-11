@@ -17,6 +17,7 @@ var (
 	vtCellClass  int64
 	vtCheckClass int64
 	vtDrawing    = map[int64]bool{} // cell views inside drawRect: invalidating them from there would loop
+	vtViewCalls  int                // viewForTableColumn calls that reached vtMakeView; read by the GUI test
 )
 
 func init() {
@@ -178,6 +179,7 @@ func vtOutlineViewFor(a []int64) int64 {
 }
 
 func vtMakeView(tableView int64, check bool) int64 {
+	vtViewCalls++
 	cell, checkCls := vtClasses()
 	name, cls := "SWTCell", cell
 	if check {

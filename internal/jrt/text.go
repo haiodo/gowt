@@ -9,7 +9,6 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"unicode/utf16"
 )
 
 // ResourceBundle is java.util.ResourceBundle backed by a <name>.properties file in the registered
@@ -189,8 +188,8 @@ func IndexFrom(s, needle string, from int32) int32 {
 		}
 		return -1
 	}
-	u := utf16.Encode([]rune(s))
-	n := utf16.Encode([]rune(needle))
+	u := ToChars(s)
+	n := ToChars(needle)
 	for i := int(from); i+len(n) <= len(u); i++ {
 		if slices.Equal(u[i:i+len(n)], n) {
 			return int32(i)
@@ -204,8 +203,8 @@ func LastIndexOf(s, needle string) int32 {
 	if isASCII(s) {
 		return int32(strings.LastIndex(s, needle))
 	}
-	u := utf16.Encode([]rune(s))
-	n := utf16.Encode([]rune(needle))
+	u := ToChars(s)
+	n := ToChars(needle)
 	for i := len(u) - len(n); i >= 0; i-- {
 		if slices.Equal(u[i:i+len(n)], n) {
 			return int32(i)

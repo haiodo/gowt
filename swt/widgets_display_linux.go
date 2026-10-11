@@ -11,7 +11,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"unicode/utf16"
 )
 
 type Display struct {
@@ -938,7 +937,7 @@ func (this *Display) CreateDisplay(dataLike DeviceDataLike) {
 			var length int32 = gtk.CStrlen(ptr)
 			var buffer []int8 = make([]int8, length)
 			gtk.CMemmoveOverload8(buffer, ptr, int64(length))
-			fmt.Fprintln(os.Stdout, fmt.Sprintf("***WARNING: %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))))
+			fmt.Fprintln(os.Stdout, fmt.Sprintf("***WARNING: %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))))
 			fmt.Fprintln(os.Stdout, fmt.Sprintf("***WARNING: SWT requires GTK %d.%d.%d", DisplayGTK3_MAJOR, DisplayGTK3_MINOR, DisplayGTK3_MICRO))
 			var major int32 = gtk.GTKGtk_get_major_version()
 			var minor int32 = gtk.GTKGtk_get_minor_version()
@@ -1648,7 +1647,7 @@ func (this *Display) Gtk_css_provider_to_string(provider int64) string {
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, str, int64(length))
 	gtk.OSG_free(str)
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 }
 
 func (this *Display) Gtk_css_parse_foreground(css string, precise string) gtk.GdkRGBA {
@@ -1697,7 +1696,7 @@ func (this *Display) Gtk_rgba_to_css_string(rgba gtk.GdkRGBA) string {
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, str, int64(length))
 	gtk.OSG_free(str)
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 }
 
 func (this *Display) Gtk_widget_get_name(handle int64) string {
@@ -1709,7 +1708,7 @@ func (this *Display) Gtk_widget_get_name(handle int64) string {
 		var length int32 = gtk.CStrlen(str)
 		var buffer []int8 = make([]int8, length)
 		gtk.CMemmoveOverload8(buffer, str, int64(length))
-		name = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+		name = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	}
 	return name
 }
@@ -1723,7 +1722,7 @@ func (this *Display) Gtk_widget_class_get_css_name(handle int64) string {
 		var length int32 = gtk.CStrlen(str)
 		var buffer []int8 = make([]int8, length)
 		gtk.CMemmoveOverload8(buffer, str, int64(length))
-		name = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+		name = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	}
 	return name
 }

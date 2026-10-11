@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"reflect"
-	"unicode/utf16"
 )
 
 type WidgetImpl interface {
@@ -2058,7 +2057,7 @@ func (this *Widget) GetName() string {
 	var index int32 = jrt.StringLength(string_)
 	for {
 		index--
-		if !((index > 0) && (int32(utf16.Encode([]rune(string_))[index]) != int32('.'))) {
+		if !((index > 0) && (int32(jrt.ToChars(string_)[index]) != int32('.'))) {
 			break
 		}
 	}

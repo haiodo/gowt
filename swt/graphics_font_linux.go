@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type Font struct {
@@ -131,7 +130,7 @@ func (this *Font) GetFontData() []*FontData {
 	var length int32 = gtk.CStrlen(family)
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, family, int64(length))
-	var name string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var name string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	var height float32 = float32(gtk.OSPango_font_description_get_size(this.Handle)) / float32(gtk.OSPANGO_SCALE)
 	var dpi *Point = this.device.dpi
 	var screenDPI *Point = this.device.GetScreenDPI()

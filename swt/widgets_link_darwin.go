@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Link struct {
@@ -382,7 +381,7 @@ func (this *Link) Parse(string_ string) string {
 				this.ParseMnemonics(buffer, linkStart, endtagStart, result)
 				this.offsets[linkIndex] = NewPoint(offset, result.Length()-1)
 				if this.ids[linkIndex] == "" {
-					this.ids[linkIndex] = string(utf16.Decode(buffer[linkStart : linkStart+endtagStart-linkStart]))
+					this.ids[linkIndex] = jrt.FromChars(buffer[linkStart : linkStart+endtagStart-linkStart])
 				}
 				linkIndex++
 				refStart = index + 1
@@ -433,7 +432,7 @@ func (this *Link) Parse(string_ string) string {
 			break
 		case 12:
 			if int32(c) == int32('"') {
-				this.ids[linkIndex] = string(utf16.Decode(buffer[refStart : refStart+index-refStart]))
+				this.ids[linkIndex] = jrt.FromChars(buffer[refStart : refStart+index-refStart])
 				state = 2
 			}
 			break

@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"unicode/utf16"
 )
 
 type Combo struct {
@@ -836,7 +835,7 @@ func (this *Combo) GetText() string {
 			var length int32 = gtk.CStrlen(str)
 			var buffer []int8 = make([]int8, length)
 			gtk.CMemmoveOverload8(buffer, str, int64(length))
-			return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+			return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 		}
 	} else {
 		var index int32 = gtk.GTKGtk_combo_box_get_active(this.Handle)
@@ -1113,7 +1112,7 @@ func (this *Combo) gtk_insert_text_(widget int64, new_text int64, new_text_lengt
 	}
 	var buffer []int8 = make([]int8, int32(new_text_length))
 	gtk.CMemmoveOverload8(buffer, new_text, int64(int32(len(buffer))))
-	var oldText string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var oldText string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	var pos []int32 = make([]int32, 1)
 	gtk.CMemmoveOverload15(pos, position, int64(4))
 	var ptr int64

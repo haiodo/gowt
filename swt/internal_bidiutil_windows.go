@@ -5,7 +5,6 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
-	"unicode/utf16"
 )
 
 type BidiUtil struct {
@@ -190,7 +189,7 @@ func BidiUtilResolveTextDirection(text string) int32 {
 	}
 	var textDirection int32 = NONE
 	for i := int32(0); i < jrt.StringLength(text); i++ {
-		var c uint16 = utf16.Encode([]rune(text))[i]
+		var c uint16 = jrt.ToChars(text)[i]
 		var directionality int8 = jrt.Directionality(rune(c))
 		var strongDirection int32 = BidiUtilGetStrongDirection(directionality)
 		if strongDirection != NONE {

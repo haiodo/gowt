@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
-	"unicode/utf16"
 )
 
 type ClipboardBaseImpl interface {
@@ -111,7 +110,7 @@ func (this *ClipboardBase) TrimTrailingNulCharacter(result string) string {
 	if result == "" {
 		return ""
 	}
-	if int32(utf16.Encode([]rune(result))[jrt.StringLength(result)-1]) == int32('\u0000') {
+	if int32(jrt.ToChars(result)[jrt.StringLength(result)-1]) == int32('\u0000') {
 		result = jrt.Substring(result, 0, jrt.StringLength(result)-1)
 	}
 	return result

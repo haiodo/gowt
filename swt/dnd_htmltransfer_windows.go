@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
-	"unicode/utf16"
 )
 
 type HTMLTransfer struct {
@@ -145,7 +144,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 			}
 			var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 			win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(win32.OSCP_UTF8, 0, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-			var string_ string = string(utf16.Decode(lpWideCharStr))
+			var string_ string = jrt.FromChars(lpWideCharStr)
 			var fragmentStart int32 = 0
 			var fragmentEnd int32 = 0
 			var start int32 = jrt.IndexFrom(string_, HTMLTransferStartFragment, 0) + jrt.StringLength(HTMLTransferStartFragment)
@@ -225,7 +224,7 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 				tretd1150 = true
 				return
 			}
-			var s string = string(utf16.Decode(lpWideCharStr[0 : 0+cchWideChar]))
+			var s string = jrt.FromChars(lpWideCharStr[0 : 0+cchWideChar])
 			var foxStart string = "<!--StartFragment -->\r\n"
 			var prefix int32 = jrt.IndexFrom(s, foxStart, 0)
 			if prefix != -1 {

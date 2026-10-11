@@ -21,7 +21,7 @@ final class JdkIntrinsics {
 	// String methods that are one strings.X(receiver, args...) call, by Java name and arity.
 	private static final java.util.Map<String, String> STRING_FUNCS = java.util.Map.of(
 			"startsWith/1", "strings.HasPrefix", "endsWith/1", "strings.HasSuffix", "contains/1", "strings.Contains",
-			"toLowerCase/0", "strings.ToLower", "toUpperCase/0", "strings.ToUpper");
+			"toLowerCase/0", "jrt.ToLowerCase", "toUpperCase/0", "jrt.ToUpperCase");
 
 	private final JdkCalls more;
 
@@ -90,7 +90,7 @@ final class JdkIntrinsics {
 		}
 		String stringFunc = STRING_FUNCS.get(mb.getName() + "/" + mi.arguments().size());
 		if (qualified.equals("java.lang.String") && stringFunc != null) {
-			emitter.fileImports.add("strings");
+			emitter.fileImports.add(stringFunc.startsWith("jrt.") ? JRT : "strings");
 			return stringFunc + "(" + emitter.expr(mi.getExpression()) + (mi.arguments().isEmpty() ? "" : ", " + arg(mi, 0)) + ")";
 		}
 		// hashCode surface of the value types' own hashCode() (FontData, FontMetrics, Image).

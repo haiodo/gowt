@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Link struct {
@@ -519,7 +518,7 @@ func (this *Link) mnemonicHitKey_(key uint16) bool {
 	var parsedText string = this.layout.GetText()
 	for i := int32(0); i < int32(len(this.mnemonics))-1; i++ {
 		if this.mnemonics[i] != -1 {
-			var mnemonic uint16 = utf16.Encode([]rune(parsedText))[this.mnemonics[i]]
+			var mnemonic uint16 = jrt.ToChars(parsedText)[this.mnemonics[i]]
 			if int32(uckey) == int32(uint16(unicode.ToUpper(rune(mnemonic)))) {
 				if !this.impl.setFocus_() {
 					return false
@@ -538,7 +537,7 @@ func (this *Link) mnemonicMatchKey_(key uint16) bool {
 	var parsedText string = this.layout.GetText()
 	for i := int32(0); i < int32(len(this.mnemonics))-1; i++ {
 		if this.mnemonics[i] != -1 {
-			var mnemonic uint16 = utf16.Encode([]rune(parsedText))[this.mnemonics[i]]
+			var mnemonic uint16 = jrt.ToChars(parsedText)[this.mnemonics[i]]
 			if int32(uckey) == int32(uint16(unicode.ToUpper(rune(mnemonic)))) {
 				return true
 			}
@@ -648,12 +647,12 @@ func (this *Link) Parse(string_ string) string {
 			break
 		case 6:
 			if int32(c) == int32('>') {
-				this.mnemonics[linkIndex] = this.ParseMnemonics(utf16.Encode([]rune(buffer.ToString())), start, tagStart, result)
+				this.mnemonics[linkIndex] = this.ParseMnemonics(jrt.ToChars(buffer.ToString()), start, tagStart, result)
 				var offset int32 = result.Length()
-				this.ParseMnemonics(utf16.Encode([]rune(buffer.ToString())), linkStart, endtagStart, result)
+				this.ParseMnemonics(jrt.ToChars(buffer.ToString()), linkStart, endtagStart, result)
 				this.offsets[linkIndex] = NewPoint(offset, result.Length()-1)
 				if this.ids[linkIndex] == "" {
-					this.ids[linkIndex] = string(utf16.Decode(utf16.Encode([]rune(buffer.ToString()))[linkStart : linkStart+endtagStart-linkStart]))
+					this.ids[linkIndex] = jrt.FromChars(jrt.ToChars(buffer.ToString())[linkStart : linkStart+endtagStart-linkStart])
 				}
 				linkIndex++
 				refStart = index + 1
@@ -704,7 +703,7 @@ func (this *Link) Parse(string_ string) string {
 			break
 		case 12:
 			if int32(c) == int32('"') {
-				this.ids[linkIndex] = string(utf16.Decode(utf16.Encode([]rune(buffer.ToString()))[refStart : refStart+index-refStart]))
+				this.ids[linkIndex] = jrt.FromChars(jrt.ToChars(buffer.ToString())[refStart : refStart+index-refStart])
 				state = 2
 			}
 			break
@@ -736,8 +735,8 @@ func (this *Link) Parse(string_ string) string {
 		index++
 	}
 	if start < length {
-		var tmp int32 = this.ParseMnemonics(utf16.Encode([]rune(buffer.ToString())), start, tagStart, result)
-		var mnemonic int32 = this.ParseMnemonics(utf16.Encode([]rune(buffer.ToString())), int32(math.Max(float64(tagStart), float64(linkStart))), length, result)
+		var tmp int32 = this.ParseMnemonics(jrt.ToChars(buffer.ToString()), start, tagStart, result)
+		var mnemonic int32 = this.ParseMnemonics(jrt.ToChars(buffer.ToString()), int32(math.Max(float64(tagStart), float64(linkStart))), length, result)
 		if mnemonic == -1 {
 			mnemonic = tmp
 		}

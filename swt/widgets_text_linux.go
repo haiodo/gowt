@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"slices"
-	"unicode/utf16"
 )
 
 type Text struct {
@@ -950,7 +949,7 @@ func (this *Text) GetTabWidth(tabs int32) int32 {
 }
 
 func (this *Text) GetText() string {
-	return string(utf16.Decode(this.GetTextChars()))
+	return jrt.FromChars(this.GetTextChars())
 }
 
 func (this *Text) GetTextStartEnd(start int32, end int32) string {
@@ -1300,7 +1299,7 @@ func (this *Text) gtk_insert_text_(widget int64, new_text int64, new_text_length
 	}
 	var buffer []int8 = make([]int8, int32(new_text_length))
 	gtk.CMemmoveOverload8(buffer, new_text, int64(int32(len(buffer))))
-	var oldText string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var oldText string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	var pos []int32 = make([]int32, 1)
 	gtk.CMemmoveOverload15(pos, position, int64(4))
 	var ptr int64
@@ -1416,7 +1415,7 @@ func (this *Text) gtk_text_buffer_insert_text_(widget int64, iter int64, text in
 	gtk.OSG_free(ptr)
 	var buffer []int8 = make([]int8, int32(length))
 	gtk.CMemmoveOverload8(buffer, text, int64(int32(len(buffer))))
-	var oldText string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var oldText string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	var newText string = this.VerifyText(oldText, start, end)
 	if newText == jrt.NullString {
 		gtk.OSG_signal_stop_emission_by_name(this.bufferHandle, gtk.OSInsert_text)
@@ -1897,7 +1896,7 @@ func (this *Text) SetTextChars(text []uint16) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
-		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, this.GetCharCount())
+		var string_ string = this.VerifyText(jrt.FromChars(text), 0, this.GetCharCount())
 		if string_ == jrt.NullString {
 			return
 		}

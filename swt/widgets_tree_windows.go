@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"unicode/utf16"
 )
 
 type Tree struct {
@@ -806,7 +805,7 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 							if (string_ != "") && (jrt.StringLength(string_) > ItemTEXT_LIMIT) {
 								string_ = fmt.Sprintf("%s%s", jrt.Substring(string_, 0, ItemTEXT_LIMIT-jrt.StringLength(ItemELLIPSIS)), ItemELLIPSIS)
 							}
-							var buffer []uint16 = utf16.Encode([]rune(string_))
+							var buffer []uint16 = jrt.ToChars(string_)
 							if !this.ignoreDrawForeground {
 								win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 							}
@@ -7068,7 +7067,7 @@ func (this *Tree) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) *
 							if (this.columns[i].style & RIGHT) != 0 {
 								flags |= win32.OSDT_RIGHT
 							}
-							var buffer []uint16 = utf16.Encode([]rune(this.columns[i].text))
+							var buffer []uint16 = jrt.ToChars(this.columns[i].text)
 							win32.OSSetBkMode(nmcd.Hdc, win32.OSTRANSPARENT)
 							win32.OSSetTextColor(nmcd.Hdc, this.GetHeaderForegroundPixel())
 							var textRect *win32.RECT = win32.NewRECT()
@@ -7446,7 +7445,7 @@ func (this *Tree) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam i
 										flags |= win32.OSDT_RIGHT
 									}
 								}
-								var buffer []uint16 = utf16.Encode([]rune(string_))
+								var buffer []uint16 = jrt.ToChars(string_)
 								var textRect *win32.RECT = win32.NewRECT()
 								win32.OSSetRect(textRect, x, cellRect[0].Top, cellRect[0].Right, cellRect[0].Bottom)
 								win32.OSDrawTextHDCLpStringNCountLpRectUFormat(nmcd.Hdc, buffer, int32(len(buffer)), textRect, flags)

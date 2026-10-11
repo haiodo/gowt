@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
-	"unicode/utf16"
 )
 
 type HTMLTransfer struct {
@@ -95,12 +94,12 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 		size = size / 2 * 2
 		var chars []uint16 = make([]uint16, size/2)
 		gtk.CMemmoveOverload10(chars, transferData.PValue, int64(size))
-		string_ = string(utf16.Decode(chars))
+		string_ = jrt.FromChars(chars)
 	} else {
 		var utf8 []int8 = make([]int8, size)
 		gtk.CMemmoveOverload8(utf8, transferData.PValue, int64(size))
 		var unicode []uint16 = gtk.ConverterMbcsToWcs(utf8)
-		string_ = string(utf16.Decode(unicode))
+		string_ = jrt.FromChars(unicode)
 	}
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
 	var cond897 any

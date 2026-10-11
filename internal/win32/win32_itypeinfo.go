@@ -5,7 +5,6 @@ package win32
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type ITypeInfo struct {
@@ -41,7 +40,7 @@ func (this *ITypeInfo) GetDocumentation(index int32, name []string, docString []
 		if size > 0 {
 			var buffer []uint16 = make([]uint16, (size+1)/2)
 			OSMoveMemoryOverload2(buffer, pBstrName[0], size)
-			name[0] = string(utf16.Decode(buffer))
+			name[0] = jrt.FromChars(buffer)
 			var subindex int32 = jrt.IndexFrom(name[0], "\u0000", 0)
 			if subindex > 0 {
 				name[0] = jrt.Substring(name[0], 0, subindex)
@@ -54,7 +53,7 @@ func (this *ITypeInfo) GetDocumentation(index int32, name []string, docString []
 		if size > 0 {
 			var buffer []uint16 = make([]uint16, (size+1)/2)
 			OSMoveMemoryOverload2(buffer, pBstrDocString[0], size)
-			docString[0] = string(utf16.Decode(buffer))
+			docString[0] = jrt.FromChars(buffer)
 			var subindex int32 = jrt.IndexFrom(docString[0], "\u0000", 0)
 			if subindex > 0 {
 				docString[0] = jrt.Substring(docString[0], 0, subindex)
@@ -67,7 +66,7 @@ func (this *ITypeInfo) GetDocumentation(index int32, name []string, docString []
 		if size > 0 {
 			var buffer []uint16 = make([]uint16, (size+1)/2)
 			OSMoveMemoryOverload2(buffer, pBstrHelpFile[0], size)
-			helpFile[0] = string(utf16.Decode(buffer))
+			helpFile[0] = jrt.FromChars(buffer)
 			var subindex int32 = jrt.IndexFrom(helpFile[0], "\u0000", 0)
 			if subindex > 0 {
 				helpFile[0] = jrt.Substring(helpFile[0], 0, subindex)
@@ -96,7 +95,7 @@ func (this *ITypeInfo) GetNames(memid int32, names []string, cMaxNames int32, pc
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				OSMoveMemoryOverload2(buffer, rgBstrNames[i], size)
-				names[i] = string(utf16.Decode(buffer))
+				names[i] = jrt.FromChars(buffer)
 				var subindex int32 = jrt.IndexFrom(names[i], "\u0000", 0)
 				if subindex > 0 {
 					names[i] = jrt.Substring(names[i], 0, subindex)

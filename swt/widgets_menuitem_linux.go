@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
-	"unicode/utf16"
 )
 
 type MenuItem struct {
@@ -1095,7 +1094,7 @@ func (this *MenuItem) GetMaskKeysym() *MenuItem_MaskKeysym {
 	default:
 		{
 			if jrt.StringLength(word) == 1 {
-				maskKeysym.keysym = int32(gtk.ConverterWcsToMbcsCh(utf16.Encode([]rune(word))[0]))
+				maskKeysym.keysym = int32(gtk.ConverterWcsToMbcsCh(jrt.ToChars(word)[0]))
 			}
 		}
 	}

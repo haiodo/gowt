@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type Relation struct {
@@ -208,7 +207,7 @@ func (this *Relation) HasTargets() bool {
 }
 
 func (this *Relation) SetString(psz int64, string_ string) {
-	var data []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", string_))))
+	var data []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", string_)))
 	var ptr int64 = win32.COMSysAllocString(data)
 	win32.OSMoveMemoryOverload79(psz, []int64{ptr}, win32.CPTR_SIZEOF)
 }

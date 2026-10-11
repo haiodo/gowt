@@ -5,7 +5,7 @@ package win32
 
 import (
 	"fmt"
-	"unicode/utf16"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 type IStorage struct {
@@ -36,7 +36,7 @@ func (this *IStorage) CopyTo(ciidExclude int32, rgiidExclude *GUID, snbExclude [
 func (this *IStorage) CreateStream(pwcsName string, grfMode int32, reserved1 int32, reserved2 int32, ppStm []int64) int32 {
 	var buffer []uint16 = nil
 	if pwcsName != "" {
-		buffer = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", pwcsName))))
+		buffer = jrt.ToChars((fmt.Sprintf("%s\u0000", pwcsName)))
 	}
 	return COMVtblCallOverload28(3, this.address, buffer, grfMode, reserved1, reserved2, ppStm)
 }
@@ -44,7 +44,7 @@ func (this *IStorage) CreateStream(pwcsName string, grfMode int32, reserved1 int
 func (this *IStorage) OpenStream(pwcsName string, reserved1 int64, grfMode int32, reserved2 int32, ppStm []int64) int32 {
 	var buffer []uint16 = nil
 	if pwcsName != "" {
-		buffer = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", pwcsName))))
+		buffer = jrt.ToChars((fmt.Sprintf("%s\u0000", pwcsName)))
 	}
 	return COMVtblCallOverload29(4, this.address, buffer, reserved1, grfMode, reserved2, ppStm)
 }

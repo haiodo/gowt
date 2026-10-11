@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type Text struct {
@@ -810,14 +809,14 @@ func (this *Text) GetSelectionText() string {
 		if selection.X == selection.Y {
 			return ""
 		}
-		return string(utf16.Decode(this.GetEditTextStartEnd(selection.X, selection.Y-1)))
+		return jrt.FromChars(this.GetEditTextStartEnd(selection.X, selection.Y-1))
 	} else {
 		var widget *cocoa.NSTextView = castcocoaNSViewTococoaNSTextView(this.View)
 		var range_ cocoa.NSRange = widget.SelectedRange()
 		var str *cocoa.NSString = widget.TextStorage().String()
 		var buffer []uint16 = make([]uint16, int32(range_.Length))
 		str.GetCharactersBufferRange(buffer, range_)
-		return string(utf16.Decode(buffer))
+		return jrt.FromChars(buffer)
 	}
 }
 
@@ -830,7 +829,7 @@ func (this *Text) GetText() string {
 	this.CheckWidget()
 	var str *cocoa.NSString
 	if (this.style & SINGLE) != 0 {
-		return string(utf16.Decode(this.GetEditText()))
+		return jrt.FromChars(this.GetEditText())
 	} else {
 		str = (castcocoaNSViewTococoaNSTextView(this.View)).TextStorage().String()
 	}
@@ -843,7 +842,7 @@ func (this *Text) GetTextStartEnd(start int32, end int32) string {
 		return ""
 	}
 	if (this.style & SINGLE) != 0 {
-		return string(utf16.Decode(this.GetEditTextStartEnd(start, end)))
+		return jrt.FromChars(this.GetEditTextStartEnd(start, end))
 	}
 	var storage *cocoa.NSTextStorage = (castcocoaNSViewTococoaNSTextView(this.View)).TextStorage()
 	end = int32(math.Min(float64(end), float64(int32(storage.Length())-1)))
@@ -1505,7 +1504,7 @@ func (this *Text) SetTextChars(text []uint16) {
 		this.Error(ERROR_NULL_ARGUMENT)
 	}
 	if this.Hooks(Verify) || this.Filters(Verify) {
-		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, this.GetCharCount(), nil)
+		var string_ string = this.VerifyText(jrt.FromChars(text), 0, this.GetCharCount(), nil)
 		if string_ == jrt.NullString {
 			return
 		}

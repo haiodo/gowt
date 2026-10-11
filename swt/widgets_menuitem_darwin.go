@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
-	"unicode/utf16"
 )
 
 type MenuItem struct {
@@ -557,7 +556,7 @@ func (this *MenuItem) UpdateText() {
 			j--
 		}
 	}
-	var text string = string(utf16.Decode(buffer[0 : 0+j]))
+	var text string = jrt.FromChars(buffer[0 : 0+j])
 	var submenu *cocoa.NSMenu = this.nsItem.Submenu()
 	var label *cocoa.NSString = castcocoaNSObjectTococoaNSString(cocoa.NewNSString().Alloc())
 	label = label.InitWithString(text)
@@ -717,7 +716,7 @@ func (this *MenuItem) UpdateAccelerator(show bool) bool {
 	if key == 0 {
 		cond188 = ""
 	} else {
-		cond188 = string(rune(uint16(key)))
+		cond188 = jrt.FromChars([]uint16{uint16(key)})
 	}
 	nsstring = nsstring.InitWithString(cond188)
 	this.nsItem.SetKeyEquivalent(nsstring.LowercaseString())

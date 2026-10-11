@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"strings"
-	"unicode/utf16"
 )
 
 type FileDialog struct {
@@ -162,7 +161,7 @@ func (this *FileDialog) OpenDialog() *jrt.Optional {
 	}
 	fileDialog.SetOptions(options[0])
 	if !(len(this.title) == 0) {
-		fileDialog.SetTitle(utf16.Encode([]rune((fmt.Sprintf("%s\u0000", this.title)))))
+		fileDialog.SetTitle(jrt.ToChars((fmt.Sprintf("%s\u0000", this.title))))
 	}
 	var filterExtensions []string = this.filterExtensions
 	var filterNames []string = this.filterNames
@@ -188,8 +187,8 @@ func (this *FileDialog) OpenDialog() *jrt.Optional {
 		}
 		var lpstrName int64 = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, (jrt.StringLength(name)+1)*2)
 		var lpstrExt int64 = win32.OSHeapAlloc(hHeap, win32.OSHEAP_ZERO_MEMORY, (jrt.StringLength(extension)+1)*2)
-		win32.OSMoveMemoryOverload12(lpstrName, utf16.Encode([]rune(name)), jrt.StringLength(name)*2)
-		win32.OSMoveMemoryOverload12(lpstrExt, utf16.Encode([]rune(extension)), jrt.StringLength(extension)*2)
+		win32.OSMoveMemoryOverload12(lpstrName, jrt.ToChars(name), jrt.StringLength(name)*2)
+		win32.OSMoveMemoryOverload12(lpstrExt, jrt.ToChars(extension), jrt.StringLength(extension)*2)
 		filterSpec[i*2] = lpstrName
 		filterSpec[i*2+1] = lpstrExt
 	}
@@ -200,7 +199,7 @@ func (this *FileDialog) OpenDialog() *jrt.Optional {
 	fileDialog.SetDefaultExtension(make([]uint16, 1))
 	fileDialog.SetFileTypeIndex(this.filterIndex + 1)
 	if this.filterPath != "" {
-		var path []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", strings.ReplaceAll(this.filterPath, string(rune('/')), string(rune('\u005c')))))))
+		var path []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", strings.ReplaceAll(this.filterPath, string(rune('/')), string(rune('\u005c'))))))
 		if win32.COMSHCreateItemFromParsingName(path, int64(0), win32.COMIID_IShellItem, ppv) == win32.COMS_OK {
 			var psi *win32.IShellItem = win32.NewIShellItem(ppv[0])
 			if jrt.StringLength(this.filterPath) > 0 {
@@ -212,7 +211,7 @@ func (this *FileDialog) OpenDialog() *jrt.Optional {
 		}
 	}
 	if this.fileName != "" {
-		var name []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", strings.ReplaceAll(this.fileName, string(rune('/')), string(rune('\u005c')))))))
+		var name []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", strings.ReplaceAll(this.fileName, string(rune('/')), string(rune('\u005c'))))))
 		fileDialog.SetFileName(name)
 	}
 	var oldModal *Dialog = nil
@@ -316,7 +315,7 @@ func FileDialogGetItemPath(psi *win32.IShellItem) *jrt.Path {
 		var buffer []uint16 = make([]uint16, length)
 		win32.OSMoveMemoryOverload2(buffer, ppsz[0], length*2)
 		win32.OSCoTaskMemFree(ppsz[0])
-		var path string = string(utf16.Decode(buffer))
+		var path string = jrt.FromChars(buffer)
 		if strings.HasPrefix(path, FileDialogLONG_PATH_PREFIX) {
 			path = jrt.Substring(path, jrt.StringLength(FileDialogLONG_PATH_PREFIX), -1)
 		}

@@ -5,7 +5,6 @@ package win32
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type TCHAR struct {
@@ -94,7 +93,7 @@ func (this *TCHAR) String() string {
 }
 
 func (this *TCHAR) StringStartLength(start int32, length int32) string {
-	return string(utf16.Decode(this.Chars[start : start+length]))
+	return jrt.FromChars(this.Chars[start : start+length])
 }
 
 func TCHARGetChars(string_ string, terminate bool) []uint16 {

@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type TreeColumn struct {
@@ -426,7 +425,7 @@ func (this *TreeColumn) setText_(string_ string) {
 	var buffer []uint16 = make([]uint16, jrt.StringLength(this.text))
 	jrt.GetChars(this.text, 0, int32(len(buffer)), buffer, 0)
 	var length int32 = this.FixMnemonic(buffer)
-	this.displayText = string(utf16.Decode(buffer[0 : 0+length]))
+	this.displayText = jrt.FromChars(buffer[0 : 0+length])
 	var title *cocoa.NSString = cocoa.NSStringStringWith(this.displayText)
 	this.nsColumn.HeaderCell().SetTitle(title)
 	var headerView *cocoa.NSTableHeaderView = (castcocoaNSViewTococoaNSOutlineView(this.parent.View)).HeaderView()

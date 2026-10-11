@@ -5,7 +5,6 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type FontData struct {
@@ -246,7 +245,7 @@ func (this *FontData) GetLocale() string {
 	var result string = buffer.ToString()
 	var length int32 = jrt.StringLength(result)
 	if length > 0 {
-		if int32(utf16.Encode([]rune(result))[length-1]) == int32(sep) {
+		if int32(jrt.ToChars(result)[length-1]) == int32(sep) {
 			result = jrt.Substring(result, 0, length-1)
 		}
 	}

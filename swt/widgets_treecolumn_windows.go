@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type TreeColumn struct {
@@ -199,7 +198,7 @@ func (this *TreeColumn) Pack() {
 	}
 	var rect *win32.RECT = win32.NewRECT()
 	var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_NOPREFIX
-	var buffer []uint16 = utf16.Encode([]rune(this.text))
+	var buffer []uint16 = jrt.ToChars(this.text)
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 	var headerWidth int32 = rect.Right - rect.Left + DPIUtilPointToPixel(TreeHEADER_MARGIN+TreeHEADER_EXTRA, this.impl.getAutoscalingZoom_())
 	if this.image != (nil) {

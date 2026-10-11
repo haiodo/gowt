@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
-	"unicode/utf16"
 )
 
 type FileTransfer struct {
@@ -119,7 +118,7 @@ func (this *FileTransfer) nativeToJava_(transferData *TransferData) any {
 		var size int32 = win32.OSDragQueryFile(stgmedium.UnionField, i, nil, 0)
 		var lpszFile []uint16 = make([]uint16, size+1)
 		win32.OSDragQueryFile(stgmedium.UnionField, i, lpszFile, size+1)
-		fileNames[i] = string(utf16.Decode(lpszFile[0 : 0+size]))
+		fileNames[i] = jrt.FromChars(lpszFile[0 : 0+size])
 	}
 	win32.OSDragFinish(stgmedium.UnionField)
 	return fileNames

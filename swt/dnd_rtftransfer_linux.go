@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
-	"unicode/utf16"
 )
 
 type RTFTransfer struct {
@@ -119,7 +118,7 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 	var buffer []int8 = make([]int8, size)
 	gtk.CMemmoveOverload8(buffer, transferData.PValue, int64(size))
 	var chars []uint16 = gtk.ConverterMbcsToWcs(buffer)
-	var string_ string = string(utf16.Decode(chars))
+	var string_ string = jrt.FromChars(chars)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
 	var cond901 any
 	if end == -1 {
@@ -139,7 +138,7 @@ func (this *RTFTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) any
 	var buffer any = this.ByteArrayTransfer.nativeToJava_(transferData)
 	bytes, ok902 := buffer.([]int8)
 	if ok902 {
-		return string(utf16.Decode(gtk.ConverterMbcsToWcs(bytes)))
+		return jrt.FromChars(gtk.ConverterMbcsToWcs(bytes))
 	}
 	return nil
 }

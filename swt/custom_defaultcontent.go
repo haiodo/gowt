@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type DefaultContent struct {
@@ -175,11 +174,11 @@ func (this *DefaultContent) IsInsideCRLF(pos int32) bool {
 	if pos == this.GetCharCount() {
 		return false
 	}
-	var charBefore uint16 = utf16.Encode([]rune(this.GetTextRange(pos-1, 1)))[0]
+	var charBefore uint16 = jrt.ToChars(this.GetTextRange(pos-1, 1))[0]
 	if int32(charBefore) != int32('\u000d') {
 		return false
 	}
-	var charAfter uint16 = utf16.Encode([]rune(this.GetTextRange(pos, 1)))[0]
+	var charAfter uint16 = jrt.ToChars(this.GetTextRange(pos, 1))[0]
 	if int32(charAfter) != int32('\u000a') {
 		return false
 	}
@@ -269,7 +268,7 @@ func (this *DefaultContent) Insert(position int32, text string) {
 	if change > 0 {
 		this.gapStart += (change)
 		for i := int32(0); i < jrt.StringLength(text); i++ {
-			this.textStore[position+i] = utf16.Encode([]rune(text))[i]
+			this.textStore[position+i] = jrt.ToChars(text)[i]
 		}
 	}
 	var newLines [][]int32 = this.IndexLinesOffsetLengthNumLines(startLineOffset, startLineLength, 10)
@@ -394,9 +393,9 @@ func (this *DefaultContent) LineCountText(text string) int32 {
 	var lineCount int32 = 0
 	var length int32 = jrt.StringLength(text)
 	for i := int32(0); i < length; i++ {
-		var ch uint16 = utf16.Encode([]rune(text))[i]
+		var ch uint16 = jrt.ToChars(text)[i]
 		if int32(ch) == int32(CR) {
-			if i+1 < length && int32(utf16.Encode([]rune(text))[i+1]) == int32(LF) {
+			if i+1 < length && int32(jrt.ToChars(text)[i+1]) == int32(LF) {
 				i++
 			}
 			lineCount++
@@ -425,7 +424,7 @@ func (this *DefaultContent) GetLine(index int32) string {
 		for (length-1 >= 0) && this.IsDelimiter(this.textStore[start+length-1]) {
 			length--
 		}
-		return string(utf16.Decode(this.textStore[start : start+length]))
+		return jrt.FromChars(this.textStore[start : start+length])
 	} else {
 		var buf *jrt.StringBuilder = jrt.NewStringBuilder()
 		var gapLength int32 = this.gapEnd - this.gapStart
@@ -448,7 +447,7 @@ func (this *DefaultContent) GetFullLine(index int32) string {
 	var length int32 = this.lines[index][1]
 	var end int32 = start + length - 1
 	if !this.GapExists() || (end < this.gapStart) || (start >= this.gapEnd) {
-		return string(utf16.Decode(this.textStore[start : start+length]))
+		return jrt.FromChars(this.textStore[start : start+length])
 	} else {
 		var buffer *jrt.StringBuilder = jrt.NewStringBuilder()
 		var gapLength int32 = this.gapEnd - this.gapStart
@@ -568,7 +567,7 @@ func (this *DefaultContent) GapExists() bool {
 }
 
 func (this *DefaultContent) GetPhysicalText(start int32, length int32) string {
-	return string(utf16.Decode(this.textStore[start : start+length]))
+	return jrt.FromChars(this.textStore[start : start+length])
 }
 
 func (this *DefaultContent) GetTextRange(start int32, length int32) string {
@@ -580,11 +579,11 @@ func (this *DefaultContent) GetTextRange(start int32, length int32) string {
 	}
 	var end int32 = start + length
 	if !this.GapExists() || (end < this.gapStart) {
-		return string(utf16.Decode(this.textStore[start : start+length]))
+		return jrt.FromChars(this.textStore[start : start+length])
 	}
 	if this.gapStart < start {
 		var gapLength int32 = this.gapEnd - this.gapStart
-		return string(utf16.Decode(this.textStore[start+gapLength : start+gapLength+length]))
+		return jrt.FromChars(this.textStore[start+gapLength : start+gapLength+length])
 	}
 	var buf *jrt.StringBuilder = jrt.NewStringBuilder()
 	buf.Append(this.textStore, start, this.gapStart-start)
@@ -636,7 +635,7 @@ func (this *DefaultContent) SendTextEvent(eventLike StyledTextEventLike) {
 }
 
 func (this *DefaultContent) SetText(text string) {
-	this.textStore = utf16.Encode([]rune(text))
+	this.textStore = jrt.ToChars(text)
 	this.gapStart = -1
 	this.gapEnd = -1
 	this.expandExp = 1
@@ -658,7 +657,7 @@ func (this *DefaultContent) Delete(position int32, length int32, numLines int32)
 	var splittingDelimiter bool = false
 	if position+length < this.GetCharCount() {
 		endText = this.GetTextRange(position+length-1, 2)
-		if (int32(utf16.Encode([]rune(endText))[0]) == int32(CR)) && (int32(utf16.Encode([]rune(endText))[1]) == int32(LF)) {
+		if (int32(jrt.ToChars(endText)[0]) == int32(CR)) && (int32(jrt.ToChars(endText)[1]) == int32(LF)) {
 			splittingDelimiter = true
 		}
 	}

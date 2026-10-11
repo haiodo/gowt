@@ -33,6 +33,7 @@ var (
 	childFlag    = flag.Bool("child", false, "run in this process (a crash ends the run); default supervises a child and resumes after a crash")
 	expectedFlag = flag.String("expected", "", "compare the run with this expected-results file; exit 1 on a regression or an undescribed failure")
 	updateFlag   = flag.String("update", "", "rewrite this expected-results file from a full run")
+	compareFlag  = flag.String("compare", "", "with -expected: read a saved run log (this file) instead of running, and apply the gate to it")
 	skipFlag     = flag.Int("skip", 0, "with -child: skip the first N matching tests")
 )
 
@@ -47,6 +48,9 @@ type result struct {
 
 func main() {
 	flag.Parse()
+	if *compareFlag != "" {
+		os.Exit(compareLog(*compareFlag, *expectedFlag))
+	}
 	if !*childFlag && !*listFlag {
 		supervise()
 		return

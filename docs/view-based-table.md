@@ -17,6 +17,13 @@ No generated file and no generator input changed. `internal/cocoa/viewtable_manu
   `setObjectValue` path); Space toggles the selected rows from a `keyDown:` wrapper.
 - `setNeedsDisplayInRect:` wrapper also invalidates the cell views of the intersecting rows (cell views are separate layers).
 
+Depends on these generated exports (a rename in the generator breaks the build here): `cocoa.OSObjc_registerClassPair_impl` and
+`_once`, `OSCALLBACK_setNeedsDisplayInRect_`, `OSCALLBACK_drawRect_`, `OSSel_isFlipped`, `OSSel_setBackgroundStyle_`,
+`OSMethod_setImplementation`, plus the Table/Tree methods `tableView_objectValueForTableColumn_row_`, `tableView_willDisplayCell_...`
+and their outline counterparts.
+
+A click on a check box runs `mouseEvent_` (MouseDown event, doit, focus) and toggles; it does not select the row and sends no MouseUp.
+
 Not done: removing `dataCell`/`buttonCell` and the cell-bound methods (steps 4-5 of the Approach), a patch stage, row-view selection
 drawing for EraseItem (selection can be painted twice), the 1px gaps of custom cell backgrounds in the intercell spacing,
 MouseUp on the check box, accessibility of the cell views, `expansionFrame` tooltips.

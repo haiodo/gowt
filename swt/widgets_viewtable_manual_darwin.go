@@ -1,6 +1,7 @@
 package swt
 
 import (
+	"log"
 	"os"
 
 	"github.com/ebitengine/purego"
@@ -15,12 +16,14 @@ var viewTableEnabled = os.Getenv("GOWT_VIEW_TABLE") == "1"
 var (
 	vtCellClass  int64
 	vtCheckClass int64
-	vtDrawing    int32
+	vtDrawing    = map[int64]bool{} // cell views inside drawRect: invalidating them from there would loop
 )
 
 func init() {
 	if viewTableEnabled {
-		cocoa.OnClassRegistered(vtClassRegistered)
+		if !cocoa.OnClassRegistered(vtClassRegistered) {
+			log.Print("gowt: GOWT_VIEW_TABLE=1 ignored: the class registration hook came too late")
+		}
 	}
 }
 
@@ -67,9 +70,6 @@ func vtWrapNeedsDisplayInRect(cls int64) {
 }
 
 func vtInvalidateCells(table int64, r cocoa.NSRect) {
-	if vtDrawing > 0 {
-		return
-	}
 	rows := cocoa.NewNSViewOverload1(table).Subviews()
 	for i := int64(0); i < rows.Count(); i++ {
 		row := cocoa.NewNSViewOverload1(rows.ObjectAtIndex(i).Id)
@@ -78,7 +78,9 @@ func vtInvalidateCells(table int64, r cocoa.NSRect) {
 		}
 		cells := row.Subviews()
 		for j := int64(0); j < cells.Count(); j++ {
-			cocoa.Msg(cells.ObjectAtIndex(j).Id, "setNeedsDisplay:", 1)
+			if cell := cells.ObjectAtIndex(j).Id; !vtDrawing[cell] {
+				cocoa.Msg(cell, "setNeedsDisplay:", 1)
+			}
 		}
 	}
 }
@@ -91,13 +93,43 @@ func vtIntersects(a, b cocoa.NSRect) bool {
 func vtWrapKeyDown(cls int64) {
 	var orig func(self, sel, event uintptr)
 	imp := cocoa.NewCallbackN(3, func(a []int64) int64 {
+		ev := cocoa.NewNSEventOverload1(a[2])
+		w := DisplayGetWidget(a[0])
+		var seen *vtSpaceListener
+		if c := vtControl(w); c != nil && ev.Characters().GetString() == " " {
+			seen = &vtSpaceListener{}
+			c.AddListener(KeyDown, seen)
+			defer func() {
+				if !c.IsDisposed() {
+					c.RemoveListener(KeyDown, seen)
+				}
+			}()
+		}
 		orig(uintptr(a[0]), uintptr(a[1]), uintptr(a[2]))
-		if cocoa.NewNSEventOverload1(a[2]).Characters().GetString() == " " {
+		if seen != nil && seen.plain {
 			vtToggleSelected(a[0])
 		}
 		return 0
 	})
 	purego.RegisterFunc(&orig, vtReplace(cls, cocoa.OSSel_keyDown_, imp, "v@:@"))
+}
+
+// vtSpaceListener is added after the application's listeners: it sees a Space KeyDown that none of them cancelled and that
+// carried no Ctrl/Alt/Command, which is when the cell path reached NSTableView's own Space handling.
+type vtSpaceListener struct{ plain bool }
+
+func (l *vtSpaceListener) HandleEvent(e *Event) {
+	l.plain = e.Doit && e.Character == ' ' && (e.StateMask&(CTRL|ALT|COMMAND)) == 0
+}
+
+func vtControl(w *Widget) *Control {
+	if t := vtAsTable(w); t != nil {
+		return &t.Control
+	}
+	if t := vtAsTree(w); t != nil {
+		return &t.Control
+	}
+	return nil
 }
 
 func vtToggleSelected(view int64) {
@@ -190,8 +222,8 @@ func vtDrawRect(a []int64) int64 {
 	view := a[0]
 	w := DisplayLookupWidget(view, 0)
 	check := cocoa.OSObject_getClass(view) == vtCheckClass
-	vtDrawing++
-	defer func() { vtDrawing-- }()
+	vtDrawing[view] = true
+	defer delete(vtDrawing, view)
 	if t := vtAsTable(w); t != nil {
 		t.vtDrawCell(view, check)
 	} else if t := vtAsTree(w); t != nil {
@@ -260,8 +292,8 @@ func (this *Table) vtCheckMouseDown(view int64, event int64) {
 	if row < 0 || row >= int64(this.itemCount) {
 		return
 	}
-	this.impl.sendMouseEvent_(cocoa.NewNSEventOverload1(event), MouseDown, true)
-	if this.IsDisposed() || row >= int64(this.itemCount) {
+	// The mouseDown: of the table view without the NSTableView part: a click on a check box does not select the row.
+	if !this.impl.mouseEvent_(tv.Id, cocoa.OSSel_mouseDown_, event, MouseDown) || this.IsDisposed() || row >= int64(this.itemCount) {
 		return
 	}
 	this.ToggleCheckedItem(this._getItem(int32(row)), row)
@@ -319,9 +351,16 @@ func (this *Tree) vtCheckMouseDown(view int64, event int64) {
 	if row < 0 {
 		return
 	}
+	if !this.impl.mouseEvent_(ov.Id, cocoa.OSSel_mouseDown_, event, MouseDown) || this.IsDisposed() {
+		return
+	}
+	// A MouseDown listener may have disposed or moved the item: resolve it again.
+	row = cocoa.Msg(ov.Id, "rowForView:", view)
+	if row < 0 || row >= ov.NumberOfRows() {
+		return
+	}
 	itemID := ov.ItemAtRow(row).Id
-	this.impl.sendMouseEvent_(cocoa.NewNSEventOverload1(event), MouseDown, true)
-	if this.IsDisposed() {
+	if item := this.display.GetWidget(itemID); item == nil || item.IsDisposed() {
 		return
 	}
 	this.outlineView_setObjectValue_forTableColumn_byItem_(ov.Id, 0, ov.Id, 0, this.checkColumn.Id, itemID)

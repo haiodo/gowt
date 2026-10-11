@@ -37,7 +37,7 @@ JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pa
 | Build | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all `CGO_ENABLED=0`) |
 | Stand | the Mac itself | CrossOver (Wine) bottle `gowt`: `make win-swttest`, `make win-snap-check` | Docker `gowt-linux`, Xvfb + noVNC: `make linux-run CMD="make test-swt"` |
 | Snapshot references | `tests/snapshots` | `tests/snapshots_windows` (BitBlt capture in `internal/shot`) | `tests/snapshots_linux` |
-| DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | manifest and `Display` request per-monitor DPI v2; the upstream SWT monitor-specific scaling (rescale on `WM_DPICHANGED`) is on unless `swt.autoScale.updateOnRuntime=false`; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |
+| DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | manifest and `Display` request per-monitor DPI v2; the upstream SWT monitor-specific scaling (rescale on `WM_DPICHANGED`) is on unless `swt.autoScale.updateOnRuntime=false`; with it on, `swt.autoScale` other than `quarter` or `exact` (`integer`, `half`, `false`, a number) fails at `Display` creation with `ERROR_NOT_IMPLEMENTED` unless `swt.autoScale.updateOnRuntime` is `false` or `force`; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |
 
 ## Known gaps
 

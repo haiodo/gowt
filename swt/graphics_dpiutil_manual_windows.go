@@ -22,20 +22,48 @@ const (
 	AutoscalingModeENABLED
 )
 
-// DPIUtilGetZoomForAutoscaleProperty is AutoScaleCalculation.parseFrom(swt.autoScale).getAutoScaledZoom.
-func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 {
-	value := strings.ToLower(jrt.GetProperty(dpiAutoScaleProperty, ""))
-	if value == "" || (value != "false" && value != "half" && value != "quarter" && value != "exact" && value != "integer") {
-		if n, err := strconv.Atoi(value); err == nil {
-			return int32(n)
-		}
-		if DPIUtilIsMonitorSpecificScalingActive() {
-			value = "quarter"
-		} else {
-			value = "integer"
+// dpiAutoScale is the parsed swt.autoScale: kind is a keyword, "number" (zoom holds it) or "" for the default.
+type dpiAutoScale struct {
+	raw  string
+	kind string
+	zoom int32
+}
+
+var dpiAutoScaleCache = &dpiAutoScale{kind: ""}
+
+// dpiParseAutoScale is AutoScaleCalculation.parseFrom, cached on the raw property text.
+func dpiParseAutoScale() *dpiAutoScale {
+	raw := jrt.GetProperty(dpiAutoScaleProperty, "")
+	if c := dpiAutoScaleCache; c.raw == raw {
+		return c
+	}
+	c := &dpiAutoScale{raw: raw}
+	switch v := strings.ToLower(raw); v {
+	case "false", "half", "quarter", "exact", "integer":
+		c.kind = v
+	default:
+		if n, err := strconv.ParseInt(raw, 10, 32); err == nil {
+			c.kind, c.zoom = "number", int32(n)
 		}
 	}
-	switch value {
+	dpiAutoScaleCache = c
+	return c
+}
+
+// DPIUtilGetZoomForAutoscaleProperty is AutoScaleCalculation.parseFrom(swt.autoScale).getAutoScaledZoom.
+func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 {
+	c := dpiParseAutoScale()
+	kind := c.kind
+	if kind == "" {
+		if DPIUtilIsMonitorSpecificScalingActive() {
+			kind = "quarter"
+		} else {
+			kind = "integer"
+		}
+	}
+	switch kind {
+	case "number":
+		return c.zoom
 	case "false":
 		return 100
 	case "half":
@@ -50,7 +78,7 @@ func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 {
 func DPIUtilMapDPIToZoom(dpi int32) int32        { return dpi * 100 / 96 }
 func DPIUtilMapZoomToDPI(zoom int32) int32       { return zoom * 96 / 100 }
 func DPIUtilGetScalingFactor(zoom int32) float32 { return float32(zoom) / 100 }
-func DPIUtilIsCustomAutoScale() bool             { return jrt.GetProperty(dpiAutoScaleProperty, "") != "" }
+func DPIUtilIsCustomAutoScale() bool             { return jrt.SystemProperties.Get(dpiAutoScaleProperty) != nil }
 
 func DPIUtilIsMonitorSpecificScalingActive() bool {
 	return !strings.EqualFold(jrt.GetProperty(dpiAutoScaleUpdateOnRuntime, ""), "false")
@@ -63,9 +91,8 @@ func DPIUtilSetMonitorSpecificScaling(active bool) {
 	if !active || jrt.GetProperty(dpiAutoScaleUpdateOnRuntime, "") == "force" {
 		return
 	}
-	switch strings.ToLower(jrt.GetProperty(dpiAutoScaleProperty, "")) {
-	case "", "quarter", "exact":
-	default:
+	switch dpiParseAutoScale().kind {
+	case "false", "half", "integer", "number":
 		ErrorCodeThrowableDetail(ERROR_NOT_IMPLEMENTED, nil, ": monitor-specific scaling is only implemented for swt.autoScale \"quarter\" and \"exact\"")
 	}
 }

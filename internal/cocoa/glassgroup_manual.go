@@ -103,7 +103,15 @@ func InstallBackgroundExtension(view *NSView, on bool) bool {
 		msg(cur, "retain")
 		msgRectOnly(ext, sel("setFrame:"), NewNSViewOverload1(int64(cur)).Frame())
 		msg(w, "setContentView:", ext)
+		// The default placement shrinks the content to the safe area (below the toolbar) and mirrors its
+		// edge into the strip, and the mirror of the flipped SWT view shows stale content. Keeping the
+		// content at the full size leaves nothing to mirror and the client area equal to the window.
+		if respondsTo(ext, "setAutomaticallyPlacesContentView:") {
+			msg(ext, "setAutomaticallyPlacesContentView:", 0)
+		}
 		msg(ext, "setContentView:", cur)
+		msgRectOnly(cur, sel("setFrame:"), NewNSViewOverload1(int64(ext)).Bounds())
+		msg(cur, "setAutoresizingMask:", viewWidthHeightSizable)
 		msg(cur, "release")
 	case !on && ext != 0:
 		inner := cur

@@ -1,7 +1,6 @@
 package swt
 
 import (
-	"log"
 	"os"
 
 	"github.com/ebitengine/purego"
@@ -22,9 +21,7 @@ var (
 
 func init() {
 	if viewTableEnabled {
-		if !cocoa.OnClassRegistered(vtClassRegistered) {
-			log.Print("gowt: GOWT_VIEW_TABLE=1 ignored: the class registration hook came too late")
-		}
+		cocoa.OnClassRegistered(vtClassRegistered)
 	}
 }
 

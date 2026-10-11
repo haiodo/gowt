@@ -36,7 +36,7 @@ func main() {
 			} else {
 				w.ToolBar().Item("Add", note)
 			}
-			look.SetGlassGroup(w, 40)
+			look.SetGlassGroup(w, 4)
 		}
 		w.Label("Window backdrop, full-size content", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 320}))
 		p := w.Panel()

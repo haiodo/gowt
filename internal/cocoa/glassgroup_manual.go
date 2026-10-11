@@ -23,28 +23,15 @@ func glassGroupContent(host uintptr, kind int, window bool) uintptr {
 	return 0
 }
 
-// lowerGlassGroup keeps the container just below the lowest glass panel of host: SWT puts every new
-// child at the bottom of its parent, which would otherwise bury a later panel under the container.
-func lowerGlassGroup(host, content uintptr) {
-	g := msg(content, "superview")
-	subs := msg(host, "subviews")
-	for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
-		s := msg(subs, "objectAtIndex:", i)
-		if s == g {
-			return
-		}
-		if bd := getAssociated(s, backdropKey()); bd != 0 && msg(bd, "superview") == content {
-			msg(g, "retain")
-			msg(g, "removeFromSuperview")
-			msg(host, "addSubview:positioned:relativeTo:", g, windowBelowArg, s)
-			msg(g, "release")
-			return
-		}
+// syncGlassGroup moves the container of host to the frame of host.
+func syncGlassGroup(host uintptr) {
+	if g := getAssociated(host, groupKey()); g != 0 {
+		msgRectOnly(g, sel("setFrame:"), NewNSViewOverload1(int64(host)).Frame())
 	}
 }
 
 // InstallGlassGroup makes the glass surfaces of the direct children of view share one
-// NSGlassEffectContainerView, so surfaces closer than spacing points merge. Call it before the children
+// NSGlassEffectContainerView, so surfaces closer than spacing points merge. Call it after SetBackgroundExtension and before the children
 // get their glass; it reports false before macOS 26. A second call only changes the spacing.
 func InstallGlassGroup(view *NSView, spacing float64) bool {
 	initAssociated()
@@ -73,8 +60,12 @@ func InstallGlassGroup(view *NSView, spacing float64) bool {
 		msg(g, "setContentView:", content)
 		msg(content, "release")
 		msg(g, "setAutoresizingMask:", viewWidthHeightSizable)
-		msgRectOnly(g, sel("setFrame:"), view.Bounds())
-		msg(v, "addSubview:positioned:relativeTo:", g, windowBelowArg, 0)
+		msgRectOnly(g, sel("setFrame:"), view.Frame())
+		// A sibling just below the host, not a child: SWT adds children at the bottom of the host, so a
+		// child container would end up above them and cover their content.
+		if sv := msg(v, "superview"); sv != 0 {
+			msg(sv, "addSubview:positioned:relativeTo:", g, windowBelowArg, v)
+		}
 		setAssociated(v, groupKey(), g, 1)
 		msg(g, "release")
 	}
@@ -112,7 +103,15 @@ func InstallBackgroundExtension(view *NSView, on bool) bool {
 		msg(cur, "retain")
 		msgRectOnly(ext, sel("setFrame:"), NewNSViewOverload1(int64(cur)).Frame())
 		msg(w, "setContentView:", ext)
+		// The default placement shrinks the content to the safe area (below the toolbar) and mirrors its
+		// edge into the strip, and the mirror of the flipped SWT view shows stale content. Keeping the
+		// content at the full size leaves nothing to mirror and the client area equal to the window.
+		if respondsTo(ext, "setAutomaticallyPlacesContentView:") {
+			msg(ext, "setAutomaticallyPlacesContentView:", 0)
+		}
 		msg(ext, "setContentView:", cur)
+		msgRectOnly(cur, sel("setFrame:"), NewNSViewOverload1(int64(ext)).Bounds())
+		msg(cur, "setAutoresizingMask:", viewWidthHeightSizable)
 		msg(cur, "release")
 	case !on && ext != 0:
 		inner := cur

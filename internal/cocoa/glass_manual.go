@@ -70,6 +70,9 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 		msg(old, "removeFromSuperview")
 		setAssociated(v, backdropKey(), 0, 1)
 		had = true
+		if !window {
+			boxChrome(v, true)
+		}
 	}
 	host := msg(v, "superview")
 	if w := msg(v, "window"); window && w != 0 && (kind != BackdropNone || had) {
@@ -95,13 +98,33 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	}
 	if group := glassGroupContent(host, kind, window); group != 0 {
 		msg(group, "addSubview:", bd)
-		lowerGlassGroup(host, group)
 	} else {
 		msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
 	}
 	setAssociated(v, backdropKey(), bd, 1)
 	msg(bd, "release")
+	if !window {
+		boxChrome(v, false)
+	}
 	return had
+}
+
+// boxChrome hides the own fill and border of an NSBox (a Group) while a backdrop is behind it, so one
+// glass shape shows instead of the box drawn over it; shown puts the system look back.
+func boxChrome(v uintptr, shown bool) {
+	if c := class("NSBox"); c == 0 || msg(v, "isKindOfClass:", c) == 0 {
+		return
+	}
+	if shown {
+		msg(v, "setBoxType:", 0)
+		return
+	}
+	msg(v, "setBoxType:", 4)
+	msg(v, "setFillColor:", msg(class("NSColor"), "clearColor"))
+	if msgF64 == nil {
+		purego.RegisterFunc(&msgF64, objcMsgSend)
+	}
+	msgF64(v, sel("setBorderWidth:"), 0)
 }
 
 // SyncBackdrop moves the material added by InstallBackdrop to the frame of view.
@@ -110,6 +133,7 @@ func SyncBackdrop(view *NSView) {
 	if bd := getAssociated(uintptr(view.Id), backdropKey()); bd != 0 {
 		msgRectOnly(bd, sel("setFrame:"), view.Frame())
 	}
+	syncGlassGroup(uintptr(view.Id))
 }
 
 // DumpViews describes the view tree of the window of view, from its frame view down, depth levels

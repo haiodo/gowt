@@ -56,7 +56,7 @@ if look.SetToolbar(w,
 }
 ```
 
-Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`. Not checked by eye yet: the toolbar, the glass group and the background extension were only compiled.
+Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`; its glass group uses spacing 4, smaller than the 10 px between the panels, so they stay separate shapes (a spacing above 10 fuses neighbours on purpose). Not checked by eye yet: the toolbar, the glass group and the background extension were only compiled.
 
 ## Known gaps
 

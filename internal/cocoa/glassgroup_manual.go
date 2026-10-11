@@ -128,3 +128,10 @@ func InstallBackgroundExtension(view *NSView, on bool) bool {
 	}
 	return true
 }
+
+// BackgroundExtensionView returns the NSBackgroundExtensionView InstallBackgroundExtension made for
+// view, 0 if there is none.
+func BackgroundExtensionView(view *NSView) uintptr {
+	initAssociated()
+	return getAssociated(uintptr(view.Id), extKey())
+}

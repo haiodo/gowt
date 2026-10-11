@@ -78,8 +78,33 @@ func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 func setGlassGroup(c *swt.Composite, spacing float64) { cocoa.InstallGlassGroup(c.View, spacing) }
 
 func setBackgroundExtension(s *swt.Shell, on bool) {
+	prev := cocoa.BackgroundExtensionView(s.View)
 	cocoa.InstallBackgroundExtension(s.View, on)
+	// Display.GetShells and GetActiveShell find the shell by the window content view, which is now the
+	// extension view; without this alias the shell is not found and Run ends at once.
+	if on {
+		if ext := cocoa.BackgroundExtensionView(s.View); ext != 0 {
+			s.GetDisplay().AddWidget(cocoa.NewNSObjectOverload1(int64(ext)), s)
+			if !extensionShells[s] {
+				extensionShells[s] = true
+				s.AddDisposeListener(&extensionDisposer{s})
+			}
+		}
+	} else if prev != 0 {
+		s.GetDisplay().RemoveWidget(cocoa.NewNSObjectOverload1(int64(prev)))
+	}
 	s.Layout()
+}
+
+var extensionShells = map[*swt.Shell]bool{}
+
+type extensionDisposer struct{ s *swt.Shell }
+
+func (d *extensionDisposer) WidgetDisposed(*swt.DisposeEvent) {
+	if ext := cocoa.BackgroundExtensionView(d.s.View); ext != 0 {
+		d.s.GetDisplay().RemoveWidget(cocoa.NewNSObjectOverload1(int64(ext)))
+	}
+	delete(extensionShells, d.s)
 }
 
 // toolbarShells holds the shells that already have the dispose hook; the hook frees the Go click handlers.

@@ -60,3 +60,20 @@ func glassButton(c *swt.Control) {
 func setRoundedCorners(*swt.Shell, bool) {}
 
 func setDarkContent(*swt.Display, bool) {}
+
+func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
+	ci := make([]cocoa.ToolbarItem, len(items))
+	for i, it := range items {
+		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick}
+	}
+	ok := cocoa.InstallToolbar(s.View, ci)
+	s.Layout()
+	return ok
+}
+
+func setGlassGroup(c *swt.Composite, spacing float64) { cocoa.InstallGlassGroup(c.View, spacing) }
+
+func setBackgroundExtension(s *swt.Shell, on bool) {
+	cocoa.InstallBackgroundExtension(s.View, on)
+	s.Layout()
+}

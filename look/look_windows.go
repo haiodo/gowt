@@ -89,3 +89,9 @@ func setFullSizeContent(*swt.Shell, bool) {}
 func setGlass(*swt.Composite, bool) {}
 
 func glassButton(*swt.Control) {}
+
+func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
+
+func setGlassGroup(*swt.Composite, float64) {}
+
+func setBackgroundExtension(*swt.Shell, bool) {}

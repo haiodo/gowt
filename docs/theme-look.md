@@ -33,15 +33,34 @@ Colours you set yourself (`Background`, `GC` colours) do not change by themselve
 | `look.SetFullSizeContent(w, true)` | content extends under a transparent title bar (macOS); leave about 28 points at the top for the traffic lights |
 | `look.SetRoundedCorners(w, true)` | force rounded or square window corners on Windows 11 |
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
+| `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux): nothing is created, build a `gowt.ToolBar` instead |
+| `look.SetGlassGroup(parent, spacing)` | glass surfaces of the children of `parent` share one NSGlassEffectContainerView and merge when closer than `spacing`; call before their `SetGlass`. macOS 26, else nothing |
+| `look.SetBackgroundExtension(w, true)` | window content inside an NSBackgroundExtensionView, extended under the transparent title bar and toolbar. macOS 26, else nothing |
 | `look.Classic()` | before `Run`: ask macOS 26 for the pre-Liquid-Glass look |
 
 On macOS 26 the system chrome is Liquid Glass without any call, because Go 1.27 records SDK 26.2 in the binary.
 
 `look.Classic()` was not confirmed to work for a binary without an app bundle. The reliable way is building with `-ldflags=-macsdk=15.0`.
 
+## Toolbar
+
+```go
+if look.SetToolbar(w,
+	look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: add},
+	look.ToolbarItem{Space: true},
+	look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: share},
+) {
+	look.SetBackgroundExtension(w, true) // optional
+} else {
+	w.ToolBar().Item("Add", add) // Windows, Linux, older macOS without the call
+}
+```
+
+Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`. Not checked by eye yet: the toolbar, the glass group and the background extension were only compiled.
+
 ## Known gaps
 
 - On Windows the material shows only where the client area is black, so `SetBackdrop` turns the shell background black. Text drawn in pure black becomes transparent: use a near-black foreground. Widgets with their own opaque background are unaffected.
 - Mica, Acrylic and rounded corners were never checked on a real Windows 11 (CrossOver has no DWM).
 - Windows per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled.
-- Not available on macOS: `NSGlassEffectContainerView`, `NSBackgroundExtensionView`, a unified tool bar.
+- The macOS toolbar has push items only (no menus, search field, toggles or sidebar tracking), and its delegate lives as long as the window.

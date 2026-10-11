@@ -52,3 +52,27 @@ func GlassButton() gowt.Option { return gowt.Custom(glassButton) }
 // buttons) through undocumented uxtheme exports. Call before creating windows; it does not switch live.
 // GTK and AppKit theme the content themselves, so it does nothing there.
 func SetDarkContent(a *gowt.App, on bool) { setDarkContent(a.Unwrap(), on) }
+
+// ToolbarItem is one entry of the window toolbar.
+type ToolbarItem struct {
+	Title   string // label and tooltip
+	Symbol  string // SF Symbol name such as "plus" or "square.and.arrow.up"; "" shows the title only
+	OnClick func()
+	Space   bool // flexible space; the other fields are ignored
+}
+
+// SetToolbar puts a native unified toolbar (NSToolbar) on the window, replacing an earlier one; with
+// no items it removes the toolbar. On macOS 26 the items are Liquid Glass. It reports whether the
+// toolbar exists: elsewhere nothing is created and the result is false, so build your own gowt.ToolBar
+// in that case. Use it together with SetFullSizeContent only if the content leaves room for the bar.
+func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool { return setToolbar(w.Unwrap(), items) }
+
+// SetGlassGroup makes the glass surfaces (SetGlass) of the direct children of c share one
+// NSGlassEffectContainerView, so surfaces closer than spacing points merge into one shape. Call it
+// before the children get their glass. macOS 26 only; elsewhere it does nothing.
+func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
+
+// SetBackgroundExtension wraps the window content in an NSBackgroundExtensionView so it is extended
+// under a transparent title bar and the toolbar (use with SetFullSizeContent). macOS 26 only;
+// elsewhere it does nothing.
+func SetBackgroundExtension(w *gowt.Window, on bool) { setBackgroundExtension(w.Unwrap(), on) }

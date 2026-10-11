@@ -126,8 +126,8 @@ final class JdkCalls {
 				return "jrt.WriteBytes(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#toLowerCase":
 				if (mi.arguments().size() != 1) return null;
-				emitter.fileImports.add("strings");
-				return "strings.ToLower(" + recv(mi) + ")";
+				emitter.fileImports.add(JRT);
+				return "jrt.ToLowerCase(" + recv(mi) + ")";
 			case "java.lang.System#runFinalization":
 				emitter.fileImports.add(JRT);
 				return "jrt.GC()";

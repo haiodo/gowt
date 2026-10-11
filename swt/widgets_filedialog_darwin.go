@@ -458,7 +458,7 @@ func (this *FileDialog) Panel_shouldEnableURL(id int64, sel int64, arg0 int64, a
 								filter = jrt.Substring(filter, 1, -1)
 							}
 						}
-						if strings.HasSuffix((strings.ToLower(fileName)), fmt.Sprintf(".%s", strings.ToLower(filter))) {
+						if strings.HasSuffix((jrt.ToLowerCase(fileName)), fmt.Sprintf(".%s", jrt.ToLowerCase(filter))) {
 							return int64(1)
 						}
 						start = index + 1

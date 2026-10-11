@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"strings"
 	"unsafe"
 )
 
@@ -57,7 +56,7 @@ func (this *GUID) String() string {
 }
 
 func GUIDToHex(v int32, length int32) string {
-	var t string = strings.ToUpper(strconv.FormatUint(uint64(uint32(v)), 16))
+	var t string = jrt.ToUpperCase(strconv.FormatUint(uint64(uint32(v)), 16))
 	var tlen int32 = jrt.StringLength(t)
 	if tlen > length {
 		t = jrt.Substring(t, tlen-length, -1)

@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
-	"strings"
 )
 
 type Win32DPIUtils struct {
@@ -38,7 +37,7 @@ func (this *Win32DPIUtils) initWin32DPIUtils() {
 func Win32DPIUtilsInitializeCustomDpiAwareness() bool {
 	var customDpiAwareness string = jrt.GetProperty(Win32DPIUtilsCUSTOM_DPI_AWARENESS_PROPERTY, "")
 	if customDpiAwareness != "" {
-		switch strings.ToLower(customDpiAwareness) {
+		switch jrt.ToLowerCase(customDpiAwareness) {
 		case "permonitorv2":
 			Win32DPIUtilsSetDPIAwareness(win32.OSDPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2_)
 			return true

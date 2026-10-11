@@ -1014,8 +1014,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post()
 			return jrt.Cast[bool](completed.Get())
 		})
 		junit.AssertTrue(hasFinished)
-		var lowerCase string = strings.ToLower(this.browser.GetText())
-		junit.AssertTrue(strings.Contains(lowerCase, strings.ToLower("<title>test_setUrl_remote_with_post</title>")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+		var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
+		junit.AssertTrue(strings.Contains(lowerCase, jrt.ToLowerCase("<title>test_setUrl_remote_with_post</title>")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 		junit.AssertTrue(strings.Contains(lowerCase, "</html>"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 	}
 }
@@ -1051,8 +1051,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_n
 					return jrt.Cast[bool](completed.Get())
 				})
 				junit.AssertTrue(hasFinished)
-				var lowerCase string = strings.ToLower(this.browser.GetText())
-				junit.AssertTrue(strings.Contains(lowerCase, strings.ToLower("<title>test_setUrl_remote_with_post</title>")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+				var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
+				junit.AssertTrue(strings.Contains(lowerCase, jrt.ToLowerCase("<title>test_setUrl_remote_with_post</title>")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 				junit.AssertTrue(strings.Contains(lowerCase, "</html>"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 				capture.AssertNoOutput()
 			}()
@@ -1080,8 +1080,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_invalid_url()
 		return jrt.Cast[bool](completed.Get())
 	})
 	junit.AssertTrue(hasFinished)
-	var lowerCase string = strings.ToLower(this.browser.GetText())
-	junit.AssertTrue(strings.Contains(lowerCase, strings.ToLower("URL is invalid")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+	var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
+	junit.AssertTrue(strings.Contains(lowerCase, jrt.ToLowerCase("URL is invalid")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_closes_prematurely() {
@@ -1113,8 +1113,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_cl
 			return jrt.Cast[bool](completed.Get())
 		})
 		junit.AssertTrue(hasFinished)
-		var lowerCase string = strings.ToLower(this.browser.GetText())
-		junit.AssertTrue(strings.Contains(lowerCase, strings.ToLower("Unexpected end of file from server")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+		var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
+		junit.AssertTrue(strings.Contains(lowerCase, jrt.ToLowerCase("Unexpected end of file from server")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 	}
 }
 
@@ -1138,8 +1138,8 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_file_url() {
 		return jrt.Cast[bool](completed.Get())
 	})
 	junit.AssertTrue(hasFinished)
-	var lowerCase string = strings.ToLower(this.browser.GetText())
-	junit.AssertTrue(strings.Contains(lowerCase, strings.ToLower("Unsupported connection type")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+	var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
+	junit.AssertTrue(strings.Contains(lowerCase, jrt.ToLowerCase("Unsupported connection type")), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) ValidateTitleChanged(expectedTitle string, browserSetFunc jrt.Runnable) {
@@ -1621,7 +1621,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) GetText_helper(testString stri
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) NormalizeHtmlString(htmlString string) string {
-	return strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(htmlString, "\r", ""), "\n", ""), ";", ""))
+	return jrt.ToLowerCase(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(htmlString, "\r", ""), "\n", ""), ";", ""))
 }
 
 func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
@@ -1672,14 +1672,14 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 		} else {
 			junit.AssertTrue(this.WaitForPassCondition(completed.Get))
 		}
-		junit.AssertFalse(strings.Contains(strings.ToLower(this.browser.GetText()), "test_stop"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
+		junit.AssertFalse(strings.Contains(jrt.ToLowerCase(this.browser.GetText()), "test_stop"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 		var loaded *jrt.AtomicBoolean = jrt.NewAtomicBoolean(false)
 		this.browser.AddProgressListener(browser.ProgressListenerCompletedAdapter(func(event *browser.ProgressEvent) {
 			loaded.Set(true)
 		}))
 		this.browser.SetUrl(server.GetEchoUrl("test_stop - after the stop"))
 		junit.AssertTrue(this.WaitForPassCondition(loaded.Get))
-		var lowerCase string = strings.ToLower(this.browser.GetText())
+		var lowerCase string = jrt.ToLowerCase(this.browser.GetText())
 		junit.AssertTrue(strings.Contains(lowerCase, "<title>test_stop - after the stop</title>"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 		junit.AssertTrue(strings.Contains(lowerCase, "</html>"), fmt.Sprintf("Browser getText was: %s", this.browser.GetText()))
 	}

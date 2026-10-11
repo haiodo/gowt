@@ -1,7 +1,6 @@
 package swt
 
 import (
-	"log"
 	"os"
 
 	"github.com/ebitengine/purego"
@@ -17,13 +16,12 @@ var (
 	vtCellClass  int64
 	vtCheckClass int64
 	vtDrawing    = map[int64]bool{} // cell views inside drawRect: invalidating them from there would loop
+	vtViewCalls  int                // viewForTableColumn calls that reached vtMakeView; read by the GUI test
 )
 
 func init() {
 	if viewTableEnabled {
-		if !cocoa.OnClassRegistered(vtClassRegistered) {
-			log.Print("gowt: GOWT_VIEW_TABLE=1 ignored: the class registration hook came too late")
-		}
+		cocoa.OnClassRegistered(vtClassRegistered)
 	}
 }
 
@@ -178,6 +176,7 @@ func vtOutlineViewFor(a []int64) int64 {
 }
 
 func vtMakeView(tableView int64, check bool) int64 {
+	vtViewCalls++
 	cell, checkCls := vtClasses()
 	name, cls := "SWTCell", cell
 	if check {

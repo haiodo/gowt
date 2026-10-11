@@ -67,6 +67,8 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	s.SetBackgroundMode(swt.INHERIT_DEFAULT)
 }
 
+func topInset(*swt.Shell) int { return 0 }
+
 func setRoundedCorners(s *swt.Shell, on bool) {
 	if windowsBuild() < buildWin11 {
 		return
@@ -93,5 +95,3 @@ func glassButton(*swt.Control) {}
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
 
 func setGlassGroup(*swt.Composite, float64) {}
-
-func setBackgroundExtension(*swt.Shell, bool) {}

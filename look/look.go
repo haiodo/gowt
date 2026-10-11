@@ -34,10 +34,23 @@ func SetRoundedCorners(w *gowt.Window, on bool) { setRoundedCorners(w.Unwrap(), 
 func Classic() { classic() }
 
 // SetFullSizeContent lets the window content extend under the title bar, which becomes
-// transparent, so the content starts at the top edge of the window: leave a top margin of about
-// 28 points for the traffic lights. The client area and Pack follow the new mask. macOS only;
-// elsewhere it does nothing.
-func SetFullSizeContent(w *gowt.Window, on bool) { setFullSizeContent(w.Unwrap(), on) }
+// transparent, so backgrounds and glass run under it. The window layout (Grid, Row, Form) gets the title bar and
+// toolbar height as extra top margin, kept in step on resize, SetToolbar and full screen; other
+// layouts need their own margin. macOS only; elsewhere it does nothing.
+func SetFullSizeContent(w *gowt.Window, on bool) {
+	setFullSizeContent(w.Unwrap(), on)
+	if !insetShells[w] {
+		insetShells[w] = true
+		w.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { refreshInset(w) }))
+	}
+	refreshInset(w)
+}
+
+var insetShells = map[*gowt.Window]bool{}
+
+// refreshInset keeps the top margin of the window layout equal to the title bar and toolbar height
+// that full-size content runs under; it is zero without full-size content and off macOS.
+func refreshInset(w *gowt.Window) { w.SetTopInset(topInset(w.Unwrap())) }
 
 // SetGlass puts a Liquid Glass surface behind the container's content, with rounded corners; the
 // container and its children stop painting their own background. It needs macOS 26; older macOS
@@ -65,14 +78,13 @@ type ToolbarItem struct {
 // no items it removes the toolbar. On macOS 26 the items are Liquid Glass. It reports whether the
 // toolbar exists: elsewhere nothing is created and the result is false, so build your own gowt.ToolBar
 // in that case. Use it together with SetFullSizeContent only if the content leaves room for the bar.
-func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool { return setToolbar(w.Unwrap(), items) }
+func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
+	ok := setToolbar(w.Unwrap(), items)
+	refreshInset(w)
+	return ok
+}
 
 // SetGlassGroup makes the glass surfaces (SetGlass) of the direct children of c share one
 // NSGlassEffectContainerView, so surfaces closer than spacing points merge into one shape. Call it
 // before the children get their glass. macOS 26 only; elsewhere it does nothing.
 func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
-
-// SetBackgroundExtension wraps the window content in an NSBackgroundExtensionView so it is extended
-// under a transparent title bar and the toolbar (use with SetFullSizeContent). macOS 26 only;
-// elsewhere it does nothing.
-func SetBackgroundExtension(w *gowt.Window, on bool) { setBackgroundExtension(w.Unwrap(), on) }

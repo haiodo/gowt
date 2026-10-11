@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -131,4 +132,37 @@ func update(path string) error {
 		}
 	}
 	return os.WriteFile(path, []byte(b.String()), 0o644)
+}
+
+var logLine = regexp.MustCompile(`^(PASS|FAIL|SKIP)\s+(\S+) \(\d+\.\d+s\)(?:: (.*))?$`)
+
+// compareLog applies the gate to a saved plain-format run log. It cannot tell a full run from a partial one,
+// so the "missing" check is on.
+func compareLog(logPath, expectedPath string) int {
+	if expectedPath == "" {
+		fmt.Fprintln(os.Stderr, "swttest: -compare needs -expected")
+		return 1
+	}
+	f, err := os.Open(logPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "swttest:", err)
+		return 1
+	}
+	defer f.Close()
+	sc := bufio.NewScanner(f)
+	sc.Buffer(make([]byte, 1<<20), 1<<20)
+	for sc.Scan() {
+		if m := logLine.FindStringSubmatch(strings.TrimRight(sc.Text(), "\r")); m != nil {
+			collected = append(collected, outcome{m[2], m[1], m[3]})
+		}
+	}
+	if err := sc.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "swttest:", err)
+		return 1
+	}
+	fmt.Printf("%d results read from %s\n", len(collected), logPath)
+	if gate(expectedPath, true) > 0 {
+		return 1
+	}
+	return 0
 }

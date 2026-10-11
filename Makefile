@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -138,6 +138,18 @@ consumer-check:
 win-build:
 	@mkdir -p $(WINBIN)
 	@for c in $(WINCMDS); do GOOS=windows GOARCH=amd64 go build -o $(WINBIN)/$$c.exe ./cmd/$$c || exit 1; done
+
+# A zip for a tester on a real Windows machine: swttest, winprobe and controlexample for amd64 and arm64, the gate file, run.cmd, README.txt.
+# Compare the returned file: go run ./cmd/swttest -expected tests/expected_windows.txt -compare result-swttest-*.txt
+KITDIR := $(BIN)/win-testkit
+win-testkit:
+	@rm -rf $(KITDIR) && mkdir -p $(KITDIR)
+	@for a in amd64 arm64; do for c in swttest winprobe controlexample; do GOOS=windows GOARCH=$$a go build -o $(KITDIR)/$$a/$$c.exe ./cmd/$$c || exit 1; done; done
+	@cp tests/expected_windows.txt $(KITDIR)/
+	@sed 's/$$/\r/' tooling/win-testkit/run.cmd > $(KITDIR)/run.cmd
+	@(printf '\357\273\277'; sed 's/$$/\r/' tooling/win-testkit/README.txt) > $(KITDIR)/README.txt
+	@mkdir -p dist && rm -f dist/gowt-win-testkit.zip && cd $(KITDIR) && zip -qr ../../dist/gowt-win-testkit.zip .
+	@echo dist/gowt-win-testkit.zip
 
 win-probe: win-build
 	$(WINE) --bottle $(WINBOTTLE) $(abspath $(WINBIN))/winprobe.exe

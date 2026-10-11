@@ -30,12 +30,11 @@ Colours you set yourself (`Background`, `GC` colours) do not change by themselve
 | `look.SetBackdrop(w, look.BackdropNone / BackdropTranslucent / BackdropGlass)` | window material. macOS: blurred material or Liquid Glass (26+). Windows 11 22H2 (build 22621) and later: Acrylic (`BackdropTranslucent`) or Mica (`BackdropGlass`); older builds keep the opaque window. Linux ignores it |
 | `look.SetGlass(container, true)` | Liquid Glass surface behind a `Panel`, `Window`, `Group`, `Split` or `CoolBar`. macOS 26; older macOS shows a blurred material, other systems nothing |
 | `look.GlassButton()` | option for a push button: glass bezel on macOS 26 |
-| `look.SetFullSizeContent(w, true)` | content extends under a transparent title bar (macOS); leave about 28 points at the top for the traffic lights |
+| `look.SetFullSizeContent(w, true)` | content extends under a transparent title bar (macOS); the window layout (Grid, Row, Form) gets the title bar and toolbar height as extra top margin (`Window.SetTopInset`), updated on resize and SetToolbar |
 | `look.SetRoundedCorners(w, true)` | force rounded or square window corners on Windows 11 |
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
 | `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux): nothing is created, build a `gowt.ToolBar` instead |
 | `look.SetGlassGroup(parent, spacing)` | glass surfaces of the children of `parent` share one NSGlassEffectContainerView and merge when closer than `spacing`; call before their `SetGlass`. macOS 26, else nothing |
-| `look.SetBackgroundExtension(w, true)` | window content inside an NSBackgroundExtensionView, extended under the transparent title bar and toolbar. macOS 26, else nothing |
 | `look.Classic()` | before `Run`: ask macOS 26 for the pre-Liquid-Glass look |
 
 On macOS 26 the system chrome is Liquid Glass without any call, because Go 1.27 records SDK 26.2 in the binary.
@@ -45,18 +44,18 @@ On macOS 26 the system chrome is Liquid Glass without any call, because Go 1.27 
 ## Toolbar
 
 ```go
-if look.SetToolbar(w,
+if !look.SetToolbar(w,
 	look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: add},
 	look.ToolbarItem{Space: true},
 	look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: share},
 ) {
-	look.SetBackgroundExtension(w, true) // optional
-} else {
 	w.ToolBar().Item("Add", add) // Windows, Linux, older macOS without the call
 }
 ```
 
-Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`. Not checked by eye yet: the toolbar, the glass group and the background extension were only compiled.
+Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`; its glass group uses spacing 4, smaller than the 10 px between the panels, so they stay separate shapes (a spacing above 10 fuses neighbours on purpose). Not checked by eye yet: the toolbar and the glass group were only compiled.
+
+NSBackgroundExtensionView is not wrapped; it makes sense only with a sidebar or split view, which gowt does not have yet.
 
 ## Known gaps
 

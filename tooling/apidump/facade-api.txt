@@ -439,6 +439,7 @@ gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
+gowt Window.SetTopInset(points int)
 gowt Window.Show()
 gowt Window.ShowTop(w Widget)
 gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -593,7 +594,6 @@ gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
-gowt/look func SetBackgroundExtension(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)

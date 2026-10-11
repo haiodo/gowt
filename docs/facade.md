@@ -69,12 +69,11 @@ around factory output, deliberately not exported yet). jface has no viewers in t
 | (none) | Liquid Glass chrome is on by itself: the Go linker records `sdk 26.2` in `LC_BUILD_VERSION` of every binary. |
 | `look.Classic()` | Before `Run`: sets `UIDesignRequiresCompatibility` via NSUserDefaults and the main bundle info dictionary. No Info.plist exists for a plain binary, so whether AppKit reads it there is checked only by eye. Reliable alternative: `go build -ldflags=-macsdk=15.0`. |
 | `look.SetBackdrop(w, b)` | `Translucent` is an NSVisualEffectView, `Glass` an NSGlassEffectView (26+, else Translucent), the window one sits in the window frame view below the content view, a panel one in the panel parent right below the panel (frame kept in step by a resize listener); SWT puts every new child at the bottom of its parent, so a child backdrop would end up above the widgets. The window turns non-opaque. SWT composites fill their background, so the window and panels also get an alpha-0 background plus `SetBackgroundMode(INHERIT_FORCE)`; |
-| `look.SetFullSizeContent(w, on)` | Full-size content view mask plus transparent title bar. |
+| `look.SetFullSizeContent(w, on)` | Full-size content view mask plus transparent title bar; the window layout gets the title bar height as top inset (Window.SetTopInset). |
 | `look.SetGlass(c, on)` (c is any container: `Panel`, `Window`, `Group`, `Split`, `CoolBar`) | NSGlassEffectView behind a panel (corner radius 12). |
 | `look.GlassButton()` | `gowt.Option`: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |
 | `look.SetToolbar(w, items...) bool` | NSToolbar (`toolbarStyle = .unified`) set on the NSWindow, not in the SWT view tree. Items come from a run-time ObjC delegate class (`GowtToolbarDelegate`, target and action `gowtClick:`); item identifiers `gowt.item.<index>`, spaces are `NSToolbarFlexibleSpaceItem`. Other OS: returns false, creates nothing. |
 | `look.SetGlassGroup(c, spacing)` | An NSGlassEffectContainerView subclass (`GowtGlassGroup`, `hitTest:` returns nil) fills `c`'s view; glass views installed for its children go into the container's content view, and the container is kept just below the lowest glass panel (SWT inserts new children at the bottom). |
-| `look.SetBackgroundExtension(w, on)` | NSBackgroundExtensionView becomes the window content view and holds the SWT content view. |
 
 Every class and selector newer than macOS 13 is looked up at run time; other systems get no-ops.
 The toolbar, glass group and background extension (TSK-34) are compiled but not yet checked by eye.

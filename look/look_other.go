@@ -8,6 +8,8 @@ func setBackdrop(*swt.Shell, Backdrop) {}
 
 func setRoundedCorners(*swt.Shell, bool) {}
 
+func topInset(*swt.Shell) int { return 0 }
+
 func classic() {}
 
 func setFullSizeContent(*swt.Shell, bool) {}
@@ -21,5 +23,3 @@ func setDarkContent(*swt.Display, bool) {}
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
 
 func setGlassGroup(*swt.Composite, float64) {}
-
-func setBackgroundExtension(*swt.Shell, bool) {}

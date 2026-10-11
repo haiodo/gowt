@@ -1,8 +1,7 @@
 //go:build darwin
 
 // Hand-written: a real NSToolbar on a window (unified style, Liquid Glass items on macOS 26),
-// NSGlassEffectContainerView grouping of glass surfaces and NSBackgroundExtensionView around the
-// content view. NSToolbar needs a delegate, so one ObjC class is registered at run time.
+// NSGlassEffectContainerView grouping of glass surfaces. NSToolbar needs a delegate, so one ObjC class is registered at run time.
 package cocoa
 
 import (

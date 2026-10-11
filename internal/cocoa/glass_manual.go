@@ -7,6 +7,7 @@ package cocoa
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/ebitengine/purego"
 )
@@ -70,6 +71,9 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 		msg(old, "removeFromSuperview")
 		setAssociated(v, backdropKey(), 0, 1)
 		had = true
+		if !window {
+			boxChrome(v, true)
+		}
 	}
 	host := msg(v, "superview")
 	if w := msg(v, "window"); window && w != 0 && (kind != BackdropNone || had) {
@@ -95,13 +99,29 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	}
 	if group := glassGroupContent(host, kind, window); group != 0 {
 		msg(group, "addSubview:", bd)
-		lowerGlassGroup(host, group)
 	} else {
 		msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
 	}
 	setAssociated(v, backdropKey(), bd, 1)
 	msg(bd, "release")
+	if !window {
+		boxChrome(v, false)
+	}
 	return had
+}
+
+// boxChrome hides the own fill and border of an NSBox (a Group) while a backdrop is behind it, so one
+// glass shape shows instead of the box drawn over it; the box type stays, so its title is still drawn.
+// shown puts the system look back (NSGrooveBorder is the NSBox default).
+func boxChrome(v uintptr, shown bool) {
+	if c := class("NSBox"); c == 0 || msg(v, "isKindOfClass:", c) == 0 {
+		return
+	}
+	if shown {
+		msg(v, "setBorderType:", 3)
+		return
+	}
+	msg(v, "setBorderType:", 0)
 }
 
 // SyncBackdrop moves the material added by InstallBackdrop to the frame of view.
@@ -110,6 +130,7 @@ func SyncBackdrop(view *NSView) {
 	if bd := getAssociated(uintptr(view.Id), backdropKey()); bd != 0 {
 		msgRectOnly(bd, sel("setFrame:"), view.Frame())
 	}
+	syncGlassGroup(uintptr(view.Id))
 }
 
 // DumpViews describes the view tree of the window of view, from its frame view down, depth levels
@@ -168,6 +189,19 @@ func SetFullSizeContent(view *NSView, on bool) {
 		b = 1
 	}
 	msg(w, "setTitlebarAppearsTransparent:", b)
+}
+
+// ContentTopInset is the height of the window strip (title bar, toolbar) that the content view runs
+// under: the content view height minus the top edge of contentLayoutRect. Zero without full-size content.
+func ContentTopInset(view *NSView) int {
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 || msg(w, "styleMask")&styleMaskFullSize == 0 {
+		return 0
+	}
+	var r NSRect
+	OSObjc_msgSend_stretOverload9(&r, int64(w), int64(sel("contentLayoutRect")))
+	cv := NewNSViewOverload1(int64(msg(w, "contentView"))).Frame()
+	return max(0, int(math.Ceil(cv.Height-(r.Y+r.Height))))
 }
 
 // SetGlassButton gives an NSButton the macOS 26 glass bezel; older systems keep the current one.

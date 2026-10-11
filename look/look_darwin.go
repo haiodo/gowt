@@ -11,6 +11,8 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	}
 }
 
+func topInset(s *swt.Shell) int { return cocoa.ContentTopInset(s.View) }
+
 func classic() { cocoa.RequireCompatibleLook() }
 
 func setFullSizeContent(s *swt.Shell, on bool) {
@@ -76,11 +78,6 @@ func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 }
 
 func setGlassGroup(c *swt.Composite, spacing float64) { cocoa.InstallGlassGroup(c.View, spacing) }
-
-func setBackgroundExtension(s *swt.Shell, on bool) {
-	cocoa.InstallBackgroundExtension(s.View, on)
-	s.Layout()
-}
 
 // toolbarShells holds the shells that already have the dispose hook; the hook frees the Go click handlers.
 var toolbarShells = map[*swt.Shell]bool{}

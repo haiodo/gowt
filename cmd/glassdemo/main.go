@@ -29,14 +29,12 @@ func main() {
 		toolbar := os.Getenv("GOWT_TOOLBAR") == "1"
 		if toolbar {
 			note := func() { log.Print("toolbar item clicked") }
-			if look.SetToolbar(w, look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: note},
+			if !look.SetToolbar(w, look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: note},
 				look.ToolbarItem{Space: true},
 				look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: note}) {
-				look.SetBackgroundExtension(w, true)
-			} else {
 				w.ToolBar().Item("Add", note)
 			}
-			look.SetGlassGroup(w, 40)
+			look.SetGlassGroup(w, 4)
 		}
 		w.Label("Window backdrop, full-size content", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 320}))
 		p := w.Panel()

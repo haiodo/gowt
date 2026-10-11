@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"unicode/utf16"
 )
 
 type AccessibleImpl interface {
@@ -2487,10 +2486,10 @@ func (this *Accessible) LineNumberForOffset(text string, offset int32) int32 {
 	var lineNumber int32 = 1
 	var length int32 = jrt.StringLength(text)
 	for i := int32(0); i < offset; i++ {
-		switch utf16.Encode([]rune(text))[i] {
+		switch jrt.ToChars(text)[i] {
 		case '\u000d':
 			if i+1 < length {
-				if int32(utf16.Encode([]rune(text))[i+1]) == int32('\u000a') {
+				if int32(jrt.ToChars(text)[i+1]) == int32('\u000a') {
 					i++
 				}
 			}
@@ -2518,9 +2517,9 @@ func (this *Accessible) RangeForLineNumber(lineNumber int32, text string) cocoa.
 		if line > lineNumber {
 			break
 		}
-		switch utf16.Encode([]rune(text))[i] {
+		switch jrt.ToChars(text)[i] {
 		case '\u000d':
-			if i+1 < length && int32(utf16.Encode([]rune(text))[i+1]) == int32('\u000a') {
+			if i+1 < length && int32(jrt.ToChars(text)[i+1]) == int32('\u000a') {
 				i++
 			}
 			fallthrough

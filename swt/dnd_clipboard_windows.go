@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"reflect"
-	"unicode/utf16"
 )
 
 type Clipboard struct {
@@ -459,7 +458,7 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		var buffer []uint16 = make([]uint16, maxSize)
 		var size int32 = win32.OSGetClipboardFormatName(types[i].CfFormat, buffer, maxSize)
 		if size != 0 {
-			names[i] = string(utf16.Decode(buffer[0 : 0+size]))
+			names[i] = jrt.FromChars(buffer[0 : 0+size])
 		} else {
 			switch types[i].CfFormat {
 			case win32.COMCF_HDROP:

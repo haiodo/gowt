@@ -10,6 +10,8 @@ import (
 	"unsafe"
 
 	"github.com/ebitengine/purego"
+
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
 var (
@@ -66,7 +68,7 @@ func class(name string) uintptr {
 
 // nsString copies s into a new autoreleased NSString (bytes+length keeps embedded NULs).
 func nsString(s string) uintptr {
-	b := []byte(s)
+	b := []byte(jrt.ValidUTF8(s))
 	p := uintptr(0)
 	if len(b) > 0 {
 		p = uintptr(unsafe.Pointer(&b[0]))

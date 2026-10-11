@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"strings"
-	"unicode/utf16"
 )
 
 type DirectoryDialog struct {
@@ -144,7 +143,7 @@ func (this *DirectoryDialog) OpenDialog() *jrt.Optional {
 					var buffer []uint16 = make([]uint16, length)
 					win32.OSMoveMemoryOverload2(buffer, wstr, length*2)
 					win32.OSCoTaskMemFree(wstr)
-					this.directoryPath = string(utf16.Decode(buffer))
+					this.directoryPath = jrt.FromChars(buffer)
 				}
 				psi.Release()
 			}

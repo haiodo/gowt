@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type Path struct {
@@ -823,7 +822,7 @@ func (this *Path_AddStringOperation) AddStringInPixels(pathHandleLike Path_PathH
 	var zoom int32 = pathHandle.zoom
 	var currentPoint *win32.PointF = pathHandle.currentPoint
 	var handle int64 = pathHandle.handle
-	var buffer []uint16 = utf16.Encode([]rune(this.string))
+	var buffer []uint16 = jrt.ToChars(this.string)
 	var hDC int64 = this.this_0.device.impl.internal_new_GC_(nil)
 	var family []int64 = make([]int64, 1)
 	var gdipFont int64 = GCCreateGdipFont(hDC, SWTFontProviderGetFontHandle(this.this_0.device, this.fontData, zoom), int64(0), this.this_0.device.fontCollection, family, nil)

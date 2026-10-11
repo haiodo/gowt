@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Label struct {
@@ -487,7 +486,7 @@ func (this *Label) WmDrawChildText(struct_ *win32.DRAWITEMSTRUCT) {
 		}
 		win32.OSSetTextColor(struct_.HDC, foregroundPixel)
 	}
-	var buffer []uint16 = utf16.Encode([]rune(this.text))
+	var buffer []uint16 = jrt.ToChars(this.text)
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(struct_.HDC, buffer, int32(len(buffer)), rect, flags)
 }
 

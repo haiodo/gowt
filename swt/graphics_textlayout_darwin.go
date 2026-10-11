@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type TextLayout struct {
@@ -1173,10 +1172,10 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 	case MOVEMENT_CLUSTER:
 		offset += step
 		if 0 <= offset && offset < length {
-			var ch uint16 = utf16.Encode([]rune(this.text))[offset]
+			var ch uint16 = jrt.ToChars(this.text)[offset]
 			if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 				if offset > 0 {
-					ch = utf16.Encode([]rune(this.text))[offset-1]
+					ch = jrt.ToChars(this.text)[offset-1]
 					if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 						offset += step
 					}
@@ -1278,10 +1277,10 @@ func (this *TextLayout) GetOffsetXYTrailing(x int32, y int32, trailing []int32) 
 		if trailing != (nil) {
 			trailing[0] = int32(math.Floor(float64(float32(partialFraction[0])) + 0.5))
 			if partialFraction[0] >= 0.5 {
-				var ch uint16 = utf16.Encode([]rune(this.text))[offset]
+				var ch uint16 = jrt.ToChars(this.text)[offset]
 				if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 					if offset+1 < length {
-						ch = utf16.Encode([]rune(this.text))[offset+1]
+						ch = jrt.ToChars(this.text)[offset+1]
 						if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 							trailing[0]++
 						}
@@ -1408,7 +1407,7 @@ func (this *TextLayout) GetSegmentsText() string {
 		segmentCount++
 		newChars[charCount+t518] = separator
 	}
-	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
+	return jrt.FromChars(newChars[0 : 0+int32(len(newChars))])
 }
 
 func (this *TextLayout) GetSpacing() int32 {

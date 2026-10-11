@@ -5,7 +5,6 @@ package swt
 import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
-	"unicode/utf16"
 )
 
 type TextTransfer struct {
@@ -139,7 +138,7 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 							break
 						}
 					}
-					tret1168 = string(utf16.Decode(chars[0 : 0+length]))
+					tret1168 = jrt.FromChars(chars[0 : 0+length])
 					tretd1169 = true
 					return
 				}()
@@ -173,7 +172,7 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 					}
 					var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 					win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-					tret1170 = string(utf16.Decode(lpWideCharStr))
+					tret1170 = jrt.FromChars(lpWideCharStr)
 					tretd1171 = true
 					return
 				}()

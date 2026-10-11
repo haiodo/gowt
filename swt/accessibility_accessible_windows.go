@@ -9,7 +9,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"unicode/utf16"
 )
 
 type Accessible struct {
@@ -2056,7 +2055,7 @@ func (this *Accessible) Get_accDefaultAction(varChild int64, pszDefaultAction in
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pDefaultAction[0], size)
-				osDefaultAction = string(utf16.Decode(buffer))
+				osDefaultAction = jrt.FromChars(buffer)
 			}
 		}
 	}
@@ -2108,7 +2107,7 @@ func (this *Accessible) Get_accDescription(varChild int64, pszDescription int64)
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pDescription[0], size)
-				osDescription = string(utf16.Decode(buffer))
+				osDescription = jrt.FromChars(buffer)
 			}
 		}
 	}
@@ -2267,7 +2266,7 @@ func (this *Accessible) Get_accHelp(varChild int64, pszHelp int64) int32 {
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pHelp[0], size)
-				osHelp = string(utf16.Decode(buffer))
+				osHelp = jrt.FromChars(buffer)
 			}
 		}
 	}
@@ -2333,7 +2332,7 @@ func (this *Accessible) Get_accKeyboardShortcut(varChild int64, pszKeyboardShort
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pKeyboardShortcut[0], size)
-				osKeyboardShortcut = string(utf16.Decode(buffer))
+				osKeyboardShortcut = jrt.FromChars(buffer)
 			}
 		}
 	}
@@ -2376,7 +2375,7 @@ func (this *Accessible) Get_accName(varChild int64, pszName int64) int32 {
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pName[0], size)
-				osName = string(utf16.Decode(buffer))
+				osName = jrt.FromChars(buffer)
 			}
 		}
 		if code == win32.COME_INVALIDARG {
@@ -2637,7 +2636,7 @@ func (this *Accessible) Get_accValue(varChild int64, pszValue int64) int32 {
 			if size > 0 {
 				var buffer []uint16 = make([]uint16, (size+1)/2)
 				win32.OSMoveMemoryOverload2(buffer, pValue[0], size)
-				osValue = string(utf16.Decode(buffer))
+				osValue = jrt.FromChars(buffer)
 			}
 		}
 		if code == win32.COME_INVALIDARG {
@@ -2698,7 +2697,7 @@ func (this *Accessible) Put_accValue(varChild int64, szValue int64) int32 {
 			var size int32 = win32.COMSysStringByteLen(szValue)
 			var buffer []uint16 = make([]uint16, (size+1)/2)
 			win32.OSMoveMemoryOverload2(buffer, szValue, size)
-			event.String_ = string(utf16.Decode(buffer))
+			event.String_ = jrt.FromChars(buffer)
 			for i := int32(0); i < this.AccessibleEditableTextListenersSize(); i++ {
 				var listener AccessibleEditableTextListener = jrt.Cast[AccessibleEditableTextListener](this.accessibleEditableTextListeners.Get(i))
 				listener.ReplaceText(event)
@@ -3197,13 +3196,13 @@ func (this *Accessible) Get_locale(pLocale int64) int32 {
 		return win32.COMCO_E_OBJNOTCONNECTED
 	}
 	var locale *jrt.Locale = jrt.LocaleDefault()
-	var data []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", locale.GetLanguage()))))
+	var data []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", locale.GetLanguage())))
 	var ptr int64 = win32.COMSysAllocString(data)
 	win32.OSMoveMemoryOverload79(pLocale, []int64{ptr}, win32.CPTR_SIZEOF)
-	data = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", locale.GetCountry()))))
+	data = jrt.ToChars((fmt.Sprintf("%s\u0000", locale.GetCountry())))
 	ptr = win32.COMSysAllocString(data)
 	win32.OSMoveMemoryOverload79(pLocale+int64(win32.CPTR_SIZEOF), []int64{ptr}, win32.CPTR_SIZEOF)
-	data = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", locale.GetVariant()))))
+	data = jrt.ToChars((fmt.Sprintf("%s\u0000", locale.GetVariant())))
 	ptr = win32.COMSysAllocString(data)
 	win32.OSMoveMemoryOverload79(pLocale+int64(2*win32.CPTR_SIZEOF), []int64{ptr}, win32.CPTR_SIZEOF)
 	if AccessibleDEBUG {
@@ -6061,7 +6060,7 @@ func (this *Accessible) GetString(psz int64) string {
 	}
 	var buffer []uint16 = make([]uint16, (size+1)/2)
 	win32.OSMoveMemoryOverload2(buffer, ptr[0], size)
-	return string(utf16.Decode(buffer))
+	return jrt.FromChars(buffer)
 }
 
 func (this *Accessible) GetVARIANT(variant int64) *win32.VARIANT {
@@ -6096,7 +6095,7 @@ func (this *Accessible) SetPtrVARIANT(variant int64, vt int16, lVal int64) {
 func (this *Accessible) SetString(psz int64, string_ string) {
 	var ptr int64 = int64(0)
 	if string_ != "" {
-		var data []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", string_))))
+		var data []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", string_)))
 		ptr = win32.COMSysAllocString(data)
 	}
 	win32.OSMoveMemoryOverload79(psz, []int64{ptr}, win32.CPTR_SIZEOF)
@@ -6105,7 +6104,7 @@ func (this *Accessible) SetString(psz int64, string_ string) {
 func (this *Accessible) SetStringVARIANT(variant int64, string_ string) {
 	var ptr int64 = int64(0)
 	if string_ != "" {
-		var data []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", string_))))
+		var data []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", string_)))
 		ptr = win32.COMSysAllocString(data)
 	}
 	var cond1104 int16

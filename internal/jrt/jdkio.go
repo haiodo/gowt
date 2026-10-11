@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
-	"unicode/utf16"
 )
 
 // File is java.io.File over a path.
@@ -152,7 +152,7 @@ func (m *Map) KeySet() *List {
 }
 
 func (sb *StringBuilder) Replace(start, end int32, s string) *StringBuilder {
-	sb.b = append(append(append([]byte{}, sb.b[:start]...), s...), sb.b[min(int(end), len(sb.b)):]...)
+	sb.u = slices.Concat(sb.u[:start], ToChars(s), sb.u[min(int(end), len(sb.u)):])
 	return sb
 }
 
@@ -219,8 +219,9 @@ func (m *Matcher) Find() bool {
 }
 
 // Start and End are UTF-16 offsets of the last match, as in Java.
-func (m *Matcher) Start() int32 { return int32(len(utf16.Encode([]rune(m.s[:m.lo])))) }
-func (m *Matcher) End() int32   { return int32(len(utf16.Encode([]rune(m.s[:m.hi])))) }
+// Ceiling: the regexp runs on bytes, so it can match inside a 3-byte WTF-8 unit; Start and End are exact only for valid text.
+func (m *Matcher) Start() int32 { return int32(len(ToChars(m.s[:m.lo]))) }
+func (m *Matcher) End() int32   { return int32(len(ToChars(m.s[:m.hi]))) }
 
 func (m *Matcher) Group(i ...int32) string {
 	if len(i) == 0 {

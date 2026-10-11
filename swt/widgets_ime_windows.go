@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
-	"unicode/utf16"
 )
 
 type IME struct {
@@ -240,7 +239,7 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 				event.End = this.startOffset + jrt.StringLength(this.text)
 				var cond959 string
 				if buffer != (nil) {
-					cond959 = string(utf16.Decode(buffer))
+					cond959 = jrt.FromChars(buffer)
 				} else {
 					cond959 = ""
 				}
@@ -259,7 +258,7 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 					display.lastVirtual = display.lastDead
 					length = jrt.StringLength(chars)
 					for i := int32(0); i < length; i++ {
-						var c uint16 = utf16.Encode([]rune(chars))[i]
+						var c uint16 = jrt.ToChars(chars)[i]
 						display.lastAscii = int32(c)
 						event = NewEvent()
 						event.Character = c
@@ -376,7 +375,7 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 		event.End = end
 		var cond960 string
 		if buffer != (nil) {
-			cond960 = string(utf16.Decode(buffer))
+			cond960 = jrt.FromChars(buffer)
 		} else {
 			cond960 = ""
 		}

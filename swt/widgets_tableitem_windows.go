@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type TableItem struct {
@@ -228,7 +227,7 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 					var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(this.text, true)
 					width = int32(win32.OSSendMessage(hwnd, win32.OSLVM_GETSTRINGWIDTH, int64(0), buffer))
 				} else {
-					var buffer []uint16 = utf16.Encode([]rune(this.text))
+					var buffer []uint16 = jrt.ToChars(this.text)
 					var textDC int64
 					if hDC != 0 {
 						textDC = hDC
@@ -371,7 +370,7 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 				}
 				if string_ != "" {
 					var textRect *win32.RECT = win32.NewRECT()
-					var buffer []uint16 = utf16.Encode([]rune(string_))
+					var buffer []uint16 = jrt.ToChars(string_)
 					var flags int32 = win32.OSDT_NOPREFIX | win32.OSDT_SINGLELINE | win32.OSDT_CALCRECT
 					win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), textRect, flags)
 					rect.Right += textRect.Right - textRect.Left + TableINSET*3 + 2

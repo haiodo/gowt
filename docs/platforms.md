@@ -37,7 +37,7 @@ JFace tests (`expected_jface*.txt`): 86 pass, 1 fail on macOS and Windows; 85 pa
 | Build | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all `CGO_ENABLED=0`) |
 | Stand | the Mac itself | CrossOver (Wine) bottle `gowt`: `make win-swttest`, `make win-snap-check` | Docker `gowt-linux`, Xvfb + noVNC: `make linux-run CMD="make test-swt"` |
 | Snapshot references | `tests/snapshots` | `tests/snapshots_windows` (BitBlt capture in `internal/shot`) | `tests/snapshots_linux` |
-| DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | the manifest requests per-monitor DPI v2, but the port keeps one scale from the system DPI at start; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |
+| DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | manifest and `Display` request per-monitor DPI v2; the upstream SWT monitor-specific scaling (rescale on `WM_DPICHANGED`) is on unless `swt.autoScale.updateOnRuntime=false`; with it on, `swt.autoScale` other than `quarter` or `exact` (`integer`, `half`, `false`, a number) fails at `Display` creation with `ERROR_NOT_IMPLEMENTED` unless `swt.autoScale.updateOnRuntime` is `false` or `force`; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |
 
 ## Known gaps
 
@@ -63,7 +63,7 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 - 209 of the 232 failures are Browser tests: the CrossOver bottle has no WebView2 Runtime. The WebView2 code (COM callbacks in Go, no `WebView2Loader.dll`) has never run.
 - 38 of the 43 skips are SWT's own "alpha for foreground colors does not exist on Win32" assumption.
 - 23 failures outside Browser, mostly "not analysed": `Image` 7, `TextLayout` 4 (three of them carry a stale reason about `isAlphabetic` and need a rerun of `make win-swttest-update`; one hits an untranslated local class), `GC` 3, `Table` 2 (`test_Virtual`, `test_getItemHeight`), and one each of `CTabFolder` and `Display` (Wine's `SendInput` does not deliver `Display.post`).
-- Mica, Acrylic and rounded corners were not seen on Windows 11. Per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled: `Display` puts the thread in system-aware mode and `DPIUtil` holds one scale. Wine reports 96 DPI, so zoom above 100% is untested.
+- Mica, Acrylic and rounded corners were not seen on Windows 11. Per-monitor DPI changes while running (`WM_DPICHANGED`) use upstream code and are untested: Wine reports 96 DPI. Manual test on real Windows 10 1809+ with two monitors of different scale: start any `cmd/*` program on the 100% monitor, drag the window to the 150% one, expect controls, fonts and window size to rescale without restart; change the scale in Settings while it runs, expect the same.
 - Dark content is opt-in (`look.SetDarkContent`) and uses undocumented uxtheme exports.
 
 **Linux** (2 failures outside Browser)

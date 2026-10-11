@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Spinner struct {
@@ -152,7 +151,7 @@ func (this *Spinner) computeSizeInPixels_(hintInPoints *Point, zoom int32, chang
 			}
 			string_ = buffer.ToString()
 		}
-		var buffer []uint16 = utf16.Encode([]rune(string_))
+		var buffer []uint16 = jrt.ToChars(string_)
 		var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_EDITCONTROL | win32.OSDT_NOPREFIX
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 		width = rect.Right - rect.Left
@@ -265,7 +264,7 @@ func (this *Spinner) GetDecimalSeparator() string {
 	var size int32 = win32.OSGetLocaleInfoLocaleLCTypeLpLCDataCchData(win32.OSLOCALE_USER_DEFAULT, win32.OSLOCALE_SDECIMAL, data, 4)
 	var cond632 string
 	if size != 0 {
-		cond632 = string(utf16.Decode(data[0 : 0+size-1]))
+		cond632 = jrt.FromChars(data[0 : 0+size-1])
 	} else {
 		cond632 = "."
 	}
@@ -307,7 +306,7 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 	var length int32 = win32.OSGetWindowTextLength(this.hwndText)
 	var buffer []uint16 = make([]uint16, length+1)
 	win32.OSGetWindowTextHWndLpStringNMaxCount(this.hwndText, buffer, length+1)
-	var string_ string = string(utf16.Decode(buffer[0 : 0+length]))
+	var string_ string = jrt.FromChars(buffer[0 : 0+length])
 	var tret633 int32
 	tretd634 := false
 	func() {
@@ -397,7 +396,7 @@ func (this *Spinner) GetText() string {
 	}
 	var buffer []uint16 = make([]uint16, length+1)
 	win32.OSGetWindowTextHWndLpStringNMaxCount(this.hwndText, buffer, length+1)
-	return string(utf16.Decode(buffer[0 : 0+length]))
+	return jrt.FromChars(buffer[0 : 0+length])
 }
 
 func (this *Spinner) GetTextLimit() int32 {
@@ -526,7 +525,7 @@ func (this *Spinner) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int3
 		if int32(key) != int32('\u0009') && int32(key) < 0x20 {
 			return true
 		}
-		oldText = string(utf16.Decode([]uint16{key}))
+		oldText = jrt.FromChars([]uint16{key})
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
@@ -791,12 +790,12 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 	if jrt.StringLength(string_) > 0 {
 		var min []int32 = make([]int32, 1)
 		win32.OSSendMessageOverload1(this.hwndUpDown, win32.OSUDM_GETRANGE32, min, nil)
-		if min[0] < 0 && int32(utf16.Encode([]rune(string_))[0]) == int32('-') {
+		if min[0] < 0 && int32(jrt.ToChars(string_)[0]) == int32('-') {
 			index++
 		}
 	}
 	for index < jrt.StringLength(string_) {
-		if !unicode.IsDigit(rune(utf16.Encode([]rune(string_))[index])) {
+		if !unicode.IsDigit(rune(jrt.ToChars(string_)[index])) {
 			break
 		}
 		index++
@@ -1029,7 +1028,7 @@ func (this *Spinner) WmClipboard(hwndText int64, msg int32, wParam int64, lParam
 			if length != 0 && newStart[0] != newEnd[0] {
 				var buffer []uint16 = make([]uint16, length+1)
 				win32.OSGetWindowTextHWndLpStringNMaxCount(hwndText, buffer, length+1)
-				newText = string(utf16.Decode(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]]))
+				newText = jrt.FromChars(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]])
 			} else {
 				newText = ""
 			}

@@ -109,8 +109,8 @@ final class JdkCallsExtra {
 				return "slices.Clone(" + recv(e, mi) + ")";
 			}
 			case "java.lang.String#toCharArray":
-				e.fileImports.add("unicode/utf16");
-				return "utf16.Encode([]rune(" + recv(e, mi) + "))";
+				e.fileImports.add(JRT);
+				return "jrt.ToChars(" + recv(e, mi) + ")";
 			case "java.lang.String#concat":
 				return "(" + recv(e, mi) + " + " + arg(e, mi, 0) + ")";
 			case "java.lang.String#replaceFirst", "java.lang.String#replaceAll":

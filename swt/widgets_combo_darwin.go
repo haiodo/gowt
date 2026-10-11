@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type Combo struct {
@@ -527,7 +526,7 @@ func (this *Combo) GetSelectionIndex() int32 {
 
 func (this *Combo) GetText() string {
 	this.CheckWidget()
-	return string(utf16.Decode(this.GetTextStartEnd(0, -1)))
+	return jrt.FromChars(this.GetTextStartEnd(0, -1))
 }
 
 func (this *Combo) GetTextStartEnd(start int32, end int32) []uint16 {
@@ -1043,7 +1042,7 @@ func (this *Combo) SetTextStringNotify(string_ string, notify bool) {
 	} else {
 		var buffer []uint16 = make([]uint16, int32(math.Min(float64(jrt.StringLength(string_)), float64(this.textLimit))))
 		jrt.GetChars(string_, 0, int32(len(buffer)), buffer, 0)
-		this.text = string(utf16.Decode(buffer[0 : 0+int32(len(buffer))]))
+		this.text = jrt.FromChars(buffer[0 : 0+int32(len(buffer))])
 		(castcocoaNSViewTococoaNSComboBox(this.View)).Cell().SetAttributedStringValue(this.CreateAttributedString(this.text))
 		if notify {
 			this.SendEventEventType(Modify)

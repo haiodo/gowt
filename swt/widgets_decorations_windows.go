@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type Decorations struct {
@@ -479,7 +478,7 @@ func (this *Decorations) GetText() string {
 	}
 	var buffer []uint16 = make([]uint16, length+1)
 	win32.OSGetWindowTextHWndLpStringNMaxCount(this.Handle, buffer, length+1)
-	return string(utf16.Decode(buffer[0 : 0+length]))
+	return jrt.FromChars(buffer[0 : 0+length])
 }
 
 func (this *Decorations) isReparentable_() bool {
@@ -1255,7 +1254,7 @@ func (this *Decorations) wM_ACTIVATE_(wParam int64, lParam int64) *win32.LRESULT
 	if win32.OSGetParent(lParam) == this.Handle {
 		var buffer []uint16 = make([]uint16, 128)
 		var length int32 = win32.OSGetClassName(lParam, buffer, int32(len(buffer)))
-		var className string = string(utf16.Decode(buffer[0 : 0+length]))
+		var className string = jrt.FromChars(buffer[0 : 0+length])
 		if className == DisplayAWT_WINDOW_CLASS {
 			return win32.LRESULTZERO
 		}

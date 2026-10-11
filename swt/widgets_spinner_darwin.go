@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Spinner struct {
@@ -797,7 +796,7 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 		index = 0
 	}
 	for index < jrt.StringLength(string_) {
-		if !unicode.IsDigit(rune(utf16.Encode([]rune(string_))[index])) {
+		if !unicode.IsDigit(rune(jrt.ToChars(string_)[index])) {
 			break
 		}
 		index++

@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Display struct {
@@ -1114,7 +1113,7 @@ func (this *Display) GetFontName(logFont *win32.LOGFONT) string {
 		}
 		index++
 	}
-	return string(utf16.Decode(chars[0 : 0+index]))
+	return jrt.FromChars(chars[0 : 0+index])
 }
 
 func (this *Display) GetHighContrast() bool {
@@ -3851,7 +3850,7 @@ func (this *Display) TextWidth(text string, handle int64) int32 {
 		oldFont = win32.OSSelectObject(hDC, newFont)
 	}
 	var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_SINGLELINE | win32.OSDT_NOPREFIX
-	var buffer []uint16 = utf16.Encode([]rune(text))
+	var buffer []uint16 = jrt.ToChars(text)
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 	if newFont != 0 {
 		win32.OSSelectObject(hDC, oldFont)
@@ -3877,7 +3876,7 @@ func (this *Display) WrapText(text string, handle int64, width int32) string {
 			lineEnd = length
 		}
 		var nextStart int32 = lineEnd + jrt.StringLength(Lf)
-		for lineEnd > lineStart+1 && unicode.IsSpace(rune(utf16.Encode([]rune(text))[lineEnd-1])) {
+		for lineEnd > lineStart+1 && unicode.IsSpace(rune(jrt.ToChars(text)[lineEnd-1])) {
 			lineEnd--
 		}
 		var wordStart int32 = lineStart
@@ -3887,13 +3886,13 @@ func (this *Display) WrapText(text string, handle int64, width int32) string {
 			var lastStart int32 = wordStart
 			var lastEnd int32 = wordEnd
 			wordStart = i
-			for i < lineEnd && !unicode.IsSpace(rune(utf16.Encode([]rune(text))[i])) {
+			for i < lineEnd && !unicode.IsSpace(rune(jrt.ToChars(text)[i])) {
 				i++
 			}
 			wordEnd = i - 1
 			var line string = jrt.Substring(text, lineStart, wordEnd+1)
 			var lineWidth int32 = this.TextWidth(line, handle)
-			for i < lineEnd && unicode.IsSpace(rune(utf16.Encode([]rune(text))[i])) {
+			for i < lineEnd && unicode.IsSpace(rune(jrt.ToChars(text)[i])) {
 				i++
 			}
 			if lineWidth > width {
@@ -4472,7 +4471,7 @@ func DisplayWithCrLf(string_ string) string {
 	var result *jrt.StringBuilder = jrt.NewStringBuilder(length)
 	for i < length {
 		var j int32 = jrt.IndexFrom(string_, string(rune('\u000a')), i)
-		if j > 0 && int32(utf16.Encode([]rune(string_))[j-1]) == int32('\u000d') {
+		if j > 0 && int32(jrt.ToChars(string_)[j-1]) == int32('\u000d') {
 			result.Append(jrt.Substring(string_, i, j+1))
 			i = j + 1
 		} else {
@@ -4569,7 +4568,7 @@ func (this *Display_ThemeData) HButtonTheme() int64 {
 	if this.hButtonTheme != 0 {
 		return this.hButtonTheme
 	}
-	var themeName []uint16 = utf16.Encode([]rune("BUTTON\u0000"))
+	var themeName []uint16 = jrt.ToChars("BUTTON\u0000")
 	cond330 := this.OpenThemeData(themeName)
 	this.hButtonTheme = cond330
 	return cond330
@@ -4579,7 +4578,7 @@ func (this *Display_ThemeData) HButtonThemeDark() int64 {
 	if this.hButtonThemeDark != 0 {
 		return this.hButtonThemeDark
 	}
-	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::BUTTON\u0000"))
+	var themeName []uint16 = jrt.ToChars("Darkmode_Explorer::BUTTON\u0000")
 	cond331 := this.OpenThemeData(themeName)
 	this.hButtonThemeDark = cond331
 	return cond331
@@ -4589,7 +4588,7 @@ func (this *Display_ThemeData) HEditTheme() int64 {
 	if this.hEditTheme != 0 {
 		return this.hEditTheme
 	}
-	var themeName []uint16 = utf16.Encode([]rune("EDIT\u0000"))
+	var themeName []uint16 = jrt.ToChars("EDIT\u0000")
 	cond332 := this.OpenThemeData(themeName)
 	this.hEditTheme = cond332
 	return cond332
@@ -4599,7 +4598,7 @@ func (this *Display_ThemeData) HExplorerBarTheme() int64 {
 	if this.hExplorerBarTheme != 0 {
 		return this.hExplorerBarTheme
 	}
-	var themeName []uint16 = utf16.Encode([]rune("EXPLORERBAR\u0000"))
+	var themeName []uint16 = jrt.ToChars("EXPLORERBAR\u0000")
 	cond333 := this.OpenThemeData(themeName)
 	this.hExplorerBarTheme = cond333
 	return cond333
@@ -4609,7 +4608,7 @@ func (this *Display_ThemeData) HScrollBarTheme() int64 {
 	if this.hScrollBarTheme != 0 {
 		return this.hScrollBarTheme
 	}
-	var themeName []uint16 = utf16.Encode([]rune("SCROLLBAR\u0000"))
+	var themeName []uint16 = jrt.ToChars("SCROLLBAR\u0000")
 	cond334 := this.OpenThemeData(themeName)
 	this.hScrollBarTheme = cond334
 	return cond334
@@ -4619,7 +4618,7 @@ func (this *Display_ThemeData) HScrollBarThemeDark() int64 {
 	if this.hScrollBarThemeDark != 0 {
 		return this.hScrollBarThemeDark
 	}
-	var themeName []uint16 = utf16.Encode([]rune("Darkmode_Explorer::SCROLLBAR\u0000"))
+	var themeName []uint16 = jrt.ToChars("Darkmode_Explorer::SCROLLBAR\u0000")
 	cond335 := this.OpenThemeData(themeName)
 	this.hScrollBarThemeDark = cond335
 	return cond335
@@ -4629,7 +4628,7 @@ func (this *Display_ThemeData) HTabTheme() int64 {
 	if this.hTabTheme != 0 {
 		return this.hTabTheme
 	}
-	var themeName []uint16 = utf16.Encode([]rune("TAB\u0000"))
+	var themeName []uint16 = jrt.ToChars("TAB\u0000")
 	cond336 := this.OpenThemeData(themeName)
 	this.hTabTheme = cond336
 	return cond336

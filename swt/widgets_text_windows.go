@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"slices"
-	"unicode/utf16"
 )
 
 type Text struct {
@@ -136,7 +135,7 @@ func (this *Text) callWindowProc_(hwnd int64, msg int32, wParam int64, lParam in
 							rect.Right--
 							rect.Bottom--
 						}
-						var buffer []uint16 = utf16.Encode([]rune(this.message))
+						var buffer []uint16 = jrt.ToChars(this.message)
 						var uFormat int32 = win32.OSDT_EDITCONTROL
 						var rtl bool = (this.style & RIGHT_TO_LEFT) != 0
 						if rtl {
@@ -355,7 +354,7 @@ func (this *Text) ApplySegments() {
 	if length > 0 {
 		win32.OSGetWindowTextHWndLpStringNMaxCount(this.Handle, buffer, length+1)
 	}
-	var string_ string = string(utf16.Decode(buffer[0 : 0+length]))
+	var string_ string = jrt.FromChars(buffer[0 : 0+length])
 	var event *Event = NewEvent()
 	event.Text = string_
 	event.Segments = this.segments
@@ -434,7 +433,7 @@ func (this *Text) ApplySegments() {
 				idx227 := charCount
 				t226 := charCount
 				charCount++
-				newChars[idx227] = utf16.Encode([]rune(string_))[t226-segmentCount]
+				newChars[idx227] = jrt.ToChars(string_)[t226-segmentCount]
 			}
 		}
 	}
@@ -570,7 +569,7 @@ func (this *Text) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed 
 		}
 		if (this.style&SINGLE) != 0 && jrt.StringLength(this.message) > 0 {
 			win32.OSSetRect(rect, 0, 0, 0, 0)
-			var buffer []uint16 = utf16.Encode([]rune(this.message))
+			var buffer []uint16 = jrt.ToChars(this.message)
 			win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 			width = int32(math.Max(float64(width), float64(rect.Right-rect.Left)))
 		}
@@ -1261,7 +1260,7 @@ func (this *Text) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int32, 
 		if int32(key) != int32('\u0009') && int32(key) < 0x20 {
 			return true
 		}
-		oldText = string(utf16.Decode([]uint16{key}))
+		oldText = jrt.FromChars([]uint16{key})
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
@@ -1537,7 +1536,7 @@ func (this *Text) SetTextChars(text []uint16) {
 	text = DisplayWithCrLfString(text)
 	if this.Hooks(Verify) || this.Filters(Verify) {
 		var length int32 = win32.OSGetWindowTextLength(this.Handle)
-		var string_ string = this.VerifyText(string(utf16.Decode(text)), 0, length, nil)
+		var string_ string = this.VerifyText(jrt.FromChars(text), 0, length, nil)
 		if string_ == jrt.NullString {
 			return
 		}
@@ -2101,7 +2100,7 @@ func (this *Text) WmClipboard(msg int32, wParam int64, lParam int64) *win32.LRES
 			if length != 0 && newStart[0] != newEnd[0] {
 				var buffer []uint16 = make([]uint16, length+1)
 				win32.OSGetWindowTextHWndLpStringNMaxCount(this.Handle, buffer, length+1)
-				newText = string(utf16.Decode(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]]))
+				newText = jrt.FromChars(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]])
 			} else {
 				newText = ""
 			}

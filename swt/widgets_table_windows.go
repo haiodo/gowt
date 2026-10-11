@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type Table struct {
@@ -3874,7 +3873,7 @@ func (this *Table) SetScrollWidthItemForce(itemLike TableItemLike, force bool) b
 					var hDC int64 = win32.OSGetDC(this.Handle)
 					var oldFont int64 = win32.OSSelectObject(hDC, hFont)
 					var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_SINGLELINE | win32.OSDT_NOPREFIX
-					var buffer []uint16 = utf16.Encode([]rune(string_))
+					var buffer []uint16 = jrt.ToChars(string_)
 					var rect *win32.RECT = win32.NewRECT()
 					win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
 					win32.OSSelectObject(hDC, oldFont)
@@ -5562,7 +5561,7 @@ func (this *Table) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) 
 							if (this.columns[i].style & RIGHT) != 0 {
 								flags |= win32.OSDT_RIGHT
 							}
-							var buffer []uint16 = utf16.Encode([]rune(this.columns[i].text))
+							var buffer []uint16 = jrt.ToChars(this.columns[i].text)
 							win32.OSSetBkMode(nmcd.Hdc, win32.OSTRANSPARENT)
 							win32.OSSetTextColor(nmcd.Hdc, this.GetHeaderForegroundPixel())
 							var textRect *win32.RECT = win32.NewRECT()
@@ -5957,7 +5956,7 @@ func (this *Table) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam 
 								flags |= win32.OSDT_RIGHT
 							}
 						}
-						var buffer []uint16 = utf16.Encode([]rune(string_))
+						var buffer []uint16 = jrt.ToChars(string_)
 						var textRect *win32.RECT = win32.NewRECT()
 						win32.OSSetRect(textRect, x, cellRect.Top, cellRect.Right, cellRect.Bottom)
 						win32.OSDrawTextHDCLpStringNCountLpRectUFormat(nmcd.Hdc, buffer, int32(len(buffer)), textRect, flags)

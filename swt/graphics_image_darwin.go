@@ -1356,7 +1356,7 @@ func (this *Image) InitNative(filename string) {
 			this.alphaInfo_100 = newImageAlphaInfo()
 		}
 		this.alphaInfo_100.Init(nativeRep, rep)
-		if strings.HasSuffix(strings.ToLower(filename), ".ico") {
+		if strings.HasSuffix(jrt.ToLowerCase(filename), ".ico") {
 			this.Type = ICON
 		} else {
 			this.Type = BITMAP

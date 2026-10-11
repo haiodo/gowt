@@ -10,7 +10,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"unicode/utf16"
 )
 
 type GC struct {
@@ -1831,7 +1830,7 @@ func (this *GC) DrawStringStringXYIsTransparent(string_ string, x int32, y int32
 }
 
 func (this *GC) DrawStringInPixels(string_ string, x int32, y int32, isTransparent bool) {
-	var buffer []uint16 = utf16.Encode([]rune(string_))
+	var buffer []uint16 = jrt.ToChars(string_)
 	var gdipGraphics int64 = this.data.GdipGraphics
 	if gdipGraphics != 0 {
 		var cond340 int32
@@ -1960,7 +1959,7 @@ func (this *GC) DrawTextInPixels(string_ string, x int32, y int32, flags int32) 
 		this.DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics, string_, x, y, flags, nil)
 		return
 	}
-	var buffer []uint16 = utf16.Encode([]rune(string_))
+	var buffer []uint16 = jrt.ToChars(string_)
 	var rect *win32.RECT = win32.NewRECT()
 	win32.OSSetRect(rect, x, y, 0x6FFFFFF, 0x6FFFFFF)
 	var uFormat int32 = win32.OSDT_LEFT
@@ -2044,7 +2043,7 @@ func (this *GC) DrawTextGdipGraphicsStringXYFlagsSize(gdipGraphics int64, string
 	}
 	_ = size
 	var length int32 = jrt.StringLength(string_)
-	var chars []uint16 = utf16.Encode([]rune(string_))
+	var chars []uint16 = jrt.ToChars(string_)
 	var hdc int64 = win32.GdipGraphics_GetHDC(gdipGraphics)
 	var hFont int64 = this.data.HGDIFont
 	if hFont == 0 && this.data.Font != (nil) {
@@ -2293,7 +2292,7 @@ func (this *GC) DrawTextGDIP(gdipGraphics int64, string_ string, x int32, y int3
 	}
 	var length int32 = jrt.StringLength(string_)
 	if length != 0 {
-		buffer = utf16.Encode([]rune(string_))
+		buffer = jrt.ToChars(string_)
 	} else {
 		if draw {
 			return
@@ -3619,7 +3618,7 @@ func (this *GC) StringExtentInPixels(string_ string) *Point {
 		win32.OSGetTextExtentPoint32(this.Handle, []uint16{' '}, 1, size)
 		return NewPoint(0, size.Cy)
 	} else {
-		var buffer []uint16 = utf16.Encode([]rune(string_))
+		var buffer []uint16 = jrt.ToChars(string_)
 		win32.OSGetTextExtentPoint32(this.Handle, buffer, length, size)
 		return NewPoint(size.Cx, size.Cy)
 	}
@@ -3651,7 +3650,7 @@ func (this *GC) TextExtentInPixels(string_ string, flags int32) *Point {
 		return NewPoint(0, size.Cy)
 	}
 	var rect *win32.RECT = win32.NewRECT()
-	var buffer []uint16 = utf16.Encode([]rune(string_))
+	var buffer []uint16 = jrt.ToChars(string_)
 	var uFormat int32 = win32.OSDT_LEFT | win32.OSDT_CALCRECT
 	if (flags & DRAW_DELIMITER) == 0 {
 		uFormat |= win32.OSDT_SINGLELINE
@@ -3795,7 +3794,7 @@ func GCCreateGdipFont(hDC int64, hFont int64, graphics int64, fontCollection int
 			}
 			index++
 		}
-		var name string = string(utf16.Decode(chars[0 : 0+index]))
+		var name string = jrt.FromChars(chars[0 : 0+index])
 		if strings.EqualFold(name, "Courier") {
 			name = "Courier New"
 		}

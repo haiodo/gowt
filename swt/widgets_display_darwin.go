@@ -11,7 +11,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"unicode/utf16"
 )
 
 type Display struct {
@@ -4613,7 +4612,7 @@ func DisplayConvertToLf(text string) string {
 	if i == -1 || i == 0 {
 		return text
 	}
-	if int32(utf16.Encode([]rune(text))[i-1]) != int32(Cr) {
+	if int32(jrt.ToChars(text)[i-1]) != int32(Cr) {
 		return text
 	}
 	i = 0

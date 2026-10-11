@@ -2,11 +2,12 @@
 
 package gtk
 
-import "unicode/utf16"
+import "github.com/haiodo/gowt/internal/jrt"
 
 // SWT's Converter: Java strings and char[] to NUL-terminated UTF-8 byte arrays and back.
 
 func utf8z(s string, terminate bool) []int8 {
+	s = jrt.ValidUTF8(s)
 	n := len(s)
 	if terminate {
 		n++
@@ -23,7 +24,7 @@ func ConverterWcsToMbcs(s string, terminate bool) []int8 { return utf8z(s, termi
 func ConverterJavaStringToCString(s string) []int8 { return utf8z(s, true) }
 
 func ConverterWcsToMbcsCharsTerminate(chars []uint16, terminate bool) []int8 {
-	return utf8z(string(utf16.Decode(chars)), terminate)
+	return utf8z(jrt.FromChars(chars), terminate)
 }
 
 // ConverterWcsToMbcsCh converts one character; keysyms below 0x100 and Unicode values are their own code.
@@ -34,7 +35,7 @@ func ConverterMbcsToWcs(b []int8) []uint16 {
 	for i, c := range b {
 		raw[i] = byte(c)
 	}
-	return utf16.Encode([]rune(string(raw)))
+	return jrt.ToChars(string(raw))
 }
 
 // ConverterCCharPtrToJavaString reads a NUL-terminated C string and optionally g_free()s it.

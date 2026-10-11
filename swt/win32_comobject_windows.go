@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
-	"unicode/utf16"
 )
 
 type COMObjectImpl interface {
@@ -1192,7 +1191,7 @@ func (this *COMObject) Method79(args []int64) int64 {
 }
 
 func COMObjectIIDFromString(lpsz string) *win32.GUID {
-	var buffer []uint16 = utf16.Encode([]rune((fmt.Sprintf("%s\u0000", lpsz))))
+	var buffer []uint16 = jrt.ToChars((fmt.Sprintf("%s\u0000", lpsz)))
 	var lpiid *win32.GUID = win32.NewGUID()
 	if win32.COMIIDFromString(buffer, lpiid) == win32.COMS_OK {
 		return lpiid

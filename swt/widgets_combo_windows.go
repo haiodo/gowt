@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type Combo struct {
@@ -167,7 +166,7 @@ func (this *Combo) ApplyEditSegments() {
 	if length > 0 {
 		win32.OSGetWindowTextHWndLpStringNMaxCount(hwndText, buffer, length+1)
 	}
-	var string_ string = string(utf16.Decode(buffer[0 : 0+length]))
+	var string_ string = jrt.FromChars(buffer[0 : 0+length])
 	this.segments = nil
 	var event *Event = this.GetSegments(string_)
 	if event == (nil) || event.Segments == (nil) {
@@ -208,7 +207,7 @@ func (this *Combo) ApplyEditSegments() {
 				idx580 := charCount
 				t579 := charCount
 				charCount++
-				newChars[idx580] = utf16.Encode([]rune(string_))[t579-segmentCount]
+				newChars[idx580] = jrt.ToChars(string_)[t579-segmentCount]
 			}
 		}
 	}
@@ -356,7 +355,7 @@ func (this *Combo) CBTProc(nCode int64, wParam int64, lParam int64) int64 {
 	if int32(nCode) == win32.OSHCBT_CREATEWND {
 		var buffer []uint16 = make([]uint16, 128)
 		var length int32 = win32.OSGetClassName(wParam, buffer, int32(len(buffer)))
-		var className string = string(utf16.Decode(buffer[0 : 0+length]))
+		var className string = jrt.FromChars(buffer[0 : 0+length])
 		if (className == "Edit") || (className == "EDIT") {
 			var bits int32 = win32.OSGetWindowLong(wParam, win32.OSGWL_STYLE)
 			win32.OSSetWindowLong(wParam, win32.OSGWL_STYLE, bits & ^win32.OSES_NOHIDESEL)
@@ -540,7 +539,7 @@ func (this *Combo) createHandle_() {
 	this.state &= ^(WidgetCANVAS | WidgetTHEME_BACKGROUND)
 	if this.display.comboUseDarkTheme {
 		win32.OSAllowDarkModeForWindow(this.Handle, true)
-		win32.OSSetWindowTheme(this.Handle, utf16.Encode([]rune("CFD\u0000")), nil)
+		win32.OSSetWindowTheme(this.Handle, jrt.ToChars("CFD\u0000"), nil)
 	}
 	this.stateFlagsUsable = this.StateFlagsTest()
 	var hwndText int64 = win32.OSGetDlgItem(this.Handle, ComboCBID_EDIT)
@@ -770,7 +769,7 @@ func (this *Combo) GetItem(index int32) string {
 		var buffer []uint16 = make([]uint16, length+1)
 		var result int32 = int32(win32.OSSendMessageOverload2(this.Handle, win32.OSCB_GETLBTEXT, int64(index), buffer))
 		if result != win32.OSCB_ERR {
-			return string(utf16.Decode(buffer[0 : 0+length]))
+			return jrt.FromChars(buffer[0 : 0+length])
 		}
 	}
 	var count int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSCB_GETCOUNT, int64(0), int64(0)))
@@ -969,7 +968,7 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 		segmentCount++
 		newChars[charCount+t589] = separator
 	}
-	return string(utf16.Decode(newChars[0 : 0+int32(len(newChars))]))
+	return jrt.FromChars(newChars[0 : 0+int32(len(newChars))])
 }
 
 func (this *Combo) GetSelection() *Point {
@@ -1412,7 +1411,7 @@ func (this *Combo) sendKeyEventTypeMsgWParamLParamEvent_(type_ int32, msg int32,
 		if int32(key) != int32('\u0009') && int32(key) < 0x20 {
 			return true
 		}
-		oldText = string(utf16.Decode([]uint16{key}))
+		oldText = jrt.FromChars([]uint16{key})
 		break
 	}
 	var newText string = this.VerifyText(oldText, start[0], end[0], event)
@@ -2490,7 +2489,7 @@ func (this *Combo) WmClipboard(hwndText int64, msg int32, wParam int64, lParam i
 			if length != 0 && newStart[0] != newEnd[0] {
 				var buffer []uint16 = make([]uint16, length+1)
 				win32.OSGetWindowTextHWndLpStringNMaxCount(hwndText, buffer, length+1)
-				newText = string(utf16.Decode(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]]))
+				newText = jrt.FromChars(buffer[newStart[0] : newStart[0]+newEnd[0]-newStart[0]])
 			} else {
 				newText = ""
 			}

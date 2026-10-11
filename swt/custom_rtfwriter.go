@@ -59,7 +59,7 @@ func (this *RTFWriter) writeHeader_() {
 	var header *jrt.StringBuilder = jrt.NewStringBuilder()
 	var fontData *FontData = this.styledText.GetFont().GetFontData()[0]
 	header.Append("{\\rtf1\\ansi")
-	var cpg string = strings.ToLower(jrt.GetProperty("file.encoding", ""))
+	var cpg string = jrt.ToLowerCase(jrt.GetProperty("file.encoding", ""))
 	if strings.HasPrefix(cpg, "cp") || strings.HasPrefix(cpg, "ms") {
 		cpg = jrt.Substring(cpg, 2, jrt.StringLength(cpg))
 		header.Append("\\ansicpg")

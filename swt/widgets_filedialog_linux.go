@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
-	"unicode/utf16"
 )
 
 type FileDialog struct {
@@ -138,7 +137,7 @@ func (this *FileDialog) ComputeResultChooserDialog(file int64) string {
 					var chars []uint16 = make([]uint16, clength)
 					gtk.CMemmoveOverload10(chars, utf16Ptr, int64(clength*2))
 					gtk.OSG_free(utf16Ptr)
-					this.fullPath = string(utf16.Decode(chars))
+					this.fullPath = jrt.FromChars(chars)
 					t576 := writePos
 					writePos++
 					this.fileNames[t576] = jrt.Substring(this.fullPath, jrt.LastIndexOf(this.fullPath, string(rune(FileDialogSEPARATOR)))+1, -1)
@@ -198,7 +197,7 @@ func (this *FileDialog) ComputeResultChooserDialog(file int64) string {
 				var chars []uint16 = make([]uint16, clength)
 				gtk.CMemmoveOverload10(chars, utf16Ptr, int64(clength*2))
 				gtk.OSG_free(utf16Ptr)
-				this.fullPath = string(utf16.Decode(chars))
+				this.fullPath = jrt.FromChars(chars)
 				this.fileNames = make([]string, 1)
 				this.fileNames[0] = jrt.Substring(this.fullPath, jrt.LastIndexOf(this.fullPath, string(rune(FileDialogSEPARATOR)))+1, -1)
 			}
@@ -217,7 +216,7 @@ func (this *FileDialog) ComputeResultChooserDialog(file int64) string {
 			var length int32 = gtk.CStrlen(filterNamePtr)
 			var buffer []int8 = make([]int8, length)
 			gtk.CMemmoveOverload8(buffer, filterNamePtr, int64(length))
-			var filterName string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+			var filterName string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 			for i := int32(0); i < int32(len(this.filterExtensions)); i++ {
 				if int32(len(this.filterNames)) > 0 {
 					if this.filterNames[i] == filterName {

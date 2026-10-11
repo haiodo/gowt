@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
-	"unicode/utf16"
 )
 
 type TaskBar struct {
@@ -461,8 +460,8 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt: deferred init TaskBar static{}:", r)
 			}
 		}()
-		win32.OSPSPropertyKeyFromString(utf16.Encode([]rune("{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 2\u0000")), TaskBarPKEY_Title)
-		win32.OSPSPropertyKeyFromString(utf16.Encode([]rune("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}, 6\u0000")), TaskBarPKEY_AppUserModel_IsDestListSeparator)
+		win32.OSPSPropertyKeyFromString(jrt.ToChars("{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 2\u0000"), TaskBarPKEY_Title)
+		win32.OSPSPropertyKeyFromString(jrt.ToChars("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}, 6\u0000"), TaskBarPKEY_AppUserModel_IsDestListSeparator)
 		var buffer []uint16 = make([]uint16, win32.OSMAX_PATH)
 		for win32.OSGetModuleFileNameHModuleLpFilenameInSize(int64(0), buffer, int32(len(buffer))) == int32(len(buffer)) {
 			buffer = make([]uint16, int32(len(buffer))+win32.OSMAX_PATH)

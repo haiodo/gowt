@@ -3089,10 +3089,10 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 	var height int32 = -1
 	this.this_0.device.CheckGDIP()
 	var gdip bool = true
-	if gdip && win32.CPTR_SIZEOF == 8 && strings.HasSuffix(strings.ToLower(filename), ".gif") {
+	if gdip && win32.CPTR_SIZEOF == 8 && strings.HasSuffix(jrt.ToLowerCase(filename), ".gif") {
 		gdip = false
 	}
-	if strings.HasSuffix(strings.ToLower(filename), ".gif") {
+	if strings.HasSuffix(jrt.ToLowerCase(filename), ".gif") {
 		gdip = false
 	}
 	if !gdip {
@@ -3108,7 +3108,7 @@ func (this *Image_ImageFileNameProviderWrapper) InitNative(filename string, zoom
 	var error_ int32 = ERROR_NO_HANDLES
 	var status int32 = win32.GdipImage_GetLastStatus(bitmap)
 	if status == 0 {
-		if strings.HasSuffix(strings.ToLower(filename), ".ico") {
+		if strings.HasSuffix(jrt.ToLowerCase(filename), ".ico") {
 			this.this_0.Type = ICON
 			var hicon []int64 = make([]int64, 1)
 			status = win32.GdipBitmap_GetHICON(bitmap, hicon)

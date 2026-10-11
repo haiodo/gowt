@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type FontData struct {
@@ -417,7 +416,7 @@ func (this *FontData) GetLocale() string {
 	var result string = buffer.ToString()
 	var length int32 = jrt.StringLength(result)
 	if length > 0 {
-		if int32(utf16.Encode([]rune(result))[length-1]) == int32(sep) {
+		if int32(jrt.ToChars(result)[length-1]) == int32(sep) {
 			result = jrt.Substring(result, 0, length-1)
 		}
 	}
@@ -433,7 +432,7 @@ func (this *FontData) GetName() string {
 		}
 		index++
 	}
-	return string(utf16.Decode(chars[0 : 0+index]))
+	return jrt.FromChars(chars[0 : 0+index])
 }
 
 func (this *FontData) GetStyle() int32 {

@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type TreeItem struct {
@@ -372,7 +371,7 @@ func (this *TreeItem) GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(inde
 					}
 					if string_ != "" {
 						var textRect *win32.RECT = win32.NewRECT()
-						var buffer []uint16 = utf16.Encode([]rune(string_))
+						var buffer []uint16 = jrt.ToChars(string_)
 						var flags int32 = win32.OSDT_NOPREFIX | win32.OSDT_SINGLELINE | win32.OSDT_CALCRECT
 						var hNewDC int64 = hDC
 						var hFont int64 = int64(0)

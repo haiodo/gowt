@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Button struct {
@@ -223,7 +222,7 @@ func (this *Button) ComputeLeftMargin() int32 {
 		if newFont != 0 {
 			oldFont = win32.OSSelectObject(hDC, newFont)
 		}
-		var buffer []uint16 = utf16.Encode([]rune(this.text))
+		var buffer []uint16 = jrt.ToChars(this.text)
 		var rect *win32.RECT = win32.NewRECT()
 		var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_SINGLELINE
 		win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, buffer, int32(len(buffer)), rect, flags)
@@ -310,7 +309,7 @@ func (this *Button) computeSizeInPixels_(hintInPoints *Point, zoom int32, change
 					height = int32(math.Max(float64(height), float64(lptm.TmHeight)))
 				} else {
 					extra = int32(math.Max(float64(DPIUtilPointToPixel(ButtonMARGIN*2, this.impl.getAutoscalingZoom_())), float64(lptm.TmAveCharWidth)))
-					var buffer []uint16 = utf16.Encode([]rune(this.text))
+					var buffer []uint16 = jrt.ToChars(this.text)
 					var rect *win32.RECT = win32.NewRECT()
 					var flags int32 = win32.OSDT_CALCRECT | win32.OSDT_SINGLELINE
 					if (this.style&WRAP) != 0 && hintInPoints.X != DEFAULT {
@@ -1090,7 +1089,7 @@ func (this *Button) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64)
 					left += cond199
 					var textRect *win32.RECT = win32.NewRECT()
 					win32.OSSetRect(textRect, left, nmcd.Top+border, right, nmcd.Bottom-border)
-					var buffer []uint16 = utf16.Encode([]rune(this.text))
+					var buffer []uint16 = jrt.ToChars(this.text)
 					var flags int32 = 0
 					if (this.style & WRAP) != 0 {
 						flags |= win32.OSDT_WORDBREAK

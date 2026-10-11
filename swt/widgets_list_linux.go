@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type List struct {
@@ -349,7 +348,7 @@ func (this *List) GetItem(index int32) string {
 	var buffer2 []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer2, ptr[0], int64(length))
 	gtk.OSG_free(ptr[0])
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer2)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer2))
 }
 
 func (this *List) GetItemCount() int32 {
@@ -389,7 +388,7 @@ func (this *List) GetItems() []string {
 			var buffer []int8 = make([]int8, length)
 			gtk.CMemmoveOverload8(buffer, ptr[0], int64(length))
 			gtk.OSG_free(ptr[0])
-			result[index] = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+			result[index] = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 		}
 	}
 	gtk.OSG_free(iter)

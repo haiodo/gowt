@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Group struct {
@@ -75,7 +74,7 @@ func (this *Group) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed
 		} else {
 			cond237 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond237)))
+		var buffer []uint16 = jrt.ToChars((cond237))
 		var newFont int64
 		var oldFont int64 = int64(0)
 		var hDC int64 = win32.OSGetDC(this.Handle)
@@ -352,7 +351,7 @@ func (this *Group) wM_PAINT_(wParam int64, lParam int64) *win32.LRESULT {
 		} else {
 			cond241 = string_
 		}
-		var buffer []uint16 = utf16.Encode([]rune((cond241)))
+		var buffer []uint16 = jrt.ToChars((cond241))
 		var hDC int64 = win32.OSGetDC(this.Handle)
 		var rect *win32.RECT = win32.NewRECT()
 		win32.OSGetClientRect(this.Handle, rect)

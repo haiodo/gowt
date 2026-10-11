@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type GC struct {
@@ -2083,7 +2082,7 @@ func (this *GC) GetAdvanceWidth(ch uint16) int32 {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return this.StringExtent(string(utf16.Decode([]uint16{ch}))).X
+	return this.StringExtent(jrt.FromChars([]uint16{ch})).X
 }
 
 func (this *GC) GetBackground() *Color {
@@ -2125,7 +2124,7 @@ func (this *GC) GetCharWidth(ch uint16) int32 {
 	if this.Handle == (nil) {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return this.StringExtent(string(utf16.Decode([]uint16{ch}))).X
+	return this.StringExtent(jrt.FromChars([]uint16{ch})).X
 }
 
 func (this *GC) GetClipping() *Rectangle {

@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type TableItem struct {
@@ -195,7 +194,7 @@ func (this *TableItem) _getText(index int32) string {
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, ptr[0], int64(length))
 	gtk.OSG_free(ptr[0])
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 }
 
 func (this *TableItem) checkSubclass_() {

@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
-	"unicode/utf16"
 )
 
 type FileTransfer struct {
@@ -211,7 +210,7 @@ func (this *FileTransfer) nativeToJava_(transferData *TransferData) any {
 		var buffer []uint16 = make([]uint16, length)
 		gtk.CMemmoveOverload10(buffer, utf16Ptr, int64(length*2))
 		gtk.OSG_free(utf16Ptr)
-		var name string = string(utf16.Decode(buffer))
+		var name string = jrt.FromChars(buffer)
 		var newFileNames []string = make([]string, int32(len(fileNames))+1)
 		copy(newFileNames[0:], fileNames[0:0+int32(len(fileNames))])
 		newFileNames[int32(len(fileNames))] = name

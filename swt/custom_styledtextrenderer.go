@@ -422,10 +422,10 @@ func (this *StyledTextRenderer) DrawBullet(bulletLike BulletLike, gcLike GCLike,
 		string_ = fmt.Sprint(index + 1)
 		break
 	case STBULLET_LETTER_LOWER:
-		string_ = string(rune(uint16((index%26 + 97))))
+		string_ = jrt.FromChars([]uint16{uint16((index%26 + 97))})
 		break
 	case STBULLET_LETTER_UPPER:
-		string_ = string(rune(uint16((index%26 + 65))))
+		string_ = jrt.FromChars([]uint16{uint16((index%26 + 65))})
 		break
 	}
 	if (bullet.Type & STBULLET_TEXT) != 0 {

@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"slices"
-	"unicode/utf16"
 )
 
 type GC struct {
@@ -1374,7 +1373,7 @@ func (this *GC) GetAdvanceWidth(ch uint16) int32 {
 	if this.Handle == 0 {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return this.TextExtentInPixels(string(utf16.Decode([]uint16{ch})), 0).X
+	return this.TextExtentInPixels(jrt.FromChars([]uint16{ch}), 0).X
 }
 
 func (this *GC) GetAdvanced() bool {
@@ -1428,7 +1427,7 @@ func (this *GC) GetCharWidth(ch uint16) int32 {
 	if this.Handle == 0 {
 		Error(ERROR_GRAPHIC_DISPOSED)
 	}
-	return this.TextExtentInPixels(string(utf16.Decode([]uint16{ch})), 0).X
+	return this.TextExtentInPixels(jrt.FromChars([]uint16{ch}), 0).X
 }
 
 func (this *GC) GetClipping() *Rectangle {

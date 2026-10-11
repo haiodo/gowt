@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"strings"
-	"unicode/utf16"
 )
 
 type DirectoryDialog struct {
@@ -214,7 +213,7 @@ func (this *DirectoryDialog) OpenNativeChooserDialog() *jrt.Optional {
 					var chars []uint16 = make([]uint16, clength)
 					gtk.CMemmoveOverload10(chars, utf16Ptr, int64(clength*2))
 					gtk.OSG_free(utf16Ptr)
-					selectedPath = string(utf16.Decode(chars))
+					selectedPath = jrt.FromChars(chars)
 					this.filterPath = selectedPath
 				}
 			}

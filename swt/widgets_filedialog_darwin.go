@@ -558,7 +558,7 @@ func (this *FileDialog) ShouldTreatAppAsDirectory(extensions string) bool {
 	if (this.style & SAVE) != 0 {
 		return false
 	}
-	var fileTypesToken *jrt.StringTokenizer = jrt.NewStringTokenizer(extensions, string(rune(FileDialogEXTENSION_SEPARATOR)))
+	var fileTypesToken *jrt.StringTokenizer = jrt.NewStringTokenizer(extensions, jrt.FromChars([]uint16{FileDialogEXTENSION_SEPARATOR}))
 	for fileTypesToken.HasMoreTokens() {
 		var fileType string = fileTypesToken.NextToken()
 		if (fileType == "*") || (fileType == "*.*") {

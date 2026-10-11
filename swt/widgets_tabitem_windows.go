@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
-	"unicode/utf16"
 )
 
 type TabItem struct {
@@ -74,7 +73,7 @@ func (this *TabItem) _setText(index int32, string_ string) {
 				}
 			}
 			if j < i {
-				string_ = string(utf16.Decode(text[0 : 0+j]))
+				string_ = jrt.FromChars(text[0 : 0+j])
 			}
 		}
 	}

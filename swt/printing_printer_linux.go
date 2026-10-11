@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
 	"strings"
-	"unicode/utf16"
 )
 
 type Printer struct {
@@ -429,12 +428,12 @@ func PrinterPrinterDataFromGtkPrinter(printer int64) *PrinterData {
 	var length int32 = gtk.CStrlen(address)
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, address, int64(length))
-	var backendType string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var backendType string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	address = gtk.GTKGtk_printer_get_name(printer)
 	length = gtk.CStrlen(address)
 	buffer = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, address, int64(length))
-	var name string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var name string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	return NewPrinterDataDriverName(backendType, name)
 }
 
@@ -459,7 +458,7 @@ func PrinterRestore(data []int8, settings int64, page_setup int64) {
 		copy(valueBuffer[0:], PrinterSettingsData[PrinterStart:PrinterStart+int32(len(valueBuffer))])
 		gtk.GTKGtk_print_settings_set(settings, keyBuffer, valueBuffer)
 		if DeviceDEBUG {
-			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s: %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(keyBuffer))), string(utf16.Decode(gtk.ConverterMbcsToWcs(valueBuffer)))))
+			fmt.Fprintln(os.Stdout, fmt.Sprintf("%s: %s", jrt.FromChars(gtk.ConverterMbcsToWcs(keyBuffer)), jrt.FromChars(gtk.ConverterMbcsToWcs(valueBuffer))))
 		}
 	}
 	PrinterEnd++
@@ -585,7 +584,7 @@ func PrinterRestoreBytes(key string, nullTerminate bool) []int8 {
 	var valueBuffer []int8 = make([]int8, length)
 	copy(valueBuffer[0:], PrinterSettingsData[PrinterStart:PrinterStart+length])
 	if DeviceDEBUG {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf("%s: %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(keyBuffer))), string(utf16.Decode(gtk.ConverterMbcsToWcs(valueBuffer)))))
+		fmt.Fprintln(os.Stdout, fmt.Sprintf("%s: %s", jrt.FromChars(gtk.ConverterMbcsToWcs(keyBuffer)), jrt.FromChars(gtk.ConverterMbcsToWcs(valueBuffer))))
 	}
 	return valueBuffer
 }

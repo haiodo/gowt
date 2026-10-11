@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
 	"unicode"
-	"unicode/utf16"
 )
 
 type DateTime struct {
@@ -1591,11 +1590,11 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				_, ok566 := this.dateFormat, this.dateFormat != nil
 				if ok566 {
 					var amPmStrings []string = (this.dateFormat).GetDateFormatSymbols().GetAmPmStrings()
-					if int32(utf16.Encode([]rune(amPmStrings[jrt.CalendarAM]))[0]) == int32(newText) {
+					if int32(jrt.ToChars(amPmStrings[jrt.CalendarAM])[0]) == int32(newText) {
 						this.SetTextField(this.currentField, jrt.CalendarAM)
 						return false
 					} else {
-						if int32(utf16.Encode([]rune(amPmStrings[jrt.CalendarPM]))[0]) == int32(newText) {
+						if int32(jrt.ToChars(amPmStrings[jrt.CalendarPM])[0]) == int32(newText) {
 							this.SetTextField(this.currentField, jrt.CalendarPM)
 							return false
 						}
@@ -1936,7 +1935,7 @@ func (this *DateTime) GetText() string {
 		var length int32 = gtk.CStrlen(stringPtr)
 		var buffer []int8 = make([]int8, length)
 		gtk.CMemmoveOverload8(buffer, stringPtr, int64(length))
-		return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+		return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	} else {
 		return ""
 	}

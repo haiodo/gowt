@@ -9,7 +9,6 @@ import (
 	"math"
 	"os"
 	"unicode"
-	"unicode/utf16"
 )
 
 type TabFolder struct {
@@ -581,7 +580,7 @@ func (this *TabFolder) updateOrientation_() {
 	for hwndChild != 0 {
 		var buffer []uint16 = make([]uint16, 128)
 		var length int32 = win32.OSGetClassName(hwndChild, buffer, int32(len(buffer)))
-		var className string = string(utf16.Decode(buffer[0 : 0+length]))
+		var className string = jrt.FromChars(buffer[0 : 0+length])
 		if className == "msctls_updown32" {
 			var bits int32 = win32.OSGetWindowLong(hwndChild, win32.OSGWL_EXSTYLE)
 			if (this.style & RIGHT_TO_LEFT) != 0 {

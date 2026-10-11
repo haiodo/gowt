@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
-	"unicode/utf16"
 )
 
 type URLTransfer struct {
@@ -90,7 +89,7 @@ func (this *URLTransfer) nativeToJava_(transferData *TransferData) any {
 	}
 	var chars []uint16 = make([]uint16, size/2)
 	gtk.CMemmoveOverload10(chars, transferData.PValue, int64(size))
-	var string_ string = string(utf16.Decode(chars))
+	var string_ string = jrt.FromChars(chars)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
 	var cond910 any
 	if end == -1 {

@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"strings"
 	"sync"
-	"unicode/utf16"
 )
 
 type Clipboard struct {
@@ -335,7 +334,7 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		gtk.OSG_free(pName)
 		t873 := count
 		count++
-		result[t873] = fmt.Sprintf("GTKCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
+		result[t873] = fmt.Sprintf("GTKCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
 	}
 	for i := int32(0); i < int32(len(types2)); i++ {
 		var pName int64 = gtk.GDKGdk_atom_name(int64(types2[i]))
@@ -347,7 +346,7 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		gtk.OSG_free(pName)
 		t874 := count
 		count++
-		result[t874] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer))))
+		result[t874] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
 	}
 	if count < int32(len(result)) {
 		var temp []string = make([]string, count)

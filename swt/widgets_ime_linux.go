@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type IME struct {
@@ -143,7 +142,7 @@ func (this *IME) gtk_commit_(imcontext int64, textPtr int64) int64 {
 			event.End = this.startOffset + jrt.StringLength(this.text)
 			var cond859 string
 			if chars != (nil) {
-				cond859 = string(utf16.Decode(chars))
+				cond859 = jrt.FromChars(chars)
 			} else {
 				cond859 = ""
 			}
@@ -280,7 +279,7 @@ func (this *IME) gtk_preedit_changed_(imcontext int64) int64 {
 		event.End = end
 		var cond861 string
 		if chars != (nil) {
-			cond861 = string(utf16.Decode(chars))
+			cond861 = jrt.FromChars(chars)
 		} else {
 			cond861 = ""
 		}

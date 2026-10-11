@@ -5,7 +5,6 @@ package cocoa
 
 import (
 	"github.com/haiodo/gowt/internal/jrt"
-	"unicode/utf16"
 )
 
 type NSString struct {
@@ -48,7 +47,7 @@ func (this *NSString) initNSStringOverload2(id *id) {
 func (this *NSString) GetString() string {
 	var buffer []uint16 = make([]uint16, int32(this.Length()))
 	this.GetCharacters(buffer)
-	return string(utf16.Decode(buffer))
+	return jrt.FromChars(buffer)
 }
 
 func (this *NSString) InitWithString(str string) *NSString {

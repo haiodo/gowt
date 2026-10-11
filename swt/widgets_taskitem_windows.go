@@ -6,7 +6,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type TaskItem struct {
@@ -323,7 +322,7 @@ func (this *TaskItem) RenderTextIcon() int64 {
 	win32.OSDeleteObject(brush)
 	var uFormat int32 = win32.OSDT_LEFT | win32.OSDT_SINGLELINE | win32.OSDT_NOPREFIX
 	var rect *win32.RECT = win32.NewRECT()
-	var buffer []uint16 = utf16.Encode([]rune(this.overlayText))
+	var buffer []uint16 = jrt.ToChars(this.overlayText)
 	var length int32 = int32(len(buffer))
 	var hFont int64 = int64(0)
 	var oldHFont int64 = int64(0)

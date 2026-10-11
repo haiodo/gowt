@@ -9,7 +9,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"unicode/utf16"
 )
 
 type DeviceImpl interface {
@@ -517,7 +516,7 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 			var length int32 = gtk.CStrlen(familyName)
 			var buffer []int8 = make([]int8, length)
 			gtk.CMemmoveOverload8(buffer, familyName, int64(length))
-			var name string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+			var name string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 			match = strings.EqualFold(faceName, name)
 		}
 		if match {

@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"unicode"
-	"unicode/utf16"
 )
 
 type Spinner struct {
@@ -397,7 +396,7 @@ func (this *Spinner) GetText() string {
 	var length int32 = gtk.CStrlen(stringPtr)
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, stringPtr, int64(length))
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 }
 
 func (this *Spinner) GetTextLimit() int32 {
@@ -427,7 +426,7 @@ func (this *Spinner) GetDecimalSeparator() string {
 	var length int32 = gtk.CStrlen(ptr)
 	var buffer []int8 = make([]int8, length)
 	gtk.CMemmoveOverload8(buffer, ptr, int64(length))
-	return string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	return jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 }
 
 func (this *Spinner) gtk_activate_(widget int64) int64 {
@@ -609,7 +608,7 @@ func (this *Spinner) gtk_insert_text_(widget int64, new_text int64, new_text_len
 	}
 	var buffer []int8 = make([]int8, int32(new_text_length))
 	gtk.CMemmoveOverload8(buffer, new_text, int64(int32(len(buffer))))
-	var oldText string = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+	var oldText string = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 	var pos []int32 = make([]int32, 1)
 	gtk.CMemmoveOverload15(pos, position, int64(4))
 	var ptr int64
@@ -1072,12 +1071,12 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32) string {
 	if jrt.StringLength(string_) > 0 {
 		var hAdjustment int64 = gtk.GTKGtk_spin_button_get_adjustment(this.Handle)
 		var lower float64 = gtk.GTKGtk_adjustment_get_lower(hAdjustment)
-		if lower < 0 && int32(utf16.Encode([]rune(string_))[0]) == int32('-') {
+		if lower < 0 && int32(jrt.ToChars(string_)[0]) == int32('-') {
 			index++
 		}
 	}
 	for index < jrt.StringLength(string_) {
-		if !unicode.IsDigit(rune(utf16.Encode([]rune(string_))[index])) {
+		if !unicode.IsDigit(rune(jrt.ToChars(string_)[index])) {
 			break
 		}
 		index++

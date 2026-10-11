@@ -8,7 +8,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"os"
-	"unicode/utf16"
 )
 
 type List struct {
@@ -298,9 +297,9 @@ func (this *List) GetItem(index int32) string {
 		if result != win32.OSLB_ERR {
 			var cond624 string
 			if (this.state & WidgetHAS_AUTO_DIRECTION) != 0 {
-				cond624 = string(utf16.Decode(buffer[1 : 1+length-1]))
+				cond624 = jrt.FromChars(buffer[1 : 1+length-1])
 			} else {
-				cond624 = string(utf16.Decode(buffer[0 : 0+length]))
+				cond624 = jrt.FromChars(buffer[0 : 0+length])
 			}
 			return cond624
 		}

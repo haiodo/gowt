@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
 	"reflect"
-	"unicode/utf16"
 )
 
 type PrintDialog struct {
@@ -199,7 +198,7 @@ func (this *PrintDialog) Open() *PrinterData {
 		if this.printerData.Name != "" {
 			var max int32 = int32(math.Min(float64(jrt.StringLength(this.printerData.Name)), float64(win32.OSCCHDEVICENAME-1)))
 			for i := int32(0); i < max; i++ {
-				devmode.DmDeviceName[i] = utf16.Encode([]rune(this.printerData.Name))[i]
+				devmode.DmDeviceName[i] = jrt.ToChars(this.printerData.Name)[i]
 			}
 		}
 		devmode.DmFields |= win32.OSDM_ORIENTATION
@@ -292,7 +291,7 @@ func (this *PrintDialog) Open() *PrinterData {
 				}
 				i++
 			}
-			var driver string = string(utf16.Decode(buffer[driverOffset : driverOffset+i]))
+			var driver string = jrt.FromChars(buffer[driverOffset : driverOffset+i])
 			var deviceOffset int32 = int32(offsets[1])
 			i = 0
 			for deviceOffset+i < size {
@@ -301,7 +300,7 @@ func (this *PrintDialog) Open() *PrinterData {
 				}
 				i++
 			}
-			var device string = string(utf16.Decode(buffer[deviceOffset : deviceOffset+i]))
+			var device string = jrt.FromChars(buffer[deviceOffset : deviceOffset+i])
 			data = NewPrinterDataDriverName(driver, device)
 			if (pd.Flags & win32.OSPD_PAGENUMS) != 0 {
 				data.Scope = PrinterDataPAGE_RANGE

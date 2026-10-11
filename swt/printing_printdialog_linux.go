@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"math"
-	"unicode/utf16"
 )
 
 type PrintDialog struct {
@@ -284,7 +283,7 @@ func (this *PrintDialog) Open() *PrinterData {
 				var length int32 = gtk.CStrlen(address)
 				var buffer []int8 = make([]int8, length)
 				gtk.CMemmoveOverload8(buffer, address, int64(length))
-				data.FileName = string(utf16.Decode(gtk.ConverterMbcsToWcs(buffer)))
+				data.FileName = jrt.FromChars(gtk.ConverterMbcsToWcs(buffer))
 			}
 			data.CopyCount = gtk.GTKGtk_print_settings_get_n_copies(settings)
 			data.Collate = gtk.GTKGtk_print_settings_get_collate(settings)

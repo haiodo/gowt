@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 	"github.com/haiodo/gowt/internal/jrt"
 	"os"
-	"unicode/utf16"
 )
 
 type TextTransfer struct {
@@ -176,7 +175,7 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 	gtk.CMemmoveOverload8(utf8, ptr[0], int64(length))
 	gtk.OSG_strfreev(list[0])
 	var unicode []uint16 = gtk.ConverterMbcsToWcs(utf8)
-	var string_ string = string(utf16.Decode(unicode))
+	var string_ string = jrt.FromChars(unicode)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
 	var cond905 any
 	if end == -1 {
@@ -196,7 +195,7 @@ func (this *TextTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) an
 	var buffer any = this.ByteArrayTransfer.nativeToJava_(transferData)
 	bytes, ok906 := buffer.([]int8)
 	if ok906 {
-		return string(utf16.Decode(gtk.ConverterMbcsToWcs(bytes)))
+		return jrt.FromChars(gtk.ConverterMbcsToWcs(bytes))
 	}
 	return nil
 }

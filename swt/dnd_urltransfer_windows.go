@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"os"
-	"unicode/utf16"
 )
 
 type URLTransfer struct {
@@ -149,7 +148,7 @@ func (this *URLTransfer) nativeToJava_(transferData *TransferData) any {
 						break
 					}
 				}
-				tret1181 = string(utf16.Decode(chars[0 : 0+length]))
+				tret1181 = jrt.FromChars(chars[0 : 0+length])
 				tretd1182 = true
 				return
 			}()
@@ -181,7 +180,7 @@ func (this *URLTransfer) nativeToJava_(transferData *TransferData) any {
 					}
 					var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 					win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-					tret1183 = string(utf16.Decode(lpWideCharStr))
+					tret1183 = jrt.FromChars(lpWideCharStr)
 					tretd1184 = true
 					return
 				}()

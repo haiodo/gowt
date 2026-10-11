@@ -7,7 +7,6 @@ import (
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/internal/win32"
 	"math"
-	"unicode/utf16"
 )
 
 type ExpandItem struct {
@@ -149,12 +148,12 @@ func (this *ExpandItem) DrawItem(gcLike GCLike, hTheme int64, clipRect *win32.RE
 		if (this.style & FLIP_TEXT_DIRECTION) != 0 {
 			var bits int32 = win32.OSGetWindowLong(this.parent.Handle, win32.OSGWL_EXSTYLE)
 			if (bits & win32.OSWS_EX_LAYOUTRTL) != 0 {
-				buffer = utf16.Encode([]rune((fmt.Sprintf("%c%s", WidgetLRE, this.text))))
+				buffer = jrt.ToChars((fmt.Sprintf("%c%s", WidgetLRE, this.text)))
 			} else {
-				buffer = utf16.Encode([]rune((fmt.Sprintf("%c%s", WidgetRLE, this.text))))
+				buffer = jrt.ToChars((fmt.Sprintf("%c%s", WidgetRLE, this.text)))
 			}
 		} else {
-			buffer = utf16.Encode([]rune(this.text))
+			buffer = jrt.ToChars(this.text)
 		}
 		if hTheme != 0 {
 			win32.OSDrawThemeText(hTheme, hDC, win32.OSEBP_NORMALGROUPHEAD, 0, buffer, int32(len(buffer)), win32.OSDT_VCENTER|win32.OSDT_SINGLELINE, 0, rect)
@@ -252,7 +251,7 @@ func (this *ExpandItem) GetPreferredWidth(hTheme int64, hDC int64) int32 {
 	}
 	if jrt.StringLength(this.text) > 0 {
 		var rect *win32.RECT = win32.NewRECT()
-		var buffer []uint16 = utf16.Encode([]rune(this.text))
+		var buffer []uint16 = jrt.ToChars(this.text)
 		if hTheme != 0 {
 			win32.OSGetThemeTextExtent(hTheme, hDC, win32.OSEBP_NORMALGROUPHEAD, 0, buffer, int32(len(buffer)), win32.OSDT_SINGLELINE, nil, rect)
 		} else {

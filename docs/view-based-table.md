@@ -1,7 +1,34 @@
 # View-based Table and Tree on macOS: assessment
 
-Status: not started. Decision: the change does not fit the generator's mechanisms (see "Why not now"), and it cannot be verified
-without GUI runs. Task: TSK-2026-10-03-product-13.
+Status: opt-in subset implemented (TSK-2026-10-03-product-32), not verified by a GUI run. Tasks: TSK-2026-10-03-product-13, -32.
+
+## Implemented subset (GOWT_VIEW_TABLE=1)
+
+No generated file and no generator input changed. `internal/cocoa/viewtable_manual.go` interposes on `OSObjc_registerClassPair`
+(the exported `_impl`/`_once` pair of the generated wrapper); `swt/widgets_viewtable_manual_darwin.go` then extends the
+`SWTTableView` / `SWTOutlineView` classes that `Display.initClasses` registers:
+
+- `tableView:viewForTableColumn:row:` / `outlineView:viewForTableColumn:item:` make the table view-based. Views are `SWTTableCellView`
+  (NSTableCellView, flipped) and `SWTTableCheckView` for the check column, reused through `makeViewWithIdentifier:`.
+- `drawRect:` of a cell view prepares the table's shared `dataCell` exactly as the cell-based path (objectValue, highlighted,
+  `willDisplayCell`) and calls the translated `drawInteriorWithFrame` through it, in table coordinates (translate by the view origin).
+  Erase/Measure/Paint events, colors, fonts, images, alignment are therefore unchanged translated code.
+- Check boxes: `buttonCell` drawn into `SWTTableCheckView`; mouseDown sends SWT.MouseDown and toggles (`ToggleCheckedItem` /
+  `setObjectValue` path); Space toggles the selected rows from a `keyDown:` wrapper.
+- `setNeedsDisplayInRect:` wrapper also invalidates the cell views of the intersecting rows (cell views are separate layers).
+
+Depends on these generated exports (a rename in the generator breaks the build here): `cocoa.OSObjc_registerClassPair_impl` and
+`_once`, `OSCALLBACK_setNeedsDisplayInRect_`, `OSCALLBACK_drawRect_`, `OSSel_isFlipped`, `OSSel_setBackgroundStyle_`,
+`OSMethod_setImplementation`, plus the Table/Tree methods `tableView_objectValueForTableColumn_row_`, `tableView_willDisplayCell_...`
+and their outline counterparts.
+
+A click on a check box runs `mouseEvent_` (MouseDown event, doit, focus) and toggles; it does not select the row and sends no MouseUp.
+
+Not done: removing `dataCell`/`buttonCell` and the cell-bound methods (steps 4-5 of the Approach), a patch stage, row-view selection
+drawing for EraseItem (selection can be painted twice), the 1px gaps of custom cell backgrounds in the intercell spacing,
+MouseUp on the check box, accessibility of the cell views, `expansionFrame` tooltips.
+
+Original assessment follows.
 
 ## Where the code depends on NSCell
 

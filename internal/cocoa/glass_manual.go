@@ -93,7 +93,12 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	} else {
 		msgRectOnly(bd, sel("setFrame:"), view.Frame())
 	}
-	msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
+	if group := glassGroupContent(host, kind, window); group != 0 {
+		msg(group, "addSubview:", bd)
+		lowerGlassGroup(host, group)
+	} else {
+		msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
+	}
 	setAssociated(v, backdropKey(), bd, 1)
 	msg(bd, "release")
 	return had

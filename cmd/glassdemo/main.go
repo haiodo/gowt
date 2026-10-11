@@ -1,5 +1,6 @@
 // Command glassdemo shows the macOS 26 look options: window backdrop, glass panel, glass buttons,
-// full-size content. GOWT_CLASSIC=1 asks for the pre-26 look; GOWT_BACKDROP=none|translucent|glass
+// full-size content. GOWT_TOOLBAR=1 adds a native unified toolbar, a glass group and a background
+// extension (the toolbar falls back to a gowt.ToolBar where it does not exist). GOWT_CLASSIC=1 asks for the pre-26 look; GOWT_BACKDROP=none|translucent|glass
 // picks the window material (default glass); GOWT_GLASSDEMO_SECS=n exits after n seconds;
 // GOWT_GLASSDEMO_DUMP=path writes the window view tree (frame view down, 4 levels) and exits.
 package main
@@ -25,6 +26,18 @@ func main() {
 		look.SetBackdrop(w, map[string]look.Backdrop{
 			"none": look.BackdropNone, "translucent": look.BackdropTranslucent, "": look.BackdropGlass, "glass": look.BackdropGlass,
 		}[os.Getenv("GOWT_BACKDROP")])
+		toolbar := os.Getenv("GOWT_TOOLBAR") == "1"
+		if toolbar {
+			note := func() { log.Print("toolbar item clicked") }
+			if look.SetToolbar(w, look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: note},
+				look.ToolbarItem{Space: true},
+				look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: note}) {
+				look.SetBackgroundExtension(w, true)
+			} else {
+				w.ToolBar().Item("Add", note)
+			}
+			look.SetGlassGroup(w, 40)
+		}
 		w.Label("Window backdrop, full-size content", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 320}))
 		p := w.Panel()
 		p.SetLayout(gowt.Grid{Columns: 2, Margin: 4, Spacing: 8})

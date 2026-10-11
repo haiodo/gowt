@@ -583,17 +583,25 @@ gowt/icons func Names() []string
 gowt/icons func Size(points int) Option
 gowt/icons type Option func(*iconConfig)
 gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt/look ToolbarItem.OnClick field func()
+gowt/look ToolbarItem.Space field bool
+gowt/look ToolbarItem.Symbol field string
+gowt/look ToolbarItem.Title field string
 gowt/look const BackdropGlass Backdrop = 2
 gowt/look const BackdropNone Backdrop = 0
 gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
+gowt/look func SetBackgroundExtension(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
+gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetToolbar(w *github.com/haiodo/gowt.Window, items ...ToolbarItem) bool
 gowt/look type Backdrop int
 gowt/look type Container
+gowt/look type ToolbarItem struct
 gowt/svg func NewImageDataProvider(svg []byte, width int32, height int32, color string) github.com/haiodo/gowt/swt.ImageDataProvider
 gowt/svg func Recolor(svg []byte, color string) []byte

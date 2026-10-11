@@ -67,6 +67,8 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	s.SetBackgroundMode(swt.INHERIT_DEFAULT)
 }
 
+func topInset(*swt.Shell) int { return 0 }
+
 func setRoundedCorners(s *swt.Shell, on bool) {
 	if windowsBuild() < buildWin11 {
 		return

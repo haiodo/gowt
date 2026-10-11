@@ -439,6 +439,7 @@ gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
+gowt Window.SetTopInset(points int)
 gowt Window.Show()
 gowt Window.ShowTop(w Widget)
 gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider

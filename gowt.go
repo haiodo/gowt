@@ -165,6 +165,7 @@ type Panel struct{ *panel }
 type panel struct {
 	c     *swt.Composite
 	stack *swt.StackLayout
+	lay   swt.LayoutLike
 }
 
 // Unwrap returns the underlying composite.
@@ -178,6 +179,7 @@ func (p *panel) AsComposite() *swt.Composite { return p.c }
 func (p *panel) SetLayout(l Layout) *Panel {
 	sl := l.layout()
 	p.stack, _ = sl.(*swt.StackLayout)
+	p.lay = sl
 	p.c.SetLayout(sl)
 	return &Panel{p}
 }
@@ -221,6 +223,38 @@ type Window struct {
 	*panel
 	shell *swt.Shell
 	sized bool
+	inset int // top inset requested by SetTopInset
+	added int // part of inset already in the current layout's top margin
+}
+
+// SetLayout installs l and returns the window as a Panel; a top inset set earlier is kept.
+func (w *Window) SetLayout(l Layout) *Panel {
+	p := w.panel.SetLayout(l)
+	w.added = 0
+	w.SetTopInset(w.inset)
+	return p
+}
+
+// SetTopInset adds points to the top margin of the window layout (Grid, Row and Form; other layouts
+// ignore it), on top of the layout's own Margin. look.SetFullSizeContent uses it to keep the content
+// below the title bar and the toolbar.
+func (w *Window) SetTopInset(points int) {
+	w.inset = points
+	d := int32(points - w.added)
+	switch l := w.lay.(type) {
+	case *swt.GridLayout:
+		l.MarginTop += d
+	case *swt.RowLayout:
+		l.MarginTop += d
+	case *swt.FormLayout:
+		l.MarginTop += d
+	default:
+		return
+	}
+	w.added = points
+	if d != 0 {
+		w.shell.Layout()
+	}
 }
 
 // Window creates a hidden window; call Show once its content is built.

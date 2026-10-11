@@ -11,6 +11,8 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	}
 }
 
+func topInset(s *swt.Shell) int { return cocoa.ContentTopInset(s.View) }
+
 func classic() { cocoa.RequireCompatibleLook() }
 
 func setFullSizeContent(s *swt.Shell, on bool) {

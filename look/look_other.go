@@ -8,6 +8,8 @@ func setBackdrop(*swt.Shell, Backdrop) {}
 
 func setRoundedCorners(*swt.Shell, bool) {}
 
+func topInset(*swt.Shell) int { return 0 }
+
 func classic() {}
 
 func setFullSizeContent(*swt.Shell, bool) {}

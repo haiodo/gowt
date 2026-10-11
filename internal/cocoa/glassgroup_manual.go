@@ -8,7 +8,6 @@ var (
 	groupClass uintptr
 	flipClass  uintptr
 	groupKey   = func() uintptr { return sel("gowtGlassGroup") }
-	extKey     = func() uintptr { return sel("gowtBackgroundExtension") }
 )
 
 // glassGroupContent returns the content view of the NSGlassEffectContainerView that host carries, or 0
@@ -31,7 +30,7 @@ func syncGlassGroup(host uintptr) {
 }
 
 // InstallGlassGroup makes the glass surfaces of the direct children of view share one
-// NSGlassEffectContainerView, so surfaces closer than spacing points merge. Call it after SetBackgroundExtension and before the children
+// NSGlassEffectContainerView, so surfaces closer than spacing points merge. Call it before the children
 // get their glass; it reports false before macOS 26. A second call only changes the spacing.
 func InstallGlassGroup(view *NSView, spacing float64) bool {
 	initAssociated()
@@ -76,61 +75,4 @@ func InstallGlassGroup(view *NSView, spacing float64) bool {
 		msgF64(g, sel("setSpacing:"), spacing)
 	}
 	return true
-}
-
-// InstallBackgroundExtension makes an NSBackgroundExtensionView the content view of the window of
-// view, with the window's former content view (the SWT view or its scroll view) inside it, so the
-// content is extended under a transparent title bar and toolbar. It reports false before macOS 26.
-// Off puts the former content view back. Shell.setZOrder_ resets the content view and drops the
-// extension, so the association alone is not trusted. Not handled: NO_FOCUS shells compare hitTest
-// with the content view, which is the extension view here.
-func InstallBackgroundExtension(view *NSView, on bool) bool {
-	initAssociated()
-	v := uintptr(view.Id)
-	w := msg(v, "window")
-	if w == 0 || class("NSBackgroundExtensionView") == 0 {
-		return false
-	}
-	ext := getAssociated(v, extKey())
-	cur := msg(w, "contentView")
-	switch {
-	case on && (ext == 0 || cur != ext):
-		if ext == 0 {
-			ext = msg(msg(class("NSBackgroundExtensionView"), "alloc"), "init")
-			setAssociated(v, extKey(), ext, 1)
-			msg(ext, "release")
-		}
-		msg(cur, "retain")
-		msgRectOnly(ext, sel("setFrame:"), NewNSViewOverload1(int64(cur)).Frame())
-		msg(w, "setContentView:", ext)
-		// The default placement shrinks the content to the safe area (below the toolbar) and mirrors its
-		// edge into the strip, and the mirror of the flipped SWT view shows stale content. Keeping the
-		// content at the full size leaves nothing to mirror and the client area equal to the window.
-		if respondsTo(ext, "setAutomaticallyPlacesContentView:") {
-			msg(ext, "setAutomaticallyPlacesContentView:", 0)
-		}
-		msg(ext, "setContentView:", cur)
-		msgRectOnly(cur, sel("setFrame:"), NewNSViewOverload1(int64(ext)).Bounds())
-		msg(cur, "setAutoresizingMask:", viewWidthHeightSizable)
-		msg(cur, "release")
-	case !on && ext != 0:
-		inner := cur
-		if cur == ext {
-			inner = msg(ext, "contentView")
-		}
-		msg(inner, "retain")
-		setAssociated(v, extKey(), 0, 1)
-		if cur == ext {
-			msg(w, "setContentView:", inner)
-		}
-		msg(inner, "release")
-	}
-	return true
-}
-
-// BackgroundExtensionView returns the NSBackgroundExtensionView InstallBackgroundExtension made for
-// view, 0 if there is none.
-func BackgroundExtensionView(view *NSView) uintptr {
-	initAssociated()
-	return getAssociated(uintptr(view.Id), extKey())
 }

@@ -93,5 +93,3 @@ func glassButton(*swt.Control) {}
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
 
 func setGlassGroup(*swt.Composite, float64) {}
-
-func setBackgroundExtension(*swt.Shell, bool) {}

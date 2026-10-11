@@ -71,8 +71,3 @@ func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool { return setToolbar(w
 // NSGlassEffectContainerView, so surfaces closer than spacing points merge into one shape. Call it
 // before the children get their glass. macOS 26 only; elsewhere it does nothing.
 func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
-
-// SetBackgroundExtension wraps the window content in an NSBackgroundExtensionView so it is extended
-// under a transparent title bar and the toolbar (use with SetFullSizeContent). macOS 26 only;
-// elsewhere it does nothing.
-func SetBackgroundExtension(w *gowt.Window, on bool) { setBackgroundExtension(w.Unwrap(), on) }

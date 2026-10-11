@@ -74,7 +74,6 @@ around factory output, deliberately not exported yet). jface has no viewers in t
 | `look.GlassButton()` | `gowt.Option`: `bezelStyle = .glass` (16), only when NSGlassEffectView exists. |
 | `look.SetToolbar(w, items...) bool` | NSToolbar (`toolbarStyle = .unified`) set on the NSWindow, not in the SWT view tree. Items come from a run-time ObjC delegate class (`GowtToolbarDelegate`, target and action `gowtClick:`); item identifiers `gowt.item.<index>`, spaces are `NSToolbarFlexibleSpaceItem`. Other OS: returns false, creates nothing. |
 | `look.SetGlassGroup(c, spacing)` | An NSGlassEffectContainerView subclass (`GowtGlassGroup`, `hitTest:` returns nil) fills `c`'s view; glass views installed for its children go into the container's content view, and the container is kept just below the lowest glass panel (SWT inserts new children at the bottom). |
-| `look.SetBackgroundExtension(w, on)` | NSBackgroundExtensionView becomes the window content view and holds the SWT content view. |
 
 Every class and selector newer than macOS 13 is looked up at run time; other systems get no-ops.
 The toolbar, glass group and background extension (TSK-34) are compiled but not yet checked by eye.

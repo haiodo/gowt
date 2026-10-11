@@ -6,20 +6,18 @@ package cocoa
 import "github.com/ebitengine/purego"
 
 // OnClassRegistered runs fn after every OSObjc_registerClassPair, so the manual code can extend the classes Display.initClasses
-// registers without a patch of the translated Display. It must be called before the first registration; it reports false if too late.
-func OnClassRegistered(fn func(cls int64)) bool {
-	done := false
-	var register func(cls int64)
+// registers without a patch of the translated Display. Classes registered before the call (the accessibility delegate does it in an
+// init()) are not reported; Display.initClasses runs later, in NewDisplay.
+func OnClassRegistered(fn func(cls int64)) {
 	OSObjc_registerClassPair_once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&register, purego.RTLD_DEFAULT, "objc_registerClassPair")
-		OSObjc_registerClassPair_impl = func(cls int64) {
-			register(cls)
-			fn(cls)
-		}
-		done = true
+		purego.RegisterLibFunc(&OSObjc_registerClassPair_impl, purego.RTLD_DEFAULT, "objc_registerClassPair")
 	})
-	return done
+	prev := OSObjc_registerClassPair_impl
+	OSObjc_registerClassPair_impl = func(cls int64) {
+		prev(cls)
+		fn(cls)
+	}
 }
 
 // Msg sends selector to recv with word-sized arguments and a word-sized (or void) result.

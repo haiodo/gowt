@@ -6,6 +6,7 @@ import "github.com/ebitengine/purego"
 
 var (
 	groupClass uintptr
+	flipClass  uintptr
 	groupKey   = func() uintptr { return sel("gowtGlassGroup") }
 	extKey     = func() uintptr { return sel("gowtBackgroundExtension") }
 )
@@ -58,10 +59,17 @@ func InstallGlassGroup(view *NSView, spacing float64) bool {
 			noHit := purego.NewCallback(func(self, _ uintptr, x, y float64) uintptr { return 0 })
 			groupClass = allocClass(class("NSGlassEffectContainerView"), "GowtGlassGroup", 0)
 			addMethod(groupClass, sel("hitTest:"), noHit, "@@:{CGPoint=dd}")
+			addMethod(groupClass, sel("isFlipped"), uintptr(OSIsFlipped_CALLBACK()), "c@:")
 			registerClass(groupClass)
 		}
 		g = msg(msg(groupClass, "alloc"), "init")
-		content := msg(msg(class("NSView"), "alloc"), "init")
+		// Flipped like the SWT host: backdrop frames are taken from SWT views in that system.
+		if flipClass == 0 {
+			flipClass = allocClass(class("NSView"), "GowtFlippedView", 0)
+			addMethod(flipClass, sel("isFlipped"), uintptr(OSIsFlipped_CALLBACK()), "c@:")
+			registerClass(flipClass)
+		}
+		content := msg(msg(flipClass, "alloc"), "init")
 		msg(g, "setContentView:", content)
 		msg(content, "release")
 		msg(g, "setAutoresizingMask:", viewWidthHeightSizable)
@@ -80,8 +88,11 @@ func InstallGlassGroup(view *NSView, spacing float64) bool {
 }
 
 // InstallBackgroundExtension makes an NSBackgroundExtensionView the content view of the window of
-// view, with the SWT content view inside it, so the content is extended under a transparent title bar
-// and toolbar. It reports false before macOS 26. Off puts the SWT view back as the content view.
+// view, with the window's former content view (the SWT view or its scroll view) inside it, so the
+// content is extended under a transparent title bar and toolbar. It reports false before macOS 26.
+// Off puts the former content view back. Shell.setZOrder_ resets the content view and drops the
+// extension, so the association alone is not trusted. Not handled: NO_FOCUS shells compare hitTest
+// with the content view, which is the extension view here.
 func InstallBackgroundExtension(view *NSView, on bool) bool {
 	initAssociated()
 	v := uintptr(view.Id)
@@ -90,21 +101,30 @@ func InstallBackgroundExtension(view *NSView, on bool) bool {
 		return false
 	}
 	ext := getAssociated(v, extKey())
+	cur := msg(w, "contentView")
 	switch {
-	case on && ext == 0:
-		ext = msg(msg(class("NSBackgroundExtensionView"), "alloc"), "init")
-		msg(v, "retain")
-		msgRectOnly(ext, sel("setFrame:"), view.Frame())
+	case on && (ext == 0 || cur != ext):
+		if ext == 0 {
+			ext = msg(msg(class("NSBackgroundExtensionView"), "alloc"), "init")
+			setAssociated(v, extKey(), ext, 1)
+			msg(ext, "release")
+		}
+		msg(cur, "retain")
+		msgRectOnly(ext, sel("setFrame:"), NewNSViewOverload1(int64(cur)).Frame())
 		msg(w, "setContentView:", ext)
-		msg(ext, "setContentView:", v)
-		setAssociated(v, extKey(), ext, 1)
-		msg(ext, "release")
-		msg(v, "release")
+		msg(ext, "setContentView:", cur)
+		msg(cur, "release")
 	case !on && ext != 0:
-		msg(v, "retain")
+		inner := cur
+		if cur == ext {
+			inner = msg(ext, "contentView")
+		}
+		msg(inner, "retain")
 		setAssociated(v, extKey(), 0, 1)
-		msg(w, "setContentView:", v)
-		msg(v, "release")
+		if cur == ext {
+			msg(w, "setContentView:", inner)
+		}
+		msg(inner, "release")
 	}
 	return true
 }

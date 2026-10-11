@@ -67,6 +67,10 @@ func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick}
 	}
 	ok := cocoa.InstallToolbar(s.View, ci)
+	if ok && !toolbarShells[s] {
+		toolbarShells[s] = true
+		s.AddDisposeListener(&toolbarDisposer{s})
+	}
 	s.Layout()
 	return ok
 }
@@ -76,4 +80,14 @@ func setGlassGroup(c *swt.Composite, spacing float64) { cocoa.InstallGlassGroup(
 func setBackgroundExtension(s *swt.Shell, on bool) {
 	cocoa.InstallBackgroundExtension(s.View, on)
 	s.Layout()
+}
+
+// toolbarShells holds the shells that already have the dispose hook; the hook frees the Go click handlers.
+var toolbarShells = map[*swt.Shell]bool{}
+
+type toolbarDisposer struct{ s *swt.Shell }
+
+func (d *toolbarDisposer) WidgetDisposed(*swt.DisposeEvent) {
+	cocoa.ReleaseToolbar(d.s.View)
+	delete(toolbarShells, d.s)
 }

@@ -135,3 +135,14 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	msg(tb, "release")
 	return true
 }
+
+// ReleaseToolbar drops the Go state of the toolbar delegate of the window of view; call it when the
+// window is disposed.
+func ReleaseToolbar(view *NSView) {
+	initAssociated()
+	if w := msg(uintptr(view.Id), "window"); w != 0 {
+		if d := getAssociated(w, toolbarKey()); d != 0 {
+			delete(toolbarDelegates, d)
+		}
+	}
+}

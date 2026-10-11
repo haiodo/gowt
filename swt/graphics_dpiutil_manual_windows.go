@@ -1,6 +1,20 @@
-// DPIUtil as win32 needs it. The process is system DPI aware (manifest, and Display.create sets the thread context):
-// the native zoom is the system DPI, the device zoom is SWT's default "integer" autoscale of it. No runtime rescaling.
+// DPIUtil as win32 needs it. Monitor-specific scaling follows upstream: on unless swt.autoScale.updateOnRuntime is
+// "false", then Display.create puts the thread in PerMonitorV2 and Shell handles WM_DPICHANGED. Ceiling: images are
+// always scaled with ImageData.ScaledTo, upstream's smooth method for this mode is not ported.
 package swt
+
+import (
+	"math"
+	"strconv"
+	"strings"
+
+	"github.com/haiodo/gowt/internal/jrt"
+)
+
+const (
+	dpiAutoScaleProperty        = "swt.autoScale"
+	dpiAutoScaleUpdateOnRuntime = "swt.autoScale.updateOnRuntime"
+)
 
 const (
 	AutoscalingModeDISABLED AutoscalingMode = iota
@@ -8,15 +22,53 @@ const (
 	AutoscalingModeENABLED
 )
 
+// DPIUtilGetZoomForAutoscaleProperty is AutoScaleCalculation.parseFrom(swt.autoScale).getAutoScaledZoom.
 func DPIUtilGetZoomForAutoscaleProperty(nativeDeviceZoom int32) int32 {
+	value := strings.ToLower(jrt.GetProperty(dpiAutoScaleProperty, ""))
+	if value == "" || (value != "false" && value != "half" && value != "quarter" && value != "exact" && value != "integer") {
+		if n, err := strconv.Atoi(value); err == nil {
+			return int32(n)
+		}
+		if DPIUtilIsMonitorSpecificScalingActive() {
+			value = "quarter"
+		} else {
+			value = "integer"
+		}
+	}
+	switch value {
+	case "false":
+		return 100
+	case "half":
+		return int32(math.RoundToEven(float64(nativeDeviceZoom)/50)) * 50
+	case "quarter":
+		return int32(math.Round(float64(nativeDeviceZoom)/25)) * 25
+	case "exact":
+		return nativeDeviceZoom
+	}
 	return max((nativeDeviceZoom+25)/100*100, 100)
 }
-func DPIUtilMapDPIToZoom(dpi int32) int32          { return dpi * 100 / 96 }
-func DPIUtilMapZoomToDPI(zoom int32) int32         { return zoom * 96 / 100 }
-func DPIUtilGetScalingFactor(zoom int32) float32   { return float32(zoom) / 100 }
-func DPIUtilSetMonitorSpecificScaling(active bool) {}
-func DPIUtilIsMonitorSpecificScalingActive() bool  { return false }
-func DPIUtilIsCustomAutoScale() bool               { return false }
+func DPIUtilMapDPIToZoom(dpi int32) int32        { return dpi * 100 / 96 }
+func DPIUtilMapZoomToDPI(zoom int32) int32       { return zoom * 96 / 100 }
+func DPIUtilGetScalingFactor(zoom int32) float32 { return float32(zoom) / 100 }
+func DPIUtilIsCustomAutoScale() bool             { return jrt.GetProperty(dpiAutoScaleProperty, "") != "" }
+
+func DPIUtilIsMonitorSpecificScalingActive() bool {
+	return !strings.EqualFold(jrt.GetProperty(dpiAutoScaleUpdateOnRuntime, ""), "false")
+}
+
+func DPIUtilSetMonitorSpecificScaling(active bool) {
+	if !active || jrt.GetProperty(dpiAutoScaleUpdateOnRuntime, "") != "force" {
+		jrt.SetProperty(dpiAutoScaleUpdateOnRuntime, strconv.FormatBool(active))
+	}
+	if !active || jrt.GetProperty(dpiAutoScaleUpdateOnRuntime, "") == "force" {
+		return
+	}
+	switch strings.ToLower(jrt.GetProperty(dpiAutoScaleProperty, "")) {
+	case "", "quarter", "exact":
+	default:
+		ErrorCodeThrowableDetail(ERROR_NOT_IMPLEMENTED, nil, ": monitor-specific scaling is only implemented for swt.autoScale \"quarter\" and \"exact\"")
+	}
+}
 
 func DPIUtilPixelToPointFloat(size float32, zoom int32) float32 {
 	if zoom == 100 {

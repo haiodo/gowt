@@ -421,13 +421,13 @@ final class InvocationEmitter {
 			if (qualified.equals("java.lang.String") && (n == 1 || n == 3)
 					&& ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("char")) {
-				emitter.fileImports.add("unicode/utf16");
+				emitter.fileImports.add(Manual.JRT_IMPORT);
 				String arg = emitter.expr((Expression) cic.arguments().get(0));
 				if (n == 3) {
 					String off = emitter.expr((Expression) cic.arguments().get(1));
 					arg += "[" + off + ":" + off + "+" + emitter.expr((Expression) cic.arguments().get(2)) + "]";
 				}
-				return "string(utf16.Decode(" + arg + "))";
+				return "jrt.FromChars(" + arg + ")";
 			}
 			// Thread is a bare any (Manual) except for the one shape the tests use: a runnable run by start()/join().
 			if (qualified.equals("java.lang.Thread") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {

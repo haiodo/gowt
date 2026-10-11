@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 	"unicode/utf16"
+	"unicode/utf8"
 )
 
 // StringBuilder is java.lang.StringBuilder. Indices are byte offsets, like the port's String.length().
@@ -34,9 +35,9 @@ func sbText(v any) string {
 	case string:
 		return x
 	case uint16:
-		return string(utf16.Decode([]uint16{x}))
+		return FromChars([]uint16{x})
 	case []uint16:
-		return string(utf16.Decode(x))
+		return FromChars(x)
 	}
 	return fmt.Sprint(v)
 }
@@ -282,7 +283,71 @@ func StringLength(s string) int32 {
 	if isASCII(s) {
 		return int32(len(s))
 	}
-	return int32(len(utf16.Encode([]rune(s))))
+	return int32(len(ToChars(s)))
+}
+
+// ToChars is String.toCharArray(): the UTF-16 units of s. A lone surrogate is kept as WTF-8
+// (ED A0..BF xx), which Substring produces when it cuts an emoji pair; two such halves
+// concatenated with + read back as the pair.
+func ToChars(s string) []uint16 {
+	u := make([]uint16, 0, len(s))
+	for i := 0; i < len(s); {
+		c := s[i]
+		if c < utf8.RuneSelf {
+			u = append(u, uint16(c))
+			i++
+			continue
+		}
+		r, n := utf8.DecodeRuneInString(s[i:])
+		if r == utf8.RuneError && n == 1 && c == 0xED && i+2 < len(s) && s[i+1] >= 0xA0 && s[i+1] <= 0xBF && s[i+2]&0xC0 == 0x80 {
+			u = append(u, uint16(0xD000|rune(s[i+1]&0x3F)<<6|rune(s[i+2]&0x3F)))
+			i += 3
+			continue
+		}
+		if r >= 0x10000 {
+			r1, r2 := utf16.EncodeRune(r)
+			u = append(u, uint16(r1), uint16(r2))
+		} else {
+			u = append(u, uint16(r))
+		}
+		i += n
+	}
+	return u
+}
+
+// FromChars is new String(char[]): a valid pair becomes one rune, a lone surrogate WTF-8 (see ToChars).
+func FromChars(u []uint16) string {
+	b := make([]byte, 0, len(u))
+	for i := 0; i < len(u); i++ {
+		r := rune(u[i])
+		switch {
+		case utf16.IsSurrogate(r) && r < 0xDC00 && i+1 < len(u) && u[i+1] >= 0xDC00 && u[i+1] < 0xE000:
+			b = utf8.AppendRune(b, utf16.DecodeRune(r, rune(u[i+1])))
+			i++
+		case utf16.IsSurrogate(r):
+			b = append(b, 0xED, byte(0x80|r>>6&0x3F), byte(0x80|r&0x3F))
+		default:
+			b = utf8.AppendRune(b, r)
+		}
+	}
+	return string(b)
+}
+
+// ValidUTF8 is for text handed to the OS: surrogate pairs held as two WTF-8 halves are joined,
+// a lone surrogate becomes U+FFFD, since Cocoa and GTK reject invalid UTF-8.
+func ValidUTF8(s string) string {
+	if utf8.ValidString(s) {
+		return s
+	}
+	u := ToChars(s)
+	for i := 0; i < len(u); i++ {
+		if u[i] >= 0xD800 && u[i] < 0xDC00 && i+1 < len(u) && u[i+1] >= 0xDC00 && u[i+1] < 0xE000 {
+			i++
+		} else if utf16.IsSurrogate(rune(u[i])) {
+			u[i] = 0xFFFD
+		}
+	}
+	return FromChars(u)
 }
 
 // Substring is String.substring(start, end) over UTF-16 indices; end < 0 means to the end.
@@ -293,11 +358,11 @@ func Substring(s string, start, end int32) string {
 		}
 		return s[start:end]
 	}
-	u := utf16.Encode([]rune(s))
+	u := ToChars(s)
 	if end < 0 {
 		end = int32(len(u))
 	}
-	return string(utf16.Decode(u[start:end]))
+	return FromChars(u[start:end])
 }
 
 // Optional is java.util.Optional over any: erased generics, so a caller casts Get's result.

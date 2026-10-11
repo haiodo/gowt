@@ -218,8 +218,8 @@ final class JdkCalls {
 				emitter.fileImports.add(JRT);
 				return "jrt.Fill(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
 			case "java.lang.String#toCharArray":
-				emitter.fileImports.add("unicode/utf16");
-				return "utf16.Encode([]rune(" + recv(mi) + "))";
+				emitter.fileImports.add(JRT);
+				return "jrt.ToChars(" + recv(mi) + ")";
 			case "java.util.Arrays#copyOf":
 				emitter.fileImports.add(JRT);
 				return "jrt.CopyOf(" + arg(mi, 0) + ", " + arg(mi, 1) + ")";
@@ -270,8 +270,8 @@ final class JdkCalls {
 				emitter.fileImports.add(JRT);
 				return "jrt.ClassGetResourceAsStream(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#charAt":
-				emitter.fileImports.add("unicode/utf16");
-				return "utf16.Encode([]rune(" + recv(mi) + "))[" + arg(mi, 0) + "]";
+				emitter.fileImports.add(JRT);
+				return "jrt.ToChars(" + recv(mi) + ")[" + arg(mi, 0) + "]";
 			case "java.lang.String#valueOf":
 				return stringValueOf(mi, mb);
 			case "java.lang.System#nanoTime":
@@ -336,10 +336,13 @@ final class JdkCalls {
 	private String stringValueOf(MethodInvocation mi, IMethodBinding mb) {
 		ITypeBinding p = mb.getParameterTypes()[0];
 		String a = arg(mi, 0);
-		if (p.getName().equals("char")) return "string(rune(" + a + "))";
+		if (p.getName().equals("char")) {
+			emitter.fileImports.add(JRT);
+			return "jrt.FromChars([]uint16{" + a + "})";
+		}
 		if (p.isArray() && p.getComponentType().getName().equals("char")) {
-			emitter.fileImports.add("unicode/utf16");
-			return "string(utf16.Decode(" + a + "))";
+			emitter.fileImports.add(JRT);
+			return "jrt.FromChars(" + a + ")";
 		}
 		emitter.fileImports.add("fmt");
 		return "fmt.Sprint(" + a + ")";

@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"unicode/utf16"
 )
 
 // File is java.io.File over a path.
@@ -219,8 +218,8 @@ func (m *Matcher) Find() bool {
 }
 
 // Start and End are UTF-16 offsets of the last match, as in Java.
-func (m *Matcher) Start() int32 { return int32(len(utf16.Encode([]rune(m.s[:m.lo])))) }
-func (m *Matcher) End() int32   { return int32(len(utf16.Encode([]rune(m.s[:m.hi])))) }
+func (m *Matcher) Start() int32 { return int32(len(ToChars(m.s[:m.lo]))) }
+func (m *Matcher) End() int32   { return int32(len(ToChars(m.s[:m.hi]))) }
 
 func (m *Matcher) Group(i ...int32) string {
 	if len(i) == 0 {

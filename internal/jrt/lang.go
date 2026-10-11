@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"unicode/utf16"
 )
 
 // Runnable is java.lang.Runnable. Lambdas and anonymous classes become *RunnableFunc: a pointer,
@@ -134,7 +133,7 @@ func IdentityHashCode(x any) int32 { return int32(reflect.ValueOf(x).Pointer()) 
 // StringHashCode is String.hashCode(): h = 31*h + c over the UTF-16 code units.
 func StringHashCode(s string) int32 {
 	var h int32
-	for _, c := range utf16.Encode([]rune(s)) {
+	for _, c := range ToChars(s) {
 		h = 31*h + int32(c)
 	}
 	return h
@@ -229,7 +228,7 @@ func AddSuppressed(e, s error) {}
 
 // GetChars is String.getChars: the UTF-16 units [srcBegin, srcEnd) of s copied into dst at dstBegin.
 func GetChars(s string, srcBegin, srcEnd int32, dst []uint16, dstBegin int32) {
-	copy(dst[dstBegin:], utf16.Encode([]rune(s))[srcBegin:srcEnd])
+	copy(dst[dstBegin:], ToChars(s)[srcBegin:srcEnd])
 }
 
 // Ignore evaluates its arguments for their side effects only: Thread.interrupt and setDaemon, which a goroutine does not have.

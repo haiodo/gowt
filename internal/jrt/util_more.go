@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
-	"unicode/utf16"
 )
 
 // entries lists the map's pairs in EntrySet order.
@@ -302,7 +301,7 @@ func (l *List) AnyMatch(pred any) bool {
 
 // StringCompareTo is String.compareTo: UTF-16 code units, the difference of the first mismatch or of the lengths.
 func StringCompareTo(a, b string) int32 {
-	x, y := utf16.Encode([]rune(a)), utf16.Encode([]rune(b))
+	x, y := ToChars(a), ToChars(b)
 	for i := 0; i < len(x) && i < len(y); i++ {
 		if x[i] != y[i] {
 			return int32(x[i]) - int32(y[i])
@@ -450,7 +449,7 @@ func (l *List) CollectInto(supplier, accumulator any) any {
 // StringChars is String.chars(): the UTF-16 code units.
 func StringChars(s string) *List {
 	out := NewList()
-	for _, u := range utf16.Encode([]rune(s)) {
+	for _, u := range ToChars(s) {
 		out.Add(int32(u))
 	}
 	return out

@@ -19,7 +19,7 @@ PI_SRC="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT PI/$PLATFORM/org/eclipse/s
 J2GO=(java -jar tooling/j2go/target/j2go.jar --swt "$SWT_REPO" --out . --platform "$PLATFORM")
 EVENTS_DIR="$SWT_REPO/bundles/org.eclipse.swt/Eclipse SWT/common/org/eclipse/swt/events"
 
-mvn -q -f tooling/j2go/pom.xml package
+mvn -q -DskipTests -f tooling/j2go/pom.xml package
 
 # gtk: Java declarations of internal/gtk's API for j2go (type information; no PI sources), made from the call
 # sites in swt/ before the cleanup below removes them.

@@ -16,6 +16,7 @@ func init() { runtime.LockOSThread() }
 
 func main() {
 	snapDir := flag.String("snap", "", "write a PNG of every tab into this directory, then exit")
+	resizeSteps := flag.Int("resize", 0, "resize the shell this many times, print timings, then exit (GOWT_PROFILE=<file> writes a CPU profile)")
 	flag.Parse()
 
 	// Without it macOS lists the process (and WebKit's helpers) as "SWT".
@@ -34,6 +35,10 @@ func main() {
 	shell.Open()
 	if *snapDir != "" {
 		snapAll(display, shell, instance.TabFolder(), *snapDir)
+	}
+	if *resizeSteps > 0 {
+		resizeBench(display, shell, *resizeSteps)
+		shell.Dispose()
 	}
 	for !shell.IsDisposed() {
 		if snapTick != nil {

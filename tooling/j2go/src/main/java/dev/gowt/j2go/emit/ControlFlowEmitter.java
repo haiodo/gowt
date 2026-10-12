@@ -244,7 +244,7 @@ final class ControlFlowEmitter {
 	/** synchronized (x) { body }: the one global jrt monitor (see internal/jrt/lang.go), released
 	 * by a defer inside a block-scoped closure - the lock expression itself is not evaluated. */
 	String emitSynchronized(SynchronizedStatement ss, int indent) {
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return ind(indent) + "jrt.MonitorEnter()\n" + emitClosure(ss.getBody(), List.of(), List.of("jrt.MonitorExit()"), null, indent);
 	}
 
@@ -408,7 +408,7 @@ final class ControlFlowEmitter {
 		}
 		if (qualified.equals("java.lang.AssertionError")) {
 			// What internal/junit panics on a failed assertion.
-			emitter.fileImports.add("github.com/haiodo/gowt/internal/junit");
+			emitter.fileImports.add(dev.gowt.j2go.Manual.JUNIT_IMPORT);
 			return "*junit.AssertionFailed";
 		}
 		TypeModel.ClassInfo ci = emitter.model.lookup(t);

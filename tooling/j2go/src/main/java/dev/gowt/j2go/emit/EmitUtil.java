@@ -345,7 +345,7 @@ final class EmitUtil {
 		boolean eq = op == InfixExpression.Operator.EQUALS || op == InfixExpression.Operator.NOT_EQUALS;
 		ITypeBinding o = other.resolveTypeBinding();
 		if (eq && (o == null || !o.isPrimitive())) return text;
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return "jrt.Cast[" + goType + "](" + text + ")";
 	}
 
@@ -354,7 +354,7 @@ final class EmitUtil {
 		String x = emitter.expr(operand);
 		ITypeBinding t = operand.resolveTypeBinding();
 		if (t == null || !t.getErasure().getQualifiedName().equals("java.lang.Integer")) return x + op;
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return x + " = jrt.Cast[int32](" + x + ") " + op.charAt(0) + " 1";
 	}
 
@@ -368,7 +368,7 @@ final class EmitUtil {
 		// A Boolean is a Go bool with no null: "unset" reads as false (ceiling: a tri-state Boolean field).
 		if (t != null && t.getErasure().getQualifiedName().equals("java.lang.Boolean")) return op == InfixExpression.Operator.EQUALS ? "false" : "true";
 		if (t == null || t.isNullType() || !dev.gowt.j2go.GoTypes.map(t, emitter).equals("any")) return null;
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return (op == InfixExpression.Operator.NOT_EQUALS ? "!" : "") + "jrt.IsNil(" + (right.equals("nil") ? left : right) + ")";
 	}
 

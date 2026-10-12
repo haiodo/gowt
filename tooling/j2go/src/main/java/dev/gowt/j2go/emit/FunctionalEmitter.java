@@ -15,7 +15,7 @@ import static dev.gowt.j2go.emit.EmitUtil.ind;
  * interface, or a generated struct for an anonymous subclass (README "Functional values"). */
 final class FunctionalEmitter {
 
-	private static final String JRT_IMPORT = "github.com/haiodo/gowt/internal/jrt";
+	private static final String JRT_IMPORT = dev.gowt.j2go.Manual.JRT_IMPORT;
 
 	private final Emitter emitter;
 

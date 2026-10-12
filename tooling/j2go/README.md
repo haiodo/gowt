@@ -110,6 +110,11 @@ java -jar tooling/j2go/target/j2go.jar --swt <swt repo root> --out . \
 	org/eclipse/swt/graphics/Point.java org/eclipse/swt/graphics/Rectangle.java ...
 ```
 
+Project settings are parameters; the defaults are gowt's: `--config <dir>` (pins, `natives.properties`,
+`selectors.properties`, `win32_layout.txt`, gtk stubs; default `tooling/j2go`), `--stubs <dir>` (repeatable,
+model-only Java stub roots; default `<config>/stubs`), `--runtime-import` (default
+`github.com/haiodo/gowt/internal/jrt`), `--junit-import` (default `github.com/haiodo/gowt/internal/junit`).
+
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
 "Multiple Go packages" and "Round 10 controlexample" below).

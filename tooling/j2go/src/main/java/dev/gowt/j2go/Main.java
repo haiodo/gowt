@@ -13,9 +13,6 @@ import java.util.*;
 /** CLI: --swt <repo root> --out <dir> <java files relative to source roots or absolute...> */
 public class Main {
 
-	// Java stubs for test-harness classes outside the SWT repo (org.eclipse.test.Screenshots).
-	private static final String STUB_ROOT = "tooling/j2go/stubs";
-
 	private static final String SWT_COMMIT = "af630a9093";
 	// eclipse.platform.ui, the source of org.eclipse.jface.* (README "Round 22 jface").
 	private static final String UI_COMMIT = "618d26a101";
@@ -26,6 +23,7 @@ public class Main {
 		Platform platform = Platform.COCOA;
 		String[] classpath = new String[0];
 		List<String> extraRoots = new ArrayList<>();
+		List<Path> stubRoots = new ArrayList<>();
 		List<String> files = new ArrayList<>();
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
 		// when translated) but not re-emitted - e.g. Widget.java needs OS.java's ClassInfo, not
@@ -39,12 +37,18 @@ public class Main {
 				case "--platform" -> platform = Platform.parse(args[++i]);
 				case "--classpath" -> classpath = args[++i].split(":");
 				case "--src" -> extraRoots.add(args[++i]);
+				case "--config" -> Config.dir = Path.of(args[++i]);
+				case "--stubs" -> stubRoots.add(Path.of(args[++i]));
+				case "--runtime-import" -> Config.runtimeImport = args[++i];
+				case "--junit-import" -> Config.junitImport = args[++i];
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
 		}
+		// Stubs default to <config>/stubs (Java stubs for test-harness classes outside the SWT repo, org.eclipse.test.Screenshots).
+		Config.stubRoots = stubRoots.isEmpty() ? List.of(Config.dir.resolve("stubs")) : stubRoots;
 		if (swtRoot == null || outDir == null || files.isEmpty()) {
-			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... <java files...> [-- <reference-only java files...>]");
+			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... [--config <dir>] [--stubs <dir>]... [--runtime-import <path>] [--junit-import <path>] <java files...> [-- <reference-only java files...>]");
 			System.exit(2);
 		}
 
@@ -79,9 +83,9 @@ public class Main {
 			if (platformRoot) platformRoots.add(p + "/");
 		}
 		for (String r : extraRoots) sourceRoots.add(Path.of(r).toAbsolutePath().toString());
-		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
-		if (platform == Platform.GTK) for (String d : new String[] { "tooling/j2go/gtkstubs", "tooling/j2go/gtkstubs-gen" })
-			if (Files.isDirectory(Path.of(d))) sourceRoots.add(Path.of(d).toAbsolutePath().toString());
+		for (Path d : Config.stubRoots) if (Files.isDirectory(d)) sourceRoots.add(d.toAbsolutePath().toString());
+		if (platform == Platform.GTK) for (String d : new String[] { "gtkstubs", "gtkstubs-gen" })
+			if (Files.isDirectory(Config.dir.resolve(d))) sourceRoots.add(Config.dir.resolve(d).toAbsolutePath().toString());
 
 		List<String> absFiles = resolveSources(files, sourceRoots);
 		List<String> absRefFiles = resolveSources(refFiles, sourceRoots);
@@ -142,16 +146,16 @@ public class Main {
 		}
 
 		Names names = new Names();
-		names.loadPins(Path.of("tooling/j2go/overloads.properties"));
-		names.loadOverrides(Path.of("tooling/j2go/names.properties"));
-		dev.gowt.j2go.emit.WinLayout.load(Path.of("tooling/j2go/win32_layout.txt"));
-		if (platform == Platform.GTK) names.loadOverrides(Path.of("tooling/j2go/gtkstubs-gen/names.properties"));
+		names.loadPins(Config.dir.resolve("overloads.properties"));
+		names.loadOverrides(Config.dir.resolve("names.properties"));
+		dev.gowt.j2go.emit.WinLayout.load(Config.dir.resolve("win32_layout.txt"));
+		if (platform == Platform.GTK) names.loadOverrides(Config.dir.resolve("gtkstubs-gen/names.properties"));
 		Natives natives = new Natives();
-		natives.load(Path.of("tooling/j2go/natives.properties"));
+		natives.load(Config.dir.resolve("natives.properties"));
 		Selectors selectors = new Selectors();
-		selectors.load(Path.of("tooling/j2go/selectors.properties"));
+		selectors.load(Config.dir.resolve("selectors.properties"));
 		TypeModel model = new TypeModel();
-		Path cascadePins = Path.of("tooling/j2go/cascade.properties");
+		Path cascadePins = Config.dir.resolve("cascade.properties");
 		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(l -> { int eq = l.indexOf('='); if (eq < 0) TypeModel.PINNED_CASCADE.add(l); else TypeModel.PINNED_CASCADE_NAMES.put(l.substring(0, eq), l.substring(eq + 1)); });
 		model.build(orderedUnits, names);
 		if (System.getenv("J2GO_DUMP_CASCADE") != null) model.dumpCascade(Path.of(System.getenv("J2GO_DUMP_CASCADE")));
@@ -168,7 +172,7 @@ public class Main {
 			CompilationUnit cu = orderedUnits.get(i);
 			String absPath = absFiles.get(i);
 			// A Java stub only types its Go counterpart (hand-written); it is modeled, never emitted.
-			if (absPath.startsWith(Path.of(STUB_ROOT).toAbsolutePath() + "/")) continue;
+			if (Config.stubRoots.stream().anyMatch(r -> absPath.startsWith(r.toAbsolutePath() + "/"))) continue;
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);

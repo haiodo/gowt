@@ -11,9 +11,9 @@ import (
 )
 
 // resizeCounter counts Resize events per widget type through a display filter.
-type resizeCounter map[string]int
+type resizeCounter struct{ m map[string]int }
 
-func (c resizeCounter) HandleEvent(e *swt.Event) { c[fmt.Sprintf("%T", e.Widget)]++ }
+func (c *resizeCounter) HandleEvent(e *swt.Event) { c.m[fmt.Sprintf("%T", e.Widget)]++ }
 
 // resizeBench resizes the shell n times through Shell.SetSize, the call path a window drag reaches
 // through windowDidResize and setFrameSize, and prints per-step timings. GOWT_PROFILE=<file> writes
@@ -29,11 +29,13 @@ func resizeBench(display *swt.Display, shell *swt.Shell, n int) {
 		}
 		shell.SetSize(size.X+int32(2*k), size.Y)
 	}
+	fmt.Fprintln(os.Stderr, "resize: warmup")
 	for i := 0; i < 20; i++ {
 		step(i)
 	}
+	fmt.Fprintln(os.Stderr, "resize: measuring")
 
-	counter := resizeCounter{}
+	counter := &resizeCounter{m: map[string]int{}}
 	display.AddFilter(swt.Resize, counter)
 
 	if path := os.Getenv("GOWT_PROFILE"); path != "" {
@@ -55,6 +57,14 @@ func resizeBench(display *swt.Display, shell *swt.Shell, n int) {
 		t := time.Now()
 		step(i)
 		times[i] = time.Since(t)
+		if os.Getenv("GOWT_RESIZE_TRACE") != "" {
+			fmt.Fprintf(os.Stderr, "step %d %v\n", i, times[i])
+		}
+		// A step that slow is the finding itself; stop instead of running for minutes.
+		if time.Since(start) > 30*time.Second {
+			n, times = i+1, times[:i+1]
+			break
+		}
 	}
 	total := time.Since(start)
 	display.RemoveFilter(swt.Resize, counter)
@@ -68,7 +78,7 @@ func resizeBench(display *swt.Display, shell *swt.Shell, n int) {
 	}
 	var rows []kv
 	events := 0
-	for k, v := range counter {
+	for k, v := range counter.m {
 		rows = append(rows, kv{k, v})
 		events += v
 	}

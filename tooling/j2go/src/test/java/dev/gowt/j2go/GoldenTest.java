@@ -45,6 +45,8 @@ class GoldenTest {
 		// A fresh JVM per rule: j2go keeps its state in statics. cwd is empty, so no repo config is picked up.
 		List<String> cmd = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
 				"-cp", System.getProperty("java.class.path"), "dev.gowt.j2go.Main", "--swt", src.toString(), "--out", out.toString()));
+		// An optional args file holds extra j2go flags for the rule, one per line.
+		if (Files.exists(rule.resolve("args"))) cmd.addAll(Files.readAllLines(rule.resolve("args")));
 		for (String n : names) cmd.add("fixture/" + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();
 		String log = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

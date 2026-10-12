@@ -22,6 +22,7 @@ public class Main {
 		String outDir = null;
 		Platform platform = Platform.COCOA;
 		String[] classpath = new String[0];
+		boolean keepGoing = false;
 		List<String> extraRoots = new ArrayList<>();
 		List<Path> stubRoots = new ArrayList<>();
 		List<String> files = new ArrayList<>();
@@ -36,6 +37,7 @@ public class Main {
 				case "--out" -> outDir = args[++i];
 				case "--platform" -> platform = Platform.parse(args[++i]);
 				case "--classpath" -> classpath = args[++i].split(":");
+				case "--keep-going" -> keepGoing = true;
 				case "--src" -> extraRoots.add(args[++i]);
 				case "--config" -> Config.dir = Path.of(args[++i]);
 				case "--stubs" -> stubRoots.add(Path.of(args[++i]));
@@ -97,6 +99,7 @@ public class Main {
 		Arrays.fill(encodings, "UTF-8");
 		List<CompilationUnit> orderedUnits = new ArrayList<>();
 		int problemCount = 0;
+		Set<String> badFiles = new HashSet<>();
 		// A hoisted local class that captures a variable breaks binding: retry those files with records desugared only.
 		for (boolean retry = true; ; retry = false) {
 			unitsByPath.clear();
@@ -130,6 +133,7 @@ public class Main {
 					if (p.isError()) {
 						bad = true;
 						errors.add("j2go: [error] " + f + ": " + p);
+						badFiles.add(f);
 					}
 				}
 				if (bad && retry) for (var e : mirrorToReal.entrySet())
@@ -141,8 +145,8 @@ public class Main {
 			break;
 		}
 		if (problemCount > 0) {
-			System.err.println("j2go: " + problemCount + " binding/compile errors, aborting");
-			System.exit(1);
+			System.err.println("j2go: " + problemCount + " binding/compile errors" + (keepGoing ? ", continuing (--keep-going)" : ", aborting"));
+			if (!keepGoing) System.exit(1);
 		}
 
 		Names names = new Names();
@@ -177,13 +181,23 @@ public class Main {
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
 			String unitPkg = cu.getPackage().getName().getFullyQualifiedName();
+			if (keepGoing && !(cu.types().get(0) instanceof TypeDeclaration)) { System.err.println("j2go: [skip] " + absPath + ": " + cu.types().get(0).getClass().getSimpleName() + " not supported"); continue; }
 			String unitType = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
 			String unitDir = GoTypes.goPackageDir(unitPkg, unitType);
 			boolean commonSource = !reference && platformRoots.stream().noneMatch(absPath::startsWith) && !unitDir.equals(platform.piDir);
 			// A common source the reference platform has no file for (it stubs the class by hand) is this platform's own.
 			boolean sharedFile = commonSource && Files.exists(Path.of(outDir, unitDir, lastSegment(unitPkg) + "_" + unitType.toLowerCase(Locale.ROOT) + ".go"));
 			emitter.separateHelpers = sharedFile;
-			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
+			if (keepGoing && badFiles.contains(absPath)) { System.err.println("j2go: [skip] " + absPath + ": binding errors"); continue; }
+			Emitter.EmitResult result;
+			try {
+				result = emitter.emitCompilationUnit(cu);
+			} catch (RuntimeException e) {
+				if (!keepGoing) throw e;
+				StackTraceElement[] st = e.getStackTrace();
+				System.err.println("j2go: [crash] " + absPath + ": " + e.getClass().getSimpleName() + " at " + (st.length > 0 ? st[0] : "?"));
+				continue;
+			}
 			// The reference platform owns the shared files; here only the helpers they need are kept.
 			if (sharedFile) {
 				if (GoTypes.goPackageOf(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals("swt")) {

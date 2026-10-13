@@ -14,7 +14,7 @@ import java.util.Map;
  * Lines (# starts a comment):
  *   module &lt;go module path&gt;
  *   class &lt;java class, fully qualified&gt; &lt;dir&gt; [layer=N]
- *   map &lt;java package&gt; &lt;dir&gt; [layer=N]     ("pkg.*" = pkg and its subpackages, {sub} = the rest of the package as a path)
+ *   map &lt;java package&gt; &lt;dir&gt; [layer=N]     ("pkg.*" = pkg and its subpackages, {sub} = the rest of the package as a path, {flat} = the same with _; Go package names are the last dir segment and must stay unique)
  *   default &lt;dir&gt; [layer=N]                    (no rule matched; else the Java package as a path)
  *   commit &lt;path substring or *&gt; &lt;sha&gt;        (header "@ sha"; none = no revision in the header)
  *   message-prefix &lt;word&gt;                       (stderr text of generated code; none = no prefix)
@@ -78,8 +78,8 @@ public final class Profile {
 			if (pat.endsWith(".*")) {
 				String head = pat.substring(0, pat.length() - 2);
 				if (!javaPackage.equals(head) && !javaPackage.startsWith(head + ".")) continue;
-				String sub = javaPackage.length() > head.length() ? javaPackage.substring(head.length() + 1).replace('.', '/') : "";
-				return record(r, r.dir.replace("{sub}", sub).replaceAll("/+$", ""));
+				String rest = javaPackage.length() > head.length() ? javaPackage.substring(head.length() + 1) : "";
+				return record(r, r.dir.replace("{sub}", rest.replace('.', '/')).replace("{flat}", rest.replace('.', '_')).replaceAll("/+$", ""));
 			}
 			if (pat.equals(javaPackage)) return record(r, r.dir);
 		}
@@ -88,6 +88,8 @@ public final class Profile {
 	}
 
 	private String record(Rule r, String dir) {
+		// "pkg.*" matched pkg itself: nothing left for {sub}, take pkg's own last segment.
+		if (dir.isEmpty()) dir = r.pattern.substring(0, r.pattern.length() - 2).replaceAll(".*\\.", "");
 		String name = dir.substring(dir.lastIndexOf('/') + 1);
 		dirByPackage.put(name, dir);
 		layerByPackage.put(name, r.layer);

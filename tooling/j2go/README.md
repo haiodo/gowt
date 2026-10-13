@@ -117,7 +117,7 @@ model-only Java stub roots; default `<config>/stubs`), `--runtime-import` (defau
 
 `<config>/packages.txt` replaces the built-in SWT layout (Java package -> Go dir, import path, layers) and
 the header: without it the output is gowt's (`swt/`, `github.com/haiodo/gowt/...`, `@ af630a9093`, `gowt:`
-in the stderr text). Directives: `module`, `class`, `map` (`pkg.*`, `{sub}`), `default`, `commit`,
+in the stderr text). Directives: `module`, `class`, `map` (`pkg.*`, `{sub}`, `{flat}`), `default`, `commit`,
 `message-prefix`, optional `layer=N`; see `Profile.java` and `testdata/packages/cfg/packages.txt`.
 Without `commit` the header has no revision; two packages whose dirs end in the same name collide.
 

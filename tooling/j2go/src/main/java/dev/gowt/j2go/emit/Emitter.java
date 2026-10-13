@@ -111,7 +111,7 @@ public class Emitter {
 		anonCounter = 0;
 		StringBuilder out = new StringBuilder();
 		for (Object t : cu.types()) {
-			classEmitter.emitTopLevelClass((TypeDeclaration) t, out);
+			classEmitter.emitTopLevelClass((AbstractTypeDeclaration) t, out);
 		}
 		lazyStaticBlocks.forEach((type, bodies) -> {
 			String once = Names.decapitalize(type) + "StaticOnce";
@@ -270,11 +270,11 @@ public class Emitter {
 		return constructorEmitter.emitSuperMethodInvocation(smi);
 	}
 
-	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		constructorEmitter.emitConstructor(md, ci, td, out);
 	}
 
-	void emitImplicitConstructor(TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+	void emitImplicitConstructor(TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		constructorEmitter.emitImplicitConstructor(ci, td, out);
 	}
 

@@ -39,8 +39,12 @@ class GoldenTest {
 		assertFalse(names.isEmpty(), "no fixtures in " + in);
 		Path work = Files.createTempDirectory("j2go-golden");
 		Path src = work.resolve("swt"), out = work.resolve("out"), cwd = Files.createDirectories(work.resolve("cwd"));
-		Files.createDirectories(src.resolve(ROOT));
-		for (String n : names) Files.copy(in.resolve(n), src.resolve(ROOT).resolve(n));
+		// An "external" marker file puts the inputs outside the SWT roots, as a non-SWT project's are (absolute paths);
+		// containing "src" it also passes their directory as a --src root.
+		boolean external = Files.exists(rule.resolve("external"));
+		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(ROOT);
+		Files.createDirectories(inputs);
+		for (String n : names) Files.copy(in.resolve(n), inputs.resolve(n));
 
 		// A fresh JVM per rule: j2go keeps its state in statics. cwd is empty, so no repo config is picked up.
 		List<String> cmd = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
@@ -48,7 +52,8 @@ class GoldenTest {
 		// An optional args file holds extra j2go flags for the rule, one per line.
 		// ${rule} is the rule's absolute directory.
 		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString())));
-		for (String n : names) cmd.add("fixture/" + n);
+		if (external && Files.readString(rule.resolve("external")).contains("src")) cmd.addAll(List.of("--src", work.resolve("ext").toString()));
+		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : "fixture/" + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();
 		String log = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 		assertEquals(0, p.waitFor(), log);

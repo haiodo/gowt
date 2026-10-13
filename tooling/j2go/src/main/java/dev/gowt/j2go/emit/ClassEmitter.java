@@ -17,11 +17,23 @@ final class ClassEmitter {
 
 	ClassEmitter(Emitter emitter) {
 		this.emitter = emitter;
+		this.enumEmitter = new EnumEmitter(emitter, this);
 	}
 
 	// ---------------------------------------------------------------- classes
 
-	void emitTopLevelClass(TypeDeclaration td, StringBuilder out) {
+	private final EnumEmitter enumEmitter;
+
+	void emitTopLevelClass(AbstractTypeDeclaration atd, StringBuilder out) {
+		if (atd instanceof EnumDeclaration ed) {
+			enumEmitter.emitEnum(ed, out);
+			return;
+		}
+		if (atd instanceof AnnotationTypeDeclaration atd2) {
+			enumEmitter.emitAnnotation(atd2, out);
+			return;
+		}
+		if (!(atd instanceof TypeDeclaration td)) throw new IllegalStateException(atd.getClass().getSimpleName() + " is not supported");
 		if (td.isInterface()) {
 			emitInterface(td, out);
 			return;
@@ -60,6 +72,7 @@ final class ClassEmitter {
 			if (o instanceof MethodDeclaration md && Modifier.isDefault(md.getModifiers())) {
 				emitDefaultMethod(md, ci, out);
 			}
+			if (o instanceof EnumDeclaration || o instanceof AnnotationTypeDeclaration) emitTopLevelClass((AbstractTypeDeclaration) o, out);
 		}
 		emitter.currentClassGoTypeName = savedClassGoTypeName;
 		emitter.currentClassInfo = savedClassInfo;
@@ -196,7 +209,7 @@ final class ClassEmitter {
 		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName)).append(CovariantBridges.emit(emitter, ci));
 		out.append(emitter.testRegistration(td, ci));
 		for (Object o : td.bodyDeclarations()) {
-			if (o instanceof TypeDeclaration nested && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
+			if (o instanceof AbstractTypeDeclaration nested && !(nested instanceof RecordDeclaration) && !Manual.isManual(nested.resolveBinding().getErasure().getQualifiedName())) {
 				emitTopLevelClass(nested, out);
 			}
 		}
@@ -227,7 +240,7 @@ final class ClassEmitter {
 			for (IMethodBinding m : iface.getDeclaredMethods()) {
 				// An abstract class leaving an interface method to its subclasses still has to satisfy
 				// the Go interface itself (its default forwarders pass `this`): a panicking stub.
-				boolean abstractGap = !type.isInterface() && Modifier.isAbstract(type.getModifiers())
+				boolean abstractGap = !type.isInterface() && !type.isEnum() && Modifier.isAbstract(type.getModifiers())
 						&& Modifier.isAbstract(m.getModifiers()) && !Modifier.isStatic(m.getModifiers());
 				if (!Modifier.isDefault(m.getModifiers()) && !abstractGap || !seen.add(m.getName() + TypeModel.signature(m))) continue;
 				if (!type.isInterface() && implementsIn(type, m) || abstractGap && declaresIn(type, m)) continue;
@@ -266,7 +279,7 @@ final class ClassEmitter {
 		return false;
 	}
 
-	private Set<String> collectMethodGoNames(TypeDeclaration td) {
+	Set<String> collectMethodGoNames(AbstractTypeDeclaration td) {
 		Set<String> s = new HashSet<>();
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
@@ -276,7 +289,7 @@ final class ClassEmitter {
 		return s;
 	}
 
-	private void emitStructFields(FieldDeclaration fd, Set<String> methodGoNames, StringBuilder out) {
+	void emitStructFields(FieldDeclaration fd, Set<String> methodGoNames, StringBuilder out) {
 		boolean pub = Modifier.isPublic(fd.getModifiers());
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
@@ -293,7 +306,7 @@ final class ClassEmitter {
 		}
 	}
 
-	private void emitStaticFields(FieldDeclaration fd, TypeModel.ClassInfo ci, StringBuilder out) {
+	void emitStaticFields(FieldDeclaration fd, TypeModel.ClassInfo ci, StringBuilder out) {
 		boolean isFinal = Modifier.isFinal(fd.getModifiers()) || ci.isInterface;
 		for (Object o : fd.fragments()) {
 			VariableDeclarationFragment f = (VariableDeclarationFragment) o;
@@ -357,7 +370,7 @@ final class ClassEmitter {
 	// the class, after the Display exists; Go's init() runs before main. It runs at the first constructor call instead.
 	static final Set<String> LAZY_STATIC_BLOCKS = Set.of("org.eclipse.swt.dnd.Clipboard");
 
-	private void emitStaticInitBlock(Initializer init) {
+	void emitStaticInitBlock(Initializer init) {
 		emitter.currentReturnType = null;
 		if (LAZY_STATIC_BLOCKS.contains(emitter.currentClassInfo.binding.getErasure().getQualifiedName())
 				&& dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.GTK) {
@@ -370,7 +383,12 @@ final class ClassEmitter {
 
 	// ---------------------------------------------------------------- methods
 
-	private void emitInstanceMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+	void emitInstanceMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+		emitInstanceMethod(md, ci, out, "");
+	}
+
+	/** guard: Go lines placed first in the body (an enum's dispatch to a constant body's func field). */
+	void emitInstanceMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out, String guard) {
 		IMethodBinding mb = md.resolveBinding();
 		String javaName = md.getName().getIdentifier();
 		String base = Names.javaMethodBaseGoName(javaName);
@@ -395,7 +413,7 @@ final class ClassEmitter {
 		String ret = emitter.retType(sigSource);
 		out.append("func (this *").append(ci.goTypeName).append(") ").append(goName)
 				.append('(').append(params).append(") ")
-				.append(ret).append(" {\n");
+				.append(ret).append(" {\n").append(guard);
 		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
 		emitter.currentReturnType = sigSource.getReturnType();
 		out.append(emitter.block(md.getBody(), 1));
@@ -440,7 +458,7 @@ final class ClassEmitter {
 		out.append("}\n\n");
 	}
 
-	private void emitStaticMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
+	void emitStaticMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
 		String goName = staticMethodGoName(mb, ci);
 		List<String> pubPrelude = new ArrayList<>();

@@ -26,14 +26,57 @@ func NewEnums() *Enums {
 func (this *Enums) initEnums() {
 }
 
-func (this *Enums) Code(c unsupported_type_fixture_Enums_Color) int32 {
+func (this *Enums) Code(c *Enums_Color) int32 {
 	switch c {
-	case func() any { panic("j2go: unresolved static field RED") }():
+	case EnumsColorRED:
 		return 1
-	case func() any { panic("j2go: unresolved static field GREEN") }():
+	case EnumsColorGREEN:
 		return 2
 	default:
 		return 3
 	}
+}
+
+type Enums_Color struct {
+	enumName string
+	enumOrdinal int32
+}
+
+func (this *Enums_Color) Name() string { return this.enumName }
+
+func (this *Enums_Color) Ordinal() int32 { return this.enumOrdinal }
+
+func (this *Enums_Color) CompareTo(o *Enums_Color) int32 { return this.enumOrdinal - o.enumOrdinal }
+
+func (this *Enums_Color) String() string { return this.enumName }
+
+var EnumsColorRED = newEnumsColor("RED", 0)
+
+var EnumsColorGREEN = newEnumsColor("GREEN", 1)
+
+var EnumsColorBLUE = newEnumsColor("BLUE", 2)
+
+var enumsColorValues = []*Enums_Color{EnumsColorRED, EnumsColorGREEN, EnumsColorBLUE}
+
+func EnumsColorValues() []*Enums_Color {
+	return append([]*Enums_Color(nil), enumsColorValues...)
+}
+
+func EnumsColorValueOf(name string) *Enums_Color {
+	for _, v := range enumsColorValues {
+		if v.enumName == name {
+			return v
+		}
+	}
+	panic(jrt.NewIllegalArgumentException("No enum constant fixture.Enums.Color." + name))
+}
+
+func newEnumsColor(enumName string, enumOrdinal int32) *Enums_Color {
+	this := &Enums_Color{enumName: enumName, enumOrdinal: enumOrdinal}
+	this.initEnumsColor()
+	return this
+}
+
+func (this *Enums_Color) initEnumsColor() {
 }
 

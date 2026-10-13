@@ -18,6 +18,8 @@ public class TypeModel {
 		public ClassInfo superclass;
 		public ClassInfo root;
 		public boolean isInterface;
+		/** A Java enum: a pointer singleton per constant (README "Enums"). */
+		public boolean isEnum;
 		// Go package this class lands in (GoTypes.goPackageOf) - qualifies a reference from
 		// a different Go package (e.g. swt calling into cocoa).
 		public String javaPackage;
@@ -291,7 +293,8 @@ public class TypeModel {
 		for (ITypeBinding anon : anonymous) {
 			ITypeBinding base = anon.getSuperclass();
 			ClassInfo baseCi = base == null ? null : byBinaryName.get(base.getErasure().getBinaryName());
-			if (baseCi == null || !baseCi.root.hasImpl() && !baseCi.root.splitsDispatch()) continue;
+			// An enum constant body is not an impl cascade: EnumEmitter keeps it in func fields.
+			if (baseCi == null || baseCi.isEnum || !baseCi.root.hasImpl() && !baseCi.root.splitsDispatch()) continue;
 			for (ClassInfo ci = baseCi; ci != null; ci = ci.superclass) {
 				for (IMethodBinding m : anon.getDeclaredMethods()) {
 					String sig = signature(m);
@@ -410,7 +413,7 @@ public class TypeModel {
 			if (c.goPackage.equals("swt") || c.goPackage.equals("jface") || c.goPackage.equals("browser")) swtTypeNames.add(c.goPackage + "." + c.goTypeName);
 		}
 		for (ClassInfo ci : byBinaryName.values()) {
-			if (!(ci.goPackage.equals("swt") || ci.goPackage.equals("jface") || ci.goPackage.equals("browser")) || ci.isInterface || ci.isStruct) continue;
+			if (!(ci.goPackage.equals("swt") || ci.goPackage.equals("jface") || ci.goPackage.equals("browser")) || ci.isInterface || ci.isStruct || ci.isEnum) continue;
 			String as = "As" + ci.goTypeName;
 			for (IMethodBinding mb : ci.declaredMethods.values()) {
 				if (names.goMemberName(mb, Names.javaMethodBaseGoName(mb.getName())).equals(as)) {
@@ -456,6 +459,10 @@ public class TypeModel {
 	}
 
 	private void collect(AbstractTypeDeclaration decl, Names names) {
+		if (decl instanceof EnumDeclaration || decl instanceof AnnotationTypeDeclaration) {
+			collectEnumOrAnnotation(decl, names);
+			return;
+		}
 		if (!(decl instanceof TypeDeclaration td)) return;
 		ITypeBinding binding = td.resolveBinding();
 		if (Manual.isManual(binding.getErasure().getQualifiedName())) return; // hand-written nested class
@@ -485,7 +492,7 @@ public class TypeModel {
 					ci.declaredMethodNames.add(md.getName().getIdentifier());
 					ci.declaredMethods.put(signature(mb), mb);
 				}
-			} else if (o instanceof TypeDeclaration nested) {
+			} else if (o instanceof AbstractTypeDeclaration nested) {
 				collect(nested, names);
 			}
 		}
@@ -506,5 +513,38 @@ public class TypeModel {
 		// Only the cocoa C-struct mirrors (NSRect, ...) are Go value types; an swt data class
 		// (DeviceData) is nullable in Java and stays a pointer.
 		ci.isStruct = !ci.isInterface && superIsObject && onlyToString && GoTypes.isStructPackage(ci.javaPackage);
+	}
+
+	/** An enum or @interface: plain ClassInfo with the declared methods and constructors registered; nested types too. */
+	private void collectEnumOrAnnotation(AbstractTypeDeclaration decl, Names names) {
+		ITypeBinding binding = decl.resolveBinding();
+		if (binding == null || Manual.isManual(binding.getErasure().getQualifiedName())) return;
+		ClassInfo ci = new ClassInfo();
+		ci.binding = binding;
+		ci.binaryName = binding.getErasure().getBinaryName();
+		ci.goTypeName = Names.goTypeName(binding);
+		ci.goFuncPrefix = Names.goFuncPrefix(binding);
+		ci.isEnum = decl instanceof EnumDeclaration;
+		ci.isInterface = !ci.isEnum;
+		ci.javaPackage = binding.getPackage() == null ? "" : binding.getPackage().getName();
+		ITypeBinding top = binding;
+		while (top.getDeclaringClass() != null) top = top.getDeclaringClass();
+		ci.goPackage = GoTypes.goPackageOf(ci.javaPackage, top.getName());
+		byBinaryName.put(ci.binaryName, ci);
+		for (Object o : decl.bodyDeclarations()) {
+			if (o instanceof MethodDeclaration md) {
+				IMethodBinding mb = md.resolveBinding();
+				if (mb == null) continue;
+				List<String> paramNames = new ArrayList<>();
+				for (Object p : md.parameters()) paramNames.add(((SingleVariableDeclaration) p).getName().getIdentifier());
+				names.registerDeclaration(mb, paramNames);
+				if (!md.isConstructor() && !Modifier.isStatic(md.getModifiers())) {
+					ci.declaredMethodNames.add(md.getName().getIdentifier());
+					ci.declaredMethods.put(signature(mb), mb);
+				}
+			} else if (o instanceof AbstractTypeDeclaration nested) {
+				collect(nested, names);
+			}
+		}
 	}
 }

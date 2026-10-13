@@ -124,6 +124,14 @@ into one (named after the last segment of the common Java package prefix, `merge
 name) and dirs ending in the same name are renamed (parent prefix, else `_2`); both are reported on stderr.
 Edges come from type bindings, so a reference spelled without one is not seen. Helper funcs are generated once per Go package.
 
+`$` in a Java identifier (`this$id`, `$id` from delombok'd `@EqualsAndHashCode`, `a$b`, a lone `$`) is renamed in the Java source before
+parsing (`SourcePrep.dollarMap`, one name per identifier across all non-SWT files, so declaration and use agree in every file and package):
+a leading `$` becomes `d_` (`D_` before an uppercase letter), other `$` become `_`, a result that already occurs in the sources or was handed out
+gets `_` appended (`a$b` next to `a_b` is `a_b_`), in sorted order, so the output is deterministic. The first letter, not the `$`, then decides Go
+export by the usual visibility rule: `public int $pub` is `D_pub`, `public int pub$` is `Pub_`, private ones stay lower case. Applies to files
+outside the SWT roots (absolute paths, `--src` roots); SWT sources are not touched. Ceilings: a public top-level type whose name has a `$` keeps
+its file name and fails binding; a `$` member of a classpath class (not in the sources) is not renamed. Test: `testdata/dollar`.
+
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
 "Multiple Go packages" and "Round 10 controlexample" below).
@@ -3423,3 +3431,43 @@ was the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption ne
   test resource (`testWebsiteWithTitle.html`; the Browser tests that load a local page panicked on the nil stream).
 - **Linux result** (Xvfb, full gate, passed / failed / skipped of 3901): 3808 / 34 / 59 with the old `os.name`, 3808 / 38 / 55 with the new one (the
   Linux-only Browser URL and POST tests now run; StyledText's caret test is skipped as upstream), 3811 / 35 / 55 with the HTML resource.
+
+## Enums, @interface and records outside SWT (TSK-2026-10-10-any2go-toolkit-22)
+
+SWT has no enum j2go translates (`RoundingMode`, `AutoscalingMode`, `Display.APPEARANCE` are hand-written, `Selector` is elided above), so the rules below
+are not gated: `make gen-check` is byte-identical on cocoa, gtk and win32 with them on. A top-level or nested `enum`/`@interface` now gets a
+`TypeModel.ClassInfo` (`isEnum`, `isAnnotation`) and is emitted by `EnumEmitter`; before, `--keep-going` skipped the file and every use became
+`unsupported_type_*`.
+
+**Object model: a pointer singleton per constant.** `type Op struct { enumName string; enumOrdinal int32; <Java fields>; fn<M> func(...) }`, one
+`var OpPLUS = newOp("PLUS", 0, args...)` per constant, `*Op` as the value type. Chosen over `type Op int32` + `iota` because it is how every other
+j2go class is shaped (pointer, fields, methods, constructors with overloads, interfaces by method set), a Java enum is nullable like the pointer, `==`
+and `switch` compare identity as Java does, map keys and `Set`s work unchanged, and constant bodies need no lookup table. The cost is a heap object per
+constant and no compile-time exhaustiveness.
+
+- Members: `Name()`, `Ordinal()`, `CompareTo(o)`, `String()` (the name, unless the enum declares `toString`), static `OpValues()` (a copy), `OpValueOf(name)`
+  (panics with `IllegalArgumentException` like Java). A public Java field that spells one of those Go names gets the usual `_` suffix.
+  Calls to `name()/ordinal()/compareTo/equals/hashCode/toString` on an enum-typed receiver are mapped in `JdkIntrinsics.enumCall`; `equals` is `any(a) == any(b)`, which compiles for any argument type.
+- Constructors are `new<Op>(enumName, enumOrdinal, params...)` plus `init<Op>`, so `this(...)` and overloads work as in classes. Static fields, static
+  blocks, nested types and interface default forwarders are the ordinary class rules.
+- `switch (c) { case RED: ... }` and `case RED ->` emit `case OpRED:` (the static field name), nothing enum-specific.
+- **Constant bodies** are func fields on the enum struct, not an impl cascade: for each method some body overrides, `Op` gets `fn<M>` and the method
+  starts with `if this.fn<M> != nil { return this.fn<M>(args) }`, then the enum's own body (or `panic("j2go: abstract M")`). The constant is built in a
+  closure that assigns the func literals; `this` in a body is the closure's `this`. Ceiling: a body method that overrides nothing, a field or a nested
+  type in a body is reported as `EnumConstantBody:` unsupported and skipped; `super.m()` in a body has no target; `TypeModel` does not count an enum
+  constant body as an anonymous cascade subclass.
+- `EnumSet` and `EnumMap` are not in jrt, so they degrade as any other JDK type; the unresolved-call marker says so (task 25).
+- **@interface** is emitted as a Go interface of its members, no instances (`type Marker interface { Value() string; Ids() []int32 }`), so a type
+  reference compiles. Annotation uses stay dropped, defaults and retention are not modeled: that is task 23.
+- **Records.** Top-level and nested records were already rewritten into final classes by `SourcePrep`, but only for files under the SWT source roots. A
+  `--src` root is now mirrored the same way, and a file named by absolute path outside every root gets a one-file mirror (header and `unhoist` map back
+  to the real path through `mirrorToReal`). For these non-SWT files the rewrite also adds Java's value `equals`, `hashCode` (31-based over the
+  components) and `toString` (`P[x=1, y=2]`) unless the body declares them, so they are ordinary `Equals`/`HashCode`/`String` methods and `jrt.Map` keys
+  match. SWT's own records (win32) are unchanged. Tests: `testdata/records-absolute`, `records-external` (+ `behavior/`).
+- **Static init order (ceiling).** Go orders package vars by dependency, Java runs the constants first and the statics after in text order. A constructor
+  that reads a static (`static int count = 5;` read through a method) sees the initialized value in Go and the default in Java. Fixing it needs a
+  deferred `init()` for all enum statics; not done.
+
+Tests: `testdata/enums` (fields, constructor, interface, switch, `valueOf`, `values`, `compareTo`, `equals`), `enum-bodies`, `annotations`, `switch`/`enumcycle`
+(existing, outputs now use the enum type). The nested rules use `args` with a `cfg/packages.txt` so the output is a non-SWT module; it was also built
+and run (`go test` of `testdata/<rule>/behavior/*_test.go`, copied next to the output) in a temp module against any2go's jrt.

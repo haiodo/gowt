@@ -397,6 +397,19 @@ if [ "$PLATFORM" = cocoa ]; then
 	grep -qF 'frameFromContentFrame(widget, newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa invalidateVisibleRegion_ enumerates native subviews to reset visibleRgn caches that mostly do not exist. The manual file
+# (widgets_visibleregion_manual_darwin.go) keeps visibleRgnHolders, the controls whose subtree may hold a region, so the walk
+# can skip clean subtrees. Every visibleRgn allocation, free and reparent below keeps it in step.
+if [ "$PLATFORM" = cocoa ]; then
+	VR_CTL=swt/widgets_control_darwin.go
+	VR_SHELL=swt/widgets_shell_darwin.go
+	VR_COMP=swt/widgets_composite_darwin.go
+	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tmarkVisibleRgn)/$1\t\tmarkVisibleRgn(this)\n/; s/(func \(this \*Control\) releaseWidget_\(\)\s*\{\n)(?!\tforgetVisibleRgn)/$1\tforgetVisibleRgn(this)\n/; s/(\tthis\.parent = parent\n)(\tthis\.impl\.reskin_\(ALL\)\n)/$1\tmarkVisibleRgnReparent(this)\n$2/; s/(func \(this \*Control\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastCompositeToControl(this.parent)) {\n\t\treturn\n\t}\n/; s/(\t\tsibling\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(?!\t\tclearVisibleRgn)/$1\t\tclearVisibleRgn(sibling)\n/; s/(\tthis\.parent\.impl\.resetVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Control\) isActive_)/$1\tif index == 0 {\n\t\tclearVisibleRgn(upcastCompositeToControl(this.parent))\n\t}\n$2/' "$VR_CTL"
+	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastShellToControl(this)) {\n\t\treturn\n\t}\n/; s/(\tthis\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Shell\) isDrawing_)/$1\tclearVisibleRgn(upcastShellToControl(this))\n$2/' "$VR_SHELL"
+	perl -0pi -e 's/func \(this \*Composite\) invalidateChildrenVisibleRegion_\(\)\s*\{\n\tvar children \[\]\*Control = this\._getChildren\(\)\n\tfor i := int32\(0\); i < int32\(len\(children\)\); i\+\+ \{\n\t\tvar child \*Control = children\[i\]\n\t\tchild\.impl\.resetVisibleRegion_\(\)\n\t\tchild\.impl\.invalidateChildrenVisibleRegion_\(\)\n\t\}\n\}\n/func (this *Composite) invalidateChildrenVisibleRegion_() {\n\tif visibleRegionsIdle(upcastCompositeToControl(this)) {\n\t\treturn\n\t}\n\tvar children []*Control = this._getChildren()\n\tfor i := int32(0); i < int32(len(children)); i++ {\n\t\tvar child *Control = children[i]\n\t\tif visibleRegionsIdle(child) {\n\t\t\tcontinue\n\t\t}\n\t\tchild.impl.resetVisibleRegion_()\n\t\tchild.impl.invalidateChildrenVisibleRegion_()\n\t\tclearVisibleRgn(child)\n\t}\n}\n/' "$VR_COMP"
+	[ "$(grep -c 'markVisibleRgn(this)' "$VR_CTL")" = 1 ] && [ "$(grep -c 'forgetVisibleRgn' "$VR_CTL")" = 1 ] && [ "$(grep -c 'markVisibleRgnReparent' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_CTL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_CTL")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_COMP")" = 2 ] || { echo "port.sh: visibleRgn holder rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

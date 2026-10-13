@@ -37,13 +37,13 @@ final class PackageQualifier {
 	String qualifyManual(String goType, ITypeBinding t) {
 		if (goType.contains(".") || !Character.isUpperCase(goType.charAt(0))) return goType; // jrt.X, any, error
 		String home = GoTypes.goPackageOf(t.getPackage().getName(), t.getErasure().getName());
-		if (home.equals(emitter.currentGoPackage) || GoTypes.layer(home) >= GoTypes.layer(emitter.currentGoPackage)) return goType;
+		if (home.equals(emitter.currentGoPackage) || GoTypes.layered() && GoTypes.layer(home) >= GoTypes.layer(emitter.currentGoPackage)) return goType;
 		return packagePrefix(home) + goType;
 	}
 
 	private String packagePrefix(String targetGoPackage) {
 		if (targetGoPackage.equals(emitter.currentGoPackage)) return "";
-		if (GoTypes.layer(targetGoPackage) > GoTypes.layer(emitter.currentGoPackage)) {
+		if (GoTypes.layered() && GoTypes.layer(targetGoPackage) > GoTypes.layer(emitter.currentGoPackage)) {
 			System.err.println("j2go: guard violated: " + emitter.currentGoPackage + " file " + emitter.currentJavaPackage
 					+ " must not reference a " + targetGoPackage + " type");
 			System.exit(1);

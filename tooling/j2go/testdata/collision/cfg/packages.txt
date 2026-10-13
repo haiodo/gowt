@@ -1,0 +1,3 @@
+module example.com/app
+map fixture.x.model x/model
+map fixture.y.model y/model

@@ -1,0 +1,4 @@
+--config
+${rule}/cfg
+--runtime-import
+example.com/rt/jrt

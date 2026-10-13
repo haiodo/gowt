@@ -46,16 +46,20 @@ class GoldenTest {
 		List<String> cmd = new ArrayList<>(List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
 				"-cp", System.getProperty("java.class.path"), "dev.gowt.j2go.Main", "--swt", src.toString(), "--out", out.toString()));
 		// An optional args file holds extra j2go flags for the rule, one per line.
-		if (Files.exists(rule.resolve("args"))) cmd.addAll(Files.readAllLines(rule.resolve("args")));
+		// ${rule} is the rule's absolute directory.
+		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString())));
 		for (String n : names) cmd.add("fixture/" + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();
 		String log = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 		assertEquals(0, p.waitFor(), log);
 
 		Map<String, String> got = new TreeMap<>();
-		Path gen = out.resolve("swt");
-		if (Files.isDirectory(gen)) try (Stream<Path> s = Files.list(gen)) {
-			for (Path f : (Iterable<Path>) s::iterator) got.put(f.getFileName().toString(), Files.readString(f, StandardCharsets.UTF_8));
+		// Keyed by path under out/; swt/ is the default package dir, kept flat as before, other dirs get "/" replaced by "__".
+		if (Files.isDirectory(out)) try (Stream<Path> s = Files.walk(out)) {
+			for (Path f : (Iterable<Path>) s.filter(Files::isRegularFile)::iterator) {
+				String key = out.relativize(f).toString().replaceFirst("^swt/", "").replace("/", "__");
+				got.put(key, Files.readString(f, StandardCharsets.UTF_8));
+			}
 		}
 		if (Boolean.getBoolean("j2go.update")) {
 			if (Files.isDirectory(want)) try (Stream<Path> s = Files.list(want)) { for (Path f : (Iterable<Path>) s::iterator) Files.delete(f); }

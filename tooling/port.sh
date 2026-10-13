@@ -388,6 +388,15 @@ CE_OLD='scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAU
 grep -qF "$CE_OLD" "$CE_GO" || grep -qF 'ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false)' "$CE_GO" || { echo "port.sh: ControlExample resize listener not found in $CE_GO" >&2; exit 1; }
 CE_OLD="$CE_OLD" perl -0pi -e 's/\Q$ENV{CE_OLD}\E/scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))/' "$CE_GO"
 
+# Group.computeTrim (cocoa) re-measures the NSBox natively on each layout; swt/widgets_group_manual_darwin.go caches the
+# frame-minus-content offset by title text and font. The Java body cannot be split out via manual.txt, so the block is rewritten.
+if [ "$PLATFORM" = cocoa ]; then
+	GROUP_GO=swt/widgets_group_darwin.go
+	grep -qF 'newRect = this.frameFromContentFrame(widget, newRect)' "$GROUP_GO" || grep -qF 'widget.SetFrameFromContentFrame(newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim not found in $GROUP_GO" >&2; exit 1; }
+	perl -0pi -e 's/\tvar oldRect cocoa\.NSRect = widget\.Frame\(\)\n\tthis\.ignoreResize = true\n\twidget\.SetFrameFromContentFrame\(newRect\)\n\tnewRect = widget\.Frame\(\)\n\twidget\.SetFrame\(oldRect\)\n\tthis\.ignoreResize = false\n/\tnewRect = this.frameFromContentFrame(widget, newRect)\n/' "$GROUP_GO"
+	grep -qF 'frameFromContentFrame(widget, newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

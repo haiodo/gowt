@@ -54,12 +54,7 @@ func (this *Group) computeTrim_(x int32, y int32, width int32, height int32) *Re
 	newRect.Y = float64(y)
 	newRect.Width = float64(width)
 	newRect.Height = float64(height)
-	var oldRect cocoa.NSRect = widget.Frame()
-	this.ignoreResize = true
-	widget.SetFrameFromContentFrame(newRect)
-	newRect = widget.Frame()
-	widget.SetFrame(oldRect)
-	this.ignoreResize = false
+	newRect = this.frameFromContentFrame(widget, newRect)
 	x = int32(math.Ceil(float64(newRect.X))) - this.hMargin
 	y = int32(math.Ceil(float64(newRect.Y))) - this.vMargin
 	width = int32(math.Ceil(float64(newRect.Width))) + (this.hMargin * 2)

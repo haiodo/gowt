@@ -397,6 +397,16 @@ if [ "$PLATFORM" = cocoa ]; then
 	grep -qF 'frameFromContentFrame(widget, newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa invalidateVisibleRegion_ walks native subviews to reset visibleRgn caches; visibleRegionsIdle (widgets_visibleregion_manual_darwin.go)
+# skips it when no Control holds a region. Every visibleRgn allocation and free below keeps visibleRgnCount in step.
+if [ "$PLATFORM" = cocoa ]; then
+	VR_CTL=swt/widgets_control_darwin.go
+	VR_SHELL=swt/widgets_shell_darwin.go
+	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tvisibleRgnCount\+\+)/$1\t\tvisibleRgnCount++\n/; s/(\tif this\.visibleRgn != 0 \{\n\t\tcocoa\.OSDisposeRgn\(this\.visibleRgn\)\n)(?!\t\tvisibleRgnCount--)/$1\t\tvisibleRgnCount--\n/g; s/(func \(this \*Control\) invalidateVisibleRegion_\(\) \{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_CTL"
+	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\) \{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_SHELL"
+	[ "$(grep -c 'visibleRgnCount++' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRgnCount--' "$VR_CTL")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL")" = 1 ] || { echo "port.sh: visibleRgn counter rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

@@ -876,6 +876,9 @@ func (this *Shell) helpRequested_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Shell) invalidateVisibleRegion_() {
+	if visibleRegionsIdle(this.display) {
+		return
+	}
 	this.impl.resetVisibleRegion_()
 	if this.toolBar != (nil) {
 		this.toolBar.impl.resetVisibleRegion_()

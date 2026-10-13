@@ -1546,6 +1546,7 @@ func (this *Control) GetVisible() bool {
 func (this *Control) GetVisibleRegion() int64 {
 	if this.visibleRgn == 0 {
 		this.visibleRgn = cocoa.OSNewRgn()
+		visibleRgnCount++
 		this.CalculateVisibleRegion(this.View, this.visibleRgn, true)
 	}
 	var result int64 = cocoa.OSNewRgn()
@@ -1740,6 +1741,9 @@ func (this *Control) InvalidateVisibleRegion() {
 }
 
 func (this *Control) invalidateVisibleRegion_() {
+	if visibleRegionsIdle(this.display) {
+		return
+	}
 	var index int32 = 0
 	var siblings []*Control = this.parent._getChildren()
 	for index < int32(len(siblings)) && siblings[index] != this {
@@ -2433,6 +2437,7 @@ func (this *Control) releaseWidget_() {
 	this.menu = nil
 	if this.visibleRgn != 0 {
 		cocoa.OSDisposeRgn(this.visibleRgn)
+		visibleRgnCount--
 	}
 	this.visibleRgn = int64(0)
 	this.layoutData = nil
@@ -2633,6 +2638,7 @@ func (this *Control) ResetVisibleRegion() {
 func (this *Control) resetVisibleRegion_() {
 	if this.visibleRgn != 0 {
 		cocoa.OSDisposeRgn(this.visibleRgn)
+		visibleRgnCount--
 		this.visibleRgn = int64(0)
 	}
 	var gcs []*GCData = this.display.contexts

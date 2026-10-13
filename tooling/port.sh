@@ -402,8 +402,8 @@ fi
 if [ "$PLATFORM" = cocoa ]; then
 	VR_CTL=swt/widgets_control_darwin.go
 	VR_SHELL=swt/widgets_shell_darwin.go
-	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tvisibleRgnCount\+\+)/$1\t\tvisibleRgnCount++\n/; s/(\tif this\.visibleRgn != 0 \{\n\t\tcocoa\.OSDisposeRgn\(this\.visibleRgn\)\n)(?!\t\tvisibleRgnCount--)/$1\t\tvisibleRgnCount--\n/g; s/(func \(this \*Control\) invalidateVisibleRegion_\(\) \{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_CTL"
-	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\) \{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_SHELL"
+	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tvisibleRgnCount\+\+)/$1\t\tvisibleRgnCount++\n/; s/(\tif this\.visibleRgn != 0 \{\n\t\tcocoa\.OSDisposeRgn\(this\.visibleRgn\)\n)(?!\t\tvisibleRgnCount--)/$1\t\tvisibleRgnCount--\n/g; s/(func \(this \*Control\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_CTL"
+	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(this.display) {\n\t\treturn\n\t}\n/' "$VR_SHELL"
 	[ "$(grep -c 'visibleRgnCount++' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRgnCount--' "$VR_CTL")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL")" = 1 ] || { echo "port.sh: visibleRgn counter rewrite did not apply" >&2; exit 1; }
 fi
 

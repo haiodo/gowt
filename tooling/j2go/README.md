@@ -119,7 +119,10 @@ model-only Java stub roots; default `<config>/stubs`), `--runtime-import` (defau
 the header: without it the output is gowt's (`swt/`, `github.com/haiodo/gowt/...`, `@ af630a9093`, `gowt:`
 in the stderr text). Directives: `module`, `class`, `map` (`pkg.*`, `{sub}`, `{flat}`), `default`, `commit`,
 `message-prefix`, optional `layer=N`; see `Profile.java` and `testdata/packages/cfg/packages.txt`.
-Without `commit` the header has no revision; two packages whose dirs end in the same name collide.
+Without `commit` the header has no revision. Go packages that reference each other in a cycle are merged
+into one (named after the last segment of the common Java package prefix, `merge <name> <dir>...` forces a
+name) and dirs ending in the same name are renamed (parent prefix, else `_2`); both are reported on stderr.
+Edges come from type bindings, so a reference spelled without one is not seen. Helper funcs are generated once per Go package.
 
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see

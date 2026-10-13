@@ -23,7 +23,12 @@ public class Emitter {
 	final Natives natives;
 	final Selectors selectors;
 	public final List<String> unsupported = new ArrayList<>();
-	public final Set<String> generatedHelpers = new LinkedHashSet<>();
+	// Helpers are package-level funcs: with a package profile each Go package needs its own copy.
+	public final Set<String> generatedHelpers = new LinkedHashSet<>() {
+		@Override public boolean add(String name) {
+			return super.add(dev.gowt.j2go.Profile.isActive() ? currentGoPackage + ":" + name : name);
+		}
+	};
 
 	Set<String> fileImports;
 	List<String> fileHelperSource;

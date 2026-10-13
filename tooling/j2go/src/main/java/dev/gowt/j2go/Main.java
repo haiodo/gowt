@@ -150,6 +150,7 @@ public class Main {
 			if (!keepGoing) System.exit(1);
 		}
 
+		if (Profile.active != null) Profile.collapse(orderedUnits, absFiles.size());
 		Names names = new Names();
 		names.loadPins(Config.dir.resolve("overloads.properties"));
 		names.loadOverrides(Config.dir.resolve("names.properties"));

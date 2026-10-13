@@ -6,11 +6,11 @@ import "github.com/haiodo/gowt/internal/cocoa"
 
 type groupTrimKey struct {
 	text string
-	font int64
+	font string
 	size float64
 }
 
-// Bounded: distinct (text, font) pairs; cleared wholesale past the limit.
+// Main thread only (cocoa Display), so no lock. Bounded: distinct (text, font) pairs; cleared wholesale past the limit.
 var groupTrims = map[groupTrimKey]cocoa.NSRect{}
 
 const groupTrimsMax = 256
@@ -29,19 +29,24 @@ func cachedFrameFromContent(key groupTrimKey, content cocoa.NSRect, measure func
 	return cocoa.NSRect{X: content.X + d.X, Y: content.Y + d.Y, Width: content.Width + d.Width, Height: content.Height + d.Height}
 }
 
+func (this *Group) measureFrame(widget *cocoa.NSBox, c cocoa.NSRect) cocoa.NSRect {
+	oldRect := widget.Frame()
+	this.ignoreResize = true
+	widget.SetFrameFromContentFrame(c)
+	frame := widget.Frame()
+	widget.SetFrame(oldRect)
+	this.ignoreResize = false
+	return frame
+}
+
 func (this *Group) frameFromContentFrame(widget *cocoa.NSBox, content cocoa.NSRect) cocoa.NSRect {
 	key := groupTrimKey{text: this.text}
+	// A native id can be reused after the font is released; the name cannot.
 	if f := widget.TitleFont(); f != nil {
-		key.font = f.Id
+		if n := f.FontName(); n != nil {
+			key.font = n.GetString()
+		}
 		key.size = f.PointSize()
 	}
-	return cachedFrameFromContent(key, content, func(c cocoa.NSRect) cocoa.NSRect {
-		oldRect := widget.Frame()
-		this.ignoreResize = true
-		widget.SetFrameFromContentFrame(c)
-		frame := widget.Frame()
-		widget.SetFrame(oldRect)
-		this.ignoreResize = false
-		return frame
-	})
+	return cachedFrameFromContent(key, content, func(c cocoa.NSRect) cocoa.NSRect { return this.measureFrame(widget, c) })
 }

@@ -5,7 +5,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 	"runtime"
+	"runtime/pprof"
 
 	"github.com/haiodo/gowt/examples/controlexample"
 	"github.com/haiodo/gowt/swt"
@@ -39,6 +42,15 @@ func main() {
 	if *resizeSteps > 0 {
 		resizeBench(display, shell, *resizeSteps)
 		shell.Dispose()
+	} else if path := os.Getenv("GOWT_PROFILE"); path != "" {
+		// Interactive run: profile everything until the window closes (manual drag-resize).
+		if f, err := os.Create(path); err != nil {
+			fmt.Fprintln(os.Stderr, "GOWT_PROFILE:", err)
+		} else if err := pprof.StartCPUProfile(f); err != nil {
+			fmt.Fprintln(os.Stderr, "GOWT_PROFILE:", err)
+		} else {
+			defer func() { pprof.StopCPUProfile(); f.Close() }()
+		}
 	}
 	for !shell.IsDisposed() {
 		if snapTick != nil {

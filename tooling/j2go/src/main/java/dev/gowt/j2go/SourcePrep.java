@@ -5,7 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -18,36 +24,101 @@ final class SourcePrep {
 	private SourcePrep() {}
 
 	/** Copies the .java files of root that contain a record, rewritten, into mirror; true if any. */
-	static boolean mirror(Path root, Path mirror) throws IOException {
+	static boolean mirror(Path root, Path mirror, Map<String, String> dollars) throws IOException {
 		boolean any = false;
 		try (Stream<Path> files = Files.walk(root)) {
 			for (Path f : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".java"))::iterator) {
-				any |= mirrorFile(f, mirror.resolve(root.relativize(f)));
+				any |= mirrorFile(f, mirror.resolve(root.relativize(f)), dollars);
 			}
 		}
 		return any;
 	}
 
-	/** Writes the rewritten file to dst when the rewrite changes it; true if it did. */
-	static boolean mirrorFile(Path f, Path dst) throws IOException {
+	/** dollars null = an SWT file (rewritten as before); else a non-SWT file: '$' identifiers renamed per the map, records get value methods. */
+	static boolean mirrorFile(Path f, Path dst, Map<String, String> dollars) throws IOException {
 		String text = Files.readString(f, StandardCharsets.UTF_8);
-		if (!text.contains("record ") && !text.contains("class ")) return false;
-		String out = hoistLocalClasses(desugar(anonymizeLocalClasses(text)));
+		String out = prepare(text, dollars, true);
 		if (out.equals(text)) return false;
 		Files.createDirectories(dst.getParent());
 		Files.writeString(dst, out, StandardCharsets.UTF_8);
 		return true;
 	}
 
+	private static String prepare(String text, Map<String, String> dollars, boolean hoist) {
+		if (!text.contains("record ") && !text.contains("class ") && (dollars == null || !text.contains("$"))) return text;
+		String src = dollars == null ? text : mapIdents(text, id -> dollars.getOrDefault(id, id));
+		src = desugar(anonymizeLocalClasses(src), dollars != null);
+		return hoist ? hoistLocalClasses(src) : src;
+	}
+
 	/** Rewrites a mirror file without hoisting; true if that changed it. */
-	static boolean unhoist(Path mirrorFile, Path realFile) throws IOException {
-		String plain = desugar(anonymizeLocalClasses(Files.readString(realFile, StandardCharsets.UTF_8)));
+	static boolean unhoist(Path mirrorFile, Path realFile, Map<String, String> dollars) throws IOException {
+		String plain = prepare(Files.readString(realFile, StandardCharsets.UTF_8), dollars, false);
 		if (plain.equals(Files.readString(mirrorFile, StandardCharsets.UTF_8))) return false;
 		Files.writeString(mirrorFile, plain, StandardCharsets.UTF_8);
 		return true;
 	}
 
-	static String desugar(String src) {
+	/**
+	 * Go has no '$' in identifiers. Every Java identifier with one gets a Go-safe name before parsing, one
+	 * name per identifier across all files: a leading '$' becomes "d_" ("D_" before an uppercase letter), so the
+	 * first letter, not the '$', decides exported-ness as for any name; other '$' become '_'. A name that
+	 * already occurs in the sources, or was handed out, gets '_' appended. Sorted, so the result is deterministic.
+	 */
+	static Map<String, String> dollarMap(Collection<Path> files) throws IOException {
+		Set<String> all = new HashSet<>();
+		for (Path f : files) mapIdents(Files.readString(f, StandardCharsets.UTF_8), id -> { all.add(id); return id; });
+		Map<String, String> map = new HashMap<>();
+		for (String id : new TreeSet<>(all)) {
+			if (id.indexOf('$') < 0) continue;
+			String name = id.replace('$', '_');
+			if (id.charAt(0) == '$') {
+				boolean upper = id.length() > 1 && Character.isUpperCase(id.charAt(1));
+				name = (upper ? "D_" : "d_") + id.substring(1).replace('$', '_');
+			}
+			while (all.contains(name)) name += "_";
+			all.add(name);
+			map.put(id, name);
+		}
+		return map;
+	}
+
+	/** Applies f to every identifier token of Java source, outside comments, string, text block and char literals. */
+	static String mapIdents(String src, java.util.function.UnaryOperator<String> f) {
+		StringBuilder b = new StringBuilder(src.length());
+		int i = 0, n = src.length();
+		while (i < n) {
+			char c = src.charAt(i);
+			int end = i + 1;
+			if (src.startsWith("//", i)) {
+				end = src.indexOf('\n', i);
+			} else if (src.startsWith("/*", i)) {
+				end = src.indexOf("*/", i + 2) + 2;
+			} else if (src.startsWith("\"\"\"", i)) {
+				end = src.indexOf("\"\"\"", i + 3) + 3;
+			} else if (c == '"' || c == '\'') {
+				while (end < n && src.charAt(end) != c) end += src.charAt(end) == '\\' ? 2 : 1;
+				end++;
+			} else if (Character.isDigit(c)) {
+				while (end < n && (Character.isLetterOrDigit(src.charAt(end)) || src.charAt(end) == '_' || src.charAt(end) == '.')) end++;
+			} else if (Character.isJavaIdentifierStart(c)) {
+				while (end < n && Character.isJavaIdentifierPart(src.charAt(end))) end++;
+				b.append(f.apply(src.substring(i, end)));
+				i = end;
+				continue;
+			} else {
+				b.append(c);
+				i++;
+				continue;
+			}
+			if (end <= i || end > n) end = n;
+			b.append(src, i, end);
+			i = end;
+		}
+		return b.toString();
+	}
+
+	static String desugar(String src, boolean valueMethods) {
 		StringBuilder out = new StringBuilder();
 		StringBuilder hoisted = new StringBuilder();
 		int pos = 0;
@@ -93,6 +164,7 @@ final class SourcePrep {
 				if (Pattern.compile("\\b" + c[1] + "\\s*\\(\\s*\\)\\s*\\{").matcher(body).find()) continue;
 				rec.append(m.group(1)).append("\tpublic ").append(c[0]).append(' ').append(c[1]).append("() { return ").append(c[1]).append("; }\n");
 			}
+			if (valueMethods) rec.append(valueMethods(m.group(1), m.group(3), m.group(4), comps, body));
 			rec.append(body).append(m.group(1)).append("}");
 			if (local) hoisted.append("\n\t").append(rec.toString().strip()).append("\n");
 			else out.append(rec);
@@ -101,6 +173,48 @@ final class SourcePrep {
 		out.append(src.substring(pos));
 		if (hoisted.length() > 0) out.insert(out.lastIndexOf("}"), hoisted);
 		return out.toString();
+	}
+
+	/** equals, hashCode and toString of a record (JLS 8.10.3 / Record's contract), unless the body declares them. */
+	private static String valueMethods(String ind, String name, String typeParams, List<String[]> comps, String body) {
+		StringBuilder b = new StringBuilder();
+		String self = typeParams == null ? name : name + "<?>";
+		if (!Pattern.compile("\\bboolean\\s+equals\\s*\\(").matcher(body).find()) {
+			b.append(ind).append("\t@Override\n").append(ind).append("\tpublic boolean equals(Object o) {\n");
+			b.append(ind).append("\t\tif (this == o) return true;\n").append(ind).append("\t\tif (!(o instanceof ").append(self).append(")) return false;\n");
+			b.append(ind).append("\t\t").append(self).append(" r = (").append(self).append(") o;\n").append(ind).append("\t\treturn true");
+			for (String[] c : comps) {
+				String x = c[1];
+				b.append(switch (c[0]) {
+					case "float" -> " && Float.compare(" + x + ", r." + x + ") == 0";
+					case "double" -> " && Double.compare(" + x + ", r." + x + ") == 0";
+					case "int", "long", "short", "byte", "char", "boolean" -> " && " + x + " == r." + x;
+					default -> " && java.util.Objects.equals(" + x + ", r." + x + ")";
+				});
+			}
+			b.append(";\n").append(ind).append("\t}\n");
+		}
+		if (!Pattern.compile("\\bint\\s+hashCode\\s*\\(").matcher(body).find()) {
+			b.append(ind).append("\t@Override\n").append(ind).append("\tpublic int hashCode() {\n").append(ind).append("\t\tint h = 0;\n");
+			for (String[] c : comps) {
+				String x = c[1];
+				b.append(ind).append("\t\th = 31 * h + ").append(switch (c[0]) {
+					case "int", "short", "byte", "char" -> "(int) " + x;
+					case "boolean" -> "(" + x + " ? 1231 : 1237)";
+					case "long" -> "(int) (" + x + " ^ (" + x + " >>> 32))";
+					case "float" -> "Float.hashCode(" + x + ")";
+					case "double" -> "Double.hashCode(" + x + ")";
+					default -> "(" + x + " == null ? 0 : " + x + ".hashCode())";
+				}).append(";\n");
+			}
+			b.append(ind).append("\t\treturn h;\n").append(ind).append("\t}\n");
+		}
+		if (!Pattern.compile("\\bString\\s+toString\\s*\\(").matcher(body).find()) {
+			b.append(ind).append("\t@Override\n").append(ind).append("\tpublic String toString() {\n").append(ind).append("\t\treturn \"").append(name).append("[\"");
+			for (int k = 0; k < comps.size(); k++) b.append(" + \"").append(k == 0 ? "" : ", ").append(comps.get(k)[1]).append("=\" + ").append(comps.get(k)[1]);
+			b.append(" + \"]\";\n").append(ind).append("\t}\n");
+		}
+		return b.toString();
 	}
 
 	private static final Pattern LOCAL_EXTENDING = Pattern.compile("(?m)^([ \\t]+)(?:final\\s+)?class\\s+(\\w+)\\s+extends\\s+([\\w.]+)\\s*\\{");

@@ -235,7 +235,7 @@ final class JdkIntrinsics {
 			case "ordinal" -> recv(mi) + ".Ordinal()";
 			case "toString" -> recv(mi) + ".String()";
 			case "compareTo" -> recv(mi) + ".CompareTo(" + arg(mi, 0) + ")";
-			case "equals" -> "(" + recv(mi) + " == " + arg(mi, 0) + ")";
+			case "equals" -> "(any(" + recv(mi) + ") == any(" + arg(mi, 0) + "))";
 			case "hashCode" -> jrtCall("IdentityHashCode", recv(mi));
 			default -> null;
 		};

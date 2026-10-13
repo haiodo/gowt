@@ -31,6 +31,10 @@ public class EnumUse {
 
 	boolean same(Level a, Level b) { return a.equals(b); }
 
+	boolean mixed(Level a, Planet p) { return a.equals(p); }
+
+	boolean viaObject(Level a, Object o, Named n) { return a.equals(o) || a.equals(n); }
+
 	int cmp(Level a, Level b) { return a.compareTo(b); }
 
 	String show(Level l) { return l.name() + l.ordinal() + l; }

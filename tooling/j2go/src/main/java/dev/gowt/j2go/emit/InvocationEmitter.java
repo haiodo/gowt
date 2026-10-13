@@ -119,14 +119,16 @@ final class InvocationEmitter {
 
 		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
 		if (ci == null) {
-			emitter.unsupported.add("MethodInvocation: unresolved declaring type " + qualified + "." + mb.getName());
+			boolean enumColl = qualified.equals("java.util.EnumSet") || qualified.equals("java.util.EnumMap");
+			String hint = enumColl ? " (EnumSet and EnumMap are not in jrt yet, task 25)" : "";
+			emitter.unsupported.add("MethodInvocation: unresolved declaring type " + qualified + "." + mb.getName() + hint);
 			// Receiver/args are referenced inside the panic closure (a local used only here must not
 			// go "declared and not used"), not hoisted before it: evaluating them eagerly would break
 			// && / || short-circuiting around a call that is never reached. A static call's
 			// receiver is a type qualifier (Integer.toHexString), not a value.
 			List<String> uses = new ArrayList<>(args);
 			if (mi.getExpression() != null && !Modifier.isStatic(mb.getModifiers())) uses.add(0, emitter.expr(mi.getExpression()));
-			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName()), uses);
+			return usingArgs(emitter.panicClosure(mi, "unresolved call " + mb.getName() + hint), uses);
 		}
 
 		// ClassEmitter skips generic methods (Display.syncCall), so a call to one has no Go target.

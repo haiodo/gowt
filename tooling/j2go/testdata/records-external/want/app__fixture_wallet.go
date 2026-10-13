@@ -2,6 +2,11 @@
 
 package app
 
+import (
+	"github.com/haiodo/any2go/runtime/jrt"
+	"fmt"
+)
+
 type Wallet struct {
 }
 
@@ -19,7 +24,7 @@ func (this *Wallet) Total(a *Wallet_Entry, b *Wallet_Entry) *Money {
 }
 
 func (this *Wallet) SameLabel(a *Wallet_Entry, b *Wallet_Entry) bool {
-	return (a.Label() == b.Label()) && (a == b)
+	return (a.Label() == b.Label()) && a.Equals(b)
 }
 
 type Wallet_Entry struct {
@@ -44,5 +49,63 @@ func (this *Wallet_Entry) Label() string {
 
 func (this *Wallet_Entry) Amount() *Money {
 	return this.amount
+}
+
+func (this *Wallet_Entry) Equals(o any) bool {
+	if this == o {
+		return true
+	}
+	_, ok7 := walletEntryImplAsWalletEntry(o)
+	if !(ok7) {
+		return false
+	}
+	var r *Wallet_Entry = castanyToWallet_Entry(o)
+	return true && (this.label == r.label) && jrt.ObjectsEquals(this.amount, r.amount)
+}
+
+func (this *Wallet_Entry) HashCode() int32 {
+	var h int32 = 0
+	var cond8 int32
+	if this.label == "" {
+		cond8 = 0
+	} else {
+		cond8 = jrt.StringHashCode(this.label)
+	}
+	h = 31 * h + (cond8)
+	var cond9 int32
+	if this.amount == (nil) {
+		cond9 = 0
+	} else {
+		cond9 = this.amount.HashCode()
+	}
+	h = 31 * h + (cond9)
+	return h
+}
+
+func (this *Wallet_Entry) String() string {
+	return fmt.Sprintf("%s%s, amount=%v]", fmt.Sprintf("Entry[label="), this.label, this.amount)
+}
+
+// j2go: instanceof helper for Wallet_Entry and its subclasses within the translated set.
+func walletEntryImplAsWalletEntry(x any) (*Wallet_Entry, bool) {
+	switch v := x.(type) {
+	case *Wallet_Entry:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castanyToWallet_Entry(x any) *Wallet_Entry {
+	if x == nil {
+		return nil
+	}
+	v, ok := walletEntryImplAsWalletEntry(x)
+	if !ok {
+		panic("java.lang.ClassCastException: Wallet_Entry")
+	}
+	return v
 }
 

@@ -34,11 +34,63 @@ func (this *Money) Currency() string {
 	return this.currency
 }
 
+func (this *Money) Equals(o any) bool {
+	if this == o {
+		return true
+	}
+	_, ok4 := moneyImplAsMoney(o)
+	if !(ok4) {
+		return false
+	}
+	var r *Money = castanyToMoney(o)
+	return true && this.cents == r.cents && (this.currency == r.currency)
+}
+
+func (this *Money) HashCode() int32 {
+	var h int32 = 0
+	h = 31 * h + int32((this.cents ^ (int64(uint64(this.cents) >> (32)))))
+	var cond5 int32
+	if this.currency == "" {
+		cond5 = 0
+	} else {
+		cond5 = jrt.StringHashCode(this.currency)
+	}
+	h = 31 * h + (cond5)
+	return h
+}
+
+func (this *Money) String() string {
+	return fmt.Sprintf("%s%d, currency=%s]", fmt.Sprintf("Money[cents="), this.cents, this.currency)
+}
+
 func (this *Money) Plus(o *Money) *Money {
 	return NewMoney(this.cents + o.Cents(), this.currency)
 }
 
 func (this *Money) Show() string {
 	return fmt.Sprintf("%d %s", this.cents, this.currency)
+}
+
+// j2go: instanceof helper for Money and its subclasses within the translated set.
+func moneyImplAsMoney(x any) (*Money, bool) {
+	switch v := x.(type) {
+	case *Money:
+		if v == nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
+}
+
+func castanyToMoney(x any) *Money {
+	if x == nil {
+		return nil
+	}
+	v, ok := moneyImplAsMoney(x)
+	if !ok {
+		panic("java.lang.ClassCastException: Money")
+	}
+	return v
 }
 

@@ -52,7 +52,15 @@ func (this *EnumUse) Parse(s string) *Level {
 }
 
 func (this *EnumUse) Same(a *Level, b *Level) bool {
-	return (a == b)
+	return (any(a) == any(b))
+}
+
+func (this *EnumUse) Mixed(a *Level, p *Planet) bool {
+	return (any(a) == any(p))
+}
+
+func (this *EnumUse) ViaObject(a *Level, o any, n Named) bool {
+	return (any(a) == any(o)) || (any(a) == any(n))
 }
 
 func (this *EnumUse) Cmp(a *Level, b *Level) int32 {

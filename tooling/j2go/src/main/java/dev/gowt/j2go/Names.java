@@ -81,7 +81,7 @@ public class Names {
 		ITypeBinding decl = t;
 		LinkedList<String> parts = new LinkedList<>();
 		while (decl != null) {
-			parts.addFirst(decl.getName().replace('$', '_'));
+			parts.addFirst(decl.getName());
 			decl = decl.getDeclaringClass();
 		}
 		return exportedPi(String.join("_", parts));
@@ -92,7 +92,7 @@ public class Names {
 		ITypeBinding decl = t;
 		LinkedList<String> parts = new LinkedList<>();
 		while (decl != null) {
-			parts.addFirst(decl.getName().replace('$', '_'));
+			parts.addFirst(decl.getName());
 			decl = decl.getDeclaringClass();
 		}
 		return exportedPi(String.join("", parts));

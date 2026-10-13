@@ -20,8 +20,6 @@ public class TypeModel {
 		public boolean isInterface;
 		/** A Java enum: a pointer singleton per constant (README "Enums"). */
 		public boolean isEnum;
-		/** An @interface: emitted as a Go interface of its members, no instances (README "Enums"). */
-		public boolean isAnnotation;
 		// Go package this class lands in (GoTypes.goPackageOf) - qualifies a reference from
 		// a different Go package (e.g. swt calling into cocoa).
 		public String javaPackage;
@@ -527,8 +525,7 @@ public class TypeModel {
 		ci.goTypeName = Names.goTypeName(binding);
 		ci.goFuncPrefix = Names.goFuncPrefix(binding);
 		ci.isEnum = decl instanceof EnumDeclaration;
-		ci.isAnnotation = !ci.isEnum;
-		ci.isInterface = ci.isAnnotation;
+		ci.isInterface = !ci.isEnum;
 		ci.javaPackage = binding.getPackage() == null ? "" : binding.getPackage().getName();
 		ITypeBinding top = binding;
 		while (top.getDeclaringClass() != null) top = top.getDeclaringClass();

@@ -124,11 +124,13 @@ into one (named after the last segment of the common Java package prefix, `merge
 name) and dirs ending in the same name are renamed (parent prefix, else `_2`); both are reported on stderr.
 Edges come from type bindings, so a reference spelled without one is not seen. Helper funcs are generated once per Go package.
 
-`$` in a Java identifier (`this$id`, `$id` from delombok'd `@EqualsAndHashCode`, `access$000`) becomes `_` in every Go
-identifier (`this_id`, `_id`, `Access_000`, as method names already did). It is one pass over the finished text of a file
-(`EmitUtil.dollarsToUnderscores`), skipping string and rune literals and comments, because identifiers are built at too many
-sites to patch each. Ceiling: no collision check, `a$b` and a Java `a_b` in one scope clash; Go then fails to compile, it does not miscompile.
-Type names get the same mapping in `Names.goTypeName`, so the `jrt.RegisterClassPackage` string matches the Go type. Test: `testdata/dollar`.
+`$` in a Java identifier (`this$id`, `$id` from delombok'd `@EqualsAndHashCode`, `a$b`, a lone `$`) is renamed in the Java source before
+parsing (`SourcePrep.dollarMap`, one name per identifier across all non-SWT files, so declaration and use agree in every file and package):
+a leading `$` becomes `d_` (`D_` before an uppercase letter), other `$` become `_`, a result that already occurs in the sources or was handed out
+gets `_` appended (`a$b` next to `a_b` is `a_b_`), in sorted order, so the output is deterministic. The first letter, not the `$`, then decides Go
+export by the usual visibility rule: `public int $pub` is `D_pub`, `public int pub$` is `Pub_`, private ones stay lower case. Applies to files
+outside the SWT roots (absolute paths, `--src` roots); SWT sources are not touched. Ceilings: a public top-level type whose name has a `$` keeps
+its file name and fails binding; a `$` member of a classpath class (not in the sources) is not renamed. Test: `testdata/dollar`.
 
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
@@ -3445,7 +3447,7 @@ constant and no compile-time exhaustiveness.
 
 - Members: `Name()`, `Ordinal()`, `CompareTo(o)`, `String()` (the name, unless the enum declares `toString`), static `OpValues()` (a copy), `OpValueOf(name)`
   (panics with `IllegalArgumentException` like Java). A public Java field that spells one of those Go names gets the usual `_` suffix.
-  Calls to `name()/ordinal()/compareTo/equals/hashCode/toString` on an enum-typed receiver are mapped in `JdkIntrinsics.enumCall`; `equals` is `==`.
+  Calls to `name()/ordinal()/compareTo/equals/hashCode/toString` on an enum-typed receiver are mapped in `JdkIntrinsics.enumCall`; `equals` is `any(a) == any(b)`, which compiles for any argument type.
 - Constructors are `new<Op>(enumName, enumOrdinal, params...)` plus `init<Op>`, so `this(...)` and overloads work as in classes. Static fields, static
   blocks, nested types and interface default forwarders are the ordinary class rules.
 - `switch (c) { case RED: ... }` and `case RED ->` emit `case OpRED:` (the static field name), nothing enum-specific.
@@ -3454,14 +3456,18 @@ constant and no compile-time exhaustiveness.
   closure that assigns the func literals; `this` in a body is the closure's `this`. Ceiling: a body method that overrides nothing, a field or a nested
   type in a body is reported as `EnumConstantBody:` unsupported and skipped; `super.m()` in a body has no target; `TypeModel` does not count an enum
   constant body as an anonymous cascade subclass.
-- `EnumSet` and `EnumMap` are not in jrt, so they degrade as any other JDK type (task 25).
+- `EnumSet` and `EnumMap` are not in jrt, so they degrade as any other JDK type; the unresolved-call marker says so (task 25).
 - **@interface** is emitted as a Go interface of its members, no instances (`type Marker interface { Value() string; Ids() []int32 }`), so a type
   reference compiles. Annotation uses stay dropped, defaults and retention are not modeled: that is task 23.
 - **Records.** Top-level and nested records were already rewritten into final classes by `SourcePrep`, but only for files under the SWT source roots. A
   `--src` root is now mirrored the same way, and a file named by absolute path outside every root gets a one-file mirror (header and `unhoist` map back
-  to the real path through `mirrorToReal`). Test: `testdata/records-absolute`, `records-external`. Left: the rewrite has no value `equals`/`hashCode`/`toString`, so
-  `a.equals(b)` on two records is identity.
+  to the real path through `mirrorToReal`). For these non-SWT files the rewrite also adds Java's value `equals`, `hashCode` (31-based over the
+  components) and `toString` (`P[x=1, y=2]`) unless the body declares them, so they are ordinary `Equals`/`HashCode`/`String` methods and `jrt.Map` keys
+  match. SWT's own records (win32) are unchanged. Tests: `testdata/records-absolute`, `records-external` (+ `behavior/`).
+- **Static init order (ceiling).** Go orders package vars by dependency, Java runs the constants first and the statics after in text order. A constructor
+  that reads a static (`static int count = 5;` read through a method) sees the initialized value in Go and the default in Java. Fixing it needs a
+  deferred `init()` for all enum statics; not done.
 
-Tests: `testdata/enums` (fields, constructor, interface, switch, `valueOf`, `values`, `compareTo`), `enum-bodies`, `annotations`, `switch`/`enumcycle`
+Tests: `testdata/enums` (fields, constructor, interface, switch, `valueOf`, `values`, `compareTo`, `equals`), `enum-bodies`, `annotations`, `switch`/`enumcycle`
 (existing, outputs now use the enum type). The nested rules use `args` with a `cfg/packages.txt` so the output is a non-SWT module; it was also built
-and run (`go test`) in a temp module against any2go's jrt.
+and run (`go test` of `testdata/<rule>/behavior/*_test.go`, copied next to the output) in a temp module against any2go's jrt.

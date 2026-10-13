@@ -76,7 +76,7 @@ public class Main {
 			boolean platformRoot = platform.roots().contains(r);
 			if (mirrorDir != null) {
 				Path mirror = mirrorDir.resolve(Integer.toString(sourceRoots.size()));
-				if (SourcePrep.mirror(p, mirror)) {
+				if (SourcePrep.mirror(p, mirror, null)) {
 					sourceRoots.add(mirror.toString());
 					mirrorToReal.put(mirror.toString(), p.toString());
 					if (platformRoot) platformRoots.add(mirror + "/");
@@ -87,10 +87,19 @@ public class Main {
 		}
 		// A non-SWT --src root gets the same record/local class rewrite; a file named by absolute path below it is read from the mirror.
 		Map<String, String> extraMirrors = new HashMap<>();
+		Set<String> externalMirrorDirs = new HashSet<>();
+		List<Path> externalSources = new ArrayList<>();
+		for (String r : extraRoots) try (var walk = Files.walk(Path.of(r))) { walk.filter(q -> q.toString().endsWith(".java")).forEach(externalSources::add); }
+		for (String f : concat(files, refFiles)) {
+			Path q = Path.of(f);
+			if (q.isAbsolute() && Files.exists(q) && !q.normalize().startsWith(swtRootPath)) externalSources.add(q);
+		}
+		Map<String, String> dollars = SourcePrep.dollarMap(externalSources);
 		for (String r : extraRoots) {
 			Path real = Path.of(r).toAbsolutePath().normalize();
 			Path mirror = mirrorDir.resolve(Integer.toString(sourceRoots.size()));
-			if (SourcePrep.mirror(real, mirror)) {
+			if (SourcePrep.mirror(real, mirror, dollars)) {
+				externalMirrorDirs.add(mirror.toString());
 				sourceRoots.add(mirror.toString());
 				mirrorToReal.put(mirror.toString(), real.toString());
 				extraMirrors.put(real.toString(), mirror.toString());
@@ -111,7 +120,8 @@ public class Main {
 				if (sourceRoots.stream().noneMatch(r -> f.startsWith(r + "/"))) {
 					Path dir = mirrorDir.resolve("file" + loneFiles++);
 					Path real = Path.of(f);
-					if (SourcePrep.mirrorFile(real, dir.resolve(real.getFileName()))) {
+					if (SourcePrep.mirrorFile(real, dir.resolve(real.getFileName()), dollars)) {
+						externalMirrorDirs.add(dir.toString());
 						mirrorToReal.put(dir.toString(), real.getParent().toString());
 						list.set(i, dir.resolve(real.getFileName()).toString());
 					}
@@ -168,7 +178,7 @@ public class Main {
 					}
 				}
 				if (bad && retry) for (var e : mirrorToReal.entrySet())
-					if (f.startsWith(e.getKey() + "/")) unhoisted |= SourcePrep.unhoist(Path.of(f), Path.of(e.getValue() + f.substring(e.getKey().length())));
+					if (f.startsWith(e.getKey() + "/")) unhoisted |= SourcePrep.unhoist(Path.of(f), Path.of(e.getValue() + f.substring(e.getKey().length())), externalMirrorDirs.contains(e.getKey()) ? dollars : null);
 			}
 			if (unhoisted) continue;
 			errors.forEach(System.err::println);
@@ -371,6 +381,12 @@ public class Main {
 				.append(". DO NOT EDIT.\n");
 		if (!leading.isEmpty()) b.append(leading).append('\n');
 		return b.toString();
+	}
+
+	private static <T> List<T> concat(List<T> a, List<T> b) {
+		List<T> all = new ArrayList<>(a);
+		all.addAll(b);
+		return all;
 	}
 
 	private static String lastSegment(String dotted) {

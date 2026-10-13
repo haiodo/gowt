@@ -139,36 +139,6 @@ final class EmitUtil {
 		return GO_KEYWORDS.contains(javaName) ? javaName + "_" : javaName;
 	}
 
-	/** '$' is legal in a Java identifier (this$id, $id from delombok), not in Go: it becomes '_', as in method names.
-	 * One pass over the finished text, outside literals and comments: identifiers are built at too many sites to patch each. */
-	static String dollarsToUnderscores(String go) {
-		if (go.indexOf('$') < 0) return go;
-		StringBuilder b = new StringBuilder(go.length());
-		int i = 0;
-		while (i < go.length()) {
-			char c = go.charAt(i);
-			int end = i + 1; // exclusive end of the literal or comment starting at i
-			if (c == '"' || c == '\'') {
-				while (end < go.length() && go.charAt(end) != c) end += go.charAt(end) == '\\' ? 2 : 1;
-				end++;
-			} else if (c == '`') {
-				end = go.indexOf('`', end) + 1;
-			} else if (go.startsWith("//", i)) {
-				end = go.indexOf('\n', i);
-			} else if (go.startsWith("/*", i)) {
-				end = go.indexOf("*/", i + 2) + 2;
-			} else {
-				b.append(c == '$' ? '_' : c);
-				i++;
-				continue;
-			}
-			if (end <= i || end > go.length()) end = go.length();
-			b.append(go, i, end);
-			i = end;
-		}
-		return b.toString();
-	}
-
 	static final String OUTER_FIELD = "this_0";
 
 	static boolean isInnerClass(ITypeBinding t) {

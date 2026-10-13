@@ -129,9 +129,9 @@ public class Emitter {
 		}
 		// Type mapping records imports as a side effect even where the mapped text is only
 		// compared, never emitted - keep just the imports the body actually references.
-		String body = EmitUtil.dollarsToUnderscores(out.toString());
+		String body = out.toString();
 		fileImports.removeIf(imp -> !body.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
-		return new EmitResult(body, fileImports, EmitUtil.dollarsToUnderscores(helpers.toString()));
+		return new EmitResult(body, fileImports, helpers.toString());
 	}
 
 	// ---------------------------------------------------------------- cross-component delegators

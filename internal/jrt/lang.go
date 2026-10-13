@@ -52,9 +52,9 @@ var monitor struct {
 
 func init() { monitor.cond = sync.NewCond(&monitor.mu) }
 
-// goid parses the current goroutine id: Go has no public API for it, and a reentrant lock
+// goidSlow parses the current goroutine id: Go has no public API for it, and a reentrant lock
 // needs to recognise its own holder.
-func goid() uint64 {
+func goidSlow() uint64 {
 	var buf [64]byte
 	b := buf[:runtime.Stack(buf[:], false)]
 	b = bytes.TrimPrefix(b, []byte("goroutine "))

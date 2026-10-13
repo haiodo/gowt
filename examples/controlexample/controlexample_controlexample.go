@@ -66,7 +66,7 @@ func (this *ControlExample) initControlExample(parent *swt.Composite) {
 	scrollComposite.SetAlwaysShowScrollBars(true)
 	scrollComposite.AddControlListener(swt.ControlListenerControlResizedAdapter(func(e *swt.ControlEvent) {
 		var r *swt.Rectangle = scrollComposite.GetClientArea()
-		scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAULT))
+		scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))
 	}))
 	var size *swt.Point = parent.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 	var monitorArea *swt.Rectangle = parent.GetMonitor().GetClientArea()

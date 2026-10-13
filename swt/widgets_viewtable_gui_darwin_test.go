@@ -91,3 +91,42 @@ func vtCheckEngaged(t *testing.T, want bool) {
 		t.Errorf("viewForTableColumn calls = %d, view-based expected: %v", vtViewCalls, want)
 	}
 }
+
+// GUI test (needs GOWT_GUI_TEST=1 and GOWT_VIEW_TABLE=1): accessibility press toggles a check box, a truncated cell has a tooltip.
+// MouseUp on the check box needs a real click: not covered here.
+func TestViewTableCheckAccessTooltip(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" || !viewTableEnabled {
+		t.Skip("set GOWT_GUI_TEST=1 and GOWT_VIEW_TABLE=1")
+	}
+	done := make(chan struct{})
+	vtMainq <- func() {
+		defer close(done)
+		d := NewDisplay()
+		defer d.Dispose()
+		shell := NewShell()
+		shell.SetSize(300, 200)
+		table := NewTable(shell, CHECK|FULL_SELECTION)
+		table.SetBounds(0, 0, 280, 180)
+		NewTableColumn(table, NONE).SetWidth(30)
+		NewTableItem(table, NONE).SetTexts([]string{"a rather long cell text that does not fit"})
+		shell.Open()
+		for end := time.Now().Add(time.Second); time.Now().Before(end); {
+			if !d.ReadAndDispatch() {
+				time.Sleep(10 * time.Millisecond)
+			}
+		}
+		tv := castcocoaNSViewTococoaNSTableView(table.View).Id
+		chk := cocoa.Msg(tv, "viewAtColumn:row:makeIfNecessary:", 0, 0, 1)
+		txt := cocoa.Msg(tv, "viewAtColumn:row:makeIfNecessary:", 1, 0, 1)
+		if chk == 0 || txt == 0 {
+			t.Fatal("no cell views")
+		}
+		if cocoa.Msg(chk, "accessibilityPerformPress") != 1 || !table.GetItem(0).GetChecked() {
+			t.Error("accessibilityPerformPress must check the item")
+		}
+		if cocoa.Msg(vtToolTip([]int64{txt, 0, 0, 0, 0, 0}), "length") == 0 {
+			t.Error("truncated cell must have a tooltip")
+		}
+	}
+	<-done
+}

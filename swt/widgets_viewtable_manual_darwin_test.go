@@ -29,4 +29,10 @@ func TestViewTableClasses(t *testing.T) {
 	if cocoa.OSObject_getClass(v) != check || cocoa.Msg(v, "isKindOfClass:", cell) == 0 {
 		t.Fatal("check view must subclass the cell view")
 	}
+	if cocoa.Msg(v, "isAccessibilityElement") != 1 {
+		t.Fatal("cell views must be accessibility elements")
+	}
+	if cocoa.Msg(v, "respondsToSelector:", cocoa.OSSel_mouseUp_) == 0 || cocoa.Msg(v, "respondsToSelector:", cocoa.OSSel_registerName("accessibilityPerformPress")) == 0 {
+		t.Fatal("check view must handle mouseUp: and accessibilityPerformPress")
+	}
 }

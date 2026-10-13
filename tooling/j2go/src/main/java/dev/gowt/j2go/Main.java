@@ -85,13 +85,43 @@ public class Main {
 			sourceRoots.add(p.toString());
 			if (platformRoot) platformRoots.add(p + "/");
 		}
-		for (String r : extraRoots) sourceRoots.add(Path.of(r).toAbsolutePath().toString());
+		// A non-SWT --src root gets the same record/local class rewrite; a file named by absolute path below it is read from the mirror.
+		Map<String, String> extraMirrors = new HashMap<>();
+		for (String r : extraRoots) {
+			Path real = Path.of(r).toAbsolutePath().normalize();
+			Path mirror = mirrorDir.resolve(Integer.toString(sourceRoots.size()));
+			if (SourcePrep.mirror(real, mirror)) {
+				sourceRoots.add(mirror.toString());
+				mirrorToReal.put(mirror.toString(), real.toString());
+				extraMirrors.put(real.toString(), mirror.toString());
+			}
+			sourceRoots.add(real.toString());
+		}
 		for (Path d : Config.stubRoots) if (Files.isDirectory(d)) sourceRoots.add(d.toAbsolutePath().toString());
 		if (platform == Platform.GTK) for (String d : new String[] { "gtkstubs", "gtkstubs-gen" })
 			if (Files.isDirectory(Config.dir.resolve(d))) sourceRoots.add(Config.dir.resolve(d).toAbsolutePath().toString());
 
 		List<String> absFiles = resolveSources(files, sourceRoots);
 		List<String> absRefFiles = resolveSources(refFiles, sourceRoots);
+		// A file named by absolute path is read from its mirror: below a --src root, or (outside every root) a one-file mirror of its own.
+		int loneFiles = 0;
+		for (List<String> list : List.of(absFiles, absRefFiles)) {
+			for (int i = 0; i < list.size(); i++) {
+				String f = list.get(i);
+				if (sourceRoots.stream().noneMatch(r -> f.startsWith(r + "/"))) {
+					Path dir = mirrorDir.resolve("file" + loneFiles++);
+					Path real = Path.of(f);
+					if (SourcePrep.mirrorFile(real, dir.resolve(real.getFileName()))) {
+						mirrorToReal.put(dir.toString(), real.getParent().toString());
+						list.set(i, dir.resolve(real.getFileName()).toString());
+					}
+					continue;
+				}
+				for (var e : extraMirrors.entrySet()) {
+					if (f.startsWith(e.getKey() + "/") && Files.exists(Path.of(e.getValue() + f.substring(e.getKey().length())))) list.set(i, e.getValue() + f.substring(e.getKey().length()));
+				}
+			}
+		}
 		List<String> allAbsFiles = new ArrayList<>(absFiles);
 		allAbsFiles.addAll(absRefFiles);
 
@@ -183,8 +213,8 @@ public class Main {
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
 			String unitPkg = cu.getPackage().getName().getFullyQualifiedName();
-			if (keepGoing && !(cu.types().get(0) instanceof TypeDeclaration)) { System.err.println("j2go: [skip] " + absPath + ": " + cu.types().get(0).getClass().getSimpleName() + " not supported"); continue; }
-			String unitType = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
+			if (keepGoing && cu.types().get(0) instanceof RecordDeclaration) { System.err.println("j2go: [skip] " + absPath + ": RecordDeclaration not supported"); continue; }
+			String unitType = ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier();
 			String unitDir = GoTypes.goPackageDir(unitPkg, unitType);
 			boolean commonSource = !reference && platformRoots.stream().noneMatch(absPath::startsWith) && !unitDir.equals(platform.piDir);
 			// A common source the reference platform has no file for (it stubs the class by hand) is this platform's own.
@@ -202,7 +232,7 @@ public class Main {
 			}
 			// The reference platform owns the shared files; here only the helpers they need are kept.
 			if (sharedFile) {
-				if (GoTypes.goPackageOf(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals("swt")) {
+				if (GoTypes.goPackageOf(cu.getPackage().getName().getFullyQualifiedName(), ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals("swt")) {
 					sharedHelpers.append(result.helpers());
 					sharedHelperImports.addAll(result.imports());
 				}
@@ -214,7 +244,7 @@ public class Main {
 			String relPath = swtRootPath.relativize(Path.of(realPath)).toString();
 			String javaPackage = cu.getPackage().getName().getFullyQualifiedName();
 			String pkgLastSegment = lastSegment(javaPackage);
-			String typeName = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
+			String typeName = ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier();
 			String outDirName = GoTypes.goPackageDir(javaPackage, typeName);
 			// swt file built only for this GOOS: read from a platform root (a same-named sibling per platform).
 			final String srcPath = absPath;

@@ -3429,3 +3429,39 @@ was the constant "Mac OS X" in the generated `SwtTestUtil`, so the assumption ne
   test resource (`testWebsiteWithTitle.html`; the Browser tests that load a local page panicked on the nil stream).
 - **Linux result** (Xvfb, full gate, passed / failed / skipped of 3901): 3808 / 34 / 59 with the old `os.name`, 3808 / 38 / 55 with the new one (the
   Linux-only Browser URL and POST tests now run; StyledText's caret test is skipped as upstream), 3811 / 35 / 55 with the HTML resource.
+
+## Enums, @interface and records outside SWT (TSK-2026-10-10-any2go-toolkit-22)
+
+SWT has no enum j2go translates (`RoundingMode`, `AutoscalingMode`, `Display.APPEARANCE` are hand-written, `Selector` is elided above), so the rules below
+are not gated: `make gen-check` is byte-identical on cocoa, gtk and win32 with them on. A top-level or nested `enum`/`@interface` now gets a
+`TypeModel.ClassInfo` (`isEnum`, `isAnnotation`) and is emitted by `EnumEmitter`; before, `--keep-going` skipped the file and every use became
+`unsupported_type_*`.
+
+**Object model: a pointer singleton per constant.** `type Op struct { enumName string; enumOrdinal int32; <Java fields>; fn<M> func(...) }`, one
+`var OpPLUS = newOp("PLUS", 0, args...)` per constant, `*Op` as the value type. Chosen over `type Op int32` + `iota` because it is how every other
+j2go class is shaped (pointer, fields, methods, constructors with overloads, interfaces by method set), a Java enum is nullable like the pointer, `==`
+and `switch` compare identity as Java does, map keys and `Set`s work unchanged, and constant bodies need no lookup table. The cost is a heap object per
+constant and no compile-time exhaustiveness.
+
+- Members: `Name()`, `Ordinal()`, `CompareTo(o)`, `String()` (the name, unless the enum declares `toString`), static `OpValues()` (a copy), `OpValueOf(name)`
+  (panics with `IllegalArgumentException` like Java). A public Java field that spells one of those Go names gets the usual `_` suffix.
+  Calls to `name()/ordinal()/compareTo/equals/hashCode/toString` on an enum-typed receiver are mapped in `JdkIntrinsics.enumCall`; `equals` is `==`.
+- Constructors are `new<Op>(enumName, enumOrdinal, params...)` plus `init<Op>`, so `this(...)` and overloads work as in classes. Static fields, static
+  blocks, nested types and interface default forwarders are the ordinary class rules.
+- `switch (c) { case RED: ... }` and `case RED ->` emit `case OpRED:` (the static field name), nothing enum-specific.
+- **Constant bodies** are func fields on the enum struct, not an impl cascade: for each method some body overrides, `Op` gets `fn<M>` and the method
+  starts with `if this.fn<M> != nil { return this.fn<M>(args) }`, then the enum's own body (or `panic("j2go: abstract M")`). The constant is built in a
+  closure that assigns the func literals; `this` in a body is the closure's `this`. Ceiling: a body method that overrides nothing, a field or a nested
+  type in a body is reported as `EnumConstantBody:` unsupported and skipped; `super.m()` in a body has no target; `TypeModel` does not count an enum
+  constant body as an anonymous cascade subclass.
+- `EnumSet` and `EnumMap` are not in jrt, so they degrade as any other JDK type (task 25).
+- **@interface** is emitted as a Go interface of its members, no instances (`type Marker interface { Value() string; Ids() []int32 }`), so a type
+  reference compiles. Annotation uses stay dropped, defaults and retention are not modeled: that is task 23.
+- **Records.** Top-level and nested records were already rewritten into final classes by `SourcePrep`, but only for files under the SWT source roots. A
+  `--src` root is now mirrored the same way, and a file named by absolute path outside every root gets a one-file mirror (header and `unhoist` map back
+  to the real path through `mirrorToReal`). Test: `testdata/records-absolute`, `records-external`. Left: the rewrite has no value `equals`/`hashCode`/`toString`, so
+  `a.equals(b)` on two records is identity.
+
+Tests: `testdata/enums` (fields, constructor, interface, switch, `valueOf`, `values`, `compareTo`), `enum-bodies`, `annotations`, `switch`/`enumcycle`
+(existing, outputs now use the enum type). The nested rules use `args` with a `cfg/packages.txt` so the output is a non-SWT module; it was also built
+and run (`go test`) in a temp module against any2go's jrt.

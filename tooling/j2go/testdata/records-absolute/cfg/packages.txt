@@ -1,0 +1,3 @@
+module example.com/app
+default app
+message-prefix app

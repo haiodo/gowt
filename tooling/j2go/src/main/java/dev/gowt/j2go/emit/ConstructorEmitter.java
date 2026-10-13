@@ -43,13 +43,23 @@ final class ConstructorEmitter {
 		return params.isEmpty() ? outer : outer + ", " + params;
 	}
 
+	/** An enum constructor takes the constant's name and ordinal first (Java's Enum(String, int)). */
+	private static String enumParams(TypeModel.ClassInfo ci, String params) {
+		if (!ci.isEnum) return params;
+		return params.isEmpty() ? EnumEmitter.NAME_PARAMS : EnumEmitter.NAME_PARAMS + ", " + params;
+	}
+
+	private static String enumFields(TypeModel.ClassInfo ci) {
+		return ci.isEnum ? "{" + EnumEmitter.NAME_FIELD + ": " + EnumEmitter.NAME_FIELD + ", " + EnumEmitter.ORDINAL_FIELD + ": " + EnumEmitter.ORDINAL_FIELD + "}" : "{}";
+	}
+
 	private static String outerAssign(TypeModel.ClassInfo ci) {
 		return outerFirst(ci) ? "\tthis." + EmitUtil.OUTER_FIELD + " = " + EmitUtil.OUTER_FIELD + "\n" : "";
 	}
 
-	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
-		boolean pub = Modifier.isPublic(md.getModifiers());
+		boolean pub = Modifier.isPublic(md.getModifiers()) && !ci.isEnum;
 		String prefix = (pub ? "New" : "new") + ci.goFuncPrefix;
 		String goName = emitter.ctorGoName(mb, prefix);
 		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape
@@ -59,10 +69,10 @@ final class ConstructorEmitter {
 		// (below) is always unexported and keeps concrete *C, cheap for generated-code callers.
 		List<String> pubPrelude = new ArrayList<>();
 		String ctorParams = pub ? EmitUtil.publicParamList(emitter, mb, md, pubPrelude) : emitter.paramList(mb, md);
-		out.append("func ").append(goName).append('(').append(outerParam(ci, ctorParams)).append(") *")
+		out.append("func ").append(goName).append('(').append(enumParams(ci, outerParam(ci, ctorParams))).append(") *")
 				.append(ci.goTypeName).append(" {\n");
 		for (String p : pubPrelude) out.append('\t').append(p).append('\n');
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n").append(outerAssign(ci));
+		out.append("\tthis := &").append(ci.goTypeName).append(enumFields(ci)).append('\n').append(outerAssign(ci));
 		if (needsImpl) out.append("\tthis.impl = this\n");
 		out.append("\tthis.").append(initName).append('(').append(emitter.argNames(md)).append(")\n");
 		out.append("\treturn this\n}\n\n");
@@ -77,13 +87,13 @@ final class ConstructorEmitter {
 
 	/** Java's implicit no-arg constructor (JLS 8.8.9): same New<X>()/init<X>() split as
 	 * emitConstructor, so a subclass's explicit ctor can still call this init<X>(). */
-	void emitImplicitConstructor(TypeModel.ClassInfo ci, TypeDeclaration td, StringBuilder out) {
+	void emitImplicitConstructor(TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		boolean needsImpl = ci.root.hasImpl();
 		// JLS 8.8.9: the implicit constructor's own accessibility matches the class's.
-		boolean pub = Modifier.isPublic(td.getModifiers());
+		boolean pub = Modifier.isPublic(td.getModifiers()) && !ci.isEnum;
 		String initName = "init" + ci.goFuncPrefix; // init methods are always unexported by shape
-		out.append("func ").append(pub ? "New" : "new").append(ci.goFuncPrefix).append('(').append(outerParam(ci, "")).append(") *").append(ci.goTypeName).append(" {\n");
-		out.append("\tthis := &").append(ci.goTypeName).append("{}\n").append(outerAssign(ci));
+		out.append("func ").append(pub ? "New" : "new").append(ci.goFuncPrefix).append('(').append(enumParams(ci, outerParam(ci, ""))).append(") *").append(ci.goTypeName).append(" {\n");
+		out.append("\tthis := &").append(ci.goTypeName).append(enumFields(ci)).append('\n').append(outerAssign(ci));
 		if (needsImpl) out.append("\tthis.impl = this\n");
 		out.append("\tthis.").append(initName).append("()\n");
 		out.append("\treturn this\n}\n\n");
@@ -127,7 +137,7 @@ final class ConstructorEmitter {
 				+ (!f.root.hasImpl() ? "" : "\tthis." + (ci.children.isEmpty() ? "" : f.goTypeName + ".") + "SetImpl_(this)\n");
 	}
 
-	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, TypeDeclaration td) {
+	private String emitConstructorBody(MethodDeclaration md, TypeModel.ClassInfo ci, AbstractTypeDeclaration td) {
 		List<Statement> stmts = md.getBody().statements();
 		StringBuilder b = new StringBuilder();
 		int start = 0;
@@ -152,7 +162,7 @@ final class ConstructorEmitter {
 		return b.toString();
 	}
 
-	private String emitInstanceInitializers(TypeDeclaration td, int indent) {
+	private String emitInstanceInitializers(AbstractTypeDeclaration td, int indent) {
 		StringBuilder b = new StringBuilder();
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd && !Modifier.isStatic(fd.getModifiers())) {

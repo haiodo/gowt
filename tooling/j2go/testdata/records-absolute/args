@@ -1,0 +1,4 @@
+--config
+${rule}/cfg
+--runtime-import
+github.com/haiodo/any2go/runtime/jrt

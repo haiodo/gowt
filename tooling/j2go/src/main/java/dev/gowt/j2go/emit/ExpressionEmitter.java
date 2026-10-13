@@ -210,6 +210,7 @@ final class ExpressionEmitter {
 		if (Manual.isManualSuper(declaringQualified)) return Names.capitalize(n);
 		if (Modifier.isPublic(vb.getModifiers())) {
 			// Same rule as ClassEmitter.emitStructFields: a public field named like a method gets an underscore.
+			if (vb.getDeclaringClass().isEnum() && EnumEmitter.FINAL_METHODS.contains(Names.capitalize(n))) return Names.capitalize(n) + "_";
 			for (IMethodBinding m : vb.getDeclaringClass().getDeclaredMethods()) {
 				if (!m.isConstructor() && !Modifier.isStatic(m.getModifiers()) && Names.javaMethodBaseGoName(m.getName()).equals(Names.capitalize(n))) return Names.capitalize(n) + "_";
 			}

@@ -22,17 +22,21 @@ final class SourcePrep {
 		boolean any = false;
 		try (Stream<Path> files = Files.walk(root)) {
 			for (Path f : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".java"))::iterator) {
-				String text = Files.readString(f, StandardCharsets.UTF_8);
-				if (!text.contains("record ") && !text.contains("class ")) continue;
-				String out = hoistLocalClasses(desugar(anonymizeLocalClasses(text)));
-				if (out.equals(text)) continue;
-				Path dst = mirror.resolve(root.relativize(f));
-				Files.createDirectories(dst.getParent());
-				Files.writeString(dst, out, StandardCharsets.UTF_8);
-				any = true;
+				any |= mirrorFile(f, mirror.resolve(root.relativize(f)));
 			}
 		}
 		return any;
+	}
+
+	/** Writes the rewritten file to dst when the rewrite changes it; true if it did. */
+	static boolean mirrorFile(Path f, Path dst) throws IOException {
+		String text = Files.readString(f, StandardCharsets.UTF_8);
+		if (!text.contains("record ") && !text.contains("class ")) return false;
+		String out = hoistLocalClasses(desugar(anonymizeLocalClasses(text)));
+		if (out.equals(text)) return false;
+		Files.createDirectories(dst.getParent());
+		Files.writeString(dst, out, StandardCharsets.UTF_8);
+		return true;
 	}
 
 	/** Rewrites a mirror file without hoisting; true if that changed it. */

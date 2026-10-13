@@ -34,6 +34,10 @@ final class JdkIntrinsics {
 	 * continues with the general Manual/translated-set dispatch). */
 	String tryIntrinsic(MethodInvocation mi, IMethodBinding mb) {
 		String qualified = mb.getDeclaringClass().getErasure().getQualifiedName();
+		if (qualified.equals("java.lang.Enum")) {
+			String call = enumCall(mi, mb);
+			if (call != null) return call;
+		}
 
 		// Image.java's own HiDPI provider path (Round 7 gfx) - the only InputStream/OutputStream
 		// method this port's final file set reaches through an abstractly-typed receiver.
@@ -220,6 +224,22 @@ final class JdkIntrinsics {
 	}
 
 	static final String JRT = dev.gowt.j2go.Manual.JRT_IMPORT;
+
+	/** The java.lang.Enum members of a translated enum (EnumEmitter): methods of its Go type, or identity. */
+	private String enumCall(MethodInvocation mi, IMethodBinding mb) {
+		ITypeBinding receiverType = mi.getExpression() != null ? mi.getExpression().resolveTypeBinding() : emitter.currentClassInfo.binding;
+		TypeModel.ClassInfo ci = receiverType == null ? null : emitter.model.lookup(receiverType);
+		if (ci == null || !ci.isEnum) return null;
+		return switch (mb.getName()) {
+			case "name" -> recv(mi) + ".Name()";
+			case "ordinal" -> recv(mi) + ".Ordinal()";
+			case "toString" -> recv(mi) + ".String()";
+			case "compareTo" -> recv(mi) + ".CompareTo(" + arg(mi, 0) + ")";
+			case "equals" -> "(" + recv(mi) + " == " + arg(mi, 0) + ")";
+			case "hashCode" -> jrtCall("IdentityHashCode", recv(mi));
+			default -> null;
+		};
+	}
 
 	private String jrtCall(String fn, String args) {
 		emitter.fileImports.add(JRT);

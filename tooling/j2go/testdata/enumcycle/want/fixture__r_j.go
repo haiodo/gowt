@@ -3,6 +3,6 @@
 package fixture
 
 type J interface {
-	First() unsupported_type_fixture_p_E
+	First() *E
 }
 

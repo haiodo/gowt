@@ -338,7 +338,7 @@ final class ClassEmitter {
 				emitter.fileImports.add("os");
 				emitter.fileImports.add("fmt");
 				out.append("var ").append(goName).append(' ').append(goType).append(" = func() (r ").append(goType).append(") {\n")
-						.append("\tdefer func() {\n\t\tif e := recover(); e != nil {\n\t\t\tfmt.Fprintln(os.Stderr, \"gowt: deferred init ")
+						.append("\tdefer func() {\n\t\tif e := recover(); e != nil {\n\t\t\tfmt.Fprintln(os.Stderr, \"" + dev.gowt.j2go.Profile.messagePrefix() + "deferred init ")
 						.append(goName).append(":\", e)\n\t\t}\n\t}()\n");
 				for (String p : myPrelude) out.append('\t').append(p).append('\n');
 				out.append("\tr = ").append(text).append("\n\treturn\n}()\n");

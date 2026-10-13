@@ -115,6 +115,12 @@ Project settings are parameters; the defaults are gowt's: `--config <dir>` (pins
 model-only Java stub roots; default `<config>/stubs`), `--runtime-import` (default
 `github.com/haiodo/gowt/internal/jrt`), `--junit-import` (default `github.com/haiodo/gowt/internal/junit`).
 
+`<config>/packages.txt` replaces the built-in SWT layout (Java package -> Go dir, import path, layers) and
+the header: without it the output is gowt's (`swt/`, `github.com/haiodo/gowt/...`, `@ af630a9093`, `gowt:`
+in the stderr text). Directives: `module`, `class`, `map` (`pkg.*`, `{sub}`), `default`, `commit`,
+`message-prefix`, optional `layer=N`; see `Profile.java` and `testdata/packages/cfg/packages.txt`.
+Without `commit` the header has no revision; two packages whose dirs end in the same name collide.
+
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
 "Multiple Go packages" and "Round 10 controlexample" below).

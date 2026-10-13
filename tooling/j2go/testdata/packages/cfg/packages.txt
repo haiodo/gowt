@@ -1,0 +1,5 @@
+module example.com/app
+map fixture.model model
+map fixture.service internal/service
+default misc
+message-prefix app

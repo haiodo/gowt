@@ -47,6 +47,13 @@ public class GoTypes {
 	/** Repo-relative Go package dir of a top-level Java class. Of org.eclipse.swt.internal only
 	 * PI's C belongs to cocoa; the common helpers there (TransparencyColorImageGcDrawer) use swt types. */
 	public static String goPackageDir(String javaPackage, String topLevelName) {
+		Profile pr = Profile.active;
+		if (pr != null) {
+			String byClass = pr.dirOf(javaPackage, topLevelName);
+			if (byClass != null) return byClass;
+			if (isPiJavaPackage(javaPackage)) return "internal/" + piPackage;
+			return pr.dirOfPackage(javaPackage);
+		}
 		// DnD and Accessible subclass it (anonymously too) with the cascade of swt's own classes: same Go package as the subclasses (README "Round 24 dnd").
 		if (javaPackage.equals("org.eclipse.swt.internal.ole.win32") && topLevelName.equals("COMObject")) return "swt";
 		if (isPiJavaPackage(javaPackage)) return "internal/" + piPackage;
@@ -68,6 +75,8 @@ public class GoTypes {
 
 	/** Import path of a Go package produced by goPackageDir (package names are unique). */
 	public static String importPath(String goPackage) {
+		Profile pr = Profile.active;
+		if (pr != null) return pr.module + "/" + pr.dirByPackage.getOrDefault(goPackage, isPiGoPackage(goPackage) ? "internal/" + goPackage : goPackage);
 		return "github.com/haiodo/gowt/" + switch (goPackage) {
 			case "cocoa", "win32", "gtk" -> "internal/" + goPackage;
 			case "swt" -> "swt";
@@ -79,8 +88,14 @@ public class GoTypes {
 		};
 	}
 
+	/** False when the profile declares no layers: packages may then reference each other freely. */
+	public static boolean layered() {
+		return Profile.active == null || Profile.active.layered;
+	}
+
 	/** Import layering: cocoa < swt < examples; a package may only reference lower layers. */
 	public static int layer(String goPackage) {
+		if (Profile.active != null) return isPiGoPackage(goPackage) ? 0 : Profile.active.layerByPackage.getOrDefault(goPackage, 0);
 		return switch (goPackage) {
 			case "cocoa", "win32", "gtk" -> 0;
 			case "swt" -> 1;

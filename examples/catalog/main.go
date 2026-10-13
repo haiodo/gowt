@@ -26,6 +26,10 @@ var samples = []sample{
 		p.Button("Check", nil, gowt.Check()).SetChecked(true)
 		p.Button("Radio", nil, gowt.Radio())
 	}},
+	{"switch", func(p *gowt.Panel) {
+		p.Switch("Wi-Fi", nil).SetChecked(true)
+		p.Switch("Bluetooth", nil)
+	}},
 	{"text", func(p *gowt.Panel) {
 		p.Text(gowt.Border()).SetText("Edit me")
 		p.Text(gowt.Password(), gowt.Border()).SetText("secret")

@@ -24,6 +24,9 @@ gowt CTabs.OnSelect(f func(index int))
 gowt CTabs.Select(i int)
 gowt CTabs.Tab(title string, opts ...Option) *Panel
 gowt CTabs.Unwrap() *github.com/haiodo/gowt/swt.CTabFolder
+gowt Canvas.OnMouseDown(f func(Mouse))
+gowt Canvas.OnMouseMove(f func(Mouse))
+gowt Canvas.OnMouseUp(f func(Mouse))
 gowt Canvas.Redraw()
 gowt Canvas.Size() (w int, h int)
 gowt Canvas.Unwrap() *github.com/haiodo/gowt/swt.Canvas
@@ -39,6 +42,7 @@ gowt Clipboard.Text() (string, bool)
 gowt Clipboard.Unwrap() *github.com/haiodo/gowt/swt.Clipboard
 gowt Column.OnClick(f func())
 gowt Column.Pack()
+gowt Column.SetResizable(v bool)
 gowt Column.SetTitle(s string)
 gowt Column.SetWidth(w int)
 gowt Column.Unwrap() *github.com/haiodo/gowt/swt.TableColumn
@@ -74,6 +78,7 @@ gowt CoolBar.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt CoolBar.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt CoolBar.Split(opts ...Option) *Split
 gowt CoolBar.StyledText(opts ...Option) *StyledText
+gowt CoolBar.Switch(text string, onChange func(on bool), opts ...Option) *Switch
 gowt CoolBar.Table(opts ...Option) *Table
 gowt CoolBar.Tabs(opts ...Option) *Tabs
 gowt CoolBar.Text(opts ...Option) *Text
@@ -165,6 +170,7 @@ gowt Group.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Group.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Group.Split(opts ...Option) *Split
 gowt Group.StyledText(opts ...Option) *StyledText
+gowt Group.Switch(text string, onChange func(on bool), opts ...Option) *Switch
 gowt Group.Table(opts ...Option) *Table
 gowt Group.Tabs(opts ...Option) *Tabs
 gowt Group.Text(opts ...Option) *Text
@@ -209,6 +215,15 @@ gowt Message.Buttons field Buttons
 gowt Message.Icon field Icon
 gowt Message.Text field string
 gowt Message.Title field string
+gowt Mods.Alt field bool
+gowt Mods.Cmd field bool
+gowt Mods.Ctrl field bool
+gowt Mods.Shift field bool
+gowt Mouse.Button field int
+gowt Mouse.Count field int
+gowt Mouse.Mods field Mods
+gowt Mouse.X field int
+gowt Mouse.Y field int
 gowt Node.Checked() bool
 gowt Node.Children() []*Node
 gowt Node.Data() any
@@ -219,8 +234,11 @@ gowt Node.SetChecked(v bool)
 gowt Node.SetData(v any)
 gowt Node.SetExpanded(v bool)
 gowt Node.SetImage(img *Image)
+gowt Node.SetImageAt(col int, img *Image)
 gowt Node.SetText(s string)
+gowt Node.SetTextAt(col int, s string)
 gowt Node.Text() string
+gowt Node.TextAt(col int) string
 gowt Node.Unwrap() *github.com/haiodo/gowt/swt.TreeItem
 gowt Panel.AsComposite() *github.com/haiodo/gowt/swt.Composite
 gowt Panel.Button(text string, onClick func(), opts ...Option) *Button
@@ -244,6 +262,7 @@ gowt Panel.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Panel.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Panel.Split(opts ...Option) *Split
 gowt Panel.StyledText(opts ...Option) *StyledText
+gowt Panel.Switch(text string, onChange func(on bool), opts ...Option) *Switch
 gowt Panel.Table(opts ...Option) *Table
 gowt Panel.Tabs(opts ...Option) *Tabs
 gowt Panel.Text(opts ...Option) *Text
@@ -305,6 +324,7 @@ gowt Split.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Split.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Split.Split(opts ...Option) *Split
 gowt Split.StyledText(opts ...Option) *StyledText
+gowt Split.Switch(text string, onChange func(on bool), opts ...Option) *Switch
 gowt Split.Table(opts ...Option) *Table
 gowt Split.Tabs(opts ...Option) *Tabs
 gowt Split.Text(opts ...Option) *Text
@@ -331,6 +351,7 @@ gowt StyledText.OnStyle(f func(line string) []StyleSpan)
 gowt StyledText.Paste()
 gowt StyledText.Replace(start int, length int, s string)
 gowt StyledText.Reveal()
+gowt StyledText.ScrollToEnd()
 gowt StyledText.SelectedText() string
 gowt StyledText.Selection() (start int, length int)
 gowt StyledText.SetCaret(offset int)
@@ -344,21 +365,38 @@ gowt StyledText.SetTopLine(line int)
 gowt StyledText.SetWrap(on bool)
 gowt StyledText.Styles() []StyleSpan
 gowt StyledText.Text() string
+gowt StyledText.TrimHead(keep int)
 gowt StyledText.Unwrap() *github.com/haiodo/gowt/swt.StyledText
+gowt Switch.Checked() bool
+gowt Switch.OnChange(f func(on bool))
+gowt Switch.SetChecked(v bool)
+gowt Switch.SetText(t string)
+gowt Switch.Unwrap() *github.com/haiodo/gowt/swt.Button
+gowt Table.CellAt(x int, y int) (row int, col int)
 gowt Table.Clear()
 gowt Table.Column(title string, width int, opts ...Option) *Column
 gowt Table.Index() int
 gowt Table.Len() int
 gowt Table.OnActivate(f func(index int))
+gowt Table.OnCellClick(f func(TableClick))
 gowt Table.OnSelect(f func(index int))
 gowt Table.Remove(i int)
 gowt Table.Row(cells ...string) *TableRow
 gowt Table.RowAt(i int) *TableRow
 gowt Table.Selected() []int
 gowt Table.SetSelection(i ...int)
+gowt Table.SetSort(col *Column, dir SortDir)
 gowt Table.ShowHeader(v bool)
 gowt Table.ShowLines(v bool)
+gowt Table.ShowRowLines(v bool)
 gowt Table.Unwrap() *github.com/haiodo/gowt/swt.Table
+gowt TableClick.Button field int
+gowt TableClick.Col field int
+gowt TableClick.Count field int
+gowt TableClick.Mods field Mods
+gowt TableClick.Row field int
+gowt TableClick.X field int
+gowt TableClick.Y field int
 gowt TableRow.Checked() bool
 gowt TableRow.Data() any
 gowt TableRow.SetChecked(v bool)
@@ -372,11 +410,15 @@ gowt Tabs.OnSelect(f func(index int))
 gowt Tabs.Select(i int)
 gowt Tabs.Tab(title string, opts ...Option) *Panel
 gowt Tabs.Unwrap() *github.com/haiodo/gowt/swt.TabFolder
+gowt Text.Append(s string)
+gowt Text.Lines() int
 gowt Text.OnActivate(f func())
 gowt Text.OnChange(f func(text string))
+gowt Text.ScrollToEnd()
 gowt Text.SetHint(s string)
 gowt Text.SetText(s string)
 gowt Text.Text() string
+gowt Text.TrimHead(keep int)
 gowt Text.Unwrap() *github.com/haiodo/gowt/swt.Text
 gowt TextStyle.Background field *RGB
 gowt TextStyle.Bold field bool
@@ -401,16 +443,35 @@ gowt TrayIcon.Remove()
 gowt TrayIcon.SetImage(img *Image)
 gowt TrayIcon.SetTooltip(s string)
 gowt TrayIcon.Unwrap() *github.com/haiodo/gowt/swt.TrayItem
+gowt Tree.CellAt(x int, y int) (*Node, int)
 gowt Tree.Clear()
+gowt Tree.Column(title string, width int, opts ...Option) *TreeColumn
 gowt Tree.Node(text string) *Node
 gowt Tree.OnActivate(f func(n *Node))
+gowt Tree.OnCellClick(f func(TreeClick))
 gowt Tree.OnCollapse(f func(n *Node))
 gowt Tree.OnExpand(f func(n *Node))
 gowt Tree.OnSelect(f func(n *Node))
 gowt Tree.Roots() []*Node
 gowt Tree.Select(n *Node)
 gowt Tree.Selected() []*Node
+gowt Tree.SetSort(col *TreeColumn, dir SortDir)
+gowt Tree.ShowHeader(v bool)
+gowt Tree.ShowRowLines(v bool)
 gowt Tree.Unwrap() *github.com/haiodo/gowt/swt.Tree
+gowt TreeClick.Button field int
+gowt TreeClick.Col field int
+gowt TreeClick.Count field int
+gowt TreeClick.Mods field Mods
+gowt TreeClick.Node field *Node
+gowt TreeClick.X field int
+gowt TreeClick.Y field int
+gowt TreeColumn.OnClick(f func())
+gowt TreeColumn.Pack()
+gowt TreeColumn.SetResizable(v bool)
+gowt TreeColumn.SetTitle(s string)
+gowt TreeColumn.SetWidth(w int)
+gowt TreeColumn.Unwrap() *github.com/haiodo/gowt/swt.TreeColumn
 gowt Window.AsComposite() *github.com/haiodo/gowt/swt.Composite
 gowt Window.Button(text string, onClick func(), opts ...Option) *Button
 gowt Window.CTabs(opts ...Option) *CTabs
@@ -446,6 +507,7 @@ gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Window.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Window.Split(opts ...Option) *Split
 gowt Window.StyledText(opts ...Option) *StyledText
+gowt Window.Switch(text string, onChange func(on bool), opts ...Option) *Switch
 gowt Window.Table(opts ...Option) *Table
 gowt Window.Tabs(opts ...Option) *Tabs
 gowt Window.Text(opts ...Option) *Text
@@ -478,6 +540,9 @@ gowt const OpCopy Op = 1
 gowt const OpLink Op = 4
 gowt const OpMove Op = 2
 gowt const OpNone Op = 0
+gowt const SortAscending SortDir = 1
+gowt const SortDescending SortDir = 2
+gowt const SortNone SortDir = 0
 gowt func Anchor(c FormCell) Option
 gowt func AsCalendar() Option
 gowt func AsTime() Option
@@ -486,6 +551,7 @@ gowt func Beside(w Widget, gap int) Edge
 gowt func Border() Option
 gowt func Bottom() Option
 gowt func Cell(c GridCell) Option
+gowt func CellSelect() Option
 gowt func Center() Option
 gowt func Check() Option
 gowt func Closable() Option
@@ -494,11 +560,13 @@ gowt func Disabled() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
+gowt func Enabled(w Widget) bool
 gowt func Flat() Option
 gowt func InRow(c RowCell) Option
 gowt func Indeterminate() Option
 gowt func MultiSelect() Option
 gowt func Multiline() Option
+gowt func NoBorder() Option
 gowt func Password() Option
 gowt func Percent(pct int, offset int) Edge
 gowt func PopupMenu(w Widget) *Menu
@@ -508,11 +576,17 @@ gowt func Right() Option
 gowt func Run(setup func(*App)) (err error)
 gowt func Same(w Widget, offset int) Edge
 gowt func Scrollbars() Option
+gowt func Search() Option
 gowt func SetAppName(name string)
+gowt func SetEnabled(w Widget, v bool)
+gowt func SetFont(w Widget, f Font)
+gowt func SetForeground(w Widget, c RGB)
+gowt func SetVisible(w Widget, v bool)
 gowt func Simple() Option
 gowt func Smooth() Option
 gowt func Tooltip(s string) Option
 gowt func Vertical() Option
+gowt func Visible(w Widget) bool
 gowt func Wrap() Option
 gowt type Align int32
 gowt type Answer int
@@ -550,6 +624,8 @@ gowt type List struct
 gowt type Menu struct
 gowt type MenuItem struct
 gowt type Message struct
+gowt type Mods struct
+gowt type Mouse struct
 gowt type Node struct
 gowt type Op int
 gowt type Option struct
@@ -562,12 +638,15 @@ gowt type Sash struct
 gowt type Scale struct
 gowt type Scroll struct
 gowt type Slider struct
+gowt type SortDir int
 gowt type Spinner struct
 gowt type Split struct
 gowt type Stack struct
 gowt type StyleSpan struct
 gowt type StyledText struct
+gowt type Switch struct
 gowt type Table struct
+gowt type TableClick struct
 gowt type TableRow struct
 gowt type Tabs struct
 gowt type Text struct
@@ -576,6 +655,8 @@ gowt type ToolBar struct
 gowt type ToolItem struct
 gowt type TrayIcon struct
 gowt type Tree struct
+gowt type TreeClick struct
+gowt type TreeColumn struct
 gowt type Widget
 gowt type Window struct
 gowt/icons func Color(c github.com/haiodo/gowt.RGB) Option
@@ -592,6 +673,7 @@ gowt/look const BackdropGlass Backdrop = 2
 gowt/look const BackdropNone Backdrop = 0
 gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
+gowt/look func DragsWindow(c Container)
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)

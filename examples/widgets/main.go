@@ -43,7 +43,9 @@ func input(p *gowt.Panel, status *gowt.Label) {
 
 	opts := p.Group("Options", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
 	opts.SetLayout(gowt.Row{Margin: 8, Spacing: 12})
-	opts.Button("Remember me", nil, gowt.Check()).SetChecked(true)
+	remember := opts.Button("Remember me", nil, gowt.Check())
+	remember.SetChecked(true)
+	opts.Switch("Enable options", func(on bool) { gowt.SetEnabled(remember, on) }).SetChecked(true)
 	opts.Button("Small", nil, gowt.Radio())
 	opts.Button("Large", nil, gowt.Radio())
 	opts.Link(`<a href="https://example.com">Terms</a>`, func(href string) { status.SetText("link: " + href) })
@@ -64,12 +66,20 @@ func lists(p *gowt.Panel, status *gowt.Label) {
 	t.OnSelect(func(i int) { status.SetText(fmt.Sprint("row data: ", t.RowAt(i).Data())) })
 
 	tree := p.Tree(fillBoth)
+	tree.Column("Name", 140)
+	tree.Column("Size", 60, gowt.Right())
+	tree.SetSort(nil, gowt.SortNone)
 	src := tree.Node("src")
-	src.Node("main.go")
-	src.Node("util.go")
+	src.Node("main.go").SetTextAt(1, "2 KB")
+	src.Node("util.go").SetTextAt(1, "1 KB")
 	src.SetExpanded(true)
-	tree.Node("README.md")
+	tree.Node("README.md").SetTextAt(1, "5 KB")
 	tree.OnSelect(func(n *gowt.Node) { status.SetText("node: " + n.Text()) })
+	tree.OnCellClick(func(c gowt.TreeClick) {
+		if c.Node != nil && c.Button == 1 && c.Count == 1 {
+			status.SetText(fmt.Sprintf("cell: %s col %d", c.Node.Text(), c.Col))
+		}
+	})
 }
 
 func ranges(p *gowt.Panel, status *gowt.Label) {

@@ -126,6 +126,14 @@ func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 // ShowLines shows or hides the grid lines.
 func (t *Table) ShowLines(v bool) { t.t.SetLinesVisible(v) }
 
+// ShowRowLines shows or hides thin lines between rows only. On macOS ShowLines also turns on
+// vertical lines and alternating row colors, this does not; elsewhere it is ShowLines.
+func (t *Table) ShowRowLines(v bool) {
+	if !rowLinesOnly(&t.t.Control, v) {
+		t.t.SetLinesVisible(v)
+	}
+}
+
 // Len counts rows, not columns.
 func (t *Table) Len() int { return int(t.t.GetItemCount()) }
 
@@ -175,8 +183,130 @@ func (t *Table) OnActivate(f func(index int)) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
+// SortDir is the sort indicator drawn in a column header. It only draws the arrow: sorting the rows is up to the app.
+type SortDir int
+
+// The sort indicator values.
+const (
+	SortNone SortDir = iota
+	SortAscending
+	SortDescending
+)
+
+func (d SortDir) swt() int32 {
+	switch d {
+	case SortAscending:
+		return swt.UP
+	case SortDescending:
+		return swt.DOWN
+	}
+	return swt.NONE
+}
+
+// SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
+func (t *Table) SetSort(col *Column, dir SortDir) {
+	if col == nil || dir == SortNone {
+		t.t.SetSortDirection(swt.NONE)
+		t.t.SetSortColumn(nil)
+		return
+	}
+	t.t.SetSortColumn(col.c)
+	t.t.SetSortDirection(dir.swt())
+}
+
+// Mods are the modifier keys held during a mouse press. On macOS a Ctrl-click arrives as Button 1 with Ctrl set.
+type Mods struct{ Ctrl, Shift, Alt, Cmd bool }
+
+func modsOf(e *swt.MouseEvent) Mods {
+	m := e.StateMask
+	return Mods{m&swt.CTRL != 0, m&swt.SHIFT != 0, m&swt.ALT != 0, m&swt.COMMAND != 0}
+}
+
+// TableClick is a mouse press on a Table. Row and Col are -1 when the point is not on a row.
+type TableClick struct {
+	Row, Col int // row index and column index of the cell under the pointer
+	Button   int // SWT's numbering: 1 left, 2 middle, 3 right
+	Count    int // 1 for a single press, 2 for the second press of a double click
+	X, Y     int // pointer position in the table's coordinates
+	Mods         // keys held down
+}
+
+// colAtX maps x (control coordinates, scrolled by scroll) to a column index given the column widths
+// in display order; order[i] is the column index shown i-th. It returns -1 for a point left of the
+// first column or past the last one, so empty space is never a cell.
+func colAtX(widths, order []int, scroll, x int) int {
+	x += scroll
+	if x < 0 {
+		return -1
+	}
+	for i, w := range widths {
+		if x < w {
+			return order[i]
+		}
+		x -= w
+	}
+	return -1
+}
+
+// probeXs lists the x positions to try with GetItemPoint: the pointer's, then the right end of the
+// first column, because macOS finds no item on a tree's expander arrow.
+func probeXs(x, firstWidth, clientWidth int) []int {
+	if firstWidth <= 0 {
+		firstWidth = clientWidth
+	}
+	return []int{x, firstWidth - 2}
+}
+
+// CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1
+// when no row is there. Col is -1 for a point in a row band but left of the first column or right of the last one.
+func (t *Table) CellAt(x, y int) (row, col int) {
+	n := int(t.t.GetColumnCount())
+	order := toInts(t.t.GetColumnOrder())
+	widths := make([]int, n)
+	for i, c := range order {
+		widths[i] = int(t.t.GetColumnIndex(int32(c)).GetWidth())
+	}
+	first := 0
+	if n > 0 {
+		first = widths[0]
+	}
+	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
+		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
+			return int(t.t.IndexOfItem(it)), cellCol(n, widths, order, hscroll(t.t.GetHorizontalBar()), x)
+		}
+	}
+	return -1, -1
+}
+
+// cellCol is colAtX, except that a table without columns has one implicit column 0.
+func cellCol(n int, widths, order []int, scroll, x int) int {
+	if n == 0 {
+		return 0
+	}
+	return colAtX(widths, order, scroll, x)
+}
+
+func hscroll(b *swt.ScrollBar) int {
+	if b == nil {
+		return 0
+	}
+	return int(b.GetSelection())
+}
+
+// OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
+// double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
+func (t *Table) OnCellClick(f func(TableClick)) {
+	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
+		row, col := t.CellAt(int(e.X), int(e.Y))
+		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
+	}))
+}
+
 // Column is a table column.
 type Column struct{ c *swt.TableColumn }
+
+// SetResizable allows or forbids resizing the column by dragging the header edge.
+func (c *Column) SetResizable(v bool) { c.c.SetResizable(v) }
 
 // SetTitle replaces the header text.
 func (c *Column) SetTitle(s string) { c.c.SetText(s) }
@@ -225,14 +355,112 @@ func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 // Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
 type Tree struct{ t *swt.Tree }
 
-// Tree adds a tree.
+// Tree adds a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
+// Column, the first column holds the tree and the header is shown until ShowHeader(false).
 func (p *panel) Tree(opts ...Option) *Tree {
-	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER, opts))
+	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
 	applyOpts(&t.Control, opts)
 	return &Tree{t}
 }
 
 func (t *Tree) control() *swt.Control { return &t.t.Control }
+
+// Column appends a column; Right() or Center() set the alignment. The first column holds the node
+// text and the expand arrows. The first call shows the header.
+func (t *Tree) Column(title string, width int, opts ...Option) *TreeColumn {
+	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
+	c.SetText(title)
+	c.SetWidth(int32(width))
+	if t.t.GetColumnCount() == 1 {
+		t.t.SetHeaderVisible(true)
+	}
+	return &TreeColumn{c}
+}
+
+// ShowRowLines shows or hides thin lines between rows only, see Table.ShowRowLines.
+func (t *Tree) ShowRowLines(v bool) {
+	if !rowLinesOnly(&t.t.Control, v) {
+		t.t.SetLinesVisible(v)
+	}
+}
+
+// ShowHeader shows or hides the column headers.
+func (t *Tree) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
+
+// SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
+func (t *Tree) SetSort(col *TreeColumn, dir SortDir) {
+	if col == nil || dir == SortNone {
+		t.t.SetSortDirection(swt.NONE)
+		t.t.SetSortColumn(nil)
+		return
+	}
+	t.t.SetSortColumn(col.c)
+	t.t.SetSortDirection(dir.swt())
+}
+
+// TreeClick is a mouse press on a Tree. Node is nil and Col is -1 when the point is not on a node.
+type TreeClick struct {
+	Node   *Node
+	Col    int // column index of the cell under the pointer
+	Button int // SWT's numbering: 1 left, 2 middle, 3 right
+	Count  int // 1 for a single press, 2 for the second press of a double click
+	X, Y   int // pointer position in the tree's coordinates
+	Mods       // keys held down
+}
+
+// CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1
+// when no node is there. The expander arrow and the space right of the text map to the cell; col is -1
+// for a point in the row's band but right of the last column.
+func (t *Tree) CellAt(x, y int) (*Node, int) {
+	n := int(t.t.GetColumnCount())
+	order := toInts(t.t.GetColumnOrder())
+	widths := make([]int, n)
+	for i, c := range order {
+		widths[i] = int(t.t.GetColumnIndex(int32(c)).GetWidth())
+	}
+	first := 0
+	if n > 0 {
+		first = widths[0]
+	}
+	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
+		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
+			return &Node{it}, cellCol(n, widths, order, hscroll(t.t.GetHorizontalBar()), x)
+		}
+	}
+	return nil, -1
+}
+
+// OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
+// double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
+func (t *Tree) OnCellClick(f func(TreeClick)) {
+	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
+		n, col := t.CellAt(int(e.X), int(e.Y))
+		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
+	}))
+}
+
+// TreeColumn is a tree column.
+type TreeColumn struct{ c *swt.TreeColumn }
+
+// SetTitle replaces the header text.
+func (c *TreeColumn) SetTitle(s string) { c.c.SetText(s) }
+
+// SetWidth sets the width in pixels.
+func (c *TreeColumn) SetWidth(w int) { c.c.SetWidth(int32(w)) }
+
+// SetResizable allows or forbids resizing the column by dragging the header edge.
+func (c *TreeColumn) SetResizable(v bool) { c.c.SetResizable(v) }
+
+// Pack resizes the column to fit its content.
+func (c *TreeColumn) Pack() { c.c.Pack() }
+
+// Unwrap returns the underlying swt.TreeColumn for the full API.
+func (c *TreeColumn) Unwrap() *swt.TreeColumn { return c.c }
+
+// OnClick runs f when the header is clicked, e.g. to sort.
+func (c *TreeColumn) OnClick(f func()) {
+	onSelect(c.c, func(*swt.SelectionEvent) { f() })
+}
 
 // Clear deletes all nodes, children included.
 func (t *Tree) Clear() { t.t.RemoveAll() }
@@ -338,6 +566,15 @@ func (n *Node) SetChecked(v bool) { n.it.SetChecked(v) }
 
 // SetImage sets the icon; the node does not own img.
 func (n *Node) SetImage(img *Image) { n.it.SetImageIndexImage(0, img.i) }
+
+// TextAt returns the text of column col.
+func (n *Node) TextAt(col int) string { return n.it.GetTextIndex(int32(col)) }
+
+// SetTextAt sets the text of column col; SetText is column 0.
+func (n *Node) SetTextAt(col int, s string) { n.it.SetTextIndexString(int32(col), s) }
+
+// SetImageAt sets the icon of column col; the node does not own img.
+func (n *Node) SetImageAt(col int, img *Image) { n.it.SetImageIndexImage(int32(col), img.i) }
 
 // Children returns the direct child nodes.
 func (n *Node) Children() []*Node { return nodes(n.it.GetItems()) }

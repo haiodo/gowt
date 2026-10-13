@@ -129,6 +129,37 @@ func (p *panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
 
 func (c *Canvas) control() *swt.Control { return &c.c.Control }
 
+// Mouse is a pointer event on a Canvas, in the canvas's coordinates.
+type Mouse struct {
+	X, Y   int
+	Button int // SWT's numbering: 1 left, 2 middle, 3 right; 0 for a move
+	Count  int // 2 for the second press of a double click
+	Mods       // keys held down; a macOS Ctrl-click is Button 1 with Ctrl
+}
+
+func mouseOf(e *swt.MouseEvent) Mouse {
+	return Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count), Mods: modsOf(e)}
+}
+
+// OnMouseDown runs f when a button is pressed.
+func (c *Canvas) OnMouseDown(f func(Mouse)) {
+	c.c.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
+}
+
+// OnMouseUp runs f when a button is released.
+func (c *Canvas) OnMouseUp(f func(Mouse)) {
+	c.c.AddMouseListener(swt.MouseListenerMouseUpAdapter(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
+}
+
+type mover func(*swt.MouseEvent)
+
+func (f mover) MouseMove(e *swt.MouseEvent) { f(e) }
+
+// OnMouseMove runs f when the pointer moves over the canvas.
+func (c *Canvas) OnMouseMove(f func(Mouse)) {
+	c.c.AddMouseMoveListener(mover(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
+}
+
 // Redraw schedules a repaint, which calls the paint callback.
 func (c *Canvas) Redraw() { c.c.Redraw() }
 

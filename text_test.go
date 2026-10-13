@@ -1,6 +1,10 @@
 package gowt
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/haiodo/gowt/swt"
+)
 
 // "a" 1 unit, emoji 2 units (surrogate pair), CJK 1 unit.
 const mixed = "a😀中b"
@@ -70,4 +74,55 @@ func TestClipboardRoundTrip(t *testing.T) {
 			t.Error("text after Clear")
 		}
 	})
+}
+
+func TestHeadUnits(t *testing.T) {
+	cases := []struct {
+		s    string
+		keep int
+		want int
+	}{
+		{"a\nb\nc", 2, 2},
+		{"a\nb\nc", 1, 4},
+		{"a\nb\nc", 3, 0},
+		{"a\nb\nc", 9, 0},
+		{"a\nb\n", 1, 4},
+		{"😀\nb\r\nc", 2, 3},
+		{"a\nb", 0, 3},
+	}
+	for _, c := range cases {
+		if got := headUnits(c.s, c.keep); got != c.want {
+			t.Errorf("headUnits(%q, %d) = %d, want %d", c.s, c.keep, got, c.want)
+		}
+	}
+}
+
+func TestSortDirMapping(t *testing.T) {
+	if SortNone.swt() != swt.NONE || SortAscending.swt() != swt.UP || SortDescending.swt() != swt.DOWN {
+		t.Error("SortDir does not map to NONE, UP, DOWN")
+	}
+}
+
+func TestNoBorderClearsDefault(t *testing.T) {
+	if resolve(swt.BORDER|swt.V_SCROLL, []Option{NoBorder()}) != swt.V_SCROLL {
+		t.Error("NoBorder must clear BORDER")
+	}
+	if resolve(swt.NONE, []Option{Search()}) != swt.SEARCH {
+		t.Error("Search must set SEARCH")
+	}
+}
+
+func TestColAtX(t *testing.T) {
+	widths, order := []int{100, 50, 80}, []int{2, 0, 1} // column 2 is shown first
+	cases := []struct{ scroll, x, want int }{
+		{0, 0, 2}, {0, 99, 2}, {0, 100, 0}, {0, 149, 0}, {0, 150, 1}, {0, 229, 1}, {0, 230, -1}, {0, 5000, -1}, {0, -1, -1}, {20, 85, 0},
+	}
+	for _, c := range cases {
+		if got := colAtX(widths, order, c.scroll, c.x); got != c.want {
+			t.Errorf("colAtX(scroll %d, x %d) = %d, want %d", c.scroll, c.x, got, c.want)
+		}
+	}
+	if colAtX(nil, nil, 0, 5) != -1 {
+		t.Error("no columns must give -1")
+	}
 }

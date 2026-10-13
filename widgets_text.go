@@ -63,6 +63,25 @@ func (t *StyledText) SetText(s string) { t.t.SetText(s) }
 // Append adds s at the end.
 func (t *StyledText) Append(s string) { t.t.Append(s) }
 
+// TrimHead deletes the oldest lines so that at most keep lines remain; TrimHead(0) clears the
+// text. It does not touch the rest of the text and works on a read-only view.
+func (t *StyledText) TrimHead(keep int) {
+	n := int(t.t.GetLineCount()) - keep
+	switch {
+	case n <= 0:
+	case keep <= 0:
+		t.t.ReplaceTextRange(0, t.t.GetCharCount(), "")
+	default:
+		t.t.ReplaceTextRange(0, t.t.GetOffsetAtLine(int32(n)), "")
+	}
+}
+
+// ScrollToEnd moves the caret to the end and scrolls it into view.
+func (t *StyledText) ScrollToEnd() {
+	t.t.SetCaretOffset(t.t.GetCharCount())
+	t.t.ShowSelection()
+}
+
 // Insert adds s at the caret.
 func (t *StyledText) Insert(s string) { t.t.Insert(s) }
 

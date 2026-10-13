@@ -367,3 +367,158 @@ func TestStyleOptionsWin(t *testing.T) {
 		}
 	})
 }
+
+func TestTreeColumnsAndCells(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		w.SetLayout(Grid{Columns: 1})
+		tr := w.Tree(Cell(GridCell{Align: AlignFill, VAlign: AlignFill, GrowX: true, GrowY: true, Width: 300, Height: 200}))
+		a := tr.Column("Name", 150)
+		b := tr.Column("Size", 100, Right())
+		b.SetResizable(false)
+		if !tr.Unwrap().GetHeaderVisible() {
+			t.Error("first Column must show the header")
+		}
+		tr.SetSort(a, SortAscending)
+		n := tr.Node("root")
+		n.SetTextAt(1, "42")
+		if n.TextAt(1) != "42" || n.Text() != "root" {
+			t.Errorf("cells %q %q", n.Text(), n.TextAt(1))
+		}
+		w.Show()
+		bounds := n.Unwrap().GetBoundsIndex(1)
+		got, col := tr.CellAt(int(bounds.X+bounds.Width/2), int(bounds.Y+bounds.Height/2))
+		if got == nil || got.Text() != "root" || col != 1 {
+			t.Errorf("tree CellAt: %v col %d", got, col)
+		}
+		if got, col := tr.CellAt(5, 5000); got != nil || col != -1 {
+			t.Errorf("tree CellAt outside: %v col %d", got, col)
+		}
+
+		tb := w.Table()
+		tb.Column("a", 80)
+		tb.Column("b", 80)
+		r := tb.Row("x", "y")
+		tb.SetSort(nil, SortNone)
+		rb := r.Unwrap().GetBoundsIndex(1)
+		if row, col := tb.CellAt(int(rb.X+rb.Width/2), int(rb.Y+rb.Height/2)); row != 0 || col != 1 {
+			t.Errorf("table CellAt: row %d col %d", row, col)
+		}
+	})
+}
+
+func TestEnabledSwitchAndTextLog(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		w.SetLayout(Grid{Columns: 1})
+		var got []bool
+		sw := w.Switch("Wi-Fi", func(on bool) { got = append(got, on) })
+		sw.SetChecked(true)
+		if !sw.Checked() || len(got) != 0 {
+			t.Errorf("SetChecked: checked %v callbacks %v", sw.Checked(), got)
+		}
+		sw.Unwrap().SetSelection(false)
+		notify(sw.Unwrap(), swt.Selection)
+		if len(got) != 1 || got[0] {
+			t.Errorf("OnChange got %v", got)
+		}
+		if !Enabled(sw) {
+			t.Error("new control must be enabled")
+		}
+		SetEnabled(sw, false)
+		if Enabled(sw) {
+			t.Error("SetEnabled(false) not applied")
+		}
+		lbl := w.Label("x", Disabled())
+		if Enabled(lbl) {
+			t.Error("Disabled() option not reflected by Enabled")
+		}
+
+		tx := w.Text(Multiline())
+		for i := 0; i < 10; i++ {
+			tx.Append("line\n")
+		}
+		if tx.Lines() != 11 {
+			t.Errorf("Text.Lines = %d", tx.Lines())
+		}
+		tx.TrimHead(3)
+		if tx.Lines() != 3 || tx.Text() != "line\nline\n" {
+			t.Errorf("Text.TrimHead: %d lines %q", tx.Lines(), tx.Text())
+		}
+		tx.ScrollToEnd()
+
+		st := w.StyledText(Scrollbars())
+		for i := 0; i < 10; i++ {
+			st.Append("l\n")
+		}
+		st.TrimHead(3)
+		if st.Lines() != 3 || st.Text() != "l\nl\n" {
+			t.Errorf("StyledText.TrimHead: %d lines %q", st.Lines(), st.Text())
+		}
+		st.TrimHead(0)
+		if st.Text() != "" {
+			t.Errorf("StyledText.TrimHead(0) left %q", st.Text())
+		}
+
+		ro := w.Text(Multiline(), ReadOnly())
+		ro.Append("a\nb\nc\nd")
+		ro.TrimHead(2)
+		if ro.Text() != "c\nd" || ro.Unwrap().GetEditable() {
+			t.Errorf("read-only Text.TrimHead: %q editable %v", ro.Text(), ro.Unwrap().GetEditable())
+		}
+		ro.TrimHead(0)
+		if ro.Text() != "" {
+			t.Errorf("Text.TrimHead(0) left %q", ro.Text())
+		}
+		st.ScrollToEnd()
+	})
+}
+
+func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		w.SetLayout(Grid{Columns: 1})
+		a := w.Label("a")
+		b := w.Label("b")
+		w.Show()
+		before := b.l.GetBounds().Y
+		SetVisible(a, false)
+		if Visible(a) || b.l.GetBounds().Y >= before {
+			t.Errorf("hidden label must free its cell: visible %v y %d -> %d", Visible(a), before, b.l.GetBounds().Y)
+		}
+		SetVisible(a, true)
+
+		row := w.Panel().SetLayout(Row{})
+		r1 := row.Label("r1")
+		r2 := row.Label("r2")
+		w.Unwrap().LayoutOverload2(true, true)
+		x2 := r2.l.GetBounds().X
+		SetVisible(r1, false)
+		if r2.l.GetBounds().X >= x2 {
+			t.Errorf("Row layout kept the gap of a hidden label: x %d -> %d", x2, r2.l.GetBounds().X)
+		}
+		SetFont(b, Font{Size: 14})
+		SetFont(b, Font{Size: 20, Bold: true})
+		if len(ownedFonts) != 1 {
+			t.Errorf("ownedFonts %d", len(ownedFonts))
+		}
+		SetForeground(b, RGB{200, 0, 0})
+		if b.l.GetFont().GetFontData()[0].GetHeight() != 20 {
+			t.Error("SetFont size not applied")
+		}
+
+		tr := w.Tree(NoBorder())
+		tr.ShowRowLines(true)
+		if tr.Unwrap().GetStyle()&swt.BORDER != 0 {
+			t.Error("NoBorder tree has BORDER")
+		}
+		w.Text(Search())
+
+		cv := w.Canvas(nil)
+		var got Mouse
+		cv.OnMouseDown(func(m Mouse) { got = m })
+		ev := &swt.Event{}
+		ev.Button, ev.X, ev.Y, ev.Count = 3, 4, 5, 2
+		cv.Unwrap().NotifyListeners(swt.MouseDown, ev)
+		if got != (Mouse{X: 4, Y: 5, Button: 3, Count: 2}) {
+			t.Errorf("canvas mouse %+v", got)
+		}
+	})
+}

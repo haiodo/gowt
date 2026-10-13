@@ -11,7 +11,7 @@ import java.util.*;
  * annotations evaluated at translation time for macOS (README "Round 12 tests"). */
 final class TestEmitter {
 
-	private static final String JUNIT_IMPORT = "github.com/haiodo/gowt/internal/junit";
+	private static final String JUNIT_IMPORT = dev.gowt.j2go.Manual.JUNIT_IMPORT;
 	private static final String API = "org.junit.jupiter.api.";
 	private static final String COND = "org.junit.jupiter.api.condition.";
 	private static final String PARAMS = "org.junit.jupiter.params.";

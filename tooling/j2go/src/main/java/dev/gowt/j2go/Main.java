@@ -13,9 +13,6 @@ import java.util.*;
 /** CLI: --swt <repo root> --out <dir> <java files relative to source roots or absolute...> */
 public class Main {
 
-	// Java stubs for test-harness classes outside the SWT repo (org.eclipse.test.Screenshots).
-	private static final String STUB_ROOT = "tooling/j2go/stubs";
-
 	private static final String SWT_COMMIT = "af630a9093";
 	// eclipse.platform.ui, the source of org.eclipse.jface.* (README "Round 22 jface").
 	private static final String UI_COMMIT = "618d26a101";
@@ -25,7 +22,9 @@ public class Main {
 		String outDir = null;
 		Platform platform = Platform.COCOA;
 		String[] classpath = new String[0];
+		boolean keepGoing = false;
 		List<String> extraRoots = new ArrayList<>();
+		List<Path> stubRoots = new ArrayList<>();
 		List<String> files = new ArrayList<>();
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
 		// when translated) but not re-emitted - e.g. Widget.java needs OS.java's ClassInfo, not
@@ -38,13 +37,20 @@ public class Main {
 				case "--out" -> outDir = args[++i];
 				case "--platform" -> platform = Platform.parse(args[++i]);
 				case "--classpath" -> classpath = args[++i].split(":");
+				case "--keep-going" -> keepGoing = true;
 				case "--src" -> extraRoots.add(args[++i]);
+				case "--config" -> Config.dir = Path.of(args[++i]);
+				case "--stubs" -> stubRoots.add(Path.of(args[++i]));
+				case "--runtime-import" -> Config.runtimeImport = args[++i];
+				case "--junit-import" -> Config.junitImport = args[++i];
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
 		}
+		// Stubs default to <config>/stubs (Java stubs for test-harness classes outside the SWT repo, org.eclipse.test.Screenshots).
+		Config.stubRoots = stubRoots.isEmpty() ? List.of(Config.dir.resolve("stubs")) : stubRoots;
 		if (swtRoot == null || outDir == null || files.isEmpty()) {
-			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... <java files...> [-- <reference-only java files...>]");
+			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... [--config <dir>] [--stubs <dir>]... [--runtime-import <path>] [--junit-import <path>] <java files...> [-- <reference-only java files...>]");
 			System.exit(2);
 		}
 
@@ -79,9 +85,9 @@ public class Main {
 			if (platformRoot) platformRoots.add(p + "/");
 		}
 		for (String r : extraRoots) sourceRoots.add(Path.of(r).toAbsolutePath().toString());
-		if (Files.isDirectory(Path.of(STUB_ROOT))) sourceRoots.add(Path.of(STUB_ROOT).toAbsolutePath().toString());
-		if (platform == Platform.GTK) for (String d : new String[] { "tooling/j2go/gtkstubs", "tooling/j2go/gtkstubs-gen" })
-			if (Files.isDirectory(Path.of(d))) sourceRoots.add(Path.of(d).toAbsolutePath().toString());
+		for (Path d : Config.stubRoots) if (Files.isDirectory(d)) sourceRoots.add(d.toAbsolutePath().toString());
+		if (platform == Platform.GTK) for (String d : new String[] { "gtkstubs", "gtkstubs-gen" })
+			if (Files.isDirectory(Config.dir.resolve(d))) sourceRoots.add(Config.dir.resolve(d).toAbsolutePath().toString());
 
 		List<String> absFiles = resolveSources(files, sourceRoots);
 		List<String> absRefFiles = resolveSources(refFiles, sourceRoots);
@@ -93,6 +99,7 @@ public class Main {
 		Arrays.fill(encodings, "UTF-8");
 		List<CompilationUnit> orderedUnits = new ArrayList<>();
 		int problemCount = 0;
+		Set<String> badFiles = new HashSet<>();
 		// A hoisted local class that captures a variable breaks binding: retry those files with records desugared only.
 		for (boolean retry = true; ; retry = false) {
 			unitsByPath.clear();
@@ -126,6 +133,7 @@ public class Main {
 					if (p.isError()) {
 						bad = true;
 						errors.add("j2go: [error] " + f + ": " + p);
+						badFiles.add(f);
 					}
 				}
 				if (bad && retry) for (var e : mirrorToReal.entrySet())
@@ -137,21 +145,21 @@ public class Main {
 			break;
 		}
 		if (problemCount > 0) {
-			System.err.println("j2go: " + problemCount + " binding/compile errors, aborting");
-			System.exit(1);
+			System.err.println("j2go: " + problemCount + " binding/compile errors" + (keepGoing ? ", continuing (--keep-going)" : ", aborting"));
+			if (!keepGoing) System.exit(1);
 		}
 
 		Names names = new Names();
-		names.loadPins(Path.of("tooling/j2go/overloads.properties"));
-		names.loadOverrides(Path.of("tooling/j2go/names.properties"));
-		dev.gowt.j2go.emit.WinLayout.load(Path.of("tooling/j2go/win32_layout.txt"));
-		if (platform == Platform.GTK) names.loadOverrides(Path.of("tooling/j2go/gtkstubs-gen/names.properties"));
+		names.loadPins(Config.dir.resolve("overloads.properties"));
+		names.loadOverrides(Config.dir.resolve("names.properties"));
+		dev.gowt.j2go.emit.WinLayout.load(Config.dir.resolve("win32_layout.txt"));
+		if (platform == Platform.GTK) names.loadOverrides(Config.dir.resolve("gtkstubs-gen/names.properties"));
 		Natives natives = new Natives();
-		natives.load(Path.of("tooling/j2go/natives.properties"));
+		natives.load(Config.dir.resolve("natives.properties"));
 		Selectors selectors = new Selectors();
-		selectors.load(Path.of("tooling/j2go/selectors.properties"));
+		selectors.load(Config.dir.resolve("selectors.properties"));
 		TypeModel model = new TypeModel();
-		Path cascadePins = Path.of("tooling/j2go/cascade.properties");
+		Path cascadePins = Config.dir.resolve("cascade.properties");
 		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(l -> { int eq = l.indexOf('='); if (eq < 0) TypeModel.PINNED_CASCADE.add(l); else TypeModel.PINNED_CASCADE_NAMES.put(l.substring(0, eq), l.substring(eq + 1)); });
 		model.build(orderedUnits, names);
 		if (System.getenv("J2GO_DUMP_CASCADE") != null) model.dumpCascade(Path.of(System.getenv("J2GO_DUMP_CASCADE")));
@@ -168,18 +176,28 @@ public class Main {
 			CompilationUnit cu = orderedUnits.get(i);
 			String absPath = absFiles.get(i);
 			// A Java stub only types its Go counterpart (hand-written); it is modeled, never emitted.
-			if (absPath.startsWith(Path.of(STUB_ROOT).toAbsolutePath() + "/")) continue;
+			if (Config.stubRoots.stream().anyMatch(r -> absPath.startsWith(r.toAbsolutePath() + "/"))) continue;
 			String source = Files.readString(Path.of(absPath), StandardCharsets.UTF_8);
 
 			if (System.getenv("J2GO_TRACE") != null) System.err.println("j2go: emitting " + absPath);
 			String unitPkg = cu.getPackage().getName().getFullyQualifiedName();
+			if (keepGoing && !(cu.types().get(0) instanceof TypeDeclaration)) { System.err.println("j2go: [skip] " + absPath + ": " + cu.types().get(0).getClass().getSimpleName() + " not supported"); continue; }
 			String unitType = ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier();
 			String unitDir = GoTypes.goPackageDir(unitPkg, unitType);
 			boolean commonSource = !reference && platformRoots.stream().noneMatch(absPath::startsWith) && !unitDir.equals(platform.piDir);
 			// A common source the reference platform has no file for (it stubs the class by hand) is this platform's own.
 			boolean sharedFile = commonSource && Files.exists(Path.of(outDir, unitDir, lastSegment(unitPkg) + "_" + unitType.toLowerCase(Locale.ROOT) + ".go"));
 			emitter.separateHelpers = sharedFile;
-			Emitter.EmitResult result = emitter.emitCompilationUnit(cu);
+			if (keepGoing && badFiles.contains(absPath)) { System.err.println("j2go: [skip] " + absPath + ": binding errors"); continue; }
+			Emitter.EmitResult result;
+			try {
+				result = emitter.emitCompilationUnit(cu);
+			} catch (RuntimeException e) {
+				if (!keepGoing) throw e;
+				StackTraceElement[] st = e.getStackTrace();
+				System.err.println("j2go: [crash] " + absPath + ": " + e.getClass().getSimpleName() + " at " + (st.length > 0 ? st[0] : "?"));
+				continue;
+			}
 			// The reference platform owns the shared files; here only the helpers they need are kept.
 			if (sharedFile) {
 				if (GoTypes.goPackageOf(cu.getPackage().getName().getFullyQualifiedName(), ((TypeDeclaration) cu.types().get(0)).getName().getIdentifier()).equals("swt")) {

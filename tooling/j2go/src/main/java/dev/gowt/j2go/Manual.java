@@ -42,7 +42,9 @@ public class Manual {
 	private static final String JAVA_EVENT_OBJECT = "java.util.EventObject";
 	private static final String JAVA_EVENT_LISTENER = "java.util.EventListener";
 	private static final String SWT_EVENT_LISTENER = "org.eclipse.swt.internal.SWTEventListener";
-	public static final String JRT_IMPORT = "github.com/haiodo/gowt/internal/jrt";
+	// Read from Config at class init, so Main must set Config before Manual is first used.
+	public static final String JRT_IMPORT = Config.runtimeImport;
+	public static final String JUNIT_IMPORT = Config.junitImport;
 
 	// Round 9 images: java.io surface ImageLoader.java's own translated code needs (field/param
 	// types and new FileInputStream/FileOutputStream(filename)) - README "Round 9 images". The
@@ -171,7 +173,7 @@ public class Manual {
 		// A record (no rule): swt/graphics_stubs_manual.go, element erased to any.
 		reg("org.eclipse.swt.internal.DPIUtil.ElementAtZoom", "DPIUtilElementAtZoom", null, false);
 		// TestInfo: internal/junit; Optional: internal/jrt/jdk.go.
-		reg("org.junit.jupiter.api.TestInfo", "junit.TestInfo", "github.com/haiodo/gowt/internal/junit", false);
+		reg("org.junit.jupiter.api.TestInfo", "junit.TestInfo", dev.gowt.j2go.Manual.JUNIT_IMPORT, false);
 		reg("java.util.Optional", "jrt.Optional", JRT_IMPORT, false);
 		reg("java.util.OptionalInt", "jrt.Optional", JRT_IMPORT, false);
 		// internal/jrt/concurrent.go; TimeUnit is a value type (jrt.TimeUnitMILLISECONDS, ...).

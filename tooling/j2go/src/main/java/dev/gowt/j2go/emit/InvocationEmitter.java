@@ -45,7 +45,7 @@ final class InvocationEmitter {
 		// list.toArray(new T[0]): jrt.List.ToArray is []any, a typed slice needs the element type.
 		if (qualified.startsWith("java.util.") && mb.getName().equals("toArray") && (args.size() == 1 || qualified.equals("java.util.stream.IntStream")) && mi.getExpression() != null
 				&& mb.getReturnType().isArray() && dev.gowt.j2go.GoTypes.map(mi.getExpression().resolveTypeBinding(), emitter).equals("*jrt.List")) {
-			emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+			emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 			return "jrt.ToSlice[" + dev.gowt.j2go.GoTypes.map(mb.getReturnType().getComponentType(), emitter) + "](" + emitter.expr(mi.getExpression()) + ")";
 		}
 
@@ -214,7 +214,7 @@ final class InvocationEmitter {
 		if (!mb.getMethodDeclaration().getReturnType().isTypeVariable()) return call;
 		String goType = dev.gowt.j2go.GoTypes.map(mb.getReturnType(), emitter);
 		if (goType.equals("any")) return call;
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		return "jrt.Cast[" + goType + "](" + call + ")";
 	}
 
@@ -273,7 +273,7 @@ final class InvocationEmitter {
 			default -> null;
 		};
 		if (goType == null) return null;
-		emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+		emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 		List<?> args = cic.arguments();
 		String msg = args.isEmpty() ? "" : "Message: " + emitter.expr((Expression) args.get(0));
 		return "&" + goType + "{" + msg + "}";
@@ -431,12 +431,12 @@ final class InvocationEmitter {
 			}
 			// Thread is a bare any (Manual) except for the one shape the tests use: a runnable run by start()/join().
 			if (qualified.equals("java.lang.Thread") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].getQualifiedName().equals("java.lang.Runnable")) {
-				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 				return "jrt.NewThread(" + buildArgs(cic.arguments(), ctor).get(0) + ")";
 			}
 			// new PrintStream(out, ...): value-typed in Manual, so no constructor call would come out of it.
 			if (qualified.equals("java.io.PrintStream")) {
-				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 				return "jrt.NewPrintStream(" + String.join(", ", buildArgs(cic.arguments(), ctor)) + ")";
 			}
 			// BufferedInputStream only adds buffering: the wrapped stream is the value.
@@ -444,7 +444,7 @@ final class InvocationEmitter {
 			// new String(byte[]) and new String(byte[], Charset): the bytes are UTF-8.
 			if (qualified.equals("java.lang.String") && (n == 1 || n == 2) && ctor.getParameterTypes()[0].isArray()
 					&& ctor.getParameterTypes()[0].getComponentType().getName().equals("byte")) {
-				emitter.fileImports.add("github.com/haiodo/gowt/internal/jrt");
+				emitter.fileImports.add(dev.gowt.j2go.Manual.JRT_IMPORT);
 				return "jrt.StringFromBytes(" + emitter.expr((Expression) cic.arguments().get(0)) + ")";
 			}
 			// new String(String) is a copy; Go strings are values.

@@ -219,7 +219,7 @@ final class JdkIntrinsics {
 		return more.tryMore(mi, mb, qualified, mb.getName());
 	}
 
-	static final String JRT = "github.com/haiodo/gowt/internal/jrt";
+	static final String JRT = dev.gowt.j2go.Manual.JRT_IMPORT;
 
 	private String jrtCall(String fn, String args) {
 		emitter.fileImports.add(JRT);

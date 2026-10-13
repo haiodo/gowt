@@ -232,20 +232,20 @@ type TableClick struct {
 }
 
 // colAtX maps x (control coordinates, scrolled by scroll) to a column index given the column widths
-// in display order; order[i] is the column index shown i-th. A point past the last column belongs to
-// it, so every point of a row maps to a column. It returns -1 for no columns.
+// in display order; order[i] is the column index shown i-th. It returns -1 for a point left of the
+// first column or past the last one, so empty space is never a cell.
 func colAtX(widths, order []int, scroll, x int) int {
-	if len(order) == 0 {
+	x += scroll
+	if x < 0 {
 		return -1
 	}
-	x += scroll
 	for i, w := range widths {
 		if x < w {
 			return order[i]
 		}
 		x -= w
 	}
-	return order[len(order)-1]
+	return -1
 }
 
 // probeXs lists the x positions to try with GetItemPoint: the pointer's, then the right end of the
@@ -258,7 +258,7 @@ func probeXs(x, firstWidth, clientWidth int) []int {
 }
 
 // CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1
-// when no row is there. Any point of a row's band maps to a cell, also right of the last column.
+// when no row is there. Col is -1 for a point in a row band but left of the first column or right of the last one.
 func (t *Table) CellAt(x, y int) (row, col int) {
 	n := int(t.t.GetColumnCount())
 	order := toInts(t.t.GetColumnOrder())
@@ -272,10 +272,18 @@ func (t *Table) CellAt(x, y int) (row, col int) {
 	}
 	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
 		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
-			return int(t.t.IndexOfItem(it)), max(colAtX(widths, order, hscroll(t.t.GetHorizontalBar()), x), 0)
+			return int(t.t.IndexOfItem(it)), cellCol(n, widths, order, hscroll(t.t.GetHorizontalBar()), x)
 		}
 	}
 	return -1, -1
+}
+
+// cellCol is colAtX, except that a table without columns has one implicit column 0.
+func cellCol(n int, widths, order []int, scroll, x int) int {
+	if n == 0 {
+		return 0
+	}
+	return colAtX(widths, order, scroll, x)
 }
 
 func hscroll(b *swt.ScrollBar) int {
@@ -401,8 +409,8 @@ type TreeClick struct {
 }
 
 // CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1
-// when no node is there. Any point of a node's row, expander arrow and the space right of the text
-// included, maps to a cell.
+// when no node is there. The expander arrow and the space right of the text map to the cell; col is -1
+// for a point in the row's band but right of the last column.
 func (t *Tree) CellAt(x, y int) (*Node, int) {
 	n := int(t.t.GetColumnCount())
 	order := toInts(t.t.GetColumnOrder())
@@ -416,7 +424,7 @@ func (t *Tree) CellAt(x, y int) (*Node, int) {
 	}
 	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
 		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
-			return &Node{it}, max(colAtX(widths, order, hscroll(t.t.GetHorizontalBar()), x), 0)
+			return &Node{it}, cellCol(n, widths, order, hscroll(t.t.GetHorizontalBar()), x)
 		}
 	}
 	return nil, -1

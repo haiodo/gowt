@@ -115,7 +115,7 @@ func TestNoBorderClearsDefault(t *testing.T) {
 func TestColAtX(t *testing.T) {
 	widths, order := []int{100, 50, 80}, []int{2, 0, 1} // column 2 is shown first
 	cases := []struct{ scroll, x, want int }{
-		{0, 0, 2}, {0, 99, 2}, {0, 100, 0}, {0, 149, 0}, {0, 150, 1}, {0, 5000, 1}, {20, 85, 0},
+		{0, 0, 2}, {0, 99, 2}, {0, 100, 0}, {0, 149, 0}, {0, 150, 1}, {0, 229, 1}, {0, 230, -1}, {0, 5000, -1}, {0, -1, -1}, {20, 85, 0},
 	}
 	for _, c := range cases {
 		if got := colAtX(widths, order, c.scroll, c.x); got != c.want {

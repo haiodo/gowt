@@ -31,6 +31,7 @@ Colours you set yourself (`Background`, `GC` colours) do not change by themselve
 | `look.SetGlass(container, true)` | Liquid Glass surface behind a `Panel`, `Window`, `Group`, `Split` or `CoolBar`. macOS 26; older macOS shows a blurred material, other systems nothing |
 | `look.GlassButton()` | option for a push button: glass bezel on macOS 26 |
 | `look.SetFullSizeContent(w, true)` | content extends under a transparent title bar (macOS); the window layout (Grid, Row, Form) gets the title bar and toolbar height as extra top margin (`Window.SetTopInset`), updated on resize and SetToolbar |
+| `look.DragsWindow(c)` | `c` (Panel, Window, Group...) and its labels and plain panels move the window on a left press and zoom or maximize on a double click, like a title bar; buttons, text fields and Canvas keep their clicks. Call it after building `c`. macOS `performWindowDragWithEvent:` and the `AppleActionOnDoubleClick` setting; Windows `WM_NCLBUTTONDOWN` with `HTCAPTION`, double click toggles maximized; Linux `gtk_window_begin_move_drag` (GTK 3), double click toggles maximized. Not run on any OS yet |
 | `look.SetRoundedCorners(w, true)` | force rounded or square window corners on Windows 11 |
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
 | `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux): nothing is created, build a `gowt.ToolBar` instead |

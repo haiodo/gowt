@@ -16,6 +16,8 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
+| `NoBorder()` | drops the frame of List, Table, Tree |
+| `Search()` | Text as a search field |
 | `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
 | `Right()`, `Center()` | Table column alignment |
 | `Bottom()` | Tabs and CTabs: tabs below the pages |
@@ -28,13 +30,14 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Widget | Constructor | Notes |
 |---|---|---|
 | Label | `Label(text)` | `SetText`, `SetImage` |
+| Switch | `Switch(text, onChange)` | on/off toggle; `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
 | Button | `Button(text, onClick)` | push by default; `Check()`/`Radio()`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
-| Text | `Text()` | `Text`, `SetText`, `SetHint`, `OnChange(func(string))`, `OnActivate(func())` (Enter) |
+| Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint`, `OnChange(func(string))`, `OnActivate(func())` (Enter) |
 | Link | `Link(html, onClick)` | text with `<a href="...">`; `onClick` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
 | List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `SetSelection`, `OnSelect`, `OnActivate` (double click) |
-| Table | `Table()` | `Column(title, width)`, `Row(cells...)` returns `*TableRow` (`SetText(col, s)`, `SetData`, `Data`, `SetChecked`, `SetImage(col, img)`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines` |
-| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse` |
+| Table | `Table()` | `Column(title, width)`, `Row(cells...)` returns `*TableRow` (`SetText(col, s)`, `SetData`, `Data`, `SetChecked`, `SetImage(col, img)`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines`, `ShowRowLines`, `SetSort(col, dir)`, `CellAt(x, y)`, `OnCellClick`; `Column` also has `SetResizable` |
+| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse`. Columns as in Table: `Column(title, width, opts...)` returns `*TreeColumn` (the first holds the tree), `ShowHeader`, `ShowRowLines`, `SetSort`, `CellAt`, `OnCellClick`; per-column cells `Node.TextAt(col)`, `SetTextAt`, `SetImageAt` |
 | Scale, Slider, Spinner | `Scale(min, max, value)` | `Value`, `SetValue`, `OnChange(func(int))` |
 | Progress | `Progress(max)` | `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
@@ -44,8 +47,20 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Scroll | `Scroll()` | build into `Content()`, then call `Fit()` |
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem`; `Separator()` |
 | CoolBar, Sash | `CoolBar()`, `Sash()` | `CoolBar.Add(widget)`; `Sash.OnMove` |
-| Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md) |
-| StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
+| Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count) |
+| StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
+
+## Any control
+
+Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again), `SetFont(w, Font{Name, Size, Bold, Italic})` (empty Name and zero Size keep the current ones; the font is released with the control), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
+
+## Cell clicks
+
+`Table.OnCellClick` and `Tree.OnCellClick` run on every mouse press with the row (or node), the column index from the item's per-column bounds, `Button` (1 left, 3 right) and `Count` (2 on a double click), so a handler ignores what it does not need. The cell comes from a hit test, not from the selection, which may not have moved yet. `CellAt(x, y)` does the same for any point, e.g. a context menu. `Tree` selects whole rows so that a click in any column finds its node.
+
+## Logs in Text and StyledText
+
+`Append(s)` adds at the end without `SetText`; `Lines()` counts lines; `TrimHead(keep)` deletes the oldest lines (Text rewrites its content, so trim when `Lines()` exceeds a cap by a margin; StyledText deletes just the head); `ScrollToEnd()` follows the tail.
 
 ## Clipboard and drag and drop
 

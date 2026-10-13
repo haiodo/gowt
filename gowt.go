@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -99,6 +100,7 @@ func (a *App) Unwrap() *swt.Display { return a.display }
 // Option adjusts a widget at construction: style bits are OR-ed before creation, apply runs after.
 type Option struct {
 	style int32
+	clear int32 // style bits removed from the widget's defaults
 	apply func(*swt.Control)
 }
 
@@ -134,6 +136,12 @@ func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
 // Border draws a frame; Table and Tree have one by default.
 func Border() Option { return Option{style: swt.BORDER} }
 
+// NoBorder removes the frame that List, Table and Tree have by default.
+func NoBorder() Option { return Option{clear: swt.BORDER} }
+
+// Search makes a Text a search field (with the clear button where the OS draws one).
+func Search() Option { return Option{style: swt.SEARCH} }
+
 // Background sets the background color of a widget.
 func Background(c RGB) Option {
 	return Option{apply: func(w *swt.Control) { w.SetBackgroundWithColor(c.color()) }}
@@ -145,6 +153,9 @@ func Custom(f func(*swt.Control)) Option { return Option{apply: f} }
 func resolve(base int32, opts []Option) int32 {
 	for _, o := range opts {
 		base |= o.style
+	}
+	for _, o := range opts {
+		base &^= o.clear
 	}
 	return base
 }
@@ -207,6 +218,20 @@ func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
 	w := &Button{b: b}
 	if onClick != nil {
 		w.OnClick(onClick)
+	}
+	return w
+}
+
+// Switch adds an on/off toggle. It is a check box on every OS: SWT has no switch control, and
+// NSSwitch on macOS or GtkSwitch on Linux would need a view that the toolkit does not create.
+// onChange gets the new state and may be nil.
+func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Switch {
+	b := swt.NewButton(p.c, resolve(swt.CHECK, opts))
+	b.SetText(text)
+	applyOpts(&b.Control, opts)
+	w := &Switch{b}
+	if onChange != nil {
+		w.OnChange(onChange)
 	}
 	return w
 }
@@ -325,6 +350,26 @@ func (b *Button) OnClick(f func()) {
 	b.b.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) { f() }))
 }
 
+// Switch is an on/off toggle, see panel.Switch.
+type Switch struct{ b *swt.Button }
+
+// Checked reports whether the switch is on.
+func (s *Switch) Checked() bool { return s.b.GetSelection() }
+
+// SetChecked sets the state without calling OnChange.
+func (s *Switch) SetChecked(v bool) { s.b.SetSelection(v) }
+
+// SetText replaces the label.
+func (s *Switch) SetText(t string) { s.b.SetText(t) }
+
+// Unwrap returns the underlying swt.Button for the full API.
+func (s *Switch) Unwrap() *swt.Button { return s.b }
+
+// OnChange runs f with the new state when the user toggles the switch.
+func (s *Switch) OnChange(f func(on bool)) {
+	onSelect(s.b, func(*swt.SelectionEvent) { f(s.b.GetSelection()) })
+}
+
 // Text is an edit field.
 type Text struct{ t *swt.Text }
 
@@ -348,6 +393,48 @@ func (t *Text) OnChange(f func(text string)) {
 // OnActivate runs f when the user presses Enter in a single-line field.
 func (t *Text) OnActivate(f func()) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f() })
+}
+
+// Append adds s at the end without rewriting the content.
+func (t *Text) Append(s string) { t.t.Append(s) }
+
+// Lines returns the number of lines; a trailing newline starts an empty last line.
+func (t *Text) Lines() int { return int(t.t.GetLineCount()) }
+
+// ScrollToEnd moves the caret to the end and scrolls it into view.
+func (t *Text) ScrollToEnd() {
+	t.t.SetSelection(t.t.GetCharCount())
+	t.t.ShowSelection()
+}
+
+// TrimHead deletes the oldest lines so that at most keep lines remain. It reads and rewrites
+// the head of the content, so call it when Lines exceeds a cap by a margin, not after every Append.
+func (t *Text) TrimHead(keep int) {
+	if int(t.t.GetLineCount()) <= keep {
+		return
+	}
+	drop := headUnits(t.t.GetText(), keep)
+	t.t.SetSelectionStartEnd(0, int32(drop))
+	t.t.Insert("")
+}
+
+// headUnits returns the UTF-16 length of the part of s before its last keep lines.
+func headUnits(s string, keep int) int {
+	lines := strings.Count(s, "\n") + 1
+	n := 0
+	for _, c := range s {
+		if lines <= keep {
+			break
+		}
+		n++
+		if c >= 0x10000 {
+			n++
+		}
+		if c == '\n' {
+			lines--
+		}
+	}
+	return n
 }
 
 type modifier struct{ f func() }

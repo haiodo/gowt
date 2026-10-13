@@ -8,6 +8,7 @@ Every widget is created by its parent (`parent.Label(text)`), see [widgets.md](w
 |---|---|---|---|---|---|
 | Label | `Label(text, opts...)` | static text | ![](img/label-linux.png) | ![](img/label-macos.png) | ![](img/label-windows.png) |
 | Button | `Button(text, onClick, opts...)` | push button; `Check()` and `Radio()` make a check box or a radio button | ![](img/button-linux.png) | ![](img/button-macos.png) | ![](img/button-windows.png) |
+| Switch | `Switch(text, onChange, opts...)` | on/off toggle, a check box on every OS | ![](img/switch-linux.png) | ![](img/switch-macos.png) | ![](img/switch-windows.png) |
 | Text | `Text(opts...)` | edit field; `Multiline()`, `Password()`, `ReadOnly()` | ![](img/text-linux.png) | ![](img/text-macos.png) | ![](img/text-windows.png) |
 | Link | `Link(html, onClick)` | text with `<a href>` links | ![](img/link-linux.png) | ![](img/link-macos.png) | ![](img/link-windows.png) |
 | Combo | `Combo(items, opts...)` | drop-down list, editable unless `ReadOnly()` | ![](img/combo-linux.png) | ![](img/combo-macos.png) | ![](img/combo-windows.png) |

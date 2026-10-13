@@ -126,6 +126,14 @@ func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 // ShowLines shows or hides the grid lines.
 func (t *Table) ShowLines(v bool) { t.t.SetLinesVisible(v) }
 
+// ShowRowLines shows or hides thin lines between rows only. On macOS ShowLines also turns on
+// vertical lines and alternating row colors, this does not; elsewhere it is ShowLines.
+func (t *Table) ShowRowLines(v bool) {
+	if !rowLinesOnly(&t.t.Control, v) {
+		t.t.SetLinesVisible(v)
+	}
+}
+
 // Len counts rows, not columns.
 func (t *Table) Len() int { return int(t.t.GetItemCount()) }
 
@@ -175,8 +183,74 @@ func (t *Table) OnActivate(f func(index int)) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
+// SortDir is the sort indicator drawn in a column header. It only draws the arrow: sorting the rows is up to the app.
+type SortDir int
+
+// The sort indicator values.
+const (
+	SortNone SortDir = iota
+	SortAscending
+	SortDescending
+)
+
+func (d SortDir) swt() int32 {
+	switch d {
+	case SortAscending:
+		return swt.UP
+	case SortDescending:
+		return swt.DOWN
+	}
+	return swt.NONE
+}
+
+// SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
+func (t *Table) SetSort(col *Column, dir SortDir) {
+	if col == nil || dir == SortNone {
+		t.t.SetSortDirection(swt.NONE)
+		t.t.SetSortColumn(nil)
+		return
+	}
+	t.t.SetSortColumn(col.c)
+	t.t.SetSortDirection(dir.swt())
+}
+
+// TableClick is a mouse press on a Table. Row and Col are -1 when the point is not on a row.
+type TableClick struct {
+	Row, Col int // row index and column index of the cell under the pointer
+	Button   int // 1 left, 2 middle, 3 right
+	Count    int // 1 for a single press, 2 for the second press of a double click
+	X, Y     int // pointer position in the table's coordinates
+}
+
+// CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1.
+func (t *Table) CellAt(x, y int) (row, col int) {
+	it := t.t.GetItemPoint(swt.NewPoint(int32(x), int32(y)))
+	if it == nil {
+		return -1, -1
+	}
+	row = int(t.t.IndexOfItem(it))
+	for c, n := int32(0), max(t.t.GetColumnCount(), 1); c < n; c++ {
+		if it.GetBoundsIndex(c).Contains(int32(x), int32(y)) {
+			return row, int(c)
+		}
+	}
+	return row, -1
+}
+
+// OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
+// double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
+func (t *Table) OnCellClick(f func(TableClick)) {
+	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
+		row, col := t.CellAt(int(e.X), int(e.Y))
+		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y)})
+	}))
+}
+
 // Column is a table column.
 type Column struct{ c *swt.TableColumn }
+
+// SetResizable allows or forbids resizing the column by dragging the header edge.
+func (c *Column) SetResizable(v bool) { c.c.SetResizable(v) }
 
 // SetTitle replaces the header text.
 func (c *Column) SetTitle(s string) { c.c.SetText(s) }
@@ -225,14 +299,103 @@ func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 // Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
 type Tree struct{ t *swt.Tree }
 
-// Tree adds a tree.
+// Tree adds a tree. Rows select as a whole so that a click in any column finds its node. With
+// Column, the first column holds the tree and the header is shown until ShowHeader(false).
 func (p *panel) Tree(opts ...Option) *Tree {
-	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER, opts))
+	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
 	applyOpts(&t.Control, opts)
 	return &Tree{t}
 }
 
 func (t *Tree) control() *swt.Control { return &t.t.Control }
+
+// Column appends a column; Right() or Center() set the alignment. The first column holds the node
+// text and the expand arrows. The first call shows the header.
+func (t *Tree) Column(title string, width int, opts ...Option) *TreeColumn {
+	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
+	c.SetText(title)
+	c.SetWidth(int32(width))
+	if t.t.GetColumnCount() == 1 {
+		t.t.SetHeaderVisible(true)
+	}
+	return &TreeColumn{c}
+}
+
+// ShowRowLines shows or hides thin lines between rows only, see Table.ShowRowLines.
+func (t *Tree) ShowRowLines(v bool) {
+	if !rowLinesOnly(&t.t.Control, v) {
+		t.t.SetLinesVisible(v)
+	}
+}
+
+// ShowHeader shows or hides the column headers.
+func (t *Tree) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
+
+// SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
+func (t *Tree) SetSort(col *TreeColumn, dir SortDir) {
+	if col == nil || dir == SortNone {
+		t.t.SetSortDirection(swt.NONE)
+		t.t.SetSortColumn(nil)
+		return
+	}
+	t.t.SetSortColumn(col.c)
+	t.t.SetSortDirection(dir.swt())
+}
+
+// TreeClick is a mouse press on a Tree. Node is nil and Col is -1 when the point is not on a node.
+type TreeClick struct {
+	Node   *Node
+	Col    int // column index of the cell under the pointer
+	Button int // 1 left, 2 middle, 3 right
+	Count  int // 1 for a single press, 2 for the second press of a double click
+	X, Y   int // pointer position in the tree's coordinates
+}
+
+// CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1.
+func (t *Tree) CellAt(x, y int) (*Node, int) {
+	it := t.t.GetItemPoint(swt.NewPoint(int32(x), int32(y)))
+	if it == nil {
+		return nil, -1
+	}
+	for c, n := int32(0), max(t.t.GetColumnCount(), 1); c < n; c++ {
+		if it.GetBoundsIndex(c).Contains(int32(x), int32(y)) {
+			return &Node{it}, int(c)
+		}
+	}
+	return &Node{it}, -1
+}
+
+// OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
+// double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
+func (t *Tree) OnCellClick(f func(TreeClick)) {
+	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
+		n, col := t.CellAt(int(e.X), int(e.Y))
+		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y)})
+	}))
+}
+
+// TreeColumn is a tree column.
+type TreeColumn struct{ c *swt.TreeColumn }
+
+// SetTitle replaces the header text.
+func (c *TreeColumn) SetTitle(s string) { c.c.SetText(s) }
+
+// SetWidth sets the width in pixels.
+func (c *TreeColumn) SetWidth(w int) { c.c.SetWidth(int32(w)) }
+
+// SetResizable allows or forbids resizing the column by dragging the header edge.
+func (c *TreeColumn) SetResizable(v bool) { c.c.SetResizable(v) }
+
+// Pack resizes the column to fit its content.
+func (c *TreeColumn) Pack() { c.c.Pack() }
+
+// Unwrap returns the underlying swt.TreeColumn for the full API.
+func (c *TreeColumn) Unwrap() *swt.TreeColumn { return c.c }
+
+// OnClick runs f when the header is clicked, e.g. to sort.
+func (c *TreeColumn) OnClick(f func()) {
+	onSelect(c.c, func(*swt.SelectionEvent) { f() })
+}
 
 // Clear deletes all nodes, children included.
 func (t *Tree) Clear() { t.t.RemoveAll() }
@@ -338,6 +501,15 @@ func (n *Node) SetChecked(v bool) { n.it.SetChecked(v) }
 
 // SetImage sets the icon; the node does not own img.
 func (n *Node) SetImage(img *Image) { n.it.SetImageIndexImage(0, img.i) }
+
+// TextAt returns the text of column col.
+func (n *Node) TextAt(col int) string { return n.it.GetTextIndex(int32(col)) }
+
+// SetTextAt sets the text of column col; SetText is column 0.
+func (n *Node) SetTextAt(col int, s string) { n.it.SetTextIndexString(int32(col), s) }
+
+// SetImageAt sets the icon of column col; the node does not own img.
+func (n *Node) SetImageAt(col int, img *Image) { n.it.SetImageIndexImage(int32(col), img.i) }
 
 // Children returns the direct child nodes.
 func (n *Node) Children() []*Node { return nodes(n.it.GetItems()) }

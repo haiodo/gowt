@@ -82,7 +82,7 @@ The toolbar, glass group and background extension (TSK-34) are compiled but not 
 
 - Custom drag and drop transfers, RTF/URL clipboard formats, the X11 selection clipboard, StyledText bullets/indents/undo listeners (`Unwrap()`).
 - The SWT event/listener type hierarchy, `Display` as a public type (`App.Unwrap()` exists), `Runnable`, `Internal_*`.
-- Widget fonts/colors/backgrounds, cursors, keyboard and mouse listeners (`Unwrap()`), `ExpandBar`, `Browser`, `CCombo`, `Shell` kinds other than `Window` (dialog shells, tool tips, `Decorations` images), accelerators on menu items, tray menus, `Sash` repositioning helpers (use `Split`), multi-column `Tree`, table sorting helpers, `ImageData`/palettes/transforms/paths/patterns, `GC` clipping, fonts, alpha, polygons.
+- Widget fonts/colors/backgrounds, cursors, keyboard listeners and mouse listeners other than `Table`/`Tree.OnCellClick` and the `Canvas` ones (`Unwrap()`), `ExpandBar`, `Browser`, `CCombo`, `Shell` kinds other than `Window` (dialog shells, tool tips, `Decorations` images), accelerators on menu items, tray menus, `Sash` repositioning helpers (use `Split`), sorting the rows (only the header indicator `SetSort`), `ImageData`/palettes/transforms/paths/patterns, `GC` clipping, fonts, alpha, polygons.
 
 ## Package layout (applied, TSK-31)
 

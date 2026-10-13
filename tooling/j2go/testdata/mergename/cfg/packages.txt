@@ -1,0 +1,4 @@
+module example.com/app
+map fixture.a a
+map fixture.b b
+map fixture.top fixture

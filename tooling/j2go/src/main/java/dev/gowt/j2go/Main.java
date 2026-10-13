@@ -172,7 +172,7 @@ public class Main {
 		boolean emittedSwtPlatformFile = false;
 		StringBuilder sharedHelpers = new StringBuilder();
 		Set<String> sharedHelperImports = new LinkedHashSet<>();
-		if (!reference) emitter.generatedHelpers.addAll(definedNames(Path.of(outDir, "swt")));
+		if (!reference && Profile.active == null) emitter.generatedHelpers.addAll(definedNames(Path.of(outDir, "swt")));
 		// Only the primary (pre "--") files are emitted; reference files only fed the model above.
 		for (int i = 0; i < absFiles.size(); i++) {
 			CompilationUnit cu = orderedUnits.get(i);
@@ -244,7 +244,7 @@ public class Main {
 			System.out.println("wrote " + outPath);
 		}
 
-		if (!reference && emittedSwtPlatformFile) {
+		if (!reference && Profile.active == null && emittedSwtPlatformFile) {
 			// The committed shared files also call helpers the reference platform defined in its own files.
 			Set<String> called = new HashSet<>();
 			var m = java.util.regex.Pattern.compile("\\b((?:upcast|is)[A-Z]\\w*To[A-Z]\\w*|[a-z]\\w*ImplAs\\w+)\\(").matcher(sharedSource(Path.of(outDir, "swt")));

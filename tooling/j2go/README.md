@@ -124,6 +124,12 @@ into one (named after the last segment of the common Java package prefix, `merge
 name) and dirs ending in the same name are renamed (parent prefix, else `_2`); both are reported on stderr.
 Edges come from type bindings, so a reference spelled without one is not seen. Helper funcs are generated once per Go package.
 
+`$` in a Java identifier (`this$id`, `$id` from delombok'd `@EqualsAndHashCode`, `access$000`) becomes `_` in every Go
+identifier (`this_id`, `_id`, `Access_000`, as method names already did). It is one pass over the finished text of a file
+(`EmitUtil.dollarsToUnderscores`), skipping string and rune literals and comments, because identifiers are built at too many
+sites to patch each. Ceiling: no collision check, `a$b` and a Java `a_b` in one scope clash; Go then fails to compile, it does not miscompile.
+Type names get the same mapping in `Names.goTypeName`, so the `jrt.RegisterClassPackage` string matches the Go type. Test: `testdata/dollar`.
+
 `--out` is the repo root, not a single package directory: each file lands under `swt/`,
 `internal/cocoa/` or `examples/<name>/` per its own Java package (`GoTypes.goPackageDir`; see
 "Multiple Go packages" and "Round 10 controlexample" below).

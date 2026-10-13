@@ -136,6 +136,10 @@ func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
 // Border draws a frame; Table and Tree have one by default.
 func Border() Option { return Option{style: swt.BORDER} }
 
+// CellSelect makes a Tree select only the text of a node, as v0.1.0 did on Windows and Linux; then
+// CellAt and OnCellClick find a node only where its text or icon is.
+func CellSelect() Option { return Option{clear: swt.FULL_SELECTION} }
+
 // NoBorder removes the frame that List, Table and Tree have by default.
 func NoBorder() Option { return Option{clear: swt.BORDER} }
 
@@ -407,15 +411,24 @@ func (t *Text) ScrollToEnd() {
 	t.t.ShowSelection()
 }
 
-// TrimHead deletes the oldest lines so that at most keep lines remain. It reads and rewrites
-// the head of the content, so call it when Lines exceeds a cap by a margin, not after every Append.
+// TrimHead deletes the oldest lines so that at most keep lines remain; TrimHead(0) clears the text.
+// It reads the content to find the cut, so call it when Lines exceeds a cap by a margin, not after
+// every Append. It works on a read-only Text.
 func (t *Text) TrimHead(keep int) {
 	if int(t.t.GetLineCount()) <= keep {
 		return
 	}
 	drop := headUnits(t.t.GetText(), keep)
+	// Insert is refused on a read-only field on some systems, so lift the flag for the edit.
+	ro := !t.t.GetEditable()
+	if ro {
+		t.t.SetEditable(true)
+	}
 	t.t.SetSelectionStartEnd(0, int32(drop))
 	t.t.Insert("")
+	if ro {
+		t.t.SetEditable(false)
+	}
 }
 
 // headUnits returns the UTF-16 length of the part of s before its last keep lines.

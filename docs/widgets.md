@@ -17,6 +17,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `MultiSelect()` | List, Table, Tree |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `NoBorder()` | drops the frame of List, Table, Tree |
+| `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field |
 | `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
 | `Right()`, `Center()` | Table column alignment |
@@ -52,15 +53,15 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 ## Any control
 
-Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again), `SetFont(w, Font{Name, Size, Bold, Italic})` (empty Name and zero Size keep the current ones; the font is released with the control), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
+Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a `Cell`/`InRow` applied afterwards resets it), `SetFont(w, Font{Name, Size, Bold, Italic})` (empty Name and zero Size keep the current ones; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 ## Cell clicks
 
-`Table.OnCellClick` and `Tree.OnCellClick` run on every mouse press with the row (or node), the column index from the item's per-column bounds, `Button` (1 left, 3 right) and `Count` (2 on a double click), so a handler ignores what it does not need. The cell comes from a hit test, not from the selection, which may not have moved yet. `CellAt(x, y)` does the same for any point, e.g. a context menu. `Tree` selects whole rows so that a click in any column finds its node.
+`Table.OnCellClick` and `Tree.OnCellClick` run on every mouse press with the row (or node), the column index from the item's per-column bounds, `Button` (SWT numbering: 1 left, 2 middle, 3 right), `Count` (2 on a double click) and the modifier keys `Ctrl`, `Shift`, `Alt`, `Cmd` (a macOS Ctrl-click is Button 1 with Ctrl), so a handler ignores what it does not need. The cell comes from a hit test, not from the selection, which may not have moved yet. `CellAt(x, y)` does the same for any point, e.g. a context menu; every point of a row band maps to a cell, the expander arrow and the space right of the last column included. `Tree` selects whole rows so that a click in any column finds its node.
 
 ## Logs in Text and StyledText
 
-`Append(s)` adds at the end without `SetText`; `Lines()` counts lines; `TrimHead(keep)` deletes the oldest lines (Text rewrites its content, so trim when `Lines()` exceeds a cap by a margin; StyledText deletes just the head); `ScrollToEnd()` follows the tail.
+`Append(s)` adds at the end without `SetText`; `Lines()` counts lines; `TrimHead(keep)` deletes the oldest lines (`TrimHead(0)` clears; it works on a read-only view) (Text rewrites its content, so trim when `Lines()` exceeds a cap by a margin; StyledText deletes just the head); `ScrollToEnd()` follows the tail.
 
 ## Clipboard and drag and drop
 

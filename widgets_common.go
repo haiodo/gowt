@@ -19,7 +19,9 @@ func SetEnabled(w Widget, v bool) { w.control().SetEnabled(v) }
 func Enabled(w Widget) bool { return w.control().GetEnabled() }
 
 // SetVisible shows or hides a control. In a Grid or Row layout a hidden control also gives up its
-// cell, and the parent is laid out again so the neighbours take the space. Other layouts keep the gap.
+// cell, and the parent is laid out again so the neighbours take the space; SetVisible(true) clears
+// that exclusion. Other layouts keep the gap. A layout option applied to the control after
+// SetVisible(false) (Cell, InRow) replaces its layout data and so undoes the exclusion.
 func SetVisible(w Widget, v bool) {
 	c := w.control()
 	c.SetVisible(v)
@@ -33,12 +35,16 @@ func SetVisible(w Widget, v bool) {
 	case *swt.RowData:
 		d.Exclude = !v
 	case nil:
-		// without data only Grid has a default to exclude; Row and the others ignore the hint
 		if l := p.GetLayout(); l != nil {
-			if _, ok := l.Impl().(*swt.GridLayout); ok {
+			switch l.Impl().(type) {
+			case *swt.GridLayout:
 				g := swt.NewGridData()
 				g.Exclude = !v
 				c.SetLayoutData(g)
+			case *swt.RowLayout:
+				r := swt.NewRowData()
+				r.Exclude = !v
+				c.SetLayoutData(r)
 			}
 		}
 	}
@@ -49,7 +55,7 @@ func SetVisible(w Widget, v bool) {
 func Visible(w Widget) bool { return w.control().GetVisible() }
 
 // SetFont gives a control the font f. Empty Name and zero Size keep the control's current ones.
-// The font is released with the control.
+// The control owns the font and releases it when replaced by the next SetFont or when it is disposed.
 func SetFont(w Widget, f Font) {
 	c := w.control()
 	if cur := c.GetFont().GetFontData(); len(cur) > 0 {
@@ -69,12 +75,24 @@ func SetFont(w Widget, f Font) {
 	}
 	sf := swt.NewFontDeviceNameHeightStyle(c.GetDisplay(), f.Name, int32(f.Size), st)
 	c.SetFont(sf)
-	c.AddDisposeListener(&fontRelease{sf})
+	old, had := ownedFonts[c]
+	ownedFonts[c] = sf
+	if had {
+		old.Dispose()
+	} else {
+		c.AddDisposeListener(&fontRelease{c})
+	}
 }
 
-type fontRelease struct{ f *swt.Font }
+// ownedFonts holds the font SetFont made for each control; UI thread only.
+var ownedFonts = map[*swt.Control]*swt.Font{}
 
-func (r *fontRelease) WidgetDisposed(*swt.DisposeEvent) { r.f.Dispose() }
+type fontRelease struct{ c *swt.Control }
+
+func (r *fontRelease) WidgetDisposed(*swt.DisposeEvent) {
+	ownedFonts[r.c].Dispose()
+	delete(ownedFonts, r.c)
+}
 
 // SetForeground sets the text color of a control.
 func SetForeground(w Widget, c RGB) { w.control().SetForeground(c.color()) }

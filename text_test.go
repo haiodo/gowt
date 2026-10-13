@@ -111,3 +111,18 @@ func TestNoBorderClearsDefault(t *testing.T) {
 		t.Error("Search must set SEARCH")
 	}
 }
+
+func TestColAtX(t *testing.T) {
+	widths, order := []int{100, 50, 80}, []int{2, 0, 1} // column 2 is shown first
+	cases := []struct{ scroll, x, want int }{
+		{0, 0, 2}, {0, 99, 2}, {0, 100, 0}, {0, 149, 0}, {0, 150, 1}, {0, 5000, 1}, {20, 85, 0},
+	}
+	for _, c := range cases {
+		if got := colAtX(widths, order, c.scroll, c.x); got != c.want {
+			t.Errorf("colAtX(scroll %d, x %d) = %d, want %d", c.scroll, c.x, got, c.want)
+		}
+	}
+	if colAtX(nil, nil, 0, 5) != -1 {
+		t.Error("no columns must give -1")
+	}
+}

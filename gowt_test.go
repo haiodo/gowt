@@ -453,6 +453,21 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 		if st.Lines() != 3 || st.Text() != "l\nl\n" {
 			t.Errorf("StyledText.TrimHead: %d lines %q", st.Lines(), st.Text())
 		}
+		st.TrimHead(0)
+		if st.Text() != "" {
+			t.Errorf("StyledText.TrimHead(0) left %q", st.Text())
+		}
+
+		ro := w.Text(Multiline(), ReadOnly())
+		ro.Append("a\nb\nc\nd")
+		ro.TrimHead(2)
+		if ro.Text() != "c\nd" || ro.Unwrap().GetEditable() {
+			t.Errorf("read-only Text.TrimHead: %q editable %v", ro.Text(), ro.Unwrap().GetEditable())
+		}
+		ro.TrimHead(0)
+		if ro.Text() != "" {
+			t.Errorf("Text.TrimHead(0) left %q", ro.Text())
+		}
 		st.ScrollToEnd()
 	})
 }
@@ -469,7 +484,21 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 			t.Errorf("hidden label must free its cell: visible %v y %d -> %d", Visible(a), before, b.l.GetBounds().Y)
 		}
 		SetVisible(a, true)
+
+		row := w.Panel().SetLayout(Row{})
+		r1 := row.Label("r1")
+		r2 := row.Label("r2")
+		w.Unwrap().LayoutOverload2(true, true)
+		x2 := r2.l.GetBounds().X
+		SetVisible(r1, false)
+		if r2.l.GetBounds().X >= x2 {
+			t.Errorf("Row layout kept the gap of a hidden label: x %d -> %d", x2, r2.l.GetBounds().X)
+		}
+		SetFont(b, Font{Size: 14})
 		SetFont(b, Font{Size: 20, Bold: true})
+		if len(ownedFonts) != 1 {
+			t.Errorf("ownedFonts %d", len(ownedFonts))
+		}
 		SetForeground(b, RGB{200, 0, 0})
 		if b.l.GetFont().GetFontData()[0].GetHeight() != 20 {
 			t.Error("SetFont size not applied")
@@ -488,7 +517,7 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 		ev := &swt.Event{}
 		ev.Button, ev.X, ev.Y, ev.Count = 3, 4, 5, 2
 		cv.Unwrap().NotifyListeners(swt.MouseDown, ev)
-		if got != (Mouse{4, 5, 3, 2}) {
+		if got != (Mouse{X: 4, Y: 5, Button: 3, Count: 2}) {
 			t.Errorf("canvas mouse %+v", got)
 		}
 	})

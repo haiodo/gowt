@@ -214,27 +214,75 @@ func (t *Table) SetSort(col *Column, dir SortDir) {
 	t.t.SetSortDirection(dir.swt())
 }
 
+// Mods are the modifier keys held during a mouse press. On macOS a Ctrl-click arrives as Button 1 with Ctrl set.
+type Mods struct{ Ctrl, Shift, Alt, Cmd bool }
+
+func modsOf(e *swt.MouseEvent) Mods {
+	m := e.StateMask
+	return Mods{m&swt.CTRL != 0, m&swt.SHIFT != 0, m&swt.ALT != 0, m&swt.COMMAND != 0}
+}
+
 // TableClick is a mouse press on a Table. Row and Col are -1 when the point is not on a row.
 type TableClick struct {
 	Row, Col int // row index and column index of the cell under the pointer
-	Button   int // 1 left, 2 middle, 3 right
+	Button   int // SWT's numbering: 1 left, 2 middle, 3 right
 	Count    int // 1 for a single press, 2 for the second press of a double click
 	X, Y     int // pointer position in the table's coordinates
+	Mods         // keys held down
 }
 
-// CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1.
-func (t *Table) CellAt(x, y int) (row, col int) {
-	it := t.t.GetItemPoint(swt.NewPoint(int32(x), int32(y)))
-	if it == nil {
-		return -1, -1
+// colAtX maps x (control coordinates, scrolled by scroll) to a column index given the column widths
+// in display order; order[i] is the column index shown i-th. A point past the last column belongs to
+// it, so every point of a row maps to a column. It returns -1 for no columns.
+func colAtX(widths, order []int, scroll, x int) int {
+	if len(order) == 0 {
+		return -1
 	}
-	row = int(t.t.IndexOfItem(it))
-	for c, n := int32(0), max(t.t.GetColumnCount(), 1); c < n; c++ {
-		if it.GetBoundsIndex(c).Contains(int32(x), int32(y)) {
-			return row, int(c)
+	x += scroll
+	for i, w := range widths {
+		if x < w {
+			return order[i]
+		}
+		x -= w
+	}
+	return order[len(order)-1]
+}
+
+// probeXs lists the x positions to try with GetItemPoint: the pointer's, then the right end of the
+// first column, because macOS finds no item on a tree's expander arrow.
+func probeXs(x, firstWidth, clientWidth int) []int {
+	if firstWidth <= 0 {
+		firstWidth = clientWidth
+	}
+	return []int{x, firstWidth - 2}
+}
+
+// CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1
+// when no row is there. Any point of a row's band maps to a cell, also right of the last column.
+func (t *Table) CellAt(x, y int) (row, col int) {
+	n := int(t.t.GetColumnCount())
+	order := toInts(t.t.GetColumnOrder())
+	widths := make([]int, n)
+	for i, c := range order {
+		widths[i] = int(t.t.GetColumnIndex(int32(c)).GetWidth())
+	}
+	first := 0
+	if n > 0 {
+		first = widths[0]
+	}
+	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
+		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
+			return int(t.t.IndexOfItem(it)), max(colAtX(widths, order, hscroll(t.t.GetHorizontalBar()), x), 0)
 		}
 	}
-	return row, -1
+	return -1, -1
+}
+
+func hscroll(b *swt.ScrollBar) int {
+	if b == nil {
+		return 0
+	}
+	return int(b.GetSelection())
 }
 
 // OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
@@ -242,7 +290,7 @@ func (t *Table) CellAt(x, y int) (row, col int) {
 func (t *Table) OnCellClick(f func(TableClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		row, col := t.CellAt(int(e.X), int(e.Y))
-		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y)})
+		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
 	}))
 }
 
@@ -299,7 +347,7 @@ func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 // Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
 type Tree struct{ t *swt.Tree }
 
-// Tree adds a tree. Rows select as a whole so that a click in any column finds its node. With
+// Tree adds a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
 func (p *panel) Tree(opts ...Option) *Tree {
 	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
@@ -346,23 +394,32 @@ func (t *Tree) SetSort(col *TreeColumn, dir SortDir) {
 type TreeClick struct {
 	Node   *Node
 	Col    int // column index of the cell under the pointer
-	Button int // 1 left, 2 middle, 3 right
+	Button int // SWT's numbering: 1 left, 2 middle, 3 right
 	Count  int // 1 for a single press, 2 for the second press of a double click
 	X, Y   int // pointer position in the tree's coordinates
+	Mods       // keys held down
 }
 
-// CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1.
+// CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1
+// when no node is there. Any point of a node's row, expander arrow and the space right of the text
+// included, maps to a cell.
 func (t *Tree) CellAt(x, y int) (*Node, int) {
-	it := t.t.GetItemPoint(swt.NewPoint(int32(x), int32(y)))
-	if it == nil {
-		return nil, -1
+	n := int(t.t.GetColumnCount())
+	order := toInts(t.t.GetColumnOrder())
+	widths := make([]int, n)
+	for i, c := range order {
+		widths[i] = int(t.t.GetColumnIndex(int32(c)).GetWidth())
 	}
-	for c, n := int32(0), max(t.t.GetColumnCount(), 1); c < n; c++ {
-		if it.GetBoundsIndex(c).Contains(int32(x), int32(y)) {
-			return &Node{it}, int(c)
+	first := 0
+	if n > 0 {
+		first = widths[0]
+	}
+	for _, px := range probeXs(x, first, int(t.t.GetClientArea().Width)) {
+		if it := t.t.GetItemPoint(swt.NewPoint(int32(px), int32(y))); it != nil {
+			return &Node{it}, max(colAtX(widths, order, hscroll(t.t.GetHorizontalBar()), x), 0)
 		}
 	}
-	return &Node{it}, -1
+	return nil, -1
 }
 
 // OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
@@ -370,7 +427,7 @@ func (t *Tree) CellAt(x, y int) (*Node, int) {
 func (t *Tree) OnCellClick(f func(TreeClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		n, col := t.CellAt(int(e.X), int(e.Y))
-		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y)})
+		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
 	}))
 }
 

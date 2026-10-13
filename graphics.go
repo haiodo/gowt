@@ -132,12 +132,13 @@ func (c *Canvas) control() *swt.Control { return &c.c.Control }
 // Mouse is a pointer event on a Canvas, in the canvas's coordinates.
 type Mouse struct {
 	X, Y   int
-	Button int // 1 left, 2 middle, 3 right; 0 for a move
+	Button int // SWT's numbering: 1 left, 2 middle, 3 right; 0 for a move
 	Count  int // 2 for the second press of a double click
+	Mods       // keys held down; a macOS Ctrl-click is Button 1 with Ctrl
 }
 
 func mouseOf(e *swt.MouseEvent) Mouse {
-	return Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count)}
+	return Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count), Mods: modsOf(e)}
 }
 
 // OnMouseDown runs f when a button is pressed.

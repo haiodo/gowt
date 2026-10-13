@@ -215,8 +215,13 @@ gowt Message.Buttons field Buttons
 gowt Message.Icon field Icon
 gowt Message.Text field string
 gowt Message.Title field string
+gowt Mods.Alt field bool
+gowt Mods.Cmd field bool
+gowt Mods.Ctrl field bool
+gowt Mods.Shift field bool
 gowt Mouse.Button field int
 gowt Mouse.Count field int
+gowt Mouse.Mods field Mods
 gowt Mouse.X field int
 gowt Mouse.Y field int
 gowt Node.Checked() bool
@@ -388,6 +393,7 @@ gowt Table.Unwrap() *github.com/haiodo/gowt/swt.Table
 gowt TableClick.Button field int
 gowt TableClick.Col field int
 gowt TableClick.Count field int
+gowt TableClick.Mods field Mods
 gowt TableClick.Row field int
 gowt TableClick.X field int
 gowt TableClick.Y field int
@@ -456,6 +462,7 @@ gowt Tree.Unwrap() *github.com/haiodo/gowt/swt.Tree
 gowt TreeClick.Button field int
 gowt TreeClick.Col field int
 gowt TreeClick.Count field int
+gowt TreeClick.Mods field Mods
 gowt TreeClick.Node field *Node
 gowt TreeClick.X field int
 gowt TreeClick.Y field int
@@ -544,6 +551,7 @@ gowt func Beside(w Widget, gap int) Edge
 gowt func Border() Option
 gowt func Bottom() Option
 gowt func Cell(c GridCell) Option
+gowt func CellSelect() Option
 gowt func Center() Option
 gowt func Check() Option
 gowt func Closable() Option
@@ -616,6 +624,7 @@ gowt type List struct
 gowt type Menu struct
 gowt type MenuItem struct
 gowt type Message struct
+gowt type Mods struct
 gowt type Mouse struct
 gowt type Node struct
 gowt type Op int
@@ -664,6 +673,7 @@ gowt/look const BackdropGlass Backdrop = 2
 gowt/look const BackdropNone Backdrop = 0
 gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
+gowt/look func DragsWindow(c Container)
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)

@@ -876,7 +876,7 @@ func (this *Shell) helpRequested_(id int64, sel int64, theEvent int64) {
 }
 
 func (this *Shell) invalidateVisibleRegion_() {
-	if visibleRegionsIdle(this.display) {
+	if visibleRegionsIdle(upcastShellToControl(this)) {
 		return
 	}
 	this.impl.resetVisibleRegion_()
@@ -884,6 +884,7 @@ func (this *Shell) invalidateVisibleRegion_() {
 		this.toolBar.impl.resetVisibleRegion_()
 	}
 	this.impl.invalidateChildrenVisibleRegion_()
+	clearVisibleRgn(upcastShellToControl(this))
 }
 
 func (this *Shell) isDrawing_() bool {

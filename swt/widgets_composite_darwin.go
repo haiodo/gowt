@@ -439,11 +439,18 @@ func (this *Composite) hooksKeys_() bool {
 }
 
 func (this *Composite) invalidateChildrenVisibleRegion_() {
+	if visibleRegionsIdle(upcastCompositeToControl(this)) {
+		return
+	}
 	var children []*Control = this._getChildren()
 	for i := int32(0); i < int32(len(children)); i++ {
 		var child *Control = children[i]
+		if visibleRegionsIdle(child) {
+			continue
+		}
 		child.impl.resetVisibleRegion_()
 		child.impl.invalidateChildrenVisibleRegion_()
+		clearVisibleRgn(child)
 	}
 }
 

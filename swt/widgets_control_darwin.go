@@ -1546,7 +1546,7 @@ func (this *Control) GetVisible() bool {
 func (this *Control) GetVisibleRegion() int64 {
 	if this.visibleRgn == 0 {
 		this.visibleRgn = cocoa.OSNewRgn()
-		visibleRgnCount++
+		markVisibleRgn(this)
 		this.CalculateVisibleRegion(this.View, this.visibleRgn, true)
 	}
 	var result int64 = cocoa.OSNewRgn()
@@ -1741,7 +1741,7 @@ func (this *Control) InvalidateVisibleRegion() {
 }
 
 func (this *Control) invalidateVisibleRegion_() {
-	if visibleRegionsIdle(this.display) {
+	if visibleRegionsIdle(upcastCompositeToControl(this.parent)) {
 		return
 	}
 	var index int32 = 0
@@ -1753,8 +1753,12 @@ func (this *Control) invalidateVisibleRegion_() {
 		var sibling *Control = siblings[i]
 		sibling.impl.resetVisibleRegion_()
 		sibling.impl.invalidateChildrenVisibleRegion_()
+		clearVisibleRgn(sibling)
 	}
 	this.parent.impl.resetVisibleRegion_()
+	if index == 0 {
+		clearVisibleRgn(upcastCompositeToControl(this.parent))
+	}
 }
 
 func (this *Control) isActive_() bool {
@@ -2420,6 +2424,7 @@ func (this *Control) releaseParent_() {
 }
 
 func (this *Control) releaseWidget_() {
+	forgetVisibleRgn(this)
 	this.Widget.releaseWidget_()
 	if this.display.currentControl == this {
 		this.display.currentControl = nil
@@ -2437,7 +2442,6 @@ func (this *Control) releaseWidget_() {
 	this.menu = nil
 	if this.visibleRgn != 0 {
 		cocoa.OSDisposeRgn(this.visibleRgn)
-		visibleRgnCount--
 	}
 	this.visibleRgn = int64(0)
 	this.layoutData = nil
@@ -2638,7 +2642,6 @@ func (this *Control) ResetVisibleRegion() {
 func (this *Control) resetVisibleRegion_() {
 	if this.visibleRgn != 0 {
 		cocoa.OSDisposeRgn(this.visibleRgn)
-		visibleRgnCount--
 		this.visibleRgn = int64(0)
 	}
 	var gcs []*GCData = this.display.contexts
@@ -3313,6 +3316,7 @@ func (this *Control) SetParent(parentLike CompositeLike) bool {
 	parent.impl.contentView_().AddSubviewAViewPlaceOtherView(topView, int64(cocoa.OSNSWindowBelow), nil)
 	topView.Release()
 	this.parent = parent
+	markVisibleRgnReparent(this)
 	this.impl.reskin_(ALL)
 	return true
 }

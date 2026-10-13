@@ -214,7 +214,8 @@ func vtClasses() (cell int64, check int64) {
 		return 0
 	}), "v@:q")
 	vtAddAccessibility(cls)
-	cocoa.OSClass_addMethod(cls, cocoa.OSSel_view_stringForToolTip_point_userData_, cocoa.NewCallbackN(6, vtToolTip), "@:@i{NSPoint}@")
+	// NSPoint arrives in FP registers on arm64: vtToolTip reads only self.
+	cocoa.OSClass_addMethod(cls, cocoa.OSSel_view_stringForToolTip_point_userData_, cocoa.NewCallbackN(6, vtToolTip), "@@:@q{NSPoint}^v")
 	cocoa.OSObjc_registerClassPair(cls)
 	chk := cocoa.OSObjc_allocateClassPair(cls, "SWTTableCheckView", 0)
 	cocoa.OSClass_addMethod(chk, cocoa.OSSel_mouseDown_, cocoa.NewCallbackN(3, vtCheckMouseDown), "v@:@")
@@ -253,7 +254,7 @@ func vtCheckMouseDown(a []int64) int64 {
 // vtOwner is the Table or Tree that owns a cell view.
 type vtOwner interface {
 	vtValue(view int64) (int64, bool)
-	vtToggle(view int64)
+	vtToggle(view int64) bool
 	vtToolTip(view int64) string
 }
 
@@ -268,6 +269,7 @@ func vtOwnerOf(view int64) vtOwner {
 	return nil
 }
 
+// Unconditional like the cell path: there Display sends MouseUp to the tracking control whatever the MouseDown doit was.
 func vtCheckMouseUp(a []int64) int64 {
 	if c := vtControl(DisplayLookupWidget(a[0], 0)); c != nil && !c.IsDisposed() {
 		c.impl.mouseEvent_(c.View.Id, cocoa.OSSel_mouseUp_, a[2], MouseUp)
@@ -313,8 +315,9 @@ func vtAddCheckAccessibility(cls int64) {
 	}, "@@:")
 	add("accessibilityPerformPress", 2, func(a []int64) int64 {
 		if o := vtOwnerOf(a[0]); o != nil {
-			o.vtToggle(a[0])
-			return 1
+			if o.vtToggle(a[0]) {
+				return 1
+			}
 		}
 		return 0
 	}, "B@:")
@@ -408,10 +411,17 @@ func (this *Table) vtValue(view int64) (int64, bool) {
 	return this.tableView_objectValueForTableColumn_row_(tv.Id, 0, tv.Id, column, row), true
 }
 
-func (this *Table) vtToggle(view int64) {
-	if _, row, _, _, ok := this.vtLocate(view); ok {
-		this.ToggleCheckedItem(this._getItem(int32(row)), row)
+func (this *Table) vtToggle(view int64) bool {
+	_, row, _, _, ok := this.vtLocate(view)
+	if !ok || !this.IsEnabled() {
+		return false
 	}
+	item := this._getItem(int32(row))
+	if item == nil || item.IsDisposed() {
+		return false
+	}
+	this.ToggleCheckedItem(item, row)
+	return true
 }
 
 func (this *Table) vtToolTip(view int64) string {
@@ -517,10 +527,16 @@ func (this *Tree) vtValue(view int64) (int64, bool) {
 	return this.outlineView_objectValueForTableColumn_byItem_(ov.Id, 0, ov.Id, column, item), true
 }
 
-func (this *Tree) vtToggle(view int64) {
-	if ov, _, _, item, ok := this.vtLocate(view); ok {
-		this.outlineView_setObjectValue_forTableColumn_byItem_(ov.Id, 0, ov.Id, 0, this.checkColumn.Id, item)
+func (this *Tree) vtToggle(view int64) bool {
+	ov, _, _, itemID, ok := this.vtLocate(view)
+	if !ok || !this.IsEnabled() || this.checkColumn == nil {
+		return false
 	}
+	if item := this.display.GetWidget(itemID); item == nil || item.IsDisposed() {
+		return false
+	}
+	this.outlineView_setObjectValue_forTableColumn_byItem_(ov.Id, 0, ov.Id, 0, this.checkColumn.Id, itemID)
+	return true
 }
 
 func (this *Tree) vtToolTip(view int64) string {

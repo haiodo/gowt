@@ -124,6 +124,12 @@ func TestViewTableCheckAccessTooltip(t *testing.T) {
 		if cocoa.Msg(chk, "accessibilityPerformPress") != 1 || !table.GetItem(0).GetChecked() {
 			t.Error("accessibilityPerformPress must check the item")
 		}
+		table.SetEnabled(false)
+		table.GetItem(0).SetChecked(false)
+		if cocoa.Msg(chk, "accessibilityPerformPress") != 0 || table.GetItem(0).GetChecked() {
+			t.Error("accessibilityPerformPress must not toggle a disabled table")
+		}
+		table.SetEnabled(true)
 		if cocoa.Msg(vtToolTip([]int64{txt, 0, 0, 0, 0, 0}), "length") == 0 {
 			t.Error("truncated cell must have a tooltip")
 		}

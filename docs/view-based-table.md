@@ -22,11 +22,16 @@ Depends on these generated exports (a rename in the generator breaks the build h
 `OSMethod_setImplementation`, plus the Table/Tree methods `tableView_objectValueForTableColumn_row_`, `tableView_willDisplayCell_...`
 and their outline counterparts.
 
-A click on a check box runs `mouseEvent_` (MouseDown event, doit, focus) and toggles; it does not select the row and sends no MouseUp.
+A click on a check box runs `mouseEvent_` (MouseDown event, doit, focus) and toggles; it does not select the row. The check view has no tracking
+loop, so AppKit sends `mouseUp:` to it and the wrapper sends SWT.MouseUp through `mouseEvent_`.
+
+Accessibility: cell views are AXCell elements labelled with the item text; the check view is AXCheckBox with the control state as value and
+`accessibilityPerformPress` toggling the item. Tooltips: each text cell view registers a tooltip rect owned by itself; `view:stringForToolTip:point:userData:`
+returns the text when `dataCell.CellSize()` is wider than the view and the table has no tooltip text of its own (the cell path's `expansionFrame` rule).
+Both are unchecked in a window.
 
 Not done: removing `dataCell`/`buttonCell` and the cell-bound methods (steps 4-5 of the Approach), a patch stage, row-view selection
-drawing for EraseItem (selection can be painted twice), the 1px gaps of custom cell backgrounds in the intercell spacing,
-MouseUp on the check box, accessibility of the cell views, `expansionFrame` tooltips.
+drawing for EraseItem (selection can be painted twice), the 1px gaps of custom cell backgrounds in the intercell spacing.
 
 Original assessment follows.
 

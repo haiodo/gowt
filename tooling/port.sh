@@ -378,6 +378,16 @@ CE=org/eclipse/swt/examples/controlexample
 	org/eclipse/swt/internal/C.java \
 	"${PI_FILES[@]}"
 
+# ControlExample's resize listener calls tabFolder.computeSize(w, DEFAULT), whose changed=true drops every
+# GridData cache and re-measures the widgets of all tabs on each live-resize step (800 ms per step on cocoa).
+# changed=false keeps the caches; a style change still reaches them through layout(true). The listener is a
+# lambda inside the constructor, which manual.txt cannot split out, so the call is rewritten here.
+CE_GO=examples/controlexample/controlexample_controlexample.go
+CE_OLD='scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAULT))'
+# A gtk or win32 run keeps the file the cocoa run wrote, already rewritten.
+grep -qF "$CE_OLD" "$CE_GO" || grep -qF 'ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false)' "$CE_GO" || { echo "port.sh: ControlExample resize listener not found in $CE_GO" >&2; exit 1; }
+CE_OLD="$CE_OLD" perl -0pi -e 's/\Q$ENV{CE_OLD}\E/scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))/' "$CE_GO"
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

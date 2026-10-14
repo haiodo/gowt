@@ -225,14 +225,24 @@ func (l *List) RemoveIf(predicate any) bool {
 }
 
 // ListOf is List.of(e1, e2, ...).
-// A lone []any is the varargs array of Stream.of(T...) / Arrays.asList(T...), spread as Java does.
+// A lone array of references ([]any, []*Control, []string...) is the varargs array of Stream.of(T...) /
+// Arrays.asList(T...), spread as Java does; a lone primitive array (int[]) stays one element, as in Java.
 func ListOf(elems ...any) *List {
 	if len(elems) == 1 {
 		if a, ok := elems[0].([]any); ok {
 			elems = a
+		} else if v := reflect.ValueOf(elems[0]); v.Kind() == reflect.Slice && !isPrimitiveKind(v.Type().Elem().Kind()) {
+			elems = make([]any, v.Len())
+			for i := range elems {
+				elems[i] = v.Index(i).Interface()
+			}
 		}
 	}
 	return &List{items: elems}
+}
+
+func isPrimitiveKind(k reflect.Kind) bool {
+	return k >= reflect.Bool && k <= reflect.Complex128
 }
 
 // Contains is List.contains(Object).

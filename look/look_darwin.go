@@ -1,6 +1,9 @@
 package look
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
@@ -110,8 +113,7 @@ func sidebarInset() int32 {
 func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
 	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
-	clearBackground(sb, true)
-	sourceLists(sb)
+	clearTree(sb)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
 		s.AddDisposeListener(&sidebarHooks{s})
@@ -131,6 +133,9 @@ func refreshSidebar(s *swt.Shell) {
 		}
 		s.LayoutOverload2(true, true)
 		cocoa.NeedsDisplayTree(s.View.Window().ContentView())
+		if os.Getenv("GOWT_SIDEBAR_DEBUG") == "1" {
+			debugSidebar(s)
+		}
 	}))
 }
 
@@ -145,18 +150,70 @@ func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 	delete(sidebarShells, d.s)
 }
 
-// sourceLists gives the lists, tables and trees under c the source-list style.
-func sourceLists(c *swt.Composite) {
+// clearTree makes c and the controls under it paint no background of their own, so the sidebar glass
+// shows, and gives lists, tables and trees the source-list style. Each control gets its own alpha-0
+// background: SWT fills a control without one in the default window colour, and an alpha-0 background of
+// a parent does not count as one there. Controls added later are not covered.
+func clearTree(c *swt.Composite) {
+	clearBackground(c, true)
 	for _, ch := range c.GetChildren() {
 		switch v := ch.Impl().(type) {
 		case *swt.List, *swt.Table, *swt.Tree:
 			cocoa.SetSourceList(ch.View)
+			clearControl(ch)
+		case *swt.Label, *swt.Link:
+			clearControl(ch)
+		case *swt.Button:
+			if v.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
+				clearControl(ch)
+			}
 		case *swt.Group:
-			sourceLists(&v.Composite)
+			clearTree(&v.Composite)
 		case *swt.Composite:
-			sourceLists(v)
+			clearTree(v)
 		}
 	}
+}
+
+func clearControl(c *swt.Control) {
+	col := swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 0, 0, 0, 0)
+	c.SetBackgroundWithColor(col)
+	col.Dispose()
+}
+
+// debugSidebar prints, for every list, table and tree in the sidebar of s, the SWT background state
+// of it and its parents and the AppKit view chain up to the content view (GOWT_SIDEBAR_DEBUG=1).
+func debugSidebar(s *swt.Shell) {
+	var walk func(c *swt.Composite)
+	walk = func(c *swt.Composite) {
+		for _, ch := range c.GetChildren() {
+			switch v := ch.Impl().(type) {
+			case *swt.List, *swt.Table, *swt.Tree:
+				fmt.Fprintf(os.Stderr, "sidebar debug: %T\n", v)
+				for w := ch; w != nil; w = parentControl(w) {
+					b := w.GetBackground()
+					mode := int32(-1)
+					if p, ok := w.Impl().(interface{ GetBackgroundMode() int32 }); ok {
+						mode = p.GetBackgroundMode()
+					}
+					fmt.Fprintf(os.Stderr, "  swt %T background %d,%d,%d,%d mode %d\n", w.Impl(), b.GetRed(), b.GetGreen(), b.GetBlue(), b.GetAlpha(), mode)
+				}
+				fmt.Fprint(os.Stderr, cocoa.DescribeViewChain(ch.View))
+			case *swt.Composite:
+				walk(v)
+			case *swt.Group:
+				walk(&v.Composite)
+			}
+		}
+	}
+	walk(&s.Composite)
+}
+
+func parentControl(c *swt.Control) *swt.Control {
+	if p := c.GetParent(); p != nil {
+		return &p.Control
+	}
+	return nil
 }
 
 func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32) {

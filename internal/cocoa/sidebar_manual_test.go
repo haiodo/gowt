@@ -2,30 +2,16 @@
 
 package cocoa
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
-func TestInstallCard(t *testing.T) {
+func TestGroupedFillRGB(t *testing.T) {
 	onMain(func() {
-		v := msg(msg(class("NSView"), "alloc"), "init")
-		view := NewNSViewOverload1(int64(v))
-		host := msg(msg(class("NSView"), "alloc"), "init")
-		msg(host, "addSubview:", v)
-		count := func() uintptr { return msg(msg(host, "subviews"), "count") }
-		InstallCard(view, 12, true)
-		InstallCard(view, 12, true)
-		if !HasCard(view) || count() != 2 {
-			t.Fatalf("second install must replace the card: %d subviews", count())
-		}
-		if msg(msg(host, "subviews"), "objectAtIndex:", 0) == v {
-			t.Error("the card must lie below the view")
-		}
-		SetCardHidden(view, true)
-		if c := msg(msg(host, "subviews"), "objectAtIndex:", 0); msg(c, "isHidden")&0xff == 0 {
-			t.Error("SetCardHidden did not hide the card")
-		}
-		InstallCard(view, 0, false)
-		if HasCard(view) || count() != 1 {
-			t.Errorf("remove left %d subviews", count())
+		r, g, b := GroupedFillRGB()
+		if r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 {
+			t.Errorf("rgb %d %d %d", r, g, b)
 		}
 	})
 }
@@ -94,6 +80,18 @@ func TestSourceListHooks(t *testing.T) {
 		}
 		if rv := msg(plain, "tableView:rowViewForRow:", plain, 0); rv != 0 {
 			t.Errorf("plain table got row view %x", rv)
+		}
+	})
+}
+
+func TestDescribeViewChain(t *testing.T) {
+	onMain(func() {
+		host := msg(msg(class("NSScrollView"), "alloc"), "init")
+		tv := msg(msg(class("NSTableView"), "alloc"), "init")
+		msg(host, "setDocumentView:", tv)
+		out := DescribeViewChain(NewNSViewOverload1(int64(tv)))
+		if !strings.Contains(out, "NSTableView") || !strings.Contains(out, "NSScrollView") || !strings.Contains(out, "drawsBackground=") {
+			t.Errorf("chain:\n%s", out)
 		}
 	})
 }

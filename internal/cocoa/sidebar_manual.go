@@ -1,17 +1,14 @@
 //go:build darwin
 
-// Hand-written: grouped-section cards, sidebar source lists and the toolbar spacer that keeps toolbar items past a sidebar.
+// Hand-written: the grouped-section colour, sidebar source lists and the toolbar spacer that keeps toolbar items past a sidebar.
 package cocoa
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/ebitengine/purego"
 )
-
-var cardClass uintptr
-
-func cardKey() uintptr { return sel("gowtCard") }
 
 // cardFill is the grouped background of System Settings: quaternarySystemFillColor (macOS 14),
 // quaternaryLabelColor before it.
@@ -22,79 +19,27 @@ func cardFill() uintptr {
 	return msg(class("NSColor"), "quaternaryLabelColor")
 }
 
-// GowtCardView sets its layer colour in updateLayer, where AppKit resolves dynamic colours for the view's
-// appearance and which a light/dark switch calls again; without drawRect the layer has no backing bitmap.
-func registerCardClass() {
-	if cardClass != 0 {
-		return
+// GroupedFillRGB is the System Settings card colour as 0..255 sRGB: cardFill over windowBackgroundColor,
+// resolved for the app's current appearance. SWT paints controls in opaque colours, so the translucent
+// system fill is flattened here.
+func GroupedFillRGB() (r, g, b int32) {
+	appearance := class("NSAppearance")
+	old := msg(appearance, "currentAppearance")
+	msg(old, "retain")
+	msg(appearance, "setCurrentAppearance:", msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance"))
+	defer func() {
+		msg(appearance, "setCurrentAppearance:", old)
+		msg(old, "release")
+	}()
+	srgb := msg(class("NSColorSpace"), "sRGBColorSpace")
+	bg := NewNSColorOverload1(int64(msg(msg(class("NSColor"), "windowBackgroundColor"), "colorUsingColorSpace:", srgb)))
+	fill := NewNSColorOverload1(int64(msg(cardFill(), "colorUsingColorSpace:", srgb)))
+	if bg.Id == 0 || fill.Id == 0 {
+		return 242, 242, 242
 	}
-	yes := purego.NewCallback(func(self, _ uintptr) uintptr { return 1 })
-	update := purego.NewCallback(func(self, _ uintptr) {
-		msg(msg(self, "layer"), "setBackgroundColor:", msg(cardFill(), "CGColor"))
-	})
-	noHit := purego.NewCallback(func(self, _ uintptr, x, y float64) uintptr { return 0 })
-	cardClass = allocClass(class("NSView"), "GowtCardView", 0)
-	addMethod(cardClass, sel("wantsUpdateLayer"), yes, "c@:")
-	addMethod(cardClass, sel("updateLayer"), update, "v@:")
-	addMethod(cardClass, sel("hitTest:"), noHit, "@@:{CGPoint=dd}")
-	registerClass(cardClass)
-}
-
-// InstallCard puts a rounded fill in the grouped background colour right behind view, a sibling as
-// with InstallBackdrop; on false it removes the fill. Keep the frame in step with SyncCard.
-func InstallCard(view *NSView, radius float64, on bool) {
-	initAssociated()
-	v := uintptr(view.Id)
-	if old := getAssociated(v, cardKey()); old != 0 {
-		msg(old, "removeFromSuperview")
-		setAssociated(v, cardKey(), 0, 1)
-	}
-	host := msg(v, "superview")
-	if !on || host == 0 {
-		return
-	}
-	registerCardClass()
-	if msgF64 == nil {
-		purego.RegisterFunc(&msgF64, objcMsgSend)
-	}
-	c := msg(msg(cardClass, "alloc"), "init")
-	msg(c, "setWantsLayer:", 1)
-	layer := msg(c, "layer")
-	msgF64(layer, sel("setCornerRadius:"), radius)
-	if respondsTo(layer, "setCornerCurve:") {
-		msg(layer, "setCornerCurve:", nsString("continuous"))
-	}
-	msgRectOnly(c, sel("setFrame:"), view.Frame())
-	msg(c, "setHidden:", msg(v, "isHidden")&0xff)
-	msg(host, "addSubview:positioned:relativeTo:", c, windowBelowArg, v)
-	setAssociated(v, cardKey(), c, 1)
-	msg(c, "release")
-}
-
-// SyncCard moves the fill of InstallCard to the frame of view.
-func SyncCard(view *NSView) {
-	initAssociated()
-	if c := getAssociated(uintptr(view.Id), cardKey()); c != 0 {
-		msgRectOnly(c, sel("setFrame:"), view.Frame())
-	}
-}
-
-// SetCardHidden hides or shows the fill of InstallCard; SWT reports Show before it unhides view.
-func SetCardHidden(view *NSView, hidden bool) {
-	initAssociated()
-	if c := getAssociated(uintptr(view.Id), cardKey()); c != 0 {
-		h := uintptr(0)
-		if hidden {
-			h = 1
-		}
-		msg(c, "setHidden:", h)
-	}
-}
-
-// HasCard reports whether view has a fill from InstallCard (for tests).
-func HasCard(view *NSView) bool {
-	initAssociated()
-	return getAssociated(uintptr(view.Id), cardKey()) != 0
+	a := fill.AlphaComponent()
+	mix := func(b, f float64) int32 { return int32(math.Round(255 * (b*(1-a) + f*a))) }
+	return mix(bg.RedComponent(), fill.RedComponent()), mix(bg.GreenComponent(), fill.GreenComponent()), mix(bg.BlueComponent(), fill.BlueComponent())
 }
 
 const tableStyleSourceList = 3
@@ -163,8 +108,11 @@ func sourceListHooks(cls uintptr) {
 	}
 	if rowViewClass == 0 {
 		no := purego.NewCallback(func(self, _ uintptr) uintptr { return 0 })
+		// The dirty rect arrives in FP registers on arm64 and in memory on amd64: only self is read.
+		drawSelection := purego.NewCallback(func(self, _ uintptr) { drawPill(self) })
 		rowViewClass = allocClass(class("NSTableRowView"), "GowtSidebarRowView", 0)
 		addMethod(rowViewClass, sel("isEmphasized"), no, "c@:")
+		addMethod(rowViewClass, sel("drawSelectionInRect:"), drawSelection, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}")
 		registerClass(rowViewClass)
 	}
 	rowView := purego.NewCallback(func(self, _, table uintptr, row int) uintptr {
@@ -283,6 +231,27 @@ func newSpacer() (view, width uintptr) {
 	return view, width
 }
 
+var roundedRect func(cls, sel uintptr, r NSRect, rx, ry float64) uintptr
+
+// drawPill draws the Finder sidebar selection: a pill in tertiarySystemFillColor (macOS 14, else
+// quaternaryLabelColor), lighter than the unemphasized selection colour AppKit uses, inset 5 points
+// at the sides as AppKit's own source-list pill is.
+func drawPill(row uintptr) {
+	if roundedRect == nil {
+		purego.RegisterFunc(&roundedRect, objcMsgSend)
+	}
+	r := NewNSViewOverload1(int64(row)).Bounds()
+	r.X += 5
+	r.Width -= 10
+	c := class("NSColor")
+	fill := msg(c, "quaternaryLabelColor")
+	if respondsTo(c, "tertiarySystemFillColor") {
+		fill = msg(c, "tertiarySystemFillColor")
+	}
+	msg(fill, "setFill")
+	msg(roundedRect(class("NSBezierPath"), sel("bezierPathWithRoundedRect:xRadius:yRadius:"), r, 6, 6), "fill")
+}
+
 // NeedsDisplayTree marks view and every view under it for display.
 func NeedsDisplayTree(view *NSView) {
 	var walk func(v uintptr)
@@ -294,4 +263,37 @@ func NeedsDisplayTree(view *NSView) {
 		}
 	}
 	walk(uintptr(view.Id))
+}
+
+// DescribeViewChain lists view and its superviews up to the window's content view, with the AppKit
+// state that decides whether a view paints a background (for GOWT_SIDEBAR_DEBUG).
+func DescribeViewChain(view *NSView) string {
+	var out string
+	content := msg(msg(uintptr(view.Id), "window"), "contentView")
+	describe := func(v uintptr, indent string) {
+		line := fmt.Sprintf("%s%s opaque=%d", indent, goString(msg(v, "className")), msg(v, "isOpaque")&0xff)
+		if respondsTo(v, "drawsBackground") {
+			line += fmt.Sprintf(" drawsBackground=%d", msg(v, "drawsBackground")&0xff)
+		}
+		if respondsTo(v, "backgroundColor") {
+			line += " backgroundColor=" + goString(msg(msg(v, "backgroundColor"), "description"))
+		}
+		if l := msg(v, "layer"); l != 0 {
+			line += fmt.Sprintf(" layer.opaque=%d layer.bg=%x", msg(l, "isOpaque")&0xff, msg(l, "backgroundColor"))
+		}
+		out += line + "\n"
+	}
+	for v := uintptr(view.Id); v != 0; v = msg(v, "superview") {
+		describe(v, "  view ")
+		if v == content {
+			break
+		}
+	}
+	if sv := msg(uintptr(view.Id), "enclosingScrollView"); sv != 0 {
+		subs := msg(sv, "subviews")
+		for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+			describe(msg(subs, "objectAtIndex:", i), "  scroll subview ")
+		}
+	}
+	return out
 }

@@ -111,7 +111,19 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
 	clearBackground(sb, true)
 	sourceLists(sb)
-	cocoa.InstallSidebarTracker(s.View)
+	if !sidebarShells[s] {
+		sidebarShells[s] = true
+		s.AddDisposeListener(&sidebarDisposer{s})
+	}
+}
+
+var sidebarShells = map[*swt.Shell]bool{}
+
+type sidebarDisposer struct{ s *swt.Shell }
+
+func (d *sidebarDisposer) WidgetDisposed(*swt.DisposeEvent) {
+	cocoa.ReleaseSidebar(d.s.View)
+	delete(sidebarShells, d.s)
 }
 
 // sourceLists gives the lists, tables and trees under c the source-list style.
@@ -130,5 +142,5 @@ func sourceLists(c *swt.Composite) {
 
 func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32) {
 	cocoa.SetBackdropFrame(sb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
-	cocoa.SetSidebarDivider(s.View, float64(bg[0]+bg[2]))
+	cocoa.SetSidebarEdge(s.View, float64(bg[0]+bg[2]))
 }

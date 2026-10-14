@@ -1,17 +1,17 @@
 //go:build darwin
 
-// Hand-written: grouped-section cards and the split view that a sidebar's toolbar separator tracks.
+// Hand-written: grouped-section cards, sidebar source lists and the toolbar spacer that keeps toolbar items past a sidebar.
 package cocoa
 
-import "github.com/ebitengine/purego"
+import (
+	"math"
 
-var (
-	cardClass   uintptr
-	msgF64Index func(self, sel uintptr, v float64, i int)
+	"github.com/ebitengine/purego"
 )
 
-func cardKey() uintptr  { return sel("gowtCard") }
-func splitKey() uintptr { return sel("gowtSidebarSplit") }
+var cardClass uintptr
+
+func cardKey() uintptr { return sel("gowtCard") }
 
 // cardFill is the grouped background of System Settings: quaternarySystemFillColor (macOS 14),
 // quaternaryLabelColor before it.
@@ -104,6 +104,18 @@ func SetSourceList(view *NSView) {
 	if respondsTo(v, "setStyle:") {
 		msg(v, "setStyle:", 3) // NSTableViewStyleSourceList
 	}
+	// The source-list style sizes rows from the sidebar icon size setting, apart from rowHeight, which SWT
+	// reads as the item height. A custom size style keeps rowHeight in charge, raised to the measured height.
+	tv := NewNSTableViewOverload1(int64(v))
+	tv.Tile()
+	h := tv.RowHeight()
+	if tv.NumberOfRows() > 0 {
+		h = max(h, tv.RectOfRow(0).Height-tv.IntercellSpacing().Height)
+	}
+	if respondsTo(v, "setRowSizeStyle:") {
+		msg(v, "setRowSizeStyle:", 0) // NSTableViewRowSizeStyleCustom
+	}
+	tv.SetRowHeight(h)
 	msg(v, "setBackgroundColor:", msg(class("NSColor"), "clearColor"))
 	if sv := msg(v, "enclosingScrollView"); sv != 0 {
 		msg(sv, "setDrawsBackground:", 0)
@@ -119,58 +131,89 @@ func SetBackdropFrame(view *NSView, x, y, w, h float64) {
 	}
 }
 
-// InstallSidebarTracker gives the window of view an empty vertical NSSplitView for an
-// NSTrackingSeparatorToolbarItem to follow, since AppKit aligns toolbar items with a split view divider
-// only. It lies zero points high under the content view, never seen or clicked; an earlier toolbar is rebuilt.
-func InstallSidebarTracker(view *NSView) bool {
-	initAssociated()
-	w := msg(uintptr(view.Id), "window")
-	if w == 0 || class("NSTrackingSeparatorToolbarItem") == 0 {
-		return false
-	}
-	if getAssociated(w, splitKey()) != 0 {
-		return true
-	}
-	content := msg(w, "contentView")
-	frame := msg(content, "superview")
-	if frame == 0 {
-		return false
-	}
-	sv := msg(msg(class("NSSplitView"), "alloc"), "init")
-	msg(sv, "setVertical:", 1)
-	msg(sv, "setDividerStyle:", 2) // NSSplitViewDividerStyleThin
-	for range 2 {
-		p := msg(msg(class("NSView"), "alloc"), "init")
-		msg(sv, "addSubview:", p)
-		msg(p, "release")
-	}
-	r := NewNSViewOverload1(int64(frame)).Bounds()
-	r.Height = 0
-	msgRectOnly(sv, sel("setFrame:"), r)
-	msg(sv, "setAutoresizingMask:", 2) // NSViewWidthSizable
-	msg(frame, "addSubview:positioned:relativeTo:", sv, windowBelowArg, content)
-	setAssociated(w, splitKey(), sv, 1)
-	msg(sv, "release")
-	if d := getAssociated(w, toolbarKey()); d != 0 && toolbarDelegates[d] != nil {
-		InstallToolbar(view, toolbarDelegates[d].items)
-	}
-	return true
-}
+// sidebarEdges holds, per window, the x of the sidebar's right edge in window points.
+var sidebarEdges = map[uintptr]float64{}
 
-// SetSidebarDivider puts the divider of the split view of InstallSidebarTracker at x points from the
-// left edge of the window.
-func SetSidebarDivider(view *NSView, x float64) {
-	initAssociated()
+// SetSidebarEdge makes the toolbar of the window of view start its navigational items and title x points
+// from the window's left edge, past a sidebar. AppKit puts navigational items and the title at the leading
+// edge, right after the traffic lights, so an empty navigational item of fitted width goes first. The
+// first call rebuilds an earlier toolbar with that item.
+func SetSidebarEdge(view *NSView, x float64) {
 	w := msg(uintptr(view.Id), "window")
 	if w == 0 {
 		return
 	}
-	sv := getAssociated(w, splitKey())
-	if sv == 0 {
+	_, had := sidebarEdges[w]
+	sidebarEdges[w] = x
+	if d := getAssociated(w, toolbarKey()); !had && d != 0 && toolbarDelegates[d] != nil {
+		InstallToolbar(view, toolbarDelegates[d].items)
+	}
+	fitSpacer(w)
+}
+
+// ReleaseSidebar forgets the sidebar edge of the window of view; call it when the window is disposed.
+func ReleaseSidebar(view *NSView) { delete(sidebarEdges, msg(uintptr(view.Id), "window")) }
+
+// spacerGap is the room between the sidebar edge and the end of the spacer; AppKit adds its item spacing.
+const spacerGap = 4
+
+// fitSpacer sizes the spacer of the toolbar of w so that it ends spacerGap points past the sidebar edge.
+// Its own left edge is measured once it is in the window, before that taken as the zoom button's right
+// edge plus 8 points.
+func fitSpacer(w uintptr) {
+	initAssociated()
+	edge, ok := sidebarEdges[w]
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if !ok || s == nil || s.width == 0 {
 		return
 	}
-	if msgF64Index == nil {
-		purego.RegisterFunc(&msgF64Index, objcMsgSend)
+	var x0 float64
+	if msg(s.spacer, "window") == w {
+		v := NewNSViewOverload1(int64(s.spacer))
+		x0 = v.ConvertRect_toView_(v.Bounds(), nil).X
+	} else if b := msg(w, "standardWindowButton:", 2); b != 0 { // NSWindowZoomButton
+		v := NewNSViewOverload1(int64(b))
+		r := v.ConvertRect_toView_(v.Bounds(), nil)
+		x0 = r.X + r.Width + 8
 	}
-	msgF64Index(sv, sel("setPosition:ofDividerAtIndex:"), x, 0)
+	width := max(0, edge+spacerGap-x0)
+	if math.Abs(width-s.spacerWidth) < 0.5 {
+		return
+	}
+	s.spacerWidth = width
+	msgF64(s.width, sel("setConstant:"), width)
+}
+
+var (
+	spacerClass uintptr
+	superLayout func(self, sel uintptr)
+	msgF64Ret   func(self, sel uintptr, v float64) uintptr
+)
+
+// newSpacer returns the view of the spacer item, retained, and its width constraint. Its layout refits
+// the width, since the toolbar places the item after the window layout ran.
+func newSpacer() (view, width uintptr) {
+	if spacerClass == 0 {
+		purego.RegisterFunc(&superLayout, uintptr(OSClass_getMethodImplementation(int64(class("NSView")), int64(sel("layout")))))
+		layout := purego.NewCallback(func(self, cmd uintptr) {
+			superLayout(self, cmd)
+			if w := msg(self, "window"); w != 0 {
+				fitSpacer(w)
+			}
+		})
+		spacerClass = allocClass(class("NSView"), "GowtToolbarSpacer", 0)
+		addMethod(spacerClass, sel("layout"), layout, "v@:")
+		registerClass(spacerClass)
+	}
+	if msgF64 == nil {
+		purego.RegisterFunc(&msgF64, objcMsgSend)
+	}
+	if msgF64Ret == nil {
+		purego.RegisterFunc(&msgF64Ret, objcMsgSend)
+	}
+	view = msg(msg(spacerClass, "alloc"), "init")
+	msg(view, "setTranslatesAutoresizingMaskIntoConstraints:", 0)
+	width = msgF64Ret(msg(view, "widthAnchor"), sel("constraintEqualToConstant:"), 0)
+	msg(width, "setActive:", 1)
+	return view, width
 }

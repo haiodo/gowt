@@ -45,22 +45,32 @@ func TestToolbarClicked(t *testing.T) {
 	s.clicked(itemIDPrefix+"1", -1)
 	s.clicked(itemIDPrefix+"1", 2)
 	s.clicked(itemIDPrefix+"2", -1)
-	s.clicked(sidebarSeparatorID, -1)
+	s.clicked(sidebarSpacerID, -1)
 	if len(got) != 2 || got[0] != "plain" || got[1] != "forward" {
 		t.Errorf("clicks %v", got)
 	}
 }
 
-func TestToolbarSidebarSeparator(t *testing.T) {
+func TestToolbarSidebarSpacer(t *testing.T) {
 	onMain(func() {
 		s := &toolbarState{items: []ToolbarItem{{Label: "a"}, {Space: true}}}
 		if n := msg(s.ids(), "count"); n != 2 {
 			t.Errorf("without a sidebar: %d ids", n)
 		}
-		s.split = 1 // any non-zero split view marks a sidebar; ids never sends to it
+		s.sidebar = true
 		ids := s.ids()
-		if n := msg(ids, "count"); n != 3 || goString(msg(ids, "objectAtIndex:", 0)) != sidebarSeparatorID {
+		if n := msg(ids, "count"); n != 3 || goString(msg(ids, "objectAtIndex:", 0)) != sidebarSpacerID {
 			t.Errorf("with a sidebar: %d ids, first %q", n, goString(msg(ids, "objectAtIndex:", 0)))
+		}
+	})
+}
+
+func TestToolbarSpacerItem(t *testing.T) {
+	onMain(func() {
+		s := &toolbarState{sidebar: true}
+		ti := s.item(0, sidebarSpacerID)
+		if ti == 0 || s.width == 0 || msg(ti, "view") != s.spacer || msg(ti, "isNavigational")&0xff == 0 {
+			t.Fatalf("spacer item %x view %x width %x", ti, s.spacer, s.width)
 		}
 	})
 }

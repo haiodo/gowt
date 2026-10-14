@@ -9,6 +9,7 @@ Any program built on `gowt.Run` honours two environment variables:
 | Variable | Meaning |
 |---|---|
 | `GOWT_SNAP=<file.png>` | after the event loop has run for a while, write the first window as a PNG, close it and let `Run` return |
+| `GOWT_SNAP_LAYERS=1` | macOS: render the window's layer tree (`CALayer renderInContext:`) instead of `cacheDisplayInRect:`, so layer-only content such as `Section` cards shows; glass and blurred backdrops stay empty. The reference images use the default |
 | `GOWT_SNAP_DELAY=<ms>` | that wait, default 800; raise it for a window that loads something (the web view examples use 4000) |
 
 ```sh

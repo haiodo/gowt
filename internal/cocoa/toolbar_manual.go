@@ -1,7 +1,7 @@
 //go:build darwin
 
 // Hand-written: a real NSToolbar on a window (unified style, Liquid Glass items on macOS 26, search
-// field, segmented groups, a separator that tracks a sidebar),
+// field, segmented groups, a spacer that keeps items past a sidebar),
 // NSGlassEffectContainerView grouping of glass surfaces. NSToolbar needs a delegate, so one ObjC class is registered at run time.
 package cocoa
 
@@ -30,14 +30,17 @@ const (
 	toolbarStyleUnified = 3
 	itemIDPrefix        = "gowt.item."
 	flexibleSpaceID     = "NSToolbarFlexibleSpaceItem"
-	sidebarSeparatorID  = "gowt.sidebar"
+	sidebarSpacerID     = "gowt.sidebar"
 	selectMomentary     = 2
 	representExpanded   = 1
 )
 
 type toolbarState struct {
-	items []ToolbarItem
-	split uintptr // NSSplitView of InstallSidebarTracker, 0 without a sidebar
+	items       []ToolbarItem
+	sidebar     bool    // the window has SetSidebarEdge: the spacer item goes first
+	spacer      uintptr // the spacer's view and width constraint, owned by the toolbar item
+	width       uintptr
+	spacerWidth float64
 }
 
 var (
@@ -50,8 +53,8 @@ func toolbarKey() uintptr { return sel("gowtToolbar") }
 
 func (s *toolbarState) ids() uintptr {
 	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+1))
-	if s.split != 0 {
-		msg(arr, "addObject:", nsString(sidebarSeparatorID))
+	if s.sidebar {
+		msg(arr, "addObject:", nsString(sidebarSpacerID))
 	}
 	for i, it := range s.items {
 		id := itemIDPrefix + strconv.Itoa(i)
@@ -80,8 +83,17 @@ func symbolImage(name, label string) uintptr {
 }
 
 func (s *toolbarState) item(target uintptr, id string) uintptr {
-	if id == sidebarSeparatorID {
-		return msg(class("NSTrackingSeparatorToolbarItem"), "trackingSeparatorToolbarItemWithIdentifier:splitView:dividerIndex:", nsString(id), s.split, 0)
+	if id == sidebarSpacerID {
+		ti := msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
+		v, width := newSpacer()
+		msg(ti, "setView:", v)
+		msg(v, "release")
+		if respondsTo(ti, "setBordered:") {
+			msg(ti, "setBordered:", 0)
+		}
+		msg(ti, "setNavigational:", 1)
+		s.spacer, s.width, s.spacerWidth = v, width, -1
+		return msg(ti, "autorelease")
 	}
 	it := s.find(id)
 	if it == nil {
@@ -221,7 +233,8 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	}
 	registerToolbarClass()
 	d := msg(msg(toolbarClass, "alloc"), "init")
-	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), split: getAssociated(w, splitKey())}
+	_, sidebar := sidebarEdges[w]
+	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar}
 	setAssociated(w, toolbarKey(), d, 1)
 	msg(d, "release")
 	toolbarSeq++

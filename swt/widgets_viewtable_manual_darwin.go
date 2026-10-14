@@ -1,6 +1,7 @@
 package swt
 
 import (
+	"math"
 	"os"
 
 	"github.com/ebitengine/purego"
@@ -411,6 +412,11 @@ func (this *List) vtDrawCell(view int64) {
 	cell.SetObjectValue(cocoa.NewidOverload1(this.tableView_objectValueForTableColumn_row_(tv.Id, 0, tv.Id, this.column.Id, row)))
 	cell.SetHighlighted(tv.IsRowSelected(row))
 	frame := tv.FrameOfCellAtColumn(col, row)
+	// The text cell draws from the top of its frame; a row taller than the text (source list) centres it.
+	if h := cell.CellSize().Height; h < frame.Height {
+		frame.Y += math.Floor((frame.Height - h) / 2)
+		frame.Height = h
+	}
 	vtDrawContext(this.View, cocoa.NewNSViewOverload1(view), func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 

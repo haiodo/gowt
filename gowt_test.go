@@ -506,6 +506,10 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 		if fd := b.l.GetFont().GetFontData()[0]; fd.GetHeight() != 15 {
 			t.Errorf("Weight font height %d", fd.GetHeight())
 		}
+		SetFont(b, Font{Size: 15, Weight: Bold})
+		if b.l.GetFont().GetFontData()[0].GetStyle()&swt.BOLD == 0 {
+			t.Error("Weight Bold is not BOLD in GetFontData")
+		}
 		SetFont(b, Font{Size: 20, Bold: true})
 		SetForeground(b, RGB{200, 0, 0})
 		if b.l.GetFont().GetFontData()[0].GetHeight() != 20 {

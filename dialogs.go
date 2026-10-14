@@ -149,8 +149,9 @@ const (
 	Bold     Weight = 700
 )
 
-// Font describes a typeface choice; Size is in points. An empty Name is the system UI font where a
-// Weight is used. Weight overrides Bold when set.
+// Font describes a typeface choice; Size is in points. Weight overrides Bold when set.
+// SetFont keeps the control's current family for an empty Name, which for a default control is the
+// system UI font (SF Pro, Segoe UI, the GTK UI font) at the given weight.
 type Font struct {
 	Name         string
 	Size         int
@@ -173,7 +174,9 @@ func (f Font) swtFont(d swt.DeviceLike) *swt.Font {
 	return swt.NewFontDeviceNameHeightStyle(d, f.Name, int32(f.Size), st)
 }
 
-// FontDialog shows a font chooser starting at initial; ok is false if cancelled.
+// FontDialog shows a font chooser starting at initial; ok is false if cancelled. The dialog knows only
+// regular and bold: an initial Weight of Semibold or more starts bold. The result has Weight 0 if
+// initial.Weight was 0, else Bold or Regular, so a Medium or Semibold round trip is not preserved.
 func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 	dlg := swt.NewFontDialog(w.shell)
 	if initial.Name != "" {
@@ -181,7 +184,7 @@ func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 		fd.SetName(initial.Name)
 		fd.SetHeight(int32(initial.Size))
 		var st int32
-		if initial.Bold {
+		if initial.Bold || initial.Weight >= Semibold {
 			st |= swt.BOLD
 		}
 		if initial.Italic {
@@ -195,5 +198,12 @@ func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 		return initial, false
 	}
 	st := r.GetStyle()
-	return Font{Name: r.GetName(), Size: int(r.GetHeight()), Bold: st&swt.BOLD != 0, Italic: st&swt.ITALIC != 0}, true
+	f = Font{Name: r.GetName(), Size: int(r.GetHeight()), Bold: st&swt.BOLD != 0, Italic: st&swt.ITALIC != 0}
+	if initial.Weight != 0 {
+		f.Weight = Regular
+		if f.Bold {
+			f.Weight = Bold
+		}
+	}
+	return f, true
 }

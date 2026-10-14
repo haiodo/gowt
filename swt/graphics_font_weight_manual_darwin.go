@@ -9,6 +9,16 @@ func NewFontDeviceNameHeightWeight(deviceLike DeviceLike, name string, height in
 	if deviceLike != nil {
 		device = deviceLike.AsDevice()
 	}
+	weight = ClampFontWeight(weight)
+	var pool *cocoa.NSAutoreleasePool = nil
+	if !cocoa.NSThreadIsMainThread() {
+		pool = castcocoaNSObjectTococoaNSAutoreleasePool(cocoa.NewNSAutoreleasePool().Alloc().Init())
+	}
+	defer func() {
+		if pool != nil {
+			pool.Release()
+		}
+	}()
 	f := newFont(device)
 	dpi := f.device.dpi
 	screenDPI := f.device.GetScreenDPI()

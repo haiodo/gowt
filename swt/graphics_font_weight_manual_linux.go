@@ -18,7 +18,7 @@ func NewFontDeviceNameHeightWeight(deviceLike DeviceLike, name string, height in
 		style = ITALIC
 	}
 	f.InitNameHeightStyleFontString(name, float32(height), style, nil)
-	gtk.OSPango_font_description_set_weight(f.Handle, weight)
+	gtk.OSPango_font_description_set_weight(f.Handle, ClampFontWeight(weight))
 	f.impl.init_()
 	return f
 }

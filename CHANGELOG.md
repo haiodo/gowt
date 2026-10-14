@@ -16,7 +16,7 @@ New API
 - `Table.ShowRowLines`, `Tree.ShowRowLines`: horizontal separators only on macOS.
 - `Canvas.OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`).
 - `look.DragsWindow`: window drag area for custom title bars.
-- Font weights: `Font.Weight` (`Light`, `Regular`, `Medium`, `Semibold`, `Bold`, CSS 100..900) for `SetFont` and `TextStyle.Font`; an empty `Name` with a `Weight` is the system UI font (SF Pro on macOS via `systemFontOfSize:weight:`, Pango weight on Linux, `lfWeight` on Windows). `swt.NewFontDeviceNameHeightWeight` makes the same font for direct use.
+- Font weights: `Font.Weight` (`Light`, `Regular`, `Medium`, `Semibold`, `Bold`, CSS 100..900) for `SetFont` and `TextStyle.Font`; `SetFont` with an empty `Name` keeps the control's current family (the system UI font for a default control); `NewFontDeviceNameHeightWeight` with an empty name is the system UI font (SF Pro on macOS via `systemFontOfSize:weight:`, Pango weight on Linux, `lfWeight` on Windows). `swt.NewFontDeviceNameHeightWeight` makes the same font for direct use.
 
 ## v0.1.0
 

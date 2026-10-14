@@ -7,6 +7,13 @@ func NewFontDeviceNameHeightWeight(deviceLike DeviceLike, name string, height in
 	if deviceLike != nil {
 		device = deviceLike.AsDevice()
 	}
+	if device == nil {
+		device = DeviceGetDevice()
+	}
+	if device == nil {
+		Error(ERROR_NULL_ARGUMENT)
+	}
+	weight = ClampFontWeight(weight)
 	if name == "" {
 		name = device.GetSystemFont().GetFontData()[0].GetName()
 	}

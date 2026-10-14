@@ -115,6 +115,7 @@ gowt Font.Bold field bool
 gowt Font.Italic field bool
 gowt Font.Name field string
 gowt Font.Size field int
+gowt Font.Weight field Weight
 gowt Form.Margin field int
 gowt Form.Spacing field int
 gowt FormCell.Bottom field Edge
@@ -525,6 +526,7 @@ gowt const AnswerNo Answer = 3
 gowt const AnswerOK Answer = 0
 gowt const AnswerRetry Answer = 4
 gowt const AnswerYes Answer = 2
+gowt const Bold Weight = 700
 gowt const ButtonsAbortRetryIgnore Buttons = 5
 gowt const ButtonsOK Buttons = 0
 gowt const ButtonsOKCancel Buttons = 1
@@ -536,10 +538,14 @@ gowt const IconInfo Icon = 1
 gowt const IconNone Icon = 0
 gowt const IconQuestion Icon = 4
 gowt const IconWarning Icon = 2
+gowt const Light Weight = 300
+gowt const Medium Weight = 500
 gowt const OpCopy Op = 1
 gowt const OpLink Op = 4
 gowt const OpMove Op = 2
 gowt const OpNone Op = 0
+gowt const Regular Weight = 400
+gowt const Semibold Weight = 600
 gowt const SortAscending SortDir = 1
 gowt const SortDescending SortDir = 2
 gowt const SortNone SortDir = 0
@@ -657,6 +663,7 @@ gowt type TrayIcon struct
 gowt type Tree struct
 gowt type TreeClick struct
 gowt type TreeColumn struct
+gowt type Weight int
 gowt type Widget
 gowt type Window struct
 gowt/icons func Color(c github.com/haiodo/gowt.RGB) Option

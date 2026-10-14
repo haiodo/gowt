@@ -126,3 +126,12 @@ func TestColAtX(t *testing.T) {
 		t.Error("no columns must give -1")
 	}
 }
+
+func TestFontWeightPrecedence(t *testing.T) {
+	if (Font{Bold: true}).Weight != 0 {
+		t.Error("Bold must not set Weight")
+	}
+	if Light >= Regular || Regular >= Medium || Medium >= Semibold || Semibold >= Bold {
+		t.Error("Weight constants must increase")
+	}
+}

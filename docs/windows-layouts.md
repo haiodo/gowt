@@ -46,6 +46,22 @@ p.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true}))
 
 `Margin` and `Spacing` are in points and zero means none (SWT itself would default to 5).
 
+### Spacing tokens
+
+`gowt.Spacing` is a `SpacingScale` of points: `XS` 4, `SM` 8, `MD` 12, `LG` 16, `XL` 32, and `PageMargin` (`LG` on macOS, `MD` elsewhere). Multiples of 4 stay whole pixels at 100..200% scaling. They fit the existing int fields:
+
+```go
+w.SetLayout(gowt.Grid{Columns: 1}.Padded())                                  // Margin = Spacing.PageMargin
+p.SetLayout(gowt.Grid{Columns: 2, Margin: gowt.Spacing.LG, Spacing: gowt.Spacing.SM})
+p.SetLayout(gowt.Row{}.Spaced())                                            // Spacing = Spacing.SM
+```
+
+`Spaced()` (Grid, Row, Form) and `Padded()` (Grid, Row, Form, Stack) return a copy with `Spacing = Spacing.SM` or `Margin = Spacing.PageMargin`. A plain zero still means none, so nested layouts stay flush; put `Padded()` on the root layout only.
+
+An application tunes the scale once at startup, e.g. `gowt.Spacing.SM = 6` or `gowt.Spacing = gowt.SpacingScale{...}`. Layouts created before the change keep their values.
+
+`gowt.Golden(total)` returns `small, large` (about 38% and 62%, summing to `total`), e.g. for a sidebar width or an initial window size; for `Split.SetWeights` the integer weights 5 and 8 give the same ratio.
+
 ### Form
 
 Edges are `Edge` values:

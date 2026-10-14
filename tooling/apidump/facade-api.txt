@@ -117,6 +117,8 @@ gowt Font.Name field string
 gowt Font.Size field int
 gowt Font.Weight field Weight
 gowt Form.Margin field int
+gowt Form.Padded() Form
+gowt Form.Spaced() Form
 gowt Form.Spacing field int
 gowt FormCell.Bottom field Edge
 gowt FormCell.Height field int
@@ -139,6 +141,8 @@ gowt GC.Unwrap() *github.com/haiodo/gowt/swt.GC
 gowt Grid.Columns field int
 gowt Grid.EqualWidth field bool
 gowt Grid.Margin field int
+gowt Grid.Padded() Grid
+gowt Grid.Spaced() Grid
 gowt Grid.Spacing field int
 gowt GridCell.Align field Align
 gowt GridCell.GrowX field bool
@@ -280,6 +284,8 @@ gowt RGB.R field uint8
 gowt Row.Center field bool
 gowt Row.Fill field bool
 gowt Row.Margin field int
+gowt Row.Padded() Row
+gowt Row.Spaced() Row
 gowt Row.Spacing field int
 gowt Row.Vertical field bool
 gowt Row.Wrap field bool
@@ -298,6 +304,12 @@ gowt Slider.OnChange(f func(value int))
 gowt Slider.SetValue(v int)
 gowt Slider.Unwrap() *github.com/haiodo/gowt/swt.Slider
 gowt Slider.Value() int
+gowt SpacingScale.LG field int
+gowt SpacingScale.MD field int
+gowt SpacingScale.PageMargin field int
+gowt SpacingScale.SM field int
+gowt SpacingScale.XL field int
+gowt SpacingScale.XS field int
 gowt Spinner.OnChange(f func(value int))
 gowt Spinner.SetValue(v int)
 gowt Spinner.Unwrap() *github.com/haiodo/gowt/swt.Spinner
@@ -333,6 +345,7 @@ gowt Split.ToolBar(opts ...Option) *ToolBar
 gowt Split.Tree(opts ...Option) *Tree
 gowt Split.Unwrap() *github.com/haiodo/gowt/swt.SashForm
 gowt Stack.Margin field int
+gowt Stack.Padded() Stack
 gowt StyleSpan.Length field int
 gowt StyleSpan.Start field int
 gowt StyleSpan.Style field TextStyle
@@ -568,6 +581,7 @@ gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
 gowt func Enabled(w Widget) bool
 gowt func Flat() Option
+gowt func Golden(total int) (small int, large int)
 gowt func InRow(c RowCell) Option
 gowt func Indeterminate() Option
 gowt func MultiSelect() Option
@@ -645,6 +659,7 @@ gowt type Scale struct
 gowt type Scroll struct
 gowt type Slider struct
 gowt type SortDir int
+gowt type SpacingScale struct
 gowt type Spinner struct
 gowt type Split struct
 gowt type Stack struct
@@ -666,6 +681,7 @@ gowt type TreeColumn struct
 gowt type Weight int
 gowt type Widget
 gowt type Window struct
+gowt var Spacing SpacingScale
 gowt/icons func Color(c github.com/haiodo/gowt.RGB) Option
 gowt/icons func Get(a *github.com/haiodo/gowt.App, name string, opts ...Option) *github.com/haiodo/gowt.Image
 gowt/icons func Names() []string

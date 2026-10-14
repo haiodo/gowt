@@ -138,11 +138,39 @@ func (w *Window) ColorDialog(initial RGB) (c RGB, ok bool) {
 	return rgbOf(r), true
 }
 
-// Font describes a typeface choice; Size is in points.
+// Weight is a CSS-style font weight, 100 to 900. The zero value means unset: Bold decides.
+type Weight int
+
+const (
+	Light    Weight = 300
+	Regular  Weight = 400
+	Medium   Weight = 500
+	Semibold Weight = 600
+	Bold     Weight = 700
+)
+
+// Font describes a typeface choice; Size is in points. An empty Name is the system UI font where a
+// Weight is used. Weight overrides Bold when set.
 type Font struct {
 	Name         string
 	Size         int
+	Weight       Weight
 	Bold, Italic bool
+}
+
+// swtFont creates the native font for f on display d; the caller owns it.
+func (f Font) swtFont(d swt.DeviceLike) *swt.Font {
+	if f.Weight != 0 {
+		return swt.NewFontDeviceNameHeightWeight(d, f.Name, int32(f.Size), int32(f.Weight), f.Italic)
+	}
+	var st int32
+	if f.Bold {
+		st |= swt.BOLD
+	}
+	if f.Italic {
+		st |= swt.ITALIC
+	}
+	return swt.NewFontDeviceNameHeightStyle(d, f.Name, int32(f.Size), st)
 }
 
 // FontDialog shows a font chooser starting at initial; ok is false if cancelled.
@@ -167,5 +195,5 @@ func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 		return initial, false
 	}
 	st := r.GetStyle()
-	return Font{r.GetName(), int(r.GetHeight()), st&swt.BOLD != 0, st&swt.ITALIC != 0}, true
+	return Font{Name: r.GetName(), Size: int(r.GetHeight()), Bold: st&swt.BOLD != 0, Italic: st&swt.ITALIC != 0}, true
 }

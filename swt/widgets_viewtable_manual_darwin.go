@@ -7,9 +7,9 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 )
 
-// GOWT_VIEW_TABLE=1 switches Table and Tree from cell-based to view-based NSTableView/NSOutlineView (docs/view-based-table.md).
-// Off by default: the mode is not yet verified against tests/expected.txt.
-var viewTableEnabled = os.Getenv("GOWT_VIEW_TABLE") == "1"
+// Table and Tree are view-based NSTableView/NSOutlineView by default (docs/view-based-table.md); GOWT_VIEW_TABLE=0 selects the
+// cell-based path (cell-based drawing adds ~227 MB of GPU memory while cells update). Opt-out is kept for one release.
+var viewTableEnabled = os.Getenv("GOWT_VIEW_TABLE") != "0"
 
 // Cell views draw through the table's shared data cell (the same EraseItem/MeasureItem/PaintItem flow as drawInteriorWithFrame).
 var (

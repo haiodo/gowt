@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"structs"
 
@@ -15,6 +16,14 @@ import (
 // snapAll selects each tab the way a click does (NSTabView selectTabViewItemAtIndex:, which
 // runs TabFolder's own delegate path), waits for layout and paint, then snapshots the window.
 func snapAll(display *swt.Display, shell *swt.Shell, folder *swt.TabFolder, dir string) {
+	// Go stacks show the main thread inside nextEventMatchingMask but not what AppKit waits for: add the native stacks.
+	stuckTrace = func() string {
+		out, err := exec.Command("/usr/bin/sample", strconv.Itoa(os.Getpid()), "1").CombinedOutput()
+		if err != nil {
+			return "sample failed: " + err.Error()
+		}
+		return "native sample:\n" + string(out)
+	}
 	snapRun(display, shell, folder, dir, snapHooks{writeMeta, selectTab, clickButton, snapshot})
 }
 

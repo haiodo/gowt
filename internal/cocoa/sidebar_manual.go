@@ -97,13 +97,22 @@ func HasCard(view *NSView) bool {
 	return getAssociated(uintptr(view.Id), cardKey()) != 0
 }
 
-// SetSourceList gives a table or outline view the sidebar look: the source-list style (macOS 11) and no
-// background of its own or of its scroll view, so the glass behind shows.
+const tableStyleSourceList = 3
+
+// SetSourceList gives a table or outline view the sidebar look: the source-list style (macOS 11), no
+// background of its own or of its scroll view so the glass behind shows, and the Finder selection, a
+// grey pill (row views never emphasized) under text in the accent colour (drawn by the toolkit's cell).
 func SetSourceList(view *NSView) {
 	v := uintptr(view.Id)
-	if respondsTo(v, "setStyle:") {
-		msg(v, "setStyle:", 3) // NSTableViewStyleSourceList
+	if !respondsTo(v, "setStyle:") {
+		return
 	}
+	sourceListHooks(msg(v, "class"))
+	// NSTableView caches which delegate methods exist when the delegate is set.
+	d := msg(v, "delegate")
+	msg(v, "setDelegate:", 0)
+	msg(v, "setDelegate:", d)
+	msg(v, "setStyle:", tableStyleSourceList)
 	// The source-list style sizes rows from the sidebar icon size setting, apart from rowHeight, which SWT
 	// reads as the item height. A custom size style keeps rowHeight in charge, raised to the measured height.
 	tv := NewNSTableViewOverload1(int64(v))
@@ -116,10 +125,61 @@ func SetSourceList(view *NSView) {
 		msg(v, "setRowSizeStyle:", 0) // NSTableViewRowSizeStyleCustom
 	}
 	tv.SetRowHeight(h)
-	msg(v, "setBackgroundColor:", msg(class("NSColor"), "clearColor"))
+	msg(v, "setBackgroundColor:", 0) // the hook below turns any colour into clear
 	if sv := msg(v, "enclosingScrollView"); sv != 0 {
 		msg(sv, "setDrawsBackground:", 0)
+		msg(msg(sv, "contentView"), "setDrawsBackground:", 0)
 	}
+}
+
+var (
+	hookedTables = map[uintptr]bool{}
+	rowViewClass uintptr
+)
+
+const rowViewIDName = "GowtSidebarRow"
+
+// sourceListHooks gives the table class cls two methods that act only on its source-list instances:
+// setBackgroundColor: stores clear, since SWT sets its default opaque colour again whenever the
+// background is refreshed (an alpha-0 parent background does not count as one there), and the
+// delegate method tableView:rowViewForRow: returns row views that are never emphasized. SWT tables are
+// their own delegate, and other tables keep the default row view (nil).
+func sourceListHooks(cls uintptr) {
+	if hookedTables[cls] {
+		return
+	}
+	hookedTables[cls] = true
+	setBG := sel("setBackgroundColor:")
+	var orig func(self, sel, color uintptr)
+	purego.RegisterFunc(&orig, uintptr(OSClass_getMethodImplementation(int64(cls), int64(setBG))))
+	imp := purego.NewCallback(func(self, cmd, color uintptr) {
+		if msg(self, "style") == tableStyleSourceList {
+			color = msg(class("NSColor"), "clearColor")
+		}
+		orig(self, cmd, color)
+	})
+	if !OSClass_addMethod(int64(cls), int64(setBG), int64(imp), "v@:@") {
+		OSMethod_setImplementation(OSClass_getInstanceMethod(int64(cls), int64(setBG)), int64(imp))
+	}
+	if rowViewClass == 0 {
+		no := purego.NewCallback(func(self, _ uintptr) uintptr { return 0 })
+		rowViewClass = allocClass(class("NSTableRowView"), "GowtSidebarRowView", 0)
+		addMethod(rowViewClass, sel("isEmphasized"), no, "c@:")
+		registerClass(rowViewClass)
+	}
+	rowView := purego.NewCallback(func(self, _, table uintptr, row int) uintptr {
+		if msg(table, "style") != tableStyleSourceList {
+			return 0
+		}
+		id := nsString(rowViewIDName)
+		if rv := msg(table, "makeViewWithIdentifier:owner:", id, table); rv != 0 {
+			return rv
+		}
+		rv := msg(msg(msg(rowViewClass, "alloc"), "init"), "autorelease")
+		msg(rv, "setIdentifier:", id)
+		return rv
+	})
+	OSClass_addMethod(int64(cls), int64(sel("tableView:rowViewForRow:")), int64(rowView), "@@:@q")
 }
 
 // SetBackdropFrame moves the material of InstallBackdrop to a frame of its own, in the coordinates of
@@ -191,18 +251,23 @@ var (
 )
 
 // newSpacer returns the view of the spacer item, retained, and its width constraint. Its layout refits
-// the width, since the toolbar places the item after the window layout ran.
+// the width, since the toolbar places the item after the window layout ran; the refit is queued on the
+// run loop, because a constraint changed inside the toolbar's layout pass asks for another pass.
 func newSpacer() (view, width uintptr) {
 	if spacerClass == 0 {
 		purego.RegisterFunc(&superLayout, uintptr(OSClass_getMethodImplementation(int64(class("NSView")), int64(sel("layout")))))
 		layout := purego.NewCallback(func(self, cmd uintptr) {
 			superLayout(self, cmd)
+			msg(self, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("gowtFit"), 0, 0)
+		})
+		fit := purego.NewCallback(func(self, _ uintptr) {
 			if w := msg(self, "window"); w != 0 {
 				fitSpacer(w)
 			}
 		})
 		spacerClass = allocClass(class("NSView"), "GowtToolbarSpacer", 0)
 		addMethod(spacerClass, sel("layout"), layout, "v@:")
+		addMethod(spacerClass, sel("gowtFit"), fit, "v@:")
 		registerClass(spacerClass)
 	}
 	if msgF64 == nil {
@@ -216,4 +281,17 @@ func newSpacer() (view, width uintptr) {
 	width = msgF64Ret(msg(view, "widthAnchor"), sel("constraintEqualToConstant:"), 0)
 	msg(width, "setActive:", 1)
 	return view, width
+}
+
+// NeedsDisplayTree marks view and every view under it for display.
+func NeedsDisplayTree(view *NSView) {
+	var walk func(v uintptr)
+	walk = func(v uintptr) {
+		msg(v, "setNeedsDisplay:", 1)
+		subs := msg(v, "subviews")
+		for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+			walk(msg(subs, "objectAtIndex:", i))
+		}
+	}
+	walk(uintptr(view.Id))
 }

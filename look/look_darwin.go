@@ -2,6 +2,7 @@ package look
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -113,15 +114,33 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
 	sourceLists(sb)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
-		s.AddDisposeListener(&sidebarDisposer{s})
+		s.AddDisposeListener(&sidebarHooks{s})
+		s.AddListener(swt.Show, &sidebarHooks{s})
 	}
+	if s.IsVisible() {
+		refreshSidebar(s)
+	}
+}
+
+// refreshSidebar lays the window out again and marks its whole view tree for display once the window is
+// on screen: the first frame after opening showed the sidebar glass but none of the SWT views until a resize.
+func refreshSidebar(s *swt.Shell) {
+	s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		if s.IsDisposed() {
+			return
+		}
+		s.LayoutOverload2(true, true)
+		cocoa.NeedsDisplayTree(s.View.Window().ContentView())
+	}))
 }
 
 var sidebarShells = map[*swt.Shell]bool{}
 
-type sidebarDisposer struct{ s *swt.Shell }
+type sidebarHooks struct{ s *swt.Shell }
 
-func (d *sidebarDisposer) WidgetDisposed(*swt.DisposeEvent) {
+func (d *sidebarHooks) HandleEvent(*swt.Event) { refreshSidebar(d.s) }
+
+func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 	cocoa.ReleaseSidebar(d.s.View)
 	delete(sidebarShells, d.s)
 }

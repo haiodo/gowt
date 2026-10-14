@@ -410,15 +410,29 @@ func (this *List) vtDrawCell(view int64) {
 	}
 	cell := this.column.DataCell()
 	cell.SetObjectValue(cocoa.NewidOverload1(this.tableView_objectValueForTableColumn_row_(tv.Id, 0, tv.Id, this.column.Id, row)))
-	cell.SetHighlighted(tv.IsRowSelected(row))
+	selected := tv.IsRowSelected(row)
+	cell.SetHighlighted(selected)
 	frame := tv.FrameOfCellAtColumn(col, row)
 	// The text cell draws from the top of its frame; a row taller than the text (source list) centres it.
 	if h := cell.CellSize().Height; h < frame.Height {
 		frame.Y += math.Floor((frame.Height - h) / 2)
 		frame.Height = h
 	}
+	// A source list (look.SetSidebar) selects with a grey pill and accent-coloured text, as Finder does.
+	if selected && cocoa.Msg(tv.Id, "style") == vtStyleSourceList {
+		old := cocoa.Msg(cell.Id, "textColor")
+		cocoa.Msg(old, "retain")
+		defer func() {
+			cocoa.Msg(cell.Id, "setTextColor:", old)
+			cocoa.Msg(old, "release")
+		}()
+		cell.SetHighlighted(false)
+		cocoa.Msg(cell.Id, "setTextColor:", cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor"))
+	}
 	vtDrawContext(this.View, cocoa.NewNSViewOverload1(view), func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
+
+const vtStyleSourceList = 3 // NSTableViewStyleSourceList
 
 func (this *Table) vtCheckMouseDown(view int64, event int64) {
 	tv := castcocoaNSViewTococoaNSTableView(this.View)

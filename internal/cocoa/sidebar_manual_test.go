@@ -74,3 +74,26 @@ func TestToolbarSpacerItem(t *testing.T) {
 		}
 	})
 }
+
+func TestSourceListHooks(t *testing.T) {
+	onMain(func() {
+		tv := msg(msg(class("NSTableView"), "alloc"), "init")
+		plain := msg(msg(class("NSTableView"), "alloc"), "init")
+		SetSourceList(NewNSViewOverload1(int64(tv)))
+		red := msg(class("NSColor"), "redColor")
+		msg(tv, "setBackgroundColor:", red)
+		msg(plain, "setBackgroundColor:", red)
+		if msg(tv, "backgroundColor") == red {
+			t.Error("a source list took an opaque background")
+		}
+		if msg(plain, "backgroundColor") != red {
+			t.Error("the hook changed a table that is no source list")
+		}
+		if rv := msg(tv, "tableView:rowViewForRow:", tv, 0); rv == 0 || msg(rv, "isEmphasized")&0xff != 0 {
+			t.Errorf("source-list row view %x", rv)
+		}
+		if rv := msg(plain, "tableView:rowViewForRow:", plain, 0); rv != 0 {
+			t.Errorf("plain table got row view %x", rv)
+		}
+	})
+}

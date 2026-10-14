@@ -48,7 +48,7 @@ func vtCheckEngaged(t *testing.T, want bool) {
 	d := NewDisplay()
 	defer d.Dispose()
 	shell := NewShell()
-	shell.SetSize(600, 400)
+	shell.SetSize(600, 600)
 
 	table := NewTable(shell, CHECK|FULL_SELECTION)
 	table.SetHeaderVisible(true)
@@ -68,6 +68,10 @@ func vtCheckEngaged(t *testing.T, want bool) {
 	NewTreeItemParentItemStyle(parent, NONE).SetTexts([]string{"c"})
 	parent.SetExpanded(true)
 
+	list := NewList(shell, BORDER|V_SCROLL)
+	list.SetBounds(0, 400, 280, 150)
+	list.SetItems([]string{"Apples", "Oranges"})
+
 	shell.Open()
 	for end := time.Now().Add(1500 * time.Millisecond); time.Now().Before(end); {
 		if !d.ReadAndDispatch() {
@@ -77,11 +81,12 @@ func vtCheckEngaged(t *testing.T, want bool) {
 
 	tv := castcocoaNSViewTococoaNSTableView(table.View).Id
 	ov := castcocoaNSViewTococoaNSOutlineView(tree.View).Id
+	lv := castcocoaNSViewTococoaNSTableView(list.View).Id
 	for _, c := range []struct {
 		name string
 		view int64
 		col  int64
-	}{{"table column 0", tv, 0}, {"table column 1", tv, 1}, {"tree column 0", ov, 0}} {
+	}{{"table column 0", tv, 0}, {"table column 1", tv, 1}, {"tree column 0", ov, 0}, {"list column 0", lv, 0}} {
 		got := cocoa.Msg(c.view, "viewAtColumn:row:makeIfNecessary:", c.col, 0, 0) != 0
 		if got != want {
 			t.Errorf("%s: viewAtColumn non-nil = %v, want %v", c.name, got, want)

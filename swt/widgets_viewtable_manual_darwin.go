@@ -159,8 +159,26 @@ func vtAsTree(w *Widget) *Tree {
 	return nil
 }
 
+func vtAsList(w *Widget) *List {
+	if w == nil {
+		return nil
+	}
+	if l, ok := w.Impl().(interface{ AsList() *List }); ok {
+		return l.AsList()
+	}
+	return nil
+}
+
 func vtTableViewFor(a []int64) int64 {
-	t := vtAsTable(DisplayGetWidget(a[0]))
+	w := DisplayGetWidget(a[0])
+	if l := vtAsList(w); l != nil {
+		// List shares the SWTTableView class with Table; a nil view leaves the cell blank.
+		if a[3] == 0 || a[4] < 0 || a[4] >= int64(l.itemCount) {
+			return 0
+		}
+		return vtMakeView(a[2], false)
+	}
+	t := vtAsTable(w)
 	if t == nil || a[3] == 0 || a[4] < 0 || a[4] >= int64(t.itemCount) {
 		return 0
 	}
@@ -237,6 +255,8 @@ func vtDrawRect(a []int64) int64 {
 		t.vtDrawCell(view, check)
 	} else if t := vtAsTree(w); t != nil {
 		t.vtDrawCell(view, check)
+	} else if l := vtAsList(w); l != nil {
+		l.vtDrawCell(view)
 	}
 	return 0
 }
@@ -375,6 +395,23 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 	this.tableView_willDisplayCell_forTableColumn_row_(tv.Id, 0, tv.Id, cell.Id, column, row)
 	frame := tv.FrameOfCellAtColumn(col, row)
 	vtDrawContext(this.View, v, func() { cell.DrawInteriorWithFrame(frame, this.View) })
+}
+
+func (this *List) vtDrawCell(view int64) {
+	if this.IsDisposed() {
+		return
+	}
+	tv := castcocoaNSViewTococoaNSTableView(this.View)
+	row := cocoa.Msg(tv.Id, "rowForView:", view)
+	col := cocoa.Msg(tv.Id, "columnForView:", view)
+	if row < 0 || col < 0 || row >= int64(this.itemCount) {
+		return
+	}
+	cell := this.column.DataCell()
+	cell.SetObjectValue(cocoa.NewidOverload1(this.tableView_objectValueForTableColumn_row_(tv.Id, 0, tv.Id, this.column.Id, row)))
+	cell.SetHighlighted(tv.IsRowSelected(row))
+	frame := tv.FrameOfCellAtColumn(col, row)
+	vtDrawContext(this.View, cocoa.NewNSViewOverload1(view), func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
 func (this *Table) vtCheckMouseDown(view int64, event int64) {

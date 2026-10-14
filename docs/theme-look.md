@@ -35,6 +35,7 @@ Colours you set yourself (`Background`, `GC` colours) do not change by themselve
 | `look.SetRoundedCorners(w, true)` | force rounded or square window corners on Windows 11 |
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
 | `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux): nothing is created, build a `gowt.ToolBar` instead |
+| `look.SetSidebar(w, sidebar, content, width)` | Finder / System Settings window: sidebar left, content right. macOS 26: floating Liquid Glass sidebar under the traffic lights, toolbar items and title past it. Windows, Linux: two plain panels. See below |
 | `look.SetGlassGroup(parent, spacing)` | glass surfaces of the children of `parent` share one NSGlassEffectContainerView and merge when closer than `spacing`; call before their `SetGlass`. macOS 26, else nothing |
 | `look.Classic()` | before `Run`: ask macOS 26 for the pre-Liquid-Glass look |
 
@@ -56,11 +57,45 @@ if !look.SetToolbar(w,
 
 Demo: `GOWT_TOOLBAR=1 go run ./cmd/glassdemo`; its glass group uses spacing 4, smaller than the 10 px between the panels, so they stay separate shapes (a spacing above 10 fuses neighbours on purpose). Not checked by eye yet: the toolbar and the glass group were only compiled.
 
-NSBackgroundExtensionView is not wrapped; it makes sense only with a sidebar or split view, which gowt does not have yet.
+NSBackgroundExtensionView is not wrapped.
+
+## Finder and System Settings look
+
+Demo: `go run ./cmd/finderdemo` (`GOWT_FINDERDEMO_SECS=n` quits after n seconds).
+
+```go
+sidebar := w.Panel()
+sidebar.SetLayout(gowt.Grid{Columns: 1, Margin: 10})
+nav := sidebar.List(pages, gowt.NoBorder(), fill)
+content := w.Panel()
+content.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
+s := content.Section(gowt.Cell(gowt.GridCell{GrowX: true, Align: gowt.AlignFill}))
+s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Appearance")
+s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Liquid Glass")
+look.SetSidebar(w, sidebar, content, 220)
+look.SetToolbar(w,
+	look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
+		{Title: "Back", Symbol: "chevron.backward", OnClick: back},
+		{Title: "Forward", Symbol: "chevron.forward", OnClick: forward},
+	}},
+	look.ToolbarItem{Space: true},
+	look.ToolbarItem{Title: "Search", OnSearch: func(text string) {}},
+)
+w.SetTitle("Appearance") // the page title next to back/forward
+```
+
+- `look.SetSidebar(w, sidebar, content, width)` replaces the window layout; the window holds just these two. It turns on full-size content. On macOS 26 the sidebar is Liquid Glass with corner radius 18, 7 points from the window edges (both measured on a Finder screenshot), running under the traffic lights; the sidebar children and the content start below the title bar and toolbar. Lists, tables and trees inside the sidebar when it is called get the source-list style. An empty split view lets an `NSTrackingSeparatorToolbarItem` align the toolbar with the sidebar edge, so back/forward and the title start past it. Older macOS: a flush blurred material. Windows and Linux: two plain panels side by side.
+- `ToolbarItem.Group` is one capsule of segments (back/forward), `Nav` puts the item before the window title, `OnSearch` makes a native search field (NSSearchToolbarItem) that reports the text after a typing pause, on Return and on clearing. The page title is the window title.
+- `Section()` on any container is a rounded card with rows; `Row()` adds a row panel and a separator line before it. macOS fills the card with `quaternarySystemFillColor` through a layer: no drawing per frame, no bitmap, and it follows light and dark. Windows and Linux paint a rounded rectangle 6% from the window colour toward the text colour, picked when the section is made, so it does not follow a live theme switch. A heading is a `Label` above the section (`gowt.SetFont(l, gowt.Font{Weight: gowt.Semibold})`).
+
+Footprint on macOS: start the demo, then `footprint -p finderdemo` (the `IOAccelerator` and `IOSurface` lines are GPU memory) or `vmmap --summary $(pgrep finderdemo)`.
+
+Not checked by eye yet: the floating sidebar, its shadow (NSGlassEffectView draws whatever shadow it has; no extra shadow layer is added), the tracking separator with a split view that is not the sidebar, and the segmented group. Only the Linux fallback was run.
 
 ## Known gaps
 
 - On Windows the material shows only where the client area is black, so `SetBackdrop` turns the shell background black. Text drawn in pure black becomes transparent: use a near-black foreground. Widgets with their own opaque background are unaffected.
 - Mica, Acrylic and rounded corners were never checked on a real Windows 11 (CrossOver has no DWM).
 - Windows per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled.
-- The macOS toolbar has push items only (no menus, search field, toggles or sidebar tracking), and its delegate lives as long as the window.
+- The macOS toolbar has no menus or toggles, and its delegate lives as long as the window.
+- A section hidden or disposed directly is followed by its card; one moved to another parent with `SetParent` leaves the card behind.

@@ -43,6 +43,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Progress | `Progress(max)` | `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
 | Group | `Group(title)` | titled container |
+| Section | `Section()` | grouped "inset" card as in macOS System Settings; `Row()` adds a row `*Panel` (no layout until you `SetLayout`), with a separator line before every row but the first. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
 | Tabs, CTabs | `Tabs()`, `CTabs()` | `Tab(title)` returns the page `*Panel`; `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
 | Split | `Split()` | children are any widgets, created in order (`split.Panel()`, `split.Table()`, ...); `SetWeights(...)` sets the relative sizes |
 | Scroll | `Scroll()` | build into `Content()`, then call `Fit()` |

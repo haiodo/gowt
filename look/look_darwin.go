@@ -63,12 +63,17 @@ func setRoundedCorners(*swt.Shell, bool) {}
 
 func setDarkContent(*swt.Display, bool) {}
 
-func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
+func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
-		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick}
+		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
+			Group: toolbarItems(it.Group), Nav: it.Nav, Search: it.OnSearch}
 	}
-	ok := cocoa.InstallToolbar(s.View, ci)
+	return ci
+}
+
+func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
+	ok := cocoa.InstallToolbar(s.View, toolbarItems(items))
 	if ok && !toolbarShells[s] {
 		toolbarShells[s] = true
 		s.AddDisposeListener(&toolbarDisposer{s})
@@ -87,4 +92,43 @@ type toolbarDisposer struct{ s *swt.Shell }
 func (d *toolbarDisposer) WidgetDisposed(*swt.DisposeEvent) {
 	cocoa.ReleaseToolbar(d.s.View)
 	delete(toolbarShells, d.s)
+}
+
+// sidebarRadius and the 7-point inset match the Finder sidebar of macOS 26, measured on a screenshot.
+const sidebarRadius = 18
+
+func sidebarInset() int32 {
+	if cocoa.GlassAvailable() {
+		return 7
+	}
+	return 0
+}
+
+// setSidebarChrome puts the glass straight behind the sidebar rather than through setGlass, whose
+// listeners would pin it to the sidebar frame: the glass also runs under the title bar strip.
+func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
+	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
+	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
+	clearBackground(sb, true)
+	sourceLists(sb)
+	cocoa.InstallSidebarTracker(s.View)
+}
+
+// sourceLists gives the lists, tables and trees under c the source-list style.
+func sourceLists(c *swt.Composite) {
+	for _, ch := range c.GetChildren() {
+		switch v := ch.Impl().(type) {
+		case *swt.List, *swt.Table, *swt.Tree:
+			cocoa.SetSourceList(ch.View)
+		case *swt.Group:
+			sourceLists(&v.Composite)
+		case *swt.Composite:
+			sourceLists(v)
+		}
+	}
+}
+
+func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32) {
+	cocoa.SetBackdropFrame(sb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	cocoa.SetSidebarDivider(s.View, float64(bg[0]+bg[2]))
 }

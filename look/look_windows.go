@@ -95,3 +95,9 @@ func glassButton(*swt.Control) {}
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
 
 func setGlassGroup(*swt.Composite, float64) {}
+
+func sidebarInset() int32 { return 0 }
+
+func setSidebarChrome(*swt.Shell, *swt.Composite) {}
+
+func syncSidebar(*swt.Shell, *swt.Composite, [4]int32) {}

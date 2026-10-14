@@ -176,3 +176,23 @@ func BenchmarkCharAtLoopOld(b *testing.B) {
 }
 
 func BenchmarkCharAtLoop(b *testing.B) { benchLoop(b, CharAt) }
+
+func TestCachedLengthSubstring(t *testing.T) {
+	for _, s := range []string{strings.Repeat("ab", 20), strings.Repeat("привет", 5) + "\U0001F600", Substring(strings.Repeat("я", 20)+"\U0001F600", 0, 21)} {
+		for pass := 0; pass < 2; pass++ {
+			w := ToChars(s)
+			if int(StringLength(s)) != len(w) || Substring(s, 3, -1) != FromChars(w[3:]) || Substring(s, 1, 5) != FromChars(w[1:5]) {
+				t.Fatalf("%q", s)
+			}
+		}
+	}
+}
+
+func BenchmarkLengthLoop(b *testing.B) {
+	s := strings.Repeat("log line привет ", 10)
+	for k := 0; k < b.N; k++ {
+		for i := int32(0); i < StringLength(s); i++ {
+			_ = CharAt(s, i)
+		}
+	}
+}

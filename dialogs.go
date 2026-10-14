@@ -138,14 +138,45 @@ func (w *Window) ColorDialog(initial RGB) (c RGB, ok bool) {
 	return rgbOf(r), true
 }
 
-// Font describes a typeface choice; Size is in points.
+// Weight is a CSS-style font weight, 100 to 900. The zero value means unset: Bold decides.
+type Weight int
+
+const (
+	Light    Weight = 300
+	Regular  Weight = 400
+	Medium   Weight = 500
+	Semibold Weight = 600
+	Bold     Weight = 700
+)
+
+// Font describes a typeface choice; Size is in points. Weight overrides Bold when set.
+// SetFont keeps the control's current family for an empty Name, which for a default control is the
+// system UI font (SF Pro, Segoe UI, the GTK UI font) at the given weight.
 type Font struct {
 	Name         string
 	Size         int
+	Weight       Weight
 	Bold, Italic bool
 }
 
-// FontDialog shows a font chooser starting at initial; ok is false if cancelled.
+// swtFont creates the native font for f on display d; the caller owns it.
+func (f Font) swtFont(d swt.DeviceLike) *swt.Font {
+	if f.Weight != 0 {
+		return swt.NewFontDeviceNameHeightWeight(d, f.Name, int32(f.Size), int32(f.Weight), f.Italic)
+	}
+	var st int32
+	if f.Bold {
+		st |= swt.BOLD
+	}
+	if f.Italic {
+		st |= swt.ITALIC
+	}
+	return swt.NewFontDeviceNameHeightStyle(d, f.Name, int32(f.Size), st)
+}
+
+// FontDialog shows a font chooser starting at initial; ok is false if cancelled. The dialog knows only
+// regular and bold: an initial Weight of Semibold or more starts bold. The result has Weight 0 if
+// initial.Weight was 0, else Bold or Regular, so a Medium or Semibold round trip is not preserved.
 func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 	dlg := swt.NewFontDialog(w.shell)
 	if initial.Name != "" {
@@ -153,7 +184,7 @@ func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 		fd.SetName(initial.Name)
 		fd.SetHeight(int32(initial.Size))
 		var st int32
-		if initial.Bold {
+		if initial.Bold || initial.Weight >= Semibold {
 			st |= swt.BOLD
 		}
 		if initial.Italic {
@@ -167,5 +198,12 @@ func (w *Window) FontDialog(initial Font) (f Font, ok bool) {
 		return initial, false
 	}
 	st := r.GetStyle()
-	return Font{r.GetName(), int(r.GetHeight()), st&swt.BOLD != 0, st&swt.ITALIC != 0}, true
+	f = Font{Name: r.GetName(), Size: int(r.GetHeight()), Bold: st&swt.BOLD != 0, Italic: st&swt.ITALIC != 0}
+	if initial.Weight != 0 {
+		f.Weight = Regular
+		if f.Bold {
+			f.Weight = Bold
+		}
+	}
+	return f, true
 }

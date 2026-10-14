@@ -214,14 +214,7 @@ func (t *StyledText) font(f Font) *swt.Font {
 	if sf, ok := t.fonts[f]; ok {
 		return sf
 	}
-	var st int32
-	if f.Bold {
-		st |= swt.BOLD
-	}
-	if f.Italic {
-		st |= swt.ITALIC
-	}
-	sf := swt.NewFontDeviceNameHeightStyle(t.t.GetDisplay(), f.Name, int32(f.Size), st)
+	sf := f.swtFont(t.t.GetDisplay())
 	t.fonts[f] = sf
 	return sf
 }

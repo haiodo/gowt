@@ -53,7 +53,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 ## Any control
 
-Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a `Cell`/`InRow` applied afterwards resets it), `SetFont(w, Font{Name, Size, Bold, Italic})` (empty Name and zero Size keep the current ones; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
+Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a `Cell`/`InRow` applied afterwards resets it), `SetFont(w, Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 ## Cell clicks
 

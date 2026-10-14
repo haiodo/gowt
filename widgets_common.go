@@ -54,7 +54,7 @@ func SetVisible(w Widget, v bool) {
 // Visible reports the state set by SetVisible, not that of the parents.
 func Visible(w Widget) bool { return w.control().GetVisible() }
 
-// SetFont gives a control the font f. Empty Name and zero Size keep the control's current ones.
+// SetFont gives a control the font f. Empty Name and zero Size keep the control's current ones (the system font for a default control).
 // The control owns the font and releases it when replaced by the next SetFont or when it is disposed.
 func SetFont(w Widget, f Font) {
 	c := w.control()
@@ -66,14 +66,7 @@ func SetFont(w Widget, f Font) {
 			f.Size = int(cur[0].GetHeight())
 		}
 	}
-	var st int32
-	if f.Bold {
-		st |= swt.BOLD
-	}
-	if f.Italic {
-		st |= swt.ITALIC
-	}
-	sf := swt.NewFontDeviceNameHeightStyle(c.GetDisplay(), f.Name, int32(f.Size), st)
+	sf := f.swtFont(c.GetDisplay())
 	c.SetFont(sf)
 	old, had := ownedFonts[c]
 	ownedFonts[c] = sf

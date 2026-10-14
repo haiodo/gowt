@@ -24,8 +24,7 @@ func gdipAddr(name string) uintptr {
 
 //go:uintptrescapes
 func gp(name string, args ...uintptr) int32 {
-	r, _, _ := syscall.SyscallN(gdipAddr(name), args...)
-	return int32(r)
+	return int32(gdipCall(gdipAddr(name), args))
 }
 
 // gpOut calls a flat function whose last argument is a pointer receiving a handle; 0 when it fails.
@@ -34,8 +33,7 @@ func gp(name string, args ...uintptr) int32 {
 func gpOut(name string, args ...uintptr) int64 {
 	out := new(uintptr)
 	args = append(args, uintptr(unsafe.Pointer(out)))
-	r, _, _ := syscall.SyscallN(gdipAddr(name), args...)
-	if r != 0 {
+	if gdipCall(gdipAddr(name), args) != 0 {
 		return 0
 	}
 	return int64(*out)
@@ -47,11 +45,15 @@ func gpOut(name string, args ...uintptr) int64 {
 func gpInt(name string, args ...uintptr) int32 {
 	out := new(int32)
 	args = append(args, uintptr(unsafe.Pointer(out)))
-	syscall.SyscallN(gdipAddr(name), args...)
+	gdipCall(gdipAddr(name), args)
 	return *out
 }
 
-func f32(v float32) uintptr { return uintptr(math.Float32bits(v)) }
+// f32 marks a float argument: the upper half carries f32Tag so gdipCall can route it to a float register
+// (AAPCS64 on windows/arm64; Go's syscall.SyscallN loads integer registers only). Plain integers never have it.
+func f32(v float32) uintptr { return uintptr(uint64(f32Tag)<<32 | uint64(math.Float32bits(v))) }
+
+const f32Tag = 0xF10A7
 
 func b2u(b bool) uintptr { return boolToUintptr(b) }
 

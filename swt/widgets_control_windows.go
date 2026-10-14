@@ -688,15 +688,15 @@ func (this *Control) FindMnemonic(string_ string) uint16 {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for index < length && int32(jrt.ToChars(string_)[index]) != int32('&') {
+		for index < length && int32(jrt.CharAt(string_, index)) != int32('&') {
 			index++
 		}
 		index++
 		if index >= length {
 			return '\u0000'
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
-			return jrt.ToChars(string_)[index]
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
+			return jrt.CharAt(string_, index)
 		}
 		index++
 		if !(index < length) {
@@ -5070,7 +5070,7 @@ func (this *Control) wM_SYSCOMMAND_(wParam int64, lParam int64) *win32.LRESULT {
 								var text string = item.impl.getText_()
 								var mnemonic uint16 = this.FindMnemonic(text)
 								if jrt.StringLength(text) > 0 && int32(mnemonic) == 0 {
-									var ch uint16 = jrt.ToChars(text)[0]
+									var ch uint16 = jrt.CharAt(text, 0)
 									if int32(uint16(unicode.ToUpper(rune(ch)))) == int32(key) {
 										this.display.mnemonicKeyHit = false
 										return win32.LRESULTZERO

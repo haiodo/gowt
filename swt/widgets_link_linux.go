@@ -518,7 +518,7 @@ func (this *Link) mnemonicHitKey_(key uint16) bool {
 	var parsedText string = this.layout.GetText()
 	for i := int32(0); i < int32(len(this.mnemonics))-1; i++ {
 		if this.mnemonics[i] != -1 {
-			var mnemonic uint16 = jrt.ToChars(parsedText)[this.mnemonics[i]]
+			var mnemonic uint16 = jrt.CharAt(parsedText, this.mnemonics[i])
 			if int32(uckey) == int32(uint16(unicode.ToUpper(rune(mnemonic)))) {
 				if !this.impl.setFocus_() {
 					return false
@@ -537,7 +537,7 @@ func (this *Link) mnemonicMatchKey_(key uint16) bool {
 	var parsedText string = this.layout.GetText()
 	for i := int32(0); i < int32(len(this.mnemonics))-1; i++ {
 		if this.mnemonics[i] != -1 {
-			var mnemonic uint16 = jrt.ToChars(parsedText)[this.mnemonics[i]]
+			var mnemonic uint16 = jrt.CharAt(parsedText, this.mnemonics[i])
 			if int32(uckey) == int32(uint16(unicode.ToUpper(rune(mnemonic)))) {
 				return true
 			}

@@ -110,7 +110,7 @@ func (this *ClipboardBase) TrimTrailingNulCharacter(result string) string {
 	if result == "" {
 		return ""
 	}
-	if int32(jrt.ToChars(result)[jrt.StringLength(result)-1]) == int32('\u0000') {
+	if int32(jrt.CharAt(result, jrt.StringLength(result)-1)) == int32('\u0000') {
 		result = jrt.Substring(result, 0, jrt.StringLength(result)-1)
 	}
 	return result

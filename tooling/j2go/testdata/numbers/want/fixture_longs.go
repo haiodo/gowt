@@ -34,7 +34,7 @@ func (this *Longs) initLongs() {
 func (this *Longs) Hash(s string) int64 {
 	var h int64 = 1125899906842597
 	for i := int32(0); i < jrt.StringLength(s); i++ {
-		h = 31 * h + int64(int32(jrt.ToChars(s)[i]))
+		h = 31 * h + int64(int32(jrt.CharAt(s, i)))
 	}
 	return h
 }

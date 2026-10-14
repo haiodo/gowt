@@ -27,7 +27,7 @@ func (this *Unicode) initUnicode() {
 }
 
 func (this *Unicode) At(s string, i int32) int32 {
-	return int32(jrt.ToChars(s)[i])
+	return int32(jrt.CharAt(s, i))
 }
 
 func (this *Unicode) Up(s string) string {

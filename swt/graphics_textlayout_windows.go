@@ -1918,19 +1918,19 @@ func (this *TextLayout) GetBoundsInPixels(start int32, end int32) *Rectangle {
 	start = this.TranslateOffset(start)
 	end = this.TranslateOffset(end)
 	length = jrt.StringLength(this.segmentsText)
-	var ch uint16 = jrt.ToChars(this.segmentsText)[start]
+	var ch uint16 = jrt.CharAt(this.segmentsText, start)
 	if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 		if start-1 >= 0 {
-			ch = jrt.ToChars(this.segmentsText)[start-1]
+			ch = jrt.CharAt(this.segmentsText, start-1)
 			if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 				start--
 			}
 		}
 	}
-	ch = jrt.ToChars(this.segmentsText)[end]
+	ch = jrt.CharAt(this.segmentsText, end)
 	if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 		if end+1 < length {
-			ch = jrt.ToChars(this.segmentsText)[end+1]
+			ch = jrt.CharAt(this.segmentsText, end+1)
 			if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 				end++
 			}
@@ -2222,11 +2222,11 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 	if offset == length {
 		return NewPoint(this.GetLineIndentInPixel(line)+this.lineWidthInPixels[line], Win32DPIUtilsPointToPixelOverload3(upcastDeviceToDrawable(this.impl.getDevice_()), this.lineY[line], this.GetZoom0()))
 	}
-	var ch uint16 = jrt.ToChars(this.segmentsText)[offset]
+	var ch uint16 = jrt.CharAt(this.segmentsText, offset)
 	if trailing {
 		if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 			if offset+1 < length {
-				ch = jrt.ToChars(this.segmentsText)[offset+1]
+				ch = jrt.CharAt(this.segmentsText, offset+1)
 				if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 					offset++
 				}
@@ -2235,7 +2235,7 @@ func (this *TextLayout) GetLocationInPixels(offset int32, trailing bool) *Point 
 	} else {
 		if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 			if offset-1 >= 0 {
-				ch = jrt.ToChars(this.segmentsText)[offset-1]
+				ch = jrt.CharAt(this.segmentsText, offset-1)
 				if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 					offset--
 				}
@@ -2363,10 +2363,10 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 				case MOVEMENT_CLUSTER:
 					{
 						if !properties.FNeedsCaretInfo || (!logAttr.FInvalid && logAttr.FCharStop) {
-							var ch uint16 = jrt.ToChars(this.segmentsText)[offset]
+							var ch uint16 = jrt.CharAt(this.segmentsText, offset)
 							if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 								if offset > 0 {
-									ch = jrt.ToChars(this.segmentsText)[offset-1]
+									ch = jrt.CharAt(this.segmentsText, offset-1)
 									if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 										offset += step
 									}
@@ -2384,10 +2384,10 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 							}
 						} else {
 							if offset > 0 {
-								var letterOrDigit bool = (unicode.IsLetter(rune(jrt.ToChars(this.segmentsText)[offset])) || unicode.IsDigit(rune(jrt.ToChars(this.segmentsText)[offset])))
-								var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.ToChars(this.segmentsText)[offset-1])) || unicode.IsDigit(rune(jrt.ToChars(this.segmentsText)[offset-1])))
+								var letterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset))))
+								var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset-1))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset-1))))
 								if letterOrDigit != previousLetterOrDigit || !letterOrDigit {
-									if !unicode.IsSpace(rune(jrt.ToChars(this.segmentsText)[offset])) {
+									if !unicode.IsSpace(rune(jrt.CharAt(this.segmentsText, offset))) {
 										return this.UntranslateOffset(offset)
 									}
 								}
@@ -2398,8 +2398,8 @@ func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) i
 				case MOVEMENT_WORD_END:
 					{
 						if offset > 0 {
-							var isLetterOrDigit bool = (unicode.IsLetter(rune(jrt.ToChars(this.segmentsText)[offset])) || unicode.IsDigit(rune(jrt.ToChars(this.segmentsText)[offset])))
-							var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.ToChars(this.segmentsText)[offset-1])) || unicode.IsDigit(rune(jrt.ToChars(this.segmentsText)[offset-1])))
+							var isLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset))))
+							var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset-1))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset-1))))
 							if !isLetterOrDigit && previousLetterOrDigit {
 								return this.UntranslateOffset(offset)
 							}
@@ -2529,13 +2529,13 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 				var length int32 = jrt.StringLength(this.segmentsText)
 				var ch uint16
 				if offset < length {
-					ch = jrt.ToChars(this.segmentsText)[offset]
+					ch = jrt.CharAt(this.segmentsText, offset)
 				} else {
 					ch = uint16(0)
 				}
 				if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF && piTrailing[0] <= 1 {
 					if offset+1 < length {
-						ch = jrt.ToChars(this.segmentsText)[offset+1]
+						ch = jrt.CharAt(this.segmentsText, offset+1)
 						if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 							if trailing != (nil) {
 								trailing[0] = 0
@@ -2545,7 +2545,7 @@ func (this *TextLayout) GetOffsetInPixelsXYTrailing(x int32, y int32, trailing [
 				} else {
 					if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF && piTrailing[0] <= 1 {
 						if offset-1 >= 0 {
-							ch = jrt.ToChars(this.segmentsText)[offset-1]
+							ch = jrt.CharAt(this.segmentsText, offset-1)
 							if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
 								offset--
 								if trailing != (nil) {
@@ -2872,7 +2872,7 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 			item.analysis.FLinkBefore = true
 			linkBefore = false
 		}
-		var ch uint16 = jrt.ToChars(this.segmentsText)[start]
+		var ch uint16 = jrt.CharAt(this.segmentsText, start)
 		switch ch {
 		case '\u000d', '\u000a':
 			item.lineBreak = true
@@ -2885,7 +2885,7 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 			nextItemIndex = itemIndex + 1
 			win32.OSMoveMemoryOverload81(scriptItem, items+int64(nextItemIndex*win32.SCRIPT_ITEMSizeof), win32.SCRIPT_ITEMSizeof)
 			itemLimit = scriptItem.ICharPos
-			if nextItemIndex < itemCount && int32(ch) == int32('\u000d') && int32(jrt.ToChars(this.segmentsText)[itemLimit]) == int32('\u000a') {
+			if nextItemIndex < itemCount && int32(ch) == int32('\u000d') && int32(jrt.CharAt(this.segmentsText, itemLimit)) == int32('\u000a') {
 				nextItemIndex = itemIndex + 2
 				win32.OSMoveMemoryOverload81(scriptItem, items+int64(nextItemIndex*win32.SCRIPT_ITEMSizeof), win32.SCRIPT_ITEMSizeof)
 				itemLimit = scriptItem.ICharPos
@@ -2898,7 +2898,7 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 							if nextItemIndex == itemCount {
 								break
 							}
-							var c uint16 = jrt.ToChars(this.segmentsText)[itemLimit]
+							var c uint16 = jrt.CharAt(this.segmentsText, itemLimit)
 							if int32(c) == int32('\u000a') || int32(c) == int32('\u000d') {
 								break
 							}
@@ -2926,8 +2926,8 @@ func (this *TextLayout) Merge(items int64, itemCount int32) []*TextLayout_StyleI
 				styleIndex++
 				start = styleLimit
 				if start < itemLimit && 0 < start && start < end {
-					var pChar uint16 = jrt.ToChars(this.segmentsText)[start-1]
-					var tChar uint16 = jrt.ToChars(this.segmentsText)[start]
+					var pChar uint16 = jrt.CharAt(this.segmentsText, start-1)
+					var tChar uint16 = jrt.CharAt(this.segmentsText, start)
 					if unicode.IsLetter(rune(pChar)) && unicode.IsLetter(rune(tChar)) {
 						item.analysis.FLinkAfter = true
 						linkBefore = true
@@ -2976,7 +2976,7 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 			break
 		}
 	}
-	if jrt.IsHighSurrogate(rune(jrt.ToChars(this.segmentsText)[run.start+best-1])) {
+	if jrt.IsHighSurrogate(rune(jrt.CharAt(this.segmentsText, run.start+best-1))) {
 		best--
 	}
 	return best

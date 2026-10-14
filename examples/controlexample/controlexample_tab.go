@@ -1196,7 +1196,7 @@ func (this *Tab) SetValue() {
 						if typeName == "char" {
 							var cond14 any
 							if jrt.StringLength(value) == 1 {
-								cond14 = jrt.ToChars(value)[0]
+								cond14 = jrt.CharAt(value, 0)
 							} else {
 								cond14 = '\u0000'
 							}
@@ -1228,7 +1228,7 @@ func (this *Tab) SetValue() {
 													var strings []string = this.Split(value, ',')
 													var chars []uint16 = make([]uint16, int32(len(strings)))
 													for j := int32(0); j < int32(len(strings)); j++ {
-														chars[j] = jrt.ToChars(strings[j])[0]
+														chars[j] = jrt.CharAt(strings[j], 0)
 													}
 													parameter = []any{chars}
 												} else {

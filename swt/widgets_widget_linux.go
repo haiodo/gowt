@@ -2057,7 +2057,7 @@ func (this *Widget) GetName() string {
 	var index int32 = jrt.StringLength(string_)
 	for {
 		index--
-		if !((index > 0) && (int32(jrt.ToChars(string_)[index]) != int32('.'))) {
+		if !((index > 0) && (int32(jrt.CharAt(string_, index)) != int32('.'))) {
 			break
 		}
 	}

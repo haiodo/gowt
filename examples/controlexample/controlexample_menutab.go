@@ -289,7 +289,7 @@ func (this *MenuTab) GetMenuItemText(item string) string {
 	var cascade bool = (item == "Cascade")
 	var mnemonic bool = this.mnemonicsButton.GetSelection()
 	var accelerator bool = this.acceleratorsButton.GetSelection()
-	var acceleratorKey uint16 = jrt.ToChars(item)[0]
+	var acceleratorKey uint16 = jrt.CharAt(item, 0)
 	if mnemonic && accelerator && !cascade {
 		return fmt.Sprintf("%s\tCtrl+Shift+%c", ControlExampleGetResourceString(fmt.Sprintf("%sWithMnemonic", item)), acceleratorKey)
 	}

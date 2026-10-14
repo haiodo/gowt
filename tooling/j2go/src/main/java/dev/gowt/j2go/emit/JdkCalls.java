@@ -271,7 +271,7 @@ final class JdkCalls {
 				return "jrt.ClassGetResourceAsStream(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#charAt":
 				emitter.fileImports.add(JRT);
-				return "jrt.ToChars(" + recv(mi) + ")[" + arg(mi, 0) + "]";
+				return "jrt.CharAt(" + recv(mi) + ", " + arg(mi, 0) + ")";
 			case "java.lang.String#valueOf":
 				return stringValueOf(mi, mb);
 			case "java.lang.System#nanoTime":

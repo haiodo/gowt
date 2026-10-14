@@ -3842,7 +3842,7 @@ func (this *Display) WrapText(text string, handle int64, width int32) string {
 			lineEnd = length
 		}
 		var nextStart int32 = lineEnd + jrt.StringLength(Lf)
-		for lineEnd > lineStart+1 && unicode.IsSpace(rune(jrt.ToChars(text)[lineEnd-1])) {
+		for lineEnd > lineStart+1 && unicode.IsSpace(rune(jrt.CharAt(text, lineEnd-1))) {
 			lineEnd--
 		}
 		var wordStart int32 = lineStart
@@ -3852,13 +3852,13 @@ func (this *Display) WrapText(text string, handle int64, width int32) string {
 			var lastStart int32 = wordStart
 			var lastEnd int32 = wordEnd
 			wordStart = i
-			for i < lineEnd && !unicode.IsSpace(rune(jrt.ToChars(text)[i])) {
+			for i < lineEnd && !unicode.IsSpace(rune(jrt.CharAt(text, i))) {
 				i++
 			}
 			wordEnd = i - 1
 			var line string = jrt.Substring(text, lineStart, wordEnd+1)
 			var lineWidth int32 = this.TextWidth(line, handle)
-			for i < lineEnd && unicode.IsSpace(rune(jrt.ToChars(text)[i])) {
+			for i < lineEnd && unicode.IsSpace(rune(jrt.CharAt(text, i))) {
 				i++
 			}
 			if lineWidth > width {
@@ -4437,7 +4437,7 @@ func DisplayWithCrLf(string_ string) string {
 	var result *jrt.StringBuilder = jrt.NewStringBuilder(length)
 	for i < length {
 		var j int32 = jrt.IndexFrom(string_, string(rune('\u000a')), i)
-		if j > 0 && int32(jrt.ToChars(string_)[j-1]) == int32('\u000d') {
+		if j > 0 && int32(jrt.CharAt(string_, j-1)) == int32('\u000d') {
 			result.Append(jrt.Substring(string_, i, j+1))
 			i = j + 1
 		} else {

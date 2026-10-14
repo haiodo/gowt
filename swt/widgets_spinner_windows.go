@@ -790,12 +790,12 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32, keyEvent
 	if jrt.StringLength(string_) > 0 {
 		var min []int32 = make([]int32, 1)
 		win32.OSSendMessageOverload1(this.hwndUpDown, win32.OSUDM_GETRANGE32, min, nil)
-		if min[0] < 0 && int32(jrt.ToChars(string_)[0]) == int32('-') {
+		if min[0] < 0 && int32(jrt.CharAt(string_, 0)) == int32('-') {
 			index++
 		}
 	}
 	for index < jrt.StringLength(string_) {
-		if !unicode.IsDigit(rune(jrt.ToChars(string_)[index])) {
+		if !unicode.IsDigit(rune(jrt.CharAt(string_, index))) {
 			break
 		}
 		index++

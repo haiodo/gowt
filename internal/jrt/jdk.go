@@ -13,6 +13,7 @@ import (
 	"time"
 	"unicode/utf16"
 	"unicode/utf8"
+	"unsafe"
 )
 
 // StringBuilder is java.lang.StringBuilder. It holds UTF-16 units, so indices and Length match Java.
@@ -317,6 +318,44 @@ func ToChars(s string) []uint16 {
 		i += n
 	}
 	return u
+}
+
+type charsEntry struct {
+	data  *byte
+	n     int
+	chars []uint16 // nil: s is ASCII, index bytes directly
+}
+
+var charsCache atomic.Pointer[charsEntry]
+
+// Ceiling: one cached string, strings over 16 MiB are converted on every call. Upgrade: a small per-string table.
+const charsCacheMax = 16 << 20
+
+// CharAt is String.charAt(i): the i-th UTF-16 unit of s, amortized O(1) in a loop over one string.
+// Out of range panics like the ToChars(s)[i] it replaces.
+func CharAt(s string, i int32) uint16 {
+	if len(s) <= 16 {
+		if isASCII(s) {
+			return uint16(s[i])
+		}
+		return ToChars(s)[i]
+	}
+	if len(s) > charsCacheMax {
+		return ToChars(s)[i]
+	}
+	d := unsafe.StringData(s)
+	e := charsCache.Load()
+	if e == nil || e.data != d || e.n != len(s) {
+		e = &charsEntry{data: d, n: len(s)}
+		if !isASCII(s) {
+			e.chars = ToChars(s)
+		}
+		charsCache.Store(e)
+	}
+	if e.chars == nil {
+		return uint16(s[i])
+	}
+	return e.chars[i]
 }
 
 // FromChars is new String(char[]): a valid pair becomes one rune, a lone surrogate WTF-8 (see ToChars).

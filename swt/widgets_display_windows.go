@@ -641,40 +641,6 @@ func (this *Display) CreateDisplay(dataLike DeviceDataLike) {
 	_ = data
 }
 
-func (this *Display) GetTextSearchIcon(size int32) int64 {
-	if !this.sizeToSearchIconHandle.ContainsKey(int32(size)) {
-		var searchIconResource int32
-		if this.textUseDarkthemeIcons {
-			searchIconResource = TextIDI_SEARCH_DARKTHEME
-		} else {
-			searchIconResource = TextIDI_SEARCH
-		}
-		var iconHandle int64 = win32.OSLoadImage(win32.OSGetLibraryHandle(), int64(searchIconResource), win32.OSIMAGE_ICON, size, size, 0)
-		if iconHandle == 0 {
-			this.Error(ERROR_NO_HANDLES)
-		}
-		this.sizeToSearchIconHandle.Put(int32(size), int64(iconHandle))
-	}
-	return jrt.Cast[int64](this.sizeToSearchIconHandle.Get(int32(size)))
-}
-
-func (this *Display) GetTextCancelIcon(size int32) int64 {
-	if !this.sizeToCancelIconHandle.ContainsKey(int32(size)) {
-		var searchIconResource int32
-		if this.textUseDarkthemeIcons {
-			searchIconResource = TextIDI_CANCEL_DARKTHEME
-		} else {
-			searchIconResource = TextIDI_CANCEL
-		}
-		var iconHandle int64 = win32.OSLoadImage(win32.OSGetLibraryHandle(), int64(searchIconResource), win32.OSIMAGE_ICON, size, size, 0)
-		if iconHandle == 0 {
-			this.Error(ERROR_NO_HANDLES)
-		}
-		this.sizeToCancelIconHandle.Put(int32(size), int64(iconHandle))
-	}
-	return jrt.Cast[int64](this.sizeToCancelIconHandle.Get(int32(size)))
-}
-
 func (this *Display) destroy_() {
 	if this == DisplayDefault {
 		DisplayDefault = nil

@@ -171,3 +171,7 @@ org.eclipse.jface.util.Util#EMPTY_SORTED_SET
 # win32 Accessible: instanceof Double/Float/Long on a Number and super.toString() have no Go form (swt/accessibility_manual_windows.go).
 org.eclipse.swt.accessibility.Accessible#setNumberVARIANT(J,java.lang.Number)
 org.eclipse.swt.accessibility.Accessible#toString()
+
+# The icons are resources of swt.dll, which gowt does not have; swt/widgets_texticon_manual_windows.go draws them at run time.
+org.eclipse.swt.widgets.Display#getTextSearchIcon(I)
+org.eclipse.swt.widgets.Display#getTextCancelIcon(I)

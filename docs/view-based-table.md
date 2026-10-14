@@ -1,8 +1,26 @@
 # View-based Table and Tree on macOS: assessment
 
-Status: opt-in subset implemented (TSK-2026-10-03-product-32), not verified by a GUI run. Tasks: TSK-2026-10-03-product-13, -32.
+Status: default on macOS; GOWT_VIEW_TABLE=0 opts out for one release. Cell-based code stays as that opt-out (it is reachable, so nothing is removed). Tasks: TSK-2026-10-03-product-13, -32.
 
-## Implemented subset (GOWT_VIEW_TABLE=1)
+## Default-on audit
+
+Cell views draw through the shared `dataCell`, so the translated drawing code runs unchanged. A per-control fallback is not possible: the
+view-based switch is the class-wide `viewForTableColumn` delegate method, a nil view leaves a blank cell. Hence no feature falls back.
+
+| Feature | State |
+|---|---|
+| EraseItem/MeasureItem/PaintItem | works (same translated `drawInteriorWithFrame` through the view); selection can be painted twice |
+| TableEditor/TreeEditor | works (`FrameOfCellAtColumn` is valid on view-based tables) |
+| Images, colors, fonts, alignment | works (`willDisplayCell` on the shared cell) |
+| Check boxes | works (check view, Space, accessibility press) |
+| Header click, sort indicator | works (header stays cell-based, not part of the switch) |
+| Row height (SetItemHeight, MeasureItem) | works (table-level `rowHeight`, not cell-level) |
+| Selection colors | works for the cell; row view draws the highlight, gap above |
+| Drag and drop | works (`canDragRowsWithIndexes` is table-level) |
+| Accessibility, tooltips | implemented, not checked in a window |
+| Custom cell background gaps in the intercell spacing | gap, 1px |
+
+## Implemented subset
 
 No generated file and no generator input changed. `internal/cocoa/viewtable_manual.go` interposes on `OSObjc_registerClassPair`
 (the exported `_impl`/`_once` pair of the generated wrapper); `swt/widgets_viewtable_manual_darwin.go` then extends the

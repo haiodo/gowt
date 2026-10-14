@@ -27,12 +27,12 @@ func TestMain(m *testing.M) {
 	}
 }
 
-// Run with GOWT_GUI_TEST=1, and again with GOWT_VIEW_TABLE=1: the native table must be view-based exactly when the flag is set.
+// Run with GOWT_GUI_TEST=1, and again with GOWT_VIEW_TABLE=0: the native table must be view-based unless the flag is 0.
 func TestViewTableEngaged(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
-	want := os.Getenv("GOWT_VIEW_TABLE") == "1"
+	want := os.Getenv("GOWT_VIEW_TABLE") != "0"
 	done := make(chan struct{})
 	vtMainq <- func() {
 		defer close(done)
@@ -92,11 +92,11 @@ func vtCheckEngaged(t *testing.T, want bool) {
 	}
 }
 
-// GUI test (needs GOWT_GUI_TEST=1 and GOWT_VIEW_TABLE=1): accessibility press toggles a check box, a truncated cell has a tooltip.
+// GUI test (needs GOWT_GUI_TEST=1, not GOWT_VIEW_TABLE=0): accessibility press toggles a check box, a truncated cell has a tooltip.
 // MouseUp on the check box needs a real click: not covered here.
 func TestViewTableCheckAccessTooltip(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" || !viewTableEnabled {
-		t.Skip("set GOWT_GUI_TEST=1 and GOWT_VIEW_TABLE=1")
+		t.Skip("set GOWT_GUI_TEST=1 and unset GOWT_VIEW_TABLE=0")
 	}
 	done := make(chan struct{})
 	vtMainq <- func() {

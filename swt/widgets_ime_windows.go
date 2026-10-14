@@ -258,7 +258,7 @@ func (this *IME) WM_IME_COMPOSITION(wParam int64, lParam int64) *win32.LRESULT {
 					display.lastVirtual = display.lastDead
 					length = jrt.StringLength(chars)
 					for i := int32(0); i < length; i++ {
-						var c uint16 = jrt.ToChars(chars)[i]
+						var c uint16 = jrt.CharAt(chars, i)
 						display.lastAscii = int32(c)
 						event = NewEvent()
 						event.Character = c

@@ -433,7 +433,7 @@ func (this *Text) ApplySegments() {
 				idx227 := charCount
 				t226 := charCount
 				charCount++
-				newChars[idx227] = jrt.ToChars(string_)[t226-segmentCount]
+				newChars[idx227] = jrt.CharAt(string_, t226-segmentCount)
 			}
 		}
 	}

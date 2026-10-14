@@ -198,7 +198,7 @@ func (this *PrintDialog) Open() *PrinterData {
 		if this.printerData.Name != "" {
 			var max int32 = int32(math.Min(float64(jrt.StringLength(this.printerData.Name)), float64(win32.OSCCHDEVICENAME-1)))
 			for i := int32(0); i < max; i++ {
-				devmode.DmDeviceName[i] = jrt.ToChars(this.printerData.Name)[i]
+				devmode.DmDeviceName[i] = jrt.CharAt(this.printerData.Name, i)
 			}
 		}
 		devmode.DmFields |= win32.OSDM_ORIENTATION

@@ -534,15 +534,15 @@ func (this *CCombo) _findMnemonic(string_ string) uint16 {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for index < length && int32(jrt.ToChars(string_)[index]) != int32('&') {
+		for index < length && int32(jrt.CharAt(string_, index)) != int32('&') {
 			index++
 		}
 		index++
 		if index >= length {
 			return '\u0000'
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
-			return uint16(unicode.ToLower(rune(jrt.ToChars(string_)[index])))
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
+			return uint16(unicode.ToLower(rune(jrt.CharAt(string_, index))))
 		}
 		index++
 		if !(index < length) {
@@ -1299,14 +1299,14 @@ func (this *CCombo) StripMnemonic(string_ string) string {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for (index < length) && (int32(jrt.ToChars(string_)[index]) != int32('&')) {
+		for (index < length) && (int32(jrt.CharAt(string_, index)) != int32('&')) {
 			index++
 		}
 		index++
 		if index >= length {
 			return string_
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
 			return fmt.Sprintf("%s%s", jrt.Substring(string_, 0, index-1), jrt.Substring(string_, index, length))
 		}
 		index++

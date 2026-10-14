@@ -1111,10 +1111,10 @@ func (this *StyledText) DoBackspace() {
 				} else {
 					var isSurrogate bool = false
 					var lineText string = this.content.GetLine(lineIndex)
-					var ch uint16 = jrt.ToChars(lineText)[caretOffset-lineOffset-1]
+					var ch uint16 = jrt.CharAt(lineText, caretOffset-lineOffset-1)
 					if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
 						if caretOffset-lineOffset-2 >= 0 {
-							ch = jrt.ToChars(lineText)[caretOffset-lineOffset-2]
+							ch = jrt.CharAt(lineText, caretOffset-lineOffset-2)
 							isSurrogate = 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF
 						}
 					}
@@ -2959,10 +2959,10 @@ func (this *StyledText) GetOffsetAtPointXYLineIndexAlignment(x int32, y int32, l
 			var level int32 = 0
 			if alignment != (nil) {
 				var offset int32 = offsetInLine
-				for offset > 0 && unicode.IsDigit(rune(jrt.ToChars(line)[offset])) {
+				for offset > 0 && unicode.IsDigit(rune(jrt.CharAt(line, offset))) {
 					offset--
 				}
-				if offset == 0 && unicode.IsDigit(rune(jrt.ToChars(line)[offset])) {
+				if offset == 0 && unicode.IsDigit(rune(jrt.CharAt(line, offset))) {
 					if this.IsMirrored() {
 						level = 1
 					} else {
@@ -3492,10 +3492,10 @@ func (this *StyledText) GetCaretDirection() int32 {
 	if offset == lineLength && offset > 0 {
 		offset--
 	}
-	for offset > 0 && unicode.IsDigit(rune(jrt.ToChars(line)[offset])) {
+	for offset > 0 && unicode.IsDigit(rune(jrt.CharAt(line, offset))) {
 		offset--
 	}
-	if offset == 0 && unicode.IsDigit(rune(jrt.ToChars(line)[offset])) {
+	if offset == 0 && unicode.IsDigit(rune(jrt.CharAt(line, offset))) {
 		var cond848 int32
 		if this.IsMirrored() {
 			cond848 = RIGHT
@@ -3680,10 +3680,10 @@ func (this *StyledText) Insert(string_ string) {
 func (this *StyledText) InsertBlockSelectionText(text string, fillWithSpaces bool) int32 {
 	var lineCount int32 = 1
 	for i := int32(0); i < jrt.StringLength(text); i++ {
-		var ch uint16 = jrt.ToChars(text)[i]
+		var ch uint16 = jrt.CharAt(text, i)
 		if int32(ch) == int32('\u000a') || int32(ch) == int32('\u000d') {
 			lineCount++
-			if int32(ch) == int32('\u000d') && i+1 < jrt.StringLength(text) && int32(jrt.ToChars(text)[i+1]) == int32('\u000a') {
+			if int32(ch) == int32('\u000d') && i+1 < jrt.StringLength(text) && int32(jrt.CharAt(text, i+1)) == int32('\u000a') {
 				i++
 			}
 		}
@@ -3692,12 +3692,12 @@ func (this *StyledText) InsertBlockSelectionText(text string, fillWithSpaces boo
 	var start int32 = 0
 	lineCount = 0
 	for i := int32(0); i < jrt.StringLength(text); i++ {
-		var ch uint16 = jrt.ToChars(text)[i]
+		var ch uint16 = jrt.CharAt(text, i)
 		if int32(ch) == int32('\u000a') || int32(ch) == int32('\u000d') {
 			t851 := lineCount
 			lineCount++
 			lines[t851] = jrt.Substring(text, start, i)
-			if int32(ch) == int32('\u000d') && i+1 < jrt.StringLength(text) && int32(jrt.ToChars(text)[i+1]) == int32('\u000a') {
+			if int32(ch) == int32('\u000d') && i+1 < jrt.StringLength(text) && int32(jrt.CharAt(text, i+1)) == int32('\u000a') {
 				i++
 			}
 			start = i + 1
@@ -4325,7 +4325,7 @@ func (this *StyledText) HandleMouseDown(eventLike EventLike) {
 					max = this.content.GetCharCount()
 				}
 				var offsetPoint *Point = this.GetPointAtOffset(offset)
-				if event.X > offsetPoint.X && offset < int32(math.Min(float64(max), float64(lineOffset+lineLength))) && !unicode.IsSpace(rune(jrt.ToChars(line)[offset-lineOffset])) {
+				if event.X > offsetPoint.X && offset < int32(math.Min(float64(max), float64(lineOffset+lineLength))) && !unicode.IsSpace(rune(jrt.CharAt(line, offset-lineOffset))) {
 					offset++
 				}
 				var start int32 = int32(math.Max(float64(min), float64(this.GetWordPrevious(offset, MOVEMENT_WORD_START))))
@@ -5259,14 +5259,14 @@ func (this *StyledText) StripMnemonic(string_ string) string {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for (index < length) && (int32(jrt.ToChars(string_)[index]) != int32('&')) {
+		for (index < length) && (int32(jrt.CharAt(string_, index)) != int32('&')) {
 			index++
 		}
 		index++
 		if index >= length {
 			return string_
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
 			return fmt.Sprintf("%s%s", jrt.Substring(string_, 0, index-1), jrt.Substring(string_, index, length))
 		}
 		index++
@@ -5284,15 +5284,15 @@ func (this *StyledText) _findMnemonic(string_ string) uint16 {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for index < length && int32(jrt.ToChars(string_)[index]) != int32('&') {
+		for index < length && int32(jrt.CharAt(string_, index)) != int32('&') {
 			index++
 		}
 		index++
 		if index >= length {
 			return '\u0000'
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
-			return uint16(unicode.ToLower(rune(jrt.ToChars(string_)[index])))
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
+			return uint16(unicode.ToLower(rune(jrt.CharAt(string_, index))))
 		}
 		index++
 		if !(index < length) {

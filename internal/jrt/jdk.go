@@ -13,6 +13,7 @@ import (
 	"time"
 	"unicode/utf16"
 	"unicode/utf8"
+	"unsafe"
 )
 
 // StringBuilder is java.lang.StringBuilder. It holds UTF-16 units, so indices and Length match Java.
@@ -281,7 +282,10 @@ func isASCII(s string) bool {
 
 // StringLength is String.length(): UTF-16 code units, so a length sizes a getChars buffer.
 func StringLength(s string) int32 {
-	if isASCII(s) {
+	if e := cachedChars(s); e != nil && e.chars != nil {
+		return int32(len(e.chars))
+	}
+	if isASCIICached(s) {
 		return int32(len(s))
 	}
 	return int32(len(ToChars(s)))
@@ -317,6 +321,58 @@ func ToChars(s string) []uint16 {
 		i += n
 	}
 	return u
+}
+
+type charsEntry struct {
+	data  *byte
+	n     int
+	chars []uint16 // nil: s is ASCII, index bytes directly
+}
+
+var charsCache atomic.Pointer[charsEntry]
+
+// Ceiling: one cached string, strings over 16 MiB are converted on every call. Upgrade: a small per-string table.
+const charsCacheMax = 16 << 20
+
+// cachedChars returns the cache entry for s (converted on a miss), or nil when s is short or over the cap.
+func cachedChars(s string) *charsEntry {
+	if len(s) <= 16 || len(s) > charsCacheMax {
+		return nil
+	}
+	d := unsafe.StringData(s)
+	e := charsCache.Load()
+	if e == nil || e.data != d || e.n != len(s) {
+		e = &charsEntry{data: d, n: len(s)}
+		if !isASCII(s) {
+			e.chars = ToChars(s)
+		}
+		charsCache.Store(e)
+	}
+	return e
+}
+
+// isASCIICached is isASCII that is O(1) when s is the cached string.
+func isASCIICached(s string) bool {
+	if e := cachedChars(s); e != nil {
+		return e.chars == nil
+	}
+	return isASCII(s)
+}
+
+// CharAt is String.charAt(i): the i-th UTF-16 unit of s, amortized O(1) in a loop over one string.
+// Out of range panics like the ToChars(s)[i] it replaces.
+func CharAt(s string, i int32) uint16 {
+	e := cachedChars(s)
+	if e == nil {
+		if isASCII(s) {
+			return uint16(s[i])
+		}
+		return ToChars(s)[i]
+	}
+	if e.chars == nil {
+		return uint16(s[i])
+	}
+	return e.chars[i]
 }
 
 // FromChars is new String(char[]): a valid pair becomes one rune, a lone surrogate WTF-8 (see ToChars).
@@ -356,7 +412,13 @@ func ValidUTF8(s string) string {
 
 // Substring is String.substring(start, end) over UTF-16 indices; end < 0 means to the end.
 func Substring(s string, start, end int32) string {
-	if isASCII(s) {
+	if e := cachedChars(s); e != nil && e.chars != nil {
+		if end < 0 {
+			end = int32(len(e.chars))
+		}
+		return FromChars(e.chars[start:end])
+	}
+	if isASCIICached(s) {
 		if end < 0 {
 			end = int32(len(s))
 		}

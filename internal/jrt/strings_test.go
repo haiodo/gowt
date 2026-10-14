@@ -1,6 +1,8 @@
 package jrt
 
 import (
+	"strings"
+	"sync"
 	"testing"
 	"unicode/utf8"
 )
@@ -108,5 +110,89 @@ func TestStringBuilderUnits(t *testing.T) {
 	e.GetChars(3, 5, dst, 0)
 	if dst[0] != 0xD83D || dst[1] != 0xDE00 {
 		t.Fatal("getChars")
+	}
+}
+
+func TestCharAt(t *testing.T) {
+	long := strings.Repeat("x", 20)
+	for _, s := range []string{"hello", "привет мир", "a\U0001F600b", Substring("a\U0001F600b", 0, 2), long, long + "я" + "\U0001F600", "привет мир, привет мир"} {
+		want := ToChars(s)
+		for pass := 0; pass < 2; pass++ {
+			for i := range want {
+				if got := CharAt(s, int32(i)); got != want[i] {
+					t.Fatalf("%q[%d] = %x, want %x", s, i, got, want[i])
+				}
+			}
+		}
+	}
+	for _, s := range []string{"", "abc", long, "привет мир, привет мир"} {
+		for _, i := range []int32{-1, int32(len(ToChars(s)))} {
+			func() {
+				defer func() {
+					if recover() == nil {
+						t.Fatalf("CharAt(%q, %d) did not panic", s, i)
+					}
+				}()
+				CharAt(s, i)
+			}()
+		}
+	}
+}
+
+func TestCharAtConcurrent(t *testing.T) {
+	a, b := strings.Repeat("ab", 20), strings.Repeat("я", 20)
+	var wg sync.WaitGroup
+	for g := 0; g < 8; g++ {
+		wg.Add(1)
+		go func(s string) {
+			defer wg.Done()
+			w := ToChars(s)
+			for n := 0; n < 2000; n++ {
+				if CharAt(s, int32(n%len(w))) != w[n%len(w)] {
+					t.Error("mismatch")
+					return
+				}
+			}
+		}([]string{a, b}[g%2])
+	}
+	wg.Wait()
+}
+
+func benchLoop(b *testing.B, at func(string, int32) uint16) {
+	s := strings.Repeat("log line привет ", 10)
+	n := StringLength(s)
+	b.ResetTimer()
+	for k := 0; k < b.N; k++ {
+		var h uint16
+		for i := int32(0); i < n; i++ {
+			h += at(s, i)
+		}
+		_ = h
+	}
+}
+
+func BenchmarkCharAtLoopOld(b *testing.B) {
+	benchLoop(b, func(s string, i int32) uint16 { return ToChars(s)[i] })
+}
+
+func BenchmarkCharAtLoop(b *testing.B) { benchLoop(b, CharAt) }
+
+func TestCachedLengthSubstring(t *testing.T) {
+	for _, s := range []string{strings.Repeat("ab", 20), strings.Repeat("привет", 5) + "\U0001F600", Substring(strings.Repeat("я", 20)+"\U0001F600", 0, 21)} {
+		for pass := 0; pass < 2; pass++ {
+			w := ToChars(s)
+			if int(StringLength(s)) != len(w) || Substring(s, 3, -1) != FromChars(w[3:]) || Substring(s, 1, 5) != FromChars(w[1:5]) {
+				t.Fatalf("%q", s)
+			}
+		}
+	}
+}
+
+func BenchmarkLengthLoop(b *testing.B) {
+	s := strings.Repeat("log line привет ", 10)
+	for k := 0; k < b.N; k++ {
+		for i := int32(0); i < StringLength(s); i++ {
+			_ = CharAt(s, i)
+		}
 	}
 }

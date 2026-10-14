@@ -1071,12 +1071,12 @@ func (this *Spinner) VerifyText(string_ string, start int32, end int32) string {
 	if jrt.StringLength(string_) > 0 {
 		var hAdjustment int64 = gtk.GTKGtk_spin_button_get_adjustment(this.Handle)
 		var lower float64 = gtk.GTKGtk_adjustment_get_lower(hAdjustment)
-		if lower < 0 && int32(jrt.ToChars(string_)[0]) == int32('-') {
+		if lower < 0 && int32(jrt.CharAt(string_, 0)) == int32('-') {
 			index++
 		}
 	}
 	for index < jrt.StringLength(string_) {
-		if !unicode.IsDigit(rune(jrt.ToChars(string_)[index])) {
+		if !unicode.IsDigit(rune(jrt.CharAt(string_, index))) {
 			break
 		}
 		index++

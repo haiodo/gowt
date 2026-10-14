@@ -416,7 +416,7 @@ func (this *FontData) GetLocale() string {
 	var result string = buffer.ToString()
 	var length int32 = jrt.StringLength(result)
 	if length > 0 {
-		if int32(jrt.ToChars(result)[length-1]) == int32(sep) {
+		if int32(jrt.CharAt(result, length-1)) == int32(sep) {
 			result = jrt.Substring(result, 0, length-1)
 		}
 	}

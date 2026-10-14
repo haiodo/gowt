@@ -1590,11 +1590,11 @@ func (this *DateTime) OnNumberKeyInput(key int32) bool {
 				_, ok566 := this.dateFormat, this.dateFormat != nil
 				if ok566 {
 					var amPmStrings []string = (this.dateFormat).GetDateFormatSymbols().GetAmPmStrings()
-					if int32(jrt.ToChars(amPmStrings[jrt.CalendarAM])[0]) == int32(newText) {
+					if int32(jrt.CharAt(amPmStrings[jrt.CalendarAM], 0)) == int32(newText) {
 						this.SetTextField(this.currentField, jrt.CalendarAM)
 						return false
 					} else {
-						if int32(jrt.ToChars(amPmStrings[jrt.CalendarPM])[0]) == int32(newText) {
+						if int32(jrt.CharAt(amPmStrings[jrt.CalendarPM], 0)) == int32(newText) {
 							this.SetTextField(this.currentField, jrt.CalendarPM)
 							return false
 						}

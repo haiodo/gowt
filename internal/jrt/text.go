@@ -179,7 +179,7 @@ func IndexFrom(s, needle string, from int32) int32 {
 	if from < 0 {
 		from = 0
 	}
-	if isASCII(s) {
+	if isASCIICached(s) {
 		if int(from) > len(s) {
 			return -1
 		}

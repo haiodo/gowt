@@ -194,7 +194,7 @@ func (this *Link) Parse(string_ string) {
 	var refEnd int32 = 0
 	var mnemonic uint16 = uint16(0)
 	for index < length {
-		var c uint16 = uint16(unicode.ToLower(rune(jrt.ToChars(string_)[index])))
+		var c uint16 = uint16(unicode.ToLower(rune(jrt.CharAt(string_, index))))
 		switch state {
 		case 0:
 			if int32(c) == int32('<') {

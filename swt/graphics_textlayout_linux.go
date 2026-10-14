@@ -1670,10 +1670,10 @@ func (this *TextLayout) SetStyle(styleLike TextStyleLike, start int32, end int32
 	}
 	start = int32(math.Min(float64(int32(math.Max(float64(0), float64(start)))), float64(length-1)))
 	end = int32(math.Min(float64(int32(math.Max(float64(0), float64(end)))), float64(length-1)))
-	if start > 0 && TextLayoutIsAlef(int32(jrt.ToChars(this.text)[start])) && TextLayoutIsLam(int32(jrt.ToChars(this.text)[start-1])) {
+	if start > 0 && TextLayoutIsAlef(int32(jrt.CharAt(this.text, start))) && TextLayoutIsLam(int32(jrt.CharAt(this.text, start-1))) {
 		start--
 	}
-	if end < length-1 && TextLayoutIsLam(int32(jrt.ToChars(this.text)[end])) && TextLayoutIsAlef(int32(jrt.ToChars(this.text)[end+1])) {
+	if end < length-1 && TextLayoutIsLam(int32(jrt.CharAt(this.text, end))) && TextLayoutIsAlef(int32(jrt.CharAt(this.text, end+1))) {
 		end++
 	}
 	var low int32 = -1

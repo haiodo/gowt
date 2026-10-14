@@ -1094,7 +1094,7 @@ func (this *MenuItem) GetMaskKeysym() *MenuItem_MaskKeysym {
 	default:
 		{
 			if jrt.StringLength(word) == 1 {
-				maskKeysym.keysym = int32(gtk.ConverterWcsToMbcsCh(jrt.ToChars(word)[0]))
+				maskKeysym.keysym = int32(gtk.ConverterWcsToMbcsCh(jrt.CharAt(word, 0)))
 			}
 		}
 	}

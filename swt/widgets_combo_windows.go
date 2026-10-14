@@ -207,7 +207,7 @@ func (this *Combo) ApplyEditSegments() {
 				idx580 := charCount
 				t579 := charCount
 				charCount++
-				newChars[idx580] = jrt.ToChars(string_)[t579-segmentCount]
+				newChars[idx580] = jrt.CharAt(string_, t579-segmentCount)
 			}
 		}
 	}

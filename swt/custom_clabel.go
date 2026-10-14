@@ -131,15 +131,15 @@ func (this *CLabel) _findMnemonic(string_ string) uint16 {
 	var index int32 = 0
 	var length int32 = jrt.StringLength(string_)
 	for {
-		for index < length && int32(jrt.ToChars(string_)[index]) != int32('&') {
+		for index < length && int32(jrt.CharAt(string_, index)) != int32('&') {
 			index++
 		}
 		index++
 		if index >= length {
 			return '\u0000'
 		}
-		if int32(jrt.ToChars(string_)[index]) != int32('&') {
-			return uint16(unicode.ToLower(rune(jrt.ToChars(string_)[index])))
+		if int32(jrt.CharAt(string_, index)) != int32('&') {
+			return uint16(unicode.ToLower(rune(jrt.CharAt(string_, index))))
 		}
 		index++
 		if !(index < length) {
@@ -811,7 +811,7 @@ func (this *CLabel) SplitString(text string) []string {
 		if pos == -1 {
 			lines[int32(len(lines))-1] = jrt.Substring(text, start, -1)
 		} else {
-			var crlf bool = (pos > 0) && (int32(jrt.ToChars(text)[pos-1]) == int32('\u000d'))
+			var crlf bool = (pos > 0) && (int32(jrt.CharAt(text, pos-1)) == int32('\u000d'))
 			idx685 := int32(len(lines)) - 1
 			var cond684 int32
 			if crlf {

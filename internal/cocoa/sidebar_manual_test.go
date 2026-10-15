@@ -120,33 +120,6 @@ func TestSourceListHooks(t *testing.T) {
 	})
 }
 
-func TestSidebarMaterial(t *testing.T) {
-	if !GlassAvailable() {
-		t.Skip("needs macOS 26")
-	}
-	onMain(func() {
-		host := msg(msg(class("NSView"), "alloc"), "init")
-		sb := msg(msg(class("NSView"), "alloc"), "init")
-		msg(host, "addSubview:", sb)
-		view := NewNSViewOverload1(int64(sb))
-		InstallBackdrop(view, BackdropGlass, false)
-		InstallSidebarMaterial(view, 18)
-		InstallSidebarMaterial(view, 18)
-		subs := msg(host, "subviews")
-		if n := msg(subs, "count"); n != 3 {
-			t.Fatalf("host has %d subviews, want material, glass, sidebar", n)
-		}
-		m := msg(subs, "objectAtIndex:", 0)
-		if goString(msg(m, "className")) != "NSVisualEffectView" || msg(m, "blendingMode") != 0 || msg(m, "maskImage") == 0 {
-			t.Errorf("material %s blending %d", goString(msg(m, "className")), msg(m, "blendingMode"))
-		}
-		SetBackdropFrame(view, 7, 7, 220, 500)
-		if f := NewNSViewOverload1(int64(m)).Frame(); f.Width != 220 || f.Height != 500 || f.X != 7 {
-			t.Errorf("material frame %+v", f)
-		}
-	})
-}
-
 func TestDescribeViewChain(t *testing.T) {
 	onMain(func() {
 		host := msg(msg(class("NSScrollView"), "alloc"), "init")

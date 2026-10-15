@@ -146,7 +146,6 @@ func sidebarInset() int32 {
 func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
 	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
-	cocoa.InstallSidebarMaterial(sb.View, sidebarRadius)
 	clearTree(sb)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true

@@ -34,6 +34,9 @@ const (
 	sidebarSpacerID     = "gowt.sidebar"
 	selectMomentary     = 2
 	representExpanded   = 1
+	displayIconOnly     = 2
+	searchButtonPrefix  = "gowt.searchbutton."
+	searchFieldWidth    = 220
 )
 
 type toolbarState struct {
@@ -43,6 +46,8 @@ type toolbarState struct {
 	width       uintptr
 	spacerWidth float64
 	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
+	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
+	searchButtons, searchItems map[int]uintptr
 }
 
 var (
@@ -63,9 +68,63 @@ func (s *toolbarState) ids() uintptr {
 		if it.Space {
 			id = flexibleSpaceID
 		}
+		if it.Search != nil && collapsibleSearch() {
+			msg(arr, "addObject:", nsString(searchButtonPrefix+strconv.Itoa(i)))
+		}
 		msg(arr, "addObject:", nsString(id))
 	}
 	return arr
+}
+
+// collapsibleSearch reports whether toolbar items can be hidden (macOS 15): a search item is then a
+// magnifier button that swaps itself for the field, as in Finder.
+func collapsibleSearch() bool {
+	return msg(class("NSToolbarItem"), "instancesRespondToSelector:", sel("setHidden:"))&0xff != 0
+}
+
+// newSearchField makes an NSSearchField with AppKit's own cell. SWT sets the cell class of every
+// NSSearchField to its SWTSearchFieldCell, and a toolbar field with that cell showed an empty capsule.
+func newSearchField() uintptr {
+	nsf := class("NSSearchField")
+	prev := msg(nsf, "cellClass")
+	msg(nsf, "setCellClass:", class("NSSearchFieldCell"))
+	f := msg(msg(nsf, "alloc"), "init")
+	msg(nsf, "setCellClass:", prev)
+	return f
+}
+
+// searchButton is the magnifier item standing for the search item number i while it is collapsed.
+func (s *toolbarState) searchButton(target uintptr, id string) uintptr {
+	i, err := strconv.Atoi(strings.TrimPrefix(id, searchButtonPrefix))
+	if err != nil || i < 0 || i >= len(s.items) || s.items[i].Search == nil {
+		return 0
+	}
+	ti := msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
+	msg(ti, "setTarget:", target)
+	msg(ti, "setAction:", sel("gowtSearchOpen:"))
+	if img := symbolImage("magnifyingglass", s.items[i].Label); img != 0 {
+		msg(ti, "setImage:", img)
+	}
+	msg(ti, "setLabel:", nsString(s.items[i].Label))
+	msg(ti, "setToolTip:", nsString(s.items[i].Label))
+	if s.searchButtons == nil {
+		s.searchButtons = map[int]uintptr{}
+	}
+	s.searchButtons[i] = ti
+	return msg(ti, "autorelease")
+}
+
+// showSearch expands search item i into its field and focuses it, or collapses it into the button.
+func (s *toolbarState) showSearch(i int, open bool) {
+	b, f := s.searchButtons[i], s.searchItems[i]
+	if b == 0 || f == 0 {
+		return
+	}
+	msg(b, "setHidden:", boolArg(open))
+	msg(f, "setHidden:", boolArg(!open))
+	if open && respondsTo(f, "beginSearchInteraction") {
+		msg(f, "beginSearchInteraction")
+	}
 }
 
 // find returns the item with identifier id, nil for an identifier that is not one of ours.
@@ -97,6 +156,9 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		s.spacer, s.width, s.spacerWidth = v, width, -1
 		return msg(ti, "autorelease")
 	}
+	if strings.HasPrefix(id, searchButtonPrefix) {
+		return s.searchButton(target, id)
+	}
 	it := s.find(id)
 	if it == nil {
 		return 0
@@ -105,11 +167,29 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 	switch {
 	case it.Search != nil:
 		ti = msg(msg(class("NSSearchToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
-		f := msg(ti, "searchField")
+		// The item manages the field once assigned, so the field is configured first.
+		f := newSearchField()
 		msg(f, "setIdentifier:", nsString(id))
 		msg(f, "setPlaceholderString:", nsString(it.Label))
 		msg(f, "setTarget:", target)
 		msg(f, "setAction:", sel("gowtSearch:"))
+		msg(f, "setDelegate:", target)
+		msg(ti, "setSearchField:", f)
+		msg(f, "release")
+		if respondsTo(ti, "setPreferredWidthForSearchField:") {
+			if msgF64 == nil {
+				purego.RegisterFunc(&msgF64, objcMsgSend)
+			}
+			msgF64(ti, sel("setPreferredWidthForSearchField:"), searchFieldWidth)
+		}
+		if collapsibleSearch() {
+			msg(ti, "setHidden:", 1)
+			if s.searchItems == nil {
+				s.searchItems = map[int]uintptr{}
+			}
+			i, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
+			s.searchItems[i] = ti
+		}
 		ti = msg(ti, "autorelease")
 	case len(it.Group) > 0:
 		ti = groupItem(target, id, it.Group)
@@ -251,6 +331,28 @@ func registerToolbarClass() {
 			}
 		}
 	})
+	open := purego.NewCallback(func(self, _, sender uintptr) {
+		defer enterCallback()()
+		if s := toolbarDelegates[self]; s != nil {
+			i, err := strconv.Atoi(strings.TrimPrefix(goString(msg(sender, "itemIdentifier")), searchButtonPrefix))
+			if err == nil {
+				s.showSearch(i, true)
+			}
+		}
+	})
+	// The field collapses into the button when editing ends with no text: Esc, the clear button
+	// (it resigns focus by default) or a click elsewhere.
+	endEditing := purego.NewCallback(func(self, _, note uintptr) {
+		defer enterCallback()()
+		s := toolbarDelegates[self]
+		field := msg(note, "object")
+		if s == nil || field == 0 || goString(msg(field, "stringValue")) != "" {
+			return
+		}
+		if i, err := strconv.Atoi(strings.TrimPrefix(goString(msg(field, "identifier")), itemIDPrefix)); err == nil {
+			s.showSearch(i, false)
+		}
+	})
 	validate := purego.NewCallback(func(self, _, item uintptr) uintptr {
 		if s := toolbarDelegates[self]; s != nil {
 			return boolArg(s.enabled(item))
@@ -261,9 +363,11 @@ func registerToolbarClass() {
 		"toolbarDefaultItemIdentifiers:":                           {ids, "@@:@"},
 		"toolbarAllowedItemIdentifiers:":                           {ids, "@@:@"},
 		"toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:": {forID, "@@:@@c"},
-		"gowtClick:":           {click, "v@:@"},
-		"gowtSearch:":          {search, "v@:@"},
-		"validateToolbarItem:": {validate, "c@:@"},
+		"gowtClick:":                {click, "v@:@"},
+		"gowtSearch:":               {search, "v@:@"},
+		"validateToolbarItem:":      {validate, "c@:@"},
+		"gowtSearchOpen:":           {open, "v@:@"},
+		"controlTextDidEndEditing:": {endEditing, "v@:@"},
 	})
 }
 
@@ -292,6 +396,7 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	toolbarSeq++
 	tb := msg(msg(class("NSToolbar"), "alloc"), "initWithIdentifier:", nsString(fmt.Sprintf("gowt.toolbar.%d", toolbarSeq)))
 	msg(tb, "setDelegate:", d)
+	msg(tb, "setDisplayMode:", displayIconOnly) // Finder shows no labels under the items
 	if respondsTo(w, "setToolbarStyle:") {
 		msg(w, "setToolbarStyle:", toolbarStyleUnified)
 	}

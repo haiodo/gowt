@@ -73,6 +73,7 @@ gowt CoolBar.Progress(max int, opts ...Option) *Progress
 gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt CoolBar.Scroll(opts ...Option) *Scroll
+gowt CoolBar.Section(opts ...Option) *Section
 gowt CoolBar.SetLayout(l Layout) *Panel
 gowt CoolBar.ShowTop(w Widget)
 gowt CoolBar.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -169,6 +170,7 @@ gowt Group.Progress(max int, opts ...Option) *Progress
 gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Group.Scroll(opts ...Option) *Scroll
+gowt Group.Section(opts ...Option) *Section
 gowt Group.SetLayout(l Layout) *Panel
 gowt Group.SetTitle(s string)
 gowt Group.ShowTop(w Widget)
@@ -263,6 +265,7 @@ gowt Panel.Progress(max int, opts ...Option) *Progress
 gowt Panel.Sash(opts ...Option) *Sash
 gowt Panel.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Panel.Scroll(opts ...Option) *Scroll
+gowt Panel.Section(opts ...Option) *Section
 gowt Panel.SetLayout(l Layout) *Panel
 gowt Panel.ShowTop(w Widget)
 gowt Panel.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -302,6 +305,9 @@ gowt Scale.Value() int
 gowt Scroll.Content() *Panel
 gowt Scroll.Fit()
 gowt Scroll.Unwrap() *github.com/haiodo/gowt/swt.ScrolledComposite
+gowt Section.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Section.Row() *Panel
+gowt Section.Unwrap() *github.com/haiodo/gowt/swt.Composite
 gowt Slider.OnChange(f func(value int))
 gowt Slider.SetValue(v int)
 gowt Slider.Unwrap() *github.com/haiodo/gowt/swt.Slider
@@ -332,6 +338,7 @@ gowt Split.Progress(max int, opts ...Option) *Progress
 gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Split.Scroll(opts ...Option) *Scroll
+gowt Split.Section(opts ...Option) *Section
 gowt Split.SetLayout(l Layout) *Panel
 gowt Split.SetWeights(w ...int)
 gowt Split.ShowTop(w Widget)
@@ -514,6 +521,7 @@ gowt Window.Progress(max int, opts ...Option) *Progress
 gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
+gowt Window.Section(opts ...Option) *Section
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
@@ -663,6 +671,7 @@ gowt type RowCell struct
 gowt type Sash struct
 gowt type Scale struct
 gowt type Scroll struct
+gowt type Section struct
 gowt type Slider struct
 gowt type SortDir int
 gowt type SpacingScale struct
@@ -694,7 +703,11 @@ gowt/icons func Names() []string
 gowt/icons func Size(points int) Option
 gowt/icons type Option func(*iconConfig)
 gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt/look ToolbarItem.Enabled field github.com/haiodo/gowt/rx.Reader[bool]
+gowt/look ToolbarItem.Group field []ToolbarItem
+gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()
+gowt/look ToolbarItem.OnSearch field func(text string)
 gowt/look ToolbarItem.Space field bool
 gowt/look ToolbarItem.Symbol field string
 gowt/look ToolbarItem.Title field string
@@ -710,6 +723,7 @@ gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetSidebar(w *github.com/haiodo/gowt.Window, sidebar Container, content Container, width int)
 gowt/look func SetToolbar(w *github.com/haiodo/gowt.Window, items ...ToolbarItem) bool
 gowt/look type Backdrop int
 gowt/look type Container

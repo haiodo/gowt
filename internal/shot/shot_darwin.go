@@ -3,6 +3,7 @@ package shot
 
 import (
 	"fmt"
+	"os"
 	"structs"
 
 	"github.com/ebitengine/purego/objc"
@@ -15,8 +16,15 @@ type nsRect struct {
 
 // WindowPNG writes the window that holds the NSView view (Shell.View.Id) as a PNG. It renders the view
 // tree with cacheDisplayInRect:toBitmapImageRep:; screencapture needs Screen Recording permission.
+// GOWT_SNAP_LAYERS=1 renders the layer tree instead (layerPNG); the reference images keep the default.
 func WindowPNG(view int64, path string) error {
 	v := objc.ID(view).Send(objc.RegisterName("window")).Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
+	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
+		return screenPNG(v, path)
+	}
+	if os.Getenv("GOWT_SNAP_LAYERS") == "1" && v.Send(objc.RegisterName("layer")) != 0 {
+		return layerPNG(v, path)
+	}
 	bounds := objc.Send[nsRect](v, objc.RegisterName("bounds"))
 	rep := v.Send(objc.RegisterName("bitmapImageRepForCachingDisplayInRect:"), bounds)
 	v.Send(objc.RegisterName("cacheDisplayInRect:toBitmapImageRep:"), bounds, rep)

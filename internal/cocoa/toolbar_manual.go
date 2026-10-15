@@ -7,6 +7,7 @@ package cocoa
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -76,6 +77,9 @@ func (s *toolbarState) ids() uintptr {
 	return arr
 }
 
+// searchOpenAtStart (GOWT_TOOLBAR_SEARCH_OPEN=1) shows search items expanded from the start, for snapshots.
+var searchOpenAtStart = os.Getenv("GOWT_TOOLBAR_SEARCH_OPEN") == "1"
+
 // collapsibleSearch reports whether toolbar items can be hidden (macOS 15): a search item is then a
 // magnifier button that swaps itself for the field, as in Finder.
 func collapsibleSearch() bool {
@@ -107,6 +111,7 @@ func (s *toolbarState) searchButton(target uintptr, id string) uintptr {
 	}
 	msg(ti, "setLabel:", nsString(s.items[i].Label))
 	msg(ti, "setToolTip:", nsString(s.items[i].Label))
+	msg(ti, "setHidden:", boolArg(searchOpenAtStart))
 	if s.searchButtons == nil {
 		s.searchButtons = map[int]uintptr{}
 	}
@@ -183,7 +188,7 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 			msgF64(ti, sel("setPreferredWidthForSearchField:"), searchFieldWidth)
 		}
 		if collapsibleSearch() {
-			msg(ti, "setHidden:", 1)
+			msg(ti, "setHidden:", boolArg(!searchOpenAtStart))
 			if s.searchItems == nil {
 				s.searchItems = map[int]uintptr{}
 			}
@@ -198,6 +203,9 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		}
 		i, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
 		s.groups[i] = ti
+		// AppKit validates the group as a whole and enables every segment again; the segments follow
+		// their own state instead.
+		msg(ti, "setAutovalidates:", 0)
 		for j, g := range it.Group {
 			setSegmentEnabled(ti, j, !g.Disabled)
 		}
@@ -251,7 +259,9 @@ func groupItem(target uintptr, id string, sub []ToolbarItem) uintptr {
 func setSegmentEnabled(group uintptr, i int, on bool) {
 	subs := msg(group, "subitems")
 	if i < int(msg(subs, "count")) {
-		msg(msg(subs, "objectAtIndex:", uintptr(i)), "setEnabled:", boolArg(on))
+		sub := msg(subs, "objectAtIndex:", uintptr(i))
+		msg(sub, "setAutovalidates:", 0)
+		msg(sub, "setEnabled:", boolArg(on))
 	}
 	if v := msg(group, "view"); respondsTo(v, "setEnabled:forSegment:") {
 		msg(v, "setEnabled:forSegment:", boolArg(on), uintptr(i))
@@ -427,6 +437,7 @@ func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
 		if g := s.groups[item]; g != 0 {
 			setSegmentEnabled(g, segment, on)
 		}
+		return // validation would enable the whole group again
 	default:
 		return
 	}

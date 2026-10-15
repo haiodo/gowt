@@ -19,6 +19,9 @@ type nsRect struct {
 // GOWT_SNAP_LAYERS=1 renders the layer tree instead (layerPNG); the reference images keep the default.
 func WindowPNG(view int64, path string) error {
 	v := objc.ID(view).Send(objc.RegisterName("window")).Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
+	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
+		return screenPNG(v, path)
+	}
 	if os.Getenv("GOWT_SNAP_LAYERS") == "1" && v.Send(objc.RegisterName("layer")) != 0 {
 		return layerPNG(v, path)
 	}

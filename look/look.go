@@ -106,7 +106,8 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 // the sidebar floats: Liquid Glass with rounded corners, inset from the window edges and running under
 // the traffic lights; the window gets full-size content, sidebar children and content start below the
 // title bar and toolbar, and the items and title of SetToolbar start past the sidebar. Older macOS
-// shows a flush sidebar material; Windows and Linux put two plain panels side by side.
+// shows a flush sidebar material; Windows and Linux put two plain panels side by side. A background
+// on w itself paints over the macOS sidebar glass; colour the content instead.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	SetFullSizeContent(w, true)
 	sb := sidebar.AsComposite()

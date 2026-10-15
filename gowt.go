@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -48,6 +49,11 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
 	defer apps.Delete(a.display)
+	// Deferred last, so rx stops waking the loop before the display is disposed.
+	defer rx.Attach(func(tick func()) func() {
+		r := jrt.NewRunnable(tick)
+		return func() { a.display.AsyncExec(r) }
+	})()
 	a.display.FollowSystemTheme()
 	setup(a)
 	snapTick := func() {}

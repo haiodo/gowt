@@ -131,3 +131,35 @@ func TestDescribeViewChain(t *testing.T) {
 		}
 	})
 }
+
+func TestToolbarSearch(t *testing.T) {
+	onMain(func() {
+		registerToolbarClass()
+		d := msg(msg(toolbarClass, "alloc"), "init")
+		defer msg(d, "release")
+		var got []string
+		toolbarDelegates[d] = &toolbarState{items: []ToolbarItem{{Label: "find", Search: func(s string) { got = append(got, s) }}}}
+		defer delete(toolbarDelegates, d)
+		f := msg(toolbarDelegates[d].item(d, itemIDPrefix+"0"), "searchField")
+		msg(f, "setStringValue:", nsString("web"))
+		msg(f, "sendAction:to:", msg(f, "action"), msg(f, "target"))
+		if len(got) != 1 || got[0] != "web" {
+			t.Errorf("search got %v", got)
+		}
+		// The window's field editor is SWT's and drops the text typed into a field of no SWT widget.
+		cell, fe := msg(f, "cell"), sel("fieldEditorForView:")
+		if msg(msg(cell, "class"), "instanceMethodForSelector:", fe) == msg(class("NSSearchFieldCell"), "instanceMethodForSelector:", fe) {
+			t.Error("the search cell takes the window's field editor")
+		}
+		if msg(cell, "fieldEditorForView:", f) != 0 {
+			t.Error("a field outside a window gets a field editor")
+		}
+		w := msg(msg(class("NSObject"), "alloc"), "init")
+		defer msg(w, "release")
+		ed := searchEditor(w)
+		if ed == 0 || ed != searchEditor(w) || msg(ed, "isFieldEditor")&0xff == 0 ||
+			goString(msg(msg(ed, "className"), "description")) != "NSTextView" {
+			t.Errorf("search field editor %x", ed)
+		}
+	})
+}

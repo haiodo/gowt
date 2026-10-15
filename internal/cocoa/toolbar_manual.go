@@ -86,15 +86,43 @@ func collapsibleSearch() bool {
 	return msg(class("NSToolbarItem"), "instancesRespondToSelector:", sel("setHidden:"))&0xff != 0
 }
 
+var searchCellClass uintptr
+
 // newSearchField makes an NSSearchField with AppKit's own cell. SWT sets the cell class of every
 // NSSearchField to its SWTSearchFieldCell, and a toolbar field with that cell showed an empty capsule.
+// The cell brings its own field editor: the window's one is SWT's SWTEditorView, which drops typed
+// text for a field that belongs to no SWT widget.
 func newSearchField() uintptr {
+	if searchCellClass == 0 {
+		editor := purego.NewCallback(func(self, _, view uintptr) uintptr { return searchEditor(msg(view, "window")) })
+		searchCellClass = allocClass(class("NSSearchFieldCell"), "GowtSearchFieldCell", 0)
+		addMethod(searchCellClass, sel("fieldEditorForView:"), editor, "@@:@")
+		registerClass(searchCellClass)
+	}
 	nsf := class("NSSearchField")
 	prev := msg(nsf, "cellClass")
-	msg(nsf, "setCellClass:", class("NSSearchFieldCell"))
+	msg(nsf, "setCellClass:", searchCellClass)
 	f := msg(msg(nsf, "alloc"), "init")
 	msg(nsf, "setCellClass:", prev)
 	return f
+}
+
+// searchEditor is a plain AppKit field editor kept on window w, one per window like the window's own.
+func searchEditor(w uintptr) uintptr {
+	if w == 0 {
+		return 0
+	}
+	initAssociated()
+	key := sel("gowtSearchEditor")
+	if ed := getAssociated(w, key); ed != 0 {
+		return ed
+	}
+	ed := msg(msg(class("NSTextView"), "alloc"), "init")
+	msg(ed, "setFieldEditor:", 1)
+	msg(ed, "setAllowsUndo:", 1)
+	setAssociated(w, key, ed, 1)
+	msg(ed, "release")
+	return ed
 }
 
 // searchButton is the magnifier item standing for the search item number i while it is collapsed.
@@ -128,7 +156,8 @@ func (s *toolbarState) showSearch(i int, open bool) {
 	msg(b, "setHidden:", boolArg(open))
 	msg(f, "setHidden:", boolArg(!open))
 	if open && respondsTo(f, "beginSearchInteraction") {
-		msg(f, "beginSearchInteraction")
+		// The shown field joins the window only on the toolbar's next layout; focusing it before is a no-op.
+		msg(f, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("beginSearchInteraction"), 0, 0)
 	}
 }
 

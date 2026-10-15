@@ -253,3 +253,120 @@ func TestDerivedPeekDoesNotSubscribe(t *testing.T) {
 		t.Fatalf("runs=%d d=%d", runs, d.Peek())
 	}
 }
+
+// A Set before the first read of a new source is no reason to run again.
+func TestSetThenReadStateRunsOnce(t *testing.T) {
+	reset(t)
+	a := New(0)
+	runs := 0
+	stop := Effect(func() { runs++; a.Set(5); _ = a.Get() })
+	defer stop()
+	Flush()
+	if runs != 1 {
+		t.Fatalf("runs=%d want 1", runs)
+	}
+}
+
+// An effect that writes an unrelated State and then reads a Derived for the first time saw the
+// Derived's current value: it runs once.
+func TestSetThenReadFreshDerivedRunsOnce(t *testing.T) {
+	reset(t)
+	status, b := New(""), New(1)
+	d := Compute(func() int { return b.Get() * 10 })
+	var started []int
+	stop := Effect(func() {
+		status.Set("loading")
+		started = append(started, d.Get()) // e.g. start a request for d
+	})
+	defer stop()
+	Flush()
+	if len(started) != 1 {
+		t.Fatalf("request started %d times: %v", len(started), started)
+	}
+}
+
+// An unobserved Derived over an observed one follows its changes.
+func TestUnobservedOverChangingDerived(t *testing.T) {
+	reset(t)
+	a := New(1)
+	d1 := Compute(func() int { return a.Get() + 1 })
+	seen := 0
+	stop := Effect(func() { seen = d1.Get() })
+	defer stop()
+	d2 := Compute(func() int { return d1.Get() * 10 })
+	d3 := Compute(func() int { return d2.Get() + 1 }) // unobserved chain
+	if d3.Get() != 21 {
+		t.Fatal(d3.Get())
+	}
+	a.Set(4)
+	if d2.Get() != 50 || d3.Get() != 51 {
+		t.Fatalf("d2=%d d3=%d", d2.Get(), d3.Get())
+	}
+	Flush()
+	a.Set(5)
+	Flush()
+	if d3.Get() != 61 || seen != 6 {
+		t.Fatalf("d3=%d seen=%d", d3.Get(), seen)
+	}
+	if len(a.observers) != 1 || len(d1.observers) != 1 {
+		t.Fatalf("subscriptions a=%d d1=%d", len(a.observers), len(d1.observers))
+	}
+}
+
+// A child queued in round 1 waits for its parent, made stale only in round 2 by an effect that
+// writes the parent's input.
+func TestChildWaitsForParentStaleInLaterRound(t *testing.T) {
+	reset(t)
+	src := NewFunc([]int{1, 2, 3}, nil)
+	n := New(3)
+	var bad any
+	x := Effect(func() { l := src.Get(); n.Set(len(l)) })
+	defer x()
+	p := Effect(func() {
+		for i := range n.Get() {
+			Effect(func() {
+				defer func() {
+					if r := recover(); r != nil && bad == nil {
+						bad = r
+					}
+				}()
+				_ = src.Get()[i]
+			})
+		}
+	})
+	defer p()
+	src.Set([]int{1})
+	Flush()
+	if bad != nil {
+		t.Fatalf("child ran before its parent: %v", bad)
+	}
+}
+
+// A Derived whose cleanup panics during an unobserved read is recomputed and subscribes on the
+// next tracked read.
+func TestDerivedCleanupPanicKeepsItLive(t *testing.T) {
+	reset(t)
+	a := New(0)
+	boom := false
+	d := Compute(func() int {
+		OnCleanup(func() {
+			if boom {
+				panic("cleanup")
+			}
+		})
+		return a.Get()
+	})
+	d.Get()
+	boom = true
+	a.Set(1)
+	func() { defer func() { recover() }(); d.Get() }()
+	boom = false
+	seen := -1
+	stop := Effect(func() { seen = d.Get() })
+	defer stop()
+	a.Set(2)
+	Flush()
+	if seen != 2 {
+		t.Fatalf("seen=%d want 2 (a=%d, d.sources=%d)", seen, a.Peek(), len(d.sources))
+	}
+}

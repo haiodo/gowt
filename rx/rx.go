@@ -37,10 +37,11 @@ type node struct {
 	stale     bool // its last run panicked; recompute on the next read whatever the state says
 	untracked bool // the next run reads without subscribing (a Derived nobody observes)
 
-	idx       int     // sources matched in order during the current run
-	diverged  bool    // the current run read a source out of the old order
-	sources   []*node // what the last run read, in read order
-	extra     []*node // sources read after the first mismatch of the current run
+	idx       int      // sources matched in order during the current run
+	diverged  bool     // the current run read a source out of the old order
+	sources   []*node  // what the last run read, in read order
+	extra     []*node  // sources read after the first mismatch of the current run
+	extraAt   []uint64 // epoch at which each extra source was read
 	observers []*node
 
 	exec     func() // derived: recompute; effect: rerun
@@ -80,6 +81,7 @@ func track(src *node) {
 	}
 	o.diverged = true
 	o.extra = append(o.extra, src)
+	o.extraAt = append(o.extraAt, epoch)
 }
 
 // execute tracks what fn reads as n's sources. After a panic n keeps old and new sources, so it
@@ -90,7 +92,7 @@ func (n *node) execute(fn func()) {
 	if n.untracked {
 		observer, n.untracked = nil, false
 	}
-	n.idx, n.diverged, n.extra, n.running, n.start = 0, false, n.extra[:0], true, epoch
+	n.idx, n.diverged, n.extra, n.extraAt, n.running, n.start = 0, false, n.extra[:0], n.extraAt[:0], true, epoch
 	if n.kind == kindEffect {
 		inEffect++
 	}
@@ -127,9 +129,9 @@ func (n *node) commit() {
 	next = append(next, old[:n.idx]...)
 	next = append(next, n.extra...)
 	missed := false
-	for _, s := range n.extra {
+	for i, s := range n.extra {
 		if !slices.Contains(old, s) {
-			missed = n.subscribe(s) || missed
+			missed = n.subscribe(s, n.extraAt[i]) || missed
 		}
 	}
 	n.sources, n.extra, n.diverged = next, n.extra[:0], false
@@ -143,20 +145,20 @@ func (n *node) commit() {
 	}
 }
 
-// subscribe adds n to s's observers and reports whether s changed after n read it: a Set
-// between the read and the end of the run marked observers that did not include n yet.
-func (n *node) subscribe(s *node) bool {
+// subscribe adds n to s's observers and reports whether s changed after n read it at epoch
+// readAt: a Set in between marked observers that did not include n yet.
+func (n *node) subscribe(s *node, readAt uint64) bool {
 	s.addObserver(n)
-	return s.changed > n.start || (s.kind == kindDerived && s.state != clean)
+	return s.changed > readAt || (s.kind == kindDerived && s.state != clean)
 }
 
 func (n *node) keepSources() {
 	missed := false
 	if !n.disposed {
-		for _, s := range n.extra {
+		for i, s := range n.extra {
 			if !slices.Contains(n.sources, s) {
 				n.sources = append(n.sources, s)
-				missed = n.subscribe(s) || missed
+				missed = n.subscribe(s, n.extraAt[i]) || missed
 			}
 		}
 	}
@@ -442,10 +444,15 @@ func Flush() {
 			slices.SortStableFunc(q, byDepth)
 		}
 		for _, e := range q {
-			e.queued = false
 			if e.disposed {
+				e.queued = false
 				continue
 			}
+			if e.ownerStale() {
+				queue = append(queue, e) // after the owner, which may dispose it; stays queued
+				continue
+			}
+			e.queued = false
 			if r, stack, ok := runEffect(e); !ok {
 				if !failed {
 					first, failed = r, true
@@ -460,6 +467,17 @@ func Flush() {
 	if failed {
 		panic(first)
 	}
+}
+
+// ownerStale reports whether an Effect above n is waiting to rerun, which would dispose n. An
+// owner made stale only in this round (by an effect writing its input) is in the next round.
+func (n *node) ownerStale() bool {
+	for p := n.parent; p != nil; p = p.parent {
+		if p.kind == kindEffect && p.state != clean {
+			return true
+		}
+	}
+	return false
 }
 
 func byDepth(a, b *node) int { return a.depth - b.depth }

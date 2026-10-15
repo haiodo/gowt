@@ -86,6 +86,7 @@ func ComputeFunc[T any](fn func() T, eq func(a, b T) bool) *Derived[T] {
 }
 
 func (d *Derived[T]) recompute() {
+	d.stale = true // a panicking cleanup must not leave an old value marked clean; execute clears it
 	d.release()
 	var v T
 	d.execute(func() { v = d.fn() })
@@ -132,6 +133,7 @@ func (d *Derived[T]) getUnobserved() T {
 		d.unlink()
 	}
 	d.state, d.untracked = dirty, true
+	defer func() { d.untracked = false }() // release may panic before execute consumes it
 	d.update()
 	d.state = dirty // nothing marks it now: the next read checks the epoch, a tracked one subscribes
 	return d.v

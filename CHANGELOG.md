@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.1 (2026-10-15)
 
 Fixes
 - macOS: typing into the toolbar search field (`look.ToolbarItem.OnSearch`) put no text in it. The field used the window's field editor, SWT's `SWTEditorView`, which drops the keys of a field that belongs to no SWT widget; the field now has a plain AppKit field editor. The magnifier button also left the focus where it was, since it focused the field before the toolbar had put it in the window; the field now takes the focus once shown.

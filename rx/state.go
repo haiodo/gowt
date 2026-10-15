@@ -1,7 +1,5 @@
 package rx
 
-import "slices"
-
 // Reader is what bindings take: a State or a Derived.
 type Reader[T any] interface {
 	Get() T
@@ -46,20 +44,18 @@ func (s *State[T]) Peek() T { return s.v }
 // the next Flush. Set panics off the UI thread (use Post) and inside a Derived.
 func (s *State[T]) Set(v T) {
 	mustUI("State.Set")
-	o := observer
-	if o != nil && o.kind == kindDerived {
+	// owner, not observer: an unobserved Derived computes untracked, and Untrack must not hide the write.
+	if o := owner; o != nil && o.kind == kindDerived {
 		panic("rx: State.Set inside a Derived; a Derived computes a value, an Effect writes")
 	}
 	if s.eq != nil && s.eq(s.v, v) {
 		return
 	}
 	s.v = v
+	epoch++
+	s.changed = epoch
 	for _, ob := range s.observers {
 		ob.mark(dirty)
-	}
-	// An effect that writes what it read in this run is not subscribed to it until the run ends.
-	if o != nil && o.kind == kindEffect && (slices.Contains(o.sources[:o.idx], &s.node) || slices.Contains(o.extra, &s.node)) {
-		o.mark(dirty)
 	}
 }
 
@@ -82,6 +78,7 @@ func Compute[T comparable](fn func() T) *Derived[T] { return ComputeFunc(fn, eqC
 // ComputeFunc makes a Derived with a custom equality; eq nil means every recompute propagates.
 // Inside an Effect or a Scope the Derived is owned by it and stops updating when disposed.
 func ComputeFunc[T any](fn func() T, eq func(a, b T) bool) *Derived[T] {
+	mustUI("Compute")
 	d := &Derived[T]{node: node{kind: kindDerived, state: dirty}, fn: fn, eq: eq}
 	d.exec = d.recompute
 	d.adopt()
@@ -89,12 +86,14 @@ func ComputeFunc[T any](fn func() T, eq func(a, b T) bool) *Derived[T] {
 }
 
 func (d *Derived[T]) recompute() {
+	d.release()
 	var v T
 	d.execute(func() { v = d.fn() })
+	d.verified = epoch
 	if d.done && d.eq != nil && d.eq(d.v, v) {
 		return
 	}
-	d.v, d.done = v, true
+	d.v, d.done, d.changed = v, true, epoch
 	for _, o := range d.observers {
 		if !o.running { // a running observer is reading the new value right now
 			o.mark(dirty)
@@ -111,10 +110,30 @@ func (d *Derived[T]) Get() T {
 	if d.running {
 		panic("rx: Derived reads itself (dependency cycle)")
 	}
-	track(&d.node)
-	if !d.disposed {
-		d.update()
+	if d.disposed {
+		track(&d.node)
+		return d.v
 	}
+	if observer == nil && len(d.observers) == 0 {
+		return d.getUnobserved()
+	}
+	track(&d.node)
+	d.update()
+	return d.v
+}
+
+// getUnobserved serves a read nobody tracks: the value is computed without subscribing, so a
+// throwaway Derived does not live as long as its sources, and reused until the next Set.
+func (d *Derived[T]) getUnobserved() T {
+	if d.done && !d.stale && d.verified == epoch {
+		return d.v
+	}
+	if len(d.sources) > 0 {
+		d.unlink()
+	}
+	d.state, d.untracked = dirty, true
+	d.update()
+	d.state = dirty // nothing marks it now: the next read checks the epoch, a tracked one subscribes
 	return d.v
 }
 

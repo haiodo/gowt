@@ -29,12 +29,13 @@ const (
 )
 
 type node struct {
-	kind     uint8
-	state    uint8
-	queued   bool
-	disposed bool
-	running  bool // inside its own execute: a Derived that reads itself is a cycle
-	stale    bool // its last run panicked; recompute on the next read whatever the state says
+	kind      uint8
+	state     uint8
+	queued    bool
+	disposed  bool
+	running   bool // inside its own execute: a Derived that reads itself is a cycle
+	stale     bool // its last run panicked; recompute on the next read whatever the state says
+	untracked bool // the next run reads without subscribing (a Derived nobody observes)
 
 	idx       int     // sources matched in order during the current run
 	diverged  bool    // the current run read a source out of the old order
@@ -46,6 +47,10 @@ type node struct {
 	parent   *node
 	children []*node  // effects, deriveds and scopes created while this node ran
 	cleanups []func() // OnCleanup funcs of the last run
+	depth    int      // owners above it: a flush runs parents before the children they may dispose
+	changed  uint64   // epoch of the last change of value (State, Derived)
+	start    uint64   // epoch when the current run began
+	verified uint64   // Derived read with nobody observing: epoch its value was computed at
 }
 
 var (
@@ -56,6 +61,8 @@ var (
 	flushing   bool
 	batchDepth int
 	scheduled  bool // a tick is on its way to the UI thread
+	inEffect   int  // effects running now; Flush inside one would re-enter it
+	epoch      uint64
 )
 
 func track(src *node) {
@@ -80,11 +87,20 @@ func track(src *node) {
 func (n *node) execute(fn func()) {
 	prevObs, prevOwn := observer, owner
 	observer, owner = n, n
-	n.idx, n.diverged, n.extra, n.running = 0, false, n.extra[:0], true
+	if n.untracked {
+		observer, n.untracked = nil, false
+	}
+	n.idx, n.diverged, n.extra, n.running, n.start = 0, false, n.extra[:0], true, epoch
+	if n.kind == kindEffect {
+		inEffect++
+	}
 	ok := false
 	defer func() {
 		observer, owner = prevObs, prevOwn
 		n.running = false
+		if n.kind == kindEffect {
+			inEffect--
+		}
 		if !ok {
 			n.keepSources()
 			n.stale = n.kind == kindDerived
@@ -110,9 +126,10 @@ func (n *node) commit() {
 	next := make([]*node, 0, n.idx+len(n.extra))
 	next = append(next, old[:n.idx]...)
 	next = append(next, n.extra...)
+	missed := false
 	for _, s := range n.extra {
 		if !slices.Contains(old, s) {
-			s.addObserver(n)
+			missed = n.subscribe(s) || missed
 		}
 	}
 	n.sources, n.extra, n.diverged = next, n.extra[:0], false
@@ -121,18 +138,32 @@ func (n *node) commit() {
 			s.removeObserver(n)
 		}
 	}
+	if missed {
+		n.mark(dirty)
+	}
+}
+
+// subscribe adds n to s's observers and reports whether s changed after n read it: a Set
+// between the read and the end of the run marked observers that did not include n yet.
+func (n *node) subscribe(s *node) bool {
+	s.addObserver(n)
+	return s.changed > n.start || (s.kind == kindDerived && s.state != clean)
 }
 
 func (n *node) keepSources() {
+	missed := false
 	if !n.disposed {
 		for _, s := range n.extra {
 			if !slices.Contains(n.sources, s) {
 				n.sources = append(n.sources, s)
-				s.addObserver(n)
+				missed = n.subscribe(s) || missed
 			}
 		}
 	}
 	n.extra, n.diverged = n.extra[:0], false
+	if missed {
+		n.mark(dirty)
+	}
 }
 
 func (n *node) addObserver(o *node) { n.observers = append(n.observers, o) }
@@ -228,24 +259,51 @@ func (n *node) settle() {
 func (n *node) adopt() {
 	if owner != nil {
 		n.parent = owner
+		n.depth = owner.depth + 1
 		owner.children = append(owner.children, n)
 	}
 }
 
-// release disposes what the last run created and runs its cleanups.
+// release disposes what the last run created and runs its cleanups. A panic in one of them does
+// not skip the rest; the first one is raised again at the end.
 func (n *node) release() {
-	for _, c := range n.children {
-		c.parent = nil // the whole list is dropped below; no per-child search
-		c.dispose()
+	if len(n.children) == 0 && len(n.cleanups) == 0 {
+		return
 	}
-	clear(n.children)
-	n.children = n.children[:0]
-	if fs := n.cleanups; len(fs) > 0 {
-		n.cleanups = nil
-		for _, f := range fs {
-			f()
+	var first any
+	failed := false
+	kids := n.children
+	n.children = nil
+	for _, c := range kids {
+		c.parent = nil // the whole list is dropped; no per-child search
+		if r, ok := try(c.dispose); !ok && !failed {
+			first, failed = r, true
 		}
 	}
+	clear(kids)
+	if n.children == nil {
+		n.children = kids[:0]
+	}
+	fs := n.cleanups
+	n.cleanups = nil
+	for _, f := range fs {
+		if r, ok := try(f); !ok && !failed {
+			first, failed = r, true
+		}
+	}
+	if failed {
+		panic(first)
+	}
+}
+
+func try(f func()) (r any, ok bool) {
+	defer func() {
+		if !ok {
+			r = recover()
+		}
+	}()
+	f()
+	return nil, true
 }
 
 func (n *node) dispose() {
@@ -297,8 +355,9 @@ func Effect(fn func()) (dispose func()) {
 	return n.dispose
 }
 
-// Scope runs fn untracked and owns what fn creates: dispose disposes it all. It is the root for
-// effects that must die together, such as those of one window.
+// Scope runs fn untracked and owns what fn creates: dispose disposes it all, for effects that
+// must die together, such as those of one window. A Scope made inside an Effect belongs to that
+// run and is disposed with it.
 func Scope(fn func()) (dispose func()) {
 	mustUI("Scope")
 	n := &node{kind: kindScope}
@@ -310,9 +369,10 @@ func Scope(fn func()) (dispose func()) {
 	return n.dispose
 }
 
-// OnCleanup registers f with the running Effect, to run before its next run and on dispose, or
-// with the Scope being built, to run on dispose. Elsewhere f never runs.
+// OnCleanup registers f with the running Effect or Derived, to run before its next run and on
+// dispose, or with the Scope being built, to run on dispose. Elsewhere f never runs.
 func OnCleanup(f func()) {
+	mustUI("OnCleanup")
 	if owner != nil {
 		owner.cleanups = append(owner.cleanups, f)
 	}
@@ -320,6 +380,7 @@ func OnCleanup(f func()) {
 
 // Untrack calls fn without subscribing the current Derived or Effect to what fn reads.
 func Untrack(fn func()) {
+	mustUI("Untrack")
 	prev := observer
 	observer = nil
 	defer func() { observer = prev }()
@@ -349,12 +410,19 @@ func Batch(fn func()) {
 
 const maxFlushRounds = 100
 
-// Flush runs every stale effect until none is left. A panic in one effect does not stop the
-// others: Flush finishes, then panics with the first value (later ones go to stderr). Effects
-// that keep each other stale for 100 rounds are a cycle and panic too.
+// Flush runs every stale effect until none is left, parents before their children. A panic in
+// one effect does not stop the others: Flush finishes, then panics with the first value (later
+// ones go to stderr). Effects that keep each other stale for 100 rounds are a cycle and panic too.
+// Inside an Effect, Flush and Batch only schedule: the running effect would be entered again.
 func Flush() {
 	mustUI("Flush")
 	if flushing {
+		return
+	}
+	if inEffect > 0 {
+		if len(queue) > 0 && !scheduled {
+			scheduled = wakeLoop()
+		}
 		return
 	}
 	flushing = true
@@ -370,6 +438,9 @@ func Flush() {
 		}
 		q := queue
 		queue = spare[:0]
+		if !slices.IsSortedFunc(q, byDepth) {
+			slices.SortStableFunc(q, byDepth)
+		}
 		for _, e := range q {
 			e.queued = false
 			if e.disposed {
@@ -390,6 +461,8 @@ func Flush() {
 		panic(first)
 	}
 }
+
+func byDepth(a, b *node) int { return a.depth - b.depth }
 
 func runEffect(e *node) (r any, stack []byte, ok bool) {
 	defer func() {

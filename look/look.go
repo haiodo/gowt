@@ -88,10 +88,22 @@ type ToolbarItem struct {
 
 // SetToolbar puts a native unified toolbar (NSToolbar) on the window, replacing an earlier one; with
 // no items it removes the toolbar. On macOS 26 the items are Liquid Glass. It reports whether the
-// toolbar exists: elsewhere nothing is created and the result is false, so build your own gowt.ToolBar
-// in that case. Use it together with SetFullSizeContent only if the content leaves room for the bar.
+// native toolbar exists. Where it does not (Windows, Linux), a window laid out by SetSidebar, before
+// or after this call, gets the items as a bar of gowt widgets at the top of its content column: flat
+// icon buttons, the window title, a search field, in the content's colour. A window without
+// SetSidebar gets nothing there; build your own gowt.ToolBar in that case. Use it together with
+// SetFullSizeContent only if the content leaves room for the bar.
 func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
 	ok := setToolbar(w.Unwrap(), items)
+	if b := bars[w.Unwrap()]; ok && b != nil {
+		b.items = nil
+		b.build()
+	}
+	if !ok {
+		b := barOf(w)
+		b.items = items
+		b.build()
+	}
 	refreshInset(w)
 	return ok
 }
@@ -106,8 +118,9 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 // the sidebar floats: Liquid Glass with rounded corners, inset from the window edges and running under
 // the traffic lights; the window gets full-size content, sidebar children and content start below the
 // title bar and toolbar, and the items and title of SetToolbar start past the sidebar. Older macOS
-// shows a flush sidebar material; Windows and Linux put two plain panels side by side. A background
-// on w itself paints over the macOS sidebar glass; colour the content instead.
+// shows a flush sidebar material; Windows and Linux put two plain panels side by side, with the
+// SetToolbar items as a bar above the content. A background on w itself paints over the macOS
+// sidebar glass; colour the content instead.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	SetFullSizeContent(w, true)
 	sb := sidebar.AsComposite()
@@ -116,7 +129,9 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	s := w.Unwrap()
 	s.SetLayout(l)
 	setSidebarChrome(s, sb)
-	s.Layout()
+	b := barOf(w)
+	b.content = l.content
+	b.build()
 }
 
 type sidebarLayout struct {
@@ -130,7 +145,7 @@ func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ boo
 	in, top := sidebarInset(), int32(topInset(c.GetShell()))
 	sb := l.sidebar.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 	ct := l.content.ComputeSize(swt.DEFAULT, swt.DEFAULT)
-	p := swt.NewPoint(in+l.width+ct.X, top+max(sb.Y+in, ct.Y))
+	p := swt.NewPoint(in+l.width+ct.X, top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
 	if wHint != swt.DEFAULT {
 		p.X = wHint
 	}
@@ -144,6 +159,7 @@ func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	r := c.GetClientArea()
 	bg, sb, ct := sidebarFrames(r.X, r.Y, r.Width, r.Height, l.width, sidebarInset(), int32(topInset(c.GetShell())))
 	l.sidebar.SetBounds(sb[0], sb[1], sb[2], sb[3])
+	ct = barTop(c.GetShell(), ct)
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	syncSidebar(c.GetShell(), l.sidebar, bg)
 }

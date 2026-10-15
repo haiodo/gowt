@@ -71,9 +71,14 @@ func SetSourceList(view *NSView) {
 	}
 	tv.SetRowHeight(h)
 	msg(v, "setBackgroundColor:", 0) // the hook below turns any colour into clear
+	// AppKit draws its own darker source-list selection outside drawRect:; GowtSidebarRowView draws the pill.
+	msg(v, "setSelectionHighlightStyle:", ^uintptr(0)) // NSTableViewSelectionHighlightStyleNone
 	if sv := msg(v, "enclosingScrollView"); sv != 0 {
 		msg(sv, "setDrawsBackground:", 0)
 		msg(msg(sv, "contentView"), "setDrawsBackground:", 0)
+		// The list sits below the title bar already; the automatic inset added the title bar height again.
+		msg(sv, "setAutomaticallyAdjustsContentInsets:", 0)
+		msgRectOnly(sv, sel("setContentInsets:"), NSRect{}) // NSEdgeInsets has the layout of four doubles
 	}
 }
 
@@ -109,10 +114,21 @@ func sourceListHooks(cls uintptr) {
 	if rowViewClass == 0 {
 		no := purego.NewCallback(func(self, _ uintptr) uintptr { return 0 })
 		// The dirty rect arrives in FP registers on arm64 and in memory on amd64: only self is read.
-		drawSelection := purego.NewCallback(func(self, _ uintptr) { drawPill(self) })
+		draw := purego.NewCallback(func(self, _ uintptr) {
+			if msg(self, "isSelected")&0xff != 0 {
+				drawPill(self)
+			}
+		})
+		var superSelected func(self, sel uintptr, on bool)
+		purego.RegisterFunc(&superSelected, uintptr(OSClass_getMethodImplementation(int64(class("NSTableRowView")), int64(sel("setSelected:")))))
+		selected := purego.NewCallback(func(self, cmd, on uintptr) {
+			superSelected(self, cmd, on&0xff != 0)
+			msg(self, "setNeedsDisplay:", 1)
+		})
 		rowViewClass = allocClass(class("NSTableRowView"), "GowtSidebarRowView", 0)
 		addMethod(rowViewClass, sel("isEmphasized"), no, "c@:")
-		addMethod(rowViewClass, sel("drawSelectionInRect:"), drawSelection, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}")
+		addMethod(rowViewClass, sel("drawRect:"), draw, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}")
+		addMethod(rowViewClass, sel("setSelected:"), selected, "v@:c")
 		registerClass(rowViewClass)
 	}
 	rowView := purego.NewCallback(func(self, _, table uintptr, row int) uintptr {
@@ -234,15 +250,17 @@ func newSpacer() (view, width uintptr) {
 var roundedRect func(cls, sel uintptr, r NSRect, rx, ry float64) uintptr
 
 // drawPill draws the Finder sidebar selection: a pill in tertiarySystemFillColor (macOS 14, else
-// quaternaryLabelColor), lighter than the unemphasized selection colour AppKit uses, inset 5 points
-// at the sides as AppKit's own source-list pill is.
+// quaternaryLabelColor; black or white at 4.7%, #EBEBEB on Finder's #F7F7F7 glass), 8 points in from the
+// sides of the row and 1 point from top and bottom.
 func drawPill(row uintptr) {
 	if roundedRect == nil {
 		purego.RegisterFunc(&roundedRect, objcMsgSend)
 	}
 	r := NewNSViewOverload1(int64(row)).Bounds()
-	r.X += 5
-	r.Width -= 10
+	r.X += 8
+	r.Width -= 16
+	r.Y++
+	r.Height -= 2
 	c := class("NSColor")
 	fill := msg(c, "quaternaryLabelColor")
 	if respondsTo(c, "tertiarySystemFillColor") {

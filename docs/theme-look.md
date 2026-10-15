@@ -65,7 +65,7 @@ Demo: `go run ./cmd/finderdemo` (`GOWT_FINDERDEMO_SECS=n` quits after n seconds)
 
 ```go
 sidebar := w.Panel()
-sidebar.SetLayout(gowt.Grid{Columns: 1, Margin: 10})
+sidebar.SetLayout(gowt.Grid{Columns: 1}) // no margin: the rows inset their selection
 nav := sidebar.List(pages, gowt.NoBorder(), fill)
 content := w.Panel()
 content.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
@@ -92,7 +92,7 @@ Footprint on macOS: start the demo, then `footprint -p finderdemo` (the `IOAccel
 
 Not checked by eye yet: the floating sidebar, its shadow (NSGlassEffectView draws whatever shadow it has; no extra shadow layer is added), the spacer item (it is unbordered; macOS 26 might still put it on glass), and the segmented group. Only the Linux fallback was run. `GOWT_SNAP_LAYERS=1` makes `GOWT_SNAP` render the layer tree; glass and backdrops never show, the window server composites them. `GOWT_SIDEBAR_DEBUG=1` prints, once the window is open, the SWT background state and the AppKit view chain of every list, table and tree in the sidebar.
 
-In the sidebar every control present when `SetSidebar` runs gets its own alpha-0 background: SWT fills a control without one in the window colour, and an alpha-0 background of a parent does not count. Controls added to the sidebar later paint that colour. The selection pill is `tertiarySystemFillColor`, lighter than AppKit's unemphasized selection, as in Finder.
+In the sidebar every control present when `SetSidebar` runs gets its own alpha-0 background: SWT fills a control without one in the window colour, and an alpha-0 background of a parent does not count. Controls added to the sidebar later paint that colour. The selection pill is drawn by the row view (AppKit's own selection is off): `tertiarySystemFillColor`, black or white at 4.7%, 8 points in from the row sides, as in Finder. Give the sidebar no margin around its list to get Finder's 8-point pill inset; the list's scroll view gets no automatic content inset.
 
 ## Known gaps
 

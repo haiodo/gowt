@@ -75,8 +75,16 @@ func TestSourceListHooks(t *testing.T) {
 		if msg(plain, "backgroundColor") != red {
 			t.Error("the hook changed a table that is no source list")
 		}
-		if rv := msg(tv, "tableView:rowViewForRow:", tv, 0); rv == 0 || msg(rv, "isEmphasized")&0xff != 0 {
-			t.Errorf("source-list row view %x", rv)
+		rv := msg(tv, "tableView:rowViewForRow:", tv, 0)
+		if rv == 0 || msg(rv, "isEmphasized")&0xff != 0 {
+			t.Fatalf("source-list row view %x", rv)
+		}
+		msg(rv, "setSelected:", 1) // through the override; needsDisplay is not kept for a view outside a window
+		if msg(rv, "isSelected")&0xff == 0 {
+			t.Error("setSelected: did not reach NSTableRowView")
+		}
+		if msg(tv, "selectionHighlightStyle") != ^uintptr(0) {
+			t.Error("AppKit still draws the selection")
 		}
 		if rv := msg(plain, "tableView:rowViewForRow:", plain, 0); rv != 0 {
 			t.Errorf("plain table got row view %x", rv)

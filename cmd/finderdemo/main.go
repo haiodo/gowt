@@ -67,7 +67,7 @@ func main() {
 		)
 
 		sidebar := w.Panel()
-		sidebar.SetLayout(gowt.Grid{Columns: 1, Margin: 10})
+		sidebar.SetLayout(gowt.Grid{Columns: 1}) // Finder: the list runs edge to edge, its rows inset their selection
 		nav = sidebar.List(pages, gowt.NoBorder(), gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true}))
 		nav.OnSelect(func(i int) {
 			if i >= 0 {

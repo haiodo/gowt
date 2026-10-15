@@ -308,7 +308,16 @@ func (w *Window) Show() {
 }
 
 // SetTitle changes the window title.
-func (w *Window) SetTitle(s string) { w.shell.SetText(s) }
+func (w *Window) SetTitle(s string) {
+	w.shell.SetText(s)
+	if f, ok := w.shell.GetDataKey(titleHookKey).(func(string)); ok {
+		f(s)
+	}
+}
+
+// titleHookKey holds a func(string) that SetTitle calls with the new title: the toolbar bar of package
+// look shows it, and SWT reports no title change. look has the same key.
+const titleHookKey = "gowt.look.title"
 
 // SetSize sets the window size in points.
 func (w *Window) SetSize(width, height int) {

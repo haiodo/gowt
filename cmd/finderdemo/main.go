@@ -1,7 +1,8 @@
 // Command finderdemo shows the macOS 26 Finder and System Settings look: a floating Liquid Glass
 // sidebar (look.SetSidebar), a toolbar with a back/forward capsule, a button and a search field
-// (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux get a plain sidebar, a
-// gowt.ToolBar with a search Text, and painted sections. GOWT_FINDERDEMO_SECS=n exits after n seconds.
+// (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux get a plain sidebar, the
+// same toolbar as a bar of flat buttons and a search field, and painted sections.
+// GOWT_FINDERDEMO_SECS=n exits after n seconds.
 package main
 
 import (
@@ -56,7 +57,7 @@ func main() {
 				}
 			}
 		}
-		native := look.SetToolbar(w,
+		look.SetToolbar(w,
 			look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
 				{Title: "Back", Symbol: "chevron.backward", OnClick: func() { step(-1) }},
 				{Title: "Forward", Symbol: "chevron.forward", OnClick: func() { step(1) }},
@@ -77,14 +78,6 @@ func main() {
 
 		content := w.Panel()
 		content.SetLayout(gowt.Grid{Columns: 1})
-		if !native {
-			tb := content.ToolBar()
-			tb.Item("Back", func() { step(-1) })
-			tb.Item("Forward", func() { step(1) })
-			tb.Item("Share", func() { log.Print("share") })
-			q := content.Text(gowt.Search(), gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true}))
-			q.OnChange(find)
-		}
 		stack = content.Panel(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true}))
 		stack.SetLayout(gowt.Stack{})
 		views = []*gowt.Panel{appearance(stack.Panel()), general(stack.Panel()), dock(stack.Panel())}

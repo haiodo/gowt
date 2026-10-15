@@ -410,6 +410,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'markVisibleRgn(this)' "$VR_CTL")" = 1 ] && [ "$(grep -c 'forgetVisibleRgn' "$VR_CTL")" = 1 ] && [ "$(grep -c 'markVisibleRgnReparent' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_CTL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_CTL")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_COMP")" = 2 ] || { echo "port.sh: visibleRgn holder rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Shell.windowDidResize_ runs the layouts deferred by layout(..., DEFER) between marking and updating its own, so the
+# shell is laid out once. They drain only in readAndDispatch, which AppKit's live-resize tracking loop never returns to:
+# one deferred shell layout (a label binding run by asyncExec during the drag) froze the content until the mouse went up.
+if [ "$PLATFORM" = cocoa ]; then
+	LR_SHELL=swt/widgets_shell_darwin.go
+	perl -0pi -e 's/(func \(this \*Shell\) windowDidResize_\(id int64, sel int64, notification int64\)\s*\{\n(?:.*\n)*?\t\tthis\.impl\.markLayout_\(false, false\)\n)(?!\t\tthis\.display\.RunDeferredLayouts)/$1\t\tthis.display.RunDeferredLayouts()\n/' "$LR_SHELL"
+	[ "$(grep -c 'this.display.RunDeferredLayouts()' "$LR_SHELL")" = 1 ] || { echo "port.sh: windowDidResize deferred layout rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

@@ -1930,6 +1930,7 @@ func (this *Shell) windowDidResize_(id int64, sel int64, notification int64) {
 	}
 	if this.layout != (nil) {
 		this.impl.markLayout_(false, false)
+		this.display.RunDeferredLayouts()
 		this.impl.updateLayout_(false)
 	}
 }

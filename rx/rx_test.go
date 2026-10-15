@@ -469,6 +469,23 @@ func TestSetOffTheUIThreadPanics(t *testing.T) {
 	}
 }
 
+func TestGetOffTheUIThreadPanicsUnderRxdebug(t *testing.T) {
+	if !checkReads {
+		t.Skip("build with -tags rxdebug")
+	}
+	reset(t)
+	fakeLoop(t)
+	a := New(0)
+	got := make(chan any)
+	go func() {
+		defer func() { got <- recover() }()
+		a.Get()
+	}()
+	if s, _ := (<-got).(string); !strings.Contains(s, "State.Get called off the UI thread") {
+		t.Fatalf("panic=%q", s)
+	}
+}
+
 func TestPostFromGoroutines(t *testing.T) {
 	reset(t)
 	ui := fakeLoop(t)

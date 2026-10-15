@@ -27,6 +27,51 @@ go func() {
 }()
 ```
 
+## Reactive state (package rx)
+
+Package `github.com/haiodo/gowt/rx` keeps widgets in step with state, in the style of Svelte 5 runes. A `State` is a value you set, a `Derived` is computed from other signals, an `Effect` reruns when something it read has changed. Nothing is declared: whatever a `Derived` or an `Effect` reads with `Get` is its dependency.
+
+```go
+count := rx.New(0)                                          // State[int], compared with ==
+label := rx.Compute(func() string {                         // Derived[string], lazy and memoized
+	return fmt.Sprintf("%d clicks", count.Get())
+})
+w.Label("").BindText(label)                                // the label follows the derived
+w.Button("+1", func() { count.Update(func(n int) int { return n + 1 }) })
+
+only := rx.New(false)
+w.Button("Only running", nil, gowt.Check()).BindChecked(only) // two-way
+query := rx.New("")
+w.Text().Bind(query)                                       // two-way; typing keeps the caret
+find := w.Button("Find", onFind)
+gowt.BindEnabled(find, rx.Compute(func() bool { return query.Get() != "" }))
+
+go func() { for v := range updates { count.Post(v) } }()    // from any goroutine
+```
+
+| Call | What it does |
+|---|---|
+| `rx.New(v)`, `rx.NewFunc(v, eq)` | a `State`; `Set` of an equal value does nothing. `eq` nil: every `Set` notifies (slices, maps) |
+| `s.Get()`, `s.Peek()`, `s.Set(v)`, `s.Update(f)` | read and subscribe, read only, write, write `f(current)` |
+| `s.Post(v)` | the only call safe from any goroutine; the last value wins, one hop to the UI thread per batch |
+| `rx.Compute(fn)`, `rx.ComputeFunc(fn, eq)` | a `Derived`: recomputed when read after a source changed; an equal result stops the change there |
+| `rx.Effect(fn)` | runs `fn` now and again after its sources changed; returns `dispose` |
+| `rx.OnCleanup(f)` | inside an `Effect` or a `Derived`: `f` runs before the next run and on dispose; inside a `Scope`: on dispose |
+| `rx.Scope(fn)` | owns the effects and deriveds created in `fn`; returns `dispose` |
+| `rx.Untrack(fn)` | reads in `fn` do not subscribe |
+| `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
+| `gowt.Bind(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives |
+| `Label.BindText`, `Button.BindChecked`, `Text.Bind`, `gowt.BindVisible`, `gowt.BindEnabled` | the common bindings |
+
+Rules:
+
+- `Set` marks the dependents at once (a `Derived` read right after sees the new value), but effects and bindings run once per batch, after the current event handler returns. Code that needs the widgets updated before it continues calls `rx.Flush()` or wraps the writes in `rx.Batch`; inside an effect both only schedule the flush. Parents run before the effects they created.
+- Everything except `Post` is UI-thread only. `Set` from another goroutine panics; build with `-tags rxdebug` to check `Get` as well.
+- Values that change together go into one `State` (a whole poll result) and are split with `Derived`s; separate `Post`s may reach the UI thread in different batches.
+- A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
+- An effect that panics does not stop the others: the flush finishes, then the panic continues from `Run` like one from a callback. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
+- `BindText` lays the window out again on the next event-loop turn, so a growing label is not clipped. `Label.SetText` still does not.
+
 ## Errors
 
 `gowt.Run` returns toolkit failures as an `error`. Programmer errors (nil dereference, index out of range) keep panicking. Getters and setters have no per-call errors; `App.LoadImage` and `App.ImageFrom` return one because a bad file is routine.

@@ -112,6 +112,9 @@ func ClassForName(name string) reflect.Type { return nil }
 // goroutine is locked to the main OS thread, so this is also the AppKit thread check).
 func CurrentThread() any { return goid() }
 
+// Goid is the current goroutine id without boxing, for thread checks on hot paths.
+func Goid() uint64 { return goid() }
+
 // LocaleLanguage is locale.getLanguage() for the default (only) locale: the ISO code from $LANG.
 func LocaleLanguage(locale any) string {
 	lang := os.Getenv("LANG")

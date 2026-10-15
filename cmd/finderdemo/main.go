@@ -145,7 +145,7 @@ func appearance(p *gowt.Panel) *gowt.Panel {
 func general(p *gowt.Panel) *gowt.Panel {
 	page(p)
 	s := p.Section(fillX)
-	row(s, "Name", func(r *gowt.Panel) { r.Text().SetText("MacBook Pro") })
+	row(s, "Name", func(r *gowt.Panel) { r.Label("MacBook Pro") }) // a Text would keep its white field
 	row(s, "Software Update", toggle(true))
 	row(s, "Storage", func(r *gowt.Panel) { r.Progress(100).SetValue(62) })
 	heading(p, "Sharing")

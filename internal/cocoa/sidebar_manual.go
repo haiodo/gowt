@@ -123,7 +123,8 @@ func sourceListHooks(cls uintptr) {
 		purego.RegisterFunc(&superSelected, uintptr(OSClass_getMethodImplementation(int64(class("NSTableRowView")), int64(sel("setSelected:")))))
 		selected := purego.NewCallback(func(self, cmd, on uintptr) {
 			superSelected(self, cmd, on&0xff != 0)
-			msg(self, "setNeedsDisplay:", 1)
+			// The cell views draw the text, in the accent colour while selected.
+			NeedsDisplayTree(NewNSViewOverload1(int64(self)))
 		})
 		rowViewClass = allocClass(class("NSTableRowView"), "GowtSidebarRowView", 0)
 		addMethod(rowViewClass, sel("isEmphasized"), no, "c@:")
@@ -200,7 +201,7 @@ func fitSpacer(w uintptr) {
 		r := v.ConvertRect_toView_(v.Bounds(), nil)
 		x0 = r.X + r.Width + 8
 	}
-	width := max(0, edge+spacerGap-x0)
+	width := max(1, edge+spacerGap-x0)
 	if math.Abs(width-s.spacerWidth) < 0.5 {
 		return
 	}
@@ -242,8 +243,10 @@ func newSpacer() (view, width uintptr) {
 	}
 	view = msg(msg(spacerClass, "alloc"), "init")
 	msg(view, "setTranslatesAutoresizingMaskIntoConstraints:", 0)
-	width = msgF64Ret(msg(view, "widthAnchor"), sel("constraintEqualToConstant:"), 0)
+	// Both sizes fixed and never zero: the toolbar warns about an item it measures as ambiguous or empty.
+	width = msgF64Ret(msg(view, "widthAnchor"), sel("constraintEqualToConstant:"), 1)
 	msg(width, "setActive:", 1)
+	msg(msgF64Ret(msg(view, "heightAnchor"), sel("constraintEqualToConstant:"), 1), "setActive:", 1)
 	return view, width
 }
 

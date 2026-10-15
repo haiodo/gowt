@@ -17,13 +17,14 @@ import (
 // Search makes it a search field with Label as placeholder; Group makes it one segmented capsule of
 // the group's items, each with its own Label, Symbol and Click.
 type ToolbarItem struct {
-	Label  string
-	Symbol string // SF Symbol name, "" for text only
-	Space  bool
-	Click  func()
-	Group  []ToolbarItem
-	Nav    bool // navigational: placed before the window title
-	Search func(text string)
+	Label    string
+	Symbol   string // SF Symbol name, "" for text only
+	Space    bool
+	Click    func()
+	Group    []ToolbarItem
+	Nav      bool // navigational: placed before the window title
+	Search   func(text string)
+	Disabled bool // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
 }
 
 const (
@@ -41,6 +42,7 @@ type toolbarState struct {
 	spacer      uintptr // the spacer's view and width constraint, owned by the toolbar item
 	width       uintptr
 	spacerWidth float64
+	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
 }
 
 var (
@@ -111,6 +113,14 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		ti = msg(ti, "autorelease")
 	case len(it.Group) > 0:
 		ti = groupItem(target, id, it.Group)
+		if s.groups == nil {
+			s.groups = map[int]uintptr{}
+		}
+		i, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
+		s.groups[i] = ti
+		for j, g := range it.Group {
+			setSegmentEnabled(ti, j, !g.Disabled)
+		}
 	default:
 		ti = msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
 		msg(ti, "setTarget:", target)
@@ -118,6 +128,7 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		if img := symbolImage(it.Symbol, it.Label); img != 0 {
 			msg(ti, "setImage:", img)
 		}
+		msg(ti, "setEnabled:", boolArg(!it.Disabled))
 		ti = msg(ti, "autorelease")
 	}
 	msg(ti, "setLabel:", nsString(it.Label))
@@ -153,6 +164,40 @@ func groupItem(target uintptr, id string, sub []ToolbarItem) uintptr {
 	}
 	msg(ti, "setControlRepresentation:", representExpanded)
 	return ti
+}
+
+// setSegmentEnabled sets segment i of a group item both on its subitem, which toolbar validation
+// reads, and on the segmented control that shows it.
+func setSegmentEnabled(group uintptr, i int, on bool) {
+	subs := msg(group, "subitems")
+	if i < int(msg(subs, "count")) {
+		msg(msg(subs, "objectAtIndex:", uintptr(i)), "setEnabled:", boolArg(on))
+	}
+	if v := msg(group, "view"); respondsTo(v, "setEnabled:forSegment:") {
+		msg(v, "setEnabled:forSegment:", boolArg(on), uintptr(i))
+	}
+}
+
+// enabled answers validateToolbarItem: for item, a push item or a subitem of a group: autovalidation
+// would otherwise enable every item whose target answers its action.
+func (s *toolbarState) enabled(item uintptr) bool {
+	for i, g := range s.groups {
+		subs := msg(g, "subitems")
+		if j := int(msg(subs, "indexOfObject:", item)); j >= 0 && j < int(msg(subs, "count")) && j < len(s.items[i].Group) {
+			return !s.items[i].Group[j].Disabled
+		}
+	}
+	if it := s.find(goString(msg(item, "itemIdentifier"))); it != nil && len(it.Group) == 0 {
+		return !it.Disabled
+	}
+	return true
+}
+
+func boolArg(v bool) uintptr {
+	if v {
+		return 1
+	}
+	return 0
 }
 
 // clicked runs the handler for a press on the item with identifier id; selected is the segment
@@ -206,12 +251,19 @@ func registerToolbarClass() {
 			}
 		}
 	})
+	validate := purego.NewCallback(func(self, _, item uintptr) uintptr {
+		if s := toolbarDelegates[self]; s != nil {
+			return boolArg(s.enabled(item))
+		}
+		return 1
+	})
 	toolbarClass = newClass("GowtToolbarDelegate", []string{"NSToolbarDelegate"}, map[string]objcMethod{
 		"toolbarDefaultItemIdentifiers:":                           {ids, "@@:@"},
 		"toolbarAllowedItemIdentifiers:":                           {ids, "@@:@"},
 		"toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:": {forID, "@@:@@c"},
-		"gowtClick:":  {click, "v@:@"},
-		"gowtSearch:": {search, "v@:@"},
+		"gowtClick:":           {click, "v@:@"},
+		"gowtSearch:":          {search, "v@:@"},
+		"validateToolbarItem:": {validate, "c@:@"},
 	})
 }
 
@@ -246,6 +298,36 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	msg(w, "setToolbar:", tb)
 	msg(tb, "release")
 	return true
+}
+
+// SetToolbarItemEnabled enables or dims item number item of the toolbar of the window of view, or
+// segment number segment of that group item when segment is not negative. A toolbar rebuilt for a
+// sidebar keeps the state, since it is stored in the items.
+func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil || item < 0 || item >= len(s.items) {
+		return
+	}
+	it := &s.items[item]
+	switch {
+	case segment < 0:
+		it.Disabled = !on
+	case segment < len(it.Group):
+		it.Group[segment].Disabled = !on
+		if g := s.groups[item]; g != 0 {
+			setSegmentEnabled(g, segment, on)
+		}
+	default:
+		return
+	}
+	if tb := msg(w, "toolbar"); tb != 0 {
+		msg(tb, "validateVisibleItems")
+	}
 }
 
 // ReleaseToolbar drops the Go state of the toolbar delegate of the window of view; call it when the

@@ -37,6 +37,34 @@ func TestToolbarClicked(t *testing.T) {
 	}
 }
 
+func TestToolbarEnabled(t *testing.T) {
+	onMain(func() {
+		s := &toolbarState{items: []ToolbarItem{
+			{Label: "plain", Disabled: true},
+			{Label: "nav", Group: []ToolbarItem{
+				{Label: "back", Symbol: "chevron.backward", Disabled: true},
+				{Label: "forward", Symbol: "chevron.forward"},
+			}},
+		}}
+		plain := s.item(0, itemIDPrefix+"0")
+		if s.enabled(plain) || msg(plain, "isEnabled")&0xff != 0 {
+			t.Error("a disabled push item is enabled")
+		}
+		subs := msg(s.item(0, itemIDPrefix+"1"), "subitems")
+		if n := msg(subs, "count"); n != 2 {
+			t.Fatalf("group has %d subitems", n)
+		}
+		back, forward := msg(subs, "objectAtIndex:", 0), msg(subs, "objectAtIndex:", 1)
+		if s.enabled(back) || !s.enabled(forward) || msg(back, "isEnabled")&0xff != 0 {
+			t.Error("segment state not applied")
+		}
+		s.items[1].Group[0].Disabled = false
+		if !s.enabled(back) {
+			t.Error("validation does not follow the item state")
+		}
+	})
+}
+
 func TestToolbarSidebarSpacer(t *testing.T) {
 	onMain(func() {
 		s := &toolbarState{items: []ToolbarItem{{Label: "a"}, {Space: true}}}
@@ -88,6 +116,33 @@ func TestSourceListHooks(t *testing.T) {
 		}
 		if rv := msg(plain, "tableView:rowViewForRow:", plain, 0); rv != 0 {
 			t.Errorf("plain table got row view %x", rv)
+		}
+	})
+}
+
+func TestSidebarMaterial(t *testing.T) {
+	if !GlassAvailable() {
+		t.Skip("needs macOS 26")
+	}
+	onMain(func() {
+		host := msg(msg(class("NSView"), "alloc"), "init")
+		sb := msg(msg(class("NSView"), "alloc"), "init")
+		msg(host, "addSubview:", sb)
+		view := NewNSViewOverload1(int64(sb))
+		InstallBackdrop(view, BackdropGlass, false)
+		InstallSidebarMaterial(view, 18)
+		InstallSidebarMaterial(view, 18)
+		subs := msg(host, "subviews")
+		if n := msg(subs, "count"); n != 3 {
+			t.Fatalf("host has %d subviews, want material, glass, sidebar", n)
+		}
+		m := msg(subs, "objectAtIndex:", 0)
+		if goString(msg(m, "className")) != "NSVisualEffectView" || msg(m, "blendingMode") != 0 || msg(m, "maskImage") == 0 {
+			t.Errorf("material %s blending %d", goString(msg(m, "className")), msg(m, "blendingMode"))
+		}
+		SetBackdropFrame(view, 7, 7, 220, 500)
+		if f := NewNSViewOverload1(int64(m)).Frame(); f.Width != 220 || f.Height != 500 || f.X != 7 {
+			t.Errorf("material frame %+v", f)
 		}
 	})
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -71,19 +72,47 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Search: it.OnSearch}
+			Group: toolbarItems(it.Group), Nav: it.Nav, Search: it.OnSearch, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
 	}
 	return ci
 }
 
 func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 	ok := cocoa.InstallToolbar(s.View, toolbarItems(items))
+	if stop := toolbarBindings[s]; stop != nil {
+		stop()
+		delete(toolbarBindings, s)
+	}
+	if ok {
+		toolbarBindings[s] = rx.Scope(func() { bindToolbar(s, items) })
+	}
 	if ok && !toolbarShells[s] {
 		toolbarShells[s] = true
 		s.AddDisposeListener(&toolbarDisposer{s})
 	}
 	s.Layout()
 	return ok
+}
+
+// toolbarBindings ends the Enabled effects of a shell's toolbar when it is replaced or disposed.
+var toolbarBindings = map[*swt.Shell]func(){}
+
+func bindToolbar(s *swt.Shell, items []ToolbarItem) {
+	bind := func(item, segment int, r rx.Reader[bool]) {
+		if r == nil {
+			return
+		}
+		rx.Effect(func() {
+			on := r.Get()
+			rx.Untrack(func() { cocoa.SetToolbarItemEnabled(s.View, item, segment, on) })
+		})
+	}
+	for i, it := range items {
+		bind(i, -1, it.Enabled)
+		for j, g := range it.Group {
+			bind(i, j, g.Enabled)
+		}
+	}
 }
 
 func setGlassGroup(c *swt.Composite, spacing float64) { cocoa.InstallGlassGroup(c.View, spacing) }
@@ -96,6 +125,10 @@ type toolbarDisposer struct{ s *swt.Shell }
 func (d *toolbarDisposer) WidgetDisposed(*swt.DisposeEvent) {
 	cocoa.ReleaseToolbar(d.s.View)
 	delete(toolbarShells, d.s)
+	if stop := toolbarBindings[d.s]; stop != nil {
+		stop()
+		delete(toolbarBindings, d.s)
+	}
 }
 
 // sidebarRadius and the 7-point inset match the Finder sidebar of macOS 26, measured on a screenshot.
@@ -113,6 +146,7 @@ func sidebarInset() int32 {
 func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
 	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
+	cocoa.InstallSidebarMaterial(sb.View, sidebarRadius)
 	clearTree(sb)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true

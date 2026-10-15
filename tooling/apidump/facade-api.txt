@@ -703,6 +703,7 @@ gowt/icons func Names() []string
 gowt/icons func Size(points int) Option
 gowt/icons type Option func(*iconConfig)
 gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt/look ToolbarItem.Enabled field github.com/haiodo/gowt/rx.Reader[bool]
 gowt/look ToolbarItem.Group field []ToolbarItem
 gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()

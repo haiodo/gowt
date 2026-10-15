@@ -4,6 +4,7 @@ package look
 
 import (
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -80,6 +81,9 @@ type ToolbarItem struct {
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.
 	OnSearch func(text string)
+	// Enabled, when set, enables and disables a push item or a Group segment as it changes, for as
+	// long as the toolbar stays; nil keeps the item enabled.
+	Enabled rx.Reader[bool]
 }
 
 // SetToolbar puts a native unified toolbar (NSToolbar) on the window, replacing an earlier one; with

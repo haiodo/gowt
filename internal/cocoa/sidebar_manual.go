@@ -151,9 +151,55 @@ func sourceListHooks(cls uintptr) {
 // the superview of view, for a backdrop larger than view.
 func SetBackdropFrame(view *NSView, x, y, w, h float64) {
 	initAssociated()
+	r := NSRect{X: x, Y: y, Width: w, Height: h}
 	if bd := getAssociated(uintptr(view.Id), backdropKey()); bd != 0 {
-		msgRectOnly(bd, sel("setFrame:"), NSRect{X: x, Y: y, Width: w, Height: h})
+		msgRectOnly(bd, sel("setFrame:"), r)
 	}
+	if m := getAssociated(uintptr(view.Id), sidebarMaterialKey()); m != 0 {
+		msgRectOnly(m, sel("setFrame:"), r)
+	}
+}
+
+const materialSidebar = 7
+
+func sidebarMaterialKey() uintptr { return sel("gowtSidebarMaterial") }
+
+// InstallSidebarMaterial puts the sidebar material, blended from behind the window, under the glass
+// InstallBackdrop added for view, rounded to radius, so the wallpaper shows through the glass as in
+// Finder. macOS 26 only; SetBackdropFrame moves it with the glass.
+func InstallSidebarMaterial(view *NSView, radius float64) {
+	initAssociated()
+	v := uintptr(view.Id)
+	glass := getAssociated(v, backdropKey())
+	if !GlassAvailable() || glass == 0 || getAssociated(v, sidebarMaterialKey()) != 0 {
+		return
+	}
+	m := msg(msg(class("NSVisualEffectView"), "alloc"), "init")
+	msg(m, "setMaterial:", materialSidebar)
+	msg(m, "setBlendingMode:", 0) // NSVisualEffectBlendingModeBehindWindow
+	msg(m, "setMaskImage:", roundedMask(radius))
+	msgRectOnly(m, sel("setFrame:"), NewNSViewOverload1(int64(glass)).Frame())
+	msg(msg(glass, "superview"), "addSubview:positioned:relativeTo:", m, windowBelowArg, glass)
+	setAssociated(v, sidebarMaterialKey(), m, 1)
+	msg(m, "release")
+}
+
+// roundedMask is a stretchable image with corners of radius r for NSVisualEffectView maskImage, whose
+// alpha shapes the material.
+func roundedMask(r float64) uintptr {
+	if roundedRect == nil {
+		purego.RegisterFunc(&roundedRect, objcMsgSend)
+	}
+	side := 2*r + 1
+	img := NewNSImageOverload1(int64(msg(class("NSImage"), "alloc"))).InitWithSize(NSSize{Width: side, Height: side})
+	img.LockFocus()
+	msg(msg(class("NSColor"), "blackColor"), "setFill")
+	msg(roundedRect(class("NSBezierPath"), sel("bezierPathWithRoundedRect:xRadius:yRadius:"), NSRect{Width: side, Height: side}, r, r), "fill")
+	img.UnlockFocus()
+	id := uintptr(img.Id)
+	msgRectOnly(id, sel("setCapInsets:"), NSRect{X: r, Y: r, Width: r, Height: r}) // NSEdgeInsets has the layout of four doubles
+	msg(id, "setResizingMode:", 1)                                                 // NSImageResizingModeStretch
+	return msg(id, "autorelease")
 }
 
 // sidebarEdges holds, per window, the x of the sidebar's right edge in window points.

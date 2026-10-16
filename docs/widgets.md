@@ -2,11 +2,11 @@
 
 Example: [`examples/widgets`](../examples/widgets) (three tabs: input, lists, ranges).
 
-Every widget is made by its parent: `parent.Label(text, opts...)`, `parent.Button(text, onClick, opts...)`. The parent can be a `Window`, `Panel`, `Group`, `Split` or `CoolBar`, or the page `Panel` returned by `Tabs.Tab` or `Pages.Page`. Constructors return a small wrapper with plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
+Every widget has a constructor function that returns a description (`gowt.Option`): `gowt.Label(text, opts...)`, `gowt.Button(text, onClick, opts...)`. A description becomes a widget when it is passed to its parent: as a child of a container constructor (`gowt.VBox`, `gowt.Group`, `gowt.Split`, ...), to `app.Window(title, children...)` or to `Add(children...)` of a live container. To call methods on the widget, declare `var x *gowt.LabelView` and pass `gowt.Ref(&x)`; `x` is set when the description is created, right after the `Add` or `app.Window` call. The widget types carry a `View` suffix (`*gowt.LabelView`, `*gowt.TableView`, ...) and have plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
 
 ## Options
 
-Options go last in the call. Some set a style that must be known at creation, the rest adjust the widget afterwards. A style option on a widget it does not apply to is silently ignored.
+Options go last in the call. Some set a style that must be known at creation, the rest adjust the widget afterwards. A style option on a widget it does not apply to is reported to `App.OnError`; the "Options:" line of `go doc github.com/haiodo/gowt.Label` (and of every other constructor) lists what a widget takes.
 
 | Option | Meaning |
 |---|---|
@@ -16,10 +16,12 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
+| `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
+| `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it right after creation |
 | `NoBorder()` | drops the frame of List, Table, Tree |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field with a magnifier icon and a clear button |
-| `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
+| `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Cell(GridCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
 | `Right()`, `Center()` | Table column alignment |
 | `Bottom()` | Tabs and CTabs: tabs below the pages |
 | `Closable()` | CTabs tab with a close button |
@@ -31,7 +33,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Widget | Constructor | Notes |
 |---|---|---|
 | Label | `Label(text)` | `SetText`, `SetImage` |
-| Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free width of a Grid; a horizontal line (`Vertical()` for a vertical one). Both return a `*Label` |
+| Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free space of a VBox, HBox or Grid row; a horizontal line (`Vertical()` for a vertical one). Both create a `*LabelView` |
 | Switch | `Switch(text, onChange)` | on/off toggle; `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
 | Button | `Button(text, onClick)` | push by default; `Check()`/`Radio()`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
 | Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint`, `OnChange(func(string))`, `OnActivate(func())` (Enter) |
@@ -43,20 +45,20 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Scale, Slider, Spinner | `Scale(min, max, value)` | `Value`, `SetValue`, `OnChange(func(int))` |
 | Progress | `Progress(max)` | `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
-| Group | `Group(title)` | titled container |
-| Section | `Section()` | grouped "inset" card as in macOS System Settings; `Row()` adds a row `*Panel` (no layout until you `SetLayout`), with a separator line before every row but the first. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
-| Tabs, CTabs | `Tabs()`, `CTabs()` | `Tab(title)` returns the page `*Panel`; `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
-| Pages | `Pages()` | one page at a time, no tabs: `Page()` returns the page `*Panel` (the first is shown), `Show(i)`, `Current()` |
-| Split | `Split()` | children are any widgets, created in order (`split.Panel()`, `split.Table()`, ...); `SetWeights(...)` sets the relative sizes |
-| Scroll | `Scroll()` | build into `Content()`, then call `Fit()` |
-| ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem`; `Separator()` |
-| CoolBar, Sash | `CoolBar()`, `Sash()` | `CoolBar.Add(widget)`; `Sash.OnMove` |
+| Group | `Group(title, children...)` | titled container, children stacked as in a VBox |
+| Section | `Section(rows...)` | grouped "inset" card as in macOS System Settings; every child is a row (usually an `HBox` or `Grid`), with a separator line before every row but the first; `SectionView.Add` appends rows. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
+| Tabs, CTabs | `Tabs(tabs...)`, `CTabs(tabs...)` | children are `Tab(title, children...)` pages (`Ref` gives the page `*Panel`; `TabsView.Add` appends); `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
+| Pages | `Pages(pages...)` | one page at a time, no tabs: every child is a page (the first is shown), `Add` appends, `Show(i)`, `Current()` |
+| Split | `Split(panes...)` | children are the panes, any widgets in order; `SetWeights(...)` sets the relative sizes |
+| Scroll | `Scroll(children...)` | children stack in the scrolling area as in a VBox and fit; `ScrollView.Add` adds more and fits again |
+| ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem` (call it after the `Add` that creates the tool bar); `Separator()` |
+| CoolBar, Sash | `CoolBar(bands...)`, `Sash()` | each child of the cool bar becomes a band; `Sash.OnMove` |
 | Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count) |
 | StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
 
 ## Any control
 
-Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(RGB)`, `SetBackground(RGB)`, `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the rx bindings `BindVisible(r)` / `BindEnabled(r)` ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
+Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(RGB)`, `SetBackground(RGB)`, `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the rx bindings `BindVisible(r)` / `BindEnabled(r)` ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 `Table.Batch(f)` and `Tree.Batch(f)` suspend drawing while `f` runs, so many row changes repaint once.
 

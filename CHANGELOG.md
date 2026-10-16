@@ -13,6 +13,32 @@ New API
 - `App.Every(d, f) (stop func())` repeats `f` on the UI thread; a panic in `f` goes to `OnError` and the ticks go on. `examples/events` and `examples/graphics` no longer re-arm `After` from inside the callback.
 - `Shortcut(keys)` for `Menu.Item` binds a key combination and shows it: `Shortcut("Cmd+O")` is Command+O on macOS and Ctrl+O elsewhere; `Ctrl`, `Alt`, `Shift`, letters, digits, punctuation, arrows, `F1`-`F12` and other named keys. `MenuItem.SetText` keeps the shown key.
 - `Window.SetMinSize(w, h)`, `App.ScreenSize()`, `Table.Batch(f)` and `Tree.Batch(f)` (drawing suspended while `f` changes many rows).
+- A screen is a tree of values: constructors are package functions that return a description (`gowt.Label`, `Button`, `Text`, `VBox`, `HBox`, `Grid(n, ...)`, `Flow`, `Fill`, `Form`, `Group`, `Tabs`/`Tab`, `Pages`, `Scroll`, `Split`, `Section`, ...), created in the parent they are passed to: a container constructor, `app.Window(title, children...)` or `container.Add(children...)`. `Ref(&x)` stores the created widget, `Init(func(x *gowt.ComboView))` sets it up as it is created. `Gap(n)` and `Padding(n)` set a container's spacing. `PagesView` has `AsComposite`. `BenchmarkTree200` measures 200 widgets created as a tree (about 3 allocations per widget more than the panel methods).
+
+Breaking change
+- Widgets are created by package functions instead of methods of their parent, and widget types end in `View` (`LabelView`, `ButtonView`, `TextView`, `TableView`, ...; `Panel` and `Window` keep their names). `Option` is a sealed interface; code that wrote `gowt.Option{}` or compared options does not compile.
+
+  ```go
+  // before
+  w := app.Window("Contacts")
+  w.SetLayout(gowt.Grid{Columns: 2, Margin: 12, Spacing: 8})
+  w.Label("Name")
+  name := w.Text(gowt.GrowX())
+  w.Button("Save", func() { save(name.Text()) })
+
+  // after
+  var name *gowt.TextView
+  w := app.Window("Contacts")
+  w.Add(gowt.Grid(2, gowt.GrowX(),
+  	gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Ref(&name)),
+  	gowt.Button("Save", func() { save(name.Text()) }),
+  ))
+  ```
+- Layouts are containers fixed at creation: `SetLayout`, the `Layout` interface, the `Grid{}`, `Row{}`, `Fill{}`, `Form{}` and `Stack{}` values, `Spaced()`, `Padded()`, `ShowTop`, `InRow`/`RowCell` are removed. `Grid{Columns: n}` is `Grid(n, ...)`, `Row{}` is `HBox(...)` (`Flow(...)` when it wraps), `Row{Vertical: true}` is `VBox(...)`, `Stack{}` is `Pages(...)`, `Margin`/`Spacing` are `Padding(n)`/`Gap(n)`, `InRow(RowCell{W, H})` is `Size(w, h)`.
+- Every container spaces its children by `Spacing.SM` unless `Gap` says otherwise; a Window and a Tab page are padded by `Spacing.PageMargin`, a Group by `Spacing.SM`. A Window, Group, Tab page and Scroll content stack their children as a VBox; put an `HBox` or `Grid` inside for another arrangement.
+- `Tabs.Tab(title)` and `CTabs.Tab(title)` are the `Tab(title, children...)` child of `Tabs(...)`/`CTabs(...)`; `Pages.Page()` is gone (every child of `Pages` is a page); `Section.Row()` is gone (every child of `Section` is a row); `Scroll.Content()` keeps working but children go to `Scroll(children...)` or `ScrollView.Add`, which fit the content; `CoolBar.Add(widget)` is `CoolBar(children...)`, each child a band.
+- `Beside` and `Same` take the address of the sibling's `Ref` variable: `Beside(&ok, 8)`, read when the child is placed.
+- A style option a widget does not read (`Password()` on a Label, `Border()` on a Combo), `Gap`/`Padding` on a widget that is not a container, children of a widget that holds none, a `Ref` or `Init` of another type, `Shortcut` outside `Menu.Item`, and common options on items (`Table.Column`, `ToolBar.Item`, `Menu.Item`) go to `App.OnError`; they were ignored.
 
 Behaviour change
 - An error or panic in an event handler no longer ends `Run` and closes the app: it goes to `App.OnError`, by default logged to stderr with its stack. `Run` still returns an error raised by `setup`.

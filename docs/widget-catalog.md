@@ -2,7 +2,7 @@
 
 Example: [`examples/catalog`](../examples/catalog). `go run ./examples/catalog` shows every sample in tabs; `go run ./examples/catalog table` opens one.
 
-Every widget is created by its parent (`parent.Label(text)`), see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots`, `win-docs-shots`, `linux-docs-shots` ([screenshots.md](screenshots.md)). A picture that is not in the repository yet has not been generated for that OS.
+Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots`, `win-docs-shots`, `linux-docs-shots` ([screenshots.md](screenshots.md)). A picture that is not in the repository yet has not been generated for that OS.
 
 | Widget | Constructor | What it is | Linux | macOS | Windows |
 |---|---|---|---|---|---|
@@ -21,13 +21,13 @@ Every widget is created by its parent (`parent.Label(text)`), see [widgets.md](w
 | Progress | `Progress(max, opts...)` | progress bar; `Smooth()`, `Indeterminate()` | ![](img/progress-linux.png) | ![](img/progress-macos.png) | ![](img/progress-windows.png) |
 | DateTime | `DateTime(opts...)` | date field; `AsTime()`, `AsCalendar()`, `DropDown()` | ![](img/datetime-linux.png) | ![](img/datetime-macos.png) | ![](img/datetime-windows.png) |
 | Group | `Group(title, opts...)` | titled container | ![](img/group-linux.png) | ![](img/group-macos.png) | ![](img/group-windows.png) |
-| Panel | `Panel(opts...)` | plain container; `Border()` for a frame | ![](img/panel-linux.png) | ![](img/panel-macos.png) | ![](img/panel-windows.png) |
-| Tabs | `Tabs(opts...)` | native tab folder, `Tab(title)` returns the page | ![](img/tabs-linux.png) | ![](img/tabs-macos.png) | ![](img/tabs-windows.png) |
+| Panel | `VBox(opts...)`, `HBox(opts...)` | plain container; `Border()` for a frame | ![](img/panel-linux.png) | ![](img/panel-macos.png) | ![](img/panel-windows.png) |
+| Tabs | `Tabs(opts...)` | native tab folder, children are `Tab(title, ...)` pages | ![](img/tabs-linux.png) | ![](img/tabs-macos.png) | ![](img/tabs-windows.png) |
 | CTabs | `CTabs(opts...)` | custom-drawn tabs; `Closable()` | ![](img/ctabs-linux.png) | ![](img/ctabs-macos.png) | ![](img/ctabs-windows.png) |
 | Split | `Split(opts...)` | children separated by draggable sashes; `SetWeights` | ![](img/split-linux.png) | ![](img/split-macos.png) | ![](img/split-windows.png) |
-| Scroll | `Scroll(opts...)` | scrollable area; build into `Content()`, then `Fit()` | ![](img/scroll-linux.png) | ![](img/scroll-macos.png) | ![](img/scroll-windows.png) |
+| Scroll | `Scroll(opts...)` | scrollable area; its children stack as in a VBox | ![](img/scroll-linux.png) | ![](img/scroll-macos.png) | ![](img/scroll-windows.png) |
 | ToolBar | `ToolBar(opts...)` | buttons in a row, `Item`, `Separator` | ![](img/toolbar-linux.png) | ![](img/toolbar-macos.png) | ![](img/toolbar-windows.png) |
-| CoolBar | `CoolBar(opts...)` | draggable bands, `Add(widget)` | ![](img/coolbar-linux.png) | ![](img/coolbar-macos.png) | ![](img/coolbar-windows.png) |
+| CoolBar | `CoolBar(opts...)` | draggable bands, one per child | ![](img/coolbar-linux.png) | ![](img/coolbar-macos.png) | ![](img/coolbar-windows.png) |
 | Sash | `Sash(opts...)` | draggable divider; `OnMove` | ![](img/sash-linux.png) | ![](img/sash-macos.png) | ![](img/sash-windows.png) |
 | Canvas | `Canvas(onPaint, opts...)` | surface you draw on with a `*GC`, see [graphics.md](graphics.md) | ![](img/canvas-linux.png) | ![](img/canvas-macos.png) | ![](img/canvas-windows.png) |
 

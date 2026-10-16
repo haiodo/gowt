@@ -4,7 +4,7 @@ Example: [`examples/events`](../examples/events).
 
 ## Callbacks
 
-Events are `OnX` methods that take plain functions: `OnClick(func())`, `OnChange(func(text string))`, `OnSelect(func(index int))`. Calling `OnX` again adds another listener; nothing is replaced. Button, menu and tool item callbacks can also be passed to the constructor (`w.Button("OK", onClick)`); `nil` means none.
+Events are `OnX` methods that take plain functions: `OnClick(func())`, `OnChange(func(text string))`, `OnSelect(func(index int))`. Calling `OnX` again adds another listener; nothing is replaced. Button, menu and tool item callbacks can also be passed to the constructor (`gowt.Button("OK", onClick)`); `nil` means none.
 
 `Window.OnClose(func() bool)` can veto closing: return false to keep the window open.
 
@@ -38,14 +38,23 @@ count := rx.New(0)                                          // State[int], compa
 label := rx.Compute(func() string {                         // Derived[string], lazy and memoized
 	return fmt.Sprintf("%d clicks", count.Get())
 })
-w.Label("").BindText(label)                                // the label follows the derived
-w.Button("+1", func() { count.Update(func(n int) int { return n + 1 }) })
-
-only := rx.New(false)
-w.Button("Only running", nil, gowt.Check()).BindChecked(only) // two-way
+onlyRunning := rx.New(false)
 query := rx.New("")
-w.Text().Bind(query)                                       // two-way; typing keeps the caret
-find := w.Button("Find", onFind)
+
+var text *gowt.LabelView
+var only *gowt.ButtonView
+var search *gowt.TextView
+var find *gowt.ButtonView
+w.Add(
+	gowt.Label("", gowt.Ref(&text)),
+	gowt.Button("+1", func() { count.Update(func(n int) int { return n + 1 }) }),
+	gowt.Button("Only running", nil, gowt.Check(), gowt.Ref(&only)),
+	gowt.Text(gowt.Ref(&search)),
+	gowt.Button("Find", onFind, gowt.Ref(&find)),
+)
+text.BindText(label)                                      // the label follows the derived
+only.BindChecked(onlyRunning)                             // two-way
+search.Bind(query)                                        // two-way; typing keeps the caret
 find.BindEnabled(rx.Compute(func() bool { return query.Get() != "" }))
 
 go func() { for v := range updates { count.Post(v) } }()    // from any goroutine
@@ -82,7 +91,7 @@ An error or panic in an event handler or in an `Async`, `Sync` or `After` callba
 app.OnError(func(err error) { status.SetText(err.Error()) })
 ```
 
-A placement option the parent's layout cannot use (`GrowX` under a `Row`, `InRow` under a `Grid`) is reported the same way when the widget is created, naming the option, the widget and the layout; the widget keeps its natural size.
+A placement option the parent's layout cannot use (`GrowX` under a `Flow`, `Anchor` outside a `Form`) is reported the same way when the widget is created, naming the option, the widget and the layout; the widget keeps its natural size.
 
 `gowt.Run` returns an `error` raised while `setup` builds the window: then nothing is on screen to recover to. A runtime error in `setup` (nil dereference, index out of range) keeps panicking. Getters and setters have no per-call errors; `App.LoadImage` and `App.ImageFrom` return one because a bad file is routine.
 

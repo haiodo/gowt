@@ -5,7 +5,8 @@ Example: [`examples/icons`](../examples/icons).
 `icons.Get(app, name, opts...)` returns a named icon from the system set of the current OS: SF Symbols on macOS, Segoe Fluent Icons on Windows, freedesktop symbolic icons on Linux. A symbol the OS lacks comes from an embedded Lucide set, so the same names work everywhere.
 
 ```go
-b := w.Button("", nil)
+var b *gowt.ButtonView
+w.Add(gowt.Button("", nil, gowt.Ref(&b)))
 b.SetImage(icons.Get(app, "search", icons.Size(24)))
 ```
 

@@ -4,15 +4,16 @@ Example: [`examples/graphics`](../examples/graphics).
 
 ## Canvas and GC
 
-`parent.Canvas(onPaint func(g *gowt.GC), opts...)` is an empty area drawn by your callback. The callback runs whenever the system needs a repaint; draw the whole area each time. After your model changes call `canvas.Redraw()`. The canvas is double buffered. `canvas.Size()` returns the drawable width and height.
+`gowt.Canvas(onPaint func(g *gowt.GC), opts...)` is an empty area drawn by your callback. The callback runs whenever the system needs a repaint; draw the whole area each time. After your model changes call `canvas.Redraw()`. The canvas is double buffered. `canvas.Size()` returns the drawable width and height.
 
 ```go
-canvas := w.Canvas(func(g *gowt.GC) {
+var canvas *gowt.CanvasView
+w.Add(gowt.Canvas(func(g *gowt.GC) {
 	g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
 	g.FillOval(10, 10, 100, 60)
 	g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
 	g.Text("hello", 20, 20)
-}, gowt.Size(400, 200))
+}, gowt.Size(400, 200), gowt.Ref(&canvas)))
 ```
 
 The `*GC` is valid only inside the callback. There is nothing to dispose. Give the canvas a size with `Size(w, h)`, or it will be small.

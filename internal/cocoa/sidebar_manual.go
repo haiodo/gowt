@@ -53,11 +53,15 @@ func SetSourceList(view *NSView) {
 		return
 	}
 	sourceListHooks(msg(v, "class"))
-	// NSTableView caches which delegate methods exist when the delegate is set.
+	// setStyle: and setSelectionHighlightStyle: reselect the selected rows, which the delegate (the SWT widget) reports
+	// as a Selection. Setting the delegate again also refreshes NSTableView's cache of which delegate methods exist.
 	d := msg(v, "delegate")
-	msg(v, "setDelegate:", 0)
-	msg(v, "setDelegate:", d)
-	msg(v, "setStyle:", tableStyleSourceList)
+	quiet := func(selector string, arg uintptr) {
+		msg(v, "setDelegate:", 0)
+		msg(v, selector, arg)
+		msg(v, "setDelegate:", d)
+	}
+	quiet("setStyle:", tableStyleSourceList)
 	// The source-list style sizes rows from the sidebar icon size setting, apart from rowHeight, which SWT
 	// reads as the item height. A custom size style keeps rowHeight in charge, raised to the measured height.
 	tv := NewNSTableViewOverload1(int64(v))
@@ -72,7 +76,7 @@ func SetSourceList(view *NSView) {
 	tv.SetRowHeight(h)
 	msg(v, "setBackgroundColor:", 0) // the hook below turns any colour into clear
 	// AppKit draws its own darker source-list selection outside drawRect:; GowtSidebarRowView draws the pill.
-	msg(v, "setSelectionHighlightStyle:", ^uintptr(0)) // NSTableViewSelectionHighlightStyleNone
+	quiet("setSelectionHighlightStyle:", ^uintptr(0)) // NSTableViewSelectionHighlightStyleNone
 	if sv := msg(v, "enclosingScrollView"); sv != 0 {
 		msg(sv, "setDrawsBackground:", 0)
 		msg(msg(sv, "contentView"), "setDrawsBackground:", 0)

@@ -5,6 +5,8 @@ package cocoa
 import (
 	"strings"
 	"testing"
+
+	"github.com/ebitengine/purego"
 )
 
 func TestGroupedFillRGB(t *testing.T) {
@@ -116,6 +118,41 @@ func TestSourceListHooks(t *testing.T) {
 		}
 		if rv := msg(plain, "tableView:rowViewForRow:", plain, 0); rv != 0 {
 			t.Errorf("plain table got row view %x", rv)
+		}
+	})
+}
+
+// SWT reports a selection change from the delegate method; SetSourceList used to trigger it by
+// re-applying the selected rows, a spurious Selection event for a sidebar list selected before look.SetSidebar.
+func TestSourceListKeepsSelectionQuiet(t *testing.T) {
+	onMain(func() {
+		changes := 0
+		rows := purego.NewCallback(func(self, _, table uintptr) int { return 3 })
+		changed := purego.NewCallback(func(self, _, note uintptr) { changes++ })
+		cell := purego.NewCallback(func(self, _, table, col uintptr, row int) uintptr {
+			return msg(msg(msg(class("NSTableCellView"), "alloc"), "init"), "autorelease")
+		})
+		// Like an SWT table: view-based, its own data source and delegate.
+		cls := allocClass(class("NSTableView"), "GowtTestSelfDelegateTable", 0)
+		addMethod(cls, sel("numberOfRowsInTableView:"), rows, "q@:@")
+		addMethod(cls, sel("tableView:viewForTableColumn:row:"), cell, "@@:@@q")
+		addMethod(cls, sel("tableViewSelectionDidChange:"), changed, "v@:@")
+		registerClass(cls)
+		tv := msg(msg(cls, "alloc"), "init")
+		msg(tv, "addTableColumn:", msg(msg(class("NSTableColumn"), "alloc"), "initWithIdentifier:", nsString("c")))
+		msg(tv, "setDataSource:", tv)
+		msg(tv, "setDelegate:", tv)
+		msg(tv, "reloadData")
+		msg(tv, "selectRowIndexes:byExtendingSelection:", msg(class("NSIndexSet"), "indexSetWithIndex:", 1), 0)
+		if changes != 1 {
+			t.Fatalf("selecting a row gave %d change notifications, want 1", changes)
+		}
+		SetSourceList(NewNSViewOverload1(int64(tv)))
+		if changes != 1 {
+			t.Errorf("SetSourceList reported %d selection changes", changes-1)
+		}
+		if row := msg(tv, "selectedRow"); row != 1 || msg(tv, "delegate") != tv {
+			t.Errorf("selected row %d, delegate %x", int(row), msg(tv, "delegate"))
 		}
 	})
 }

@@ -12,10 +12,10 @@ canvas := w.Canvas(func(g *gowt.GC) {
 	g.FillOval(10, 10, 100, 60)
 	g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
 	g.Text("hello", 20, 20)
-}, gowt.Cell(gowt.GridCell{Width: 400, Height: 200}))
+}, gowt.Size(400, 200))
 ```
 
-The `*GC` is valid only inside the callback. There is nothing to dispose. Give the canvas a size with `Cell(GridCell{Width, Height})`, or it will be small.
+The `*GC` is valid only inside the callback. There is nothing to dispose. Give the canvas a size with `Size(w, h)`, or it will be small.
 
 | Method | Draws |
 |---|---|

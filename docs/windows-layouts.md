@@ -29,9 +29,9 @@ A layout is a value you pass to `SetLayout`. The zero value of every field means
 | Layout | Fields | Per-child option | Use |
 |---|---|---|---|
 | `Fill` | `Vertical` | - | children share the space equally in a row or column |
-| `Grid` | `Columns` (0 means 1), `EqualWidth`, `Margin`, `Spacing` | `Cell(GridCell{...})` | forms and most dialogs |
-| `Row` | `Vertical`, `Wrap`, `Fill`, `Center`, `Margin`, `Spacing` | `InRow(RowCell{Width, Height})` | toolbars, button rows, wrapping flows |
-| `Form` | `Margin`, `Spacing` | `Anchor(FormCell{Left, Right, Top, Bottom, Width, Height})` | edges attached to the container or to siblings |
+| `Grid` | `Columns` (0 means 1), `EqualWidth`, `Margin`, `Spacing` | `Grow`, `GrowX`, `GrowY`, `Span`, `Size`, `Place`, `Cell(GridCell{...})` | forms and most dialogs |
+| `Row` | `Vertical`, `Wrap`, `Fill`, `Center`, `Margin`, `Spacing` | `Size`, `InRow(RowCell{Width, Height})` | toolbars, button rows, wrapping flows |
+| `Form` | `Margin`, `Spacing` | `Anchor(FormCell{Left, Right, Top, Bottom, Width, Height})`, `Size` | edges attached to the container or to siblings |
 | `Stack` | `Margin` | - | one child visible at a time; choose with `panel.ShowTop(child)` |
 
 ### Grid
@@ -39,10 +39,28 @@ A layout is a value you pass to `SetLayout`. The zero value of every field means
 ```go
 p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 p.Label("Name")
-p.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true}))
+p.Text(gowt.GrowX())
+p.Label("Notes")
+p.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80))
+p.Separator(gowt.Span(2))
+p.Spacer()
+p.Button("Save", onSave)
 ```
 
-`GridCell` fields: `Align` and `VAlign` (`AlignStart`, `AlignCenter`, `AlignEnd`, `AlignFill`), `GrowX`/`GrowY` (take spare space), `SpanX`/`SpanY`, `Width`/`Height` (size hints in points). A child without `Cell` has its natural size, top left.
+A child without placement options has its natural size, top left of its cell. The options add up, and when two set the same thing the later one wins:
+
+| Option | Effect in a Grid |
+|---|---|
+| `GrowX()`, `GrowY()` | fill the cell's width (height) and take the free width (height) of the grid |
+| `Grow()` | both |
+| `Span(n)` | cover n columns |
+| `Size(w, h)` | width and height hints in points, 0 keeps the natural one; also works in Row and Form |
+| `Place(h, v)` | alignment in the cell: `AlignStart`, `AlignCenter`, `AlignEnd`, `AlignFill` |
+| `Cell(GridCell{...})` | every field at once, including `SpanY`; options after it change single fields |
+
+`p.Spacer()` is an empty cell that takes the free width, pushing the cells after it to the end of the row (`Spacer(gowt.GrowY())` also takes the free height). `p.Separator()` is a line across its cell; `Vertical()` turns it.
+
+A placement option the parent's layout cannot use (`GrowX` under `Row`, `InRow` under `Grid`) is reported to `App.OnError` when the widget is created, with the option, the widget and the layout in the message, and the widget keeps its natural size. Set the layout before adding children: a `SetLayout` that comes later drops and reports the children placed for another layout.
 
 `Margin` and `Spacing` are in points and zero means none (SWT itself would default to 5).
 

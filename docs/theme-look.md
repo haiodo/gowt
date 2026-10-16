@@ -66,10 +66,10 @@ Demo: `go run ./cmd/finderdemo` (`GOWT_FINDERDEMO_SECS=n` quits after n seconds)
 ```go
 sidebar := w.Panel()
 sidebar.SetLayout(gowt.Grid{Columns: 1}) // no margin: the rows inset their selection
-nav := sidebar.List(pages, gowt.NoBorder(), fill)
+nav := sidebar.List(pages, gowt.NoBorder(), gowt.Grow())
 content := w.Panel()
 content.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
-s := content.Section(gowt.Cell(gowt.GridCell{GrowX: true, Align: gowt.AlignFill}))
+s := content.Section(gowt.GrowX())
 s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Appearance")
 s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Liquid Glass")
 look.SetSidebar(w, sidebar, content, 220)

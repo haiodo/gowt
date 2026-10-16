@@ -39,7 +39,7 @@ This is [`examples/hello`](../examples/hello). Run it with `go run ./examples/he
 
 Four ideas carry the whole API:
 
-- `gowt.Run` owns the UI thread and the event loop. You build windows inside the setup function, and `Run` returns when the last window closes or `app.Quit()` is called. It also returns errors raised by the toolkit.
+- `gowt.Run` owns the UI thread and the event loop. You build windows inside the setup function, and `Run` returns when the last window closes or `app.Quit()` is called. It returns an error raised while setup builds the window; errors in callbacks go to `app.OnError` and the app keeps running.
 - A parent creates its children: `w.Button("Quit", onClick)`, `panel.Label("text")`. There is no `Parent` argument and no separate "add" step.
 - Settings that must be known at creation (a check box, a password field, a border) are options: `w.Button("Remember", nil, gowt.Check())`.
 - Callbacks are plain functions: `OnClick(func())`, `OnChange(func(text string))`. Touch widgets only on the UI thread; [events.md](events.md) shows how to come back from a goroutine.
@@ -65,6 +65,7 @@ Four ideas carry the whole API:
 
 Reference material:
 
+- [agents.md](agents.md): the canonical idioms on one page and which option works on which widget; the page to give a coding agent.
 - [screenshots.md](screenshots.md): how `docs/img` is produced (`GOWT_SNAP`, `make docs-shots`).
 - Package docs: `go doc github.com/haiodo/gowt` (every exported name has a doc comment).
 - [facade.md](facade.md): why the API looks the way it does.

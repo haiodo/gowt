@@ -12,14 +12,14 @@ Options go last in the call. Some set a style that must be known at creation, th
 |---|---|
 | `Check()`, `Radio()` | button kind; `Check` also makes Table/Tree rows and ToolBar items checkable |
 | `Multiline()`, `Password()`, `ReadOnly()` | Text (and `ReadOnly` for Combo) |
-| `Border()`, `Flat()`, `Wrap()` | frame; flat tool bar; tool bar that wraps |
+| `Border()`, `Flat()`, `Wrap()` | frame; flat tool bar; Label and StyledText text wrapped into lines, tool bar items wrapped into rows |
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `NoBorder()` | drops the frame of List, Table, Tree |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
-| `Search()` | Text as a search field |
-| `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
+| `Search()` | Text as a search field with a magnifier icon and a clear button |
+| `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Cell(GridCell)`, `InRow(RowCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
 | `Right()`, `Center()` | Table column alignment |
 | `Bottom()` | Tabs and CTabs: tabs below the pages |
 | `Closable()` | CTabs tab with a close button |
@@ -31,6 +31,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Widget | Constructor | Notes |
 |---|---|---|
 | Label | `Label(text)` | `SetText`, `SetImage` |
+| Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free width of a Grid; a horizontal line (`Vertical()` for a vertical one). Both return a `*Label` |
 | Switch | `Switch(text, onChange)` | on/off toggle; `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
 | Button | `Button(text, onClick)` | push by default; `Check()`/`Radio()`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
 | Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint`, `OnChange(func(string))`, `OnActivate(func())` (Enter) |
@@ -54,7 +55,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 ## Any control
 
-Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a `Cell`/`InRow` applied afterwards resets it), `SetFont(w, Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
+Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(w, Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 ## Cell clicks
 

@@ -135,3 +135,35 @@ func TestFontWeightPrecedence(t *testing.T) {
 		t.Error("Weight constants must increase")
 	}
 }
+
+func TestParseShortcut(t *testing.T) {
+	cases := []struct {
+		keys, goos string
+		accel      int32
+		label      string
+	}{
+		{"Cmd+O", "darwin", swt.COMMAND | 'O', "Cmd+O"},
+		{"cmd+o", "windows", swt.CTRL | 'O', "Ctrl+O"},
+		{"Ctrl+Cmd+Q", "darwin", swt.CTRL | swt.COMMAND | 'Q', "Ctrl+Cmd+Q"},
+		{"Cmd+Shift+S", "linux", swt.CTRL | swt.SHIFT | 'S', "Ctrl+Shift+S"},
+		{"Alt+Left", "linux", swt.ALT | swt.ARROW_LEFT, "Alt+Left"},
+		{"Cmd+[", "darwin", swt.COMMAND | '[', "Cmd+["},
+		{"Cmd++", "windows", swt.CTRL | '+', "Ctrl++"},
+		{"F5", "linux", swt.F1 + 4, "F5"},
+		{"Shift+f12", "linux", swt.SHIFT | swt.F12, "Shift+F12"},
+		{"Esc", "darwin", int32(swt.ESC), "Esc"},
+		{"Cmd+pagedown", "windows", swt.CTRL | swt.PAGE_DOWN, "Ctrl+PageDown"},
+		{"F", "linux", 'F', "F"},
+	}
+	for _, c := range cases {
+		accel, label, err := parseShortcut(c.keys, c.goos)
+		if err != nil || accel != c.accel || label != c.label {
+			t.Errorf("parseShortcut(%q, %s) = %#x %q %v, want %#x %q", c.keys, c.goos, accel, label, err, c.accel, c.label)
+		}
+	}
+	for _, bad := range []string{"", "Cmd+", "Hyper+O", "Cmd+Foo", "Cmd+12", "F13", "Cmd++O", "Cmd+é"} {
+		if _, _, err := parseShortcut(bad, "linux"); err == nil {
+			t.Errorf("parseShortcut(%q) must fail", bad)
+		}
+	}
+}

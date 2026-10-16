@@ -115,19 +115,10 @@ func containers(p *g.Panel) {
 	}
 	ct.OnClose(func(i int) bool { return i != 0 })
 
-	stack := p.Panel(g.Border(), g.GrowX())
-	stack.SetLayout(g.Stack{Margin: 4})
-	pages := []g.Widget{stack.Label("page A"), stack.Button("page B", nil)}
-	stack.ShowTop(pages[0])
-	flipped := false
-	p.Button("Flip", func() {
-		flipped = !flipped
-		if flipped {
-			stack.ShowTop(pages[1])
-		} else {
-			stack.ShowTop(pages[0])
-		}
-	})
+	pages := p.Pages(g.Border(), g.GrowX())
+	pages.Page().SetLayout(g.Fill{}).Label("page A")
+	pages.Page().SetLayout(g.Fill{}).Button("page B", nil)
+	p.Button("Flip", func() { pages.Show(1 - pages.Current()) })
 
 	form := p.Panel(g.GrowX())
 	form.SetLayout(g.Form{Margin: 4, Spacing: 4})

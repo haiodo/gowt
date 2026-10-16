@@ -79,15 +79,11 @@ func (t *Text) Bind(s *rx.State[string]) {
 	})
 }
 
-// BindVisible shows or hides w as r changes, with SetVisible's handling of Grid and Row layouts.
-func BindVisible(w Widget, r rx.Reader[bool]) {
-	Bind(w, r, func(v bool) { SetVisible(w, v) })
-}
+// BindVisible shows or hides the control as r changes, with SetVisible's handling of Grid and Row layouts.
+func (w *base) BindVisible(r rx.Reader[bool]) { Bind(w, r, w.SetVisible) }
 
-// BindEnabled enables or disables w as r changes.
-func BindEnabled(w Widget, r rx.Reader[bool]) {
-	Bind(w, r, func(v bool) { SetEnabled(w, v) })
-}
+// BindEnabled enables or disables the control as r changes.
+func (w *base) BindEnabled(r rx.Reader[bool]) { Bind(w, r, w.SetEnabled) }
 
 // own runs body in an rx.Scope that is disposed with w. body makes the effects of one binding and
 // removes with rx.OnCleanup whatever it added to the widget.

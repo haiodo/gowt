@@ -110,7 +110,10 @@ func (g *GC) Image(img *Image, x, y int) { g.g.DrawImage(img.i, int32(x), int32(
 func (g *GC) Unwrap() *swt.GC { return g.g }
 
 // Canvas is a blank area drawn by the paint callback.
-type Canvas struct{ c *swt.Canvas }
+type Canvas struct {
+	base
+	c *swt.Canvas
+}
 
 type painter func(*swt.PaintEvent)
 
@@ -125,10 +128,8 @@ func (p *panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
 	if onPaint != nil {
 		c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc}) }))
 	}
-	return &Canvas{c}
+	return &Canvas{base{&c.Control}, c}
 }
-
-func (c *Canvas) control() *swt.Control { return &c.c.Control }
 
 // Mouse is a pointer event on a Canvas, in the canvas's coordinates.
 type Mouse struct {

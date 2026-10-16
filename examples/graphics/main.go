@@ -54,13 +54,10 @@ func main() {
 			g.Text(fmt.Sprint("frame ", angle/4), 20, 20)
 		}, gowt.Size(400, 200))
 
-		var step func()
-		step = func() {
+		app.Every(40*time.Millisecond, func() {
 			angle += 4
 			canvas.Redraw()
-			app.After(40*time.Millisecond, step)
-		}
-		step()
+		})
 
 		w.Label("Image from memory:")
 		l := w.Label("")

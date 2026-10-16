@@ -14,6 +14,7 @@ func Scrollbars() Option { return Option{style: swt.V_SCROLL | swt.H_SCROLL} }
 // styles and colors, block selection, verify and extended-modify listeners (undo), bidi
 // segments, custom content.
 type StyledText struct {
+	base
 	t     *swt.StyledText
 	fonts map[Font]*swt.Font
 }
@@ -37,7 +38,7 @@ type StyleSpan struct {
 func (p *panel) StyledText(opts ...Option) *StyledText {
 	t := swt.NewStyledText(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
-	w := &StyledText{t: t, fonts: map[Font]*swt.Font{}}
+	w := &StyledText{base: base{&t.Control}, t: t, fonts: map[Font]*swt.Font{}}
 	t.AddDisposeListener(&fontDisposer{w})
 	return w
 }
@@ -49,8 +50,6 @@ func (d *fontDisposer) WidgetDisposed(*swt.DisposeEvent) {
 		f.Dispose()
 	}
 }
-
-func (t *StyledText) control() *swt.Control { return &t.t.Control }
 
 // Unwrap returns the underlying swt.StyledText for the full API (offsets there are UTF-16 units).
 func (t *StyledText) Unwrap() *swt.StyledText { return t.t }

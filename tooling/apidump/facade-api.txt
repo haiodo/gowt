@@ -3,35 +3,76 @@ gowt App.After(d time.Duration, f func())
 gowt App.Async(f func())
 gowt App.Clipboard() *Clipboard
 gowt App.Dark() bool
+gowt App.Every(d time.Duration, f func()) (stop func())
 gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.ImageFromProvider(p github.com/haiodo/gowt/swt.ImageDataProvider) *Image
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnError(f func(error))
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
+gowt App.ScreenSize() (width int, height int)
 gowt App.Sync(f func())
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon
 gowt App.Unwrap() *github.com/haiodo/gowt/swt.Display
 gowt App.Window(title string, opts ...Option) *Window
 gowt Button.BindChecked(s *github.com/haiodo/gowt/rx.State[bool])
+gowt Button.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Button.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Button.Checked() bool
+gowt Button.Dispose()
+gowt Button.Enabled() bool
+gowt Button.Focus() bool
 gowt Button.OnClick(f func())
+gowt Button.OnDispose(f func())
+gowt Button.SetBackground(c RGB)
 gowt Button.SetChecked(v bool)
+gowt Button.SetEnabled(v bool)
+gowt Button.SetFont(f Font)
+gowt Button.SetForeground(c RGB)
 gowt Button.SetImage(img *Image)
 gowt Button.SetText(s string)
+gowt Button.SetTooltip(s string)
+gowt Button.SetVisible(v bool)
 gowt Button.Unwrap() *github.com/haiodo/gowt/swt.Button
+gowt Button.Visible() bool
+gowt CTabs.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt CTabs.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt CTabs.Dispose()
+gowt CTabs.Enabled() bool
+gowt CTabs.Focus() bool
 gowt CTabs.Index() int
 gowt CTabs.OnClose(f func(index int) bool)
+gowt CTabs.OnDispose(f func())
 gowt CTabs.OnSelect(f func(index int))
 gowt CTabs.Select(i int)
+gowt CTabs.SetBackground(c RGB)
+gowt CTabs.SetEnabled(v bool)
+gowt CTabs.SetFont(f Font)
+gowt CTabs.SetForeground(c RGB)
+gowt CTabs.SetTooltip(s string)
+gowt CTabs.SetVisible(v bool)
 gowt CTabs.Tab(title string, opts ...Option) *Panel
 gowt CTabs.Unwrap() *github.com/haiodo/gowt/swt.CTabFolder
+gowt CTabs.Visible() bool
+gowt Canvas.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Canvas.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Canvas.Dispose()
+gowt Canvas.Enabled() bool
+gowt Canvas.Focus() bool
+gowt Canvas.OnDispose(f func())
 gowt Canvas.OnMouseDown(f func(Mouse))
 gowt Canvas.OnMouseMove(f func(Mouse))
 gowt Canvas.OnMouseUp(f func(Mouse))
 gowt Canvas.Redraw()
+gowt Canvas.SetBackground(c RGB)
+gowt Canvas.SetEnabled(v bool)
+gowt Canvas.SetFont(f Font)
+gowt Canvas.SetForeground(c RGB)
+gowt Canvas.SetTooltip(s string)
+gowt Canvas.SetVisible(v bool)
 gowt Canvas.Size() (w int, h int)
 gowt Canvas.Unwrap() *github.com/haiodo/gowt/swt.Canvas
+gowt Canvas.Visible() bool
 gowt Clipboard.Clear()
 gowt Clipboard.Files() []string
 gowt Clipboard.HTML() (string, bool)
@@ -48,35 +89,63 @@ gowt Column.SetResizable(v bool)
 gowt Column.SetTitle(s string)
 gowt Column.SetWidth(w int)
 gowt Column.Unwrap() *github.com/haiodo/gowt/swt.TableColumn
+gowt Combo.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Combo.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Combo.Dispose()
+gowt Combo.Enabled() bool
+gowt Combo.Focus() bool
 gowt Combo.Index() int
 gowt Combo.Items() []string
 gowt Combo.OnChange(f func(text string))
+gowt Combo.OnDispose(f func())
 gowt Combo.OnSelect(f func(index int))
 gowt Combo.Select(i int)
+gowt Combo.SetBackground(c RGB)
+gowt Combo.SetEnabled(v bool)
+gowt Combo.SetFont(f Font)
+gowt Combo.SetForeground(c RGB)
 gowt Combo.SetItems(s []string)
 gowt Combo.SetText(s string)
+gowt Combo.SetTooltip(s string)
+gowt Combo.SetVisible(v bool)
 gowt Combo.Text() string
 gowt Combo.Unwrap() *github.com/haiodo/gowt/swt.Combo
+gowt Combo.Visible() bool
 gowt CoolBar.Add(w Widget)
 gowt CoolBar.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt CoolBar.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt CoolBar.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt CoolBar.Button(text string, onClick func(), opts ...Option) *Button
 gowt CoolBar.CTabs(opts ...Option) *CTabs
 gowt CoolBar.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
+gowt CoolBar.Clear()
 gowt CoolBar.Combo(items []string, opts ...Option) *Combo
 gowt CoolBar.CoolBar(opts ...Option) *CoolBar
 gowt CoolBar.DateTime(opts ...Option) *DateTime
+gowt CoolBar.Dispose()
+gowt CoolBar.Enabled() bool
+gowt CoolBar.Focus() bool
 gowt CoolBar.Group(title string, opts ...Option) *Group
 gowt CoolBar.Label(text string, opts ...Option) *Label
 gowt CoolBar.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt CoolBar.List(items []string, opts ...Option) *List
+gowt CoolBar.OnDispose(f func())
+gowt CoolBar.Pages(opts ...Option) *Pages
 gowt CoolBar.Panel(opts ...Option) *Panel
 gowt CoolBar.Progress(max int, opts ...Option) *Progress
+gowt CoolBar.Relayout()
 gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt CoolBar.Scroll(opts ...Option) *Scroll
 gowt CoolBar.Section(opts ...Option) *Section
 gowt CoolBar.Separator(opts ...Option) *Label
+gowt CoolBar.SetBackground(c RGB)
+gowt CoolBar.SetEnabled(v bool)
+gowt CoolBar.SetFont(f Font)
+gowt CoolBar.SetForeground(c RGB)
 gowt CoolBar.SetLayout(l Layout) *Panel
+gowt CoolBar.SetTooltip(s string)
+gowt CoolBar.SetVisible(v bool)
 gowt CoolBar.ShowTop(w Widget)
 gowt CoolBar.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt CoolBar.Spacer(opts ...Option) *Label
@@ -90,10 +159,24 @@ gowt CoolBar.Text(opts ...Option) *Text
 gowt CoolBar.ToolBar(opts ...Option) *ToolBar
 gowt CoolBar.Tree(opts ...Option) *Tree
 gowt CoolBar.Unwrap() *github.com/haiodo/gowt/swt.CoolBar
+gowt CoolBar.Visible() bool
+gowt DateTime.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt DateTime.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt DateTime.Dispose()
+gowt DateTime.Enabled() bool
+gowt DateTime.Focus() bool
 gowt DateTime.OnChange(f func(t time.Time))
+gowt DateTime.OnDispose(f func())
+gowt DateTime.SetBackground(c RGB)
+gowt DateTime.SetEnabled(v bool)
+gowt DateTime.SetFont(f Font)
+gowt DateTime.SetForeground(c RGB)
+gowt DateTime.SetTooltip(s string)
 gowt DateTime.SetValue(t time.Time)
+gowt DateTime.SetVisible(v bool)
 gowt DateTime.Unwrap() *github.com/haiodo/gowt/swt.DateTime
 gowt DateTime.Value() time.Time
+gowt DateTime.Visible() bool
 gowt Drag.Files field func() []string
 gowt Drag.Image field func() *Image
 gowt Drag.OnDone field func(op Op)
@@ -158,25 +241,40 @@ gowt GridCell.SpanY field int
 gowt GridCell.VAlign field Align
 gowt GridCell.Width field int
 gowt Group.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Group.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Group.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Group.Button(text string, onClick func(), opts ...Option) *Button
 gowt Group.CTabs(opts ...Option) *CTabs
 gowt Group.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
+gowt Group.Clear()
 gowt Group.Combo(items []string, opts ...Option) *Combo
 gowt Group.CoolBar(opts ...Option) *CoolBar
 gowt Group.DateTime(opts ...Option) *DateTime
+gowt Group.Dispose()
+gowt Group.Enabled() bool
+gowt Group.Focus() bool
 gowt Group.Group(title string, opts ...Option) *Group
 gowt Group.Label(text string, opts ...Option) *Label
 gowt Group.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Group.List(items []string, opts ...Option) *List
+gowt Group.OnDispose(f func())
+gowt Group.Pages(opts ...Option) *Pages
 gowt Group.Panel(opts ...Option) *Panel
 gowt Group.Progress(max int, opts ...Option) *Progress
+gowt Group.Relayout()
 gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Group.Scroll(opts ...Option) *Scroll
 gowt Group.Section(opts ...Option) *Section
 gowt Group.Separator(opts ...Option) *Label
+gowt Group.SetBackground(c RGB)
+gowt Group.SetEnabled(v bool)
+gowt Group.SetFont(f Font)
+gowt Group.SetForeground(c RGB)
 gowt Group.SetLayout(l Layout) *Panel
 gowt Group.SetTitle(s string)
+gowt Group.SetTooltip(s string)
+gowt Group.SetVisible(v bool)
 gowt Group.ShowTop(w Widget)
 gowt Group.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Group.Spacer(opts ...Option) *Label
@@ -190,29 +288,69 @@ gowt Group.Text(opts ...Option) *Text
 gowt Group.ToolBar(opts ...Option) *ToolBar
 gowt Group.Tree(opts ...Option) *Tree
 gowt Group.Unwrap() *github.com/haiodo/gowt/swt.Group
+gowt Group.Visible() bool
 gowt Image.Dispose()
 gowt Image.Size() (w int, h int)
 gowt Image.Unwrap() *github.com/haiodo/gowt/swt.Image
+gowt Label.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Label.BindText(r github.com/haiodo/gowt/rx.Reader[string])
+gowt Label.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Label.Dispose()
+gowt Label.Enabled() bool
+gowt Label.Focus() bool
+gowt Label.OnDispose(f func())
+gowt Label.SetBackground(c RGB)
+gowt Label.SetEnabled(v bool)
+gowt Label.SetFont(f Font)
+gowt Label.SetForeground(c RGB)
 gowt Label.SetImage(img *Image)
 gowt Label.SetText(s string)
+gowt Label.SetTooltip(s string)
+gowt Label.SetVisible(v bool)
 gowt Label.Unwrap() *github.com/haiodo/gowt/swt.Label
+gowt Label.Visible() bool
+gowt Link.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Link.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Link.Dispose()
+gowt Link.Enabled() bool
+gowt Link.Focus() bool
 gowt Link.OnClick(f func(href string))
+gowt Link.OnDispose(f func())
+gowt Link.SetBackground(c RGB)
+gowt Link.SetEnabled(v bool)
+gowt Link.SetFont(f Font)
+gowt Link.SetForeground(c RGB)
 gowt Link.SetText(s string)
+gowt Link.SetTooltip(s string)
+gowt Link.SetVisible(v bool)
 gowt Link.Unwrap() *github.com/haiodo/gowt/swt.Link
+gowt Link.Visible() bool
 gowt List.Add(s string)
+gowt List.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt List.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt List.Clear()
+gowt List.Dispose()
+gowt List.Enabled() bool
+gowt List.Focus() bool
 gowt List.Index() int
 gowt List.Items() []string
 gowt List.Len() int
 gowt List.OnActivate(f func(index int))
+gowt List.OnDispose(f func())
 gowt List.OnSelect(f func(index int))
 gowt List.Remove(i int)
 gowt List.Selected() []int
+gowt List.SetBackground(c RGB)
+gowt List.SetEnabled(v bool)
+gowt List.SetFont(f Font)
+gowt List.SetForeground(c RGB)
 gowt List.SetItem(i int, s string)
 gowt List.SetItems(s []string)
 gowt List.SetSelection(i ...int)
+gowt List.SetTooltip(s string)
+gowt List.SetVisible(v bool)
 gowt List.Unwrap() *github.com/haiodo/gowt/swt.List
+gowt List.Visible() bool
 gowt Menu.Item(text string, onClick func(), opts ...Option) *MenuItem
 gowt Menu.OnShow(f func())
 gowt Menu.Separator()
@@ -254,25 +392,57 @@ gowt Node.SetTextAt(col int, s string)
 gowt Node.Text() string
 gowt Node.TextAt(col int) string
 gowt Node.Unwrap() *github.com/haiodo/gowt/swt.TreeItem
+gowt Pages.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Pages.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Pages.Current() int
+gowt Pages.Dispose()
+gowt Pages.Enabled() bool
+gowt Pages.Focus() bool
+gowt Pages.OnDispose(f func())
+gowt Pages.Page(opts ...Option) *Panel
+gowt Pages.SetBackground(c RGB)
+gowt Pages.SetEnabled(v bool)
+gowt Pages.SetFont(f Font)
+gowt Pages.SetForeground(c RGB)
+gowt Pages.SetTooltip(s string)
+gowt Pages.SetVisible(v bool)
+gowt Pages.Show(i int)
+gowt Pages.Unwrap() *github.com/haiodo/gowt/swt.Composite
+gowt Pages.Visible() bool
 gowt Panel.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Panel.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Panel.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Panel.Button(text string, onClick func(), opts ...Option) *Button
 gowt Panel.CTabs(opts ...Option) *CTabs
 gowt Panel.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
+gowt Panel.Clear()
 gowt Panel.Combo(items []string, opts ...Option) *Combo
 gowt Panel.CoolBar(opts ...Option) *CoolBar
 gowt Panel.DateTime(opts ...Option) *DateTime
+gowt Panel.Dispose()
+gowt Panel.Enabled() bool
+gowt Panel.Focus() bool
 gowt Panel.Group(title string, opts ...Option) *Group
 gowt Panel.Label(text string, opts ...Option) *Label
 gowt Panel.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Panel.List(items []string, opts ...Option) *List
+gowt Panel.OnDispose(f func())
+gowt Panel.Pages(opts ...Option) *Pages
 gowt Panel.Panel(opts ...Option) *Panel
 gowt Panel.Progress(max int, opts ...Option) *Progress
+gowt Panel.Relayout()
 gowt Panel.Sash(opts ...Option) *Sash
 gowt Panel.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Panel.Scroll(opts ...Option) *Scroll
 gowt Panel.Section(opts ...Option) *Section
 gowt Panel.Separator(opts ...Option) *Label
+gowt Panel.SetBackground(c RGB)
+gowt Panel.SetEnabled(v bool)
+gowt Panel.SetFont(f Font)
+gowt Panel.SetForeground(c RGB)
 gowt Panel.SetLayout(l Layout) *Panel
+gowt Panel.SetTooltip(s string)
+gowt Panel.SetVisible(v bool)
 gowt Panel.ShowTop(w Widget)
 gowt Panel.Slider(min int, max int, value int, opts ...Option) *Slider
 gowt Panel.Spacer(opts ...Option) *Label
@@ -286,10 +456,24 @@ gowt Panel.Text(opts ...Option) *Text
 gowt Panel.ToolBar(opts ...Option) *ToolBar
 gowt Panel.Tree(opts ...Option) *Tree
 gowt Panel.Unwrap() *github.com/haiodo/gowt/swt.Composite
+gowt Panel.Visible() bool
+gowt Progress.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Progress.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Progress.Dispose()
+gowt Progress.Enabled() bool
+gowt Progress.Focus() bool
+gowt Progress.OnDispose(f func())
+gowt Progress.SetBackground(c RGB)
+gowt Progress.SetEnabled(v bool)
+gowt Progress.SetFont(f Font)
+gowt Progress.SetForeground(c RGB)
 gowt Progress.SetMax(v int)
+gowt Progress.SetTooltip(s string)
 gowt Progress.SetValue(v int)
+gowt Progress.SetVisible(v bool)
 gowt Progress.Unwrap() *github.com/haiodo/gowt/swt.ProgressBar
 gowt Progress.Value() int
+gowt Progress.Visible() bool
 gowt RGB.B field uint8
 gowt RGB.G field uint8
 gowt RGB.R field uint8
@@ -303,51 +487,144 @@ gowt Row.Vertical field bool
 gowt Row.Wrap field bool
 gowt RowCell.Height field int
 gowt RowCell.Width field int
+gowt Sash.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Sash.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Sash.Dispose()
+gowt Sash.Enabled() bool
+gowt Sash.Focus() bool
+gowt Sash.OnDispose(f func())
 gowt Sash.OnMove(f func(x int, y int))
+gowt Sash.SetBackground(c RGB)
+gowt Sash.SetEnabled(v bool)
+gowt Sash.SetFont(f Font)
+gowt Sash.SetForeground(c RGB)
+gowt Sash.SetTooltip(s string)
+gowt Sash.SetVisible(v bool)
 gowt Sash.Unwrap() *github.com/haiodo/gowt/swt.Sash
+gowt Sash.Visible() bool
+gowt Scale.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Scale.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Scale.Dispose()
+gowt Scale.Enabled() bool
+gowt Scale.Focus() bool
 gowt Scale.OnChange(f func(value int))
+gowt Scale.OnDispose(f func())
+gowt Scale.SetBackground(c RGB)
+gowt Scale.SetEnabled(v bool)
+gowt Scale.SetFont(f Font)
+gowt Scale.SetForeground(c RGB)
+gowt Scale.SetTooltip(s string)
 gowt Scale.SetValue(v int)
+gowt Scale.SetVisible(v bool)
 gowt Scale.Unwrap() *github.com/haiodo/gowt/swt.Scale
 gowt Scale.Value() int
+gowt Scale.Visible() bool
+gowt Scroll.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Scroll.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Scroll.Content() *Panel
+gowt Scroll.Dispose()
+gowt Scroll.Enabled() bool
 gowt Scroll.Fit()
+gowt Scroll.Focus() bool
+gowt Scroll.OnDispose(f func())
+gowt Scroll.SetBackground(c RGB)
+gowt Scroll.SetEnabled(v bool)
+gowt Scroll.SetFont(f Font)
+gowt Scroll.SetForeground(c RGB)
+gowt Scroll.SetTooltip(s string)
+gowt Scroll.SetVisible(v bool)
 gowt Scroll.Unwrap() *github.com/haiodo/gowt/swt.ScrolledComposite
+gowt Scroll.Visible() bool
 gowt Section.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Section.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Section.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Section.Dispose()
+gowt Section.Enabled() bool
+gowt Section.Focus() bool
+gowt Section.OnDispose(f func())
 gowt Section.Row() *Panel
+gowt Section.SetBackground(c RGB)
+gowt Section.SetEnabled(v bool)
+gowt Section.SetFont(f Font)
+gowt Section.SetForeground(c RGB)
+gowt Section.SetTooltip(s string)
+gowt Section.SetVisible(v bool)
 gowt Section.Unwrap() *github.com/haiodo/gowt/swt.Composite
+gowt Section.Visible() bool
+gowt Slider.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Slider.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Slider.Dispose()
+gowt Slider.Enabled() bool
+gowt Slider.Focus() bool
 gowt Slider.OnChange(f func(value int))
+gowt Slider.OnDispose(f func())
+gowt Slider.SetBackground(c RGB)
+gowt Slider.SetEnabled(v bool)
+gowt Slider.SetFont(f Font)
+gowt Slider.SetForeground(c RGB)
+gowt Slider.SetTooltip(s string)
 gowt Slider.SetValue(v int)
+gowt Slider.SetVisible(v bool)
 gowt Slider.Unwrap() *github.com/haiodo/gowt/swt.Slider
 gowt Slider.Value() int
+gowt Slider.Visible() bool
 gowt SpacingScale.LG field int
 gowt SpacingScale.MD field int
 gowt SpacingScale.PageMargin field int
 gowt SpacingScale.SM field int
 gowt SpacingScale.XL field int
 gowt SpacingScale.XS field int
+gowt Spinner.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Spinner.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Spinner.Dispose()
+gowt Spinner.Enabled() bool
+gowt Spinner.Focus() bool
 gowt Spinner.OnChange(f func(value int))
+gowt Spinner.OnDispose(f func())
+gowt Spinner.SetBackground(c RGB)
+gowt Spinner.SetEnabled(v bool)
+gowt Spinner.SetFont(f Font)
+gowt Spinner.SetForeground(c RGB)
+gowt Spinner.SetTooltip(s string)
 gowt Spinner.SetValue(v int)
+gowt Spinner.SetVisible(v bool)
 gowt Spinner.Unwrap() *github.com/haiodo/gowt/swt.Spinner
 gowt Spinner.Value() int
+gowt Spinner.Visible() bool
 gowt Split.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Split.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Split.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Split.Button(text string, onClick func(), opts ...Option) *Button
 gowt Split.CTabs(opts ...Option) *CTabs
 gowt Split.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
+gowt Split.Clear()
 gowt Split.Combo(items []string, opts ...Option) *Combo
 gowt Split.CoolBar(opts ...Option) *CoolBar
 gowt Split.DateTime(opts ...Option) *DateTime
+gowt Split.Dispose()
+gowt Split.Enabled() bool
+gowt Split.Focus() bool
 gowt Split.Group(title string, opts ...Option) *Group
 gowt Split.Label(text string, opts ...Option) *Label
 gowt Split.Link(text string, onClick func(href string), opts ...Option) *Link
 gowt Split.List(items []string, opts ...Option) *List
+gowt Split.OnDispose(f func())
+gowt Split.Pages(opts ...Option) *Pages
 gowt Split.Panel(opts ...Option) *Panel
 gowt Split.Progress(max int, opts ...Option) *Progress
+gowt Split.Relayout()
 gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Split.Scroll(opts ...Option) *Scroll
 gowt Split.Section(opts ...Option) *Section
 gowt Split.Separator(opts ...Option) *Label
+gowt Split.SetBackground(c RGB)
+gowt Split.SetEnabled(v bool)
+gowt Split.SetFont(f Font)
+gowt Split.SetForeground(c RGB)
 gowt Split.SetLayout(l Layout) *Panel
+gowt Split.SetTooltip(s string)
+gowt Split.SetVisible(v bool)
 gowt Split.SetWeights(w ...int)
 gowt Split.ShowTop(w Widget)
 gowt Split.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -362,22 +639,29 @@ gowt Split.Text(opts ...Option) *Text
 gowt Split.ToolBar(opts ...Option) *ToolBar
 gowt Split.Tree(opts ...Option) *Tree
 gowt Split.Unwrap() *github.com/haiodo/gowt/swt.SashForm
+gowt Split.Visible() bool
 gowt Stack.Margin field int
 gowt Stack.Padded() Stack
 gowt StyleSpan.Length field int
 gowt StyleSpan.Start field int
 gowt StyleSpan.Style field TextStyle
 gowt StyledText.Append(s string)
+gowt StyledText.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt StyledText.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt StyledText.Caret() int
 gowt StyledText.ClearStyles()
 gowt StyledText.Copy()
 gowt StyledText.Cut()
+gowt StyledText.Dispose()
+gowt StyledText.Enabled() bool
+gowt StyledText.Focus() bool
 gowt StyledText.Insert(s string)
 gowt StyledText.LineAt(offset int) int
 gowt StyledText.LineStart(line int) int
 gowt StyledText.Lines() int
 gowt StyledText.OnCaret(f func(offset int))
 gowt StyledText.OnChange(f func(text string))
+gowt StyledText.OnDispose(f func())
 gowt StyledText.OnSelect(f func(start int, length int))
 gowt StyledText.OnStyle(f func(line string) []StyleSpan)
 gowt StyledText.Paste()
@@ -386,42 +670,76 @@ gowt StyledText.Reveal()
 gowt StyledText.ScrollToEnd()
 gowt StyledText.SelectedText() string
 gowt StyledText.Selection() (start int, length int)
+gowt StyledText.SetBackground(c RGB)
 gowt StyledText.SetCaret(offset int)
 gowt StyledText.SetEditable(on bool)
+gowt StyledText.SetEnabled(v bool)
+gowt StyledText.SetFont(f Font)
+gowt StyledText.SetForeground(c RGB)
 gowt StyledText.SetLineBackground(line int, count int, c RGB)
 gowt StyledText.SetSelection(start int, length int)
 gowt StyledText.SetStyle(start int, length int, s TextStyle)
 gowt StyledText.SetTabs(n int)
 gowt StyledText.SetText(s string)
+gowt StyledText.SetTooltip(s string)
 gowt StyledText.SetTopLine(line int)
+gowt StyledText.SetVisible(v bool)
 gowt StyledText.SetWrap(on bool)
 gowt StyledText.Styles() []StyleSpan
 gowt StyledText.Text() string
 gowt StyledText.TrimHead(keep int)
 gowt StyledText.Unwrap() *github.com/haiodo/gowt/swt.StyledText
+gowt StyledText.Visible() bool
+gowt Switch.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Switch.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Switch.Checked() bool
+gowt Switch.Dispose()
+gowt Switch.Enabled() bool
+gowt Switch.Focus() bool
 gowt Switch.OnChange(f func(on bool))
+gowt Switch.OnDispose(f func())
+gowt Switch.SetBackground(c RGB)
 gowt Switch.SetChecked(v bool)
+gowt Switch.SetEnabled(v bool)
+gowt Switch.SetFont(f Font)
+gowt Switch.SetForeground(c RGB)
 gowt Switch.SetText(t string)
+gowt Switch.SetTooltip(s string)
+gowt Switch.SetVisible(v bool)
 gowt Switch.Unwrap() *github.com/haiodo/gowt/swt.Button
+gowt Switch.Visible() bool
+gowt Table.Batch(f func())
+gowt Table.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Table.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Table.CellAt(x int, y int) (row int, col int)
 gowt Table.Clear()
 gowt Table.Column(title string, width int, opts ...Option) *Column
+gowt Table.Dispose()
+gowt Table.Enabled() bool
+gowt Table.Focus() bool
 gowt Table.Index() int
 gowt Table.Len() int
 gowt Table.OnActivate(f func(index int))
 gowt Table.OnCellClick(f func(TableClick))
+gowt Table.OnDispose(f func())
 gowt Table.OnSelect(f func(index int))
 gowt Table.Remove(i int)
 gowt Table.Row(cells ...string) *TableRow
 gowt Table.RowAt(i int) *TableRow
 gowt Table.Selected() []int
+gowt Table.SetBackground(c RGB)
+gowt Table.SetEnabled(v bool)
+gowt Table.SetFont(f Font)
+gowt Table.SetForeground(c RGB)
 gowt Table.SetSelection(i ...int)
 gowt Table.SetSort(col *Column, dir SortDir)
+gowt Table.SetTooltip(s string)
+gowt Table.SetVisible(v bool)
 gowt Table.ShowHeader(v bool)
 gowt Table.ShowLines(v bool)
 gowt Table.ShowRowLines(v bool)
 gowt Table.Unwrap() *github.com/haiodo/gowt/swt.Table
+gowt Table.Visible() bool
 gowt TableClick.Button field int
 gowt TableClick.Col field int
 gowt TableClick.Count field int
@@ -437,22 +755,48 @@ gowt TableRow.SetImage(col int, img *Image)
 gowt TableRow.SetText(col int, s string)
 gowt TableRow.Text(col int) string
 gowt TableRow.Unwrap() *github.com/haiodo/gowt/swt.TableItem
+gowt Tabs.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Tabs.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Tabs.Dispose()
+gowt Tabs.Enabled() bool
+gowt Tabs.Focus() bool
 gowt Tabs.Index() int
+gowt Tabs.OnDispose(f func())
 gowt Tabs.OnSelect(f func(index int))
 gowt Tabs.Select(i int)
+gowt Tabs.SetBackground(c RGB)
+gowt Tabs.SetEnabled(v bool)
+gowt Tabs.SetFont(f Font)
+gowt Tabs.SetForeground(c RGB)
+gowt Tabs.SetTooltip(s string)
+gowt Tabs.SetVisible(v bool)
 gowt Tabs.Tab(title string, opts ...Option) *Panel
 gowt Tabs.Unwrap() *github.com/haiodo/gowt/swt.TabFolder
+gowt Tabs.Visible() bool
 gowt Text.Append(s string)
 gowt Text.Bind(s *github.com/haiodo/gowt/rx.State[string])
+gowt Text.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Text.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Text.Dispose()
+gowt Text.Enabled() bool
+gowt Text.Focus() bool
 gowt Text.Lines() int
 gowt Text.OnActivate(f func())
 gowt Text.OnChange(f func(text string))
+gowt Text.OnDispose(f func())
 gowt Text.ScrollToEnd()
+gowt Text.SetBackground(c RGB)
+gowt Text.SetEnabled(v bool)
+gowt Text.SetFont(f Font)
+gowt Text.SetForeground(c RGB)
 gowt Text.SetHint(s string)
 gowt Text.SetText(s string)
+gowt Text.SetTooltip(s string)
+gowt Text.SetVisible(v bool)
 gowt Text.Text() string
 gowt Text.TrimHead(keep int)
 gowt Text.Unwrap() *github.com/haiodo/gowt/swt.Text
+gowt Text.Visible() bool
 gowt TextStyle.Background field *RGB
 gowt TextStyle.Bold field bool
 gowt TextStyle.Font field *Font
@@ -460,9 +804,22 @@ gowt TextStyle.Foreground field *RGB
 gowt TextStyle.Italic field bool
 gowt TextStyle.Strikeout field bool
 gowt TextStyle.Underline field bool
+gowt ToolBar.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt ToolBar.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt ToolBar.Dispose()
+gowt ToolBar.Enabled() bool
+gowt ToolBar.Focus() bool
 gowt ToolBar.Item(text string, onClick func(), opts ...Option) *ToolItem
+gowt ToolBar.OnDispose(f func())
 gowt ToolBar.Separator()
+gowt ToolBar.SetBackground(c RGB)
+gowt ToolBar.SetEnabled(v bool)
+gowt ToolBar.SetFont(f Font)
+gowt ToolBar.SetForeground(c RGB)
+gowt ToolBar.SetTooltip(s string)
+gowt ToolBar.SetVisible(v bool)
 gowt ToolBar.Unwrap() *github.com/haiodo/gowt/swt.ToolBar
+gowt ToolBar.Visible() bool
 gowt ToolItem.Checked() bool
 gowt ToolItem.OnClick(f func())
 gowt ToolItem.SetChecked(v bool)
@@ -476,22 +833,36 @@ gowt TrayIcon.Remove()
 gowt TrayIcon.SetImage(img *Image)
 gowt TrayIcon.SetTooltip(s string)
 gowt TrayIcon.Unwrap() *github.com/haiodo/gowt/swt.TrayItem
+gowt Tree.Batch(f func())
+gowt Tree.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Tree.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Tree.CellAt(x int, y int) (*Node, int)
 gowt Tree.Clear()
 gowt Tree.Column(title string, width int, opts ...Option) *TreeColumn
+gowt Tree.Dispose()
+gowt Tree.Enabled() bool
+gowt Tree.Focus() bool
 gowt Tree.Node(text string) *Node
 gowt Tree.OnActivate(f func(n *Node))
 gowt Tree.OnCellClick(f func(TreeClick))
 gowt Tree.OnCollapse(f func(n *Node))
+gowt Tree.OnDispose(f func())
 gowt Tree.OnExpand(f func(n *Node))
 gowt Tree.OnSelect(f func(n *Node))
 gowt Tree.Roots() []*Node
 gowt Tree.Select(n *Node)
 gowt Tree.Selected() []*Node
+gowt Tree.SetBackground(c RGB)
+gowt Tree.SetEnabled(v bool)
+gowt Tree.SetFont(f Font)
+gowt Tree.SetForeground(c RGB)
 gowt Tree.SetSort(col *TreeColumn, dir SortDir)
+gowt Tree.SetTooltip(s string)
+gowt Tree.SetVisible(v bool)
 gowt Tree.ShowHeader(v bool)
 gowt Tree.ShowRowLines(v bool)
 gowt Tree.Unwrap() *github.com/haiodo/gowt/swt.Tree
+gowt Tree.Visible() bool
 gowt TreeClick.Button field int
 gowt TreeClick.Col field int
 gowt TreeClick.Count field int
@@ -505,10 +876,26 @@ gowt TreeColumn.SetResizable(v bool)
 gowt TreeColumn.SetTitle(s string)
 gowt TreeColumn.SetWidth(w int)
 gowt TreeColumn.Unwrap() *github.com/haiodo/gowt/swt.TreeColumn
+gowt Widget.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Widget.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Widget.Dispose()
+gowt Widget.Enabled() bool
+gowt Widget.Focus() bool
+gowt Widget.OnDispose(f func())
+gowt Widget.SetBackground(c RGB)
+gowt Widget.SetEnabled(v bool)
+gowt Widget.SetFont(f Font)
+gowt Widget.SetForeground(c RGB)
+gowt Widget.SetTooltip(s string)
+gowt Widget.SetVisible(v bool)
+gowt Widget.Visible() bool
 gowt Window.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Window.BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool])
+gowt Window.BindVisible(r github.com/haiodo/gowt/rx.Reader[bool])
 gowt Window.Button(text string, onClick func(), opts ...Option) *Button
 gowt Window.CTabs(opts ...Option) *CTabs
 gowt Window.Canvas(onPaint func(g *GC), opts ...Option) *Canvas
+gowt Window.Clear()
 gowt Window.Close()
 gowt Window.ColorDialog(initial RGB) (c RGB, ok bool)
 gowt Window.Combo(items []string, opts ...Option) *Combo
@@ -516,7 +903,10 @@ gowt Window.Confirm(title string, text string) bool
 gowt Window.CoolBar(opts ...Option) *CoolBar
 gowt Window.DateTime(opts ...Option) *DateTime
 gowt Window.DirDialog(title string, dir string) (path string, ok bool)
+gowt Window.Dispose()
+gowt Window.Enabled() bool
 gowt Window.FileDialog(d FileDialog) []string
+gowt Window.Focus() bool
 gowt Window.FontDialog(initial Font) (f Font, ok bool)
 gowt Window.Group(title string, opts ...Option) *Group
 gowt Window.Label(text string, opts ...Option) *Label
@@ -525,17 +915,27 @@ gowt Window.List(items []string, opts ...Option) *List
 gowt Window.MenuBar() *Menu
 gowt Window.MessageBox(m Message) Answer
 gowt Window.OnClose(f func() bool)
+gowt Window.OnDispose(f func())
+gowt Window.Pages(opts ...Option) *Pages
 gowt Window.Panel(opts ...Option) *Panel
 gowt Window.Progress(max int, opts ...Option) *Progress
+gowt Window.Relayout()
 gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.Section(opts ...Option) *Section
 gowt Window.Separator(opts ...Option) *Label
+gowt Window.SetBackground(c RGB)
+gowt Window.SetEnabled(v bool)
+gowt Window.SetFont(f Font)
+gowt Window.SetForeground(c RGB)
 gowt Window.SetLayout(l Layout) *Panel
+gowt Window.SetMinSize(width int, height int)
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
+gowt Window.SetTooltip(s string)
 gowt Window.SetTopInset(points int)
+gowt Window.SetVisible(v bool)
 gowt Window.Show()
 gowt Window.ShowTop(w Widget)
 gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider
@@ -550,6 +950,7 @@ gowt Window.Text(opts ...Option) *Text
 gowt Window.ToolBar(opts ...Option) *ToolBar
 gowt Window.Tree(opts ...Option) *Tree
 gowt Window.Unwrap() *github.com/haiodo/gowt/swt.Shell
+gowt Window.Visible() bool
 gowt const AlignCenter Align = 1
 gowt const AlignEnd Align = 2
 gowt const AlignFill Align = 3
@@ -589,8 +990,6 @@ gowt func AsCalendar() Option
 gowt func AsTime() Option
 gowt func Background(c RGB) Option
 gowt func Beside(w Widget, gap int) Edge
-gowt func BindEnabled(w Widget, r github.com/haiodo/gowt/rx.Reader[bool])
-gowt func BindVisible(w Widget, r github.com/haiodo/gowt/rx.Reader[bool])
 gowt func Bind[T any](w Widget, r github.com/haiodo/gowt/rx.Reader[T], apply func(T))
 gowt func Border() Option
 gowt func Bottom() Option
@@ -604,7 +1003,6 @@ gowt func Disabled() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
-gowt func Enabled(w Widget) bool
 gowt func Flat() Option
 gowt func Golden(total int) (small int, large int)
 gowt func Grow() Option
@@ -627,17 +1025,13 @@ gowt func Same(w Widget, offset int) Edge
 gowt func Scrollbars() Option
 gowt func Search() Option
 gowt func SetAppName(name string)
-gowt func SetEnabled(w Widget, v bool)
-gowt func SetFont(w Widget, f Font)
-gowt func SetForeground(w Widget, c RGB)
-gowt func SetVisible(w Widget, v bool)
+gowt func Shortcut(keys string) Option
 gowt func Simple() Option
 gowt func Size(w int, h int) Option
 gowt func Smooth() Option
 gowt func Span(cols int) Option
 gowt func Tooltip(s string) Option
 gowt func Vertical() Option
-gowt func Visible(w Widget) bool
 gowt func Wrap() Option
 gowt type Align int32
 gowt type Answer int
@@ -680,6 +1074,7 @@ gowt type Mouse struct
 gowt type Node struct
 gowt type Op int
 gowt type Option struct
+gowt type Pages struct
 gowt type Panel struct
 gowt type Progress struct
 gowt type RGB struct

@@ -25,27 +25,22 @@ func main() {
 		progress := w.Progress(100, gowt.GrowX(), gowt.Span(2))
 		var start *gowt.Button
 		start = w.Button("Start work", func() {
-			gowt.SetEnabled(start, false)
+			start.SetEnabled(false)
 			go func() {
 				for i := 1; i <= 100; i++ {
 					time.Sleep(30 * time.Millisecond) // stands for slow work
 					app.Async(func() { progress.SetValue(i) })
 				}
 				app.Async(func() {
-					gowt.SetEnabled(start, true)
+					start.SetEnabled(true)
 					echo.SetText("work done")
 				})
 			}()
 		})
 
-		// After runs once on the UI thread; re-arm it for a periodic tick.
-		clock := w.Label("", gowt.GrowX())
-		var tick func()
-		tick = func() {
-			clock.SetText(time.Now().Format("15:04:05"))
-			app.After(time.Second, tick)
-		}
-		tick()
+		// Every repeats on the UI thread until the stop func it returns is called; After runs once.
+		clock := w.Label(time.Now().Format("15:04:05"), gowt.GrowX())
+		app.Every(time.Second, func() { clock.SetText(time.Now().Format("15:04:05")) })
 
 		// OnClose can veto closing: return false to keep the window.
 		closes := 0

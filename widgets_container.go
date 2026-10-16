@@ -14,7 +14,7 @@ func (p *panel) Group(title string, opts ...Option) *Group {
 	g := swt.NewGroup(p.c, resolve(swt.NONE, opts))
 	g.SetText(title)
 	applyOpts(&g.Control, opts)
-	return &Group{&panel{c: &g.Composite}, g}
+	return &Group{newPanel(&g.Composite), g}
 }
 
 // SetTitle replaces the frame title.
@@ -24,14 +24,17 @@ func (g *Group) SetTitle(s string) { g.g.SetText(s) }
 func (g *Group) Unwrap() *swt.Group { return g.g }
 
 // Tabs is a native tab folder; each Tab returns the page container.
-type Tabs struct{ f *swt.TabFolder }
+type Tabs struct {
+	base
+	f *swt.TabFolder
+}
 
 // Tabs adds a tab folder; Bottom() moves the tabs below the pages.
 // Options: Bottom.
 func (p *panel) Tabs(opts ...Option) *Tabs {
 	f := swt.NewTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
-	return &Tabs{f}
+	return &Tabs{base{&f.Control}, f}
 }
 
 // Tab appends a tab and returns its page.
@@ -41,10 +44,8 @@ func (t *Tabs) Tab(title string, opts ...Option) *Panel {
 	it.SetText(title)
 	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
 	it.SetControl(page)
-	return &Panel{&panel{c: page}}
+	return &Panel{newPanel(page)}
 }
-
-func (t *Tabs) control() *swt.Control { return &t.f.Control }
 
 // Index is the selected tab, -1 if none.
 func (t *Tabs) Index() int { return int(t.f.GetSelectionIndex()) }
@@ -61,14 +62,17 @@ func (t *Tabs) OnSelect(f func(index int)) {
 }
 
 // CTabs is the custom-drawn tab folder: closable tabs (Closable on the folder's Tab) and a flatter look.
-type CTabs struct{ f *swt.CTabFolder }
+type CTabs struct {
+	base
+	f *swt.CTabFolder
+}
 
 // CTabs adds a custom tab folder; Border() draws a frame.
 // Options: Bottom, Border.
 func (p *panel) CTabs(opts ...Option) *CTabs {
 	f := swt.NewCTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
-	return &CTabs{f}
+	return &CTabs{base{&f.Control}, f}
 }
 
 // Tab appends a tab and returns its page; Closable() adds a close button to the tab.
@@ -78,10 +82,8 @@ func (t *CTabs) Tab(title string, opts ...Option) *Panel {
 	it.SetText(title)
 	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
 	it.SetControl(page)
-	return &Panel{&panel{c: page}}
+	return &Panel{newPanel(page)}
 }
-
-func (t *CTabs) control() *swt.Control { return &t.f.Control }
 
 // Index is the selected tab, -1 if none.
 func (t *CTabs) Index() int { return int(t.f.GetSelectionIndex()) }
@@ -119,7 +121,7 @@ type Split struct {
 func (p *panel) Split(opts ...Option) *Split {
 	s := swt.NewSashForm(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
-	return &Split{&panel{c: &s.Composite}, s}
+	return &Split{newPanel(&s.Composite), s}
 }
 
 // SetWeights sets the relative size of each child, one weight per child.
@@ -130,6 +132,7 @@ func (s *Split) Unwrap() *swt.SashForm { return s.s }
 
 // Scroll shows content larger than itself with scroll bars. Build the content in Content, then call Fit.
 type Scroll struct {
+	base
 	s    *swt.ScrolledComposite
 	body *Panel
 }
@@ -143,7 +146,7 @@ func (p *panel) Scroll(opts ...Option) *Scroll {
 	s.SetContent(body)
 	s.SetExpandHorizontal(true)
 	s.SetExpandVertical(true)
-	return &Scroll{s, &Panel{&panel{c: body}}}
+	return &Scroll{base{&s.Control}, s, &Panel{newPanel(body)}}
 }
 
 // Content is the container that scrolls.
@@ -155,21 +158,22 @@ func (s *Scroll) Fit() {
 	s.s.SetMinSizeWidthHeight(size.X, size.Y)
 }
 
-func (s *Scroll) control() *swt.Control { return &s.s.Control }
-
 // Unwrap returns the underlying swt.ScrolledComposite for the full API.
 func (s *Scroll) Unwrap() *swt.ScrolledComposite { return s.s }
 
 // Sash is a bare draggable divider; most code wants Split instead. The sash does not move itself:
 // OnMove must lay it out (Unwrap gives the layout data).
-type Sash struct{ s *swt.Sash }
+type Sash struct {
+	base
+	s *swt.Sash
+}
 
 // Sash adds a sash; Vertical() makes a vertical bar that moves left and right.
 // Options: Vertical.
 func (p *panel) Sash(opts ...Option) *Sash {
 	s := swt.NewSash(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
-	return &Sash{s}
+	return &Sash{base{&s.Control}, s}
 }
 
 // OnMove runs f with the position the user dragged the sash to, in parent coordinates.
@@ -177,20 +181,21 @@ func (s *Sash) OnMove(f func(x, y int)) {
 	onSelect(s.s, func(e *swt.SelectionEvent) { f(int(e.X), int(e.Y)) })
 }
 
-func (s *Sash) control() *swt.Control { return &s.s.Control }
-
 // Unwrap returns the underlying swt.Sash for the full API.
 func (s *Sash) Unwrap() *swt.Sash { return s.s }
 
 // ToolBar is a row of tool buttons.
-type ToolBar struct{ t *swt.ToolBar }
+type ToolBar struct {
+	base
+	t *swt.ToolBar
+}
 
 // ToolBar adds a tool bar; Flat() and Wrap() change its look.
 // Options: Flat, Wrap.
 func (p *panel) ToolBar(opts ...Option) *ToolBar {
 	t := swt.NewToolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
-	return &ToolBar{t}
+	return &ToolBar{base{&t.Control}, t}
 }
 
 // Item appends a push button (Check, Radio or DropDown for other kinds). onClick may be nil.
@@ -207,8 +212,6 @@ func (t *ToolBar) Item(text string, onClick func(), opts ...Option) *ToolItem {
 
 // Separator appends a divider.
 func (t *ToolBar) Separator() { swt.NewToolItem(t.t, swt.SEPARATOR) }
-
-func (t *ToolBar) control() *swt.Control { return &t.t.Control }
 
 // Unwrap returns the underlying swt.ToolBar for the full API.
 func (t *ToolBar) Unwrap() *swt.ToolBar { return t.t }
@@ -253,7 +256,7 @@ type CoolBar struct {
 func (p *panel) CoolBar(opts ...Option) *CoolBar {
 	b := swt.NewCoolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&b.Control, opts)
-	return &CoolBar{&panel{c: &b.Composite}, b}
+	return &CoolBar{newPanel(&b.Composite), b}
 }
 
 // Add makes w (a child of the cool bar) a draggable band of its natural size.

@@ -32,25 +32,24 @@ func main() {
 }
 
 func build(app *g.App) {
-	fillX := g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true})
 	w := app.Window("Mini browser")
 	w.SetLayout(g.Fill{})
 	split := w.Split()
 
 	left := split.Panel()
 	left.SetLayout(g.Grid{Columns: 3, Margin: 5, Spacing: 5})
-	addr := left.Text(g.Border(), fillX)
+	addr := left.Text(g.Border(), g.GrowX())
 	plus := left.Button("+", nil)
 	minus := left.Button("-", nil)
-	list := left.List(nil, g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, SpanX: 3}))
+	list := left.List(nil, g.Grow(), g.Span(3))
 
 	right := split.Panel()
 	right.SetLayout(g.Grid{Columns: 4, Margin: 5, Spacing: 5})
 	back := right.Button("<", nil)
 	forward := right.Button(">", nil)
 	reload := right.Button("Reload", nil)
-	urlLabel := right.Label("", fillX)
-	stackHost := right.Panel(g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, SpanX: 4}))
+	urlLabel := right.Label("", g.GrowX())
+	stackHost := right.Panel(g.Grow(), g.Span(4))
 	stackHost.SetLayout(g.Stack{})
 	split.SetWeights(10, 90)
 

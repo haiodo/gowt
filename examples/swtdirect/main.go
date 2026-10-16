@@ -14,13 +14,12 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Facade and swt")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
-		fillX := gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
 
 		// The facade has no minimum window size: the shell has.
 		w.Unwrap().SetMinimumSize(320, 160)
 
-		field := w.Text(fillX)
-		echo := w.Label("", fillX)
+		field := w.Text(gowt.GrowX())
+		echo := w.Label("", gowt.GrowX())
 
 		// A key listener on the swt Text; the facade only has OnChange and OnActivate.
 		field.Unwrap().AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
@@ -34,7 +33,7 @@ func main() {
 		sep.SetLayoutData(gd)
 
 		// Left-aligned button text: swt.Button has SetAlignment.
-		b := w.Button("Left aligned", nil, fillX)
+		b := w.Button("Left aligned", nil, gowt.GrowX())
 		b.Unwrap().SetAlignment(swt.LEFT)
 		w.Show()
 	})

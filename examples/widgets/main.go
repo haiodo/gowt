@@ -9,15 +9,12 @@ import (
 	"github.com/haiodo/gowt"
 )
 
-var fillX = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
-var fillBoth = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true})
-
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Widgets")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-		status := w.Label("", fillX)
-		tabs := w.Tabs(fillBoth)
+		status := w.Label("", gowt.GrowX())
+		tabs := w.Tabs(gowt.Grow())
 		input(tabs.Tab("Input"), status)
 		lists(tabs.Tab("Lists"), status)
 		ranges(tabs.Tab("Ranges"), status)
@@ -32,16 +29,16 @@ func main() {
 func input(p *gowt.Panel, status *gowt.Label) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 	p.Label("User")
-	name := p.Text(fillX)
+	name := p.Text(gowt.GrowX())
 	name.SetHint("name")
 	p.Label("Password")
-	p.Text(gowt.Password(), fillX)
+	p.Text(gowt.Password(), gowt.GrowX())
 	p.Label("Notes")
-	p.Text(gowt.Multiline(), gowt.Border(), fillBoth)
+	p.Text(gowt.Multiline(), gowt.Border(), gowt.Grow())
 
 	name.OnChange(func(s string) { status.SetText("text: " + s) })
 
-	opts := p.Group("Options", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+	opts := p.Group("Options", gowt.GrowX(), gowt.Span(2))
 	opts.SetLayout(gowt.Row{Margin: 8, Spacing: 12})
 	remember := opts.Button("Remember me", nil, gowt.Check())
 	remember.SetChecked(true)
@@ -58,14 +55,14 @@ func lists(p *gowt.Panel, status *gowt.Label) {
 	c.OnSelect(func(i int) { status.SetText(fmt.Sprint("combo: ", c.Items()[i])) })
 	p.List([]string{"alpha", "beta", "gamma"}).OnSelect(func(i int) { status.SetText(fmt.Sprint("list: ", i)) })
 
-	t := p.Table(gowt.Cell(gowt.GridCell{SpanX: 1, Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true, Height: 120}))
+	t := p.Table(gowt.Grow(), gowt.Size(0, 120))
 	t.Column("File", 140)
 	t.Column("Size", 60, gowt.Right())
 	t.Row("a.txt", "12").SetData("id-a")
 	t.Row("b.txt", "340").SetData("id-b")
 	t.OnSelect(func(i int) { status.SetText(fmt.Sprint("row data: ", t.RowAt(i).Data())) })
 
-	tree := p.Tree(fillBoth)
+	tree := p.Tree(gowt.Grow())
 	tree.Column("Name", 140)
 	tree.Column("Size", 60, gowt.Right())
 	tree.SetSort(nil, gowt.SortNone)
@@ -84,10 +81,10 @@ func lists(p *gowt.Panel, status *gowt.Label) {
 
 func ranges(p *gowt.Panel, status *gowt.Label) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-	bar := p.Progress(100, gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+	bar := p.Progress(100, gowt.GrowX(), gowt.Span(2))
 	bar.SetValue(30)
 	p.Label("Volume")
-	p.Scale(0, 100, 30, fillX).OnChange(func(v int) { bar.SetValue(v); status.SetText(fmt.Sprint("scale: ", v)) })
+	p.Scale(0, 100, 30, gowt.GrowX()).OnChange(func(v int) { bar.SetValue(v); status.SetText(fmt.Sprint("scale: ", v)) })
 	p.Label("Count")
 	p.Spinner(0, 10, 3).OnChange(func(v int) { status.SetText(fmt.Sprint("spinner: ", v)) })
 	p.Label("Date")

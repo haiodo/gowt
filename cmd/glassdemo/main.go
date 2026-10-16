@@ -36,7 +36,7 @@ func main() {
 			}
 			look.SetGlassGroup(w, 4)
 		}
-		w.Label("Window backdrop, full-size content", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 320}))
+		w.Label("Window backdrop, full-size content", gowt.GrowX(), gowt.Size(320, 0))
 		p := w.Panel()
 		p.SetLayout(gowt.Grid{Columns: 2, Margin: 4, Spacing: 8})
 		p.Label("Nested panel:")

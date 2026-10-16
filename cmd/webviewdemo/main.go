@@ -25,21 +25,20 @@ func main() {
 }
 
 func build(app *g.App) {
-	both := g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true})
 	w := app.Window("WebView demo")
 	w.SetLayout(g.Grid{Columns: 2, Margin: 5, Spacing: 5})
 
-	tree := w.Tree(g.Border(), g.Cell(g.GridCell{VAlign: g.AlignFill, GrowY: true, Width: 160}))
+	tree := w.Tree(g.Border(), g.GrowY(), g.Size(160, 0))
 	for _, p := range []string{"index.html", "about.html"} {
 		tree.Node(p)
 	}
 
-	right := w.Panel(both)
+	right := w.Panel(g.Grow())
 	right.SetLayout(g.Grid{Columns: 1, Margin: 5, Spacing: 5})
 	button := right.Button("Eval in page", nil)
-	label := right.Label("Messages from the page appear here", g.Wrap(), g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true}))
+	label := right.Label("Messages from the page appear here", g.Wrap(), g.GrowX())
 
-	host := right.Panel(both)
+	host := right.Panel(g.Grow())
 	host.SetLayout(g.Fill{})
 	wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 	if err != nil {

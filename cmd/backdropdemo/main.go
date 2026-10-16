@@ -22,15 +22,14 @@ func main() {
 		}
 		w := app.Window("backdropdemo")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
-		fill := gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 280})
 		// Pure black text over the material turns transparent; near-black stays visible.
-		w.Label("Material behind the window", fill).Unwrap().SetForeground(swt.NewColorRedGreenBlue(24, 24, 24))
-		w.Button("None", func() { look.SetBackdrop(w, look.BackdropNone) }, fill)
-		w.Button("Translucent (Acrylic)", func() { look.SetBackdrop(w, look.BackdropTranslucent) }, fill)
-		w.Button("Glass (Mica)", func() { look.SetBackdrop(w, look.BackdropGlass) }, fill)
-		w.Button("Square corners", func() { look.SetRoundedCorners(w, false) }, fill)
-		w.Button("Round corners", func() { look.SetRoundedCorners(w, true) }, fill)
-		w.Text(fill)
+		w.Label("Material behind the window", gowt.GrowX(), gowt.Size(280, 0)).Unwrap().SetForeground(swt.NewColorRedGreenBlue(24, 24, 24))
+		w.Button("None", func() { look.SetBackdrop(w, look.BackdropNone) }, gowt.GrowX())
+		w.Button("Translucent (Acrylic)", func() { look.SetBackdrop(w, look.BackdropTranslucent) }, gowt.GrowX())
+		w.Button("Glass (Mica)", func() { look.SetBackdrop(w, look.BackdropGlass) }, gowt.GrowX())
+		w.Button("Square corners", func() { look.SetRoundedCorners(w, false) }, gowt.GrowX())
+		w.Button("Round corners", func() { look.SetRoundedCorners(w, true) }, gowt.GrowX())
+		w.Text(gowt.GrowX())
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_BACKDROP_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)
 		}

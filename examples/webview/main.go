@@ -19,11 +19,10 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Web view")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-		fillX := gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
-		status := w.Label("", fillX)
+		status := w.Label("", gowt.GrowX())
 		button := w.Button("Set page text from Go", nil)
 
-		host := w.Panel(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true, Width: 480, Height: 280}))
+		host := w.Panel(gowt.Grow(), gowt.Size(480, 280))
 		host.SetLayout(gowt.Fill{})
 
 		wv, err := webview.New(host.Unwrap(), webview.Options{})

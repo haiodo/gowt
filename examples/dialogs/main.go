@@ -13,15 +13,14 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Dialogs and menus")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
-		fillX := gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
 
 		bar := w.MenuBar()
 		file := bar.Submenu("&File")
 		view := bar.Submenu("&View")
 
-		tools := w.ToolBar(gowt.Flat(), fillX)
+		tools := w.ToolBar(gowt.Flat(), gowt.GrowX())
 		out := w.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(),
-			gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true, Width: 420, Height: 160}))
+			gowt.Grow(), gowt.Size(420, 160))
 		say := func(s string) { out.SetText(out.Text() + s + "\n") }
 
 		openFile := func() {

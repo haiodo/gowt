@@ -21,7 +21,7 @@ func main() {
 		name := jface.WidgetFactoryText(swt.BORDER).Message("Full name").LayoutData(fill()).Create(w.AsComposite())
 
 		// gowt widgets in the same grid take their GridData from Cell.
-		status := w.Label("", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+		status := w.Label("", gowt.GrowX(), gowt.Span(2))
 		jface.WidgetFactoryButton(swt.PUSH).Text("Greet").
 			LayoutData(jface.GridDataFactoryCreate(swt.END).Span(2, 1).Create()).
 			OnSelect(func(e *swt.SelectionEvent) { status.SetText("Hello, " + name.GetText()) }).

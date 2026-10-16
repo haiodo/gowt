@@ -11,8 +11,8 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Hello gowt")
 		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-		name := w.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 200}))
-		greet := w.Label("", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+		name := w.Text(gowt.GrowX(), gowt.Size(200, 0))
+		greet := w.Label("", gowt.GrowX(), gowt.Span(2))
 		w.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") })
 		w.Show()
 	})

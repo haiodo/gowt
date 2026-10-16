@@ -69,7 +69,7 @@ func main() {
 
 		sidebar := w.Panel()
 		sidebar.SetLayout(gowt.Grid{Columns: 1}) // Finder: the list runs edge to edge, its rows inset their selection
-		nav = sidebar.List(pages, gowt.NoBorder(), gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true}))
+		nav = sidebar.List(pages, gowt.NoBorder(), gowt.Grow())
 		nav.OnSelect(func(i int) {
 			if i >= 0 {
 				open(i)
@@ -78,7 +78,7 @@ func main() {
 
 		content := w.Panel()
 		content.SetLayout(gowt.Grid{Columns: 1})
-		stack = content.Panel(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true}))
+		stack = content.Panel(gowt.Grow())
 		stack.SetLayout(gowt.Stack{})
 		views = []*gowt.Panel{appearance(stack.Panel()), general(stack.Panel()), dock(stack.Panel())}
 
@@ -94,8 +94,6 @@ func main() {
 	}
 }
 
-var fillX = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
-
 func page(p *gowt.Panel) *gowt.Panel {
 	return p.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
 }
@@ -107,7 +105,7 @@ func heading(p *gowt.Panel, text string) {
 // row adds a settings row: the label on the left, the control that add creates on the right.
 func row(s *gowt.Section, label string, add func(r *gowt.Panel)) {
 	r := s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6, Spacing: 12})
-	r.Label(label, gowt.Cell(gowt.GridCell{GrowX: true, VAlign: gowt.AlignCenter}))
+	r.Label(label, gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
 	add(r)
 }
 
@@ -121,15 +119,15 @@ func toggle(on bool) func(*gowt.Panel) {
 
 func appearance(p *gowt.Panel) *gowt.Panel {
 	page(p)
-	s := p.Section(fillX)
+	s := p.Section(gowt.GrowX())
 	row(s, "Appearance", choice("Auto", "Light", "Dark"))
 	row(s, "Liquid Glass", choice("Clear", "Tinted"))
 	heading(p, "Theme")
-	s = p.Section(fillX)
+	s = p.Section(gowt.GrowX())
 	row(s, "Text highlight color", choice("Accent color", "Orange", "Blue"))
 	row(s, "Folder color", choice("Automatic", "Blue"))
 	heading(p, "Windows")
-	s = p.Section(fillX)
+	s = p.Section(gowt.GrowX())
 	row(s, "Sidebar icon size", choice("Medium", "Small", "Large"))
 	row(s, "Tint window background with wallpaper color", toggle(true))
 	return p
@@ -137,12 +135,12 @@ func appearance(p *gowt.Panel) *gowt.Panel {
 
 func general(p *gowt.Panel) *gowt.Panel {
 	page(p)
-	s := p.Section(fillX)
+	s := p.Section(gowt.GrowX())
 	row(s, "Name", func(r *gowt.Panel) { r.Label("MacBook Pro") }) // a Text would keep its white field
 	row(s, "Software Update", toggle(true))
 	row(s, "Storage", func(r *gowt.Panel) { r.Progress(100).SetValue(62) })
 	heading(p, "Sharing")
-	s = p.Section(fillX)
+	s = p.Section(gowt.GrowX())
 	row(s, "File Sharing", toggle(false))
 	row(s, "Remote Login", toggle(false))
 	return p
@@ -151,7 +149,7 @@ func general(p *gowt.Panel) *gowt.Panel {
 func dock(p *gowt.Panel) *gowt.Panel {
 	page(p)
 	heading(p, "Dock")
-	s := p.Section(fillX)
+	s := p.Section(gowt.GrowX())
 	row(s, "Size", func(r *gowt.Panel) { r.Scale(16, 128, 48) })
 	row(s, "Magnification", toggle(false))
 	row(s, "Position on screen", choice("Bottom", "Left", "Right"))

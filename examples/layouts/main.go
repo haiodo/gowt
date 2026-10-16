@@ -7,9 +7,6 @@ import (
 	"github.com/haiodo/gowt"
 )
 
-var fillX = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true})
-var fillBoth = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true})
-
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Layouts")
@@ -31,10 +28,10 @@ func main() {
 func grid(p *gowt.Panel) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 	p.Label("Name")
-	p.Text(fillX)
+	p.Text(gowt.GrowX())
 	p.Label("Notes")
-	p.Text(gowt.Multiline(), fillBoth)
-	p.Button("Save", nil, gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignEnd}))
+	p.Text(gowt.Multiline(), gowt.Grow())
+	p.Button("Save", nil, gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart))
 }
 
 // Row: children keep their natural size and wrap to the next row when the panel is narrow.
@@ -63,7 +60,7 @@ func form(p *gowt.Panel) {
 // Stack: every child has the full size of the panel, ShowTop picks the visible one.
 func stack(p *gowt.Panel) {
 	p.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
-	pages := p.Panel(fillBoth)
+	pages := p.Panel(gowt.Grow())
 	pages.SetLayout(gowt.Stack{})
 	first := pages.Panel()
 	first.SetLayout(gowt.Fill{})

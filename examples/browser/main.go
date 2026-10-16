@@ -14,7 +14,7 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Browser")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-		status := w.Label("", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true}))
+		status := w.Label("", gowt.GrowX())
 
 		// Browser takes an swt composite as its parent: AsComposite hands it over.
 		b := browser.NewBrowser(w.AsComposite(), swt.NONE)

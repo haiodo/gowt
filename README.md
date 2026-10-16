@@ -61,7 +61,7 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 
 ## What you get
 
-- Widgets: labels, buttons, text, combo, list, table, tree, tabs, split, scroll, tool bar, menus, date picker, sliders, canvas, dialogs, tray icon.
+- Widgets: labels, buttons, text, combo, list, table, tree, tabs, pages, split, scroll, tool bar, menus, date picker, sliders, canvas, dialogs, tray icon.
 - Layouts: `Grid`, `Row`, `Fill`, `Form`, `Stack`.
 - The system web view next to native widgets: package `webview`, and SWT's `Browser` on top of it.
 - Platform look: Liquid Glass on macOS 26, Mica and Acrylic on Windows 11 22H2 and later (package `look`), light/dark following the system, system icons by name (package `icons`).

@@ -59,7 +59,9 @@ go func() {                                        // slow work off the UI threa
 	r := fetch()
 	app.Async(func() { status.SetText(r) })        // back on the UI thread; a no-op after Run
 }()
-app.After(time.Second, tick)                       // once; call After again inside tick to repeat
+app.After(time.Second, tick)                       // once
+stop := app.Every(time.Second, tick)               // repeats until stop()
+file.Item("&Save", save, gowt.Shortcut("Cmd+S"))   // Cmd+S binds the key and shows it; Ctrl+S on Windows and Linux
 
 app.OnError(func(err error) { status.SetText(err.Error()) }) // errors in callbacks; the app keeps running
 ```
@@ -68,16 +70,40 @@ Widgets belong to the UI thread: touch them only in the setup function and in ca
 
 ## Changing a widget later
 
-Shared setters are package functions that take any widget, including windows and containers:
+Every widget, windows and containers included, has the same common methods (they are also the methods of the `Widget` interface):
 
 ```go
-gowt.SetEnabled(save, false)       // not save.SetEnabled
-gowt.SetVisible(details, false)    // in a Grid or Row the neighbours take the space
-gowt.SetFont(title, gowt.Font{Weight: gowt.Semibold})
-gowt.SetForeground(warn, gowt.RGB{R: 200, G: 40, B: 40})
+save.SetEnabled(false)
+details.SetVisible(false)          // in a Grid or Row the neighbours take the space
+title.SetFont(gowt.Font{Weight: gowt.Semibold})
+warn.SetForeground(gowt.RGB{R: 200, G: 40, B: 40})
+row.SetBackground(gowt.RGB{R: 250, G: 250, B: 250})
+name.SetTooltip("Full name")
+name.Focus()
+row.Dispose()                      // removes it; the parent is laid out again
+row.OnDispose(stop)                // runs when row is disposed or its window closes
+save.BindEnabled(canSave)          // rx: follows an rx.Reader[bool]; BindVisible likewise
 ```
 
-Widget-specific ones are methods: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled` method.
+`Enabled()` and `Visible()` read the state back. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
+
+A container also has `Relayout()` (lay the children out again after a text got longer) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
+
+## Pages
+
+```go
+pages := w.Pages(gowt.Grow())
+general := pages.Page()             // a *Panel, the first page is shown
+general.SetLayout(gowt.Grid{Columns: 2})
+pages.Page().SetLayout(gowt.Fill{})
+pages.Show(1)                       // pages.Current() is now 1
+```
+
+`Pages` is a tab folder without tabs; use it instead of a `Stack` layout and a variable that remembers the visible child.
+
+## The window
+
+`w.SetSize(800, 600)` fixes the start size in points, `w.SetMinSize(400, 300)` the smallest one the user can drag to, and `app.ScreenSize()` gives the area a window can take on the primary monitor.
 
 ## Tables, trees, tabs
 
@@ -100,7 +126,7 @@ Rows, nodes, tool items and tab pages are not widgets: they come from their owne
 
 ## Leaving the facade
 
-`Unwrap()` returns the swt object for what the facade lacks (key listeners, a minimum window size, drawing into an image). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, `SetVisible`, `SetEnabled`, `TrimHead` and `look.DragsWindow` exist already.
+`Unwrap()` returns the swt object for what the facade lacks (key listeners outside menus, drawing into an image). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `TrimHead` and `look.DragsWindow` exist already.
 
 ## Option to widgets
 
@@ -109,6 +135,7 @@ The common options work on every control: `Disabled()`, `Tooltip(s)`, `Backgroun
 | Option | Widgets |
 |---|---|
 | `Check()` | Button, Table, Tree, ToolBar.Item, Menu.Item |
+| `Shortcut(keys)` | Menu.Item |
 | `Radio()` | Button, ToolBar.Item, Menu.Item |
 | `Multiline()`, `Password()`, `Search()` | Text |
 | `ReadOnly()` | Text, Combo, Spinner, StyledText |

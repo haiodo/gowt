@@ -13,7 +13,6 @@ Package `github.com/haiodo/gowt/swt` is the full Eclipse SWT API translated to G
 | `gowt.Custom(func(*swt.Control))` | an option that runs on the new widget right after creation |
 
 ```go
-w.Unwrap().SetMinimumSize(320, 160)
 field.Unwrap().AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) { ... }))
 sep := swt.NewLabel(w.AsComposite(), swt.SEPARATOR|swt.HORIZONTAL)
 ```

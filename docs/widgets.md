@@ -2,7 +2,7 @@
 
 Example: [`examples/widgets`](../examples/widgets) (three tabs: input, lists, ranges).
 
-Every widget is made by its parent: `parent.Label(text, opts...)`, `parent.Button(text, onClick, opts...)`. The parent can be a `Window`, `Panel`, `Group`, `Split` or `CoolBar`, or the page `Panel` returned by `Tabs.Tab`. Constructors return a small wrapper with plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
+Every widget is made by its parent: `parent.Label(text, opts...)`, `parent.Button(text, onClick, opts...)`. The parent can be a `Window`, `Panel`, `Group`, `Split` or `CoolBar`, or the page `Panel` returned by `Tabs.Tab` or `Pages.Page`. Constructors return a small wrapper with plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
 
 ## Options
 
@@ -46,6 +46,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Group | `Group(title)` | titled container |
 | Section | `Section()` | grouped "inset" card as in macOS System Settings; `Row()` adds a row `*Panel` (no layout until you `SetLayout`), with a separator line before every row but the first. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
 | Tabs, CTabs | `Tabs()`, `CTabs()` | `Tab(title)` returns the page `*Panel`; `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
+| Pages | `Pages()` | one page at a time, no tabs: `Page()` returns the page `*Panel` (the first is shown), `Show(i)`, `Current()` |
 | Split | `Split()` | children are any widgets, created in order (`split.Panel()`, `split.Table()`, ...); `SetWeights(...)` sets the relative sizes |
 | Scroll | `Scroll()` | build into `Content()`, then call `Fit()` |
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem`; `Separator()` |
@@ -55,7 +56,9 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 ## Any control
 
-Free functions take any widget (`Window` and containers included): `SetEnabled(w, v)` / `Enabled(w)` (children of a disabled container follow), `SetVisible(w, v)` / `Visible(w)` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(w, Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(w, RGB)`. The header font of Table and Tree is not reachable; use `Unwrap()`.
+Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid or Row layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(RGB)`, `SetBackground(RGB)`, `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the rx bindings `BindVisible(r)` / `BindEnabled(r)` ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
+
+`Table.Batch(f)` and `Tree.Batch(f)` suspend drawing while `f` runs, so many row changes repaint once.
 
 ## Cell clicks
 

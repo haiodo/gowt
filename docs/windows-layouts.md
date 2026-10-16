@@ -13,14 +13,16 @@ w.Show()
 ```
 
 - `app.Window(title, opts...)` creates a top-level window. It is hidden until `Show`.
-- `Show` sizes the window to its content unless `SetSize` was called.
+- `Show` sizes the window to its content unless `SetSize` was called. `SetMinSize(w, h)` keeps the user from making it smaller; `app.ScreenSize()` is the area a window can take on the primary monitor.
 - `SetTitle`, `Close` (as if the user closed it) and `OnClose(func() bool)` exist; returning false from `OnClose` keeps the window open.
 - A window is also a container: it has the same child constructors as `Panel` (`w.Button`, `w.Label`, `w.Panel`, ...).
 - More than one window: call `app.Window` again. `Run` returns when the last one is closed.
 
 ## Panels
 
-`w.Panel()` is a plain container with its own layout. Nest panels to build any arrangement. `Group(title)` is a panel with a titled frame; `Tabs`, `CTabs`, `Split` and `Scroll` are containers too (see [widgets.md](widgets.md)).
+`w.Panel()` is a plain container with its own layout. Nest panels to build any arrangement. `Group(title)` is a panel with a titled frame; `Tabs`, `CTabs`, `Pages`, `Split` and `Scroll` are containers too (see [widgets.md](widgets.md)).
+
+A container's content can change after `Show`: `Relayout()` lays the children out again (after a label got a longer text, for example), `Clear()` disposes every child so that the content can be built again, and `child.Dispose()` removes one child and lays the parent out again.
 
 ## Layouts
 
@@ -32,7 +34,7 @@ A layout is a value you pass to `SetLayout`. The zero value of every field means
 | `Grid` | `Columns` (0 means 1), `EqualWidth`, `Margin`, `Spacing` | `Grow`, `GrowX`, `GrowY`, `Span`, `Size`, `Place`, `Cell(GridCell{...})` | forms and most dialogs |
 | `Row` | `Vertical`, `Wrap`, `Fill`, `Center`, `Margin`, `Spacing` | `Size`, `InRow(RowCell{Width, Height})` | toolbars, button rows, wrapping flows |
 | `Form` | `Margin`, `Spacing` | `Anchor(FormCell{Left, Right, Top, Bottom, Width, Height})`, `Size` | edges attached to the container or to siblings |
-| `Stack` | `Margin` | - | one child visible at a time; choose with `panel.ShowTop(child)` |
+| `Stack` | `Margin` | - | one child visible at a time; choose with `panel.ShowTop(child)`. `Pages` does the same and remembers the page |
 
 ### Grid
 
@@ -92,8 +94,15 @@ A side left as the zero `Edge` is free. An edge that refers to a sibling needs t
 
 ### Stack
 
-`Stack` keeps all children at the container's full size. `ShowTop(child)` shows one; it panics on a panel that has no `Stack` layout. There is no getter for the page on top: remember it yourself.
+`Stack` keeps all children at the container's full size. `ShowTop(child)` shows one; it panics on a panel that has no `Stack` layout. There is no getter for the child on top.
 
-## Gaps
+`Pages` is the container for that case, and it knows which page is shown:
 
-There is no minimum window size in the facade; use `w.Unwrap().SetMinimumSize(w, h)` ([swt-direct.md](swt-direct.md)).
+```go
+pages := p.Pages(gowt.Grow())
+pages.Page().SetLayout(gowt.Fill{}).Label("Page one")   // the first page is shown
+pages.Page().SetLayout(gowt.Fill{}).Label("Page two")
+p.Button("Switch", func() { pages.Show(1 - pages.Current()) })
+```
+
+`Show(i)` counts pages from 0 in the order of `Page` calls and panics on an index out of range; `Current()` is -1 when no page is shown.

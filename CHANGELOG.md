@@ -8,15 +8,23 @@ New API
 - `App.OnError(func(error))` receives errors and panics raised by event handlers, `Async` and `After` callbacks and misplaced placement options; the event loop continues.
 - docs/agents.md: the canonical idioms on one page and a table from each option to the widgets that read it. Every constructor's doc ends with an "Options:" line; `go doc` has examples for `Panel.Button`, `Text`, `Table` and `Tree`.
 - `tooling/api-metrics.sh` counts lines, `Unwrap()` and `swt.` uses and local placement helpers per facade program.
+- Common methods on every widget, `Window` and containers included, listed by `go doc` of each type and part of the `Widget` interface: `SetEnabled`, `Enabled`, `SetVisible`, `Visible`, `SetTooltip`, `SetFont`, `SetForeground`, `SetBackground`, `Focus`, `Dispose` (lays the parent out again), `OnDispose`, and the rx bindings `BindVisible`, `BindEnabled`. Containers add `Relayout()` and `Clear()`.
+- `Pages()` on any container: one page at a time without tabs; `Page()` returns the page `*Panel` (the first is shown), `Show(i)`, `Current()`. `examples/layouts`, `cmd/finderdemo` and `cmd/gowtdemo` use it instead of a `Stack` panel and a variable for the page on top.
+- `App.Every(d, f) (stop func())` repeats `f` on the UI thread; a panic in `f` goes to `OnError` and the ticks go on. `examples/events` and `examples/graphics` no longer re-arm `After` from inside the callback.
+- `Shortcut(keys)` for `Menu.Item` binds a key combination and shows it: `Shortcut("Cmd+O")` is Command+O on macOS and Ctrl+O elsewhere; `Ctrl`, `Alt`, `Shift`, letters, digits, punctuation, arrows, `F1`-`F12` and other named keys. `MenuItem.SetText` keeps the shown key.
+- `Window.SetMinSize(w, h)`, `App.ScreenSize()`, `Table.Batch(f)` and `Tree.Batch(f)` (drawing suspended while `f` changes many rows).
 
 Behaviour change
 - An error or panic in an event handler no longer ends `Run` and closes the app: it goes to `App.OnError`, by default logged to stderr with its stack. `Run` still returns an error raised by `setup`.
 - `App.Async`, `App.Sync` and `App.Quit` after `Run` has returned do nothing; they panicked with "Device is disposed".
 - A placement option the parent's layout cannot use (`Cell` under `Row`, `InRow` under `Grid`, any of them under `Fill` or `Stack`) is reported to `App.OnError` when the widget is created, naming the option, the widget and the layout, and the widget keeps its natural size. It used to panic with "java.lang.ClassCastException" on the next layout pass. `SetLayout` drops and reports the layout data of children placed for another layout.
 - `Search()` adds the magnifier icon and the clear button; on macOS and Linux the field had neither.
+- The package functions `SetEnabled(w, v)`, `Enabled(w)`, `SetVisible(w, v)`, `Visible(w)`, `SetFont(w, f)`, `SetForeground(w, c)`, `BindVisible(w, r)` and `BindEnabled(w, r)` are removed: call the methods, `w.SetEnabled(v)`. `gowt.Bind(w, r, apply)` stays a function, since a method cannot have a type parameter.
+- `Widget` has the common methods; it was an interface with only the unexported `control()`.
 
 Fixes
 - docs: events.md said the facade had no mouse listeners (`Canvas.OnMouseDown`/`Up`/`Move` and `Table`/`Tree.OnCellClick` exist); facade.md listed widget fonts and colours as not wrapped; the `Wrap()` doc named only ToolBar. `examples/events` and `examples/catalog` no longer reach for `Unwrap()`.
+- docs: dialogs-menus.md and `Menu.Item` showed a shortcut hint after "\t" that bound no key; `examples/dialogs` displayed Cmd+O and did nothing on it. It uses `Shortcut` now. windows-layouts.md and swt-direct.md sent a minimum window size to `Unwrap()`.
 
 ## v0.7.0 (2026-10-15)
 

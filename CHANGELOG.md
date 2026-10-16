@@ -1,63 +1,60 @@
 # Changelog
 
-## Unreleased
+## v0.8.0 (2026-10-17)
+
+A new facade API: a screen is a tree of values, and events, initial values and rx bindings are options next to the widget. Code written for v0.7 does not compile; the breaking changes below say what each old form becomes, and docs/agents.md shows the idioms on one page.
+
+```go
+// v0.7
+w := app.Window("Contacts")
+w.SetLayout(gowt.Grid{Columns: 2, Margin: 12, Spacing: 8})
+w.Label("Name")
+name := w.Text(gowt.GrowX())
+w.Button("Save", func() { save(name.Text()) })
+
+// v0.8
+name := rx.New("")
+w := app.Window("Contacts")
+w.Add(gowt.Grid(2, gowt.GrowX(),
+	gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Bind(name)),
+	gowt.Button("Save", gowt.OnClick(func() { save(name.Get()) }))))
+```
 
 New API
-- Placement options that do not name the layout and add up to one layout data: `Grow()`, `GrowX()`, `GrowY()` (fill the cell and take the free space), `Span(n)`, `Size(w, h)` (also in `Row` and `Form`), `Place(h, v)`. `GrowX(), Span(2)` is one cell; the later option wins on a shared field. `Cell`, `InRow` and `Anchor` stay and combine with them. The examples and demos use them instead of local `fillX`/`fillBoth` values.
-- `Spacer()` on any container: an empty cell that takes the free width of a Grid row; `Separator()` draws a line across its cell (`Vertical()` turns it).
-- `App.OnError(func(error))` receives errors and panics raised by event handlers, `Async` and `After` callbacks and misplaced placement options; the event loop continues.
-- docs/agents.md: the canonical idioms on one page and a table from each option to the widgets that read it. Every constructor's doc ends with an "Options:" line; `go doc` has examples for `Panel.Button`, `Text`, `Table` and `Tree`.
-- `tooling/api-metrics.sh` counts lines, `Unwrap()` and `swt.` uses and local placement helpers per facade program.
-- Common methods on every widget, `Window` and containers included, listed by `go doc` of each type and part of the `Widget` interface: `SetEnabled`, `Enabled`, `SetVisible`, `Visible`, `SetTooltip`, `SetFont`, `SetForeground`, `SetBackground`, `Focus`, `Dispose` (lays the parent out again), `OnDispose`, and the rx bindings `BindVisible`, `BindEnabled`. Containers add `Relayout()` and `Clear()`.
-- `Pages()` on any container: one page at a time without tabs; `Page()` returns the page `*Panel` (the first is shown), `Show(i)`, `Current()`. `examples/layouts`, `cmd/finderdemo` and `cmd/gowtdemo` use it instead of a `Stack` panel and a variable for the page on top.
-- `App.Every(d, f) (stop func())` repeats `f` on the UI thread; a panic in `f` goes to `OnError` and the ticks go on. `examples/events` and `examples/graphics` no longer re-arm `After` from inside the callback.
-- `Shortcut(keys)` for `Menu.Item` binds a key combination and shows it: `Shortcut("Cmd+O")` is Command+O on macOS and Ctrl+O elsewhere; `Ctrl`, `Alt`, `Shift`, letters, digits, punctuation, arrows, `F1`-`F12` and other named keys. `MenuItem.SetText` keeps the shown key.
-- `Window.SetMinSize(w, h)`, `App.ScreenSize()`, `Table.Batch(f)` and `Tree.Batch(f)` (drawing suspended while `f` changes many rows).
-- A screen is a tree of values: constructors are package functions that return a description (`gowt.Label`, `Button`, `Text`, `VBox`, `HBox`, `Grid(n, ...)`, `Flow`, `Fill`, `Form`, `Group`, `Tabs`/`Tab`, `Pages`, `Scroll`, `Split`, `Section`, ...), created in the parent they are passed to: a container constructor, `app.Window(title, children...)` or `container.Add(children...)`. `Ref(&x)` stores the created widget, `Init(func(x *gowt.ComboView))` sets it up as it is created. `Gap(n)` and `Padding(n)` set a container's spacing. `PagesView` has `AsComposite`. `BenchmarkTree200` measures 200 widgets created as a tree (about 3 allocations per widget more than the panel methods).
-- Events, initial values and rx bindings are options next to the widget: `OnClick`, `OnChange`, `OnSelect`, `OnActivate` (one name per concept, the handler type says what the widget reports: `OnChange(func(string))` on a Text, `OnChange(func(int))` on a Scale), `Hint`, `Checked`, `Selected`, `Value` (the text of a Text, the value of a Scale, the date of a DateTime), and `Bind(state)` (two-way: Text, Combo, Switch, Check button, Scale, Slider, Spinner, List), `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)`. `Watch(w, r, apply)` binds anything else. `Init` and the other hooks run once the widget's children exist, so `Init` fills a Table or sets Split weights in place. The examples keep shared data in `rx` state; `Ref` remains for filling tables and trees.
-- `Window.OnKey(keys, f)` runs `f` when a key combination is pressed anywhere in the window, written as for `Shortcut`; the key does not reach the focused widget. A focused text field keeps the combinations it types or edits with (characters, arrows, Backspace, Cmd+C and the like; the list per OS is in events.md), so `Cmd+[` or `Esc` work while typing and a bare letter does not.
+- Tree of values: constructors are package functions that return a description (`Label`, `Button`, `Text`, `Table`, `Tree`, ... and the containers `VBox`, `HBox`, `Grid(n, ...)`, `Flow`, `Fill`, `Form`, `Group`, `Tabs`/`CTabs` with `Tab`, `Pages`, `Scroll`, `Split`, `Section`, `CoolBar`), created in the parent they are passed to: a container constructor, `app.Window(title, children...)` or `Add(children...)` on a live container. `Ref(&x)` stores the created widget, `Init(func(t *gowt.TableView))` sets it up in place once its children exist (fill a Table, set Split weights). `Gap(n)` and `Padding(n)` set a container's spacing.
+- Events and initial values as options: `OnClick`, `OnChange`, `OnSelect`, `OnActivate` (one name per concept; the handler type says what the widget reports: `OnChange(func(string))` on a Text, `OnChange(func(int))` on a Scale), `Hint`, `Checked`, `Selected`, `Value` (the text of a Text, the value of a Scale, the date of a DateTime).
+- rx bindings as options that live as long as the widget: `Bind(state)` two-way (Text, Combo, Switch, check Button, Scale, Slider, Spinner, List), `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)`; `Watch(w, r, apply)` binds anything else.
+- Placement options that do not name the layout and add up to one layout data: `Grow()`, `GrowX()`, `GrowY()` (fill the cell and take the free space), `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Indent(x, y)`; the later option wins on a shared field. `Cell` (`GridCell` gains `IndentX`, `IndentY`) and `Anchor` stay and combine with them. `Spacer()` is an empty cell that takes the free width of a row, `Separator()` a line across its cell (`Vertical()` turns it).
+- Common methods on every widget, windows and containers included, also on the `Widget` interface: `SetEnabled`, `Enabled`, `SetVisible`, `Visible`, `SetTooltip`, `SetFont`, `SetForeground`, `SetBackground`, `Focus`, `Dispose` (lays the parent out again), `OnDispose`. Containers have `Add`, `Relayout()` and `Clear()`.
+- `Pages(children...)`: one page at a time without tabs, every child is a page; `PagesView.Show(i)`, `Current()`.
+- `App.OnError(func(error))` receives errors and panics raised by event handlers, `Async`, `After` and `Every` callbacks, and options a widget cannot use; the event loop continues. Without it they are logged to stderr with their stack.
+- `App.Every(d, f) (stop func())` repeats `f` on the UI thread; a panic in `f` goes to `OnError` and the ticks go on.
+- Keys: `Shortcut(keys)` on `Menu.Item` binds a combination and shows it (`Shortcut("Cmd+O")` is Command+O on macOS and Ctrl+O elsewhere; `Ctrl`, `Alt`, `Shift`, letters, digits, punctuation, arrows, `F1`-`F12` and other named keys). `Window.OnKey(keys, f)` binds one anywhere in the window with the same syntax; the key does not reach the focused widget, but a focused text field keeps the combinations it types or edits with (the list per OS is in docs/events.md), so `Cmd+[` or `Esc` work while typing and a bare letter does not.
 - `GC.SetFont(f)` sets the font of the text drawn after it in a paint callback; `Font{}` goes back to the canvas's font. The canvas makes each font once and releases it when disposed.
-- `Indent(x, y)` moves a child right and down inside its cell of a VBox, HBox or Grid and composes with the other placement options; `GridCell` has `IndentX` and `IndentY`.
-- `App.Flush()` runs the stale rx effects and the layouts the bindings put off (a longer `BindText` text) now instead of on the next event-loop turn.
+- `App.Flush()` runs the pending rx effects and the layouts the bindings put off now instead of on the next event-loop turn.
+- `Window.SetMinSize(w, h)`, `App.ScreenSize()`, `Table.Batch(f)` and `Tree.Batch(f)` (drawing suspended while `f` changes many rows).
+- docs/agents.md: the canonical idioms on one page and a table from each option to the widgets that read it. Every constructor's doc ends with an "Options:" line. `tooling/api-metrics.sh` counts lines, `Unwrap()` and `swt.` uses per facade program.
 
 Breaking change
-- Widgets are created by package functions instead of methods of their parent, and widget types end in `View` (`LabelView`, `ButtonView`, `TextView`, `TableView`, ...; `Panel` and `Window` keep their names). `Option` is a sealed interface; code that wrote `gowt.Option{}` or compared options does not compile.
-
-  ```go
-  // before
-  w := app.Window("Contacts")
-  w.SetLayout(gowt.Grid{Columns: 2, Margin: 12, Spacing: 8})
-  w.Label("Name")
-  name := w.Text(gowt.GrowX())
-  w.Button("Save", func() { save(name.Text()) })
-
-  // after
-  name := rx.New("")
-  w := app.Window("Contacts")
-  w.Add(gowt.Grid(2, gowt.GrowX(),
-  	gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Bind(name)),
-  	gowt.Button("Save", gowt.OnClick(func() { save(name.Get()) }))))
-  ```
-- Layouts are containers fixed at creation: `SetLayout`, the `Layout` interface, the `Grid{}`, `Row{}`, `Fill{}`, `Form{}` and `Stack{}` values, `Spaced()`, `Padded()`, `ShowTop`, `InRow`/`RowCell` are removed. `Grid{Columns: n}` is `Grid(n, ...)`, `Row{}` is `HBox(...)` (`Flow(...)` when it wraps), `Row{Vertical: true}` is `VBox(...)`, `Stack{}` is `Pages(...)`, `Margin`/`Spacing` are `Padding(n)`/`Gap(n)`, `InRow(RowCell{W, H})` is `Size(w, h)`.
-- Every container spaces its children by `Spacing.SM` unless `Gap` says otherwise; a Window and a Tab page are padded by `Spacing.PageMargin`, a Group by `Spacing.SM`. A Window, Group, Tab page and Scroll content stack their children as a VBox; put an `HBox` or `Grid` inside for another arrangement.
-- `Tabs.Tab(title)` and `CTabs.Tab(title)` are the `Tab(title, children...)` child of `Tabs(...)`/`CTabs(...)`; `Pages.Page()` is gone (every child of `Pages` is a page); `Section.Row()` is gone (every child of `Section` is a row); `Scroll.Content()` keeps working but children go to `Scroll(children...)` or `ScrollView.Add`, which fit the content; `CoolBar.Add(widget)` is `CoolBar(children...)`, each child a band.
+- Widgets are created by package functions instead of methods of their parent (`p.Button(...)` is `p.Add(gowt.Button(...))` or a child of a container constructor), and widget types end in `View` (`LabelView`, `ButtonView`, `TextView`, `TableView`, ...; `Panel` and `Window` keep their names). `Option` is a sealed interface: code that wrote `gowt.Option{}` or compared options does not compile.
+- Layouts are containers fixed at creation: `SetLayout`, the `Layout` interface, the `Grid{}`, `Row{}`, `Fill{}`, `Form{}` and `Stack{}` values, `Spaced()`, `Padded()`, `Stack`/`ShowTop`, `InRow`/`RowCell` are removed. `Grid{Columns: n}` is `Grid(n, ...)`, `Row{}` is `HBox(...)` (`Flow(...)` when it wraps), `Row{Vertical: true}` is `VBox(...)`, `Stack{}` is `Pages(...)`, `Margin`/`Spacing` are `Padding(n)`/`Gap(n)`, `InRow(RowCell{W, H})` is `Size(w, h)`.
+- Default spacing: every container spaces its children by `Spacing.SM` unless `Gap` says otherwise; a Window and a Tab page are padded by `Spacing.PageMargin`, a Group by `Spacing.SM`. A Window, Group, Tab page and Scroll content stack their children as a VBox; put an `HBox` or `Grid` inside for another arrangement.
+- `Tabs.Tab(title)` and `CTabs.Tab(title)` are the `Tab(title, children...)` child of `Tabs(...)`/`CTabs(...)`; every child of `Section` is a row (`Section.Row()` is gone); `Scroll.Content()` keeps working but children go to `Scroll(children...)` or `ScrollView.Add`, which fit the content; `CoolBar.Add(widget)` is `CoolBar(children...)`, each child a band.
 - `Button`, `Switch` and `Link` lose the positional callback: `Button("Save", save)` is `Button("Save", OnClick(save))`, `Button("Small", nil, Radio())` is `Button("Small", Radio())`. `Scale`, `Slider` and `Spinner` lose the positional value: `Scale(0, 100, 30)` is `Scale(0, 100, Value(30))`.
-- The binding methods `LabelView.BindText`, `ButtonView.BindChecked`, `TextView.Bind`, `BindVisible` and `BindEnabled` are the options `BindText`, `Bind`, `BindVisible`, `BindEnabled`; `gowt.Bind(w, r, apply)` is `gowt.Watch(w, r, apply)`.
+- Bindings: `LabelView.BindText`, `ButtonView.BindChecked`, `TextView.Bind` and the functions `BindVisible(w, r)`, `BindEnabled(w, r)` are the options `BindText`, `Bind`, `BindVisible`, `BindEnabled`; `gowt.Bind(w, r, apply)` is `gowt.Watch(w, r, apply)`.
+- The functions `SetEnabled(w, v)`, `Enabled(w)`, `SetVisible(w, v)`, `Visible(w)`, `SetFont(w, f)` and `SetForeground(w, c)` are the methods `w.SetEnabled(v)` and so on.
 - `Beside` and `Same` take the address of the sibling's `Ref` variable: `Beside(&ok, 8)`, read when the child is placed.
-- A style option a widget does not read (`Password()` on a Label, `Border()` on a Combo), `Gap`/`Padding` on a widget that is not a container, children of a widget that holds none, a `Ref` or `Init` of another type, `Shortcut` outside `Menu.Item`, and common options on items (`Table.Column`, `ToolBar.Item`, `Menu.Item`) go to `App.OnError`; they were ignored.
 
 Behaviour change
-- An error or panic in an event handler no longer ends `Run` and closes the app: it goes to `App.OnError`, by default logged to stderr with its stack. `Run` still returns an error raised by `setup`.
+- An error or panic in an event handler no longer ends `Run` and closes the app: it goes to `App.OnError`. `Run` still returns an error raised by `setup`.
+- An option a widget cannot use goes to `App.OnError` with the option, the widget and the layout in the message, and the widget is created without it; it used to be ignored, or for a placement option under another layout, to panic with "java.lang.ClassCastException" on the next layout pass. This covers a style option the widget does not read (`Password()` on a Label), `Gap`/`Padding` on a widget that is not a container, children of a widget that holds none, a `Ref` or `Init` of another type, `Shortcut` outside `Menu.Item` and common options on `Table.Column`, `ToolBar.Item` and `Menu.Item`.
 - `App.Async`, `App.Sync` and `App.Quit` after `Run` has returned do nothing; they panicked with "Device is disposed".
-- A placement option the parent's layout cannot use (`Cell` under `Row`, `InRow` under `Grid`, any of them under `Fill` or `Stack`) is reported to `App.OnError` when the widget is created, naming the option, the widget and the layout, and the widget keeps its natural size. It used to panic with "java.lang.ClassCastException" on the next layout pass. `SetLayout` drops and reports the layout data of children placed for another layout.
 - `Search()` adds the magnifier icon and the clear button; on macOS and Linux the field had neither.
-- The package functions `SetEnabled(w, v)`, `Enabled(w)`, `SetVisible(w, v)`, `Visible(w)`, `SetFont(w, f)`, `SetForeground(w, c)`, `BindVisible(w, r)` and `BindEnabled(w, r)` are removed: call the methods, `w.SetEnabled(v)`. `gowt.Bind(w, r, apply)` stays a function, since a method cannot have a type parameter.
-- `Widget` has the common methods; it was an interface with only the unexported `control()`.
 
 Fixes
-- docs: events.md said the facade had no mouse listeners (`Canvas.OnMouseDown`/`Up`/`Move` and `Table`/`Tree.OnCellClick` exist); facade.md listed widget fonts and colours as not wrapped; the `Wrap()` doc named only ToolBar. `examples/events` and `examples/catalog` no longer reach for `Unwrap()`.
-- docs: dialogs-menus.md and `Menu.Item` showed a shortcut hint after "\t" that bound no key; `examples/dialogs` displayed Cmd+O and did nothing on it. It uses `Shortcut` now. windows-layouts.md and swt-direct.md sent a minimum window size to `Unwrap()`.
 - macOS: `look.SetSidebar` sent a Selection event for each Table, List or Tree in the sidebar that had a selected row (two per widget), so an app had to select its sidebar item after `SetSidebar`. The source-list style is now applied without reporting the reselection.
+- `Menu.Item` showed a shortcut hint after "\t" that bound no key; `examples/dialogs` displayed Cmd+O and did nothing on it. It uses `Shortcut` now.
+- docs: events.md said the facade had no mouse listeners (`Canvas.OnMouseDown`/`Up`/`Move` and `Table`/`Tree.OnCellClick` exist); facade.md listed widget fonts and colours as not wrapped.
 
 ## v0.7.0 (2026-10-15)
 

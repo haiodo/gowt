@@ -17,7 +17,7 @@ func main() {
 		buttons := make([]*gowt.ButtonView, len(names))
 		row := make([]gowt.Option, len(names))
 		for i, n := range names {
-			row[i] = gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&buttons[i]))
+			row[i] = gowt.Button("", gowt.Tooltip(n), gowt.Ref(&buttons[i]))
 		}
 		w := app.Window("Icons", gowt.HBox(row...))
 		// Get caches per name, size and colour and the App owns the images: no Dispose here.

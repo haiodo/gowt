@@ -30,13 +30,13 @@ func main() {
 func boxes() gowt.Option {
 	return gowt.VBox(gowt.GrowX(),
 		gowt.Label("A VBox stacks its children"),
-		gowt.Button("One", nil),
-		gowt.Button("Two", nil),
+		gowt.Button("One"),
+		gowt.Button("Two"),
 		gowt.HBox(gowt.GrowX(),
 			gowt.Label("An HBox lines them up"),
 			gowt.Spacer(),
-			gowt.Button("Cancel", nil),
-			gowt.Button("OK", nil),
+			gowt.Button("Cancel"),
+			gowt.Button("OK"),
 		),
 	)
 }
@@ -46,7 +46,7 @@ func grid() gowt.Option {
 	return gowt.Grid(2, gowt.Grow(),
 		gowt.Label("Name"), gowt.Text(gowt.GrowX()),
 		gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow()),
-		gowt.Button("Save", nil, gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart)),
+		gowt.Button("Save", gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart)),
 	)
 }
 
@@ -54,7 +54,7 @@ func grid() gowt.Option {
 func flow() gowt.Option {
 	opts := []gowt.Option{gowt.GrowX()}
 	for _, name := range []string{"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"} {
-		opts = append(opts, gowt.Button(name, nil, gowt.Size(90, 0)))
+		opts = append(opts, gowt.Button(name, gowt.Size(90, 0)))
 	}
 	return gowt.Flow(opts...)
 }
@@ -71,7 +71,7 @@ func form() gowt.Option {
 		gowt.Text(gowt.Ref(&field), gowt.Anchor(gowt.FormCell{
 			Left: gowt.Beside(&label, 8), Right: gowt.Percent(100, 0), Top: gowt.Percent(0, 0),
 		})),
-		gowt.Button("Go", nil, gowt.Anchor(gowt.FormCell{
+		gowt.Button("Go", gowt.Anchor(gowt.FormCell{
 			Right: gowt.Same(&field, 0), Top: gowt.Beside(&field, 8),
 		})),
 	)
@@ -85,6 +85,6 @@ func pages() gowt.Option {
 			gowt.Label("Page one"),
 			gowt.Label("Page two"),
 		),
-		gowt.Button("Switch", func() { pages.Show(1 - pages.Current()) }),
+		gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })),
 	)
 }

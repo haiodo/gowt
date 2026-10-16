@@ -293,7 +293,7 @@ func (p *panel) Clear() {
 func newPanel(c *swt.Composite) *panel { return &panel{base: base{&c.Control}, c: c} }
 
 // Label creates a static text.
-// Options: Wrap, Center, Right, Border.
+// Options: Wrap, Center, Right, Border, BindText.
 func Label(text string, opts ...Option) Option {
 	return leaf("Label", sWrap|sCenter|sRight|sBorder, opts, func(p *swt.Composite) Widget {
 		l := swt.NewLabel(p, resolve(swt.NONE, opts))
@@ -343,38 +343,29 @@ func Separator(opts ...Option) Option {
 	}}
 }
 
-// Button creates a push button (Check or Radio for other kinds). onClick may be nil.
-// Options: Check, Radio.
-func Button(text string, onClick func(), opts ...Option) Option {
+// Button creates a push button (Check or Radio for other kinds); OnClick gives it an action.
+// Options: Check, Radio, OnClick, OnChange and Checked (Check, Radio), Bind (bool), BindText.
+func Button(text string, opts ...Option) Option {
 	return leaf("Button", sCheck|sRadio, opts, func(p *swt.Composite) Widget {
 		b := swt.NewButton(p, resolve(swt.NONE, opts))
 		b.SetText(text)
-		w := &ButtonView{base{&b.Control}, b}
-		if onClick != nil {
-			w.OnClick(onClick)
-		}
-		return w
+		return &ButtonView{base{&b.Control}, b}
 	})
 }
 
 // Switch creates an on/off toggle. It is a check box on every OS: SWT has no switch control, and
 // NSSwitch on macOS or GtkSwitch on Linux would need a view that the toolkit does not create.
-// onChange gets the new state and may be nil.
-// Options: common only.
-func Switch(text string, onChange func(on bool), opts ...Option) Option {
+// Options: OnChange, Checked, Bind (bool), BindText.
+func Switch(text string, opts ...Option) Option {
 	return leaf("Switch", 0, opts, func(p *swt.Composite) Widget {
 		b := swt.NewButton(p, resolve(swt.CHECK, opts))
 		b.SetText(text)
-		w := &SwitchView{base{&b.Control}, b}
-		if onChange != nil {
-			w.OnChange(onChange)
-		}
-		return w
+		return &SwitchView{base{&b.Control}, b}
 	})
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border.
+// Options: Multiline, Password, ReadOnly, Search, Border, Hint, OnChange, OnActivate, Bind (string).
 func Text(opts ...Option) Option {
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))

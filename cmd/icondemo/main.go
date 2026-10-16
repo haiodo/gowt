@@ -17,7 +17,7 @@ func main() {
 		var buttons = make([]*gowt.ButtonView, len(names))
 		var cells = []gowt.Option{gowt.Grow()}
 		for i, n := range names {
-			cells = append(cells, gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&buttons[i])))
+			cells = append(cells, gowt.Button("", gowt.Tooltip(n), gowt.Ref(&buttons[i])))
 		}
 		w.Add(gowt.Grid(8, cells...))
 		// icons.Get caches per name, size and colour and the App owns the images, so no Dispose here.

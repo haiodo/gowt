@@ -22,7 +22,7 @@ func main() {
 		var host *gowt.Panel
 		w := app.Window("Web view",
 			gowt.Label("", gowt.GrowX(), gowt.Ref(&status)),
-			gowt.Button("Set page text from Go", nil, gowt.Ref(&button)),
+			gowt.Button("Set page text from Go", gowt.Ref(&button)),
 			gowt.Fill(gowt.Grow(), gowt.Size(480, 280), gowt.Ref(&host)),
 		)
 

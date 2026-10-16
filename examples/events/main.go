@@ -24,7 +24,7 @@ func main() {
 				gowt.Progress(100, gowt.GrowX(), gowt.Span(2), gowt.Ref(&progress)),
 				// Slow work goes to a goroutine. Widgets are touched only on the UI thread,
 				// so the result comes back through app.Async.
-				gowt.Button("Start work", func() {
+				gowt.Button("Start work", gowt.OnClick(func() {
 					start.SetEnabled(false)
 					go func() {
 						for i := 1; i <= 100; i++ {
@@ -36,7 +36,7 @@ func main() {
 							echo.SetText("work done")
 						})
 					}()
-				}, gowt.Ref(&start)),
+				}), gowt.Ref(&start)),
 				gowt.Label(time.Now().Format("15:04:05"), gowt.GrowX(), gowt.Ref(&clock)),
 			),
 		)

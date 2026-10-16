@@ -16,7 +16,7 @@ func ExampleRun() {
 		w := app.Window("Hello gowt",
 			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Ref(&name)),
 			gowt.Label("", gowt.GrowX(), gowt.Ref(&greet)),
-			gowt.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") }),
+			gowt.Button("Greet", gowt.OnClick(func() { greet.SetText("Hello, " + name.Text() + "!") })),
 		)
 		w.Show()
 	})
@@ -35,7 +35,7 @@ func ExampleHBox() {
 			gowt.HBox(gowt.GrowX(),
 				gowt.Label("Contacts"),
 				gowt.Spacer(),
-				gowt.Button("Add", func() { name.SetText("") }),
+				gowt.Button("Add", gowt.OnClick(func() { name.SetText("") })),
 			),
 			gowt.Grid(2, gowt.GrowX(),
 				gowt.Label("Name"),
@@ -43,8 +43,8 @@ func ExampleHBox() {
 			),
 			gowt.HBox(gowt.GrowX(),
 				gowt.Spacer(),
-				gowt.Button("Cancel", w.Close),
-				gowt.Button("Save", func() { fmt.Println("save", name.Text()) }),
+				gowt.Button("Cancel", gowt.OnClick(w.Close)),
+				gowt.Button("Save", gowt.OnClick(func() { fmt.Println("save", name.Text()) })),
 			),
 		)
 		name.SetHint("Full name")
@@ -57,8 +57,8 @@ func ExamplePanel_Add() {
 	_ = gowt.Run(func(app *gowt.App) {
 		var list *gowt.Panel
 		w := app.Window("Log", gowt.VBox(gowt.Grow(), gowt.Ref(&list)))
-		w.Add(gowt.Button("More", func() { list.Add(gowt.Label(time.Now().Format(time.TimeOnly))) }))
-		w.Add(gowt.Button("Clear", func() { list.Clear() }))
+		w.Add(gowt.Button("More", gowt.OnClick(func() { list.Add(gowt.Label(time.Now().Format(time.TimeOnly))) })))
+		w.Add(gowt.Button("Clear", gowt.OnClick(func() { list.Clear() })))
 		w.Show()
 	})
 }
@@ -106,7 +106,7 @@ func ExamplePages() {
 				gowt.Label("Step 2"),
 			),
 		)
-		w.Add(gowt.Button("Next", func() { pages.Show((pages.Current() + 1) % 2) }))
+		w.Add(gowt.Button("Next", gowt.OnClick(func() { pages.Show((pages.Current() + 1) % 2) })))
 		w.Show()
 	})
 }
@@ -139,11 +139,11 @@ func ExampleGrid() {
 func ExampleWindow_Confirm() {
 	_ = gowt.Run(func(app *gowt.App) {
 		w := app.Window("Editor")
-		w.Add(gowt.Button("Quit", func() {
+		w.Add(gowt.Button("Quit", gowt.OnClick(func() {
 			if w.Confirm("Quit", "Discard unsaved changes?") {
 				w.Close()
 			}
-		}))
+		})))
 		w.Show()
 	})
 }
@@ -215,9 +215,9 @@ func ExampleButton() {
 		var remember *gowt.ButtonView
 		w := app.Window("Buttons",
 			gowt.HBox(gowt.GrowX(),
-				gowt.Button("Remember me", nil, gowt.Check(), gowt.Ref(&remember)),
+				gowt.Button("Remember me", gowt.Check(), gowt.Ref(&remember)),
 				gowt.Spacer(),
-				gowt.Button("Sign in", func() { fmt.Println("remember:", remember.Checked()) }),
+				gowt.Button("Sign in", gowt.OnClick(func() { fmt.Println("remember:", remember.Checked()) })),
 			),
 		)
 		w.Show()

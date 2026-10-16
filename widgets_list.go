@@ -9,7 +9,7 @@ type ComboView struct {
 }
 
 // Combo creates a combo box with the given items.
-// Options: ReadOnly, Simple.
+// Options: ReadOnly, Simple, Selected, OnSelect, OnChange, Bind (string: text, int: index).
 func Combo(items []string, opts ...Option) Option {
 	return leaf("Combo", sReadOnly|sSimple, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCombo(p, resolve(swt.NONE, opts))
@@ -58,7 +58,7 @@ type ListView struct {
 }
 
 // List creates a list with the given items.
-// Options: MultiSelect, NoBorder.
+// Options: MultiSelect, NoBorder, Selected, OnSelect, OnActivate, Bind (int).
 func List(items []string, opts ...Option) Option {
 	return leaf("List", sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		l := swt.NewList(p, resolve(swt.V_SCROLL|swt.BORDER, opts))
@@ -119,7 +119,7 @@ type TableView struct {
 }
 
 // Table creates a table with a visible header and grid lines.
-// Options: Check, MultiSelect, NoBorder.
+// Options: Check, MultiSelect, NoBorder, Selected, OnSelect, OnActivate.
 func Table(opts ...Option) Option {
 	return leaf("Table", sCheck|sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
@@ -378,7 +378,7 @@ type TreeView struct {
 
 // Tree creates a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
-// Options: Check, MultiSelect, NoBorder, CellSelect.
+// Options: Check, MultiSelect, NoBorder, CellSelect, OnSelect, OnActivate.
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))

@@ -51,7 +51,7 @@ func main() {
 			gowt.ToolBar(gowt.Flat(), gowt.GrowX(), gowt.Ref(&tools)),
 			gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(),
 				gowt.Grow(), gowt.Size(420, 160), gowt.Ref(&out)),
-			gowt.Button("Message box", func() {
+			gowt.Button("Message box", gowt.OnClick(func() {
 				a := w.MessageBox(gowt.Message{
 					Title:   "Delete",
 					Text:    "Delete the file?",
@@ -59,17 +59,17 @@ func main() {
 					Buttons: gowt.ButtonsYesNoCancel,
 				})
 				say(fmt.Sprint("answer: ", a, " yes=", a == gowt.AnswerYes))
-			}),
-			gowt.Button("Colour", func() {
+			})),
+			gowt.Button("Colour", gowt.OnClick(func() {
 				if c, ok := w.ColorDialog(gowt.RGB{R: 200, G: 60, B: 60}); ok {
 					say(fmt.Sprintf("colour: #%02x%02x%02x", c.R, c.G, c.B))
 				}
-			}),
-			gowt.Button("Font", func() {
+			})),
+			gowt.Button("Font", gowt.OnClick(func() {
 				if f, ok := w.FontDialog(gowt.Font{Name: "Helvetica", Size: 12}); ok {
 					say(fmt.Sprintf("font: %s %d bold=%v", f.Name, f.Size, f.Bold))
 				}
-			}),
+			})),
 		)
 
 		tools.Item("Open", openFile)

@@ -34,7 +34,7 @@ func main() {
 
 		// Left-aligned button text: swt.Button has SetAlignment.
 		var b *gowt.ButtonView
-		w.Add(gowt.Button("Left aligned", nil, gowt.GrowX(), gowt.Ref(&b)))
+		w.Add(gowt.Button("Left aligned", gowt.GrowX(), gowt.Ref(&b)))
 		b.Unwrap().SetAlignment(swt.LEFT)
 		w.Show()
 	})

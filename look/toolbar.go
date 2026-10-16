@@ -168,7 +168,7 @@ func (b *toolbarBar) toolItem(tb *gowt.ToolBarView, it ToolbarItem) {
 		})
 	}
 	if it.Enabled != nil {
-		gowt.Bind(tb, it.Enabled, ti.SetEnabled)
+		gowt.Watch(tb, it.Enabled, ti.SetEnabled)
 	}
 }
 

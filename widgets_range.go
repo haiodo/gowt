@@ -29,13 +29,12 @@ type ScaleView struct {
 	s *swt.Scale
 }
 
-// Scale creates a scale over [min, max] set to value.
-// Options: Vertical.
-func Scale(min, max, value int, opts ...Option) Option {
+// Scale creates a scale over [min, max] at min; Value sets another start.
+// Options: Vertical, Value, OnChange, Bind (int).
+func Scale(min, max int, opts ...Option) Option {
 	return leaf("Scale", sVertical, opts, func(p *swt.Composite) Widget {
 		s := swt.NewScale(p, resolve(swt.NONE, opts))
 		setRange(s, min, max)
-		s.SetSelection(int32(value))
 		return &ScaleView{base{&s.Control}, s}
 	})
 }
@@ -60,13 +59,12 @@ type SliderView struct {
 	s *swt.Slider
 }
 
-// Slider creates a slider over [min, max] set to value.
-// Options: Vertical.
-func Slider(min, max, value int, opts ...Option) Option {
+// Slider creates a slider over [min, max] at min; Value sets another start.
+// Options: Vertical, Value, OnChange, Bind (int).
+func Slider(min, max int, opts ...Option) Option {
 	return leaf("Slider", sVertical, opts, func(p *swt.Composite) Widget {
 		s := swt.NewSlider(p, resolve(swt.NONE, opts))
 		setRange(s, min, max)
-		s.SetSelection(int32(value))
 		return &SliderView{base{&s.Control}, s}
 	})
 }
@@ -91,13 +89,12 @@ type SpinnerView struct {
 	s *swt.Spinner
 }
 
-// Spinner creates a spinner over [min, max] set to value.
-// Options: ReadOnly, Border.
-func Spinner(min, max, value int, opts ...Option) Option {
+// Spinner creates a spinner over [min, max] at min; Value sets another start.
+// Options: ReadOnly, Border, Value, OnChange, Bind (int).
+func Spinner(min, max int, opts ...Option) Option {
 	return leaf("Spinner", sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		s := swt.NewSpinner(p, resolve(swt.NONE, opts))
 		setRange(s, min, max)
-		s.SetSelection(int32(value))
 		return &SpinnerView{base{&s.Control}, s}
 	})
 }
@@ -123,7 +120,7 @@ type ProgressView struct {
 }
 
 // Progress creates a progress bar over [0, max].
-// Options: Vertical, Smooth, Indeterminate.
+// Options: Vertical, Smooth, Indeterminate, Value.
 func Progress(max int, opts ...Option) Option {
 	return leaf("Progress", sVertical|sSmooth|sIndeterminate, opts, func(p *swt.Composite) Widget {
 		b := swt.NewProgressBar(p, resolve(swt.NONE, opts))
@@ -151,7 +148,7 @@ type DateTimeView struct {
 }
 
 // DateTime creates a date picker; DropDown() makes the date field a drop-down calendar.
-// Options: DropDown, AsTime, AsCalendar.
+// Options: DropDown, AsTime, AsCalendar, OnChange.
 func DateTime(opts ...Option) Option {
 	return leaf("DateTime", sDropDown|sAsTime|sAsCalendar, opts, func(p *swt.Composite) Widget {
 		d := swt.NewDateTime(p, resolve(swt.NONE, opts))
@@ -191,17 +188,13 @@ type LinkView struct {
 	l *swt.Link
 }
 
-// Link creates a link label; onClick gets the href of the clicked anchor (its text if there is no href). onClick may be nil.
-// Options: common only.
-func Link(text string, onClick func(href string), opts ...Option) Option {
+// Link creates a link label; OnClick gets the href of the clicked anchor (its text if there is no href).
+// Options: OnClick, BindText.
+func Link(text string, opts ...Option) Option {
 	return leaf("Link", 0, opts, func(p *swt.Composite) Widget {
 		l := swt.NewLink(p, resolve(swt.NONE, opts))
 		l.SetText(text)
-		w := &LinkView{base{&l.Control}, l}
-		if onClick != nil {
-			w.OnClick(onClick)
-		}
-		return w
+		return &LinkView{base{&l.Control}, l}
 	})
 }
 

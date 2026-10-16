@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -48,21 +49,14 @@ func TestSpacingOf(t *testing.T) {
 }
 
 func TestRefType(t *testing.T) {
-	var txt *TextView
 	var btn *ButtonView
-	b := &ButtonView{}
-	if want := Ref(&txt).(ref)(b); want != "*gowt.TextView" || txt != nil {
-		t.Errorf("Ref to the wrong type: want %q, txt %v", want, txt)
-	}
-	if want := Ref(&btn).(ref)(b); want != "" || btn != b {
-		t.Errorf("Ref: want %q, btn %v", want, btn)
-	}
 	var got *ButtonView
-	if want := Init(func(t *TextView) {}).(ref)(b); want != "*gowt.TextView" {
-		t.Errorf("Init for the wrong type: want %q", want)
+	b := &ButtonView{}
+	if err := Ref(&btn).(hook)(b); err != nil || btn != b {
+		t.Errorf("Ref: %v, btn %v", err, btn)
 	}
-	if want := Init(func(v *ButtonView) { got = v }).(ref)(b); want != "" || got != b {
-		t.Errorf("Init: want %q, got %v", want, got)
+	if err := Init(func(v *ButtonView) { got = v }).(hook)(b); err != nil || got != b {
+		t.Errorf("Init: %v, got %v", err, got)
 	}
 }
 
@@ -88,7 +82,7 @@ func TestTree(t *testing.T) {
 			HBox(GrowX(), Ref(&head),
 				Label("Contacts"),
 				Spacer(),
-				Button("Add", nil),
+				Button("Add"),
 			),
 			Grid(2, GrowX(), Ref(&form),
 				Label("Name"),
@@ -96,7 +90,7 @@ func TestTree(t *testing.T) {
 			),
 			Group("g", Ref(&grp), Label("in")),
 			Tabs(Tab("t", Ref(&tab), Label("page"))),
-			HBox(GrowX(), Spacer(), Button("Save", nil, Ref(&save))),
+			HBox(GrowX(), Spacer(), Button("Save", Ref(&save))),
 		)
 		if name == nil || save == nil || head == nil || tab == nil {
 			t.Fatalf("Ref: name %v save %v head %v tab %v", name, save, head, tab)
@@ -157,9 +151,9 @@ func TestTree(t *testing.T) {
 		}
 
 		errs = nil
-		bad := put[*LabelView](w, Label("x", Password(), Gap(2), Button("b", nil), Shortcut("Cmd+B")))
+		bad := put[*LabelView](w, Label("x", Password(), Gap(2), Button("b"), Shortcut("Cmd+B")))
 		var wrong *TextView
-		put[*ButtonView](w, Button("b", nil, Ref(&wrong)))
+		put[*ButtonView](w, Button("b", Ref(&wrong)))
 		put[*Panel](w, Flow(Label("f", GrowX())))
 		put[*Panel](w, VBox(Tab("lost")))
 		put[*TabsView](w, Tabs(Label("stray")))
@@ -170,7 +164,7 @@ func TestTree(t *testing.T) {
 			"gowt: Gap and Padding apply to containers, not to Label",
 			"gowt: Label takes no children, Button is dropped",
 			"gowt: Shortcut applies to Menu.Item, not to Label",
-			"gowt: Ref or Init for a *gowt.TextView given to Button",
+			"gowt: Ref to a *gowt.TextView given to Button",
 			"gowt: GrowX on Label needs a VBox, HBox or Grid parent, not Flow",
 			"gowt: Tab needs a Tabs or CTabs parent, not Panel",
 			"gowt: Tabs takes Tab children, not Label",
@@ -179,6 +173,83 @@ func TestTree(t *testing.T) {
 		}
 		if bad == nil || bad.l.IsDisposed() || strings.Join(errs, "\n") != strings.Join(want, "\n") {
 			t.Errorf("error path:\n%s\nwant:\n%s", strings.Join(errs, "\n"), strings.Join(want, "\n"))
+		}
+	})
+}
+
+// Event, initial-value and binding options on real widgets, and the errors of the misfits.
+func TestEventOptions(t *testing.T) {
+	var errs []string
+	guiRun(t, func(app *App, w *Window) {
+		app.OnError(func(err error) { errs = append(errs, err.Error()) })
+		var clicks, picked, activated int
+		var on bool
+		var text string
+		var href string
+		var node string
+		name := rx.New("ann")
+		count := rx.New(3)
+		agree := rx.New(true)
+		title := rx.Compute(func() string { return "Hello, " + name.Get() })
+		btn := put[*ButtonView](w, Button("b", OnClick(func() { clicks++ }), BindEnabled(agree)))
+		chk := put[*ButtonView](w, Button("c", Check(), Checked(true), OnChange(func(v bool) { on = v })))
+		sw := put[*SwitchView](w, Switch("s", Bind(agree)))
+		tx := put[*TextView](w, Text(Hint("Name"), Bind(name), OnChange(func(s string) { text = s }), OnActivate(func() { activated++ })))
+		lb := put[*LabelView](w, Label("", BindText(title), BindVisible(agree)))
+		lk := put[*LinkView](w, Link(`<a href="x">x</a>`, OnClick(func(h string) { href = h })))
+		sp := put[*SpinnerView](w, Spinner(0, 10, Bind(count)))
+		sc := put[*ScaleView](w, Scale(0, 100, Value(40)))
+		cb := put[*ComboView](w, Combo([]string{"a", "b"}, Selected(1), OnSelect(func(i int) { picked = i })))
+		ls := put[*ListView](w, List([]string{"x", "y"}, Bind(count)))
+		tr := put[*TreeView](w, Tree(OnSelect(func(n *Node) { node = n.Text() })))
+		if !chk.Checked() || tx.t.GetMessage() != "Name" || tx.Text() != "ann" || lb.l.GetText() != "Hello, ann" ||
+			sp.Value() != 3 || sc.Value() != 40 || cb.Index() != 1 || !sw.Checked() {
+			t.Errorf("initial values: checked %v hint %q text %q label %q spinner %d scale %d combo %d switch %v",
+				chk.Checked(), tx.t.GetMessage(), tx.Text(), lb.l.GetText(), sp.Value(), sc.Value(), cb.Index(), sw.Checked())
+		}
+		notify(btn.b, swt.Selection)
+		chk.b.SetSelection(false)
+		notify(chk.b, swt.Selection)
+		tx.SetText("bob")
+		notify(tx.t, swt.DefaultSelection)
+		ev := swt.NewEvent()
+		ev.Text = "x"
+		lk.l.NotifyListeners(swt.Selection, ev)
+		notify(cb.c, swt.Selection)
+		n := tr.Node("n")
+		tr.Select(n)
+		notify(tr.t, swt.Selection)
+		rx.Flush()
+		if clicks != 1 || on || text != "bob" || activated != 1 || href != "x" || picked != 1 || node != "n" ||
+			name.Peek() != "bob" || lb.l.GetText() != "Hello, bob" {
+			t.Errorf("events: clicks %d on %v text %q activated %d href %q picked %d node %q state %q label %q",
+				clicks, on, text, activated, href, picked, node, name.Peek(), lb.l.GetText())
+		}
+		sw.b.SetSelection(false)
+		notify(sw.b, swt.Selection)
+		rx.Flush()
+		if agree.Peek() || btn.Enabled() || lb.Visible() {
+			t.Errorf("Switch Bind: state %v, enabled %v, visible %v", agree.Peek(), btn.Enabled(), lb.Visible())
+		}
+		count.Set(1)
+		rx.Flush()
+		if sp.Value() != 1 || ls.Index() != 1 {
+			t.Errorf("Set did not reach Spinner %d and List %d", sp.Value(), ls.Index())
+		}
+
+		errs = nil
+		put[*LabelView](w, Label("x", OnClick(func() {}), Hint("h"), Bind(name), Value(1)))
+		put[*TextView](w, Text(OnChange(func(int) {}), BindText(title)))
+		want := []string{
+			"gowt: OnClick(func()) does not apply to Label",
+			"gowt: Hint applies to Text, not to Label",
+			"gowt: Bind(*rx.State[string]) applies to Text and Combo, not to Label",
+			"gowt: Value applies to Scale, Slider, Spinner and Progress, not to Label",
+			"gowt: OnChange(func(int)) does not apply to Text",
+			"gowt: BindText applies to Label, Button and Link, not to Text; a Text takes Bind",
+		}
+		if strings.Join(errs, "\n") != strings.Join(want, "\n") {
+			t.Errorf("misfits:\n%s\nwant:\n%s", strings.Join(errs, "\n"), strings.Join(want, "\n"))
 		}
 	})
 }
@@ -198,7 +269,7 @@ func BenchmarkTree200(b *testing.B) {
 				rows := make([]Option, 0, 51)
 				rows = append(rows, Ref(&p))
 				for r := 0; r < 50; r++ {
-					rows = append(rows, HBox(Label("Name"), Text(GrowX()), Button("OK", nil)))
+					rows = append(rows, HBox(Label("Name"), Text(GrowX()), Button("OK")))
 				}
 				w.Add(VBox(rows...))
 				p.Dispose()
@@ -207,4 +278,11 @@ func BenchmarkTree200(b *testing.B) {
 			w.Close()
 		})
 	})
+}
+
+// with applies a hook option to an existing widget, as finish would at creation.
+func with(w Widget, o Option) {
+	if err := o.(hook)(w); err != nil {
+		panic(err)
+	}
 }

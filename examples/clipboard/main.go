@@ -17,21 +17,21 @@ func main() {
 			gowt.Grid(2, gowt.Grow(),
 				gowt.Text(gowt.GrowX(), gowt.Size(240, 0), gowt.Ref(&field)),
 				gowt.Label("", gowt.GrowX(), gowt.Span(2), gowt.Ref(&status)),
-				gowt.Button("Copy", func() {
+				gowt.Button("Copy", gowt.OnClick(func() {
 					if err := app.Clipboard().SetText(field.Text()); err != nil {
 						status.SetText("copy failed: " + err.Error())
 						return
 					}
 					status.SetText("copied")
-				}),
-				gowt.Button("Paste", func() {
+				})),
+				gowt.Button("Paste", gowt.OnClick(func() {
 					if s, ok := app.Clipboard().Text(); ok {
 						field.SetText(s)
 						status.SetText("pasted")
 					} else {
 						status.SetText("no text on the clipboard")
 					}
-				}),
+				})),
 			),
 		)
 		w.Show()

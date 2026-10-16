@@ -112,7 +112,7 @@ func choice(items ...string) gowt.Option {
 }
 
 func toggle(on bool) gowt.Option {
-	return gowt.Switch("", nil, gowt.Init(func(s *gowt.SwitchView) { s.SetChecked(on) }))
+	return gowt.Switch("", gowt.Init(func(s *gowt.SwitchView) { s.SetChecked(on) }))
 }
 
 func storage(value int) gowt.Option {
@@ -157,7 +157,7 @@ func dock() gowt.Option {
 	return page(
 		heading("Dock"),
 		gowt.Section(gowt.GrowX(),
-			row("Size", gowt.Scale(16, 128, 48)),
+			row("Size", gowt.Scale(16, 128, gowt.Value(48))),
 			row("Magnification", toggle(false)),
 			row("Position on screen", choice("Bottom", "Left", "Right")),
 			row("Automatically hide and show the Dock", toggle(false)),

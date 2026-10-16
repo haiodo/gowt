@@ -17,10 +17,10 @@ func main() {
 				g.Text(g.Border(), g.GrowX(), g.Size(150, 0), g.Ref(&name)),
 				g.Label("Email:"),
 				g.Text(g.Border(), g.GrowX(), g.Ref(&email)),
-				g.Button("OK", func() {
+				g.Button("OK", g.OnClick(func() {
 					fmt.Println("Name:", name.Text())
 					fmt.Println("Email:", email.Text())
-				}, g.Span(2)),
+				}), g.Span(2)),
 			),
 		)
 

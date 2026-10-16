@@ -70,20 +70,20 @@ func basics(p *g.Panel, status *g.LabelView) {
 	)
 	p.Add(g.Grid(2, g.GrowX(),
 		g.Text(g.GrowX(), g.Ref(&name)),
-		g.Button("Greet", func() { status.SetText("Hello, " + name.Text()) }),
-		g.Link(`Visit <a href="https://github.com/haiodo/gowt">gowt</a>`, func(href string) { status.SetText(href) },
+		g.Button("Greet", g.OnClick(func() { status.SetText("Hello, " + name.Text()) })),
+		g.Link(`Visit <a href="https://github.com/haiodo/gowt">gowt</a>`, g.OnClick(func(href string) { status.SetText(href) }),
 			g.Span(2)),
 		g.Group("Range widgets", g.GrowX(), g.Span(2),
 			g.Grid(2, g.GrowX(),
 				g.Progress(100, g.GrowX(), g.Span(2), g.Ref(&bar)),
-				g.Label("Scale"), g.Scale(0, 100, 30, g.GrowX(), g.Ref(&scale)),
-				g.Label("Slider"), g.Slider(0, 110, 20, g.GrowX(), g.Ref(&slider)),
-				g.Label("Spinner"), g.Spinner(-10, 10, 3, g.Ref(&spinner)),
+				g.Label("Scale"), g.Scale(0, 100, g.Value(30), g.GrowX(), g.Ref(&scale)),
+				g.Label("Slider"), g.Slider(0, 110, g.Value(20), g.GrowX(), g.Ref(&slider)),
+				g.Label("Spinner"), g.Spinner(-10, 10, g.Value(3), g.Ref(&spinner)),
 				g.Label("Date"), g.DateTime(g.DropDown(), g.Ref(&date)),
 				g.Label("Time"), g.DateTime(g.AsTime()),
 			),
 		),
-		g.Button("Busy", nil, g.Check(), g.Tooltip("a check box")),
+		g.Button("Busy", g.Check(), g.Tooltip("a check box")),
 		g.Progress(0, g.Indeterminate(), g.GrowX()),
 	))
 	scale.OnChange(bar.SetValue)
@@ -150,11 +150,11 @@ func containers(p *g.Panel) {
 		g.CTabs(g.Border(), g.Grow(), g.Ref(&ct)),
 		g.Pages(g.Border(), g.GrowX(), g.Ref(&pages),
 			g.Label("page A"),
-			g.Button("page B", nil),
+			g.Button("page B"),
 		),
-		g.Button("Flip", func() { pages.Show(1 - pages.Current()) }),
+		g.Button("Flip", g.OnClick(func() { pages.Show(1 - pages.Current()) })),
 		g.Form(g.GrowX(),
-			g.Button("OK", nil, g.Anchor(g.FormCell{Right: g.Percent(100, 0)}), g.Ref(&ok)),
+			g.Button("OK", g.Anchor(g.FormCell{Right: g.Percent(100, 0)}), g.Ref(&ok)),
 			g.Text(g.Anchor(g.FormCell{Left: g.Percent(0, 0), Right: g.Beside(&ok, -4), Top: g.Same(&ok, 0)})),
 		),
 		g.Scroll(lines...),
@@ -194,7 +194,7 @@ func graphics(app *g.App, p *g.Panel) {
 			gc.Text("Canvas "+fmt.Sprint(angle), 100, 20)
 			gc.Image(img, 100, 50)
 		}, g.Grow(), g.Ref(&cv)),
-		g.Button("Move circle", func() { angle += 20; cv.Redraw() }),
+		g.Button("Move circle", g.OnClick(func() { angle += 20; cv.Redraw() })),
 	)
 	tb.Item("Open", nil).SetImage(img)
 	tb.Separator()
@@ -225,16 +225,16 @@ func dialogs(w *g.Window, p *g.Panel) {
 	var out *g.LabelView
 	p.Add(
 		g.Label("", g.Size(500, 0), g.Ref(&out)),
-		g.Button("Message", func() {
+		g.Button("Message", g.OnClick(func() {
 			a := w.MessageBox(g.Message{Title: "Hi", Text: "Proceed?", Icon: g.IconQuestion, Buttons: g.ButtonsYesNoCancel})
 			out.SetText(fmt.Sprint("answer ", a))
-		}),
-		g.Button("Open files", func() {
+		})),
+		g.Button("Open files", g.OnClick(func() {
 			out.SetText(fmt.Sprint(w.FileDialog(g.FileDialog{Title: "Open", Multi: true,
 				Filters: []g.FileFilter{{Name: "Go", Pattern: "*.go"}, {Name: "All", Pattern: "*"}}})))
-		}),
-		g.Button("Folder", func() { d, ok := w.DirDialog("Folder", ""); out.SetText(fmt.Sprint(d, ok)) }),
-		g.Button("Color", func() { c, ok := w.ColorDialog(g.RGB{R: 255}); out.SetText(fmt.Sprint(c, ok)) }),
-		g.Button("Font", func() { f, ok := w.FontDialog(g.Font{}); out.SetText(fmt.Sprint(f, ok)) }),
+		})),
+		g.Button("Folder", g.OnClick(func() { d, ok := w.DirDialog("Folder", ""); out.SetText(fmt.Sprint(d, ok)) })),
+		g.Button("Color", g.OnClick(func() { c, ok := w.ColorDialog(g.RGB{R: 255}); out.SetText(fmt.Sprint(c, ok)) })),
+		g.Button("Font", g.OnClick(func() { f, ok := w.FontDialog(g.Font{}); out.SetText(fmt.Sprint(f, ok)) })),
 	)
 }

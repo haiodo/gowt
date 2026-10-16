@@ -1,9 +1,6 @@
 package gowt
 
-import (
-	"github.com/haiodo/gowt/rx"
-	"github.com/haiodo/gowt/swt"
-)
+import "github.com/haiodo/gowt/swt"
 
 // Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a
 // child. Its methods are the ones every widget type has.
@@ -20,8 +17,6 @@ type Widget interface {
 	Focus() bool
 	Dispose()
 	OnDispose(f func())
-	BindVisible(r rx.Reader[bool])
-	BindEnabled(r rx.Reader[bool])
 }
 
 // base holds the methods every control has. Each widget type embeds it, so go doc lists them on

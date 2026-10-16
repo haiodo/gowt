@@ -78,8 +78,9 @@ type boxOpt struct {
 	n       int
 }
 
-// ref receives the created widget (Ref, Init); it returns the type it wants when w is another type.
-type ref func(w Widget) (want string)
+// hook runs on the created widget (Ref, Init, events, initial values, bindings); it returns the
+// error to report when w cannot take it.
+type hook func(w Widget) error
 
 // node is a widget description: build creates the widget in h, applies its options and children,
 // and returns it, or nil after reporting that h cannot hold it. Nothing of it stays after build.
@@ -93,7 +94,7 @@ func (apply) option()   {}
 func (place) option()   {}
 func (menuOpt) option() {}
 func (boxOpt) option()  {}
-func (ref) option()     {}
+func (hook) option()    {}
 func (*node) option()   {}
 
 // host is a container that children are created in.
@@ -106,26 +107,26 @@ type host interface {
 // Ref stores the created widget in *p for the code after the Add that creates it, which calls its
 // methods. A Ref to a type other than the widget's is reported to App.OnError.
 func Ref[T Widget](p *T) Option {
-	return ref(func(w Widget) string {
+	return hook(func(w Widget) error {
 		v, ok := w.(T)
 		if !ok {
-			return fmt.Sprintf("%T", *p)
+			return fmt.Errorf("gowt: Ref to a %T given to %s", v, nameOf(w.control()))
 		}
 		*p = v
-		return ""
+		return nil
 	})
 }
 
 // Init runs f on the widget as soon as it is created, before its children: a function that returns
 // a description sets up its widget with it. A widget of another type than f takes goes to App.OnError.
 func Init[T Widget](f func(T)) Option {
-	return ref(func(w Widget) string {
+	return hook(func(w Widget) error {
 		v, ok := w.(T)
 		if !ok {
-			return fmt.Sprintf("%T", v)
+			return fmt.Errorf("gowt: Init for a %T given to %s", v, nameOf(w.control()))
 		}
 		f(v)
-		return ""
+		return nil
 	})
 }
 
@@ -185,9 +186,9 @@ func finish(w Widget, allow styleID, opts []Option) {
 				pl = &placement{}
 			}
 			o(pl)
-		case ref:
-			if want := o(w); want != "" {
-				reportOn(c, fmt.Errorf("gowt: Ref or Init for a %s given to %s", want, nameOf(c)))
+		case hook:
+			if err := o(w); err != nil {
+				reportOn(c, err)
 			}
 		case menuOpt:
 			reportOn(c, fmt.Errorf("gowt: Shortcut applies to Menu.Item, not to %s", nameOf(c)))

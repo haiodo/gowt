@@ -14,7 +14,7 @@ func main() {
 		w := app.Window("Hello gowt",
 			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Ref(&name)),
 			gowt.Label("", gowt.GrowX(), gowt.Ref(&greet)),
-			gowt.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") }),
+			gowt.Button("Greet", gowt.OnClick(func() { greet.SetText("Hello, " + name.Text() + "!") })),
 		)
 		w.Show()
 	})

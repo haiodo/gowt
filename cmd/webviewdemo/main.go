@@ -33,7 +33,7 @@ func build(app *g.App) {
 		g.Grid(2, g.Grow(),
 			g.Tree(g.GrowY(), g.Size(160, 0), g.Ref(&tree)),
 			g.VBox(g.Grow(),
-				g.Button("Eval in page", nil, g.Ref(&button)),
+				g.Button("Eval in page", g.Ref(&button)),
 				g.Label("Messages from the page appear here", g.Wrap(), g.GrowX(), g.Ref(&label)),
 				g.Fill(g.Grow(), g.Ref(&host)),
 			),

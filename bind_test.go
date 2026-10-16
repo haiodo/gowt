@@ -19,7 +19,7 @@ func TestBindings(t *testing.T) {
 		calls := 0
 		text := rx.Compute(func() string { calls++; return "n=" + strconv.Itoa(n.Get()) })
 		lbl := put[*LabelView](w, Label(""))
-		lbl.BindText(text)
+		with(lbl, BindText(text))
 		if lbl.l.GetText() != "n=1" {
 			t.Errorf("BindText first run: %q", lbl.l.GetText())
 		}
@@ -33,8 +33,8 @@ func TestBindings(t *testing.T) {
 		}
 
 		on := rx.New(true)
-		cb := put[*ButtonView](w, Button("check", nil, Check()))
-		cb.BindChecked(on)
+		cb := put[*ButtonView](w, Button("check", Check()))
+		with(cb, Bind(on))
 		if !cb.Checked() {
 			t.Error("BindChecked first run")
 		}
@@ -49,8 +49,8 @@ func TestBindings(t *testing.T) {
 			t.Error("Set did not check the button")
 		}
 
-		cb.BindEnabled(on)
-		lbl.BindVisible(on)
+		with(cb, BindEnabled(on))
+		with(lbl, BindVisible(on))
 		on.Set(false)
 		rx.Flush()
 		if cb.Enabled() || lbl.Visible() {
@@ -68,7 +68,7 @@ func TestBindings(t *testing.T) {
 
 		// A binding made in a Scope dies with the Scope while the widget lives on.
 		other := put[*LabelView](w, Label("keep"))
-		stop := rx.Scope(func() { other.BindText(text) })
+		stop := rx.Scope(func() { with(other, BindText(text)) })
 		stop()
 		n.Set(4)
 		rx.Flush()
@@ -85,7 +85,7 @@ func TestTextBindKeepsCaret(t *testing.T) {
 		stop := rx.Effect(func() { seen = append(seen, s.Get()) })
 		defer stop()
 		tx := put[*TextView](w, Text())
-		tx.Bind(s)
+		with(tx, Bind(s))
 		if tx.Text() != "hello" {
 			t.Errorf("Text.Bind first run: %q", tx.Text())
 		}
@@ -266,9 +266,9 @@ func BenchmarkHeaderRx(b *testing.B) {
 			mem int64
 		}
 		use := rx.Compute(func() usage { c, m := benchUsage(snap.Get()); return usage{c, m} })
-		cpuL.BindText(rx.Compute(func() string { return fmt.Sprintf("%.2f%% / %d00%%", use.Get().cpu, 8) }))
-		memL.BindText(rx.Compute(func() string { return strconv.FormatInt(use.Get().mem>>20, 10) + " MiB" }))
-		footL.BindText(rx.Compute(func() string { return fmt.Sprintf("RAM %d CPU %.2f%%", use.Get().mem>>20, use.Get().cpu/8) }))
+		with(cpuL, BindText(rx.Compute(func() string { return fmt.Sprintf("%.2f%% / %d00%%", use.Get().cpu, 8) })))
+		with(memL, BindText(rx.Compute(func() string { return strconv.FormatInt(use.Get().mem>>20, 10) + " MiB" })))
+		with(footL, BindText(rx.Compute(func() string { return fmt.Sprintf("RAM %d CPU %.2f%%", use.Get().mem>>20, use.Get().cpu/8) })))
 		b.ReportAllocs()
 		b.ResetTimer()
 		for i := range b.N {

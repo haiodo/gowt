@@ -42,7 +42,7 @@ func TestIconsRender(t *testing.T) {
 					t.Errorf("%s: size %dx%d", n, wd, h)
 				}
 				var b *gowt.ButtonView
-				grid.Add(gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&b)))
+				grid.Add(gowt.Button("", gowt.Tooltip(n), gowt.Ref(&b)))
 				b.SetImage(img)
 			}
 			w.Show()

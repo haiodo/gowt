@@ -34,7 +34,7 @@ type StyleSpan struct {
 }
 
 // StyledText creates a multi-line styled editor.
-// Options: Scrollbars, Wrap, ReadOnly, Border.
+// Options: Scrollbars, Wrap, ReadOnly, Border, OnChange.
 func StyledText(opts ...Option) Option {
 	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))

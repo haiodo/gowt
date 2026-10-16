@@ -47,13 +47,13 @@ func main() {
 			),
 			gowt.Group("Glass group", gowt.Ref(&g),
 				gowt.Grid(2,
-					gowt.Button("Glass", nil, look.GlassButton()),
-					gowt.Button("Plain", nil),
-					gowt.Button("Check, no glass bezel", nil, gowt.Check(), look.GlassButton()),
+					gowt.Button("Glass", look.GlassButton()),
+					gowt.Button("Plain"),
+					gowt.Button("Check, no glass bezel", gowt.Check(), look.GlassButton()),
 				),
 			),
 			gowt.VBox(gowt.Padding(12), gowt.Ref(&glassPanel), gowt.Label("Glass panel")),
-			gowt.Button("Glass button", nil, look.GlassButton()),
+			gowt.Button("Glass button", look.GlassButton()),
 		)
 		look.SetGlass(g, true)
 		look.SetGlass(glassPanel, true)

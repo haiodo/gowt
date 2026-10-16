@@ -11,7 +11,7 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Hello",
 			gowt.Label("Hello, gowt"),
-			gowt.Button("Quit", app.Quit),
+			gowt.Button("Quit", gowt.OnClick(app.Quit)),
 		)
 		w.Show()
 	})

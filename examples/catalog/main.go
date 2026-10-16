@@ -23,17 +23,17 @@ var samples = []sample{
 	{"button", func(p *gowt.Panel) {
 		var check *gowt.ButtonView
 		p.Add(
-			gowt.Button("Push", nil),
-			gowt.Button("Check", nil, gowt.Check(), gowt.Ref(&check)),
-			gowt.Button("Radio", nil, gowt.Radio()),
+			gowt.Button("Push"),
+			gowt.Button("Check", gowt.Check(), gowt.Ref(&check)),
+			gowt.Button("Radio", gowt.Radio()),
 		)
 		check.SetChecked(true)
 	}},
 	{"switch", func(p *gowt.Panel) {
 		var wifi *gowt.SwitchView
 		p.Add(
-			gowt.Switch("Wi-Fi", nil, gowt.Ref(&wifi)),
-			gowt.Switch("Bluetooth", nil),
+			gowt.Switch("Wi-Fi", gowt.Ref(&wifi)),
+			gowt.Switch("Bluetooth"),
 		)
 		wifi.SetChecked(true)
 	}},
@@ -49,7 +49,7 @@ var samples = []sample{
 		lines.SetText("Several\nlines")
 	}},
 	{"link", func(p *gowt.Panel) {
-		p.Add(gowt.Link(`Read the <a href="https://example.com">terms</a>`, func(string) {}))
+		p.Add(gowt.Link(`Read the <a href="https://example.com">terms</a>`, gowt.OnClick(func(string) {})))
 	}},
 	{"combo", func(p *gowt.Panel) {
 		var c *gowt.ComboView
@@ -79,9 +79,9 @@ var samples = []sample{
 		src.SetExpanded(true)
 		t.Node("README.md")
 	}},
-	{"scale", func(p *gowt.Panel) { p.Add(gowt.Scale(0, 100, 40)) }},
-	{"slider", func(p *gowt.Panel) { p.Add(gowt.Slider(0, 100, 30)) }},
-	{"spinner", func(p *gowt.Panel) { p.Add(gowt.Spinner(0, 99, 7)) }},
+	{"scale", func(p *gowt.Panel) { p.Add(gowt.Scale(0, 100, gowt.Value(40))) }},
+	{"slider", func(p *gowt.Panel) { p.Add(gowt.Slider(0, 100, gowt.Value(30))) }},
+	{"spinner", func(p *gowt.Panel) { p.Add(gowt.Spinner(0, 99, gowt.Value(7))) }},
 	{"progress", func(p *gowt.Panel) {
 		var plain, smooth *gowt.ProgressView
 		p.Add(
@@ -98,8 +98,8 @@ var samples = []sample{
 	}},
 	{"group", func(p *gowt.Panel) {
 		p.Add(gowt.Group("Options",
-			gowt.Button("First", nil, gowt.Check()),
-			gowt.Button("Second", nil, gowt.Check()),
+			gowt.Button("First", gowt.Check()),
+			gowt.Button("Second", gowt.Check()),
 		))
 	}},
 	{"panel", func(p *gowt.Panel) {

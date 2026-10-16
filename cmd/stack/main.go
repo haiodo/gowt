@@ -14,7 +14,7 @@ func main() {
 		var pages *g.PagesView
 		var buttons, groups []g.Option
 		for i, n := range []string{"A", "B", "C"} {
-			buttons = append(buttons, g.Button(n, func() { pages.Show(i) }))
+			buttons = append(buttons, g.Button(n, g.OnClick(func() { pages.Show(i) })))
 			groups = append(groups, g.Group("Panel "+n, g.Label("This is panel "+n)))
 		}
 		w := app.Window("Stack",

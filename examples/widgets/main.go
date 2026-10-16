@@ -43,11 +43,11 @@ func input(p *gowt.Panel, say func(string)) {
 		gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Border(), gowt.Grow()),
 		gowt.Group("Options", gowt.Span(2), gowt.GrowX(),
 			gowt.HBox(
-				gowt.Button("Remember me", nil, gowt.Check(), gowt.Ref(&remember)),
-				gowt.Switch("Enable options", func(on bool) { remember.SetEnabled(on) }, gowt.Ref(&enable)),
-				gowt.Button("Small", nil, gowt.Radio()),
-				gowt.Button("Large", nil, gowt.Radio()),
-				gowt.Link(`<a href="https://example.com">Terms</a>`, func(href string) { say("link: " + href) }),
+				gowt.Button("Remember me", gowt.Check(), gowt.Ref(&remember)),
+				gowt.Switch("Enable options", gowt.OnChange(func(on bool) { remember.SetEnabled(on) }), gowt.Ref(&enable)),
+				gowt.Button("Small", gowt.Radio()),
+				gowt.Button("Large", gowt.Radio()),
+				gowt.Link(`<a href="https://example.com">Terms</a>`, gowt.OnClick(func(href string) { say("link: " + href) })),
 			),
 		),
 	))
@@ -101,8 +101,8 @@ func ranges(p *gowt.Panel, say func(string)) {
 	var d *gowt.DateTimeView
 	p.Add(gowt.Grid(2, gowt.GrowX(),
 		gowt.Progress(100, gowt.GrowX(), gowt.Span(2), gowt.Ref(&bar)),
-		gowt.Label("Volume"), gowt.Scale(0, 100, 30, gowt.GrowX(), gowt.Ref(&volume)),
-		gowt.Label("Count"), gowt.Spinner(0, 10, 3, gowt.Ref(&count)),
+		gowt.Label("Volume"), gowt.Scale(0, 100, gowt.Value(30), gowt.GrowX(), gowt.Ref(&volume)),
+		gowt.Label("Count"), gowt.Spinner(0, 10, gowt.Value(3), gowt.Ref(&count)),
 		gowt.Label("Date"), gowt.DateTime(gowt.Ref(&d)),
 	))
 	bar.SetValue(30)

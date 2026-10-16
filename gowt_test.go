@@ -52,7 +52,7 @@ func TestRun(t *testing.T) {
 			var btn *ButtonView
 			w.Add(Grid(2, Padding(5),
 				Text(Cell(GridCell{GrowX: true, Align: AlignFill}), Ref(&txt)),
-				Button("go", func() { clicks++ }, Ref(&btn)),
+				Button("go", OnClick(func() { clicks++ }), Ref(&btn)),
 			))
 			txt.OnChange(func(s string) { changed = s })
 			w.Show()
@@ -177,12 +177,12 @@ func TestListWidgets(t *testing.T) {
 func TestRangeWidgets(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		var got int
-		sc := put[*ScaleView](w, Scale(10, 50, 20))
+		sc := put[*ScaleView](w, Scale(10, 50, Value(20)))
 		sc.OnChange(func(v int) { got = v })
 		sc.SetValue(30)
 		notify(sc.Unwrap(), swt.Selection)
-		sl := put[*SliderView](w, Slider(0, 200, 50))
-		sp := put[*SpinnerView](w, Spinner(-300, -150, -200))
+		sl := put[*SliderView](w, Slider(0, 200, Value(50)))
+		sp := put[*SpinnerView](w, Spinner(-300, -150, Value(-200)))
 		pb := put[*ProgressView](w, Progress(10))
 		pb.SetValue(4)
 		if got != 30 || sl.Value() != 50 || sp.Value() != -200 || pb.Value() != 4 || sc.Unwrap().GetMinimum() != 10 {
@@ -200,7 +200,7 @@ func TestRangeWidgets(t *testing.T) {
 			t.Errorf("time %v", v)
 		}
 		var href string
-		lk := put[*LinkView](w, Link(`<a href="http://x">x</a>`, func(h string) { href = h }))
+		lk := put[*LinkView](w, Link(`<a href="http://x">x</a>`, OnClick(func(h string) { href = h })))
 		ev := swt.NewEvent()
 		ev.Text = "http://x"
 		lk.Unwrap().NotifyListeners(swt.Selection, ev)
@@ -226,8 +226,8 @@ func TestContainers(t *testing.T) {
 		}
 		var first, second *ButtonView
 		b.Add(Form(Padding(2),
-			Button("x", nil, Anchor(FormCell{Left: Percent(0, 3), Top: Percent(0, 3)}), Ref(&first)),
-			Button("y", nil, Anchor(FormCell{Left: Beside(&first, 4), Top: Same(&first, 0)}), Ref(&second)),
+			Button("x", Anchor(FormCell{Left: Percent(0, 3), Top: Percent(0, 3)}), Ref(&first)),
+			Button("y", Anchor(FormCell{Left: Beside(&first, 4), Top: Same(&first, 0)}), Ref(&second)),
 		), Flow(Gap(2), Label("r", Size(20, 0))))
 		if fd, ok := second.b.GetLayoutData().(*swt.FormData); !ok || fd.Left == nil || fd.Left.Control != &first.b.Control {
 			t.Errorf("Beside(&first) did not attach to first: %v", second.b.GetLayoutData())
@@ -349,10 +349,10 @@ func TestStyleOptionsWin(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		tb := put[*TableView](w, Table())
 		for name, c := range map[string]struct{ got, want int32 }{
-			"check":    {put[*ButtonView](w, Button("b", nil, Check())).Unwrap().GetStyle(), swt.CHECK},
-			"radio":    {put[*ButtonView](w, Button("b", nil, Radio())).Unwrap().GetStyle(), swt.RADIO},
+			"check":    {put[*ButtonView](w, Button("b", Check())).Unwrap().GetStyle(), swt.CHECK},
+			"radio":    {put[*ButtonView](w, Button("b", Radio())).Unwrap().GetStyle(), swt.RADIO},
 			"simple":   {put[*ComboView](w, Combo(nil, Simple())).Unwrap().GetStyle(), swt.SIMPLE},
-			"vscale":   {put[*ScaleView](w, Scale(0, 10, 0, Vertical())).Unwrap().GetStyle(), swt.VERTICAL},
+			"vscale":   {put[*ScaleView](w, Scale(0, 10, Vertical())).Unwrap().GetStyle(), swt.VERTICAL},
 			"right":    {tb.Column("c", 10, Right()).Unwrap().GetStyle(), swt.RIGHT},
 			"calendr":  {put[*DateTimeView](w, DateTime(AsCalendar())).Unwrap().GetStyle(), swt.CALENDAR},
 			"password": {put[*TextView](w, Text(Password())).Unwrap().GetStyle(), swt.PASSWORD | swt.SINGLE},
@@ -404,7 +404,7 @@ func TestTreeColumnsAndCells(t *testing.T) {
 func TestEnabledSwitchAndTextLog(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		var got []bool
-		sw := put[*SwitchView](w, Switch("Wi-Fi", func(on bool) { got = append(got, on) }))
+		sw := put[*SwitchView](w, Switch("Wi-Fi", OnChange(func(on bool) { got = append(got, on) })))
 		sw.SetChecked(true)
 		if !sw.Checked() || len(got) != 0 {
 			t.Errorf("SetChecked: checked %v callbacks %v", sw.Checked(), got)
@@ -530,7 +530,7 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 
 func TestCommonMethodsAndPages(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		btn := put[*ButtonView](w, Button("b", nil))
+		btn := put[*ButtonView](w, Button("b"))
 		pages := put[*PagesView](w, Pages(GrowX()))
 		for _, x := range []Widget{btn, put[*LabelView](w, Label("l")), put[*Panel](w, VBox()), put[*TableView](w, Table()), pages, w} {
 			x.SetEnabled(false)

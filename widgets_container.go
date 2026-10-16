@@ -39,7 +39,7 @@ type TabsView struct {
 }
 
 // Tabs creates a tab folder whose children are Tab pages; Bottom() moves the tabs below the pages.
-// Options: Bottom, children (Tab only).
+// Options: Bottom, Selected, OnSelect, children (Tab only).
 func Tabs(opts ...Option) Option {
 	return leaf("Tabs", sBottom, opts, func(p *swt.Composite) Widget {
 		f := swt.NewTabFolder(p, resolve(swt.NONE, opts))
@@ -105,7 +105,7 @@ type CTabsView struct {
 
 // CTabs creates a custom tab folder whose children are Tab pages; Border() draws a frame and
 // Closable() on a Tab adds a close button to it.
-// Options: Bottom, Border, children (Tab only).
+// Options: Bottom, Border, Selected, OnSelect, children (Tab only).
 func CTabs(opts ...Option) Option {
 	return leaf("CTabs", sBottom|sBorder, opts, func(p *swt.Composite) Widget {
 		f := swt.NewCTabFolder(p, resolve(swt.NONE, opts))

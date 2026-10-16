@@ -83,6 +83,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Scope(fn)` | owns the effects and deriveds created in `fn`; returns `dispose` |
 | `rx.Untrack(fn)` | reads in `fn` do not subscribe |
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
+| `app.Flush()` | `rx.Flush()`, then the layouts the bindings put off (a longer `BindText` text) instead of on the next event-loop turn: for timing one update or measuring a widget right after a change |
 | `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way) |
 | `gowt.BindText(r)` | option: the text of a Label, Button or Link follows an `rx.Reader[string]` (a `State` or a `Derived`) |
 | `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
@@ -111,6 +112,26 @@ A placement option the parent's layout cannot use (`GrowX` under a `Flow`, `Anch
 
 ## Key and mouse events
 
-`Canvas` has `OnMouseDown`, `OnMouseUp` and `OnMouseMove`; `Table` and `Tree` have `OnCellClick` with the row, column, button and click count. A key combination that runs a command belongs to a menu item: `menu.Item("Back", back, gowt.Shortcut("Alt+Left"))` binds the key and shows it in the menu. There are no other key listeners and no mouse listeners on other widgets: add them on the swt object, see [swt-direct.md](swt-direct.md).
+`Canvas` has `OnMouseDown`, `OnMouseUp` and `OnMouseMove`; `Table` and `Tree` have `OnCellClick` with the row, column, button and click count. A key combination that runs a command belongs to a menu item when there is one: `menu.Item("Back", back, gowt.Shortcut("Alt+Left"))` binds the key and shows it in the menu. Without a menu item, `w.OnKey(keys, f)` binds it in the whole window, written as for `Shortcut`:
+
+```go
+if runtime.GOOS == "darwin" {
+	w.OnKey("Cmd+[", back)
+	w.OnKey("Cmd+]", forward)
+} else {
+	w.OnKey("Alt+Left", back)
+	w.OnKey("Alt+Right", forward)
+}
+```
+
+The bound key does not reach the focused widget. A focused text field (`Text`, `StyledText`, `Spinner`, an editable `Combo`) keeps the combinations it types or edits with, and `f` does not run for them there:
+
+- a character, an arrow, `Home`, `End`, `PageUp`, `PageDown`, `Enter` or `Tab`, alone or with `Shift`;
+- `Backspace` and `Delete` with any modifiers;
+- `Cmd+A`, `C`, `V`, `X`, `Y`, `Z` (Command on macOS, Ctrl elsewhere), with or without `Shift`;
+- on macOS the arrows, `Home`, `End`, `PageUp` and `PageDown` with any modifiers, and a character with `Alt` (Option) or `Ctrl`;
+- on Windows and Linux those keys with `Ctrl`, and a character with `Ctrl+Alt` (AltGr).
+
+So `Cmd+[`, `Alt+Left` on Windows and Linux, `Esc` and `F1`-`F12` work while the user types in a field, and `Alt+Left` on macOS or a bare letter do not. There are no other key listeners and no mouse listeners on other widgets: add them on the swt object, see [swt-direct.md](swt-direct.md).
 
 `w.OnDispose(f)` runs `f` when the widget goes away: by `Dispose`, with its parent, or when its window closes.

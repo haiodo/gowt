@@ -60,6 +60,7 @@ A child without placement options has its natural size, top left of its cell. Th
 | `Span(n)` | cover n columns of a Grid |
 | `Size(w, h)` | width and height hints in points, 0 keeps the natural one; also works in Flow and Form |
 | `Place(h, v)` | alignment in the cell: `AlignStart`, `AlignCenter`, `AlignEnd`, `AlignFill` |
+| `Indent(x, y)` | move the child x points right and y points down inside its cell; the cell grows by as much |
 | `Cell(GridCell{...})` | every field at once, including `SpanY`; options after it change single fields |
 
 `Spacer()` is an empty cell that takes the free space along a VBox or HBox, or the free width of a Grid row, pushing the cells after it to the end. `Separator()` is a line across its cell; `Vertical()` turns it.

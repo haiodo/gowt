@@ -159,6 +159,19 @@ type Font struct {
 	Bold, Italic bool
 }
 
+// from fills an empty Name and a zero Size of f with those of cur.
+func (f Font) from(cur *swt.Font) Font {
+	if fd := cur.GetFontData(); len(fd) > 0 {
+		if f.Name == "" {
+			f.Name = fd[0].GetName()
+		}
+		if f.Size == 0 {
+			f.Size = int(fd[0].GetHeight())
+		}
+	}
+	return f
+}
+
 // swtFont creates the native font for f on display d; the caller owns it.
 func (f Font) swtFont(d swt.DeviceLike) *swt.Font {
 	if f.Weight != 0 {

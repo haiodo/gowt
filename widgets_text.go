@@ -39,15 +39,16 @@ func StyledText(opts ...Option) Option {
 	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
 		w := &StyledTextView{base: base{&t.Control}, t: t, fonts: map[Font]*swt.Font{}}
-		t.AddDisposeListener(&fontDisposer{w})
+		t.AddDisposeListener(&fontDisposer{w.fonts})
 		return w
 	})
 }
 
-type fontDisposer struct{ w *StyledTextView }
+// fontDisposer releases the fonts a widget made for its content.
+type fontDisposer struct{ fonts map[Font]*swt.Font }
 
 func (d *fontDisposer) WidgetDisposed(*swt.DisposeEvent) {
-	for _, f := range d.w.fonts {
+	for _, f := range d.fonts {
 		f.Dispose()
 	}
 }

@@ -183,6 +183,14 @@ func (a *App) Every(d time.Duration, f func()) (stop func()) {
 	return func() { stopped.Store(true) }
 }
 
+// Flush applies pending changes now instead of on the next event-loop turn: it runs the stale rx
+// effects and the layouts that bindings put off, such as BindText's. For timing one update or measuring
+// widgets right after a change. UI thread only.
+func (a *App) Flush() {
+	rx.Flush()
+	a.display.RunDeferredLayouts()
+}
+
 // ScreenSize returns the size in points of the primary monitor's area for windows, without the
 // menu bar, Dock or taskbar.
 func (a *App) ScreenSize() (width, height int) {

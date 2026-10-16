@@ -16,7 +16,7 @@ w.Add(gowt.Canvas(func(g *gowt.GC) {
 }, gowt.Size(400, 200), gowt.Ref(&canvas)))
 ```
 
-The `*GC` is valid only inside the callback. There is nothing to dispose. Give the canvas a size with `Size(w, h)`, or it will be small.
+The `*GC` is valid only inside the callback. There is nothing to dispose: the canvas keeps the fonts `SetFont` made and releases them with itself. Give the canvas a size with `Size(w, h)`, or it will be small.
 
 | Method | Draws |
 |---|---|
@@ -26,6 +26,7 @@ The `*GC` is valid only inside the callback. There is nothing to dispose. Give t
 | `Line`, `Rect`, `Oval` | outlines |
 | `FillRect`, `FillOval` | filled shapes |
 | `Text(s, x, y)`, `TextSize(s)` | text drawn over the fill colour; measure with `TextSize` |
+| `SetFont(Font)` | font of the text drawn after it, until the callback returns; empty `Name` and zero `Size` keep the canvas's, `Font{}` goes back to the canvas's font |
 | `Image(img, x, y)` | an image |
 
 `RGB{R, G, B}` are `uint8`. Not wrapped: paths, gradients, transforms, clipping, drawing into an off-screen image. `Unwrap()` gives the `*swt.GC` with all of them ([swt-direct.md](swt-direct.md)).

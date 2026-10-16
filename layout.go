@@ -153,12 +153,13 @@ func (l *boxLayout) columns(c *swt.Composite) {
 }
 
 // GridCell places one child inside a Grid. Zero value: natural size, top left, one cell.
-// Align zero is AlignStart. Grow, GrowX, GrowY, Span, Size and Place set the common fields one at a time.
+// Align zero is AlignStart. Grow, GrowX, GrowY, Span, Size, Place and Indent set the common fields one at a time.
 type GridCell struct {
-	Align, VAlign Align
-	GrowX, GrowY  bool
-	SpanX, SpanY  int
-	Width, Height int
+	Align, VAlign    Align
+	GrowX, GrowY     bool
+	SpanX, SpanY     int
+	Width, Height    int
+	IndentX, IndentY int // points the child sits right of and below the cell's top left
 }
 
 func (c GridCell) data() *swt.GridData {
@@ -167,6 +168,7 @@ func (c GridCell) data() *swt.GridData {
 	d.GrabExcessHorizontalSpace, d.GrabExcessVerticalSpace = c.GrowX, c.GrowY
 	d.HorizontalSpan, d.VerticalSpan = int32(max(c.SpanX, 1)), int32(max(c.SpanY, 1))
 	d.WidthHint, d.HeightHint = int32(c.Width), int32(c.Height)
+	d.HorizontalIndent, d.VerticalIndent = int32(c.IndentX), int32(c.IndentY)
 	if c.Width == 0 {
 		d.WidthHint = swt.DEFAULT
 	}
@@ -366,6 +368,11 @@ func Span(cols int) Option { return gridOpt("Span", func(c *GridCell) { c.SpanX 
 // Place aligns the child inside its cell: Place(AlignEnd, AlignCenter) puts it at the right, centred vertically.
 func Place(h, v Align) Option {
 	return gridOpt("Place", func(c *GridCell) { c.Align, c.VAlign = h, v })
+}
+
+// Indent moves the child x points right and y points down inside its cell; the cell grows by as much.
+func Indent(x, y int) Option {
+	return gridOpt("Indent", func(c *GridCell) { c.IndentX, c.IndentY = x, y })
 }
 
 // Cell sets every field of the child's grid cell at once; placement options after it change single fields.

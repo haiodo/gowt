@@ -43,7 +43,7 @@ view.Item("Word wrap", nil, gowt.Check()).SetChecked(true)
 
 - `Item(text, onClick, opts...)` appends an item; `Check()` or `Radio()` makes it a toggle. `MenuItem` has `SetText`, `SetEnabled`, `Checked`, `SetChecked`, `OnClick`.
 - `&` in the text marks a mnemonic.
-- `Shortcut(keys)` binds a key combination to the item and shows it next to the text: `"Cmd+O"`, `"Cmd+Shift+S"`, `"Alt+Left"`, `"F5"`. `Cmd` is Command on macOS and Ctrl on Windows and Linux; `Ctrl`, `Alt` and `Shift` are the same keys everywhere. The key is a letter, digit or punctuation mark, or `Left`, `Right`, `Up`, `Down`, `Home`, `End`, `PageUp`, `PageDown`, `Enter`, `Esc`, `Tab`, `Space`, `Backspace`, `Delete`, `Insert`, `F1`-`F12`; an unknown name panics. Text after a tab character in the item text is only shown and binds nothing.
+- `Shortcut(keys)` binds a key combination to the item and shows it next to the text: `"Cmd+O"`, `"Cmd+Shift+S"`, `"Alt+Left"`, `"F5"`. `Cmd` is Command on macOS and Ctrl on Windows and Linux; `Ctrl`, `Alt` and `Shift` are the same keys everywhere. The key is a letter, digit or punctuation mark, or `Left`, `Right`, `Up`, `Down`, `Home`, `End`, `PageUp`, `PageDown`, `Enter`, `Esc`, `Tab`, `Space`, `Backspace`, `Delete`, `Insert`, `F1`-`F12`; an unknown name panics. Text after a tab character in the item text is only shown and binds nothing. A key without a menu item is bound with `w.OnKey(keys, f)`, see [events.md](events.md#key-and-mouse-events).
 - `Menu.OnShow(f)` runs just before the menu opens; refresh enabled states there.
 - Context menu: `gowt.PopupMenu(widget)` returns the widget's menu; a right click opens it, `Show()` opens it by hand. It is a function, not a method.
 

@@ -74,15 +74,7 @@ func (w *base) SetTooltip(s string) { w.ctl.SetToolTipText(s) }
 // The control owns the font and releases it when replaced by the next SetFont or when it is disposed.
 func (w *base) SetFont(f Font) {
 	c := w.ctl
-	if cur := c.GetFont().GetFontData(); len(cur) > 0 {
-		if f.Name == "" {
-			f.Name = cur[0].GetName()
-		}
-		if f.Size == 0 {
-			f.Size = int(cur[0].GetHeight())
-		}
-	}
-	sf := f.swtFont(c.GetDisplay())
+	sf := f.from(c.GetFont()).swtFont(c.GetDisplay())
 	c.SetFont(sf)
 	old, had := ownedFonts[c]
 	ownedFonts[c] = sf

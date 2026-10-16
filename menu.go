@@ -109,7 +109,7 @@ func (i *MenuItem) OnClick(f func()) {
 func Shortcut(keys string) Option {
 	accel, label, err := parseShortcut(keys, runtime.GOOS)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("gowt: Shortcut(%q): %w", keys, err))
 	}
 	return menuOpt(func(it *swt.MenuItem) {
 		it.SetAccelerator(accel)
@@ -150,12 +150,12 @@ func parseShortcut(keys, goos string) (accel int32, label string, err error) {
 		case "shift":
 			accel, words[i] = accel|swt.SHIFT, "Shift"
 		default:
-			return 0, "", fmt.Errorf("gowt: Shortcut(%q): unknown modifier %q, want Cmd, Ctrl, Alt or Shift", keys, p)
+			return 0, "", fmt.Errorf("unknown modifier %q, want Cmd, Ctrl, Alt or Shift", p)
 		}
 	}
 	code, name := shortcutKey(parts[len(parts)-1])
 	if code == 0 {
-		return 0, "", fmt.Errorf("gowt: Shortcut(%q): unknown key %q", keys, parts[len(parts)-1])
+		return 0, "", fmt.Errorf("unknown key %q", parts[len(parts)-1])
 	}
 	words[len(words)-1] = name
 	return accel | code, strings.Join(words, "+"), nil
@@ -213,4 +213,96 @@ func (t *TrayIcon) Unwrap() *swt.TrayItem { return t.i }
 // OnClick runs f when the icon is clicked.
 func (t *TrayIcon) OnClick(f func()) {
 	onSelect(t.i, func(*swt.SelectionEvent) { f() })
+}
+
+// OnKey runs f when keys are pressed anywhere in the window: w.OnKey("Cmd+[", back). keys is written
+// as for Shortcut. A focused text field (Text, StyledText, Spinner, an editable Combo) keeps the
+// combinations it types or edits with, and f does not run for them there; see editsText. OnKey panics
+// on a name it does not know.
+func (w *Window) OnKey(keys string, f func()) {
+	accel, _, err := parseShortcut(keys, runtime.GOOS)
+	if err != nil {
+		panic(fmt.Errorf("gowt: OnKey(%q): %w", keys, err))
+	}
+	d := w.shell.GetDisplay()
+	k := &keyBinding{w.shell, accel, editsText(accel, runtime.GOOS), f}
+	d.AddFilter(swt.KeyDown, k)
+	w.shell.AddDisposeListener(disposeFunc(func() { d.RemoveFilter(swt.KeyDown, k) }))
+}
+
+type keyBinding struct {
+	shell *swt.Shell
+	accel int32
+	edits bool // a text field keeps the keys
+	f     func()
+}
+
+func (k *keyBinding) HandleEvent(e *swt.Event) {
+	if !keyMatches(k.accel, e.StateMask, e.KeyCode) || e.Widget == nil {
+		return
+	}
+	c, ok := e.Widget.Impl().(interface{ GetShell() *swt.Shell })
+	if !ok || c.GetShell() != k.shell || k.edits && isTextField(e.Widget) {
+		return
+	}
+	e.Doit = false
+	k.f()
+}
+
+// keyMatches reports whether a key press with the modifiers in state and the key code matches accel.
+// SWT reports a letter key in lower case whatever the modifiers.
+func keyMatches(accel, state, code int32) bool {
+	if state&swt.MODIFIER_MASK != accel&swt.MODIFIER_MASK {
+		return false
+	}
+	if code >= 'a' && code <= 'z' {
+		code -= 'a' - 'A'
+	}
+	return code == accel&swt.KEY_MASK
+}
+
+func isTextField(w *swt.Widget) bool {
+	switch c := w.Impl().(type) {
+	case *swt.Text, *swt.StyledText, *swt.Spinner:
+		return true
+	case *swt.Combo:
+		return c.GetStyle()&swt.READ_ONLY == 0
+	case *swt.CCombo:
+		return c.GetStyle()&swt.READ_ONLY == 0
+	}
+	return false
+}
+
+// editsText reports whether a text field on goos types or edits with accel: a character, an arrow, Home,
+// End, PageUp, PageDown, Enter or Tab alone; Backspace or Delete with any modifiers; Cmd+A, C, V, X, Y
+// or Z; on macOS the movement keys with any modifiers and a character with Option or Ctrl; elsewhere the
+// movement keys with Ctrl and a character with Ctrl+Alt (AltGr). Shift does not count.
+func editsText(accel int32, goos string) bool {
+	mods := accel & swt.MODIFIER_MASK &^ swt.SHIFT
+	key := accel & swt.KEY_MASK
+	char := key >= ' ' && key < 0x7f
+	move := key == swt.ARROW_LEFT || key == swt.ARROW_RIGHT || key == swt.ARROW_UP || key == swt.ARROW_DOWN ||
+		key == swt.HOME || key == swt.END || key == swt.PAGE_UP || key == swt.PAGE_DOWN
+	mac := goos == "darwin"
+	switch {
+	case key == int32(swt.BS) || key == int32(swt.DEL):
+		return true
+	case mods == 0:
+		return char || move || key == int32(swt.CR) || key == int32(swt.TAB)
+	case move:
+		return mac || mods&swt.CTRL != 0
+	case !char:
+		return false
+	}
+	clip := int32(swt.CTRL)
+	if mac {
+		clip = swt.COMMAND
+	}
+	switch {
+	case mods == clip:
+		return strings.ContainsRune("ACVXYZ", key)
+	case mac:
+		return mods == swt.ALT || mods == swt.CTRL
+	}
+	return mods == swt.CTRL|swt.ALT
 }

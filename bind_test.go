@@ -78,6 +78,21 @@ func TestBindings(t *testing.T) {
 	})
 }
 
+func TestAppFlush(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		s := rx.New("a")
+		lbl := put[*LabelView](w, Label("", BindText(s)))
+		w.SetSize(400, 100)
+		w.Show()
+		before := lbl.l.GetSize().X
+		s.Set("a much longer text")
+		app.Flush()
+		if lbl.l.GetText() != "a much longer text" || lbl.l.GetSize().X <= before {
+			t.Errorf("after Flush: text %q, width %d, was %d", lbl.l.GetText(), lbl.l.GetSize().X, before)
+		}
+	})
+}
+
 func TestTextBindKeepsCaret(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		s := rx.New("hello")
@@ -273,8 +288,7 @@ func BenchmarkHeaderRx(b *testing.B) {
 		b.ResetTimer()
 		for i := range b.N {
 			snap.Set(snaps[i&1])
-			rx.Flush()
-			app.display.RunDeferredLayouts() // what the next event-loop turn does with BindText's DEFER layout
+			app.Flush()
 		}
 		b.StopTimer()
 		w.Close()

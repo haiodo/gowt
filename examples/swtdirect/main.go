@@ -7,23 +7,23 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Facade and swt")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
+		echo := rx.New("")
+		w := app.Window("Facade and swt",
+			// A key listener on the swt Text; the facade only has OnChange and OnActivate.
+			gowt.Text(gowt.GrowX(), gowt.Init(func(t *gowt.TextView) {
+				t.Unwrap().AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
+					echo.Set(fmt.Sprintf("key code %d, character %q", e.KeyCode, rune(e.Character)))
+				}))
+			})),
+			gowt.Label("", gowt.GrowX(), gowt.BindText(echo)))
 
 		w.SetMinSize(320, 160)
-
-		field := w.Text(gowt.GrowX())
-		echo := w.Label("", gowt.GrowX())
-
-		// A key listener on the swt Text; the facade only has OnChange and OnActivate.
-		field.Unwrap().AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
-			echo.SetText(fmt.Sprintf("key code %d, character %q", e.KeyCode, rune(e.Character)))
-		}))
 
 		// A separator line is a Label with the SEPARATOR style in SWT; the facade has no such widget.
 		sep := swt.NewLabel(w.AsComposite(), swt.SEPARATOR|swt.HORIZONTAL)
@@ -32,8 +32,8 @@ func main() {
 		sep.SetLayoutData(gd)
 
 		// Left-aligned button text: swt.Button has SetAlignment.
-		b := w.Button("Left aligned", nil, gowt.GrowX())
-		b.Unwrap().SetAlignment(swt.LEFT)
+		w.Add(gowt.Button("Left aligned", gowt.GrowX(),
+			gowt.Init(func(b *gowt.ButtonView) { b.Unwrap().SetAlignment(swt.LEFT) })))
 		w.Show()
 	})
 	if err != nil {

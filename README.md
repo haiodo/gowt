@@ -32,10 +32,9 @@ import "github.com/haiodo/gowt"
 
 func main() {
 	gowt.Run(func(app *gowt.App) {
-		w := app.Window("Hello")
-		w.SetLayout(gowt.Row{Vertical: true, Margin: 12, Spacing: 8})
-		w.Label("Hello, gowt")
-		w.Button("Quit", app.Quit)
+		w := app.Window("Hello",
+			gowt.Label("Hello, gowt"),
+			gowt.Button("Quit", gowt.OnClick(app.Quit)))
 		w.Show()
 	})
 }
@@ -62,7 +61,7 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 ## What you get
 
 - Widgets: labels, buttons, text, combo, list, table, tree, tabs, pages, split, scroll, tool bar, menus, date picker, sliders, canvas, dialogs, tray icon.
-- Layouts: `Grid`, `Row`, `Fill`, `Form`, `Stack`.
+- Layouts: `VBox`, `HBox`, `Grid`, `Flow`, `Fill`, `Form`, `Pages`, with `Gap` and `Padding`.
 - The system web view next to native widgets: package `webview`, and SWT's `Browser` on top of it.
 - Platform look: Liquid Glass on macOS 26, Mica and Acrylic on Windows 11 22H2 and later (package `look`), light/dark following the system, system icons by name (package `icons`).
 - The full SWT API in package `swt` for what the facade does not wrap, and JFace layout and widget factories in `jface`.

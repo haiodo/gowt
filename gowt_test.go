@@ -48,10 +48,13 @@ func TestRun(t *testing.T) {
 	onMain(func() {
 		err = Run(func(app *App) {
 			w := app.Window("t")
-			w.SetLayout(Grid{Columns: 2, Margin: 5})
-			txt := w.Text(Cell(GridCell{GrowX: true, Align: AlignFill}))
+			var txt *TextView
+			var btn *ButtonView
+			w.Add(Grid(2, Padding(5),
+				Text(Cell(GridCell{GrowX: true, Align: AlignFill}), Ref(&txt)),
+				Button("go", OnClick(func() { clicks++ }), Ref(&btn)),
+			))
 			txt.OnChange(func(s string) { changed = s })
-			btn := w.Button("go", func() { clicks++ })
 			w.Show()
 			txt.SetText("abc")
 			btn.Unwrap().NotifyListeners(swt.Selection, swt.NewEvent())
@@ -99,7 +102,7 @@ func notify(w interface{ NotifyListeners(int32, swt.EventLike) }, typ int32) {
 
 func TestMultilineText(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		if w.Text(Multiline()).Unwrap().GetStyle()&swt.MULTI == 0 {
+		if put[*TextView](w, Text(Multiline())).Unwrap().GetStyle()&swt.MULTI == 0 {
 			t.Error("Multiline text lost MULTI")
 		}
 	})
@@ -108,13 +111,12 @@ func TestMultilineText(t *testing.T) {
 func TestListWidgets(t *testing.T) {
 	var combo, list, row, node = -2, -2, -2, ""
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
-		c := w.Combo([]string{"a", "b", "c"}, ReadOnly())
+		c := put[*ComboView](w, Combo([]string{"a", "b", "c"}, ReadOnly()))
 		c.OnSelect(func(i int) { combo = i })
 		c.Select(1)
 		notify(c.Unwrap(), swt.Selection)
 
-		l := w.List([]string{"x", "y", "z"}, MultiSelect())
+		l := put[*ListView](w, List([]string{"x", "y", "z"}, MultiSelect()))
 		l.OnSelect(func(i int) { list = i })
 		l.SetSelection(2, 0)
 		notify(l.Unwrap(), swt.Selection)
@@ -127,7 +129,7 @@ func TestListWidgets(t *testing.T) {
 			t.Errorf("list items %v", items)
 		}
 
-		tb := w.Table(Check())
+		tb := put[*TableView](w, Table(Check()))
 		tb.Column("n", 50)
 		tb.Column("s", 50, Right())
 		tb.Row("a", "1")
@@ -142,7 +144,7 @@ func TestListWidgets(t *testing.T) {
 			t.Errorf("table state: len %d", tb.Len())
 		}
 
-		tr := w.Tree()
+		tr := put[*TreeView](w, Tree())
 		root := tr.Node("root")
 		kid := root.Node("kid")
 		kid.Node("leaf")
@@ -175,30 +177,30 @@ func TestListWidgets(t *testing.T) {
 func TestRangeWidgets(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		var got int
-		sc := w.Scale(10, 50, 20)
+		sc := put[*ScaleView](w, Scale(10, 50, Value(20)))
 		sc.OnChange(func(v int) { got = v })
 		sc.SetValue(30)
 		notify(sc.Unwrap(), swt.Selection)
-		sl := w.Slider(0, 200, 50)
-		sp := w.Spinner(-300, -150, -200)
-		pb := w.Progress(10)
+		sl := put[*SliderView](w, Slider(0, 200, Value(50)))
+		sp := put[*SpinnerView](w, Spinner(-300, -150, Value(-200)))
+		pb := put[*ProgressView](w, Progress(10))
 		pb.SetValue(4)
 		if got != 30 || sl.Value() != 50 || sp.Value() != -200 || pb.Value() != 4 || sc.Unwrap().GetMinimum() != 10 {
 			t.Errorf("scale=%d slider=%d spinner=%d progress=%d min=%d", got, sl.Value(), sp.Value(), pb.Value(), sc.Unwrap().GetMinimum())
 		}
-		dt := w.DateTime()
+		dt := put[*DateTimeView](w, DateTime())
 		day := time.Date(2024, time.February, 29, 0, 0, 0, 0, time.Local)
 		dt.SetValue(day)
 		if !dt.Value().Equal(day) {
 			t.Errorf("date %v", dt.Value())
 		}
-		tm := w.DateTime(AsTime())
+		tm := put[*DateTimeView](w, DateTime(AsTime()))
 		tm.SetValue(time.Date(2000, 1, 1, 13, 45, 7, 0, time.Local))
 		if v := tm.Value(); v.Hour() != 13 || v.Minute() != 45 || v.Second() != 7 {
 			t.Errorf("time %v", v)
 		}
 		var href string
-		lk := w.Link(`<a href="http://x">x</a>`, func(h string) { href = h })
+		lk := put[*LinkView](w, Link(`<a href="http://x">x</a>`, OnClick(func(h string) { href = h })))
 		ev := swt.NewEvent()
 		ev.Text = "http://x"
 		lk.Unwrap().NotifyListeners(swt.Selection, ev)
@@ -210,9 +212,8 @@ func TestRangeWidgets(t *testing.T) {
 
 func TestContainers(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Fill{})
-		tabs := w.Tabs()
-		a, b := tabs.Tab("a"), tabs.Tab("b")
+		var a, b *Panel
+		tabs := put[*TabsView](w, Tabs(Tab("a", Ref(&a)), Tab("b", Ref(&b))))
 		var sel int
 		tabs.OnSelect(func(i int) { sel = i })
 		tabs.Select(1)
@@ -220,49 +221,42 @@ func TestContainers(t *testing.T) {
 		if sel != 1 || tabs.Unwrap().GetItemCount() != 2 {
 			t.Errorf("tabs sel=%d", sel)
 		}
-		a.SetLayout(Stack{})
-		l1, l2 := a.Label("1"), a.Label("2")
-		a.ShowTop(l2)
-		if a.stack.TopControl != l2.control() || a.stack.TopControl == l1.control() {
-			t.Error("stack top")
+		if a.Unwrap().GetParent() != &tabs.f.Composite || layoutName(a.c) != "VBox" {
+			t.Errorf("Tab page: parent %v layout %q", a.Unwrap().GetParent(), layoutName(a.c))
 		}
-		b.SetLayout(Form{Margin: 2})
-		first := b.Button("x", nil, Anchor(FormCell{Left: Percent(0, 3), Top: Percent(0, 3)}))
-		b.Button("y", nil, Anchor(FormCell{Left: Beside(first, 4), Top: Same(first, 0)}))
-		b.Panel().SetLayout(Row{Wrap: true, Spacing: 2}).Label("r", InRow(RowCell{Width: 20}))
+		var first, second *ButtonView
+		b.Add(Form(Padding(2),
+			Button("x", Anchor(FormCell{Left: Percent(0, 3), Top: Percent(0, 3)}), Ref(&first)),
+			Button("y", Anchor(FormCell{Left: Beside(&first, 4), Top: Same(&first, 0)}), Ref(&second)),
+		), Flow(Gap(2), Label("r", Size(20, 0))))
+		if fd, ok := second.b.GetLayoutData().(*swt.FormData); !ok || fd.Left == nil || fd.Left.Control != &first.b.Control {
+			t.Errorf("Beside(&first) did not attach to first: %v", second.b.GetLayoutData())
+		}
 
-		ct := w.CTabs()
-		ct.Tab("c", Closable())
-		ct.Tab("d", Closable())
+		ct := put[*CTabsView](w, CTabs(Tab("c", Closable())))
+		ct.Add(Tab("d", Closable()))
 		closed := -1
 		ct.OnClose(func(i int) bool { closed = i; return false })
 		ct.Unwrap().GetItem(1).Dispose() // programmatic dispose does not ask; the veto path needs the UI
 		_ = closed
 
-		sp := w.Split(Vertical())
-		sp.Label("p")
-		sp.Label("q")
+		sp := put[*SplitView](w, Split(Vertical(), Label("p"), Label("q")))
 		sp.SetWeights(1, 2)
 		if ws := sp.Unwrap().GetWeights(); len(ws) != 2 || ws[1] < ws[0]*19/10 { // SWT rescales the weights
 			t.Errorf("weights %v", ws)
 		}
-		sc := w.Scroll()
-		sc.Content().SetLayout(Row{Vertical: true})
-		sc.Content().Label("line")
-		sc.Fit()
+		sc := put[*ScrollView](w, Scroll(Label("line")))
 		if sc.Unwrap().GetMinHeight() <= 0 {
 			t.Error("scroll Fit")
 		}
-		g := w.Group("grp")
-		g.Label("in group")
-		tb := w.ToolBar()
+		g := put[*GroupView](w, Group("grp", Label("in group")))
+		tb := put[*ToolBarView](w, ToolBar())
 		clicks := 0
 		it := tb.Item("t", func() { clicks++ }, Check())
 		tb.Separator()
 		it.SetChecked(true)
 		notify(it.Unwrap(), swt.Selection)
-		cb := w.CoolBar()
-		cb.Add(cb.ToolBar())
+		cb := put[*CoolBarView](w, CoolBar(ToolBar()))
 		if clicks != 1 || !it.Checked() || cb.Unwrap().GetItemCount() != 1 || g.Unwrap().GetText() != "grp" {
 			t.Errorf("toolbar clicks=%d", clicks)
 		}
@@ -283,7 +277,7 @@ func TestMenus(t *testing.T) {
 		if len(hit) != 2 || !chk.Checked() || bar.Unwrap().GetItemCount() != 1 || file.Unwrap().GetItemCount() != 3 {
 			t.Errorf("menu hits %v", hit)
 		}
-		pop := PopupMenu(w.Text())
+		pop := PopupMenu(put[*TextView](w, Text()))
 		pop.Item("x", nil)
 		if pop.Unwrap().GetItemCount() != 1 {
 			t.Error("popup")
@@ -314,12 +308,11 @@ func TestImageAndCanvas(t *testing.T) {
 		if _, badErr = app.LoadImage(filepath.Join(t.TempDir(), "nope.png")); badErr == nil {
 			t.Error("missing file: want error")
 		}
-		w.Label("l").SetImage(fromBytes)
+		put[*LabelView](w, Label("l")).SetImage(fromBytes)
 		fromFile.Dispose()
 		fromFile.Dispose() // idempotent
 
-		w.SetLayout(Fill{})
-		cv := w.Canvas(func(g *GC) {
+		cv := put[*CanvasView](w, Canvas(func(g *GC) {
 			g.SetColor(RGB{255, 0, 0})
 			g.SetFill(RGB{0, 255, 0})
 			g.SetLineWidth(2)
@@ -334,7 +327,7 @@ func TestImageAndCanvas(t *testing.T) {
 			}
 			g.Image(fromBytes, 0, 0)
 			drawn++
-		})
+		}, Grow()))
 		w.SetSize(200, 100)
 		w.Show()
 		cv.Redraw()
@@ -354,15 +347,15 @@ func TestImageAndCanvas(t *testing.T) {
 // order, so a default OR-ed in by the facade would override the option.
 func TestStyleOptionsWin(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		tb := w.Table()
+		tb := put[*TableView](w, Table())
 		for name, c := range map[string]struct{ got, want int32 }{
-			"check":    {w.Button("b", nil, Check()).Unwrap().GetStyle(), swt.CHECK},
-			"radio":    {w.Button("b", nil, Radio()).Unwrap().GetStyle(), swt.RADIO},
-			"simple":   {w.Combo(nil, Simple()).Unwrap().GetStyle(), swt.SIMPLE},
-			"vscale":   {w.Scale(0, 10, 0, Vertical()).Unwrap().GetStyle(), swt.VERTICAL},
+			"check":    {put[*ButtonView](w, Button("b", Check())).Unwrap().GetStyle(), swt.CHECK},
+			"radio":    {put[*ButtonView](w, Button("b", Radio())).Unwrap().GetStyle(), swt.RADIO},
+			"simple":   {put[*ComboView](w, Combo(nil, Simple())).Unwrap().GetStyle(), swt.SIMPLE},
+			"vscale":   {put[*ScaleView](w, Scale(0, 10, Vertical())).Unwrap().GetStyle(), swt.VERTICAL},
 			"right":    {tb.Column("c", 10, Right()).Unwrap().GetStyle(), swt.RIGHT},
-			"calendr":  {w.DateTime(AsCalendar()).Unwrap().GetStyle(), swt.CALENDAR},
-			"password": {w.Text(Password()).Unwrap().GetStyle(), swt.PASSWORD | swt.SINGLE},
+			"calendr":  {put[*DateTimeView](w, DateTime(AsCalendar())).Unwrap().GetStyle(), swt.CALENDAR},
+			"password": {put[*TextView](w, Text(Password())).Unwrap().GetStyle(), swt.PASSWORD | swt.SINGLE},
 		} {
 			if c.got&c.want != c.want {
 				t.Errorf("%s: style %#x lacks %#x", name, c.got, c.want)
@@ -373,8 +366,7 @@ func TestStyleOptionsWin(t *testing.T) {
 
 func TestTreeColumnsAndCells(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
-		tr := w.Tree(Cell(GridCell{Align: AlignFill, VAlign: AlignFill, GrowX: true, GrowY: true, Width: 300, Height: 200}))
+		tr := put[*TreeView](w, Tree(Cell(GridCell{Align: AlignFill, VAlign: AlignFill, GrowX: true, GrowY: true, Width: 300, Height: 200})))
 		a := tr.Column("Name", 150)
 		b := tr.Column("Size", 100, Right())
 		b.SetResizable(false)
@@ -397,7 +389,7 @@ func TestTreeColumnsAndCells(t *testing.T) {
 			t.Errorf("tree CellAt outside: %v col %d", got, col)
 		}
 
-		tb := w.Table()
+		tb := put[*TableView](w, Table())
 		tb.Column("a", 80)
 		tb.Column("b", 80)
 		r := tb.Row("x", "y")
@@ -411,9 +403,8 @@ func TestTreeColumnsAndCells(t *testing.T) {
 
 func TestEnabledSwitchAndTextLog(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
 		var got []bool
-		sw := w.Switch("Wi-Fi", func(on bool) { got = append(got, on) })
+		sw := put[*SwitchView](w, Switch("Wi-Fi", OnChange(func(on bool) { got = append(got, on) })))
 		sw.SetChecked(true)
 		if !sw.Checked() || len(got) != 0 {
 			t.Errorf("SetChecked: checked %v callbacks %v", sw.Checked(), got)
@@ -430,12 +421,12 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 		if sw.Enabled() {
 			t.Error("SetEnabled(false) not applied")
 		}
-		lbl := w.Label("x", Disabled())
+		lbl := put[*LabelView](w, Label("x", Disabled()))
 		if lbl.Enabled() {
 			t.Error("Disabled() option not reflected by Enabled")
 		}
 
-		tx := w.Text(Multiline())
+		tx := put[*TextView](w, Text(Multiline()))
 		for i := 0; i < 10; i++ {
 			tx.Append("line\n")
 		}
@@ -448,7 +439,7 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 		}
 		tx.ScrollToEnd()
 
-		st := w.StyledText(Scrollbars())
+		st := put[*StyledTextView](w, StyledText(Scrollbars()))
 		for i := 0; i < 10; i++ {
 			st.Append("l\n")
 		}
@@ -461,7 +452,7 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 			t.Errorf("StyledText.TrimHead(0) left %q", st.Text())
 		}
 
-		ro := w.Text(Multiline(), ReadOnly())
+		ro := put[*TextView](w, Text(Multiline(), ReadOnly()))
 		ro.Append("a\nb\nc\nd")
 		ro.TrimHead(2)
 		if ro.Text() != "c\nd" || ro.Unwrap().GetEditable() {
@@ -477,9 +468,8 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 
 func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
-		a := w.Label("a")
-		b := w.Label("b")
+		a := put[*LabelView](w, Label("a"))
+		b := put[*LabelView](w, Label("b"))
 		w.Show()
 		before := b.l.GetBounds().Y
 		a.SetVisible(false)
@@ -488,14 +478,14 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 		}
 		a.SetVisible(true)
 
-		row := w.Panel().SetLayout(Row{})
-		r1 := row.Label("r1")
-		r2 := row.Label("r2")
+		row := put[*Panel](w, Flow())
+		r1 := put[*LabelView](row, Label("r1"))
+		r2 := put[*LabelView](row, Label("r2"))
 		w.Unwrap().LayoutOverload2(true, true)
 		x2 := r2.l.GetBounds().X
 		r1.SetVisible(false)
 		if r2.l.GetBounds().X >= x2 {
-			t.Errorf("Row layout kept the gap of a hidden label: x %d -> %d", x2, r2.l.GetBounds().X)
+			t.Errorf("Flow layout kept the gap of a hidden label: x %d -> %d", x2, r2.l.GetBounds().X)
 		}
 		b.SetFont(Font{Size: 14})
 		b.SetFont(Font{Size: 20, Bold: true})
@@ -519,14 +509,14 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 			t.Error("SetFont size not applied")
 		}
 
-		tr := w.Tree(NoBorder())
+		tr := put[*TreeView](w, Tree(NoBorder()))
 		tr.ShowRowLines(true)
 		if tr.Unwrap().GetStyle()&swt.BORDER != 0 {
 			t.Error("NoBorder tree has BORDER")
 		}
-		w.Text(Search())
+		put[*TextView](w, Text(Search()))
 
-		cv := w.Canvas(nil)
+		cv := put[*CanvasView](w, Canvas(nil))
 		var got Mouse
 		cv.OnMouseDown(func(m Mouse) { got = m })
 		ev := &swt.Event{}
@@ -540,10 +530,9 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 
 func TestCommonMethodsAndPages(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
-		btn := w.Button("b", nil)
-		pages := w.Pages(GrowX())
-		for _, x := range []Widget{btn, w.Label("l"), w.Panel(), w.Table(), pages, w} {
+		btn := put[*ButtonView](w, Button("b"))
+		pages := put[*PagesView](w, Pages(GrowX()))
+		for _, x := range []Widget{btn, put[*LabelView](w, Label("l")), put[*Panel](w, VBox()), put[*TableView](w, Table()), pages, w} {
 			x.SetEnabled(false)
 			if x.Enabled() || x.control().GetEnabled() {
 				t.Errorf("%T: SetEnabled(false) did not reach the control", x)
@@ -559,16 +548,15 @@ func TestCommonMethodsAndPages(t *testing.T) {
 		btn.Focus()
 
 		gone := 0
-		l := w.Label("x")
+		l := put[*LabelView](w, Label("x"))
 		l.OnDispose(func() { gone++ })
 		l.Dispose()
 		l.Dispose()
 		if gone != 1 || !l.l.IsDisposed() {
 			t.Errorf("Dispose: OnDispose ran %d times, disposed %v", gone, l.l.IsDisposed())
 		}
-		p := w.Panel()
-		p.Label("a")
-		p.Label("b")
+		p := put[*Panel](w, VBox())
+		p.Add(Label("a"), Label("b"))
 		p.Relayout()
 		p.Clear()
 		if n := len(p.c.GetChildren()); n != 0 {
@@ -578,7 +566,7 @@ func TestCommonMethodsAndPages(t *testing.T) {
 		if pages.Current() != -1 {
 			t.Errorf("empty Pages: Current %d", pages.Current())
 		}
-		first, second := pages.Page(), pages.Page()
+		first, second := put[*Panel](pages, VBox()), put[*Panel](pages, VBox())
 		if pages.Current() != 0 || pages.stack.TopControl != first.control() {
 			t.Errorf("first page must be shown: Current %d", pages.Current())
 		}
@@ -590,7 +578,7 @@ func TestCommonMethodsAndPages(t *testing.T) {
 		if pages.Current() != -1 {
 			t.Errorf("disposed page still current: %d", pages.Current())
 		}
-		third := pages.Page()
+		third := put[*Panel](pages, VBox())
 		if pages.Current() != 1 || pages.stack.TopControl != third.control() {
 			t.Errorf("a page added while none is shown must be shown: Current %d", pages.Current())
 		}
@@ -603,7 +591,7 @@ func TestCommonMethodsAndPages(t *testing.T) {
 			pages.Show(3)
 		}()
 
-		tb := w.Table()
+		tb := put[*TableView](w, Table())
 		tb.Batch(func() {
 			for i := 0; i < 3; i++ {
 				tb.Row("r")

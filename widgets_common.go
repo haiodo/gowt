@@ -1,9 +1,6 @@
 package gowt
 
-import (
-	"github.com/haiodo/gowt/rx"
-	"github.com/haiodo/gowt/swt"
-)
+import "github.com/haiodo/gowt/swt"
 
 // Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a
 // child. Its methods are the ones every widget type has.
@@ -20,8 +17,6 @@ type Widget interface {
 	Focus() bool
 	Dispose()
 	OnDispose(f func())
-	BindVisible(r rx.Reader[bool])
-	BindEnabled(r rx.Reader[bool])
 }
 
 // base holds the methods every control has. Each widget type embeds it, so go doc lists them on
@@ -39,8 +34,7 @@ func (w *base) Enabled() bool { return w.ctl.GetEnabled() }
 
 // SetVisible shows or hides the control. In a Grid or Row layout a hidden control also gives up its
 // cell, and the parent is laid out again so the neighbours take the space; SetVisible(true) clears
-// that exclusion. Other layouts keep the gap. A layout option applied to the control after
-// SetVisible(false) (Cell, InRow) replaces its layout data and so undoes the exclusion.
+// that exclusion. Other layouts keep the gap.
 func (w *base) SetVisible(v bool) {
 	c := w.ctl
 	c.SetVisible(v)
@@ -56,7 +50,7 @@ func (w *base) SetVisible(v bool) {
 	case nil:
 		if l := p.GetLayout(); l != nil {
 			switch l.Impl().(type) {
-			case *swt.GridLayout:
+			case swt.GridLayoutLike:
 				g := swt.NewGridData()
 				g.Exclude = !v
 				c.SetLayoutData(g)
@@ -138,50 +132,50 @@ type disposeFunc func()
 
 func (f disposeFunc) WidgetDisposed(*swt.DisposeEvent) { f() }
 
-// Style options. Each applies to the widgets whose SWT style has that bit and is silently ignored
-// elsewhere. Check (gowt.go) also makes Table and Tree rows checkable.
+// Style options. Each applies to the widgets whose "Options:" line lists it; elsewhere it is
+// reported to App.OnError. Check (gowt.go) also makes Table and Tree rows checkable.
 
 // MultiSelect allows several selected items in a List, Table or Tree.
-func MultiSelect() Option { return Option{style: swt.MULTI} }
+func MultiSelect() Option { return style{id: sMultiSelect, set: swt.MULTI} }
 
 // Simple makes a Combo show its list permanently.
-func Simple() Option { return Option{style: swt.SIMPLE} }
+func Simple() Option { return style{id: sSimple, set: swt.SIMPLE} }
 
 // Vertical rotates a Scale, Slider or Progress, stacks a Split, and makes a Sash a vertical bar.
-func Vertical() Option { return Option{style: swt.VERTICAL} }
+func Vertical() Option { return style{id: sVertical, set: swt.VERTICAL} }
 
 // Smooth makes a Progress an unsegmented bar.
-func Smooth() Option { return Option{style: swt.SMOOTH} }
+func Smooth() Option { return style{id: sSmooth, set: swt.SMOOTH} }
 
 // Indeterminate animates a Progress without a value.
-func Indeterminate() Option { return Option{style: swt.INDETERMINATE} }
+func Indeterminate() Option { return style{id: sIndeterminate, set: swt.INDETERMINATE} }
 
 // Flat gives a ToolBar the flat look.
-func Flat() Option { return Option{style: swt.FLAT} }
+func Flat() Option { return style{id: sFlat, set: swt.FLAT} }
 
 // Wrap breaks long text of a Label or StyledText into lines, and lets a ToolBar wrap its items to further rows.
-func Wrap() Option { return Option{style: swt.WRAP} }
+func Wrap() Option { return style{id: sWrap, set: swt.WRAP} }
 
 // Bottom puts the tabs of Tabs or CTabs below the pages.
-func Bottom() Option { return Option{style: swt.BOTTOM} }
+func Bottom() Option { return style{id: sBottom, set: swt.BOTTOM} }
 
 // Closable adds a close button to a CTabs tab.
-func Closable() Option { return Option{style: swt.CLOSE} }
+func Closable() Option { return style{id: sClosable, set: swt.CLOSE} }
 
 // DropDown makes a DateTime date field a drop-down calendar, or a ToolBar item a drop-down.
-func DropDown() Option { return Option{style: swt.DROP_DOWN} }
+func DropDown() Option { return style{id: sDropDown, set: swt.DROP_DOWN} }
 
 // Right right-aligns a table Column.
-func Right() Option { return Option{style: swt.RIGHT} }
+func Right() Option { return style{id: sRight, set: swt.RIGHT} }
 
 // Center centers a table Column.
-func Center() Option { return Option{style: swt.CENTER} }
+func Center() Option { return style{id: sCenter, set: swt.CENTER} }
 
 // AsTime and AsCalendar turn a DateTime from a date field into a time field or a month calendar.
-func AsTime() Option { return Option{style: swt.TIME} }
+func AsTime() Option { return style{id: sAsTime, set: swt.TIME} }
 
 // AsCalendar makes a DateTime a month calendar.
-func AsCalendar() Option { return Option{style: swt.CALENDAR} }
+func AsCalendar() Option { return style{id: sAsCalendar, set: swt.CALENDAR} }
 
 type selector interface {
 	AddSelectionListener(swt.SelectionListener)
@@ -212,7 +206,7 @@ func toInt32s(a []int) []int32 {
 }
 
 // SetImage sets the icon; the label does not own img.
-func (l *Label) SetImage(img *Image) { l.l.SetImage(img.i) }
+func (l *LabelView) SetImage(img *Image) { l.l.SetImage(img.i) }
 
 // SetImage sets the icon; the button does not own img.
-func (b *Button) SetImage(img *Image) { b.b.SetImage(img.i) }
+func (b *ButtonView) SetImage(img *Image) { b.b.SetImage(img.i) }

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 )
 
 func label(dark bool) string {
@@ -21,12 +22,11 @@ func label(dark bool) string {
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("themecheck")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
-		l := w.Label(label(app.Dark()), gowt.GrowX(), gowt.Size(240, 0))
+		theme := rx.New(label(app.Dark()))
+		w := app.Window("themecheck", gowt.Label("", gowt.GrowX(), gowt.Size(240, 0), gowt.BindText(theme)))
 		fmt.Println(label(app.Dark()))
 		app.OnThemeChange(func(dark bool) {
-			l.SetText(label(dark))
+			theme.Set(label(dark))
 			fmt.Println(label(dark))
 		})
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_THEMECHECK_SECS")); s > 0 {

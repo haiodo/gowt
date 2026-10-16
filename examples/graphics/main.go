@@ -30,9 +30,6 @@ func gradient() []byte {
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Graphics")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-
 		// The caller owns an Image; the App disposes what is left when Run returns.
 		tile, err := app.ImageFrom(bytes.NewReader(gradient()))
 		if err != nil {
@@ -40,27 +37,30 @@ func main() {
 		}
 
 		angle := 0
-		canvas := w.Canvas(func(g *gowt.GC) {
-			// The GC lives only inside this callback; draw the whole area every time.
-			g.SetFill(gowt.RGB{R: 245, G: 245, B: 245})
-			g.FillRect(0, 0, 400, 200)
-			g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
-			g.SetLineWidth(2)
-			g.Rect(10, 10, 380, 180)
-			g.Line(10, 10, 390, 190)
-			g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
-			g.FillOval(30+angle%200, 60, 80, 80)
-			g.Image(tile, 300, 20)
-			g.Text(fmt.Sprint("frame ", angle/4), 20, 20)
-		}, gowt.Size(400, 200))
+		var canvas *gowt.CanvasView
+		var l *gowt.LabelView
+		w := app.Window("Graphics",
+			gowt.Canvas(func(g *gowt.GC) {
+				// The GC lives only inside this callback; draw the whole area every time.
+				g.SetFill(gowt.RGB{R: 245, G: 245, B: 245})
+				g.FillRect(0, 0, 400, 200)
+				g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
+				g.SetLineWidth(2)
+				g.Rect(10, 10, 380, 180)
+				g.Line(10, 10, 390, 190)
+				g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
+				g.FillOval(30+angle%200, 60, 80, 80)
+				g.Image(tile, 300, 20)
+				g.Text(fmt.Sprint("frame ", angle/4), 20, 20)
+			}, gowt.Size(400, 200), gowt.Ref(&canvas)),
+			gowt.Label("Image from memory:"),
+			gowt.Label("", gowt.Ref(&l)))
 
 		app.Every(40*time.Millisecond, func() {
 			angle += 4
 			canvas.Redraw()
 		})
 
-		w.Label("Image from memory:")
-		l := w.Label("")
 		l.SetImage(tile)
 		w.Show()
 	})

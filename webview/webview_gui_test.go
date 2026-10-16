@@ -56,9 +56,8 @@ func TestWebView(t *testing.T) {
 	onMain(func() {
 		err = g.Run(func(app *g.App) {
 			w := app.Window("webview")
-			w.SetLayout(g.Fill{})
-			host := w.Panel()
-			host.SetLayout(g.Fill{})
+			var host *g.Panel
+			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
 			wv, e := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 			if e != nil {
 				t.Error(e)
@@ -175,9 +174,8 @@ func TestWebViewOptional(t *testing.T) {
 	onMain(func() {
 		err = g.Run(func(app *g.App) {
 			w := app.Window("webview-opt")
-			w.SetLayout(g.Fill{})
-			host := w.Panel()
-			host.SetLayout(g.Fill{})
+			var host *g.Panel
+			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
 			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
 			if e != nil {
 				t.Error(e)
@@ -286,9 +284,8 @@ func TestWebViewWindows(t *testing.T) {
 	onMain(func() {
 		err = g.Run(func(app *g.App) {
 			w := app.Window("webview-windows")
-			w.SetLayout(g.Fill{})
-			host := w.Panel()
-			host.SetLayout(g.Fill{})
+			var host *g.Panel
+			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
 			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
 			if e != nil {
 				t.Error(e)
@@ -297,7 +294,8 @@ func TestWebViewWindows(t *testing.T) {
 			}
 			if !wv.SetNewWindowHandler(func(n *webview.NewWindow) *webview.WebView {
 				childURL = n.URL
-				ph := host.Panel()
+				var ph *g.Panel
+				host.Add(g.Fill(g.Ref(&ph)))
 				pv, e := n.NewOn(ph.Unwrap(), webview.Options{})
 				if e != nil {
 					t.Error(e)

@@ -64,14 +64,14 @@ NSBackgroundExtensionView is not wrapped.
 Demo: `go run ./cmd/finderdemo` (`GOWT_FINDERDEMO_SECS=n` quits after n seconds).
 
 ```go
-sidebar := w.Panel()
-sidebar.SetLayout(gowt.Grid{Columns: 1}) // no margin: the rows inset their selection
-nav := sidebar.List(pages, gowt.NoBorder(), gowt.Grow())
-content := w.Panel()
-content.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
-s := content.Section(gowt.GrowX())
-s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Appearance")
-s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6}).Label("Liquid Glass")
+var sidebar, content *gowt.Panel
+w.Add(
+	gowt.VBox(gowt.Ref(&sidebar), gowt.Padding(0), // no padding: the rows inset their selection
+		gowt.List(pages, gowt.NoBorder(), gowt.Grow())),
+	gowt.VBox(gowt.Ref(&content), gowt.Padding(20),
+		gowt.Section(gowt.GrowX(),
+			gowt.Grid(2, gowt.Padding(6), gowt.Label("Appearance")),
+			gowt.Grid(2, gowt.Padding(6), gowt.Label("Liquid Glass")))))
 look.SetSidebar(w, sidebar, content, 220)
 look.SetToolbar(w,
 	look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
@@ -79,15 +79,14 @@ look.SetToolbar(w,
 		{Title: "Forward", Symbol: "chevron.forward", OnClick: forward},
 	}},
 	look.ToolbarItem{Space: true},
-	look.ToolbarItem{Title: "Search", OnSearch: func(text string) {}},
-)
+	look.ToolbarItem{Title: "Search", OnSearch: func(text string) {}})
 w.SetTitle("Appearance") // the page title next to back/forward
 ```
 
 - `look.SetSidebar(w, sidebar, content, width)` replaces the window layout; the window holds just these two. It turns on full-size content. On macOS 26 the sidebar is Liquid Glass with corner radius 18, 7 points from the window edges (both measured on a Finder screenshot), running under the traffic lights; the sidebar children and the content start below the title bar and toolbar. Lists, tables and trees inside the sidebar when it is called get the source-list style with a transparent background; a List or Table selects the Finder way, a grey pill with the text in the accent colour (a Tree keeps the filled selection). AppKit puts navigational items and the window title right after the traffic lights, so an empty navigational item of fitted width goes first and back/forward and the title start past the sidebar edge. Rows of a source list keep a fixed height (custom row size style, at least the one AppKit chose for the sidebar), which SWT reads as the item height; List text is centred in its row. Older macOS: a flush blurred material. Windows and Linux: two plain panels side by side.
 - `ToolbarItem.Group` is one capsule of segments (back/forward), `Nav` puts the item before the window title, `OnSearch` makes a native search field (NSSearchToolbarItem) that reports the text after a typing pause, on Return and on clearing. On macOS 15 and newer it starts as a magnifier button that turns into the field on a click and back when editing ends with the field empty (Esc, the clear button, a click elsewhere), as in Finder. The field gets AppKit's own `NSSearchFieldCell`: SWT sets the cell class of every NSSearchField to its own cell, and with that cell the toolbar field showed an empty capsule. The toolbar shows icons only, no labels under the items. `Enabled` (an `rx.Reader[bool]`, nil for always enabled) dims a push item or a group segment while it is false; the toolbar delegate answers `validateToolbarItem:` from it, so AppKit's autovalidation does not enable it again. The page title is the window title.
 - Windows and Linux: `SetToolbar` with `SetSidebar` (in either order) puts the items in a bar at the top of the content column, built from ordinary gowt widgets: Nav items, the window title in semibold, then the other items; the title takes the free width unless a `Space` item does. Push items and `Group` segments are flat `ToolBar` buttons with the native hover and pressed states; `Symbol` draws a 16-point icon for `chevron.backward`, `chevron.forward`, `plus` and `square.and.arrow.up`, any other symbol shows `Title` as text. `Title` is the tooltip. `Enabled` dims the icon. `OnSearch` is a 240-point search `Text` with `Title` as the placeholder, called on every change. The bar takes the background of the content panel (again on a layout and after a theme change) with a hairline below it, and its text and icons use the system text colour, or near black or near white where that would not read on the content colour. `Window.SetTitle` updates the bar title.
-- `Section()` on any container is a rounded card with rows; `Row()` adds a row panel and a separator line before it. The card is the section's SWT background, inherited by its rows and labels, with the corners painted in the parent's colour: on macOS `quaternarySystemFillColor` over the window colour, flattened to an opaque colour (SWT fills the background of every label and panel on the card, and translucent fills would add up); on Windows and Linux 6% from the window colour toward the text colour. It is taken again when the system theme changes. Labels, check boxes and panels in a row take the card colour; a `Text` keeps its own white field, so show a read-only value with a `Label`. A heading is a `Label` above the section (`l.SetFont(gowt.Font{Weight: gowt.Semibold})`).
+- `gowt.Section(rows...)` is a rounded card; each child is a row, with a separator line before it. The card is the section's SWT background, inherited by its rows and labels, with the corners painted in the parent's colour: on macOS `quaternarySystemFillColor` over the window colour, flattened to an opaque colour (SWT fills the background of every label and panel on the card, and translucent fills would add up); on Windows and Linux 6% from the window colour toward the text colour. It is taken again when the system theme changes. Labels, check boxes and panels in a row take the card colour; a `Text` keeps its own white field, so show a read-only value with a `Label`. A heading is a `Label` above the section (`l.SetFont(gowt.Font{Weight: gowt.Semibold})`).
 
 Footprint on macOS: start the demo, then `footprint -p finderdemo` (the `IOAccelerator` and `IOSurface` lines are GPU memory) or `vmmap --summary $(pgrep finderdemo)`.
 

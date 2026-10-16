@@ -3,9 +3,9 @@ package gowt
 import "github.com/haiodo/gowt/swt"
 
 // Scrollbars gives a StyledText vertical and horizontal scroll bars (they appear when needed).
-func Scrollbars() Option { return Option{style: swt.V_SCROLL | swt.H_SCROLL} }
+func Scrollbars() Option { return style{id: sScrollbars, set: swt.V_SCROLL | swt.H_SCROLL} }
 
-// StyledText is a multi-line editor with per-range styles. All offsets and lengths are in
+// StyledTextView is a multi-line editor with per-range styles. All offsets and lengths are in
 // runes, i.e. indexes into []rune(Text()); the facade converts to the UTF-16 units SWT uses.
 // Each conversion scans the text, O(n) per call: fine for documents up to some hundred
 // kilobytes; for larger ones keep a line index and use Unwrap with SWT offsets.
@@ -13,7 +13,7 @@ func Scrollbars() Option { return Option{style: swt.V_SCROLL | swt.H_SCROLL} }
 // Not wrapped (use Unwrap): bullets, line alignment and indent, glyph metrics, underline
 // styles and colors, block selection, verify and extended-modify listeners (undo), bidi
 // segments, custom content.
-type StyledText struct {
+type StyledTextView struct {
 	base
 	t     *swt.StyledText
 	fonts map[Font]*swt.Font
@@ -33,17 +33,18 @@ type StyleSpan struct {
 	Style         TextStyle
 }
 
-// StyledText adds a multi-line styled editor.
-// Options: Scrollbars, Wrap, ReadOnly, Border.
-func (p *panel) StyledText(opts ...Option) *StyledText {
-	t := swt.NewStyledText(p.c, resolve(swt.NONE, opts))
-	applyOpts(&t.Control, opts)
-	w := &StyledText{base: base{&t.Control}, t: t, fonts: map[Font]*swt.Font{}}
-	t.AddDisposeListener(&fontDisposer{w})
-	return w
+// StyledText creates a multi-line styled editor.
+// Options: Scrollbars, Wrap, ReadOnly, Border, Value, OnChange.
+func StyledText(opts ...Option) Option {
+	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
+		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
+		w := &StyledTextView{base: base{&t.Control}, t: t, fonts: map[Font]*swt.Font{}}
+		t.AddDisposeListener(&fontDisposer{w})
+		return w
+	})
 }
 
-type fontDisposer struct{ w *StyledText }
+type fontDisposer struct{ w *StyledTextView }
 
 func (d *fontDisposer) WidgetDisposed(*swt.DisposeEvent) {
 	for _, f := range d.w.fonts {
@@ -52,20 +53,20 @@ func (d *fontDisposer) WidgetDisposed(*swt.DisposeEvent) {
 }
 
 // Unwrap returns the underlying swt.StyledText for the full API (offsets there are UTF-16 units).
-func (t *StyledText) Unwrap() *swt.StyledText { return t.t }
+func (t *StyledTextView) Unwrap() *swt.StyledText { return t.t }
 
 // Text returns the whole content.
-func (t *StyledText) Text() string { return t.t.GetText() }
+func (t *StyledTextView) Text() string { return t.t.GetText() }
 
 // SetText replaces the whole content.
-func (t *StyledText) SetText(s string) { t.t.SetText(s) }
+func (t *StyledTextView) SetText(s string) { t.t.SetText(s) }
 
 // Append adds s at the end.
-func (t *StyledText) Append(s string) { t.t.Append(s) }
+func (t *StyledTextView) Append(s string) { t.t.Append(s) }
 
 // TrimHead deletes the oldest lines so that at most keep lines remain; TrimHead(0) clears the
 // text. It does not touch the rest of the text and works on a read-only view.
-func (t *StyledText) TrimHead(keep int) {
+func (t *StyledTextView) TrimHead(keep int) {
 	n := int(t.t.GetLineCount()) - keep
 	switch {
 	case n <= 0:
@@ -77,23 +78,23 @@ func (t *StyledText) TrimHead(keep int) {
 }
 
 // ScrollToEnd moves the caret to the end and scrolls it into view.
-func (t *StyledText) ScrollToEnd() {
+func (t *StyledTextView) ScrollToEnd() {
 	t.t.SetCaretOffset(t.t.GetCharCount())
 	t.t.ShowSelection()
 }
 
 // Insert adds s at the caret.
-func (t *StyledText) Insert(s string) { t.t.Insert(s) }
+func (t *StyledTextView) Insert(s string) { t.t.Insert(s) }
 
 // Replace replaces length runes from start with s.
-func (t *StyledText) Replace(start, length int, s string) {
+func (t *StyledTextView) Replace(start, length int, s string) {
 	text := t.t.GetText()
 	u := runesToUnits(text, start)
 	t.t.ReplaceTextRange(int32(u), int32(runesToUnits(text, start+length)-u), s)
 }
 
 // Selection returns the selected range; length is 0 when only the caret is set.
-func (t *StyledText) Selection() (start, length int) {
+func (t *StyledTextView) Selection() (start, length int) {
 	p := t.t.GetSelectionRange()
 	text := t.t.GetText()
 	start = unitsToRunes(text, int(p.X))
@@ -101,69 +102,69 @@ func (t *StyledText) Selection() (start, length int) {
 }
 
 // SetSelection selects length runes from start.
-func (t *StyledText) SetSelection(start, length int) {
+func (t *StyledTextView) SetSelection(start, length int) {
 	text := t.t.GetText()
 	u := runesToUnits(text, start)
 	t.t.SetSelectionRange(int32(u), int32(runesToUnits(text, start+length)-u))
 }
 
 // SelectedText returns the selected text.
-func (t *StyledText) SelectedText() string { return t.t.GetSelectionText() }
+func (t *StyledTextView) SelectedText() string { return t.t.GetSelectionText() }
 
 // Caret returns the caret position.
-func (t *StyledText) Caret() int {
+func (t *StyledTextView) Caret() int {
 	return unitsToRunes(t.t.GetText(), int(t.t.GetCaretOffset()))
 }
 
 // SetCaret moves the caret.
-func (t *StyledText) SetCaret(offset int) {
+func (t *StyledTextView) SetCaret(offset int) {
 	t.t.SetCaretOffset(int32(runesToUnits(t.t.GetText(), offset)))
 }
 
 // Reveal scrolls so that the selection is visible.
-func (t *StyledText) Reveal() { t.t.ShowSelection() }
+func (t *StyledTextView) Reveal() { t.t.ShowSelection() }
 
 // Lines returns the number of lines.
-func (t *StyledText) Lines() int { return int(t.t.GetLineCount()) }
+func (t *StyledTextView) Lines() int { return int(t.t.GetLineCount()) }
 
 // LineAt returns the line index that holds the rune offset.
-func (t *StyledText) LineAt(offset int) int {
+func (t *StyledTextView) LineAt(offset int) int {
 	return int(t.t.GetLineAtOffset(int32(runesToUnits(t.t.GetText(), offset))))
 }
 
 // LineStart returns the rune offset of the first character of line.
-func (t *StyledText) LineStart(line int) int {
+func (t *StyledTextView) LineStart(line int) int {
 	return unitsToRunes(t.t.GetText(), int(t.t.GetOffsetAtLine(int32(line))))
 }
 
 // SetTopLine scrolls so that line is the first visible one.
-func (t *StyledText) SetTopLine(line int) { t.t.SetTopIndex(int32(line)) }
+func (t *StyledTextView) SetTopLine(line int) { t.t.SetTopIndex(int32(line)) }
 
 // SetEditable allows or forbids typing.
-func (t *StyledText) SetEditable(on bool) { t.t.SetEditable(on) }
+func (t *StyledTextView) SetEditable(on bool) { t.t.SetEditable(on) }
 
 // SetWrap turns word wrapping on or off.
-func (t *StyledText) SetWrap(on bool) { t.t.SetWordWrap(on) }
+func (t *StyledTextView) SetWrap(on bool) { t.t.SetWordWrap(on) }
 
 // SetTabs sets the tab width in spaces.
-func (t *StyledText) SetTabs(n int) { t.t.SetTabs(int32(n)) }
+func (t *StyledTextView) SetTabs(n int) { t.t.SetTabs(int32(n)) }
 
 // Cut moves the selection to the system clipboard.
-func (t *StyledText) Cut() { t.t.Cut() }
+func (t *StyledTextView) Cut() { t.t.Cut() }
 
 // Copy copies the selection to the system clipboard.
-func (t *StyledText) Copy() { t.t.Copy() }
+func (t *StyledTextView) Copy() { t.t.Copy() }
 
 // Paste inserts the system clipboard text at the caret.
-func (t *StyledText) Paste() { t.t.Paste() }
+func (t *StyledTextView) Paste() { t.t.Paste() }
 
 // SetLineBackground colors count lines from line.
-func (t *StyledText) SetLineBackground(line, count int, c RGB) {
+func (t *StyledTextView) SetLineBackground(line, count int, c RGB) {
 	t.t.SetLineBackground(int32(line), int32(count), c.color())
 }
 
 // SetStyle applies s to length runes from start, replacing the styles there.
-func (t *StyledText) SetStyle(start, length int, s TextStyle) {
+func (t *StyledTextView) SetStyle(start, length int, s TextStyle) {
 	text := t.t.GetText()
 	u := runesToUnits(text, start)
 	r := t.styleRange(s)
@@ -173,12 +174,12 @@ func (t *StyledText) SetStyle(start, length int, s TextStyle) {
 }
 
 // ClearStyles removes every style.
-func (t *StyledText) ClearStyles() {
+func (t *StyledTextView) ClearStyles() {
 	t.t.ReplaceStyleRanges(0, t.t.GetCharCount(), []*swt.StyleRange{})
 }
 
 // Styles returns the styled ranges in order. Font is not reported.
-func (t *StyledText) Styles() []StyleSpan {
+func (t *StyledTextView) Styles() []StyleSpan {
 	text := t.t.GetText()
 	var out []StyleSpan
 	for _, r := range t.t.GetStyleRanges() {
@@ -188,7 +189,7 @@ func (t *StyledText) Styles() []StyleSpan {
 	return out
 }
 
-func (t *StyledText) styleRange(s TextStyle) *swt.StyleRange {
+func (t *StyledTextView) styleRange(s TextStyle) *swt.StyleRange {
 	r := swt.NewStyleRange()
 	if s.Foreground != nil {
 		r.Foreground = s.Foreground.color()
@@ -210,7 +211,7 @@ func (t *StyledText) styleRange(s TextStyle) *swt.StyleRange {
 	return r
 }
 
-func (t *StyledText) font(f Font) *swt.Font {
+func (t *StyledTextView) font(f Font) *swt.Font {
 	if sf, ok := t.fonts[f]; ok {
 		return sf
 	}
@@ -234,17 +235,17 @@ func styleOf(r *swt.StyleRange) TextStyle {
 }
 
 // OnChange runs f with the new content after every edit.
-func (t *StyledText) OnChange(f func(text string)) {
+func (t *StyledTextView) OnChange(f func(text string)) {
 	t.t.AddModifyListener(&modifier{func() { f(t.t.GetText()) }})
 }
 
 // OnSelect runs f with the selection after it changed.
-func (t *StyledText) OnSelect(f func(start, length int)) {
+func (t *StyledTextView) OnSelect(f func(start, length int)) {
 	onSelect(t.t, func(*swt.SelectionEvent) { f(t.Selection()) })
 }
 
 // OnCaret runs f with the caret position after it moved.
-func (t *StyledText) OnCaret(f func(offset int)) {
+func (t *StyledTextView) OnCaret(f func(offset int)) {
 	t.t.AddCaretListener(&caretFunc{func() { f(t.Caret()) }})
 }
 
@@ -255,12 +256,12 @@ func (c *caretFunc) CaretMoved(*swt.CaretEvent) { c.f() }
 // OnStyle runs f each time a line is drawn; the spans it returns style that line only. Start
 // is counted in runes from the beginning of the line, so no whole-text conversion happens per
 // repaint. f must not change the text.
-func (t *StyledText) OnStyle(f func(line string) []StyleSpan) {
+func (t *StyledTextView) OnStyle(f func(line string) []StyleSpan) {
 	t.t.AddLineStyleListener(&lineStyler{t, f})
 }
 
 type lineStyler struct {
-	t *StyledText
+	t *StyledTextView
 	f func(line string) []StyleSpan
 }
 

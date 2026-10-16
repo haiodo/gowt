@@ -32,15 +32,16 @@ func PopupMenu(w Widget) *Menu {
 
 // Item appends a push item (Check or Radio for other kinds). onClick may be nil.
 // A "&" in text marks a mnemonic. Shortcut binds a key and shows it; text after "\t" is only shown.
-// Options: Check, Radio, Shortcut; the common options are ignored.
+// Options: Check, Radio, Shortcut.
 func (m *Menu) Item(text string, onClick func(), opts ...Option) *MenuItem {
 	it := swt.NewMenuItem(m.m, resolve(swt.NONE, opts))
 	it.SetText(text)
 	for _, o := range opts {
-		if o.menu != nil {
-			o.menu(it)
+		if f, ok := o.(menuOpt); ok {
+			f(it)
 		}
 	}
+	itemOpts(it, "Menu.Item", sCheck|sRadio, true, opts)
 	w := &MenuItem{it}
 	if onClick != nil {
 		w.OnClick(onClick)
@@ -110,11 +111,11 @@ func Shortcut(keys string) Option {
 	if err != nil {
 		panic(err)
 	}
-	return Option{menu: func(it *swt.MenuItem) {
+	return menuOpt(func(it *swt.MenuItem) {
 		it.SetAccelerator(accel)
 		text, _, _ := strings.Cut(it.GetText(), "\t")
 		it.SetText(text + "\t" + label) // macOS shows the bound key itself and drops the text after "\t"
-	}}
+	})
 }
 
 var namedKeys = []struct {

@@ -5,15 +5,16 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 )
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Hello gowt")
-		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-		name := w.Text(gowt.GrowX(), gowt.Size(200, 0))
-		greet := w.Label("", gowt.GrowX(), gowt.Span(2))
-		w.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") })
+		name, greet := rx.New(""), rx.New("")
+		w := app.Window("Hello gowt",
+			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Bind(name)),
+			gowt.Label("", gowt.GrowX(), gowt.BindText(greet)),
+			gowt.Button("Greet", gowt.OnClick(func() { greet.Set("Hello, " + name.Get() + "!") })))
 		w.Show()
 	})
 	if err != nil {

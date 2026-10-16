@@ -2,178 +2,182 @@ package gowt
 
 import "github.com/haiodo/gowt/swt"
 
-// Combo is a drop-down (or Simple) list with an edit field; ReadOnly() makes it a pure chooser.
-type Combo struct {
+// ComboView is a drop-down (or Simple) list with an edit field; ReadOnly() makes it a pure chooser.
+type ComboView struct {
 	base
 	c *swt.Combo
 }
 
-// Combo adds a combo box with the given items.
-// Options: ReadOnly, Simple.
-func (p *panel) Combo(items []string, opts ...Option) *Combo {
-	c := swt.NewCombo(p.c, resolve(swt.NONE, opts))
-	if len(items) > 0 { // SWT rejects a nil items slice
-		c.SetItems(items)
-	}
-	applyOpts(&c.Control, opts)
-	return &Combo{base{&c.Control}, c}
+// Combo creates a combo box with the given items.
+// Options: ReadOnly, Simple, Value, Selected, OnSelect, OnChange, Bind (string: text, int: index).
+func Combo(items []string, opts ...Option) Option {
+	return leaf("Combo", sReadOnly|sSimple, opts, func(p *swt.Composite) Widget {
+		c := swt.NewCombo(p, resolve(swt.NONE, opts))
+		if len(items) > 0 { // SWT rejects a nil items slice
+			c.SetItems(items)
+		}
+		return &ComboView{base{&c.Control}, c}
+	})
 }
 
 // Text returns the edit field content, also when it matches no item.
-func (c *Combo) Text() string { return c.c.GetText() }
+func (c *ComboView) Text() string { return c.c.GetText() }
 
 // SetText replaces the edit field content.
-func (c *Combo) SetText(s string) { c.c.SetText(s) }
+func (c *ComboView) SetText(s string) { c.c.SetText(s) }
 
 // Items returns the list entries.
-func (c *Combo) Items() []string { return c.c.GetItems() }
+func (c *ComboView) Items() []string { return c.c.GetItems() }
 
 // SetItems replaces the list entries.
-func (c *Combo) SetItems(s []string) { c.c.SetItems(s) }
+func (c *ComboView) SetItems(s []string) { c.c.SetItems(s) }
 
 // Index is the selected item, -1 if the text matches none.
-func (c *Combo) Index() int { return int(c.c.GetSelectionIndex()) }
+func (c *ComboView) Index() int { return int(c.c.GetSelectionIndex()) }
 
 // Select selects item i.
-func (c *Combo) Select(i int) { c.c.Select(int32(i)) }
+func (c *ComboView) Select(i int) { c.c.Select(int32(i)) }
 
 // Unwrap returns the underlying swt.Combo for the full API.
-func (c *Combo) Unwrap() *swt.Combo { return c.c }
+func (c *ComboView) Unwrap() *swt.Combo { return c.c }
 
 // OnSelect runs f with the chosen item index.
-func (c *Combo) OnSelect(f func(index int)) {
+func (c *ComboView) OnSelect(f func(index int)) {
 	onSelect(c.c, func(*swt.SelectionEvent) { f(c.Index()) })
 }
 
 // OnChange runs f with the new text after every edit.
-func (c *Combo) OnChange(f func(text string)) {
+func (c *ComboView) OnChange(f func(text string)) {
 	c.c.AddModifyListener(&modifier{func() { f(c.c.GetText()) }})
 }
 
-// List is a single or multi (MultiSelect) selection list of strings.
-type List struct {
+// ListView is a single or multi (MultiSelect) selection list of strings.
+type ListView struct {
 	base
 	l *swt.List
 }
 
-// List adds a list with the given items.
-// Options: MultiSelect, NoBorder.
-func (p *panel) List(items []string, opts ...Option) *List {
-	l := swt.NewList(p.c, resolve(swt.V_SCROLL|swt.BORDER, opts))
-	if len(items) > 0 {
-		l.SetItems(items)
-	}
-	applyOpts(&l.Control, opts)
-	return &List{base{&l.Control}, l}
+// List creates a list with the given items.
+// Options: MultiSelect, NoBorder, Selected, OnSelect, OnActivate, Bind (int).
+func List(items []string, opts ...Option) Option {
+	return leaf("List", sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
+		l := swt.NewList(p, resolve(swt.V_SCROLL|swt.BORDER, opts))
+		if len(items) > 0 {
+			l.SetItems(items)
+		}
+		return &ListView{base{&l.Control}, l}
+	})
 }
 
 // Items returns the list entries.
-func (l *List) Items() []string { return l.l.GetItems() }
+func (l *ListView) Items() []string { return l.l.GetItems() }
 
 // SetItems replaces the list entries.
-func (l *List) SetItems(s []string) { l.l.SetItems(s) }
+func (l *ListView) SetItems(s []string) { l.l.SetItems(s) }
 
 // Add appends an entry.
-func (l *List) Add(s string) { l.l.Add(s) }
+func (l *ListView) Add(s string) { l.l.Add(s) }
 
 // Remove deletes entry i.
-func (l *List) Remove(i int) { l.l.Remove(int32(i)) }
+func (l *ListView) Remove(i int) { l.l.Remove(int32(i)) }
 
 // Clear deletes all entries and with them the selection.
-func (l *List) Clear() { l.l.RemoveAll() }
+func (l *ListView) Clear() { l.l.RemoveAll() }
 
 // Len counts all entries, selected or not.
-func (l *List) Len() int { return int(l.l.GetItemCount()) }
+func (l *ListView) Len() int { return int(l.l.GetItemCount()) }
 
 // Index is the first selected item, -1 if none.
-func (l *List) Index() int { return int(l.l.GetSelectionIndex()) }
+func (l *ListView) Index() int { return int(l.l.GetSelectionIndex()) }
 
 // Selected returns all selected item indices.
-func (l *List) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
+func (l *ListView) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
 
 // SetSelection replaces the selection.
-func (l *List) SetSelection(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
+func (l *ListView) SetSelection(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
 
 // SetItem replaces the text of item i, keeping the selection.
-func (l *List) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
+func (l *ListView) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
 
 // Unwrap returns the underlying swt.List for the full API.
-func (l *List) Unwrap() *swt.List { return l.l }
+func (l *ListView) Unwrap() *swt.List { return l.l }
 
 // OnSelect runs f with the first selected index.
-func (l *List) OnSelect(f func(index int)) {
+func (l *ListView) OnSelect(f func(index int)) {
 	onSelect(l.l, func(*swt.SelectionEvent) { f(l.Index()) })
 }
 
 // OnActivate runs f on double click or Enter.
-func (l *List) OnActivate(f func(index int)) {
+func (l *ListView) OnActivate(f func(index int)) {
 	onActivate(l.l, func(*swt.SelectionEvent) { f(l.Index()) })
 }
 
-// Table is a multi-column grid with a header; rows are added with Row. Check makes rows checkable.
-type Table struct {
+// TableView is a multi-column grid with a header; rows are added with Row. Check makes rows checkable.
+type TableView struct {
 	base
 	t *swt.Table
 }
 
-// Table adds a table with a visible header and grid lines.
-// Options: Check, MultiSelect, NoBorder.
-func (p *panel) Table(opts ...Option) *Table {
-	t := swt.NewTable(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
-	t.SetHeaderVisible(true)
-	t.SetLinesVisible(true)
-	applyOpts(&t.Control, opts)
-	return &Table{base{&t.Control}, t}
+// Table creates a table with a visible header and grid lines.
+// Options: Check, MultiSelect, NoBorder, Selected, OnSelect, OnActivate.
+func Table(opts ...Option) Option {
+	return leaf("Table", sCheck|sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
+		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
+		t.SetHeaderVisible(true)
+		t.SetLinesVisible(true)
+		return &TableView{base{&t.Control}, t}
+	})
 }
 
 // ShowHeader shows or hides the column headers.
-func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
+func (t *TableView) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 
 // ShowLines shows or hides the grid lines.
-func (t *Table) ShowLines(v bool) { t.t.SetLinesVisible(v) }
+func (t *TableView) ShowLines(v bool) { t.t.SetLinesVisible(v) }
 
 // ShowRowLines shows or hides thin lines between rows only. On macOS ShowLines also turns on
 // vertical lines and alternating row colors, this does not; elsewhere it is ShowLines.
-func (t *Table) ShowRowLines(v bool) {
+func (t *TableView) ShowRowLines(v bool) {
 	if !rowLinesOnly(&t.t.Control, v) {
 		t.t.SetLinesVisible(v)
 	}
 }
 
 // Len counts rows, not columns.
-func (t *Table) Len() int { return int(t.t.GetItemCount()) }
+func (t *TableView) Len() int { return int(t.t.GetItemCount()) }
 
 // Remove deletes row i.
-func (t *Table) Remove(i int) { t.t.Remove(int32(i)) }
+func (t *TableView) Remove(i int) { t.t.Remove(int32(i)) }
 
 // Clear deletes all rows and with them the selection.
-func (t *Table) Clear() { t.t.RemoveAll() }
+func (t *TableView) Clear() { t.t.RemoveAll() }
 
 // Batch runs f with drawing of the table suspended, so that many row changes repaint once.
-func (t *Table) Batch(f func()) {
+func (t *TableView) Batch(f func()) {
 	t.t.SetRedraw(false)
 	defer t.t.SetRedraw(true)
 	f()
 }
 
 // Unwrap returns the underlying swt.Table for the full API.
-func (t *Table) Unwrap() *swt.Table { return t.t }
+func (t *TableView) Unwrap() *swt.Table { return t.t }
 
 // Index is the first selected row, -1 if none.
-func (t *Table) Index() int { return int(t.t.GetSelectionIndex()) }
+func (t *TableView) Index() int { return int(t.t.GetSelectionIndex()) }
 
 // Selected returns all selected row indices.
-func (t *Table) Selected() []int { return toInts(t.t.GetSelectionIndices()) }
+func (t *TableView) Selected() []int { return toInts(t.t.GetSelectionIndices()) }
 
 // SetSelection replaces the selection.
-func (t *Table) SetSelection(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
+func (t *TableView) SetSelection(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
 
 // RowAt returns row i.
-func (t *Table) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
+func (t *TableView) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
 
 // Column appends a column; Right() or Center() set the alignment.
-// Options: Right, Center; the common options are ignored.
-func (t *Table) Column(title string, width int, opts ...Option) *Column {
+// Options: Right, Center.
+func (t *TableView) Column(title string, width int, opts ...Option) *Column {
+	itemOpts(t.t, "Table.Column", sRight|sCenter, false, opts)
 	c := swt.NewTableColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
 	c.SetWidth(int32(width))
@@ -181,19 +185,19 @@ func (t *Table) Column(title string, width int, opts ...Option) *Column {
 }
 
 // Row appends a row with one text per column.
-func (t *Table) Row(cells ...string) *TableRow {
+func (t *TableView) Row(cells ...string) *TableRow {
 	it := swt.NewTableItem(t.t, swt.NONE)
 	it.SetTexts(cells)
 	return &TableRow{it}
 }
 
 // OnSelect runs f with the first selected row.
-func (t *Table) OnSelect(f func(index int)) {
+func (t *TableView) OnSelect(f func(index int)) {
 	onSelect(t.t, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
 // OnActivate runs f on double click or Enter.
-func (t *Table) OnActivate(f func(index int)) {
+func (t *TableView) OnActivate(f func(index int)) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
@@ -218,7 +222,7 @@ func (d SortDir) swt() int32 {
 }
 
 // SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
-func (t *Table) SetSort(col *Column, dir SortDir) {
+func (t *TableView) SetSort(col *Column, dir SortDir) {
 	if col == nil || dir == SortNone {
 		t.t.SetSortDirection(swt.NONE)
 		t.t.SetSortColumn(nil)
@@ -273,7 +277,7 @@ func probeXs(x, firstWidth, clientWidth int) []int {
 
 // CellAt returns the row and column under the point (x, y) in the table's coordinates, or -1, -1
 // when no row is there. Col is -1 for a point in a row band but left of the first column or right of the last one.
-func (t *Table) CellAt(x, y int) (row, col int) {
+func (t *TableView) CellAt(x, y int) (row, col int) {
 	n := int(t.t.GetColumnCount())
 	order := toInts(t.t.GetColumnOrder())
 	widths := make([]int, n)
@@ -309,7 +313,7 @@ func hscroll(b *swt.ScrollBar) int {
 
 // OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
 // double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
-func (t *Table) OnCellClick(f func(TableClick)) {
+func (t *TableView) OnCellClick(f func(TableClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		row, col := t.CellAt(int(e.X), int(e.Y))
 		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
@@ -366,25 +370,27 @@ func (r *TableRow) SetData(v any) { r.it.SetData(v) }
 // Unwrap returns the underlying swt.TableItem for the full API.
 func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 
-// Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
-type Tree struct {
+// TreeView is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
+type TreeView struct {
 	base
 	t *swt.Tree
 }
 
-// Tree adds a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
+// Tree creates a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
-// Options: Check, MultiSelect, NoBorder, CellSelect.
-func (p *panel) Tree(opts ...Option) *Tree {
-	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
-	applyOpts(&t.Control, opts)
-	return &Tree{base{&t.Control}, t}
+// Options: Check, MultiSelect, NoBorder, CellSelect, OnSelect, OnActivate.
+func Tree(opts ...Option) Option {
+	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
+		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
+		return &TreeView{base{&t.Control}, t}
+	})
 }
 
 // Column appends a column; Right() or Center() set the alignment. The first column holds the node
 // text and the expand arrows. The first call shows the header.
-// Options: Right, Center; the common options are ignored.
-func (t *Tree) Column(title string, width int, opts ...Option) *TreeColumn {
+// Options: Right, Center.
+func (t *TreeView) Column(title string, width int, opts ...Option) *TreeColumn {
+	itemOpts(t.t, "Tree.Column", sRight|sCenter, false, opts)
 	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
 	c.SetWidth(int32(width))
@@ -395,17 +401,17 @@ func (t *Tree) Column(title string, width int, opts ...Option) *TreeColumn {
 }
 
 // ShowRowLines shows or hides thin lines between rows only, see Table.ShowRowLines.
-func (t *Tree) ShowRowLines(v bool) {
+func (t *TreeView) ShowRowLines(v bool) {
 	if !rowLinesOnly(&t.t.Control, v) {
 		t.t.SetLinesVisible(v)
 	}
 }
 
 // ShowHeader shows or hides the column headers.
-func (t *Tree) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
+func (t *TreeView) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 
 // SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
-func (t *Tree) SetSort(col *TreeColumn, dir SortDir) {
+func (t *TreeView) SetSort(col *TreeColumn, dir SortDir) {
 	if col == nil || dir == SortNone {
 		t.t.SetSortDirection(swt.NONE)
 		t.t.SetSortColumn(nil)
@@ -428,7 +434,7 @@ type TreeClick struct {
 // CellAt returns the node and column under the point (x, y) in the tree's coordinates, or nil, -1
 // when no node is there. The expander arrow and the space right of the text map to the cell; col is -1
 // for a point in the row's band but right of the last column.
-func (t *Tree) CellAt(x, y int) (*Node, int) {
+func (t *TreeView) CellAt(x, y int) (*Node, int) {
 	n := int(t.t.GetColumnCount())
 	order := toInts(t.t.GetColumnOrder())
 	widths := make([]int, n)
@@ -449,7 +455,7 @@ func (t *Tree) CellAt(x, y int) (*Node, int) {
 
 // OnCellClick runs f on every mouse press, so a handler can ignore right clicks (Button != 1) and
 // double clicks (Count > 1). The cell comes from the hit test, not from the selection, which may not have moved yet.
-func (t *Tree) OnCellClick(f func(TreeClick)) {
+func (t *TreeView) OnCellClick(f func(TreeClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		n, col := t.CellAt(int(e.X), int(e.Y))
 		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
@@ -472,7 +478,7 @@ func (c *TreeColumn) SetResizable(v bool) { c.c.SetResizable(v) }
 func (c *TreeColumn) Pack() { c.c.Pack() }
 
 // Batch runs f with drawing of the tree suspended, so that many node changes repaint once.
-func (t *Tree) Batch(f func()) {
+func (t *TreeView) Batch(f func()) {
 	t.t.SetRedraw(false)
 	defer t.t.SetRedraw(true)
 	f()
@@ -487,49 +493,49 @@ func (c *TreeColumn) OnClick(f func()) {
 }
 
 // Clear deletes all nodes, children included.
-func (t *Tree) Clear() { t.t.RemoveAll() }
+func (t *TreeView) Clear() { t.t.RemoveAll() }
 
 // Unwrap returns the underlying swt.Tree for the full API.
-func (t *Tree) Unwrap() *swt.Tree { return t.t }
+func (t *TreeView) Unwrap() *swt.Tree { return t.t }
 
 // Node appends a root node.
-func (t *Tree) Node(text string) *Node {
+func (t *TreeView) Node(text string) *Node {
 	it := swt.NewTreeItem(t.t, swt.NONE)
 	it.SetTextIndexString(0, text)
 	return &Node{it}
 }
 
 // Roots returns the top-level nodes.
-func (t *Tree) Roots() []*Node { return nodes(t.t.GetItems()) }
+func (t *TreeView) Roots() []*Node { return nodes(t.t.GetItems()) }
 
 // Selected returns the selected nodes.
-func (t *Tree) Selected() []*Node { return nodes(t.t.GetSelection()) }
+func (t *TreeView) Selected() []*Node { return nodes(t.t.GetSelection()) }
 
 // Select selects n alone.
-func (t *Tree) Select(n *Node) { t.t.SetSelection(n.it) }
+func (t *TreeView) Select(n *Node) { t.t.SetSelection(n.it) }
 
 // OnSelect runs f with the first selected node, nil if none.
-func (t *Tree) OnSelect(f func(n *Node)) {
+func (t *TreeView) OnSelect(f func(n *Node)) {
 	onSelect(t.t, func(*swt.SelectionEvent) { f(first(t.t.GetSelection())) })
 }
 
 // OnActivate runs f on double click or Enter.
-func (t *Tree) OnActivate(f func(n *Node)) {
+func (t *TreeView) OnActivate(f func(n *Node)) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f(first(t.t.GetSelection())) })
 }
 
 // OnExpand and OnCollapse run f with the node that changed. The event carries the item as a
 // bare *swt.Widget that cannot be downcast, so the node is found by walking the tree.
-func (t *Tree) OnExpand(f func(n *Node)) {
+func (t *TreeView) OnExpand(f func(n *Node)) {
 	t.t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
 }
 
 // OnCollapse runs f with the node that was collapsed; see OnExpand.
-func (t *Tree) OnCollapse(f func(n *Node)) {
+func (t *TreeView) OnCollapse(f func(n *Node)) {
 	t.t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
 }
 
-func (t *Tree) find(w *swt.Widget) *Node {
+func (t *TreeView) find(w *swt.Widget) *Node {
 	var walk func([]*swt.TreeItem) *Node
 	walk = func(items []*swt.TreeItem) *Node {
 		for _, it := range items {

@@ -124,8 +124,11 @@ func (a *App) report(err error) {
 	log.Printf("%v\n%s", err, debug.Stack())
 }
 
+// displayed is any swt widget: it knows its display, and so its App.
+type displayed interface{ GetDisplay() *swt.Display }
+
 // reportOn hands err to the App that owns c, see App.OnError.
-func reportOn(c *swt.Control, err error) {
+func reportOn(c displayed, err error) {
 	if a, ok := apps.Load(c.GetDisplay()); ok {
 		a.(*App).report(err)
 		return
@@ -197,111 +200,62 @@ func (a *App) Quit() {
 // Unwrap returns the underlying display.
 func (a *App) Unwrap() *swt.Display { return a.display }
 
-// Option adjusts a widget at construction: style bits are OR-ed before creation, apply runs after,
-// and the placement options add up to one layout data.
-//
-// Every control takes the common options Disabled, Tooltip, Background and Custom, and the placement
-// options Grow, GrowX, GrowY, Span, Size, Place, Cell, InRow and Anchor. The "Options:" line of a
-// constructor lists the others it reads; a style option a widget does not read is ignored.
-// docs/agents.md has the table from option to widgets.
-type Option struct {
-	style int32
-	clear int32 // style bits removed from the widget's defaults
-	apply func(*swt.Control)
-	place func(*placement)
-	menu  func(*swt.MenuItem)
-}
-
 // Disabled creates the widget disabled.
-func Disabled() Option { return Option{apply: func(w *swt.Control) { w.SetEnabled(false) }} }
+func Disabled() Option { return apply(func(w *swt.Control) { w.SetEnabled(false) }) }
 
 // Tooltip sets the hover text.
 func Tooltip(s string) Option {
-	return Option{apply: func(w *swt.Control) { w.SetToolTipText(s) }}
+	return apply(func(w *swt.Control) { w.SetToolTipText(s) })
 }
 
 // Check makes a Button a check box, and Table and Tree rows and ToolBar items checkable.
 // Radio, Multiline, Password, ReadOnly and Border follow below.
-func Check() Option { return Option{style: swt.CHECK} }
+func Check() Option { return style{id: sCheck, set: swt.CHECK} }
 
 // Radio makes a Button a radio button.
-func Radio() Option { return Option{style: swt.RADIO} }
+func Radio() Option { return style{id: sRadio, set: swt.RADIO} }
 
 // Multiline makes a Text multi-line, wrapped, with a vertical scroll bar.
-func Multiline() Option { return Option{style: swt.MULTI | swt.WRAP | swt.V_SCROLL} }
+func Multiline() Option { return style{id: sMultiline, set: swt.MULTI | swt.WRAP | swt.V_SCROLL} }
 
 // Password masks the characters typed into a Text.
-func Password() Option { return Option{style: swt.PASSWORD} }
+func Password() Option { return style{id: sPassword, set: swt.PASSWORD} }
 
 // ReadOnly makes a Text or Combo non-editable.
-func ReadOnly() Option { return Option{style: swt.READ_ONLY} }
+func ReadOnly() Option { return style{id: sReadOnly, set: swt.READ_ONLY} }
 
 // Border draws a frame; Table and Tree have one by default.
-func Border() Option { return Option{style: swt.BORDER} }
+func Border() Option { return style{id: sBorder, set: swt.BORDER} }
 
 // CellSelect makes a Tree select only the text of a node, as v0.1.0 did on Windows and Linux; then
 // CellAt and OnCellClick find a node only where its text or icon is.
-func CellSelect() Option { return Option{clear: swt.FULL_SELECTION} }
+func CellSelect() Option { return style{id: sCellSelect, clear: swt.FULL_SELECTION} }
 
 // NoBorder removes the frame that List, Table and Tree have by default.
-func NoBorder() Option { return Option{clear: swt.BORDER} }
+func NoBorder() Option { return style{id: sNoBorder, clear: swt.BORDER} }
 
 // Search makes a Text a search field with a magnifier icon and a clear button.
-func Search() Option { return Option{style: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL} }
+func Search() Option {
+	return style{id: sSearch, set: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL}
+}
 
 // Background sets the background color of a widget.
 func Background(c RGB) Option {
-	return Option{apply: func(w *swt.Control) { w.SetBackgroundWithColor(c.color()) }}
+	return apply(func(w *swt.Control) { w.SetBackgroundWithColor(c.color()) })
 }
 
 // Custom runs f on the widget right after it is created and sets no style bits. It lets a package outside gowt adjust the swt control.
-func Custom(f func(*swt.Control)) Option { return Option{apply: f} }
+func Custom(f func(*swt.Control)) Option { return apply(f) }
 
-func resolve(base int32, opts []Option) int32 {
-	for _, o := range opts {
-		base |= o.style
-	}
-	for _, o := range opts {
-		base &^= o.clear
-	}
-	return base
-}
-
-func applyOpts(c *swt.Control, opts []Option) {
-	var pl *placement
-	for _, o := range opts {
-		if o.place != nil {
-			if pl == nil {
-				pl = &placement{}
-			}
-			o.place(pl)
-		}
-		if o.apply != nil {
-			o.apply(c)
-		}
-	}
-	if pl == nil {
-		return
-	}
-	// A mismatch leaves c at its natural size: layout data of the wrong kind fails on every layout pass.
-	d, err := pl.data(c.GetName(), layoutName(c.GetParent()))
-	if err != nil {
-		reportOn(c, err)
-		return
-	}
-	c.SetLayoutData(d)
-}
-
-// Panel is a plain container; Window, Group, Split and CoolBar embed its methods.
+// Panel is a container: VBox, HBox, Grid, Flow, Fill, Form and Tab create one. Window, Group, Split
+// and CoolBar embed its methods.
 type Panel struct{ *panel }
 
 // panel holds the container methods. They are declared on an unexported type so that godoc lists
 // them for every embedding type while no exported field named Panel hides the Panel method.
 type panel struct {
 	base
-	c     *swt.Composite
-	stack *swt.StackLayout
-	lay   swt.LayoutLike
+	c *swt.Composite
 }
 
 // Unwrap returns the underlying composite.
@@ -311,15 +265,17 @@ func (p *panel) Unwrap() *swt.Composite { return p.c }
 // Window, Group, Split and CoolBar, so one function can take any of them.
 func (p *panel) AsComposite() *swt.Composite { return p.c }
 
-// SetLayout installs l and returns p.
-func (p *panel) SetLayout(l Layout) *Panel {
-	sl := l.layout()
-	p.stack, _ = sl.(*swt.StackLayout)
-	p.lay = sl
-	p.c.SetLayout(sl)
-	checkChildren(p.c)
-	return &Panel{p}
+// Add creates children at the end of p, in order, and lays p out again when it is on screen.
+// It is the way to fill a container after its creation, for content that changes; see Clear.
+func (p *panel) Add(children ...Option) {
+	add(p, children)
+	if p.c.IsVisible() {
+		p.c.LayoutOverload2(true, true)
+	}
 }
+
+func (p *panel) into() *swt.Composite { return p.c }
+func (p *panel) added(Widget)         {}
 
 // Relayout lays the children out again and recomputes their sizes, as needed after a change that
 // SWT does not lay out by itself, such as a SetText that makes a label longer. p keeps its own
@@ -331,121 +287,113 @@ func (p *panel) Clear() {
 	for _, ch := range p.c.GetChildren() {
 		ch.Dispose()
 	}
-	if p.stack != nil {
-		p.stack.TopControl = nil
-	}
 	p.c.Layout()
-}
-
-// Panel adds a nested container.
-// Options: Border.
-func (p *panel) Panel(opts ...Option) *Panel {
-	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
-	applyOpts(&c.Control, opts)
-	return &Panel{newPanel(c)}
 }
 
 func newPanel(c *swt.Composite) *panel { return &panel{base: base{&c.Control}, c: c} }
 
-// Label adds a static text.
-// Options: Wrap, Center, Right, Border.
-func (p *panel) Label(text string, opts ...Option) *Label {
-	l := swt.NewLabel(p.c, resolve(swt.NONE, opts))
-	l.SetText(text)
-	applyOpts(&l.Control, opts)
-	return &Label{base{&l.Control}, l}
+// Label creates a static text.
+// Options: Wrap, Center, Right, Border, BindText.
+func Label(text string, opts ...Option) Option {
+	return leaf("Label", sWrap|sCenter|sRight|sBorder, opts, func(p *swt.Composite) Widget {
+		l := swt.NewLabel(p, resolve(swt.NONE, opts))
+		l.SetText(text)
+		return &LabelView{base{&l.Control}, l}
+	})
 }
 
-// Spacer adds an empty cell that takes the free width of a Grid row, pushing the cells after it to
-// the end; Spacer(GrowY()) takes the free height too. In other layouts it is an empty Label.
+// Spacer creates an empty cell that takes the free space along a VBox or an HBox, or the free width
+// of a Grid row, pushing the cells after it to the end. Elsewhere it is an empty Label.
 // Options: common only.
-func (p *panel) Spacer(opts ...Option) *Label {
-	if layoutName(p.c) == "Grid" {
-		opts = append([]Option{GrowX()}, opts...)
-	}
-	return p.Label("", opts...)
+func Spacer(opts ...Option) Option {
+	return &node{"Spacer", func(h host) Widget {
+		l := swt.NewLabel(h.into(), swt.NONE)
+		w := &LabelView{base{&l.Control}, l}
+		switch layoutName(h.into()) {
+		case "VBox":
+			finish(w, 0, append([]Option{GrowY()}, opts...))
+		case "HBox", "Grid":
+			finish(w, 0, append([]Option{GrowX()}, opts...))
+		default:
+			finish(w, 0, opts)
+		}
+		return w
+	}}
 }
 
-// Separator adds a line across the width of its grid cell, or along its height with Vertical().
-// Span(n) stretches it over a row of n columns.
+// Separator creates a line across the width of its cell, or along its height with Vertical().
+// Span(n) stretches it over a Grid row of n columns.
 // Options: Vertical.
-func (p *panel) Separator(opts ...Option) *Label {
-	style := resolve(swt.SEPARATOR, opts)
-	grow := GrowY()
-	if style&swt.VERTICAL == 0 {
-		style |= swt.HORIZONTAL
-		grow = GrowX()
-	}
-	l := swt.NewLabel(p.c, style)
-	if layoutName(p.c) == "Grid" {
-		opts = append([]Option{grow}, opts...)
-	}
-	applyOpts(&l.Control, opts)
-	return &Label{base{&l.Control}, l}
+func Separator(opts ...Option) Option {
+	return &node{"Separator", func(h host) Widget {
+		style := resolve(swt.SEPARATOR, opts)
+		grow := GrowY()
+		if style&swt.VERTICAL == 0 {
+			style |= swt.HORIZONTAL
+			grow = GrowX()
+		}
+		l := swt.NewLabel(h.into(), style)
+		w := &LabelView{base{&l.Control}, l}
+		o := opts
+		if isGrid(layoutName(h.into())) {
+			o = append([]Option{grow}, opts...)
+		}
+		finish(w, sVertical, o)
+		return w
+	}}
 }
 
-// Button adds a push button (Check or Radio for other kinds). onClick may be nil.
-// Options: Check, Radio.
-func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
-	b := swt.NewButton(p.c, resolve(swt.NONE, opts))
-	b.SetText(text)
-	applyOpts(&b.Control, opts)
-	w := &Button{base{&b.Control}, b}
-	if onClick != nil {
-		w.OnClick(onClick)
-	}
-	return w
+// Button creates a push button (Check or Radio for other kinds); OnClick gives it an action.
+// Options: Check, Radio, OnClick, OnChange and Checked (Check, Radio), Bind (bool), BindText.
+func Button(text string, opts ...Option) Option {
+	return leaf("Button", sCheck|sRadio, opts, func(p *swt.Composite) Widget {
+		b := swt.NewButton(p, resolve(swt.NONE, opts))
+		b.SetText(text)
+		return &ButtonView{base{&b.Control}, b}
+	})
 }
 
-// Switch adds an on/off toggle. It is a check box on every OS: SWT has no switch control, and
+// Switch creates an on/off toggle. It is a check box on every OS: SWT has no switch control, and
 // NSSwitch on macOS or GtkSwitch on Linux would need a view that the toolkit does not create.
-// onChange gets the new state and may be nil.
-// Options: common only.
-func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Switch {
-	b := swt.NewButton(p.c, resolve(swt.CHECK, opts))
-	b.SetText(text)
-	applyOpts(&b.Control, opts)
-	w := &Switch{base{&b.Control}, b}
-	if onChange != nil {
-		w.OnChange(onChange)
-	}
-	return w
+// Options: OnChange, Checked, Bind (bool), BindText.
+func Switch(text string, opts ...Option) Option {
+	return leaf("Switch", 0, opts, func(p *swt.Composite) Widget {
+		b := swt.NewButton(p, resolve(swt.CHECK, opts))
+		b.SetText(text)
+		return &SwitchView{base{&b.Control}, b}
+	})
 }
 
-// Text adds an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border.
-func (p *panel) Text(opts ...Option) *Text {
-	t := swt.NewText(p.c, resolve(swt.NONE, opts))
-	applyOpts(&t.Control, opts)
-	return &Text{base{&t.Control}, t}
+// Text creates an edit field.
+// Options: Multiline, Password, ReadOnly, Search, Border, Hint, Value, OnChange, OnActivate, Bind (string).
+func Text(opts ...Option) Option {
+	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
+		t := swt.NewText(p, resolve(swt.NONE, opts))
+		return &TextView{base{&t.Control}, t}
+	})
 }
 
-// Window is a top-level window.
+// Window is a top-level window. Its children stack as in a VBox, with Padding(Spacing.PageMargin)
+// unless Padding says otherwise.
 type Window struct {
 	*panel
 	shell *swt.Shell
 	sized bool
 	inset int // top inset requested by SetTopInset
-	added int // part of inset already in the current layout's top margin
+	done  int // part of inset already in the top margin
 }
 
-// SetLayout installs l and returns the window as a Panel; a top inset set earlier is kept.
-func (w *Window) SetLayout(l Layout) *Panel {
-	p := w.panel.SetLayout(l)
-	w.added = 0
-	w.SetTopInset(w.inset)
-	return p
-}
-
-// SetTopInset adds points to the top margin of the window layout (Grid, Row and Form; other layouts
-// ignore it), on top of the layout's own Margin. look.SetFullSizeContent uses it to keep the content
-// below the title bar and the toolbar.
+// SetTopInset adds points to the top margin of the window layout on top of its Padding.
+// look.SetFullSizeContent uses it to keep the content below the title bar and the toolbar.
 func (w *Window) SetTopInset(points int) {
 	w.inset = points
-	d := int32(points - w.added)
-	switch l := w.lay.(type) {
-	case *swt.GridLayout:
-		l.MarginTop += d
+	d := int32(points - w.done)
+	if w.shell.GetLayout() == nil {
+		return
+	}
+	switch l := w.shell.GetLayout().Impl().(type) {
+	case swt.GridLayoutLike:
+		l.AsGridLayout().MarginTop += d
 	case *swt.RowLayout:
 		l.MarginTop += d
 	case *swt.FormLayout:
@@ -453,18 +401,23 @@ func (w *Window) SetTopInset(points int) {
 	default:
 		return
 	}
-	w.added = points
+	w.done = points
 	if d != 0 {
 		w.shell.Layout()
 	}
 }
 
-// Window creates a hidden window; call Show once its content is built.
-// Options: none yet; the common and placement options are ignored.
+// Window creates a hidden window with the children in opts; call Show once its content is built.
+// Children whose callbacks use the window go in a w.Add after this call, when w is set.
+// Options: Gap, Padding, children; the placement options do not apply.
 func (a *App) Window(title string, opts ...Option) *Window {
-	s := swt.NewShellDisplayStyle(a.display, resolve(swt.SHELL_TRIM, opts))
+	s := swt.NewShellDisplayStyle(a.display, swt.SHELL_TRIM)
 	s.SetText(title)
-	return &Window{panel: newPanel(&s.Composite), shell: s}
+	gap, pad := spacingOf(opts, Spacing.PageMargin)
+	s.SetLayout(newBox(false, gap, pad))
+	w := &Window{panel: newPanel(&s.Composite), shell: s}
+	finish(w, 0, opts)
+	return w
 }
 
 // Show packs the window to its content size (unless SetSize was called) and opens it.
@@ -511,100 +464,100 @@ func (w *Window) OnClose(f func() bool) {
 // Unwrap returns the underlying shell.
 func (w *Window) Unwrap() *swt.Shell { return w.shell }
 
-// Label is a static text.
-type Label struct {
+// LabelView is a static text.
+type LabelView struct {
 	base
 	l *swt.Label
 }
 
 // SetText replaces the label text.
-func (l *Label) SetText(s string) { l.l.SetText(s) }
+func (l *LabelView) SetText(s string) { l.l.SetText(s) }
 
 // Unwrap returns the underlying swt.Label for the full API.
-func (l *Label) Unwrap() *swt.Label { return l.l }
+func (l *LabelView) Unwrap() *swt.Label { return l.l }
 
-// Button is a push, check or radio button.
-type Button struct {
+// ButtonView is a push, check or radio button.
+type ButtonView struct {
 	base
 	b *swt.Button
 }
 
 // SetText replaces the button text.
-func (b *Button) SetText(s string) { b.b.SetText(s) }
+func (b *ButtonView) SetText(s string) { b.b.SetText(s) }
 
 // Checked reports the state of a Check or Radio button.
-func (b *Button) Checked() bool { return b.b.GetSelection() }
+func (b *ButtonView) Checked() bool { return b.b.GetSelection() }
 
 // SetChecked sets the state of a Check or Radio button.
-func (b *Button) SetChecked(v bool) { b.b.SetSelection(v) }
+func (b *ButtonView) SetChecked(v bool) { b.b.SetSelection(v) }
 
 // Unwrap returns the underlying swt.Button for the full API.
-func (b *Button) Unwrap() *swt.Button { return b.b }
+func (b *ButtonView) Unwrap() *swt.Button { return b.b }
 
 // OnClick runs f when the button is pressed (or toggled).
-func (b *Button) OnClick(f func()) {
+func (b *ButtonView) OnClick(f func()) {
 	b.b.AddSelectionListener(swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) { f() }))
 }
 
-// Switch is an on/off toggle, see panel.Switch.
-type Switch struct {
+// SwitchView is an on/off toggle, see panel.SwitchView.
+type SwitchView struct {
 	base
 	b *swt.Button
 }
 
 // Checked reports whether the switch is on.
-func (s *Switch) Checked() bool { return s.b.GetSelection() }
+func (s *SwitchView) Checked() bool { return s.b.GetSelection() }
 
 // SetChecked sets the state without calling OnChange.
-func (s *Switch) SetChecked(v bool) { s.b.SetSelection(v) }
+func (s *SwitchView) SetChecked(v bool) { s.b.SetSelection(v) }
 
 // SetText replaces the label.
-func (s *Switch) SetText(t string) { s.b.SetText(t) }
+func (s *SwitchView) SetText(t string) { s.b.SetText(t) }
 
 // Unwrap returns the underlying swt.Button for the full API.
-func (s *Switch) Unwrap() *swt.Button { return s.b }
+func (s *SwitchView) Unwrap() *swt.Button { return s.b }
 
 // OnChange runs f with the new state when the user toggles the switch.
-func (s *Switch) OnChange(f func(on bool)) {
+func (s *SwitchView) OnChange(f func(on bool)) {
 	onSelect(s.b, func(*swt.SelectionEvent) { f(s.b.GetSelection()) })
 }
 
-// Text is an edit field.
-type Text struct {
+// TextView is an edit field.
+type TextView struct {
 	base
 	t *swt.Text
 }
 
 // Text returns the current content.
-func (t *Text) Text() string { return t.t.GetText() }
+func (t *TextView) Text() string { return t.t.GetText() }
 
 // SetText replaces the content.
-func (t *Text) SetText(s string) { t.t.SetText(s) }
+func (t *TextView) SetText(s string) { t.t.SetText(s) }
 
 // SetHint sets the placeholder shown while the field is empty.
-func (t *Text) SetHint(s string) { t.t.SetMessage(s) }
+func (t *TextView) SetHint(s string) { t.t.SetMessage(s) }
 
 // Unwrap returns the underlying swt.Text for the full API.
-func (t *Text) Unwrap() *swt.Text { return t.t }
+func (t *TextView) Unwrap() *swt.Text { return t.t }
 
 // OnChange runs f with the new content after every edit.
-func (t *Text) OnChange(f func(text string)) {
+func (t *TextView) OnChange(f func(text string)) {
 	t.t.AddModifyListener(&modifier{func() { f(t.t.GetText()) }})
 }
 
 // OnActivate runs f when the user presses Enter in a single-line field.
-func (t *Text) OnActivate(f func()) {
+func (t *TextView) OnActivate(f func()) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f() })
 }
 
 // Append adds s at the end without rewriting the content.
-func (t *Text) Append(s string) { t.t.Append(s) }
+func (t *TextView) Append(s string) { t.t.Append(s) }
 
 // Lines returns the number of lines; a trailing newline starts an empty last line.
-func (t *Text) Lines() int { return int(t.t.GetLineCount()) }
+func (t *TextView) Lines() int { return int(t.t.GetLineCount()) }
 
 // ScrollToEnd moves the caret to the end and scrolls it into view.
-func (t *Text) ScrollToEnd() {
+func (t *TextView) ScrollToEnd() {
 	t.t.SetSelection(t.t.GetCharCount())
 	t.t.ShowSelection()
 }
@@ -612,7 +565,7 @@ func (t *Text) ScrollToEnd() {
 // TrimHead deletes the oldest lines so that at most keep lines remain; TrimHead(0) clears the text.
 // It reads the content to find the cut, so call it when Lines exceeds a cap by a margin, not after
 // every Append. It works on a read-only Text.
-func (t *Text) TrimHead(keep int) {
+func (t *TextView) TrimHead(keep int) {
 	if int(t.t.GetLineCount()) <= keep {
 		return
 	}

@@ -20,8 +20,7 @@ func main() {
 		look.Classic()
 	}
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("glassdemo")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 24, Spacing: 10})
+		w := app.Window("glassdemo", gowt.Padding(24), gowt.Gap(10))
 		look.SetFullSizeContent(w, true)
 		look.SetBackdrop(w, map[string]look.Backdrop{
 			"none": look.BackdropNone, "translucent": look.BackdropTranslucent, "": look.BackdropGlass, "glass": look.BackdropGlass,
@@ -32,26 +31,22 @@ func main() {
 			if !look.SetToolbar(w, look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: note},
 				look.ToolbarItem{Space: true},
 				look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: note}) {
-				w.ToolBar().Item("Add", note)
+				w.Add(gowt.ToolBar(gowt.Init(func(tb *gowt.ToolBarView) { tb.Item("Add", note) })))
 			}
 			look.SetGlassGroup(w, 4)
 		}
-		w.Label("Window backdrop, full-size content", gowt.GrowX(), gowt.Size(320, 0))
-		p := w.Panel()
-		p.SetLayout(gowt.Grid{Columns: 2, Margin: 4, Spacing: 8})
-		p.Label("Nested panel:")
-		p.Text()
-		g := w.Group("Glass group")
-		g.SetLayout(gowt.Grid{Columns: 2, Margin: 12, Spacing: 8})
-		look.SetGlass(g, true)
-		g.Button("Glass", nil, look.GlassButton())
-		g.Button("Plain", nil)
-		g.Button("Check, no glass bezel", nil, gowt.Check(), look.GlassButton())
-		gp := w.Panel()
-		gp.SetLayout(gowt.Grid{Columns: 1, Margin: 12})
-		look.SetGlass(gp, true)
-		gp.Label("Glass panel")
-		w.Button("Glass button", nil, look.GlassButton())
+		w.Add(
+			gowt.Label("Window backdrop, full-size content", gowt.GrowX(), gowt.Size(320, 0)),
+			gowt.Grid(2, gowt.Padding(4),
+				gowt.Label("Nested panel:"),
+				gowt.Text()),
+			gowt.Group("Glass group", gowt.Init(func(g *gowt.GroupView) { look.SetGlass(g, true) }),
+				gowt.Grid(2,
+					gowt.Button("Glass", look.GlassButton()),
+					gowt.Button("Plain"),
+					gowt.Button("Check, no glass bezel", gowt.Check(), look.GlassButton()))),
+			gowt.VBox(gowt.Padding(12), gowt.Init(func(p *gowt.Panel) { look.SetGlass(p, true) }), gowt.Label("Glass panel")),
+			gowt.Button("Glass button", look.GlassButton()))
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_GLASSDEMO_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)
 		}

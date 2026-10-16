@@ -10,42 +10,31 @@ import (
 
 func main() {
 	err := g.Run(func(app *g.App) {
-		w := app.Window("Widgets2")
-		w.SetLayout(g.Fill{})
-		tabs := w.Tabs()
-
-		comboTab := tabs.Tab("Combo")
-		comboTab.SetLayout(g.Row{Vertical: true, Margin: 3, Spacing: 3})
-		readOnly := comboTab.Combo([]string{"One", "Two", "Three"}, g.ReadOnly(), g.Border())
-		readOnly.Select(0)
-		readOnly.OnSelect(func(int) { fmt.Println("Combo (read-only) selected:", readOnly.Text()) })
-		editable := comboTab.Combo([]string{"Alpha", "Beta", "Gamma"}, g.Border())
-		editable.OnSelect(func(int) { fmt.Println("Combo (editable) selected:", editable.Text()) })
-
-		tableTab := tabs.Tab("Table")
-		tableTab.SetLayout(g.Fill{})
-		table := tableTab.Table()
-		table.Column("Name", 120)
-		table.Column("Value", 80)
-		for i := 1; i <= 5; i++ {
-			table.Row(fmt.Sprintf("Row %d", i), fmt.Sprintf("%d", i*10))
-		}
-		table.OnSelect(func(i int) {
-			if i >= 0 {
-				fmt.Println("Table selected:", table.RowAt(i).Text(0))
-			}
-		})
-
-		scrollTab := tabs.Tab("Scrolled")
-		scrollTab.SetLayout(g.Fill{})
-		scroll := scrollTab.Scroll(g.Border())
-		scroll.Content().SetLayout(g.Row{Vertical: true, Margin: 3, Spacing: 3})
+		ro := []string{"One", "Two", "Three"}
+		editable := []string{"Alpha", "Beta", "Gamma"}
+		var labels []g.Option
 		for i := 1; i <= 30; i++ {
-			scroll.Content().Label(fmt.Sprintf("Label %d", i))
+			labels = append(labels, g.Label(fmt.Sprintf("Label %d", i)))
 		}
-		scroll.Fit()
+		w := app.Window("Widgets2",
+			g.Tabs(g.Grow(), g.Selected(0),
+				g.Tab("Combo",
+					g.Combo(ro, g.ReadOnly(), g.Selected(0), g.OnSelect(func(i int) { fmt.Println("Combo (read-only) selected:", ro[i]) })),
+					g.Combo(editable, g.OnSelect(func(i int) { fmt.Println("Combo (editable) selected:", editable[i]) }))),
+				g.Tab("Table", g.Table(g.Grow(), g.Init(func(t *g.TableView) {
+					t.Column("Name", 120)
+					t.Column("Value", 80)
+					for i := 1; i <= 5; i++ {
+						t.Row(fmt.Sprintf("Row %d", i), fmt.Sprintf("%d", i*10))
+					}
+					t.OnSelect(func(i int) {
+						if i >= 0 {
+							fmt.Println("Table selected:", t.RowAt(i).Text(0))
+						}
+					})
+				}))),
+				g.Tab("Scrolled", g.Scroll(append([]g.Option{g.Border(), g.Grow()}, labels...)...))))
 
-		tabs.Select(0)
 		w.SetSize(420, 380)
 		w.Show()
 	})

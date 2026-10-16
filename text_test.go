@@ -29,7 +29,7 @@ func TestRuneUnitConversion(t *testing.T) {
 
 func TestStyledTextRunes(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		st := w.StyledText(Scrollbars())
+		st := put[*StyledTextView](w, StyledText(Scrollbars()))
 		st.SetText(mixed)
 		st.SetSelection(1, 2)
 		if s, l := st.Selection(); s != 1 || l != 2 || st.SelectedText() != "😀中" {

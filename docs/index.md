@@ -23,10 +23,9 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Hello")
-		w.SetLayout(gowt.Row{Vertical: true, Margin: 12, Spacing: 8})
-		w.Label("Hello, gowt")
-		w.Button("Quit", app.Quit)
+		w := app.Window("Hello",
+			gowt.Label("Hello, gowt"),
+			gowt.Button("Quit", gowt.OnClick(app.Quit)))
 		w.Show()
 	})
 	if err != nil {
@@ -40,9 +39,9 @@ This is [`examples/hello`](../examples/hello). Run it with `go run ./examples/he
 Four ideas carry the whole API:
 
 - `gowt.Run` owns the UI thread and the event loop. You build windows inside the setup function, and `Run` returns when the last window closes or `app.Quit()` is called. It returns an error raised while setup builds the window; errors in callbacks go to `app.OnError` and the app keeps running.
-- A parent creates its children: `w.Button("Quit", onClick)`, `panel.Label("text")`. There is no `Parent` argument and no separate "add" step.
-- Settings that must be known at creation (a check box, a password field, a border) are options: `w.Button("Remember", nil, gowt.Check())`.
-- Callbacks are plain functions: `OnClick(func())`, `OnChange(func(text string))`. Touch widgets only on the UI thread; [events.md](events.md) shows how to come back from a goroutine.
+- Constructors return descriptions: `gowt.Button("Quit", gowt.OnClick(quit))`, `gowt.Label("text")`. A description becomes a widget when it is passed to its parent: to `app.Window(title, children...)`, to a container such as `gowt.VBox(children...)`, or to `panel.Add(children...)`. Data shared between widgets lives in `rx` state that the widgets bind to; a widget you need for imperative work is captured with `gowt.Ref(&x)`.
+- Settings that must be known at creation (a check box, a password field, a border) are options: `gowt.Button("Remember", gowt.Check())`. So are events and initial values: `gowt.OnClick`, `gowt.OnChange`, `gowt.Checked`, `gowt.Value`.
+- Callbacks are plain functions given as options: `gowt.OnClick(func())`, `gowt.OnChange(func(text string))`. Touch widgets only on the UI thread; [events.md](events.md) shows how to come back from a goroutine.
 
 ## Guide
 

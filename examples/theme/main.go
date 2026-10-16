@@ -13,9 +13,13 @@ func main() {
 		// Before the first window: dark scroll bars, tables and buttons on Windows.
 		look.SetDarkContent(app, true)
 
-		w := app.Window("Theme and look")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 16, Spacing: 8})
-		mode := w.Label("", gowt.GrowX(), gowt.Size(280, 0))
+		var mode *gowt.LabelView
+		var panel *gowt.GroupView
+		w := app.Window("Theme and look",
+			gowt.Label("", gowt.GrowX(), gowt.Size(280, 0), gowt.Ref(&mode)),
+			gowt.Group("Glass panel",
+				gowt.Ref(&panel),
+				gowt.Button("Glass button", look.GlassButton())))
 		show := func(dark bool) {
 			if dark {
 				mode.SetText("system theme: dark")
@@ -30,10 +34,7 @@ func main() {
 		look.SetBackdrop(w, look.BackdropGlass)
 		look.SetRoundedCorners(w, true)
 
-		panel := w.Group("Glass panel")
-		panel.SetLayout(gowt.Grid{Columns: 1, Margin: 12, Spacing: 8})
 		look.SetGlass(panel, true)
-		panel.Button("Glass button", nil, look.GlassButton())
 		w.Show()
 	})
 	if err != nil {

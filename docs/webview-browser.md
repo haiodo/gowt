@@ -13,8 +13,8 @@ Two packages put a web page next to native widgets. Both use the system engine, 
 ## webview
 
 ```go
-host := w.Panel()
-host.SetLayout(gowt.Fill{})
+var host *gowt.Panel
+w.Add(gowt.Fill(gowt.Grow(), gowt.Ref(&host)))
 wv, err := webview.New(host.Unwrap(), webview.Options{})
 if err != nil { /* engine missing */ }
 wv.HandleScheme("app", func(r webview.Request) *webview.Response {
@@ -25,7 +25,7 @@ w.Show()
 wv.Navigate("app://localhost/")
 ```
 
-- The parent is a plain composite: pass `panel.Unwrap()`. Give the panel a `Fill{}` layout so the view fills it.
+- The parent is a plain composite: pass `panel.Unwrap()`. Make the panel a `gowt.Fill(...)` so the view fills it.
 - `SetCallHandler(f func(msg string) string) bool` sets a synchronous page-to-Go call (the page calls `window.gowt.call`); it is what `BrowserFunction` uses. `SetNavigationPolicy(f func(url string, mainFrame bool) bool) bool` lets Go cancel a navigation. Both return false if the engine lacks the feature.
 - `SetNewWindowHandler(f func(n *NewWindow) *WebView) bool` decides what `window.open` and `target=_blank` get: `f` makes the view with `n.NewOn(host, opts)` and returns it, or returns nil to refuse. `SetShowHandler` fires when the new page wants its window shown (with the `window.open` features), `SetCloseHandler` on `window.close`, `SetStatusHandler` with the link under the pointer. The new view shares the session and the user scripts of its opener.
 - `Load(LoadRequest)` navigates with a method (GET or POST), headers and a body. On Linux the POST goes through `net/http`, because WebKitGTK has no API for it: WebKit's cookie jar and proxy settings do not apply to that request.

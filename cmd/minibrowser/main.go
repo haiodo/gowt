@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	g "github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/webview"
 )
 
@@ -32,28 +33,13 @@ func main() {
 }
 
 func build(app *g.App) {
-	w := app.Window("Mini browser")
-	w.SetLayout(g.Fill{})
-	split := w.Split()
-
-	left := split.Panel()
-	left.SetLayout(g.Grid{Columns: 3, Margin: 5, Spacing: 5})
-	addr := left.Text(g.Border(), g.GrowX())
-	plus := left.Button("+", nil)
-	minus := left.Button("-", nil)
-	list := left.List(nil, g.Grow(), g.Span(3))
-
-	right := split.Panel()
-	right.SetLayout(g.Grid{Columns: 4, Margin: 5, Spacing: 5})
-	back := right.Button("<", nil)
-	forward := right.Button(">", nil)
-	reload := right.Button("Reload", nil)
-	urlLabel := right.Label("", g.GrowX())
-	stackHost := right.Panel(g.Grow(), g.Span(4))
-	stackHost.SetLayout(g.Stack{})
-	split.SetWeights(10, 90)
-
-	var pages []*page
+	var (
+		list  *g.ListView
+		stack *g.PagesView
+		pages []*page
+	)
+	addr, url := rx.New(""), rx.New("")
+	w := app.Window("Mini browser", g.Padding(0))
 	selected := func() *page {
 		if i := list.Index(); i >= 0 {
 			return pages[i]
@@ -63,26 +49,26 @@ func build(app *g.App) {
 	show := func() {
 		p := selected()
 		if p == nil {
-			urlLabel.SetText("")
+			url.Set("")
 			return
 		}
-		stackHost.ShowTop(p.host)
-		urlLabel.SetText(p.wv.URL())
+		stack.Show(list.Index())
+		url.Set(p.wv.URL())
 		w.SetTitle(label(p, "Mini browser"))
 	}
-	open := func(url string) {
+	open := func(u string) {
 		// Each page gets its own host: the stack shows hosts, and webview takes a plain composite.
-		host := stackHost.Panel()
-		host.SetLayout(g.Fill{})
+		var host *g.Panel
+		stack.Add(g.Fill(g.Ref(&host)))
 		wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 		if err != nil {
 			host.Dispose()
-			urlLabel.SetText(err.Error())
+			url.Set(err.Error())
 			return
 		}
 		p := &page{wv: wv, host: host}
 		pages = append(pages, p)
-		list.Add(label(p, cmp.Or(url, "Start")))
+		list.Add(label(p, cmp.Or(u, "Start")))
 		list.SetSelection(len(pages) - 1)
 		wv.OnTitleChanged = func(t string) {
 			p.title = t
@@ -97,27 +83,23 @@ func build(app *g.App) {
 		}
 		wv.OnNavigationFinished = func(u string) {
 			if selected() == p {
-				urlLabel.SetText(u)
+				url.Set(u)
 			}
 		}
-		if url == "" {
+		if u == "" {
 			wv.SetHTML(startPage, "")
 		} else {
-			wv.Navigate(url)
+			wv.Navigate(u)
 		}
 		show()
 	}
 	add := func() {
-		if u := normalize(addr.Text()); u != "" {
+		if u := normalize(addr.Peek()); u != "" {
 			open(u)
-			addr.SetText("")
+			addr.Set("")
 		}
 	}
-
-	plus.OnClick(add)
-	addr.OnActivate(add)
-	list.OnSelect(func(int) { show() })
-	minus.OnClick(func() {
+	remove := func() {
 		i := list.Index()
 		if i < 0 {
 			return
@@ -130,22 +112,28 @@ func build(app *g.App) {
 			list.SetSelection(min(i, n-1))
 		}
 		show()
-	})
-	back.OnClick(func() {
-		if p := selected(); p != nil {
-			p.wv.GoBack()
+	}
+	// act runs f on the selected page, if any.
+	act := func(f func(*webview.WebView)) func() {
+		return func() {
+			if p := selected(); p != nil {
+				f(p.wv)
+			}
 		}
-	})
-	forward.OnClick(func() {
-		if p := selected(); p != nil {
-			p.wv.GoForward()
-		}
-	})
-	reload.OnClick(func() {
-		if p := selected(); p != nil {
-			p.wv.Reload()
-		}
-	})
+	}
+
+	w.Add(g.Split(g.Grow(), g.Init(func(s *g.SplitView) { s.SetWeights(10, 90) }),
+		g.Grid(3, g.Padding(5),
+			g.Text(g.Border(), g.GrowX(), g.Bind(addr), g.OnActivate(add)),
+			g.Button("+", g.OnClick(add)),
+			g.Button("-", g.OnClick(remove)),
+			g.List(nil, g.Grow(), g.Span(3), g.Ref(&list), g.OnSelect(func(int) { show() }))),
+		g.Grid(4, g.Padding(5),
+			g.Button("<", g.OnClick(act((*webview.WebView).GoBack))),
+			g.Button(">", g.OnClick(act((*webview.WebView).GoForward))),
+			g.Button("Reload", g.OnClick(act((*webview.WebView).Reload))),
+			g.Label("", g.GrowX(), g.BindText(url)),
+			g.Pages(g.Grow(), g.Span(4), g.Ref(&stack)))))
 
 	open("")
 	w.SetSize(1100, 700)

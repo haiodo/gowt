@@ -1,4 +1,4 @@
-// Command layouts shows the five layouts: Grid, Row, Fill, Form and Stack.
+// Command layouts shows the layouts: VBox and HBox, Grid, Flow, Form and Pages.
 package main
 
 import (
@@ -9,13 +9,13 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Layouts")
-		w.SetLayout(gowt.Fill{})
-		tabs := w.Tabs()
-		grid(tabs.Tab("Grid"))
-		row(tabs.Tab("Row"))
-		form(tabs.Tab("Form"))
-		stack(tabs.Tab("Stack"))
+		w := app.Window("Layouts",
+			gowt.Tabs(gowt.Grow(),
+				gowt.Tab("VBox / HBox", boxes()),
+				gowt.Tab("Grid", grid()),
+				gowt.Tab("Flow", flow()),
+				gowt.Tab("Form", form()),
+				gowt.Tab("Pages", pages())))
 		w.SetSize(480, 320)
 		w.Show()
 	})
@@ -24,44 +24,59 @@ func main() {
 	}
 }
 
-// Grid: labels in column 0, fields stretch in column 1, the notes field takes the spare height.
-func grid(p *gowt.Panel) {
-	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-	p.Label("Name")
-	p.Text(gowt.GrowX())
-	p.Label("Notes")
-	p.Text(gowt.Multiline(), gowt.Grow())
-	p.Button("Save", nil, gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart))
+// VBox: children stack top to bottom; an HBox lines its children up, a Spacer pushes the buttons to the end.
+func boxes() gowt.Option {
+	return gowt.VBox(gowt.GrowX(),
+		gowt.Label("A VBox stacks its children"),
+		gowt.Button("One"),
+		gowt.Button("Two"),
+		gowt.HBox(gowt.GrowX(),
+			gowt.Label("An HBox lines them up"),
+			gowt.Spacer(),
+			gowt.Button("Cancel"),
+			gowt.Button("OK")))
 }
 
-// Row: children keep their natural size and wrap to the next row when the panel is narrow.
-func row(p *gowt.Panel) {
-	p.SetLayout(gowt.Row{Wrap: true, Margin: 10, Spacing: 6})
+// Grid: labels in column 0, fields stretch in column 1, the notes field takes the spare height.
+func grid() gowt.Option {
+	return gowt.Grid(2, gowt.Grow(),
+		gowt.Label("Name"), gowt.Text(gowt.GrowX()),
+		gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow()),
+		gowt.Button("Save", gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart)))
+}
+
+// Flow: children keep their natural size and wrap to the next row when the panel is narrow.
+func flow() gowt.Option {
+	opts := []gowt.Option{gowt.GrowX()}
 	for _, name := range []string{"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"} {
-		p.Button(name, nil, gowt.InRow(gowt.RowCell{Width: 90}))
+		opts = append(opts, gowt.Button(name, gowt.Size(90, 0)))
 	}
+	return gowt.Flow(opts...)
 }
 
 // Form: the field sits right of the label and stretches to 5 points from the right edge,
 // the button hangs under the field.
-func form(p *gowt.Panel) {
-	p.SetLayout(gowt.Form{Margin: 10})
-	label := p.Label("Address", gowt.Anchor(gowt.FormCell{
-		Left: gowt.Percent(0, 0), Top: gowt.Percent(0, 4),
-	}))
-	field := p.Text(gowt.Anchor(gowt.FormCell{
-		Left: gowt.Beside(label, 8), Right: gowt.Percent(100, 0), Top: gowt.Percent(0, 0),
-	}))
-	p.Button("Go", nil, gowt.Anchor(gowt.FormCell{
-		Right: gowt.Same(field, 0), Top: gowt.Beside(field, 8),
-	}))
+func form() gowt.Option {
+	var label *gowt.LabelView
+	var field *gowt.TextView
+	return gowt.Form(gowt.Grow(),
+		gowt.Label("Address", gowt.Ref(&label), gowt.Anchor(gowt.FormCell{
+			Left: gowt.Percent(0, 0), Top: gowt.Percent(0, 4),
+		})),
+		gowt.Text(gowt.Ref(&field), gowt.Anchor(gowt.FormCell{
+			Left: gowt.Beside(&label, 8), Right: gowt.Percent(100, 0), Top: gowt.Percent(0, 0),
+		})),
+		gowt.Button("Go", gowt.Anchor(gowt.FormCell{
+			Right: gowt.Same(&field, 0), Top: gowt.Beside(&field, 8),
+		})))
 }
 
-// Stack: Pages gives every page the full size of the panel, Show picks the visible one.
-func stack(p *gowt.Panel) {
-	p.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
-	pages := p.Pages(gowt.Grow())
-	pages.Page().SetLayout(gowt.Fill{}).Label("Page one")
-	pages.Page().SetLayout(gowt.Fill{}).Label("Page two")
-	p.Button("Switch", func() { pages.Show(1 - pages.Current()) })
+// Pages: every child is a page of the full size, Show picks the visible one.
+func pages() gowt.Option {
+	var pages *gowt.PagesView
+	return gowt.VBox(gowt.Grow(),
+		gowt.Pages(gowt.Grow(), gowt.Ref(&pages),
+			gowt.Label("Page one"),
+			gowt.Label("Page two")),
+		gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })))
 }

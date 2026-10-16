@@ -9,10 +9,9 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Hello")
-		w.SetLayout(gowt.Row{Vertical: true, Margin: 12, Spacing: 8})
-		w.Label("Hello, gowt")
-		w.Button("Quit", app.Quit)
+		w := app.Window("Hello",
+			gowt.Label("Hello, gowt"),
+			gowt.Button("Quit", gowt.OnClick(app.Quit)))
 		w.Show()
 	})
 	if err != nil {

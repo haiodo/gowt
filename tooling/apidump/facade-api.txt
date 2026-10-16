@@ -4,6 +4,7 @@ gowt App.Async(f func())
 gowt App.Clipboard() *Clipboard
 gowt App.Dark() bool
 gowt App.Every(d time.Duration, f func()) (stop func())
+gowt App.Flush()
 gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.ImageFromProvider(p github.com/haiodo/gowt/swt.ImageDataProvider) *Image
 gowt App.LoadImage(path string) (img *Image, err error)
@@ -173,6 +174,7 @@ gowt GC.Oval(x int, y int, w int, h int)
 gowt GC.Rect(x int, y int, w int, h int)
 gowt GC.SetColor(c RGB)
 gowt GC.SetFill(c RGB)
+gowt GC.SetFont(f Font)
 gowt GC.SetLineWidth(w int)
 gowt GC.Text(s string, x int, y int)
 gowt GC.TextSize(s string) (w int, h int)
@@ -181,6 +183,8 @@ gowt GridCell.Align field Align
 gowt GridCell.GrowX field bool
 gowt GridCell.GrowY field bool
 gowt GridCell.Height field int
+gowt GridCell.IndentX field int
+gowt GridCell.IndentY field int
 gowt GridCell.SpanX field int
 gowt GridCell.SpanY field int
 gowt GridCell.VAlign field Align
@@ -704,6 +708,7 @@ gowt Window.MenuBar() *Menu
 gowt Window.MessageBox(m Message) Answer
 gowt Window.OnClose(f func() bool)
 gowt Window.OnDispose(f func())
+gowt Window.OnKey(keys string, f func())
 gowt Window.Relayout()
 gowt Window.SetBackground(c RGB)
 gowt Window.SetEnabled(v bool)
@@ -793,6 +798,7 @@ gowt func GrowX() Option
 gowt func GrowY() Option
 gowt func HBox(opts ...Option) Option
 gowt func Hint(s string) Option
+gowt func Indent(x int, y int) Option
 gowt func Indeterminate() Option
 gowt func Init[T Widget](f func(T)) Option
 gowt func Label(text string, opts ...Option) Option

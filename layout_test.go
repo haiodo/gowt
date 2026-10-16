@@ -46,6 +46,13 @@ func TestPlacementComposes(t *testing.T) {
 	if d.HorizontalSpan != 3 || d.WidthHint != 100 || d.VerticalAlignment != swt.FILL || !d.GrabExcessVerticalSpace {
 		t.Errorf("GrowY after Cell must keep the cell: %+v", d)
 	}
+	d = placed(t, "Grid", GrowX(), Indent(12, 4), Span(2)).(*swt.GridData)
+	if d.HorizontalIndent != 12 || d.VerticalIndent != 4 || d.HorizontalSpan != 2 || !d.GrabExcessHorizontalSpace {
+		t.Errorf("GrowX, Indent(12, 4), Span(2): %+v", d)
+	}
+	if err := misplacedErr("Flow", Indent(5, 0)); err == nil || !strings.Contains(err.Error(), "Indent") {
+		t.Errorf("Indent in a Flow: %v", err)
+	}
 	if r := placed(t, "Flow", Size(120, 0)).(*swt.RowData); r.Width != 120 || r.Height != swt.DEFAULT {
 		t.Errorf("Size in a Flow: %+v", r)
 	}

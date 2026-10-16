@@ -167,3 +167,73 @@ func TestParseShortcut(t *testing.T) {
 		}
 	}
 }
+
+func TestKeyMatches(t *testing.T) {
+	cases := []struct {
+		keys, goos  string
+		state, code int32
+		want        bool
+	}{
+		{"Cmd+[", "darwin", swt.COMMAND, '[', true},
+		{"Cmd+[", "darwin", swt.COMMAND | swt.SHIFT, '[', false},
+		{"Cmd+[", "darwin", swt.CTRL, '[', false},
+		{"Cmd+[", "linux", swt.CTRL, '[', true},
+		{"Alt+Left", "linux", swt.ALT, swt.ARROW_LEFT, true},
+		{"Alt+Left", "linux", swt.ALT, swt.ARROW_RIGHT, false},
+		{"Alt+Left", "linux", 0, swt.ARROW_LEFT, false},
+		{"Cmd+K", "windows", swt.CTRL, 'k', true},
+		{"Cmd+Shift+K", "windows", swt.CTRL | swt.SHIFT, 'k', true},
+		{"Cmd+K", "windows", swt.CTRL | swt.ALT_GR, 'k', false},
+		{"F5", "linux", 0, swt.F5, true},
+		{"F5", "linux", swt.SHIFT, swt.F5, false},
+	}
+	for _, c := range cases {
+		accel, _, err := parseShortcut(c.keys, c.goos)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := keyMatches(accel, c.state, c.code); got != c.want {
+			t.Errorf("%s on %s: state %#x code %#x matched %v", c.keys, c.goos, c.state, c.code, got)
+		}
+	}
+}
+
+func TestEditsText(t *testing.T) {
+	cases := []struct {
+		keys, goos string
+		want       bool
+	}{
+		{"Cmd+[", "darwin", false},
+		{"Alt+Left", "linux", false},
+		{"Alt+Left", "windows", false},
+		{"Alt+Left", "darwin", true}, // Option+Left moves by word
+		{"Cmd+Left", "darwin", true},
+		{"Ctrl+Left", "linux", true},
+		{"Cmd+C", "darwin", true},
+		{"Cmd+Shift+Z", "linux", true},
+		{"Ctrl+C", "darwin", true}, // Ctrl+letter is an editing key in Cocoa text
+		{"Cmd+K", "linux", false},
+		{"Alt+E", "darwin", true}, // Option types a character
+		{"Alt+E", "windows", false},
+		{"Ctrl+Alt+Q", "windows", true}, // AltGr
+		{"Alt+Backspace", "linux", true},
+		{"Shift+Delete", "windows", true},
+		{"K", "linux", true},
+		{"Shift+K", "darwin", true},
+		{"Space", "linux", true},
+		{"Enter", "linux", true},
+		{"Down", "windows", true},
+		{"Esc", "darwin", false},
+		{"F5", "linux", false},
+		{"Cmd+Enter", "darwin", false},
+	}
+	for _, c := range cases {
+		accel, _, err := parseShortcut(c.keys, c.goos)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := editsText(accel, c.goos); got != c.want {
+			t.Errorf("editsText(%s, %s) = %v", c.keys, c.goos, got)
+		}
+	}
+}

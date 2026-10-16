@@ -67,8 +67,11 @@ func (i *Image) Dispose() {
 func (i *Image) Unwrap() *swt.Image { return i.i }
 
 // GC draws on a Canvas. It is valid only inside the paint callback it was passed to.
-// Colors are set per call and need no disposal.
-type GC struct{ g *swt.GC }
+// Colors and fonts are set per call and need no disposal.
+type GC struct {
+	g *swt.GC
+	c *CanvasView
+}
 
 // SetColor sets the color of lines and text.
 func (g *GC) SetColor(c RGB) { g.g.SetForeground(c.color()) }
@@ -97,6 +100,23 @@ func (g *GC) FillOval(x, y, w, h int) { g.g.FillOval(int32(x), int32(y), int32(w
 // Text draws s with its top left at (x, y) over the fill color; tabs and newlines are honored.
 func (g *GC) Text(s string, x, y int) { g.g.DrawText(s, int32(x), int32(y)) }
 
+// SetFont sets the font of Text and TextSize for the rest of the paint callback. Empty Name and zero
+// Size take the canvas's ones, as Widget.SetFont does; Font{} is the canvas's font itself. The canvas
+// makes each native font once and releases them when it is disposed.
+func (g *GC) SetFont(f Font) {
+	if f == (Font{}) {
+		g.g.SetFont(g.c.c.GetFont())
+		return
+	}
+	f = f.from(g.c.c.GetFont())
+	sf, ok := g.c.fonts[f]
+	if !ok {
+		sf = f.swtFont(g.c.c.GetDisplay())
+		g.c.fonts[f] = sf
+	}
+	g.g.SetFont(sf)
+}
+
 // TextSize measures s as Text would draw it.
 func (g *GC) TextSize(s string) (w, h int) {
 	p := g.g.TextExtent(s)
@@ -112,7 +132,8 @@ func (g *GC) Unwrap() *swt.GC { return g.g }
 // CanvasView is a blank area drawn by the paint callback.
 type CanvasView struct {
 	base
-	c *swt.Canvas
+	c     *swt.Canvas
+	fonts map[Font]*swt.Font // made by GC.SetFont
 }
 
 type painter func(*swt.PaintEvent)
@@ -125,10 +146,12 @@ func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 func Canvas(onPaint func(g *GC), opts ...Option) Option {
 	return leaf("Canvas", sBorder, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCanvasParentStyle(p, resolve(swt.DOUBLE_BUFFERED, opts))
+		v := &CanvasView{base{&c.Control}, c, map[Font]*swt.Font{}}
+		c.AddDisposeListener(&fontDisposer{v.fonts})
 		if onPaint != nil {
-			c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc}) }))
+			c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc, v}) }))
 		}
-		return &CanvasView{base{&c.Control}, c}
+		return v
 	})
 }
 

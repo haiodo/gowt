@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -324,6 +325,16 @@ func TestImageAndCanvas(t *testing.T) {
 			g.Text("hi", 0, 0)
 			if tw, th := g.TextSize("hi"); tw <= 0 || th <= 0 {
 				t.Errorf("text size %dx%d", tw, th)
+			}
+			_, plain := g.TextSize("hi")
+			g.SetFont(Font{Size: 40, Weight: Semibold})
+			g.SetFont(Font{Size: 40, Weight: Semibold})
+			if _, big := g.TextSize("hi"); big <= plain || len(g.c.fonts) != 1 {
+				t.Errorf("SetFont: height %d, canvas font %d; %d fonts made", big, plain, len(g.c.fonts))
+			}
+			g.SetFont(Font{})
+			if _, h := g.TextSize("hi"); h != plain {
+				t.Errorf("SetFont(Font{}): height %d, want the canvas's %d", h, plain)
 			}
 			g.Image(fromBytes, 0, 0)
 			drawn++
@@ -653,4 +664,40 @@ func TestEvery(t *testing.T) {
 	if err != nil || n != 3 || len(errs) != 1 {
 		t.Fatalf("err %v, ticks %d, errors %v", err, n, errs)
 	}
+}
+
+func TestWindowOnKey(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var hits []string
+		w.OnKey("Cmd+K", func() { hits = append(hits, "Cmd+K") })
+		w.OnKey("Delete", func() { hits = append(hits, "Delete") })
+		txt := put[*TextView](w, Text())
+		btn := put[*ButtonView](w, Button("b"))
+		other := app.Window("other")
+		defer other.Unwrap().Dispose()
+		elsewhere := put[*ButtonView](other, Button("o"))
+		cmd := int32(swt.CTRL)
+		if runtime.GOOS == "darwin" {
+			cmd = swt.COMMAND
+		}
+		key := func(c interface{ NotifyListeners(int32, swt.EventLike) }, state, code int32) bool {
+			e := swt.NewEvent()
+			e.StateMask, e.KeyCode = state, code
+			c.NotifyListeners(swt.KeyDown, e)
+			return e.Doit
+		}
+		if key(btn.Unwrap(), cmd, 'k') {
+			t.Error("the bound key went on to the button")
+		}
+		key(txt.Unwrap(), cmd, 'k')
+		key(btn.Unwrap(), 0, int32(swt.DEL))
+		if !key(txt.Unwrap(), 0, int32(swt.DEL)) {
+			t.Error("Delete did not reach the text field")
+		}
+		key(elsewhere.Unwrap(), cmd, 'k')
+		key(btn.Unwrap(), cmd, 'j')
+		if want := []string{"Cmd+K", "Cmd+K", "Delete"}; !slices.Equal(hits, want) {
+			t.Errorf("hits %v, want %v", hits, want)
+		}
+	})
 }

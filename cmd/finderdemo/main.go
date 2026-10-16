@@ -24,8 +24,8 @@ func main() {
 		w.SetSize(860, 620)
 
 		var (
-			nav   *gowt.List
-			views *gowt.Pages
+			nav   *gowt.ListView
+			views *gowt.PagesView
 			hist  = []int{0}
 			pos   int
 		)
@@ -103,7 +103,7 @@ func heading(p *gowt.Panel, text string) {
 }
 
 // row adds a settings row: the label on the left, the control that add creates on the right.
-func row(s *gowt.Section, label string, add func(r *gowt.Panel)) {
+func row(s *gowt.SectionView, label string, add func(r *gowt.Panel)) {
 	r := s.Row().SetLayout(gowt.Grid{Columns: 2, Margin: 6, Spacing: 12})
 	r.Label(label, gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
 	add(r)

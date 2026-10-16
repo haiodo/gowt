@@ -19,7 +19,7 @@ func main() {
 		right := split.Panel()
 		right.SetLayout(g.Stack{})
 
-		var groups []*g.Group
+		var groups []*g.GroupView
 		for _, n := range []string{"A", "B", "C"} {
 			grp := right.Group("Panel " + n)
 			grp.SetLayout(g.Fill{})

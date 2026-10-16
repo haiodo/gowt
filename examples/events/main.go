@@ -23,7 +23,7 @@ func main() {
 		// Slow work goes to a goroutine. Widgets are touched only on the UI thread,
 		// so the result comes back through app.Async.
 		progress := w.Progress(100, gowt.GrowX(), gowt.Span(2))
-		var start *gowt.Button
+		var start *gowt.ButtonView
 		start = w.Button("Start work", func() {
 			start.SetEnabled(false)
 			go func() {

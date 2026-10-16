@@ -16,7 +16,7 @@ func main() {
 		if len(names) > 12 {
 			names = names[:12]
 		}
-		buttons := make([]*gowt.Button, len(names))
+		buttons := make([]*gowt.ButtonView, len(names))
 		for i, n := range names {
 			buttons[i] = w.Button("", nil, gowt.Tooltip(n))
 		}

@@ -19,7 +19,7 @@ func Bind[T any](w Widget, r rx.Reader[T], apply func(T)) {
 
 // BindText shows r in the label. A changed text lays the window out again on the next event-loop
 // turn, so a label that grows is not clipped.
-func (l *Label) BindText(r rx.Reader[string]) {
+func (l *LabelView) BindText(r rx.Reader[string]) {
 	last := l.l.GetText()
 	Bind(l, r, func(s string) {
 		if s == last {
@@ -33,7 +33,7 @@ func (l *Label) BindText(r rx.Reader[string]) {
 
 // BindChecked keeps a Check or Radio button and s in step both ways: a click sets s, a Set of s
 // checks or unchecks the button.
-func (b *Button) BindChecked(s *rx.State[bool]) {
+func (b *ButtonView) BindChecked(s *rx.State[bool]) {
 	last := b.b.GetSelection()
 	l := swt.SelectionListenerWidgetSelectedAdapter(func(*swt.SelectionEvent) {
 		last = b.b.GetSelection()
@@ -57,7 +57,7 @@ func (b *Button) BindChecked(s *rx.State[bool]) {
 
 // Bind keeps the field and s in step both ways: every edit sets s, a Set of s replaces the
 // content. The content is replaced only when s differs from it, so typing keeps the caret.
-func (t *Text) Bind(s *rx.State[string]) {
+func (t *TextView) Bind(s *rx.State[string]) {
 	last := t.t.GetText()
 	m := &modifier{func() {
 		last = t.t.GetText()

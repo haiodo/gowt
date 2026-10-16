@@ -1,14 +1,12 @@
 package gowt
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/haiodo/gowt/swt"
 )
-
-// Layout arranges the children of a Panel or Window.
-type Layout interface{ layout() swt.LayoutLike }
 
 // Align is a cell alignment inside a grid cell.
 type Align int32
@@ -25,30 +23,133 @@ func (a Align) swt() int32 {
 	return [...]int32{swt.BEGINNING, swt.CENTER, swt.END, swt.FILL}[a]
 }
 
-// Fill lays children out in one row or column of equal size.
-type Fill struct{ Vertical bool }
-
-func (f Fill) layout() swt.LayoutLike {
-	if f.Vertical {
-		return swt.NewFillLayoutType(swt.VERTICAL)
-	}
-	return swt.NewFillLayout()
+// VBox creates a container that stacks its children top to bottom, Gap apart. A child takes its
+// natural size unless GrowX, GrowY or Grow stretch it; a Spacer takes the free height.
+// Options: Gap, Padding, Border, children.
+func VBox(opts ...Option) Option {
+	return box("VBox", opts, func(gap, pad int, _ int32) swt.LayoutLike { return newBox(false, gap, pad) })
 }
 
-// Grid lays children out in Columns columns, left to right, top to bottom.
-// Margin and Spacing are in points; zero means none (SWT's own defaults are 5 and 5).
-type Grid struct {
-	Columns    int
-	EqualWidth bool
-	Margin     int
-	Spacing    int
+// HBox creates a container that lines its children up left to right, Gap apart, one column per
+// shown child. GrowX gives a child the free width; a Spacer takes it and pushes the rest to the end.
+// Options: Gap, Padding, Border, children.
+func HBox(opts ...Option) Option {
+	return box("HBox", opts, func(gap, pad int, _ int32) swt.LayoutLike { return newBox(true, gap, pad) })
 }
 
-func (g Grid) layout() swt.LayoutLike {
-	l := swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(int32(max(g.Columns, 1)), g.EqualWidth)
-	l.MarginWidth, l.MarginHeight = int32(g.Margin), int32(g.Margin)
-	l.HorizontalSpacing, l.VerticalSpacing = int32(g.Spacing), int32(g.Spacing)
+// Grid creates a container that lays its children out in columns columns, left to right, top to
+// bottom, Gap apart in both directions: Grid(2, Label("Name"), Text(GrowX())) is a form row.
+// Options: Gap, Padding, Border, children.
+func Grid(columns int, opts ...Option) Option {
+	return box("Grid", opts, func(gap, pad int, _ int32) swt.LayoutLike {
+		return gridLayout(swt.NewGridLayoutNumColumnsMakeColumnsEqualWidth(int32(max(columns, 1)), false), gap, pad)
+	})
+}
+
+// Flow creates a container that puts its children in a row at their natural size and wraps them to
+// the next row when the width runs out; Vertical() makes it a column that wraps to the next column.
+// Size sets the size of a child.
+// Options: Vertical, Gap, Padding, Border, children.
+func Flow(opts ...Option) Option {
+	return box("Flow", opts, func(gap, pad int, style int32) swt.LayoutLike {
+		l := swt.NewRowLayout()
+		if style&swt.VERTICAL != 0 {
+			l.Type = swt.VERTICAL
+		}
+		l.Wrap = true
+		l.MarginWidth, l.MarginHeight = 0, 0
+		l.MarginLeft, l.MarginTop, l.MarginRight, l.MarginBottom = int32(pad), int32(pad), int32(pad), int32(pad)
+		l.Spacing = int32(gap)
+		return l
+	})
+}
+
+// Fill creates a container whose children share its whole width in equal parts, or its height
+// with Vertical(); with one child, the child fills the container.
+// Options: Vertical, Gap, Padding, Border, children.
+func Fill(opts ...Option) Option {
+	return box("Fill", opts, func(gap, pad int, style int32) swt.LayoutLike {
+		l := swt.NewFillLayout()
+		if style&swt.VERTICAL != 0 {
+			l.Type = swt.VERTICAL
+		}
+		l.MarginWidth, l.MarginHeight = int32(pad), int32(pad)
+		l.Spacing = int32(gap)
+		return l
+	})
+}
+
+// Form creates a container that positions each child by attaching its edges (see Anchor), which
+// lets children stretch or follow siblings. Gap is the space Form leaves between attached siblings.
+// Options: Gap, Padding, Border, children.
+func Form(opts ...Option) Option {
+	return box("Form", opts, func(gap, pad int, _ int32) swt.LayoutLike {
+		l := swt.NewFormLayout()
+		l.MarginWidth, l.MarginHeight = int32(pad), int32(pad)
+		l.Spacing = int32(gap)
+		return l
+	})
+}
+
+// box returns the node of a Panel laid out by lay(gap, padding, style bits).
+func box(name string, opts []Option, lay func(gap, pad int, style int32) swt.LayoutLike) Option {
+	return &node{name, func(h host) Widget {
+		style := resolve(swt.NONE, opts)
+		// VERTICAL is V_SCROLL to a composite: it only chooses the layout's direction.
+		c := swt.NewCompositeParentStyle(h.into(), style&^swt.VERTICAL)
+		gap, pad := spacingOf(opts, 0)
+		c.SetLayout(lay(gap, pad, style))
+		p := &Panel{newPanel(c)}
+		allow := sBorder
+		if name == "Flow" || name == "Fill" {
+			allow |= sVertical
+		}
+		finish(p, allow, opts)
+		return p
+	}}
+}
+
+func gridLayout(l *swt.GridLayout, gap, pad int) *swt.GridLayout {
+	l.MarginWidth, l.MarginHeight = int32(pad), int32(pad)
+	l.HorizontalSpacing, l.VerticalSpacing = int32(gap), int32(gap)
 	return l
+}
+
+// boxLayout is the GridLayout of a VBox, or of an HBox, which gets one column per shown child at
+// each layout pass, so that Add, Dispose and SetVisible need not count columns.
+type boxLayout struct {
+	*swt.GridLayout
+	row bool
+}
+
+func newBox(row bool, gap, pad int) *boxLayout {
+	l := &boxLayout{gridLayout(swt.NewGridLayout(), gap, pad), row}
+	l.SetImpl_(l)
+	return l
+}
+
+func (l *boxLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, flush bool) *swt.Point {
+	l.columns(c)
+	return l.GridLayout.ComputeSize(c, wHint, hHint, flush)
+}
+
+func (l *boxLayout) LayoutFn_(c *swt.Composite, flush bool) {
+	l.columns(c)
+	l.GridLayout.LayoutFn(c, flush)
+}
+
+func (l *boxLayout) columns(c *swt.Composite) {
+	if !l.row {
+		return
+	}
+	n := 0
+	for _, ch := range c.GetChildren() {
+		if d, ok := ch.GetLayoutData().(*swt.GridData); ok && d.Exclude {
+			continue
+		}
+		n++
+	}
+	l.NumColumns = int32(max(n, 1))
 }
 
 // GridCell places one child inside a Grid. Zero value: natural size, top left, one cell.
@@ -75,53 +176,16 @@ func (c GridCell) data() *swt.GridData {
 	return d
 }
 
-// Row lays children out in a row (or column with Vertical) at their natural size, wrapping if Wrap is set.
-// Fill stretches every child to the row's full height (width for Vertical), Center centers them.
-type Row struct {
-	Vertical, Wrap, Fill, Center bool
-	Margin, Spacing              int
-}
-
-func (r Row) layout() swt.LayoutLike {
-	l := swt.NewRowLayout()
-	if r.Vertical {
-		l.Type = swt.VERTICAL
-	}
-	l.Wrap, l.Fill, l.Center = r.Wrap, r.Fill, r.Center
-	l.MarginWidth, l.MarginHeight = 0, 0
-	l.MarginLeft, l.MarginTop, l.MarginRight, l.MarginBottom = int32(r.Margin), int32(r.Margin), int32(r.Margin), int32(r.Margin)
-	l.Spacing = int32(r.Spacing)
-	return l
-}
-
-// RowCell sets the size of one child of a Row; zero means natural size.
-type RowCell struct{ Width, Height int }
-
-// InRow sets the size of a child laid out by Row; Size does the same and also works in Grid and Form.
-func InRow(c RowCell) Option {
-	return Option{place: func(pl *placement) { pl.row, pl.rowc = true, c }}
-}
-
-func (c RowCell) data() *swt.RowData {
+func rowData(w, h int) *swt.RowData {
 	d := swt.NewRowData()
-	d.Width, d.Height = int32(c.Width), int32(c.Height)
-	if c.Width == 0 {
+	d.Width, d.Height = int32(w), int32(h)
+	if w == 0 {
 		d.Width = swt.DEFAULT
 	}
-	if c.Height == 0 {
+	if h == 0 {
 		d.Height = swt.DEFAULT
 	}
 	return d
-}
-
-// Form positions each child by attaching its edges (see Anchor), which lets children stretch or follow siblings.
-type Form struct{ Margin, Spacing int }
-
-func (f Form) layout() swt.LayoutLike {
-	l := swt.NewFormLayout()
-	l.MarginWidth, l.MarginHeight = int32(f.Margin), int32(f.Margin)
-	l.Spacing = int32(f.Spacing)
-	return l
 }
 
 // Edge says where one side of a Form child sits. The zero Edge leaves the side free.
@@ -129,7 +193,7 @@ type Edge struct {
 	kind   uint8
 	pct    int
 	offset int
-	to     Widget
+	to     func() Widget
 }
 
 const (
@@ -143,22 +207,44 @@ const (
 // Percent(0, 5) is 5 from the left/top, Percent(100, -5) is 5 from the right/bottom.
 func Percent(pct, offset int) Edge { return Edge{kind: edgePercent, pct: pct, offset: offset} }
 
-// Beside attaches the side to the opposite side of w, gap points away: a left edge sits right of w.
-func Beside(w Widget, gap int) Edge { return Edge{kind: edgeBeside, offset: gap, to: w} }
+// Beside attaches the side to the opposite side of the sibling *w, gap points away: a left edge sits
+// right of it. *w is read when the child is placed, so a Ref of an earlier sibling fills it in time.
+func Beside[T Widget](w *T, gap int) Edge {
+	return Edge{kind: edgeBeside, offset: gap, to: func() Widget { return *w }}
+}
 
-// Same attaches the side to the same side of w (left to left, top to top, ...), offset points away.
-func Same(w Widget, offset int) Edge { return Edge{kind: edgeSame, offset: offset, to: w} }
+// Same attaches the side to the same side of the sibling *w (left to left, top to top, ...), offset points away.
+func Same[T Widget](w *T, offset int) Edge {
+	return Edge{kind: edgeSame, offset: offset, to: func() Widget { return *w }}
+}
 
-func (e Edge) attachment(side int32) *swt.FormAttachment {
+var errNoSibling = errors.New("a Beside or Same edge refers to a sibling that is not created yet")
+
+func (e Edge) attachment(side int32) (*swt.FormAttachment, error) {
 	switch e.kind {
+	case edgeFree:
+		return nil, nil
 	case edgePercent:
-		return swt.NewFormAttachmentNumeratorOffset(int32(e.pct), int32(e.offset))
-	case edgeBeside:
-		return swt.NewFormAttachmentControlOffset(e.to.control(), int32(e.offset))
-	case edgeSame:
-		return swt.NewFormAttachmentControlOffsetAlignment(e.to.control(), int32(e.offset), side)
+		return swt.NewFormAttachmentNumeratorOffset(int32(e.pct), int32(e.offset)), nil
 	}
-	return nil
+	to := e.to()
+	if isNil(to) {
+		return nil, errNoSibling
+	}
+	if e.kind == edgeBeside {
+		return swt.NewFormAttachmentControlOffset(to.control(), int32(e.offset)), nil
+	}
+	return swt.NewFormAttachmentControlOffsetAlignment(to.control(), int32(e.offset), side), nil
+}
+
+// isNil reports a nil Widget, also a typed nil pointer read from a Ref variable not filled yet.
+func isNil(w Widget) (yes bool) {
+	defer func() {
+		if recover() != nil {
+			yes = true
+		}
+	}()
+	return w == nil || w.control() == nil
 }
 
 // FormCell places one child of a Form. Width and Height are hints in points, zero is natural size.
@@ -168,15 +254,21 @@ type FormCell struct {
 	Width, Height            int
 }
 
-// Anchor sets the position of a child laid out by Form. Edges that refer to a sibling need that sibling to exist already.
+// Anchor sets the position of a child laid out by Form.
 func Anchor(c FormCell) Option {
-	return Option{place: func(pl *placement) { pl.form, pl.formc = true, c }}
+	return place(func(pl *placement) { pl.form, pl.formc = true, c })
 }
 
-func (c FormCell) data() *swt.FormData {
+func (c FormCell) data() (*swt.FormData, error) {
 	d := swt.NewFormData()
-	d.Left, d.Right = c.Left.attachment(swt.LEFT), c.Right.attachment(swt.RIGHT)
-	d.Top, d.Bottom = c.Top.attachment(swt.TOP), c.Bottom.attachment(swt.BOTTOM)
+	var errs [4]error
+	d.Left, errs[0] = c.Left.attachment(swt.LEFT)
+	d.Right, errs[1] = c.Right.attachment(swt.RIGHT)
+	d.Top, errs[2] = c.Top.attachment(swt.TOP)
+	d.Bottom, errs[3] = c.Bottom.attachment(swt.BOTTOM)
+	if err := errors.Join(errs[:]...); err != nil {
+		return nil, err
+	}
 	d.Width, d.Height = int32(c.Width), int32(c.Height)
 	if c.Width == 0 {
 		d.Width = swt.DEFAULT
@@ -184,59 +276,46 @@ func (c FormCell) data() *swt.FormData {
 	if c.Height == 0 {
 		d.Height = swt.DEFAULT
 	}
-	return d
+	return d, nil
 }
 
-// Stack shows one child at a time, all at the full size of the container; choose it with Panel.ShowTop.
-// Pages does the same and also knows which page is shown.
-type Stack struct{ Margin int }
-
-func (s Stack) layout() swt.LayoutLike {
-	l := swt.NewStackLayout()
-	l.MarginWidth, l.MarginHeight = int32(s.Margin), int32(s.Margin)
-	return l
-}
-
-// ShowTop makes w, a child of p, the visible one. p must have a Stack layout.
-func (p *panel) ShowTop(w Widget) {
-	if p.stack == nil {
-		panic("gowt: ShowTop on a Panel without a Stack layout")
-	}
-	p.stack.TopControl = w.control()
-	p.c.Layout()
-}
-
-// Pages shows one page at a time at the full size of the container, like a tab folder without tabs.
-type Pages struct {
+// PagesView shows one page at a time at the full size of the container, like a tab folder without tabs.
+type PagesView struct {
 	base
 	c     *swt.Composite
 	stack *swt.StackLayout
 }
 
-// Pages adds a container of pages; add them with Page and switch with Show.
-// Options: common only.
-func (p *panel) Pages(opts ...Option) *Pages {
-	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
-	s := swt.NewStackLayout()
-	c.SetLayout(s)
-	applyOpts(&c.Control, opts)
-	return &Pages{base{&c.Control}, c, s}
+// Pages creates a container whose children are pages, one shown at a time; the first is shown
+// until Show picks another.
+// Options: common only, children.
+func Pages(opts ...Option) Option {
+	return &node{"Pages", func(h host) Widget {
+		c := swt.NewCompositeParentStyle(h.into(), resolve(swt.NONE, opts))
+		s := swt.NewStackLayout()
+		c.SetLayout(s)
+		g := &PagesView{base{&c.Control}, c, s}
+		finish(g, 0, opts)
+		return g
+	}}
 }
 
-// Page appends a page and returns it as a Panel without a layout. The new page is shown when no
-// other is, so the first page is visible until Show picks another.
-// Options: common only.
-func (g *Pages) Page(opts ...Option) *Panel {
-	c := swt.NewCompositeParentStyle(g.c, resolve(swt.NONE, opts))
-	applyOpts(&c.Control, opts)
+// Add appends pages; a page added while none is shown is shown.
+func (g *PagesView) Add(pages ...Option) {
+	add(g, pages)
+	g.c.Layout()
+}
+
+func (g *PagesView) into() *swt.Composite { return g.c }
+
+func (g *PagesView) added(w Widget) {
 	if g.Current() == -1 {
-		g.stack.TopControl = &c.Control
+		g.stack.TopControl = w.control()
 	}
-	return &Panel{newPanel(c)}
 }
 
-// Show makes page i, counted from 0 in the order of Page calls, the visible one.
-func (g *Pages) Show(i int) {
+// Show makes page i, counted from 0 in the order the pages were added, the visible one.
+func (g *PagesView) Show(i int) {
 	pages := g.c.GetChildren()
 	if i < 0 || i >= len(pages) {
 		panic(fmt.Sprintf("gowt: Pages.Show(%d) with %d pages", i, len(pages)))
@@ -246,7 +325,7 @@ func (g *Pages) Show(i int) {
 }
 
 // Current returns the index of the visible page, -1 if there is none.
-func (g *Pages) Current() int {
+func (g *PagesView) Current() int {
 	for i, c := range g.c.GetChildren() {
 		if c == g.stack.TopControl {
 			return i
@@ -256,24 +335,24 @@ func (g *Pages) Current() int {
 }
 
 // Unwrap returns the underlying composite; its layout is an swt.StackLayout.
-func (g *Pages) Unwrap() *swt.Composite { return g.c }
+func (g *PagesView) Unwrap() *swt.Composite { return g.c }
 
 // Placement options. They describe where a child sits and how it grows without naming the parent's
 // layout, and add up: GrowX(), Span(2) give one cell that spans two columns and fills its width.
 // When several set the same field, the later one wins. An option the parent's layout cannot use is
 // reported to App.OnError naming the widget and the layout, and the widget keeps its natural size.
 
-// Grow fills the grid cell and takes the free width and height of the Grid.
+// Grow fills the cell and takes the free width and height of a VBox, HBox or Grid.
 func Grow() Option {
 	return gridOpt("Grow", func(c *GridCell) { c.Align, c.VAlign, c.GrowX, c.GrowY = AlignFill, AlignFill, true, true })
 }
 
-// GrowX fills the width of the grid cell and takes the free width of the Grid.
+// GrowX fills the width of the cell and takes the free width of an HBox or Grid row.
 func GrowX() Option {
 	return gridOpt("GrowX", func(c *GridCell) { c.Align, c.GrowX = AlignFill, true })
 }
 
-// GrowY fills the height of the grid cell and takes the free height of the Grid.
+// GrowY fills the height of the cell and takes the free height of a VBox or Grid column.
 func GrowY() Option {
 	return gridOpt("GrowY", func(c *GridCell) { c.VAlign, c.GrowY = AlignFill, true })
 }
@@ -281,7 +360,7 @@ func GrowY() Option {
 // Span makes the child cover cols columns of the Grid.
 func Span(cols int) Option { return gridOpt("Span", func(c *GridCell) { c.SpanX = cols }) }
 
-// Place aligns the child inside its grid cell: Place(AlignEnd, AlignCenter) puts it at the right, centred vertically.
+// Place aligns the child inside its cell: Place(AlignEnd, AlignCenter) puts it at the right, centred vertically.
 func Place(h, v Align) Option {
 	return gridOpt("Place", func(c *GridCell) { c.Align, c.VAlign = h, v })
 }
@@ -289,122 +368,87 @@ func Place(h, v Align) Option {
 // Cell sets every field of the child's grid cell at once; placement options after it change single fields.
 func Cell(c GridCell) Option { return gridOpt("Cell", func(g *GridCell) { *g = c }) }
 
-// Size asks for a width and height in points, zero keeps the natural one. It works in Grid, Row and Form.
+// Size asks for a width and height in points, zero keeps the natural one. It works in a VBox, HBox,
+// Grid, Flow and Form.
 func Size(w, h int) Option {
-	return Option{place: func(pl *placement) {
+	return place(func(pl *placement) {
 		pl.cell.Width, pl.cell.Height = w, h
-		pl.rowc.Width, pl.rowc.Height = w, h
 		pl.formc.Width, pl.formc.Height = w, h
-	}}
+	})
 }
 
 func gridOpt(name string, f func(*GridCell)) Option {
-	return Option{place: func(pl *placement) {
+	return place(func(pl *placement) {
 		if pl.grid == "" {
 			pl.grid = name
 		}
 		f(&pl.cell)
-	}}
+	})
 }
 
-// placement collects the placement options of one widget; applyOpts turns it into layout data.
+// placement collects the placement options of one widget; finish turns it into layout data.
 type placement struct {
-	grid      string // the first option only a Grid can use, "" if none
-	row, form bool   // InRow, Anchor given
-	cell      GridCell
-	rowc      RowCell
-	formc     FormCell
+	grid  string // the first option only a VBox, HBox or Grid can use, "" if none
+	form  bool   // Anchor given
+	cell  GridCell
+	formc FormCell
 }
 
-// data returns the layout data for widget in a parent laid out by layout, a layoutName. With no
-// layout yet the options choose the kind, and SetLayout checks it later (checkChildren).
+// isGrid reports whether a layoutName is laid out by a GridLayout.
+func isGrid(layout string) bool { return layout == "Grid" || layout == "VBox" || layout == "HBox" }
+
+// data returns the layout data for widget in a parent laid out by layout, a layoutName.
 func (pl *placement) data(widget, layout string) (any, error) {
-	kind := layout
-	if kind == "" {
-		kind = pl.kind()
-	}
 	switch {
-	case pl.grid != "" && kind != "Grid":
-		return nil, misplaced(pl.grid, "a Grid", widget, layout)
-	case pl.row && kind != "Row":
-		return nil, misplaced("InRow", "a Row", widget, layout)
-	case pl.form && kind != "Form":
+	case pl.grid != "" && !isGrid(layout):
+		return nil, misplaced(pl.grid, "a VBox, HBox or Grid", widget, layout)
+	case pl.form && layout != "Form":
 		return nil, misplaced("Anchor", "a Form", widget, layout)
 	}
-	switch kind {
-	case "Grid":
-		return pl.cell.data(), nil
-	case "Row":
-		return pl.rowc.data(), nil
-	case "Form":
-		return pl.formc.data(), nil
-	}
-	return nil, misplaced("Size", "a Grid, Row or Form", widget, layout)
-}
-
-func (pl *placement) kind() string {
 	switch {
-	case pl.grid != "":
-		return "Grid"
-	case pl.row:
-		return "Row"
-	case pl.form:
-		return "Form"
+	case isGrid(layout):
+		return pl.cell.data(), nil
+	case layout == "Flow":
+		return rowData(pl.cell.Width, pl.cell.Height), nil
+	case layout == "Form":
+		d, err := pl.formc.data()
+		if err != nil {
+			return nil, fmt.Errorf("gowt: Anchor on %s: %w", widget, err)
+		}
+		return d, nil
 	}
-	return "Grid"
+	return nil, misplaced("Size", "a VBox, HBox, Grid, Flow or Form", widget, layout)
 }
 
 func misplaced(opt, need, widget, layout string) error {
 	if layout == "" {
-		layout = "no layout"
+		layout = "a parent without a layout"
 	}
-	return fmt.Errorf("gowt: %s on %s needs %s layout, its parent has %s", opt, widget, need, layout)
+	return fmt.Errorf("gowt: %s on %s needs %s parent, not %s", opt, widget, need, layout)
 }
 
-// layoutName names the layout of c as the facade does ("Grid", "Row", ...), "" for none.
+// layoutName names the layout of c as the facade does ("Grid", "VBox", ...), "" for none.
 func layoutName(c *swt.Composite) string {
 	if c == nil || c.GetLayout() == nil {
 		return ""
 	}
 	switch l := c.GetLayout().Impl().(type) {
+	case *boxLayout:
+		if l.row {
+			return "HBox"
+		}
+		return "VBox"
 	case *swt.GridLayout:
 		return "Grid"
 	case *swt.RowLayout:
-		return "Row"
+		return "Flow"
 	case *swt.FormLayout:
 		return "Form"
 	case *swt.FillLayout:
 		return "Fill"
 	case *swt.StackLayout:
-		return "Stack"
+		return "Pages"
 	default:
 		return strings.TrimPrefix(fmt.Sprintf("%T", l), "*swt.")
-	}
-}
-
-// checkChildren runs after SetLayout: a child placed for another layout would fail the next layout
-// pass, so its layout data is dropped and the mismatch reported. Stack reads no layout data.
-func checkChildren(c *swt.Composite) {
-	have := layoutName(c)
-	if have == "Stack" {
-		return
-	}
-	for _, ch := range c.GetChildren() {
-		var need string
-		switch ch.GetLayoutData().(type) {
-		case *swt.GridData:
-			need = "Grid"
-		case *swt.RowData:
-			need = "Row"
-		case *swt.FormData:
-			need = "Form"
-		case *swt.FillData:
-			need = "Fill"
-		}
-		if need == "" || need == have {
-			continue
-		}
-		reportOn(ch, fmt.Errorf("gowt: %s is placed for a %s layout, its parent's new layout is %s", ch.GetName(), need, have))
-		ch.SetLayoutData(nil)
 	}
 }

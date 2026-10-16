@@ -109,8 +109,8 @@ func (g *GC) Image(img *Image, x, y int) { g.g.DrawImage(img.i, int32(x), int32(
 // Unwrap returns the underlying GC.
 func (g *GC) Unwrap() *swt.GC { return g.g }
 
-// Canvas is a blank area drawn by the paint callback.
-type Canvas struct {
+// CanvasView is a blank area drawn by the paint callback.
+type CanvasView struct {
 	base
 	c *swt.Canvas
 }
@@ -119,16 +119,17 @@ type painter func(*swt.PaintEvent)
 
 func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 
-// Canvas adds a drawing area. onPaint draws the whole area (clipped to the damaged part) and
+// Canvas creates a drawing area. onPaint draws the whole area (clipped to the damaged part) and
 // must not keep g; it may be nil. Call Redraw after the model changes.
 // Options: Border.
-func (p *panel) Canvas(onPaint func(g *GC), opts ...Option) *Canvas {
-	c := swt.NewCanvasParentStyle(p.c, resolve(swt.DOUBLE_BUFFERED, opts))
-	applyOpts(&c.Control, opts)
-	if onPaint != nil {
-		c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc}) }))
-	}
-	return &Canvas{base{&c.Control}, c}
+func Canvas(onPaint func(g *GC), opts ...Option) Option {
+	return leaf("Canvas", sBorder, opts, func(p *swt.Composite) Widget {
+		c := swt.NewCanvasParentStyle(p, resolve(swt.DOUBLE_BUFFERED, opts))
+		if onPaint != nil {
+			c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc}) }))
+		}
+		return &CanvasView{base{&c.Control}, c}
+	})
 }
 
 // Mouse is a pointer event on a Canvas, in the canvas's coordinates.
@@ -144,12 +145,12 @@ func mouseOf(e *swt.MouseEvent) Mouse {
 }
 
 // OnMouseDown runs f when a button is pressed.
-func (c *Canvas) OnMouseDown(f func(Mouse)) {
+func (c *CanvasView) OnMouseDown(f func(Mouse)) {
 	c.c.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
 }
 
 // OnMouseUp runs f when a button is released.
-func (c *Canvas) OnMouseUp(f func(Mouse)) {
+func (c *CanvasView) OnMouseUp(f func(Mouse)) {
 	c.c.AddMouseListener(swt.MouseListenerMouseUpAdapter(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
 }
 
@@ -158,18 +159,18 @@ type mover func(*swt.MouseEvent)
 func (f mover) MouseMove(e *swt.MouseEvent) { f(e) }
 
 // OnMouseMove runs f when the pointer moves over the canvas.
-func (c *Canvas) OnMouseMove(f func(Mouse)) {
+func (c *CanvasView) OnMouseMove(f func(Mouse)) {
 	c.c.AddMouseMoveListener(mover(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
 }
 
 // Redraw schedules a repaint, which calls the paint callback.
-func (c *Canvas) Redraw() { c.c.Redraw() }
+func (c *CanvasView) Redraw() { c.c.Redraw() }
 
 // Unwrap returns the underlying swt.Canvas for the full API.
-func (c *Canvas) Unwrap() *swt.Canvas { return c.c }
+func (c *CanvasView) Unwrap() *swt.Canvas { return c.c }
 
 // Size returns the drawable width and height.
-func (c *Canvas) Size() (w, h int) {
+func (c *CanvasView) Size() (w, h int) {
 	r := c.c.GetClientArea()
 	return int(r.Width), int(r.Height)
 }

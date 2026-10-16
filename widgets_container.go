@@ -1,106 +1,141 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"fmt"
 
-// Group is a container with a titled frame.
-type Group struct {
+	"github.com/haiodo/gowt/swt"
+)
+
+// GroupView is a container with a titled frame.
+type GroupView struct {
 	*panel
 	g *swt.Group
 }
 
-// Group adds a titled container.
-// Options: common only.
-func (p *panel) Group(title string, opts ...Option) *Group {
-	g := swt.NewGroup(p.c, resolve(swt.NONE, opts))
-	g.SetText(title)
-	applyOpts(&g.Control, opts)
-	return &Group{newPanel(&g.Composite), g}
+// Group creates a titled frame whose children stack as in a VBox, Padding(Spacing.SM) from the frame.
+// Options: Gap, Padding, children.
+func Group(title string, opts ...Option) Option {
+	return &node{"Group", func(h host) Widget {
+		g := swt.NewGroup(h.into(), swt.NONE)
+		g.SetText(title)
+		gap, pad := spacingOf(opts, Spacing.SM)
+		g.SetLayout(newBox(false, gap, pad))
+		w := &GroupView{newPanel(&g.Composite), g}
+		finish(w, 0, opts)
+		return w
+	}}
 }
 
 // SetTitle replaces the frame title.
-func (g *Group) SetTitle(s string) { g.g.SetText(s) }
+func (g *GroupView) SetTitle(s string) { g.g.SetText(s) }
 
 // Unwrap returns the underlying swt.Group for the full API.
-func (g *Group) Unwrap() *swt.Group { return g.g }
+func (g *GroupView) Unwrap() *swt.Group { return g.g }
 
-// Tabs is a native tab folder; each Tab returns the page container.
-type Tabs struct {
+// TabsView is a native tab folder; each Tab returns the page container.
+type TabsView struct {
 	base
 	f *swt.TabFolder
 }
 
-// Tabs adds a tab folder; Bottom() moves the tabs below the pages.
-// Options: Bottom.
-func (p *panel) Tabs(opts ...Option) *Tabs {
-	f := swt.NewTabFolder(p.c, resolve(swt.NONE, opts))
-	applyOpts(&f.Control, opts)
-	return &Tabs{base{&f.Control}, f}
+// Tabs creates a tab folder whose children are Tab pages; Bottom() moves the tabs below the pages.
+// Options: Bottom, children (Tab only).
+func Tabs(opts ...Option) Option {
+	return leaf("Tabs", sBottom, opts, func(p *swt.Composite) Widget {
+		f := swt.NewTabFolder(p, resolve(swt.NONE, opts))
+		return &TabsView{base{&f.Control}, f}
+	})
 }
 
-// Tab appends a tab and returns its page.
-// Options: none; the common options are ignored.
-func (t *Tabs) Tab(title string, opts ...Option) *Panel {
-	it := swt.NewTabItem(t.f, resolve(swt.NONE, opts))
-	it.SetText(title)
-	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
-	it.SetControl(page)
-	return &Panel{newPanel(page)}
+// Add appends Tab pages.
+func (t *TabsView) Add(tabs ...Option) { add(t, tabs) }
+
+func (t *TabsView) into() *swt.Composite { return &t.f.Composite }
+func (t *TabsView) added(Widget)         {}
+func (t *TabsView) only() string         { return "Tab" }
+
+// Tab creates a tab page of a Tabs or CTabs; its children stack as in a VBox,
+// Padding(Spacing.PageMargin) from the edge. Ref gives the page as a *Panel.
+// Options: Closable (CTabs), Gap, Padding, children.
+func Tab(title string, opts ...Option) Option {
+	return &node{"Tab", func(h host) Widget {
+		var page *swt.Composite
+		switch t := h.(type) {
+		case *TabsView:
+			it := swt.NewTabItem(t.f, resolve(swt.NONE, opts))
+			it.SetText(title)
+			page = swt.NewCompositeParentStyle(t.f, swt.NONE)
+			it.SetControl(page)
+		case *CTabsView:
+			it := swt.NewCTabItem(t.f, resolve(swt.NONE, opts))
+			it.SetText(title)
+			page = swt.NewCompositeParentStyle(t.f, swt.NONE)
+			it.SetControl(page)
+		default:
+			reportOn(h.control(), fmt.Errorf("gowt: Tab needs a Tabs or CTabs parent, not %s", nameOf(h.control())))
+			return nil
+		}
+		gap, pad := spacingOf(opts, Spacing.PageMargin)
+		page.SetLayout(newBox(false, gap, pad))
+		p := &Panel{newPanel(page)}
+		finish(p, sClosable, opts)
+		return p
+	}}
 }
 
 // Index is the selected tab, -1 if none.
-func (t *Tabs) Index() int { return int(t.f.GetSelectionIndex()) }
+func (t *TabsView) Index() int { return int(t.f.GetSelectionIndex()) }
 
 // Select selects tab i.
-func (t *Tabs) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
+func (t *TabsView) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
 
 // Unwrap returns the underlying swt.TabFolder for the full API.
-func (t *Tabs) Unwrap() *swt.TabFolder { return t.f }
+func (t *TabsView) Unwrap() *swt.TabFolder { return t.f }
 
 // OnSelect runs f with the selected tab index.
-func (t *Tabs) OnSelect(f func(index int)) {
+func (t *TabsView) OnSelect(f func(index int)) {
 	onSelect(t.f, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
-// CTabs is the custom-drawn tab folder: closable tabs (Closable on the folder's Tab) and a flatter look.
-type CTabs struct {
+// CTabsView is the custom-drawn tab folder: closable tabs (Closable on the folder's Tab) and a flatter look.
+type CTabsView struct {
 	base
 	f *swt.CTabFolder
 }
 
-// CTabs adds a custom tab folder; Border() draws a frame.
-// Options: Bottom, Border.
-func (p *panel) CTabs(opts ...Option) *CTabs {
-	f := swt.NewCTabFolder(p.c, resolve(swt.NONE, opts))
-	applyOpts(&f.Control, opts)
-	return &CTabs{base{&f.Control}, f}
+// CTabs creates a custom tab folder whose children are Tab pages; Border() draws a frame and
+// Closable() on a Tab adds a close button to it.
+// Options: Bottom, Border, children (Tab only).
+func CTabs(opts ...Option) Option {
+	return leaf("CTabs", sBottom|sBorder, opts, func(p *swt.Composite) Widget {
+		f := swt.NewCTabFolder(p, resolve(swt.NONE, opts))
+		return &CTabsView{base{&f.Control}, f}
+	})
 }
 
-// Tab appends a tab and returns its page; Closable() adds a close button to the tab.
-// Options: Closable; the common options are ignored.
-func (t *CTabs) Tab(title string, opts ...Option) *Panel {
-	it := swt.NewCTabItem(t.f, resolve(swt.NONE, opts))
-	it.SetText(title)
-	page := swt.NewCompositeParentStyle(t.f, swt.NONE)
-	it.SetControl(page)
-	return &Panel{newPanel(page)}
-}
+// Add appends Tab pages.
+func (t *CTabsView) Add(tabs ...Option) { add(t, tabs) }
+
+func (t *CTabsView) into() *swt.Composite { return &t.f.Composite }
+func (t *CTabsView) added(Widget)         {}
+func (t *CTabsView) only() string         { return "Tab" }
 
 // Index is the selected tab, -1 if none.
-func (t *CTabs) Index() int { return int(t.f.GetSelectionIndex()) }
+func (t *CTabsView) Index() int { return int(t.f.GetSelectionIndex()) }
 
 // Select selects tab i.
-func (t *CTabs) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
+func (t *CTabsView) Select(i int) { t.f.SetSelectionIndex(int32(i)) }
 
 // Unwrap returns the underlying swt.CTabFolder for the full API.
-func (t *CTabs) Unwrap() *swt.CTabFolder { return t.f }
+func (t *CTabsView) Unwrap() *swt.CTabFolder { return t.f }
 
 // OnSelect runs f with the selected tab index.
-func (t *CTabs) OnSelect(f func(index int)) {
+func (t *CTabsView) OnSelect(f func(index int)) {
 	onSelect(t.f, func(*swt.SelectionEvent) { f(t.Index()) })
 }
 
 // OnClose runs f with the index of the tab whose close button was pressed; false keeps the tab.
-func (t *CTabs) OnClose(f func(index int) bool) {
+func (t *CTabsView) OnClose(f func(index int) bool) {
 	t.f.AddCTabFolder2Listener(swt.CTabFolder2ListenerCloseAdapter(func(e *swt.CTabFolderEvent) {
 		for i, it := range t.f.GetItems() {
 			if &it.Widget == e.Item && !f(i) {
@@ -110,97 +145,121 @@ func (t *CTabs) OnClose(f func(index int) bool) {
 	}))
 }
 
-// Split divides its children with draggable sashes; the children are ordinary Panel children.
-type Split struct {
+// SplitView divides its children with draggable sashes; the children are ordinary Panel children.
+type SplitView struct {
 	*panel
 	s *swt.SashForm
 }
 
-// Split adds a sash form: children side by side, or stacked with Vertical().
-// Options: Vertical.
-func (p *panel) Split(opts ...Option) *Split {
-	s := swt.NewSashForm(p.c, resolve(swt.NONE, opts))
-	applyOpts(&s.Control, opts)
-	return &Split{newPanel(&s.Composite), s}
+// Split creates a sash form: its children side by side, or stacked with Vertical(), with draggable
+// sashes between them.
+// Options: Vertical, children.
+func Split(opts ...Option) Option {
+	return &node{"Split", func(h host) Widget {
+		s := swt.NewSashForm(h.into(), resolve(swt.NONE, opts))
+		w := &SplitView{newPanel(&s.Composite), s}
+		finish(w, sVertical, opts)
+		return w
+	}}
 }
 
 // SetWeights sets the relative size of each child, one weight per child.
-func (s *Split) SetWeights(w ...int) { s.s.SetWeights(toInt32s(w)) }
+func (s *SplitView) SetWeights(w ...int) { s.s.SetWeights(toInt32s(w)) }
 
 // Unwrap returns the underlying swt.SashForm for the full API.
-func (s *Split) Unwrap() *swt.SashForm { return s.s }
+func (s *SplitView) Unwrap() *swt.SashForm { return s.s }
 
-// Scroll shows content larger than itself with scroll bars. Build the content in Content, then call Fit.
-type Scroll struct {
+// ScrollView shows content larger than itself with scroll bars.
+type ScrollView struct {
 	base
 	s    *swt.ScrolledComposite
 	body *Panel
 }
 
-// Scroll adds a scrolled area; Border() draws a frame.
-// Options: Border.
-func (p *panel) Scroll(opts ...Option) *Scroll {
-	s := swt.NewScrolledComposite(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL, opts))
-	applyOpts(&s.Control, opts)
-	body := swt.NewCompositeParentStyle(s, swt.NONE)
-	s.SetContent(body)
-	s.SetExpandHorizontal(true)
-	s.SetExpandVertical(true)
-	return &Scroll{base{&s.Control}, s, &Panel{newPanel(body)}}
+// Scroll creates a scrolled area whose children stack as in a VBox; Border() draws a frame.
+// Options: Border, Gap, Padding, children.
+func Scroll(opts ...Option) Option {
+	return &node{"Scroll", func(h host) Widget {
+		s := swt.NewScrolledComposite(h.into(), resolve(swt.V_SCROLL|swt.H_SCROLL, opts))
+		body := swt.NewCompositeParentStyle(s, swt.NONE)
+		gap, pad := spacingOf(opts, 0)
+		body.SetLayout(newBox(false, gap, pad))
+		s.SetContent(body)
+		s.SetExpandHorizontal(true)
+		s.SetExpandVertical(true)
+		w := &ScrollView{base{&s.Control}, s, &Panel{newPanel(body)}}
+		finish(w, sBorder, opts)
+		w.Fit()
+		return w
+	}}
 }
 
-// Content is the container that scrolls.
-func (s *Scroll) Content() *Panel { return s.body }
+// Add creates children at the end of the content and calls Fit.
+func (s *ScrollView) Add(children ...Option) {
+	add(s, children)
+	s.body.c.Layout()
+	s.Fit()
+}
 
-// Fit sets the scrollable size to the content's natural size; call it after the content is built.
-func (s *Scroll) Fit() {
+func (s *ScrollView) into() *swt.Composite { return s.body.c }
+func (s *ScrollView) added(Widget)         {}
+
+// Content is the container that scrolls.
+func (s *ScrollView) Content() *Panel { return s.body }
+
+// Fit sets the scrollable size to the content's natural size; Scroll and Add call it, call it again
+// after the content changes otherwise.
+func (s *ScrollView) Fit() {
 	size := s.body.c.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 	s.s.SetMinSizeWidthHeight(size.X, size.Y)
 }
 
 // Unwrap returns the underlying swt.ScrolledComposite for the full API.
-func (s *Scroll) Unwrap() *swt.ScrolledComposite { return s.s }
+func (s *ScrollView) Unwrap() *swt.ScrolledComposite { return s.s }
 
-// Sash is a bare draggable divider; most code wants Split instead. The sash does not move itself:
+// SashView is a bare draggable divider; most code wants Split instead. The sash does not move itself:
 // OnMove must lay it out (Unwrap gives the layout data).
-type Sash struct {
+type SashView struct {
 	base
 	s *swt.Sash
 }
 
-// Sash adds a sash; Vertical() makes a vertical bar that moves left and right.
+// Sash creates a sash; Vertical() makes a vertical bar that moves left and right.
 // Options: Vertical.
-func (p *panel) Sash(opts ...Option) *Sash {
-	s := swt.NewSash(p.c, resolve(swt.NONE, opts))
-	applyOpts(&s.Control, opts)
-	return &Sash{base{&s.Control}, s}
+func Sash(opts ...Option) Option {
+	return leaf("Sash", sVertical, opts, func(p *swt.Composite) Widget {
+		s := swt.NewSash(p, resolve(swt.NONE, opts))
+		return &SashView{base{&s.Control}, s}
+	})
 }
 
 // OnMove runs f with the position the user dragged the sash to, in parent coordinates.
-func (s *Sash) OnMove(f func(x, y int)) {
+func (s *SashView) OnMove(f func(x, y int)) {
 	onSelect(s.s, func(e *swt.SelectionEvent) { f(int(e.X), int(e.Y)) })
 }
 
 // Unwrap returns the underlying swt.Sash for the full API.
-func (s *Sash) Unwrap() *swt.Sash { return s.s }
+func (s *SashView) Unwrap() *swt.Sash { return s.s }
 
-// ToolBar is a row of tool buttons.
-type ToolBar struct {
+// ToolBarView is a row of tool buttons.
+type ToolBarView struct {
 	base
 	t *swt.ToolBar
 }
 
-// ToolBar adds a tool bar; Flat() and Wrap() change its look.
+// ToolBar creates a tool bar; Flat() and Wrap() change its look. Its items come from Item.
 // Options: Flat, Wrap.
-func (p *panel) ToolBar(opts ...Option) *ToolBar {
-	t := swt.NewToolBar(p.c, resolve(swt.NONE, opts))
-	applyOpts(&t.Control, opts)
-	return &ToolBar{base{&t.Control}, t}
+func ToolBar(opts ...Option) Option {
+	return leaf("ToolBar", sFlat|sWrap, opts, func(p *swt.Composite) Widget {
+		t := swt.NewToolBar(p, resolve(swt.NONE, opts))
+		return &ToolBarView{base{&t.Control}, t}
+	})
 }
 
 // Item appends a push button (Check, Radio or DropDown for other kinds). onClick may be nil.
-// Options: Check, Radio, DropDown; the common options are ignored (SetTooltip, SetEnabled).
-func (t *ToolBar) Item(text string, onClick func(), opts ...Option) *ToolItem {
+// Options: Check, Radio, DropDown; for a tooltip or a disabled item use SetTooltip and SetEnabled.
+func (t *ToolBarView) Item(text string, onClick func(), opts ...Option) *ToolItem {
+	itemOpts(t.t, "ToolBar.Item", sCheck|sRadio|sDropDown, false, opts)
 	it := swt.NewToolItem(t.t, resolve(swt.NONE, opts))
 	it.SetText(text)
 	w := &ToolItem{it}
@@ -211,10 +270,10 @@ func (t *ToolBar) Item(text string, onClick func(), opts ...Option) *ToolItem {
 }
 
 // Separator appends a divider.
-func (t *ToolBar) Separator() { swt.NewToolItem(t.t, swt.SEPARATOR) }
+func (t *ToolBarView) Separator() { swt.NewToolItem(t.t, swt.SEPARATOR) }
 
 // Unwrap returns the underlying swt.ToolBar for the full API.
-func (t *ToolBar) Unwrap() *swt.ToolBar { return t.t }
+func (t *ToolBarView) Unwrap() *swt.ToolBar { return t.t }
 
 // ToolItem is a tool bar button.
 type ToolItem struct{ i *swt.ToolItem }
@@ -245,22 +304,28 @@ func (i *ToolItem) OnClick(f func()) {
 	onSelect(i.i, func(*swt.SelectionEvent) { f() })
 }
 
-// CoolBar is a tool bar area whose bands the user can rearrange.
-type CoolBar struct {
+// CoolBarView is a tool bar area whose bands the user can rearrange.
+type CoolBarView struct {
 	*panel
 	b *swt.CoolBar
 }
 
-// CoolBar adds a cool bar; create the band contents as its children, then Add them.
-// Options: common only.
-func (p *panel) CoolBar(opts ...Option) *CoolBar {
-	b := swt.NewCoolBar(p.c, resolve(swt.NONE, opts))
-	applyOpts(&b.Control, opts)
-	return &CoolBar{newPanel(&b.Composite), b}
+// CoolBar creates a cool bar: each child, usually a ToolBar, becomes a band of its natural size.
+// Options: common only, children.
+func CoolBar(opts ...Option) Option {
+	return &node{"CoolBar", func(h host) Widget {
+		b := swt.NewCoolBar(h.into(), resolve(swt.NONE, opts))
+		w := &CoolBarView{newPanel(&b.Composite), b}
+		finish(w, 0, opts)
+		return w
+	}}
 }
 
-// Add makes w (a child of the cool bar) a draggable band of its natural size.
-func (b *CoolBar) Add(w Widget) {
+// Add appends bands, one per child.
+func (b *CoolBarView) Add(bands ...Option) { add(b, bands) }
+
+// added makes w a draggable band of its natural size.
+func (b *CoolBarView) added(w Widget) {
 	it := swt.NewCoolItem(b.b, swt.NONE)
 	c := w.control()
 	it.SetControl(c)
@@ -269,4 +334,4 @@ func (b *CoolBar) Add(w Widget) {
 }
 
 // Unwrap returns the underlying swt.CoolBar for the full API.
-func (b *CoolBar) Unwrap() *swt.CoolBar { return b.b }
+func (b *CoolBarView) Unwrap() *swt.CoolBar { return b.b }

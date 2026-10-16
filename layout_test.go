@@ -12,7 +12,7 @@ func placed(t *testing.T, layout string, opts ...Option) any {
 	t.Helper()
 	var pl placement
 	for _, o := range opts {
-		o.place(&pl)
+		o.(place)(&pl)
 	}
 	d, err := pl.data("Button", layout)
 	if err != nil {
@@ -24,7 +24,7 @@ func placed(t *testing.T, layout string, opts ...Option) any {
 func misplacedErr(layout string, opts ...Option) error {
 	var pl placement
 	for _, o := range opts {
-		o.place(&pl)
+		o.(place)(&pl)
 	}
 	_, err := pl.data("Button", layout)
 	return err
@@ -46,17 +46,16 @@ func TestPlacementComposes(t *testing.T) {
 	if d.HorizontalSpan != 3 || d.WidthHint != 100 || d.VerticalAlignment != swt.FILL || !d.GrabExcessVerticalSpace {
 		t.Errorf("GrowY after Cell must keep the cell: %+v", d)
 	}
-	if r := placed(t, "Row", Size(120, 0)).(*swt.RowData); r.Width != 120 || r.Height != swt.DEFAULT {
-		t.Errorf("Size in a Row: %+v", r)
+	if r := placed(t, "Flow", Size(120, 0)).(*swt.RowData); r.Width != 120 || r.Height != swt.DEFAULT {
+		t.Errorf("Size in a Flow: %+v", r)
 	}
 	if f := placed(t, "Form", Anchor(FormCell{Left: Percent(0, 5)}), Size(80, 0)).(*swt.FormData); f.Width != 80 || f.Left == nil {
 		t.Errorf("Size after Anchor in a Form: %+v", f)
 	}
-	if _, ok := placed(t, "", GrowX()).(*swt.GridData); !ok {
-		t.Error("with no layout yet, GrowX must choose GridData")
-	}
-	if _, ok := placed(t, "", InRow(RowCell{Width: 10})).(*swt.RowData); !ok {
-		t.Error("with no layout yet, InRow must choose RowData")
+	for _, l := range []string{"VBox", "HBox"} {
+		if _, ok := placed(t, l, GrowX()).(*swt.GridData); !ok {
+			t.Errorf("GrowX in a %s must give GridData", l)
+		}
 	}
 }
 
@@ -66,12 +65,11 @@ func TestPlacementUnderForeignLayout(t *testing.T) {
 		opts   []Option
 		want   string
 	}{
-		{"Row", []Option{Cell(GridCell{})}, "Cell on Button needs a Grid layout, its parent has Row"},
-		{"Fill", []Option{Size(10, 10), GrowX()}, "GrowX on Button needs a Grid layout, its parent has Fill"},
-		{"Grid", []Option{InRow(RowCell{})}, "InRow on Button needs a Row layout, its parent has Grid"},
-		{"Row", []Option{Anchor(FormCell{})}, "Anchor on Button needs a Form layout, its parent has Row"},
-		{"Stack", []Option{Size(10, 0)}, "Size on Button needs a Grid, Row or Form layout, its parent has Stack"},
-		{"", []Option{GrowX(), InRow(RowCell{})}, "InRow on Button needs a Row layout, its parent has no layout"},
+		{"Flow", []Option{Cell(GridCell{})}, "Cell on Button needs a VBox, HBox or Grid parent, not Flow"},
+		{"Fill", []Option{Size(10, 10), GrowX()}, "GrowX on Button needs a VBox, HBox or Grid parent, not Fill"},
+		{"Grid", []Option{Anchor(FormCell{})}, "Anchor on Button needs a Form parent, not Grid"},
+		{"Pages", []Option{Size(10, 0)}, "Size on Button needs a VBox, HBox, Grid, Flow or Form parent, not Pages"},
+		{"", []Option{GrowX()}, "GrowX on Button needs a VBox, HBox or Grid parent, not a parent without a layout"},
 	}
 	for _, c := range cases {
 		err := misplacedErr(c.layout, c.opts...)

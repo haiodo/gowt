@@ -15,32 +15,11 @@ func TestSpacingDefaults(t *testing.T) {
 func TestSpacingTuning(t *testing.T) {
 	old := Spacing
 	defer func() { Spacing = old }()
-	before := Grid{Columns: 2}.Spaced()
+	bg, _ := spacingOf(nil, 0)
 	Spacing.SM, Spacing.PageMargin = 6, 20
-	after := Grid{Columns: 2}.Spaced().Padded()
-	if before.Spacing != old.SM || after.Spacing != 6 || after.Margin != 20 {
-		t.Fatalf("before %+v after %+v", before, after)
-	}
-}
-
-func TestSpacedPadded(t *testing.T) {
-	if g := (Grid{Columns: 2}); g.Margin != 0 || g.Spacing != 0 {
-		t.Fatal("zero must stay none")
-	}
-	g := Grid{Columns: 3, Margin: 1}.Spaced().Padded()
-	if g.Columns != 3 || g.Spacing != Spacing.SM || g.Margin != Spacing.PageMargin {
-		t.Fatalf("grid %+v", g)
-	}
-	r := Row{Vertical: true}.Spaced().Padded()
-	if !r.Vertical || r.Spacing != Spacing.SM || r.Margin != Spacing.PageMargin {
-		t.Fatalf("row %+v", r)
-	}
-	f := Form{}.Spaced().Padded()
-	if f.Spacing != Spacing.SM || f.Margin != Spacing.PageMargin {
-		t.Fatalf("form %+v", f)
-	}
-	if s := (Stack{}).Padded(); s.Margin != Spacing.PageMargin {
-		t.Fatalf("stack %+v", s)
+	ag, ap := spacingOf(nil, Spacing.PageMargin)
+	if bg != old.SM || ag != 6 || ap != 20 {
+		t.Fatalf("gap before %d, after %d, padding %d", bg, ag, ap)
 	}
 }
 

@@ -45,7 +45,7 @@ func menus(w *g.Window) {
 	view.Submenu("Zoom").Item("100%", nil, g.Radio())
 }
 
-func basics(p *g.Panel, status *g.Label) {
+func basics(p *g.Panel, status *g.LabelView) {
 	p.SetLayout(g.Grid{Columns: 2, Margin: 8, Spacing: 8})
 	name := p.Text(g.GrowX())
 	p.Button("Greet", func() { status.SetText("Hello, " + name.Text()) })
@@ -153,7 +153,7 @@ func graphics(app *g.App, p *g.Panel) {
 	cool.Add(band)
 
 	angle := 0
-	var cv *g.Canvas
+	var cv *g.CanvasView
 	cv = p.Canvas(func(gc *g.GC) {
 		w, h := cv.Size()
 		gc.SetFill(g.RGB{R: 250, G: 250, B: 240})

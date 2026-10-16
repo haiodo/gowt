@@ -26,7 +26,7 @@ func main() {
 	}
 }
 
-func input(p *gowt.Panel, status *gowt.Label) {
+func input(p *gowt.Panel, status *gowt.LabelView) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 	p.Label("User")
 	name := p.Text(gowt.GrowX())
@@ -48,7 +48,7 @@ func input(p *gowt.Panel, status *gowt.Label) {
 	opts.Link(`<a href="https://example.com">Terms</a>`, func(href string) { status.SetText("link: " + href) })
 }
 
-func lists(p *gowt.Panel, status *gowt.Label) {
+func lists(p *gowt.Panel, status *gowt.LabelView) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 	c := p.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly())
 	c.Select(0)
@@ -79,7 +79,7 @@ func lists(p *gowt.Panel, status *gowt.Label) {
 	})
 }
 
-func ranges(p *gowt.Panel, status *gowt.Label) {
+func ranges(p *gowt.Panel, status *gowt.LabelView) {
 	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
 	bar := p.Progress(100, gowt.GrowX(), gowt.Span(2))
 	bar.SetValue(30)

@@ -14,7 +14,7 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("gowt icons")
 		w.SetLayout(gowt.Grid{Columns: 8, Margin: 10, Spacing: 8})
-		var buttons []*gowt.Button
+		var buttons []*gowt.ButtonView
 		var names = icons.Names()
 		for _, n := range names {
 			buttons = append(buttons, w.Button("", nil, gowt.Tooltip(n)))

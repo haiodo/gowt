@@ -34,13 +34,16 @@ func TestIconsRender(t *testing.T) {
 		defer close(ok)
 		err = gowt.Run(func(app *gowt.App) {
 			w := app.Window("t")
-			w.SetLayout(gowt.Grid{Columns: 8, Margin: 5})
+			var grid *gowt.Panel
+			w.Add(gowt.Grid(8, gowt.Padding(5), gowt.Ref(&grid)))
 			for _, n := range Names() {
 				img := Get(app, n, Size(20))
 				if wd, h := img.Size(); wd != 20 || h != 20 {
 					t.Errorf("%s: size %dx%d", n, wd, h)
 				}
-				w.Button("", nil, gowt.Tooltip(n)).SetImage(img)
+				var b *gowt.ButtonView
+				grid.Add(gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&b)))
+				b.SetImage(img)
 			}
 			w.Show()
 			app.After(10*time.Millisecond, w.Close)

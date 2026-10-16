@@ -31,7 +31,7 @@ type toolbarBar struct {
 	items   []ToolbarItem
 	content *swt.Control // the SetSidebar content; nil leaves the bar unbuilt
 	panel   *gowt.Panel
-	title   *gowt.Label
+	title   *gowt.LabelView
 	icons   []func(on, off string) []*swt.Image // set the images of one tool item in the given colours
 	images  []*swt.Image
 	bg      swt.RGB // content colour the bar was styled for
@@ -101,8 +101,8 @@ func (b *toolbarBar) fill() {
 		trail = append(trail, it)
 		spaced = spaced || it.Space
 	}
-	p := b.w.Panel()
-	p.SetLayout(gowt.Grid{Columns: len(lead) + 1 + len(trail), Margin: 8, Spacing: 6})
+	var p *gowt.Panel
+	b.w.Add(gowt.Grid(len(lead)+1+len(trail), gowt.Padding(8), gowt.Gap(6), gowt.Ref(&p)))
 	p.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 	p.Unwrap().AddPaintListener(painter(func(e *swt.PaintEvent) {
 		r := p.Unwrap().GetClientArea()
@@ -113,7 +113,7 @@ func (b *toolbarBar) fill() {
 	for _, it := range lead {
 		b.item(p, it)
 	}
-	b.title = p.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}))
+	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
 	size := 0
 	if fd := b.title.Unwrap().GetFont().GetFontData(); len(fd) > 0 {
 		size = int(fd[0].GetHeight()) + 2
@@ -128,13 +128,15 @@ func (b *toolbarBar) fill() {
 func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem) {
 	switch {
 	case it.Space:
-		p.Spacer()
+		p.Add(gowt.Spacer())
 	case it.OnSearch != nil:
-		t := p.Text(gowt.Search(), gowt.Size(240, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
+		var t *gowt.TextView
+		p.Add(gowt.Text(gowt.Search(), gowt.Size(240, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
 	default:
-		tb := p.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
+		var tb *gowt.ToolBarView
+		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&tb)))
 		segs := it.Group
 		if len(segs) == 0 {
 			segs = []ToolbarItem{it}
@@ -146,7 +148,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem) {
 }
 
 // toolItem adds a flat button: the symbol in the bar's text colour, dimmed while Enabled is false.
-func (b *toolbarBar) toolItem(tb *gowt.ToolBar, it ToolbarItem) {
+func (b *toolbarBar) toolItem(tb *gowt.ToolBarView, it ToolbarItem) {
 	shape, ok := barSymbols[it.Symbol]
 	text := ""
 	if !ok {

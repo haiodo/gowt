@@ -15,11 +15,10 @@ import (
 
 func TestBindings(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
 		n := rx.New(1)
 		calls := 0
 		text := rx.Compute(func() string { calls++; return "n=" + strconv.Itoa(n.Get()) })
-		lbl := w.Label("")
+		lbl := put[*LabelView](w, Label(""))
 		lbl.BindText(text)
 		if lbl.l.GetText() != "n=1" {
 			t.Errorf("BindText first run: %q", lbl.l.GetText())
@@ -34,7 +33,7 @@ func TestBindings(t *testing.T) {
 		}
 
 		on := rx.New(true)
-		cb := w.Button("check", nil, Check())
+		cb := put[*ButtonView](w, Button("check", nil, Check()))
 		cb.BindChecked(on)
 		if !cb.Checked() {
 			t.Error("BindChecked first run")
@@ -68,7 +67,7 @@ func TestBindings(t *testing.T) {
 		}
 
 		// A binding made in a Scope dies with the Scope while the widget lives on.
-		other := w.Label("keep")
+		other := put[*LabelView](w, Label("keep"))
 		stop := rx.Scope(func() { other.BindText(text) })
 		stop()
 		n.Set(4)
@@ -81,12 +80,11 @@ func TestBindings(t *testing.T) {
 
 func TestTextBindKeepsCaret(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
-		w.SetLayout(Grid{Columns: 1})
 		s := rx.New("hello")
 		var seen []string
 		stop := rx.Effect(func() { seen = append(seen, s.Get()) })
 		defer stop()
-		tx := w.Text()
+		tx := put[*TextView](w, Text())
 		tx.Bind(s)
 		if tx.Text() != "hello" {
 			t.Errorf("Text.Bind first run: %q", tx.Text())
@@ -259,8 +257,7 @@ func benchUsage(cs []benchCtr) (cpu float64, mem int64) {
 func BenchmarkHeaderRx(b *testing.B) {
 	guiBench(b, func(app *App) {
 		w := app.Window("bench")
-		w.SetLayout(Grid{Columns: 1})
-		cpuL, memL, footL := w.Label("-"), w.Label("-"), w.Label("-")
+		cpuL, memL, footL := put[*LabelView](w, Label("-")), put[*LabelView](w, Label("-")), put[*LabelView](w, Label("-"))
 		w.Show()
 		snaps := benchSnaps(50)
 		snap := rx.NewFunc(snaps[0], nil)
@@ -287,12 +284,11 @@ func BenchmarkHeaderRx(b *testing.B) {
 func BenchmarkHeaderManual(b *testing.B) {
 	guiBench(b, func(app *App) {
 		w := app.Window("bench")
-		w.SetLayout(Grid{Columns: 1})
-		cpuL, memL, footL := w.Label("-"), w.Label("-"), w.Label("-")
+		cpuL, memL, footL := put[*LabelView](w, Label("-")), put[*LabelView](w, Label("-")), put[*LabelView](w, Label("-"))
 		w.Show()
 		snaps := benchSnaps(50)
 		var last [3]string
-		set := func(i int, l *Label, s string) bool {
+		set := func(i int, l *LabelView, s string) bool {
 			if s == last[i] {
 				return false
 			}

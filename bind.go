@@ -21,8 +21,8 @@ func Watch[T any](w Widget, r rx.Reader[T], apply func(T)) {
 
 // Bind keeps the widget's value and s in step both ways, as Svelte's bind:value: a user's edit sets
 // s, a Set of s changes the widget. The value is the text of a Text or Combo (string), the state of
-// a Switch or a Check button (bool), the value of a Scale, Slider or Spinner, or the selected index
-// of a Combo or List (int). A Text is rewritten only when s differs from it, so typing keeps the caret.
+// a Switch or a Check button (bool), the value of a Scale, Slider, Spinner or Progress (one way), or
+// the selected index of a Combo or List (int). A Text is rewritten only when s differs from it, so typing keeps the caret.
 func Bind[T string | bool | int](s *rx.State[T]) Option {
 	return hook(func(w Widget) error {
 		switch s := any(s).(type) {
@@ -73,8 +73,10 @@ func bindInt(w Widget, s *rx.State[int]) error {
 		twoWay(w, s, w.Index, w.Select, onSelection(w.c))
 	case *ListView:
 		twoWay(w, s, w.Index, func(i int) { w.SetSelection(i) }, onSelection(w.l))
+	case *ProgressView:
+		twoWay(w, s, w.Value, w.SetValue, func(func()) func() { return func() {} }) // the user does not move a progress bar
 	default:
-		return fmt.Errorf("gowt: Bind(*rx.State[int]) applies to Scale, Slider, Spinner, Combo and List, not to %s", nameOf(w.control()))
+		return fmt.Errorf("gowt: Bind(*rx.State[int]) applies to Scale, Slider, Spinner, Progress, Combo and List, not to %s", nameOf(w.control()))
 	}
 	return nil
 }

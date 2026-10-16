@@ -9,7 +9,7 @@ type ComboView struct {
 }
 
 // Combo creates a combo box with the given items.
-// Options: ReadOnly, Simple, Selected, OnSelect, OnChange, Bind (string: text, int: index).
+// Options: ReadOnly, Simple, Value, Selected, OnSelect, OnChange, Bind (string: text, int: index).
 func Combo(items []string, opts ...Option) Option {
 	return leaf("Combo", sReadOnly|sSimple, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCombo(p, resolve(swt.NONE, opts))

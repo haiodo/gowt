@@ -150,15 +150,29 @@ func Selected(i int) Option {
 	})
 }
 
-// Value sets the value of a Scale, Slider, Spinner or Progress; without it the value is the minimum.
-func Value(v int) Option {
+// Value sets the starting value: the text of a Text, Combo or StyledText (string), the value of a
+// Scale, Slider, Spinner or Progress (int; without it the minimum), the date or time of a DateTime.
+func Value[T string | int | time.Time](v T) Option {
 	return hook(func(w Widget) error {
-		if w, ok := w.(interface{ SetValue(int) }); ok {
+		if w, ok := w.(interface{ SetValue(T) }); ok {
 			w.SetValue(v)
 			return nil
 		}
-		return fmt.Errorf("gowt: Value applies to Scale, Slider, Spinner and Progress, not to %s", nameOf(w.control()))
+		if w, ok := w.(interface{ SetText(T) }); ok && !isLabel(w) {
+			w.SetText(v)
+			return nil
+		}
+		return fmt.Errorf("gowt: Value(%T) does not apply to %s", v, nameOf(w.control()))
 	})
+}
+
+// isLabel tells the widgets whose SetText is a caption, not a value.
+func isLabel(w any) bool {
+	switch w.(type) {
+	case *LabelView, *ButtonView, *SwitchView, *LinkView:
+		return true
+	}
+	return false
 }
 
 func misfit(opt string, f any, w Widget) error {

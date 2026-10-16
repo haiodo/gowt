@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
@@ -200,10 +201,12 @@ func TestEventOptions(t *testing.T) {
 		sp := put[*SpinnerView](w, Spinner(0, 10, Bind(count)))
 		sc := put[*ScaleView](w, Scale(0, 100, Value(40)))
 		cb := put[*ComboView](w, Combo([]string{"a", "b"}, Selected(1), OnSelect(func(i int) { picked = i })))
+		dt := put[*DateTimeView](w, DateTime(Value(time.Date(2024, 2, 29, 0, 0, 0, 0, time.Local))))
+		st := put[*StyledTextView](w, StyledText(Value("styled")))
 		ls := put[*ListView](w, List([]string{"x", "y"}, Bind(count)))
 		tr := put[*TreeView](w, Tree(OnSelect(func(n *Node) { node = n.Text() })))
 		if !chk.Checked() || tx.t.GetMessage() != "Name" || tx.Text() != "ann" || lb.l.GetText() != "Hello, ann" ||
-			sp.Value() != 3 || sc.Value() != 40 || cb.Index() != 1 || !sw.Checked() {
+			sp.Value() != 3 || sc.Value() != 40 || cb.Index() != 1 || !sw.Checked() || dt.Value().Day() != 29 || st.Text() != "styled" {
 			t.Errorf("initial values: checked %v hint %q text %q label %q spinner %d scale %d combo %d switch %v",
 				chk.Checked(), tx.t.GetMessage(), tx.Text(), lb.l.GetText(), sp.Value(), sc.Value(), cb.Index(), sw.Checked())
 		}
@@ -237,16 +240,25 @@ func TestEventOptions(t *testing.T) {
 			t.Errorf("Set did not reach Spinner %d and List %d", sp.Value(), ls.Index())
 		}
 
+		// Hooks run after the children: Selected finds the tabs, Init the panes.
+		tabs := put[*TabsView](w, Tabs(Selected(1), Tab("a"), Tab("b")))
+		var weights []int32
+		put[*SplitView](w, Split(Init(func(s *SplitView) { s.SetWeights(1, 3); weights = s.s.GetWeights() }), Label("l"), Label("r")))
+		if tabs.Index() != 1 || len(weights) != 2 {
+			t.Errorf("hooks before children: tab %d, weights %v", tabs.Index(), weights)
+		}
+
 		errs = nil
 		put[*LabelView](w, Label("x", OnClick(func() {}), Hint("h"), Bind(name), Value(1)))
-		put[*TextView](w, Text(OnChange(func(int) {}), BindText(title)))
+		put[*TextView](w, Text(OnChange(func(int) {}), BindText(title), Value(2)))
 		want := []string{
 			"gowt: OnClick(func()) does not apply to Label",
 			"gowt: Hint applies to Text, not to Label",
 			"gowt: Bind(*rx.State[string]) applies to Text and Combo, not to Label",
-			"gowt: Value applies to Scale, Slider, Spinner and Progress, not to Label",
+			"gowt: Value(int) does not apply to Label",
 			"gowt: OnChange(func(int)) does not apply to Text",
 			"gowt: BindText applies to Label, Button and Link, not to Text; a Text takes Bind",
+			"gowt: Value(int) does not apply to Text",
 		}
 		if strings.Join(errs, "\n") != strings.Join(want, "\n") {
 			t.Errorf("misfits:\n%s\nwant:\n%s", strings.Join(errs, "\n"), strings.Join(want, "\n"))

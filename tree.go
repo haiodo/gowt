@@ -104,8 +104,8 @@ type host interface {
 	added(w Widget)       // runs after each child is created
 }
 
-// Ref stores the created widget in *p for the code after the Add that creates it, which calls its
-// methods. A Ref to a type other than the widget's is reported to App.OnError.
+// Ref stores the widget in *p once it and its children are created, for the code after the Add
+// that creates it, which calls its methods. A Ref to a type other than the widget's is reported to App.OnError.
 func Ref[T Widget](p *T) Option {
 	return hook(func(w Widget) error {
 		v, ok := w.(T)
@@ -117,8 +117,8 @@ func Ref[T Widget](p *T) Option {
 	})
 }
 
-// Init runs f on the widget as soon as it is created, before its children: a function that returns
-// a description sets up its widget with it. A widget of another type than f takes goes to App.OnError.
+// Init runs f on the widget once it and its children are created: a function that returns a
+// description sets up its widget with it. A widget of another type than f takes goes to App.OnError.
 func Init[T Widget](f func(T)) Option {
 	return hook(func(w Widget) error {
 		v, ok := w.(T)
@@ -167,8 +167,8 @@ func resolve(base int32, opts []Option) int32 {
 	return base
 }
 
-// finish applies opts to w, a widget just created from the style options that allow lists, and
-// then creates the children when w is a container. Options w cannot use go to App.OnError.
+// finish applies opts to w, a widget just created from the style options that allow lists, then
+// creates the children when w is a container, then runs the hooks. Options w cannot use go to App.OnError.
 func finish(w Widget, allow styleID, opts []Option) {
 	c := w.control()
 	h, isHost := w.(host)
@@ -186,10 +186,6 @@ func finish(w Widget, allow styleID, opts []Option) {
 				pl = &placement{}
 			}
 			o(pl)
-		case hook:
-			if err := o(w); err != nil {
-				reportOn(c, err)
-			}
 		case menuOpt:
 			reportOn(c, fmt.Errorf("gowt: Shortcut applies to Menu.Item, not to %s", nameOf(c)))
 		case boxOpt:
@@ -213,6 +209,14 @@ func finish(w Widget, allow styleID, opts []Option) {
 	}
 	if isHost {
 		addNodes(h, opts)
+	}
+	// Hooks come after the children, so that Selected finds the tabs and Init the panes of a Split.
+	for _, o := range opts {
+		if f, ok := o.(hook); ok {
+			if err := f(w); err != nil {
+				reportOn(c, err)
+			}
+		}
 	}
 }
 

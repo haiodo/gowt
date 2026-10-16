@@ -365,7 +365,7 @@ func Switch(text string, opts ...Option) Option {
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border, Hint, OnChange, OnActivate, Bind (string).
+// Options: Multiline, Password, ReadOnly, Search, Border, Hint, Value, OnChange, OnActivate, Bind (string).
 func Text(opts ...Option) Option {
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))

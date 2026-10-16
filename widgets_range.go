@@ -148,7 +148,7 @@ type DateTimeView struct {
 }
 
 // DateTime creates a date picker; DropDown() makes the date field a drop-down calendar.
-// Options: DropDown, AsTime, AsCalendar, OnChange.
+// Options: DropDown, AsTime, AsCalendar, Value, OnChange.
 func DateTime(opts ...Option) Option {
 	return leaf("DateTime", sDropDown|sAsTime|sAsCalendar, opts, func(p *swt.Composite) Widget {
 		d := swt.NewDateTime(p, resolve(swt.NONE, opts))

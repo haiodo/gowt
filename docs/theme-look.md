@@ -71,10 +71,7 @@ w.Add(
 	gowt.VBox(gowt.Ref(&content), gowt.Padding(20),
 		gowt.Section(gowt.GrowX(),
 			gowt.Grid(2, gowt.Padding(6), gowt.Label("Appearance")),
-			gowt.Grid(2, gowt.Padding(6), gowt.Label("Liquid Glass")),
-		),
-	),
-)
+			gowt.Grid(2, gowt.Padding(6), gowt.Label("Liquid Glass")))))
 look.SetSidebar(w, sidebar, content, 220)
 look.SetToolbar(w,
 	look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
@@ -82,8 +79,7 @@ look.SetToolbar(w,
 		{Title: "Forward", Symbol: "chevron.forward", OnClick: forward},
 	}},
 	look.ToolbarItem{Space: true},
-	look.ToolbarItem{Title: "Search", OnSearch: func(text string) {}},
-)
+	look.ToolbarItem{Title: "Search", OnSearch: func(text string) {}})
 w.SetTitle("Appearance") // the page title next to back/forward
 ```
 

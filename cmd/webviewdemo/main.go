@@ -10,6 +10,7 @@ import (
 	"path"
 
 	g "github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/webview"
 )
 
@@ -25,23 +26,35 @@ func main() {
 }
 
 func build(app *g.App) {
-	var tree *g.TreeView
-	var button *g.ButtonView
-	var label *g.LabelView
+	var wv *webview.WebView
 	var host *g.Panel
+	label := rx.New("")
 	w := app.Window("WebView demo",
 		g.Grid(2, g.Grow(),
-			g.Tree(g.GrowY(), g.Size(160, 0), g.Ref(&tree)),
+			g.Tree(g.GrowY(), g.Size(160, 0),
+				g.Init(func(t *g.TreeView) {
+					for _, p := range []string{"index.html", "about.html"} {
+						t.Node(p)
+					}
+				}),
+				g.OnSelect(func(n *g.Node) {
+					if n != nil {
+						wv.Navigate("app://localhost/" + n.Text())
+					}
+				})),
 			g.VBox(g.Grow(),
-				g.Button("Eval in page", g.Ref(&button)),
-				g.Label("Messages from the page appear here", g.Wrap(), g.GrowX(), g.Ref(&label)),
-				g.Fill(g.Grow(), g.Ref(&host)),
-			),
-		),
-	)
-	for _, p := range []string{"index.html", "about.html"} {
-		tree.Node(p)
-	}
+				g.Button("Eval in page", g.OnClick(func() {
+					wv.Eval(`document.getElementById("out").textContent = "Eval from Go at " + new Date().toLocaleTimeString(); document.title`,
+						func(result string, err error) {
+							if err != nil {
+								label.Set("Eval error: " + err.Error())
+								return
+							}
+							label.Set("Eval result: " + result)
+						})
+				})),
+				g.Label("Messages from the page appear here", g.Wrap(), g.GrowX(), g.BindText(label)),
+				g.Fill(g.Grow(), g.Ref(&host)))))
 
 	wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 	if err != nil {
@@ -57,25 +70,9 @@ func build(app *g.App) {
 		}
 		return &webview.Response{MimeType: mime.TypeByExtension(path.Ext(name)), Body: body}
 	})
-	wv.OnMessage = func(m string) { label.SetText("Message: " + m) }
+	wv.OnMessage = func(m string) { label.Set("Message: " + m) }
 	wv.OnTitleChanged = func(t string) { w.SetTitle("WebView demo - " + t) }
-	wv.OnNavigationFailed = func(u string, err error) { label.SetText("Navigation failed: " + u + ": " + err.Error()) }
-
-	button.OnClick(func() {
-		wv.Eval(`document.getElementById("out").textContent = "Eval from Go at " + new Date().toLocaleTimeString(); document.title`,
-			func(result string, err error) {
-				if err != nil {
-					label.SetText("Eval error: " + err.Error())
-					return
-				}
-				label.SetText("Eval result: " + result)
-			})
-	})
-	tree.OnSelect(func(n *g.Node) {
-		if n != nil {
-			wv.Navigate("app://localhost/" + n.Text())
-		}
-	})
+	wv.OnNavigationFailed = func(u string, err error) { label.Set("Navigation failed: " + u + ": " + err.Error()) }
 
 	w.SetSize(800, 520)
 	w.Show()

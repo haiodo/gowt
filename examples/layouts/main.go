@@ -15,9 +15,7 @@ func main() {
 				gowt.Tab("Grid", grid()),
 				gowt.Tab("Flow", flow()),
 				gowt.Tab("Form", form()),
-				gowt.Tab("Pages", pages()),
-			),
-		)
+				gowt.Tab("Pages", pages())))
 		w.SetSize(480, 320)
 		w.Show()
 	})
@@ -36,9 +34,7 @@ func boxes() gowt.Option {
 			gowt.Label("An HBox lines them up"),
 			gowt.Spacer(),
 			gowt.Button("Cancel"),
-			gowt.Button("OK"),
-		),
-	)
+			gowt.Button("OK")))
 }
 
 // Grid: labels in column 0, fields stretch in column 1, the notes field takes the spare height.
@@ -46,8 +42,7 @@ func grid() gowt.Option {
 	return gowt.Grid(2, gowt.Grow(),
 		gowt.Label("Name"), gowt.Text(gowt.GrowX()),
 		gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow()),
-		gowt.Button("Save", gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart)),
-	)
+		gowt.Button("Save", gowt.Span(2), gowt.Place(gowt.AlignEnd, gowt.AlignStart)))
 }
 
 // Flow: children keep their natural size and wrap to the next row when the panel is narrow.
@@ -73,8 +68,7 @@ func form() gowt.Option {
 		})),
 		gowt.Button("Go", gowt.Anchor(gowt.FormCell{
 			Right: gowt.Same(&field, 0), Top: gowt.Beside(&field, 8),
-		})),
-	)
+		})))
 }
 
 // Pages: every child is a page of the full size, Show picks the visible one.
@@ -83,8 +77,6 @@ func pages() gowt.Option {
 	return gowt.VBox(gowt.Grow(),
 		gowt.Pages(gowt.Grow(), gowt.Ref(&pages),
 			gowt.Label("Page one"),
-			gowt.Label("Page two"),
-		),
-		gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })),
-	)
+			gowt.Label("Page two")),
+		gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })))
 }

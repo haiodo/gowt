@@ -7,13 +7,14 @@ import (
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/browser"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		var status *gowt.LabelView
-		w := app.Window("Browser", gowt.Label("", gowt.GrowX(), gowt.Ref(&status)))
+		status := rx.New("")
+		w := app.Window("Browser", gowt.Label("", gowt.GrowX(), gowt.BindText(status)))
 
 		// Browser takes an swt composite as its parent: AsComposite hands it over.
 		b := browser.NewBrowser(w.AsComposite(), swt.NONE)
@@ -24,7 +25,7 @@ func main() {
 		b.SetLayoutData(gd)
 
 		b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.LocationEvent) {
-			status.SetText(fmt.Sprint("location: ", e.Location))
+			status.Set(fmt.Sprint("location: ", e.Location))
 		}))
 		b.SetText(`<h2>Hello from SWT Browser</h2><p>Page text is set with SetText.</p>`)
 		w.Show()

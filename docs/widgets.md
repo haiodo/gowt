@@ -2,7 +2,7 @@
 
 Example: [`examples/widgets`](../examples/widgets) (three tabs: input, lists, ranges).
 
-Every widget has a constructor function that returns a description (`gowt.Option`): `gowt.Label(text, opts...)`, `gowt.Button(text, onClick, opts...)`. A description becomes a widget when it is passed to its parent: as a child of a container constructor (`gowt.VBox`, `gowt.Group`, `gowt.Split`, ...), to `app.Window(title, children...)` or to `Add(children...)` of a live container. To call methods on the widget, declare `var x *gowt.LabelView` and pass `gowt.Ref(&x)`; `x` is set when the description is created, right after the `Add` or `app.Window` call. The widget types carry a `View` suffix (`*gowt.LabelView`, `*gowt.TableView`, ...) and have plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
+Every widget has a constructor function that returns a description (`gowt.Option`): `gowt.Label(text, opts...)`, `gowt.Button(text, opts...)`. A description becomes a widget when it is passed to its parent: as a child of a container constructor (`gowt.VBox`, `gowt.Group`, `gowt.Split`, ...), to `app.Window(title, children...)` or to `Add(children...)` of a live container. Events, initial values and rx bindings are options too (see below), and data shared between widgets lives in `rx` state ([events.md](events.md)). For imperative work on a widget (filling a Table, `Pages.Show`, `Canvas.Redraw`) declare `var x *gowt.LabelView` and pass `gowt.Ref(&x)`, or run the code in `gowt.Init(func(x *gowt.LabelView) {...})`; both run once the widget and its children exist, `Ref` sets `x` for the code after the `Add` or `app.Window` call. The widget types carry a `View` suffix (`*gowt.LabelView`, `*gowt.TableView`, ...) and have plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.
 
 ## Options
 
@@ -17,7 +17,15 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `MultiSelect()` | List, Table, Tree |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
-| `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it right after creation |
+| `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it once it and its children exist |
+| `OnClick(f)` | Button `func()`, Link `func(href string)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
+| `Hint(s)`, `Checked(b)`, `Selected(i)` | initial state: Text placeholder; Switch and Check/Radio Button; Combo, List, Table, Tabs, CTabs |
+| `Value(v)` | initial value: string for Text, Combo, StyledText; int for Scale, Slider, Spinner, Progress; `time.Time` for DateTime |
+| `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check Button; `[int]` Scale, Slider, Spinner, Combo, List index (Progress one way) |
+| `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
 | `NoBorder()` | drops the frame of List, Table, Tree |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field with a magnifier icon and a clear button |
@@ -34,16 +42,16 @@ Options go last in the call. Some set a style that must be known at creation, th
 |---|---|---|
 | Label | `Label(text)` | `SetText`, `SetImage` |
 | Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free space of a VBox, HBox or Grid row; a horizontal line (`Vertical()` for a vertical one). Both create a `*LabelView` |
-| Switch | `Switch(text, onChange)` | on/off toggle; `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
-| Button | `Button(text, onClick)` | push by default; `Check()`/`Radio()`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
-| Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint`, `OnChange(func(string))`, `OnActivate(func())` (Enter) |
-| Link | `Link(html, onClick)` | text with `<a href="...">`; `onClick` gets the href |
+| Switch | `Switch(text, opts...)` | on/off toggle; options `Checked`, `OnChange`, `Bind`; methods `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
+| Button | `Button(text, opts...)` | push by default; `Check()`/`Radio()`; `OnClick(f)`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
+| Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint` (or the option `Hint`), `OnChange(func(string))`, `OnActivate(func())` (Enter) |
+| Link | `Link(html, opts...)` | text with `<a href="...">`; `OnClick(func(href string))` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
 | List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `SetSelection`, `OnSelect`, `OnActivate` (double click) |
 | Table | `Table()` | `Column(title, width)`, `Row(cells...)` returns `*TableRow` (`SetText(col, s)`, `SetData`, `Data`, `SetChecked`, `SetImage(col, img)`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines`, `ShowRowLines`, `SetSort(col, dir)`, `CellAt(x, y)`, `OnCellClick`; `Column` also has `SetResizable` |
 | Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse`. Columns as in Table: `Column(title, width, opts...)` returns `*TreeColumn` (the first holds the tree), `ShowHeader`, `ShowRowLines`, `SetSort`, `CellAt`, `OnCellClick`; per-column cells `Node.TextAt(col)`, `SetTextAt`, `SetImageAt` |
-| Scale, Slider, Spinner | `Scale(min, max, value)` | `Value`, `SetValue`, `OnChange(func(int))` |
-| Progress | `Progress(max)` | `SetValue`, `SetMax`, `Value` |
+| Scale, Slider, Spinner | `Scale(min, max, opts...)` | start value with the option `Value(n)` (default `min`); `Value`, `SetValue`, `OnChange(func(int))` |
+| Progress | `Progress(max, opts...)` | option `Value(n)`; `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
 | Group | `Group(title, children...)` | titled container, children stacked as in a VBox |
 | Section | `Section(rows...)` | grouped "inset" card as in macOS System Settings; every child is a row (usually an `HBox` or `Grid`), with a separator line before every row but the first; `SectionView.Add` appends rows. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
@@ -58,7 +66,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 ## Any control
 
-Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(RGB)`, `SetBackground(RGB)`, `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the rx bindings `BindVisible(r)` / `BindEnabled(r)` ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
+Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; the control owns the font and frees the previous one on each call), `SetForeground(RGB)`, `SetBackground(RGB)`, `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the options `BindVisible(r)` / `BindEnabled(r)` that follow an rx value ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 `Table.Batch(f)` and `Tree.Batch(f)` suspend drawing while `f` runs, so many row changes repaint once.
 
@@ -82,7 +90,7 @@ Wrappers returned by `Row`, `Node` and the `Tree.On*` callbacks are fresh each c
 
 ## Selection
 
-`Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected) and `SetSelection(...)`; Combo has neither. Callbacks receive indexes. Tree callbacks receive `*Node`.
+`Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected) and `SetSelection(...)`; Combo has neither. The option `Selected(i)` sets the initial selection of Combo, List, Table, Tabs and CTabs. Callbacks receive indexes. Tree callbacks receive `*Node`.
 
 ## Known limits
 

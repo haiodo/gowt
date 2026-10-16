@@ -13,8 +13,7 @@ func main() {
 		var src, zone *gowt.LabelView
 		w := app.Window("Drag and drop",
 			gowt.Label("Drag this text", gowt.GrowX(), gowt.Size(280, 0), gowt.Border(), gowt.Ref(&src)),
-			gowt.Label("Drop text or files here", gowt.GrowX(), gowt.Border(), gowt.Ref(&zone)),
-		)
+			gowt.Label("Drop text or files here", gowt.GrowX(), gowt.Border(), gowt.Ref(&zone)))
 		gowt.DragFrom(src, gowt.Drag{
 			Ops:    gowt.OpCopy | gowt.OpMove,
 			Text:   func() string { return "dragged from gowt" },

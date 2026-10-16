@@ -7,6 +7,7 @@ import (
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/jface"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -21,11 +22,11 @@ func main() {
 		name := jface.WidgetFactoryText(swt.BORDER).Message("Full name").LayoutData(fill()).Create(w.AsComposite())
 
 		// gowt widgets in the same grid take their GridData from Cell.
-		var status *gowt.LabelView
-		w.Add(gowt.Label("", gowt.GrowX(), gowt.Span(2), gowt.Ref(&status)))
+		status := rx.New("")
+		w.Add(gowt.Label("", gowt.GrowX(), gowt.Span(2), gowt.BindText(status)))
 		jface.WidgetFactoryButton(swt.PUSH).Text("Greet").
 			LayoutData(jface.GridDataFactoryCreate(swt.END).Span(2, 1).Create()).
-			OnSelect(func(e *swt.SelectionEvent) { status.SetText("Hello, " + name.GetText()) }).
+			OnSelect(func(e *swt.SelectionEvent) { status.Set("Hello, " + name.GetText()) }).
 			Create(w.AsComposite())
 
 		w.Show()

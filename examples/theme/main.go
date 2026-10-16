@@ -19,9 +19,7 @@ func main() {
 			gowt.Label("", gowt.GrowX(), gowt.Size(280, 0), gowt.Ref(&mode)),
 			gowt.Group("Glass panel",
 				gowt.Ref(&panel),
-				gowt.Button("Glass button", look.GlassButton()),
-			),
-		)
+				gowt.Button("Glass button", look.GlassButton())))
 		show := func(dark bool) {
 			if dark {
 				mode.SetText("system theme: dark")

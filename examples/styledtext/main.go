@@ -11,24 +11,24 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		var ed *gowt.StyledTextView
-		w := app.Window("StyledText", gowt.StyledText(gowt.Scrollbars(), gowt.Border(), gowt.Grow(), gowt.Ref(&ed)))
-		ed.SetText("Styled text: ключевые слова func and return are colored per line.")
-
 		blue := gowt.RGB{R: 30, G: 80, B: 200}
-		// The callback gets one line; Start counts runes from its beginning.
-		ed.OnStyle(func(line string) []gowt.StyleSpan {
-			var spans []gowt.StyleSpan
-			for _, kw := range []string{"func", "return"} {
-				if i := strings.Index(line, kw); i >= 0 {
-					spans = append(spans, gowt.StyleSpan{
-						Start: utf8.RuneCountInString(line[:i]), Length: len(kw),
-						Style: gowt.TextStyle{Foreground: &blue, Bold: true},
-					})
-				}
-			}
-			return spans
-		})
+		w := app.Window("StyledText", gowt.StyledText(gowt.Scrollbars(), gowt.Border(), gowt.Grow(),
+			gowt.Init(func(ed *gowt.StyledTextView) {
+				ed.SetText("Styled text: ключевые слова func and return are colored per line.")
+				// The callback gets one line; Start counts runes from its beginning.
+				ed.OnStyle(func(line string) []gowt.StyleSpan {
+					var spans []gowt.StyleSpan
+					for _, kw := range []string{"func", "return"} {
+						if i := strings.Index(line, kw); i >= 0 {
+							spans = append(spans, gowt.StyleSpan{
+								Start: utf8.RuneCountInString(line[:i]), Length: len(kw),
+								Style: gowt.TextStyle{Foreground: &blue, Bold: true},
+							})
+						}
+					}
+					return spans
+				})
+			})))
 		w.SetSize(480, 160)
 		w.Show()
 	})

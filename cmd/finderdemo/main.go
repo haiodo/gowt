@@ -63,22 +63,18 @@ func main() {
 			}},
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: func() { log.Print("share") }},
-			look.ToolbarItem{Title: "Search", OnSearch: find},
-		)
+			look.ToolbarItem{Title: "Search", OnSearch: find})
 
 		var sidebar, content *gowt.Panel
 		// Finder: the list runs edge to edge, its rows inset their selection
 		w.Add(
-			gowt.VBox(gowt.Ref(&sidebar), gowt.List(pages, gowt.NoBorder(), gowt.Grow(), gowt.Ref(&nav))),
+			gowt.VBox(gowt.Ref(&sidebar), gowt.List(pages, gowt.NoBorder(), gowt.Grow(), gowt.Ref(&nav), gowt.OnSelect(func(i int) {
+				if i >= 0 {
+					open(i)
+				}
+			}))),
 			gowt.VBox(gowt.Ref(&content),
-				gowt.Pages(gowt.Grow(), gowt.Ref(&views), appearance(), general(), dock()),
-			),
-		)
-		nav.OnSelect(func(i int) {
-			if i >= 0 {
-				open(i)
-			}
-		})
+				gowt.Pages(gowt.Grow(), gowt.Ref(&views), appearance(), general(), dock())))
 
 		look.SetSidebar(w, sidebar, content, 220)
 		show(0)
@@ -108,34 +104,30 @@ func row(label string, control gowt.Option) gowt.Option {
 }
 
 func choice(items ...string) gowt.Option {
-	return gowt.Combo(items, gowt.ReadOnly(), gowt.Init(func(c *gowt.ComboView) { c.Select(0) }))
+	return gowt.Combo(items, gowt.ReadOnly(), gowt.Selected(0))
 }
 
 func toggle(on bool) gowt.Option {
-	return gowt.Switch("", gowt.Init(func(s *gowt.SwitchView) { s.SetChecked(on) }))
+	return gowt.Switch("", gowt.Checked(on))
 }
 
 func storage(value int) gowt.Option {
-	return gowt.Progress(100, gowt.Init(func(p *gowt.ProgressView) { p.SetValue(value) }))
+	return gowt.Progress(100, gowt.Value(value))
 }
 
 func appearance() gowt.Option {
 	return page(
 		gowt.Section(gowt.GrowX(),
 			row("Appearance", choice("Auto", "Light", "Dark")),
-			row("Liquid Glass", choice("Clear", "Tinted")),
-		),
+			row("Liquid Glass", choice("Clear", "Tinted"))),
 		heading("Theme"),
 		gowt.Section(gowt.GrowX(),
 			row("Text highlight color", choice("Accent color", "Orange", "Blue")),
-			row("Folder color", choice("Automatic", "Blue")),
-		),
+			row("Folder color", choice("Automatic", "Blue"))),
 		heading("Windows"),
 		gowt.Section(gowt.GrowX(),
 			row("Sidebar icon size", choice("Medium", "Small", "Large")),
-			row("Tint window background with wallpaper color", toggle(true)),
-		),
-	)
+			row("Tint window background with wallpaper color", toggle(true))))
 }
 
 func general() gowt.Option {
@@ -143,14 +135,11 @@ func general() gowt.Option {
 		gowt.Section(gowt.GrowX(),
 			row("Name", gowt.Label("MacBook Pro")), // a Text would keep its white field
 			row("Software Update", toggle(true)),
-			row("Storage", storage(62)),
-		),
+			row("Storage", storage(62))),
 		heading("Sharing"),
 		gowt.Section(gowt.GrowX(),
 			row("File Sharing", toggle(false)),
-			row("Remote Login", toggle(false)),
-		),
-	)
+			row("Remote Login", toggle(false))))
 }
 
 func dock() gowt.Option {
@@ -160,7 +149,5 @@ func dock() gowt.Option {
 			row("Size", gowt.Scale(16, 128, gowt.Value(48))),
 			row("Magnification", toggle(false)),
 			row("Position on screen", choice("Bottom", "Left", "Right")),
-			row("Automatically hide and show the Dock", toggle(false)),
-		),
-	)
+			row("Automatically hide and show the Dock", toggle(false))))
 }

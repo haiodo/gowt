@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/webview"
 )
 
@@ -17,19 +18,28 @@ const page = `<!doctype html><meta charset="utf-8"><title>From Go</title>
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		var status *gowt.LabelView
-		var button *gowt.ButtonView
+		status := rx.New("")
 		var host *gowt.Panel
+		var wv *webview.WebView
+		var err error
 		w := app.Window("Web view",
-			gowt.Label("", gowt.GrowX(), gowt.Ref(&status)),
-			gowt.Button("Set page text from Go", gowt.Ref(&button)),
-			gowt.Fill(gowt.Grow(), gowt.Size(480, 280), gowt.Ref(&host)),
-		)
+			gowt.Label("", gowt.GrowX(), gowt.BindText(status)),
+			gowt.Button("Set page text from Go", gowt.OnClick(func() {
+				wv.Eval(`document.getElementById("out").textContent = "set from Go"; document.title`,
+					func(result string, err error) {
+						if err != nil {
+							status.Set("eval error: " + err.Error())
+							return
+						}
+						status.Set("eval result (JSON): " + result)
+					})
+			})),
+			gowt.Fill(gowt.Grow(), gowt.Size(480, 280), gowt.Ref(&host)))
 
-		wv, err := webview.New(host.Unwrap(), webview.Options{})
+		wv, err = webview.New(host.Unwrap(), webview.Options{})
 		if err != nil {
 			// For example no WebView2 Runtime on Windows, or no WebKitGTK on Linux.
-			status.SetText("no web view: " + err.Error())
+			status.Set("no web view: " + err.Error())
 			w.Show()
 			return
 		}
@@ -38,21 +48,11 @@ func main() {
 			return &webview.Response{MimeType: "text/html", Body: []byte(page)}
 		})
 		if err != nil {
-			status.SetText(err.Error())
+			status.Set(err.Error())
 		}
-		wv.OnMessage = func(msg string) { status.SetText("page says: " + msg) }
-		wv.OnNavigationFinished = func(url string) { status.SetText("loaded " + url) }
+		wv.OnMessage = func(msg string) { status.Set("page says: " + msg) }
+		wv.OnNavigationFinished = func(url string) { status.Set("loaded " + url) }
 
-		button.OnClick(func() {
-			wv.Eval(`document.getElementById("out").textContent = "set from Go"; document.title`,
-				func(result string, err error) {
-					if err != nil {
-						status.SetText("eval error: " + err.Error())
-						return
-					}
-					status.SetText("eval result (JSON): " + result)
-				})
-		})
 		w.Show()
 		wv.Navigate("app://localhost/")
 	})

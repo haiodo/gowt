@@ -7,17 +7,17 @@ Every widget is created by a constructor function (`gowt.Label(text)`) that is p
 | Widget | Constructor | What it is | Linux | macOS | Windows |
 |---|---|---|---|---|---|
 | Label | `Label(text, opts...)` | static text | ![](img/label-linux.png) | ![](img/label-macos.png) | ![](img/label-windows.png) |
-| Button | `Button(text, onClick, opts...)` | push button; `Check()` and `Radio()` make a check box or a radio button | ![](img/button-linux.png) | ![](img/button-macos.png) | ![](img/button-windows.png) |
-| Switch | `Switch(text, onChange, opts...)` | on/off toggle, a check box on every OS | ![](img/switch-linux.png) | ![](img/switch-macos.png) | ![](img/switch-windows.png) |
+| Button | `Button(text, opts...)` | push button, `OnClick(f)`; `Check()` and `Radio()` make a check box or a radio button | ![](img/button-linux.png) | ![](img/button-macos.png) | ![](img/button-windows.png) |
+| Switch | `Switch(text, opts...)` | on/off toggle, a check box on every OS | ![](img/switch-linux.png) | ![](img/switch-macos.png) | ![](img/switch-windows.png) |
 | Text | `Text(opts...)` | edit field; `Multiline()`, `Password()`, `ReadOnly()` | ![](img/text-linux.png) | ![](img/text-macos.png) | ![](img/text-windows.png) |
-| Link | `Link(html, onClick)` | text with `<a href>` links | ![](img/link-linux.png) | ![](img/link-macos.png) | ![](img/link-windows.png) |
+| Link | `Link(html, opts...)` | text with `<a href>` links | ![](img/link-linux.png) | ![](img/link-macos.png) | ![](img/link-windows.png) |
 | Combo | `Combo(items, opts...)` | drop-down list, editable unless `ReadOnly()` | ![](img/combo-linux.png) | ![](img/combo-macos.png) | ![](img/combo-windows.png) |
 | List | `List(items, opts...)` | single or multiple selection list | ![](img/list-linux.png) | ![](img/list-macos.png) | ![](img/list-windows.png) |
 | Table | `Table(opts...)` | rows and columns, `Column`, `Row` | ![](img/table-linux.png) | ![](img/table-macos.png) | ![](img/table-windows.png) |
 | Tree | `Tree(opts...)` | hierarchy of `Node` | ![](img/tree-linux.png) | ![](img/tree-macos.png) | ![](img/tree-windows.png) |
-| Scale | `Scale(min, max, value, opts...)` | slider with a track | ![](img/scale-linux.png) | ![](img/scale-macos.png) | ![](img/scale-windows.png) |
-| Slider | `Slider(min, max, value, opts...)` | scroll-bar-like value control | ![](img/slider-linux.png) | ![](img/slider-macos.png) | ![](img/slider-windows.png) |
-| Spinner | `Spinner(min, max, value, opts...)` | number field with arrows | ![](img/spinner-linux.png) | ![](img/spinner-macos.png) | ![](img/spinner-windows.png) |
+| Scale | `Scale(min, max, opts...)` | slider with a track | ![](img/scale-linux.png) | ![](img/scale-macos.png) | ![](img/scale-windows.png) |
+| Slider | `Slider(min, max, opts...)` | scroll-bar-like value control | ![](img/slider-linux.png) | ![](img/slider-macos.png) | ![](img/slider-windows.png) |
+| Spinner | `Spinner(min, max, opts...)` | number field with arrows | ![](img/spinner-linux.png) | ![](img/spinner-macos.png) | ![](img/spinner-windows.png) |
 | Progress | `Progress(max, opts...)` | progress bar; `Smooth()`, `Indeterminate()` | ![](img/progress-linux.png) | ![](img/progress-macos.png) | ![](img/progress-windows.png) |
 | DateTime | `DateTime(opts...)` | date field; `AsTime()`, `AsCalendar()`, `DropDown()` | ![](img/datetime-linux.png) | ![](img/datetime-macos.png) | ![](img/datetime-windows.png) |
 | Group | `Group(title, opts...)` | titled container | ![](img/group-linux.png) | ![](img/group-macos.png) | ![](img/group-windows.png) |

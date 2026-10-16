@@ -5,13 +5,11 @@ Example: [`examples/layouts`](../examples/layouts).
 ## Windows
 
 ```go
-var name *gowt.TextView
 w := app.Window("Title")   // hidden until Show; its children stack as in a VBox
 w.Add(
 	gowt.Label("Name"),
-	gowt.Text(gowt.GrowX(), gowt.Ref(&name)),
-	gowt.Button("Close", w.Close),
-)
+	gowt.Text(gowt.GrowX(), gowt.Hint("Full name")),
+	gowt.Button("Close", gowt.OnClick(w.Close)))
 w.SetSize(480, 320)        // optional; without it Show packs the window to its content
 w.Show()
 ```
@@ -46,8 +44,7 @@ gowt.Grid(2, gowt.GrowX(), gowt.Gap(gowt.Spacing.LG),
 	gowt.Label("Name"), gowt.Text(gowt.GrowX()),
 	gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80)),
 	gowt.Separator(gowt.Span(2)),
-	gowt.Spacer(), gowt.Button("Save", onSave),
-)
+	gowt.Spacer(), gowt.Button("Save", gowt.OnClick(onSave)))
 ```
 
 A container's content can change after `Show`: `Add(children...)` creates children at its end, `Relayout()` lays the children out again (after a label got a longer text, for example), `Clear()` disposes every child so that the content can be built again, and `child.Dispose()` removes one child and lays the parent out again.
@@ -82,9 +79,8 @@ An application tunes the scale once at startup, e.g. `gowt.Spacing.SM = 6` or `g
 ```go
 var ok *gowt.ButtonView
 gowt.Form(gowt.Grow(),
-	gowt.Button("OK", onOK, gowt.Ref(&ok), gowt.Anchor(gowt.FormCell{Right: gowt.Percent(100, 0), Bottom: gowt.Percent(100, 0)})),
-	gowt.Button("Cancel", onCancel, gowt.Anchor(gowt.FormCell{Right: gowt.Beside(&ok, 8), Bottom: gowt.Same(&ok, 0)})),
-)
+	gowt.Button("OK", gowt.OnClick(onOK), gowt.Ref(&ok), gowt.Anchor(gowt.FormCell{Right: gowt.Percent(100, 0), Bottom: gowt.Percent(100, 0)})),
+	gowt.Button("Cancel", gowt.OnClick(onCancel), gowt.Anchor(gowt.FormCell{Right: gowt.Beside(&ok, 8), Bottom: gowt.Same(&ok, 0)})))
 ```
 
 Edges are `Edge` values:
@@ -102,10 +98,8 @@ var pages *gowt.PagesView
 w.Add(
 	gowt.Pages(gowt.Grow(), gowt.Ref(&pages),
 		gowt.Label("Page one"),          // the first page is shown
-		gowt.Label("Page two"),
-	),
-	gowt.Button("Switch", func() { pages.Show(1 - pages.Current()) }),
-)
+		gowt.Label("Page two")),
+	gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })))
 ```
 
 Every child of `Pages` is a page. `Show(i)` counts pages from 0 in the order they were added and panics on an index out of range; `Current()` is -1 when no page is shown. `pages.Add(...)` appends pages; a page added while none is shown is shown.

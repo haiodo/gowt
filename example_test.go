@@ -6,18 +6,17 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 )
 
 // A window with a field, a button and a label; Run returns when the window is closed.
 func ExampleRun() {
 	err := gowt.Run(func(app *gowt.App) {
-		var name *gowt.TextView
-		var greet *gowt.LabelView
+		name, greet := rx.New(""), rx.New("")
 		w := app.Window("Hello gowt",
-			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Ref(&name)),
-			gowt.Label("", gowt.GrowX(), gowt.Ref(&greet)),
-			gowt.Button("Greet", gowt.OnClick(func() { greet.SetText("Hello, " + name.Text() + "!") })),
-		)
+			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Bind(name)),
+			gowt.Label("", gowt.GrowX(), gowt.BindText(greet)),
+			gowt.Button("Greet", gowt.OnClick(func() { greet.Set("Hello, " + name.Get() + "!") })))
 		w.Show()
 	})
 	if err != nil {
@@ -29,25 +28,21 @@ func ExampleRun() {
 // Children whose callbacks use the window go in w.Add, after w exists.
 func ExampleHBox() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var name *gowt.TextView
+		name := rx.New("")
 		w := app.Window("Contacts")
 		w.Add(
 			gowt.HBox(gowt.GrowX(),
 				gowt.Label("Contacts"),
 				gowt.Spacer(),
-				gowt.Button("Add", gowt.OnClick(func() { name.SetText("") })),
-			),
+				gowt.Button("Add", gowt.OnClick(func() { name.Set("") }))),
 			gowt.Grid(2, gowt.GrowX(),
 				gowt.Label("Name"),
-				gowt.Text(gowt.GrowX(), gowt.Ref(&name)),
-			),
+				gowt.Text(gowt.GrowX(), gowt.Hint("Full name"), gowt.Bind(name))),
 			gowt.HBox(gowt.GrowX(),
 				gowt.Spacer(),
 				gowt.Button("Cancel", gowt.OnClick(w.Close)),
-				gowt.Button("Save", gowt.OnClick(func() { fmt.Println("save", name.Text()) })),
-			),
-		)
-		name.SetHint("Full name")
+				gowt.Button("Save", gowt.BindEnabled(rx.Compute(func() bool { return name.Get() != "" })),
+					gowt.OnClick(func() { fmt.Println("save", name.Peek()) }))))
 		w.Show()
 	})
 }
@@ -66,12 +61,12 @@ func ExamplePanel_Add() {
 // Work off the UI thread reports back through Async; widgets are touched only on the UI thread.
 func ExampleApp_Async() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var status *gowt.LabelView
-		w := app.Window("Download", gowt.Label("working...", gowt.Ref(&status)))
+		status := rx.New("working...")
+		w := app.Window("Download", gowt.Label("", gowt.BindText(status)))
 		w.Show()
 		go func() {
 			time.Sleep(time.Second) // stands for slow work
-			app.Async(func() { status.SetText("done") })
+			app.Async(func() { status.Set("done") })
 		}()
 	})
 }
@@ -88,9 +83,9 @@ func ExampleApp_After() {
 // Every repeats a function on the UI thread until the returned stop is called.
 func ExampleApp_Every() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var clock *gowt.LabelView
-		w := app.Window("Clock", gowt.Label(time.Now().Format(time.TimeOnly), gowt.Ref(&clock)))
-		stop := app.Every(time.Second, func() { clock.SetText(time.Now().Format(time.TimeOnly)) })
+		clock := rx.New(time.Now().Format(time.TimeOnly))
+		w := app.Window("Clock", gowt.Label("", gowt.BindText(clock)))
+		stop := app.Every(time.Second, func() { clock.Set(time.Now().Format(time.TimeOnly)) })
 		w.OnClose(func() bool { stop(); return true })
 		w.Show()
 	})
@@ -103,9 +98,7 @@ func ExamplePages() {
 		w := app.Window("Wizard",
 			gowt.Pages(gowt.Grow(), gowt.Ref(&pages),
 				gowt.Label("Step 1"),
-				gowt.Label("Step 2"),
-			),
-		)
+				gowt.Label("Step 2")))
 		w.Add(gowt.Button("Next", gowt.OnClick(func() { pages.Show((pages.Current() + 1) % 2) })))
 		w.Show()
 	})
@@ -128,9 +121,7 @@ func ExampleGrid() {
 		w := app.Window("Form",
 			gowt.Grid(2, gowt.Grow(),
 				gowt.Label("Name"), gowt.Text(gowt.GrowX()),
-				gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80)),
-			),
-		)
+				gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80))))
 		w.Show()
 	})
 }
@@ -152,13 +143,15 @@ func ExampleWindow_Confirm() {
 // application value with a row.
 func ExampleTable() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var t *gowt.TableView
-		w := app.Window("Processes", gowt.Table(gowt.Grow(), gowt.MultiSelect(), gowt.Ref(&t)))
-		t.Column("Name", 160)
-		t.Column("CPU", 60, gowt.Right())
-		t.Row("gowt", "1.5").SetData("pid-1")
-		t.Row("docker", "12.0")
-		t.OnActivate(func(i int) { fmt.Println("open", t.RowAt(i).Text(0), t.RowAt(i).Data()) })
+		var t *gowt.TableView // OnActivate reads the rows
+		w := app.Window("Processes", gowt.Table(gowt.Grow(), gowt.MultiSelect(), gowt.Ref(&t),
+			gowt.OnActivate(func(i int) { fmt.Println("open", t.RowAt(i).Text(0), t.RowAt(i).Data()) }),
+			gowt.Init(func(t *gowt.TableView) { // fills the table once it exists
+				t.Column("Name", 160)
+				t.Column("CPU", 60, gowt.Right())
+				t.Row("gowt", "1.5").SetData("pid-1")
+				t.Row("docker", "12.0")
+			})))
 		w.Show()
 	})
 }
@@ -170,8 +163,7 @@ func ExampleCanvas() {
 			gowt.Canvas(func(g *gowt.GC) {
 				g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
 				g.FillOval(10, 10, 100, 60)
-			}, gowt.Size(200, 100)),
-		)
+			}, gowt.Size(200, 100)))
 		w.Show()
 	})
 }
@@ -201,10 +193,8 @@ func ExampleDropOn() {
 // StyledText offsets are runes; spans style ranges of the text.
 func ExampleStyledText() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var ed *gowt.StyledTextView
-		w := app.Window("Editor", gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.Ref(&ed)))
-		ed.SetText("bold word")
-		ed.SetStyle(0, 4, gowt.TextStyle{Bold: true})
+		w := app.Window("Editor", gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.Value("bold word"),
+			gowt.Init(func(ed *gowt.StyledTextView) { ed.SetStyle(0, 4, gowt.TextStyle{Bold: true}) })))
 		w.Show()
 	})
 }
@@ -212,14 +202,12 @@ func ExampleStyledText() {
 // A check box and a push button pushed to the right end of their row.
 func ExampleButton() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var remember *gowt.ButtonView
+		remember := rx.New(true)
 		w := app.Window("Buttons",
 			gowt.HBox(gowt.GrowX(),
-				gowt.Button("Remember me", gowt.Check(), gowt.Ref(&remember)),
+				gowt.Button("Remember me", gowt.Check(), gowt.Bind(remember)),
 				gowt.Spacer(),
-				gowt.Button("Sign in", gowt.OnClick(func() { fmt.Println("remember:", remember.Checked()) })),
-			),
-		)
+				gowt.Button("Sign in", gowt.OnClick(func() { fmt.Println("remember:", remember.Get()) }))))
 		w.Show()
 	})
 }
@@ -227,16 +215,11 @@ func ExampleButton() {
 // A field that takes the free width, a password field and a search field with a hint.
 func ExampleText() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var user, find *gowt.TextView
 		w := app.Window("Fields",
 			gowt.Grid(2, gowt.GrowX(),
-				gowt.Label("User"), gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Ref(&user)),
+				gowt.Label("User"), gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.OnChange(func(s string) { fmt.Println("user:", s) })),
 				gowt.Label("Password"), gowt.Text(gowt.Password(), gowt.GrowX()),
-				gowt.Text(gowt.Search(), gowt.GrowX(), gowt.Span(2), gowt.Ref(&find)),
-			),
-		)
-		find.SetHint("Search")
-		user.OnChange(func(s string) { fmt.Println("user:", s) })
+				gowt.Text(gowt.Search(), gowt.GrowX(), gowt.Span(2), gowt.Hint("Search"))))
 		w.Show()
 	})
 }
@@ -244,12 +227,13 @@ func ExampleText() {
 // Nodes nest under the tree and under each other; callbacks get the node.
 func ExampleTree() {
 	_ = gowt.Run(func(app *gowt.App) {
-		var tree *gowt.TreeView
-		w := app.Window("Files", gowt.Tree(gowt.Grow(), gowt.Ref(&tree)))
-		docs := tree.Node("Documents")
-		docs.Node("report.pdf")
-		docs.SetExpanded(true)
-		tree.OnSelect(func(n *gowt.Node) { fmt.Println(n.Text()) })
+		w := app.Window("Files", gowt.Tree(gowt.Grow(),
+			gowt.OnSelect(func(n *gowt.Node) { fmt.Println(n.Text()) }),
+			gowt.Init(func(t *gowt.TreeView) {
+				docs := t.Node("Documents")
+				docs.Node("report.pdf")
+				docs.SetExpanded(true)
+			})))
 		w.Show()
 	})
 }

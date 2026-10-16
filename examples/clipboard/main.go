@@ -5,35 +5,34 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/rx"
 )
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		var field *gowt.TextView
-		var status *gowt.LabelView
+		field := rx.New("")
+		status := rx.New("")
 		// The clipboard belongs to the App and is disposed with it. A busy clipboard is a normal
 		// error on Windows, so setters return it.
 		w := app.Window("Clipboard",
 			gowt.Grid(2, gowt.Grow(),
-				gowt.Text(gowt.GrowX(), gowt.Size(240, 0), gowt.Ref(&field)),
-				gowt.Label("", gowt.GrowX(), gowt.Span(2), gowt.Ref(&status)),
+				gowt.Text(gowt.GrowX(), gowt.Size(240, 0), gowt.Bind(field)),
+				gowt.Label("", gowt.GrowX(), gowt.Span(2), gowt.BindText(status)),
 				gowt.Button("Copy", gowt.OnClick(func() {
-					if err := app.Clipboard().SetText(field.Text()); err != nil {
-						status.SetText("copy failed: " + err.Error())
+					if err := app.Clipboard().SetText(field.Get()); err != nil {
+						status.Set("copy failed: " + err.Error())
 						return
 					}
-					status.SetText("copied")
+					status.Set("copied")
 				})),
 				gowt.Button("Paste", gowt.OnClick(func() {
 					if s, ok := app.Clipboard().Text(); ok {
-						field.SetText(s)
-						status.SetText("pasted")
+						field.Set(s)
+						status.Set("pasted")
 					} else {
-						status.SetText("no text on the clipboard")
+						status.Set("no text on the clipboard")
 					}
-				})),
-			),
-		)
+				}))))
 		w.Show()
 	})
 	if err != nil {

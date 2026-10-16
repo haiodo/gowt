@@ -10,7 +10,6 @@ import (
 
 func main() {
 	err := g.Run(func(app *g.App) {
-		var split *g.SplitView
 		var pages *g.PagesView
 		var buttons, groups []g.Option
 		for i, n := range []string{"A", "B", "C"} {
@@ -18,12 +17,9 @@ func main() {
 			groups = append(groups, g.Group("Panel "+n, g.Label("This is panel "+n)))
 		}
 		w := app.Window("Stack",
-			g.Split(g.Grow(), g.Ref(&split),
+			g.Split(g.Grow(), g.Init(func(s *g.SplitView) { s.SetWeights(1, 3) }),
 				g.Fill(buttons...),
-				g.Pages(append([]g.Option{g.Ref(&pages)}, groups...)...),
-			),
-		)
-		split.SetWeights(1, 3)
+				g.Pages(append([]g.Option{g.Ref(&pages)}, groups...)...)))
 
 		w.SetSize(500, 300)
 		w.Show()

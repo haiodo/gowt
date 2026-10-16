@@ -6,25 +6,21 @@ The idioms below are the ones to write. Longer explanations are in [windows-layo
 
 ```go
 err := gowt.Run(func(app *gowt.App) {
-	var name *gowt.TextView                                  // filled by Ref when the field is created
+	name := rx.New("")                                       // state shared by the widgets below
 	w := app.Window("Contacts")                              // hidden until Show; children stack top to bottom
 	w.Add(
 		gowt.HBox(gowt.GrowX(),
 			gowt.Label("Contacts"),
 			gowt.Spacer(),                                   // pushes the button to the right
-			gowt.Button("Clear", func() { name.SetText("") }),
-		),
+			gowt.Button("Clear", gowt.OnClick(func() { name.Set("") }))),
 		gowt.Grid(2, gowt.GrowX(),                           // a form: label | field per row
-			gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Ref(&name)),
-			gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80)),
-		),
+			gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Hint("Full name"), gowt.Bind(name)),
+			gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80))),
 		gowt.HBox(gowt.GrowX(),
 			gowt.Spacer(),
-			gowt.Button("Cancel", w.Close),
-			gowt.Button("Save", func() { save(name.Text()) }),
-		),
-	)
-	name.SetHint("Full name")                                // after the Add that created it
+			gowt.Button("Cancel", gowt.OnClick(w.Close)),
+			gowt.Button("Save", gowt.OnClick(func() { save(name.Get()) }),
+				gowt.BindEnabled(rx.Compute(func() bool { return name.Get() != "" })))))
 	w.Show()                                                 // packs to the content size unless SetSize was called
 })
 if err != nil {
@@ -33,9 +29,12 @@ if err != nil {
 ```
 
 - A constructor (`gowt.Label`, `gowt.Button`, `gowt.HBox`, ...) returns a description, a `gowt.Option`. The widget is created when the description is passed to its parent: to a container constructor, to `app.Window(title, ...)` or to `container.Add(...)`. The nesting of the calls is the nesting on screen.
-- `gowt.Ref(&x)` stores the created widget in `x` (`var x *gowt.TextView`; the widget types end in `View`, containers are `*gowt.Panel`). Call `x`'s methods after the `Add` or `app.Window` call that created it.
-- `gowt.Init(func(x *gowt.ComboView) { x.Select(0) })` runs on the widget as soon as it is created: for a helper function that returns a description and must set up its widget.
+- Everything about a widget goes into its option list: placement, style, events (`OnClick`, `OnChange`, `OnSelect`, `OnActivate`), initial state (`Hint`, `Checked`, `Selected`, `Value`) and rx bindings (`Bind`, `BindText`, `BindEnabled`, `BindVisible`).
+- Data the screen shares lives in `rx` state (`rx.New`, `rx.Compute`); widgets bind to it, callbacks `Set` it. No variable per widget.
+- Imperative setup (filling a Table or Tree, `Split.SetWeights`, tool bar items) goes in `gowt.Init(func(t *gowt.TableView) {...})`, which runs once the widget and its children exist. Widget types end in `View`; containers are `*gowt.Panel`.
+- `gowt.Ref(&x)` (`var x *gowt.PagesView`) is for a widget a later callback calls into (`pages.Show`, `canvas.Redraw`) when no state fits. Ref is set by the `Add` or `app.Window` call that creates the widget.
 - A child whose callback uses `w` goes into `w.Add(...)`, after `w` exists. Children that do not can go straight into `app.Window("Title", children...)`.
+- Closing parens go on the line of the last child; the indentation shows the nesting.
 - `w.Show()` comes last, once the content is built.
 
 ## Containers
@@ -73,29 +72,35 @@ if err != nil {
 
 Options add up; when two set the same thing the later one wins. They work in a VBox, HBox and Grid; `Size` also works in `Flow` and `Form`, `Anchor(FormCell{...})` only in `Form`. An option the parent cannot use is reported to `App.OnError` with the option, the widget and the layout in the message; the widget keeps its natural size.
 
-## Events
+## Events and state
 
 ```go
-gowt.Button("Delete", onDelete)                    // nil means no callback
-var field *gowt.TextView
-p.Add(gowt.Text(gowt.Ref(&field)))
-field.OnChange(func(s string) { status.SetText(s) })
-table.OnSelect(func(i int) { show(table.RowAt(i).Text(0)) })
+gowt.Button("Delete", gowt.OnClick(onDelete))
+gowt.Text(gowt.OnChange(func(s string) { query.Set(s) }), gowt.OnActivate(search))
+gowt.List(names, gowt.OnSelect(func(i int) { show(names[i]) }), gowt.OnActivate(open))
+gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
+gowt.Switch("Wi-Fi", gowt.Checked(true), gowt.OnChange(func(on bool) { wifi(on) }))
+gowt.Scale(0, 100, gowt.Value(30), gowt.OnChange(func(v int) { volume(v) }))
+
+on := rx.New(true)                                 // Svelte-style state
+gowt.Switch("Enable", gowt.Bind(on))               // two-way: a click sets on, on.Set(false) unchecks
+gowt.Button("Remember", gowt.Check(), gowt.BindEnabled(on))
+gowt.Label("", gowt.BindText(rx.Compute(func() string { return fmt.Sprint("on: ", on.Get()) })))
 
 go func() {                                        // slow work off the UI thread
 	r := fetch()
-	app.Async(func() { status.SetText(r) })        // back on the UI thread; a no-op after Run
+	status.Post(r)                                 // rx state from any goroutine; or app.Async(func() { ... })
 }()
 app.After(time.Second, tick)                       // once
 stop := app.Every(time.Second, tick)               // repeats until stop()
 file.Item("&Save", save, gowt.Shortcut("Cmd+S"))   // Cmd+S binds the key and shows it; Ctrl+S on Windows and Linux
 
-app.OnError(func(err error) { status.SetText(err.Error()) }) // errors in callbacks and misused options; the app keeps running
+app.OnError(func(err error) { status.Set(err.Error()) }) // errors in callbacks and misused options; the app keeps running
 ```
 
-`Button`, `Switch`, `Link` and `Canvas` take their main callback as an argument. Other events are methods: `Ref` the widget and call them after the `Add`, or call them in `Init`.
+One event name per concept: the handler's parameter is what the widget reports (`OnChange(func(string))` for a Text, `OnChange(func(int))` for a Scale). `Bind` takes `*rx.State[string]` (Text, Combo text), `[bool]` (Switch, Check button) or `[int]` (Scale, Slider, Spinner, Combo or List index). A binding lives as long as its widget. `gowt.Watch(w, reader, apply)` binds anything else. The methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add handlers after creation; menu and tool items take their callback as an argument.
 
-Widgets belong to the UI thread: touch them only in the setup function and in callbacks. `Async`, `Sync` and `Quit` are the calls safe from any goroutine.
+Widgets belong to the UI thread: touch them only in the setup function and in callbacks. `Async`, `Sync`, `Quit` and `State.Post` are the calls safe from any goroutine.
 
 ## Changing a widget later
 
@@ -111,7 +116,6 @@ name.SetTooltip("Full name")
 name.Focus()
 row.Dispose()                      // removes it; the parent is laid out again
 row.OnDispose(stop)                // runs when row is disposed or its window closes
-save.BindEnabled(canSave)          // rx: follows an rx.Reader[bool]; BindVisible likewise
 ```
 
 `Enabled()` and `Visible()` read the state back. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
@@ -125,20 +129,19 @@ A container has `Add(children...)` (create more children at its end, also after 
 ## Tables, trees, tool bars
 
 ```go
-var t *gowt.TableView
-var tree *gowt.TreeView
-var tb *gowt.ToolBarView
+var t *gowt.TableView                              // OnSelect reads the rows later
 w.Add(
-	gowt.ToolBar(gowt.Ref(&tb)),
-	gowt.Table(gowt.Grow(), gowt.Ref(&t)),
-	gowt.Tree(gowt.Grow(), gowt.Ref(&tree)),
-)
-tb.Item("Open", open)
-t.Column("Name", 200)
-t.Column("Size", 80, gowt.Right())
-t.Row("report.pdf", "1.2 MB").SetData(file)
-docs := tree.Node("Documents")
-docs.Node("report.pdf")
+	gowt.ToolBar(gowt.Init(func(tb *gowt.ToolBarView) { tb.Item("Open", open) })),
+	gowt.Table(gowt.Grow(), gowt.Ref(&t), gowt.OnSelect(func(i int) { show(t.RowAt(i).Text(0)) }),
+		gowt.Init(func(t *gowt.TableView) {
+			t.Column("Name", 200)
+			t.Column("Size", 80, gowt.Right())
+			t.Row("report.pdf", "1.2 MB").SetData(file)
+		})),
+	gowt.Tree(gowt.Grow(), gowt.Init(func(tree *gowt.TreeView) {
+		docs := tree.Node("Documents")
+		docs.Node("report.pdf")
+	})))
 ```
 
 Rows, nodes, columns, tool items and menu items are not widgets: they come from their owner's methods. Wrappers are fresh per call, so keep per-row state with `SetData`/`Data`.
@@ -149,7 +152,7 @@ Rows, nodes, columns, tool items and menu items are not widgets: they come from 
 
 ## Option to widgets
 
-The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background(rgb)`, `Custom(f)`, `Ref(&x)`, `Init(f)`, and the placement options above. `Gap`, `Padding` and children work on containers. Items (`Tab`, `ToolBar.Item`, `Menu.Item`, `Column`) read only the style options listed for them. Any other option is reported to `App.OnError` and the widget is created without it.
+The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background(rgb)`, `Custom(f)`, `Ref(&x)`, `Init(f)`, `BindEnabled(r)`, `BindVisible(r)`, and the placement options above. `Gap`, `Padding` and children work on containers. Items (`Tab`, `ToolBar.Item`, `Menu.Item`, `Column`) read only the style options listed for them. Any other option is reported to `App.OnError` and the widget is created without it.
 
 | Option | Widgets |
 |---|---|
@@ -172,6 +175,16 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `DropDown()` | DateTime, ToolBar.Item |
 | `AsTime()`, `AsCalendar()` | DateTime |
 | `Right()`, `Center()` | Table.Column, Tree.Column, Label |
+| `OnClick(f)` | Button `func()`, Link `func(href string)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnActivate(f)` | Text `func()`; List, Table `func(int)`; Tree `func(*Node)` |
+| `Hint(s)` | Text |
+| `Checked(b)` | Switch, Check/Radio Button |
+| `Selected(i)` | Combo, List, Table, Tabs, CTabs |
+| `Value(n)` | Scale, Slider, Spinner, Progress |
+| `Bind(state)` | Text, Combo (`string`); Switch, Check Button (`bool`); Scale, Slider, Spinner, Combo, List (`int`) |
+| `BindText(r)` | Label, Button, Link |
 | `Gap(n)`, `Padding(n)` | Window, VBox, HBox, Grid, Flow, Fill, Form, Group, Tab, Scroll |
 | `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Place(h, v)`, `Cell(...)` | any widget in a VBox, HBox or Grid |
 | `Size(w, h)` | any widget in a VBox, HBox, Grid, Flow or Form |

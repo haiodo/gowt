@@ -20,19 +20,17 @@ func main() {
 		if os.Getenv("GOWT_DARK_CONTENT") == "1" {
 			look.SetDarkContent(app, true)
 		}
-		var title *gowt.LabelView
 		w := app.Window("backdropdemo")
 		w.Add(
-			gowt.Label("Material behind the window", gowt.GrowX(), gowt.Size(280, 0), gowt.Ref(&title)),
+			gowt.Label("Material behind the window", gowt.GrowX(), gowt.Size(280, 0),
+				// Pure black text over the material turns transparent; near-black stays visible.
+				gowt.Init(func(l *gowt.LabelView) { l.Unwrap().SetForeground(swt.NewColorRedGreenBlue(24, 24, 24)) })),
 			gowt.Button("None", gowt.OnClick(func() { look.SetBackdrop(w, look.BackdropNone) }), gowt.GrowX()),
 			gowt.Button("Translucent (Acrylic)", gowt.OnClick(func() { look.SetBackdrop(w, look.BackdropTranslucent) }), gowt.GrowX()),
 			gowt.Button("Glass (Mica)", gowt.OnClick(func() { look.SetBackdrop(w, look.BackdropGlass) }), gowt.GrowX()),
 			gowt.Button("Square corners", gowt.OnClick(func() { look.SetRoundedCorners(w, false) }), gowt.GrowX()),
 			gowt.Button("Round corners", gowt.OnClick(func() { look.SetRoundedCorners(w, true) }), gowt.GrowX()),
-			gowt.Text(gowt.GrowX()),
-		)
-		// Pure black text over the material turns transparent; near-black stays visible.
-		title.Unwrap().SetForeground(swt.NewColorRedGreenBlue(24, 24, 24))
+			gowt.Text(gowt.GrowX()))
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_BACKDROP_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)
 		}

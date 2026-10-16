@@ -54,8 +54,7 @@ func main() {
 				g.Text(fmt.Sprint("frame ", angle/4), 20, 20)
 			}, gowt.Size(400, 200), gowt.Ref(&canvas)),
 			gowt.Label("Image from memory:"),
-			gowt.Label("", gowt.Ref(&l)),
-		)
+			gowt.Label("", gowt.Ref(&l)))
 
 		app.Every(40*time.Millisecond, func() {
 			angle += 4

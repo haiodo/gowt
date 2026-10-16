@@ -6,7 +6,7 @@ Example: [`examples/icons`](../examples/icons).
 
 ```go
 var b *gowt.ButtonView
-w.Add(gowt.Button("", nil, gowt.Ref(&b)))
+w.Add(gowt.Button("", gowt.Ref(&b)))
 b.SetImage(icons.Get(app, "search", icons.Size(24)))
 ```
 

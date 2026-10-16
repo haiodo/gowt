@@ -12,7 +12,6 @@ import (
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Dialogs and menus")
-		var tools *gowt.ToolBarView
 		var out *gowt.TextView
 
 		bar := w.MenuBar()
@@ -48,7 +47,15 @@ func main() {
 		view.OnShow(func() { say("view menu opens, wrap is " + fmt.Sprint(wrap.Checked())) })
 
 		w.Add(
-			gowt.ToolBar(gowt.Flat(), gowt.GrowX(), gowt.Ref(&tools)),
+			gowt.ToolBar(gowt.Flat(), gowt.GrowX(), gowt.Init(func(t *gowt.ToolBarView) {
+				t.Item("Open", openFile)
+				t.Separator()
+				t.Item("Folder", func() {
+					if dir, ok := w.DirDialog("Pick a folder", ""); ok {
+						say("folder: " + dir)
+					}
+				})
+			})),
 			gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(),
 				gowt.Grow(), gowt.Size(420, 160), gowt.Ref(&out)),
 			gowt.Button("Message box", gowt.OnClick(func() {
@@ -69,16 +76,7 @@ func main() {
 				if f, ok := w.FontDialog(gowt.Font{Name: "Helvetica", Size: 12}); ok {
 					say(fmt.Sprintf("font: %s %d bold=%v", f.Name, f.Size, f.Bold))
 				}
-			})),
-		)
-
-		tools.Item("Open", openFile)
-		tools.Separator()
-		tools.Item("Folder", func() {
-			if dir, ok := w.DirDialog("Pick a folder", ""); ok {
-				say("folder: " + dir)
-			}
-		})
+			})))
 
 		// Right click on the text opens this menu.
 		ctx := gowt.PopupMenu(out)

@@ -31,32 +31,22 @@ func main() {
 			if !look.SetToolbar(w, look.ToolbarItem{Title: "Add", Symbol: "plus", OnClick: note},
 				look.ToolbarItem{Space: true},
 				look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: note}) {
-				var tb *gowt.ToolBarView
-				w.Add(gowt.ToolBar(gowt.Ref(&tb)))
-				tb.Item("Add", note)
+				w.Add(gowt.ToolBar(gowt.Init(func(tb *gowt.ToolBarView) { tb.Item("Add", note) })))
 			}
 			look.SetGlassGroup(w, 4)
 		}
-		var g *gowt.GroupView
-		var glassPanel *gowt.Panel
 		w.Add(
 			gowt.Label("Window backdrop, full-size content", gowt.GrowX(), gowt.Size(320, 0)),
 			gowt.Grid(2, gowt.Padding(4),
 				gowt.Label("Nested panel:"),
-				gowt.Text(),
-			),
-			gowt.Group("Glass group", gowt.Ref(&g),
+				gowt.Text()),
+			gowt.Group("Glass group", gowt.Init(func(g *gowt.GroupView) { look.SetGlass(g, true) }),
 				gowt.Grid(2,
 					gowt.Button("Glass", look.GlassButton()),
 					gowt.Button("Plain"),
-					gowt.Button("Check, no glass bezel", gowt.Check(), look.GlassButton()),
-				),
-			),
-			gowt.VBox(gowt.Padding(12), gowt.Ref(&glassPanel), gowt.Label("Glass panel")),
-			gowt.Button("Glass button", look.GlassButton()),
-		)
-		look.SetGlass(g, true)
-		look.SetGlass(glassPanel, true)
+					gowt.Button("Check, no glass bezel", gowt.Check(), look.GlassButton()))),
+			gowt.VBox(gowt.Padding(12), gowt.Init(func(p *gowt.Panel) { look.SetGlass(p, true) }), gowt.Label("Glass panel")),
+			gowt.Button("Glass button", look.GlassButton()))
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_GLASSDEMO_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)
 		}

@@ -4,7 +4,27 @@ Example: [`examples/events`](../examples/events).
 
 ## Callbacks
 
-Events are `OnX` methods that take plain functions: `OnClick(func())`, `OnChange(func(text string))`, `OnSelect(func(index int))`. Calling `OnX` again adds another listener; nothing is replaced. Button, menu and tool item callbacks can also be passed to the constructor (`gowt.Button("OK", onClick)`); `nil` means none.
+Events are options of the constructor, with plain functions as handlers. One name per concept; the handler's parameter is what the widget reports:
+
+```go
+gowt.Button("OK", gowt.OnClick(ok))
+gowt.Text(gowt.Hint("Search"), gowt.OnChange(func(s string) { query.Set(s) }), gowt.OnActivate(find))
+gowt.Switch("Wi-Fi", gowt.Checked(true), gowt.OnChange(func(on bool) { wifi(on) }))
+gowt.Scale(0, 100, gowt.Value(30), gowt.OnChange(func(v int) { volume(v) }))
+gowt.List(names, gowt.Selected(0), gowt.OnSelect(func(i int) { show(names[i]) }), gowt.OnActivate(open))
+gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
+```
+
+| Option | Widgets |
+|---|---|
+| `OnClick(func())` | Button; `OnClick(func(href string))` Link |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
+
+The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).
+
+The `OnX` methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add a handler to a widget that exists already, through `Ref`. Calling `OnX` again adds another listener; nothing is replaced. Menu and tool items take their callback as an argument: `menu.Item("Quit", app.Quit)`; `nil` means none.
 
 `Window.OnClose(func() bool)` can veto closing: return false to keep the window open.
 
@@ -25,13 +45,13 @@ After `Run` has returned the three do nothing, so a goroutine that outlives the 
 ```go
 go func() {
 	result := slowWork()
-	app.Async(func() { status.SetText(result) })
+	status.Post(result) // or app.Async(func() { ... })
 }()
 ```
 
 ## Reactive state (package rx)
 
-Package `github.com/haiodo/gowt/rx` keeps widgets in step with state, in the style of Svelte 5 runes. A `State` is a value you set, a `Derived` is computed from other signals, an `Effect` reruns when something it read has changed. Nothing is declared: whatever a `Derived` or an `Effect` reads with `Get` is its dependency.
+Package `github.com/haiodo/gowt/rx` keeps widgets in step with state, in the style of Svelte 5 runes. A `State` is a value you set, a `Derived` is computed from other signals, an `Effect` reruns when something it read has changed. Nothing is declared: whatever a `Derived` or an `Effect` reads with `Get` is its dependency. Widgets bind to a state through options, so the data a screen shares lives in `rx` and needs no variable per widget.
 
 ```go
 count := rx.New(0)                                          // State[int], compared with ==
@@ -41,21 +61,13 @@ label := rx.Compute(func() string {                         // Derived[string], 
 onlyRunning := rx.New(false)
 query := rx.New("")
 
-var text *gowt.LabelView
-var only *gowt.ButtonView
-var search *gowt.TextView
-var find *gowt.ButtonView
 w.Add(
-	gowt.Label("", gowt.Ref(&text)),
-	gowt.Button("+1", func() { count.Update(func(n int) int { return n + 1 }) }),
-	gowt.Button("Only running", nil, gowt.Check(), gowt.Ref(&only)),
-	gowt.Text(gowt.Ref(&search)),
-	gowt.Button("Find", onFind, gowt.Ref(&find)),
-)
-text.BindText(label)                                      // the label follows the derived
-only.BindChecked(onlyRunning)                             // two-way
-search.Bind(query)                                        // two-way; typing keeps the caret
-find.BindEnabled(rx.Compute(func() bool { return query.Get() != "" }))
+	gowt.Label("", gowt.BindText(label)),                       // the text follows the derived
+	gowt.Button("+1", gowt.OnClick(func() { count.Update(func(n int) int { return n + 1 }) })),
+	gowt.Button("Only running", gowt.Check(), gowt.Bind(onlyRunning)), // two-way
+	gowt.Text(gowt.Bind(query)),                                // two-way; typing keeps the caret
+	gowt.Button("Find", gowt.OnClick(find),
+		gowt.BindEnabled(rx.Compute(func() bool { return query.Get() != "" }))))
 
 go func() { for v := range updates { count.Post(v) } }()    // from any goroutine
 ```
@@ -71,8 +83,10 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Scope(fn)` | owns the effects and deriveds created in `fn`; returns `dispose` |
 | `rx.Untrack(fn)` | reads in `fn` do not subscribe |
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
-| `gowt.Bind(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives |
-| `Label.BindText`, `Button.BindChecked`, `Text.Bind`, and `BindVisible`, `BindEnabled` on every widget | the common bindings |
+| `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way) |
+| `gowt.BindText(r)` | option: the text of a Label, Button or Link follows an `rx.Reader[string]` (a `State` or a `Derived`) |
+| `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
+| `gowt.Watch(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives: the binding for what no option covers |
 
 Rules:
 
@@ -88,7 +102,7 @@ Rules:
 An error or panic in an event handler or in an `Async`, `Sync` or `After` callback does not end the program. It goes to the function set with `App.OnError`, and the event loop goes on; without `OnError` it is logged to stderr with the stack where it was raised. Toolkit errors arrive wrapped (`gowt: Widget is disposed`), so `errors.As(err, &swtErr)` works; a panic with another value arrives as `gowt: panic: <value>`.
 
 ```go
-app.OnError(func(err error) { status.SetText(err.Error()) })
+app.OnError(func(err error) { status.Set(err.Error()) })
 ```
 
 A placement option the parent's layout cannot use (`GrowX` under a `Flow`, `Anchor` outside a `Form`) is reported the same way when the widget is created, naming the option, the widget and the layout; the widget keeps its natural size.

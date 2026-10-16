@@ -20,8 +20,7 @@ func main() {
 				gc.Oval(160, 20, 120, 80)
 				gc.SetColor(g.RGB{R: 0, G: 0, B: 0})
 				gc.Text("Hello, GC", 20, 150)
-			}, g.Background(g.RGB{R: 255, G: 255, B: 255}), g.Grow()),
-		)
+			}, g.Background(g.RGB{R: 255, G: 255, B: 255}), g.Grow()))
 		w.SetSize(300, 220)
 		w.Show()
 	})

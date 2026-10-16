@@ -11,8 +11,8 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Clipboard")
 		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-		field := w.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 240}))
-		status := w.Label("", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+		field := w.Text(gowt.GrowX(), gowt.Size(240, 0))
+		status := w.Label("", gowt.GrowX(), gowt.Span(2))
 
 		// The clipboard belongs to the App and is disposed with it. A busy clipboard is a normal
 		// error on Windows, so setters return it.

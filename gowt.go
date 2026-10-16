@@ -5,8 +5,10 @@ package gowt
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -26,6 +28,7 @@ type App struct {
 	quit    atomic.Bool
 	images  []*Image
 	clip    *Clipboard
+	onError func(error)
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -33,8 +36,9 @@ type App struct {
 func SetAppName(name string) { swt.DisplaySetAppName(name) }
 
 // Run creates the display, calls setup on the UI thread, then runs the event loop until the
-// last window is closed or App.Quit is called. SWT exceptions raised on the UI thread
-// (panics carrying an error, e.g. *swt.SWTException) are returned; runtime errors and other panics propagate.
+// last window is closed or App.Quit is called. An SWT exception raised by setup (a panic carrying an
+// error, e.g. *swt.SWTException) is returned; a runtime error in setup propagates. Errors and panics
+// in event handlers, Async and After callbacks do not end the loop: they go to App.OnError.
 //
 // With GOWT_SNAP=<file.png> in the environment Run writes the first window as a PNG after the
 // loop has run for GOWT_SNAP_DELAY milliseconds (default 800), then returns; see docs/screenshots.md.
@@ -45,6 +49,9 @@ func Run(setup func(*App)) (err error) {
 	defer catch(&err)
 	a := &App{display: swt.NewDisplay()}
 	defer a.display.Dispose()
+	toOnError := func(err error) { a.fail(err) }
+	a.display.SetRuntimeExceptionHandler(toOnError)
+	a.display.SetErrorHandler(toOnError)
 	defer a.disposeImages()
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
@@ -62,7 +69,7 @@ func Run(setup func(*App)) (err error) {
 	}
 	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
 		snapTick()
-		if !a.display.ReadAndDispatch() {
+		if !a.dispatch(a.display.ReadAndDispatch) {
 			a.display.Sleep()
 		}
 	}
@@ -83,19 +90,82 @@ func catch(err *error) {
 	}
 }
 
-// Async queues f on the UI thread; safe from any goroutine.
-func (a *App) Async(f func()) { a.display.AsyncExec(jrt.NewRunnable(f)) }
+// dispatch runs one step of the event loop. SWT hands errors raised in listeners, Async and After
+// to the display's handlers (fail); dispatch catches the panics that get past them, such as a string.
+func (a *App) dispatch(step func() bool) (busy bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			a.fail(r)
+			busy = true
+		}
+	}()
+	return step()
+}
+
+// OnError sets f to receive the errors and panics raised on the UI thread by event handlers, Async,
+// Sync and After callbacks, and placement options that do not fit the parent's layout. The event loop
+// goes on after f returns. Without OnError each one is logged with the stack where it was raised.
+func (a *App) OnError(f func(error)) { a.onError = f }
+
+// fail reports a panic value caught on the UI thread, wrapped like the error Run returns.
+func (a *App) fail(r any) {
+	err, ok := r.(error)
+	if !ok {
+		err = fmt.Errorf("panic: %v", r)
+	}
+	a.report(fmt.Errorf("gowt: %w", err))
+}
+
+func (a *App) report(err error) {
+	if a.onError != nil {
+		a.onError(err)
+		return
+	}
+	log.Printf("%v\n%s", err, debug.Stack())
+}
+
+// reportOn hands err to the App that owns c, see App.OnError.
+func reportOn(c *swt.Control, err error) {
+	if a, ok := apps.Load(c.GetDisplay()); ok {
+		a.(*App).report(err)
+		return
+	}
+	panic(err)
+}
+
+// Async queues f on the UI thread; safe from any goroutine. Once Run has returned, Async does nothing
+// and f never runs; f queued while Run is ending may not run either.
+func (a *App) Async(f func()) {
+	defer ignoreDisposed()
+	a.display.AsyncExec(jrt.NewRunnable(f))
+}
 
 // Sync runs f on the UI thread and waits; safe from any goroutine except while the UI thread is blocked on you.
-func (a *App) Sync(f func()) { a.display.SyncExec(jrt.NewRunnable(f)) }
+// Once Run has returned, Sync returns at once without running f.
+func (a *App) Sync(f func()) {
+	defer ignoreDisposed()
+	a.display.SyncExec(jrt.NewRunnable(f))
+}
+
+// ignoreDisposed swallows the exception that a call on the display raises after Run disposed it.
+func ignoreDisposed() {
+	r := recover()
+	if r == nil {
+		return
+	}
+	if e, ok := r.(*swt.SWTException); !ok || e.Code != swt.ERROR_DEVICE_DISPOSED {
+		panic(r)
+	}
+}
 
 // After runs f on the UI thread once, after d.
 func (a *App) After(d time.Duration, f func()) {
 	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(f))
 }
 
-// Quit ends the event loop after the current event; safe from any goroutine.
+// Quit ends the event loop after the current event; safe from any goroutine, a no-op after Run.
 func (a *App) Quit() {
+	defer ignoreDisposed()
 	a.quit.Store(true)
 	a.display.Wake()
 }
@@ -103,16 +173,18 @@ func (a *App) Quit() {
 // Unwrap returns the underlying display.
 func (a *App) Unwrap() *swt.Display { return a.display }
 
-// Option adjusts a widget at construction: style bits are OR-ed before creation, apply runs after.
+// Option adjusts a widget at construction: style bits are OR-ed before creation, apply runs after,
+// and the placement options add up to one layout data.
+//
+// Every control takes the common options Disabled, Tooltip, Background and Custom, and the placement
+// options Grow, GrowX, GrowY, Span, Size, Place, Cell, InRow and Anchor. The "Options:" line of a
+// constructor lists the others it reads; a style option a widget does not read is ignored.
+// docs/agents.md has the table from option to widgets.
 type Option struct {
 	style int32
 	clear int32 // style bits removed from the widget's defaults
 	apply func(*swt.Control)
-}
-
-// Cell sets the GridData of a widget laid out by Grid.
-func Cell(c GridCell) Option {
-	return Option{apply: func(w *swt.Control) { w.SetLayoutData(c.data()) }}
+	place func(*placement)
 }
 
 // Disabled creates the widget disabled.
@@ -149,8 +221,8 @@ func CellSelect() Option { return Option{clear: swt.FULL_SELECTION} }
 // NoBorder removes the frame that List, Table and Tree have by default.
 func NoBorder() Option { return Option{clear: swt.BORDER} }
 
-// Search makes a Text a search field (with the clear button where the OS draws one).
-func Search() Option { return Option{style: swt.SEARCH} }
+// Search makes a Text a search field with a magnifier icon and a clear button.
+func Search() Option { return Option{style: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL} }
 
 // Background sets the background color of a widget.
 func Background(c RGB) Option {
@@ -171,11 +243,28 @@ func resolve(base int32, opts []Option) int32 {
 }
 
 func applyOpts(c *swt.Control, opts []Option) {
+	var pl *placement
 	for _, o := range opts {
+		if o.place != nil {
+			if pl == nil {
+				pl = &placement{}
+			}
+			o.place(pl)
+		}
 		if o.apply != nil {
 			o.apply(c)
 		}
 	}
+	if pl == nil {
+		return
+	}
+	// A mismatch leaves c at its natural size: layout data of the wrong kind fails on every layout pass.
+	d, err := pl.data(c.GetName(), layoutName(c.GetParent()))
+	if err != nil {
+		reportOn(c, err)
+		return
+	}
+	c.SetLayoutData(d)
 }
 
 // Panel is a plain container; Window, Group, Split and CoolBar embed its methods.
@@ -202,10 +291,12 @@ func (p *panel) SetLayout(l Layout) *Panel {
 	p.stack, _ = sl.(*swt.StackLayout)
 	p.lay = sl
 	p.c.SetLayout(sl)
+	checkChildren(p.c)
 	return &Panel{p}
 }
 
 // Panel adds a nested container.
+// Options: Border.
 func (p *panel) Panel(opts ...Option) *Panel {
 	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
 	applyOpts(&c.Control, opts)
@@ -213,6 +304,7 @@ func (p *panel) Panel(opts ...Option) *Panel {
 }
 
 // Label adds a static text.
+// Options: Wrap, Center, Right, Border.
 func (p *panel) Label(text string, opts ...Option) *Label {
 	l := swt.NewLabel(p.c, resolve(swt.NONE, opts))
 	l.SetText(text)
@@ -220,7 +312,36 @@ func (p *panel) Label(text string, opts ...Option) *Label {
 	return &Label{l}
 }
 
+// Spacer adds an empty cell that takes the free width of a Grid row, pushing the cells after it to
+// the end; Spacer(GrowY()) takes the free height too. In other layouts it is an empty Label.
+// Options: common only.
+func (p *panel) Spacer(opts ...Option) *Label {
+	if layoutName(p.c) == "Grid" {
+		opts = append([]Option{GrowX()}, opts...)
+	}
+	return p.Label("", opts...)
+}
+
+// Separator adds a line across the width of its grid cell, or along its height with Vertical().
+// Span(n) stretches it over a row of n columns.
+// Options: Vertical.
+func (p *panel) Separator(opts ...Option) *Label {
+	style := resolve(swt.SEPARATOR, opts)
+	grow := GrowY()
+	if style&swt.VERTICAL == 0 {
+		style |= swt.HORIZONTAL
+		grow = GrowX()
+	}
+	l := swt.NewLabel(p.c, style)
+	if layoutName(p.c) == "Grid" {
+		opts = append([]Option{grow}, opts...)
+	}
+	applyOpts(&l.Control, opts)
+	return &Label{l}
+}
+
 // Button adds a push button (Check or Radio for other kinds). onClick may be nil.
+// Options: Check, Radio.
 func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
 	b := swt.NewButton(p.c, resolve(swt.NONE, opts))
 	b.SetText(text)
@@ -235,6 +356,7 @@ func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
 // Switch adds an on/off toggle. It is a check box on every OS: SWT has no switch control, and
 // NSSwitch on macOS or GtkSwitch on Linux would need a view that the toolkit does not create.
 // onChange gets the new state and may be nil.
+// Options: common only.
 func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Switch {
 	b := swt.NewButton(p.c, resolve(swt.CHECK, opts))
 	b.SetText(text)
@@ -247,6 +369,7 @@ func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Swi
 }
 
 // Text adds an edit field.
+// Options: Multiline, Password, ReadOnly, Search, Border.
 func (p *panel) Text(opts ...Option) *Text {
 	t := swt.NewText(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
@@ -293,6 +416,7 @@ func (w *Window) SetTopInset(points int) {
 }
 
 // Window creates a hidden window; call Show once its content is built.
+// Options: none yet; the common and placement options are ignored.
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, resolve(swt.SHELL_TRIM, opts))
 	s.SetText(title)

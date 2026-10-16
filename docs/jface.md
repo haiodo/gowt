@@ -44,7 +44,7 @@ func main() {
 		jface.WidgetFactoryLabel(swt.NONE).Text("Name:").Create(w.AsComposite())
 		name := jface.WidgetFactoryText(swt.BORDER).Message("Full name").LayoutData(fill()).Create(w.AsComposite())
 
-		status := w.Label("", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+		status := w.Label("", gowt.GrowX(), gowt.Span(2))
 		jface.WidgetFactoryButton(swt.PUSH).Text("Greet").
 			LayoutData(jface.GridDataFactoryCreate(swt.END).Span(2, 1).Create()).
 			OnSelect(func(e *swt.SelectionEvent) { status.SetText("Hello, " + name.GetText()) }).
@@ -61,7 +61,7 @@ func main() {
 Points to know:
 
 - A factory returns an `*swt.Button`, `*swt.Text` and so on, not a gowt wrapper. Call its `swt` methods (`GetText`, `SetText`). There is no constructor that wraps an existing `swt` widget into a gowt one.
-- A JFace layout and a gowt layout are both SWT layouts. Applying a JFace layout to a gowt container is fine; `SetLayout` on it afterwards replaces it. `gowt.Cell(GridCell{...})` produces the same `GridData` that `GridDataFactory` does, so both kinds of child can sit in one grid.
+- A JFace layout and a gowt layout are both SWT layouts. Applying a JFace layout to a gowt container is fine; `SetLayout` on it afterwards replaces it. gowt's placement options (`GrowX()`, `Span(2)`, ...) produce the same `GridData` that `GridDataFactory` does, so both kinds of child can sit in one grid.
 - Apply the layout through `AsComposite()`, not through `gowt`'s `SetLayout`, when the layout is a `jface` one: `SetLayout` takes a gowt `Layout` value.
 - The same rules as for the rest of gowt: touch widgets only on the UI thread ([events.md](events.md)).
 

@@ -18,6 +18,8 @@ All widgets belong to the UI thread: the goroutine inside `gowt.Run`'s setup fun
 | `app.Sync(f)` | run `f` on the UI thread and wait (do not call it while the UI thread waits for you) |
 | `app.Quit()` | end the event loop after the current event |
 
+After `Run` has returned the three do nothing, so a goroutine that outlives the window may still call them; `f` does not run.
+
 `app.After(d, f)` runs `f` on the UI thread once after `d`; call it again from `f` for a periodic tick. It is UI-thread only.
 
 ```go
@@ -69,13 +71,21 @@ Rules:
 - Everything except `Post` is UI-thread only. `Set` from another goroutine panics; build with `-tags rxdebug` to check `Get` as well.
 - Values that change together go into one `State` (a whole poll result) and are split with `Derived`s; separate `Post`s may reach the UI thread in different batches.
 - A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
-- An effect that panics does not stop the others: the flush finishes, then the panic continues from `Run` like one from a callback. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
+- An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
 - `BindText` lays the window out again on the next event-loop turn, so a growing label is not clipped. `Label.SetText` still does not.
 
 ## Errors
 
-`gowt.Run` returns toolkit failures as an `error`. Programmer errors (nil dereference, index out of range) keep panicking. Getters and setters have no per-call errors; `App.LoadImage` and `App.ImageFrom` return one because a bad file is routine.
+An error or panic in an event handler or in an `Async`, `Sync` or `After` callback does not end the program. It goes to the function set with `App.OnError`, and the event loop goes on; without `OnError` it is logged to stderr with the stack where it was raised. Toolkit errors arrive wrapped (`gowt: Widget is disposed`), so `errors.As(err, &swtErr)` works; a panic with another value arrives as `gowt: panic: <value>`.
+
+```go
+app.OnError(func(err error) { status.SetText(err.Error()) })
+```
+
+A placement option the parent's layout cannot use (`GrowX` under a `Row`, `InRow` under a `Grid`) is reported the same way when the widget is created, naming the option, the widget and the layout; the widget keeps its natural size.
+
+`gowt.Run` returns an `error` raised while `setup` builds the window: then nothing is on screen to recover to. A runtime error in `setup` (nil dereference, index out of range) keeps panicking. Getters and setters have no per-call errors; `App.LoadImage` and `App.ImageFrom` return one because a bad file is routine.
 
 ## Key and mouse events
 
-The facade has no key or mouse listeners. Add them on the swt object, see [swt-direct.md](swt-direct.md).
+`Canvas` has `OnMouseDown`, `OnMouseUp` and `OnMouseMove`; `Table` and `Tree` have `OnCellClick` with the row, column, button and click count. There are no key listeners and no mouse listeners on other widgets: add them on the swt object, see [swt-direct.md](swt-direct.md).

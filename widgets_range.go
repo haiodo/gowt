@@ -27,6 +27,7 @@ func setRange(r ranged, min, max int) {
 type Scale struct{ s *swt.Scale }
 
 // Scale adds a scale over [min, max] set to value.
+// Options: Vertical.
 func (p *panel) Scale(min, max, value int, opts ...Option) *Scale {
 	s := swt.NewScale(p.c, resolve(swt.NONE, opts))
 	setRange(s, min, max)
@@ -55,6 +56,7 @@ func (s *Scale) OnChange(f func(value int)) {
 type Slider struct{ s *swt.Slider }
 
 // Slider adds a slider over [min, max] set to value.
+// Options: Vertical.
 func (p *panel) Slider(min, max, value int, opts ...Option) *Slider {
 	s := swt.NewSlider(p.c, resolve(swt.NONE, opts))
 	setRange(s, min, max)
@@ -83,6 +85,7 @@ func (s *Slider) OnChange(f func(value int)) {
 type Spinner struct{ s *swt.Spinner }
 
 // Spinner adds a spinner over [min, max] set to value.
+// Options: ReadOnly, Border.
 func (p *panel) Spinner(min, max, value int, opts ...Option) *Spinner {
 	s := swt.NewSpinner(p.c, resolve(swt.NONE, opts))
 	setRange(s, min, max)
@@ -111,6 +114,7 @@ func (s *Spinner) OnChange(f func(value int)) {
 type Progress struct{ b *swt.ProgressBar }
 
 // Progress adds a progress bar over [0, max].
+// Options: Vertical, Smooth, Indeterminate.
 func (p *panel) Progress(max int, opts ...Option) *Progress {
 	b := swt.NewProgressBar(p.c, resolve(swt.NONE, opts))
 	b.SetMaximum(int32(max))
@@ -136,6 +140,7 @@ func (p *Progress) Unwrap() *swt.ProgressBar { return p.b }
 type DateTime struct{ d *swt.DateTime }
 
 // DateTime adds a date picker; DropDown() makes the date field a drop-down calendar.
+// Options: DropDown, AsTime, AsCalendar.
 func (p *panel) DateTime(opts ...Option) *DateTime {
 	d := swt.NewDateTime(p.c, resolve(swt.NONE, opts))
 	applyOpts(&d.Control, opts)
@@ -174,6 +179,7 @@ func (d *DateTime) OnChange(f func(t time.Time)) {
 type Link struct{ l *swt.Link }
 
 // Link adds a link label; onClick gets the href of the clicked anchor (its text if there is no href). onClick may be nil.
+// Options: common only.
 func (p *panel) Link(text string, onClick func(href string), opts ...Option) *Link {
 	l := swt.NewLink(p.c, resolve(swt.NONE, opts))
 	l.SetText(text)

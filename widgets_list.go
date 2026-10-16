@@ -6,6 +6,7 @@ import "github.com/haiodo/gowt/swt"
 type Combo struct{ c *swt.Combo }
 
 // Combo adds a combo box with the given items.
+// Options: ReadOnly, Simple.
 func (p *panel) Combo(items []string, opts ...Option) *Combo {
 	c := swt.NewCombo(p.c, resolve(swt.NONE, opts))
 	if len(items) > 0 { // SWT rejects a nil items slice
@@ -52,6 +53,7 @@ func (c *Combo) OnChange(f func(text string)) {
 type List struct{ l *swt.List }
 
 // List adds a list with the given items.
+// Options: MultiSelect, NoBorder.
 func (p *panel) List(items []string, opts ...Option) *List {
 	l := swt.NewList(p.c, resolve(swt.V_SCROLL|swt.BORDER, opts))
 	if len(items) > 0 {
@@ -110,6 +112,7 @@ func (l *List) OnActivate(f func(index int)) {
 type Table struct{ t *swt.Table }
 
 // Table adds a table with a visible header and grid lines.
+// Options: Check, MultiSelect, NoBorder.
 func (p *panel) Table(opts ...Option) *Table {
 	t := swt.NewTable(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
 	t.SetHeaderVisible(true)
@@ -159,6 +162,7 @@ func (t *Table) SetSelection(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
 func (t *Table) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
 
 // Column appends a column; Right() or Center() set the alignment.
+// Options: Right, Center; the common options are ignored.
 func (t *Table) Column(title string, width int, opts ...Option) *Column {
 	c := swt.NewTableColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
@@ -357,6 +361,7 @@ type Tree struct{ t *swt.Tree }
 
 // Tree adds a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
+// Options: Check, MultiSelect, NoBorder, CellSelect.
 func (p *panel) Tree(opts ...Option) *Tree {
 	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
 	applyOpts(&t.Control, opts)
@@ -367,6 +372,7 @@ func (t *Tree) control() *swt.Control { return &t.t.Control }
 
 // Column appends a column; Right() or Center() set the alignment. The first column holds the node
 // text and the expand arrows. The first call shows the header.
+// Options: Right, Center; the common options are ignored.
 func (t *Tree) Column(title string, width int, opts ...Option) *TreeColumn {
 	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)

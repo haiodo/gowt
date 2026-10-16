@@ -23,7 +23,7 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("themecheck")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 20, Spacing: 8})
-		l := w.Label(label(app.Dark()), gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 240}))
+		l := w.Label(label(app.Dark()), gowt.GrowX(), gowt.Size(240, 0))
 		fmt.Println(label(app.Dark()))
 		app.OnThemeChange(func(dark bool) {
 			l.SetText(label(dark))

@@ -52,7 +52,7 @@ func main() {
 			g.FillOval(30+angle%200, 60, 80, 80)
 			g.Image(tile, 300, 20)
 			g.Text(fmt.Sprint("frame ", angle/4), 20, 20)
-		}, gowt.Cell(gowt.GridCell{Width: 400, Height: 200}))
+		}, gowt.Size(400, 200))
 
 		var step func()
 		step = func() {

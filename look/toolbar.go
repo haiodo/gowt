@@ -128,13 +128,13 @@ func (b *toolbarBar) fill() {
 func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem) {
 	switch {
 	case it.Space:
-		p.Label("", gowt.Cell(gowt.GridCell{GrowX: true}))
+		p.Spacer()
 	case it.OnSearch != nil:
-		t := p.Text(gowt.Search(), gowt.Cell(gowt.GridCell{Width: 240, VAlign: gowt.AlignCenter}))
+		t := p.Text(gowt.Search(), gowt.Size(240, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
 	default:
-		tb := p.ToolBar(gowt.Flat(), gowt.Cell(gowt.GridCell{VAlign: gowt.AlignCenter}))
+		tb := p.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter))
 		segs := it.Group
 		if len(segs) == 0 {
 			segs = []ToolbarItem{it}

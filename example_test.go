@@ -13,8 +13,8 @@ func ExampleRun() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Hello gowt")
 		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-		name := w.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 200}))
-		greet := w.Label("", gowt.Cell(gowt.GridCell{SpanX: 2, Align: gowt.AlignFill, GrowX: true}))
+		name := w.Text(gowt.GrowX(), gowt.Size(200, 0))
+		greet := w.Label("", gowt.GrowX(), gowt.Span(2))
 		w.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") })
 		w.Show()
 	})
@@ -45,15 +45,15 @@ func ExampleApp_After() {
 	})
 }
 
-// Grid places children in columns; GridCell tunes one child.
+// Grid places children in columns; placement options such as GrowX tune one child.
 func ExampleGrid() {
 	_ = gowt.Run(func(app *gowt.App) {
 		w := app.Window("Form")
 		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 6})
 		w.Label("Name")
-		w.Text(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true}))
+		w.Text(gowt.GrowX())
 		w.Label("Notes")
-		w.Text(gowt.Multiline(), gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, GrowY: true, Height: 80}))
+		w.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80))
 		w.Show()
 	})
 }
@@ -91,7 +91,7 @@ func ExamplePanel_Canvas() {
 		w.Canvas(func(g *gowt.GC) {
 			g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
 			g.FillOval(10, 10, 100, 60)
-		}, gowt.Cell(gowt.GridCell{Width: 200, Height: 100}))
+		}, gowt.Size(200, 100))
 		w.Show()
 	})
 }
@@ -125,6 +125,63 @@ func ExampleStyledText() {
 		ed := w.StyledText(gowt.Scrollbars())
 		ed.SetText("bold word")
 		ed.SetStyle(0, 4, gowt.TextStyle{Bold: true})
+		w.Show()
+	})
+}
+
+// A push button, a check box and a button pushed to the right end of its row.
+func ExamplePanel_Button() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Buttons")
+		w.SetLayout(gowt.Grid{Columns: 3, Margin: 10, Spacing: 8})
+		remember := w.Button("Remember me", nil, gowt.Check())
+		w.Spacer()
+		w.Button("Sign in", func() { fmt.Println("remember:", remember.Checked()) })
+		w.Show()
+	})
+}
+
+// A field that takes the free width, a password field and a search field with a hint.
+func ExamplePanel_Text() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Fields")
+		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
+		w.Label("User")
+		user := w.Text(gowt.GrowX(), gowt.Size(200, 0))
+		w.Label("Password")
+		w.Text(gowt.Password(), gowt.GrowX())
+		find := w.Text(gowt.Search(), gowt.GrowX(), gowt.Span(2))
+		find.SetHint("Search")
+		user.OnChange(func(s string) { fmt.Println("user:", s) })
+		w.Show()
+	})
+}
+
+// A table that fills the window: columns first, then one row per record.
+func ExamplePanel_Table() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Processes")
+		w.SetLayout(gowt.Grid{Columns: 1})
+		t := w.Table(gowt.Grow(), gowt.MultiSelect())
+		t.Column("Name", 160)
+		t.Column("CPU", 60, gowt.Right())
+		t.Row("gowt", "1.5")
+		t.Row("docker", "12.0")
+		t.OnActivate(func(i int) { fmt.Println("open", t.RowAt(i).Text(0)) })
+		w.Show()
+	})
+}
+
+// Nodes nest under the tree and under each other; callbacks get the node.
+func ExamplePanel_Tree() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Files")
+		w.SetLayout(gowt.Grid{Columns: 1})
+		tree := w.Tree(gowt.Grow())
+		docs := tree.Node("Documents")
+		docs.Node("report.pdf")
+		docs.SetExpanded(true)
+		tree.OnSelect(func(n *gowt.Node) { fmt.Println(n.Text()) })
 		w.Show()
 	})
 }

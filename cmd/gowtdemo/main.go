@@ -13,9 +13,6 @@ import (
 	g "github.com/haiodo/gowt"
 )
 
-var fill = g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true})
-var growX = g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true})
-
 func main() {
 	if err := g.Run(build); err != nil {
 		log.Fatal(err)
@@ -26,8 +23,8 @@ func build(app *g.App) {
 	w := app.Window("gowt demo")
 	w.SetLayout(g.Grid{Columns: 1, Margin: 6, Spacing: 6})
 	menus(w)
-	status := w.Label("ready", growX)
-	tabs := w.Tabs(fill)
+	status := w.Label("ready", g.GrowX())
+	tabs := w.Tabs(g.Grow())
 	basics(tabs.Tab("Basics"), status)
 	lists(tabs.Tab("Lists"))
 	containers(tabs.Tab("Containers"))
@@ -50,18 +47,18 @@ func menus(w *g.Window) {
 
 func basics(p *g.Panel, status *g.Label) {
 	p.SetLayout(g.Grid{Columns: 2, Margin: 8, Spacing: 8})
-	name := p.Text(growX)
+	name := p.Text(g.GrowX())
 	p.Button("Greet", func() { status.SetText("Hello, " + name.Text()) })
 	p.Link(`Visit <a href="https://github.com/haiodo/gowt">gowt</a>`, func(href string) { status.SetText(href) },
-		g.Cell(g.GridCell{SpanX: 2}))
+		g.Span(2))
 
-	grp := p.Group("Range widgets", g.Cell(g.GridCell{SpanX: 2, Align: g.AlignFill, GrowX: true}))
+	grp := p.Group("Range widgets", g.GrowX(), g.Span(2))
 	grp.SetLayout(g.Grid{Columns: 2, Margin: 8, Spacing: 8})
-	bar := grp.Progress(100, g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true, SpanX: 2}))
+	bar := grp.Progress(100, g.GrowX(), g.Span(2))
 	grp.Label("Scale")
-	grp.Scale(0, 100, 30, growX).OnChange(bar.SetValue)
+	grp.Scale(0, 100, 30, g.GrowX()).OnChange(bar.SetValue)
 	grp.Label("Slider")
-	grp.Slider(0, 110, 20, growX).OnChange(func(v int) { status.SetText(fmt.Sprint("slider ", v)) })
+	grp.Slider(0, 110, 20, g.GrowX()).OnChange(func(v int) { status.SetText(fmt.Sprint("slider ", v)) })
 	grp.Label("Spinner")
 	grp.Spinner(-10, 10, 3).OnChange(func(v int) { status.SetText(fmt.Sprint("spinner ", v)) })
 	grp.Label("Date")
@@ -69,19 +66,19 @@ func basics(p *g.Panel, status *g.Label) {
 	grp.Label("Time")
 	grp.DateTime(g.AsTime())
 	p.Button("Busy", nil, g.Check(), g.Tooltip("a check box"))
-	p.Progress(0, g.Indeterminate(), growX)
+	p.Progress(0, g.Indeterminate(), g.GrowX())
 }
 
 func lists(p *g.Panel) {
 	p.SetLayout(g.Grid{Columns: 2, Margin: 8, Spacing: 8})
-	combo := p.Combo([]string{"red", "green", "blue"}, g.ReadOnly(), growX)
-	list := p.List([]string{"one", "two", "three"}, g.MultiSelect(), fill)
-	out := p.Label("", g.Cell(g.GridCell{SpanX: 2, Align: g.AlignFill, GrowX: true}))
+	combo := p.Combo([]string{"red", "green", "blue"}, g.ReadOnly(), g.GrowX())
+	list := p.List([]string{"one", "two", "three"}, g.MultiSelect(), g.Grow())
+	out := p.Label("", g.GrowX(), g.Span(2))
 	combo.Select(0)
 	combo.OnSelect(func(i int) { out.SetText(fmt.Sprint("combo ", i)) })
 	list.OnSelect(func(int) { out.SetText(fmt.Sprint("list ", list.Selected())) })
 
-	tbl := p.Table(g.Check(), fill)
+	tbl := p.Table(g.Check(), g.Grow())
 	tbl.Column("Name", 120)
 	tbl.Column("Size", 80, g.Right())
 	for i := 1; i <= 5; i++ {
@@ -89,7 +86,7 @@ func lists(p *g.Panel) {
 	}
 	tbl.OnSelect(func(i int) { out.SetText(fmt.Sprint("row ", i, " ", tbl.RowAt(i).Text(0))) })
 
-	tree := p.Tree(fill)
+	tree := p.Tree(g.Grow())
 	root := tree.Node("project")
 	src := root.Node("src")
 	src.Node("main.go")
@@ -105,12 +102,12 @@ func lists(p *g.Panel) {
 
 func containers(p *g.Panel) {
 	p.SetLayout(g.Grid{Columns: 1, Margin: 8, Spacing: 8})
-	split := p.Split(g.Cell(g.GridCell{Align: g.AlignFill, VAlign: g.AlignFill, GrowX: true, GrowY: true, Height: 120}))
+	split := p.Split(g.Grow(), g.Size(0, 120))
 	split.List([]string{"a", "b", "c"})
 	split.Text(g.Multiline())
 	split.SetWeights(1, 3)
 
-	ct := p.CTabs(g.Border(), fill)
+	ct := p.CTabs(g.Border(), g.Grow())
 	for i := 1; i <= 3; i++ {
 		page := ct.Tab(fmt.Sprint("Doc ", i), g.Closable())
 		page.SetLayout(g.Fill{})
@@ -118,7 +115,7 @@ func containers(p *g.Panel) {
 	}
 	ct.OnClose(func(i int) bool { return i != 0 })
 
-	stack := p.Panel(g.Border(), growX)
+	stack := p.Panel(g.Border(), g.GrowX())
 	stack.SetLayout(g.Stack{Margin: 4})
 	pages := []g.Widget{stack.Label("page A"), stack.Button("page B", nil)}
 	stack.ShowTop(pages[0])
@@ -132,12 +129,12 @@ func containers(p *g.Panel) {
 		}
 	})
 
-	form := p.Panel(growX)
+	form := p.Panel(g.GrowX())
 	form.SetLayout(g.Form{Margin: 4, Spacing: 4})
 	ok := form.Button("OK", nil, g.Anchor(g.FormCell{Right: g.Percent(100, 0)}))
 	form.Text(g.Anchor(g.FormCell{Left: g.Percent(0, 0), Right: g.Beside(ok, -4), Top: g.Same(ok, 0)}))
 
-	scroll := p.Scroll(g.Border(), g.Cell(g.GridCell{Align: g.AlignFill, GrowX: true, Height: 80}))
+	scroll := p.Scroll(g.Border(), g.GrowX(), g.Size(0, 80))
 	body := scroll.Content()
 	body.SetLayout(g.Row{Vertical: true, Spacing: 2})
 	for i := 1; i <= 12; i++ {
@@ -158,7 +155,7 @@ func graphics(app *g.App, p *g.Panel) {
 	tb.Item("Bold", nil, g.Check())
 	tb.Item("Plain", nil, g.Radio())
 
-	cool := p.CoolBar(growX)
+	cool := p.CoolBar(g.GrowX())
 	band := cool.ToolBar(g.Flat())
 	band.Item("One", nil)
 	band.Item("Two", nil)
@@ -179,7 +176,7 @@ func graphics(app *g.App, p *g.Panel) {
 		gc.SetColor(g.RGB{})
 		gc.Text("Canvas "+fmt.Sprint(angle), 100, 20)
 		gc.Image(img, 100, 50)
-	}, fill)
+	}, g.Grow())
 	pop := g.PopupMenu(cv)
 	pop.Item("Move", func() { angle += 20; cv.Redraw() })
 	p.Button("Move circle", func() { angle += 20; cv.Redraw() })

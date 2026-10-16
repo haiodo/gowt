@@ -23,6 +23,7 @@ func PopupMenu(w Widget) *Menu {
 
 // Item appends a push item (Check or Radio for other kinds). onClick may be nil.
 // A "&" in text marks a mnemonic; text after "\t" is shown as the shortcut hint (it does not bind a key).
+// Options: Check, Radio; the common options are ignored.
 func (m *Menu) Item(text string, onClick func(), opts ...Option) *MenuItem {
 	it := swt.NewMenuItem(m.m, resolve(swt.NONE, opts))
 	it.SetText(text)

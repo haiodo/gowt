@@ -15,7 +15,7 @@ func main() {
 
 		w := app.Window("Theme and look")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 16, Spacing: 8})
-		mode := w.Label("", gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 280}))
+		mode := w.Label("", gowt.GrowX(), gowt.Size(280, 0))
 		show := func(dark bool) {
 			if dark {
 				mode.SetText("system theme: dark")

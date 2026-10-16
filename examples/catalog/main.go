@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/haiodo/gowt"
 )
-
-var fillBoth = gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, VAlign: gowt.AlignFill, GrowX: true, GrowY: true})
 
 type sample struct {
 	name  string
@@ -33,7 +32,7 @@ var samples = []sample{
 	{"text", func(p *gowt.Panel) {
 		p.Text(gowt.Border()).SetText("Edit me")
 		p.Text(gowt.Password(), gowt.Border()).SetText("secret")
-		p.Text(gowt.Multiline(), gowt.Border(), gowt.Cell(gowt.GridCell{Height: 60})).SetText("Several\nlines")
+		p.Text(gowt.Multiline(), gowt.Border(), gowt.Size(0, 60)).SetText("Several\nlines")
 	}},
 	{"link", func(p *gowt.Panel) { p.Link(`Read the <a href="https://example.com">terms</a>`, func(string) {}) }},
 	{"combo", func(p *gowt.Panel) { p.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly()).Select(1) }},
@@ -80,23 +79,23 @@ var samples = []sample{
 		in.Text(gowt.Border())
 	}},
 	{"tabs", func(p *gowt.Panel) {
-		t := p.Tabs(fillBoth)
+		t := p.Tabs(gowt.Grow())
 		t.Tab("General").Label("First page")
 		t.Tab("Advanced").Label("Second page")
 	}},
 	{"ctabs", func(p *gowt.Panel) {
-		t := p.CTabs(fillBoth, gowt.Closable())
+		t := p.CTabs(gowt.Grow(), gowt.Closable())
 		t.Tab("main.go").Label("package main")
 		t.Tab("util.go").Label("package util")
 	}},
 	{"split", func(p *gowt.Panel) {
-		s := p.Split(fillBoth)
+		s := p.Split(gowt.Grow())
 		s.List([]string{"inbox", "sent", "drafts"})
 		s.Text(gowt.Multiline(), gowt.Border()).SetText("Message text")
 		s.SetWeights(1, 2)
 	}},
 	{"scroll", func(p *gowt.Panel) {
-		s := p.Scroll(gowt.Cell(gowt.GridCell{Align: gowt.AlignFill, GrowX: true, Width: 140, Height: 110}))
+		s := p.Scroll(gowt.GrowX(), gowt.Size(140, 110))
 		c := s.Content()
 		c.SetLayout(gowt.Row{Vertical: true, Spacing: 4})
 		for i := 1; i <= 20; i++ {
@@ -134,7 +133,7 @@ var samples = []sample{
 			g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
 			g.Rect(100, 10, 80, 80)
 			g.Text("Canvas", 100, 100)
-		}, gowt.Cell(gowt.GridCell{Width: 200, Height: 130}))
+		}, gowt.Size(200, 130))
 	}},
 }
 
@@ -147,18 +146,14 @@ func main() {
 			s.build(p)
 		}
 		if len(os.Args) > 1 {
-			for _, s := range samples {
-				if s.name == os.Args[1] {
-					w.SetTitle(s.name)
-					page(w.Panel(fillBoth), s)
-					break
-				}
-			}
-			if len(w.Unwrap().GetChildren()) == 0 {
+			i := slices.IndexFunc(samples, func(s sample) bool { return s.name == os.Args[1] })
+			if i < 0 {
 				log.Fatalf("unknown widget %q", os.Args[1])
 			}
+			w.SetTitle(samples[i].name)
+			page(w.Panel(gowt.Grow()), samples[i])
 		} else {
-			tabs := w.Tabs(fillBoth)
+			tabs := w.Tabs(gowt.Grow())
 			for _, s := range samples {
 				page(tabs.Tab(s.name), s)
 			}

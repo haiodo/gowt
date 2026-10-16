@@ -6,6 +6,7 @@ gowt App.Dark() bool
 gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.ImageFromProvider(p github.com/haiodo/gowt/swt.ImageDataProvider) *Image
 gowt App.LoadImage(path string) (img *Image, err error)
+gowt App.OnError(f func(error))
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
 gowt App.Sync(f func())
@@ -74,9 +75,11 @@ gowt CoolBar.Sash(opts ...Option) *Sash
 gowt CoolBar.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt CoolBar.Scroll(opts ...Option) *Scroll
 gowt CoolBar.Section(opts ...Option) *Section
+gowt CoolBar.Separator(opts ...Option) *Label
 gowt CoolBar.SetLayout(l Layout) *Panel
 gowt CoolBar.ShowTop(w Widget)
 gowt CoolBar.Slider(min int, max int, value int, opts ...Option) *Slider
+gowt CoolBar.Spacer(opts ...Option) *Label
 gowt CoolBar.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt CoolBar.Split(opts ...Option) *Split
 gowt CoolBar.StyledText(opts ...Option) *StyledText
@@ -171,10 +174,12 @@ gowt Group.Sash(opts ...Option) *Sash
 gowt Group.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Group.Scroll(opts ...Option) *Scroll
 gowt Group.Section(opts ...Option) *Section
+gowt Group.Separator(opts ...Option) *Label
 gowt Group.SetLayout(l Layout) *Panel
 gowt Group.SetTitle(s string)
 gowt Group.ShowTop(w Widget)
 gowt Group.Slider(min int, max int, value int, opts ...Option) *Slider
+gowt Group.Spacer(opts ...Option) *Label
 gowt Group.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Group.Split(opts ...Option) *Split
 gowt Group.StyledText(opts ...Option) *StyledText
@@ -266,9 +271,11 @@ gowt Panel.Sash(opts ...Option) *Sash
 gowt Panel.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Panel.Scroll(opts ...Option) *Scroll
 gowt Panel.Section(opts ...Option) *Section
+gowt Panel.Separator(opts ...Option) *Label
 gowt Panel.SetLayout(l Layout) *Panel
 gowt Panel.ShowTop(w Widget)
 gowt Panel.Slider(min int, max int, value int, opts ...Option) *Slider
+gowt Panel.Spacer(opts ...Option) *Label
 gowt Panel.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Panel.Split(opts ...Option) *Split
 gowt Panel.StyledText(opts ...Option) *StyledText
@@ -339,10 +346,12 @@ gowt Split.Sash(opts ...Option) *Sash
 gowt Split.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Split.Scroll(opts ...Option) *Scroll
 gowt Split.Section(opts ...Option) *Section
+gowt Split.Separator(opts ...Option) *Label
 gowt Split.SetLayout(l Layout) *Panel
 gowt Split.SetWeights(w ...int)
 gowt Split.ShowTop(w Widget)
 gowt Split.Slider(min int, max int, value int, opts ...Option) *Slider
+gowt Split.Spacer(opts ...Option) *Label
 gowt Split.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Split.Split(opts ...Option) *Split
 gowt Split.StyledText(opts ...Option) *StyledText
@@ -522,6 +531,7 @@ gowt Window.Sash(opts ...Option) *Sash
 gowt Window.Scale(min int, max int, value int, opts ...Option) *Scale
 gowt Window.Scroll(opts ...Option) *Scroll
 gowt Window.Section(opts ...Option) *Section
+gowt Window.Separator(opts ...Option) *Label
 gowt Window.SetLayout(l Layout) *Panel
 gowt Window.SetSize(width int, height int)
 gowt Window.SetTitle(s string)
@@ -529,6 +539,7 @@ gowt Window.SetTopInset(points int)
 gowt Window.Show()
 gowt Window.ShowTop(w Widget)
 gowt Window.Slider(min int, max int, value int, opts ...Option) *Slider
+gowt Window.Spacer(opts ...Option) *Label
 gowt Window.Spinner(min int, max int, value int, opts ...Option) *Spinner
 gowt Window.Split(opts ...Option) *Split
 gowt Window.StyledText(opts ...Option) *StyledText
@@ -596,6 +607,9 @@ gowt func DropOn(w Widget, d Drop) *DropHandle
 gowt func Enabled(w Widget) bool
 gowt func Flat() Option
 gowt func Golden(total int) (small int, large int)
+gowt func Grow() Option
+gowt func GrowX() Option
+gowt func GrowY() Option
 gowt func InRow(c RowCell) Option
 gowt func Indeterminate() Option
 gowt func MultiSelect() Option
@@ -603,6 +617,7 @@ gowt func Multiline() Option
 gowt func NoBorder() Option
 gowt func Password() Option
 gowt func Percent(pct int, offset int) Edge
+gowt func Place(h Align, v Align) Option
 gowt func PopupMenu(w Widget) *Menu
 gowt func Radio() Option
 gowt func ReadOnly() Option
@@ -617,7 +632,9 @@ gowt func SetFont(w Widget, f Font)
 gowt func SetForeground(w Widget, c RGB)
 gowt func SetVisible(w Widget, v bool)
 gowt func Simple() Option
+gowt func Size(w int, h int) Option
 gowt func Smooth() Option
+gowt func Span(cols int) Option
 gowt func Tooltip(s string) Option
 gowt func Vertical() Option
 gowt func Visible(w Widget) bool

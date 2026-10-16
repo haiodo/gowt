@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+New API
+- Placement options that do not name the layout and add up to one layout data: `Grow()`, `GrowX()`, `GrowY()` (fill the cell and take the free space), `Span(n)`, `Size(w, h)` (also in `Row` and `Form`), `Place(h, v)`. `GrowX(), Span(2)` is one cell; the later option wins on a shared field. `Cell`, `InRow` and `Anchor` stay and combine with them. The examples and demos use them instead of local `fillX`/`fillBoth` values.
+- `Spacer()` on any container: an empty cell that takes the free width of a Grid row; `Separator()` draws a line across its cell (`Vertical()` turns it).
+- `App.OnError(func(error))` receives errors and panics raised by event handlers, `Async` and `After` callbacks and misplaced placement options; the event loop continues.
+- docs/agents.md: the canonical idioms on one page and a table from each option to the widgets that read it. Every constructor's doc ends with an "Options:" line; `go doc` has examples for `Panel.Button`, `Text`, `Table` and `Tree`.
+- `tooling/api-metrics.sh` counts lines, `Unwrap()` and `swt.` uses and local placement helpers per facade program.
+
+Behaviour change
+- An error or panic in an event handler no longer ends `Run` and closes the app: it goes to `App.OnError`, by default logged to stderr with its stack. `Run` still returns an error raised by `setup`.
+- `App.Async`, `App.Sync` and `App.Quit` after `Run` has returned do nothing; they panicked with "Device is disposed".
+- A placement option the parent's layout cannot use (`Cell` under `Row`, `InRow` under `Grid`, any of them under `Fill` or `Stack`) is reported to `App.OnError` when the widget is created, naming the option, the widget and the layout, and the widget keeps its natural size. It used to panic with "java.lang.ClassCastException" on the next layout pass. `SetLayout` drops and reports the layout data of children placed for another layout.
+- `Search()` adds the magnifier icon and the clear button; on macOS and Linux the field had neither.
+
+Fixes
+- docs: events.md said the facade had no mouse listeners (`Canvas.OnMouseDown`/`Up`/`Move` and `Table`/`Tree.OnCellClick` exist); facade.md listed widget fonts and colours as not wrapped; the `Wrap()` doc named only ToolBar. `examples/events` and `examples/catalog` no longer reach for `Unwrap()`.
+
 ## v0.7.0 (2026-10-15)
 
 New API

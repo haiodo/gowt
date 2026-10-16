@@ -10,16 +10,16 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Icons")
-		w.SetLayout(gowt.Row{Margin: 10, Spacing: 8})
 		names := icons.Names()
 		if len(names) > 12 {
 			names = names[:12]
 		}
 		buttons := make([]*gowt.ButtonView, len(names))
+		row := make([]gowt.Option, len(names))
 		for i, n := range names {
-			buttons[i] = w.Button("", nil, gowt.Tooltip(n))
+			row[i] = gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&buttons[i]))
 		}
+		w := app.Window("Icons", gowt.HBox(row...))
 		// Get caches per name, size and colour and the App owns the images: no Dispose here.
 		fill := func() {
 			for i, n := range names {

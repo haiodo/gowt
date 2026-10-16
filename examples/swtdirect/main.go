@@ -12,13 +12,14 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Facade and swt")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
+		var field *gowt.TextView
+		var echo *gowt.LabelView
+		w := app.Window("Facade and swt",
+			gowt.Text(gowt.GrowX(), gowt.Ref(&field)),
+			gowt.Label("", gowt.GrowX(), gowt.Ref(&echo)),
+		)
 
 		w.SetMinSize(320, 160)
-
-		field := w.Text(gowt.GrowX())
-		echo := w.Label("", gowt.GrowX())
 
 		// A key listener on the swt Text; the facade only has OnChange and OnActivate.
 		field.Unwrap().AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
@@ -32,7 +33,8 @@ func main() {
 		sep.SetLayoutData(gd)
 
 		// Left-aligned button text: swt.Button has SetAlignment.
-		b := w.Button("Left aligned", nil, gowt.GrowX())
+		var b *gowt.ButtonView
+		w.Add(gowt.Button("Left aligned", nil, gowt.GrowX(), gowt.Ref(&b)))
 		b.Unwrap().SetAlignment(swt.LEFT)
 		w.Show()
 	})

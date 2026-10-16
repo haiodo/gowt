@@ -9,11 +9,13 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Hello gowt")
-		w.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-		name := w.Text(gowt.GrowX(), gowt.Size(200, 0))
-		greet := w.Label("", gowt.GrowX(), gowt.Span(2))
-		w.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") })
+		var name *gowt.TextView
+		var greet *gowt.LabelView
+		w := app.Window("Hello gowt",
+			gowt.Text(gowt.GrowX(), gowt.Size(200, 0), gowt.Ref(&name)),
+			gowt.Label("", gowt.GrowX(), gowt.Ref(&greet)),
+			gowt.Button("Greet", func() { greet.SetText("Hello, " + name.Text() + "!") }),
+		)
 		w.Show()
 	})
 	if err != nil {

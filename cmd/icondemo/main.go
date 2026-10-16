@@ -13,12 +13,13 @@ import (
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("gowt icons")
-		w.SetLayout(gowt.Grid{Columns: 8, Margin: 10, Spacing: 8})
-		var buttons []*gowt.ButtonView
 		var names = icons.Names()
-		for _, n := range names {
-			buttons = append(buttons, w.Button("", nil, gowt.Tooltip(n)))
+		var buttons = make([]*gowt.ButtonView, len(names))
+		var cells = []gowt.Option{gowt.Grow()}
+		for i, n := range names {
+			cells = append(cells, gowt.Button("", nil, gowt.Tooltip(n), gowt.Ref(&buttons[i])))
 		}
+		w.Add(gowt.Grid(8, cells...))
 		// icons.Get caches per name, size and colour and the App owns the images, so no Dispose here.
 		fill := func() {
 			for i, n := range names {

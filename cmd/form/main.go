@@ -10,16 +10,19 @@ import (
 
 func main() {
 	err := g.Run(func(app *g.App) {
-		w := app.Window("Form")
-		w.SetLayout(g.Grid{Columns: 2, Margin: 5, Spacing: 5})
-		w.Label("Name:")
-		name := w.Text(g.Border(), g.GrowX(), g.Size(150, 0))
-		w.Label("Email:")
-		email := w.Text(g.Border(), g.GrowX())
-		w.Button("OK", func() {
-			fmt.Println("Name:", name.Text())
-			fmt.Println("Email:", email.Text())
-		}, g.Span(2))
+		var name, email *g.TextView
+		w := app.Window("Form",
+			g.Grid(2, g.GrowX(),
+				g.Label("Name:"),
+				g.Text(g.Border(), g.GrowX(), g.Size(150, 0), g.Ref(&name)),
+				g.Label("Email:"),
+				g.Text(g.Border(), g.GrowX(), g.Ref(&email)),
+				g.Button("OK", func() {
+					fmt.Println("Name:", name.Text())
+					fmt.Println("Email:", email.Text())
+				}, g.Span(2)),
+			),
+		)
 
 		w.MenuBar().Submenu("File").Item("Quit", w.Close)
 		w.Show()

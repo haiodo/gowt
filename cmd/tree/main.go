@@ -10,9 +10,8 @@ import (
 
 func main() {
 	err := g.Run(func(app *g.App) {
-		w := app.Window("Tree")
-		w.SetLayout(g.Fill{})
-		tree := w.Tree(g.Border())
+		var tree *g.TreeView
+		w := app.Window("Tree", g.Tree(g.Grow(), g.Ref(&tree)))
 
 		children := map[string][]string{
 			"Fruits":     {"Apple", "Banana", "Cherry"},

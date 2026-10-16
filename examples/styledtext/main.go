@@ -11,9 +11,8 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("StyledText")
-		w.SetLayout(gowt.Fill{})
-		ed := w.StyledText(gowt.Scrollbars(), gowt.Border())
+		var ed *gowt.StyledTextView
+		w := app.Window("StyledText", gowt.StyledText(gowt.Scrollbars(), gowt.Border(), gowt.Grow(), gowt.Ref(&ed)))
 		ed.SetText("Styled text: ключевые слова func and return are colored per line.")
 
 		blue := gowt.RGB{R: 30, G: 80, B: 200}

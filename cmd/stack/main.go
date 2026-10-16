@@ -1,4 +1,4 @@
-// Command stack: a Split divides left (buttons) from right (a Stack of Groups);
+// Command stack: a Split divides left (buttons) from right (Pages of Groups);
 // clicking a button switches the visible panel.
 package main
 
@@ -10,28 +10,20 @@ import (
 
 func main() {
 	err := g.Run(func(app *g.App) {
-		w := app.Window("Stack")
-		w.SetLayout(g.Fill{})
-		split := w.Split()
-
-		left := split.Panel()
-		left.SetLayout(g.Fill{})
-		right := split.Panel()
-		right.SetLayout(g.Stack{})
-
-		var groups []*g.GroupView
-		for _, n := range []string{"A", "B", "C"} {
-			grp := right.Group("Panel " + n)
-			grp.SetLayout(g.Fill{})
-			grp.Label("This is panel " + n)
-			groups = append(groups, grp)
-		}
-		right.ShowTop(groups[0])
-		split.SetWeights(1, 3)
-
+		var split *g.SplitView
+		var pages *g.PagesView
+		var buttons, groups []g.Option
 		for i, n := range []string{"A", "B", "C"} {
-			left.Button(n, func() { right.ShowTop(groups[i]) })
+			buttons = append(buttons, g.Button(n, func() { pages.Show(i) }))
+			groups = append(groups, g.Group("Panel "+n, g.Label("This is panel "+n)))
 		}
+		w := app.Window("Stack",
+			g.Split(g.Grow(), g.Ref(&split),
+				g.Fill(buttons...),
+				g.Pages(append([]g.Option{g.Ref(&pages)}, groups...)...),
+			),
+		)
+		split.SetWeights(1, 3)
 
 		w.SetSize(500, 300)
 		w.Show()

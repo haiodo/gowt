@@ -17,13 +17,14 @@ const page = `<!doctype html><meta charset="utf-8"><title>From Go</title>
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Web view")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-		status := w.Label("", gowt.GrowX())
-		button := w.Button("Set page text from Go", nil)
-
-		host := w.Panel(gowt.Grow(), gowt.Size(480, 280))
-		host.SetLayout(gowt.Fill{})
+		var status *gowt.LabelView
+		var button *gowt.ButtonView
+		var host *gowt.Panel
+		w := app.Window("Web view",
+			gowt.Label("", gowt.GrowX(), gowt.Ref(&status)),
+			gowt.Button("Set page text from Go", nil, gowt.Ref(&button)),
+			gowt.Fill(gowt.Grow(), gowt.Size(480, 280), gowt.Ref(&host)),
+		)
 
 		wv, err := webview.New(host.Unwrap(), webview.Options{})
 		if err != nil {

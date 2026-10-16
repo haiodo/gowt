@@ -11,13 +11,20 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
-		w := app.Window("Widgets")
-		w.SetLayout(gowt.Grid{Columns: 1, Margin: 8, Spacing: 8})
-		status := w.Label("", gowt.GrowX())
-		tabs := w.Tabs(gowt.Grow())
-		input(tabs.Tab("Input"), status)
-		lists(tabs.Tab("Lists"), status)
-		ranges(tabs.Tab("Ranges"), status)
+		var status *gowt.LabelView
+		var in, ls, rg *gowt.Panel
+		w := app.Window("Widgets",
+			gowt.Label("", gowt.GrowX(), gowt.Ref(&status)),
+			gowt.Tabs(gowt.Grow(),
+				gowt.Tab("Input", gowt.Ref(&in)),
+				gowt.Tab("Lists", gowt.Ref(&ls)),
+				gowt.Tab("Ranges", gowt.Ref(&rg)),
+			),
+		)
+		say := func(s string) { status.SetText(s) }
+		input(in, say)
+		lists(ls, say)
+		ranges(rg, say)
 		w.SetSize(520, 380)
 		w.Show()
 	})
@@ -26,43 +33,51 @@ func main() {
 	}
 }
 
-func input(p *gowt.Panel, status *gowt.LabelView) {
-	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-	p.Label("User")
-	name := p.Text(gowt.GrowX())
+func input(p *gowt.Panel, say func(string)) {
+	var name *gowt.TextView
+	var remember *gowt.ButtonView
+	var enable *gowt.SwitchView
+	p.Add(gowt.Grid(2, gowt.Grow(),
+		gowt.Label("User"), gowt.Text(gowt.GrowX(), gowt.Ref(&name)),
+		gowt.Label("Password"), gowt.Text(gowt.Password(), gowt.GrowX()),
+		gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Border(), gowt.Grow()),
+		gowt.Group("Options", gowt.Span(2), gowt.GrowX(),
+			gowt.HBox(
+				gowt.Button("Remember me", nil, gowt.Check(), gowt.Ref(&remember)),
+				gowt.Switch("Enable options", func(on bool) { remember.SetEnabled(on) }, gowt.Ref(&enable)),
+				gowt.Button("Small", nil, gowt.Radio()),
+				gowt.Button("Large", nil, gowt.Radio()),
+				gowt.Link(`<a href="https://example.com">Terms</a>`, func(href string) { say("link: " + href) }),
+			),
+		),
+	))
 	name.SetHint("name")
-	p.Label("Password")
-	p.Text(gowt.Password(), gowt.GrowX())
-	p.Label("Notes")
-	p.Text(gowt.Multiline(), gowt.Border(), gowt.Grow())
-
-	name.OnChange(func(s string) { status.SetText("text: " + s) })
-
-	opts := p.Group("Options", gowt.GrowX(), gowt.Span(2))
-	opts.SetLayout(gowt.Row{Margin: 8, Spacing: 12})
-	remember := opts.Button("Remember me", nil, gowt.Check())
+	name.OnChange(func(s string) { say("text: " + s) })
 	remember.SetChecked(true)
-	opts.Switch("Enable options", func(on bool) { remember.SetEnabled(on) }).SetChecked(true)
-	opts.Button("Small", nil, gowt.Radio())
-	opts.Button("Large", nil, gowt.Radio())
-	opts.Link(`<a href="https://example.com">Terms</a>`, func(href string) { status.SetText("link: " + href) })
+	enable.SetChecked(true)
 }
 
-func lists(p *gowt.Panel, status *gowt.LabelView) {
-	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-	c := p.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly())
+func lists(p *gowt.Panel, say func(string)) {
+	var c *gowt.ComboView
+	var l *gowt.ListView
+	var t *gowt.TableView
+	var tree *gowt.TreeView
+	p.Add(gowt.Grid(2, gowt.Grow(),
+		gowt.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly(), gowt.Ref(&c)),
+		gowt.List([]string{"alpha", "beta", "gamma"}, gowt.Ref(&l)),
+		gowt.Table(gowt.Grow(), gowt.Size(0, 120), gowt.Ref(&t)),
+		gowt.Tree(gowt.Grow(), gowt.Ref(&tree)),
+	))
 	c.Select(0)
-	c.OnSelect(func(i int) { status.SetText(fmt.Sprint("combo: ", c.Items()[i])) })
-	p.List([]string{"alpha", "beta", "gamma"}).OnSelect(func(i int) { status.SetText(fmt.Sprint("list: ", i)) })
+	c.OnSelect(func(i int) { say(fmt.Sprint("combo: ", c.Items()[i])) })
+	l.OnSelect(func(i int) { say(fmt.Sprint("list: ", i)) })
 
-	t := p.Table(gowt.Grow(), gowt.Size(0, 120))
 	t.Column("File", 140)
 	t.Column("Size", 60, gowt.Right())
 	t.Row("a.txt", "12").SetData("id-a")
 	t.Row("b.txt", "340").SetData("id-b")
-	t.OnSelect(func(i int) { status.SetText(fmt.Sprint("row data: ", t.RowAt(i).Data())) })
+	t.OnSelect(func(i int) { say(fmt.Sprint("row data: ", t.RowAt(i).Data())) })
 
-	tree := p.Tree(gowt.Grow())
 	tree.Column("Name", 140)
 	tree.Column("Size", 60, gowt.Right())
 	tree.SetSort(nil, gowt.SortNone)
@@ -71,23 +86,27 @@ func lists(p *gowt.Panel, status *gowt.LabelView) {
 	src.Node("util.go").SetTextAt(1, "1 KB")
 	src.SetExpanded(true)
 	tree.Node("README.md").SetTextAt(1, "5 KB")
-	tree.OnSelect(func(n *gowt.Node) { status.SetText("node: " + n.Text()) })
+	tree.OnSelect(func(n *gowt.Node) { say("node: " + n.Text()) })
 	tree.OnCellClick(func(c gowt.TreeClick) {
 		if c.Node != nil && c.Button == 1 && c.Count == 1 {
-			status.SetText(fmt.Sprintf("cell: %s col %d", c.Node.Text(), c.Col))
+			say(fmt.Sprintf("cell: %s col %d", c.Node.Text(), c.Col))
 		}
 	})
 }
 
-func ranges(p *gowt.Panel, status *gowt.LabelView) {
-	p.SetLayout(gowt.Grid{Columns: 2, Margin: 10, Spacing: 8})
-	bar := p.Progress(100, gowt.GrowX(), gowt.Span(2))
+func ranges(p *gowt.Panel, say func(string)) {
+	var bar *gowt.ProgressView
+	var volume *gowt.ScaleView
+	var count *gowt.SpinnerView
+	var d *gowt.DateTimeView
+	p.Add(gowt.Grid(2, gowt.GrowX(),
+		gowt.Progress(100, gowt.GrowX(), gowt.Span(2), gowt.Ref(&bar)),
+		gowt.Label("Volume"), gowt.Scale(0, 100, 30, gowt.GrowX(), gowt.Ref(&volume)),
+		gowt.Label("Count"), gowt.Spinner(0, 10, 3, gowt.Ref(&count)),
+		gowt.Label("Date"), gowt.DateTime(gowt.Ref(&d)),
+	))
 	bar.SetValue(30)
-	p.Label("Volume")
-	p.Scale(0, 100, 30, gowt.GrowX()).OnChange(func(v int) { bar.SetValue(v); status.SetText(fmt.Sprint("scale: ", v)) })
-	p.Label("Count")
-	p.Spinner(0, 10, 3).OnChange(func(v int) { status.SetText(fmt.Sprint("spinner: ", v)) })
-	p.Label("Date")
-	d := p.DateTime()
-	d.OnChange(func(t time.Time) { status.SetText("date: " + t.Format("2006-01-02")) })
+	volume.OnChange(func(v int) { bar.SetValue(v); say(fmt.Sprint("scale: ", v)) })
+	count.OnChange(func(v int) { say(fmt.Sprint("spinner: ", v)) })
+	d.OnChange(func(t time.Time) { say("date: " + t.Format("2006-01-02")) })
 }

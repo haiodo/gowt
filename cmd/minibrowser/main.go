@@ -32,25 +32,34 @@ func main() {
 }
 
 func build(app *g.App) {
-	w := app.Window("Mini browser")
-	w.SetLayout(g.Fill{})
-	split := w.Split()
-
-	left := split.Panel()
-	left.SetLayout(g.Grid{Columns: 3, Margin: 5, Spacing: 5})
-	addr := left.Text(g.Border(), g.GrowX())
-	plus := left.Button("+", nil)
-	minus := left.Button("-", nil)
-	list := left.List(nil, g.Grow(), g.Span(3))
-
-	right := split.Panel()
-	right.SetLayout(g.Grid{Columns: 4, Margin: 5, Spacing: 5})
-	back := right.Button("<", nil)
-	forward := right.Button(">", nil)
-	reload := right.Button("Reload", nil)
-	urlLabel := right.Label("", g.GrowX())
-	stackHost := right.Panel(g.Grow(), g.Span(4))
-	stackHost.SetLayout(g.Stack{})
+	var (
+		split    *g.SplitView
+		addr     *g.TextView
+		plus     *g.ButtonView
+		minus    *g.ButtonView
+		list     *g.ListView
+		back     *g.ButtonView
+		forward  *g.ButtonView
+		reload   *g.ButtonView
+		urlLabel *g.LabelView
+		stack    *g.PagesView
+	)
+	w := app.Window("Mini browser", g.Padding(0))
+	w.Add(g.Split(g.Grow(), g.Ref(&split),
+		g.Grid(3, g.Padding(5),
+			g.Text(g.Border(), g.GrowX(), g.Ref(&addr)),
+			g.Button("+", nil, g.Ref(&plus)),
+			g.Button("-", nil, g.Ref(&minus)),
+			g.List(nil, g.Grow(), g.Span(3), g.Ref(&list)),
+		),
+		g.Grid(4, g.Padding(5),
+			g.Button("<", nil, g.Ref(&back)),
+			g.Button(">", nil, g.Ref(&forward)),
+			g.Button("Reload", nil, g.Ref(&reload)),
+			g.Label("", g.GrowX(), g.Ref(&urlLabel)),
+			g.Pages(g.Grow(), g.Span(4), g.Ref(&stack)),
+		),
+	))
 	split.SetWeights(10, 90)
 
 	var pages []*page
@@ -66,14 +75,14 @@ func build(app *g.App) {
 			urlLabel.SetText("")
 			return
 		}
-		stackHost.ShowTop(p.host)
+		stack.Show(list.Index())
 		urlLabel.SetText(p.wv.URL())
 		w.SetTitle(label(p, "Mini browser"))
 	}
 	open := func(url string) {
 		// Each page gets its own host: the stack shows hosts, and webview takes a plain composite.
-		host := stackHost.Panel()
-		host.SetLayout(g.Fill{})
+		var host *g.Panel
+		stack.Add(g.Fill(g.Ref(&host)))
 		wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 		if err != nil {
 			host.Dispose()

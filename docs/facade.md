@@ -30,8 +30,8 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 | Lists | `Combo`, `List`, `Table` (+`Column`, `TableRow`), `Tree` (+`Node`). Index-based `OnSelect(func(index int))`, `OnActivate`; tree callbacks get `*Node`. |
 | Containers | `Group`, `Tabs` (TabFolder) and `CTabs` (CTabFolder, `OnClose` veto) with `Tab(title, ...)` children (`Closable()` on a CTabs tab), `Pages` (a composite with a StackLayout, children are pages: `Show(i)`, `Current()`), `Split` (SashForm), `Scroll` (ScrolledComposite: children in its content, fitted), `Sash` (bare), `ToolBar`+`ToolItem`, `CoolBar` (children are bands), `Section` (children are rows) |
 | Ranges | `Scale`, `Slider`, `Spinner`, `Progress`, `DateTime` (`time.Time`), `Link` (`OnClick(func(href string))`) |
-| Graphics | `Canvas(onPaint func(*GC))`, `GC` (colors, line width, Line/Rect/Oval/Fill*, Text, TextSize, Image), `Image`, `RGB` |
-| Menus | `Window.MenuBar()`, `PopupMenu(widget)`, `Menu.Item/Submenu/Separator/Show/OnShow`, `MenuItem`, `Shortcut(keys)` (accelerator plus the "\t" hint); `App.Tray` (nil without a system tray) |
+| Graphics | `Canvas(onPaint func(*GC))`, `GC` (colors, line width, font, Line/Rect/Oval/Fill*, Text, TextSize, Image), `Image`, `RGB` |
+| Menus | `Window.MenuBar()`, `PopupMenu(widget)`, `Menu.Item/Submenu/Separator/Show/OnShow`, `MenuItem`, `Shortcut(keys)` (accelerator plus the "\t" hint), `Window.OnKey(keys, f)` (a display filter for the window); `App.Tray` (nil without a system tray) |
 | Dialogs | `Window.MessageBox(Message)`, `Confirm`, `FileDialog(FileDialog)`, `DirDialog`, `ColorDialog`, `FontDialog`: value-type descriptions in, plain values out |
 | Layouts | `Flow` (RowLayout, wrapping; `Vertical()`) + `Size`; `Form` + `Anchor(FormCell{Left, Right, Top, Bottom Edge})`; `Fill` (FillLayout; `Vertical()`) |
 

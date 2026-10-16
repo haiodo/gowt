@@ -65,6 +65,7 @@ if err != nil {
 | free height only (a list in a column) | `GrowY()` |
 | one cell across n columns of a Grid | `Span(n)` |
 | a width or height hint in points | `Size(w, h)`, 0 keeps the natural one |
+| moved right or down inside its cell | `Indent(x, y)` |
 | aligned right / centred in its cell | `Place(gowt.AlignEnd, gowt.AlignCenter)` |
 | everything at once, also `SpanY` | `Cell(gowt.GridCell{...})` |
 | empty space that pushes the next children to the end | `gowt.Spacer()` |
@@ -94,6 +95,7 @@ go func() {                                        // slow work off the UI threa
 app.After(time.Second, tick)                       // once
 stop := app.Every(time.Second, tick)               // repeats until stop()
 file.Item("&Save", save, gowt.Shortcut("Cmd+S"))   // Cmd+S binds the key and shows it; Ctrl+S on Windows and Linux
+w.OnKey("Cmd+[", back)                             // a key for the whole window, without a menu item; text fields keep their editing keys
 
 app.OnError(func(err error) { status.Set(err.Error()) }) // errors in callbacks and misused options; the app keeps running
 ```
@@ -148,7 +150,7 @@ Rows, nodes, columns, tool items and menu items are not widgets: they come from 
 
 ## Leaving the facade
 
-`Unwrap()` returns the swt object for what the facade lacks (key listeners outside menus, drawing into an image). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `TrimHead` and `look.DragsWindow` exist already.
+`Unwrap()` returns the swt object for what the facade lacks (drawing into an image, key events of one widget). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `Window.OnKey`, `GC.SetFont`, `Indent`, `App.Flush`, `TrimHead` and `look.DragsWindow` exist already.
 
 ## Option to widgets
 
@@ -186,6 +188,6 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Bind(state)` | Text, Combo (`string`); Switch, Check Button (`bool`); Scale, Slider, Spinner, Combo, List (`int`) |
 | `BindText(r)` | Label, Button, Link |
 | `Gap(n)`, `Padding(n)` | Window, VBox, HBox, Grid, Flow, Fill, Form, Group, Tab, Scroll |
-| `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Place(h, v)`, `Cell(...)` | any widget in a VBox, HBox or Grid |
+| `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Place(h, v)`, `Indent(x, y)`, `Cell(...)` | any widget in a VBox, HBox or Grid |
 | `Size(w, h)` | any widget in a VBox, HBox, Grid, Flow or Form |
 | `Anchor(...)` | any widget in a Form |

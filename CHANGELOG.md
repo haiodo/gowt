@@ -15,6 +15,10 @@ New API
 - `Window.SetMinSize(w, h)`, `App.ScreenSize()`, `Table.Batch(f)` and `Tree.Batch(f)` (drawing suspended while `f` changes many rows).
 - A screen is a tree of values: constructors are package functions that return a description (`gowt.Label`, `Button`, `Text`, `VBox`, `HBox`, `Grid(n, ...)`, `Flow`, `Fill`, `Form`, `Group`, `Tabs`/`Tab`, `Pages`, `Scroll`, `Split`, `Section`, ...), created in the parent they are passed to: a container constructor, `app.Window(title, children...)` or `container.Add(children...)`. `Ref(&x)` stores the created widget, `Init(func(x *gowt.ComboView))` sets it up as it is created. `Gap(n)` and `Padding(n)` set a container's spacing. `PagesView` has `AsComposite`. `BenchmarkTree200` measures 200 widgets created as a tree (about 3 allocations per widget more than the panel methods).
 - Events, initial values and rx bindings are options next to the widget: `OnClick`, `OnChange`, `OnSelect`, `OnActivate` (one name per concept, the handler type says what the widget reports: `OnChange(func(string))` on a Text, `OnChange(func(int))` on a Scale), `Hint`, `Checked`, `Selected`, `Value` (the text of a Text, the value of a Scale, the date of a DateTime), and `Bind(state)` (two-way: Text, Combo, Switch, Check button, Scale, Slider, Spinner, List), `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)`. `Watch(w, r, apply)` binds anything else. `Init` and the other hooks run once the widget's children exist, so `Init` fills a Table or sets Split weights in place. The examples keep shared data in `rx` state; `Ref` remains for filling tables and trees.
+- `Window.OnKey(keys, f)` runs `f` when a key combination is pressed anywhere in the window, written as for `Shortcut`; the key does not reach the focused widget. A focused text field keeps the combinations it types or edits with (characters, arrows, Backspace, Cmd+C and the like; the list per OS is in events.md), so `Cmd+[` or `Esc` work while typing and a bare letter does not.
+- `GC.SetFont(f)` sets the font of the text drawn after it in a paint callback; `Font{}` goes back to the canvas's font. The canvas makes each font once and releases it when disposed.
+- `Indent(x, y)` moves a child right and down inside its cell of a VBox, HBox or Grid and composes with the other placement options; `GridCell` has `IndentX` and `IndentY`.
+- `App.Flush()` runs the stale rx effects and the layouts the bindings put off (a longer `BindText` text) now instead of on the next event-loop turn.
 
 Breaking change
 - Widgets are created by package functions instead of methods of their parent, and widget types end in `View` (`LabelView`, `ButtonView`, `TextView`, `TableView`, ...; `Panel` and `Window` keep their names). `Option` is a sealed interface; code that wrote `gowt.Option{}` or compared options does not compile.
@@ -53,6 +57,7 @@ Behaviour change
 Fixes
 - docs: events.md said the facade had no mouse listeners (`Canvas.OnMouseDown`/`Up`/`Move` and `Table`/`Tree.OnCellClick` exist); facade.md listed widget fonts and colours as not wrapped; the `Wrap()` doc named only ToolBar. `examples/events` and `examples/catalog` no longer reach for `Unwrap()`.
 - docs: dialogs-menus.md and `Menu.Item` showed a shortcut hint after "\t" that bound no key; `examples/dialogs` displayed Cmd+O and did nothing on it. It uses `Shortcut` now. windows-layouts.md and swt-direct.md sent a minimum window size to `Unwrap()`.
+- macOS: `look.SetSidebar` sent a Selection event for each Table, List or Tree in the sidebar that had a selected row (two per widget), so an app had to select its sidebar item after `SetSidebar`. The source-list style is now applied without reporting the reselection.
 
 ## v0.7.0 (2026-10-15)
 

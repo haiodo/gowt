@@ -288,14 +288,14 @@ type PagesView struct {
 
 // Pages creates a container whose children are pages, one shown at a time; the first is shown
 // until Show picks another.
-// Options: common only, children.
+// Options: Border, children.
 func Pages(opts ...Option) Option {
 	return &node{"Pages", func(h host) Widget {
 		c := swt.NewCompositeParentStyle(h.into(), resolve(swt.NONE, opts))
 		s := swt.NewStackLayout()
 		c.SetLayout(s)
 		g := &PagesView{base{&c.Control}, c, s}
-		finish(g, 0, opts)
+		finish(g, sBorder, opts)
 		return g
 	}}
 }
@@ -336,6 +336,9 @@ func (g *PagesView) Current() int {
 
 // Unwrap returns the underlying composite; its layout is an swt.StackLayout.
 func (g *PagesView) Unwrap() *swt.Composite { return g.c }
+
+// AsComposite returns the underlying composite, as Panel does, for the look package.
+func (g *PagesView) AsComposite() *swt.Composite { return g.c }
 
 // Placement options. They describe where a child sits and how it grows without naming the parent's
 // layout, and add up: GrowX(), Span(2) give one cell that spans two columns and fills its width.

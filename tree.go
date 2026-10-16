@@ -78,7 +78,7 @@ type boxOpt struct {
 	n       int
 }
 
-// ref receives the created widget; it returns the type it wants when w is another type.
+// ref receives the created widget (Ref, Init); it returns the type it wants when w is another type.
 type ref func(w Widget) (want string)
 
 // node is a widget description: build creates the widget in h, applies its options and children,
@@ -112,6 +112,19 @@ func Ref[T Widget](p *T) Option {
 			return fmt.Sprintf("%T", *p)
 		}
 		*p = v
+		return ""
+	})
+}
+
+// Init runs f on the widget as soon as it is created, before its children: a function that returns
+// a description sets up its widget with it. A widget of another type than f takes goes to App.OnError.
+func Init[T Widget](f func(T)) Option {
+	return ref(func(w Widget) string {
+		v, ok := w.(T)
+		if !ok {
+			return fmt.Sprintf("%T", v)
+		}
+		f(v)
 		return ""
 	})
 }
@@ -174,7 +187,7 @@ func finish(w Widget, allow styleID, opts []Option) {
 			o(pl)
 		case ref:
 			if want := o(w); want != "" {
-				reportOn(c, fmt.Errorf("gowt: Ref to a %s given to %s", want, nameOf(c)))
+				reportOn(c, fmt.Errorf("gowt: Ref or Init for a %s given to %s", want, nameOf(c)))
 			}
 		case menuOpt:
 			reportOn(c, fmt.Errorf("gowt: Shortcut applies to Menu.Item, not to %s", nameOf(c)))

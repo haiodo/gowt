@@ -2,6 +2,7 @@ package gowt
 
 import (
 	"errors"
+	"os"
 	"strings"
 	"testing"
 
@@ -55,6 +56,13 @@ func TestRefType(t *testing.T) {
 	}
 	if want := Ref(&btn).(ref)(b); want != "" || btn != b {
 		t.Errorf("Ref: want %q, btn %v", want, btn)
+	}
+	var got *ButtonView
+	if want := Init(func(t *TextView) {}).(ref)(b); want != "*gowt.TextView" {
+		t.Errorf("Init for the wrong type: want %q", want)
+	}
+	if want := Init(func(v *ButtonView) { got = v }).(ref)(b); want != "" || got != b {
+		t.Errorf("Init: want %q, got %v", want, got)
 	}
 }
 
@@ -162,7 +170,7 @@ func TestTree(t *testing.T) {
 			"gowt: Gap and Padding apply to containers, not to Label",
 			"gowt: Label takes no children, Button is dropped",
 			"gowt: Shortcut applies to Menu.Item, not to Label",
-			"gowt: Ref to a *gowt.TextView given to Button",
+			"gowt: Ref or Init for a *gowt.TextView given to Button",
 			"gowt: GrowX on Label needs a VBox, HBox or Grid parent, not Flow",
 			"gowt: Tab needs a Tabs or CTabs parent, not Panel",
 			"gowt: Tabs takes Tab children, not Label",
@@ -172,5 +180,31 @@ func TestTree(t *testing.T) {
 		if bad == nil || bad.l.IsDisposed() || strings.Join(errs, "\n") != strings.Join(want, "\n") {
 			t.Errorf("error path:\n%s\nwant:\n%s", strings.Join(errs, "\n"), strings.Join(want, "\n"))
 		}
+	})
+}
+
+// BenchmarkTree200 creates and disposes 200 widgets: 50 HBox rows of a Label, a Text and a Button.
+func BenchmarkTree200(b *testing.B) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		b.Skip("set GOWT_GUI_TEST=1")
+	}
+	onMain(func() {
+		_ = Run(func(app *App) {
+			w := app.Window("bench")
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				var p *Panel
+				rows := make([]Option, 0, 51)
+				rows = append(rows, Ref(&p))
+				for r := 0; r < 50; r++ {
+					rows = append(rows, HBox(Label("Name"), Text(GrowX()), Button("OK", nil)))
+				}
+				w.Add(VBox(rows...))
+				p.Dispose()
+			}
+			b.StopTimer()
+			w.Close()
+		})
 	})
 }

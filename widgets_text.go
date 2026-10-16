@@ -32,7 +32,8 @@ type StyleSpan struct {
 	Style         TextStyle
 }
 
-// StyledText adds a multi-line styled editor; options: Scrollbars, Wrap, ReadOnly, Border.
+// StyledText adds a multi-line styled editor.
+// Options: Scrollbars, Wrap, ReadOnly, Border.
 func (p *panel) StyledText(opts ...Option) *StyledText {
 	t := swt.NewStyledText(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)

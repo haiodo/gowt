@@ -12,8 +12,9 @@ type Section struct {
 	rows int
 }
 
-// Section adds a grouped section with a one-column Grid of its own; pass Cell(GridCell{GrowX: true,
-// Align: AlignFill}) to stretch it in a Grid parent. docs/theme-look.md tells how each OS fills the card.
+// Section adds a grouped section with a one-column Grid of its own; pass GrowX() to stretch it in a
+// Grid parent. docs/theme-look.md tells how each OS fills the card.
+// Options: common only.
 func (p *panel) Section(opts ...Option) *Section {
 	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
 	l := swt.NewGridLayout()

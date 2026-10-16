@@ -107,8 +107,8 @@ func TestNoBorderClearsDefault(t *testing.T) {
 	if resolve(swt.BORDER|swt.V_SCROLL, []Option{NoBorder()}) != swt.V_SCROLL {
 		t.Error("NoBorder must clear BORDER")
 	}
-	if resolve(swt.NONE, []Option{Search()}) != swt.SEARCH {
-		t.Error("Search must set SEARCH")
+	if resolve(swt.NONE, []Option{Search()}) != swt.SEARCH|swt.ICON_SEARCH|swt.ICON_CANCEL {
+		t.Error("Search must set SEARCH and both icons")
 	}
 }
 

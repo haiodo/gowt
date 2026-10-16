@@ -9,6 +9,7 @@ type Group struct {
 }
 
 // Group adds a titled container.
+// Options: common only.
 func (p *panel) Group(title string, opts ...Option) *Group {
 	g := swt.NewGroup(p.c, resolve(swt.NONE, opts))
 	g.SetText(title)
@@ -26,6 +27,7 @@ func (g *Group) Unwrap() *swt.Group { return g.g }
 type Tabs struct{ f *swt.TabFolder }
 
 // Tabs adds a tab folder; Bottom() moves the tabs below the pages.
+// Options: Bottom.
 func (p *panel) Tabs(opts ...Option) *Tabs {
 	f := swt.NewTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
@@ -33,6 +35,7 @@ func (p *panel) Tabs(opts ...Option) *Tabs {
 }
 
 // Tab appends a tab and returns its page.
+// Options: none; the common options are ignored.
 func (t *Tabs) Tab(title string, opts ...Option) *Panel {
 	it := swt.NewTabItem(t.f, resolve(swt.NONE, opts))
 	it.SetText(title)
@@ -61,6 +64,7 @@ func (t *Tabs) OnSelect(f func(index int)) {
 type CTabs struct{ f *swt.CTabFolder }
 
 // CTabs adds a custom tab folder; Border() draws a frame.
+// Options: Bottom, Border.
 func (p *panel) CTabs(opts ...Option) *CTabs {
 	f := swt.NewCTabFolder(p.c, resolve(swt.NONE, opts))
 	applyOpts(&f.Control, opts)
@@ -68,6 +72,7 @@ func (p *panel) CTabs(opts ...Option) *CTabs {
 }
 
 // Tab appends a tab and returns its page; Closable() adds a close button to the tab.
+// Options: Closable; the common options are ignored.
 func (t *CTabs) Tab(title string, opts ...Option) *Panel {
 	it := swt.NewCTabItem(t.f, resolve(swt.NONE, opts))
 	it.SetText(title)
@@ -110,6 +115,7 @@ type Split struct {
 }
 
 // Split adds a sash form: children side by side, or stacked with Vertical().
+// Options: Vertical.
 func (p *panel) Split(opts ...Option) *Split {
 	s := swt.NewSashForm(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
@@ -129,6 +135,7 @@ type Scroll struct {
 }
 
 // Scroll adds a scrolled area; Border() draws a frame.
+// Options: Border.
 func (p *panel) Scroll(opts ...Option) *Scroll {
 	s := swt.NewScrolledComposite(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL, opts))
 	applyOpts(&s.Control, opts)
@@ -158,6 +165,7 @@ func (s *Scroll) Unwrap() *swt.ScrolledComposite { return s.s }
 type Sash struct{ s *swt.Sash }
 
 // Sash adds a sash; Vertical() makes a vertical bar that moves left and right.
+// Options: Vertical.
 func (p *panel) Sash(opts ...Option) *Sash {
 	s := swt.NewSash(p.c, resolve(swt.NONE, opts))
 	applyOpts(&s.Control, opts)
@@ -178,6 +186,7 @@ func (s *Sash) Unwrap() *swt.Sash { return s.s }
 type ToolBar struct{ t *swt.ToolBar }
 
 // ToolBar adds a tool bar; Flat() and Wrap() change its look.
+// Options: Flat, Wrap.
 func (p *panel) ToolBar(opts ...Option) *ToolBar {
 	t := swt.NewToolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
@@ -185,6 +194,7 @@ func (p *panel) ToolBar(opts ...Option) *ToolBar {
 }
 
 // Item appends a push button (Check, Radio or DropDown for other kinds). onClick may be nil.
+// Options: Check, Radio, DropDown; the common options are ignored (SetTooltip, SetEnabled).
 func (t *ToolBar) Item(text string, onClick func(), opts ...Option) *ToolItem {
 	it := swt.NewToolItem(t.t, resolve(swt.NONE, opts))
 	it.SetText(text)
@@ -239,6 +249,7 @@ type CoolBar struct {
 }
 
 // CoolBar adds a cool bar; create the band contents as its children, then Add them.
+// Options: common only.
 func (p *panel) CoolBar(opts ...Option) *CoolBar {
 	b := swt.NewCoolBar(p.c, resolve(swt.NONE, opts))
 	applyOpts(&b.Control, opts)

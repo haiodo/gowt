@@ -111,7 +111,7 @@ func Indeterminate() Option { return Option{style: swt.INDETERMINATE} }
 // Flat gives a ToolBar the flat look.
 func Flat() Option { return Option{style: swt.FLAT} }
 
-// Wrap lets a ToolBar wrap its items to further rows.
+// Wrap breaks long text of a Label or StyledText into lines, and lets a ToolBar wrap its items to further rows.
 func Wrap() Option { return Option{style: swt.WRAP} }
 
 // Bottom puts the tabs of Tabs or CTabs below the pages.

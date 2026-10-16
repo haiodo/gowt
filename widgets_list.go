@@ -3,7 +3,10 @@ package gowt
 import "github.com/haiodo/gowt/swt"
 
 // Combo is a drop-down (or Simple) list with an edit field; ReadOnly() makes it a pure chooser.
-type Combo struct{ c *swt.Combo }
+type Combo struct {
+	base
+	c *swt.Combo
+}
 
 // Combo adds a combo box with the given items.
 // Options: ReadOnly, Simple.
@@ -13,10 +16,8 @@ func (p *panel) Combo(items []string, opts ...Option) *Combo {
 		c.SetItems(items)
 	}
 	applyOpts(&c.Control, opts)
-	return &Combo{c}
+	return &Combo{base{&c.Control}, c}
 }
-
-func (c *Combo) control() *swt.Control { return &c.c.Control }
 
 // Text returns the edit field content, also when it matches no item.
 func (c *Combo) Text() string { return c.c.GetText() }
@@ -50,7 +51,10 @@ func (c *Combo) OnChange(f func(text string)) {
 }
 
 // List is a single or multi (MultiSelect) selection list of strings.
-type List struct{ l *swt.List }
+type List struct {
+	base
+	l *swt.List
+}
 
 // List adds a list with the given items.
 // Options: MultiSelect, NoBorder.
@@ -60,10 +64,8 @@ func (p *panel) List(items []string, opts ...Option) *List {
 		l.SetItems(items)
 	}
 	applyOpts(&l.Control, opts)
-	return &List{l}
+	return &List{base{&l.Control}, l}
 }
-
-func (l *List) control() *swt.Control { return &l.l.Control }
 
 // Items returns the list entries.
 func (l *List) Items() []string { return l.l.GetItems() }
@@ -109,7 +111,10 @@ func (l *List) OnActivate(f func(index int)) {
 }
 
 // Table is a multi-column grid with a header; rows are added with Row. Check makes rows checkable.
-type Table struct{ t *swt.Table }
+type Table struct {
+	base
+	t *swt.Table
+}
 
 // Table adds a table with a visible header and grid lines.
 // Options: Check, MultiSelect, NoBorder.
@@ -118,10 +123,8 @@ func (p *panel) Table(opts ...Option) *Table {
 	t.SetHeaderVisible(true)
 	t.SetLinesVisible(true)
 	applyOpts(&t.Control, opts)
-	return &Table{t}
+	return &Table{base{&t.Control}, t}
 }
-
-func (t *Table) control() *swt.Control { return &t.t.Control }
 
 // ShowHeader shows or hides the column headers.
 func (t *Table) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
@@ -145,6 +148,13 @@ func (t *Table) Remove(i int) { t.t.Remove(int32(i)) }
 
 // Clear deletes all rows and with them the selection.
 func (t *Table) Clear() { t.t.RemoveAll() }
+
+// Batch runs f with drawing of the table suspended, so that many row changes repaint once.
+func (t *Table) Batch(f func()) {
+	t.t.SetRedraw(false)
+	defer t.t.SetRedraw(true)
+	f()
+}
 
 // Unwrap returns the underlying swt.Table for the full API.
 func (t *Table) Unwrap() *swt.Table { return t.t }
@@ -357,7 +367,10 @@ func (r *TableRow) SetData(v any) { r.it.SetData(v) }
 func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 
 // Tree is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
-type Tree struct{ t *swt.Tree }
+type Tree struct {
+	base
+	t *swt.Tree
+}
 
 // Tree adds a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
@@ -365,10 +378,8 @@ type Tree struct{ t *swt.Tree }
 func (p *panel) Tree(opts ...Option) *Tree {
 	t := swt.NewTree(p.c, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
 	applyOpts(&t.Control, opts)
-	return &Tree{t}
+	return &Tree{base{&t.Control}, t}
 }
-
-func (t *Tree) control() *swt.Control { return &t.t.Control }
 
 // Column appends a column; Right() or Center() set the alignment. The first column holds the node
 // text and the expand arrows. The first call shows the header.
@@ -459,6 +470,13 @@ func (c *TreeColumn) SetResizable(v bool) { c.c.SetResizable(v) }
 
 // Pack resizes the column to fit its content.
 func (c *TreeColumn) Pack() { c.c.Pack() }
+
+// Batch runs f with drawing of the tree suspended, so that many node changes repaint once.
+func (t *Tree) Batch(f func()) {
+	t.t.SetRedraw(false)
+	defer t.t.SetRedraw(true)
+	f()
+}
 
 // Unwrap returns the underlying swt.TreeColumn for the full API.
 func (c *TreeColumn) Unwrap() *swt.TreeColumn { return c.c }

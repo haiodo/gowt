@@ -20,7 +20,7 @@ All widgets belong to the UI thread: the goroutine inside `gowt.Run`'s setup fun
 
 After `Run` has returned the three do nothing, so a goroutine that outlives the window may still call them; `f` does not run.
 
-`app.After(d, f)` runs `f` on the UI thread once after `d`; call it again from `f` for a periodic tick. It is UI-thread only.
+`app.After(d, f)` runs `f` on the UI thread once after `d`. `stop := app.Every(d, f)` runs `f` every `d` until `stop()`; a panic in `f` goes to `OnError` and the ticks go on. Both are UI-thread only; `stop` is safe from any goroutine.
 
 ```go
 go func() {
@@ -46,7 +46,7 @@ w.Button("Only running", nil, gowt.Check()).BindChecked(only) // two-way
 query := rx.New("")
 w.Text().Bind(query)                                       // two-way; typing keeps the caret
 find := w.Button("Find", onFind)
-gowt.BindEnabled(find, rx.Compute(func() bool { return query.Get() != "" }))
+find.BindEnabled(rx.Compute(func() bool { return query.Get() != "" }))
 
 go func() { for v := range updates { count.Post(v) } }()    // from any goroutine
 ```
@@ -63,7 +63,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Untrack(fn)` | reads in `fn` do not subscribe |
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
 | `gowt.Bind(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives |
-| `Label.BindText`, `Button.BindChecked`, `Text.Bind`, `gowt.BindVisible`, `gowt.BindEnabled` | the common bindings |
+| `Label.BindText`, `Button.BindChecked`, `Text.Bind`, and `BindVisible`, `BindEnabled` on every widget | the common bindings |
 
 Rules:
 
@@ -88,4 +88,6 @@ A placement option the parent's layout cannot use (`GrowX` under a `Row`, `InRow
 
 ## Key and mouse events
 
-`Canvas` has `OnMouseDown`, `OnMouseUp` and `OnMouseMove`; `Table` and `Tree` have `OnCellClick` with the row, column, button and click count. There are no key listeners and no mouse listeners on other widgets: add them on the swt object, see [swt-direct.md](swt-direct.md).
+`Canvas` has `OnMouseDown`, `OnMouseUp` and `OnMouseMove`; `Table` and `Tree` have `OnCellClick` with the row, column, button and click count. A key combination that runs a command belongs to a menu item: `menu.Item("Back", back, gowt.Shortcut("Alt+Left"))` binds the key and shows it in the menu. There are no other key listeners and no mouse listeners on other widgets: add them on the swt object, see [swt-direct.md](swt-direct.md).
+
+`w.OnDispose(f)` runs `f` when the widget goes away: by `Dispose`, with its parent, or when its window closes.

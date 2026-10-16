@@ -24,7 +24,10 @@ func setRange(r ranged, min, max int) {
 }
 
 // Scale is a slider with tick marks; Vertical() rotates it.
-type Scale struct{ s *swt.Scale }
+type Scale struct {
+	base
+	s *swt.Scale
+}
 
 // Scale adds a scale over [min, max] set to value.
 // Options: Vertical.
@@ -33,10 +36,8 @@ func (p *panel) Scale(min, max, value int, opts ...Option) *Scale {
 	setRange(s, min, max)
 	s.SetSelection(int32(value))
 	applyOpts(&s.Control, opts)
-	return &Scale{s}
+	return &Scale{base{&s.Control}, s}
 }
-
-func (s *Scale) control() *swt.Control { return &s.s.Control }
 
 // Value returns the position within [min, max].
 func (s *Scale) Value() int { return int(s.s.GetSelection()) }
@@ -53,7 +54,10 @@ func (s *Scale) OnChange(f func(value int)) {
 }
 
 // Slider is a scroll-bar style control; Vertical() rotates it.
-type Slider struct{ s *swt.Slider }
+type Slider struct {
+	base
+	s *swt.Slider
+}
 
 // Slider adds a slider over [min, max] set to value.
 // Options: Vertical.
@@ -62,10 +66,8 @@ func (p *panel) Slider(min, max, value int, opts ...Option) *Slider {
 	setRange(s, min, max)
 	s.SetSelection(int32(value))
 	applyOpts(&s.Control, opts)
-	return &Slider{s}
+	return &Slider{base{&s.Control}, s}
 }
-
-func (s *Slider) control() *swt.Control { return &s.s.Control }
 
 // Value returns the position within [min, max].
 func (s *Slider) Value() int { return int(s.s.GetSelection()) }
@@ -82,7 +84,10 @@ func (s *Slider) OnChange(f func(value int)) {
 }
 
 // Spinner is an integer edit field with arrows.
-type Spinner struct{ s *swt.Spinner }
+type Spinner struct {
+	base
+	s *swt.Spinner
+}
 
 // Spinner adds a spinner over [min, max] set to value.
 // Options: ReadOnly, Border.
@@ -91,10 +96,8 @@ func (p *panel) Spinner(min, max, value int, opts ...Option) *Spinner {
 	setRange(s, min, max)
 	s.SetSelection(int32(value))
 	applyOpts(&s.Control, opts)
-	return &Spinner{s}
+	return &Spinner{base{&s.Control}, s}
 }
-
-func (s *Spinner) control() *swt.Control { return &s.s.Control }
 
 // Value returns the number within [min, max].
 func (s *Spinner) Value() int { return int(s.s.GetSelection()) }
@@ -111,7 +114,10 @@ func (s *Spinner) OnChange(f func(value int)) {
 }
 
 // Progress is a progress bar; Vertical() rotates it, Indeterminate() animates it without a value.
-type Progress struct{ b *swt.ProgressBar }
+type Progress struct {
+	base
+	b *swt.ProgressBar
+}
 
 // Progress adds a progress bar over [0, max].
 // Options: Vertical, Smooth, Indeterminate.
@@ -119,10 +125,8 @@ func (p *panel) Progress(max int, opts ...Option) *Progress {
 	b := swt.NewProgressBar(p.c, resolve(swt.NONE, opts))
 	b.SetMaximum(int32(max))
 	applyOpts(&b.Control, opts)
-	return &Progress{b}
+	return &Progress{base{&b.Control}, b}
 }
-
-func (p *Progress) control() *swt.Control { return &p.b.Control }
 
 // Value returns the progress within [0, max].
 func (p *Progress) Value() int { return int(p.b.GetSelection()) }
@@ -137,17 +141,18 @@ func (p *Progress) SetMax(v int) { p.b.SetMaximum(int32(v)) }
 func (p *Progress) Unwrap() *swt.ProgressBar { return p.b }
 
 // DateTime is a date field, a time field (AsTime) or a month calendar (AsCalendar).
-type DateTime struct{ d *swt.DateTime }
+type DateTime struct {
+	base
+	d *swt.DateTime
+}
 
 // DateTime adds a date picker; DropDown() makes the date field a drop-down calendar.
 // Options: DropDown, AsTime, AsCalendar.
 func (p *panel) DateTime(opts ...Option) *DateTime {
 	d := swt.NewDateTime(p.c, resolve(swt.NONE, opts))
 	applyOpts(&d.Control, opts)
-	return &DateTime{d}
+	return &DateTime{base{&d.Control}, d}
 }
-
-func (d *DateTime) control() *swt.Control { return &d.d.Control }
 
 // Value is the shown date, or the shown time of day on today's date for AsTime, in the local zone.
 func (d *DateTime) Value() time.Time {
@@ -176,7 +181,10 @@ func (d *DateTime) OnChange(f func(t time.Time)) {
 }
 
 // Link is a label with clickable parts: text uses <a href="...">anchor</a>.
-type Link struct{ l *swt.Link }
+type Link struct {
+	base
+	l *swt.Link
+}
 
 // Link adds a link label; onClick gets the href of the clicked anchor (its text if there is no href). onClick may be nil.
 // Options: common only.
@@ -184,14 +192,12 @@ func (p *panel) Link(text string, onClick func(href string), opts ...Option) *Li
 	l := swt.NewLink(p.c, resolve(swt.NONE, opts))
 	l.SetText(text)
 	applyOpts(&l.Control, opts)
-	w := &Link{l}
+	w := &Link{base{&l.Control}, l}
 	if onClick != nil {
 		w.OnClick(onClick)
 	}
 	return w
 }
-
-func (l *Link) control() *swt.Control { return &l.l.Control }
 
 // SetText replaces the text; anchors use <a href="...">.
 func (l *Link) SetText(s string) { l.l.SetText(s) }

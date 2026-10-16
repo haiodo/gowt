@@ -1,29 +1,48 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"github.com/haiodo/gowt/rx"
+	"github.com/haiodo/gowt/swt"
+)
 
-// Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a child.
-type Widget interface{ control() *swt.Control }
+// Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a
+// child. Its methods are the ones every widget type has.
+type Widget interface {
+	control() *swt.Control
+	SetEnabled(v bool)
+	Enabled() bool
+	SetVisible(v bool)
+	Visible() bool
+	SetTooltip(s string)
+	SetFont(f Font)
+	SetForeground(c RGB)
+	SetBackground(c RGB)
+	Focus() bool
+	Dispose()
+	OnDispose(f func())
+	BindVisible(r rx.Reader[bool])
+	BindEnabled(r rx.Reader[bool])
+}
 
-func (p *panel) control() *swt.Control  { return &p.c.Control }
-func (l *Label) control() *swt.Control  { return &l.l.Control }
-func (b *Button) control() *swt.Control { return &b.b.Control }
-func (t *Text) control() *swt.Control   { return &t.t.Control }
-func (s *Switch) control() *swt.Control { return &s.b.Control }
+// base holds the methods every control has. Each widget type embeds it, so go doc lists them on
+// the type itself.
+type base struct{ ctl *swt.Control }
 
-// SetEnabled enables or disables any control, a Window or container included (its children follow).
+func (w *base) control() *swt.Control { return w.ctl }
+
+// SetEnabled enables or disables the control, a Window or container included (its children follow).
 // A disabled control ignores input and is drawn dimmed; Disabled() does the same at creation.
-func SetEnabled(w Widget, v bool) { w.control().SetEnabled(v) }
+func (w *base) SetEnabled(v bool) { w.ctl.SetEnabled(v) }
 
 // Enabled reports the state set by SetEnabled, not that of the parents.
-func Enabled(w Widget) bool { return w.control().GetEnabled() }
+func (w *base) Enabled() bool { return w.ctl.GetEnabled() }
 
-// SetVisible shows or hides a control. In a Grid or Row layout a hidden control also gives up its
+// SetVisible shows or hides the control. In a Grid or Row layout a hidden control also gives up its
 // cell, and the parent is laid out again so the neighbours take the space; SetVisible(true) clears
 // that exclusion. Other layouts keep the gap. A layout option applied to the control after
 // SetVisible(false) (Cell, InRow) replaces its layout data and so undoes the exclusion.
-func SetVisible(w Widget, v bool) {
-	c := w.control()
+func (w *base) SetVisible(v bool) {
+	c := w.ctl
 	c.SetVisible(v)
 	p := c.GetParent()
 	if p == nil {
@@ -52,12 +71,15 @@ func SetVisible(w Widget, v bool) {
 }
 
 // Visible reports the state set by SetVisible, not that of the parents.
-func Visible(w Widget) bool { return w.control().GetVisible() }
+func (w *base) Visible() bool { return w.ctl.GetVisible() }
 
-// SetFont gives a control the font f. Empty Name and zero Size keep the control's current ones (the system font for a default control).
+// SetTooltip sets the hover text; "" removes it. Tooltip() does the same at creation.
+func (w *base) SetTooltip(s string) { w.ctl.SetToolTipText(s) }
+
+// SetFont gives the control the font f. Empty Name and zero Size keep the control's current ones (the system font for a default control).
 // The control owns the font and releases it when replaced by the next SetFont or when it is disposed.
-func SetFont(w Widget, f Font) {
-	c := w.control()
+func (w *base) SetFont(f Font) {
+	c := w.ctl
 	if cur := c.GetFont().GetFontData(); len(cur) > 0 {
 		if f.Name == "" {
 			f.Name = cur[0].GetName()
@@ -87,8 +109,34 @@ func (r *fontRelease) WidgetDisposed(*swt.DisposeEvent) {
 	delete(ownedFonts, r.c)
 }
 
-// SetForeground sets the text color of a control.
-func SetForeground(w Widget, c RGB) { w.control().SetForeground(c.color()) }
+// SetForeground sets the text color of the control.
+func (w *base) SetForeground(c RGB) { w.ctl.SetForeground(c.color()) }
+
+// SetBackground sets the background color of the control; Background() does the same at creation.
+func (w *base) SetBackground(c RGB) { w.ctl.SetBackgroundWithColor(c.color()) }
+
+// Focus gives the control the keyboard focus and reports whether it took it.
+func (w *base) Focus() bool { return w.ctl.SetFocus() }
+
+// Dispose removes the control and its children from the window and lays the parent out again, so
+// the neighbours take the space. The widget must not be used afterwards; a second Dispose does nothing.
+func (w *base) Dispose() {
+	if w.ctl.IsDisposed() {
+		return
+	}
+	p := w.ctl.GetParent()
+	w.ctl.Dispose()
+	if p != nil && !p.IsDisposed() {
+		p.LayoutOverload1(true)
+	}
+}
+
+// OnDispose runs f when the control is disposed: by Dispose, with its parent, or when its window closes.
+func (w *base) OnDispose(f func()) { w.ctl.AddDisposeListener(disposeFunc(f)) }
+
+type disposeFunc func()
+
+func (f disposeFunc) WidgetDisposed(*swt.DisposeEvent) { f() }
 
 // Style options. Each applies to the widgets whose SWT style has that bit and is silently ignored
 // elsewhere. Check (gowt.go) also makes Table and Tree rows checkable.

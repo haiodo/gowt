@@ -50,12 +50,12 @@ func TestBindings(t *testing.T) {
 			t.Error("Set did not check the button")
 		}
 
-		BindEnabled(cb, on)
-		BindVisible(lbl, on)
+		cb.BindEnabled(on)
+		lbl.BindVisible(on)
 		on.Set(false)
 		rx.Flush()
-		if Enabled(cb) || Visible(lbl) {
-			t.Errorf("enabled %v visible %v after Set(false)", Enabled(cb), Visible(lbl))
+		if cb.Enabled() || lbl.Visible() {
+			t.Errorf("enabled %v visible %v after Set(false)", cb.Enabled(), lbl.Visible())
 		}
 
 		// Disposing the widget disposes the binding: the derived loses its last observer and stops.

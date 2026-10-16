@@ -57,25 +57,11 @@ func form(p *gowt.Panel) {
 	}))
 }
 
-// Stack: every child has the full size of the panel, ShowTop picks the visible one.
+// Stack: Pages gives every page the full size of the panel, Show picks the visible one.
 func stack(p *gowt.Panel) {
 	p.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
-	pages := p.Panel(gowt.Grow())
-	pages.SetLayout(gowt.Stack{})
-	first := pages.Panel()
-	first.SetLayout(gowt.Fill{})
-	first.Label("Page one")
-	second := pages.Panel()
-	second.SetLayout(gowt.Fill{})
-	second.Label("Page two")
-	pages.ShowTop(first)
-	onSecond := false // Stack has no getter for the page on top
-	p.Button("Switch", func() {
-		onSecond = !onSecond
-		if onSecond {
-			pages.ShowTop(second)
-		} else {
-			pages.ShowTop(first)
-		}
-	})
+	pages := p.Pages(gowt.Grow())
+	pages.Page().SetLayout(gowt.Fill{}).Label("Page one")
+	pages.Page().SetLayout(gowt.Fill{}).Label("Page two")
+	p.Button("Switch", func() { pages.Show(1 - pages.Current()) })
 }

@@ -25,14 +25,13 @@ func main() {
 
 		var (
 			nav   *gowt.List
-			stack *gowt.Panel
-			views []*gowt.Panel
+			views *gowt.Pages
 			hist  = []int{0}
 			pos   int
 		)
 		show := func(i int) {
 			nav.SetSelection(i)
-			stack.ShowTop(views[i])
+			views.Show(i)
 			w.SetTitle(pages[i])
 		}
 		open := func(i int) {
@@ -78,9 +77,10 @@ func main() {
 
 		content := w.Panel()
 		content.SetLayout(gowt.Grid{Columns: 1})
-		stack = content.Panel(gowt.Grow())
-		stack.SetLayout(gowt.Stack{})
-		views = []*gowt.Panel{appearance(stack.Panel()), general(stack.Panel()), dock(stack.Panel())}
+		views = content.Pages(gowt.Grow())
+		appearance(views.Page())
+		general(views.Page())
+		dock(views.Page())
 
 		look.SetSidebar(w, sidebar, content, 220)
 		show(0)
@@ -99,7 +99,7 @@ func page(p *gowt.Panel) *gowt.Panel {
 }
 
 func heading(p *gowt.Panel, text string) {
-	gowt.SetFont(p.Label(text), gowt.Font{Weight: gowt.Semibold})
+	p.Label(text).SetFont(gowt.Font{Weight: gowt.Semibold})
 }
 
 // row adds a settings row: the label on the left, the control that add creates on the right.

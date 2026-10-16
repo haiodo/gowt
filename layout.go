@@ -188,6 +188,7 @@ func (c FormCell) data() *swt.FormData {
 }
 
 // Stack shows one child at a time, all at the full size of the container; choose it with Panel.ShowTop.
+// Pages does the same and also knows which page is shown.
 type Stack struct{ Margin int }
 
 func (s Stack) layout() swt.LayoutLike {
@@ -204,6 +205,58 @@ func (p *panel) ShowTop(w Widget) {
 	p.stack.TopControl = w.control()
 	p.c.Layout()
 }
+
+// Pages shows one page at a time at the full size of the container, like a tab folder without tabs.
+type Pages struct {
+	base
+	c     *swt.Composite
+	stack *swt.StackLayout
+}
+
+// Pages adds a container of pages; add them with Page and switch with Show.
+// Options: common only.
+func (p *panel) Pages(opts ...Option) *Pages {
+	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
+	s := swt.NewStackLayout()
+	c.SetLayout(s)
+	applyOpts(&c.Control, opts)
+	return &Pages{base{&c.Control}, c, s}
+}
+
+// Page appends a page and returns it as a Panel without a layout. The new page is shown when no
+// other is, so the first page is visible until Show picks another.
+// Options: common only.
+func (g *Pages) Page(opts ...Option) *Panel {
+	c := swt.NewCompositeParentStyle(g.c, resolve(swt.NONE, opts))
+	applyOpts(&c.Control, opts)
+	if g.Current() == -1 {
+		g.stack.TopControl = &c.Control
+	}
+	return &Panel{newPanel(c)}
+}
+
+// Show makes page i, counted from 0 in the order of Page calls, the visible one.
+func (g *Pages) Show(i int) {
+	pages := g.c.GetChildren()
+	if i < 0 || i >= len(pages) {
+		panic(fmt.Sprintf("gowt: Pages.Show(%d) with %d pages", i, len(pages)))
+	}
+	g.stack.TopControl = pages[i]
+	g.c.Layout()
+}
+
+// Current returns the index of the visible page, -1 if there is none.
+func (g *Pages) Current() int {
+	for i, c := range g.c.GetChildren() {
+		if c == g.stack.TopControl {
+			return i
+		}
+	}
+	return -1
+}
+
+// Unwrap returns the underlying composite; its layout is an swt.StackLayout.
+func (g *Pages) Unwrap() *swt.Composite { return g.c }
 
 // Placement options. They describe where a child sits and how it grows without naming the parent's
 // layout, and add up: GrowX(), Span(2) give one cell that spans two columns and fills its width.

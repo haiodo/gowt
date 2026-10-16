@@ -45,6 +45,40 @@ func ExampleApp_After() {
 	})
 }
 
+// Every repeats a function on the UI thread until the returned stop is called.
+func ExampleApp_Every() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Clock")
+		clock := w.Label(time.Now().Format(time.TimeOnly))
+		stop := app.Every(time.Second, func() { clock.SetText(time.Now().Format(time.TimeOnly)) })
+		w.OnClose(func() bool { stop(); return true })
+		w.Show()
+	})
+}
+
+// Pages shows one page at a time; Current tells which.
+func ExamplePanel_Pages() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Wizard")
+		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 6})
+		pages := w.Pages(gowt.Grow())
+		pages.Page().SetLayout(gowt.Fill{}).Label("Step 1")
+		pages.Page().SetLayout(gowt.Fill{}).Label("Step 2")
+		w.Button("Next", func() { pages.Show((pages.Current() + 1) % 2) })
+		w.Show()
+	})
+}
+
+// A menu item with Shortcut runs on Cmd+S (Ctrl+S on Windows and Linux) and shows the key.
+func ExampleShortcut() {
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Editor")
+		file := w.MenuBar().Submenu("&File")
+		file.Item("&Save", func() { fmt.Println("saved") }, gowt.Shortcut("Cmd+S"))
+		w.Show()
+	})
+}
+
 // Grid places children in columns; placement options such as GrowX tune one child.
 func ExampleGrid() {
 	_ = gowt.Run(func(app *gowt.App) {

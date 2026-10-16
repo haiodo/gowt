@@ -76,7 +76,7 @@ func build(app *g.App) {
 		host.SetLayout(g.Fill{})
 		wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
 		if err != nil {
-			host.Unwrap().Dispose()
+			host.Dispose()
 			urlLabel.SetText(err.Error())
 			return
 		}
@@ -123,7 +123,7 @@ func build(app *g.App) {
 			return
 		}
 		pages[i].wv.Dispose()
-		pages[i].host.Unwrap().Dispose()
+		pages[i].host.Dispose()
 		pages = append(pages[:i], pages[i+1:]...)
 		list.Remove(i)
 		if n := len(pages); n > 0 {

@@ -8,6 +8,7 @@ const sectionRadius = 12
 // Section is a grouped "inset" section as in macOS System Settings: rows on a rounded card in the
 // platform's grouped background colour, separated by lines. A heading is a Label above it.
 type Section struct {
+	base
 	c    *swt.Composite
 	rows int
 }
@@ -23,7 +24,7 @@ func (p *panel) Section(opts ...Option) *Section {
 	c.SetLayout(l)
 	applyOpts(&c.Control, opts)
 	installCard(c)
-	return &Section{c: c}
+	return &Section{base: base{&c.Control}, c: c}
 }
 
 // Row adds a row, after a separator unless it is the first. The row is a Panel without a layout:
@@ -36,10 +37,8 @@ func (s *Section) Row() *Panel {
 	s.rows++
 	c := swt.NewCompositeParentStyle(s.c, swt.NONE)
 	c.SetLayoutData(swt.NewGridDataHorizontalAlignmentVerticalAlignmentGrabExcessHorizontalSpaceGrabExcessVerticalSpace(swt.FILL, swt.CENTER, true, false))
-	return &Panel{&panel{c: c}}
+	return &Panel{newPanel(c)}
 }
-
-func (s *Section) control() *swt.Control { return &s.c.Control }
 
 // Unwrap returns the underlying composite.
 func (s *Section) Unwrap() *swt.Composite { return s.c }

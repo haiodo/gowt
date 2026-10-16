@@ -2,10 +2,13 @@ package gowt
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/png"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -420,15 +423,15 @@ func TestEnabledSwitchAndTextLog(t *testing.T) {
 		if len(got) != 1 || got[0] {
 			t.Errorf("OnChange got %v", got)
 		}
-		if !Enabled(sw) {
+		if !sw.Enabled() {
 			t.Error("new control must be enabled")
 		}
-		SetEnabled(sw, false)
-		if Enabled(sw) {
+		sw.SetEnabled(false)
+		if sw.Enabled() {
 			t.Error("SetEnabled(false) not applied")
 		}
 		lbl := w.Label("x", Disabled())
-		if Enabled(lbl) {
+		if lbl.Enabled() {
 			t.Error("Disabled() option not reflected by Enabled")
 		}
 
@@ -479,39 +482,39 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 		b := w.Label("b")
 		w.Show()
 		before := b.l.GetBounds().Y
-		SetVisible(a, false)
-		if Visible(a) || b.l.GetBounds().Y >= before {
-			t.Errorf("hidden label must free its cell: visible %v y %d -> %d", Visible(a), before, b.l.GetBounds().Y)
+		a.SetVisible(false)
+		if a.Visible() || b.l.GetBounds().Y >= before {
+			t.Errorf("hidden label must free its cell: visible %v y %d -> %d", a.Visible(), before, b.l.GetBounds().Y)
 		}
-		SetVisible(a, true)
+		a.SetVisible(true)
 
 		row := w.Panel().SetLayout(Row{})
 		r1 := row.Label("r1")
 		r2 := row.Label("r2")
 		w.Unwrap().LayoutOverload2(true, true)
 		x2 := r2.l.GetBounds().X
-		SetVisible(r1, false)
+		r1.SetVisible(false)
 		if r2.l.GetBounds().X >= x2 {
 			t.Errorf("Row layout kept the gap of a hidden label: x %d -> %d", x2, r2.l.GetBounds().X)
 		}
-		SetFont(b, Font{Size: 14})
-		SetFont(b, Font{Size: 20, Bold: true})
+		b.SetFont(Font{Size: 14})
+		b.SetFont(Font{Size: 20, Bold: true})
 		if len(ownedFonts) != 1 {
 			t.Errorf("ownedFonts %d", len(ownedFonts))
 		}
-		SetFont(b, Font{Size: 15, Weight: Semibold})
+		b.SetFont(Font{Size: 15, Weight: Semibold})
 		if len(ownedFonts) != 1 {
 			t.Errorf("ownedFonts %d after Weight", len(ownedFonts))
 		}
 		if fd := b.l.GetFont().GetFontData()[0]; fd.GetHeight() != 15 {
 			t.Errorf("Weight font height %d", fd.GetHeight())
 		}
-		SetFont(b, Font{Size: 15, Weight: Bold})
+		b.SetFont(Font{Size: 15, Weight: Bold})
 		if b.l.GetFont().GetFontData()[0].GetStyle()&swt.BOLD == 0 {
 			t.Error("Weight Bold is not BOLD in GetFontData")
 		}
-		SetFont(b, Font{Size: 20, Bold: true})
-		SetForeground(b, RGB{200, 0, 0})
+		b.SetFont(Font{Size: 20, Bold: true})
+		b.SetForeground(RGB{200, 0, 0})
 		if b.l.GetFont().GetFontData()[0].GetHeight() != 20 {
 			t.Error("SetFont size not applied")
 		}
@@ -533,4 +536,133 @@ func TestVisibilityFontsAndCanvasMouse(t *testing.T) {
 			t.Errorf("canvas mouse %+v", got)
 		}
 	})
+}
+
+func TestCommonMethodsAndPages(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		w.SetLayout(Grid{Columns: 1})
+		btn := w.Button("b", nil)
+		pages := w.Pages(GrowX())
+		for _, x := range []Widget{btn, w.Label("l"), w.Panel(), w.Table(), pages, w} {
+			x.SetEnabled(false)
+			if x.Enabled() || x.control().GetEnabled() {
+				t.Errorf("%T: SetEnabled(false) did not reach the control", x)
+			}
+			x.SetEnabled(true)
+		}
+		btn.SetTooltip("tip")
+		btn.SetBackground(RGB{10, 20, 30})
+		btn.SetForeground(RGB{40, 50, 60})
+		if btn.b.GetToolTipText() != "tip" || rgbOf(btn.b.GetBackground().GetRGB()) != (RGB{10, 20, 30}) || rgbOf(btn.b.GetForeground().GetRGB()) != (RGB{40, 50, 60}) {
+			t.Error("SetTooltip, SetBackground or SetForeground did not reach the control")
+		}
+		btn.Focus()
+
+		gone := 0
+		l := w.Label("x")
+		l.OnDispose(func() { gone++ })
+		l.Dispose()
+		l.Dispose()
+		if gone != 1 || !l.l.IsDisposed() {
+			t.Errorf("Dispose: OnDispose ran %d times, disposed %v", gone, l.l.IsDisposed())
+		}
+		p := w.Panel()
+		p.Label("a")
+		p.Label("b")
+		p.Relayout()
+		p.Clear()
+		if n := len(p.c.GetChildren()); n != 0 {
+			t.Errorf("Clear left %d children", n)
+		}
+
+		if pages.Current() != -1 {
+			t.Errorf("empty Pages: Current %d", pages.Current())
+		}
+		first, second := pages.Page(), pages.Page()
+		if pages.Current() != 0 || pages.stack.TopControl != first.control() {
+			t.Errorf("first page must be shown: Current %d", pages.Current())
+		}
+		pages.Show(1)
+		if pages.Current() != 1 || pages.stack.TopControl != second.control() {
+			t.Errorf("Show(1): Current %d", pages.Current())
+		}
+		second.Dispose()
+		if pages.Current() != -1 {
+			t.Errorf("disposed page still current: %d", pages.Current())
+		}
+		third := pages.Page()
+		if pages.Current() != 1 || pages.stack.TopControl != third.control() {
+			t.Errorf("a page added while none is shown must be shown: Current %d", pages.Current())
+		}
+		func() {
+			defer func() {
+				if r := recover(); r == nil || !strings.Contains(fmt.Sprint(r), "Pages.Show(3) with 2 pages") {
+					t.Errorf("Show out of range: %v", r)
+				}
+			}()
+			pages.Show(3)
+		}()
+
+		tb := w.Table()
+		tb.Batch(func() {
+			for i := 0; i < 3; i++ {
+				tb.Row("r")
+			}
+		})
+		if tb.Len() != 3 {
+			t.Errorf("Batch rows %d", tb.Len())
+		}
+
+		file := w.MenuBar().Submenu("&File")
+		open := file.Item("&Open", nil, Shortcut("Cmd+O"))
+		want := swt.CTRL | 'O'
+		if runtime.GOOS == "darwin" {
+			want = swt.COMMAND | 'O'
+		}
+		if open.i.GetAccelerator() != want || !strings.Contains(open.i.GetText(), "\t") {
+			t.Errorf("Shortcut: accelerator %#x text %q", open.i.GetAccelerator(), open.i.GetText())
+		}
+		open.SetText("&Open...")
+		if !strings.HasPrefix(open.i.GetText(), "&Open...\t") {
+			t.Errorf("SetText dropped the shortcut: %q", open.i.GetText())
+		}
+
+		w.SetMinSize(200, 100)
+		if m := w.shell.GetMinimumSize(); m.X < 200 || m.Y < 100 {
+			t.Errorf("SetMinSize: %v", m)
+		}
+		if sw, sh := app.ScreenSize(); sw <= 0 || sh <= 0 {
+			t.Errorf("ScreenSize %dx%d", sw, sh)
+		}
+	})
+}
+
+func TestEvery(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var n int
+	var errs []error
+	var err error
+	onMain(func() {
+		err = Run(func(app *App) {
+			app.OnError(func(e error) { errs = append(errs, e) })
+			w := app.Window("t")
+			w.Show()
+			var stop func()
+			stop = app.Every(5*time.Millisecond, func() {
+				n++
+				if n == 1 {
+					panic("tick")
+				}
+				if n == 3 {
+					stop()
+				}
+			})
+			app.After(150*time.Millisecond, w.Close)
+		})
+	})
+	if err != nil || n != 3 || len(errs) != 1 {
+		t.Fatalf("err %v, ticks %d, errors %v", err, n, errs)
+	}
 }

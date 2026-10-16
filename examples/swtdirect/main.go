@@ -15,8 +15,7 @@ func main() {
 		w := app.Window("Facade and swt")
 		w.SetLayout(gowt.Grid{Columns: 1, Margin: 10, Spacing: 8})
 
-		// The facade has no minimum window size: the shell has.
-		w.Unwrap().SetMinimumSize(320, 160)
+		w.SetMinSize(320, 160)
 
 		field := w.Text(gowt.GrowX())
 		echo := w.Label("", gowt.GrowX())

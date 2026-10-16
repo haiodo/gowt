@@ -163,6 +163,30 @@ func (a *App) After(d time.Duration, f func()) {
 	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(f))
 }
 
+// Every runs f on the UI thread every d, the first time after d, until stop is called. stop is safe
+// from any goroutine; called on the UI thread, f included, it keeps f from running again.
+func (a *App) Every(d time.Duration, f func()) (stop func()) {
+	var stopped atomic.Bool
+	ms := int32(d.Milliseconds())
+	r := jrt.NewRunnable(nil)
+	r.Fn = func() {
+		if stopped.Load() {
+			return
+		}
+		a.display.TimerExec(ms, r) // before f, so that a panic in f does not end the ticks
+		f()
+	}
+	a.display.TimerExec(ms, r)
+	return func() { stopped.Store(true) }
+}
+
+// ScreenSize returns the size in points of the primary monitor's area for windows, without the
+// menu bar, Dock or taskbar.
+func (a *App) ScreenSize() (width, height int) {
+	r := a.display.GetPrimaryMonitor().GetClientArea()
+	return int(r.Width), int(r.Height)
+}
+
 // Quit ends the event loop after the current event; safe from any goroutine, a no-op after Run.
 func (a *App) Quit() {
 	defer ignoreDisposed()
@@ -185,6 +209,7 @@ type Option struct {
 	clear int32 // style bits removed from the widget's defaults
 	apply func(*swt.Control)
 	place func(*placement)
+	menu  func(*swt.MenuItem)
 }
 
 // Disabled creates the widget disabled.
@@ -273,6 +298,7 @@ type Panel struct{ *panel }
 // panel holds the container methods. They are declared on an unexported type so that godoc lists
 // them for every embedding type while no exported field named Panel hides the Panel method.
 type panel struct {
+	base
 	c     *swt.Composite
 	stack *swt.StackLayout
 	lay   swt.LayoutLike
@@ -295,13 +321,31 @@ func (p *panel) SetLayout(l Layout) *Panel {
 	return &Panel{p}
 }
 
+// Relayout lays the children out again and recomputes their sizes, as needed after a change that
+// SWT does not lay out by itself, such as a SetText that makes a label longer. p keeps its own
+// size: to let it grow too, Relayout the Window.
+func (p *panel) Relayout() { p.c.LayoutOverload2(true, true) }
+
+// Clear disposes every child and lays p out again, ready for new content.
+func (p *panel) Clear() {
+	for _, ch := range p.c.GetChildren() {
+		ch.Dispose()
+	}
+	if p.stack != nil {
+		p.stack.TopControl = nil
+	}
+	p.c.Layout()
+}
+
 // Panel adds a nested container.
 // Options: Border.
 func (p *panel) Panel(opts ...Option) *Panel {
 	c := swt.NewCompositeParentStyle(p.c, resolve(swt.NONE, opts))
 	applyOpts(&c.Control, opts)
-	return &Panel{&panel{c: c}}
+	return &Panel{newPanel(c)}
 }
+
+func newPanel(c *swt.Composite) *panel { return &panel{base: base{&c.Control}, c: c} }
 
 // Label adds a static text.
 // Options: Wrap, Center, Right, Border.
@@ -309,7 +353,7 @@ func (p *panel) Label(text string, opts ...Option) *Label {
 	l := swt.NewLabel(p.c, resolve(swt.NONE, opts))
 	l.SetText(text)
 	applyOpts(&l.Control, opts)
-	return &Label{l}
+	return &Label{base{&l.Control}, l}
 }
 
 // Spacer adds an empty cell that takes the free width of a Grid row, pushing the cells after it to
@@ -337,7 +381,7 @@ func (p *panel) Separator(opts ...Option) *Label {
 		opts = append([]Option{grow}, opts...)
 	}
 	applyOpts(&l.Control, opts)
-	return &Label{l}
+	return &Label{base{&l.Control}, l}
 }
 
 // Button adds a push button (Check or Radio for other kinds). onClick may be nil.
@@ -346,7 +390,7 @@ func (p *panel) Button(text string, onClick func(), opts ...Option) *Button {
 	b := swt.NewButton(p.c, resolve(swt.NONE, opts))
 	b.SetText(text)
 	applyOpts(&b.Control, opts)
-	w := &Button{b: b}
+	w := &Button{base{&b.Control}, b}
 	if onClick != nil {
 		w.OnClick(onClick)
 	}
@@ -361,7 +405,7 @@ func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Swi
 	b := swt.NewButton(p.c, resolve(swt.CHECK, opts))
 	b.SetText(text)
 	applyOpts(&b.Control, opts)
-	w := &Switch{b}
+	w := &Switch{base{&b.Control}, b}
 	if onChange != nil {
 		w.OnChange(onChange)
 	}
@@ -373,7 +417,7 @@ func (p *panel) Switch(text string, onChange func(on bool), opts ...Option) *Swi
 func (p *panel) Text(opts ...Option) *Text {
 	t := swt.NewText(p.c, resolve(swt.NONE, opts))
 	applyOpts(&t.Control, opts)
-	return &Text{t}
+	return &Text{base{&t.Control}, t}
 }
 
 // Window is a top-level window.
@@ -420,7 +464,7 @@ func (w *Window) SetTopInset(points int) {
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, resolve(swt.SHELL_TRIM, opts))
 	s.SetText(title)
-	return &Window{panel: &panel{c: &s.Composite}, shell: s}
+	return &Window{panel: newPanel(&s.Composite), shell: s}
 }
 
 // Show packs the window to its content size (unless SetSize was called) and opens it.
@@ -449,6 +493,9 @@ func (w *Window) SetSize(width, height int) {
 	w.shell.SetSize(int32(width), int32(height))
 }
 
+// SetMinSize keeps the user from resizing the window below width x height points.
+func (w *Window) SetMinSize(width, height int) { w.shell.SetMinimumSize(int32(width), int32(height)) }
+
 // Close closes the window as the user would, running OnClose.
 func (w *Window) Close() { w.shell.Close() }
 
@@ -465,7 +512,10 @@ func (w *Window) OnClose(f func() bool) {
 func (w *Window) Unwrap() *swt.Shell { return w.shell }
 
 // Label is a static text.
-type Label struct{ l *swt.Label }
+type Label struct {
+	base
+	l *swt.Label
+}
 
 // SetText replaces the label text.
 func (l *Label) SetText(s string) { l.l.SetText(s) }
@@ -474,7 +524,10 @@ func (l *Label) SetText(s string) { l.l.SetText(s) }
 func (l *Label) Unwrap() *swt.Label { return l.l }
 
 // Button is a push, check or radio button.
-type Button struct{ b *swt.Button }
+type Button struct {
+	base
+	b *swt.Button
+}
 
 // SetText replaces the button text.
 func (b *Button) SetText(s string) { b.b.SetText(s) }
@@ -494,7 +547,10 @@ func (b *Button) OnClick(f func()) {
 }
 
 // Switch is an on/off toggle, see panel.Switch.
-type Switch struct{ b *swt.Button }
+type Switch struct {
+	base
+	b *swt.Button
+}
 
 // Checked reports whether the switch is on.
 func (s *Switch) Checked() bool { return s.b.GetSelection() }
@@ -514,7 +570,10 @@ func (s *Switch) OnChange(f func(on bool)) {
 }
 
 // Text is an edit field.
-type Text struct{ t *swt.Text }
+type Text struct {
+	base
+	t *swt.Text
+}
 
 // Text returns the current content.
 func (t *Text) Text() string { return t.t.GetText() }

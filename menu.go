@@ -1,6 +1,15 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"fmt"
+	"runtime"
+	"strconv"
+	"strings"
+	"unicode"
+	"unicode/utf8"
+
+	"github.com/haiodo/gowt/swt"
+)
 
 // Menu is a menu bar, a popup menu or a submenu.
 type Menu struct{ m *swt.Menu }
@@ -22,11 +31,16 @@ func PopupMenu(w Widget) *Menu {
 }
 
 // Item appends a push item (Check or Radio for other kinds). onClick may be nil.
-// A "&" in text marks a mnemonic; text after "\t" is shown as the shortcut hint (it does not bind a key).
-// Options: Check, Radio; the common options are ignored.
+// A "&" in text marks a mnemonic. Shortcut binds a key and shows it; text after "\t" is only shown.
+// Options: Check, Radio, Shortcut; the common options are ignored.
 func (m *Menu) Item(text string, onClick func(), opts ...Option) *MenuItem {
 	it := swt.NewMenuItem(m.m, resolve(swt.NONE, opts))
 	it.SetText(text)
+	for _, o := range opts {
+		if o.menu != nil {
+			o.menu(it)
+		}
+	}
 	w := &MenuItem{it}
 	if onClick != nil {
 		w.OnClick(onClick)
@@ -60,8 +74,14 @@ func (m *Menu) Unwrap() *swt.Menu { return m.m }
 // MenuItem is a menu entry.
 type MenuItem struct{ i *swt.MenuItem }
 
-// SetText replaces the item text; "&" marks the mnemonic.
-func (i *MenuItem) SetText(s string) { i.i.SetText(s) }
+// SetText replaces the item text; "&" marks the mnemonic. The key of a Shortcut stays shown unless s
+// has a "\t" part of its own.
+func (i *MenuItem) SetText(s string) {
+	if _, hint, ok := strings.Cut(i.i.GetText(), "\t"); ok && i.i.GetAccelerator() != 0 && !strings.Contains(s, "\t") {
+		s += "\t" + hint
+	}
+	i.i.SetText(s)
+}
 
 // SetEnabled enables or greys out the item.
 func (i *MenuItem) SetEnabled(v bool) { i.i.SetEnabled(v) }
@@ -78,6 +98,85 @@ func (i *MenuItem) Unwrap() *swt.MenuItem { return i.i }
 // OnClick runs f when the item is chosen (or toggled).
 func (i *MenuItem) OnClick(f func()) {
 	onSelect(i.i, func(*swt.SelectionEvent) { f() })
+}
+
+// Shortcut binds keys to a menu item and shows them next to its text: Shortcut("Cmd+O"),
+// Shortcut("Cmd+Shift+S"), Shortcut("Alt+Left"). Cmd is Command on macOS and Ctrl elsewhere; Ctrl,
+// Alt and Shift are the same keys on every OS. The last part is a letter, digit or punctuation mark,
+// or one of Left, Right, Up, Down, Home, End, PageUp, PageDown, Enter, Esc, Tab, Space, Backspace,
+// Delete, Insert, F1-F12, in any case. Shortcut panics on a name it does not know.
+func Shortcut(keys string) Option {
+	accel, label, err := parseShortcut(keys, runtime.GOOS)
+	if err != nil {
+		panic(err)
+	}
+	return Option{menu: func(it *swt.MenuItem) {
+		it.SetAccelerator(accel)
+		text, _, _ := strings.Cut(it.GetText(), "\t")
+		it.SetText(text + "\t" + label) // macOS shows the bound key itself and drops the text after "\t"
+	}}
+}
+
+var namedKeys = []struct {
+	name string
+	code int32
+}{
+	{"Left", swt.ARROW_LEFT}, {"Right", swt.ARROW_RIGHT}, {"Up", swt.ARROW_UP}, {"Down", swt.ARROW_DOWN},
+	{"Home", swt.HOME}, {"End", swt.END}, {"PageUp", swt.PAGE_UP}, {"PageDown", swt.PAGE_DOWN},
+	{"Enter", int32(swt.CR)}, {"Esc", int32(swt.ESC)}, {"Tab", int32(swt.TAB)}, {"Space", int32(swt.SPACE)},
+	{"Backspace", int32(swt.BS)}, {"Delete", int32(swt.DEL)}, {"Insert", swt.INSERT},
+}
+
+// parseShortcut returns the SWT accelerator of keys on goos and the text that shows it.
+func parseShortcut(keys, goos string) (accel int32, label string, err error) {
+	parts := strings.Split(keys, "+")
+	if strings.HasSuffix(keys, "++") {
+		parts = append(parts[:len(parts)-2], "+") // "Cmd++": the key is the plus sign
+	}
+	words := make([]string, len(parts))
+	for i, p := range parts[:len(parts)-1] {
+		switch strings.ToLower(p) {
+		case "cmd":
+			m, w := swt.CTRL, "Ctrl"
+			if goos == "darwin" {
+				m, w = swt.COMMAND, "Cmd"
+			}
+			accel, words[i] = accel|m, w
+		case "ctrl":
+			accel, words[i] = accel|swt.CTRL, "Ctrl"
+		case "alt":
+			accel, words[i] = accel|swt.ALT, "Alt"
+		case "shift":
+			accel, words[i] = accel|swt.SHIFT, "Shift"
+		default:
+			return 0, "", fmt.Errorf("gowt: Shortcut(%q): unknown modifier %q, want Cmd, Ctrl, Alt or Shift", keys, p)
+		}
+	}
+	code, name := shortcutKey(parts[len(parts)-1])
+	if code == 0 {
+		return 0, "", fmt.Errorf("gowt: Shortcut(%q): unknown key %q", keys, parts[len(parts)-1])
+	}
+	words[len(words)-1] = name
+	return accel | code, strings.Join(words, "+"), nil
+}
+
+// shortcutKey returns the SWT key code and the shown name of one key, 0 if it has none.
+func shortcutKey(k string) (int32, string) {
+	if r, n := utf8.DecodeRuneInString(k); n == len(k) && r > ' ' && r < 0x7f {
+		r = unicode.ToUpper(r)
+		return r, string(r)
+	}
+	for _, nk := range namedKeys {
+		if strings.EqualFold(k, nk.name) {
+			return nk.code, nk.name
+		}
+	}
+	if num, ok := strings.CutPrefix(strings.ToUpper(k), "F"); ok {
+		if n, err := strconv.Atoi(num); err == nil && n >= 1 && n <= 12 {
+			return swt.F1 + int32(n-1), "F" + strconv.Itoa(n)
+		}
+	}
+	return 0, ""
 }
 
 // TrayIcon is an icon in the system tray / status area.

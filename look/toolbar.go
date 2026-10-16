@@ -118,7 +118,7 @@ func (b *toolbarBar) fill() {
 	if fd := b.title.Unwrap().GetFont().GetFontData(); len(fd) > 0 {
 		size = int(fd[0].GetHeight()) + 2
 	}
-	gowt.SetFont(b.title, gowt.Font{Size: size, Weight: gowt.Semibold})
+	b.title.SetFont(gowt.Font{Size: size, Weight: gowt.Semibold})
 	for _, it := range trail {
 		b.item(p, it)
 	}

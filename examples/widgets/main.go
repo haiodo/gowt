@@ -42,7 +42,7 @@ func input(p *gowt.Panel, status *gowt.Label) {
 	opts.SetLayout(gowt.Row{Margin: 8, Spacing: 12})
 	remember := opts.Button("Remember me", nil, gowt.Check())
 	remember.SetChecked(true)
-	opts.Switch("Enable options", func(on bool) { gowt.SetEnabled(remember, on) }).SetChecked(true)
+	opts.Switch("Enable options", func(on bool) { remember.SetEnabled(on) }).SetChecked(true)
 	opts.Button("Small", nil, gowt.Radio())
 	opts.Button("Large", nil, gowt.Radio())
 	opts.Link(`<a href="https://example.com">Terms</a>`, func(href string) { status.SetText("link: " + href) })

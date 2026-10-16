@@ -38,7 +38,7 @@ func main() {
 			}
 			say("open: " + strings.Join(files, ", "))
 		}
-		file.Item("&Open...\tCmd+O", openFile)
+		file.Item("&Open...", openFile, gowt.Shortcut("Cmd+O"))
 		file.Item("&Save as...", func() {
 			say(fmt.Sprint("save: ", w.FileDialog(gowt.FileDialog{Title: "Save", Save: true, Name: "untitled.txt"})))
 		})

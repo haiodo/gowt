@@ -120,6 +120,7 @@ go func() { for range time.Tick(time.Second) { procs.Post(poll()) } }()
 - `Nodes` takes `children func(T) []T` (nil for a flat tree) and `fill(n, item, created)`: it runs after the node's children exist, with `created` true when the node is made, so the initial expansion goes there.
 - The binding owns the rows of its widget: rows added or removed by hand are dropped and the list is shown again on the next change. Columns go in `Init`.
 - Keys should be unique among siblings; a repeated key gets a row made again on every change. A node moved to another parent is a new node there.
+- `key`, `children` and `fill` run untracked: only a change of the list itself updates the rows, so everything they show belongs in the list or is read by the `Derived` that makes it.
 
 Cost, per change: the common prefix and suffix are compared by key; the middle goes through a key map and the longest increasing subsequence of old positions, O(n log n), and only rows outside it are made again. When more than half the rows of a level would go, the level is cleared and made again, which is what a hand-written refill costs. A change without new, removed or moved keys allocates nothing beyond the widget calls. The binding keeps per row the key, the last element and the native item; the buffers of the diff grow to the largest change seen.
 

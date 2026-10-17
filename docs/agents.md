@@ -31,7 +31,7 @@ if err != nil {
 - A constructor (`gowt.Label`, `gowt.Button`, `gowt.HBox`, ...) returns a description, a `gowt.Option`. The widget is created when the description is passed to its parent: to a container constructor, to `app.Window(title, ...)` or to `container.Add(...)`. The nesting of the calls is the nesting on screen.
 - Everything about a widget goes into its option list: placement, style, events (`OnClick`, `OnChange`, `OnSelect`, `OnActivate`), initial state (`Hint`, `Checked`, `Selected`, `Value`) and rx bindings (`Bind`, `BindText`, `BindEnabled`, `BindVisible`).
 - Data the screen shares lives in `rx` state (`rx.New`, `rx.Compute`); widgets bind to it, callbacks `Set` it. No variable per widget.
-- Imperative setup (filling a Table or Tree, `Split.SetWeights`, tool bar items) goes in `gowt.Init(func(t *gowt.TableView) {...})`, which runs once the widget and its children exist. Widget types end in `View`; containers are `*gowt.Panel`.
+- Rows of a Table or Tree that show rx state are declared with `Rows`, `Nodes` (and `Items` for a List or Combo), see below. Imperative setup (columns, fixed rows, `Split.SetWeights`, tool bar items) goes in `gowt.Init(func(t *gowt.TableView) {...})`, which runs once the widget and its children exist. Widget types end in `View`; containers are `*gowt.Panel`.
 - `gowt.Ref(&x)` (`var x *gowt.PagesView`) is for a widget a later callback calls into (`pages.Show`, `canvas.Redraw`) when no state fits. Ref is set by the `Add` or `app.Window` call that creates the widget.
 - A child whose callback uses `w` goes into `w.Add(...)`, after `w` exists. Children that do not can go straight into `app.Window("Title", children...)`.
 - Closing parens go on the line of the last child; the indentation shows the nesting.
@@ -148,9 +148,29 @@ w.Add(
 
 Rows, nodes, columns, tool items and menu items are not widgets: they come from their owner's methods. Wrappers are fresh per call, so keep per-row state with `SetData`/`Data`.
 
+Rows that show data in rx state are declared, as Svelte's `{#each list as item (key)}`: one row per element, matched by key when the state changes. Only new rows and rows whose element is no longer `==` run `fill`; the rest, selection and expansion included, stay as they are. The element type must be comparable: a struct of strings and numbers, or a pointer (compared by identity).
+
+```go
+procs := rx.NewFunc([]proc(nil), nil)               // set or Post a new slice per poll
+gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) { t.Column("Name", 200); t.Column("CPU", 60) }),
+	gowt.Rows(procs, func(p proc) int { return p.pid }, func(r *gowt.TableRow, p proc) {
+		r.SetTextAt(0, p.name)
+		r.SetTextAt(1, p.cpu)
+	}))
+gowt.Tree(gowt.Grow(), gowt.Nodes(dirs, dir.path, kidsOf, func(n *gowt.Node, d dir, created bool) {
+	n.SetText(d.name)
+	if created {
+		n.SetExpanded(true)                         // initial state only: a node the user collapsed stays collapsed
+	}
+}))
+gowt.List(nil, gowt.Items(names))                  // *rx.State[[]string]; also Combo
+```
+
+The binding owns the rows: no `Row`, `Remove` or `Clear` by hand on that widget. `kidsOf(d dir) []dir` returns a node's children (nil for a flat tree); `fill` runs after them, and `created` is false when only the element changed. A key that moves among its siblings gets its row made again (fill runs, selection and expansion are kept). Columns go in `Init`; `Rows` fills after it whatever the order of the options.
+
 ## Leaving the facade
 
-`Unwrap()` returns the swt object for what the facade lacks (drawing into an image, key events of one widget). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `Window.OnKey`, `GC.SetFont`, `Font.Scale`, `App.SystemFont`, `Adaptive`, `Indent`, `App.Flush`, `TrimHead` and `look.DragsWindow` exist already. The packages `jface` and `browser` are the SWT port for porting Java code; new screens do not use them.
+`Unwrap()` returns the swt object for what the facade lacks (drawing into an image, key events of one widget). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `Window.OnKey`, `Rows`/`Nodes`/`Items`, `GC.SetFont`, `Font.Scale`, `App.SystemFont`, `Adaptive`, `Indent`, `App.Flush`, `TrimHead` and `look.DragsWindow` exist already. The packages `jface` and `browser` are the SWT port for porting Java code; new screens do not use them.
 
 ## Option to widgets
 
@@ -187,6 +207,9 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Value(n)` | Scale, Slider, Spinner, Progress |
 | `Bind(state)` | Text, Combo (`string`); Switch, Check Button (`bool`); Scale, Slider, Spinner, Combo, List (`int`) |
 | `BindText(r)` | Label, Button, Link |
+| `Rows(list, key, fill)` | Table |
+| `Nodes(list, key, children, fill)` | Tree |
+| `Items(list)` | List, Combo |
 | `Gap(n)`, `Padding(n)` | Window, VBox, HBox, Grid, Flow, Fill, Form, Group, Tab, Scroll |
 | `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Place(h, v)`, `Indent(x, y)`, `Cell(...)` | any widget in a VBox, HBox or Grid |
 | `Size(w, h)` | any widget in a VBox, HBox, Grid, Flow or Form |

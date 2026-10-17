@@ -21,6 +21,7 @@ New API
 - `Font.Scale`: with `Size` 0 the size is the system font size times `Scale`, for widgets (`SetFont`, the new option `Typeface(font)`), `GC.SetFont` and `TextStyle.Font`. `App.SystemFont()` returns the family and size of the system UI font.
 - `icons.FromSVG(app, data, size, rgb)`: an image from an SVG document with `currentColor` drawn in `rgb`, cached per document, size and colour like `icons.Get`.
 - `TableRow.TextAt`, `SetTextAt`, `SetImageAt`, as on `Node`.
+- Rows bound to rx state, Svelte's keyed `{#each}`: `Rows(list, key, fill)` on a Table, `Nodes(list, key, children, fill)` on a Tree and `Items(list)` on a List or Combo keep one row, node or entry per element of an `rx.Reader[[]T]`. Rows are matched by key; `fill` runs only for new rows and rows whose element is no longer `==`, the others keep their native item, selection and expansion, and a moved key keeps its selection (and on a Tree the expansion of its subtree). A change of 10 rows in 1000 takes 20 µs and 75 allocations on Linux, against 5.3 ms and 35108 for clearing and refilling the table by hand; a full replace or a reverse costs what the refill costs. `examples/rows` shows a table and a tree that change every second.
 
 Breaking change
 - `List.SetSelection(i...)` and `Table.SetSelection(i...)` are `Select(i...)`, as on Combo, Tabs and Tree.

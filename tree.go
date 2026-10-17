@@ -82,6 +82,9 @@ type boxOpt struct {
 // error to report when w cannot take it.
 type hook func(w Widget) error
 
+// lateHook runs after the hooks: Rows and Nodes fill rows after Init has made the columns.
+type lateHook func(w Widget) error
+
 // node is a widget description: build creates the widget in h, applies its options and children,
 // and returns it, or nil after reporting that h cannot hold it. Nothing of it stays after build.
 type node struct {
@@ -89,13 +92,14 @@ type node struct {
 	build func(h host) Widget
 }
 
-func (style) option()   {}
-func (apply) option()   {}
-func (place) option()   {}
-func (menuOpt) option() {}
-func (boxOpt) option()  {}
-func (hook) option()    {}
-func (*node) option()   {}
+func (style) option()    {}
+func (apply) option()    {}
+func (place) option()    {}
+func (menuOpt) option()  {}
+func (boxOpt) option()   {}
+func (hook) option()     {}
+func (lateHook) option() {}
+func (*node) option()    {}
 
 // host is a container that children are created in.
 type host interface {
@@ -213,6 +217,13 @@ func finish(w Widget, allow styleID, opts []Option) {
 	// Hooks come after the children, so that Selected finds the tabs and Init the panes of a Split.
 	for _, o := range opts {
 		if f, ok := o.(hook); ok {
+			if err := f(w); err != nil {
+				reportOn(c, err)
+			}
+		}
+	}
+	for _, o := range opts {
+		if f, ok := o.(lateHook); ok {
 			if err := f(w); err != nil {
 				reportOn(c, err)
 			}

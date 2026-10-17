@@ -800,12 +800,14 @@ gowt func Hint(s string) Option
 gowt func Indent(x int, y int) Option
 gowt func Indeterminate() Option
 gowt func Init[T Widget](f func(T)) Option
+gowt func Items(list github.com/haiodo/gowt/rx.Reader[[]string]) Option
 gowt func Label(text string, opts ...Option) Option
 gowt func Link(text string, opts ...Option) Option
 gowt func List(items []string, opts ...Option) Option
 gowt func MultiSelect() Option
 gowt func Multiline() Option
 gowt func NoBorder() Option
+gowt func Nodes[T, K comparable](list github.com/haiodo/gowt/rx.Reader[[]T], key func(T) K, children func(T) []T, fill func(n *Node, item T, created bool)) Option
 gowt func OnActivate[F func() | func(int) | func(*Node)](f F) Option
 gowt func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option
 gowt func OnClick[F func() | func(string)](f F) Option
@@ -821,6 +823,7 @@ gowt func Radio() Option
 gowt func ReadOnly() Option
 gowt func Ref[T Widget](p *T) Option
 gowt func Right() Option
+gowt func Rows[T, K comparable](list github.com/haiodo/gowt/rx.Reader[[]T], key func(T) K, fill func(r *TableRow, item T)) Option
 gowt func Run(setup func(*App)) (err error)
 gowt func Same[T Widget](w *T, offset int) Edge
 gowt func Sash(opts ...Option) Option

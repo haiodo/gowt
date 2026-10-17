@@ -1,6 +1,6 @@
 # Events and the UI thread
 
-Example: [`examples/events`](../examples/events).
+Examples: [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) (rows bound to state).
 
 ## Callbacks
 
@@ -87,6 +87,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way) |
 | `gowt.BindText(r)` | option: the text of a Label, Button or Link follows an `rx.Reader[string]` (a `State` or a `Derived`) |
 | `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
+| `gowt.Rows(list, key, fill)`, `gowt.Nodes(list, key, children, fill)`, `gowt.Items(list)` | options: one Table row, Tree node or List/Combo entry per element of an `rx.Reader[[]T]`, matched by key, see below |
 | `gowt.Watch(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives: the binding for what no option covers |
 
 Rules:
@@ -97,6 +98,42 @@ Rules:
 - A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
 - An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
 - `BindText` lays the window out again on the next event-loop turn, so a growing label is not clipped. `Label.SetText` still does not.
+
+### Rows bound to state
+
+`Rows`, `Nodes` and `Items` are Svelte's keyed `{#each list as item (key)}` for a Table, a Tree and a List or Combo. The app keeps the list in one `State` (a new slice per change, `rx.NewFunc(v, nil)`) or computes it in a `Derived`; the binding keeps the widget in step:
+
+```go
+type proc struct{ pid int; name, cpu string }       // comparable: compared with == to find changed rows
+procs := rx.NewFunc([]proc(nil), nil)
+gowt.Table(gowt.Grow(),
+	gowt.Init(func(t *gowt.TableView) { t.Column("Name", 200); t.Column("CPU", 60, gowt.Right()) }),
+	gowt.Rows(procs, func(p proc) int { return p.pid }, func(r *gowt.TableRow, p proc) {
+		r.SetTextAt(0, p.name)
+		r.SetTextAt(1, p.cpu)
+	}))
+go func() { for range time.Tick(time.Second) { procs.Post(poll()) } }()
+```
+
+- A row is matched by `key`. `fill` runs for a new key and for a row whose element is no longer `==` to the one it showed; equal rows are not touched. A removed key's row goes, with its selection.
+- Rows whose keys keep their order keep their native items, so selection, check boxes and scroll position stay. A key that moved is made again at its new place (`fill` runs) and keeps its selection; on a Tree it keeps the expansion and selection of its whole subtree.
+- `Nodes` takes `children func(T) []T` (nil for a flat tree) and `fill(n, item, created)`: it runs after the node's children exist, with `created` true when the node is made, so the initial expansion goes there.
+- The binding owns the rows of its widget: rows added or removed by hand are dropped and the list is shown again on the next change. Columns go in `Init`.
+- Keys should be unique among siblings; a repeated key gets a row made again on every change. A node moved to another parent is a new node there.
+
+Cost, per change: the common prefix and suffix are compared by key; the middle goes through a key map and the longest increasing subsequence of old positions, O(n log n), and only rows outside it are made again. When more than half the rows of a level would go, the level is cleared and made again, which is what a hand-written refill costs. A change without new, removed or moved keys allocates nothing beyond the widget calls. The binding keeps per row the key, the last element and the native item; the buffers of the diff grow to the largest change seen.
+
+Linux (GTK, arm64, Docker), 1000 rows, two columns, per change after `app.Flush()`:
+
+| Change | `Rows` | clear and refill by hand |
+|---|---|---|
+| 10 rows changed | 20 µs, 75 allocs | 5.3 ms, 35108 allocs |
+| 10 rows inserted | 0.13 ms, 371 allocs | 5.3 ms |
+| all keys new | 5.4 ms, 35116 allocs | 5.4 ms |
+| reversed | 5.3 ms, 35191 allocs | 5.3 ms |
+| Tree, 100 nodes with 10 children each, 10 changed | 36 µs, 75 allocs | 5.9 ms, 47791 allocs |
+
+Setting the texts of the 10 changed rows by hand, knowing which they are, takes 17 µs and 64 allocs.
 
 ## Errors
 

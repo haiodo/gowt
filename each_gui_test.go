@@ -19,15 +19,15 @@ type proc struct {
 func procKey(p proc) int { return p.pid }
 
 func fillProc(r *TableRow, p proc) {
-	r.SetText(0, p.name)
-	r.SetText(1, p.cpu)
+	r.SetTextAt(0, p.name)
+	r.SetTextAt(1, p.cpu)
 }
 
 func tableTexts(t *TableView) string {
 	var s []string
 	for i := range t.Len() {
 		r := t.RowAt(i)
-		s = append(s, r.Text(0)+":"+r.Text(1))
+		s = append(s, r.TextAt(0)+":"+r.TextAt(1))
 	}
 	return strings.Join(s, " ")
 }
@@ -35,7 +35,7 @@ func tableTexts(t *TableView) string {
 func tableSelection(t *TableView) string {
 	var s []string
 	for _, i := range t.Selected() {
-		s = append(s, t.RowAt(i).Text(0))
+		s = append(s, t.RowAt(i).TextAt(0))
 	}
 	return strings.Join(s, " ")
 }
@@ -50,7 +50,7 @@ func TestRowsTable(t *testing.T) {
 			t.Fatalf("first fill %q", got)
 		}
 		first := tb.RowAt(0).Unwrap()
-		tb.SetSelection(1, 2)
+		tb.Select(1, 2)
 		list.Set([]proc{{1, "a", "5"}, {4, "d", "1"}, {3, "c", "0"}, {2, "b", "0"}})
 		rx.Flush()
 		if got := tableTexts(tb); got != "a:5 d:1 c:0 b:0" {
@@ -63,7 +63,7 @@ func TestRowsTable(t *testing.T) {
 			t.Error("the row of a changed element was made again")
 		}
 		list.Set([]proc{{1, "a", "5"}, {3, "c", "0"}, {2, "b", "0"}}) // d goes; GTK would select a neighbour
-		tb.SetSelection(1)
+		tb.Select(1)
 		list.Set([]proc{{1, "a", "5"}, {2, "b", "0"}})
 		rx.Flush()
 		if got := tableSelection(tb); got != "" {
@@ -140,7 +140,7 @@ func TestItemsListCombo(t *testing.T) {
 		names := rx.NewFunc([]string{"a", "b", "c"}, nil)
 		l := put[*ListView](w, List(nil, Items(names)))
 		c := put[*ComboView](w, Combo(nil, ReadOnly(), Items(names)))
-		l.SetSelection(2)
+		l.Select(2)
 		c.Select(2)
 		names.Set([]string{"x", "c", "a"})
 		rx.Flush()

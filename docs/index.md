@@ -50,7 +50,7 @@ Four ideas carry the whole API:
 | Installation, per OS | [install.md](install.md) | - |
 | Windows and layouts | [windows-layouts.md](windows-layouts.md) | [`examples/layouts`](../examples/layouts) |
 | Widgets | [widgets.md](widgets.md) | [`examples/widgets`](../examples/widgets) |
-| Events, the UI thread and reactive state | [events.md](events.md) | [`examples/events`](../examples/events) |
+| Events, the UI thread and reactive state | [events.md](events.md) | [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) |
 | Dialogs and menus | [dialogs-menus.md](dialogs-menus.md) | [`examples/dialogs`](../examples/dialogs) |
 | Graphics and images | [graphics.md](graphics.md) | [`examples/graphics`](../examples/graphics) |
 | Theme and platform look | [theme-look.md](theme-look.md) | [`examples/theme`](../examples/theme) |

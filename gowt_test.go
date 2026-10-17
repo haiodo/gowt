@@ -390,7 +390,19 @@ func TestTreeColumnsAndCells(t *testing.T) {
 		if n.TextAt(1) != "42" || n.Text() != "root" {
 			t.Errorf("cells %q %q", n.Text(), n.TextAt(1))
 		}
+		// The table goes in before Show, which lays it out; put alone leaves it 0x0, where GTK finds no row.
+		tb := put[*TableView](w, Table())
+		tb.Column("a", 80)
+		tb.Column("b", 80)
+		r := tb.Row("x", "y")
+		tb.SetSort(nil, SortNone)
 		w.Show()
+		// GTK allocates the table on an event-loop turn; until then a Table column's GetWidth is 0.
+		for i := 0; i < 50 && tb.Unwrap().GetColumnIndex(0).GetWidth() == 0; i++ {
+			for app.display.ReadAndDispatch() {
+			}
+			time.Sleep(time.Millisecond)
+		}
 		bounds := n.Unwrap().GetBoundsIndex(1)
 		got, col := tr.CellAt(int(bounds.X+bounds.Width/2), int(bounds.Y+bounds.Height/2))
 		if got == nil || got.Text() != "root" || col != 1 {
@@ -400,11 +412,6 @@ func TestTreeColumnsAndCells(t *testing.T) {
 			t.Errorf("tree CellAt outside: %v col %d", got, col)
 		}
 
-		tb := put[*TableView](w, Table())
-		tb.Column("a", 80)
-		tb.Column("b", 80)
-		r := tb.Row("x", "y")
-		tb.SetSort(nil, SortNone)
 		rb := r.Unwrap().GetBoundsIndex(1)
 		if row, col := tb.CellAt(int(rb.X+rb.Width/2), int(rb.Y+rb.Height/2)); row != 0 || col != 1 {
 			t.Errorf("table CellAt: row %d col %d", row, col)

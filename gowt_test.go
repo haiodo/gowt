@@ -119,7 +119,7 @@ func TestListWidgets(t *testing.T) {
 
 		l := put[*ListView](w, List([]string{"x", "y", "z"}, MultiSelect()))
 		l.OnSelect(func(i int) { list = i })
-		l.SetSelection(2, 0)
+		l.Select(2, 0)
 		notify(l.Unwrap(), swt.Selection)
 		if got := l.Selected(); len(got) != 2 || l.Len() != 3 {
 			t.Errorf("list selection %v len %d", got, l.Len())
@@ -135,13 +135,13 @@ func TestListWidgets(t *testing.T) {
 		tb.Column("s", 50, Right())
 		tb.Row("a", "1")
 		r := tb.Row("b", "2")
-		r.SetText(1, "22")
+		r.SetTextAt(1, "22")
 		r.SetChecked(true)
 		r.SetData("tag")
 		tb.OnSelect(func(i int) { row = i })
-		tb.SetSelection(1)
+		tb.Select(1)
 		notify(tb.Unwrap(), swt.Selection)
-		if tb.Len() != 2 || tb.RowAt(1).Text(1) != "22" || !tb.RowAt(1).Checked() || tb.RowAt(1).Data() != "tag" {
+		if tb.Len() != 2 || tb.RowAt(1).TextAt(1) != "22" || !tb.RowAt(1).Checked() || tb.RowAt(1).Data() != "tag" {
 			t.Errorf("table state: len %d", tb.Len())
 		}
 
@@ -329,8 +329,8 @@ func TestImageAndCanvas(t *testing.T) {
 			_, plain := g.TextSize("hi")
 			g.SetFont(Font{Size: 40, Weight: Semibold})
 			g.SetFont(Font{Size: 40, Weight: Semibold})
-			if _, big := g.TextSize("hi"); big <= plain || len(g.c.fonts) != 1 {
-				t.Errorf("SetFont: height %d, canvas font %d; %d fonts made", big, plain, len(g.c.fonts))
+			if _, big := g.TextSize("hi"); big <= plain || len(g.c.fonts.fonts) != 1 {
+				t.Errorf("SetFont: height %d, canvas font %d; %d fonts made", big, plain, len(g.c.fonts.fonts))
 			}
 			g.SetFont(Font{})
 			if _, h := g.TextSize("hi"); h != plain {

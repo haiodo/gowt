@@ -68,8 +68,7 @@ func (c *Clipboard) SetFiles(paths []string) error {
 	return c.set(paths, swt.FileTransferGetInstance().AsTransfer())
 }
 
-// Image returns a copy of the image on the clipboard. The App owns it and disposes it when
-// Run returns; Dispose may be called earlier.
+// Image returns a copy of the image on the clipboard, owned by the App like every Image.
 func (c *Clipboard) Image() (img *Image, ok bool) {
 	d, ok := c.c.GetContents(swt.ImageTransferGetInstance()).(*swt.ImageData)
 	if !ok || d == nil {

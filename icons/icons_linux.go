@@ -39,5 +39,5 @@ func systemIcon(a *gowt.App, e iconEntry, px int, c gowt.RGB) *swt.ImageData {
 	}
 	hex := fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B)
 	src = hexColor.ReplaceAll(src, []byte(hex))
-	return svg.NewImageDataProvider(src, int32(px), int32(px), hex).GetImageData(100)
+	return svg.NewImageDataProvider(src, px, px, hex).GetImageData(100)
 }

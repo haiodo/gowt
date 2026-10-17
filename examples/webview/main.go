@@ -36,7 +36,7 @@ func main() {
 			})),
 			gowt.Fill(gowt.Grow(), gowt.Size(480, 280), gowt.Ref(&host)))
 
-		wv, err = webview.New(host.Unwrap(), webview.Options{})
+		wv, err = webview.New(host, webview.Options{})
 		if err != nil {
 			// For example no WebView2 Runtime on Windows, or no WebKitGTK on Linux.
 			status.Set("no web view: " + err.Error())

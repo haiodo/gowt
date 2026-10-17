@@ -30,7 +30,7 @@ func main() {
 			pos   int
 		)
 		show := func(i int) {
-			nav.SetSelection(i)
+			nav.Select(i)
 			views.Show(i)
 			w.SetTitle(pages[i])
 		}

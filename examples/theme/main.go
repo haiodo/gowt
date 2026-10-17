@@ -13,10 +13,17 @@ func main() {
 		// Before the first window: dark scroll bars, tables and buttons on Windows.
 		look.SetDarkContent(app, true)
 
+		// Adaptive colours switch with the system theme by themselves; the labels in the card show its background.
+		card := gowt.Adaptive{Light: gowt.RGB{R: 232, G: 240, B: 254}, Dark: gowt.RGB{R: 36, G: 46, B: 66}}
+		accent := gowt.Adaptive{Light: gowt.RGB{R: 29, G: 99, B: 237}, Dark: gowt.RGB{R: 120, G: 165, B: 255}}
+
 		var mode *gowt.LabelView
 		var panel *gowt.GroupView
 		w := app.Window("Theme and look",
 			gowt.Label("", gowt.GrowX(), gowt.Size(280, 0), gowt.Ref(&mode)),
+			gowt.VBox(gowt.GrowX(), gowt.Padding(gowt.Spacing.MD), gowt.Background(card),
+				gowt.Label("Adaptive colours", gowt.Typeface(gowt.Font{Scale: 1.3, Weight: gowt.Semibold}), gowt.Foreground(accent)),
+				gowt.Label("Font sizes are relative to the system font", gowt.Typeface(gowt.Font{Scale: 0.9}))),
 			gowt.Group("Glass panel",
 				gowt.Ref(&panel),
 				gowt.Button("Glass button", look.GlassButton())))

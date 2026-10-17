@@ -80,7 +80,7 @@ func lists() g.Option {
 			for i := 1; i <= 5; i++ {
 				t.Row(fmt.Sprint("file", i), fmt.Sprint(i*1024))
 			}
-			t.OnSelect(func(i int) { out.Set(fmt.Sprint("row ", i, " ", t.RowAt(i).Text(0))) })
+			t.OnSelect(func(i int) { out.Set(fmt.Sprint("row ", i, " ", t.RowAt(i).TextAt(0))) })
 		})),
 		g.Tree(g.Grow(),
 			g.OnSelect(func(n *g.Node) {

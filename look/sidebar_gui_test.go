@@ -55,8 +55,8 @@ func TestSidebarKeepsSelectionQuiet(t *testing.T) {
 					gowt.List([]string{"a", "b"}, gowt.Ref(&list)),
 					gowt.Tree(gowt.Ref(&tree), gowt.Init(func(t *gowt.TreeView) { t.Node("a"); t.Node("b") }))),
 				gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
-			table.SetSelection(1)
-			list.SetSelection(1)
+			table.Select(1)
+			list.Select(1)
 			tree.Select(tree.Roots()[1])
 			table.OnSelect(func(i int) { events = append(events, fmt.Sprint("table ", i)) })
 			list.OnSelect(func(i int) { events = append(events, fmt.Sprint("list ", i)) })

@@ -26,18 +26,18 @@ func Recolor(svg []byte, color string) []byte {
 
 // NewImageDataProvider is the zoom-aware source of an icon logically width x height: every zoom is
 // drawn from the vector at width*zoom/100 pixels. For a new theme colour build a new provider.
-func NewImageDataProvider(svg []byte, width, height int32, color string) swt.ImageDataProvider {
+func NewImageDataProvider(svg []byte, width, height int, color string) swt.ImageDataProvider {
 	svg = Recolor(svg, color)
 	return &provider{svg, width, height}
 }
 
 type provider struct {
 	svg           []byte
-	width, height int32
+	width, height int
 }
 
 func (p *provider) GetImageData(zoom int32) *swt.ImageData {
-	img, err := rasterizer{}.Rasterize(p.svg, p.width*zoom/100, p.height*zoom/100)
+	img, err := rasterizer{}.Rasterize(p.svg, int32(p.width*int(zoom)/100), int32(p.height*int(zoom)/100))
 	if err != nil {
 		return nil
 	}

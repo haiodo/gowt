@@ -60,7 +60,7 @@ func build(app *g.App) {
 		// Each page gets its own host: the stack shows hosts, and webview takes a plain composite.
 		var host *g.Panel
 		stack.Add(g.Fill(g.Ref(&host)))
-		wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
+		wv, err := webview.New(host, webview.Options{Inspectable: true})
 		if err != nil {
 			host.Dispose()
 			url.Set(err.Error())
@@ -69,7 +69,7 @@ func build(app *g.App) {
 		p := &page{wv: wv, host: host}
 		pages = append(pages, p)
 		list.Add(label(p, cmp.Or(u, "Start")))
-		list.SetSelection(len(pages) - 1)
+		list.Select(len(pages) - 1)
 		wv.OnTitleChanged = func(t string) {
 			p.title = t
 			for i, q := range pages {
@@ -109,7 +109,7 @@ func build(app *g.App) {
 		pages = append(pages[:i], pages[i+1:]...)
 		list.Remove(i)
 		if n := len(pages); n > 0 {
-			list.SetSelection(min(i, n-1))
+			list.Select(min(i, n-1))
 		}
 		show()
 	}

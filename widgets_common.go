@@ -12,8 +12,8 @@ type Widget interface {
 	Visible() bool
 	SetTooltip(s string)
 	SetFont(f Font)
-	SetForeground(c RGB)
-	SetBackground(c RGB)
+	SetForeground(c Paint)
+	SetBackground(c Paint)
 	Focus() bool
 	Dispose()
 	OnDispose(f func())
@@ -70,36 +70,82 @@ func (w *base) Visible() bool { return w.ctl.GetVisible() }
 // SetTooltip sets the hover text; "" removes it. Tooltip() does the same at creation.
 func (w *base) SetTooltip(s string) { w.ctl.SetToolTipText(s) }
 
-// SetFont gives the control the font f. Empty Name and zero Size keep the control's current ones (the system font for a default control).
-// The control owns the font and releases it when replaced by the next SetFont or when it is disposed.
+// SetFont gives the control the font f. Empty Name and zero Size keep the control's current ones (the
+// system font for a default control); a zero Size with a Scale is the system font size times Scale.
+// Controls given equal fonts share one native font, released after the last of them is disposed or
+// given another font. Typeface() does the same at creation.
 func (w *base) SetFont(f Font) {
 	c := w.ctl
-	sf := f.from(c.GetFont()).swtFont(c.GetDisplay())
-	c.SetFont(sf)
+	a := appOf(c)
+	k := f.from(c.GetFont(), c.GetDisplay())
+	c.SetFont(a.font(k))
 	old, had := ownedFonts[c]
-	ownedFonts[c] = sf
+	ownedFonts[c] = k
 	if had {
-		old.Dispose()
+		a.releaseFont(old)
 	} else {
-		c.AddDisposeListener(&fontRelease{c})
+		c.AddDisposeListener(&fontRelease{a, c})
 	}
 }
 
-// ownedFonts holds the font SetFont made for each control; UI thread only.
-var ownedFonts = map[*swt.Control]*swt.Font{}
+// ownedFonts holds the font key SetFont gave each control; UI thread only.
+var ownedFonts = map[*swt.Control]Font{}
 
-type fontRelease struct{ c *swt.Control }
+type fontRelease struct {
+	a *App
+	c *swt.Control
+}
 
 func (r *fontRelease) WidgetDisposed(*swt.DisposeEvent) {
-	ownedFonts[r.c].Dispose()
+	r.a.releaseFont(ownedFonts[r.c])
 	delete(ownedFonts, r.c)
 }
 
-// SetForeground sets the text color of the control.
-func (w *base) SetForeground(c RGB) { w.ctl.SetForeground(c.color()) }
+// sharedFont is a native font and the number of its users: controls given it by SetFont, and canvases
+// and styled texts that drew with it.
+type sharedFont struct {
+	f    *swt.Font
+	refs int
+}
 
-// SetBackground sets the background color of the control; Background() does the same at creation.
-func (w *base) SetBackground(c RGB) { w.ctl.SetBackgroundWithColor(c.color()) }
+// font returns the native font for k, a Font filled by from, making it on first use. Every call
+// needs its releaseFont.
+func (a *App) font(k Font) *swt.Font {
+	s := a.fonts[k]
+	if s == nil {
+		s = &sharedFont{f: k.swtFont(a.display)}
+		a.fonts[k] = s
+	}
+	s.refs++
+	return s.f
+}
+
+// releaseFont drops one use of k and disposes the native font after the last one.
+func (a *App) releaseFont(k Font) {
+	s := a.fonts[k]
+	if s == nil {
+		return
+	}
+	if s.refs--; s.refs == 0 {
+		s.f.Dispose()
+		delete(a.fonts, k)
+	}
+}
+
+// SystemFont returns the family and size of the system UI font, which Font.Scale multiplies.
+func (a *App) SystemFont() Font {
+	return Font{}.from(a.display.GetSystemFont(), a.display)
+}
+
+// SetForeground sets the text colour of the control; an Adaptive one follows the system theme, nil
+// restores the default. Foreground() does the same at creation.
+func (w *base) SetForeground(c Paint) { setPaint(w.ctl, c, true) }
+
+// SetBackground sets the background colour of the control; an Adaptive one follows the system theme,
+// nil restores the default. On a container (Window, VBox and the other boxes, Group, Pages, Section,
+// Scroll, Split) the children without a background of their own, such as labels and nested boxes,
+// show it too; text fields, lists, tables and buttons keep theirs. Background() does the same at creation.
+func (w *base) SetBackground(c Paint) { setPaint(w.ctl, c, false) }
 
 // Focus gives the control the keyboard focus and reports whether it took it.
 func (w *base) Focus() bool { return w.ctl.SetFocus() }

@@ -72,7 +72,7 @@ func bindInt(w Widget, s *rx.State[int]) error {
 	case *ComboView:
 		twoWay(w, s, w.Index, w.Select, onSelection(w.c))
 	case *ListView:
-		twoWay(w, s, w.Index, func(i int) { w.SetSelection(i) }, onSelection(w.l))
+		twoWay(w, s, w.Index, func(i int) { w.Select(i) }, onSelection(w.l))
 	case *ProgressView:
 		twoWay(w, s, w.Value, w.SetValue, func(func()) func() { return func() {} }) // the user does not move a progress bar
 	default:

@@ -1,10 +1,6 @@
 package webview
 
-import (
-	"errors"
-
-	"github.com/haiodo/gowt/swt"
-)
+import "errors"
 
 // Optional engine features. An engine implements the unexported method of each one its web view can
 // do (checked by type assertion, so the engine interface stays the same on every OS); the WebView
@@ -89,8 +85,8 @@ func (w *WebView) SetCallHandler(f func(msg string) string) bool {
 // NewOn is New with host itself as the hosting Composite instead of a new child of it, for a widget
 // that is the web view (swt Browser). An engine that cannot host in an existing Composite adds a
 // child to host as New does.
-func NewOn(host *swt.Composite, opts Options) (*WebView, error) {
-	opts.host = host
+func NewOn(host Container, opts Options) (*WebView, error) {
+	opts.host = host.AsComposite()
 	return New(host, opts)
 }
 
@@ -122,7 +118,7 @@ type NewWindow struct {
 // message handler and the session (cookies, storage) of the opener, as the engine's own popups do:
 // scripts added with AddScript later are not added to a popup, and on Linux OnMessage of the popup
 // and the opener both hear the page of either.
-func (n *NewWindow) NewOn(host *swt.Composite, opts Options) (*WebView, error) {
+func (n *NewWindow) NewOn(host Container, opts Options) (*WebView, error) {
 	if n.done {
 		return nil, errors.New("webview: the new window request is over")
 	}

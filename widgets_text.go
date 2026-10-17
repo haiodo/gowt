@@ -16,7 +16,7 @@ func Scrollbars() Option { return style{id: sScrollbars, set: swt.V_SCROLL | swt
 type StyledTextView struct {
 	base
 	t     *swt.StyledText
-	fonts map[Font]*swt.Font
+	fonts *usedFonts
 }
 
 // TextStyle is the look of a range of a StyledText. Nil colors inherit the widget's.
@@ -24,7 +24,7 @@ type TextStyle struct {
 	Foreground, Background *RGB
 	Bold, Italic           bool
 	Underline, Strikeout   bool
-	Font                   *Font // a typeface other than the widget's; the widget owns the native font
+	Font                   *Font // a typeface other than the widget's, resolved as SetFont does
 }
 
 // StyleSpan is a TextStyle applied to Length runes from Start.
@@ -38,18 +38,35 @@ type StyleSpan struct {
 func StyledText(opts ...Option) Option {
 	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
-		w := &StyledTextView{base: base{&t.Control}, t: t, fonts: map[Font]*swt.Font{}}
-		t.AddDisposeListener(&fontDisposer{w.fonts})
-		return w
+		return &StyledTextView{base: base{&t.Control}, t: t, fonts: newUsedFonts(&t.Control)}
 	})
 }
 
-// fontDisposer releases the fonts a widget made for its content.
-type fontDisposer struct{ fonts map[Font]*swt.Font }
+// usedFonts holds the shared fonts a widget took for its content, each once, until it is disposed.
+type usedFonts struct {
+	a     *App
+	fonts map[Font]*swt.Font
+}
 
-func (d *fontDisposer) WidgetDisposed(*swt.DisposeEvent) {
-	for _, f := range d.fonts {
-		f.Dispose()
+func newUsedFonts(c *swt.Control) *usedFonts {
+	u := &usedFonts{appOf(c), map[Font]*swt.Font{}}
+	c.AddDisposeListener(u)
+	return u
+}
+
+// get returns the native font for k, a Font filled by from.
+func (u *usedFonts) get(k Font) *swt.Font {
+	sf, ok := u.fonts[k]
+	if !ok {
+		sf = u.a.font(k)
+		u.fonts[k] = sf
+	}
+	return sf
+}
+
+func (u *usedFonts) WidgetDisposed(*swt.DisposeEvent) {
+	for k := range u.fonts {
+		u.a.releaseFont(k)
 	}
 }
 
@@ -213,12 +230,7 @@ func (t *StyledTextView) styleRange(s TextStyle) *swt.StyleRange {
 }
 
 func (t *StyledTextView) font(f Font) *swt.Font {
-	if sf, ok := t.fonts[f]; ok {
-		return sf
-	}
-	sf := f.swtFont(t.t.GetDisplay())
-	t.fonts[f] = sf
-	return sf
+	return t.fonts.get(f.from(t.t.GetFont(), t.t.GetDisplay()))
 }
 
 func styleOf(r *swt.StyleRange) TextStyle {

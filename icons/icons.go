@@ -92,8 +92,8 @@ func Color(c gowt.RGB) Option { return func(ic *iconConfig) { ic.color = &c } }
 // Icons, freedesktop symbolic icons), or from the embedded Lucide set when the system has none.
 // The result is drawn at every zoom and tinted for the theme at call time: after
 // App.OnThemeChange call Get again (the old image keeps its colour). Images are cached per
-// name, size and colour: the App owns them, the caller must not Dispose them. It panics on an
-// unknown name; Names lists the valid ones.
+// name, size and colour and owned by the App like every gowt.Image; after a Dispose, Get makes the
+// image again. It panics on an unknown name; Names lists the valid ones.
 func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	e, ok := iconDict[name]
 	if !ok {
@@ -111,16 +111,32 @@ func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	if cfg.color != nil {
 		c = *cfg.color
 	}
-	key := iconKey{name, cfg.size, c}
+	return cached(a, iconKey{name: name, size: cfg.size, c: c}, func() *gowt.Image {
+		src, _ := lucide.SVG(e.lucide)
+		return a.ImageFromProvider(&iconProvider{a: a, e: e, size: cfg.size, c: c,
+			fallback: svg.NewImageDataProvider(src, cfg.size, cfg.size, fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B))})
+	})
+}
+
+// FromSVG returns an image size x size points drawn from the SVG document data at every zoom, with
+// currentColor in c (Lucide, Tabler and other monochrome icons). Images are cached per document, size
+// and colour like Get's: calling FromSVG again with the colour of the new theme makes a new image only
+// for a colour not seen before. The App owns the image like every gowt.Image.
+func FromSVG(a *gowt.App, data []byte, size int, c gowt.RGB) *gowt.Image {
+	size = max(size, 1)
+	return cached(a, iconKey{svg: string(data), size: size, c: c}, func() *gowt.Image {
+		return a.ImageFromProvider(svg.NewImageDataProvider(data, size, size, fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B)))
+	})
+}
+
+// cached returns the image of key, made by mk on first use or after a Dispose.
+func cached(a *gowt.App, key iconKey, mk func() *gowt.Image) *gowt.Image {
 	cacheMu.Lock()
 	defer cacheMu.Unlock()
-	if img, ok := cache[a][key]; ok {
+	if img, ok := cache[a][key]; ok && !img.Unwrap().IsDisposed() {
 		return img
 	}
-	src, _ := lucide.SVG(e.lucide)
-	p := &iconProvider{a: a, e: e, size: cfg.size, c: c,
-		fallback: svg.NewImageDataProvider(src, int32(cfg.size), int32(cfg.size), fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B))}
-	img := a.ImageFromProvider(p)
+	img := mk()
 	if cache[a] == nil {
 		cache[a] = map[iconKey]*gowt.Image{}
 	}
@@ -128,8 +144,10 @@ func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	return img
 }
 
+// iconKey is a named icon of Get (svg empty) or a document of FromSVG (name empty).
 type iconKey struct {
 	name string
+	svg  string
 	size int
 	c    gowt.RGB
 }

@@ -138,9 +138,9 @@ func Selected(i int) Option {
 	return hook(func(w Widget) error {
 		switch w := w.(type) {
 		case *ListView:
-			w.SetSelection(i)
+			w.Select(i)
 		case *TableView:
-			w.SetSelection(i)
+			w.Select(i)
 		case interface{ Select(int) }:
 			w.Select(i)
 		default:

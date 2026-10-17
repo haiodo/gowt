@@ -57,11 +57,15 @@ type engine interface {
 	dispose()
 }
 
-// New adds a web view filling a new Composite inside parent. The native view is created at the first
-// load, so HandleScheme and AddScript must come before it.
-func New(parent *swt.Composite, opts Options) (*WebView, error) {
+// Container is where a web view goes: a gowt container (Panel, Window, Group, ...) or an swt.Composite.
+type Container interface{ AsComposite() *swt.Composite }
+
+// New adds a web view filling a new Composite inside parent; give parent a Fill layout, gowt.Fill(...),
+// so that the view takes its whole area. The native view is created at the first load, so
+// HandleScheme and AddScript must come before it.
+func New(parent Container, opts Options) (*WebView, error) {
 	w := &WebView{}
-	e, err := newEngine(w, parent, opts)
+	e, err := newEngine(w, parent.AsComposite(), opts)
 	if err != nil {
 		return nil, err
 	}

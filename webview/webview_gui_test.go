@@ -58,7 +58,7 @@ func TestWebView(t *testing.T) {
 			w := app.Window("webview")
 			var host *g.Panel
 			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
-			wv, e := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
+			wv, e := webview.New(host, webview.Options{Inspectable: true})
 			if e != nil {
 				t.Error(e)
 				app.Quit()
@@ -176,7 +176,7 @@ func TestWebViewOptional(t *testing.T) {
 			w := app.Window("webview-opt")
 			var host *g.Panel
 			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
-			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
+			wv, e := webview.NewOn(host, webview.Options{})
 			if e != nil {
 				t.Error(e)
 				app.Quit()
@@ -286,7 +286,7 @@ func TestWebViewWindows(t *testing.T) {
 			w := app.Window("webview-windows")
 			var host *g.Panel
 			w.Add(g.Fill(g.Grow(), g.Ref(&host)))
-			wv, e := webview.NewOn(host.Unwrap(), webview.Options{})
+			wv, e := webview.NewOn(host, webview.Options{})
 			if e != nil {
 				t.Error(e)
 				app.Quit()

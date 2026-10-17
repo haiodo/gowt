@@ -145,7 +145,7 @@ func ExampleTable() {
 	_ = gowt.Run(func(app *gowt.App) {
 		var t *gowt.TableView // OnActivate reads the rows
 		w := app.Window("Processes", gowt.Table(gowt.Grow(), gowt.MultiSelect(), gowt.Ref(&t),
-			gowt.OnActivate(func(i int) { fmt.Println("open", t.RowAt(i).Text(0), t.RowAt(i).Data()) }),
+			gowt.OnActivate(func(i int) { fmt.Println("open", t.RowAt(i).TextAt(0), t.RowAt(i).Data()) }),
 			gowt.Init(func(t *gowt.TableView) { // fills the table once it exists
 				t.Column("Name", 160)
 				t.Column("CPU", 60, gowt.Right())
@@ -234,6 +234,24 @@ func ExampleTree() {
 				docs.Node("report.pdf")
 				docs.SetExpanded(true)
 			})))
+		w.Show()
+	})
+}
+
+// Colours for both themes and fonts relative to the system size: the card and its labels switch with
+// the system theme, and the heading grows with the system font. Equal fonts share one native font.
+func ExampleAdaptive() {
+	var (
+		surface = gowt.Adaptive{Light: gowt.RGB{R: 255, G: 255, B: 255}, Dark: gowt.RGB{R: 30, G: 31, B: 34}}
+		muted   = gowt.Adaptive{Light: gowt.RGB{R: 100, G: 106, B: 118}, Dark: gowt.RGB{R: 150, G: 155, B: 164}}
+		title   = gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold})
+		small   = gowt.Typeface(gowt.Font{Scale: 0.85})
+	)
+	_ = gowt.Run(func(app *gowt.App) {
+		w := app.Window("Status",
+			gowt.VBox(gowt.Background(surface), gowt.Padding(gowt.Spacing.MD), // labels inside show surface too
+				gowt.Label("Containers", title),
+				gowt.Label("3 running", small, gowt.Foreground(muted))))
 		w.Show()
 	})
 }

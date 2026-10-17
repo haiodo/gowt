@@ -16,7 +16,7 @@ w.Add(gowt.Canvas(func(g *gowt.GC) {
 }, gowt.Size(400, 200), gowt.Ref(&canvas)))
 ```
 
-The `*GC` is valid only inside the callback. There is nothing to dispose: the canvas keeps the fonts `SetFont` made and releases them with itself. Give the canvas a size with `Size(w, h)`, or it will be small.
+The `*GC` is valid only inside the callback. There is nothing to dispose: the canvas shares the fonts `SetFont` uses with the widgets and releases them with itself. Give the canvas a size with `Size(w, h)`, or it will be small.
 
 | Method | Draws |
 |---|---|
@@ -26,7 +26,7 @@ The `*GC` is valid only inside the callback. There is nothing to dispose: the ca
 | `Line`, `Rect`, `Oval` | outlines |
 | `FillRect`, `FillOval` | filled shapes |
 | `Text(s, x, y)`, `TextSize(s)` | text drawn over the fill colour; measure with `TextSize` |
-| `SetFont(Font)` | font of the text drawn after it, until the callback returns; empty `Name` and zero `Size` keep the canvas's, `Font{}` goes back to the canvas's font |
+| `SetFont(Font)` | font of the text drawn after it, until the callback returns; empty `Name` and zero `Size` keep the canvas's, `Scale` sizes it from the system font, `Font{}` goes back to the canvas's font |
 | `Image(img, x, y)` | an image |
 
 `RGB{R, G, B}` are `uint8`. Not wrapped: paths, gradients, transforms, clipping, drawing into an off-screen image. `Unwrap()` gives the `*swt.GC` with all of them ([swt-direct.md](swt-direct.md)).
@@ -39,16 +39,16 @@ The `*GC` is valid only inside the callback. There is nothing to dispose: the ca
 | `app.ImageFrom(r io.Reader)` | any reader, same formats |
 | `app.ImageFromProvider(p)` | a zoom-aware provider such as `svg.NewImageDataProvider` |
 
-Both loaders return an `error`. Use the image with `Label.SetImage`, `Button.SetImage`, `ToolItem.SetImage`, `Node.SetImage`, `TableRow.SetImage(col, img)`, `TrayIcon.SetImage` or `GC.Image`.
+Both loaders return an `error`. Use the image with `Label.SetImage`, `Button.SetImage`, `ToolItem.SetImage`, `Node.SetImage`, `TableRow.SetImageAt(col, img)`, `TrayIcon.SetImage` or `GC.Image`.
 
-Ownership: the App disposes every image it created when `Run` returns. Call `img.Dispose()` earlier if you create many short-lived images. Widgets neither copy nor dispose an image, so keep it alive while it is shown.
+Ownership: the App owns every image, whichever call made it (the loaders, `ImageFromProvider`, `Clipboard.Image`, a drop, `icons.Get`, `icons.FromSVG`), and disposes the ones still alive when `Run` returns. `img.Dispose()` frees one earlier, for images made and dropped while the app runs. Widgets neither copy nor dispose an image, so dispose it only once nothing shows it.
 
 ## SVG
 
 Import `github.com/haiodo/gowt/svg` to rasterize SVG at every zoom (paths, basic shapes, gradients, strokes; no text, filters or masks):
 
 ```go
-img := app.ImageFromProvider(svg.NewImageDataProvider(data, 24, 24, "#333333"))
+img := icons.FromSVG(app, data, 24, gowt.RGB{R: 51, G: 51, B: 51})
 ```
 
-`color` is what `currentColor` means in a monochrome icon. For a new theme colour build a new provider. `svg.Recolor(data, color)` returns recoloured bytes. Named system icons are in [icons.md](icons.md).
+`icons.FromSVG` draws `currentColor` of a monochrome icon in the given colour and caches the image per document, size and colour, so calling it again after a theme switch makes new images only for a colour not seen before. Underneath it is `app.ImageFromProvider(svg.NewImageDataProvider(data, 24, 24, "#333333"))`; for a new theme colour build a new provider. `svg.Recolor(data, color)` returns recoloured bytes. Named system icons are in [icons.md](icons.md).

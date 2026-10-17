@@ -9,7 +9,7 @@ Package `github.com/haiodo/gowt/swt` is the full Eclipse SWT API translated to G
 | `widget.Unwrap()` | the swt object of that wrapper: `*swt.Button`, `*swt.Text`, `*swt.Table`, ... |
 | `window.Unwrap()` | `*swt.Shell` |
 | `app.Unwrap()` | `*swt.Display` |
-| `window.AsComposite()`, `panel.AsComposite()` (also `Group`, `Split`, `CoolBar`) | the `*swt.Composite` to use as a parent for swt widgets, or for `webview.New`, `browser.NewBrowser` |
+| `window.AsComposite()`, `panel.AsComposite()` (also `Group`, `Split`, `CoolBar`) | the `*swt.Composite` to use as a parent for swt widgets, or for `browser.NewBrowser` |
 | `gowt.Custom(func(*swt.Control))` | an option that runs on the new widget right after creation |
 
 ```go

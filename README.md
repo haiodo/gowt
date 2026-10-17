@@ -55,8 +55,15 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 | Graphics and images | [graphics](docs/graphics.md) | [graphics](examples/graphics) |
 | Theme and platform look | [theme-look](docs/theme-look.md) | [theme](examples/theme) |
 | Icons | [icons](docs/icons.md) | [icons](examples/icons) |
-| Web view and Browser | [webview-browser](docs/webview-browser.md) | [webview](examples/webview), [browser](examples/browser) |
+| Web view | [webview-browser](docs/webview-browser.md) | [webview](examples/webview) |
+
+SWT port, for porting SWT and JFace code (apps and the examples above do not use it):
+
+| Topic | Page | Example |
+|---|---|---|
 | Using swt directly | [swt-direct](docs/swt-direct.md) | [swtdirect](examples/swtdirect) |
+| JFace factories | [jface](docs/jface.md) | [jface](examples/jface) |
+| SWT `Browser` | [webview-browser](docs/webview-browser.md#browser) | [browser](examples/browser) |
 
 ## What you get
 

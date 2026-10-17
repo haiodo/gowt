@@ -55,12 +55,20 @@ Four ideas carry the whole API:
 | Graphics and images | [graphics.md](graphics.md) | [`examples/graphics`](../examples/graphics) |
 | Theme and platform look | [theme-look.md](theme-look.md) | [`examples/theme`](../examples/theme) |
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
-| Web view and Browser | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview), [`examples/browser`](../examples/browser) |
+| Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |
 | Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |
-| JFace factories | [jface.md](jface.md) | [`examples/jface`](../examples/jface) |
 | Packaging and distribution | [packaging.md](packaging.md) | - |
-| Using swt directly | [swt-direct.md](swt-direct.md) | [`examples/swtdirect`](../examples/swtdirect) |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |
+
+## SWT port
+
+Packages translated from Eclipse with their Java names, for porting SWT and JFace code or for what the facade does not wrap. Apps and the examples above do not use them: a new screen is written with `gowt`, and `webview` for a web page.
+
+| Topic | Page | Example |
+|---|---|---|
+| Using swt directly | [swt-direct.md](swt-direct.md) | [`examples/swtdirect`](../examples/swtdirect) |
+| JFace factories (`jface`) | [jface.md](jface.md) | [`examples/jface`](../examples/jface) |
+| SWT `Browser` (`browser`) | [webview-browser.md](webview-browser.md#browser) | [`examples/browser`](../examples/browser) |
 
 Reference material:
 

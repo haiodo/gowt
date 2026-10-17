@@ -1,5 +1,44 @@
 # Changelog
 
+## Unreleased
+
+Colours that follow the system theme, fonts relative to the system size and shared between widgets, one ownership rule for images, and the names the API review found spelled two ways.
+
+```go
+// v0.8
+w.SetForeground(gowt.RGB{R: 28, G: 32, B: 40}) // and again in OnThemeChange with the dark colour
+size := int(float64(win.Unwrap().GetFont().GetFontData()[0].GetHeight())*1.15 + 0.5)
+title.SetFont(gowt.Font{Size: size, Weight: gowt.Semibold})
+
+// now
+ink := gowt.Adaptive{Light: gowt.RGB{R: 28, G: 32, B: 40}, Dark: gowt.RGB{R: 231, G: 233, B: 237}}
+gowt.Label("Containers", gowt.Foreground(ink), gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold}))
+```
+
+New API
+- `Paint`, a sealed interface implemented by `RGB` and `Adaptive{Light, Dark RGB}`. `Foreground(paint)` (new option), `Background(paint)`, `SetForeground(paint)` and `SetBackground(paint)` take it; a widget given an `Adaptive` switches to the other colour when the system theme changes, before the `OnThemeChange` callbacks run. nil restores the default colour.
+- A background on a container (Window, VBox and the other boxes, Group, Pages, Section, Scroll, Split) shows behind the labels and boxes inside it (SWT `INHERIT_DEFAULT`); text fields, lists, tables and buttons keep the native one.
+- `Font.Scale`: with `Size` 0 the size is the system font size times `Scale`, for widgets (`SetFont`, the new option `Typeface(font)`), `GC.SetFont` and `TextStyle.Font`. `App.SystemFont()` returns the family and size of the system UI font.
+- `icons.FromSVG(app, data, size, rgb)`: an image from an SVG document with `currentColor` drawn in `rgb`, cached per document, size and colour like `icons.Get`.
+- `TableRow.TextAt`, `SetTextAt`, `SetImageAt`, as on `Node`.
+
+Breaking change
+- `List.SetSelection(i...)` and `Table.SetSelection(i...)` are `Select(i...)`, as on Combo, Tabs and Tree.
+- `TableRow.Text(col)`, `SetText(col, s)` and `SetImage(col, img)` are `TextAt`, `SetTextAt` and `SetImageAt`.
+- `TreeColumn` is gone: `Tree.Column` returns the `*Column` that `Table.Column` returns, and `Tree.SetSort` takes it. `Column.Unwrap()` returns the `*swt.Item`; its `Impl()` is the `*swt.TableColumn` or `*swt.TreeColumn`.
+- `Background(c RGB)` is `Background(c Paint)`, and the `Widget` methods `SetForeground` and `SetBackground` take `Paint`: calls with an `RGB` compile as before, code that stores these methods as `func(RGB)` values does not.
+- `webview.New`, `webview.NewOn` and `NewWindow.NewOn` take a `webview.Container` (any gowt container or an `*swt.Composite`): `webview.New(host.Unwrap(), opts)` is `webview.New(host, opts)`.
+- `svg.NewImageDataProvider(svg, width, height, color)` takes `int` sizes instead of `int32`.
+
+Behaviour change
+- Images: the App owns every `Image`, whichever call made it (`LoadImage` and `ImageFrom` said the caller owned theirs), and disposes the ones still alive when `Run` returns. `Dispose` frees one earlier and removes it from the App; disposed images used to stay listed until the end of `Run`. `icons.Get` makes an image again after its cached one was disposed.
+- Fonts: controls, canvases and styled texts given equal fonts share one native font per App, released after the last of them is disposed or given another font; each `SetFont` used to make a native font per control. `TextStyle.Font` with an empty `Name` or a zero `Size` now takes them from the widget's font, as `SetFont` does.
+- Theme switch: the colours of `Adaptive` paints are Go values (SWT colours hold no native handle on macOS, Windows or Linux), so a switch makes no native colours; images from `icons.Get` and `icons.FromSVG` are made once per colour.
+
+Fixes
+- docs: `Column.SetWidth` and `GC.SetLineWidth` said pixels; widths are in points, like every facade size. theme-look.md told apps to recolour widgets in `OnThemeChange` while the facade had no way to set a background after creation.
+- docs: `Switch` and a `Check` button are the same check box; the doc now says when each reads right. jface and browser are listed under "SWT port" in docs/index.md and README.md: apps and examples do not use them.
+
 ## v0.8.0 (2026-10-17)
 
 A new facade API: a screen is a tree of values, and events, initial values and rx bindings are options next to the widget. Code written for v0.7 does not compile; the breaking changes below say what each old form becomes, and docs/agents.md shows the idioms on one page.

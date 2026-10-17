@@ -53,6 +53,7 @@ if err != nil {
 | a scrolled column | `gowt.Scroll(children...)` |
 | panes with draggable sashes | `gowt.Split(children...)`, `split.SetWeights(1, 3)` |
 | settings rows on a card | `gowt.Section(rows...)` |
+| a part whose failure shows in place | `gowt.Boundary(children...)`, `Failed(func(err, reset) Option)`; see [events.md](events.md#boundary-errors-shown-in-place) |
 
 `Gap(points)` is the space between children (default `Spacing.SM`), `Padding(points)` the space from the container's edge (default `Spacing.PageMargin` for a Window and a Tab page, `Spacing.SM` for a Group, 0 elsewhere).
 
@@ -98,6 +99,9 @@ file.Item("&Save", save, gowt.Shortcut("Cmd+S"))   // Cmd+S binds the key and sh
 w.OnKey("Cmd+[", back)                             // a key for the whole window, without a menu item; text fields keep their editing keys
 
 app.OnError(func(err error) { status.Set(err.Error()) }) // errors in callbacks and misused options; the app keeps running
+gowt.Boundary(gowt.Failed(func(err error, reset func()) gowt.Option { // errors of the widgets inside, shown in their place
+	return gowt.Button("Retry: "+err.Error(), gowt.OnClick(reset))
+}), gowt.Label("", gowt.BindText(summary)))
 ```
 
 One event name per concept: the handler's parameter is what the widget reports (`OnChange(func(string))` for a Text, `OnChange(func(int))` for a Scale). `Bind` takes `*rx.State[string]` (Text, Combo text), `[bool]` (Switch, Check button) or `[int]` (Scale, Slider, Spinner, Combo or List index). A binding lives as long as its widget. `gowt.Watch(w, reader, apply)` binds anything else. The methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add handlers after creation; menu and tool items take their callback as an argument.
@@ -183,7 +187,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Radio()` | Button, ToolBar.Item, Menu.Item |
 | `Multiline()`, `Password()`, `Search()` | Text |
 | `ReadOnly()` | Text, Combo, Spinner, StyledText |
-| `Border()` | VBox, HBox, Grid, Flow, Fill, Form, Pages, Label, Text, Canvas, Scroll, CTabs, Spinner, StyledText |
+| `Border()` | VBox, HBox, Grid, Flow, Fill, Form, Pages, Boundary, Label, Text, Canvas, Scroll, CTabs, Spinner, StyledText |
 | `NoBorder()`, `MultiSelect()` | List, Table, Tree |
 | `CellSelect()` | Tree |
 | `Simple()` | Combo |
@@ -210,7 +214,8 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Rows(list, key, fill)` | Table |
 | `Nodes(list, key, children, fill)` | Tree |
 | `Items(list)` | List, Combo |
-| `Gap(n)`, `Padding(n)` | Window, VBox, HBox, Grid, Flow, Fill, Form, Group, Tab, Scroll |
+| `Failed(f)` | Boundary |
+| `Gap(n)`, `Padding(n)` | Window, VBox, HBox, Grid, Flow, Fill, Form, Group, Tab, Scroll, Boundary |
 | `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Place(h, v)`, `Indent(x, y)`, `Cell(...)` | any widget in a VBox, HBox or Grid |
 | `Size(w, h)` | any widget in a VBox, HBox, Grid, Flow or Form |
 | `Anchor(...)` | any widget in a Form |

@@ -29,7 +29,7 @@ func main() {
 					}
 					t.OnSelect(func(i int) {
 						if i >= 0 {
-							fmt.Println("Table selected:", t.RowAt(i).Text(0))
+							fmt.Println("Table selected:", t.RowAt(i).TextAt(0))
 						}
 					})
 				}))),

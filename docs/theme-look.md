@@ -19,7 +19,15 @@ How the theme is read: macOS `NSApp.effectiveAppearance`, Windows the apps theme
 | Windows | the title bar; content stays light unless you call `look.SetDarkContent(app, true)` before creating windows (scroll bars, tables, trees, buttons; it uses undocumented uxtheme exports and does not switch live) |
 | Linux | the theme and accent colour come from the portal; this was not verified against a live portal |
 
-Colours you set yourself (`Background`, `GC` colours) do not change by themselves: redraw them in `OnThemeChange`.
+A widget colour can follow the theme by itself: give `Foreground`, `Background`, `SetForeground` or `SetBackground` an `Adaptive{Light, Dark}` instead of an `RGB`, and the facade applies the other colour on a switch, before the `OnThemeChange` callbacks run. A background on a container (Window, a box, Group, Pages, Scroll, Split) shows behind the labels and boxes inside it (SWT `INHERIT_DEFAULT`); text fields, lists, tables and buttons keep the native one.
+
+```go
+surface := gowt.Adaptive{Light: gowt.RGB{R: 255, G: 255, B: 255}, Dark: gowt.RGB{R: 30, G: 31, B: 34}}
+gowt.VBox(gowt.Background(surface),
+	gowt.Label("Containers", gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold})))
+```
+
+`GC` colours and images are drawn for one theme: redraw the canvas and ask `icons.Get` or `icons.FromSVG` again in `OnThemeChange`.
 
 ## Package look
 

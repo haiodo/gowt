@@ -10,14 +10,34 @@ import (
 // RGB is a color, 0-255 per channel.
 type RGB struct{ R, G, B uint8 }
 
+// Paint is a widget colour: an RGB, the same in both themes, or an Adaptive with one per theme.
+// Only this package implements it.
+type Paint interface{ in(dark bool) RGB }
+
+// Adaptive is a colour for each system theme. A widget given one through Foreground, Background or
+// their setters takes the other colour when the system switches between light and dark.
+type Adaptive struct{ Light, Dark RGB }
+
+func (c RGB) in(bool) RGB { return c }
+
+func (c Adaptive) in(dark bool) RGB {
+	if dark {
+		return c.Dark
+	}
+	return c.Light
+}
+
 func (c RGB) color() *swt.Color { return swt.NewColorRedGreenBlue(int32(c.R), int32(c.G), int32(c.B)) }
 
 func rgbOf(r *swt.RGB) RGB { return RGB{uint8(r.Red), uint8(r.Green), uint8(r.Blue)} }
 
-// Image is a bitmap. The caller owns it: Dispose when done. Widgets that show an image
-// (SetImage) do not take ownership and do not copy it, so keep it alive while shown. Images
-// still alive when Run returns are disposed with the App.
-type Image struct{ i *swt.Image }
+// Image is a bitmap. The App owns every image, whichever call made it, and disposes the ones still
+// alive when Run returns. Dispose frees one earlier, once nothing shows it: widgets that show an image
+// (SetImage) neither copy nor own it.
+type Image struct {
+	i *swt.Image
+	a *App
+}
 
 // LoadImage reads an image file (PNG, JPEG, GIF, BMP, ICO, TIFF).
 func (a *App) LoadImage(path string) (img *Image, err error) {
@@ -32,20 +52,19 @@ func (a *App) ImageFrom(r io.Reader) (img *Image, err error) {
 }
 
 // ImageFromProvider creates an image from p, drawn at every zoom the provider answers for (for
-// example svg.NewImageDataProvider). The App owns it and disposes it when Run returns, like the
-// other images it created.
+// example svg.NewImageDataProvider).
 func (a *App) ImageFromProvider(p swt.ImageDataProvider) *Image {
 	return a.track(swt.NewImageDeviceImageDataProvider(a.display, p))
 }
 
 func (a *App) track(i *swt.Image) *Image {
-	img := &Image{i}
-	a.images = append(a.images, img)
+	img := &Image{i, a}
+	a.images[img] = struct{}{}
 	return img
 }
 
 func (a *App) disposeImages() {
-	for _, img := range a.images {
+	for img := range a.images {
 		img.Dispose()
 	}
 }
@@ -56,8 +75,9 @@ func (i *Image) Size() (w, h int) {
 	return int(b.Width), int(b.Height)
 }
 
-// Dispose releases the image; calling it again is a no-op.
+// Dispose releases the image now instead of when Run returns; calling it again is a no-op.
 func (i *Image) Dispose() {
+	delete(i.a.images, i)
 	if !i.i.IsDisposed() {
 		i.i.Dispose()
 	}
@@ -79,7 +99,7 @@ func (g *GC) SetColor(c RGB) { g.g.SetForeground(c.color()) }
 // SetFill sets the color of filled shapes and the text background.
 func (g *GC) SetFill(c RGB) { g.g.SetBackground(c.color()) }
 
-// SetLineWidth sets the outline width in pixels.
+// SetLineWidth sets the outline width in points.
 func (g *GC) SetLineWidth(w int) { g.g.SetLineWidth(int32(w)) }
 
 // Line draws a line from (x1, y1) to (x2, y2).
@@ -100,21 +120,15 @@ func (g *GC) FillOval(x, y, w, h int) { g.g.FillOval(int32(x), int32(y), int32(w
 // Text draws s with its top left at (x, y) over the fill color; tabs and newlines are honored.
 func (g *GC) Text(s string, x, y int) { g.g.DrawText(s, int32(x), int32(y)) }
 
-// SetFont sets the font of Text and TextSize for the rest of the paint callback. Empty Name and zero
-// Size take the canvas's ones, as Widget.SetFont does; Font{} is the canvas's font itself. The canvas
-// makes each native font once and releases them when it is disposed.
+// SetFont sets the font of Text and TextSize for the rest of the paint callback. Empty Name, zero
+// Size and Scale mean what they do for Widget.SetFont; Font{} is the canvas's font itself. The canvas
+// shares the native fonts with the widgets and releases them when it is disposed.
 func (g *GC) SetFont(f Font) {
 	if f == (Font{}) {
 		g.g.SetFont(g.c.c.GetFont())
 		return
 	}
-	f = f.from(g.c.c.GetFont())
-	sf, ok := g.c.fonts[f]
-	if !ok {
-		sf = f.swtFont(g.c.c.GetDisplay())
-		g.c.fonts[f] = sf
-	}
-	g.g.SetFont(sf)
+	g.g.SetFont(g.c.fonts.get(f.from(g.c.c.GetFont(), g.c.c.GetDisplay())))
 }
 
 // TextSize measures s as Text would draw it.
@@ -133,7 +147,7 @@ func (g *GC) Unwrap() *swt.GC { return g.g }
 type CanvasView struct {
 	base
 	c     *swt.Canvas
-	fonts map[Font]*swt.Font // made by GC.SetFont
+	fonts *usedFonts // by GC.SetFont
 }
 
 type painter func(*swt.PaintEvent)
@@ -146,8 +160,7 @@ func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 func Canvas(onPaint func(g *GC), opts ...Option) Option {
 	return leaf("Canvas", sBorder, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCanvasParentStyle(p, resolve(swt.DOUBLE_BUFFERED, opts))
-		v := &CanvasView{base{&c.Control}, c, map[Font]*swt.Font{}}
-		c.AddDisposeListener(&fontDisposer{v.fonts})
+		v := &CanvasView{base{&c.Control}, c, newUsedFonts(&c.Control)}
 		if onPaint != nil {
 			c.AddPaintListener(painter(func(e *swt.PaintEvent) { onPaint(&GC{e.Gc, v}) }))
 		}

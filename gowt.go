@@ -26,9 +26,12 @@ func init() { runtime.LockOSThread() }
 type App struct {
 	display *swt.Display
 	quit    atomic.Bool
-	images  []*Image
+	images  map[*Image]struct{}
+	fonts   map[Font]*sharedFont
 	clip    *Clipboard
 	onError func(error)
+	dark    bool                      // the theme the Adaptive colours were last applied for
+	paints  map[*swt.Control]*painted // controls given an Adaptive colour
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -47,7 +50,7 @@ func Run(setup func(*App)) (err error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	defer catch(&err)
-	a := &App{display: swt.NewDisplay()}
+	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}}
 	defer a.display.Dispose()
 	toOnError := func(err error) { a.fail(err) }
 	a.display.SetRuntimeExceptionHandler(toOnError)
@@ -62,6 +65,7 @@ func Run(setup func(*App)) (err error) {
 		return func() { a.display.AsyncExec(r) }
 	})()
 	a.display.FollowSystemTheme()
+	a.followTheme()
 	setup(a)
 	snapTick := func() {}
 	if p := os.Getenv("GOWT_SNAP"); p != "" {
@@ -78,6 +82,14 @@ func Run(setup func(*App)) (err error) {
 
 // apps lets a widget find its App from its display (drop callbacks create App-owned images).
 var apps sync.Map // *swt.Display -> *App
+
+// appOf returns the App running c's display, nil outside Run.
+func appOf(c displayed) *App {
+	if a, ok := apps.Load(c.GetDisplay()); ok {
+		return a.(*App)
+	}
+	return nil
+}
 
 // catch is deferred directly: it turns a panic carrying an SWT error into *err.
 func catch(err *error) {
@@ -247,10 +259,14 @@ func Search() Option {
 	return style{id: sSearch, set: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL}
 }
 
-// Background sets the background color of a widget.
-func Background(c RGB) Option {
-	return apply(func(w *swt.Control) { w.SetBackgroundWithColor(c.color()) })
-}
+// Background sets the background colour of a widget, as SetBackground does.
+func Background(c Paint) Option { return apply(func(w *swt.Control) { setPaint(w, c, false) }) }
+
+// Foreground sets the text colour of a widget, as SetForeground does.
+func Foreground(c Paint) Option { return apply(func(w *swt.Control) { setPaint(w, c, true) }) }
+
+// Typeface gives a widget the font f, as SetFont does.
+func Typeface(f Font) Option { return hook(func(w Widget) error { w.SetFont(f); return nil }) }
 
 // Custom runs f on the widget right after it is created and sets no style bits. It lets a package outside gowt adjust the swt control.
 func Custom(f func(*swt.Control)) Option { return apply(f) }
@@ -361,8 +377,10 @@ func Button(text string, opts ...Option) Option {
 	})
 }
 
-// Switch creates an on/off toggle. It is a check box on every OS: SWT has no switch control, and
-// NSSwitch on macOS or GtkSwitch on Linux would need a view that the toolkit does not create.
+// Switch creates an on/off toggle for a setting that takes effect at once. It is a check box on every
+// OS, the same control as Button(text, Check()), which reads as one choice of a form applied later:
+// SWT has no switch control, and NSSwitch on macOS or GtkSwitch on Linux would need a view that the
+// toolkit does not create.
 // Options: OnChange, Checked, Bind (bool), BindText.
 func Switch(text string, opts ...Option) Option {
 	return leaf("Switch", 0, opts, func(p *swt.Composite) Widget {

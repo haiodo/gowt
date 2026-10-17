@@ -13,6 +13,8 @@ b.SetImage(icons.Get(app, "search", icons.Size(24)))
 - `icons.Names()` lists the valid names (39 today: add, back, check, close, copy, cut, delete, down, download, edit, error, file, filter, folder, forward, heart, help, home, info, lock, menu, open, paste, pause, play, print, redo, refresh, remove, save, search, settings, star, stop, undo, up, upload, user, warning). `Get` panics on an unknown one.
 - `icons.Size(points)`: the side in points, default 16.
 - `icons.Color(rgb)`: the tint. Default is light gray in dark mode and near-black in light mode.
+- `icons.FromSVG(app, data, size, rgb)`: an image from your own SVG document, `currentColor` drawn in `rgb`, cached like `Get` per document, size and colour.
+- The App owns the images, as every `gowt.Image`; `Dispose` frees one early, and the next `Get` or `FromSVG` makes it again.
 - The image is drawn at every zoom.
 - The App owns icons from `Get` and caches them per name, size and colour. Do not call `Dispose` on them.
 - The tint is chosen at call time. After a theme change call `Get` again and set the image anew:

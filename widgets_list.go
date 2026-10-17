@@ -93,8 +93,8 @@ func (l *ListView) Index() int { return int(l.l.GetSelectionIndex()) }
 // Selected returns all selected item indices.
 func (l *ListView) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
 
-// SetSelection replaces the selection.
-func (l *ListView) SetSelection(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
+// Select replaces the selection with items i; no i clears it.
+func (l *ListView) Select(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
 
 // SetItem replaces the text of item i, keeping the selection.
 func (l *ListView) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
@@ -168,8 +168,8 @@ func (t *TableView) Index() int { return int(t.t.GetSelectionIndex()) }
 // Selected returns all selected row indices.
 func (t *TableView) Selected() []int { return toInts(t.t.GetSelectionIndices()) }
 
-// SetSelection replaces the selection.
-func (t *TableView) SetSelection(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
+// Select replaces the selection with rows i; no i clears it.
+func (t *TableView) Select(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
 
 // RowAt returns row i.
 func (t *TableView) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
@@ -228,7 +228,7 @@ func (t *TableView) SetSort(col *Column, dir SortDir) {
 		t.t.SetSortColumn(nil)
 		return
 	}
-	t.t.SetSortColumn(col.c)
+	t.t.SetSortColumn(col.c.(*swt.TableColumn))
 	t.t.SetSortDirection(dir.swt())
 }
 
@@ -320,8 +320,18 @@ func (t *TableView) OnCellClick(f func(TableClick)) {
 	}))
 }
 
-// Column is a table column.
-type Column struct{ c *swt.TableColumn }
+// Column is a column of a Table or a Tree.
+type Column struct{ c column }
+
+// column is what swt.TableColumn and swt.TreeColumn have in common.
+type column interface {
+	selector
+	SetText(string)
+	SetWidth(int32)
+	SetResizable(bool)
+	Pack()
+	AsItem() *swt.Item
+}
 
 // SetResizable allows or forbids resizing the column by dragging the header edge.
 func (c *Column) SetResizable(v bool) { c.c.SetResizable(v) }
@@ -329,14 +339,14 @@ func (c *Column) SetResizable(v bool) { c.c.SetResizable(v) }
 // SetTitle replaces the header text.
 func (c *Column) SetTitle(s string) { c.c.SetText(s) }
 
-// SetWidth sets the width in pixels.
+// SetWidth sets the width in points.
 func (c *Column) SetWidth(w int) { c.c.SetWidth(int32(w)) }
 
 // Pack resizes the column to fit its content.
 func (c *Column) Pack() { c.c.Pack() }
 
-// Unwrap returns the underlying swt.TableColumn for the full API.
-func (c *Column) Unwrap() *swt.TableColumn { return c.c }
+// Unwrap returns the underlying item for the full API; its Impl() is the *swt.TableColumn or *swt.TreeColumn.
+func (c *Column) Unwrap() *swt.Item { return c.c.AsItem() }
 
 // OnClick runs f when the header is clicked, e.g. to sort.
 func (c *Column) OnClick(f func()) {
@@ -346,11 +356,11 @@ func (c *Column) OnClick(f func()) {
 // TableRow is a table row. Rows are re-wrapped on every lookup: keep per-row state in SetData.
 type TableRow struct{ it *swt.TableItem }
 
-// Text returns the text of column col.
-func (r *TableRow) Text(col int) string { return r.it.GetTextIndex(int32(col)) }
+// TextAt returns the text of column col.
+func (r *TableRow) TextAt(col int) string { return r.it.GetTextIndex(int32(col)) }
 
-// SetText sets the text of column col.
-func (r *TableRow) SetText(col int, s string) { r.it.SetTextIndexString(int32(col), s) }
+// SetTextAt sets the text of column col.
+func (r *TableRow) SetTextAt(col int, s string) { r.it.SetTextIndexString(int32(col), s) }
 
 // Checked reports the check box of a Check table.
 func (r *TableRow) Checked() bool { return r.it.GetChecked() }
@@ -358,8 +368,8 @@ func (r *TableRow) Checked() bool { return r.it.GetChecked() }
 // SetChecked sets the check box of a Check table.
 func (r *TableRow) SetChecked(v bool) { r.it.SetChecked(v) }
 
-// SetImage sets the icon of column col; the row does not own img.
-func (r *TableRow) SetImage(col int, img *Image) { r.it.SetImageIndexImage(int32(col), img.i) }
+// SetImageAt sets the icon of column col; the row does not own img.
+func (r *TableRow) SetImageAt(col int, img *Image) { r.it.SetImageIndexImage(int32(col), img.i) }
 
 // Data returns the value stored by SetData.
 func (r *TableRow) Data() any { return r.it.GetData() }
@@ -389,7 +399,7 @@ func Tree(opts ...Option) Option {
 // Column appends a column; Right() or Center() set the alignment. The first column holds the node
 // text and the expand arrows. The first call shows the header.
 // Options: Right, Center.
-func (t *TreeView) Column(title string, width int, opts ...Option) *TreeColumn {
+func (t *TreeView) Column(title string, width int, opts ...Option) *Column {
 	itemOpts(t.t, "Tree.Column", sRight|sCenter, false, opts)
 	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
@@ -397,7 +407,7 @@ func (t *TreeView) Column(title string, width int, opts ...Option) *TreeColumn {
 	if t.t.GetColumnCount() == 1 {
 		t.t.SetHeaderVisible(true)
 	}
-	return &TreeColumn{c}
+	return &Column{c}
 }
 
 // ShowRowLines shows or hides thin lines between rows only, see Table.ShowRowLines.
@@ -411,13 +421,13 @@ func (t *TreeView) ShowRowLines(v bool) {
 func (t *TreeView) ShowHeader(v bool) { t.t.SetHeaderVisible(v) }
 
 // SetSort draws the sort indicator dir in the header of col; col nil or SortNone clears it.
-func (t *TreeView) SetSort(col *TreeColumn, dir SortDir) {
+func (t *TreeView) SetSort(col *Column, dir SortDir) {
 	if col == nil || dir == SortNone {
 		t.t.SetSortDirection(swt.NONE)
 		t.t.SetSortColumn(nil)
 		return
 	}
-	t.t.SetSortColumn(col.c)
+	t.t.SetSortColumn(col.c.(*swt.TreeColumn))
 	t.t.SetSortDirection(dir.swt())
 }
 
@@ -462,34 +472,11 @@ func (t *TreeView) OnCellClick(f func(TreeClick)) {
 	}))
 }
 
-// TreeColumn is a tree column.
-type TreeColumn struct{ c *swt.TreeColumn }
-
-// SetTitle replaces the header text.
-func (c *TreeColumn) SetTitle(s string) { c.c.SetText(s) }
-
-// SetWidth sets the width in pixels.
-func (c *TreeColumn) SetWidth(w int) { c.c.SetWidth(int32(w)) }
-
-// SetResizable allows or forbids resizing the column by dragging the header edge.
-func (c *TreeColumn) SetResizable(v bool) { c.c.SetResizable(v) }
-
-// Pack resizes the column to fit its content.
-func (c *TreeColumn) Pack() { c.c.Pack() }
-
 // Batch runs f with drawing of the tree suspended, so that many node changes repaint once.
 func (t *TreeView) Batch(f func()) {
 	t.t.SetRedraw(false)
 	defer t.t.SetRedraw(true)
 	f()
-}
-
-// Unwrap returns the underlying swt.TreeColumn for the full API.
-func (c *TreeColumn) Unwrap() *swt.TreeColumn { return c.c }
-
-// OnClick runs f when the header is clicked, e.g. to sort.
-func (c *TreeColumn) OnClick(f func()) {
-	onSelect(c.c, func(*swt.SelectionEvent) { f() })
 }
 
 // Clear deletes all nodes, children included.

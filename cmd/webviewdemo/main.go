@@ -56,7 +56,7 @@ func build(app *g.App) {
 				g.Label("Messages from the page appear here", g.Wrap(), g.GrowX(), g.BindText(label)),
 				g.Fill(g.Grow(), g.Ref(&host)))))
 
-	wv, err := webview.New(host.Unwrap(), webview.Options{Inspectable: true})
+	wv, err := webview.New(host, webview.Options{Inspectable: true})
 	if err != nil {
 		fmt.Println(err)
 		app.Quit()

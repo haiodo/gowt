@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"math"
 	"path/filepath"
 
 	"github.com/haiodo/gowt/swt"
@@ -151,23 +152,45 @@ const (
 
 // Font describes a typeface choice; Size is in points. Weight overrides Bold when set.
 // SetFont keeps the control's current family for an empty Name, which for a default control is the
-// system UI font (SF Pro, Segoe UI, the GTK UI font) at the given weight.
+// system UI font (SF Pro, Segoe UI, the GTK UI font) at the given weight. Scale sizes the font
+// relative to the system font when Size is 0: Font{Scale: 1.2, Weight: Semibold} is a heading that
+// grows with the system font on every OS.
 type Font struct {
 	Name         string
 	Size         int
+	Scale        float64
 	Weight       Weight
 	Bold, Italic bool
 }
 
-// from fills an empty Name and a zero Size of f with those of cur.
-func (f Font) from(cur *swt.Font) Font {
-	if fd := cur.GetFontData(); len(fd) > 0 {
-		if f.Name == "" {
-			f.Name = fd[0].GetName()
+// from fills an empty Name and a zero Size of f with those of cur, or the Size with the system font
+// size of d times Scale. The result is the key under which equal fonts share one native font.
+func (f Font) from(cur *swt.Font, d *swt.Display) Font {
+	name, size := fontData(cur)
+	_, sys := fontData(d.GetSystemFont())
+	return f.resolve(name, size, sys)
+}
+
+func fontData(f *swt.Font) (name string, size int) {
+	if fd := f.GetFontData(); len(fd) > 0 {
+		return fd[0].GetName(), int(fd[0].GetHeight())
+	}
+	return "", 0
+}
+
+func (f Font) resolve(name string, size, system int) Font {
+	if f.Name == "" {
+		f.Name = name
+	}
+	if f.Size == 0 {
+		f.Size = size
+		if f.Scale != 0 {
+			f.Size = max(1, int(math.Round(float64(system)*f.Scale)))
 		}
-		if f.Size == 0 {
-			f.Size = int(fd[0].GetHeight())
-		}
+	}
+	f.Scale = 0
+	if f.Weight != 0 {
+		f.Bold = false
 	}
 	return f
 }

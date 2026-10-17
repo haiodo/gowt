@@ -113,14 +113,14 @@ save.SetEnabled(false)
 details.SetVisible(false)          // in a VBox, HBox, Grid or Flow the neighbours take the space
 title.SetFont(gowt.Font{Weight: gowt.Semibold})
 warn.SetForeground(gowt.RGB{R: 200, G: 40, B: 40})
-row.SetBackground(gowt.RGB{R: 250, G: 250, B: 250})
+row.SetBackground(gowt.Adaptive{Light: gowt.RGB{R: 250, G: 250, B: 250}, Dark: gowt.RGB{R: 40, G: 40, B: 44}})
 name.SetTooltip("Full name")
 name.Focus()
 row.Dispose()                      // removes it; the parent is laid out again
 row.OnDispose(stop)                // runs when row is disposed or its window closes
 ```
 
-`Enabled()` and `Visible()` read the state back. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
+`Enabled()` and `Visible()` read the state back. A colour is an `RGB` or an `Adaptive{Light, Dark}`, which the widget switches with the system theme by itself; a background on a container also shows behind its labels and boxes. A `Font` with `Scale` and no `Size` is sized from the system font (`Font{Scale: 1.2, Weight: gowt.Semibold}` for a heading), and widgets with equal fonts share one native font. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
 
 A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a text got longer) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
 
@@ -134,7 +134,7 @@ A container has `Add(children...)` (create more children at its end, also after 
 var t *gowt.TableView                              // OnSelect reads the rows later
 w.Add(
 	gowt.ToolBar(gowt.Init(func(tb *gowt.ToolBarView) { tb.Item("Open", open) })),
-	gowt.Table(gowt.Grow(), gowt.Ref(&t), gowt.OnSelect(func(i int) { show(t.RowAt(i).Text(0)) }),
+	gowt.Table(gowt.Grow(), gowt.Ref(&t), gowt.OnSelect(func(i int) { show(t.RowAt(i).TextAt(0)) }),
 		gowt.Init(func(t *gowt.TableView) {
 			t.Column("Name", 200)
 			t.Column("Size", 80, gowt.Right())
@@ -150,11 +150,11 @@ Rows, nodes, columns, tool items and menu items are not widgets: they come from 
 
 ## Leaving the facade
 
-`Unwrap()` returns the swt object for what the facade lacks (drawing into an image, key events of one widget). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `Window.OnKey`, `GC.SetFont`, `Indent`, `App.Flush`, `TrimHead` and `look.DragsWindow` exist already.
+`Unwrap()` returns the swt object for what the facade lacks (drawing into an image, key events of one widget). Before writing `Unwrap()`, check this page and `go doc`: mouse events on `Canvas`, cell clicks on `Table`/`Tree`, the common methods above, `Relayout`, `Batch`, `SetMinSize`, `Shortcut`, `Window.OnKey`, `GC.SetFont`, `Font.Scale`, `App.SystemFont`, `Adaptive`, `Indent`, `App.Flush`, `TrimHead` and `look.DragsWindow` exist already. The packages `jface` and `browser` are the SWT port for porting Java code; new screens do not use them.
 
 ## Option to widgets
 
-The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background(rgb)`, `Custom(f)`, `Ref(&x)`, `Init(f)`, `BindEnabled(r)`, `BindVisible(r)`, and the placement options above. `Gap`, `Padding` and children work on containers. Items (`Tab`, `ToolBar.Item`, `Menu.Item`, `Column`) read only the style options listed for them. Any other option is reported to `App.OnError` and the widget is created without it.
+The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background(paint)`, `Foreground(paint)`, `Typeface(font)`, `Custom(f)`, `Ref(&x)`, `Init(f)`, `BindEnabled(r)`, `BindVisible(r)`, and the placement options above. `Gap`, `Padding` and children work on containers. Items (`Tab`, `ToolBar.Item`, `Menu.Item`, `Column`) read only the style options listed for them. Any other option is reported to `App.OnError` and the widget is created without it.
 
 | Option | Widgets |
 |---|---|

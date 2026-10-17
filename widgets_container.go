@@ -197,6 +197,9 @@ func Scroll(opts ...Option) Option {
 // Add creates children at the end of the content and calls Fit.
 func (s *ScrollView) Add(children ...Option) {
 	add(s, children)
+	if s.body.c.IsDisposed() {
+		return
+	}
 	s.body.c.Layout()
 	s.Fit()
 }

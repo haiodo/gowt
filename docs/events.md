@@ -1,6 +1,6 @@
 # Events and the UI thread
 
-Examples: [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) (rows bound to state).
+Examples: [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) (rows bound to state), [`examples/boundary`](../examples/boundary) (errors shown in place).
 
 ## Callbacks
 
@@ -81,6 +81,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Effect(fn)` | runs `fn` now and again after its sources changed; returns `dispose` |
 | `rx.OnCleanup(f)` | inside an `Effect` or a `Derived`: `f` runs before the next run and on dispose; inside a `Scope`: on dispose |
 | `rx.Scope(fn)` | owns the effects and deriveds created in `fn`; returns `dispose` |
+| `rx.Catch(fn, handle)` | a `Scope` whose effects hand a panic in a `Flush` to `handle` instead of to `Flush`'s caller; `gowt.Boundary` is built on it |
 | `rx.Untrack(fn)` | reads in `fn` do not subscribe |
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
 | `app.Flush()` | `rx.Flush()`, then the layouts the bindings put off (a longer `BindText` text) instead of on the next event-loop turn: for timing one update or measuring a widget right after a change |
@@ -96,7 +97,7 @@ Rules:
 - Everything except `Post` is UI-thread only. `Set` from another goroutine panics; build with `-tags rxdebug` to check `Get` as well.
 - Values that change together go into one `State` (a whole poll result) and are split with `Derived`s; separate `Post`s may reach the UI thread in different batches.
 - A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
-- An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
+- An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback, or to the nearest `gowt.Boundary` around its widget. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
 - `BindText` lays the window out again on the next event-loop turn, so a growing label is not clipped. `Label.SetText` still does not.
 
 ### Rows bound to state
@@ -145,6 +146,26 @@ app.OnError(func(err error) { status.Set(err.Error()) })
 ```
 
 A placement option the parent's layout cannot use (`GrowX` under a `Flow`, `Anchor` outside a `Form`) is reported the same way when the widget is created, naming the option, the widget and the layout; the widget keeps its natural size.
+
+### Boundary: errors shown in place
+
+`gowt.Boundary(children...)` is Svelte's `<svelte:boundary>`: when its children fail, they are disposed with their bindings and effects, and a fallback is shown in their place. The rest of the window keeps working.
+
+```go
+gowt.Boundary(gowt.GrowX(),
+	gowt.Failed(func(err error, reset func()) gowt.Option {
+		return gowt.HBox(gowt.Label("Cannot split: "+err.Error()), gowt.Button("Try again", gowt.OnClick(reset)))
+	}),
+	gowt.Label("", gowt.BindText(share)))  // share panics when parts is 0
+```
+
+- Caught: panics and reported errors while the children are made (constructors, `Ref`, `Init`, an option a widget cannot use, children of a widget that holds none, `Add` on a container inside), and panics in the bindings and effects of the widgets inside after a state change (`Bind`, `BindText`, `BindEnabled`, `BindVisible`, `Watch`, `Rows`, `Nodes` and `Items` with their `fill`, `rx.Effect` made in `Init`).
+- Not caught: event handlers (`OnClick`, `OnChange`, ...), `Async`, `After` and `Every`. Their errors go to `App.OnError` only, as without a boundary.
+- `App.OnError` gets every caught error too, once, so a log stays complete.
+- `reset` disposes the fallback and makes the children again on the next event-loop turn, with the state as it is then. Without `Failed` the fallback is the message and a Retry button.
+- The innermost boundary catches first. An error in a fallback goes to the boundary above.
+- The options of the boundary itself (`GrowX`, `Gap`, ...) belong to its parent: an error in them is not caught by it. Its children stack as in a `VBox`.
+- A window has no boundary of its own: without one, errors go to `App.OnError` and the loop goes on, as above.
 
 `gowt.Run` returns an `error` raised while `setup` builds the window: then nothing is on screen to recover to. A runtime error in `setup` (nil dereference, index out of range) keeps panicking. Getters and setters have no per-call errors; `App.LoadImage` and `App.ImageFrom` return one because a bad file is routine.
 

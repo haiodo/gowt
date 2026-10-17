@@ -34,7 +34,9 @@ func Section(opts ...Option) Option {
 // Add appends rows.
 func (s *SectionView) Add(rows ...Option) {
 	add(s, rows)
-	s.c.Layout()
+	if !s.c.IsDisposed() {
+		s.c.Layout()
+	}
 }
 
 func (s *SectionView) into() *swt.Composite { return s.c }

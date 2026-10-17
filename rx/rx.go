@@ -44,7 +44,8 @@ type node struct {
 	extraAt   []uint64 // epoch at which each extra source was read
 	observers []*node
 
-	exec     func() // derived: recompute; effect: rerun
+	exec     func()      // derived: recompute; effect: rerun
+	catch    func(r any) // Catch: takes the panics of the effects below it
 	parent   *node
 	children []*node  // effects, deriveds and scopes created while this node ran
 	cleanups []func() // OnCleanup funcs of the last run
@@ -371,6 +372,40 @@ func Scope(fn func()) (dispose func()) {
 	return n.dispose
 }
 
+// Catch runs fn as Scope does and owns what fn creates. A panic in an Effect it owns, at any depth,
+// during a Flush goes to handle instead of to the caller of Flush; the nearest Catch above the effect
+// takes it. handle runs on the UI thread while the stack still shows where the panic was raised, and
+// should dispose the scope or the part that failed. A panic in handle goes to the next Catch above,
+// or to Flush's caller. A panic in the first run of an Effect still reaches the code that made it.
+func Catch(fn func(), handle func(r any)) (dispose func()) {
+	mustUI("Catch")
+	n := &node{kind: kindScope, catch: handle}
+	n.adopt()
+	prevObs, prevOwn := observer, owner
+	observer, owner = nil, n
+	defer func() { observer, owner = prevObs, prevOwn }()
+	fn()
+	return n.dispose
+}
+
+// handOver gives r to the Catch handlers above n, nearest first, until one returns; false when
+// none is left. The parent is read before a handler runs: the handler may dispose its Catch.
+func (n *node) handOver(r any) (any, bool) {
+	for p := n.parent; p != nil; {
+		if p.catch == nil {
+			p = p.parent
+			continue
+		}
+		h, up := p.catch, p.parent
+		var ok bool
+		if r, ok = try(func() { h(r) }); ok {
+			return nil, true
+		}
+		p = up
+	}
+	return r, false
+}
+
 // OnCleanup registers f with the running Effect or Derived, to run before its next run and on
 // dispose, or with the Scope being built, to run on dispose. Elsewhere f never runs.
 func OnCleanup(f func()) {
@@ -484,10 +519,13 @@ func byDepth(a, b *node) int { return a.depth - b.depth }
 
 func runEffect(e *node) (r any, stack []byte, ok bool) {
 	defer func() {
-		if !ok {
-			r, stack = recover(), debug.Stack()
-			e.settle()
+		if ok {
+			return
 		}
+		r, stack = recover(), debug.Stack()
+		e.settle()
+		// Handed over here, so that a stack taken in a handler still shows where the panic was raised.
+		r, ok = e.handOver(r)
 	}()
 	e.update()
 	return nil, nil, true

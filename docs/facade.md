@@ -265,6 +265,33 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 - Editing text that contains surrogate pairs (emoji) panics in `swt` (`DefaultContent.GetLine` -> `jrt.Substring` slice bounds, found on Linux after `ReplaceTextRange`); selection, caret and styles on such text work. A generator-level bug, not fixed here.
 - `Styles()` does not report `TextStyle.Font`; `SetStyle` fonts are cached per widget by `Font` value until the widget is disposed.
 
+## Boundary (TSK-2026-10-03-product-40)
+
+`Boundary(children..., Failed(func(err error, reset func()) Option))` is Svelte's `<svelte:boundary>` with a `failed` snippet: when the children fail, they are disposed and the fallback is created in the same place. Example: `examples/boundary`.
+
+```go
+gowt.Boundary(gowt.GrowX(),
+	gowt.Failed(func(err error, reset func()) gowt.Option {
+		return gowt.HBox(gowt.Label(err.Error()), gowt.Button("Try again", gowt.OnClick(reset)))
+	}),
+	gowt.Label("", gowt.BindText(share))) // share panics for some input
+```
+
+| Choice | Reason |
+|---|---|
+| A container (a column, like VBox) that holds the children and later the fallback | The fallback lands in the same place without moving native widgets among the parent's children, and the parent's layout keeps one cell whatever the fallback holds. Cost: one native composite per boundary. Placement options on the boundary apply to it in its parent. |
+| Caught while the children are made: panics (any value, runtime errors included) and the errors reported against a widget inside (misused option, child of a widget that holds none, wrong Ref/Init type), also during `Add` on a container inside after creation | These all describe one subtree that cannot be shown as written. Reported errors keep today's behaviour (the widget is made without the option) until the subtree is done, then the first error replaces it. |
+| Caught later: panics in the effects of bindings inside (`Watch`, `Bind`, `BindText`, `BindEnabled`, `BindVisible`, `Rows`, `Nodes`, `Items` and their `fill`) and of `rx.Effect` made while the children are made (`Init`) | `rx.Catch(fn, handle)`: a Scope whose effects hand their panics to `handle` instead of to the caller of `Flush`; the nearest Catch takes it, and a panic in `handle` goes to the next one. Bindings find their boundary through the native parents (a data key on the composite), so widgets added later by `Add` are covered too. |
+| Not caught: event handlers, `Async`, `After`, `Every` | As in Svelte: the handler's code is the place to handle its errors, and the subtree is not broken by them. They go to `App.OnError` as before. |
+| `App.OnError` also gets every caught error, once, with the stack where it was raised | Logging stays complete. rx calls `handle` inside its deferred recover, so the stack still holds the panic's frames. |
+| The fallback of a boundary belongs to the boundary above: its errors and the panics of its bindings go there | A failing fallback would otherwise replace itself in a loop. |
+| `reset` runs on the next event-loop turn | The usual caller is a button inside the fallback, which the reset disposes. |
+| Default fallback: the message in red, wrapped at 320 points, and a Retry button | Shows what failed, with the option and widget names the messages already carry. |
+| On failure and on reset the rx scope of the children is disposed, then the native children | Effects made in `Init` under a boundary end with it; they used to live until the program ended. `TestBoundaryResetDoesNotLeak` counts live effects across resets. |
+| No implicit boundary per Window | One broken label would blank the whole window, where today the rest keeps working and the error goes to `OnError`; code without a boundary behaves as before. A boundary around the window's content is one line. |
+
+Ceilings: `rx.Effect` made by a callback (not while the children are made) under a boundary is not owned by it, as before. A panic in the first run of an effect made by `Add` from an event handler is caught, since `Add` is; one made by `rx.Effect` directly in that handler is not.
+
 ## Open points
 
 - `Sync` called from the UI thread runs inline (SWT behaviour); documented, not changed.

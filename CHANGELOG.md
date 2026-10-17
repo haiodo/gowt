@@ -22,6 +22,8 @@ New API
 - `icons.FromSVG(app, data, size, rgb)`: an image from an SVG document with `currentColor` drawn in `rgb`, cached per document, size and colour like `icons.Get`.
 - `TableRow.TextAt`, `SetTextAt`, `SetImageAt`, as on `Node`.
 - Rows bound to rx state, Svelte's keyed `{#each}`: `Rows(list, key, fill)` on a Table, `Nodes(list, key, children, fill)` on a Tree and `Items(list)` on a List or Combo keep one row, node or entry per element of an `rx.Reader[[]T]`. Rows are matched by key; `fill` runs only for new rows and rows whose element is no longer `==`, the others keep their native item, selection and expansion, and a moved key keeps its selection (and on a Tree the expansion of its subtree). A change of 10 rows in 1000 takes 20 µs and 75 allocations on Linux, against 5.3 ms and 35108 for clearing and refilling the table by hand; a full replace or a reverse costs what the refill costs. `examples/rows` shows a table and a tree that change every second.
+- `Boundary(children...)` with `Failed(func(err error, reset func()) Option)`, Svelte's `<svelte:boundary>`: when its children fail to build (a panic, a misused option, a child of a widget that holds none) or a binding or effect inside panics after a state change (`Bind`, `BindText`, `Watch`, `Rows` `fill`, ...), they are disposed with their effects and the fallback is shown in their place; `reset` makes them again. Event handlers are not caught. Without `Failed` the fallback is the message and a Retry button. Example: `examples/boundary`.
+- `rx.Catch(fn, handle)`: a `Scope` whose effects hand their panics in a `Flush` to `handle`, the nearest Catch first.
 
 Breaking change
 - `List.SetSelection(i...)` and `Table.SetSelection(i...)` are `Select(i...)`, as on Combo, Tabs and Tree.
@@ -35,6 +37,7 @@ Behaviour change
 - Images: the App owns every `Image`, whichever call made it (`LoadImage` and `ImageFrom` said the caller owned theirs), and disposes the ones still alive when `Run` returns. `Dispose` frees one earlier and removes it from the App; disposed images used to stay listed until the end of `Run`. `icons.Get` makes an image again after its cached one was disposed.
 - Fonts: controls, canvases and styled texts given equal fonts share one native font per App, released after the last of them is disposed or given another font; each `SetFont` used to make a native font per control. `TextStyle.Font` with an empty `Name` or a zero `Size` now takes them from the widget's font, as `SetFont` does.
 - Theme switch: the colours of `Adaptive` paints are Go values (SWT colours hold no native handle on macOS, Windows or Linux), so a switch makes no native colours; images from `icons.Get` and `icons.FromSVG` are made once per colour.
+- An `rx.Effect` made in `Init` inside a `Boundary` is disposed with the boundary's children; elsewhere it lives until its `dispose`, as before. Every error a boundary catches also goes to `App.OnError`.
 
 Fixes
 - docs: `Column.SetWidth` and `GC.SetLineWidth` said pixels; widths are in points, like every facade size. theme-look.md told apps to recolour widgets in `OnThemeChange` while the facade had no way to set a background after creation.

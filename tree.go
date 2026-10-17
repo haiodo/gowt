@@ -200,6 +200,8 @@ func finish(w Widget, allow styleID, opts []Option) {
 			if !isHost {
 				reportOn(c, fmt.Errorf("gowt: %s takes no children, %s is dropped", nameOf(c), o.name))
 			}
+		case failedOpt:
+			reportOn(c, fmt.Errorf("gowt: Failed applies to Boundary, not to %s", nameOf(c)))
 		}
 	}
 	if pl != nil {
@@ -259,7 +261,7 @@ func add(h host, children []Option) {
 			reportOn(h.control(), fmt.Errorf("gowt: Add on %s takes widgets; give options where the widget is created", nameOf(h.control())))
 		}
 	}
-	addNodes(h, children)
+	addIn(h, children)
 }
 
 // leaf returns the node of a widget without children: make creates it in parent.

@@ -766,6 +766,7 @@ gowt func BindVisible(r github.com/haiodo/gowt/rx.Reader[bool]) Option
 gowt func Bind[T string | bool | int](s *github.com/haiodo/gowt/rx.State[T]) Option
 gowt func Border() Option
 gowt func Bottom() Option
+gowt func Boundary(opts ...Option) Option
 gowt func Button(text string, opts ...Option) Option
 gowt func CTabs(opts ...Option) Option
 gowt func Canvas(onPaint func(g *GC), opts ...Option) Option
@@ -783,6 +784,7 @@ gowt func Disabled() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
+gowt func Failed(f func(err error, reset func()) Option) Option
 gowt func Fill(opts ...Option) Option
 gowt func Flat() Option
 gowt func Flow(opts ...Option) Option
@@ -972,6 +974,7 @@ gowt/rx State.Set(v T)
 gowt/rx State.Update(fn func(T) T)
 gowt/rx func Attach(prepare func(tick func()) (wake func())) (detach func())
 gowt/rx func Batch(fn func())
+gowt/rx func Catch(fn func(), handle func(r any)) (dispose func())
 gowt/rx func ComputeFunc[T any](fn func() T, eq func(a T, b T) bool) *Derived[T]
 gowt/rx func Compute[T comparable](fn func() T) *Derived[T]
 gowt/rx func Effect(fn func()) (dispose func())

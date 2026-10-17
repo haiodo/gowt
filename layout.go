@@ -305,7 +305,9 @@ func Pages(opts ...Option) Option {
 // Add appends pages; a page added while none is shown is shown.
 func (g *PagesView) Add(pages ...Option) {
 	add(g, pages)
-	g.c.Layout()
+	if !g.c.IsDisposed() {
+		g.c.Layout()
+	}
 }
 
 func (g *PagesView) into() *swt.Composite { return g.c }

@@ -170,12 +170,16 @@ func BindVisible(r rx.Reader[bool]) Option {
 	})
 }
 
-// own runs body in an rx.Scope that is disposed with w. body makes the effects of one binding and
+// own runs body in an rx.Scope that is disposed with w; inside a Boundary its panics go there. body makes the effects of one binding and
 // removes with rx.OnCleanup whatever it added to the widget.
 func own(w Widget, body func()) {
 	c := w.control()
 	u := &unbinder{c: c}
-	u.stop = rx.Scope(func() {
+	scope := rx.Scope
+	if b := boundaryOf(c); b != nil {
+		scope = func(f func()) func() { return rx.Catch(f, b.caught) }
+	}
+	u.stop = scope(func() {
 		rx.OnCleanup(u.detach)
 		body()
 	})

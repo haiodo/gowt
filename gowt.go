@@ -120,13 +120,7 @@ func (a *App) dispatch(step func() bool) (busy bool) {
 func (a *App) OnError(f func(error)) { a.onError = f }
 
 // fail reports a panic value caught on the UI thread, wrapped like the error Run returns.
-func (a *App) fail(r any) {
-	err, ok := r.(error)
-	if !ok {
-		err = fmt.Errorf("panic: %v", r)
-	}
-	a.report(fmt.Errorf("gowt: %w", err))
-}
+func (a *App) fail(r any) { a.report(panicError(r)) }
 
 func (a *App) report(err error) {
 	if a.onError != nil {
@@ -139,13 +133,18 @@ func (a *App) report(err error) {
 // displayed is any swt widget: it knows its display, and so its App.
 type displayed interface{ GetDisplay() *swt.Display }
 
-// reportOn hands err to the App that owns c, see App.OnError.
+// reportOn hands err to the App that owns c, see App.OnError, and to the Boundary creating c.
 func reportOn(c displayed, err error) {
-	if a, ok := apps.Load(c.GetDisplay()); ok {
-		a.(*App).report(err)
-		return
+	a, ok := apps.Load(c.GetDisplay())
+	if !ok {
+		panic(err)
 	}
-	panic(err)
+	a.(*App).report(err)
+	if ctl, ok := c.(*swt.Control); ok {
+		if b := buildingAt(ctl); b != nil {
+			b.record(err)
+		}
+	}
 }
 
 // Async queues f on the UI thread; safe from any goroutine. Once Run has returned, Async does nothing
@@ -293,7 +292,7 @@ func (p *panel) AsComposite() *swt.Composite { return p.c }
 // It is the way to fill a container after its creation, for content that changes; see Clear.
 func (p *panel) Add(children ...Option) {
 	add(p, children)
-	if p.c.IsVisible() {
+	if !p.c.IsDisposed() && p.c.IsVisible() {
 		p.c.LayoutOverload2(true, true)
 	}
 }

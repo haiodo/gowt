@@ -354,13 +354,14 @@ func vtToolTip(a []int64) int64 {
 	return 0
 }
 
-// vtDrawContext draws with the table's coordinates: the cell view's own origin is shifted back to the table's.
-func vtDrawContext(table *cocoa.NSView, view *cocoa.NSView, draw func()) {
-	origin := table.ConvertRect_fromView_(view.Bounds(), view)
+// vtDrawContext draws in the table's coordinates, frame (the cell in the table) mapped onto the view.
+// Not the view's current place: while an expand animates, the rows below still sit at their old y.
+func vtDrawContext(view *cocoa.NSView, frame cocoa.NSRect, draw func()) {
+	b := view.Bounds()
 	ctx := cocoa.NSGraphicsContextCurrentContext()
 	ctx.SaveGraphicsState()
 	transform := cocoa.NSAffineTransformTransform()
-	transform.TranslateXBy(-origin.X, -origin.Y)
+	transform.TranslateXBy(b.X-frame.X, b.Y-frame.Y)
 	transform.Concat()
 	draw()
 	ctx.RestoreGraphicsState()
@@ -395,7 +396,7 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 	cell.SetHighlighted(tv.IsRowSelected(row))
 	this.tableView_willDisplayCell_forTableColumn_row_(tv.Id, 0, tv.Id, cell.Id, column, row)
 	frame := tv.FrameOfCellAtColumn(col, row)
-	vtDrawContext(this.View, v, func() { cell.DrawInteriorWithFrame(frame, this.View) })
+	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
 func (this *List) vtDrawCell(view int64) {
@@ -412,7 +413,8 @@ func (this *List) vtDrawCell(view int64) {
 	cell.SetObjectValue(cocoa.NewidOverload1(this.tableView_objectValueForTableColumn_row_(tv.Id, 0, tv.Id, this.column.Id, row)))
 	selected := tv.IsRowSelected(row)
 	cell.SetHighlighted(selected)
-	frame := tv.FrameOfCellAtColumn(col, row)
+	cellFrame := tv.FrameOfCellAtColumn(col, row)
+	frame := cellFrame
 	// The text cell draws from the top of its frame; a row taller than the text (source list) centres it.
 	if h := cell.CellSize().Height; h < frame.Height {
 		frame.Y += math.Floor((frame.Height - h) / 2)
@@ -429,7 +431,7 @@ func (this *List) vtDrawCell(view int64) {
 		cell.SetHighlighted(false)
 		cocoa.Msg(cell.Id, "setTextColor:", cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor"))
 	}
-	vtDrawContext(this.View, cocoa.NewNSViewOverload1(view), func() { cell.DrawInteriorWithFrame(frame, this.View) })
+	vtDrawContext(cocoa.NewNSViewOverload1(view), cellFrame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
 const vtStyleSourceList = 3 // NSTableViewStyleSourceList
@@ -539,7 +541,7 @@ func (this *Tree) vtDrawCell(view int64, check bool) {
 	cell.SetHighlighted(ov.IsRowSelected(row))
 	this.outlineView_willDisplayCell_forTableColumn_item_(ov.Id, 0, ov.Id, cell.Id, column, itemID)
 	frame := ov.FrameOfCellAtColumn(col, row)
-	vtDrawContext(this.View, v, func() { cell.DrawInteriorWithFrame(frame, this.View) })
+	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
 func (this *Tree) vtCheckMouseDown(view int64, event int64) {

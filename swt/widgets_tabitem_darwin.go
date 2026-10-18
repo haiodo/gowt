@@ -257,6 +257,7 @@ func (this *TabItem) setImageOnItem_(image *Image) {
 	}
 	this.Item.setImageOnItem_(image)
 	this.nsItem.SetLabel(cocoa.NSStringString())
+	this.remeasureLabel()
 }
 
 func (this *TabItem) setText_(string_ string) {
@@ -270,6 +271,7 @@ func (this *TabItem) setText_(string_ string) {
 	}
 	this.Item.setText_(string_)
 	this.UpdateText()
+	this.remeasureLabel()
 }
 
 func (this *TabItem) SetToolTipText(string_ string) {

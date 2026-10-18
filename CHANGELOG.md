@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+Fixes
+- `StyledText.SetText` took time quadratic in the number of lines: 10000 lines 0.37 s, 30000 lines 3.5 s. Setting the text resets the renderer's cache through a sorted set of every line index, and the runtime's sorted set searched the whole list and sorted it again on each add. It now inserts by binary search; 30000 lines take about 7 ms on Linux.
+
 ## v0.9.2 (2026-10-18)
 
 Fixes

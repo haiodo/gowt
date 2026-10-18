@@ -24,7 +24,8 @@ func (a *App) Clipboard() *Clipboard {
 }
 
 func (a *App) disposeClipboard() {
-	if a.clip != nil && !a.clip.c.IsDisposed() {
+	// Clipboard.Dispose asks the display for its thread, which fails once the display is disposed.
+	if a.clip != nil && !a.clip.c.IsDisposed() && !a.display.IsDisposed() {
 		a.clip.c.Dispose()
 	}
 }

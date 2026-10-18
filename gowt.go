@@ -231,6 +231,36 @@ func Tooltip(s string) Option {
 	return apply(func(w *swt.Control) { w.SetToolTipText(s) })
 }
 
+// Focused gives the widget the keyboard focus when its window is first shown, in place of the first
+// control that SWT and the OS pick (with Full Keyboard Access on, macOS draws the focus ring on that
+// control, often a button). Created into a window already on screen, the widget takes the focus on
+// the next event-loop turn, or when that window is next activated. With several Focused in a window
+// the last one created wins.
+func Focused() Option {
+	return apply(func(c *swt.Control) {
+		s := c.GetShell()
+		if c == &s.Control {
+			reportOn(c, fmt.Errorf("gowt: Focused applies to a widget in a window, not to Window"))
+			return
+		}
+		if !s.GetVisible() {
+			s.SetDataKeyValue(focusedKey, c)
+			return
+		}
+		// On the next turn the widget is laid out; focusing an inactive window would bring it to the front.
+		c.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+			if c.IsDisposed() {
+				return
+			}
+			if c.GetDisplay().GetActiveShell() == s {
+				c.SetFocus()
+				return
+			}
+			s.SetSavedFocus(c)
+		}))
+	})
+}
+
 // Check makes a Button a check box, and Table and Tree rows and ToolBar items checkable.
 // Radio, Multiline, Password, ReadOnly and Border follow below.
 func Check() Option { return style{id: sCheck, set: swt.CHECK} }
@@ -450,13 +480,49 @@ func (a *App) Window(title string, opts ...Option) *Window {
 	return w
 }
 
-// Show packs the window to its content size (unless SetSize was called) and opens it.
+// Show packs the window to its content size (unless SetSize was called), opens it and, the first
+// time, gives the keyboard focus to the widget created with Focused.
 func (w *Window) Show() {
 	if !w.sized {
 		w.shell.Pack()
 	}
+	c := w.initialFocus()
+	if c != nil {
+		// Shell.Open, and windowDidBecomeKey on macOS, give the focus to the saved control first.
+		w.shell.SetSavedFocus(c)
+	}
 	w.shell.Open()
+	// Open passes over a push button on Windows and Linux.
+	if c != nil && !c.IsDisposed() {
+		c.SetFocus()
+	}
 }
+
+// initialFocus returns the control that Focused named or, without one, the default that package look
+// set, once: a window shown again keeps the focus SWT saved for it.
+func (w *Window) initialFocus() *swt.Control {
+	c, _ := w.shell.GetDataKey(focusedKey).(*swt.Control)
+	if c == nil {
+		if f, ok := w.shell.GetDataKey(focusDefaultKey).(func() *swt.Control); ok {
+			// The layout hides the pages of a Pages that are not shown; f skips hidden controls.
+			w.shell.Layout()
+			c = f()
+		}
+	}
+	w.shell.SetDataKeyValue(focusedKey, nil)
+	w.shell.SetDataKeyValue(focusDefaultKey, nil)
+	if c == nil || c.IsDisposed() {
+		return nil
+	}
+	return c
+}
+
+// focusedKey holds the control given Focused in a window not shown yet. focusDefaultKey holds a
+// func() *swt.Control that package look sets for a sidebar window; look has the same key.
+const (
+	focusedKey      = "gowt.focused"
+	focusDefaultKey = "gowt.look.focus"
+)
 
 // SetTitle changes the window title.
 func (w *Window) SetTitle(s string) {

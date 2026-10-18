@@ -3,6 +3,8 @@
 ## Unreleased
 
 New API
+- `gowt.Focused()`, an option that gives a widget the keyboard focus when its window is first shown, in place of the first control SWT picks; on macOS with Full Keyboard Access on that was often a button, drawn with a focus ring. The last `Focused` created in a window wins; a `Focused` widget added to a window on screen takes the focus on the next event-loop turn, or when its window is next activated. `Focused` on a Window goes to `App.OnError`.
+- A window laid out by `look.SetSidebar` without a `Focused` widget opens with the focus on its first visible List, Table or Tree, in the content first, then in the sidebar, as Finder does, instead of the first button.
 - `gowt.SecondaryText`, a `Paint` with the system colour of secondary text that follows the system theme like an `Adaptive`: macOS `secondaryLabelColor` (flattened over the window background, as SWT text colours are opaque), Windows `COLOR_GRAYTEXT`, GTK the insensitive label colour. SWT's `COLOR_WIDGET_DISABLED_FOREGROUND` is not used on macOS, where it is a selection background colour.
 - `look.ToolbarItem.Sidebar` puts a toolbar item over the sidebar of a `look.SetSidebar` window. On macOS it sits in the title bar level with the traffic lights, right-aligned about 25 points inside the sidebar edge, and back/forward and the title start about 27 points past the edge. On Windows and Linux the item goes into a row at the top of the sidebar, at its right end. Without `SetSidebar` it is an ordinary item.
 

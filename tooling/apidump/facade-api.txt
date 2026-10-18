@@ -789,6 +789,7 @@ gowt func Failed(f func(err error, reset func()) Option) Option
 gowt func Fill(opts ...Option) Option
 gowt func Flat() Option
 gowt func Flow(opts ...Option) Option
+gowt func Focused() Option
 gowt func Foreground(c Paint) Option
 gowt func Form(opts ...Option) Option
 gowt func Gap(points int) Option

@@ -13,6 +13,9 @@ func TestPropertiesAndMessageFormat(t *testing.T) {
 	if got := MessageFormatFormat("{0}   e.g. {1}, it''s {2}", []any{"int", 5}); got != "int   e.g. 5, it's {2}" {
 		t.Errorf("MessageFormatFormat = %q", got)
 	}
+	if got := MessageFormatFormat("Alt+{0}, {1,number,integer} KB", []any{uint16('3'), 12}); got != "Alt+3, 12 KB" {
+		t.Errorf("MessageFormatFormat = %q", got)
+	}
 	if got := IndexFrom("a|b|c", "|", 2); got != 3 {
 		t.Errorf("IndexFrom = %d", got)
 	}

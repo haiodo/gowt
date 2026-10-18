@@ -129,8 +129,9 @@ func unescapeProperty(s string) string {
 	return b.String()
 }
 
-// MessageFormatFormat is MessageFormat.format(pattern, args): {n} is replaced by fmt.Sprint(args[n])
-// and ” is a literal quote. Not supported: {n,number,...} format types, quoted literal sections.
+// MessageFormatFormat is MessageFormat.format(pattern, args): {n} and {n,type,style} are replaced by
+// fmt.Sprint(args[n]), a char (uint16) by its character, and ” is a literal quote. Not supported:
+// the number and date formatting of type and style, quoted literal sections.
 func MessageFormatFormat(pattern string, args []any) string {
 	var b strings.Builder
 	for i := 0; i < len(pattern); i++ {
@@ -145,9 +146,12 @@ func MessageFormatFormat(pattern string, args []any) string {
 			b.WriteByte(c)
 			continue
 		}
-		n, err := strconv.Atoi(pattern[i+1 : i+end])
+		index, _, _ := strings.Cut(pattern[i+1:i+end], ",")
+		n, err := strconv.Atoi(index)
 		if err != nil || n < 0 || n >= len(args) {
 			b.WriteString(pattern[i : i+end+1])
+		} else if c, ok := args[n].(uint16); ok {
+			b.WriteRune(rune(c))
 		} else {
 			b.WriteString(fmt.Sprint(args[n]))
 		}

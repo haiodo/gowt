@@ -193,6 +193,7 @@ func (this *TabFolder) CreateItem(itemLike TabItemLike, index int32) {
 	item.labelHandle = labelHandle
 	item.imageHandle = imageHandle
 	item.pageHandle = pageHandle
+	this.hookPage(pageHandle)
 	t477 := itemCount
 	itemCount++
 	copy(this.items[index+1:], this.items[index:index+t477-index])

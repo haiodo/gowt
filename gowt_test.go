@@ -816,3 +816,42 @@ func TestWindowOnKey(t *testing.T) {
 		}
 	})
 }
+
+// A setter that changes a widget's size lays the parents out on the next turn, without Relayout;
+// a Wrap label in a column that fills the window takes the lines its text needs.
+func TestSetTextLaysOut(t *testing.T) {
+	const long = "a long text that needs several lines in a window this narrow, set after the window was shown"
+	ran := false
+	guiRun(t, func(app *App, w *Window) {
+		var l, wrap, below *LabelView
+		var b *ButtonView
+		w.Add(HBox(Label("short", Ref(&l)), Button("ok", Ref(&b))),
+			VBox(GrowX(), Label("", Wrap(), GrowX(), Ref(&wrap)), Label("neighbour", Ref(&below))))
+		w.SetSize(400, 300)
+		w.Show()
+		app.Flush()
+		lineH := below.l.GetSize().Y
+		l.SetText("a longer text, set after Show")
+		b.SetText("a wider button")
+		wrap.SetText(long)
+		app.Async(func() {
+			ran = true
+			for _, c := range []*swt.Control{&l.l.Control, &b.b.Control} {
+				if got, want := c.GetSize().X, c.ComputeSize(swt.DEFAULT, swt.DEFAULT).X; got != want {
+					t.Errorf("%v: width %d after SetText, want %d", c, got, want)
+				}
+			}
+			wb := wrap.l.GetBounds()
+			if wb.Height < 2*lineH || below.l.GetLocation().Y < wb.Y+wb.Height {
+				t.Errorf("wrap label %v, line %d, neighbour at %d", wb, lineH, below.l.GetLocation().Y)
+			}
+			l.SetText("a longer text, set after Show")
+			if len(app.relayouts) != 0 {
+				t.Errorf("the same text queued a relayout: %d", len(app.relayouts))
+			}
+		})
+	})
+	if !ran {
+		t.Error("the check did not run")
+	}
+}

@@ -29,8 +29,9 @@ func (c *ComboView) SetText(s string) { c.c.SetText(s) }
 // Items returns the list entries.
 func (c *ComboView) Items() []string { return c.c.GetItems() }
 
-// SetItems replaces the list entries.
-func (c *ComboView) SetItems(s []string) { c.c.SetItems(s) }
+// SetItems replaces the list entries. Lays the parents out when the size changes: the width follows
+// the widest entry.
+func (c *ComboView) SetItems(s []string) { sizing(&c.c.Control, func() { c.c.SetItems(s) }) }
 
 // Index is the selected item, -1 if the text matches none.
 func (c *ComboView) Index() int { return int(c.c.GetSelectionIndex()) }

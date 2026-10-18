@@ -131,15 +131,14 @@ func onModify(x modifiable) func(func()) func() {
 	}
 }
 
-// BindText shows r as the text of a Label, Button or Link. A changed text lays the window out again
-// on the next event-loop turn, so a text that grows is not clipped.
+// BindText shows r as the text of a Label, Button or Link. As with SetText, a text that changes the
+// widget's size lays its parents out again on the next event-loop turn, so a text that grows is not cut.
 func BindText(r rx.Reader[string]) Option {
 	return hook(func(w Widget) error {
 		t, ok := w.(interface{ SetText(string) })
 		if _, field := w.(*TextView); !ok || field {
 			return fmt.Errorf("gowt: BindText applies to Label, Button and Link, not to %s; a Text takes Bind", nameOf(w.control()))
 		}
-		c := w.control()
 		last := ""
 		first := true
 		Watch(w, r, func(s string) {
@@ -148,7 +147,6 @@ func BindText(r rx.Reader[string]) Option {
 			}
 			first, last = false, s
 			t.SetText(s)
-			c.GetShell().LayoutOverload4([]*swt.Control{c}, swt.DEFER)
 		})
 		return nil
 	})

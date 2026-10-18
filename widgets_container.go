@@ -26,8 +26,8 @@ func Group(title string, opts ...Option) Option {
 	}}
 }
 
-// SetTitle replaces the frame title.
-func (g *GroupView) SetTitle(s string) { g.g.SetText(s) }
+// SetTitle replaces the frame title. Lays the parents out when the size changes.
+func (g *GroupView) SetTitle(s string) { sizing(&g.g.Control, func() { g.g.SetText(s) }) }
 
 // Unwrap returns the underlying swt.Group for the full API.
 func (g *GroupView) Unwrap() *swt.Group { return g.g }
@@ -282,11 +282,14 @@ func (t *ToolBarView) Unwrap() *swt.ToolBar { return t.t }
 // ToolItem is a tool bar button.
 type ToolItem struct{ i *swt.ToolItem }
 
-// SetText replaces the item text.
-func (i *ToolItem) SetText(s string) { i.i.SetText(s) }
+// SetText replaces the item text. Lays the tool bar's parents out when its size changes.
+func (i *ToolItem) SetText(s string) { sizing(&i.i.GetParent().Control, func() { i.i.SetText(s) }) }
 
-// SetImage sets the icon; the item does not own img.
-func (i *ToolItem) SetImage(img *Image) { i.i.SetImage(img.i) }
+// SetImage sets the icon; the item does not own img. Lays the tool bar's parents out when its size
+// changes.
+func (i *ToolItem) SetImage(img *Image) {
+	sizing(&i.i.GetParent().Control, func() { i.i.SetImage(img.i) })
+}
 
 // SetTooltip sets the text shown on hover.
 func (i *ToolItem) SetTooltip(s string) { i.i.SetToolTipText(s) }

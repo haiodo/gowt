@@ -1,6 +1,11 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"slices"
+
+	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/swt"
+)
 
 // Widget is any gowt control. Layouts and containers take it where they refer to a sibling or a
 // child. Its methods are the ones every widget type has.
@@ -73,18 +78,70 @@ func (w *base) SetTooltip(s string) { w.ctl.SetToolTipText(s) }
 // SetFont gives the control the font f. Empty Name and zero Size keep the control's current ones (the
 // system font for a default control); a zero Size with a Scale is the system font size times Scale.
 // Controls given equal fonts share one native font, released after the last of them is disposed or
-// given another font. Typeface() does the same at creation.
+// given another font. Typeface() does the same at creation. Lays the parents out when the size
+// changes.
 func (w *base) SetFont(f Font) {
 	c := w.ctl
 	a := appOf(c)
 	k := f.from(c.GetFont(), c.GetDisplay())
-	c.SetFont(a.font(k))
+	sizing(c, func() { c.SetFont(a.font(k)) })
 	old, had := ownedFonts[c]
 	ownedFonts[c] = k
 	if had {
 		a.releaseFont(old)
 	} else {
 		c.AddDisposeListener(&fontRelease{a, c})
+	}
+}
+
+// sizing runs set; when that changes c's preferred size, c's parents are laid out on the next
+// event-loop turn or at App.Flush, one pass for all the controls changed in that turn.
+func sizing(c *swt.Control, set func()) {
+	a := appOf(c)
+	if a == nil || &c.GetShell().Control == c { // no layout places a Window
+		set()
+		return
+	}
+	before := preferred(c)
+	set()
+	after := preferred(c)
+	// Linear: a turn changes few controls; thousands of them in one turn would want a set.
+	if after.X == before.X && after.Y == before.Y || slices.Contains(a.relayouts, c) {
+		return
+	}
+	a.relayouts = append(a.relayouts, c)
+	if len(a.relayouts) == 1 {
+		a.display.AsyncExec(jrt.NewRunnable(a.runRelayouts))
+	}
+}
+
+// preferred is the size c asks its layout for; a WRAP control is measured at its current width,
+// as GridLayout does for a filled cell.
+func preferred(c *swt.Control) *swt.Point {
+	w := int32(swt.DEFAULT)
+	if x := c.GetSize().X; c.GetStyle()&swt.WRAP != 0 && x > 0 {
+		w = x
+	}
+	return c.ComputeSizeWHintHHintChanged(w, swt.DEFAULT, false)
+}
+
+// runRelayouts lays out the parent chains of the controls sizing queued, one pass per shell.
+func (a *App) runRelayouts() {
+	list := a.relayouts
+	a.relayouts = nil
+	for i, c := range list {
+		if c == nil || c.IsDisposed() {
+			continue
+		}
+		sh := c.GetShell()
+		group := []*swt.Control{c}
+		for j, d := range list[i+1:] {
+			if d != nil && !d.IsDisposed() && d.GetShell() == sh {
+				group = append(group, d)
+				list[i+1+j] = nil
+			}
+		}
+		sh.LayoutOverload4(group, swt.NONE)
 	}
 }
 
@@ -243,8 +300,8 @@ func toInt32s(a []int) []int32 {
 	return r
 }
 
-// SetImage sets the icon; the label does not own img.
-func (l *LabelView) SetImage(img *Image) { l.l.SetImage(img.i) }
+// SetImage sets the icon; the label does not own img. Lays the parents out when the size changes.
+func (l *LabelView) SetImage(img *Image) { sizing(&l.l.Control, func() { l.l.SetImage(img.i) }) }
 
-// SetImage sets the icon; the button does not own img.
-func (b *ButtonView) SetImage(img *Image) { b.b.SetImage(img.i) }
+// SetImage sets the icon; the button does not own img. Lays the parents out when the size changes.
+func (b *ButtonView) SetImage(img *Image) { sizing(&b.b.Control, func() { b.b.SetImage(img.i) }) }

@@ -389,3 +389,43 @@ func BenchmarkTreeRefillUpdate10of1100(b *testing.B) {
 		}
 	})
 }
+
+// njpt's Methods tab against its call tree: 3000 rows of 7 cells, refilled in one Batch.
+func BenchmarkTableRow3000x7(b *testing.B) {
+	cells := []string{"main.run", "12.50", "4.1", "3.20", "1.0", "1024", "main.go:42"}
+	benchTable(b, func(w *Window) func(int) {
+		t := put[*TableView](w, Table())
+		for _, c := range cells {
+			t.Column(c, 60)
+		}
+		return func(int) {
+			t.Batch(func() {
+				t.Clear()
+				for range 3000 {
+					t.Row(cells...)
+				}
+			})
+		}
+	})
+}
+
+func BenchmarkTreeNode3000x7(b *testing.B) {
+	cells := []string{"main.run", "12.50", "4.1", "3.20", "1.0", "1024", "main.go:42"}
+	benchTable(b, func(w *Window) func(int) {
+		t := put[*TreeView](w, Tree())
+		for _, c := range cells {
+			t.Column(c, 60)
+		}
+		return func(int) {
+			t.Batch(func() {
+				t.Clear()
+				for range 3000 {
+					n := t.Node(cells[0])
+					for j, c := range cells[1:] {
+						n.SetTextAt(j+1, c)
+					}
+				}
+			})
+		}
+	})
+}

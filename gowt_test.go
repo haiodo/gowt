@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -470,6 +471,51 @@ func TestTreeColumnsAndCells(t *testing.T) {
 		rb := r.Unwrap().GetBoundsIndex(1)
 		if row, col := tb.CellAt(int(rb.X+rb.Width/2), int(rb.Y+rb.Height/2)); row != 0 || col != 1 {
 			t.Errorf("table CellAt: row %d col %d", row, col)
+		}
+	})
+}
+
+// Rows added at creation, before the first layout, must not leave the first row under the header (macOS), and a
+// selection made inside Batch may name rows the native view has not been told about yet.
+func TestTableTreeFilledBeforeLayout(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var tb *TableView
+		var tr *TreeView
+		w.Add(HBox(Grow(),
+			Table(Grow(), Ref(&tb), Init(func(t *TableView) {
+				t.Column("a", 80)
+				for i := range 200 {
+					t.Row(strconv.Itoa(i))
+				}
+			})),
+			Tree(Grow(), Ref(&tr), Init(func(t *TreeView) {
+				t.Column("a", 80)
+				for i := range 200 {
+					t.Node(strconv.Itoa(i))
+				}
+			}))))
+		w.SetSize(400, 300)
+		w.Show()
+		for range 20 {
+			for app.display.ReadAndDispatch() {
+			}
+			time.Sleep(time.Millisecond)
+		}
+		if top := tb.Unwrap().GetTopIndex(); top != 0 {
+			t.Errorf("table top index %d", top)
+		}
+		if top := tr.Unwrap().GetTopItem(); top == nil || top.GetTextIndex(0) != "0" {
+			t.Errorf("tree top item %v", top)
+		}
+		tb.Batch(func() {
+			for i := range 100 {
+				tb.Row("b" + strconv.Itoa(i))
+			}
+			tb.Select(299)
+			tb.Unwrap().ShowSelection()
+		})
+		if tb.Len() != 300 || tb.Index() != 299 {
+			t.Errorf("after batch: len %d index %d", tb.Len(), tb.Index())
 		}
 	})
 }

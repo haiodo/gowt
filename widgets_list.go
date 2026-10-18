@@ -125,6 +125,11 @@ func Table(opts ...Option) Option {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
 		t.SetHeaderVisible(true)
 		t.SetLinesVisible(true)
+		topOnFirstSize(&t.Control, func() {
+			if t.GetItemCount() > 0 {
+				t.SetTopIndex(0)
+			}
+		})
 		return &TableView{base{&t.Control}, t}
 	})
 }
@@ -392,6 +397,11 @@ type TreeView struct {
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
+		topOnFirstSize(&t.Control, func() {
+			if t.GetItemCount() > 0 {
+				t.SetTopItem(t.GetItem(0))
+			}
+		})
 		return &TreeView{base{&t.Control}, t}
 	})
 }
@@ -511,31 +521,25 @@ func (t *TreeView) OnActivate(f func(n *Node)) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f(first(t.t.GetSelection())) })
 }
 
-// OnExpand and OnCollapse run f with the node that changed. The event carries the item as a
-// bare *swt.Widget that cannot be downcast, so the node is found by walking the tree.
+// OnExpand and OnCollapse run f with the node that changed.
 func (t *TreeView) OnExpand(f func(n *Node)) {
-	t.t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
+	t.t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(e *swt.TreeEvent) { f(eventNode(e)) }))
 }
 
 // OnCollapse runs f with the node that was collapsed; see OnExpand.
 func (t *TreeView) OnCollapse(f func(n *Node)) {
-	t.t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(e *swt.TreeEvent) { f(t.find(e.Item)) }))
+	t.t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(e *swt.TreeEvent) { f(eventNode(e)) }))
 }
 
-func (t *TreeView) find(w *swt.Widget) *Node {
-	var walk func([]*swt.TreeItem) *Node
-	walk = func(items []*swt.TreeItem) *Node {
-		for _, it := range items {
-			if &it.Widget == w {
-				return &Node{it}
-			}
-			if n := walk(it.GetItems()); n != nil {
-				return n
-			}
-		}
+// eventNode wraps the item of e: a bare *swt.Widget whose Impl is the *swt.TreeItem.
+func eventNode(e *swt.TreeEvent) *Node {
+	if e.Item == nil {
 		return nil
 	}
-	return walk(t.t.GetItems())
+	if it, ok := e.Item.Impl().(*swt.TreeItem); ok {
+		return &Node{it}
+	}
+	return nil
 }
 
 func first(items []*swt.TreeItem) *Node {

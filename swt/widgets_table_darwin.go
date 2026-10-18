@@ -10,6 +10,7 @@ import (
 
 type Table struct {
 	Composite
+	rowsPending      bool
 	items            []*TableItem
 	columns          []*TableColumn
 	sortColumn       *TableColumn
@@ -549,6 +550,10 @@ func (this *Table) CreateItemItemIndex(itemLike TableItemLike, index int32) {
 	this.itemCount++
 	copy(this.items[index+1:], this.items[index:index+t568-index])
 	this.items[index] = item
+	if !this.impl.getDrawing_() && index == this.itemCount-1 {
+		this.rowsPending = true
+		return
+	}
 	this.UpdateRowCount()
 	if index != this.itemCount {
 		this.FixSelection(index, true)
@@ -607,6 +612,7 @@ func (this *Table) deselectRow_(id int64, sel int64, index int64) {
 }
 
 func (this *Table) Deselect(index int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if 0 <= index && index < this.itemCount {
 		var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
@@ -617,6 +623,7 @@ func (this *Table) Deselect(index int32) {
 }
 
 func (this *Table) DeselectStartEnd(start int32, end int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if start > end {
 		return
@@ -639,6 +646,7 @@ func (this *Table) DeselectStartEnd(start int32, end int32) {
 }
 
 func (this *Table) DeselectIndices(indices []int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -1311,6 +1319,7 @@ func (this *Table) GetItem(index int32) *TableItem {
 }
 
 func (this *Table) GetItemPoint(pointLike PointLike) *TableItem {
+	this.syncRows()
 	var point *Point
 	if pointLike != nil {
 		point = pointLike.AsPoint()
@@ -1901,6 +1910,7 @@ func (this *Table) scrollClipViewToPoint_(id int64, sel int64, clipView int64, p
 }
 
 func (this *Table) Select(index int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if 0 <= index && index < this.itemCount {
 		var set *cocoa.NSIndexSet = castcocoaNSObjectTococoaNSIndexSet(cocoa.NewNSIndexSet().Alloc())
@@ -1914,6 +1924,7 @@ func (this *Table) Select(index int32) {
 }
 
 func (this *Table) SelectStartEnd(start int32, end int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if end < 0 || start > end || ((this.style&SINGLE) != 0 && start != end) {
 		return
@@ -1940,6 +1951,7 @@ func (this *Table) SelectStartEnd(start int32, end int32) {
 }
 
 func (this *Table) SelectIndices(indices []int32) {
+	this.syncRows()
 	this.CheckWidget()
 	if indices == (nil) {
 		this.Error(ERROR_NULL_ARGUMENT)
@@ -1967,6 +1979,7 @@ func (this *Table) SelectIndices(indices []int32) {
 }
 
 func (this *Table) SelectIndicesCountClear(indices []int32, count int32, clear bool) {
+	this.syncRows()
 	var set *cocoa.NSMutableIndexSet = castcocoaNSObjectTococoaNSMutableIndexSet(cocoa.NewNSMutableIndexSet().Alloc().Init())
 	for i := int32(0); i < count; i++ {
 		set.AddIndex(int64(indices[i]))
@@ -1979,6 +1992,7 @@ func (this *Table) SelectIndicesCountClear(indices []int32, count int32, clear b
 }
 
 func (this *Table) SelectAll() {
+	this.syncRows()
 	this.CheckWidget()
 	if (this.style & SINGLE) != 0 {
 		return
@@ -2233,6 +2247,7 @@ func (this *Table) setRedraw_(redraw bool) {
 	this.CheckWidget()
 	this.Composite.setRedraw_(redraw)
 	if redraw && this.drawCount == 0 {
+		this.syncRows()
 		if int32(len(this.items)) > 4 && int32(len(this.items))-this.itemCount > 3 {
 			var length int32 = int32(math.Max(float64(4), float64((this.itemCount+3)/4*4)))
 			var newItems []*TableItem = make([]*TableItem, length)
@@ -2469,6 +2484,7 @@ func (this *Table) SetTableEmpty() {
 }
 
 func (this *Table) SetTopIndex(index int32) {
+	this.syncRows()
 	this.CheckWidget()
 	var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
 	var row int32 = int32(math.Max(float64(0), float64(int32(math.Min(float64(index), float64(this.itemCount))))))
@@ -2517,6 +2533,7 @@ func (this *Table) ShowColumn(columnLike TableColumnLike) {
 }
 
 func (this *Table) ShowIndex(index int32) {
+	this.syncRows()
 	if 0 <= index && index < this.itemCount {
 		var tableView *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
 		if tableView.HeaderView() == (nil) {
@@ -3044,6 +3061,7 @@ func (this *Table) updateCursorRects_(enabled bool) {
 }
 
 func (this *Table) UpdateRowCount() {
+	this.rowsPending = false
 	var widget *cocoa.NSTableView = castcocoaNSViewTococoaNSTableView(this.View)
 	this.impl.setRedraw_(false)
 	this.ignoreSelect = true

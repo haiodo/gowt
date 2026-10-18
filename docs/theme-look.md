@@ -27,6 +27,20 @@ gowt.VBox(gowt.Background(surface),
 	gowt.Label("Containers", gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold})))
 ```
 
+`gowt.SecondaryText` is the system colour of secondary text, for the second line of an empty state or a value next to its label. It is a `Paint` like `Adaptive` and is read again on a theme switch.
+
+| OS | Source |
+|---|---|
+| macOS | `secondaryLabelColor` for the app's appearance, flattened over `windowBackgroundColor`: SWT text colours are opaque, and SWT's own `COLOR_WIDGET_DISABLED_FOREGROUND` there is a selection background |
+| Windows | `COLOR_GRAYTEXT` (SWT `COLOR_WIDGET_DISABLED_FOREGROUND`); system colours do not follow the apps theme, so under `look.SetDarkContent` it is expected to stay the light-theme grey (not checked) |
+| Linux | the insensitive label colour of the GTK theme (SWT `COLOR_TITLE_INACTIVE_FOREGROUND`) |
+
+On a `Section` card the label takes the card colour behind its text, while the macOS text colour is mixed over the window colour, a few percent off the card. Only secondary text has a system colour: no tertiary text, separator or accent `Paint`, since `Separator()` and `Link` already draw the native ones and `GC` takes `RGB`.
+
+```go
+gowt.Label("Open a .cpuprofile, or drop one on this window", gowt.Foreground(gowt.SecondaryText))
+```
+
 `GC` colours and images are drawn for one theme: redraw the canvas and ask `icons.Get` or `icons.FromSVG` again in `OnThemeChange`.
 
 ## Package look

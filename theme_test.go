@@ -39,6 +39,24 @@ func TestAdaptiveIn(t *testing.T) {
 	}
 }
 
+func TestSecondaryText(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		plain := put[*LabelView](w, Label("main"))
+		l := put[*LabelView](w, Label("second line", Foreground(SecondaryText)))
+		want := secondaryText()
+		if fg(l.ctl) != want || want == fg(plain.ctl) {
+			t.Errorf("SecondaryText %v on the label, system %v, plain label %v", fg(l.ctl), want, fg(plain.ctl))
+		}
+		if app.paints[l.ctl] == nil {
+			t.Fatal("SecondaryText not kept for a theme switch")
+		}
+		app.repaint(!app.dark)
+		if fg(l.ctl) != secondaryText() {
+			t.Errorf("after a switch %v, system %v", fg(l.ctl), secondaryText())
+		}
+	})
+}
+
 func bg(c *swt.Control) RGB { return rgbOf(c.GetBackground().GetRGB()) }
 func fg(c *swt.Control) RGB { return rgbOf(c.GetForeground().GetRGB()) }
 

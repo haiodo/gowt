@@ -55,7 +55,8 @@ func (t *TabsView) added(Widget)         {}
 func (t *TabsView) only() string         { return "Tab" }
 
 // Tab creates a tab page of a Tabs or CTabs; its children stack as in a VBox,
-// Padding(Spacing.PageMargin) from the edge. Ref gives the page as a *Panel.
+// Padding(Spacing.PageMargin) from the edge. Ref gives the page as a *Panel; its Dispose removes the
+// tab too, and a CTabs tab closed by its button disposes the page.
 // Options: Closable (CTabs), Gap, Padding, children.
 func Tab(title string, opts ...Option) Option {
 	return &node{"Tab", func(h host) Widget {
@@ -66,11 +67,31 @@ func Tab(title string, opts ...Option) Option {
 			it.SetText(title)
 			page = swt.NewCompositeParentStyle(t.f, swt.NONE)
 			it.SetControl(page)
+			// A disposed page takes its tab along; when the folder goes, its items are released first.
+			page.AddDisposeListener(disposeFunc(func() {
+				if !it.IsDisposed() {
+					it.Dispose()
+				}
+			}))
 		case *CTabsView:
 			it := swt.NewCTabItem(t.f, resolve(swt.NONE, opts))
 			it.SetText(title)
 			page = swt.NewCompositeParentStyle(t.f, swt.NONE)
 			it.SetControl(page)
+			// SWT disposes only the item of a closed tab; whichever of item and page goes first takes the other.
+			gone := false
+			page.AddDisposeListener(disposeFunc(func() {
+				if !gone {
+					gone = true
+					it.Dispose()
+				}
+			}))
+			it.AddDisposeListener(disposeFunc(func() {
+				if !gone {
+					gone = true
+					page.Dispose()
+				}
+			}))
 		default:
 			reportOn(h.control(), fmt.Errorf("gowt: Tab needs a Tabs or CTabs parent, not %s", nameOf(h.control())))
 			return nil

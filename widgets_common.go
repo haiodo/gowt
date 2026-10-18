@@ -194,8 +194,8 @@ func (a *App) SystemFont() Font {
 	return Font{}.from(a.display.GetSystemFont(), a.display)
 }
 
-// SetForeground sets the text colour of the control; an Adaptive one follows the system theme, nil
-// restores the default. Foreground() does the same at creation.
+// SetForeground sets the text colour of the control; an Adaptive one and SecondaryText follow the
+// system theme, nil restores the default. Foreground() does the same at creation.
 func (w *base) SetForeground(c Paint) { setPaint(w.ctl, c, true) }
 
 // SetBackground sets the background colour of the control; an Adaptive one follows the system theme,

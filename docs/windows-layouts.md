@@ -103,4 +103,4 @@ w.Add(
 	gowt.Button("Switch", gowt.OnClick(func() { pages.Show(1 - pages.Current()) })))
 ```
 
-Every child of `Pages` is a page. `Show(i)` counts pages from 0 in the order they were added and panics on an index out of range; `Current()` is -1 when no page is shown. `pages.Add(...)` appends pages; a page added while none is shown is shown.
+Every child of `Pages` is a page. `Show(i)` counts pages from 0 in the order they were added and panics on an index out of range; `Current()` is -1 when no page is shown. `pages.Add(...)` appends pages; a page added while none is shown is shown. `page.Dispose()` removes a page: the pages after it move down by one, and when it was shown the page before it is shown (the next one when it was the first, none when it was the last page). A `List` that picks the page is kept in step by the app: `list.Remove(i)`, `page.Dispose()`, then `list.Select(pages.Current())`.

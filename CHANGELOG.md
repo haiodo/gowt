@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+New API
+- `gowt.SecondaryText`, a `Paint` with the system colour of secondary text that follows the system theme like an `Adaptive`: macOS `secondaryLabelColor` (flattened over the window background, as SWT text colours are opaque), Windows `COLOR_GRAYTEXT`, GTK the insensitive label colour. SWT's `COLOR_WIDGET_DISABLED_FOREGROUND` is not used on macOS, where it is a selection background colour.
+
+Behaviour change
+- Disposing the shown page of `Pages` shows the page before it, or the next one when it was the first; it used to leave the `Pages` empty with `Current()` -1. The pages after a disposed one move down by one, as before.
+- Disposing a `Tab` page removes its tab from `Tabs` and `CTabs`; it used to leave an empty tab. A `CTabs` tab closed by its button now disposes its page and the bindings in it; the page used to stay hidden in the folder.
+
 Fixes
 - `StyledText.SetText` took time quadratic in the number of lines: 10000 lines 0.37 s, 30000 lines 3.5 s. Setting the text resets the renderer's cache through a sorted set of every line index, and the runtime's sorted set searched the whole list and sorted it again on each add. It now inserts by binary search; 30000 lines take about 7 ms on Linux.
 - `LabelView.SetText` with a longer text after `Show` kept the label at the size of its first text, so the new one was cut; a `Wrap()` label with `GrowX()` kept the height of its first text. SWT leaves the layout to the app, and the facade did it only for `BindText`. The setters that can change a widget's size now lay its parents out again by themselves: `SetText` of a Label, Button, Switch, Link and tool item, `SetImage` of a Label, Button and tool item, `SetFont`, `GroupView.SetTitle` and `ComboView.SetItems`. The layout runs on the next event-loop turn (or at `App.Flush`), one pass per window over the parent chains of all the widgets changed in that turn; a setter that keeps the widget's size measures it twice and lays nothing out. A Wrap label is measured at its current width, so a text that needs more lines makes it taller. `Relayout` is now needed only after changes made through `Unwrap`.

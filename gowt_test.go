@@ -297,12 +297,25 @@ func TestContainers(t *testing.T) {
 			t.Errorf("Beside(&first) did not attach to first: %v", second.b.GetLayoutData())
 		}
 
-		ct := put[*CTabsView](w, CTabs(Tab("c", Closable())))
-		ct.Add(Tab("d", Closable()))
+		b.Dispose()
+		if n := tabs.Unwrap().GetItemCount(); n != 1 || a.c.IsDisposed() {
+			t.Errorf("a disposed Tab page left %d tabs, want 1", n)
+		}
+
+		var c, d *Panel
+		ct := put[*CTabsView](w, CTabs(Tab("c", Closable(), Ref(&c))))
+		ct.Add(Tab("d", Closable(), Ref(&d)))
 		closed := -1
 		ct.OnClose(func(i int) bool { closed = i; return false })
 		ct.Unwrap().GetItem(1).Dispose() // programmatic dispose does not ask; the veto path needs the UI
 		_ = closed
+		if !d.c.IsDisposed() || c.c.IsDisposed() {
+			t.Error("a closed CTabs tab must dispose its page only")
+		}
+		c.Dispose()
+		if n := ct.Unwrap().GetItemCount(); n != 0 {
+			t.Errorf("a disposed CTabs page left %d tabs", n)
+		}
 
 		sp := put[*SplitView](w, Split(Vertical(), Label("p"), Label("q")))
 		sp.SetWeights(1, 2)
@@ -700,21 +713,36 @@ func TestCommonMethodsAndPages(t *testing.T) {
 		if pages.Current() != 1 || pages.stack.TopControl != second.control() {
 			t.Errorf("Show(1): Current %d", pages.Current())
 		}
+		// Disposing pages: the shown one hands over to the page before it, or after it when it was first.
 		second.Dispose()
-		if pages.Current() != -1 {
-			t.Errorf("disposed page still current: %d", pages.Current())
+		if pages.Current() != 0 || pages.stack.TopControl != first.control() || !first.ctl.GetVisible() {
+			t.Errorf("shown last page disposed: Current %d, want the one before it", pages.Current())
 		}
-		third := put[*Panel](pages, VBox())
-		if pages.Current() != 1 || pages.stack.TopControl != third.control() {
+		third, fourth := put[*Panel](pages, VBox()), put[*Panel](pages, VBox())
+		pages.Show(0)
+		first.Dispose()
+		if pages.Current() != 0 || pages.stack.TopControl != third.control() || !third.ctl.GetVisible() {
+			t.Errorf("shown first page disposed: Current %d, want the next one renumbered to 0", pages.Current())
+		}
+		fourth.Dispose()
+		if pages.Current() != 0 || pages.stack.TopControl != third.control() {
+			t.Errorf("hidden page disposed: Current %d, want 0 kept", pages.Current())
+		}
+		third.Dispose()
+		if pages.Current() != -1 || pages.stack.TopControl != nil {
+			t.Errorf("last page disposed: Current %d", pages.Current())
+		}
+		fifth := put[*Panel](pages, VBox())
+		if pages.Current() != 0 || pages.stack.TopControl != fifth.control() {
 			t.Errorf("a page added while none is shown must be shown: Current %d", pages.Current())
 		}
 		func() {
 			defer func() {
-				if r := recover(); r == nil || !strings.Contains(fmt.Sprint(r), "Pages.Show(3) with 2 pages") {
+				if r := recover(); r == nil || !strings.Contains(fmt.Sprint(r), "Pages.Show(1) with 1 pages") {
 					t.Errorf("Show out of range: %v", r)
 				}
 			}()
-			pages.Show(3)
+			pages.Show(1)
 		}()
 
 		tb := put[*TableView](w, Table())

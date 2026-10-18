@@ -7,7 +7,8 @@ import "github.com/haiodo/gowt/swt"
 func (a *App) Dark() bool { return systemDark() }
 
 // OnThemeChange runs f on the UI thread when the system switches between light and dark.
-// Cached widget colors and the Adaptive colours of widgets are already refreshed when f runs.
+// Cached widget colors and the Adaptive and SecondaryText colours of widgets are already refreshed
+// when f runs.
 func (a *App) OnThemeChange(f func(dark bool)) {
 	last := a.Dark()
 	a.display.AddListener(swt.Settings, themeListener(func() {
@@ -26,8 +27,8 @@ func (l themeListener) HandleEvent(*swt.Event) { l() }
 // and for its background, nil for one never set.
 type painted struct{ fg, bg Paint }
 
-// followTheme makes a theme switch apply the Adaptive colours again. Run calls it before setup, so
-// the colours are switched before the OnThemeChange callbacks run.
+// followTheme makes a theme switch apply the Adaptive and system colours again. Run calls it before
+// setup, so the colours are switched before the OnThemeChange callbacks run.
 func (a *App) followTheme() {
 	a.dark = a.Dark()
 	a.paints = map[*swt.Control]*painted{}
@@ -52,7 +53,8 @@ func (a *App) repaint(dark bool) {
 
 // setPaint gives c the text colour (fg) or the background p in the current theme; nil restores the
 // default. A container's children without their own background show its background (INHERIT_DEFAULT),
-// as text fields, lists and buttons keep the native one. The App keeps an Adaptive for a theme switch.
+// as text fields, lists and buttons keep the native one. The App keeps any Paint but an RGB for a
+// theme switch.
 func setPaint(c *swt.Control, p Paint, fg bool) {
 	a := appOf(c)
 	var col *swt.Color
@@ -80,7 +82,7 @@ func setPaint(c *swt.Control, p Paint, fg bool) {
 	}
 	e := a.paints[c]
 	if e == nil {
-		if _, ok := p.(Adaptive); !ok {
+		if _, fixed := p.(RGB); fixed || p == nil {
 			return
 		}
 		e = &painted{}

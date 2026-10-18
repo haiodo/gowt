@@ -3,6 +3,7 @@
 package cocoa
 
 import (
+	"math"
 	"runtime"
 	"unsafe"
 
@@ -47,4 +48,36 @@ func EffectiveAppearanceDark() bool {
 func SyncCurrentAppearance() {
 	ap := msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance")
 	msg(class("NSAppearance"), "setCurrentAppearance:", ap)
+}
+
+// SecondaryLabelRGB is secondaryLabelColor as 0..255 sRGB, flattened over windowBackgroundColor as
+// GroupedFillRGB is.
+func SecondaryLabelRGB() (r, g, b int32) {
+	if r, g, b, ok := overWindow(msg(class("NSColor"), "secondaryLabelColor")); ok {
+		return r, g, b
+	}
+	return 128, 128, 128
+}
+
+// overWindow resolves the colour c for the app's current appearance and returns it over
+// windowBackgroundColor as 0..255 sRGB. SWT paints controls in opaque colours, so a translucent system
+// colour is flattened here.
+func overWindow(c uintptr) (r, g, b int32, ok bool) {
+	appearance := class("NSAppearance")
+	old := msg(appearance, "currentAppearance")
+	msg(old, "retain")
+	msg(appearance, "setCurrentAppearance:", msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance"))
+	defer func() {
+		msg(appearance, "setCurrentAppearance:", old)
+		msg(old, "release")
+	}()
+	srgb := msg(class("NSColorSpace"), "sRGBColorSpace")
+	bg := NewNSColorOverload1(int64(msg(msg(class("NSColor"), "windowBackgroundColor"), "colorUsingColorSpace:", srgb)))
+	fill := NewNSColorOverload1(int64(msg(c, "colorUsingColorSpace:", srgb)))
+	if bg.Id == 0 || fill.Id == 0 {
+		return 0, 0, 0, false
+	}
+	a := fill.AlphaComponent()
+	mix := func(b, f float64) int32 { return int32(math.Round(255 * (b*(1-a) + f*a))) }
+	return mix(bg.RedComponent(), fill.RedComponent()), mix(bg.GreenComponent(), fill.GreenComponent()), mix(bg.BlueComponent(), fill.BlueComponent()), true
 }

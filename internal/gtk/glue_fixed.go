@@ -242,6 +242,8 @@ func fixedRegister() {
 	// SWT connects to "dpi-changed" on every widget; GTK 3 has no such signal, so give GtkWidget a
 	// do-nothing one (nothing emits it) instead of a critical warning per connect.
 	gSignalNew.get()(sp(cs("dpi-changed")), gtkWidgetGetType.get()(), 1, 0, 0, 0, 0, 1<<2, 0)
+	// Tree and Table columns are SWT widgets too, but their handle is a GtkTreeViewColumn, not a GtkWidget.
+	gSignalNew.get()(sp(cs("dpi-changed")), uintptr(gtypeOf("gtk_tree_view_column_get_type")), 1, 0, 0, 0, 0, 1<<2, 0)
 	var iface GInterfaceInfo
 	gTypeAddInterfaceStatic.get()(t, gtkScrollableGetType.get()(), unsafe.Pointer(&iface))
 	fixedType = int64(t)

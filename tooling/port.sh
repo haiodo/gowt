@@ -428,6 +428,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
+# gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
+# yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
+# swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.
+if [ "$PLATFORM" = gtk ]; then
+	TF_GO=swt/widgets_tabfolder_linux.go
+	perl -0pi -e 's/(\titem\.pageHandle = pageHandle\n)(?!\tthis\.hookPage)/$1\tthis.hookPage(pageHandle)\n/' "$TF_GO"
+	[ "$(grep -c 'this.hookPage(pageHandle)' "$TF_GO")" = 1 ] || { echo "port.sh: TabFolder hookPage rewrite did not apply" >&2; exit 1; }
+fi
+
 # cocoa Table.createItem tells NSTableView about every new row (noteNumberOfRowsChanged and tile), so filling a table costs
 # native work per row even with redraw off. Like Tree's reloadPending, a row appended while redraw is off only marks the
 # count stale (rowsPending); syncRows (widgets_table_manual_darwin.go) catches the view up when redraw comes back and before

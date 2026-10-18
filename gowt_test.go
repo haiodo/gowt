@@ -236,22 +236,25 @@ func TestTabsAddAfterShow(t *testing.T) {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
 	var first, second, count, sel int32
+	var client, page *swt.Rectangle
 	var err error
 	onMain(func() {
 		err = Run(func(app *App) {
 			w := app.Window("t")
 			var tabs *TabsView
+			var p *Panel
 			w.Add(Tabs(Grow(), Ref(&tabs), Tab("Welcome", Label("hello"))))
 			w.SetSize(600, 400)
 			w.Show()
 			app.After(100*time.Millisecond, func() {
-				tabs.Add(Tab("Second session", Label("page two")))
+				tabs.Add(Tab("Second session", Ref(&p), Label("page two")))
 				tabs.Select(1)
 			})
 			app.After(400*time.Millisecond, func() {
 				f := tabs.Unwrap()
 				count, sel = f.GetItemCount(), f.GetSelectionIndex()
 				first, second = f.GetItem(0).GetBounds().Width, f.GetItem(1).GetBounds().Width
+				client, page = f.GetClientArea(), p.Unwrap().GetBounds()
 				w.Close()
 			})
 		})
@@ -264,6 +267,10 @@ func TestTabsAddAfterShow(t *testing.T) {
 	}
 	if first <= 0 || second <= first {
 		t.Errorf("tab widths %d, %d: the added tab is not wider than \"Welcome\"", first, second)
+	}
+	// GTK reported a 1x1 client area for the page it had not allocated yet, and the page kept that size.
+	if client == nil || client.Width < 100 || page.Width != client.Width || page.Height != client.Height {
+		t.Errorf("added page %v, client area %v: the page does not fill the client area", page, client)
 	}
 }
 

@@ -229,6 +229,43 @@ func TestRangeWidgets(t *testing.T) {
 	})
 }
 
+// A tab added to a shown Tabs is as wide as its title; cocoa kept the width of an empty title.
+func TestTabsAddAfterShow(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var first, second, count, sel int32
+	var err error
+	onMain(func() {
+		err = Run(func(app *App) {
+			w := app.Window("t")
+			var tabs *TabsView
+			w.Add(Tabs(Grow(), Ref(&tabs), Tab("Welcome", Label("hello"))))
+			w.SetSize(600, 400)
+			w.Show()
+			app.After(100*time.Millisecond, func() {
+				tabs.Add(Tab("Second session", Label("page two")))
+				tabs.Select(1)
+			})
+			app.After(400*time.Millisecond, func() {
+				f := tabs.Unwrap()
+				count, sel = f.GetItemCount(), f.GetSelectionIndex()
+				first, second = f.GetItem(0).GetBounds().Width, f.GetItem(1).GetBounds().Width
+				w.Close()
+			})
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 2 || sel != 1 {
+		t.Errorf("items %d, selected %d; want 2, 1", count, sel)
+	}
+	if first <= 0 || second <= first {
+		t.Errorf("tab widths %d, %d: the added tab is not wider than \"Welcome\"", first, second)
+	}
+}
+
 func TestContainers(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		var a, b *Panel

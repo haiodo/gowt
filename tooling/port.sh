@@ -419,6 +419,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.display.RunDeferredLayouts()' "$LR_SHELL")" = 1 ] || { echo "port.sh: windowDidResize deferred layout rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa TabItem keeps every NSTabViewItem label empty and sizes the tab in sizeOfLabel:, so after a new text or image the
+# label is set to the same empty string and a shown NSTabView keeps the old width: a tab added after show stayed zero wide.
+# swt/widgets_tabitem_manual_darwin.go changes the label and back, which makes the tab view measure it again.
+if [ "$PLATFORM" = cocoa ]; then
+	TI_GO=swt/widgets_tabitem_darwin.go
+	perl -0pi -e 's/(\tthis\.Item\.setText_\(string_\)\n\tthis\.UpdateText\(\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/; s/(\tthis\.Item\.setImageOnItem_\(image\)\n\tthis\.nsItem\.SetLabel\(cocoa\.NSStringString\(\)\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/' "$TI_GO"
+	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

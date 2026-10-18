@@ -71,7 +71,8 @@ func Run(setup func(*App)) (err error) {
 	if p := os.Getenv("GOWT_SNAP"); p != "" {
 		snapTick = a.armSnap(p, &err)
 	}
-	for !a.quit.Load() && len(a.display.GetShells()) > 0 {
+	// The display can dispose itself inside ReadAndDispatch: macOS Quit, Windows WM_ENDSESSION.
+	for !a.quit.Load() && !a.display.IsDisposed() && len(a.display.GetShells()) > 0 {
 		snapTick()
 		if !a.dispatch(a.display.ReadAndDispatch) {
 			a.display.Sleep()

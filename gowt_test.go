@@ -78,6 +78,24 @@ func TestRunReturnsSWTError(t *testing.T) {
 	}
 }
 
+// Display.Close from Async disposes the display inside ReadAndDispatch, as the macOS Quit item does.
+func TestRunDisplayDisposedInLoop(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var err error
+	onMain(func() {
+		err = Run(func(app *App) {
+			app.Window("t").Show()
+			app.Clipboard()
+			app.Async(func() { app.display.Close() })
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func guiRun(t *testing.T, setup func(app *App, w *Window)) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {

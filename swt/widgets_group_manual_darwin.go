@@ -39,6 +39,29 @@ func (this *Group) measureFrame(widget *cocoa.NSBox, c cocoa.NSRect) cocoa.NSRec
 	return frame
 }
 
+// groupResizing is the Group whose NSBox is inside setFrameSize. Main thread only.
+var groupResizing *Group
+
+// The NSBox tiles its content view at SetText while still 0x0, so it stays 2 title heights too tall
+// until AppKit re-tiles the box before display; lay out again then, or children overflow the box.
+func (this *Group) setFrameSize_(id int64, sel int64, size cocoa.NSSize) {
+	if this.contentView == nil || id != this.contentView.Id {
+		outer := groupResizing
+		groupResizing = this
+		defer func() { groupResizing = outer }()
+		this.Composite.setFrameSize_(id, sel, size)
+		return
+	}
+	old := this.contentView.Frame()
+	this.Composite.setFrameSize_(id, sel, size)
+	// A resize of the box itself relays the Group once, in resized.
+	if groupResizing == this || this.ignoreResize || this.layout == nil || (old.Width == size.Width && old.Height == size.Height) {
+		return
+	}
+	this.impl.markLayout_(false, false)
+	this.impl.updateLayout_(false)
+}
+
 func (this *Group) frameFromContentFrame(widget *cocoa.NSBox, content cocoa.NSRect) cocoa.NSRect {
 	key := groupTrimKey{text: this.text}
 	// A native id can be reused after the font is released; the name cannot.

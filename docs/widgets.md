@@ -57,7 +57,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Section | `Section(rows...)` | grouped "inset" card as in macOS System Settings; every child is a row (usually an `HBox` or `Grid`), with a separator line before every row but the first; `SectionView.Add` appends rows. See [theme-look.md](theme-look.md#finder-and-system-settings-look) |
 | Tabs, CTabs | `Tabs(tabs...)`, `CTabs(tabs...)` | children are `Tab(title, children...)` pages (`Ref` gives the page `*Panel`; `TabsView.Add` appends); `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
 | Pages | `Pages(pages...)` | one page at a time, no tabs: every child is a page (the first is shown), `Add` appends, `Show(i)`, `Current()` |
-| Split | `Split(panes...)` | children are the panes, any widgets in order; `SetWeights(...)` sets the relative sizes |
+| Split | `Split(panes...)` | children are the panes, any widgets in order; each pane fills its part, `SetWeights(...)` sets the relative sizes. A pane takes no placement options: `Grow`, `GrowX`, `GrowY` are accepted and change nothing, `Size`, `Span`, `Place` and the rest go to `App.OnError` |
 | Scroll | `Scroll(children...)` | children stack in the scrolling area as in a VBox and fit; `ScrollView.Add` adds more and fits again |
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem` (call it after the `Add` that creates the tool bar); `Separator()` |
 | CoolBar, Sash | `CoolBar(bands...)`, `Sash()` | each child of the cool bar becomes a band; `Sash.OnMove` |

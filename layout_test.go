@@ -21,12 +21,16 @@ func placed(t *testing.T, layout string, opts ...Option) any {
 	return d
 }
 
-func misplacedErr(layout string, opts ...Option) error {
+func placedErr(layout string, opts ...Option) (any, error) {
 	var pl placement
 	for _, o := range opts {
 		o.(place)(&pl)
 	}
-	_, err := pl.data("Button", layout)
+	return pl.data("Button", layout)
+}
+
+func misplacedErr(layout string, opts ...Option) error {
+	_, err := placedErr(layout, opts...)
 	return err
 }
 
@@ -66,6 +70,16 @@ func TestPlacementComposes(t *testing.T) {
 	}
 }
 
+func TestGrowWhereEveryChildFills(t *testing.T) {
+	for _, l := range []string{"Split", "Fill", "Pages", "Tabs", "CTabs"} {
+		for _, o := range []Option{Grow(), GrowX(), GrowY()} {
+			if d, err := placedErr(l, o); d != nil || err != nil {
+				t.Errorf("%s: got %v, %v; want no layout data and no error", l, d, err)
+			}
+		}
+	}
+}
+
 func TestPlacementUnderForeignLayout(t *testing.T) {
 	cases := []struct {
 		layout string
@@ -73,7 +87,9 @@ func TestPlacementUnderForeignLayout(t *testing.T) {
 		want   string
 	}{
 		{"Flow", []Option{Cell(GridCell{})}, "Cell on Button needs a VBox, HBox or Grid parent, not Flow"},
-		{"Fill", []Option{Size(10, 10), GrowX()}, "GrowX on Button needs a VBox, HBox or Grid parent, not Fill"},
+		{"Fill", []Option{Size(10, 10), GrowX()}, "Size on Button needs a VBox, HBox, Grid, Flow or Form parent, not Fill"},
+		{"Split", []Option{Grow(), Span(2)}, "Span on Button needs a VBox, HBox or Grid parent, not Split"},
+		{"Form", []Option{Grow()}, "Grow on Button needs a VBox, HBox or Grid parent, not Form"},
 		{"Grid", []Option{Anchor(FormCell{})}, "Anchor on Button needs a Form parent, not Grid"},
 		{"Pages", []Option{Size(10, 0)}, "Size on Button needs a VBox, HBox, Grid, Flow or Form parent, not Pages"},
 		{"", []Option{GrowX()}, "GrowX on Button needs a VBox, HBox or Grid parent, not a parent without a layout"},
@@ -117,4 +133,23 @@ func TestIgnoreDisposed(t *testing.T) {
 		defer ignoreDisposed()
 		swt.Error(swt.ERROR_WIDGET_DISPOSED)
 	}()
+}
+
+// The child of a titled Group stays inside the Group's client area once the window is shown.
+func TestGroupChildInsideClientArea(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		items := make([]string, 40)
+		for i := range items {
+			items[i] = "item"
+		}
+		g := put[*GroupView](w, Group("Sessions", Grow(), List(items, Grow())))
+		w.SetSize(600, 400)
+		app.Async(func() {
+			ca := g.g.GetClientArea()
+			b := g.g.GetChildren()[0].GetBounds()
+			if b.Height == 0 || b.Y < ca.Y || b.Y+b.Height > ca.Y+ca.Height || b.X+b.Width > ca.X+ca.Width {
+				t.Errorf("list %v outside the client area %v of a group %v", b, ca, g.g.GetBounds())
+			}
+		})
+	})
 }

@@ -98,7 +98,7 @@ Rules:
 - Values that change together go into one `State` (a whole poll result) and are split with `Derived`s; separate `Post`s may reach the UI thread in different batches.
 - A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
 - An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback, or to the nearest `gowt.Boundary` around its widget. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
-- `BindText` lays the window out again on the next event-loop turn, so a growing label is not clipped. `Label.SetText` still does not.
+- `BindText`, like `Label.SetText`, lays the parents out again on the next event-loop turn when the text changes the widget's size, so a growing label is not cut.
 
 ### Rows bound to state
 

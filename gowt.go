@@ -32,6 +32,8 @@ type App struct {
 	onError func(error)
 	dark    bool                      // the theme the Adaptive colours were last applied for
 	paints  map[*swt.Control]*painted // controls given an Adaptive colour
+	// controls whose preferred size changed in this event-loop turn; see sizing
+	relayouts []*swt.Control
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -200,6 +202,7 @@ func (a *App) Every(d time.Duration, f func()) (stop func()) {
 // widgets right after a change. UI thread only.
 func (a *App) Flush() {
 	rx.Flush()
+	a.runRelayouts()
 	a.display.RunDeferredLayouts()
 }
 
@@ -301,9 +304,10 @@ func (p *panel) Add(children ...Option) {
 func (p *panel) into() *swt.Composite { return p.c }
 func (p *panel) added(Widget)         {}
 
-// Relayout lays the children out again and recomputes their sizes, as needed after a change that
-// SWT does not lay out by itself, such as a SetText that makes a label longer. p keeps its own
-// size: to let it grow too, Relayout the Window.
+// Relayout lays the children out again and recomputes their sizes, as needed after a change made
+// through Unwrap, such as swt.Label.SetText. The facade setters that change a size (SetText, SetImage,
+// SetFont, SetTitle of a Group, SetItems of a Combo) lay out by themselves. p keeps its own size: to
+// let it grow too, Relayout the Window.
 func (p *panel) Relayout() { p.c.LayoutOverload2(true, true) }
 
 // Clear disposes every child and lays p out again, ready for new content.
@@ -496,8 +500,8 @@ type LabelView struct {
 	l *swt.Label
 }
 
-// SetText replaces the label text.
-func (l *LabelView) SetText(s string) { l.l.SetText(s) }
+// SetText replaces the label text. Lays the parents out when the size changes.
+func (l *LabelView) SetText(s string) { sizing(&l.l.Control, func() { l.l.SetText(s) }) }
 
 // Unwrap returns the underlying swt.Label for the full API.
 func (l *LabelView) Unwrap() *swt.Label { return l.l }
@@ -508,8 +512,8 @@ type ButtonView struct {
 	b *swt.Button
 }
 
-// SetText replaces the button text.
-func (b *ButtonView) SetText(s string) { b.b.SetText(s) }
+// SetText replaces the button text. Lays the parents out when the size changes.
+func (b *ButtonView) SetText(s string) { sizing(&b.b.Control, func() { b.b.SetText(s) }) }
 
 // Checked reports the state of a Check or Radio button.
 func (b *ButtonView) Checked() bool { return b.b.GetSelection() }
@@ -537,8 +541,8 @@ func (s *SwitchView) Checked() bool { return s.b.GetSelection() }
 // SetChecked sets the state without calling OnChange.
 func (s *SwitchView) SetChecked(v bool) { s.b.SetSelection(v) }
 
-// SetText replaces the label.
-func (s *SwitchView) SetText(t string) { s.b.SetText(t) }
+// SetText replaces the label. Lays the parents out when the size changes.
+func (s *SwitchView) SetText(t string) { sizing(&s.b.Control, func() { s.b.SetText(t) }) }
 
 // Unwrap returns the underlying swt.Button for the full API.
 func (s *SwitchView) Unwrap() *swt.Button { return s.b }

@@ -126,7 +126,9 @@ row.OnDispose(stop)                // runs when row is disposed or its window cl
 
 `Enabled()` and `Visible()` read the state back. A colour is an `RGB` or an `Adaptive{Light, Dark}`, which the widget switches with the system theme by itself; a background on a container also shows behind its labels and boxes. A `Font` with `Scale` and no `Size` is sized from the system font (`Font{Scale: 1.2, Weight: gowt.Semibold}` for a heading), and widgets with equal fonts share one native font. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
 
-A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a text got longer) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
+A setter that changes a widget's size lays its parents out again by itself, on the next event-loop turn (or at `app.Flush()`), once for all the changes of that turn: `SetText` of a Label, Button, Switch, Link or tool item, `SetImage`, `SetFont`, a Group's `SetTitle`, a Combo's `SetItems`, and `BindText`. A setter that leaves the size as it was costs no layout. A `Text` or `List` keeps its size and scrolls. A `Wrap()` label breaks its text at the width its cell gets and grows in height: give it `GrowX()` and let its containers fill the width (`GrowX()` up to the window), or give it `Size(w, 0)`; otherwise its one-line width widens the column and the text is cut at the window edge.
+
+A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a change made through `Unwrap()`) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
 
 ## The window
 

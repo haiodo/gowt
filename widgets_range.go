@@ -198,8 +198,8 @@ func Link(text string, opts ...Option) Option {
 	})
 }
 
-// SetText replaces the text; anchors use <a href="...">.
-func (l *LinkView) SetText(s string) { l.l.SetText(s) }
+// SetText replaces the text; anchors use <a href="...">. Lays the parents out when the size changes.
+func (l *LinkView) SetText(s string) { sizing(&l.l.Control, func() { l.l.SetText(s) }) }
 
 // Unwrap returns the underlying swt.Link for the full API.
 func (l *LinkView) Unwrap() *swt.Link { return l.l }

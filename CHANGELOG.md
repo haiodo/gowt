@@ -4,6 +4,8 @@
 
 Fixes
 - `StyledText.SetText` took time quadratic in the number of lines: 10000 lines 0.37 s, 30000 lines 3.5 s. Setting the text resets the renderer's cache through a sorted set of every line index, and the runtime's sorted set searched the whole list and sorted it again on each add. It now inserts by binary search; 30000 lines take about 7 ms on Linux.
+- `LabelView.SetText` with a longer text after `Show` kept the label at the size of its first text, so the new one was cut; a `Wrap()` label with `GrowX()` kept the height of its first text. SWT leaves the layout to the app, and the facade did it only for `BindText`. The setters that can change a widget's size now lay its parents out again by themselves: `SetText` of a Label, Button, Switch, Link and tool item, `SetImage` of a Label, Button and tool item, `SetFont`, `GroupView.SetTitle` and `ComboView.SetItems`. The layout runs on the next event-loop turn (or at `App.Flush`), one pass per window over the parent chains of all the widgets changed in that turn; a setter that keeps the widget's size measures it twice and lays nothing out. A Wrap label is measured at its current width, so a text that needs more lines makes it taller. `Relayout` is now needed only after changes made through `Unwrap`.
+- `BindText` lays out the parent chain of its widget, only when the size changed, instead of the whole window after every new text.
 
 ## v0.9.2 (2026-10-18)
 

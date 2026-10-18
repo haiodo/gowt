@@ -419,6 +419,18 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.display.RunDeferredLayouts()' "$LR_SHELL")" = 1 ] || { echo "port.sh: windowDidResize deferred layout rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Table.createItem tells NSTableView about every new row (noteNumberOfRowsChanged and tile), so filling a table costs
+# native work per row even with redraw off. Like Tree's reloadPending, a row appended while redraw is off only marks the
+# count stale (rowsPending); syncRows (widgets_table_manual_darwin.go) catches the view up when redraw comes back and before
+# each call that hands NSTableView a row index. Inserts before the end keep the immediate update: fixSelection needs it.
+if [ "$PLATFORM" = cocoa ]; then
+	TB_GO=swt/widgets_table_darwin.go
+	TI_GO=swt/widgets_tableitem_darwin.go
+	perl -0pi -e 's/(type Table struct \{\n\tComposite\n)(?!\trowsPending)/$1\trowsPending bool\n/; s/(\tthis\.items\[index\] = item\n)(\tthis\.UpdateRowCount\(\)\n\tif index != this\.itemCount \{\n)/$1\tif !this.impl.getDrawing_() && index == this.itemCount-1 {\n\t\tthis.rowsPending = true\n\t\treturn\n\t}\n$2/; s/(func \(this \*Table\) UpdateRowCount\(\)\s*\{\n)(?!\tthis\.rowsPending)/$1\tthis.rowsPending = false\n/; s/(func \(this \*Table\) setRedraw_\(redraw bool\)\s*\{\n\tthis\.CheckWidget\(\)\n\tthis\.Composite\.setRedraw_\(redraw\)\n\tif redraw && this\.drawCount == 0 \{\n)(?!\t\tthis\.syncRows)/$1\t\tthis.syncRows()\n/; s/(func \(this \*Table\) (?:Deselect|DeselectStartEnd|DeselectIndices|GetItemPoint|Select|SelectStartEnd|SelectIndices|SelectIndicesCountClear|SelectAll|SetTopIndex|ShowIndex)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.syncRows)/$1\tthis.syncRows()\n/g' "$TB_GO"
+	perl -0pi -e 's/(func \(this \*TableItem\) (?:GetBounds|GetBoundsIndex|GetImageBounds|GetTextBounds)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.parent\.syncRows)/$1\tthis.parent.syncRows()\n/g' "$TI_GO"
+	[ "$(grep -c 'rowsPending' "$TB_GO")" = 3 ] && [ "$(grep -c 'this.syncRows()' "$TB_GO")" = 12 ] && [ "$(grep -c 'this.parent.syncRows()' "$TI_GO")" = 4 ] || { echo "port.sh: Table rowsPending rewrite did not apply" >&2; exit 1; }
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

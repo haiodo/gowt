@@ -269,6 +269,7 @@ func (this *TableItem) GetBackgroundIndex(index int32) *Color {
 }
 
 func (this *TableItem) GetBounds() *Rectangle {
+	this.parent.syncRows()
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
@@ -323,6 +324,7 @@ func (this *TableItem) GetBounds() *Rectangle {
 }
 
 func (this *TableItem) GetBoundsIndex(index int32) *Rectangle {
+	this.parent.syncRows()
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
@@ -450,6 +452,7 @@ func (this *TableItem) GetImageIndex(index int32) *Image {
 }
 
 func (this *TableItem) GetImageBounds(index int32) *Rectangle {
+	this.parent.syncRows()
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)
@@ -544,6 +547,7 @@ func (this *TableItem) GetTextIndex(index int32) string {
 }
 
 func (this *TableItem) GetTextBounds(index int32) *Rectangle {
+	this.parent.syncRows()
 	this.CheckWidget()
 	if !this.parent.CheckData(this) {
 		this.Error(ERROR_WIDGET_DISPOSED)

@@ -4,6 +4,9 @@
 
 Fixes
 - Quitting from the macOS app menu (Cmd+Q) made `Run` return "gowt: Device is disposed": the Quit item disposes the display inside the event loop, and `Run` then asked the disposed display for its shells and disposed the clipboard on it. `Run` now ends without an error when the display is disposed under it, as on Windows logoff (WM_ENDSESSION) or after `Display.Close` in a handler.
+- macOS: a `Table` or `Tree` filled before its first layout (in `Init`) showed its first row under the header, scrolled by about one row. AppKit leaves the clip view at offset 0 when the view gets its size; the facade now scrolls such a view to its top once, after the first resize, unless the app scrolled it elsewhere.
+- macOS: `Table.Row` inside `Batch` was about ten times slower than `Tree.Node`: SWT told NSTableView about each new row (`noteNumberOfRowsChanged` and `tile`). A row appended while redraw is off now only marks the count stale, as Tree does; the view catches up when redraw comes back and before selecting, scrolling or hit-testing rows.
+- `Tree.OnExpand` and `OnCollapse` found the node by walking every created node; the event item now maps to its node directly.
 
 ## v0.9.1 (2026-10-18)
 

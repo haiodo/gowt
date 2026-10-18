@@ -200,3 +200,27 @@ func TestToolbarSearch(t *testing.T) {
 		}
 	})
 }
+
+// Sidebar items go between the sidebar spacer and the end spacer, before everything else; without
+// a sidebar they keep their place.
+func TestToolbarSidebarOrder(t *testing.T) {
+	items := []ToolbarItem{{Label: "back", Nav: true}, {Label: "open", Sidebar: true}, {Space: true, Sidebar: true}, {Label: "add"}}
+	order := func(s *toolbarState) string {
+		var ids []string
+		onMain(func() {
+			arr := s.ids()
+			for i, n := uintptr(0), msg(arr, "count"); i < n; i++ {
+				ids = append(ids, goString(msg(arr, "objectAtIndex:", i)))
+			}
+		})
+		return strings.Join(ids, " ")
+	}
+	want := "gowt.sidebar gowt.item.1 gowt.sidebar.end gowt.item.0 NSToolbarFlexibleSpaceItem gowt.item.3"
+	if got := order(&toolbarState{items: items, sidebar: true}); got != want {
+		t.Errorf("with sidebar: %s, want %s", got, want)
+	}
+	want = "gowt.item.0 gowt.item.1 NSToolbarFlexibleSpaceItem gowt.item.3"
+	if got := order(&toolbarState{items: items}); got != want {
+		t.Errorf("without sidebar: %s, want %s", got, want)
+	}
+}

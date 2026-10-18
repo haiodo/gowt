@@ -24,6 +24,7 @@ type ToolbarItem struct {
 	Click    func()
 	Group    []ToolbarItem
 	Nav      bool // navigational: placed before the window title
+	Sidebar  bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
 	Search   func(text string)
 	Disabled bool // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
 }
@@ -33,6 +34,7 @@ const (
 	itemIDPrefix        = "gowt.item."
 	flexibleSpaceID     = "NSToolbarFlexibleSpaceItem"
 	sidebarSpacerID     = "gowt.sidebar"
+	sidebarEndID        = "gowt.sidebar.end"
 	selectMomentary     = 2
 	representExpanded   = 1
 	displayIconOnly     = 2
@@ -46,6 +48,7 @@ type toolbarState struct {
 	spacer      uintptr // the spacer's view and width constraint, owned by the toolbar item
 	width       uintptr
 	spacerWidth float64
+	end         uintptr         // the spacer after the Sidebar items, the point the spacer width is fitted on
 	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
 	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
 	searchButtons, searchItems map[int]uintptr
@@ -59,12 +62,14 @@ var (
 
 func toolbarKey() uintptr { return sel("gowtToolbar") }
 
+// overSidebar reports whether it goes over the sidebar: a Sidebar item of a window with a sidebar.
+func (s *toolbarState) overSidebar(it ToolbarItem) bool { return s.sidebar && it.Sidebar && !it.Space }
+
+// ids lists the items in toolbar order. With a sidebar that is the spacer, the Sidebar items, a second
+// spacer they end before, then the rest: all navigational up to the title, so AppKit keeps the order.
 func (s *toolbarState) ids() uintptr {
-	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+1))
-	if s.sidebar {
-		msg(arr, "addObject:", nsString(sidebarSpacerID))
-	}
-	for i, it := range s.items {
+	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+2))
+	add := func(i int, it ToolbarItem) {
 		id := itemIDPrefix + strconv.Itoa(i)
 		if it.Space {
 			id = flexibleSpaceID
@@ -73,6 +78,24 @@ func (s *toolbarState) ids() uintptr {
 			msg(arr, "addObject:", nsString(searchButtonPrefix+strconv.Itoa(i)))
 		}
 		msg(arr, "addObject:", nsString(id))
+	}
+	if s.sidebar {
+		msg(arr, "addObject:", nsString(sidebarSpacerID))
+		over := false
+		for i, it := range s.items {
+			if s.overSidebar(it) {
+				add(i, it)
+				over = true
+			}
+		}
+		if over {
+			msg(arr, "addObject:", nsString(sidebarEndID))
+		}
+	}
+	for i, it := range s.items {
+		if !s.overSidebar(it) {
+			add(i, it)
+		}
 	}
 	return arr
 }
@@ -178,7 +201,7 @@ func symbolImage(name, label string) uintptr {
 }
 
 func (s *toolbarState) item(target uintptr, id string) uintptr {
-	if id == sidebarSpacerID {
+	if id == sidebarSpacerID || id == sidebarEndID {
 		ti := msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
 		v, width := newSpacer()
 		msg(ti, "setView:", v)
@@ -187,7 +210,12 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 			msg(ti, "setBordered:", 0)
 		}
 		msg(ti, "setNavigational:", 1)
-		s.spacer, s.width, s.spacerWidth = v, width, -1
+		if id == sidebarEndID {
+			msgF64(width, sel("setConstant:"), sidebarEndWidth)
+			s.end = v
+		} else {
+			s.spacer, s.width, s.spacerWidth = v, width, -1
+		}
 		return msg(ti, "autorelease")
 	}
 	if strings.HasPrefix(id, searchButtonPrefix) {
@@ -250,7 +278,7 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 	}
 	msg(ti, "setLabel:", nsString(it.Label))
 	msg(ti, "setToolTip:", nsString(it.Label))
-	if it.Nav && respondsTo(ti, "setNavigational:") {
+	if (it.Nav || s.overSidebar(*it)) && respondsTo(ti, "setNavigational:") {
 		msg(ti, "setNavigational:", 1)
 	}
 	return ti

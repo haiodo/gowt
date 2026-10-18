@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+Fixes
+- Dialogs and SWT-made texts showed message keys instead of words: the Yes and No buttons of a question read "SWT_Yes" and "SWT_No", likewise OK, Cancel, Abort, Retry, Ignore, the CTabFolder chevron tooltip and accessibility relation names. The English SWT messages are now built in.
+
 ## v0.9.0 (2026-10-18)
 
 Tables, trees and lists that follow rx state by key, a `Boundary` that shows an error in place of the part of the screen that failed, colours that follow the system theme, fonts relative to the system size and shared between widgets, one ownership rule for images, and the names the API review found spelled two ways.

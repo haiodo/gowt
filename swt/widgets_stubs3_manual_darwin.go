@@ -74,14 +74,6 @@ func BidiUtilIsBidiPlatform() bool                                              
 func BidiUtilAddLanguageListener(controlLike ControlLike, runnable jrt.Runnable) {}
 func BidiUtilRemoveLanguageListener(controlLike ControlLike)                     {}
 
-// Compatibility.getMessage: no SWTMessages resource bundle, the key itself is the message.
-func CompatibilityGetMessage(key string, args ...[]any) string {
-	if len(args) == 0 {
-		return key
-	}
-	return fmt.Sprint(key, args[0])
-}
-
 // DefaultExceptionHandler: rethrow, as the Java lambdas do.
 var DefaultExceptionHandlerRUNTIME_EXCEPTION_HANDLER = func(e error) { panic(e) }
 var DefaultExceptionHandlerRUNTIME_ERROR_HANDLER = func(e error) {

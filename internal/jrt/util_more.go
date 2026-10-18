@@ -187,12 +187,16 @@ func NewTreeSet(from ...any) *TreeSet {
 	return t
 }
 
+// Add keeps items sorted by binary insertion: StyledText fills a set with every line index on setText.
 func (t *TreeSet) Add(a ...any) bool {
-	if t.Contains(a[0]) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	v := a[0]
+	i := sort.Search(len(t.items), func(i int) bool { return !lessAny(t.items[i], v) })
+	if i < len(t.items) && !lessAny(v, t.items[i]) {
 		return false
 	}
-	t.List.Add(a[0])
-	sort.SliceStable(t.items, func(i, j int) bool { return lessAny(t.items[i], t.items[j]) })
+	t.items = slices.Insert(t.items, i, v)
 	return true
 }
 
